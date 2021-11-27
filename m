@@ -1,109 +1,84 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4A70EC4332F
-	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 07:59:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E719BC433F5
+	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 10:11:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 73CF4606CF;
-	Sat, 27 Nov 2021 07:59:36 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 7759940194;
+	Sat, 27 Nov 2021 10:11:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id B7kZJBLv6WXi; Sat, 27 Nov 2021 07:59:35 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 54D0E607C0;
-	Sat, 27 Nov 2021 07:59:35 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BEA76C003E;
-	Sat, 27 Nov 2021 07:59:34 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C96AAC000A
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 07:59:33 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id E8797401CC
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 07:59:32 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 13im0-GXM_Et for <iommu@lists.linux-foundation.org>;
- Sat, 27 Nov 2021 07:59:31 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vVJxOoIk7YaU; Sat, 27 Nov 2021 10:11:51 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 9F9EB4012F;
+	Sat, 27 Nov 2021 10:11:50 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 79223C001C;
+	Sat, 27 Nov 2021 10:11:50 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A9DEEC000A
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 10:11:48 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 81EFF82C38
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 10:11:48 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=fail (2048-bit key) reason="fail (bad RSA signature)"
+ header.d=collabora.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Kyua6BnO1SIZ for <iommu@lists.linux-foundation.org>;
+ Sat, 27 Nov 2021 10:11:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 69A1C400C1
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 07:59:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1637999970;
- h=from:from:reply-to:reply-to:subject:subject:date:date:
- message-id:message-id:to:to:cc:cc:mime-version:mime-version:
- content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=58Kjh48+rA0mz4yMMMVKby2HPiPhnf/RAdjUHo4rrk8=;
- b=Wjhqm85aXcYC5GLn/pZhrp3OPwiu/dAjoVS6W7S7iCWoJ1x+lmxj1GIo5ENRVK9RI0MZkS
- gtwCHxUJjVXOhrtpSlWRUQ4nHtaYH+XQwvxPR3wp0vE3r2DJLNzvNo74AH40FZaCj6p2lH
- IM69R0ewldSsZU2G82wvXkYDttI88WE=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-160-wN5D3CDDM3i4Du-AyMZYKQ-1; Sat, 27 Nov 2021 02:59:28 -0500
-X-MC-Unique: wN5D3CDDM3i4Du-AyMZYKQ-1
-Received: by mail-wm1-f69.google.com with SMTP id
- n16-20020a05600c3b9000b003331973fdbbso6670757wms.0
- for <iommu@lists.linux-foundation.org>; Fri, 26 Nov 2021 23:59:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:reply-to:subject:to:cc:references:from
- :message-id:date:user-agent:mime-version:in-reply-to
- :content-transfer-encoding:content-language;
- bh=58Kjh48+rA0mz4yMMMVKby2HPiPhnf/RAdjUHo4rrk8=;
- b=rmVW993EbWPQgflMwxNi4WQFE2GgtrWs4M6vn6Yi1WMbDzvQ6wjyYLc9yJTGf15ZNh
- 5jkMTHHxmzmjkJMv0t+eFanA+Y3kqQ9r/Oi/EPGNJpSaRUUbhtsGnJ16B6OoN1w4Z8fy
- oBk3XzC4VGHTUzI97zfsVaHuaV6561OeT8r7ycrM/7XoYVc7o8cnxmXLsrVs1iNzssRN
- b8iZSTyZK9Q8UQKjPLf32mvOYqkSL+3xzR9AYcvW3Hx7u1Qs/b2HGHV7OfXFKYUhVq51
- yr6l9ZlJZmA/Y9ypmqr3XX/8Tjmx1iv3i8NJhXReE34X95XF1dlnOtf1Em7Cb/TJ6b7Z
- kDqw==
-X-Gm-Message-State: AOAM532FamvM8VvZEm9i1gw+Iwpn0WIrW2rLGuCkaXTwubS3pjev74RG
- N5P1X5T5VkM52fMIay91AZn4T6BXFmReuwFJKV28WXbGvz77qtbXtX1f4bvGYHKPb91xgWH/ZbI
- oc6fV+bLBYM7C1MKdONhE9NR31SaKEg==
-X-Received: by 2002:a05:6000:1043:: with SMTP id
- c3mr19152234wrx.64.1637999967651; 
- Fri, 26 Nov 2021 23:59:27 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxoFdzhtbBQJqlr9QWdg9YHontW3Tzr3Rv+AFm3mKY7LUujJNHPKIkOvpyLAG9zOSPSOxJ1Ug==
-X-Received: by 2002:a05:6000:1043:: with SMTP id
- c3mr19152225wrx.64.1637999967502; 
- Fri, 26 Nov 2021 23:59:27 -0800 (PST)
-Received: from ?IPv6:2a01:e0a:59e:9d80:527b:9dff:feef:3874?
- ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
- by smtp.gmail.com with ESMTPSA id d1sm7359363wrz.92.2021.11.26.23.59.26
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 26 Nov 2021 23:59:26 -0800 (PST)
-Subject: Re: [PATCH v2 1/5] iommu/virtio: Add definitions for
- VIRTIO_IOMMU_F_BYPASS_CONFIG
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>, joro@8bytes.org,
- will@kernel.org, mst@redhat.com, jasowang@redhat.com
-References: <20211123155301.1047943-1-jean-philippe@linaro.org>
- <20211123155301.1047943-2-jean-philippe@linaro.org>
-From: Eric Auger <eric.auger@redhat.com>
-Message-ID: <b9068111-bc1e-cc0a-155d-04585d6f4138@redhat.com>
-Date: Sat, 27 Nov 2021 08:59:25 +0100
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 13D0982C2E
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 10:11:46 +0000 (UTC)
+Received: from [IPv6:2a00:c281:133e:7400:3570:9958:9ca2:e611] (unknown
+ [IPv6:2a00:c281:133e:7400:3570:9958:9ca2:e611])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: dafna)
+ by bhuna.collabora.co.uk (Postfix) with ESMTPSA id B605E1F4631A;
+ Sat, 27 Nov 2021 10:11:42 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=collabora.com; s=mail;
+ t=1638007904; bh=8EFH+LY67WhaBIlkxUuLTiItxL9oH/dPB5IQi/pdSGw=;
+ h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+ b=dcYk9UwJIKmqV4xnGWsMCx3oWQo+UP98331MXBJM+pXBwvBRKryaqO0lawsL7uBk0
+ koil1HMhX7dGGJVQFup3Rz7UguYBPdeS4e+vqacQwvMvgzYjfKHO26naCKBHQdHfvB
+ FAfXnS+L6mpsUY5LzCq5MVkyf2pDOu4wIPSPauuk7l8BHIM84afxPmhOYAeLWKRX4z
+ u7NFUSkjEaBvzFdZYChGhmZJ+FkzINlIbuD09ztFws0t66Zq1wjdqkrltZ3VL2HW2K
+ P5TtxEnuMOsdF8nUcISdxk5ezYVws6PNmE/R769ELNLwb2kNatAyetteWwNly2PBUQ
+ LGb3i1bXjljwg==
+Subject: Re: [PATCH v3 12/33] iommu/mediatek: Always tlb_flush_all when each
+ PM resume
+To: Yong Wu <yong.wu@mediatek.com>
+References: <20210923115840.17813-1-yong.wu@mediatek.com>
+ <20210923115840.17813-13-yong.wu@mediatek.com>
+ <c4be1a14-c257-81b7-4a2b-f7e68c32de88@collabora.com>
+ <5c4dd67ae7c81721d8cfd2c3b23b7c6df493cb5a.camel@mediatek.com>
+ <4dd4cf8d-0f52-afae-f7d9-8e3cfdf3b729@collabora.com>
+ <c69e03b4781dd9014393e0ff47767c58c846a722.camel@mediatek.com>
+From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+Message-ID: <c5ded58b-a53a-3089-f8a5-c264f8ab9463@collabora.com>
+Date: Sat, 27 Nov 2021 12:11:39 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <20211123155301.1047943-2-jean-philippe@linaro.org>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=eric.auger@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
+In-Reply-To: <c69e03b4781dd9014393e0ff47767c58c846a722.camel@mediatek.com>
 Content-Language: en-US
-Cc: kevin.tian@intel.com, linux-kernel@vger.kernel.org,
- virtualization@lists.linux-foundation.org, pasic@linux.ibm.com,
- iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com, srv_heupstream@mediatek.com,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ Robin Murphy <robin.murphy@arm.com>, sebastian.reichel@collabora.com,
+ yen-chang.chen@mediatek.com, Fabien Parent <fparent@baylibre.com>,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ linux-mediatek@lists.infradead.org, yf.wang@mediatek.com,
+ Hsin-Yi Wang <hsinyi@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ Collabora Kernel ML <kernel@collabora.com>, Will Deacon <will@kernel.org>,
+ mingyuan.ma@mediatek.com, linux-arm-kernel@lists.infradead.org,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,73 +91,187 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: eric.auger@redhat.com
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jean,
 
-On 11/23/21 4:52 PM, Jean-Philippe Brucker wrote:
-> Add definitions for the VIRTIO_IOMMU_F_BYPASS_CONFIG, which supersedes
-> VIRTIO_IOMMU_F_BYPASS.
->
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> ---
->  include/uapi/linux/virtio_iommu.h | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
->
-> diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
-> index 237e36a280cb..cafd8cf7febf 100644
-> --- a/include/uapi/linux/virtio_iommu.h
-> +++ b/include/uapi/linux/virtio_iommu.h
-> @@ -16,6 +16,7 @@
->  #define VIRTIO_IOMMU_F_BYPASS			3
->  #define VIRTIO_IOMMU_F_PROBE			4
->  #define VIRTIO_IOMMU_F_MMIO			5
-> +#define VIRTIO_IOMMU_F_BYPASS_CONFIG		6
->  
->  struct virtio_iommu_range_64 {
->  	__le64					start;
-> @@ -36,6 +37,8 @@ struct virtio_iommu_config {
->  	struct virtio_iommu_range_32		domain_range;
->  	/* Probe buffer size */
->  	__le32					probe_size;
-> +	__u8					bypass;
-> +	__u8					reserved[7];
-in [PATCH v3] virtio-iommu: Rework the bypass feature I see
 
-+  u8 bypass;
-+  u8 reserved[3];
+On 10.11.21 09:50, Yong Wu wrote:
+> On Wed, 2021-11-10 at 07:29 +0200, Dafna Hirschfeld wrote:
+>>
+>> On 10.11.21 04:20, Yong Wu wrote:
+>>> On Tue, 2021-11-09 at 14:21 +0200, Dafna Hirschfeld wrote:
+>>>> Hi
+>>>> This patch is needed in order to update the tlb when a device is
+>>>> powered on.
+>>>> Could you send this patch alone without the whole series so it
+>>>> get
+>>>> accepted easier?
+>>>
+>>> Which SoC are you testing on? In previous SoC, the IOMMU HW don't
+>>> have
+>>> power-domain, and we have a "has_pm"[1] in the tlb function for
+>>> that
+>>> case. The "has_pm" should be always 0 for the previous SoC like
+>>> mt8173,
+>>> it should always tlb synchronize.
+>>>
+>>> thus, Could you help share more about your issue? In which case it
+>>> lack
+>>> the necessary tlb operation. At least, We need confirm if it needs
+>>> a
+>>> "Fixes" tags if sending this patch alone.
+>>
+>> Hi,
+>> I work with the mtk-vcodec driver on mt8173. As you wrote, the iommu
+>> doesn't
+>> have a power-domain and so when allocating buffers before the device
+>> is powered
+>> on, there is the warning
+>> "Partial TLB flush timed out, falling back to full flush"
+>> flooding the log buf.
+> 
+> oh. Thanks very much for your information. Get it now.
+> 
+> This issue should be introduced by the:
+> 
+> b34ea31fe013 ("iommu/mediatek: Always enable the clk on resume")
 
-What was exactly voted?
+Hi, reverting this commit didn't solve those warnings,
+I think this is because in the function mtk_iommu_attach_device
+the first call to pm_runtime_resume_and_get does not turn the clks on
+since m4u_dom is not yet initialize. And then mtk_iommu_attach_device
+calls pm_runtime_put right after mtk_iommu_hw_init is called
+(where the clks are turned on)
 
-Thanks
+thanks,
+Dafna
 
-Eric
 
->  };
->  
->  /* Request types */
-> @@ -66,11 +69,14 @@ struct virtio_iommu_req_tail {
->  	__u8					reserved[3];
->  };
->  
-> +#define VIRTIO_IOMMU_ATTACH_F_BYPASS		(1 << 0)
-> +
->  struct virtio_iommu_req_attach {
->  	struct virtio_iommu_req_head		head;
->  	__le32					domain;
->  	__le32					endpoint;
-> -	__u8					reserved[8];
-> +	__le32					flags;
-> +	__u8					reserved[4];
->  	struct virtio_iommu_req_tail		tail;
->  };
->  
-
+> 
+> tlb failed due to the bclk is not enabled. Could you help try that
+> after reverting this?
+> 
+>>
+>> Sebastian Reichel suggested to remove the 'if(has_pm)' check to avoid
+>> this warning,
+>> and avoid flushing the tlb if the device is off:
+>>
+>> [1] http://ix.io/3Eyr
+>>
+>> This fixes the warning, but then the tlb is not flushed in sync,
+>> Therefore the tlb should be flushed when the device is resumed.
+>>
+>> So the two patches (the one suggested in the link [1] and this patch)
+>> should be sent together as a 2-patch series.
+> 
+> then this is reasonable. You could help this into a new patchset if you
+> are free(add Fixes tag).
+> 
+> Thanks.
+> 
+>>
+>> Thanks,
+>> Dafna
+>>
+>>>
+>>> Thanks.
+>>>
+>>> [1]
+>>>
+> https://elixir.bootlin.com/linux/v5.15/source/drivers/iommu/mtk_iommu.c#L236
+>>>
+>>>> I can resend the patch on your behalf if you want.
+>>>>
+>>>> Thanks,
+>>>> Dafna
+>>>>
+>>>> On 23.09.21 14:58, Yong Wu wrote:
+>>>>> Prepare for 2 HWs that sharing pgtable in different power-
+>>>>> domains.
+>>>>>
+>>>>> When there are 2 M4U HWs, it may has problem in the flush_range
+>>>>> in
+>>>>> which
+>>>>> we get the pm_status via the m4u dev, BUT that function don't
+>>>>> reflect the
+>>>>> real power-domain status of the HW since there may be other HW
+>>>>> also
+>>>>> use
+>>>>> that power-domain.
+>>>>>
+>>>>> The function dma_alloc_attrs help allocate the iommu buffer
+>>>>> which
+>>>>> need the corresponding power domain since tlb flush is needed
+>>>>> when
+>>>>> preparing iova. BUT this function only is for allocating
+>>>>> buffer,
+>>>>> we have no good reason to request the user always call
+>>>>> pm_runtime_get
+>>>>> before calling dma_alloc_xxx. Therefore, we add a tlb_flush_all
+>>>>> in the pm_runtime_resume to make sure the tlb always is clean.
+>>>>>
+>>>>> Another solution is always call pm_runtime_get in the
+>>>>> tlb_flush_range.
+>>>>> This will trigger pm runtime resume/backup so often when the
+>>>>> iommu
+>>>>> power is not active at some time(means user don't call
+>>>>> pm_runtime_get
+>>>>> before calling dma_alloc_xxx), This may cause the performance
+>>>>> drop.
+>>>>> thus we don't use this.
+>>>>>
+>>>>> In other case, the iommu's power should always be active via
+>>>>> device
+>>>>> link with smi.
+>>>>>
+>>>>> The previous SoC don't have PM except mt8192. the mt8192 IOMMU
+>>>>> is
+>>>>> display's
+>>>>> power-domain which nearly always is enabled. thus no need fix
+>>>>> tags
+>>>>> here.
+>>>>> Prepare for mt8195.
+>>>>>
+>>>>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+>>>>> ---
+>>>>>     drivers/iommu/mtk_iommu.c | 11 +++++++++++
+>>>>>     1 file changed, 11 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/iommu/mtk_iommu.c
+>>>>> b/drivers/iommu/mtk_iommu.c
+>>>>> index 44cf5547d084..e9e94944ed91 100644
+>>>>> --- a/drivers/iommu/mtk_iommu.c
+>>>>> +++ b/drivers/iommu/mtk_iommu.c
+>>>>> @@ -984,6 +984,17 @@ static int __maybe_unused
+>>>>> mtk_iommu_runtime_resume(struct device *dev)
+>>>>>     		return ret;
+>>>>>     	}
+>>>>>     
+>>>>> +	/*
+>>>>> +	 * Users may allocate dma buffer before they call
+>>>>> pm_runtime_get, then
+>>>>> +	 * it will lack the necessary tlb flush.
+>>>>> +	 *
+>>>>> +	 * We have no good reason to request the users always
+>>>>> call
+>>>>> dma_alloc_xx
+>>>>> +	 * after pm_runtime_get_sync.
+>>>>> +	 *
+>>>>> +	 * Thus, Make sure the tlb always is clean after each
+>>>>> PM
+>>>>> resume.
+>>>>> +	 */
+>>>>> +	mtk_iommu_tlb_do_flush_all(data);
+>>>>> +
+>>>>>     	/*
+>>>>>     	 * Uppon first resume, only enable the clk and return,
+>>>>> since
+>>>>> the values of the
+>>>>>     	 * registers are not yet set.
+>>>>>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
