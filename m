@@ -1,68 +1,67 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 74E7FC4167E
-	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 01:21:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E2DCDC433F5
+	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 01:21:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 2F390409AC;
-	Sat, 27 Nov 2021 01:21:39 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id A3B7482CE5;
+	Sat, 27 Nov 2021 01:21:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bfAUlHj5ZkHG; Sat, 27 Nov 2021 01:21:38 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Gct2OAJOJzVk; Sat, 27 Nov 2021 01:21:39 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 27CA74099F;
-	Sat, 27 Nov 2021 01:21:38 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 7D3E682CDD;
+	Sat, 27 Nov 2021 01:21:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0A217C001C;
-	Sat, 27 Nov 2021 01:21:38 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4E38BC000A
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4953DC001C;
+	Sat, 27 Nov 2021 01:21:39 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1F6B6C003C
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 37E0240570
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:36 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 0753140577
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="veI2kEfZ";
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="mo6zD0Aq";
  dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="1m3EWOJM"
+ header.d=linutronix.de header.b="71f/riK2"
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zTn6jda5V0-J for <iommu@lists.linux-foundation.org>;
- Sat, 27 Nov 2021 01:21:35 +0000 (UTC)
+ with ESMTP id Msbs4ssMtDCc for <iommu@lists.linux-foundation.org>;
+ Sat, 27 Nov 2021 01:21:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de
- [IPv6:2a0a:51c0:0:12e:550::1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 6C7394040C
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:35 +0000 (UTC)
-Message-ID: <20211126230524.540744026@linutronix.de>
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id E861E4040C
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:36 +0000 (UTC)
+Message-ID: <20211126230524.600490756@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1637976093;
+ s=2020; t=1637976095;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=gn8p+zMtjjrDzl8WaoyQn+U7cmDXCgk8UU3FdWlgcVs=;
- b=veI2kEfZAljWdxQgH+oFZ06NGIS0u4jv5b6G0YVI/5tq0tfagdI9IzMyR4CwU8aFholbY4
- Ar0/6hZ9VNP8ai6nQzq7wvIJZBEKKWYg2ijV3RD7Yk3vSpH4gjvQSpIjsj4Sj/qg+kcmrN
- jK0k3hR1CTjpPXSVJE0wsQdnIrz3/7+ol1iaZvA37AiezpcXLKS6UydHatzHBRKCLSistU
- 3Qbt9x/D24kcA2iKdhqFHANFfHoyKA+Qaor+ulU8sr6J5DaPTCsp5qfBQrQREk66LlOgh3
- Y9/vWc1KD6Ylz1To5GJA4ikmkAO+SsMBR6ku/uTdxAd5sGVIT3SkmaNOSbMnVg==
+ references:references; bh=rnKORZE/4q0+dcWq5txOsnvSH8CsBB5Zw8/HocPRCso=;
+ b=mo6zD0Aqr7U54k+FSOHjrEzlOHKb1QgppSxapZGm79sRdVC/yTiLntOXeL+iE2rLfw8rM7
+ AGraTGE71anj/PDVEb84qtD/kGahkk1EQxcbsGr/P9Xm/s+q7knW7WrwXjuYYEfS2G5nsT
+ +QUmkWlRARQ2SlZYduNIUN9KZ7uGsocaHEYF50ZNtokaDiZFdBFmKctMv8JxcvL8OwccY+
+ NMjiqGGYFm0jw+2MSOMoKh34QWzGYnNnymPdhCPx6fvdm4KstWYyzqIT+xsNMfDArJOahV
+ PeUL5lO+o4/GgN7b8j/998+6DBTMcVm2s0hutWJMot0WyH2RzhpLgtvPlFpIjQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1637976093;
+ s=2020e; t=1637976095;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=gn8p+zMtjjrDzl8WaoyQn+U7cmDXCgk8UU3FdWlgcVs=;
- b=1m3EWOJMso/qIATs0qfEVb9kpV3JoMbSygyvjX/kUnML2Id8FFWmajWiakMISHAtKihGEl
- bfUst7p3P2z5afDg==
+ references:references; bh=rnKORZE/4q0+dcWq5txOsnvSH8CsBB5Zw8/HocPRCso=;
+ b=71f/riK2awxxr5jNfsDzPA4UMVkE8RGUx6WhaYcnER7ZmV57jsbMtOaHgYPB48tYk4AZ5B
+ Ai3G8Q0PhijenYBQ==
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch 10/37] platform-msi: Let the core code handle sysfs groups
+Subject: [patch 11/37] genirq/msi: Remove the original sysfs interfaces
 References: <20211126224100.303046749@linutronix.de>
 MIME-Version: 1.0
-Date: Sat, 27 Nov 2021 02:21:33 +0100 (CET)
+Date: Sat, 27 Nov 2021 02:21:34 +0100 (CET)
 Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
  Stuart Yoder <stuyoder@gmail.com>, linux-pci@vger.kernel.org,
  Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
@@ -91,57 +90,116 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
-Message-ID: <20211127012133.etnExS5Lsysd54EdzMYxhyqjMmSLtrV9zYYGJi90J-s@z>
+Message-ID: <20211127012134.WbbxKdrRjyFk0n0Bv0nDiS5qEHXkJ8sgyu0LqKK5CfI@z>
 
-Set the domain info flag and remove the local sysfs code.
+No more users. Refactor the core code accordingly.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- drivers/base/platform-msi.c |   11 +----------
- 1 file changed, 1 insertion(+), 10 deletions(-)
+ include/linux/msi.h |   12 -----------
+ kernel/irq/msi.c    |   53 +++++++++++++++++++---------------------------------
+ 2 files changed, 20 insertions(+), 45 deletions(-)
 
---- a/drivers/base/platform-msi.c
-+++ b/drivers/base/platform-msi.c
-@@ -23,7 +23,6 @@
- struct platform_msi_priv_data {
- 	struct device			*dev;
- 	void				*host_data;
--	const struct attribute_group    **msi_irq_groups;
- 	msi_alloc_info_t		arg;
- 	irq_write_msi_msg_t		write_msg;
- 	int				devid;
-@@ -191,6 +190,7 @@ struct irq_domain *platform_msi_create_i
- 		platform_msi_update_dom_ops(info);
- 	if (info->flags & MSI_FLAG_USE_DEF_CHIP_OPS)
- 		platform_msi_update_chip_ops(info);
-+	info->flags |= MSI_FLAG_DEV_SYSFS;
- 
- 	domain = msi_create_irq_domain(fwnode, info, parent);
- 	if (domain)
-@@ -279,16 +279,8 @@ int platform_msi_domain_alloc_irqs(struc
- 	if (err)
- 		goto out_free_desc;
- 
--	priv_data->msi_irq_groups = msi_populate_sysfs(dev);
--	if (IS_ERR(priv_data->msi_irq_groups)) {
--		err = PTR_ERR(priv_data->msi_irq_groups);
--		goto out_free_irqs;
--	}
+--- a/include/linux/msi.h
++++ b/include/linux/msi.h
+@@ -246,21 +246,9 @@ void pci_msi_unmask_irq(struct irq_data
+ #ifdef CONFIG_SYSFS
+ int msi_device_populate_sysfs(struct device *dev);
+ void msi_device_destroy_sysfs(struct device *dev);
 -
- 	return 0;
+-const struct attribute_group **msi_populate_sysfs(struct device *dev);
+-void msi_destroy_sysfs(struct device *dev,
+-		       const struct attribute_group **msi_irq_groups);
+ #else
+ static inline int msi_device_populate_sysfs(struct device *dev) { return 0; }
+ static inline void msi_device_destroy_sysfs(struct device *dev) { }
+-
+-static inline const struct attribute_group **msi_populate_sysfs(struct device *dev)
+-{
+-	return NULL;
+-}
+-static inline void msi_destroy_sysfs(struct device *dev, const struct attribute_group **msi_irq_groups)
+-{
+-}
+ #endif
  
--out_free_irqs:
--	msi_domain_free_irqs(dev->msi.domain, dev);
- out_free_desc:
- 	platform_msi_free_descs(dev, 0, nvec);
- out_free_priv_data:
-@@ -308,7 +300,6 @@ void platform_msi_domain_free_irqs(struc
- 		struct msi_desc *desc;
+ /*
+--- a/kernel/irq/msi.c
++++ b/kernel/irq/msi.c
+@@ -132,12 +132,8 @@ static ssize_t msi_mode_show(struct devi
+ /**
+  * msi_populate_sysfs - Populate msi_irqs sysfs entries for devices
+  * @dev:	The device(PCI, platform etc) who will get sysfs entries
+- *
+- * Return attribute_group ** so that specific bus MSI can save it to
+- * somewhere during initilizing msi irqs. If devices has no MSI irq,
+- * return NULL; if it fails to populate sysfs, return ERR_PTR
+  */
+-const struct attribute_group **msi_populate_sysfs(struct device *dev)
++static const struct attribute_group **msi_populate_sysfs(struct device *dev)
+ {
+ 	const struct attribute_group **msi_irq_groups;
+ 	struct attribute **msi_attrs, *msi_attr;
+@@ -228,41 +224,32 @@ int msi_device_populate_sysfs(struct dev
+ }
  
- 		desc = first_msi_entry(dev);
--		msi_destroy_sysfs(dev, desc->platform.msi_priv_data->msi_irq_groups);
- 		platform_msi_free_priv_data(desc->platform.msi_priv_data);
- 	}
+ /**
+- * msi_destroy_sysfs - Destroy msi_irqs sysfs entries for devices
+- * @dev:		The device(PCI, platform etc) who will remove sysfs entries
+- * @msi_irq_groups:	attribute_group for device msi_irqs entries
+- */
+-void msi_destroy_sysfs(struct device *dev, const struct attribute_group **msi_irq_groups)
+-{
+-	struct device_attribute *dev_attr;
+-	struct attribute **msi_attrs;
+-	int count = 0;
+-
+-	if (msi_irq_groups) {
+-		sysfs_remove_groups(&dev->kobj, msi_irq_groups);
+-		msi_attrs = msi_irq_groups[0]->attrs;
+-		while (msi_attrs[count]) {
+-			dev_attr = container_of(msi_attrs[count],
+-					struct device_attribute, attr);
+-			kfree(dev_attr->attr.name);
+-			kfree(dev_attr);
+-			++count;
+-		}
+-		kfree(msi_attrs);
+-		kfree(msi_irq_groups[0]);
+-		kfree(msi_irq_groups);
+-	}
+-}
+-
+-/**
+  * msi_device_destroy_sysfs - Destroy msi_irqs sysfs entries for a device
+  * @dev:		The device(PCI, platform etc) for which to remove
+  *			sysfs entries
+  */
+ void msi_device_destroy_sysfs(struct device *dev)
+ {
+-	msi_destroy_sysfs(dev, dev->msi.data->attrs);
++	const struct attribute_group **msi_irq_groups = dev->msi.data->attrs;
++	struct device_attribute *dev_attr;
++	struct attribute **msi_attrs;
++	int count = 0;
++
+ 	dev->msi.data->attrs = NULL;
++	if (!msi_irq_groups)
++		return;
++
++	sysfs_remove_groups(&dev->kobj, msi_irq_groups);
++	msi_attrs = msi_irq_groups[0]->attrs;
++	while (msi_attrs[count]) {
++		dev_attr = container_of(msi_attrs[count], struct device_attribute, attr);
++		kfree(dev_attr->attr.name);
++		kfree(dev_attr);
++		++count;
++	}
++	kfree(msi_attrs);
++	kfree(msi_irq_groups[0]);
++	kfree(msi_irq_groups);
+ }
+ #endif
  
 
 _______________________________________________
