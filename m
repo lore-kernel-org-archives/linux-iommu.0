@@ -1,67 +1,64 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1550CC433FE
-	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 01:21:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 406B0C4167B
+	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 01:21:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C5C7A80F40;
-	Sat, 27 Nov 2021 01:21:09 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id E3C1E4099B;
+	Sat, 27 Nov 2021 01:21:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KLhp6glEO6P4; Sat, 27 Nov 2021 01:21:08 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id etEV39uLdpnx; Sat, 27 Nov 2021 01:21:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 8883180E1E;
-	Sat, 27 Nov 2021 01:21:08 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id D04C24092D;
+	Sat, 27 Nov 2021 01:21:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6754BC0039;
-	Sat, 27 Nov 2021 01:21:08 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5F3B0C003E
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BA022C001C;
+	Sat, 27 Nov 2021 01:21:09 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 234FDC001C
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 4A86C4058E
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:06 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id C7C8F4092D
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="cIJPIRHT";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="A6V2SaXv"
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id a7MvrKI2aTVa for <iommu@lists.linux-foundation.org>;
- Sat, 27 Nov 2021 01:21:05 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id LWxUept11qto for <iommu@lists.linux-foundation.org>;
+ Sat, 27 Nov 2021 01:21:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by smtp2.osuosl.org (Postfix) with ESMTPS id E59BD40570
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:04 +0000 (UTC)
-Message-ID: <20211126230525.998430251@linutronix.de>
+Received: from galois.linutronix.de (Galois.linutronix.de
+ [IPv6:2a0a:51c0:0:12e:550::1])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 2195C4099B
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:08 +0000 (UTC)
+Message-ID: <20211126230526.111397616@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1637976063;
+ s=2020; t=1637976066;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=lIJfdgdWXqPpzoX+GA8322PEONJgAj7Dsfk3jEgUh34=;
- b=cIJPIRHTYqu1EO5Rt8Fauw4xwn4X2GJg0mKwjSz655pKJkUJRTbuCUG/OywsMu5TXYfYQy
- /lICbrbJdWZyI067qDzJfGXnzi7QyLQMR8aO4XFunuVncL5xw3Jsk9GFx+om8UHTTEcptC
- 2/1/cJ4hoHhCSgD/l/YgDix+RSMOB3Z6Kuzig5ObesK3zKwbwYdU8CSXCztFxG7LhHmJlu
- Y+7beIWqygt1ClhQFDBNwX4J1DSu23A1DO9cz4DupbPhdgHD9HbUAiOxFMEN0VMJ3gu44y
- nVu8UDWODkE1WnYQIcWyTJGse0OplSmToAQy12Qna7YQSO97EKnsWGsfdYr0Cg==
+ references:references; bh=t/L3bect6Otcyaj5o3pOpna8DPyPttA1iOCagOeFNh8=;
+ b=uPVGIEZysuDFheLAvBLfc+Jubu4K+kqJiowq/57mk6FzMxJ3uWAZyEPOEfrRqntesLbzgB
+ ZLIV/Mki40we1MaJOaEw4PJuN19pmujdZoE907RAhaC36FrJ7XigqxurbZoSzM1TZXZ4zQ
+ n5Xwt3jzWxKXYCzV8CR2AQIVjokb1ctZlPPb92L0b3ELj4cF1sNV2gl9KLgiNqeYkycYpF
+ uJNdPayzyxqDRwGilHzJoTqxwCj8zTYKXYxdx7PQ6TbHZt8LonyjKCEkBekluNXPyjfqBH
+ Xptpv7EI5Kv6VGetsY+zwItYkI/2KdNAwod1polDssznrN+AWr8LUMqXWiYpPA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1637976063;
+ s=2020e; t=1637976066;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=lIJfdgdWXqPpzoX+GA8322PEONJgAj7Dsfk3jEgUh34=;
- b=A6V2SaXvDCDPbEJ/IMuFEbN+Qjshk6gm56Vi0S1DiYCVz/Je3j4vZ3qep7SaEU7DlxeSyP
- KTFVKxqHTSTiySAw==
+ references:references; bh=t/L3bect6Otcyaj5o3pOpna8DPyPttA1iOCagOeFNh8=;
+ b=5GlBKX2jwhx+qkHdtSvbhhsoVE/Kwc8V/8tOf3y1uo87BiuMCpniEuDny/pl1Ro5kOW7Kr
+ fkYICB6MZllCxjDg==
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch 35/37] bus: fsl-mc: fsl-mc-allocator: Rework MSI handling
+Subject: [patch 37/37] dmaengine: qcom_hidma: Cleanup MSI handling
 References: <20211126224100.303046749@linutronix.de>
 MIME-Version: 1.0
-Date: Sat, 27 Nov 2021 02:21:02 +0100 (CET)
+Date: Sat, 27 Nov 2021 02:21:05 +0100 (CET)
 Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
  Stuart Yoder <stuyoder@gmail.com>, linux-pci@vger.kernel.org,
  Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
@@ -91,247 +88,94 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Storing a pointer to the MSI descriptor just to track the Linux interrupt
-number is daft. Just store the interrupt number and be done with it.
+There is no reason to walk the MSI descriptors to retrieve the interrupt
+number for a device. Use msi_get_virq() instead.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Stuart Yoder <stuyoder@gmail.com>
+Cc: Sinan Kaya <okaya@kernel.org>
+Cc: dmaengine@vger.kernel.org
 ---
- drivers/bus/fsl-mc/dprc-driver.c                    |    8 ++++----
- drivers/bus/fsl-mc/fsl-mc-allocator.c               |    9 ++-------
- drivers/bus/fsl-mc/fsl-mc-msi.c                     |    6 +++---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c    |    4 ++--
- drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c    |    4 +---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c |    5 ++---
- drivers/soc/fsl/dpio/dpio-driver.c                  |    8 ++++----
- drivers/vfio/fsl-mc/vfio_fsl_mc_intr.c              |    4 ++--
- include/linux/fsl/mc.h                              |    4 ++--
- 9 files changed, 22 insertions(+), 30 deletions(-)
+ drivers/dma/qcom/hidma.c |   42 ++++++++++++++++++------------------------
+ 1 file changed, 18 insertions(+), 24 deletions(-)
 
---- a/drivers/bus/fsl-mc/dprc-driver.c
-+++ b/drivers/bus/fsl-mc/dprc-driver.c
-@@ -400,7 +400,7 @@ static irqreturn_t dprc_irq0_handler_thr
- 	struct fsl_mc_device *mc_dev = to_fsl_mc_device(dev);
- 	struct fsl_mc_bus *mc_bus = to_fsl_mc_bus(mc_dev);
- 	struct fsl_mc_io *mc_io = mc_dev->mc_io;
--	struct msi_desc *msi_desc = mc_dev->irqs[0]->msi_desc;
-+	int irq = mc_dev->irqs[0]->virq;
- 
- 	dev_dbg(dev, "DPRC IRQ %d triggered on CPU %u\n",
- 		irq_num, smp_processor_id());
-@@ -409,7 +409,7 @@ static irqreturn_t dprc_irq0_handler_thr
- 		return IRQ_HANDLED;
- 
- 	mutex_lock(&mc_bus->scan_mutex);
--	if (!msi_desc || msi_desc->irq != (u32)irq_num)
-+	if (irq != (u32)irq_num)
- 		goto out;
- 
- 	status = 0;
-@@ -521,7 +521,7 @@ static int register_dprc_irq_handler(str
- 	 * function that programs the MSI physically in the device
- 	 */
- 	error = devm_request_threaded_irq(&mc_dev->dev,
--					  irq->msi_desc->irq,
-+					  irq->virq,
- 					  dprc_irq0_handler,
- 					  dprc_irq0_handler_thread,
- 					  IRQF_NO_SUSPEND | IRQF_ONESHOT,
-@@ -771,7 +771,7 @@ static void dprc_teardown_irq(struct fsl
- 
- 	(void)disable_dprc_irq(mc_dev);
- 
--	devm_free_irq(&mc_dev->dev, irq->msi_desc->irq, &mc_dev->dev);
-+	devm_free_irq(&mc_dev->dev, irq->virq, &mc_dev->dev);
- 
- 	fsl_mc_free_irqs(mc_dev);
- }
---- a/drivers/bus/fsl-mc/fsl-mc-allocator.c
-+++ b/drivers/bus/fsl-mc/fsl-mc-allocator.c
-@@ -350,7 +350,6 @@ int fsl_mc_populate_irq_pool(struct fsl_
- 			     unsigned int irq_count)
+--- a/drivers/dma/qcom/hidma.c
++++ b/drivers/dma/qcom/hidma.c
+@@ -678,11 +678,13 @@ static void hidma_free_msis(struct hidma
  {
- 	unsigned int i;
--	struct msi_desc *msi_desc;
- 	struct fsl_mc_device_irq *irq_resources;
- 	struct fsl_mc_device_irq *mc_dev_irq;
- 	int error;
-@@ -388,16 +387,12 @@ int fsl_mc_populate_irq_pool(struct fsl_
- 		mc_dev_irq->resource.type = res_pool->type;
- 		mc_dev_irq->resource.data = mc_dev_irq;
- 		mc_dev_irq->resource.parent_pool = res_pool;
-+		mc_dev_irq->virq = msi_get_virq(&mc_bus_dev->dev, i);
-+		mc_dev_irq->resource.id = mc_dev_irq->virq;
- 		INIT_LIST_HEAD(&mc_dev_irq->resource.node);
- 		list_add_tail(&mc_dev_irq->resource.node, &res_pool->free_list);
- 	}
+ #ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
+ 	struct device *dev = dmadev->ddev.dev;
+-	struct msi_desc *desc;
++	int i, virq;
  
--	for_each_msi_entry(msi_desc, &mc_bus_dev->dev) {
--		mc_dev_irq = &irq_resources[msi_desc->msi_index];
--		mc_dev_irq->msi_desc = msi_desc;
--		mc_dev_irq->resource.id = msi_desc->irq;
--	}
+-	/* free allocated MSI interrupts above */
+-	for_each_msi_entry(desc, dev)
+-		devm_free_irq(dev, desc->irq, &dmadev->lldev);
++	for (i = 0; i < HIDMA_MSI_INTS; i++) {
++		virq = msi_get_virq(dev, i);
++		if (virq)
++			devm_free_irq(dev, virq, &dmadev->lldev);
++	}
+ 
+ 	platform_msi_domain_free_irqs(dev);
+ #endif
+@@ -692,45 +694,37 @@ static int hidma_request_msi(struct hidm
+ 			     struct platform_device *pdev)
+ {
+ #ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
+-	int rc;
+-	struct msi_desc *desc;
+-	struct msi_desc *failed_desc = NULL;
++	int rc, i, virq;
+ 
+ 	rc = platform_msi_domain_alloc_irqs(&pdev->dev, HIDMA_MSI_INTS,
+ 					    hidma_write_msi_msg);
+ 	if (rc)
+ 		return rc;
+ 
+-	for_each_msi_entry(desc, &pdev->dev) {
+-		if (!desc->msi_index)
+-			dmadev->msi_virqbase = desc->irq;
 -
- 	res_pool->max_count = irq_count;
- 	res_pool->free_count = irq_count;
- 	mc_bus->irq_resources = irq_resources;
---- a/drivers/bus/fsl-mc/fsl-mc-msi.c
-+++ b/drivers/bus/fsl-mc/fsl-mc-msi.c
-@@ -58,11 +58,11 @@ static void fsl_mc_msi_update_dom_ops(st
- }
- 
- static void __fsl_mc_msi_write_msg(struct fsl_mc_device *mc_bus_dev,
--				   struct fsl_mc_device_irq *mc_dev_irq)
-+				   struct fsl_mc_device_irq *mc_dev_irq,
-+				   struct msi_desc *msi_desc)
- {
- 	int error;
- 	struct fsl_mc_device *owner_mc_dev = mc_dev_irq->mc_dev;
--	struct msi_desc *msi_desc = mc_dev_irq->msi_desc;
- 	struct dprc_irq_cfg irq_cfg;
- 
- 	/*
-@@ -129,7 +129,7 @@ static void fsl_mc_msi_write_msg(struct
- 	/*
- 	 * Program the MSI (paddr, value) pair in the device:
- 	 */
--	__fsl_mc_msi_write_msg(mc_bus_dev, mc_dev_irq);
-+	__fsl_mc_msi_write_msg(mc_bus_dev, mc_dev_irq, msi_desc);
- }
- 
- static void fsl_mc_msi_update_chip_ops(struct msi_domain_info *info)
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -4246,7 +4246,7 @@ static int dpaa2_eth_setup_irqs(struct f
+-		rc = devm_request_irq(&pdev->dev, desc->irq,
++	for (i = 0; i < HIDMA_MSI_INTS; i++) {
++		virq = msi_get_virq(&pdev->dev, i);
++		rc = devm_request_irq(&pdev->dev, virq,
+ 				       hidma_chirq_handler_msi,
+ 				       0, "qcom-hidma-msi",
+ 				       &dmadev->lldev);
+-		if (rc) {
+-			failed_desc = desc;
++		if (rc)
+ 			break;
+-		}
++		if (!i)
++			dmadev->msi_virqbase = virq;
  	}
  
- 	irq = ls_dev->irqs[0];
--	err = devm_request_threaded_irq(&ls_dev->dev, irq->msi_desc->irq,
-+	err = devm_request_threaded_irq(&ls_dev->dev, irq->virq,
- 					NULL, dpni_irq0_handler_thread,
- 					IRQF_NO_SUSPEND | IRQF_ONESHOT,
- 					dev_name(&ls_dev->dev), &ls_dev->dev);
-@@ -4273,7 +4273,7 @@ static int dpaa2_eth_setup_irqs(struct f
- 	return 0;
- 
- free_irq:
--	devm_free_irq(&ls_dev->dev, irq->msi_desc->irq, &ls_dev->dev);
-+	devm_free_irq(&ls_dev->dev, irq->virq, &ls_dev->dev);
- free_mc_irq:
- 	fsl_mc_free_irqs(ls_dev);
- 
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
-@@ -129,7 +129,6 @@ static irqreturn_t dpaa2_ptp_irq_handler
- static int dpaa2_ptp_probe(struct fsl_mc_device *mc_dev)
- {
- 	struct device *dev = &mc_dev->dev;
--	struct fsl_mc_device_irq *irq;
- 	struct ptp_qoriq *ptp_qoriq;
- 	struct device_node *node;
- 	void __iomem *base;
-@@ -177,8 +176,7 @@ static int dpaa2_ptp_probe(struct fsl_mc
- 		goto err_unmap;
+ 	if (rc) {
+ 		/* free allocated MSI interrupts above */
+-		for_each_msi_entry(desc, &pdev->dev) {
+-			if (desc == failed_desc)
+-				break;
+-			devm_free_irq(&pdev->dev, desc->irq,
+-				      &dmadev->lldev);
++		for (--i; i >= 0; i--) {
++			virq = msi_get_virq(&pdev->dev, i);
++			devm_free_irq(&pdev->dev, virq, &dmadev->lldev);
+ 		}
++		dev_warn(&pdev->dev,
++			 "failed to request MSI irq, falling back to wired IRQ\n");
+ 	} else {
+ 		/* Add callback to free MSIs on teardown */
+ 		hidma_ll_setup_irq(dmadev->lldev, true);
+-
  	}
- 
--	irq = mc_dev->irqs[0];
--	ptp_qoriq->irq = irq->msi_desc->irq;
-+	ptp_qoriq->irq = mc_dev->irqs[0]->virq;
- 
- 	err = request_threaded_irq(ptp_qoriq->irq, NULL,
- 				   dpaa2_ptp_irq_handler_thread,
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c
-@@ -1553,8 +1553,7 @@ static int dpaa2_switch_setup_irqs(struc
- 
- 	irq = sw_dev->irqs[DPSW_IRQ_INDEX_IF];
- 
--	err = devm_request_threaded_irq(dev, irq->msi_desc->irq,
--					NULL,
-+	err = devm_request_threaded_irq(dev, irq->virq, NULL,
- 					dpaa2_switch_irq0_handler_thread,
- 					IRQF_NO_SUSPEND | IRQF_ONESHOT,
- 					dev_name(dev), dev);
-@@ -1580,7 +1579,7 @@ static int dpaa2_switch_setup_irqs(struc
- 	return 0;
- 
- free_devm_irq:
--	devm_free_irq(dev, irq->msi_desc->irq, dev);
-+	devm_free_irq(dev, irq->virq, dev);
- free_irq:
- 	fsl_mc_free_irqs(sw_dev);
- 	return err;
---- a/drivers/soc/fsl/dpio/dpio-driver.c
-+++ b/drivers/soc/fsl/dpio/dpio-driver.c
-@@ -88,7 +88,7 @@ static void unregister_dpio_irq_handlers
- 	irq = dpio_dev->irqs[0];
- 
- 	/* clear the affinity hint */
--	irq_set_affinity_hint(irq->msi_desc->irq, NULL);
-+	irq_set_affinity_hint(irq->virq, NULL);
- }
- 
- static int register_dpio_irq_handlers(struct fsl_mc_device *dpio_dev, int cpu)
-@@ -98,7 +98,7 @@ static int register_dpio_irq_handlers(st
- 
- 	irq = dpio_dev->irqs[0];
- 	error = devm_request_irq(&dpio_dev->dev,
--				 irq->msi_desc->irq,
-+				 irq->virq,
- 				 dpio_irq_handler,
- 				 0,
- 				 dev_name(&dpio_dev->dev),
-@@ -111,10 +111,10 @@ static int register_dpio_irq_handlers(st
- 	}
- 
- 	/* set the affinity hint */
--	if (irq_set_affinity_hint(irq->msi_desc->irq, cpumask_of(cpu)))
-+	if (irq_set_affinity_hint(irq->virq, cpumask_of(cpu)))
- 		dev_err(&dpio_dev->dev,
- 			"irq_set_affinity failed irq %d cpu %d\n",
--			irq->msi_desc->irq, cpu);
-+			irq->virq, cpu);
- 
- 	return 0;
- }
---- a/drivers/vfio/fsl-mc/vfio_fsl_mc_intr.c
-+++ b/drivers/vfio/fsl-mc/vfio_fsl_mc_intr.c
-@@ -67,7 +67,7 @@ static int vfio_set_trigger(struct vfio_
- 	int hwirq;
- 	int ret;
- 
--	hwirq = vdev->mc_dev->irqs[index]->msi_desc->irq;
-+	hwirq = vdev->mc_dev->irqs[index]->virq;
- 	if (irq->trigger) {
- 		free_irq(hwirq, irq);
- 		kfree(irq->name);
-@@ -137,7 +137,7 @@ static int vfio_fsl_mc_set_irq_trigger(s
- 		return vfio_set_trigger(vdev, index, fd);
- 	}
- 
--	hwirq = vdev->mc_dev->irqs[index]->msi_desc->irq;
-+	hwirq = vdev->mc_dev->irqs[index]->virq;
- 
- 	irq = &vdev->mc_irqs[index];
- 
---- a/include/linux/fsl/mc.h
-+++ b/include/linux/fsl/mc.h
-@@ -91,13 +91,13 @@ struct fsl_mc_resource {
- 
- /**
-  * struct fsl_mc_device_irq - MC object device message-based interrupt
-- * @msi_desc: pointer to MSI descriptor allocated by fsl_mc_msi_alloc_descs()
-+ * @virq: Linux virtual interrupt number
-  * @mc_dev: MC object device that owns this interrupt
-  * @dev_irq_index: device-relative IRQ index
-  * @resource: MC generic resource associated with the interrupt
-  */
- struct fsl_mc_device_irq {
--	struct msi_desc *msi_desc;
-+	unsigned int virq;
- 	struct fsl_mc_device *mc_dev;
- 	u8 dev_irq_index;
- 	struct fsl_mc_resource resource;
+-	if (rc)
+-		dev_warn(&pdev->dev,
+-			 "failed to request MSI irq, falling back to wired IRQ\n");
+ 	return rc;
+ #else
+ 	return -EINVAL;
 
 _______________________________________________
 iommu mailing list
