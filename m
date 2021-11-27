@@ -1,65 +1,64 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9C40DC43217
-	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 01:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5B492C28D13
+	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 01:21:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 568ED40585;
-	Sat, 27 Nov 2021 01:20:58 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0A0C361C15;
+	Sat, 27 Nov 2021 01:21:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SQba1zVwyG0C; Sat, 27 Nov 2021 01:20:57 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id F163C402E0;
-	Sat, 27 Nov 2021 01:20:56 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id npQ_0lwud_uf; Sat, 27 Nov 2021 01:20:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 1525161C10;
+	Sat, 27 Nov 2021 01:20:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C3773C001C;
-	Sat, 27 Nov 2021 01:20:56 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 10605C000A
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0067CC001C;
+	Sat, 27 Nov 2021 01:20:59 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3B090C001C
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 0584F4057D
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:55 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 176DE61C11
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eTRqllMYIQIH for <iommu@lists.linux-foundation.org>;
- Sat, 27 Nov 2021 01:20:54 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id JdIj_RmlHS1c for <iommu@lists.linux-foundation.org>;
+ Sat, 27 Nov 2021 01:20:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from galois.linutronix.de (Galois.linutronix.de
  [IPv6:2a0a:51c0:0:12e:550::1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 22927403BE
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:54 +0000 (UTC)
-Message-ID: <20211126230525.603398433@linutronix.de>
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 75E9261C13
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:55 +0000 (UTC)
+Message-ID: <20211126230525.660206325@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1637976052;
+ s=2020; t=1637976053;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=OStoQ1k4lhD67pt01NEuqrVFlk3DmZUUJiTL5O5hAPA=;
- b=2eIPTF3xTaHSNXBIoN6UqqgFfwD0fJ1X1T9rr9vQ/2LfENBf9x4679Mo2RuhP9n8o8RsID
- PnEAypAhi616GnVO+gsc2xOAtuWMr4zBjlVOnNOOtDv/TFaKyRNAdBMjxKS/4JHJVMVGoZ
- WM12EP6pWvV4ZsO7GlLDsIBUy/ezmXIF/1d3ZFPMW5x3TBf0XpZh+FYDE99NYyZWIvzYgi
- BIqUxvpeT1xK0s9B7mfKENI+tGzeDcNGN6l89hiOEFrHrMdVn8Hh5EnSM+v1FR2r2Ei4Jg
- 6CiJ/KP+dYdUGxvoPE9tL/6S+FTAN/FPTY7BQjlvqgOjLHOCqkbvJ4Ec+bDtIQ==
+ references:references; bh=jDw77Q4/ltoMqqyOm7bRFWOUZ2wme/igWfBiXxqo04E=;
+ b=qcphe6heJuFhgeduvF2Reuv4MsRdWQoJvg2SS3EklVbtfQMCfMHepnA6aswHZvdCNm95JM
+ ZJCqv8yvfhWXCo7kpdm0VoADVoyFe16/31gccfBww5+RFExnu8gp0atniaD79Qi3vDjbQM
+ B5gEnUCbG7Qa7lbqxJ0yxhbiq2ncMH6xYARq59W2DoqThjv7anXdD9w7J/3Wlv23hDx8Yz
+ toD0JJ62PtZRlhLFza6PCjm1YqhAqE6ewJ1sJP2ky4RQBZWSsTJMQv4c9KXKUsUPpmDJtm
+ 2sBBQv12zQ1ocJDsjCrFoBod+HNM+8Kj49KY0bhQYTebAv0oebDz+XXdkGUDnQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1637976052;
+ s=2020e; t=1637976053;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=OStoQ1k4lhD67pt01NEuqrVFlk3DmZUUJiTL5O5hAPA=;
- b=F4GuDJS8gR6I0V15qge6xQbu7oE67MdRvXQDexFplNMXCIE/Lzm4ICs8dJd43R0NUCg4Ec
- uDsRCB20i1Lf70AQ==
+ references:references; bh=jDw77Q4/ltoMqqyOm7bRFWOUZ2wme/igWfBiXxqo04E=;
+ b=rxtvy30SOfVqYPnNL8Cg8Y3TzkF1flw2TNQolZOnFfTQrmh4C6E16aqDKf5J1vmsXVOdd6
+ srt6OU8S/yzbHDCQ==
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch 28/37] genirq/msi: Provide interface to retrieve Linux
- interrupt number
+Subject: [patch 29/37] PCI/MSI: Use __msi_get_virq() in pci_get_vector()
 References: <20211126224100.303046749@linutronix.de>
 MIME-Version: 1.0
-Date: Sat, 27 Nov 2021 02:20:51 +0100 (CET)
+Date: Sat, 27 Nov 2021 02:20:53 +0100 (CET)
 Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
  Stuart Yoder <stuyoder@gmail.com>, linux-pci@vger.kernel.org,
  Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
@@ -89,90 +88,51 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This allows drivers to retrieve the Linux interrupt number instead of
-fiddling with MSI descriptors.
+Use __msi_get_vector() and handle the return values to be compatible.
 
-msi_get_virq() returns the Linux interrupt number or 0, __msi_get_virq()
-has more detailed return codes so pci_irq_vector() can use it as well.
+No functional change intended.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- include/linux/msi.h |   16 ++++++++++++++++
- kernel/irq/msi.c    |   38 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 54 insertions(+)
+ drivers/pci/msi/msi.c |   25 +++++--------------------
+ 1 file changed, 5 insertions(+), 20 deletions(-)
 
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -169,6 +169,22 @@ static inline bool msi_device_has_proper
- }
- #endif
+--- a/drivers/pci/msi/msi.c
++++ b/drivers/pci/msi/msi.c
+@@ -1023,28 +1023,13 @@ EXPORT_SYMBOL(pci_free_irq_vectors);
+  */
+ int pci_irq_vector(struct pci_dev *dev, unsigned int nr)
+ {
+-	if (dev->msix_enabled) {
+-		struct msi_desc *entry;
++	int irq = __msi_get_virq(&dev->dev, nr);
  
-+int __msi_get_virq(struct device *dev, unsigned int index);
-+
-+/**
-+ * msi_get_virq - Return Linux interrupt number of a MSI interrupt
-+ * @dev:	Device to operate on
-+ * @index:	MSI interrupt index to look for (0-based)
-+ *
-+ * Return: The Linux interrupt number on success (> 0), 0 if not found
-+ */
-+static inline unsigned int msi_get_virq(struct device *dev, unsigned int index)
-+{
-+	int ret = __msi_get_virq(dev, index);
-+
-+	return ret < 0 ? 0 : ret;
-+}
-+
- /* Helpers to hide struct msi_desc implementation details */
- #define msi_desc_to_dev(desc)		((desc)->dev)
- #define dev_to_msi_list(dev)		(&(dev)->msi_list)
---- a/kernel/irq/msi.c
-+++ b/kernel/irq/msi.c
-@@ -120,6 +120,44 @@ int msi_setup_device_data(struct device
- 	return 0;
+-		for_each_pci_msi_entry(entry, dev) {
+-			if (entry->msi_index == nr)
+-				return entry->irq;
+-		}
+-		WARN_ON_ONCE(1);
+-		return -EINVAL;
++	switch (irq) {
++	case -ENODEV: return !nr ? dev->irq : -EINVAL;
++	case -ENOENT: return -EINVAL;
+ 	}
+-
+-	if (dev->msi_enabled) {
+-		struct msi_desc *entry = first_pci_msi_entry(dev);
+-
+-		if (WARN_ON_ONCE(nr >= entry->nvec_used))
+-			return -EINVAL;
+-	} else {
+-		if (WARN_ON_ONCE(nr > 0))
+-			return -EINVAL;
+-	}
+-
+-	return dev->irq + nr;
++	return irq;
  }
+ EXPORT_SYMBOL(pci_irq_vector);
  
-+/**
-+ * __msi_get_virq - Return Linux interrupt number of a MSI interrupt
-+ * @dev:	Device to operate on
-+ * @index:	MSI interrupt index to look for (0-based)
-+ *
-+ * Return: The Linux interrupt number on success (> 0)
-+ *	   -ENODEV when the device is not using MSI
-+ *	   -ENOENT if no such entry exists
-+ */
-+int __msi_get_virq(struct device *dev, unsigned int index)
-+{
-+	struct msi_desc *desc;
-+	bool pcimsi;
-+
-+	if (!dev->msi.data)
-+		return -ENODEV;
-+
-+	pcimsi = msi_device_has_property(dev, MSI_PROP_PCI_MSI);
-+
-+	for_each_msi_entry(desc, dev) {
-+		/* PCI-MSI has only one descriptor for multiple interrupts. */
-+		if (pcimsi) {
-+			if (desc->irq && index < desc->nvec_used)
-+				return desc->irq + index;
-+			break;
-+		}
-+
-+		/*
-+		 * PCI-MSIX and platform MSI use a descriptor per
-+		 * interrupt.
-+		 */
-+		if (desc->msi_index == index)
-+			return desc->irq;
-+	}
-+	return -ENOENT;
-+}
-+EXPORT_SYMBOL_GPL(__msi_get_virq);
-+
- #ifdef CONFIG_SYSFS
- static ssize_t msi_mode_show(struct device *dev, struct device_attribute *attr,
- 			     char *buf)
 
 _______________________________________________
 iommu mailing list
