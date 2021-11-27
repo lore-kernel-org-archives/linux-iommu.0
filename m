@@ -1,79 +1,64 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 40D4CC433FE
-	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 01:22:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 585BCC433EF
+	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 02:10:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id EBC74409BD;
-	Sat, 27 Nov 2021 01:22:21 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id E2A5F61BFE;
+	Sat, 27 Nov 2021 02:10:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AqS3O6viV1cU; Sat, 27 Nov 2021 01:22:21 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id B201840995;
-	Sat, 27 Nov 2021 01:22:20 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1kHv-x6f4oIH; Sat, 27 Nov 2021 02:10:25 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 8D940606B9;
+	Sat, 27 Nov 2021 02:10:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9188EC001C;
-	Sat, 27 Nov 2021 01:22:20 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1538CC000A
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:22:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5175BC001C;
+	Sat, 27 Nov 2021 02:10:25 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2D7E9C000A
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 02:10:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id BEADB82B08
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:22:18 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 2376560789
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 02:10:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="MDXzFKK4";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="JUOb/B7Q"
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6x3h-BrRKeeT for <iommu@lists.linux-foundation.org>;
- Sat, 27 Nov 2021 01:22:18 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id d3OXc4BFTiAs for <iommu@lists.linux-foundation.org>;
+ Sat, 27 Nov 2021 02:10:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 1721B82BE7
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:22:18 +0000 (UTC)
-Message-ID: <20211126230526.111397616@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1637976136;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=t/L3bect6Otcyaj5o3pOpna8DPyPttA1iOCagOeFNh8=;
- b=MDXzFKK4lr7UhxJr8zp1tnFqO7RBHR8TIBOCCqPZbm9TBg7n6NpaaNpSVf4XYgu/bM7MpQ
- LAZBCI8/GM+AQgJo3uDNG6c6MgFwYCzMRdpqjXMFBFeY4A1CMqCSz0VpFyGaDSyRnU+wYv
- TPyDR77qDcIj3zvJ+IUtu/DIveMxky0JcoNAu5WReTlN2DJ9V9MFtnS6pCGrogTCrWOsA+
- C2D3trPH/k6abcSxrrZTBzrl4oHUQRvjts+XdudCYhYbquSyHDf80dgeQz6zgaRnuzNafq
- GHlDnRXvR6cZMDAu8jiHdKKTFCd2kowLu3EokNhsvvvb86VtiIEU8yFlvfDVkg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1637976136;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=t/L3bect6Otcyaj5o3pOpna8DPyPttA1iOCagOeFNh8=;
- b=JUOb/B7Qq8t+E96GsSguepWh9UD02us4qamllS9i4niMvkxuriOgrZJorE7mfE/KU14Eij
- WX276QInU44VhqBw==
-From: Thomas Gleixner <tglx@linutronix.de>
-To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch 37/37] dmaengine: qcom_hidma: Cleanup MSI handling
-References: <20211126224100.303046749@linutronix.de>
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 62D1F606B9
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 02:10:23 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10180"; a="235973752"
+X-IronPort-AV: E=Sophos;i="5.87,267,1631602800"; d="scan'208";a="235973752"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Nov 2021 18:10:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,267,1631602800"; d="scan'208";a="652307974"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
+ ([10.239.159.118])
+ by fmsmga001.fm.intel.com with ESMTP; 26 Nov 2021 18:10:20 -0800
+Subject: Re: [PATCH v2 0/2] iommu/vt-d: Fixes for v5.16-rc3
+To: Joerg Roedel <joro@8bytes.org>
+References: <20211126135556.397932-1-baolu.lu@linux.intel.com>
+ <YaFYRRGU5Qg4ViB8@8bytes.org>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <ac24b6c9-8ebe-9f29-270e-4aa96373a8e3@linux.intel.com>
+Date: Sat, 27 Nov 2021 10:10:22 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Date: Sat, 27 Nov 2021 02:22:15 +0100 (CET)
-Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
- Stuart Yoder <stuyoder@gmail.com>, linux-pci@vger.kernel.org,
- Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Marc Zygnier <maz@kernel.org>, x86@kernel.org, Sinan Kaya <okaya@kernel.org>,
- iommu@lists.linux-foundation.org, Bjorn Helgaas <helgaas@kernel.org>,
- Megha Dey <megha.dey@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Kevin Tian <kevin.tian@intel.com>,
+In-Reply-To: <YaFYRRGU5Qg4ViB8@8bytes.org>
+Content-Language: en-US
+Cc: iommu@lists.linux-foundation.org,
  Alex Williamson <alex.williamson@redhat.com>,
- Santosh Shilimkar <ssantosh@kernel.org>, linux-arm-kernel@lists.infradead.org,
- Tero Kristo <kristo@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Vinod Koul <vkoul@kernel.org>,
- dmaengine@vger.kernel.org
+ Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,100 +71,24 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
-Message-ID: <20211127012215.qKP70s_wdO-p0U6Q6YOm2PmBlFdY-0eCP8LAqU407eM@z>
 
-There is no reason to walk the MSI descriptors to retrieve the interrupt
-number for a device. Use msi_get_virq() instead.
+On 11/27/21 5:57 AM, Joerg Roedel wrote:
+> On Fri, Nov 26, 2021 at 09:55:54PM +0800, Lu Baolu wrote:
+>> Update this series with a fix for an issue reported by Intel 0-day
+>> robot. Sorry for the inconvenience.
+> 
+> Replaced those with the previous fixes, thanks. Please just send a fix
+> on-top next time. This was already in the published fixes branch, which
+> I had to rebase now.
 
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Sinan Kaya <okaya@kernel.org>
-Cc: dmaengine@vger.kernel.org
----
- drivers/dma/qcom/hidma.c |   42 ++++++++++++++++++------------------------
- 1 file changed, 18 insertions(+), 24 deletions(-)
+Sure.
 
---- a/drivers/dma/qcom/hidma.c
-+++ b/drivers/dma/qcom/hidma.c
-@@ -678,11 +678,13 @@ static void hidma_free_msis(struct hidma
- {
- #ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
- 	struct device *dev = dmadev->ddev.dev;
--	struct msi_desc *desc;
-+	int i, virq;
- 
--	/* free allocated MSI interrupts above */
--	for_each_msi_entry(desc, dev)
--		devm_free_irq(dev, desc->irq, &dmadev->lldev);
-+	for (i = 0; i < HIDMA_MSI_INTS; i++) {
-+		virq = msi_get_virq(dev, i);
-+		if (virq)
-+			devm_free_irq(dev, virq, &dmadev->lldev);
-+	}
- 
- 	platform_msi_domain_free_irqs(dev);
- #endif
-@@ -692,45 +694,37 @@ static int hidma_request_msi(struct hidm
- 			     struct platform_device *pdev)
- {
- #ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
--	int rc;
--	struct msi_desc *desc;
--	struct msi_desc *failed_desc = NULL;
-+	int rc, i, virq;
- 
- 	rc = platform_msi_domain_alloc_irqs(&pdev->dev, HIDMA_MSI_INTS,
- 					    hidma_write_msi_msg);
- 	if (rc)
- 		return rc;
- 
--	for_each_msi_entry(desc, &pdev->dev) {
--		if (!desc->msi_index)
--			dmadev->msi_virqbase = desc->irq;
--
--		rc = devm_request_irq(&pdev->dev, desc->irq,
-+	for (i = 0; i < HIDMA_MSI_INTS; i++) {
-+		virq = msi_get_virq(&pdev->dev, i);
-+		rc = devm_request_irq(&pdev->dev, virq,
- 				       hidma_chirq_handler_msi,
- 				       0, "qcom-hidma-msi",
- 				       &dmadev->lldev);
--		if (rc) {
--			failed_desc = desc;
-+		if (rc)
- 			break;
--		}
-+		if (!i)
-+			dmadev->msi_virqbase = virq;
- 	}
- 
- 	if (rc) {
- 		/* free allocated MSI interrupts above */
--		for_each_msi_entry(desc, &pdev->dev) {
--			if (desc == failed_desc)
--				break;
--			devm_free_irq(&pdev->dev, desc->irq,
--				      &dmadev->lldev);
-+		for (--i; i >= 0; i--) {
-+			virq = msi_get_virq(&pdev->dev, i);
-+			devm_free_irq(&pdev->dev, virq, &dmadev->lldev);
- 		}
-+		dev_warn(&pdev->dev,
-+			 "failed to request MSI irq, falling back to wired IRQ\n");
- 	} else {
- 		/* Add callback to free MSIs on teardown */
- 		hidma_ll_setup_irq(dmadev->lldev, true);
--
- 	}
--	if (rc)
--		dev_warn(&pdev->dev,
--			 "failed to request MSI irq, falling back to wired IRQ\n");
- 	return rc;
- #else
- 	return -EINVAL;
+Best regards,
+baolu
 
 _______________________________________________
 iommu mailing list
