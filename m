@@ -1,81 +1,109 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E3601C433EF
-	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 02:47:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4A70EC4332F
+	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 07:59:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8B22B409B7;
-	Sat, 27 Nov 2021 02:47:05 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 73CF4606CF;
+	Sat, 27 Nov 2021 07:59:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VN-GN2fYcWeL; Sat, 27 Nov 2021 02:47:04 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id B7kZJBLv6WXi; Sat, 27 Nov 2021 07:59:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 855B4409B4;
-	Sat, 27 Nov 2021 02:47:04 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 54D0E607C0;
+	Sat, 27 Nov 2021 07:59:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6F0FAC0012;
-	Sat, 27 Nov 2021 02:47:04 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AA475C000A
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 02:47:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BEA76C003E;
+	Sat, 27 Nov 2021 07:59:34 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C96AAC000A
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 07:59:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 95D9E82C84
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 02:47:03 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id E8797401CC
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 07:59:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=mediatek.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id O34St2AIRxQI for <iommu@lists.linux-foundation.org>;
- Sat, 27 Nov 2021 02:47:02 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 13im0-GXM_Et for <iommu@lists.linux-foundation.org>;
+ Sat, 27 Nov 2021 07:59:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 0B8B082C5E
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 02:47:01 +0000 (UTC)
-X-UUID: 63097bdb89564466aacb8ffc82d8cb9c-20211127
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
- s=dk; 
- h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=ujgxNDgOxn13iafpFO6sRZICJ73MLq1oFrLOiv1fYeY=; 
- b=bPmANuoT3cfKXUNqiiCIKIBt36G5QsT5X1foyd6PeX8RDglm4eoXsdsdzOiQLfyxvLnjJUNQQ7x+RBMns+IqBm5AIbKu7ltcdy/u9XRkTjZNLyVeNg2nXZyZCj/z9wMAZRwagN5KI/8k1+yQZ73y7AJ7TWxNAecP+bhl8z43yow=;
-X-UUID: 63097bdb89564466aacb8ffc82d8cb9c-20211127
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
- mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1665839108; Sat, 27 Nov 2021 10:46:57 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Sat, 27 Nov 2021 10:46:55 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
- Sat, 27 Nov 2021 10:46:55 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 27 Nov 2021 10:46:54 +0800
-Message-ID: <afb46ad6ca9477a2bf71233858406caa6ccb1588.camel@mediatek.com>
-Subject: Re: [PATCH 2/2] iommu/mediatek: always check runtime PM status in
- tlb flush range callback
-From: Yong Wu <yong.wu@mediatek.com>
-To: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
- <iommu@lists.linux-foundation.org>
-Date: Sat, 27 Nov 2021 10:46:54 +0800
-In-Reply-To: <20211122104400.4160-3-dafna.hirschfeld@collabora.com>
-References: <20211122104400.4160-1-dafna.hirschfeld@collabora.com>
- <20211122104400.4160-3-dafna.hirschfeld@collabora.com>
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 69A1C400C1
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 07:59:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1637999970;
+ h=from:from:reply-to:reply-to:subject:subject:date:date:
+ message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+ content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=58Kjh48+rA0mz4yMMMVKby2HPiPhnf/RAdjUHo4rrk8=;
+ b=Wjhqm85aXcYC5GLn/pZhrp3OPwiu/dAjoVS6W7S7iCWoJ1x+lmxj1GIo5ENRVK9RI0MZkS
+ gtwCHxUJjVXOhrtpSlWRUQ4nHtaYH+XQwvxPR3wp0vE3r2DJLNzvNo74AH40FZaCj6p2lH
+ IM69R0ewldSsZU2G82wvXkYDttI88WE=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-160-wN5D3CDDM3i4Du-AyMZYKQ-1; Sat, 27 Nov 2021 02:59:28 -0500
+X-MC-Unique: wN5D3CDDM3i4Du-AyMZYKQ-1
+Received: by mail-wm1-f69.google.com with SMTP id
+ n16-20020a05600c3b9000b003331973fdbbso6670757wms.0
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Nov 2021 23:59:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:reply-to:subject:to:cc:references:from
+ :message-id:date:user-agent:mime-version:in-reply-to
+ :content-transfer-encoding:content-language;
+ bh=58Kjh48+rA0mz4yMMMVKby2HPiPhnf/RAdjUHo4rrk8=;
+ b=rmVW993EbWPQgflMwxNi4WQFE2GgtrWs4M6vn6Yi1WMbDzvQ6wjyYLc9yJTGf15ZNh
+ 5jkMTHHxmzmjkJMv0t+eFanA+Y3kqQ9r/Oi/EPGNJpSaRUUbhtsGnJ16B6OoN1w4Z8fy
+ oBk3XzC4VGHTUzI97zfsVaHuaV6561OeT8r7ycrM/7XoYVc7o8cnxmXLsrVs1iNzssRN
+ b8iZSTyZK9Q8UQKjPLf32mvOYqkSL+3xzR9AYcvW3Hx7u1Qs/b2HGHV7OfXFKYUhVq51
+ yr6l9ZlJZmA/Y9ypmqr3XX/8Tjmx1iv3i8NJhXReE34X95XF1dlnOtf1Em7Cb/TJ6b7Z
+ kDqw==
+X-Gm-Message-State: AOAM532FamvM8VvZEm9i1gw+Iwpn0WIrW2rLGuCkaXTwubS3pjev74RG
+ N5P1X5T5VkM52fMIay91AZn4T6BXFmReuwFJKV28WXbGvz77qtbXtX1f4bvGYHKPb91xgWH/ZbI
+ oc6fV+bLBYM7C1MKdONhE9NR31SaKEg==
+X-Received: by 2002:a05:6000:1043:: with SMTP id
+ c3mr19152234wrx.64.1637999967651; 
+ Fri, 26 Nov 2021 23:59:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxoFdzhtbBQJqlr9QWdg9YHontW3Tzr3Rv+AFm3mKY7LUujJNHPKIkOvpyLAG9zOSPSOxJ1Ug==
+X-Received: by 2002:a05:6000:1043:: with SMTP id
+ c3mr19152225wrx.64.1637999967502; 
+ Fri, 26 Nov 2021 23:59:27 -0800 (PST)
+Received: from ?IPv6:2a01:e0a:59e:9d80:527b:9dff:feef:3874?
+ ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+ by smtp.gmail.com with ESMTPSA id d1sm7359363wrz.92.2021.11.26.23.59.26
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Fri, 26 Nov 2021 23:59:26 -0800 (PST)
+Subject: Re: [PATCH v2 1/5] iommu/virtio: Add definitions for
+ VIRTIO_IOMMU_F_BYPASS_CONFIG
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>, joro@8bytes.org,
+ will@kernel.org, mst@redhat.com, jasowang@redhat.com
+References: <20211123155301.1047943-1-jean-philippe@linaro.org>
+ <20211123155301.1047943-2-jean-philippe@linaro.org>
+From: Eric Auger <eric.auger@redhat.com>
+Message-ID: <b9068111-bc1e-cc0a-155d-04585d6f4138@redhat.com>
+Date: Sat, 27 Nov 2021 08:59:25 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-X-MTK: N
-Cc: Sebastian Reichel <sebastian.reichel@collabora.com>, open
- list <linux-kernel@vger.kernel.org>, "moderated
- list:MEDIATEK IOMMU DRIVER" <linux-mediatek@lists.infradead.org>,
- Matthias Brugger <matthias.bgg@gmail.com>, kernel@collabora.com,
- Will Deacon <will@kernel.org>, "moderated
- list:ARM/Mediatek SoC support" <linux-arm-kernel@lists.infradead.org>,
- linux-media@vger.kernel.org
+In-Reply-To: <20211123155301.1047943-2-jean-philippe@linaro.org>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=eric.auger@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Cc: kevin.tian@intel.com, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, pasic@linux.ibm.com,
+ iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,69 +116,73 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Reply-To: eric.auger@redhat.com
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 2021-11-22 at 12:44 +0200, Dafna Hirschfeld wrote:
-> From: Sebastian Reichel <sebastian.reichel@collabora.com>
-> 
-> In case of v4l2_reqbufs() it is possible, that a TLB flush is done
-> without runtime PM being enabled. In that case the "Partial TLB flush
-> timed out, falling back to full flush" warning is printed.
-> 
-> Commit c0b57581b73b ("iommu/mediatek: Add power-domain operation")
-> introduced has_pm as optimization to avoid checking runtime PM
-> when there is no power domain attached. But without the PM domain
-> there is still the device driver's runtime PM suspend handler, which
-> disables the clock. Thus flushing should also be avoided when there
-> is no PM domain involved.
-> 
-> Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-> Reviewed-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+Hi Jean,
 
-Reviewed-by: Yong Wu <yong.wu@mediatek.com>
-
+On 11/23/21 4:52 PM, Jean-Philippe Brucker wrote:
+> Add definitions for the VIRTIO_IOMMU_F_BYPASS_CONFIG, which supersedes
+> VIRTIO_IOMMU_F_BYPASS.
+>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 > ---
->  drivers/iommu/mtk_iommu.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 28dc4b95b6d9..b0535fcfd1d7 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -227,16 +227,13 @@ static void
-> mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
->  					   size_t granule,
->  					   struct mtk_iommu_data *data)
->  {
-> -	bool has_pm = !!data->dev->pm_domain;
->  	unsigned long flags;
->  	int ret;
->  	u32 tmp;
+>  include/uapi/linux/virtio_iommu.h | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
+> index 237e36a280cb..cafd8cf7febf 100644
+> --- a/include/uapi/linux/virtio_iommu.h
+> +++ b/include/uapi/linux/virtio_iommu.h
+> @@ -16,6 +16,7 @@
+>  #define VIRTIO_IOMMU_F_BYPASS			3
+>  #define VIRTIO_IOMMU_F_PROBE			4
+>  #define VIRTIO_IOMMU_F_MMIO			5
+> +#define VIRTIO_IOMMU_F_BYPASS_CONFIG		6
 >  
->  	for_each_m4u(data) {
-> -		if (has_pm) {
-> -			if (pm_runtime_get_if_in_use(data->dev) <= 0)
-> -				continue;
-> -		}
-> +		if (pm_runtime_get_if_in_use(data->dev) <= 0)
-> +			continue;
+>  struct virtio_iommu_range_64 {
+>  	__le64					start;
+> @@ -36,6 +37,8 @@ struct virtio_iommu_config {
+>  	struct virtio_iommu_range_32		domain_range;
+>  	/* Probe buffer size */
+>  	__le32					probe_size;
+> +	__u8					bypass;
+> +	__u8					reserved[7];
+in [PATCH v3] virtio-iommu: Rework the bypass feature I see
+
++  u8 bypass;
++  u8 reserved[3];
+
+What was exactly voted?
+
+Thanks
+
+Eric
+
+>  };
 >  
->  		spin_lock_irqsave(&data->tlb_lock, flags);
->  		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
-> @@ -261,8 +258,7 @@ static void
-> mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
->  		writel_relaxed(0, data->base + REG_MMU_CPE_DONE);
->  		spin_unlock_irqrestore(&data->tlb_lock, flags);
+>  /* Request types */
+> @@ -66,11 +69,14 @@ struct virtio_iommu_req_tail {
+>  	__u8					reserved[3];
+>  };
 >  
-> -		if (has_pm)
-> -			pm_runtime_put(data->dev);
-> +		pm_runtime_put(data->dev);
->  	}
->  }
+> +#define VIRTIO_IOMMU_ATTACH_F_BYPASS		(1 << 0)
+> +
+>  struct virtio_iommu_req_attach {
+>  	struct virtio_iommu_req_head		head;
+>  	__le32					domain;
+>  	__le32					endpoint;
+> -	__u8					reserved[8];
+> +	__le32					flags;
+> +	__u8					reserved[4];
+>  	struct virtio_iommu_req_tail		tail;
+>  };
 >  
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
