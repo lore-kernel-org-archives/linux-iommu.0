@@ -1,68 +1,63 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7E2A6C433FE
-	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 01:20:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DDFCFC433EF
+	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 01:20:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 29140607DB;
-	Sat, 27 Nov 2021 01:20:21 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 84C4740556;
+	Sat, 27 Nov 2021 01:20:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lAtKvpbdzCCY; Sat, 27 Nov 2021 01:20:20 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jd2VOkP-1gLy; Sat, 27 Nov 2021 01:20:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id EB8BB607DE;
-	Sat, 27 Nov 2021 01:20:19 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 38E67403B7;
+	Sat, 27 Nov 2021 01:20:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C26A0C0039;
-	Sat, 27 Nov 2021 01:20:19 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3527BC003E
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 053ABC001C;
+	Sat, 27 Nov 2021 01:20:23 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BD35DC000A
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 490A4405EE
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:17 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 70B4F40287
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="vOf/lyTy";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="f86YkWaU"
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NbgYwzDLGcJR for <iommu@lists.linux-foundation.org>;
- Sat, 27 Nov 2021 01:20:15 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id gWxzsj5mpSqm for <iommu@lists.linux-foundation.org>;
+ Sat, 27 Nov 2021 01:20:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de
- [IPv6:2a0a:51c0:0:12e:550::1])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 6DDE14048A
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:15 +0000 (UTC)
-Message-ID: <20211126230524.173951799@linutronix.de>
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 9A129403B7
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:18 +0000 (UTC)
+Message-ID: <20211126230524.295122054@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1637976013;
+ s=2020; t=1637976016;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=KQEQh1eEOaSazo6Y93s5vbUnfdxHtVwCI6okaSxjU/U=;
- b=vOf/lyTy9Uvmhdzml5O3C7qmhYgs45igzDfSxx9p/drTW4VD4VSEhQhVNKiZUAfNCJC30V
- e8dQfeYGka8ujhdMrin/sl62vtIrmrIzH00l67bof2S+Q3Z7Q8piEwzoezvFzBpT/UVwF9
- Pf29t3lrcwYow+KPk9l0tBxP23ixAtq/6FqL/RBaICUbQyDjtFGxyYOVz+Sd2uZPVZ1Uz3
- nclIsoqxq6pO5kZNm6idrPVjFDs/KgaaVEga7pC1jek22SyMs4baM3OacmLcoLv8zH2rfO
- Z9NON2r61HIbXOghsRUeQUkzUqIYhhlfiPaomHDPH3IfBdziy5prETd8nwUe2A==
+ references:references; bh=Oh8EM+g3S/QfSPoDjrJmTy+Z80Zsw+m+X3NUsXacOTE=;
+ b=qVZGDbNZ2EPWgWKeie9Lsg8SlBXlB0cdjwpWi66yeNG4DYIWMBeGOpSML8TzTYX+IBXTLC
+ MytS9/7pPDvx+5uOdmMK7tsJf7Ty5rDTRSyLyz3rUILaGDpD78K/KinpA9spc//yXsu3gN
+ es43eYzq8WxrwsxRBJzulVPjdWWxECSfHrNvVbIpbHXTO4du8HBL66WTL0tQYDkuwnrV1V
+ PPHrx45+4UKv8DU+YAJ7euQ68e3XyTtqHvf2s+uztrRavCQ0DyLPUn8PCzZD6IvxFPHea8
+ bXkbZI3WH5L+7y2A9eEGs9xy4p0pSnnPxY75sPwFeTWsH96Mo6TP/W1vzRoDBw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1637976013;
+ s=2020e; t=1637976016;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=KQEQh1eEOaSazo6Y93s5vbUnfdxHtVwCI6okaSxjU/U=;
- b=f86YkWaUYpzObWEqjBLcBy9kuRvnNi405nX87dWtTERX9WPsxoSHwoDQWqHz9JSQ/8qoXh
- nNdFaAmaI4EFxYBQ==
+ references:references; bh=Oh8EM+g3S/QfSPoDjrJmTy+Z80Zsw+m+X3NUsXacOTE=;
+ b=xOkGJjLxWWpLTjyaY3a3wt1jNJ6brnrPkO+LEWpUUYBkEz0HM87BkrlRzK6xnt7ICAcZBo
+ 9lh6ntzQZMTtE/BA==
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch 04/37] PCI/MSI: Use lock from msi_device_data
+Subject: [patch 06/37] bus: fsl-mc-msi: Allocate MSI device data on first use
 References: <20211126224100.303046749@linutronix.de>
 MIME-Version: 1.0
-Date: Sat, 27 Nov 2021 02:20:13 +0100 (CET)
+Date: Sat, 27 Nov 2021 02:20:16 +0100 (CET)
 Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
  Stuart Yoder <stuyoder@gmail.com>, linux-pci@vger.kernel.org,
  Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
@@ -92,55 +87,45 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Remove the register lock from struct device and use the one in
-struct msi_device_data.
+Allocate the MSI device data on first invocation of the allocation function.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Stuart Yoder <stuyoder@gmail.com>
+Cc: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 ---
- drivers/base/core.c    |    1 -
- drivers/pci/msi/msi.c  |    2 +-
- include/linux/device.h |    2 --
- 3 files changed, 1 insertion(+), 4 deletions(-)
+ drivers/bus/fsl-mc/fsl-mc-msi.c |   14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -2875,7 +2875,6 @@ void device_initialize(struct device *de
- 	device_pm_init(dev);
- 	set_dev_node(dev, NUMA_NO_NODE);
- #ifdef CONFIG_GENERIC_MSI_IRQ
--	raw_spin_lock_init(&dev->msi_lock);
- 	INIT_LIST_HEAD(&dev->msi_list);
- #endif
- 	INIT_LIST_HEAD(&dev->links.consumers);
---- a/drivers/pci/msi/msi.c
-+++ b/drivers/pci/msi/msi.c
-@@ -18,7 +18,7 @@ int pci_msi_ignore_mask;
+--- a/drivers/bus/fsl-mc/fsl-mc-msi.c
++++ b/drivers/bus/fsl-mc/fsl-mc-msi.c
+@@ -253,6 +253,14 @@ int fsl_mc_msi_domain_alloc_irqs(struct
+ 	struct irq_domain *msi_domain;
+ 	int error;
  
- static noinline void pci_msi_update_mask(struct msi_desc *desc, u32 clear, u32 set)
- {
--	raw_spinlock_t *lock = &desc->dev->msi_lock;
-+	raw_spinlock_t *lock = &desc->dev->msi.data->lock;
- 	unsigned long flags;
++	msi_domain = dev_get_msi_domain(dev);
++	if (!msi_domain)
++		return -EINVAL;
++
++	error = msi_setup_device_data(dev);
++	if (error)
++		return error;
++
+ 	if (!list_empty(dev_to_msi_list(dev)))
+ 		return -EINVAL;
  
- 	if (!desc->pci.msi_attrib.can_mask)
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -422,7 +422,6 @@ struct dev_msi_info {
-  * @em_pd:	device's energy model performance domain
-  * @pins:	For device pin management.
-  *		See Documentation/driver-api/pin-control.rst for details.
-- * @msi_lock:	Lock to protect MSI mask cache and mask register
-  * @msi_list:	Hosts MSI descriptors
-  * @numa_node:	NUMA node this device is close to.
-  * @dma_ops:    DMA mapping operations for this device.
-@@ -520,7 +519,6 @@ struct device {
- #endif
- 	struct dev_msi_info	msi;
- #ifdef CONFIG_GENERIC_MSI_IRQ
--	raw_spinlock_t		msi_lock;
- 	struct list_head	msi_list;
- #endif
- #ifdef CONFIG_DMA_OPS
+@@ -260,12 +268,6 @@ int fsl_mc_msi_domain_alloc_irqs(struct
+ 	if (error < 0)
+ 		return error;
+ 
+-	msi_domain = dev_get_msi_domain(dev);
+-	if (!msi_domain) {
+-		error = -EINVAL;
+-		goto cleanup_msi_descs;
+-	}
+-
+ 	/*
+ 	 * NOTE: Calling this function will trigger the invocation of the
+ 	 * its_fsl_mc_msi_prepare() callback
 
 _______________________________________________
 iommu mailing list
