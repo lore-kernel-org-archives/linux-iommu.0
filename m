@@ -4,60 +4,64 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 53295C4167B
-	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 01:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4D4D9C2BB1D
+	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 01:21:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 17F3D82D14;
-	Sat, 27 Nov 2021 01:21:52 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id B955D82D0F;
+	Sat, 27 Nov 2021 01:21:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id in8wnE4V38PX; Sat, 27 Nov 2021 01:21:51 +0000 (UTC)
+	with ESMTP id 6_qLJWyA0jdt; Sat, 27 Nov 2021 01:21:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id E714282CA5;
-	Sat, 27 Nov 2021 01:21:50 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id AA3F082D49;
+	Sat, 27 Nov 2021 01:21:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D25DCC001C;
-	Sat, 27 Nov 2021 01:21:50 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A0758C000A
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4873CC003E;
+	Sat, 27 Nov 2021 01:21:53 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 503EFC000A
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 9022682D04
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:49 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 4770B4058C
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id yR29r2_n_8SV for <iommu@lists.linux-foundation.org>;
- Sat, 27 Nov 2021 01:21:48 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="hy97HFE6";
+ dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
+ header.d=linutronix.de header.b="DfYv5Qo1"
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id CJJ3sdWOy0w5 for <iommu@lists.linux-foundation.org>;
+ Sat, 27 Nov 2021 01:21:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 94D9182CFA
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:48 +0000 (UTC)
-Message-ID: <20211126230525.016223236@linutronix.de>
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 82D3D40579
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:21:51 +0000 (UTC)
+Message-ID: <20211126230525.137299282@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1637976106;
+ s=2020; t=1637976109;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=fkSRZAFKOg49WRvcaWCK3eXzS4tUTHUaar/EP1a26n8=;
- b=DoOKl/TsnNlvvjn/xJfebNuCXzkuoUNBf7Y5MKkmZRV/XqHqQiDGgeTeUEw8hWP8lIYf6A
- DTndX4xDMHlR/CCZ5QD3JY2beloRroRkA6rfwDYTYfi311OopnZhQhVUJY90EIpVStmxP/
- eFW8Se8XVj9E8SflKMRWgvSnVkHeIjiLc5gopKN+cfrWz3ZTC5BZV7n2+eEmvleMaAX5pB
- FKwhT2uoN8+nhpITISgUxRtKfeLXn7/rnz7lbLkDEKtFj2X3tU5uC+qLFSGd+JolNkv2xP
- Cwa7VLgvRi/jcxY6UgQUaAYn4cw8dlqCQlcW0v0twvOV7My2nzxEwCsjkxRWBA==
+ references:references; bh=ZWaHMo5/cxTSb8aCm3CN77ES3jPYHd9BeCyQKbhAf1Q=;
+ b=hy97HFE6I814pV4rx+xUrwuUAhL4IUA798mts+smaySzKuUadOTBalyUe9VTE3Hx8vG+TZ
+ hIuTfOk36OH3vQYQZefI5I3Rw3EAi8HCjA/3s6icu+vdv2PFRY7dWD3CUk+dgwwntHLSFg
+ YyNTHMOWkiuKCIWIb0zFBNJpiz69LHC5rMFKk3ShYcanbbVttRGLGrJZCnI6+Ecd/BlckC
+ OEvsof342hr0uLMAcDan61lIqCeE6/Kee5YFN6JIGUB30gTy4531wLcwnPea6KcxvzCp4M
+ gjKx6hMBTQKuf2Ls44rtIPD7505IuqKnel6KsjHMq+66g5dCaastAkR/IPEcWQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1637976106;
+ s=2020e; t=1637976109;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=fkSRZAFKOg49WRvcaWCK3eXzS4tUTHUaar/EP1a26n8=;
- b=j5KC/iwbsnlunBQ1GyTSP1bWKYa97v4VL9Ct+ceZqtmnRmJDt+RJ11gEin/8XS1KNq7CXz
- szJwxmDjdhZhMIBw==
+ references:references; bh=ZWaHMo5/cxTSb8aCm3CN77ES3jPYHd9BeCyQKbhAf1Q=;
+ b=DfYv5Qo1fNDyy/u2FnjloE8DeN/fnIR0Tl+Jv4cf71yMysYcKARkCZEL1g1Y02rzlDPgNE
+ w4pJ5/U3r3YQu1Bg==
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch 18/37] PCI/MSI: Use msi_desc::msi_index
+Subject: [patch 20/37] PCI/MSI: Store properties in device::msi::data
 References: <20211126224100.303046749@linutronix.de>
 MIME-Version: 1.0
-Date: Sat, 27 Nov 2021 02:21:46 +0100 (CET)
+Date: Sat, 27 Nov 2021 02:21:49 +0100 (CET)
 Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
  Stuart Yoder <stuyoder@gmail.com>, linux-pci@vger.kernel.org,
  Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
@@ -86,156 +90,45 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
-Message-ID: <20211127012146._Wr8rEDlvUBdxzhysMyBg_MJeXDsjd9r6UET37TQbLM@z>
+Message-ID: <20211127012149.uUgwCSr03GpomIN406kFMDARrLI-5ScwoD_CQtRFzlE@z>
 
-The usage of msi_desc::pci::entry_nr is confusing at best. It's the index
-into the MSI[X] descriptor table.
-
-Use msi_desc::msi_index which is shared between all MSI incarnations
-instead of having a PCI specific storage for no value.
+Store the properties which are interesting for various places so the MSI
+descriptor fiddling can be removed.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/powerpc/platforms/pseries/msi.c |    4 ++--
- arch/x86/pci/xen.c                   |    2 +-
- drivers/pci/msi/irqdomain.c          |    2 +-
- drivers/pci/msi/msi.c                |   20 ++++++++------------
- drivers/pci/xen-pcifront.c           |    2 +-
- include/linux/msi.h                  |    2 --
- 6 files changed, 13 insertions(+), 19 deletions(-)
+ drivers/pci/msi/msi.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/arch/powerpc/platforms/pseries/msi.c
-+++ b/arch/powerpc/platforms/pseries/msi.c
-@@ -332,7 +332,7 @@ static int check_msix_entries(struct pci
- 
- 	expected = 0;
- 	for_each_pci_msi_entry(entry, pdev) {
--		if (entry->pci.msi_attrib.entry_nr != expected) {
-+		if (entry->msi_index != expected) {
- 			pr_debug("rtas_msi: bad MSI-X entries.\n");
- 			return -EINVAL;
- 		}
-@@ -580,7 +580,7 @@ static int pseries_irq_domain_alloc(stru
- 	int hwirq;
- 	int i, ret;
- 
--	hwirq = rtas_query_irq_number(pci_get_pdn(pdev), desc->pci.msi_attrib.entry_nr);
-+	hwirq = rtas_query_irq_number(pci_get_pdn(pdev), desc->msi_index);
- 	if (hwirq < 0) {
- 		dev_err(&pdev->dev, "Failed to query HW IRQ: %d\n", hwirq);
- 		return hwirq;
---- a/arch/x86/pci/xen.c
-+++ b/arch/x86/pci/xen.c
-@@ -306,7 +306,7 @@ static int xen_initdom_setup_msi_irqs(st
- 				return -EINVAL;
- 
- 			map_irq.table_base = pci_resource_start(dev, bir);
--			map_irq.entry_nr = msidesc->pci.msi_attrib.entry_nr;
-+			map_irq.entry_nr = msidesc->msi_index;
- 		}
- 
- 		ret = -EINVAL;
---- a/drivers/pci/msi/irqdomain.c
-+++ b/drivers/pci/msi/irqdomain.c
-@@ -57,7 +57,7 @@ static irq_hw_number_t pci_msi_domain_ca
- {
- 	struct pci_dev *dev = msi_desc_to_pci_dev(desc);
- 
--	return (irq_hw_number_t)desc->pci.msi_attrib.entry_nr |
-+	return (irq_hw_number_t)desc->msi_index |
- 		pci_dev_id(dev) << 11 |
- 		(pci_domain_nr(dev->bus) & 0xFFFFFFFF) << 27;
- }
 --- a/drivers/pci/msi/msi.c
 +++ b/drivers/pci/msi/msi.c
-@@ -44,7 +44,7 @@ static inline void pci_msi_unmask(struct
- 
- static inline void __iomem *pci_msix_desc_addr(struct msi_desc *desc)
- {
--	return desc->pci.mask_base + desc->pci.msi_attrib.entry_nr * PCI_MSIX_ENTRY_SIZE;
-+	return desc->pci.mask_base + desc->msi_index * PCI_MSIX_ENTRY_SIZE;
+@@ -244,6 +244,8 @@ static void free_msi_irqs(struct pci_dev
+ 		iounmap(dev->msix_base);
+ 		dev->msix_base = NULL;
+ 	}
++
++	dev->dev.msi.data->properties = 0;
  }
  
- /*
-@@ -354,13 +354,10 @@ msi_setup_entry(struct pci_dev *dev, int
- 	if (dev->dev_flags & PCI_DEV_FLAGS_HAS_MSI_MASKING)
- 		control |= PCI_MSI_FLAGS_MASKBIT;
+ static void pci_intx_for_msi(struct pci_dev *dev, int enable)
+@@ -372,6 +374,9 @@ msi_setup_entry(struct pci_dev *dev, int
+ 	if (entry->pci.msi_attrib.can_mask)
+ 		pci_read_config_dword(dev, entry->pci.mask_pos, &entry->pci.msi_mask);
  
--	entry->pci.msi_attrib.is_msix	= 0;
--	entry->pci.msi_attrib.is_64		= !!(control & PCI_MSI_FLAGS_64BIT);
--	entry->pci.msi_attrib.is_virtual    = 0;
--	entry->pci.msi_attrib.entry_nr	= 0;
-+	entry->pci.msi_attrib.is_64	= !!(control & PCI_MSI_FLAGS_64BIT);
- 	entry->pci.msi_attrib.can_mask	= !pci_msi_ignore_mask &&
- 					  !!(control & PCI_MSI_FLAGS_MASKBIT);
--	entry->pci.msi_attrib.default_irq	= dev->irq;	/* Save IOAPIC IRQ */
-+	entry->pci.msi_attrib.default_irq = dev->irq;
- 	entry->pci.msi_attrib.multi_cap	= (control & PCI_MSI_FLAGS_QMASK) >> 1;
- 	entry->pci.msi_attrib.multiple	= ilog2(__roundup_pow_of_two(nvec));
- 
-@@ -494,12 +491,11 @@ static int msix_setup_entries(struct pci
- 		entry->pci.msi_attrib.is_64	= 1;
- 
- 		if (entries)
--			entry->pci.msi_attrib.entry_nr = entries[i].entry;
-+			entry->msi_index = entries[i].entry;
- 		else
--			entry->pci.msi_attrib.entry_nr = i;
-+			entry->msi_index = i;
- 
--		entry->pci.msi_attrib.is_virtual =
--			entry->pci.msi_attrib.entry_nr >= vec_count;
-+		entry->pci.msi_attrib.is_virtual = entry->msi_index >= vec_count;
- 
- 		entry->pci.msi_attrib.can_mask	= !pci_msi_ignore_mask &&
- 						  !entry->pci.msi_attrib.is_virtual;
-@@ -1025,7 +1021,7 @@ int pci_irq_vector(struct pci_dev *dev,
- 		struct msi_desc *entry;
- 
- 		for_each_pci_msi_entry(entry, dev) {
--			if (entry->pci.msi_attrib.entry_nr == nr)
-+			if (entry->msi_index == nr)
- 				return entry->irq;
- 		}
- 		WARN_ON_ONCE(1);
-@@ -1057,7 +1053,7 @@ const struct cpumask *pci_irq_get_affini
- 		struct msi_desc *entry;
- 
- 		for_each_pci_msi_entry(entry, dev) {
--			if (entry->pci.msi_attrib.entry_nr == nr)
-+			if (entry->msi_index == nr)
- 				return &entry->affinity->mask;
- 		}
- 		WARN_ON_ONCE(1);
---- a/drivers/pci/xen-pcifront.c
-+++ b/drivers/pci/xen-pcifront.c
-@@ -263,7 +263,7 @@ static int pci_frontend_enable_msix(stru
- 
- 	i = 0;
- 	for_each_pci_msi_entry(entry, dev) {
--		op.msix_entries[i].entry = entry->pci.msi_attrib.entry_nr;
-+		op.msix_entries[i].entry = entry->msi_index;
- 		/* Vector is useless at this point. */
- 		op.msix_entries[i].vector = -1;
- 		i++;
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -79,7 +79,6 @@ typedef void (*irq_write_msi_msg_t)(stru
-  * @multi_cap:	[PCI MSI/X] log2 num of messages supported
-  * @can_mask:	[PCI MSI/X] Masking supported?
-  * @is_64:	[PCI MSI/X] Address size: 0=32bit 1=64bit
-- * @entry_nr:	[PCI MSI/X] Entry which is described by this descriptor
-  * @default_irq:[PCI MSI/X] The default pre-assigned non-MSI irq
-  * @mask_pos:	[PCI MSI]   Mask register position
-  * @mask_base:	[PCI MSI-X] Mask register base address
-@@ -96,7 +95,6 @@ struct pci_msi_desc {
- 		u8	can_mask	: 1;
- 		u8	is_64		: 1;
- 		u8	is_virtual	: 1;
--		u16	entry_nr;
- 		unsigned default_irq;
- 	} msi_attrib;
- 	union {
++	dev->dev.msi.data->properties = MSI_PROP_PCI_MSI;
++	if (entry->pci.msi_attrib.is_64)
++		dev->dev.msi.data->properties |= MSI_PROP_64BIT;
+ out:
+ 	kfree(masks);
+ 	return entry;
+@@ -514,6 +519,7 @@ static int msix_setup_entries(struct pci
+ 		if (masks)
+ 			curmsk++;
+ 	}
++	dev->dev.msi.data->properties = MSI_PROP_PCI_MSIX | MSI_PROP_64BIT;
+ 	ret = 0;
+ out:
+ 	kfree(masks);
 
 _______________________________________________
 iommu mailing list
