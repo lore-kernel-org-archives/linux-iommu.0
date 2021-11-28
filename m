@@ -1,48 +1,48 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B4E7AC433F5
-	for <iommu@archiver.kernel.org>; Sun, 28 Nov 2021 02:51:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EAD11C433EF
+	for <iommu@archiver.kernel.org>; Sun, 28 Nov 2021 02:51:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 46E3C819D2;
-	Sun, 28 Nov 2021 02:51:29 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 984D940198;
+	Sun, 28 Nov 2021 02:51:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SW7OhmP-Y4xE; Sun, 28 Nov 2021 02:51:28 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 1A6528199D;
-	Sun, 28 Nov 2021 02:51:28 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Gz8Zs_BDYzIv; Sun, 28 Nov 2021 02:51:35 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 428AB4017D;
+	Sun, 28 Nov 2021 02:51:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EAEB9C002E;
-	Sun, 28 Nov 2021 02:51:27 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4BDCDC000A
- for <iommu@lists.linux-foundation.org>; Sun, 28 Nov 2021 02:51:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 26E27C001C;
+	Sun, 28 Nov 2021 02:51:35 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 175FEC000A
+ for <iommu@lists.linux-foundation.org>; Sun, 28 Nov 2021 02:51:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 2AF09607DB
- for <iommu@lists.linux-foundation.org>; Sun, 28 Nov 2021 02:51:26 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id ECEAC404B6
+ for <iommu@lists.linux-foundation.org>; Sun, 28 Nov 2021 02:51:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AWJM8hULAXFe for <iommu@lists.linux-foundation.org>;
- Sun, 28 Nov 2021 02:51:25 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id q_-4KVTw3X7N for <iommu@lists.linux-foundation.org>;
+ Sun, 28 Nov 2021 02:51:32 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 796CE607D2
- for <iommu@lists.linux-foundation.org>; Sun, 28 Nov 2021 02:51:25 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10181"; a="222672291"
-X-IronPort-AV: E=Sophos;i="5.87,270,1631602800"; d="scan'208";a="222672291"
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 555B54046B
+ for <iommu@lists.linux-foundation.org>; Sun, 28 Nov 2021 02:51:32 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10181"; a="235738915"
+X-IronPort-AV: E=Sophos;i="5.87,270,1631602800"; d="scan'208";a="235738915"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 27 Nov 2021 18:51:24 -0800
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Nov 2021 18:51:31 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,270,1631602800"; d="scan'208";a="652488960"
+X-IronPort-AV: E=Sophos;i="5.87,270,1631602800"; d="scan'208";a="652488980"
 Received: from allen-box.sh.intel.com ([10.239.159.118])
- by fmsmga001.fm.intel.com with ESMTP; 27 Nov 2021 18:51:17 -0800
+ by fmsmga001.fm.intel.com with ESMTP; 27 Nov 2021 18:51:24 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Joerg Roedel <joro@8bytes.org>,
@@ -50,9 +50,10 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Bjorn Helgaas <bhelgaas@google.com>, Jason Gunthorpe <jgg@nvidia.com>,
  Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
  Ashok Raj <ashok.raj@intel.com>
-Subject: [PATCH v2 03/17] PCI: Add driver dma ownership management
-Date: Sun, 28 Nov 2021 10:50:37 +0800
-Message-Id: <20211128025051.355578-4-baolu.lu@linux.intel.com>
+Subject: [PATCH v2 04/17] driver core: platform: Add driver dma ownership
+ management
+Date: Sun, 28 Nov 2021 10:50:38 +0800
+Message-Id: <20211128025051.355578-5-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211128025051.355578-1-baolu.lu@linux.intel.com>
 References: <20211128025051.355578-1-baolu.lu@linux.intel.com>
@@ -83,10 +84,10 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Multiple PCI devices may be placed in the same IOMMU group because they
-cannot be isolated from each other. These devices must either be entirely
-under kernel control or userspace control, never a mixture. This checks
-and sets DMA ownership during driver binding, and vice versa, release the
+Multiple platform devices may be placed in the same IOMMU group because
+they cannot be isolated from each other. These devices must either be
+entirely under kernel control or userspace control, never a mixture. This
+checks and sets DMA ownership during driver binding, and release the
 ownership during driver unbinding.
 
 Driver may set a new flag (suppress_auto_claim_dma_owner) to disable auto
@@ -96,92 +97,77 @@ DMA_OWNER_PRIVATE_DOMAIN_USER when assigning a device to userspace.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- include/linux/pci.h      |  5 +++++
- drivers/pci/pci-driver.c | 21 +++++++++++++++++++++
- 2 files changed, 26 insertions(+)
+ include/linux/platform_device.h |  1 +
+ drivers/base/platform.c         | 30 +++++++++++++++++++++++++++++-
+ 2 files changed, 30 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 18a75c8e615c..1b29af0ab43b 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -882,6 +882,10 @@ struct module;
-  *              created once it is bound to the driver.
-  * @driver:	Driver model structure.
-  * @dynids:	List of dynamically added device IDs.
-+ * @suppress_auto_claim_dma_owner: Disable auto claiming of kernel DMA owner.
-+ *		Drivers which don't require DMA or want to manually claim the
-+ *		owner type (e.g. userspace driver frameworks) could set this
-+ *		flag.
-  */
- struct pci_driver {
- 	struct list_head	node;
-@@ -900,6 +904,7 @@ struct pci_driver {
- 	const struct attribute_group **dev_groups;
- 	struct device_driver	driver;
- 	struct pci_dynids	dynids;
+diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
+index 7c96f169d274..779bcf2a851c 100644
+--- a/include/linux/platform_device.h
++++ b/include/linux/platform_device.h
+@@ -210,6 +210,7 @@ struct platform_driver {
+ 	struct device_driver driver;
+ 	const struct platform_device_id *id_table;
+ 	bool prevent_deferred_probe;
 +	bool suppress_auto_claim_dma_owner;
  };
  
- static inline struct pci_driver *to_pci_driver(struct device_driver *drv)
-diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 588588cfda48..cad299d79f1a 100644
---- a/drivers/pci/pci-driver.c
-+++ b/drivers/pci/pci-driver.c
-@@ -20,6 +20,7 @@
- #include <linux/of_device.h>
- #include <linux/acpi.h>
- #include <linux/dma-map-ops.h>
+ #define to_platform_driver(drv)	(container_of((drv), struct platform_driver, \
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index 598acf93a360..df4b385c8a52 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -30,6 +30,7 @@
+ #include <linux/property.h>
+ #include <linux/kmemleak.h>
+ #include <linux/types.h>
 +#include <linux/iommu.h>
- #include "pci.h"
- #include "pcie/portdrv.h"
  
-@@ -1590,9 +1591,16 @@ static int pci_bus_num_vf(struct device *dev)
-  */
- static int pci_dma_configure(struct device *dev)
- {
-+	struct pci_driver *driver = to_pci_driver(dev->driver);
- 	struct device *bridge;
- 	int ret = 0;
+ #include "base.h"
+ #include "power/power.h"
+@@ -1465,6 +1466,32 @@ int platform_dma_configure(struct device *dev)
+ 	return ret;
+ }
  
-+	if (!driver->suppress_auto_claim_dma_owner) {
++static int _platform_dma_configure(struct device *dev)
++{
++	struct platform_driver *drv = to_platform_driver(dev->driver);
++	int ret;
++
++	if (!drv->suppress_auto_claim_dma_owner) {
 +		ret = iommu_device_set_dma_owner(dev, DMA_OWNER_DMA_API, NULL);
 +		if (ret)
 +			return ret;
 +	}
 +
- 	bridge = pci_get_host_bridge_device(to_pci_dev(dev));
- 
- 	if (IS_ENABLED(CONFIG_OF) && bridge->parent &&
-@@ -1605,9 +1613,21 @@ static int pci_dma_configure(struct device *dev)
- 	}
- 
- 	pci_put_host_bridge_device(bridge);
-+
-+	if (ret && !driver->suppress_auto_claim_dma_owner)
++	ret = platform_dma_configure(dev);
++	if (ret && !drv->suppress_auto_claim_dma_owner)
 +		iommu_device_release_dma_owner(dev, DMA_OWNER_DMA_API);
 +
- 	return ret;
- }
- 
-+static void pci_dma_unconfigure(struct device *dev)
-+{
-+	struct pci_driver *driver = to_pci_driver(dev->driver);
++	return ret;
++}
 +
-+	if (!driver->suppress_auto_claim_dma_owner)
++static void _platform_dma_unconfigure(struct device *dev)
++{
++	struct platform_driver *drv = to_platform_driver(dev->driver);
++
++	if (!drv->suppress_auto_claim_dma_owner)
 +		iommu_device_release_dma_owner(dev, DMA_OWNER_DMA_API);
 +}
 +
- struct bus_type pci_bus_type = {
- 	.name		= "pci",
- 	.match		= pci_bus_match,
-@@ -1621,6 +1641,7 @@ struct bus_type pci_bus_type = {
- 	.pm		= PCI_PM_OPS_PTR,
- 	.num_vf		= pci_bus_num_vf,
- 	.dma_configure	= pci_dma_configure,
-+	.dma_unconfigure = pci_dma_unconfigure,
+ static const struct dev_pm_ops platform_dev_pm_ops = {
+ 	SET_RUNTIME_PM_OPS(pm_generic_runtime_suspend, pm_generic_runtime_resume, NULL)
+ 	USE_PLATFORM_PM_SLEEP_OPS
+@@ -1478,7 +1505,8 @@ struct bus_type platform_bus_type = {
+ 	.probe		= platform_probe,
+ 	.remove		= platform_remove,
+ 	.shutdown	= platform_shutdown,
+-	.dma_configure	= platform_dma_configure,
++	.dma_configure	= _platform_dma_configure,
++	.dma_unconfigure = _platform_dma_unconfigure,
+ 	.pm		= &platform_dev_pm_ops,
  };
- EXPORT_SYMBOL(pci_bus_type);
- 
+ EXPORT_SYMBOL_GPL(platform_bus_type);
 -- 
 2.25.1
 
