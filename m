@@ -1,69 +1,72 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DF850C433EF
-	for <iommu@archiver.kernel.org>; Mon, 29 Nov 2021 11:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A25BEC433F5
+	for <iommu@archiver.kernel.org>; Mon, 29 Nov 2021 12:52:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 758D7409DC;
-	Mon, 29 Nov 2021 11:01:44 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id D6969403DD;
+	Mon, 29 Nov 2021 12:52:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DAAn_IDebWJx; Mon, 29 Nov 2021 11:01:43 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id XiwwtOdldUyo; Mon, 29 Nov 2021 12:52:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 5278D409C4;
-	Mon, 29 Nov 2021 11:01:43 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 7B8A040371;
+	Mon, 29 Nov 2021 12:52:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1FA90C001C;
-	Mon, 29 Nov 2021 11:01:43 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E1F60C000A
- for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 11:01:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 47063C001C;
+	Mon, 29 Nov 2021 12:52:53 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4C720C000A
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 12:52:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id C2EF983126
- for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 11:01:41 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 272A381770
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 12:52:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="HplVWLUy";
+ dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
+ header.d=linutronix.de header.b="/vtVlvS+"
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id p5H2IScevSZV for <iommu@lists.linux-foundation.org>;
- Mon, 29 Nov 2021 11:01:41 +0000 (UTC)
+ with ESMTP id ELuSoZNW2Wv8 for <iommu@lists.linux-foundation.org>;
+ Mon, 29 Nov 2021 12:52:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 37A2D82C75
- for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 11:01:41 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id EAAFF612D9;
- Mon, 29 Nov 2021 10:55:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A396C53FAD;
- Mon, 29 Nov 2021 10:55:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1638183315;
- bh=QhZNG7zEJdkQvS0LEX52li9AXzufJrQFobG0M6duX3k=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=In+AkzkxuwyvtyrVSnDdHfnln0ej7MVCOlSJ0dRt2ZWpilriGh6TuxtTbIvPZpGRc
- 3raF7kENSA7Iqg9d3lIFa1Tycva8OdSns9kjZGzFU/i0aJcBpVAWsw03om+s4qnUOM
- fw8I9XrPtQ3Rho8qt5voFvB4S6aarTonmWrXmIFAJNjWosRUJn049/OYsViwr62iQF
- gEyUDXXP/57E3hImuxQespEfMMrhMyK1bU1TI2fcChiOBzoxZ2prSilIA/X8hL/HV2
- gt/PtTjrEAm0TvcLCwOpO2++IoNJLFndUJeT7h1TLYmVmW3HVey3dfUX8+sE/bT/k6
- GGQZi90ZDL7Yg==
-Date: Mon, 29 Nov 2021 10:55:07 +0000
-From: Will Deacon <will@kernel.org>
-To: Thomas Gleixner <tglx@linutronix.de>
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id DA6AD80C03
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 12:52:50 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020; t=1638190367;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=4YfGqtKfqcg/VBb4scc+UNPvXNHJqUnbrO9jfKPdvNc=;
+ b=HplVWLUyXX2hGBuDuAzepO9k9vKo4+aigansIMG5A6PgvComp9g/A8szrWNGO+DISdY1cO
+ HzmwbYFzpO7Q/2IoKG933FYvlI+iakLvkkI3MW676OVlnc7A8MPybqGncMhSM56B+JB5UN
+ PWbU+6wCNcKBNO1A+j34akq/xZ3+3aX1ItXbhwlzVpIdbOCrNj9jP2pah7Z/DMh8iXi0vY
+ WQ4WxZl0EvS+kKrLf6K04nLtKxRo+NFQ3CXHYtdg12/OZVLnw9TMiwzne+FekVyS17Msmp
+ St+PtqpCeGz+AJ4jXwZIiSDeE/g+SbXuSG9NDgfDEF4UJQ+4uLGw3cZ+2GnJcA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020e; t=1638190367;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=4YfGqtKfqcg/VBb4scc+UNPvXNHJqUnbrO9jfKPdvNc=;
+ b=/vtVlvS+jCeXqOvFdJKQpUuqX073/P52p4KqQKu8Yr9vhveVqL5kazEV6dmh03ToVmk41R
+ neyuByPAuatkkHDQ==
+To: Will Deacon <will@kernel.org>
 Subject: Re: [patch 33/37] iommu/arm-smmu-v3: Use msi_get_virq()
-Message-ID: <20211129105506.GA22761@willie-the-truck>
+In-Reply-To: <20211129105506.GA22761@willie-the-truck>
 References: <20211126224100.303046749@linutronix.de>
  <20211126230525.885757679@linutronix.de>
+ <20211129105506.GA22761@willie-the-truck>
+Date: Mon, 29 Nov 2021 13:52:46 +0100
+Message-ID: <87lf17dsyp.ffs@tglx>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20211126230525.885757679@linutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
  Stuart Yoder <stuyoder@gmail.com>, linux-pci@vger.kernel.org,
  Ashok Raj <ashok.raj@intel.com>, Marc Zygnier <maz@kernel.org>, x86@kernel.org,
@@ -93,57 +96,25 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Thomas,
+Will,
 
-On Sat, Nov 27, 2021 at 02:20:59AM +0100, Thomas Gleixner wrote:
-> Let the core code fiddle with the MSI descriptor retrieval.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   19 +++----------------
->  1 file changed, 3 insertions(+), 16 deletions(-)
-> 
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -3154,7 +3154,6 @@ static void arm_smmu_write_msi_msg(struc
->  
->  static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
->  {
-> -	struct msi_desc *desc;
->  	int ret, nvec = ARM_SMMU_MAX_MSIS;
->  	struct device *dev = smmu->dev;
->  
-> @@ -3182,21 +3181,9 @@ static void arm_smmu_setup_msis(struct a
->  		return;
->  	}
->  
-> -	for_each_msi_entry(desc, dev) {
-> -		switch (desc->msi_index) {
-> -		case EVTQ_MSI_INDEX:
-> -			smmu->evtq.q.irq = desc->irq;
-> -			break;
-> -		case GERROR_MSI_INDEX:
-> -			smmu->gerr_irq = desc->irq;
-> -			break;
-> -		case PRIQ_MSI_INDEX:
-> -			smmu->priq.q.irq = desc->irq;
-> -			break;
-> -		default:	/* Unknown */
-> -			continue;
-> -		}
-> -	}
-> +	smmu->evtq.q.irq = msi_get_virq(dev, EVTQ_MSI_INDEX);
-> +	smmu->gerr_irq = msi_get_virq(dev, GERROR_MSI_INDEX);
-> +	smmu->priq.q.irq = msi_get_virq(dev, PRIQ_MSI_INDEX);
+On Mon, Nov 29 2021 at 10:55, Will Deacon wrote:
+> On Sat, Nov 27, 2021 at 02:20:59AM +0100, Thomas Gleixner wrote:
+>> +	smmu->evtq.q.irq = msi_get_virq(dev, EVTQ_MSI_INDEX);
+>> +	smmu->gerr_irq = msi_get_virq(dev, GERROR_MSI_INDEX);
+>> +	smmu->priq.q.irq = msi_get_virq(dev, PRIQ_MSI_INDEX);
+>
+> Prviously, if retrieval of the MSI failed then we'd fall back to wired
+> interrupts. Now, I think we'll clobber the interrupt with 0 instead. Can
+> we make the assignments to smmu->*irq here conditional on the MSI being
+> valid, please?
 
-Prviously, if retrieval of the MSI failed then we'd fall back to wired
-interrupts. Now, I think we'll clobber the interrupt with 0 instead. Can
-we make the assignments to smmu->*irq here conditional on the MSI being
-valid, please?
+So the wired irq number is in ->irq already and MSI does an override
+if available. Not really obvious...
 
-Cheers,
+Thanks,
 
-Will
+        tglx
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
