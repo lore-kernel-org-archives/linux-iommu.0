@@ -1,60 +1,62 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2F989C433EF
-	for <iommu@archiver.kernel.org>; Mon, 29 Nov 2021 04:00:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3EDA7C433EF
+	for <iommu@archiver.kernel.org>; Mon, 29 Nov 2021 04:03:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9F6966071A;
-	Mon, 29 Nov 2021 04:00:02 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id AA22040247;
+	Mon, 29 Nov 2021 04:03:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uMHjXZt0Dbxe; Mon, 29 Nov 2021 04:00:02 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pnZgdbodDdwt; Mon, 29 Nov 2021 04:03:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 954FA607F0;
-	Mon, 29 Nov 2021 04:00:01 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 4861340236;
+	Mon, 29 Nov 2021 04:03:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6ADC3C001C;
-	Mon, 29 Nov 2021 04:00:01 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5D165C000A
- for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 04:00:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EBC5AC001C;
+	Mon, 29 Nov 2021 04:03:40 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 13DC6C000A
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 04:03:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 44524607F0
- for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 04:00:00 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id EA3BC4036E
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 04:03:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iSvN2asFguRu for <iommu@lists.linux-foundation.org>;
- Mon, 29 Nov 2021 03:59:59 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id SNpcRFrCu3FA for <iommu@lists.linux-foundation.org>;
+ Mon, 29 Nov 2021 04:03:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 7D6996071A
- for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 03:59:59 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10182"; a="234618913"
-X-IronPort-AV: E=Sophos;i="5.87,272,1631602800"; d="scan'208";a="234618913"
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id EE49840265
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 04:03:37 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10182"; a="299288303"
+X-IronPort-AV: E=Sophos;i="5.87,272,1631602800"; d="scan'208";a="299288303"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Nov 2021 19:59:58 -0800
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Nov 2021 20:03:37 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,272,1631602800"; d="scan'208";a="458984844"
+X-IronPort-AV: E=Sophos;i="5.87,272,1631602800"; d="scan'208";a="458985855"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
  ([10.239.159.118])
- by orsmga006.jf.intel.com with ESMTP; 28 Nov 2021 19:59:51 -0800
-Subject: Re: [PATCH v2 00/17] Fix BUG_ON in vfio_iommu_group_notifier()
+ by orsmga006.jf.intel.com with ESMTP; 28 Nov 2021 20:03:29 -0800
+Subject: Re: [PATCH v2 02/17] driver core: Add dma_unconfigure callback in
+ bus_type
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 References: <20211128025051.355578-1-baolu.lu@linux.intel.com>
- <YaM5ko+VkJUT7ZDs@kroah.com>
+ <20211128025051.355578-3-baolu.lu@linux.intel.com>
+ <YaM3slBGozqxsQ+m@kroah.com>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <c3230ace-c878-39db-1663-2b752ff5384e@linux.intel.com>
-Date: Mon, 29 Nov 2021 11:59:52 +0800
+Message-ID: <0eca1892-a063-a695-ac35-0ac1e2de28e0@linux.intel.com>
+Date: Mon, 29 Nov 2021 12:03:30 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <YaM5ko+VkJUT7ZDs@kroah.com>
+In-Reply-To: <YaM3slBGozqxsQ+m@kroah.com>
 Content-Language: en-US
 Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
  David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
@@ -86,18 +88,54 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Greg,
-
-On 11/28/21 4:10 PM, Greg Kroah-Hartman wrote:
-> On Sun, Nov 28, 2021 at 10:50:34AM +0800, Lu Baolu wrote:
->> The original post and intent of this series is here.
->> https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/
+On 11/28/21 4:02 PM, Greg Kroah-Hartman wrote:
+> On Sun, Nov 28, 2021 at 10:50:36AM +0800, Lu Baolu wrote:
+>> The bus_type structure defines dma_configure() callback for bus drivers
+>> to configure DMA on the devices. This adds the paired dma_unconfigure()
+>> callback and calls it during driver unbinding so that bus drivers can do
+>> some cleanup work.
+>>
+>> One use case for this paired DMA callbacks is for the bus driver to check
+>> for DMA ownership conflicts during driver binding, where multiple devices
+>> belonging to a same IOMMU group (the minimum granularity of isolation and
+>> protection) may be assigned to kernel drivers or user space respectively.
+>>
+>> Without this change, for example, the vfio driver has to listen to a bus
+>> BOUND_DRIVER event and then BUG_ON() in case of dma ownership conflict.
+>> This leads to bad user experience since careless driver binding operation
+>> may crash the system if the admin overlooks the group restriction. Aside
+>> from bad design, this leads to a security problem as a root user, even with
+>> lockdown=integrity, can force the kernel to BUG.
+>>
+>> With this change, the bus driver could check and set the DMA ownership in
+>> driver binding process and fail on ownership conflicts. The DMA ownership
+>> should be released during driver unbinding.
+>>
+>> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+>> Link: https://lore.kernel.org/linux-iommu/20210922123931.GI327412@nvidia.com/
+>> Link: https://lore.kernel.org/linux-iommu/20210928115751.GK964074@nvidia.com/
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   include/linux/device/bus.h | 3 +++
+>>   drivers/base/dd.c          | 7 ++++++-
+>>   2 files changed, 9 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/include/linux/device/bus.h b/include/linux/device/bus.h
+>> index a039ab809753..ef54a71e5f8f 100644
+>> --- a/include/linux/device/bus.h
+>> +++ b/include/linux/device/bus.h
+>> @@ -59,6 +59,8 @@ struct fwnode_handle;
+>>    *		bus supports.
+>>    * @dma_configure:	Called to setup DMA configuration on a device on
+>>    *			this bus.
+>> + * @dma_unconfigure:	Called to cleanup DMA configuration on a device on
+>> + *			this bus.
 > 
-> Please put the intent in the message, dont make us go and dig it up
-> again.
+> "dma_cleanup()" is a better name for this, don't you think?
 
-Sure! I will include the message next time. Thanks!
+I agree with you. dma_cleanup() is more explicit and better here.
 
+> 
 > thanks,
 > 
 > greg k-h
