@@ -1,154 +1,69 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 664B4C433F5
-	for <iommu@archiver.kernel.org>; Mon, 29 Nov 2021 13:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 075C2C433F5
+	for <iommu@archiver.kernel.org>; Mon, 29 Nov 2021 13:13:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id E9B3660787;
-	Mon, 29 Nov 2021 13:00:06 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 978B282F6C;
+	Mon, 29 Nov 2021 13:13:24 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qfkagIwHsKqZ; Mon, 29 Nov 2021 13:13:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 2684582F4A;
+	Mon, 29 Nov 2021 13:13:22 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AFC0FC0012;
+	Mon, 29 Nov 2021 13:13:22 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3D408C000A
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 13:13:21 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 249AD60A5C
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 13:13:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OY7N4HbTCyJt; Mon, 29 Nov 2021 13:00:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id AC87560664;
-	Mon, 29 Nov 2021 13:00:05 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8893FC001C;
-	Mon, 29 Nov 2021 13:00:05 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ACAD5C000A
- for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 13:00:03 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8E6A580C76
- for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 13:00:03 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CpBo4AAZlyFF for <iommu@lists.linux-foundation.org>;
- Mon, 29 Nov 2021 13:00:02 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam12on2045.outbound.protection.outlook.com [40.107.244.45])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 0855B80DDA
- for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 13:00:01 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z7l+xqZxnCXelcDrQQpgHdTjzrwdTrGvLKeRwe+/fC/LcFTzJRk3iUAVUu65RVEV09JDP+AgjGNiL91NArucHiX/EjqsPdCkYbWAFYTkVpUqqyAHq/517EX8CxiAubyFp8h7nuogv86mzOvjmYe9MDsiypKrWV6bNDYRl9y/bVioXLCgJrA9dkZ3BiqcmQEksCxRmBxNrZ+H+CJwg4ThEvPfuHV6cU23V6jCA3RYRIF0op1kL1PVf026aI1osXfei8aL+n9Mh7b9HiiZh8MOYShmQdVIGlad6U+lNZP40lZY/eO/ZOdQm7csvDUJ7v9Hu/sC6KpBbPNrcBHPRjrUOQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=u/bswR6sd8pOUIcroDh34UG+IDB6uqffqEm0OWrgWCM=;
- b=A6uUA6YJlc8yym4tHlnyUICwemP9/2UMInmGRmWJJolK/ULaGPQLCTozlV/swGCpZeUmCNPCm5tiJ1i7jw99BXwX8DOCnNWSfJ+Gpug33sdpoG7uvx1Jvd91isx5CZHQxdxbGKz9s2ThNe9B+iPDDeJxe3iMF9iVKwm5ppamPyJbV5mUcbdE0mTmWnk/5qN2NTxiAo2WU6pUIWmaqodKz426aLzio1liWA1ov9rqIRVI+eJLTYbSlGSBw4lzSYVkHdyN4Lzb6z6hRyCGD1rWc7uS4D2CzdkwqPk7GMyfolp87yc54zUSleDhcEo/XAk8rSdlh4KAlmfStBfMnDzuOA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=u/bswR6sd8pOUIcroDh34UG+IDB6uqffqEm0OWrgWCM=;
- b=uigwqjayQSNXvW57og+MmGYYOIgyU4J1WjuXrmo7queJJZrj/cO27+Udu6arbjBo5s2629q1c0aRZj69kLwYqY9IHxE2gM2/EE54NJB8AZC+qn77tMSWoe0qSlDvMEl1P26jJtJXtSOVkW/JWHGscAtizaCmjk+Fg2MBn08wduEYDXOd8i34fo1fKlu8Jp6BNNI2i//qQkwsCtgl4rCI+o5TWY9PxteRyoTiyHMZz5Kg6bhHV7I0RBNPZpSqybEvsgAca2IjU48sBhQK485aE+x2tMBRhS1TmsjYUkT2QPsznchKOWapVcEEtl4BkzAndLsPDwfXYptltVL850E0dA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5335.namprd12.prod.outlook.com (2603:10b6:208:317::19)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.24; Mon, 29 Nov
- 2021 12:59:59 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::5897:83b2:a704:7909]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::5897:83b2:a704:7909%8]) with mapi id 15.20.4734.024; Mon, 29 Nov 2021
- 12:59:59 +0000
-Date: Mon, 29 Nov 2021 08:59:58 -0400
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v2 04/17] driver core: platform: Add driver dma ownership
- management
-Message-ID: <20211129125958.GW4670@nvidia.com>
-References: <20211128025051.355578-1-baolu.lu@linux.intel.com>
- <20211128025051.355578-5-baolu.lu@linux.intel.com>
- <YaM5Zv1RrdidycKe@kroah.com> <20211128231509.GA966332@nvidia.com>
- <YaSsv5Z1WS7ldgu3@kroah.com>
-Content-Disposition: inline
-In-Reply-To: <YaSsv5Z1WS7ldgu3@kroah.com>
-X-ClientProxiedBy: MN2PR15CA0027.namprd15.prod.outlook.com
- (2603:10b6:208:1b4::40) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id EsNbnCZzZL3r for <iommu@lists.linux-foundation.org>;
+ Mon, 29 Nov 2021 13:13:20 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 3B24660809
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Nov 2021 13:13:20 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 616131515;
+ Mon, 29 Nov 2021 05:13:19 -0800 (PST)
+Received: from [10.57.34.182] (unknown [10.57.34.182])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 317153F766;
+ Mon, 29 Nov 2021 05:13:15 -0800 (PST)
+Message-ID: <76a1b5c1-01c8-bb30-6105-b4073dc23065@arm.com>
+Date: Mon, 29 Nov 2021 13:13:11 +0000
 MIME-Version: 1.0
-Received: from mlx.ziepe.ca (142.162.113.129) by
- MN2PR15CA0027.namprd15.prod.outlook.com (2603:10b6:208:1b4::40) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.20 via Frontend
- Transport; Mon, 29 Nov 2021 12:59:59 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1mrgGE-004F8P-Bu; Mon, 29 Nov 2021 08:59:58 -0400
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 236dede2-1e0c-4a47-76e6-08d9b3382685
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5335:
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5335AA362C51C8FBCA1C02C7C2669@BL1PR12MB5335.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2089;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WG2ESH5YHbmM/Vy1+p21M/G6uLSiB5VWvYKjFP0JqhTN+ZBEmfv6yZDlv3KSA9t09tcnjIpQ7BFVLEbM4/xS+9ABsLdETpXhcsBfxqFnJGo9yxZAJcABC9F4nqzWdK8061trs5B4s1I2G3GoeGXw24e2P1GP6A6X/R4x/u/8y4L8xuXijODTvZ9DU6xm3bicsPoGavWMfVjj7Ej5yZ3oQfKkQlpURo8qoQh9X+o2s254y+W2uvmufNKa/AhyG+YcLJSWKDnVNpz28sI7anC3b65UvZY5dlBxBuiBw9EX76P9lT1Q72MdEsde5O74mpMEG8I57xfqa9+Q/9bZeVDP1hX61XR054KnTXRiFrP5j13fhzBVGS3AeSj/gRgImsLbZqX3/jxOvKMYgFRiAsqFPeuGJkG2k/b8XO8UdrB9/hze5+SvW4l7FzF38Lte3xpQMmpUMj+zUZNiVtoinowcrY7tKkdOQgXVFecvfF0TbqdWS1SCx/YfBA+m7dHJzvB/6bllAVqKTqvGgpRMSCcyxEvLU6/IIlin2MIHvGz6my00wlTotgWY5vEcL7DLAmbYE94swIsb24V38buZ1cId5nmmxdiTZvvhdCSDB5bbQpuYizykc1a5mero4ZlrjdDywl0TRbbK+gGDIepQZVsxII4OJ2kaX/BYdDB+ZKRibmJBpSGbxUC/1G0EFkuItOOt+ekW36Vv8YuRY/mk1ikO1dmsN27rkpFVJyQXtrFG6vw=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(2616005)(426003)(36756003)(38100700002)(8676002)(26005)(2906002)(966005)(1076003)(86362001)(83380400001)(66556008)(66476007)(316002)(66946007)(508600001)(4326008)(9786002)(5660300002)(8936002)(186003)(7416002)(6916009)(54906003)(33656002)(9746002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ca5rJcTwgYCpueMG2ick/mZHf0JJ/wvS7lyUXjXmc/I33Mzzbp0nV7fIOX6L?=
- =?us-ascii?Q?Blbekw3aMDfc9Euso/F0eLAhqJOQ05YN5evITKFUN/y9YWT5shbBVGWbQHCw?=
- =?us-ascii?Q?2DjQggbXWKub3mcEliuCfrv0DyT3hmN6R/AvTLTqfkFb/j1KHWbxpLnMgFLE?=
- =?us-ascii?Q?VjnErPO+fzG4kPPEZNbPcvdu2dd7yhG0ARrL2dsHAHINSZ/+l9YZpC5uaIOc?=
- =?us-ascii?Q?p0awdXcl0EFlPoHRniPhPg9JjYl8SaG80y94ATScfWIgNTgT+0i4xdXlVOP9?=
- =?us-ascii?Q?8aX7DekDzXaVzmriy2CrAbkz5XVumK4K/2sZJW9RDmInqBe8Gl4fmJ183bFR?=
- =?us-ascii?Q?+OwCOAT3maJODOPpzCbt0fcTqku4IRcyt5QHaYLNLSjBepsAYUeftVWbjMpo?=
- =?us-ascii?Q?xIPwXm0QZXNSDaGxnoqWFshD8KBYFgVhPanuPMLOONgzfdUwnFKtuvLhb0C4?=
- =?us-ascii?Q?tdJ8VJ4OhpGSCBgApQH5h0GP4Kho9bK/ILY2TfGNcjN5cw384XNq6+j7vnUt?=
- =?us-ascii?Q?+cU2sZZeQFr5gRdjnfWMD/oub41pWZoAqSB7oAkahh1k1GOU5Owo/6FhUBil?=
- =?us-ascii?Q?7fMFC+zz6v6ZSxQsR95C+F+LByHtUeWTJ3jlsxKH5yOGwf1MDWJf5NUaJ9Ca?=
- =?us-ascii?Q?9Ei9zHEsNB4LDxpTG3x5j104LYmf0JvPu3ZK8Mk4wJbYLQypgTu/dMHfKjMU?=
- =?us-ascii?Q?aucjPSl1t4ikujLJ4TVYnYv0nctKI6ohMgapaFPBdKpyodR+DsAYZeN9WUlH?=
- =?us-ascii?Q?pfySURpT9aUNMfPDi8GcGgnaSyFCky/W8+GI2v26Fs8yGuy2Sb9O0W/BNZ28?=
- =?us-ascii?Q?hl+z6b1iPbMW2nvGqyTRSSaZkq619Y8tLhn5QrWlx7s5Hiwjn8C/x9JF5BZG?=
- =?us-ascii?Q?9byUYMR4JkaRH6Mf0zee1G0/Vz0lbjYhmNf6lWFdhQOLV5YTyJKxhBxvalBf?=
- =?us-ascii?Q?uvgBriwr5XThD55S7F5Q39wHEZeF6YtCVpTlyT2hed4u1uU5QIYChaiKkr2b?=
- =?us-ascii?Q?lAPZNR7k2umHmwhceLoYBRu75OmqR0F5n3ENjB97OX5k/MsaO4VG76wA518I?=
- =?us-ascii?Q?Zxflu9GOfdEYTU804/wWVtM24hTaKVnF+ekJTHjQDMcDgqoEQyxP0gANeJtW?=
- =?us-ascii?Q?e624PjaJQSlp4iSEdFkmBXM7nYrhJN7T95wB+lkRe92Hj7I177/vnSEer7yI?=
- =?us-ascii?Q?YWYqqnh6O697Uo0JOU4775plclCpo5lBXRtm/7T2aOwEcj/CI+bNQr+u1JTo?=
- =?us-ascii?Q?kqGYIvZ1bdHZLsvr8yRpwCECV3XePl2nF8dvnlpnCL8/s1xPBmSXkQEfbQrM?=
- =?us-ascii?Q?rFTK1IV+KL2kq6F3CLho8QHJZ7/15DBJNGA2Wfe/Bielxld/spNt20GsDUX9?=
- =?us-ascii?Q?sA7/+f8nNIDcSerSVhqzhe3+whjLo6Jf9U69Y+F+mLAQ5QMr3RihRrXs3Pqw?=
- =?us-ascii?Q?KPBAYMN8ZK9F4/0ofMCNKtLDDWsGOXMQ/eSVg6Ed44Xtiej+OeXmppc7zdRF?=
- =?us-ascii?Q?6PmtmyBuvs96a+pTyXaqKAD8uUEQ94GAT468ku792zrQBXJUHcUxblFuDG3u?=
- =?us-ascii?Q?si61puTFDmmt2un3xgk=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 236dede2-1e0c-4a47-76e6-08d9b3382685
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Nov 2021 12:59:59.8135 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: B4uKQzUST2JJCIPfznwGQ8JswObaRovABb9leWOZYhy2A0SStBWx8gieCb2zkOGg
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5335
-Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
- David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
- Thierry Reding <thierry.reding@gmail.com>,
- Diana Craciun <diana.craciun@oss.nxp.com>, Will Deacon <will@kernel.org>,
- Ashok Raj <ashok.raj@intel.com>, Jonathan Hunter <jonathanh@nvidia.com>,
- Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
- Chaitanya Kulkarni <kch@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
- Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
- Robin Murphy <robin.murphy@arm.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [patch 33/37] iommu/arm-smmu-v3: Use msi_get_virq()
+Content-Language: en-GB
+To: Will Deacon <will@kernel.org>, Thomas Gleixner <tglx@linutronix.de>
+References: <20211126224100.303046749@linutronix.de>
+ <20211126230525.885757679@linutronix.de>
+ <20211129105506.GA22761@willie-the-truck>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20211129105506.GA22761@willie-the-truck>
+Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Stuart Yoder <stuyoder@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marc Zygnier <maz@kernel.org>,
+ Vinod Koul <vkoul@kernel.org>, x86@kernel.org, Sinan Kaya <okaya@kernel.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ LKML <linux-kernel@vger.kernel.org>, Santosh Shilimkar <ssantosh@kernel.org>,
+ iommu@lists.linux-foundation.org, Bjorn Helgaas <helgaas@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, Jason Gunthorpe <jgg@nvidia.com>,
+ linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+ Tero Kristo <kristo@kernel.org>, Megha Dey <megha.dey@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -161,106 +76,74 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Nov 29, 2021 at 11:34:39AM +0100, Greg Kroah-Hartman wrote:
-> On Sun, Nov 28, 2021 at 07:15:09PM -0400, Jason Gunthorpe wrote:
-> > On Sun, Nov 28, 2021 at 09:10:14AM +0100, Greg Kroah-Hartman wrote:
-> > > On Sun, Nov 28, 2021 at 10:50:38AM +0800, Lu Baolu wrote:
-> > > > Multiple platform devices may be placed in the same IOMMU group because
-> > > > they cannot be isolated from each other. These devices must either be
-> > > > entirely under kernel control or userspace control, never a mixture. This
-> > > > checks and sets DMA ownership during driver binding, and release the
-> > > > ownership during driver unbinding.
-> > > > 
-> > > > Driver may set a new flag (suppress_auto_claim_dma_owner) to disable auto
-> > > > claiming DMA_OWNER_DMA_API ownership in the binding process. For instance,
-> > > > the userspace framework drivers (vfio etc.) which need to manually claim
-> > > > DMA_OWNER_PRIVATE_DOMAIN_USER when assigning a device to userspace.
-> > > 
-> > > Why would any vfio driver be a platform driver?  
-> > 
-> > Why not? VFIO implements drivers for most physical device types
-> > these days. Why wouldn't platform be included?
+On 2021-11-29 10:55, Will Deacon wrote:
+> Hi Thomas,
 > 
-> Because "platform" is not a real device type.  It's a catch-all for
-> devices that are only described by firmware, so why would you have a
-> virtual device for that?  Why would that be needed?
-
-Why does it matter how a physical device is enumerated?
-PCI/DT/ACPI/setup.c - it doesn't matter. There is still a physical
-device with physical DMA and MMIO.
-
-As long as people are making ethernet controllers and other
-interesting devices enumerated through platform_device there will be
-need to expose them to userspace through VFIO too.
-
-> Ok, nevermind, you do have a virtual platform device, which personally,
-> I find crazy as why would firmware export a "virtual device"?
-
-Why do you keep saying "virtual device"?
-
-The "VF" in vfio refers to language in the PCI-SIG SRIOV
-specification. You are better to think of the V as meaning "for
-virtualization".
-
-Today vfio is just a nonsense acronym. The subsystem's job is to allow
-user space to fully operate a physical HW device, including using its
-DMA and interrupts. With the advent of DPDK/SPDK/etc it isn't even
-related to virtualization use-cases any more.
-
-It is a lot like UIO except VFIO can operate devices that use DMA too.
-
-> > @@ -76,6 +76,7 @@ static struct platform_driver vfio_platform_driver = {
-> >         .driver = {
-> >                 .name   = "vfio-platform",
-> >         },
-> > +       .suppress_auto_claim_dma_owner = true,
-> >  };
-> > 
-> > Which is how VFIO provides support to DPDK for some Ethernet
-> > controllers embedded in a few ARM SOCs.
+> On Sat, Nov 27, 2021 at 02:20:59AM +0100, Thomas Gleixner wrote:
+>> Let the core code fiddle with the MSI descriptor retrieval.
+>>
+>> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+>> ---
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |   19 +++----------------
+>>   1 file changed, 3 insertions(+), 16 deletions(-)
+>>
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -3154,7 +3154,6 @@ static void arm_smmu_write_msi_msg(struc
+>>   
+>>   static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+>>   {
+>> -	struct msi_desc *desc;
+>>   	int ret, nvec = ARM_SMMU_MAX_MSIS;
+>>   	struct device *dev = smmu->dev;
+>>   
+>> @@ -3182,21 +3181,9 @@ static void arm_smmu_setup_msis(struct a
+>>   		return;
+>>   	}
+>>   
+>> -	for_each_msi_entry(desc, dev) {
+>> -		switch (desc->msi_index) {
+>> -		case EVTQ_MSI_INDEX:
+>> -			smmu->evtq.q.irq = desc->irq;
+>> -			break;
+>> -		case GERROR_MSI_INDEX:
+>> -			smmu->gerr_irq = desc->irq;
+>> -			break;
+>> -		case PRIQ_MSI_INDEX:
+>> -			smmu->priq.q.irq = desc->irq;
+>> -			break;
+>> -		default:	/* Unknown */
+>> -			continue;
+>> -		}
+>> -	}
+>> +	smmu->evtq.q.irq = msi_get_virq(dev, EVTQ_MSI_INDEX);
+>> +	smmu->gerr_irq = msi_get_virq(dev, GERROR_MSI_INDEX);
+>> +	smmu->priq.q.irq = msi_get_virq(dev, PRIQ_MSI_INDEX);
 > 
-> Ick.  Where does the DT file for these devices live that describe a
-> "virtual device" to match with this driver?
+> Prviously, if retrieval of the MSI failed then we'd fall back to wired
+> interrupts. Now, I think we'll clobber the interrupt with 0 instead. Can
+> we make the assignments to smmu->*irq here conditional on the MSI being
+> valid, please?
 
-The DT describes a physical ethernet device that would normally load
-it's netdev driver. If the admin wishes to use that physical ethernet
-device in userspace, say with DPDK, then the admin switches the driver
-from netdev to vfio.
+I was just looking at that too, but reached the conclusion that it's 
+probably OK, since consumption of this value later is gated on 
+ARM_SMMU_FEAT_PRI, so the fact that it changes from 0 to an error value 
+in the absence of PRI should make no practical difference. If we don't 
+have MSIs at all, we'd presumably still fail earlier either at the 
+dev->msi_domain check or upon trying to allocate the vectors, so we'll 
+still fall back to any previously-set wired values before getting here. 
+The only remaining case is if we've *successfully* allocated the 
+expected number of vectors yet are then somehow unable to retrieve one 
+or more of them - presumably the system has to be massively borked for 
+that to happen, at which point do we really want to bother trying to 
+reason about anything?
 
-The OF compatible string 'calxeda,hb-xgmac' is one example:
- Documentation/devicetree/bindings/net/calxeda-xgmac.yaml
- arch/arm/boot/dts/ecx-common.dtsi
- drivers/net/ethernet/calxeda/xgmac.c
- drivers/vfio/platform/reset/vfio_platform_calxedaxgmac.c
-
-We all recently went over the switching mechanim in a lot of detail
-when you Ack'd this patch series:
-
-https://lore.kernel.org/kvm/20210721161609.68223-1-yishaih@nvidia.com/
-
-(though vfio platform has not yet been revised to use this mechanism,
-it still uses the sysfs driver_override)
-
-> > It is also used in patch 17 in five tegra platform_drivers to make
-> > their sharing of an iommu group between possibly related
-> > platform_driver's safer.
-> 
-> Safer how?
-
-tegra makes assumptions that the DT configures the IOMMU in a certain
-way. If the DT does something else then the kernel will probably corrupt
-memory with wild DMAs. After this series the conflicting IOMMU usages
-will be detected and blocked instead.
-
-Thanks,
-Jason
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
