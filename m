@@ -1,86 +1,79 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 20628C433F5
-	for <iommu@archiver.kernel.org>; Tue, 30 Nov 2021 11:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B05A4C433F5
+	for <iommu@archiver.kernel.org>; Tue, 30 Nov 2021 11:54:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id AC85D608DD;
-	Tue, 30 Nov 2021 11:33:15 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 42E214034C;
+	Tue, 30 Nov 2021 11:54:09 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id WCcQExvOgrgy; Tue, 30 Nov 2021 11:54:08 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 06E174036C;
+	Tue, 30 Nov 2021 11:54:07 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DCD04C001C;
+	Tue, 30 Nov 2021 11:54:07 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E6428C001C
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 11:54:06 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id C385360642
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 11:54:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WgKqqpaRbj8H; Tue, 30 Nov 2021 11:33:14 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 5FEE5606D4;
-	Tue, 30 Nov 2021 11:33:14 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1FB21C001C;
-	Tue, 30 Nov 2021 11:33:14 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 46414C000A
- for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 11:33:13 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 17D6F401AF
- for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 11:33:13 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=fail (2048-bit key) reason="fail (bad RSA signature)"
- header.d=collabora.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id aV3K0AGirFKq for <iommu@lists.linux-foundation.org>;
- Tue, 30 Nov 2021 11:33:12 +0000 (UTC)
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id WLHQlBFg0tlN for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Nov 2021 11:54:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
- by smtp4.osuosl.org (Postfix) with ESMTPS id B9D7E4019D
- for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 11:33:11 +0000 (UTC)
-Received: from [IPv6:2a00:c281:1409:4a00:f02c:94f7:9527:dda] (unknown
- [IPv6:2a00:c281:1409:4a00:f02c:94f7:9527:dda])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: dafna)
- by bhuna.collabora.co.uk (Postfix) with ESMTPSA id CAFDD1F410B9;
- Tue, 30 Nov 2021 11:33:07 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=collabora.com; s=mail;
- t=1638271989; bh=kPPICgkzXFPBrIYmZPv1q+nwez55PhApUTcS0F/NeBo=;
- h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
- b=Deq8PqlhTo0QneJhYsfmqFdvxX1pqWMpB6c+zvITaBH3pEHHh5JGO5Sy0evRJAMI9
- sXnuDdpZy+Lzle2eErvroT2n1r7myLSrKb7RX9bn/3wyfymXBt7gIo2qzAg+O+tDVl
- 8g6XEBjqU88FYPMQuzdS3sfsmUhfCo4BqUZJGyKn++t/O7QRj2haWB0dvTk0zDvHR5
- dhM/+BpZGzAnzR4gHl12N8WgTJ8MYmgsjcO/NvwBrZ9o1AqMTauccppSbv4A+MOev3
- UI6LMYtsBuAdh8dQyjs0dD2AYCZliYOcfnfD4yqIaMlsUpP7BvgHZmZnKEc0Gzymkw
- zKy8tz0LHsrRA==
-Subject: Re: [PATCH v3 12/33] iommu/mediatek: Always tlb_flush_all when each
- PM resume
-To: Yong Wu <yong.wu@mediatek.com>
-References: <20210923115840.17813-1-yong.wu@mediatek.com>
- <20210923115840.17813-13-yong.wu@mediatek.com>
- <c4be1a14-c257-81b7-4a2b-f7e68c32de88@collabora.com>
- <5c4dd67ae7c81721d8cfd2c3b23b7c6df493cb5a.camel@mediatek.com>
- <4dd4cf8d-0f52-afae-f7d9-8e3cfdf3b729@collabora.com>
- <c69e03b4781dd9014393e0ff47767c58c846a722.camel@mediatek.com>
- <c5ded58b-a53a-3089-f8a5-c264f8ab9463@collabora.com>
- <128eb1874127b2b9b42a7419e26090d1d192666f.camel@mediatek.com>
-From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-Message-ID: <58b13d3a-e89b-d2e3-278d-af8859d901b9@collabora.com>
-Date: Tue, 30 Nov 2021 13:33:04 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A51026063B
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 11:54:04 +0000 (UTC)
+Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.206])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4J3LF31Knkz67jq6;
+ Tue, 30 Nov 2021 19:52:39 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.20; Tue, 30 Nov 2021 12:54:00 +0100
+Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Tue, 30 Nov
+ 2021 11:53:59 +0000
+Date: Tue, 30 Nov 2021 11:53:58 +0000
+To: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [patch 08/37] genirq/msi: Provide
+ msi_device_populate/destroy_sysfs()
+Message-ID: <20211130115358.000017ec@Huawei.com>
+In-Reply-To: <20211126230524.416227100@linutronix.de>
+References: <20211126224100.303046749@linutronix.de>
+ <20211126230524.416227100@linutronix.de>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-In-Reply-To: <128eb1874127b2b9b42a7419e26090d1d192666f.camel@mediatek.com>
-Content-Language: en-US
-Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com, srv_heupstream@mediatek.com,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- Robin Murphy <robin.murphy@arm.com>, sebastian.reichel@collabora.com,
- yen-chang.chen@mediatek.com, Fabien Parent <fparent@baylibre.com>,
- iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- linux-mediatek@lists.infradead.org, yf.wang@mediatek.com,
- Hsin-Yi Wang <hsinyi@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
- Collabora Kernel ML <kernel@collabora.com>, Will Deacon <will@kernel.org>,
- mingyuan.ma@mediatek.com, linux-arm-kernel@lists.infradead.org,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+X-Originating-IP: [10.202.226.41]
+X-ClientProxiedBy: lhreml733-chm.china.huawei.com (10.201.108.84) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
+Cc: Nishanth Menon <nm@ti.com>, Mark
+ Rutland <mark.rutland@arm.com>, Stuart Yoder <stuyoder@gmail.com>,
+ linux-pci@vger.kernel.org, Will Deacon <will@kernel.org>,
+ Ashok Raj <ashok.raj@intel.com>, Marc Zygnier <maz@kernel.org>, x86@kernel.org,
+ Sinan Kaya <okaya@kernel.org>, iommu@lists.linux-foundation.org,
+ Bjorn Helgaas <helgaas@kernel.org>, Megha Dey <megha.dey@intel.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Santosh Shilimkar <ssantosh@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ Tero Kristo <kristo@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ LKML <linux-kernel@vger.kernel.org>, Vinod Koul <vkoul@kernel.org>,
+ dmaengine@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,126 +86,154 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jonathan Cameron via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Sat, 27 Nov 2021 02:20:19 +0100 (CET)
+Thomas Gleixner <tglx@linutronix.de> wrote:
 
-
-On 30.11.21 09:39, Yong Wu wrote:
-> On Sat, 2021-11-27 at 12:11 +0200, Dafna Hirschfeld wrote:
->>
->> On 10.11.21 09:50, Yong Wu wrote:
->>> On Wed, 2021-11-10 at 07:29 +0200, Dafna Hirschfeld wrote:
->>>>
->>>> On 10.11.21 04:20, Yong Wu wrote:
->>>>> On Tue, 2021-11-09 at 14:21 +0200, Dafna Hirschfeld wrote:
->>>>>> Hi
->>>>>> This patch is needed in order to update the tlb when a device
->>>>>> is
->>>>>> powered on.
->>>>>> Could you send this patch alone without the whole series so
->>>>>> it
->>>>>> get
->>>>>> accepted easier?
->>>>>
->>>>> Which SoC are you testing on? In previous SoC, the IOMMU HW
->>>>> don't
->>>>> have
->>>>> power-domain, and we have a "has_pm"[1] in the tlb function for
->>>>> that
->>>>> case. The "has_pm" should be always 0 for the previous SoC like
->>>>> mt8173,
->>>>> it should always tlb synchronize.
->>>>>
->>>>> thus, Could you help share more about your issue? In which case
->>>>> it
->>>>> lack
->>>>> the necessary tlb operation. At least, We need confirm if it
->>>>> needs
->>>>> a
->>>>> "Fixes" tags if sending this patch alone.
->>>>
->>>> Hi,
->>>> I work with the mtk-vcodec driver on mt8173. As you wrote, the
->>>> iommu
->>>> doesn't
->>>> have a power-domain and so when allocating buffers before the
->>>> device
->>>> is powered
->>>> on, there is the warning
->>>> "Partial TLB flush timed out, falling back to full flush"
->>>> flooding the log buf.
->>>
->>> oh. Thanks very much for your information. Get it now.
->>>
->>> This issue should be introduced by the:
->>>
->>> b34ea31fe013 ("iommu/mediatek: Always enable the clk on resume")
->>
->> Hi, reverting this commit didn't solve those warnings,
->> I think this is because in the function mtk_iommu_attach_device
->> the first call to pm_runtime_resume_and_get does not turn the clks on
->> since m4u_dom is not yet initialize. And then mtk_iommu_attach_device
->> calls pm_runtime_put right after mtk_iommu_hw_init is called
->> (where the clks are turned on)
+> Add new allocation functions which can be activated by domain info
+> flags. They store the groups pointer in struct msi_device_data.
 > 
-> oh. Right. this is also related with the patch of "Add power-domain
-> operation".
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+
+A few trivial comments...
+
+> ---
+>  include/linux/msi.h |   12 +++++++++++-
+>  kernel/irq/msi.c    |   42 ++++++++++++++++++++++++++++++++++++++++--
+>  2 files changed, 51 insertions(+), 3 deletions(-)
 > 
-> The current problem is that there is a redundant log of "Partial TLB
-> flush timed out" in mt8173. We need fix this issue firstly. Are you
-> going to prepare the patches again? If not, I could help this. You
-> could help confirm them if you are free.
+> --- a/include/linux/msi.h
+> +++ b/include/linux/msi.h
+> @@ -174,9 +174,11 @@ struct msi_desc {
+>  /**
+>   * msi_device_data - MSI per device data
+>   * @lock:		Spinlock to protect register access
+> + * @attrs:		Pointer to the sysfs attribute group
+>   */
+>  struct msi_device_data {
+> -	raw_spinlock_t		lock;
+> +	raw_spinlock_t			lock;
 
-Hi,
-I already sent a patch last week: https://lore.kernel.org/linux-iommu/afb46ad6ca9477a2bf71233858406caa6ccb1588.camel@mediatek.com/T/
-could you please review it?
+Trivial: Move the alignment change back to patch 2.
 
-Thanks,
-Dafna
+> +	const struct attribute_group    **attrs;
+>  };
+>  
+>  int msi_setup_device_data(struct device *dev);
+> @@ -242,10 +244,16 @@ void pci_msi_mask_irq(struct irq_data *d
+>  void pci_msi_unmask_irq(struct irq_data *data);
+>  
+>  #ifdef CONFIG_SYSFS
+> +int msi_device_populate_sysfs(struct device *dev);
+> +void msi_device_destroy_sysfs(struct device *dev);
+> +
+>  const struct attribute_group **msi_populate_sysfs(struct device *dev);
+>  void msi_destroy_sysfs(struct device *dev,
+>  		       const struct attribute_group **msi_irq_groups);
+>  #else
+> +static inline int msi_device_populate_sysfs(struct device *dev) { return 0; }
+> +static inline void msi_device_destroy_sysfs(struct device *dev) { }
+> +
+>  static inline const struct attribute_group **msi_populate_sysfs(struct device *dev)
+>  {
+>  	return NULL;
+> @@ -393,6 +401,8 @@ enum {
+>  	MSI_FLAG_MUST_REACTIVATE	= (1 << 5),
+>  	/* Is level-triggered capable, using two messages */
+>  	MSI_FLAG_LEVEL_CAPABLE		= (1 << 6),
+> +	/* Populate sysfs on alloc() and destroy it on free() */
+> +	MSI_FLAG_DEV_SYSFS		= (1 << 7),
+>  };
+>  
+>  int msi_domain_set_affinity(struct irq_data *data, const struct cpumask *mask,
+> --- a/kernel/irq/msi.c
+> +++ b/kernel/irq/msi.c
+> @@ -214,6 +214,20 @@ const struct attribute_group **msi_popul
+>  }
+>  
+>  /**
+> + * msi_device_populate_sysfs - Populate msi_irqs sysfs entries for a device
+> + * @dev:	The device(PCI, platform etc) which will get sysfs entries
 
+Space after device
 
-
+> + */
+> +int msi_device_populate_sysfs(struct device *dev)
+> +{
+> +	const struct attribute_group **group = msi_populate_sysfs(dev);
+> +
+> +	if (IS_ERR(group))
+> +		return PTR_ERR(group);
+> +	dev->msi.data->attrs = group;
+> +	return 0;
+> +}
+> +
+> +/**
+>   * msi_destroy_sysfs - Destroy msi_irqs sysfs entries for devices
+>   * @dev:		The device(PCI, platform etc) who will remove sysfs entries
+>   * @msi_irq_groups:	attribute_group for device msi_irqs entries
+> @@ -239,6 +253,17 @@ void msi_destroy_sysfs(struct device *de
+>  		kfree(msi_irq_groups);
+>  	}
+>  }
+> +
+> +/**
+> + * msi_device_destroy_sysfs - Destroy msi_irqs sysfs entries for a device
+> + * @dev:		The device(PCI, platform etc) for which to remove
+> + *			sysfs entries
+> + */
+> +void msi_device_destroy_sysfs(struct device *dev)
+> +{
+> +	msi_destroy_sysfs(dev, dev->msi.data->attrs);
+> +	dev->msi.data->attrs = NULL;
+> +}
+>  #endif
+>  
+>  #ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
+> @@ -686,8 +711,19 @@ int msi_domain_alloc_irqs(struct irq_dom
+>  {
+>  	struct msi_domain_info *info = domain->host_data;
+>  	struct msi_domain_ops *ops = info->ops;
+> +	int ret;
+>  
+> -	return ops->domain_alloc_irqs(domain, dev, nvec);
+> +	ret = ops->domain_alloc_irqs(domain, dev, nvec);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (!(info->flags & MSI_FLAG_DEV_SYSFS))
+> +		return 0;
+> +
+> +	ret = msi_device_populate_sysfs(dev);
+> +	if (ret)
+> +		msi_domain_free_irqs(domain, dev);
+> +	return ret;
+>  }
+>  
+>  void __msi_domain_free_irqs(struct irq_domain *domain, struct device *dev)
+> @@ -726,7 +762,9 @@ void msi_domain_free_irqs(struct irq_dom
+>  	struct msi_domain_info *info = domain->host_data;
+>  	struct msi_domain_ops *ops = info->ops;
+>  
+> -	return ops->domain_free_irqs(domain, dev);
+> +	if (info->flags & MSI_FLAG_DEV_SYSFS)
+> +		msi_device_destroy_sysfs(dev);
+> +	ops->domain_free_irqs(domain, dev);
+>  }
+>  
+>  /**
 > 
-> Thanks.
-> 
->>
->> thanks,
->> Dafna
->>
->>
->>>
->>> tlb failed due to the bclk is not enabled. Could you help try that
->>> after reverting this?
->>>
->>>>
->>>> Sebastian Reichel suggested to remove the 'if(has_pm)' check to
->>>> avoid
->>>> this warning,
->>>> and avoid flushing the tlb if the device is off:
->>>>
->>>> [1] http://ix.io/3Eyr
->>>>
->>>> This fixes the warning, but then the tlb is not flushed in sync,
->>>> Therefore the tlb should be flushed when the device is resumed.
->>>>
->>>> So the two patches (the one suggested in the link [1] and this
->>>> patch)
->>>> should be sent together as a 2-patch series.
->>>
->>> then this is reasonable. You could help this into a new patchset if
->>> you
->>> are free(add Fixes tag).
->>>
->>> Thanks.
->>>
->>>>
->>>> Thanks,
->>>> Dafna
->>>>
-> 
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
