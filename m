@@ -1,86 +1,70 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E8812C433F5
-	for <iommu@archiver.kernel.org>; Tue, 30 Nov 2021 09:36:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6A1B9C433EF
+	for <iommu@archiver.kernel.org>; Tue, 30 Nov 2021 10:16:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 8A1BB606D3;
-	Tue, 30 Nov 2021 09:36:25 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1AD2B40475;
+	Tue, 30 Nov 2021 10:16:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VZ9sPM__4oHt; Tue, 30 Nov 2021 09:36:24 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id HJea2GPe7oZU; Tue, 30 Nov 2021 10:16:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 66BD660692;
-	Tue, 30 Nov 2021 09:36:24 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id D6D9D40465;
+	Tue, 30 Nov 2021 10:16:05 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 25881C001C;
-	Tue, 30 Nov 2021 09:36:24 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AE363C000A
- for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 09:36:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B309CC0012;
+	Tue, 30 Nov 2021 10:16:05 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8373FC000A
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 10:16:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 95A0A81DCA
- for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 09:36:22 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 61FFF81769
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 10:16:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tyKSUy2SgbzS for <iommu@lists.linux-foundation.org>;
- Tue, 30 Nov 2021 09:36:21 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from sin.source.kernel.org (sin.source.kernel.org
- [IPv6:2604:1380:40e1:4800::1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 7C6D180E49
- for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 09:36:21 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by sin.source.kernel.org (Postfix) with ESMTPS id 84BE0CE16B4;
- Tue, 30 Nov 2021 09:36:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B953BC53FC1;
- Tue, 30 Nov 2021 09:36:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1638264975;
- bh=W1GU/Y+dYM9mor9VhMfyacGdkrH60iHzxrMl5d0x7r8=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=I0r5AYfW3e1qmmKXMhnPGFNda+jCz4x32KqmgoGbi/4llhlf6BrLG4Dh11TrqOIeu
- 6t7GoYuyjI9rTSprKBeCATI3H8ZBljyKTSGOSCnipoGRBXubK/230YXB3/xb4gFMhK
- cetZdMeS2NJYt7HNccWctY4u4f1mgnZpNgCtZJRGxDgqEEEw7kR57CR0PfP0Ionr1G
- xPTqMjy/MGJ4yEDXMUL6xcvp5DKu/6CmLLEBvKhEmLc8LWxQafHEWBJGhbDleY8T/g
- YOwIzg7OkJlOKz2t3lQsamPaqomT2NSf9Bp1mKf8Gg28o2SHvwcvRn0rzb0pd0NzYi
- nyH+dmToW47RQ==
-Date: Tue, 30 Nov 2021 09:36:07 +0000
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [patch 33/37] iommu/arm-smmu-v3: Use msi_get_virq()
-Message-ID: <20211130093607.GA23941@willie-the-truck>
-References: <20211126224100.303046749@linutronix.de>
- <20211126230525.885757679@linutronix.de>
- <20211129105506.GA22761@willie-the-truck>
- <76a1b5c1-01c8-bb30-6105-b4073dc23065@arm.com>
- <87czmjdnw9.ffs@tglx>
- <b192ad88-5e4e-6f32-1cc7-7a50fc0676a1@arm.com>
+ with ESMTP id KsnEIpp9Hg-3 for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Nov 2021 10:16:03 +0000 (UTC)
+X-Greylist: delayed 00:07:05 by SQLgrey-1.8.0
+Received: from outbound-smtp48.blacknight.com (outbound-smtp48.blacknight.com
+ [46.22.136.219])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id B084681768
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 10:16:03 +0000 (UTC)
+Received: from mail.blacknight.com (pemlinmail03.blacknight.ie [81.17.254.16])
+ by outbound-smtp48.blacknight.com (Postfix) with ESMTPS id A9726FAF40
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 10:08:55 +0000 (GMT)
+Received: (qmail 25169 invoked from network); 30 Nov 2021 10:08:55 -0000
+Received: from unknown (HELO techsingularity.net)
+ (mgorman@techsingularity.net@[84.203.17.29])
+ by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated);
+ 30 Nov 2021 10:08:55 -0000
+Date: Tue, 30 Nov 2021 10:08:53 +0000
+From: Mel Gorman <mgorman@techsingularity.net>
+To: Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [RFC PATCH 0/3] Use pageblock_order for cma and
+ alloc_contig_range alignment.
+Message-ID: <20211130100853.GP3366@techsingularity.net>
+References: <20211115193725.737539-1-zi.yan@sent.com>
+ <3083463d-978b-fbe6-dadf-670d400ed437@suse.cz>
+ <AEFF28CF-0ED8-450F-96A4-A6CD59CB1F3D@nvidia.com>
+ <BF8FB68A-6E1D-4465-8A2B-884FC034660B@nvidia.com>
+ <52dbf824-76be-cc34-3983-d45510b1b618@suse.cz>
+ <35A20739-152A-450E-8535-2236D2B28748@nvidia.com>
+ <1c67bb96-24db-f5a6-7520-3d97e54e5192@suse.cz>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <b192ad88-5e4e-6f32-1cc7-7a50fc0676a1@arm.com>
+In-Reply-To: <1c67bb96-24db-f5a6-7520-3d97e54e5192@suse.cz>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
- Stuart Yoder <stuyoder@gmail.com>, linux-pci@vger.kernel.org,
- Ashok Raj <ashok.raj@intel.com>, Marc Zygnier <maz@kernel.org>, x86@kernel.org,
- Sinan Kaya <okaya@kernel.org>, iommu@lists.linux-foundation.org,
- Bjorn Helgaas <helgaas@kernel.org>, Megha Dey <megha.dey@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Santosh Shilimkar <ssantosh@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
- linux-arm-kernel@lists.infradead.org, Tero Kristo <kristo@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- LKML <linux-kernel@vger.kernel.org>, Vinod Koul <vkoul@kernel.org>,
- dmaengine@vger.kernel.org
+Cc: David Hildenbrand <david@redhat.com>, Michael Ellerman <mpe@ellerman.id.au>,
+ linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org, Zi Yan <ziy@nvidia.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,41 +82,56 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Nov 29, 2021 at 02:54:18PM +0000, Robin Murphy wrote:
-> On 2021-11-29 14:42, Thomas Gleixner wrote:
-> > On Mon, Nov 29 2021 at 13:13, Robin Murphy wrote:
-> > > On 2021-11-29 10:55, Will Deacon wrote:
-> > > > > -	}
-> > > > > +	smmu->evtq.q.irq = msi_get_virq(dev, EVTQ_MSI_INDEX);
-> > > > > +	smmu->gerr_irq = msi_get_virq(dev, GERROR_MSI_INDEX);
-> > > > > +	smmu->priq.q.irq = msi_get_virq(dev, PRIQ_MSI_INDEX);
-> > > > 
-> > > > Prviously, if retrieval of the MSI failed then we'd fall back to wired
-> > > > interrupts. Now, I think we'll clobber the interrupt with 0 instead. Can
-> > > > we make the assignments to smmu->*irq here conditional on the MSI being
-> > > > valid, please?
-> > > 
-> > > I was just looking at that too, but reached the conclusion that it's
-> > > probably OK, since consumption of this value later is gated on
-> > > ARM_SMMU_FEAT_PRI, so the fact that it changes from 0 to an error value
-> > > in the absence of PRI should make no practical difference.
+On Tue, Nov 30, 2021 at 10:11:36AM +0100, Vlastimil Babka wrote:
+> >>> I find that two pageblocks with different migratetypes, like MIGRATE_RECLAIMABLE
+> >>> and MIGRATE_MOVABLE can be merged into a single free page after I checked
+> >>> __free_one_page() in detail and printed pageblock information during buddy page
+> >>> merging.
+> >>
+> >> Yes, that can happen.
+> >>
+> >> I am not sure what consequence it will cause. Do you have any idea?
+> >>
+> >> For MIGRATE_RECLAIMABLE or MIGRATE_MOVABLE or even MIGRATE_UNMOVABLE it's
+> >> absolutely fine. As long as these pageblocks are fully free (and they are if
+> >> it's a single free page spanning 2 pageblocks), they can be of any of these
+> >> type, as they can be reused as needed without causing fragmentation.
+> >>
+> >> But in case of MIGRATE_CMA and MIGRATE_ISOLATE, uncontrolled merging would
+> >> break the specifics of those types. That's why the code is careful for
+> >> MIGRATE_ISOLATE, and MIGRATE_CMA was until now done in MAX_ORDER granularity.
 > > 
-> > It's actually 0 when the vector cannot be found.
+> > Thanks for the explanation. Basically migratetypes that can fall back to each
+> > other can be merged into a single free page, right?
 > 
-> Oh, -1 for my reading comprehension but +1 for my confidence in the patch
-> then :)
+> Yes.
 > 
-> I'll let Will have the final say over how cautious we really want to be
-> here, but as far as I'm concerned it's a welcome cleanup as-is. Ditto for
-> patch #32 based on the same reasoning, although I don't have a suitable test
-> platform on-hand to sanity-check that one.
+> > How about MIGRATE_HIGHATOMIC? It should not be merged with other migratetypes
+> > from my understanding.
+> 
+> Hmm it shouldn't minimally because it has an accounting that would become
+> broken. So it should prevent merging or make sure the reservations are with
+> MAX_ORDER granularity, but seems that neither is true? CCing Mel.
+> 
 
-If, as it appears, msi_get_virq() isn't going to fail meaningfully after
-we've successfully called platform_msi_domain_alloc_irqs() then it sounds
-like the patch is fine. Just wanted to check though, as Spring cleaning at
-the end of November raised an eyebrow over here :)
+MIGRATE_HIGHATOMIC pageblocks can have pages allocated of different
+types, particularly UNMOVABLE and potentially RECLAIMABLE. The
+reserving or releasing MIGRATE_HIGHATOMIC pageblocks should be done with
+reserve_highatomic_pageblock and unreserve_highatomic_pageblock to get
+the accounting right.
 
-Will
+However, there does not appear to be any special protection against a
+page in a highatomic pageblock getting merged with a buddy of another
+pageblock type. The pageblock would still have the right setting but on
+allocation, the pages could split to the wrong free list and be lost
+until the pages belonging to MIGRATE_HIGHATOMIC were freed again.
+
+Not sure how much of a problem that is in practice, it's been a while
+since I've heard of high-order atomic allocation failures.
+
+-- 
+Mel Gorman
+SUSE Labs
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
