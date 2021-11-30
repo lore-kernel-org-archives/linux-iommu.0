@@ -4,76 +4,83 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B05A4C433F5
-	for <iommu@archiver.kernel.org>; Tue, 30 Nov 2021 11:54:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id F0F2EC433EF
+	for <iommu@archiver.kernel.org>; Tue, 30 Nov 2021 12:31:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 42E214034C;
-	Tue, 30 Nov 2021 11:54:09 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 8EC054043E;
+	Tue, 30 Nov 2021 12:31:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WCcQExvOgrgy; Tue, 30 Nov 2021 11:54:08 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 06E174036C;
-	Tue, 30 Nov 2021 11:54:07 +0000 (UTC)
+	with ESMTP id CNRSf09ZZbUX; Tue, 30 Nov 2021 12:31:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 8D82040438;
+	Tue, 30 Nov 2021 12:31:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DCD04C001C;
-	Tue, 30 Nov 2021 11:54:07 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E6428C001C
- for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 11:54:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 672C6C0012;
+	Tue, 30 Nov 2021 12:31:01 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9C512C000A
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 12:30:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id C385360642
- for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 11:54:06 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 915636069F
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 12:30:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="By9F2Cxz";
+ dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
+ header.d=linutronix.de header.b="b3LRCCra"
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WLHQlBFg0tlN for <iommu@lists.linux-foundation.org>;
- Tue, 30 Nov 2021 11:54:05 +0000 (UTC)
+ with ESMTP id Gg3Bcitr-d3s for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Nov 2021 12:30:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A51026063B
- for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 11:54:04 +0000 (UTC)
-Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.206])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4J3LF31Knkz67jq6;
- Tue, 30 Nov 2021 19:52:39 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.20; Tue, 30 Nov 2021 12:54:00 +0100
-Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Tue, 30 Nov
- 2021 11:53:59 +0000
-Date: Tue, 30 Nov 2021 11:53:58 +0000
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch 08/37] genirq/msi: Provide
- msi_device_populate/destroy_sysfs()
-Message-ID: <20211130115358.000017ec@Huawei.com>
-In-Reply-To: <20211126230524.416227100@linutronix.de>
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 780496058F
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Nov 2021 12:30:57 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020; t=1638275453;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=MoxU22IJJPvJRa8OS7V+vWzcBzYBFKmJ+AzUDqGDJ0c=;
+ b=By9F2CxzS/o9ToFNEiRxLUVS4AyQNuM7azBeEiD814EleLq+hJGIFbr5Pb7s+yxDcghQJZ
+ bz+QmgZkMouYYFY+n8NIMmEVrzBGnKypYEtqksbB0LcQcsXrqkseVFUPXnb/sd5ZkkeCjp
+ Pnu87QVrfqY+aPFRcb2JbkA20ryw2kwZX8Zt58hXMuKopfKcpJeEcYrsQaBCBid5TfxvzR
+ pg01jc6fTOy30S6/4paKJbL3nUdr+wHzyl4B2pcoryuGOAyzDqtURCC8EFqCHDYt+1EdmP
+ Tn7K/VVDH3bM9b/JWsuJU4BSSPJHX1HAmQQ17NBsztNZhn1jdrGHUG7vESjD7A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020e; t=1638275453;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=MoxU22IJJPvJRa8OS7V+vWzcBzYBFKmJ+AzUDqGDJ0c=;
+ b=b3LRCCrahGv4zVsp1t2g38jgPS8/TbYK4NCKubQCW9LmpN8f4nz/THoNrepB7KLN6Bne8n
+ caFNq7QymQ+tnnDg==
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [patch 33/37] iommu/arm-smmu-v3: Use msi_get_virq()
+In-Reply-To: <20211130093607.GA23941@willie-the-truck>
 References: <20211126224100.303046749@linutronix.de>
- <20211126230524.416227100@linutronix.de>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+ <20211126230525.885757679@linutronix.de>
+ <20211129105506.GA22761@willie-the-truck>
+ <76a1b5c1-01c8-bb30-6105-b4073dc23065@arm.com> <87czmjdnw9.ffs@tglx>
+ <b192ad88-5e4e-6f32-1cc7-7a50fc0676a1@arm.com>
+ <20211130093607.GA23941@willie-the-truck>
+Date: Tue, 30 Nov 2021 13:30:53 +0100
+Message-ID: <878rx5ddvm.ffs@tglx>
 MIME-Version: 1.0
-X-Originating-IP: [10.202.226.41]
-X-ClientProxiedBy: lhreml733-chm.china.huawei.com (10.201.108.84) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
-Cc: Nishanth Menon <nm@ti.com>, Mark
- Rutland <mark.rutland@arm.com>, Stuart Yoder <stuyoder@gmail.com>,
- linux-pci@vger.kernel.org, Will Deacon <will@kernel.org>,
- Ashok Raj <ashok.raj@intel.com>, Marc Zygnier <maz@kernel.org>, x86@kernel.org,
- Sinan Kaya <okaya@kernel.org>, iommu@lists.linux-foundation.org,
- Bjorn Helgaas <helgaas@kernel.org>, Megha Dey <megha.dey@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Stuart Yoder <stuyoder@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marc Zygnier <maz@kernel.org>,
+ Vinod Koul <vkoul@kernel.org>, x86@kernel.org, Sinan Kaya <okaya@kernel.org>,
  Alex Williamson <alex.williamson@redhat.com>,
- Santosh Shilimkar <ssantosh@kernel.org>, linux-arm-kernel@lists.infradead.org,
- Tero Kristo <kristo@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- LKML <linux-kernel@vger.kernel.org>, Vinod Koul <vkoul@kernel.org>,
- dmaengine@vger.kernel.org
+ LKML <linux-kernel@vger.kernel.org>, Santosh Shilimkar <ssantosh@kernel.org>,
+ iommu@lists.linux-foundation.org, Bjorn Helgaas <helgaas@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, Jason Gunthorpe <jgg@nvidia.com>,
+ linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+ Tero Kristo <kristo@kernel.org>, Megha Dey <megha.dey@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,153 +93,35 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jonathan Cameron via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, 27 Nov 2021 02:20:19 +0100 (CET)
-Thomas Gleixner <tglx@linutronix.de> wrote:
+On Tue, Nov 30 2021 at 09:36, Will Deacon wrote:
+> On Mon, Nov 29, 2021 at 02:54:18PM +0000, Robin Murphy wrote:
+>> On 2021-11-29 14:42, Thomas Gleixner wrote:
+>> > It's actually 0 when the vector cannot be found.
+>> 
+>> Oh, -1 for my reading comprehension but +1 for my confidence in the patch
+>> then :)
+>> 
+>> I'll let Will have the final say over how cautious we really want to be
+>> here, but as far as I'm concerned it's a welcome cleanup as-is. Ditto for
+>> patch #32 based on the same reasoning, although I don't have a suitable test
+>> platform on-hand to sanity-check that one.
+>
+> If, as it appears, msi_get_virq() isn't going to fail meaningfully after
+> we've successfully called platform_msi_domain_alloc_irqs() then it sounds
+> like the patch is fine. Just wanted to check though, as Spring cleaning at
+> the end of November raised an eyebrow over here :)
 
-> Add new allocation functions which can be activated by domain info
-> flags. They store the groups pointer in struct msi_device_data.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Fair enough. Next time I'll name it 'Cleaning the Augean stables' when
+it's the wrong season.
 
-A few trivial comments...
+Thanks,
 
-> ---
->  include/linux/msi.h |   12 +++++++++++-
->  kernel/irq/msi.c    |   42 ++++++++++++++++++++++++++++++++++++++++--
->  2 files changed, 51 insertions(+), 3 deletions(-)
-> 
-> --- a/include/linux/msi.h
-> +++ b/include/linux/msi.h
-> @@ -174,9 +174,11 @@ struct msi_desc {
->  /**
->   * msi_device_data - MSI per device data
->   * @lock:		Spinlock to protect register access
-> + * @attrs:		Pointer to the sysfs attribute group
->   */
->  struct msi_device_data {
-> -	raw_spinlock_t		lock;
-> +	raw_spinlock_t			lock;
-
-Trivial: Move the alignment change back to patch 2.
-
-> +	const struct attribute_group    **attrs;
->  };
->  
->  int msi_setup_device_data(struct device *dev);
-> @@ -242,10 +244,16 @@ void pci_msi_mask_irq(struct irq_data *d
->  void pci_msi_unmask_irq(struct irq_data *data);
->  
->  #ifdef CONFIG_SYSFS
-> +int msi_device_populate_sysfs(struct device *dev);
-> +void msi_device_destroy_sysfs(struct device *dev);
-> +
->  const struct attribute_group **msi_populate_sysfs(struct device *dev);
->  void msi_destroy_sysfs(struct device *dev,
->  		       const struct attribute_group **msi_irq_groups);
->  #else
-> +static inline int msi_device_populate_sysfs(struct device *dev) { return 0; }
-> +static inline void msi_device_destroy_sysfs(struct device *dev) { }
-> +
->  static inline const struct attribute_group **msi_populate_sysfs(struct device *dev)
->  {
->  	return NULL;
-> @@ -393,6 +401,8 @@ enum {
->  	MSI_FLAG_MUST_REACTIVATE	= (1 << 5),
->  	/* Is level-triggered capable, using two messages */
->  	MSI_FLAG_LEVEL_CAPABLE		= (1 << 6),
-> +	/* Populate sysfs on alloc() and destroy it on free() */
-> +	MSI_FLAG_DEV_SYSFS		= (1 << 7),
->  };
->  
->  int msi_domain_set_affinity(struct irq_data *data, const struct cpumask *mask,
-> --- a/kernel/irq/msi.c
-> +++ b/kernel/irq/msi.c
-> @@ -214,6 +214,20 @@ const struct attribute_group **msi_popul
->  }
->  
->  /**
-> + * msi_device_populate_sysfs - Populate msi_irqs sysfs entries for a device
-> + * @dev:	The device(PCI, platform etc) which will get sysfs entries
-
-Space after device
-
-> + */
-> +int msi_device_populate_sysfs(struct device *dev)
-> +{
-> +	const struct attribute_group **group = msi_populate_sysfs(dev);
-> +
-> +	if (IS_ERR(group))
-> +		return PTR_ERR(group);
-> +	dev->msi.data->attrs = group;
-> +	return 0;
-> +}
-> +
-> +/**
->   * msi_destroy_sysfs - Destroy msi_irqs sysfs entries for devices
->   * @dev:		The device(PCI, platform etc) who will remove sysfs entries
->   * @msi_irq_groups:	attribute_group for device msi_irqs entries
-> @@ -239,6 +253,17 @@ void msi_destroy_sysfs(struct device *de
->  		kfree(msi_irq_groups);
->  	}
->  }
-> +
-> +/**
-> + * msi_device_destroy_sysfs - Destroy msi_irqs sysfs entries for a device
-> + * @dev:		The device(PCI, platform etc) for which to remove
-> + *			sysfs entries
-> + */
-> +void msi_device_destroy_sysfs(struct device *dev)
-> +{
-> +	msi_destroy_sysfs(dev, dev->msi.data->attrs);
-> +	dev->msi.data->attrs = NULL;
-> +}
->  #endif
->  
->  #ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
-> @@ -686,8 +711,19 @@ int msi_domain_alloc_irqs(struct irq_dom
->  {
->  	struct msi_domain_info *info = domain->host_data;
->  	struct msi_domain_ops *ops = info->ops;
-> +	int ret;
->  
-> -	return ops->domain_alloc_irqs(domain, dev, nvec);
-> +	ret = ops->domain_alloc_irqs(domain, dev, nvec);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (!(info->flags & MSI_FLAG_DEV_SYSFS))
-> +		return 0;
-> +
-> +	ret = msi_device_populate_sysfs(dev);
-> +	if (ret)
-> +		msi_domain_free_irqs(domain, dev);
-> +	return ret;
->  }
->  
->  void __msi_domain_free_irqs(struct irq_domain *domain, struct device *dev)
-> @@ -726,7 +762,9 @@ void msi_domain_free_irqs(struct irq_dom
->  	struct msi_domain_info *info = domain->host_data;
->  	struct msi_domain_ops *ops = info->ops;
->  
-> -	return ops->domain_free_irqs(domain, dev);
-> +	if (info->flags & MSI_FLAG_DEV_SYSFS)
-> +		msi_device_destroy_sysfs(dev);
-> +	ops->domain_free_irqs(domain, dev);
->  }
->  
->  /**
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+        tglx
 
 _______________________________________________
 iommu mailing list
