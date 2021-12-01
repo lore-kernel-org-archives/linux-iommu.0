@@ -4,105 +4,95 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 81B43C433EF
-	for <iommu@archiver.kernel.org>; Wed,  1 Dec 2021 18:15:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 29B34C433F5
+	for <iommu@archiver.kernel.org>; Wed,  1 Dec 2021 18:15:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 1548B40534;
-	Wed,  1 Dec 2021 18:15:23 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id C16E640343;
+	Wed,  1 Dec 2021 18:15:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4v7e7luqnjko; Wed,  1 Dec 2021 18:15:21 +0000 (UTC)
+	with ESMTP id 7CIyFJcJy3Dh; Wed,  1 Dec 2021 18:15:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 70EC9400C8;
-	Wed,  1 Dec 2021 18:15:21 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A17FD4014C;
+	Wed,  1 Dec 2021 18:15:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4C7DBC001C;
-	Wed,  1 Dec 2021 18:15:21 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 364C0C000A
- for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 18:15:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C031C001C;
+	Wed,  1 Dec 2021 18:15:26 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C94EAC000A
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 18:15:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 23E1482A95
- for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 18:15:20 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id B64A14014C
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 18:15:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=suse.cz header.b="UaIAD/rh";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=suse.cz header.b="B9QhHHVa"
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BRM4lYB0E7dk for <iommu@lists.linux-foundation.org>;
- Wed,  1 Dec 2021 18:15:18 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id GNVRrSa_Vies for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Dec 2021 18:15:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 818EA829DB
- for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 18:15:18 +0000 (UTC)
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 1249040343
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 18:15:22 +0000 (UTC)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
  (No client certificate requested)
- by smtp-out1.suse.de (Postfix) with ESMTPS id 3F12A212B5;
- Wed,  1 Dec 2021 18:15:15 +0000 (UTC)
+ by smtp-out2.suse.de (Postfix) with ESMTPS id 99C741FDFE;
+ Wed,  1 Dec 2021 18:15:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
- t=1638382515; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
- mime-version:mime-version: content-transfer-encoding:content-transfer-encoding;
- bh=JudYALEd+vfrSbydk9WzA1a8Jbja5L0uMhSJtIDczwA=;
- b=UaIAD/rhRvykk/vdhz8EgwhBknGbHwV3ROKoan/VHmnMLq2d3F9E0nHpl84fbfjnDrF2jB
- vRCalgCkl6G8SSsqhjhAnCOauXho6h7TjGkiOqubtDxd4KvxmoncjPwnmFp3ytRgpC1LHU
- GtneAXQvWmNKW2BX5O7pCzpcZvMvxB0=
+ t=1638382520; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+ mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=az6sFyj1e45fY/bBnrxdX3b+BRZdTiwGv8NbVsxpP3M=;
+ b=NT1RFzzi3OGQN/xRn0p4koCTY7K6jnXwbq1+Uc7vwbX19emcIwv5R0oZDtufKUraLtV90F
+ phRnBD/ZJVxwZxjqrRzROurPKLVxZlWCeTKkIEnXuoax//Djnb5k7RUz1OAzd98tPdusIU
+ wG0kLw2SqXP5BHFWNkk4BiC5wYkbGmQ=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
- s=susede2_ed25519; t=1638382515;
+ s=susede2_ed25519; t=1638382520;
  h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
- mime-version:mime-version: content-transfer-encoding:content-transfer-encoding;
- bh=JudYALEd+vfrSbydk9WzA1a8Jbja5L0uMhSJtIDczwA=;
- b=B9QhHHVarkGXSXnYR5XJI3OxatgPELHKl3z1mjSspeFn3QBIu3843VrZ+6nfE6068UqAWW
- nVtNpPgokA2RaWBg==
+ mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=az6sFyj1e45fY/bBnrxdX3b+BRZdTiwGv8NbVsxpP3M=;
+ b=TmWYVL7cPGiRxn4R6wiUa9HXSbsHfD+BZkwuwYfUrcXqEJjj+JyjfO4xHBnDvqVdQD+v+U
+ ZkeQiNecKIV0DjDQ==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
  (No client certificate requested)
- by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A01A513D9D;
- Wed,  1 Dec 2021 18:15:14 +0000 (UTC)
+ by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 670CF14050;
+ Wed,  1 Dec 2021 18:15:20 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
- by imap2.suse-dmz.suse.de with ESMTPSA id 1FhbJrK7p2HPSAAAMHmgww
- (envelope-from <vbabka@suse.cz>); Wed, 01 Dec 2021 18:15:14 +0000
+ by imap2.suse-dmz.suse.de with ESMTPSA id 0OeYGLi7p2HPSAAAMHmgww
+ (envelope-from <vbabka@suse.cz>); Wed, 01 Dec 2021 18:15:20 +0000
 From: Vlastimil Babka <vbabka@suse.cz>
 To: Matthew Wilcox <willy@infradead.org>, Christoph Lameter <cl@linux.com>,
  David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>,
  Pekka Enberg <penberg@kernel.org>
-Subject: [PATCH v2 00/33] Separate struct slab from struct page
-Date: Wed,  1 Dec 2021 19:14:37 +0100
-Message-Id: <20211201181510.18784-1-vbabka@suse.cz>
+Subject: [PATCH v2 29/33] iommu: Use put_pages_list
+Date: Wed,  1 Dec 2021 19:15:06 +0100
+Message-Id: <20211201181510.18784-30-vbabka@suse.cz>
 X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20211201181510.18784-1-vbabka@suse.cz>
+References: <20211201181510.18784-1-vbabka@suse.cz>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6884; h=from:subject;
- bh=C9Y/49TsxB/E0akYUQmXh/Rw3x/uvjRHIGWgJWjz1iY=;
- b=owEBbQGS/pANAwAIAeAhynPxiakQAcsmYgBhp7tbz3TdAfpYMhghWpBPjpyNQELQnNXbCWvxjXXW
- V+khgIGJATMEAAEIAB0WIQSNS5MBqTXjGL5IXszgIcpz8YmpEAUCYae7WwAKCRDgIcpz8YmpEL55B/
- 0YVOB9lFU4Yo+9QGDna3BPOOTGFYoU+NhN1HU+HWaN4/METjmHzL6QTkZey7Vf/iUopoghro1cTifZ
- VJ0movi8ZzLs2CGqHCSXxycHOUjYhJga97oHj5g228ilwmOxRvwbltPZf/4Dq1GsHNPvA519rK17Mb
- FAtSBH05pG6994CDDcdJ87Ml2jM1WOYqIznymTYUQcDxcdqenLbyIZ6iYkLNZlWM6eHSMaZTuIZhJ4
- 5EobcLpyHXjVaQh30br8NhlSFQwc2JsF/S1x4wdWfs7uLnGix90NeTfKlxxOoK5pScmDEnNMYULCHG
- qssJrZ/85aCJE+jQj+N/wBkMCp87Jl
+X-Developer-Signature: v=1; a=openpgp-sha256; l=14154; i=vbabka@suse.cz;
+ h=from:subject; bh=pLlXe7dSmOifDup/aySOAuI6iuF91lovDBJ0efL+weE=;
+ b=owEBbQGS/pANAwAIAeAhynPxiakQAcsmYgBhp7uia2Tt+TMTC5mrb9JgIVqtq/cL3fYBFo3kKe1Y
+ uiqNi0mJATMEAAEIAB0WIQSNS5MBqTXjGL5IXszgIcpz8YmpEAUCYae7ogAKCRDgIcpz8YmpEPXkB/
+ 9F2yl0GALIVvuaFp6Z0dtmri3q4tvGZmEkIeK6BTqTOQ4WBPy7aC74I7uivwwoT0XjZ2w0OlBoBqCm
+ HhChnbR9XArXMewbtlI0uSACjXw3emI5pLN3ceFkfrQ1HcJXiZag5ZJaGbmeU8FtSLd+wKmrcuuHOJ
+ AAX+8M1s9J1CB+8QTN8v80469J3u0wu8wno2pcRoJmhOIOjNfQGIZ8jbnBH3g3Km8hGSAiaRHxmgPp
+ w8JNjl9htRlhaReT4yqdtYsUh7YOjg+8bQ0IZKwtIUb9eBb8hL3I9BLurTlg/JPaY3rfq5AvoWpGwx
+ ig364SAdNAoDWYqRnFmbvqEYkvC4hW
 X-Developer-Key: i=vbabka@suse.cz; a=openpgp;
  fpr=A940D434992C2E8E99103D50224FA7E7CC82A664
-Cc: Peter Zijlstra <peterz@infradead.org>,
- Dave Hansen <dave.hansen@linux.intel.com>, Michal Hocko <mhocko@kernel.org>,
- linux-mm@kvack.org, Andrey Ryabinin <ryabinin.a.a@gmail.com>,
- Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>,
- Will Deacon <will@kernel.org>, Sergey Senozhatsky <senozhatsky@chromium.org>,
- x86@kernel.org, iommu@lists.linux-foundation.org, kasan-dev@googlegroups.com,
- Ingo Molnar <mingo@redhat.com>, Vlastimil Babka <vbabka@suse.cz>,
- Nitin Gupta <ngupta@vflare.org>, Vladimir Davydov <vdavydov.dev@gmail.com>,
- Marco Elver <elver@google.com>, Borislav Petkov <bp@alien8.de>,
- Andy Lutomirski <luto@kernel.org>, cgroups@vger.kernel.org,
- Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>,
- Andrey Konovalov <andreyknvl@gmail.com>, patches@lists.linux.dev,
- Julia Lawall <julia.lawall@inria.fr>, Minchan Kim <minchan@kernel.org>,
- Luis Chamberlain <mcgrof@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- David Woodhouse <dwmw2@infradead.org>
+Cc: David Woodhouse <dwmw2@infradead.org>, patches@lists.linux.dev,
+ linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+ Andrew Morton <akpm@linux-foundation.org>, Will Deacon <will@kernel.org>,
+ Vlastimil Babka <vbabka@suse.cz>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -120,146 +110,434 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Folks from non-slab subsystems are Cc'd only to patches affecting them, and
-this cover letter.
+From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-Series also available in git, based on 5.16-rc3:
-https://git.kernel.org/pub/scm/linux/kernel/git/vbabka/linux.git/log/?h=slab-struct_slab-v2r2
+page->freelist is for the use of slab.  We already have the ability
+to free a list of pages in the core mm, but it requires the use of a
+list_head and for the pages to be chained together through page->lru.
+Switch the iommu code over to using put_pages_list().
 
-The plan: as my SLUB PREEMPT_RT series in 5.15, I would prefer to go again with
-the git pull request way of eventually merging this, as it's also not a small
-series. I will thus reply to this mail with asking to include my branch in
-linux-next.
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: <iommu@lists.linux-foundation.org>
+---
+ drivers/iommu/amd/io_pgtable.c | 59 +++++++++-------------
+ drivers/iommu/dma-iommu.c      | 11 +----
+ drivers/iommu/intel/iommu.c    | 89 ++++++++++++----------------------
+ include/linux/iommu.h          |  3 +-
+ 4 files changed, 57 insertions(+), 105 deletions(-)
 
-As stated in the v1/RFC cover letter, I wouldn't mind to then continue with
-maintaining a git tree for all slab patches in general. It was apparently
-already done that way before, by Pekka:
-https://lore.kernel.org/linux-mm/alpine.DEB.2.00.1107221108190.2996@tiger/
-
-Changes from v1/RFC:
-https://lore.kernel.org/all/20211116001628.24216-1-vbabka@suse.cz/
-- Added virt_to_folio() and folio_address() in the new Patch 1.
-- Addressed feedback from Andrey Konovalov and Matthew Wilcox (Thanks!)
-- Added Tested-by: Marco Elver for the KFENCE parts (Thanks!)
-
-Previous version from Matthew Wilcox:
-https://lore.kernel.org/all/20211004134650.4031813-1-willy@infradead.org/
-
-LWN coverage of the above:
-https://lwn.net/Articles/871982/
-
-This is originally an offshoot of the folio work by Matthew. One of the more
-complex parts of the struct page definition are the parts used by the slab
-allocators. It would be good for the MM in general if struct slab were its own
-data type, and it also helps to prevent tail pages from slipping in anywhere.
-As Matthew requested in his proof of concept series, I have taken over the
-development of this series, so it's a mix of patches from him (often modified
-by me) and my own.
-
-One big difference is the use of coccinelle to perform the relatively trivial
-parts of the conversions automatically and at once, instead of a larger number
-of smaller incremental reviewable steps. Thanks to Julia Lawall and Luis
-Chamberlain for all their help!
-
-Another notable difference is (based also on review feedback) I don't represent
-with a struct slab the large kmalloc allocations which are not really a slab,
-but use page allocator directly. When going from an object address to a struct
-slab, the code tests first folio slab flag, and only if it's set it converts to
-struct slab. This makes the struct slab type stronger.
-
-Finally, although Matthew's version didn't use any of the folio work, the
-initial support has been merged meanwhile so my version builds on top of it
-where appropriate. This eliminates some of the redundant compound_head()
-being performed e.g. when testing the slab flag.
-
-To sum up, after this series, struct page fields used by slab allocators are
-moved from struct page to a new struct slab, that uses the same physical
-storage. The availability of the fields is further distinguished by the
-selected slab allocator implementation. The advantages include:
-
-- Similar to folios, if the slab is of order > 0, struct slab always is
-  guaranteed to be the head page. Additionally it's guaranteed to be an actual
-  slab page, not a large kmalloc. This removes uncertainty and potential for
-  bugs.
-- It's not possible to accidentally use fields of the slab implementation that's
-  not configured.
-- Other subsystems cannot use slab's fields in struct page anymore (some
-  existing non-slab usages had to be adjusted in this series), so slab
-  implementations have more freedom in rearranging them in the struct slab.
-
-Matthew Wilcox (Oracle) (16):
-  mm: Split slab into its own type
-  mm: Add account_slab() and unaccount_slab()
-  mm: Convert virt_to_cache() to use struct slab
-  mm: Convert __ksize() to struct slab
-  mm: Use struct slab in kmem_obj_info()
-  mm: Convert check_heap_object() to use struct slab
-  mm/slub: Convert detached_freelist to use a struct slab
-  mm/slub: Convert kfree() to use a struct slab
-  mm/slub: Convert print_page_info() to print_slab_info()
-  mm/slub: Convert pfmemalloc_match() to take a struct slab
-  mm/slob: Convert SLOB to use struct slab
-  mm/kasan: Convert to struct folio and struct slab
-  zsmalloc: Stop using slab fields in struct page
-  bootmem: Use page->index instead of page->freelist
-  iommu: Use put_pages_list
-  mm: Remove slab from struct page
-
-Vlastimil Babka (17):
-  mm: add virt_to_folio() and folio_address()
-  mm/slab: Dissolve slab_map_pages() in its caller
-  mm/slub: Make object_err() static
-  mm/slub: Convert __slab_lock() and __slab_unlock() to struct slab
-  mm/slub: Convert alloc_slab_page() to return a struct slab
-  mm/slub: Convert __free_slab() to use struct slab
-  mm/slub: Convert most struct page to struct slab by spatch
-  mm/slub: Finish struct page to struct slab conversion
-  mm/slab: Convert kmem_getpages() and kmem_freepages() to struct slab
-  mm/slab: Convert most struct page to struct slab by spatch
-  mm/slab: Finish struct page to struct slab conversion
-  mm: Convert struct page to struct slab in functions used by other
-    subsystems
-  mm/memcg: Convert slab objcgs from struct page to struct slab
-  mm/kfence: Convert kfence_guarded_alloc() to struct slab
-  mm/sl*b: Differentiate struct slab fields by sl*b implementations
-  mm/slub: Simplify struct slab slabs field definition
-  mm/slub: Define struct slab fields for CONFIG_SLUB_CPU_PARTIAL only
-    when enabled
-
- arch/x86/mm/init_64.c          |    2 +-
- drivers/iommu/amd/io_pgtable.c |   59 +-
- drivers/iommu/dma-iommu.c      |   11 +-
- drivers/iommu/intel/iommu.c    |   89 +--
- include/linux/bootmem_info.h   |    2 +-
- include/linux/iommu.h          |    3 +-
- include/linux/kasan.h          |    9 +-
- include/linux/memcontrol.h     |   48 --
- include/linux/mm.h             |   12 +
- include/linux/mm_types.h       |   38 +-
- include/linux/page-flags.h     |   37 -
- include/linux/slab.h           |    8 -
- include/linux/slab_def.h       |   16 +-
- include/linux/slub_def.h       |   29 +-
- mm/bootmem_info.c              |    7 +-
- mm/kasan/common.c              |   27 +-
- mm/kasan/generic.c             |    8 +-
- mm/kasan/kasan.h               |    1 +
- mm/kasan/quarantine.c          |    2 +-
- mm/kasan/report.c              |   13 +-
- mm/kasan/report_tags.c         |   10 +-
- mm/kfence/core.c               |   17 +-
- mm/kfence/kfence_test.c        |    6 +-
- mm/memcontrol.c                |   43 +-
- mm/slab.c                      |  455 ++++++-------
- mm/slab.h                      |  322 ++++++++-
- mm/slab_common.c               |    8 +-
- mm/slob.c                      |   46 +-
- mm/slub.c                      | 1164 ++++++++++++++++----------------
- mm/sparse.c                    |    2 +-
- mm/usercopy.c                  |   13 +-
- mm/zsmalloc.c                  |   18 +-
- 32 files changed, 1317 insertions(+), 1208 deletions(-)
-
+diff --git a/drivers/iommu/amd/io_pgtable.c b/drivers/iommu/amd/io_pgtable.c
+index 182c93a43efd..08ea6a02cda9 100644
+--- a/drivers/iommu/amd/io_pgtable.c
++++ b/drivers/iommu/amd/io_pgtable.c
+@@ -74,27 +74,15 @@ static u64 *first_pte_l7(u64 *pte, unsigned long *page_size,
+  *
+  ****************************************************************************/
+ 
+-static void free_page_list(struct page *freelist)
+-{
+-	while (freelist != NULL) {
+-		unsigned long p = (unsigned long)page_address(freelist);
+-
+-		freelist = freelist->freelist;
+-		free_page(p);
+-	}
+-}
+-
+-static struct page *free_pt_page(unsigned long pt, struct page *freelist)
++static void free_pt_page(unsigned long pt, struct list_head *list)
+ {
+ 	struct page *p = virt_to_page((void *)pt);
+ 
+-	p->freelist = freelist;
+-
+-	return p;
++	list_add(&p->lru, list);
+ }
+ 
+ #define DEFINE_FREE_PT_FN(LVL, FN)						\
+-static struct page *free_pt_##LVL (unsigned long __pt, struct page *freelist)	\
++static void free_pt_##LVL (unsigned long __pt, struct list_head *list)		\
+ {										\
+ 	unsigned long p;							\
+ 	u64 *pt;								\
+@@ -113,10 +101,10 @@ static struct page *free_pt_##LVL (unsigned long __pt, struct page *freelist)	\
+ 			continue;						\
+ 										\
+ 		p = (unsigned long)IOMMU_PTE_PAGE(pt[i]);			\
+-		freelist = FN(p, freelist);					\
++		FN(p, list);							\
+ 	}									\
+ 										\
+-	return free_pt_page((unsigned long)pt, freelist);			\
++	free_pt_page((unsigned long)pt, list);					\
+ }
+ 
+ DEFINE_FREE_PT_FN(l2, free_pt_page)
+@@ -125,36 +113,33 @@ DEFINE_FREE_PT_FN(l4, free_pt_l3)
+ DEFINE_FREE_PT_FN(l5, free_pt_l4)
+ DEFINE_FREE_PT_FN(l6, free_pt_l5)
+ 
+-static struct page *free_sub_pt(unsigned long root, int mode,
+-				struct page *freelist)
++static void free_sub_pt(unsigned long root, int mode, struct list_head *list)
+ {
+ 	switch (mode) {
+ 	case PAGE_MODE_NONE:
+ 	case PAGE_MODE_7_LEVEL:
+ 		break;
+ 	case PAGE_MODE_1_LEVEL:
+-		freelist = free_pt_page(root, freelist);
++		free_pt_page(root, list);
+ 		break;
+ 	case PAGE_MODE_2_LEVEL:
+-		freelist = free_pt_l2(root, freelist);
++		free_pt_l2(root, list);
+ 		break;
+ 	case PAGE_MODE_3_LEVEL:
+-		freelist = free_pt_l3(root, freelist);
++		free_pt_l3(root, list);
+ 		break;
+ 	case PAGE_MODE_4_LEVEL:
+-		freelist = free_pt_l4(root, freelist);
++		free_pt_l4(root, list);
+ 		break;
+ 	case PAGE_MODE_5_LEVEL:
+-		freelist = free_pt_l5(root, freelist);
++		free_pt_l5(root, list);
+ 		break;
+ 	case PAGE_MODE_6_LEVEL:
+-		freelist = free_pt_l6(root, freelist);
++		free_pt_l6(root, list);
+ 		break;
+ 	default:
+ 		BUG();
+ 	}
+-
+-	return freelist;
+ }
+ 
+ void amd_iommu_domain_set_pgtable(struct protection_domain *domain,
+@@ -362,7 +347,7 @@ static u64 *fetch_pte(struct amd_io_pgtable *pgtable,
+ 	return pte;
+ }
+ 
+-static struct page *free_clear_pte(u64 *pte, u64 pteval, struct page *freelist)
++static void free_clear_pte(u64 *pte, u64 pteval, struct list_head *list)
+ {
+ 	unsigned long pt;
+ 	int mode;
+@@ -373,12 +358,12 @@ static struct page *free_clear_pte(u64 *pte, u64 pteval, struct page *freelist)
+ 	}
+ 
+ 	if (!IOMMU_PTE_PRESENT(pteval))
+-		return freelist;
++		return;
+ 
+ 	pt   = (unsigned long)IOMMU_PTE_PAGE(pteval);
+ 	mode = IOMMU_PTE_MODE(pteval);
+ 
+-	return free_sub_pt(pt, mode, freelist);
++	free_sub_pt(pt, mode, list);
+ }
+ 
+ /*
+@@ -392,7 +377,7 @@ static int iommu_v1_map_page(struct io_pgtable_ops *ops, unsigned long iova,
+ 			  phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
+ {
+ 	struct protection_domain *dom = io_pgtable_ops_to_domain(ops);
+-	struct page *freelist = NULL;
++	LIST_HEAD(freelist);
+ 	bool updated = false;
+ 	u64 __pte, *pte;
+ 	int ret, i, count;
+@@ -412,9 +397,9 @@ static int iommu_v1_map_page(struct io_pgtable_ops *ops, unsigned long iova,
+ 		goto out;
+ 
+ 	for (i = 0; i < count; ++i)
+-		freelist = free_clear_pte(&pte[i], pte[i], freelist);
++		free_clear_pte(&pte[i], pte[i], &freelist);
+ 
+-	if (freelist != NULL)
++	if (!list_empty(&freelist))
+ 		updated = true;
+ 
+ 	if (count > 1) {
+@@ -449,7 +434,7 @@ static int iommu_v1_map_page(struct io_pgtable_ops *ops, unsigned long iova,
+ 	}
+ 
+ 	/* Everything flushed out, free pages now */
+-	free_page_list(freelist);
++	put_pages_list(&freelist);
+ 
+ 	return ret;
+ }
+@@ -511,7 +496,7 @@ static void v1_free_pgtable(struct io_pgtable *iop)
+ {
+ 	struct amd_io_pgtable *pgtable = container_of(iop, struct amd_io_pgtable, iop);
+ 	struct protection_domain *dom;
+-	struct page *freelist = NULL;
++	LIST_HEAD(freelist);
+ 	unsigned long root;
+ 
+ 	if (pgtable->mode == PAGE_MODE_NONE)
+@@ -530,9 +515,9 @@ static void v1_free_pgtable(struct io_pgtable *iop)
+ 	       pgtable->mode > PAGE_MODE_6_LEVEL);
+ 
+ 	root = (unsigned long)pgtable->root;
+-	freelist = free_sub_pt(root, pgtable->mode, freelist);
++	free_sub_pt(root, pgtable->mode, &freelist);
+ 
+-	free_page_list(freelist);
++	put_pages_list(&freelist);
+ }
+ 
+ static struct io_pgtable *v1_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index b42e38a0dbe2..e61881c2c258 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -66,14 +66,7 @@ early_param("iommu.forcedac", iommu_dma_forcedac_setup);
+ 
+ static void iommu_dma_entry_dtor(unsigned long data)
+ {
+-	struct page *freelist = (struct page *)data;
+-
+-	while (freelist) {
+-		unsigned long p = (unsigned long)page_address(freelist);
+-
+-		freelist = freelist->freelist;
+-		free_page(p);
+-	}
++	put_pages_list((struct list_head *)data);
+ }
+ 
+ static inline size_t cookie_msi_granule(struct iommu_dma_cookie *cookie)
+@@ -479,7 +472,7 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
+ 	else if (gather && gather->queued)
+ 		queue_iova(iovad, iova_pfn(iovad, iova),
+ 				size >> iova_shift(iovad),
+-				(unsigned long)gather->freelist);
++				(unsigned long)&gather->freelist);
+ 	else
+ 		free_iova_fast(iovad, iova_pfn(iovad, iova),
+ 				size >> iova_shift(iovad));
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index b6a8f3282411..cd2ec6779cac 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1303,35 +1303,30 @@ static void dma_pte_free_pagetable(struct dmar_domain *domain,
+    know the hardware page-walk will no longer touch them.
+    The 'pte' argument is the *parent* PTE, pointing to the page that is to
+    be freed. */
+-static struct page *dma_pte_list_pagetables(struct dmar_domain *domain,
+-					    int level, struct dma_pte *pte,
+-					    struct page *freelist)
++static void dma_pte_list_pagetables(struct dmar_domain *domain,
++				    int level, struct dma_pte *pte,
++				    struct list_head *list)
+ {
+ 	struct page *pg;
+ 
+ 	pg = pfn_to_page(dma_pte_addr(pte) >> PAGE_SHIFT);
+-	pg->freelist = freelist;
+-	freelist = pg;
++	list_add(&pg->lru, list);
+ 
+ 	if (level == 1)
+-		return freelist;
++		return;
+ 
+ 	pte = page_address(pg);
+ 	do {
+ 		if (dma_pte_present(pte) && !dma_pte_superpage(pte))
+-			freelist = dma_pte_list_pagetables(domain, level - 1,
+-							   pte, freelist);
++			dma_pte_list_pagetables(domain, level - 1, pte, list);
+ 		pte++;
+ 	} while (!first_pte_in_page(pte));
+-
+-	return freelist;
+ }
+ 
+-static struct page *dma_pte_clear_level(struct dmar_domain *domain, int level,
+-					struct dma_pte *pte, unsigned long pfn,
+-					unsigned long start_pfn,
+-					unsigned long last_pfn,
+-					struct page *freelist)
++static void dma_pte_clear_level(struct dmar_domain *domain, int level,
++				struct dma_pte *pte, unsigned long pfn,
++				unsigned long start_pfn, unsigned long last_pfn,
++				struct list_head *list)
+ {
+ 	struct dma_pte *first_pte = NULL, *last_pte = NULL;
+ 
+@@ -1350,7 +1345,7 @@ static struct page *dma_pte_clear_level(struct dmar_domain *domain, int level,
+ 			/* These suborbinate page tables are going away entirely. Don't
+ 			   bother to clear them; we're just going to *free* them. */
+ 			if (level > 1 && !dma_pte_superpage(pte))
+-				freelist = dma_pte_list_pagetables(domain, level - 1, pte, freelist);
++				dma_pte_list_pagetables(domain, level - 1, pte, list);
+ 
+ 			dma_clear_pte(pte);
+ 			if (!first_pte)
+@@ -1358,10 +1353,10 @@ static struct page *dma_pte_clear_level(struct dmar_domain *domain, int level,
+ 			last_pte = pte;
+ 		} else if (level > 1) {
+ 			/* Recurse down into a level that isn't *entirely* obsolete */
+-			freelist = dma_pte_clear_level(domain, level - 1,
+-						       phys_to_virt(dma_pte_addr(pte)),
+-						       level_pfn, start_pfn, last_pfn,
+-						       freelist);
++			dma_pte_clear_level(domain, level - 1,
++					    phys_to_virt(dma_pte_addr(pte)),
++					    level_pfn, start_pfn, last_pfn,
++					    list);
+ 		}
+ next:
+ 		pfn = level_pfn + level_size(level);
+@@ -1370,47 +1365,28 @@ static struct page *dma_pte_clear_level(struct dmar_domain *domain, int level,
+ 	if (first_pte)
+ 		domain_flush_cache(domain, first_pte,
+ 				   (void *)++last_pte - (void *)first_pte);
+-
+-	return freelist;
+ }
+ 
+ /* We can't just free the pages because the IOMMU may still be walking
+    the page tables, and may have cached the intermediate levels. The
+    pages can only be freed after the IOTLB flush has been done. */
+-static struct page *domain_unmap(struct dmar_domain *domain,
+-				 unsigned long start_pfn,
+-				 unsigned long last_pfn,
+-				 struct page *freelist)
++static void domain_unmap(struct dmar_domain *domain, unsigned long start_pfn,
++			 unsigned long last_pfn, struct list_head *list)
+ {
+ 	BUG_ON(!domain_pfn_supported(domain, start_pfn));
+ 	BUG_ON(!domain_pfn_supported(domain, last_pfn));
+ 	BUG_ON(start_pfn > last_pfn);
+ 
+ 	/* we don't need lock here; nobody else touches the iova range */
+-	freelist = dma_pte_clear_level(domain, agaw_to_level(domain->agaw),
+-				       domain->pgd, 0, start_pfn, last_pfn,
+-				       freelist);
++	dma_pte_clear_level(domain, agaw_to_level(domain->agaw),
++			    domain->pgd, 0, start_pfn, last_pfn, list);
+ 
+ 	/* free pgd */
+ 	if (start_pfn == 0 && last_pfn == DOMAIN_MAX_PFN(domain->gaw)) {
+ 		struct page *pgd_page = virt_to_page(domain->pgd);
+-		pgd_page->freelist = freelist;
+-		freelist = pgd_page;
+-
++		list_add(&pgd_page->lru, list);
+ 		domain->pgd = NULL;
+ 	}
+-
+-	return freelist;
+-}
+-
+-static void dma_free_pagelist(struct page *freelist)
+-{
+-	struct page *pg;
+-
+-	while ((pg = freelist)) {
+-		freelist = pg->freelist;
+-		free_pgtable_page(page_address(pg));
+-	}
+ }
+ 
+ /* iommu handling */
+@@ -2095,11 +2071,10 @@ static void domain_exit(struct dmar_domain *domain)
+ 	domain_remove_dev_info(domain);
+ 
+ 	if (domain->pgd) {
+-		struct page *freelist;
++		LIST_HEAD(pages);
+ 
+-		freelist = domain_unmap(domain, 0,
+-					DOMAIN_MAX_PFN(domain->gaw), NULL);
+-		dma_free_pagelist(freelist);
++		domain_unmap(domain, 0, DOMAIN_MAX_PFN(domain->gaw), &pages);
++		put_pages_list(&pages);
+ 	}
+ 
+ 	free_domain_mem(domain);
+@@ -4192,19 +4167,17 @@ static int intel_iommu_memory_notifier(struct notifier_block *nb,
+ 		{
+ 			struct dmar_drhd_unit *drhd;
+ 			struct intel_iommu *iommu;
+-			struct page *freelist;
++			LIST_HEAD(pages);
+ 
+-			freelist = domain_unmap(si_domain,
+-						start_vpfn, last_vpfn,
+-						NULL);
++			domain_unmap(si_domain, start_vpfn, last_vpfn, &pages);
+ 
+ 			rcu_read_lock();
+ 			for_each_active_iommu(iommu, drhd)
+ 				iommu_flush_iotlb_psi(iommu, si_domain,
+ 					start_vpfn, mhp->nr_pages,
+-					!freelist, 0);
++					list_empty(&pages), 0);
+ 			rcu_read_unlock();
+-			dma_free_pagelist(freelist);
++			put_pages_list(&pages);
+ 		}
+ 		break;
+ 	}
+@@ -5211,8 +5184,7 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+ 	start_pfn = iova >> VTD_PAGE_SHIFT;
+ 	last_pfn = (iova + size - 1) >> VTD_PAGE_SHIFT;
+ 
+-	gather->freelist = domain_unmap(dmar_domain, start_pfn,
+-					last_pfn, gather->freelist);
++	domain_unmap(dmar_domain, start_pfn, last_pfn, &gather->freelist);
+ 
+ 	if (dmar_domain->max_addr == iova + size)
+ 		dmar_domain->max_addr = iova;
+@@ -5248,9 +5220,10 @@ static void intel_iommu_tlb_sync(struct iommu_domain *domain,
+ 
+ 	for_each_domain_iommu(iommu_id, dmar_domain)
+ 		iommu_flush_iotlb_psi(g_iommus[iommu_id], dmar_domain,
+-				      start_pfn, nrpages, !gather->freelist, 0);
++				      start_pfn, nrpages,
++				      list_empty(&gather->freelist), 0);
+ 
+-	dma_free_pagelist(gather->freelist);
++	put_pages_list(&gather->freelist);
+ }
+ 
+ static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index d2f3435e7d17..de0c57a567c8 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -186,7 +186,7 @@ struct iommu_iotlb_gather {
+ 	unsigned long		start;
+ 	unsigned long		end;
+ 	size_t			pgsize;
+-	struct page		*freelist;
++	struct list_head	freelist;
+ 	bool			queued;
+ };
+ 
+@@ -399,6 +399,7 @@ static inline void iommu_iotlb_gather_init(struct iommu_iotlb_gather *gather)
+ {
+ 	*gather = (struct iommu_iotlb_gather) {
+ 		.start	= ULONG_MAX,
++		.freelist = LIST_HEAD_INIT(gather->freelist),
+ 	};
+ }
+ 
 -- 
 2.33.1
 
