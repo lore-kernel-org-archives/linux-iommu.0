@@ -4,74 +4,86 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 18C50C433F5
-	for <iommu@archiver.kernel.org>; Wed,  1 Dec 2021 16:29:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C9283C433EF
+	for <iommu@archiver.kernel.org>; Wed,  1 Dec 2021 17:34:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9E8C861BC5;
-	Wed,  1 Dec 2021 16:29:02 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 6641061BE7;
+	Wed,  1 Dec 2021 17:34:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MMGOKqp_y5xV; Wed,  1 Dec 2021 16:29:01 +0000 (UTC)
+	with ESMTP id KwSHXqgRmfc5; Wed,  1 Dec 2021 17:34:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 49CCA61BAD;
-	Wed,  1 Dec 2021 16:29:01 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 639CD60603;
+	Wed,  1 Dec 2021 17:34:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1AADBC000A;
-	Wed,  1 Dec 2021 16:29:01 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C6BB7C000A
- for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 16:28:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BB706C0040;
+	Wed,  1 Dec 2021 17:34:39 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D784AC0012
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 17:34:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9E22F4036F
- for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 16:28:59 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id C582581C71
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 17:34:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1Cj8KG3i8TwA for <iommu@lists.linux-foundation.org>;
- Wed,  1 Dec 2021 16:28:58 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 7470640355
- for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 16:28:58 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10185"; a="216509049"
-X-IronPort-AV: E=Sophos;i="5.87,279,1631602800"; d="scan'208";a="216509049"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 01 Dec 2021 08:28:56 -0800
-X-IronPort-AV: E=Sophos;i="5.87,279,1631602800"; d="scan'208";a="602213420"
-Received: from cjlee1-mobl1.amr.corp.intel.com (HELO [10.212.64.69])
- ([10.212.64.69])
- by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 01 Dec 2021 08:28:54 -0800
-Message-ID: <8c2262ba-173e-0007-bc4c-94ec54b2847d@intel.com>
-Date: Wed, 1 Dec 2021 09:28:52 -0700
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id IpKuzzUnTZKg for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Dec 2021 17:34:37 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com
+ [IPv6:2a00:1450:4864:20::332])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id D733B81BC2
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 17:34:36 +0000 (UTC)
+Received: by mail-wm1-x332.google.com with SMTP id
+ p27-20020a05600c1d9b00b0033bf8532855so1729631wms.3
+ for <iommu@lists.linux-foundation.org>; Wed, 01 Dec 2021 09:34:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=hUrXQwIfEJVWh6hdGtsCtY1XLEUSUBHNz/xuvNP25sA=;
+ b=qBndB82iTaFzAh8I1/ZWCrjDRO0mKHRUdE0yCtmNAJd3t4bddB9qlIwuY3LtOlmQ/o
+ b4ETIJGLSao+KPSG/LMVRS0BUIe2NNPO+g6UkpZHVlUW52tu6sjp3fmca6Gc/0cgBL4l
+ rNOHIAQ7f/heKHl1nfW0gSZperjQRUnTnTIDq7MwJ3Q2o0cdrqA7BHxlQwlw0hKFn0mt
+ XyFHCrDUHKUoZTe3ek5+//bxCfx5GK6+lCZufwPVDA8ipd+RVbIB6eUTRY9yGpMgKRI+
+ CWEw7n6MUvzGzNtvXcRLsBhKa0wKnUMyZ9bvjxurpaUjCjaNG652k0UESWpmLJRDotUf
+ wdBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=hUrXQwIfEJVWh6hdGtsCtY1XLEUSUBHNz/xuvNP25sA=;
+ b=qxlmvqACmKhuoMl13tHEdHpZ81k1e1SGciFFuvRneRI/o2q/Z0azdo+Blby+HSt3s8
+ Qth8ktBbO9dHNL7uuSExXBEj4abpF2wOD5JuNHBTckui4sX3HMcnKa73rNkKfRkwWOH7
+ XqqeYZIc8N16x01I+JQ+i08iM/5T00VLT/NniUWGEa+1mpAYBI/hULi2HPTT0bC0jP6Y
+ 6d3twab4mahLoPXHP2Qs/dUzHxmB/fT7OdlGCLYg4iIMzLSL5vCPgn4bpECIhkGBod32
+ rVcY7Mww4zEfH4oZ+sPUCi9VWBe4GKysxGm957WydysZYHpsPT8keSctfFF1w4Dm0O6h
+ RhcA==
+X-Gm-Message-State: AOAM531WXMEZm/+Mnpit5oHjRpofUHFdKp4XkS3+9LROtm2BNcsrM8YC
+ oV8RnbGR3vG32waP8kMntb+Uew==
+X-Google-Smtp-Source: ABdhPJwRYM3Ctiffulx14kVjAzQCuPr8zqmd2uDQdHGJ3qdq2CZIiqZXJaQ2EX52z0/BATyyGH1uDw==
+X-Received: by 2002:a1c:7ed3:: with SMTP id z202mr8754622wmc.110.1638380074883; 
+ Wed, 01 Dec 2021 09:34:34 -0800 (PST)
+Received: from localhost.localdomain
+ (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+ by smtp.gmail.com with ESMTPSA id q8sm360023wrx.71.2021.12.01.09.34.33
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 01 Dec 2021 09:34:34 -0800 (PST)
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: joro@8bytes.org,
+	will@kernel.org,
+	mst@redhat.com,
+	jasowang@redhat.com
+Subject: [PATCH v3 0/5] iommu/virtio: Add identity domains
+Date: Wed,  1 Dec 2021 17:33:20 +0000
+Message-Id: <20211201173323.1045819-1-jean-philippe@linaro.org>
+X-Mailer: git-send-email 2.34.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [patch 21/32] NTB/msi: Convert to msi_on_each_desc()
-Content-Language: en-US
-To: Thomas Gleixner <tglx@linutronix.de>, Jason Gunthorpe <jgg@nvidia.com>
-References: <20211126230957.239391799@linutronix.de>
- <20211126232735.547996838@linutronix.de>
- <7daba0e2-73a3-4980-c3a5-a71f6b597b22@deltatee.com> <874k7ueldt.ffs@tglx>
- <6ba084d6-2b26-7c86-4526-8fcd3d921dfd@deltatee.com> <87ilwacwp8.ffs@tglx>
- <d6f13729-1b83-fa7d-3f0d-98d4e3f7a2aa@deltatee.com> <87v909bf2k.ffs@tglx>
- <20211130202800.GE4670@nvidia.com> <87o861banv.ffs@tglx>
- <20211201001748.GF4670@nvidia.com> <87mtlkaauo.ffs@tglx>
-From: Dave Jiang <dave.jiang@intel.com>
-In-Reply-To: <87mtlkaauo.ffs@tglx>
-Cc: Allen Hubbe <allenbh@gmail.com>, linux-s390@vger.kernel.org,
- Kevin Tian <kevin.tian@intel.com>, x86@kernel.org,
- Ashok Raj <ashok.raj@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marc Zygnier <maz@kernel.org>,
- Heiko Carstens <hca@linux.ibm.com>, LKML <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org,
- Christian Borntraeger <borntraeger@de.ibm.com>,
- Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>,
- Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org,
- linux-ntb@googlegroups.com, Logan Gunthorpe <logang@deltatee.com>,
- Megha Dey <megha.dey@intel.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, kevin.tian@intel.com,
+ virtualization@lists.linux-foundation.org, pasic@linux.ibm.com,
+ iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,93 +96,46 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Support identity domains, allowing to only enable IOMMU protection for a
+subset of endpoints (those assigned to userspace, for example). Users
+may enable identity domains at compile time
+(CONFIG_IOMMU_DEFAULT_PASSTHROUGH), boot time (iommu.passthrough=1) or
+runtime (/sys/kernel/iommu_groups/*/type = identity).
 
-On 12/1/2021 3:16 AM, Thomas Gleixner wrote:
-> Jason,
->
-> CC+ IOMMU folks
->
-> On Tue, Nov 30 2021 at 20:17, Jason Gunthorpe wrote:
->> On Tue, Nov 30, 2021 at 10:23:16PM +0100, Thomas Gleixner wrote:
->>> The real problem is where to store the MSI descriptors because the PCI
->>> device has its own real PCI/MSI-X interrupts which means it still shares
->>> the storage space.
->> Er.. I never realized that just looking at the patches :|
->>
->> That is relevant to all real "IMS" users. IDXD escaped this because
->> it, IMHO, wrongly used the mdev with the IRQ layer. The mdev is purely
->> a messy artifact of VFIO, it should not be required to make the IRQ
->> layers work.
->> I don't think it makes sense that the msi_desc would point to a mdev,
->> the iommu layer consumes the msi_desc_to_dev(), it really should point
->> to the physical device that originates the message with a proper
->> iommu ops/data/etc.
-> Looking at the device slices as subdevices with their own struct device
-> makes a lot of sense from the conceptual level. That makes is pretty
-> much obvious to manage the MSIs of those devices at this level like we
-> do for any other device.
->
-> Whether mdev is the right encapsulation for these subdevices is an
-> orthogonal problem.
->
-> I surely agree that msi_desc::dev is an interesting question, but we
-> already have this disconnect of msi_desc::dev and DMA today due to DMA
-> aliasing. I haven't looked at that in detail yet, but of course the
-> alias handling is substantially different accross the various IOMMU
-> implementations.
->
-> Though I fear there is also a use case for MSI-X and IMS tied to the
-> same device. That network card you are talking about might end up using
-> MSI-X for a control block and then IMS for the actual network queues
-> when it is used as physical function device as a whole, but that's
-> conceptually a different case.
+Since v2 [1] I fixed the padding in patch 1 and a rebase error in patch
+5, reported by Eric.
 
-Hi Thomas. This is actually the IDXD usage for a mediated device passed 
-to a guest kernel when we plumb the pass through of IMS to the guest 
-rather than doing previous implementation of having a MSIX vector on 
-guest backed by IMS. The control block for the mediated device is 
-emulated and therefore an emulated MSIX vector will be surfaced as 
-vector 0. However the queues will backed by IMS vectors. So we end up 
-needing MSIX and IMS coexist running on the guest kernel for the same 
-device.
+Patches 1-2 support identity domains using the optional
+VIRTIO_IOMMU_F_BYPASS_CONFIG feature, which was accepted into the spec
+[2]. Patches 3-5 add a fallback to identity mappings, when the feature
+is not supported.
 
-DJ
+QEMU patches are on my virtio-iommu/bypass branch [3], and depend on the
+UAPI update.
 
->
->>> I'm currently tending to partition the index space in the xarray:
->>>
->>>   0x00000000 - 0x0000ffff          PCI/MSI-X
->>>   0x00010000 - 0x0001ffff          NTB
->> It is OK, with some xarray work it can be range allocating & reserving
->> so that the msi_domain_alloc_irqs() flows can carve out chunks of the
->> number space..
->>
->> Another view is the msi_domain_alloc_irqs() flows should have their
->> own xarrays..
-> Yes, I was thinking about that as well. The trivial way would be:
->
->      struct xarray     store[MSI_MAX_STORES];
->
-> and then have a store index for each allocation domain. With the
-> proposed encapsulation of the xarray handling that's definitely
-> feasible. Whether that buys much is a different question. Let me think
-> about it some more.
->
->>> which is feasible now with the range modifications and way simpler to do
->>> with xarray than with the linked list.
->> Indeed!
-> I'm glad you like the approach.
->
-> Thanks,
->
->          tglx
->
->
+[1] https://lore.kernel.org/linux-iommu/20211123155301.1047943-1-jean-philippe@linaro.org/
+[2] https://github.com/oasis-tcs/virtio-spec/issues/119
+[3] https://jpbrucker.net/git/qemu/log/?h=virtio-iommu/bypass
+
+Jean-Philippe Brucker (5):
+  iommu/virtio: Add definitions for VIRTIO_IOMMU_F_BYPASS_CONFIG
+  iommu/virtio: Support bypass domains
+  iommu/virtio: Sort reserved regions
+  iommu/virtio: Pass end address to viommu_add_mapping()
+  iommu/virtio: Support identity-mapped domains
+
+ include/uapi/linux/virtio_iommu.h |   8 ++-
+ drivers/iommu/virtio-iommu.c      | 113 +++++++++++++++++++++++++-----
+ 2 files changed, 101 insertions(+), 20 deletions(-)
+
+-- 
+2.34.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
