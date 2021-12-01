@@ -1,89 +1,86 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3F6A2C433EF
-	for <iommu@archiver.kernel.org>; Wed,  1 Dec 2021 17:34:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DA790C433FE
+	for <iommu@archiver.kernel.org>; Wed,  1 Dec 2021 17:35:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id B581D61BE2;
-	Wed,  1 Dec 2021 17:34:47 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 89D1840173;
+	Wed,  1 Dec 2021 17:35:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id H5HdRzXsMELX; Wed,  1 Dec 2021 17:34:46 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id szA3URleuVim; Wed,  1 Dec 2021 17:35:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 8C4C0607AF;
-	Wed,  1 Dec 2021 17:34:46 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id C53BA40168;
+	Wed,  1 Dec 2021 17:35:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 69149C0012;
-	Wed,  1 Dec 2021 17:34:46 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AA9CAC0012
- for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 17:34:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A5B09C000A;
+	Wed,  1 Dec 2021 17:35:41 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5833FC000A
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 17:35:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id A18CA61BEF
- for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 17:34:44 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 392EC82AB6
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 17:35:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tyEtqWN0Dmkx for <iommu@lists.linux-foundation.org>;
- Wed,  1 Dec 2021 17:34:41 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com
- [IPv6:2a00:1450:4864:20::331])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A45F161BE9
- for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 17:34:41 +0000 (UTC)
-Received: by mail-wm1-x331.google.com with SMTP id
- m25-20020a7bcb99000000b0033aa12cdd33so1283359wmi.1
- for <iommu@lists.linux-foundation.org>; Wed, 01 Dec 2021 09:34:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=Ht2VzoGN+S/PkTX664g1y/SfBIF5stVyopXayUTwdMM=;
- b=KQgNyfaK/CGS4b7aWmii+Hs6TH4TTgdXnJGQJ5q96JWJEMWJ83/tDDCjUCRzk8U7OZ
- t6uZ/5LnrmAA8w5miu3T4KhAh5JBTBNFI60zU6Bb8SHobIFErGXf7tVjgWRGx7zglGNC
- COWDNtj8v8WYgYXysN9JscXE7ySnunB9S6uB4flJHl+ZApHrdxN8pWKgdeZywFlX60px
- UisAHl7PgFa26g9VW6gQP943bsokJ/3rRF28tOMavhqqiNdVRTYI6PJMob3YQ6xCJKwl
- ZSugGTswvLOtBQP3ZVL3x/yYv8GZHrvBTIPcyiUgnlaHNTEIxWpzTlBqu66eMfZ0uT8m
- 8vjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=Ht2VzoGN+S/PkTX664g1y/SfBIF5stVyopXayUTwdMM=;
- b=qX0NF70907P/dNsWW7avfrJjBjEsuzIZtZtHsWOmwIM9rZT//ZAAMSVl0t5zVpJm5C
- SGIGnDaJg0gNnCfFvrAepw1+IUMe4Abm2/wR5ZTXsGCwc+WnxY0BefID+i8UZuzoaMV6
- zQZ35IZVZgloBWpX2Om6N8e6BUiQ+nJlr2hN88Iv5P8wMbnfgIYlXZOhwnnzo0NQxipc
- /og7tIkqEUXWudUIGmX7jPoPnOw/FWwYPQl3LdgNUPy2I56uTq936nv1Aaky1LSbc79E
- P5SpPwF7vuIptrFm4Dwpf5B9dWnlxa1prZsqoiNNXkvz6XwLoqdm7r8ejRhhC2thXB2U
- TK+g==
-X-Gm-Message-State: AOAM531Oz2RSp5Q/GxyebtNAdQkDkFDvh2NEzcyHptJfHP3R+Y6v1uR8
- LV6EEkp0wvRRapKtcHnU0ys/XQ==
-X-Google-Smtp-Source: ABdhPJwT+pu91liuF3w9bR5qfSx/F3ol9Pk2QBWzIgI1VOYNlToxql1cSlVGhQM68pLu5noVrYqfAQ==
-X-Received: by 2002:a1c:1c8:: with SMTP id 191mr8642371wmb.90.1638380079899;
- Wed, 01 Dec 2021 09:34:39 -0800 (PST)
-Received: from localhost.localdomain
- (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
- by smtp.gmail.com with ESMTPSA id q8sm360023wrx.71.2021.12.01.09.34.39
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 01 Dec 2021 09:34:39 -0800 (PST)
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: joro@8bytes.org,
-	will@kernel.org,
-	mst@redhat.com,
-	jasowang@redhat.com
-Subject: [PATCH v3 5/5] iommu/virtio: Support identity-mapped domains
-Date: Wed,  1 Dec 2021 17:33:25 +0000
-Message-Id: <20211201173323.1045819-6-jean-philippe@linaro.org>
-X-Mailer: git-send-email 2.34.0
-In-Reply-To: <20211201173323.1045819-1-jean-philippe@linaro.org>
-References: <20211201173323.1045819-1-jean-philippe@linaro.org>
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="Pt+06zaI";
+ dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
+ header.d=linutronix.de header.b="MnhqyMiR"
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Ii-TVDPfYlTu for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Dec 2021 17:35:39 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 2D9D4828B3
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 17:35:39 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020; t=1638380135;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=Wl46BdwZ1KGmv50G3jfsI0iPOejQIWMQSjLutgaOqHk=;
+ b=Pt+06zaIN+XpTYcehYRys4HS6+cE2m00/PDyN9TVIqeywPk9TTKPncOzAFiuKRSxOoNPqI
+ AIVc5kWzV7DZUepaLnecpQSpeilOo7HLcvABG0FHIM99zFsj6YzMuKoxBIMB2mIDHDvWPF
+ WXoI8orNajSMfj/abMIouU/kReMZpmDjvA+dmGmp8L9lqueEILj0Y0HXBPxUo5O8RSP88C
+ yr/AToa8X9keo82ZrPu4y700gVV5afLfh3oCl/0OThPa+UJI1XHydF4PfhiY5m57ipzz6W
+ L1I8Kt9UNYWk+vEoTJzmxbnGYdcT0Zq7nFWc9XJ2N4OWIbexFvFzd88vDoSGrA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020e; t=1638380135;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=Wl46BdwZ1KGmv50G3jfsI0iPOejQIWMQSjLutgaOqHk=;
+ b=MnhqyMiRcxE0SVcEGB/228XRCWh7TIQj1mDZaA2bSHkC/rEWlG373NhsYy4dvo0s23asR9
+ YhsM2tmL5EKUQkBw==
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [patch 21/32] NTB/msi: Convert to msi_on_each_desc()
+In-Reply-To: <20211201130023.GH4670@nvidia.com>
+References: <7daba0e2-73a3-4980-c3a5-a71f6b597b22@deltatee.com>
+ <874k7ueldt.ffs@tglx> <6ba084d6-2b26-7c86-4526-8fcd3d921dfd@deltatee.com>
+ <87ilwacwp8.ffs@tglx> <d6f13729-1b83-fa7d-3f0d-98d4e3f7a2aa@deltatee.com>
+ <87v909bf2k.ffs@tglx> <20211130202800.GE4670@nvidia.com>
+ <87o861banv.ffs@tglx> <20211201001748.GF4670@nvidia.com>
+ <87mtlkaauo.ffs@tglx> <20211201130023.GH4670@nvidia.com>
+Date: Wed, 01 Dec 2021 18:35:35 +0100
+Message-ID: <87y2548byw.ffs@tglx>
 MIME-Version: 1.0
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, kevin.tian@intel.com,
- virtualization@lists.linux-foundation.org, pasic@linux.ibm.com,
- iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com
+Cc: Allen Hubbe <allenbh@gmail.com>, linux-s390@vger.kernel.org,
+ Kevin Tian <kevin.tian@intel.com>, x86@kernel.org,
+ Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marc Zygnier <maz@kernel.org>,
+ Heiko Carstens <hca@linux.ibm.com>, LKML <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org,
+ Christian Borntraeger <borntraeger@de.ibm.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+ Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org,
+ linux-ntb@googlegroups.com, Logan Gunthorpe <logang@deltatee.com>,
+ Megha Dey <megha.dey@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,113 +98,151 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Support identity domains for devices that do not offer the
-VIRTIO_IOMMU_F_BYPASS_CONFIG feature, by creating 1:1 mappings between
-the virtual and physical address space. Identity domains created this
-way still perform noticeably better than DMA domains, because they don't
-have the overhead of setting up and tearing down mappings at runtime.
-The performance difference between this and bypass is minimal in
-comparison.
+On Wed, Dec 01 2021 at 09:00, Jason Gunthorpe wrote:
+> On Wed, Dec 01, 2021 at 11:16:47AM +0100, Thomas Gleixner wrote:
+>> Looking at the device slices as subdevices with their own struct device
+>> makes a lot of sense from the conceptual level.
+>
+> Except IMS is not just for subdevices, it should be usable for any
+> driver in any case as a general interrupt mechiansm, as you alluded to
+> below about ethernet queues. ntb seems to be the current example of
+> this need..
 
-It does not matter that the physical addresses in the identity mappings
-do not all correspond to memory. By enabling passthrough we are trusting
-the device driver and the device itself to only perform DMA to suitable
-locations. In some cases it may even be desirable to perform DMA to MMIO
-regions.
+But NTB is operating through an abstraction layer and is not a direct
+PCIe device driver.
 
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
----
- drivers/iommu/virtio-iommu.c | 61 +++++++++++++++++++++++++++++++++---
- 1 file changed, 57 insertions(+), 4 deletions(-)
+> IDXD is not so much making device "slices", but virtualizing and
+> sharing a PCI device. The IDXD hardware is multi-queue like the NIC I
+> described and the VFIO driver is simply allocating queues from a PCI
+> device for specific usages and assigning them interrupts.
 
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 2fa370c2659c..6a8a52b4297b 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -375,6 +375,55 @@ static size_t viommu_del_mappings(struct viommu_domain *vdomain,
- 	return unmapped;
- }
- 
-+/*
-+ * Fill the domain with identity mappings, skipping the device's reserved
-+ * regions.
-+ */
-+static int viommu_domain_map_identity(struct viommu_endpoint *vdev,
-+				      struct viommu_domain *vdomain)
-+{
-+	int ret;
-+	struct iommu_resv_region *resv;
-+	u64 iova = vdomain->domain.geometry.aperture_start;
-+	u64 limit = vdomain->domain.geometry.aperture_end;
-+	u32 flags = VIRTIO_IOMMU_MAP_F_READ | VIRTIO_IOMMU_MAP_F_WRITE;
-+	unsigned long granule = 1UL << __ffs(vdomain->domain.pgsize_bitmap);
-+
-+	iova = ALIGN(iova, granule);
-+	limit = ALIGN_DOWN(limit + 1, granule) - 1;
-+
-+	list_for_each_entry(resv, &vdev->resv_regions, list) {
-+		u64 resv_start = ALIGN_DOWN(resv->start, granule);
-+		u64 resv_end = ALIGN(resv->start + resv->length, granule) - 1;
-+
-+		if (resv_end < iova || resv_start > limit)
-+			/* No overlap */
-+			continue;
-+
-+		if (resv_start > iova) {
-+			ret = viommu_add_mapping(vdomain, iova, resv_start - 1,
-+						 (phys_addr_t)iova, flags);
-+			if (ret)
-+				goto err_unmap;
-+		}
-+
-+		if (resv_end >= limit)
-+			return 0;
-+
-+		iova = resv_end + 1;
-+	}
-+
-+	ret = viommu_add_mapping(vdomain, iova, limit, (phys_addr_t)iova,
-+				 flags);
-+	if (ret)
-+		goto err_unmap;
-+	return 0;
-+
-+err_unmap:
-+	viommu_del_mappings(vdomain, 0, iova);
-+	return ret;
-+}
-+
- /*
-  * viommu_replay_mappings - re-send MAP requests
-  *
-@@ -637,14 +686,18 @@ static int viommu_domain_finalise(struct viommu_endpoint *vdev,
- 	vdomain->viommu		= viommu;
- 
- 	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
--		if (!virtio_has_feature(viommu->vdev,
--					VIRTIO_IOMMU_F_BYPASS_CONFIG)) {
-+		if (virtio_has_feature(viommu->vdev,
-+				       VIRTIO_IOMMU_F_BYPASS_CONFIG)) {
-+			vdomain->bypass = true;
-+			return 0;
-+		}
-+
-+		ret = viommu_domain_map_identity(vdev, vdomain);
-+		if (ret) {
- 			ida_free(&viommu->domain_ids, vdomain->id);
- 			vdomain->viommu = NULL;
- 			return -EOPNOTSUPP;
- 		}
--
--		vdomain->bypass = true;
- 	}
- 
- 	return 0;
--- 
-2.34.0
+Right.
 
+But what is the representation for that resulting device? Some VFIO
+specific homebrewn muck or something which is based on struct device?
+
+Right now with VF passthrough, I can see the interrupts which are
+associated to the device.
+
+How is that going to be with something which is just made up? Does that
+expose it's own msi properties then somewhere hidden in the VFIO layer?
+
+See below.
+
+> There is already a char dev interface that equally allocates queues
+> from the same IDXD device, why shouldn't it be able to access IMS
+> interrupt pools too?
+
+Why wouldn't it be able to do so?
+
+> IMHO a well designed IDXD driver should put all the PCI MMIO, queue
+> mangement, interrupts, etc in the PCI driver layer, and the VFIO
+> driver layer should only deal with the MMIO trapping and VFIO
+> interfacing.
+>
+> From this view it is conceptually wrong to have the VFIO driver
+> directly talking to MMIO registers in the PCI device or owning the
+> irq_chip.
+
+The VFIO driver does not own the irq chip ever. The irq chip is of
+course part of the underlying infrastructure. I never asked for that.
+
+PCIe driver
+     Owns the PCI/MSI[x] interrupts for the control block
+
+     Has a control mechanism which handles queues or whatever the
+     device is partitioned into, that's what I called slice.
+
+     The irqdomain is part of that control mechanism and the irqchip
+     implementation belongs to that as well. It has to because the
+     message store is device specific.
+
+     Whether the doamin and chip implementation is in a separate
+     drivers/irqchip/foo.c file for sharing or directly built into the
+     PCIe driver itself does not matter.
+
+     When it allocates a slice for whatever usage then it also
+     allocates the IMS interrupts (though the VFIO people want to
+     have only one and do the allocations later on demand).
+
+     That allocation cannot be part of the PCI/MSIx interrupt
+     domain as we already agreed on.
+
+We have several problems to solve. Let me look at it from both point of
+views:
+
+    1) Storage
+
+       A) Having "subdevices" solves the storage problem nicely and
+          makes everything just fall in place. Even for a purely
+          physical multiqueue device one can argue that each queue is a
+          "subdevice" of the physical device. The fact that we lump them
+          all together today is not an argument against that.
+
+       B) Requires extra storage in the PCIe device and extra storage
+          per subdevice, queue to keep track of the interrupts which
+          are associated to it.
+
+    2) Exposure of VFIO interrupts via sysfs
+
+       A) Just works
+
+       B) Requires extra mechanisms to expose it
+
+    3) On demand expansion of the vectors for VFIO
+
+       A) Just works because the device has an irqdomain assigned.
+
+       B) Requires extra indirections to do that
+
+    4) IOMMU msi_desc::dev
+
+       A) I think that's reasonably simple to address by having the
+          relationship to the underlying PCIe device stored in struct
+          device, which is not really adding any complexity to the IOMMU
+          code.
+
+          Quite the contrary it could be used to make the DMA aliasing a
+          problem of device setup time and not a lookup per interrupt
+          allocation in the IOMMU code.
+
+       B) No change required.
+
+    4) PASID
+
+       While an Intel IDXD specific issue, it want's to be solved
+       without any nasty hacks.
+
+       A) Having a "subdevice" allows to associate the PASID with the
+          underlying struct device which makes IOMMU integration trivial
+
+       B) Needs some other custom hackery to get that solved
+
+So both variants come with their ups and downs.
+
+IMO A) is the right thing to do when looking at all the involved moving
+pieces.
+
+> It would be very odd for the PCI driver to allocate interrupts from
+> some random external struct device when it is creating queues on the
+> PCI device.
+
+No. That's not what I want.
+
+>> and then have a store index for each allocation domain. With the
+>> proposed encapsulation of the xarray handling that's definitely
+>> feasible. Whether that buys much is a different question. Let me think
+>> about it some more.
+>
+> Any possibility that the 'IMS' xarray could be outside the struct
+> device?
+
+We could, but we really want to keep things tied to devices which is the
+right thing to do.
+
+Thanks,
+
+        tglx
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
