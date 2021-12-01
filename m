@@ -1,155 +1,108 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 35B3BC433EF
-	for <iommu@archiver.kernel.org>; Wed,  1 Dec 2021 18:14:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 81B43C433EF
+	for <iommu@archiver.kernel.org>; Wed,  1 Dec 2021 18:15:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id BC1B841CB4;
-	Wed,  1 Dec 2021 18:14:14 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 1548B40534;
+	Wed,  1 Dec 2021 18:15:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CHtYz180dFhx; Wed,  1 Dec 2021 18:14:13 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 4v7e7luqnjko; Wed,  1 Dec 2021 18:15:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 348E441C41;
-	Wed,  1 Dec 2021 18:14:13 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 70EC9400C8;
+	Wed,  1 Dec 2021 18:15:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0186BC000A;
-	Wed,  1 Dec 2021 18:14:13 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1A35DC000A
- for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 18:14:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4C7DBC001C;
+	Wed,  1 Dec 2021 18:15:21 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 364C0C000A
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 18:15:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id EE75661BD8
- for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 18:14:11 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 23E1482A95
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 18:15:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9DBsc9m4mDtF for <iommu@lists.linux-foundation.org>;
- Wed,  1 Dec 2021 18:14:10 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam10on20619.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e89::619])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 9631561BEF
- for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 18:14:10 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QE/rHRAiPYEPxQR1Uv8/RDYYm/arXqEW6y3MmCkYCKESGRtvuZmnXHk5mOFYoMctUL0JFulPKPu7wHAjYkJU2rfGngmwx1odvQiuPJ4AAdbo+RXIWi2t2Rp4/IHEz4En+dtSlO0amumaQTzQ/pYDQaU9O22xWfVRFBW5WvJr+yRHbrLGV5PhvIMuJb22TnBBceBkMmKtbyXnhXOoem582FO0LAegPgH1OlcbZuab6QuXJG4EXbPiJXLcDTwbfKupJra5dZEoyKUnolPycICt1haQ7PMsdcMhBxHik0EEeUVVf9uhV318QHgrTPMDK9HI/UzKAEbPbvI4pjBS22rAyg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Q/drkoEhu7nZh/phzadEOE8Lq+erAnjghyP5VZJ9WY8=;
- b=KeyKQg7sztx0aiVwgD98mkhy5iIrrWO0jWzIFiO+nr5UrjXusjcT9cgZ08TcaLIPg/Mbr9tqdbURjlKyRncXHVjiWv4m2XuKfUYMjpbpDkkAJ8IlK6u4INaY7c1uzsC0DI0m76c+FHli63CQmUPdgV3agjX2HX0AZGXm2jUmtp+AXqhUgdzPqiZeyqsv0GCU47UvqKqOiPhLp9O8Y/m9+LZF3wzvcKZqhHK8PanLIOTaFUwbi/fR2+jxw1Y9pqX5goRPYfo1TGH+4X29DaI3Jaxl9+JQzkDVJBY9XztHWAUEaS9/meVvFv7VvH5S8XFmStNFyqjajiLC9UePBOddlg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Q/drkoEhu7nZh/phzadEOE8Lq+erAnjghyP5VZJ9WY8=;
- b=g0RP6hNwU4NAB9/w9WmTzpsWFo0UdY0prGtMgzJCzK1EY9thA29MLKLeJSVccCDIXNhogAjPps0pRfTIPifVIpecDqCtl+wUQYx1qgOfFH8MbiEp6q6TeHLema1VThvOkLbnOrRliAMv9zmd394Rfy2N0m5/2alfkh0YCBQg9cf+82fu8doxWo8ZUXLyNhW73z/DnyT60U2Nl30cCdl2HsNZMnYude4RedQSrQpJcEflxLOgzH+g+63AckrmW8iiH9PpeZ3GsoTxRnT6ndv0E0c8PRpf7nNan4eSG7iSa7aN/R05gyxh2cOTHHEecwDl7ICokQclHSTuT+D7SIPEdQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB5520.namprd12.prod.outlook.com (2603:10b6:5:208::9) by
- DM8PR12MB5493.namprd12.prod.outlook.com (2603:10b6:8:3d::10) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4734.24; Wed, 1 Dec 2021 18:14:07 +0000
-Received: from DM6PR12MB5520.namprd12.prod.outlook.com
- ([fe80::1569:38dd:26fb:bf87]) by DM6PR12MB5520.namprd12.prod.outlook.com
- ([fe80::1569:38dd:26fb:bf87%8]) with mapi id 15.20.4734.024; Wed, 1 Dec 2021
- 18:14:07 +0000
-Date: Wed, 1 Dec 2021 14:14:06 -0400
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch 21/32] NTB/msi: Convert to msi_on_each_desc()
-Message-ID: <20211201181406.GM4670@nvidia.com>
-References: <6ba084d6-2b26-7c86-4526-8fcd3d921dfd@deltatee.com>
- <87ilwacwp8.ffs@tglx>
- <d6f13729-1b83-fa7d-3f0d-98d4e3f7a2aa@deltatee.com>
- <87v909bf2k.ffs@tglx> <20211130202800.GE4670@nvidia.com>
- <87o861banv.ffs@tglx> <20211201001748.GF4670@nvidia.com>
- <87mtlkaauo.ffs@tglx> <20211201130023.GH4670@nvidia.com>
- <87y2548byw.ffs@tglx>
-Content-Disposition: inline
-In-Reply-To: <87y2548byw.ffs@tglx>
-X-ClientProxiedBy: MN2PR11CA0022.namprd11.prod.outlook.com
- (2603:10b6:208:23b::27) To DM6PR12MB5520.namprd12.prod.outlook.com
- (2603:10b6:5:208::9)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=suse.cz header.b="UaIAD/rh";
+ dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
+ header.d=suse.cz header.b="B9QhHHVa"
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id BRM4lYB0E7dk for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Dec 2021 18:15:18 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 818EA829DB
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 18:15:18 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+ (No client certificate requested)
+ by smtp-out1.suse.de (Postfix) with ESMTPS id 3F12A212B5;
+ Wed,  1 Dec 2021 18:15:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+ t=1638382515; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+ mime-version:mime-version: content-transfer-encoding:content-transfer-encoding;
+ bh=JudYALEd+vfrSbydk9WzA1a8Jbja5L0uMhSJtIDczwA=;
+ b=UaIAD/rhRvykk/vdhz8EgwhBknGbHwV3ROKoan/VHmnMLq2d3F9E0nHpl84fbfjnDrF2jB
+ vRCalgCkl6G8SSsqhjhAnCOauXho6h7TjGkiOqubtDxd4KvxmoncjPwnmFp3ytRgpC1LHU
+ GtneAXQvWmNKW2BX5O7pCzpcZvMvxB0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+ s=susede2_ed25519; t=1638382515;
+ h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+ mime-version:mime-version: content-transfer-encoding:content-transfer-encoding;
+ bh=JudYALEd+vfrSbydk9WzA1a8Jbja5L0uMhSJtIDczwA=;
+ b=B9QhHHVarkGXSXnYR5XJI3OxatgPELHKl3z1mjSspeFn3QBIu3843VrZ+6nfE6068UqAWW
+ nVtNpPgokA2RaWBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+ (No client certificate requested)
+ by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A01A513D9D;
+ Wed,  1 Dec 2021 18:15:14 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+ by imap2.suse-dmz.suse.de with ESMTPSA id 1FhbJrK7p2HPSAAAMHmgww
+ (envelope-from <vbabka@suse.cz>); Wed, 01 Dec 2021 18:15:14 +0000
+From: Vlastimil Babka <vbabka@suse.cz>
+To: Matthew Wilcox <willy@infradead.org>, Christoph Lameter <cl@linux.com>,
+ David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+ Pekka Enberg <penberg@kernel.org>
+Subject: [PATCH v2 00/33] Separate struct slab from struct page
+Date: Wed,  1 Dec 2021 19:14:37 +0100
+Message-Id: <20211201181510.18784-1-vbabka@suse.cz>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Received: from mlx.ziepe.ca (142.162.113.129) by
- MN2PR11CA0022.namprd11.prod.outlook.com (2603:10b6:208:23b::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.22 via Frontend
- Transport; Wed, 1 Dec 2021 18:14:07 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1msU7K-006VDS-61; Wed, 01 Dec 2021 14:14:06 -0400
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ca816ada-6367-46b2-3b78-08d9b4f65d99
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5493:
-X-Microsoft-Antispam-PRVS: <DM8PR12MB5493056BBAF18733A1A6D39DC2689@DM8PR12MB5493.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Tooc435HsfvuiFOTgyLmU4UgqNRqIoUN+hYf4bdl50UA/dxldRTzVHZZqBq9zQA5PguVHJDQgVPtbluUUOwnz61zneNqzuFoYTLMzuFBBBe9g21yrwI/8idH1sxFNmOza54aLLCFpGibH/rXS3hETh4rB4DiuOHQi0v1h0xlmnDrXccpWVuHC2Qx//dZ9TEOQwroE0hlug3aoM3BH//I1Al+Eq+AX+XjPJcQjlZDtHZOtBgqL+k3VYNEgE8JnHsYV1SYa4r/MHfF1OhOTXZahbD1n3myKfVlQe25KjI0jp1cGDzs/sDD+Lqr92hn9RSokng0Nco9hr668AIVU6ETt6vV32D3sZHF9AmQuy8moVdWXATPUrRohde1xrbmuLXWvuOQmlm7oHbmkChU9EjNYjAazteU/PHmsHkFweyRMDKU3JqVDdPMHuVkp+vquhFg2VRq4Ux4KFn/wnRjafhQoUAYLUdqyihad15hfvjCE6KVnlMzu3+vfCfttCb9hiJNeLwMJIzC9fIq63u6PFtxyxN7Uom5H7VgM+uOqyoq22PqBZtbEyp2I2x1Eupo3rgCxWUr0/tmofipWVnGUzZ73jVjtTOl38siyVd5t057qPz/NiEkYcyU5Vfyu5CJlh3TiEaNZPX978OhWBCl0Z/0BA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM6PR12MB5520.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(7416002)(1076003)(426003)(508600001)(316002)(33656002)(9746002)(2906002)(36756003)(66476007)(83380400001)(66556008)(8936002)(6916009)(5660300002)(66946007)(54906003)(4326008)(38100700002)(186003)(2616005)(26005)(9786002)(8676002)(86362001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?llI5b/lyMhd8gG1ZPmuCIdNISi77mu8IHX+gstCZ0HblnrtRYvgS609dIChy?=
- =?us-ascii?Q?g3IdcVpTnooTpY0+v6L3BRmDkYFCH2+SWdEEOV9BiiUaefz2FWdIiVdhzyy8?=
- =?us-ascii?Q?ZKHUWL6n2T/9du2cbyYEzm7Aft9Hpa10ia3wzP+NrlsJmdWH72ejSI2l8u8W?=
- =?us-ascii?Q?xzPK8TzaNxtjn/r4ShoLi3FXSTrKssFOngQHcttcheBDKWe1I10OEzIuSEBY?=
- =?us-ascii?Q?n+hJb1f7QmZaMpJnCFcwxh81DLXqGxxqptdpvKTWT2E9w/IR4jTiQ2DVE9vw?=
- =?us-ascii?Q?jGXrTrgqw4+OOarrJaI77k5zT114heoEdDIF3XRqSgfE2Kvu1fNbpOXZkGC+?=
- =?us-ascii?Q?sjQmynwzM0POehlw0H3evhEv42vFSvVLwtluqmCiFzBuCmnhudlST3k1sVXF?=
- =?us-ascii?Q?NMph/wrpnHlDasjAIU5r20NcvspaCQHh8Hh+Bp7LA3cm5rtPgR3JKB5BsVu1?=
- =?us-ascii?Q?5tIX81sKFsSIGyhYzm+1kffIi2We3xZOCgfYWKDlKnYzc8CXAGnmYNM1gAqW?=
- =?us-ascii?Q?urNY2IvDCuY52REtZ6J7MkOw3arxaTCjzp2Bx4B2frkuCj0aSPEjMD0oDyqY?=
- =?us-ascii?Q?8VhisZGIS1B8T4TppOcXk1BfxmQFfo9UzTYsA8HHwBUBsA1qF1l1H/WQXJU2?=
- =?us-ascii?Q?uXB9IF/YCIuXKftHB+fa9QJQgnjGxDMixKyYfSFE/9+lFXCUtcA6m1DWOsIV?=
- =?us-ascii?Q?2OnsnBxhlXgYeHG7n9EvaFyHktnc9o5/I+sNXA36OIbGKrQYY10/VJkB0F2N?=
- =?us-ascii?Q?gOLAim4E7dBKCO2IuZtZlJIuZgNztolos3SGM2hhtAFqe5/A9KjMAoI8ygnd?=
- =?us-ascii?Q?a/TQgFAeHEJIHCXsp3fP2YRBjZmN5VDhtM9AQ43H5tsN8d5gv2SkaFtC3QdI?=
- =?us-ascii?Q?3bc017HJ2oTHx2WiVxr6bFHSTUUxlRxUDVTqH2K45bIfwN/oLJ5OotY1O6JA?=
- =?us-ascii?Q?qw2SxhlkU+4wbe5KfOwhMDSC82Xfz56M0xP8k64PZI6M5Xg7ilIGYBZ7ds1L?=
- =?us-ascii?Q?0FNUYJSgqO1+DssnJt/4VH0+mulEftWl/umSaHFx9mnWj4yyiNp0A48ctmb7?=
- =?us-ascii?Q?y0ySGCi7td2yNkinNNy6r8Uv+8LUwr4mUpKJZQPpCk/jU6CxzgNdVD3PbZLH?=
- =?us-ascii?Q?4rgcDExva0ItFCuJ5T3vBfj2qZOQqkLTDY+wwLxVxnGxbQYXgBXVhuzxwPu/?=
- =?us-ascii?Q?6XlslvzKYXzR+toDRG+e6m5yCRLeGRaPO2JY/eIYelprUtT+/KPZ5wRqmDYH?=
- =?us-ascii?Q?hiA/KnbUVzcJw3yy3fTvGZeLrYbd6NZGM80C+CR99tQXO+9d+GiWSaoOlBMJ?=
- =?us-ascii?Q?eR5Tteo2lvD+M2JtoU6e8t4uvdg4oUe/6ggsWJE04RbgjQrwuPwYlN0r2J5x?=
- =?us-ascii?Q?K1oJnKqprF4+jQMxeDGE4KfvIkJIq3DJ47qMjx8hBrvqDydA2mtmsYJuHSbg?=
- =?us-ascii?Q?D41JC98A34UkxL889oTUaZ9qEdRWzqfNCxZnFYJJ/B4a1T/9g+HSifTF3APm?=
- =?us-ascii?Q?wZDdp7JP2dFfS9lvWo1NuVLo9BQxUdvYe2xd9G4kZDUCKKgTKRJNtGvgKIgz?=
- =?us-ascii?Q?t3009p88R2MkoCD2or0=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ca816ada-6367-46b2-3b78-08d9b4f65d99
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB5520.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Dec 2021 18:14:07.6795 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Z7b+iAxIE8zKW/3yDHgcto0NrQg8iPaBQx0a0KUbBfcC7PCZdkhXCaG9L9mb+JoR
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5493
-Cc: Allen Hubbe <allenbh@gmail.com>, linux-s390@vger.kernel.org,
- Kevin Tian <kevin.tian@intel.com>, x86@kernel.org,
- Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marc Zygnier <maz@kernel.org>,
- Heiko Carstens <hca@linux.ibm.com>, LKML <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org,
- Christian Borntraeger <borntraeger@de.ibm.com>,
- Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>,
- Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org,
- linux-ntb@googlegroups.com, Logan Gunthorpe <logang@deltatee.com>,
- Megha Dey <megha.dey@intel.com>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6884; h=from:subject;
+ bh=C9Y/49TsxB/E0akYUQmXh/Rw3x/uvjRHIGWgJWjz1iY=;
+ b=owEBbQGS/pANAwAIAeAhynPxiakQAcsmYgBhp7tbz3TdAfpYMhghWpBPjpyNQELQnNXbCWvxjXXW
+ V+khgIGJATMEAAEIAB0WIQSNS5MBqTXjGL5IXszgIcpz8YmpEAUCYae7WwAKCRDgIcpz8YmpEL55B/
+ 0YVOB9lFU4Yo+9QGDna3BPOOTGFYoU+NhN1HU+HWaN4/METjmHzL6QTkZey7Vf/iUopoghro1cTifZ
+ VJ0movi8ZzLs2CGqHCSXxycHOUjYhJga97oHj5g228ilwmOxRvwbltPZf/4Dq1GsHNPvA519rK17Mb
+ FAtSBH05pG6994CDDcdJ87Ml2jM1WOYqIznymTYUQcDxcdqenLbyIZ6iYkLNZlWM6eHSMaZTuIZhJ4
+ 5EobcLpyHXjVaQh30br8NhlSFQwc2JsF/S1x4wdWfs7uLnGix90NeTfKlxxOoK5pScmDEnNMYULCHG
+ qssJrZ/85aCJE+jQj+N/wBkMCp87Jl
+X-Developer-Key: i=vbabka@suse.cz; a=openpgp;
+ fpr=A940D434992C2E8E99103D50224FA7E7CC82A664
+Cc: Peter Zijlstra <peterz@infradead.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, Michal Hocko <mhocko@kernel.org>,
+ linux-mm@kvack.org, Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+ Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>,
+ Will Deacon <will@kernel.org>, Sergey Senozhatsky <senozhatsky@chromium.org>,
+ x86@kernel.org, iommu@lists.linux-foundation.org, kasan-dev@googlegroups.com,
+ Ingo Molnar <mingo@redhat.com>, Vlastimil Babka <vbabka@suse.cz>,
+ Nitin Gupta <ngupta@vflare.org>, Vladimir Davydov <vdavydov.dev@gmail.com>,
+ Marco Elver <elver@google.com>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, cgroups@vger.kernel.org,
+ Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>,
+ Andrey Konovalov <andreyknvl@gmail.com>, patches@lists.linux.dev,
+ Julia Lawall <julia.lawall@inria.fr>, Minchan Kim <minchan@kernel.org>,
+ Luis Chamberlain <mcgrof@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -162,156 +115,154 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Dec 01, 2021 at 06:35:35PM +0100, Thomas Gleixner wrote:
-> On Wed, Dec 01 2021 at 09:00, Jason Gunthorpe wrote:
-> > On Wed, Dec 01, 2021 at 11:16:47AM +0100, Thomas Gleixner wrote:
-> >> Looking at the device slices as subdevices with their own struct device
-> >> makes a lot of sense from the conceptual level.
-> >
-> > Except IMS is not just for subdevices, it should be usable for any
-> > driver in any case as a general interrupt mechiansm, as you alluded to
-> > below about ethernet queues. ntb seems to be the current example of
-> > this need..
-> 
-> But NTB is operating through an abstraction layer and is not a direct
-> PCIe device driver.
+Folks from non-slab subsystems are Cc'd only to patches affecting them, and
+this cover letter.
 
-I'm not sure exactly how NTB seems to be split between switchtec and
-the ntb code, but since the ntbd code seems to be doing MMIO touches,
-it feels like part of a PCIe driver?
+Series also available in git, based on 5.16-rc3:
+https://git.kernel.org/pub/scm/linux/kernel/git/vbabka/linux.git/log/?h=slab-struct_slab-v2r2
 
-> > IDXD is not so much making device "slices", but virtualizing and
-> > sharing a PCI device. The IDXD hardware is multi-queue like the NIC I
-> > described and the VFIO driver is simply allocating queues from a PCI
-> > device for specific usages and assigning them interrupts.
-> 
-> Right.
-> 
-> But what is the representation for that resulting device? Some VFIO
-> specific homebrewn muck or something which is based on struct device?
+The plan: as my SLUB PREEMPT_RT series in 5.15, I would prefer to go again with
+the git pull request way of eventually merging this, as it's also not a small
+series. I will thus reply to this mail with asking to include my branch in
+linux-next.
 
-Why is there a device? A queue is a queue, not a device.
+As stated in the v1/RFC cover letter, I wouldn't mind to then continue with
+maintaining a git tree for all slab patches in general. It was apparently
+already done that way before, by Pekka:
+https://lore.kernel.org/linux-mm/alpine.DEB.2.00.1107221108190.2996@tiger/
 
-If the task is to make some struct device (eg mdev, or cdev, or
-whatever) then queues may be allocated to do this, but the queue is
-logically a resource handed out by the PCIe driver and there should
-not be a requirement to have an external struct device just to create
-a queue.
+Changes from v1/RFC:
+https://lore.kernel.org/all/20211116001628.24216-1-vbabka@suse.cz/
+- Added virt_to_folio() and folio_address() in the new Patch 1.
+- Addressed feedback from Andrey Konovalov and Matthew Wilcox (Thanks!)
+- Added Tested-by: Marco Elver for the KFENCE parts (Thanks!)
 
-> Right now with VF passthrough, I can see the interrupts which are
-> associated to the device.
-> 
-> How is that going to be with something which is just made up? Does that
-> expose it's own msi properties then somewhere hidden in the VFIO layer?
+Previous version from Matthew Wilcox:
+https://lore.kernel.org/all/20211004134650.4031813-1-willy@infradead.org/
 
-For sysfs, I think all interrupts should be on the PCI directory.
+LWN coverage of the above:
+https://lwn.net/Articles/871982/
 
-> > There is already a char dev interface that equally allocates queues
-> > from the same IDXD device, why shouldn't it be able to access IMS
-> > interrupt pools too?
-> 
-> Why wouldn't it be able to do so?
+This is originally an offshoot of the folio work by Matthew. One of the more
+complex parts of the struct page definition are the parts used by the slab
+allocators. It would be good for the MM in general if struct slab were its own
+data type, and it also helps to prevent tail pages from slipping in anywhere.
+As Matthew requested in his proof of concept series, I have taken over the
+development of this series, so it's a mix of patches from him (often modified
+by me) and my own.
 
-The only 'struct device' there is a cdev and I really don't think
-cdevs should have interrupts. It is a bit hacky as a in-kernel thing
-and downright wrong as a sysfs ABI.
+One big difference is the use of coccinelle to perform the relatively trivial
+parts of the conversions automatically and at once, instead of a larger number
+of smaller incremental reviewable steps. Thanks to Julia Lawall and Luis
+Chamberlain for all their help!
 
-> The VFIO driver does not own the irq chip ever. The irq chip is of
-> course part of the underlying infrastructure. I never asked for that.
+Another notable difference is (based also on review feedback) I don't represent
+with a struct slab the large kmalloc allocations which are not really a slab,
+but use page allocator directly. When going from an object address to a struct
+slab, the code tests first folio slab flag, and only if it's set it converts to
+struct slab. This makes the struct slab type stronger.
 
-That isn't quite what I ment.. I ment the PCIe driver cannot create
-the domain or make use of the irq_chip until the VFIO layer comes
-along and provides the struct device. To me this is backwards
-layering, the interrupts come from the PCIe layer and should exist
-independently from VFIO.
+Finally, although Matthew's version didn't use any of the folio work, the
+initial support has been merged meanwhile so my version builds on top of it
+where appropriate. This eliminates some of the redundant compound_head()
+being performed e.g. when testing the slab flag.
 
->      When it allocates a slice for whatever usage then it also
->      allocates the IMS interrupts (though the VFIO people want to
->      have only one and do the allocations later on demand).
-> 
->      That allocation cannot be part of the PCI/MSIx interrupt
->      domain as we already agreed on.
+To sum up, after this series, struct page fields used by slab allocators are
+moved from struct page to a new struct slab, that uses the same physical
+storage. The availability of the fields is further distinguished by the
+selected slab allocator implementation. The advantages include:
 
-Yes, it is just an open question of where the new irq_domain need to
-reside
+- Similar to folios, if the slab is of order > 0, struct slab always is
+  guaranteed to be the head page. Additionally it's guaranteed to be an actual
+  slab page, not a large kmalloc. This removes uncertainty and potential for
+  bugs.
+- It's not possible to accidentally use fields of the slab implementation that's
+  not configured.
+- Other subsystems cannot use slab's fields in struct page anymore (some
+  existing non-slab usages had to be adjusted in this series), so slab
+  implementations have more freedom in rearranging them in the struct slab.
 
->     1) Storage
-> 
->        A) Having "subdevices" solves the storage problem nicely and
->           makes everything just fall in place. Even for a purely
->           physical multiqueue device one can argue that each queue is a
->           "subdevice" of the physical device. The fact that we lump them
->           all together today is not an argument against that.
+Matthew Wilcox (Oracle) (16):
+  mm: Split slab into its own type
+  mm: Add account_slab() and unaccount_slab()
+  mm: Convert virt_to_cache() to use struct slab
+  mm: Convert __ksize() to struct slab
+  mm: Use struct slab in kmem_obj_info()
+  mm: Convert check_heap_object() to use struct slab
+  mm/slub: Convert detached_freelist to use a struct slab
+  mm/slub: Convert kfree() to use a struct slab
+  mm/slub: Convert print_page_info() to print_slab_info()
+  mm/slub: Convert pfmemalloc_match() to take a struct slab
+  mm/slob: Convert SLOB to use struct slab
+  mm/kasan: Convert to struct folio and struct slab
+  zsmalloc: Stop using slab fields in struct page
+  bootmem: Use page->index instead of page->freelist
+  iommu: Use put_pages_list
+  mm: Remove slab from struct page
 
-I don't like the idea that queue is a device, that is trying to force
-a struct device centric world onto a queue which doesn't really want
-it..
- 
->        B) Requires extra storage in the PCIe device and extra storage
->           per subdevice, queue to keep track of the interrupts which
->           are associated to it.
+Vlastimil Babka (17):
+  mm: add virt_to_folio() and folio_address()
+  mm/slab: Dissolve slab_map_pages() in its caller
+  mm/slub: Make object_err() static
+  mm/slub: Convert __slab_lock() and __slab_unlock() to struct slab
+  mm/slub: Convert alloc_slab_page() to return a struct slab
+  mm/slub: Convert __free_slab() to use struct slab
+  mm/slub: Convert most struct page to struct slab by spatch
+  mm/slub: Finish struct page to struct slab conversion
+  mm/slab: Convert kmem_getpages() and kmem_freepages() to struct slab
+  mm/slab: Convert most struct page to struct slab by spatch
+  mm/slab: Finish struct page to struct slab conversion
+  mm: Convert struct page to struct slab in functions used by other
+    subsystems
+  mm/memcg: Convert slab objcgs from struct page to struct slab
+  mm/kfence: Convert kfence_guarded_alloc() to struct slab
+  mm/sl*b: Differentiate struct slab fields by sl*b implementations
+  mm/slub: Simplify struct slab slabs field definition
+  mm/slub: Define struct slab fields for CONFIG_SLUB_CPU_PARTIAL only
+    when enabled
 
-Yes
+ arch/x86/mm/init_64.c          |    2 +-
+ drivers/iommu/amd/io_pgtable.c |   59 +-
+ drivers/iommu/dma-iommu.c      |   11 +-
+ drivers/iommu/intel/iommu.c    |   89 +--
+ include/linux/bootmem_info.h   |    2 +-
+ include/linux/iommu.h          |    3 +-
+ include/linux/kasan.h          |    9 +-
+ include/linux/memcontrol.h     |   48 --
+ include/linux/mm.h             |   12 +
+ include/linux/mm_types.h       |   38 +-
+ include/linux/page-flags.h     |   37 -
+ include/linux/slab.h           |    8 -
+ include/linux/slab_def.h       |   16 +-
+ include/linux/slub_def.h       |   29 +-
+ mm/bootmem_info.c              |    7 +-
+ mm/kasan/common.c              |   27 +-
+ mm/kasan/generic.c             |    8 +-
+ mm/kasan/kasan.h               |    1 +
+ mm/kasan/quarantine.c          |    2 +-
+ mm/kasan/report.c              |   13 +-
+ mm/kasan/report_tags.c         |   10 +-
+ mm/kfence/core.c               |   17 +-
+ mm/kfence/kfence_test.c        |    6 +-
+ mm/memcontrol.c                |   43 +-
+ mm/slab.c                      |  455 ++++++-------
+ mm/slab.h                      |  322 ++++++++-
+ mm/slab_common.c               |    8 +-
+ mm/slob.c                      |   46 +-
+ mm/slub.c                      | 1164 ++++++++++++++++----------------
+ mm/sparse.c                    |    2 +-
+ mm/usercopy.c                  |   13 +-
+ mm/zsmalloc.c                  |   18 +-
+ 32 files changed, 1317 insertions(+), 1208 deletions(-)
 
->     2) Exposure of VFIO interrupts via sysfs
-> 
->        A) Just works
+-- 
+2.33.1
 
-I would say this is flawed, in sysfs I expect all the interrupts for
-the PCIe device to be in the PCIe sysfs, not strewn over subsystem
-owned sub-directories.
-
-For instance, today in mlx5, when a subdevice allocates a queue for a
-slice (which is modeled as an aux device) the queue's assigned MSI-X
-interrupt shows up on the PCIe sysfs, not the aux.
-
-It should be uniform, if I assign a queue a legacy INT, MSI or an IMS
-it should show in sysfs in the same way. Leaking this kernel
-implementation detail as sysfs ABI does not seem good.
-
->     3) On demand expansion of the vectors for VFIO
-> 
->        A) Just works because the device has an irqdomain assigned.
-> 
->        B) Requires extra indirections to do that
-
-Yes.
- 
->     4) PASID
-> 
->        While an Intel IDXD specific issue, it want's to be solved
->        without any nasty hacks.
-> 
->        A) Having a "subdevice" allows to associate the PASID with the
->           underlying struct device which makes IOMMU integration trivial
-> 
->        B) Needs some other custom hackery to get that solved
-
-Yes
-
-> > Any possibility that the 'IMS' xarray could be outside the struct
-> > device?
-> 
-> We could, but we really want to keep things tied to devices which is the
-> right thing to do.
-
-I see the sysfs issue makes this a poor idea as well, as where would
-the sysfs live if there was no struct device?
-
-I'm inclined to think either of your ideas with the xarray are good
-directions, primarily because it keeps HW data out of non-HW struct
-devices and maintains a consistent sysfs representation for all the
-different interrupt allocation methods.
-
-Regards,
-Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
