@@ -4,82 +4,83 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C9283C433EF
-	for <iommu@archiver.kernel.org>; Wed,  1 Dec 2021 17:34:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0B996C4167B
+	for <iommu@archiver.kernel.org>; Wed,  1 Dec 2021 17:34:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 6641061BE7;
-	Wed,  1 Dec 2021 17:34:41 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id C1EB861BE9;
+	Wed,  1 Dec 2021 17:34:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KwSHXqgRmfc5; Wed,  1 Dec 2021 17:34:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 639CD60603;
-	Wed,  1 Dec 2021 17:34:40 +0000 (UTC)
+	with ESMTP id 4nVdGlB1Kcs2; Wed,  1 Dec 2021 17:34:44 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id AD37161BEC;
+	Wed,  1 Dec 2021 17:34:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BB706C0040;
-	Wed,  1 Dec 2021 17:34:39 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D784AC0012
- for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 17:34:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8333BC000A;
+	Wed,  1 Dec 2021 17:34:43 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B5177C003F
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 17:34:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id C582581C71
- for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 17:34:37 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 9538281CE7
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 17:34:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IpKuzzUnTZKg for <iommu@lists.linux-foundation.org>;
- Wed,  1 Dec 2021 17:34:37 +0000 (UTC)
+ with ESMTP id 3ca8pqfqIfHG for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Dec 2021 17:34:40 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com
- [IPv6:2a00:1450:4864:20::332])
- by smtp1.osuosl.org (Postfix) with ESMTPS id D733B81BC2
- for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 17:34:36 +0000 (UTC)
-Received: by mail-wm1-x332.google.com with SMTP id
- p27-20020a05600c1d9b00b0033bf8532855so1729631wms.3
- for <iommu@lists.linux-foundation.org>; Wed, 01 Dec 2021 09:34:36 -0800 (PST)
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com
+ [IPv6:2a00:1450:4864:20::333])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id C3A8F81BC2
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Dec 2021 17:34:39 +0000 (UTC)
+Received: by mail-wm1-x333.google.com with SMTP id p18so21034904wmq.5
+ for <iommu@lists.linux-foundation.org>; Wed, 01 Dec 2021 09:34:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=hUrXQwIfEJVWh6hdGtsCtY1XLEUSUBHNz/xuvNP25sA=;
- b=qBndB82iTaFzAh8I1/ZWCrjDRO0mKHRUdE0yCtmNAJd3t4bddB9qlIwuY3LtOlmQ/o
- b4ETIJGLSao+KPSG/LMVRS0BUIe2NNPO+g6UkpZHVlUW52tu6sjp3fmca6Gc/0cgBL4l
- rNOHIAQ7f/heKHl1nfW0gSZperjQRUnTnTIDq7MwJ3Q2o0cdrqA7BHxlQwlw0hKFn0mt
- XyFHCrDUHKUoZTe3ek5+//bxCfx5GK6+lCZufwPVDA8ipd+RVbIB6eUTRY9yGpMgKRI+
- CWEw7n6MUvzGzNtvXcRLsBhKa0wKnUMyZ9bvjxurpaUjCjaNG652k0UESWpmLJRDotUf
- wdBw==
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=4wUTd96eZB11jR8FhOdA8c/6TyDHIYU4luFJMM8Zorc=;
+ b=k5I/sAiM7hayNpy0ivvbeZBOIoWPQJJ+Ue5btogoCttQ7Sla6pblXrzkiXmhMRBIP2
+ JZSjVxOjzeA/zbdsJ4Mld00sYUoKq53/neBZMvhXeMfpdgkYwPcGEwrwEar0YyaILCBf
+ Ltw/HLn8SKbuU2UTK2Uv8tk8FO/vuactFzdubW7ito3CWaCV9OJeyhL7O5KcQBqu0LCw
+ LHBrlbFzkAguOkgSThig2ppqRbfPlmwTXhkNQs9YpL9UjZ5jPtY9ObABZKFakCbAYUcX
+ r5ckH0WI9lxIS9DokJrA/4lI2oDdrmRNKwXdoQWkNn7ltwWZinyjzeiEH6JoNsjkGDTA
+ i/fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=hUrXQwIfEJVWh6hdGtsCtY1XLEUSUBHNz/xuvNP25sA=;
- b=qxlmvqACmKhuoMl13tHEdHpZ81k1e1SGciFFuvRneRI/o2q/Z0azdo+Blby+HSt3s8
- Qth8ktBbO9dHNL7uuSExXBEj4abpF2wOD5JuNHBTckui4sX3HMcnKa73rNkKfRkwWOH7
- XqqeYZIc8N16x01I+JQ+i08iM/5T00VLT/NniUWGEa+1mpAYBI/hULi2HPTT0bC0jP6Y
- 6d3twab4mahLoPXHP2Qs/dUzHxmB/fT7OdlGCLYg4iIMzLSL5vCPgn4bpECIhkGBod32
- rVcY7Mww4zEfH4oZ+sPUCi9VWBe4GKysxGm957WydysZYHpsPT8keSctfFF1w4Dm0O6h
- RhcA==
-X-Gm-Message-State: AOAM531WXMEZm/+Mnpit5oHjRpofUHFdKp4XkS3+9LROtm2BNcsrM8YC
- oV8RnbGR3vG32waP8kMntb+Uew==
-X-Google-Smtp-Source: ABdhPJwRYM3Ctiffulx14kVjAzQCuPr8zqmd2uDQdHGJ3qdq2CZIiqZXJaQ2EX52z0/BATyyGH1uDw==
-X-Received: by 2002:a1c:7ed3:: with SMTP id z202mr8754622wmc.110.1638380074883; 
- Wed, 01 Dec 2021 09:34:34 -0800 (PST)
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=4wUTd96eZB11jR8FhOdA8c/6TyDHIYU4luFJMM8Zorc=;
+ b=ASD/CETwPDNlqlpNSY3YllUBOTatrPaKeDKS1WhoCYP0KSXT+jt4UdnDPaljgLBqHP
+ O291TI0j2szoN657mlA1NReDT2wSSL2dXXKqdkRPsKr8tgxNQvcKjY77N+6Qqw4R5uMz
+ jNrliGKjHgwoicB2Y5wv3Ktjz5daYVI3iF+IuLnvgx3Hl7dTrLpzJIuFme2DNzpDuiGR
+ MwEhXV2DhYJrQR43Ou7PvKfUW/dyw+6AIYBGsT3TJ0xNm1p0KFjEXMFW/EMjpO5f+fQL
+ 8q3eFiYeqEiWUO5sIxdxI9k9wYf+VVNzpMC6mzXr6i0q+GuK1ZZVCAnsxdV+mEeevMOA
+ wIWg==
+X-Gm-Message-State: AOAM533xnJx8GSKbMVakiarbpiiev3f3aRvdq7HG7jNXgLn0XfJL6Ojt
+ Ngwcq2jmFmu7KF0eWW4lcB6CfQ==
+X-Google-Smtp-Source: ABdhPJxUPAiNHfZ32Dke/Q9eAsDiXSQWBejQMoi62H4eAO5Rf0AgfmVqvVuVxsb1CMVx7s6ZIW+yHA==
+X-Received: by 2002:a7b:c194:: with SMTP id y20mr9033654wmi.61.1638380077860; 
+ Wed, 01 Dec 2021 09:34:37 -0800 (PST)
 Received: from localhost.localdomain
  (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
- by smtp.gmail.com with ESMTPSA id q8sm360023wrx.71.2021.12.01.09.34.33
+ by smtp.gmail.com with ESMTPSA id q8sm360023wrx.71.2021.12.01.09.34.36
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 01 Dec 2021 09:34:34 -0800 (PST)
+ Wed, 01 Dec 2021 09:34:37 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: joro@8bytes.org,
 	will@kernel.org,
 	mst@redhat.com,
 	jasowang@redhat.com
-Subject: [PATCH v3 0/5] iommu/virtio: Add identity domains
-Date: Wed,  1 Dec 2021 17:33:20 +0000
-Message-Id: <20211201173323.1045819-1-jean-philippe@linaro.org>
+Subject: [PATCH v3 3/5] iommu/virtio: Sort reserved regions
+Date: Wed,  1 Dec 2021 17:33:23 +0000
+Message-Id: <20211201173323.1045819-4-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.34.0
+In-Reply-To: <20211201173323.1045819-1-jean-philippe@linaro.org>
+References: <20211201173323.1045819-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, kevin.tian@intel.com,
  virtualization@lists.linux-foundation.org, pasic@linux.ibm.com,
@@ -101,38 +102,43 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Support identity domains, allowing to only enable IOMMU protection for a
-subset of endpoints (those assigned to userspace, for example). Users
-may enable identity domains at compile time
-(CONFIG_IOMMU_DEFAULT_PASSTHROUGH), boot time (iommu.passthrough=1) or
-runtime (/sys/kernel/iommu_groups/*/type = identity).
+To ease identity mapping support, keep the list of reserved regions
+sorted.
 
-Since v2 [1] I fixed the padding in patch 1 and a rebase error in patch
-5, reported by Eric.
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
+ drivers/iommu/virtio-iommu.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-Patches 1-2 support identity domains using the optional
-VIRTIO_IOMMU_F_BYPASS_CONFIG feature, which was accepted into the spec
-[2]. Patches 3-5 add a fallback to identity mappings, when the feature
-is not supported.
-
-QEMU patches are on my virtio-iommu/bypass branch [3], and depend on the
-UAPI update.
-
-[1] https://lore.kernel.org/linux-iommu/20211123155301.1047943-1-jean-philippe@linaro.org/
-[2] https://github.com/oasis-tcs/virtio-spec/issues/119
-[3] https://jpbrucker.net/git/qemu/log/?h=virtio-iommu/bypass
-
-Jean-Philippe Brucker (5):
-  iommu/virtio: Add definitions for VIRTIO_IOMMU_F_BYPASS_CONFIG
-  iommu/virtio: Support bypass domains
-  iommu/virtio: Sort reserved regions
-  iommu/virtio: Pass end address to viommu_add_mapping()
-  iommu/virtio: Support identity-mapped domains
-
- include/uapi/linux/virtio_iommu.h |   8 ++-
- drivers/iommu/virtio-iommu.c      | 113 +++++++++++++++++++++++++-----
- 2 files changed, 101 insertions(+), 20 deletions(-)
-
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 14dfee76fd19..1b3c1f2741c6 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -423,7 +423,7 @@ static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
+ 	size_t size;
+ 	u64 start64, end64;
+ 	phys_addr_t start, end;
+-	struct iommu_resv_region *region = NULL;
++	struct iommu_resv_region *region = NULL, *next;
+ 	unsigned long prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+ 
+ 	start = start64 = le64_to_cpu(mem->start);
+@@ -454,7 +454,12 @@ static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
+ 	if (!region)
+ 		return -ENOMEM;
+ 
+-	list_add(&region->list, &vdev->resv_regions);
++	/* Keep the list sorted */
++	list_for_each_entry(next, &vdev->resv_regions, list) {
++		if (next->start > region->start)
++			break;
++	}
++	list_add_tail(&region->list, &next->list);
+ 	return 0;
+ }
+ 
 -- 
 2.34.0
 
