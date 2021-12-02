@@ -1,79 +1,86 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3CD17C433FE
-	for <iommu@archiver.kernel.org>; Thu,  2 Dec 2021 14:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0537CC433F5
+	for <iommu@archiver.kernel.org>; Thu,  2 Dec 2021 14:39:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C39C461C18;
-	Thu,  2 Dec 2021 14:23:50 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 93A6441D74;
+	Thu,  2 Dec 2021 14:39:53 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xxr2rHIJQ5JR; Thu,  2 Dec 2021 14:39:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 5CA6741D75;
+	Thu,  2 Dec 2021 14:39:52 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 357C0C0012;
+	Thu,  2 Dec 2021 14:39:52 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 40261C000A
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Dec 2021 14:39:51 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 360EA6F47F
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Dec 2021 14:39:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id J9A_EhEg1eoW; Thu,  2 Dec 2021 14:23:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id A28EB605CC;
-	Thu,  2 Dec 2021 14:23:49 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 724B2C000A;
-	Thu,  2 Dec 2021 14:23:49 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1FC01C000A
- for <iommu@lists.linux-foundation.org>; Thu,  2 Dec 2021 14:23:48 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 085DF409AF
- for <iommu@lists.linux-foundation.org>; Thu,  2 Dec 2021 14:23:48 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=linuxfoundation.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id K_13MBHdzTU0 for <iommu@lists.linux-foundation.org>;
- Thu,  2 Dec 2021 14:23:47 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org
- [IPv6:2604:1380:4601:e00::1])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 4AF17409AE
- for <iommu@lists.linux-foundation.org>; Thu,  2 Dec 2021 14:23:47 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id 34D2CB82398;
- Thu,  2 Dec 2021 14:23:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 153FEC53FCB;
- Thu,  2 Dec 2021 14:23:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
- s=korg; t=1638455021;
- bh=oNnu/fYAquguLpIjYchK/Hyo7SQoNQsDNVEvVDkmwwk=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=d/aD7jGGlhRQjYD/ICQSfDKoktRiprSbgaJ8mVVH9OPYzLELURNXeF3/gTDBLQ/Yy
- 6x0JCTvaCeSp9JwZ1MYyDngkR4Hcx89iyNJ+Uo/WH50ZI+87VTZs0h3TOKCOnfzt48
- o4onjuvyaKSqZ5RiWx5EzAY8TzrdsK/qMfaG0rkE=
-Date: Thu, 2 Dec 2021 15:23:38 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [patch 21/32] NTB/msi: Convert to msi_on_each_desc()
-Message-ID: <YajW6veanK4GZUkv@kroah.com>
-References: <20211130202800.GE4670@nvidia.com> <87o861banv.ffs@tglx>
- <20211201001748.GF4670@nvidia.com> <87mtlkaauo.ffs@tglx>
- <20211201130023.GH4670@nvidia.com> <87y2548byw.ffs@tglx>
- <20211201181406.GM4670@nvidia.com> <87mtlk84ae.ffs@tglx>
- <87r1av7u3d.ffs@tglx> <20211202135502.GP4670@nvidia.com>
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id kKoxchlexNee for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Dec 2021 14:39:50 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com
+ [209.85.221.43])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id EBE7B607E6
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Dec 2021 14:39:49 +0000 (UTC)
+Received: by mail-wr1-f43.google.com with SMTP id v11so60138828wrw.10
+ for <iommu@lists.linux-foundation.org>; Thu, 02 Dec 2021 06:39:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=72a6A507OnldVCWrhDSc/GY7lKjxc4B5WRBxEFXAJ3U=;
+ b=nNdTpzDtNEIpIbUIjJCGkVb+Psyrf/HAhrsu4Qgz21dmMofFfD8Dl01EFJPHKD/3Oz
+ aKJhnzbs6C/+FtiqbC2SkG3kf4DGKcCyb+NfkXFZ9jXHVmzhtEs0WnrFZTo4KEnPGbxl
+ o0BTknS205+SRuCtnqcCeTzkeqcT4VUMV+366kzJjHqzpyl2hgeXCARfomXSCydD9EJP
+ EswqFxefTpncqWX0D26TQ3kxannJwG8PTCc05TD5Gz7D/KTE5/CRN8NXFHeHdf9FPAxb
+ N7egtWgYZXzmLG/Sr5+CyonaETtNTOVTxbL4Q5sQ6jyyks6DYdmOAutGHi2j749e4ej9
+ rTHQ==
+X-Gm-Message-State: AOAM5332aRh7skp9ZbQ5vb43HBcgTiR2xwBvonY1MdgsaLwrxe4lxx6o
+ o9MzFmV0jhIuBH2/1Iodl6s=
+X-Google-Smtp-Source: ABdhPJxPzdtd3RdqIbFdq4J+qJfyoes2s3XiUvAs4cyVDgX4hcthvPCvHGkt6Ry5P/1NlIy3ec+13w==
+X-Received: by 2002:adf:d4c2:: with SMTP id w2mr14815368wrk.225.1638455988303; 
+ Thu, 02 Dec 2021 06:39:48 -0800 (PST)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+ by smtp.gmail.com with ESMTPSA id z5sm2876037wmp.26.2021.12.02.06.39.47
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 02 Dec 2021 06:39:47 -0800 (PST)
+Date: Thu, 2 Dec 2021 14:39:46 +0000
+From: Wei Liu <wei.liu@kernel.org>
+To: Tianyu Lan <ltykernel@gmail.com>
+Subject: Re: [PATCH V3 2/5] x86/hyper-v: Add hyperv Isolation VM check in the
+ cc_platform_has()
+Message-ID: <20211202143946.7o7ncwcjq3t6xcrq@liuwe-devbox-debian-v2>
+References: <20211201160257.1003912-1-ltykernel@gmail.com>
+ <20211201160257.1003912-3-ltykernel@gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20211202135502.GP4670@nvidia.com>
-Cc: Allen Hubbe <allenbh@gmail.com>, linux-s390@vger.kernel.org,
- Kevin Tian <kevin.tian@intel.com>, x86@kernel.org,
- Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Marc Zygnier <maz@kernel.org>, Heiko Carstens <hca@linux.ibm.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Christian Borntraeger <borntraeger@de.ibm.com>,
- Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>,
- Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org,
- linux-ntb@googlegroups.com, Thomas Gleixner <tglx@linutronix.de>,
- Logan Gunthorpe <logang@deltatee.com>, Megha Dey <megha.dey@intel.com>
+In-Reply-To: <20211201160257.1003912-3-ltykernel@gmail.com>
+Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
+ dave.hansen@linux.intel.com, dave.hansen@intel.com, hpa@zytor.com,
+ kys@microsoft.com, will@kernel.org, boris.ostrovsky@oracle.com,
+ linux-arch@vger.kernel.org, michael.h.kelley@microsoft.com, wei.liu@kernel.org,
+ sstabellini@kernel.org, sthemmin@microsoft.com, linux-scsi@vger.kernel.org,
+ x86@kernel.org, decui@microsoft.com, hch@lst.de, hch@infradead.org,
+ mingo@redhat.com, kuba@kernel.org, haiyangz@microsoft.com,
+ parri.andrea@gmail.com, thomas.lendacky@amd.com, Tianyu.Lan@microsoft.com,
+ arnd@arndb.de, konrad.wilk@oracle.com, jejb@linux.ibm.com, bp@alien8.de,
+ xen-devel@lists.xenproject.org, tglx@linutronix.de, jgross@suse.com,
+ martin.petersen@oracle.com, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ vkuznets@redhat.com, robin.murphy@arm.com, davem@davemloft.net
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,35 +98,48 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Dec 02, 2021 at 09:55:02AM -0400, Jason Gunthorpe wrote:
-> Further, there is no reason why IMS should be reserved exclusively for
-> VFIO! Why shouldn't the cdev be able to use IMS vectors too? It is
-> just a feature of the PCI device like MSI. If the queue has a PASID it
-> can use IDXD's IMS.
+On Wed, Dec 01, 2021 at 11:02:53AM -0500, Tianyu Lan wrote:
+> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> 
+> Hyper-V provides Isolation VM which has memory encrypt support. Add
+> hyperv_cc_platform_has() and return true for check of GUEST_MEM_ENCRYPT
+> attribute.
+> 
+> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> ---
+>  arch/x86/kernel/cc_platform.c | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+> 
+> diff --git a/arch/x86/kernel/cc_platform.c b/arch/x86/kernel/cc_platform.c
+> index 03bb2f343ddb..f3bb0431f5c5 100644
+> --- a/arch/x86/kernel/cc_platform.c
+> +++ b/arch/x86/kernel/cc_platform.c
+> @@ -11,6 +11,7 @@
+>  #include <linux/cc_platform.h>
+>  #include <linux/mem_encrypt.h>
+>  
+> +#include <asm/mshyperv.h>
+>  #include <asm/processor.h>
+>  
+>  static bool __maybe_unused intel_cc_platform_has(enum cc_attr attr)
+> @@ -58,9 +59,23 @@ static bool amd_cc_platform_has(enum cc_attr attr)
+>  #endif
+>  }
+>  
+> +static bool hyperv_cc_platform_has(enum cc_attr attr)
+> +{
+> +#ifdef CONFIG_HYPERV
+> +	if (attr == CC_ATTR_GUEST_MEM_ENCRYPT)
+> +		return true;
+> +	else
+> +		return false;
 
-No, sorry, but a cdev is not for anything resembling any real resource
-at all.
+This can be simplified as
 
-It is ONLY for the /dev/NODE interface that controls the character
-device api to userspace.  The struct device involved in it is ONLY for
-that, nothing else.  Any attempt to add things to it will be gleefully
-rejected.
+	return attr == CC_ATTR_GUEST_MEM_ENCRYPT;
 
-The cdev api today (in the kernel) exposes too much mess and there's at
-least 4 or 5 different ways to use it.  It's on my long-term TODO list
-to fix this up to not even allow abuses like you are considering here,
-so please don't do that.
 
-> If we really need a 2nd struct device to turn on IMS then, I'd suggest
-> picking the cdev, as it keeps IMS and its allocator inside the IDXD
-> PCIe driver and not in the VFIO world.
-
-No!  Again, a cdev is to control the lifespan/lifecycle of the /dev/NODE
-only.  Anything other than that is not ok to do at all.
-
-thanks,
-
-greg k-h
+Wei.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
