@@ -1,150 +1,84 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6E820C433EF
-	for <iommu@archiver.kernel.org>; Thu,  2 Dec 2021 14:45:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 86D81C433EF
+	for <iommu@archiver.kernel.org>; Thu,  2 Dec 2021 16:26:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 0A28D4013F;
-	Thu,  2 Dec 2021 14:45:22 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 272B583E7E;
+	Thu,  2 Dec 2021 16:26:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UoJqfriI1Q4C; Thu,  2 Dec 2021 14:45:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 67A80400E5;
-	Thu,  2 Dec 2021 14:45:20 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id X9_atkJtZFPz; Thu,  2 Dec 2021 16:26:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id BA21283E7F;
+	Thu,  2 Dec 2021 16:26:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4CFCDC000A;
-	Thu,  2 Dec 2021 14:45:20 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7818FC000A
- for <iommu@lists.linux-foundation.org>; Thu,  2 Dec 2021 14:45:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8C94AC0012;
+	Thu,  2 Dec 2021 16:26:15 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3799EC000A
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Dec 2021 16:26:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 63087400F7
- for <iommu@lists.linux-foundation.org>; Thu,  2 Dec 2021 14:45:19 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 1D83241D89
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Dec 2021 16:26:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id b6aoUbdVt-Z1 for <iommu@lists.linux-foundation.org>;
- Thu,  2 Dec 2021 14:45:18 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com
- (mail-co1nam11on20623.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7eab::623])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 0F2D4400E5
- for <iommu@lists.linux-foundation.org>; Thu,  2 Dec 2021 14:45:17 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NhxsAbWVhn3EQybBSWSQ+IPO2NR7Lk2nh61H2CLOmrl+t0PJI19oIPGANjQLqBjpz+QYe50Z0WvHspA8JIYkWk6PJPLuesEQ/om7oMBV5OSb9hweQqG7Q73xJPaxlM7pAoO7lGeIICr1YV9Psx+5U6QNOgmnFgS7avwCtX2ONYfa20BoQIAk9e6Gj2oJ3hY6k+LjdFcTfn5NgJxo8ztDCtWMLtHGNZ7M6RUrCfZCLxPq06WL52hmM1bdroENI40oEG0TLosLUkYjecX6DJC8B8KUpE3h2fdd6ny1RWJgG7pf4Z3lQzKIUqjeHEgT8yjT6ennaxAqW76w5qHYGaQ6iA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X/I0zanScvzDSeYVjIuIpJcqFAlFMYihOVtWJ/0S5HA=;
- b=D3l/7EaNY46DYH2ltOuiFnWuuaRexy4wTVDmNBWtt2j90Ik5ewNanXyMbK1sVGuE4JS4DHxcpcbqszCxbZjcliJ+/aThG3ca/553sF8EdcYhmP+k+hFYqb0zoxV7xl55mzBHsLw319jPhoSd+UppiZ9qTOHpjQGv8VxLRUzCTZd2h40Rx2HiYfxcrRLGtlY9f0YA6tLP6alXUIzM3Yulf4XxT7aBBNv5PGz8EVgcjqXT9Xf/jsQ9YCVrMGgdQCpbFHXIYzd6gju4Tn+7yYhoNL5k81+qEv4KHaL6CN13uR2CJHJgV1rcr+iMSfZmm2AwxlipqY1vLbzS2b6urkNslg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X/I0zanScvzDSeYVjIuIpJcqFAlFMYihOVtWJ/0S5HA=;
- b=Unl10r+tNPMvt77Vmql32sWhYafjMADSkbsQTuqXfybXcU7lV4cDoWaERbOONbGskHj5ZAfAJdpoOLRZkWyawnsd40qeENTnbaZC7tv+xWEO/TcjYVUCJ6PuNWQ7j9humAxZ5pUq4ArF6Me0WqgCBKcg2QdrZDkgLbiz/wE5+HaQXcrIP58+IAXYfkXRXJ3D6ehP5vhVeS+QCTG5kYwG56sHFb8OjEveIW1CD7KQUsefSMsSMyRa53TYIBBKttpk8BF4dkaoHsmYkZoLubAIp6sDix/aWJCVsNWgCOTIUgvRrmq6BJSL1wW6eQu3JUjS+HQ3t45rkM4SCDSnBjzC3g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5288.namprd12.prod.outlook.com (2603:10b6:208:314::23)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.23; Thu, 2 Dec
- 2021 14:45:15 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::d8be:e4e4:ce53:6d11]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::d8be:e4e4:ce53:6d11%5]) with mapi id 15.20.4755.016; Thu, 2 Dec 2021
- 14:45:15 +0000
-Date: Thu, 2 Dec 2021 10:45:14 -0400
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [patch 21/32] NTB/msi: Convert to msi_on_each_desc()
-Message-ID: <20211202144514.GQ4670@nvidia.com>
-References: <87o861banv.ffs@tglx> <20211201001748.GF4670@nvidia.com>
- <87mtlkaauo.ffs@tglx> <20211201130023.GH4670@nvidia.com>
- <87y2548byw.ffs@tglx> <20211201181406.GM4670@nvidia.com>
- <87mtlk84ae.ffs@tglx> <87r1av7u3d.ffs@tglx>
- <20211202135502.GP4670@nvidia.com> <YajW6veanK4GZUkv@kroah.com>
-Content-Disposition: inline
-In-Reply-To: <YajW6veanK4GZUkv@kroah.com>
-X-ClientProxiedBy: MN2PR07CA0004.namprd07.prod.outlook.com
- (2603:10b6:208:1a0::14) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=apertussolutions.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0BmakuEFK_Nl for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Dec 2021 16:26:12 +0000 (UTC)
+X-Greylist: delayed 00:15:03 by SQLgrey-1.8.0
+Received: from sender4-of-o51.zoho.com (sender4-of-o51.zoho.com
+ [136.143.188.51])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 0CA76409AD
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Dec 2021 16:26:11 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; t=1638461440; cv=none; 
+ d=zohomail.com; s=zohoarc; 
+ b=Ef7/5KndNWTutWFlInIcn49PUdwFroAcNIVI7T1nYeb8Pe7cwRm0UMhiRJbIfJDrEGbWsXrVmwS2K2YAqqS+tiwmrH4Ahgk7IIlFcySQzasFv0FTsvKeqmMmeSHADU4ra7sWRyTFZCqS1TwA5i3nQpc8P8ukmzEMhP4Avd5TWcE=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com;
+ s=zohoarc; t=1638461440;
+ h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To;
+ bh=lMSNaC8iHTZb79U0vyTj0xLlOB+ewHNQ8YYULYg6ndY=; 
+ b=G8avNwaERXHBVta7/GOP+xxNti1Kca9EgBOmQgh4K5E5wop+LfQMRmehlWTLqvbKyX1YFk/ZQGyTg6UXGWd9HKeRC8c6K+4bXY8BhZZEs7Ja6y3Ydb9j/oSVt9HsAeqTfUxnuaVDrw4Skh2brupK+8ULeCUyQyrYd1MLMfO19M8=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+ dkim=pass  header.i=apertussolutions.com;
+ spf=pass  smtp.mailfrom=dpsmith@apertussolutions.com;
+ dmarc=pass header.from=<dpsmith@apertussolutions.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1638461440; 
+ s=zoho; d=apertussolutions.com; i=dpsmith@apertussolutions.com;
+ h=From:To:Cc:References:Subject:Message-ID:Date:MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+ bh=lMSNaC8iHTZb79U0vyTj0xLlOB+ewHNQ8YYULYg6ndY=;
+ b=ZDhAHqpdCvwT8O5SVL4rT5hzDc0tFNRwrWO/x7qrfascQu4XC7ag6pjHeLC90XwO
+ 92OGdjmhJjqgX0ZuM6YF6fgmCXA7OnVzW4+LiTwMmt1qAKy5dcJmM1UU13chMCZklAo
+ C2bP/fO3KHN0F2SYobN5q9X8eE5HGLByzkL9xDM0=
+Received: from [10.10.1.138] (static-72-81-132-2.bltmmd.fios.verizon.net
+ [72.81.132.2]) by mx.zohomail.com
+ with SMTPS id 1638461437855136.63909149380606;
+ Thu, 2 Dec 2021 08:10:37 -0800 (PST)
+From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+To: Paul Moore <paul@paul-moore.com>,
+ Ross Philipson <ross.philipson@oracle.com>, trenchboot-devel@googlegroups.com
+References: <1630070917-9896-1-git-send-email-ross.philipson@oracle.com>
+ <CAHC9VhTJG24iG=U0geO-ZhC6OogxOu4icBrNY22+qRNpWd5PBQ@mail.gmail.com>
+Subject: Re: [PATCH v4 00/14] x86: Trenchboot secure dynamic launch Linux
+ kernel support
+Message-ID: <456caf8c-b79a-e8b0-581f-3504240466ff@apertussolutions.com>
+Date: Thu, 2 Dec 2021 11:09:55 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Received: from mlx.ziepe.ca (142.162.113.129) by
- MN2PR07CA0004.namprd07.prod.outlook.com (2603:10b6:208:1a0::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.23 via Frontend
- Transport; Thu, 2 Dec 2021 14:45:15 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1msnKk-006tVB-In; Thu, 02 Dec 2021 10:45:14 -0400
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cd0a7af6-db9d-424c-ff6c-08d9b5a25a4a
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5288:
-X-Microsoft-Antispam-PRVS: <BL1PR12MB52884E5826063775221460FBC2699@BL1PR12MB5288.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YUKBGsKQ3l3n03IijQjMpOxcqKtPuH/w1C88WjIJe0O1HhuamGsh//N41iWjVYiBG/my+MluaTGFirxjsKr4unCDTiOjONsC6W7i69T1etF5WjqBG3sEEzWzLcswRFMDYNEwFqgdTvybwSF7g6mx1m3+7E0pA/GJxiC5SaBt5aODB4yc+5fTKhBVRHk8+Ui9P4qTEh0+vKkiiW++Cd9Zk4/k2OQRPS8/2io66LANc5qa6/lmjqQKIoFt9woRI6t5NYYjE0wzPcaKWvzJZLHCsaI6k/HoF7fONf5Ilc8tETj65AbTsuZjVHDXy/PiWrhxLzbHS2p25oeF7xTvf6Fh/gXcO80Wm02g3SEy77TYiFG0k/N5jweTVzsH4EE5m+5k9tvYfDqzGEsZ07xBNOK0iQascRTaiPtARmU8x6oOaMtetua+knEBi6t5BpzGNDXWeEoZSI59D6PFSFIt9NnnLxBTAQpcevOo01c7xuWBvZFPo2r3ZPj7dfP3jQZC6AU05j0HK7pr8ywt7wSp9rcFjWO9HvHpytZIkFe6dLwSlO+njPp1b1fCfwtxSFnXlu+BKcLbCkgW8RRU1Y8KFXABZNIc+Ydrlc0gtszQw1cBXw4LM96ntn9GAdlDp+oTS5bxjeApypjkXLs0KuTtMtYiEw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(9786002)(9746002)(426003)(2616005)(8936002)(8676002)(5660300002)(83380400001)(2906002)(66476007)(36756003)(33656002)(508600001)(86362001)(66556008)(38100700002)(4326008)(186003)(26005)(66946007)(7416002)(1076003)(316002)(6916009)(54906003);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DXnrJ1GJqiu0t8/khzdJQDoSDdzCtvRrFwbqY8rzmO7h/oAole7zRZfb7FpZ?=
- =?us-ascii?Q?g7nKpgNzWeoqTjJjOtfgC0uf7vpk+hBbfVhPvzOnkbDCV+6OOH/x5KyCsQdY?=
- =?us-ascii?Q?2qb495f6QwxtiAKqSn560iwBERfqkNE0wctYflvA01DmxABLUShuPrI43BBN?=
- =?us-ascii?Q?IeyABwvs455MJO59iI2idlbt7irS80HuqzMUQM1y8oGq83c3C4fX7GSKhYV6?=
- =?us-ascii?Q?5aRUw/3nqlp6wl74WWZ2Apy/kKJ5qMe0MORoAbgjt02C3K170VABUfT8w5hi?=
- =?us-ascii?Q?BikoIhj63Ew1/a+s04KwTtWomBeHwMUaIWLsPQVjijq1oNF3sJZcdTj3EG5n?=
- =?us-ascii?Q?tNbgyP/XdQzV9LVwmRR3OK/8p1HfxkIMI0dSbfKvxRBcl2Sv5j9hvbDZ5KMj?=
- =?us-ascii?Q?TsXCgnA1vjeWLZG+SB1RGvnsByJV9sumCqMCx2F3xsOKoqiOCVm/Bvqod5tj?=
- =?us-ascii?Q?uAbCyLf+T4Cvc5ZWhCno1G2a49Q42YwmwWng8BOBduM9Xnd+bbZYzL6Ntydw?=
- =?us-ascii?Q?qY0FIh/l44gWaQuL+aSWqqUzhQr5QU8tOKqKEqd33mqopP6hPd6KHCPuaJm4?=
- =?us-ascii?Q?vIfOi4pHZSmBGCs49vc02oB9bdM+XuiUnuh3S8CLJGkmQelHvcxFjwxiZPuh?=
- =?us-ascii?Q?ahDPqPOXbUv/IuZ2th++NhGXfzloW+pvoAetIjPFgCPxIw53AsbwI0cVhxZd?=
- =?us-ascii?Q?pkgKgKqUrG8UdUxbydOFfuNl57iSz43F8AfMOgs4XIU/HMs0F+MDvUCPGYaa?=
- =?us-ascii?Q?mghjzw01jhn3HbJB0FwMLR5IWApuSloqyh2b7qWXQ4oVDpJT4ajkxOKlBOA4?=
- =?us-ascii?Q?iNCC3sLafJb23c3F3656NZ7Egb8XOjMeEdq0GNEWxodSQmjU/NVFCEAJv8py?=
- =?us-ascii?Q?P2cWeLskqLpSAwiK55rDkfqfUsuVXq4GHnxSVkRkChC9mMNwWj3gfZ7iTGwP?=
- =?us-ascii?Q?nkvT8TEkqpuVRO9t5I1bGh1hqgtvjCVWDukr+3zaRJM1LyTfRnyoSx/WliPY?=
- =?us-ascii?Q?Gf5OlkbqLGJoSCGveIHjOh7PmG21ZWwBiSFXTniW66EObS58BzldL/A74zVJ?=
- =?us-ascii?Q?/+oHtDOhGQhG4gl9wRrbId5+uH2WYqF/3l7htWJNNEa1gEiMzjrgJESc9e2o?=
- =?us-ascii?Q?A0AQPAQRJTU8MVkurW34gg0hjVnav5+QBnHLuqnJsRubRfw3uLQOx+YxFpa0?=
- =?us-ascii?Q?VwEjK1qrflNyPZiA4+C0pQRqa+BH+OLr9oa9OsDjU6Rrpy2YW1HfVo4ICN6Y?=
- =?us-ascii?Q?Cm0KS+9FQsQZpPIRrilQGx8WapW7Vt81OLT9L7cPhg9lowg4tftO4wmS5DU0?=
- =?us-ascii?Q?Crq/dFvdiSafou8AwP3eoYkMijLTOG6zawmSsXOjcaZ/5UIaeMCzIRQ6Mqnv?=
- =?us-ascii?Q?kfBO/JtmhgiIre8rkrlFdfLmeVETFHEyQ5acJOQv28sgqOZrO+rggNQNj3bA?=
- =?us-ascii?Q?Xs8hmM9BMnoLvhPzbI28cWHpazNsXq3asTRKdJ9KTv19DWR7PUXMjYMYj7Ga?=
- =?us-ascii?Q?ALQuEcKuD+ql1/NsRtBaG4Wgk99xDVc9ZliG4+n57mkOlxDZRIN6PgrHmJzK?=
- =?us-ascii?Q?LaShTJCSyJ3CtZT8Wek=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd0a7af6-db9d-424c-ff6c-08d9b5a25a4a
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2021 14:45:15.5860 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hfPU1iuT4TXLtSDHxF28C9Z+zdeCqb0rqRpoRGObfoVoNsSvXIcgCWahbUwSO/3l
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5288
-Cc: Allen Hubbe <allenbh@gmail.com>, linux-s390@vger.kernel.org,
- Kevin Tian <kevin.tian@intel.com>, x86@kernel.org,
- Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Marc Zygnier <maz@kernel.org>, Heiko Carstens <hca@linux.ibm.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Christian Borntraeger <borntraeger@de.ibm.com>,
- Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>,
- Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org,
- linux-ntb@googlegroups.com, Thomas Gleixner <tglx@linutronix.de>,
- Logan Gunthorpe <logang@deltatee.com>, Megha Dey <megha.dey@intel.com>
+In-Reply-To: <CAHC9VhTJG24iG=U0geO-ZhC6OogxOu4icBrNY22+qRNpWd5PBQ@mail.gmail.com>
+Content-Language: en-US
+X-ZohoMailClient: External
+Cc: linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org,
+ luto@amacapital.net, iommu@lists.linux-foundation.org, mingo@redhat.com,
+ bp@alien8.de, hpa@zytor.com, kanth.ghatraju@oracle.com,
+ linux-integrity@vger.kernel.org, tglx@linutronix.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -157,49 +91,173 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Dec 02, 2021 at 03:23:38PM +0100, Greg Kroah-Hartman wrote:
-> On Thu, Dec 02, 2021 at 09:55:02AM -0400, Jason Gunthorpe wrote:
-> > Further, there is no reason why IMS should be reserved exclusively for
-> > VFIO! Why shouldn't the cdev be able to use IMS vectors too? It is
-> > just a feature of the PCI device like MSI. If the queue has a PASID it
-> > can use IDXD's IMS.
+Hi Paul!
+
+On 11/30/21 8:06 PM, Paul Moore wrote:
+> On Fri, Aug 27, 2021 at 9:20 AM Ross Philipson
+> <ross.philipson@oracle.com> wrote:
+>>
+>> The larger focus of the Trechboot project (https://github.com/TrenchBoot) is to
+>> enhance the boot security and integrity in a unified manner. The first area of
+>> focus has been on the Trusted Computing Group's Dynamic Launch for establishing
+>> a hardware Root of Trust for Measurement, also know as DRTM (Dynamic Root of
+>> Trust for Measurement).
 > 
-> No, sorry, but a cdev is not for anything resembling any real resource
-> at all.
+> My apologies for such a late reply, but I'm just getting around to
+> looking at this and I have a few questions on the basic design/flow
+> (below) ...
 
-My point is that when the user asks the driver to allocate a queue
-through a cdev ioctl it should be able to get the queue attached to an
-IMS, today it can only get a queue attached to a MSI.
+No worries, thank you so much for taking the time to review.
 
-> It is ONLY for the /dev/NODE interface that controls the character
-> device api to userspace.  The struct device involved in it is ONLY for
-> that, nothing else.  Any attempt to add things to it will be gleefully
-> rejected.
-
-I agree with you!
- 
-> > If we really need a 2nd struct device to turn on IMS then, I'd suggest
-> > picking the cdev, as it keeps IMS and its allocator inside the IDXD
-> > PCIe driver and not in the VFIO world.
+>> The basic flow is:
+>>
+>>  - Entry from the dynamic launch jumps to the SL stub
 > 
-> No!  Again, a cdev is to control the lifespan/lifecycle of the /dev/NODE
-> only.  Anything other than that is not ok to do at all.
+> So I'm clear, at this point the combined stub+kernel+initramfs+cmdline
+> image has already been loaded into memory and the SL stub is
+> executing, yes?
 
-Said the same thing in a prior email - which is why I think the only
-logical choice here is to make IMS work on the pci_device
+That is correct.
 
-FWIW I feel the same way about the VFIO mdev - its *ONLY* purpose is
-to control the lifecycle and we are close to stripping away all the
-other abuses using it for other things.
+> As TrenchBoot seems to be focused on boot measurement and not
+> enforcing policy, I'm guessing this is considered out-of-scope (not to
+> mention that the combined stub+kernel image makes this less
+> interesting), but has any thought been given to leveraging the TXT
+> launch control policy, or is it simply an empty run-everything policy?
 
-Jason
+The TrenchBoot model is a bit different and takes a more flexible
+approach to allow users to build tailored solutions. For instance Secure
+Launch is able to be used in a configuration that is similar to tboot.
+Consider the functions of tboot, it has a portion that is the
+post-launch kernel that handles the handover from the ACM and a portion
+that provides the Verified Launch policy engine, which is only capable
+of enforcing policy on what is contained in the Multiboot chain. The
+TrenchBoot approach is to introduce the Secure Launch capability into a
+kernel, in this case Linux, to handle the handover from the ACM, and
+then transition to a running user space that can contain a distribution
+specific policy enforcement. As an example, the TrenchBoot project
+contributed to the uroot project a Secure Launch policy engine which
+enables the creation of an initramfs image which can then be embedded
+into a minimal configuration Secure Launch Linux kernel. This results in
+a single binary that functions like tboot but with a far richer and more
+extensible policy engine.
+
+With regard to TXT's Launch Control Policy, it is a function of SINIT
+ACM and so it is still very much possible to be used with Secure Launch.
+In fact such a configuration has been tested and used. Now it is out of
+scope in the sense that the tboot project already maintains and provides
+the lcptools suite for managing LCPs. If there is a requirement to use
+an LCP, then the lcptools can be used to create a policy to only allow
+the specific instance(s) of a Secure Launch kernel.
+
+>>  - SL stub fixes up the world on the BSP
+>>  - For TXT, SL stub wakes the APs, fixes up their worlds
+>>  - For TXT, APs are left halted waiting for an NMI to wake them
+>>  - SL stub jumps to startup_32
+>>  - SL main locates the TPM event log and writes the measurements of
+>>    configuration and module information into it.
+> 
+> Since the stub+kernel image are combined it looks like the kernel
+> measurement comes from the ACM via the MLE measurement into PCR 18,
+> while the stub generated measurements are extended into PCR 19 or 20
+> depending on the configuration, yes?
+
+If TXT is launched in Legacy PCR usage mode, then the bzImage, as loaded
+into memory by the bootloader (GRUB), will be hashed into PCR 18. If it
+is launched in the default Details and Authorities (DA) PCR usage mode,
+then the bzImage will be hashed into PCR 17. This is because the kernel
+has been promoted to being the MLE.
+
+> I realize that moving the TXT code into the kernel makes this
+> difficult (not possible?), but one of the things that was nice about
+> the tboot based approach (dynamic, early launch) was that it could be
+> extended to do different types of measurements, e.g. a signing
+> authority measurement similar to UEFI Secure Boot and PCR 7.  If that
+> is possible, I think it is something worth including in the design,
+> even if it isn't initially implemented.  The only thing that
+> immediately comes to mind would be a section/region based approach
+> similar to systemd-boot/gummiboot where the (signed) kernel is kept in
+> a well known region and verified/measured by the stub prior to jumping
+> into its start point.
+
+Revisiting the tboot-like configuration: the Secure Launch kernel, its
+configuration (cmdline), and uroot initramfs (which may be embedded or
+separate) are all part of the MLE started by the ACM. For tboot there is
+the tboot binary and the VL policy, though uncertain if it was
+configurable where the policy hash would be extended. Like the tboot VL
+policy engine, the u-root policy engine is configurable where the
+measurements are stored.
+
+As highlighted, more components are measured as part of Secure Launch
+than for tboot. The approach taken was to model after DA and put
+binaries into 17 and configuration into 18. Later there were
+requirements to isolate certain measurements. For the time this is
+provided through kconfig to move config to 19 and initrd to 20. In the
+future if/when additional measurements are incorporated, such as signing
+keys that are embedded into the kernel, then it may be necessary to
+provide a means to configure PCR usage at runtime.
+
+>>  - Kernel boot proceeds normally from this point.
+>>  - During early setup, slaunch_setup() runs to finish some validation
+>>    and setup tasks.
+>>  - The SMP bringup code is modified to wake the waiting APs. APs vector
+>>    to rmpiggy and start up normally from that point.
+>>  - SL platform module is registered as a late initcall module. It reads
+>>    the TPM event log and extends the measurements taken into the TPM PCRs.
+> 
+> I'm sure there is some issue with passing data across boundaries, but
+> is there any reason why the TPM event log needs to be updated
+> out-of-sync with the TPM PCRs?  Is is possible to pass the
+> measurements to the SL platform module which would both extend the
+> PCRs and update the TPM event log at the same time?
+
+Without rehashing the issues around TPM usage from the stub, the core
+issue is that measurements need to be collected before usage which is at
+a time when access to the TPM is not possible at this time. Thus the
+measurements need to be collected and persisted in a location where they
+can be retrieved when the main kernel is in control. It was felt using
+the DRTM TPM log was a natural place as it persists all the info
+necessary to record the measurements by the SL platform module. Though
+it does result in there being two non-event entries to exist in the log
+but those are standardized such that any TCG compliant log parser should
+ignore them.
+
+With the explanation of why it was done aside, if there is another
+location that is preferred which can provide the necessary guarantees,
+then there is no reason why they could not be switched to that location.
+
+>>  - SL platform module initializes the securityfs interface to allow
+>>    asccess to the TPM event log and TXT public registers.
+>>  - Kernel boot finishes booting normally
+>>  - SEXIT support to leave SMX mode is present on the kexec path and
+>>    the various reboot paths (poweroff, reset, halt).
+> 
+> It doesn't look like it's currently implemented, but it looks like
+> eventually you plan to support doing a new DRTM measurement on kexec,
+> is that correct?  I'm sure that is something a *lot* of people
+> (including myself) would like to see happen.
+
+Correct, relaunch is not currently implemented but has always been
+planned as relaunch enables DRTM late-launch use cases. For a few
+reasons this is being elevated in priority and as a result there is a
+short-term solution to quickly enable relaunch with longer term direct
+integration into kexec.
+
+Finally if your schedule allows it and it is not too much to ask, it
+would be greatly appreciated if some code review could be provided.
+Otherwise thank you for taking the time that you have to review the
+approach.
+
+V/r,
+Daniel P. Smith
+Apertus Solutions, LLC
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
