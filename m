@@ -1,190 +1,171 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EFCB5C433EF
-	for <iommu@archiver.kernel.org>; Fri,  3 Dec 2021 17:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3E6CAC433F5
+	for <iommu@archiver.kernel.org>; Fri,  3 Dec 2021 18:59:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9321A40365;
-	Fri,  3 Dec 2021 17:49:42 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id AEFDA401B7;
+	Fri,  3 Dec 2021 18:59:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZuVRvboRCoNK; Fri,  3 Dec 2021 17:49:41 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id t2guUR5Tw8sP; Fri,  3 Dec 2021 18:59:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id BD25140022;
-	Fri,  3 Dec 2021 17:49:40 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 20C004018D;
+	Fri,  3 Dec 2021 18:59:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A3387C001E;
-	Fri,  3 Dec 2021 17:49:40 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9CEEAC0012
- for <iommu@lists.linux-foundation.org>; Fri,  3 Dec 2021 17:49:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F3F7BC006E;
+	Fri,  3 Dec 2021 18:59:35 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4D4E8C0012
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Dec 2021 18:59:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id E785E40394
- for <iommu@lists.linux-foundation.org>; Fri,  3 Dec 2021 17:49:37 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 350EF4019D
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Dec 2021 18:59:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id axX4UxzLBY1G for <iommu@lists.linux-foundation.org>;
- Fri,  3 Dec 2021 17:49:37 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com
- [205.220.165.32])
- by smtp2.osuosl.org (Postfix) with ESMTPS id CCD2140365
- for <iommu@lists.linux-foundation.org>; Fri,  3 Dec 2021 17:49:36 +0000 (UTC)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
- by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1B3H7N9i002175; 
- Fri, 3 Dec 2021 17:49:05 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=KGJoHFN6t30Hg/u4/UO/V5+fT7CS/VPCuSPZDVXXVdM=;
- b=UfHoAOedJyIhaA7AtruxaKMbtyKpWenSmY/RVh9MD1PZI/VUw4jyktS93aB1Qe32dlvc
- ou+yCAaJLfH7V2tbkvm02kWb6R0e2AINmPCDP4WHKkEd9hPjHKzY9pcfK2/NyzY2tfwA
- kwLBQRwFT993sZCUMta/jRW92tWI4eT/h46J+6jW14UBBVrT/epiXOxUgKflTBNOhaqk
- qJPoRDSBpLW1qv/Gog2BvvgifMuJHCIma96Ni63E4PD04AqEwqB+yUBMUe6n06I2/3sH
- tHuOdSpWQPbLjPWBIuB3+zfKgkgyc08UlaD9pOZ1PtM3ZDDrIjIkSEvhiSW5EhcjEtNE XA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
- by mx0b-00069f02.pphosted.com with ESMTP id 3cqkx5hrnc-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Fri, 03 Dec 2021 17:49:04 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
- by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 1B3HexrX007725;
- Fri, 3 Dec 2021 17:48:49 GMT
-Received: from nam10-dm6-obe.outbound.protection.outlook.com
- (mail-dm6nam10lp2107.outbound.protection.outlook.com [104.47.58.107])
- by userp3030.oracle.com with ESMTP id 3ck9t6jxf6-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Fri, 03 Dec 2021 17:48:49 +0000
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id gNITPksd7Gom for <iommu@lists.linux-foundation.org>;
+ Fri,  3 Dec 2021 18:59:33 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from na01-obe.outbound.protection.outlook.com
+ (mail-cusazlp17010007.outbound.protection.outlook.com [40.93.13.7])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id CB9164018D
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Dec 2021 18:59:32 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FSaohaEiPxdI6AoczlDynC6fxd14KODCpMJa/xD81/u0sLun2RhRxTTy8LZM928kF48Yz4tYNGryOL3q5wyPiUBAqjD4G7p9s5Vk6GzpbE6I4yoO7MqMvt9v9MfkHii1W3PWlSdOYlbRxNYJr4xZj9rzhf7wqPURBClvpbCxiIBOknSwtYaWeG9fNx72zQ/3hqMAEb5Y+Lkj3nREpuMAf7+iJiwCohb4sSLEMTqQZUkvlSxhRDcX1Xhfgq0nb0RMq0p2gTlC4ozk/JMO5d4btZVLdbKBvsgVk1mRG6gj5Ehmst5woIj2mBy1TU55wcIoBi+D/+v1T/Cb44Ie4ByA5A==
+ b=lwvvorw3+A+YYcD5vSTxaajypwrEDSblNTf15y8nBuFDxy9pl2iteCEGoAzTWU4+Neck9CAlJlGg47Syj+46hZmHGC/VuM1nJnorGizfpa3YGQ7PRL1h3YiB1/qEJmHDWkMQ482EA17hW3AleMLlfOuDeWwP8Nyu5aUbUukOGtZ3tPnHW/O7MDCeN6hIDbARVOttrQ/JI620sN9+uWOwdoyTZ2vviv+IjXg1WCqJkSNZ44ASHtV0Y7+AusIHsiR6i1Mm8l3crOpaMOCcBtSdIgBOOE+Qp6Sw/cUT5fzB1Yhai29RBKMKh2BNO/rKXE2Taev5aufAcAHKjWcAZ/ReWw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KGJoHFN6t30Hg/u4/UO/V5+fT7CS/VPCuSPZDVXXVdM=;
- b=g+XWqQs4pAbey+3dk8S8c5KuOMQdZ7LzL5M6pyLKxFJStXAHA1LT2YP+CZAvqzHj4rY4UtkZfFZbi/nMHjG73ThtsTTDo6e5vdbTOkYWurtDrmrjJc7ZOlOnYikEJIRHMlAZmIljPXjiTFjCAzcW8d6Wj3Q3/7ujWYVZSSEx7agaA90f/+q6f0zQnT90qbFDDH2pa22E1UX6I10S4ZmbjBZwTRwNH/4SFEO9KHlMbSZDFKWBBa1Z446Q6Uo1WGDeWbCoV6W+48mR80eWF/1EEaTqy3NqBKvCLX88R2R2NOWEtYjsnQjAiX9VbmRrRepg6O4MkgjWOUA/N0lRTgSbRA==
+ bh=1zvSmGZWeL7RWAEcBm9oIjTfTcaBDiK4JIFwRC9Z5qI=;
+ b=DmA9wQkU4WWD70vdJ0rTD7Utt4ya1UcV9DrNvYAkSwSk2FZMOWwb7QsIbs6cRwzxRUCFb0k8LE0mhH46wwrUg2hWxz2JuLz52YzNKugvjGUe47SerHwK52YKCmlCOIf11P/6hxKHtgJTE0NoqHoKaShnDpW45eXETGCYLFLzNmYvS8UKHw+QSX8B4nIefEWx5rw72hvJ02EN7KGoLcPl8NUjzuHAxWbYf1+t0xA/BipuZc6sHKj3/UR1Xwy+LkfWRc6/kuZ1GkQ+NDGyAbBFOTwQfq3BgH2R524Arty1KNdNkfHcUiaBCZo7XTMGw0022uI8t2S1AtgCTd7N866Z9A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KGJoHFN6t30Hg/u4/UO/V5+fT7CS/VPCuSPZDVXXVdM=;
- b=Ns+jPxBP+DEsuLnWZNnGSuPTVMQf0OUk4sbgR6UwnTtY2kPpD0qDlWuev3TsU/LbYxUsKcgX2KNGrxYMwnJZHE833IsXX2dE/pvvdAyq3jT6D1CYc6J8wZirsRCtlHl+3R+Lavr5neuGdGPWPTIIb9lylisW4DvzDSjVfLGR91k=
-Received: from BY5PR10MB3793.namprd10.prod.outlook.com (2603:10b6:a03:1f6::14)
- by BY5PR10MB4002.namprd10.prod.outlook.com (2603:10b6:a03:1b0::31)
+ bh=1zvSmGZWeL7RWAEcBm9oIjTfTcaBDiK4JIFwRC9Z5qI=;
+ b=BiC27HDQ44LRg9RXfOjZHExAaPOFEGxSNUX1P8QoDaUcBh8HcGtMWo/XjI9KTkBpjCqf829atRtTQUtzU285LfbyFmgSUL9mKjzGT9hjoee1TATPnI0wcuCFKA23nyxvxREAKRdkP4vidPKJBTbfCFg+6WCUAN4eXASP+yAtXSs=
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
+ by MW2PR2101MB1019.namprd21.prod.outlook.com (2603:10b6:302:5::10)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.22; Fri, 3 Dec
- 2021 17:48:46 +0000
-Received: from BY5PR10MB3793.namprd10.prod.outlook.com
- ([fe80::b46e:493b:14b7:9c83]) by BY5PR10MB3793.namprd10.prod.outlook.com
- ([fe80::b46e:493b:14b7:9c83%3]) with mapi id 15.20.4755.019; Fri, 3 Dec 2021
- 17:48:46 +0000
-Message-ID: <b2fd060d-0ac8-b00e-cebb-46015dfea14c@oracle.com>
-Date: Fri, 3 Dec 2021 12:48:43 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCH v4 04/14] Documentation/x86: Secure Launch kernel
- documentation
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.4; Fri, 3 Dec
+ 2021 18:59:29 +0000
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::40d7:92be:b38f:a9cd]) by MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::40d7:92be:b38f:a9cd%3]) with mapi id 15.20.4778.007; Fri, 3 Dec 2021
+ 18:59:28 +0000
+To: Tianyu Lan <ltykernel@gmail.com>, KY Srinivasan <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Stephen Hemminger
+ <sthemmin@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan
+ Cui <decui@microsoft.com>, "tglx@linutronix.de" <tglx@linutronix.de>,
+ "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
+ "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, "x86@kernel.org"
+ <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>, "jgross@suse.com"
+ <jgross@suse.com>, "sstabellini@kernel.org" <sstabellini@kernel.org>,
+ "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>, "joro@8bytes.org"
+ <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, "davem@davemloft.net"
+ <davem@davemloft.net>, "kuba@kernel.org" <kuba@kernel.org>,
+ "jejb@linux.ibm.com" <jejb@linux.ibm.com>, "martin.petersen@oracle.com"
+ <martin.petersen@oracle.com>, "arnd@arndb.de" <arnd@arndb.de>,
+ "hch@infradead.org" <hch@infradead.org>, "m.szyprowski@samsung.com"
+ <m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ Tianyu Lan <Tianyu.Lan@microsoft.com>, "thomas.lendacky@amd.com"
+ <thomas.lendacky@amd.com>, "xen-devel@lists.xenproject.org"
+ <xen-devel@lists.xenproject.org>
+Subject: RE: [PATCH V3 5/5] hv_netvsc: Add Isolation VM support for netvsc
+ driver
+Thread-Topic: [PATCH V3 5/5] hv_netvsc: Add Isolation VM support for netvsc
+ driver
+Thread-Index: AQHX5sz1lOYUX8sXwkWf4jhcdD0xcKwhHfRw
+Date: Fri, 3 Dec 2021 18:59:28 +0000
+Message-ID: <MWHPR21MB15934DE25012A8565256336ED76A9@MWHPR21MB1593.namprd21.prod.outlook.com>
+References: <20211201160257.1003912-1-ltykernel@gmail.com>
+ <20211201160257.1003912-6-ltykernel@gmail.com>
+In-Reply-To: <20211201160257.1003912-6-ltykernel@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- x86@kernel.org, iommu@lists.linux-foundation.org,
- linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org
-References: <1630070917-9896-1-git-send-email-ross.philipson@oracle.com>
- <1630070917-9896-5-git-send-email-ross.philipson@oracle.com>
- <bd677501-bd65-9648-c8f5-1b90983377b5@arm.com>
- <6713b6b2-3c6d-8318-ee9e-e1746f02a3a5@oracle.com>
- <7ee55288-209f-8f19-ef69-27e2a5448473@arm.com>
-From: Ross Philipson <ross.philipson@oracle.com>
-In-Reply-To: <7ee55288-209f-8f19-ef69-27e2a5448473@arm.com>
-X-ClientProxiedBy: BLAPR03CA0146.namprd03.prod.outlook.com
- (2603:10b6:208:32e::31) To BY5PR10MB3793.namprd10.prod.outlook.com
- (2603:10b6:a03:1f6::14)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=7aa46730-7ac1-4f56-a342-d06f8d3c5a0d;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-12-03T18:44:18Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e4fd0545-1fe9-490d-11ea-08d9b68f0888
+x-ms-traffictypediagnostic: MW2PR2101MB1019:EE_
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <MW2PR2101MB1019D55A2C3EF51484B7E581D76A9@MW2PR2101MB1019.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:862;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ydoQvVlPfMxx+YfYtW+339jBk6xMiWetvoI6kXCiqRvtC6JfucpyOWfrd0a+h5RxygwYl1I15pZuDA/v6Wjcp3XaJ1B83XVnxyWcHSKltL3yJuiSFfAwXb7WKwZ154+PE8lS46uTBLyzoFr21VpaXTifhDJylakapYurHcVSWxqt7rOZkj9rlLmhPfRbTVUwUXqrZqjYrsGAY7idYxiUuG5Rj2qrTI+1Cvsqr3NbYEtWUINEvXyOYDmvWq0wC0c92gUaJX1U5XKYyeDdVq2OusotUAhVrhTXmkLb04/Z4ZBTzf2pZ3djvQczH1R0zfTcqyMZkFQ/HZcStt8NYkJ0cIa4AO2C2CaspPns3WLiw1h7hEbRVnUbAugzCm2Tm64htPq9XL8lIE9Iqgke5rYfmAMvVBfZwPVj9ZS/IqL3oc5A80gv+QQBaq5M0Zl/MnpPu1OcJBKmwqNVcJnyUiVuOS9RabA/rjQFKa63SHLSOfFl9lZwXAA7axn7q5ffN9ZlnJbLnoVSuw62EiPDZ+pyMTrB6z8uxekQq1O8CoN2H1lcAW/gNHrPHg34zJmH/TApJTIXZKHyl0XHBUZxx+W/a8U4OUzRedAdNFREgbEM52vLDdmUj8sbzjN4wjUH5SB4ovixqy060ke6VuebNhQBHkYGMhRIOHV2WYVJ9Tz+gv3xectNAtgHdZkeOiTk8egzDXvUNcIGI9n4GCeaSzB6uinDf7/YrcewVU2V2KDxWj2EcAQBIU3a0vW83ymH8zlCPHru2tVQ/LoBsV4dtth2iQ==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR21MB1593.namprd21.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(7406005)(83380400001)(7696005)(38100700002)(52536014)(26005)(122000001)(7416002)(33656002)(2906002)(30864003)(55016003)(8990500004)(921005)(76116006)(110136005)(10290500003)(66476007)(54906003)(508600001)(66946007)(38070700005)(71200400001)(9686003)(316002)(64756008)(4326008)(186003)(66446008)(82960400001)(8676002)(8936002)(82950400001)(5660300002)(6506007)(86362001)(66556008)(20210929001);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?zro05vSCjNhuL5MHhJZOTjES/UopVWOcpIskjM1HonsMdpJeWb4uyjKZK49+?=
+ =?us-ascii?Q?sPTbWrp09l4kVjrnPUElkyQPSW2rCsjz9I0uqEYXSscsthBnmLBxIn9OFuIn?=
+ =?us-ascii?Q?/ko3l7vahMQIWCVgMS/3clNRo8sbdGJ5KSN2jUawD6pr/3m+Psh7Jzpt1zEQ?=
+ =?us-ascii?Q?Jo7rc1X4wPqQvquhEWhM0xaZf6BcSdmfAmq5oyLzqWxYdyTJMT6D3Nv1IZoP?=
+ =?us-ascii?Q?G5S6svamQHo/NG72c6H1PIyRkVThXgCZ3TFHfTKL5mSGkbfMmz3L9ofEOVkG?=
+ =?us-ascii?Q?hz4W72vOpX/2jIXdE0XrP1g7TOIt9Euax44m2MkDuaA5K9MegcMEjJjBMTH7?=
+ =?us-ascii?Q?uEUas+uIia4ztMbRKx7d/v0XVEjHFiAfySOL7pCa0OLlQ30Att4f6rmBQQmG?=
+ =?us-ascii?Q?eG3bdaBrnYhaxeD7M7lV/Nux6v/mcc4gErL5Ek2QWc8JizuQN/XpSsJdGg9y?=
+ =?us-ascii?Q?NJQ3DVOjgBuhQBPIdd9BaeNTA3YuoZHCGdMnY/cgQxDqGqvm9go9EaA1/LfZ?=
+ =?us-ascii?Q?QrlLu/dnubx1sw92+WypKQcH8BRbW/a6hCxKmDjYYO9kls5FWRsTllUzPQcQ?=
+ =?us-ascii?Q?AjjfxzU/CReHsPVVAjj2X+8CozdfyXNgeU3F3vNpN7gmiSiEZ7IIwa69v2Az?=
+ =?us-ascii?Q?ydOhQIzKdk2xL7PZup1Qi1LaEHZKNz/4zh9H+iH9aZg6KgxkZs1PbfbdgiI1?=
+ =?us-ascii?Q?pZW9idJgm8kIDWzDfxW6Z4Ycyr66zEdbkrtcVnNY7O+5BXwlxst96aJAj+va?=
+ =?us-ascii?Q?uGNSZu81g3h2Acq4GNRQxb/1fdEDa01z6/9Tiu73WxzTprkmlrqV8cTO3MmJ?=
+ =?us-ascii?Q?I2GixJzZjMahihMWVm+gILXztvQQjyjGEQm+2JKNRflygrVIQllAzhf/FhCS?=
+ =?us-ascii?Q?+247wG9pKiyt2JF7bph+WCgID9oRz90f/AqwVG2JSdM7Uj3H7IFuCXiibXw7?=
+ =?us-ascii?Q?Z5CIgeeV0XFrHXT/1Nu1vAO9ceHSzVeEL/rHUDBp67rXjOutI2+lqgWTKTeO?=
+ =?us-ascii?Q?f1vR1eEABitU9o9v3kHjGkgPLwF4V7aNHXqPmzLnpgTSCQ4cQzk2oal1cAJD?=
+ =?us-ascii?Q?YN/2lAfhZCo/gwpodcKhFT9/R/sNpwGwtI0+4gbTXJ3b/U7jHJDY2ZhkDRDc?=
+ =?us-ascii?Q?LwIW15Tg5VbdX+hcaVnPNvMTJFSbakCQCm7cOSh+4lNhi1dWe2mnuBBb3Pig?=
+ =?us-ascii?Q?/6V6BEnNe/xjAuu0yO4fc8kRTSDXPv99wtqcMFQ4Ygsmd1VYaPGOHrk/7nvz?=
+ =?us-ascii?Q?wyXUbAlq1VOevie58iYz06IJn0uRxxqzKCZ3WnD9X7eDNgCwJUUU36Bc0cBl?=
+ =?us-ascii?Q?jQvDM79Xd8wsUD8PEGR8F0J0vKgcxSc+1EnINQRLjntgo1ELCmE2REZSZ/fN?=
+ =?us-ascii?Q?GRseoeIIFNtDnDxO2JKwMGlnQIsKBY+nAH/Jp1VZ3NbYVxiNU7LuuwvZkEz6?=
+ =?us-ascii?Q?76Mg1mInYSEe7Xh27WOuH1Av+0Shqefq64UumAWF4FB2m1sBvHvYXXfx8xHq?=
+ =?us-ascii?Q?ah4Ul6oRzXrIQUL5/YXRuzb1yKj618fuHOVSq+UzA+6kToluDHd4w0XfFOOq?=
+ =?us-ascii?Q?5cuYbfyBTSZnEyFbShNhPGM5BuhBHX/yNn/Pq4tMkSOwJjzQ2TTma10tmB9S?=
+ =?us-ascii?Q?d402NcSXuQalpQsaEegUQG2pmbbC1GUqaMH59uPaQpgJqr25hurQg7ODq8ET?=
+ =?us-ascii?Q?QmrLAA=3D=3D?=
 MIME-Version: 1.0
-Received: from [IPV6:2601:191:8500:cff0::7928] (2601:191:8500:cff0::7928) by
- BLAPR03CA0146.namprd03.prod.outlook.com (2603:10b6:208:32e::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.16 via Frontend
- Transport; Fri, 3 Dec 2021 17:48:44 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cc6149e2-f5ed-43bc-09ce-08d9b68527bc
-X-MS-TrafficTypeDiagnostic: BY5PR10MB4002:
-X-Microsoft-Antispam-PRVS: <BY5PR10MB4002A0F077B704765CAC5D85E66A9@BY5PR10MB4002.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vNoMfgdubtWHYNDz0LZHViSkjqOPWHo6xf8eibYFW4OjYaIvudYVquFz7Z1EV3ij8mLomV/VrY6oN8LMrMJ/J9FfGQM8cUKKLk9x44RkPKlf97dRWh3I72RhuUlv3rKImWhPiCw7WLfgIQC8zwDamWMeUCjTmP+C3WKKljwhjdHPTeQ6EYGNPdQodyAU1PH70stB9ozqPkYuJ22YDeiNdFW9VDPGVuqPcoGT23dNwOKu3UxhTwCOho1hmM6yOAjcwSIoyPVJoBcR6lI8pppcgES66S6yM16StcdB2hyXAyzv4qHTREz++nr34WivebItioaPcvW0+vHrN6ZrzaYxSSx99oGhXWkguxOK7WxWxdeWu5yC0JnzpSOH+9zp3WnH7ABC31/mI5oEveBXQMvlF5y/kzGzDyqC4B6yNYJHtMwoxgwybQpCUGtq4J8+791eyRCvSvG+TR7H5WT/cF8RDLSWNYWSB2OUsHFX7Ne7ncVSKkdtWHX2lzi4Z+bcdbRBXKIECjOTJWgsrycnQYPBetyxtIXPtNay9G9mmNwMjO2vCKuYzakxUUSY8cXPoL06NUlVXcJVYfeVu4Qm5ZHCAjciNdFh2dtdW/sDDsRD/IDYIRbNhrE+LnxW/CqhdWtOJBR2QfEDalx9IKqAmtFDfnjipziVoBRB1nby8STW8xx347gdGHCHphKu6l9AWSWFXFgzaQbTndEBnqo3iTFyeC41R6+5E1wR9h6+KEegnCY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BY5PR10MB3793.namprd10.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(366004)(66476007)(2906002)(31696002)(66946007)(31686004)(7416002)(66556008)(5660300002)(8676002)(316002)(83380400001)(36756003)(8936002)(6486002)(508600001)(38100700002)(53546011)(2616005)(4326008)(44832011)(86362001)(186003)(43740500002)(45980500001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Q05MQXVDUTlGdDZzNzRwZnlNSHo1elZjcDhQaWFHUUV1Z3lXYjlrU1hUTlRF?=
- =?utf-8?B?VHRqK3B2SDBMMkRMdXVLWXgxOXliZHBab1FqUzlEeVF4MlhFYk9lbVMxYXo5?=
- =?utf-8?B?S0RhVnhVNHhRMXhNL1BuZVZRTEs3cTVhUTd2QnAvTTJtYzRCRGtZYlVXRjdh?=
- =?utf-8?B?UkR1UTdQUU1PRzE2ZTdaUkxTWmFFdUp2ZlNub2ltUVJjSVA0VDJ2dE5Vd3V6?=
- =?utf-8?B?U1lnN1gzSjgzcFBQWWlTTUdsdkFVZzZlMmhsWk1RbjZRV0lPalByc2xYZHUx?=
- =?utf-8?B?TkpTWHAvTWVaMXlNWk1lYzdTSHhqRTE5SS9QVDU3S3BNVS9kZVZJWUxCSlcx?=
- =?utf-8?B?YXhkNU5jaXJwTlI5QjJ4UjVmZFNUYWx1bWdwS0VOcWtZUlIvOXo5OXZoU3ls?=
- =?utf-8?B?c2t2MTNXNmc5ZEFYL2xsUENzSUVqUllDQmRnbTEzWURybG9EaW03WnV3bHBJ?=
- =?utf-8?B?ZVVXNGloSDQzaTVpUUUyRVJ4TEMwc3RSVDRQVWFuOUwwZE5zblY0Vit6WjAx?=
- =?utf-8?B?VWtsSTZwQ3J2QVVreXNMRGV4dEpxNlJ1Q2ZqazZQTnRuSVhVeEZ5NXozTXJP?=
- =?utf-8?B?SjZSYXM5MCtwc2pGYkFHZ2ZvNVdGR1B5Z0ZNYm9pTHBoRTNQb3Q2c3FNN3lk?=
- =?utf-8?B?djUzTVE5Q3oyVWE4S0FabFk1VzRVYjRrYzVMVXVna2hDZEZRMm15MXVuVWJY?=
- =?utf-8?B?MDlCNGNsK2NaR2JuVXRueEVnNGlVOXZ4bm56dlpsTUFwYWhRMUpnd1NJM0Yv?=
- =?utf-8?B?eVp4MWJwNVkrZnlFL0t6UlJoYUszZWFsYW51ekRRb3dUV2ZmalFKSi9nNEpI?=
- =?utf-8?B?TWd0NUQ2NkZtTHJjVGpQWUorcGtiTVdoWHZzQjUwTTZTREE2OVRRZmRaa0or?=
- =?utf-8?B?dHJwRDRCRzVQVERhNkZoZVBDOVZJRjE0MkV5NmtqZ0JJeklzQW8xYXpTaDhu?=
- =?utf-8?B?NFFaM1NEOVkwdmRtNTJWZ3R3Q1F1VVZqMFZPWHlFSXB0WkU4MElMd2V3Y05J?=
- =?utf-8?B?VW8vWXhvNW5vZWd4aXR3SjJSUG9rclUraXFFTGZ5Q3dmVVM1S1gzR1Z6djhU?=
- =?utf-8?B?VnNPNzdjVDNCTWp1bzdNdm92VHlhdzVpdmoyME04VktSS1JpUXZYd3ZTK3lG?=
- =?utf-8?B?Wjl6VVVBU1NLK3BuQXBGcXYzRkltVVpCN0ZENTFtQ2RmSGxyKzVSMW5MeDh2?=
- =?utf-8?B?SnlaOGphZ0xaTEgrWTlpalNiRXlmQkI0Z1BvdlV0VURZT3VjeFA4RHdHR25z?=
- =?utf-8?B?UFFIK0tEckZmN1V6YTZTRXM2ckJuK1llMlpLSmtlajgzaU1NQVdwTlFNUGs4?=
- =?utf-8?B?ZXZLWVNVaTZsZStldzhoaXp1SVRMSzh5TkxsaVhLOEY5ZzBFSDkvSFp4Zlgy?=
- =?utf-8?B?a1ZjMXRFSURJNHRnUWI5eUFEMUVPSUNMd2Z4ajVwR1dMNTI2QlpxR2FwVnRp?=
- =?utf-8?B?cUtOdFZ0WENYTmMyOTdLRTNsSjZTRFJQTndnVnZUK2w4L01sOVpTTU9tTHNj?=
- =?utf-8?B?Mks0VFhUaHlzUkkwc3FUMnM0aFp6YkFDWnNBNUFhekRJWFY2a2VtZ3VkRTI4?=
- =?utf-8?B?Q3BkMzhrVkxCUzZaRVdKZUtnVytOaHQ4Q0lIV3UvQi9La2JxZTM5M1p2dmhj?=
- =?utf-8?B?Y1AwM2pNNUh4dm1ZK2FtWmZRVVNNdHhtUHNRK3hVMjVTOXNqT0gvWURIL1VB?=
- =?utf-8?B?Nmlwakt4QjZLYThKUGZWSFZsVG5ZMVZjdVN1SWdWdXR2R3d2SWV1VzVIV2dR?=
- =?utf-8?B?QndiMFE1akx0aFlQQU9rdjZYd0ZWc25xa0wxelpoK0g1RTdCUEQxU0ZhVXh3?=
- =?utf-8?B?NHNaQXg3ZGhUTnEzdXZKRzl2T0p4RmpMZmptRWVwR0N1WnRkdXgvNjVSOFVs?=
- =?utf-8?B?SXBTKzExWlFmdjJ0L003ODlPYjh6cTBmMTRLdE5xWE5JM09xb0piZ0hYcVRv?=
- =?utf-8?B?TXY2OVYvYTRVME1rNElFeUt4ekkvNU0raC9RSVpDMXp3dEJ4QXdBODFSaE4z?=
- =?utf-8?B?NXpXZU1WQ1ZvYnFDaEJ3UEUrRFE5MW92OUlvMUh4UlNBZEpwOUZ6U1NqQXBT?=
- =?utf-8?B?RnNsV09wMnFuSS84TGtMRjJuVnVqK0VJUzd1RU5GUkNaOTBzcWtSRCtkWGNQ?=
- =?utf-8?B?alVIVThpV1NHejZRdmZTWDBuenMxQWFNOUFmYk96MkhVWWw0c3BoWmk2R1ZV?=
- =?utf-8?B?UFdJUkIzd2hCdnBUMEFhdDlVdUhyOFl0bWs0ZU1QUDVGSGRvL1UyTFUzMkxY?=
- =?utf-8?B?MVdIL1kwZ2V2dEE1SmxxbUY5UzFCK0lhb2tyR2c2cCs2cllFd2lSMzlPS0I0?=
- =?utf-8?Q?AgNus9vHSncl9gmF3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cc6149e2-f5ed-43bc-09ce-08d9b68527bc
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB3793.namprd10.prod.outlook.com
+X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Dec 2021 17:48:46.5554 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kTZA3CU1DnQYApB/itWIfO7Iuc4UL3zWdNqxzOF8JvJeTIIeac3/ekZTD6lUjJsXj3jLlgX4H7rZxWNXQj9G7Yk5qoqX6jrba0VjRQ/oMI0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR10MB4002
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10187
- signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0
- mlxscore=0 malwarescore=0
- spamscore=0 bulkscore=0 mlxlogscore=999 suspectscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2112030112
-X-Proofpoint-GUID: ItEI_sDqqDNcbOXK0kLpEm5U1Gan_8t1
-X-Proofpoint-ORIG-GUID: ItEI_sDqqDNcbOXK0kLpEm5U1Gan_8t1
-Cc: dpsmith@apertussolutions.com, luto@amacapital.net, mingo@redhat.com,
- kanth.ghatraju@oracle.com, hpa@zytor.com, bp@alien8.de, tglx@linutronix.de,
- trenchboot-devel@googlegroups.com
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e4fd0545-1fe9-490d-11ea-08d9b68f0888
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Dec 2021 18:59:28.7049 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NNhAqCcIO2/MvZ83887pIu/DkGlbprQSyQM4VAMD175E+8fHTfeqdSeFGghpyHZnawQeWGOLtdfagQjnJczuCNx+Z3JOc24ccqsSmogkqcU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR2101MB1019
+Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+ "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+ "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+ "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "dave.hansen@intel.com" <dave.hansen@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ vkuznets <vkuznets@redhat.com>, "hch@lst.de" <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -197,54 +178,409 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: "Michael Kelley \(LINUX\) via iommu" <iommu@lists.linux-foundation.org>
+Reply-To: "Michael Kelley \(LINUX\)" <mikelley@microsoft.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMTIvMy8yMSAxMTowMywgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDIwMjEtMTItMDMgMTU6
-NDcsIFJvc3MgUGhpbGlwc29uIHdyb3RlOgo+PiBPbiAxMi8yLzIxIDEyOjI2LCBSb2JpbiBNdXJw
-aHkgd3JvdGU6Cj4+PiBPbiAyMDIxLTA4LTI3IDE0OjI4LCBSb3NzIFBoaWxpcHNvbiB3cm90ZToK
-Pj4+IFsuLi5dCj4+Pj4gK0lPTU1VIENvbmZpZ3VyYXRpb24KPj4+PiArLS0tLS0tLS0tLS0tLS0t
-LS0tLQo+Pj4+ICsKPj4+PiArV2hlbiBkb2luZyBhIFNlY3VyZSBMYXVuY2gsIHRoZSBJT01NVSBz
-aG91bGQgYWx3YXlzIGJlIGVuYWJsZWQgYW5kCj4+Pj4gdGhlIGRyaXZlcnMKPj4+PiArbG9hZGVk
-LiBIb3dldmVyLCBJT01NVSBwYXNzdGhyb3VnaCBtb2RlIHNob3VsZCBuZXZlciBiZSB1c2VkLiBU
-aGlzCj4+Pj4gbGVhdmVzIHRoZQo+Pj4+ICtNTEUgY29tcGxldGVseSBleHBvc2VkIHRvIERNQSBh
-ZnRlciB0aGUgUE1SJ3MgWzJdXyBhcmUgZGlzYWJsZWQuCj4+Pj4gRmlyc3QsIElPTU1VCj4+Pj4g
-K3Bhc3N0aHJvdWdoIHNob3VsZCBiZSBkaXNhYmxlZCBieSBkZWZhdWx0IGluIHRoZSBidWlsZCBj
-b25maWd1cmF0aW9uOjoKPj4+PiArCj4+Pj4gK8KgICJEZXZpY2UgRHJpdmVycyIgLS0+Cj4+Pj4g
-K8KgwqDCoMKgwqAgIklPTU1VIEhhcmR3YXJlIFN1cHBvcnQiIC0tPgo+Pj4+ICvCoMKgwqDCoMKg
-wqDCoMKgwqAgIklPTU1VIHBhc3N0aHJvdWdoIGJ5IGRlZmF1bHQgWyBdIgo+Pj4+ICsKPj4+PiAr
-VGhpcyB1bnNldCB0aGUgS2NvbmZpZyB2YWx1ZSBDT05GSUdfSU9NTVVfREVGQVVMVF9QQVNTVEhS
-T1VHSC4KPj4+Cj4+PiBOb3RlIHRoYXQgdGhlIGNvbmZpZyBzdHJ1Y3R1cmUgaGFzIG5vdyBjaGFu
-Z2VkLCBhbmQgaWYgc2V0LCBwYXNzdGhyb3VnaAo+Pj4gaXMgZGVzZWxlY3RlZCBieSBjaG9vc2lu
-ZyBhIGRpZmZlcmVudCBkZWZhdWx0IGRvbWFpbiB0eXBlLgo+Pgo+PiBUaGFua3MgZm9yIHRoZSBo
-ZWFkcyB1cC4gV2Ugd2lsbCBoYXZlIHRvIG1vZGlmeSB0aGlzIGZvciBob3cgdGhpbmdzCj4+IGV4
-aXN0IHRvZGF5Lgo+Pgo+Pj4KPj4+PiArSW4gYWRkaXRpb24sIHBhc3N0aHJvdWdoIG11c3QgYmUg
-ZGlzYWJsZWQgb24gdGhlIGtlcm5lbCBjb21tYW5kIGxpbmUKPj4+PiB3aGVuIGRvaW5nCj4+Pj4g
-K2EgU2VjdXJlIExhdW5jaCBhcyBmb2xsb3dzOjoKPj4+PiArCj4+Pj4gK8KgIGlvbW11PW5vcHQg
-aW9tbXUucGFzc3Rocm91Z2g9MAo+Pj4KPj4+IFRoaXMgcGFydCBpcyBhIGJpdCBzaWxseSAtIHRo
-b3NlIG9wdGlvbnMgYXJlIGxpdGVyYWxseSBhbGlhc2VzIGZvciB0aGUKPj4+IGV4YWN0IHNhbWUg
-dGhpbmcsIGFuZCBmdXJ0aGVybW9yZSBpZiB0aGUgY29uZmlnIGlzIGFscmVhZHkgc2V0IGFzCj4+
-PiByZXF1aXJlZCB0aGVuIHRoZSBzb2xlIGVmZmVjdCBlaXRoZXIgb2YgdGhlbSB3aWxsIGhhdmUg
-aXMgdG8gY2F1c2UgIihzZXQKPj4+IGJ5IGtlcm5lbCBjb21tYW5kIGxpbmUpIiB0byBiZSBwcmlu
-dGVkLiBUaGVyZSBpcyBubyB2YWx1ZSBpbiBleHBsaWNpdGx5Cj4+PiBvdmVycmlkaW5nIHRoZSBk
-ZWZhdWx0IHZhbHVlIHdpdGggdGhlIGRlZmF1bHQgdmFsdWUgLSBpZiBhbnlvbmUgY2FuCj4+PiBh
-cHBlbmQgYW4gYWRkaXRpb25hbCAiaW9tbXUucGFzc3Rocm91Z2g9MSIgKG9yICJpb21tdT1wdCIp
-IHRvIHRoZSBlbmQgb2YKPj4+IHRoZSBjb21tYW5kIGxpbmUgdGhleSdsbCBzdGlsbCB3aW4uCj4+
-Cj4+IEkgZmVlbCBsaWtlIHdoZW4gd2Ugd29ya2VkIG9uIHRoaXMsIGl0IHdhcyBzdGlsbCBpbXBv
-cnRhbnQgdG8gc2V0IHRob3NlCj4+IHZhbHVlcy4gVGhpcyBjb3VsZCBoYXZlIGJlZW4gaW4gYW4g
-b2xkZXIga2VybmVsIHZlcnNpb24uIFdlIHdpbGwgZ28gYmFjawo+PiBhbmQgdmVyaWZ5IHdoYXQg
-eW91IGFyZSBzYXlpbmcgaGVyZSBhbmQgYWRqdXN0IHRoZSBkb2N1bWVudGF0aW9uCj4+IGFjY29y
-ZGluZ2x5Lgo+Pgo+PiBBcyB0byBhbnlvbmUganVzdCBhZGRpbmcgdmFsdWVzIHRvIHRoZSBjb21t
-YW5kIGxpbmUsIHRoYXQgaXMgd2h5IHRoZQo+PiBjb21tYW5kIGxpbmUgaXMgcGFydCBvZiB0aGUg
-RFJUTSBtZWFzdXJlbWVudHMuCj4gCj4gWWVhaCwgSSBoYWQgYSB2YWd1ZSBtZW1vcnkgdGhhdCB0
-aGF0IHdhcyB0aGUgY2FzZSAtIGJhc2ljYWxseSBpZiB5b3UgY2FuCj4gdHJ1c3QgdGhlIGNvbW1h
-bmQgbGluZSBhcyBtdWNoIGFzIHRoZSBjb25maWcgdGhlbiBpdCdzIGRlZmluaXRlbHkKPiByZWR1
-bmRhbnQgdG8gcGFzcyBhbiBvcHRpb24gZm9yIHRoaXMgKHNlZSBpb21tdV9zdWJzeXNfaW5pdCgp
-IC0gaXQncyBub3cKPiBhbGwgcGx1bWJlZCB0aHJvdWdoIGlvbW11X2RlZl9kb21haW5fdHlwZSks
-IGFuZCBpZiB5b3UgY2FuJ3QgdGhlbgo+IHBhc3NpbmcgdGhlbSBpcyBmdXRpbGUgYW55d2F5LgoK
-VGhhbmtzIHlvdSBmb3IgeW91ciBmZWVkYmFjay4KClJvc3MKCj4gCj4gQ2hlZXJzLAo+IFJvYmlu
-LgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUg
-bWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlz
-dHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+From: Tianyu Lan <ltykernel@gmail.com> Sent: Wednesday, December 1, 2021 8:03 AM
+> 
+> In Isolation VM, all shared memory with host needs to mark visible
+> to host via hvcall. vmbus_establish_gpadl() has already done it for
+> netvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
+> pagebuffer() stills need to be handled. Use DMA API to map/umap
+> these memory during sending/receiving packet and Hyper-V swiotlb
+> bounce buffer dma adress will be returned. The swiotlb bounce buffer
+> has been masked to be visible to host during boot up.
+> 
+> rx/tx ring buffer is allocated via vzalloc() and they need to be
+> mapped into unencrypted address space(above vTOM) before sharing
+> with host and accessing. Add hv_map/unmap_memory() to map/umap rx
+> /tx ring buffer.
+> 
+> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> ---
+> Change since v2:
+>        * Add hv_map/unmap_memory() to map/umap rx/tx ring buffer.
+> ---
+>  arch/x86/hyperv/ivm.c             |  28 ++++++
+>  drivers/hv/hv_common.c            |  11 +++
+>  drivers/net/hyperv/hyperv_net.h   |   5 ++
+>  drivers/net/hyperv/netvsc.c       | 136 +++++++++++++++++++++++++++++-
+>  drivers/net/hyperv/netvsc_drv.c   |   1 +
+>  drivers/net/hyperv/rndis_filter.c |   2 +
+>  include/asm-generic/mshyperv.h    |   2 +
+>  include/linux/hyperv.h            |   5 ++
+>  8 files changed, 187 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
+> index 69c7a57f3307..9f78d8f67ea3 100644
+> --- a/arch/x86/hyperv/ivm.c
+> +++ b/arch/x86/hyperv/ivm.c
+> @@ -287,3 +287,31 @@ int hv_set_mem_host_visibility(unsigned long kbuffer, int pagecount, bool visibl
+>  	kfree(pfn_array);
+>  	return ret;
+>  }
+> +
+> +/*
+> + * hv_map_memory - map memory to extra space in the AMD SEV-SNP Isolation VM.
+> + */
+> +void *hv_map_memory(void *addr, unsigned long size)
+> +{
+> +	unsigned long *pfns = kcalloc(size / HV_HYP_PAGE_SIZE,
+
+This should be just PAGE_SIZE, as this code is unrelated to communication
+with Hyper-V.
+
+> +				      sizeof(unsigned long), GFP_KERNEL);
+> +	void *vaddr;
+> +	int i;
+> +
+> +	if (!pfns)
+> +		return NULL;
+> +
+> +	for (i = 0; i < size / PAGE_SIZE; i++)
+> +		pfns[i] = virt_to_hvpfn(addr + i * PAGE_SIZE) +
+
+Same here:  Use virt_to_pfn().
+
+> +			(ms_hyperv.shared_gpa_boundary >> PAGE_SHIFT);
+> +
+> +	vaddr = vmap_pfn(pfns, size / PAGE_SIZE, PAGE_KERNEL_IO);
+> +	kfree(pfns);
+> +
+> +	return vaddr;
+> +}
+> +
+> +void hv_unmap_memory(void *addr)
+> +{
+> +	vunmap(addr);
+> +}
+> diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
+> index 7be173a99f27..3c5cb1f70319 100644
+> --- a/drivers/hv/hv_common.c
+> +++ b/drivers/hv/hv_common.c
+> @@ -295,3 +295,14 @@ u64 __weak hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_s
+>  	return HV_STATUS_INVALID_PARAMETER;
+>  }
+>  EXPORT_SYMBOL_GPL(hv_ghcb_hypercall);
+> +
+> +void __weak *hv_map_memory(void *addr, unsigned long size)
+> +{
+> +	return NULL;
+> +}
+> +EXPORT_SYMBOL_GPL(hv_map_memory);
+> +
+> +void __weak hv_unmap_memory(void *addr)
+> +{
+> +}
+> +EXPORT_SYMBOL_GPL(hv_unmap_memory);
+> diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
+> index 315278a7cf88..cf69da0e296c 100644
+> --- a/drivers/net/hyperv/hyperv_net.h
+> +++ b/drivers/net/hyperv/hyperv_net.h
+> @@ -164,6 +164,7 @@ struct hv_netvsc_packet {
+>  	u32 total_bytes;
+>  	u32 send_buf_index;
+>  	u32 total_data_buflen;
+> +	struct hv_dma_range *dma_range;
+>  };
+> 
+>  #define NETVSC_HASH_KEYLEN 40
+> @@ -1074,6 +1075,7 @@ struct netvsc_device {
+> 
+>  	/* Receive buffer allocated by us but manages by NetVSP */
+>  	void *recv_buf;
+> +	void *recv_original_buf;
+>  	u32 recv_buf_size; /* allocated bytes */
+>  	struct vmbus_gpadl recv_buf_gpadl_handle;
+>  	u32 recv_section_cnt;
+> @@ -1082,6 +1084,7 @@ struct netvsc_device {
+> 
+>  	/* Send buffer allocated by us */
+>  	void *send_buf;
+> +	void *send_original_buf;
+>  	u32 send_buf_size;
+>  	struct vmbus_gpadl send_buf_gpadl_handle;
+>  	u32 send_section_cnt;
+> @@ -1731,4 +1734,6 @@ struct rndis_message {
+>  #define RETRY_US_HI	10000
+>  #define RETRY_MAX	2000	/* >10 sec */
+> 
+> +void netvsc_dma_unmap(struct hv_device *hv_dev,
+> +		      struct hv_netvsc_packet *packet);
+>  #endif /* _HYPERV_NET_H */
+> diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+> index 396bc1c204e6..b7ade735a806 100644
+> --- a/drivers/net/hyperv/netvsc.c
+> +++ b/drivers/net/hyperv/netvsc.c
+> @@ -153,8 +153,21 @@ static void free_netvsc_device(struct rcu_head *head)
+>  	int i;
+> 
+>  	kfree(nvdev->extension);
+> -	vfree(nvdev->recv_buf);
+> -	vfree(nvdev->send_buf);
+> +
+> +	if (nvdev->recv_original_buf) {
+> +		hv_unmap_memory(nvdev->recv_buf);
+> +		vfree(nvdev->recv_original_buf);
+> +	} else {
+> +		vfree(nvdev->recv_buf);
+> +	}
+> +
+> +	if (nvdev->send_original_buf) {
+> +		hv_unmap_memory(nvdev->send_buf);
+> +		vfree(nvdev->send_original_buf);
+> +	} else {
+> +		vfree(nvdev->send_buf);
+> +	}
+> +
+>  	kfree(nvdev->send_section_map);
+> 
+>  	for (i = 0; i < VRSS_CHANNEL_MAX; i++) {
+> @@ -338,6 +351,7 @@ static int netvsc_init_buf(struct hv_device *device,
+>  	unsigned int buf_size;
+>  	size_t map_words;
+>  	int i, ret = 0;
+> +	void *vaddr;
+> 
+>  	/* Get receive buffer area. */
+>  	buf_size = device_info->recv_sections * device_info->recv_section_size;
+> @@ -373,6 +387,17 @@ static int netvsc_init_buf(struct hv_device *device,
+>  		goto cleanup;
+>  	}
+> 
+> +	if (hv_isolation_type_snp()) {
+> +		vaddr = hv_map_memory(net_device->recv_buf, buf_size);
+> +		if (!vaddr) {
+> +			ret = -ENOMEM;
+> +			goto cleanup;
+> +		}
+> +
+> +		net_device->recv_original_buf = net_device->recv_buf;
+> +		net_device->recv_buf = vaddr;
+> +	}
+> +
+>  	/* Notify the NetVsp of the gpadl handle */
+>  	init_packet = &net_device->channel_init_pkt;
+>  	memset(init_packet, 0, sizeof(struct nvsp_message));
+> @@ -476,6 +501,17 @@ static int netvsc_init_buf(struct hv_device *device,
+>  		goto cleanup;
+>  	}
+> 
+> +	if (hv_isolation_type_snp()) {
+> +		vaddr = hv_map_memory(net_device->send_buf, buf_size);
+> +		if (!vaddr) {
+> +			ret = -ENOMEM;
+> +			goto cleanup;
+> +		}
+> +
+> +		net_device->send_original_buf = net_device->send_buf;
+> +		net_device->send_buf = vaddr;
+> +	}
+> +
+>  	/* Notify the NetVsp of the gpadl handle */
+>  	init_packet = &net_device->channel_init_pkt;
+>  	memset(init_packet, 0, sizeof(struct nvsp_message));
+> @@ -766,7 +802,7 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
+> 
+>  	/* Notify the layer above us */
+>  	if (likely(skb)) {
+> -		const struct hv_netvsc_packet *packet
+> +		struct hv_netvsc_packet *packet
+>  			= (struct hv_netvsc_packet *)skb->cb;
+>  		u32 send_index = packet->send_buf_index;
+>  		struct netvsc_stats *tx_stats;
+> @@ -782,6 +818,7 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
+>  		tx_stats->bytes += packet->total_bytes;
+>  		u64_stats_update_end(&tx_stats->syncp);
+> 
+> +		netvsc_dma_unmap(ndev_ctx->device_ctx, packet);
+>  		napi_consume_skb(skb, budget);
+>  	}
+> 
+> @@ -946,6 +983,88 @@ static void netvsc_copy_to_send_buf(struct netvsc_device *net_device,
+>  		memset(dest, 0, padding);
+>  }
+> 
+> +void netvsc_dma_unmap(struct hv_device *hv_dev,
+> +		      struct hv_netvsc_packet *packet)
+> +{
+> +	u32 page_count = packet->cp_partial ?
+> +		packet->page_buf_cnt - packet->rmsg_pgcnt :
+> +		packet->page_buf_cnt;
+> +	int i;
+> +
+> +	if (!hv_is_isolation_supported())
+> +		return;
+> +
+> +	if (!packet->dma_range)
+> +		return;
+> +
+> +	for (i = 0; i < page_count; i++)
+> +		dma_unmap_single(&hv_dev->device, packet->dma_range[i].dma,
+> +				 packet->dma_range[i].mapping_size,
+> +				 DMA_TO_DEVICE);
+> +
+> +	kfree(packet->dma_range);
+> +}
+> +
+> +/* netvsc_dma_map - Map swiotlb bounce buffer with data page of
+> + * packet sent by vmbus_sendpacket_pagebuffer() in the Isolation
+> + * VM.
+> + *
+> + * In isolation VM, netvsc send buffer has been marked visible to
+> + * host and so the data copied to send buffer doesn't need to use
+> + * bounce buffer. The data pages handled by vmbus_sendpacket_pagebuffer()
+> + * may not be copied to send buffer and so these pages need to be
+> + * mapped with swiotlb bounce buffer. netvsc_dma_map() is to do
+> + * that. The pfns in the struct hv_page_buffer need to be converted
+> + * to bounce buffer's pfn. The loop here is necessary because the
+> + * entries in the page buffer array are not necessarily full
+> + * pages of data.  Each entry in the array has a separate offset and
+> + * len that may be non-zero, even for entries in the middle of the
+> + * array.  And the entries are not physically contiguous.  So each
+> + * entry must be individually mapped rather than as a contiguous unit.
+> + * So not use dma_map_sg() here.
+> + */
+> +int netvsc_dma_map(struct hv_device *hv_dev,
+> +		   struct hv_netvsc_packet *packet,
+> +		   struct hv_page_buffer *pb)
+> +{
+> +	u32 page_count =  packet->cp_partial ?
+> +		packet->page_buf_cnt - packet->rmsg_pgcnt :
+> +		packet->page_buf_cnt;
+> +	dma_addr_t dma;
+> +	int i;
+> +
+> +	if (!hv_is_isolation_supported())
+> +		return 0;
+> +
+> +	packet->dma_range = kcalloc(page_count,
+> +				    sizeof(*packet->dma_range),
+> +				    GFP_KERNEL);
+> +	if (!packet->dma_range)
+> +		return -ENOMEM;
+> +
+> +	for (i = 0; i < page_count; i++) {
+> +		char *src = phys_to_virt((pb[i].pfn << HV_HYP_PAGE_SHIFT)
+> +					 + pb[i].offset);
+> +		u32 len = pb[i].len;
+> +
+> +		dma = dma_map_single(&hv_dev->device, src, len,
+> +				     DMA_TO_DEVICE);
+> +		if (dma_mapping_error(&hv_dev->device, dma)) {
+> +			kfree(packet->dma_range);
+> +			return -ENOMEM;
+> +		}
+> +
+> +		/* pb[].offset and pb[].len are not changed during dma mapping
+> +		 * and so not reassign.
+> +		 */
+> +		packet->dma_range[i].dma = dma;
+> +		packet->dma_range[i].mapping_size = len;
+> +		pb[i].pfn = dma >> HV_HYP_PAGE_SHIFT;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static inline int netvsc_send_pkt(
+>  	struct hv_device *device,
+>  	struct hv_netvsc_packet *packet,
+> @@ -986,14 +1105,24 @@ static inline int netvsc_send_pkt(
+> 
+>  	trace_nvsp_send_pkt(ndev, out_channel, rpkt);
+> 
+> +	packet->dma_range = NULL;
+>  	if (packet->page_buf_cnt) {
+>  		if (packet->cp_partial)
+>  			pb += packet->rmsg_pgcnt;
+> 
+> +		ret = netvsc_dma_map(ndev_ctx->device_ctx, packet, pb);
+> +		if (ret) {
+> +			ret = -EAGAIN;
+> +			goto exit;
+> +		}
+> +
+>  		ret = vmbus_sendpacket_pagebuffer(out_channel,
+>  						  pb, packet->page_buf_cnt,
+>  						  &nvmsg, sizeof(nvmsg),
+>  						  req_id);
+> +
+> +		if (ret)
+> +			netvsc_dma_unmap(ndev_ctx->device_ctx, packet);
+>  	} else {
+>  		ret = vmbus_sendpacket(out_channel,
+>  				       &nvmsg, sizeof(nvmsg),
+> @@ -1001,6 +1130,7 @@ static inline int netvsc_send_pkt(
+>  				       VMBUS_DATA_PACKET_FLAG_COMPLETION_REQUESTED);
+>  	}
+> 
+> +exit:
+>  	if (ret == 0) {
+>  		atomic_inc_return(&nvchan->queue_sends);
+> 
+> diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+> index 7e66ae1d2a59..17958533bf30 100644
+> --- a/drivers/net/hyperv/netvsc_drv.c
+> +++ b/drivers/net/hyperv/netvsc_drv.c
+> @@ -2512,6 +2512,7 @@ static int netvsc_probe(struct hv_device *dev,
+>  	net->netdev_ops = &device_ops;
+>  	net->ethtool_ops = &ethtool_ops;
+>  	SET_NETDEV_DEV(net, &dev->device);
+> +	dma_set_min_align_mask(&dev->device, HV_HYP_PAGE_SIZE - 1);
+> 
+>  	/* We always need headroom for rndis header */
+>  	net->needed_headroom = RNDIS_AND_PPI_SIZE;
+> diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
+> index f6c9c2a670f9..448fcc325ed7 100644
+> --- a/drivers/net/hyperv/rndis_filter.c
+> +++ b/drivers/net/hyperv/rndis_filter.c
+> @@ -361,6 +361,8 @@ static void rndis_filter_receive_response(struct net_device *ndev,
+>  			}
+>  		}
+> 
+> +		netvsc_dma_unmap(((struct net_device_context *)
+> +			netdev_priv(ndev))->device_ctx, &request->pkt);
+>  		complete(&request->wait_event);
+>  	} else {
+>  		netdev_err(ndev,
+> diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
+> index 3e2248ac328e..94e73ba129c5 100644
+> --- a/include/asm-generic/mshyperv.h
+> +++ b/include/asm-generic/mshyperv.h
+> @@ -269,6 +269,8 @@ bool hv_isolation_type_snp(void);
+>  u64 hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_size);
+>  void hyperv_cleanup(void);
+>  bool hv_query_ext_cap(u64 cap_query);
+> +void *hv_map_memory(void *addr, unsigned long size);
+> +void hv_unmap_memory(void *addr);
+>  #else /* CONFIG_HYPERV */
+>  static inline bool hv_is_hyperv_initialized(void) { return false; }
+>  static inline bool hv_is_hibernation_supported(void) { return false; }
+> diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
+> index 74f5e92f91a0..b53cfc4163af 100644
+> --- a/include/linux/hyperv.h
+> +++ b/include/linux/hyperv.h
+> @@ -1584,6 +1584,11 @@ struct hyperv_service_callback {
+>  	void (*callback)(void *context);
+>  };
+> 
+> +struct hv_dma_range {
+> +	dma_addr_t dma;
+> +	u32 mapping_size;
+> +};
+> +
+>  #define MAX_SRV_VER	0x7ffffff
+>  extern bool vmbus_prep_negotiate_resp(struct icmsg_hdr *icmsghdrp, u8 *buf, u32 buflen,
+>  				const int *fw_version, int fw_vercnt,
+> --
+> 2.25.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
