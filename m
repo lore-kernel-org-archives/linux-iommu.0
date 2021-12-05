@@ -4,86 +4,84 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7C5B6C4321E
-	for <iommu@archiver.kernel.org>; Sun,  5 Dec 2021 10:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B7450C433F5
+	for <iommu@archiver.kernel.org>; Sun,  5 Dec 2021 14:16:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 2198E405A3;
-	Sun,  5 Dec 2021 10:31:56 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 36180404B5;
+	Sun,  5 Dec 2021 14:16:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UaUOE9wASUlb; Sun,  5 Dec 2021 10:31:55 +0000 (UTC)
+	with ESMTP id XFZNb-Ql0qef; Sun,  5 Dec 2021 14:16:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id C3242404AD;
-	Sun,  5 Dec 2021 10:31:54 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 4199240424;
+	Sun,  5 Dec 2021 14:16:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A69F1C002F;
-	Sun,  5 Dec 2021 10:31:54 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DB689C0012
- for <iommu@lists.linux-foundation.org>; Sun,  5 Dec 2021 10:31:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 162BAC0012;
+	Sun,  5 Dec 2021 14:16:48 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DB56CC0012
+ for <iommu@lists.linux-foundation.org>; Sun,  5 Dec 2021 14:16:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id B546E4058B
- for <iommu@lists.linux-foundation.org>; Sun,  5 Dec 2021 10:31:52 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id C42D56067C
+ for <iommu@lists.linux-foundation.org>; Sun,  5 Dec 2021 14:16:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fLCvzs5117SQ for <iommu@lists.linux-foundation.org>;
- Sun,  5 Dec 2021 10:31:52 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="yD1StGSO";
+ dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
+ header.d=linutronix.de header.b="qH/RLvwS"
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id DQXmBUqOLvbi for <iommu@lists.linux-foundation.org>;
+ Sun,  5 Dec 2021 14:16:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
- by smtp4.osuosl.org (Postfix) with ESMTPS id E6F61404AD
- for <iommu@lists.linux-foundation.org>; Sun,  5 Dec 2021 10:31:51 +0000 (UTC)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
- (No client certificate requested)
- by smtp-out2.suse.de (Postfix) with ESMTPS id 9B4041FD38;
- Sun,  5 Dec 2021 10:31:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
- t=1638700308; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
- mime-version:mime-version:content-type:content-type:
+Received: from galois.linutronix.de (Galois.linutronix.de
+ [IPv6:2a0a:51c0:0:12e:550::1])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 587BF6067B
+ for <iommu@lists.linux-foundation.org>; Sun,  5 Dec 2021 14:16:44 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020; t=1638713800;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  in-reply-to:in-reply-to:references:references;
- bh=K7SjtJiY99hUvKc+7aYw88KA13ESSI3BIsezmC/7IyY=;
- b=ohafv7Z6p35vo8D6RqjNwU7ojURa1cOTkJi+dJivIYoiyBnTVP2smtpL8AGkv+hHcm+OWp
- cHxyTRuCDEDMji92LoYs5I8f4KoZYj7RLwUTQRF/E7oDoVKcK3XB3xHv9Ik2toMmz+h/d3
- 5k6HsZi0t+woqJbJVkd6B+89Fie9qE8=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
- (No client certificate requested)
- by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C107F1348A;
- Sun,  5 Dec 2021 10:31:46 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
- by imap2.suse-dmz.suse.de with ESMTPSA id qYOyLBKVrGH8TQAAMHmgww
- (envelope-from <jgross@suse.com>); Sun, 05 Dec 2021 10:31:46 +0000
-Subject: Re: [PATCH V4 3/5] hyperv/IOMMU: Enable swiotlb bounce buffer for
- Isolation VM
-To: Tianyu Lan <ltykernel@gmail.com>, kys@microsoft.com,
- haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
- decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
- dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
- sstabellini@kernel.org, boris.ostrovsky@oracle.com, joro@8bytes.org,
- will@kernel.org, davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
- martin.petersen@oracle.com, arnd@arndb.de, hch@infradead.org,
- m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
- Tianyu.Lan@microsoft.com, xen-devel@lists.xenproject.org,
- michael.h.kelley@microsoft.com
-References: <20211205081815.129276-1-ltykernel@gmail.com>
- <20211205081815.129276-4-ltykernel@gmail.com>
- <a5943893-510a-3fc8-cbb7-8742369bf36b@suse.com>
- <125ffb7d-958c-e77a-243b-4cf38f690396@gmail.com>
-Message-ID: <ed9aa3d5-9ac8-2195-e617-85599ffd7864@suse.com>
-Date: Sun, 5 Dec 2021 11:31:45 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+ bh=sJTQUIRR77MaSNIdhZpi/LTBTa3zuBS70Kn6pQ3k3x4=;
+ b=yD1StGSOHlk6RlSGRR+TrLWg0wckaM608a8e99ggT3Bd6RYNRkapYOOSja0cPA0zSjfnDw
+ c06H50JiCJEUhCUVUc8qE1csfa8vr5fz52V+zK3Zk42tVbUqzej5yq3wAQjeWeTV5W/BJf
+ twK9J70//mEDrfjm4L7ifeevlIXyaAI39wtiEUoa15a38eReRpDY8ycv+lQ/U7UBvLCGFp
+ 2veaCrVpAu0IeGZk7yfu8kY7HZHwQRH6y1nhcK/Mt/4i1Rma+LVZSPme2rgoyGe+MWhBlm
+ aQ3T7dNZQBc6R/KvCJSKfRa9LzdbrWVzDA4evblraJwmI3pR0+g43jeREh+PCA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020e; t=1638713800;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=sJTQUIRR77MaSNIdhZpi/LTBTa3zuBS70Kn6pQ3k3x4=;
+ b=qH/RLvwSHUt6Ph9FdFVGnlnQOGRwIJr6RblwaJUaSVzx76f4dRY0bxKeW2TgzpeuIos4hI
+ LLHLspi6g3Ee7tDw==
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [patch 21/32] NTB/msi: Convert to msi_on_each_desc()
+In-Reply-To: <87v9044fkb.ffs@tglx>
+References: <87y2548byw.ffs@tglx> <20211201181406.GM4670@nvidia.com>
+ <87mtlk84ae.ffs@tglx> <87r1av7u3d.ffs@tglx>
+ <20211202135502.GP4670@nvidia.com> <87wnkm6c77.ffs@tglx>
+ <20211202200017.GS4670@nvidia.com> <87o85y63m8.ffs@tglx>
+ <20211203003749.GT4670@nvidia.com> <877dcl681d.ffs@tglx>
+ <20211203164104.GX4670@nvidia.com> <87v9044fkb.ffs@tglx>
+Date: Sun, 05 Dec 2021 15:16:40 +0100
+Message-ID: <87o85v3znb.ffs@tglx>
 MIME-Version: 1.0
-In-Reply-To: <125ffb7d-958c-e77a-243b-4cf38f690396@gmail.com>
-Cc: linux-arch@vger.kernel.org, parri.andrea@gmail.com,
- linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
- linux-scsi@vger.kernel.org, konrad.wilk@oracle.com, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, dave.hansen@intel.com,
- iommu@lists.linux-foundation.org, vkuznets@redhat.com, hch@lst.de
+Cc: Allen Hubbe <allenbh@gmail.com>, linux-s390@vger.kernel.org,
+ Kevin Tian <kevin.tian@intel.com>, x86@kernel.org,
+ Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marc Zygnier <maz@kernel.org>,
+ Heiko Carstens <hca@linux.ibm.com>, LKML <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org,
+ Christian Borntraeger <borntraeger@de.ibm.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+ Bjorn Helgaas <helgaas@kernel.org>, Kalle Valo <kvalo@codeaurora.org>,
+ linux-pci@vger.kernel.org, linux-ntb@googlegroups.com,
+ Logan Gunthorpe <logang@deltatee.com>, Megha Dey <megha.dey@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,226 +94,217 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Juergen Gross via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Juergen Gross <jgross@suse.com>
-Content-Type: multipart/mixed; boundary="===============3046167105318762822=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---===============3046167105318762822==
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="2lNGFmlfQKDxEQnMi4PlLmBojmVqlWXfg"
+On Sat, Dec 04 2021 at 15:20, Thomas Gleixner wrote:
+> On Fri, Dec 03 2021 at 12:41, Jason Gunthorpe wrote:
+> So I need to break that up in a way which caters for both cases, but
+> does neither create a special case for PCI nor for the rest of the
+> universe, i.e. the 1:1 case has to be a subset of the 1:2 case which
+> means all of it is common case. With that solved the storage question
+> becomes a nobrainer.
+>
+> When I looked at it again yesterday while writing mail, I went back to
+> my notes and found the loose ends where I left off. Let me go back and
+> start over from there.
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---2lNGFmlfQKDxEQnMi4PlLmBojmVqlWXfg
-Content-Type: multipart/mixed; boundary="xiSNwffzrwFZS3WSVpqneCffSxZ2oqvaj";
- protected-headers="v1"
-From: Juergen Gross <jgross@suse.com>
-To: Tianyu Lan <ltykernel@gmail.com>, kys@microsoft.com,
- haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
- decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
- dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
- sstabellini@kernel.org, boris.ostrovsky@oracle.com, joro@8bytes.org,
- will@kernel.org, davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
- martin.petersen@oracle.com, arnd@arndb.de, hch@infradead.org,
- m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
- Tianyu.Lan@microsoft.com, xen-devel@lists.xenproject.org,
- michael.h.kelley@microsoft.com
-Cc: iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org,
- linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-scsi@vger.kernel.org, netdev@vger.kernel.org, vkuznets@redhat.com,
- brijesh.singh@amd.com, konrad.wilk@oracle.com, hch@lst.de,
- parri.andrea@gmail.com, dave.hansen@intel.com
-Message-ID: <ed9aa3d5-9ac8-2195-e617-85599ffd7864@suse.com>
-Subject: Re: [PATCH V4 3/5] hyperv/IOMMU: Enable swiotlb bounce buffer for
- Isolation VM
-References: <20211205081815.129276-1-ltykernel@gmail.com>
- <20211205081815.129276-4-ltykernel@gmail.com>
- <a5943893-510a-3fc8-cbb7-8742369bf36b@suse.com>
- <125ffb7d-958c-e77a-243b-4cf38f690396@gmail.com>
-In-Reply-To: <125ffb7d-958c-e77a-243b-4cf38f690396@gmail.com>
+I found out why I stopped looking at it. I came from a similar point of
+view what you were suggesting:
 
---xiSNwffzrwFZS3WSVpqneCffSxZ2oqvaj
-Content-Type: multipart/mixed;
- boundary="------------6DEB2D258518C218A03A410C"
-Content-Language: en-US
+>> If IMS == MSI, then couldn't we conceptually have the dev->irqdomain
+>> completely unable to handle IMS/MSI/MSI-X at all, and instead, when
+>> the driver asks for PCI MSI access we create a new hierarchical
+>> irqdomain and link it to a MSI chip_ops or a MSI-X chip_ops - just as
+>> you outlined for IMS?  (again, not saying to do this, but let's ask if
+>> that makes more sense than the current configuration)
 
-This is a multi-part message in MIME format.
---------------6DEB2D258518C218A03A410C
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Which I shot down with:
 
-On 05.12.21 09:48, Tianyu Lan wrote:
->=20
->=20
-> On 12/5/2021 4:34 PM, Juergen Gross wrote:
->> On 05.12.21 09:18, Tianyu Lan wrote:
->>> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
->>>
->>> hyperv Isolation VM requires bounce buffer support to copy
->>> data from/to encrypted memory and so enable swiotlb force
->>> mode to use swiotlb bounce buffer for DMA transaction.
->>>
->>> In Isolation VM with AMD SEV, the bounce buffer needs to be
->>> accessed via extra address space which is above shared_gpa_boundary
->>> (E.G 39 bit address line) reported by Hyper-V CPUID ISOLATION_CONFIG.=
+> That's not really a good idea because dev->irqdomain is a generic
+> mechanism and not restricted to the PCI use case. Special casing it for
+> PCI is just wrong. Special casing it for all use cases just to please
+> PCI is equally wrong. There is a world outside of PCI and x86. 
 
->>> The access physical address will be original physical address +
->>> shared_gpa_boundary. The shared_gpa_boundary in the AMD SEV SNP
->>> spec is called virtual top of memory(vTOM). Memory addresses below
->>> vTOM are automatically treated as private while memory above
->>> vTOM is treated as shared.
->>>
->>> Hyper-V initalizes swiotlb bounce buffer and default swiotlb
->>> needs to be disabled. pci_swiotlb_detect_override() and
->>> pci_swiotlb_detect_4gb() enable the default one. To override
->>> the setting, hyperv_swiotlb_detect() needs to run before
->>> these detect functions which depends on the pci_xen_swiotlb_
->>> init(). Make pci_xen_swiotlb_init() depends on the hyperv_swiotlb
->>> _detect() to keep the order.
->>
->> Why? Does Hyper-V plan to support Xen PV guests? If not, I don't see
->> the need for adding this change.
->>
->=20
-> This is to keep detect function calling order that Hyper-V detect=20
-> callback needs to call before pci_swiotlb_detect_override() and=20
-> pci_swiotlb_detect_4gb(). This is the same for why
-> pci_swiotlb_detect_override() needs to depend on the=20
-> pci_xen_swiotlb_detect(). Hyper-V also has such request and so make xen=
-=20
-> detect callback depends on Hyper-V one.
+That argument is actually only partially correct.
 
-And does this even work without CONFIG_SWIOTLB_XEN, i.e. without
-pci_xen_swiotlb_detect() being in the system?
+After studying my notes and some more code (sigh), it looks feasible
+under certain assumptions, constraints and consequences.
 
+Assumptions:
 
-Juergen
+  1) The irqdomain pointer of PCI devices which is set up during device
+     discovery is not used by anything else than infrastructure which
+     knows how to handle it.
 
---------------6DEB2D258518C218A03A410C
-Content-Type: application/pgp-keys;
- name="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Transfer-Encoding: quoted-printable
-Content-Description: OpenPGP public key
-Content-Disposition: attachment;
- filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+     Of course there is no guarantee, but I'm not that horrified about
+     it anymore after chasing the exposure with yet more coccinelle
+     scripts.
 
------BEGIN PGP PUBLIC KEY BLOCK-----
+Constraints:
 
-xsBNBFOMcBYBCACgGjqjoGvbEouQZw/ToiBg9W98AlM2QHV+iNHsEs7kxWhKMjrioyspZKOBy=
-cWx
-w3ie3j9uvg9EOB3aN4xiTv4qbnGiTr3oJhkB1gsb6ToJQZ8uxGq2kaV2KL9650I1SJvedYm8O=
-f8Z
-d621lSmoKOwlNClALZNew72NjJLEzTalU1OdT7/i1TXkH09XSSI8mEQ/ouNcMvIJNwQpd369y=
-9bf
-IhWUiVXEK7MlRgUG6MvIj6Y3Am/BBLUVbDa4+gmzDC9ezlZkTZG2t14zWPvxXP3FAp2pkW0xq=
-G7/
-377qptDmrk42GlSKN4z76ELnLxussxc7I2hx18NUcbP8+uty4bMxABEBAAHNHEp1ZXJnZW4gR=
-3Jv
-c3MgPGpnQHBmdXBmLm5ldD7CwHkEEwECACMFAlOMcBYCGwMHCwkIBwMCAQYVCAIJCgsEFgIDA=
-QIe
-AQIXgAAKCRCw3p3WKL8TL0KdB/93FcIZ3GCNwFU0u3EjNbNjmXBKDY4FUGNQH2lvWAUy+dnyT=
-hpw
-dtF/jQ6j9RwE8VP0+NXcYpGJDWlNb9/JmYqLiX2Q3TyevpB0CA3dbBQp0OW0fgCetToGIQrg0=
-MbD
-1C/sEOv8Mr4NAfbauXjZlvTj30H2jO0u+6WGM6nHwbh2l5O8ZiHkH32iaSTfN7Eu5RnNVUJbv=
-oPH
-Z8SlM4KWm8rG+lIkGurqqu5gu8q8ZMKdsdGC4bBxdQKDKHEFExLJK/nRPFmAuGlId1E3fe10v=
-5QL
-+qHI3EIPtyfE7i9Hz6rVwi7lWKgh7pe0ZvatAudZ+JNIlBKptb64FaiIOAWDCx1SzR9KdWVyZ=
-2Vu
-IEdyb3NzIDxqZ3Jvc3NAc3VzZS5jb20+wsB5BBMBAgAjBQJTjHCvAhsDBwsJCAcDAgEGFQgCC=
-QoL
-BBYCAwECHgECF4AACgkQsN6d1ii/Ey/HmQf/RtI7kv5A2PS4RF7HoZhPVPogNVbC4YA6lW7Dr=
-Wf0
-teC0RR3MzXfy6pJ+7KLgkqMlrAbN/8Dvjoz78X+5vhH/rDLa9BuZQlhFmvcGtCF8eR0T1v0nC=
-/nu
-AFVGy+67q2DH8As3KPu0344TBDpAvr2uYM4tSqxK4DURx5INz4ZZ0WNFHcqsfvlGJALDeE0Lh=
-ITT
-d9jLzdDad1pQSToCnLl6SBJZjDOX9QQcyUigZFtCXFst4dlsvddrxyqT1f17+2cFSdu7+ynLm=
-XBK
-7abQ3rwJY8SbRO2iRulogc5vr/RLMMlscDAiDkaFQWLoqHHOdfO9rURssHNN8WkMnQfvUewRz=
-80h
-SnVlcmdlbiBHcm9zcyA8amdyb3NzQG5vdmVsbC5jb20+wsB5BBMBAgAjBQJTjHDXAhsDBwsJC=
-AcD
-AgEGFQgCCQoLBBYCAwECHgECF4AACgkQsN6d1ii/Ey8PUQf/ehmgCI9jB9hlgexLvgOtf7PJn=
-FOX
-gMLdBQgBlVPO3/D9R8LtF9DBAFPNhlrsfIG/SqICoRCqUcJ96Pn3P7UUinFG/I0ECGF4EvTE1=
-jnD
-kfJZr6jrbjgyoZHiw/4BNwSTL9rWASyLgqlA8u1mf+c2yUwcGhgkRAd1gOwungxcwzwqgljf0=
-N51
-N5JfVRHRtyfwq/ge+YEkDGcTU6Y0sPOuj4Dyfm8fJzdfHNQsWq3PnczLVELStJNdapwPOoE+l=
-otu
-fe3AM2vAEYJ9rTz3Cki4JFUsgLkHFqGZarrPGi1eyQcXeluldO3m91NK/1xMI3/+8jbO0tsn1=
-tqS
-EUGIJi7ox80eSnVlcmdlbiBHcm9zcyA8amdyb3NzQHN1c2UuZGU+wsB5BBMBAgAjBQJTjHDrA=
-hsD
-BwsJCAcDAgEGFQgCCQoLBBYCAwECHgECF4AACgkQsN6d1ii/Ey+LhQf9GL45eU5vOowA2u5N3=
-g3O
-ZUEBmDHVVbqMtzwlmNC4k9Kx39r5s2vcFl4tXqW7g9/ViXYuiDXb0RfUpZiIUW89siKrkzmQ5=
-dM7
-wRqzgJpJwK8Bn2MIxAKArekWpiCKvBOB/Cc+3EXE78XdlxLyOi/NrmSGRIov0karw2RzMNOu5=
-D+j
-LRZQd1Sv27AR+IP3I8U4aqnhLpwhK7MEy9oCILlgZ1QZe49kpcumcZKORmzBTNh30FVKK1Evm=
-V2x
-AKDoaEOgQB4iFQLhJCdP1I5aSgM5IVFdn7v5YgEYuJYx37IoN1EblHI//x/e2AaIHpzK5h88N=
-Eaw
-QsaNRpNSrcfbFmAg987ATQRTjHAWAQgAyzH6AOODMBjgfWE9VeCgsrwH3exNAU32gLq2xvjpW=
-nHI
-s98ndPUDpnoxWQugJ6MpMncr0xSwFmHEgnSEjK/PAjppgmyc57BwKII3sV4on+gDVFJR6Y8ZR=
-wgn
-BC5mVM6JjQ5xDk8WRXljExRfUX9pNhdE5eBOZJrDRoLUmmjDtKzWaDhIg/+1Hzz93X4fCQkNV=
-bVF
-LELU9bMaLPBG/x5q4iYZ2k2ex6d47YE1ZFdMm6YBYMOljGkZKwYde5ldM9mo45mmwe0icXKLk=
-pEd
-IXKTZeKDO+Hdv1aqFuAcccTg9RXDQjmwhC3yEmrmcfl0+rPghO0Iv3OOImwTEe4co3c1mwARA=
-QAB
-wsBfBBgBAgAJBQJTjHAWAhsMAAoJELDendYovxMvQ/gH/1ha96vm4P/L+bQpJwrZ/dneZcmEw=
-Tbe
-8YFsw2V/Buv6Z4Mysln3nQK5ZadD534CF7TDVft7fC4tU4PONxF5D+/tvgkPfDAfF77zy2AH1=
-vJz
-Q1fOU8lYFpZXTXIHb+559UqvIB8AdgR3SAJGHHt4RKA0F7f5ipYBBrC6cyXJyyoprT10EMvU8=
-VGi
-wXvTyJz3fjoYsdFzpWPlJEBRMedCot60g5dmbdrZ5DWClAr0yau47zpWj3enf1tLWaqcsuylW=
-svi
-uGjKGw7KHQd3bxALOknAp4dN3QwBYCKuZ7AddY9yjynVaD5X7nF9nO5BjR/i1DG86lem3iBDX=
-zXs
-ZDn8R38=3D
-=3D2wuH
------END PGP PUBLIC KEY BLOCK-----
+  1) This is strictly opt-in and depends on hierarchical irqdomains.
 
---------------6DEB2D258518C218A03A410C--
+     If an architecture/subarchitecture wants to support it then it
+     needs to rework their PCI/MSI backend to hierarchical irqdomains or
+     make their PCI/MSI irqdomain ready for the task.
 
---xiSNwffzrwFZS3WSVpqneCffSxZ2oqvaj--
+     From my inspection of 30+ PCI/MSI irqdomains, most of them should
+     be trivial to convert. The hard ones are powerpc, XEN and VMD,
+     where XEN is definitely the most convoluted one.
 
---2lNGFmlfQKDxEQnMi4PlLmBojmVqlWXfg
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+     That means that devices which depend on IMS won't work on anything
+     which is not up to date.
 
------BEGIN PGP SIGNATURE-----
+  2) Guest support is strictly opt-in
 
-wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmGslRIFAwAAAAAACgkQsN6d1ii/Ey9y
-Tgf/UCpwSO5ZoUwzIdaAOOQ5xJjsv/5TLJU+V/47jZW8b5iw54q5T19UV0gNLP/mxxuaq8lKREwG
-63YPWXsyVexiOXe6rIum4MEg5cyVKCqxrtaB9iWUTTD9uAhhd79db5Vq7M8Fa6//tBtbDvbuA1WH
-MfASOYJQXrrBcBPGOb/PZfLJcm91NmSv2WGPFpNfP4dNSTExkMBRp2y2KpfbWVbB0K9GEfzPNOlZ
-JnXv6k+OR31oyd/0nsL9KVQ09lattw1Nmh8cMaNh81+SzqnSlnfd1j/jJ2E8djTuCJGurGTBIANr
-nHiJ2MbcApZE66yH0xNQtjdZdEx4soeSG6IALNYkpA==
-=f6Cb
------END PGP SIGNATURE-----
+     The underlying architecture/subarchitecture specific irqdomain has
+     to detect at setup time (eventually early boot), whether the
+     underlying hypervisor supports it.
 
---2lNGFmlfQKDxEQnMi4PlLmBojmVqlWXfg--
+     The only reasonable way to support that is the availability of
+     interrupt remapping via vIOMMU, as we discussed before.
 
---===============3046167105318762822==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+  3) IOMMU/Interrupt remapping dependency
 
+     While IMS just works without interrupt remapping on bare metal the
+     fact that there is no reliable way to figure out whether the kernel
+     runs on bare metal or not, makes it pretty much mandatory, at least
+     on x86.
+
+     That's not a hardcoded constraint. It's a decision made during the
+     setup of the underlying architecture/subarchitecture specific
+     irqdomain.
+
+  4) The resulting irqdomain hierarchy would ideally look like this:
+
+     VECTOR -> [IOMMU, ROUTING, ...] -> PCI/[MSI/MSI-X/IMS] domains
+
+     That does not work in all cases due to architecture and host
+     controller constraints, so we might end up with:
+
+           VECTOR -> IOMMU -> SHIM -> PCI/[MSI/MSI-X/IMS] domains
+
+     The nice thing about the irqdomain hierarchy concept is that this
+     does not create any runtime special cases as the base hierarchy is
+     established at boot or device detection time. It's just another
+     layer of indirection.
+
+  5) The design rules for the device specific IMS irqdomains have to be
+     documented and enforced to the extent possible.
+
+     Rules which I have in my notes as of today:
+
+       - The device specific IMS irq chip / irqdomain has to be strictly
+         separated from the rest of the driver code and can only
+         interact via the irq chip data which is either per interrupt or
+         per device.
+
+         I have some ideas how to enforce these things to go into
+         drivers/irqchip/ so they are exposed to scrutiny and not
+         burried in some "my device is special" driver code and applied
+         by subsystem maintainers before anyone can even look at it. 
+
+       - The irqchip callbacks which can be implemented by these top
+         level domains are going to be restricted.
+
+       - For the irqchip callbacks which are allowed/required the rules
+         vs. following down the hierarchy need to be defined and
+         enforced.
+
+       - To achieve that the registration interface will not be based on
+         struct irq_chip. This will be a new representation and the core
+         will convert that into a proper irq chip which fits into the
+         hierarchy. This provides one central place where the hierarchy
+         requirements can be handled as they depend on the underlying
+         MSI domain (IOMMU, SHIM, etc.). Otherwise any change on that
+         would require to chase the IMS irqchips all over the place.
+
+Consequences:
+
+  1) A more radical split between legacy and hierarchical irqdomain
+     code in drivers/pci/msi/ into:
+
+       - api
+       - legacy
+       - irqdomain
+       - shared
+
+     That means that we are going to end up with duplicated code for
+     some of the mechanisms up to the point where the stuck-in-the-mud
+     parts either get converted or deleted.
+
+  2) The device centric storage concept will stay as it does not make
+     any sense to push it towards drivers and what's worse it would be a
+     major pain vs. the not yet up to the task irqdomains and the legacy
+     architecture backends to change that. I really have no interrest to
+     make the legacy code 
+
+     It also makes sense because the interrupts are strictly tied to the
+     device. They cannot originate from some disconnected layer of thin
+     air.
+
+     Sorry Jason, no tables for you. :)
+
+How to get there:
+
+  1) I'm going to post part 1-3 of the series once more with the fallout
+     and review comments addressed.
+
+  2) If nobody objects, I'll merge that into tip irq/msi and work on top
+     of that.
+
+     The consolidation makes sense on it's own and is required anyway. I
+     might need to revisit some of the already touched places, but that
+     should be a halfways limited number. I rather do that step for step
+     on top than going back to start and mixing the new concepts in from
+     the very beginning.
+
+     But I drop part 4 in it's current form because that's going to be
+     part of the new infrastructure.
+
+  3) I'll work on that bottom up towards a driver exposable API as that
+     is going to be a result of the final requirements of the underlying
+     infrastructure.
+
+     The final driver visible interfaces can be bikeshedded on top to
+     make them palatable for driver writers.
+
+  4) Convert x86 PCI/MSI[x] to the new scheme
+
+  5) Implement an IMS user.
+
+     The obvious candidate which should be halfways accessible is the
+     ath11 PCI driver which falls into that category.
+
+     It uses horrendous hackery to make it "work" by abusing MSI. It's a
+     wonder that it works at all, by some definition of "works".
+
+     I'm pretty sure how to make it fall apart without touching a single
+     line of code.
+
+     With a small code change I can make it fail hard without blowing up
+     any other MSI/MSI-X user except the switchtec NTB.
+
+     That's a prime example for the way how driver writers behave.
+
+     Instead of talking to the people who are responsible for the
+     interrupt subsystem, they go off and do their own thing. It does
+     not explode on their test machine, but it's not even remotely close
+     to the requirements for PCI drivers to work independent of the
+     underlying platform.
+
+     Of course the responsible maintainer does not even notice and waves
+     it through without questioning it.
+
+Thoughts?
+
+Thanks,
+
+        tglx
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============3046167105318762822==--
