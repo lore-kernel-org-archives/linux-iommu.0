@@ -1,87 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 83AB7C433EF
-	for <iommu@archiver.kernel.org>; Mon,  6 Dec 2021 22:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4E1B0C43219
+	for <iommu@archiver.kernel.org>; Mon,  6 Dec 2021 22:39:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 1CBE8404C2;
-	Mon,  6 Dec 2021 22:21:29 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id DA3CB60DCB;
+	Mon,  6 Dec 2021 22:39:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gQgMcRke7X6j; Mon,  6 Dec 2021 22:21:27 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id w_uYiN5oUhd3; Mon,  6 Dec 2021 22:39:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 61EAA4015F;
-	Mon,  6 Dec 2021 22:21:27 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 9703F6079C;
+	Mon,  6 Dec 2021 22:39:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 41BEFC0012;
-	Mon,  6 Dec 2021 22:21:27 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9C1F0C0012
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 22:21:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 77838C001E;
+	Mon,  6 Dec 2021 22:39:01 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BE2C5C0012
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 22:39:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 869D541C4D
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 22:21:26 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 9E071404C5
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 22:39:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="0J9687id";
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="IBPmwzRm";
  dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="Wx4gi6Bj"
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tNyYvELlhp42 for <iommu@lists.linux-foundation.org>;
- Mon,  6 Dec 2021 22:21:25 +0000 (UTC)
+ header.d=linutronix.de header.b="kGhsuXkA"
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Qp1GJWenvsf0 for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Dec 2021 22:38:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from galois.linutronix.de (Galois.linutronix.de
  [IPv6:2a0a:51c0:0:12e:550::1])
- by smtp4.osuosl.org (Postfix) with ESMTPS id C618D41C4C
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 22:21:25 +0000 (UTC)
-From: Thomas Gleixner <tglx@linutronix.de>
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 4CF414015F
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 22:38:58 +0000 (UTC)
+Message-ID: <20211206210307.625116253@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1638829282;
+ s=2020; t=1638830336;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=N49gEhli14ajV1XqLRb5F9ss4iZ1ZN+8bFDUJvAuM3M=;
- b=0J9687idATq3eSU8opoNI/aOkzjdbjjUpMWjHV3Qabs9RqhCNQPNJBr+5i+m3099/jmwq6
- g+ZAiliCpYaXekUHvIKQ2pI4cx3rTI+UFvB0BfqfMIO6f6uBoQUW7LsfXWTS6j+C6mS+3V
- VftXiEs/guGu3i3k6vp77PkuLjxC1mDHeeGcz4MKif8n/65DKd403BVDutNlFXLJZLL5IP
- 0VoEExR2BtW7/b8MSBB2ynUXeBvvYayWrW2i+L7o18ENw2U9MeEcyaqsLWKHXD+P38wGGq
- mBPhQZklZdrOsB58eh0sUEXK2m7IfLSHId+27nhXNBKURzAaEPdripwxy+a3+A==
+ content-transfer-encoding:content-transfer-encoding;
+ bh=tVxkONw1+URUxuo5QL2ocxThr7/mkfa4+qL7IuxO3Uk=;
+ b=IBPmwzRmWD5mL6+e7MwJlzRwVEFnyloQOG5U1+MtcbGwWlmr/iX9fTfUI/80/wO154AnhB
+ 8DYtOoCiUZGZIX7xxJRto86p8RkbCzd/unh1t58dBbsJrwuPqPvrRLRXrT0esBwzHbNsNa
+ qwXZqvTJre7RZQfDg4/dTnBaJ4Vn9A0GgekS+1e4Qf5kRU0iK9FpbDyilXUeeC7+VrAfb5
+ IxJNcokipuIGvUWHF5lH8dowLW34B6L9V/hmTpeZhSPpHFMlpyl8w1QpGVxHjEjKadyW2W
+ 7U4rDr3YJC9E75LoEvXhJG05GptEAkSgVKVq9N1KE7tsTr7r8yq+qfSK1FbT+A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1638829282;
+ s=2020e; t=1638830336;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=N49gEhli14ajV1XqLRb5F9ss4iZ1ZN+8bFDUJvAuM3M=;
- b=Wx4gi6Bj1U8lrQ5ISmceY0XquUUW6+HVPKcwkr02uxE46QEl5SfZX1pDjpJhD0CY+dlfk/
- g6Qu7fTSIpyIBKCw==
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [patch 21/32] NTB/msi: Convert to msi_on_each_desc()
-In-Reply-To: <20211206210609.GN4670@nvidia.com>
-References: <87o85y63m8.ffs@tglx> <20211203003749.GT4670@nvidia.com>
- <877dcl681d.ffs@tglx> <20211203164104.GX4670@nvidia.com>
- <87v9044fkb.ffs@tglx> <87o85v3znb.ffs@tglx>
- <20211206144344.GA4670@nvidia.com> <87fsr54tw1.ffs@tglx>
- <20211206170035.GJ4670@nvidia.com> <875ys14gw0.ffs@tglx>
- <20211206210609.GN4670@nvidia.com>
-Date: Mon, 06 Dec 2021 23:21:21 +0100
-Message-ID: <87zgpd2x3y.ffs@tglx>
+ content-transfer-encoding:content-transfer-encoding;
+ bh=tVxkONw1+URUxuo5QL2ocxThr7/mkfa4+qL7IuxO3Uk=;
+ b=kGhsuXkAAqnqxB8SQ+Z7lY2BC9yD4sp1NOG0tpAY5Yhj/oSfoQ4S3EJ7Pv7mdUHrVMdkTQ
+ yUjnayt7pKthTuCQ==
+From: Thomas Gleixner <tglx@linutronix.de>
+To: LKML <linux-kernel@vger.kernel.org>
+Subject: [patch V2 00/36] genirq/msi, PCI/MSI: Spring cleaning - Part 2
 MIME-Version: 1.0
-Cc: Allen Hubbe <allenbh@gmail.com>, linux-s390@vger.kernel.org,
- Kevin Tian <kevin.tian@intel.com>, x86@kernel.org,
- Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marc Zygnier <maz@kernel.org>,
- Heiko Carstens <hca@linux.ibm.com>, LKML <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org,
- Christian Borntraeger <borntraeger@de.ibm.com>,
- Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>,
- Bjorn Helgaas <helgaas@kernel.org>, Kalle Valo <kvalo@codeaurora.org>,
- linux-pci@vger.kernel.org, linux-ntb@googlegroups.com,
- Logan Gunthorpe <logang@deltatee.com>, Megha Dey <megha.dey@intel.com>
+Date: Mon,  6 Dec 2021 23:38:56 +0100 (CET)
+Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
+ Stuart Yoder <stuyoder@gmail.com>, linux-pci@vger.kernel.org,
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Marc Zygnier <maz@kernel.org>, Sinan Kaya <okaya@kernel.org>,
+ iommu@lists.linux-foundation.org, Bjorn Helgaas <helgaas@kernel.org>,
+ Megha Dey <megha.dey@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ xen-devel@lists.xenproject.org, Kevin Tian <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Cedric Le Goater <clg@kaod.org>,
+ Santosh Shilimkar <ssantosh@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ Juergen Gross <jgross@suse.com>, Tero Kristo <kristo@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Vinod Koul <vkoul@kernel.org>,
+ dmaengine@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,79 +93,113 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Dec 06 2021 at 17:06, Jason Gunthorpe wrote:
-> On Mon, Dec 06, 2021 at 09:28:47PM +0100, Thomas Gleixner wrote:
->> I wish I could mask underneath for some stuff on x86. Though that would
->> not help with the worst problem vs. affinity settings. See the horrible
->> dance in:
->
-> My thinking here is that this stuff in ARM is one of the different
-> cases (ie not using MSI_FLAG_USE_DEF_CHIP_OPS), and I guess we can
-> just handle it cleanly by having the core call both the irq_chip->mask
-> and the msi_storage_ops->mask and we don't need ARM to be different,
-> x86 just won't provide a mask at destination op.
->
->>     x86/kernel/apic/msi.c::msi_set_affinity()
->
-> Okay, so it is complicated, but it is just calling
->    irq_data_get_irq_chip(irqd)->irq_write_msi_msg(irqd, msg);
->
-> So, from a msi_storage_ops perspective, things are still clean.
 
-Yes.
+This is the second part of [PCI]MSI refactoring which aims to provide the
+ability of expanding MSI-X vectors after enabling MSI-X.
 
->> You forgot IO/APIC which is a MSI endpoint too, just more convoluted but
->> it's not using MSI domains so it's not in the way. I'm not going to
->> touch that with a ten foot pole. :)
->
-> I left off IOAPIC because I view it as conceptually different. I used
-> the phrasse "device that originated the interrupt" deliberately,
-> IOAPIC is just a middle box that converts from a physical interrupt
-> line to a message world, it belongs with the physical interrupt
-> infrastructure.
+The first part of this work can be found here:
 
-I mentioned it because there is mbigen on arm64 which is the same thing,
-translates hundreds of wire inputs into MSI. It's even worse than
-IO/APIC. There is a horrible hack to make it "work" which Marc and I are
-looking at whether we can kill it on the way.
+    https://lore.kernel.org/r/20211206210147.872865823@linutronix.de
 
-> Possibly the IOAPIC considerations is what motivated some of this to
-> look the way it does today, because it really was trying to hide MSI
-> under normal PCI INTX physical pins with full compatability. We kind
-> of kept doing that as MSI grew into its own thing.
+This second part has the following important changes:
 
-Not really. It was more to avoid having a complete separate
-infrastructure for irqdomain based MSI[X]. Lazyness and lack of time
-added the rest of non-motivation :)
+   1) Cleanup of the MSI related data in struct device
 
-> I'm curious to see if you end up with irq_domains and irq_chips along
-> with what I labeled as the msi_storage above, or if those turn out to
-> be unnecesary for the driver to provide MSI programming.
+      struct device contains at the moment various MSI related parts. Some
+      of them (the irq domain pointer) cannot be moved out, but the rest
+      can be allocated on first use. This is in preparation of adding more
+      per device MSI data later on.
 
-I cant avoid irq chips because from the interrupt handling side of view
-that's unavoidable unless we create a duplicate zoo there. What I have
-in mind is to convert the msi ops provided by the device driver into a
-real chip as that just falls in place without further changes.
+   2) Consolidation of sysfs handling
 
-The irqdomain will be real as well just to make things consistent and to
-share as much code as possible.
+      As a first step this moves the sysfs pointer from struct msi_desc
+      into the new per device MSI data structure where it belongs.
 
-> Also, if msi_storage_ops can be robust enough you'd be comfortable
-> with it in a driver .c file and just a regex match in the MAINTAINERS
-> file :)
+      Later changes will cleanup this code further, but that's not possible
+      at this point.
 
-That might work. Let's see when we are there.
+   3) Store per device properties in the per device MSI data to avoid
+      looking up MSI descriptors and analysing their data. Cleanup all
+      related use cases.
 
->>    - Have a transition mechanism to convert one part at a time to keep
->>      the patch sizes reviewable and the whole mess bisectable.
->
-> This seems difficult all on its own..
+   4) Provide a function to retrieve the Linux interrupt number for a given
+      MSI index similar to pci_irq_vector() and cleanup all open coded
+      variants.
 
-I've done that before. It just needs some thought.
+This second series is based on:
+
+     git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git msi-v2-part-1
+
+and also available from git:
+
+     git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git msi-v2-part-2
+
+For the curious who can't wait for the next part to arrive the full series
+is available via:
+
+     git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git msi-v2-part-3
+
+V1 of this series can be found here:
+
+    https://lore.kernel.org/r/20211126224100.303046749@linutronix.de
+
+Changes versus V1:
+
+  - Fix the pci_irq_vector() thinko - Marc
+
+  - Fix the powerpc fallout - Cedric, Andy
+
+  - Addressed codingstyle/comments feedback - Jonathan
+
+  - Added a MSI properties setter to prepare for later changes
+
+  - Confined the global msi*sysfs functions to legacy code
+
+  - Dropped the MSI lock patch as the lock has moved to struct pci_dev
+    in V2 part-1 now
+
+  - Picked up Reviewed/Tested/Acked-by tags as appropriate
 
 Thanks,
 
-        tglx
+	tglx
+---
+ arch/powerpc/platforms/cell/axon_msi.c              |    6 
+ arch/powerpc/platforms/pseries/msi.c                |   39 +---
+ arch/x86/kernel/apic/msi.c                          |    5 
+ arch/x86/pci/xen.c                                  |    8 
+ drivers/base/platform-msi.c                         |  152 +++++++---------
+ drivers/bus/fsl-mc/dprc-driver.c                    |    8 
+ drivers/bus/fsl-mc/fsl-mc-allocator.c               |    9 
+ drivers/bus/fsl-mc/fsl-mc-msi.c                     |   26 +-
+ drivers/dma/mv_xor_v2.c                             |   16 -
+ drivers/dma/qcom/hidma.c                            |   44 ++--
+ drivers/dma/ti/k3-udma-private.c                    |    6 
+ drivers/dma/ti/k3-udma.c                            |   14 -
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c         |   23 --
+ drivers/irqchip/irq-mbigen.c                        |    4 
+ drivers/irqchip/irq-mvebu-icu.c                     |   12 -
+ drivers/irqchip/irq-ti-sci-inta.c                   |    2 
+ drivers/mailbox/bcm-flexrm-mailbox.c                |    9 
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c    |    4 
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c    |    4 
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c |    5 
+ drivers/pci/msi/irqdomain.c                         |   20 +-
+ drivers/pci/msi/legacy.c                            |    6 
+ drivers/pci/msi/msi.c                               |  118 ++++--------
+ drivers/pci/xen-pcifront.c                          |    2 
+ drivers/perf/arm_smmuv3_pmu.c                       |    5 
+ drivers/soc/fsl/dpio/dpio-driver.c                  |    8 
+ drivers/soc/ti/k3-ringacc.c                         |    6 
+ drivers/soc/ti/ti_sci_inta_msi.c                    |   22 --
+ drivers/vfio/fsl-mc/vfio_fsl_mc_intr.c              |    4 
+ include/linux/device.h                              |   25 ++
+ include/linux/fsl/mc.h                              |    4 
+ include/linux/msi.h                                 |  112 ++++++------
+ include/linux/pci.h                                 |    1 
+ include/linux/soc/ti/ti_sci_inta_msi.h              |    1 
+ kernel/irq/msi.c                                    |  182 +++++++++++++++-----
+ 35 files changed, 464 insertions(+), 448 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
