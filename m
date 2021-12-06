@@ -4,87 +4,87 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6D316C43217
-	for <iommu@archiver.kernel.org>; Mon,  6 Dec 2021 14:14:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 535BBC433EF
+	for <iommu@archiver.kernel.org>; Mon,  6 Dec 2021 14:17:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 1E0D182A26;
-	Mon,  6 Dec 2021 14:14:13 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D40F684B4D;
+	Mon,  6 Dec 2021 14:17:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RjtH8TYyVHT2; Mon,  6 Dec 2021 14:14:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 12FBC81A9C;
-	Mon,  6 Dec 2021 14:14:12 +0000 (UTC)
+	with ESMTP id nPjk3tY8VAZs; Mon,  6 Dec 2021 14:17:09 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id D327682B08;
+	Mon,  6 Dec 2021 14:17:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DD084C002F;
-	Mon,  6 Dec 2021 14:14:11 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6523FC0012
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 14:14:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6283EC001E;
+	Mon,  6 Dec 2021 14:17:08 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 404D6C0012
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 14:17:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 542C7607AA
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 14:14:10 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 34A8860633
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 14:17:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4QLHOTKqigkg for <iommu@lists.linux-foundation.org>;
- Mon,  6 Dec 2021 14:14:09 +0000 (UTC)
+ with ESMTP id rwqDgSHG2qAc for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Dec 2021 14:17:05 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com
- [IPv6:2607:f8b0:4864:20::42c])
- by smtp3.osuosl.org (Postfix) with ESMTPS id D7F7E6079A
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 14:14:09 +0000 (UTC)
-Received: by mail-pf1-x42c.google.com with SMTP id g19so10267625pfb.8
- for <iommu@lists.linux-foundation.org>; Mon, 06 Dec 2021 06:14:09 -0800 (PST)
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com
+ [IPv6:2607:f8b0:4864:20::433])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id B2C7E605D9
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 14:17:05 +0000 (UTC)
+Received: by mail-pf1-x433.google.com with SMTP id k64so2095327pfd.11
+ for <iommu@lists.linux-foundation.org>; Mon, 06 Dec 2021 06:17:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
  h=message-id:date:mime-version:user-agent:subject:content-language:to
  :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=LG+zF8eXNnqFsGFKA2ZTnXSPUueJWK5YxbpbucSufXI=;
- b=mQqUkA3xIsQY4XmQYBzGNmYRws6Q0JrMJpuTq/VEAZ58elCNocHbrP8QMV+4phw9Ut
- vWKeJdfRRl2H6A3/U0ZfFrg46WCHuxCz5sAlIyGUXSN9dXWnqcoQP+R/jmprw5bfpFHj
- fKOmzAhbS2g+OM1Z5BI3nXKStQ11a7SSrQ5tFd6125uR6KPjsGJebIfx224pdX+EvGle
- FqorCYj7anmbSaX4e41EWyvuvtjfgov84k+oRDD0xrawuDr2dYvzxxLjG9dUVswmsHTE
- elai+rbP43KznXg+HMIMYpPzORZYpPi24LOHZHh8JFVSoiDVYRN7mdHXVcauIlegBAj5
- mHBg==
+ bh=MlPjTzqAzGMiJV1XIvo3CWuIKKPvCgUAVf8fFzgqOVA=;
+ b=aUNHCl+dyTHAibi55HobGp+ZEySdQG08OEI+Y5k9nKK1X7xf+qtKsmguZgkbi+whPm
+ GdJx9SeuhwP2ruODw9GfMgbHlzGk1gA6u4kF0GNnRTEbqTtzWhv5aQOvFkSisqrp80Je
+ AuiZLyvBxRbWVKNJfUOgUEgQe+/ruz2KLZzOD08be7j/r8WHZNcwGCfhgny3RP1zHKHA
+ 1KDnGlCjbWtR+gN0SkVDdYDBRV83mT0qrFufECTGnYo50zNSja6vhsEoHMcB7bAvEpfm
+ 2tJ0a1+Qw3wjhe2hKKQCf2+fKGAqtRWFQXDtWW6xNYHAMZ+JXZUxTRR80tunhwvY2yh9
+ HWsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
  :content-language:to:cc:references:from:in-reply-to
  :content-transfer-encoding;
- bh=LG+zF8eXNnqFsGFKA2ZTnXSPUueJWK5YxbpbucSufXI=;
- b=XPuqfcII84MTfAC/IdcZ8cPqScnR98LUa5ckk2lCTCSQkvGMbDHTNV2ATBzpS4icn9
- Idh+PgNQsDeQZCjm6ONDKL/YyQ37wVMhb+9+jZWZyQZpPM7Q+hz/zqiagIw7xXdeRveX
- BO1VamhqS3TiRNbfN1ZX9rcB/04dnfHbqDyy6UKQ8DyJhzOktOnzJkxbZTK2v4byxN8o
- H0AOwYZkqWlRLwlDYp76aG/bxXs4IIllJfu35pBfsr9lx5mi/iiSJsjKEA2JwVbH3RNO
- aiSTlGUC8MphoPqYP+8CDflve5IHqms7qQIezhDZHPe3wgsUu1BTSD9ySRGJbJ0eA4bl
- LyyQ==
-X-Gm-Message-State: AOAM530PcWcYO693426K8u1kXSh5ppYTpfQwrVTFITJRRNlu2KWbnf2o
- 8mDLjkuXxQXixjBHMS/6wFs=
-X-Google-Smtp-Source: ABdhPJySAj+QT4OHzaoYLk1cSWHqCc54qgRjOngjnxP5g2RiZmDR4g0TxiHn1EhVWrwC669mfsgWOQ==
-X-Received: by 2002:a62:7e4c:0:b0:4a2:678e:8793 with SMTP id
- z73-20020a627e4c000000b004a2678e8793mr36890086pfc.75.1638800049309; 
- Mon, 06 Dec 2021 06:14:09 -0800 (PST)
+ bh=MlPjTzqAzGMiJV1XIvo3CWuIKKPvCgUAVf8fFzgqOVA=;
+ b=R+U1t6GABO595/Nd5GMZxcCaQ7N11DdrXevurm4jl6WOcjdlvByfYZq5/Lqmivj6tR
+ l4LwRT/F1r/4F3xJE9SjXD1Yeexcb85qrt3aaNOisN4obzeLXjvmdSTZZm2ieGgxH1iM
+ 2K8NfNE3CsLh64oM4P2ysl6CNjyHpClhMfC+Ra55AUp9L8UWU+63cQuNtNOzTsUE7kiG
+ SYJrPSVIHbnBFWU/XxYEfHt58jMsSEBxewRck5pgILarUNMjmAu8ZdNxhy4tmPZ+BkEf
+ 7Nh4ILZ3b14lFKoWUnhgebuJ6AkvtOJi3T6ihJxqivaPIq4yeYeHRgh2X9WU08FlNqZb
+ 3lbA==
+X-Gm-Message-State: AOAM53210/1WILjGJatl46ejNrkDE4ewTPxdUxro+9jfCdd080KSN8XY
+ rhpt3dG34Q/M4oKL7r17FgA=
+X-Google-Smtp-Source: ABdhPJwC0KD/zVGir6spSXosBbRFLHsih0Tulm1FqYapzoO5PMARObP84mGb9GeA31fKmf/7FDoFjA==
+X-Received: by 2002:a62:1cc4:0:b0:49f:99b6:3507 with SMTP id
+ c187-20020a621cc4000000b0049f99b63507mr37506196pfc.76.1638800225207; 
+ Mon, 06 Dec 2021 06:17:05 -0800 (PST)
 Received: from ?IPV6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
  by smtp.gmail.com with ESMTPSA id
- pi17sm14658528pjb.34.2021.12.06.06.13.58
+ d6sm10030597pgv.48.2021.12.06.06.16.52
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 06 Dec 2021 06:14:08 -0800 (PST)
-Message-ID: <4d9049eb-d3a8-3872-c4c3-4ad41d93b58c@gmail.com>
-Date: Mon, 6 Dec 2021 22:13:57 +0800
+ Mon, 06 Dec 2021 06:17:04 -0800 (PST)
+Message-ID: <ed333f81-0527-ae98-6348-a2bf6e783dae@gmail.com>
+Date: Mon, 6 Dec 2021 22:16:51 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.3.2
-Subject: Re: [PATCH V4 2/5] x86/hyper-v: Add hyperv Isolation VM check in the
- cc_platform_has()
+Subject: Re: [PATCH V4 1/5] Swiotlb: Add Swiotlb bounce buffer remap function
+ for HV IVM
 Content-Language: en-US
 To: Christoph Hellwig <hch@lst.de>
 References: <20211205081815.129276-1-ltykernel@gmail.com>
- <20211205081815.129276-3-ltykernel@gmail.com> <20211206140651.GA5100@lst.de>
+ <20211205081815.129276-2-ltykernel@gmail.com> <20211206140916.GB5100@lst.de>
 From: Tianyu Lan <ltykernel@gmail.com>
-In-Reply-To: <20211206140651.GA5100@lst.de>
+In-Reply-To: <20211206140916.GB5100@lst.de>
 Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
  dave.hansen@linux.intel.com, dave.hansen@intel.com, hpa@zytor.com,
  kys@microsoft.com, will@kernel.org, boris.ostrovsky@oracle.com,
@@ -115,26 +115,17 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Christoph:
-	Thanks for your review.
-
-On 12/6/2021 10:06 PM, Christoph Hellwig wrote:
-> On Sun, Dec 05, 2021 at 03:18:10AM -0500, Tianyu Lan wrote:
->> +static bool hyperv_cc_platform_has(enum cc_attr attr)
->> +{
->> +#ifdef CONFIG_HYPERV
->> +	return attr == CC_ATTR_GUEST_MEM_ENCRYPT;
->> +#else
->> +	return false;
->> +#endif
->> +}
+On 12/6/2021 10:09 PM, Christoph Hellwig wrote:
+> Please spell swiotlb with a lower case s.  Otherwise this look good
 > 
-> Can we even end up here without CONFIG_HYPERV?
+> Acked-by: Christoph Hellwig <hch@lst.de>
+> 
+> Feel free to carry this in whatever tree is suitable for the rest of the
+> patches.
 > 
 
-Yes, I will update in the next version.
+Sure. Thanks for your ack and will update "swiotlb" in the next version.
 
-Thanks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
