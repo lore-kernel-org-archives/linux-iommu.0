@@ -1,48 +1,48 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DBD9CC4332F
-	for <iommu@archiver.kernel.org>; Mon,  6 Dec 2021 01:59:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E693DC433EF
+	for <iommu@archiver.kernel.org>; Mon,  6 Dec 2021 02:00:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 8288D400EF;
-	Mon,  6 Dec 2021 01:59:55 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 9CFD782B75;
+	Mon,  6 Dec 2021 02:00:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LQC0Ir-VYJbG; Mon,  6 Dec 2021 01:59:54 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3zP0W0Ec5RO4; Mon,  6 Dec 2021 02:00:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 28EFE401D4;
-	Mon,  6 Dec 2021 01:59:54 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 952168174C;
+	Mon,  6 Dec 2021 02:00:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F41D5C001E;
-	Mon,  6 Dec 2021 01:59:53 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E0604C0012
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 01:59:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 70BFBC001E;
+	Mon,  6 Dec 2021 02:00:06 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6C91DC0012
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 02:00:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id C000D401D4
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 01:59:52 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 4E88840498
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 02:00:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pJmErxLw14ba for <iommu@lists.linux-foundation.org>;
- Mon,  6 Dec 2021 01:59:52 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0QCiqE1OL-L9 for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Dec 2021 02:00:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by smtp2.osuosl.org (Postfix) with ESMTPS id F0D39400EF
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 01:59:51 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10189"; a="261257508"
-X-IronPort-AV: E=Sophos;i="5.87,290,1631602800"; d="scan'208";a="261257508"
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 2D64D40473
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 02:00:03 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10189"; a="224098895"
+X-IronPort-AV: E=Sophos;i="5.87,290,1631602800"; d="scan'208";a="224098895"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 05 Dec 2021 17:59:51 -0800
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 05 Dec 2021 17:59:58 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,290,1631602800"; d="scan'208";a="514542009"
+X-IronPort-AV: E=Sophos;i="5.87,290,1631602800"; d="scan'208";a="514542057"
 Received: from allen-box.sh.intel.com ([10.239.159.118])
- by orsmga008.jf.intel.com with ESMTP; 05 Dec 2021 17:59:44 -0800
+ by orsmga008.jf.intel.com with ESMTP; 05 Dec 2021 17:59:51 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Joerg Roedel <joro@8bytes.org>,
@@ -50,10 +50,9 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Bjorn Helgaas <bhelgaas@google.com>, Jason Gunthorpe <jgg@nvidia.com>,
  Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
  Ashok Raj <ashok.raj@intel.com>
-Subject: [PATCH v3 04/18] driver core: platform: Add driver dma ownership
- management
-Date: Mon,  6 Dec 2021 09:58:49 +0800
-Message-Id: <20211206015903.88687-5-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 05/18] amba: Add driver dma ownership management
+Date: Mon,  6 Dec 2021 09:58:50 +0800
+Message-Id: <20211206015903.88687-6-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211206015903.88687-1-baolu.lu@linux.intel.com>
 References: <20211206015903.88687-1-baolu.lu@linux.intel.com>
@@ -84,7 +83,7 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Multiple platform devices may be placed in the same IOMMU group because
+Multiple amba devices may be placed in the same IOMMU group because
 they cannot be isolated from each other. These devices must either be
 entirely under kernel control or userspace control, never a mixture. This
 checks and sets DMA ownership during driver binding, and release the
@@ -97,41 +96,41 @@ DMA_OWNER_PRIVATE_DOMAIN_USER when assigning a device to userspace.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- include/linux/platform_device.h |  1 +
- drivers/base/platform.c         | 30 +++++++++++++++++++++++++++++-
+ include/linux/amba/bus.h |  1 +
+ drivers/amba/bus.c       | 30 +++++++++++++++++++++++++++++-
  2 files changed, 30 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
-index 4381c34af7e0..f3926be7582f 100644
---- a/include/linux/platform_device.h
-+++ b/include/linux/platform_device.h
-@@ -210,6 +210,7 @@ struct platform_driver {
- 	struct device_driver driver;
- 	const struct platform_device_id *id_table;
- 	bool prevent_deferred_probe;
+diff --git a/include/linux/amba/bus.h b/include/linux/amba/bus.h
+index edfcf7a14dcd..745c5a60ddd8 100644
+--- a/include/linux/amba/bus.h
++++ b/include/linux/amba/bus.h
+@@ -79,6 +79,7 @@ struct amba_driver {
+ 	void			(*remove)(struct amba_device *);
+ 	void			(*shutdown)(struct amba_device *);
+ 	const struct amba_id	*id_table;
 +	bool suppress_auto_claim_dma_owner;
  };
  
- #define to_platform_driver(drv)	(container_of((drv), struct platform_driver, \
-diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-index 125d708c0eb3..032b9f20b468 100644
---- a/drivers/base/platform.c
-+++ b/drivers/base/platform.c
-@@ -30,6 +30,7 @@
- #include <linux/property.h>
- #include <linux/kmemleak.h>
- #include <linux/types.h>
+ /*
+diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+index 08c094124c0e..d220584c900b 100644
+--- a/drivers/amba/bus.c
++++ b/drivers/amba/bus.c
+@@ -20,6 +20,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/reset.h>
+ #include <linux/of_irq.h>
 +#include <linux/iommu.h>
  
- #include "base.h"
- #include "power/power.h"
-@@ -1464,6 +1465,32 @@ int firmware_dma_configure(struct device *dev)
- 	return ret;
- }
+ #include <asm/irq.h>
  
-+static int platform_dma_configure(struct device *dev)
+@@ -305,6 +306,32 @@ static const struct dev_pm_ops amba_pm = {
+ 	)
+ };
+ 
++static int amba_dma_configure(struct device *dev)
 +{
-+	struct platform_driver *drv = to_platform_driver(dev->driver);
++	struct amba_driver *drv = to_amba_driver(dev->driver);
 +	int ret;
 +
 +	if (!drv->suppress_auto_claim_dma_owner) {
@@ -147,27 +146,27 @@ index 125d708c0eb3..032b9f20b468 100644
 +	return ret;
 +}
 +
-+static void platform_dma_cleanup(struct device *dev)
++static void amba_dma_cleanup(struct device *dev)
 +{
-+	struct platform_driver *drv = to_platform_driver(dev->driver);
++	struct amba_driver *drv = to_amba_driver(dev->driver);
 +
 +	if (!drv->suppress_auto_claim_dma_owner)
 +		iommu_device_release_dma_owner(dev, DMA_OWNER_DMA_API);
 +}
 +
- static const struct dev_pm_ops platform_dev_pm_ops = {
- 	SET_RUNTIME_PM_OPS(pm_generic_runtime_suspend, pm_generic_runtime_resume, NULL)
- 	USE_PLATFORM_PM_SLEEP_OPS
-@@ -1477,7 +1504,8 @@ struct bus_type platform_bus_type = {
- 	.probe		= platform_probe,
- 	.remove		= platform_remove,
- 	.shutdown	= platform_shutdown,
+ /*
+  * Primecells are part of the Advanced Microcontroller Bus Architecture,
+  * so we call the bus "amba".
+@@ -319,7 +346,8 @@ struct bus_type amba_bustype = {
+ 	.probe		= amba_probe,
+ 	.remove		= amba_remove,
+ 	.shutdown	= amba_shutdown,
 -	.dma_configure	= firmware_dma_configure,
-+	.dma_configure	= platform_dma_configure,
-+	.dma_cleanup	= platform_dma_cleanup,
- 	.pm		= &platform_dev_pm_ops,
++	.dma_configure	= amba_dma_configure,
++	.dma_cleanup	= amba_dma_cleanup,
+ 	.pm		= &amba_pm,
  };
- EXPORT_SYMBOL_GPL(platform_bus_type);
+ EXPORT_SYMBOL_GPL(amba_bustype);
 -- 
 2.25.1
 
