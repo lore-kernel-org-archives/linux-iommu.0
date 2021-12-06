@@ -4,66 +4,61 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4E1B0C43219
-	for <iommu@archiver.kernel.org>; Mon,  6 Dec 2021 22:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7E2CDC433FE
+	for <iommu@archiver.kernel.org>; Mon,  6 Dec 2021 22:39:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id DA3CB60DCB;
-	Mon,  6 Dec 2021 22:39:02 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 2319F60D9D;
+	Mon,  6 Dec 2021 22:39:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id w_uYiN5oUhd3; Mon,  6 Dec 2021 22:39:02 +0000 (UTC)
+	with ESMTP id 7rVJGb5LN-Yd; Mon,  6 Dec 2021 22:39:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 9703F6079C;
-	Mon,  6 Dec 2021 22:39:01 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id C7881605F6;
+	Mon,  6 Dec 2021 22:39:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 77838C001E;
-	Mon,  6 Dec 2021 22:39:01 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BE2C5C0012
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 22:39:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A460EC001E;
+	Mon,  6 Dec 2021 22:39:02 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 31E8BC0012
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 22:39:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9E071404C5
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 22:39:00 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 2D0216079C
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 22:39:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="IBPmwzRm";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="kGhsuXkA"
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Qp1GJWenvsf0 for <iommu@lists.linux-foundation.org>;
- Mon,  6 Dec 2021 22:38:59 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id XLGiTj33PxM2 for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Dec 2021 22:39:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from galois.linutronix.de (Galois.linutronix.de
  [IPv6:2a0a:51c0:0:12e:550::1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 4CF414015F
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 22:38:58 +0000 (UTC)
-Message-ID: <20211206210307.625116253@linutronix.de>
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 2614F605F6
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 22:39:00 +0000 (UTC)
+Message-ID: <20211206210437.708862278@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1638830336;
+ s=2020; t=1638830338;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding;
- bh=tVxkONw1+URUxuo5QL2ocxThr7/mkfa4+qL7IuxO3Uk=;
- b=IBPmwzRmWD5mL6+e7MwJlzRwVEFnyloQOG5U1+MtcbGwWlmr/iX9fTfUI/80/wO154AnhB
- 8DYtOoCiUZGZIX7xxJRto86p8RkbCzd/unh1t58dBbsJrwuPqPvrRLRXrT0esBwzHbNsNa
- qwXZqvTJre7RZQfDg4/dTnBaJ4Vn9A0GgekS+1e4Qf5kRU0iK9FpbDyilXUeeC7+VrAfb5
- IxJNcokipuIGvUWHF5lH8dowLW34B6L9V/hmTpeZhSPpHFMlpyl8w1QpGVxHjEjKadyW2W
- 7U4rDr3YJC9E75LoEvXhJG05GptEAkSgVKVq9N1KE7tsTr7r8yq+qfSK1FbT+A==
+ references:references; bh=E+U4wBNO821PczyA58GFB83d3mrDArDJk9rmH8AmF2s=;
+ b=XgzGfONAvccQTF6y8RU+V8re1pgjfR0lBoT/9VUgclQ3JM43YF+JGXabuLcuE1jBlZUbxZ
+ r5gKwI4COnVuL+LVNpp1XS8npZu4/QNJr9VKtynI10/IbTRuCAQkQXUebw6D9pyukMNGIO
+ 65TH/YU0UJ2QhkfOOhzGm4mxl10x80CcYKA+nWGjLBdsH+DHpB1MpfsHDWPgFMzV/cq099
+ PCZ+8deN75cxusBqHvU26pqvpvbc7n39A11+hGZnQMhZBMvksO089n4M4L4pcWmOUNvH3y
+ KILPk7eSvemFD7lfDWUFwWHw6eDo1wYUFhqaUKtwmztro+ZWYAIPSyWpNdokfA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1638830336;
+ s=2020e; t=1638830338;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding;
- bh=tVxkONw1+URUxuo5QL2ocxThr7/mkfa4+qL7IuxO3Uk=;
- b=kGhsuXkAAqnqxB8SQ+Z7lY2BC9yD4sp1NOG0tpAY5Yhj/oSfoQ4S3EJ7Pv7mdUHrVMdkTQ
- yUjnayt7pKthTuCQ==
+ references:references; bh=E+U4wBNO821PczyA58GFB83d3mrDArDJk9rmH8AmF2s=;
+ b=Asgi9ojEK9C/QpFeOZitUkdaLt+mGz7mKxEdN/+qlo7HJoCr0R42jfwDjz72tdmcwVwwsH
+ eQjniczuWGPANGAA==
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V2 00/36] genirq/msi, PCI/MSI: Spring cleaning - Part 2
+Subject: [patch V2 01/36] device: Move MSI related data into a struct
+References: <20211206210307.625116253@linutronix.de>
 MIME-Version: 1.0
-Date: Mon,  6 Dec 2021 23:38:56 +0100 (CET)
+Date: Mon,  6 Dec 2021 23:38:57 +0100 (CET)
 Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
  Stuart Yoder <stuyoder@gmail.com>, linux-pci@vger.kernel.org,
  Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
@@ -93,113 +88,209 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+The only unconditional part of MSI data in struct device is the irqdomain
+pointer. Everything else can be allocated on demand. Create a data
+structure and move the irqdomain pointer into it. The other MSI specific
+parts are going to be removed from struct device in later steps.
 
-This is the second part of [PCI]MSI refactoring which aims to provide the
-ability of expanding MSI-X vectors after enabling MSI-X.
-
-The first part of this work can be found here:
-
-    https://lore.kernel.org/r/20211206210147.872865823@linutronix.de
-
-This second part has the following important changes:
-
-   1) Cleanup of the MSI related data in struct device
-
-      struct device contains at the moment various MSI related parts. Some
-      of them (the irq domain pointer) cannot be moved out, but the rest
-      can be allocated on first use. This is in preparation of adding more
-      per device MSI data later on.
-
-   2) Consolidation of sysfs handling
-
-      As a first step this moves the sysfs pointer from struct msi_desc
-      into the new per device MSI data structure where it belongs.
-
-      Later changes will cleanup this code further, but that's not possible
-      at this point.
-
-   3) Store per device properties in the per device MSI data to avoid
-      looking up MSI descriptors and analysing their data. Cleanup all
-      related use cases.
-
-   4) Provide a function to retrieve the Linux interrupt number for a given
-      MSI index similar to pci_irq_vector() and cleanup all open coded
-      variants.
-
-This second series is based on:
-
-     git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git msi-v2-part-1
-
-and also available from git:
-
-     git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git msi-v2-part-2
-
-For the curious who can't wait for the next part to arrive the full series
-is available via:
-
-     git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git msi-v2-part-3
-
-V1 of this series can be found here:
-
-    https://lore.kernel.org/r/20211126224100.303046749@linutronix.de
-
-Changes versus V1:
-
-  - Fix the pci_irq_vector() thinko - Marc
-
-  - Fix the powerpc fallout - Cedric, Andy
-
-  - Addressed codingstyle/comments feedback - Jonathan
-
-  - Added a MSI properties setter to prepare for later changes
-
-  - Confined the global msi*sysfs functions to legacy code
-
-  - Dropped the MSI lock patch as the lock has moved to struct pci_dev
-    in V2 part-1 now
-
-  - Picked up Reviewed/Tested/Acked-by tags as appropriate
-
-Thanks,
-
-	tglx
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Santosh Shilimkar <ssantosh@kernel.org>
+Cc: iommu@lists.linux-foundation.org
+Cc: dmaengine@vger.kernel.org
 ---
- arch/powerpc/platforms/cell/axon_msi.c              |    6 
- arch/powerpc/platforms/pseries/msi.c                |   39 +---
- arch/x86/kernel/apic/msi.c                          |    5 
- arch/x86/pci/xen.c                                  |    8 
- drivers/base/platform-msi.c                         |  152 +++++++---------
- drivers/bus/fsl-mc/dprc-driver.c                    |    8 
- drivers/bus/fsl-mc/fsl-mc-allocator.c               |    9 
- drivers/bus/fsl-mc/fsl-mc-msi.c                     |   26 +-
- drivers/dma/mv_xor_v2.c                             |   16 -
- drivers/dma/qcom/hidma.c                            |   44 ++--
- drivers/dma/ti/k3-udma-private.c                    |    6 
- drivers/dma/ti/k3-udma.c                            |   14 -
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c         |   23 --
- drivers/irqchip/irq-mbigen.c                        |    4 
- drivers/irqchip/irq-mvebu-icu.c                     |   12 -
- drivers/irqchip/irq-ti-sci-inta.c                   |    2 
- drivers/mailbox/bcm-flexrm-mailbox.c                |    9 
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c    |    4 
- drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c    |    4 
- drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c |    5 
- drivers/pci/msi/irqdomain.c                         |   20 +-
- drivers/pci/msi/legacy.c                            |    6 
- drivers/pci/msi/msi.c                               |  118 ++++--------
- drivers/pci/xen-pcifront.c                          |    2 
- drivers/perf/arm_smmuv3_pmu.c                       |    5 
- drivers/soc/fsl/dpio/dpio-driver.c                  |    8 
- drivers/soc/ti/k3-ringacc.c                         |    6 
- drivers/soc/ti/ti_sci_inta_msi.c                    |   22 --
- drivers/vfio/fsl-mc/vfio_fsl_mc_intr.c              |    4 
- include/linux/device.h                              |   25 ++
- include/linux/fsl/mc.h                              |    4 
- include/linux/msi.h                                 |  112 ++++++------
- include/linux/pci.h                                 |    1 
- include/linux/soc/ti/ti_sci_inta_msi.h              |    1 
- kernel/irq/msi.c                                    |  182 +++++++++++++++-----
- 35 files changed, 464 insertions(+), 448 deletions(-)
+ drivers/base/platform-msi.c                 |   12 ++++++------
+ drivers/dma/ti/k3-udma.c                    |    4 ++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |    2 +-
+ drivers/irqchip/irq-mvebu-icu.c             |    6 +++---
+ drivers/soc/ti/k3-ringacc.c                 |    4 ++--
+ drivers/soc/ti/ti_sci_inta_msi.c            |    2 +-
+ include/linux/device.h                      |   20 ++++++++++++++------
+ 7 files changed, 29 insertions(+), 21 deletions(-)
+
+--- a/drivers/base/platform-msi.c
++++ b/drivers/base/platform-msi.c
+@@ -210,10 +210,10 @@ platform_msi_alloc_priv_data(struct devi
+ 	 * accordingly (which would impact the max number of MSI
+ 	 * capable devices).
+ 	 */
+-	if (!dev->msi_domain || !write_msi_msg || !nvec || nvec > MAX_DEV_MSIS)
++	if (!dev->msi.domain || !write_msi_msg || !nvec || nvec > MAX_DEV_MSIS)
+ 		return ERR_PTR(-EINVAL);
+ 
+-	if (dev->msi_domain->bus_token != DOMAIN_BUS_PLATFORM_MSI) {
++	if (dev->msi.domain->bus_token != DOMAIN_BUS_PLATFORM_MSI) {
+ 		dev_err(dev, "Incompatible msi_domain, giving up\n");
+ 		return ERR_PTR(-EINVAL);
+ 	}
+@@ -269,7 +269,7 @@ int platform_msi_domain_alloc_irqs(struc
+ 	if (err)
+ 		goto out_free_priv_data;
+ 
+-	err = msi_domain_alloc_irqs(dev->msi_domain, dev, nvec);
++	err = msi_domain_alloc_irqs(dev->msi.domain, dev, nvec);
+ 	if (err)
+ 		goto out_free_desc;
+ 
+@@ -282,7 +282,7 @@ int platform_msi_domain_alloc_irqs(struc
+ 	return 0;
+ 
+ out_free_irqs:
+-	msi_domain_free_irqs(dev->msi_domain, dev);
++	msi_domain_free_irqs(dev->msi.domain, dev);
+ out_free_desc:
+ 	platform_msi_free_descs(dev, 0, nvec);
+ out_free_priv_data:
+@@ -306,7 +306,7 @@ void platform_msi_domain_free_irqs(struc
+ 		platform_msi_free_priv_data(desc->platform.msi_priv_data);
+ 	}
+ 
+-	msi_domain_free_irqs(dev->msi_domain, dev);
++	msi_domain_free_irqs(dev->msi.domain, dev);
+ 	platform_msi_free_descs(dev, 0, MAX_DEV_MSIS);
+ }
+ EXPORT_SYMBOL_GPL(platform_msi_domain_free_irqs);
+@@ -354,7 +354,7 @@ struct irq_domain *
+ 		return NULL;
+ 
+ 	data->host_data = host_data;
+-	domain = irq_domain_create_hierarchy(dev->msi_domain, 0,
++	domain = irq_domain_create_hierarchy(dev->msi.domain, 0,
+ 					     is_tree ? 0 : nvec,
+ 					     dev->fwnode, ops, data);
+ 	if (!domain)
+--- a/drivers/dma/ti/k3-udma.c
++++ b/drivers/dma/ti/k3-udma.c
+@@ -5279,9 +5279,9 @@ static int udma_probe(struct platform_de
+ 	if (IS_ERR(ud->ringacc))
+ 		return PTR_ERR(ud->ringacc);
+ 
+-	dev->msi_domain = of_msi_get_domain(dev, dev->of_node,
++	dev->msi.domain = of_msi_get_domain(dev, dev->of_node,
+ 					    DOMAIN_BUS_TI_SCI_INTA_MSI);
+-	if (!dev->msi_domain) {
++	if (!dev->msi.domain) {
+ 		dev_err(dev, "Failed to get MSI domain\n");
+ 		return -EPROBE_DEFER;
+ 	}
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -3170,7 +3170,7 @@ static void arm_smmu_setup_msis(struct a
+ 	if (!(smmu->features & ARM_SMMU_FEAT_MSI))
+ 		return;
+ 
+-	if (!dev->msi_domain) {
++	if (!dev->msi.domain) {
+ 		dev_info(smmu->dev, "msi_domain absent - falling back to wired irqs\n");
+ 		return;
+ 	}
+--- a/drivers/irqchip/irq-mvebu-icu.c
++++ b/drivers/irqchip/irq-mvebu-icu.c
+@@ -314,12 +314,12 @@ static int mvebu_icu_subset_probe(struct
+ 		msi_data->subset_data = of_device_get_match_data(dev);
+ 	}
+ 
+-	dev->msi_domain = of_msi_get_domain(dev, dev->of_node,
++	dev->msi.domain = of_msi_get_domain(dev, dev->of_node,
+ 					    DOMAIN_BUS_PLATFORM_MSI);
+-	if (!dev->msi_domain)
++	if (!dev->msi.domain)
+ 		return -EPROBE_DEFER;
+ 
+-	msi_parent_dn = irq_domain_get_of_node(dev->msi_domain);
++	msi_parent_dn = irq_domain_get_of_node(dev->msi.domain);
+ 	if (!msi_parent_dn)
+ 		return -ENODEV;
+ 
+--- a/drivers/soc/ti/k3-ringacc.c
++++ b/drivers/soc/ti/k3-ringacc.c
+@@ -1356,9 +1356,9 @@ static int k3_ringacc_init(struct platfo
+ 	struct resource *res;
+ 	int ret, i;
+ 
+-	dev->msi_domain = of_msi_get_domain(dev, dev->of_node,
++	dev->msi.domain = of_msi_get_domain(dev, dev->of_node,
+ 					    DOMAIN_BUS_TI_SCI_INTA_MSI);
+-	if (!dev->msi_domain) {
++	if (!dev->msi.domain) {
+ 		dev_err(dev, "Failed to get MSI domain\n");
+ 		return -EPROBE_DEFER;
+ 	}
+--- a/drivers/soc/ti/ti_sci_inta_msi.c
++++ b/drivers/soc/ti/ti_sci_inta_msi.c
+@@ -140,7 +140,7 @@ EXPORT_SYMBOL_GPL(ti_sci_inta_msi_domain
+ 
+ void ti_sci_inta_msi_domain_free_irqs(struct device *dev)
+ {
+-	msi_domain_free_irqs(dev->msi_domain, dev);
++	msi_domain_free_irqs(dev->msi.domain, dev);
+ 	ti_sci_inta_msi_free_descs(dev);
+ }
+ EXPORT_SYMBOL_GPL(ti_sci_inta_msi_domain_free_irqs);
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -372,6 +372,16 @@ struct dev_links_info {
+ };
+ 
+ /**
++ * struct dev_msi_info - Device data related to MSI
++ * @domain:	The MSI interrupt domain associated to the device
++ */
++struct dev_msi_info {
++#ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
++	struct irq_domain	*domain;
++#endif
++};
++
++/**
+  * struct device - The basic device structure
+  * @parent:	The device's "parent" device, the device to which it is attached.
+  * 		In most cases, a parent device is some sort of bus or host
+@@ -407,8 +417,8 @@ struct dev_links_info {
+  * @em_pd:	device's energy model performance domain
+  * @pins:	For device pin management.
+  *		See Documentation/driver-api/pin-control.rst for details.
++ * @msi:	MSI related data
+  * @msi_list:	Hosts MSI descriptors
+- * @msi_domain: The generic MSI domain this device is using.
+  * @numa_node:	NUMA node this device is close to.
+  * @dma_ops:    DMA mapping operations for this device.
+  * @dma_mask:	Dma mask (if dma'ble device).
+@@ -500,12 +510,10 @@ struct device {
+ 	struct em_perf_domain	*em_pd;
+ #endif
+ 
+-#ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
+-	struct irq_domain	*msi_domain;
+-#endif
+ #ifdef CONFIG_PINCTRL
+ 	struct dev_pin_info	*pins;
+ #endif
++	struct dev_msi_info	msi;
+ #ifdef CONFIG_GENERIC_MSI_IRQ
+ 	struct list_head	msi_list;
+ #endif
+@@ -666,7 +674,7 @@ static inline void set_dev_node(struct d
+ static inline struct irq_domain *dev_get_msi_domain(const struct device *dev)
+ {
+ #ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
+-	return dev->msi_domain;
++	return dev->msi.domain;
+ #else
+ 	return NULL;
+ #endif
+@@ -675,7 +683,7 @@ static inline struct irq_domain *dev_get
+ static inline void dev_set_msi_domain(struct device *dev, struct irq_domain *d)
+ {
+ #ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
+-	dev->msi_domain = d;
++	dev->msi.domain = d;
+ #endif
+ }
+ 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
