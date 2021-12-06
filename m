@@ -1,83 +1,59 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C772DC433EF
-	for <iommu@archiver.kernel.org>; Mon,  6 Dec 2021 14:48:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C5E12C433EF
+	for <iommu@archiver.kernel.org>; Mon,  6 Dec 2021 14:48:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6C63584B6F;
-	Mon,  6 Dec 2021 14:48:01 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 73D0860C33;
+	Mon,  6 Dec 2021 14:48:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SNNNVVr1Gqre; Mon,  6 Dec 2021 14:48:00 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 22B7184B61;
-	Mon,  6 Dec 2021 14:48:00 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F147DC001E;
-	Mon,  6 Dec 2021 14:47:59 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DA0ABC0012
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 14:47:58 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id BBEA060C13
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 14:47:58 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=infradead.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eAX7z9iuQBkN for <iommu@lists.linux-foundation.org>;
- Mon,  6 Dec 2021 14:47:58 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [IPv6:2607:7c80:54:e::133])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 4698860784
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 14:47:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
- :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=TXFSmUvaU3cs7so6I58UjRnLfUrT8rfsvaCveH+MJuc=; b=ZiRLfAaJDzSkoPKw079EiQGN/7
- bxEKFwuhOQvYYSgZXv1b+xWvyFVzNDvrcTUJ8CrugUQ1MZGfwXs4qs+kRH5Pgd6FfqQeopylxTXM2
- KEihaEizzovXtpeHFOOrAAnufrDT2x88N8hCB8B/qerE1deCagPlmiZhGv8gWSZOaaFqyN/ErO9kq
- GsGzIMiW8kOtePhuvpDQsLXK5nzB8G8Gqt4vffNqzXweCO4qGKi2Iq1jBOxSkvZhESpY+FT0gTciQ
- YB7vf/L0oA6Kb6YnYNYmKh6qsr6h3cHGfoDvoYiah/Se/KBF6+VNPV1c9HXR9N0xVBgtLWK/Udv+u
- WSiZvg1A==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red
- Hat Linux)) id 1muFHN-004GnQ-TB; Mon, 06 Dec 2021 14:47:45 +0000
-Date: Mon, 6 Dec 2021 06:47:45 -0800
-From: Christoph Hellwig <hch@infradead.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v3 03/18] driver core: platform: Rename
- platform_dma_configure()
-Message-ID: <Ya4ikRpenoQPXfML@infradead.org>
-References: <20211206015903.88687-1-baolu.lu@linux.intel.com>
- <20211206015903.88687-4-baolu.lu@linux.intel.com>
- <Ya3BYxrgkNK3kbGI@kroah.com> <Ya4abbx5M31LYd3N@infradead.org>
- <20211206144535.GB4670@nvidia.com>
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id u8Ua1YFrwhV4; Mon,  6 Dec 2021 14:48:12 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 4203160C2D;
+	Mon,  6 Dec 2021 14:48:12 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2DDD2C001E;
+	Mon,  6 Dec 2021 14:48:12 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 61707C0012
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 14:48:11 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 5101D405D7
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 14:48:11 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id JEE17PB5_Keh for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Dec 2021 14:48:10 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 30D614044C
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 14:48:10 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7535D1FB;
+ Mon,  6 Dec 2021 06:48:09 -0800 (PST)
+Received: from [10.57.34.58] (unknown [10.57.34.58])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E46123F5A1;
+ Mon,  6 Dec 2021 06:48:07 -0800 (PST)
+Message-ID: <76a1cc8a-562e-1474-1c26-c2c391cb978f@arm.com>
+Date: Mon, 6 Dec 2021 14:48:02 +0000
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20211206144535.GB4670@nvidia.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
- David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
- Thierry Reding <thierry.reding@gmail.com>,
- Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
- Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
- Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
- Robin Murphy <robin.murphy@arm.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [RFC PATCH] per device enable smmu whem iommu passthrough
+Content-Language: en-GB
+To: Jay Chen <jkchen@linux.alibaba.com>, will@kernel.org, joro@8bytes.org,
+ inux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org,
+ linux-doc@vger.kernel.org
+References: <20211130081440.12397-1-jkchen@linux.alibaba.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20211130081440.12397-1-jkchen@linux.alibaba.com>
+Cc: zhangliguang@linux.alibaba.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,21 +66,129 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Dec 06, 2021 at 10:45:35AM -0400, Jason Gunthorpe via iommu wrote:
-> IIRC the only thing this function does is touch ACPI and OF stuff?
-> Isn't that firmware?
-> 
-> AFAICT amba uses this because AMBA devices might be linked to DT
-> descriptions?
+On 2021-11-30 08:14, Jay Chen wrote:
+> Currently, when iommu.passthrough=1 is set,
+> all arm smmu peripherals are bypassed. This
+> patch allows specific peripherals to use smmu translate.
 
-But DT descriptions aren't firmware.  They are usually either passed onb
-the bootloader or in some deeply embedded setups embedded into the
-kernel image.
+The existing solution for this is the sysfs interface, where the usage 
+model is to start up with translation as the default, then from an 
+initrd or later userspace, reconfigure certain "trusted" devices into 
+passthrough before loading their drivers (technically you *could* do it 
+the other way round too, but that makes a lot less sense from a 
+trust/privilege point of view). See the original discussion for some of 
+the reasons why a command-line interface isn't really viable:
+
+https://lore.kernel.org/linux-iommu/FFF73D592F13FD46B8700F0A279B802F48DA796E@ORSMSX114.amr.corp.intel.com/
+
+Furthermore, usual comment about there being no reason for this to be 
+specific to any particular driver.
+
+Thanks,
+Robin.
+
+> Signed-off-by: Jay Chen <jkchen@linux.alibaba.com>
+> ---
+>   .../admin-guide/kernel-parameters.txt         |  6 +++
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 41 +++++++++++++++++++
+>   2 files changed, 47 insertions(+)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index 91ba391f9b32..7ecc7a4c84d7 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -2076,6 +2076,12 @@
+>   			1 - Bypass the IOMMU for DMA.
+>   			unset - Use value of CONFIG_IOMMU_DEFAULT_PASSTHROUGH.
+>   
+> +	smmuv3_no_passthrough=
+> +			[ARM64] enable smmu for devices when iommu.passthrough=1.
+> +			Format: {83:00.0,84:00.0,devname}
+> +			83:00.0 - the bdf for one pci devices
+> +			devname - the name for the platform device
+> +
+>   	io7=		[HW] IO7 for Marvel-based Alpha systems
+>   			See comment before marvel_specify_io7 in
+>   			arch/alpha/kernel/core_marvel.c.
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index a388e318f86e..e2a57bd37f32 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -76,6 +76,8 @@ struct arm_smmu_option_prop {
+>   DEFINE_XARRAY_ALLOC1(arm_smmu_asid_xa);
+>   DEFINE_MUTEX(arm_smmu_asid_lock);
+>   
+> +char *smmuv3_nopt;
+> +
+>   /*
+>    * Special value used by SVA when a process dies, to quiesce a CD without
+>    * disabling it.
+> @@ -102,6 +104,17 @@ static void parse_driver_options(struct arm_smmu_device *smmu)
+>   	} while (arm_smmu_options[++i].opt);
+>   }
+>   
+> +static int __init arm_smmu_no_passthrough_setup(char *str)
+> +{
+> +	if (!str)
+> +		return -EINVAL;
+> +
+> +	smmuv3_nopt = str;
+> +
+> +	return 0;
+> +}
+> +__setup("smmuv3_no_passthrough=", arm_smmu_no_passthrough_setup);
+> +
+>   /* Low-level queue manipulation functions */
+>   static bool queue_has_space(struct arm_smmu_ll_queue *q, u32 n)
+>   {
+> @@ -2831,6 +2844,33 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
+>   	}
+>   }
+>   
+> +static int arm_smmu_def_domain_type(struct device *dev)
+> +{
+> +	char *str = smmuv3_nopt;
+> +	const char *tmp;
+> +
+> +	if (!dev || !str)
+> +		return 0;
+> +
+> +	if (dev_is_pci(dev)) {
+> +		tmp = dev_name(dev);
+> +		tmp += strcspn(tmp, ":") + 1;
+> +	} else {
+> +		tmp = dev_name(dev);
+> +	}
+> +
+> +	while (*str) {
+> +		if (!strncmp(str, tmp, strlen(tmp)))
+> +			return IOMMU_DOMAIN_DMA;
+> +
+> +		str += strcspn(str, ",");
+> +		while (*str == ',')
+> +			str++;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>   static struct iommu_ops arm_smmu_ops = {
+>   	.capable		= arm_smmu_capable,
+>   	.domain_alloc		= arm_smmu_domain_alloc,
+> @@ -2856,6 +2896,7 @@ static struct iommu_ops arm_smmu_ops = {
+>   	.sva_unbind		= arm_smmu_sva_unbind,
+>   	.sva_get_pasid		= arm_smmu_sva_get_pasid,
+>   	.page_response		= arm_smmu_page_response,
+> +	.def_domain_type	= arm_smmu_def_domain_type,
+>   	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+>   	.owner			= THIS_MODULE,
+>   };
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
