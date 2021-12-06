@@ -1,59 +1,73 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C5E12C433EF
-	for <iommu@archiver.kernel.org>; Mon,  6 Dec 2021 14:48:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AE131C433FE
+	for <iommu@archiver.kernel.org>; Mon,  6 Dec 2021 15:00:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 73D0860C33;
-	Mon,  6 Dec 2021 14:48:13 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id u8Ua1YFrwhV4; Mon,  6 Dec 2021 14:48:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 4203160C2D;
-	Mon,  6 Dec 2021 14:48:12 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2DDD2C001E;
-	Mon,  6 Dec 2021 14:48:12 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 61707C0012
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 14:48:11 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5101D405D7
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 14:48:11 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3D14F40903;
+	Mon,  6 Dec 2021 15:00:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JEE17PB5_Keh for <iommu@lists.linux-foundation.org>;
- Mon,  6 Dec 2021 14:48:10 +0000 (UTC)
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id BZcr9jIZBnOD; Mon,  6 Dec 2021 15:00:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id D268040943;
+	Mon,  6 Dec 2021 15:00:14 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ACF1FC001E;
+	Mon,  6 Dec 2021 15:00:14 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E361BC0012
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 15:00:12 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id D6CCB40289
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 15:00:12 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=fail (2048-bit key) reason="fail (bad RSA signature)"
+ header.d=collabora.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id AV5LrcgeUVhN for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Dec 2021 15:00:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id 30D614044C
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 14:48:10 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7535D1FB;
- Mon,  6 Dec 2021 06:48:09 -0800 (PST)
-Received: from [10.57.34.58] (unknown [10.57.34.58])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E46123F5A1;
- Mon,  6 Dec 2021 06:48:07 -0800 (PST)
-Message-ID: <76a1cc8a-562e-1474-1c26-c2c391cb978f@arm.com>
-Date: Mon, 6 Dec 2021 14:48:02 +0000
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 3ECB1400C9
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 15:00:10 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+ (Authenticated sender: kholk11) with ESMTPSA id 4FBD11F44803
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=collabora.com; s=mail;
+ t=1638802808; bh=GdCGPmly0UuQ6WjSsNws2p+iDG85TsB+eBdXAeJYWKo=;
+ h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+ b=K0fNGcFVKt7O287APEpkAIFNWACJowOJtubES7YzU18wZK9tNnX6ZS0kbADSNKC+Y
+ am0NkVRHfnoQTQJlzPZjKnz30qgm4Whf1fMoJ36ZW7tuuwUON8yNfV5KB1fLGF4qLz
+ wRT4fRML+iDArFocVdBPGhXWssHAcEDtuY3zEl7XnqGMC9g8Nu3Z34O6qjezjYx2+p
+ Jm3G8SkDOksXBYgZgWNmR8ZXro02agCanHvdBQG3jB7N6mGf3ioJSxk1lPrjf/msEu
+ rhasgGlGOHR52V1irMnWJcut59XIHV0ggwnbxyB9JXfc+GJvqg6CTW6oYAXy015cKw
+ WjK2fAddW3VRw==
+Subject: Re: [PATCH 4/4] memory: mtk-smi: mt8186: Add smi support
+To: Yong Wu <yong.wu@mediatek.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
+References: <20211203064027.14993-1-yong.wu@mediatek.com>
+ <20211203064027.14993-5-yong.wu@mediatek.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Message-ID: <417ec223-b49a-c8dc-c53a-7831cca4d2d1@collabora.com>
+Date: Mon, 6 Dec 2021 16:00:04 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [RFC PATCH] per device enable smmu whem iommu passthrough
-Content-Language: en-GB
-To: Jay Chen <jkchen@linux.alibaba.com>, will@kernel.org, joro@8bytes.org,
- inux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org,
- linux-doc@vger.kernel.org
-References: <20211130081440.12397-1-jkchen@linux.alibaba.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20211130081440.12397-1-jkchen@linux.alibaba.com>
-Cc: zhangliguang@linux.alibaba.com
+In-Reply-To: <20211203064027.14993-5-yong.wu@mediatek.com>
+Content-Language: en-US
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org, yi.kuo@mediatek.com,
+ srv_heupstream@mediatek.com, Will Deacon <will@kernel.org>,
+ linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ lc.kan@mediatek.com, anthony.huang@mediatek.com, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -71,124 +85,13 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-11-30 08:14, Jay Chen wrote:
-> Currently, when iommu.passthrough=1 is set,
-> all arm smmu peripherals are bypassed. This
-> patch allows specific peripherals to use smmu translate.
-
-The existing solution for this is the sysfs interface, where the usage 
-model is to start up with translation as the default, then from an 
-initrd or later userspace, reconfigure certain "trusted" devices into 
-passthrough before loading their drivers (technically you *could* do it 
-the other way round too, but that makes a lot less sense from a 
-trust/privilege point of view). See the original discussion for some of 
-the reasons why a command-line interface isn't really viable:
-
-https://lore.kernel.org/linux-iommu/FFF73D592F13FD46B8700F0A279B802F48DA796E@ORSMSX114.amr.corp.intel.com/
-
-Furthermore, usual comment about there being no reason for this to be 
-specific to any particular driver.
-
-Thanks,
-Robin.
-
-> Signed-off-by: Jay Chen <jkchen@linux.alibaba.com>
-> ---
->   .../admin-guide/kernel-parameters.txt         |  6 +++
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 41 +++++++++++++++++++
->   2 files changed, 47 insertions(+)
+Il 03/12/21 07:40, Yong Wu ha scritto:
+> Add mt8186 SMI support.
 > 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index 91ba391f9b32..7ecc7a4c84d7 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -2076,6 +2076,12 @@
->   			1 - Bypass the IOMMU for DMA.
->   			unset - Use value of CONFIG_IOMMU_DEFAULT_PASSTHROUGH.
->   
-> +	smmuv3_no_passthrough=
-> +			[ARM64] enable smmu for devices when iommu.passthrough=1.
-> +			Format: {83:00.0,84:00.0,devname}
-> +			83:00.0 - the bdf for one pci devices
-> +			devname - the name for the platform device
-> +
->   	io7=		[HW] IO7 for Marvel-based Alpha systems
->   			See comment before marvel_specify_io7 in
->   			arch/alpha/kernel/core_marvel.c.
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index a388e318f86e..e2a57bd37f32 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -76,6 +76,8 @@ struct arm_smmu_option_prop {
->   DEFINE_XARRAY_ALLOC1(arm_smmu_asid_xa);
->   DEFINE_MUTEX(arm_smmu_asid_lock);
->   
-> +char *smmuv3_nopt;
-> +
->   /*
->    * Special value used by SVA when a process dies, to quiesce a CD without
->    * disabling it.
-> @@ -102,6 +104,17 @@ static void parse_driver_options(struct arm_smmu_device *smmu)
->   	} while (arm_smmu_options[++i].opt);
->   }
->   
-> +static int __init arm_smmu_no_passthrough_setup(char *str)
-> +{
-> +	if (!str)
-> +		return -EINVAL;
-> +
-> +	smmuv3_nopt = str;
-> +
-> +	return 0;
-> +}
-> +__setup("smmuv3_no_passthrough=", arm_smmu_no_passthrough_setup);
-> +
->   /* Low-level queue manipulation functions */
->   static bool queue_has_space(struct arm_smmu_ll_queue *q, u32 n)
->   {
-> @@ -2831,6 +2844,33 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
->   	}
->   }
->   
-> +static int arm_smmu_def_domain_type(struct device *dev)
-> +{
-> +	char *str = smmuv3_nopt;
-> +	const char *tmp;
-> +
-> +	if (!dev || !str)
-> +		return 0;
-> +
-> +	if (dev_is_pci(dev)) {
-> +		tmp = dev_name(dev);
-> +		tmp += strcspn(tmp, ":") + 1;
-> +	} else {
-> +		tmp = dev_name(dev);
-> +	}
-> +
-> +	while (*str) {
-> +		if (!strncmp(str, tmp, strlen(tmp)))
-> +			return IOMMU_DOMAIN_DMA;
-> +
-> +		str += strcspn(str, ",");
-> +		while (*str == ',')
-> +			str++;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->   static struct iommu_ops arm_smmu_ops = {
->   	.capable		= arm_smmu_capable,
->   	.domain_alloc		= arm_smmu_domain_alloc,
-> @@ -2856,6 +2896,7 @@ static struct iommu_ops arm_smmu_ops = {
->   	.sva_unbind		= arm_smmu_sva_unbind,
->   	.sva_get_pasid		= arm_smmu_sva_get_pasid,
->   	.page_response		= arm_smmu_page_response,
-> +	.def_domain_type	= arm_smmu_def_domain_type,
->   	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
->   	.owner			= THIS_MODULE,
->   };
-> 
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+
+
+Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
