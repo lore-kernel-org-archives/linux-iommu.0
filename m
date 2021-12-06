@@ -1,79 +1,89 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C0746C433F5
-	for <iommu@archiver.kernel.org>; Mon,  6 Dec 2021 08:16:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7D5D2C433F5
+	for <iommu@archiver.kernel.org>; Mon,  6 Dec 2021 08:28:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id B6AB4400A4;
-	Mon,  6 Dec 2021 08:16:10 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 060174016B;
+	Mon,  6 Dec 2021 08:28:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7KA4Z1C1l5ie; Mon,  6 Dec 2021 08:16:09 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id wH5oziMbACjA; Mon,  6 Dec 2021 08:28:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 2B5EB40018;
-	Mon,  6 Dec 2021 08:16:09 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 8930A400F4;
+	Mon,  6 Dec 2021 08:28:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 00C5FC001E;
-	Mon,  6 Dec 2021 08:16:09 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7F0BBC0012
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 08:16:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3865CC001E;
+	Mon,  6 Dec 2021 08:28:21 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 94DB6C0012
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 08:28:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 5C58860A3E
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 08:16:07 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 809E4400A4
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 08:28:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=mediatek.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fsrvZdXyDlFI for <iommu@lists.linux-foundation.org>;
- Mon,  6 Dec 2021 08:16:02 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id k3Nr-bW8jtju for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Dec 2021 08:28:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp3.osuosl.org (Postfix) with ESMTPS id CF6086070A
- for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 08:16:01 +0000 (UTC)
-X-UUID: 609d79adcd3f4cadbe01c5f4985a4d4f-20211206
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 046E540018
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Dec 2021 08:28:09 +0000 (UTC)
+X-UUID: 5af0a9b0f4b242b691cda3217dc8d290-20211206
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=Gwi9NQMi+aJlqofRC9/2Cdnnhql1ssg2h7PD3Qu6tws=; 
- b=Z08QStxoNbqTiW1WRshvSqF8wGbc7Gv6bihg6mJxnWv1F1KZbkNuOgvRuOcHG0WnUAJHvmesy3d4QAGLM7KenLjfassalmT3Jwgi8OqjEfvDTzhZHRmThBWFjoCTJyp7dG1pOr5iHICqFILsgnnEK1raH/8tUBLYSgD6clsjZpI=;
-X-UUID: 609d79adcd3f4cadbe01c5f4985a4d4f-20211206
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
- (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1785352478; Mon, 06 Dec 2021 16:15:55 +0800
+ bh=x6YtsVKT5SbA+fAmPG41G/VMiY4QVQjlGJqlNFJ+A68=; 
+ b=GNUUDpkb4nqaw/D5eLC44xtXblzMMrj+glo2DaXZ6Z3JnNut3AKqnZA3VwvxuKsa/UsGvp5Fbrs00PXQB7UPFpP7Di7ZcddIe1JcRvKLW/W9Jv3FzvVGmY/WbsYO/4NhRwn2rW7wO9hHVjWQSs24JSvpNTVWveso0ioyjagJrKo=;
+X-UUID: 5af0a9b0f4b242b691cda3217dc8d290-20211206
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
+ mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+ with ESMTP id 79413400; Mon, 06 Dec 2021 16:28:05 +0800
 Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 6 Dec 2021 16:15:54 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
+ Mon, 6 Dec 2021 16:28:03 +0800
 Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 6 Dec 2021 16:15:53 +0800
-Message-ID: <303eaeb2d371c96def8e5f0284495b1762879905.camel@mediatek.com>
-Subject: Re: [PATCH 3/4] memory: mtk-smi: Add sleep ctrl function
+ Transport; Mon, 6 Dec 2021 16:28:01 +0800
+Message-ID: <9fd624a9f0752b92f309c0bb8524547f250830cb.camel@mediatek.com>
+Subject: Re: [PATCH v3 12/33] iommu/mediatek: Always tlb_flush_all when each
+ PM resume
 From: Yong Wu <yong.wu@mediatek.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Date: Mon, 6 Dec 2021 16:15:53 +0800
-In-Reply-To: <9631fe7c-b878-79b0-1680-80b0be089429@canonical.com>
-References: <20211203064027.14993-1-yong.wu@mediatek.com>
- <20211203064027.14993-4-yong.wu@mediatek.com>
- <9631fe7c-b878-79b0-1680-80b0be089429@canonical.com>
+To: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+Date: Mon, 6 Dec 2021 16:28:00 +0800
+In-Reply-To: <58b13d3a-e89b-d2e3-278d-af8859d901b9@collabora.com>
+References: <20210923115840.17813-1-yong.wu@mediatek.com>
+ <20210923115840.17813-13-yong.wu@mediatek.com>
+ <c4be1a14-c257-81b7-4a2b-f7e68c32de88@collabora.com>
+ <5c4dd67ae7c81721d8cfd2c3b23b7c6df493cb5a.camel@mediatek.com>
+ <4dd4cf8d-0f52-afae-f7d9-8e3cfdf3b729@collabora.com>
+ <c69e03b4781dd9014393e0ff47767c58c846a722.camel@mediatek.com>
+ <c5ded58b-a53a-3089-f8a5-c264f8ab9463@collabora.com>
+ <128eb1874127b2b9b42a7419e26090d1d192666f.camel@mediatek.com>
+ <58b13d3a-e89b-d2e3-278d-af8859d901b9@collabora.com>
 X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
 X-MTK: N
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org, yi.kuo@mediatek.com,
- srv_heupstream@mediatek.com, Will Deacon <will@kernel.org>,
- linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com, srv_heupstream@mediatek.com,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ Robin Murphy <robin.murphy@arm.com>, sebastian.reichel@collabora.com,
+ yen-chang.chen@mediatek.com, Fabien Parent <fparent@baylibre.com>,
  iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- linux-mediatek@lists.infradead.org, lc.kan@mediatek.com, Matthias
- Brugger <matthias.bgg@gmail.com>, anthony.huang@mediatek.com,
- anan.sun@mediatek.com, Robin Murphy <robin.murphy@arm.com>,
- linux-arm-kernel@lists.infradead.org
+ linux-mediatek@lists.infradead.org, yf.wang@mediatek.com,
+ Hsin-Yi Wang <hsinyi@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ Collabora Kernel ML <kernel@collabora.com>, Will
+ Deacon <will@kernel.org>, mingyuan.ma@mediatek.com,
+ linux-arm-kernel@lists.infradead.org,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,160 +101,148 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, 2021-12-04 at 12:48 +0100, Krzysztof Kozlowski wrote:
-> On 03/12/2021 07:40, Yong Wu wrote:
-> > sleep control means that when the larb go to sleep, we should wait
-> > a bit
+On Tue, 2021-11-30 at 13:33 +0200, Dafna Hirschfeld wrote:
 > 
-> s/go/goes/
+> On 30.11.21 09:39, Yong Wu wrote:
+> > On Sat, 2021-11-27 at 12:11 +0200, Dafna Hirschfeld wrote:
+> > > 
+> > > On 10.11.21 09:50, Yong Wu wrote:
+> > > > On Wed, 2021-11-10 at 07:29 +0200, Dafna Hirschfeld wrote:
+> > > > > 
+> > > > > On 10.11.21 04:20, Yong Wu wrote:
+> > > > > > On Tue, 2021-11-09 at 14:21 +0200, Dafna Hirschfeld wrote:
+> > > > > > > Hi
+> > > > > > > This patch is needed in order to update the tlb when a
+> > > > > > > device
+> > > > > > > is
+> > > > > > > powered on.
+> > > > > > > Could you send this patch alone without the whole series
+> > > > > > > so
+> > > > > > > it
+> > > > > > > get
+> > > > > > > accepted easier?
+> > > > > > 
+> > > > > > Which SoC are you testing on? In previous SoC, the IOMMU HW
+> > > > > > don't
+> > > > > > have
+> > > > > > power-domain, and we have a "has_pm"[1] in the tlb function
+> > > > > > for
+> > > > > > that
+> > > > > > case. The "has_pm" should be always 0 for the previous SoC
+> > > > > > like
+> > > > > > mt8173,
+> > > > > > it should always tlb synchronize.
+> > > > > > 
+> > > > > > thus, Could you help share more about your issue? In which
+> > > > > > case
+> > > > > > it
+> > > > > > lack
+> > > > > > the necessary tlb operation. At least, We need confirm if
+> > > > > > it
+> > > > > > needs
+> > > > > > a
+> > > > > > "Fixes" tags if sending this patch alone.
+> > > > > 
+> > > > > Hi,
+> > > > > I work with the mtk-vcodec driver on mt8173. As you wrote,
+> > > > > the
+> > > > > iommu
+> > > > > doesn't
+> > > > > have a power-domain and so when allocating buffers before the
+> > > > > device
+> > > > > is powered
+> > > > > on, there is the warning
+> > > > > "Partial TLB flush timed out, falling back to full flush"
+> > > > > flooding the log buf.
+> > > > 
+> > > > oh. Thanks very much for your information. Get it now.
+> > > > 
+> > > > This issue should be introduced by the:
+> > > > 
+> > > > b34ea31fe013 ("iommu/mediatek: Always enable the clk on
+> > > > resume")
+> > > 
+> > > Hi, reverting this commit didn't solve those warnings,
+> > > I think this is because in the function mtk_iommu_attach_device
+> > > the first call to pm_runtime_resume_and_get does not turn the
+> > > clks on
+> > > since m4u_dom is not yet initialize. And then
+> > > mtk_iommu_attach_device
+> > > calls pm_runtime_put right after mtk_iommu_hw_init is called
+> > > (where the clks are turned on)
+> > 
+> > oh. Right. this is also related with the patch of "Add power-domain
+> > operation".
+> > 
+> > The current problem is that there is a redundant log of "Partial
+> > TLB
+> > flush timed out" in mt8173. We need fix this issue firstly. Are you
+> > going to prepare the patches again? If not, I could help this. You
+> > could help confirm them if you are free.
 > 
-> > until all the current commands are finished. thus, when the larb
-> > runtime
-> 
-> Please start every sentence with a capital letter.
-> 
-> > suspend, we need enable this function to wait until all the existed
-> 
-> s/suspend/suspends/
-> s/we need enable/we need to enable/
-> 
-> > command are finished. when the larb resume, just disable this
-> > function.
-> 
-> s/command/commands/
-> s/resume/resumes/
-> 
-> > This function only improve the safe of bus. Add a new flag for this
-> 
-> s/improve/improves/
-> s/the safe/the safety/
-> 
-> > function. Prepare for mt8186.
-> 
-> In total it is hard to parse, really.
+> Hi,
+> I already sent a patch last week: 
+> https://lore.kernel.org/linux-iommu/afb46ad6ca9477a2bf71233858406caa6ccb1588.camel@mediatek.com/T/
+> could you please review it?
 
-Will fix them in next version.
+I have replied them before you send this reply. Have you got them?
 
-Thanks for reviewing so detailedly. Sorry. I didn't pay attention to
-the grammar before.
 
+https://lore.kernel.org/linux-iommu/afb46ad6ca9477a2bf71233858406caa6ccb1588.camel@mediatek.com/
+
+https://lore.kernel.org/linux-iommu/6abef78f6447c626b737fd35688f421c29871f43.camel@mediatek.com/
+
+Thanks.
+
+> 
+> Thanks,
+> Dafna
+> 
+> 
 > 
 > > 
-> > Signed-off-by: Anan Sun <anan.sun@mediatek.com>
-> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > ---
-> >  drivers/memory/mtk-smi.c | 39 +++++++++++++++++++++++++++++++++++-
-> > ---
-> >  1 file changed, 35 insertions(+), 4 deletions(-)
+> > Thanks.
 > > 
-> > diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-> > index b883dcc0bbfa..4b59b28e4d73 100644
-> > --- a/drivers/memory/mtk-smi.c
-> > +++ b/drivers/memory/mtk-smi.c
-> > @@ -8,6 +8,7 @@
-> >  #include <linux/device.h>
-> >  #include <linux/err.h>
-> >  #include <linux/io.h>
-> > +#include <linux/iopoll.h>
-> >  #include <linux/module.h>
-> >  #include <linux/of.h>
-> >  #include <linux/of_platform.h>
-> > @@ -32,6 +33,10 @@
-> >  #define SMI_DUMMY			0x444
-> >  
-> >  /* SMI LARB */
-> > +#define SMI_LARB_SLP_CON                0x00c
-> > +#define SLP_PROT_EN                     BIT(0)
-> > +#define SLP_PROT_RDY                    BIT(16)
-> > +
-> >  #define SMI_LARB_CMD_THRT_CON		0x24
-> >  #define SMI_LARB_THRT_RD_NU_LMT_MSK	GENMASK(7, 4)
-> >  #define SMI_LARB_THRT_RD_NU_LMT		(5 << 4)
-> > @@ -81,6 +86,7 @@
-> >  
-> >  #define MTK_SMI_FLAG_THRT_UPDATE	BIT(0)
-> >  #define MTK_SMI_FLAG_SW_FLAG		BIT(1)
-> > +#define MTK_SMI_FLAG_SLEEP_CTL		BIT(2)
-> >  #define MTK_SMI_CAPS(flags, _x)		(!!((flags) & (_x)))
-> >  
-> >  struct mtk_smi_reg_pair {
-> > @@ -371,6 +377,24 @@ static const struct of_device_id
-> > mtk_smi_larb_of_ids[] = {
-> >  	{}
-> >  };
-> >  
-> > +static int mtk_smi_larb_sleep_ctrl(struct device *dev, bool
-> > to_sleep)
-> > +{
-> 
-> Make two functions instead. There is no single code reuse (shared)
-> between sleep and resume. In the same time bool arguments are
-> confusing
-> when looking at caller and one never knows whether true means to
-> resume
-> or to sleep. Having two functions is obvious. Obvious code is easier
-> to
-> read and maintain.
-
-Make sense. Thanks for this suggestion.
-
-> 
-> > +	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
-> > +	int ret = 0;
-> > +	u32 tmp;
-> > +
-> > +	if (to_sleep) {
-> > +		writel_relaxed(SLP_PROT_EN, larb->base +
-> > SMI_LARB_SLP_CON);
-> > +		ret = readl_poll_timeout_atomic(larb->base +
-> > SMI_LARB_SLP_CON,
-> > +						tmp, !!(tmp &
-> > SLP_PROT_RDY), 10, 1000);
-> > +		if (ret)
-> > +			dev_warn(dev, "sleep ctrl is not
-> > ready(0x%x).\n", tmp);
-> > +	} else {
-> > +		writel_relaxed(0, larb->base + SMI_LARB_SLP_CON);
-> > +	}
-> > +	return ret;
-> > +}
-> > +
-> >  static int mtk_smi_device_link_common(struct device *dev, struct
-> > device **com_dev)
-> >  {
-> >  	struct platform_device *smi_com_pdev;
-> > @@ -477,24 +501,31 @@ static int __maybe_unused
-> > mtk_smi_larb_resume(struct device *dev)
-> >  {
-> >  	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
-> >  	const struct mtk_smi_larb_gen *larb_gen = larb->larb_gen;
-> > -	int ret;
-> > +	int ret = 0;
-> 
-> This line does not have a sense.
-
-Yes. This is unhelpful. Will remove this.
-
-> 
-> >  
-> >  	ret = clk_bulk_prepare_enable(larb->smi.clk_num, larb-
-> > >smi.clks);
-> > -	if (ret < 0)
-> > +	if (ret)
-> 
-> Why changing this?
-
-The successful return value should be 0. I will use a independent patch
-for this.
-
-> 
-> Best regards,
-> Krzysztof
-> 
-> _______________________________________________
-> Linux-mediatek mailing list
-> Linux-mediatek@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-mediatek
+> > > 
+> > > thanks,
+> > > Dafna
+> > > 
+> > > 
+> > > > 
+> > > > tlb failed due to the bclk is not enabled. Could you help try
+> > > > that
+> > > > after reverting this?
+> > > > 
+> > > > > 
+> > > > > Sebastian Reichel suggested to remove the 'if(has_pm)' check
+> > > > > to
+> > > > > avoid
+> > > > > this warning,
+> > > > > and avoid flushing the tlb if the device is off:
+> > > > > 
+> > > > > [1] http://ix.io/3Eyr
+> > > > > 
+> > > > > This fixes the warning, but then the tlb is not flushed in
+> > > > > sync,
+> > > > > Therefore the tlb should be flushed when the device is
+> > > > > resumed.
+> > > > > 
+> > > > > So the two patches (the one suggested in the link [1] and
+> > > > > this
+> > > > > patch)
+> > > > > should be sent together as a 2-patch series.
+> > > > 
+> > > > then this is reasonable. You could help this into a new
+> > > > patchset if
+> > > > you
+> > > > are free(add Fixes tag).
+> > > > 
+> > > > Thanks.
+> > > > 
+> > > > > 
+> > > > > Thanks,
+> > > > > Dafna
+> > > > > 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
