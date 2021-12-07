@@ -1,74 +1,78 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3A256C433EF
-	for <iommu@archiver.kernel.org>; Tue,  7 Dec 2021 05:55:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4C29AC433EF
+	for <iommu@archiver.kernel.org>; Tue,  7 Dec 2021 06:24:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id B189F40515;
-	Tue,  7 Dec 2021 05:55:21 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D2AF58248F;
+	Tue,  7 Dec 2021 06:24:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id j-xDiiNHqZEb; Tue,  7 Dec 2021 05:55:20 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JxeQ1OlUSrE2; Tue,  7 Dec 2021 06:24:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 4055140284;
-	Tue,  7 Dec 2021 05:55:20 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id B1CFB81CDC;
+	Tue,  7 Dec 2021 06:24:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0EAB4C002F;
-	Tue,  7 Dec 2021 05:55:20 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 438BAC0012
- for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 05:55:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 78B97C001E;
+	Tue,  7 Dec 2021 06:24:25 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B940DC0012
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 06:24:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 26D03404FD
- for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 05:55:19 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id A7DAC823E2
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 06:24:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Cn5RTL0xkaHa for <iommu@lists.linux-foundation.org>;
- Tue,  7 Dec 2021 05:55:18 +0000 (UTC)
-X-Greylist: delayed 00:17:19 by SQLgrey-1.8.0
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 81BC640284
- for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 05:55:17 +0000 (UTC)
-Received: from kwepemi100007.china.huawei.com (unknown [172.30.72.53])
- by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4J7Tb66V4FzbjHn;
- Tue,  7 Dec 2021 13:37:38 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi100007.china.huawei.com (7.221.188.115) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 7 Dec 2021 13:37:50 +0800
-Received: from kwepemm600014.china.huawei.com (7.193.23.54) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 7 Dec 2021 13:37:50 +0800
-Received: from kwepemm600014.china.huawei.com ([7.193.23.54]) by
- kwepemm600014.china.huawei.com ([7.193.23.54]) with mapi id 15.01.2308.020;
- Tue, 7 Dec 2021 13:37:50 +0800
-To: Robin Murphy <robin.murphy@arm.com>, Jay Chen <jkchen@linux.alibaba.com>, 
- "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
- <m.szyprowski@samsung.com>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>
-Subject: RE: [RFC PATCH] provide per numa cma with an initial default size
-Thread-Topic: [RFC PATCH] provide per numa cma with an initial default size
-Thread-Index: AQHX5b5WdkB1fqcI6kSRZ5Tsh5qqyawlEoQAgAF5HwA=
-Date: Tue, 7 Dec 2021 05:37:50 +0000
-Message-ID: <a3990c9921a44884b0adc448d1281b0a@hisilicon.com>
-References: <20211130074556.11091-1-jkchen@linux.alibaba.com>
- <ddcdde8c-5118-048e-d5f8-6b8bc860947d@arm.com>
-In-Reply-To: <ddcdde8c-5118-048e-d5f8-6b8bc860947d@arm.com>
-Accept-Language: en-GB, zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.126.201.109]
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id c-kk7AHLHFDc for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Dec 2021 06:24:18 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 1DD6F81CDC
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 06:24:17 +0000 (UTC)
+X-UUID: 5b912bf4d72b42b99a20f911787d68db-20211207
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
+ s=dk; 
+ h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
+ bh=69qaWgeCtoVl4LXqKx5dxuVaxCCi/f31QLGTc1pclR4=; 
+ b=bh+PSfggMCrFYUQ7aMLMZc15Or4sTaulKL1h3Qh8Wt3CQGEMuch3SpQMM0vqfcFLIZ/ndKQZifD4THRj79MXMrZadgyXth5dMu+xYCCCDta4ZD40bBuD/zTKmnXcbrIBL3u7lgJ1OTKfwgyi9lbFe5+SRtWVq49UkmKcWEBhneg=;
+X-UUID: 5b912bf4d72b42b99a20f911787d68db-20211207
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by
+ mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 281838797; Tue, 07 Dec 2021 14:24:13 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 7 Dec 2021 14:24:12 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 7 Dec 2021 14:24:11 +0800
+Message-ID: <ebc8e4c0b0519043c5a82c6c967ac6d524e8869a.camel@mediatek.com>
+Subject: Re: [PATCH 3/4] memory: mtk-smi: Add sleep ctrl function
+From: Yong Wu <yong.wu@mediatek.com>
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Date: Tue, 7 Dec 2021 14:24:07 +0800
+In-Reply-To: <f2ffd08a-44c3-9458-1bd8-68e3c0755611@collabora.com>
+References: <20211203064027.14993-1-yong.wu@mediatek.com>
+ <20211203064027.14993-4-yong.wu@mediatek.com>
+ <f2ffd08a-44c3-9458-1bd8-68e3c0755611@collabora.com>
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "zhangliguang@linux.alibaba.com" <zhangliguang@linux.alibaba.com>
+X-MTK: N
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org, yi.kuo@mediatek.com,
+ srv_heupstream@mediatek.com, Will Deacon <will@kernel.org>,
+ linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ linux-mediatek@lists.infradead.org, lc.kan@mediatek.com, Matthias
+ Brugger <matthias.bgg@gmail.com>, anthony.huang@mediatek.com,
+ anan.sun@mediatek.com, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,78 +85,87 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: "Song Bao Hua \(Barry Song\) via iommu"
- <iommu@lists.linux-foundation.org>
-Reply-To: "Song Bao Hua \(Barry Song\)" <song.bao.hua@hisilicon.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi AngeloGioacchino,
 
+Thanks for your review.
 
-> -----Original Message-----
-> From: Robin Murphy [mailto:robin.murphy@arm.com]
-> Sent: Tuesday, December 7, 2021 4:01 AM
-> To: Jay Chen <jkchen@linux.alibaba.com>; hch@lst.de; m.szyprowski@samsung.com;
-> linux-kernel@vger.kernel.org; iommu@lists.linux-foundation.org; Song Bao Hua
-> (Barry Song) <song.bao.hua@hisilicon.com>
-> Cc: zhangliguang@linux.alibaba.com
-> Subject: Re: [RFC PATCH] provide per numa cma with an initial default size
-> 
-> [ +Barry ]
-> 
-> On 2021-11-30 07:45, Jay Chen wrote:
-> >    In the actual production environment, when we open
-> > cma and per numa cma, if we do not increase the per
-> > numa size configuration in cmdline, we find that our
-> > performance has dropped by 20%.
-> >    Through analysis, we found that the default size of
-> > per numa is 0, which causes the driver to allocate
-> > memory from cma, which affects performance. Therefore,
-> > we think we need to provide a default size.
-> 
-> Looking back at some of the review discussions, I think it may have been
-> intentional that per-node areas are not allocated by default, since it's
-> the kind of thing that really wants to be tuned to the particular system
-> and workload, and as such it seemed reasonable to expect users to
-> provide a value on the command line if they wanted the feature. That's
-> certainly what the Kconfig text implies.
-> 
-> Thanks,
-> Robin.
-> 
-> > Signed-off-by: Jay Chen <jkchen@linux.alibaba.com>
+On Mon, 2021-12-06 at 16:08 +0100, AngeloGioacchino Del Regno wrote:
+> Il 03/12/21 07:40, Yong Wu ha scritto:
+> > sleep control means that when the larb go to sleep, we should wait
+> > a bit
+> > until all the current commands are finished. thus, when the larb
+> > runtime
+> > suspend, we need enable this function to wait until all the existed
+> > command are finished. when the larb resume, just disable this
+> > function.
+> > This function only improve the safe of bus. Add a new flag for this
+> > function. Prepare for mt8186.
+> > 
+> > Signed-off-by: Anan Sun <anan.sun@mediatek.com>
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 > > ---
-> >   kernel/dma/contiguous.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-> > index 3d63d91cba5c..3bef8bf371d9 100644
-> > --- a/kernel/dma/contiguous.c
-> > +++ b/kernel/dma/contiguous.c
-> > @@ -99,7 +99,7 @@ early_param("cma", early_cma);
-> >   #ifdef CONFIG_DMA_PERNUMA_CMA
-> >
-> >   static struct cma *dma_contiguous_pernuma_area[MAX_NUMNODES];
-> > -static phys_addr_t pernuma_size_bytes __initdata;
-> > +static phys_addr_t pernuma_size_bytes __initdata = size_bytes;
+> >   drivers/memory/mtk-smi.c | 39
+> > +++++++++++++++++++++++++++++++++++----
+> >   1 file changed, 35 insertions(+), 4 deletions(-)
 
-I don't think the size for the default cma can apply to
-per-numa CMA.
+[snip]
 
-We did have some discussion regarding the size when per-numa cma was
-added, and it was done by a Kconfig option. I think we have decided
-to not have any default size other than 0. Default size 0 is perfect,
-this will enforce users to set a proper "cma_pernuma=" bootargs.
-
-> >
-> >   static int __init early_cma_pernuma(char *p)
+> >   static int __maybe_unused mtk_smi_larb_suspend(struct device
+> > *dev)
 > >   {
-> >
+> >   	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
+> > +	int ret = 0;
+> > +
+> > +	if (MTK_SMI_CAPS(larb->larb_gen->flags_general,
+> > MTK_SMI_FLAG_SLEEP_CTL))
+> > +		ret = mtk_smi_larb_sleep_ctrl(dev, true);
+> 
+> Sorry but what happens if SLP_PROT_RDY is not getting set properly?
+>  From what I can understand in the commit description that you wrote,
+> if we reach
+> the timeout, then the LARB transactions are not over....
+> 
+> I see that you are indeed returning a failure here, but you are also
+> turning off
+> the clocks regardless of whether we get a failure or a success; I'm
+> not sure that
+> this is right, as this may leave the hardware in an unpredictable
+> state (since
+> there were some more LARB transactions that didn't go through),
+> leading to crashes
+> at system resume (or when retyring to suspend).
 
-Thanks
-Barry
+Thanks for this question. In theory you are right. In this case, the
+bus already hang.
+
+We only printed a fail log in this patch. If this fail happens, we
+should request the master to check which case cause the larb hang.
+
+If the master has a good reason or limitation, the hang is expected, I
+think we have to add larb reset in this fail case: Reset the larb when
+the larb runtime resume.
+
+Fortunately, we have never got this issue. We could add this reset when
+necessary. Is this OK for you?
+
+Thanks.
+
+> 
+> >   
+> >   	clk_bulk_disable_unprepare(larb->smi.clk_num, larb->smi.clks);
+> > -	return 0;
+> > +	return ret;
+> >   }
+> >   
+> >   static const struct dev_pm_ops smi_larb_pm_ops = {
+> > 
+> 
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
