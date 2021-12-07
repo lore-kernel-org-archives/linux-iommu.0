@@ -1,63 +1,60 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BE085C433EF
-	for <iommu@archiver.kernel.org>; Tue,  7 Dec 2021 11:42:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 70842C433EF
+	for <iommu@archiver.kernel.org>; Tue,  7 Dec 2021 11:44:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 520D682EA4;
-	Tue,  7 Dec 2021 11:42:43 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8X2zwlrG-mYG; Tue,  7 Dec 2021 11:42:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 3BCC582D96;
-	Tue,  7 Dec 2021 11:42:42 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E0F32C001E;
-	Tue,  7 Dec 2021 11:42:41 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6DA03C0012
- for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 11:42:40 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4E63A60E5F
- for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 11:42:40 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 6DBB5605B0;
+	Tue,  7 Dec 2021 11:44:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lKy54k1A4OSQ for <iommu@lists.linux-foundation.org>;
- Tue,  7 Dec 2021 11:42:39 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id T4Wyibo3dNmL; Tue,  7 Dec 2021 11:44:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 9CE2860E5F;
+	Tue,  7 Dec 2021 11:44:22 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4FF2EC001E;
+	Tue,  7 Dec 2021 11:44:22 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 65F65C0012;
+ Tue,  7 Dec 2021 11:44:21 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 54CCC828AF;
+ Tue,  7 Dec 2021 11:44:21 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id AeLO-G5Troi9; Tue,  7 Dec 2021 11:44:20 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 7318460594
- for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 11:42:39 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 4CCA98277E;
+ Tue,  7 Dec 2021 11:44:20 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B96A611FB;
- Tue,  7 Dec 2021 03:42:38 -0800 (PST)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8EC4B11FB;
+ Tue,  7 Dec 2021 03:44:19 -0800 (PST)
 Received: from [10.57.34.58] (unknown [10.57.34.58])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1A46E3F73B;
- Tue,  7 Dec 2021 03:42:36 -0800 (PST)
-Message-ID: <c81305b0-c419-362a-073b-65150497d1d7@arm.com>
-Date: Tue, 7 Dec 2021 11:42:33 +0000
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 358823F73B;
+ Tue,  7 Dec 2021 03:44:18 -0800 (PST)
+Message-ID: <858e55cc-6afe-6b8a-41fd-4bd707d2ddc6@arm.com>
+Date: Tue, 7 Dec 2021 11:44:17 +0000
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
  Thunderbird/91.3.2
-Subject: Re: [PATCH v3] iommu/io-pgtable-arm-v7s: Add error handle for page
- table allocation failure
+Subject: Re: [PATCH v2] iova: Move fast alloc size roundup into
+ alloc_iova_fast()
 Content-Language: en-GB
-To: yf.wang@mediatek.com, will@kernel.org
-References: <20211207094817.GA31382@willie-the-truck>
- <20211207113315.29109-1-yf.wang@mediatek.com>
+To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org
+References: <1638875846-23993-1-git-send-email-john.garry@huawei.com>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20211207113315.29109-1-yf.wang@mediatek.com>
-Cc: Guangming.Cao@mediatek.com, wsd_upstream@mediatek.com,
- linux-kernel@vger.kernel.org, Libo.Kang@mediatek.com,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- stable@vger.kernel.org, matthias.bgg@gmail.com,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <1638875846-23993-1-git-send-email-john.garry@huawei.com>
+Cc: xieyongji@bytedance.com, jasowang@redhat.com,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ mst@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,69 +72,85 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-12-07 11:33, yf.wang@mediatek.com wrote:
-> From: Yunfei Wang <yf.wang@mediatek.com>
-> 
-> In __arm_v7s_alloc_table function:
-> iommu call kmem_cache_alloc to allocate page table, this function
-> allocate memory may fail, when kmem_cache_alloc fails to allocate
-> table, call virt_to_phys will be abnomal and return unexpected phys
-> and goto out_free, then call kmem_cache_free to release table will
-> trigger KE, __get_free_pages and free_pages have similar problem,
-> so add error handle for page table allocation failure.
-> 
-> Fixes: 29859aeb8a6ea ("iommu/io-pgtable-arm-v7s: Abort allocation when table address overflows the PTE")
-> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-> Cc: <stable@vger.kernel.org> # 5.10.*
+On 2021-12-07 11:17, John Garry wrote:
+> It really is a property of the IOVA rcache code that we need to alloc a
+> power-of-2 size, so relocate the functionality to resize into
+> alloc_iova_fast(), rather than the callsites.
 
-Is this genuinely a realistic issue which distro users can hit? In 
-practice, a system that can't allocate 2KB is already dead and almost 
-certainly isn't coming back either way.
-
-Still, v3 has managed to address my other review comments before I'd 
-even finished writing them, so for the change itself,
+I'd still much prefer to resolve the issue that there shouldn't *be* 
+more than one caller in the first place, but hey.
 
 Acked-by: Robin Murphy <robin.murphy@arm.com>
 
-Thanks,
-Robin.
-
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> Acked-by: Will Deacon <will@kernel.org>
+> Reviewed-by: Xie Yongji <xieyongji@bytedance.com>
+> Acked-by: Jason Wang <jasowang@redhat.com>
+> Acked-by: Michael S. Tsirkin <mst@redhat.com>
 > ---
-> v3: Update patch
->      1. Remove unnecessary log print as suggested by Will.
->      2. Remove unnecessary condition check.
-> v2: Cc stable@vger.kernel.org
->      1. This patch needs to be merged stable branch, add stable@vger.kernel.org
->         in mail list.
->      2. There is No new code change in v2.
+> Differences to v1:
+> - Separate out from original series which conflicts with Robin's IOVA FQ work:
+>    https://lore.kernel.org/linux-iommu/1632477717-5254-1-git-send-email-john.garry@huawei.com/
+> - Add tags - thanks!
 > 
-> ---
->   drivers/iommu/io-pgtable-arm-v7s.c | 6 +++++-
->   1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-> index bfb6acb651e5..be066c1503d3 100644
-> --- a/drivers/iommu/io-pgtable-arm-v7s.c
-> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
-> @@ -246,13 +246,17 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
->   			__GFP_ZERO | ARM_V7S_TABLE_GFP_DMA, get_order(size));
->   	else if (lvl == 2)
->   		table = kmem_cache_zalloc(data->l2_tables, gfp);
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index b42e38a0dbe2..84dee53fe892 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -442,14 +442,6 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+>   
+>   	shift = iova_shift(iovad);
+>   	iova_len = size >> shift;
+> -	/*
+> -	 * Freeing non-power-of-two-sized allocations back into the IOVA caches
+> -	 * will come back to bite us badly, so we have to waste a bit of space
+> -	 * rounding up anything cacheable to make sure that can't happen. The
+> -	 * order of the unadjusted size will still match upon freeing.
+> -	 */
+> -	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
+> -		iova_len = roundup_pow_of_two(iova_len);
+>   
+>   	dma_limit = min_not_zero(dma_limit, dev->bus_dma_limit);
+>   
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index 9e8bc802ac05..ff567cbc42f7 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -497,6 +497,15 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+>   	unsigned long iova_pfn;
+>   	struct iova *new_iova;
+>   
+> +	/*
+> +	 * Freeing non-power-of-two-sized allocations back into the IOVA caches
+> +	 * will come back to bite us badly, so we have to waste a bit of space
+> +	 * rounding up anything cacheable to make sure that can't happen. The
+> +	 * order of the unadjusted size will still match upon freeing.
+> +	 */
+> +	if (size < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
+> +		size = roundup_pow_of_two(size);
 > +
-> +	if (!table)
-> +		return NULL;
-> +
->   	phys = virt_to_phys(table);
->   	if (phys != (arm_v7s_iopte)phys) {
->   		/* Doesn't fit in PTE */
->   		dev_err(dev, "Page table does not fit in PTE: %pa", &phys);
->   		goto out_free;
->   	}
-> -	if (table && !cfg->coherent_walk) {
-> +	if (!cfg->coherent_walk) {
->   		dma = dma_map_single(dev, table, size, DMA_TO_DEVICE);
->   		if (dma_mapping_error(dev, dma))
->   			goto out_free;
+>   	iova_pfn = iova_rcache_get(iovad, size, limit_pfn + 1);
+>   	if (iova_pfn)
+>   		return iova_pfn;
+> diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa_user/iova_domain.c
+> index 1daae2608860..2b1143f11d8f 100644
+> --- a/drivers/vdpa/vdpa_user/iova_domain.c
+> +++ b/drivers/vdpa/vdpa_user/iova_domain.c
+> @@ -292,14 +292,6 @@ vduse_domain_alloc_iova(struct iova_domain *iovad,
+>   	unsigned long iova_len = iova_align(iovad, size) >> shift;
+>   	unsigned long iova_pfn;
+>   
+> -	/*
+> -	 * Freeing non-power-of-two-sized allocations back into the IOVA caches
+> -	 * will come back to bite us badly, so we have to waste a bit of space
+> -	 * rounding up anything cacheable to make sure that can't happen. The
+> -	 * order of the unadjusted size will still match upon freeing.
+> -	 */
+> -	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
+> -		iova_len = roundup_pow_of_two(iova_len);
+>   	iova_pfn = alloc_iova_fast(iovad, iova_len, limit >> shift, true);
+>   
+>   	return iova_pfn << shift;
 > 
 _______________________________________________
 iommu mailing list
