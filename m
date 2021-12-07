@@ -1,77 +1,78 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 10589C433F5
-	for <iommu@archiver.kernel.org>; Tue,  7 Dec 2021 02:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D19A5C433FE
+	for <iommu@archiver.kernel.org>; Tue,  7 Dec 2021 03:08:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id B42A540951;
-	Tue,  7 Dec 2021 02:57:45 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 7481280D35;
+	Tue,  7 Dec 2021 03:08:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zxISbETKYuGl; Tue,  7 Dec 2021 02:57:45 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 951A541C70;
-	Tue,  7 Dec 2021 02:57:44 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id GM2Cv8GVmUjX; Tue,  7 Dec 2021 03:08:40 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 49A7C80CD4;
+	Tue,  7 Dec 2021 03:08:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4AF7CC001E;
-	Tue,  7 Dec 2021 02:57:44 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8A21CC0012
- for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 02:57:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 24FE5C002F;
+	Tue,  7 Dec 2021 03:08:40 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4C0A6C0012
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 03:08:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 6507D40153
- for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 02:57:42 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 2726360595
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 03:08:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zJRcl3pVoSDd for <iommu@lists.linux-foundation.org>;
- Tue,  7 Dec 2021 02:57:41 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id HKjqln8CTdwK for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Dec 2021 03:08:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 4097D400BA
- for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 02:57:41 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10190"; a="237708088"
-X-IronPort-AV: E=Sophos;i="5.87,293,1631602800"; d="scan'208";a="237708088"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 06 Dec 2021 18:57:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,293,1631602800"; d="scan'208";a="515065510"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
- ([10.239.159.118])
- by orsmga008.jf.intel.com with ESMTP; 06 Dec 2021 18:57:32 -0800
-Subject: Re: [PATCH v3 04/18] driver core: platform: Add driver dma ownership
- management
-To: Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>
-References: <20211206015903.88687-1-baolu.lu@linux.intel.com>
- <20211206015903.88687-5-baolu.lu@linux.intel.com>
- <Ya4f662Af+8kE2F/@infradead.org> <20211206150647.GE4670@nvidia.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <56a63776-48ca-0d6e-c25c-016dc016e0d5@linux.intel.com>
-Date: Tue, 7 Dec 2021 10:57:25 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <20211206150647.GE4670@nvidia.com>
-Content-Language: en-US
-Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
- David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
- Thierry Reding <thierry.reding@gmail.com>,
- Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
- Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
- Chaitanya Kulkarni <kch@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
- Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
- Robin Murphy <robin.murphy@arm.com>
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 13DCC600CB
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 03:08:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1638846515;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:in-reply-to:in-reply-to:references:references;
+ bh=uYJk8sZNBvqI2TY4p7XM11abhtDaYRbwAT1TVDU3vqk=;
+ b=MltMNBP8MaWcqsD8VMwgZf4ZaDjV/dblP3/LY34Ef4vpDPFCVbvSg+/Hd7DNH+ncIs+maW
+ LqqXhecsjmbCvTZ51FRsJazok5Ufi6zffKP3oGZWLu4XNKRIrR6a39N4c94T59YQXL5Shu
+ zsGz0c9n5RCfdCg4cFNrzNIKuyIkMSk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-473-e7M3Njl3PLOnd8yyWBWbnQ-1; Mon, 06 Dec 2021 22:08:31 -0500
+X-MC-Unique: e7M3Njl3PLOnd8yyWBWbnQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+ [10.5.11.23])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 72E471006AA0;
+ Tue,  7 Dec 2021 03:08:29 +0000 (UTC)
+Received: from MiWiFi-R3L-srv.redhat.com (ovpn-12-87.pek2.redhat.com
+ [10.72.12.87])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id C0F7419C59;
+ Tue,  7 Dec 2021 03:08:21 +0000 (UTC)
+From: Baoquan He <bhe@redhat.com>
+To: linux-kernel@vger.kernel.org
+Subject: [PATCH RESEND v2 4/5] dma/pool: create dma atomic pool only if dma
+ zone has managed pages
+Date: Tue,  7 Dec 2021 11:07:49 +0800
+Message-Id: <20211207030750.30824-5-bhe@redhat.com>
+In-Reply-To: <20211207030750.30824-1-bhe@redhat.com>
+References: <20211207030750.30824-1-bhe@redhat.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Cc: John.p.donnelly@oracle.com, kexec@lists.infradead.org, hch@lst.de,
+ penberg@kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+ rientjes@google.com, iamjoonsoo.kim@lge.com, cl@linux.com,
+ robin.murphy@arm.com, akpm@linux-foundation.org, vbabka@suse.cz
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,83 +85,88 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 12/6/21 11:06 PM, Jason Gunthorpe wrote:
-> On Mon, Dec 06, 2021 at 06:36:27AM -0800, Christoph Hellwig wrote:
->> I really hate the amount of boilerplate code that having this in each
->> bus type causes.
-> +1
-> 
-> I liked the first version of this series better with the code near
-> really_probe().
-> 
-> Can we go back to that with some device_configure_dma() wrapper
-> condtionally called by really_probe as we discussed?
-> 
+Currently three dma atomic pools are initialized as long as the relevant
+kernel codes are built in. While in kdump kernel of x86_64, this is not
+right when trying to create atomic_pool_dma, because there's no managed
+pages in DMA zone. In the case, DMA zone only has low 1M memory presented
+and locked down by memblock allocator. So no pages are added into buddy
+of DMA zone. Please check commit f1d4d47c5851 ("x86/setup: Always reserve
+the first 1M of RAM").
 
-Are you talking about below change?
+Then in kdump kernel of x86_64, it always prints below failure message:
 
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 68ea1f949daa..368f9e530515 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -577,7 +577,13 @@ static int really_probe(struct device *dev, struct 
-device_driver *drv)
-  	if (dev->bus->dma_configure) {
-  		ret = dev->bus->dma_configure(dev);
-  		if (ret)
--			goto probe_failed;
-+			goto pinctrl_bind_failed;
-+
-+		if (!drv->no_kernel_dma) {
-+			ret = iommu_device_set_dma_owner(dev, DMA_OWNER_DMA_API, NULL);
-+			if (ret)
-+				goto pinctrl_bind_failed;
-+                }
-  	}
+ DMA: preallocated 128 KiB GFP_KERNEL pool for atomic allocations
+ swapper/0: page allocation failure: order:5, mode:0xcc1(GFP_KERNEL|GFP_DMA), nodemask=(null),cpuset=/,mems_allowed=0
+ CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.16.0-rc3+ #1
+ Call Trace:
+  dump_stack+0x7f/0xa1
+  warn_alloc.cold+0x72/0xd6
+  ? _raw_spin_unlock_irq+0x24/0x40
+  ? __alloc_pages_direct_compact+0x90/0x1b0
+  __alloc_pages_slowpath.constprop.0+0xf29/0xf50
+  ? __cond_resched+0x16/0x50
+  ? prepare_alloc_pages.constprop.0+0x19d/0x1b0
+  __alloc_pages+0x24d/0x2c0
+  ? __dma_atomic_pool_init+0x93/0x93
+  alloc_page_interleave+0x13/0xb0
+  atomic_pool_expand+0x118/0x210
+  ? __dma_atomic_pool_init+0x93/0x93
+  __dma_atomic_pool_init+0x45/0x93
+  dma_atomic_pool_init+0xdb/0x176
+  do_one_initcall+0x67/0x320
+  ? rcu_read_lock_sched_held+0x3f/0x80
+  kernel_init_freeable+0x290/0x2dc
+  ? rest_init+0x24f/0x24f
+  kernel_init+0xa/0x111
+  ret_from_fork+0x22/0x30
+ Mem-Info:
+ ......
+ DMA: failed to allocate 128 KiB GFP_KERNEL|GFP_DMA pool for atomic allocation
+ DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
 
-  	ret = driver_sysfs_add(dev);
-@@ -660,6 +666,9 @@ static int really_probe(struct device *dev, struct 
-device_driver *drv)
-  	if (dev->bus)
-  		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
-  					     BUS_NOTIFY_DRIVER_NOT_BOUND, dev);
-+
-+	if (dev->bus->dma_configure && !drv->no_kernel_dma)
-+		iommu_device_release_dma_owner(dev, DMA_OWNER_DMA_API);
-  pinctrl_bind_failed:
-  	device_links_no_driver(dev);
-  	devres_release_all(dev);
-@@ -1204,6 +1213,9 @@ static void __device_release_driver(struct device 
-*dev, struct device *parent)
-  		else if (drv->remove)
-  			drv->remove(dev);
+Here, let's check if DMA zone has managed pages, then create atomic_pool_dma
+if yes. Otherwise just skip it.
 
-+		if (dev->bus->dma_configure && !drv->no_kernel_dma)
-+			iommu_device_release_dma_owner(dev, DMA_OWNER_DMA_API);
-+
-  		device_links_driver_cleanup(dev);
+Signed-off-by: Baoquan He <bhe@redhat.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux-foundation.org
+---
+ kernel/dma/pool.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-  		devres_release_all(dev);
-diff --git a/include/linux/device/driver.h b/include/linux/device/driver.h
-index a498ebcf4993..2cf7b757b28e 100644
---- a/include/linux/device/driver.h
-+++ b/include/linux/device/driver.h
-@@ -100,6 +100,7 @@ struct device_driver {
-  	const char		*mod_name;	/* used for built-in modules */
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index 5a85804b5beb..00df3edd6c5d 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -206,7 +206,7 @@ static int __init dma_atomic_pool_init(void)
+ 						    GFP_KERNEL);
+ 	if (!atomic_pool_kernel)
+ 		ret = -ENOMEM;
+-	if (IS_ENABLED(CONFIG_ZONE_DMA)) {
++	if (has_managed_dma()) {
+ 		atomic_pool_dma = __dma_atomic_pool_init(atomic_pool_size,
+ 						GFP_KERNEL | GFP_DMA);
+ 		if (!atomic_pool_dma)
+@@ -229,7 +229,7 @@ static inline struct gen_pool *dma_guess_pool(struct gen_pool *prev, gfp_t gfp)
+ 	if (prev == NULL) {
+ 		if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
+ 			return atomic_pool_dma32;
+-		if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
++		if (atomic_pool_dma && (gfp & GFP_DMA))
+ 			return atomic_pool_dma;
+ 		return atomic_pool_kernel;
+ 	}
+-- 
+2.17.2
 
-  	bool suppress_bind_attrs;	/* disables bind/unbind via sysfs */
-+	bool no_kernel_dma;
-  	enum probe_type probe_type;
-
-  	const struct of_device_id	*of_match_table;
-
-Best regards,
-baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
