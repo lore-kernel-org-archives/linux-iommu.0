@@ -1,64 +1,67 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2BB31C433EF
-	for <iommu@archiver.kernel.org>; Tue,  7 Dec 2021 11:22:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 772EAC433F5
+	for <iommu@archiver.kernel.org>; Tue,  7 Dec 2021 11:38:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C889A40285;
-	Tue,  7 Dec 2021 11:22:48 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 0654980B56;
+	Tue,  7 Dec 2021 11:38:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LwKCTtepm9Vq; Tue,  7 Dec 2021 11:22:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 74B5D40104;
-	Tue,  7 Dec 2021 11:22:47 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id cIA1BV3vEx0h; Tue,  7 Dec 2021 11:38:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id AB72680B3F;
+	Tue,  7 Dec 2021 11:38:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5DC18C001E;
-	Tue,  7 Dec 2021 11:22:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 38A1AC001E;
+	Tue,  7 Dec 2021 11:38:37 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6D157C0012;
- Tue,  7 Dec 2021 11:22:46 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 88328C0012
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 11:38:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4DCE8606B9;
- Tue,  7 Dec 2021 11:22:46 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 686C460E5F
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 11:38:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id roViV2fZU2Gx; Tue,  7 Dec 2021 11:22:44 +0000 (UTC)
+ with ESMTP id Sps_KcP1Ps1D for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Dec 2021 11:38:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 99E72606A3;
- Tue,  7 Dec 2021 11:22:44 +0000 (UTC)
-Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.206])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4J7d8N6mKtz67sBW;
- Tue,  7 Dec 2021 19:18:28 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 7 Dec 2021 12:22:40 +0100
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 7 Dec 2021 11:22:38 +0000
-To: <joro@8bytes.org>, <will@kernel.org>
-Subject: [PATCH v2] iova: Move fast alloc size roundup into alloc_iova_fast()
-Date: Tue, 7 Dec 2021 19:17:26 +0800
-Message-ID: <1638875846-23993-1-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 5322560594
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 11:38:30 +0000 (UTC)
+X-UUID: c1d2d3faf55548ef827f6e6e2d90f71d-20211207
+X-UUID: c1d2d3faf55548ef827f6e6e2d90f71d-20211207
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by
+ mailgw01.mediatek.com (envelope-from <yf.wang@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 686929266; Tue, 07 Dec 2021 19:38:24 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 7 Dec 2021 19:38:22 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via
+ Frontend Transport; Tue, 7 Dec 2021 19:38:21 +0800
+From: <yf.wang@mediatek.com>
+To: <will@kernel.org>
+Subject: [PATCH v3] iommu/io-pgtable-arm-v7s: Add error handle for page table
+ allocation failure
+Date: Tue, 7 Dec 2021 19:33:15 +0800
+Message-ID: <20211207113315.29109-1-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20211207094817.GA31382@willie-the-truck>
+References: <20211207094817.GA31382@willie-the-truck>
 MIME-Version: 1.0
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: mst@redhat.com, jasowang@redhat.com,
- virtualization@lists.linux-foundation.org, xieyongji@bytedance.com,
- iommu@lists.linux-foundation.org, robin.murphy@arm.com
+Cc: Guangming.Cao@mediatek.com, wsd_upstream@mediatek.com,
+ linux-kernel@vger.kernel.org, Libo.Kang@mediatek.com, yf.wang@mediatek.com,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ stable@vger.kernel.org, matthias.bgg@gmail.com, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -71,90 +74,123 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: John Garry via iommu <iommu@lists.linux-foundation.org>
-Reply-To: John Garry <john.garry@huawei.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============6961436977798354991=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-It really is a property of the IOVA rcache code that we need to alloc a
-power-of-2 size, so relocate the functionality to resize into
-alloc_iova_fast(), rather than the callsites.
+--===============6961436977798354991==
+Content-Type: multipart/alternative;
+	boundary="__=_Part_Boundary_006_493484030.152006670"
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-Acked-by: Will Deacon <will@kernel.org>
-Reviewed-by: Xie Yongji <xieyongji@bytedance.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
----
-Differences to v1:
-- Separate out from original series which conflicts with Robin's IOVA FQ work:
-  https://lore.kernel.org/linux-iommu/1632477717-5254-1-git-send-email-john.garry@huawei.com/
-- Add tags - thanks!
+--__=_Part_Boundary_006_493484030.152006670
+Content-Type: text/html;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index b42e38a0dbe2..84dee53fe892 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -442,14 +442,6 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
- 
- 	shift = iova_shift(iovad);
- 	iova_len = size >> shift;
--	/*
--	 * Freeing non-power-of-two-sized allocations back into the IOVA caches
--	 * will come back to bite us badly, so we have to waste a bit of space
--	 * rounding up anything cacheable to make sure that can't happen. The
--	 * order of the unadjusted size will still match upon freeing.
--	 */
--	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
--		iova_len = roundup_pow_of_two(iova_len);
- 
- 	dma_limit = min_not_zero(dma_limit, dev->bus_dma_limit);
- 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 9e8bc802ac05..ff567cbc42f7 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -497,6 +497,15 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
- 	unsigned long iova_pfn;
- 	struct iova *new_iova;
- 
-+	/*
-+	 * Freeing non-power-of-two-sized allocations back into the IOVA caches
-+	 * will come back to bite us badly, so we have to waste a bit of space
-+	 * rounding up anything cacheable to make sure that can't happen. The
-+	 * order of the unadjusted size will still match upon freeing.
-+	 */
-+	if (size < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
-+		size = roundup_pow_of_two(size);
-+
- 	iova_pfn = iova_rcache_get(iovad, size, limit_pfn + 1);
- 	if (iova_pfn)
- 		return iova_pfn;
-diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa_user/iova_domain.c
-index 1daae2608860..2b1143f11d8f 100644
---- a/drivers/vdpa/vdpa_user/iova_domain.c
-+++ b/drivers/vdpa/vdpa_user/iova_domain.c
-@@ -292,14 +292,6 @@ vduse_domain_alloc_iova(struct iova_domain *iovad,
- 	unsigned long iova_len = iova_align(iovad, size) >> shift;
- 	unsigned long iova_pfn;
- 
--	/*
--	 * Freeing non-power-of-two-sized allocations back into the IOVA caches
--	 * will come back to bite us badly, so we have to waste a bit of space
--	 * rounding up anything cacheable to make sure that can't happen. The
--	 * order of the unadjusted size will still match upon freeing.
--	 */
--	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
--		iova_len = roundup_pow_of_two(iova_len);
- 	iova_pfn = alloc_iova_fast(iovad, iova_len, limit >> shift, true);
- 
- 	return iova_pfn << shift;
--- 
-2.26.2
+PHByZT4NCkZyb206IFl1bmZlaSBXYW5nICZsdDt5Zi53YW5nQG1lZGlhdGVrLmNvbSZndDsNCg0K
+SW4gX19hcm1fdjdzX2FsbG9jX3RhYmxlIGZ1bmN0aW9uOg0KaW9tbXUgY2FsbCBrbWVtX2NhY2hl
+X2FsbG9jIHRvIGFsbG9jYXRlIHBhZ2UgdGFibGUsIHRoaXMgZnVuY3Rpb24NCmFsbG9jYXRlIG1l
+bW9yeSBtYXkgZmFpbCwgd2hlbiBrbWVtX2NhY2hlX2FsbG9jIGZhaWxzIHRvIGFsbG9jYXRlDQp0
+YWJsZSwgY2FsbCB2aXJ0X3RvX3BoeXMgd2lsbCBiZSBhYm5vbWFsIGFuZCByZXR1cm4gdW5leHBl
+Y3RlZCBwaHlzDQphbmQgZ290byBvdXRfZnJlZSwgdGhlbiBjYWxsIGttZW1fY2FjaGVfZnJlZSB0
+byByZWxlYXNlIHRhYmxlIHdpbGwNCnRyaWdnZXIgS0UsIF9fZ2V0X2ZyZWVfcGFnZXMgYW5kIGZy
+ZWVfcGFnZXMgaGF2ZSBzaW1pbGFyIHByb2JsZW0sDQpzbyBhZGQgZXJyb3IgaGFuZGxlIGZvciBw
+YWdlIHRhYmxlIGFsbG9jYXRpb24gZmFpbHVyZS4NCg0KRml4ZXM6IDI5ODU5YWViOGE2ZWEgKCZx
+dW90O2lvbW11L2lvLXBndGFibGUtYXJtLXY3czogQWJvcnQgYWxsb2NhdGlvbiB3aGVuIHRhYmxl
+IGFkZHJlc3Mgb3ZlcmZsb3dzIHRoZSBQVEUmcXVvdDspDQpTaWduZWQtb2ZmLWJ5OiBZdW5mZWkg
+V2FuZyAmbHQ7eWYud2FuZ0BtZWRpYXRlay5jb20mZ3Q7DQpDYzogJmx0O3N0YWJsZUB2Z2VyLmtl
+cm5lbC5vcmcmZ3Q7ICMgNS4xMC4qDQotLS0NCnYzOiBVcGRhdGUgcGF0Y2gNCiAgICAxLiBSZW1v
+dmUgdW5uZWNlc3NhcnkgbG9nIHByaW50IGFzIHN1Z2dlc3RlZCBieSBXaWxsLg0KICAgIDIuIFJl
+bW92ZSB1bm5lY2Vzc2FyeSBjb25kaXRpb24gY2hlY2suDQp2MjogQ2Mgc3RhYmxlQHZnZXIua2Vy
+bmVsLm9yZw0KICAgIDEuIFRoaXMgcGF0Y2ggbmVlZHMgdG8gYmUgbWVyZ2VkIHN0YWJsZSBicmFu
+Y2gsIGFkZCBzdGFibGVAdmdlci5rZXJuZWwub3JnDQogICAgICAgaW4gbWFpbCBsaXN0Lg0KICAg
+IDIuIFRoZXJlIGlzIE5vIG5ldyBjb2RlIGNoYW5nZSBpbiB2Mi4NCg0KLS0tDQogZHJpdmVycy9p
+b21tdS9pby1wZ3RhYmxlLWFybS12N3MuYyB8IDYgKysrKystDQogMSBmaWxlIGNoYW5nZWQsIDUg
+aW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21t
+dS9pby1wZ3RhYmxlLWFybS12N3MuYyBiL2RyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0tdjdz
+LmMNCmluZGV4IGJmYjZhY2I2NTFlNS4uYmUwNjZjMTUwM2QzIDEwMDY0NA0KLS0tIGEvZHJpdmVy
+cy9pb21tdS9pby1wZ3RhYmxlLWFybS12N3MuYw0KKysrIGIvZHJpdmVycy9pb21tdS9pby1wZ3Rh
+YmxlLWFybS12N3MuYw0KQEAgLTI0NiwxMyArMjQ2LDE3IEBAIHN0YXRpYyB2b2lkICpfX2FybV92
+N3NfYWxsb2NfdGFibGUoaW50IGx2bCwgZ2ZwX3QgZ2ZwLA0KIAkJCV9fR0ZQX1pFUk8gfCBBUk1f
+VjdTX1RBQkxFX0dGUF9ETUEsIGdldF9vcmRlcihzaXplKSk7DQogCWVsc2UgaWYgKGx2bCA9PSAy
+KQ0KIAkJdGFibGUgPSBrbWVtX2NhY2hlX3phbGxvYyhkYXRhLSZndDtsMl90YWJsZXMsIGdmcCk7
+DQorDQorCWlmICghdGFibGUpDQorCQlyZXR1cm4gTlVMTDsNCisNCiAJcGh5cyA9IHZpcnRfdG9f
+cGh5cyh0YWJsZSk7DQogCWlmIChwaHlzICE9IChhcm1fdjdzX2lvcHRlKXBoeXMpIHsNCiAJCS8q
+IERvZXNuJiMzOTt0IGZpdCBpbiBQVEUgKi8NCiAJCWRldl9lcnIoZGV2LCAmcXVvdDtQYWdlIHRh
+YmxlIGRvZXMgbm90IGZpdCBpbiBQVEU6ICVwYSZxdW90OywgJmFtcDtwaHlzKTsNCiAJCWdvdG8g
+b3V0X2ZyZWU7DQogCX0NCi0JaWYgKHRhYmxlICZhbXA7JmFtcDsgIWNmZy0mZ3Q7Y29oZXJlbnRf
+d2Fsaykgew0KKwlpZiAoIWNmZy0mZ3Q7Y29oZXJlbnRfd2Fsaykgew0KIAkJZG1hID0gZG1hX21h
+cF9zaW5nbGUoZGV2LCB0YWJsZSwgc2l6ZSwgRE1BX1RPX0RFVklDRSk7DQogCQlpZiAoZG1hX21h
+cHBpbmdfZXJyb3IoZGV2LCBkbWEpKQ0KIAkJCWdvdG8gb3V0X2ZyZWU7DQotLSANCjIuMTguMA0K
+DQo8L3ByZT48IS0tdHlwZTp0ZXh0LS0+PCEtLXstLT48cHJlPioqKioqKioqKioqKiogTUVESUFU
+RUsgQ29uZmlkZW50aWFsaXR5IE5vdGljZQ0KICoqKioqKioqKioqKioqKioqKioqDQpUaGUgaW5m
+b3JtYXRpb24gY29udGFpbmVkIGluIHRoaXMgZS1tYWlsIG1lc3NhZ2UgKGluY2x1ZGluZyBhbnkg
+DQphdHRhY2htZW50cykgbWF5IGJlIGNvbmZpZGVudGlhbCwgcHJvcHJpZXRhcnksIHByaXZpbGVn
+ZWQsIG9yIG90aGVyd2lzZQ0KZXhlbXB0IGZyb20gZGlzY2xvc3VyZSB1bmRlciBhcHBsaWNhYmxl
+IGxhd3MuIEl0IGlzIGludGVuZGVkIHRvIGJlIA0KY29udmV5ZWQgb25seSB0byB0aGUgZGVzaWdu
+YXRlZCByZWNpcGllbnQocykuIEFueSB1c2UsIGRpc3NlbWluYXRpb24sIA0KZGlzdHJpYnV0aW9u
+LCBwcmludGluZywgcmV0YWluaW5nIG9yIGNvcHlpbmcgb2YgdGhpcyBlLW1haWwgKGluY2x1ZGlu
+ZyBpdHMgDQphdHRhY2htZW50cykgYnkgdW5pbnRlbmRlZCByZWNpcGllbnQocykgaXMgc3RyaWN0
+bHkgcHJvaGliaXRlZCBhbmQgbWF5IA0KYmUgdW5sYXdmdWwuIElmIHlvdSBhcmUgbm90IGFuIGlu
+dGVuZGVkIHJlY2lwaWVudCBvZiB0aGlzIGUtbWFpbCwgb3IgYmVsaWV2ZQ0KIA0KdGhhdCB5b3Ug
+aGF2ZSByZWNlaXZlZCB0aGlzIGUtbWFpbCBpbiBlcnJvciwgcGxlYXNlIG5vdGlmeSB0aGUgc2Vu
+ZGVyIA0KaW1tZWRpYXRlbHkgKGJ5IHJlcGx5aW5nIHRvIHRoaXMgZS1tYWlsKSwgZGVsZXRlIGFu
+eSBhbmQgYWxsIGNvcGllcyBvZiANCnRoaXMgZS1tYWlsIChpbmNsdWRpbmcgYW55IGF0dGFjaG1l
+bnRzKSBmcm9tIHlvdXIgc3lzdGVtLCBhbmQgZG8gbm90DQpkaXNjbG9zZSB0aGUgY29udGVudCBv
+ZiB0aGlzIGUtbWFpbCB0byBhbnkgb3RoZXIgcGVyc29uLiBUaGFuayB5b3UhDQo8L3ByZT48IS0t
+fS0tPg==
+
+--__=_Part_Boundary_006_493484030.152006670
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+
+RnJvbTogWXVuZmVpIFdhbmcgPHlmLndhbmdAbWVkaWF0ZWsuY29tPg0KDQpJbiBfX2FybV92N3Nf
+YWxsb2NfdGFibGUgZnVuY3Rpb246DQppb21tdSBjYWxsIGttZW1fY2FjaGVfYWxsb2MgdG8gYWxs
+b2NhdGUgcGFnZSB0YWJsZSwgdGhpcyBmdW5jdGlvbg0KYWxsb2NhdGUgbWVtb3J5IG1heSBmYWls
+LCB3aGVuIGttZW1fY2FjaGVfYWxsb2MgZmFpbHMgdG8gYWxsb2NhdGUNCnRhYmxlLCBjYWxsIHZp
+cnRfdG9fcGh5cyB3aWxsIGJlIGFibm9tYWwgYW5kIHJldHVybiB1bmV4cGVjdGVkIHBoeXMNCmFu
+ZCBnb3RvIG91dF9mcmVlLCB0aGVuIGNhbGwga21lbV9jYWNoZV9mcmVlIHRvIHJlbGVhc2UgdGFi
+bGUgd2lsbA0KdHJpZ2dlciBLRSwgX19nZXRfZnJlZV9wYWdlcyBhbmQgZnJlZV9wYWdlcyBoYXZl
+IHNpbWlsYXIgcHJvYmxlbSwNCnNvIGFkZCBlcnJvciBoYW5kbGUgZm9yIHBhZ2UgdGFibGUgYWxs
+b2NhdGlvbiBmYWlsdXJlLg0KDQpGaXhlczogMjk4NTlhZWI4YTZlYSAoImlvbW11L2lvLXBndGFi
+bGUtYXJtLXY3czogQWJvcnQgYWxsb2NhdGlvbiB3aGVuIHRhYmxlIGFkZHJlc3Mgb3ZlcmZsb3dz
+IHRoZSBQVEUiKQ0KU2lnbmVkLW9mZi1ieTogWXVuZmVpIFdhbmcgPHlmLndhbmdAbWVkaWF0ZWsu
+Y29tPg0KQ2M6IDxzdGFibGVAdmdlci5rZXJuZWwub3JnPiAjIDUuMTAuKg0KLS0tDQp2MzogVXBk
+YXRlIHBhdGNoDQogICAgMS4gUmVtb3ZlIHVubmVjZXNzYXJ5IGxvZyBwcmludCBhcyBzdWdnZXN0
+ZWQgYnkgV2lsbC4NCiAgICAyLiBSZW1vdmUgdW5uZWNlc3NhcnkgY29uZGl0aW9uIGNoZWNrLg0K
+djI6IENjIHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmcNCiAgICAxLiBUaGlzIHBhdGNoIG5lZWRzIHRv
+IGJlIG1lcmdlZCBzdGFibGUgYnJhbmNoLCBhZGQgc3RhYmxlQHZnZXIua2VybmVsLm9yZw0KICAg
+ICAgIGluIG1haWwgbGlzdC4NCiAgICAyLiBUaGVyZSBpcyBObyBuZXcgY29kZSBjaGFuZ2UgaW4g
+djIuDQoNCi0tLQ0KIGRyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0tdjdzLmMgfCA2ICsrKysr
+LQ0KIDEgZmlsZSBjaGFuZ2VkLCA1IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkNCg0KZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0tdjdzLmMgYi9kcml2ZXJzL2lv
+bW11L2lvLXBndGFibGUtYXJtLXY3cy5jDQppbmRleCBiZmI2YWNiNjUxZTUuLmJlMDY2YzE1MDNk
+MyAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0tdjdzLmMNCisrKyBi
+L2RyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0tdjdzLmMNCkBAIC0yNDYsMTMgKzI0NiwxNyBA
+QCBzdGF0aWMgdm9pZCAqX19hcm1fdjdzX2FsbG9jX3RhYmxlKGludCBsdmwsIGdmcF90IGdmcCwN
+CiAJCQlfX0dGUF9aRVJPIHwgQVJNX1Y3U19UQUJMRV9HRlBfRE1BLCBnZXRfb3JkZXIoc2l6ZSkp
+Ow0KIAllbHNlIGlmIChsdmwgPT0gMikNCiAJCXRhYmxlID0ga21lbV9jYWNoZV96YWxsb2MoZGF0
+YS0+bDJfdGFibGVzLCBnZnApOw0KKw0KKwlpZiAoIXRhYmxlKQ0KKwkJcmV0dXJuIE5VTEw7DQor
+DQogCXBoeXMgPSB2aXJ0X3RvX3BoeXModGFibGUpOw0KIAlpZiAocGh5cyAhPSAoYXJtX3Y3c19p
+b3B0ZSlwaHlzKSB7DQogCQkvKiBEb2Vzbid0IGZpdCBpbiBQVEUgKi8NCiAJCWRldl9lcnIoZGV2
+LCAiUGFnZSB0YWJsZSBkb2VzIG5vdCBmaXQgaW4gUFRFOiAlcGEiLCAmcGh5cyk7DQogCQlnb3Rv
+IG91dF9mcmVlOw0KIAl9DQotCWlmICh0YWJsZSAmJiAhY2ZnLT5jb2hlcmVudF93YWxrKSB7DQor
+CWlmICghY2ZnLT5jb2hlcmVudF93YWxrKSB7DQogCQlkbWEgPSBkbWFfbWFwX3NpbmdsZShkZXYs
+IHRhYmxlLCBzaXplLCBETUFfVE9fREVWSUNFKTsNCiAJCWlmIChkbWFfbWFwcGluZ19lcnJvcihk
+ZXYsIGRtYSkpDQogCQkJZ290byBvdXRfZnJlZTsNCi0tIA0KMi4xOC4wDQo=
+
+--__=_Part_Boundary_006_493484030.152006670--
+
+
+--===============6961436977798354991==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============6961436977798354991==--
+
