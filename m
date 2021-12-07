@@ -1,102 +1,64 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3D796C433EF
-	for <iommu@archiver.kernel.org>; Tue,  7 Dec 2021 11:18:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2BB31C433EF
+	for <iommu@archiver.kernel.org>; Tue,  7 Dec 2021 11:22:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id DA6BA4044A;
-	Tue,  7 Dec 2021 11:18:33 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id C889A40285;
+	Tue,  7 Dec 2021 11:22:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yZujdWJVMkmQ; Tue,  7 Dec 2021 11:18:33 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id B53FB40439;
-	Tue,  7 Dec 2021 11:18:32 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 63451C001E;
-	Tue,  7 Dec 2021 11:18:32 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D4AC5C0012
- for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 11:18:30 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id B43C540285
- for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 11:18:30 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ufOdzpwKtLWV for <iommu@lists.linux-foundation.org>;
- Tue,  7 Dec 2021 11:18:30 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com
- [IPv6:2607:f8b0:4864:20::102b])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 069DB401CA
- for <iommu@lists.linux-foundation.org>; Tue,  7 Dec 2021 11:18:29 +0000 (UTC)
-Received: by mail-pj1-x102b.google.com with SMTP id
- cq22-20020a17090af99600b001a9550a17a5so1672999pjb.2
- for <iommu@lists.linux-foundation.org>; Tue, 07 Dec 2021 03:18:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=message-id:date:mime-version:user-agent:subject:content-language:to
- :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=XkJS/vk/AFCAw+MrKJZ0hWbQuGoDCAYXbs59fxjYT0Q=;
- b=YiRYLAImUdwYtDAM2dV92jtzYCI7H/oTaQpaYU9J3BTdl9mZzWQvXZstH079RAnzrO
- BKa0r12fG0lYvHIKhYcvZ5/oQiXQI7/ElY7ki15eMt2zl5xnYcm+WUhDAb1iJO8dgurD
- cuaqGlcHLKSI88ln4GStddlJ6GvQmebeg4h/Yrg6MVNZwkXhYpK4afH5hKuQviglzk7h
- QJ5RXCb+/wBTk4zWrQG/4SWebKyPujunw8RrM+sPLvF7Qa94YrwyUCTnzfD7DA2yj3N+
- dHWk0mByLS+4vEFJPA9DWEigJjcwc7D8z1Wn/WgwUnxFJH90qjt09MtlBbYIgUxkIXUR
- 18Kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:in-reply-to
- :content-transfer-encoding;
- bh=XkJS/vk/AFCAw+MrKJZ0hWbQuGoDCAYXbs59fxjYT0Q=;
- b=IJkohFFvfBwD5n1D5d0DDYkx0Cvg/sv8z8VORMia7EHqrNh7EyqY1QLwsSzEVqEbVT
- xhON5we7XNw+dLYIGdNgRWqU4uIHeFx7YE487HFn5CcvIJeKB9MSRNsb9NCVo9KoAPfj
- qONauvRPQ5DQBMUwe1edT1AAq0DcldGxAwphqRvj/R0omndaWQA4S+h1pSbK+Uzdtvc3
- n30w0ZowGbiM6/DyYve7rIyy7CvJGQkETQWQVmSjWS/h/OIX8hro1HwKX2WFvDRaGv2u
- zF174XCM5IvBfVQDMeL6BZXhbVhzM8SP5OwcRRbmjJ5ci5+3/iJXIfv8zcR9o1xil/UG
- Gprg==
-X-Gm-Message-State: AOAM53204yBCxyM3ZWUPrPTFgl8Odkqp8ASFFQwBTZJbdjwGVDV7oUgf
- mAykDkE84HZMDdFT/tZPhks=
-X-Google-Smtp-Source: ABdhPJy6JQ2U2g/j2Cyw3PWOVycj1dWgdg4/1qcexVGVfrBnGzPoAXWo/lvzcA61q4EzMlW8PtSvNA==
-X-Received: by 2002:a17:902:d34d:b0:143:c927:dc48 with SMTP id
- l13-20020a170902d34d00b00143c927dc48mr50676636plk.71.1638875909491; 
- Tue, 07 Dec 2021 03:18:29 -0800 (PST)
-Received: from ?IPV6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
- by smtp.gmail.com with ESMTPSA id
- m76sm8832389pfd.160.2021.12.07.03.18.19
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 07 Dec 2021 03:18:29 -0800 (PST)
-Message-ID: <1f967946-6634-9aeb-4840-1b52e30cecc5@gmail.com>
-Date: Tue, 7 Dec 2021 19:18:18 +0800
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LwKCTtepm9Vq; Tue,  7 Dec 2021 11:22:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 74B5D40104;
+	Tue,  7 Dec 2021 11:22:47 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5DC18C001E;
+	Tue,  7 Dec 2021 11:22:47 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6D157C0012;
+ Tue,  7 Dec 2021 11:22:46 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 4DCE8606B9;
+ Tue,  7 Dec 2021 11:22:46 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id roViV2fZU2Gx; Tue,  7 Dec 2021 11:22:44 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 99E72606A3;
+ Tue,  7 Dec 2021 11:22:44 +0000 (UTC)
+Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.206])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4J7d8N6mKtz67sBW;
+ Tue,  7 Dec 2021 19:18:28 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Tue, 7 Dec 2021 12:22:40 +0100
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Tue, 7 Dec 2021 11:22:38 +0000
+To: <joro@8bytes.org>, <will@kernel.org>
+Subject: [PATCH v2] iova: Move fast alloc size roundup into alloc_iova_fast()
+Date: Tue, 7 Dec 2021 19:17:26 +0800
+Message-ID: <1638875846-23993-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH V6 2/5] x86/hyper-v: Add hyperv Isolation VM check in the
- cc_platform_has()
-Content-Language: en-US
-To: Borislav Petkov <bp@alien8.de>
-References: <20211207075602.2452-1-ltykernel@gmail.com>
- <20211207075602.2452-3-ltykernel@gmail.com> <Ya8tlQZf7+Ec6Oyp@zn.tnic>
-From: Tianyu Lan <ltykernel@gmail.com>
-In-Reply-To: <Ya8tlQZf7+Ec6Oyp@zn.tnic>
-Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
- dave.hansen@linux.intel.com, dave.hansen@intel.com, hpa@zytor.com,
- kys@microsoft.com, hch@lst.de, linux-arch@vger.kernel.org, hch@infradead.org,
- wei.liu@kernel.org, sthemmin@microsoft.com, linux-scsi@vger.kernel.org,
- x86@kernel.org, decui@microsoft.com, michael.h.kelley@microsoft.com,
- mingo@redhat.com, kuba@kernel.org, jejb@linux.ibm.com, parri.andrea@gmail.com,
- thomas.lendacky@amd.com, Tianyu.Lan@microsoft.com, arnd@arndb.de,
- konrad.wilk@oracle.com, haiyangz@microsoft.com, tglx@linutronix.de,
- martin.petersen@oracle.com, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- vkuznets@redhat.com, robin.murphy@arm.com, davem@davemloft.net
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: mst@redhat.com, jasowang@redhat.com,
+ virtualization@lists.linux-foundation.org, xieyongji@bytedance.com,
+ iommu@lists.linux-foundation.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,49 +71,88 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: John Garry via iommu <iommu@lists.linux-foundation.org>
+Reply-To: John Garry <john.garry@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Borislav:
-	Thanks for your review.
+It really is a property of the IOVA rcache code that we need to alloc a
+power-of-2 size, so relocate the functionality to resize into
+alloc_iova_fast(), rather than the callsites.
 
-On 12/7/2021 5:47 PM, Borislav Petkov wrote:
-> On Tue, Dec 07, 2021 at 02:55:58AM -0500, Tianyu Lan wrote:
->> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
->>
->> Hyper-V provides Isolation VM which has memory encrypt support. Add
->> hyperv_cc_platform_has() and return true for check of GUEST_MEM_ENCRYPT
->> attribute.
-> 
-> You need to refresh on how to write commit messages - never say what the
-> patch is doing - that's visible in the diff itself. Rather, you should
-> talk about *why* it is doing what it is doing.
+Signed-off-by: John Garry <john.garry@huawei.com>
+Acked-by: Will Deacon <will@kernel.org>
+Reviewed-by: Xie Yongji <xieyongji@bytedance.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+---
+Differences to v1:
+- Separate out from original series which conflicts with Robin's IOVA FQ work:
+  https://lore.kernel.org/linux-iommu/1632477717-5254-1-git-send-email-john.garry@huawei.com/
+- Add tags - thanks!
 
-Sure. Will update.
-
-> 
->>   bool cc_platform_has(enum cc_attr attr)
->>   {
->> +	if (hv_is_isolation_supported())
->> +		return hyperv_cc_platform_has(attr);
-> 
-> Is there any reason for the hv_is_.. check to come before...
-> 
-
-Do you mean to check hyper-v before sev? If yes, no special reason.
-
-
->> +
->>   	if (sme_me_mask)
->>   		return amd_cc_platform_has(attr);
-> 
-> ... the sme_me_mask check?
-> 
-> What's in sme_me_mask on hyperv?
-
-sme_me_mask is unset in this case.
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index b42e38a0dbe2..84dee53fe892 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -442,14 +442,6 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+ 
+ 	shift = iova_shift(iovad);
+ 	iova_len = size >> shift;
+-	/*
+-	 * Freeing non-power-of-two-sized allocations back into the IOVA caches
+-	 * will come back to bite us badly, so we have to waste a bit of space
+-	 * rounding up anything cacheable to make sure that can't happen. The
+-	 * order of the unadjusted size will still match upon freeing.
+-	 */
+-	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
+-		iova_len = roundup_pow_of_two(iova_len);
+ 
+ 	dma_limit = min_not_zero(dma_limit, dev->bus_dma_limit);
+ 
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 9e8bc802ac05..ff567cbc42f7 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -497,6 +497,15 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+ 	unsigned long iova_pfn;
+ 	struct iova *new_iova;
+ 
++	/*
++	 * Freeing non-power-of-two-sized allocations back into the IOVA caches
++	 * will come back to bite us badly, so we have to waste a bit of space
++	 * rounding up anything cacheable to make sure that can't happen. The
++	 * order of the unadjusted size will still match upon freeing.
++	 */
++	if (size < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
++		size = roundup_pow_of_two(size);
++
+ 	iova_pfn = iova_rcache_get(iovad, size, limit_pfn + 1);
+ 	if (iova_pfn)
+ 		return iova_pfn;
+diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa_user/iova_domain.c
+index 1daae2608860..2b1143f11d8f 100644
+--- a/drivers/vdpa/vdpa_user/iova_domain.c
++++ b/drivers/vdpa/vdpa_user/iova_domain.c
+@@ -292,14 +292,6 @@ vduse_domain_alloc_iova(struct iova_domain *iovad,
+ 	unsigned long iova_len = iova_align(iovad, size) >> shift;
+ 	unsigned long iova_pfn;
+ 
+-	/*
+-	 * Freeing non-power-of-two-sized allocations back into the IOVA caches
+-	 * will come back to bite us badly, so we have to waste a bit of space
+-	 * rounding up anything cacheable to make sure that can't happen. The
+-	 * order of the unadjusted size will still match upon freeing.
+-	 */
+-	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
+-		iova_len = roundup_pow_of_two(iova_len);
+ 	iova_pfn = alloc_iova_fast(iovad, iova_len, limit >> shift, true);
+ 
+ 	return iova_pfn << shift;
+-- 
+2.26.2
 
 _______________________________________________
 iommu mailing list
