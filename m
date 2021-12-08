@@ -1,57 +1,58 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 86D96C433F5
-	for <iommu@archiver.kernel.org>; Wed,  8 Dec 2021 19:12:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 62AF2C433F5
+	for <iommu@archiver.kernel.org>; Wed,  8 Dec 2021 19:51:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 152F182919;
-	Wed,  8 Dec 2021 19:12:49 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id E496640420;
+	Wed,  8 Dec 2021 19:51:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vZ1rggtkrON0; Wed,  8 Dec 2021 19:12:48 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZF4VNvqm1xNd; Wed,  8 Dec 2021 19:51:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id D493282871;
-	Wed,  8 Dec 2021 19:12:47 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A4CFD4021C;
+	Wed,  8 Dec 2021 19:51:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AA526C002F;
-	Wed,  8 Dec 2021 19:12:47 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C7930C0012
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 19:12:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 72025C002F;
+	Wed,  8 Dec 2021 19:51:02 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 79A71C0012
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 19:51:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id AF6A1828F8
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 19:12:45 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 657A74021C
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 19:51:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FouuxiAH8jOL for <iommu@lists.linux-foundation.org>;
- Wed,  8 Dec 2021 19:12:45 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id HJnCpVqUhImt for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Dec 2021 19:51:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by smtp1.osuosl.org (Postfix) with ESMTPS id E483482871
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 19:12:44 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10192"; a="237717808"
-X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; d="scan'208";a="237717808"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 08 Dec 2021 11:12:42 -0800
-X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; d="scan'208";a="543305679"
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 99454400FC
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 19:51:00 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10192"; a="237865875"
+X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; d="scan'208";a="237865875"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 08 Dec 2021 11:50:59 -0800
+X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; d="scan'208";a="612215503"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 08 Dec 2021 11:12:42 -0800
-Date: Wed, 8 Dec 2021 11:16:59 -0800
+ by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 08 Dec 2021 11:50:59 -0800
+Date: Wed, 8 Dec 2021 11:55:16 -0800
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH 3/4] iommu/vt-d: Support PASID DMA for in-kernel usage
-Message-ID: <20211208111659.6de22e52@jacob-builder>
-In-Reply-To: <20211208132255.GS6385@nvidia.com>
+Subject: Re: [PATCH 4/4] dmaengine: idxd: Use DMA API for in-kernel DMA with
+ PASID
+Message-ID: <20211208115516.1d36fed9@jacob-builder>
+In-Reply-To: <20211208131358.GR6385@nvidia.com>
 References: <1638884834-83028-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1638884834-83028-4-git-send-email-jacob.jun.pan@linux.intel.com>
- <20211208132255.GS6385@nvidia.com>
+ <1638884834-83028-5-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20211208131358.GR6385@nvidia.com>
 Organization: OTC
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
@@ -83,98 +84,23 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 Hi Jason,
 
-On Wed, 8 Dec 2021 09:22:55 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
+On Wed, 8 Dec 2021 09:13:58 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-> On Tue, Dec 07, 2021 at 05:47:13AM -0800, Jacob Pan wrote:
-> > Between DMA requests with and without PASID (legacy), DMA mapping APIs
-> > are used indiscriminately on a device. Therefore, we should always match
-> > the addressing mode of the legacy DMA when enabling kernel PASID.
-> > 
-> > This patch adds support for VT-d driver where the kernel PASID is
-> > programmed to match RIDPASID. i.e. if the device is in pass-through, the
-> > kernel PASID is also in pass-through; if the device is in IOVA mode, the
-> > kernel PASID will also be using the same IOVA space.
-> > 
-> > There is additional handling for IOTLB and device TLB flush w.r.t. the
-> > kernel PASID. On VT-d, PASID-selective IOTLB flush is also on a
-> > per-domain basis; whereas device TLB flush is per device. Note that
-> > IOTLBs are used even when devices are in pass-through mode. ATS is
-> > enabled device-wide, but the device drivers can choose to manage ATS at
-> > per PASID level whenever control is available.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> >  drivers/iommu/intel/iommu.c | 105 +++++++++++++++++++++++++++++++++++-
-> >  drivers/iommu/intel/pasid.c |   7 +++
-> >  include/linux/intel-iommu.h |   3 +-
-> >  3 files changed, 113 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> > index 60253bc436bb..a2ef6b9e4bfc 100644
-> > +++ b/drivers/iommu/intel/iommu.c
-> > @@ -1743,7 +1743,14 @@ static void domain_flush_piotlb(struct
-> > intel_iommu *iommu, if (domain->default_pasid)
-> >  		qi_flush_piotlb(iommu, did, domain->default_pasid,
-> >  				addr, npages, ih);
-> > -
-> > +	if (domain->kernel_pasid && !domain_type_is_si(domain)) {
-> > +		/*
-> > +		 * REVISIT: we only do PASID IOTLB inval for FL, we
-> > could have SL
-> > +		 * for PASID in the future such as vIOMMU PT. this
-> > doesn't get hit.
-> > +		 */
-> > +		qi_flush_piotlb(iommu, did, domain->kernel_pasid,
-> > +				addr, npages, ih);
-> > +	}
-> >  	if (!list_empty(&domain->devices))
-> >  		qi_flush_piotlb(iommu, did, PASID_RID2PASID, addr,
-> > npages, ih); }
-> > @@ -5695,6 +5702,100 @@ static void intel_iommu_iotlb_sync_map(struct
-> > iommu_domain *domain, }
-> >  }
-> >  
-> > +static int intel_enable_pasid_dma(struct device *dev, u32 pasid)
-> > +{  
+> > This patch utilizes iommu_enable_pasid_dma() to enable DSA to perform
+> > DMA requests with PASID under the same mapping managed by DMA mapping
+> > API. In addition, SVA-related bits for kernel DMA are removed. As a
+> > result, DSA users shall use DMA mapping API to obtain DMA handles
+> > instead of using kernel virtual addresses.  
 > 
-> This seems like completely the wrong kind of op.
+> Er, shouldn't this be adding dma_map/etc type calls?
 > 
-> At the level of the iommu driver things should be iommu_domain centric
-> 
-> The op should be
-> 
-> int attach_dev_pasid(struct iommu_domain *domain, struct device *dev,
-> ioasid_t pasid)
-> 
-> Where 'dev' purpose is to provide the RID
-> 
-> The iommu_domain passed in should be the 'default domain' ie the table
-> used for on-demand mapping, or the passthrough page table.
-> 
-Makes sense. DMA API is device centric, iommu API is domain centric. It
-should be the common IOMMU code to get the default domain then pass to
-vendor drivers. Then we can enforce default domain behavior across all
-vendor drivers.
-i.e. 	
-	dom = iommu_get_dma_domain(dev);
-	attach_dev_pasid(dom, dev, pasid);
-
-> > +	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
-> > +	struct device_domain_info *info;  
-> 
-> I don't even want to know why an iommu driver is tracking its own
-> per-device state. That seems like completely wrong layering.
-> 
-This is for IOTLB and deTLB flush. IOTLB is flushed at per domain level,
-devTLB is per device.
-
-For multi-device groups, this is a need to track how many devices are using
-the kernel DMA PASID.
-
-Are you suggesting we add the tracking info in the generic layer? i.e.
-iommu_group.
-
-We could also have a generic device domain info to replace what is in VT-d
-and FSL IOMMU driver, etc.
+> You can't really say a driver is using the DMA API without actually
+> calling the DMA API..
+The IDXD driver is not aware of addressing mode, it is up to the user of
+dmaengine API to prepare the buffer mappings. Here we only set up the PASID
+such that it can be picked up during DMA work submission. I tested with
+/drivers/dma/dmatest.c which does dma_map_page(), map_single etc. also
+tested with other pieces under development.
 
 Thanks,
 
