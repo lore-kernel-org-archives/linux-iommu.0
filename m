@@ -1,57 +1,57 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EE6FDC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id F2547C4167B
 	for <iommu@archiver.kernel.org>; Wed,  8 Dec 2021 12:08:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id A782840A18;
+	by smtp4.osuosl.org (Postfix) with ESMTP id A5CF940395;
 	Wed,  8 Dec 2021 12:08:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zqmjybb_b0h0; Wed,  8 Dec 2021 12:08:17 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id N3btZlyxouMV; Wed,  8 Dec 2021 12:08:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 6F4B84029F;
+	by smtp4.osuosl.org (Postfix) with ESMTPS id E4AD740390;
 	Wed,  8 Dec 2021 12:08:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 47F41C002F;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AA82CC0075;
 	Wed,  8 Dec 2021 12:08:17 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D15C4C0012
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 12:08:15 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 86C68C002F
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 12:08:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id BA73C60654
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 12:08:15 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 5F79460F60
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 12:08:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=fail (2048-bit key) reason="fail (bad RSA signature)"
  header.d=collabora.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id OXRKG0PUBRqj for <iommu@lists.linux-foundation.org>;
- Wed,  8 Dec 2021 12:08:13 +0000 (UTC)
+ with ESMTP id OCP-QZBo4CtN for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Dec 2021 12:08:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
- by smtp3.osuosl.org (Postfix) with ESMTPS id B82CC60F55
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 12:08:10 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id C4C3F6077B
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 12:08:15 +0000 (UTC)
 Received: from localhost.localdomain (unknown
  [IPv6:2a00:c281:1230:3700:51d0:7039:5913:64d3])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested) (Authenticated sender: dafna)
- by bhuna.collabora.co.uk (Postfix) with ESMTPSA id E7B1B1F45C87;
- Wed,  8 Dec 2021 12:08:07 +0000 (GMT)
+ by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 32EAE1F45CD8;
+ Wed,  8 Dec 2021 12:08:13 +0000 (GMT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=collabora.com; s=mail;
- t=1638965289; bh=/ksqLGRqcx9RPvezQU0f63T25oDST3xu9zSisBbGyqQ=;
+ t=1638965294; bh=G9wyjm+JcpBuGTU5PaSnqlWsQq2znoMjrDZdkywQlnY=;
  h=From:To:Subject:Date:In-Reply-To:References:From;
- b=i/LWg2n8z2KMdp8HIIjkNn1xo/fr0fLDwfwLt7svKE9NR2p3Gf9/2bv4lH9xOHzpD
- /+dwsNPVKbByunLTi8ZVdEh4acbq+KKVnEbl4+2fPAhJYOOgxUwed1R6yu/Nmqni8q
- XZuGjkKlFUI5u6zNGwHf4UlNMaOncuL2fzEHgM+x2giWgW7hjwEcVAAwWlbBnzXFJv
- hMkCCAU5b5YKfQATsvJNRoqjzqwX1opyFxS1ZipzmaJviXYtelzgCiuGzLlpsbRNUo
- R6DEHUTh7mfJezgGkhq1Ranbr+Fuq6RSOXh38z18YtmYh8z2t9QPuS7SiUdNBzf+ft
- QeIZilzrM/dhQ==
+ b=kb9C2fVQI5+8rtQymm3l8HLiyN1QCH1KfHOfc2PhFGn8d4y6GjxkbBlNqwN+BWm8r
+ tch0oDrm0FD0HQdryvlsVIfJJ0dusjcsu2ADofkLLCSrNiFxzl5Ay5tGUcX/vRNjtu
+ XG9fcXd7SfGgSRwLqI5j9+emeLaPrb5hXG4cR/ltLxktw69haPyl5fE2wG9ubSqsZS
+ /utSX3pQofgpXnRw3rJz+I1lKY5tZXhenJxqYb+3VgBZMuCiiphKm9mU2BXHI6f4dO
+ JvyNF2dk2EPtspUhBswvj2ItrSCam2agdjtme10+dlxlepmxpFM6GtmItR2U+vr7Nt
+ LeT/rOo5k21/w==
 From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
 To: iommu@lists.linux-foundation.org, Yong Wu <yong.wu@mediatek.com>,
  Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -61,9 +61,10 @@ To: iommu@lists.linux-foundation.org, Yong Wu <yong.wu@mediatek.com>,
  linux-kernel@vger.kernel.org (open list), dafna.hirschfeld@collabora.com,
  kernel@collabora.com, linux-media@vger.kernel.org,
  sebastian.reichel@collabora.com
-Subject: [PATCH v2 1/5] iommu/mediatek: Remove for_each_m4u in tlb_sync_all
-Date: Wed,  8 Dec 2021 14:07:40 +0200
-Message-Id: <20211208120744.2415-2-dafna.hirschfeld@collabora.com>
+Subject: [PATCH v2 5/5] iommu/mediatek: Always tlb_flush_all when each PM
+ resume
+Date: Wed,  8 Dec 2021 14:07:44 +0200
+Message-Id: <20211208120744.2415-6-dafna.hirschfeld@collabora.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211208120744.2415-1-dafna.hirschfeld@collabora.com>
 References: <20211208120744.2415-1-dafna.hirschfeld@collabora.com>
@@ -87,48 +88,47 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Yong Wu <yong.wu@mediatek.com>
 
-The tlb_sync_all is called from these three functions:
-a) flush_iotlb_all: it will be called for each a iommu HW.
-b) tlb_flush_range_sync: it already has for_each_m4u.
-c) in irq: When IOMMU HW translation fault, Only need flush itself.
+Prepare for 2 HWs that sharing pgtable in different power-domains.
 
-Thus, No need for_each_m4u in this tlb_sync_all. Remove it.
+When there are 2 M4U HWs, it may has problem in the flush_range in which
+we get the pm_status via the m4u dev, BUT that function don't reflect the
+real power-domain status of the HW since there may be other HW also use
+that power-domain.
+
+DAM allocation is often done while the allocating device is runtime
+suspended. In such a case the iommu will also be suspended and partial
+flushing of the tlb will not be executed.
+Therefore, we add a tlb_flush_all in the pm_runtime_resume to make
+sure the tlb is always clean.
+
+In other case, the iommu's power should be active via device
+link with smi.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+[move the call to mtk_iommu_tlb_flush_all to the bottom of resume cb, improve doc/log]
+Signed-off-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
 ---
- drivers/iommu/mtk_iommu.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ drivers/iommu/mtk_iommu.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 507123ae7485..342aa562ab6a 100644
+index 195a411e3087..4799cd06511b 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -210,17 +210,15 @@ static struct mtk_iommu_domain *to_mtk_domain(struct iommu_domain *dom)
- 
- static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
- {
--	for_each_m4u(data) {
--		if (pm_runtime_get_if_in_use(data->dev) <= 0)
--			continue;
-+	if (pm_runtime_get_if_in_use(data->dev) <= 0)
-+		return;
- 
--		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
--			       data->base + data->plat_data->inv_sel_reg);
--		writel_relaxed(F_ALL_INVLD, data->base + REG_MMU_INVALIDATE);
--		wmb(); /* Make sure the tlb flush all done */
-+	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
-+		       data->base + data->plat_data->inv_sel_reg);
-+	writel_relaxed(F_ALL_INVLD, data->base + REG_MMU_INVALIDATE);
-+	wmb(); /* Make sure the tlb flush all done */
- 
--		pm_runtime_put(data->dev);
--	}
-+	pm_runtime_put(data->dev);
+@@ -997,6 +997,13 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
+ 	writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
+ 	writel_relaxed(reg->vld_pa_rng, base + REG_MMU_VLD_PA_RNG);
+ 	writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK, base + REG_MMU_PT_BASE_ADDR);
++
++	/*
++	 * Users may allocate dma buffer before they call pm_runtime_get,
++	 * in which case it will lack the necessary tlb flush.
++	 * Thus, make sure to update the tlb after each PM resume.
++	 */
++	mtk_iommu_tlb_flush_all(data);
+ 	return 0;
  }
  
- static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
 -- 
 2.17.1
 
