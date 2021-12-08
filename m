@@ -4,77 +4,107 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4A7D3C433F5
-	for <iommu@archiver.kernel.org>; Wed,  8 Dec 2021 04:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C6B2AC433EF
+	for <iommu@archiver.kernel.org>; Wed,  8 Dec 2021 07:33:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id CA5D440965;
-	Wed,  8 Dec 2021 04:56:32 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5F23E409FB;
+	Wed,  8 Dec 2021 07:33:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ujeNMS_sr9pd; Wed,  8 Dec 2021 04:56:31 +0000 (UTC)
+	with ESMTP id 1kDjAnPCkkTB; Wed,  8 Dec 2021 07:33:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 78695400C7;
-	Wed,  8 Dec 2021 04:56:31 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id CF950409F2;
+	Wed,  8 Dec 2021 07:33:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5B448C002F;
-	Wed,  8 Dec 2021 04:56:31 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E403CC0012
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 04:56:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9E880C002F;
+	Wed,  8 Dec 2021 07:33:47 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 71666C0012
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 07:33:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D95E760EFE
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 04:56:29 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 48F66409FB
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 07:33:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iE-VLu4xZ3Ur for <iommu@lists.linux-foundation.org>;
- Wed,  8 Dec 2021 04:56:29 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Qv9U27mCJntB for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Dec 2021 07:33:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
- by smtp3.osuosl.org (Postfix) with ESMTPS id EF53460EFC
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 04:56:28 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id 712EBB81F70;
- Wed,  8 Dec 2021 04:56:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E346C341C3;
- Wed,  8 Dec 2021 04:56:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1638939386;
- bh=C9Fxg4lH/TpRohy6FBCFxRHJq6QxdHRXmdORxmA2LQg=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=sqcCBB0TqyOBe1PKMXTJnGrJfgXFaWGreXTj4jacVfPnKGUQdsx2+nFCt6aL8AWCe
- gtaOqSRy8mIQSsB9Z1Uv6Jn0CtQ0xxwjqe9Ti1AqmdRSAJ2wmhcEdA5Oqc8wbp80tz
- zwRSIObMdfzqEZARgmGqbIaLCXu+YC30LG2braUKc+iaNTCQAdAGQ0n0COlSAwPH7W
- LNtk2YVvMJTRCDCVfBPMAHA1KG5uRv0WP3xJ06LgzZSpPQdm8cdmIxvLsj1ooSWMqU
- JY2qXKWq26CuKIsAcA3w9CH9PFTdFkD+uScKtG7iAGiebvHqBxMUoVX7QHjcBVE/Pe
- gXTHxbjRH/83g==
-Date: Wed, 8 Dec 2021 10:26:22 +0530
-From: Vinod Koul <vkoul@kernel.org>
-To: Dave Jiang <dave.jiang@intel.com>
-Subject: Re: [PATCH 4/4] dmaengine: idxd: Use DMA API for in-kernel DMA with
- PASID
-Message-ID: <YbA69kdTgqB9tJc8@matsya>
-References: <1638884834-83028-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1638884834-83028-5-git-send-email-jacob.jun.pan@linux.intel.com>
- <dbb90f20-d9fb-1f24-b59d-15a2a42437e2@intel.com>
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 6F025409F2
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 07:33:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1638948821;
+ h=from:from:reply-to:reply-to:subject:subject:date:date:
+ message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+ content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=VaQgBFKDWPtyW4rX+GpfnPjaazD4SfZz/ToOHd0Wuzc=;
+ b=gcRXlv6l0vxLKUIniuzzSOPmVUXPUji0uvDnpC2LmQZvB0YxEISb3HxUqHQVkvP2xHKswv
+ hXS/zgRwpKONE89uy+bdwUR+QOQ8cfpsF3IP7JWn5j5SQd2mjUKmLH+QOnKv2ZFd/41ZNr
+ ouT0NnHEtV+y5itfWMuPcD6D9R+jc2o=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-588-Zdt0ml0OMX25uAQOcjwVUw-1; Wed, 08 Dec 2021 02:33:37 -0500
+X-MC-Unique: Zdt0ml0OMX25uAQOcjwVUw-1
+Received: by mail-wr1-f69.google.com with SMTP id
+ c4-20020adfed84000000b00185ca4eba36so157914wro.21
+ for <iommu@lists.linux-foundation.org>; Tue, 07 Dec 2021 23:33:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:reply-to:subject:to:cc:references:from
+ :message-id:date:user-agent:mime-version:in-reply-to
+ :content-transfer-encoding:content-language;
+ bh=VaQgBFKDWPtyW4rX+GpfnPjaazD4SfZz/ToOHd0Wuzc=;
+ b=B+8vR5vwMXRlksjbz45NdKQuFH76FDpVVKlvAswb/v8g6th+e1cvYBpfHDjDftsNLh
+ dZl48w33qc94RDMgqxoWkzC/1lDkAQ+nUCGBi6no8Wln+mwvlUm/muVHvnV4eO5YMPfG
+ mqzm72pYaDf7oOQlHS1haOpKwWYUBHcfqwj+3dn6RnA/TiM/IXfwx58gnP5pxQ9QV+0j
+ C6xNdUfVRKFKEpVuMBkhlVdtdm21FvuW4SNhSf14IJ4Gjo2W57f2WnWmBdx/1y2PGOFT
+ 4e12JgaETtSqIjcH/iMtyhf3+mqr9sJgxY3vh1X3M9pOsNZIpSdXcq36lZ2lfu+8un5Q
+ 70IQ==
+X-Gm-Message-State: AOAM531a3JFCT1AlDhXuRQo/7GKZpx6eJ6Bq4GAtd6rKAZU2tL0DdGzu
+ qgGJZ5sFftHmkNkUqI9aR87QD5zXOOdPILOX9NqTVfav0iFIH2DKfZOocxYE8SyPbIxn+xrRt5b
+ SaXhcKG6c2X9FWvPqIYSK2kN6OtNyXw==
+X-Received: by 2002:adf:f708:: with SMTP id r8mr57333465wrp.198.1638948816619; 
+ Tue, 07 Dec 2021 23:33:36 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy7KoV5p8PVF3If5VE3e/tXMfPoPdiN58LX+mhb+Qk/apSQFS8E5N4maEwm2dxUTEGR+YL9hQ==
+X-Received: by 2002:adf:f708:: with SMTP id r8mr57333432wrp.198.1638948816394; 
+ Tue, 07 Dec 2021 23:33:36 -0800 (PST)
+Received: from ?IPv6:2a01:e0a:59e:9d80:527b:9dff:feef:3874?
+ ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+ by smtp.gmail.com with ESMTPSA id l3sm2033529wmq.46.2021.12.07.23.33.34
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 07 Dec 2021 23:33:35 -0800 (PST)
+Subject: Re: [RFC v16 1/9] iommu: Introduce attach/detach_pasid_table API
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>
+References: <20211027104428.1059740-1-eric.auger@redhat.com>
+ <20211027104428.1059740-2-eric.auger@redhat.com>
+ <Ya3qd6mT/DpceSm8@8bytes.org>
+ <c7e26722-f78c-a93f-c425-63413aa33dde@redhat.com>
+ <e6733c59-ffcb-74d4-af26-273c1ae8ce68@linux.intel.com>
+From: Eric Auger <eric.auger@redhat.com>
+Message-ID: <fbeabcff-a6d4-dcc5-6687-7b32d6358fe3@redhat.com>
+Date: Wed, 8 Dec 2021 08:33:33 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <dbb90f20-d9fb-1f24-b59d-15a2a42437e2@intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Kumar,
- Sanjay K" <sanjay.k.kumar@intel.com>, LKML <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
- Tony Luck <tony.luck@intel.com>, Jacob Pan <jacob.jun.pan@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Barry Song <21cnbao@gmail.com>,
- "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
- Dan Williams <dan.j.williams@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>, "Zanussi,
- Tom" <tom.zanussi@intel.com>
+In-Reply-To: <e6733c59-ffcb-74d4-af26-273c1ae8ce68@linux.intel.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=eric.auger@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Cc: peter.maydell@linaro.org, kevin.tian@intel.com, lushenming@huawei.com,
+ ashok.raj@intel.com, kvm@vger.kernel.org, jean-philippe@linaro.org,
+ maz@kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ vsethi@nvidia.com, vivek.gautam@arm.com, alex.williamson@redhat.com,
+ Jason Gunthorpe <jgg@nvidia.com>, wangxingang5@huawei.com,
+ zhangfei.gao@linaro.org, robin.murphy@arm.com, will@kernel.org,
+ kvmarm@lists.cs.columbia.edu, eric.auger.pro@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,37 +117,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Reply-To: eric.auger@redhat.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 07-12-21, 16:27, Dave Jiang wrote:
-> 
-> On 12/7/2021 6:47 AM, Jacob Pan wrote:
-> > In-kernel DMA should be managed by DMA mapping API. The existing kernel
-> > PASID support is based on the SVA machinery in SVA lib that is intended
-> > for user process SVA. The binding between a kernel PASID and kernel
-> > mapping has many flaws. See discussions in the link below.
-> > 
-> > This patch utilizes iommu_enable_pasid_dma() to enable DSA to perform DMA
-> > requests with PASID under the same mapping managed by DMA mapping API.
-> > In addition, SVA-related bits for kernel DMA are removed. As a result,
-> > DSA users shall use DMA mapping API to obtain DMA handles instead of
-> > using kernel virtual addresses.
-> > 
-> > Link: https://lore.kernel.org/linux-iommu/20210511194726.GP1002214@nvidia.com/
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> 
-> Acked-by: Dave Jiang <dave.jiang@intel.com>
-> 
-> Also cc Vinod and dmaengine@vger
-
-Pls resend collecting acks. I dont have this in my queue
-
--- 
-~Vinod
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgQmFvbHUsCgpPbiAxMi84LzIxIDM6NDQgQU0sIEx1IEJhb2x1IHdyb3RlOgo+IEhpIEVyaWMs
+Cj4KPiBPbiAxMi83LzIxIDY6MjIgUE0sIEVyaWMgQXVnZXIgd3JvdGU6Cj4+IE9uIDEyLzYvMjEg
+MTE6NDggQU0sIEpvZXJnIFJvZWRlbCB3cm90ZToKPj4+IE9uIFdlZCwgT2N0IDI3LCAyMDIxIGF0
+IDEyOjQ0OjIwUE0gKzAyMDAsIEVyaWMgQXVnZXIgd3JvdGU6Cj4+Pj4gU2lnbmVkLW9mZi1ieTog
+SmVhbi1QaGlsaXBwZSBCcnVja2VyPGplYW4tcGhpbGlwcGUuYnJ1Y2tlckBhcm0uY29tPgo+Pj4+
+IFNpZ25lZC1vZmYtYnk6IExpdSwgWWkgTDx5aS5sLmxpdUBsaW51eC5pbnRlbC5jb20+Cj4+Pj4g
+U2lnbmVkLW9mZi1ieTogQXNob2sgUmFqPGFzaG9rLnJhakBpbnRlbC5jb20+Cj4+Pj4gU2lnbmVk
+LW9mZi1ieTogSmFjb2IgUGFuPGphY29iLmp1bi5wYW5AbGludXguaW50ZWwuY29tPgo+Pj4+IFNp
+Z25lZC1vZmYtYnk6IEVyaWMgQXVnZXI8ZXJpYy5hdWdlckByZWRoYXQuY29tPgo+Pj4gVGhpcyBT
+aWduZWQtb2YtYnkgY2hhaW4gbG9va3MgZHViaW91cywgeW91IGFyZSB0aGUgYXV0aG9yIGJ1dCB0
+aGUgbGFzdAo+Pj4gb25lIGluIHRoZSBjaGFpbj8KPj4gVGhlIDFzdCBSRkMgaW4gQXVnIDIwMTgK
+Pj4gKGh0dHBzOi8vbGlzdHMuY3MuY29sdW1iaWEuZWR1L3BpcGVybWFpbC9rdm1hcm0vMjAxOC1B
+dWd1c3QvMDMyNDc4Lmh0bWwpCj4+IHNhaWQgdGhpcyB3YXMgYSBnZW5lcmFsaXphdGlvbiBvZiBK
+YWNvYidzIHBhdGNoCj4+Cj4+Cj4+IMKgwqAgW1BBVENIIHY1IDAxLzIzXSBpb21tdTogaW50cm9k
+dWNlIGJpbmRfcGFzaWRfdGFibGUgQVBJIGZ1bmN0aW9uCj4+Cj4+Cj4+IMKgwqAKPj4gaHR0cHM6
+Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL3BpcGVybWFpbC9pb21tdS8yMDE4LU1heS8wMjc2
+NDcuaHRtbAo+Pgo+PiBTbyBpbmRlZWQgSmFjb2Igc2hvdWxkIGJlIHRoZSBhdXRob3IuIEkgZ3Vl
+c3MgdGhlIG11bHRpcGxlIHJlYmFzZXMgZ290Cj4+IHRoaXMgZXZlbnR1YWxseSByZXBsYWNlZCBh
+dCBzb21lIHBvaW50LCB3aGljaCBpcyBub3QgYW4gZXhjdXNlLiBQbGVhc2UKPj4gZm9yZ2l2ZSBt
+ZSBmb3IgdGhhdC4KPj4gTm93IHRoZSBvcmlnaW5hbCBwYXRjaCBhbHJlYWR5IGhhZCB0aGlzIGxp
+c3Qgb2YgU29CIHNvIEkgZG9uJ3Qga25vdyBpZiBJCj4+IHNoYWxsIHNpbXBsaWZ5IGl0Lgo+Cj4g
+QXMgd2UgaGF2ZSBkZWNpZGVkIHRvIG1vdmUgdGhlIG5lc3RlZCBtb2RlIChkdWFsIHN0YWdlcykg
+aW1wbGVtZW50YXRpb24KPiBvbnRvIHRoZSBkZXZlbG9waW5nIGlvbW11ZmQgZnJhbWV3b3JrLCB3
+aGF0J3MgdGhlIHZhbHVlIG9mIGFkZGluZyB0aGlzCj4gaW50byBpb21tdSBjb3JlPwoKVGhlIGlv
+bW11X3VhcGlfYXR0YWNoX3Bhc2lkX3RhYmxlIHVhcGkgc2hvdWxkIGRpc2FwcGVhciBpbmRlZWQg
+YXMgaXQgaXMKaXMgYm91bmQgdG8gYmUgcmVwbGFjZWQgYnkgL2Rldi9pb21tdSBmZWxsb3cgQVBJ
+LgpIb3dldmVyIHVudGlsIEkgY2FuIHJlYmFzZSBvbiAvZGV2L2lvbW11IGNvZGUgSSBhbSBvYmxp
+Z2VkIHRvIGtlZXAgaXQgdG8KbWFpbnRhaW4gdGhpcyBpbnRlZ3JhdGlvbiwgaGVuY2UgdGhlIFJG
+Qy4KClRoYW5rcwoKRXJpYwo+Cj4gQmVzdCByZWdhcmRzLAo+IGJhb2x1Cj4KCl9fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
+b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
+dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
