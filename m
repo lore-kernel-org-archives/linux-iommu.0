@@ -1,83 +1,94 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 40E8FC433EF
-	for <iommu@archiver.kernel.org>; Wed,  8 Dec 2021 15:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 63DDDC433F5
+	for <iommu@archiver.kernel.org>; Wed,  8 Dec 2021 15:11:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 7FF976069E;
-	Wed,  8 Dec 2021 15:03:54 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id EB5C383EE5;
+	Wed,  8 Dec 2021 15:11:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id urA-dyzTYYuz; Wed,  8 Dec 2021 15:03:53 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 77FAB60657;
-	Wed,  8 Dec 2021 15:03:53 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id g_8x2m5i-hur; Wed,  8 Dec 2021 15:11:56 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id CE00F83EE2;
+	Wed,  8 Dec 2021 15:11:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B8EAC001E;
-	Wed,  8 Dec 2021 15:03:53 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 25678C0012
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 15:03:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9EEA2C002F;
+	Wed,  8 Dec 2021 15:11:55 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 29422C0012
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 15:11:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 06BA240210
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 15:03:52 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0A9ED41D68
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 15:11:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
+ dkim=pass (2048-bit key) header.d=solid-run-com.20210112.gappssmtp.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AFI9zlwB6Ss2 for <iommu@lists.linux-foundation.org>;
- Wed,  8 Dec 2021 15:03:51 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.129.124])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 4C827401A6
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 15:03:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1638975829;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=R2jrd2Kf9So+x8Xz8AeO7h4+6EIMVdYK/e/smQ/H8MM=;
- b=f6Aq8dbIU1Gh0qzz5/zABRu0zkITXm0KVFJ/0RD3i4DQTNZYNpM9SgArRGcKE40xXhQFI/
- J9KxuNbY+Po0k23gfuE5FJJTPzxV47aPkFaSW+uymOgrxdQkSP8wXHryduB4sYddALsvpl
- SuwBcaKYJP0+/oHVTOwS6HoaZmWmn30=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-589-cf0uzvLzM2eUCw3rji32Lg-1; Wed, 08 Dec 2021 10:03:45 -0500
-X-MC-Unique: cf0uzvLzM2eUCw3rji32Lg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
- [10.5.11.23])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E6647802C99;
- Wed,  8 Dec 2021 15:03:42 +0000 (UTC)
-Received: from starship (unknown [10.40.192.24])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 1E4F019724;
- Wed,  8 Dec 2021 15:03:38 +0000 (UTC)
-Message-ID: <f5b75c4d99c1f9e94ab9e639bc2fc8fddb9c7366.camel@redhat.com>
-Subject: Re: [PATCH v3 21/26] KVM: SVM: Drop AVIC's intermediate
- avic_set_running() helper
-From: Maxim Levitsky <mlevitsk@redhat.com>
-To: Paolo Bonzini <pbonzini@redhat.com>, Sean Christopherson
- <seanjc@google.com>,  Joerg Roedel <joro@8bytes.org>
-Date: Wed, 08 Dec 2021 17:03:37 +0200
-In-Reply-To: <e1c4ec6a-7c1e-b96c-63e6-d07b35820def@redhat.com>
-References: <20211208015236.1616697-1-seanjc@google.com>
- <20211208015236.1616697-22-seanjc@google.com>
- <e1c4ec6a-7c1e-b96c-63e6-d07b35820def@redhat.com>
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+ with ESMTP id euBkfLW6LT2w for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Dec 2021 15:11:51 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com
+ [IPv6:2a00:1450:4864:20::529])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id AFEBB41CC3
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 15:11:51 +0000 (UTC)
+Received: by mail-ed1-x529.google.com with SMTP id r25so9377744edq.7
+ for <iommu@lists.linux-foundation.org>; Wed, 08 Dec 2021 07:11:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=solid-run-com.20210112.gappssmtp.com; s=20210112;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=N3yl9v2atpilSDgp9e8S6T68cXXaaZdtU6LZvrpjcbM=;
+ b=CPS/QAob2L+Gi18nwuq6qFA+AIRa1j7Hixi5N0EIxPErClUtTUgrGZ8RAcY5/XNP19
+ qstSpq8UK3xpRrNDb20jYMu9PI8vC3Ce/TVViJN5IbIDIuEyrY452QUAT03WvfDgYUZJ
+ eSLIIQBNziq9uJR4zO8460E7oPsFoABSjNHuSDMI0uxqlp5Y78CuSH52CzLKvvyDEAyZ
+ qLddtmBN4k8cbqPjQVYEppM8OjhkpVp6/NDbQXU4ay9TDxHRExlFBfOJbmkdEmGcILIb
+ FDTmSdEgHCTnRDfKlyIPWKyVDyPnq7C5W/BFd2iWajydryA2/R0xdhaKJEML4mtdHrhy
+ +OXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=N3yl9v2atpilSDgp9e8S6T68cXXaaZdtU6LZvrpjcbM=;
+ b=nvmtNaCSvqpZ9rZOG05B05WO7SDGeOW5vhJ480hALKkZJiBnmRwV+0Vonq2/5zxwni
+ Fg7Ln2QZLD+gByQtZqh4Cbsl4GE7X1NIHHNYC1w7byYpw22yBYS8cj07ok+SnqXe4NPl
+ Xi7WWxluZB1UCw4O0BQAFYHGHVjtAzNPSaBFSytZu4lEQVn6yzytIpnFzXH6rdG7f6rD
+ kRAUmrFjwQfb701MDb9whhmyFOUtFD9TNYPULla7ajt3PbkvCNn/uI2292zIHI7CVdcU
+ ki4AXTnd12lj0pg4oiEfTJE4PsMRBZrYu0Wea3epJEdXZj1o/kFkxPN6j1t5aZCQia0M
+ pwZQ==
+X-Gm-Message-State: AOAM5323uekQ2WhijjC3+KwYCRvXokw/Hgbq+W7yOWBoLmuv403qjpSQ
+ D1VfPiNIlzkWv3iMhVste5/leJ/kb5JVnQBoMvbDng==
+X-Google-Smtp-Source: ABdhPJw+RBPuSMwIoUELluUHpcF5vz2y2SOiBJKHsLSueuCQHaQ+wd08UsfA39AmY2SoWbItXXs1NnsqYUe5HrHUdss=
+X-Received: by 2002:a17:906:4791:: with SMTP id
+ cw17mr8208331ejc.493.1638976308788; 
+ Wed, 08 Dec 2021 07:11:48 -0800 (PST)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Cc: Wanpeng Li <wanpengli@tencent.com>, kvm@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Vitaly Kuznetsov <vkuznets@redhat.com>, Jim Mattson <jmattson@google.com>
+References: <20210805080724.480-1-shameerali.kolothum.thodi@huawei.com>
+ <20210805080724.480-3-shameerali.kolothum.thodi@huawei.com>
+ <e24df2a9-1332-0eb3-b52a-230662fe46ba@arm.com>
+ <CABdtJHvY5XnQN7wgQ9D8Zcu-NgHRmaUMFPgaPGZwM+AhmVpULw@mail.gmail.com>
+ <3225875e-ebd9-6378-e92c-ed3894d8aedc@arm.com>
+ <CABdtJHsOShKrRMp33JvbVKuTMLEcHQKaDw0wtZ0igoeGeWJTQg@mail.gmail.com>
+ <20211208121854.GA7317@e123427-lin.cambridge.arm.com>
+ <CABdtJHvOo+xG3pp0U1LyEAKqeUdU68tXNFN3PZBhgKVe0N=fUA@mail.gmail.com>
+ <b268f857-52a4-62fb-c748-176dc86769fb@arm.com>
+In-Reply-To: <b268f857-52a4-62fb-c748-176dc86769fb@arm.com>
+From: Jon Nettleton <jon@solid-run.com>
+Date: Wed, 8 Dec 2021 16:11:10 +0100
+Message-ID: <CABdtJHs=mo8a=Xm9Nf8aGaU-G4xbV5WNkV=Csb-m46y_y0BqPw@mail.gmail.com>
+Subject: Re: [PATCH v7 2/9] ACPI/IORT: Add support for RMR node parsing
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Linuxarm <linuxarm@huawei.com>, Steven Price <steven.price@arm.com>,
+ ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ wanghuiqiang <wanghuiqiang@huawei.com>, Hanjun Guo <guohanjun@huawei.com>,
+ yangyicong <yangyicong@huawei.com>, Sami Mujawar <Sami.Mujawar@arm.com>,
+ Will Deacon <will@kernel.org>,
+ linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,56 +101,159 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gV2VkLCAyMDIxLTEyLTA4IGF0IDE1OjQzICswMTAwLCBQYW9sbyBCb256aW5pIHdyb3RlOgo+
-IE9uIDEyLzgvMjEgMDI6NTIsIFNlYW4gQ2hyaXN0b3BoZXJzb24gd3JvdGU6Cj4gPiArCS8qCj4g
-PiArCSAqIFVubG9hZCB0aGUgQVZJQyB3aGVuIHRoZSB2Q1BVIGlzIGFib3V0IHRvIGJsb2NrLF9i
-ZWZvcmVfICB0aGUgdkNQVQo+ID4gKwkgKiBhY3R1YWxseSBibG9ja3MuICBUaGUgdkNQVSBuZWVk
-cyB0byBiZSBtYXJrZWQgSXNSdW5uaW5nPTAgYmVmb3JlIHRoZQo+ID4gKwkgKiBmaW5hbCBwYXNz
-IG92ZXIgdGhlIHZJUlIgdmlhIGt2bV92Y3B1X2NoZWNrX2Jsb2NrKCkuICBBbnkgSVJRcyB0aGF0
-Cj4gPiArCSAqIGFycml2ZSBiZWZvcmUgSXNSdW5uaW5nPTAgd2lsbCBub3Qgc2lnbmFsIHRoZSBk
-b29yYmVsbCwgaS5lLiBpdCdzCj4gPiArCSAqIEtWTSdzIHJlc3BvbnNpYmlsaXR5IHRvIGVuc3Vy
-ZSB0aGVyZSBhcmUgbm8gcGVuZGluZyBJUlFzIGluIHRoZSB2SVJSCj4gPiArCSAqIGFmdGVyIElz
-UnVubmluZyBpcyBjbGVhcmVkLCBwcmlvciB0byBzY2hlZHVsaW5nIG91dCB0aGUgdkNQVS4KPiAK
-PiBJIHByZWZlciB0byBwaHJhc2UgdGhpcyBhcm91bmQgcGFpcmVkIG1lbW9yeSBiYXJyaWVycyBh
-bmQgdGhlIHVzdWFsIAo+IHN0b3JlL3NtcF9tYi9sb2FkIGxvY2tsZXNzIGlkaW9tOgo+IAo+IAkv
-Kgo+IAkgKiBVbmxvYWQgdGhlIEFWSUMgd2hlbiB0aGUgdkNQVSBpcyBhYm91dCB0byBibG9jaywg
-X2JlZm9yZV8KPiAJICogdGhlIHZDUFUgYWN0dWFsbHkgYmxvY2tzLgo+IAkgKgo+IAkgKiBBbnkg
-SVJRcyB0aGF0IGFycml2ZSBiZWZvcmUgSXNSdW5uaW5nPTAgd2lsbCBub3QgY2F1c2UgYW4KPiAJ
-ICogaW5jb21wbGV0ZSBJUEkgdm1leGl0IG9uIHRoZSBzb3VyY2UsIHRoZXJlZm9yZSB2SVJSIHdp
-bGwgYWxzbwo+IAkgKiBiZSBjaGVja2VkIGJ5IGt2bV92Y3B1X2NoZWNrX2Jsb2NrKCkgYmVmb3Jl
-IGJsb2NraW5nLiAgVGhlCj4gCSAqIG1lbW9yeSBiYXJyaWVyIGltcGxpY2l0IGluIHNldF9jdXJy
-ZW50X3N0YXRlIG9yZGVycyB3cml0aW5nCgpJZiBJIHVuZGVyc3RhbmQgY29ycmVjdGx5IHRoaXMg
-aXMgYSBmdWxsIG1lbW9yeSBiYXJyaWVyIGFuZCBub3Qgb25seSBhIHdyaXRlIGJhcnJpZXI/Cgog
-CkFsc28sIGp1c3QgdG8gZG9jdW1lbnQsIEkgYWxzbyBmb3VuZCBvdXQgdGhhdCBsYWNrIG9mIHN1
-YnNlcXVlbnQgdklSUiBjaGVja2luZwppbiB0aGUgJ0tWTTogU1ZNOiBVbmNvbmRpdGlvbmFsbHkg
-bWFyayBBVklDIGFzIHJ1bm5pbmcgb24gdkNQVSBsb2FkICh3aXRoIEFQSUN2KScKaXMgd2hhdCBt
-YWRlIEFWSUMgdG90YWxseSB1bnVzYWJsZSBvbiBteSBzeXN0ZW1zLgpUaGF0IHBhdGNoIHdvdWxk
-IHNldCBpc19ydW5uaW5nIHJpZ2h0IGluIHRoZSBtaWRkbGUgb2Ygc2NoZWR1bGUoKSBhbmQgdGhl
-bgpubyB2SVJSIGNoZWNrIHdvdWxkIGJlIGRvbmUgYWZ0ZXJ3YXJkcy4KIApTbWFsbCB1cGRhdGUg
-b24gbXkgYWR2ZW50dXJlcyB3aXRoIEFWSUM6IE9uIHR3byBNaWxhbiBtYWNoaW5lcyBJIGdvdCBt
-eSBoYW5kcyBvbiwKb24gYm90aCBBVklDIGlzIGRpc2FibGVkIGluIENQVUlELCBidXQgc2VlbXMg
-dG8gd29yay4gTm9uZSBvZiBteSByZXByb2R1Y2VycwptYW5hZ2UgdG8gaGl0IHRoYXQgZXJyYXRh
-IGFuZCBvbiB0b3Agb2YgdGhhdCBJIGhhdmUgc2V0IG9mIHBhdGNoZXMgdGhhdCBtYWtlCkFWSUMg
-Y28tZXhpc3Qgd2l0aCBuZXN0aW5nIGFuZCBpdCBhcHBlYXJzIHRvIHdvcmsgd2hpbGUgc3RyZXNz
-IHRlc3RlZCB3aXRoCm15IEtWTSB1bml0IHRlc3Qgd2hpY2ggSSB1cGRhdGVkIHRvIHJ1biBhIG5l
-c3RlZCBndWVzdCBvbiBvbmUgb2YgdGhlIHZDUFVzLgpJIG1vc3RseSB0ZXN0aW5nIHRoZSBzZWNv
-bmQgbWFjaGluZSB0aG91Z2ggdGhpcyB3ZWVrLgogCkknbGwgcG9zdCBteSBwYXRjaGVzIGFzIHNv
-b24gYXMgSSByZWJhc2UgdGhlbSBvbiB0b3Agb2YgdGhpcyBwYXRjaCBzZXJpZXMsCmFmdGVyIEkg
-cmV2aWV3IGl0LgpJ4oCZbGwgcG9zdCB0aGUgdW5pdCB0ZXN0IHNvb24gdG9vLgogClN0aWxsIG15
-IGd1dCBmZWVsaW5nIGlzIHRoYXQgdGhlIGVycmF0YSBpcyBzdGlsbCB0aGVyZSAtIEkgYW0gc3Rp
-bGwgd2FpdGluZyBmb3IKQU1EIHRvIHByb3ZpZGUgYW55IGluZm8gdGhleSBjb3VsZCBvbiB0aGlz
-LgoKCkJlc3QgcmVnYXJkcywKCU1heGltIExldml0c2t5CgoKPiAJICogSXNSdW5uaW5nPTAgYmVm
-b3JlIHJlYWRpbmcgdGhlIHZJUlIuICBUaGUgcHJvY2Vzc29yIG5lZWRzIGEKPiAJICogbWF0Y2hp
-bmcgbWVtb3J5IGJhcnJpZXIgb24gaW50ZXJydXB0IGRlbGl2ZXJ5IGJldHdlZW4gd3JpdGluZwo+
-IAkgKiBJUlIgYW5kIHJlYWRpbmcgSXNSdW5uaW5nOyB0aGUgbGFjayBvZiB0aGlzIGJhcnJpZXIg
-bWlnaHQgYmUKPiAJICogdGhlIGNhdXNlIG9mIGVycmF0YSAjMTIzNSkuCj4gCSAqLwo+IAo+IElz
-IHRoZXJlIGFueSBudWFuY2UgdGhhdCBJIGFtIG1pc3Npbmc/Cj4gCj4gUGFvbG8KPiAKPiA+ICsJ
-ICovCj4gPiArCWF2aWNfdmNwdV9wdXQodmNwdSk7Cj4gPiArCgoKX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxp
-c3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Wed, Dec 8, 2021 at 3:37 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> Jon,
+>
+> On 2021-12-08 13:26, Jon Nettleton wrote:
+> [...]
+> >>> Even marking them as IOMMU_READ/WRITE is as much of an assumption as
+> >>> using IOMMU_MMIO or IOMMU_CACHE. It just seems IOMMU_MMIO is the most
+> >>> popular since all the examples use it for MSI doorbells in the
+> >>> documentation.
+> >>
+> >> We don't merge code based on assumptions that can easily break because
+> >> the specifications don't contemplate the details that are required.
+> >>
+> >>> I am interested why this concern is only being brought up at this point
+> >>> on a patchset that has been on the mailing list for 8+ months?
+> >>
+> >> See above. We don't merge code that we know can break and is based on
+> >> assumptions, we need to update the IORT specifications to make them
+> >> cover all the use cases - in a predictable way - and that's what we are
+> >> working on.
+> >
+> > This is not really an answer to the question.  The latest version of the
+> > IORT RMR spec was published in Feb 2021. Why was this issue not
+> > brought up with Rev 1 of this patchset? Instead you have wasted
+> > 10 months of developer and customer time. This could have easily been
+> > turned into a code first spec change request, which is a valid option
+> > for ACPI changes.
+>
+> It was only on v5 of the patchset - *six months* after the original RFC
+> posting - that anyone even first started to question the initial
+> assumptions made about attributes[1], and even then somebody familiar
+> countered that it didn't appear to matter[2]. Sorry, but you don't get
+> to U-turn and throw unjust shade at Arm for not being prescient.
+>
+> Yes, when those of us within Arm set out the initial RMR spec, an
+> assumption was made that it seemed reasonable for an OS to simply pick
+> some default strong memory type (Device or Normal-NC) and full
+> permissions if it did need to map RMRs at stage 1. That spec was
+> reviewed and published externally and no interested parties came forth
+> asking "hey, what about attributes?". Linux patches were written around
+> that assumption and proceeded through many rounds of review until we
+> eventually received sufficient feedback to demonstrate that the
+> assumption did not in fact hold well enough in general and there seemed
+> to be a genuine need for RMR attributes, and at that point we started
+> work on revising the spec.
+
+Was it documented anywhere that the RMR spec mandated Device
+or Normal-NC memory attributes? I have read through the spec
+pretty thoroughly and not seen this requirement documented
+anywhere. Also please feel free to point out where we can find information
+regarding how the spec is being revised. I am on causeway and in
+all the SC meetings and haven't seen this topic brought up at all.
+
+>
+> In the meantime, these patches have sat at v7 for four months - the
+> *other* outstanding review comments have not been addressed; I still
+> don't recall seeing an answer about whether LX2160 or anything else
+> currently deployed actually *needs* cacheable mappings or whether it
+> could muddle through with the IOMMU_MMIO assumption until proper "RMR
+> v2" support arrived later; even if so, an interim workaround specific to
+> LX2160 could have been proposed but hasn't. It is hardly reasonable to
+> pretend that Arm or the upstream maintainers are responsible for a lack
+> of development activity on the part of the submitters, no matter how
+> much blatant misinformation is repeated on Twitter.
+
+Oh the "other" comments where after 7 series of patches you decided
+that the approach that was agreed upon on the mailing list was no longer
+to your liking? Not to mention the month the patchset sat idle after initial
+comments from Ard that were cleared up, when I pinged the thread
+and it was ignored. If there was some sort of prompt response on the
+threads by the maintainers with accurate information about why the
+patches were being held up, or that they were working on a new
+spec maybe developers would have bothered to push the patchset forward.
+There is no misinformation on Twitter.  After 7 series on a patchset after
+initial discussion that it would be designed so device-tree could leverage
+the backend work, you just changed your mind, and basically sent
+everything back to the start.  Meanwhile only now in this thread are we
+finding out that the spec is getting re-worked again, which means that
+we will need to update our firmware, and wait for someone to write patches
+for the new spec, because guess what?... Arm didn't write the patches
+for any of the initial specs.
+
+Arm maintainers should be helping to find ways to get Arm "specifications",
+integrated for SystemReady customers to use.  Instead we get delayed
+responses, about right turns on the path of the patches, or just outright
+ignored for a month at a time. Maybe if Arm developers had actually
+written the patches when the spec was released there wouldn't have been
+almost a year of wasted time by the hardware manufacturers actually
+trying to build and deploy products.
+
+-Jon
+
+>
+> Regards,
+> Robin.
+>
+> [1]
+> https://lore.kernel.org/linux-iommu/13c2499e-cc0c-d395-0d60-6c3437f206ac@nxp.com/
+> [2]
+> https://lore.kernel.org/linux-iommu/CABdtJHv2QBHNoWTyp51H-J_apc75imPj0FbrV70Tm8xuNjpiTA@mail.gmail.com/
+>
+> >>
+> >>> This is based on a spec that has existed from Arm since 2020 with the
+> >>> most recent revisions published in Feb 2021.  The lack of RMR support
+> >>> in the kernel is affecting real world products, and the ability for
+> >>> SystemReady ES certified systems from just fully working with recent
+> >>> distributions.
+> >>
+> >> I answered above - if you have any questions please ask them, here,
+> >> as far as Linux code is concerned.
+> >>
+> >> I understand this is taking a long time, it is also helping us
+> >> understand all the possible use cases and how to cover them in
+> >> a way that is maintainable in the long run.
+> >
+> > Every month that this patchset has sat being unattended by the
+> > maintainers is another kernel dev cycle missed, it is another
+> > another distribution release where users need to add hackish
+> > kernel command-line options to disable security features that
+> > were forced on by default. Not to mention Linux is just one
+> > platform. What if other platforms have already adopted the
+> > existing spec? These are Arm specs and Arm maintainers and
+> > yet nobody seems to agree on anything and absolutely nothing
+> > has been achieved except wasting the time of Shameer, myself,
+> > our companies, and our customers.
+> >
+> > -Jon
+> >
+> >>
+> >> Thanks,
+> >> Lorenzo
+> >>
+> >>> Even worse, is that without this patchset customers are forced to jump
+> >>> through hoops to purposefully re-enable smmu bypass making their
+> >>> systems less secure.
+> >>>
+> >>> How is this a good experience for customers of SystemReady hardware
+> >>> when for any mainline distribution to work the first thing they have
+> >>> to do is make their system less secure?
+> >>>
+> >>> -Jon
+> >>>
+> >>>>
+> >>>> Thanks,
+> >>>> Robin.
+> >>>
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
