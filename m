@@ -1,68 +1,72 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5703FC433F5
-	for <iommu@archiver.kernel.org>; Wed,  8 Dec 2021 18:11:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 19E7CC433F5
+	for <iommu@archiver.kernel.org>; Wed,  8 Dec 2021 18:18:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id F01ED607F9;
-	Wed,  8 Dec 2021 18:11:44 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id AD68740022;
+	Wed,  8 Dec 2021 18:18:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id F1CnSPv8GOW7; Wed,  8 Dec 2021 18:11:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 7C1366060E;
-	Wed,  8 Dec 2021 18:11:43 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 23LmYZ_ukZz1; Wed,  8 Dec 2021 18:18:14 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A9ABA40196;
+	Wed,  8 Dec 2021 18:18:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 62F78C002F;
-	Wed,  8 Dec 2021 18:11:43 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 983AEC0012
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 18:11:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 60593C001E;
+	Wed,  8 Dec 2021 18:18:13 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B30F4C0012
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 18:18:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7A87682628
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 18:11:42 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 8CA4940196
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 18:18:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id v3LQV29Bu4Mm for <iommu@lists.linux-foundation.org>;
- Wed,  8 Dec 2021 18:11:41 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id vylmSgHwBvSN for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Dec 2021 18:18:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 78D9582612
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 18:11:41 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10192"; a="235408321"
-X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; d="scan'208";a="235408321"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 08 Dec 2021 10:11:40 -0800
-X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; d="scan'208";a="462858988"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 08 Dec 2021 10:11:39 -0800
-Date: Wed, 8 Dec 2021 10:15:57 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH 0/4] Enable PASID for DMA API users
-Message-ID: <20211208101557.0a896d2d@jacob-builder>
-In-Reply-To: <20211208131038.GQ6385@nvidia.com>
-References: <1638884834-83028-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <20211208131038.GQ6385@nvidia.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 49C7340022
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 18:18:10 +0000 (UTC)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.207])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4J8QNm4dqMz67mM5;
+ Thu,  9 Dec 2021 02:16:56 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.20; Wed, 8 Dec 2021 19:18:06 +0100
+Received: from [10.47.91.245] (10.47.91.245) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Wed, 8 Dec
+ 2021 18:18:06 +0000
+Subject: Re: [PATCH v3 1/1] iommu/arm-smmu-v3: Simplify useless instructions
+ in arm_smmu_cmdq_build_cmd()
+To: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel
+ <joro@8bytes.org>, <linux-arm-kernel@lists.infradead.org>,
+ <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>
+References: <20211207094109.1962-1-thunder.leizhen@huawei.com>
+ <20211207094109.1962-2-thunder.leizhen@huawei.com>
+ <9da73d96-c61d-4ed2-607d-4861e6bfd696@huawei.com>
+ <58e8e7c6-a47b-7816-ac74-aefa5b55dd17@huawei.com>
+Message-ID: <4f296b55-a59a-49b4-ad4d-902bb83a203c@huawei.com>
+Date: Wed, 8 Dec 2021 18:17:45 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Tony Luck <tony.luck@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Kumar, Sanjay
- K" <sanjay.k.kumar@intel.com>, LKML <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
- Jacob Pan <jacob.jun.pan@intel.com>, Barry Song <21cnbao@gmail.com>,
- Dan Williams <dan.j.williams@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>, "Zanussi,
- Tom" <tom.zanussi@intel.com>
+In-Reply-To: <58e8e7c6-a47b-7816-ac74-aefa5b55dd17@huawei.com>
+Content-Language: en-US
+X-Originating-IP: [10.47.91.245]
+X-ClientProxiedBy: lhreml724-chm.china.huawei.com (10.201.108.75) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,100 +79,61 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+From: John Garry via iommu <iommu@lists.linux-foundation.org>
+Reply-To: John Garry <john.garry@huawei.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jason,
+>> Did you notice any performance change with this change?
+> 
+> Hi John:
+>    Thanks for the tip. I wrote a test case today, and I found that the
+> performance did not go up but down.
 
-Thanks for the quick review.
+I very quickly tested on a DMA mapping benchmark very similar to the 
+kernel DMA benchmark module - I got mixed results. For fewer CPUs (<8), 
+a small improvement, like 0.7%. For more CPUs, a dis-improvement - 
+that's surprising, I did expect just no change as any improvement would 
+get dwarfed from the slower unmap rates for more CPUs. I can check this
+more tomorrow.
 
-On Wed, 8 Dec 2021 09:10:38 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
+> It's so weird. So I decided not to
+> change it, because it's also poorly readable. So I plan to make only
+> the following modifications:
+> @@ -237,7 +237,7 @@ static int queue_remove_raw(struct arm_smmu_queue *q, u64 *ent)
+>   static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+>   {
+>          memset(cmd, 0, 1 << CMDQ_ENT_SZ_SHIFT);
+> -       cmd[0] |= FIELD_PREP(CMDQ_0_OP, ent->opcode);
+> +       cmd[0] = FIELD_PREP(CMDQ_0_OP, ent->opcode);
+> 
+>          switch (ent->opcode) {
+>          case CMDQ_OP_TLBI_EL2_ALL:
+> 
+> This prevents the compiler from generating the following two inefficient
+> instructions:
+>       394:       f9400002        ldr     x2, [x0]	//x2 = cmd[0]
+>       398:       aa020062        orr     x2, x3, x2	//x3 = FIELD_PREP(CMDQ_0_OP, ent->opcode)
+> 
+> Maybe it's not worth changing because I've only seen a 0.x nanosecond reduction
+> in performance. But one thing is, it only comes with benefits, no side effects.
+> 
 
-> On Tue, Dec 07, 2021 at 05:47:10AM -0800, Jacob Pan wrote:
-> > Modern accelerators such as Intel's Data Streaming Accelerator (DSA) can
-> > perform DMA requests with PASID, which is a finer granularity than the
-> > device's requester ID(RID). In fact, work submissions on DSA shared work
-> > queues require PASID.  
-> 
-> Lets use plain langauge please:
-> 
-> DSA HW cannot do DMA from its RID, so always requires a PASID, even
-> for kernel controlled DMA.
-> 
-> To allow it to use the DMA API we must associate a PASID with the
-> iommu_domain that the DMA API is already using for the device's RID.
-> 
-> This way DMA tagged with the PASID will be treated exactly the same as
-> DMA originating from the RID.
-> 
-Exactly, will incorporate in the next version.
+I just think that with the original code that cmd[] is on the stack and 
+cached, so if we have write-back attribute (which I think we do) then 
+there would not necessarily a write to external memory per write to cmd[].
 
-> > DMA mapping API is the de facto standard for in-kernel DMA. However, it
-> > operates on a per device/RID basis which is not PASID-aware.
-> > 
-> > This patch introduces the following driver facing API that enables DMA
-> > API PASID usage: ioasid_t iommu_enable_pasid_dma(struct device *dev);  
-> 
-> This is the wrong API, IMHO
-> 
-> It should be more like
-> 
-> int iommu_get_dma_api_pasid(struct device *dev, ioasid_t *pasid);
-This works. I had ioasid_t *pasid in my previous version but thinking we
-can simplify the interface since we can have the reserved INVALID_IOASID
-for return status.
-But it seems to me _get_ does not convey the message that this API
-actually enables/attaches the kernel DMA PASID. Perhaps call it
-iommu_attach_dma_api_pasid() as you suggested in the ops function?
-
-> void iommu_destroy_dma_api_pasid(struct device *dev);
-> 
-Sounds good
-
-> > A PASID field is added to struct device for the purposes of storing
-> > kernel DMA PASID and flushing device IOTLBs. A separate use case in
-> > interrupt  
-> 
-> And this really should not be touching the struct device at all.
-> 
-I was thinking RID is per device, this PASID == RID. We could put in pci_dev
-but there are non-PCI devices use SSID/PASID.
-
-> At worst the PASID should be stored in the iommu_group.
-> 
-This also makes sense, default domain is stored per group. To support
-multiple devices per group, we still need a per device flag for devTLB
-flush. Right?
-
-i.e. while doing iova unmap, IOTLBs are flush for all devices, but we
-only need to flush the device TLBs for devices that has kernel DMA PASID.
-
-> > message store (IMS) also hinted adding a PASID field to struct device.
-> > https://lore.kernel.org/all/87pmx73tfw.ffs@nanos.tec.linutronix.de/
-> > IMS virtualization and DMA API does not overlap.  
-> 
-> This is under debate, I'm skeptical it will happen considering the new
-> direction for this work.
-> 
-Good to know, thanks.
-
-> > Once enabled, device drivers can continue to use DMA APIs as-is. There
-> > is no difference in terms of mapping in dma_handle between without
-> > PASID and with PASID.  The DMA mapping performed by IOMMU will be
-> > identical for both requests with and without PASID (legacy), let it be
-> > IOVA or PA in case of pass-through.  
-> 
-> In other words all this does is connect the PASID to the normal
-> DMA-API owned iommu_domain.
-> 
-Exactly! will incorporate. 
-
+So, apart from this approach, I think that if we can just reduce the 
+instructions through other efficiencies in the function then that would 
+be good.
 
 Thanks,
+John
 
-Jacob
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
