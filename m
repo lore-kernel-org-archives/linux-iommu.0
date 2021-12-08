@@ -4,143 +4,66 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 27887C433F5
-	for <iommu@archiver.kernel.org>; Wed,  8 Dec 2021 18:31:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 07957C433FE
+	for <iommu@archiver.kernel.org>; Wed,  8 Dec 2021 18:38:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id B2FF441E44;
-	Wed,  8 Dec 2021 18:31:12 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 98EB040162;
+	Wed,  8 Dec 2021 18:38:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7VRMCWxz5_EV; Wed,  8 Dec 2021 18:31:11 +0000 (UTC)
+	with ESMTP id hPGsODePu8Eu; Wed,  8 Dec 2021 18:38:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 7A15541C98;
-	Wed,  8 Dec 2021 18:31:11 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 4810C4016F;
+	Wed,  8 Dec 2021 18:38:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3F17EC001E;
-	Wed,  8 Dec 2021 18:31:11 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0D7FCC0012
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 18:31:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1B23EC001E;
+	Wed,  8 Dec 2021 18:38:01 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 214D3C0012
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 18:37:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id EE54741CB9
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 18:31:09 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 03EF4831EF
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 18:37:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Vt1EvSv-CyRx for <iommu@lists.linux-foundation.org>;
- Wed,  8 Dec 2021 18:31:07 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam11on20614.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7eae::614])
- by smtp4.osuosl.org (Postfix) with ESMTPS id F402941E6C
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 18:31:06 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bzu7nzrRq2koojpkIesVMBIdB20CB2PxtLufxw2cMz797ljcAdgdFsQsXZrnYDPQOZTn3ydmb9nz/Ps/8sxqiZiVIFd+nUPsjWKs+5bCcbtCPdluIRA8k+hdNY8km32Q/eincxcEzGkCd+gSfz03MKhfO691MVluhHr4+5hOCjhzoQAg8sBL8gLk1OEzuQQq0VH4AwFBXcfmBXd2lqq1ymlg3vo2jta2HFtVN+ScjBcloVF0yEHO2E1a9JGD51y40nyzOsoEMXX/GjqPD0t2/79NskA+HSUVjjgyWE2FxcHI9ixlwHuAESwmGFTY529JjKD7MEnZ2NFpb97DIu5nZA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=R5s4EtS6S2nZTEiIr45/f78dzWgKqtBd1A9Wx7UpxHE=;
- b=ZOVkT1C7tNgtmQ7vYNSLEan8/f4Z1VtkGAimD9LPLGb6AdEVPIsboLlEgAhgqXfVp/hhC9QmFvQc88E1evWRlMaxFhoxiomn9HfNFsM4WtmrM3+CZnoSxmzpU342vyp+T9Y3u3O6t/N3L0u+vJlh76hXPOrKSGzmkVykl92iQRMclgeZhSGCVfK7/D0Cnyig8NTAs2EePNh4Uk/nA9W31oxwZUpuZmq++E+wsSCgbkgP1NadFtT+R/fRL39Bh0ff1sEbhHRyuIDx0qR8+hy6Q3Q+aht4JM0/bFaeU0tK0XW39inu7Q95TDs4Zf6p3f1CggsvgMlaTm7yKwe6qXgM9A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=R5s4EtS6S2nZTEiIr45/f78dzWgKqtBd1A9Wx7UpxHE=;
- b=XadHPGkhyd5zjXx1g82/SHNkyv31UL9XnBQ27sHWzfMhPBF/YwsPNNYENoxdUdpyfXFJa0HCIW7Q/Q9IUE/gGM/v1iv6IOrkXHgtKf+eGTID699mLFKHGuIvApBsC/IvRII6/nQKvoSKcVRpSeutUZbiVGaI+4X1vs21XoA5w5TNoe/MKBzcj78adaYvnP990iHooiXPIjHeWdt1xe6j7N8gx5hWUWuiYdQb520zVUSt7f5fAorZralhpmbDaWyZVzKIV0l0NhGB8ogAFkYUrUA71q67lahoziFC435dfHxpOn9+wp98o/N7mg7zfhuuTUJiglRYugiCEZLYQuLvIw==
-Received: from BL1PR12MB5029.namprd12.prod.outlook.com (2603:10b6:208:310::24)
- by BL1PR12MB5206.namprd12.prod.outlook.com (2603:10b6:208:31c::5)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.21; Wed, 8 Dec
- 2021 18:31:04 +0000
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5029.namprd12.prod.outlook.com (2603:10b6:208:310::24)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.21; Wed, 8 Dec
- 2021 18:31:04 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::d8be:e4e4:ce53:6d11]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::d8be:e4e4:ce53:6d11%7]) with mapi id 15.20.4778.013; Wed, 8 Dec 2021
- 18:31:04 +0000
-Date: Wed, 8 Dec 2021 14:31:02 -0400
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [RFC v16 1/9] iommu: Introduce attach/detach_pasid_table API
-Message-ID: <20211208183102.GD6385@nvidia.com>
-References: <20211027104428.1059740-1-eric.auger@redhat.com>
- <20211027104428.1059740-2-eric.auger@redhat.com>
- <Ya3qd6mT/DpceSm8@8bytes.org>
- <c7e26722-f78c-a93f-c425-63413aa33dde@redhat.com>
- <e6733c59-ffcb-74d4-af26-273c1ae8ce68@linux.intel.com>
- <fbeabcff-a6d4-dcc5-6687-7b32d6358fe3@redhat.com>
- <20211208125616.GN6385@nvidia.com> <YbDpZ0pf7XeZcc7z@myrica>
-Content-Disposition: inline
-In-Reply-To: <YbDpZ0pf7XeZcc7z@myrica>
-X-ClientProxiedBy: YTXPR0101CA0068.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b00:1::45) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0l3v2KP3EDDq for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Dec 2021 18:37:58 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 0EF61831DA
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 18:37:57 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10192"; a="217926422"
+X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; d="scan'208";a="217926422"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 08 Dec 2021 10:37:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; d="scan'208";a="480003898"
+Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
+ by orsmga002.jf.intel.com with ESMTP; 08 Dec 2021 10:37:53 -0800
+Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
+ (envelope-from <lkp@intel.com>)
+ id 1mv1pA-0000uX-Fg; Wed, 08 Dec 2021 18:37:52 +0000
+Date: Thu, 9 Dec 2021 02:37:17 +0800
+From: kernel test robot <lkp@intel.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ iommu@lists.linux-foundation.org,
+ LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>
+Subject: Re: [PATCH 4/4] dmaengine: idxd: Use DMA API for in-kernel DMA with
+ PASID
+Message-ID: <202112090231.mEK0hpuw-lkp@intel.com>
+References: <1638884834-83028-5-git-send-email-jacob.jun.pan@linux.intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5a61b233-78c8-4f26-4fd1-08d9ba78e433
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5029:EE_|BL1PR12MB5206:EE_
-X-Microsoft-Antispam-PRVS: <BL1PR12MB50299677FE40EBF18F5DC3A2C26F9@BL1PR12MB5029.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5f0iKkIy8tchyKgciaPxJE0A84e9Fp5H+KMuNUGOm/4zMlePSvUCQoG0jBTvdbW3y6Zw9Us8byrQqKDSdHzbo2i8o0Lh3SM5Scz/Y3e/lwMrVCfntRL45vzt9T2/k8ZjlEeJt/XNksMqhu+PImex1qKpjl5sountwpYPsLNebeGnF/RrTJ8gnwcz3ZwRoEY00P4AcT4+ZhTsM827K5HUCsWdFKZ/MMr8RPb0bS0q1ImCPyWKN3umNUHhGxCMIFhQ9cQVMvMBRsry/URgKJ6K4JEcZwJeeJ5hdVizgnFEI1BH9y/vCTpNOs+swHk8L91ZMK0gtMIZBp6bi0gQU0Ys9u7BIX3j8HMDXIPZ3zWLzhcBW/sPjdxVezvKCJnZAPbKJAH7eYDJQsJWYWyy6AxP9AKRJrnezm187zkRVCI25sY0o3pgKqpp81D1a8SKbq5VuqRQou1Ph55I2VTZ5dYLRdqjCXPGumsMNtM/MDB9xGQgIPb8c+YpO+XdJxXkWTOiI/UnIkkFVLITvn1d98Dxal3kD3mIdjJHttFAVxumWrZ5wux1o4O0ofIJgjxJT0cZyVzmDhVgH5gq/23Xnm9SI3Yc8S3AitYgwjrV9nuc5EgrpAJsNGlQTJ/28aFuh/3HlAhml8kPuo84WDCmNjTRI9aBCycfVqZTJOXpJCssh2nE2cIkQ6P+tJV3XcasH2Jk1q3Z5fjfTVGi5ntCOpWjBw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL1PR12MB5029.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(1076003)(2906002)(6512007)(316002)(7416002)(26005)(186003)(66946007)(33656002)(54906003)(66556008)(508600001)(2616005)(66476007)(6486002)(5660300002)(8676002)(83380400001)(86362001)(4326008)(8936002)(36756003)(6916009)(38100700002)(6506007);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0ZkvjLdJl0Vu4WoRcx2HVrCPQiqASS8KyHCJlY909l3MFep1xkeV3CNqBNoh?=
- =?us-ascii?Q?9n00Dm5xws79iZnT8oemfAGFxij0NBx0G71va3OcodikZh+RoGmwLthtDkBa?=
- =?us-ascii?Q?adpRKjFqUrDahOa/105vC3cOjuuhl0ZV5TjK3v70/xev55lrWwjeY5T9BAZC?=
- =?us-ascii?Q?58rsQQqcOWWpO+xnvcMGA93zA2WsTxwu1X0fNCpQ0jUrc96B1u0cHvFxd5Y9?=
- =?us-ascii?Q?K0iUNKfyCOG4a8lnr1r6fjubiPANWnXtGYBYO4O1T85U9Vh2ZfG7ivbLa2t4?=
- =?us-ascii?Q?mdyhZILzhwUL/Jn+ZBdxUyABGoJXF2pwKLg8WOzW4HpHg8KgpquBgMRO9JXW?=
- =?us-ascii?Q?/U7kU7zY0wUZyY4bge2VOx2GAjTSxboTBwFPd4JF7dmskJiEQQg/HIsFh5fF?=
- =?us-ascii?Q?tvWUsj5A1qk3wdZtDU/l/cUPsRyYuzHVFwRRR21+uCBdQf+BVCug/cK0Flxq?=
- =?us-ascii?Q?Yd4168mrq8BeGI+7WrJfLLs9VxvXHb+ZdWt+HDtGN+Z2GG/MiPWmrXH87UJr?=
- =?us-ascii?Q?MumkggE9+AHHj38ioEgHmq1nvrVFVQoGYyHWYbtdm3vbhf6P9y1b3WPHp7CW?=
- =?us-ascii?Q?m8UBcTSHOPX39Get0EgYMzSQhEVagcNDiipkfhXVhRvJVcsh9aLkBFJmrpkN?=
- =?us-ascii?Q?QaADpiOlUN7wKs/r2cIaTyWDH0hIp31IdlXE9EdjQA/ktFJ92GQ8lBTDjql7?=
- =?us-ascii?Q?laBNAlMycea76Jhkgzmb/A739l46lQnV501aKS0Z5UUJwdzzTzbn6gcjogv5?=
- =?us-ascii?Q?j8Pd1Djez3Qdrn43JzXzTMpqxfuRKD+i/MpuML36hdL0Etfjf4FM83NiLi0E?=
- =?us-ascii?Q?muuVtkibkTKI0C0SSTHAtP1w6whKLdmNIOMAln6juDD8dqIsEEvfK6Jh5CDn?=
- =?us-ascii?Q?/TV8qoijhHK6TRwE+7JZrA/dJaWqs4MYBYd2dugLqRYu7URYtW37imG9b/uC?=
- =?us-ascii?Q?Qm2xSBYTjjKs8BKkNOc099Qri3Y4doSPcfYtUlkcpgQ2ltoAoFKyKGiJfajm?=
- =?us-ascii?Q?IfgKeJ17QSn48VlYqBOpOQs0KXJUfTLHYVVBxAqXM8n4Q/DzBAC+6Dip5dRx?=
- =?us-ascii?Q?+yADjqMu2MKhsOfNGWb63+DTaLV5Q+KvxZkrmWQi5W4FJBPNnis7xVs0ZAo5?=
- =?us-ascii?Q?sNpjsQg1vwecBu3+kOJv5U4wLpLQdzdq2kRwIgsWQ7MyVw5gpbZnhkUUugo5?=
- =?us-ascii?Q?JeP1QMSguo5UGLpRWv6kMwdW2YolQGsUQlnWGXQEnnV3LKhT6FFNNinmRoG2?=
- =?us-ascii?Q?U8qEoFQYNnOW6vHKE1BOgJGZRC8YJ7R7sz74Jd2gt2fJDjjGUV3ioZRZmh21?=
- =?us-ascii?Q?S4FZslR+3neRTJSAj6N9CAHmof03gG05BN1EWcjGakXKHljVRYYXxcbHJcOk?=
- =?us-ascii?Q?KlqSZwcBGcJ7IsM4WY2/+z4YwWKMWI95b6pzLfy9oPN9BlcD4nmaNK9brja9?=
- =?us-ascii?Q?Rq2PBHzDum3oDVkb5FULe5nhdRPYOVHUBap1kRHYk0XU4aHCNhInorOeTNjV?=
- =?us-ascii?Q?NhNAycznuDk3VKXTo+T4pHVDj2OaZ/E+nZ0ActaWMVJ7MCDYtds9Xy9UhX/Y?=
- =?us-ascii?Q?+4oNxmOFCCn8gPhyYTI=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a61b233-78c8-4f26-4fd1-08d9ba78e433
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Dec 2021 18:31:03.8139 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fTRsiG1t7crbRhC7JwmmfuLWuVcxH+HwqSaGNukN7Wzm7dfGIE0CCBuFz5B/nzQ4
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5206
-Cc: peter.maydell@linaro.org, kevin.tian@intel.com, lushenming@huawei.com,
- robin.murphy@arm.com, ashok.raj@intel.com, kvm@vger.kernel.org,
- vivek.gautam@arm.com, maz@kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, vsethi@nvidia.com,
- alex.williamson@redhat.com, wangxingang5@huawei.com, zhangfei.gao@linaro.org,
- eric.auger.pro@gmail.com, will@kernel.org, kvmarm@lists.cs.columbia.edu
+Content-Disposition: inline
+In-Reply-To: <1638884834-83028-5-git-send-email-jacob.jun.pan@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Raj Ashok <ashok.raj@intel.com>, kbuild-all@lists.01.org,
+ Jacob Pan <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -153,92 +76,78 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Dec 08, 2021 at 05:20:39PM +0000, Jean-Philippe Brucker wrote:
-> On Wed, Dec 08, 2021 at 08:56:16AM -0400, Jason Gunthorpe wrote:
-> > From a progress perspective I would like to start with simple 'page
-> > tables in userspace', ie no PASID in this step.
-> > 
-> > 'page tables in userspace' means an iommufd ioctl to create an
-> > iommu_domain where the IOMMU HW is directly travesering a
-> > device-specific page table structure in user space memory. All the HW
-> > today implements this by using another iommu_domain to allow the IOMMU
-> > HW DMA access to user memory - ie nesting or multi-stage or whatever.
-> > 
-> > This would come along with some ioctls to invalidate the IOTLB.
-> > 
-> > I'm imagining this step as a iommu_group->op->create_user_domain()
-> > driver callback which will create a new kind of domain with
-> > domain-unique ops. Ie map/unmap related should all be NULL as those
-> > are impossible operations.
-> > 
-> > From there the usual struct device (ie RID) attach/detatch stuff needs
-> > to take care of routing DMAs to this iommu_domain.
-> > 
-> > Step two would be to add the ability for an iommufd using driver to
-> > request that a RID&PASID is connected to an iommu_domain. This
-> > connection can be requested for any kind of iommu_domain, kernel owned
-> > or user owned.
-> > 
-> > I don't quite have an answer how exactly the SMMUv3 vs Intel
-> > difference in PASID routing should be resolved.
-> 
-> In SMMUv3 the user pgd is always stored in the PASID table (actually
-> called "context descriptor table" but I want to avoid confusion with
-> the VT-d "context table"). And to access the PASID table, the SMMUv3 first
-> translate its GPA into a PA using the stage-2 page table. For userspace to
-> pass individual pgds to the kernel, as opposed to passing whole PASID
-> tables, the host kernel needs to reserve GPA space and map it in stage-2,
-> so it can store the PASID table in there. Userspace manages GPA space.
+Hi Jacob,
 
-It is what I thought.. So in the SMMUv3 spec the STE is completely in
-kernel memory, but it points to an S1ContextPtr that must be an IPA if
-the "stage 1 translation tables" are IPA. Only via S1ContextPtr can we
-decode the substream?
+I love your patch! Yet something to improve:
 
-So in SMMUv3 land we don't really ever talk about PASID, we have a
-'user page table' that is bound to an entire RID and *all* PASIDs.
+[auto build test ERROR on joro-iommu/next]
+[also build test ERROR on vkoul-dmaengine/next linux/master linus/master v5.16-rc4 next-20211208]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-While Intel would have a 'user page table' that is only bound to a RID
-& PASID
+url:    https://github.com/0day-ci/linux/commits/Jacob-Pan/Enable-PASID-for-DMA-API-users/20211208-063637
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
+config: x86_64-randconfig-a013-20211208 (https://download.01.org/0day-ci/archive/20211209/202112090231.mEK0hpuw-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/0day-ci/linux/commit/018108bcd08fc145526791870b4b58edeecfca1e
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Jacob-Pan/Enable-PASID-for-DMA-API-users/20211208-063637
+        git checkout 018108bcd08fc145526791870b4b58edeecfca1e
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/dma/idxd/
 
-Certianly it is not a difference we can hide from userspace.
- 
-> This would be easy for a single pgd. In this case the PASID table has a
-> single entry and userspace could just pass one GPA page during
-> registration. However it isn't easily generalized to full PASID support,
-> because managing a multi-level PASID table will require runtime GPA
-> allocation, and that API is awkward. That's why we opted for "attach PASID
-> table" operation rather than "attach page table" (back then the choice was
-> easy since VT-d used the same concept).
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-I think the entire context descriptor table should be in userspace,
-and filled in by userspace, as part of the userspace page table.
+All errors (new ones prefixed by >>):
 
-The kernel API should accept the S1ContextPtr IPA and all the parts of
-the STE that relate to the defining the layout of what the S1Context
-points to an thats it.
+   drivers/dma/idxd/init.c: In function 'idxd_enable_system_pasid':
+>> drivers/dma/idxd/init.c:532:10: error: implicit declaration of function 'iommu_enable_pasid_dma'; did you mean 'iommu_enable_nesting'? [-Werror=implicit-function-declaration]
+     532 |  pasid = iommu_enable_pasid_dma(&idxd->pdev->dev);
+         |          ^~~~~~~~~~~~~~~~~~~~~~
+         |          iommu_enable_nesting
+   drivers/dma/idxd/init.c: In function 'idxd_disable_system_pasid':
+>> drivers/dma/idxd/init.c:544:2: error: implicit declaration of function 'iommu_disable_pasid_dma' [-Werror=implicit-function-declaration]
+     544 |  iommu_disable_pasid_dma(&idxd->pdev->dev);
+         |  ^~~~~~~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
-We should have another mode where the kernel owns everything, and the
-S1ContexPtr is a PA with Stage 2 bypassed.
 
-That part is fine, the more open question is what does the driver
-interface look like when userspace tell something like vfio-pci to
-connect to this thing. At some level the attaching device needs to
-authorize iommufd to take the entire PASID table and RID.
+vim +532 drivers/dma/idxd/init.c
 
-Specifically we cannot use this thing with a mdev, while the Intel
-version of a userspace page table can be.
+   527	
+   528	static int idxd_enable_system_pasid(struct idxd_device *idxd)
+   529	{
+   530		u32 pasid;
+   531	
+ > 532		pasid = iommu_enable_pasid_dma(&idxd->pdev->dev);
+   533		if (pasid == INVALID_IOASID) {
+   534			dev_err(&idxd->pdev->dev, "No kernel DMA PASID\n");
+   535			return -ENODEV;
+   536		}
+   537		idxd->pasid = pasid;
+   538	
+   539		return 0;
+   540	}
+   541	
+   542	static void idxd_disable_system_pasid(struct idxd_device *idxd)
+   543	{
+ > 544		iommu_disable_pasid_dma(&idxd->pdev->dev);
+   545		idxd->pasid = 0;
+   546	}
+   547	
 
-Maybe that is just some 'allow whole device' flag in an API
-
-Jason
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
