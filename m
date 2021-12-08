@@ -1,95 +1,89 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D76C2C433EF
-	for <iommu@archiver.kernel.org>; Wed,  8 Dec 2021 14:43:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D0D6AC433EF
+	for <iommu@archiver.kernel.org>; Wed,  8 Dec 2021 14:49:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 64229402B5;
-	Wed,  8 Dec 2021 14:43:30 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 669FA607F3;
+	Wed,  8 Dec 2021 14:49:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VIcYeIIlBYpm; Wed,  8 Dec 2021 14:43:29 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id BCD06ufFGua5; Wed,  8 Dec 2021 14:49:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id A12E0403B7;
-	Wed,  8 Dec 2021 14:43:28 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 4DD6E607EE;
+	Wed,  8 Dec 2021 14:49:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 666F3C001E;
-	Wed,  8 Dec 2021 14:43:28 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 26F2FC0012
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 14:43:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2A662C001E;
+	Wed,  8 Dec 2021 14:49:45 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 018F9C0012
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 14:49:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 07B2D40249
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 14:43:27 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id D7D6E607E8
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 14:49:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id P6gLknjMJFH4 for <iommu@lists.linux-foundation.org>;
- Wed,  8 Dec 2021 14:43:26 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Ul_RSdwLtpHo for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Dec 2021 14:49:43 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com
- [IPv6:2a00:1450:4864:20::531])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 14DBF40187
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 14:43:25 +0000 (UTC)
-Received: by mail-ed1-x531.google.com with SMTP id r25so9076510edq.7
- for <iommu@lists.linux-foundation.org>; Wed, 08 Dec 2021 06:43:25 -0800 (PST)
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com
+ [IPv6:2a00:1450:4864:20::131])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 1D406607F9
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 14:49:42 +0000 (UTC)
+Received: by mail-lf1-x131.google.com with SMTP id l22so6049675lfg.7
+ for <iommu@lists.linux-foundation.org>; Wed, 08 Dec 2021 06:49:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=sender:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:in-reply-to
- :content-transfer-encoding;
- bh=rorkq0kqbS106yCnMdxNh4H+tZeEZk4vhvZMtOx+RQ4=;
- b=T3mfDWm/XqaADQeVNwzK/X8+hI+FconPHoWo6op2K9PxyThxL1T38t2a3dx5Xh4PfW
- iLoTV9rja69gpLtgr66N21boCJeEsaM/jY3TU/FvTOIbVY+ARWnGgqXtahW/xOQceEz0
- eLoe43vh5rZ2SolOLIajqKHiLqQSH4YNiztYIm6KfhElEtSZ9hQJFJryyfWhiq3Qawy4
- YQm5eBbfTdRocGGCU8z81P7fSgxvnU5sCufQzM/jYiUoAptS/wsu62k+zo7LWQ8AmcwW
- 17TOvUH9bJlBQJ1a7vm6ilUEt3K3Hbu1hYLMntw72EMbIuKovpldwpE56i+vdBMQunCy
- EWDA==
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=A6AQ5RwsLshkjaFWGygq+igXovLHIdNbBW/Y1yrIsSE=;
+ b=edtbly6D/+OT8HwkDGJjQMmmvUukDQwJxH9sektWgq+2vtrnEXgDPIuLQDZbMCzUjT
+ ehn3E69bsJvREITJaO6njTL6s1x0unRO/pDj5eudgb+6zzMSYv3dPxkgMZzFs58zY1oH
+ 1CiuLQr49p3v0K9geojMUA5KnICmmtlfVD5zYwcUTCdA4zMsgiPkrWOxT+J+0+ZwZD/T
+ 9qhv/qCNra5Uq8URmoQm9J3TtV17adJ7RIBeg7Zxc/RVQcDZ9picNCW8lMy7hwwS38FW
+ v1rUR6yoWqRklJCsHsPFMZZaxxSzeqfNI/VaCCKTkM3QoJeKMdLvSDyGxF9zSZxx6pwQ
+ ko8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
- :subject:content-language:to:cc:references:from:in-reply-to
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
  :content-transfer-encoding;
- bh=rorkq0kqbS106yCnMdxNh4H+tZeEZk4vhvZMtOx+RQ4=;
- b=aj7yq/Fymlr4EP4JXAW23PWRcg5+5t4l2dJVrnmq4xp+1tozfj0RdVspN97LX5zbiH
- JUf0MiZvxW2iUsMfoLBP/8w89/5K/AP0YBYlYGfGAS00Q+HBo1PtpZ5cbdK5uKskCwqr
- qbyJRQ2M5lB3I77jhhWzmSTmlGsluPPeXMGfBrbNBqeFRhWIm0vRBJeYUut1k0jG2tVd
- Rk7SRb6J9Z1aOPBMophuk4glSe8l9kbfUPoKsa04cRriBWdAU09lYAKkJ2l8phhBAyHy
- QF1ZxWQ4d6uIRmtYd7EewU99CsSAht8wDBBOS9dUHRo5070GKXHHNsS6cexWBxj6RS0E
- sAyA==
-X-Gm-Message-State: AOAM530E/JqjADXsRyGO3+oEF1UZnAfNF5l2QvF0TwnU6/lgFtArZpln
- Pdh82peLXI0ylNxg3aFUDjs=
-X-Google-Smtp-Source: ABdhPJwfAih1UJbuG8DluPuj4Xflbizg9LMcjZmEsGKRCYoy5N5def2qOGTnZAHflDSy0OchG6cTIQ==
-X-Received: by 2002:a17:906:5f94:: with SMTP id
- a20mr8047146eju.256.1638974601767; 
- Wed, 08 Dec 2021 06:43:21 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:63a7:c72e:ea0e:6045?
- ([2001:b07:6468:f312:63a7:c72e:ea0e:6045])
- by smtp.googlemail.com with ESMTPSA id oz11sm1691246ejc.81.2021.12.08.06.43.20
+ bh=A6AQ5RwsLshkjaFWGygq+igXovLHIdNbBW/Y1yrIsSE=;
+ b=bRDkX9ImGC+qKFLyi6uQtc2g7YtsVhS529OdVWJGn7ogwXykvbBTlclyGcf7ybSvGx
+ DpDkLiTAbo9tYbL67At9s9Ump9WeNcegsik4GWHpGQSm9+SDYSxlfr3o3Kod+QQ6frcm
+ TYuD+2H9eDHeNrfRvHaz6xnS4ESb0+K78Dd/M19eW+yovM1JPLUe5wieJBk44U0kDF22
+ 7UGg8CK076H7MnYnshOYzlFn3D9jrXUPdF15KzredzWk/U3bMFx/OnglU7/q70sQNroL
+ GpFNUM8L4MYkITutCVz3I7r9vJG7uKBpHXU8bwz8QwwE3RShfcgzRmlMBGH30eU5SGMt
+ u4Ng==
+X-Gm-Message-State: AOAM533FNIPfptbd9i+ekgc5SPLg4EBvkNyyQmuIcZ5fydA4InF9m1nZ
+ wvRyJaRcBKx39uXF1lP6kQk=
+X-Google-Smtp-Source: ABdhPJwaNMhyxPX38YKJFrCYdx3ruEto3eCjl/TlMxD+eADMt56U216NfdKzrYehTDrBsbArMabrMw==
+X-Received: by 2002:a19:dc1a:: with SMTP id t26mr47903524lfg.315.1638974981163; 
+ Wed, 08 Dec 2021 06:49:41 -0800 (PST)
+Received: from [192.168.2.145] (94-29-46-111.dynamic.spd-mgts.ru.
+ [94.29.46.111])
+ by smtp.googlemail.com with ESMTPSA id w15sm272697lfe.184.2021.12.08.06.49.40
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 08 Dec 2021 06:43:21 -0800 (PST)
-Message-ID: <e1c4ec6a-7c1e-b96c-63e6-d07b35820def@redhat.com>
-Date: Wed, 8 Dec 2021 15:43:19 +0100
+ Wed, 08 Dec 2021 06:49:40 -0800 (PST)
+Subject: Re: [PATCH v7 6/6] iommu/tegra-smmu: Add pagetable mappings to debugfs
+To: Nicolin Chen <nicolinc@nvidia.com>, thierry.reding@gmail.com,
+ joro@8bytes.org, will@kernel.org
+References: <20211208084732.23363-1-nicolinc@nvidia.com>
+ <20211208084732.23363-7-nicolinc@nvidia.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <ccb06bfc-8ba3-b3b2-b550-d8c491082ef5@gmail.com>
+Date: Wed, 8 Dec 2021 17:49:40 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCH v3 21/26] KVM: SVM: Drop AVIC's intermediate
- avic_set_running() helper
+In-Reply-To: <20211208084732.23363-7-nicolinc@nvidia.com>
 Content-Language: en-US
-To: Sean Christopherson <seanjc@google.com>, Joerg Roedel <joro@8bytes.org>
-References: <20211208015236.1616697-1-seanjc@google.com>
- <20211208015236.1616697-22-seanjc@google.com>
-From: Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20211208015236.1616697-22-seanjc@google.com>
-Cc: Wanpeng Li <wanpengli@tencent.com>, kvm@vger.kernel.org,
- linux-kernel@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
- iommu@lists.linux-foundation.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
- Jim Mattson <jmattson@google.com>
+Cc: linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, jonathanh@nvidia.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,46 +96,16 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 12/8/21 02:52, Sean Christopherson wrote:
-> +	/*
-> +	 * Unload the AVIC when the vCPU is about to block,_before_  the vCPU
-> +	 * actually blocks.  The vCPU needs to be marked IsRunning=0 before the
-> +	 * final pass over the vIRR via kvm_vcpu_check_block().  Any IRQs that
-> +	 * arrive before IsRunning=0 will not signal the doorbell, i.e. it's
-> +	 * KVM's responsibility to ensure there are no pending IRQs in the vIRR
-> +	 * after IsRunning is cleared, prior to scheduling out the vCPU.
-
-I prefer to phrase this around paired memory barriers and the usual 
-store/smp_mb/load lockless idiom:
-
-	/*
-	 * Unload the AVIC when the vCPU is about to block, _before_
-	 * the vCPU actually blocks.
-	 *
-	 * Any IRQs that arrive before IsRunning=0 will not cause an
-	 * incomplete IPI vmexit on the source, therefore vIRR will also
-	 * be checked by kvm_vcpu_check_block() before blocking.  The
-	 * memory barrier implicit in set_current_state orders writing
-	 * IsRunning=0 before reading the vIRR.  The processor needs a
-	 * matching memory barrier on interrupt delivery between writing
-	 * IRR and reading IsRunning; the lack of this barrier might be
-	 * the cause of errata #1235).
-	 */
-
-Is there any nuance that I am missing?
-
-Paolo
-
-> +	 */
-> +	avic_vcpu_put(vcpu);
-> +
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+MDguMTIuMjAyMSAxMTo0NywgTmljb2xpbiBDaGVuINC/0LjRiNC10YI6Cj4gKwkJc2VxX3ByaW50
+ZihzLCAiXHRcdCUtMTRzIHwgJS00cyB8ICUtMTBzJXMgfCAlLTEwcyVzIHwgJS0xMXNcbiIsCj4g
+KwkJCSAgICJQVEUgUkFOR0UiLCAiQVRUUiIsCj4gKwkJCSAgICJQSFlTIiwgc2l6ZW9mKHBoeXNf
+YWRkcl90KSA+IDQgPyAiICAgICAgICAiIDogIiIsCj4gKwkJCSAgICJJT1ZBIiwgc2l6ZW9mKGRt
+YV9hZGRyX3QpICA+IDQgPyAiICAgICAgICAiIDogIiIsCgpDYW4gd2UgY2hhbmdlIElPVkEgdG8g
+dTMyPwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21t
+dSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9s
+aXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
