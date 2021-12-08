@@ -1,79 +1,82 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 545CCC433EF
-	for <iommu@archiver.kernel.org>; Wed,  8 Dec 2021 01:54:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 821A7C433FE
+	for <iommu@archiver.kernel.org>; Wed,  8 Dec 2021 01:54:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 0169982784;
-	Wed,  8 Dec 2021 01:54:52 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1D39041D74;
+	Wed,  8 Dec 2021 01:54:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id k0sVYYGXdWMV; Wed,  8 Dec 2021 01:54:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id DFF25824EE;
-	Wed,  8 Dec 2021 01:54:50 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BEBC0C001E;
-	Wed,  8 Dec 2021 01:54:50 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5660AC0012
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 01:54:50 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 396AA41D74
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 01:54:50 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=google.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MoCnPEVuVGNz for <iommu@lists.linux-foundation.org>;
- Wed,  8 Dec 2021 01:54:49 +0000 (UTC)
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Wfvbf5A5kRZM; Wed,  8 Dec 2021 01:54:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 125D141D8A;
+	Wed,  8 Dec 2021 01:54:53 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E5B81C001E;
+	Wed,  8 Dec 2021 01:54:52 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E681EC0012
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 01:54:51 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id CEB9F827D9
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 01:54:51 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=google.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id owbVP9IXxLO0 for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Dec 2021 01:54:51 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com
- [IPv6:2607:f8b0:4864:20::44a])
- by smtp4.osuosl.org (Postfix) with ESMTPS id AD98F41D8A
- for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 01:54:49 +0000 (UTC)
-Received: by mail-pf1-x44a.google.com with SMTP id
- a23-20020a62bd17000000b004a3f6892612so665367pff.22
- for <iommu@lists.linux-foundation.org>; Tue, 07 Dec 2021 17:54:49 -0800 (PST)
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com
+ [IPv6:2607:f8b0:4864:20::54a])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 4027C82784
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Dec 2021 01:54:51 +0000 (UTC)
+Received: by mail-pg1-x54a.google.com with SMTP id
+ i12-20020a63584c000000b00330ec6e2c37so443390pgm.7
+ for <iommu@lists.linux-foundation.org>; Tue, 07 Dec 2021 17:54:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
  h=reply-to:date:in-reply-to:message-id:mime-version:references
  :subject:from:to:cc;
- bh=t+Ei0itOPUqCS4bP4MpGZr4Y0AKiyZYQUO3shvC6OH4=;
- b=k2YwbuxAPGemjRBHL7uFYlBdoruRLQIFroSCqiVqW7M9ZBvnUQQ9jGvvoRM5wp50BU
- zIgGQ7HGQFBmuNg7A+QIp+NCeTdN/K7rIpyetOEYv0fFftMX25G2HHMkN4qtIQ0LfZMv
- nEZ0SJpr3uyAnIWFfnfoFOuoynn+5sugfYnXc8Zu5xGttDxjBfbR1pzNtBX3wmGo5Eh4
- tc+DrZgmJZQlP0JmnQUhMMdwg4C1ob1gWVBL3GTQuYBEqUYWxacTaSRVkDaRkCGPvyNC
- fBrkeiQfSYOSRFEFYUtRYvG8vJlWJMCUTEIGnMXeL5T96k3SQN4J7z95j0CLBBRC0fn1
- ygmg==
+ bh=dJfQR7SNrodeHl+1uM4QnaH90bN7dxbb2nVm/KO0Fr0=;
+ b=E6q7ZoNKap3puayKpMyApx5aMM7cpIA29jNBAm9RU9qZ2GsBRZJfo9m90cE5YibjKS
+ /Oqgenvs55WfnwkYUvBoCk+My3oUfiaTjkyMxYFWO3kk1h8G8HtGhEo6Irx/isGI39P8
+ YAupJ+v5JJALrli/83tKDSLpVhDiUSKDU/wVs7ag7lbqCuykiVB1elNOTh55hiyT8D9v
+ jmnX+mcFaHf8KkrFeSKV3qxr2kd4tBBqfQlKRW6eshGxdpztNEqJsQJh8QwW4i9TNc0q
+ rlqaM09jieisbicgfB7o9jhF24ra4lV3zdBRr9IhEOVwZ6sT5TUz2j1F46A73P/S5cS7
+ l4RQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:reply-to:date:in-reply-to:message-id
  :mime-version:references:subject:from:to:cc;
- bh=t+Ei0itOPUqCS4bP4MpGZr4Y0AKiyZYQUO3shvC6OH4=;
- b=pNJ/e30w+8v7utV4lRkn8M+nJCJty/wKcsEeKPXfOQt70DOSxvVl1ANwot86pSlHha
- TrX9SL03eyT+XwUA6K9d2OHZuW9ZKc0eUDJq9bcWV8Rwp2ZroWK3IyL6VOPn2oeIsuyv
- wp0j80a3aiBCO0BNi9PXg9vhQee6h5BYKyUf6DEvY62WLqZZgSkXQgodumE67t5kXOMB
- IMUgEhhRGywIWBIJ6K0ZBdAM2hj889abLxeU8qOU8bzfrHpNEk6Y7caQt7tes45Mj7Dj
- yeKKwI06P6BYqCP911aQqHWYruBNpRbWTPtgKwuVojnjImoMkdeQJqKPqqlNXRcwomqs
- jjBA==
-X-Gm-Message-State: AOAM531YQ0kEHuXfebT6NrSvj1p2orzi72+THc4zQkVJnngJTkrHzDqN
- RJeabp0NsbOcANQSFWEuUCQXRX+aK8M=
-X-Google-Smtp-Source: ABdhPJydNGMZpFjjQ57G1ZC66ywbHz44PKREG9EyVwHjLHfG2SNsZYM0b6sqBp1lD+CDQVcAS7e/s6aPdYs=
+ bh=dJfQR7SNrodeHl+1uM4QnaH90bN7dxbb2nVm/KO0Fr0=;
+ b=IMmqhBbHu6yIF+k+kEyJEv/ymimBACnylWBagwF3gJAsobE+VfAGbew258sLyYRk9Y
+ DdH1BQ0SHfiB7jOBkgQ7klIL1EjY74xvKhIN/YPJ4xStQVIoibXuE6pwZ1VkgDcUh3eH
+ x0k5Hx2hcXJe3bpKZcfNOHr2LmZ2Kdn5ECZbCtXSvwnpR8nEwZSqFh+b6HnnCH31JJp3
+ 90caMWAQR1DaCcWtC5t31Scv/GBeZ7WsYIxVuRQEKyAw2F9GrsTnuC1uG5GtpUNkj9nW
+ LjXR2Lxbf1MPbJ78IUnUdFdtQOWOSJZD3mdzQGUBI7bluhXS3kLYlCkQKsJyiH7vxKGD
+ l5fA==
+X-Gm-Message-State: AOAM532esDLr5kfVLIwAOtiJcQ3muvssoxb7RU4dzWvIyj/iRaF5YGrW
+ bSBMOQex5KAdvE5k3JsAPksGgkuwZ+I=
+X-Google-Smtp-Source: ABdhPJzRAo1jT1w67ssZL5EULvdAsrstbRdTXsE4od1JORZJT4BANLfRDFxRIq1Nz+VdNTWiu5B+Wyay4gI=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90b:1486:: with SMTP id
- js6mr342701pjb.0.1638928488764; Tue, 07 Dec 2021 17:54:48 -0800 (PST)
-Date: Wed,  8 Dec 2021 01:52:11 +0000
+ (user=seanjc job=sendgmr) by 2002:a17:903:300d:b0:142:744f:c74d
+ with SMTP id
+ o13-20020a170903300d00b00142744fc74dmr56964166pla.26.1638928490614; Tue, 07
+ Dec 2021 17:54:50 -0800 (PST)
+Date: Wed,  8 Dec 2021 01:52:12 +0000
 In-Reply-To: <20211208015236.1616697-1-seanjc@google.com>
-Message-Id: <20211208015236.1616697-2-seanjc@google.com>
+Message-Id: <20211208015236.1616697-3-seanjc@google.com>
 Mime-Version: 1.0
 References: <20211208015236.1616697-1-seanjc@google.com>
 X-Mailer: git-send-email 2.34.1.400.ga245620fadb-goog
-Subject: [PATCH v3 01/26] KVM: fix avic_set_running for preemptable kernels
+Subject: [PATCH v3 02/26] KVM: nVMX: Ensure vCPU honors event request if
+ posting nested IRQ fails
 To: Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>
 Cc: Wanpeng Li <wanpengli@tencent.com>, kvm@vger.kernel.org,
  Sean Christopherson <seanjc@google.com>, linux-kernel@vger.kernel.org,
@@ -98,52 +101,61 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+Add a memory barrier between writing vcpu->requests and reading
+vcpu->guest_mode to ensure the read is ordered after the write when
+(potentially) delivering an IRQ to L2 via nested posted interrupt.  If
+the request were to be completed after reading vcpu->mode, it would be
+possible for the target vCPU to enter the guest without posting the
+interrupt and without handling the event request.
 
-avic_set_running() passes the current CPU to avic_vcpu_load(), albeit
-via vcpu->cpu rather than smp_processor_id().  If the thread is migrated
-while avic_set_running runs, the call to avic_vcpu_load() can use a stale
-value for the processor id.  Avoid this by blocking preemption over the
-entire execution of avic_set_running().
+Note, the barrier is only for documentation since atomic operations are
+serializing on x86.
 
-Reported-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Not-signed-off-by: Sean Christopherson <seanjc@google.com>
+Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 6b6977117f50 ("KVM: nVMX: Fix races when sending nested PI while dest enters/leaves L2")
+Fixes: 705699a13994 ("KVM: nVMX: Enable nested posted interrupt processing")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/avic.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ arch/x86/kvm/vmx/vmx.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 1d8ada5b01f8..d7132a4551a2 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -997,16 +997,18 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
- static void avic_set_running(struct kvm_vcpu *vcpu, bool is_run)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
-+	int cpu = get_cpu();
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index efcc5a58abbc..a94f0fb80fd4 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -3941,6 +3941,19 @@ static int vmx_deliver_nested_posted_interrupt(struct kvm_vcpu *vcpu,
+ 		 */
+ 		vmx->nested.pi_pending = true;
+ 		kvm_make_request(KVM_REQ_EVENT, vcpu);
++
++		/*
++		 * This pairs with the smp_mb_*() after setting vcpu->mode in
++		 * vcpu_enter_guest() to guarantee the vCPU sees the event
++		 * request if triggering a posted interrupt "fails" because
++		 * vcpu->mode != IN_GUEST_MODE.  The extra barrier is needed as
++		 * the smb_wmb() in kvm_make_request() only ensures everything
++		 * done before making the request is visible when the request
++		 * is visible, it doesn't ensure ordering between the store to
++		 * vcpu->requests and the load from vcpu->mode.
++		 */
++		smp_mb__after_atomic();
++
+ 		/* the PIR and ON have been set by L1. */
+ 		if (!kvm_vcpu_trigger_posted_interrupt(vcpu, true))
+ 			kvm_vcpu_kick(vcpu);
+@@ -3974,6 +3987,12 @@ static int vmx_deliver_posted_interrupt(struct kvm_vcpu *vcpu, int vector)
+ 	if (pi_test_and_set_on(&vmx->pi_desc))
+ 		return 0;
  
-+	WARN_ON(cpu != vcpu->cpu);
- 	svm->avic_is_running = is_run;
- 
--	if (!kvm_vcpu_apicv_active(vcpu))
--		return;
--
--	if (is_run)
--		avic_vcpu_load(vcpu, vcpu->cpu);
--	else
--		avic_vcpu_put(vcpu);
-+	if (kvm_vcpu_apicv_active(vcpu)) {
-+		if (is_run)
-+			avic_vcpu_load(vcpu, cpu);
-+		else
-+			avic_vcpu_put(vcpu);
-+	}
-+	put_cpu();
- }
- 
- void svm_vcpu_blocking(struct kvm_vcpu *vcpu)
++	/*
++	 * The implied barrier in pi_test_and_set_on() pairs with the smp_mb_*()
++	 * after setting vcpu->mode in vcpu_enter_guest(), thus the vCPU is
++	 * guaranteed to see PID.ON=1 and sync the PIR to IRR if triggering a
++	 * posted interrupt "fails" because vcpu->mode != IN_GUEST_MODE.
++	 */
+ 	if (vcpu != kvm_get_running_vcpu() &&
+ 	    !kvm_vcpu_trigger_posted_interrupt(vcpu, false))
+ 		kvm_vcpu_kick(vcpu);
 -- 
 2.34.1.400.ga245620fadb-goog
 
