@@ -1,119 +1,115 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B59EFC4332F
-	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 07:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A398FC433F5
+	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 07:50:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 6F98D408D1;
-	Thu,  9 Dec 2021 07:38:45 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 46DBF6076C;
+	Thu,  9 Dec 2021 07:50:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9twb5VTqpD7O; Thu,  9 Dec 2021 07:38:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 198B9408C7;
-	Thu,  9 Dec 2021 07:38:44 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PY3mez16X-mO; Thu,  9 Dec 2021 07:50:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id B4AF960759;
+	Thu,  9 Dec 2021 07:50:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F3AFBC001E;
-	Thu,  9 Dec 2021 07:38:43 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C5A33C0038
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 07:38:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8A9F3C001E;
+	Thu,  9 Dec 2021 07:50:14 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7EAAAC0012
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 07:50:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 9B0F5408D6
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 07:38:41 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 58DDB82B9F
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 07:50:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1g5XaQU1PeHI for <iommu@lists.linux-foundation.org>;
- Thu,  9 Dec 2021 07:38:39 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam10on2063.outbound.protection.outlook.com [40.107.94.63])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 786C0402F2
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 07:38:39 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ixJhFWiorBiRttdLhK0HPR/6JjegRgEF/sUBc+Yj82bTDn4AlrVdh9D2k2SpnIcuXr1rf6nrZKSEEmin8HA843bCqD8EkGna+8Lcuzn5gzm9YT94tNw9QLotTioCmHLDZJEqQFgyIDAmdSSU4XLtJ85hZbCr3g1W+V/4ZgZrNIwDgz86IfLHdu2dwcZHSkfi91e9bABO2ciSvXYuEKXZry0lZX8jhpidhMKxYB3bg/1LnpPEqNag/jryj1upj/LwLnn3JVcHrCB5SA/5uH5BIx701dwA3ktzgY7EdklAUAEm9s/Uuyq0rOcenlX7m0xOdDXKVFSsMGFtQPLnLNbmLw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6fsCQVDe6IewBrU1aRb8iIWNyENyLRKuoX/y/1XS11o=;
- b=UaFD3EYOrcBcAkl5NQbF+LS1plbMy1gsWjtQ+GucKd5+2QKkeLmrz7pTmWpWwtZd3M5wPAfHCOcD024De8VmOaxm0xmkX2jamsB+YyBg/QlgPfEWKtV2SKmD7O2JCkCTjRpLc3AJjZ9YBGoJEhNWwdwlsvqcDidP/9N7i9Cbdp5SkPvYpBoHj3COHDYOnBuXDN3i0fHszHTa/xjU0UA2evq17YyoPqwqKToAfxMjNwFj854bWBUP740KxrdVRT/V5Dof3ZK2nJ67h/I36K+8WwaDFFmU/bonfelgZbbPB/9dIGqodWEaGQBcL75X4W/d9JcgMF4g82xSLXsReSF3QA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 203.18.50.13) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6fsCQVDe6IewBrU1aRb8iIWNyENyLRKuoX/y/1XS11o=;
- b=iH5NRE1ElUp56E3wR43+XMQHNaApDih97/XNxtOTAEpR+hiPAvFyjIesOY8eC+j9ebDY5C9QzwS9bJME73xl4MzI+MzdZkzCrJBeCAhVQk16cvGQgpQHsIMOU651Crqg7dmtTXmSRsiDX3oRH3AVn8f1fQaiHBPLTbryt8Dq05nnmjdbFY/kE4IoDAufLn5IrcT8+V7LevBVOSOSjx4M90efDUtUdoQ6eZzaIm4JpdXP1u0Rqq0xC75GoGGVjXtpzxahsqFpbw18D0UhpnQhu2wufgu+2TSZ4WQ6xr2Qz+Zo6IWX8ffUK+xQG7ZNpnE2EC9MhD36VJRgpq5CKV1e5w==
-Received: from DM6PR07CA0115.namprd07.prod.outlook.com (2603:10b6:5:330::6) by
- DM6PR12MB4944.namprd12.prod.outlook.com (2603:10b6:5:1ba::24) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4755.22; Thu, 9 Dec 2021 07:38:31 +0000
-Received: from DM6NAM11FT006.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:330:cafe::de) by DM6PR07CA0115.outlook.office365.com
- (2603:10b6:5:330::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.13 via Frontend
- Transport; Thu, 9 Dec 2021 07:38:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 203.18.50.13)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 203.18.50.13 as permitted sender) receiver=protection.outlook.com;
- client-ip=203.18.50.13; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (203.18.50.13) by
- DM6NAM11FT006.mail.protection.outlook.com (10.13.173.104) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4755.13 via Frontend Transport; Thu, 9 Dec 2021 07:38:31 +0000
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HKMAIL102.nvidia.com
- (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 9 Dec
- 2021 07:38:30 +0000
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 9 Dec
- 2021 07:38:28 +0000
-Received: from Asurada-Nvidia.nvidia.com (172.20.187.5) by mail.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Wed, 8 Dec 2021 23:38:27 -0800
-To: <thierry.reding@gmail.com>, <joro@8bytes.org>, <will@kernel.org>
-Subject: [PATCH v8 6/6] iommu/tegra-smmu: Add pagetable mappings to debugfs
-Date: Wed, 8 Dec 2021 23:38:22 -0800
-Message-ID: <20211209073822.26728-7-nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211209073822.26728-1-nicolinc@nvidia.com>
-References: <20211209073822.26728-1-nicolinc@nvidia.com>
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 2NmTNVS4fWRy for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Dec 2021 07:50:12 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 2A27D82B94
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 07:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1639036211;
+ h=from:from:reply-to:reply-to:subject:subject:date:date:
+ message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+ content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=/AygQgJSDL/0VPHQil7DxyO7LMzsaDLMXqw5yWmd50s=;
+ b=LnqVbwx+G1OX31NZmcCzIt86lXfRPnHQF5vFC8h/ip+ni8LooZBI0wujWV33l4EnQERrDy
+ pH9FiVB9iiQ6z/9dJ+V054j1YAM6JpIOtLqEPb2/wc7ctjdI1EfvrEMKzxI1O3OyLGotpY
+ zyzY7QSh3o6wn9wfZh9lo0qCy9Si+sE=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-78-7mjCU62HMUWWe3jqkCbrmw-1; Thu, 09 Dec 2021 02:50:08 -0500
+X-MC-Unique: 7mjCU62HMUWWe3jqkCbrmw-1
+Received: by mail-wm1-f70.google.com with SMTP id
+ a85-20020a1c7f58000000b0033ddc0eacc8so4430103wmd.9
+ for <iommu@lists.linux-foundation.org>; Wed, 08 Dec 2021 23:50:08 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:reply-to:subject:to:cc:references:from
+ :message-id:date:user-agent:mime-version:in-reply-to
+ :content-transfer-encoding:content-language;
+ bh=/AygQgJSDL/0VPHQil7DxyO7LMzsaDLMXqw5yWmd50s=;
+ b=ukaBJ58lavYZPCG6FV08PQORz4Wdn+5UVWArAF3Q9QhYw8Y+zUGUAMj1dKPBWQtYxS
+ egBZWUA5TEA7lYnkj2mYxAcz47hK0CqCS9PmVzEOuFdR0fJrExJLFlb4RhiUnL12/OTt
+ giDJv6lo6Aawu0bhCcbEDKyloEL19mvubqCzkGwY5XB6oCu4LXh+rVC4/uh085j6xy0z
+ HCn/1nxd0bhS82a0/DHynWOXlcqoVWTpYmHbK7KyZzIIFlP7rlhPewjt3Y3Y7DjexuRb
+ KsxMLG7qd/J0BzDtgb9tFcIVPkJhGuMKM22JdZJ1ep4h84iEdOyWM7oZFJQblO6Kwx8Y
+ 5ewA==
+X-Gm-Message-State: AOAM530+9b7heHDPWiQexHC5+wBeW4PHrVtz9r3rKyTQVCIKP22zWaXG
+ mSyBY6G5Z/iE+K/qG62iNNdKs5hNWxkKQzzJkiU9Yyww0vCA9KirsoClwAO19ShFRH3ddKym/n0
+ 6xFq69pMgx4MY59yxNFcfvr3/V95uug==
+X-Received: by 2002:a5d:68c1:: with SMTP id p1mr4404827wrw.585.1639036207474; 
+ Wed, 08 Dec 2021 23:50:07 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyxM7es35fO3bx5eEMf/Nb497G7NrF+/56L4RejjxGuiXbl8ZtgmWYluATX5InHERKthnvKkg==
+X-Received: by 2002:a5d:68c1:: with SMTP id p1mr4404796wrw.585.1639036207210; 
+ Wed, 08 Dec 2021 23:50:07 -0800 (PST)
+Received: from ?IPv6:2a01:e0a:59e:9d80:527b:9dff:feef:3874?
+ ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+ by smtp.gmail.com with ESMTPSA id l5sm6766694wrs.59.2021.12.08.23.50.05
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 08 Dec 2021 23:50:06 -0800 (PST)
+Subject: Re: [RFC v16 1/9] iommu: Introduce attach/detach_pasid_table API
+To: Jason Gunthorpe <jgg@nvidia.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <20211027104428.1059740-1-eric.auger@redhat.com>
+ <20211027104428.1059740-2-eric.auger@redhat.com>
+ <Ya3qd6mT/DpceSm8@8bytes.org>
+ <c7e26722-f78c-a93f-c425-63413aa33dde@redhat.com>
+ <e6733c59-ffcb-74d4-af26-273c1ae8ce68@linux.intel.com>
+ <fbeabcff-a6d4-dcc5-6687-7b32d6358fe3@redhat.com>
+ <20211208125616.GN6385@nvidia.com> <YbDpZ0pf7XeZcc7z@myrica>
+ <20211208183102.GD6385@nvidia.com>
+From: Eric Auger <eric.auger@redhat.com>
+Message-ID: <b576084b-482f-bcb7-35a6-d786dbb305e1@redhat.com>
+Date: Thu, 9 Dec 2021 08:50:04 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1825133c-c72f-4569-219a-08d9bae6e632
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4944:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB49443E53DAB924885C774E57AB709@DM6PR12MB4944.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:392;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jIKPXEoQKK67PLy3Qh9DHlvprXgvIfHFat/3Q03c9RjHAd4nIsz81bxCZinSnVn4pkIbWeQUT09Tz97VAmyRFJTnO487fSieAh0zG2EAeS2rGCOP3iDIBrqnLbY68MrT3rbGWoVrnJNKAeBItREcEYfyqsNqcw7RqSOp2vkrylAlA+s+Xe6TYeCYtODeOcHK1Kl1cvnc+EnHRJYmqKOaYU1xmrQkZEu21nkfqbHyVv+xO2X9hp9Of6BOHBPAfzOpe5V/MzZGtIJixHYADVMUdKTC5mncgp+H5wuco3QPPZPFySRB3MsmasRt7RxOWSvK84Aiguw2zmRMdwizKV9oTkLe9f/xdJMnAtf2yFUK89amyRD7blsNTPuFRToGL3BC+YsoddK+CAyme49QhmibrkwvPo1URl4liyhbWkTFFeh8gmHyzoQgZjjTAA/hHTjYx6BM96ppiIARr2Yml0kYySkIMM3Uan7LVozMA6mpLlrxqijtF+QLrnomiClQ3cRcJeVpiARspWoJbl8eK8mcuZ33O/Egtnh10qc0x20iGkNtPhzF9y6aT8s2WjfyE84FJnDLcqSu1B5tNRq0Qugis1s/vceU9p93Qht53u5FtXqaYh4c0uu4KznmFeZViNirDDmhGFWMtHeDuIvtpC+I/ve5VDiw9fv31PZ9I6JOkE4/u2A9YGbAipG0p3rexOSvs3FjBk+rNBJcIQA3byc5rOHyivihO7m1O7vxt/JVkQ2S3Qns1yqRCv0uS9hwj79sL89bwi+CpPPELwRb08KX+54h6Lj14cwXO9rHJC+aBGo=
-X-Forefront-Antispam-Report: CIP:203.18.50.13; CTRY:HK; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:hkhybrid02.nvidia.com; CAT:NONE;
- SFS:(4636009)(46966006)(36840700001)(40470700001)(70206006)(7696005)(186003)(36860700001)(70586007)(8676002)(40460700001)(316002)(82310400004)(26005)(4326008)(508600001)(86362001)(1076003)(36756003)(5660300002)(2906002)(7636003)(54906003)(6666004)(110136005)(83380400001)(356005)(8936002)(34070700002)(2616005)(336012)(47076005)(426003);
- DIR:OUT; SFP:1101; 
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2021 07:38:31.1457 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1825133c-c72f-4569-219a-08d9bae6e632
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[203.18.50.13];
- Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT006.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4944
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jonathanh@nvidia.com, linux-tegra@vger.kernel.org, digetx@gmail.com
+In-Reply-To: <20211208183102.GD6385@nvidia.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=eric.auger@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Cc: peter.maydell@linaro.org, kevin.tian@intel.com, lushenming@huawei.com,
+ robin.murphy@arm.com, ashok.raj@intel.com, kvm@vger.kernel.org,
+ wangxingang5@huawei.com, maz@kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, vsethi@nvidia.com, vivek.gautam@arm.com,
+ alex.williamson@redhat.com, zhangfei.gao@linaro.org, eric.auger.pro@gmail.com,
+ will@kernel.org, kvmarm@lists.cs.columbia.edu
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -126,299 +122,119 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Nicolin Chen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Nicolin Chen <nicolinc@nvidia.com>
+Reply-To: eric.auger@redhat.com
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This patch dumps all active mapping entries from pagetable to a
-debugfs directory named "mappings".
+Hi Jason,
 
-Part of this patch for listing all swgroup names in a group_soc
-is provided by Dmitry Osipenko <digetx@gmail.com>
+On 12/8/21 7:31 PM, Jason Gunthorpe wrote:
+> On Wed, Dec 08, 2021 at 05:20:39PM +0000, Jean-Philippe Brucker wrote:
+>> On Wed, Dec 08, 2021 at 08:56:16AM -0400, Jason Gunthorpe wrote:
+>>> From a progress perspective I would like to start with simple 'page
+>>> tables in userspace', ie no PASID in this step.
+>>>
+>>> 'page tables in userspace' means an iommufd ioctl to create an
+>>> iommu_domain where the IOMMU HW is directly travesering a
+>>> device-specific page table structure in user space memory. All the HW
+>>> today implements this by using another iommu_domain to allow the IOMMU
+>>> HW DMA access to user memory - ie nesting or multi-stage or whatever.
+>>>
+>>> This would come along with some ioctls to invalidate the IOTLB.
+>>>
+>>> I'm imagining this step as a iommu_group->op->create_user_domain()
+>>> driver callback which will create a new kind of domain with
+>>> domain-unique ops. Ie map/unmap related should all be NULL as those
+>>> are impossible operations.
+>>>
+>>> From there the usual struct device (ie RID) attach/detatch stuff needs
+>>> to take care of routing DMAs to this iommu_domain.
+>>>
+>>> Step two would be to add the ability for an iommufd using driver to
+>>> request that a RID&PASID is connected to an iommu_domain. This
+>>> connection can be requested for any kind of iommu_domain, kernel owned
+>>> or user owned.
+>>>
+>>> I don't quite have an answer how exactly the SMMUv3 vs Intel
+>>> difference in PASID routing should be resolved.
+>> In SMMUv3 the user pgd is always stored in the PASID table (actually
+>> called "context descriptor table" but I want to avoid confusion with
+>> the VT-d "context table"). And to access the PASID table, the SMMUv3 first
+>> translate its GPA into a PA using the stage-2 page table. For userspace to
+>> pass individual pgds to the kernel, as opposed to passing whole PASID
+>> tables, the host kernel needs to reserve GPA space and map it in stage-2,
+>> so it can store the PASID table in there. Userspace manages GPA space.
+> It is what I thought.. So in the SMMUv3 spec the STE is completely in
+> kernel memory, but it points to an S1ContextPtr that must be an IPA if
+> the "stage 1 translation tables" are IPA. Only via S1ContextPtr can we
+> decode the substream?
+Yes that's correct. S1ContextPtr is the IPA of the L1 Context Descriptor
+Table which is then indexed by substreamID.
 
-Attaching an example:
+>
+> So in SMMUv3 land we don't really ever talk about PASID, we have a
+> 'user page table' that is bound to an entire RID and *all* PASIDs.
+in ARM terminology substreamID matches the PASID and this is what
+indexes the L1 Context Descriptor Table.
 
-[SWGROUP: xusb_host] [as: (id: 5), (attr: R|W|-), (pd_dma: 0x0000000080005000)]
-{
-        [index: 1023] 0xf0080007 (count: 52)
-        {
-                PTE RANGE      | ATTR | PHYS               | IOVA       | SIZE
-                [#913 , #913 ] | 0x7  | 0x0000000101fbe000 | 0xfff91000 | 0x1000
-                [#914 , #914 ] | 0x7  | 0x0000000101fbd000 | 0xfff92000 | 0x1000
-                [#915 , #915 ] | 0x7  | 0x0000000101fbc000 | 0xfff93000 | 0x1000
-                [#916 , #916 ] | 0x7  | 0x0000000101fbb000 | 0xfff94000 | 0x1000
-                [#921 , #921 ] | 0x7  | 0x00000000fcc02000 | 0xfff99000 | 0x1000
-                [#922 , #922 ] | 0x7  | 0x0000000101fb7000 | 0xfff9a000 | 0x1000
-                [#923 , #923 ] | 0x7  | 0x0000000101fb5000 | 0xfff9b000 | 0x1000
-                [#948 , #948 ] | 0x7  | 0x0000000101fb2000 | 0xfffb4000 | 0x1000
-                [#949 , #949 ] | 0x7  | 0x0000000101fb1000 | 0xfffb5000 | 0x1000
-                [#950 , #950 ] | 0x7  | 0x0000000101faf000 | 0xfffb6000 | 0x1000
-                [#951 , #951 ] | 0x7  | 0x0000000101fae000 | 0xfffb7000 | 0x1000
-                [#952 , #952 ] | 0x7  | 0x000000010263d000 | 0xfffb8000 | 0x1000
-                [#953 , #953 ] | 0x7  | 0x000000010263c000 | 0xfffb9000 | 0x1000
-                [#954 , #954 ] | 0x7  | 0x000000010263b000 | 0xfffba000 | 0x1000
-                [#955 , #955 ] | 0x7  | 0x000000010263a000 | 0xfffbb000 | 0x1000
-                [#956 , #956 ] | 0x7  | 0x0000000102639000 | 0xfffbc000 | 0x1000
-                [#957 , #957 ] | 0x7  | 0x0000000102638000 | 0xfffbd000 | 0x1000
-                [#958 , #958 ] | 0x7  | 0x0000000102637000 | 0xfffbe000 | 0x1000
-                [#959 , #959 ] | 0x7  | 0x0000000102636000 | 0xfffbf000 | 0x1000
-                [#960 , #992 ] | 0x7  | 0x0000000102613000 | 0xfffc0000 | 0x21000
-        }
-}
-Total PDEs: 1, total PTEs: 52
+>
+> While Intel would have a 'user page table' that is only bound to a RID
+> & PASID
+>
+> Certianly it is not a difference we can hide from userspace.
+>  
+>> This would be easy for a single pgd. In this case the PASID table has a
+>> single entry and userspace could just pass one GPA page during
+>> registration. However it isn't easily generalized to full PASID support,
+>> because managing a multi-level PASID table will require runtime GPA
+>> allocation, and that API is awkward. That's why we opted for "attach PASID
+>> table" operation rather than "attach page table" (back then the choice was
+>> easy since VT-d used the same concept).
+> I think the entire context descriptor table should be in userspace,
+> and filled in by userspace, as part of the userspace page table.
 
-Note that the example above was output after I locally enabled
-IOMMU_DOMAIN_DMA, which is not merged to mainline yet due to a
-known framebuffer issue.
+In ARM nested mode the L1 Context Descriptor Table is fully managed by
+the guest and the userspace only needs to trap its S1ContextPtr and pass
+it to the host.
+>
+> The kernel API should accept the S1ContextPtr IPA and all the parts of
+> the STE that relate to the defining the layout of what the S1Context
+> points to an thats it.
+Yes that's exactly what is done currently. At config time the host must
+trap guest STE changes (format and S1ContextPtr) and "incorporate" those
+changes into the stage2 related STE information. The STE is owned by the
+host kernel as it contains the stage2 information (S2TTB).
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- drivers/iommu/tegra-smmu.c | 185 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 185 insertions(+)
+In
+https://developer.arm.com/documentation/ihi0070/latest
+(ARM_IHI_0070_D_b_System_Memory_Management_Unit_Architecture_Specification.pdf)
+Synthetic diagrams can be found in 3.3.2 StreamIDs to Context
+Descriptors. They give the global view.
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 454504aa6602..cbd1a52f2a9f 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -47,6 +47,7 @@ struct tegra_smmu {
- 	struct list_head list;
- 
- 	struct dentry *debugfs;
-+	struct dentry *debugfs_mappings;
- 
- 	struct iommu_device iommu;	/* IOMMU Core code handle */
- };
-@@ -154,6 +155,9 @@ static inline u32 smmu_readl(struct tegra_smmu *smmu, unsigned long offset)
- 
- #define SMMU_PDE_ATTR		(SMMU_PDE_READABLE | SMMU_PDE_WRITABLE | \
- 				 SMMU_PDE_NONSECURE)
-+#define SMMU_PTE_ATTR		(SMMU_PTE_READABLE | SMMU_PTE_WRITABLE | \
-+				 SMMU_PTE_NONSECURE)
-+#define SMMU_PTE_ATTR_SHIFT	29
- 
- static unsigned int iova_pd_index(unsigned long iova)
- {
-@@ -165,6 +169,12 @@ static unsigned int iova_pt_index(unsigned long iova)
- 	return (iova >> SMMU_PTE_SHIFT) & (SMMU_NUM_PTE - 1);
- }
- 
-+static unsigned long pd_pt_index_iova(unsigned int pd_index, unsigned int pt_index)
-+{
-+	return (pd_index & (SMMU_NUM_PDE - 1)) << SMMU_PDE_SHIFT |
-+	       (pt_index & (SMMU_NUM_PTE - 1)) << SMMU_PTE_SHIFT;
-+}
-+
- static bool smmu_dma_addr_valid(struct tegra_smmu *smmu, dma_addr_t addr)
- {
- 	addr >>= 12;
-@@ -498,6 +508,156 @@ static void tegra_smmu_as_unprepare(struct tegra_smmu *smmu,
- 	mutex_unlock(&smmu->lock);
- }
- 
-+static int tegra_smmu_debugfs_mappings_show(struct seq_file *s, void *data)
-+{
-+	struct tegra_smmu_group *group = s->private;
-+	const struct tegra_smmu_group_soc *soc;
-+	const struct tegra_smmu_swgroup *swgrp;
-+	struct tegra_smmu_as *as;
-+	struct tegra_smmu *smmu;
-+	unsigned int pd_index;
-+	unsigned int pt_index;
-+	unsigned long flags;
-+	u64 pte_count = 0;
-+	u32 pde_count = 0;
-+	u32 *pd, val;
-+
-+	if (!group || !group->as || !group->swgrp)
-+		return 0;
-+
-+	swgrp = group->swgrp;
-+	smmu = group->smmu;
-+	soc = group->soc;
-+	as = group->as;
-+
-+	mutex_lock(&smmu->lock);
-+
-+	val = smmu_readl(smmu, swgrp->reg);
-+	if (!(val & SMMU_ASID_ENABLE))
-+		goto unlock;
-+
-+	pd = page_address(as->pd);
-+	if (!pd)
-+		goto unlock;
-+
-+	seq_puts(s, "[SWGROUP: ");
-+	/* List all the swgroup names in the same group_soc */
-+	if (soc) {
-+		bool first_swgroup = true;
-+		unsigned int i;
-+
-+		for (i = 0; i < soc->num_swgroups; i++) {
-+			swgrp = tegra_smmu_find_swgrp(smmu, soc->swgroups[i]);
-+			if (WARN_ON(!swgrp))
-+				goto unlock;
-+
-+			val = smmu_readl(smmu, swgrp->reg);
-+			if (!(val & SMMU_ASID_ENABLE))
-+				continue;
-+
-+			if (WARN_ON((val & SMMU_ASID_MASK) != as->id))
-+				continue;
-+
-+			if (first_swgroup)
-+				first_swgroup = false;
-+			else
-+				seq_puts(s, ", ");
-+
-+			seq_printf(s, "%s", swgrp->name);
-+		}
-+	} else {
-+		WARN_ON((val & SMMU_ASID_MASK) != as->id);
-+		seq_printf(s, "%s", swgrp->name);
-+	}
-+	seq_puts(s, "] ");
-+
-+	seq_printf(s, "[as: (id: %d), ", as->id);
-+	seq_printf(s, "(attr: %c|%c|%c), ",
-+		   as->attr & SMMU_PD_READABLE ? 'R' : '-',
-+		   as->attr & SMMU_PD_WRITABLE ? 'W' : '-',
-+		   as->attr & SMMU_PD_NONSECURE ? '-' : 'S');
-+	seq_printf(s, "(pd_dma: %pad)]\n", &as->pd_dma);
-+	seq_puts(s, "{\n");
-+
-+	spin_lock_irqsave(&as->lock, flags);
-+
-+	for (pd_index = 0; pd_index < SMMU_NUM_PDE; pd_index++) {
-+		struct page *pt_page;
-+		unsigned int i;
-+		u32 *addr;
-+
-+		/* An empty PDE should not have a pte use count */
-+		WARN_ON_ONCE(!pd[pd_index] ^ !as->count[pd_index]);
-+
-+		/* Skip this empty PDE */
-+		if (!pd[pd_index])
-+			continue;
-+
-+		pde_count++;
-+		pte_count += as->count[pd_index];
-+		seq_printf(s, "\t[index: %u] 0x%x (count: %d)\n",
-+			   pd_index, pd[pd_index], as->count[pd_index]);
-+		pt_page = as->pts[pd_index];
-+		addr = page_address(pt_page);
-+
-+		seq_puts(s, "\t{\n");
-+		seq_printf(s, "\t\t%-14s | %-4s | %-10s%s | %-10s | %-11s\n",
-+			   "PTE RANGE", "ATTR",
-+			   "PHYS", sizeof(phys_addr_t) > 4 ? "        " : "",
-+			   "IOVA", "SIZE");
-+		for (pt_index = 0; pt_index < SMMU_NUM_PTE; pt_index += i) {
-+			size_t size = SMMU_SIZE_PT;
-+			dma_addr_t iova;
-+			phys_addr_t pa;
-+
-+			i = 1;
-+
-+			if (!addr[pt_index])
-+				continue;
-+
-+			iova = pd_pt_index_iova(pd_index, pt_index);
-+			pa = SMMU_PFN_PHYS(addr[pt_index] & ~SMMU_PTE_ATTR);
-+
-+			/* Check contiguous mappings and increase size */
-+			while (pt_index + i < SMMU_NUM_PTE) {
-+				dma_addr_t next_iova;
-+				phys_addr_t next_pa;
-+
-+				if (!addr[pt_index + i])
-+					break;
-+
-+				next_iova = pd_pt_index_iova(pd_index, pt_index + i);
-+				next_pa = SMMU_PFN_PHYS(addr[pt_index + i] & ~SMMU_PTE_ATTR);
-+
-+				/* Break at the end of a linear mapping */
-+				if ((next_iova - iova != SMMU_SIZE_PT * i) ||
-+				    (next_pa - pa != SMMU_SIZE_PT * i))
-+					break;
-+
-+				i++;
-+			}
-+
-+			seq_printf(s, "\t\t[#%-4u, #%-4u] | 0x%-2x | %pa | 0x%-8x | 0x%-9zx\n",
-+				   pt_index, pt_index + i - 1,
-+				   addr[pt_index] >> SMMU_PTE_ATTR_SHIFT,
-+				   &pa, (u32)iova, size * i);
-+		}
-+		seq_puts(s, "\t}\n");
-+	}
-+
-+	spin_unlock_irqrestore(&as->lock, flags);
-+
-+	seq_puts(s, "}\n");
-+	seq_printf(s, "Total PDEs: %u, total PTEs: %llu\n ", pde_count, pte_count);
-+
-+unlock:
-+	mutex_unlock(&smmu->lock);
-+
-+	return 0;
-+}
-+
-+DEFINE_SHOW_ATTRIBUTE(tegra_smmu_debugfs_mappings);
-+
- static void tegra_smmu_attach_as(struct tegra_smmu *smmu,
- 				 struct tegra_smmu_as *as,
- 				 unsigned int swgroup)
-@@ -522,6 +682,20 @@ static void tegra_smmu_attach_as(struct tegra_smmu *smmu,
- 			dev_warn(smmu->dev,
- 				 "overwriting group->as for swgroup: %s\n", swgrp->name);
- 		group->as = as;
-+
-+		if (smmu->debugfs_mappings) {
-+			const char *name;
-+
-+			if (group->soc)
-+				name = group->soc->name;
-+			else
-+				name = group->swgrp->name;
-+
-+			debugfs_create_file(name, 0444,
-+					    smmu->debugfs_mappings, group,
-+					    &tegra_smmu_debugfs_mappings_fops);
-+		}
-+
- 		break;
- 	}
- 
-@@ -545,6 +719,15 @@ static void tegra_smmu_detach_as(struct tegra_smmu *smmu,
- 		if (group->swgrp != swgrp)
- 			continue;
- 		group->as = NULL;
-+
-+		if (smmu->debugfs_mappings) {
-+			struct dentry *d;
-+
-+			d = debugfs_lookup(group->swgrp->name,
-+					   smmu->debugfs_mappings);
-+			debugfs_remove(d);
-+		}
-+
- 		break;
- 	}
- 
-@@ -1137,6 +1320,8 @@ static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
- 			    &tegra_smmu_swgroups_fops);
- 	debugfs_create_file("clients", S_IRUGO, smmu->debugfs, smmu,
- 			    &tegra_smmu_clients_fops);
-+
-+	smmu->debugfs_mappings = debugfs_create_dir("mappings", smmu->debugfs);
- }
- 
- static void tegra_smmu_debugfs_exit(struct tegra_smmu *smmu)
--- 
-2.17.1
+Note this series only coped with a single CD in the Context Descriptor
+Table.
+
+Thanks
+
+Eric
+>
+> We should have another mode where the kernel owns everything, and the
+> S1ContexPtr is a PA with Stage 2 bypassed.
+>
+> That part is fine, the more open question is what does the driver
+> interface look like when userspace tell something like vfio-pci to
+> connect to this thing. At some level the attaching device needs to
+> authorize iommufd to take the entire PASID table and RID.
+>
+> Specifically we cannot use this thing with a mdev, while the Intel
+> version of a userspace page table can be.
+>
+> Maybe that is just some 'allow whole device' flag in an API
+>
+> Jason
+>
 
 _______________________________________________
 iommu mailing list
