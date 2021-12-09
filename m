@@ -1,91 +1,74 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9AD09C433EF
-	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 00:04:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0E5BAC433F5
+	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 00:12:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 47F7F4027F;
-	Thu,  9 Dec 2021 00:04:50 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 9C4F2606F9;
+	Thu,  9 Dec 2021 00:12:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zGvFUv7nhhNf; Thu,  9 Dec 2021 00:04:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 58A8C40143;
-	Thu,  9 Dec 2021 00:04:48 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 7OeUyR6uTAWL; Thu,  9 Dec 2021 00:12:34 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7ADD56068F;
+	Thu,  9 Dec 2021 00:12:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3E019C002F;
-	Thu,  9 Dec 2021 00:04:48 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EF9DFC0012
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 00:04:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 52E87C002F;
+	Thu,  9 Dec 2021 00:12:34 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ABD29C0012
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 00:12:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id DCF4B606C0
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 00:04:46 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id A0096606C0
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 00:12:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=google.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XLEclttgHkRS for <iommu@lists.linux-foundation.org>;
- Thu,  9 Dec 2021 00:04:46 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com
- [IPv6:2607:f8b0:4864:20::62b])
- by smtp3.osuosl.org (Postfix) with ESMTPS id F156F6068F
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 00:04:45 +0000 (UTC)
-Received: by mail-pl1-x62b.google.com with SMTP id q17so2624868plr.11
- for <iommu@lists.linux-foundation.org>; Wed, 08 Dec 2021 16:04:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=MjUeHzzA4V17niQyufwkdrBEp0f65mLMF1fq0crIpW0=;
- b=b+3DMK2d5mC+XSKmwavtEEUhdxeN1Sx6VF8/i5xEOkF77+HhxFlS7HOatJxHNY6/nb
- PJfVeM/FZc53xg2Gm0RZKK3pjNka3g8c/tYglsPigPaiobRgBBAPlGbUvxoHlsHCHiUc
- YehYKmEOkc5137JM/L8YYXEfZTttkn66sk9+26uVrXO6Efykk+1T5nWhC7z4ZoGxT5zY
- qfP3qKjUB45LJk3MFpQvmhN2An5vk5coeZt786iJr9cey0YWSe2SZw3NC+Tjk7qc+S/P
- nBgfKZ2T3uD1CJW9x1r5EhNEYNtGIDrpOIuLhWfyb8yBYCpN0gd+nvxAsJloYZ9tf3QQ
- ZGiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=MjUeHzzA4V17niQyufwkdrBEp0f65mLMF1fq0crIpW0=;
- b=VC3G2Kj2I/Zq8C6LjzXqWO9fSO2A3UcTJNUtcCxmAu5j4ZZSe9gveFGjkPeWoMB+bW
- iZo9XkgPxaeADOp78Dwk77i87DvSmZuGzQwbeS/1eBLjuT0PgVHlI4KgyEqDXpQ2ZNlQ
- 2xxf+iCQfzIODXfEZ3LBlVRDX10nUvMr/1N7F/kPdkdKX5xscFu83SZ+D2Se7pmK0FXu
- hFh6bs8Mn6shnhGnTO2MgjpXDNuZwzFXsZ2NRtd6xVkxSwYCPAY5Sx3oaee3BB68cLwW
- gB+1cksw1F07LIbOxkY9Bnl241RTibHIGsUgtInq0T+m2W6IutB65arsQLr/wNC+J4HD
- 8IGQ==
-X-Gm-Message-State: AOAM530ohyYHHpz5IK+W6WDjsszlrPBDg6KHTLzgE6JLH+DqW53IQ8Re
- MXgpbxMqK0fJMdr86bT2/fsW9w==
-X-Google-Smtp-Source: ABdhPJyiv63F9ZJKJny3hjVwxro5UZyYEhLuM/dB7Sc4H0wX9hjkGjpGw/qXP8w5pVdLRhJLyjjXmQ==
-X-Received: by 2002:a17:90b:1b0a:: with SMTP id
- nu10mr11290342pjb.35.1639008285121; 
- Wed, 08 Dec 2021 16:04:45 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com.
- [35.185.214.157])
- by smtp.gmail.com with ESMTPSA id z4sm4946183pfh.15.2021.12.08.16.04.44
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 08 Dec 2021 16:04:44 -0800 (PST)
-Date: Thu, 9 Dec 2021 00:04:41 +0000
-To: Maxim Levitsky <mlevitsk@redhat.com>
-Subject: Re: [PATCH v3 00/26] KVM: x86: Halt and APICv overhaul
-Message-ID: <YbFIGSeukbquyoQ5@google.com>
-References: <20211208015236.1616697-1-seanjc@google.com>
- <39c885fc6455dd0aa2f8643e725422851430f9ec.camel@redhat.com>
- <8c6c38f3cc201e42629c3b8e5cf8cdb251c9ea8d.camel@redhat.com>
- <6f0dc26c78c151814317d95d4918ffddabdd2df1.camel@redhat.com>
+ with ESMTP id kAvQNlaMo16y for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Dec 2021 00:12:31 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id DFA236068F
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 00:12:31 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10192"; a="238209149"
+X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; d="scan'208";a="238209149"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 08 Dec 2021 16:12:26 -0800
+X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; d="scan'208";a="503279210"
+Received: from djiang5-mobl1.amr.corp.intel.com (HELO [10.209.146.48])
+ ([10.209.146.48])
+ by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 08 Dec 2021 16:12:24 -0800
+Message-ID: <5fec4e7e-be37-193b-b4ab-dd1bbdb589d1@intel.com>
+Date: Wed, 8 Dec 2021 17:12:23 -0700
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <6f0dc26c78c151814317d95d4918ffddabdd2df1.camel@redhat.com>
-Cc: Wanpeng Li <wanpengli@tencent.com>, kvm@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Paolo Bonzini <pbonzini@redhat.com>, Vitaly Kuznetsov <vkuznets@redhat.com>,
- Jim Mattson <jmattson@google.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH 4/4] dmaengine: idxd: Use DMA API for in-kernel DMA with
+ PASID
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <1638884834-83028-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1638884834-83028-5-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20211208131358.GR6385@nvidia.com> <20211208115516.1d36fed9@jacob-builder>
+ <20211208203022.GF6385@nvidia.com> <20211208135945.6d0a3b69@jacob-builder>
+ <20211208233936.GI6385@nvidia.com>
+From: Dave Jiang <dave.jiang@intel.com>
+In-Reply-To: <20211208233936.GI6385@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Raj Ashok <ashok.raj@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Kumar,
+ Sanjay K" <sanjay.k.kumar@intel.com>, LKML <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
+ Jacob Pan <jacob.jun.pan@intel.com>, Barry Song <21cnbao@gmail.com>,
+ Dan Williams <dan.j.williams@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>, "Zanussi,
+ Tom" <tom.zanussi@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,31 +81,65 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Sean Christopherson via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Sean Christopherson <seanjc@google.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Dec 09, 2021, Maxim Levitsky wrote:
-> Host crash while running 32 bit VM and another 32 bit VM nested in it:
-> 
-> [  751.182290] BUG: kernel NULL pointer dereference, address: 0000000000000025
-> [  751.198234] #PF: supervisor read access in kernel mode
-> [  751.209982] #PF: error_code(0x0000) - not-present page
-> [  751.221733] PGD 3720f9067 P4D 3720f9067 PUD 3720f8067 PMD 0 
-> [  751.234682] Oops: 0000 [#1] SMP
-> [  751.241857] CPU: 8 PID: 54050 Comm: CPU 8/KVM Tainted: G           O      5.16.0-rc4.unstable #6
-> [  751.261960] Hardware name: LENOVO 20UF001CUS/20UF001CUS, BIOS R1CET65W(1.34 ) 06/17/2021
-> [  751.280475] RIP: 0010:is_page_fault_stale.isra.0+0x2a/0xa0 [kvm]
 
-...
+On 12/8/2021 4:39 PM, Jason Gunthorpe wrote:
+> On Wed, Dec 08, 2021 at 01:59:45PM -0800, Jacob Pan wrote:
+>> Hi Jason,
+>>
+>> On Wed, 8 Dec 2021 16:30:22 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
+>>
+>>> On Wed, Dec 08, 2021 at 11:55:16AM -0800, Jacob Pan wrote:
+>>>> Hi Jason,
+>>>>
+>>>> On Wed, 8 Dec 2021 09:13:58 -0400, Jason Gunthorpe <jgg@nvidia.com>
+>>>> wrote:
+>>>>>> This patch utilizes iommu_enable_pasid_dma() to enable DSA to
+>>>>>> perform DMA requests with PASID under the same mapping managed by
+>>>>>> DMA mapping API. In addition, SVA-related bits for kernel DMA are
+>>>>>> removed. As a result, DSA users shall use DMA mapping API to obtain
+>>>>>> DMA handles instead of using kernel virtual addresses.
+>>>>> Er, shouldn't this be adding dma_map/etc type calls?
+>>>>>
+>>>>> You can't really say a driver is using the DMA API without actually
+>>>>> calling the DMA API..
+>>>> The IDXD driver is not aware of addressing mode, it is up to the user of
+>>>> dmaengine API to prepare the buffer mappings. Here we only set up the
+>>>> PASID such that it can be picked up during DMA work submission. I
+>>>> tested with /drivers/dma/dmatest.c which does dma_map_page(),
+>>>> map_single etc. also tested with other pieces under development.
+>>> Ignoring the work, doesn't IDXD prepare the DMA queues itself, don't
+>>> those need the DMA API?
+>>>
+>> Do you mean wq completion record address? It is already using DMA API.
+>> 	wq->compls = dma_alloc_coherent(dev, wq->compls_size,
+>> &wq->compls_addr, GFP_KERNEL);
+>> 	desc->compl_dma = wq->compls_addr + idxd->data->compl_size * i;
+> I would have expected something on the queue submission side too?
 
-> Oh well, not related to the patch series but just that I don't forget.
-> I need to do some throughfull testing on all the VMs I use.
+DSA is different than typical DMA devices in the past. Instead of a 
+software descriptor ring where the device DMA to fetch the descriptors 
+after the software ringing a doorbell or writing a head index, the 
+descriptors are submitted directly to the device via a CPU instruction 
+(i.e. MOVDIR64B or ENQCMD(S)). The CPU takes the KVA of the 64B 
+descriptor and writes to the device atomically. No DMA mapping is 
+necessary in this case.
 
-This is my goof, I'll post a fix shortly.
+
+>
+>>> the same thing, they do not use the same IOVA's. Did you test this
+>>> with bypass mode off?
+>> Yes with dmatest. IOVA is the default, I separated out the SATC patch which
+>> will put internal accelerators in bypass mode. It can also be verified by
+>> iommu debugfs dump of DMA PASID (2) and PASID 0 (RIDPASID) are pointing to
+>> he same default domain. e.g
+> Well, OK then..
+>
+> Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
