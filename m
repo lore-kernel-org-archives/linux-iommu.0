@@ -1,79 +1,90 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D32F9C433EF
-	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 01:20:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2DFFDC433EF
+	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 01:37:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 4E30D4010E;
-	Thu,  9 Dec 2021 01:20:32 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id CEE856069D;
+	Thu,  9 Dec 2021 01:37:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tdLWwRl-qtxL; Thu,  9 Dec 2021 01:20:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id DDC15402DC;
-	Thu,  9 Dec 2021 01:20:30 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 2bEA5vCCOOHe; Thu,  9 Dec 2021 01:37:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 8F37860657;
+	Thu,  9 Dec 2021 01:37:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A0F35C002F;
-	Thu,  9 Dec 2021 01:20:30 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E7F54C0012
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 01:20:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 67081C002F;
+	Thu,  9 Dec 2021 01:37:10 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 318CFC0012
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 01:37:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id CCB2040143
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 01:20:29 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 1F3F98283D
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 01:37:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Opi-048drN4u for <iommu@lists.linux-foundation.org>;
- Thu,  9 Dec 2021 01:20:28 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp2.osuosl.org (Postfix) with ESMTPS id C97A14010E
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 01:20:28 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10192"; a="238217721"
-X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; d="scan'208";a="238217721"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 08 Dec 2021 17:20:27 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,190,1635231600"; d="scan'208";a="516062926"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
- ([10.239.159.118])
- by orsmga008.jf.intel.com with ESMTP; 08 Dec 2021 17:20:20 -0800
-Subject: Re: [PATCH v3 04/18] driver core: platform: Add driver dma ownership
- management
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20211206015903.88687-1-baolu.lu@linux.intel.com>
- <20211206015903.88687-5-baolu.lu@linux.intel.com>
- <Ya4f662Af+8kE2F/@infradead.org> <20211206150647.GE4670@nvidia.com>
- <56a63776-48ca-0d6e-c25c-016dc016e0d5@linux.intel.com>
- <20211207131627.GA6385@nvidia.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <c170d215-6aef-ff21-8733-1bae4478e39c@linux.intel.com>
-Date: Thu, 9 Dec 2021 09:20:10 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=google.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id LWXUWFkehfSx for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Dec 2021 01:37:08 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com
+ [IPv6:2607:f8b0:4864:20::102b])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id A2D13827CE
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 01:37:08 +0000 (UTC)
+Received: by mail-pj1-x102b.google.com with SMTP id np3so3250341pjb.4
+ for <iommu@lists.linux-foundation.org>; Wed, 08 Dec 2021 17:37:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=Uub+IbSwvrL8++vPLHy04nVi4lIQuX6pueB0R7vJJ2U=;
+ b=iHwPfvXwbAm6nakAlsdpYwrT0RIU8jrGpjgoLneEfTM5vIUaoB0f6Pb1UpM6tETwX2
+ aCJikC5Vfr+/Qk4u+4KXRa/2H9AdK2V2ip1H1doX0T7+cU2W9lUcvbGCJ6viyybWGYV5
+ wIQhcWIUPsGn3E4dbsyVRMtahM/9GjICVYpwSz/R3j9evKuev0PZYmC6M4G958QNbWEX
+ OECU3Wj9J3umEN2suXvmzUMdROlZUYvb4GVrHW+LIcJmBv2alcrtOMCuR+Xh+gSC57IT
+ apbqVK1Gfq04kvNfWwShKfXCgqVO0kmDM51NYNa8a/m4OnsPBGbqQ+vyiH8I6B/E31Gf
+ vwyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=Uub+IbSwvrL8++vPLHy04nVi4lIQuX6pueB0R7vJJ2U=;
+ b=G3D3TM9NiVTB+NC0P/0ZR4WBIo7jU2Vuky1/rVQa2s5WcJNYvvJMRHtjFDsvVpEocg
+ julshM7fKsTSyWBBIviih373nBZIppd9bhjRp/p5cbWEazJFy1w2nRF5DR5ktMnTxk7k
+ bjZ8/a5QzCLU4MsPG1LfeaVfwOT4UYyPUC/PlYNUJIgQ6AByDTfPTAaqcfmO1y97Hz7X
+ XWRH59XtrulHiRF4reeg5uueuccWmtDqe2QF8cjEAfepfTeSYIvH17XCUv+J/UWSrSdZ
+ +J3FJvnExs02TvLOoduaxn+9SVY+RqCCZ4LXrtrI6eUp/67/t5CoVxRnoV1sEAwgcHOd
+ u5sw==
+X-Gm-Message-State: AOAM532viNItoHO4x/DyaSfETySGkpAJdKxV5/4kWPs4yKIe0JUansRW
+ nJRNE7TEILVh5mEzk1NjKAQX6Q==
+X-Google-Smtp-Source: ABdhPJwIMJr5dFbwijfg8NpzqGkN3MdYDUBGuiollfpqkvGJuDCIdMQ7nXvJJkacj26B4AVhBVPxuw==
+X-Received: by 2002:a17:902:a60b:b0:142:7621:be0b with SMTP id
+ u11-20020a170902a60b00b001427621be0bmr62849052plq.58.1639013827911; 
+ Wed, 08 Dec 2021 17:37:07 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com.
+ [35.185.214.157])
+ by smtp.gmail.com with ESMTPSA id x14sm4023275pjl.27.2021.12.08.17.37.07
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 08 Dec 2021 17:37:07 -0800 (PST)
+Date: Thu, 9 Dec 2021 01:37:04 +0000
+To: Maxim Levitsky <mlevitsk@redhat.com>
+Subject: Re: [PATCH v3 00/26] KVM: x86: Halt and APICv overhaul
+Message-ID: <YbFdwO3RZf6dg0M5@google.com>
+References: <20211208015236.1616697-1-seanjc@google.com>
+ <39c885fc6455dd0aa2f8643e725422851430f9ec.camel@redhat.com>
+ <8c6c38f3cc201e42629c3b8e5cf8cdb251c9ea8d.camel@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20211207131627.GA6385@nvidia.com>
-Content-Language: en-US
-Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
- David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
- Thierry Reding <thierry.reding@gmail.com>,
- Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
- Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
- Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
- Robin Murphy <robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <8c6c38f3cc201e42629c3b8e5cf8cdb251c9ea8d.camel@redhat.com>
+Cc: Wanpeng Li <wanpengli@tencent.com>, kvm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Paolo Bonzini <pbonzini@redhat.com>, Vitaly Kuznetsov <vkuznets@redhat.com>,
+ Jim Mattson <jmattson@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,147 +97,38 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Sean Christopherson via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Sean Christopherson <seanjc@google.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 12/7/21 9:16 PM, Jason Gunthorpe wrote:
-> On Tue, Dec 07, 2021 at 10:57:25AM +0800, Lu Baolu wrote:
->> On 12/6/21 11:06 PM, Jason Gunthorpe wrote:
->>> On Mon, Dec 06, 2021 at 06:36:27AM -0800, Christoph Hellwig wrote:
->>>> I really hate the amount of boilerplate code that having this in each
->>>> bus type causes.
->>> +1
->>>
->>> I liked the first version of this series better with the code near
->>> really_probe().
->>>
->>> Can we go back to that with some device_configure_dma() wrapper
->>> condtionally called by really_probe as we discussed?
->>>
->>
->> Are you talking about below change?
->>
->> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
->> index 68ea1f949daa..368f9e530515 100644
->> +++ b/drivers/base/dd.c
->> @@ -577,7 +577,13 @@ static int really_probe(struct device *dev, struct
->> device_driver *drv)
->>   	if (dev->bus->dma_configure) {
->>   		ret = dev->bus->dma_configure(dev);
->>   		if (ret)
->> -			goto probe_failed;
->> +			goto pinctrl_bind_failed;
->> +
->> +		if (!drv->no_kernel_dma) {
->> +			ret = iommu_device_set_dma_owner(dev, DMA_OWNER_DMA_API, NULL);
->> +			if (ret)
->> +				goto pinctrl_bind_failed;
->> +                }
->>   	}
-> 
-> Yes, the suggestion was to put everything that 'if' inside a function
-> and then of course a matching undo function.
+On Thu, Dec 09, 2021, Maxim Levitsky wrote:
+> On Thu, 2021-12-09 at 01:00 +0200, Maxim Levitsky wrote:
+> > Probably just luck (can't reproduce this anymore) but
+> > while running some kvm unit tests with this patch series (and few my patches
+> > for AVIC co-existance which shouldn't affect this) I got this
+> > 
+> > (warning about is_running already set)
 
-Followed your suggestion, I refactored the change like below:
-
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 68ea1f949daa..68ca5a579eb1 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -538,6 +538,32 @@ static int call_driver_probe(struct device *dev, 
-struct device_driver *drv)
-         return ret;
-  }
-
-+static int device_dma_configure(struct device *dev, struct 
-device_driver *drv)
-+{
-+       int ret;
-+
-+       if (!dev->bus->dma_configure)
-+               return 0;
-+
-+       ret = dev->bus->dma_configure(dev);
-+       if (ret)
-+               return ret;
-+
-+       if (!drv->suppress_auto_claim_dma_owner)
-+               ret = iommu_device_set_dma_owner(dev, DMA_OWNER_DMA_API, 
-NULL);
-+
-+       return ret;
-+}
-+
-+static void device_dma_cleanup(struct device *dev, struct device_driver 
-*drv)
-+{
-+       if (!dev->bus->dma_configure)
-+               return;
-+
-+       if (!drv->suppress_auto_claim_dma_owner)
-+               iommu_device_release_dma_owner(dev, DMA_OWNER_DMA_API, 
-NULL);
-+}
-+
-  static int really_probe(struct device *dev, struct device_driver *drv)
-  {
-         bool test_remove = IS_ENABLED(CONFIG_DEBUG_TEST_DRIVER_REMOVE) &&
-@@ -574,11 +600,8 @@ static int really_probe(struct device *dev, struct 
-device_driver *drv)
-         if (ret)
-                 goto pinctrl_bind_failed;
-
--       if (dev->bus->dma_configure) {
--               ret = dev->bus->dma_configure(dev);
--               if (ret)
--                       goto probe_failed;
--       }
-+       if (device_dma_configure(dev, drv))
-+               goto pinctrl_bind_failed;
-
-         ret = driver_sysfs_add(dev);
-         if (ret) {
-@@ -660,6 +683,8 @@ static int really_probe(struct device *dev, struct 
-device_driver *drv)
-         if (dev->bus)
-                 blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
+...
  
-BUS_NOTIFY_DRIVER_NOT_BOUND, dev);
-+
-+       device_dma_cleanup(dev, drv);
-  pinctrl_bind_failed:
-         device_links_no_driver(dev);
-         devres_release_all(dev);
-@@ -1204,6 +1229,7 @@ static void __device_release_driver(struct device 
-*dev, struct device *parent)
-                 else if (drv->remove)
-                         drv->remove(dev);
+> Also got this while trying a VM with passed through device:
 
-+               device_dma_cleanup(dev, drv);
-                 device_links_driver_cleanup(dev);
+A tangentially related question: have you seen any mysterious crashes on your AMD
+system?  I've been bisecting (well, attempting to bisect) bizarre crashes that
+AFAICT showed up between v5.15 and v5.16-rc2.  Things like runqueues being NULL
+deep in the scheduler when a CPU is coming out of idle.  I _think_ the issues have
+been fixed as of v5.16-rc4, but I don't have a good reproducer so bisecting in
+either direction has been a complete mess.  I've reproduced on multiple AMD hosts,
+but never on an Intel system.  I have a sinking feeling that the issue is
+relatively unique to our systems :-/
 
-                 devres_release_all(dev);
-diff --git a/include/linux/device/driver.h b/include/linux/device/driver.h
-index a498ebcf4993..374a3c2cc10d 100644
---- a/include/linux/device/driver.h
-+++ b/include/linux/device/driver.h
-@@ -100,6 +100,7 @@ struct device_driver {
-         const char              *mod_name;      /* used for built-in 
-modules */
-
-         bool suppress_bind_attrs;       /* disables bind/unbind via 
-sysfs */
-+       bool suppress_auto_claim_dma_owner;
-         enum probe_type probe_type;
-
-         const struct of_device_id       *of_match_table;
-
-Further suggestions?
-
-Best regards,
-baolu
+And a request: any testing and bug fixes you can throw at the AVIC changes would be
+greatly appreciated.  I've been partially blocked on testing the AVIC stuff for the
+better part of the week.  If the crashes I'm seeing have been resolved, then I should
+be able to help hunt down the issues, but if not...
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
