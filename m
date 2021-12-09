@@ -4,84 +4,85 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5ED5AC433F5
-	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 16:36:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3AF25C433EF
+	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 16:36:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 02EB8856C0;
+	by smtp1.osuosl.org (Postfix) with ESMTP id EEC73856BA;
 	Thu,  9 Dec 2021 16:36:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4dVPiLQDB5sA; Thu,  9 Dec 2021 16:36:12 +0000 (UTC)
+	with ESMTP id UjbLfhaOZMcb; Thu,  9 Dec 2021 16:36:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id D7C3E856B5;
-	Thu,  9 Dec 2021 16:36:11 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id F3330856BE;
+	Thu,  9 Dec 2021 16:36:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A0A6DC002F;
-	Thu,  9 Dec 2021 16:36:11 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1A067C0012
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 16:36:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DE6AFC002F;
+	Thu,  9 Dec 2021 16:36:12 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F026BC006E
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 16:36:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 05FFB61ADE
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 16:36:10 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id D057F61AE0
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 16:36:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0rQRd0AMyBgH for <iommu@lists.linux-foundation.org>;
- Thu,  9 Dec 2021 16:36:09 +0000 (UTC)
+ with ESMTP id 2vjKqb1frLtV for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Dec 2021 16:36:11 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com
- [IPv6:2a00:1450:4864:20::32b])
- by smtp3.osuosl.org (Postfix) with ESMTPS id E10BF61AE5
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 16:36:08 +0000 (UTC)
-Received: by mail-wm1-x32b.google.com with SMTP id
- o19-20020a1c7513000000b0033a93202467so4548715wmc.2
- for <iommu@lists.linux-foundation.org>; Thu, 09 Dec 2021 08:36:08 -0800 (PST)
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com
+ [IPv6:2a00:1450:4864:20::42e])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 1D2CC61ADD
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 16:36:10 +0000 (UTC)
+Received: by mail-wr1-x42e.google.com with SMTP id q3so10693721wru.5
+ for <iommu@lists.linux-foundation.org>; Thu, 09 Dec 2021 08:36:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=iI3azBWTRCFEeeRKyJXboLUDLxUqU0ShZoPCiSe0QHI=;
- b=IvslFsKP2cSAAyw81pK4hpkGOzTdSo/ctRvboBfXswKfysT5fU5LhL/9bRxSPuRWgL
- iBZHmyOuf9rQ3ILzAxwW6IBHw5NxZDxhUcTtbubGfDs+NS9kEWGeBug16SAcrC+ihzbP
- Y3NV2KEG6CbS3lZBJtG6eSob23mqkyF0FaClUFW8/vr9tbAJgmVFGqD9wjFdu9Wl+yIA
- 3hDivw4Ft7xhzx9V2B2OYa9GYDE6KxbUjOC4Y6qvBD6wE6wigFf+MoZHwU0x06SElhur
- aGAHOZGlfXkirYozfV96mJpJ8ROZP5bUeGazugVqBgrCOBWWtYSbV9Q8+3+bnxK/uSY0
- mVNA==
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=86gCcT11WeDFdl1AL6yEl0ohyQgOtx0+QoNrmaw2baI=;
+ b=Ga+bX+MxQ2LlUWtzQpm7YKN+3EoZkJIPF4urBsxybQ3zUoQRKwiYd3HPGW2qx8L49P
+ q/wwMfLlhTN/bDG/qODlTV3TjkwsPu9qZDLFv4Ov1BwPD/+eND9vumYd0P4o+EfPii6t
+ EP1P2UFvGfJVvqTbDl125jewEungHH4bTxUx7ZmGM0/Huct4rHA/auNHvDJWz9hkbLQy
+ arWvahGAMpWjEQ4GrSrtaitit0FgX2rsXuFEF7A6GxDXyy+MUCI17Q3HrPRIGthnWHdA
+ 7OK3WKyYh1tDp+1bTWv9YFPZf8gDgsZOJ6eJVxcDKNo0pQ9pCrso9BoCKbJGm5aFchh0
+ RBPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=iI3azBWTRCFEeeRKyJXboLUDLxUqU0ShZoPCiSe0QHI=;
- b=2U4wFZVtmWuoNywAtUDM7eHztvl++IFGkVKOAnKhLWrPiRHTFfS7jjZttTTA9tr8tX
- BfwlvrKjjZexPXMDHv593TvjiSJajdIaMOjPTxuuGhYTVTOHnxOB5Fj+OuW8ERzZlBzM
- FEvhN670qqX2RJIbHMzFL4XGGLXxdHdESzJTUisXSpPSJPRoFhJmgVYKfkWRqsXCbUnh
- slSgbnKakt7vvdmNOD00JBrFutpkY77Je1dy78/ozswSL6MaQa8y4hV8IPRoANwyxSEO
- 9g4jTkf9yzgwUwVQv+5KATc/FbMFi882+mXz/McQzn6/ByD2Vszdt5meMth9b8sxtCPc
- WZXQ==
-X-Gm-Message-State: AOAM532fhyBSxpGHtZbnsMDAO6q1HrT+vZO1zXXxs67V7IR80uvY2nI5
- Sdk1LUhA5hYRysDEbDLw21w=
-X-Google-Smtp-Source: ABdhPJy/sovjJ1DaI6y5oVUNi8kEueGlCXRc+ly7iHh3Okas8Ii3nmU4WWUlC+CLCxJuYru8/SPnpw==
-X-Received: by 2002:a1c:1c1:: with SMTP id 184mr8636459wmb.1.1639067766782;
- Thu, 09 Dec 2021 08:36:06 -0800 (PST)
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=86gCcT11WeDFdl1AL6yEl0ohyQgOtx0+QoNrmaw2baI=;
+ b=RboopweeA1rwid8QYb2ouO4668BbBfR4wBv0W3yst28OS0/BmboItHG6sW7McriPwO
+ IVKpotqbAEIO62GPgRMGjpk2nQMVKnLrZ0qgurspQ0kVwKWUu3G43FFe+pfJkJ/KiSx8
+ oDrcuRi/OIlgsNW+tljKFwbY7BorsidAk1As1kw0QXdaMDDANwrt1RxJbLhCSOkIRUbV
+ qJMqjwg3ekj8BHCUASk7wKNErMrWAp7bU7NoEM0kYvoSVBXknzO1o/b6Wo4O+l6Y4TkP
+ 2oDAPcKeTsjRIDQwSrCUMvU81Ob2gnk+vENbx6NIV0aIq6QOBZvtGo/89Ux1mlPgT4ij
+ 343A==
+X-Gm-Message-State: AOAM531Z+iaVHKRnpDA9KTSOhBXe2mAkLy+1FMaJCGdeOqw3l1wVobFV
+ nGqLrAsOLCEDw3zLvCDE9XE=
+X-Google-Smtp-Source: ABdhPJzu/LQIurnEEcsBXxaEe6K46RBSx74oQ7BLemLuFcbFy7zSJ66BBZRQOEPAj2P6+XWrrayDTQ==
+X-Received: by 2002:a5d:514a:: with SMTP id u10mr7663352wrt.321.1639067769151; 
+ Thu, 09 Dec 2021 08:36:09 -0800 (PST)
 Received: from localhost ([193.209.96.43])
- by smtp.gmail.com with ESMTPSA id r62sm284530wmr.35.2021.12.09.08.36.05
+ by smtp.gmail.com with ESMTPSA id r15sm8899810wmh.13.2021.12.09.08.36.08
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 09 Dec 2021 08:36:06 -0800 (PST)
+ Thu, 09 Dec 2021 08:36:08 -0800 (PST)
 From: Thierry Reding <thierry.reding@gmail.com>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH v2 1/4] dt-bindings: arm-smmu: Document nvidia,
- memory-controller property
-Date: Thu,  9 Dec 2021 17:35:57 +0100
-Message-Id: <20211209163600.609613-1-thierry.reding@gmail.com>
+Subject: [PATCH v2 2/4] dt-bindings: arm-smmu: Add compatible for Tegra234 SOC
+Date: Thu,  9 Dec 2021 17:35:58 +0100
+Message-Id: <20211209163600.609613-2-thierry.reding@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20211209163600.609613-1-thierry.reding@gmail.com>
+References: <20211209163600.609613-1-thierry.reding@gmail.com>
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
- iommu@lists.linux-foundation.org, Thierry Reding <thierry.reding@gmail.com>,
- linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>,
+ Jon Hunter <jonathanh@nvidia.com>, iommu@lists.linux-foundation.org,
+ Thierry Reding <thierry.reding@gmail.com>, linux-tegra@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,56 +102,40 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Thierry Reding <treding@nvidia.com>
 
-On NVIDIA SoC's the ARM SMMU needs to interact with the memory
-controller in order to map memory clients to the corresponding stream
-IDs. Document how the nvidia,memory-controller property can be used to
-achieve this.
+The NVIDIA Tegra234 SoC comes with one single-instance ARM SMMU used by
+isochronous memory clients and two dual-instance ARM SMMUs used by non-
+isochronous memory clients.
 
-Note that this is a backwards-incompatible change that is, however,
-necessary to ensure correctness. Without the new property, most of the
-devices would still work but it is not guaranteed that all will.
-
+Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
-Changes in v2:
-- clarify why the new nvidia,memory-controller property is required
-
- .../devicetree/bindings/iommu/arm,smmu.yaml     | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index f66a3effba73..e239157eb30c 100644
+index e239157eb30c..7fd0522bcd84 100644
 --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
 +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -155,6 +155,17 @@ properties:
-   power-domains:
-     maxItems: 1
- 
-+  nvidia,memory-controller:
-+    description: |
-+      A phandle to the memory controller on NVIDIA Tegra186 and later SoCs.
-+      The memory controller needs to be programmed with a mapping of memory
-+      client IDs to ARM SMMU stream IDs.
-+
-+      If this property is absent, the mapping programmed by early firmware
-+      will be used and it is not guaranteed that IOMMU translations will be
-+      enabled for any given device.
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+
- required:
-   - compatible
-   - reg
-@@ -177,6 +188,12 @@ allOf:
-         reg:
-           minItems: 1
-           maxItems: 2
-+
-+      # The reference to the memory controller is required to ensure that the
-+      # memory client to stream ID mapping can be done synchronously with the
-+      # IOMMU attachment.
-+      required:
-+        - nvidia,memory-controller
-     else:
+@@ -60,8 +60,9 @@ properties:
+           for improved performance.
+         items:
+           - enum:
+-              - nvidia,tegra194-smmu
+               - nvidia,tegra186-smmu
++              - nvidia,tegra194-smmu
++              - nvidia,tegra234-smmu
+           - const: nvidia,smmu-500
+       - items:
+           - const: arm,mmu-500
+@@ -181,8 +182,9 @@ allOf:
+         compatible:
+           contains:
+             enum:
+-              - nvidia,tegra194-smmu
+               - nvidia,tegra186-smmu
++              - nvidia,tegra194-smmu
++              - nvidia,tegra234-smmu
+     then:
        properties:
          reg:
 -- 
