@@ -4,70 +4,84 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EA97BC433F5
-	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 16:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5ED5AC433F5
+	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 16:36:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 81F31855CC;
-	Thu,  9 Dec 2021 16:31:27 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 02EB8856C0;
+	Thu,  9 Dec 2021 16:36:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EXkR-9h3hhfY; Thu,  9 Dec 2021 16:31:26 +0000 (UTC)
+	with ESMTP id 4dVPiLQDB5sA; Thu,  9 Dec 2021 16:36:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 5EA6D855DB;
-	Thu,  9 Dec 2021 16:31:26 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id D7C3E856B5;
+	Thu,  9 Dec 2021 16:36:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 19CD3C002F;
-	Thu,  9 Dec 2021 16:31:26 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3EF4DC0012
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 16:31:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A0A6DC002F;
+	Thu,  9 Dec 2021 16:36:11 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1A067C0012
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 16:36:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 2D0CD4286C
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 16:31:24 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 05FFB61ADE
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 16:36:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ITCXC1_vMmHp for <iommu@lists.linux-foundation.org>;
- Thu,  9 Dec 2021 16:31:23 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 15F3242864
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 16:31:22 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10193"; a="301525042"
-X-IronPort-AV: E=Sophos;i="5.88,192,1635231600"; d="scan'208";a="301525042"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
- by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 09 Dec 2021 08:28:31 -0800
-X-IronPort-AV: E=Sophos;i="5.88,192,1635231600"; d="scan'208";a="543650742"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 09 Dec 2021 08:28:31 -0800
-Date: Thu, 9 Dec 2021 08:32:49 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 2/4] iommu: Add PASID support for DMA mapping API users
-Message-ID: <20211209083249.7d775512@jacob-builder>
-In-Reply-To: <1b3ee13d-0148-1156-52ad-b96bca51cb6f@linux.intel.com>
-References: <1638884834-83028-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1638884834-83028-3-git-send-email-jacob.jun.pan@linux.intel.com>
- <16408193-c8bc-3046-b32f-9274bf0b415c@linux.intel.com>
- <20211208104939.732fa5b9@jacob-builder>
- <BN9PR11MB5276676474FA6A35016B6BB88C709@BN9PR11MB5276.namprd11.prod.outlook.com>
- <1b3ee13d-0148-1156-52ad-b96bca51cb6f@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0rQRd0AMyBgH for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Dec 2021 16:36:09 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com
+ [IPv6:2a00:1450:4864:20::32b])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id E10BF61AE5
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 16:36:08 +0000 (UTC)
+Received: by mail-wm1-x32b.google.com with SMTP id
+ o19-20020a1c7513000000b0033a93202467so4548715wmc.2
+ for <iommu@lists.linux-foundation.org>; Thu, 09 Dec 2021 08:36:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=iI3azBWTRCFEeeRKyJXboLUDLxUqU0ShZoPCiSe0QHI=;
+ b=IvslFsKP2cSAAyw81pK4hpkGOzTdSo/ctRvboBfXswKfysT5fU5LhL/9bRxSPuRWgL
+ iBZHmyOuf9rQ3ILzAxwW6IBHw5NxZDxhUcTtbubGfDs+NS9kEWGeBug16SAcrC+ihzbP
+ Y3NV2KEG6CbS3lZBJtG6eSob23mqkyF0FaClUFW8/vr9tbAJgmVFGqD9wjFdu9Wl+yIA
+ 3hDivw4Ft7xhzx9V2B2OYa9GYDE6KxbUjOC4Y6qvBD6wE6wigFf+MoZHwU0x06SElhur
+ aGAHOZGlfXkirYozfV96mJpJ8ROZP5bUeGazugVqBgrCOBWWtYSbV9Q8+3+bnxK/uSY0
+ mVNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=iI3azBWTRCFEeeRKyJXboLUDLxUqU0ShZoPCiSe0QHI=;
+ b=2U4wFZVtmWuoNywAtUDM7eHztvl++IFGkVKOAnKhLWrPiRHTFfS7jjZttTTA9tr8tX
+ BfwlvrKjjZexPXMDHv593TvjiSJajdIaMOjPTxuuGhYTVTOHnxOB5Fj+OuW8ERzZlBzM
+ FEvhN670qqX2RJIbHMzFL4XGGLXxdHdESzJTUisXSpPSJPRoFhJmgVYKfkWRqsXCbUnh
+ slSgbnKakt7vvdmNOD00JBrFutpkY77Je1dy78/ozswSL6MaQa8y4hV8IPRoANwyxSEO
+ 9g4jTkf9yzgwUwVQv+5KATc/FbMFi882+mXz/McQzn6/ByD2Vszdt5meMth9b8sxtCPc
+ WZXQ==
+X-Gm-Message-State: AOAM532fhyBSxpGHtZbnsMDAO6q1HrT+vZO1zXXxs67V7IR80uvY2nI5
+ Sdk1LUhA5hYRysDEbDLw21w=
+X-Google-Smtp-Source: ABdhPJy/sovjJ1DaI6y5oVUNi8kEueGlCXRc+ly7iHh3Okas8Ii3nmU4WWUlC+CLCxJuYru8/SPnpw==
+X-Received: by 2002:a1c:1c1:: with SMTP id 184mr8636459wmb.1.1639067766782;
+ Thu, 09 Dec 2021 08:36:06 -0800 (PST)
+Received: from localhost ([193.209.96.43])
+ by smtp.gmail.com with ESMTPSA id r62sm284530wmr.35.2021.12.09.08.36.05
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 09 Dec 2021 08:36:06 -0800 (PST)
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
+Subject: [PATCH v2 1/4] dt-bindings: arm-smmu: Document nvidia,
+ memory-controller property
+Date: Thu,  9 Dec 2021 17:35:57 +0100
+Message-Id: <20211209163600.609613-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Luck,
- Tony" <tony.luck@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
- Ashok" <ashok.raj@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
- LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Barry Song <21cnbao@gmail.com>, "Williams, Dan
- J" <dan.j.williams@intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.com>,
- "Zanussi, Tom" <tom.zanussi@intel.com>
+Cc: devicetree@vger.kernel.org, Jon Hunter <jonathanh@nvidia.com>,
+ iommu@lists.linux-foundation.org, Thierry Reding <thierry.reding@gmail.com>,
+ linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,66 +99,63 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Lu,
+From: Thierry Reding <treding@nvidia.com>
 
-On Thu, 9 Dec 2021 10:21:38 +0800, Lu Baolu <baolu.lu@linux.intel.com>
-wrote:
+On NVIDIA SoC's the ARM SMMU needs to interact with the memory
+controller in order to map memory clients to the corresponding stream
+IDs. Document how the nvidia,memory-controller property can be used to
+achieve this.
 
-> On 12/9/21 9:56 AM, Tian, Kevin wrote:
-> >> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> >> Sent: Thursday, December 9, 2021 2:50 AM
-> >>  
-> >>> Can a device issue DMA requests with PASID even there's no system  
-> >> IOMMU  
-> >>> or the system IOMMU is disabled?
-> >>>  
-> >> Good point.
-> >> If IOMMU is not enabled, device cannot issue DMA requests with PASID.
-> >> This API will not be available. Forgot to add dummy functions to the
-> >> header. 
-> > 
-> > PASID is a PCI thing, not defined by IOMMU.
-> > 
-> > I think the key is physically if IOMMU is disabled, how will root
-> > complex handle a PCI memory request including a PASID TLP prefix? Does
-> > it block such request due to no IOMMU to consume PASID or simply ignore
-> > PASID and continue routing the request to the memory controller?
-> > 
-> > If block, then having an iommu interface makes sense.
-> > 
-> > If ignore, possibly a DMA API call makes more sense instead, implying
-> > that this extension can be used even when iommu is disabled.
-> > 
-> > I think that is what Baolu wants to point out.  
-> 
-Thanks for clarifying, very good point.
-Looking at the PCIe spec. I don't see specific rules for RC to ignore or
-block PASID TLP if not enabled.
-"- A Root Complex that supports PASID TLP Prefixes must have a device
-specific mechanism for enabling them. By default usage of PASID TLP
-Prefixes is disabled
- - Root Complexes may optionally support TLPs with PASID TLP Prefixes. The
-mechanism used to detect whether a Root Complex supports the PASID TLP
-Prefix is implementation specific
-"
-For all practical purposes, why would someone sets up PASID for DMA just to
-be ignored? An IOMMU interface makes sense to me.
+Note that this is a backwards-incompatible change that is, however,
+necessary to ensure correctness. Without the new property, most of the
+devices would still work but it is not guaranteed that all will.
 
-> Yes, exactly. Imagining in the VM guest environment, do we require a
-> vIOMMU for this functionality? vIOMMU is not performance friendly if we
-> put aside the security considerations.
-> 
-The primary use case for accelerators to use in-kernel DMA will be in
-pass-through mode. vIOMMU should be able to do PT with good performance,
-right? no nesting, IO page faults.
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+---
+Changes in v2:
+- clarify why the new nvidia,memory-controller property is required
 
-> Best regards,
-> baolu
+ .../devicetree/bindings/iommu/arm,smmu.yaml     | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+index f66a3effba73..e239157eb30c 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+@@ -155,6 +155,17 @@ properties:
+   power-domains:
+     maxItems: 1
+ 
++  nvidia,memory-controller:
++    description: |
++      A phandle to the memory controller on NVIDIA Tegra186 and later SoCs.
++      The memory controller needs to be programmed with a mapping of memory
++      client IDs to ARM SMMU stream IDs.
++
++      If this property is absent, the mapping programmed by early firmware
++      will be used and it is not guaranteed that IOMMU translations will be
++      enabled for any given device.
++    $ref: /schemas/types.yaml#/definitions/phandle
++
+ required:
+   - compatible
+   - reg
+@@ -177,6 +188,12 @@ allOf:
+         reg:
+           minItems: 1
+           maxItems: 2
++
++      # The reference to the memory controller is required to ensure that the
++      # memory client to stream ID mapping can be done synchronously with the
++      # IOMMU attachment.
++      required:
++        - nvidia,memory-controller
+     else:
+       properties:
+         reg:
+-- 
+2.34.1
 
-Thanks,
-
-Jacob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
