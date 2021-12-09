@@ -1,73 +1,73 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3DFFDC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 86C62C433F5
 	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 23:36:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id DC03D401B1;
+	by smtp1.osuosl.org (Postfix) with ESMTP id B67D280C68;
 	Thu,  9 Dec 2021 23:36:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8cQEvJiRu2Py; Thu,  9 Dec 2021 23:36:10 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id peSiZ5yzihOl; Thu,  9 Dec 2021 23:36:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id B25A34019F;
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 404A180C6D;
 	Thu,  9 Dec 2021 23:36:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C3EA0C007E;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8961FC0075;
 	Thu,  9 Dec 2021 23:36:08 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C4FDBC0012;
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2209DC0012;
  Thu,  9 Dec 2021 23:04:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id A49CD6F9EB;
- Thu,  9 Dec 2021 23:04:43 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id A600A42635;
+ Thu,  9 Dec 2021 23:04:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=sent.com header.b="TuuRuLss";
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=sent.com header.b="MG7YC+pU";
  dkim=pass (2048-bit key) header.d=messagingengine.com
- header.b="dTp5YN8n"
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tmyBON8gDfP4; Thu,  9 Dec 2021 23:04:43 +0000 (UTC)
+ header.b="MdMLTKav"
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 6Q7F9hep0Gq7; Thu,  9 Dec 2021 23:04:42 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com
  [66.111.4.221])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 03BC96F9DB;
- Thu,  9 Dec 2021 23:04:42 +0000 (UTC)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
- by mailnew.nyi.internal (Postfix) with ESMTP id 2ACDE5802C9;
- Thu,  9 Dec 2021 18:04:42 -0500 (EST)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id D79CD42619;
+ Thu,  9 Dec 2021 23:04:41 +0000 (UTC)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+ by mailnew.nyi.internal (Postfix) with ESMTP id 0578A58026D;
+ Thu,  9 Dec 2021 18:04:41 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
- by compute3.internal (MEProxy); Thu, 09 Dec 2021 18:04:42 -0500
+ by compute4.internal (MEProxy); Thu, 09 Dec 2021 18:04:41 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=from
  :to:cc:subject:date:message-id:in-reply-to:references:reply-to
- :mime-version:content-transfer-encoding; s=fm2; bh=UTQs1ux+hZ7wP
- wqBSLphwUkfQ6f0lSb5ot+4msaDpHs=; b=TuuRuLssMKg6UBRpj/SlIFAWKPmqa
- s+1erp14Y9Z35RZSebwiDROJcjArV2wRAmJBjjX3uEEbDHV6qChrQcfmMdIFce7i
- szjDQPkGHVOHJLgC3+AY3iqMVelNSYSPa/7FhfSQ3mcx4XFHNKTsbJRMO0YhxZtB
- 2jq0UT2K5ZPUJdFqfiwoTcKtsEXjEdwJj6blyVPQ7/n2O2uzXZZJx3knBjJKDKGD
- ln9hIdsuSHCBcVBdHNF4VNWtHRG+0/A3ZZISc3e6on4Njg3oJLUjCfL5bBRPsTqX
- lIZmC4qR835uuOA05xjmm3bIjA5WiH5J8YUFs7c3zwAnWCjvRQa8SwjFg==
+ :mime-version:content-transfer-encoding; s=fm2; bh=7cyN4s0xVwQyR
+ GJ0Fc+VVqgj+iUolX1sZzd0E92fEJY=; b=MG7YC+pU3dCSJPziDOQc190Xhgyek
+ yz8KXK/RBv9WfhZnU/loKYoXkW6pITbpEMn/iVBkABFTEDINHVicLejE5F5cwGdZ
+ tNoJAjYeAuRe6H/zbgUJxE2Q6zp/hXAZyAcXS+t48EYoFuyFqelT+4DSMj1VzuyR
+ rPjxld8Byq28+NnQe8pCkRrzbrVA848WP0Z40Q3TMV7zBBMkoUZbLCdvC96iMsqw
+ RSOhnPux8hlkqwb/UnLjSTdnDd1bLUF5ZDPaqixJVmunDfLKQ6zHHcL2HaPAeLot
+ ceUEIuJDVTVfWiPfxgvctRIpJ8dqBSvXkxBZ44jmv5PAanE0qCA+/IHFA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
  messagingengine.com; h=cc:content-transfer-encoding:date:from
  :in-reply-to:message-id:mime-version:references:reply-to:subject
  :to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
- fm1; bh=UTQs1ux+hZ7wPwqBSLphwUkfQ6f0lSb5ot+4msaDpHs=; b=dTp5YN8n
- NtGl0Q1FCz+Ay7HWSTl7DdQPolH5VXkIDGCHCA57hz0dFeNaCrC4cnAJJicMQmBA
- JlxuJYU7S4lGdLLK0NXpfSQi2jbck+onVDsYNJEqdwj2wjCwYwvFCSmNrZxyeYut
- Z+gS6VrkBSBcQLTFmdrxoDg0YKkSQH0PpgIgqzQCZ4GU3z5hHriKkalvxe+dJ3ur
- 853yQ/qjrRseoiy0mfCXDWJTAF7lse+m8bhYxJs0yfr+oeQJdmUwWI7zSiQDo866
- syGhBzkc8H1QGu5blmZYAwDC71n4xDHHhNIs6Ykc2k33jD3Lg5a68VaJpnYGz6PZ
- kHyXZxRCfwAKWQ==
-X-ME-Sender: <xms:iYuyYck0WYFqaCD_WJ4jOvDYi898Fbo7RFveIA_M73YY1bNC0R7yeg>
- <xme:iYuyYb0rqnc7K8ue5vQv3x9rMvRzb5zQAjvLP_nXm9Gl0pxg83zogVESeUXPsYrQ5
- qjqCxNjwYXjt7grcQ>
-X-ME-Received: <xmr:iYuyYarFXAZsHAtOn4M6sDjTNLM5rLGrPfqzpZvcpzkqEuHADwiKMhO0aabh45rwzxFGQLUW>
+ fm1; bh=7cyN4s0xVwQyRGJ0Fc+VVqgj+iUolX1sZzd0E92fEJY=; b=MdMLTKav
+ 488WWiYXMVbpTmasmlkq2si3G1H/7u5RP3uEs67z606CkpRFJgdWeiFglie42wDA
+ hdxSUzbt4HfI4OZVhtBjNAIt0H1FLKV4BBZq7yC/exMTzwMFFWF3relfDpdIiWgi
+ AqWLPM3wws0KiDslZq7YXu1jMM9LRdXViZKgfXNtV5hNvSCjQNZ4UO7nT8BzIgtS
+ esJ2bsJ2KTkygLzYnPphZRjvJGdKEOMKQ+EnEaKftK5AZbhhqTRM1NrBSUrZolsk
+ GejfYEtd5swYNfMzGHbVqQfT2aH4wbZThpZEjZvrcO/67vsHd76LwTAOYOy/YXYU
+ nVZf0UJSxORcSQ==
+X-ME-Sender: <xms:iIuyYYFG_FFzLFHtxM4D-Qnx6ybGDUgDuMfaGUxXhCl79qDHQBuj4Q>
+ <xme:iIuyYRUHpLQwK8klf7AEqIkgc2MaNxaX0e_jcsxQ6FXcy4njAmkmxUBG8etk6q0up
+ iVRB8tYwwiVRleksA>
+X-ME-Received: <xmr:iIuyYSI68PyOikJyn2kxWLBNX4Pb2QXau-FksY5jqh-akYsYiOmTF6VPJkjhXHwJ-ZLQc36Y>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrkedugddtgecutefuodetggdotefrodftvf
  curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
  uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
@@ -76,19 +76,19 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrkedugddtgecutefuodetggdote
  euudeuhfeghfehieeuvdetvdeugfeigeevteeuieeuhedtgeduheefleenucevlhhushht
  vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpeiiihdrhigrnhesshgvnh
  htrdgtohhm
-X-ME-Proxy: <xmx:iYuyYYlRsvjzvKR13_WATPZX6pQGBfVbrzROhdKBN-GTQ-3Q50BO0Q>
- <xmx:iYuyYa2RvU11-ltbh154NTkkUlTTCBgE95K_DCfpMLKeE8P-zWj79w>
- <xmx:iYuyYfsQ-zwAi1n3M7mBT5c7NjKZLkTReI_mo9_VLpbeB7m-LHDQ9w>
- <xmx:iouyYQOyibWXBG_QwhJoKzINkPiUFnGMOJHiezyfZ2RY9ICjW5sGgA>
+X-ME-Proxy: <xmx:iIuyYaG4vt5Ka_CfmXGe_rmIvEXwaEX6c4baG3ld2f1SLCQswFn0qQ>
+ <xmx:iIuyYeUGxT9EnreIQvKd6qiYOWRv7x1S7dwtZgp6qa_QdnGq4U8H6A>
+ <xmx:iIuyYdNJGJ1MXcHVnTpzGBRfgzcD5yn169wI0riD4FAbkm5FqHG27Q>
+ <xmx:iIuyYfvj5dWQqn83Yovg9fhaUhBp6nMgG1-4-6xKdXrhkcKcOWP0Vg>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 9 Dec 2021 18:04:41 -0500 (EST)
+ 9 Dec 2021 18:04:40 -0500 (EST)
 From: Zi Yan <zi.yan@sent.com>
 To: David Hildenbrand <david@redhat.com>,
 	linux-mm@kvack.org
-Subject: [RFC PATCH v2 6/7] drivers: virtio_mem: use pageblock size as the
- minimum virtio_mem size.
-Date: Thu,  9 Dec 2021 18:04:13 -0500
-Message-Id: <20211209230414.2766515-7-zi.yan@sent.com>
+Subject: [RFC PATCH v2 5/7] mm: cma: use pageblock_order as the single
+ alignment
+Date: Thu,  9 Dec 2021 18:04:12 -0500
+Message-Id: <20211209230414.2766515-6-zi.yan@sent.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211209230414.2766515-1-zi.yan@sent.com>
 References: <20211209230414.2766515-1-zi.yan@sent.com>
@@ -120,37 +120,95 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Zi Yan <ziy@nvidia.com>
 
-alloc_contig_range() now only needs to be aligned to pageblock_order,
-drop virtio_mem size requirement that it needs to be the max of
-pageblock_order and MAX_ORDER.
+Now alloc_contig_range() works at pageblock granularity. Change CMA
+allocation, which uses alloc_contig_range(), to use pageblock_order
+alignment.
 
 Signed-off-by: Zi Yan <ziy@nvidia.com>
 ---
- drivers/virtio/virtio_mem.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ include/linux/mmzone.h  | 5 +----
+ kernel/dma/contiguous.c | 2 +-
+ mm/cma.c                | 6 ++----
+ mm/page_alloc.c         | 6 +++---
+ 4 files changed, 7 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/virtio/virtio_mem.c b/drivers/virtio/virtio_mem.c
-index 96e5a8782769..dab4bce417fd 100644
---- a/drivers/virtio/virtio_mem.c
-+++ b/drivers/virtio/virtio_mem.c
-@@ -2436,15 +2436,13 @@ static int virtio_mem_init_hotplug(struct virtio_mem *vm)
- 				      VIRTIO_MEM_DEFAULT_OFFLINE_THRESHOLD);
+diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+index b925431b0123..71830af35745 100644
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -54,10 +54,7 @@ enum migratetype {
+ 	 *
+ 	 * The way to use it is to change migratetype of a range of
+ 	 * pageblocks to MIGRATE_CMA which can be done by
+-	 * __free_pageblock_cma() function.  What is important though
+-	 * is that a range of pageblocks must be aligned to
+-	 * MAX_ORDER_NR_PAGES should biggest page be bigger than
+-	 * a single pageblock.
++	 * __free_pageblock_cma() function.
+ 	 */
+ 	MIGRATE_CMA,
+ #endif
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index 3d63d91cba5c..ac35b14b0786 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -399,7 +399,7 @@ static const struct reserved_mem_ops rmem_cma_ops = {
+ 
+ static int __init rmem_cma_setup(struct reserved_mem *rmem)
+ {
+-	phys_addr_t align = PAGE_SIZE << max(MAX_ORDER - 1, pageblock_order);
++	phys_addr_t align = PAGE_SIZE << pageblock_order;
+ 	phys_addr_t mask = align - 1;
+ 	unsigned long node = rmem->fdt_node;
+ 	bool default_cma = of_get_flat_dt_prop(node, "linux,cma-default", NULL);
+diff --git a/mm/cma.c b/mm/cma.c
+index bc9ca8f3c487..d171158bd418 100644
+--- a/mm/cma.c
++++ b/mm/cma.c
+@@ -180,8 +180,7 @@ int __init cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
+ 		return -EINVAL;
+ 
+ 	/* ensure minimal alignment required by mm core */
+-	alignment = PAGE_SIZE <<
+-			max_t(unsigned long, MAX_ORDER - 1, pageblock_order);
++	alignment = PAGE_SIZE << pageblock_order;
+ 
+ 	/* alignment should be aligned with order_per_bit */
+ 	if (!IS_ALIGNED(alignment >> PAGE_SHIFT, 1 << order_per_bit))
+@@ -268,8 +267,7 @@ int __init cma_declare_contiguous_nid(phys_addr_t base,
+ 	 * migratetype page by page allocator's buddy algorithm. In the case,
+ 	 * you couldn't get a contiguous memory, which is not what we want.
+ 	 */
+-	alignment = max(alignment,  (phys_addr_t)PAGE_SIZE <<
+-			  max_t(unsigned long, MAX_ORDER - 1, pageblock_order));
++	alignment = max(alignment,  (phys_addr_t)PAGE_SIZE << pageblock_order);
+ 	if (fixed && base & (alignment - 1)) {
+ 		ret = -EINVAL;
+ 		pr_err("Region at %pa must be aligned to %pa bytes\n",
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 5ffbeb1b7512..3317f2064105 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -9127,8 +9127,8 @@ static inline void split_free_page_into_pageblocks(struct page *free_page,
+  *			be either of the two.
+  * @gfp_mask:	GFP mask to use during compaction
+  *
+- * The PFN range does not have to be pageblock or MAX_ORDER_NR_PAGES
+- * aligned.  The PFN range must belong to a single zone.
++ * The PFN range does not have to be pageblock aligned. The PFN range must
++ * belong to a single zone.
+  *
+  * The first thing this routine does is attempt to MIGRATE_ISOLATE all
+  * pageblocks in the range.  Once isolated, the pageblocks should not
+@@ -9243,7 +9243,7 @@ int alloc_contig_range(unsigned long start, unsigned long end,
+ 	ret = 0;
  
  	/*
--	 * We want subblocks to span at least MAX_ORDER_NR_PAGES and
--	 * pageblock_nr_pages pages. This:
-+	 * We want subblocks to span at least pageblock_nr_pages pages. This:
- 	 * - Simplifies our page onlining code (virtio_mem_online_page_cb)
- 	 *   and fake page onlining code (virtio_mem_fake_online).
- 	 * - Is required for now for alloc_contig_range() to work reliably -
- 	 *   it doesn't properly handle smaller granularity on ZONE_NORMAL.
- 	 */
--	sb_size = max_t(uint64_t, MAX_ORDER_NR_PAGES,
--			pageblock_nr_pages) * PAGE_SIZE;
-+	sb_size = pageblock_nr_pages * PAGE_SIZE;
- 	sb_size = max_t(uint64_t, vm->device_block_size, sb_size);
- 
- 	if (sb_size < memory_block_size_bytes() && !force_bbm) {
+-	 * Pages from [start, end) are within a MAX_ORDER_NR_PAGES
++	 * Pages from [start, end) are within a pageblock_nr_pages
+ 	 * aligned blocks that are marked as MIGRATE_ISOLATE.  What's
+ 	 * more, all pages in [start, end) are free in page allocator.
+ 	 * What we are going to do is to allocate all pages from
 -- 
 2.33.0
 
