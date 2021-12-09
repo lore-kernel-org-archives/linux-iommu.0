@@ -4,56 +4,75 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8545AC433F5
-	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 13:17:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 22F69C433EF
+	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 13:20:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1CFEB61010;
-	Thu,  9 Dec 2021 13:17:30 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0260061018;
+	Thu,  9 Dec 2021 13:20:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kU9dZE4h2MGi; Thu,  9 Dec 2021 13:17:27 +0000 (UTC)
+	with ESMTP id uMg3aVZjPl6T; Thu,  9 Dec 2021 13:20:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 9DEC961013;
-	Thu,  9 Dec 2021 13:17:26 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 3CB4F61010;
+	Thu,  9 Dec 2021 13:20:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8326EC0038;
-	Thu,  9 Dec 2021 13:17:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 144C5C001E;
+	Thu,  9 Dec 2021 13:20:15 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D53EBC0012
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 13:17:25 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2653FC0012
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 13:20:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D034761019
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 13:17:25 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 1500361013
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 13:20:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kh_k-LJdIsCQ for <iommu@lists.linux-foundation.org>;
- Thu,  9 Dec 2021 13:17:24 +0000 (UTC)
+ with ESMTP id a-6En-MfnkkP for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Dec 2021 13:20:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 75CDC61013
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 13:17:24 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BD511ED1;
- Thu,  9 Dec 2021 05:17:23 -0800 (PST)
-Received: from [10.57.34.58] (unknown [10.57.34.58])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9DC1E3F5A1;
- Thu,  9 Dec 2021 05:17:22 -0800 (PST)
-Message-ID: <ef2c9b27-a644-928d-5bae-1ae4d2f2c099@arm.com>
-Date: Thu, 9 Dec 2021 13:17:19 +0000
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id CBAB061010
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 13:20:08 +0000 (UTC)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
+ by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4J8vkw39W1z939n;
+ Thu,  9 Dec 2021 21:19:20 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 9 Dec 2021 21:19:59 +0800
+Subject: Re: [PATCH v2 2/6] hwtracing: Add trace function support for
+ HiSilicon PCIe Tune and Trace device
+To: Robin Murphy <robin.murphy@arm.com>, <gregkh@linuxfoundation.org>,
+ <helgaas@kernel.org>, <alexander.shishkin@linux.intel.com>,
+ <lorenzo.pieralisi@arm.com>, <will@kernel.org>, <mark.rutland@arm.com>,
+ <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+ <mike.leach@linaro.org>, <leo.yan@linaro.org>, <jonathan.cameron@huawei.com>, 
+ <daniel.thompson@linaro.org>, <joro@8bytes.org>, <john.garry@huawei.com>,
+ <shameerali.kolothum.thodi@huawei.com>, <linux-kernel@vger.kernel.org>,
+ <linux-arm-kernel@lists.infradead.org>, <coresight@lists.linaro.org>,
+ <linux-pci@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+ <iommu@lists.linux-foundation.org>
+References: <20211116090625.53702-1-yangyicong@hisilicon.com>
+ <20211116090625.53702-3-yangyicong@hisilicon.com>
+ <0b67745c-13dd-1fea-1b8b-d55212bad232@arm.com>
+ <3644ad6e-d800-c84b-9d62-6dda8462450f@hisilicon.com>
+ <e7d4afb7-e4e4-e581-872b-2477850ad8da@hisilicon.com>
+ <38bfa372-54c8-2e81-adab-ca24051a0fe6@arm.com>
+ <288856a6-d1eb-d4cc-f3ca-0134b7e4d1dc@hisilicon.com>
+ <e60d17fb-58c5-cbbc-391c-043ec15a47b6@arm.com>
+Message-ID: <c707c5bb-b344-a20a-e776-d914916431ad@hisilicon.com>
+Date: Thu, 9 Dec 2021 21:19:59 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH] iommu/iova: wait 'fq_timer' handler to finish before
- destroying 'fq'
-Content-Language: en-GB
-To: Xiongfeng Wang <wangxiongfeng2@huawei.com>, joro@8bytes.org,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-References: <1564219269-14346-1-git-send-email-wangxiongfeng2@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <1564219269-14346-1-git-send-email-wangxiongfeng2@huawei.com>
-Cc: yaohongbo@huawei.com, huawei.libin@huawei.com
+In-Reply-To: <e60d17fb-58c5-cbbc-391c-043ec15a47b6@arm.com>
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
+Cc: zhangshaokun@hisilicon.com, liuqi115@huawei.com, linuxarm@huawei.com,
+ prime.zeng@huawei.com, yangyicong@hisilicon.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -66,128 +85,183 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+From: Yicong Yang via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Yicong Yang <yangyicong@hisilicon.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Sorry I missed this before...
-
-On 2019-07-27 10:21, Xiongfeng Wang wrote:
-> Fix following crash that occurs when 'fq_flush_timeout()' access
-> 'fq->lock' while 'iovad->fq' has been cleared. This happens when the
-> 'fq_timer' handler is being executed and we call
-> 'free_iova_flush_queue()'. When the timer handler is being executed,
-> its pending state is cleared and it is detached. This patch use
-> 'del_timer_sync()' to wait for the timer handler 'fq_flush_timeout()' to
-> finish before destroying the flush queue.
-
-So if I understand correctly, you shut down the device - which naturally 
-frees some DMA mappings into the FQ - then hotplug it out, such that 
-tearing down its group and default domain can end up racing with the 
-timeout firing on a different CPU? It would help if the commit message 
-actually explained that - I've just reverse-engineered it from the given 
-symptom - rather than focusing on details that aren't really important. 
-fq->lock is hardly significant, since *any* access to the FQ while it's 
-being destroyed is fundamentally unsound. I also spent way too long 
-trying to understand the significance of the full stack trace below 
-before realising that it is in fact just irrelevant - there's only one 
-way fq_flush_timeout() ever gets called, and it's the obvious one.
-
-The fix itself seems reasonable - the kerneldoc for del_timer_sync() is 
-slightly scary, but since free_iova_flush_queue() doesn't touch any of 
-the locks and definitely shouldn't run in IRQ context I believe we're OK.
-
-This will affect my IOVA refactoring series a little, so I'm happy to 
-help improve the writeup if you like - provided that my understanding is 
-actually correct - and include it in a v2 of that.
-
-Thanks,
-Robin.
-
-> [ 9052.361840] Unable to handle kernel paging request at virtual address 0000a02fd6c66008
-> [ 9052.361843] Mem abort info:
-> [ 9052.361845]   ESR = 0x96000004
-> [ 9052.361847]   Exception class = DABT (current EL), IL = 32 bits
-> [ 9052.361849]   SET = 0, FnV = 0
-> [ 9052.361850]   EA = 0, S1PTW = 0
-> [ 9052.361852] Data abort info:
-> [ 9052.361853]   ISV = 0, ISS = 0x00000004
-> [ 9052.361855]   CM = 0, WnR = 0
-> [ 9052.361860] user pgtable: 4k pages, 48-bit VAs, pgdp = 000000009b665b91
-> [ 9052.361863] [0000a02fd6c66008] pgd=0000000000000000
-> [ 9052.361870] Internal error: Oops: 96000004 [#1] SMP
-> [ 9052.361873] Process rmmod (pid: 51122, stack limit = 0x000000003f5524f7)
-> [ 9052.361881] CPU: 69 PID: 51122 Comm: rmmod Kdump: loaded Tainted: G           OE     4.19.36-vhulk1906.3.0.h356.eulerosv2r8.aarch64 #1
-> [ 9052.361882] Hardware name: Huawei TaiShan 2280 V2/BC82AMDC, BIOS 0.81 07/10/2019
-> [ 9052.361885] pstate: 80400089 (Nzcv daIf +PAN -UAO)
-> [ 9052.361902] pc : fq_flush_timeout+0x9c/0x110
-> [ 9052.361904] lr :           (null)
-> [ 9052.361906] sp : ffff00000965bd80
-> [ 9052.361907] x29: ffff00000965bd80 x28: 0000000000000202
-> [ 9052.361912] x27: 0000000000000000 x26: 0000000000000053
-> [ 9052.361915] x25: ffffa026ed805008 x24: ffff000009119810
-> [ 9052.361919] x23: ffff00000911b938 x22: ffff00000911bc04
-> [ 9052.361922] x21: ffffa026ed804f28 x20: 0000a02fd6c66008
-> [ 9052.361926] x19: 0000a02fd6c64000 x18: ffff000009117000
-> [ 9052.361929] x17: 0000000000000008 x16: 0000000000000000
-> [ 9052.361933] x15: ffff000009119708 x14: 0000000000000115
-> [ 9052.361936] x13: ffff0000092f09d7 x12: 0000000000000000
-> [ 9052.361940] x11: 0000000000000001 x10: ffff00000965be98
-> [ 9052.361943] x9 : 0000000000000000 x8 : 0000000000000007
-> [ 9052.361947] x7 : 0000000000000010 x6 : 000000d658b784ef
-> [ 9052.361950] x5 : 00ffffffffffffff x4 : 00000000ffffffff
-> [ 9052.361954] x3 : 0000000000000013 x2 : 0000000000000001
-> [ 9052.361957] x1 : 0000000000000000 x0 : 0000a02fd6c66008
-> [ 9052.361961] Call trace:
-> [ 9052.361967]  fq_flush_timeout+0x9c/0x110
-> [ 9052.361976]  call_timer_fn+0x34/0x178
-> [ 9052.361980]  expire_timers+0xec/0x158
-> [ 9052.361983]  run_timer_softirq+0xc0/0x1f8
-> [ 9052.361987]  __do_softirq+0x120/0x324
-> [ 9052.361995]  irq_exit+0x11c/0x140
-> [ 9052.362003]  __handle_domain_irq+0x6c/0xc0
-> [ 9052.362005]  gic_handle_irq+0x6c/0x150
-> [ 9052.362008]  el1_irq+0xb8/0x140
-> [ 9052.362010]  vprintk_emit+0x2b4/0x320
-> [ 9052.362013]  vprintk_default+0x54/0x90
-> [ 9052.362016]  vprintk_func+0xa0/0x150
-> [ 9052.362019]  printk+0x74/0x94
-> [ 9052.362034]  nvme_get_smart+0x200/0x220 [nvme]
-> [ 9052.362041]  nvme_remove+0x38/0x250 [nvme]
-> [ 9052.362051]  pci_device_remove+0x48/0xd8
-> [ 9052.362065]  device_release_driver_internal+0x1b4/0x250
-> [ 9052.362068]  driver_detach+0x64/0xe8
-> [ 9052.362072]  bus_remove_driver+0x64/0x118
-> [ 9052.362074]  driver_unregister+0x34/0x60
-> [ 9052.362077]  pci_unregister_driver+0x24/0xd8
-> [ 9052.362083]  nvme_exit+0x24/0x1754 [nvme]
-> [ 9052.362094]  __arm64_sys_delete_module+0x19c/0x2a0
-> [ 9052.362102]  el0_svc_common+0x78/0x130
-> [ 9052.362106]  el0_svc_handler+0x38/0x78
-> [ 9052.362108]  el0_svc+0x8/0xc
-> 
-> Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-> ---
->   drivers/iommu/iova.c | 3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 3e1a8a6..90e8035 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -64,8 +64,7 @@ static void free_iova_flush_queue(struct iova_domain *iovad)
->   	if (!has_iova_flush_queue(iovad))
->   		return;
->   
-> -	if (timer_pending(&iovad->fq_timer))
-> -		del_timer(&iovad->fq_timer);
-> +	del_timer_sync(&iovad->fq_timer);
->   
->   	fq_destroy_all_entries(iovad);
->   
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMS8xMi84IDA6MzEsIFJvYmluIE11cnBoeSB3cm90ZToKPiBPbiAyMDIxLTExLTI5IDA4
+OjIyLCBZaWNvbmcgWWFuZyB2aWEgaW9tbXUgd3JvdGU6Cj4+IE9uIDIwMjEvMTEvMjUgMjM6NDks
+IFJvYmluIE11cnBoeSB3cm90ZToKPj4+IE9uIDIwMjEtMTEtMTggMDk6MDEsIFlpY29uZyBZYW5n
+IHZpYSBpb21tdSB3cm90ZToKPj4+PiBIaSBSb2JpbiwKPj4+Pgo+Pj4+IE9uIDIwMjEvMTEvMTYg
+MTk6MzcsIFlpY29uZyBZYW5nIHdyb3RlOgo+Pj4+PiBPbiAyMDIxLzExLzE2IDE4OjU2LCBSb2Jp
+biBNdXJwaHkgd3JvdGU6Cj4+Pj4+PiBPbiAyMDIxLTExLTE2IDA5OjA2LCBZaWNvbmcgWWFuZyB2
+aWEgaW9tbXUgd3JvdGU6Cj4+Pj4+PiBbLi4uXQo+Pj4+Pj4+ICsvKgo+Pj4+Pj4+ICsgKiBHZXQg
+Uk1SIGFkZHJlc3MgaWYgcHJvdmlkZWQgYnkgdGhlIGZpcm13YXJlLgo+Pj4+Pj4+ICsgKiBSZXR1
+cm4gMCBpZiB0aGUgSU9NTVUgZG9lc24ndCBwcmVzZW50IG9yIHRoZSBwb2xpY3kgb2YgdGhlCj4+
+Pj4+Pj4gKyAqIElPTU1VIGRvbWFpbiBpcyBwYXNzdGhyb3VnaCBvciB3ZSBnZXQgYSB1c2FibGUg
+Uk1SIHJlZ2lvbi4KPj4+Pj4+PiArICogT3RoZXJ3aXNlIGEgbmVnYXRpdmUgdmFsdWUgaXMgcmV0
+dXJuZWQuCj4+Pj4+Pj4gKyAqLwo+Pj4+Pj4+ICtzdGF0aWMgaW50IGhpc2lfcHR0X2dldF9ybXIo
+c3RydWN0IGhpc2lfcHR0ICpoaXNpX3B0dCkKPj4+Pj4+PiArewo+Pj4+Pj4+ICvCoMKgwqAgc3Ry
+dWN0IHBjaV9kZXYgKnBkZXYgPSBoaXNpX3B0dC0+cGRldjsKPj4+Pj4+PiArwqDCoMKgIHN0cnVj
+dCBpb21tdV9kb21haW4gKmlvbW11X2RvbWFpbjsKPj4+Pj4+PiArwqDCoMKgIHN0cnVjdCBpb21t
+dV9yZXN2X3JlZ2lvbiAqcmVnaW9uOwo+Pj4+Pj4+ICvCoMKgwqAgTElTVF9IRUFEKGxpc3QpOwo+
+Pj4+Pj4+ICsKPj4+Pj4+PiArwqDCoMKgIC8qCj4+Pj4+Pj4gK8KgwqDCoMKgICogVXNlIGRpcmVj
+dCBETUEgaWYgSU9NTVUgZG9lcyBub3QgcHJlc2VudCBvciB0aGUgcG9saWN5IG9mIHRoZQo+Pj4+
+Pj4+ICvCoMKgwqDCoCAqIElPTU1VIGRvbWFpbiBpcyBwYXNzdGhyb3VnaC4KPj4+Pj4+PiArwqDC
+oMKgwqAgKi8KPj4+Pj4+PiArwqDCoMKgIGlvbW11X2RvbWFpbiA9IGlvbW11X2dldF9kb21haW5f
+Zm9yX2RldigmcGRldi0+ZGV2KTsKPj4+Pj4+PiArwqDCoMKgIGlmICghaW9tbXVfZG9tYWluIHx8
+IGlvbW11X2RvbWFpbi0+dHlwZSA9PSBJT01NVV9ET01BSU5fSURFTlRJVFkpCj4+Pj4+Pj4gK8Kg
+wqDCoMKgwqDCoMKgIHJldHVybiAwOwo+Pj4+Pj4+ICsKPj4+Pj4+PiArwqDCoMKgIGlvbW11X2dl
+dF9yZXN2X3JlZ2lvbnMoJnBkZXYtPmRldiwgJmxpc3QpOwo+Pj4+Pj4+ICvCoMKgwqAgbGlzdF9m
+b3JfZWFjaF9lbnRyeShyZWdpb24sICZsaXN0LCBsaXN0KQo+Pj4+Pj4+ICvCoMKgwqDCoMKgwqDC
+oCBpZiAocmVnaW9uLT50eXBlID09IElPTU1VX1JFU1ZfRElSRUNUICYmCj4+Pj4+Pj4gK8KgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgcmVnaW9uLT5sZW5ndGggPj0gSElTSV9QVFRfVFJBQ0VfQlVGRkVS
+X1NJWkUpIHsKPj4+Pj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBoaXNpX3B0dC0+dHJhY2Vf
+Y3RybC5oYXNfcm1yID0gdHJ1ZTsKPj4+Pj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBoaXNp
+X3B0dC0+dHJhY2VfY3RybC5ybXJfYWRkciA9IHJlZ2lvbi0+c3RhcnQ7Cj4+Pj4+Pj4gK8KgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgaGlzaV9wdHQtPnRyYWNlX2N0cmwucm1yX2xlbmd0aCA9IHJlZ2lv
+bi0+bGVuZ3RoOwo+Pj4+Pj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGJyZWFrOwo+Pj4+Pj4+
+ICvCoMKgwqDCoMKgwqDCoCB9Cj4+Pj4+Pj4gKwo+Pj4+Pj4+ICvCoMKgwqAgaW9tbXVfcHV0X3Jl
+c3ZfcmVnaW9ucygmcGRldi0+ZGV2LCAmbGlzdCk7Cj4+Pj4+Pj4gK8KgwqDCoCByZXR1cm4gaGlz
+aV9wdHQtPnRyYWNlX2N0cmwuaGFzX3JtciA/IDAgOiAtRU5PTUVNOwo+Pj4+Pj4+ICt9Cj4+Pj4+
+Pgo+Pj4+Pj4gTm8uCj4+Pj4+Pgo+Pj4+Pj4gVGhlIHdob2xlIHBvaW50IG9mIFJNUnMgaXMgZm9y
+IGRldmljZXMgdGhhdCBhcmUgYWxyZWFkeSBjb25maWd1cmVkIHRvIGFjY2VzcyB0aGUgZ2l2ZW4g
+YWRkcmVzcyByYW5nZSBpbiBhIG1hbm5lciBiZXlvbmQgdGhlIGtlcm5lbCdzIGNvbnRyb2wuIElm
+IHlvdSBjYW4gZG8gdGhpcywgaXQgcHJvdmVzIHRoYXQgeW91IHNob3VsZCBub3QgaGF2ZSBhbiBS
+TVIgaW4gdGhlIGZpcnN0IHBsYWNlLgo+Pj4+Pj4KPj4+Pj4+IFRoZSBub3Rpb24gb2YgYSBrZXJu
+ZWwgZHJpdmVyIGV4cGxpY2l0bHkgY29uZmlndXJpbmcgaXRzIGRldmljZSB0byBETUEgaW50byBh
+bnkgcmFuZG9tIFJNUiB0aGF0IGxvb2tzIGJpZyBlbm91Z2ggaXMgc28gZWdyZWdpb3VzbHkgd3Jv
+bmcgdGhhdCBJJ20gYWxtb3N0IGxvc3QgZm9yIHdvcmRzLi4uCj4+Pj4+Pgo+Pj4+Pgo+Pj4+PiBv
+dXIgYmlvcyB3aWxsIHJlc2VydmUgc3VjaCBhIHJlZ2lvbiBhbmQgcmVwb3J0ZWQgaXQgdGhyb3Vn
+aCBpb3J0LiB0aGUgZGV2aWNlIHdpbGwgd3JpdGUgdG8gdGhlIHJlZ2lvbiBhbmQgaW4gdGhlIGRy
+aXZlciB3ZSBuZWVkIHRvIGFjY2VzcyB0aGUgcmVnaW9uCj4+Pj4+IHRvIGdldCB0aGUgdHJhY2Vk
+IGRhdGEuIHRoZSByZWdpb24gaXMgcmVzZXJ2ZWQgZXhjbHVzaXZlbHkgYW5kIHdpbGwgbm90IGJl
+IGFjY2Vzc2VkIGJ5IGtlcm5lbCBvciBvdGhlciBkZXZpY2VzLgo+Pj4+Pgo+Pj4+PiBpcyBpdCBv
+ayB0byBsZXQgYmlvcyBjb25maWd1cmUgdGhlIGFkZHJlc3MgdG8gdGhlIGRldmljZSBhbmQgZnJv
+bSBDUFUgc2lkZSB3ZSBqdXN0IHJlYWQgaXQ/Cj4+Pj4+Cj4+Pj4KPj4+PiBBbnkgc3VnZ2VzdGlv
+bj/CoCBJcyB0aGlzIHN0aWxsIGFuIGlzc3VlIHlvdSBjb25jZXJuIGlmIHdlIG1vdmUgdGhlIGNv
+bmZpZ3VyYXRpb24gb2YgdGhlIGRldmljZSBhZGRyZXNzIHRvIEJJT1MgYW5kIGp1c3QgcmVhZCBm
+cm9tIHRoZSBDUFUgc2lkZT8KPj4+Cj4+PiBJZiB0aGUgZmlybXdhcmUgY29uZmlndXJlcyB0aGUg
+ZGV2aWNlIHNvIHRoYXQgaXQncyBhY3RpdmVseSB0cmFjaW5nIGFuZCB3cml0aW5nIG91dCB0byBt
+ZW1vcnkgd2hpbGUgdGhlIGtlcm5lbCBib290cywgdGhlbiB0aGF0IGlzIGEgdmFsaWQgcmVhc29u
+IHRvIGhhdmUgYW4gUk1SLiBIb3dldmVyIHdoYXQgeW91J3JlIGRvaW5nIGluIHRoZSBkcml2ZXIg
+aXMgc3RpbGwgY29tcGxldGUgbm9uc2Vuc2UuIEFzIGZhciBhcyBJIGNhbiBmb2xsb3csIHRoZSB3
+YXkgaXQncyB3b3JraW5nIGlzIHRoaXM6Cj4+Pgo+Pj4gLSBBdCBwcm9iZSB0aW1lLCB0aGUgaW5p
+dGlhbCBzdGF0ZSBvZiB0aGUgaGFyZHdhcmUgaXMgZW50aXJlbHkgaWdub3JlZC4gSWYgaXQgKmlz
+KiBhbHJlYWR5IGFjdGl2ZSwgdGhlcmUgYXBwZWFycyB0byBiZSBhIGZ1biBjaGFuY2Ugb2YgY3Jh
+c2hpbmcgaWYgVFJBQ0VfSU5UX01BU0sgaXMgY2xlYXIgYW5kIGFuIGludGVycnVwdCBoYXBwZW5z
+IHRvIGZpcmUgYmVmb3JlIGFueW9uZSBoYXMgZ290IHJvdW5kIHRvIGNhbGxpbmcgcGVyZl9hdXhf
+b3V0cHV0X2JlZ2luKCkgdG8gbWFrZSB0cmFjZV9jdHJsLmhhbmRsZS5yYiBub24tTlVMTC4KPj4+
+Cj4+PiAtIExhdGVyLCBvbmNlIHRoZSB1c2VyIHN0YXJ0cyBhIHRyYWNpbmcgc2Vzc2lvbiwgYSBi
+dWZmZXIgaXMgc2V0IHVwICplaXRoZXIqIGFzIGEgY29tcGxldGVseSBub3JtYWwgRE1BIGFsbG9j
+YXRpb24sIG9yIGJ5IG1lbXJlbWFwKClpbmcgc29tZSByYW5kb20gSU9WQSBjYXJ2ZW91dCB3aGlj
+aCBtYXkgb3IgbWF5IG5vdCBiZSB3aGF0ZXZlciBtZW1vcnkgdGhlIGZpcm13YXJlIHdhcyB0cmFj
+aW5nIHRvLgo+Pj4KPj4+IC0gVGhlIGhhcmR3YXJlIGlzIHRoZW4gcmVzZXQgYW5kIGNvbXBsZXRl
+bHkgcmVwcm9ncmFtbWVkIHRvIHVzZSB0aGUgbmV3IGJ1ZmZlciwgYWdhaW4gd2l0aG91dCBhbnkg
+Y29uc2lkZXJhdGlvbiBvZiBpdHMgcHJldmlvdXMgc3RhdGUgKG90aGVyIHRoYW4gcG9zc2libHkg
+dGltaW5nIG91dCBhbmQgZmFpbGluZyBpZiBpdCdzIGFscmVhZHkgcnVubmluZyBhbmQgdGhhdCBt
+ZWFucyBpdCBuZXZlciBnb2VzIGlkbGUpLgo+Pj4KPj4+IFRoZXJlZm9yZSB0aGUgZHJpdmVyIGRv
+ZXMgbm90IHNlZW0gdG8gcmVzcGVjdCBhbnkgcHJpb3IgY29uZmlndXJhdGlvbiBvZiB0aGUgZGV2
+aWNlIGJ5IGZpcm13YXJlLCBkb2VzIG5vdCBzZWVtIHRvIGV4cGVjdCBpdCB0byBiZSBydW5uaW5n
+IGF0IGJvb3QgdGltZSwgZG9lcyBub3Qgc2VlbSB0byBoYXZlIGFueSB3YXkgdG8gcHJlc2VydmUg
+YW5kIGV4cG9ydCBhbnkgdHJhY2UgZGF0YSBjYXB0dXJlZCBpbiBhbiBSTVIgaWYgaXQgKndhcyog
+cnVubmluZyBhdCBib290IHRpbWUsIGFuZCB0aHVzIHdpdGhvdXQgbG9zcyBvZiBnZW5lcmFsaXR5
+IGNvdWxkIHNpbXBseSB1c2UgdGhlIGRtYV9hbGxvY19jb2hlcmVudCgpIHBhdGggYWxsIHRoZSB0
+aW1lLiBBbSBJIG1pc3NpbmcgYW55dGhpbmc/Cj4+Pgo+Pgo+PiBUaGFua3MgZm9yIHRoZSBmdXJ0
+aGVyIGV4cGxhbmF0aW9uIGFuZCBJIHRoaW5rIEkgdW5kZXJzdGFuZCB5b3VyIGNvbmNlcm5zIG1v
+cmUgY2xlYXJlci4KPj4KPj4gVGhlIHRyYWNlIGlzIG5vdCBzdXBwb3NlZCB0byBiZWdpbiBieSB0
+aGUgZmlybXdhcmUgYXQgYm9vdCB0aW1lLiBEdWUgdG8gc29tZSBoYXJkd2FyZSByZXN0cmljdGlv
+biwgdGhlIGRldmljZSBjYW5ub3QgdHJhY2Ugd2l0aCBub24taWRlbnRpY2FsIG1hcHBpbmcuCj4+
+IFNvIHdlJ2QgbGlrZSB0byB1c2UgUk1SIHRvIG1ha2UgdGhlIGRldmljZSB3b3JrIHdoZW4gdGhl
+IGRtYSBtYXBwaW5nIGlzIG5vbi1pZGVudGljYWwuIFRodXMgd2UgY2hlY2sgaGVyZSB0byBkZWNp
+ZGUgd2hldGhlciB0byB1c2UgUk1SIG9yIG5vdDogaWYgdGhlIGlvbW11Cj4+IGlzIG5vdCBwcmVz
+ZW50ZWQgb3IgaW4gdGhlIHBhc3N0aHJvdWdoIG1vZGUsIHdlIGNhbiB1c2UgZGlyZWN0IERNQSBi
+eSBkbWFfYWxsb2NfY29oZXJlbnQoKTsgaWYgdGhlIGlvbW11IGlzIHByZXNlbnQgYW5kIHRoZSBt
+b2RlIGlzIG5vdCBwYXNzdGhyb3VnaCwgd2UgdHJ5Cj4+IHRvIHJldHJpZXZlIFJNUiBvciB3ZSBm
+YWlsIHRoZSBwcm9iZS4gVGhlIGZpcm13YXJlIGlzIGV4cGVjdGVkIHRvIHJlc2VydmUgYSByYW5n
+ZSBvZiBtZW1vcnkgYW5kIHJlcG9ydHMgaXQgdG8gdGhlIGRyaXZlciBhbmQgaXMgbm90IGV4cGVj
+dGVkIHRvIGNvbmZpZ3VyZQo+PiB0aGUgdHJhY2UgYW5kIGRvIGJvb3QgdGltZSB0cmFjaW5nLgo+
+Pgo+Pj4gQXMgdGhpbmdzIHN0YW5kLCBSTVJzIGFyZSBub3QgeWV0IHN1cHBvcnRlZCB1cHN0cmVh
+bSAoRllJIHdlJ3JlIHN0aWxsIHdvcmtpbmcgb24gZml4aW5nIHRoZSBzcGVjLi4uKSwgc28gdGhl
+IGNvZGUgYWJvdmUgaXMgYXQgYmVzdCBkZWFkLCBhbmQgYXQgd29yc3QgYWN0aXZlbHkgd3Jvbmcu
+IEZ1cnRoZXJtb3JlLCBpZiB0aGUgZXhwZWN0ZWQgdXNhZ2UgbW9kZWwgKmlzKiB0aGF0IHRoZSBr
+ZXJuZWwgZHJpdmVyIGNvbXBsZXRlbHkgcmVzZXRzIGFuZCByZXByb2dyYW1zIHRoZSBoYXJkd2Fy
+ZSwgdGhlbiBldmVuIGlmIHRoZXJlIGlzIGFuIFJNUiBmb3IgYm9vdC10aW1lIHRyYWNpbmcgSSB3
+b3VsZCByYXRoZXIgZXhwZWN0IGl0IHRvIGJlIGZsYWdnZWQgYXMgcmVtYXBwYWJsZSwgYW5kIHRo
+dXMgcG90ZW50aWFsbHkgZW5kIHVwIGFzIGFuIElPTU1VX1JFU1ZfRElSRUNUX1JFTEFYQUJMRSBy
+ZXNlcnZhdGlvbiB3aGljaCB5b3Ugd291bGRuJ3QgbWF0Y2ggYW55d2F5Lgo+Pj4KPj4KPj4gWWVz
+IHRoZSBmaXJtd2FyZSBpcyBub3QgZXhwZWN0ZWQgdG8gc3RhcnQgdGhlIHRyYWNlLiBXaWxsIGNo
+YW5nZSB0aGUgZGVzaXJlZCBmbGFnIHRvIElPTU1VX1JFU1ZfRElSRUNUX1JFTEFYQUJMRSBhbmQg
+aGF2ZSBhIHRlc3QuCj4+Cj4+PiBBbmQgYWZ0ZXIgYWxsIHRoYXQsIGlmIHlvdSByZWFsbHkgZG8g
+aGF2ZSBhIGdlbnVpbmUgbmVlZCB0byByZXNwZWN0IGFuZCBwcmVzZXJ2ZSBwcmlvciBmaXJtd2Fy
+ZSBjb25maWd1cmF0aW9uIG9mIHRoZSBkZXZpY2UsIHRoZW4gSSB3b3VsZCBzdXJlbHkgZXhwZWN0
+IHRvIHNlZSB0aGUgZHJpdmVyIGFjdHVhbGx5IGRvaW5nIGV4YWN0bHkgdGhhdC4gUHJlc3VtYWJs
+eTogYXQgcHJvYmUgdGltZSwgbG9vayBhdCBUUkFDRV9DVFJMOyBpZiB0aGUgZGV2aWNlIGlzIGFs
+cmVhZHkgY29uZmlndXJlZCwgcmVhZCBvdXQgdGhhdCBjb25maWd1cmF0aW9uIC0gZXNwZWNpYWxs
+eSBpbmNsdWRpbmcgVFJBQ0VfQUREUl8qIC0gYW5kIG1ha2Ugc3VyZSB0byByZXVzZSBpdC4gTm90
+IGdvIG9mZiBvbiBhIHRhbmdlbnQgYmxpbmRseSBwb2tpbmcgaW50byBpbnRlcm5hbCBJT01NVSBB
+UEkgYWJzdHJhY3Rpb25zIGluIHRoZSB2YWluIGhvcGUgdGhhdCB0aGUgZmlyc3QgdGhpbmcgeW91
+IGZpbmQgaGFwcGVucyB0byBiZSBzb3J0LW9mLXJlbGF0ZWQgdG8gdGhlIGluZm9ybWF0aW9uIHRo
+YXQgeW91IGFjdHVhbGx5IGNhcmUgYWJvdXQuCj4+Pgo+Pgo+PiBZZXMsIHdlIGRvIG5lZWQgUk1S
+IHRvIG1ha2UgdGhlIGRldmljZSB3b3JrIGF0IHNpdHVhdGlvbiB3aGVyZSB0aGUgbWFwcGluZyBp
+cyBub24taWRlbnRpY2FsLgo+Pgo+PiBXZSdyZSBjZXJ0YWluIHRoYXQgdGhlIGJpb3Mgd29uJ3Qg
+c3RhcnQgYW5kIGNvbmZpZ3VyZSB0aGUgdHJhY2UgaW4gdGhpcyBkZXZpY2UncyB1c2FnZSwgaXMg
+aXQgc3RpbGwgbmVjZXNzYXJ5IHRvIG1ha2UKPj4gZmlybXdhcmUgY29uZmlndXJlIHRoZSBUUkFD
+RV9BRERSXyogdG8gdGhlIGRldmljZT8KPj4KPj4gQXMgc3VnZ2VzdGVkLCBJIHRoaW5rIEknbGwg
+bmVlZCB0byBtb2RpZnkgdGhlIFJNUiBjb2RlcyBsaWtlCj4+Cj4+IC0gY2hlY2sgVFJBQ0VfQ1RS
+TCwgYW5kIHN0b3AgaXQgaWYgaXQncyBzdGFydGVkLiAod29uJ3QgaGFwcGVuIGJ1dCBjaGVjayBm
+b3Igc2FuaXR5KQo+PiAtIGlmIHNtbXUgaXMgbm90IHByZXNlbnRlZCwgdXNlIGRpcmVjdCBETUEK
+Pj4gLSB0cnkgdG8gcmV0cmlldmUgUk1SIGFkZHJlc3Mgd2l0aCBmbGFnIElPTU1VX1JFU1ZfRElS
+RUNUX1JFTEFYQUJMRSAsIGlmIHByZXNlbnRlZCBzZXQgaGlzaV9wdHQtPmhhc19ybXIuIGluIHRo
+aXMgY2FzZSB3ZSB3b24ndCB1c2UgZGlyZWN0IERNQQo+PiAtIGNoZWNrIGlmIHRoZSBUUkFDRV9B
+RERSXyogaGFzIGJlZW4gY29uZmlndXJlZC4gaWYgc28gZG9uJ3QgcmVjb25maWd1cmUgaXQgd2hl
+biB0cmFjZQo+PiAtIGlmIG5vIHJtciBidXQgc21tdSB3b3JrcyBpbiBwYXNzdGhyb3VnaCBtb2Rl
+LCB1c2UgZGlyZWN0IERNQQo+PiAtIG90aGVyd2lzZSBmYWlscyB0aGUgcHJvYmUKPj4KPj4gSWYg
+SSBtaXNzIHNvbWV0aGluZyBwbGVhc2UgcG9pbnQgaXQgb3V0Lgo+IAo+IFRoYW5rcyBmb3IgY2xh
+cmlmeWluZy4gVW5mb3J0dW5hdGVseSBpdCBhbHNvIGNvbmZpcm1zIG15IHN1c3BpY2lvbiB0aGF0
+IHRoaXMgaXMgZXhhY3RseSB0aGUga2luZCBvZiBtaXN1c2Ugb2YgUk1ScyB0aGF0IHdlIGRvbid0
+IHdhbnQgdG8gc3VwcG9ydC4gWW91IGNhbiBpZ25vcmUgbW9zdCBvZiB3aGF0IEkgc2FpZCBhYm92
+ZSB3aGljaCBhcHBsaWVzIHRvIHRoZSBnZW51aW5lIFJNUiB1c2UtY2FzZSBvZiB0aGUgZGV2aWNl
+IGFscmVhZHkgYmVpbmcgY29uZmlndXJlZC4KPiAKPiBJZiB0aGUgZGV2aWNlIHJlYWxseSBjYW4n
+dCBoYW5kbGUgU01NVSB0cmFuc2xhdGlvbiB0aGVuIHRoYXQgY2FuIGJlIGRlYWx0IHdpdGggZW50
+aXJlbHkgd2l0aGluIExpbnV4LiBHaXZlIGl0IGEgaW9tbXVfZGVmX2RvbWFpbl90eXBlIHF1aXJr
+IHRvIGZvcmNlIHBhc3N0aHJvdWdoOyBvciBtYXliZSBmYWlsIHByb2JlIGlmIGEgRE1BIGRvbWFp
+biBpcyBwcmVzZW50IGFuZCB0ZWxsIHRoZSB1c2VyIHRvIGNoYW5nZSB0aGUgZG9tYWluIHR5cGUg
+dmlhIHN5c2ZzIG1hbnVhbGx5OyBvciBtYXliZSBzZXQgdXAgeW91ciBvd24gSU9NTVUgZG9tYWlu
+IGFuZCBtYW51YWxseSBtYXAgdGhpbmdzIDE6MSBpZiB5b3UgcmVhbGx5IHdhbnQgdG87IHRoZXJl
+IGFyZSBwbGVudHkgb2YgcG9zc2libGUgb3B0aW9ucyBmb3IgaW1wbGVtZW50aW5nIHRoYXQga2lu
+ZCBvZiBpbnRlcm5hbCBzb2Z0d2FyZSBwb2xpY3kuIEFidXNpbmcgZXh0ZXJuYWwgZmlybXdhcmUg
+bWVjaGFuaXNtcyBpcyBub3QgYSByZWFzb25hYmxlIG9uZSwgaG93ZXZlci4KPiA+IEkgYWxzbyBj
+YW4ndCBoZWxwIGJlIGN1cmlvdXMgYXMgdG8gZXhhY3RseSAqd2h5KiB0aGUgZGV2aWNlIGRvZXNu
+J3Qgd29yayB3aXRoIHRyYW5zbGF0aW9uLiBJZiBpdCdzIGFuIFJDaUVQIHdpdGggc29tZSBkaWZm
+ZXJlbnQgcGF0aCB0byBtZW1vcnkgdGhhdCBwaHlzaWNhbGx5IGJ5cGFzc2VzIHRoZSBTTU1VIGNv
+bXBhcmVkIHRvICJub3JtYWwiIFBDSWUgdHJhZmZpYywgdGhlbiB0aGF0IHNob3VsZCBiZSBmaXhl
+ZCBieSBoYXZpbmcgdGhlIElPUlQgbWFwcGluZ3MgZGVzY3JpYmUgdGhlIHVuZGVybHlpbmcgdG9w
+b2xvZ3kgY29ycmVjdGx5IGluIHRoZSBmaXJzdCBwbGFjZS4gSWYgaXQgdHVybnMgb3V0IGp1c3Qg
+dG8gYmUgdGhlIGNhc2UgdGhhdCB0aGUgZGV2aWNlIG9ubHkgYWN0dWFsbHkgZHJpdmVzIGVub3Vn
+aCBhZGRyZXNzIGJpdHMgdG8gY292ZXIgdGhlIHBoeXNpY2FsIG1lbW9yeSBtYXAsIGFuZCB1c2lu
+ZyB0cmFuc2xhdGlvbiBoYXBwZW5zIHRvIHJlc3VsdCBpbiBJT1ZBcyBsYXJnZXIgdGhhbiB0aGF0
+IHdoaWNoIHRoZW4gZ2V0IHRydW5jYXRlZCBhbmQgZ28gd3JvbmcsIHRoYXQncyBmaXhlZCBieSBz
+aW1wbHkgc2V0dGluZyB0aGUgcmlnaHQgRE1BIG1hc2sgaW4gdGhlIGRyaXZlci4gSWYgaXQncyBz
+b21lIGNvbXBsaWNhdGVkIGludGVyY29ubmVjdCBsYXRlbmN5L2RlYWRsb2NrIHRoaW5nIHJlbGF0
+ZWQgdG8gdHJhbnNsYXRpb24gZGVsYXlzIGFzIHRyYWZmaWMgZmxvd3MgdGhyb3VnaCB0aGUgU01N
+VSwgSSdkIGV4cGVjdCB0aGF0IHRvIG1hdHRlciByZWdhcmRsZXNzIG9mIHdoZXRoZXIgdGhlIGlu
+cHV0IGFkZHJlc3MgaGFwcGVucyB0byBtYXRjaCB0aGUgb3V0cHV0IGFkZHJlc3Mgb3Igbm90LiBB
+dCB0aGlzIHBvaW50IEknbSBzdGFydGluZyB0byBnZXQgc2xpZ2h0bHkgc3VzcGljaW91cyBvZiB3
+aGV0aGVyIHdlJ3JlIGV2ZW4gdHJ5aW5nIHRvIHNvbHZlIHRoZSByaWdodCBwcm9ibGVtIGF0IGFs
+bC4KPiAKClRoYW5rcyBhIGxvdCBmb3IgdGhlIGtpbmQgc3VnZ2VzdGlvbnMuIFNlZW1zIHdlJ3Jl
+IG5vdCB1c2luZyBSTVIgcHJvcGVybHkgYW5kIGl0J3Mgb2sgZm9yIHVzIHRvIHNvbHZlIHRoaXMg
+cHJvYmxlbSBpbiB0aGUga2VybmVsIHNpZGUsIHRoYW5rcyBmb3IgcG9pbnQKaXQgb3V0LgoKVGhl
+IGltcGxlbWVudGF0aW9uIG9mIFBUVCBkZXZpY2UgaXMgbGlrZSB3aGF0IHlvdSBtZW50aW9uZWQg
+dGhhdCB0aGUgRE1BIGZyb20gUFRUIGlzIGJ5cGFzc2VkIGJ5IHRoZSBTTU1VLiBJIG5lZWQgbW9y
+ZSBrbm93bGVkZ2Ugb2YgSU9SVCB0byBzZWUgd2hldGhlcgp3ZSBjYW4gZ2V0IHRoaXMgZml4ZWQg
+ZnJvbSB0aGUgSU9SVCBzaWRlIGFuZCBoYXZlIGEgdGVzdCBpZiBpdCdzIGEgcG9zc2libGUgc29s
+dXRpb24gYmVmb3JlIEkgY2FuIHJlcGx5LiBBbmQgSSdsbCB0cnkgYW5kIHRlc3QgaWYgd2UgY2Fu
+IGhhdmUgYQppb21tdV9kZWZfZG9tYWluX3R5cGUgcXVpcmsgdG8gZGVhbCB3aXRoIHRoaXMgaGFy
+ZHdhcmUgbGltaXRhdGlvbi4KClJlZ2FyZHMsCllpY29uZwoKCgoKCl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
+aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
+cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
