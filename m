@@ -1,73 +1,69 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 14015C433F5
-	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 02:21:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 61462C433FE
+	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 02:33:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9D938402DC;
-	Thu,  9 Dec 2021 02:21:56 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id E77CA824DD;
+	Thu,  9 Dec 2021 02:33:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1iMMqyUDz22p; Thu,  9 Dec 2021 02:21:55 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id DSf9_EsQZRpJ; Thu,  9 Dec 2021 02:33:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 69C49400F2;
-	Thu,  9 Dec 2021 02:21:55 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 9CD2C824CB;
+	Thu,  9 Dec 2021 02:33:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3CF11C001E;
-	Thu,  9 Dec 2021 02:21:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 76E5BC001E;
+	Thu,  9 Dec 2021 02:33:00 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C7841C0012
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 02:21:54 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 90926C0012
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 02:32:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id A5E01405AE
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 02:21:54 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 84AE7401E3
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 02:32:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5wWAxgW-2tt5 for <iommu@lists.linux-foundation.org>;
- Thu,  9 Dec 2021 02:21:54 +0000 (UTC)
+ with ESMTP id ci1KFIpwIfzb for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Dec 2021 02:32:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 0D4AB4059D
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 02:21:53 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10192"; a="324260663"
-X-IronPort-AV: E=Sophos;i="5.88,191,1635231600"; d="scan'208";a="324260663"
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 8A060401B3
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 02:32:58 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10192"; a="237941929"
+X-IronPort-AV: E=Sophos;i="5.88,191,1635231600"; d="scan'208";a="237941929"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 08 Dec 2021 18:21:53 -0800
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 08 Dec 2021 18:32:57 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,191,1635231600"; d="scan'208";a="516080276"
+X-IronPort-AV: E=Sophos;i="5.88,191,1635231600"; d="scan'208";a="516082504"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
  ([10.239.159.118])
- by orsmga008.jf.intel.com with ESMTP; 08 Dec 2021 18:21:47 -0800
-Subject: Re: [PATCH 2/4] iommu: Add PASID support for DMA mapping API users
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>
+ by orsmga008.jf.intel.com with ESMTP; 08 Dec 2021 18:32:53 -0800
+Subject: Re: [PATCH 3/4] iommu/vt-d: Support PASID DMA for in-kernel usage
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, Jason Gunthorpe <jgg@nvidia.com>
 References: <1638884834-83028-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1638884834-83028-3-git-send-email-jacob.jun.pan@linux.intel.com>
- <16408193-c8bc-3046-b32f-9274bf0b415c@linux.intel.com>
- <20211208104939.732fa5b9@jacob-builder>
- <BN9PR11MB5276676474FA6A35016B6BB88C709@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <1638884834-83028-4-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20211208132255.GS6385@nvidia.com> <20211208111659.6de22e52@jacob-builder>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <1b3ee13d-0148-1156-52ad-b96bca51cb6f@linux.intel.com>
-Date: Thu, 9 Dec 2021 10:21:38 +0800
+Message-ID: <9f724b3a-6028-43d7-b4fc-d8a939e7b2cf@linux.intel.com>
+Date: Thu, 9 Dec 2021 10:32:43 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <BN9PR11MB5276676474FA6A35016B6BB88C709@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <20211208111659.6de22e52@jacob-builder>
 Content-Language: en-US
-Cc: "Luck, Tony" <tony.luck@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
- "Raj, Ashok" <ashok.raj@intel.com>,
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Kumar,
  Sanjay K" <sanjay.k.kumar@intel.com>, LKML <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@infradead.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Barry Song <21cnbao@gmail.com>, "Williams, Dan J" <dan.j.williams@intel.com>,
+ Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
+ Jacob Pan <jacob.jun.pan@intel.com>, Barry Song <21cnbao@gmail.com>,
+ Dan Williams <dan.j.williams@intel.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>, "Zanussi,
  Tom" <tom.zanussi@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -87,36 +83,110 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 12/9/21 9:56 AM, Tian, Kevin wrote:
->> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
->> Sent: Thursday, December 9, 2021 2:50 AM
->>
->>> Can a device issue DMA requests with PASID even there's no system
->> IOMMU
->>> or the system IOMMU is disabled?
+On 12/9/21 3:16 AM, Jacob Pan wrote:
+> Hi Jason,
+> 
+> On Wed, 8 Dec 2021 09:22:55 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
+> 
+>> On Tue, Dec 07, 2021 at 05:47:13AM -0800, Jacob Pan wrote:
+>>> Between DMA requests with and without PASID (legacy), DMA mapping APIs
+>>> are used indiscriminately on a device. Therefore, we should always match
+>>> the addressing mode of the legacy DMA when enabling kernel PASID.
 >>>
->> Good point.
->> If IOMMU is not enabled, device cannot issue DMA requests with PASID. This
->> API will not be available. Forgot to add dummy functions to the header.
+>>> This patch adds support for VT-d driver where the kernel PASID is
+>>> programmed to match RIDPASID. i.e. if the device is in pass-through, the
+>>> kernel PASID is also in pass-through; if the device is in IOVA mode, the
+>>> kernel PASID will also be using the same IOVA space.
+>>>
+>>> There is additional handling for IOTLB and device TLB flush w.r.t. the
+>>> kernel PASID. On VT-d, PASID-selective IOTLB flush is also on a
+>>> per-domain basis; whereas device TLB flush is per device. Note that
+>>> IOTLBs are used even when devices are in pass-through mode. ATS is
+>>> enabled device-wide, but the device drivers can choose to manage ATS at
+>>> per PASID level whenever control is available.
+>>>
+>>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+>>>   drivers/iommu/intel/iommu.c | 105 +++++++++++++++++++++++++++++++++++-
+>>>   drivers/iommu/intel/pasid.c |   7 +++
+>>>   include/linux/intel-iommu.h |   3 +-
+>>>   3 files changed, 113 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>>> index 60253bc436bb..a2ef6b9e4bfc 100644
+>>> +++ b/drivers/iommu/intel/iommu.c
+>>> @@ -1743,7 +1743,14 @@ static void domain_flush_piotlb(struct
+>>> intel_iommu *iommu, if (domain->default_pasid)
+>>>   		qi_flush_piotlb(iommu, did, domain->default_pasid,
+>>>   				addr, npages, ih);
+>>> -
+>>> +	if (domain->kernel_pasid && !domain_type_is_si(domain)) {
+>>> +		/*
+>>> +		 * REVISIT: we only do PASID IOTLB inval for FL, we
+>>> could have SL
+>>> +		 * for PASID in the future such as vIOMMU PT. this
+>>> doesn't get hit.
+>>> +		 */
+>>> +		qi_flush_piotlb(iommu, did, domain->kernel_pasid,
+>>> +				addr, npages, ih);
+>>> +	}
+>>>   	if (!list_empty(&domain->devices))
+>>>   		qi_flush_piotlb(iommu, did, PASID_RID2PASID, addr,
+>>> npages, ih); }
+>>> @@ -5695,6 +5702,100 @@ static void intel_iommu_iotlb_sync_map(struct
+>>> iommu_domain *domain, }
+>>>   }
+>>>   
+>>> +static int intel_enable_pasid_dma(struct device *dev, u32 pasid)
+>>> +{
 >>
+>> This seems like completely the wrong kind of op.
+>>
+>> At the level of the iommu driver things should be iommu_domain centric
+>>
+>> The op should be
+>>
+>> int attach_dev_pasid(struct iommu_domain *domain, struct device *dev,
+>> ioasid_t pasid)
+>>
+>> Where 'dev' purpose is to provide the RID
+>>
+>> The iommu_domain passed in should be the 'default domain' ie the table
+>> used for on-demand mapping, or the passthrough page table.
+>>
+> Makes sense. DMA API is device centric, iommu API is domain centric. It
+> should be the common IOMMU code to get the default domain then pass to
+> vendor drivers. Then we can enforce default domain behavior across all
+> vendor drivers.
+> i.e. 	
+> 	dom = iommu_get_dma_domain(dev);
+> 	attach_dev_pasid(dom, dev, pasid);
 > 
-> PASID is a PCI thing, not defined by IOMMU.
+>>> +	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
+>>> +	struct device_domain_info *info;
+>>
+>> I don't even want to know why an iommu driver is tracking its own
+>> per-device state. That seems like completely wrong layering.
+>>
+> This is for IOTLB and deTLB flush. IOTLB is flushed at per domain level,
+> devTLB is per device.
 > 
-> I think the key is physically if IOMMU is disabled, how will root complex
-> handle a PCI memory request including a PASID TLP prefix? Does it block
-> such request due to no IOMMU to consume PASID or simply ignore PASID
-> and continue routing the request to the memory controller?
+> For multi-device groups, this is a need to track how many devices are using
+> the kernel DMA PASID.
 > 
-> If block, then having an iommu interface makes sense.
+> Are you suggesting we add the tracking info in the generic layer? i.e.
+> iommu_group.
 > 
-> If ignore, possibly a DMA API call makes more sense instead, implying that
-> this extension can be used even when iommu is disabled.
-> 
-> I think that is what Baolu wants to point out.
+> We could also have a generic device domain info to replace what is in VT-d
+> and FSL IOMMU driver, etc.
 
-Yes, exactly. Imagining in the VM guest environment, do we require a
-vIOMMU for this functionality? vIOMMU is not performance friendly if we
-put aside the security considerations.
+The store place of per-device iommu driver private data has already been
+standardized. The iommu core provides below interfaces for this purpose:
+
+void dev_iommu_priv_set(struct device *dev, void *priv);
+void *dev_iommu_priv_get(struct device *dev);
+
+If we have anything generic among different vendor iommu drivers,
+perhaps we could move them into dev->iommu.
 
 Best regards,
 baolu
