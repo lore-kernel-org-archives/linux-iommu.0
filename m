@@ -1,120 +1,117 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4E4C5C433EF
-	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 07:38:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B59EFC4332F
+	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 07:38:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 7B77D40443;
-	Thu,  9 Dec 2021 07:38:43 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 6F98D408D1;
+	Thu,  9 Dec 2021 07:38:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id t73ccK5p0JNp; Thu,  9 Dec 2021 07:38:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id E9BB1403BE;
-	Thu,  9 Dec 2021 07:38:41 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9twb5VTqpD7O; Thu,  9 Dec 2021 07:38:44 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 198B9408C7;
+	Thu,  9 Dec 2021 07:38:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C4D2CC001E;
-	Thu,  9 Dec 2021 07:38:41 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B0D43C0012
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 07:38:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F3AFBC001E;
+	Thu,  9 Dec 2021 07:38:43 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C5A33C0038
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 07:38:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 90BC8605E8
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 07:38:40 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 9B0F5408D6
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 07:38:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id caH1zqyzhi43 for <iommu@lists.linux-foundation.org>;
- Thu,  9 Dec 2021 07:38:37 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 1g5XaQU1PeHI for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Dec 2021 07:38:39 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
 Received: from NAM10-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam10on2054.outbound.protection.outlook.com [40.107.94.54])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C62A9605DA
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 07:38:37 +0000 (UTC)
+ (mail-mw2nam10on2063.outbound.protection.outlook.com [40.107.94.63])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 786C0402F2
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 07:38:39 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TWiegKCrAnVjvEz19NmVCm8uTLU+BbeKYuFyFf0BJgmaUZ5addK5mdjsEJF2zJ4yckrMchqSGESWj7VippNbWHtOLE2QzI0zqJdttTi/rl1AB84I+rgfmfSeiZH9AwAAWJg6aOZlcKC8KVTgNBcZ2ESPi++DzdjQO9AZq4N2TKJO2TC4GLwvVHdo6CxkCySGltXELROIh2FgFVkWT5DHNyrTF5C4FrpvwNWK3NrafXFpyyIEyUCYI0zDiTTXXP3y/VnYXKpFmRPM/i3+B53p//3SOrQYuNNhlhhzxqWDHoNDyBYJ96lWJyG+tUgG8IAMgMsnUE6uAC8W+Hr/VPbqHQ==
+ b=ixJhFWiorBiRttdLhK0HPR/6JjegRgEF/sUBc+Yj82bTDn4AlrVdh9D2k2SpnIcuXr1rf6nrZKSEEmin8HA843bCqD8EkGna+8Lcuzn5gzm9YT94tNw9QLotTioCmHLDZJEqQFgyIDAmdSSU4XLtJ85hZbCr3g1W+V/4ZgZrNIwDgz86IfLHdu2dwcZHSkfi91e9bABO2ciSvXYuEKXZry0lZX8jhpidhMKxYB3bg/1LnpPEqNag/jryj1upj/LwLnn3JVcHrCB5SA/5uH5BIx701dwA3ktzgY7EdklAUAEm9s/Uuyq0rOcenlX7m0xOdDXKVFSsMGFtQPLnLNbmLw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YOTG1d4rBvNLhhTcrp32ba9Ys0WCtNwL+lBBmHhb/kQ=;
- b=KnypXvOhkV2Sf45P0DYmEM8FBfglvpy+ETcS8t3sTd5flr4QwqJHYhioER6xgbWJ950SGZyLyCVnwaO73G4K4k9o5CjzFUf6fTo3XXZKofeDgyjzGGoe0FTX82USnWZgHJqOWE3EpsDe4AJUDm3pXAeTI6IwI1RedupiA5OKzRkjEKT+czd4MpZCGRvvXCOh50ekMRhda9TTjX5rnANRXHdQRZBXM5XasFrW47cp0Vru8t6yX527bCAqUdnj+6xw6b+0by9BF1Da4Uasa+48SgxW/rVlIRanoqm4ncUlK35UWjT1iEBojU5jYBLUxmg7qd43OJFoRTI49uEPUQz7AA==
+ bh=6fsCQVDe6IewBrU1aRb8iIWNyENyLRKuoX/y/1XS11o=;
+ b=UaFD3EYOrcBcAkl5NQbF+LS1plbMy1gsWjtQ+GucKd5+2QKkeLmrz7pTmWpWwtZd3M5wPAfHCOcD024De8VmOaxm0xmkX2jamsB+YyBg/QlgPfEWKtV2SKmD7O2JCkCTjRpLc3AJjZ9YBGoJEhNWwdwlsvqcDidP/9N7i9Cbdp5SkPvYpBoHj3COHDYOnBuXDN3i0fHszHTa/xjU0UA2evq17YyoPqwqKToAfxMjNwFj854bWBUP740KxrdVRT/V5Dof3ZK2nJ67h/I36K+8WwaDFFmU/bonfelgZbbPB/9dIGqodWEaGQBcL75X4W/d9JcgMF4g82xSLXsReSF3QA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 203.18.50.12) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
+ 203.18.50.13) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=nvidia.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YOTG1d4rBvNLhhTcrp32ba9Ys0WCtNwL+lBBmHhb/kQ=;
- b=g9H2uRV/6X+7OZf08ehbZkUtswwQr0Bvb1kUDXMg9q0qE3vfc1pS+kikfV42C/dYgO3gFhjf1RgohfwwUGhlzOGfxEeHw4DiR1zAjhwSELCeuG5TeuU5rBS1aNh0UMpYNWu7OH1Gz9CB1HAvRssDiZf1v51dxHyayIC0yUaKtowNU0fLcHwHpIm9T/XuagW4XbGbZQ5qvjJeBv/wvn2unTsKN0JxM6Kn+bQh//pmdI+IHecQEDFsNwi3M0JRnk21erhIw9aJlWZp7SfqBiclYj/J6f0DbW0TYnKk7/OIPR1s+zi2A+7pjl0RmXFtv6RE/li+/YCMPyNQcss40Uciyg==
-Received: from CO1PR15CA0106.namprd15.prod.outlook.com (2603:10b6:101:21::26)
- by BY5PR12MB3683.namprd12.prod.outlook.com (2603:10b6:a03:1a5::16)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.11; Thu, 9 Dec
- 2021 07:38:34 +0000
-Received: from CO1NAM11FT056.eop-nam11.prod.protection.outlook.com
- (2603:10b6:101:21:cafe::9f) by CO1PR15CA0106.outlook.office365.com
- (2603:10b6:101:21::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.22 via Frontend
- Transport; Thu, 9 Dec 2021 07:38:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 203.18.50.12)
+ bh=6fsCQVDe6IewBrU1aRb8iIWNyENyLRKuoX/y/1XS11o=;
+ b=iH5NRE1ElUp56E3wR43+XMQHNaApDih97/XNxtOTAEpR+hiPAvFyjIesOY8eC+j9ebDY5C9QzwS9bJME73xl4MzI+MzdZkzCrJBeCAhVQk16cvGQgpQHsIMOU651Crqg7dmtTXmSRsiDX3oRH3AVn8f1fQaiHBPLTbryt8Dq05nnmjdbFY/kE4IoDAufLn5IrcT8+V7LevBVOSOSjx4M90efDUtUdoQ6eZzaIm4JpdXP1u0Rqq0xC75GoGGVjXtpzxahsqFpbw18D0UhpnQhu2wufgu+2TSZ4WQ6xr2Qz+Zo6IWX8ffUK+xQG7ZNpnE2EC9MhD36VJRgpq5CKV1e5w==
+Received: from DM6PR07CA0115.namprd07.prod.outlook.com (2603:10b6:5:330::6) by
+ DM6PR12MB4944.namprd12.prod.outlook.com (2603:10b6:5:1ba::24) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4755.22; Thu, 9 Dec 2021 07:38:31 +0000
+Received: from DM6NAM11FT006.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:330:cafe::de) by DM6PR07CA0115.outlook.office365.com
+ (2603:10b6:5:330::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.13 via Frontend
+ Transport; Thu, 9 Dec 2021 07:38:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 203.18.50.13)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 203.18.50.12 as permitted sender) receiver=protection.outlook.com;
- client-ip=203.18.50.12; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (203.18.50.12) by
- CO1NAM11FT056.mail.protection.outlook.com (10.13.175.107) with Microsoft SMTP
+ 203.18.50.13 as permitted sender) receiver=protection.outlook.com;
+ client-ip=203.18.50.13; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (203.18.50.13) by
+ DM6NAM11FT006.mail.protection.outlook.com (10.13.173.104) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4755.13 via Frontend Transport; Thu, 9 Dec 2021 07:38:33 +0000
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HKMAIL101.nvidia.com
- (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 9 Dec
- 2021 07:38:27 +0000
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 9 Dec
- 2021 07:38:27 +0000
+ 15.20.4755.13 via Frontend Transport; Thu, 9 Dec 2021 07:38:31 +0000
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HKMAIL102.nvidia.com
+ (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 9 Dec
+ 2021 07:38:30 +0000
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 9 Dec
+ 2021 07:38:28 +0000
 Received: from Asurada-Nvidia.nvidia.com (172.20.187.5) by mail.nvidia.com
  (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Wed, 8 Dec 2021 23:38:26 -0800
+ Transport; Wed, 8 Dec 2021 23:38:27 -0800
 To: <thierry.reding@gmail.com>, <joro@8bytes.org>, <will@kernel.org>
-Subject: [PATCH v8 4/6] iommu/tegra-smmu: Use swgrp pointer instead of swgroup
- id
-Date: Wed, 8 Dec 2021 23:38:20 -0800
-Message-ID: <20211209073822.26728-5-nicolinc@nvidia.com>
+Subject: [PATCH v8 6/6] iommu/tegra-smmu: Add pagetable mappings to debugfs
+Date: Wed, 8 Dec 2021 23:38:22 -0800
+Message-ID: <20211209073822.26728-7-nicolinc@nvidia.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211209073822.26728-1-nicolinc@nvidia.com>
 References: <20211209073822.26728-1-nicolinc@nvidia.com>
 MIME-Version: 1.0
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1682f348-8c12-4e8a-9a71-08d9bae6e79b
-X-MS-TrafficTypeDiagnostic: BY5PR12MB3683:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB36832FB18D1D26A0BD0B094BAB709@BY5PR12MB3683.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3631;
+X-MS-Office365-Filtering-Correlation-Id: 1825133c-c72f-4569-219a-08d9bae6e632
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4944:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB49443E53DAB924885C774E57AB709@DM6PR12MB4944.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:392;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Q/SXwRn0y0q3UBAKYGQjPP/LWT6hzqDTqvuOXEVmAJ3DPPgHYpop07tB95xmc7VsUqf1gNfsks1/2LhTXl5K9MpusHJiBryITQwKQdd9u7ujnMVQliEQq2pYmMByywwd8JOxHa3+8Me/fxpZHJjndhypDUqj3L2XE+uhYSUocUvukdCgw02OEx8wDMjT64zopSmXjwhFbchFeq/gwBaiRuLwyDXILD1r91tehh8dbM5RBmrfPQJlpTUpf5L0anbadx1ffE1UsPiLJZtPCr2EWCLYQg6P5xmdIoM/GPcttBgonAgpGLbaNonpbwYsqwD9I8tkqcalHizJf6RTKVfIwc+3SUhcJFiyAUVbhI0PVttEN8ghLzPFVaBEu2ZsDjneMZyzA7SlSamM4y1QtdzLZTYHLfRJd3/fJfJ4q+ErcdMDlPppWfiJjOIOLjBLye+IAFKEYprHMLyN40RX2HsGkCbPC4CEbFxGB/mtEtu0LjBj0RBTRCXtY6TN2Junu6a+fYlkdcf0FLrRPuwE6j0HIbrrR9oBOVG9WnLnxGX0Acs4eiMWyJCuuYN48SYTwarw4zRveM2tXkCAPp4vhGWOtlZV+ZuLR+HL0UXAL2dlhf7W/KSAlMP4eXvW+0RlGQCy8DLRa/3CPAqrQctQWu/kDD2KpM6kCtID4qmQCNCvOX7NgA/p8YGMMAAhj57Aa6hfzD97GCBOVuAqTKb5oi9qxjZbMEfQ1JWUjXh4IlFmYhe6DHX6K814jplymR760l9ZG4EyBqVWyQKP1QAUyGfbd02IM4CnNy1NRvRJoifG0rCguhvyRVnAoAk6Llnj+9+24epUSgNL+Ev+DNt3+l6EBytr0SzcML40X1KzYP2W2rM=
-X-Forefront-Antispam-Report: CIP:203.18.50.12; CTRY:HK; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:hkhybrid01.nvidia.com; CAT:NONE;
- SFS:(4636009)(46966006)(36840700001)(40470700001)(2616005)(40460700001)(186003)(336012)(426003)(70206006)(70586007)(26005)(34070700002)(83380400001)(82310400004)(36756003)(508600001)(2906002)(356005)(5660300002)(1076003)(7636003)(6666004)(47076005)(8676002)(8936002)(54906003)(86362001)(7696005)(110136005)(316002)(4326008)(36860700001);
+X-Microsoft-Antispam-Message-Info: jIKPXEoQKK67PLy3Qh9DHlvprXgvIfHFat/3Q03c9RjHAd4nIsz81bxCZinSnVn4pkIbWeQUT09Tz97VAmyRFJTnO487fSieAh0zG2EAeS2rGCOP3iDIBrqnLbY68MrT3rbGWoVrnJNKAeBItREcEYfyqsNqcw7RqSOp2vkrylAlA+s+Xe6TYeCYtODeOcHK1Kl1cvnc+EnHRJYmqKOaYU1xmrQkZEu21nkfqbHyVv+xO2X9hp9Of6BOHBPAfzOpe5V/MzZGtIJixHYADVMUdKTC5mncgp+H5wuco3QPPZPFySRB3MsmasRt7RxOWSvK84Aiguw2zmRMdwizKV9oTkLe9f/xdJMnAtf2yFUK89amyRD7blsNTPuFRToGL3BC+YsoddK+CAyme49QhmibrkwvPo1URl4liyhbWkTFFeh8gmHyzoQgZjjTAA/hHTjYx6BM96ppiIARr2Yml0kYySkIMM3Uan7LVozMA6mpLlrxqijtF+QLrnomiClQ3cRcJeVpiARspWoJbl8eK8mcuZ33O/Egtnh10qc0x20iGkNtPhzF9y6aT8s2WjfyE84FJnDLcqSu1B5tNRq0Qugis1s/vceU9p93Qht53u5FtXqaYh4c0uu4KznmFeZViNirDDmhGFWMtHeDuIvtpC+I/ve5VDiw9fv31PZ9I6JOkE4/u2A9YGbAipG0p3rexOSvs3FjBk+rNBJcIQA3byc5rOHyivihO7m1O7vxt/JVkQ2S3Qns1yqRCv0uS9hwj79sL89bwi+CpPPELwRb08KX+54h6Lj14cwXO9rHJC+aBGo=
+X-Forefront-Antispam-Report: CIP:203.18.50.13; CTRY:HK; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:hkhybrid02.nvidia.com; CAT:NONE;
+ SFS:(4636009)(46966006)(36840700001)(40470700001)(70206006)(7696005)(186003)(36860700001)(70586007)(8676002)(40460700001)(316002)(82310400004)(26005)(4326008)(508600001)(86362001)(1076003)(36756003)(5660300002)(2906002)(7636003)(54906003)(6666004)(110136005)(83380400001)(356005)(8936002)(34070700002)(2616005)(336012)(47076005)(426003);
  DIR:OUT; SFP:1101; 
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2021 07:38:33.5771 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1682f348-8c12-4e8a-9a71-08d9bae6e79b
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2021 07:38:31.1457 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1825133c-c72f-4569-219a-08d9bae6e632
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[203.18.50.12];
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[203.18.50.13];
  Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT056.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT006.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3683
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4944
 Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
  jonathanh@nvidia.com, linux-tegra@vger.kernel.org, digetx@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -136,64 +133,290 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This patch changes in struct tegra_smmu_group to use swgrp
-pointer instead of swgroup, as a preparational change for
-the "mappings" debugfs feature.
+This patch dumps all active mapping entries from pagetable to a
+debugfs directory named "mappings".
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+Part of this patch for listing all swgroup names in a group_soc
+is provided by Dmitry Osipenko <digetx@gmail.com>
+
+Attaching an example:
+
+[SWGROUP: xusb_host] [as: (id: 5), (attr: R|W|-), (pd_dma: 0x0000000080005000)]
+{
+        [index: 1023] 0xf0080007 (count: 52)
+        {
+                PTE RANGE      | ATTR | PHYS               | IOVA       | SIZE
+                [#913 , #913 ] | 0x7  | 0x0000000101fbe000 | 0xfff91000 | 0x1000
+                [#914 , #914 ] | 0x7  | 0x0000000101fbd000 | 0xfff92000 | 0x1000
+                [#915 , #915 ] | 0x7  | 0x0000000101fbc000 | 0xfff93000 | 0x1000
+                [#916 , #916 ] | 0x7  | 0x0000000101fbb000 | 0xfff94000 | 0x1000
+                [#921 , #921 ] | 0x7  | 0x00000000fcc02000 | 0xfff99000 | 0x1000
+                [#922 , #922 ] | 0x7  | 0x0000000101fb7000 | 0xfff9a000 | 0x1000
+                [#923 , #923 ] | 0x7  | 0x0000000101fb5000 | 0xfff9b000 | 0x1000
+                [#948 , #948 ] | 0x7  | 0x0000000101fb2000 | 0xfffb4000 | 0x1000
+                [#949 , #949 ] | 0x7  | 0x0000000101fb1000 | 0xfffb5000 | 0x1000
+                [#950 , #950 ] | 0x7  | 0x0000000101faf000 | 0xfffb6000 | 0x1000
+                [#951 , #951 ] | 0x7  | 0x0000000101fae000 | 0xfffb7000 | 0x1000
+                [#952 , #952 ] | 0x7  | 0x000000010263d000 | 0xfffb8000 | 0x1000
+                [#953 , #953 ] | 0x7  | 0x000000010263c000 | 0xfffb9000 | 0x1000
+                [#954 , #954 ] | 0x7  | 0x000000010263b000 | 0xfffba000 | 0x1000
+                [#955 , #955 ] | 0x7  | 0x000000010263a000 | 0xfffbb000 | 0x1000
+                [#956 , #956 ] | 0x7  | 0x0000000102639000 | 0xfffbc000 | 0x1000
+                [#957 , #957 ] | 0x7  | 0x0000000102638000 | 0xfffbd000 | 0x1000
+                [#958 , #958 ] | 0x7  | 0x0000000102637000 | 0xfffbe000 | 0x1000
+                [#959 , #959 ] | 0x7  | 0x0000000102636000 | 0xfffbf000 | 0x1000
+                [#960 , #992 ] | 0x7  | 0x0000000102613000 | 0xfffc0000 | 0x21000
+        }
+}
+Total PDEs: 1, total PTEs: 52
+
+Note that the example above was output after I locally enabled
+IOMMU_DOMAIN_DMA, which is not merged to mainline yet due to a
+known framebuffer issue.
+
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 ---
- drivers/iommu/tegra-smmu.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ drivers/iommu/tegra-smmu.c | 185 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 185 insertions(+)
 
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 05a386036fce..532c843eb631 100644
+index 454504aa6602..cbd1a52f2a9f 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -24,8 +24,8 @@ struct tegra_smmu_group {
+@@ -47,6 +47,7 @@ struct tegra_smmu {
  	struct list_head list;
- 	struct tegra_smmu *smmu;
- 	const struct tegra_smmu_group_soc *soc;
-+	const struct tegra_smmu_swgroup *swgrp;
- 	struct iommu_group *grp;
--	unsigned int swgroup;
+ 
+ 	struct dentry *debugfs;
++	struct dentry *debugfs_mappings;
+ 
+ 	struct iommu_device iommu;	/* IOMMU Core code handle */
  };
+@@ -154,6 +155,9 @@ static inline u32 smmu_readl(struct tegra_smmu *smmu, unsigned long offset)
  
- struct tegra_smmu {
-@@ -899,18 +899,22 @@ static struct iommu_group *tegra_smmu_device_group(struct device *dev)
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct tegra_smmu *smmu = dev_iommu_priv_get(dev);
- 	const struct tegra_smmu_group_soc *soc;
-+	const struct tegra_smmu_swgroup *swgrp;
- 	unsigned int swgroup = fwspec->ids[0];
- 	struct tegra_smmu_group *group;
- 	struct iommu_group *grp;
+ #define SMMU_PDE_ATTR		(SMMU_PDE_READABLE | SMMU_PDE_WRITABLE | \
+ 				 SMMU_PDE_NONSECURE)
++#define SMMU_PTE_ATTR		(SMMU_PTE_READABLE | SMMU_PTE_WRITABLE | \
++				 SMMU_PTE_NONSECURE)
++#define SMMU_PTE_ATTR_SHIFT	29
  
-+	/* Find swgrp according to the swgroup id */
-+	swgrp = tegra_smmu_find_swgrp(smmu, swgroup);
+ static unsigned int iova_pd_index(unsigned long iova)
+ {
+@@ -165,6 +169,12 @@ static unsigned int iova_pt_index(unsigned long iova)
+ 	return (iova >> SMMU_PTE_SHIFT) & (SMMU_NUM_PTE - 1);
+ }
+ 
++static unsigned long pd_pt_index_iova(unsigned int pd_index, unsigned int pt_index)
++{
++	return (pd_index & (SMMU_NUM_PDE - 1)) << SMMU_PDE_SHIFT |
++	       (pt_index & (SMMU_NUM_PTE - 1)) << SMMU_PTE_SHIFT;
++}
 +
- 	/* Find group_soc associating with swgroup */
- 	soc = tegra_smmu_find_group_soc(smmu, swgroup);
+ static bool smmu_dma_addr_valid(struct tegra_smmu *smmu, dma_addr_t addr)
+ {
+ 	addr >>= 12;
+@@ -498,6 +508,156 @@ static void tegra_smmu_as_unprepare(struct tegra_smmu *smmu,
+ 	mutex_unlock(&smmu->lock);
+ }
  
- 	mutex_lock(&smmu->lock);
- 
--	/* Find existing iommu_group associating with swgroup or group_soc */
-+	/* Find existing iommu_group associating with swgrp or group_soc */
- 	list_for_each_entry(group, &smmu->groups, list)
--		if ((group->swgroup == swgroup) || (soc && group->soc == soc)) {
-+		if ((swgrp && group->swgrp == swgrp) || (soc && group->soc == soc)) {
- 			grp = iommu_group_ref_get(group->grp);
- 			mutex_unlock(&smmu->lock);
- 			return grp;
-@@ -923,7 +927,7 @@ static struct iommu_group *tegra_smmu_device_group(struct device *dev)
++static int tegra_smmu_debugfs_mappings_show(struct seq_file *s, void *data)
++{
++	struct tegra_smmu_group *group = s->private;
++	const struct tegra_smmu_group_soc *soc;
++	const struct tegra_smmu_swgroup *swgrp;
++	struct tegra_smmu_as *as;
++	struct tegra_smmu *smmu;
++	unsigned int pd_index;
++	unsigned int pt_index;
++	unsigned long flags;
++	u64 pte_count = 0;
++	u32 pde_count = 0;
++	u32 *pd, val;
++
++	if (!group || !group->as || !group->swgrp)
++		return 0;
++
++	swgrp = group->swgrp;
++	smmu = group->smmu;
++	soc = group->soc;
++	as = group->as;
++
++	mutex_lock(&smmu->lock);
++
++	val = smmu_readl(smmu, swgrp->reg);
++	if (!(val & SMMU_ASID_ENABLE))
++		goto unlock;
++
++	pd = page_address(as->pd);
++	if (!pd)
++		goto unlock;
++
++	seq_puts(s, "[SWGROUP: ");
++	/* List all the swgroup names in the same group_soc */
++	if (soc) {
++		bool first_swgroup = true;
++		unsigned int i;
++
++		for (i = 0; i < soc->num_swgroups; i++) {
++			swgrp = tegra_smmu_find_swgrp(smmu, soc->swgroups[i]);
++			if (WARN_ON(!swgrp))
++				goto unlock;
++
++			val = smmu_readl(smmu, swgrp->reg);
++			if (!(val & SMMU_ASID_ENABLE))
++				continue;
++
++			if (WARN_ON((val & SMMU_ASID_MASK) != as->id))
++				continue;
++
++			if (first_swgroup)
++				first_swgroup = false;
++			else
++				seq_puts(s, ", ");
++
++			seq_printf(s, "%s", swgrp->name);
++		}
++	} else {
++		WARN_ON((val & SMMU_ASID_MASK) != as->id);
++		seq_printf(s, "%s", swgrp->name);
++	}
++	seq_puts(s, "] ");
++
++	seq_printf(s, "[as: (id: %d), ", as->id);
++	seq_printf(s, "(attr: %c|%c|%c), ",
++		   as->attr & SMMU_PD_READABLE ? 'R' : '-',
++		   as->attr & SMMU_PD_WRITABLE ? 'W' : '-',
++		   as->attr & SMMU_PD_NONSECURE ? '-' : 'S');
++	seq_printf(s, "(pd_dma: %pad)]\n", &as->pd_dma);
++	seq_puts(s, "{\n");
++
++	spin_lock_irqsave(&as->lock, flags);
++
++	for (pd_index = 0; pd_index < SMMU_NUM_PDE; pd_index++) {
++		struct page *pt_page;
++		unsigned int i;
++		u32 *addr;
++
++		/* An empty PDE should not have a pte use count */
++		WARN_ON_ONCE(!pd[pd_index] ^ !as->count[pd_index]);
++
++		/* Skip this empty PDE */
++		if (!pd[pd_index])
++			continue;
++
++		pde_count++;
++		pte_count += as->count[pd_index];
++		seq_printf(s, "\t[index: %u] 0x%x (count: %d)\n",
++			   pd_index, pd[pd_index], as->count[pd_index]);
++		pt_page = as->pts[pd_index];
++		addr = page_address(pt_page);
++
++		seq_puts(s, "\t{\n");
++		seq_printf(s, "\t\t%-14s | %-4s | %-10s%s | %-10s | %-11s\n",
++			   "PTE RANGE", "ATTR",
++			   "PHYS", sizeof(phys_addr_t) > 4 ? "        " : "",
++			   "IOVA", "SIZE");
++		for (pt_index = 0; pt_index < SMMU_NUM_PTE; pt_index += i) {
++			size_t size = SMMU_SIZE_PT;
++			dma_addr_t iova;
++			phys_addr_t pa;
++
++			i = 1;
++
++			if (!addr[pt_index])
++				continue;
++
++			iova = pd_pt_index_iova(pd_index, pt_index);
++			pa = SMMU_PFN_PHYS(addr[pt_index] & ~SMMU_PTE_ATTR);
++
++			/* Check contiguous mappings and increase size */
++			while (pt_index + i < SMMU_NUM_PTE) {
++				dma_addr_t next_iova;
++				phys_addr_t next_pa;
++
++				if (!addr[pt_index + i])
++					break;
++
++				next_iova = pd_pt_index_iova(pd_index, pt_index + i);
++				next_pa = SMMU_PFN_PHYS(addr[pt_index + i] & ~SMMU_PTE_ATTR);
++
++				/* Break at the end of a linear mapping */
++				if ((next_iova - iova != SMMU_SIZE_PT * i) ||
++				    (next_pa - pa != SMMU_SIZE_PT * i))
++					break;
++
++				i++;
++			}
++
++			seq_printf(s, "\t\t[#%-4u, #%-4u] | 0x%-2x | %pa | 0x%-8x | 0x%-9zx\n",
++				   pt_index, pt_index + i - 1,
++				   addr[pt_index] >> SMMU_PTE_ATTR_SHIFT,
++				   &pa, (u32)iova, size * i);
++		}
++		seq_puts(s, "\t}\n");
++	}
++
++	spin_unlock_irqrestore(&as->lock, flags);
++
++	seq_puts(s, "}\n");
++	seq_printf(s, "Total PDEs: %u, total PTEs: %llu\n ", pde_count, pte_count);
++
++unlock:
++	mutex_unlock(&smmu->lock);
++
++	return 0;
++}
++
++DEFINE_SHOW_ATTRIBUTE(tegra_smmu_debugfs_mappings);
++
+ static void tegra_smmu_attach_as(struct tegra_smmu *smmu,
+ 				 struct tegra_smmu_as *as,
+ 				 unsigned int swgroup)
+@@ -522,6 +682,20 @@ static void tegra_smmu_attach_as(struct tegra_smmu *smmu,
+ 			dev_warn(smmu->dev,
+ 				 "overwriting group->as for swgroup: %s\n", swgrp->name);
+ 		group->as = as;
++
++		if (smmu->debugfs_mappings) {
++			const char *name;
++
++			if (group->soc)
++				name = group->soc->name;
++			else
++				name = group->swgrp->name;
++
++			debugfs_create_file(name, 0444,
++					    smmu->debugfs_mappings, group,
++					    &tegra_smmu_debugfs_mappings_fops);
++		}
++
+ 		break;
  	}
  
- 	INIT_LIST_HEAD(&group->list);
--	group->swgroup = swgroup;
-+	group->swgrp = swgrp;
- 	group->smmu = smmu;
- 	group->soc = soc;
+@@ -545,6 +719,15 @@ static void tegra_smmu_detach_as(struct tegra_smmu *smmu,
+ 		if (group->swgrp != swgrp)
+ 			continue;
+ 		group->as = NULL;
++
++		if (smmu->debugfs_mappings) {
++			struct dentry *d;
++
++			d = debugfs_lookup(group->swgrp->name,
++					   smmu->debugfs_mappings);
++			debugfs_remove(d);
++		}
++
+ 		break;
+ 	}
  
+@@ -1137,6 +1320,8 @@ static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
+ 			    &tegra_smmu_swgroups_fops);
+ 	debugfs_create_file("clients", S_IRUGO, smmu->debugfs, smmu,
+ 			    &tegra_smmu_clients_fops);
++
++	smmu->debugfs_mappings = debugfs_create_dir("mappings", smmu->debugfs);
+ }
+ 
+ static void tegra_smmu_debugfs_exit(struct tegra_smmu *smmu)
 -- 
 2.17.1
 
