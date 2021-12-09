@@ -1,127 +1,142 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8EF52C433FE
-	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 20:07:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 69D75C43217
+	for <iommu@archiver.kernel.org>; Thu,  9 Dec 2021 20:25:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 385A18607E;
-	Thu,  9 Dec 2021 20:07:34 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1647D4EE72;
+	Thu,  9 Dec 2021 20:25:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id d6OAdh35Vllp; Thu,  9 Dec 2021 20:07:33 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9LlO0IB0bsoh; Thu,  9 Dec 2021 20:25:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 04C318607D;
-	Thu,  9 Dec 2021 20:07:32 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id BB4134EE74;
+	Thu,  9 Dec 2021 20:25:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B787DC002F;
-	Thu,  9 Dec 2021 20:07:32 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BC872C0012
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 20:07:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7F51EC002F;
+	Thu,  9 Dec 2021 20:25:25 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 527D3C0012
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 20:25:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 974E78607D
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 20:07:31 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 48DD185AEC
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 20:25:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=microsoft.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jEvO-sN_vCzN for <iommu@lists.linux-foundation.org>;
- Thu,  9 Dec 2021 20:07:30 +0000 (UTC)
+ with ESMTP id I8kX85pzvnWx for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Dec 2021 20:25:23 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam11on2065.outbound.protection.outlook.com [40.107.236.65])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 9D1688607B
- for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 20:07:30 +0000 (UTC)
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam11lp20201.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7eaa::201])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 51CE285AEB
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Dec 2021 20:25:23 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f6Tpom3yRKvI21MTXOnKwACZKiz97mTwGVrHoNc6LMi504yoPtGraxrTpddw13H56z+0mDW7TBVTCO4lK8HnJqACweTXPizp+FwIM61opi7gbtXaUdPDjxC4E6KHG1YEuwXmtkt6UkT0s7LBXw8n3DLkvwqoMeZOTU8A9InpW1lpQyfyIjDmGBlYQc5C7X1Vjuxy4ksLAv3J5czCRZB1H18dNox4XCKqALqba2dy39Thk162TCKLRBI7YrbdkSvqT3BKUBteBVMBGFQmGXTCY2SaS/h49YB3gH/3oLpXKOrF2b7HcOAVcVWnnLBENPopPDulDCKtWc3UQ1W8h+3iDQ==
+ b=a0PHMvKlAM/BnQMEo1u49VdFEJx/WuLG1BTPRsLUaVk+EuHMSf0d3Qnnu2+TblevfYCn2dPFA5o7sHUAaiRIPSFdZEYpIKfWqQr19ZM0N/wG+EppVtLq7CTWa24WeXz8pxN2Gp911wEtcDIzFxtYPAFTdKrcLleRTlx/8pCvovel/C+i0rvG1KeFHXMfCGjpaNqeqvLyw0NjXlGj0pH1MU/IPjIH7ZmNhGcbcrLGjUukAN3hVXMJyF9MzJa0d5rsLdDKR+yLdyN8Q+nDeldUKKSwY0eR8tuw+OX4olZnoqZPVd9CVM+k4JcM+FQN89noie3BYfgNzc0SnGJgKS+g2g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0qBDv9Qs1rohVW3WLB4vHrUfp/BI8Q15uIADSfnwuRM=;
- b=Wd6s4TdnriyLeY3iDBvhaFepcPZUbQr/37CijVlvplAV7YKug0b4OaEmTpE20H1AMHCCQbNOwZGmhKEVuS2dQG7D+x0aXLXbDDT7MmFec1SIJpQqFQyfOxGe0xAqa+wW826HbXftx3WsGLLGxNnmjtoCblZZzU6TflowKXSbQ4fkS0nVjS2FqYU8mZ0YGTniHbl5EKHy+z9UIhKYZEuRr3ZnZ6NcqF4rECpb3qHoFUVW7hFrOHKim4Uxk+tbyyaUmEh8I8Zgtfm49wSN2xwZvegHO7uBqOtEszqdDha6Wnk+PXWVJEs0RhUWiu25OLWRZhj3yNeAvzcJkkrVKUwC8g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 203.18.50.13) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ bh=i2GInL2fbY9LM/yDScvF5EnyIC8c4u858vss0k9RZHQ=;
+ b=O6C2xdpBSNj2y0zXJ0a5tJBOW1j84HsllcZAursGyyLR6HDKs1GRxzt3U3u967bbdx6FWYY3B2ZgZLL614cE72ygfc7U3JQgjlG87y+IsewTspjzGKQVyiAmtJghlKYpAxJOiGE/XCQT9Jxy5uGlOH9EkQDAw9X1fvdFaUjZy9wFe7n68njaUn/nOI+KvjHYZLhe9JH2yrf/zvxiwsobKFzQZiK3yNG+ZsAgifIdBvtv7KuJwIaU14TmjgBv30weF4F6bL/dFlg8CH3iDsGsuEriWf7vBtOSyOb665Cxsw7iTE/3b5Plzv1qsNmwXWTArh1FxStfjFAmgEiLIACZhg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0qBDv9Qs1rohVW3WLB4vHrUfp/BI8Q15uIADSfnwuRM=;
- b=JqYflR5joUFCPH/5qHd/53/5yTRAMTGXCbsADiDlrHsOIRbr5niZy2PbTjRm7nqlO0rtDcCyqffYuAnYgoG4LwotnXucP7QBxr6kHj51ejD/5Lcb0ERL6Hz2lWqF79Jmdsses7DqpGpMk0RqVPJ0GsGaydqVuApTzuT9ebeetktoKJzPqxcC7krb+A8KDIfrmWSU0VpEQ/dem1LKYsiaiOJEWCCBl+83bT/6rVr56QoZiXRDvMhrbOcyvXip4gMTHaujhouGj9W5gFjO8N/DEwiZs32hswtO+3ajGisP34MhobEhnNjOKbnuwo2S85Ncrh7a8RVvwdgvsXSOfLoWDA==
-Received: from DM5PR07CA0053.namprd07.prod.outlook.com (2603:10b6:4:ad::18) by
- BN8PR12MB3009.namprd12.prod.outlook.com (2603:10b6:408:42::32) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4755.21; Thu, 9 Dec 2021 20:07:27 +0000
-Received: from DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
- (2603:10b6:4:ad:cafe::b0) by DM5PR07CA0053.outlook.office365.com
- (2603:10b6:4:ad::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.11 via Frontend
- Transport; Thu, 9 Dec 2021 20:07:27 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 203.18.50.13)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 203.18.50.13 as permitted sender) receiver=protection.outlook.com;
- client-ip=203.18.50.13; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (203.18.50.13) by
- DM6NAM11FT035.mail.protection.outlook.com (10.13.172.100) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4755.13 via Frontend Transport; Thu, 9 Dec 2021 20:07:26 +0000
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HKMAIL102.nvidia.com
- (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 9 Dec
- 2021 20:07:00 +0000
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 9 Dec
- 2021 20:06:59 +0000
-Received: from Asurada-Nvidia (172.20.187.6) by mail.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18 via Frontend
- Transport; Thu, 9 Dec 2021 20:06:59 +0000
-Date: Thu, 9 Dec 2021 12:06:57 -0800
-To: Dmitry Osipenko <digetx@gmail.com>
-Subject: Re: [PATCH v8 6/6] iommu/tegra-smmu: Add pagetable mappings to debugfs
-Message-ID: <20211209200657.GB35858@Asurada-Nvidia>
-References: <20211209073822.26728-1-nicolinc@nvidia.com>
- <20211209073822.26728-7-nicolinc@nvidia.com>
- <5713902d-823b-63ca-00c9-aa6c64c1af41@gmail.com>
- <20211209193253.GB34762@Asurada-Nvidia>
- <97a32c9a-2ec7-6579-7d8d-026d6f820a3e@gmail.com>
- <20211209195128.GA35526@Asurada-Nvidia>
- <a4002ad9-70d9-22d1-7bcc-ae4f712187c8@gmail.com>
+ bh=i2GInL2fbY9LM/yDScvF5EnyIC8c4u858vss0k9RZHQ=;
+ b=h4ttG+Gkx4QPU7OYF9U8RdL9/XtNtsKGaVjZ9jILtSKSc3bIshJV5vSlLDXrpx/47MqTxa7CcBl6/9OHOkDgejxJJsRdOPYQ3a17TUlqDkhzCWXjyGn4tkYpFxbwwVO4H58FWXeTLmTWLXbqJZMgXnneqpgRCxwK6mqBfKEEG3E=
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
+ by PH0PR21MB1960.namprd21.prod.outlook.com (2603:10b6:510:8::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.25; Thu, 9 Dec
+ 2021 20:09:19 +0000
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::e9ea:fc3b:df77:af3e]) by MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::e9ea:fc3b:df77:af3e%8]) with mapi id 15.20.4801.007; Thu, 9 Dec 2021
+ 20:09:19 +0000
+To: Tianyu Lan <ltykernel@gmail.com>, KY Srinivasan <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Stephen Hemminger
+ <sthemmin@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan
+ Cui <decui@microsoft.com>, "tglx@linutronix.de" <tglx@linutronix.de>,
+ "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
+ "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, "x86@kernel.org"
+ <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>, "davem@davemloft.net"
+ <davem@davemloft.net>, "kuba@kernel.org" <kuba@kernel.org>,
+ "jejb@linux.ibm.com" <jejb@linux.ibm.com>, "martin.petersen@oracle.com"
+ <martin.petersen@oracle.com>, "arnd@arndb.de" <arnd@arndb.de>,
+ "hch@infradead.org" <hch@infradead.org>, "m.szyprowski@samsung.com"
+ <m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ Tianyu Lan <Tianyu.Lan@microsoft.com>, "thomas.lendacky@amd.com"
+ <thomas.lendacky@amd.com>
+Subject: RE: [PATCH V6 3/5] hyper-v: Enable swiotlb bounce buffer for
+ Isolation VM
+Thread-Topic: [PATCH V6 3/5] hyper-v: Enable swiotlb bounce buffer for
+ Isolation VM
+Thread-Index: AQHX6z/mlYtshOhm/UO21xPyGwUfQ6wqlr9A
+Date: Thu, 9 Dec 2021 20:09:18 +0000
+Message-ID: <MWHPR21MB159359667085776793988EACD7709@MWHPR21MB1593.namprd21.prod.outlook.com>
+References: <20211207075602.2452-1-ltykernel@gmail.com>
+ <20211207075602.2452-4-ltykernel@gmail.com>
+In-Reply-To: <20211207075602.2452-4-ltykernel@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=fb6518fb-4c13-42df-b79a-b4c6d0836b6e;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-12-09T19:54:49Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 25d976b4-8563-45f3-3a5b-08d9bb4fc898
+x-ms-traffictypediagnostic: PH0PR21MB1960:EE_
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <PH0PR21MB19601DEE7C3B7CBACCEF6AD0D7709@PH0PR21MB1960.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: rYD+MWM5lt6cwQz9Fg8XHqLH7LZzvc7JFYFY2R4gqWXz8bSuIHR0+ju9NYeUOTi25f7M7cVVr/QATpZqDSuS6qNem2lrgIIdeUh8FQPh+zoZvbXNYLxd++VtQ+z+ko0mx5IPUE8IMfkjec3Qq7efudoXjSv+mcWRGAtGn1n8YbHiuz5TAS6L1OIAFEDaiTtnqKqMeIyB77IiKSjQpFaEkvWup0I4j9t43kw7EW4dpC4ICeN7NcaqWunfPFk/LxdYmoneZzeZSZDnfksHgDRhcXxloTMkwl5aOJ6V+7QfIHDT+SMdi094SHOyAIWObpJrLPTCyU3REv5abgKLZ/7XkGZknq9wXoE6QsxzvWDVVF4WCUB6z8cBxwnNGCRkuaw25qB6DcPh+orb8tBHCLHOqot87Cy6D5gjg5ZGFNaOColK9BIIBRzXHaU6fri2grLCWfhyPEFVe6uoh1N476CMM0kuoPXR9MpY32v9arO961RUdzB1QcfVdPkbZk7h1Rei0CGgazLkJqOBQgN5TAZuG54pdgwl1DcTcc4US8OE1hrhB71v2hXFZ9ZtIPG1iJLuypjOsogDe7+v0oCDbgKEsD/ITliRWZkxtmkg6p4PBIQqpOZdvvxzs6NYAr+OxDfBYQaOviAE4gIkHuqNFnfXNdxJXt/B+dKMI2k9gXKKwWWJTmecpe2MhisoYeBTWAl6
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR21MB1593.namprd21.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(76116006)(66476007)(66946007)(8936002)(316002)(4326008)(54906003)(8676002)(921005)(110136005)(66556008)(64756008)(52536014)(66446008)(86362001)(82950400001)(82960400001)(38070700005)(9686003)(55016003)(7406005)(83380400001)(71200400001)(33656002)(2906002)(8990500004)(26005)(6506007)(7416002)(10290500003)(5660300002)(7696005)(508600001)(122000001)(38100700002)(186003)(20210929001);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: RT7JgHiVD8NG8Kr6fBi9zPiBXBP0l8tU9vJjjMj7s7prIcTej/TdjPEBmrxQbDamGpbXfzBFJE3C3rmlsSTArNUayWmwnhYwb8ePp0G7cO4IYlUWCnUVjUBKj8CN85WcWzNlPRVV6fNJG4khuaTEoXwnSzT2GrDBJCIXrerCWnxhP3IJR9JQuTcr8RN5XhfsEcc+Hnza59YvEFBM1ZdFYk0qs3utWKoq9EfGK9vOhH2LlBvBDBOgpFdPAOJyjQRsOfC7qbCK37CoWeRFwQxZh4vNG2IMAceV6R5vxuAPCT9K2NsPKTnVG7Cgov/cmDmLLerBnx1qAr1HdU057xOJX7ODPJX3pAYBj0HxibF63965LuuneJ+ejfDGFtv/rcIRnaNF5hNsGmwTy/ffEk9n5qxmfyTLMwzD6EqX2ijxrkniXfFRNVHSx35T6LIYetCIK8NiUfPVbELjw8EszB5LtLGTrB19KcqiDVayG9+TWRE8jsEOQM1uoRIv1TZA0Bdf
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <a4002ad9-70d9-22d1-7bcc-ae4f712187c8@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 726f8ad7-3b3b-4128-0f3e-08d9bb4f85fc
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3009:EE_
-X-Microsoft-Antispam-PRVS: <BN8PR12MB300991BF84BAF35DA295D2AAAB709@BN8PR12MB3009.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HxaG7VQ7Kd5QIE2PWP8wVBh/qO2kcVhFUOApr4a+3o7QFGfe+c4u0miI+kO23OkO7HSu6iFN/9my3qUUG6qzmvj7R6oabHjVt2+ZOcU8aLT7DztFHmYlqDZ4/eWX5Lti9+2vk7IVQkHXUcuaP3HqYhesST7wAOQWghCSgy6MGrhKeLKwK9p/rdVd+nb3K76NXQ/+WwpAJ3bS8Hf/RIy7xXw4QaQRzToJRRYe8xiNsNjmaxTD2trK/qULJgIuQTnuABzgVdzeXP8zV+aHwpDZQ78Z5YiDFPTDwuyQjokmOgzd4SCzGIG5TVQCtIjaP4NlD2wRoUvaf1EDnskE0ed83ajGrDx9YNJNO18yx1XPBjfCcmdgXN85KiVTmv8W3I7I6UH09i94iErlCLHTqnKvf4Ugl5wa8fYtejB1tbQCk9CNQqdj6iww45iF+HnSs0r8yQMxgIQPz5dOVR6nQ8QdqUaN9VKh9Ifx8TjZLFAIlWwO/FoQV1X4YgUdMA0rVjwgV4D2gAe94MDKIjIAphX6uyA24sdxfNsIPWMAf0frwisoO9CJ5wdMEPnsF+QPEx/y+tA+F3ScYqjw1db8ZhD8KBuEC2YXUm5m0+/q72LgzA0dWKdsIsGJxRsWr0ctVsv5XDj6F4AjQ+J7yownjYToCKE3X3V94Wqce4XT8idHrDgvImW4UvaKbRbkOYX0DP7YcVyP9JVfZODsQsDbXZfT9Gz0QTLL2v83s+r/yJ+WoLP54jf2ilKsiB89esJoKBotW4GL5oK/Q7Ncx+bwyQil4q6StIwxBKLMKeUQ8NqEFsg=
-X-Forefront-Antispam-Report: CIP:203.18.50.13; CTRY:HK; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:hkhybrid02.nvidia.com; CAT:NONE;
- SFS:(4636009)(36840700001)(46966006)(40470700001)(86362001)(55016003)(40460700001)(82310400004)(33716001)(8936002)(8676002)(33656002)(316002)(6916009)(54906003)(7636003)(508600001)(26005)(9686003)(70206006)(186003)(70586007)(34020700004)(336012)(426003)(4326008)(356005)(2906002)(1076003)(36860700001)(83380400001)(5660300002)(47076005);
- DIR:OUT; SFP:1101; 
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2021 20:07:26.9803 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 726f8ad7-3b3b-4128-0f3e-08d9bb4f85fc
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[203.18.50.13];
- Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT035.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3009
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jonathanh@nvidia.com, thierry.reding@gmail.com, linux-tegra@vger.kernel.org,
- will@kernel.org
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 25d976b4-8563-45f3-3a5b-08d9bb4fc898
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Dec 2021 20:09:18.9916 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: m1xKY2RabmeS2pVUkIU4uDbnLiqbkvQGBaLLjrMTAuQk9AKLG9i/WyGVA6lnyklUmCF4x0sCBIjuy36JLJ0UuIXt8Rw16gls0i/c30y2MCY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR21MB1960
+Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+ "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+ "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+ "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "dave.hansen@intel.com" <dave.hansen@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ vkuznets <vkuznets@redhat.com>, "hch@lst.de" <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -134,47 +149,155 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Nicolin Chen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Nicolin Chen <nicolinc@nvidia.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: "Michael Kelley \(LINUX\) via iommu" <iommu@lists.linux-foundation.org>
+Reply-To: "Michael Kelley \(LINUX\)" <mikelley@microsoft.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gVGh1LCBEZWMgMDksIDIwMjEgYXQgMTA6NTg6MTVQTSArMDMwMCwgRG1pdHJ5IE9zaXBlbmtv
-IHdyb3RlOgo+IEV4dGVybmFsIGVtYWlsOiBVc2UgY2F1dGlvbiBvcGVuaW5nIGxpbmtzIG9yIGF0
-dGFjaG1lbnRzCj4gCj4gCj4gMDkuMTIuMjAyMSAyMjo1MSwgTmljb2xpbiBDaGVuINC/0LjRiNC1
-0YI6Cj4gPiBPbiBUaHUsIERlYyAwOSwgMjAyMSBhdCAxMDo0MDo0MlBNICswMzAwLCBEbWl0cnkg
-T3NpcGVua28gd3JvdGU6Cj4gPj4gRXh0ZXJuYWwgZW1haWw6IFVzZSBjYXV0aW9uIG9wZW5pbmcg
-bGlua3Mgb3IgYXR0YWNobWVudHMKPiA+Pgo+ID4+Cj4gPj4gMDkuMTIuMjAyMSAyMjozMiwgTmlj
-b2xpbiBDaGVuINC/0LjRiNC10YI6Cj4gPj4+IE9uIFRodSwgRGVjIDA5LCAyMDIxIGF0IDA1OjQ3
-OjE4UE0gKzAzMDAsIERtaXRyeSBPc2lwZW5rbyB3cm90ZToKPiA+Pj4+IEV4dGVybmFsIGVtYWls
-OiBVc2UgY2F1dGlvbiBvcGVuaW5nIGxpbmtzIG9yIGF0dGFjaG1lbnRzCj4gPj4+Pgo+ID4+Pj4K
-PiA+Pj4+IDA5LjEyLjIwMjEgMTA6MzgsIE5pY29saW4gQ2hlbiDQv9C40YjQtdGCOgo+ID4+Pj4+
-IEBAIC01NDUsNiArNzE5LDE1IEBAIHN0YXRpYyB2b2lkIHRlZ3JhX3NtbXVfZGV0YWNoX2FzKHN0
-cnVjdCB0ZWdyYV9zbW11ICpzbW11LAo+ID4+Pj4+ICAgICAgICAgICAgICAgaWYgKGdyb3VwLT5z
-d2dycCAhPSBzd2dycCkKPiA+Pj4+PiAgICAgICAgICAgICAgICAgICAgICAgY29udGludWU7Cj4g
-Pj4+Pj4gICAgICAgICAgICAgICBncm91cC0+YXMgPSBOVUxMOwo+ID4+Pj4+ICsKPiA+Pj4+PiAr
-ICAgICAgICAgICAgIGlmIChzbW11LT5kZWJ1Z2ZzX21hcHBpbmdzKSB7Cj4gPj4+PiBEbyB3ZSBy
-ZWFsbHkgbmVlZCB0aGlzIGNoZWNrPwo+ID4+Pj4KPiA+Pj4+IExvb2tzIGxpa2UgYWxsIGRlYnVn
-ZnNfY3JlYXRlX2RpcigpIHVzYWdlcyBpbiB0aGlzIGRyaXZlciBhcmUgaW5jb3JyZWN0LAo+ID4+
-Pj4gdGhhdCBmdW5jdGlvbiBuZXZlciByZXR1cm5zIE5VTEwuIFBsZWFzZSBmaXggdGhpcy4KPiA+
-Pj4gZGVidWdmc19jcmVhdGVfZGlyIHJldHVybnMgRVJSX1BUUiBvbiBmYWlsdXJlLiBTbyBoZXJl
-IHNob3VsZCBiZQo+ID4+PiB0byBjaGVjayAhSVNfRVJSLiBUaGFua3MgZm9yIHBvaW50aW5nIGl0
-IG91dCEKPiA+Pj4KPiA+Pgo+ID4+IEFsbCBkZWJ1Z2ZzIGZ1bmN0aW9ucyBoYW5kbGUgSVNfRVJS
-KCkuIEdyZWdLSCByZW1vdmVzIGFsbCBzdWNoIGNoZWNrcwo+ID4+IGFsbCBvdmVyIHRoZSBrZXJu
-ZWwuIFNvIHRoZSBjaGVjayBzaG91bGRuJ3QgYmUgbmVlZGVkIGF0IGFsbCwgcGxlYXNlCj4gPj4g
-cmVtb3ZlIGl0IGlmIGl0J3MgdW5uZWVkZWQgb3IgcHJvdmUgdGhhdCBpdCdzIG5lZWRlZC4KPiA+
-Cj4gPiBkZWJ1Z2ZzX2NyZWF0ZV9maWxlIGNhbiBoYW5kbGUgYSBOVUxMIHBhcmVudCwgYnV0IG5v
-dCBFUlJfUFRSIG9uZSwKPiA+IGFuZCB0aGVuIGl0IHB1dHMgdGhlIG5ldyBub2RlIHVuZGVyIHRo
-ZSByb290LiBTbyBlaXRoZXIgcGFzc2luZyBhbgo+ID4gRVJSX1BUUiBwYXJlbnQgb3IgY3JlYXRp
-bmcgb3JwaGFuIG5vZGVzIGhlcmUgZG9lc24ndCBzb3VuZCBnb29kLi4uCj4gPgo+IAo+IFdoYXQg
-bWFrZXMgeW91IHNheSBzbz8gUGxlYXNlIHNob3cgdGhlIGV4YWN0IHNvdXJjZSBjb2RlIHRoYXQg
-d2lsbCBjYXVzZQo+IHRoZSBwcm9ibGVtLgo+IAo+IFRoZSBzbW11LT5kZWJ1Z2ZzX21hcHBpbmdz
-IGNhbid0IGV2ZXIgYmUgTlVMTCBhbmQgZGVidWdmc19jcmVhdGVfZmlsZQo+IGhhbmRsZXMgdGhl
-IEVSUl9QVFIgWzFdWzJdLgoKQWguLi5teSB0b29sIGp1bXBzIHRvIHN0YXJ0X2NyZWF0aW5nIGlu
-IGZzL3RyYWNlZnMvaW5vZGUuYyBpbnN0ZWFkLgoKVGhhbmtzIGZvciB0aGUgcmVwbHkuIEkgd2ls
-bCByZW1vdmUgdGhlIGlmIGxpbmUgdGhlbi4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZv
-dW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2lvbW11
+From: Tianyu Lan <ltykernel@gmail.com> Sent: Monday, December 6, 2021 11:56 PM
+> 
+> hyperv Isolation VM requires bounce buffer support to copy
+> data from/to encrypted memory and so enable swiotlb force
+> mode to use swiotlb bounce buffer for DMA transaction.
+> 
+> In Isolation VM with AMD SEV, the bounce buffer needs to be
+> accessed via extra address space which is above shared_gpa_boundary
+> (E.G 39 bit address line) reported by Hyper-V CPUID ISOLATION_CONFIG.
+> The access physical address will be original physical address +
+> shared_gpa_boundary. The shared_gpa_boundary in the AMD SEV SNP
+> spec is called virtual top of memory(vTOM). Memory addresses below
+> vTOM are automatically treated as private while memory above
+> vTOM is treated as shared.
+> 
+> Swiotlb bounce buffer code calls set_memory_decrypted()
+> to mark bounce buffer visible to host and map it in extra
+> address space via memremap. Populate the shared_gpa_boundary
+> (vTOM) via swiotlb_unencrypted_base variable.
+> 
+> The map function memremap() can't work in the early place
+> (e.g ms_hyperv_init_platform()) and so call swiotlb_update_mem_
+> attributes() in the hyperv_init().
+> 
+> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> ---
+> Change since v4:
+> 	* Remove Hyper-V IOMMU IOMMU_INIT_FINISH related functions
+> 	  and set SWIOTLB_FORCE and swiotlb_unencrypted_base in the
+> 	  ms_hyperv_init_platform(). Call swiotlb_update_mem_attributes()
+> 	  in the hyperv_init().
+> 
+> Change since v3:
+> 	* Add comment in pci-swiotlb-xen.c to explain why add
+> 	  dependency between hyperv_swiotlb_detect() and pci_
+> 	  xen_swiotlb_detect().
+> 	* Return directly when fails to allocate Hyper-V swiotlb
+> 	  buffer in the hyperv_iommu_swiotlb_init().
+> ---
+>  arch/x86/hyperv/hv_init.c      | 10 ++++++++++
+>  arch/x86/kernel/cpu/mshyperv.c | 11 ++++++++++-
+>  include/linux/hyperv.h         |  8 ++++++++
+>  3 files changed, 28 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+> index 24f4a06ac46a..9e18a280f89d 100644
+> --- a/arch/x86/hyperv/hv_init.c
+> +++ b/arch/x86/hyperv/hv_init.c
+> @@ -28,6 +28,7 @@
+>  #include <linux/syscore_ops.h>
+>  #include <clocksource/hyperv_timer.h>
+>  #include <linux/highmem.h>
+> +#include <linux/swiotlb.h>
+> 
+>  int hyperv_init_cpuhp;
+>  u64 hv_current_partition_id = ~0ull;
+> @@ -502,6 +503,15 @@ void __init hyperv_init(void)
+> 
+>  	/* Query the VMs extended capability once, so that it can be cached. */
+>  	hv_query_ext_cap(0);
+> +
+> +	/*
+> +	 * Swiotlb bounce buffer needs to be mapped in extra address
+> +	 * space. Map function doesn't work in the early place and so
+> +	 * call swiotlb_update_mem_attributes() here.
+> +	 */
+> +	if (hv_is_isolation_supported())
+> +		swiotlb_update_mem_attributes();
+> +
+>  	return;
+> 
+>  clean_guest_os_id:
+> diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
+> index 4794b716ec79..baf3a0873552 100644
+> --- a/arch/x86/kernel/cpu/mshyperv.c
+> +++ b/arch/x86/kernel/cpu/mshyperv.c
+> @@ -18,6 +18,7 @@
+>  #include <linux/kexec.h>
+>  #include <linux/i8253.h>
+>  #include <linux/random.h>
+> +#include <linux/swiotlb.h>
+>  #include <asm/processor.h>
+>  #include <asm/hypervisor.h>
+>  #include <asm/hyperv-tlfs.h>
+> @@ -319,8 +320,16 @@ static void __init ms_hyperv_init_platform(void)
+>  		pr_info("Hyper-V: Isolation Config: Group A 0x%x, Group B 0x%x\n",
+>  			ms_hyperv.isolation_config_a, ms_hyperv.isolation_config_b);
+> 
+> -		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP)
+> +		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP) {
+>  			static_branch_enable(&isolation_type_snp);
+> +			swiotlb_unencrypted_base = ms_hyperv.shared_gpa_boundary;
+> +		}
+> +
+> +		/*
+> +		 * Enable swiotlb force mode in Isolation VM to
+> +		 * use swiotlb bounce buffer for dma transaction.
+> +		 */
+> +		swiotlb_force = SWIOTLB_FORCE;
+
+I'm good with this approach that directly updates the swiotlb settings here
+rather than in IOMMU initialization code.  It's a lot more straightforward.
+
+However, there's an issue if building for X86_32 without PAE, in that the 
+swiotlb module may not be built, resulting in compile and link errors.  The
+swiotlb.h file needs to be updated to provide a stub function for
+swiotlb_update_mem_attributes().   swiotlb_unencrypted_base probably
+needs wrapper functions to get/set it, which can be stubs when 
+CONFIG_SWIOTLB is not set.  swiotlb_force is a bit of a mess in that it already
+has a stub definition that assumes it will only be read, and not set.  A bit of
+thinking will be needed to sort that out.
+
+>  	}
+> 
+>  	if (hv_max_functions_eax >= HYPERV_CPUID_NESTED_FEATURES) {
+> diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
+> index b823311eac79..1f037e114dc8 100644
+> --- a/include/linux/hyperv.h
+> +++ b/include/linux/hyperv.h
+> @@ -1726,6 +1726,14 @@ int hyperv_write_cfg_blk(struct pci_dev *dev, void *buf, unsigned int len,
+>  int hyperv_reg_block_invalidate(struct pci_dev *dev, void *context,
+>  				void (*block_invalidate)(void *context,
+>  							 u64 block_mask));
+> +#if IS_ENABLED(CONFIG_HYPERV)
+> +int __init hyperv_swiotlb_detect(void);
+> +#else
+> +static inline int __init hyperv_swiotlb_detect(void)
+> +{
+> +	return 0;
+> +}
+> +#endif
+
+I don't think hyperv_swiotlb_detect() is used any longer, so this change
+should be dropped.
+
+> 
+>  struct hyperv_pci_block_ops {
+>  	int (*read_block)(struct pci_dev *dev, void *buf, unsigned int buf_len,
+> --
+> 2.25.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
