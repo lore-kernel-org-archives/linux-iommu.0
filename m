@@ -1,91 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A52BAC433F5
-	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 00:26:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B7354C433F5
+	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 01:23:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1B2CD60A7E;
-	Fri, 10 Dec 2021 00:26:25 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5006240A38;
+	Fri, 10 Dec 2021 01:23:48 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 7fTlXdEpaH8Z; Fri, 10 Dec 2021 01:23:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id B49D440A31;
+	Fri, 10 Dec 2021 01:23:46 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6D909C001E;
+	Fri, 10 Dec 2021 01:23:46 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0D23AC0012
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 01:23:45 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id DB4BC60F8A
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 01:23:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Y1IbdhZzehV2; Fri, 10 Dec 2021 00:26:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id A5CD760A63;
-	Fri, 10 Dec 2021 00:26:23 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 81BEFC0012;
-	Fri, 10 Dec 2021 00:26:23 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1F6FFC0012
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 00:26:22 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 07496826C0
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 00:26:22 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="SGuP3jiE";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="7AvNtbOo"
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EHjj4e766Dcz for <iommu@lists.linux-foundation.org>;
- Fri, 10 Dec 2021 00:26:21 +0000 (UTC)
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 23dt2Dkt3Q-O for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Dec 2021 01:23:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de
- [IPv6:2a0a:51c0:0:12e:550::1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 00BDB82681
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 00:26:20 +0000 (UTC)
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1639095977;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=oyRD+ut1wwQO4SYEZeVrK3aZY2EypBixx+iW/lkFS4g=;
- b=SGuP3jiErQ98J7HDSGUIX8rDX9888+GB8LHUDw6h/Wvhfnk24FU7UD854H8TZCZlitOIbC
- /VBG/amubqvGbBLOctbw7FifJsbxNgdG2N1F81Vsj1c154aE0hfzDNsot32T25tRAMi7KS
- yzu4Uwp/Ip0ebzzC1aIGSh/bVxKieeoyfi4WcHYUkyhNjIf2WRUz7csxz8NdfWgfDQv5AF
- GxureoGLp7/dRPpAVSOuy3UmxmpBOn+KH/qZED3rba+mBhJSs5fzzOL1NTL4tGsbYkt/d7
- LIa1xm23tREl7w8hubxNLwtDgIAX/nr8NAQ/SXDXAJ0EfZI8KvhQ+lzIa6qwdw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1639095977;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=oyRD+ut1wwQO4SYEZeVrK3aZY2EypBixx+iW/lkFS4g=;
- b=7AvNtbOokh8VZBBRmmnzW2IZUOSlz4rYyL79qDJjxujomOTaW52xfFBu37qbnWJytFlDWO
- CqmJc/9fUfXi95BQ==
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [patch 21/32] NTB/msi: Convert to msi_on_each_desc()
-In-Reply-To: <8735n1zaz3.ffs@tglx>
-References: <8c2262ba-173e-0007-bc4c-94ec54b2847d@intel.com>
- <87pmqg88xq.ffs@tglx> <df00b87e-00dc-d998-8b64-46b16dba46eb@intel.com>
- <87k0go8432.ffs@tglx> <f4cc305b-a329-6d27-9fca-b74ebc9fa0c1@intel.com>
- <878rx480fk.ffs@tglx>
- <BN9PR11MB52765F2EF8420C60FD5945D18C709@BN9PR11MB5276.namprd11.prod.outlook.com>
- <87sfv2yy19.ffs@tglx> <20211209162129.GS6385@nvidia.com>
- <878rwtzfh1.ffs@tglx> <20211209205835.GZ6385@nvidia.com>
- <8735n1zaz3.ffs@tglx>
-Date: Fri, 10 Dec 2021 01:26:16 +0100
-Message-ID: <87sfv1xq3b.ffs@tglx>
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 2627A60F7E
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 01:23:44 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10193"; a="235757541"
+X-IronPort-AV: E=Sophos;i="5.88,194,1635231600"; d="scan'208";a="235757541"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 09 Dec 2021 17:23:37 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,194,1635231600"; d="scan'208";a="516558392"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
+ ([10.239.159.118])
+ by orsmga008.jf.intel.com with ESMTP; 09 Dec 2021 17:23:29 -0800
+Subject: Re: [PATCH v3 04/18] driver core: platform: Add driver dma ownership
+ management
+To: Jason Gunthorpe <jgg@nvidia.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Christoph Hellwig <hch@infradead.org>
+References: <20211206015903.88687-1-baolu.lu@linux.intel.com>
+ <20211206015903.88687-5-baolu.lu@linux.intel.com>
+ <Ya4f662Af+8kE2F/@infradead.org> <20211206150647.GE4670@nvidia.com>
+ <56a63776-48ca-0d6e-c25c-016dc016e0d5@linux.intel.com>
+ <20211207131627.GA6385@nvidia.com>
+ <c170d215-6aef-ff21-8733-1bae4478e39c@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <b42ffaee-bb96-6db4-8540-b399214f6881@linux.intel.com>
+Date: Fri, 10 Dec 2021 09:23:19 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Cc: Allen Hubbe <allenbh@gmail.com>,
- "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "x86@kernel.org" <x86@kernel.org>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Marc Zygnier <maz@kernel.org>,
- Heiko Carstens <hca@linux.ibm.com>, LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Christian Borntraeger <borntraeger@de.ibm.com>,
- Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>,
- Bjorn Helgaas <helgaas@kernel.org>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "linux-ntb@googlegroups.com" <linux-ntb@googlegroups.com>,
- Logan Gunthorpe <logang@deltatee.com>, "Dey, Megha" <megha.dey@intel.com>
+In-Reply-To: <c170d215-6aef-ff21-8733-1bae4478e39c@linux.intel.com>
+Content-Language: en-US
+Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
+ David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+ Chaitanya Kulkarni <kch@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,168 +88,84 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Dec 09 2021 at 23:09, Thomas Gleixner wrote:
-> On Thu, Dec 09 2021 at 16:58, Jason Gunthorpe wrote:
->> Okay, I think I get it. Would be nice to have someone from intel
->> familiar with the vIOMMU protocols and qemu code remark what the
->> hypervisor side can look like.
->>
->> There is a bit more work here, we'd have to change VFIO to somehow
->> entirely disconnect the kernel IRQ logic from the MSI table and
->> directly pass control of it to the guest after the hypervisor IOMMU IR
->> secures it. ie directly mmap the msi-x table into the guest
->
-> That makes everything consistent and a clear cut on all levels, right?
-
-Let me give a bit more rationale here, why I think this is the right
-thing to do. There are several problems with IMS both on the host and on
-the guest side:
-
-  1) Contrary to MSI/MSI-X the address/data pair is not completely
-     managed by the core. It's handed off to driver writers in the
-     hope they get it right.
-
-  2) Without interrupt remapping there is a fundamental issue on x86
-     for the affinity setting case, as there is no guarantee that
-     the magic protocol which we came up with (see msi_set_affinity()
-     in the x86 code) is correctly implemented at the driver level or
-     that the update is truly atomic so that the problem does not
-     arise. My interrest in chasing these things is exactly zero.
-
-     With interrupt remapping the affinity change happens at the IRTE
-     level and not at the device level. It's a one time setup for the
-     device.
-
-     Just for the record:
-
-     The ATH11 thing does not have that problem by pure luck because
-     multi-vector MSI is not supported on X86 unless interrupt
-     remapping is enabled. 
-
-     The switchtec NTB thing will fall apart w/o remapping AFAICT.
-
-  3) With remapping the message for the device is constructed at
-     allocation time. It does not change after that because the affinity
-     change happens at the remapping level, which eliminates #2 above.
-
-     That has another advantage for IMS because it does not require any
-     synchronization with the queue or whatever is involved. The next
-     interrupt after the change at the remapping level ends up on the
-     new target.
-
-  4) For the guest side we agreed that we need an hypercall because the
-     host can't trap the write to the MSI[-X] entry anymore.
-
-     Aside of the fact that this creates a special case for IMS which is
-     undesirable in my opinion, it's not really obvious where the
-     hypercall should be placed to work for all scenarios so that it can
-     also solve the existing issue of silent failures.
-
-  5) It's not possible for the kernel to reliably detect whether it is
-     running on bare metal or not. Yes we talked about heuristics, but
-     that's something I really want to avoid.
-
-When looking at the above I came to the conclusion that the consistent
-way is to make IMS depend on IR both on the host and the guest as this
-solves all of the above in one go.
-
-How would that work? With IR the irqdomain hierarchy looks like this:
-
-                   |--IO/APIC
-                   |--MSI
-    vector -- IR --|--MIX-X
-                   |--IMS
-
-There are several context where this matters:
-
-  1) Allocation of an interrupt, e.g. pci_alloc_irq_vectors().
-
-  2) Activation of an interrupt which happens during allocation and/or
-     at request_irq() time
-
-  3) Interrupt affinity setting
-
-#1 Allocation
-
-   That allocates an IRTE, which can fail
-
-#2 Activation
-
-   That's the step where actually a CPU vector is allocated, where the
-   IRTE is updated and where the device message is composed to target
-   the IRTE.
-
-   On X86 activation is happening twice:
-
-   1) During allocation it allocates a special CPU vector which is
-      handed out to all allocated interrupts. That's called reservation
-      mode. This was introduced to prevent vector exhaustion for two
-      cases:
-      
-       - Devices allocating tons of MSI-X vectors without using
-         them. That obviously needs to be fixed at the device driver
-         level, but due to the fact that post probe() allocation is not
-         supported, that's not always possible
-
-       - CPU hotunplug
-
-         All vectors targeting the outgoing CPU need to be migrated to a
-         new target CPU, which can result in exhaustion of the vector
-         space.
-
-         Reservation mode avoids that because it just uses a unique
-         vector for all interrupts which are allocated but not
-         requested.
-
-    2) On request_irq()
-
-       As the vector assigned during allocation is just a place holder
-       to make the MSI hardware happy it needs to be replaced by a
-       real vector.
-
-   Both can fail and the error is propagated through the call chain
-
-#3 Changing the interrupt affinity
-
-   This obviously needs to allocate a new target CPU vector and update
-   the IRTE.
-
-   Allocating a new target CPU vector can fail.
-
-When looking at it from the host side, then the host needs to do the
-same things:
-
-  1) Allocate an IRTE for #1
-
-  2) Update the IRTE for #2 and #3
-
-But that does not necessarily mean that we need two hypercalls. We can
-get away with one in the code which updates the IRTE and that would be
-the point where the host side has to allocate the backing host
-interrupt, which would replace that allocate on unmask mechanism which
-is used today.
-
-It might look awkward on first sight that an IRTE update can fail, but
-it's not that awkward when put into context:
-
-  The first update happens during activation and activation can fail for
-  various reasons.
-  
-The charm is that his works for everything from INTx to IMS because all
-of them go through the same procedure, except that INTx (IO/APIC) does
-not support the reservation mode dance.
-
-Thoughts?
-
-Thanks,
-
-        tglx
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgR3JlZywgSmFzb24gYW5kIENocmlzdG9waCwKCk9uIDEyLzkvMjEgOToyMCBBTSwgTHUgQmFv
+bHUgd3JvdGU6Cj4gT24gMTIvNy8yMSA5OjE2IFBNLCBKYXNvbiBHdW50aG9ycGUgd3JvdGU6Cj4+
+IE9uIFR1ZSwgRGVjIDA3LCAyMDIxIGF0IDEwOjU3OjI1QU0gKzA4MDAsIEx1IEJhb2x1IHdyb3Rl
+Ogo+Pj4gT24gMTIvNi8yMSAxMTowNiBQTSwgSmFzb24gR3VudGhvcnBlIHdyb3RlOgo+Pj4+IE9u
+IE1vbiwgRGVjIDA2LCAyMDIxIGF0IDA2OjM2OjI3QU0gLTA4MDAsIENocmlzdG9waCBIZWxsd2ln
+IHdyb3RlOgo+Pj4+PiBJIHJlYWxseSBoYXRlIHRoZSBhbW91bnQgb2YgYm9pbGVycGxhdGUgY29k
+ZSB0aGF0IGhhdmluZyB0aGlzIGluIGVhY2gKPj4+Pj4gYnVzIHR5cGUgY2F1c2VzLgo+Pj4+ICsx
+Cj4+Pj4KPj4+PiBJIGxpa2VkIHRoZSBmaXJzdCB2ZXJzaW9uIG9mIHRoaXMgc2VyaWVzIGJldHRl
+ciB3aXRoIHRoZSBjb2RlIG5lYXIKPj4+PiByZWFsbHlfcHJvYmUoKS4KPj4+Pgo+Pj4+IENhbiB3
+ZSBnbyBiYWNrIHRvIHRoYXQgd2l0aCBzb21lIGRldmljZV9jb25maWd1cmVfZG1hKCkgd3JhcHBl
+cgo+Pj4+IGNvbmR0aW9uYWxseSBjYWxsZWQgYnkgcmVhbGx5X3Byb2JlIGFzIHdlIGRpc2N1c3Nl
+ZD8KClsuLi5dCgo+IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2Jhc2UvZGQuYyBiL2RyaXZlcnMv
+YmFzZS9kZC5jCj4gaW5kZXggNjhlYTFmOTQ5ZGFhLi42OGNhNWE1NzllYjEgMTAwNjQ0Cj4gLS0t
+IGEvZHJpdmVycy9iYXNlL2RkLmMKPiArKysgYi9kcml2ZXJzL2Jhc2UvZGQuYwo+IEBAIC01Mzgs
+NiArNTM4LDMyIEBAIHN0YXRpYyBpbnQgY2FsbF9kcml2ZXJfcHJvYmUoc3RydWN0IGRldmljZSAq
+ZGV2LCAKPiBzdHJ1Y3QgZGV2aWNlX2RyaXZlciAqZHJ2KQo+ICDCoMKgwqDCoMKgwqDCoCByZXR1
+cm4gcmV0Owo+ICDCoH0KPiAKPiArc3RhdGljIGludCBkZXZpY2VfZG1hX2NvbmZpZ3VyZShzdHJ1
+Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCAKPiBkZXZpY2VfZHJpdmVyICpkcnYpCj4gK3sKPiArwqDC
+oMKgwqDCoMKgIGludCByZXQ7Cj4gKwo+ICvCoMKgwqDCoMKgwqAgaWYgKCFkZXYtPmJ1cy0+ZG1h
+X2NvbmZpZ3VyZSkKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gMDsKPiAr
+Cj4gK8KgwqDCoMKgwqDCoCByZXQgPSBkZXYtPmJ1cy0+ZG1hX2NvbmZpZ3VyZShkZXYpOwo+ICvC
+oMKgwqDCoMKgwqAgaWYgKHJldCkKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1
+cm4gcmV0Owo+ICsKPiArwqDCoMKgwqDCoMKgIGlmICghZHJ2LT5zdXBwcmVzc19hdXRvX2NsYWlt
+X2RtYV9vd25lcikKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXQgPSBpb21tdV9k
+ZXZpY2Vfc2V0X2RtYV9vd25lcihkZXYsIERNQV9PV05FUl9ETUFfQVBJLCAKPiBOVUxMKTsKPiAr
+Cj4gK8KgwqDCoMKgwqDCoCByZXR1cm4gcmV0Owo+ICt9Cj4gKwo+ICtzdGF0aWMgdm9pZCBkZXZp
+Y2VfZG1hX2NsZWFudXAoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgZGV2aWNlX2RyaXZlciAK
+PiAqZHJ2KQo+ICt7Cj4gK8KgwqDCoMKgwqDCoCBpZiAoIWRldi0+YnVzLT5kbWFfY29uZmlndXJl
+KQo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJldHVybjsKPiArCj4gK8KgwqDCoMKg
+wqDCoCBpZiAoIWRydi0+c3VwcHJlc3NfYXV0b19jbGFpbV9kbWFfb3duZXIpCj4gK8KgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgaW9tbXVfZGV2aWNlX3JlbGVhc2VfZG1hX293bmVyKGRldiwg
+RE1BX09XTkVSX0RNQV9BUEksIAo+IE5VTEwpOwo+ICt9Cj4gKwo+ICDCoHN0YXRpYyBpbnQgcmVh
+bGx5X3Byb2JlKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGRldmljZV9kcml2ZXIgKmRydikK
+PiAgwqB7Cj4gIMKgwqDCoMKgwqDCoMKgIGJvb2wgdGVzdF9yZW1vdmUgPSBJU19FTkFCTEVEKENP
+TkZJR19ERUJVR19URVNUX0RSSVZFUl9SRU1PVkUpICYmCj4gQEAgLTU3NCwxMSArNjAwLDggQEAg
+c3RhdGljIGludCByZWFsbHlfcHJvYmUoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgCj4gZGV2
+aWNlX2RyaXZlciAqZHJ2KQo+ICDCoMKgwqDCoMKgwqDCoCBpZiAocmV0KQo+ICDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBwaW5jdHJsX2JpbmRfZmFpbGVkOwo+IAo+IC3CoMKg
+wqDCoMKgwqAgaWYgKGRldi0+YnVzLT5kbWFfY29uZmlndXJlKSB7Cj4gLcKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAgcmV0ID0gZGV2LT5idXMtPmRtYV9jb25maWd1cmUoZGV2KTsKPiAtwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpZiAocmV0KQo+IC3CoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBnb3RvIHByb2JlX2ZhaWxlZDsKPiAtwqDCoMKgwqDC
+oMKgIH0KPiArwqDCoMKgwqDCoMKgIGlmIChkZXZpY2VfZG1hX2NvbmZpZ3VyZShkZXYsIGRydikp
+Cj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBwaW5jdHJsX2JpbmRfZmFpbGVk
+Owo+IAo+ICDCoMKgwqDCoMKgwqDCoCByZXQgPSBkcml2ZXJfc3lzZnNfYWRkKGRldik7Cj4gIMKg
+wqDCoMKgwqDCoMKgIGlmIChyZXQpIHsKPiBAQCAtNjYwLDYgKzY4Myw4IEBAIHN0YXRpYyBpbnQg
+cmVhbGx5X3Byb2JlKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IAo+IGRldmljZV9kcml2ZXIg
+KmRydikKPiAgwqDCoMKgwqDCoMKgwqAgaWYgKGRldi0+YnVzKQo+ICDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAgYmxvY2tpbmdfbm90aWZpZXJfY2FsbF9jaGFpbigmZGV2LT5idXMtPnAt
+PmJ1c19ub3RpZmllciwKPiAKPiBCVVNfTk9USUZZX0RSSVZFUl9OT1RfQk9VTkQsIGRldik7Cj4g
+Kwo+ICvCoMKgwqDCoMKgwqAgZGV2aWNlX2RtYV9jbGVhbnVwKGRldiwgZHJ2KTsKPiAgwqBwaW5j
+dHJsX2JpbmRfZmFpbGVkOgo+ICDCoMKgwqDCoMKgwqDCoCBkZXZpY2VfbGlua3Nfbm9fZHJpdmVy
+KGRldik7Cj4gIMKgwqDCoMKgwqDCoMKgIGRldnJlc19yZWxlYXNlX2FsbChkZXYpOwo+IEBAIC0x
+MjA0LDYgKzEyMjksNyBAQCBzdGF0aWMgdm9pZCBfX2RldmljZV9yZWxlYXNlX2RyaXZlcihzdHJ1
+Y3QgZGV2aWNlIAo+ICpkZXYsIHN0cnVjdCBkZXZpY2UgKnBhcmVudCkKPiAgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgIGVsc2UgaWYgKGRydi0+cmVtb3ZlKQo+ICDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGRydi0+cmVtb3ZlKGRldik7Cj4gCj4g
+K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZGV2aWNlX2RtYV9jbGVhbnVwKGRldiwgZHJ2
+KTsKPiAgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGRldmljZV9saW5rc19kcml2ZXJf
+Y2xlYW51cChkZXYpOwo+IAo+ICDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZGV2cmVz
+X3JlbGVhc2VfYWxsKGRldik7Cj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvZGV2aWNlL2Ry
+aXZlci5oIGIvaW5jbHVkZS9saW51eC9kZXZpY2UvZHJpdmVyLmgKPiBpbmRleCBhNDk4ZWJjZjQ5
+OTMuLjM3NGEzYzJjYzEwZCAxMDA2NDQKPiAtLS0gYS9pbmNsdWRlL2xpbnV4L2RldmljZS9kcml2
+ZXIuaAo+ICsrKyBiL2luY2x1ZGUvbGludXgvZGV2aWNlL2RyaXZlci5oCj4gQEAgLTEwMCw2ICsx
+MDAsNyBAQCBzdHJ1Y3QgZGV2aWNlX2RyaXZlciB7Cj4gIMKgwqDCoMKgwqDCoMKgIGNvbnN0IGNo
+YXLCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAqbW9kX25hbWU7wqDCoMKgwqDCoCAvKiB1c2Vk
+IGZvciBidWlsdC1pbiAKPiBtb2R1bGVzICovCj4gCj4gIMKgwqDCoMKgwqDCoMKgIGJvb2wgc3Vw
+cHJlc3NfYmluZF9hdHRyczvCoMKgwqDCoMKgwqAgLyogZGlzYWJsZXMgYmluZC91bmJpbmQgdmlh
+IAo+IHN5c2ZzICovCj4gK8KgwqDCoMKgwqDCoCBib29sIHN1cHByZXNzX2F1dG9fY2xhaW1fZG1h
+X293bmVyOwo+ICDCoMKgwqDCoMKgwqDCoCBlbnVtIHByb2JlX3R5cGUgcHJvYmVfdHlwZTsKPiAK
+PiAgwqDCoMKgwqDCoMKgwqAgY29uc3Qgc3RydWN0IG9mX2RldmljZV9pZMKgwqDCoMKgwqDCoCAq
+b2ZfbWF0Y2hfdGFibGU7CgpEb2VzIHRoaXMgd29yayBmb3IgeW91PyBDYW4gSSB3b3JrIHRvd2Fy
+ZHMgdGhpcyBpbiB0aGUgbmV4dCB2ZXJzaW9uPwoKQmVzdCByZWdhcmRzLApiYW9sdQpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
+c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
+dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
