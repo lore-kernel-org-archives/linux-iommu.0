@@ -1,150 +1,115 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1D355C433EF
-	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 12:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3A86CC433F5
+	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 13:25:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 917B0823AB;
-	Fri, 10 Dec 2021 12:39:48 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id AFE7A411D0;
+	Fri, 10 Dec 2021 13:25:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aH6IcsutrV5O; Fri, 10 Dec 2021 12:39:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 000FB81D9F;
-	Fri, 10 Dec 2021 12:39:46 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id lorcwu3jnPPm; Fri, 10 Dec 2021 13:25:55 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 28F7E411AA;
+	Fri, 10 Dec 2021 13:25:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B8CA7C0012;
-	Fri, 10 Dec 2021 12:39:46 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C2C35C0012
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 12:39:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 06F1FC002F;
+	Fri, 10 Dec 2021 13:25:55 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E572DC0012
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 13:25:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9ECED411C9
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 12:39:45 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id D0358411AB
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 13:25:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kxSm7pVHw1D9 for <iommu@lists.linux-foundation.org>;
- Fri, 10 Dec 2021 12:39:44 +0000 (UTC)
+ with ESMTP id jogBxG2W1Qpo for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Dec 2021 13:25:53 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam11on2068.outbound.protection.outlook.com [40.107.223.68])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 3CB20411C3
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 12:39:44 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EL1bdkTy9wg0ugHWYciT0/8Xi7mX7GFJAZmaagvEsu2BbvJwBqmuwRgRDhvQ4QmATUC9rV3FbQEcJ8czJoE9v0mBsyaO5C2VFCVnpMF/blwQBRb2MReJcQ8Ip/NQf9gA5xD9Y38SVK4tFrXu6U7FUFvCNUgEbDo19O8OJXz37OQonObOhUYhIFABEg7IOXI0b9r3L5fRZV3xRdQUks+TzuFoo98zxLTBjiNipUqgsBY9wgwB7ilKIuDY1Uk3tG6BJqOh7jMaVTrJq3NrZEPMUw216AQgxgEX6u5R/rTb+k9yYOiTdX6eGpJ+J4UVhhvsodjI7TWtxEDHl/svu7wy/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=A0fMPmab2uvG9MU19FoSeQxZlEvv5TWqraNaKqSb4L0=;
- b=PPKCDvd4v/avBQJZAtGlueusswebvDL4psopcOstfACTKg14KBVB2hEorbIoA1WdKYT04GIZNmWk/0RlTy2v3eLOHwAw4rQsrGA/IWViaLEMOJa2BFCQ9qJ5rkWMFFW8HlhRZy+HwRw6Kt2rZY+whnvheb28L4s0+Q2xHplacpjI+u8wR/VvtoIv55wUmv9L3M+GvX0uxPvAedazcK0hyadnbPBy/3Lng0E5Wmt7zzBNE/fUdUVKrsZ6bpyvDb2x12epIGvu0g99jWqmAsIeYsekluXT00BaHRUD2mM1dH5L7dZr8uicGqQiev2cFgIpMXRaQlBWo7pfZECTdrCiKA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=A0fMPmab2uvG9MU19FoSeQxZlEvv5TWqraNaKqSb4L0=;
- b=BBW/0dakS2jqkXVp5y7UdCnXsY5ZcAmxCxBfWNIQatlyOcJXbSyYQ7JevDWSZ7fsylEivY7tyhl+hrBpfJlQBNW8h3T1RPpcnn/fhPVNScuv9iiqYcIz8t+MFrn1Z4lU6qvvk4JNCq5FCMxvFmR3+NAYfgpxIpk+7o7IY54ngtskKtEBGsGEtCPKD7HuSLQ0aZ4xg9cSRZldjM9lxiiZQx/RLxmN9/BGc9F9EBETEg4ySrNEg/l1MtW03H5JeE0c7R0sy4EMb0/j0K6pKS+UJVdOTtFHH4PtUzwzC8G7piFKEJ4yCQsY8IIrVZXjz0H3rMAyTzr04x0HC4NBIdLJug==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5175.namprd12.prod.outlook.com (2603:10b6:208:318::8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.21; Fri, 10 Dec
- 2021 12:39:40 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::d8be:e4e4:ce53:6d11]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::d8be:e4e4:ce53:6d11%7]) with mapi id 15.20.4778.015; Fri, 10 Dec 2021
- 12:39:40 +0000
-Date: Fri, 10 Dec 2021 08:39:38 -0400
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [patch 21/32] NTB/msi: Convert to msi_on_each_desc()
-Message-ID: <20211210123938.GF6385@nvidia.com>
-References: <f4cc305b-a329-6d27-9fca-b74ebc9fa0c1@intel.com>
- <878rx480fk.ffs@tglx>
- <BN9PR11MB52765F2EF8420C60FD5945D18C709@BN9PR11MB5276.namprd11.prod.outlook.com>
- <87sfv2yy19.ffs@tglx> <20211209162129.GS6385@nvidia.com>
- <878rwtzfh1.ffs@tglx> <20211209205835.GZ6385@nvidia.com>
- <8735n1zaz3.ffs@tglx> <87sfv1xq3b.ffs@tglx>
- <BN9PR11MB527619B099061B3814EB40408C719@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB527619B099061B3814EB40408C719@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: YT3PR01CA0134.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:83::29) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com
+ [IPv6:2607:f8b0:4864:20::533])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id F2356411AA
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 13:25:52 +0000 (UTC)
+Received: by mail-pg1-x533.google.com with SMTP id k4so8079281pgb.8
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 05:25:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=message-id:date:mime-version:user-agent:subject:content-language:to
+ :cc:references:from:in-reply-to:content-transfer-encoding;
+ bh=uqbMD53C4ItO9uYDsVUp6EzSCFXpBRENU7IWZcPSA4M=;
+ b=DYNhmkDVXoEZft9BS7jFUM1vYYZ9YvKi4muEhJQLHJqiGbbJk0Iumlz2I6fT8+haze
+ +MHAL/pcdD4GLXyqCU4Eprb2eJjd2mf5vjZ8DzEVupN2/zan52H0xynI+4aaWNtuVWQR
+ u3FFiz7DqcRVKU3YNjfbYFUBd9ISYneZ0CFIwjjQz4wdmgu3nHHTvURDoHnr8+4N58O0
+ +eACuj6LixZk6F8b3vkNTwo6yKMoV83F9BRq8aU/+w55tia+vJpE3bD21MEPY3j+2BaE
+ 9dLxiZxTDsTYe+1zqNUFCvJlKUuDFeGgSZNtGgd0+OHn+cZQKKeYxLE0Si0RPs0NHEOx
+ 16Kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+ :content-language:to:cc:references:from:in-reply-to
+ :content-transfer-encoding;
+ bh=uqbMD53C4ItO9uYDsVUp6EzSCFXpBRENU7IWZcPSA4M=;
+ b=Kn1YkGYGk2NNpstBnLjFr4NLhfqmq5iRt0/sso/RfQKzuPGyUFBZhgHiOYoaA+JQTE
+ SX9bTGGBuKw0MVvmNTDhSH4LaEYdlp3ElgcnQLfcWRvNS8Dh0ZW0RSRt7cXSRYQnfcNu
+ +tNeULIopJB/y1xR/SXZPupdvHfn40VXPO66vOTFrQR2QbIt6rl22YlVtDsystjPtgEA
+ 1FV4OXyUz/nq9erMICCz3t9Xr5GFFjeicopfc3Ja61FnyXRnx4s66u0doIKVLwOrlbnq
+ QWv+5b9b3sdQN1+JOqOwZ4Rediz2aBwXlIQjAEAAL5vyBNDf13eTfUqBtw6FkNxyxuDP
+ HXGA==
+X-Gm-Message-State: AOAM5333aKM4wwNd+ScHnIuCTl30rtINky7U6wDjzxcN5W9ltaM5hhHt
+ JuLtFl/IjaNfO6v8Qf3Jleo=
+X-Google-Smtp-Source: ABdhPJw/w6j8JzL1Fx/z+ArF/5BNciB/RRrnV3JnjQfO14coUZUSUS2ONAfIBFDYLQpvqjdNq3HtQA==
+X-Received: by 2002:a62:1708:0:b0:4a7:e068:b121 with SMTP id
+ 8-20020a621708000000b004a7e068b121mr17936120pfx.61.1639142752136; 
+ Fri, 10 Dec 2021 05:25:52 -0800 (PST)
+Received: from [10.10.156.113] ([167.220.232.113])
+ by smtp.gmail.com with ESMTPSA id c17sm1481858pfc.163.2021.12.10.05.25.41
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Fri, 10 Dec 2021 05:25:51 -0800 (PST)
+Message-ID: <4d60fcd1-97df-f4a1-1b79-643e65f66b3e@gmail.com>
+Date: Fri, 10 Dec 2021 21:25:40 +0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4806e7e9-7a76-4bb1-b693-08d9bbda226e
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5175:EE_
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5175B993160D961E298DFF7BC2719@BL1PR12MB5175.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7OUv25Hec6nhNmWfa4k67A61Ykz6P8Cuzfmzf/zZ+KSaPflfAP4Z/g/8NGa5RYbbX6uZ1znpFGRwqxtGyE2FPsROnNN7WkNBSNJlS4NhNqvNmtXiDVWdcbnf+luelRKtmyE2c9F8CYQhZ84zIahzDHMCZ3LqTIJcrMCQisyHtVXyzldMyqj+vYG5L+HAt5DFbiBKb3sOrDPcZfc69+6X3OWlK9Gg8XOTmVXzh9r/49f7Cp1rnEdNVEO7WAvE9WBpyv2ruV7QKapfJB2dA5dsx6wo4suCZzCOO+9LtEyFKxXR6OAKPT9sYSy5wwlw0dSoWR1Ix5ZkMsBdS1z/ZclR7royJJXo386s99LPO+smkG6u2KKVK6hwQhEMMCOavL2aiuNliM+A3GHj9/pkRES+k4F3HTaGE+6QI4srqoGDxdcpcEl0vpbTbtjUlo2832ylg1hubn9negzUYuzXNA4DXz0gMThXryTPFFUmsVoNOlop8T3TDmWWAw1tu9TDfVbulzDiXtJnTs2b3PhhloXI9BOdiaXnBGO9T2v4CC3/l2idUR29zuoob2e7g4hpYS+uI8ZnzQqhe7TJcd4ZKJu8DvB6jUhPgeSTgQe94fAQksWWqofSU6f02RWCeJkQT3sInTVsfpFjnbSM/873otwB1A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(8936002)(86362001)(6512007)(26005)(8676002)(83380400001)(508600001)(54906003)(186003)(66476007)(66556008)(66946007)(2906002)(6506007)(36756003)(5660300002)(1076003)(38100700002)(6916009)(33656002)(6486002)(4326008)(316002)(7416002)(2616005);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?i/ysojPts8ffnSarDicHAUTx9pHOgqOQAo1YAtjI2NxKqqnKB3lST9DEpZVN?=
- =?us-ascii?Q?g39pVdKXoHr8d4UkJ1OIlNBDNg7lAnT3Bjxhibfy63ecz0b3RonUHswQNH6E?=
- =?us-ascii?Q?ztpRcYmyDw4DcHVgij0qRQOTODDycNl3UuwBhR1mwDSEtAIMvIxd04MxwuG4?=
- =?us-ascii?Q?GxcWMEvAgqjgl0uNe1jzJwThPtoHlj6KXy/ejFQlhjhl7QBsZa258CZuKf2+?=
- =?us-ascii?Q?fkl4OAeBabS0347aDh+vrPe0mabIwjo9sSJ+dcuQe1b5Tx0rgD6TT9FemX62?=
- =?us-ascii?Q?ITOti4DUiL1AIZvzRPRKFylU2ZggZT746RSM3eRd8xBc1fYv/oZDGBsZEBLs?=
- =?us-ascii?Q?j7n4GxbdE7iDVG0Dhd3RNYUxPqzuGh2vSf35/iQsUXxzO3vIluu6BYgPSCTk?=
- =?us-ascii?Q?+8lktQr5+9by0ZMuA2vWkn0cYHYHfJOpEC+w0hH78Xqhrw37gnsexKocX8Oi?=
- =?us-ascii?Q?Bd7Vtske7Vij72qkp1a6beErFfbG+pQal5e0Cbl8lUcA90Otbr/8OCGtoLOu?=
- =?us-ascii?Q?z1iewx/QqA0UIx8HO06hfHRyAwG+5fmq7QYBYFHgmwLX6ZvfbEZLEhqPqHXT?=
- =?us-ascii?Q?CLi00pkuAkC8e/1nEHP5vcyPtw+gpInINM488oZn7hGVPkc8A80sKtxyJ5av?=
- =?us-ascii?Q?2xpUzwOM2GX5p9sdOgpKZXFt8xYLahu27rBmTExlFTL8L6a2pZ6la5qcV1Hb?=
- =?us-ascii?Q?zIUWoZ7T2u7CcwWgmi3BJprvQKtSWOaoZoDjfiz/rKDIa5MTRbOPMzLF3yAA?=
- =?us-ascii?Q?8otKkl7NTup7NFYNZYYHwsBoqyeEC4CfElXuuX8IKarOLnq+++I4IP7u12Sk?=
- =?us-ascii?Q?deMC6fsu0WORdmw4xLvM2+hzuTPj/773WMty5XGjgsRWXwaojZN1xIMePmjQ?=
- =?us-ascii?Q?7/8Pt2RlO6z1aL+5IsEkq7MGjd7GLBzpKnpwTfnLSrWzk3aImbSWmhqK+ifI?=
- =?us-ascii?Q?E1eyxxV1E/7PvK3npvPeHstxp+ovOY1AJX2VIgYMjEtkBodRcZzZIsZmf7ae?=
- =?us-ascii?Q?oRDM2AkLDP4FeFyvTUiLUyfChk5RG/Lcl8TGZLcU9rEvaJUgGdpYljKbwNiw?=
- =?us-ascii?Q?C5l6856bQJE1iwmN+83HNeRMAeiL3ppo2tGY/CRHvp3dLggg0Up4mAwouurW?=
- =?us-ascii?Q?0wY4opdaTIhbzsrT8zbWxYhUJAYpZha6scPdflvNt74OsKLP++6U67aAMgLN?=
- =?us-ascii?Q?60g4cicxSQMgPRO9RJdy49eiv0JaZxUxZgrtbnRW1oL0oZRWb793TbWHfR9l?=
- =?us-ascii?Q?QaievWhpl8VNyqTpPK8qInUcXgAIS6RikjrNK9EDPI/wbSu8Jz+f75V9iJ6W?=
- =?us-ascii?Q?ifEVebUYe8LA5AZ5+6+K5233DWCVxAuV/HZpMX7LPeBzN6H3b6dDDKgjn2qn?=
- =?us-ascii?Q?vHKr4ucV9inBGCICglARhHYBmSM+al+b9kResfviCsLfZGxoQpR7+fC4BetR?=
- =?us-ascii?Q?UvjRnJJV28bKT+s6Xlst1+MiGB/g2iHRG1D9zo7Fq1sePnjZBrnkblBecgAR?=
- =?us-ascii?Q?OR3OuDd1uwS3sBJ7iP9L0SVTVZo/9fDCgSv67A6dVjWUkfTeYSvCeSxIf1oL?=
- =?us-ascii?Q?CR1NAOKNiyUOM0sJoOk=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4806e7e9-7a76-4bb1-b693-08d9bbda226e
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Dec 2021 12:39:40.6613 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /wyGge3EVTdLxsFgI+Q34aekTqjybgqd85HfSzjZfZhDGUei1uShjWrJWysgFRwt
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5175
-Cc: Allen Hubbe <allenbh@gmail.com>,
- "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
- "x86@kernel.org" <x86@kernel.org>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
- Ashok" <ashok.raj@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Marc Zygnier <maz@kernel.org>, Heiko Carstens <hca@linux.ibm.com>,
- LKML <linux-kernel@vger.kernel.org>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH V6 3/5] hyper-v: Enable swiotlb bounce buffer for
+ Isolation VM
+Content-Language: en-US
+To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+ KY Srinivasan <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
+ Stephen Hemminger <sthemmin@microsoft.com>,
+ "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+ "tglx@linutronix.de" <tglx@linutronix.de>,
+ "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
+ "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+ "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+ "davem@davemloft.net" <davem@davemloft.net>,
+ "kuba@kernel.org" <kuba@kernel.org>, "jejb@linux.ibm.com"
+ <jejb@linux.ibm.com>, "martin.petersen@oracle.com"
+ <martin.petersen@oracle.com>, "arnd@arndb.de" <arnd@arndb.de>,
+ "hch@infradead.org" <hch@infradead.org>,
+ "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>
+References: <20211207075602.2452-1-ltykernel@gmail.com>
+ <20211207075602.2452-4-ltykernel@gmail.com>
+ <MWHPR21MB159359667085776793988EACD7709@MWHPR21MB1593.namprd21.prod.outlook.com>
+From: Tianyu Lan <ltykernel@gmail.com>
+In-Reply-To: <MWHPR21MB159359667085776793988EACD7709@MWHPR21MB1593.namprd21.prod.outlook.com>
+Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+ "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+ "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+ "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "dave.hansen@intel.com" <dave.hansen@intel.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Christian Borntraeger <borntraeger@de.ibm.com>,
- Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>,
- Bjorn Helgaas <helgaas@kernel.org>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "linux-ntb@googlegroups.com" <linux-ntb@googlegroups.com>,
- Thomas Gleixner <tglx@linutronix.de>, Logan Gunthorpe <logang@deltatee.com>,
- "Dey, Megha" <megha.dey@intel.com>
+ vkuznets <vkuznets@redhat.com>, "hch@lst.de" <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -157,58 +122,66 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Dec 10, 2021 at 07:29:01AM +0000, Tian, Kevin wrote:
-> >   5) It's not possible for the kernel to reliably detect whether it is
-> >      running on bare metal or not. Yes we talked about heuristics, but
-> >      that's something I really want to avoid.
+On 12/10/2021 4:09 AM, Michael Kelley (LINUX) wrote:
+>> @@ -319,8 +320,16 @@ static void __init ms_hyperv_init_platform(void)
+>>   		pr_info("Hyper-V: Isolation Config: Group A 0x%x, Group B 0x%x\n",
+>>   			ms_hyperv.isolation_config_a, ms_hyperv.isolation_config_b);
+>>
+>> -		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP)
+>> +		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP) {
+>>   			static_branch_enable(&isolation_type_snp);
+>> +			swiotlb_unencrypted_base = ms_hyperv.shared_gpa_boundary;
+>> +		}
+>> +
+>> +		/*
+>> +		 * Enable swiotlb force mode in Isolation VM to
+>> +		 * use swiotlb bounce buffer for dma transaction.
+>> +		 */
+>> +		swiotlb_force = SWIOTLB_FORCE;
+> I'm good with this approach that directly updates the swiotlb settings here
 > 
-> How would the hypercall mechanism avoid such heuristics?
+> rather than in IOMMU initialization code.  It's a lot more straightforward.
+> 
+> However, there's an issue if building for X86_32 without PAE, in that the
+> swiotlb module may not be built, resulting in compile and link errors.  The
+> swiotlb.h file needs to be updated to provide a stub function for
+> swiotlb_update_mem_attributes().   swiotlb_unencrypted_base probably
+> needs wrapper functions to get/set it, which can be stubs when
+> CONFIG_SWIOTLB is not set.  swiotlb_force is a bit of a mess in that it already
+> has a stub definition that assumes it will only be read, and not set.  A bit of
+> thinking will be needed to sort that out.
 
-It is clever, we don't have an vIOMMU that supplies vIR today, so by
-definition all guests are excluded and only bare metal works.
+It's ok to fix the issue via selecting swiotlb when CONFIG_HYPERV is
+set?
 
-> > The charm is that his works for everything from INTx to IMS because all
-> > of them go through the same procedure, except that INTx (IO/APIC) does
-> > not support the reservation mode dance.
-
-Do we even have vIOAPIC?
-
-> > Thoughts?
-
-It seems reasonable - do you have any idea how this all would work on
-ARM too? IMS on baremetal ARM is surely interesting. I assume they
-have a similar issue with trapping the MSI
-
-> Then Qemu needs to find out the GSI number for the vIRTE handle. 
-> Again Qemu doesn't have such information since it doesn't know 
-> which MSI[-X] entry points to this handle due to no trap.
-
-No this is already going wrong. qemu *cannot* know the MSI information
-because there is no MSI information for IMS.
-
-All qemu should get is the origin device information and data about
-how the guest wants the interrupt setup.
-
-Forget about guests and all of this complexity, design how to make
-VFIO work with IMS in pure userspace like DPDK.
-
-We must have a VFIO ioctl to acquire a addr/data pair and link it to
-an event fd.
-
-I'm not sure exactly how this should be done, it is 90% of what IMS
-is, except the VFIO irq_chip cannot touch any real HW and certainly
-cannot do mask/unmask..
-
-Maybe that is OK now that it requires IR?
-
-Jason
+> 
+>>   	}
+>>
+>>   	if (hv_max_functions_eax >= HYPERV_CPUID_NESTED_FEATURES) {
+>> diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
+>> index b823311eac79..1f037e114dc8 100644
+>> --- a/include/linux/hyperv.h
+>> +++ b/include/linux/hyperv.h
+>> @@ -1726,6 +1726,14 @@ int hyperv_write_cfg_blk(struct pci_dev *dev, void *buf, unsigned int len,
+>>   int hyperv_reg_block_invalidate(struct pci_dev *dev, void *context,
+>>   				void (*block_invalidate)(void *context,
+>>   							 u64 block_mask));
+>> +#if IS_ENABLED(CONFIG_HYPERV)
+>> +int __init hyperv_swiotlb_detect(void);
+>> +#else
+>> +static inline int __init hyperv_swiotlb_detect(void)
+>> +{
+>> +	return 0;
+>> +}
+>> +#endif
+> I don't think hyperv_swiotlb_detect() is used any longer, so this change
+> should be dropped.
+Yes, will update.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
