@@ -1,72 +1,140 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 22772C433EF
-	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 19:20:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CFCC6C433EF
+	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 20:18:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C034A426F8;
-	Fri, 10 Dec 2021 19:20:31 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 5A7D361AD7;
+	Fri, 10 Dec 2021 20:18:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ihShVetRschX; Fri, 10 Dec 2021 19:20:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id AA4BD426F6;
-	Fri, 10 Dec 2021 19:20:30 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id DQmHbFe2CWm0; Fri, 10 Dec 2021 20:17:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 088E161603;
+	Fri, 10 Dec 2021 20:17:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8219FC002F;
-	Fri, 10 Dec 2021 19:20:30 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 429DDC0012
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 19:20:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BF99FC001E;
+	Fri, 10 Dec 2021 20:17:58 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 734EEC0012;
+ Fri, 10 Dec 2021 20:17:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 2FA4A412D6
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 19:20:28 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 4B97F61790;
+ Fri, 10 Dec 2021 20:17:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hbfFiowOuBdz for <iommu@lists.linux-foundation.org>;
- Fri, 10 Dec 2021 19:20:27 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp2.osuosl.org (Postfix) with ESMTPS id C99D0412C1
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 19:20:26 +0000 (UTC)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.200])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4J9ggb1zQSz67MYc;
- Sat, 11 Dec 2021 03:19:07 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.20; Fri, 10 Dec 2021 20:20:22 +0100
-Received: from [10.47.93.58] (10.47.93.58) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Fri, 10 Dec
- 2021 19:20:22 +0000
-Subject: Re: [PATCH v2 01/11] iommu/iova: Fix race between FQ timeout and
- teardown
-To: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>
-References: <cover.1639157090.git.robin.murphy@arm.com>
- <ecea6835baca75b945bd8ecfaa636ff01dabcc1d.1639157090.git.robin.murphy@arm.com>
- <03cbd9c4-0f11-895b-8eb5-1b75bb74d37c@huawei.com>
- <80145652-b9ca-57b5-ad95-ca12d6a25eea@arm.com>
-Message-ID: <8c29534f-ac90-6998-afd7-37b94a3ad3c2@huawei.com>
-Date: Fri, 10 Dec 2021 19:19:56 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id S9uBUNQTab-E; Fri, 10 Dec 2021 20:17:55 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam08on2089.outbound.protection.outlook.com [40.107.101.89])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id DD0C361603;
+ Fri, 10 Dec 2021 20:17:54 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CbYvYc7iTIjsobCpx2S0FgMX38tKyHRVORpEktGjE5np9IZzPSUgm8rU1XHCmGs2Ok+YNfVqu4R5Vwn9dbBL3joVWS+58rwKTyk0KM3+5954pDDftcC1W1B9ondYrctXnx+cRV/A+lQ4FBA9E3VgpqSdqnp6n6la5p5B57UZzHHxsmCJFvXWEVKmfA9oTyH228cOs8TtI0Wgopnvt+4tEpJVVCLlVgNtNpmJxeQV0HSwDQIN16sWlhfsWdUZLIELbzVoDOJ6NkNtSfAv5SKCzVFiArm5Lvd1SREI8FziE1jLsu2oCwcajten7ibAqaycNjSs4aEAsY/4+TdBejXt5A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1SokwhU4d7BpKF4vHwXs0YVFnysXC8lVmxK2OwOxIdQ=;
+ b=h4KwYbjU/u2uFhJLpP5a144ya60RqUv7wrhKFmm6rrcF6yVUHL0yRby+PJB72lHLBaHNynnrvsT1PZKB0I9fwF7CdSDNWqXQoO6JT/4JT6cwdXdRMEZ3jUgtYCTzFDS8tjTHrEc/xfeMttOevL7vCSrP1J7HWllmoUp6t7uaTxuVCO+UzNl4NAzDQvzil/QoJv4RnLxyqkEWVdTMf0H6EDMi2jqTWdF9PjvU+Qy/iRRzlW5281y1sOdwBO0LHtXbGpFvA8GwkV2Gnwk7RJy8ZaGfL1kuCHlhmKsJTGBXGRinE4udee3lZeT9lZLy+wt3+7voisHFY8zpyu3DikxshQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1SokwhU4d7BpKF4vHwXs0YVFnysXC8lVmxK2OwOxIdQ=;
+ b=h1L6yf7okLNBulvXiJW78v0VOL0mwvFJxygSmn9HEHZh2IFasD0WS5a5ZvUvQuTncOGIKSj3MEjjAD5L/bNKYlv1/TnqYSt4dyF8ambpqdF7BNiRoCeNz9c3D9MLkmfpcGlrrQ9NO0oQsZBnwXSv+nu8kqZEmD6ziZOoskF4A7c/BKkhSC2BG0pjotYX2Nlp8SLct4/WURBihWzvLHiEqBA2p3jkDA6Rfr1SYvZIGKdzplba3n0vjX9bAwaGbyJ8+kafipz3TAtOfoKrVIK1hjMNuOWogV+SQ/AJgSHyQZ7ApBB0ofbq6lgC8twdFNeaMGxTX2MrNdZ5o7zdh+Hqjg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB3823.namprd12.prod.outlook.com (2603:10b6:208:168::26)
+ by MN2PR12MB4256.namprd12.prod.outlook.com (2603:10b6:208:1d2::14)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.25; Fri, 10 Dec
+ 2021 20:17:53 +0000
+Received: from MN2PR12MB3823.namprd12.prod.outlook.com
+ ([fe80::a9db:9c46:183e:c213]) by MN2PR12MB3823.namprd12.prod.outlook.com
+ ([fe80::a9db:9c46:183e:c213%3]) with mapi id 15.20.4755.026; Fri, 10 Dec 2021
+ 20:17:53 +0000
+To: David Hildenbrand <david@redhat.com>
+Subject: Re: [RFC PATCH v2 0/7] Use pageblock_order for cma and
+ alloc_contig_range alignment.
+Date: Fri, 10 Dec 2021 15:17:51 -0500
+X-Mailer: MailMate (1.14r5852)
+Message-ID: <535079B9-D284-4A6F-9ABE-A85287697921@nvidia.com>
+In-Reply-To: <19404189-3bee-c02a-a596-2e5564e0f8f5@redhat.com>
+References: <20211209230414.2766515-1-zi.yan@sent.com>
+ <19404189-3bee-c02a-a596-2e5564e0f8f5@redhat.com>
+X-ClientProxiedBy: BL1PR13CA0171.namprd13.prod.outlook.com
+ (2603:10b6:208:2bd::26) To MN2PR12MB3823.namprd12.prod.outlook.com
+ (2603:10b6:208:168::26)
 MIME-Version: 1.0
-In-Reply-To: <80145652-b9ca-57b5-ad95-ca12d6a25eea@arm.com>
-Content-Language: en-US
-X-Originating-IP: [10.47.93.58]
-X-ClientProxiedBy: lhreml723-chm.china.huawei.com (10.201.108.74) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: linux-mm@kvack.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, willy@infradead.org,
- Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Received: from [10.2.54.79] (130.44.175.231) by
+ BL1PR13CA0171.namprd13.prod.outlook.com (2603:10b6:208:2bd::26) with
+ Microsoft SMTP Server (version=TLS1_2, cipher=) via Frontend Transport;
+ Fri, 10 Dec 2021 20:17:52 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9cb3a282-c459-43b1-9d91-08d9bc1a251e
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4256:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB42567758C6EAC135E2ABD332C2719@MN2PR12MB4256.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 9e4aijV1JgJLLjMpc7BgldE1hMKUw2okKqgXni9ulUzWa5TTLz6uAyLX9zuOa+yb9ypDVKTOcXTq7XvQiyGUYtw2ZhU2r+Ql4bUajUBSqFjrdVtUCVsQEvss9wVGgYkkxRU/myFmaQfHoT5M+NgAUaa/n2VO5GCSeayZz2wvnlOa9GYFhDgfBVwDpLG1q0p8EZAiTivXsCvYjN/HEX1pOiWGPV21exZ4a8Cb0z6910X8WNwGGJZ9tZqG+52Mz2GacMFvmXewBLZA+dwWC/Ie2RFBeazXH9hj5sJJSdD3d0XUGFT9TX+/ALUpbMvJteHjjtwG96iOzZAo+Y7+1N/9SYg4bopE/XaACLGbOiICRMlsn/dzn+GAXecj9WhP+n9JTexaMqaW0BzDNj5cN4+BM924XscVQQB7iy82EP6NRmjJW3YkR2tfiMOAUP3pDL9BPUZBEFCG40rnlGWgja6EOVpUS2OskMZ0qn04xk44Gaa9C167hAeGigFcIbNQUX/lfXCbmuzpHUBdpRffEgck5VhWOKtvGZzcUBIanX4yjYywy7A9b8R8hf04fus9SfshOnrgSEvmES8bCTVvgnyx3ePF2zngpCGmIvB90SnYr8lbAMEjNFHvQ7h7oefNIupcljNcyftwzpYqQqo4HivZWx9kbTxNrfOGWN2dcbwJm22C5Z1LbKrS82+C93YyjABc6QEksS2x+oHkI9SQu7jgEwnr+0Rnho7VgaqLEJz2ytU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB3823.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(186003)(2906002)(53546011)(86362001)(508600001)(26005)(6916009)(6486002)(7416002)(36756003)(4326008)(38100700002)(33656002)(2616005)(956004)(5660300002)(21480400003)(235185007)(83380400001)(54906003)(66476007)(66556008)(8676002)(66946007)(8936002)(316002)(16576012)(72826004)(45980500001);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ivDqoONSePtYOBgu9KVJjw2Vn31jf6gsktHKqqustAtBz8dp0xcATdZBRJdd?=
+ =?us-ascii?Q?mkW8ngd9Agw0f6VZKzmudPblKoeCimQIdk0q/9Kpkc0kAM/8S7qeLZicVPis?=
+ =?us-ascii?Q?VCD2lL/GOJ4lXky9/n8jsMFB+mbPw2gOtuSQrAdAf2EEQIdeTU0f2JPgyTeK?=
+ =?us-ascii?Q?J9B8RWTTFuuQdGIl5ZSG9zLU8s6/UjHDP7BSMCgX5eMceA0L+cfBnojd+X0a?=
+ =?us-ascii?Q?0d3UBkiqm05FVjpzK8Bqle6sLPtyfd+UZq6U5NwlTg2UrTiQ0d2mDrP8JOCp?=
+ =?us-ascii?Q?9Mw503fzzsTNWyh6fd3jeP+xijISh4hQwVBO4ADPaj1mLKOZRLLtP2w2ljcH?=
+ =?us-ascii?Q?Iwyzn+RPNFwZNODKi55fKHA9P5TofNlwZqQp1MoXiAV2LC7cvgmay+4uq5Q1?=
+ =?us-ascii?Q?8Zzgp4xtg89wlvoy9Jh5umV5NMDDFDcsl0BwWy8SLFpWIkhCFPrTaZfIAQzR?=
+ =?us-ascii?Q?c/dpFxQgVcPA5bThSXDP+bbuYEABvfPCE/KEPnW3iatGwlELp7KtQlMhQ3jD?=
+ =?us-ascii?Q?4AhjQEhP+VxrhpSPJKHfyPMxYee/lMNnLm0XsXHR0+9gHtoj25/QrupBzRcA?=
+ =?us-ascii?Q?pHRD0U6+utvlQQYRf8xXIybVvopzLQ9Wj2hyaYpBA+mbnWx3zvJJw0JyVKXH?=
+ =?us-ascii?Q?2PQ/B1rzpwCws6+2zvEsUUtw/Z7UxY1/otaHRIUIDh3v4nU2bAh0i5GFWWyv?=
+ =?us-ascii?Q?kcsu6ircvEc+m4F5YjK3/wSl3XFH1RvR3yseQOACkuzn/eIUop4Kl09zu0A5?=
+ =?us-ascii?Q?hG6wOAs4+zvi41Hk0Aq5dVFBIiyod/Ts4WXIhJBrM3Xow2n/vch7FGMIcANO?=
+ =?us-ascii?Q?KzlcjGco3YmZyCMVYWR9Y7dkyWCDjMABTxHneb4tY442bfbONbGUTNo1g9UI?=
+ =?us-ascii?Q?BcvLx7Y0QiEvAveG4ShB+gX6vhxPP4JUEu+rQlEo5g0JC/5BkA1wfLKU7ew+?=
+ =?us-ascii?Q?t2MeLB0qLdlNy092jBpAxLYFLNhoFNKhoTvhwl9Xf/FMo5lVAsvSRH+at2oZ?=
+ =?us-ascii?Q?oaG9N6sLMp+t0LPrZ5Jl++89/01XxvGAy+WicjsMh8TVPG83sJYXMCFmjkzB?=
+ =?us-ascii?Q?Y3GtMkUMh3pyhZNoyOtUfNUnp0D+eS5mvTZTnmRapeyHGuljOPsztWe8txeU?=
+ =?us-ascii?Q?NMWzHdAQ1t4oajEUSwRpnjCD04OAV6e3v5+tJi8eakYkvdSX9G29uwbgYbhl?=
+ =?us-ascii?Q?TB9vbgRH9YpMb+TXa4Oyr9sEp123EBoKZYOeHwkueP2/SL6/WyDYHiRSkvUP?=
+ =?us-ascii?Q?DSCRVP8gX8xyZyMQBN/zaBS+a7FqLGt8Gm82fGNaNXAjqLqGIDnF25pF781Q?=
+ =?us-ascii?Q?VdECV3JEH+629gMeI4b82/bY+9NqV13zooULrfQ9DK2bXG3WZ3pYwhx+mXik?=
+ =?us-ascii?Q?/w3lHSxZHUfUc1wMKdm4CQ9RTyCyCV62qDbZPFth5qNu0ZB/yK3WoD/y01n6?=
+ =?us-ascii?Q?/eVzeMF6+Qt4ARUXt2PWrBESFtt/IBTrwE0NAasmuFWsr16RRBLSS6vRfmPa?=
+ =?us-ascii?Q?9XLf/H/FCIG27ALIl7PTWk3z5nGoicafa2Tb9zH0b17Y5p0r963TBFEqoDAc?=
+ =?us-ascii?Q?7paG1wBFOkHBAGW4kAQ=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9cb3a282-c459-43b1-9d91-08d9bc1a251e
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3823.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Dec 2021 20:17:52.9758 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PiH9nDK6pEKX9mzRqApD9ksMofkeszEWKYdN2/uZg/eR1CX/6VpTiwAO2s3Sa/YF
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4256
+Cc: Mel Gorman <mgorman@techsingularity.net>,
+ Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org,
+ linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
+ linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+ Eric Ren <renzhengeek@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>, Vlastimil Babka <vbabka@suse.cz>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,21 +147,117 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: John Garry via iommu <iommu@lists.linux-foundation.org>
-Reply-To: John Garry <john.garry@huawei.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+From: Zi Yan via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Zi Yan <ziy@nvidia.com>
+Content-Type: multipart/mixed; boundary="===============0328229417903400097=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMTAvMTIvMjAyMSAxODoxMywgUm9iaW4gTXVycGh5IHdyb3RlOgo+Pj4gcG9zc2libGUgZm9y
-IHRoZSB0aW1lb3V0IHRvIGV4cGlyZSBqdXN0KmJlZm9yZSrCoCB0aGUgZGVsX3RpbWVyKCkgY2Fs
-bAo+Pgo+PiBzdXBlciBuaXQ6ICJqdXN0KmJlZm9yZSrCoCB0aGUiIC0gbmVlZHMgYSB3aGl0ZXNw
-YWNlIGJlZm9yZSAiYmVmb3JlIiA6KQo+IAo+IFdlaXJkLi4uIHRoZSBvcmlnaW5hbCBwYXRjaCBm
-aWxlIGhlcmUgYW5kIHRoZSBjb3B5IHJlY2VpdmVkIGJ5IGxvcmUgdmlhIAo+IGxpbnV4LWlvbW11
-IGxvb2sgZmluZSwgZ3JlbWxpbnMgaW4geW91ciBNVUEgb3IgZGVsaXZlcnkgcGF0aCBwZXJoYXBz
-PwoKUmlnaHQsIGFwb2xvZ2llcyBmb3IgdGhhdC4gSSBkaWQgcmVjZWl2ZSBpdCBvaywgYnV0IG15
-IHJlcGx5aW5nIHNlZW1lZCAKdG8gbWFuZ2xlIGl0LiBOb3Qgc3VyZSB3aHkuLgoKVGhhbmtzLApK
-b2huCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11
-IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xp
-c3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+--===============0328229417903400097==
+Content-Type: multipart/signed;
+ boundary="=_MailMate_7DBDBA8D-1217-4A06-8FC2-209CFAFFFA5D_=";
+ micalg=pgp-sha512; protocol="application/pgp-signature"
+
+--=_MailMate_7DBDBA8D-1217-4A06-8FC2-209CFAFFFA5D_=
+Content-Type: text/plain
+
+On 10 Dec 2021, at 13:36, David Hildenbrand wrote:
+
+> On 10.12.21 00:04, Zi Yan wrote:
+>> From: Zi Yan <ziy@nvidia.com>
+>>
+>> Hi all,
+>
+> Hi,
+>
+> thanks for working on that!
+>
+>>
+>> This patchset tries to remove the MAX_ORDER - 1 alignment requirement for CMA
+>> and alloc_contig_range(). It prepares for my upcoming changes to make MAX_ORDER
+>> adjustable at boot time[1].
+>>
+>> The MAX_ORDER - 1 alignment requirement comes from that alloc_contig_range()
+>> isolates pageblocks to remove free memory from buddy allocator but isolating
+>> only a subset of pageblocks within a page spanning across multiple pageblocks
+>> causes free page accounting issues. Isolated page might not be put into the
+>> right free list, since the code assumes the migratetype of the first pageblock
+>> as the whole free page migratetype. This is based on the discussion at [2].
+>>
+>> To remove the requirement, this patchset:
+>> 1. still isolates pageblocks at MAX_ORDER - 1 granularity;
+>> 2. but saves the pageblock migratetypes outside the specified range of
+>>    alloc_contig_range() and restores them after all pages within the range
+>>    become free after __alloc_contig_migrate_range();
+>> 3. splits free pages spanning multiple pageblocks at the beginning and the end
+>>    of the range and puts the split pages to the right migratetype free lists
+>>    based on the pageblock migratetypes;
+>> 4. returns pages not in the range as it did before this patch.
+>>
+>> Isolation needs to happen at MAX_ORDER - 1 granularity, because otherwise
+>> 1) extra code is needed to detect pages (free, PageHuge, THP, or PageCompound)
+>> to make sure all pageblocks belonging to a single page are isolated together
+>> and later pageblocks outside the range need to have their migratetypes restored;
+>> or 2) extra logic will need to be added during page free time to split a free
+>> page with multi-migratetype pageblocks.
+>>
+>> Two optimizations might come later:
+>> 1. only check unmovable pages within the range instead of MAX_ORDER - 1 aligned
+>>    range during isolation to increase successful rate of alloc_contig_range().
+>
+> The issue with virtio-mem is that we'll need that as soon as we change
+> the granularity to pageblocks, because otherwise, you can heavily
+> degrade unplug reliably in sane setups:
+>
+> Previous:
+> * Try unplug free 4M range (2 pageblocks): succeeds
+>
+> Now:
+> * Try unplug 2M range (first pageblock): succeeds.
+> * Try unplug next 2M range (second pageblock): fails because first
+> contains unmovable allcoations.
+>
+
+OK. Make sense. I will add it in the next version.
+
+
+--
+Best Regards,
+Yan, Zi
+
+--=_MailMate_7DBDBA8D-1217-4A06-8FC2-209CFAFFFA5D_=
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJDBAEBCgAtFiEEh7yFAW3gwjwQ4C9anbJR82th+ooFAmGzte8PHHppeUBudmlk
+aWEuY29tAAoJEJ2yUfNrYfqKgZMP/3tUjopJZwSAjnbkyluDjYvGsNB3I1qVGH+o
+SfzNETll0wimCsKbrRMUhh0tx3E3TLgF79FuigVaoPLnfbgEdJwPyMRyArQep4ti
+hyZnKN7zhCvYzHpVK/BDiI78JC96GZusKSU1hYOUcaLNtx4EaAttk+EXYyE/TP+D
+Qdtox83CjKX/FtwJH/P0XSn4XhBl52KnHgARC4YDVEJorv+VmImHcQFfO+rxQKEw
+VnpevGuWetgc7m4GrPm+4rCZNzv5/voCOhtriLyn1xlBt4LvmmgSqAIIT8Kk0mWz
+rPVwPSQF9qexiOR8juR7JmO739ODjKpyqFEtG6xpQ7cJdBz0voOXxexZGKJ3X9XM
+aIpgvgWRygJYkiivTRKfcHakjHekQ4ZYcPqeNrVnQ6Feq6j7LChg127YpK0mBsru
+FxWxB9Ekb4mYulDEfeyiMz66CziaDgqQDT/AcilMtNzvpfXN/WmoSU8erBvPvVkl
+ZF2X+bvXdYtinVSSYM/XE9mdltfvlnIZcK8FA60pRVv6xDBKPMyzE9Pzq7+o+Aho
+9Zrfe6VqzsqKTJ3r/Joy6QWlcKmjPkzMRnGyzjO/P+JIyX3pTZ2j6Ae7pmOhwwHT
+fQ6zONI/o2JkUxZEqOTl9yGga6qOgBTchNhbNHX67Ww5HpBZhwKkZbWWo6QgdvSe
+eEnH9Z76
+=k/t4
+-----END PGP SIGNATURE-----
+
+--=_MailMate_7DBDBA8D-1217-4A06-8FC2-209CFAFFFA5D_=--
+
+--===============0328229417903400097==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============0328229417903400097==--
