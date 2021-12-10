@@ -1,91 +1,92 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A7DACC433F5
-	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 11:35:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2D6F1C433EF
+	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 12:13:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 294D761407;
-	Fri, 10 Dec 2021 11:35:21 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id BE5CB425ED;
+	Fri, 10 Dec 2021 12:13:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id rosCbWz-66qh; Fri, 10 Dec 2021 11:35:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id EDA3761406;
-	Fri, 10 Dec 2021 11:35:19 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id wtmCIfFxcKRy; Fri, 10 Dec 2021 12:13:27 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 4F3184250C;
+	Fri, 10 Dec 2021 12:13:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8B7EFC002F;
-	Fri, 10 Dec 2021 11:35:19 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DDF32C0012
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 11:35:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D2F39C0012;
+	Fri, 10 Dec 2021 12:13:26 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 26726C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 12:13:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id C917061406
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 11:35:17 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 0A48C41195
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 12:13:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CKmYse4Wx7oR for <iommu@lists.linux-foundation.org>;
- Fri, 10 Dec 2021 11:35:16 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com
- [IPv6:2a00:1450:4864:20::530])
- by smtp3.osuosl.org (Postfix) with ESMTPS id B1D5C61405
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 11:35:16 +0000 (UTC)
-Received: by mail-ed1-x530.google.com with SMTP id l25so29190306eda.11
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 03:35:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=sHUQnknpRoRpINaobvY2dor6jsSdIZSUoZ8Zm4a2q70=;
- b=LadmZCjaZOlcssnT0OFEV4tiYNuniS1zjMbnun6AR2XupZ5FHTEh+sbVXdnATwo0XX
- YHHOr3n+69Mbvv55eH7BOrXueoWN6mAmF+irOtwoIcFiUxXPMMJ40dSK6aIuzvMicgtP
- 5CWdUJmIpooWMNySNL11fA+tq2liADfyiULGsbwe0bJrEolmvlpI0f0cp44u8bt8aHtn
- bEjoLPfT0VlGidN+XNd7gA61tRT71HFaxa1z6MZ6FrHVpyaiTvyqg1yk3lxDuRrHGrXo
- PaYIetNfeTrrxatKOVumscoyVV5hPXXgue56dK0D0neUfogL/gkLb2xDxjGzQnjRL4T0
- 7h1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=sHUQnknpRoRpINaobvY2dor6jsSdIZSUoZ8Zm4a2q70=;
- b=3yyBsVEa/giOnlsYmmHWRlupqbPAzVXrkbh5wihDY93eTsijyJQwEpdoSiJ5uMsTH0
- 37Lb6FNdmrpMBIINjdvPqWXzqQ9L5unO1SIwgOjLX8LG2kRHqrhkjGZUGA5oO/Tddz6S
- 42D4dt7J5PdaRQWkUgviMbYeR82C1JYHZJMeReBcO+4NHiCWvCi12SyiOwQJ7XnwlpLt
- odxZhvUrSrOmcbaE7jSV3PpkUjLDzQ0KfG4YlVIUWD7zIakd7bwHMwj8I3gIWxucxcIV
- 9Zi315sUygjV1zc5sDkBOZ4G6c7ajzrKbsbtpo1EjfefCue2TRqb7jQdXo8XjG7HKR/l
- d4+w==
-X-Gm-Message-State: AOAM5332HeBtgMfTeDEcADHqLwM8q0LQyq2nB8ox5Man+cVvP33SZFzT
- 80SMG91Lonb/FqGRY1sfULPhhA==
-X-Google-Smtp-Source: ABdhPJzsYrBDIoY58eWULptlz5iAZzxR1uzAUkqovIWOgsfT1CCTkFzLpJgHyonknttyFtOH9BeMBA==
-X-Received: by 2002:a17:907:d0b:: with SMTP id
- gn11mr22731241ejc.355.1639136114749; 
- Fri, 10 Dec 2021 03:35:14 -0800 (PST)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
- [82.27.106.168])
- by smtp.gmail.com with ESMTPSA id g9sm1373553edb.52.2021.12.10.03.35.13
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 10 Dec 2021 03:35:14 -0800 (PST)
-Date: Fri, 10 Dec 2021 11:34:52 +0000
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 1/2] dt-bindings: Add Arm SMMUv3 PMCG binding
-Message-ID: <YbM7XNz9V/zbQuyF@myrica>
-References: <20211116113536.69758-1-jean-philippe@linaro.org>
- <20211116113536.69758-2-jean-philippe@linaro.org>
- <CAL_JsqJ6v6HKA3ifQoeVh+2iABL7fBPCS0ntTXb0BA8LO0vi8g@mail.gmail.com>
- <2f17b812-367c-da75-a2a6-0c16a93cf4a3@arm.com>
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="oe+ng6LU";
+ dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
+ header.d=linutronix.de header.b="o4xXuI8J"
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id NS-FQ0_fUooZ for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Dec 2021 12:13:23 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from galois.linutronix.de (Galois.linutronix.de
+ [IPv6:2a0a:51c0:0:12e:550::1])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 0EEDE41191
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 12:13:22 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020; t=1639138399;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=QIJx3V1nvr+fY8tSaxth/62MySjeKbxzIzd3EtwZXi4=;
+ b=oe+ng6LUlIuJbSWH+D4G64HgHQTE7jlH1UxjiFAklZOgQndHfatMqyxA+ClH9kcFJzMYy2
+ O1DDAhtiq7b/uciVymud2fZkbwZ62ykl6W57llLL484YhV/xZ1hRQpdSrEsGEylvECuASS
+ 9DjNK8XZGMvc9zwoSrnr53iAApm5+PXPowdNv51cxz/dXUw5DY4XiFE6h8jvcVN5ZITl7a
+ U8lc6wFlmoASIk3dQCbf1XQ6XeJ2/A5soMV1eoKHwX0V0Hys54zonoDOqtxe3AjZLG54Ac
+ EwR17FYlTjNgKM0Z3OI7yd105AZ+gBfWeABDPaTCtBzrph4+6vz+H2Tj4ZP9ug==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020e; t=1639138399;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=QIJx3V1nvr+fY8tSaxth/62MySjeKbxzIzd3EtwZXi4=;
+ b=o4xXuI8J+9OC404Thd08WZ3NU1jI+FqeWY93Iczbh6a01mb1Oeluyrbr3nFh3pAzPdQRcg
+ +pLv7bujunlyGOAQ==
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+Subject: RE: [patch 21/32] NTB/msi: Convert to msi_on_each_desc()
+In-Reply-To: <BN9PR11MB527619B099061B3814EB40408C719@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <8c2262ba-173e-0007-bc4c-94ec54b2847d@intel.com>
+ <87pmqg88xq.ffs@tglx> <df00b87e-00dc-d998-8b64-46b16dba46eb@intel.com>
+ <87k0go8432.ffs@tglx> <f4cc305b-a329-6d27-9fca-b74ebc9fa0c1@intel.com>
+ <878rx480fk.ffs@tglx>
+ <BN9PR11MB52765F2EF8420C60FD5945D18C709@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <87sfv2yy19.ffs@tglx> <20211209162129.GS6385@nvidia.com>
+ <878rwtzfh1.ffs@tglx> <20211209205835.GZ6385@nvidia.com>
+ <8735n1zaz3.ffs@tglx> <87sfv1xq3b.ffs@tglx>
+ <BN9PR11MB527619B099061B3814EB40408C719@BN9PR11MB5276.namprd11.prod.outlook.com>
+Date: Fri, 10 Dec 2021 13:13:18 +0100
+Message-ID: <87lf0sy7xd.ffs@tglx>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <2f17b812-367c-da75-a2a6-0c16a93cf4a3@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- Rob Herring <robh+dt@kernel.org>, uchida.jun@socionext.com,
- Leo Yan <leo.yan@linaro.org>, Will Deacon <will@kernel.org>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Cc: Allen Hubbe <allenbh@gmail.com>,
+ "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+ "x86@kernel.org" <x86@kernel.org>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Marc Zygnier <maz@kernel.org>, Heiko Carstens <hca@linux.ibm.com>,
+ LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Christian Borntraeger <borntraeger@de.ibm.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+ Bjorn Helgaas <helgaas@kernel.org>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+ "linux-ntb@googlegroups.com" <linux-ntb@googlegroups.com>,
+ Logan Gunthorpe <logang@deltatee.com>, "Dey, Megha" <megha.dey@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,139 +104,146 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Nov 18, 2021 at 03:50:54PM +0000, Robin Murphy wrote:
-> > > +  An SMMUv3 may have several Performance Monitor Counter Group (PMCG).
-> > > +  They are standalone performance monitoring units that support both
-> > > +  architected and IMPLEMENTATION DEFINED event counters.
-> > 
-> > Humm, I don't know that I agree they are standalone. They could be I
-> > guess, but looking at the MMU-600 spec the PMCG looks like it's just a
-> > subset of registers in a larger block. This seems similar to MPAM
-> > (which I'm working on a binding for) where it's just a register map
-> > and interrupts, but every other possible resource is unspecified by
-> > the architecture.
-> 
-> They're "standalone" in the sense that they don't have to be part of an
-> SMMU, they could be part of a PCIe root complex or other SoC device that
-> couples to an SMMU (e.g. anything that can speak AMBA DTI, in the case of
-> our SMMU implementations).
+Kevin,
 
-The "standalone" word came from the SMMUv3 spec (IHI0070D.b 10.1):
+On Fri, Dec 10 2021 at 07:29, Kevin Tian wrote:
+>> From: Thomas Gleixner <tglx@linutronix.de>
+>>   4) For the guest side we agreed that we need an hypercall because the
+>>      host can't trap the write to the MSI[-X] entry anymore.
+>
+> To be accurate I'd like to not call it "can't trap". The host still traps the 
+> MSI/MSI-X entry if the hypercall is not used. This is for current guest 
+> OS which doesn't have this hypercall mechanism. For future new guest
+> OS which will support this machinery then a handshake process from
+> such guest will disable the trap for MSI-X and map it for direct guest
+> access in the fly.
 
-  The Performance Monitor Counter Groups are standalone monitoring
-  facilities and, as such, can be implemented in separate components that
-  are all associated with (but not necessarily part of) an SMMU.
+Right. What I'm suggesting is a clear cut between the current approach,
+which obviously needs to be preserved, and a consistent new approach
+which handles MSI, MSI-X and IMS in the exactly same way.
 
-> 
-> In fact our SMMU TBUs are pretty much separate devices themselves, they just
-> *only* speak DTI, so access to their registers is proxied through the TCU
-> programming interface.
-> 
-> > The simplest change from this would be just specifying that the PMCG
-> > is child node(s) of whatever it is part of. The extreme would be this
-> > is all part of the SMMU binding (i.e. reg entry X is PMCG registers,
-> > interrupts entry Y is pmu irq).
-> 
-> Being a child of its associated device doesn't seem too bad semantically,
-> however how would we describe a PMCG as a child of a PCIe node when its
-> "reg" property still exists in the parent address space and not PCI
-> config/memory space like any of its siblings? Also in practical terms,
-> consuming that binding in Linux and getting the things to probe when it may
-> want to be independent of whether we even understand the parent node at all
-> could be... unpleasant.
+> MSI has to be always trapped although the guest has acquired the right 
+> data/addr pair via the hypercall, since it's a PCI config capability.
+>
+>> 
+>>      Aside of the fact that this creates a special case for IMS which is
+>>      undesirable in my opinion, it's not really obvious where the
+>>      hypercall should be placed to work for all scenarios so that it can
+>>      also solve the existing issue of silent failures.
+>> 
+>>   5) It's not possible for the kernel to reliably detect whether it is
+>>      running on bare metal or not. Yes we talked about heuristics, but
+>>      that's something I really want to avoid.
+>
+> How would the hypercall mechanism avoid such heuristics?
 
-So there are multiple options for what "the PMCG is part of".
+The availability of IR remapping where the irqdomain which is provided
+by the remapping unit signals that it supports this new scheme:
 
-(a) The SMMU: the spec guarantees that a PMCG is associated with an SMMU.
+                    |--IO/APIC
+                    |--MSI
+     vector -- IR --|--MSI-X
+                    |--IMS
 
-(b) The MMIO region: may be within the SMMU (as with MMU-600), outside of
-    it (as does another implementation, two 64k pages after the SMMU base)
-    or, theoretically, within a separate device (e.g. PCIe controller).
+while the current scheme is:
 
-(c) The thing being measured: does not necessarily match the MMIO region.
-    For example a TBU attached to the PCIe RC but the PMCG MMIO is within
-    the SMMU region.
+                    |--IO/APIC
+     vector -- IR --|--PCI/MSI[-X]
 
-(d) None: the PMCG can be probed and driven separately from the SMMU and
-    other components, as demonstrated by Linux.
+or 
 
-Which one is normally picked to decide where to insert a devicetree node?
-I guess (b)?  I picked (d) so far as the easiest choice.
+                    |--IO/APIC
+     vector --------|--PCI/MSI[-X]
 
-(a) is also a reasonable choice, being based on the spec, but it might be
-confusing to have a PMCG node inside the SMMU node when the MMIO region is
-external, possibly belonging to another device. For the same reason we
-could discard (c).
+So in the new scheme the IR domain will advertise new features which are
+not available on older kernels. The availability of these new features
+is the indicator for the interrupt subsystem and subsequently for PCI
+whether IMS is supported or not.
 
-(b) feels more natural, although it's not clear what to do when the PMCG
-MMIO region is external or adjacent to the SMMU region. Does the node go
-inside the SMMU node or one level up?
+Bootup either finds an IR unit or not. In the bare metal case that's the
+usual hardware/firmware detection. In the guest case it's the
+availability of vIR including the required hypercall protocol.
+
+So for the guest case the initialization would look like this:
+
+   qemu starts guest
+      Method of interrupt management defaults to current scheme
+      restricted to MSI/MSI-X
+
+      guest initializes
+          older guest do not check for the hypercall so everything
+          continues as of today
+
+          new guest initializes vIR, detects hypercall and requests
+          from the hypervisor to switch over to the new scheme.
+
+          The hypervisor grants or rejects the request, i.e. either both
+          switch to the new scheme or stay with the old one.
+
+The new scheme means, that all variants, MSI, MSI-X, IMS are handled in
+the same way. Staying on the old scheme means that IMS is not available
+to the guest.
+
+Having that clear separation is in my opinion way better than trying to
+make all of that a big maze of conditionals.
+
+I'm going to make that clear cut in the PCI/MSI management layer as
+well. Trying to do that hybrid we do today for irqdomain and non
+irqdomain based backends is just not feasible. The decision which way to
+go will be very close to the driver exposed API, i.e.:
+
+   pci_alloc_ims_vector()
+        if (new_scheme())
+        	return new_scheme_alloc_ims();
+        else
+        	return -ENOTSUPP;
+
+and new_scheme_alloc_ims() will have:
+
+   new_scheme_alloc_ims()
+        if (!system_supports_ims())
+        	return -ENOTSUPP;
+        ....
+
+system_supports_ims() makes its decision based on the feature flags
+exposed by the underlying base MSI irqdomain, i.e. either vector or IR
+on x86.
+
+Vector domain will not have that feature flag set, but IR will have on
+bare metal and eventually in the guest when the vIR setup and hypercall
+detection and negotiation succeeds.
+
+> Then Qemu needs to find out the GSI number for the vIRTE handle. 
+> Again Qemu doesn't have such information since it doesn't know 
+> which MSI[-X] entry points to this handle due to no trap.
+>
+> This implies that we may also need carry device ID, #msi entry, etc. 
+> in the hypercall, so Qemu can associate the virtual routing info
+> to the right [irqfd, gsi].
+>
+> In your model the hypercall is raised by IR domain. Do you see
+> any problem of finding those information within IR domain?
+
+IR has the following information available:
+
+   Interrupt type
+    - MSI:   Device, index and number of vectors
+    - MSI-X: Device, index
+    - IMS:   Device, index
+
+  Target APIC/vector pair
+
+IMS: The index depends on the storage type:
+
+     For storage in device memory, e.g. IDXD, it's the array index.
+
+     For storage in system memory, the index is a software artifact.
+
+Does that answer your question?
 
 Thanks,
-Jean
 
-> 
-> Robin.
-> 
-> > > +
-> > > +properties:
-> > > +  $nodename:
-> > > +    pattern: "^pmu@[0-9a-f]*"
-> > 
-> > s/*/+/
-> > 
-> > Need at least 1 digit.
-> > 
-> > > +  compatible:
-> > > +    oneOf:
-> > > +      - items:
-> > > +        - enum:
-> > > +          - hisilicon,smmu-v3-pmcg-hip08
-> > > +        - const: arm,smmu-v3-pmcg
-> > > +      - const: arm,smmu-v3-pmcg
-> > > +
-> > > +  reg:
-> > > +    description: |
-> > > +      Base addresses of the PMCG registers. Either a single address for Page 0
-> > > +      or an additional address for Page 1, where some registers can be
-> > > +      relocated with SMMU_PMCG_CFGR.RELOC_CTRS.
-> > > +    minItems: 1
-> > > +    maxItems: 2
-> > > +
-> > > +  interrupts:
-> > > +    maxItems: 1
-> > > +
-> > > +  msi-parent: true
-> > > +
-> > > +required:
-> > > +  - compatible
-> > > +  - reg
-> > > +
-> > > +additionalProperties: false
-> > > +
-> > > +examples:
-> > > +  - |+
-> > > +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> > > +    #include <dt-bindings/interrupt-controller/irq.h>
-> > > +
-> > > +    pmu@2b420000 {
-> > > +            compatible = "arm,smmu-v3-pmcg";
-> > > +            reg = <0 0x2b420000 0 0x1000>,
-> > > +                  <0 0x2b430000 0 0x1000>;
-> > > +            interrupts = <GIC_SPI 80 IRQ_TYPE_EDGE_RISING>;
-> > > +            msi-parent = <&its 0xff0000>;
-> > > +    };
-> > > +
-> > > +    pmu@2b440000 {
-> > > +            compatible = "arm,smmu-v3-pmcg";
-> > > +            reg = <0 0x2b440000 0 0x1000>,
-> > > +                  <0 0x2b450000 0 0x1000>;
-> > > +            interrupts = <GIC_SPI 81 IRQ_TYPE_EDGE_RISING>;
-> > > +            msi-parent = <&its 0xff0000>;
-> > > +    };
-> > > --
-> > > 2.33.1
-> > > 
+        tglx
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
