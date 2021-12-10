@@ -1,78 +1,96 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D763BC433EF
-	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 08:00:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BF9ECC433F5
+	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 09:06:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 558234113A;
-	Fri, 10 Dec 2021 08:00:41 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 532EE85217;
+	Fri, 10 Dec 2021 09:06:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vY2PXuPjvTix; Fri, 10 Dec 2021 08:00:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 004B64096C;
-	Fri, 10 Dec 2021 08:00:39 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id rdfDTuIXLIxk; Fri, 10 Dec 2021 09:06:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 779078520F;
+	Fri, 10 Dec 2021 09:06:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C082AC002F;
-	Fri, 10 Dec 2021 08:00:39 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 786F0C0012
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 08:00:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 411BBC001E;
+	Fri, 10 Dec 2021 09:06:52 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 72C42C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 09:06:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 738D8410B4
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 08:00:38 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 4BD65401F1
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 09:06:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4N7jwgmvLdNv for <iommu@lists.linux-foundation.org>;
- Fri, 10 Dec 2021 08:00:37 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.129.124])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 75F024096C
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 08:00:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1639123236;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=sUtNAIADtdctcg9tA5j3P6EyUpJjvzVV2dvlxQqKHnQ=;
- b=eYefEHYSsXFW7CDnXQ93tQcqnIQ5KEukpsRKQyKEasgM9G1omeTDHDtXADWOa2O/vw3klP
- MI0P/q67nAIeLgVoMWMicVhHsMduz6CgOmDtg7joD00Wx/C9BpKzKDtLEJfCsvtyExvX86
- xXaAhFUZI3FuzJ36YqH9TGbGwIgaEWk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-595-DHq-jcflMt2mD-boYIksEg-1; Fri, 10 Dec 2021 03:00:32 -0500
-X-MC-Unique: DHq-jcflMt2mD-boYIksEg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
- [10.5.11.13])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F261F81EE6E;
- Fri, 10 Dec 2021 08:00:30 +0000 (UTC)
-Received: from starship (unknown [10.40.192.24])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 2F9A91B42C;
- Fri, 10 Dec 2021 08:00:27 +0000 (UTC)
-Message-ID: <5d7d591abdbfa8a5cb327a59b94ff7a6c1cfdee6.camel@redhat.com>
-Subject: Re: [PATCH 0/5] iommu/amd: fixes for suspend/resume
-From: Maxim Levitsky <mlevitsk@redhat.com>
-To: linux-kernel@vger.kernel.org
-Date: Fri, 10 Dec 2021 10:00:26 +0200
-In-Reply-To: <44f3f76cb14bafee2d81a615f258a4fb4be93fe1.camel@redhat.com>
-References: <20211123161038.48009-1-mlevitsk@redhat.com>
- <44f3f76cb14bafee2d81a615f258a4fb4be93fe1.camel@redhat.com>
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+ with ESMTP id Fb6zcdim6QY1 for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Dec 2021 09:06:49 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com
+ [IPv6:2a00:1450:4864:20::531])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id CE729400A8
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 09:06:48 +0000 (UTC)
+Received: by mail-ed1-x531.google.com with SMTP id w1so27591592edc.6
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 01:06:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=p51Nz29s/4zmZ+EPSD75GUmiIaP5D91+aCSEQZKR7mY=;
+ b=w0/20eIpOstfeq4XyG6SkmuCg0ION+5jLGBpP6vias0+7A0TxUpXOgqgAoOTZ4QTXN
+ wAYFBxEEsCB1XdI237RbMAMOgXiUuIQRB7hnO2KBN3T22RrD0M2HvPKcHqfnxduCWPtL
+ CBFRfUVhrE7VGPWNvtwIHwQkKo/+JblWxwlbflPf8kc8ikqftYje0ih6EYKEBcYnhHlc
+ zw4jkifcFLQ/ohA3A+4FtKNDC2KuYHsaAJ0qudJumUaejaQMja/v/kYOFlhHSnEW28px
+ uFPLpwq9cg9NNnbfvhYKNtMkha7CpwF/2sbn2ST+miB5XzMxb8zF6C9MQRu32KEFjOO3
+ UyBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=p51Nz29s/4zmZ+EPSD75GUmiIaP5D91+aCSEQZKR7mY=;
+ b=uEojWbL3LaBvsmk1WPd5dvUZ145EXYJngoIqo1xHsnsTrLavfohUvy5ydY6Xz9NndN
+ PF7s+YYY5++pZgBp89g9pZ8qUiRl8pwDfFmTccbql5cA8I7icSWvqZgofwS2eDmV17r5
+ aGtnz8YrIgiGdsSEA8M5wosb6Vskk2KbDca/czXhjvsv00Rg/cwvWqqRUbIL7KkJp0ty
+ t5JO5C8wGxF1qz1on/UVFRPZ8UbYwDIODJFWK0Z6JR7Eow1Lh0C2Zv9AnbDU23YZMCJo
+ GVUZ33QI3y9/KuHleD3Wv4VC+3kRY6s53Yjn3MRjdNuL/rc6LSp9WyewPVf5Ngigg164
+ 8ABQ==
+X-Gm-Message-State: AOAM530jEtmsC/vz5XHsgJBjVHVIXYBd9TVvhEMGFzqXdbC9cFUbV4Tw
+ EPmv5k96Vtp6MEsHXDExnwtO1w==
+X-Google-Smtp-Source: ABdhPJzzl9GYf5cjF2Z03Bwf6HwuUK34ncwmWm/jaDIJ7LMJxa/P7TYdoO0r7pqId0sfN/uLkPSH1Q==
+X-Received: by 2002:a05:6402:1e93:: with SMTP id
+ f19mr37545678edf.60.1639127206878; 
+ Fri, 10 Dec 2021 01:06:46 -0800 (PST)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
+ [82.27.106.168])
+ by smtp.gmail.com with ESMTPSA id mp26sm1135173ejc.61.2021.12.10.01.06.45
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 10 Dec 2021 01:06:46 -0800 (PST)
+Date: Fri, 10 Dec 2021 09:06:24 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH 1/4] ioasid: Reserve a global PASID for in-kernel DMA
+Message-ID: <YbMYkKZBktlrB2CR@myrica>
+References: <1638884834-83028-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1638884834-83028-2-git-send-email-jacob.jun.pan@linux.intel.com>
+ <YbHie/Z4bIXwTInx@myrica> <20211209101404.6aefbe1c@jacob-builder>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-Cc: "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
- Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>,
- David Woodhouse <dwmw@amazon.co.uk>
+Content-Disposition: inline
+In-Reply-To: <20211209101404.6aefbe1c@jacob-builder>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Kumar,
+ Sanjay K" <sanjay.k.kumar@intel.com>, LKML <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
+ Jacob Pan <jacob.jun.pan@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Barry Song <21cnbao@gmail.com>, Dan Williams <dan.j.williams@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>, "Zanussi,
+ Tom" <tom.zanussi@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,84 +108,23 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 2021-12-02 at 01:08 +0200, Maxim Levitsky wrote:
-> On Tue, 2021-11-23 at 18:10 +0200, Maxim Levitsky wrote:
-> > As I sadly found out, a s3 cycle makes the AMD's iommu stop sending interrupts
-> > until the system is rebooted.
-> > 
-> > I only noticed it now because otherwise the IOMMU works, and these interrupts
-> > are only used for errors and for GA log which I tend not to use by
-> > making my VMs do mwait/pause/etc in guest (cpu-pm=on).
-> > 
-> > There are two issues here that prevent interrupts from being generated after
-> > s3 cycle:
-> > 
-> > 1. GA log base address was not restored after resume, and was all zeroed
-> > after resume (by BIOS or such).
-> > 
-> > In theory if BIOS writes some junk to it, that can even cause a memory corruption.
-> > Patch 2 fixes that.
-> > 
-> > 2. INTX (aka x2apic mode) settings were not restored after resume.
-> > That mode is used regardless if the host uses/supports x2apic, but rather when
-> > the IOMMU supports it, and mine does.
-> > Patches 3-4 fix that.
-> > 
-> > Note that there is still one slight (userspace) bug remaining:
-> > During suspend all but the boot CPU are offlined and then after resume
-> > are onlined again.
-> > 
-> > The offlining moves all non-affinity managed interrupts to CPU0, and
-> > later when all other CPUs are onlined, there is nothing in the kernel
-> > to spread back the interrupts over the cores.
-> > 
-> > The userspace 'irqbalance' daemon does fix this but it seems to ignore
-> > the IOMMU interrupts in INTX mode since they are not attached to any
-> > PCI device, and thus they remain on CPU0 after a s3 cycle,
-> > which is suboptimal when the system has multiple IOMMUs
-> > (mine has 4 of them).
-> > 
-> > Setting the IRQ affinity manually via /proc/irq/ does work.
-> > 
-> > This was tested on my 3970X with both INTX and regular MSI mode (later was enabled
-> > by patching out INTX detection), by running a guest with AVIC enabled and with
-> > a PCI assigned device (network card), and observing interrupts from
-> > IOMMU while guest is mostly idle.
-> > 
-> > This was also tested on my AMD laptop with 4650U (which has the same issue)
-> > (I tested only INTX mode)
-> > 
-> > Patch 1 is a small refactoring to remove an unused struct field.
-> > 
-> > Best regards,
-> >    Maxim Levitsky
-> > 
-> > Maxim Levitsky (5):
-> >   iommu/amd: restore GA log/tail pointer on host resume
-> >   iommu/amd: x2apic mode: re-enable after resume
-> >   iommu/amd: x2apic mode: setup the INTX registers on mask/unmask
-> >   iommu/amd: x2apic mode: mask/unmask interrupts on suspend/resume
-> >   iommu/amd: remove useless irq affinity notifier
-> > 
-> >  drivers/iommu/amd/amd_iommu_types.h |   2 -
-> >  drivers/iommu/amd/init.c            | 107 +++++++++++++++-------------
-> >  2 files changed, 58 insertions(+), 51 deletions(-)
-> > 
-> > -- 
-> > 2.26.3
-> > 
-> > 
-> 
-> Polite ping on these patches.
+On Thu, Dec 09, 2021 at 10:14:04AM -0800, Jacob Pan wrote:
+> > This looks like we're just one step away from device drivers needing
+> > multiple PASIDs for kernel DMA so I'm trying to figure out how to evolve
+> > the API towards that. It's probably as simple as keeping a kernel IOASID
+> > set at first, but then we'll probably want to optimize by having multiple
+> > overlapping sets for each device driver (all separate from the SVA set).
+> Sounds reasonable to start with a kernel set for in-kernel DMA once we need
+> multiple ones. But I am not sure what *overlapping* sets mean here, could
+> you explain?
 
-Another very polite ping on these patches :)
+Given that each device uses a separate PASID table, we could allocate the
+same set of PASID values for different device drivers. We just need to
+make sure that those values are different from PASIDs allocated for user
+SVA.
 
-Best regards,
-	Maxim Levitsky
-
-> Best regards,
-> 	Maxim Levitsky
-
+Thanks,
+Jean
 
 _______________________________________________
 iommu mailing list
