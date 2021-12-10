@@ -1,67 +1,64 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 09C2AC4332F
-	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 22:19:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8C57FC433F5
+	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 22:19:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id CC16B61B61;
-	Fri, 10 Dec 2021 22:19:30 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 4A6D5418E1;
+	Fri, 10 Dec 2021 22:19:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vHH5P5kQfk4W; Fri, 10 Dec 2021 22:19:30 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id shJuo0Z9GoLO; Fri, 10 Dec 2021 22:19:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id BAB4F61B4F;
-	Fri, 10 Dec 2021 22:19:29 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id EF61F418E7;
+	Fri, 10 Dec 2021 22:19:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 96919C0071;
-	Fri, 10 Dec 2021 22:19:29 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3D823C0012
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CBC90C001E;
+	Fri, 10 Dec 2021 22:19:31 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 19BD5C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 1E71A42855
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:28 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id C3C3F418F7
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="z6iPEnfV";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="ClMHqdNE"
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zNcndQmx1ALT for <iommu@lists.linux-foundation.org>;
- Fri, 10 Dec 2021 22:19:27 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rj3hARVL5hJa for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Dec 2021 22:19:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 6D3EC42857
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:27 +0000 (UTC)
-Message-ID: <20211210221814.841243231@linutronix.de>
+Received: from galois.linutronix.de (Galois.linutronix.de
+ [IPv6:2a0a:51c0:0:12e:550::1])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id EBA2D418E8
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:28 +0000 (UTC)
+Message-ID: <20211210221814.900929381@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1639174765;
+ s=2020; t=1639174767;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=ja9fbkTMChiYC+RHKTG35XzzVDvmaXMgaMrb6WY3XeQ=;
- b=z6iPEnfVAgwlW1Qbnq1nCFWwA6bNapErKquzAi3fk6aQqeO9o4U4iwQjv+EebRfvLnwN8n
- e63ahKnp4QuQIaqzvffdsynbWgeJGaK4CvS+c+uMgRBceXI7VODqOegmQe3L/CvghbDhuO
- LN91tjaF0S12KexgZs8cR5/oZ2rSgoo7wgdZrtLgJvkHGW3yStep1fiuvR7g41IWJCZNnu
- Rdmmg97HfnTylsxqpzgAYVzZaMeXvWfNQQ5rvNFbwpEWwzgtXnQ4/DZTiIX/XN8OvdQ75p
- NdflsNWb6DcWnXBSu0XhAKL30N7MQvosu7Eo61JG6PvjMi8bgOFzC5eVez11kQ==
+ references:references; bh=rNrzn8yRvXgsVUgYBaKAG8ZHI0uIOQ4IQLNHP2L6pxE=;
+ b=nf9eyrsJJrs9ednYCFZjv8J2yY2kMTBnnjDazqRJ511KXpZJf1YcQjdYfXYm2loBQc4e51
+ X1migsWpqvkVonHlgKGazqD3LQt1VEi1ONQMXlquZAUbD3bWwtHjKz6uiOhNtYIahCIAun
+ mRzaRa8QncWEAJyd2oq1drpHnTqWPT1eKioZJCZmH/BKUQRxgGCPmRRh6EsC/v//nl8sL/
+ boRobi4kXbHHVHnVHwhXecrQ/I8Q5OXFyHGRvTUgcBYSHxyXSCbkQ+q/m1CrmiEH4i02FY
+ dX0m9VD+WaASxOutJEozXkaEXjuYirVE7txgIlds5ll8afoP9lZT4fq2oH6P3A==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1639174765;
+ s=2020e; t=1639174767;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=ja9fbkTMChiYC+RHKTG35XzzVDvmaXMgaMrb6WY3XeQ=;
- b=ClMHqdNEhBqMOb1sVFaSm0KweWWAEZJCgeJM/hGJMp5ROj9kquAcj3PJfKxxeM3i7GOxBS
- FHUfoC+s+JX7GLDA==
+ references:references; bh=rNrzn8yRvXgsVUgYBaKAG8ZHI0uIOQ4IQLNHP2L6pxE=;
+ b=Cgugbw7jJJgW3jPH6Q3nUfo/m4UVuVoB8e3+XhsPb07BsPv7J7QZZ/uWWrdVpdYtMpcMdt
+ NSwEg+9aK1hyY+CQ==
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V3 27/35] PCI/MSI: Use __msi_get_virq() in pci_get_vector()
+Subject: [patch V3 28/35] PCI/MSI: Simplify pci_irq_get_affinity()
 References: <20211210221642.869015045@linutronix.de>
 MIME-Version: 1.0
-Date: Fri, 10 Dec 2021 23:19:25 +0100 (CET)
+Date: Fri, 10 Dec 2021 23:19:26 +0100 (CET)
 Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
  Stuart Yoder <stuyoder@gmail.com>,
  Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -99,53 +96,54 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-Use msi_get_vector() and handle the return value to be compatible.
-
-No functional change intended.
+Replace open coded MSI descriptor chasing and use the proper accessor
+functions instead.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
-V2: Handle the INTx case directly instead of trying to be overly smart - Marc
----
- drivers/pci/msi/msi.c |   25 +++++--------------------
- 1 file changed, 5 insertions(+), 20 deletions(-)
+ drivers/pci/msi/msi.c |   26 ++++++++++----------------
+ 1 file changed, 10 insertions(+), 16 deletions(-)
 
 --- a/drivers/pci/msi/msi.c
 +++ b/drivers/pci/msi/msi.c
-@@ -1037,28 +1037,13 @@ EXPORT_SYMBOL(pci_free_irq_vectors);
+@@ -1061,26 +1061,20 @@ EXPORT_SYMBOL(pci_irq_vector);
   */
- int pci_irq_vector(struct pci_dev *dev, unsigned int nr)
+ const struct cpumask *pci_irq_get_affinity(struct pci_dev *dev, int nr)
  {
 -	if (dev->msix_enabled) {
 -		struct msi_desc *entry;
-+	unsigned int irq;
++	int irq = pci_irq_vector(dev, nr);
++	struct msi_desc *desc;
  
 -		for_each_pci_msi_entry(entry, dev) {
 -			if (entry->msi_index == nr)
--				return entry->irq;
+-				return &entry->affinity->mask;
 -		}
 -		WARN_ON_ONCE(1);
--		return -EINVAL;
--	}
-+	if (!dev->msi_enabled && !dev->msix_enabled)
-+		return !nr ? dev->irq : -EINVAL;
- 
--	if (dev->msi_enabled) {
++	if (WARN_ON_ONCE(irq <= 0))
+ 		return NULL;
+-	} else if (dev->msi_enabled) {
 -		struct msi_desc *entry = first_pci_msi_entry(dev);
+ 
+-		if (WARN_ON_ONCE(!entry || !entry->affinity ||
+-				 nr >= entry->nvec_used))
+-			return NULL;
 -
--		if (WARN_ON_ONCE(nr >= entry->nvec_used))
--			return -EINVAL;
+-		return &entry->affinity[nr].mask;
 -	} else {
--		if (WARN_ON_ONCE(nr > 0))
--			return -EINVAL;
++	desc = irq_get_msi_desc(irq);
++	/* Non-MSI does not have the information handy */
++	if (!desc)
+ 		return cpu_possible_mask;
 -	}
--
--	return dev->irq + nr;
-+	irq = msi_get_virq(&dev->dev, nr);
-+	return irq ? irq : -EINVAL;
++
++	if (WARN_ON_ONCE(!desc->affinity))
++		return NULL;
++	return &desc->affinity[nr].mask;
  }
- EXPORT_SYMBOL(pci_irq_vector);
+ EXPORT_SYMBOL(pci_irq_get_affinity);
  
 
 _______________________________________________
