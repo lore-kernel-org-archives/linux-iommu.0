@@ -1,75 +1,110 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DA070C433EF
-	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 18:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AA55DC433EF
+	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 18:36:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 98670851FA;
-	Fri, 10 Dec 2021 18:14:05 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dobUSWdwJnH0; Fri, 10 Dec 2021 18:14:04 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 74FB0851F8;
-	Fri, 10 Dec 2021 18:14:04 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 513A1C001E;
-	Fri, 10 Dec 2021 18:14:04 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AD603C0012
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 18:14:03 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 8C5E1614B6
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 18:14:03 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 2FF9C614D8;
+	Fri, 10 Dec 2021 18:36:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sz462FaNWMDy for <iommu@lists.linux-foundation.org>;
- Fri, 10 Dec 2021 18:14:03 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 2ibp4ZBi2I72; Fri, 10 Dec 2021 18:36:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id DC700614DC;
+	Fri, 10 Dec 2021 18:36:36 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F823C0073;
+	Fri, 10 Dec 2021 18:36:36 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7A98DC001E
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 18:36:34 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 64C4D85480
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 18:36:34 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id WjqIOaO6ug16 for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Dec 2021 18:36:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 0A4F2614B4
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 18:14:02 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10194"; a="324674287"
-X-IronPort-AV: E=Sophos;i="5.88,196,1635231600"; d="scan'208";a="324674287"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 10 Dec 2021 10:14:02 -0800
-X-IronPort-AV: E=Sophos;i="5.88,196,1635231600"; d="scan'208";a="659713475"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 10 Dec 2021 10:14:01 -0800
-Date: Fri, 10 Dec 2021 10:18:20 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH 3/4] iommu/vt-d: Support PASID DMA for in-kernel usage
-Message-ID: <20211210101820.58b24b77@jacob-builder>
-In-Reply-To: <20211210174848.GH6385@nvidia.com>
-References: <1638884834-83028-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1638884834-83028-4-git-send-email-jacob.jun.pan@linux.intel.com>
- <20211208132255.GS6385@nvidia.com>
- <20211208111659.6de22e52@jacob-builder>
- <9f724b3a-6028-43d7-b4fc-d8a939e7b2cf@linux.intel.com>
- <20211209152113.64b817b9@jacob-builder>
- <921a766f-d826-2ca4-f739-4d196b32a681@linux.intel.com>
- <20211210095025.38af67ce@jacob-builder>
- <20211210174848.GH6385@nvidia.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 70E4980E00
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 18:36:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1639161392;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=UuZMXUxnRYoJ6fczszwwZGhWUdbXILWisTJH5f1GF3o=;
+ b=h6NhXiAshx8h8AMhcEyh3d83NUqUTc3SmcpEn9D/1fotKZTJDAhrUEBFZcmGXn6gJtY7jh
+ 4VQ4adoG4pSeupPe7G/RAT8PRGQgHnzvhDOqQIjGMkSPxM30LQTBlDb7kUrbJpVjbvmEa5
+ 1cTohojE+8jZ45ix+/DCBS4+vG0nGNo=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-232-DHHMluMANYGniEQIbrCuug-1; Fri, 10 Dec 2021 13:36:31 -0500
+X-MC-Unique: DHHMluMANYGniEQIbrCuug-1
+Received: by mail-wm1-f72.google.com with SMTP id
+ n41-20020a05600c502900b003335ab97f41so4089142wmr.3
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 10:36:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+ :content-language:to:cc:references:from:organization:in-reply-to
+ :content-transfer-encoding;
+ bh=UuZMXUxnRYoJ6fczszwwZGhWUdbXILWisTJH5f1GF3o=;
+ b=YUbTGjGsLPH4KrkZUEDgGcZLVdsDigCV3p+Toh1lQF9L1hZCknF/fNaihkn2MxgUFD
+ cAsKWvk/MMe66RQ/EHE+E5DZPHtSPAhXld4b+hu2pUlriO4v5ugaheQzSnSSrmaYmePN
+ RN4z9YtXruGu4oqBjrlbgMsflEkbP2NsWFonDs0hQ9/w5S/0pZXOE7CG39wZKLTkIQz2
+ llX6PRGkfnfYqwz/27wx5HIHA5JxKrFjQ1AodSHaNMynglqwgD1Kn8vE/Nh+dn9ibk4x
+ sWIbvqvZ2Ph3+u/svTWU+C8l18+qhWHwYbdwLmNuoC3AIxTrJMUwHokN4ToKuY77GJgU
+ SQLg==
+X-Gm-Message-State: AOAM5319ho/41D0/B6ipYQWY+XCwjHbMbvGLFOoW6sO/DU8QcrmHGb2m
+ vXhhmraBgXbfZD5ZfZrK6OtNwI/8/NAxzWMkkwaa5c01FtwdrpCe5PLSt9RaHmpo103UdZJuIR5
+ L9Lqlixaf93ngsS3IdFfRc/Lmel/4PA==
+X-Received: by 2002:a1c:2397:: with SMTP id
+ j145mr18630563wmj.113.1639161389938; 
+ Fri, 10 Dec 2021 10:36:29 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxnE6mECpT6/x+6acEXXbzAagez4dMgCo4uhwD9w2DwYFQ/4FPaugRFXQx4gh8a1gwW+xf9tQ==
+X-Received: by 2002:a1c:2397:: with SMTP id
+ j145mr18630532wmj.113.1639161389702; 
+ Fri, 10 Dec 2021 10:36:29 -0800 (PST)
+Received: from [192.168.3.132] (p5b0c60f8.dip0.t-ipconnect.de. [91.12.96.248])
+ by smtp.gmail.com with ESMTPSA id
+ v8sm3098510wrd.84.2021.12.10.10.36.28
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Fri, 10 Dec 2021 10:36:29 -0800 (PST)
+Message-ID: <19404189-3bee-c02a-a596-2e5564e0f8f5@redhat.com>
+Date: Fri, 10 Dec 2021 19:36:27 +0100
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Tony Luck <tony.luck@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Kumar,
- Sanjay K" <sanjay.k.kumar@intel.com>, LKML <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
- Jacob Pan <jacob.jun.pan@intel.com>, Barry Song <21cnbao@gmail.com>,
- Dan Williams <dan.j.williams@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>, "Zanussi,
- Tom" <tom.zanussi@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Subject: Re: [RFC PATCH v2 0/7] Use pageblock_order for cma and
+ alloc_contig_range alignment.
+To: Zi Yan <ziy@nvidia.com>, linux-mm@kvack.org
+References: <20211209230414.2766515-1-zi.yan@sent.com>
+From: David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20211209230414.2766515-1-zi.yan@sent.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=david@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Cc: Mel Gorman <mgorman@techsingularity.net>,
+ Michael Ellerman <mpe@ellerman.id.au>, Robin Murphy <robin.murphy@arm.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Eric Ren <renzhengeek@gmail.com>, virtualization@lists.linux-foundation.org,
+ linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>,
+ Vlastimil Babka <vbabka@suse.cz>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,55 +122,65 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jason,
-
-On Fri, 10 Dec 2021 13:48:48 -0400, Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Fri, Dec 10, 2021 at 09:50:25AM -0800, Jacob Pan wrote:
+On 10.12.21 00:04, Zi Yan wrote:
+> From: Zi Yan <ziy@nvidia.com>
 > 
-> > > Tying pasid to an iommu_domain is not a good idea. An iommu_domain
-> > > represents an I/O address translation table. It could be attached to a
-> > > device or a PASID on the device.  
-> > 
-> > I don;t think we can avoid storing PASID at domain level or the group's
-> > default domain. IOTLB flush is per domain. Default domain of DMA type
-> > is already tying to PASID0, right?  
+> Hi all,
+
+Hi,
+
+thanks for working on that!
+
 > 
-> No, it is just wrong.
+> This patchset tries to remove the MAX_ORDER - 1 alignment requirement for CMA
+> and alloc_contig_range(). It prepares for my upcoming changes to make MAX_ORDER
+> adjustable at boot time[1].
 > 
-> If the HW requires a list of everything that is connected to the
-> iommu_domain then it's private iommu_domain should have that list.
+> The MAX_ORDER - 1 alignment requirement comes from that alloc_contig_range()
+> isolates pageblocks to remove free memory from buddy allocator but isolating
+> only a subset of pageblocks within a page spanning across multiple pageblocks
+> causes free page accounting issues. Isolated page might not be put into the
+> right free list, since the code assumes the migratetype of the first pageblock
+> as the whole free page migratetype. This is based on the discussion at [2].
 > 
-What I have in this patchset is in the private dmar_domain
-struct dmar_domain {
-	...
-	u32		kernel_pasid;	/* for in-kernel DMA w/
-PASID */ atomic_t	kernel_pasid_user; /* count of kernel_pasid users
-*/ struct iommu_domain domain;	/* generic domain data structure for
-					   iommu core */
-};
-
-Perhaps I am missing the point. "private domain" is still "domain level" as
-what I stated. Confused :(
-
-> But it is a *list* not a single PASID.
+> To remove the requirement, this patchset:
+> 1. still isolates pageblocks at MAX_ORDER - 1 granularity;
+> 2. but saves the pageblock migratetypes outside the specified range of
+>    alloc_contig_range() and restores them after all pages within the range
+>    become free after __alloc_contig_migrate_range();
+> 3. splits free pages spanning multiple pageblocks at the beginning and the end
+>    of the range and puts the split pages to the right migratetype free lists
+>    based on the pageblock migratetypes;
+> 4. returns pages not in the range as it did before this patch.
 > 
-We could have a list when real use case comes.
-
-> If one device has 10 PASID's pointing to this domain you must flush
-> them all if that is what the HW requires.
+> Isolation needs to happen at MAX_ORDER - 1 granularity, because otherwise
+> 1) extra code is needed to detect pages (free, PageHuge, THP, or PageCompound)
+> to make sure all pageblocks belonging to a single page are isolated together 
+> and later pageblocks outside the range need to have their migratetypes restored;
+> or 2) extra logic will need to be added during page free time to split a free
+> page with multi-migratetype pageblocks.
 > 
-Yes. My point is that other than PASID 0 is a given, we must track the 10
-PASIDs to avoid wasted flush. It also depend on how TLBs are tagged and
-flush granularity available. But at the API level, should we support all the
-cases?
+> Two optimizations might come later:
+> 1. only check unmovable pages within the range instead of MAX_ORDER - 1 aligned
+>    range during isolation to increase successful rate of alloc_contig_range().
 
-> Jason
+The issue with virtio-mem is that we'll need that as soon as we change
+the granularity to pageblocks, because otherwise, you can heavily
+degrade unplug reliably in sane setups:
 
+Previous:
+* Try unplug free 4M range (2 pageblocks): succeeds
 
+Now:
+* Try unplug 2M range (first pageblock): succeeds.
+* Try unplug next 2M range (second pageblock): fails because first
+contains unmovable allcoations.
+
+-- 
 Thanks,
 
-Jacob
+David / dhildenb
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
