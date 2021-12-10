@@ -1,69 +1,63 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 612DDC433FE
-	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 22:19:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3E409C433F5
+	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 22:19:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 0A3FE418E6;
+	by smtp1.osuosl.org (Postfix) with ESMTP id EECC585531;
 	Fri, 10 Dec 2021 22:19:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UtH81Vc9wK0Z; Fri, 10 Dec 2021 22:19:09 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id g8cxzOLft3EZ; Fri, 10 Dec 2021 22:19:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 9EE4E418D7;
-	Fri, 10 Dec 2021 22:19:08 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id D0EDB85538;
+	Fri, 10 Dec 2021 22:19:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 79572C0030;
-	Fri, 10 Dec 2021 22:19:08 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2A477C0012
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A7988C001E;
+	Fri, 10 Dec 2021 22:19:09 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6D519C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 0B23742855
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:07 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 4E4BD853B9
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="Du2Aaeyf";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="CDqZUrLA"
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KiXlIawzgil9 for <iommu@lists.linux-foundation.org>;
- Fri, 10 Dec 2021 22:19:06 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0zq6qMmC4xDO for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Dec 2021 22:19:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de
- [IPv6:2a0a:51c0:0:12e:550::1])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 1A71542853
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:05 +0000 (UTC)
-Message-ID: <20211210221813.988659194@linutronix.de>
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 5EAF985531
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:07 +0000 (UTC)
+Message-ID: <20211210221814.048612053@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1639174744;
+ s=2020; t=1639174745;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=oE2eGYCYBsqhTiqWwROCSzBN1PHvDBTxc4ApBbpWErQ=;
- b=Du2AaeyfQ64dP3dBs4P+iX/eFtTtuCyElkywg4oYr94298FnFHpAop9t86vUsn4VVyrVCl
- lGFyPgrvSs0Gr8kuj771Eh/3xQ8clx37P2uIDld9f7h+STIe4QjMB1lNIq8aFa6qmzcjnK
- ay+m0Xlfk66F93sm9gAN9zblzf0wZsVdVR/m5/BXpezRfWcYkI8p02Y74sGyJQfgJA30nA
- rqbyJQqYND31ug87CWMo7Va00A2e5kmACGXuAKhdEYFcuBoXlbaLCxWV3+5wzPYP6RyyPz
- PWzzT0WZAAnVAI5zp20wKtXbAm26pTRbjZaW7zp6VGBl5Re0rxuPRFo21zuz0g==
+ references:references; bh=TChehWVkaCDXWslfOqt9SsdG5fg+7v6o6aA6KtRbeHM=;
+ b=Z11uvvxgirAW72rICp0vfbanS84UF82Nhb6VQydo25+LJ6YqYAbpXkmM7xdJXeTdznCw1s
+ erlLzvS3f8S8X3MqKG6FWkDbzvp7PQ01OSu3pmt6X/fqLdRuw+xf/tSng+pQE/QA3EVuJa
+ JvpnsrGVQpSL/3nyMTJIBfAiiT+kUUJ3ssX8tU5sGnGPYjGGWGGM83LFKfBPbHkqRu8STR
+ ghiqR/QIHyPv2LwcuKChQWwCEtBFQEHKUTL6+PT9gOax11YdzEWoTVht9qcQ8QqZBnEz6n
+ JMmNdgKrS9iGoaCLMEB/xcBcfHGnMd7m6HmEh/Jj9qHhvvs3t2TqzewDPQIdXg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1639174744;
+ s=2020e; t=1639174745;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=oE2eGYCYBsqhTiqWwROCSzBN1PHvDBTxc4ApBbpWErQ=;
- b=CDqZUrLAr3/IbkCTIDZp0THg1iNwgAbMiICWCbxnRLGjU3FnBGAqbCSc84YSFhBleVyNIj
- Oj6FzJ0V6tLDbaAw==
+ references:references; bh=TChehWVkaCDXWslfOqt9SsdG5fg+7v6o6aA6KtRbeHM=;
+ b=KlfpjkCvcrQosgJ4ChgS7lGyZYuQ96QJI/yz5x/JhIyB7M0oc7AC8htzC3Lr6XT++gnAIE
+ k/pOg57H/xU1JEBA==
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V3 13/35] genirq/msi: Provide
- msi_device_populate/destroy_sysfs()
+Subject: [patch V3 14/35] PCI/MSI: Let the irq code handle sysfs groups
 References: <20211210221642.869015045@linutronix.de>
 MIME-Version: 1.0
-Date: Fri, 10 Dec 2021 23:19:03 +0100 (CET)
+Date: Fri, 10 Dec 2021 23:19:05 +0100 (CET)
 Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
  Stuart Yoder <stuyoder@gmail.com>,
  Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -101,113 +95,119 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-Add new allocation functions which can be activated by domain info
-flags. They store the groups pointer in struct msi_device_data.
+Set the domain info flag which makes the core code handle sysfs groups and
+put an explicit invocation into the legacy code.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
- include/linux/msi.h |    4 ++++
- kernel/irq/msi.c    |   42 ++++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 44 insertions(+), 2 deletions(-)
+ drivers/pci/msi/irqdomain.c |    2 +-
+ drivers/pci/msi/legacy.c    |    6 +++++-
+ drivers/pci/msi/msi.c       |   23 -----------------------
+ include/linux/pci.h         |    1 -
+ 4 files changed, 6 insertions(+), 26 deletions(-)
 
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -56,6 +56,8 @@ struct irq_data;
- struct msi_desc;
- struct pci_dev;
- struct platform_msi_priv_data;
-+struct attribute_group;
-+
- void __get_cached_msi_msg(struct msi_desc *entry, struct msi_msg *msg);
- #ifdef CONFIG_GENERIC_MSI_IRQ
- void get_cached_msi_msg(unsigned int irq, struct msi_msg *msg);
-@@ -174,9 +176,11 @@ struct msi_desc {
- /**
-  * msi_device_data - MSI per device data
-  * @properties:		MSI properties which are interesting to drivers
-+ * @attrs:		Pointer to the sysfs attribute group
-  */
- struct msi_device_data {
- 	unsigned long			properties;
-+	const struct attribute_group    **attrs;
- };
+--- a/drivers/pci/msi/irqdomain.c
++++ b/drivers/pci/msi/irqdomain.c
+@@ -159,7 +159,7 @@ struct irq_domain *pci_msi_create_irq_do
+ 	if (info->flags & MSI_FLAG_USE_DEF_CHIP_OPS)
+ 		pci_msi_domain_update_chip_ops(info);
  
- int msi_setup_device_data(struct device *dev);
---- a/kernel/irq/msi.c
-+++ b/kernel/irq/msi.c
-@@ -200,6 +200,20 @@ const struct attribute_group **msi_popul
- }
+-	info->flags |= MSI_FLAG_ACTIVATE_EARLY;
++	info->flags |= MSI_FLAG_ACTIVATE_EARLY | MSI_FLAG_DEV_SYSFS;
+ 	if (IS_ENABLED(CONFIG_GENERIC_IRQ_RESERVATION_MODE))
+ 		info->flags |= MSI_FLAG_MUST_REACTIVATE;
  
- /**
-+ * msi_device_populate_sysfs - Populate msi_irqs sysfs entries for a device
-+ * @dev:	The device (PCI, platform etc) which will get sysfs entries
-+ */
-+int msi_device_populate_sysfs(struct device *dev)
-+{
-+	const struct attribute_group **group = msi_populate_sysfs(dev);
-+
-+	if (IS_ERR(group))
-+		return PTR_ERR(group);
-+	dev->msi.data->attrs = group;
-+	return 0;
-+}
-+
-+/**
-  * msi_destroy_sysfs - Destroy msi_irqs sysfs entries for devices
-  * @dev:		The device(PCI, platform etc) who will remove sysfs entries
-  * @msi_irq_groups:	attribute_group for device msi_irqs entries
-@@ -225,6 +239,17 @@ void msi_destroy_sysfs(struct device *de
- 		kfree(msi_irq_groups);
- 	}
- }
-+
-+/**
-+ * msi_device_destroy_sysfs - Destroy msi_irqs sysfs entries for a device
-+ * @dev:		The device (PCI, platform etc) for which to remove
-+ *			sysfs entries
-+ */
-+void msi_device_destroy_sysfs(struct device *dev)
-+{
-+	msi_destroy_sysfs(dev, dev->msi.data->attrs);
-+	dev->msi.data->attrs = NULL;
-+}
- #endif
- 
- #ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
-@@ -672,8 +697,19 @@ int msi_domain_alloc_irqs(struct irq_dom
+--- a/drivers/pci/msi/legacy.c
++++ b/drivers/pci/msi/legacy.c
+@@ -70,10 +70,14 @@ int pci_msi_legacy_setup_msi_irqs(struct
  {
- 	struct msi_domain_info *info = domain->host_data;
- 	struct msi_domain_ops *ops = info->ops;
-+	int ret;
+ 	int ret = arch_setup_msi_irqs(dev, nvec, type);
  
--	return ops->domain_alloc_irqs(domain, dev, nvec);
-+	ret = ops->domain_alloc_irqs(domain, dev, nvec);
-+	if (ret)
-+		return ret;
-+
-+	if (!(info->flags & MSI_FLAG_DEV_SYSFS))
-+		return 0;
-+
-+	ret = msi_device_populate_sysfs(dev);
-+	if (ret)
-+		msi_domain_free_irqs(domain, dev);
+-	return pci_msi_setup_check_result(dev, type, ret);
++	ret = pci_msi_setup_check_result(dev, type, ret);
++	if (!ret)
++		ret = msi_device_populate_sysfs(&dev->dev);
 +	return ret;
  }
  
- void __msi_domain_free_irqs(struct irq_domain *domain, struct device *dev)
-@@ -712,7 +748,9 @@ void msi_domain_free_irqs(struct irq_dom
- 	struct msi_domain_info *info = domain->host_data;
- 	struct msi_domain_ops *ops = info->ops;
- 
--	return ops->domain_free_irqs(domain, dev);
-+	if (info->flags & MSI_FLAG_DEV_SYSFS)
-+		msi_device_destroy_sysfs(dev);
-+	ops->domain_free_irqs(domain, dev);
+ void pci_msi_legacy_teardown_msi_irqs(struct pci_dev *dev)
+ {
++	msi_device_destroy_sysfs(&dev->dev);
+ 	arch_teardown_msi_irqs(dev);
  }
+--- a/drivers/pci/msi/msi.c
++++ b/drivers/pci/msi/msi.c
+@@ -233,11 +233,6 @@ static void free_msi_irqs(struct pci_dev
+ 			for (i = 0; i < entry->nvec_used; i++)
+ 				BUG_ON(irq_has_action(entry->irq + i));
  
- /**
+-	if (dev->msi_irq_groups) {
+-		msi_destroy_sysfs(&dev->dev, dev->msi_irq_groups);
+-		dev->msi_irq_groups = NULL;
+-	}
+-
+ 	pci_msi_teardown_msi_irqs(dev);
+ 
+ 	list_for_each_entry_safe(entry, tmp, msi_list, list) {
+@@ -417,7 +412,6 @@ static int msi_verify_entries(struct pci
+ static int msi_capability_init(struct pci_dev *dev, int nvec,
+ 			       struct irq_affinity *affd)
+ {
+-	const struct attribute_group **groups;
+ 	struct msi_desc *entry;
+ 	int ret;
+ 
+@@ -448,14 +442,6 @@ static int msi_capability_init(struct pc
+ 	if (ret)
+ 		goto err;
+ 
+-	groups = msi_populate_sysfs(&dev->dev);
+-	if (IS_ERR(groups)) {
+-		ret = PTR_ERR(groups);
+-		goto err;
+-	}
+-
+-	dev->msi_irq_groups = groups;
+-
+ 	/* Set MSI enabled bits	*/
+ 	pci_intx_for_msi(dev, 0);
+ 	pci_msi_set_enable(dev, 1);
+@@ -584,7 +570,6 @@ static void msix_mask_all(void __iomem *
+ static int msix_capability_init(struct pci_dev *dev, struct msix_entry *entries,
+ 				int nvec, struct irq_affinity *affd)
+ {
+-	const struct attribute_group **groups;
+ 	void __iomem *base;
+ 	int ret, tsize;
+ 	u16 control;
+@@ -629,14 +614,6 @@ static int msix_capability_init(struct p
+ 
+ 	msix_update_entries(dev, entries);
+ 
+-	groups = msi_populate_sysfs(&dev->dev);
+-	if (IS_ERR(groups)) {
+-		ret = PTR_ERR(groups);
+-		goto out_free;
+-	}
+-
+-	dev->msi_irq_groups = groups;
+-
+ 	/* Disable INTX and unmask MSI-X */
+ 	pci_intx_for_msi(dev, 0);
+ 	pci_msix_clear_and_set_ctrl(dev, PCI_MSIX_FLAGS_MASKALL, 0);
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -475,7 +475,6 @@ struct pci_dev {
+ #ifdef CONFIG_PCI_MSI
+ 	void __iomem	*msix_base;
+ 	raw_spinlock_t	msi_lock;
+-	const struct attribute_group **msi_irq_groups;
+ #endif
+ 	struct pci_vpd	vpd;
+ #ifdef CONFIG_PCIE_DPC
 
 _______________________________________________
 iommu mailing list
