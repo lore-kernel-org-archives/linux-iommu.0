@@ -1,68 +1,69 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 476E1C433EF
-	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 22:19:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 612DDC433FE
+	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 22:19:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id BE6CD85535;
-	Fri, 10 Dec 2021 22:19:07 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 0A3FE418E6;
+	Fri, 10 Dec 2021 22:19:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1DATOugGONBe; Fri, 10 Dec 2021 22:19:07 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id UtH81Vc9wK0Z; Fri, 10 Dec 2021 22:19:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id A845D85536;
-	Fri, 10 Dec 2021 22:19:06 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 9EE4E418D7;
+	Fri, 10 Dec 2021 22:19:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 46A3FC0072;
-	Fri, 10 Dec 2021 22:19:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 79572C0030;
+	Fri, 10 Dec 2021 22:19:08 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E2AA8C0012
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:04 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2A477C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id D07434284B
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:04 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0B23742855
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="KpnJbo94";
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="Du2Aaeyf";
  dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="UgAZcMDw"
+ header.d=linutronix.de header.b="CDqZUrLA"
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Y3dte3UzgIE3 for <iommu@lists.linux-foundation.org>;
- Fri, 10 Dec 2021 22:19:04 +0000 (UTC)
+ with ESMTP id KiXlIawzgil9 for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Dec 2021 22:19:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 3F4AF42853
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:04 +0000 (UTC)
-Message-ID: <20211210221813.928842960@linutronix.de>
+Received: from galois.linutronix.de (Galois.linutronix.de
+ [IPv6:2a0a:51c0:0:12e:550::1])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 1A71542853
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 22:19:05 +0000 (UTC)
+Message-ID: <20211210221813.988659194@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1639174742;
+ s=2020; t=1639174744;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=QlSfKOBDbr45C76IAsibYWGajwRrbHzT4oR8MTMol6A=;
- b=KpnJbo94PqafiDuB6cPP3ZG9y5TYJIE/BqRjDQ0OMl+P5klfpfRI7MUpyeTBzsKPc5S7kh
- 7p3bE4N4UClxyjVm4RQXGQBoUIlrUzhcVfp1xJrqCvGQODcFtaL8VLk9npWo2+QOK7o5tV
- b8D7JRJxi5hLB8IALGYUp00MiCX/ts+z5R21QKQl8nIuInb4hpSIHrSWUplo5op0d61N1y
- RIhRFc5a7u4PREveCUA5ts1KCb929sEyBGYy7dGh0DMVlgqH0fqqZWZBKpVtc2K6Bc9eC1
- SblHiCzRFrs/1DG8/HPJfiG3/K2bxSPCdWYGZWDWrbuFk9vApUEdyDOw8IUSng==
+ references:references; bh=oE2eGYCYBsqhTiqWwROCSzBN1PHvDBTxc4ApBbpWErQ=;
+ b=Du2AaeyfQ64dP3dBs4P+iX/eFtTtuCyElkywg4oYr94298FnFHpAop9t86vUsn4VVyrVCl
+ lGFyPgrvSs0Gr8kuj771Eh/3xQ8clx37P2uIDld9f7h+STIe4QjMB1lNIq8aFa6qmzcjnK
+ ay+m0Xlfk66F93sm9gAN9zblzf0wZsVdVR/m5/BXpezRfWcYkI8p02Y74sGyJQfgJA30nA
+ rqbyJQqYND31ug87CWMo7Va00A2e5kmACGXuAKhdEYFcuBoXlbaLCxWV3+5wzPYP6RyyPz
+ PWzzT0WZAAnVAI5zp20wKtXbAm26pTRbjZaW7zp6VGBl5Re0rxuPRFo21zuz0g==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1639174742;
+ s=2020e; t=1639174744;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=QlSfKOBDbr45C76IAsibYWGajwRrbHzT4oR8MTMol6A=;
- b=UgAZcMDwKNxLIdU8MxFmR1DNd/e2mpKEkmAj2dgcbgZL095ScwRy/HwPdGnfG/reYRKINs
- E5jUy+5K8dMLKvAQ==
+ references:references; bh=oE2eGYCYBsqhTiqWwROCSzBN1PHvDBTxc4ApBbpWErQ=;
+ b=CDqZUrLAr3/IbkCTIDZp0THg1iNwgAbMiICWCbxnRLGjU3FnBGAqbCSc84YSFhBleVyNIj
+ Oj6FzJ0V6tLDbaAw==
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch V3 12/35] soc: ti: ti_sci_inta_msi: Allocate MSI device data
- on first use
+Subject: [patch V3 13/35] genirq/msi: Provide
+ msi_device_populate/destroy_sysfs()
 References: <20211210221642.869015045@linutronix.de>
 MIME-Version: 1.0
-Date: Fri, 10 Dec 2021 23:19:01 +0100 (CET)
+Date: Fri, 10 Dec 2021 23:19:03 +0100 (CET)
 Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
  Stuart Yoder <stuyoder@gmail.com>,
  Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -100,32 +101,113 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-Allocate the MSI device data on first invocation of the allocation function.
+Add new allocation functions which can be activated by domain info
+flags. They store the groups pointer in struct msi_device_data.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nishanth Menon <nm@ti.com>
-Cc: Tero Kristo <kristo@kernel.org>
-Cc: Santosh Shilimkar <ssantosh@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org
 ---
- drivers/soc/ti/ti_sci_inta_msi.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ include/linux/msi.h |    4 ++++
+ kernel/irq/msi.c    |   42 ++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 44 insertions(+), 2 deletions(-)
 
---- a/drivers/soc/ti/ti_sci_inta_msi.c
-+++ b/drivers/soc/ti/ti_sci_inta_msi.c
-@@ -120,6 +120,10 @@ int ti_sci_inta_msi_domain_alloc_irqs(st
- 	if (pdev->id < 0)
- 		return -ENODEV;
+--- a/include/linux/msi.h
++++ b/include/linux/msi.h
+@@ -56,6 +56,8 @@ struct irq_data;
+ struct msi_desc;
+ struct pci_dev;
+ struct platform_msi_priv_data;
++struct attribute_group;
++
+ void __get_cached_msi_msg(struct msi_desc *entry, struct msi_msg *msg);
+ #ifdef CONFIG_GENERIC_MSI_IRQ
+ void get_cached_msi_msg(unsigned int irq, struct msi_msg *msg);
+@@ -174,9 +176,11 @@ struct msi_desc {
+ /**
+  * msi_device_data - MSI per device data
+  * @properties:		MSI properties which are interesting to drivers
++ * @attrs:		Pointer to the sysfs attribute group
+  */
+ struct msi_device_data {
+ 	unsigned long			properties;
++	const struct attribute_group    **attrs;
+ };
  
-+	ret = msi_setup_device_data(dev);
+ int msi_setup_device_data(struct device *dev);
+--- a/kernel/irq/msi.c
++++ b/kernel/irq/msi.c
+@@ -200,6 +200,20 @@ const struct attribute_group **msi_popul
+ }
+ 
+ /**
++ * msi_device_populate_sysfs - Populate msi_irqs sysfs entries for a device
++ * @dev:	The device (PCI, platform etc) which will get sysfs entries
++ */
++int msi_device_populate_sysfs(struct device *dev)
++{
++	const struct attribute_group **group = msi_populate_sysfs(dev);
++
++	if (IS_ERR(group))
++		return PTR_ERR(group);
++	dev->msi.data->attrs = group;
++	return 0;
++}
++
++/**
+  * msi_destroy_sysfs - Destroy msi_irqs sysfs entries for devices
+  * @dev:		The device(PCI, platform etc) who will remove sysfs entries
+  * @msi_irq_groups:	attribute_group for device msi_irqs entries
+@@ -225,6 +239,17 @@ void msi_destroy_sysfs(struct device *de
+ 		kfree(msi_irq_groups);
+ 	}
+ }
++
++/**
++ * msi_device_destroy_sysfs - Destroy msi_irqs sysfs entries for a device
++ * @dev:		The device (PCI, platform etc) for which to remove
++ *			sysfs entries
++ */
++void msi_device_destroy_sysfs(struct device *dev)
++{
++	msi_destroy_sysfs(dev, dev->msi.data->attrs);
++	dev->msi.data->attrs = NULL;
++}
+ #endif
+ 
+ #ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
+@@ -672,8 +697,19 @@ int msi_domain_alloc_irqs(struct irq_dom
+ {
+ 	struct msi_domain_info *info = domain->host_data;
+ 	struct msi_domain_ops *ops = info->ops;
++	int ret;
+ 
+-	return ops->domain_alloc_irqs(domain, dev, nvec);
++	ret = ops->domain_alloc_irqs(domain, dev, nvec);
 +	if (ret)
 +		return ret;
 +
- 	nvec = ti_sci_inta_msi_alloc_descs(dev, res);
- 	if (nvec <= 0)
- 		return nvec;
++	if (!(info->flags & MSI_FLAG_DEV_SYSFS))
++		return 0;
++
++	ret = msi_device_populate_sysfs(dev);
++	if (ret)
++		msi_domain_free_irqs(domain, dev);
++	return ret;
+ }
+ 
+ void __msi_domain_free_irqs(struct irq_domain *domain, struct device *dev)
+@@ -712,7 +748,9 @@ void msi_domain_free_irqs(struct irq_dom
+ 	struct msi_domain_info *info = domain->host_data;
+ 	struct msi_domain_ops *ops = info->ops;
+ 
+-	return ops->domain_free_irqs(domain, dev);
++	if (info->flags & MSI_FLAG_DEV_SYSFS)
++		msi_device_destroy_sysfs(dev);
++	ops->domain_free_irqs(domain, dev);
+ }
+ 
+ /**
 
 _______________________________________________
 iommu mailing list
