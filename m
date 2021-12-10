@@ -4,79 +4,80 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3A86CC433F5
-	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 13:25:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4E85BC433F5
+	for <iommu@archiver.kernel.org>; Fri, 10 Dec 2021 14:01:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id AFE7A411D0;
-	Fri, 10 Dec 2021 13:25:56 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id C9194411D0;
+	Fri, 10 Dec 2021 14:01:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lorcwu3jnPPm; Fri, 10 Dec 2021 13:25:55 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 28F7E411AA;
-	Fri, 10 Dec 2021 13:25:55 +0000 (UTC)
+	with ESMTP id CSf8w6Gz44xD; Fri, 10 Dec 2021 14:01:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 47443401F5;
+	Fri, 10 Dec 2021 14:01:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 06F1FC002F;
-	Fri, 10 Dec 2021 13:25:55 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E572DC0012
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 13:25:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 27C5BC001E;
+	Fri, 10 Dec 2021 14:01:31 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 94643C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 14:01:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D0358411AB
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 13:25:53 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 6B5A7411D0
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 14:01:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jogBxG2W1Qpo for <iommu@lists.linux-foundation.org>;
- Fri, 10 Dec 2021 13:25:53 +0000 (UTC)
+ with ESMTP id YHQUvs0iZpv7 for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Dec 2021 14:01:29 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com
- [IPv6:2607:f8b0:4864:20::533])
- by smtp2.osuosl.org (Postfix) with ESMTPS id F2356411AA
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 13:25:52 +0000 (UTC)
-Received: by mail-pg1-x533.google.com with SMTP id k4so8079281pgb.8
- for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 05:25:52 -0800 (PST)
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com
+ [IPv6:2607:f8b0:4864:20::62c])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A1BB5401F5
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 14:01:29 +0000 (UTC)
+Received: by mail-pl1-x62c.google.com with SMTP id p18so6314100plf.13
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Dec 2021 06:01:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=message-id:date:mime-version:user-agent:subject:content-language:to
- :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=uqbMD53C4ItO9uYDsVUp6EzSCFXpBRENU7IWZcPSA4M=;
- b=DYNhmkDVXoEZft9BS7jFUM1vYYZ9YvKi4muEhJQLHJqiGbbJk0Iumlz2I6fT8+haze
- +MHAL/pcdD4GLXyqCU4Eprb2eJjd2mf5vjZ8DzEVupN2/zan52H0xynI+4aaWNtuVWQR
- u3FFiz7DqcRVKU3YNjfbYFUBd9ISYneZ0CFIwjjQz4wdmgu3nHHTvURDoHnr8+4N58O0
- +eACuj6LixZk6F8b3vkNTwo6yKMoV83F9BRq8aU/+w55tia+vJpE3bD21MEPY3j+2BaE
- 9dLxiZxTDsTYe+1zqNUFCvJlKUuDFeGgSZNtGgd0+OHn+cZQKKeYxLE0Si0RPs0NHEOx
- 16Kw==
+ h=message-id:date:mime-version:user-agent:subject:content-language
+ :from:to:cc:references:in-reply-to:content-transfer-encoding;
+ bh=qGyMg3tvfT9nUCepnAppoZ9Lv+yUxkzqt89//s+CHr8=;
+ b=E5gvOzOd9Jcgbo7L0/Gr2lPgDb+GzCE1t9Hj5oLewunkZJ69lNCjzxAU+rrM7IZX8M
+ m3l9lRj2J8s1wNDOSmylB7KXS78MBT5AoUfgGA9Lt5H9CgvPI3rtE+36X8jmCXZD/FQh
+ vN05DUXd4DejDyXPhkRZD+YfK5YG6cv397KJs01OrVXKhlLKE0Awcy1NbP8ZR9zum4Tx
+ 0ERuW0U61lzP2W3au6RMK4oP4M2lfyyNEhkRSZbW81m729P0vMx/YjDbGowwayZRjSDb
+ MwIhPqLO1Vk1KSKHZP9u/MTjJi8Fb3+F/5X7rj5h2Q4nFoGUHhKLQYJfktOvskXkeuok
+ ML3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:in-reply-to
+ :content-language:from:to:cc:references:in-reply-to
  :content-transfer-encoding;
- bh=uqbMD53C4ItO9uYDsVUp6EzSCFXpBRENU7IWZcPSA4M=;
- b=Kn1YkGYGk2NNpstBnLjFr4NLhfqmq5iRt0/sso/RfQKzuPGyUFBZhgHiOYoaA+JQTE
- SX9bTGGBuKw0MVvmNTDhSH4LaEYdlp3ElgcnQLfcWRvNS8Dh0ZW0RSRt7cXSRYQnfcNu
- +tNeULIopJB/y1xR/SXZPupdvHfn40VXPO66vOTFrQR2QbIt6rl22YlVtDsystjPtgEA
- 1FV4OXyUz/nq9erMICCz3t9Xr5GFFjeicopfc3Ja61FnyXRnx4s66u0doIKVLwOrlbnq
- QWv+5b9b3sdQN1+JOqOwZ4Rediz2aBwXlIQjAEAAL5vyBNDf13eTfUqBtw6FkNxyxuDP
- HXGA==
-X-Gm-Message-State: AOAM5333aKM4wwNd+ScHnIuCTl30rtINky7U6wDjzxcN5W9ltaM5hhHt
- JuLtFl/IjaNfO6v8Qf3Jleo=
-X-Google-Smtp-Source: ABdhPJw/w6j8JzL1Fx/z+ArF/5BNciB/RRrnV3JnjQfO14coUZUSUS2ONAfIBFDYLQpvqjdNq3HtQA==
-X-Received: by 2002:a62:1708:0:b0:4a7:e068:b121 with SMTP id
- 8-20020a621708000000b004a7e068b121mr17936120pfx.61.1639142752136; 
- Fri, 10 Dec 2021 05:25:52 -0800 (PST)
-Received: from [10.10.156.113] ([167.220.232.113])
- by smtp.gmail.com with ESMTPSA id c17sm1481858pfc.163.2021.12.10.05.25.41
+ bh=qGyMg3tvfT9nUCepnAppoZ9Lv+yUxkzqt89//s+CHr8=;
+ b=QBO2eKkbZ9d3kF+o/KpYJ68WKoTbIqa+1BuCoLaWYEusTQg6dd/n1PS0gh3fv9eg3V
+ 6KMD8b21SckX8E/9Wa+163MZngsLZamPwIkve/bOR0HD3jmzjT04j543JLwIPa0rujVM
+ OIrIJoQByb4tFp9LgkcDp57spBkHEgvLs/Wu1I4DuFHmNqPCJtc3pbvbUgwffdRO5qGe
+ cIv6TNmvLVzjU+NJERsjji5w6GNBuIAmrGRCYzN5YgsNO9KmzRkVZ/c3zC7y053GChZS
+ 0qglDlILjb1/yWyv44F/wg6cuHt4leA3agnc/oKioZjzoQ6c48qRo9zytuBHnYflx4h+
+ MUPQ==
+X-Gm-Message-State: AOAM530D1omiK546t5sFJpiJKzb9sS4hf6TMUAeJFSGAxnIr7fsEpgC0
+ Er7QJ6rk3FR1fZyw0m2SrtY=
+X-Google-Smtp-Source: ABdhPJyN70DofvK36my/JEa51Le1W77gGRolxr53HVM8X29rx2LLiZygscgs0COaIR0G2PUhK4LxUA==
+X-Received: by 2002:a17:90b:384a:: with SMTP id
+ nl10mr24345699pjb.234.1639144888831; 
+ Fri, 10 Dec 2021 06:01:28 -0800 (PST)
+Received: from [10.10.156.113] ([167.220.233.113])
+ by smtp.gmail.com with ESMTPSA id n71sm3733339pfd.50.2021.12.10.06.01.17
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 10 Dec 2021 05:25:51 -0800 (PST)
-Message-ID: <4d60fcd1-97df-f4a1-1b79-643e65f66b3e@gmail.com>
-Date: Fri, 10 Dec 2021 21:25:40 +0800
+ Fri, 10 Dec 2021 06:01:28 -0800 (PST)
+Message-ID: <6baeb3c4-a493-80d1-439d-fa7dbe1a703a@gmail.com>
+Date: Fri, 10 Dec 2021 22:01:16 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.4.0
 Subject: Re: [PATCH V6 3/5] hyper-v: Enable swiotlb bounce buffer for
  Isolation VM
 Content-Language: en-US
+From: Tianyu Lan <ltykernel@gmail.com>
 To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
  KY Srinivasan <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
  Stephen Hemminger <sthemmin@microsoft.com>,
@@ -97,8 +98,8 @@ To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
 References: <20211207075602.2452-1-ltykernel@gmail.com>
  <20211207075602.2452-4-ltykernel@gmail.com>
  <MWHPR21MB159359667085776793988EACD7709@MWHPR21MB1593.namprd21.prod.outlook.com>
-From: Tianyu Lan <ltykernel@gmail.com>
-In-Reply-To: <MWHPR21MB159359667085776793988EACD7709@MWHPR21MB1593.namprd21.prod.outlook.com>
+ <4d60fcd1-97df-f4a1-1b79-643e65f66b3e@gmail.com>
+In-Reply-To: <4d60fcd1-97df-f4a1-1b79-643e65f66b3e@gmail.com>
 Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
  "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
  "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
@@ -122,67 +123,44 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 12/10/2021 4:09 AM, Michael Kelley (LINUX) wrote:
->> @@ -319,8 +320,16 @@ static void __init ms_hyperv_init_platform(void)
->>   		pr_info("Hyper-V: Isolation Config: Group A 0x%x, Group B 0x%x\n",
->>   			ms_hyperv.isolation_config_a, ms_hyperv.isolation_config_b);
->>
->> -		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP)
->> +		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP) {
->>   			static_branch_enable(&isolation_type_snp);
->> +			swiotlb_unencrypted_base = ms_hyperv.shared_gpa_boundary;
->> +		}
->> +
->> +		/*
->> +		 * Enable swiotlb force mode in Isolation VM to
->> +		 * use swiotlb bounce buffer for dma transaction.
->> +		 */
->> +		swiotlb_force = SWIOTLB_FORCE;
-> I'm good with this approach that directly updates the swiotlb settings here
-> 
-> rather than in IOMMU initialization code.  It's a lot more straightforward.
-> 
-> However, there's an issue if building for X86_32 without PAE, in that the
-> swiotlb module may not be built, resulting in compile and link errors.  The
-> swiotlb.h file needs to be updated to provide a stub function for
-> swiotlb_update_mem_attributes().   swiotlb_unencrypted_base probably
-> needs wrapper functions to get/set it, which can be stubs when
-> CONFIG_SWIOTLB is not set.  swiotlb_force is a bit of a mess in that it already
-> has a stub definition that assumes it will only be read, and not set.  A bit of
-> thinking will be needed to sort that out.
-
-It's ok to fix the issue via selecting swiotlb when CONFIG_HYPERV is
-set?
-
-> 
->>   	}
->>
->>   	if (hv_max_functions_eax >= HYPERV_CPUID_NESTED_FEATURES) {
->> diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
->> index b823311eac79..1f037e114dc8 100644
->> --- a/include/linux/hyperv.h
->> +++ b/include/linux/hyperv.h
->> @@ -1726,6 +1726,14 @@ int hyperv_write_cfg_blk(struct pci_dev *dev, void *buf, unsigned int len,
->>   int hyperv_reg_block_invalidate(struct pci_dev *dev, void *context,
->>   				void (*block_invalidate)(void *context,
->>   							 u64 block_mask));
->> +#if IS_ENABLED(CONFIG_HYPERV)
->> +int __init hyperv_swiotlb_detect(void);
->> +#else
->> +static inline int __init hyperv_swiotlb_detect(void)
->> +{
->> +	return 0;
->> +}
->> +#endif
-> I don't think hyperv_swiotlb_detect() is used any longer, so this change
-> should be dropped.
-Yes, will update.
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CgpPbiAxMi8xMC8yMDIxIDk6MjUgUE0sIFRpYW55dSBMYW4gd3JvdGU6Cj4+PiBAQCAtMzE5LDgg
+KzMyMCwxNiBAQCBzdGF0aWMgdm9pZCBfX2luaXQgbXNfaHlwZXJ2X2luaXRfcGxhdGZvcm0odm9p
+ZCkKPj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBwcl9pbmZvKCJIeXBlci1WOiBJc29sYXRpb24gQ29u
+ZmlnOiBHcm91cCBBIDB4JXgsIEdyb3VwIEIgCj4+PiAweCV4XG4iLAo+Pj4gwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAgbXNfaHlwZXJ2Lmlzb2xhdGlvbl9jb25maWdfYSwgCj4+PiBtc19oeXBl
+cnYuaXNvbGF0aW9uX2NvbmZpZ19iKTsKPj4+Cj4+PiAtwqDCoMKgwqDCoMKgwqAgaWYgKGh2X2dl
+dF9pc29sYXRpb25fdHlwZSgpID09IEhWX0lTT0xBVElPTl9UWVBFX1NOUCkKPj4+ICvCoMKgwqDC
+oMKgwqDCoCBpZiAoaHZfZ2V0X2lzb2xhdGlvbl90eXBlKCkgPT0gSFZfSVNPTEFUSU9OX1RZUEVf
+U05QKSB7Cj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzdGF0aWNfYnJhbmNoX2VuYWJs
+ZSgmaXNvbGF0aW9uX3R5cGVfc25wKTsKPj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN3aW90
+bGJfdW5lbmNyeXB0ZWRfYmFzZSA9IG1zX2h5cGVydi5zaGFyZWRfZ3BhX2JvdW5kYXJ5Owo+Pj4g
+K8KgwqDCoMKgwqDCoMKgIH0KPj4+ICsKPj4+ICvCoMKgwqDCoMKgwqDCoCAvKgo+Pj4gK8KgwqDC
+oMKgwqDCoMKgwqAgKiBFbmFibGUgc3dpb3RsYiBmb3JjZSBtb2RlIGluIElzb2xhdGlvbiBWTSB0
+bwo+Pj4gK8KgwqDCoMKgwqDCoMKgwqAgKiB1c2Ugc3dpb3RsYiBib3VuY2UgYnVmZmVyIGZvciBk
+bWEgdHJhbnNhY3Rpb24uCj4+PiArwqDCoMKgwqDCoMKgwqDCoCAqLwo+Pj4gK8KgwqDCoMKgwqDC
+oMKgIHN3aW90bGJfZm9yY2UgPSBTV0lPVExCX0ZPUkNFOwo+PiBJJ20gZ29vZCB3aXRoIHRoaXMg
+YXBwcm9hY2ggdGhhdCBkaXJlY3RseSB1cGRhdGVzIHRoZSBzd2lvdGxiIHNldHRpbmdzIAo+PiBo
+ZXJlCj4+Cj4+IHJhdGhlciB0aGFuIGluIElPTU1VIGluaXRpYWxpemF0aW9uIGNvZGUuwqAgSXQn
+cyBhIGxvdCBtb3JlIAo+PiBzdHJhaWdodGZvcndhcmQuCj4+Cj4+IEhvd2V2ZXIsIHRoZXJlJ3Mg
+YW4gaXNzdWUgaWYgYnVpbGRpbmcgZm9yIFg4Nl8zMiB3aXRob3V0IFBBRSwgaW4gdGhhdCB0aGUK
+Pj4gc3dpb3RsYiBtb2R1bGUgbWF5IG5vdCBiZSBidWlsdCwgcmVzdWx0aW5nIGluIGNvbXBpbGUg
+YW5kIGxpbmsgCj4+IGVycm9ycy7CoCBUaGUKPj4gc3dpb3RsYi5oIGZpbGUgbmVlZHMgdG8gYmUg
+dXBkYXRlZCB0byBwcm92aWRlIGEgc3R1YiBmdW5jdGlvbiBmb3IKPj4gc3dpb3RsYl91cGRhdGVf
+bWVtX2F0dHJpYnV0ZXMoKS7CoMKgIHN3aW90bGJfdW5lbmNyeXB0ZWRfYmFzZSBwcm9iYWJseQo+
+PiBuZWVkcyB3cmFwcGVyIGZ1bmN0aW9ucyB0byBnZXQvc2V0IGl0LCB3aGljaCBjYW4gYmUgc3R1
+YnMgd2hlbgo+PiBDT05GSUdfU1dJT1RMQiBpcyBub3Qgc2V0LsKgIHN3aW90bGJfZm9yY2UgaXMg
+YSBiaXQgb2YgYSBtZXNzIGluIHRoYXQgCj4+IGl0IGFscmVhZHkKPj4gaGFzIGEgc3R1YiBkZWZp
+bml0aW9uIHRoYXQgYXNzdW1lcyBpdCB3aWxsIG9ubHkgYmUgcmVhZCwgYW5kIG5vdCBzZXQuICAK
+Pj4gQSBiaXQgb2YKPj4gdGhpbmtpbmcgd2lsbCBiZSBuZWVkZWQgdG8gc29ydCB0aGF0IG91dC4K
+PiAKPiBJdCdzIG9rIHRvIGZpeCB0aGUgaXNzdWUgdmlhIHNlbGVjdGluZyBzd2lvdGxiIHdoZW4g
+Q09ORklHX0hZUEVSViBpcwo+IHNldD8KPiAKU29ycnkuIGlnbm9yZSB0aGUgcHJldmlvdXMgc3Rh
+dGVtZW50LiBUaGVzZSBjb2RlcyBkb2Vzbid0IGRlcGVuZCBvbiAKQ09ORklHX0hZUEVSVi4KCkhv
+dyBhYm91dCBtYWtpbmcgdGhlc2UgY29kZSB1bmRlciAjaWZkZWYgQ09ORklHX1g4Nl82NCBvciBD
+T05GSUdfU1dJT1RMQj8KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
+Cmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
