@@ -4,83 +4,83 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5FC55C433F5
-	for <iommu@archiver.kernel.org>; Sat, 11 Dec 2021 16:25:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C7A9EC433F5
+	for <iommu@archiver.kernel.org>; Sat, 11 Dec 2021 16:27:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E49724035E;
-	Sat, 11 Dec 2021 16:25:40 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 694A940399;
+	Sat, 11 Dec 2021 16:27:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id X3awJ8X07AS3; Sat, 11 Dec 2021 16:25:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id A5EBE40017;
-	Sat, 11 Dec 2021 16:25:39 +0000 (UTC)
+	with ESMTP id sI5CGnyrwFuC; Sat, 11 Dec 2021 16:27:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 00CEF40017;
+	Sat, 11 Dec 2021 16:27:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 75C22C002F;
-	Sat, 11 Dec 2021 16:25:39 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D9722C0012
- for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 16:25:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C4610C002F;
+	Sat, 11 Dec 2021 16:27:15 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EAE70C0012
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 16:27:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id D540B42A3E
- for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 16:25:37 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id D8EC78580A
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 16:27:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eG0GNhNPr1od for <iommu@lists.linux-foundation.org>;
- Sat, 11 Dec 2021 16:25:36 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0qt-qXudYB28 for <iommu@lists.linux-foundation.org>;
+ Sat, 11 Dec 2021 16:27:12 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 6E9D942A3C
- for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 16:25:35 +0000 (UTC)
-Received: from mail-wm1-f42.google.com ([209.85.128.42]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MtfRv-1mgDYp21WR-00v95p for <iommu@lists.linux-foundation.org>; Sat, 11 Dec
- 2021 17:25:32 +0100
-Received: by mail-wm1-f42.google.com with SMTP id i12so8983298wmq.4
- for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 08:25:32 -0800 (PST)
-X-Gm-Message-State: AOAM531wzc/V1UTUjPY4ouVtK8UKI9ejLM6IgDJyGWhIPrq2N0NodQPz
- Rqg+O2PgtOhLGuianRpXZyhPV844En3FUq/fiis=
-X-Google-Smtp-Source: ABdhPJyOlfLidEd9162beuC5UM1yFpg2300rafM4JRbY2mJjNOXxVFZo/cAEJoaFFS655TaSoVWjWn5yGpFZ9WnPivI=
-X-Received: by 2002:a05:600c:6d2:: with SMTP id
- b18mr25037494wmn.98.1639236149109; 
- Sat, 11 Dec 2021 07:22:29 -0800 (PST)
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 4FD4885806
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 16:27:12 +0000 (UTC)
+Received: from mail-ed1-f48.google.com ([209.85.208.48]) by
+ mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1M3D3N-1mxTBg2vHR-003Zl2 for <iommu@lists.linux-foundation.org>; Sat, 11 Dec
+ 2021 17:27:09 +0100
+Received: by mail-ed1-f48.google.com with SMTP id w1so38829418edc.6
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 08:27:09 -0800 (PST)
+X-Gm-Message-State: AOAM5309Jupp0Au+Ihz4wT0R1T7jKxmCOoX1j3l6y709AvmdHasS9m/B
+ J81aHVbop8lsm+oSQ4JXi/Gq8yicn8yi8WplRuM=
+X-Google-Smtp-Source: ABdhPJydOCBHCBVhL5GrxiQp2LNkO7SO9fSpEb1ktgLdLbaiYOV8bo99cpA+GLEsnha3mdPvOSWLSKg/3Dqg7U73gXw=
+X-Received: by 2002:a5d:6902:: with SMTP id t2mr20632629wru.317.1639236258246; 
+ Sat, 11 Dec 2021 07:24:18 -0800 (PST)
 MIME-Version: 1.0
 References: <20211210221642.869015045@linutronix.de>
- <20211210221813.617178827@linutronix.de>
-In-Reply-To: <20211210221813.617178827@linutronix.de>
+ <20211210221815.269468319@linutronix.de>
+In-Reply-To: <20211210221815.269468319@linutronix.de>
 From: Arnd Bergmann <arnd@arndb.de>
-Date: Sat, 11 Dec 2021 16:22:13 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0SPopq871z7hbeTZbgnpO=cnEz-4Pmi1Ko3SHFTpU-mg@mail.gmail.com>
-Message-ID: <CAK8P3a0SPopq871z7hbeTZbgnpO=cnEz-4Pmi1Ko3SHFTpU-mg@mail.gmail.com>
-Subject: Re: [patch V3 07/35] device: Move MSI related data into a struct
+Date: Sat, 11 Dec 2021 16:24:02 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a2=LKoe1nw1sZZmxFwAh+54n-Q3cMO3goHEVMQKSVSh+g@mail.gmail.com>
+Message-ID: <CAK8P3a2=LKoe1nw1sZZmxFwAh+54n-Q3cMO3goHEVMQKSVSh+g@mail.gmail.com>
+Subject: Re: [patch V3 34/35] soc: ti: ti_sci_inta_msi: Get rid of
+ ti_sci_inta_msi_get_virq()
 To: Thomas Gleixner <tglx@linutronix.de>
-X-Provags-ID: V03:K1:CqoE0xVESfy+Q5aE+/70eQL3/UHETQUIOuJ5Soo48fuiaCo/nv4
- Ckw9INEXToug0dfcUlpOQ689X8Aiis7mGbgsa6kBqVdWguQP2PIx9BdUT/gGrTw/l41Q5U6
- rPlchBBoGxamlcAKV5LsYBeXplgc5kTy0s72DQ4qzAGxgmwA1tjLbHJTMPfIvayXWdXIut3
- RnvKkgPwa1gteP9KJ77sQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:7TVjEP8bFro=:EA4aQgytHw//eV+zPEBaE7
- VDJMpSx94AsjkDu+rx/2RRdngADupSRh9dbcxceffusfaJIjh92FMRgArOeErmxwNNdiNhZkV
- iWgsT7ZSnOsX9M1TdKhOpz/AW+6mF+2fjXlJlW6b4ykoXOocaiMT3D5cYRoA9OxlrxmeiBVWk
- YrUGhSg+GuvrVmiZaCM8Bj6zXFThi4YPBppwhd5a7yMCZ5wp63n5pvv8N4GY5MhGIaxf2Eg6+
- DeyZH5Ls7qcYOtA7gFT6l60b5yMHlYye3rEIvw9g8P2qk1fjDSPxT2YG1CwGtDX5Ah2mv50/B
- o0UcwdRWfS7Z3uh081+NgntqWtrNuIoCIrId8STVjlVuzuEFG/d4v93dzS0e928yI4yITNMz9
- p5nNJ2HUKX8Fy6RmGyjOzcHIekwy4cPQseuoyGBuh7I6kPAUOizWQ1ZN4460KR/iAzj0JoT9a
- cqlu6gYnH3QeLOFuo0KinH/+HLtOyomy7wuIJaATetw6AyD9AlVCjegmlKGbAFTYyVqFGMKTW
- ILwLHvq1PKJZ18+u2eUVzCRGE11k1mumqLKF8gCUzDW6P2PQgiYZYNW0lIR8wC/p8CkLArSN4
- aXoNSTsvesnDsa3o66g9mIBomRCO9S+UZRrMOVj2rItupRaXovL6y9s4WAseEZvFbD99uY6M6
- VmhUlxTNxwwZQFXuOZVDdA/IxXC36lB8RHuk3uBlhlTlDfRtghq1KDt+PS2C+nmclTlplWol+
- AJAE5GQGL8EMb/VLVOXDhQYY+t+Wafq36uhHLkkC9tx4IHxgOYAJ8g1XhHA31x2pCOGNN96bd
- YCrFgX3GguSyfk0QGd8p2uiLUer/Wr4aRkblUeCc+wqeEQ/mHU=
+X-Provags-ID: V03:K1:fYvffi4UG8Cnt2k7OgN83l5r/dxERPvXAFgHN1jSYH9SwuWJ5V4
+ bp/bJiumofX7E+YMfOGM2E8zq0Qzy0pUyk2QiDIoNFcN7mmw1iI3z0x/75a5Ta6Oz714/7S
+ k+NcclBGUDz2vs5BszDqIm+hGNgA4JY0bitXBzpMDTuv6UfwIFuxrVCBlB5wsakLu240suk
+ swbTvo8bCdfmQpM/d9Otw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:wdCV8I3HR1k=:+NECGqKrNujdthY2n1izY9
+ PFFjUCzM3YBN63OJEvp1OBFca4JcktBUE1QXTzg2Ov0Lka8PrnXfI3KnlG6qSzLm2hFXvlddd
+ JcGiqY2SX44PKF8xC8oIAsw/m65nQw5Kzd4HZefy9OuQtKGMZj35TzzqJBDrdEZAcy6IyeCWe
+ WgylaIRJZjGt3pKPtWeOTeMckNYR8NMrnHHpNGoLk3Jqx1NomZJs8Yh5zQvWYD+t2o2rWUfOR
+ 11VvQAJlBRPZswCBgYGrmjtZs4uDfCfQNF9pZtwACkoBHc8lqT4ziaoaY7F1tiIMJiBlAl/DZ
+ Ax2StkxiMkat858genUl2C+Gv2pFz72vuNCd+4bnYJd0ouhClFftp8enKl3bdtfd6X9aAqQ1U
+ nYk4pILKFF+EwNXfg+kos/0EE1YJpWkLfjquACpMc11QHisIz78dUqTDbbLvWDciwBHvD3tvT
+ Gc76auz/R6R7j2l/GURkuW/C7x3Sbfnyzv5EyjYYnCbNKrsx2xxYV10EHgJQl3A7nZ+QX6d+c
+ qSHh92OYPrkjiZvlUJlWGUqmgs6ccodhPRpmFb23DJpiKvYSd3ijvwRoSzQf87gGrpFlARP0S
+ iPT0cGpzHA5PFI52yMQTT5AfGF2hb+Md1DHhwQ9YXUzA83S6zPTrtkBMBpo0ZNLBM34gK4WDr
+ TQDnsH2ydn24xlvk6mdZRt5wUKEvCjDmSoHJXZfi2ddSlZB7vU94qIQoYwNzUnQ8pknhRGYyN
+ v5MopvFyybGd22Zn7M36hGsy0zSz21Tb4Z0P0F5mLhrsyVGinXyGYtnHsy3k+88Ew6lOxAI2n
+ D6UtoxH00pwmQ303WueEVbn40c6DDGu9E3TiRA9o4bUlMlSPzg=
 Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
  Stuart Yoder <stuyoder@gmail.com>,
  Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Jassi Brar <jassisinghbrar@gmail.com>,
- Sinan Kaya <okaya@kernel.org>,
+ Will Deacon <will@kernel.org>, Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+ Ashok Raj <ashok.raj@intel.com>, Michael Ellerman <mpe@ellerman.id.au>,
+ Jassi Brar <jassisinghbrar@gmail.com>, Sinan Kaya <okaya@kernel.org>,
  "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Peter Ujfalusi <peter.ujfalusi@gmail.com>, Bjorn Helgaas <helgaas@kernel.org>,
+ Bjorn Helgaas <helgaas@kernel.org>,
  Linux ARM <linux-arm-kernel@lists.infradead.org>,
  Jason Gunthorpe <jgg@nvidia.com>, linux-pci <linux-pci@vger.kernel.org>,
  xen-devel <xen-devel@lists.xenproject.org>, Kevin Tian <kevin.tian@intel.com>,
@@ -110,18 +110,18 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Dec 10, 2021 at 11:18 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+On Fri, Dec 10, 2021 at 11:19 PM Thomas Gleixner <tglx@linutronix.de> wrote:
 >
 > From: Thomas Gleixner <tglx@linutronix.de>
 >
-> The only unconditional part of MSI data in struct device is the irqdomain
-> pointer. Everything else can be allocated on demand. Create a data
-> structure and move the irqdomain pointer into it. The other MSI specific
-> parts are going to be removed from struct device in later steps.
+> Just use the core function msi_get_virq().
 >
 > Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 > Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Cc: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: dmaengine@vger.kernel.org
 
 Acked-by: Arnd Bergmann <arnd@arndb.de>
 _______________________________________________
