@@ -1,92 +1,99 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 091BFC4332F
-	for <iommu@archiver.kernel.org>; Sat, 11 Dec 2021 14:57:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7AE55C433EF
+	for <iommu@archiver.kernel.org>; Sat, 11 Dec 2021 15:27:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9CF9961C4B;
-	Sat, 11 Dec 2021 14:57:48 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 31BC18595B;
+	Sat, 11 Dec 2021 15:27:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qvC-HMudJVmw; Sat, 11 Dec 2021 14:57:45 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Sn0C8VAgPDQ1; Sat, 11 Dec 2021 15:27:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 2CC3461C41;
-	Sat, 11 Dec 2021 14:57:45 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 280BE85959;
+	Sat, 11 Dec 2021 15:27:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AF960C0073;
-	Sat, 11 Dec 2021 14:57:44 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 11AEBC0012;
- Fri, 10 Dec 2021 07:44:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F3192C001E;
+	Sat, 11 Dec 2021 15:27:19 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BE2E7C0012
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 15:27:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id E408361267;
- Fri, 10 Dec 2021 07:44:04 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id AB90261BF4
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 15:27:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2RqTrIo9LZRr; Fri, 10 Dec 2021 07:44:03 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com
- [IPv6:2607:f8b0:4864:20::536])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 5992E61263;
- Fri, 10 Dec 2021 07:44:03 +0000 (UTC)
-Received: by mail-pg1-x536.google.com with SMTP id l18so2662514pgj.9;
- Thu, 09 Dec 2021 23:44:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=message-id:date:mime-version:user-agent:subject:to:cc:references
- :from:in-reply-to:content-transfer-encoding;
- bh=FYFBhmavOHQihQEBX9qGXsO80PWaXrVj26hswLpne0s=;
- b=eG+dAPNpmN++zkv+fyWyJm9db2yzcXdaxWLsIDeNrM9/yL83hTHf9VWSkbOQK7h6hM
- Wlj/u3dtTGGsr1WM3qnBX5p59ibJ2UWj0/j+XWpG/tEacNWRzkoWytB17nxhlXdNVC2y
- RnNAYGMHaxEvW5WS7jDhS/fK+O5Gq63015sDuBfT8AfK5aOhuV3Ic3GuiN4JvVgC/x7i
- eec5AQFzLkkQkv9h4mhe2Rh7QcMiJbAxca73e5nrylXCYayDnebl2aF/Brekj2CjFD0F
- t1I3tDGsE7w3AKpWWqUALBve87HRS41uV7DfVDpOdl2CYYpeNu0XyfLRmLT0MDs/BoQi
- Lflw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :to:cc:references:from:in-reply-to:content-transfer-encoding;
- bh=FYFBhmavOHQihQEBX9qGXsO80PWaXrVj26hswLpne0s=;
- b=QgrnerkJXdASBrOtT1E7TmgWG2cE/FfH97zsxgHBTjaQbKNt1BhwZTSKSLD11m1bBs
- P9O6wPkmfLS0MrgizFMfDxu7aiOyEbhKIsgml/q6IL6dvQemKwbu9ui8EZYT+0aE2C57
- KuwIXFYoYg68MCxd0xFKFr/EiKWo/3Og2LpyDwobLKrAUCWsRFn8BOtlcPUxqASHD8uP
- N2d3T4wfnXpj4w8BY50NkhkFjn3PKe2KoXecnKErVVYIdn9IQfiWcvTZpPGQ/KgaCe7O
- ckGCuhol35KkXpzTdsCJm4dwLgW9NpG4F6m8QlM7F1AD+C5JF8Wa+hl78mutD3v2HpUP
- jaGA==
-X-Gm-Message-State: AOAM533Ag+/ZHxBcs0/sqvNqY9J2HQWwHWmnmsVRzHOcacPl//1aRFsp
- YwCzrC1vBBFEblCKQi+KH44=
-X-Google-Smtp-Source: ABdhPJwBPXWYkvIGUGnrjWv+j12lBB8kMdBIkbohxceo7qPeZwVXgp1O9cfcTUiYk9mgFRMURfHLMw==
-X-Received: by 2002:a62:790e:0:b0:4af:e9c0:3322 with SMTP id
- u14-20020a62790e000000b004afe9c03322mr8145425pfc.86.1639122242728; 
- Thu, 09 Dec 2021 23:44:02 -0800 (PST)
-Received: from [30.240.98.4] ([205.204.117.108])
- by smtp.gmail.com with ESMTPSA id a26sm1908458pfh.161.2021.12.09.23.43.59
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 09 Dec 2021 23:44:02 -0800 (PST)
-Message-ID: <2926b360-5204-45f5-e1a0-e260214f8dbf@gmail.com>
-Date: Fri, 10 Dec 2021 15:43:56 +0800
+ with ESMTP id x7d9eY_maFtD for <iommu@lists.linux-foundation.org>;
+ Sat, 11 Dec 2021 15:27:18 +0000 (UTC)
+X-Greylist: delayed 00:05:04 by SQLgrey-1.8.0
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 8ED1861BDA
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 15:27:16 +0000 (UTC)
+Received: from mail-wr1-f43.google.com ([209.85.221.43]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MrPRB-1m9JRc05J9-00oZDz for <iommu@lists.linux-foundation.org>; Sat, 11
+ Dec 2021 16:22:11 +0100
+Received: by mail-wr1-f43.google.com with SMTP id j3so19785256wrp.1
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 07:22:10 -0800 (PST)
+X-Gm-Message-State: AOAM5309ukJomAeEe3GUO/eeQr40KfemFj1rQLFTP9HFNAcEXnTTjRsT
+ kyKV6M2H46NJk6Nk/QtjfJPZf/YYUiYx4FixE44=
+X-Google-Smtp-Source: ABdhPJw71fHmkJDBQfwdVvTsQemVVjs0TdIXte5O3MuH5722pvreNXPnvtVfyYQ4NEpRi0VtDUcmnQ9Z/Qh6+K4QE8c=
+X-Received: by 2002:a5d:530e:: with SMTP id e14mr21123035wrv.12.1639236119426; 
+ Sat, 11 Dec 2021 07:21:59 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.2.1
-Subject: Re: [RFC PATCH v2 1/7] mm: page_alloc: avoid merging non-fallbackable
- pageblocks with others.
-To: Zi Yan <ziy@nvidia.com>, David Hildenbrand <david@redhat.com>,
- linux-mm@kvack.org
-References: <20211209230414.2766515-1-zi.yan@sent.com>
- <20211209230414.2766515-2-zi.yan@sent.com>
-From: Eric Ren <renzhengeek@gmail.com>
-In-Reply-To: <20211209230414.2766515-2-zi.yan@sent.com>
-X-Mailman-Approved-At: Sat, 11 Dec 2021 14:57:43 +0000
-Cc: Mel Gorman <mgorman@techsingularity.net>,
- Michael Ellerman <mpe@ellerman.id.au>, Robin Murphy <robin.murphy@arm.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
- Christoph Hellwig <hch@lst.de>, Vlastimil Babka <vbabka@suse.cz>
+References: <20211210221642.869015045@linutronix.de>
+ <20211210221813.493922179@linutronix.de>
+In-Reply-To: <20211210221813.493922179@linutronix.de>
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Sat, 11 Dec 2021 16:21:43 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3U2DSm_DWS+iDkzH14hNMwyOQ77iS=W4HoAyHPh6pqUw@mail.gmail.com>
+Message-ID: <CAK8P3a3U2DSm_DWS+iDkzH14hNMwyOQ77iS=W4HoAyHPh6pqUw@mail.gmail.com>
+Subject: Re: [patch V3 05/35] powerpc/cell/axon_msi: Use PCI device property
+To: Thomas Gleixner <tglx@linutronix.de>
+X-Provags-ID: V03:K1:r4z/4igR5PJTzwD1REDDrNfpz+jFus9r/dYXb43g4sRb+eNLrRK
+ 8nbRt7QoUEWVSah1mQKYAUalUb6cEF97lUTsDVZJEQUC3D2SJzJMU9blm/foMLOp3RoPaH4
+ JAFXWSo8CfOXXoi34bvHCz2u/Rdi/4dzL2P2ZJWhUJMpwzL+hXDdkkwiVFa+1Z9v3AzrKRt
+ 4P/OD/OFWBf0EB8AJaymQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:M3WjowCcRNw=:RzSbNiG63zkpBaSFMYy8wp
+ HL0i0NjBYnGx11kH/qKtQ9IheG8d/3EnbtLe3xm02v88T7c49sZUyCFQSmsiOVoVfdWFTBshT
+ EQgeIAqaJxKr+vBHgwigB5QVa78oyli6QZ1+/pP2YQdasRYi8dhXyke/5MqhKqfHXOXch4U4M
+ 2sTxRtiELeu6hjGCefJnNhNhP4FR09EUNaxscSKjEWWeotTkiN7V29qNtudk1LIfvwQLWeyND
+ MLULpS10YzIYTqHcHaSmP2qjHSeS9wU8Vf4JImOHdlEFljVFcY8w6CzIi1PmiYrctz79gq8UU
+ Z94L9P1ba3/9+zWamkz18aaO4aJWdJ3jZRlLEWJP0n/K13Zh5MamdAcdjFlID3Liup71llN8f
+ i8Kq3lzLErtgXNVCT0AiB3W2/7B556Q4oX5j56eJAYq7H0GHNQSBO1s5HogpLJcG8sl+Vhkjr
+ 3oYWLrgOPP+VUBX/hVHBqEsQ+iEfsn8JqEjB3fF50wa4A+YZRvWwWfMVoY9MlcAEKZo8Nc8wh
+ JMy5g5HOum9VclUz0LV+OpYo/cpOsYU7MsQpPaNJyGsYM6s4zav6BjIqGiMP93M3XlwCuw8Xh
+ vcjSgjC77bI6jfttMI6dHyqfF/wXxUmtJc/dtG7Ex28rLTAoO3p7eIUjqyaqtcodmH8HD44xw
+ KVzn5ingWo799a/GD5j4L4MwpHssFvd8gzNTQpCdCbmPmxcz4LNyMvE3Czvp8mqNOeZinK85T
+ hgM7DzqSbvxUgDKp8flT+imh/aC7OOOQ3pVguTBj3A5vG3WbJB4o4FRlQMDaEpdHA05WMZJ5G
+ zmxNf+nAxLuOaEfoi88F9njoXVZ5cdoN2f7BzNbIppqQgQOOFYiaSB9XQrR8qCYWux5bCtoVH
+ S2h/6R5rLUFKZFm++hA+U5LVCKD0yJoWKUasnIFEAcNsv9L621dd5iNlJCVonG38Uevr4CoFY
+ z2Am63Oa0Ig==
+Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
+ Stuart Yoder <stuyoder@gmail.com>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Jassi Brar <jassisinghbrar@gmail.com>,
+ Sinan Kaya <okaya@kernel.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Peter Ujfalusi <peter.ujfalusi@gmail.com>, Bjorn Helgaas <helgaas@kernel.org>,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, linux-pci <linux-pci@vger.kernel.org>,
+ xen-devel <xen-devel@lists.xenproject.org>, Kevin Tian <kevin.tian@intel.com>,
+ Arnd Bergmann <arnd@arndb.de>, Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Cedric Le Goater <clg@kaod.org>,
+ Santosh Shilimkar <ssantosh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Megha Dey <megha.dey@intel.com>, Juergen Gross <jgross@suse.com>,
+ Tero Kristo <kristo@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ LKML <linux-kernel@vger.kernel.org>, Vinod Koul <vkoul@kernel.org>,
+ Marc Zygnier <maz@kernel.org>, dmaengine@vger.kernel.org,
+ linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,102 +106,26 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGksCgpPbiAyMDIxLzEyLzEwIDA3OjA0LCBaaSBZYW4gd3JvdGU6Cj4gRnJvbTogWmkgWWFuIDx6
-aXlAbnZpZGlhLmNvbT4KPgo+IFRoaXMgaXMgZG9uZSBpbiBhZGRpdGlvbiB0byBNSUdSQVRFX0lT
-T0xBVEUgcGFnZWJsb2NrIG1lcmdlIGF2b2lkYW5jZS4KPiBJdCBwcmVwYXJlcyBmb3IgdGhlIHVw
-Y29taW5nIHJlbW92YWwgb2YgdGhlIE1BWF9PUkRFUi0xIGFsaWdubWVudAo+IHJlcXVpcmVtZW50
-IGZvciBDTUEgYW5kIGFsbG9jX2NvbnRpZ19yYW5nZSgpLgo+Cj4gTUlHUkFSVEVfSElHSEFUT01J
-QyBzaG91bGQgbm90IG1lcmdlIHdpdGggb3RoZXIgbWlncmF0ZXR5cGVzIGxpa2UKPiBNSUdSQVRF
-X0lTT0xBVEUgYW5kIE1JR1JBUlRFX0NNQVsxXSwgc28gdGhpcyBjb21taXQgcHJldmVudHMgdGhh
-dCB0b28uCj4gQWxzbyBhZGQgTUlHUkFSVEVfSElHSEFUT01JQyB0byBmYWxsYmFja3MgYXJyYXkg
-Zm9yIGNvbXBsZXRlbmVzcy4KPgo+IFsxXSBodHRwczovL2xvcmUua2VybmVsLm9yZy9saW51eC1t
-bS8yMDIxMTEzMDEwMDg1My5HUDMzNjZAdGVjaHNpbmd1bGFyaXR5Lm5ldC8KPgo+IFNpZ25lZC1v
-ZmYtYnk6IFppIFlhbiA8eml5QG52aWRpYS5jb20+Cj4gLS0tCj4gICBpbmNsdWRlL2xpbnV4L21t
-em9uZS5oIHwgIDYgKysrKysrCj4gICBtbS9wYWdlX2FsbG9jLmMgICAgICAgIHwgMjggKysrKysr
-KysrKysrKysrKysrLS0tLS0tLS0tLQo+ICAgMiBmaWxlcyBjaGFuZ2VkLCAyNCBpbnNlcnRpb25z
-KCspLCAxMCBkZWxldGlvbnMoLSkKPgo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L21tem9u
-ZS5oIGIvaW5jbHVkZS9saW51eC9tbXpvbmUuaAo+IGluZGV4IDU4ZTc0NGI3OGMyYy4uYjkyNTQz
-MWIwMTIzIDEwMDY0NAo+IC0tLSBhL2luY2x1ZGUvbGludXgvbW16b25lLmgKPiArKysgYi9pbmNs
-dWRlL2xpbnV4L21tem9uZS5oCj4gQEAgLTgzLDYgKzgzLDEyIEBAIHN0YXRpYyBpbmxpbmUgYm9v
-bCBpc19taWdyYXRlX21vdmFibGUoaW50IG10KQo+ICAgCXJldHVybiBpc19taWdyYXRlX2NtYSht
-dCkgfHwgbXQgPT0gTUlHUkFURV9NT1ZBQkxFOwo+ICAgfQo+ICAgCj4gKy8qIFNlZSBmYWxsYmFj
-a3NbTUlHUkFURV9UWVBFU11bM10gaW4gcGFnZV9hbGxvYy5jICovCj4gK3N0YXRpYyBpbmxpbmUg
-Ym9vbCBtaWdyYXRldHlwZV9oYXNfZmFsbGJhY2soaW50IG10KQo+ICt7Cj4gKwlyZXR1cm4gbXQg
-PCBNSUdSQVRFX1BDUFRZUEVTOwo+ICt9Cj4gKwoKSSB3b3VsZCBzdWdnZXN0IHNwbGl0aW5nIHRo
-ZSBwYXRjaCBpbnRvIDIgcGFydHMuwqAgVGhlIGZpcnN0IHBhcnQ6IG5vIApmdW5jdGlvbmluZyBj
-aGFuZ2UsIGp1c3QgaW50cm9kdWNlIG1pZ3JhdGV0eXBlX2hhc19mYWxsYmFjaygpCmFuZCByZXBs
-YWNlIHdoZXJlIGl0IGFwcGx5cyB0by4KCj4gICAjZGVmaW5lIGZvcl9lYWNoX21pZ3JhdGV0eXBl
-X29yZGVyKG9yZGVyLCB0eXBlKSBcCj4gICAJZm9yIChvcmRlciA9IDA7IG9yZGVyIDwgTUFYX09S
-REVSOyBvcmRlcisrKSBcCj4gICAJCWZvciAodHlwZSA9IDA7IHR5cGUgPCBNSUdSQVRFX1RZUEVT
-OyB0eXBlKyspCj4gZGlmZiAtLWdpdCBhL21tL3BhZ2VfYWxsb2MuYyBiL21tL3BhZ2VfYWxsb2Mu
-Ywo+IGluZGV4IGVkZmQ2YzgxYWY4Mi4uMTA3YTVmMTg2ZDNiIDEwMDY0NAo+IC0tLSBhL21tL3Bh
-Z2VfYWxsb2MuYwo+ICsrKyBiL21tL3BhZ2VfYWxsb2MuYwo+IEBAIC0xMDQxLDYgKzEwNDEsMTIg
-QEAgYnVkZHlfbWVyZ2VfbGlrZWx5KHVuc2lnbmVkIGxvbmcgcGZuLCB1bnNpZ25lZCBsb25nIGJ1
-ZGR5X3BmbiwKPiAgIAlyZXR1cm4gcGFnZV9pc19idWRkeShoaWdoZXJfcGFnZSwgaGlnaGVyX2J1
-ZGR5LCBvcmRlciArIDEpOwo+ICAgfQo+ICAgCj4gK3N0YXRpYyBpbmxpbmUgYm9vbCBoYXNfbm9u
-X2ZhbGxiYWNrX3BhZ2VibG9jayhzdHJ1Y3Qgem9uZSAqem9uZSkKPiArewo+ICsJcmV0dXJuIGhh
-c19pc29sYXRlX3BhZ2VibG9jayh6b25lKSB8fCB6b25lX2NtYV9wYWdlcyh6b25lKSAhPSAwIHx8
-Cj4gKwkJem9uZS0+bnJfcmVzZXJ2ZWRfaGlnaGF0b21pYyAhPSAwOwoKTWFrZSB6b25lLT5ucl9y
-ZXNlcnZlZF9oaWdoYXRvbWljICE9IDAgYSBoZWxwZXIgYXMgem9uZV9jbWFfcGFnZXMoKT8KPiAr
-fQo+ICsKPiAgIC8qCj4gICAgKiBGcmVlaW5nIGZ1bmN0aW9uIGZvciBhIGJ1ZGR5IHN5c3RlbSBh
-bGxvY2F0b3IuCj4gICAgKgo+IEBAIC0xMTE2LDE0ICsxMTIyLDE1IEBAIHN0YXRpYyBpbmxpbmUg
-dm9pZCBfX2ZyZWVfb25lX3BhZ2Uoc3RydWN0IHBhZ2UgKnBhZ2UsCj4gICAJfQo+ICAgCWlmIChv
-cmRlciA8IE1BWF9PUkRFUiAtIDEpIHsKPiAgIAkJLyogSWYgd2UgYXJlIGhlcmUsIGl0IG1lYW5z
-IG9yZGVyIGlzID49IHBhZ2VibG9ja19vcmRlci4KPiAtCQkgKiBXZSB3YW50IHRvIHByZXZlbnQg
-bWVyZ2UgYmV0d2VlbiBmcmVlcGFnZXMgb24gaXNvbGF0ZQo+IC0JCSAqIHBhZ2VibG9jayBhbmQg
-bm9ybWFsIHBhZ2VibG9jay4gV2l0aG91dCB0aGlzLCBwYWdlYmxvY2sKPiAtCQkgKiBpc29sYXRp
-b24gY291bGQgY2F1c2UgaW5jb3JyZWN0IGZyZWVwYWdlIG9yIENNQSBhY2NvdW50aW5nLgo+ICsJ
-CSAqIFdlIHdhbnQgdG8gcHJldmVudCBtZXJnZSBiZXR3ZWVuIGZyZWVwYWdlcyBvbiBwYWdlYmxv
-Y2sKPiArCQkgKiB3aXRob3V0IGZhbGxiYWNrcyBhbmQgbm9ybWFsIHBhZ2VibG9jay4gV2l0aG91
-dCB0aGlzLAo+ICsJCSAqIHBhZ2VibG9jayBpc29sYXRpb24gY291bGQgY2F1c2UgaW5jb3JyZWN0
-IGZyZWVwYWdlIG9yIENNQQo+ICsJCSAqIGFjY291bnRpbmcgb3IgSElHSEFUT01JQyBhY2NvdW50
-aW5nLgo+ICAgCQkgKgo+ICAgCQkgKiBXZSBkb24ndCB3YW50IHRvIGhpdCB0aGlzIGNvZGUgZm9y
-IHRoZSBtb3JlIGZyZXF1ZW50Cj4gICAJCSAqIGxvdy1vcmRlciBtZXJnaW5nLgo+ICAgCQkgKi8K
-PiAtCQlpZiAodW5saWtlbHkoaGFzX2lzb2xhdGVfcGFnZWJsb2NrKHpvbmUpKSkgewo+ICsJCWlm
-ICh1bmxpa2VseShoYXNfbm9uX2ZhbGxiYWNrX3BhZ2VibG9jayh6b25lKSkpIHsKSSdtIG5vdCBm
-YW1pbGlhciB3aXRoIHRoZSBjb2RlIGRldGFpbHMsIGp1c3Qgd29uZGVyaW5nIGlmIHRoaXMgY2hh
-bmdlIAp3b3VsZCBoYXMgc2lkZSBlZmZlY3RzIG9uIGNtYQpwYWdlYmxvY2sgbWVyZ2luZyBhcyBp
-dCB0aGUgY29uZGl0aW9uIHN0cm9uZ2VyPwoKVGhhbmtzLApFcmljCj4gICAJCQlpbnQgYnVkZHlf
-bXQ7Cj4gICAKPiAgIAkJCWJ1ZGR5X3BmbiA9IF9fZmluZF9idWRkeV9wZm4ocGZuLCBvcmRlcik7
-Cj4gQEAgLTExMzEsOCArMTEzOCw4IEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBfX2ZyZWVfb25lX3Bh
-Z2Uoc3RydWN0IHBhZ2UgKnBhZ2UsCj4gICAJCQlidWRkeV9tdCA9IGdldF9wYWdlYmxvY2tfbWln
-cmF0ZXR5cGUoYnVkZHkpOwo+ICAgCj4gICAJCQlpZiAobWlncmF0ZXR5cGUgIT0gYnVkZHlfbXQK
-PiAtCQkJCQkmJiAoaXNfbWlncmF0ZV9pc29sYXRlKG1pZ3JhdGV0eXBlKSB8fAo+IC0JCQkJCQlp
-c19taWdyYXRlX2lzb2xhdGUoYnVkZHlfbXQpKSkKPiArCQkJCQkmJiAoIW1pZ3JhdGV0eXBlX2hh
-c19mYWxsYmFjayhtaWdyYXRldHlwZSkgfHwKPiArCQkJCQkJIW1pZ3JhdGV0eXBlX2hhc19mYWxs
-YmFjayhidWRkeV9tdCkpKQo+ICAgCQkJCWdvdG8gZG9uZV9tZXJnaW5nOwo+ICAgCQl9Cj4gICAJ
-CW1heF9vcmRlciA9IG9yZGVyICsgMTsKPiBAQCAtMjQ4Myw2ICsyNDkwLDcgQEAgc3RhdGljIGlu
-dCBmYWxsYmFja3NbTUlHUkFURV9UWVBFU11bM10gPSB7Cj4gICAJW01JR1JBVEVfVU5NT1ZBQkxF
-XSAgID0geyBNSUdSQVRFX1JFQ0xBSU1BQkxFLCBNSUdSQVRFX01PVkFCTEUsICAgTUlHUkFURV9U
-WVBFUyB9LAo+ICAgCVtNSUdSQVRFX01PVkFCTEVdICAgICA9IHsgTUlHUkFURV9SRUNMQUlNQUJM
-RSwgTUlHUkFURV9VTk1PVkFCTEUsIE1JR1JBVEVfVFlQRVMgfSwKPiAgIAlbTUlHUkFURV9SRUNM
-QUlNQUJMRV0gPSB7IE1JR1JBVEVfVU5NT1ZBQkxFLCAgIE1JR1JBVEVfTU9WQUJMRSwgICBNSUdS
-QVRFX1RZUEVTIH0sCj4gKwlbTUlHUkFURV9ISUdIQVRPTUlDXSA9IHsgTUlHUkFURV9UWVBFUyB9
-LCAvKiBOZXZlciB1c2VkICovCj4gICAjaWZkZWYgQ09ORklHX0NNQQo+ICAgCVtNSUdSQVRFX0NN
-QV0gICAgICAgICA9IHsgTUlHUkFURV9UWVBFUyB9LCAvKiBOZXZlciB1c2VkICovCj4gICAjZW5k
-aWYKPiBAQCAtMjc5NCw4ICsyODAyLDggQEAgc3RhdGljIHZvaWQgcmVzZXJ2ZV9oaWdoYXRvbWlj
-X3BhZ2VibG9jayhzdHJ1Y3QgcGFnZSAqcGFnZSwgc3RydWN0IHpvbmUgKnpvbmUsCj4gICAKPiAg
-IAkvKiBZb2luayEgKi8KPiAgIAltdCA9IGdldF9wYWdlYmxvY2tfbWlncmF0ZXR5cGUocGFnZSk7
-Cj4gLQlpZiAoIWlzX21pZ3JhdGVfaGlnaGF0b21pYyhtdCkgJiYgIWlzX21pZ3JhdGVfaXNvbGF0
-ZShtdCkKPiAtCSAgICAmJiAhaXNfbWlncmF0ZV9jbWEobXQpKSB7Cj4gKwkvKiBPbmx5IHJlc2Vy
-dmUgbm9ybWFsIHBhZ2VibG9jayAqLwo+ICsJaWYgKG1pZ3JhdGV0eXBlX2hhc19mYWxsYmFjayht
-dCkpIHsKPiAgIAkJem9uZS0+bnJfcmVzZXJ2ZWRfaGlnaGF0b21pYyArPSBwYWdlYmxvY2tfbnJf
-cGFnZXM7Cj4gICAJCXNldF9wYWdlYmxvY2tfbWlncmF0ZXR5cGUocGFnZSwgTUlHUkFURV9ISUdI
-QVRPTUlDKTsKPiAgIAkJbW92ZV9mcmVlcGFnZXNfYmxvY2soem9uZSwgcGFnZSwgTUlHUkFURV9I
-SUdIQVRPTUlDLCBOVUxMKTsKPiBAQCAtMzU0NCw4ICszNTUyLDggQEAgaW50IF9faXNvbGF0ZV9m
-cmVlX3BhZ2Uoc3RydWN0IHBhZ2UgKnBhZ2UsIHVuc2lnbmVkIGludCBvcmRlcikKPiAgIAkJc3Ry
-dWN0IHBhZ2UgKmVuZHBhZ2UgPSBwYWdlICsgKDEgPDwgb3JkZXIpIC0gMTsKPiAgIAkJZm9yICg7
-IHBhZ2UgPCBlbmRwYWdlOyBwYWdlICs9IHBhZ2VibG9ja19ucl9wYWdlcykgewo+ICAgCQkJaW50
-IG10ID0gZ2V0X3BhZ2VibG9ja19taWdyYXRldHlwZShwYWdlKTsKPiAtCQkJaWYgKCFpc19taWdy
-YXRlX2lzb2xhdGUobXQpICYmICFpc19taWdyYXRlX2NtYShtdCkKPiAtCQkJICAgICYmICFpc19t
-aWdyYXRlX2hpZ2hhdG9taWMobXQpKQo+ICsJCQkvKiBPbmx5IGNoYW5nZSBub3JtYWwgcGFnZWJs
-b2NrICovCj4gKwkJCWlmIChtaWdyYXRldHlwZV9oYXNfZmFsbGJhY2sobXQpKQo+ICAgCQkJCXNl
-dF9wYWdlYmxvY2tfbWlncmF0ZXR5cGUocGFnZSwKPiAgIAkJCQkJCQkgIE1JR1JBVEVfTU9WQUJM
-RSk7Cj4gICAJCX0KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpo
-dHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Fri, Dec 10, 2021 at 11:18 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+>
+> From: Thomas Gleixner <tglx@linutronix.de>
+>
+> instead of fiddling with MSI descriptors.
+>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+> Cc: linuxppc-dev@lists.ozlabs.org
+> ---
+
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
