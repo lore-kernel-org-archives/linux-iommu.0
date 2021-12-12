@@ -4,96 +4,88 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B742DC433F5
-	for <iommu@archiver.kernel.org>; Sat, 11 Dec 2021 18:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2AB22C433F5
+	for <iommu@archiver.kernel.org>; Sun, 12 Dec 2021 00:12:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3C0B44046B;
-	Sat, 11 Dec 2021 18:05:44 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id A39B24017A;
+	Sun, 12 Dec 2021 00:12:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RI8FshUBZPPW; Sat, 11 Dec 2021 18:05:43 +0000 (UTC)
+	with ESMTP id H1_ci7fPlsNW; Sun, 12 Dec 2021 00:12:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id C0B4040017;
-	Sat, 11 Dec 2021 18:05:42 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 36AD3400FD;
+	Sun, 12 Dec 2021 00:12:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 91BEFC0038;
-	Sat, 11 Dec 2021 18:05:42 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2ED65C001E
- for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 18:05:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0F440C001E;
+	Sun, 12 Dec 2021 00:12:14 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 05B20C001E
+ for <iommu@lists.linux-foundation.org>; Sun, 12 Dec 2021 00:12:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id EFD1B60D56
- for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 18:05:41 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id D9D95429C5
+ for <iommu@lists.linux-foundation.org>; Sun, 12 Dec 2021 00:12:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vDsfRIPOoi46 for <iommu@lists.linux-foundation.org>;
- Sat, 11 Dec 2021 18:05:40 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 6075A606ED
- for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 18:05:40 +0000 (UTC)
-Received: from mail-wm1-f41.google.com ([209.85.128.41]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MZSJa-1mzsTn3CDu-00WZAz for <iommu@lists.linux-foundation.org>; Sat, 11 Dec
- 2021 19:05:37 +0100
-Received: by mail-wm1-f41.google.com with SMTP id
- p27-20020a05600c1d9b00b0033bf8532855so8894975wms.3
- for <iommu@lists.linux-foundation.org>; Sat, 11 Dec 2021 10:05:37 -0800 (PST)
-X-Gm-Message-State: AOAM530vl7aGNJ6jTEionskf4gMGRszHjOzZ6amqFmcSGkl9cxNGOo0D
- Ul+jTDZ4zwE8BYXy19/rgTAmAUVkyFMQ90FOtd0=
-X-Google-Smtp-Source: ABdhPJz9JqWJLeTUfS5IahRcetLl+JbMiIvXpgsv1eGAXoUb1XDPjjtJEfoNcEXB+cjjosPGuUvpUWQic5X/F+X6I8s=
-X-Received: by 2002:a1c:1c1:: with SMTP id 184mr24672882wmb.1.1639236184421;
- Sat, 11 Dec 2021 07:23:04 -0800 (PST)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="qM/Otsa9";
+ dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
+ header.d=linutronix.de header.b="pzckp4fg"
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id PMaMh2pejnmK for <iommu@lists.linux-foundation.org>;
+ Sun, 12 Dec 2021 00:12:11 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 6495C429C2
+ for <iommu@lists.linux-foundation.org>; Sun, 12 Dec 2021 00:12:10 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020; t=1639267926;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=96U2PvNjfJ25atF3ICxYtTfUxrjzv0nAHv5JG16938Y=;
+ b=qM/Otsa93p16nlR9DkrMfklAwRdZuI5Fi25hBcrv+RfRaQAnQIKilESEITJdIeherUES3k
+ lEaluejCbQWR8vk3qXKRNe+fSzEjZb8Lq3xD/g/QVQbw2wlcenFnWnTJxDsf1kZJF6REQ3
+ C9owWU1oMpezJc0cGBg1Af7a9tW6FDI64myjiMK6J61lmq2xMhrzFTs2v3ietjUS8abHyg
+ b1qgZguIkR+9v0JztqlD3sdejolUuoSPxqFGPoppQxL1CEJqX9wL0HaAYwAC+nRoCb6Fm3
+ 8LoezdAb0uju/kjuKofSa3R/O5T6+9q+mHPCLQ/1CiFiZakwWBbAHFrsMAIZ9w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020e; t=1639267926;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=96U2PvNjfJ25atF3ICxYtTfUxrjzv0nAHv5JG16938Y=;
+ b=pzckp4fggY2TyL8TqgqkB1LFIEa6p646bMIt0lGvtXjie64eXqNhFKTbnbkfUlzQ8hiJu1
+ kIrEo8pOTLFsyWDQ==
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+Subject: RE: [patch 21/32] NTB/msi: Convert to msi_on_each_desc()
+In-Reply-To: <BN9PR11MB5276B2584F928B4BFD4573428C729@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <f4cc305b-a329-6d27-9fca-b74ebc9fa0c1@intel.com>
+ <878rx480fk.ffs@tglx>
+ <BN9PR11MB52765F2EF8420C60FD5945D18C709@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <87sfv2yy19.ffs@tglx> <20211209162129.GS6385@nvidia.com>
+ <878rwtzfh1.ffs@tglx> <20211209205835.GZ6385@nvidia.com>
+ <8735n1zaz3.ffs@tglx> <87sfv1xq3b.ffs@tglx>
+ <BN9PR11MB527619B099061B3814EB40408C719@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20211210123938.GF6385@nvidia.com>
+ <BN9PR11MB5276B2584F928B4BFD4573428C729@BN9PR11MB5276.namprd11.prod.outlook.com>
+Date: Sun, 12 Dec 2021 01:12:05 +0100
+Message-ID: <87lf0qvfze.ffs@tglx>
 MIME-Version: 1.0
-References: <20211210221642.869015045@linutronix.de>
- <20211210221813.928842960@linutronix.de>
-In-Reply-To: <20211210221813.928842960@linutronix.de>
-From: Arnd Bergmann <arnd@arndb.de>
-Date: Sat, 11 Dec 2021 16:22:48 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a00M1MGPEwMQpgGJ9-g9-P6e9wo8G1frfVMqJ4bRp1Okg@mail.gmail.com>
-Message-ID: <CAK8P3a00M1MGPEwMQpgGJ9-g9-P6e9wo8G1frfVMqJ4bRp1Okg@mail.gmail.com>
-Subject: Re: [patch V3 12/35] soc: ti: ti_sci_inta_msi: Allocate MSI device
- data on first use
-To: Thomas Gleixner <tglx@linutronix.de>
-X-Provags-ID: V03:K1:djv5qHJRLjTS4pWf5aoJ+hII6bEdq1IHt4yHUcKWogkGJPhFbGp
- UQIt2MFdMUIamMb+Y4yTVlSlckB3VQGi0pQdKpdQZ4i0J9QeoIsdk7ixkPzHI8R+CLxIezn
- lJZA8g6PzTpTyWDObpPjUf/5WhaCNAtPQHVRKAI/QR2aio+2tkLkXq2gRvlSsxEMPjwj0Nd
- sxT5Zvu5hk0vuUeAlRMfw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:jv/Z9PuOqoo=:2soz1n9DSJBZ90jDpW3Hkt
- u1BHWCQpDWXQ0J64OO08T+9tAfGVoy70+DeSZ3XTdiPvNXq67Xegiza+IVaUmR4s3v3N+tLqJ
- DwkuPpAitIDjN750bOMQRBKPvWn0qG27hwMLqgkRSCGTapyDtyJGzpuC6zHmUaSwaMebJFubA
- GxuMxMlwzNR1jhuAQ0k0aqXmOTZbeb3YhgfgVs13Rod4A9xDJXwSYSlL6Eis7Srr8rceRJrzP
- 9FVsqSCUn2Z2iqlaVeAg/PRJO5yxmR3CxgWywuKxYKYeQmkLzrmrp0GiR6qxHYXwhHopeGQSx
- Opa77tp9UdkEV/xyW1ygnpq+AnXn+MGK+s1YvuYgoYHIVeDYQYjAgXjgpcKtFIkTWCe5glZNI
- BzuXosRhGbW4iRisioeM6SdcRQ8D7W0taJWQO2W/B7JyWAIKIE/C6v/JJdD9n94Ojg4+yVz6a
- m7kZNHfa1HQ3zBrF9/TZaZ2bG2j+Fy6Xddih3hvxlGy9C3ANyIdEYottHlDQXkuVIDuJqCirE
- bUODugEEgSW4UgbZzSC3Z3DcFE4nvNCykC3vJSVbGWiyRuTQ1ANBlSYeRnAeC4G2BEn2MDlc2
- d4QKYq4Xw+SKuyG29hUbsHt0p9gf2f7MSR081UV4xgNvY8LBDV7Az+zsjuIb+ArtDgxC7s6aJ
- 0W7cpo7ao8G/4eiDVQ3E0M7/KVWZw6N4XFVC6BBwM2WhHXc9ZLvZx1KYhh6S/Be2JWQAjGZuF
- vOlUAOePk7A1hyUn+Ir4xXmQ/z5HGfy0gUaLiL2iLbolfEI0boKhrQinBVgbZyVVoPfGmRcb4
- j/Y4Y7ZwgzSPcO0TVP7XgiXdPAtTjQ/WmJ/RUSJxUzT6McUukQ=
-Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
- Stuart Yoder <stuyoder@gmail.com>,
- Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Jassi Brar <jassisinghbrar@gmail.com>,
- Sinan Kaya <okaya@kernel.org>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Peter Ujfalusi <peter.ujfalusi@gmail.com>, Bjorn Helgaas <helgaas@kernel.org>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>,
- Jason Gunthorpe <jgg@nvidia.com>, linux-pci <linux-pci@vger.kernel.org>,
- xen-devel <xen-devel@lists.xenproject.org>, Kevin Tian <kevin.tian@intel.com>,
- Arnd Bergmann <arnd@arndb.de>, Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>, Cedric Le Goater <clg@kaod.org>,
- Santosh Shilimkar <ssantosh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Megha Dey <megha.dey@intel.com>, Juergen Gross <jgross@suse.com>,
- Tero Kristo <kristo@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- LKML <linux-kernel@vger.kernel.org>, Vinod Koul <vkoul@kernel.org>,
- Marc Zygnier <maz@kernel.org>, dmaengine@vger.kernel.org,
- linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+Cc: Allen Hubbe <allenbh@gmail.com>,
+ "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+ "x86@kernel.org" <x86@kernel.org>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Marc Zygnier <maz@kernel.org>, Heiko Carstens <hca@linux.ibm.com>,
+ LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Christian Borntraeger <borntraeger@de.ibm.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+ Bjorn Helgaas <helgaas@kernel.org>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+ "linux-ntb@googlegroups.com" <linux-ntb@googlegroups.com>,
+ Logan Gunthorpe <logang@deltatee.com>, "Dey, Megha" <megha.dey@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,21 +103,98 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Dec 10, 2021 at 11:19 PM Thomas Gleixner <tglx@linutronix.de> wrote:
->
-> From: Thomas Gleixner <tglx@linutronix.de>
->
-> Allocate the MSI device data on first invocation of the allocation function.
->
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Cc: Nishanth Menon <nm@ti.com>
-> Cc: Tero Kristo <kristo@kernel.org>
-> Cc: Santosh Shilimkar <ssantosh@kernel.org>
-> Cc: linux-arm-kernel@lists.infradead.org
+Kevin,
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+On Sat, Dec 11 2021 at 07:52, Kevin Tian wrote:
+>> From: Jason Gunthorpe <jgg@nvidia.com>
+>> > Then Qemu needs to find out the GSI number for the vIRTE handle.
+>> > Again Qemu doesn't have such information since it doesn't know
+>> > which MSI[-X] entry points to this handle due to no trap.
+>> 
+>> No this is already going wrong. qemu *cannot* know the MSI information
+>> because there is no MSI information for IMS.
+>
+> I haven't thought of IMS at this step. The IR approach applies to
+> all types of interrupt storages, thus I'm more interested in how it
+> affect the storages which are already virtualized today (MSI[-X] 
+> in my thought practice).
+
+They are not any different. As I explained several times now IMS is
+nothing new at all. It existed since the invention of Message Signaled
+interrupts. Why?
+
+The principle behind Message Signaled Interrupts is:
+
+    Device writes DATA to ADDRESS which raises an interrupt in a CPU
+
+Message Signaled Interrupts obviously need some place to store the
+ADDRESS/DATA pair so that the device can use it for raising an
+interrupt, i.e. an
+
+   Interrupt Message Store, short IMS.
+
+PCI/MSI was the first implementation of this and the storage was defined
+to be at a specified and therefore uniform and device independent place.
+
+PCI/MSI-X followed the same approch. While it solved quite some of the
+shortcomings of PCI/MSI it still has a specificed and uniform and device
+independent place to store the message (ADDRESS/DATA pair)
+
+Now the PCI wizards figured out that PCI/MSI[-X] is not longer up to the
+task for various reasons and came up with the revolutionary new concept
+of IMS, aka Interrupt Message Store. where the device defines where the
+message is stored.
+
+IOW, this is coming back full circle to the original problem of where to
+store the message, i.e. the ADDRESS/DATA pair so that the device can
+raise an interrupt in a CPU, which requires - drum roll - an
+
+   Interrupt Message Store, short IMS.
+
+So you simply have to look at it from a pure MSI (not PCI/MSI) point
+of view:
+
+   MSI at the conceptual level requires storage for the ADDRESS/DATA
+   pair at some place so that the device or the compute unit embedded in
+   the device can write DATA to ADDRESS.
+
+That's it. Not more, not less.
+
+When you look at it from this perspective, then you'll realize that
+
+     PCI/MSI and PCI/MSI-X are just implementations of IMS
+
+Not more, not less. The fact that they have very strict rules about the
+storage space and the fact that they are mutually exclusive does not
+change that at all.
+
+That's where a lot of the confusion comes from. If you go back to all
+the IDXD/IMS discussions which happened over time then you'll figure out
+that _all_ of us where coming from the same wrong assumption:
+
+    IMS is new and it's just another exclusive variant of PCI/MSI and
+    PCi/MSI-X.
+
+It took _all_ of us quite some time to realize that we need to look at
+it from the other way around.
+
+There was surely some other conceptual confusion vs. subdevices, queues
+and whatever involved which contributed to that. Water under the bridge.
+
+Coming back to your initial question:
+
+> I haven't thought of IMS at this step. The IR approach applies to
+> all types of interrupt storages, thus I'm more interested in how it
+> affect the storages which are already virtualized today (MSI[-X] 
+> in my thought practice).
+
+Stop focussing on implementation details. Focus on the general concept
+instead. See above.
+
+Thanks,
+
+        tglx
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
