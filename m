@@ -4,74 +4,72 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 460DDC433EF
-	for <iommu@archiver.kernel.org>; Mon, 13 Dec 2021 07:14:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B6F33C4167D
+	for <iommu@archiver.kernel.org>; Mon, 13 Dec 2021 07:14:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E81A3409BC;
-	Mon, 13 Dec 2021 07:14:27 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6F47A409F6;
+	Mon, 13 Dec 2021 07:14:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 67xwLMbeA1Zh; Mon, 13 Dec 2021 07:14:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 9A3A040965;
-	Mon, 13 Dec 2021 07:14:26 +0000 (UTC)
+	with ESMTP id lEz_GpCddaPQ; Mon, 13 Dec 2021 07:14:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id E529F40965;
+	Mon, 13 Dec 2021 07:14:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8313AC001E;
-	Mon, 13 Dec 2021 07:14:26 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5A402C0012
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 07:14:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B3CE4C001E;
+	Mon, 13 Dec 2021 07:14:28 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3B94BC0012
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 07:14:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4705260EF8
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 07:14:24 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 14D074273B
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 07:14:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Jksv0EE2xHWT for <iommu@lists.linux-foundation.org>;
- Mon, 13 Dec 2021 07:14:23 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id MQn2oiLgNp9s for <iommu@lists.linux-foundation.org>;
+ Mon, 13 Dec 2021 07:14:25 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com
- [IPv6:2607:f8b0:4864:20::1035])
- by smtp3.osuosl.org (Postfix) with ESMTPS id B81C960EF7
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 07:14:23 +0000 (UTC)
-Received: by mail-pj1-x1035.google.com with SMTP id
- j6-20020a17090a588600b001a78a5ce46aso14020522pji.0
- for <iommu@lists.linux-foundation.org>; Sun, 12 Dec 2021 23:14:23 -0800 (PST)
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com
+ [IPv6:2607:f8b0:4864:20::42b])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 4450842720
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 07:14:25 +0000 (UTC)
+Received: by mail-pf1-x42b.google.com with SMTP id g19so14135456pfb.8
+ for <iommu@lists.linux-foundation.org>; Sun, 12 Dec 2021 23:14:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=LTLz7GgAX11MfClfWm4VByenkQJ5cwVcinYkI0CYydg=;
- b=eIBO98gr6cqdhEubdZxn7qJbRXcsGJcQJKCTBTWQMyIeHrNp5xrHWYdAoKYNVGEidJ
- LFwP3LjGoL5tFuzB2FoB5YpZg5bwVmowqjbEIb8AsmhZerCmxw86+voMBrO3FdsH4LZ1
- v8oAohgYKdqLsMvZ/GTDqezGmPqe06lPPdMYJ8kKDtdDCRGI+T2u1D6j25qAwdvo7zlI
- 679EHAHUZ/Q7woRuLMzvvmv9YQOH/DT1Dkg52bG9+CtfhWhBq/5McohZ6K/5TT2Unmva
- iRnNz4FNW2NV5wXk4ssnY1Wipt5DNixWOWnYmq/MRnkkFwLm0dKEKvTE3IQj4PHbr8gx
- d9CQ==
+ bh=IQVoqBhkMbv3k6OINJ2ThuqOwq/2RghajB/JhTjJmPQ=;
+ b=Wqo7YQm2zeFPL0nGRQ/1URjIGV8BliGhkhdwTOPCx+dpnrZLSgG0HCHKgoLI9zbofo
+ aV5IVmqv59n6PYoyDMvfYZndvTANTvaQ2r1FFbcM59xXA9I+6SVsk7aGhru5Ixr2ZOfk
+ NPZxOHQI5ytzgfG19WNv00a0yPiz2hMK/Lk61MLyNt4pxZIXS0ZHYOS4shfjMxwFsfrP
+ BK7BnsVmr9wHf2qjlrukAaSDtQqW8Ttc3ZkIUmSqdgdD5tka5pWHqCY6TUrXt7qzIgOK
+ vB8iuXXW7qJ4yoGYBB/46YSezALc7eN0IH0LiDdUHJax3AuetajCPak/tRv2gnMO9IQ4
+ tM8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=LTLz7GgAX11MfClfWm4VByenkQJ5cwVcinYkI0CYydg=;
- b=ADcWyQDKsbs/hvSQdv4f/jtzSj35uJLqCrmaqK6QBZMIE+raEZpA5Kcy0FAqcqYyQk
- 2c7elFFKdoo6WvVhW0S2DeSFyGnW9zlA4Tk2GC5BlU0jXEGtYQha9IKi3OzElx0y+sXs
- 3I8cZmpGZuUEMPzkvBjDYG9jbZd5uNp5KUNKtcFFU2729amMDCQQsgmRjjaAFkUEsUaj
- /1U8U1GKgGMxlcyRJqM1eFImbt4GyN0iMYmB4psYIi9a+Iavbtk4JfG9dYH/vihdtnFR
- 3PPxnOE3vXv8+2sxzKlWQ/gittx2B9GpMAIeL+TeYKbYlUmacJvRCY8pajTrn/5AjpqN
- +NhA==
-X-Gm-Message-State: AOAM53250yCHFhpWB9vAA4ihZnTYCePxZAT1LO4kUnACDzJPHF6tSh7j
- mt6V86VPmvb4NPhDzpYmLYo=
-X-Google-Smtp-Source: ABdhPJwyUng+IRJS7MH80C/GEuQWaWTRNRKCx4z2HRH688KUyKHYm7NSiU3shK/X0mt0z+tL2buWiw==
-X-Received: by 2002:a17:902:c947:b0:141:e7f6:d688 with SMTP id
- i7-20020a170902c94700b00141e7f6d688mr92839450pla.56.1639379663188; 
- Sun, 12 Dec 2021 23:14:23 -0800 (PST)
+ bh=IQVoqBhkMbv3k6OINJ2ThuqOwq/2RghajB/JhTjJmPQ=;
+ b=SQ6//i6XzAQr3DmdKLcSfgtdpjecQzEkqn2QPa6HehVXhEorSFSIr3Xh7nYCvyVVHI
+ fS+hloHP1kayzGmaUyp8xoPFRJaILvLHoQhTHEjzSkjTtzj706Vgrjk6inAhCZ7wnWNm
+ cZrZmns+u8FTt+LX81TIB2qJcQIJ3jQnqxbUGW1oBFnrw7+u+anCeauHH3UQIuW4PlUJ
+ c0kDweTFVsxpKpGNVyfuNJWJEDINGzmON0AIuOyZGkd/J1TMfHPEBWKeEn/0PbryFeWV
+ AkP6WapVKG2oeWs2EgjvUzlB+HLCVd4OkBqgmLyt8ZFBpEVZbcZKEUxfWiausxit4qYB
+ oL/Q==
+X-Gm-Message-State: AOAM533IoSw0SL72OcwLr2EFCUuRS8temxlHMwAjXiWuhD4ZZwOo+YcS
+ eXkbR/SBZPYstJcDen6RoT4=
+X-Google-Smtp-Source: ABdhPJwjAKWpKihnmAu8aWL3L+K1y3yAYsNTpxjg65IVsLLMsSna5L5XMs9r0umkWQIy2E3STqhOUQ==
+X-Received: by 2002:a63:4a4b:: with SMTP id j11mr51473120pgl.580.1639379664613; 
+ Sun, 12 Dec 2021 23:14:24 -0800 (PST)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com
  ([2001:4898:80e8:36:a586:a4cb:7d3:4f27])
- by smtp.gmail.com with ESMTPSA id qe12sm6079401pjb.29.2021.12.12.23.14.22
+ by smtp.gmail.com with ESMTPSA id qe12sm6079401pjb.29.2021.12.12.23.14.23
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 12 Dec 2021 23:14:22 -0800 (PST)
+ Sun, 12 Dec 2021 23:14:24 -0800 (PST)
 From: Tianyu Lan <ltykernel@gmail.com>
 To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
@@ -81,10 +79,9 @@ To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  hch@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
  thomas.lendacky@amd.com, Tianyu.Lan@microsoft.com,
  michael.h.kelley@microsoft.com
-Subject: [PATCH V7 2/5] x86/hyper-v: Add hyperv Isolation VM check in the
- cc_platform_has()
-Date: Mon, 13 Dec 2021 02:14:03 -0500
-Message-Id: <20211213071407.314309-3-ltykernel@gmail.com>
+Subject: [PATCH V7 3/5] hyper-v: Enable swiotlb bounce buffer for Isolation VM
+Date: Mon, 13 Dec 2021 02:14:04 -0500
+Message-Id: <20211213071407.314309-4-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211213071407.314309-1-ltykernel@gmail.com>
 References: <20211213071407.314309-1-ltykernel@gmail.com>
@@ -113,57 +110,114 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-Hyper-V provides Isolation VM for confidential computing support and
-guest memory is encrypted in it. Places checking cc_platform_has()
-with GUEST_MEM_ENCRYPT attr should return "True" in Isolation vm. e.g,
-swiotlb bounce buffer size needs to adjust according to memory size
-in the sev_setup_arch(). Add GUEST_MEM_ENCRYPT check for Hyper-V Isolation
-VM.
+hyperv Isolation VM requires bounce buffer support to copy
+data from/to encrypted memory and so enable swiotlb force
+mode to use swiotlb bounce buffer for DMA transaction.
+
+In Isolation VM with AMD SEV, the bounce buffer needs to be
+accessed via extra address space which is above shared_gpa_boundary
+(E.G 39 bit address line) reported by Hyper-V CPUID ISOLATION_CONFIG.
+The access physical address will be original physical address +
+shared_gpa_boundary. The shared_gpa_boundary in the AMD SEV SNP
+spec is called virtual top of memory(vTOM). Memory addresses below
+vTOM are automatically treated as private while memory above
+vTOM is treated as shared.
+
+Swiotlb bounce buffer code calls set_memory_decrypted()
+to mark bounce buffer visible to host and map it in extra
+address space via memremap. Populate the shared_gpa_boundary
+(vTOM) via swiotlb_unencrypted_base variable.
+
+The map function memremap() can't work in the early place
+(e.g ms_hyperv_init_platform()) and so call swiotlb_update_mem_
+attributes() in the hyperv_init().
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
 Change since v6:
-	* Change the order in the cc_platform_has() and check sev first.
+        * Fix compile error when swiotlb is not enabled.
+
+Change since v4:
+	* Remove Hyper-V IOMMU IOMMU_INIT_FINISH related functions
+	  and set SWIOTLB_FORCE and swiotlb_unencrypted_base in the
+	  ms_hyperv_init_platform(). Call swiotlb_update_mem_attributes()
+	  in the hyperv_init().
 
 Change since v3:
-	* Change code style of checking GUEST_MEM attribute in the
-	  hyperv_cc_platform_has().
+	* Add comment in pci-swiotlb-xen.c to explain why add
+	  dependency between hyperv_swiotlb_detect() and pci_
+	  xen_swiotlb_detect().
+	* Return directly when fails to allocate Hyper-V swiotlb
+	  buffer in the hyperv_iommu_swiotlb_init().
 ---
- arch/x86/kernel/cc_platform.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/x86/hyperv/hv_init.c      | 12 ++++++++++++
+ arch/x86/kernel/cpu/mshyperv.c | 15 ++++++++++++++-
+ 2 files changed, 26 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/cc_platform.c b/arch/x86/kernel/cc_platform.c
-index 03bb2f343ddb..6cb3a675e686 100644
---- a/arch/x86/kernel/cc_platform.c
-+++ b/arch/x86/kernel/cc_platform.c
-@@ -11,6 +11,7 @@
- #include <linux/cc_platform.h>
- #include <linux/mem_encrypt.h>
+diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+index 24f4a06ac46a..749906a8e068 100644
+--- a/arch/x86/hyperv/hv_init.c
++++ b/arch/x86/hyperv/hv_init.c
+@@ -28,6 +28,7 @@
+ #include <linux/syscore_ops.h>
+ #include <clocksource/hyperv_timer.h>
+ #include <linux/highmem.h>
++#include <linux/swiotlb.h>
  
-+#include <asm/mshyperv.h>
- #include <asm/processor.h>
+ int hyperv_init_cpuhp;
+ u64 hv_current_partition_id = ~0ull;
+@@ -502,6 +503,17 @@ void __init hyperv_init(void)
  
- static bool __maybe_unused intel_cc_platform_has(enum cc_attr attr)
-@@ -58,12 +59,19 @@ static bool amd_cc_platform_has(enum cc_attr attr)
- #endif
- }
- 
-+static bool hyperv_cc_platform_has(enum cc_attr attr)
-+{
-+	return attr == CC_ATTR_GUEST_MEM_ENCRYPT;
-+}
- 
- bool cc_platform_has(enum cc_attr attr)
- {
- 	if (sme_me_mask)
- 		return amd_cc_platform_has(attr);
- 
-+	if (hv_is_isolation_supported())
-+		return hyperv_cc_platform_has(attr);
+ 	/* Query the VMs extended capability once, so that it can be cached. */
+ 	hv_query_ext_cap(0);
 +
- 	return false;
- }
- EXPORT_SYMBOL_GPL(cc_platform_has);
++#ifdef CONFIG_SWIOTLB
++	/*
++	 * Swiotlb bounce buffer needs to be mapped in extra address
++	 * space. Map function doesn't work in the early place and so
++	 * call swiotlb_update_mem_attributes() here.
++	 */
++	if (hv_is_isolation_supported())
++		swiotlb_update_mem_attributes();
++#endif
++
+ 	return;
+ 
+ clean_guest_os_id:
+diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
+index 4794b716ec79..e3a240c5e4f5 100644
+--- a/arch/x86/kernel/cpu/mshyperv.c
++++ b/arch/x86/kernel/cpu/mshyperv.c
+@@ -18,6 +18,7 @@
+ #include <linux/kexec.h>
+ #include <linux/i8253.h>
+ #include <linux/random.h>
++#include <linux/swiotlb.h>
+ #include <asm/processor.h>
+ #include <asm/hypervisor.h>
+ #include <asm/hyperv-tlfs.h>
+@@ -319,8 +320,20 @@ static void __init ms_hyperv_init_platform(void)
+ 		pr_info("Hyper-V: Isolation Config: Group A 0x%x, Group B 0x%x\n",
+ 			ms_hyperv.isolation_config_a, ms_hyperv.isolation_config_b);
+ 
+-		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP)
++		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP) {
+ 			static_branch_enable(&isolation_type_snp);
++#ifdef CONFIG_SWIOTLB
++			swiotlb_unencrypted_base = ms_hyperv.shared_gpa_boundary;
++#endif
++		}
++
++#ifdef CONFIG_SWIOTLB
++		/*
++		 * Enable swiotlb force mode in Isolation VM to
++		 * use swiotlb bounce buffer for dma transaction.
++		 */
++		swiotlb_force = SWIOTLB_FORCE;
++#endif
+ 	}
+ 
+ 	if (hv_max_functions_eax >= HYPERV_CPUID_NESTED_FEATURES) {
 -- 
 2.25.1
 
