@@ -1,76 +1,77 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5592AC4332F
-	for <iommu@archiver.kernel.org>; Mon, 13 Dec 2021 07:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 460DDC433EF
+	for <iommu@archiver.kernel.org>; Mon, 13 Dec 2021 07:14:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id EC4A160F0A;
-	Mon, 13 Dec 2021 07:14:26 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id E81A3409BC;
+	Mon, 13 Dec 2021 07:14:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id suH-891sl1IH; Mon, 13 Dec 2021 07:14:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 77F6660EF8;
-	Mon, 13 Dec 2021 07:14:25 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 46E07C001E;
-	Mon, 13 Dec 2021 07:14:25 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 85A39C0039
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 07:14:23 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 63C9540965
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 07:14:23 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PB1LINCOwBYI for <iommu@lists.linux-foundation.org>;
- Mon, 13 Dec 2021 07:14:22 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 67xwLMbeA1Zh; Mon, 13 Dec 2021 07:14:27 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 9A3A040965;
+	Mon, 13 Dec 2021 07:14:26 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8313AC001E;
+	Mon, 13 Dec 2021 07:14:26 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5A402C0012
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 07:14:24 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 4705260EF8
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 07:14:24 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Jksv0EE2xHWT for <iommu@lists.linux-foundation.org>;
+ Mon, 13 Dec 2021 07:14:23 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com
- [IPv6:2607:f8b0:4864:20::1029])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 2E211400B9
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 07:14:22 +0000 (UTC)
-Received: by mail-pj1-x1029.google.com with SMTP id np3so11201924pjb.4
- for <iommu@lists.linux-foundation.org>; Sun, 12 Dec 2021 23:14:22 -0800 (PST)
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com
+ [IPv6:2607:f8b0:4864:20::1035])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id B81C960EF7
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 07:14:23 +0000 (UTC)
+Received: by mail-pj1-x1035.google.com with SMTP id
+ j6-20020a17090a588600b001a78a5ce46aso14020522pji.0
+ for <iommu@lists.linux-foundation.org>; Sun, 12 Dec 2021 23:14:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=wues2SqUPRv0oUKBbTR72tAwqhwqv49+w2re/gGhWqk=;
- b=b/NWqgCs2gBsbDGyfnzfZY1Legyjeef1WWGW81yTpBb2ZQi5zYFhkJORx00YViA38A
- rXkvV09tKi3Qwr7u+tWleswqCMKs2mWPqXFAO99WWMu/m3UZh7DdXsjLZutMCJaoUrZx
- xR+XPjB0dnkIzXeiOJg+erThkdIyIBaNPfrsy8eSF20TNyAl55EPOm0unin5IiORKJN9
- sbaCqyJMQ/yez3hAMn9gVn0Gf3Laab+96Evhwa53GY3QkHaEWYGeaYof2dvqMIU068t2
- YaDFMWSOynt0bEN5Ha0AmoQZ4JnJVMxhIMQYBhanF9aLCvQhONA/Xik1l3QVmnqQqgE0
- QlNw==
+ bh=LTLz7GgAX11MfClfWm4VByenkQJ5cwVcinYkI0CYydg=;
+ b=eIBO98gr6cqdhEubdZxn7qJbRXcsGJcQJKCTBTWQMyIeHrNp5xrHWYdAoKYNVGEidJ
+ LFwP3LjGoL5tFuzB2FoB5YpZg5bwVmowqjbEIb8AsmhZerCmxw86+voMBrO3FdsH4LZ1
+ v8oAohgYKdqLsMvZ/GTDqezGmPqe06lPPdMYJ8kKDtdDCRGI+T2u1D6j25qAwdvo7zlI
+ 679EHAHUZ/Q7woRuLMzvvmv9YQOH/DT1Dkg52bG9+CtfhWhBq/5McohZ6K/5TT2Unmva
+ iRnNz4FNW2NV5wXk4ssnY1Wipt5DNixWOWnYmq/MRnkkFwLm0dKEKvTE3IQj4PHbr8gx
+ d9CQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=wues2SqUPRv0oUKBbTR72tAwqhwqv49+w2re/gGhWqk=;
- b=r64UOkoOe3T1FAnlZLy4iwti3/P2ZwwAWz7XD7nF1bKMQS8Gag0GfXw6qX36t+6W8k
- Nq0sZ6Lr/BaaOtpetGPH8QdN+tj0mttzXq5ebIyrGYXCYhAi5xhHzl1sBsOaTkgt1BOM
- PgA6JJWTeE9d750g3JANosGo8frgtPGJ558/31t2yqWrFSxZ4toJ/MDbSelTGMrmvaan
- dmfdebK3TtByIvDR+yVxvO0RRAlVieeV02dlVk6EWzZWsS9gijDRo5wX4Zz+0XyyE4UF
- Puvhwi8ROnIXbcINEKHsadSPsV+iO4aJ/y4H65ozoAF1NUgQsSnzUKmd782rrkILKjrH
- BwXA==
-X-Gm-Message-State: AOAM533uht8aaEaG/ZlFtzOfz9gRwUXxi2jxPJRb9b4OUAB6KKfhW8F2
- 4wpZi/qWmnVPiYJlTHoQr38=
-X-Google-Smtp-Source: ABdhPJzJCc7LuFJ/y5tpFg+3uLbQnKDMBGewfJBC/CKfRPxcCJkk/tEmaFF7CCfLsBkD11kJjWZNng==
-X-Received: by 2002:a17:902:b588:b0:143:b732:834 with SMTP id
- a8-20020a170902b58800b00143b7320834mr94583970pls.22.1639379661566; 
- Sun, 12 Dec 2021 23:14:21 -0800 (PST)
+ bh=LTLz7GgAX11MfClfWm4VByenkQJ5cwVcinYkI0CYydg=;
+ b=ADcWyQDKsbs/hvSQdv4f/jtzSj35uJLqCrmaqK6QBZMIE+raEZpA5Kcy0FAqcqYyQk
+ 2c7elFFKdoo6WvVhW0S2DeSFyGnW9zlA4Tk2GC5BlU0jXEGtYQha9IKi3OzElx0y+sXs
+ 3I8cZmpGZuUEMPzkvBjDYG9jbZd5uNp5KUNKtcFFU2729amMDCQQsgmRjjaAFkUEsUaj
+ /1U8U1GKgGMxlcyRJqM1eFImbt4GyN0iMYmB4psYIi9a+Iavbtk4JfG9dYH/vihdtnFR
+ 3PPxnOE3vXv8+2sxzKlWQ/gittx2B9GpMAIeL+TeYKbYlUmacJvRCY8pajTrn/5AjpqN
+ +NhA==
+X-Gm-Message-State: AOAM53250yCHFhpWB9vAA4ihZnTYCePxZAT1LO4kUnACDzJPHF6tSh7j
+ mt6V86VPmvb4NPhDzpYmLYo=
+X-Google-Smtp-Source: ABdhPJwyUng+IRJS7MH80C/GEuQWaWTRNRKCx4z2HRH688KUyKHYm7NSiU3shK/X0mt0z+tL2buWiw==
+X-Received: by 2002:a17:902:c947:b0:141:e7f6:d688 with SMTP id
+ i7-20020a170902c94700b00141e7f6d688mr92839450pla.56.1639379663188; 
+ Sun, 12 Dec 2021 23:14:23 -0800 (PST)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com
  ([2001:4898:80e8:36:a586:a4cb:7d3:4f27])
- by smtp.gmail.com with ESMTPSA id qe12sm6079401pjb.29.2021.12.12.23.14.20
+ by smtp.gmail.com with ESMTPSA id qe12sm6079401pjb.29.2021.12.12.23.14.22
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 12 Dec 2021 23:14:21 -0800 (PST)
+ Sun, 12 Dec 2021 23:14:22 -0800 (PST)
 From: Tianyu Lan <ltykernel@gmail.com>
 To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
@@ -80,10 +81,10 @@ To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  hch@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
  thomas.lendacky@amd.com, Tianyu.Lan@microsoft.com,
  michael.h.kelley@microsoft.com
-Subject: [PATCH V7 1/5] swiotlb: Add swiotlb bounce buffer remap function for
- HV IVM
-Date: Mon, 13 Dec 2021 02:14:02 -0500
-Message-Id: <20211213071407.314309-2-ltykernel@gmail.com>
+Subject: [PATCH V7 2/5] x86/hyper-v: Add hyperv Isolation VM check in the
+ cc_platform_has()
+Date: Mon, 13 Dec 2021 02:14:03 -0500
+Message-Id: <20211213071407.314309-3-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211213071407.314309-1-ltykernel@gmail.com>
 References: <20211213071407.314309-1-ltykernel@gmail.com>
@@ -112,161 +113,57 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-In Isolation VM with AMD SEV, bounce buffer needs to be accessed via
-extra address space which is above shared_gpa_boundary (E.G 39 bit
-address line) reported by Hyper-V CPUID ISOLATION_CONFIG. The access
-physical address will be original physical address + shared_gpa_boundary.
-The shared_gpa_boundary in the AMD SEV SNP spec is called virtual top of
-memory(vTOM). Memory addresses below vTOM are automatically treated as
-private while memory above vTOM is treated as shared.
+Hyper-V provides Isolation VM for confidential computing support and
+guest memory is encrypted in it. Places checking cc_platform_has()
+with GUEST_MEM_ENCRYPT attr should return "True" in Isolation vm. e.g,
+swiotlb bounce buffer size needs to adjust according to memory size
+in the sev_setup_arch(). Add GUEST_MEM_ENCRYPT check for Hyper-V Isolation
+VM.
 
-Expose swiotlb_unencrypted_base for platforms to set unencrypted
-memory base offset and platform calls swiotlb_update_mem_attributes()
-to remap swiotlb mem to unencrypted address space. memremap() can
-not be called in the early stage and so put remapping code into
-swiotlb_update_mem_attributes(). Store remap address and use it to copy
-data from/to swiotlb bounce buffer.
-
-Acked-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
+Change since v6:
+	* Change the order in the cc_platform_has() and check sev first.
+
 Change since v3:
-	* Fix boot up failure on the host with mem_encrypt=on.
-	  Move calloing of set_memory_decrypted() back from
-	  swiotlb_init_io_tlb_mem to swiotlb_late_init_with_tbl()
-	  and rmem_swiotlb_device_init().
-
-Change since v2:
-	* Leave mem->vaddr with phys_to_virt(mem->start) when fail
-	  to remap swiotlb memory.
-
-Change since v1:
-	* Rework comment in the swiotlb_init_io_tlb_mem()
-	* Make swiotlb_init_io_tlb_mem() back to return void.
+	* Change code style of checking GUEST_MEM attribute in the
+	  hyperv_cc_platform_has().
 ---
- include/linux/swiotlb.h |  6 ++++++
- kernel/dma/swiotlb.c    | 43 +++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 47 insertions(+), 2 deletions(-)
+ arch/x86/kernel/cc_platform.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 569272871375..f6c3638255d5 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -73,6 +73,9 @@ extern enum swiotlb_force swiotlb_force;
-  * @end:	The end address of the swiotlb memory pool. Used to do a quick
-  *		range check to see if the memory was in fact allocated by this
-  *		API.
-+ * @vaddr:	The vaddr of the swiotlb memory pool. The swiotlb memory pool
-+ *		may be remapped in the memory encrypted case and store virtual
-+ *		address for bounce buffer operation.
-  * @nslabs:	The number of IO TLB blocks (in groups of 64) between @start and
-  *		@end. For default swiotlb, this is command line adjustable via
-  *		setup_io_tlb_npages.
-@@ -92,6 +95,7 @@ extern enum swiotlb_force swiotlb_force;
- struct io_tlb_mem {
- 	phys_addr_t start;
- 	phys_addr_t end;
-+	void *vaddr;
- 	unsigned long nslabs;
- 	unsigned long used;
- 	unsigned int index;
-@@ -186,4 +190,6 @@ static inline bool is_swiotlb_for_alloc(struct device *dev)
- }
- #endif /* CONFIG_DMA_RESTRICTED_POOL */
+diff --git a/arch/x86/kernel/cc_platform.c b/arch/x86/kernel/cc_platform.c
+index 03bb2f343ddb..6cb3a675e686 100644
+--- a/arch/x86/kernel/cc_platform.c
++++ b/arch/x86/kernel/cc_platform.c
+@@ -11,6 +11,7 @@
+ #include <linux/cc_platform.h>
+ #include <linux/mem_encrypt.h>
  
-+extern phys_addr_t swiotlb_unencrypted_base;
-+
- #endif /* __LINUX_SWIOTLB_H */
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 8e840fbbed7c..34e6ade4f73c 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -50,6 +50,7 @@
- #include <asm/io.h>
- #include <asm/dma.h>
++#include <asm/mshyperv.h>
+ #include <asm/processor.h>
  
-+#include <linux/io.h>
- #include <linux/init.h>
- #include <linux/memblock.h>
- #include <linux/iommu-helper.h>
-@@ -72,6 +73,8 @@ enum swiotlb_force swiotlb_force;
- 
- struct io_tlb_mem io_tlb_default_mem;
- 
-+phys_addr_t swiotlb_unencrypted_base;
-+
- /*
-  * Max segment that we can provide which (if pages are contingous) will
-  * not be bounced (unless SWIOTLB_FORCE is set).
-@@ -155,6 +158,27 @@ static inline unsigned long nr_slots(u64 val)
- 	return DIV_ROUND_UP(val, IO_TLB_SIZE);
+ static bool __maybe_unused intel_cc_platform_has(enum cc_attr attr)
+@@ -58,12 +59,19 @@ static bool amd_cc_platform_has(enum cc_attr attr)
+ #endif
  }
  
-+/*
-+ * Remap swioltb memory in the unencrypted physical address space
-+ * when swiotlb_unencrypted_base is set. (e.g. for Hyper-V AMD SEV-SNP
-+ * Isolation VMs).
-+ */
-+void *swiotlb_mem_remap(struct io_tlb_mem *mem, unsigned long bytes)
++static bool hyperv_cc_platform_has(enum cc_attr attr)
 +{
-+	void *vaddr = NULL;
-+
-+	if (swiotlb_unencrypted_base) {
-+		phys_addr_t paddr = mem->start + swiotlb_unencrypted_base;
-+
-+		vaddr = memremap(paddr, bytes, MEMREMAP_WB);
-+		if (!vaddr)
-+			pr_err("Failed to map the unencrypted memory %llx size %lx.\n",
-+			       paddr, bytes);
-+	}
-+
-+	return vaddr;
++	return attr == CC_ATTR_GUEST_MEM_ENCRYPT;
 +}
+ 
+ bool cc_platform_has(enum cc_attr attr)
+ {
+ 	if (sme_me_mask)
+ 		return amd_cc_platform_has(attr);
+ 
++	if (hv_is_isolation_supported())
++		return hyperv_cc_platform_has(attr);
 +
- /*
-  * Early SWIOTLB allocation may be too early to allow an architecture to
-  * perform the desired operations.  This function allows the architecture to
-@@ -172,7 +196,12 @@ void __init swiotlb_update_mem_attributes(void)
- 	vaddr = phys_to_virt(mem->start);
- 	bytes = PAGE_ALIGN(mem->nslabs << IO_TLB_SHIFT);
- 	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
--	memset(vaddr, 0, bytes);
-+
-+	mem->vaddr = swiotlb_mem_remap(mem, bytes);
-+	if (!mem->vaddr)
-+		mem->vaddr = vaddr;
-+
-+	memset(mem->vaddr, 0, bytes);
+ 	return false;
  }
- 
- static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
-@@ -196,7 +225,17 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
- 		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
- 		mem->slots[i].alloc_size = 0;
- 	}
-+
-+	/*
-+	 * If swiotlb_unencrypted_base is set, the bounce buffer memory will
-+	 * be remapped and cleared in swiotlb_update_mem_attributes.
-+	 */
-+	if (swiotlb_unencrypted_base)
-+		return;
-+
- 	memset(vaddr, 0, bytes);
-+	mem->vaddr = vaddr;
-+	return;
- }
- 
- int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
-@@ -371,7 +410,7 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
- 	phys_addr_t orig_addr = mem->slots[index].orig_addr;
- 	size_t alloc_size = mem->slots[index].alloc_size;
- 	unsigned long pfn = PFN_DOWN(orig_addr);
--	unsigned char *vaddr = phys_to_virt(tlb_addr);
-+	unsigned char *vaddr = mem->vaddr + tlb_addr - mem->start;
- 	unsigned int tlb_offset, orig_addr_offset;
- 
- 	if (orig_addr == INVALID_PHYS_ADDR)
+ EXPORT_SYMBOL_GPL(cc_platform_has);
 -- 
 2.25.1
 
