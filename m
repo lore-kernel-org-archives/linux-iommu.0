@@ -1,87 +1,86 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 01527C433EF
-	for <iommu@archiver.kernel.org>; Mon, 13 Dec 2021 20:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4CAA5C433F5
+	for <iommu@archiver.kernel.org>; Mon, 13 Dec 2021 20:31:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 933CF60B43;
-	Mon, 13 Dec 2021 20:30:59 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YXn2XjTGlwIp; Mon, 13 Dec 2021 20:30:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 7D68D606F5;
-	Mon, 13 Dec 2021 20:30:58 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 65FD8C002F;
-	Mon, 13 Dec 2021 20:30:58 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 83E8BC0012
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 20:30:56 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 6F2CF81323
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 20:30:56 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id E08BC81252;
+	Mon, 13 Dec 2021 20:31:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id L-VZ-fYsX0fn for <iommu@lists.linux-foundation.org>;
- Mon, 13 Dec 2021 20:30:55 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 2lvbZS157n3K; Mon, 13 Dec 2021 20:31:34 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id CF8848124F;
+	Mon, 13 Dec 2021 20:31:33 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AA102C002F;
+	Mon, 13 Dec 2021 20:31:33 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9D1E6C0012
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 20:31:32 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 7E5CA60B26
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 20:31:32 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id c-7WqGcNgLLT for <iommu@lists.linux-foundation.org>;
+ Mon, 13 Dec 2021 20:31:31 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com
- [209.85.167.174])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 972AF81322
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 20:30:55 +0000 (UTC)
-Received: by mail-oi1-f174.google.com with SMTP id q25so24856874oiw.0
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 12:30:55 -0800 (PST)
+Received: from mail-oo1-f53.google.com (mail-oo1-f53.google.com
+ [209.85.161.53])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 57581606F5
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 20:31:30 +0000 (UTC)
+Received: by mail-oo1-f53.google.com with SMTP id
+ v19-20020a4a2453000000b002bb88bfb594so4468076oov.4
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 12:31:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=sfYJREk4LthXDmYH+mm6RPH7Unbt5mdqH4JPAcOL8jM=;
- b=TBEA8Fm98UlbJ1ExMykMlyJ2hPc7mWhfh6pqyJlae/WYwmprtjgw3loMmAZGCagN7w
- ZjmxH34GeK+CGScwjdymSAUykBBRqqPv/MJDqLUVksh6OcmdgL6e0P7/Bg8tBCZdBXXO
- mzFT/+2/A/IEYecAsPZUgFFPO9StT/qqXLy3VR4EYLVUsVs7/IJBBzBbB2ijg3VHD13Y
- b4yPToOqncxpkIvSwbnqvF2VOGCA6aISGOdUY0sUEr/oG40uPdNRiLG90k4/9DoLlmpj
- sErR1CHgepbMQ+pl0VLBWJlSFpZ33uJq2mtUKk57o9/pAHa8VJ+hPETxPs145d44UfNh
- HerA==
-X-Gm-Message-State: AOAM5305J98SRClzrCyUK8IdDMA4kFoKtnoqaqPH3uyk+rO8+libLqgz
- iC88btIWzYsA8IHxS9MjlQ==
-X-Google-Smtp-Source: ABdhPJypg8D572vna64ZqsehAGwqHTe6foFXFeIhphG+rwK2thl/QHujnSj1sQrfMN3EvOBZVoRK9g==
-X-Received: by 2002:aca:1a04:: with SMTP id a4mr752400oia.153.1639427454528;
- Mon, 13 Dec 2021 12:30:54 -0800 (PST)
+ bh=6Jz4O5bCit+lttjk1cWgGeasdedfgCU+0At2jS7RFSQ=;
+ b=8Bd+NRq+Db1KBlNNpLPi9bqe3PYJOCsv95pFx5Y29tm+uC3uFCor++Gz4yW45yUmCe
+ KnB0RPTy1wjNOb5AeHvkRuz6Rk0N37t/e4PppUXu0TKtKHupQmPlOOYWDEaQRApS/crf
+ uNQZvKlcE1P7Pfw+UHPtQxpcuy6f3thlRHzIO4ftJZl4aWWQGGOYWLPWLvXMehaXH7yM
+ QbLJjZ7mQqd69ZKRsjKqUZZgTRsnjM9XBSyRWqDCDh8kKJnLCzdmJ4YlhJN/8D5DZ1k6
+ igdZlnqQy/D0gGiIOxb6ZnhgBBSAW9eGGbDqbtQgGxNU8QMy0J6bVrx1IMRcS1ZjBo7T
+ Au4Q==
+X-Gm-Message-State: AOAM532G3OCOlo0LTvjQJNwNfZ4xeOVoMNqkSGo4MUM8lwaZnpEwCZeT
+ h08mJO2wboG3DV785KhESw==
+X-Google-Smtp-Source: ABdhPJx7lUq1A20jc5mI60hoJ2qUBaBDpxbjw29ueJ948efm/GYtUpX11ooAyBeEUo7gl9BXh/sNbQ==
+X-Received: by 2002:a05:6820:151b:: with SMTP id
+ ay27mr535785oob.22.1639427489902; 
+ Mon, 13 Dec 2021 12:31:29 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net.
  [66.90.148.213])
- by smtp.gmail.com with ESMTPSA id j20sm2305218ota.76.2021.12.13.12.30.53
+ by smtp.gmail.com with ESMTPSA id m22sm2534192ooj.8.2021.12.13.12.31.28
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 13 Dec 2021 12:30:53 -0800 (PST)
-Received: (nullmailer pid 1519622 invoked by uid 1000);
- Mon, 13 Dec 2021 20:30:52 -0000
-Date: Mon, 13 Dec 2021 14:30:52 -0600
+ Mon, 13 Dec 2021 12:31:29 -0800 (PST)
+Received: (nullmailer pid 1520651 invoked by uid 1000);
+ Mon, 13 Dec 2021 20:31:28 -0000
+Date: Mon, 13 Dec 2021 14:31:28 -0600
 From: Rob Herring <robh@kernel.org>
 To: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH 1/4] dt-bindings: memory: mediatek: Correct the minItems
- of clk for larbs
-Message-ID: <YbetfPEoHdyqyo8H@robh.at.kernel.org>
+Subject: Re: [PATCH 2/4] dt-bindings: memory: mediatek: Add mt8186 support
+Message-ID: <YbetoA2JJtnXj7gm@robh.at.kernel.org>
 References: <20211203064027.14993-1-yong.wu@mediatek.com>
- <20211203064027.14993-2-yong.wu@mediatek.com>
- <1638574455.281202.1043012.nullmailer@robh.at.kernel.org>
- <5d1ebe0089acd28032b74e3a180466f418580805.camel@mediatek.com>
+ <20211203064027.14993-3-yong.wu@mediatek.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <5d1ebe0089acd28032b74e3a180466f418580805.camel@mediatek.com>
-Cc: anan.sun@mediatek.com, devicetree@vger.kernel.org,
- srv_heupstream@mediatek.com,
+In-Reply-To: <20211203064027.14993-3-yong.wu@mediatek.com>
+Cc: anan.sun@mediatek.com, youlin.pei@mediatek.com, srv_heupstream@mediatek.com,
  Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- Robin Murphy <robin.murphy@arm.com>, youlin.pei@mediatek.com,
+ devicetree@vger.kernel.org, Will Deacon <will@kernel.org>,
  linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
  yi.kuo@mediatek.com, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, lc.kan@mediatek.com,
- Matthias Brugger <matthias.bgg@gmail.com>, anthony.huang@mediatek.com,
- Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
+ Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
+ lc.kan@mediatek.com, Matthias Brugger <matthias.bgg@gmail.com>,
+ anthony.huang@mediatek.com, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,76 +98,17 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Dec 13, 2021 at 02:48:52PM +0800, Yong Wu wrote:
-> On Fri, 2021-12-03 at 17:34 -0600, Rob Herring wrote:
-> > On Fri, 03 Dec 2021 14:40:24 +0800, Yong Wu wrote:
-> > > If a platform's larb support gals, there will be some larbs have a
-> > > one
-> > > more "gals" clock while the others still only need "apb"/"smi"
-> > > clocks.
-> > > then the minItems is 2 and the maxItems is 3.
-> > > 
-> > > Fixes: 27bb0e42855a ("dt-bindings: memory: mediatek: Convert SMI to
-> > > DT schema")
-> > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > > ---
-> > >  .../bindings/memory-controllers/mediatek,smi-larb.yaml          |
-> > > 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > 
-> > Running 'make dtbs_check' with the schema in this patch gives the
-> > following warnings. Consider if they are expected or the schema is
-> > incorrect. These may not be new warnings.
-> > 
-> > Note that it is not yet a requirement to have 0 warnings for
-> > dtbs_check.
-> > This will change in the future.
-> > 
-> > Full log is available here: 
-> > https://patchwork.ozlabs.org/patch/1563127
-> > 
-> > 
-> > larb@14016000: 'mediatek,larb-id' is a required property
-> > 	arch/arm64/boot/dts/mediatek/mt8167-pumpkin.dt.yaml
+On Fri, 03 Dec 2021 14:40:25 +0800, Yong Wu wrote:
+> Add mt8186 smi support in the bindings.
 > 
-> I will fix this in next version. This property is not needed in mt8167.
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>  .../bindings/memory-controllers/mediatek,smi-common.yaml      | 4 +++-
+>  .../bindings/memory-controllers/mediatek,smi-larb.yaml        | 3 +++
+>  2 files changed, 6 insertions(+), 1 deletion(-)
 > 
-> > 
-> > larb@14017000: clock-names: ['apb', 'smi'] is too short
-> > 	arch/arm64/boot/dts/mediatek/mt8183-evb.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-
-> > burnet.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-damu.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-
-> > fennel14.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel-
-> > sku1.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-fennel-
-> > sku6.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-juniper-
-> > sku16.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-kappa.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-kenzo.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-willow-
-> > sku0.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-willow-
-> > sku1.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-kakadu.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku16.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku272.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku288.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku32.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-krane-sku0.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-kukui-krane-sku176.dt.yaml
-> > 	arch/arm64/boot/dts/mediatek/mt8183-pumpkin.dt.yaml
-> 
-> Some larbs only have two clocks(apb/smi) in mt8183. thus it is
-> reasonable for me. I won't fix this in next version.
 
-You also need to adjust 'clock-names' to allow for 2 items.
-
-Rob
+Acked-by: Rob Herring <robh@kernel.org>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
