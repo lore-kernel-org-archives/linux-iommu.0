@@ -1,184 +1,131 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C1232C433F5
-	for <iommu@archiver.kernel.org>; Mon, 13 Dec 2021 14:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C8B02C433EF
+	for <iommu@archiver.kernel.org>; Mon, 13 Dec 2021 16:45:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 77EFB400D8;
-	Mon, 13 Dec 2021 14:23:46 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 69D0B60A99;
+	Mon, 13 Dec 2021 16:45:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XiiNNh0TEv3k; Mon, 13 Dec 2021 14:23:45 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id BHqyNsheaD_D; Mon, 13 Dec 2021 16:45:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 01BEE4023B;
-	Mon, 13 Dec 2021 14:23:45 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 67B6E607DF;
+	Mon, 13 Dec 2021 16:45:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D29D2C001E;
-	Mon, 13 Dec 2021 14:23:44 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 940FCC0012
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 14:23:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4DF5BC001E;
+	Mon, 13 Dec 2021 16:45:21 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 37501C0012
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 16:45:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 74E3884D0F
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 14:23:43 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 228A74023F
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 16:45:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=oracle.com header.b="palPGs9k";
- dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
- header.b="o3wJ7y3b"
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jclZFtK52OWn for <iommu@lists.linux-foundation.org>;
- Mon, 13 Dec 2021 14:23:42 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id YKpL-QX9ARCh for <iommu@lists.linux-foundation.org>;
+ Mon, 13 Dec 2021 16:45:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com
- [205.220.177.32])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 5FAA284B9F
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 14:23:42 +0000 (UTC)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
- by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1BDDQ5tV011744; 
- Mon, 13 Dec 2021 14:23:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=XWm4A5fAPoZqDfpJiDE0db0FAczCxmp+FTYfvct/6Rc=;
- b=palPGs9kgpNSDxCdF7QGHsfZLhEt5IGmMbL8zQ/Du279JpwIUHNC8N9i+RlgFmHnME5F
- MeH3JdzrtDfiGfer+NLxDFVVqW8KMoXF/+hLbiJniWPjHKe6Peztm7i2dGO3fVEZ06Sd
- rrLXkxJPfRJAb5++j6wLuSo4DR5X+uw0W1TKMf10S7uKYUWXtxEm1S26LwpFGp/DEIZ+
- axLUZ6shUoZb/2Qmwkwrf2+g2ArAn5MiDvLmx7Ox3QfqEcFrm7zMItzdWFz8Q8h1OYnQ
- a1wzuHMwkaCkjIM0HVFCPmH/w4jkr/1onNX4PetXBhOVbacl5QJtwAYaUp0vcRKa+GZr mg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
- by mx0b-00069f02.pphosted.com with ESMTP id 3cx3uk8kpx-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Mon, 13 Dec 2021 14:23:31 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
- by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 1BDEARWw009138;
- Mon, 13 Dec 2021 14:23:31 GMT
-Received: from nam12-dm6-obe.outbound.protection.outlook.com
- (mail-dm6nam12lp2172.outbound.protection.outlook.com [104.47.59.172])
- by aserp3020.oracle.com with ESMTP id 3cvkt30uqt-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Mon, 13 Dec 2021 14:23:30 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EpyrQmAgnKI3StF19CX2QvDqpumhGts9mGpFt91XECnHOCVkbEzgJ1LpUI3K4c6wqNA+hTmYbUiuduSUu7XFdbyaHWs0CPGysvmnWTj7oVbIh/ZDel8/CEFX6URTpKdqOErk0qzik590GToJeKTOrYnHgZAHmih4RKxHSLBS3JaDcEv34AL1V+dtuAVzybKNlfrudtTO3qfQn69BdPym5BaPNeqoy8uPd02fgn2zhOFOXtl6u/oQCZPe2rICfOXu3zZZI9T+ptZAPmnBOaqRX60CaqQ67d5auV+Ss8/uVqDitXHHVT8wMXFk9je0dnF55F/G7/xZg4rA6SWe2yQi3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XWm4A5fAPoZqDfpJiDE0db0FAczCxmp+FTYfvct/6Rc=;
- b=eFcyPUSzAf7E8blf/riWqUmjK71t7aAtloTSdOzL4Wk3rKThwa5MC5tTm1y8jTAT66pIiWd4jnW5z0j6XmdO/p5TY6W/Qed9vF55SIXDyge+8bpWszPEjaXcEaJcCt5QqxWsUBxMmznpgSaMSfObZUVYdpw3fZ9+LcZye6GRIjNe7tS9uk/d/QO5q1VNuTZNYMQmPB4941aOvDLruc1+0NF/AYIQFideFYMgojUKF6dQnt8eX32ml438ZDO137jNx89/wg5aYtIAdgQYMMP4rpb0jvHJAqViTOgoekWyOIE7kLDWbyjeX0QZQe8yd3nT6a/EX5adJYjWdHTfIg7cyw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XWm4A5fAPoZqDfpJiDE0db0FAczCxmp+FTYfvct/6Rc=;
- b=o3wJ7y3bWnQXmcAgJLZ1Pkg/aWKTY7AZKFMkWBaZy84J2pj/75gg2eN5k/6IQ2/vWWKI7bSYdnau4X8Jeyw8pr+4asqOr311mxEgqbPmitWSnT0qgdpL95NYib7B37Zw43Sd8G+mFbFZKKCOiLYSIhSLSZ+OHegye+zrCJhlTlo=
-Received: from CO1PR10MB4722.namprd10.prod.outlook.com (2603:10b6:303:9e::12)
- by MWHPR10MB1759.namprd10.prod.outlook.com (2603:10b6:301:8::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4778.12; Mon, 13 Dec
- 2021 14:23:29 +0000
-Received: from CO1PR10MB4722.namprd10.prod.outlook.com
- ([fe80::54ed:be86:184c:7d00]) by CO1PR10MB4722.namprd10.prod.outlook.com
- ([fe80::54ed:be86:184c:7d00%8]) with mapi id 15.20.4778.018; Mon, 13 Dec 2021
- 14:23:28 +0000
-Message-ID: <f7cb4884-72c5-dab3-c2e0-323d826febae@oracle.com>
-Date: Mon, 13 Dec 2021 08:23:18 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.0
-Subject: Re: [PATCH v3 4/5] dma/pool: create dma atomic pool only if dma zone
- has managed pages
-Content-Language: en-US
-To: Baoquan He <bhe@redhat.com>, linux-kernel@vger.kernel.org
-References: <20211213122712.23805-1-bhe@redhat.com>
- <20211213122712.23805-5-bhe@redhat.com>
-From: john.p.donnelly@oracle.com
-In-Reply-To: <20211213122712.23805-5-bhe@redhat.com>
-X-ClientProxiedBy: DB6PR0202CA0047.eurprd02.prod.outlook.com
- (2603:10a6:4:a5::33) To CO1PR10MB4722.namprd10.prod.outlook.com
- (2603:10b6:303:9e::12)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 2CDAF401C7
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 16:45:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1639413918; x=1670949918;
+ h=subject:to:cc:references:from:message-id:date:
+ mime-version:in-reply-to:content-transfer-encoding;
+ bh=VU8lPewNePeXNWyIHHTWtUYDbfI/CnTiJxPmI+xNY74=;
+ b=TEBpUVRs2Sd+wYXKTBESJDiFCA5qM60LMkdBmT+1V6CMYR83iUlMUoXQ
+ hzh9QkdZOVq3UEQMBsDyhfmj7eRnhVHp9TN69lo5BqUdQlZjcgbWNBABf
+ Q9md4xYMaId4cnCXAmuAcMCVfhWa2G6ar3+wZE6Rb55Nh625iNU1BnytT
+ ijeqVvB/np2AQN2U+ZBJA1Y8N8DFkDFvAmy8hwTws9w8WbQbcAwS3xvcA
+ EKBttGfh5r1tWaPEcBPHWUat9mCA4H4IP2Y7QCZ//8Gd0aKIA/yRniuC6
+ hxJHuoadvbcQp+2TfZ2arWtZ5ny6d5ACrUCdhDQIz3hgZ7IKV/XG0b/yH g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10196"; a="219455692"
+X-IronPort-AV: E=Sophos;i="5.88,203,1635231600"; d="scan'208";a="219455692"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 13 Dec 2021 08:45:03 -0800
+X-IronPort-AV: E=Sophos;i="5.88,203,1635231600"; d="scan'208";a="752324377"
+Received: from chenb-mobl1.amr.corp.intel.com (HELO [10.212.210.237])
+ ([10.212.210.237])
+ by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 13 Dec 2021 08:45:02 -0800
+Subject: Re: [PATCH V7 1/5] swiotlb: Add swiotlb bounce buffer remap function
+ for HV IVM
+To: Tianyu Lan <ltykernel@gmail.com>, kys@microsoft.com,
+ haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+ decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+ davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
+ martin.petersen@oracle.com, arnd@arndb.de, hch@infradead.org,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
+ Tianyu.Lan@microsoft.com, michael.h.kelley@microsoft.com
+References: <20211213071407.314309-1-ltykernel@gmail.com>
+ <20211213071407.314309-2-ltykernel@gmail.com>
+From: Dave Hansen <dave.hansen@intel.com>
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+ z5cecg==
+Message-ID: <198e9243-abca-b23e-0e8e-8581a7329ede@intel.com>
+Date: Mon, 13 Dec 2021 08:45:00 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7aefb268-0c4a-45fb-bd3c-08d9be442206
-X-MS-TrafficTypeDiagnostic: MWHPR10MB1759:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR10MB175920286189F7F9111222FAC7749@MWHPR10MB1759.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:989;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: n1gQcwFHPyxXHv+iLKt/fqRVOKO4WHSEfBR2o2GzMV5c3dZTdSbwQrdEj2TQVUe8eObxRCmjQ7qSYFT87yiFxO7QJ2CCmqrv2b300cjShNRpif+M+7yhpV2Q9rVXkkvU1w+Y2mZXApVk3nfQYkCH8XTzLDWpKLqoC06G1WbTFnCd6piKQw6gdCXMyxzHQhLqMbJDHwgfwu6JbhHSuy88irzZwi2bb4nM2yMfr35V2iYiLd22MBuXrULaClfSRJ03+3dQOay/O11QvghkhEuZQTED5MNTu2zEOMWcJDivbiehBLWhNdxem1e4Lh5weuRjQS98k34XZEP41BvOxNt4YcKWjoiaGDOgNtZTc/XzbO3LNVtdex/ODYjsgm5nsJlDSEDlJJV/T7t2OAPl7TsxHmSwlI45v87JmLhfHOq/KidHlqFdYPOgIDWpLU2FrXuKoBI0XARY3muECgTKIU/7bQ9Lfp1a9WEIwyg/tEsADqTjBk6cMQ9BY6nuG+o6SZAwG6GwMCDznhxTB8QEbijHI28jMD6AIYT3UjOx82RgCehN2X2cHNf32stS2wuJYQz/u9tn8l/wAIVORptzYrgtMtEkQyiQu4UFeJy8c+L5zUhSc0VVdeV0wtg4+N4GVgaMRwjoC4ttj44TywdxYVwQlJ3UeWNTRt/RAmExH2+K0kplypFS6SQgEtBUChV6BU9eoyq8RmVrPvz6efBgHlJiRg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:CO1PR10MB4722.namprd10.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(366004)(8676002)(6486002)(6512007)(9686003)(36756003)(6506007)(31686004)(66946007)(53546011)(8936002)(38100700002)(508600001)(5660300002)(66556008)(66476007)(316002)(2616005)(54906003)(86362001)(186003)(26005)(4326008)(83380400001)(6666004)(7416002)(31696002)(2906002)(43740500002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Ty9SZkhTSytvQWszODVPejF1RmN5RkhreGdxV3Q1VVAzQ0FsOVNaczdsWFcv?=
- =?utf-8?B?ajNFWlZoblozS3IvQzhaZ2E0Z2RWTytydkNoeC9MSnZaWVN0Z3hXYTg0TGRO?=
- =?utf-8?B?V2RURU8rVkNJZHg1Vk9pdE1NOUUzVkxHSjQ1ZXRtR1NHdVYvRUFYUnllcjFJ?=
- =?utf-8?B?UHovRVpEZHAzSHBmNndrTHp2VUlUSkdvQllBcXhoakpIZlNzeHgwVUJqTlpS?=
- =?utf-8?B?R2hvUWJwRmswbkUwMnQrUlJQYk9GL0preXpIOG01U0hscG9BMC9oMHlTeG5i?=
- =?utf-8?B?YUVsazVoOG5xUytTVmh4YWdUendlNjI1VjdnN1NETzBSdVg0M0FkSWV6K1pK?=
- =?utf-8?B?RGg1UkV0aVo1VHVOVnpQekhaRXhuMlE1NS9JTGRqc0xid0xMMTVvN005VmZi?=
- =?utf-8?B?aGdRQjVtdUZsc1Y4a2pGRkZsWUdxNUZMZU5qaTh1TWF4NFhoU2Jua0NOTUli?=
- =?utf-8?B?VWxBQlhoaURFVWJnZkxDVHpieGo5NjBJTXJPbXY2SXlTTjc5SXNCNEYwaURR?=
- =?utf-8?B?TklQdXFHN0FiUHZ1em5EV2ZSVjNoSTFnc2hOaVFrbVNmVmZwMC9qWGxvSUht?=
- =?utf-8?B?bmVVWk1Jd3VWdklwbTg2eWplYTNqdGZqS0xSS0lLajdKRFhIOVZ6NXoxL09v?=
- =?utf-8?B?MVlEQzdacUNoZUg4Rmhkc3QwOHQwZU9RblBVaG4zTWkyWXpIRnc2ZlhFRXVM?=
- =?utf-8?B?RDROeTBQZHIzVndJSnc2MU53N3hIZzZhZ1ljNWRWTmhjSDBwQ1ZuOHBhbGpo?=
- =?utf-8?B?ZWw0OXFLWDYzUVZmU0p4K3FWb3IzMEpJTk9mVEZtQkMwaUhGcWFrc1ZLN0Jt?=
- =?utf-8?B?MjJhYkNLbjBualBzSHpwK1grQ1ZBcGI3dndidDhVODIyR3B2bmRvZDFQT3Rh?=
- =?utf-8?B?MHRBZlExWC9zVEpRMXdsb1ZsRkt5TGF5VTJKRW95YlBwd3RXWnFmS0tlQnBS?=
- =?utf-8?B?Q0FPU01jRW56Q3l5QTVrMXdKenV3dEhBdHhhM0ZwV2hKZURFSCtwOUhiZDZi?=
- =?utf-8?B?a2V4VkZndjF4c2NxSyt2d0E0MkNtRFVPa3R1Z3NlcUhGS2N5bGlhNzVBZ0VJ?=
- =?utf-8?B?ZDM4Wlhta2xqRlI2dE04MUpXMHlvUG9vMDhuVVB6eXRsTHB6VmNVQ0lEK0lP?=
- =?utf-8?B?eVlENURWSjVzUXdOMXZxb1pRaEtKME5DRnFIYmpBUEcrREZWM21KbDhJS1dr?=
- =?utf-8?B?RHlhcEFUZWNOdzB4MU5aTENlUDlhS05TK0VIMVRlY3hjVEIyRDhFZzN3TDlK?=
- =?utf-8?B?THpxajdBM0QzbHZVWml3d1RQN3Y2OXV6TVNDaWFmZm44eFQ4NkJTVTFkVkF5?=
- =?utf-8?B?bCtFemd0RHlEK3Zhemx3N2IrUGRNSGZMK2tTdUpjN1BFUlQ5ZGxIVENFaE4w?=
- =?utf-8?B?UWRGM1dzOHIzRlZnSlE5YWVYUE9Kb0tyYnk5MkNXWDAyK21NanZLNmlST3Q0?=
- =?utf-8?B?MVpCcmU2KytJdThKekRwMm5lYWl1bkxaSU5jOHhxc3M3SUVJVDBmY09RVjRT?=
- =?utf-8?B?YkZKVVowV1BrUlluVlpkRkNaL1JiRnRnRWI2dXRkMzBPdHhzQ0R5S1BFaWFp?=
- =?utf-8?B?WXpoSUwycTVmZ3FXZVk5c1luRVBiSjJQbGhsWmxCbmN0R3ZTSVk2QkRtYUpD?=
- =?utf-8?B?TDFsWTJaOVhCc01KSTF0T3F3b2IrOHNtTEMydTd0R1dEMHo0NFJ3Y0JrelI1?=
- =?utf-8?B?WmFzQ0Q1d3hRNThZSm5YaDlCdVYvSVpTWDJoSk1PWTArUnNNTUZBeHdyTnM0?=
- =?utf-8?B?Y2RMYkd2b09Fa08vSDk4VitqTEkydmxZdjdtdWVkN2tDemJKUE9kK2pUSi9p?=
- =?utf-8?B?ZEgzVURCd1diY1hyU1hRVStaUzBsT0loay9tUG0vSm9scUt1OE9ZOHVEd0lT?=
- =?utf-8?B?L2wwL3dFNGIxV0VHbkpucnFJVVZ1Rjl1SFJSMkhrV1hKN3VWeGtSVWJWUjFr?=
- =?utf-8?B?MWEydStIald3VzZkMVM1TkVDVnJFV0ZRdDRzem0wQjRiVzFDVEtSQkxsbzkr?=
- =?utf-8?B?TDBQTDdscjdNN1pkcUcrOCtYUG4veEN5dE04TGkxWVJlcnppRktjQm5KRnhO?=
- =?utf-8?B?M1VONWJpN3MxMUJydUdvV3MwdW5Ta1NOdEh4U2hYUkdTZ3VoRmo4MXB6Vi84?=
- =?utf-8?B?a2ZON2lXa1BSblB6TUlwWnVzY082UTg3RHlOUDFvRkQxdmd4bDgrM28weHFu?=
- =?utf-8?B?MUFsUFhXSTIyUkF3aHV1NXgvQ3Q1M0J6UUtCS2I3eS9qUE44anQwSUJTQ3JM?=
- =?utf-8?B?UW5xYmlLeUViSitDVEVwYnpJdG13PT0=?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7aefb268-0c4a-45fb-bd3c-08d9be442206
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4722.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Dec 2021 14:23:28.8838 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rKqPb33m+Ba/LFNzhV+OMfypVv3e+H95tHxyRSWm86dxLg14u/n4hPEjwCXkgaytWDv7qQdmXbm4vi/Zc/lTJkKvcE6HmHxNAiiXGVkuAJU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1759
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10196
- signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
- adultscore=0 suspectscore=0
- mlxlogscore=999 phishscore=0 malwarescore=0 bulkscore=0 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2112130091
-X-Proofpoint-GUID: 6SNsDVUKNphjraKQSJ0BARU3u8bAnTGR
-X-Proofpoint-ORIG-GUID: 6SNsDVUKNphjraKQSJ0BARU3u8bAnTGR
-Cc: John.p.donnelly@oracle.com, kexec@lists.infradead.org,
- stable@vger.kernel.org, hch@lst.de, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, akpm@linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>, cl@linux.com
+In-Reply-To: <20211213071407.314309-2-ltykernel@gmail.com>
+Content-Language: en-US
+Cc: linux-arch@vger.kernel.org, parri.andrea@gmail.com,
+ linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
+ linux-scsi@vger.kernel.org, konrad.wilk@oracle.com, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ vkuznets@redhat.com, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -191,96 +138,26 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 12/13/21 6:27 AM, Baoquan He wrote:
-> Currently three dma atomic pools are initialized as long as the relevant
-> kernel codes are built in. While in kdump kernel of x86_64, this is not
-> right when trying to create atomic_pool_dma, because there's no managed
-> pages in DMA zone. In the case, DMA zone only has low 1M memory presented
-> and locked down by memblock allocator. So no pages are added into buddy
-> of DMA zone. Please check commit f1d4d47c5851 ("x86/setup: Always reserve
-> the first 1M of RAM").
-> 
-> Then in kdump kernel of x86_64, it always prints below failure message:
-> 
->   DMA: preallocated 128 KiB GFP_KERNEL pool for atomic allocations
->   swapper/0: page allocation failure: order:5, mode:0xcc1(GFP_KERNEL|GFP_DMA), nodemask=(null),cpuset=/,mems_allowed=0
->   CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.13.0-0.rc5.20210611git929d931f2b40.42.fc35.x86_64 #1
->   Hardware name: Dell Inc. PowerEdge R910/0P658H, BIOS 2.12.0 06/04/2018
->   Call Trace:
->    dump_stack+0x7f/0xa1
->    warn_alloc.cold+0x72/0xd6
->    ? _raw_spin_unlock_irq+0x24/0x40
->    ? __alloc_pages_direct_compact+0x90/0x1b0
->    __alloc_pages_slowpath.constprop.0+0xf29/0xf50
->    ? __cond_resched+0x16/0x50
->    ? prepare_alloc_pages.constprop.0+0x19d/0x1b0
->    __alloc_pages+0x24d/0x2c0
->    ? __dma_atomic_pool_init+0x93/0x93
->    alloc_page_interleave+0x13/0xb0
->    atomic_pool_expand+0x118/0x210
->    ? __dma_atomic_pool_init+0x93/0x93
->    __dma_atomic_pool_init+0x45/0x93
->    dma_atomic_pool_init+0xdb/0x176
->    do_one_initcall+0x67/0x320
->    ? rcu_read_lock_sched_held+0x3f/0x80
->    kernel_init_freeable+0x290/0x2dc
->    ? rest_init+0x24f/0x24f
->    kernel_init+0xa/0x111
->    ret_from_fork+0x22/0x30
->   Mem-Info:
->   ......
->   DMA: failed to allocate 128 KiB GFP_KERNEL|GFP_DMA pool for atomic allocation
->   DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
-> 
-> Here, let's check if DMA zone has managed pages, then create atomic_pool_dma
-> if yes. Otherwise just skip it.
-> 
-> Fixes: 6f599d84231f ("x86/kdump: Always reserve the low 1M when the crashkernel option is specified")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Baoquan He <bhe@redhat.com>
+On 12/12/21 11:14 PM, Tianyu Lan wrote:
+> In Isolation VM with AMD SEV, bounce buffer needs to be accessed via
+> extra address space which is above shared_gpa_boundary (E.G 39 bit
+> address line) reported by Hyper-V CPUID ISOLATION_CONFIG. The access
+> physical address will be original physical address + shared_gpa_boundary.
+> The shared_gpa_boundary in the AMD SEV SNP spec is called virtual top of
+> memory(vTOM). Memory addresses below vTOM are automatically treated as
+> private while memory above vTOM is treated as shared.
 
+This seems to be independently reintroducing some of the SEV
+infrastructure.  Is it really OK that this doesn't interact at all with
+any existing SEV code?
 
-
-  Acked-by: John Donnelly <john.p.donnelly@oracle.com>
-  Tested-by:  John Donnelly <john.p.donnelly@oracle.com>
-
-
-> Cc: Christoph Hellwig <hch@lst.de>
-> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: iommu@lists.linux-foundation.org
-> ---
->   kernel/dma/pool.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-> index 5a85804b5beb..00df3edd6c5d 100644
-> --- a/kernel/dma/pool.c
-> +++ b/kernel/dma/pool.c
-> @@ -206,7 +206,7 @@ static int __init dma_atomic_pool_init(void)
->   						    GFP_KERNEL);
->   	if (!atomic_pool_kernel)
->   		ret = -ENOMEM;
-> -	if (IS_ENABLED(CONFIG_ZONE_DMA)) {
-> +	if (has_managed_dma()) {
->   		atomic_pool_dma = __dma_atomic_pool_init(atomic_pool_size,
->   						GFP_KERNEL | GFP_DMA);
->   		if (!atomic_pool_dma)
-> @@ -229,7 +229,7 @@ static inline struct gen_pool *dma_guess_pool(struct gen_pool *prev, gfp_t gfp)
->   	if (prev == NULL) {
->   		if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
->   			return atomic_pool_dma32;
-> -		if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
-> +		if (atomic_pool_dma && (gfp & GFP_DMA))
->   			return atomic_pool_dma;
->   		return atomic_pool_kernel;
->   	}
-
+For instance, do we need a new 'swiotlb_unencrypted_base', or should
+this just be using sme_me_mask somehow?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
