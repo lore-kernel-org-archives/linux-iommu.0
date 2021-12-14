@@ -1,101 +1,103 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C03B8C433F5
-	for <iommu@archiver.kernel.org>; Mon, 13 Dec 2021 22:29:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 38808C43217
+	for <iommu@archiver.kernel.org>; Tue, 14 Dec 2021 04:37:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 2F4674047C;
-	Mon, 13 Dec 2021 22:29:30 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D124F81382;
+	Tue, 14 Dec 2021 04:37:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id muwvZGyR9TQx; Mon, 13 Dec 2021 22:29:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id B4DB74019D;
-	Mon, 13 Dec 2021 22:29:28 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id A9CfHlC78o7b; Tue, 14 Dec 2021 04:37:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id BFEC481361;
+	Tue, 14 Dec 2021 04:37:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 87535C002F;
-	Mon, 13 Dec 2021 22:29:28 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5B832C0012
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 22:29:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A7776C002F;
+	Tue, 14 Dec 2021 04:37:09 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3A82CC0012
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 04:37:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 2F85360B5F
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 22:29:27 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 1B080403C7
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 04:37:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=deltatee.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LJPcmgcySdIr for <iommu@lists.linux-foundation.org>;
- Mon, 13 Dec 2021 22:29:25 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 509B760B4E
- for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 22:29:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
- Message-ID:From:References:Cc:To:content-disposition;
- bh=7iaOSPYC++rVBoYT3QRUQDaMarUdPJ3RFeXKP6p9rM4=; b=b3dBhIgajJAvUk635a5T6J+46S
- lWGtZao8HbOE8FQzCpvd1HGkyAd8ZKQCD7KmVuvwCjqFnOdp1/6fBQqIqviPbBW3OAlA7rK5mYuJp
- ISX4VUGcdu+eaAVoI4XiQfUSuYbsqkyzs9pinzLkr8frDEOIvCPGPHWNLRXiDfjEtx6iopkOFseh7
- 3nVLEpOS4Euq+Xe2yxnR8Oqycsa1pui0qvcMZaJQZ7Y60d7xioQ6c13dSL4wCD4OmLA/3MOcr2wjy
- ErkKSypS9r+JtZqxUMXBuukP7mxIR+F+TYmxzDEHKJktVg54mBubaL0dovEnkeXllV049o5n8uat3
- N8KqHCbA==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
- by ale.deltatee.com with esmtpsa (TLS1.3) tls
- TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Exim 4.94.2)
- (envelope-from <logang@deltatee.com>)
- id 1mwtoY-0042Rf-6n; Mon, 13 Dec 2021 15:28:59 -0700
-To: Chaitanya Kulkarni <chaitanyak@nvidia.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
- "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "linux-mm@kvack.org" <linux-mm@kvack.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-References: <20211117215410.3695-1-logang@deltatee.com>
- <20211117215410.3695-12-logang@deltatee.com>
- <e4fda995-6b50-0f74-0af7-4d790ab66ba9@nvidia.com>
-From: Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <af6cda4f-9996-0aad-9278-1d41f824a070@deltatee.com>
-Date: Mon, 13 Dec 2021 15:28:54 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id aHTBC6-lGxjs for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Dec 2021 04:37:07 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com
+ [IPv6:2607:f8b0:4864:20::62a])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 8AB4540274
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 04:37:07 +0000 (UTC)
+Received: by mail-pl1-x62a.google.com with SMTP id v19so12712650plo.7
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Dec 2021 20:37:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=message-id:date:mime-version:user-agent:from:subject:to:cc
+ :references:content-language:in-reply-to:content-transfer-encoding;
+ bh=w4jF6pVlAr6sHba/AXtkTZyGmAkMDj6qQwAZlJ+UdLM=;
+ b=OO8cW6CQyLhwtJRdZo64ynH6YeKqGhXzDwlR96DxhxE8Bz5kntawlo3U2eaGVD6CHI
+ QwlLfqlppyoVymnRsSdhwAbcwoI1D7iwAn/eC7pS7Pj0K1VfQQPlhUUd5xy+WbCBAYDe
+ CQOlcjQSfsQlxLiRuxOWyrkrVDXvfEueSrvOQHwoCOK3vTOpot3KDNKHU3PW7aUlZOQX
+ MN7v7ONz+WWwWOXpsViMSrzGNo6sSDbOMGzJD6Qa0xvRGJgAgkSVClBY32rRHfyCo6A3
+ FQ9HQBcHZRpZZlCrmfLicfdlKItAAolAJVEfIXHGJEJMbZjO/ZWcO9H4hEoGAYqHbkbf
+ SDXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+ :subject:to:cc:references:content-language:in-reply-to
+ :content-transfer-encoding;
+ bh=w4jF6pVlAr6sHba/AXtkTZyGmAkMDj6qQwAZlJ+UdLM=;
+ b=dh/8pWuyF41awIxnPECy9vrS+DmBIQAf+JQh8Eq02/BegP2DX/McLXKFZkJ0ShVWBG
+ mL1UFXPAfkz1ZXTHt8EbwzOJE7C5Os/u25n/nnN7yE6BzeacOcL2bYfWlrJjZ5IPryWF
+ sjfQItpM5KX/cb03VkgVzR6u8lYpbA3Y1pBRJD7tN5XdiLKbPiKaDcs2/WKX2cNHfO2e
+ lPxL40bsygSXXSYQSPifMTd3iTW3bN5zVCjdDqv2sspD7+y5O+t2lhmLp77cT6FzL8IC
+ V1ZolMOVSuxfbSm1/fyI7BjRe5BO+O87AhulCKTctA+AT33haU/iMHtjWzvQezS3shdH
+ wISA==
+X-Gm-Message-State: AOAM5319lKnmYtfGq2bgnR6XZTBAQqLVvTcfxz+/yigr7vwD9RUvtylU
+ lea/7SReQIG97/RaA1nNaBM=
+X-Google-Smtp-Source: ABdhPJw8uDA1QXzEpygmuAAZVoXz6dprKQR+3bFuLs1n/mm4f5XuNE+IqFlivIE3110OJ/+FyvUzTA==
+X-Received: by 2002:a17:90b:4b86:: with SMTP id
+ lr6mr2944595pjb.98.1639456626921; 
+ Mon, 13 Dec 2021 20:37:06 -0800 (PST)
+Received: from ?IPV6:2404:f801:0:5:8000::50b? ([2404:f801:9000:1a:efea::50b])
+ by smtp.gmail.com with ESMTPSA id
+ rm10sm812022pjb.29.2021.12.13.20.36.57
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Mon, 13 Dec 2021 20:37:06 -0800 (PST)
+Message-ID: <3243ff22-f6c8-b7cd-26b7-6e917e274a7c@gmail.com>
+Date: Tue, 14 Dec 2021 12:36:56 +0800
 MIME-Version: 1.0
-In-Reply-To: <e4fda995-6b50-0f74-0af7-4d790ab66ba9@nvidia.com>
-Content-Language: en-CA
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: mgurtovoy@nvidia.com, ckulkarnilinux@gmail.com,
- martin.oliveira@eideticom.com, robin.murphy@arm.com, ira.weiny@intel.com,
- helgaas@kernel.org, jianxin.xiong@intel.com, dave.hansen@linux.intel.com,
- jason@jlekstrand.net, dave.b.minturn@intel.com, andrzej.jakowski@intel.com,
- daniel.vetter@ffwll.ch, willy@infradead.org, ddutile@redhat.com,
- jhubbard@nvidia.com, christian.koenig@amd.com, jgg@ziepe.ca,
- dan.j.williams@intel.com, hch@lst.de, sbates@raithlin.com,
- iommu@lists.linux-foundation.org, linux-mm@kvack.org,
- linux-pci@vger.kernel.org, linux-block@vger.kernel.org,
- linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
- chaitanyak@nvidia.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH v4 11/23] nvme-pci: convert to using dma_map_sgtable()
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: Minturn Dave B <dave.b.minturn@intel.com>,
- Martin Oliveira <martin.oliveira@eideticom.com>,
- Ira Weiny <ira.weiny@intel.com>, John Hubbard <jhubbard@nvidia.com>,
- Dave Hansen <dave.hansen@linux.intel.com>, Robin Murphy <robin.murphy@arm.com>,
- Matthew Wilcox <willy@infradead.org>,
- =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
- Max Gurtovoy <mgurtovoy@nvidia.com>, Jason Ekstrand <jason@jlekstrand.net>,
- Daniel Vetter <daniel.vetter@ffwll.ch>, Bjorn Helgaas <helgaas@kernel.org>,
- Dan Williams <dan.j.williams@intel.com>, Stephen Bates <sbates@raithlin.com>,
- Jakowski Andrzej <andrzej.jakowski@intel.com>, Christoph Hellwig <hch@lst.de>,
- Xiong Jianxin <jianxin.xiong@intel.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+From: Tianyu Lan <ltykernel@gmail.com>
+Subject: Re: [PATCH V7 1/5] swiotlb: Add swiotlb bounce buffer remap function
+ for HV IVM
+To: Dave Hansen <dave.hansen@intel.com>, kys@microsoft.com,
+ haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+ decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+ davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
+ martin.petersen@oracle.com, arnd@arndb.de, hch@infradead.org,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
+ Tianyu.Lan@microsoft.com, michael.h.kelley@microsoft.com
+References: <20211213071407.314309-1-ltykernel@gmail.com>
+ <20211213071407.314309-2-ltykernel@gmail.com>
+ <198e9243-abca-b23e-0e8e-8581a7329ede@intel.com>
+Content-Language: en-US
+In-Reply-To: <198e9243-abca-b23e-0e8e-8581a7329ede@intel.com>
+Cc: linux-arch@vger.kernel.org, parri.andrea@gmail.com,
+ linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
+ linux-scsi@vger.kernel.org, konrad.wilk@oracle.com, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ vkuznets@redhat.com, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,40 +110,35 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-On 2021-12-13 3:21 p.m., Chaitanya Kulkarni wrote:
+On 12/14/2021 12:45 AM, Dave Hansen wrote:
+> On 12/12/21 11:14 PM, Tianyu Lan wrote:
+>> In Isolation VM with AMD SEV, bounce buffer needs to be accessed via
+>> extra address space which is above shared_gpa_boundary (E.G 39 bit
+>> address line) reported by Hyper-V CPUID ISOLATION_CONFIG. The access
+>> physical address will be original physical address + shared_gpa_boundary.
+>> The shared_gpa_boundary in the AMD SEV SNP spec is called virtual top of
+>> memory(vTOM). Memory addresses below vTOM are automatically treated as
+>> private while memory above vTOM is treated as shared.
 > 
->>   static blk_status_t nvme_pci_setup_sgls(struct nvme_dev *dev,
->> -		struct request *req, struct nvme_rw_command *cmd, int entries)
->> +		struct request *req, struct nvme_rw_command *cmd)
->>   {
->>   	struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
->>   	struct dma_pool *pool;
->>   	struct nvme_sgl_desc *sg_list;
->> -	struct scatterlist *sg = iod->sg;
->> +	struct scatterlist *sg = iod->sgt.sgl;
->> +	int entries = iod->sgt.nents;
+> This seems to be independently reintroducing some of the SEV
+> infrastructure.  Is it really OK that this doesn't interact at all with
+> any existing SEV code?
 > 
-> I don't see use of newly added entries variable anywhere in
-> nvme_pci_setup_sgls(), what am I missing ?
+> For instance, do we need a new 'swiotlb_unencrypted_base', or should
+> this just be using sme_me_mask somehow?
 
-'entries' is being moved out from the argument list of
-nvme_pci_setup_sgls(), so there are already uses in the function that
-don't show in the diff.
-
-> Also, type of entries variable should be unsigned int to match
-> the iod->sgt.nents.
-
-Sure, I will fix that in the next version.
-
-Thanks for the reviews!
-
-Logan
+Hi Dave:
+        Thanks for your review. Hyper-V provides a para-virtualized
+confidential computing solution based on the AMD SEV function and not
+expose sev&sme capabilities to guest. So sme_me_mask is unset in the
+Hyper-V Isolation VM. swiotlb_unencrypted_base is more general solution
+to handle such case of different address space for encrypted and
+decrypted memory and other platform also may reuse it.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
