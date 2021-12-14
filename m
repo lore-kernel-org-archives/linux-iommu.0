@@ -1,71 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C9CA5C433FE
-	for <iommu@archiver.kernel.org>; Tue, 14 Dec 2021 14:48:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B15D1C433F5
+	for <iommu@archiver.kernel.org>; Tue, 14 Dec 2021 14:53:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 7BA29402FE;
-	Tue, 14 Dec 2021 14:48:53 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 417C960BCB;
+	Tue, 14 Dec 2021 14:53:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GJEERVcjPVTX; Tue, 14 Dec 2021 14:48:52 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id H1qS5D3C6tEG; Tue, 14 Dec 2021 14:53:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 76D2140284;
-	Tue, 14 Dec 2021 14:48:52 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 489E960BBF;
+	Tue, 14 Dec 2021 14:53:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A238C001E;
-	Tue, 14 Dec 2021 14:48:52 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1BDC2C0012
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 14:48:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 140E5C001E;
+	Tue, 14 Dec 2021 14:53:36 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D349FC0012
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 14:53:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 0859A40132
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 14:48:51 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id B913740548
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 14:53:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
+ dkim=pass (2048-bit key) header.d=kapsi.fi
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ACNlLE_hG9Jv for <iommu@lists.linux-foundation.org>;
- Tue, 14 Dec 2021 14:48:49 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from dfw.source.kernel.org (dfw.source.kernel.org
- [IPv6:2604:1380:4641:c500::1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id F297640125
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 14:48:48 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id C923E61541;
- Tue, 14 Dec 2021 14:48:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66B98C34606;
- Tue, 14 Dec 2021 14:48:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1639493327;
- bh=XSs0hwoBZKJiQwXo79v4ykpR7MoyXobF2GtdyXH8Igw=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=dLjDuhWiykgHlSirhPAAbWPY0E9aziSEZa17Um8F2TtWciH/ofX+oITQanU3rNJwZ
- b0HAYDtUj51I9CBSTsoEhoGaIhi7iRUXzP1oZOL8WpunFeT/OVrsm3nHMaY/eD/bIH
- oGffz9MUsGTWi9JW8yvF5pUgRLbo9Yc20pY1PDmOrb7j4HANhERoV8zeViLvgbpFlG
- vbJkpb4UbZDxwljyQ7bHAioLsfN3fBky1y1deaatNve9djJj5+i/e37oQLhrnz8/J1
- 7rEKT8Yqjvz50/c4ncilJeXJVc9PJdsltzWb/CJq1iEBN2HnfYOyMhuC5Pxg/7v6rM
- yAxMkmfusSygg==
-Date: Tue, 14 Dec 2021 14:48:42 +0000
-From: Will Deacon <will@kernel.org>
-To: Zhou Wang <wangzhou1@hisilicon.com>
-Subject: Re: [PATCH] Revert "iommu/arm-smmu-v3: Decrease the queue size of
- evtq and priq"
-Message-ID: <20211214144841.GB14837@willie-the-truck>
-References: <1638858768-9971-1-git-send-email-wangzhou1@hisilicon.com>
+ with ESMTP id AhOoDcNsXX3m for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Dec 2021 14:53:33 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A257740125
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 14:53:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+ s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+ References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=QZYhNaGojIhkj+DE3EZypSilzYN2uhm80/kOdf1GbYA=; b=IlPN7dM2SThppX1r0UTulL/Isn
+ e+U/mXVxY67CDVx82BzZ2uOGU/otApvyN6778DHwVP2o81j9E6zO+GGobSI5PUNjiaZj+46Tt5Tms
+ zYQPfUcnELURQm0aXn2m7WzCu23wzd4oUxEXYZKcv5BgpjSsOIeRjsT8fg8Ynta/tOSyD6IeFZhxa
+ nNmcRLipl3uuTZZmONO7kULsoXP+ShRwKgB6FmoswXmpUBbjRv+hZq32V48Y5BWDCLVJyU7k4HNoP
+ drdGSCjfNFKpuEcDPHLq75GFb0MlmXDXY8aL2idfIcBmAldsRSH203JE1+Trc22VEgx3+p2j/HCEL
+ gzMoJjIg==;
+Received: from dsl-hkibng22-54f986-236.dhcp.inet.fi ([84.249.134.236]
+ helo=[192.168.1.10])
+ by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+ (Exim 4.89) (envelope-from <cyndis@kapsi.fi>)
+ id 1mx9BB-0000zE-4A; Tue, 14 Dec 2021 16:53:21 +0200
+Message-ID: <a62602df-91f6-783d-60f3-d9eba10da543@kapsi.fi>
+Date: Tue, 14 Dec 2021 16:53:20 +0200
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1638858768-9971-1-git-send-email-wangzhou1@hisilicon.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH v2 0/8] Host1x context isolation support
+Content-Language: en-US
+To: Dmitry Osipenko <digetx@gmail.com>, Jon Hunter <jonathanh@nvidia.com>,
+ joro@8bytes.org, will@kernel.org, robh+dt@kernel.org, robin.murphy@arm.com,
+ Mikko Perttunen <mperttunen@nvidia.com>
+References: <20210916143302.2024933-1-mperttunen@nvidia.com>
+ <10de82cf-27a5-8890-93a5-0e58c74e5bcc@kapsi.fi>
+ <c382fb0e-6b73-5ca0-7f63-d2843351325e@nvidia.com>
+ <91dddccd-a6c1-21b3-34d6-6a8082a386e7@nvidia.com>
+ <a507b10b-395b-1f6d-87b9-7c7c436cab0e@gmail.com>
+From: Mikko Perttunen <cyndis@kapsi.fi>
+In-Reply-To: <a507b10b-395b-1f6d-87b9-7c7c436cab0e@gmail.com>
+X-SA-Exim-Connect-IP: 84.249.134.236
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ thierry.reding@gmail.com, linux-tegra@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -79,31 +89,18 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Dec 07, 2021 at 02:32:48PM +0800, Zhou Wang wrote:
-> The commit f115f3c0d5d8 ("iommu/arm-smmu-v3: Decrease the queue size of
-> evtq and priq") decreases evtq and priq, which may lead evtq/priq to be
-> full with fault events, e.g HiSilicon ZIP/SEC/HPRE have maximum 1024 queues
-> in one device, every queue could be binded with one process and trigger a
-> fault event. So let's revert f115f3c0d5d8.
-> 
-> In fact, if an implementation of SMMU really does not need so long evtq
-> and priq, value of IDR1_EVTQS and IDR1_PRIQS can be set to proper ones.
-> 
-> Signed-off-by: Zhou Wang <wangzhou1@hisilicon.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
-
-I'd like an Ack from Zhen Lei on this, as the aim of the original patch
-was to reduce memory consumption.
-
-Will
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMTIvMTQvMjEgMTY6MzUsIERtaXRyeSBPc2lwZW5rbyB3cm90ZToKPiAxNC4xMi4yMDIxIDEx
+OjA1LCBKb24gSHVudGVyINC/0LjRiNC10YI6Cj4+IEhpIGFsbCwKPj4KPj4gU3RpbGwgbm8gcmVz
+cG9uc2Ugb24gdGhpcyA6LSgKPiAKPiBJIHNlZSBvbmx5IHR3byBwYXRjaGVzIG9uIFRlZ3JhIE1M
+IGFuZCBvdGhlcnMgb24gRFJJIE1MLiBNaWdodCBiZSBnb29kCj4gdG8gc3RhcnQgd2l0aCByZS1z
+ZW5kaW5nIHRoaXMgd2hvbGUgc2VyaWVzIGFuZCBDQ2luZyBNTHMgcHJvcGVybHkuCj4gCgpBbGwg
+cGF0Y2hlcyBzaG91bGQgaGF2ZSBiZWVuIHNlbnQgdG8gdGhlIHNhbWUgc2V0IG9mIGFkZHJlc3Nl
+cy4gQXQgbGVhc3QgCkxXTidzIGFyY2hpdmUgc2VlbXMgdG8gYWdyZWUuLgoKTWlra28KX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBs
+aXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhm
+b3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
