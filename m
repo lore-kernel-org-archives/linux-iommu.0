@@ -1,85 +1,77 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 05CC7C433EF
-	for <iommu@archiver.kernel.org>; Tue, 14 Dec 2021 15:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B5814C4332F
+	for <iommu@archiver.kernel.org>; Tue, 14 Dec 2021 15:37:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id ABB1B40569;
-	Tue, 14 Dec 2021 15:33:10 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cVYjAL5Vsjmz; Tue, 14 Dec 2021 15:33:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 8FC0A40564;
-	Tue, 14 Dec 2021 15:33:09 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E743C002F;
-	Tue, 14 Dec 2021 15:33:09 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 383CFC0012
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:33:08 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 2327440302
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:33:08 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 63940401FA;
+	Tue, 14 Dec 2021 15:37:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3gDYOj2W_HYW for <iommu@lists.linux-foundation.org>;
- Tue, 14 Dec 2021 15:33:07 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com
- [209.85.128.47])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 6B2BF40281
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:33:07 +0000 (UTC)
-Received: by mail-wm1-f47.google.com with SMTP id
- p3-20020a05600c1d8300b003334fab53afso16528782wms.3
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 07:33:07 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=gGTASyVvn36rhQtSc7TEVERHcrRg+7y0+ImLAER1pZU=;
- b=ElFUS+8NdkRiKzfHKkNOk9Cm/X1IqVxKkdwxa8tXgoj2vq7DoDTLi2z/TNsNwlK6WX
- dHzcJAmw91QCfnhZQr6+2U81QF2hykWuD7NkmbDzRwlFs4thEfjWA2gLMS4WmqrsSD16
- Kpnb0hM4q66maXaOHpdfqMvCDnNazDpL50YhUeuRAxkskcahHjfm+oMCa6wV/cBBNjlw
- M0IABeC4pSGxlz51D6kOEzFnB4MH/Rlbt20+7zswUJHYci157i4RuxU7eyKMQLqY9/ye
- 4Ljgh5rz/7RzXs7Kzcj+lNUmb4ntbIkVRr6dGWJmsORoizYVOJbdcrVUmLP6w3nG3TJy
- EARg==
-X-Gm-Message-State: AOAM531//tNp6iUx7abJ0wYUB4g0oFVThfcY0Obo3CM74F4ce9uFYC2b
- gfVZohLb6KZZnoBgZQej8bM=
-X-Google-Smtp-Source: ABdhPJxHhur3wQN8WmEyNxA+W1/sE24M3nO1TWjo2rJ0GnYL+t3NixDhtMD6glLsTC6egs0Kn3Dhjw==
-X-Received: by 2002:a7b:c1cb:: with SMTP id a11mr8027105wmj.30.1639495985661; 
- Tue, 14 Dec 2021 07:33:05 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
- by smtp.gmail.com with ESMTPSA id a198sm118170wmd.42.2021.12.14.07.33.04
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 14 Dec 2021 07:33:05 -0800 (PST)
-Date: Tue, 14 Dec 2021 15:33:03 +0000
-From: Wei Liu <wei.liu@kernel.org>
-To: Tianyu Lan <ltykernel@gmail.com>
-Subject: Re: [PATCH V7 2/5] x86/hyper-v: Add hyperv Isolation VM check in the
- cc_platform_has()
-Message-ID: <20211214153303.qmhowu4lfpcp4gej@liuwe-devbox-debian-v2>
-References: <20211213071407.314309-1-ltykernel@gmail.com>
- <20211213071407.314309-3-ltykernel@gmail.com>
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9i58vSkyYF8I; Tue, 14 Dec 2021 15:37:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 3DD1A401F6;
+	Tue, 14 Dec 2021 15:37:37 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1B1D5C002F;
+	Tue, 14 Dec 2021 15:37:37 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 04861C0012
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:37:36 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id D8AEA81404
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:37:35 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id gQAjd5hU3Tai for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Dec 2021 15:37:35 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from sin.source.kernel.org (sin.source.kernel.org
+ [IPv6:2604:1380:40e1:4800::1])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id C370781403
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:37:34 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by sin.source.kernel.org (Postfix) with ESMTPS id 9744ACE18EA;
+ Tue, 14 Dec 2021 15:37:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45E90C34604;
+ Tue, 14 Dec 2021 15:37:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1639496248;
+ bh=RsqIxw7l181YP8CsMrHMkGZWM3eQKUjSOlAiEt1c9Z0=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=X/ot4IoekuSM4yLL1UUyI+1dPtb3HVfplV1+ex5sYgFnpg32AlhbJlga1P+xLbvRB
+ m68qNKuZ0AjmmhiJZT80bpwuuFy3AhoW2kYTAeLe+9/UFMSnWFIKMbxsZodICte8FW
+ 7XCRckyPKHOkLhvc4o88hxVaXQWuC59eCg/5EW6gD9HEvBkBWP/3dGn2y21pPtux5D
+ A4C7V58JkeE1IwGQmIlg3uQfLyN622kMzdUasowwlnVUEJoD8i0b7vCvkakk3H+3FP
+ lJXIM99ArskFYH4zq1+vL0RZHhT3rVdoZqInX8B0qR/1ISuFT+vbKfeDmLEHN1nZe+
+ /0dSqFlT8MTSA==
+Date: Tue, 14 Dec 2021 15:37:22 +0000
+From: Will Deacon <will@kernel.org>
+To: Rob Clark <robdclark@gmail.com>
+Subject: Re: [PATCH v2 1/3] iommu/io-pgtable-arm: Add way to debug pgtable walk
+Message-ID: <20211214153722.GA15416@willie-the-truck>
+References: <20211005151633.1738878-1-robdclark@gmail.com>
+ <20211005151633.1738878-2-robdclark@gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20211213071407.314309-3-ltykernel@gmail.com>
-Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
- dave.hansen@linux.intel.com, dave.hansen@intel.com, hpa@zytor.com,
- kys@microsoft.com, hch@lst.de, linux-arch@vger.kernel.org, hch@infradead.org,
- wei.liu@kernel.org, sthemmin@microsoft.com, linux-scsi@vger.kernel.org,
- x86@kernel.org, decui@microsoft.com, michael.h.kelley@microsoft.com,
- mingo@redhat.com, kuba@kernel.org, jejb@linux.ibm.com, parri.andrea@gmail.com,
- thomas.lendacky@amd.com, Tianyu.Lan@microsoft.com, arnd@arndb.de,
- konrad.wilk@oracle.com, haiyangz@microsoft.com, bp@alien8.de,
- tglx@linutronix.de, martin.petersen@oracle.com, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- vkuznets@redhat.com, robin.murphy@arm.com, davem@davemloft.net
+In-Reply-To: <20211005151633.1738878-2-robdclark@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Rob Clark <robdclark@chromium.org>,
+ "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+ Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
+ freedreno@lists.freedesktop.org, open list <linux-kernel@vger.kernel.org>,
+ dri-devel@lists.freedesktop.org,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,66 +89,130 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Dec 13, 2021 at 02:14:03AM -0500, Tianyu Lan wrote:
-> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+On Tue, Oct 05, 2021 at 08:16:25AM -0700, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
 > 
-> Hyper-V provides Isolation VM for confidential computing support and
-> guest memory is encrypted in it. Places checking cc_platform_has()
-> with GUEST_MEM_ENCRYPT attr should return "True" in Isolation vm. e.g,
-> swiotlb bounce buffer size needs to adjust according to memory size
-> in the sev_setup_arch(). Add GUEST_MEM_ENCRYPT check for Hyper-V Isolation
-> VM.
+> Add an io-pgtable method to retrieve the raw PTEs that would be
+> traversed for a given iova access.
 > 
-> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
-
-x86 maintainers, any comment on this patch?
-
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
 > ---
-> Change since v6:
-> 	* Change the order in the cc_platform_has() and check sev first.
+>  drivers/iommu/io-pgtable-arm.c | 40 +++++++++++++++++++++++++++-------
+>  include/linux/io-pgtable.h     |  9 ++++++++
+>  2 files changed, 41 insertions(+), 8 deletions(-)
 > 
-> Change since v3:
-> 	* Change code style of checking GUEST_MEM attribute in the
-> 	  hyperv_cc_platform_has().
-> ---
->  arch/x86/kernel/cc_platform.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/arch/x86/kernel/cc_platform.c b/arch/x86/kernel/cc_platform.c
-> index 03bb2f343ddb..6cb3a675e686 100644
-> --- a/arch/x86/kernel/cc_platform.c
-> +++ b/arch/x86/kernel/cc_platform.c
-> @@ -11,6 +11,7 @@
->  #include <linux/cc_platform.h>
->  #include <linux/mem_encrypt.h>
->  
-> +#include <asm/mshyperv.h>
->  #include <asm/processor.h>
->  
->  static bool __maybe_unused intel_cc_platform_has(enum cc_attr attr)
-> @@ -58,12 +59,19 @@ static bool amd_cc_platform_has(enum cc_attr attr)
->  #endif
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index dd9e47189d0d..c470fc0b3c2b 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -700,38 +700,61 @@ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+>  	return arm_lpae_unmap_pages(ops, iova, size, 1, gather);
 >  }
 >  
-> +static bool hyperv_cc_platform_has(enum cc_attr attr)
-> +{
-> +	return attr == CC_ATTR_GUEST_MEM_ENCRYPT;
-> +}
->  
->  bool cc_platform_has(enum cc_attr attr)
+> -static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+> -					 unsigned long iova)
+> +static int arm_lpae_pgtable_walk(struct io_pgtable_ops *ops, unsigned long iova,
+> +				 void *_ptes, int *num_ptes)
 >  {
->  	if (sme_me_mask)
->  		return amd_cc_platform_has(attr);
+>  	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+>  	arm_lpae_iopte pte, *ptep = data->pgd;
+> +	arm_lpae_iopte *ptes = _ptes;
+> +	int max_ptes = *num_ptes;
+>  	int lvl = data->start_level;
 >  
-> +	if (hv_is_isolation_supported())
-> +		return hyperv_cc_platform_has(attr);
+> +	*num_ptes = 0;
 > +
->  	return false;
+>  	do {
+> +		if (*num_ptes >= max_ptes)
+> +			return -ENOSPC;
+> +
+>  		/* Valid IOPTE pointer? */
+>  		if (!ptep)
+> -			return 0;
+> +			return -EFAULT;
+>  
+>  		/* Grab the IOPTE we're interested in */
+>  		ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
+>  		pte = READ_ONCE(*ptep);
+>  
+> +		ptes[(*num_ptes)++] = pte;
+> +
+>  		/* Valid entry? */
+>  		if (!pte)
+> -			return 0;
+> +			return -EFAULT;
+>  
+>  		/* Leaf entry? */
+>  		if (iopte_leaf(pte, lvl, data->iop.fmt))
+> -			goto found_translation;
+> +			return 0;
+>  
+>  		/* Take it to the next level */
+>  		ptep = iopte_deref(pte, data);
+>  	} while (++lvl < ARM_LPAE_MAX_LEVELS);
+>  
+> -	/* Ran out of page tables to walk */
+> -	return 0;
+> +	return -EFAULT;
+> +}
+> +
+> +static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+> +					 unsigned long iova)
+> +{
+> +	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+> +	arm_lpae_iopte pte, ptes[ARM_LPAE_MAX_LEVELS];
+> +	int lvl, num_ptes = ARM_LPAE_MAX_LEVELS;
+> +	int ret;
+> +
+> +	ret = arm_lpae_pgtable_walk(ops, iova, ptes, &num_ptes);
+> +	if (ret)
+> +		return 0;
+> +
+> +	pte = ptes[num_ptes - 1];
+> +	lvl = num_ptes - 1 + data->start_level;
+>  
+> -found_translation:
+>  	iova &= (ARM_LPAE_BLOCK_SIZE(lvl, data) - 1);
+>  	return iopte_to_paddr(pte, data) | iova;
 >  }
->  EXPORT_SYMBOL_GPL(cc_platform_has);
-> -- 
-> 2.25.1
-> 
+> @@ -816,6 +839,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
+>  		.unmap		= arm_lpae_unmap,
+>  		.unmap_pages	= arm_lpae_unmap_pages,
+>  		.iova_to_phys	= arm_lpae_iova_to_phys,
+> +		.pgtable_walk	= arm_lpae_pgtable_walk,
+>  	};
+>  
+>  	return data;
+> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+> index 86af6f0a00a2..501f362a929c 100644
+> --- a/include/linux/io-pgtable.h
+> +++ b/include/linux/io-pgtable.h
+> @@ -148,6 +148,13 @@ struct io_pgtable_cfg {
+>   * @unmap:        Unmap a physically contiguous memory region.
+>   * @unmap_pages:  Unmap a range of virtually contiguous pages of the same size.
+>   * @iova_to_phys: Translate iova to physical address.
+> + * @pgtable_walk: Return details of a page table walk for a given iova.
+> + *                This returns the array of PTEs in a format that is
+> + *                specific to the page table format.  The number of
+> + *                PTEs can be format specific.  The num_ptes parameter
+> + *                on input specifies the size of the ptes array, and
+> + *                on output the number of PTEs filled in (which depends
+> + *                on the number of PTEs walked to resolve the iova)
+
+I think this would be a fair bit cleaner if the interface instead took a
+callback function to invoke at each page-table level. It would be invoked
+with the pte value and the level. Depending on its return value the walk
+could be terminated early. That would also potentially scale to walking
+ranges of iovas as well if we ever need it and it may be more readily
+implementable by other formats too.
+
+>   *
+>   * These functions map directly onto the iommu_ops member functions with
+>   * the same names.
+
+This bit of the comment is no longer true with your change.
+
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
