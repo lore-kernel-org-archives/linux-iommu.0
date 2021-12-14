@@ -4,84 +4,88 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 67024C433FE
-	for <iommu@archiver.kernel.org>; Tue, 14 Dec 2021 16:36:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E7204C433F5
+	for <iommu@archiver.kernel.org>; Tue, 14 Dec 2021 16:36:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 1E8424056B;
-	Tue, 14 Dec 2021 16:36:01 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 8E4EA40580;
+	Tue, 14 Dec 2021 16:36:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6iBG4abu_EbS; Tue, 14 Dec 2021 16:36:00 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id E44C940560;
-	Tue, 14 Dec 2021 16:35:59 +0000 (UTC)
+	with ESMTP id 1_fT5NuMbBVy; Tue, 14 Dec 2021 16:36:07 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 337094056B;
+	Tue, 14 Dec 2021 16:36:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9A215C001E;
-	Tue, 14 Dec 2021 16:35:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EBC1BC001E;
+	Tue, 14 Dec 2021 16:36:06 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EA245C0012
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 16:35:57 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DC448C0012
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 16:36:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id D7938408BC
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 16:35:57 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id BC198408C2
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 16:36:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=infradead.org
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="x+UREoz0";
+ dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
+ header.d=linutronix.de header.b="JRPDqiMe"
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 16IH_8ahJlud for <iommu@lists.linux-foundation.org>;
- Tue, 14 Dec 2021 16:35:57 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [IPv6:2607:7c80:54:e::133])
- by smtp4.osuosl.org (Postfix) with ESMTPS id EEF8640251
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 16:35:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
- :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=TJHlVmEwt9Yn7nAUG6DPNm043cF9utC+xQV8paAaWAM=; b=40+u+vmk+XOCdOggCN3h/j84ei
- /3cHk7zQUUWAjO9te9WovB6Bm/2TRYibL9UYnuGoXbVv1dGpp6g0qxveO48vRpmDPDVjJhLHOEWfk
- 0XrgFgVrH55QKwNv81pFeHEkSd+T8oAVZ1JIzjCUkHjvO65HvwV/7suK97kACt6P3P9v6gfT0ZEBT
- NznjhIZg166Wf794uvCH9pqUFup+y7kF8gvWq5mvli3vA7JwtSTnuDgj97K5PiN92TEYmzwTxNOEK
- xko6UTXcPDjqnmahdq2wM6v0+Dd71MgY20Z28Hw8LrAu4Fa3ooFyg1ASL7/ChmuCoqyDUjNAiXdbG
- Ahx4xg1Q==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red
- Hat Linux)) id 1mxAm8-00Ev5n-T0; Tue, 14 Dec 2021 16:35:36 +0000
-Date: Tue, 14 Dec 2021 08:35:36 -0800
-From: Christoph Hellwig <hch@infradead.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v3 04/18] driver core: platform: Add driver dma ownership
- management
-Message-ID: <YbjH2H1VfBAzn8nL@infradead.org>
-References: <20211206015903.88687-1-baolu.lu@linux.intel.com>
- <20211206015903.88687-5-baolu.lu@linux.intel.com>
- <Ya4f662Af+8kE2F/@infradead.org> <20211206150647.GE4670@nvidia.com>
- <56a63776-48ca-0d6e-c25c-016dc016e0d5@linux.intel.com>
- <20211207131627.GA6385@nvidia.com>
- <c170d215-6aef-ff21-8733-1bae4478e39c@linux.intel.com>
- <b42ffaee-bb96-6db4-8540-b399214f6881@linux.intel.com>
+ with ESMTP id RMuMej6XtNXi for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Dec 2021 16:36:04 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from galois.linutronix.de (Galois.linutronix.de
+ [IPv6:2a0a:51c0:0:12e:550::1])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 8DFBF408BC
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 16:36:04 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020; t=1639499761;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=jHkEiVG0BVT8V/9kbAcBq/GVsYt3jqgvF40FkGyKrlo=;
+ b=x+UREoz0tV0ByegvETONzIcJg/btHkYAeUTOB9Cwk6fF4WS4tcdqSKPZhosLY9Kw8fzkL2
+ iAO8dxlrohDcjOfDmK3UIx35hhe0gnfY1J6UUVxyO061FZZ9igOXoMxu0oZsfFw4GbgpYB
+ Q5rK3Ehp3GsvY/ZWFqOBDe34LxDsXDQAfeXwgAzwLGuRTF6/6fajjiB+l4faY58KyXYRd9
+ TRvQUMx4KhjpOhAQjyD53NZ44/KDHNZzen3o5CWSSmMuXJs7tSK49MGIkP5L/9Tw/0p3r8
+ ob+7BJIhXKuW4vpCWZYdUoDVrJaJ+Ar127CVhFKQjgeiplPgqNc0w3IVyPx/sg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020e; t=1639499761;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=jHkEiVG0BVT8V/9kbAcBq/GVsYt3jqgvF40FkGyKrlo=;
+ b=JRPDqiMesD5qMuzHSYGkN8LOEMskH9IhyPnRCqMbSThsy+YATwXU6QDtFhGJhGuZcxfILm
+ UyvW8q3ctT/IqHDg==
+To: Nishanth Menon <nm@ti.com>
+Subject: Re: [patch V3 00/35] genirq/msi, PCI/MSI: Spring cleaning - Part 2
+In-Reply-To: <20211214162247.ocjm7ihg5oi7uiuv@slider>
+References: <20211210221642.869015045@linutronix.de>
+ <20211213182958.ytj4m6gsg35u77cv@detonator> <87fsqvttfv.ffs@tglx>
+ <20211214162247.ocjm7ihg5oi7uiuv@slider>
+Date: Tue, 14 Dec 2021 17:36:00 +0100
+Message-ID: <87wnk7rvnz.ffs@tglx>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <b42ffaee-bb96-6db4-8540-b399214f6881@linux.intel.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
- David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
- Thierry Reding <thierry.reding@gmail.com>,
- Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+Cc: Mark Rutland <mark.rutland@arm.com>, Stuart Yoder <stuyoder@gmail.com>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
  Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
- Chaitanya Kulkarni <kch@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
- Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Jassi Brar <jassisinghbrar@gmail.com>,
+ Sinan Kaya <okaya@kernel.org>, iommu@lists.linux-foundation.org,
+ Peter Ujfalusi <peter.ujfalusi@gmail.com>, Bjorn Helgaas <helgaas@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, Jason Gunthorpe <jgg@nvidia.com>,
+ linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
+ Kevin Tian <kevin.tian@intel.com>, Arnd Bergmann <arnd@arndb.de>,
+ Robin Murphy <robin.murphy@arm.com>, Johannes Berg <johannes.berg@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Cedric Le Goater <clg@kaod.org>,
+ Santosh Shilimkar <ssantosh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Megha Dey <megha.dey@intel.com>, Juergen Gross <jgross@suse.com>,
+ Tero Kristo <kristo@kernel.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
- Robin Murphy <robin.murphy@arm.com>
+ linux-wireless@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+ Vinod Koul <vkoul@kernel.org>, Marc Zygnier <maz@kernel.org>,
+ dmaengine@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,7 +103,38 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This approach looks much better to me.
+On Tue, Dec 14 2021 at 10:22, Nishanth Menon wrote:
+> On 10:41-20211214, Thomas Gleixner wrote:
+> Agreed that the warning is fine, the null pointer exception that follows
+> [1] [2] it however does'nt look right and it can be trivially fixed with the
+> following fixup for ee90787487bc ("genirq/msi: Provide
+> msi_device_populate/destroy_sysfs()") below, with that the log looks
+> like [3] - the warn is good, the null pointer exception and resultant
+> crash could be avoided (not saying this is the best solution):
+
+Aaargh.
+
+[   13.478122] Call trace:
+[   13.509042]  msi_device_destroy_sysfs+0x18/0x88
+[   13.509058]  msi_domain_free_irqs+0x34/0x58
+[   13.509064]  pci_msi_teardown_msi_irqs+0x30/0x3c
+[   13.509072]  free_msi_irqs+0x78/0xd4
+[   13.509077]  pci_disable_msix+0x138/0x164
+[   13.529930]  pcim_release+0x70/0x238
+[   13.529942]  devres_release_all+0x9c/0xfc
+[   13.529951]  device_release_driver_internal+0x1a0/0x244
+[   13.542725]  device_release_driver+0x18/0x24
+[   13.542741]  iwl_req_fw_callback+0x1a28/0x1ddc [iwlwifi]
+[   13.552308]  request_firmware_work_func+0x50/0x9c
+[   13.552320]  process_one_work+0x194/0x25c
+
+That's not a driver problem, that's an ordering issue vs. the devres
+muck. Let me go back to the drawing board. Sigh...
+
+Thanks,
+
+        tglx
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
