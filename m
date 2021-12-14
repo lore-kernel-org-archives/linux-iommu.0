@@ -1,77 +1,62 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B5814C4332F
-	for <iommu@archiver.kernel.org>; Tue, 14 Dec 2021 15:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 11D17C433FE
+	for <iommu@archiver.kernel.org>; Tue, 14 Dec 2021 15:39:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 63940401FA;
-	Tue, 14 Dec 2021 15:37:38 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id B6FB660BD9;
+	Tue, 14 Dec 2021 15:39:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9i58vSkyYF8I; Tue, 14 Dec 2021 15:37:37 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZmSR5tkw551w; Tue, 14 Dec 2021 15:39:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 3DD1A401F6;
-	Tue, 14 Dec 2021 15:37:37 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 608F760BE4;
+	Tue, 14 Dec 2021 15:39:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1B1D5C002F;
-	Tue, 14 Dec 2021 15:37:37 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 04861C0012
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:37:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 47817C002F;
+	Tue, 14 Dec 2021 15:39:02 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4CD54C0012
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:39:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id D8AEA81404
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:37:35 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id D716260BDD
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:39:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gQAjd5hU3Tai for <iommu@lists.linux-foundation.org>;
- Tue, 14 Dec 2021 15:37:35 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id bRaTCdEKqAA1 for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Dec 2021 15:39:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from sin.source.kernel.org (sin.source.kernel.org
- [IPv6:2604:1380:40e1:4800::1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id C370781403
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:37:34 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by sin.source.kernel.org (Postfix) with ESMTPS id 9744ACE18EA;
- Tue, 14 Dec 2021 15:37:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45E90C34604;
- Tue, 14 Dec 2021 15:37:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1639496248;
- bh=RsqIxw7l181YP8CsMrHMkGZWM3eQKUjSOlAiEt1c9Z0=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=X/ot4IoekuSM4yLL1UUyI+1dPtb3HVfplV1+ex5sYgFnpg32AlhbJlga1P+xLbvRB
- m68qNKuZ0AjmmhiJZT80bpwuuFy3AhoW2kYTAeLe+9/UFMSnWFIKMbxsZodICte8FW
- 7XCRckyPKHOkLhvc4o88hxVaXQWuC59eCg/5EW6gD9HEvBkBWP/3dGn2y21pPtux5D
- A4C7V58JkeE1IwGQmIlg3uQfLyN622kMzdUasowwlnVUEJoD8i0b7vCvkakk3H+3FP
- lJXIM99ArskFYH4zq1+vL0RZHhT3rVdoZqInX8B0qR/1ISuFT+vbKfeDmLEHN1nZe+
- /0dSqFlT8MTSA==
-Date: Tue, 14 Dec 2021 15:37:22 +0000
-From: Will Deacon <will@kernel.org>
-To: Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCH v2 1/3] iommu/io-pgtable-arm: Add way to debug pgtable walk
-Message-ID: <20211214153722.GA15416@willie-the-truck>
-References: <20211005151633.1738878-1-robdclark@gmail.com>
- <20211005151633.1738878-2-robdclark@gmail.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id F403960BE5
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:38:59 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 40EBBD6E;
+ Tue, 14 Dec 2021 07:38:59 -0800 (PST)
+Received: from [10.57.34.58] (unknown [10.57.34.58])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 549423F774;
+ Tue, 14 Dec 2021 07:38:54 -0800 (PST)
+Message-ID: <a1c8c438-72e6-0938-1b05-09694983164d@arm.com>
+Date: Tue, 14 Dec 2021 15:38:50 +0000
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20211005151633.1738878-2-robdclark@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Rob Clark <robdclark@chromium.org>,
- "Isaac J. Manjarres" <isaacm@codeaurora.org>,
- Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
- freedreno@lists.freedesktop.org, open list <linux-kernel@vger.kernel.org>,
- dri-devel@lists.freedesktop.org,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH v2 0/8] Host1x context isolation support
+Content-Language: en-GB
+To: Mikko Perttunen <cyndis@kapsi.fi>, Mikko Perttunen
+ <mperttunen@nvidia.com>, thierry.reding@gmail.com, jonathanh@nvidia.com,
+ joro@8bytes.org, will@kernel.org, robh+dt@kernel.org
+References: <20210916143302.2024933-1-mperttunen@nvidia.com>
+ <10de82cf-27a5-8890-93a5-0e58c74e5bcc@kapsi.fi>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <10de82cf-27a5-8890-93a5-0e58c74e5bcc@kapsi.fi>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,136 +69,91 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Oct 05, 2021 at 08:16:25AM -0700, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
-> 
-> Add an io-pgtable method to retrieve the raw PTEs that would be
-> traversed for a given iova access.
-> 
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
-> ---
->  drivers/iommu/io-pgtable-arm.c | 40 +++++++++++++++++++++++++++-------
->  include/linux/io-pgtable.h     |  9 ++++++++
->  2 files changed, 41 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index dd9e47189d0d..c470fc0b3c2b 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -700,38 +700,61 @@ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
->  	return arm_lpae_unmap_pages(ops, iova, size, 1, gather);
->  }
->  
-> -static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
-> -					 unsigned long iova)
-> +static int arm_lpae_pgtable_walk(struct io_pgtable_ops *ops, unsigned long iova,
-> +				 void *_ptes, int *num_ptes)
->  {
->  	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
->  	arm_lpae_iopte pte, *ptep = data->pgd;
-> +	arm_lpae_iopte *ptes = _ptes;
-> +	int max_ptes = *num_ptes;
->  	int lvl = data->start_level;
->  
-> +	*num_ptes = 0;
-> +
->  	do {
-> +		if (*num_ptes >= max_ptes)
-> +			return -ENOSPC;
-> +
->  		/* Valid IOPTE pointer? */
->  		if (!ptep)
-> -			return 0;
-> +			return -EFAULT;
->  
->  		/* Grab the IOPTE we're interested in */
->  		ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
->  		pte = READ_ONCE(*ptep);
->  
-> +		ptes[(*num_ptes)++] = pte;
-> +
->  		/* Valid entry? */
->  		if (!pte)
-> -			return 0;
-> +			return -EFAULT;
->  
->  		/* Leaf entry? */
->  		if (iopte_leaf(pte, lvl, data->iop.fmt))
-> -			goto found_translation;
-> +			return 0;
->  
->  		/* Take it to the next level */
->  		ptep = iopte_deref(pte, data);
->  	} while (++lvl < ARM_LPAE_MAX_LEVELS);
->  
-> -	/* Ran out of page tables to walk */
-> -	return 0;
-> +	return -EFAULT;
-> +}
-> +
-> +static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
-> +					 unsigned long iova)
-> +{
-> +	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> +	arm_lpae_iopte pte, ptes[ARM_LPAE_MAX_LEVELS];
-> +	int lvl, num_ptes = ARM_LPAE_MAX_LEVELS;
-> +	int ret;
-> +
-> +	ret = arm_lpae_pgtable_walk(ops, iova, ptes, &num_ptes);
-> +	if (ret)
-> +		return 0;
-> +
-> +	pte = ptes[num_ptes - 1];
-> +	lvl = num_ptes - 1 + data->start_level;
->  
-> -found_translation:
->  	iova &= (ARM_LPAE_BLOCK_SIZE(lvl, data) - 1);
->  	return iopte_to_paddr(pte, data) | iova;
->  }
-> @@ -816,6 +839,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
->  		.unmap		= arm_lpae_unmap,
->  		.unmap_pages	= arm_lpae_unmap_pages,
->  		.iova_to_phys	= arm_lpae_iova_to_phys,
-> +		.pgtable_walk	= arm_lpae_pgtable_walk,
->  	};
->  
->  	return data;
-> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> index 86af6f0a00a2..501f362a929c 100644
-> --- a/include/linux/io-pgtable.h
-> +++ b/include/linux/io-pgtable.h
-> @@ -148,6 +148,13 @@ struct io_pgtable_cfg {
->   * @unmap:        Unmap a physically contiguous memory region.
->   * @unmap_pages:  Unmap a range of virtually contiguous pages of the same size.
->   * @iova_to_phys: Translate iova to physical address.
-> + * @pgtable_walk: Return details of a page table walk for a given iova.
-> + *                This returns the array of PTEs in a format that is
-> + *                specific to the page table format.  The number of
-> + *                PTEs can be format specific.  The num_ptes parameter
-> + *                on input specifies the size of the ptes array, and
-> + *                on output the number of PTEs filled in (which depends
-> + *                on the number of PTEs walked to resolve the iova)
-
-I think this would be a fair bit cleaner if the interface instead took a
-callback function to invoke at each page-table level. It would be invoked
-with the pte value and the level. Depending on its return value the walk
-could be terminated early. That would also potentially scale to walking
-ranges of iovas as well if we ever need it and it may be more readily
-implementable by other formats too.
-
->   *
->   * These functions map directly onto the iommu_ops member functions with
->   * the same names.
-
-This bit of the comment is no longer true with your change.
-
-Will
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMS0xMS0wOCAxMDozNiwgTWlra28gUGVydHR1bmVuIHdyb3RlOgo+IE9uIDkvMTYvMjEg
+NTozMiBQTSwgTWlra28gUGVydHR1bmVuIHdyb3RlOgo+PiBIaSBhbGwsCj4+Cj4+ICoqKgo+PiBO
+ZXcgaW4gdjI6Cj4+Cj4+IEFkZGVkIHN1cHBvcnQgZm9yIFRlZ3JhMTk0Cj4+IFVzZSBzdGFuZGFy
+ZCBpb21tdS1tYXAgcHJvcGVydHkgaW5zdGVhZCBvZiBjdXN0b20gbWVjaGFuaXNtCj4+ICoqKgo+
+Pgo+PiB0aGlzIHNlcmllcyBhZGRzIHN1cHBvcnQgZm9yIEhvc3QxeCAnY29udGV4dCBpc29sYXRp
+b24nLiBTaW5jZQo+PiB3aGVuIHByb2dyYW1taW5nIGVuZ2luZXMgdGhyb3VnaCBIb3N0MXgsIHVz
+ZXJzcGFjZSBjYW4gcHJvZ3JhbSBpbgo+PiBhbnkgYWRkcmVzc2VzIGl0IHdhbnRzLCB3ZSBuZWVk
+IHNvbWUgd2F5IHRvIGlzb2xhdGUgdGhlIGVuZ2luZXMnCj4+IG1lbW9yeSBzcGFjZXMuIFRyYWRp
+dGlvbmFsbHkgdGhpcyBoYXMgZWl0aGVyIGJlZW4gZG9uZSBpbXBlcmZlY3RseQo+PiB3aXRoIGEg
+c2luZ2xlIHNoYXJlZCBJT01NVSBkb21haW4sIG9yIGJ5IGNvcHlpbmcgYW5kIHZlcmlmeWluZyB0
+aGUKPj4gcHJvZ3JhbW1pbmcgY29tbWFuZCBzdHJlYW0gYXQgc3VibWl0IHRpbWUgKEhvc3QxeCBm
+aXJld2FsbCkuCj4+Cj4+IFNpbmNlIFRlZ3JhMTg2IHRoZXJlIGlzIGEgcHJpdmlsZWdlZCAob25s
+eSB1c2FibGUgYnkga2VybmVsKQo+PiBIb3N0MXggb3Bjb2RlIHRoYXQgYWxsb3dzIHNldHRpbmcg
+dGhlIHN0cmVhbSBJRCBzZW50IGJ5IHRoZSBlbmdpbmUKPj4gdG8gdGhlIFNNTVUuIFNvLCBieSBh
+bGxvY2F0aW5nIGEgbnVtYmVyIG9mIGNvbnRleHQgYmFua3MgYW5kIHN0cmVhbQo+PiBJRHMgZm9y
+IHRoaXMgcHVycG9zZSwgYW5kIHVzaW5nIHRoaXMgb3Bjb2RlIGF0IHRoZSBiZWdpbm5pbmcgb2YK
+Pj4gZWFjaCBqb2IsIHdlIGNhbiBpbXBsZW1lbnQgaXNvbGF0aW9uLiBEdWUgdG8gdGhlIGxpbWl0
+ZWQgbnVtYmVyIG9mCj4+IGNvbnRleHQgYmFua3Mgb25seSBlYWNoIHByb2Nlc3MgZ2V0cyBpdHMg
+b3duIGNvbnRleHQsIGFuZCBub3QKPj4gZWFjaCBjaGFubmVsLgo+Pgo+PiBUaGlzIGZlYXR1cmUg
+YWxzbyBhbGxvd3Mgc2hhcmluZyBlbmdpbmVzIGFtb25nIG11bHRpcGxlIFZNcyB3aGVuCj4+IHVz
+ZWQgd2l0aCBIb3N0MXgncyBoYXJkd2FyZSB2aXJ0dWFsaXphdGlvbiBzdXBwb3J0IC0gdXAgdG8g
+OCBWTXMKPj4gY2FuIGJlIGNvbmZpZ3VyZWQgd2l0aCBhIHN1YnNldCBvZiBhbGxvd2VkIHN0cmVh
+bSBJRHMsIGVuZm9yY2VkCj4+IGF0IGhhcmR3YXJlIGxldmVsLgo+Pgo+PiBUbyBpbXBsZW1lbnQg
+dGhpcywgdGhpcyBzZXJpZXMgYWRkcyBhIG5ldyBob3N0MXggY29udGV4dCBidXMsIHdoaWNoCj4+
+IHdpbGwgY29udGFpbiB0aGUgJ3N0cnVjdCBkZXZpY2UncyBjb3JyZXNwb25kaW5nIHRvIGVhY2gg
+Y29udGV4dAo+PiBiYW5rIC8gc3RyZWFtIElELCBjaGFuZ2VzIHRvIGRldmljZSB0cmVlIGFuZCBT
+TU1VIGNvZGUgdG8gYWxsb3cKPj4gcmVnaXN0ZXJpbmcgdGhlIGRldmljZXMgYW5kIHVzaW5nIHRo
+ZSBidXMsIGFzIHdlbGwgYXMgdGhlIEhvc3QxeAo+PiBzdHJlYW0gSUQgcHJvZ3JhbW1pbmcgY29k
+ZSBhbmQgc3VwcG9ydCBpbiBUZWdyYURSTS4KPj4KPj4gRGV2aWNlIHRyZWUgYmluZGluZ3MgYXJl
+IG5vdCB1cGRhdGVkIHlldCBwZW5kaW5nIGNvbnNlbnN1cyB0aGF0IHRoZQo+PiBwcm9wb3NlZCBj
+aGFuZ2VzIG1ha2Ugc2Vuc2UuCj4+Cj4+IFRoYW5rcywKPj4gTWlra28KPj4KPj4gTWlra28gUGVy
+dHR1bmVuICg4KToKPj4gwqDCoCBncHU6IGhvc3QxeDogQWRkIGNvbnRleHQgYnVzCj4+IMKgwqAg
+Z3B1OiBob3N0MXg6IEFkZCBjb250ZXh0IGRldmljZSBtYW5hZ2VtZW50IGNvZGUKPj4gwqDCoCBn
+cHU6IGhvc3QxeDogUHJvZ3JhbSBjb250ZXh0IHN0cmVhbSBJRCBvbiBzdWJtaXNzaW9uCj4+IMKg
+wqAgaW9tbXUvYXJtLXNtbXU6IEF0dGFjaCB0byBob3N0MXggY29udGV4dCBkZXZpY2UgYnVzCj4+
+IMKgwqAgYXJtNjQ6IHRlZ3JhOiBBZGQgSG9zdDF4IGNvbnRleHQgc3RyZWFtIElEcyBvbiBUZWdy
+YTE4NisKPj4gwqDCoCBkcm0vdGVncmE6IGZhbGNvbjogU2V0IERNQUNUWCBmaWVsZCBvbiBETUEg
+dHJhbnNhY3Rpb25zCj4+IMKgwqAgZHJtL3RlZ3JhOiB2aWM6IEltcGxlbWVudCBnZXRfc3RyZWFt
+aWRfb2Zmc2V0Cj4+IMKgwqAgZHJtL3RlZ3JhOiBTdXBwb3J0IGNvbnRleHQgaXNvbGF0aW9uCj4+
+Cj4+IMKgIGFyY2gvYXJtNjQvYm9vdC9kdHMvbnZpZGlhL3RlZ3JhMTg2LmR0c2nCoCB8wqAgMTIg
+KysKPj4gwqAgYXJjaC9hcm02NC9ib290L2R0cy9udmlkaWEvdGVncmExOTQuZHRzacKgIHzCoCAx
+MiArKwo+PiDCoCBkcml2ZXJzL2dwdS9NYWtlZmlsZcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCB8wqDCoCAzICstCj4+IMKgIGRyaXZlcnMvZ3B1L2RybS90ZWdyYS9k
+cm0uaMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfMKgwqAgMiArCj4+IMKgIGRyaXZlcnMv
+Z3B1L2RybS90ZWdyYS9mYWxjb24uY8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfMKgwqAgOCArCj4+
+IMKgIGRyaXZlcnMvZ3B1L2RybS90ZWdyYS9mYWxjb24uaMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+fMKgwqAgMSArCj4+IMKgIGRyaXZlcnMvZ3B1L2RybS90ZWdyYS9zdWJtaXQuY8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgfMKgIDEzICsrCj4+IMKgIGRyaXZlcnMvZ3B1L2RybS90ZWdyYS91YXBpLmPC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8wqAgMzQgKysrKy0KPj4gwqAgZHJpdmVycy9ncHUv
+ZHJtL3RlZ3JhL3ZpYy5jwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8wqAgMzggKysrKysK
+Pj4gwqAgZHJpdmVycy9ncHUvaG9zdDF4L0tjb25maWfCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgfMKgwqAgNSArCj4+IMKgIGRyaXZlcnMvZ3B1L2hvc3QxeC9NYWtlZmlsZcKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgfMKgwqAgMiArCj4+IMKgIGRyaXZlcnMvZ3B1L2hvc3QxeC9j
+b250ZXh0LmPCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8IDE3NCArKysrKysrKysrKysrKysr
+KysrKysrCj4+IMKgIGRyaXZlcnMvZ3B1L2hvc3QxeC9jb250ZXh0LmjCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCB8wqAgMjcgKysrKwo+PiDCoCBkcml2ZXJzL2dwdS9ob3N0MXgvY29udGV4dF9i
+dXMuY8KgwqDCoMKgwqDCoMKgwqDCoCB8wqAgMzEgKysrKwo+PiDCoCBkcml2ZXJzL2dwdS9ob3N0
+MXgvZGV2LmPCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHzCoCAxMiArLQo+PiDC
+oCBkcml2ZXJzL2dwdS9ob3N0MXgvZGV2LmjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgIHzCoMKgIDIgKwo+PiDCoCBkcml2ZXJzL2dwdS9ob3N0MXgvaHcvY2hhbm5lbF9ody5jwqDC
+oMKgwqDCoMKgwqAgfMKgIDUyICsrKysrKy0KPj4gwqAgZHJpdmVycy9ncHUvaG9zdDF4L2h3L2hv
+c3QxeDA2X2hhcmR3YXJlLmggfMKgIDEwICsrCj4+IMKgIGRyaXZlcnMvZ3B1L2hvc3QxeC9ody9o
+b3N0MXgwN19oYXJkd2FyZS5oIHzCoCAxMCArKwo+PiDCoCBkcml2ZXJzL2lvbW11L2FybS9hcm0t
+c21tdS9hcm0tc21tdS5jwqDCoMKgwqAgfMKgIDEzICsrCj4+IMKgIGluY2x1ZGUvbGludXgvaG9z
+dDF4LmjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8wqAgMjEgKysrCj4+
+IMKgIGluY2x1ZGUvbGludXgvaG9zdDF4X2NvbnRleHRfYnVzLmjCoMKgwqDCoMKgwqDCoCB8wqAg
+MTUgKysKPj4gwqAgMjIgZmlsZXMgY2hhbmdlZCwgNDg4IGluc2VydGlvbnMoKyksIDkgZGVsZXRp
+b25zKC0pCj4+IMKgIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2dwdS9ob3N0MXgvY29udGV4
+dC5jCj4+IMKgIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2dwdS9ob3N0MXgvY29udGV4dC5o
+Cj4+IMKgIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2dwdS9ob3N0MXgvY29udGV4dF9idXMu
+Ywo+PiDCoCBjcmVhdGUgbW9kZSAxMDA2NDQgaW5jbHVkZS9saW51eC9ob3N0MXhfY29udGV4dF9i
+dXMuaAo+Pgo+IAo+IElPTU1VL0RUIGZvbGtzLCBhbnkgdGhvdWdodHMgYWJvdXQgdGhpcyBhcHBy
+b2FjaD8gVGhlIHBhdGNoZXMgdGhhdCBhcmUgCj4gb2YgaW50ZXJlc3Qgb3V0c2lkZSBvZiBIb3N0
+MXgvVGVncmFEUk0gc3BlY2lmaWNzIGFyZSBwYXRjaGVzIDEsIDIsIDQsIAo+IGFuZCA1LgoKRldJ
+VyBpdCBsb29rcyBmYWlybHkgaW5ub2N1b3VzIHRvIG1lLiBJIGRvbid0IHVuZGVyc3RhbmQgaG9z
+dDF4IC0gCm5laXRoZXIgaGFyZHdhcmUgbm9yIGRyaXZlciBhYnN0cmFjdGlvbnMgLSB3ZWxsIGVu
+b3VnaCB0byBtZWFuaW5nZnVsbHkgCnJldmlldyBpdCBhbGwgKGUuZy4gbWF5YmUgaXQncyBkZWxp
+YmVyYXRlIHRoYXQgdGhlIGJ1cyAuZG1hX2NvbmZpZ3VyZSAKbWV0aG9kIGlzbid0IHVzZWQ/KSwg
+YnV0IHRoZSBTTU1VIHBhdGNoIHNlZW1zIGZpbmUgZ2l2ZW4gdGhlIEtjb25maWcgCnNvbHV0aW9u
+IHRvIGF2b2lkIG1vZHVsZSBsaW5rYWdlIHByb2JsZW1zLgoKQ2hlZXJzLApSb2Jpbi4KX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBs
+aXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhm
+b3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
