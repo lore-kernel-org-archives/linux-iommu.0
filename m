@@ -4,96 +4,82 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B6572C433EF
-	for <iommu@archiver.kernel.org>; Tue, 14 Dec 2021 15:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 05CC7C433EF
+	for <iommu@archiver.kernel.org>; Tue, 14 Dec 2021 15:33:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 5328F40563;
-	Tue, 14 Dec 2021 15:31:20 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id ABB1B40569;
+	Tue, 14 Dec 2021 15:33:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hkT6aziNO2PA; Tue, 14 Dec 2021 15:31:19 +0000 (UTC)
+	with ESMTP id cVYjAL5Vsjmz; Tue, 14 Dec 2021 15:33:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1135F40125;
-	Tue, 14 Dec 2021 15:31:19 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 8FC0A40564;
+	Tue, 14 Dec 2021 15:33:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DCA5AC002F;
-	Tue, 14 Dec 2021 15:31:18 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C0FADC0012
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:31:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E743C002F;
+	Tue, 14 Dec 2021 15:33:09 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 383CFC0012
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:33:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id A183F812E5
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:31:17 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2327440302
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:33:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zBYdcONq4O26 for <iommu@lists.linux-foundation.org>;
- Tue, 14 Dec 2021 15:31:17 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 3gDYOj2W_HYW for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Dec 2021 15:33:07 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com
- [IPv6:2a00:1450:4864:20::129])
- by smtp1.osuosl.org (Postfix) with ESMTPS id DE9C080C28
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:31:16 +0000 (UTC)
-Received: by mail-lf1-x129.google.com with SMTP id l22so37469526lfg.7
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 07:31:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=Cew1bsVh+uPPxFCPvivLMvnMySnBo7QVXMyLf4NUogc=;
- b=EIBs/m05yVAVjNZxKsVu8Oh0Ra+ssLFinvG7LKfMOy1Tb+DDQFa83JoEpSp/kyJ20f
- vtvaLZfleYaQEdO83kKRrCP8Y1G2P1VVBd1C8H/rC2FEvRABY4qZuLZF9MfzdbRNDmow
- cGRJTZrbJmdGnvJe7MN8XhbpvUlkpK10PBqiVAoE8HuxHw13OwKud0XkPDg5fcAHJYnV
- DUKRpnGNMPgJ7sbEiuJYUCWQTbbeQh0lDx39iMitKSXkglOeja3j0JlYaUtRccSzzC+C
- igtqlbPFWaGY1CMcs+PW8sdRnRh3ONs1rCgNZ4xxe4sqUVtqBu0PNS8azfyALy+nPF5r
- Y88A==
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com
+ [209.85.128.47])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 6B2BF40281
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 15:33:07 +0000 (UTC)
+Received: by mail-wm1-f47.google.com with SMTP id
+ p3-20020a05600c1d8300b003334fab53afso16528782wms.3
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 07:33:07 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=Cew1bsVh+uPPxFCPvivLMvnMySnBo7QVXMyLf4NUogc=;
- b=TYE08cM8suRqgaQZg0V+BAzAD3EWNMVjawja5WNfpPhkf66jKdA1g9ChBKtJaElxBD
- QHvcm8DX3TB/KHw9pjvDkUJgBvQNkHsR4rBsU6we/CxdyKCzgKWWCEIjIslVYZEbIrBE
- cZZv/re1PCmWp9va/+OU8t5ilKqJhIe6x6Dh1EC1bKvwFdkM54FIbDGNZVYNlte8YFkO
- zL8VFnmDO0JWyVMUdxY/7qoTgsZ5T5cdlhHl7w3u4SxxW1kYuvb4ydVcgU6CeJygDOiC
- jobe+/vsufo3K69KBRoDpD8xep6SXSsol0el6inWQHoZJklRlhc3nJkkMwby7CFAGP2L
- IfRw==
-X-Gm-Message-State: AOAM530fWJpMOyXYIpm1oAjdtBV5euD3OlurJsIRK3jg03+4kfUHZGKI
- KjbbvXRNEF8DFGD6D3cToMs=
-X-Google-Smtp-Source: ABdhPJxmQNB9Dr/Fnytdwhc2WP3yKSVRtKMT+07lahidhyWpm3qWdRsLiGLH2I4Htvoh4G+FR0Ibzw==
-X-Received: by 2002:a05:6512:3053:: with SMTP id
- b19mr5387718lfb.276.1639495874691; 
- Tue, 14 Dec 2021 07:31:14 -0800 (PST)
-Received: from [192.168.2.145] (94-29-63-156.dynamic.spd-mgts.ru.
- [94.29.63.156])
- by smtp.googlemail.com with ESMTPSA id s4sm11501lfp.198.2021.12.14.07.31.13
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 14 Dec 2021 07:31:14 -0800 (PST)
-Subject: Re: [PATCH v2 0/8] Host1x context isolation support
-To: Mikko Perttunen <cyndis@kapsi.fi>, Jon Hunter <jonathanh@nvidia.com>,
- joro@8bytes.org, will@kernel.org, robh+dt@kernel.org, robin.murphy@arm.com,
- Mikko Perttunen <mperttunen@nvidia.com>
-References: <20210916143302.2024933-1-mperttunen@nvidia.com>
- <10de82cf-27a5-8890-93a5-0e58c74e5bcc@kapsi.fi>
- <c382fb0e-6b73-5ca0-7f63-d2843351325e@nvidia.com>
- <91dddccd-a6c1-21b3-34d6-6a8082a386e7@nvidia.com>
- <a507b10b-395b-1f6d-87b9-7c7c436cab0e@gmail.com>
- <a62602df-91f6-783d-60f3-d9eba10da543@kapsi.fi>
-From: Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <be8aec02-8651-0b12-ff13-237c75a5b29d@gmail.com>
-Date: Tue, 14 Dec 2021 18:31:13 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=gGTASyVvn36rhQtSc7TEVERHcrRg+7y0+ImLAER1pZU=;
+ b=ElFUS+8NdkRiKzfHKkNOk9Cm/X1IqVxKkdwxa8tXgoj2vq7DoDTLi2z/TNsNwlK6WX
+ dHzcJAmw91QCfnhZQr6+2U81QF2hykWuD7NkmbDzRwlFs4thEfjWA2gLMS4WmqrsSD16
+ Kpnb0hM4q66maXaOHpdfqMvCDnNazDpL50YhUeuRAxkskcahHjfm+oMCa6wV/cBBNjlw
+ M0IABeC4pSGxlz51D6kOEzFnB4MH/Rlbt20+7zswUJHYci157i4RuxU7eyKMQLqY9/ye
+ 4Ljgh5rz/7RzXs7Kzcj+lNUmb4ntbIkVRr6dGWJmsORoizYVOJbdcrVUmLP6w3nG3TJy
+ EARg==
+X-Gm-Message-State: AOAM531//tNp6iUx7abJ0wYUB4g0oFVThfcY0Obo3CM74F4ce9uFYC2b
+ gfVZohLb6KZZnoBgZQej8bM=
+X-Google-Smtp-Source: ABdhPJxHhur3wQN8WmEyNxA+W1/sE24M3nO1TWjo2rJ0GnYL+t3NixDhtMD6glLsTC6egs0Kn3Dhjw==
+X-Received: by 2002:a7b:c1cb:: with SMTP id a11mr8027105wmj.30.1639495985661; 
+ Tue, 14 Dec 2021 07:33:05 -0800 (PST)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+ by smtp.gmail.com with ESMTPSA id a198sm118170wmd.42.2021.12.14.07.33.04
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 14 Dec 2021 07:33:05 -0800 (PST)
+Date: Tue, 14 Dec 2021 15:33:03 +0000
+From: Wei Liu <wei.liu@kernel.org>
+To: Tianyu Lan <ltykernel@gmail.com>
+Subject: Re: [PATCH V7 2/5] x86/hyper-v: Add hyperv Isolation VM check in the
+ cc_platform_has()
+Message-ID: <20211214153303.qmhowu4lfpcp4gej@liuwe-devbox-debian-v2>
+References: <20211213071407.314309-1-ltykernel@gmail.com>
+ <20211213071407.314309-3-ltykernel@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <a62602df-91f6-783d-60f3-d9eba10da543@kapsi.fi>
-Content-Language: en-US
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
- thierry.reding@gmail.com, linux-tegra@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <20211213071407.314309-3-ltykernel@gmail.com>
+Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
+ dave.hansen@linux.intel.com, dave.hansen@intel.com, hpa@zytor.com,
+ kys@microsoft.com, hch@lst.de, linux-arch@vger.kernel.org, hch@infradead.org,
+ wei.liu@kernel.org, sthemmin@microsoft.com, linux-scsi@vger.kernel.org,
+ x86@kernel.org, decui@microsoft.com, michael.h.kelley@microsoft.com,
+ mingo@redhat.com, kuba@kernel.org, jejb@linux.ibm.com, parri.andrea@gmail.com,
+ thomas.lendacky@amd.com, Tianyu.Lan@microsoft.com, arnd@arndb.de,
+ konrad.wilk@oracle.com, haiyangz@microsoft.com, bp@alien8.de,
+ tglx@linutronix.de, martin.petersen@oracle.com, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ vkuznets@redhat.com, robin.murphy@arm.com, davem@davemloft.net
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,21 +92,72 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-MTQuMTIuMjAyMSAxNzo1MywgTWlra28gUGVydHR1bmVuINC/0LjRiNC10YI6Cj4gT24gMTIvMTQv
-MjEgMTY6MzUsIERtaXRyeSBPc2lwZW5rbyB3cm90ZToKPj4gMTQuMTIuMjAyMSAxMTowNSwgSm9u
-IEh1bnRlciDQv9C40YjQtdGCOgo+Pj4gSGkgYWxsLAo+Pj4KPj4+IFN0aWxsIG5vIHJlc3BvbnNl
-IG9uIHRoaXMgOi0oCj4+Cj4+IEkgc2VlIG9ubHkgdHdvIHBhdGNoZXMgb24gVGVncmEgTUwgYW5k
-IG90aGVycyBvbiBEUkkgTUwuIE1pZ2h0IGJlIGdvb2QKPj4gdG8gc3RhcnQgd2l0aCByZS1zZW5k
-aW5nIHRoaXMgd2hvbGUgc2VyaWVzIGFuZCBDQ2luZyBNTHMgcHJvcGVybHkuCj4+Cj4gCj4gQWxs
-IHBhdGNoZXMgc2hvdWxkIGhhdmUgYmVlbiBzZW50IHRvIHRoZSBzYW1lIHNldCBvZiBhZGRyZXNz
-ZXMuIEF0IGxlYXN0Cj4gTFdOJ3MgYXJjaGl2ZSBzZWVtcyB0byBhZ3JlZS4uCgpJbmRlZWQsIEkg
-c2VlIHRoYXQgVGVncmEgTUwgd2FzIENDZWQgYW5kIEkgc2VlIGFsbCBwYXRjaGVzIG9uIFRlZ3Jh
-CnBhdGNod29yaywgYnV0IEkgZG9uJ3Qgc2VlIHRoZW0gYWxsIG9uIGxvcmUgYW5kIGdtYW5lLgpf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWls
-aW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5s
-aW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Mon, Dec 13, 2021 at 02:14:03AM -0500, Tianyu Lan wrote:
+> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> 
+> Hyper-V provides Isolation VM for confidential computing support and
+> guest memory is encrypted in it. Places checking cc_platform_has()
+> with GUEST_MEM_ENCRYPT attr should return "True" in Isolation vm. e.g,
+> swiotlb bounce buffer size needs to adjust according to memory size
+> in the sev_setup_arch(). Add GUEST_MEM_ENCRYPT check for Hyper-V Isolation
+> VM.
+> 
+> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+
+x86 maintainers, any comment on this patch?
+
+> ---
+> Change since v6:
+> 	* Change the order in the cc_platform_has() and check sev first.
+> 
+> Change since v3:
+> 	* Change code style of checking GUEST_MEM attribute in the
+> 	  hyperv_cc_platform_has().
+> ---
+>  arch/x86/kernel/cc_platform.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/arch/x86/kernel/cc_platform.c b/arch/x86/kernel/cc_platform.c
+> index 03bb2f343ddb..6cb3a675e686 100644
+> --- a/arch/x86/kernel/cc_platform.c
+> +++ b/arch/x86/kernel/cc_platform.c
+> @@ -11,6 +11,7 @@
+>  #include <linux/cc_platform.h>
+>  #include <linux/mem_encrypt.h>
+>  
+> +#include <asm/mshyperv.h>
+>  #include <asm/processor.h>
+>  
+>  static bool __maybe_unused intel_cc_platform_has(enum cc_attr attr)
+> @@ -58,12 +59,19 @@ static bool amd_cc_platform_has(enum cc_attr attr)
+>  #endif
+>  }
+>  
+> +static bool hyperv_cc_platform_has(enum cc_attr attr)
+> +{
+> +	return attr == CC_ATTR_GUEST_MEM_ENCRYPT;
+> +}
+>  
+>  bool cc_platform_has(enum cc_attr attr)
+>  {
+>  	if (sme_me_mask)
+>  		return amd_cc_platform_has(attr);
+>  
+> +	if (hv_is_isolation_supported())
+> +		return hyperv_cc_platform_has(attr);
+> +
+>  	return false;
+>  }
+>  EXPORT_SYMBOL_GPL(cc_platform_has);
+> -- 
+> 2.25.1
+> 
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
