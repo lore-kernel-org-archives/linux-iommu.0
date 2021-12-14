@@ -4,76 +4,72 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CB56FC433F5
-	for <iommu@archiver.kernel.org>; Tue, 14 Dec 2021 20:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 07641C433EF
+	for <iommu@archiver.kernel.org>; Tue, 14 Dec 2021 21:20:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 6B6F340327;
-	Tue, 14 Dec 2021 20:57:24 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 8EE73408AF;
+	Tue, 14 Dec 2021 21:20:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DoyjG8_pYC9H; Tue, 14 Dec 2021 20:57:23 +0000 (UTC)
+	with ESMTP id 8MGZipcB9VWC; Tue, 14 Dec 2021 21:20:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 459454025F;
-	Tue, 14 Dec 2021 20:57:23 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id CACAF402FE;
+	Tue, 14 Dec 2021 21:20:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1440AC001E;
-	Tue, 14 Dec 2021 20:57:23 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A2FA2C0012
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 20:57:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AEE53C002F;
+	Tue, 14 Dec 2021 21:20:08 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A64F7C0012
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 21:20:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 7F7C740402
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 20:57:21 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 7FF508176B
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 21:20:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=ti.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id O4IJTzP922VW for <iommu@lists.linux-foundation.org>;
- Tue, 14 Dec 2021 20:57:20 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 073FC40114
- for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 20:57:19 +0000 (UTC)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
- by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 1BEKuQ2G087867;
- Tue, 14 Dec 2021 14:56:26 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
- s=ti-com-17Q1; t=1639515386;
- bh=j3osEyGU+RxWIqSwbtxX3t4fWrHk6cyOWUyU3Kklrls=;
- h=Date:From:To:CC:Subject:References:In-Reply-To;
- b=ro9Zy1BiNWwoHciKsimW9l8VopF6tYlVp/6zMhM4RqRr5OMdDNHhzpvvxTClpNzB8
- dPzQuK5sKOVV9r4w2zlsPGBt+0LP2kgt2QlGyvAvguubR7lVNMCWrPyux0hcVHFUr4
- 7zdyFM5y9LIDHeI/2x8RTh77XgWACTwR6L5QvGfs=
-Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
- by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 1BEKuQZP071677
- (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
- Tue, 14 Dec 2021 14:56:26 -0600
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 14
- Dec 2021 14:56:26 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 14 Dec 2021 14:56:26 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
- by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 1BEKuQKW080208;
- Tue, 14 Dec 2021 14:56:26 -0600
-Date: Tue, 14 Dec 2021 14:56:26 -0600
-To: Thomas Gleixner <tglx@linutronix.de>
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="EzQFCHRv";
+ dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
+ header.d=linutronix.de header.b="lDR2zL85"
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 8fL1PtKmxLRW for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Dec 2021 21:20:02 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from galois.linutronix.de (Galois.linutronix.de
+ [IPv6:2a0a:51c0:0:12e:550::1])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id ED4A48176C
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 21:20:01 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020; t=1639516798;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=UY5SIbLiQJhNf3IcwLAaYT3af81CnBCUSA3qSWP4dj0=;
+ b=EzQFCHRvraOq6euqkQn1B+tUeoQ1uw1bo4mwk9Q+vKSF8S8PO4nMGeLKZ/WNHEDZ5eJhpq
+ mjggZFTuoIKEO/OrzzxxfitzasNIFFxeDKcRyrdk7DdmUaNmMFC1unLIMtUfaK38TWwXYn
+ h2orgm5VCZyrGWnjQirGszYr8438eZQal4q/1iuBvD2zWg9nOeapYD6mAyJQRKxCWoQSAd
+ enz2/bCSy9StMuvCnU8bbCEhKsc+iX17V3lbzwiD4WPpGEDgVUswHFbLH8z54QbwfbJl42
+ iPxl/XpXV7+3L/A3q2mlzAY6VVHUHz35mnJZ8s3Ze10jfDmKSXRCDaOkhFkkdQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020e; t=1639516798;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=UY5SIbLiQJhNf3IcwLAaYT3af81CnBCUSA3qSWP4dj0=;
+ b=lDR2zL85oMI4BdOLKEJ1Arl/dti0X9kWdevk0BKKPLGWBqf9hwgLOpBluOuP1fE4iBCR8Y
+ 5fOFMFfQxW57zEAA==
+To: Nishanth Menon <nm@ti.com>
 Subject: Re: [patch V3 00/35] genirq/msi, PCI/MSI: Spring cleaning - Part 2
-Message-ID: <20211214205626.lrnddha6bd6d6es5@possibly>
+In-Reply-To: <20211214205626.lrnddha6bd6d6es5@possibly>
 References: <20211210221642.869015045@linutronix.de>
  <20211213182958.ytj4m6gsg35u77cv@detonator> <87fsqvttfv.ffs@tglx>
  <20211214162247.ocjm7ihg5oi7uiuv@slider> <87wnk7rvnz.ffs@tglx>
  <87tufbrudl.ffs@tglx> <87mtl3rli1.ffs@tglx>
+ <20211214205626.lrnddha6bd6d6es5@possibly>
+Date: Tue, 14 Dec 2021 22:19:57 +0100
+Message-ID: <87h7basx36.ffs@tglx>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <87mtl3rli1.ffs@tglx>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Cc: Mark Rutland <mark.rutland@arm.com>, Stuart Yoder <stuyoder@gmail.com>,
  Benjamin Herrenschmidt <benh@kernel.crashing.org>,
  Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
@@ -104,43 +100,37 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Nishanth Menon via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Nishanth Menon <nm@ti.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 21:15-20211214, Thomas Gleixner wrote:
-> Nishanth,
-> 
-> On Tue, Dec 14 2021 at 18:03, Thomas Gleixner wrote:
-> >     msi_device_data_release()
-> >     ...
-> >     pcim_release()
-> >        pci_disable_msi[x]()
-> >
-> > Groan....
-> 
-> I think I managed to distangle this. Can you please give:
-> 
->    git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git msi-v4-part-2
+Nishanth,
 
+On Tue, Dec 14 2021 at 14:56, Nishanth Menon wrote:
+> On 21:15-20211214, Thomas Gleixner wrote:
+>> I think I managed to distangle this. Can you please give:
+>> 
+>>    git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git msi-v4-part-2
+>
+>
+> Umm.. I am not entirely sure what is going on.. but all kinds of weird
+> corruption seems to occur with msi-v4-part-2 that does'nt seem to be
+> present in v5.16-rc5. (I use NFS since ethernet in K3 platforms use
+> inta/intr and dma that is impacted by this series).
+>
+> I will try and rebase your patches on v5.16-rc4 to be sure as well and
+> report back later today once i get some time.
+>
+> [1] https://gist.github.com/nmenon/a66e022926c4c15313c45d44313d860c msi-v4-part-2
+> [2] https://gist.github.com/nmenon/43085664d69ad846d596e76a06ed0656  v5.16-rc5
 
-Umm.. I am not entirely sure what is going on.. but all kinds of weird
-corruption seems to occur with msi-v4-part-2 that does'nt seem to be
-present in v5.16-rc5. (I use NFS since ethernet in K3 platforms use
-inta/intr and dma that is impacted by this series).
+thanks for trying. I'll have a look again with brain awake tomorrow
+morning.
 
-I will try and rebase your patches on v5.16-rc4 to be sure as well and
-report back later today once i get some time.
+Thanks,
 
-[1] https://gist.github.com/nmenon/a66e022926c4c15313c45d44313d860c msi-v4-part-2
-[2] https://gist.github.com/nmenon/43085664d69ad846d596e76a06ed0656  v5.16-rc5
--- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+        tglx
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
