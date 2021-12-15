@@ -1,68 +1,106 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 53429C433EF
-	for <iommu@archiver.kernel.org>; Wed, 15 Dec 2021 01:59:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9E49BC433EF
+	for <iommu@archiver.kernel.org>; Wed, 15 Dec 2021 03:48:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D608C60D70;
-	Wed, 15 Dec 2021 01:59:21 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zDWwA2r9oyuB; Wed, 15 Dec 2021 01:59:21 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id B60EF60BEC;
-	Wed, 15 Dec 2021 01:59:20 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 675B6C002F;
-	Wed, 15 Dec 2021 01:59:20 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 238CBC0012
- for <iommu@lists.linux-foundation.org>; Wed, 15 Dec 2021 01:59:18 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 09E8B40292
- for <iommu@lists.linux-foundation.org>; Wed, 15 Dec 2021 01:59:18 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 3B0034028D;
+	Wed, 15 Dec 2021 03:48:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id G83uvv-37UhP for <iommu@lists.linux-foundation.org>;
- Wed, 15 Dec 2021 01:59:16 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
- by smtp2.osuosl.org (Postfix) with ESMTPS id AA91D40156
- for <iommu@lists.linux-foundation.org>; Wed, 15 Dec 2021 01:59:16 +0000 (UTC)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
- by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JDJLW6zvsz91kH;
- Wed, 15 Dec 2021 09:58:27 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 15 Dec 2021 09:59:12 +0800
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 15 Dec 2021 09:59:11 +0800
-Subject: Re: [PATCH] Revert "iommu/arm-smmu-v3: Decrease the queue size of
- evtq and priq"
-To: Will Deacon <will@kernel.org>, Zhou Wang <wangzhou1@hisilicon.com>
-References: <1638858768-9971-1-git-send-email-wangzhou1@hisilicon.com>
- <20211214144841.GB14837@willie-the-truck>
-Message-ID: <ded54329-b3b8-4a73-c2c6-41cf89923414@huawei.com>
-Date: Wed, 15 Dec 2021 09:59:00 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id cdgnquhrsP5W; Wed, 15 Dec 2021 03:48:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id D09664055E;
+	Wed, 15 Dec 2021 03:48:00 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A5392C002F;
+	Wed, 15 Dec 2021 03:48:00 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D82A8C0012
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Dec 2021 03:47:59 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id BF57060D6F
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Dec 2021 03:47:59 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id nXqvtdfYII71 for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Dec 2021 03:47:57 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com
+ [IPv6:2607:f8b0:4864:20::52e])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id D344660C2C
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Dec 2021 03:47:57 +0000 (UTC)
+Received: by mail-pg1-x52e.google.com with SMTP id l10so8041405pgm.7
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Dec 2021 19:47:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=WX18AvwNcCC2p0SRhjMK6GhbrhT1JBIKs0M6zY3Lj7Q=;
+ b=WPMmh69mSOiH8mgu7ySy0stRSmNQGrh1n9Iu5lufvirjG8da5krGccBikzmhxIsonV
+ GbYy/0bHveh5UqULIOuHH20n1HJHPYTsvZW5BCUkJsJDXDgnV+nHa9RB4IBg2YWPJ/qe
+ d5vdXmlTtFUjiF+1U4AFPGuBU6UXbON5hAccSzNXB5qEG8PdX3brb3YXmDMWwz1J8OgI
+ UstG31izgnPdQHQofdMy4Pv5BBjgfkIxeFVKEuskD09VJSK12WfK1GTx0gXEl7PF3xsW
+ 1V9a83ysdKElKSmypE0spqdeA2uIe+86YAbXC1pKh4RUT89rp+4xvKASaUTEbBqH5mWU
+ RuAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=WX18AvwNcCC2p0SRhjMK6GhbrhT1JBIKs0M6zY3Lj7Q=;
+ b=hc0Ybx3s644raWwR2yMTgToNAG6xtTPxBCxww9v6x/rGf0dVx1JK5r41VNDzhmBOr0
+ 8t0WkubGBLTwEVGrwuZIDRGpmIqDAQVQjhIajN86Va0GSX8eyH3espALXzlM94wBblru
+ Ny8NITuS4Z5hdfvTGZczW9XXrz0Gqbz954BfnS1tq1VLbK0lksCYo1VTM+1Fffu8X8QD
+ C84j5Nm9O+bOQKNFKf/2FXtK0bMj7Pa3bqhu+HdETuKBVBAFl39jfz7ZgST9cMI8dolb
+ yXYbXlT6J6FRrFBvzOENfE0uBVyWcnM3e71MM1YTsOSBTWraRCQo//0RYqXn89NIA+kW
+ aW8Q==
+X-Gm-Message-State: AOAM533/r1ShZYyHsNOCK5G/OKjhlenGDw492UlRBl0qLGWBGkQt7AKn
+ 5UWcAxYzrS0bweV7+pRcyVM=
+X-Google-Smtp-Source: ABdhPJwH10ZHWDFi6cCdKP8OhQjj1dB7avN/b0cOOYyztSjA2GG31Cmv5mFdBR/aJtU91LzSkrUsRA==
+X-Received: by 2002:a62:7a54:0:b0:494:6e78:994b with SMTP id
+ v81-20020a627a54000000b004946e78994bmr7244240pfc.5.1639540077124; 
+ Tue, 14 Dec 2021 19:47:57 -0800 (PST)
+Received: from odroid ([114.29.23.242])
+ by smtp.gmail.com with ESMTPSA id x11sm418405pjq.52.2021.12.14.19.47.48
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 14 Dec 2021 19:47:56 -0800 (PST)
+Date: Wed, 15 Dec 2021 03:47:46 +0000
+From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To: Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH v2 00/33] Separate struct slab from struct page
+Message-ID: <20211215034746.GA1097530@odroid>
+References: <20211201181510.18784-1-vbabka@suse.cz>
+ <4c3dfdfa-2e19-a9a7-7945-3d75bc87ca05@suse.cz>
+ <20211214143822.GA1063445@odroid>
+ <87584294-b1bc-aabe-d86a-1a8b93a7f4d4@suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <20211214144841.GB14837@willie-the-truck>
-Content-Language: en-US
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org,
- linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <87584294-b1bc-aabe-d86a-1a8b93a7f4d4@suse.cz>
+Cc: Peter Zijlstra <peterz@infradead.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, Michal Hocko <mhocko@kernel.org>,
+ linux-mm@kvack.org, Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+ Alexander Potapenko <glider@google.com>, kasan-dev@googlegroups.com,
+ "H. Peter Anvin" <hpa@zytor.com>, Christoph Lameter <cl@linux.com>,
+ Will Deacon <will@kernel.org>, Julia Lawall <julia.lawall@inria.fr>,
+ Sergey Senozhatsky <senozhatsky@chromium.org>, x86@kernel.org,
+ Luis Chamberlain <mcgrof@kernel.org>, Matthew Wilcox <willy@infradead.org>,
+ Ingo Molnar <mingo@redhat.com>, Vladimir Davydov <vdavydov.dev@gmail.com>,
+ David Rientjes <rientjes@google.com>, Nitin Gupta <ngupta@vflare.org>,
+ Marco Elver <elver@google.com>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, cgroups@vger.kernel.org,
+ Thomas Gleixner <tglx@linutronix.de>, Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+ Dmitry Vyukov <dvyukov@google.com>, Andrey Konovalov <andreyknvl@gmail.com>,
+ patches@lists.linux.dev, Pekka Enberg <penberg@kernel.org>,
+ Minchan Kim <minchan@kernel.org>, iommu@lists.linux-foundation.org,
+ Johannes Weiner <hannes@cmpxchg.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,44 +113,53 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: "Leizhen \(ThunderTown\) via iommu" <iommu@lists.linux-foundation.org>
-Reply-To: "Leizhen \(ThunderTown\)" <thunder.leizhen@huawei.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-On 2021/12/14 22:48, Will Deacon wrote:
-> On Tue, Dec 07, 2021 at 02:32:48PM +0800, Zhou Wang wrote:
->> The commit f115f3c0d5d8 ("iommu/arm-smmu-v3: Decrease the queue size of
->> evtq and priq") decreases evtq and priq, which may lead evtq/priq to be
->> full with fault events, e.g HiSilicon ZIP/SEC/HPRE have maximum 1024 queues
->> in one device, every queue could be binded with one process and trigger a
->> fault event. So let's revert f115f3c0d5d8.
->>
->> In fact, if an implementation of SMMU really does not need so long evtq
->> and priq, value of IDR1_EVTQS and IDR1_PRIQS can be set to proper ones.
->>
->> Signed-off-by: Zhou Wang <wangzhou1@hisilicon.com>
->> ---
->>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h | 5 ++---
->>  1 file changed, 2 insertions(+), 3 deletions(-)
+On Tue, Dec 14, 2021 at 03:43:35PM +0100, Vlastimil Babka wrote:
+> On 12/14/21 15:38, Hyeonggon Yoo wrote:
+> > On Tue, Dec 14, 2021 at 01:57:22PM +0100, Vlastimil Babka wrote:
+> >> On 12/1/21 19:14, Vlastimil Babka wrote:
+> >> > Folks from non-slab subsystems are Cc'd only to patches affecting them, and
+> >> > this cover letter.
+> >> > 
+> >> > Series also available in git, based on 5.16-rc3:
+> >> > https://git.kernel.org/pub/scm/linux/kernel/git/vbabka/linux.git/log/?h=slab-struct_slab-v2r2
+> >> 
+> >> Pushed a new branch slab-struct-slab-v3r3 with accumulated fixes and small tweaks
+> >> and a new patch from Hyeonggon Yoo on top. To avoid too much spam, here's a range diff:
+> >> 
+> > 
+> > Hello Vlastimil, Thank you for nice work.
+> > I'm going to review and test new version soon in free time.
 > 
-> I'd like an Ack from Zhen Lei on this, as the aim of the original patch
-> was to reduce memory consumption.
+> Thanks!
+> 
 
-I did it for the purpose of saving memory. At the time, I didn't think it would
-have accumulated so many events. Now there is such a practical situation. Ensuring
-functionality stability is more important than saving a little memory. So I have
-no objection to reverting my patch.
+You're welcome!
 
-Acked-by: Zhen Lei <thunder.leizhen@huawei.com>
+> > Btw, I gave you some review and test tags and seems to be missing in new
+> > series. Did I do review/test process wrongly? It's first time to review
+> > patches so please let me know if I did it wrongly.
+> 
+> You did right, sorry! I didn't include them as those were for patches that I
+> was additionally changing after your review/test and the decision what is
+> substantial change enough to need a new test/review is often fuzzy. 
+
+Ah, Okay. review/test becomes invalid after some changing.
+that's okay. I was just unfamiliar with the process. Thank you!
+
+> So if you can recheck the new versions it would be great and then I will pick that
+> up, thanks!
+
+Okay. I'll new versions.
 
 > 
-> Will
-> .
+> > --
+> > Thank you.
+> > Hyeonggon.
 > 
 _______________________________________________
 iommu mailing list
