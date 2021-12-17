@@ -1,62 +1,62 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E857FC433F5
-	for <iommu@archiver.kernel.org>; Fri, 17 Dec 2021 22:02:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A09F4C4332F
+	for <iommu@archiver.kernel.org>; Fri, 17 Dec 2021 22:02:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id AC0464222A;
-	Fri, 17 Dec 2021 22:02:09 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 62C9784DBD;
+	Fri, 17 Dec 2021 22:02:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id X8Mg9OSY_g4F; Fri, 17 Dec 2021 22:02:08 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JOPMNGMQkh9K; Fri, 17 Dec 2021 22:02:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 94D35421DA;
-	Fri, 17 Dec 2021 22:02:08 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 3156A84D78;
+	Fri, 17 Dec 2021 22:02:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7D5A0C002F;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A7851C0072;
 	Fri, 17 Dec 2021 22:02:08 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1D56FC0070
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7A21CC002F
  for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 22:02:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 35D8161147
- for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 22:01:59 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 5933F40C36
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 22:02:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uK0zd-SggewY for <iommu@lists.linux-foundation.org>;
- Fri, 17 Dec 2021 22:01:58 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 2r0_HYkZzNun for <iommu@lists.linux-foundation.org>;
+ Fri, 17 Dec 2021 22:01:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 926846116E
- for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 22:01:58 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id D9C8840629
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 22:01:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1639778518; x=1671314518;
+ t=1639778517; x=1671314517;
  h=from:to:cc:subject:date:message-id:in-reply-to:
  references:mime-version:content-transfer-encoding;
- bh=WUETfejsiNGR9gILAkgt74/RWnHGbmhPzWPMpp74bp0=;
- b=ZJgQHVbrRkAYaKANKKgnKpw5Ir0hu4whxxRIluZszNDWwhWezqOwKYgx
- omA8m5C0GaNGg0xdXE4+vJVb992/ovW1kCPEF3S2Dj0NHtHwdeg84YcsR
- S7BQWxn25lK6DYe5ZoFcr0aRs6fmF27AB+XWGfFbkRTL9QSqHh88qPG8l
- BkS+z4pmTiYyNKJ5X8ygHCcIGn68dsnqyQHFluJdEVoX04149uZSTZ7I3
- x5l35ND2sp4tcfO9TaEE2Uoe06YjuXSr1suwuHDIxToXZBUsEffOOnl2G
- zPBZG+LBuzz9R9a4RX2vjRLLFKsrUoDrY9fwF9nRkZp2R9XqSvjvnic1J w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10201"; a="239793601"
-X-IronPort-AV: E=Sophos;i="5.88,214,1635231600"; d="scan'208";a="239793601"
+ bh=vrJ/zKRVUU6ZR06GrFfxZCmYCCjEMizfBdO6/ux2RvU=;
+ b=n/2wfwO8a3zJY1bCHuECCR9EC8s0ukQfFZaUN3fc52ySAZA3pKDcLm6H
+ 4j2k+Xc1t45LoYJDj8sjpWE7vPYrrQxrZAn5luyswMcOwZ2KuLxSAuWzK
+ 7Fou/OGA5mxWejgHoCb+ZRC3KMgd9gqir6BLz4iPv33OL7dHbg3hYNv1V
+ fUFJuQQucyEbcXtTrkWxwAGIClV8qOzaqXic/bzDeGZt3VNVYcoJ6qMAD
+ 0mRlG83E3k7tPcCjE6JcWCpNPTNs8nL6NRLC34YOtqbH9Oep30YMlaPWc
+ CeIQ8RgBAE6EnBuZKXOp2er0BezxSpHejBn8CIiofpMH/asQe4Wrq5KLa Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10201"; a="239793565"
+X-IronPort-AV: E=Sophos;i="5.88,214,1635231600"; d="scan'208";a="239793565"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 17 Dec 2021 14:01:51 -0800
+ 17 Dec 2021 14:01:47 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,214,1635231600"; d="scan'208";a="506928110"
+X-IronPort-AV: E=Sophos;i="5.88,214,1635231600"; d="scan'208";a="506928073"
 Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
- by orsmga007.jf.intel.com with ESMTP; 17 Dec 2021 14:01:51 -0800
+ by orsmga007.jf.intel.com with ESMTP; 17 Dec 2021 14:01:46 -0800
 From: Fenghua Yu <fenghua.yu@intel.com>
 To: "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
  "Borislav Petkov" <bp@alien8.de>, "Peter Zijlstra" <peterz@infradead.org>,
@@ -67,10 +67,10 @@ To: "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
  "Jacob Pan" <jacob.jun.pan@linux.intel.com>,
  "Ashok Raj" <ashok.raj@intel.com>,
  "Ravi V Shankar" <ravi.v.shankar@intel.com>
-Subject: [PATCH v2 10/11] tools/objtool: Check for use of the ENQCMD
- instruction in the kernel
-Date: Fri, 17 Dec 2021 22:01:35 +0000
-Message-Id: <20211217220136.2762116-11-fenghua.yu@intel.com>
+Subject: [PATCH v2 01/11] iommu/sva: Rename CONFIG_IOMMU_SVA_LIB to
+ CONFIG_IOMMU_SVA
+Date: Fri, 17 Dec 2021 22:01:26 +0000
+Message-Id: <20211217220136.2762116-2-fenghua.yu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211217220136.2762116-1-fenghua.yu@intel.com>
 References: <20211217220136.2762116-1-fenghua.yu@intel.com>
@@ -94,62 +94,103 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The ENQCMD implicitly accesses the PASID_MSR to fill in the pasid field
-of the descriptor being submitted to an accelerator. But there is no
-precise (and stable across kernel changes) point at which the PASID_MSR
-is updated from the value for one task to the next.
+This CONFIG option originally only referred to the Shared
+Virtual Address (SVA) library. But it is now also used for
+non-library portions of code.
 
-Kernel code that uses accelerators must always use the ENQCMDS instruction
-which does not access the PASID_MSR.
-
-Check for use of the ENQCMD instruction in the kernel and warn on its
-usage.
+Drop the "_LIB" suffix so that there is just one configuration
+options for all code relating to SVA.
 
 Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 ---
 v2:
-- Simplify handling ENQCMD (PeterZ and Josh)
+- Add this patch for more meaningful name CONFIG_IOMMU_SVA
 
- tools/objtool/arch/x86/decode.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/iommu/Kconfig         | 6 +++---
+ drivers/iommu/Makefile        | 2 +-
+ drivers/iommu/intel/Kconfig   | 2 +-
+ drivers/iommu/iommu-sva-lib.h | 6 +++---
+ 4 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/tools/objtool/arch/x86/decode.c b/tools/objtool/arch/x86/decode.c
-index 4d6d7fc13255..11ffa0e53f84 100644
---- a/tools/objtool/arch/x86/decode.c
-+++ b/tools/objtool/arch/x86/decode.c
-@@ -112,7 +112,7 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
- 	const struct elf *elf = file->elf;
- 	struct insn insn;
- 	int x86_64, ret;
--	unsigned char op1, op2,
-+	unsigned char op1, op2, op3,
- 		      rex = 0, rex_b = 0, rex_r = 0, rex_w = 0, rex_x = 0,
- 		      modrm = 0, modrm_mod = 0, modrm_rm = 0, modrm_reg = 0,
- 		      sib = 0, /* sib_scale = 0, */ sib_index = 0, sib_base = 0;
-@@ -139,6 +139,7 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 3eb68fa1b8cc..c79a0df090c0 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -144,8 +144,8 @@ config IOMMU_DMA
+ 	select IRQ_MSI_IOMMU
+ 	select NEED_SG_DMA_LENGTH
  
- 	op1 = insn.opcode.bytes[0];
- 	op2 = insn.opcode.bytes[1];
-+	op3 = insn.opcode.bytes[2];
+-# Shared Virtual Addressing library
+-config IOMMU_SVA_LIB
++# Shared Virtual Addressing
++config IOMMU_SVA
+ 	bool
+ 	select IOASID
  
- 	if (insn.rex_prefix.nbytes) {
- 		rex = insn.rex_prefix.bytes[0];
-@@ -491,6 +492,14 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
- 			/* nopl/nopw */
- 			*type = INSN_NOP;
+@@ -379,7 +379,7 @@ config ARM_SMMU_V3
+ config ARM_SMMU_V3_SVA
+ 	bool "Shared Virtual Addressing support for the ARM SMMUv3"
+ 	depends on ARM_SMMU_V3
+-	select IOMMU_SVA_LIB
++	select IOMMU_SVA
+ 	select MMU_NOTIFIER
+ 	help
+ 	  Support for sharing process address spaces with devices using the
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index bc7f730edbb0..44475a9b3eea 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -27,6 +27,6 @@ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
+ obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+ obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+ obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+-obj-$(CONFIG_IOMMU_SVA_LIB) += iommu-sva-lib.o io-pgfault.o
++obj-$(CONFIG_IOMMU_SVA) += iommu-sva-lib.o io-pgfault.o
+ obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
+ obj-$(CONFIG_APPLE_DART) += apple-dart.o
+diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+index 247d0f2d5fdf..39a06d245f12 100644
+--- a/drivers/iommu/intel/Kconfig
++++ b/drivers/iommu/intel/Kconfig
+@@ -52,7 +52,7 @@ config INTEL_IOMMU_SVM
+ 	select PCI_PRI
+ 	select MMU_NOTIFIER
+ 	select IOASID
+-	select IOMMU_SVA_LIB
++	select IOMMU_SVA
+ 	help
+ 	  Shared Virtual Memory (SVM) provides a facility for devices
+ 	  to access DMA resources through process address space by
+diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva-lib.h
+index 031155010ca8..95dc3ebc1928 100644
+--- a/drivers/iommu/iommu-sva-lib.h
++++ b/drivers/iommu/iommu-sva-lib.h
+@@ -17,7 +17,7 @@ struct device;
+ struct iommu_fault;
+ struct iopf_queue;
  
-+		} else if (op2 == 0x38 && op3 == 0xf8) {
-+			if (insn.prefixes.nbytes == 1 &&
-+			    insn.prefixes.bytes[0] == 0xf2) {
-+				/* ENQCMD cannot be used in the kernel. */
-+				WARN("ENQCMD instruction at %s:%lx", sec->name,
-+				     offset);
-+			}
-+
- 		} else if (op2 == 0xa0 || op2 == 0xa8) {
+-#ifdef CONFIG_IOMMU_SVA_LIB
++#ifdef CONFIG_IOMMU_SVA
+ int iommu_queue_iopf(struct iommu_fault *fault, void *cookie);
  
- 			/* push fs/gs */
+ int iopf_queue_add_device(struct iopf_queue *queue, struct device *dev);
+@@ -28,7 +28,7 @@ struct iopf_queue *iopf_queue_alloc(const char *name);
+ void iopf_queue_free(struct iopf_queue *queue);
+ int iopf_queue_discard_partial(struct iopf_queue *queue);
+ 
+-#else /* CONFIG_IOMMU_SVA_LIB */
++#else /* CONFIG_IOMMU_SVA */
+ static inline int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
+ {
+ 	return -ENODEV;
+@@ -64,5 +64,5 @@ static inline int iopf_queue_discard_partial(struct iopf_queue *queue)
+ {
+ 	return -ENODEV;
+ }
+-#endif /* CONFIG_IOMMU_SVA_LIB */
++#endif /* CONFIG_IOMMU_SVA */
+ #endif /* _IOMMU_SVA_LIB_H */
 -- 
 2.34.1
 
