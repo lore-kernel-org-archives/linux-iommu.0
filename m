@@ -1,88 +1,105 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 01E04C433F5
-	for <iommu@archiver.kernel.org>; Fri, 17 Dec 2021 22:30:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D11EAC433F5
+	for <iommu@archiver.kernel.org>; Fri, 17 Dec 2021 22:57:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 98E0D40122;
-	Fri, 17 Dec 2021 22:30:17 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 7C3FB61130;
+	Fri, 17 Dec 2021 22:57:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CAkG3BgHPprr; Fri, 17 Dec 2021 22:30:16 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 2A9A5404A6;
-	Fri, 17 Dec 2021 22:30:16 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E2FC5C001E;
-	Fri, 17 Dec 2021 22:30:15 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DA8BAC0012
- for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 22:30:14 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id C148E6116F
- for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 22:30:14 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eA9KcxgLnaTS for <iommu@lists.linux-foundation.org>;
- Fri, 17 Dec 2021 22:30:14 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id VdjEGZDl9AQP; Fri, 17 Dec 2021 22:57:17 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7A3BD61119;
+	Fri, 17 Dec 2021 22:57:17 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3DE0EC001E;
+	Fri, 17 Dec 2021 22:57:17 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0C763C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 22:57:16 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id E1E8041E88
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 22:57:15 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id iHd8eWhn1UDz for <iommu@lists.linux-foundation.org>;
+ Fri, 17 Dec 2021 22:57:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org
- [IPv6:2604:1380:4601:e00::1])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C8DAC61162
- for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 22:30:13 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id AEC59B82B21;
- Fri, 17 Dec 2021 22:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E46BC36AE2;
- Fri, 17 Dec 2021 22:30:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1639780209;
- bh=8wwtNzd+gqMtJWZe56YrMEoqcAh58nCen38oaJYWaO8=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=iEDPDsKO98XO/jvJbm+yFgRmQxDl4CmwNCCZ9O7HpbCSEXJA25pw5YHPwb3s5TQNN
- i9BY1ubFlnf5uG9DhdB1upZgn3wBZ2U7zEKoZbzzSqONfP1iWr0lR/mc6vKNukUu4Y
- v3rmzZ7PuTCgGnrM38gn5DW9gYtmVN5J+BeNUM4EZYyS4A+dHs/rlpxPuADA19S0dn
- neVNoMO0dY5ql14VUQ62/P1PHlq3AtDvEc5p5JSO8vS0wwfJA0S0NhJ71hctL2lZr6
- u+JH0mJiYdoKOw4PkNyE8E1OMgv4ObOm4BwqrAiECJ8clDjSowxx7LeV6ApqW7P8A6
- w01dCRvRkkngQ==
-Date: Fri, 17 Dec 2021 15:30:00 -0700
-From: Nathan Chancellor <nathan@kernel.org>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch V3 28/35] PCI/MSI: Simplify pci_irq_get_affinity()
-Message-ID: <Yb0PaCyo/6z3XOlf@archlinux-ax161>
-References: <20211210221642.869015045@linutronix.de>
- <20211210221814.900929381@linutronix.de>
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 5155E41D44
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 22:57:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1639781834;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=+KxH5v9Eb3o+QR18pfErKc1z+d/J0pC61Cr5tDyvWcc=;
+ b=T/s6KfFkc17witCdLdpA3oOAFFgdKw14DMHIOM59huIvyAhmA40NjQoPDgZj/8eTv0tRw7
+ zIB/Sejz28Oca0vSN3mTvd/uHZUeKoQocHKfQzkwbphCjjFGgjKxCx1uKjK8Lvwq7a28RM
+ mpVjkfqvG6V5ah+ThpBTaY9kS5cKIpA=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-617-49CEf8y0NSC-9UdCOJ3-VQ-1; Fri, 17 Dec 2021 17:57:11 -0500
+X-MC-Unique: 49CEf8y0NSC-9UdCOJ3-VQ-1
+Received: by mail-qv1-f71.google.com with SMTP id
+ jo4-20020a056214500400b003a5cb094fb8so3878184qvb.22
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 14:57:11 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=+KxH5v9Eb3o+QR18pfErKc1z+d/J0pC61Cr5tDyvWcc=;
+ b=y4zK+6jj4QL7RDEezL9f3CIqeytnxyup+eAogYckgbeEBMnSkLsFMz7isLXUtEE3Ug
+ RfgLpfyH1r2kx0BiMZ/FAmbkZ7aQz0LkLkBScfKk4ITnrHPmZ3uTavMlN92AwSX0Nmdh
+ C9goaHYXcWCnvR+V7oGneafi78e+eLaP3ns2fqqAy/oOn8EbkbuoCQhuPGI5815uq/i9
+ 0+OVVP4LS0eqvovnF4yhc33jcjrmPNUB+poQOGUzSkmrMni2eW7aYdrWocYRFwhYTSmm
+ 91uyHYuuD0FNFt13Ewln3DPVtgLHSHDuL6oVGoLcMPQyxHw3OE8zSAjVnE/8iTt0EG7S
+ jZpA==
+X-Gm-Message-State: AOAM530K36kvrYuwZhhZZyZhK6oAwCv8gGawdO4fhASCJ8lMsKJmb0Cd
+ 2kVV/kDQYsU6+jlb01lcFzEQUJ54jQWQcsNmDGhQe6J9Zcda4DXsrsfOk3ZdIoikAbNdtcOCwRe
+ YSS+EjmOwq5H2LMGAVhJf4Icjy8dx+g==
+X-Received: by 2002:a05:620a:c4f:: with SMTP id
+ u15mr3355599qki.565.1639781830647; 
+ Fri, 17 Dec 2021 14:57:10 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyXTuyfhYWKF4pQk89sjuYVjRKVvS7QNC4FUSVmFAhRcqT4DCDcP4pbJoonGDrl/wkVMlwLfw==
+X-Received: by 2002:a05:620a:c4f:: with SMTP id
+ u15mr3355589qki.565.1639781830438; 
+ Fri, 17 Dec 2021 14:57:10 -0800 (PST)
+Received: from treble ([2600:1700:6e32:6c00::45])
+ by smtp.gmail.com with ESMTPSA id g12sm8095977qtk.69.2021.12.17.14.57.08
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 17 Dec 2021 14:57:10 -0800 (PST)
+Date: Fri, 17 Dec 2021 14:57:06 -0800
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+To: Fenghua Yu <fenghua.yu@intel.com>
+Subject: Re: [PATCH v2 10/11] tools/objtool: Check for use of the ENQCMD
+ instruction in the kernel
+Message-ID: <20211217225706.32ahbyf5yeuzrhre@treble>
+References: <20211217220136.2762116-1-fenghua.yu@intel.com>
+ <20211217220136.2762116-11-fenghua.yu@intel.com>
 MIME-Version: 1.0
+In-Reply-To: <20211217220136.2762116-11-fenghua.yu@intel.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jpoimboe@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Disposition: inline
-In-Reply-To: <20211210221814.900929381@linutronix.de>
-Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
- Stuart Yoder <stuyoder@gmail.com>,
- Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Jassi Brar <jassisinghbrar@gmail.com>,
- Sinan Kaya <okaya@kernel.org>, iommu@lists.linux-foundation.org,
- Peter Ujfalusi <peter.ujfalusi@gmail.com>, Bjorn Helgaas <helgaas@kernel.org>,
- linux-arm-kernel@lists.infradead.org, Jason Gunthorpe <jgg@nvidia.com>,
- linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
- Kevin Tian <kevin.tian@intel.com>, Arnd Bergmann <arnd@arndb.de>,
- Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>, Cedric Le Goater <clg@kaod.org>,
- Santosh Shilimkar <ssantosh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Megha Dey <megha.dey@intel.com>, Juergen Gross <jgross@suse.com>,
- Tero Kristo <kristo@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- LKML <linux-kernel@vger.kernel.org>, Vinod Koul <vkoul@kernel.org>,
- Marc Zygnier <maz@kernel.org>, dmaengine@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org
+Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,37 +117,29 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Thomas,
-
-On Fri, Dec 10, 2021 at 11:19:26PM +0100, Thomas Gleixner wrote:
-> From: Thomas Gleixner <tglx@linutronix.de>
+On Fri, Dec 17, 2021 at 10:01:35PM +0000, Fenghua Yu wrote:
+> The ENQCMD implicitly accesses the PASID_MSR to fill in the pasid field
+> of the descriptor being submitted to an accelerator. But there is no
+> precise (and stable across kernel changes) point at which the PASID_MSR
+> is updated from the value for one task to the next.
 > 
-> Replace open coded MSI descriptor chasing and use the proper accessor
-> functions instead.
+> Kernel code that uses accelerators must always use the ENQCMDS instruction
+> which does not access the PASID_MSR.
 > 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Check for use of the ENQCMD instruction in the kernel and warn on its
+> usage.
+> 
+> Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+> Reviewed-by: Tony Luck <tony.luck@intel.com>
+> ---
+> v2:
+> - Simplify handling ENQCMD (PeterZ and Josh)
 
-Apologies if this has already been reported somewhere else or already
-fixed, I did a search of all of lore and did not see anything similar to
-it and I did not see any new commits in -tip around this.
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
 
-I just bisected a boot failure on my AMD test desktop to this patch as
-commit f48235900182 ("PCI/MSI: Simplify pci_irq_get_affinity()") in
--next. It looks like there is a problem with the NVMe drive after this
-change according to the logs. Given that the hard drive is not getting
-mounted for journald to write logs to, I am not really sure how to get
-them from the machine so I have at least taken a picture of what I see
-on my screen; open to ideas on that front!
+-- 
+Josh
 
-https://github.com/nathanchance/bug-files/blob/0d25d78b5bc1d5e9c15192b3bc80676364de8287/f48235900182/crash.jpg
-
-Please let me know what information I can provide to make debugging this
-easier and I am more than happy to apply and test patches as needed.
-
-Cheers,
-Nathan
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
