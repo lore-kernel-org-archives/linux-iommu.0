@@ -1,62 +1,62 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 09959C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E857FC433F5
 	for <iommu@archiver.kernel.org>; Fri, 17 Dec 2021 22:02:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id BF0BB40AB1;
-	Fri, 17 Dec 2021 22:02:08 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id AC0464222A;
+	Fri, 17 Dec 2021 22:02:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YgDD6PYBhHBN; Fri, 17 Dec 2021 22:02:04 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 047C040C56;
-	Fri, 17 Dec 2021 22:02:03 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id X8Mg9OSY_g4F; Fri, 17 Dec 2021 22:02:08 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 94D35421DA;
+	Fri, 17 Dec 2021 22:02:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 39C10C007F;
-	Fri, 17 Dec 2021 22:02:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7D5A0C002F;
+	Fri, 17 Dec 2021 22:02:08 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 47727C002F
- for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 22:02:01 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1D56FC0070
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 22:02:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 01E496116F
+ by smtp3.osuosl.org (Postfix) with ESMTP id 35D8161147
  for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 22:01:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id D4dgksIKa-Dh for <iommu@lists.linux-foundation.org>;
+ with ESMTP id uK0zd-SggewY for <iommu@lists.linux-foundation.org>;
  Fri, 17 Dec 2021 22:01:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 622DF61147
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 926846116E
  for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 22:01:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
  t=1639778518; x=1671314518;
  h=from:to:cc:subject:date:message-id:in-reply-to:
  references:mime-version:content-transfer-encoding;
- bh=UnMZO3dIpMprFJhYU1oJBcxLAM+pPp7MOtKZRkV+U7g=;
- b=cHeWY+WpUUcwiBVSwFgnOgzq1+Psw6mtloS4f6Zki0YU/FCySCF3HgHQ
- y4Ko5ze212CezU105+pmmSgHv1QgBAIrSvrSTFrQjOVKu+WDVB3YQZaYT
- UofnPrHj3Kf8lF/Yhr3ODhxE1+NAIawBp2PFg3vpryd11+xGe6L5Dk7dD
- 7pwoTQhkzyQg30wVXO7qkcvPqZnFph99CjEvCYvQjQr86SB+xVOIh/r6/
- dSzhLtYNwEN2Pr/dNKS6mrbN9VYgIXJitEOw7pvv4LwO6F1bx13SQaFFo
- anvDcxO8nXI4Sdh4BvtTdvhaV+fAa0+ogZBUMJacZaCam6kGzw01i8+km Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10201"; a="239793589"
-X-IronPort-AV: E=Sophos;i="5.88,214,1635231600"; d="scan'208";a="239793589"
+ bh=WUETfejsiNGR9gILAkgt74/RWnHGbmhPzWPMpp74bp0=;
+ b=ZJgQHVbrRkAYaKANKKgnKpw5Ir0hu4whxxRIluZszNDWwhWezqOwKYgx
+ omA8m5C0GaNGg0xdXE4+vJVb992/ovW1kCPEF3S2Dj0NHtHwdeg84YcsR
+ S7BQWxn25lK6DYe5ZoFcr0aRs6fmF27AB+XWGfFbkRTL9QSqHh88qPG8l
+ BkS+z4pmTiYyNKJ5X8ygHCcIGn68dsnqyQHFluJdEVoX04149uZSTZ7I3
+ x5l35ND2sp4tcfO9TaEE2Uoe06YjuXSr1suwuHDIxToXZBUsEffOOnl2G
+ zPBZG+LBuzz9R9a4RX2vjRLLFKsrUoDrY9fwF9nRkZp2R9XqSvjvnic1J w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10201"; a="239793601"
+X-IronPort-AV: E=Sophos;i="5.88,214,1635231600"; d="scan'208";a="239793601"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 17 Dec 2021 14:01:50 -0800
+ 17 Dec 2021 14:01:51 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,214,1635231600"; d="scan'208";a="506928102"
+X-IronPort-AV: E=Sophos;i="5.88,214,1635231600"; d="scan'208";a="506928110"
 Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
- by orsmga007.jf.intel.com with ESMTP; 17 Dec 2021 14:01:49 -0800
+ by orsmga007.jf.intel.com with ESMTP; 17 Dec 2021 14:01:51 -0800
 From: Fenghua Yu <fenghua.yu@intel.com>
 To: "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
  "Borislav Petkov" <bp@alien8.de>, "Peter Zijlstra" <peterz@infradead.org>,
@@ -67,10 +67,10 @@ To: "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
  "Jacob Pan" <jacob.jun.pan@linux.intel.com>,
  "Ashok Raj" <ashok.raj@intel.com>,
  "Ravi V Shankar" <ravi.v.shankar@intel.com>
-Subject: [PATCH v2 07/11] sched: Define and initialize a flag to identify
- valid PASID in the task
-Date: Fri, 17 Dec 2021 22:01:32 +0000
-Message-Id: <20211217220136.2762116-8-fenghua.yu@intel.com>
+Subject: [PATCH v2 10/11] tools/objtool: Check for use of the ENQCMD
+ instruction in the kernel
+Date: Fri, 17 Dec 2021 22:01:35 +0000
+Message-Id: <20211217220136.2762116-11-fenghua.yu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211217220136.2762116-1-fenghua.yu@intel.com>
 References: <20211217220136.2762116-1-fenghua.yu@intel.com>
@@ -94,54 +94,62 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Peter Zijlstra <peterz@infradead.org>
+The ENQCMD implicitly accesses the PASID_MSR to fill in the pasid field
+of the descriptor being submitted to an accelerator. But there is no
+precise (and stable across kernel changes) point at which the PASID_MSR
+is updated from the value for one task to the next.
 
-Add a new single bit field to the task structure to track whether this task
-has initialized the IA32_PASID MSR to the mm's PASID.
+Kernel code that uses accelerators must always use the ENQCMDS instruction
+which does not access the PASID_MSR.
 
-Initialize the field to zero when creating a new task with fork/clone.
+Check for use of the ENQCMD instruction in the kernel and warn on its
+usage.
 
-Signed-off-by: Peter Zijlstra <peterz@infradead.org>
-Co-developed-by: Fenghua Yu <fenghua.yu@intel.com>
 Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 ---
 v2:
-- Change condition to more accurate CONFIG_IOMMU_SVA (Jacob)
+- Simplify handling ENQCMD (PeterZ and Josh)
 
- include/linux/sched.h | 3 +++
- kernel/fork.c         | 4 ++++
- 2 files changed, 7 insertions(+)
+ tools/objtool/arch/x86/decode.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 78c351e35fec..41a0b5703f94 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -933,6 +933,9 @@ struct task_struct {
- 	/* Recursion prevention for eventfd_signal() */
- 	unsigned			in_eventfd_signal:1;
- #endif
-+#ifdef CONFIG_IOMMU_SVA
-+	unsigned			pasid_activated:1;
-+#endif
+diff --git a/tools/objtool/arch/x86/decode.c b/tools/objtool/arch/x86/decode.c
+index 4d6d7fc13255..11ffa0e53f84 100644
+--- a/tools/objtool/arch/x86/decode.c
++++ b/tools/objtool/arch/x86/decode.c
+@@ -112,7 +112,7 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
+ 	const struct elf *elf = file->elf;
+ 	struct insn insn;
+ 	int x86_64, ret;
+-	unsigned char op1, op2,
++	unsigned char op1, op2, op3,
+ 		      rex = 0, rex_b = 0, rex_r = 0, rex_w = 0, rex_x = 0,
+ 		      modrm = 0, modrm_mod = 0, modrm_rm = 0, modrm_reg = 0,
+ 		      sib = 0, /* sib_scale = 0, */ sib_index = 0, sib_base = 0;
+@@ -139,6 +139,7 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
  
- 	unsigned long			atomic_flags; /* Flags requiring atomic access. */
+ 	op1 = insn.opcode.bytes[0];
+ 	op2 = insn.opcode.bytes[1];
++	op3 = insn.opcode.bytes[2];
  
-diff --git a/kernel/fork.c b/kernel/fork.c
-index 3adad225cc09..cd297926b6f2 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -967,6 +967,10 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
- 	tsk->use_memdelay = 0;
- #endif
+ 	if (insn.rex_prefix.nbytes) {
+ 		rex = insn.rex_prefix.bytes[0];
+@@ -491,6 +492,14 @@ int arch_decode_instruction(struct objtool_file *file, const struct section *sec
+ 			/* nopl/nopw */
+ 			*type = INSN_NOP;
  
-+#ifdef CONFIG_IOMMU_SVA
-+	tsk->pasid_activated = 0;
-+#endif
++		} else if (op2 == 0x38 && op3 == 0xf8) {
++			if (insn.prefixes.nbytes == 1 &&
++			    insn.prefixes.bytes[0] == 0xf2) {
++				/* ENQCMD cannot be used in the kernel. */
++				WARN("ENQCMD instruction at %s:%lx", sec->name,
++				     offset);
++			}
 +
- #ifdef CONFIG_MEMCG
- 	tsk->active_memcg = NULL;
- #endif
+ 		} else if (op2 == 0xa0 || op2 == 0xa8) {
+ 
+ 			/* push fs/gs */
 -- 
 2.34.1
 
