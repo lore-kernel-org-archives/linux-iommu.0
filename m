@@ -1,58 +1,57 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6C018C433FE
-	for <iommu@archiver.kernel.org>; Fri, 17 Dec 2021 15:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 95F23C433EF
+	for <iommu@archiver.kernel.org>; Fri, 17 Dec 2021 15:31:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 0394940BE8;
-	Fri, 17 Dec 2021 15:31:18 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 3D12684BD1;
+	Fri, 17 Dec 2021 15:31:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ua49s_SHA2KE; Fri, 17 Dec 2021 15:31:17 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id A0B8D40BE0;
-	Fri, 17 Dec 2021 15:31:16 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id C-nOojj79Fhg; Fri, 17 Dec 2021 15:31:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 001BE84BD6;
+	Fri, 17 Dec 2021 15:31:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6F3A3C0030;
-	Fri, 17 Dec 2021 15:31:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D1587C002F;
+	Fri, 17 Dec 2021 15:31:18 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 20ADBC0012
- for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 15:31:15 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1B467C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 15:31:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 0DDFD84CCA
- for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 15:31:15 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 0883F84CD4
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 15:31:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DPniz-CDQ0rg for <iommu@lists.linux-foundation.org>;
- Fri, 17 Dec 2021 15:31:14 +0000 (UTC)
+ with ESMTP id OE_Uq3TCImf0 for <iommu@lists.linux-foundation.org>;
+ Fri, 17 Dec 2021 15:31:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 6E40784BD1
- for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 15:31:14 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 2F52784CD1
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 15:31:16 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D6C631476;
- Fri, 17 Dec 2021 07:31:13 -0800 (PST)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6AC1B14BF;
+ Fri, 17 Dec 2021 07:31:15 -0800 (PST)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
  [10.1.196.40])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6D49D3F774;
- Fri, 17 Dec 2021 07:31:12 -0800 (PST)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 165BB3F774;
+ Fri, 17 Dec 2021 07:31:13 -0800 (PST)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
-Subject: [PATCH v3 1/9] iommu/iova: Fix race between FQ timeout and teardown
-Date: Fri, 17 Dec 2021 15:30:55 +0000
-Message-Id: <0a365e5b07f14b7344677ad6a9a734966a8422ce.1639753638.git.robin.murphy@arm.com>
+Subject: [PATCH v3 2/9] iommu/iova: Squash entry_dtor abstraction
+Date: Fri, 17 Dec 2021 15:30:56 +0000
+Message-Id: <2260f8de00ab5e0f9d2a1cf8978e6ae7cd4f182c.1639753638.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.28.0.dirty
 In-Reply-To: <cover.1639753638.git.robin.murphy@arm.com>
 References: <cover.1639753638.git.robin.murphy@arm.com>
 MIME-Version: 1.0
-Cc: linux-kernel@vger.kernel.org, willy@infradead.org,
- Xiongfeng Wang <wangxiongfeng2@huawei.com>, linux-mm@kvack.org,
+Cc: linux-kernel@vger.kernel.org, willy@infradead.org, linux-mm@kvack.org,
  iommu@lists.linux-foundation.org, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -71,46 +70,227 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+All flush queues are driven by iommu-dma now, so there is no need to
+abstract entry_dtor or its data any more. Squash the now-canonical
+implementation directly into the IOVA code to get it out of the way.
 
-It turns out to be possible for hotplugging out a device to reach the
-stage of tearing down the device's group and default domain before the
-domain's flush queue has drained naturally. At this point, it is then
-possible for the timeout to expire just before the del_timer() call
-in free_iova_flush_queue(), such that we then proceed to free the FQ
-resources while fq_flush_timeout() is still accessing them on another
-CPU. Crashes due to this have been observed in the wild while removing
-NVMe devices.
-
-Close the race window by using del_timer_sync() to safely wait for any
-active timeout handler to finish before we start to free things. We
-already avoid any locking in free_iova_flush_queue() since the FQ is
-supposed to be inactive anyway, so the potential deadlock scenario does
-not apply.
-
-Fixes: 9a005a800ae8 ("iommu/iova: Add flush timer")
 Reviewed-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-[ rm: rewrite commit message ]
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/iova.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iommu/dma-iommu.c | 17 ++---------------
+ drivers/iommu/iova.c      | 28 +++++++++++++++-------------
+ include/linux/iova.h      | 26 +++-----------------------
+ 3 files changed, 20 insertions(+), 51 deletions(-)
 
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index b42e38a0dbe2..fa21b9141b71 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -64,18 +64,6 @@ static int __init iommu_dma_forcedac_setup(char *str)
+ }
+ early_param("iommu.forcedac", iommu_dma_forcedac_setup);
+ 
+-static void iommu_dma_entry_dtor(unsigned long data)
+-{
+-	struct page *freelist = (struct page *)data;
+-
+-	while (freelist) {
+-		unsigned long p = (unsigned long)page_address(freelist);
+-
+-		freelist = freelist->freelist;
+-		free_page(p);
+-	}
+-}
+-
+ static inline size_t cookie_msi_granule(struct iommu_dma_cookie *cookie)
+ {
+ 	if (cookie->type == IOMMU_DMA_IOVA_COOKIE)
+@@ -324,8 +312,7 @@ int iommu_dma_init_fq(struct iommu_domain *domain)
+ 	if (cookie->fq_domain)
+ 		return 0;
+ 
+-	ret = init_iova_flush_queue(&cookie->iovad, iommu_dma_flush_iotlb_all,
+-				    iommu_dma_entry_dtor);
++	ret = init_iova_flush_queue(&cookie->iovad, iommu_dma_flush_iotlb_all);
+ 	if (ret) {
+ 		pr_warn("iova flush queue initialization failed\n");
+ 		return ret;
+@@ -479,7 +466,7 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
+ 	else if (gather && gather->queued)
+ 		queue_iova(iovad, iova_pfn(iovad, iova),
+ 				size >> iova_shift(iovad),
+-				(unsigned long)gather->freelist);
++				gather->freelist);
+ 	else
+ 		free_iova_fast(iovad, iova_pfn(iovad, iova),
+ 				size >> iova_shift(iovad));
 diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 9e8bc802ac05..920fcc27c9a1 100644
+index 920fcc27c9a1..280dd0c7fe1b 100644
 --- a/drivers/iommu/iova.c
 +++ b/drivers/iommu/iova.c
-@@ -83,8 +83,7 @@ static void free_iova_flush_queue(struct iova_domain *iovad)
- 	if (!has_iova_flush_queue(iovad))
- 		return;
+@@ -91,11 +91,9 @@ static void free_iova_flush_queue(struct iova_domain *iovad)
  
--	if (timer_pending(&iovad->fq_timer))
--		del_timer(&iovad->fq_timer);
-+	del_timer_sync(&iovad->fq_timer);
+ 	iovad->fq         = NULL;
+ 	iovad->flush_cb   = NULL;
+-	iovad->entry_dtor = NULL;
+ }
  
- 	fq_destroy_all_entries(iovad);
+-int init_iova_flush_queue(struct iova_domain *iovad,
+-			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor)
++int init_iova_flush_queue(struct iova_domain *iovad, iova_flush_cb flush_cb)
+ {
+ 	struct iova_fq __percpu *queue;
+ 	int cpu;
+@@ -108,7 +106,6 @@ int init_iova_flush_queue(struct iova_domain *iovad,
+ 		return -ENOMEM;
  
+ 	iovad->flush_cb   = flush_cb;
+-	iovad->entry_dtor = entry_dtor;
+ 
+ 	for_each_possible_cpu(cpu) {
+ 		struct iova_fq *fq;
+@@ -538,6 +535,16 @@ free_iova_fast(struct iova_domain *iovad, unsigned long pfn, unsigned long size)
+ }
+ EXPORT_SYMBOL_GPL(free_iova_fast);
+ 
++static void fq_entry_dtor(struct page *freelist)
++{
++	while (freelist) {
++		unsigned long p = (unsigned long)page_address(freelist);
++
++		freelist = freelist->freelist;
++		free_page(p);
++	}
++}
++
+ #define fq_ring_for_each(i, fq) \
+ 	for ((i) = (fq)->head; (i) != (fq)->tail; (i) = ((i) + 1) % IOVA_FQ_SIZE)
+ 
+@@ -570,9 +577,7 @@ static void fq_ring_free(struct iova_domain *iovad, struct iova_fq *fq)
+ 		if (fq->entries[idx].counter >= counter)
+ 			break;
+ 
+-		if (iovad->entry_dtor)
+-			iovad->entry_dtor(fq->entries[idx].data);
+-
++		fq_entry_dtor(fq->entries[idx].freelist);
+ 		free_iova_fast(iovad,
+ 			       fq->entries[idx].iova_pfn,
+ 			       fq->entries[idx].pages);
+@@ -597,15 +602,12 @@ static void fq_destroy_all_entries(struct iova_domain *iovad)
+ 	 * bother to free iovas, just call the entry_dtor on all remaining
+ 	 * entries.
+ 	 */
+-	if (!iovad->entry_dtor)
+-		return;
+-
+ 	for_each_possible_cpu(cpu) {
+ 		struct iova_fq *fq = per_cpu_ptr(iovad->fq, cpu);
+ 		int idx;
+ 
+ 		fq_ring_for_each(idx, fq)
+-			iovad->entry_dtor(fq->entries[idx].data);
++			fq_entry_dtor(fq->entries[idx].freelist);
+ 	}
+ }
+ 
+@@ -630,7 +632,7 @@ static void fq_flush_timeout(struct timer_list *t)
+ 
+ void queue_iova(struct iova_domain *iovad,
+ 		unsigned long pfn, unsigned long pages,
+-		unsigned long data)
++		struct page *freelist)
+ {
+ 	struct iova_fq *fq;
+ 	unsigned long flags;
+@@ -664,7 +666,7 @@ void queue_iova(struct iova_domain *iovad,
+ 
+ 	fq->entries[idx].iova_pfn = pfn;
+ 	fq->entries[idx].pages    = pages;
+-	fq->entries[idx].data     = data;
++	fq->entries[idx].freelist = freelist;
+ 	fq->entries[idx].counter  = atomic64_read(&iovad->fq_flush_start_cnt);
+ 
+ 	spin_unlock_irqrestore(&fq->lock, flags);
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index 71d8a2de6635..e746d8e41449 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -40,9 +40,6 @@ struct iova_domain;
+ /* Call-Back from IOVA code into IOMMU drivers */
+ typedef void (* iova_flush_cb)(struct iova_domain *domain);
+ 
+-/* Destructor for per-entry data */
+-typedef void (* iova_entry_dtor)(unsigned long data);
+-
+ /* Number of entries per Flush Queue */
+ #define IOVA_FQ_SIZE	256
+ 
+@@ -53,7 +50,7 @@ typedef void (* iova_entry_dtor)(unsigned long data);
+ struct iova_fq_entry {
+ 	unsigned long iova_pfn;
+ 	unsigned long pages;
+-	unsigned long data;
++	struct page *freelist;
+ 	u64 counter; /* Flush counter when this entrie was added */
+ };
+ 
+@@ -88,9 +85,6 @@ struct iova_domain {
+ 	iova_flush_cb	flush_cb;	/* Call-Back function to flush IOMMU
+ 					   TLBs */
+ 
+-	iova_entry_dtor entry_dtor;	/* IOMMU driver specific destructor for
+-					   iova entry */
+-
+ 	struct timer_list fq_timer;		/* Timer to regularily empty the
+ 						   flush-queues */
+ 	atomic_t fq_timer_on;			/* 1 when timer is active, 0
+@@ -146,15 +140,14 @@ void free_iova_fast(struct iova_domain *iovad, unsigned long pfn,
+ 		    unsigned long size);
+ void queue_iova(struct iova_domain *iovad,
+ 		unsigned long pfn, unsigned long pages,
+-		unsigned long data);
++		struct page *freelist);
+ unsigned long alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+ 			      unsigned long limit_pfn, bool flush_rcache);
+ struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
+ 	unsigned long pfn_hi);
+ void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ 	unsigned long start_pfn);
+-int init_iova_flush_queue(struct iova_domain *iovad,
+-			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor);
++int init_iova_flush_queue(struct iova_domain *iovad, iova_flush_cb flush_cb);
+ struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
+ void put_iova_domain(struct iova_domain *iovad);
+ #else
+@@ -189,12 +182,6 @@ static inline void free_iova_fast(struct iova_domain *iovad,
+ {
+ }
+ 
+-static inline void queue_iova(struct iova_domain *iovad,
+-			      unsigned long pfn, unsigned long pages,
+-			      unsigned long data)
+-{
+-}
+-
+ static inline unsigned long alloc_iova_fast(struct iova_domain *iovad,
+ 					    unsigned long size,
+ 					    unsigned long limit_pfn,
+@@ -216,13 +203,6 @@ static inline void init_iova_domain(struct iova_domain *iovad,
+ {
+ }
+ 
+-static inline int init_iova_flush_queue(struct iova_domain *iovad,
+-					iova_flush_cb flush_cb,
+-					iova_entry_dtor entry_dtor)
+-{
+-	return -ENODEV;
+-}
+-
+ static inline struct iova *find_iova(struct iova_domain *iovad,
+ 				     unsigned long pfn)
+ {
 -- 
 2.28.0.dirty
 
