@@ -1,48 +1,48 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8635FC433EF
-	for <iommu@archiver.kernel.org>; Fri, 17 Dec 2021 06:38:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CF903C433F5
+	for <iommu@archiver.kernel.org>; Fri, 17 Dec 2021 06:38:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 4434D84B3A;
-	Fri, 17 Dec 2021 06:38:36 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 7887E41BD9;
+	Fri, 17 Dec 2021 06:38:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id X8ar0cq-6QxG; Fri, 17 Dec 2021 06:38:35 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id M6ziI4kYMV06; Fri, 17 Dec 2021 06:38:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 08B5683F9A;
-	Fri, 17 Dec 2021 06:38:34 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 6487D417B8;
+	Fri, 17 Dec 2021 06:38:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CA043C002F;
-	Fri, 17 Dec 2021 06:38:34 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C9B1CC0012
- for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 06:38:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 25831C002F;
+	Fri, 17 Dec 2021 06:38:43 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 617A1C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 06:38:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id B83E084B3A
- for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 06:38:33 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 3E2AA40B66
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 06:38:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9v7QfvB19kp7 for <iommu@lists.linux-foundation.org>;
- Fri, 17 Dec 2021 06:38:33 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id fTUXpl1CoiMh for <iommu@lists.linux-foundation.org>;
+ Fri, 17 Dec 2021 06:38:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 14BEE83F9A
- for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 06:38:32 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10200"; a="237232486"
-X-IronPort-AV: E=Sophos;i="5.88,213,1635231600"; d="scan'208";a="237232486"
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 773F540B51
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Dec 2021 06:38:40 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10200"; a="263864861"
+X-IronPort-AV: E=Sophos;i="5.88,213,1635231600"; d="scan'208";a="263864861"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 16 Dec 2021 22:38:32 -0800
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 16 Dec 2021 22:38:39 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,213,1635231600"; d="scan'208";a="519623298"
+X-IronPort-AV: E=Sophos;i="5.88,213,1635231600"; d="scan'208";a="519623324"
 Received: from allen-box.sh.intel.com ([10.239.159.118])
- by orsmga008.jf.intel.com with ESMTP; 16 Dec 2021 22:38:23 -0800
+ by orsmga008.jf.intel.com with ESMTP; 16 Dec 2021 22:38:32 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Joerg Roedel <joro@8bytes.org>,
@@ -50,10 +50,9 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Bjorn Helgaas <bhelgaas@google.com>, Jason Gunthorpe <jgg@nvidia.com>,
  Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
  Ashok Raj <ashok.raj@intel.com>
-Subject: [PATCH v4 07/13] iommu: Add iommu_at[de]tach_device_shared() for
- multi-device groups
-Date: Fri, 17 Dec 2021 14:37:02 +0800
-Message-Id: <20211217063708.1740334-8-baolu.lu@linux.intel.com>
+Subject: [PATCH v4 08/13] vfio: Set DMA USER ownership for VFIO devices
+Date: Fri, 17 Dec 2021 14:37:03 +0800
+Message-Id: <20211217063708.1740334-9-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211217063708.1740334-1-baolu.lu@linux.intel.com>
 References: <20211217063708.1740334-1-baolu.lu@linux.intel.com>
@@ -84,160 +83,106 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The iommu_attach/detach_device() interfaces were exposed for the device
-drivers to attach/detach their own domains. The commit <426a273834eae>
-("iommu: Limit iommu_attach/detach_device to device with their own group")
-restricted them to singleton groups to avoid different device in a group
-attaching different domain.
+Set DMA_OWNER_PRIVATE_DOMAIN_USER when an iommu group is set to a
+container, and release DMA_OWNER_USER once the iommu group is unset
+from a container.
 
-As we've introduced device DMA ownership into the iommu core. We can now
-introduce interfaces for muliple-device groups, and "all devices are in the
-same address space" is still guaranteed.
-
-The iommu_attach/detach_device_shared() could be used when multiple drivers
-sharing the group claim the DMA_OWNER_PRIVATE_DOMAIN ownership. The first
-call of iommu_attach_device_shared() attaches the domain to the group.
-Other drivers could join it later. The domain will be detached from the
-group after all drivers unjoin it.
-
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Tested-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- include/linux/iommu.h | 13 +++++++
- drivers/iommu/iommu.c | 79 +++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 92 insertions(+)
+ drivers/vfio/fsl-mc/vfio_fsl_mc.c     |  1 +
+ drivers/vfio/pci/vfio_pci.c           |  3 +++
+ drivers/vfio/platform/vfio_amba.c     |  1 +
+ drivers/vfio/platform/vfio_platform.c |  1 +
+ drivers/vfio/vfio.c                   | 13 ++++++++++++-
+ 5 files changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 5ad4cf13370d..1bc03118dfb3 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -703,6 +703,8 @@ int iommu_group_set_dma_owner(struct iommu_group *group, enum iommu_dma_owner ow
- 			      void *owner_cookie);
- void iommu_group_release_dma_owner(struct iommu_group *group, enum iommu_dma_owner owner);
- bool iommu_group_dma_owner_unclaimed(struct iommu_group *group);
-+int iommu_attach_device_shared(struct iommu_domain *domain, struct device *dev);
-+void iommu_detach_device_shared(struct iommu_domain *domain, struct device *dev);
- 
- #else /* CONFIG_IOMMU_API */
- 
-@@ -743,11 +745,22 @@ static inline int iommu_attach_device(struct iommu_domain *domain,
- 	return -ENODEV;
- }
- 
-+static inline int iommu_attach_device_shared(struct iommu_domain *domain,
-+					     struct device *dev)
-+{
-+	return -ENODEV;
-+}
-+
- static inline void iommu_detach_device(struct iommu_domain *domain,
- 				       struct device *dev)
- {
- }
- 
-+static inline void iommu_detach_device_shared(struct iommu_domain *domain,
-+					      struct device *dev)
-+{
-+}
-+
- static inline struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
- {
- 	return NULL;
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8bec71b1cc18..3ad66cb9bedc 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -50,6 +50,7 @@ struct iommu_group {
- 	struct list_head entry;
- 	enum iommu_dma_owner dma_owner;
- 	unsigned int owner_cnt;
-+	unsigned int attach_cnt;
- 	void *owner_cookie;
+diff --git a/drivers/vfio/fsl-mc/vfio_fsl_mc.c b/drivers/vfio/fsl-mc/vfio_fsl_mc.c
+index 6e2e62c6f47a..b749d092a185 100644
+--- a/drivers/vfio/fsl-mc/vfio_fsl_mc.c
++++ b/drivers/vfio/fsl-mc/vfio_fsl_mc.c
+@@ -587,6 +587,7 @@ static struct fsl_mc_driver vfio_fsl_mc_driver = {
+ 	.driver	= {
+ 		.name	= "vfio-fsl-mc",
+ 		.owner	= THIS_MODULE,
++		.suppress_auto_claim_dma_owner = true,
+ 	},
  };
  
-@@ -3512,3 +3513,81 @@ void iommu_device_release_dma_owner(struct device *dev, enum iommu_dma_owner own
- 	iommu_group_put(group);
- }
- EXPORT_SYMBOL_GPL(iommu_device_release_dma_owner);
+diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
+index a5ce92beb655..ce3e814b5506 100644
+--- a/drivers/vfio/pci/vfio_pci.c
++++ b/drivers/vfio/pci/vfio_pci.c
+@@ -193,6 +193,9 @@ static struct pci_driver vfio_pci_driver = {
+ 	.remove			= vfio_pci_remove,
+ 	.sriov_configure	= vfio_pci_sriov_configure,
+ 	.err_handler		= &vfio_pci_core_err_handlers,
++	.driver			= {
++		.suppress_auto_claim_dma_owner = true,
++	},
+ };
+ 
+ static void __init vfio_pci_fill_ids(void)
+diff --git a/drivers/vfio/platform/vfio_amba.c b/drivers/vfio/platform/vfio_amba.c
+index badfffea14fb..2146ee52901a 100644
+--- a/drivers/vfio/platform/vfio_amba.c
++++ b/drivers/vfio/platform/vfio_amba.c
+@@ -94,6 +94,7 @@ static struct amba_driver vfio_amba_driver = {
+ 	.drv = {
+ 		.name = "vfio-amba",
+ 		.owner = THIS_MODULE,
++		.suppress_auto_claim_dma_owner = true,
+ 	},
+ };
+ 
+diff --git a/drivers/vfio/platform/vfio_platform.c b/drivers/vfio/platform/vfio_platform.c
+index 68a1c87066d7..5ef06e668192 100644
+--- a/drivers/vfio/platform/vfio_platform.c
++++ b/drivers/vfio/platform/vfio_platform.c
+@@ -75,6 +75,7 @@ static struct platform_driver vfio_platform_driver = {
+ 	.remove		= vfio_platform_remove,
+ 	.driver	= {
+ 		.name	= "vfio-platform",
++		.suppress_auto_claim_dma_owner = true,
+ 	},
+ };
+ 
+diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+index 735d1d344af9..b75ba7551079 100644
+--- a/drivers/vfio/vfio.c
++++ b/drivers/vfio/vfio.c
+@@ -1198,6 +1198,9 @@ static void __vfio_group_unset_container(struct vfio_group *group)
+ 		driver->ops->detach_group(container->iommu_data,
+ 					  group->iommu_group);
+ 
++	iommu_group_release_dma_owner(group->iommu_group,
++				      DMA_OWNER_PRIVATE_DOMAIN_USER);
 +
-+/**
-+ * iommu_attach_device_shared() - Attach shared domain to a device
-+ * @domain: The shared domain.
-+ * @dev: The device.
-+ *
-+ * Similar to iommu_attach_device(), but allowed for shared-group devices
-+ * and guarantees that all devices in an iommu group could only be attached
-+ * by a same iommu domain. The caller should explicitly set the dma ownership
-+ * of DMA_OWNER_PRIVATE_DOMAIN or DMA_OWNER_PRIVATE_DOMAIN_USER type before
-+ * calling it and use the paired helper iommu_detach_device_shared() for
-+ * cleanup.
-+ */
-+int iommu_attach_device_shared(struct iommu_domain *domain, struct device *dev)
-+{
-+	struct iommu_group *group;
-+	int ret = 0;
-+
-+	group = iommu_group_get(dev);
-+	if (!group)
-+		return -ENODEV;
-+
-+	mutex_lock(&group->mutex);
-+	if (group->dma_owner != DMA_OWNER_PRIVATE_DOMAIN &&
-+	    group->dma_owner != DMA_OWNER_PRIVATE_DOMAIN_USER) {
-+		ret = -EPERM;
+ 	group->container = NULL;
+ 	wake_up(&group->container_q);
+ 	list_del(&group->container_next);
+@@ -1282,13 +1285,21 @@ static int vfio_group_set_container(struct vfio_group *group, int container_fd)
+ 		goto unlock_out;
+ 	}
+ 
++	ret = iommu_group_set_dma_owner(group->iommu_group,
++					DMA_OWNER_PRIVATE_DOMAIN_USER, f.file);
++	if (ret)
 +		goto unlock_out;
-+	}
 +
-+	if (group->attach_cnt) {
-+		if (group->domain != domain) {
-+			ret = -EBUSY;
-+			goto unlock_out;
+ 	driver = container->iommu_driver;
+ 	if (driver) {
+ 		ret = driver->ops->attach_group(container->iommu_data,
+ 						group->iommu_group,
+ 						group->type);
+-		if (ret)
++		if (ret) {
++			iommu_group_release_dma_owner(group->iommu_group,
++						      DMA_OWNER_PRIVATE_DOMAIN_USER);
+ 			goto unlock_out;
 +		}
-+	} else {
-+		ret = __iommu_attach_group(domain, group);
-+		if (ret)
-+			goto unlock_out;
-+	}
-+
-+	group->attach_cnt++;
-+unlock_out:
-+	mutex_unlock(&group->mutex);
-+	iommu_group_put(group);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_attach_device_shared);
-+
-+/**
-+ * iommu_detach_device_shared() - Detach a domain from device
-+ * @domain: The domain.
-+ * @dev: The device.
-+ *
-+ * The detach helper paired with iommu_attach_device_shared().
-+ */
-+void iommu_detach_device_shared(struct iommu_domain *domain, struct device *dev)
-+{
-+	struct iommu_group *group;
-+
-+	group = iommu_group_get(dev);
-+	if (!group)
-+		return;
-+
-+	mutex_lock(&group->mutex);
-+	if (WARN_ON(!group->attach_cnt || group->domain != domain ||
-+		    (group->dma_owner != DMA_OWNER_PRIVATE_DOMAIN &&
-+		     group->dma_owner != DMA_OWNER_PRIVATE_DOMAIN_USER)))
-+		goto unlock_out;
-+
-+	if (--group->attach_cnt == 0)
-+		__iommu_detach_group(domain, group);
-+
-+unlock_out:
-+	mutex_unlock(&group->mutex);
-+	iommu_group_put(group);
-+}
-+EXPORT_SYMBOL_GPL(iommu_detach_device_shared);
+ 	}
+ 
+ 	group->container = container;
 -- 
 2.25.1
 
