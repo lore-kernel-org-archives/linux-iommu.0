@@ -4,58 +4,56 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4AB70C433F5
-	for <iommu@archiver.kernel.org>; Sat, 18 Dec 2021 05:56:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 84E11C433EF
+	for <iommu@archiver.kernel.org>; Sat, 18 Dec 2021 06:55:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C158684E05;
-	Sat, 18 Dec 2021 05:56:20 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 1927C84DD3;
+	Sat, 18 Dec 2021 06:55:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id K7WCY1XZwqlz; Sat, 18 Dec 2021 05:56:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 9312584DFB;
-	Sat, 18 Dec 2021 05:56:19 +0000 (UTC)
+	with ESMTP id ckGKarUKAfME; Sat, 18 Dec 2021 06:55:35 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id A78A284DD1;
+	Sat, 18 Dec 2021 06:55:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7223BC002F;
-	Sat, 18 Dec 2021 05:56:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C3C1C002F;
+	Sat, 18 Dec 2021 06:55:34 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C8323C0012
- for <iommu@lists.linux-foundation.org>; Sat, 18 Dec 2021 05:56:16 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E6DFEC0012
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Dec 2021 06:55:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id AFB30403CF
- for <iommu@lists.linux-foundation.org>; Sat, 18 Dec 2021 05:56:16 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id BF1134062F
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Dec 2021 06:55:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Yb6XVb_-QCSf for <iommu@lists.linux-foundation.org>;
- Sat, 18 Dec 2021 05:56:15 +0000 (UTC)
+ with ESMTP id GZxMkLgZbllX for <iommu@lists.linux-foundation.org>;
+ Sat, 18 Dec 2021 06:55:32 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 60A1740010
- for <iommu@lists.linux-foundation.org>; Sat, 18 Dec 2021 05:56:15 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10201"; a="303266975"
-X-IronPort-AV: E=Sophos;i="5.88,215,1635231600"; d="scan'208";a="303266975"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 17 Dec 2021 21:56:13 -0800
-X-IronPort-AV: E=Sophos;i="5.88,215,1635231600"; d="scan'208";a="520056486"
-Received: from weizhuoz-mobl.ccr.corp.intel.com (HELO [10.254.215.142])
- ([10.254.215.142])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 17 Dec 2021 21:56:11 -0800
-Message-ID: <73bdc4a3-6028-2ab5-f9a6-dbad15effad4@linux.intel.com>
-Date: Sat, 18 Dec 2021 13:56:09 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
+Received: from smtp.smtpout.orange.fr (smtp04.smtpout.orange.fr
+ [80.12.242.126])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 3707840010
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Dec 2021 06:55:31 +0000 (UTC)
+Received: from [192.168.1.18] ([86.243.171.122]) by smtp.orange.fr with ESMTPA
+ id yTctmAwLisoWhyTctm8zt5; Sat, 18 Dec 2021 07:55:29 +0100
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sat, 18 Dec 2021 07:55:29 +0100
+X-ME-IP: 86.243.171.122
 Subject: Re: [PATCH] iommu/vt-d: Use bitmap_zalloc() when applicable
-Content-Language: en-US
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>, dwmw2@infradead.org,
+To: Lu Baolu <baolu.lu@linux.intel.com>, dwmw2@infradead.org,
  joro@8bytes.org, will@kernel.org
 References: <367914663187b8fe043e31b352cd6ad836088f0a.1639778255.git.christophe.jaillet@wanadoo.fr>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <367914663187b8fe043e31b352cd6ad836088f0a.1639778255.git.christophe.jaillet@wanadoo.fr>
+ <73bdc4a3-6028-2ab5-f9a6-dbad15effad4@linux.intel.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Message-ID: <935af038-1b75-2717-40fa-e2e7858ed09e@wanadoo.fr>
+Date: Sat, 18 Dec 2021 07:55:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <73bdc4a3-6028-2ab5-f9a6-dbad15effad4@linux.intel.com>
+Content-Language: fr
 Cc: iommu@lists.linux-foundation.org, kernel-janitors@vger.kernel.org,
  linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -70,75 +68,58 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021/12/18 5:58, Christophe JAILLET wrote:
-> 'ommu->domain_ids' is a bitmap. So use 'bitmap_zalloc()' to simplify
-> code and improve the semantic, instead of hand writing it.
-> 
-> Also change the corresponding 'kfree()' into 'bitmap_free()' to keep
-> consistency.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
->   drivers/iommu/intel/iommu.c | 9 ++++-----
->   1 file changed, 4 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index b6a8f3282411..4acc97765209 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1878,17 +1878,16 @@ static void iommu_disable_translation(struct intel_iommu *iommu)
->   
->   static int iommu_init_domains(struct intel_iommu *iommu)
->   {
-> -	u32 ndomains, nlongs;
-> +	u32 ndomains;
->   	size_t size;
->   
->   	ndomains = cap_ndoms(iommu->cap);
->   	pr_debug("%s: Number of Domains supported <%d>\n",
->   		 iommu->name, ndomains);
-> -	nlongs = BITS_TO_LONGS(ndomains);
->   
->   	spin_lock_init(&iommu->lock);
->   
-> -	iommu->domain_ids = kcalloc(nlongs, sizeof(unsigned long), GFP_KERNEL);
-> +	iommu->domain_ids = bitmap_zalloc(ndomains, GFP_KERNEL);
->   	if (!iommu->domain_ids)
->   		return -ENOMEM;
->   
-> @@ -1903,7 +1902,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
->   	if (!iommu->domains || !iommu->domains[0]) {
->   		pr_err("%s: Allocating domain array failed\n",
->   		       iommu->name);
-> -		kfree(iommu->domain_ids);
-> +		bitmap_free(iommu->domain_ids);
->   		kfree(iommu->domains);
->   		iommu->domain_ids = NULL;
->   		iommu->domains    = NULL;
-> @@ -1964,7 +1963,7 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
->   		for (i = 0; i < elems; i++)
->   			kfree(iommu->domains[i]);
->   		kfree(iommu->domains);
-> -		kfree(iommu->domain_ids);
-> +		bitmap_free(iommu->domain_ids);
->   		iommu->domains = NULL;
->   		iommu->domain_ids = NULL;
->   	}
-
-This patch has been merged to Joerg's tree through
-
-https://lore.kernel.org/linux-iommu/20211217083817.1745419-2-baolu.lu@linux.intel.com/
-
-Are there any extra changes in this one?
-
-Best regards,
-baolu
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+TGUgMTgvMTIvMjAyMSDDoCAwNjo1NiwgTHUgQmFvbHUgYSDDqWNyaXTCoDoKPiBPbiAyMDIxLzEy
+LzE4IDU6NTgsIENocmlzdG9waGUgSkFJTExFVCB3cm90ZToKPj4gJ29tbXUtPmRvbWFpbl9pZHMn
+IGlzIGEgYml0bWFwLiBTbyB1c2UgJ2JpdG1hcF96YWxsb2MoKScgdG8gc2ltcGxpZnkKPj4gY29k
+ZSBhbmQgaW1wcm92ZSB0aGUgc2VtYW50aWMsIGluc3RlYWQgb2YgaGFuZCB3cml0aW5nIGl0Lgo+
+Pgo+PiBBbHNvIGNoYW5nZSB0aGUgY29ycmVzcG9uZGluZyAna2ZyZWUoKScgaW50byAnYml0bWFw
+X2ZyZWUoKScgdG8ga2VlcAo+PiBjb25zaXN0ZW5jeS4KPj4KPj4gU2lnbmVkLW9mZi1ieTogQ2hy
+aXN0b3BoZSBKQUlMTEVUIDxjaHJpc3RvcGhlLmphaWxsZXRAd2FuYWRvby5mcj4KPj4gLS0tCj4+
+IMKgIGRyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYyB8IDkgKysrKy0tLS0tCj4+IMKgIDEgZmls
+ZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDUgZGVsZXRpb25zKC0pCj4+Cj4+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL2lvbW11L2ludGVsL2lvbW11LmMgYi9kcml2ZXJzL2lvbW11L2ludGVsL2lv
+bW11LmMKPj4gaW5kZXggYjZhOGYzMjgyNDExLi40YWNjOTc3NjUyMDkgMTAwNjQ0Cj4+IC0tLSBh
+L2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYwo+PiArKysgYi9kcml2ZXJzL2lvbW11L2ludGVs
+L2lvbW11LmMKPj4gQEAgLTE4NzgsMTcgKzE4NzgsMTYgQEAgc3RhdGljIHZvaWQgaW9tbXVfZGlz
+YWJsZV90cmFuc2xhdGlvbihzdHJ1Y3QgCj4+IGludGVsX2lvbW11ICppb21tdSkKPj4gwqAgc3Rh
+dGljIGludCBpb21tdV9pbml0X2RvbWFpbnMoc3RydWN0IGludGVsX2lvbW11ICppb21tdSkKPj4g
+wqAgewo+PiAtwqDCoMKgIHUzMiBuZG9tYWlucywgbmxvbmdzOwo+PiArwqDCoMKgIHUzMiBuZG9t
+YWluczsKPj4gwqDCoMKgwqDCoCBzaXplX3Qgc2l6ZTsKPj4gwqDCoMKgwqDCoCBuZG9tYWlucyA9
+IGNhcF9uZG9tcyhpb21tdS0+Y2FwKTsKPj4gwqDCoMKgwqDCoCBwcl9kZWJ1ZygiJXM6IE51bWJl
+ciBvZiBEb21haW5zIHN1cHBvcnRlZCA8JWQ+XG4iLAo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoCBp
+b21tdS0+bmFtZSwgbmRvbWFpbnMpOwo+PiAtwqDCoMKgIG5sb25ncyA9IEJJVFNfVE9fTE9OR1Mo
+bmRvbWFpbnMpOwo+PiDCoMKgwqDCoMKgIHNwaW5fbG9ja19pbml0KCZpb21tdS0+bG9jayk7Cj4+
+IC3CoMKgwqAgaW9tbXUtPmRvbWFpbl9pZHMgPSBrY2FsbG9jKG5sb25ncywgc2l6ZW9mKHVuc2ln
+bmVkIGxvbmcpLCAKPj4gR0ZQX0tFUk5FTCk7Cj4+ICvCoMKgwqAgaW9tbXUtPmRvbWFpbl9pZHMg
+PSBiaXRtYXBfemFsbG9jKG5kb21haW5zLCBHRlBfS0VSTkVMKTsKPj4gwqDCoMKgwqDCoCBpZiAo
+IWlvbW11LT5kb21haW5faWRzKQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0dXJuIC1FTk9NRU07
+Cj4+IEBAIC0xOTAzLDcgKzE5MDIsNyBAQCBzdGF0aWMgaW50IGlvbW11X2luaXRfZG9tYWlucyhz
+dHJ1Y3QgaW50ZWxfaW9tbXUgCj4+ICppb21tdSkKPj4gwqDCoMKgwqDCoCBpZiAoIWlvbW11LT5k
+b21haW5zIHx8ICFpb21tdS0+ZG9tYWluc1swXSkgewo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgcHJf
+ZXJyKCIlczogQWxsb2NhdGluZyBkb21haW4gYXJyYXkgZmFpbGVkXG4iLAo+PiDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpb21tdS0+bmFtZSk7Cj4+IC3CoMKgwqDCoMKgwqDCoCBr
+ZnJlZShpb21tdS0+ZG9tYWluX2lkcyk7Cj4+ICvCoMKgwqDCoMKgwqDCoCBiaXRtYXBfZnJlZShp
+b21tdS0+ZG9tYWluX2lkcyk7Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBrZnJlZShpb21tdS0+ZG9t
+YWlucyk7Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBpb21tdS0+ZG9tYWluX2lkcyA9IE5VTEw7Cj4+
+IMKgwqDCoMKgwqDCoMKgwqDCoCBpb21tdS0+ZG9tYWluc8KgwqDCoCA9IE5VTEw7Cj4+IEBAIC0x
+OTY0LDcgKzE5NjMsNyBAQCBzdGF0aWMgdm9pZCBmcmVlX2RtYXJfaW9tbXUoc3RydWN0IGludGVs
+X2lvbW11IAo+PiAqaW9tbXUpCj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBmb3IgKGkgPSAwOyBpIDwg
+ZWxlbXM7IGkrKykKPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAga2ZyZWUoaW9tbXUtPmRv
+bWFpbnNbaV0pOwo+PiDCoMKgwqDCoMKgwqDCoMKgwqAga2ZyZWUoaW9tbXUtPmRvbWFpbnMpOwo+
+PiAtwqDCoMKgwqDCoMKgwqAga2ZyZWUoaW9tbXUtPmRvbWFpbl9pZHMpOwo+PiArwqDCoMKgwqDC
+oMKgwqAgYml0bWFwX2ZyZWUoaW9tbXUtPmRvbWFpbl9pZHMpOwo+PiDCoMKgwqDCoMKgwqDCoMKg
+wqAgaW9tbXUtPmRvbWFpbnMgPSBOVUxMOwo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgaW9tbXUtPmRv
+bWFpbl9pZHMgPSBOVUxMOwo+PiDCoMKgwqDCoMKgIH0KPiAKPiBUaGlzIHBhdGNoIGhhcyBiZWVu
+IG1lcmdlZCB0byBKb2VyZydzIHRyZWUgdGhyb3VnaAo+IAo+IGh0dHBzOi8vbG9yZS5rZXJuZWwu
+b3JnL2xpbnV4LWlvbW11LzIwMjExMjE3MDgzODE3LjE3NDU0MTktMi1iYW9sdS5sdUBsaW51eC5p
+bnRlbC5jb20vIAo+IAo+IAo+IEFyZSB0aGVyZSBhbnkgZXh0cmEgY2hhbmdlcyBpbiB0aGlzIG9u
+ZT8KCk5vLCB0aGlzIGlzIHRoZSBzYW1lLiBTb3JyeSBmb3IgdGhlIGR1cGxpY2F0ZS4KCkNKCgo+
+IAo+IEJlc3QgcmVnYXJkcywKPiBiYW9sdQo+IAoKX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4
+LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFu
+L2xpc3RpbmZvL2lvbW11
