@@ -1,63 +1,86 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 41DB3C433FE
-	for <iommu@archiver.kernel.org>; Mon, 20 Dec 2021 01:19:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id ED7C4C433F5
+	for <iommu@archiver.kernel.org>; Mon, 20 Dec 2021 01:43:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C1B6C41709;
-	Mon, 20 Dec 2021 01:18:59 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 8FDC160B9B;
+	Mon, 20 Dec 2021 01:43:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yrwoO3PoSsqb; Mon, 20 Dec 2021 01:18:59 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JYi5a01RIhFw; Mon, 20 Dec 2021 01:43:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id B8284416DF;
-	Mon, 20 Dec 2021 01:18:58 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 527AD6058C;
+	Mon, 20 Dec 2021 01:43:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6EAC8C002F;
-	Mon, 20 Dec 2021 01:18:58 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DF317C0012
- for <iommu@lists.linux-foundation.org>; Mon, 20 Dec 2021 01:18:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0DB83C002F;
+	Mon, 20 Dec 2021 01:43:02 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CEDFCC0012
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Dec 2021 01:42:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id C595240164
- for <iommu@lists.linux-foundation.org>; Mon, 20 Dec 2021 01:18:56 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id C839182CFD
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Dec 2021 01:42:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id j-pbnYu6YV8f for <iommu@lists.linux-foundation.org>;
- Mon, 20 Dec 2021 01:18:54 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id pUkc5DGx_Bgm for <iommu@lists.linux-foundation.org>;
+ Mon, 20 Dec 2021 01:42:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp2.osuosl.org (Postfix) with ESMTPS id B6BAB400E9
- for <iommu@lists.linux-foundation.org>; Mon, 20 Dec 2021 01:18:54 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10203"; a="326370530"
-X-IronPort-AV: E=Sophos;i="5.88,219,1635231600"; d="scan'208";a="326370530"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 19 Dec 2021 17:18:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,219,1635231600"; d="scan'208";a="507496332"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
- ([10.239.159.118])
- by orsmga007.jf.intel.com with ESMTP; 19 Dec 2021 17:18:51 -0800
-Subject: Re: [PATCH v3 6/9] iommu/vt-d: Use put_pages_list
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
-References: <cover.1639753638.git.robin.murphy@arm.com>
- <2115b560d9a0ce7cd4b948bd51a2b7bde8fdfd59.1639753638.git.robin.murphy@arm.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <1df4cd6c-7f70-4358-e57f-754d98807abe@linux.intel.com>
-Date: Mon, 20 Dec 2021 09:18:29 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+Received: from casper.infradead.org (casper.infradead.org
+ [IPv6:2001:8b0:10b:1236::1])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 0481182B84
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Dec 2021 01:42:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+ References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description;
+ bh=k7fHWgKrjS6NSIvn5a4Jtgxmp/WhT9Wz1heA+PvFHEU=; b=fbUn3fvK/C4lIcfXkF1dhfDZp+
+ 0ZelBeFgnQYcFnt0EOTirvxdbva/ddh2SL+FntgltRD3RE987l95C52xyYhhRfbE2xb17KwOfKlFs
+ 5hOrS2+3DKFsP3AzTTFXGdtnAfDlAGiCbxuyVX733jeZZ+d0DD58EAaIyKmbheLpfRjDtShOeT6am
+ hg7mxrzy3tJ/5EM0XQThsZ+qE0Zv7Dl2ydMZ44Ueicge/g2XjDjlE+5Q0yijLnkgOFaSa51eA1ivu
+ 3KHkjCK1aKheaU9DVEJ4MCzqGgtQ+Ndgh2oKwtYQK2wpphRgppBrz+kxZNRgm1Zd6KP6yXdmRMLqn
+ IlqHXmWA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red
+ Hat Linux)) id 1mz7gr-001BXA-DH; Mon, 20 Dec 2021 01:42:13 +0000
+Date: Mon, 20 Dec 2021 01:42:13 +0000
+From: Matthew Wilcox <willy@infradead.org>
+To: Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH v2 00/33] Separate struct slab from struct page
+Message-ID: <Yb/fdYbLunsVYRqQ@casper.infradead.org>
+References: <20211201181510.18784-1-vbabka@suse.cz>
+ <4c3dfdfa-2e19-a9a7-7945-3d75bc87ca05@suse.cz>
+ <Ybk+0LKrsAJatILE@carbon.dhcp.thefacebook.com>
+ <Ybp8a5JNndgCLy2w@carbon.dhcp.thefacebook.com>
+ <86617be0-8aa8-67d2-08bd-1e06c3d12785@suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <2115b560d9a0ce7cd4b948bd51a2b7bde8fdfd59.1639753638.git.robin.murphy@arm.com>
-Content-Language: en-US
-Cc: linux-kernel@vger.kernel.org, willy@infradead.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, hch@lst.de
+Content-Disposition: inline
+In-Reply-To: <86617be0-8aa8-67d2-08bd-1e06c3d12785@suse.cz>
+Cc: Peter Zijlstra <peterz@infradead.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, Michal Hocko <mhocko@kernel.org>,
+ linux-mm@kvack.org, Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+ Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>,
+ Hyeonggon Yoo <42.hyeyoo@gmail.com>, Christoph Lameter <cl@linux.com>,
+ Will Deacon <will@kernel.org>, Julia Lawall <julia.lawall@inria.fr>,
+ Sergey Senozhatsky <senozhatsky@chromium.org>, x86@kernel.org,
+ Luis Chamberlain <mcgrof@kernel.org>, kasan-dev@googlegroups.com,
+ Ingo Molnar <mingo@redhat.com>, Vladimir Davydov <vdavydov.dev@gmail.com>,
+ David Rientjes <rientjes@google.com>, Nitin Gupta <ngupta@vflare.org>,
+ Marco Elver <elver@google.com>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, cgroups@vger.kernel.org,
+ Thomas Gleixner <tglx@linutronix.de>, Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+ Dmitry Vyukov <dvyukov@google.com>, Andrey Konovalov <andreyknvl@gmail.com>,
+ patches@lists.linux.dev, Pekka Enberg <penberg@kernel.org>,
+ Minchan Kim <minchan@kernel.org>, iommu@lists.linux-foundation.org,
+ Johannes Weiner <hannes@cmpxchg.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ David Woodhouse <dwmw2@infradead.org>, Roman Gushchin <guro@fb.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -70,35 +93,60 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin,
-
-On 12/17/21 11:31 PM, Robin Murphy wrote:
-> From: "Matthew Wilcox (Oracle)"<willy@infradead.org>
+On Mon, Dec 20, 2021 at 01:47:54AM +0100, Vlastimil Babka wrote:
+> > * mm/slub: Convert print_page_info() to print_slab_info()
+> > Do we really need to explicitly convert slab_folio()'s result to (struct folio *)?
 > 
-> page->freelist is for the use of slab.  We already have the ability
-> to free a list of pages in the core mm, but it requires the use of a
-> list_head and for the pages to be chained together through page->lru.
-> Switch the Intel IOMMU and IOVA code over to using free_pages_list().
-> 
-> Signed-off-by: Matthew Wilcox (Oracle)<willy@infradead.org>
-> [rm: split from original patch, cosmetic tweaks, fix fq entries]
-> Signed-off-by: Robin Murphy<robin.murphy@arm.com>
+> Unfortunately yes, as long as folio_flags() don't take const struct folio *,
+> which will need some yak shaving.
 
-I had boot tests on my development machines with both strict and lazy
-flushing modes. I didn't see any regression, the disk i/o and network
-i/o worked good for me.
+In case anyone's interested ...
 
-For changes in iommu/vt-d:
+folio_flags calls VM_BUG_ON_PGFLAGS() which would need its second
+argument to be const.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+That means dump_page() needs to take a const struct page, which
+means __dump_page() needs its argument to be const.
 
-Best regards,
-baolu
+That calls ...
+
+is_migrate_cma_page()
+page_mapping()
+page_mapcount()
+page_ref_count()
+page_to_pgoff()
+page_to_pfn()
+hpage_pincount_available()
+head_compound_mapcount()
+head_compound_pincount()
+compound_order()
+PageKsm()
+PageAnon()
+PageCompound()
+
+... and at that point, I ran out of motivation to track down some parts
+of this tarbaby that could be fixed.  I did do:
+
+    mm: constify page_count and page_ref_count
+    mm: constify get_pfnblock_flags_mask and get_pfnblock_migratetype
+    mm: make compound_head const-preserving
+    mm/page_owner: constify dump_page_owner
+
+so some of those are already done.  But a lot of them just need to be
+done at the same time.  For example, page_mapping() calls
+folio_mapping() which calls folio_test_slab() which calls folio_flags(),
+so dump_page() and page_mapping() need to be done at the same time.
+
+One bit that could be broken off easily (I think ...) is PageTransTail()
+PageTail(), PageCompound(), PageHuge(), page_to_pgoff() and
+page_to_index().  One wrinkle is needed a temporary
+TESTPAGEFLAGS_FALSE_CONST.  But I haven't tried it yet.
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
