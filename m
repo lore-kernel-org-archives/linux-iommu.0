@@ -1,107 +1,146 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DC871C433F5
-	for <iommu@archiver.kernel.org>; Wed, 22 Dec 2021 16:57:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 93B8FC433FE
+	for <iommu@archiver.kernel.org>; Wed, 22 Dec 2021 17:52:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 65E11402E2;
-	Wed, 22 Dec 2021 16:57:58 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4AE3A60FCF;
+	Wed, 22 Dec 2021 17:52:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8EKW7lxQtfgM; Wed, 22 Dec 2021 16:57:57 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id zm7Z6ZbYT2eG; Wed, 22 Dec 2021 17:52:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 3B86A4018D;
-	Wed, 22 Dec 2021 16:57:57 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 1D64360FB3;
+	Wed, 22 Dec 2021 17:52:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 20147C002F;
-	Wed, 22 Dec 2021 16:57:57 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 626FAC0012
- for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 16:57:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EA34BC001E;
+	Wed, 22 Dec 2021 17:52:12 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DD35DC0012
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 17:52:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 4F4FC4098A
- for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 16:57:56 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id CB77B8195C
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 17:52:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=suse.cz header.b="CDFZD6sc";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=suse.cz header.b="2sorQ5ZF"
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id s3JC0J8ysgKU for <iommu@lists.linux-foundation.org>;
- Wed, 22 Dec 2021 16:57:55 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
- by smtp2.osuosl.org (Postfix) with ESMTPS id D56E740556
- for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 16:57:54 +0000 (UTC)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
- (No client certificate requested)
- by smtp-out2.suse.de (Postfix) with ESMTPS id 6984B1F38E;
- Wed, 22 Dec 2021 16:57:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
- t=1640192271; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
- mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=QOgLrQeLTYXFsk2cNqehMzvGapHl59pV5Owm/dhArOw=;
- b=CDFZD6sccpV6jrCOHW97R2dW6ujbp077JyPh2ADMZt0zx5mlXMzqjdacEze7nuAIS+yDgg
- UUTjY5hFRuaR4dEPxO0senjKMM+P5Fb9FtYQQEqtpi9wAL8wTeXtwEHFfmOnL/n3Uun98r
- MrtWTdxdDOL+bAPIf7+6quPuG5+PzCM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
- s=susede2_ed25519; t=1640192271;
- h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
- mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=QOgLrQeLTYXFsk2cNqehMzvGapHl59pV5Owm/dhArOw=;
- b=2sorQ5ZFjTtsCyW0F9rkVJIQ3xM/7DGVPCyMsnYJ83+Sfg0XVuCsGs+/ZTFz/cA/5BbJ+I
- 38BhGjxjJSKj3QDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
- (No client certificate requested)
- by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 403CA13D3A;
- Wed, 22 Dec 2021 16:57:50 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
- by imap2.suse-dmz.suse.de with ESMTPSA id 5a3EDQ5Zw2HbJwAAMHmgww
- (envelope-from <vbabka@suse.cz>); Wed, 22 Dec 2021 16:57:50 +0000
-Message-ID: <f3a83708-3f3c-a634-7bee-dcfcaaa7f36e@suse.cz>
-Date: Wed, 22 Dec 2021 17:56:50 +0100
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 9b2Gt23sBGTt for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Dec 2021 17:52:10 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com
+ (mail-bn8nam12on2066.outbound.protection.outlook.com [40.107.237.66])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 7E2F781B71
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 17:52:10 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VP+NLdzx3RGsdxwM6VuX2bMd4c2xEX+yXoIAA1QBY4B2ZAr1YVWklcnqBuYkTEODcXfGjKYAX6uBrsRcTOclZkVL9awotyNOyYT6ouvM1TcfZ7S1DLUxctvvv99gLbYvWzaM7/PXgwu+IIEzvMDg7WTEOsFY4fBuajsbZyJvIDVSix6tYKLrW2dhnO6Pj9tP3jLBm0nmLs3QxZNCIPCHyfBHeDo4SraRKLjRpjmWv4A2fsKNMjG9nvDbgSGOzyZ/biDXnLGzBdMf4kD8FSZsFGo2QnruPehPo7dQ9YMAT3mJBFGGDv4+lTmIeZ0RBq4G5owo0SJ9jZnrOimIucd44Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BZhpsDmmXVHBis31nXjeXXEsp6+x6ZM/nkS2KwjvaDc=;
+ b=nl27CSjdLACFnMz3UktqHKUarRmHccOVlpPgcOG0wBxTDFrd55VNwSqMYJ3jOPWCIakO5ukAxq4+LkyEKqzxJsb4NjYS4uQhXbwiDxUmMAV31WZwF2AEtRbGc5klYxzZE7WC/zycYLWv///Oa5EqyqkVEOvw52XEnKT2zW3tJ9nm/1alB9EH34LStxSirrfj8FTMCzdSZ1SSHwEQsmEq6KZzYWRGtJNK8dZZ5vnf/E2e4AoawiwMKvvJFttB95tLOKZE+vNcAe+8D+fepDrht8GxcTmj0fUP8MHYEy736t4bropQxmUEYk15fkHzeITx+DcwU/U/S7o72BngAWYjrw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BZhpsDmmXVHBis31nXjeXXEsp6+x6ZM/nkS2KwjvaDc=;
+ b=FQB6XEL3h6H8BNCM4TcceSo+AGHuBMTBJkobjkYvSXZLj9yW1lqqfKQy5VgNB6o/UA4nUDuplBIEthSxj14c8CnyWq75xwfPyyvcSwDipqrRNGSexXKiy8OOCnPTXwVsyU//OdEViMetiLQtTwbHbdvCoE8sCPw3MqqijlyjLugttVJtYPvUWxT/4m1whVPz5bsS7w1QDT5gnefIDtAgbNxBnvPoWeoIoqXv4o6ndRfk2J57I6rHfLp5kOUTxCo5Ow5nJ0MldokWyzON+hE5pqP/kula5ad3Zf/DZmZ6H1vj4XbVVOgCKYlm29jX9EJSfnVe/YgwPA7rIFKQxdhe/Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5224.namprd12.prod.outlook.com (2603:10b6:208:319::23)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.14; Wed, 22 Dec
+ 2021 17:52:07 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::d8be:e4e4:ce53:6d11]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::d8be:e4e4:ce53:6d11%7]) with mapi id 15.20.4823.019; Wed, 22 Dec 2021
+ 17:52:07 +0000
+Date: Wed, 22 Dec 2021 13:52:05 -0400
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v4 02/13] driver core: Set DMA ownership during driver
+ bind/unbind
+Message-ID: <20211222175205.GL1432915@nvidia.com>
+References: <20211217063708.1740334-1-baolu.lu@linux.intel.com>
+ <20211217063708.1740334-3-baolu.lu@linux.intel.com>
+ <YcMeZlN3798noycN@kroah.com>
+Content-Disposition: inline
+In-Reply-To: <YcMeZlN3798noycN@kroah.com>
+X-ClientProxiedBy: MN2PR08CA0025.namprd08.prod.outlook.com
+ (2603:10b6:208:239::30) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCH v2 00/33] Separate struct slab from struct page
-Content-Language: en-US
-From: Vlastimil Babka <vbabka@suse.cz>
-To: Matthew Wilcox <willy@infradead.org>, Christoph Lameter <cl@linux.com>,
- David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>,
- Pekka Enberg <penberg@kernel.org>
-References: <20211201181510.18784-1-vbabka@suse.cz>
- <4c3dfdfa-2e19-a9a7-7945-3d75bc87ca05@suse.cz>
-In-Reply-To: <4c3dfdfa-2e19-a9a7-7945-3d75bc87ca05@suse.cz>
-Cc: Peter Zijlstra <peterz@infradead.org>,
- Dave Hansen <dave.hansen@linux.intel.com>, Michal Hocko <mhocko@kernel.org>,
- linux-mm@kvack.org, Andrey Ryabinin <ryabinin.a.a@gmail.com>,
- Alexander Potapenko <glider@google.com>, "H. Peter Anvin" <hpa@zytor.com>,
- Hyeonggon Yoo <42.hyeyoo@gmail.com>, Will Deacon <will@kernel.org>,
- Sergey Senozhatsky <senozhatsky@chromium.org>, x86@kernel.org,
- Luis Chamberlain <mcgrof@kernel.org>, kasan-dev@googlegroups.com,
- Ingo Molnar <mingo@redhat.com>, Vladimir Davydov <vdavydov.dev@gmail.com>,
- Nitin Gupta <ngupta@vflare.org>, Marco Elver <elver@google.com>,
- Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
- cgroups@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
- Dmitry Vyukov <dvyukov@google.com>, Andrey Konovalov <andreyknvl@gmail.com>,
- patches@lists.linux.dev, Julia Lawall <julia.lawall@inria.fr>,
- Minchan Kim <minchan@kernel.org>, iommu@lists.linux-foundation.org,
- Johannes Weiner <hannes@cmpxchg.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- David Woodhouse <dwmw2@infradead.org>, Roman Gushchin <guro@fb.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: af56339f-7652-4542-8538-08d9c573c512
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5224:EE_
+X-Microsoft-Antispam-PRVS: <BL1PR12MB52240322F78DAC41C5EEB809C27D9@BL1PR12MB5224.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: W1oSqoLAl4e78Skj2iYDTmvhGjr5XBUQwrwEPrgWfWu44tIIneYnPbj4At5G4ds963hNFnickVAlnoC3HuBN70kvcWibxOK9uGsJixTRZYwA7KcwU9qRaq9iI78GqnsGFu+KuhuK5yc7sdi1VVGMQdWfDLzwQ2A1mizdiS/7D1haZjFCzskt+vpK+bCiezm4bQiIuXC3mkXUMMdTnKSMQbAAqtt0PMbngZG2Nn7sdyjltIBON1mf1QlTjiJ086CxKycdRyLXujFes+zRziWg+g0zxEhrp5MPwU+fL78esHb3YGGNysCnnhZ2OFV8L/yzLZBd3Hn89qcEn2BGYNEDedhVdIW4kMvRvtNdqc8/uQwpPDD9ZOobyoYvVDAdeqMsTBJD12A7JmM1g/pr1QiDM+iFMch5lUVEkOhwD0WTj0hXfU2xiOwKzGu1tnODn2hkiTu55cp4+tQa7Vzu+AewxIUfpiL06LbUkg0a1TnMGB6uPVdUIXZzgXAdkBpEB9bAl7LrYkx2W3d4BH2fo3HkN/Ng1VOmuCvXT0lvDEhU0JTC7OKx6LyIkeReHh3U0pKyPSivQ862gvSIBZBvh7DejWs5vdcHhOqhhXa8zSm5mZ6fTdYJ4KDEiqH+toYM4iXI9c4NUbaYKwUVLswP6Obh60kwGg5vjfy1MWJePen1YwkHvWIQTj7RAod9toKdY1jA8WQXv60bTdrwV3ccD8FjhQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(4326008)(8676002)(66556008)(36756003)(316002)(33656002)(8936002)(6486002)(38100700002)(5660300002)(508600001)(186003)(54906003)(6506007)(6916009)(66476007)(6512007)(1076003)(26005)(66946007)(7416002)(2906002)(2616005)(86362001)(357404004);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LNUD/IgNmlKnrRo+pbsrJkjafl0UVOTlgto7/Njz8Al+ivNtDElw/moGbmhT?=
+ =?us-ascii?Q?mH4P9wQykdwwB5v/JtZ7A2MjNdsezfGYOwnOHkEy++Jqmt7hmKysfoApgwuj?=
+ =?us-ascii?Q?fV3qX4ZZLn3nqQIEHQiVwT2ErreTxZVDZgSnu5HoGq/D2S6mjKBJVqfKv2Ao?=
+ =?us-ascii?Q?uw/eaL1CK8u/igrUo2hwO5WO1FzCEt2OxOTGXysmewIgGjOjTNDIP3d15ZhJ?=
+ =?us-ascii?Q?sdzMggaLHkVdpIh0O2X7RiA5uq+m8d2ML2tj1kO+aLxTIbZPMAfriyKI/w/w?=
+ =?us-ascii?Q?v7iUYH067m25Xs0ksU8m0r1EIKKuVfbYVwIzIV7WpnyNH4GOQGeuWdT6txeq?=
+ =?us-ascii?Q?rwZukXBYXzASjBZcTjKrBiORTlnZf/j20fotFzHT/lWaoJlQJ9mkY1MaU1Ap?=
+ =?us-ascii?Q?BoMiP7YCquD3DptVVHrl1+Q/FARJuswBQ8ZQg/2DkIIB0G8eCtgLPEqDbR0a?=
+ =?us-ascii?Q?m9x9JwX9iVuXCPKVmSSNB9iybi6bo49eROjMmc0mt/n3Eexw3EVn/RyDMZHx?=
+ =?us-ascii?Q?L2xOvot+092gTiePWRF6WJdolhi3sP6ar7TQ/xiDvTfUQjHqtfQpPU20+xZs?=
+ =?us-ascii?Q?ggVbfYpTtLqj81LtNWrq+HNbDsdMELhMRBhX73qfWwWJG9ROLh0NnsM1fggA?=
+ =?us-ascii?Q?PhcNKbg2cY/Dmsdpz3khcLBiyDNEHdwCIu+ov8dy1p3peNBLxPjqyIIf+vkY?=
+ =?us-ascii?Q?/mkaHqr6ohAJyguhVNNZDKDxailvrhFFwSSfwIlF50UgW7Wrh5eAemcjhA6M?=
+ =?us-ascii?Q?oAcXntPuaFL5RS8kj0K8lYaRGHfe83yaC+US2FeIf63RLT7RWk1fs88SeQFP?=
+ =?us-ascii?Q?b8vt4CRr3ukCYhnjcx4zM0CD1bqMFW65ZzS0uMvNOi6WS4G0HwJUi5oIig6f?=
+ =?us-ascii?Q?5rZ3QyBJvEnwesGpCAPJgAm5GxNSmIOtRM9J/akrWqrM9AE8X1s0vdLblEU2?=
+ =?us-ascii?Q?D1+yWAbDKkU6pQ8M/svlBiKI+yUae92DpD17Aa/uSY40YcFSx+RUvdRqDOSZ?=
+ =?us-ascii?Q?CKpaoi/yhW5NwR1CTyap6B1j1/AFwwCbtCR5owJsA6I7X7XZeeadfR1PI9GZ?=
+ =?us-ascii?Q?PawKzlt2PAu5OMaCAPQr8Yex8blnCW8MfPmgTOZG4zUgC2dHa66Ew8IF1aoc?=
+ =?us-ascii?Q?4sHgFxWeainN58T/4+pBQA1ZCoqBn4Up/C59QGeAfUF3k+n/WSpL+5XzPra8?=
+ =?us-ascii?Q?EhGbKnzwF22Dn7Dv16HLRv9TRomKEGJOrS0o7KloDz0yeakIkntmfhVtfRlG?=
+ =?us-ascii?Q?2R+msV/59tl2/68u0QCumOT7q0/dpTjSEJrxK1qKHsrvgWw6vPZzaKfj5vr/?=
+ =?us-ascii?Q?2zaJ5ZOVc012N8wK8qIiJTd0phndFfCGsJvsNGDTFVyMzj3zyJcmI8uKYj/Z?=
+ =?us-ascii?Q?nWPmv/ykSFqqfOeQTrcVMpFyG8Kf5iuAMnaEFzjfsaFnjIzhWWVm/Jda+3rO?=
+ =?us-ascii?Q?6Q45/8tlVLtjOdzyNw/ixM6BkAaghx/2YHVy3qTIBJd/wwu1FI+MQ1eD8TqT?=
+ =?us-ascii?Q?ViV4JI30Q4iFlbrAFxkp7N/l1Lqkn85QSUuNqK4mX6q/XVpJO/Zw17oQqtfd?=
+ =?us-ascii?Q?M5e6O2PhJc7XVRDEq30=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: af56339f-7652-4542-8538-08d9c573c512
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Dec 2021 17:52:06.9746 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: D0jr7NMtj5q5slxr7okhtLMqU+3/UoPzj2iumZqCV89O5M9vqo1GqZ0pZWcQf/6r
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5224
+Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
+ David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,40 +153,59 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 12/14/21 13:57, Vlastimil Babka wrote:
-> On 12/1/21 19:14, Vlastimil Babka wrote:
->> Folks from non-slab subsystems are Cc'd only to patches affecting them, and
->> this cover letter.
->>
->> Series also available in git, based on 5.16-rc3:
->> https://git.kernel.org/pub/scm/linux/kernel/git/vbabka/linux.git/log/?h=slab-struct_slab-v2r2
+On Wed, Dec 22, 2021 at 01:47:34PM +0100, Greg Kroah-Hartman wrote:
+
+> Right now we only have 4 different "busses" that care about this.  Out
+> of the following callbacks:
+> 	fsl_mc_dma_configure
+> 	host1x_dma_configure
+> 	pci_dma_configure
+> 	platform_dma_configure
 > 
-> Pushed a new branch slab-struct-slab-v3r3 with accumulated fixes and small tweaks
-> and a new patch from Hyeonggon Yoo on top. To avoid too much spam, here's a range diff:
+> Which one will actually care about the iommu_device_set_dma_owner()
+> call?  All of them?  None of them?  Some of them?
 
-Hi, I've pushed another update branch slab-struct_slab-v4r1, and also to
--next. I've shortened git commit log lines to make checkpatch happier,
-so no range-diff as it would be too long. I believe it would be useless
-spam to post the whole series now, shortly before xmas, so I will do it
-at rc8 time, to hopefully collect remaining reviews. But if anyone wants
-a mailed version, I can do that.
+You asked this already, and it was answered - all but host1x require
+it, and it is harmless for host1x to do it.
 
-Changes in v4:
-- rebase to 5.16-rc6 to avoid a conflict with mainline
-- collect acks/reviews/tested-by from Johannes, Roman, Hyeonggon Yoo -
-thanks!
-- in patch "mm/slub: Convert detached_freelist to use a struct slab"
-renamed free_nonslab_page() to free_large_kmalloc() and use folio there,
-as suggested by Roman
-- in "mm/memcg: Convert slab objcgs from struct page to struct slab"
-change one caller of slab_objcgs_check() to slab_objcgs() as suggested
-by Johannes, realize the other caller should be also changed, and remove
-slab_objcgs_check() completely.
+> Again, why can't this just happen in the (very few) bus callbacks that
+> care about this?  
+
+Because it is not 'very few', it is all but one. This is why HCH and I
+both prefer this arrangement.
+
+Especially since host1x is pretty odd. I wasn't able to find where a
+host1x driver is doing DMA using the host1x device.. The places I
+looked at already doing DMA used a platform device. So I'm not sure
+what its host1x_dma_configure is for, or why host1x calls
+of_dma_configure() twice..
+
+> In following patches in this series, you turn off this
+> for the pci_dma_configure users, so what is left?  
+
+??? Where do you see this?
+
+> I know others told you to put this in the driver core, but I fail to see
+> how adding this call to the 3 busses that care about it is a lot more
+> work than this driver core functionality that we all will have to
+> maintain for forever?
+
+It is 4, you forgot AMBA's re-use of platform_dma_configure.
+
+Why are you asking to duplicate code that has no reason to be
+different based on bus type? That seems like bad practice.
+
+No matter where we put this we have to maintain it "forever" not sure
+what you are trying to say.
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
