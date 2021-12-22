@@ -1,72 +1,66 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B227AC433F5
-	for <iommu@archiver.kernel.org>; Wed, 22 Dec 2021 11:53:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DF53CC433EF
+	for <iommu@archiver.kernel.org>; Wed, 22 Dec 2021 11:57:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 4628F60FA9;
-	Wed, 22 Dec 2021 11:53:22 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6AC3E40132;
+	Wed, 22 Dec 2021 11:57:20 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id IpJBimz5_RBc; Wed, 22 Dec 2021 11:57:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id ECD9F4017A;
+	Wed, 22 Dec 2021 11:57:18 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C0A79C001E;
+	Wed, 22 Dec 2021 11:57:18 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C2763C0012
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 11:57:17 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id A1EED60F7E
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 11:57:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KAI6jcXFB5Cn; Wed, 22 Dec 2021 11:53:21 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 2C50D60EB9;
-	Wed, 22 Dec 2021 11:53:21 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E99E5C001E;
-	Wed, 22 Dec 2021 11:53:20 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5DECAC0012;
- Wed, 22 Dec 2021 11:53:19 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 4B8C84156C;
- Wed, 22 Dec 2021 11:53:19 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WL6V5IRMY0su; Wed, 22 Dec 2021 11:53:17 +0000 (UTC)
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ALQb5hvm1-Xs for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Dec 2021 11:57:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp4.osuosl.org (Postfix) with ESMTPS id EE9F041559;
- Wed, 22 Dec 2021 11:53:16 +0000 (UTC)
-Received: from fraeml741-chm.china.huawei.com (unknown [172.18.147.201])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JJs9S1wfNz67s22;
- Wed, 22 Dec 2021 19:51:24 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml741-chm.china.huawei.com (10.206.15.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 22 Dec 2021 12:53:13 +0100
-Received: from [10.195.32.222] (10.195.32.222) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 22 Dec 2021 11:53:12 +0000
-Subject: Re: [PATCH 4/5] iommu: Separate IOVA rcache memories from iova_domain
- structure
-To: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>, 
- <mst@redhat.com>, <jasowang@redhat.com>
-References: <1632477717-5254-1-git-send-email-john.garry@huawei.com>
- <1632477717-5254-5-git-send-email-john.garry@huawei.com>
- <2c58036f-d9aa-61f9-ae4b-f6938a135de5@huawei.com>
- <85c60ef4-e1af-c947-a2ed-b63c4fef36c3@arm.com>
-Message-ID: <045030ed-0151-6259-e336-4235d6456223@huawei.com>
-Date: Wed, 22 Dec 2021 11:53:11 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id C98A360EB9
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 11:57:14 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D6E241FB;
+ Wed, 22 Dec 2021 03:57:13 -0800 (PST)
+Received: from [10.57.34.58] (unknown [10.57.34.58])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 98CCF3F5A1;
+ Wed, 22 Dec 2021 03:57:10 -0800 (PST)
+Message-ID: <2fbc6a98-6569-0a06-c901-9a37e40ccb7c@arm.com>
+Date: Wed, 22 Dec 2021 11:57:05 +0000
 MIME-Version: 1.0
-In-Reply-To: <85c60ef4-e1af-c947-a2ed-b63c4fef36c3@arm.com>
-Content-Language: en-US
-X-Originating-IP: [10.195.32.222]
-X-ClientProxiedBy: lhreml750-chm.china.huawei.com (10.201.108.200) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: linuxarm@huawei.com, linux-kernel@vger.kernel.org, xieyongji@bytedance.com,
- iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v3 4/5] iommu/arm-smmu-v3: Add host support for NVIDIA
+ Grace CMDQ-V
+Content-Language: en-GB
+To: Nicolin Chen <nicolinc@nvidia.com>
+References: <20211119071959.16706-1-nicolinc@nvidia.com>
+ <20211119071959.16706-5-nicolinc@nvidia.com>
+ <b05183b4-e08a-77ff-219c-009a4e42a32b@arm.com>
+ <20211220192714.GA27303@Asurada-Nvidia>
+ <7e68fa19-90b1-bbb5-9991-36b5d35278fa@arm.com>
+ <20211221220037.GA6292@Asurada-Nvidia>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20211221220037.GA6292@Asurada-Nvidia>
+Cc: jean-philippe@linaro.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org,
+ thierry.reding@gmail.com, jgg@nvidia.com, will@kernel.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,40 +73,69 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: John Garry via iommu <iommu@lists.linux-foundation.org>
-Reply-To: John Garry <john.garry@huawei.com>
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 20/12/2021 13:57, Robin Murphy wrote:
->> Do you have any thoughts on this patch? The decision is whether we 
->> stick with a single iova domain structure or support this super 
->> structure for iova domains which support the rcache. I did not try the 
->> former - it would be do-able but I am not sure on how it would look.
+On 2021-12-21 22:00, Nicolin Chen wrote:
+[...]
+>>>> The challenge to make ECMDQ useful to Linux is how to make sure that all
+>>>> the commands expected to be within scope of a future CMND_SYNC plus that
+>>>> sync itself all get issued on the same queue, so I'd be mildly surprised
+>>>> if you didn't have the same problem.
+>>>
+>>> PATCH-3 in this series actually helps align the command queues,
+>>> between issued commands and SYNC, if bool sync == true. Yet, if
+>>> doing something like issue->issue->issue_with_sync, it could be
+>>> tricker.
+>>
+>> Indeed between the iommu_iotlb_gather mechanism and low-level command
+>> batching things are already a lot more concentrated than they could be,
+>> but arm_smmu_cmdq_batch_add() and its callers stand out as examples of
+>> where we'd still be vulnerable to preemption. What I haven't even tried
+>> to reason about yet is assumptions in the higher-level APIs, e.g. if
+>> io-pgtable might chuck out a TLBI during an iommu_unmap() which we
+>> implicitly expect a later iommu_iotlb_sync() to cover.
 > 
-> TBH I feel inclined to take the simpler approach of just splitting the 
-> rcache array to a separate allocation, making init_iova_rcaches() public 
-> (with a proper return value), and tweaking put_iova_domain() to make 
-> rcache cleanup conditional. A residual overhead of 3 extra pointers in 
-> iova_domain doesn't seem like *too* much for non-DMA-API users to bear. 
+> Though I might have oversimplified the situation here, I see
+> the arm_smmu_cmdq_batch_add() calls are typically followed by
+> arm_smmu_cmdq_batch_submit(). Could we just add a SYNC in the
+> _batch_submit() to all the queues that it previously touched
+> in the _batch_add()?
 
-OK, fine. So I tried as you suggested and it looks ok to me.
+Keeping track of which queues a batch has touched is certainly possible, 
+but it's yet more overhead to impose across the board when intra-batch 
+preemption should (hopefully) be very rare in practice. I was thinking 
+more along the lines of disabling preemption/migration for the lifetime 
+of a batch, or more pragmatically just hoisting the queue selection all 
+the way out to the scope of the batch itself (which also conveniently 
+seems about the right shape for potentially forking off a whole other 
+dedicated command submission flow from that point later).
 
-I'll send something out at rc1.
+We still can't mitigate inter-batch preemption, though, so we'll just 
+have to audit everything very carefully to make sure we don't have (or 
+inadvertently introduce in future) any places where that could be 
+problematic. We really want to avoid over-syncing as that's liable to 
+end up being just as bad for performance as the contention that we're 
+nominally avoiding.
 
-> Unless you want to try generalising the rcache mechanism completely away 
-> from IOVA API specifics, it doesn't seem like there's really enough to 
-> justify the bother of having its own distinct abstraction layer.
+>> I've been thinking that in many ways per-domain queues make quite a bit
+>> of sense and would be easier to manage than per-CPU ones - plus that's
+>> pretty much the usage model once we get to VMs anyway - but that fails
+>> to help the significant cases like networking and storage where many
+>> CPUs are servicing a big monolithic device in a single domain :(
+> 
+> Yea, and it's hard to assume which client would use CMDQ more
+> frequently, in order to balance or assign more queues to that
+> client, which feels like a QoS conundrum.
 
-Yeah, I don't see that as necessary.
+Indeed, plus once we start assigning queues to VMs we're going to want 
+to remove them from the general pool for host usage, so we definitely 
+want to plan ahead here.
 
-However something which could be useful is to separate the magazine code 
-out for other possible users.
-
-Thanks!
-John
+Cheers,
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
