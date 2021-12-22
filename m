@@ -4,130 +4,57 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 93B8FC433FE
-	for <iommu@archiver.kernel.org>; Wed, 22 Dec 2021 17:52:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4B26BC433F5
+	for <iommu@archiver.kernel.org>; Wed, 22 Dec 2021 20:27:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 4AE3A60FCF;
-	Wed, 22 Dec 2021 17:52:14 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id D761A60ADA;
+	Wed, 22 Dec 2021 20:27:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zm7Z6ZbYT2eG; Wed, 22 Dec 2021 17:52:13 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 1D64360FB3;
-	Wed, 22 Dec 2021 17:52:13 +0000 (UTC)
+	with ESMTP id b5KQzzrovhpP; Wed, 22 Dec 2021 20:27:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7113160AD7;
+	Wed, 22 Dec 2021 20:27:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EA34BC001E;
-	Wed, 22 Dec 2021 17:52:12 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DD35DC0012
- for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 17:52:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 57B91C002F;
+	Wed, 22 Dec 2021 20:27:16 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AF2FAC0012
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 20:27:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id CB77B8195C
- for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 17:52:11 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 8F46760AD8
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 20:27:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9b2Gt23sBGTt for <iommu@lists.linux-foundation.org>;
- Wed, 22 Dec 2021 17:52:10 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam12on2066.outbound.protection.outlook.com [40.107.237.66])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 7E2F781B71
- for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 17:52:10 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VP+NLdzx3RGsdxwM6VuX2bMd4c2xEX+yXoIAA1QBY4B2ZAr1YVWklcnqBuYkTEODcXfGjKYAX6uBrsRcTOclZkVL9awotyNOyYT6ouvM1TcfZ7S1DLUxctvvv99gLbYvWzaM7/PXgwu+IIEzvMDg7WTEOsFY4fBuajsbZyJvIDVSix6tYKLrW2dhnO6Pj9tP3jLBm0nmLs3QxZNCIPCHyfBHeDo4SraRKLjRpjmWv4A2fsKNMjG9nvDbgSGOzyZ/biDXnLGzBdMf4kD8FSZsFGo2QnruPehPo7dQ9YMAT3mJBFGGDv4+lTmIeZ0RBq4G5owo0SJ9jZnrOimIucd44Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BZhpsDmmXVHBis31nXjeXXEsp6+x6ZM/nkS2KwjvaDc=;
- b=nl27CSjdLACFnMz3UktqHKUarRmHccOVlpPgcOG0wBxTDFrd55VNwSqMYJ3jOPWCIakO5ukAxq4+LkyEKqzxJsb4NjYS4uQhXbwiDxUmMAV31WZwF2AEtRbGc5klYxzZE7WC/zycYLWv///Oa5EqyqkVEOvw52XEnKT2zW3tJ9nm/1alB9EH34LStxSirrfj8FTMCzdSZ1SSHwEQsmEq6KZzYWRGtJNK8dZZ5vnf/E2e4AoawiwMKvvJFttB95tLOKZE+vNcAe+8D+fepDrht8GxcTmj0fUP8MHYEy736t4bropQxmUEYk15fkHzeITx+DcwU/U/S7o72BngAWYjrw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BZhpsDmmXVHBis31nXjeXXEsp6+x6ZM/nkS2KwjvaDc=;
- b=FQB6XEL3h6H8BNCM4TcceSo+AGHuBMTBJkobjkYvSXZLj9yW1lqqfKQy5VgNB6o/UA4nUDuplBIEthSxj14c8CnyWq75xwfPyyvcSwDipqrRNGSexXKiy8OOCnPTXwVsyU//OdEViMetiLQtTwbHbdvCoE8sCPw3MqqijlyjLugttVJtYPvUWxT/4m1whVPz5bsS7w1QDT5gnefIDtAgbNxBnvPoWeoIoqXv4o6ndRfk2J57I6rHfLp5kOUTxCo5Ow5nJ0MldokWyzON+hE5pqP/kula5ad3Zf/DZmZ6H1vj4XbVVOgCKYlm29jX9EJSfnVe/YgwPA7rIFKQxdhe/Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5224.namprd12.prod.outlook.com (2603:10b6:208:319::23)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.14; Wed, 22 Dec
- 2021 17:52:07 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::d8be:e4e4:ce53:6d11]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::d8be:e4e4:ce53:6d11%7]) with mapi id 15.20.4823.019; Wed, 22 Dec 2021
- 17:52:07 +0000
-Date: Wed, 22 Dec 2021 13:52:05 -0400
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH v4 02/13] driver core: Set DMA ownership during driver
- bind/unbind
-Message-ID: <20211222175205.GL1432915@nvidia.com>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id v_zOn-bWs9LH for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Dec 2021 20:27:13 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 72F9060AD7
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 20:27:13 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 71C8FD6E;
+ Wed, 22 Dec 2021 12:27:12 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6753D3F5A1;
+ Wed, 22 Dec 2021 12:26:44 -0800 (PST)
+Subject: Re: [PATCH v4 07/13] iommu: Add iommu_at[de]tach_device_shared() for
+ multi-device groups
+To: Jason Gunthorpe <jgg@nvidia.com>
 References: <20211217063708.1740334-1-baolu.lu@linux.intel.com>
- <20211217063708.1740334-3-baolu.lu@linux.intel.com>
- <YcMeZlN3798noycN@kroah.com>
-Content-Disposition: inline
-In-Reply-To: <YcMeZlN3798noycN@kroah.com>
-X-ClientProxiedBy: MN2PR08CA0025.namprd08.prod.outlook.com
- (2603:10b6:208:239::30) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+ <20211217063708.1740334-8-baolu.lu@linux.intel.com>
+ <dd797dcd-251a-1980-ca64-bb38e67a526f@arm.com>
+ <20211221184609.GF1432915@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <aebbd9c7-a239-0f89-972b-a9059e8b218b@arm.com>
+Date: Wed, 22 Dec 2021 20:26:34 +0000
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: af56339f-7652-4542-8538-08d9c573c512
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5224:EE_
-X-Microsoft-Antispam-PRVS: <BL1PR12MB52240322F78DAC41C5EEB809C27D9@BL1PR12MB5224.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: W1oSqoLAl4e78Skj2iYDTmvhGjr5XBUQwrwEPrgWfWu44tIIneYnPbj4At5G4ds963hNFnickVAlnoC3HuBN70kvcWibxOK9uGsJixTRZYwA7KcwU9qRaq9iI78GqnsGFu+KuhuK5yc7sdi1VVGMQdWfDLzwQ2A1mizdiS/7D1haZjFCzskt+vpK+bCiezm4bQiIuXC3mkXUMMdTnKSMQbAAqtt0PMbngZG2Nn7sdyjltIBON1mf1QlTjiJ086CxKycdRyLXujFes+zRziWg+g0zxEhrp5MPwU+fL78esHb3YGGNysCnnhZ2OFV8L/yzLZBd3Hn89qcEn2BGYNEDedhVdIW4kMvRvtNdqc8/uQwpPDD9ZOobyoYvVDAdeqMsTBJD12A7JmM1g/pr1QiDM+iFMch5lUVEkOhwD0WTj0hXfU2xiOwKzGu1tnODn2hkiTu55cp4+tQa7Vzu+AewxIUfpiL06LbUkg0a1TnMGB6uPVdUIXZzgXAdkBpEB9bAl7LrYkx2W3d4BH2fo3HkN/Ng1VOmuCvXT0lvDEhU0JTC7OKx6LyIkeReHh3U0pKyPSivQ862gvSIBZBvh7DejWs5vdcHhOqhhXa8zSm5mZ6fTdYJ4KDEiqH+toYM4iXI9c4NUbaYKwUVLswP6Obh60kwGg5vjfy1MWJePen1YwkHvWIQTj7RAod9toKdY1jA8WQXv60bTdrwV3ccD8FjhQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(4326008)(8676002)(66556008)(36756003)(316002)(33656002)(8936002)(6486002)(38100700002)(5660300002)(508600001)(186003)(54906003)(6506007)(6916009)(66476007)(6512007)(1076003)(26005)(66946007)(7416002)(2906002)(2616005)(86362001)(357404004);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LNUD/IgNmlKnrRo+pbsrJkjafl0UVOTlgto7/Njz8Al+ivNtDElw/moGbmhT?=
- =?us-ascii?Q?mH4P9wQykdwwB5v/JtZ7A2MjNdsezfGYOwnOHkEy++Jqmt7hmKysfoApgwuj?=
- =?us-ascii?Q?fV3qX4ZZLn3nqQIEHQiVwT2ErreTxZVDZgSnu5HoGq/D2S6mjKBJVqfKv2Ao?=
- =?us-ascii?Q?uw/eaL1CK8u/igrUo2hwO5WO1FzCEt2OxOTGXysmewIgGjOjTNDIP3d15ZhJ?=
- =?us-ascii?Q?sdzMggaLHkVdpIh0O2X7RiA5uq+m8d2ML2tj1kO+aLxTIbZPMAfriyKI/w/w?=
- =?us-ascii?Q?v7iUYH067m25Xs0ksU8m0r1EIKKuVfbYVwIzIV7WpnyNH4GOQGeuWdT6txeq?=
- =?us-ascii?Q?rwZukXBYXzASjBZcTjKrBiORTlnZf/j20fotFzHT/lWaoJlQJ9mkY1MaU1Ap?=
- =?us-ascii?Q?BoMiP7YCquD3DptVVHrl1+Q/FARJuswBQ8ZQg/2DkIIB0G8eCtgLPEqDbR0a?=
- =?us-ascii?Q?m9x9JwX9iVuXCPKVmSSNB9iybi6bo49eROjMmc0mt/n3Eexw3EVn/RyDMZHx?=
- =?us-ascii?Q?L2xOvot+092gTiePWRF6WJdolhi3sP6ar7TQ/xiDvTfUQjHqtfQpPU20+xZs?=
- =?us-ascii?Q?ggVbfYpTtLqj81LtNWrq+HNbDsdMELhMRBhX73qfWwWJG9ROLh0NnsM1fggA?=
- =?us-ascii?Q?PhcNKbg2cY/Dmsdpz3khcLBiyDNEHdwCIu+ov8dy1p3peNBLxPjqyIIf+vkY?=
- =?us-ascii?Q?/mkaHqr6ohAJyguhVNNZDKDxailvrhFFwSSfwIlF50UgW7Wrh5eAemcjhA6M?=
- =?us-ascii?Q?oAcXntPuaFL5RS8kj0K8lYaRGHfe83yaC+US2FeIf63RLT7RWk1fs88SeQFP?=
- =?us-ascii?Q?b8vt4CRr3ukCYhnjcx4zM0CD1bqMFW65ZzS0uMvNOi6WS4G0HwJUi5oIig6f?=
- =?us-ascii?Q?5rZ3QyBJvEnwesGpCAPJgAm5GxNSmIOtRM9J/akrWqrM9AE8X1s0vdLblEU2?=
- =?us-ascii?Q?D1+yWAbDKkU6pQ8M/svlBiKI+yUae92DpD17Aa/uSY40YcFSx+RUvdRqDOSZ?=
- =?us-ascii?Q?CKpaoi/yhW5NwR1CTyap6B1j1/AFwwCbtCR5owJsA6I7X7XZeeadfR1PI9GZ?=
- =?us-ascii?Q?PawKzlt2PAu5OMaCAPQr8Yex8blnCW8MfPmgTOZG4zUgC2dHa66Ew8IF1aoc?=
- =?us-ascii?Q?4sHgFxWeainN58T/4+pBQA1ZCoqBn4Up/C59QGeAfUF3k+n/WSpL+5XzPra8?=
- =?us-ascii?Q?EhGbKnzwF22Dn7Dv16HLRv9TRomKEGJOrS0o7KloDz0yeakIkntmfhVtfRlG?=
- =?us-ascii?Q?2R+msV/59tl2/68u0QCumOT7q0/dpTjSEJrxK1qKHsrvgWw6vPZzaKfj5vr/?=
- =?us-ascii?Q?2zaJ5ZOVc012N8wK8qIiJTd0phndFfCGsJvsNGDTFVyMzj3zyJcmI8uKYj/Z?=
- =?us-ascii?Q?nWPmv/ykSFqqfOeQTrcVMpFyG8Kf5iuAMnaEFzjfsaFnjIzhWWVm/Jda+3rO?=
- =?us-ascii?Q?6Q45/8tlVLtjOdzyNw/ixM6BkAaghx/2YHVy3qTIBJd/wwu1FI+MQ1eD8TqT?=
- =?us-ascii?Q?ViV4JI30Q4iFlbrAFxkp7N/l1Lqkn85QSUuNqK4mX6q/XVpJO/Zw17oQqtfd?=
- =?us-ascii?Q?M5e6O2PhJc7XVRDEq30=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: af56339f-7652-4542-8538-08d9c573c512
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Dec 2021 17:52:06.9746 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: D0jr7NMtj5q5slxr7okhtLMqU+3/UoPzj2iumZqCV89O5M9vqo1GqZ0pZWcQf/6r
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5224
+In-Reply-To: <20211221184609.GF1432915@nvidia.com>
+Content-Language: en-GB
 Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
  David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
  Thierry Reding <thierry.reding@gmail.com>,
@@ -137,10 +64,10 @@ Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
  Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
  Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
  Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
  Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
- Robin Murphy <robin.murphy@arm.com>
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -153,59 +80,192 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Dec 22, 2021 at 01:47:34PM +0100, Greg Kroah-Hartman wrote:
-
-> Right now we only have 4 different "busses" that care about this.  Out
-> of the following callbacks:
-> 	fsl_mc_dma_configure
-> 	host1x_dma_configure
-> 	pci_dma_configure
-> 	platform_dma_configure
+On 21/12/2021 6:46 pm, Jason Gunthorpe wrote:
+> On Tue, Dec 21, 2021 at 04:50:56PM +0000, Robin Murphy wrote:
 > 
-> Which one will actually care about the iommu_device_set_dma_owner()
-> call?  All of them?  None of them?  Some of them?
+>> this proposal is the worst of both worlds, in that drivers still have to be
+>> just as aware of groups in order to know whether to call the _shared
+>> interface or not, except it's now entirely implicit and non-obvious.
+> 
+> Drivers are not aware of groups, where did you see that?
 
-You asked this already, and it was answered - all but host1x require
-it, and it is harmless for host1x to do it.
+`git grep iommu_attach_group -- :^drivers/iommu :^include`
 
-> Again, why can't this just happen in the (very few) bus callbacks that
-> care about this?  
+Did I really have to explain that?
 
-Because it is not 'very few', it is all but one. This is why HCH and I
-both prefer this arrangement.
+The drivers other than vfio_iommu_type1, however, do have a complete 
+failure to handle, or even consider, any group that does not fit the 
+particular set of assumptions they are making, but at least they only 
+work in a context where that should not occur.
 
-Especially since host1x is pretty odd. I wasn't able to find where a
-host1x driver is doing DMA using the host1x device.. The places I
-looked at already doing DMA used a platform device. So I'm not sure
-what its host1x_dma_configure is for, or why host1x calls
-of_dma_configure() twice..
+> Drivers have to indicate their intention, based entirely on their own
+> internal design. If groups are present, or not is irrelevant to the
+> driver.
+> 
+> If the driver uses a single struct device (which is most) then it uses
+> iommu_attach_device().
+> 
+> If the driver uses multiple struct devices and intends to connect them
+> all to the same domain then it uses the _shared variant. The only
+> difference between the two is the _shared varient lacks some of the
+> protections against driver abuse of the API.
 
-> In following patches in this series, you turn off this
-> for the pci_dma_configure users, so what is left?  
+You've lost me again; how are those intentions any different? Attaching 
+one device to a private domain is a literal subset of attaching more 
+than one device to a private domain. There is no "abuse" of any API 
+anywhere; the singleton group restriction exists as a protective measure 
+because iommu_attach_device() was already in use before groups were 
+really a thing, in contexts where groups happened to be singleton 
+already, but anyone adding *new* uses in contexts where that assumption 
+might *not* hold would be in trouble. Thus it enforces DMA ownership by 
+the most trivial and heavy-handed means of simply preventing it ever 
+becoming shared in the first place.
 
-??? Where do you see this?
+Yes, I'm using the term "DMA ownership" in a slightly different context 
+to the one in which you originally proposed it. Please step out of the 
+userspace-device-assignment-focused bubble for a moment and stay with me...
 
-> I know others told you to put this in the driver core, but I fail to see
-> how adding this call to the 3 busses that care about it is a lot more
-> work than this driver core functionality that we all will have to
-> maintain for forever?
+So then we have the iommu_attach_group() interface for new code (and 
+still nobody has got round to updating the old code to it yet), for 
+which the basic use-case is still fundamentally "I want to attach my 
+thing to my domain", but at least now forcing explicit awareness that 
+"my thing" could possibly be inextricably intertwined with more than 
+just the one device they expect, so potential callers should have a good 
+think about that. Unfortunately this leaves the matter of who "owns" the 
+group entirely in the hands of those callers, which as we've now 
+concluded is not great.
 
-It is 4, you forgot AMBA's re-use of platform_dma_configure.
+One of the main reasons for non-singleton groups to occur is due to ID 
+aliasing or lack of isolation well beyond the scope and control of 
+endpoint devices themselves, so it's not really fair to expect every 
+IOMMU-aware driver to also be aware of that, have any idea of how to 
+actually handle it, or especially try to negotiate with random other 
+drivers as to whether it might be OK to take control of their DMA 
+address space too. The whole point is that *every* domain attach really 
+*has* to be considered "shared" because in general drivers can't know 
+otherwise. Hence the easy, if crude, fix for the original API.
 
-Why are you asking to duplicate code that has no reason to be
-different based on bus type? That seems like bad practice.
+> Nothing uses the group interface except for VFIO and stuff inside
+> drivers/iommu. VFIO has a uAPI tied to the group interface and it
+> is stuck with it.
 
-No matter where we put this we have to maintain it "forever" not sure
-what you are trying to say.
+Self-contradiction is getting stronger, careful...
+>> Otherwise just add the housekeeping stuff to iommu_{attach,detach}_group() -
+>> there's no way we want *three* attach/detach interfaces all with different
+>> semantics.
+> 
+> I'm not sure why you think 3 APIs is bad thing. Threes APIs, with
+> clearly intended purposes is a lot better than one giant API with a
+> bunch of parameters that tries to do everything.
 
-Jason
+Because there's only one problem to solve! We have the original API 
+which does happen to safely enforce ownership, but in an implicit way 
+that doesn't scale; then we have the second API which got past the 
+topology constraint but unfortunately turns out to just be unsafe in a 
+slightly different way, and was supposed to replace the first one but 
+hasn't, and is a bit clunky to boot; now you're proposing a third one 
+which can correctly enforce safe ownership for any group topology, which 
+is simply combining the good bits of the first two. It makes no sense to 
+maintain two bad versions of a thing alongside one which works better.
+
+I don't see why anything would be a giant API with a bunch of parameters 
+- depending on how you look at it, this new proposal is basically either 
+iommu_attach_device() with the ability to scale up to non-trivial groups 
+properly, or iommu_attach_group() with a potentially better interface 
+and actual safety. The former is still more prevalent (and the interface 
+argument compelling), so if we put the new implementation behind that, 
+with the one tweak of having it set DMA_OWNER_PRIVATE_DOMAIN 
+automatically, kill off iommu_attach_group() by converting its couple of 
+users, and not only have we solved the VFIO problem but we've also 
+finally updated all the legacy code for free! Of course you can have a 
+separate version for VFIO to attach with DMA_OWNER_PRIVATE_DOMAIN_USER 
+if you like, although I still fail to understand the necessity of the 
+distinction.
+
+> In this case, it is not simple to 'add the housekeeping' to
+> iommu_attach_group() in a way that is useful to both tegra and
+> VFIO. What tegra wants is what the _shared API implements, and that
+> logic should not be open coded in drivers.
+> 
+> VFIO does not want exactly that, it has its own logic to deal directly
+> with groups tied to its uAPI. Due to the uAPI it doesn't even have a
+> struct device, unfortunately.
+
+Nope. VFIO has its own logic to deal with groups because it's the only 
+thing that's ever actually tried dealing with groups correctly 
+(unsurprisingly, given that it's where they came from), and every other 
+private IOMMU domain user is just crippled or broken to some degree. All 
+that proves is that we really should be policing groups better in the 
+IOMMU core, per this series, because actually fixing all the other users 
+to properly validate their device's group would be a ridiculous mess.
+
+What VFIO wants is (conceptually[1]) "attach this device to my domain, 
+provided it and any other devices in its group are managed by a driver I 
+approve of." Surprise surprise, that's what any other driver wants as 
+well! For iommu_attach_device() it was originally implicit, and is now 
+further enforced by the singleton group restriction. For Tegra/host1x 
+it's implicit in the complete obliviousness to the possibility of that 
+not being the case.
+
+Of course VFIO has a struct device if it needs one; it's trivial to 
+resolve the member(s) of a group (and even more so once we can assume 
+that a group may only ever contain mutually-compatible devices in the 
+first place). How do you think vfio_bus_type() works?
+
+VFIO will also need a struct device anyway, because once I get back from 
+my holiday in the new year I need to start working with Simon on 
+evolving the rest of the API away from bus->iommu_ops to dev->iommu so 
+we can finally support IOMMU drivers coexisting[2].
+
+> The reason there are three APIs is because there are three different
+> use-cases. It is not bad thing to have APIs designed for the use cases
+> they serve.
+
+Indeed I agree with that second point, I'm just increasingly baffled how 
+it's not clear to you that there is only one fundamental use-case here. 
+Perhaps I'm too familiar with the history to objectively see how unclear 
+the current state of things might be :/
+
+>> It's worth taking a step back and realising that overall, this is really
+>> just a more generalised and finer-grained extension of what 426a273834ea
+>> already did for non-group-aware code, so it makes little sense *not* to
+>> integrate it into the existing interfaces.
+> 
+> This is taking 426a to it's logical conclusion and *removing* the
+> group API from the drivers entirely. This is desirable because drivers
+> cannot do anything sane with the group.
+
+I am in complete agreement with that (to the point of also not liking 
+patch #6).
+
+> The drivers have struct devices, and so we provide APIs that work in
+> terms of struct devices to cover both driver use cases today, and do
+> so more safely than what is already implemented.
+
+I am in complete agreement with that (given "both" of the supposed 3 
+use-cases all being the same).
+
+> Do not mix up VFIO with the driver interface, these are different
+> things. It is better VFIO stay on its own and not complicate the
+> driver world.
+
+Nope, vfio_iommu_type1 is just a driver, calling the IOMMU API just like 
+any other driver. I like the little bit where it passes itself to 
+vfio_register_iommu_driver(), which I feel gets this across far more 
+poetically than I can manage.
+
+Thanks,
+Robin.
+
+[1] Yes, due to the UAPI it actually starts with the whole group rather 
+than any particular device within it. Don't nitpick.
+[2] 
+https://lore.kernel.org/linux-iommu/2021052710373173260118@rock-chips.com/
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
