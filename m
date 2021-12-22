@@ -4,133 +4,86 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 098D2C433F5
-	for <iommu@archiver.kernel.org>; Wed, 22 Dec 2021 03:27:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8EB00C433F5
+	for <iommu@archiver.kernel.org>; Wed, 22 Dec 2021 04:22:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 8259940338;
-	Wed, 22 Dec 2021 03:27:51 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 107E0405CF;
+	Wed, 22 Dec 2021 04:22:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PlYYJBuWWhk2; Wed, 22 Dec 2021 03:27:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1CE0440210;
-	Wed, 22 Dec 2021 03:27:50 +0000 (UTC)
+	with ESMTP id s3tZDh8nhv3W; Wed, 22 Dec 2021 04:22:46 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A84824013E;
+	Wed, 22 Dec 2021 04:22:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E6FF6C002F;
-	Wed, 22 Dec 2021 03:27:49 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 69088C0012
- for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 02:55:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 72D14C001E;
+	Wed, 22 Dec 2021 04:22:45 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9541CC0012
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 04:22:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 51CD660F86
- for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 02:55:18 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 6D793405CF
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 04:22:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=vivo0.onmicrosoft.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KIsMfjE9TkWA for <iommu@lists.linux-foundation.org>;
- Wed, 22 Dec 2021 02:55:16 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from APC01-HK2-obe.outbound.protection.outlook.com
- (mail-eopbgr1300092.outbound.protection.outlook.com [40.107.130.92])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 496CB60F1E
- for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 02:55:15 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LU5KnqRLYR+4poE6C4WJ8vz5IgvQgvoXYP4YC0GBHqomg9c4P7/dYMUUar/9m1L7AkktqTAq3EakL1rrbVgJrMfKD6WcjxEQrIYPpp3l92ycUDKwLa80807e3iM4rnXGLNDQVWfNvlpEjT0wyuFbiIMrNQAmup2g0bXbftI7npxIYEYgkqslfRMdglbM6i2suyXe/kyiQqZ+AxJYgThMBduHcbpuHUO8HcnM7+ZysOfQHD5vILyaXmKxHVeUDXPFCso9awux1NXE3/NOHSogZUQVMBaTnmkQpVZt8sPISqNBDEnnC0M2lVuUxTsOMqY2qhvXDsW/APHuDYB0tiBeqg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dnAddFWw4Kt+vasaJkcrY33F+UG4ZCgirvYtLpjaCp4=;
- b=InXX4k5AEZZcSFFhOo0w91uRBJ9FCG5qGQwxYpptPniFUN0mDTL5YJmldn8xepAYjAVW+1dhC2I2cntfD6AaXrwK0hG+Kh6O9HGfcPmZzR99QS/GCoNfOKDLA7wKVfvlfUS5/Js7O4FAhWcwF54MkNqtAgLjVvgILxs2Kl1BTKzyNtYY4pvmIjHXtplqMnPi/WW1hExtUyfeA5KTz8yO7M7aLsE8vJj+5Ycp3yJibpBQHNHdA3hRhkBWL0u2eNtXL2R58L8aT6r05NiH6v2+GdS7h099HF3tIw8ydzeJNLo0WzmzT7fGkzRcnJ4v5PKluNVwyQAJ1Kn3XPZE759gSw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com; 
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dnAddFWw4Kt+vasaJkcrY33F+UG4ZCgirvYtLpjaCp4=;
- b=OCngFr4vAC1a0vT66mLXfSF9GGzJhLk8tFZTIPB3spyv1Sszxvgv2tfW4cWHg/3OzWlYScXueFYszUeTbXPfAQuzqLffs3/dYfmTkVyIjomwgCl+7RHrTjifijS34Es0yvjtznKdqBqL5LmFc5gdLuO+iDIlKFDvdQJ6XQd6bkI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from HK2PR06MB3492.apcprd06.prod.outlook.com (2603:1096:202:2f::10)
- by HK0PR06MB2723.apcprd06.prod.outlook.com (2603:1096:203:59::10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.18; Wed, 22 Dec
- 2021 02:55:09 +0000
-Received: from HK2PR06MB3492.apcprd06.prod.outlook.com
- ([fe80::8986:b885:90d7:5e61]) by HK2PR06MB3492.apcprd06.prod.outlook.com
- ([fe80::8986:b885:90d7:5e61%3]) with mapi id 15.20.4801.023; Wed, 22 Dec 2021
- 02:55:08 +0000
-From: Guo Zhengkui <guozhengkui@vivo.com>
-To: Christoph Hellwig <hch@infradead.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux-foundation.org (open list:SWIOTLB SUBSYSTEM),
- linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] Swiotlb: remove a duplicate include
-Date: Wed, 22 Dec 2021 10:54:16 +0800
-Message-Id: <20211222025416.3505-1-guozhengkui@vivo.com>
-X-Mailer: git-send-email 2.20.1
-X-ClientProxiedBy: HK2PR06CA0024.apcprd06.prod.outlook.com
- (2603:1096:202:2e::36) To HK2PR06MB3492.apcprd06.prod.outlook.com
- (2603:1096:202:2f::10)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id JmYc23QvuIvY for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Dec 2021 04:22:42 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id E55284013E
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 04:22:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1640146962; x=1671682962;
+ h=cc:subject:to:references:from:message-id:date:
+ mime-version:in-reply-to:content-transfer-encoding;
+ bh=Cyl3EnNuBUB+YdjCSptEMAFJt9rmebRqepgSebgdx4Q=;
+ b=eubJVPpDfPtfrTBLcr3Gs8dpVBwAY9MKpAwC33JbHbznSW4/tnJzoyaH
+ CdDNZXb2dyV0HotKeaLxBwZEDccTTzvbqVG9JTZmJgkJMP6Z4L8uN6mmo
+ gyqum56B1quamhPBqn3US5q0KwHNcN4K4x6nn/Eog1BO4XpFGAaU0reyn
+ C8FIrU3OF5kCfsTW4qYIDLnKhrMt6FPsZc9IYywIbtZw9wotSbGPwu8fH
+ ucYMpr1xzy121jluY2Rn5hKznZFeAjdrr/lS+4NgN8dyp6sMw9SNHKIEZ
+ N2YBRqDg5C2Nw+oB3lW3Pet1IcooeEGx232MiBPZIxo8A0h21+Fc0AWoz Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10205"; a="220553625"
+X-IronPort-AV: E=Sophos;i="5.88,225,1635231600"; d="scan'208";a="220553625"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 21 Dec 2021 20:22:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,225,1635231600"; d="scan'208";a="664154927"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
+ ([10.239.159.118])
+ by fmsmga001.fm.intel.com with ESMTP; 21 Dec 2021 20:22:34 -0800
+Subject: Re: [PATCH v4 07/13] iommu: Add iommu_at[de]tach_device_shared() for
+ multi-device groups
+To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
+References: <20211217063708.1740334-1-baolu.lu@linux.intel.com>
+ <20211217063708.1740334-8-baolu.lu@linux.intel.com>
+ <dd797dcd-251a-1980-ca64-bb38e67a526f@arm.com>
+ <20211221184609.GF1432915@nvidia.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <ced7f89a-8857-a8bb-be06-aaaabb4cdf09@linux.intel.com>
+Date: Wed, 22 Dec 2021 12:22:11 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 673990f0-98a3-42bf-1d0d-08d9c4f676d3
-X-MS-TrafficTypeDiagnostic: HK0PR06MB2723:EE_
-X-Microsoft-Antispam-PRVS: <HK0PR06MB27232DE3B32EE92A5FF66864C77D9@HK0PR06MB2723.apcprd06.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2089;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nFqDs4dfL4ypTJT9k0vWkKJ+i49Uoqfgzz04fRE0iPj0hXjVtZgS5HEE3s7+ISRpNCi/NhOJZshibtjxrA8MMdjRYTVQRbAXSQ/CQMMU2hBWMIxd3PIL5dfkM/qfyVdm0md3LIXJMqOMVPf6wZHnhsjR2nY9WcYqRtPbHg8oOSdfS2HiKjeyZTynNMjvqgW3iZy9PW2OaHfTScUSspsQfXmXi6mzl9vBjHvZ86vGKGwAJsFvAdhwOAgC57VgzryIszNa2P9Y3VSIY8T3p+yCZfSPYHohj37Q9DkgPDIJ9jha2rM/GmFwvGkDWWf9I78F4lHZStPbFpEoo4E11Yv5GfD5tPJsOxZ2wWsGgXN67sG+qbctTuRsR4UyQiHsrcJa7B/YYIug/5OOtI3aaGdB49KlYbhVwsD4axh9CovOA+Z3/EqM3OoPGD2YO24aJPIJLKJBwFkY5awGLjxTRt00fF3M5ALseM44VvHPTFawy+D0IV6TfzaOvRJDphXXtnzjdHiP+pZQLPYG+eIpsoPWexpkQ6gqQyk4oTTMUV8oECkgpEiZ6nWnAAmbUn1PBrXQq7PcXRFfCGV8spgBYr9tYzP1psidwpHXn5XBt4FFoNrrvtyQIV+9sFcN2GnbGyCCvSeba8CpBjJ7cIbQV3F3EJbXwGyFVxRg26GRGWFq32XaD7mBUkXpKa7H8V8Ek3JxX5q2Gi0MhsIC0it/83o3Mw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:HK2PR06MB3492.apcprd06.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(4326008)(186003)(6486002)(26005)(316002)(52116002)(110136005)(508600001)(6506007)(8936002)(8676002)(2906002)(38100700002)(1076003)(6666004)(66556008)(66946007)(66476007)(36756003)(86362001)(2616005)(83380400001)(38350700002)(5660300002)(4744005)(107886003)(6512007);
- DIR:OUT; SFP:1102; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0vk8GTyQm2+fO4dv8WMkl37LAw79hYFFyOiIW0rCTYKYyflRH6clxGQCnkcJ?=
- =?us-ascii?Q?p9UNEhjsOOlsAtltXYgsW7ySj4cCPrg2EZWsQ0Z3XaS2PR68nj9xTMgbvI1O?=
- =?us-ascii?Q?1cG80BYN6xb1MIB6Nd62gEpkk2fHwsIZ1Gtu9TenThF85IzpKU2BRsAK60u0?=
- =?us-ascii?Q?DhR7yOKemIja4RcCVQytLGnWgXIGM27Zely8sd5aw736YM4yG1abQodgVJQ+?=
- =?us-ascii?Q?HTaa0zgIKmb/wczu+bFTfa9ntzlZkMlJxl23c6Us8nfDE1qqfWcC1FxIzLmp?=
- =?us-ascii?Q?jdOScFa/O9K8cKO51ph1jfir466e3tLbc9/IZth5XzqyGEj1APszSFUnCPie?=
- =?us-ascii?Q?A6W8+f4TqjTs547AAgUMjzN8/LxgaXLf2cYuP+DZLy1dAAM3Jk1zz6nXHyRQ?=
- =?us-ascii?Q?BMfIsJR8ZfZ3GyDaBpG3aou4MWC/z6kZnj+kwimlZTV5nPYiBpUq9zkntA1G?=
- =?us-ascii?Q?kuQH6CAxOPvRwxsBwEoBnLXwyQ1Fq0pIcOx+O/TSnGgoYGQJgQ/dweWGVeWj?=
- =?us-ascii?Q?c1OdfRbbMNl8OFMu3xe4lVTmWngfgCXtW8uz4EYqezfC0WhJKBoB3Jm2hNGy?=
- =?us-ascii?Q?Hnkysc7Nf6y4SKY56BBvkS2qJKgZ8vgN2ygaWjQTQDZuFKULkXLxtYWHLM8w?=
- =?us-ascii?Q?PrUZBFuY83ZAtqtECHZ5s85YtwFb+xjuOyZ8iR9s4g6R5jQPaRt+ywWQ2lzp?=
- =?us-ascii?Q?Fkh66/EdOy58b76DaCJPcASgGViei4W//rIOCb4E5HUEwOqLtbJxXq6VZMHa?=
- =?us-ascii?Q?wOV+uO/JDGn3gTmVring3X2TU1Lv50MYhbfb/ReRnb6Nyqp5j34JOEXKWrJb?=
- =?us-ascii?Q?5tFa9yGZc9vNz9Lqm2TLCGq6ZqrOsyC86tCCfUuqHZTQWhPjQBBQzJYK6scS?=
- =?us-ascii?Q?kMYaJcptZrbdbMgc4xkDvH+ZLqtjeEJvPj0sJ27lQ8j6qmAouVxIrX+3KP8B?=
- =?us-ascii?Q?zyEMR+xyS3cJmGhq/kav20kHnKni9tI6EfoyEHSXUo5B5gw9lIGc1iwHEG3S?=
- =?us-ascii?Q?qhVy3g1nRg4kQmmSFGygdkrqNjYTTOWdacYNDrTQjIk265FS7V2QH1E4AqI8?=
- =?us-ascii?Q?KES1TLcpdcqOUi4u3r7GGnUzDhWYhui4kT6MRJhnmsoWOZOSGv9sv9V4KWXQ?=
- =?us-ascii?Q?oeEIxn2WJe7HV474XFMj3q7bR3AlXPmxNta+QL4ISmUgGYPRCJLQxGFizxdy?=
- =?us-ascii?Q?pprpfJjwfoGzpsyKtAfl1qbluDkTwE7n6fwiWbTBshUUt0Myv/FesrrK0l3m?=
- =?us-ascii?Q?vWRfe2sEjFPrnsTy8kPKZNxTxsxSWgasZTF4SkVJunvs2WMfuA+FzooawRXY?=
- =?us-ascii?Q?qnvaDgTYcPjM+imfrFxD23UOAS0o/n+2a4NTTtkSLgZu72L8yn1zIHE6a2ga?=
- =?us-ascii?Q?9mrVBsftBUx2RqwEO601PaYjSSuVsFPyqxeLcOdo5E13W2YAAn3Qw3jhN4AN?=
- =?us-ascii?Q?YVCLC01/GIg6lKDwxoFwMgOfJpV84HOIsPTkKOnjfJAyYwVEpK/NYFK1xY3l?=
- =?us-ascii?Q?fKoHY7UVOvwUo1nLLnwe1Tt9/k2dIwwibMAZ3XkVo3JZGMM7ZK/4s4jfz24Y?=
- =?us-ascii?Q?tiDHfi/O6MLZN2l0rwUGoAyPt+MM1mckWpjuTHVW9PRjlmdWQPUqKG049GKm?=
- =?us-ascii?Q?+h73YegDlfUvke+SO2CVNcI=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 673990f0-98a3-42bf-1d0d-08d9c4f676d3
-X-MS-Exchange-CrossTenant-AuthSource: HK2PR06MB3492.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Dec 2021 02:55:08.7775 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZfEmeaxDSeU+zNJVVM2NlFGjasRrssEm3TK89Fs6u179EnTfaVlVFeVoFF/P37OdeHxjASID4uqLHWd1nDnoDw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0PR06MB2723
-X-Mailman-Approved-At: Wed, 22 Dec 2021 03:27:49 +0000
-Cc: kernel@vivo.com, Guo Zhengkui <guozhengkui@vivo.com>
+In-Reply-To: <20211221184609.GF1432915@nvidia.com>
+Content-Language: en-US
+Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
+ David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -143,49 +96,91 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Remove a duplicate "#include <linux/io.h>". The deleted one in line 43
-is under "#ifdef CONFIG_DMA_RESTRICTED_POOL". However, there is already
-one in line 53 with no conditional compile.
+On 12/22/21 2:46 AM, Jason Gunthorpe wrote:
+>> It's worth taking a step back and realising that overall, this is really
+>> just a more generalised and finer-grained extension of what 426a273834ea
+>> already did for non-group-aware code, so it makes little sense*not*  to
+>> integrate it into the existing interfaces.
+> This is taking 426a to it's logical conclusion and*removing*  the
+> group API from the drivers entirely. This is desirable because drivers
+> cannot do anything sane with the group.
+> 
+> The drivers have struct devices, and so we provide APIs that work in
+> terms of struct devices to cover both driver use cases today, and do
+> so more safely than what is already implemented.
+> 
+> Do not mix up VFIO with the driver interface, these are different
+> things. It is better VFIO stay on its own and not complicate the
+> driver world.
 
-Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
----
- kernel/dma/swiotlb.c | 1 -
- 1 file changed, 1 deletion(-)
+Per Joerg's previous comments:
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 1b0501fd3e0e..8c091626ca35 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -33,21 +33,20 @@
- #include <linux/ctype.h>
- #include <linux/highmem.h>
- #include <linux/gfp.h>
- #include <linux/scatterlist.h>
- #include <linux/cc_platform.h>
- #include <linux/set_memory.h>
- #ifdef CONFIG_DEBUG_FS
- #include <linux/debugfs.h>
- #endif
- #ifdef CONFIG_DMA_RESTRICTED_POOL
--#include <linux/io.h>
- #include <linux/of.h>
- #include <linux/of_fdt.h>
- #include <linux/of_reserved_mem.h>
- #include <linux/slab.h>
- #endif
- 
- #include <asm/io.h>
- #include <asm/dma.h>
- 
- #include <linux/io.h>
--- 
-2.20.1
+https://lore.kernel.org/linux-iommu/20211119150612.jhsvsbzisvux2lga@8bytes.org/
 
+The commit 426a273834ea came only in order to disallow attaching a
+single device within a group to a different iommu_domain. So it's
+reasonable to improve the existing iommu_attach/detach_device() to cover
+all cases. How about below code? Did I miss anything?
+
+int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+{
+         struct iommu_group *group;
+         int ret = 0;
+
+         group = iommu_group_get(dev);
+         if (!group)
+                 return -ENODEV;
+
+         mutex_lock(&group->mutex);
+         if (group->attach_cnt) {
+                 if (group->domain != domain) {
+                         ret = -EBUSY;
+                         goto unlock_out;
+                 }
+         } else {
+                 ret = __iommu_attach_group(domain, group);
+                 if (ret)
+                         goto unlock_out;
+         }
+
+         group->attach_cnt++;
+unlock_out:
+         mutex_unlock(&group->mutex);
+         iommu_group_put(group);
+
+         return ret;
+}
+EXPORT_SYMBOL_GPL(iommu_attach_device);
+
+void iommu_detach_device_shared(struct iommu_domain *domain, struct 
+device *dev)
+{
+         struct iommu_group *group;
+
+         group = iommu_group_get(dev);
+         if (WARN_ON(!group))
+                 return;
+
+         mutex_lock(&group->mutex);
+         if (WARN_ON(!group->attach_cnt || group->domain != domain)
+                 goto unlock_out;
+
+         if (--group->attach_cnt == 0)
+                 __iommu_detach_group(domain, group);
+
+unlock_out:
+         mutex_unlock(&group->mutex);
+         iommu_group_put(group);
+}
+EXPORT_SYMBOL_GPL(iommu_detach_device);
+
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
