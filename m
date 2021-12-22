@@ -1,61 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 76CFEC433FE
-	for <iommu@archiver.kernel.org>; Wed, 22 Dec 2021 12:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D5AC5C433F5
+	for <iommu@archiver.kernel.org>; Wed, 22 Dec 2021 12:47:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 10E9760FC1;
-	Wed, 22 Dec 2021 12:32:42 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 65CBD404E9;
+	Wed, 22 Dec 2021 12:47:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8WPcOGRrol0M; Wed, 22 Dec 2021 12:32:41 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id BE33960FB7;
-	Wed, 22 Dec 2021 12:32:40 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id WYEgvadHzhxR; Wed, 22 Dec 2021 12:47:42 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id B25424051D;
+	Wed, 22 Dec 2021 12:47:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 954A9C002F;
-	Wed, 22 Dec 2021 12:32:40 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0251AC0012
- for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 12:32:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 85009C002F;
+	Wed, 22 Dec 2021 12:47:41 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 97FA9C0012
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 12:47:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id DDE3C41621
- for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 12:32:38 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 7750F82C04
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 12:47:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lN2xSylBisnV for <iommu@lists.linux-foundation.org>;
- Wed, 22 Dec 2021 12:32:38 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id D54DF41606
- for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 12:32:37 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 131091FB;
- Wed, 22 Dec 2021 04:32:37 -0800 (PST)
-Received: from [10.57.34.58] (unknown [10.57.34.58])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 02FE23F5A1;
- Wed, 22 Dec 2021 04:32:34 -0800 (PST)
-Message-ID: <6f020ea5-a45c-d21d-04b5-bdb2aef080f1@arm.com>
-Date: Wed, 22 Dec 2021 12:32:29 +0000
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=linuxfoundation.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id mdp7JxwhpaHr for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Dec 2021 12:47:38 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from dfw.source.kernel.org (dfw.source.kernel.org
+ [IPv6:2604:1380:4641:c500::1])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 3842E82907
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 12:47:38 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id 0D8A061947;
+ Wed, 22 Dec 2021 12:47:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C86F6C36AEB;
+ Wed, 22 Dec 2021 12:47:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+ s=korg; t=1640177256;
+ bh=qZ5Me6WI7mkDi0azDBPQq5dSpsFYy5Bph6HB3I2DDz4=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=AcvTYGw/SzfCslxuTb0DnXeiXRptpHokYrNiFvO00bOd87s7zOWmIrZu53i1WWVN5
+ NI8Yo8M3YRytp4C3Bo0sZcBWeaY2GOfSVn8HKiaHKAXVB+OLomcypI4oxR3cvgXRS7
+ JQ7zwu8Uhw7hM6wCp4CIT9Bj8LSOQuda7PHW5Prc=
+Date: Wed, 22 Dec 2021 13:47:34 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v4 02/13] driver core: Set DMA ownership during driver
+ bind/unbind
+Message-ID: <YcMeZlN3798noycN@kroah.com>
+References: <20211217063708.1740334-1-baolu.lu@linux.intel.com>
+ <20211217063708.1740334-3-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH v3 5/5] iommu/nvidia-grace-cmdqv: Limit CMDs for guest
- owned VINTF
-Content-Language: en-GB
-To: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org, will@kernel.org
-References: <20211119071959.16706-1-nicolinc@nvidia.com>
- <20211119071959.16706-6-nicolinc@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20211119071959.16706-6-nicolinc@nvidia.com>
-Cc: jean-philippe@linaro.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, thierry.reding@gmail.com, jgg@nvidia.com,
- linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <20211217063708.1740334-3-baolu.lu@linux.intel.com>
+Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
+ David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+ Chaitanya Kulkarni <kch@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -68,161 +88,157 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-11-19 07:19, Nicolin Chen via iommu wrote:
-> When VCMDQs are assigned to a VINTF that is owned by a guest, not
-> hypervisor (HYP_OWN bit is unset), only TLB invalidation commands
-> are supported. This requires get_cmd() function to scan the input
-> cmd before selecting cmdq between smmu->cmdq and vintf->vcmdq, so
-> unsupported commands can still go through emulated smmu->cmdq.
+On Fri, Dec 17, 2021 at 02:36:57PM +0800, Lu Baolu wrote:
+> This extends really_probe() to allow checking for dma ownership conflict
+> during the driver binding process. By default, the DMA_OWNER_DMA_API is
+> claimed for the bound driver before calling its .probe() callback. If this
+> operation fails (e.g. the iommu group of the target device already has the
+> DMA_OWNER_USER set), the binding process is aborted to avoid breaking the
+> security contract for devices in the iommu group.
 > 
-> Also the guest shouldn't have HYP_OWN bit being set regardless of
-> guest kernel driver writing it or not, i.e. the user space driver
-> running in the host OS should wire this bit to zero when trapping
-> a write access to this VINTF_CONFIG register from a guest kernel.
-> So instead of using the existing regval, this patch reads out the
-> register value explicitly to cache in vintf->cfg.
+> Without this change, the vfio driver has to listen to a bus BOUND_DRIVER
+> event and then BUG_ON() in case of dma ownership conflict. This leads to
+> bad user experience since careless driver binding operation may crash the
+> system if the admin overlooks the group restriction. Aside from bad design,
+> this leads to a security problem as a root user can force the kernel to
+> BUG() even with lockdown=integrity.
 > 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> Driver may set a new flag (suppress_auto_claim_dma_owner) to disable auto
+> claim in the binding process. Examples include kernel drivers (pci_stub,
+> PCI bridge drivers, etc.) which don't trigger DMA at all thus can be safely
+> exempted in DMA ownership check and userspace framework drivers (vfio/vdpa
+> etc.) which need to manually claim DMA_OWNER_USER when assigning a device
+> to userspace.
+> 
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Link: https://lore.kernel.org/linux-iommu/20210922123931.GI327412@nvidia.com/
+> Link: https://lore.kernel.org/linux-iommu/20210928115751.GK964074@nvidia.com/
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  6 ++--
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  5 +--
->   .../arm/arm-smmu-v3/nvidia-grace-cmdqv.c      | 32 +++++++++++++++++--
->   3 files changed, 36 insertions(+), 7 deletions(-)
+>  include/linux/device/driver.h |  2 ++
+>  drivers/base/dd.c             | 37 ++++++++++++++++++++++++++++++-----
+>  2 files changed, 34 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index b1182dd825fd..73941ccc1a3e 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -337,10 +337,10 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
->   	return 0;
->   }
->   
-> -static struct arm_smmu_cmdq *arm_smmu_get_cmdq(struct arm_smmu_device *smmu)
-> +static struct arm_smmu_cmdq *arm_smmu_get_cmdq(struct arm_smmu_device *smmu, u64 *cmds, int n)
->   {
->   	if (smmu->nvidia_grace_cmdqv)
-> -		return nvidia_grace_cmdqv_get_cmdq(smmu);
-> +		return nvidia_grace_cmdqv_get_cmdq(smmu, cmds, n);
->   
->   	return &smmu->cmdq;
->   }
-> @@ -747,7 +747,7 @@ static int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
->   	u32 prod;
->   	unsigned long flags;
->   	bool owner;
-> -	struct arm_smmu_cmdq *cmdq = arm_smmu_get_cmdq(smmu);
-> +	struct arm_smmu_cmdq *cmdq = arm_smmu_get_cmdq(smmu, cmds, n);
->   	struct arm_smmu_ll_queue llq, head;
->   	int ret = 0;
->   
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 24f93444aeeb..085c775c2eea 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -832,7 +832,8 @@ struct nvidia_grace_cmdqv *
->   nvidia_grace_cmdqv_acpi_probe(struct arm_smmu_device *smmu,
->   			      struct acpi_iort_node *node);
->   int nvidia_grace_cmdqv_device_reset(struct arm_smmu_device *smmu);
-> -struct arm_smmu_cmdq *nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu);
-> +struct arm_smmu_cmdq *nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu,
-> +						  u64 *cmds, int n);
->   #else /* CONFIG_NVIDIA_GRACE_CMDQV */
->   static inline struct nvidia_grace_cmdqv *
->   nvidia_grace_cmdqv_acpi_probe(struct arm_smmu_device *smmu,
-> @@ -847,7 +848,7 @@ static inline int nvidia_grace_cmdqv_device_reset(struct arm_smmu_device *smmu)
->   }
->   
->   static inline struct arm_smmu_cmdq *
-> -nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu)
-> +nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu, u64 *cmds, int n)
->   {
->   	return NULL;
->   }
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/nvidia-grace-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/nvidia-grace-cmdqv.c
-> index c0d7351f13e2..71f6bc684e64 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/nvidia-grace-cmdqv.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/nvidia-grace-cmdqv.c
-> @@ -166,7 +166,8 @@ static int nvidia_grace_cmdqv_init_one_vcmdq(struct nvidia_grace_cmdqv *cmdqv,
->   	return arm_smmu_cmdq_init(cmdqv->smmu, cmdq);
->   }
->   
-> -struct arm_smmu_cmdq *nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu)
-> +struct arm_smmu_cmdq *
-> +nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu, u64 *cmds, int n)
->   {
->   	struct nvidia_grace_cmdqv *cmdqv = smmu->nvidia_grace_cmdqv;
->   	struct nvidia_grace_cmdqv_vintf *vintf0 = &cmdqv->vintf0;
-> @@ -176,6 +177,24 @@ struct arm_smmu_cmdq *nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu)
->   	if (!FIELD_GET(VINTF_STATUS, vintf0->status))
->   		return &smmu->cmdq;
->   
-> +	/* Check for supported CMDs if VINTF is owned by guest (not hypervisor) */
-> +	if (!FIELD_GET(VINTF_HYP_OWN, vintf0->cfg)) {
-> +		u64 opcode = (n) ? FIELD_GET(CMDQ_0_OP, cmds[0]) : CMDQ_OP_CMD_SYNC;
+> diff --git a/include/linux/device/driver.h b/include/linux/device/driver.h
+> index a498ebcf4993..f5bf7030c416 100644
+> --- a/include/linux/device/driver.h
+> +++ b/include/linux/device/driver.h
+> @@ -54,6 +54,7 @@ enum probe_type {
+>   * @owner:	The module owner.
+>   * @mod_name:	Used for built-in modules.
+>   * @suppress_bind_attrs: Disables bind/unbind via sysfs.
+> + * @suppress_auto_claim_dma_owner: Disable kernel dma auto-claim.
+>   * @probe_type:	Type of the probe (synchronous or asynchronous) to use.
+>   * @of_match_table: The open firmware table.
+>   * @acpi_match_table: The ACPI match table.
+> @@ -100,6 +101,7 @@ struct device_driver {
+>  	const char		*mod_name;	/* used for built-in modules */
+>  
+>  	bool suppress_bind_attrs;	/* disables bind/unbind via sysfs */
+> +	bool suppress_auto_claim_dma_owner;
+>  	enum probe_type probe_type;
+>  
+>  	const struct of_device_id	*of_match_table;
+> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+> index 68ea1f949daa..b04eec5dcefa 100644
+> --- a/drivers/base/dd.c
+> +++ b/drivers/base/dd.c
+> @@ -28,6 +28,7 @@
+>  #include <linux/pm_runtime.h>
+>  #include <linux/pinctrl/devinfo.h>
+>  #include <linux/slab.h>
+> +#include <linux/iommu.h>
+>  
+>  #include "base.h"
+>  #include "power/power.h"
+> @@ -538,6 +539,32 @@ static int call_driver_probe(struct device *dev, struct device_driver *drv)
+>  	return ret;
+>  }
+>  
+> +static int device_dma_configure(struct device *dev, struct device_driver *drv)
+> +{
+> +	int ret;
+> +
+> +	if (!dev->bus->dma_configure)
+> +		return 0;
+> +
+> +	ret = dev->bus->dma_configure(dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (!drv->suppress_auto_claim_dma_owner)
+> +		ret = iommu_device_set_dma_owner(dev, DMA_OWNER_DMA_API, NULL);
 
-I'm not sure there was ever a conscious design decision that batches 
-only ever contain one type of command - if something needs to start 
-depending on that behaviour then that dependency probably wants to be 
-clearly documented. Also, a sync on its own gets trapped to the main 
-cmdq but a sync on the end of a batch of TLBIs or ATCIs goes to the 
-VCMDQ, huh?
+Wait, the busses that wanted to configure the device, just did so in
+their dma_configure callback, so why not do this type of
+iommu_device_set_dma_owner() in the few busses that will want this to
+happen?
+
+Right now we only have 4 different "busses" that care about this.  Out
+of the following callbacks:
+	fsl_mc_dma_configure
+	host1x_dma_configure
+	pci_dma_configure
+	platform_dma_configure
+
+Which one will actually care about the iommu_device_set_dma_owner()
+call?  All of them?  None of them?  Some of them?
+
+Again, why can't this just happen in the (very few) bus callbacks that
+care about this?  In following patches in this series, you turn off this
+for the pci_dma_configure users, so what is left?  3 odd bus types that
+are not used often.  How well did you test devices of those types with
+this patchset?
+
+It's fine to have "suppress" fields when they are the minority, but here
+it's a _very_ tiny tiny number of actual devices in a system that will
+ever get the chance to have this check happen for them and trigger,
+right?
+
+I know others told you to put this in the driver core, but I fail to see
+how adding this call to the 3 busses that care about it is a lot more
+work than this driver core functionality that we all will have to
+maintain for forever?
 
 > +
-> +		/* List all supported CMDs for vintf->cmdq pathway */
-> +		switch (opcode) {
-> +		case CMDQ_OP_TLBI_NH_ASID:
-> +		case CMDQ_OP_TLBI_NH_VA:
-> +		case CMDQ_OP_TLBI_S12_VMALL:
-> +		case CMDQ_OP_TLBI_S2_IPA:
-
-Fun! Can the guest invalidate any VMID it feels like, or is there some 
-additional magic on the host side that we're missing here?
-
-> +		case CMDQ_OP_ATC_INV:
-> +			break;
-Ditto for StreamID here.
-
-Robin.
-
-
-> +		default:
-> +			/* Unsupported CMDs go for smmu->cmdq pathway */
-> +			return &smmu->cmdq;
-> +		}
-> +	}
+> +	return ret;
+> +}
 > +
->   	/*
->   	 * Select a vcmdq to use. Here we use a temporal solution to
->   	 * balance out traffic on cmdq issuing: each cmdq has its own
-> @@ -199,13 +218,22 @@ int nvidia_grace_cmdqv_device_reset(struct arm_smmu_device *smmu)
->   	vintf0->idx = 0;
->   	vintf0->base = cmdqv->base + NVIDIA_CMDQV_VINTF(0);
->   
-> +	/*
-> +	 * Note that HYP_OWN bit is wired to zero when running in guest kernel
-> +	 * regardless of enabling it here, as !HYP_OWN cmdqs have a restricted
-> +	 * set of supported commands, by following the HW design.
-> +	 */
->   	regval = FIELD_PREP(VINTF_HYP_OWN, 1);
->   	writel(regval, vintf0->base + NVIDIA_VINTF_CONFIG);
->   
->   	regval |= FIELD_PREP(VINTF_EN, 1);
->   	writel(regval, vintf0->base + NVIDIA_VINTF_CONFIG);
->   
-> -	vintf0->cfg = regval;
-> +	/*
-> +	 * As being mentioned above, HYP_OWN bit is wired to zero for a guest
-> +	 * kernel, so read back regval from HW to ensure that reflects in cfg
-> +	 */
-> +	vintf0->cfg = readl(vintf0->base + NVIDIA_VINTF_CONFIG);
->   
->   	ret = readl_relaxed_poll_timeout(vintf0->base + NVIDIA_VINTF_STATUS,
->   					 regval, regval == VINTF_ENABLED,
+> +static void device_dma_cleanup(struct device *dev, struct device_driver *drv)
+> +{
+> +	if (!dev->bus->dma_configure)
+> +		return;
+> +
+> +	if (!drv->suppress_auto_claim_dma_owner)
+> +		iommu_device_release_dma_owner(dev, DMA_OWNER_DMA_API);
+> +}
+> +
+>  static int really_probe(struct device *dev, struct device_driver *drv)
+>  {
+>  	bool test_remove = IS_ENABLED(CONFIG_DEBUG_TEST_DRIVER_REMOVE) &&
+> @@ -574,11 +601,8 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+>  	if (ret)
+>  		goto pinctrl_bind_failed;
+>  
+> -	if (dev->bus->dma_configure) {
+> -		ret = dev->bus->dma_configure(dev);
+> -		if (ret)
+> -			goto probe_failed;
+> -	}
+> +	if (device_dma_configure(dev, drv))
+> +		goto pinctrl_bind_failed;
+
+Are you sure you are jumping to the proper error path here?  It is not
+obvious why you changed this.
+
+thanks,
+
+greg k-h
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
