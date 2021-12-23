@@ -4,51 +4,50 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 578B4C433F5
-	for <iommu@archiver.kernel.org>; Thu, 23 Dec 2021 13:06:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id ADE0CC433FE
+	for <iommu@archiver.kernel.org>; Thu, 23 Dec 2021 13:06:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 4697F40144;
-	Thu, 23 Dec 2021 13:06:10 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 60D2140921;
+	Thu, 23 Dec 2021 13:06:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id G1ygvSDLozbf; Thu, 23 Dec 2021 13:06:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id E069940647;
-	Thu, 23 Dec 2021 13:06:07 +0000 (UTC)
+	with ESMTP id Bci4k8ZzABVS; Thu, 23 Dec 2021 13:06:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 140FB408BF;
+	Thu, 23 Dec 2021 13:06:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B9F11C001E;
-	Thu, 23 Dec 2021 13:06:07 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BFE25C0012
- for <iommu@lists.linux-foundation.org>; Thu, 23 Dec 2021 13:06:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E3A3EC001E;
+	Thu, 23 Dec 2021 13:06:10 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5A8BCC0012
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Dec 2021 13:06:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id AD74940144
- for <iommu@lists.linux-foundation.org>; Thu, 23 Dec 2021 13:06:04 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 46DAA40922
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Dec 2021 13:06:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id aSQIxjtO-83l for <iommu@lists.linux-foundation.org>;
- Thu, 23 Dec 2021 13:06:04 +0000 (UTC)
+ with ESMTP id eOTFv4v2nCeS for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Dec 2021 13:06:07 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com
  [210.160.252.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id D54784013A
- for <iommu@lists.linux-foundation.org>; Thu, 23 Dec 2021 13:06:03 +0000 (UTC)
-X-IronPort-AV: E=Sophos;i="5.88,229,1635174000"; d="scan'208";a="104966906"
+ by smtp2.osuosl.org (Postfix) with ESMTP id F33D94062F
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Dec 2021 13:06:06 +0000 (UTC)
+X-IronPort-AV: E=Sophos;i="5.88,229,1635174000"; d="scan'208";a="104966916"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
- by relmlie6.idc.renesas.com with ESMTP; 23 Dec 2021 22:01:01 +0900
+ by relmlie6.idc.renesas.com with ESMTP; 23 Dec 2021 22:01:04 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
- by relmlir6.idc.renesas.com (Postfix) with ESMTP id C3D2E4366C26;
- Thu, 23 Dec 2021 22:00:58 +0900 (JST)
+ by relmlir6.idc.renesas.com (Postfix) with ESMTP id C87BD4366C2F;
+ Thu, 23 Dec 2021 22:01:01 +0900 (JST)
 From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Joerg Roedel <joro@8bytes.org>, Rob Clark <robdclark@chromium.org>,
  linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
-Subject: [PATCH 1/2] iommu/arm-smmu: Use platform_irq_count() to get the
- interrupt count
-Date: Thu, 23 Dec 2021 13:00:45 +0000
-Message-Id: <20211223130046.9365-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 2/2] iommu/arm-smmu: Propagate errors from platform_get_irq()
+Date: Thu, 23 Dec 2021 13:00:46 +0000
+Message-Id: <20211223130046.9365-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211223130046.9365-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20211223130046.9365-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -76,43 +75,29 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
-allocation of IRQ resources in DT core code, this causes an issue
-when using hierarchical interrupt domains using "interrupts" property
-in the node as this bypasses the hierarchical setup and messes up the
-irq chaining.
+The driver overrides the error code returned by platform_get_irq() to
+-ENODEV. Switch to propagating the error code upstream so that errors
+such as -EPROBE_DEFER are handled.
 
-In preparation for removal of static setup of IRQ resource from DT core
-code use platform_get_irq_count().
-
+Fixes: 9ec36cafe43b ("of/irq: do irq resolution in platform_get_irq")
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 4bc75c4ce402..4844cd075644 100644
+index 4844cd075644..6cf5612efcda 100644
 --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
 +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -2105,12 +2105,12 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	if (IS_ERR(smmu))
- 		return PTR_ERR(smmu);
+@@ -2129,7 +2129,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 		int irq = platform_get_irq(pdev, i);
  
--	num_irqs = 0;
--	while ((res = platform_get_resource(pdev, IORESOURCE_IRQ, num_irqs))) {
--		num_irqs++;
--		if (num_irqs > smmu->num_global_irqs)
--			smmu->num_context_irqs++;
--	}
-+	num_irqs = platform_irq_count(pdev);
-+	if (num_irqs < 0)
-+		return num_irqs;
-+
-+	if (num_irqs > smmu->num_global_irqs)
-+		smmu->num_context_irqs += (num_irqs - smmu->num_global_irqs);
+ 		if (irq < 0)
+-			return -ENODEV;
++			return irq;
+ 		smmu->irqs[i] = irq;
+ 	}
  
- 	if (!smmu->num_context_irqs) {
- 		dev_err(dev, "found %d interrupts but expected at least %d\n",
 -- 
 2.17.1
 
