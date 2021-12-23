@@ -4,125 +4,143 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BF0D4C433F5
-	for <iommu@archiver.kernel.org>; Wed, 22 Dec 2021 22:52:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D84D5C433F5
+	for <iommu@archiver.kernel.org>; Thu, 23 Dec 2021 00:57:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 4CC31408D2;
-	Wed, 22 Dec 2021 22:52:54 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 65297408AE;
+	Thu, 23 Dec 2021 00:57:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id k0rJly54Xv5Z; Wed, 22 Dec 2021 22:52:53 +0000 (UTC)
+	with ESMTP id FGFdyrXU_OW9; Thu, 23 Dec 2021 00:57:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id CB225402A9;
-	Wed, 22 Dec 2021 22:52:52 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 21BBC4067F;
+	Thu, 23 Dec 2021 00:57:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7E89FC002F;
-	Wed, 22 Dec 2021 22:52:52 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 54309C0012
- for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 22:52:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E0135C002F;
+	Thu, 23 Dec 2021 00:57:21 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C0096C0012
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Dec 2021 00:57:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 3521E60A98
- for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 22:52:51 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id A684A4063C
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Dec 2021 00:57:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9LQ4bFjjdfm9 for <iommu@lists.linux-foundation.org>;
- Wed, 22 Dec 2021 22:52:49 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id qWfRDMwbA4RZ for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Dec 2021 00:57:18 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on2061b.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e88::61b])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 5671B60A87
- for <iommu@lists.linux-foundation.org>; Wed, 22 Dec 2021 22:52:49 +0000 (UTC)
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam12on2064.outbound.protection.outlook.com [40.107.243.64])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id DBB7840574
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Dec 2021 00:57:17 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=maf/41XZTyPkrp+puK2fcnc5R+GiEDYbXxoxDjLfT/OO9k7M5V6qIdWgPhGR6Why6SSGwJdERc9y5eVAgz8f5eVC/GiVGoZjNXA0ghwx5PSXAN6kDb92QudvaaOoPMbR1/XqRWOpEb8Zd8N/Z11zBa4+xkBttFS7/dGXUXSVvdktVpM+YbvRc/O1C6Ij2Hgl3MbqR4TlYkagQ5XOGNXZv65N6CYCiwTNiQyqif0km+tvRuVgc/EqEmgXWeOKL/XtvvK/hROPNr4YQZ32tsX7uejr9IUNqtu4+xONVUJOe64SL/Pch4KD91h0+ZTQnqODA6FTJIvMx1l+Yc0H+ZNKDg==
+ b=Eo4EAdVH2oPST6pivcoJT9Ez/VcTBRLNzhEvFH4mHJHPb5+PSH0Gmkl/LREnjjUpfUiuVnD4o6D1Wa1OgE18QPipfkE6UouxebOJnMK+eM/mg2jBuscA0ylxeR+Hq2E5RjEDtckkG5rUnz1ragVLzmw5UIreF7yRR7IRgoe9F5pcU/3YU+JZTNdGK+6H4fxkCX9WYENcVChzv68atNUa3Wcd2BIoY1s7+sZw7ZB1wuy4xxwZiS4PHQFCkuHvCYH/xDu9P4FwX9IERnBPijtuib5yslffFzP5w28uxgH2O1mD7IK5ubUkEk2NkhemmOc0ccmMivbY7lTfqLT7ePNmfQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IhRifqNjKh97D4zNpyN7zrEHJYexMckcYmOAa4FkE9s=;
- b=DM8G9dMq6tQMk20BnVR6xfHOHMFIpSxLqUNlS3BbSbWMhDvRr75oXg6wsBfzzNxDqX/+8xVlVuGdRTOjrTeyPthLHw0BHyfdQSQHw/jZ+REtL7i1QbF+2t+b7HuQaUZi0LctZhV9ACsfGX9/bj6UcNIW5+k9xkJgbKvkXOmIpOXBb4j/4K2W0/zxR3zXsf8qg5JdqxXesmusbcKmb5ZyAeM2h/QhdHxky8XElBPrt1rojkIIe7XLzlEw0TYqn+nZoepCTji+nTGu2TWExbJEzUp0lsrV6i0IK2twwk1DYxXxvg/IvEAGmKlHOUjGEQmWrrpH41GS2jG4s/v7TWezDA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
+ bh=8b/MI4f8ed5HLSsCpH46jtH4orPelhFJH6IJcABq7Ks=;
+ b=VfVZstTvQz9/DfdmYsMt08NYJHDSPZzKB9tBB2wdv6VfeQkqcoybKtjXR7CM2d3cKSAsLdAMPVLYrsI8HMuUNowLF3337AsODZGv0qumCLmvD1GhkYngqHnuBStUytPaNA0dbq+YzuWAa01xg2vKAYi9X7Te7elL9b6DKPtUukeb+d7uv0TxHrgPp49npTaR6U3sRaBIa5aW7F/a86oAPd6Hd7vI4LHzFHyCWCiHVOQqr4CiYHG2+xBEfyVOaCCtBirPVW0CLKIHC+p7Hz0t0myQ6ueFw0cRqTnltaWWRAP2eGXZNbnX3afXk90tjb08nSDNU2PcEJPUjQdGHjdCXw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IhRifqNjKh97D4zNpyN7zrEHJYexMckcYmOAa4FkE9s=;
- b=lGn5MMi24LP3FQms19rJ0SFg1+7rF7pL/GAxeFAc2cIrsgNDrG6vFcrZtn0pVG9mrpN40P7o1eq3ymrAgSdddrW7DRL/79uhp0i8BtD7sB2PPkzaqOwOnoQUv42S828JMScwOWkCOR5VzDU6pnjS09A4iq4+oaUNfIottS4NLCFfBZsNDB+kzKKDygklXi+lgXRMeP1pDLiLbBVaawuza02RvKu8ddYopH3IcTckAwPfuusgtSNUjUFc/glkazEH5ATCZ+rB/2vOv1kyWj4M13NW2ZkgyMZuzDGnbOkVtg1rcsZTvu+1mMfgKR/2R2H1yyDubPJwmp9cGc1rx8rvqA==
-Received: from BN1PR14CA0008.namprd14.prod.outlook.com (2603:10b6:408:e3::13)
- by CH0PR12MB5218.namprd12.prod.outlook.com (2603:10b6:610:d1::17)
+ bh=8b/MI4f8ed5HLSsCpH46jtH4orPelhFJH6IJcABq7Ks=;
+ b=DajlqFlHYdcy4YN94RR9+/TyIMi+i6i1CXkmyA1YFnffMGKfc0j3xxuOew5jarU2IbpZMeUSCPatt7YlyveJ23pSggIvr9IusQwMkCKFcWhk2JVSwiQoHfF/jSdVy5XGdBJDWc2uANc7vqPQgHAwjoeUJURPZ8h5qIczdxv2tL3mxllC5eOcUVni1aKM99nidBcpj1FjouD/4fQduNOfsf6mlz4TS3Va5MhwrLsiYZukp5uGuMXQTW+HtF7t43smi0w/0sm+eRGt1o+v5TAmPf33yp5B012fak+OipEjufIjxeumXyBJG4tHLqOQ0wXqn1nIMO9gTgoma2degyCFEQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL0PR12MB5539.namprd12.prod.outlook.com (2603:10b6:208:1c3::15)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4801.14; Wed, 22 Dec
- 2021 22:52:44 +0000
-Received: from BN8NAM11FT022.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e3:cafe::ba) by BN1PR14CA0008.outlook.office365.com
- (2603:10b6:408:e3::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.18 via Frontend
- Transport; Wed, 22 Dec 2021 22:52:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- BN8NAM11FT022.mail.protection.outlook.com (10.13.176.112) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4823.18 via Frontend Transport; Wed, 22 Dec 2021 22:52:43 +0000
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18;
- Wed, 22 Dec 2021 22:52:43 +0000
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 22 Dec
- 2021 22:52:43 +0000
-Received: from Asurada-Nvidia (172.20.187.6) by mail.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.18 via Frontend
- Transport; Wed, 22 Dec 2021 22:52:42 +0000
-Date: Wed, 22 Dec 2021 14:52:40 -0800
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.16; Thu, 23 Dec
+ 2021 00:57:14 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::d8be:e4e4:ce53:6d11]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::d8be:e4e4:ce53:6d11%7]) with mapi id 15.20.4823.019; Thu, 23 Dec 2021
+ 00:57:14 +0000
+Date: Wed, 22 Dec 2021 20:57:12 -0400
 To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v3 5/5] iommu/nvidia-grace-cmdqv: Limit CMDs for guest
- owned VINTF
-Message-ID: <20211222225134.GB5698@Asurada-Nvidia>
-References: <20211119071959.16706-1-nicolinc@nvidia.com>
- <20211119071959.16706-6-nicolinc@nvidia.com>
- <6f020ea5-a45c-d21d-04b5-bdb2aef080f1@arm.com>
-MIME-Version: 1.0
+Subject: Re: [PATCH v4 07/13] iommu: Add iommu_at[de]tach_device_shared() for
+ multi-device groups
+Message-ID: <20211223005712.GA1779224@nvidia.com>
+References: <20211217063708.1740334-1-baolu.lu@linux.intel.com>
+ <20211217063708.1740334-8-baolu.lu@linux.intel.com>
+ <dd797dcd-251a-1980-ca64-bb38e67a526f@arm.com>
+ <20211221184609.GF1432915@nvidia.com>
+ <aebbd9c7-a239-0f89-972b-a9059e8b218b@arm.com>
 Content-Disposition: inline
-In-Reply-To: <6f020ea5-a45c-d21d-04b5-bdb2aef080f1@arm.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EOPAttributedMessage: 0
+In-Reply-To: <aebbd9c7-a239-0f89-972b-a9059e8b218b@arm.com>
+X-ClientProxiedBy: BL1PR13CA0269.namprd13.prod.outlook.com
+ (2603:10b6:208:2ba::34) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
+MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6259e1db-12be-41ac-dd08-08d9c59dc3f4
-X-MS-TrafficTypeDiagnostic: CH0PR12MB5218:EE_
-X-Microsoft-Antispam-PRVS: <CH0PR12MB5218F8A9458432DF88E735AAAB7D9@CH0PR12MB5218.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: f690428c-fbb1-4975-06d6-08d9c5af2888
+X-MS-TrafficTypeDiagnostic: BL0PR12MB5539:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB55397D0E525F60833BEA593CC27E9@BL0PR12MB5539.namprd12.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gneU9TTugnzxi4tu+VWIMZEGnqSExhZArEvCsgeQca6Z9+sdnfBH8TrU7Fh1rk3tADzh5vqkzTa7R1w5dV0nKYRFrCjdjvvRK5Kgd+aarBwCwmOv6xLjNZ5g+AWtW7lx/m6z+v0nGVcSEwUHjI7kaPeGf8gT9n+bL275V5zZ7rQwM8gA6svxpZPz5iKpXS0w/AIe6DSUuRmk3oSyiz+v+L0Nm87QuxwuCEFWHLNDQED5tt1AosE1jFKbdEajExVd5R5Xy4+B/V4wkctv/9Yw27bh7N5yQPkl8QgsxOUl0XaB+nol4f5gY8bjQrmDCM273cGNCKdAEgN7XtxfSIuiLi+j723u/d8wiK3JEUqPmI954Y9IxYb2+Hc39eJd4p9u2wkXhz+z+zqMKc5fX6vNSQEy7cJ2YCGC7qGbyNGqxADEP7ZhzbcEzU/US5gtm6vao5CtFcPDtzjhV3RTdP1RIPMSgGbRiVG7skV0UrJMBgpnQ1G2t0i06ZwNSmQ0YzPyqlIZYBw3cuPOhjkOrkQ+7zEvwRr/2mtv2k9qpCDrT41vauExZQnoIqvyXdHCRHOPYDa0AZWH3wkQRzT5ngN4NiK85WRbAvDDRC0uGw01KEoNq6im451WSNpbphc++6OE9sTEtW0sWxP4uFaFvIsjcC0pgFIL+7tBE16R6DTjGgjqdE+Kl6um2NiXEDE7xuTCrYgzHuijfHny7x++DmMWWPUkuFSCUuYCOA60pTUkrt4YgKKJqTLBiGoxEZ+xmHo4sHg3wfJIYQI3mRZK1o0bsbbWSUzb9ulTWRhXPn9m75sTLSxwA/GluQrYddL+wVmGYZkkyjUfCa92gd+e9FL0Ndz15+IfNTIGoCf96Phfj7H0ajeZZ4QN1o7swJZSh9WrDkwN8oy4A4UKJWbFfOS52xEt7NZ7wIxF2d7FA4wDDH8=
-X-Forefront-Antispam-Report: CIP:12.22.5.238; CTRY:US; LANG:en; SCL:1; SRV:;
- IPV:CAL; SFV:NSPM; H:mail.nvidia.com; PTR:InfoNoRecords; CAT:NONE;
- SFS:(4636009)(36840700001)(40470700002)(46966006)(8936002)(53546011)(70206006)(70586007)(9686003)(83380400001)(4001150100001)(316002)(6916009)(33656002)(2906002)(966005)(186003)(8676002)(26005)(5660300002)(47076005)(356005)(86362001)(54906003)(1076003)(426003)(40460700001)(36860700001)(82310400004)(55016003)(81166007)(336012)(4326008)(34020700004)(33716001)(508600001)(36900700001);
+X-Microsoft-Antispam-Message-Info: wHHL1wqRSAKjuF3UoaKFQe1q/W9uoKHXooW6H5T6IMEAiKhyIsURtdcskfjCPkBjlrQ5h3CTuyvB31Au3lr/7Z0iuN5fn+nt458lfArE/kSJevbhDpruKp1xCiRQPza0Fqe2zUAbGvSvaJMrI+3aWROagUSF9MuUPK4hTRKpSKR3etKHWT/tNfcwixpjYpOyelfKvy5ITtGIl98bQf9K+3CzK2M8wyvRSNobL6DDZ0TYSdzrCnc8ZQxK3Qy9J88wNmoQjBnL4OlIP6HYt29p4Lc90/VSApLvEIkL2syCpwXUWy/UGulVSTTddAigrMmzH6wfO5HE3u0jc66MizUl+UX3xj7861njj1JJ9VOurL8OpO428ECVjAmrM1oSWoKl07d3pkQ0rikunp0PytCZesTlgaN73gSUiQrGjuEKFcPxqd8dQ1qcXEfNYtTfNMluBpY/tF9KhqXveqrBkGuxVqbYHesUXxYPzzCaL9U1alnVQh57+/+YIJx3qnxV0+GnGBckVLYBHNQYjC0oOgKHnDpcvY/KLeEq81WHY8bHpVweVQopPz9Z3yVhrYtnXqGnnKXwHGVILOtggfyiuNaJY0dvQn0jWIj6FCtD7avRYmzIsoFtIMqN7Haviz87Syimo1mMaedWyK75nDogRUINFg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(7416002)(2906002)(8936002)(5660300002)(36756003)(186003)(6512007)(6916009)(6506007)(316002)(86362001)(33656002)(54906003)(53546011)(6486002)(8676002)(26005)(38100700002)(4326008)(83380400001)(66946007)(66556008)(508600001)(66476007)(2616005)(1076003);
  DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?D4JIbmHbtK2Gmlcej6tJcVMa6kWJI5M0nCV4FR9DJdUuv6zbFGhdrB5ZeAOm?=
+ =?us-ascii?Q?vLF/rbMAhS6pJonT4TfR0Sg1CwlfyjRMbhKfPH6mwJCYL4/N9hEnC4ILK+IP?=
+ =?us-ascii?Q?oqOlNp+/FwU8ohyI5FjZdoxGYBeMp+qRRTv6bYmR1HicsRcnOI9EpNomfa0K?=
+ =?us-ascii?Q?i2+5shqdNXQuBoUr7MxGxgD1tv3TJjK1fZoOegO+/MoPGg1j7Gq++ULxFLl8?=
+ =?us-ascii?Q?sHVMMha53ahm1oeCwQS0j+SUQ7JEQolJg0Os6KPHvk0BHI+Hk5IOiCIRch31?=
+ =?us-ascii?Q?746oKxZ5PlFGvdod0uC80O+QpnA8gomnThUgW/L7sUkG5jWjWQ7WzMRkIU3V?=
+ =?us-ascii?Q?3DLRs/jxUARu0g0IYF+hLojMDkCZe83lAdrwibjB29E3KMpq8uiSbvLvxLFp?=
+ =?us-ascii?Q?V/qFPiChJQO7rzTj4smozzDXYNy+f5TQmKg0csFM25B6+g5CkG4cBtBGpZCi?=
+ =?us-ascii?Q?t0BloUWPcOHC1N+sPYi0gHR5BPreu2f9CkI3uQuwIQoBoqBQ5lNrfGMDrjqv?=
+ =?us-ascii?Q?uyrvkpkK4VWHHI8ULy2avKBw7Xn37AIARopUbUuEd5A6Xso0MCjHc95hZRfW?=
+ =?us-ascii?Q?vusmjvvk50cT365e/R45bSuYxhvCJ2CA8jdXMAT+ICy8Hjbbqc8LJKYkiDiL?=
+ =?us-ascii?Q?7fJrMjtMKIFwWaDeFbc4r6N6j6usLqITpzYLhsIHCIxRH2ArBTEh6SQXb+uP?=
+ =?us-ascii?Q?8JU+ZkcRCCVNBq3BvVuC863DuSmz2Y9IWBzttz6c/+TGV0cPD49RDdu978qC?=
+ =?us-ascii?Q?OOeYSDL7tW31f0243eubImuuPM9mC1R6PM5jsAwH4E/BbGarzdw9rN4Xzzht?=
+ =?us-ascii?Q?Opng4ljk3p+TP0ut9S3mVQpDCQpslHNw3j57bS7vqqGDEgb6Mv13XnplmbWc?=
+ =?us-ascii?Q?/pJHdNxawD+HpEpY16AF9XaM4c3f94EHpmFN4VF+IisS1y0JKlRdjwaZ7gnO?=
+ =?us-ascii?Q?QAp0kXNrlioFJpOd7R2PlsN70yamkuRryXGh/eLSgw8OGVJd7QbscAz8KVm0?=
+ =?us-ascii?Q?nw/ZkNG/7zncVS5RvkNSjT9K50GMnrVJrhqZKLAIc4JHjyfnv1H27R9vQUnS?=
+ =?us-ascii?Q?xDxd8ur51eBkbhNdJ9f8LK2d6x/m/wNFN4omd5FHQ/dolN51a7qPGbmsSQTI?=
+ =?us-ascii?Q?V2VZOtohyGn5ughQ92VrOHsIZDA9UjEZiwRuTP+bzYSDZ3wjkljxhZkDtnVe?=
+ =?us-ascii?Q?8R3LIQlntQ78gSEXpAtWkMDdOQLLBGhS1yfjUc7Bd17ES7hx57YWHU6DfezO?=
+ =?us-ascii?Q?/Egndv33qHmS4s+Mzaerlm1+s0Wia2yz6VQhxARdsfDErYD/++x07lUwdvNK?=
+ =?us-ascii?Q?5zovB5p5DLKjWl+KhvFx50gkvjzudDO2wYN+kPgcATJAK3Ey1b/HAfuGhcmY?=
+ =?us-ascii?Q?5YbC1nPl6/SxfaxfLL02h/a4yBaF8hg+0bfHAYtx+sN3FJpPfuOtJf75jz63?=
+ =?us-ascii?Q?WFogHgLgzRWAOybdaks+D8QiuqFrwKX6LxpM3wFYdEWdlym66yNm6HSovfgu?=
+ =?us-ascii?Q?/rgu97GK511wL3Gxx59j8qePptkCqMBNiss0bO0/1DqQHzwvk8pDF5UJJxw8?=
+ =?us-ascii?Q?PJ1l6tDRN+FXtXh1w94=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Dec 2021 22:52:43.5434 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6259e1db-12be-41ac-dd08-08d9c59dc3f4
+X-MS-Exchange-CrossTenant-Network-Message-Id: f690428c-fbb1-4975-06d6-08d9c5af2888
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Dec 2021 00:57:14.2399 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[12.22.5.238];
- Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT022.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5218
-Cc: jean-philippe@linaro.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, thierry.reding@gmail.com, jgg@nvidia.com,
- linux-tegra@vger.kernel.org, will@kernel.org,
- linux-arm-kernel@lists.infradead.org
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fRpLOM8ZzECFxLIawHacA52Cytiz5kIRA7L+rOQoUqp+dmwpnDhgo7DoMorCCy55
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB5539
+Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
+ David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -135,193 +153,220 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Nicolin Chen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Nicolin Chen <nicolinc@nvidia.com>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Dec 22, 2021 at 12:32:29PM +0000, Robin Murphy wrote:
-> External email: Use caution opening links or attachments
+On Wed, Dec 22, 2021 at 08:26:34PM +0000, Robin Murphy wrote:
+> On 21/12/2021 6:46 pm, Jason Gunthorpe wrote:
+> > On Tue, Dec 21, 2021 at 04:50:56PM +0000, Robin Murphy wrote:
+> > 
+> > > this proposal is the worst of both worlds, in that drivers still have to be
+> > > just as aware of groups in order to know whether to call the _shared
+> > > interface or not, except it's now entirely implicit and non-obvious.
+> > 
+> > Drivers are not aware of groups, where did you see that?
 > 
+> `git grep iommu_attach_group -- :^drivers/iommu :^include`
 > 
-> On 2021-11-19 07:19, Nicolin Chen via iommu wrote:
-> > When VCMDQs are assigned to a VINTF that is owned by a guest, not
-> > hypervisor (HYP_OWN bit is unset), only TLB invalidation commands
-> > are supported. This requires get_cmd() function to scan the input
-> > cmd before selecting cmdq between smmu->cmdq and vintf->vcmdq, so
-> > unsupported commands can still go through emulated smmu->cmdq.
-> > 
-> > Also the guest shouldn't have HYP_OWN bit being set regardless of
-> > guest kernel driver writing it or not, i.e. the user space driver
-> > running in the host OS should wire this bit to zero when trapping
-> > a write access to this VINTF_CONFIG register from a guest kernel.
-> > So instead of using the existing regval, this patch reads out the
-> > register value explicitly to cache in vintf->cfg.
-> > 
-> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> > ---
-> >   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  6 ++--
-> >   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  5 +--
-> >   .../arm/arm-smmu-v3/nvidia-grace-cmdqv.c      | 32 +++++++++++++++++--
-> >   3 files changed, 36 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > index b1182dd825fd..73941ccc1a3e 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > @@ -337,10 +337,10 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
-> >       return 0;
-> >   }
-> > 
-> > -static struct arm_smmu_cmdq *arm_smmu_get_cmdq(struct arm_smmu_device *smmu)
-> > +static struct arm_smmu_cmdq *arm_smmu_get_cmdq(struct arm_smmu_device *smmu, u64 *cmds, int n)
-> >   {
-> >       if (smmu->nvidia_grace_cmdqv)
-> > -             return nvidia_grace_cmdqv_get_cmdq(smmu);
-> > +             return nvidia_grace_cmdqv_get_cmdq(smmu, cmds, n);
-> > 
-> >       return &smmu->cmdq;
-> >   }
-> > @@ -747,7 +747,7 @@ static int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
-> >       u32 prod;
-> >       unsigned long flags;
-> >       bool owner;
-> > -     struct arm_smmu_cmdq *cmdq = arm_smmu_get_cmdq(smmu);
-> > +     struct arm_smmu_cmdq *cmdq = arm_smmu_get_cmdq(smmu, cmds, n);
-> >       struct arm_smmu_ll_queue llq, head;
-> >       int ret = 0;
-> > 
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > index 24f93444aeeb..085c775c2eea 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > @@ -832,7 +832,8 @@ struct nvidia_grace_cmdqv *
-> >   nvidia_grace_cmdqv_acpi_probe(struct arm_smmu_device *smmu,
-> >                             struct acpi_iort_node *node);
-> >   int nvidia_grace_cmdqv_device_reset(struct arm_smmu_device *smmu);
-> > -struct arm_smmu_cmdq *nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu);
-> > +struct arm_smmu_cmdq *nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu,
-> > +                                               u64 *cmds, int n);
-> >   #else /* CONFIG_NVIDIA_GRACE_CMDQV */
-> >   static inline struct nvidia_grace_cmdqv *
-> >   nvidia_grace_cmdqv_acpi_probe(struct arm_smmu_device *smmu,
-> > @@ -847,7 +848,7 @@ static inline int nvidia_grace_cmdqv_device_reset(struct arm_smmu_device *smmu)
-> >   }
-> > 
-> >   static inline struct arm_smmu_cmdq *
-> > -nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu)
-> > +nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu, u64 *cmds, int n)
-> >   {
-> >       return NULL;
-> >   }
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/nvidia-grace-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/nvidia-grace-cmdqv.c
-> > index c0d7351f13e2..71f6bc684e64 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/nvidia-grace-cmdqv.c
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/nvidia-grace-cmdqv.c
-> > @@ -166,7 +166,8 @@ static int nvidia_grace_cmdqv_init_one_vcmdq(struct nvidia_grace_cmdqv *cmdqv,
-> >       return arm_smmu_cmdq_init(cmdqv->smmu, cmdq);
-> >   }
-> > 
-> > -struct arm_smmu_cmdq *nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu)
-> > +struct arm_smmu_cmdq *
-> > +nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu, u64 *cmds, int n)
-> >   {
-> >       struct nvidia_grace_cmdqv *cmdqv = smmu->nvidia_grace_cmdqv;
-> >       struct nvidia_grace_cmdqv_vintf *vintf0 = &cmdqv->vintf0;
-> > @@ -176,6 +177,24 @@ struct arm_smmu_cmdq *nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu)
-> >       if (!FIELD_GET(VINTF_STATUS, vintf0->status))
-> >               return &smmu->cmdq;
-> > 
-> > +     /* Check for supported CMDs if VINTF is owned by guest (not hypervisor) */
-> > +     if (!FIELD_GET(VINTF_HYP_OWN, vintf0->cfg)) {
-> > +             u64 opcode = (n) ? FIELD_GET(CMDQ_0_OP, cmds[0]) : CMDQ_OP_CMD_SYNC;
+> Did I really have to explain that?
+
+Well, yes you did, because it shows you haven't understood my
+question. After this series we deleted all those calls (though Lu, we
+missed one of the tegra ones in staging, let's get it for the next
+posting)
+
+So, after this series, where do you see drivers being aware of groups?
+If things are missed lets expect to fix them.
+
+> > If the driver uses multiple struct devices and intends to connect them
+> > all to the same domain then it uses the _shared variant. The only
+> > difference between the two is the _shared varient lacks some of the
+> > protections against driver abuse of the API.
 > 
-> I'm not sure there was ever a conscious design decision that batches
-> only ever contain one type of command - if something needs to start
+> You've lost me again; how are those intentions any different? Attaching one
+> device to a private domain is a literal subset of attaching more than one
+> device to a private domain. 
 
-Hmm, I think that's a good catch -- as it could be a potential
-bug here. Though the SMMUv3 driver currently seems to use loop
-by adding one type of cmds to any batch and submitting it right
-away so checking opcode of cmds[0] alone seems to be sufficient
-at this moment, yet it might not be so in the future. We'd need
-to apply certain constrains on the type of cmds in the batch in
-SMMUv3 driver upon smmu->nvidia_grace_cmdqv, or fallback to the
-SMMUv3's CMDQ pathway here if one of cmds is not supported.
+Yes it is a subset, but drivers will malfunction if they are not
+designed to have multi-attachment and wrongly get it, and there is
+only one driver that does actually need this.
 
-> depending on that behaviour then that dependency probably wants to be
-> clearly documented. Also, a sync on its own gets trapped to the main
-> cmdq but a sync on the end of a batch of TLBIs or ATCIs goes to the
-> VCMDQ, huh?
+I maintain a big driver subsystem and have learned that grepability of
+the driver mess for special cases is quite a good thing to
+have. Forcing drivers to mark in code when they do something weird is
+an advantage, even if it causes some small API redundancy.
 
-Yea...looks like an implication again where cmds must have SYNC
-at the end of the batch. I will see if any simple change can be
-done to fix these two. If you have suggestions for them, I would
-love to hear too.
+However, if you really feel strongly this should really be one API
+with the _shared implementation I won't argue it any further.
 
-> > +
-> > +             /* List all supported CMDs for vintf->cmdq pathway */
-> > +             switch (opcode) {
-> > +             case CMDQ_OP_TLBI_NH_ASID:
-> > +             case CMDQ_OP_TLBI_NH_VA:
-> > +             case CMDQ_OP_TLBI_S12_VMALL:
-> > +             case CMDQ_OP_TLBI_S2_IPA:
+> So then we have the iommu_attach_group() interface for new code (and still
+> nobody has got round to updating the old code to it yet), for which
+> the
+
+This series is going in the direction of eliminating
+iommu_attach_group() as part of the driver
+interface. iommu_attach_group() is repurposed to only be useful for
+VFIO.
+
+> properly, or iommu_attach_group() with a potentially better interface and
+> actual safety. The former is still more prevalent (and the interface
+> argument compelling), so if we put the new implementation behind that, with
+> the one tweak of having it set DMA_OWNER_PRIVATE_DOMAIN automatically, kill
+> off iommu_attach_group() by converting its couple of users, 
+
+This is what we did, iommu_attach_device() & _shared() are to be the
+only interface for the drivers, and we killed off the
+iommu_attach_group() couple of users except VFIO (the miss of
+drivers/staging excepted)
+
+> and not only have we solved the VFIO problem but we've also finally
+> updated all the legacy code for free! Of course you can have a
+> separate version for VFIO to attach with
+> DMA_OWNER_PRIVATE_DOMAIN_USER if you like, although I still fail to
+> understand the necessity of the distinction.
+
+And the seperate version for VFIO is called 'iommu_attach_group()'.
+
+Lu, it is probably a good idea to add an assertion here that the group
+is in DMA_OWNER_PRIVATE_DOMAIN_USER to make it clear that
+iommu_attach_group() is only for VFIO.
+
+VFIO has a special requirement that it be able to do:
+
++       ret = iommu_group_set_dma_owner(group->iommu_group,
++                                       DMA_OWNER_PRIVATE_DOMAIN_USER, f.file);
+
+Without having a iommu_domain to attach.
+
+This is because of the giant special case that PPC made of VFIO's
+IOMMU code. PPC (aka vfio_iommu_spapr_tce.c) requires the group
+isolation that iommu_group_set_dma_owner() provides, but does not
+actually have an iommu_domain and can not/does not call
+iommu_attach_group().
+
+Fixing this is a whole other giant adventure I'm hoping David will
+help me unwind next year.. 
+
+This series solves this problem by using the two step sequence of
+iommu_group_set_dma_owner()/iommu_attach_group() and conceptually
+redefining how iommu_attach_group() works to require the external
+caller to have done the iommu_group_set_dma_owner() for it. This is
+why the series has three APIs, because the VFIO special one assumes
+external iommu_group_set_dma_owner(). It just happens that is exactly
+the same code as iommu_attach_group() today.
+
+As for why does DMA_OWNER_PRIVATE_DOMAIN_USER exist? VFIO doesn't have
+an iommu_domain at this point but it still needs the iommu core to
+detatch the default domain. This is what the _USER does.
+
+Soo..
+
+There is another way to organize this and perhaps it does make more
+sense. I will try to sketch briefly in email, try to imagine the
+gaps..
+
+API family (== compares to this series):
+
+   iommu_device_use_dma_api(dev);
+     == iommu_device_set_dma_owner(dev, DMA_OWNER_DMA_API, NULL);
+
+   iommu_group_set_dma_owner(group, file);
+     == iommu_device_set_dma_owner(dev, DMA_OWNER_PRIVATE_DOMAIN_USER,
+                                   file);
+     Always detaches all domains from the group
+
+   iommu_attach_device(domain, dev)
+     == as is in this patch
+     dev and domain are 1:1
+
+   iommu_attach_device_shared(domain, dev)
+     == as is in this patch
+     dev and domain are N:1
+     * could just be the same as iommu_attach_device
+
+   iommu_replace_group_domain(group, old_domain, new_domain)
+     Makes group point at new_domain. new_domain can be NULL.
+
+   iommu_device_unuse_dma_api(dev)
+    == iommu_device_release_dma_owner() in this patch
+
+   iommu_group_release_dma_owner(group)
+    == iommu_detatch_group() && iommu_group_release_dma_owner()
+
+VFIO would use the sequence:
+
+   iommu_group_set_dma_owner(group, file);
+   iommu_replace_group_domain(group, NULL, domain_1);
+   iommu_replace_group_domain(group, domain_1, domain_2);
+   iommu_group_release_dma_owner(group);
+
+Simple devices would use
+
+   iommu_attach_device(domain, dev);
+   iommu_detatch_device(domain, dev);
+
+Tegra would use:
+
+   iommu_attach_device_shared(domain, dev);
+   iommu_detatch_device_shared(domain, dev);
+   // Or not, if people agree we should not mark this
+
+DMA API would have the driver core dma_configure do:
+   iommu_device_use_dma_api(dev);
+   dev->driver->probe()
+   iommu_device_unuse_dma_api(dev);
+
+It is more APIs overall, but perhaps they have a much clearer
+purpose. 
+
+I think it would be clear why iommu_group_set_dma_owner(), which
+actually does detatch, is not the same thing as iommu_attach_device().
+
+I'm not sure if this entirely eliminates
+DMA_OWNER_PRIVATE_DOMAIN_USER, or not, but at least it isn't in the
+API.
+
+Is it better?
+
+> What VFIO wants is (conceptually[1]) "attach this device to my domain,
+> provided it and any other devices in its group are managed by a driver I
+> approve of." 
+
+Yes, sure, "conceptually". But, there are troublesome details.
+
+> VFIO will also need a struct device anyway, because once I get back from my
+> holiday in the new year I need to start working with Simon on evolving the
+> rest of the API away from bus->iommu_ops to dev->iommu so we can finally
+> support IOMMU drivers coexisting[2].
+
+For VFIO it would be much easier to get the ops from the struct
+iommu_group (eg via iommu_group->default_domain->ops, or whatever).
+
+> Indeed I agree with that second point, I'm just increasingly baffled how
+> it's not clear to you that there is only one fundamental use-case here.
+> Perhaps I'm too familiar with the history to objectively see how unclear the
+> current state of things might be :/
+
+I think it is because you are just not familiar with the dark corners
+of VFIO. 
+
+VFIO has a special case, I outlined above.
+
+> > This is taking 426a to it's logical conclusion and *removing* the
+> > group API from the drivers entirely. This is desirable because drivers
+> > cannot do anything sane with the group.
 > 
-> Fun! Can the guest invalidate any VMID it feels like, or is there some
-> additional magic on the host side that we're missing here?
+> I am in complete agreement with that (to the point of also not liking patch
+> #6).
 
-Yes. VINTF has a register for SW to program VMID so that the HW
-can replace VMIDs in the cmds in the VCMDQs of that VINTF with
-the programmed VMID. That was the reason why we had numbers of
-patches in v2 to route the VMID between guest and host.
+Unfortunately patch #6 is only because of VFIO needing to use the
+group as a handle.
 
-> > +             case CMDQ_OP_ATC_INV:
-> > +                     break;
-> Ditto for StreamID here.
-
-Yes. StreamID works similarly by the HW: each VINTF provides us
-16 pairs of MATCH+REPLACE registers to program host and guest's
-StreamIDs. Our previous mdev implementation in v2 can be a good
-reference code:
-https://lore.kernel.org/kvm/20210831101549.237151fa.alex.williamson@redhat.com/T/#m903a1b44935d9e0376439a0c63e832eb464fbaee
-
-Thanks
-Nic
-
-> > +             default:
-> > +                     /* Unsupported CMDs go for smmu->cmdq pathway */
-> > +                     return &smmu->cmdq;
-> > +             }
-> > +     }
-> > +
-> >       /*
-> >        * Select a vcmdq to use. Here we use a temporal solution to
-> >        * balance out traffic on cmdq issuing: each cmdq has its own
-> > @@ -199,13 +218,22 @@ int nvidia_grace_cmdqv_device_reset(struct arm_smmu_device *smmu)
-> >       vintf0->idx = 0;
-> >       vintf0->base = cmdqv->base + NVIDIA_CMDQV_VINTF(0);
-> > 
-> > +     /*
-> > +      * Note that HYP_OWN bit is wired to zero when running in guest kernel
-> > +      * regardless of enabling it here, as !HYP_OWN cmdqs have a restricted
-> > +      * set of supported commands, by following the HW design.
-> > +      */
-> >       regval = FIELD_PREP(VINTF_HYP_OWN, 1);
-> >       writel(regval, vintf0->base + NVIDIA_VINTF_CONFIG);
-> > 
-> >       regval |= FIELD_PREP(VINTF_EN, 1);
-> >       writel(regval, vintf0->base + NVIDIA_VINTF_CONFIG);
-> > 
-> > -     vintf0->cfg = regval;
-> > +     /*
-> > +      * As being mentioned above, HYP_OWN bit is wired to zero for a guest
-> > +      * kernel, so read back regval from HW to ensure that reflects in cfg
-> > +      */
-> > +     vintf0->cfg = readl(vintf0->base + NVIDIA_VINTF_CONFIG);
-> > 
-> >       ret = readl_relaxed_poll_timeout(vintf0->base + NVIDIA_VINTF_STATUS,
-> >                                        regval, regval == VINTF_ENABLED,
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
