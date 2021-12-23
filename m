@@ -1,63 +1,61 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A9701C433F5
-	for <iommu@archiver.kernel.org>; Thu, 23 Dec 2021 02:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 56362C433EF
+	for <iommu@archiver.kernel.org>; Thu, 23 Dec 2021 03:03:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 4AD17410B0;
-	Thu, 23 Dec 2021 02:08:48 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id CEED360A79;
+	Thu, 23 Dec 2021 03:03:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QA8Z9OUP4d93; Thu, 23 Dec 2021 02:08:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 0DA4D4092B;
-	Thu, 23 Dec 2021 02:08:46 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id FCRpLyYg1hRV; Thu, 23 Dec 2021 03:03:36 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id B36AE60AC7;
+	Thu, 23 Dec 2021 03:03:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D6F84C001E;
-	Thu, 23 Dec 2021 02:08:46 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 75A1FC0012
- for <iommu@lists.linux-foundation.org>; Thu, 23 Dec 2021 02:08:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8A88AC002F;
+	Thu, 23 Dec 2021 03:03:35 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1A0D1C0012
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Dec 2021 03:03:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 571B5405C5
- for <iommu@lists.linux-foundation.org>; Thu, 23 Dec 2021 02:08:45 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id E8E3960AC7
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Dec 2021 03:03:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GWoqgzUvt1dR for <iommu@lists.linux-foundation.org>;
- Thu, 23 Dec 2021 02:08:43 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xrl973tGk21B for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Dec 2021 03:03:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 456B4404A9
- for <iommu@lists.linux-foundation.org>; Thu, 23 Dec 2021 02:08:43 +0000 (UTC)
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 4627E607E1
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Dec 2021 03:03:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1640225323; x=1671761323;
+ t=1640228610; x=1671764610;
  h=cc:subject:to:references:from:message-id:date:
  mime-version:in-reply-to:content-transfer-encoding;
- bh=U3C5yVoX5E5uvujjF66oQQmBBqdF/yUhDK/aFppaBqg=;
- b=GiyC04BxzNNEiGTWunU/8Rw0AjJgwmeuVrQpDPBuwYC/pBWc639VMaqv
- 9AEOBYZOSr8iE99c4W2fEgbgCt7nxLdf4BJLJZhekxfwG5wcfduDoUdij
- cPfk4ByCFtBzTGHNmI0eoCPt1vpu3Xz6k6SwGTgtlM3k3udRyVos1z6+r
- eAkuGQjTGa7iKbqj2LcRmznIAF2gE0WaeQ0T9qKoKehfr0EbLi20zoz0O
- wW/ReYrqjQQCdw7E+t8eOStE2C02BUIjuklyaU0B21tQIDd0sjPVxwXLL
- E8XDkTznsgh9CrLY2AxEcdcPiQpHWRl6fYIM+CEHoIsV2FFw7g/RPSRuj Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10206"; a="240692027"
-X-IronPort-AV: E=Sophos;i="5.88,228,1635231600"; d="scan'208";a="240692027"
+ bh=5d4GcwvuSuDNN/LCrM8VSrs/VLqePmPsfkX8JRr6fXw=;
+ b=UaM6k73Izx1eUslGXr1XBr61UOrgGg/wMz8YphKeP1BYNCf4csGK3Xh8
+ WXg/XOCzTtLqHh9a6UwMV2BracFeo+QJsYwbdo6C3lkcI6+Q9Jlhjgh85
+ JaeZMjcyNp2F5QiOgsDAQEfYGaUM6i/LQFfRGLGAtjwLvuY6FsV3XOPAM
+ 2hvbp+EKHjqvRpWgVcdgSAC1wzUWRfseACVGdBaP9MM3krPwhmpnUMAmh
+ +O6YazyHDU+fnBKGbrXQHomfn5uBy7QifIdIlLtadTxtABd6gb+FjPrSr
+ 4O0guwVZm80T32UxzwsyaJCGml0QwaKhSy5dBXifYuYSYZwnAB0RUET08 Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10206"; a="227590555"
+X-IronPort-AV: E=Sophos;i="5.88,228,1635231600"; d="scan'208";a="227590555"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Dec 2021 18:08:42 -0800
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 22 Dec 2021 19:03:25 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,228,1635231600"; d="scan'208";a="664445608"
+X-IronPort-AV: E=Sophos;i="5.88,228,1635231600"; d="scan'208";a="664454653"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
  ([10.239.159.118])
- by fmsmga001.fm.intel.com with ESMTP; 22 Dec 2021 18:08:35 -0800
+ by fmsmga001.fm.intel.com with ESMTP; 22 Dec 2021 19:03:18 -0800
 Subject: Re: [PATCH v4 02/13] driver core: Set DMA ownership during driver
  bind/unbind
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -65,8 +63,8 @@ References: <20211217063708.1740334-1-baolu.lu@linux.intel.com>
  <20211217063708.1740334-3-baolu.lu@linux.intel.com>
  <YcMeZlN3798noycN@kroah.com>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <40d67b07-b56b-d626-f71b-54ef5c80275c@linux.intel.com>
-Date: Thu, 23 Dec 2021 10:08:11 +0800
+Message-ID: <94e37c45-abc1-c682-5adf-1cc4b6887640@linux.intel.com>
+Date: Thu, 23 Dec 2021 11:02:54 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.14.0
 MIME-Version: 1.0
@@ -106,49 +104,66 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 Hi Greg,
 
 On 12/22/21 8:47 PM, Greg Kroah-Hartman wrote:
-> Which one will actually care about the iommu_device_set_dma_owner()
-> call?  All of them?  None of them?  Some of them?
-> 
-> Again, why can't this just happen in the (very few) bus callbacks that
-> care about this?  In following patches in this series, you turn off this
-> for the pci_dma_configure users, so what is left?  3 odd bus types that
-> are not used often.  How well did you test devices of those types with
-> this patchset?
-> 
-> It's fine to have "suppress" fields when they are the minority, but here
-> it's a_very_  tiny tiny number of actual devices in a system that will
-> ever get the chance to have this check happen for them and trigger,
-> right?
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static void device_dma_cleanup(struct device *dev, struct device_driver *drv)
+>> +{
+>> +	if (!dev->bus->dma_configure)
+>> +		return;
+>> +
+>> +	if (!drv->suppress_auto_claim_dma_owner)
+>> +		iommu_device_release_dma_owner(dev, DMA_OWNER_DMA_API);
+>> +}
+>> +
+>>   static int really_probe(struct device *dev, struct device_driver *drv)
+>>   {
+>>   	bool test_remove = IS_ENABLED(CONFIG_DEBUG_TEST_DRIVER_REMOVE) &&
+>> @@ -574,11 +601,8 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+>>   	if (ret)
+>>   		goto pinctrl_bind_failed;
+>>   
+>> -	if (dev->bus->dma_configure) {
+>> -		ret = dev->bus->dma_configure(dev);
+>> -		if (ret)
+>> -			goto probe_failed;
+>> -	}
+>> +	if (device_dma_configure(dev, drv))
+>> +		goto pinctrl_bind_failed;
+> Are you sure you are jumping to the proper error path here?  It is not
+> obvious why you changed this.
 
-Thank you for your comments. Current VFIO implementation supports
-devices on pci/platform/amba/fls-mc buses for user-space DMA. So only
-those buses need to call iommu_device_set/release_dma_owner() in their
-dma_configure/cleanup() callbacks.
-
-The "suppress" field is only for a few device drivers (not devices), for
+The error handling path in really_probe() seems a bit wrong. For
 example,
 
-- vfio-pci, a PCI device driver used to bind to a PCI device so that it
-   could be assigned for user-space DMA.
+  572         /* If using pinctrl, bind pins now before probing */
+  573         ret = pinctrl_bind_pins(dev);
+  574         if (ret)
+  575                 goto pinctrl_bind_failed;
 
-Other similar drivers in drivers/vfio are vfio-fsl-mc, vfio-amba and
-vfio-platform. These drivers will call
-iommu_device_set/release_dma_owner(DMA_OWNER_USER) explicitly when the
-device is assigned to user.
+[...]
 
-The logic is that on the affected buses (pci/platform/amba/fls-mc),
+  663 pinctrl_bind_failed:
+  664         device_links_no_driver(dev);
+  665         devres_release_all(dev);
+  666         arch_teardown_dma_ops(dev);
+  667         kfree(dev->dma_range_map);
+  668         dev->dma_range_map = NULL;
+  669         driver_sysfs_remove(dev);
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  670         dev->driver = NULL;
+  671         dev_set_drvdata(dev, NULL);
+  672         if (dev->pm_domain && dev->pm_domain->dismiss)
+  673                 dev->pm_domain->dismiss(dev);
+  674         pm_runtime_reinit(dev);
+  675         dev_pm_set_driver_flags(dev, 0);
+  676 done:
+  677         return ret;
 
-- for non-vfio drivers, bus dma_configure/cleanup() will automatically
-   call iommu_device_set_dma_owner(KERNEL) for the device; [This is the
-   majority cases.]
-
-- for vfio drivers, the auto-call will be suppressed, and the vfio
-   drivers are supposed to call iommu_device_set_dma_owner(USER) before
-   device is assigned to the userspace. [This is the rare case.]
-
-The KERNEL and USER conflict will be detected in
-iommu_device_set_dma_owner() with a -EBUSY return value. In that case,
-the driver binding or device assignment should be aborted.
+The driver_sysfs_remove() will be called even driver_sysfs_add() hasn't
+been called yet. I can fix this in a separated patch if I didn't miss
+anything.
 
 Best regards,
 baolu
