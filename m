@@ -1,66 +1,148 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4DCA0C433F5
-	for <iommu@archiver.kernel.org>; Fri, 24 Dec 2021 12:14:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 23A82C433F5
+	for <iommu@archiver.kernel.org>; Fri, 24 Dec 2021 14:24:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id DFF4660AC1;
-	Fri, 24 Dec 2021 12:14:14 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id AD62E827DD;
+	Fri, 24 Dec 2021 14:24:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Dq0-IWCngbsC; Fri, 24 Dec 2021 12:14:12 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OE-uK7ZuOvE6; Fri, 24 Dec 2021 14:24:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 04EC960A89;
-	Fri, 24 Dec 2021 12:14:11 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 8925A8149C;
+	Fri, 24 Dec 2021 14:24:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C21AFC002F;
-	Fri, 24 Dec 2021 12:14:11 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5358FC0012
- for <iommu@lists.linux-foundation.org>; Fri, 24 Dec 2021 12:14:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 63B17C002F;
+	Fri, 24 Dec 2021 14:24:11 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 98DE4C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Dec 2021 14:24:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 46DB04011B
- for <iommu@lists.linux-foundation.org>; Fri, 24 Dec 2021 12:14:10 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 796E581758
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Dec 2021 14:24:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RCFoedKR0bDP for <iommu@lists.linux-foundation.org>;
- Fri, 24 Dec 2021 12:14:05 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 397B640105
- for <iommu@lists.linux-foundation.org>; Fri, 24 Dec 2021 12:14:05 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2E1F21FB;
- Fri, 24 Dec 2021 04:14:04 -0800 (PST)
-Received: from [192.168.1.107] (unknown [172.31.20.19])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 426333F774;
- Fri, 24 Dec 2021 04:14:02 -0800 (PST)
-Message-ID: <e44a90f6-be69-5dca-3903-46a8caa4a37c@arm.com>
-Date: Fri, 24 Dec 2021 12:13:57 +0000
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id DDacCpA4OYGy for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Dec 2021 14:24:08 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam08on2061.outbound.protection.outlook.com [40.107.102.61])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id ECBBA8149C
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Dec 2021 14:24:07 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lNRwtWtmLHbrJWf0S9U+4inHUaKOOM0GCDhZJs52riHRTzBEqxWMeozHbM9N+keVi8y1XB5tronrrqapYANt37nI1ado6xQDpliXaBoDZ2wB0+/EknpRcbx/dkDPo63tOtya/BTVWC+6fRtJyASOSpZ0LRcyAeyAqo0yCEP/9liO6UTVlYz8gbsba/hGfedPvgFpkTUNp9b3xsqj75PfV/Ir+E9A8bhRnqNtFsPi5obLdmGIc1fxEerY5fAwZRLjNkr+hVm4Z41Q+z+z3xZEJiG5wWtXOFprCHW5I6HvmUKu12a8JOJ+2KtYskLN3T8giQIH7iFjfU+eK7RWW4q5gQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4ELgRMFIDdac9+Y6Kbb+9N7eP2tpOpnrcsDKxiOgbKA=;
+ b=lVpT3coIBpp7eu/V8r3YdqYwgQbk2CW/W+dVrx1283oqnk896DQ+ibH3nH0P0cD++32BFw65o/9gdGJCkohc/V5+DR0IV3uF80MsMTFg0eQt521L+uMG1QePe6MkAF/thDzMaFCQWhC4dVJucCkJfReygtrcNuNO8C+B1F/U2BYD7S1bH+m8sRDAoPGVOZMu2VNi4c3SXcx7uQHWqfPBDoQxRLRCm49qVC5hKTMvHYbAhwDP1GJUTrgUz0BR/VYYOt0kW5OlOuhH5Ac473GEBDPqFHoox6TvYURwcsZ57h8yE/DaRJUq+cK4wLsXwTo6+fh6W5HqZlc2xWst91H+gA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4ELgRMFIDdac9+Y6Kbb+9N7eP2tpOpnrcsDKxiOgbKA=;
+ b=MNDKE8JEWfC/B5RrFN7HKPHBA59l48bN7/GAT700AW0sBv51ab5n9m4f8AgQpCg43nSNMntperJyeLArftIlCNqGiu3+Wz6aZxBz3aqRPt9fNxCdLy0ummzfk6NwGVffwh4EzPamK15leK7AaXEseo0zu/o4OcwTM22X8Q63WS392HRjAk9G+iVtb4Xcu50peAHcl87McCx79kJ0amPPC4PCvR4rGK/qXD88WIbhM9YBAAv4ciDcY7AEXDS9ikkajBM9NCrgf/kFgK2U9R+cbTkU+qGsnqzgRTi8gvDBL7hIxq8lZNda1waNqsmH+DBb7/7PeqSo/kSZuuujs+/QFg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5111.namprd12.prod.outlook.com (2603:10b6:208:31b::12)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.17; Fri, 24 Dec
+ 2021 14:24:05 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::d8be:e4e4:ce53:6d11]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::d8be:e4e4:ce53:6d11%7]) with mapi id 15.20.4823.021; Fri, 24 Dec 2021
+ 14:24:05 +0000
+Date: Fri, 24 Dec 2021 10:24:04 -0400
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v4 07/13] iommu: Add iommu_at[de]tach_device_shared() for
+ multi-device groups
+Message-ID: <20211224142404.GG1779224@nvidia.com>
+References: <20211217063708.1740334-1-baolu.lu@linux.intel.com>
+ <20211217063708.1740334-8-baolu.lu@linux.intel.com>
+ <dd797dcd-251a-1980-ca64-bb38e67a526f@arm.com>
+ <20211221184609.GF1432915@nvidia.com>
+ <aebbd9c7-a239-0f89-972b-a9059e8b218b@arm.com>
+ <b4405a5e-c4cc-f44a-ab43-8cb62b888565@linux.intel.com>
+Content-Disposition: inline
+In-Reply-To: <b4405a5e-c4cc-f44a-ab43-8cb62b888565@linux.intel.com>
+X-ClientProxiedBy: MN2PR17CA0009.namprd17.prod.outlook.com
+ (2603:10b6:208:15e::22) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v3 5/5] iommu/nvidia-grace-cmdqv: Limit CMDs for guest
- owned VINTF
-Content-Language: en-GB
-To: Nicolin Chen <nicolinc@nvidia.com>
-References: <20211119071959.16706-1-nicolinc@nvidia.com>
- <20211119071959.16706-6-nicolinc@nvidia.com>
- <6f020ea5-a45c-d21d-04b5-bdb2aef080f1@arm.com>
- <20211222225134.GB5698@Asurada-Nvidia>
- <6d570b70-245d-bd99-a64c-065ade787d98@arm.com>
- <20211224080254.GA4653@Asurada-CZ80>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20211224080254.GA4653@Asurada-CZ80>
-Cc: jean-philippe@linaro.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, thierry.reding@gmail.com, jgg@nvidia.com,
- linux-tegra@vger.kernel.org, will@kernel.org,
- linux-arm-kernel@lists.infradead.org
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 09e9789f-50e3-4ceb-7afb-08d9c6e90a69
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5111:EE_
+X-Microsoft-Antispam-PRVS: <BL1PR12MB511101491FE59B8C9D945278C27F9@BL1PR12MB5111.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zwFt6MCVyaQDIzMv7XCa/fchYIDJUCw8fhZ4Cjf5ZrwTSECPdnUERmFEOZJ225vhD+OYg/W3Rptqwmt1AjZUpU+RLX35m9/N91qcdKA3cq3zHMJ/K2p8mzjYiwSMvNtXtaI6QrXIgE3v4hVL0E0daEs1+NMVsYC+9yuG+dKu2JbhzKPhMk8GcOxwik6ryQA8NSrWX/yilXRZHSMPT+TvzWgcz1I/HcGzmJBbPfxEdJEW0SwPDng9E5vMiQ0uVL9A5SqSYCGeFnoxgIVc6NsGUbY81WmTPKMjZhVH7Mq7n1e1L2p2bd5z/jCRDud+QtiJ4yDGR0DP4DKyUHg5xQbDm6XFBaqwqyBhOV84PHK1QGHtjsisebDPLBul+57qp2fE+4xI2oNzmxMWOkeumwfcciMTWxhZW6UPg5//m78cgLrNhz+hFSKvyxHVDnehpRPmqNzgdLk2bWz0+fH0OKbZrnLRTgVi54NXMfNUD14liDKry567vQ446sGjC46Y4UAKctOpycjvsXBVKGCkEoSL+vYUJQqVIJYuishwaPVMXeJbxL01R+9m0bFHvww7k3FtD4cezlhS1Ktb/ZJ+pEVuLyZdofIss2oX9WZ3yoMyFs5fnwOGVYb9eZvDW7EwlEWgIzpF1dsMrjdKgC2qc8D5aQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(33656002)(26005)(2906002)(186003)(6916009)(8676002)(36756003)(6486002)(66946007)(6512007)(8936002)(508600001)(86362001)(1076003)(316002)(38100700002)(4326008)(54906003)(66476007)(7416002)(5660300002)(6506007)(66556008)(2616005);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Q+c8u1h7XlelIHoIpomSULrj9AxCKB0CVvRp+SSvUvMS7gN/UNCTp/OCxn/Q?=
+ =?us-ascii?Q?FkRWu51T3Gh5B0iUyUcmzNZGP5O7WfvQOiM1HIWJi9wDsULMSWDZNutc/vFL?=
+ =?us-ascii?Q?RAxFikk3Y0Sb7tipiik6w2y9UvucKYRqrgIipdU5/lO5N6983LaN3gV/v6+h?=
+ =?us-ascii?Q?yHSTn7SMyGgiqsppgcg59pdobUQLT2p6uwzV4KFTvgldjl8wRlkWEhsW7K4n?=
+ =?us-ascii?Q?Yif76FrgjCzhKJGXkDZBO0yh7/oNa8KzXfLNPF8cxZHfIPyRmizQEVXrm+M4?=
+ =?us-ascii?Q?7vcnMhKY582nQJmUcyv2NloU2upX+32OSra+bhvG/XJMw1Rqo4u0hhhKEQq+?=
+ =?us-ascii?Q?2Ztxb0TcQS253bFX0ta4+A3xUvPJQXxQuJHKL5yn8y8rYRV9MWhToy8Q4JZK?=
+ =?us-ascii?Q?RKgBqcog/RC/JJSa8VGdU//VOU/RQIbZCR7qop2pKhQOW4YfkgExFnhJgDEp?=
+ =?us-ascii?Q?JUxmI0G3RoWxhusQhmPtLVeKwpOTt0t4Cj7Xrt0vZ8Wj7gIrSCchHzbNiYGY?=
+ =?us-ascii?Q?rKbjxDFeZhEBxX6yp+Hw5eu9k8aPNs4I8cE36Nh9LegMOwiS7qaJqAStIoaH?=
+ =?us-ascii?Q?vaqcNg+UJSogK5gXIEXnbAyQJHmCR4R6TQjF6JXpHOnluteE92wqzGrfkNe+?=
+ =?us-ascii?Q?wX+S8urXwisGJxyx5vP25iDbenYYNvWh0DhoE8kdBfUAW+dQy7frxDfC1aRK?=
+ =?us-ascii?Q?RXgnI5OEXm3zM+9gilCPRPyO1+gzVxZt9cw3U35JDxEKKJewlQ0R7xL5zVbf?=
+ =?us-ascii?Q?DZZCV/TVECC8BazbdUHgrQUa9QuhVRwJWosnn8hPoAAJXks8FXCFjn2rYZEl?=
+ =?us-ascii?Q?LB3zYzaffIiF5zDo0HdPA4ruLjjJ23V70sIyB0NBPDImCUI2TOwOBzSZKZ10?=
+ =?us-ascii?Q?YcDVAenL/J9z+1c6BJO4r7OOm3MhR2KtyUpASwKT2N3cHmZaEDPBVpz3ovuY?=
+ =?us-ascii?Q?0YK0Atn4NtvdipZL+k/2BtEPSnB7ZGo3f/5cvOaRIr1E9tHezFInjakwqy9Z?=
+ =?us-ascii?Q?8RdAkmM9R5BdhSJUcAHAHBdNM0sWuQYNzam6f29NiO2eEMysBsogQTXaWrg2?=
+ =?us-ascii?Q?2oSR8ykC9WEwoJm8iRupdQopJ+GNEocZCENVbunMS+av7SGZb06SS+RVcoJQ?=
+ =?us-ascii?Q?JSbvfvO3SMPscH7m1aqqUPQnWCWjtCfCgxgwASX8oN9hqVjPTIDlPnKhG452?=
+ =?us-ascii?Q?Tbng84ByaGKiQ77qtAx3pmZ+7KH2DSEUmUbbZbhOq04odXzCX6LLDQE3DZKE?=
+ =?us-ascii?Q?oeSQqoqrbGwCHe0Aak2Gjq30caSqHe22i2D2Tydj7ZLWZ/Uu6ys2FJogZqsp?=
+ =?us-ascii?Q?nHN1zmIPon7o4bA8pany3EDMWuM60JbJXU+b9Adm/Aaj95z69TQCoRDT0LHT?=
+ =?us-ascii?Q?K/5rj94dX+kRPAhhhvn35wUKFt9YsRVo9SbnTzE/mCLXup7DZJXFheGo3MHO?=
+ =?us-ascii?Q?B4rWs2inliyEwNygXPyxFZmw6FdEYzi2f1WZGf25z8D09hmYQgu19wVaGEn8?=
+ =?us-ascii?Q?aHYsdaZLY3O653sjqJ+xGUXEP77hb2iTDYUhhcUzh3AOyg3ftS6b5RfhVJoG?=
+ =?us-ascii?Q?m2rPEqAEjSwvlGPl2O0=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 09e9789f-50e3-4ceb-7afb-08d9c6e90a69
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Dec 2021 14:24:05.5707 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jVx4DTD5gXNiV/0MrVKUxh3bzo6BgxD0Mi+rWkVuBT+ApIlDCh3HEaDeJV87drtD
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5111
+Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
+ David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -73,269 +155,91 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-12-24 08:02, Nicolin Chen wrote:
-> On Thu, Dec 23, 2021 at 11:14:17AM +0000, Robin Murphy wrote:
->> External email: Use caution opening links or attachments
->>
->>
->> On 2021-12-22 22:52, Nicolin Chen wrote:
->>> On Wed, Dec 22, 2021 at 12:32:29PM +0000, Robin Murphy wrote:
->>>> External email: Use caution opening links or attachments
->>>>
->>>>
->>>> On 2021-11-19 07:19, Nicolin Chen via iommu wrote:
->>>>> When VCMDQs are assigned to a VINTF that is owned by a guest, not
->>>>> hypervisor (HYP_OWN bit is unset), only TLB invalidation commands
->>>>> are supported. This requires get_cmd() function to scan the input
->>>>> cmd before selecting cmdq between smmu->cmdq and vintf->vcmdq, so
->>>>> unsupported commands can still go through emulated smmu->cmdq.
->>>>>
->>>>> Also the guest shouldn't have HYP_OWN bit being set regardless of
->>>>> guest kernel driver writing it or not, i.e. the user space driver
->>>>> running in the host OS should wire this bit to zero when trapping
->>>>> a write access to this VINTF_CONFIG register from a guest kernel.
->>>>> So instead of using the existing regval, this patch reads out the
->>>>> register value explicitly to cache in vintf->cfg.
->>>>>
->>>>> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
->>>>> ---
->>>>>     drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  6 ++--
->>>>>     drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  5 +--
->>>>>     .../arm/arm-smmu-v3/nvidia-grace-cmdqv.c      | 32 +++++++++++++++++--
->>>>>     3 files changed, 36 insertions(+), 7 deletions(-)
->>>>>
->>>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>>> index b1182dd825fd..73941ccc1a3e 100644
->>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>>> @@ -337,10 +337,10 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
->>>>>         return 0;
->>>>>     }
->>>>>
->>>>> -static struct arm_smmu_cmdq *arm_smmu_get_cmdq(struct arm_smmu_device *smmu)
->>>>> +static struct arm_smmu_cmdq *arm_smmu_get_cmdq(struct arm_smmu_device *smmu, u64 *cmds, int n)
->>>>>     {
->>>>>         if (smmu->nvidia_grace_cmdqv)
->>>>> -             return nvidia_grace_cmdqv_get_cmdq(smmu);
->>>>> +             return nvidia_grace_cmdqv_get_cmdq(smmu, cmds, n);
->>>>>
->>>>>         return &smmu->cmdq;
->>>>>     }
->>>>> @@ -747,7 +747,7 @@ static int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
->>>>>         u32 prod;
->>>>>         unsigned long flags;
->>>>>         bool owner;
->>>>> -     struct arm_smmu_cmdq *cmdq = arm_smmu_get_cmdq(smmu);
->>>>> +     struct arm_smmu_cmdq *cmdq = arm_smmu_get_cmdq(smmu, cmds, n);
->>>>>         struct arm_smmu_ll_queue llq, head;
->>>>>         int ret = 0;
->>>>>
->>>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
->>>>> index 24f93444aeeb..085c775c2eea 100644
->>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
->>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
->>>>> @@ -832,7 +832,8 @@ struct nvidia_grace_cmdqv *
->>>>>     nvidia_grace_cmdqv_acpi_probe(struct arm_smmu_device *smmu,
->>>>>                               struct acpi_iort_node *node);
->>>>>     int nvidia_grace_cmdqv_device_reset(struct arm_smmu_device *smmu);
->>>>> -struct arm_smmu_cmdq *nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu);
->>>>> +struct arm_smmu_cmdq *nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu,
->>>>> +                                               u64 *cmds, int n);
->>>>>     #else /* CONFIG_NVIDIA_GRACE_CMDQV */
->>>>>     static inline struct nvidia_grace_cmdqv *
->>>>>     nvidia_grace_cmdqv_acpi_probe(struct arm_smmu_device *smmu,
->>>>> @@ -847,7 +848,7 @@ static inline int nvidia_grace_cmdqv_device_reset(struct arm_smmu_device *smmu)
->>>>>     }
->>>>>
->>>>>     static inline struct arm_smmu_cmdq *
->>>>> -nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu)
->>>>> +nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu, u64 *cmds, int n)
->>>>>     {
->>>>>         return NULL;
->>>>>     }
->>>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/nvidia-grace-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/nvidia-grace-cmdqv.c
->>>>> index c0d7351f13e2..71f6bc684e64 100644
->>>>> --- a/drivers/iommu/arm/arm-smmu-v3/nvidia-grace-cmdqv.c
->>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/nvidia-grace-cmdqv.c
->>>>> @@ -166,7 +166,8 @@ static int nvidia_grace_cmdqv_init_one_vcmdq(struct nvidia_grace_cmdqv *cmdqv,
->>>>>         return arm_smmu_cmdq_init(cmdqv->smmu, cmdq);
->>>>>     }
->>>>>
->>>>> -struct arm_smmu_cmdq *nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu)
->>>>> +struct arm_smmu_cmdq *
->>>>> +nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu, u64 *cmds, int n)
->>>>>     {
->>>>>         struct nvidia_grace_cmdqv *cmdqv = smmu->nvidia_grace_cmdqv;
->>>>>         struct nvidia_grace_cmdqv_vintf *vintf0 = &cmdqv->vintf0;
->>>>> @@ -176,6 +177,24 @@ struct arm_smmu_cmdq *nvidia_grace_cmdqv_get_cmdq(struct arm_smmu_device *smmu)
->>>>>         if (!FIELD_GET(VINTF_STATUS, vintf0->status))
->>>>>                 return &smmu->cmdq;
->>>>>
->>>>> +     /* Check for supported CMDs if VINTF is owned by guest (not hypervisor) */
->>>>> +     if (!FIELD_GET(VINTF_HYP_OWN, vintf0->cfg)) {
->>>>> +             u64 opcode = (n) ? FIELD_GET(CMDQ_0_OP, cmds[0]) : CMDQ_OP_CMD_SYNC;
->>>>
->>>> I'm not sure there was ever a conscious design decision that batches
->>>> only ever contain one type of command - if something needs to start
->>>
->>> Hmm, I think that's a good catch -- as it could be a potential
->>> bug here. Though the SMMUv3 driver currently seems to use loop
->>> by adding one type of cmds to any batch and submitting it right
->>> away so checking opcode of cmds[0] alone seems to be sufficient
->>> at this moment, yet it might not be so in the future. We'd need
->>> to apply certain constrains on the type of cmds in the batch in
->>> SMMUv3 driver upon smmu->nvidia_grace_cmdqv, or fallback to the
->>> SMMUv3's CMDQ pathway here if one of cmds is not supported.
->>>
->>>> depending on that behaviour then that dependency probably wants to be
->>>> clearly documented. Also, a sync on its own gets trapped to the main
->>>> cmdq but a sync on the end of a batch of TLBIs or ATCIs goes to the
->>>> VCMDQ, huh?
->>>
->>> Yea...looks like an implication again where cmds must have SYNC
->>> at the end of the batch. I will see if any simple change can be
->>> done to fix these two. If you have suggestions for them, I would
->>> love to hear too.
->>
->> Can you explain the current logic here? It's not entirely clear to me
->> whether the VCMDQ is actually meant to support CMD_SYNC or not.
+On Fri, Dec 24, 2021 at 11:19:44AM +0800, Lu Baolu wrote:
+
+> Let me summarize what I've got from above comments.
 > 
-> Yes. It's designed to take CMD_SYNC in same queue too. Though it
-> also has features, such as HW-inserted-SYNC when scheduler moves
-> away from the current queue or when the number of cmds in vcmdq
-> meets a MAX-BATCH-SIZE setting (in config register), yet it'd be
-> safer for software to ensure the CMD_SYNC is inserted to the end
-> of the batch.
-
-OK, so the bug here is just that we're missing CMDQ_OP_CMD_SYNC from the 
-switch statement? That's reassuring at least. Having to trap to the host 
-to issue a sync would be horrible, and largely defeat the point of the 
-whole exercise.
-
-It's not generally much use to software to know that the hardware may or 
-may not have automatically inserted syncs at arbitrary points in the 
-timeline; certainly for our flow in Linux, which I don't think is 
-atypical, we need to know for sure that specific invalidation commands 
-have completed before we can safely reuse resources associated with the 
-invalidated translations, and the only way to guarantee that is to 
-explicitly observe the consumption of a CMD_SYNC from a later queue index.
-
->>>>> +
->>>>> +             /* List all supported CMDs for vintf->cmdq pathway */
->>>>> +             switch (opcode) {
->>>>> +             case CMDQ_OP_TLBI_NH_ASID:
->>>>> +             case CMDQ_OP_TLBI_NH_VA:
->>>>> +             case CMDQ_OP_TLBI_S12_VMALL:
->>>>> +             case CMDQ_OP_TLBI_S2_IPA:
->>>>
->>>> Fun! Can the guest invalidate any VMID it feels like, or is there some
->>>> additional magic on the host side that we're missing here?
->>>
->>> Yes. VINTF has a register for SW to program VMID so that the HW
->>> can replace VMIDs in the cmds in the VCMDQs of that VINTF with
->>> the programmed VMID. That was the reason why we had numbers of
->>> patches in v2 to route the VMID between guest and host.
->>>
->>>>> +             case CMDQ_OP_ATC_INV:
->>>>> +                     break;
->>>> Ditto for StreamID here.
->>>
->>> Yes. StreamID works similarly by the HW: each VINTF provides us
->>> 16 pairs of MATCH+REPLACE registers to program host and guest's
->>> StreamIDs. Our previous mdev implementation in v2 can be a good
->>> reference code:
->>> https://lore.kernel.org/kvm/20210831101549.237151fa.alex.williamson@redhat.com/T/#m903a1b44935d9e0376439a0c63e832eb464fbaee
->>
->> Ah, sorry, I haven't had the bandwidth to dig back through all the
->> previous threads. Thanks for clarifying - I'm still not sure why any
->> notion of stage 2 would be exposed to guests at all, but at least ita
+> 1. Essentially we only need below interfaces for device drivers to
+>    manage the I/O address conflict in iommu layer:
 > 
-> Do you mean, by "notion of stage 2", Host Stream IDs? The guest
-> wouldn't get those I think. They'll be trapped in the hypervisor
-> -- the user driver (QEMU CMDQV device model for example.)
-
-I mean if it's emulated as a full SMMUv3 interface, IDR0.S2P=0. At the 
-moment it makes no sense for a guest to even *think* it can issue 
-TLBI_S2_IPA or TLBI_S12_VMALL. My understanding of the usage model for 
-this is that we pick the Context Descriptor from guest memory via the 
-emulated Stream Table (or other mechanism like virtio-iommu) and plumb 
-it directly into the S1ContextPtr of the appropriate underlying physical 
-STE, on top of the host's S2 translation. I don't see how we could also 
-flatten an emulated S2 into either physical stage without having to go 
-back to the costly "trap all pagetable accesses" approach which would 
-obliterate the benefit of having a directly-assigned queue.
-
->> sounds like there's no functional concern here, other than constraining
->> the number of devices which can be assigned to a single VM, but I think
->> that falls into the bucket of information that userspace VMMs will have
->> to learn about this kind of direct IOMMU interface assignment anyway
->> (most importantly, the relationship of assigned devices to vIOMMUs
->> suddenly has to start reflecting the underlying physical topology).
+> int iommu_device_set/release/query_kernel_dma(struct device *dev)
 > 
-> We haven't started to think how to fit the best into the IOMMUFD
-> but we will be likely having some idea or test case in Jan.
-> 
->> Out of interest, would ATC_INV with an unmatched StreamID raise an error
->> or just be ignored? Particularly if the host gets a chance to handle a
-> 
-> Mismatched StreamID will be treated as an Illegal command. Yes,
-> there'd be an error.
-> 
->> GError and decide whether CMDQ_CONS.ERR is reported back to the guest or
->> not, there's scope to do some interesting things for functionality and
->> robustness.
-> 
-> Would love to learn more about your thoughts :)
+> - Device driver lets the iommu layer know that driver DMAs go through
+>   the kernel DMA APIs. The iommu layer should use the default domain
+>   for DMA remapping. No other domains could be attached.
+> - Device driver lets the iommu layer know that driver doesn't do DMA
+>   anymore and other domains are allowed to be attached.
+> - Device driver queries "can I only do DMA through the kernel DMA API?
+>   In other words, can I attach my own domain?"
 
-Basically it's quite neat if we could present a virtual queue to the 
-guest as the vSMMU's main queue, such that any commands that the 
-hardware can't consume directly could be fixed up or emulated by the 
-host with the illusion that they're being consumed as normal. It does 
-push more complexity into the host, and a round trip via the GError 
-interrupt would be a bit less efficient than trapping synchronously on a 
-write to an emulated CMDQ_PROD for commands that *do* need emulating, 
-but conversely it means we could support any guest with only the most 
-basic understanding of SMMUv3.0, and could potentially be more robust 
-overall. As I say, though, it depends entirely on the guest not being 
-able to observe an error unltil the host has decided not to fix up the 
-offending command.
+I'm not sure I see the utility of a query, but OK - this is the API
+family v4 has added to really_probe, basically.
 
-> Btw, I think we may continue the discussion on this PATCH-5 and
-> then to figure out ideal solutions for those potential bugs that
-> you commented so far, as this patch really is very introductory
-> to Guest support (we need more implementation based on IOMMUFD.)
+> int iommu_device_set/release_private_dma(struct device *dev)
 > 
-> For the first 4 patches, they could be separated. Do you see a
-> chance to get them applied first? They are in the mail list for
-> a while now. And we'd like to accelerate the progress of those
-> four changes first.
+> - Device driver lets the iommu layer know that it wants to use its own
+>   iommu domain. The iommu layer should detach the default domain and
+>   allow the driver to attach or detach its own domain through
+>   iommu_attach/detach_device() interfaces.
+> - Device driver lets the iommy layer know that it on longer needs a
+>   private domain.
 
-I can't speak for Will, but personally I'd consider them exactly the 
-same as the ECMDQ patches - it's good to have them out here, reviewed as 
-far as we reasonably can, and ready for people to experiment with as 
-soon as the real hardware turns up, but I don't see any benefit in 
-actually merging unproven complexity into mainline before then. Neither 
-patchset gives Linux any new functionality that it can't achieve already 
-with the regular cmdq, so there's nothing to gain until it's actually 
-demonstrable that we really are addressing the right bottlenecks in the 
-right manner to meaningfully improve real-world performance, but what we 
-have to lose is more effort spent ripping stuff out again if it turns 
-out to be no good. Even patches #1-#3 here fundamentally beg the 
-question of whether replicating the full heavyweight cmdq behaviour is 
-the right way to go.
+Drivers don't actually need an interface like this, they all have
+domains so they can all present their domain when they want to change
+the ownership mode.
 
-I appreciate you've probably got hardware validation teams on your back 
-wanting "the driver" to support every new feature right now for them to 
-exercise, but we just have to stand firm and tell them that's not how 
-upstream works :)
+The advantage of presenting the domain in the API is that it allows
+the core code to support sharing. Present the same domain and your
+device gets to join the group. Present a different domain and it is
+rejected. Simple.
 
-Thanks,
-Robin.
+Since there is no domain the above APIs cannot support tegra, for
+instance.
+
+>   Make the iommu_attach_device() the only and generic interface for the
+>   device drivers to use their own private domain (I/O address space)
+>   and replace all iommu_attach_group() uses with iommu_attach_device()
+>   and deprecate the former.
+
+Certainly in the devices drivers yes, VFIO should stay with group as
+I've explained.
+
+Ideals aside, we still need to have this series to have a scope that
+is achievable in a reasonable size. So, we still end up with three
+interfaces:
+
+ 1) iommu_attach_device() as used by the 11 current drivers that do
+    not set suppress_auto_claim_dma_owner.
+    It's key property is that it is API compatible with what we have
+    today and doesn't require changing the 11 drivers.
+
+ 2) iommu_attach_device_shared() which is used by tegra and requires
+    that drivers set suppress_auto_claim_dma_owner.
+
+    A followup series could replace all calls of iommu_attach_device()
+    with iommu_attach_device_shared() with one patch per driver that
+    also sets suppress_auto_claim_dma_owner.
+
+ 3) Unless a better idea aries the
+    iommu_group_set_dma_owner()/iommu_replace_group_domain()
+    API that I suggested, used only by VFIO. This API is designed to
+    work without a domain and uses the 'struct file *owner' instead
+    of the domain to permit sharing. It swaps the obviously confusing
+    concept of _USER for the more general concept of 'replace domain'.
+
+All three need to consistently use the owner_cnt and related to
+implement their internal logic.
+
+It is a pretty clear explanation why there are three interfaces.
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
