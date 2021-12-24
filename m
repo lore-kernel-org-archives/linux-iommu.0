@@ -1,148 +1,68 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 23A82C433F5
-	for <iommu@archiver.kernel.org>; Fri, 24 Dec 2021 14:24:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9CCDAC433F5
+	for <iommu@archiver.kernel.org>; Fri, 24 Dec 2021 16:59:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id AD62E827DD;
-	Fri, 24 Dec 2021 14:24:12 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1446B415E3;
+	Fri, 24 Dec 2021 16:59:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OE-uK7ZuOvE6; Fri, 24 Dec 2021 14:24:11 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1R4N38Eddw0t; Fri, 24 Dec 2021 16:59:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 8925A8149C;
-	Fri, 24 Dec 2021 14:24:11 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id CB9AE410E6;
+	Fri, 24 Dec 2021 16:59:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 63B17C002F;
-	Fri, 24 Dec 2021 14:24:11 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 98DE4C0012
- for <iommu@lists.linux-foundation.org>; Fri, 24 Dec 2021 14:24:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A30A8C002F;
+	Fri, 24 Dec 2021 16:59:11 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F3945C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Dec 2021 16:59:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 796E581758
- for <iommu@lists.linux-foundation.org>; Fri, 24 Dec 2021 14:24:09 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id CC9A8415E0
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Dec 2021 16:59:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DDacCpA4OYGy for <iommu@lists.linux-foundation.org>;
- Fri, 24 Dec 2021 14:24:08 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam08on2061.outbound.protection.outlook.com [40.107.102.61])
- by smtp1.osuosl.org (Postfix) with ESMTPS id ECBBA8149C
- for <iommu@lists.linux-foundation.org>; Fri, 24 Dec 2021 14:24:07 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lNRwtWtmLHbrJWf0S9U+4inHUaKOOM0GCDhZJs52riHRTzBEqxWMeozHbM9N+keVi8y1XB5tronrrqapYANt37nI1ado6xQDpliXaBoDZ2wB0+/EknpRcbx/dkDPo63tOtya/BTVWC+6fRtJyASOSpZ0LRcyAeyAqo0yCEP/9liO6UTVlYz8gbsba/hGfedPvgFpkTUNp9b3xsqj75PfV/Ir+E9A8bhRnqNtFsPi5obLdmGIc1fxEerY5fAwZRLjNkr+hVm4Z41Q+z+z3xZEJiG5wWtXOFprCHW5I6HvmUKu12a8JOJ+2KtYskLN3T8giQIH7iFjfU+eK7RWW4q5gQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4ELgRMFIDdac9+Y6Kbb+9N7eP2tpOpnrcsDKxiOgbKA=;
- b=lVpT3coIBpp7eu/V8r3YdqYwgQbk2CW/W+dVrx1283oqnk896DQ+ibH3nH0P0cD++32BFw65o/9gdGJCkohc/V5+DR0IV3uF80MsMTFg0eQt521L+uMG1QePe6MkAF/thDzMaFCQWhC4dVJucCkJfReygtrcNuNO8C+B1F/U2BYD7S1bH+m8sRDAoPGVOZMu2VNi4c3SXcx7uQHWqfPBDoQxRLRCm49qVC5hKTMvHYbAhwDP1GJUTrgUz0BR/VYYOt0kW5OlOuhH5Ac473GEBDPqFHoox6TvYURwcsZ57h8yE/DaRJUq+cK4wLsXwTo6+fh6W5HqZlc2xWst91H+gA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4ELgRMFIDdac9+Y6Kbb+9N7eP2tpOpnrcsDKxiOgbKA=;
- b=MNDKE8JEWfC/B5RrFN7HKPHBA59l48bN7/GAT700AW0sBv51ab5n9m4f8AgQpCg43nSNMntperJyeLArftIlCNqGiu3+Wz6aZxBz3aqRPt9fNxCdLy0ummzfk6NwGVffwh4EzPamK15leK7AaXEseo0zu/o4OcwTM22X8Q63WS392HRjAk9G+iVtb4Xcu50peAHcl87McCx79kJ0amPPC4PCvR4rGK/qXD88WIbhM9YBAAv4ciDcY7AEXDS9ikkajBM9NCrgf/kFgK2U9R+cbTkU+qGsnqzgRTi8gvDBL7hIxq8lZNda1waNqsmH+DBb7/7PeqSo/kSZuuujs+/QFg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5111.namprd12.prod.outlook.com (2603:10b6:208:31b::12)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4823.17; Fri, 24 Dec
- 2021 14:24:05 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::d8be:e4e4:ce53:6d11]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::d8be:e4e4:ce53:6d11%7]) with mapi id 15.20.4823.021; Fri, 24 Dec 2021
- 14:24:05 +0000
-Date: Fri, 24 Dec 2021 10:24:04 -0400
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v4 07/13] iommu: Add iommu_at[de]tach_device_shared() for
- multi-device groups
-Message-ID: <20211224142404.GG1779224@nvidia.com>
-References: <20211217063708.1740334-1-baolu.lu@linux.intel.com>
- <20211217063708.1740334-8-baolu.lu@linux.intel.com>
- <dd797dcd-251a-1980-ca64-bb38e67a526f@arm.com>
- <20211221184609.GF1432915@nvidia.com>
- <aebbd9c7-a239-0f89-972b-a9059e8b218b@arm.com>
- <b4405a5e-c4cc-f44a-ab43-8cb62b888565@linux.intel.com>
-Content-Disposition: inline
-In-Reply-To: <b4405a5e-c4cc-f44a-ab43-8cb62b888565@linux.intel.com>
-X-ClientProxiedBy: MN2PR17CA0009.namprd17.prod.outlook.com
- (2603:10b6:208:15e::22) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id JXneJXHlpTWi for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Dec 2021 16:59:08 +0000 (UTC)
+X-Greylist: delayed 00:08:46 by SQLgrey-1.8.0
+Received: from ixit.cz (ixit.cz [94.230.151.217])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 0E26A410E6
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Dec 2021 16:59:07 +0000 (UTC)
+Received: from localhost.localdomain (ip-89-176-96-70.net.upcbroadband.cz
+ [89.176.96.70])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+ (No client certificate requested)
+ by ixit.cz (Postfix) with ESMTPSA id A47842243C;
+ Fri, 24 Dec 2021 17:50:17 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
+ t=1640364618;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=0hPROkzSJG3RWXzy2nCv6OuuMMuRGi/5ZutaTzY09Lk=;
+ b=TcVg8jctekCD9HNYhsjtS9+GsoVBlMGETFqIK7lOqlJuvIuKn4o1+skshZISOhFcJRNB6b
+ bi38/U2DeY51ffzMOoDSSXQqr7CTIiGsKpKbO69QAwfDTIu6oXOivSDYGqj+ovd171N6tw
+ rvagwEfKgkkL4rbWvuS5esxMaz72WE8=
+From: David Heidelberg <david@ixit.cz>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH] dt-bindings: iommu: Convert msm,iommu-v0 to yaml
+Date: Fri, 24 Dec 2021 17:50:14 +0100
+Message-Id: <20211224165014.56308-1-david@ixit.cz>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 09e9789f-50e3-4ceb-7afb-08d9c6e90a69
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5111:EE_
-X-Microsoft-Antispam-PRVS: <BL1PR12MB511101491FE59B8C9D945278C27F9@BL1PR12MB5111.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zwFt6MCVyaQDIzMv7XCa/fchYIDJUCw8fhZ4Cjf5ZrwTSECPdnUERmFEOZJ225vhD+OYg/W3Rptqwmt1AjZUpU+RLX35m9/N91qcdKA3cq3zHMJ/K2p8mzjYiwSMvNtXtaI6QrXIgE3v4hVL0E0daEs1+NMVsYC+9yuG+dKu2JbhzKPhMk8GcOxwik6ryQA8NSrWX/yilXRZHSMPT+TvzWgcz1I/HcGzmJBbPfxEdJEW0SwPDng9E5vMiQ0uVL9A5SqSYCGeFnoxgIVc6NsGUbY81WmTPKMjZhVH7Mq7n1e1L2p2bd5z/jCRDud+QtiJ4yDGR0DP4DKyUHg5xQbDm6XFBaqwqyBhOV84PHK1QGHtjsisebDPLBul+57qp2fE+4xI2oNzmxMWOkeumwfcciMTWxhZW6UPg5//m78cgLrNhz+hFSKvyxHVDnehpRPmqNzgdLk2bWz0+fH0OKbZrnLRTgVi54NXMfNUD14liDKry567vQ446sGjC46Y4UAKctOpycjvsXBVKGCkEoSL+vYUJQqVIJYuishwaPVMXeJbxL01R+9m0bFHvww7k3FtD4cezlhS1Ktb/ZJ+pEVuLyZdofIss2oX9WZ3yoMyFs5fnwOGVYb9eZvDW7EwlEWgIzpF1dsMrjdKgC2qc8D5aQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(33656002)(26005)(2906002)(186003)(6916009)(8676002)(36756003)(6486002)(66946007)(6512007)(8936002)(508600001)(86362001)(1076003)(316002)(38100700002)(4326008)(54906003)(66476007)(7416002)(5660300002)(6506007)(66556008)(2616005);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Q+c8u1h7XlelIHoIpomSULrj9AxCKB0CVvRp+SSvUvMS7gN/UNCTp/OCxn/Q?=
- =?us-ascii?Q?FkRWu51T3Gh5B0iUyUcmzNZGP5O7WfvQOiM1HIWJi9wDsULMSWDZNutc/vFL?=
- =?us-ascii?Q?RAxFikk3Y0Sb7tipiik6w2y9UvucKYRqrgIipdU5/lO5N6983LaN3gV/v6+h?=
- =?us-ascii?Q?yHSTn7SMyGgiqsppgcg59pdobUQLT2p6uwzV4KFTvgldjl8wRlkWEhsW7K4n?=
- =?us-ascii?Q?Yif76FrgjCzhKJGXkDZBO0yh7/oNa8KzXfLNPF8cxZHfIPyRmizQEVXrm+M4?=
- =?us-ascii?Q?7vcnMhKY582nQJmUcyv2NloU2upX+32OSra+bhvG/XJMw1Rqo4u0hhhKEQq+?=
- =?us-ascii?Q?2Ztxb0TcQS253bFX0ta4+A3xUvPJQXxQuJHKL5yn8y8rYRV9MWhToy8Q4JZK?=
- =?us-ascii?Q?RKgBqcog/RC/JJSa8VGdU//VOU/RQIbZCR7qop2pKhQOW4YfkgExFnhJgDEp?=
- =?us-ascii?Q?JUxmI0G3RoWxhusQhmPtLVeKwpOTt0t4Cj7Xrt0vZ8Wj7gIrSCchHzbNiYGY?=
- =?us-ascii?Q?rKbjxDFeZhEBxX6yp+Hw5eu9k8aPNs4I8cE36Nh9LegMOwiS7qaJqAStIoaH?=
- =?us-ascii?Q?vaqcNg+UJSogK5gXIEXnbAyQJHmCR4R6TQjF6JXpHOnluteE92wqzGrfkNe+?=
- =?us-ascii?Q?wX+S8urXwisGJxyx5vP25iDbenYYNvWh0DhoE8kdBfUAW+dQy7frxDfC1aRK?=
- =?us-ascii?Q?RXgnI5OEXm3zM+9gilCPRPyO1+gzVxZt9cw3U35JDxEKKJewlQ0R7xL5zVbf?=
- =?us-ascii?Q?DZZCV/TVECC8BazbdUHgrQUa9QuhVRwJWosnn8hPoAAJXks8FXCFjn2rYZEl?=
- =?us-ascii?Q?LB3zYzaffIiF5zDo0HdPA4ruLjjJ23V70sIyB0NBPDImCUI2TOwOBzSZKZ10?=
- =?us-ascii?Q?YcDVAenL/J9z+1c6BJO4r7OOm3MhR2KtyUpASwKT2N3cHmZaEDPBVpz3ovuY?=
- =?us-ascii?Q?0YK0Atn4NtvdipZL+k/2BtEPSnB7ZGo3f/5cvOaRIr1E9tHezFInjakwqy9Z?=
- =?us-ascii?Q?8RdAkmM9R5BdhSJUcAHAHBdNM0sWuQYNzam6f29NiO2eEMysBsogQTXaWrg2?=
- =?us-ascii?Q?2oSR8ykC9WEwoJm8iRupdQopJ+GNEocZCENVbunMS+av7SGZb06SS+RVcoJQ?=
- =?us-ascii?Q?JSbvfvO3SMPscH7m1aqqUPQnWCWjtCfCgxgwASX8oN9hqVjPTIDlPnKhG452?=
- =?us-ascii?Q?Tbng84ByaGKiQ77qtAx3pmZ+7KH2DSEUmUbbZbhOq04odXzCX6LLDQE3DZKE?=
- =?us-ascii?Q?oeSQqoqrbGwCHe0Aak2Gjq30caSqHe22i2D2Tydj7ZLWZ/Uu6ys2FJogZqsp?=
- =?us-ascii?Q?nHN1zmIPon7o4bA8pany3EDMWuM60JbJXU+b9Adm/Aaj95z69TQCoRDT0LHT?=
- =?us-ascii?Q?K/5rj94dX+kRPAhhhvn35wUKFt9YsRVo9SbnTzE/mCLXup7DZJXFheGo3MHO?=
- =?us-ascii?Q?B4rWs2inliyEwNygXPyxFZmw6FdEYzi2f1WZGf25z8D09hmYQgu19wVaGEn8?=
- =?us-ascii?Q?aHYsdaZLY3O653sjqJ+xGUXEP77hb2iTDYUhhcUzh3AOyg3ftS6b5RfhVJoG?=
- =?us-ascii?Q?m2rPEqAEjSwvlGPl2O0=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 09e9789f-50e3-4ceb-7afb-08d9c6e90a69
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Dec 2021 14:24:05.5707 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jVx4DTD5gXNiV/0MrVKUxh3bzo6BgxD0Mi+rWkVuBT+ApIlDCh3HEaDeJV87drtD
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5111
-Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
- David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
- Thierry Reding <thierry.reding@gmail.com>,
- Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
- Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
- Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
- Robin Murphy <robin.murphy@arm.com>
+X-Spam: Yes
+Cc: devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, David Heidelberg <david@ixit.cz>,
+ iommu@lists.linux-foundation.org, ~okias/devicetree@lists.sr.ht
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -155,91 +75,196 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Dec 24, 2021 at 11:19:44AM +0800, Lu Baolu wrote:
+Convert Qualcomm IOMMU v0 implementation to yaml format.
 
-> Let me summarize what I've got from above comments.
-> 
-> 1. Essentially we only need below interfaces for device drivers to
->    manage the I/O address conflict in iommu layer:
-> 
-> int iommu_device_set/release/query_kernel_dma(struct device *dev)
-> 
-> - Device driver lets the iommu layer know that driver DMAs go through
->   the kernel DMA APIs. The iommu layer should use the default domain
->   for DMA remapping. No other domains could be attached.
-> - Device driver lets the iommu layer know that driver doesn't do DMA
->   anymore and other domains are allowed to be attached.
-> - Device driver queries "can I only do DMA through the kernel DMA API?
->   In other words, can I attach my own domain?"
+Signed-off-by: David Heidelberg <david@ixit.cz>
+---
+ .../bindings/iommu/msm,iommu-v0.txt           | 64 -------------
+ .../bindings/iommu/qcom,iommu-v0.yaml         | 96 +++++++++++++++++++
+ 2 files changed, 96 insertions(+), 64 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+ create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu-v0.yaml
 
-I'm not sure I see the utility of a query, but OK - this is the API
-family v4 has added to really_probe, basically.
+diff --git a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+deleted file mode 100644
+index 20236385f26e..000000000000
+--- a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
++++ /dev/null
+@@ -1,64 +0,0 @@
+-* QCOM IOMMU
+-
+-The MSM IOMMU is an implementation compatible with the ARM VMSA short
+-descriptor page tables. It provides address translation for bus masters outside
+-of the CPU, each connected to the IOMMU through a port called micro-TLB.
+-
+-Required Properties:
+-
+-  - compatible: Must contain "qcom,apq8064-iommu".
+-  - reg: Base address and size of the IOMMU registers.
+-  - interrupts: Specifiers for the MMU fault interrupts. For instances that
+-    support secure mode two interrupts must be specified, for non-secure and
+-    secure mode, in that order. For instances that don't support secure mode a
+-    single interrupt must be specified.
+-  - #iommu-cells: The number of cells needed to specify the stream id. This
+-		  is always 1.
+-  - qcom,ncb:	  The total number of context banks in the IOMMU.
+-  - clocks	: List of clocks to be used during SMMU register access. See
+-		  Documentation/devicetree/bindings/clock/clock-bindings.txt
+-		  for information about the format. For each clock specified
+-		  here, there must be a corresponding entry in clock-names
+-		  (see below).
+-
+-  - clock-names	: List of clock names corresponding to the clocks specified in
+-		  the "clocks" property (above).
+-		  Should be "smmu_pclk" for specifying the interface clock
+-		  required for iommu's register accesses.
+-		  Should be "smmu_clk" for specifying the functional clock
+-		  required by iommu for bus accesses.
+-
+-Each bus master connected to an IOMMU must reference the IOMMU in its device
+-node with the following property:
+-
+-  - iommus: A reference to the IOMMU in multiple cells. The first cell is a
+-	    phandle to the IOMMU and the second cell is the stream id.
+-	    A single master device can be connected to more than one iommu
+-	    and multiple contexts in each of the iommu. So multiple entries
+-	    are required to list all the iommus and the stream ids that the
+-	    master is connected to.
+-
+-Example: mdp iommu and its bus master
+-
+-                mdp_port0: iommu@7500000 {
+-			compatible = "qcom,apq8064-iommu";
+-			#iommu-cells = <1>;
+-			clock-names =
+-			    "smmu_pclk",
+-			    "smmu_clk";
+-			clocks =
+-			    <&mmcc SMMU_AHB_CLK>,
+-			    <&mmcc MDP_AXI_CLK>;
+-			reg = <0x07500000 0x100000>;
+-			interrupts =
+-			    <GIC_SPI 63 0>,
+-			    <GIC_SPI 64 0>;
+-			qcom,ncb = <2>;
+-		};
+-
+-		mdp: qcom,mdp@5100000 {
+-			compatible = "qcom,mdp";
+-			...
+-			iommus = <&mdp_port0 0
+-				  &mdp_port0 2>;
+-		};
+diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu-v0.yaml b/Documentation/devicetree/bindings/iommu/qcom,iommu-v0.yaml
+new file mode 100644
+index 000000000000..989f7dc643a4
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/qcom,iommu-v0.yaml
+@@ -0,0 +1,96 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++
++$id: "http://devicetree.org/schemas/iommu/msm,iommu-v0.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: Qualcomm IOMMU for APQ8064
++
++maintainers:
++  - Will Deacon <will@kernel.org>
++
++description: >
++  The MSM IOMMU is an implementation compatible with the ARM VMSA short
++  descriptor page tables. It provides address translation for bus masters
++  outside of the CPU, each connected to the IOMMU through a port called micro-TLB.
++
++properties:
++  compatible:
++    const: qcom,apq8064-iommu
++
++  clocks:
++    items:
++      - description: interface clock for register accesses
++      - description: functional clock for bus accesses
++
++  clock-names:
++    oneOf:
++      - items:
++          - const: smmu_pclk
++          - const: smmu_clk
++      - items:
++          - const: smmu_pclk
++          - const: iommu_clk
++  reg:
++    maxItems: 1
++
++  interrupts:
++    description: >
++      Specifiers for the MMU fault interrupts. For instances that
++      support secure mode two interrupts must be specified, for non-secure and
++      secure mode, in that order. For instances that don't support secure mode a
++      single interrupt must be specified.
++
++  "#iommu-cells":
++    const: 1
++
++  qcom,ncb:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: The total number of context banks in the IOMMU.
++
++# Each bus master connected to an IOMMU must reference the IOMMU
++# in its device node with the following property:
++#   A reference to the IOMMU in multiple cells. The first cell is a
++#   phandle to the IOMMU and the second cell is the stream id.
++#   A single master device can be connected to more than one iommu
++#   and multiple contexts in each of the iommu. So multiple entries
++#   are required to list all the iommus and the stream ids that the
++#   master is connected to.
++
++required:
++  - clocks
++  - clock-names
++  - reg
++  - interrupts
++  - qcom,ncb
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/qcom,mmcc-msm8960.h>
++
++    mdp_port0: iommu@7500000 {
++            compatible = "qcom,apq8064-iommu";
++            #iommu-cells = <1>;
++            clock-names =
++                "smmu_pclk",
++                "smmu_clk";
++            clocks =
++                <&clk SMMU_AHB_CLK>,
++                <&clk MDP_AXI_CLK>;
++            reg = <0x07500000 0x100000>;
++            interrupts =
++                <0 63 0>,
++                <0 64 0>;
++            qcom,ncb = <2>;
++    };
++
++    mdp: mdp@5100000 {
++            compatible = "qcom,mdp4";
++            // ...
++
++            iommus = <&mdp_port0 0
++                      &mdp_port0 2>;
++    };
+-- 
+2.34.1
 
-> int iommu_device_set/release_private_dma(struct device *dev)
-> 
-> - Device driver lets the iommu layer know that it wants to use its own
->   iommu domain. The iommu layer should detach the default domain and
->   allow the driver to attach or detach its own domain through
->   iommu_attach/detach_device() interfaces.
-> - Device driver lets the iommy layer know that it on longer needs a
->   private domain.
-
-Drivers don't actually need an interface like this, they all have
-domains so they can all present their domain when they want to change
-the ownership mode.
-
-The advantage of presenting the domain in the API is that it allows
-the core code to support sharing. Present the same domain and your
-device gets to join the group. Present a different domain and it is
-rejected. Simple.
-
-Since there is no domain the above APIs cannot support tegra, for
-instance.
-
->   Make the iommu_attach_device() the only and generic interface for the
->   device drivers to use their own private domain (I/O address space)
->   and replace all iommu_attach_group() uses with iommu_attach_device()
->   and deprecate the former.
-
-Certainly in the devices drivers yes, VFIO should stay with group as
-I've explained.
-
-Ideals aside, we still need to have this series to have a scope that
-is achievable in a reasonable size. So, we still end up with three
-interfaces:
-
- 1) iommu_attach_device() as used by the 11 current drivers that do
-    not set suppress_auto_claim_dma_owner.
-    It's key property is that it is API compatible with what we have
-    today and doesn't require changing the 11 drivers.
-
- 2) iommu_attach_device_shared() which is used by tegra and requires
-    that drivers set suppress_auto_claim_dma_owner.
-
-    A followup series could replace all calls of iommu_attach_device()
-    with iommu_attach_device_shared() with one patch per driver that
-    also sets suppress_auto_claim_dma_owner.
-
- 3) Unless a better idea aries the
-    iommu_group_set_dma_owner()/iommu_replace_group_domain()
-    API that I suggested, used only by VFIO. This API is designed to
-    work without a domain and uses the 'struct file *owner' instead
-    of the domain to permit sharing. It swaps the obviously confusing
-    concept of _USER for the more general concept of 'replace domain'.
-
-All three need to consistently use the owner_cnt and related to
-implement their internal logic.
-
-It is a pretty clear explanation why there are three interfaces.
-
-Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
