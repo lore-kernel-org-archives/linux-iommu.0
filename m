@@ -1,68 +1,106 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9CCDAC433F5
-	for <iommu@archiver.kernel.org>; Fri, 24 Dec 2021 16:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 20F2FC433EF
+	for <iommu@archiver.kernel.org>; Sat, 25 Dec 2021 09:17:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 1446B415E3;
-	Fri, 24 Dec 2021 16:59:13 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id A6E6D81C67;
+	Sat, 25 Dec 2021 09:17:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1R4N38Eddw0t; Fri, 24 Dec 2021 16:59:12 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id EBEnVcw-oQKH; Sat, 25 Dec 2021 09:17:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id CB9AE410E6;
-	Fri, 24 Dec 2021 16:59:11 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 77A8681A0D;
+	Sat, 25 Dec 2021 09:17:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A30A8C002F;
-	Fri, 24 Dec 2021 16:59:11 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F3945C0012
- for <iommu@lists.linux-foundation.org>; Fri, 24 Dec 2021 16:59:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4EB5EC002F;
+	Sat, 25 Dec 2021 09:17:08 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 31545C0012
+ for <iommu@lists.linux-foundation.org>; Sat, 25 Dec 2021 09:17:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id CC9A8415E0
- for <iommu@lists.linux-foundation.org>; Fri, 24 Dec 2021 16:59:09 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 06B6C60BB8
+ for <iommu@lists.linux-foundation.org>; Sat, 25 Dec 2021 09:17:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JXneJXHlpTWi for <iommu@lists.linux-foundation.org>;
- Fri, 24 Dec 2021 16:59:08 +0000 (UTC)
-X-Greylist: delayed 00:08:46 by SQLgrey-1.8.0
-Received: from ixit.cz (ixit.cz [94.230.151.217])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 0E26A410E6
- for <iommu@lists.linux-foundation.org>; Fri, 24 Dec 2021 16:59:07 +0000 (UTC)
-Received: from localhost.localdomain (ip-89-176-96-70.net.upcbroadband.cz
- [89.176.96.70])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
- (No client certificate requested)
- by ixit.cz (Postfix) with ESMTPSA id A47842243C;
- Fri, 24 Dec 2021 17:50:17 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
- t=1640364618;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:
- content-transfer-encoding:content-transfer-encoding;
- bh=0hPROkzSJG3RWXzy2nCv6OuuMMuRGi/5ZutaTzY09Lk=;
- b=TcVg8jctekCD9HNYhsjtS9+GsoVBlMGETFqIK7lOqlJuvIuKn4o1+skshZISOhFcJRNB6b
- bi38/U2DeY51ffzMOoDSSXQqr7CTIiGsKpKbO69QAwfDTIu6oXOivSDYGqj+ovd171N6tw
- rvagwEfKgkkL4rbWvuS5esxMaz72WE8=
-From: David Heidelberg <david@ixit.cz>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
- Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH] dt-bindings: iommu: Convert msm,iommu-v0 to yaml
-Date: Fri, 24 Dec 2021 17:50:14 +0100
-Message-Id: <20211224165014.56308-1-david@ixit.cz>
-X-Mailer: git-send-email 2.34.1
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Tmn-B8a8LaXC for <iommu@lists.linux-foundation.org>;
+ Sat, 25 Dec 2021 09:17:06 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com
+ [IPv6:2607:f8b0:4864:20::62b])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 48F5E60BB7
+ for <iommu@lists.linux-foundation.org>; Sat, 25 Dec 2021 09:17:06 +0000 (UTC)
+Received: by mail-pl1-x62b.google.com with SMTP id n16so8018493plc.2
+ for <iommu@lists.linux-foundation.org>; Sat, 25 Dec 2021 01:17:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=j8TrOsw0QgcOPU1it/XtIDhHHO12dds110STZzwzYD0=;
+ b=nOfcDm4R5YmmsgOzRMD28sPCqa+TwQDAQHfEwt3dW/ogm2rgFf/ajmkB4ScNuPhyO8
+ vYbJwRK0IZSKimBi3gea8Oje+/59Z+0N6771bKnQRHOPYgG0nV5O3ZG7v8mbs1axOAGL
+ G+qJ4RNKx03TigPLiGc18Rfr8Tekoumv1fh6eY6ElmMFViRIArxRcUUDaxqriuwSKbep
+ aHEYUZxo1aUj7I0wrJ0eHssFN6dTHiyDQT0tqulG//pf997KhiOJDjAnKMwINw04gyQ1
+ 7SPueCO4+F38JtWp128b+dPBIVb22KtU1MqSpIOk9k85uyu5uIhMGcIwIXKUCBRmUlek
+ 2Anw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=j8TrOsw0QgcOPU1it/XtIDhHHO12dds110STZzwzYD0=;
+ b=0Kw1zv4ZkMsj2/K6eWAQNVAME6JfXE/agZh6Gc032v7KCdeZs3uJ6+s5TLuWbFVqEJ
+ AT2VzmrK5KdQsmLeciqEwILcpJEN8q1BHxG3CkXIFVp5feopB+tXfS4bUJwxErAp19HP
+ 1/9ESeg5OGBfvX3xqKYaL0u9YSqA52a0Kd+G2esLTgTEhIAJ0msJj3oLI7XxJYlaV5KA
+ 4L/FtS781nzTmCBeAc5A0AR0r33uP0a5OMlti0fj65cjiFcmIDAJZMkzK7y5gCAo2gQ1
+ xYn9rduRCOdavaeqoMJqH0JNQAP6ERQgxcEPYkM9g+f9hVc3/Tx+JbT26f9t8wjh7BhR
+ JK6w==
+X-Gm-Message-State: AOAM532O3Cqurm8Gs2ZSSzZAxW2DmZBUF1cYBLAGxvqF4VI0o/NKh3gz
+ kM57kYZUVjVAUSO71sPViC4=
+X-Google-Smtp-Source: ABdhPJz9jlowVnaWF5WFDxgb4hC4jKXBJ9R7DZT7d9Gt8MbbdXuDlBdTHBahWN62xgb0xOPaqu1h7Q==
+X-Received: by 2002:a17:903:2303:b0:149:50d1:19d0 with SMTP id
+ d3-20020a170903230300b0014950d119d0mr9507103plh.86.1640423825603; 
+ Sat, 25 Dec 2021 01:17:05 -0800 (PST)
+Received: from ip-172-31-30-232.ap-northeast-1.compute.internal
+ (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
+ by smtp.gmail.com with ESMTPSA id t10sm11886406pfg.105.2021.12.25.01.16.58
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sat, 25 Dec 2021 01:17:05 -0800 (PST)
+Date: Sat, 25 Dec 2021 09:16:55 +0000
+From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To: Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH v2 00/33] Separate struct slab from struct page
+Message-ID: <Ycbhh5n8TBODWHR+@ip-172-31-30-232.ap-northeast-1.compute.internal>
+References: <20211201181510.18784-1-vbabka@suse.cz>
+ <4c3dfdfa-2e19-a9a7-7945-3d75bc87ca05@suse.cz>
+ <f3a83708-3f3c-a634-7bee-dcfcaaa7f36e@suse.cz>
 MIME-Version: 1.0
-X-Spam: Yes
-Cc: devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org, David Heidelberg <david@ixit.cz>,
- iommu@lists.linux-foundation.org, ~okias/devicetree@lists.sr.ht
+Content-Disposition: inline
+In-Reply-To: <f3a83708-3f3c-a634-7bee-dcfcaaa7f36e@suse.cz>
+Cc: Peter Zijlstra <peterz@infradead.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, Michal Hocko <mhocko@kernel.org>,
+ linux-mm@kvack.org, Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+ Alexander Potapenko <glider@google.com>, kasan-dev@googlegroups.com,
+ "H. Peter Anvin" <hpa@zytor.com>, Christoph Lameter <cl@linux.com>,
+ Will Deacon <will@kernel.org>, Julia Lawall <julia.lawall@inria.fr>,
+ Sergey Senozhatsky <senozhatsky@chromium.org>, x86@kernel.org,
+ Luis Chamberlain <mcgrof@kernel.org>, Matthew Wilcox <willy@infradead.org>,
+ Ingo Molnar <mingo@redhat.com>, Vladimir Davydov <vdavydov.dev@gmail.com>,
+ David Rientjes <rientjes@google.com>, Nitin Gupta <ngupta@vflare.org>,
+ Marco Elver <elver@google.com>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, cgroups@vger.kernel.org,
+ Thomas Gleixner <tglx@linutronix.de>, Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+ Dmitry Vyukov <dvyukov@google.com>, Andrey Konovalov <andreyknvl@gmail.com>,
+ patches@lists.linux.dev, Pekka Enberg <penberg@kernel.org>,
+ Minchan Kim <minchan@kernel.org>, iommu@lists.linux-foundation.org,
+ Johannes Weiner <hannes@cmpxchg.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ David Woodhouse <dwmw2@infradead.org>, Roman Gushchin <guro@fb.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,191 +118,73 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Convert Qualcomm IOMMU v0 implementation to yaml format.
+On Wed, Dec 22, 2021 at 05:56:50PM +0100, Vlastimil Babka wrote:
+> On 12/14/21 13:57, Vlastimil Babka wrote:
+> > On 12/1/21 19:14, Vlastimil Babka wrote:
+> >> Folks from non-slab subsystems are Cc'd only to patches affecting them, and
+> >> this cover letter.
+> >>
+> >> Series also available in git, based on 5.16-rc3:
+> >> https://git.kernel.org/pub/scm/linux/kernel/git/vbabka/linux.git/log/?h=slab-struct_slab-v2r2
+> > 
+> > Pushed a new branch slab-struct-slab-v3r3 with accumulated fixes and small tweaks
+> > and a new patch from Hyeonggon Yoo on top. To avoid too much spam, here's a range diff:
+> 
+> Hi, I've pushed another update branch slab-struct_slab-v4r1, and also to
+> -next. I've shortened git commit log lines to make checkpatch happier,
+> so no range-diff as it would be too long. I believe it would be useless
+> spam to post the whole series now, shortly before xmas, so I will do it
+> at rc8 time, to hopefully collect remaining reviews. But if anyone wants
+> a mailed version, I can do that.
 
-Signed-off-by: David Heidelberg <david@ixit.cz>
----
- .../bindings/iommu/msm,iommu-v0.txt           | 64 -------------
- .../bindings/iommu/qcom,iommu-v0.yaml         | 96 +++++++++++++++++++
- 2 files changed, 96 insertions(+), 64 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
- create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu-v0.yaml
+Hello Vlastimil, Merry Christmas!
+This is part 2 of reviewing/testing patches.
 
-diff --git a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
-deleted file mode 100644
-index 20236385f26e..000000000000
---- a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
-+++ /dev/null
-@@ -1,64 +0,0 @@
--* QCOM IOMMU
--
--The MSM IOMMU is an implementation compatible with the ARM VMSA short
--descriptor page tables. It provides address translation for bus masters outside
--of the CPU, each connected to the IOMMU through a port called micro-TLB.
--
--Required Properties:
--
--  - compatible: Must contain "qcom,apq8064-iommu".
--  - reg: Base address and size of the IOMMU registers.
--  - interrupts: Specifiers for the MMU fault interrupts. For instances that
--    support secure mode two interrupts must be specified, for non-secure and
--    secure mode, in that order. For instances that don't support secure mode a
--    single interrupt must be specified.
--  - #iommu-cells: The number of cells needed to specify the stream id. This
--		  is always 1.
--  - qcom,ncb:	  The total number of context banks in the IOMMU.
--  - clocks	: List of clocks to be used during SMMU register access. See
--		  Documentation/devicetree/bindings/clock/clock-bindings.txt
--		  for information about the format. For each clock specified
--		  here, there must be a corresponding entry in clock-names
--		  (see below).
--
--  - clock-names	: List of clock names corresponding to the clocks specified in
--		  the "clocks" property (above).
--		  Should be "smmu_pclk" for specifying the interface clock
--		  required for iommu's register accesses.
--		  Should be "smmu_clk" for specifying the functional clock
--		  required by iommu for bus accesses.
--
--Each bus master connected to an IOMMU must reference the IOMMU in its device
--node with the following property:
--
--  - iommus: A reference to the IOMMU in multiple cells. The first cell is a
--	    phandle to the IOMMU and the second cell is the stream id.
--	    A single master device can be connected to more than one iommu
--	    and multiple contexts in each of the iommu. So multiple entries
--	    are required to list all the iommus and the stream ids that the
--	    master is connected to.
--
--Example: mdp iommu and its bus master
--
--                mdp_port0: iommu@7500000 {
--			compatible = "qcom,apq8064-iommu";
--			#iommu-cells = <1>;
--			clock-names =
--			    "smmu_pclk",
--			    "smmu_clk";
--			clocks =
--			    <&mmcc SMMU_AHB_CLK>,
--			    <&mmcc MDP_AXI_CLK>;
--			reg = <0x07500000 0x100000>;
--			interrupts =
--			    <GIC_SPI 63 0>,
--			    <GIC_SPI 64 0>;
--			qcom,ncb = <2>;
--		};
--
--		mdp: qcom,mdp@5100000 {
--			compatible = "qcom,mdp";
--			...
--			iommus = <&mdp_port0 0
--				  &mdp_port0 2>;
--		};
-diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu-v0.yaml b/Documentation/devicetree/bindings/iommu/qcom,iommu-v0.yaml
-new file mode 100644
-index 000000000000..989f7dc643a4
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/qcom,iommu-v0.yaml
-@@ -0,0 +1,96 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+
-+$id: "http://devicetree.org/schemas/iommu/msm,iommu-v0.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: Qualcomm IOMMU for APQ8064
-+
-+maintainers:
-+  - Will Deacon <will@kernel.org>
-+
-+description: >
-+  The MSM IOMMU is an implementation compatible with the ARM VMSA short
-+  descriptor page tables. It provides address translation for bus masters
-+  outside of the CPU, each connected to the IOMMU through a port called micro-TLB.
-+
-+properties:
-+  compatible:
-+    const: qcom,apq8064-iommu
-+
-+  clocks:
-+    items:
-+      - description: interface clock for register accesses
-+      - description: functional clock for bus accesses
-+
-+  clock-names:
-+    oneOf:
-+      - items:
-+          - const: smmu_pclk
-+          - const: smmu_clk
-+      - items:
-+          - const: smmu_pclk
-+          - const: iommu_clk
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    description: >
-+      Specifiers for the MMU fault interrupts. For instances that
-+      support secure mode two interrupts must be specified, for non-secure and
-+      secure mode, in that order. For instances that don't support secure mode a
-+      single interrupt must be specified.
-+
-+  "#iommu-cells":
-+    const: 1
-+
-+  qcom,ncb:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: The total number of context banks in the IOMMU.
-+
-+# Each bus master connected to an IOMMU must reference the IOMMU
-+# in its device node with the following property:
-+#   A reference to the IOMMU in multiple cells. The first cell is a
-+#   phandle to the IOMMU and the second cell is the stream id.
-+#   A single master device can be connected to more than one iommu
-+#   and multiple contexts in each of the iommu. So multiple entries
-+#   are required to list all the iommus and the stream ids that the
-+#   master is connected to.
-+
-+required:
-+  - clocks
-+  - clock-names
-+  - reg
-+  - interrupts
-+  - qcom,ncb
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/qcom,mmcc-msm8960.h>
-+
-+    mdp_port0: iommu@7500000 {
-+            compatible = "qcom,apq8064-iommu";
-+            #iommu-cells = <1>;
-+            clock-names =
-+                "smmu_pclk",
-+                "smmu_clk";
-+            clocks =
-+                <&clk SMMU_AHB_CLK>,
-+                <&clk MDP_AXI_CLK>;
-+            reg = <0x07500000 0x100000>;
-+            interrupts =
-+                <0 63 0>,
-+                <0 64 0>;
-+            qcom,ncb = <2>;
-+    };
-+
-+    mdp: mdp@5100000 {
-+            compatible = "qcom,mdp4";
-+            // ...
-+
-+            iommus = <&mdp_port0 0
-+                      &mdp_port0 2>;
-+    };
--- 
-2.34.1
+# mm/kasan: Convert to struct folio and struct slab
+I'm not familiar with kasan yet but kasan runs well on my machine and
+kasan's bug report functionality too works fine.
+Tested-by: Hyeongogn Yoo <42.hyeyoo@gmail.com>
 
+# mm: Convert struct page to struct slab in functions used by other subsystems
+I'm not familiar with kasan, but to ask:
+Does ____kasan_slab_free detect invalid free if someone frees
+an object that is not allocated from slab?
+
+@@ -341,7 +341,7 @@ static inline bool ____kasan_slab_free(struct kmem_cache *cache, void *object,
+-       if (unlikely(nearest_obj(cache, virt_to_head_page(object), object) !=
++       if (unlikely(nearest_obj(cache, virt_to_slab(object), object) !=
+            object)) {
+                kasan_report_invalid_free(tagged_object, ip);
+                return true;
+
+I'm asking this because virt_to_slab() will return NULL if folio_test_slab()
+returns false. That will cause NULL pointer dereference in nearest_obj.
+I don't think this change is intended.
+
+This makes me think some of virt_to_head_page() -> virt_to_slab()
+conversion need to be reviewed with caution.
+
+# mm/slab: Finish struct page to struct slab conversion
+Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+
+# mm/slab: Convert most struct page to struct slab by spatch
+Tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+
+I'll come back with part 3 :)
+Enjoy your Christmas!
+Hyeonggon
+
+> Changes in v4:
+> - rebase to 5.16-rc6 to avoid a conflict with mainline
+> - collect acks/reviews/tested-by from Johannes, Roman, Hyeonggon Yoo -
+> thanks!
+> - in patch "mm/slub: Convert detached_freelist to use a struct slab"
+> renamed free_nonslab_page() to free_large_kmalloc() and use folio there,
+> as suggested by Roman
+> - in "mm/memcg: Convert slab objcgs from struct page to struct slab"
+> change one caller of slab_objcgs_check() to slab_objcgs() as suggested
+> by Johannes, realize the other caller should be also changed, and remove
+> slab_objcgs_check() completely.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
