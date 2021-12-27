@@ -1,80 +1,80 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9CB4DC433F5
-	for <iommu@archiver.kernel.org>; Mon, 27 Dec 2021 17:51:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5186BC433F5
+	for <iommu@archiver.kernel.org>; Mon, 27 Dec 2021 17:52:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 3CA74402BF;
-	Mon, 27 Dec 2021 17:51:11 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id D9355404BD;
+	Mon, 27 Dec 2021 17:52:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cuKjzxkN2zVx; Mon, 27 Dec 2021 17:51:10 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vO8eaXl5G1KF; Mon, 27 Dec 2021 17:52:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 3ED76402EE;
-	Mon, 27 Dec 2021 17:51:10 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 8861B400E5;
+	Mon, 27 Dec 2021 17:52:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 101D4C002F;
-	Mon, 27 Dec 2021 17:51:10 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 232B0C0012
- for <iommu@lists.linux-foundation.org>; Mon, 27 Dec 2021 17:51:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6FE2DC002F;
+	Mon, 27 Dec 2021 17:52:41 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 89762C0012
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Dec 2021 17:52:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 09E8C60E27
- for <iommu@lists.linux-foundation.org>; Mon, 27 Dec 2021 17:51:09 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 7762040922
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Dec 2021 17:52:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8ho292Bgec4h for <iommu@lists.linux-foundation.org>;
- Mon, 27 Dec 2021 17:51:07 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 2OWQ1oEu1Rp4 for <iommu@lists.linux-foundation.org>;
+ Mon, 27 Dec 2021 17:52:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 04BF3605AC
- for <iommu@lists.linux-foundation.org>; Mon, 27 Dec 2021 17:51:06 +0000 (UTC)
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 5B6AD40197
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Dec 2021 17:52:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1640627466; x=1672163466;
+ t=1640627559; x=1672163559;
  h=date:from:to:cc:subject:message-id:references:
  mime-version:in-reply-to;
- bh=iPDSX7fY/NKEUf5rzPU4pa5rtlpdbe9mM+k8gcJXJUc=;
- b=CV36Phx2Ib634vGIUJVp9NNyfdVMsJ9sYOIJO4C3VGqsznBdhnoXFeNb
- T0Y1vDW23099iTx84nR3pWpFREbLin7/38oAldp7l7u3Y35MSy086jWvL
- OfOM3REsuxdtyakKD3jnUgHiMuCejWznT2XmLR3cAq9pilHhRjzwJHKsg
- IGq6qMuzV2F5VmelUqCAi/kJE5NsFWVjEz1lEAtyXxUm8pUD3meUmtjhI
- fL8V+wbvWoorhqMgND0crqnSwuq1FKauRt75hQ2xvSx84diDfRWc1mb2j
- xOwj31B2kcMWouHD4QVbiZmaouaOhe4gtzKL/dmwKA4f4lIYMEFR1gYaX A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10210"; a="221249267"
-X-IronPort-AV: E=Sophos;i="5.88,240,1635231600"; d="scan'208";a="221249267"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 27 Dec 2021 09:51:06 -0800
-X-IronPort-AV: E=Sophos;i="5.88,240,1635231600"; d="scan'208";a="686353442"
+ bh=uivZtDQsssJoVXCGHwOl0scNNO1XH+LQhL6LBCEbZQ4=;
+ b=Ns7u/ZLNoSb4INMdN5O5r9JshF/uXxSK/AF2oJgMo6uTVnxkoKVwqvr7
+ Y21CucQygI6DvS1ZOxS6ylXQvL3oubzIEwAV7iOITMTXwhnI4VCeDRWh3
+ MNi+JE4VLRn8WiajH1NI849bVhFhWl0f0ZwdRaIFwsBq0RhXR907XG579
+ cWMUE8ik8guKtZ+CmVP8dr4vEDvSyN+XOQuokY6nZQcK5WEHDaFDrW0Mw
+ G5gwmvSa7DUpcLsPF0WFpkIbx5SY3FOCwHt6FvYcB9uJ/SQvs98BLqMzh
+ 5UetD7SwGEqqMxEC8VV6rrGyuzi0OtHjrUbHPCxL3R5Y0lQSLy1lHEUjU w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10210"; a="241201025"
+X-IronPort-AV: E=Sophos;i="5.88,240,1635231600"; d="scan'208";a="241201025"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Dec 2021 09:52:38 -0800
+X-IronPort-AV: E=Sophos;i="5.88,240,1635231600"; d="scan'208";a="615408490"
 Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
- by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 27 Dec 2021 09:51:05 -0800
-Date: Mon, 27 Dec 2021 09:50:58 -0800
+ by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Dec 2021 09:52:38 -0800
+Date: Mon, 27 Dec 2021 09:52:36 -0800
 From: Fenghua Yu <fenghua.yu@intel.com>
-To: Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [PATCH v2 10/11] tools/objtool: Check for use of the ENQCMD
- instruction in the kernel
-Message-ID: <Ycn9AqoxPuKxHLZi@otcwcpicx3.sc.intel.com>
+To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Peter Zijlstra <peterz@infradead.org>,
+ Andy Lutomirski <luto@kernel.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, Tony Luck <tony.luck@intel.com>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Josh Poimboeuf <jpoimboe@redhat.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Ravi V Shankar <ravi.v.shankar@intel.com>
+Subject: Re: [PATCH v2 00/11] Re-enable ENQCMD and PASID MSR
+Message-ID: <Ycn9ZKgCjRWK9JC5@otcwcpicx3.sc.intel.com>
 References: <20211217220136.2762116-1-fenghua.yu@intel.com>
- <20211217220136.2762116-11-fenghua.yu@intel.com>
- <20211217225706.32ahbyf5yeuzrhre@treble>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20211217225706.32ahbyf5yeuzrhre@treble>
-Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Tony Luck <tony.luck@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
- Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>
+In-Reply-To: <20211217220136.2762116-1-fenghua.yu@intel.com>
+Cc: iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,30 +92,24 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi, Josh,
+Hi, Dear Maintainers,
 
-On Fri, Dec 17, 2021 at 02:57:06PM -0800, Josh Poimboeuf wrote:
-> On Fri, Dec 17, 2021 at 10:01:35PM +0000, Fenghua Yu wrote:
-> > The ENQCMD implicitly accesses the PASID_MSR to fill in the pasid field
-> > of the descriptor being submitted to an accelerator. But there is no
-> > precise (and stable across kernel changes) point at which the PASID_MSR
-> > is updated from the value for one task to the next.
-> > 
-> > Kernel code that uses accelerators must always use the ENQCMDS instruction
-> > which does not access the PASID_MSR.
-> > 
-> > Check for use of the ENQCMD instruction in the kernel and warn on its
-> > usage.
-> > 
-> > Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
-> > Reviewed-by: Tony Luck <tony.luck@intel.com>
-> > ---
-> > v2:
-> > - Simplify handling ENQCMD (PeterZ and Josh)
+On Fri, Dec 17, 2021 at 10:01:25PM +0000, Fenghua Yu wrote:
+> Problems in the old code to manage SVM (Shared Virtual Memory) devices
+> and the PASID (Process Address Space ID) led to that code being
+> disabled.
 > 
-> Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> Subsequent discussions resulted in a far simpler approach:
+> 
+> 1) PASID life cycle is from first allocation by a process until that
+>    process exits.
+> 2) All tasks begin with PASID disabled
+> 3) The #GP fault handler tries to fix faulting ENQCMD instructions very
+>    early (thus avoiding complexities of the XSAVE infrastructure)
 
-Thank you!
+Any comments on this series?
+
+Thanks.
 
 -Fenghua
 _______________________________________________
