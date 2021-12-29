@@ -1,54 +1,105 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9BFACC433F5
-	for <iommu@archiver.kernel.org>; Wed, 29 Dec 2021 01:34:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EEAEBC433F5
+	for <iommu@archiver.kernel.org>; Wed, 29 Dec 2021 11:23:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3C3A881A58;
-	Wed, 29 Dec 2021 01:34:40 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 8BF4260BB1;
+	Wed, 29 Dec 2021 11:23:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SLgw9STfxNTA; Wed, 29 Dec 2021 01:34:39 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SQohR_A3ZLOy; Wed, 29 Dec 2021 11:23:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 24C818188A;
-	Wed, 29 Dec 2021 01:34:39 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 4897860709;
+	Wed, 29 Dec 2021 11:23:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 01EB4C001E;
-	Wed, 29 Dec 2021 01:34:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 18FF1C002F;
+	Wed, 29 Dec 2021 11:23:07 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7D3DCC0012
- for <iommu@lists.linux-foundation.org>; Wed, 29 Dec 2021 01:34:37 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 365A1C0012
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Dec 2021 11:23:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 5E4D7605A4
- for <iommu@lists.linux-foundation.org>; Wed, 29 Dec 2021 01:34:37 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 1DE8260A46
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Dec 2021 11:23:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9TpcWY2-5FTm for <iommu@lists.linux-foundation.org>;
- Wed, 29 Dec 2021 01:34:36 +0000 (UTC)
-X-Greylist: delayed 00:05:12 by SQLgrey-1.8.0
-Received: from njjs-sys-mailin07.njjs.baidu.com (mx311.baidu.com
- [180.101.52.76])
- by smtp3.osuosl.org (Postfix) with ESMTP id EB0786006A
- for <iommu@lists.linux-foundation.org>; Wed, 29 Dec 2021 01:34:35 +0000 (UTC)
-Received: from bjhw-sys-rpm015653cc5.bjhw.baidu.com
- (bjhw-sys-rpm015653cc5.bjhw.baidu.com [10.227.53.39])
- by njjs-sys-mailin07.njjs.baidu.com (Postfix) with ESMTP id 0A31E19480056
- for <iommu@lists.linux-foundation.org>; Wed, 29 Dec 2021 09:29:20 +0800 (CST)
-Received: from localhost (localhost [127.0.0.1])
- by bjhw-sys-rpm015653cc5.bjhw.baidu.com (Postfix) with ESMTP id E4994D9932
- for <iommu@lists.linux-foundation.org>; Wed, 29 Dec 2021 09:29:19 +0800 (CST)
-From: Li RongQing <lirongqing@baidu.com>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH][RFC] iommu/amd: Add config option to set amd iommu off as
- default
-Date: Wed, 29 Dec 2021 09:29:19 +0800
-Message-Id: <1640741359-42539-1-git-send-email-lirongqing@baidu.com>
-X-Mailer: git-send-email 1.7.1
+ with ESMTP id Q9XNv9KRk5Yr for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Dec 2021 11:23:04 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com
+ [IPv6:2607:f8b0:4864:20::102b])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 4FA2560709
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Dec 2021 11:23:04 +0000 (UTC)
+Received: by mail-pj1-x102b.google.com with SMTP id
+ rj2-20020a17090b3e8200b001b1944bad25so19633085pjb.5
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Dec 2021 03:23:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=B8D9h3oa8OpyqxIH3xe2rIOLYO1p/ntyh/ItEZc2ers=;
+ b=WGgAxIa78MQr67iJtQ1TD1NaSUDzL8Sj14e4SvxYWhEN9di3WJIBnUF+L3ExcGr1oj
+ QG61NAIFhjT/XTvY0CDIKSy0x2wdhjgp5o3CP/sn9tLZp0iIoIh8BXvPhaMFXpuLfzRl
+ ssYONzQtGOvuMs4NA/1vndNqMZ2aeOxJ5COnpBFYJWM3L7v9L5GRfb6CzWNnmn7NDNB5
+ Y3k9y/k0SaoD8ZsB9lFCcDRjDybncaD5TD9GRZZ/dYi8Nrw8/TG12zPX6PJi/KX88OD2
+ OuID2/9IQHJyO+voFSIrf5Pg524R1rvzzNEz20N8dgdaI7Q3jfQjIb0uJgqdnoHZZxJI
+ MBfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=B8D9h3oa8OpyqxIH3xe2rIOLYO1p/ntyh/ItEZc2ers=;
+ b=zM3KjS1wEgxR5PJUlDiMgSpEBX4vSUThI04FQJg/vCuUfFyJ8EP42c9UwO1ALHPHig
+ oLSbOaa75nscSLCu6acoHuq3B1W6Wta4SQMbP4Wt7zlJhrGaJMqolhvnNuu6S5OAOSkQ
+ q8edJnzgYvsauJPHKFUqCuF+jkCQzO6ocot7/XF8jypDm6KASLMWk5Tsxa7DJXxrdPlo
+ xC58Jt0NAiMemaANxu0yFD4FPAYsS8Kxdj2qAiLQo1X0hn/o2wkpLzJbqCFjz50UCEz0
+ 5fdg6cDTvxO3Ci1pNb/X7eSlYQ5IRpdmHuXl+i1xR8HUFqTlcqvMTlsKHwd1OGJ/ZLtg
+ oSWQ==
+X-Gm-Message-State: AOAM533Xb9rOWn5Bq2M0sSqX8aY1zwfb+65olPXVUQD41y7JPEC7zfxQ
+ 5A5jw4xCDgO02NlL9/fRbGg=
+X-Google-Smtp-Source: ABdhPJwuzAxU4R0IYSsKh74KLKKx3PviuJjkKN5hUYyTQsDBZbYnOyqmi34FrA9NClJ4Q9W7ZJbPJg==
+X-Received: by 2002:a17:902:9343:b0:148:a2e7:fb5f with SMTP id
+ g3-20020a170902934300b00148a2e7fb5fmr27487300plp.160.1640776983676; 
+ Wed, 29 Dec 2021 03:23:03 -0800 (PST)
+Received: from ip-172-31-30-232.ap-northeast-1.compute.internal
+ (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
+ by smtp.gmail.com with ESMTPSA id pf7sm27063114pjb.8.2021.12.29.03.22.56
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 29 Dec 2021 03:23:03 -0800 (PST)
+Date: Wed, 29 Dec 2021 11:22:54 +0000
+From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To: Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH v2 00/33] Separate struct slab from struct page
+Message-ID: <YcxFDuPXlTwrPSPk@ip-172-31-30-232.ap-northeast-1.compute.internal>
+References: <20211201181510.18784-1-vbabka@suse.cz>
+ <4c3dfdfa-2e19-a9a7-7945-3d75bc87ca05@suse.cz>
+ <f3a83708-3f3c-a634-7bee-dcfcaaa7f36e@suse.cz>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <f3a83708-3f3c-a634-7bee-dcfcaaa7f36e@suse.cz>
+Cc: Peter Zijlstra <peterz@infradead.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, Michal Hocko <mhocko@kernel.org>,
+ linux-mm@kvack.org, Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+ Alexander Potapenko <glider@google.com>, kasan-dev@googlegroups.com,
+ "H. Peter Anvin" <hpa@zytor.com>, Christoph Lameter <cl@linux.com>,
+ Will Deacon <will@kernel.org>, Julia Lawall <julia.lawall@inria.fr>,
+ Sergey Senozhatsky <senozhatsky@chromium.org>, x86@kernel.org,
+ Luis Chamberlain <mcgrof@kernel.org>, Matthew Wilcox <willy@infradead.org>,
+ Ingo Molnar <mingo@redhat.com>, Vladimir Davydov <vdavydov.dev@gmail.com>,
+ David Rientjes <rientjes@google.com>, Nitin Gupta <ngupta@vflare.org>,
+ Marco Elver <elver@google.com>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, cgroups@vger.kernel.org,
+ Thomas Gleixner <tglx@linutronix.de>, Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+ Dmitry Vyukov <dvyukov@google.com>, Andrey Konovalov <andreyknvl@gmail.com>,
+ patches@lists.linux.dev, Pekka Enberg <penberg@kernel.org>,
+ Minchan Kim <minchan@kernel.org>, iommu@lists.linux-foundation.org,
+ Johannes Weiner <hannes@cmpxchg.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ David Woodhouse <dwmw2@infradead.org>, Roman Gushchin <guro@fb.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -61,94 +112,96 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-AMD iommu is not needed by most users, but enabled by default, and
-causes performance issue for some device like NICs, so add config
-option to set amd iommu off as default as Intel
+On Wed, Dec 22, 2021 at 05:56:50PM +0100, Vlastimil Babka wrote:
+> On 12/14/21 13:57, Vlastimil Babka wrote:
+> > On 12/1/21 19:14, Vlastimil Babka wrote:
+> >> Folks from non-slab subsystems are Cc'd only to patches affecting them, and
+> >> this cover letter.
+> >>
+> >> Series also available in git, based on 5.16-rc3:
+> >> https://git.kernel.org/pub/scm/linux/kernel/git/vbabka/linux.git/log/?h=slab-struct_slab-v2r2
+> > 
+> > Pushed a new branch slab-struct-slab-v3r3 with accumulated fixes and small tweaks
+> > and a new patch from Hyeonggon Yoo on top. To avoid too much spam, here's a range diff:
+> 
+> Hi, I've pushed another update branch slab-struct_slab-v4r1, and also to
+> -next. I've shortened git commit log lines to make checkpatch happier,
+> so no range-diff as it would be too long. I believe it would be useless
+> spam to post the whole series now, shortly before xmas, so I will do it
+> at rc8 time, to hopefully collect remaining reviews. But if anyone wants
+> a mailed version, I can do that.
+>
 
-if AMD iommu is needed, it can be enabled by passing amd_iommu=on
+Hello Matthew and Vlastimil.
+it's part 3 of review.
 
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
----
- Documentation/admin-guide/kernel-parameters.txt | 1 +
- arch/x86/configs/x86_64_defconfig               | 1 +
- drivers/iommu/amd/Kconfig                       | 8 ++++++++
- drivers/iommu/amd/init.c                        | 4 +++-
- 4 files changed, 13 insertions(+), 1 deletion(-)
+# mm: Convert struct page to struct slab in functions used by other subsystems
+Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 9725c54..0c754c8 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -304,6 +304,7 @@
- 			fullflush - Deprecated, equivalent to iommu.strict=1
- 			off	  - do not initialize any AMD IOMMU found in
- 				    the system
-+			on	  - initialize any AMD IOMMU found in the system
- 			force_isolation - Force device isolation for all
- 					  devices. The IOMMU driver is not
- 					  allowed anymore to lift isolation
-diff --git a/arch/x86/configs/x86_64_defconfig b/arch/x86/configs/x86_64_defconfig
-index e8a7a0a..0693b62 100644
---- a/arch/x86/configs/x86_64_defconfig
-+++ b/arch/x86/configs/x86_64_defconfig
-@@ -218,6 +218,7 @@ CONFIG_EEEPC_LAPTOP=y
- CONFIG_AMD_IOMMU=y
- CONFIG_INTEL_IOMMU=y
- # CONFIG_INTEL_IOMMU_DEFAULT_ON is not set
-+# CONFIG_AMD_IOMMU_DEFAULT_ON is not set
- CONFIG_EXT4_FS=y
- CONFIG_EXT4_FS_POSIX_ACL=y
- CONFIG_EXT4_FS_SECURITY=y
-diff --git a/drivers/iommu/amd/Kconfig b/drivers/iommu/amd/Kconfig
-index a3cbafb..7962c46 100644
---- a/drivers/iommu/amd/Kconfig
-+++ b/drivers/iommu/amd/Kconfig
-@@ -32,6 +32,14 @@ config AMD_IOMMU_V2
- 	  hardware. Select this option if you want to use devices that support
- 	  the PCI PRI and PASID interface.
+
+# mm/slub: Convert most struct page to struct slab by spatch
+Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+with a question below.
+
+-static int check_slab(struct kmem_cache *s, struct page *page)
++static int check_slab(struct kmem_cache *s, struct slab *slab)
+ {
+        int maxobj;
  
-+config AMD_IOMMU_DEFAULT_ON
-+	bool "Enable AMD IOMMU by default"
-+	default n
-+	help
-+	  Selecting this option will enable a AMD IOMMU at boot time if
-+	  one is found. If this option is not selected, AMD IOMMU support can
-+	  be enabled by passing amd_iommu=on to the kernel.
-+
- config AMD_IOMMU_DEBUGFS
- 	bool "Enable AMD IOMMU internals in DebugFS"
- 	depends on AMD_IOMMU && IOMMU_DEBUGFS
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 1eacd43..dcf24cb 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -155,7 +155,7 @@ int amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_VAPIC;
- static int amd_iommu_xt_mode = IRQ_REMAP_XAPIC_MODE;
- 
- static bool amd_iommu_detected;
--static bool amd_iommu_disabled __initdata;
-+static bool amd_iommu_disabled __initdata = !IS_ENABLED(CONFIG_AMD_IOMMU_DEFAULT_ON);
- static bool amd_iommu_force_enable __initdata;
- static int amd_iommu_target_ivhd_type;
- 
-@@ -3120,6 +3120,8 @@ static int __init parse_amd_iommu_options(char *str)
- 			amd_iommu_force_enable = true;
- 		if (strncmp(str, "off", 3) == 0)
- 			amd_iommu_disabled = true;
-+		if (strncmp(str, "on", 2) == 0)
-+			amd_iommu_disabled = false;
- 		if (strncmp(str, "force_isolation", 15) == 0)
- 			amd_iommu_force_isolation = true;
- 	}
--- 
-2.9.4
+-       if (!PageSlab(page)) {
+-               slab_err(s, page, "Not a valid slab page");
++       if (!folio_test_slab(slab_folio(slab))) {
++               slab_err(s, slab, "Not a valid slab page");
+                return 0;
+        }
 
+Can't we guarantee that struct slab * always points to a slab?
+
+for struct page * it can be !PageSlab(page) because struct page *
+can be other than slab. but struct slab * can only be slab
+unlike struct page. code will be simpler if we guarantee that
+struct slab * always points to a slab (or NULL).
+
+
+# mm/slub: Convert pfmemalloc_match() to take a struct slab
+It's confusing to me because the original pfmemalloc_match() is removed
+and pfmemalloc_match_unsafe() was renamed to pfmemalloc_match() and
+converted to use slab_test_pfmemalloc() helper.
+
+But I agree with the resulting code. so:
+Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+
+
+# mm/slub: Convert alloc_slab_page() to return a struct slab
+Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+
+
+# mm/slub: Convert print_page_info() to print_slab_info()
+Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+
+I hope to review rest of patches in a week.
+
+Thanks,
+Hyeonggon
+
+> Changes in v4:
+> - rebase to 5.16-rc6 to avoid a conflict with mainline
+> - collect acks/reviews/tested-by from Johannes, Roman, Hyeonggon Yoo -
+> thanks!
+> - in patch "mm/slub: Convert detached_freelist to use a struct slab"
+> renamed free_nonslab_page() to free_large_kmalloc() and use folio there,
+> as suggested by Roman
+> - in "mm/memcg: Convert slab objcgs from struct page to struct slab"
+> change one caller of slab_objcgs_check() to slab_objcgs() as suggested
+> by Johannes, realize the other caller should be also changed, and remove
+> slab_objcgs_check() completely.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
