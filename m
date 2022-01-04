@@ -4,65 +4,63 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CA98BC433F5
-	for <iommu@archiver.kernel.org>; Tue,  4 Jan 2022 15:54:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D2493C433F5
+	for <iommu@archiver.kernel.org>; Tue,  4 Jan 2022 15:54:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 8A75F826C1;
-	Tue,  4 Jan 2022 15:54:28 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 92A31826FB;
+	Tue,  4 Jan 2022 15:54:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nViCCIlRvFHL; Tue,  4 Jan 2022 15:54:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 65EE282640;
-	Tue,  4 Jan 2022 15:54:27 +0000 (UTC)
+	with ESMTP id Sqnk9xVxVvpl; Tue,  4 Jan 2022 15:54:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id A152E8275A;
+	Tue,  4 Jan 2022 15:54:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 50669C002F;
-	Tue,  4 Jan 2022 15:54:27 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4E06CC001E
- for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 15:54:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7E31BC002F;
+	Tue,  4 Jan 2022 15:54:29 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 34376C001E
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 15:54:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 3C60860C01
- for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 15:54:26 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 137E08278F
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 15:54:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=collabora.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZYFopCeeMCPY for <iommu@lists.linux-foundation.org>;
- Tue,  4 Jan 2022 15:54:25 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id cCSwK38FkQAg for <iommu@lists.linux-foundation.org>;
+ Tue,  4 Jan 2022 15:54:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk
  [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A6B1560BF9
- for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 15:54:25 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 830F88267C
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 15:54:27 +0000 (UTC)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
- (Authenticated sender: kholk11) with ESMTPSA id 5FF1A1F43593
+ (Authenticated sender: kholk11) with ESMTPSA id 0B5281F43595
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
- s=mail; t=1641311664;
- bh=z8b4JgrEINeDdHaIUQNnWliGF0ifNcQlBrAvNR4lIjA=;
+ s=mail; t=1641311666;
+ bh=ulZHjpTu7j0ySO1MMReKIYjoYdR7bbmUzzLd3EJvGds=;
  h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
- b=RIApkZCMkaFcib0aBu9CH9SoagjUf5BxhxJF4rMLq9d8min2nzflzYPa4uPoCn6Bz
- xQtr2frS8nyypu+J5vauINYYcwtNZA3CJ9SzP7gmHS2YTTWR9qyRTyBnl+LojUmG1S
- t6K7SXfjZ1LwtD6QCJPb41VsanF6DZrzmQJB1eIPniiBMHkdLzykaThTLtCd3O6IEY
- WYh2OaowGW6mYrkQmK3qzAfWT6XtHQiHOUrC71BUx4eVdPDo4DMknqv8L5gw31fQgY
- NY9U4jmNYy8qxqW6x1j1/hV25zioi207s+3xItCCFFBRKzBvXByWQnPmp6tDVtskmg
- g0iPgonHSmZuQ==
-Subject: Re: [PATCH v3 27/33] iommu/mediatek: Initialise bank HW for each a
- bank
+ b=M31g3/2LbHAm51RSMj8gQ/+f16Uz829T17eQnWLzFcVnn+T7o5DjmceJuekSLlCqN
+ DHgaVnrL5OdMjSs5yLStZZibQGJ3Ng3+nZtcaQkCigkb5UFYPhDxddqV1r60EyPa3c
+ F9xtRxB5ZFeFPW9jvqC+UBLXvEVDo8WBpzw7LK3saWxtKNCHZ9FQnd4r3O6J+UGiMT
+ pnWBQTqhT6RYGbm2hnDIjKEY6Ir/rVvgTl3oxYTvu5RaMv5F05VkObmq/RI80YS90H
+ bY8vFOJ2iwa/6hS0kaz9t9fDJ4FcymyIPkZUcjo4R2iT7W+7V9NYEpV6lOzvyxWfCP
+ o2eLhdMkSIEGw==
+Subject: Re: [PATCH v3 24/33] iommu/mediatek: Only adjust code about register
+ base
 To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
  Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
 References: <20210923115840.17813-1-yong.wu@mediatek.com>
- <20210923115840.17813-28-yong.wu@mediatek.com>
+ <20210923115840.17813-25-yong.wu@mediatek.com>
 From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Message-ID: <af588804-041c-b382-e5e4-4dfd0506b439@collabora.com>
-Date: Tue, 4 Jan 2022 16:54:20 +0100
+Message-ID: <4dce6fff-1c8f-3ec3-f540-4028241036e1@collabora.com>
+Date: Tue, 4 Jan 2022 16:54:22 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20210923115840.17813-28-yong.wu@mediatek.com>
+In-Reply-To: <20210923115840.17813-25-yong.wu@mediatek.com>
 Content-Language: en-US
 Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
  srv_heupstream@mediatek.com,
@@ -89,32 +87,10 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 Il 23/09/21 13:58, Yong Wu ha scritto:
-> The mt8195 IOMMU HW max support 5 banks, and regarding the banks'
-> registers, it looks like:
-> 
->   ----------------------------------------
->   |bank0  | bank1 | bank2 | bank3 | bank4|
->   ----------------------------------------
->   |global |
->   |control|         null
->   |regs   |
->   -----------------------------------------
->   |bank   |bank   |bank   |bank   |bank   |
->   |regs   |regs   |regs   |regs   |regs   |
->   |       |       |       |       |       |
->   -----------------------------------------
-> 
-> Each bank has some special bank registers and it share bank0's global
-> control registers. this patch initialise the bank hw with the bankid.
-> 
-> In the hw_init, we always initialise bank0's control register since
-> we don't know if the bank0 is initialised.
-> 
-> Additionally, About each bank's register base, always delta 0x1000.
-> like bank[x + 1] = bank[x] + 0x1000.
+> No functional change. Use "base" instead of the data->base. This is
+> avoid to touch too many lines in the next patches.
 > 
 > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-
 
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
