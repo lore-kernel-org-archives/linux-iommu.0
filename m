@@ -1,87 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 674BCC433F5
-	for <iommu@archiver.kernel.org>; Tue,  4 Jan 2022 05:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 67CA9C433F5
+	for <iommu@archiver.kernel.org>; Tue,  4 Jan 2022 10:08:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id EDE66400BA;
-	Tue,  4 Jan 2022 05:23:50 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 064F160B71;
+	Tue,  4 Jan 2022 10:08:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jeeBKkcWrTGP; Tue,  4 Jan 2022 05:23:49 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 6602E400F5;
-	Tue,  4 Jan 2022 05:23:49 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id G1CE0GP_1f-U; Tue,  4 Jan 2022 10:08:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id BBB7860B0E;
+	Tue,  4 Jan 2022 10:08:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3AABCC0030;
-	Tue,  4 Jan 2022 05:23:49 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E4F66C001E
- for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 05:23:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9843FC002F;
+	Tue,  4 Jan 2022 10:08:28 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E9EA2C001E
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 10:08:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id D1B41825CA
- for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 05:23:47 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id CABB540352
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 10:08:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MidOcnDgRiBv for <iommu@lists.linux-foundation.org>;
- Tue,  4 Jan 2022 05:23:46 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp1.osuosl.org (Postfix) with ESMTPS id CFED5825C7
- for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 05:23:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1641273826; x=1672809826;
- h=cc:subject:to:references:from:message-id:date:
- mime-version:in-reply-to:content-transfer-encoding;
- bh=uXKPyRWOnxNU5FJs1OVLLK8xkyzVa8K8E1f+yzjqR1k=;
- b=EwMkS0K0QGzIOb8kKa3Y6vhCNpPowM9TeZwQn+IpRffRvPzl3BESkPGX
- vG6I8qraTfzgUO4924hd5mUdL/s/6Ns3LNOEn5ZEsveSQLMQiqMHMJLfn
- 5ItZVvrM/shkzT59+ZSlugJaNG4rywQB56CnsBc1aDKnlHNJ8Z+O7ckgH
- SNBI49mUhwLZanzooju0lfAHvV9iCF3ReE2YDXSQriCCHJWZnyUyQveSf
- MRaMyL/CSXpKbtvHpaLJDTNj5YFIgF7M4WCIuNSuQUUpRRBpBp0dJu0RB
- iX9aRdB4Sy5iArY8z47jI0reMVsJSdqJEaOjXcLYybWcCG/EA5oV7f8SX A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10216"; a="222151242"
-X-IronPort-AV: E=Sophos;i="5.88,260,1635231600"; d="scan'208";a="222151242"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 03 Jan 2022 21:23:46 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,260,1635231600"; d="scan'208";a="525866862"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
- ([10.239.159.118])
- by orsmga008.jf.intel.com with ESMTP; 03 Jan 2022 21:23:39 -0800
-Subject: Re: [PATCH v4 00/13] Fix BUG_ON in vfio_iommu_group_notifier()
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Joerg Roedel <joro@8bytes.org>, Alex Williamson
- <alex.williamson@redhat.com>, Bjorn Helgaas <bhelgaas@google.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>
-References: <20211217063708.1740334-1-baolu.lu@linux.intel.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <d7ca046e-37fe-937b-d7cf-55af3839f0a0@linux.intel.com>
-Date: Tue, 4 Jan 2022 13:23:02 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 9bXkedP_9FAd for <iommu@lists.linux-foundation.org>;
+ Tue,  4 Jan 2022 10:08:25 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [IPv6:2607:7c80:54:e::133])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9EC0D402E7
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 10:08:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+ :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description;
+ bh=CeJbcRxNatDqSOdUSkpsMyqknIzDwpPrhNR0CEO5Mq8=; b=m7Jy2ahpCJtNi/CxWcKT+8g2bW
+ M/mvq/JPDSk4aKt3yvYyJRZG0BRhvNwzvsXh/MXyH2x93E6otKVA6SJ+cxzoi4eHH85S44DRDdhPC
+ HzdbvbxYSB/7s3snhVQtPxXldOLnyjWzXgMlOOVI2L2DXq1VWGdt5UOyFhy7dKiI+F6Hfvm9WZMds
+ QQgA+lL32KheVZ7FfZFHW7gursD0fzb5VP8DEvAMCynajQAHzCQFf3OZqZBEpTYekqKHScn0BoP2s
+ LJfx104qTzGAHt3i9tcORQeQN3dRRqvV/uwx36zT6scluWeDr5r2Cf6kfridj1T2fBFSnku6V1HM9
+ vV76sNVA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red
+ Hat Linux)) id 1n4gjY-00B65Z-Bp; Tue, 04 Jan 2022 10:08:00 +0000
+Date: Tue, 4 Jan 2022 02:08:00 -0800
+From: Christoph Hellwig <hch@infradead.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v5 01/14] iommu: Add dma ownership management interfaces
+Message-ID: <YdQcgFhIMYvUwABV@infradead.org>
+References: <20220104015644.2294354-1-baolu.lu@linux.intel.com>
+ <20220104015644.2294354-2-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20211217063708.1740334-1-baolu.lu@linux.intel.com>
-Content-Language: en-US
-Cc: kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
- linux-pci@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
+Content-Disposition: inline
+In-Reply-To: <20220104015644.2294354-2-baolu.lu@linux.intel.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
+ David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
+ Thierry Reding <thierry.reding@gmail.com>,
  Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
- Will Deacon <will@kernel.org>, Stuart Yoder <stuyoder@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Chaitanya Kulkarni <kch@nvidia.com>,
- Dan Williams <dan.j.williams@intel.com>, Cornelia Huck <cohuck@redhat.com>,
- linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
- iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
- Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+ Chaitanya Kulkarni <kch@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,120 +88,150 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 12/17/21 2:36 PM, Lu Baolu wrote:
-> Hi folks,
+On Tue, Jan 04, 2022 at 09:56:31AM +0800, Lu Baolu wrote:
+> Multiple devices may be placed in the same IOMMU group because they
+> cannot be isolated from each other. These devices must either be
+> entirely under kernel control or userspace control, never a mixture.
 > 
-> The iommu group is the minimal isolation boundary for DMA. Devices in
-> a group can access each other's MMIO registers via peer to peer DMA
-> and also need share the same I/O address space.
+> This adds dma ownership management in iommu core and exposes several
+> interfaces for the device drivers and the device userspace assignment
+> framework (i.e. vfio), so that any conflict between user and kernel
+> controlled DMA could be detected at the beginning.
 > 
-> Once the I/O address space is assigned to user control it is no longer
-> available to the dma_map* API, which effectively makes the DMA API
-> non-working.
+> The device driver oriented interfaces are,
 > 
-> Second, userspace can use DMA initiated by a device that it controls
-> to access the MMIO spaces of other devices in the group. This allows
-> userspace to indirectly attack any kernel owned device and it's driver.
+> 	int iommu_device_use_dma_api(struct device *dev);
+> 	void iommu_device_unuse_dma_api(struct device *dev);
 > 
-> Therefore groups must either be entirely under kernel control or
-> userspace control, never a mixture. Unfortunately some systems have
-> problems with the granularity of groups and there are a couple of
-> important exceptions:
+> Devices under kernel drivers control must call iommu_device_use_dma_api()
+> before driver probes. The driver binding process must be aborted if it
+> returns failure.
 > 
->   - pci_stub allows the admin to block driver binding on a device and
->     make it permanently shared with userspace. Since PCI stub does not
->     do DMA it is safe, however the admin must understand that using
->     pci_stub allows userspace to attack whatever device it was bound
->     it.
+> The vfio oriented interfaces are,
 > 
->   - PCI bridges are sometimes included in groups. Typically PCI bridges
->     do not use DMA, and generally do not have MMIO regions.
+> 	int iommu_group_set_dma_owner(struct iommu_group *group,
+> 				      void *owner);
+> 	void iommu_group_release_dma_owner(struct iommu_group *group);
+> 	bool iommu_group_dma_owner_claimed(struct iommu_group *group);
 > 
-> Generally any device that does not have any MMIO registers is a
-> possible candidate for an exception.
+> The device userspace assignment must be disallowed if the set dma owner
+> interface returns failure.
 > 
-> Currently vfio adopts a workaround to detect violations of the above
-> restrictions by monitoring the driver core BOUND event, and hardwiring
-> the above exceptions. Since there is no way for vfio to reject driver
-> binding at this point, BUG_ON() is triggered if a violation is
-> captured (kernel driver BOUND event on a group which already has some
-> devices assigned to userspace). Aside from the bad user experience
-> this opens a way for root userspace to crash the kernel, even in high
-> integrity configurations, by manipulating the module binding and
-> triggering the BUG_ON.
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  include/linux/iommu.h |  31 ++++++++
+>  drivers/iommu/iommu.c | 161 +++++++++++++++++++++++++++++++++++++++++-
+>  2 files changed, 189 insertions(+), 3 deletions(-)
 > 
-> This series solves this problem by making the user/kernel ownership a
-> core concept at the IOMMU layer. The driver core enforces kernel
-> ownership while drivers are bound and violations now result in a error
-> codes during probe, not BUG_ON failures.
-> 
-> Patch partitions:
->    [PATCH 1-4]: Detect DMA ownership conflicts during driver binding;
->    [PATCH 5-8]: Add security context management for assigned devices;
->    [PATCH 9-13]: Various cleanups.
-> 
-> This is also part one of three initial series for IOMMUFD:
->   * Move IOMMU Group security into the iommu layer
->   - Generic IOMMUFD implementation
->   - VFIO ability to consume IOMMUFD
-> 
-> Change log:
-> v1: initial post
->    - https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/
-> 
-> v2:
->    - https://lore.kernel.org/linux-iommu/20211128025051.355578-1-baolu.lu@linux.intel.com/
-> 
->    - Move kernel dma ownership auto-claiming from driver core to bus
->      callback. [Greg/Christoph/Robin/Jason]
->      https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/T/#m153706912b770682cb12e3c28f57e171aa1f9d0c
-> 
->    - Code and interface refactoring for iommu_set/release_dma_owner()
->      interfaces. [Jason]
->      https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/T/#mea70ed8e4e3665aedf32a5a0a7db095bf680325e
-> 
->    - [NEW]Add new iommu_attach/detach_device_shared() interfaces for
->      multiple devices group. [Robin/Jason]
->      https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/T/#mea70ed8e4e3665aedf32a5a0a7db095bf680325e
-> 
->    - [NEW]Use iommu_attach/detach_device_shared() in drm/tegra drivers.
-> 
->    - Refactoring and description refinement.
-> 
-> v3:
->    - https://lore.kernel.org/linux-iommu/20211206015903.88687-1-baolu.lu@linux.intel.com/
-> 
->    - Rename bus_type::dma_unconfigure to bus_type::dma_cleanup. [Greg]
->      https://lore.kernel.org/linux-iommu/c3230ace-c878-39db-1663-2b752ff5384e@linux.intel.com/T/#m6711e041e47cb0cbe3964fad0a3466f5ae4b3b9b
-> 
->    - Avoid _platform_dma_configure for platform_bus_type::dma_configure.
->      [Greg]
->      https://lore.kernel.org/linux-iommu/c3230ace-c878-39db-1663-2b752ff5384e@linux.intel.com/T/#m43fc46286611aa56a5c0eeaad99d539e5519f3f6
-> 
->    - Patch "0012-iommu-Add-iommu_at-de-tach_device_shared-for-mult.patch"
->      and "0018-drm-tegra-Use-the-iommu-dma_owner-mechanism.patch" have
->      been tested by Dmitry Osipenko <digetx@gmail.com>.
-> 
-> v4:
->    - Remove unnecessary tegra->domain chech in the tegra patch. (Jason)
->    - Remove DMA_OWNER_NONE. (Joerg)
->    - Change refcount to unsigned int. (Christoph)
->    - Move mutex lock into group set_dma_owner functions. (Christoph)
->    - Add kernel doc for iommu_attach/detach_domain_shared(). (Christoph)
->    - Move dma auto-claim into driver core. (Jason/Christoph)
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index de0c57a567c8..568f285468cf 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -682,6 +682,13 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev,
+>  void iommu_sva_unbind_device(struct iommu_sva *handle);
+>  u32 iommu_sva_get_pasid(struct iommu_sva *handle);
+>  
+> +int iommu_device_use_dma_api(struct device *dev);
+> +void iommu_device_unuse_dma_api(struct device *dev);
+> +
+> +int iommu_group_set_dma_owner(struct iommu_group *group, void *owner);
+> +void iommu_group_release_dma_owner(struct iommu_group *group);
+> +bool iommu_group_dma_owner_claimed(struct iommu_group *group);
+> +
+>  #else /* CONFIG_IOMMU_API */
+>  
+>  struct iommu_ops {};
+> @@ -1082,6 +1089,30 @@ static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
+>  {
+>  	return NULL;
+>  }
+> +
+> +static inline int iommu_device_use_dma_api(struct device *dev)
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline void iommu_device_unuse_dma_api(struct device *dev)
+> +{
+> +}
+> +
+> +static inline int
+> +iommu_group_set_dma_owner(struct iommu_group *group, void *owner)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +static inline void iommu_group_release_dma_owner(struct iommu_group *group)
+> +{
+> +}
+> +
+> +static inline bool iommu_group_dma_owner_claimed(struct iommu_group *group)
+> +{
+> +	return false;
+> +}
+>  #endif /* CONFIG_IOMMU_API */
+>  
+>  /**
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 8b86406b7162..ff0c8c1ad5af 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -48,6 +48,8 @@ struct iommu_group {
+>  	struct iommu_domain *default_domain;
+>  	struct iommu_domain *domain;
+>  	struct list_head entry;
+> +	unsigned int owner_cnt;
+> +	void *owner;
+>  };
+>  
+>  struct group_device {
+> @@ -289,7 +291,12 @@ int iommu_probe_device(struct device *dev)
+>  	mutex_lock(&group->mutex);
+>  	iommu_alloc_default_domain(group, dev);
+>  
+> -	if (group->default_domain) {
+> +	/*
+> +	 * If device joined an existing group which has been claimed
+> +	 * for none kernel DMA purpose, avoid attaching the default
+> +	 * domain.
+> +	 */
+> +	if (group->default_domain && !group->owner) {
+>  		ret = __iommu_attach_device(group->default_domain, dev);
+>  		if (ret) {
+>  			mutex_unlock(&group->mutex);
+> @@ -2320,7 +2327,7 @@ static int __iommu_attach_group(struct iommu_domain *domain,
+>  {
+>  	int ret;
+>  
+> -	if (group->default_domain && group->domain != group->default_domain)
+> +	if (group->domain && group->domain != group->default_domain)
+>  		return -EBUSY;
+>  
+>  	ret = __iommu_group_for_each_dev(group, domain,
+> @@ -2357,7 +2364,11 @@ static void __iommu_detach_group(struct iommu_domain *domain,
+>  {
+>  	int ret;
+>  
+> -	if (!group->default_domain) {
+> +	/*
+> +	 * If group has been claimed for none kernel DMA purpose, avoid
+> +	 * re-attaching the default domain.
+> +	 */
 
-Thank you very much for the review comments. A new version has been
-posted.
+none kernel reads odd.  But maybe drop that and just say 'claimed
+already' ala:
 
-https://lore.kernel.org/linux-iommu/20220104015644.2294354-1-baolu.lu@linux.intel.com/
-
-Best regards,
-baolu
+	/*
+	 * If the group has been claimed already, do not re-attach the default
+	 * domain.
+	 */
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
