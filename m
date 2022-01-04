@@ -1,67 +1,67 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3CFF0C433FE
-	for <iommu@archiver.kernel.org>; Tue,  4 Jan 2022 15:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 305B6C433FE
+	for <iommu@archiver.kernel.org>; Tue,  4 Jan 2022 15:55:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id E756F410B0;
-	Tue,  4 Jan 2022 15:54:56 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id EACAF60D4B;
+	Tue,  4 Jan 2022 15:54:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id R3jLe9zT5Jn7; Tue,  4 Jan 2022 15:54:56 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id YyGhFurl8EYz; Tue,  4 Jan 2022 15:54:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id E405D41499;
-	Tue,  4 Jan 2022 15:54:55 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 1724D60BBF;
+	Tue,  4 Jan 2022 15:54:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C0DE5C002F;
-	Tue,  4 Jan 2022 15:54:55 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 71A5AC001E
- for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 15:54:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E8030C002F;
+	Tue,  4 Jan 2022 15:54:58 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9617EC001E
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 15:54:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 51ECF826C1
- for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 15:54:54 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 7627B8267C
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 15:54:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=collabora.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XD93wmr5fzzK for <iommu@lists.linux-foundation.org>;
- Tue,  4 Jan 2022 15:54:53 +0000 (UTC)
+ with ESMTP id W_bp3BTXTaG1 for <iommu@lists.linux-foundation.org>;
+ Tue,  4 Jan 2022 15:54:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk
  [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
- by smtp1.osuosl.org (Postfix) with ESMTPS id B62B08267C
- for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 15:54:53 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id E715C82640
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 15:54:56 +0000 (UTC)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
- (Authenticated sender: kholk11) with ESMTPSA id 697211F43596
+ (Authenticated sender: kholk11) with ESMTPSA id 47BA81F43593
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
- s=mail; t=1641311692;
- bh=vzayMLDZjmuU/T7YRMHDZIjwrs5CK4WTNFLBnmYiBTM=;
+ s=mail; t=1641311695;
+ bh=nZtZOEtytaUQcxSF0fDujQOcByfRCuHgzsSYmEcHraA=;
  h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
- b=mD36jnzaMKvD5o+7fxeQ1bkd+sQm/XLb8FjaIhnKMzkK2CsWfRbrZmigtOFTlt1/K
- sAGzUAavQU3lTvSsdZS4u7UYa2Ik5Cs9xO7IKDfRjCa0TemdEZ2rn4JL7fbHr56a2h
- Q3Mh+MZNkZlQSr7c6qXpeBIp57Qp/NXSgBql5uLQPPEVfqCX3IUxugzBTd1H/z5jIV
- NxfsCqAp3cbZi0eb0jYP989vSqVVG6nelZoL78ISk34B0s8Ijq+EjScT+VfPbUIFWn
- foxdsPlOvKVhui2Tk39F2rFq/5CBySmx5ULpDbH4j5TEyFkalGdxcuro/ws7hUF3O/
- 04kY2M0JoWVHQ==
-Subject: Re: [PATCH v3 07/33] iommu/mediatek: Add a flag DCM_DISABLE
+ b=ZECJ1qAJpbp/5J99/GNFFYUnVXcBNUp1NkoItJ2S6Qk9Emdi8DIiBmmNOmkZSx0oJ
+ IoVLOG2n9g42K/EDPtxIUrS8JSKEapnaZcUbTPfig1V8A84+J2cfYZSkdO88OsiWXh
+ WsTQMVfIu1zz+4P5HE3Sd1V5WOgRRsBnwOcuX4rz1jPSRr3mlqqptssnIFpmUcDKmA
+ ZVHGs+RUVJ/7mX5RKLgtzqPSeFGcKOg9r7EdA2zgpT+tHAgHSyCeL7L+G6/fEU7bNN
+ 5BlesiGLftMpWBgxTpc0UcXlXFkK9IAyWe1Hm/eVn+e/JKzO3oj2W4/oZmKWQJB9jh
+ GuClj0bbWHQJQ==
+Subject: Re: [PATCH v3 21/33] iommu/mediatek: Add infra iommu support
 To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
  Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
 References: <20210923115840.17813-1-yong.wu@mediatek.com>
- <20210923115840.17813-8-yong.wu@mediatek.com>
+ <20210923115840.17813-22-yong.wu@mediatek.com>
 From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Message-ID: <4b48b8ee-422b-b3b1-acdc-4e0c0085a20a@collabora.com>
-Date: Tue, 4 Jan 2022 16:54:48 +0100
+Message-ID: <f1e93e9e-cc89-146a-410f-13ea94445d31@collabora.com>
+Date: Tue, 4 Jan 2022 16:54:51 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20210923115840.17813-8-yong.wu@mediatek.com>
+In-Reply-To: <20210923115840.17813-22-yong.wu@mediatek.com>
 Content-Language: en-US
 Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
  srv_heupstream@mediatek.com,
@@ -88,11 +88,21 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 Il 23/09/21 13:58, Yong Wu ha scritto:
-> In the infra iommu, we should disable DCM. add a new flag for this.
+> The infra iommu enable bits in mt8195 is in the pericfg register segment,
+> use regmap to update it.
+> 
+> If infra iommu master translation fault, It don't have the larbid/portid,
+> thus print out the whole register value.
+> 
+> Since regmap_update_bits may fail, add return value for mtk_iommu_config.
 > 
 > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 
+
+
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
