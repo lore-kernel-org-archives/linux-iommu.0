@@ -1,83 +1,77 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8A73FC433FE
-	for <iommu@archiver.kernel.org>; Tue,  4 Jan 2022 01:54:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8E7E0C4332F
+	for <iommu@archiver.kernel.org>; Tue,  4 Jan 2022 01:55:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 2143F60E5B;
-	Tue,  4 Jan 2022 01:54:59 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 4333881757;
+	Tue,  4 Jan 2022 01:55:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id liOzIjIVQZ13; Tue,  4 Jan 2022 01:54:58 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jCFI--4H4Zu7; Tue,  4 Jan 2022 01:55:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 0E6E260AB1;
-	Tue,  4 Jan 2022 01:54:58 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 4136881B17;
+	Tue,  4 Jan 2022 01:55:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D71ADC0030;
-	Tue,  4 Jan 2022 01:54:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1BE84C0030;
+	Tue,  4 Jan 2022 01:55:18 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 93D17C001E
- for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 01:54:55 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 73637C001E
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 01:55:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 629D740338
- for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 01:54:55 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 5EEC740338
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 01:55:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kv-y-3N0I7ig for <iommu@lists.linux-foundation.org>;
- Tue,  4 Jan 2022 01:54:54 +0000 (UTC)
+ with ESMTP id AjmYrOM_SwDa for <iommu@lists.linux-foundation.org>;
+ Tue,  4 Jan 2022 01:55:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 82AB2402DC
- for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 01:54:54 +0000 (UTC)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id ACB7C402DC
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 01:55:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1641261294; x=1672797294;
+ t=1641261315; x=1672797315;
  h=cc:subject:to:references:from:message-id:date:
  mime-version:in-reply-to:content-transfer-encoding;
- bh=Ss8QCGOz/6iEe4yePS2efWHOxCXd1yzggIK/DRLWMvI=;
- b=l02hLKkwL3vr4eCYfEmGd4zBoiGpGlA+P9QMxHrvrqvM/b+HJMAxgGI+
- J9qOyFFveAbJ5C+xphpunseCFZQF3oNlOeMMobR4X8MkowbQxICZLwSNq
- NQZuR/YAhWrZ1gQqLDlSYGcaxX8f+OIMOgfVL5w8TenLP3G6w8aTddZ3k
- puMjJJtDRzm7HFjXxGyWe/BCsPB0aub39iJ2ri6sBZW3BiTE+3rzkbH6M
- ZFpNQgDOqwnG0l6CnWf2Mnix9Hms3rQWDGDAjoMDTRRf8gMc6lpe1YZQH
- ldLPRhV9/I0zT/g+cYySAiL8FlVRcsUSK5NvfFlu+mnAk4X0e14gfSmDT A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10216"; a="240960623"
-X-IronPort-AV: E=Sophos;i="5.88,258,1635231600"; d="scan'208";a="240960623"
+ bh=SY0Ryi1NwGIpRAEonFk2jxPsk87fE1CBTswYWv3obpo=;
+ b=Z/fQkIy3+Hx8addrgWth+yQjCP0GF6kftfpDuNAWW4VxQ6D6q3wBbtJ+
+ t4dTmNfbcIcPgo6a8sqJ+fygGXFpLRlc/jcIKHK+SK30muvVq/aThMQf0
+ HqRlL8yRYZLclARzD+rgV3LXXAnTxwCqWCLeAqUe3VMqh5AjVVTovCRJa
+ Sk7D+5r7tVJmcA0leJFRq33TbY3Bm3cViYPSJch29JJmIeeWujZ9oc787
+ 16BSzV1vgrh3f5e1Ve61UDILHF4c0bikiuA1yPFK+ocPGadYF778HDKmK
+ pD2wkOpUTjejVwG/6IVuKbnwTFDcyxsu33gK/mqWaqeg8MVssPeeD+Tq8 w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10216"; a="222813037"
+X-IronPort-AV: E=Sophos;i="5.88,258,1635231600"; d="scan'208";a="222813037"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 03 Jan 2022 17:54:30 -0800
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 03 Jan 2022 17:55:15 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,258,1635231600"; d="scan'208";a="525816995"
+X-IronPort-AV: E=Sophos;i="5.88,258,1635231600"; d="scan'208";a="525817281"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
  ([10.239.159.118])
- by orsmga008.jf.intel.com with ESMTP; 03 Jan 2022 17:54:23 -0800
-Subject: Re: [PATCH v4 07/13] iommu: Add iommu_at[de]tach_device_shared() for
- multi-device groups
+ by orsmga008.jf.intel.com with ESMTP; 03 Jan 2022 17:55:07 -0800
+Subject: Re: [PATCH v4 03/13] PCI: pci_stub: Suppress kernel DMA ownership
+ auto-claiming
 To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20211217063708.1740334-1-baolu.lu@linux.intel.com>
- <20211217063708.1740334-8-baolu.lu@linux.intel.com>
- <dd797dcd-251a-1980-ca64-bb38e67a526f@arm.com>
- <20211221184609.GF1432915@nvidia.com>
- <aebbd9c7-a239-0f89-972b-a9059e8b218b@arm.com>
- <20211223005712.GA1779224@nvidia.com>
- <fea0fc91-ac4c-dfe4-f491-5f906bea08bd@linux.intel.com>
- <20211223140300.GC1779224@nvidia.com>
- <50b8bb0f-3873-b128-48e8-22f6142f7118@linux.intel.com>
- <20211224025036.GD1779224@nvidia.com>
+References: <568b6d1d-69df-98ad-a864-dd031bedd081@linux.intel.com>
+ <20211230222414.GA1805873@bhelgaas> <20211231004019.GH1779224@nvidia.com>
+ <5eb8650c-432f-bf06-c63d-6320199ef894@linux.intel.com>
+ <20220103195318.GA2328285@nvidia.com>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <1a22fecf-9cba-76f8-7dc4-88a56b2457cd@linux.intel.com>
-Date: Tue, 4 Jan 2022 09:53:47 +0800
+Message-ID: <2bbe6e20-6b1a-64ae-a4c6-2f414a8665f2@linux.intel.com>
+Date: Tue, 4 Jan 2022 09:54:31 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <20211224025036.GD1779224@nvidia.com>
+In-Reply-To: <20220103195318.GA2328285@nvidia.com>
 Content-Language: en-US
 Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
  David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
@@ -85,7 +79,8 @@ Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
  Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
  Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
  Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Bjorn Helgaas <helgaas@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
+ Chaitanya Kulkarni <kch@nvidia.com>,
  Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
  Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -110,32 +105,21 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 12/24/21 10:50 AM, Jason Gunthorpe wrote:
->>> We don't need _USER anymore because iommu_group_set_dma_owner() always
->>> does detatch, and iommu_replace_group_domain() avoids ever reassigning
->>> default_domain. The sepecial USER behavior falls out automatically.
->> This means we will grow more group-centric interfaces. My understanding
->> is the opposite that we should hide the concept of group in IOMMU
->> subsystem, and the device drivers only faces device specific interfaces.
-> Ideally group interfaces would be reduced, but in this case VFIO needs
-> the group. It has sort of a fundamental problem with its uAPI that
-> expects the container is fully setup with a domain at the moment the
-> group is attached. So deferring domain setup to when the device is
-> available becomes a user visible artifact - and if this is important
-> or not is a whole research question that isn't really that important
-> for this series.
+On 1/4/22 3:53 AM, Jason Gunthorpe wrote:
+> On Fri, Dec 31, 2021 at 09:10:43AM +0800, Lu Baolu wrote:
 > 
-> We also can't just pull a device out of thin air, a device that hasn't
-> been probed() hasn't even had dma_configure called! Let alone the
-> lifetime and locking problems with that kind of idea.
+>> We still need to call iommu_device_use_dma_api() in bus dma_configure()
+>> callback. But we can call iommu_device_unuse_dma_api() in the .probe()
+>> of vfio (and vfio-approved) drivers, so that we don't need the new flag
+>> anymore.
 > 
-> So.. leaving it as a group interface makes the most sense,
-> particularly for this series which is really about fixing the sharing
-> model in the iommu core and deleting the BUG_ONs.
+> No, we can't. The action that iommu_device_use_dma_api() takes is to
+> not call probe, it obviously cannot be undone by code inside probe.
 
-I feel it makes more sense if we leave the attach_device/group
-refactoring patches into a separated series. I will come up with this
-new series so that people can review and comment on the real code.
+Yes. Agreed.
+
+> Jason
+> 
 
 Best regards,
 baolu
