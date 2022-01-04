@@ -1,62 +1,62 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 865DEC4332F
-	for <iommu@archiver.kernel.org>; Tue,  4 Jan 2022 01:57:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CE621C433EF
+	for <iommu@archiver.kernel.org>; Tue,  4 Jan 2022 01:57:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 4DECA81B17;
-	Tue,  4 Jan 2022 01:57:52 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 87D91402D8;
+	Tue,  4 Jan 2022 01:57:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id S3kf_zlowMg2; Tue,  4 Jan 2022 01:57:51 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fF6ggIJDg_nx; Tue,  4 Jan 2022 01:57:58 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 30BC281A34;
-	Tue,  4 Jan 2022 01:57:51 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 5ABC2408AE;
+	Tue,  4 Jan 2022 01:57:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E6DBC0030;
-	Tue,  4 Jan 2022 01:57:51 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B856BC001E
- for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 01:57:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 376B3C0030;
+	Tue,  4 Jan 2022 01:57:58 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 34B2EC001E
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 01:57:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 98ACA60E5F
- for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 01:57:50 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 1305B4060E
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 01:57:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 558wTmo8nXDd for <iommu@lists.linux-foundation.org>;
- Tue,  4 Jan 2022 01:57:50 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id C5NDazilau5e for <iommu@lists.linux-foundation.org>;
+ Tue,  4 Jan 2022 01:57:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp3.osuosl.org (Postfix) with ESMTPS id F065660E5C
- for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 01:57:49 +0000 (UTC)
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 2B4274060C
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Jan 2022 01:57:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1641261469; x=1672797469;
+ t=1641261476; x=1672797476;
  h=from:to:cc:subject:date:message-id:in-reply-to:
  references:mime-version:content-transfer-encoding;
- bh=xdp+gaxXZn/4YHXphQ37hzTT8Ienm3tZy4Mchv890U0=;
- b=a9bsV0yMZeWVQuTeIyn0oM6N4QqtvmhX4hrVh80PXvhUR6HLGycba824
- OctxDKaUAfv8t2XEAVsYu3J5FgCfzwaDY345h7SUE9/dlkY2QYqIdvd+p
- 0vXpCJ2A98qtBpvqqIJwzhB+SRN6TsvnE6E08HayQAacpuwVNnCTO+d9f
- EVGN0lBdXjIQmdG4sRGzYbPCyuZqOqu2r6MrJciLZBanhoqE602EAMdIW
- hv0lzlNhcEtMBSKkEypuza5Ydm93fkiZPi+zRyh99dm5/EosiGF/MfQjZ
- LXEazb3QjbTdHQ3xBgdxvOb3QwBYMFAcovdSDP4kr3AdCzBMrNxNhz1pb w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10216"; a="328481889"
-X-IronPort-AV: E=Sophos;i="5.88,258,1635231600"; d="scan'208";a="328481889"
+ bh=W99W9RR17D04pNuYuEdfrJcOOv2Un4PiDIeALXpTOd8=;
+ b=E8BXd1AMJu/6HQIwRb9V1QOlszFZupkUvw2JkeYSJhAOzzvdBT8i44er
+ 54m53WCed7tKiubh9dGDr1szozy+++ddL3I7qRneaCUd4wKcmq3CBK1av
+ 8boL0wy14ed6gTtple3JfVHkxV/FsshnP0uoGjh2QJUF46FU+Dw5wjkvk
+ LpDsSFnhnLghbfQ+xt2HiuRtib1sgxebLwv1NBNZp3Rz1uHAmOVLm0Dnq
+ MnCRH1ka8iYJHJTP4pCuzVGyXMfxvONUqC5ObKUYyX3n+WAxty5gveZub
+ h7bH9p4Wzk/m+sVKX9yeb7SIvyIMVn5laV3ubsbuxppQQWFsacLjeYP1d A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10216"; a="240961099"
+X-IronPort-AV: E=Sophos;i="5.88,258,1635231600"; d="scan'208";a="240961099"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 03 Jan 2022 17:57:49 -0800
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 03 Jan 2022 17:57:55 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,258,1635231600"; d="scan'208";a="667573215"
+X-IronPort-AV: E=Sophos;i="5.88,258,1635231600"; d="scan'208";a="667573222"
 Received: from allen-box.sh.intel.com ([10.239.159.118])
- by fmsmga001.fm.intel.com with ESMTP; 03 Jan 2022 17:57:43 -0800
+ by fmsmga001.fm.intel.com with ESMTP; 03 Jan 2022 17:57:49 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Joerg Roedel <joro@8bytes.org>,
@@ -64,9 +64,10 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Bjorn Helgaas <bhelgaas@google.com>, Jason Gunthorpe <jgg@nvidia.com>,
  Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
  Ashok Raj <ashok.raj@intel.com>
-Subject: [PATCH v5 03/14] amba: Stop sharing platform_dma_configure()
-Date: Tue,  4 Jan 2022 09:56:33 +0800
-Message-Id: <20220104015644.2294354-4-baolu.lu@linux.intel.com>
+Subject: [PATCH v5 04/14] driver core: platform: Add driver dma ownership
+ management
+Date: Tue,  4 Jan 2022 09:56:34 +0800
+Message-Id: <20220104015644.2294354-5-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220104015644.2294354-1-baolu.lu@linux.intel.com>
 References: <20220104015644.2294354-1-baolu.lu@linux.intel.com>
@@ -97,87 +98,93 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Stop sharing platform_dma_configure() helper as they are about to have
-their specific bus dma_configure callbacks.
+Multiple platform devices may be placed in the same IOMMU group because
+they cannot be isolated from each other. These devices must either be
+entirely under kernel control or userspace control, never a mixture. This
+checks and sets DMA ownership during driver binding, and release the
+ownership during driver unbinding.
+
+The device driver may set a new flag (no_kernel_api_dma) to skip calling
+iommu_device_use_dma_api() during the binding process. For instance, the
+userspace framework drivers (vfio etc.) which need to manually claim
+their own dma ownership when assigning the device to userspace.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- include/linux/platform_device.h |  2 --
- drivers/amba/bus.c              | 19 ++++++++++++++++++-
- drivers/base/platform.c         |  3 +--
- 3 files changed, 19 insertions(+), 5 deletions(-)
+ include/linux/platform_device.h |  1 +
+ drivers/base/platform.c         | 20 ++++++++++++++++++++
+ 2 files changed, 21 insertions(+)
 
 diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
-index 7c96f169d274..17fde717df68 100644
+index 17fde717df68..8f0eaafcef47 100644
 --- a/include/linux/platform_device.h
 +++ b/include/linux/platform_device.h
-@@ -328,8 +328,6 @@ extern int platform_pm_restore(struct device *dev);
- #define platform_pm_restore		NULL
- #endif
- 
--extern int platform_dma_configure(struct device *dev);
--
- #ifdef CONFIG_PM_SLEEP
- #define USE_PLATFORM_PM_SLEEP_OPS \
- 	.suspend = platform_pm_suspend, \
-diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
-index 720aa6cdd402..850a0a8973c6 100644
---- a/drivers/amba/bus.c
-+++ b/drivers/amba/bus.c
-@@ -20,6 +20,8 @@
- #include <linux/platform_device.h>
- #include <linux/reset.h>
- #include <linux/of_irq.h>
-+#include <linux/of_device.h>
-+#include <linux/acpi.h>
- 
- #include <asm/irq.h>
- 
-@@ -251,6 +253,21 @@ static void amba_shutdown(struct device *dev)
- 		drv->shutdown(to_amba_device(dev));
- }
- 
-+static int amba_dma_configure(struct device *dev)
-+{
-+	enum dev_dma_attr attr;
-+	int ret = 0;
-+
-+	if (dev->of_node) {
-+		ret = of_dma_configure(dev, dev->of_node, true);
-+	} else if (has_acpi_companion(dev)) {
-+		attr = acpi_get_dma_attr(to_acpi_device_node(dev->fwnode));
-+		ret = acpi_dma_configure(dev, attr);
-+	}
-+
-+	return ret;
-+}
-+
- #ifdef CONFIG_PM
- /*
-  * Hooks to provide runtime PM of the pclk (bus clock).  It is safe to
-@@ -319,7 +336,7 @@ struct bus_type amba_bustype = {
- 	.probe		= amba_probe,
- 	.remove		= amba_remove,
- 	.shutdown	= amba_shutdown,
--	.dma_configure	= platform_dma_configure,
-+	.dma_configure	= amba_dma_configure,
- 	.pm		= &amba_pm,
+@@ -210,6 +210,7 @@ struct platform_driver {
+ 	struct device_driver driver;
+ 	const struct platform_device_id *id_table;
+ 	bool prevent_deferred_probe;
++	bool no_kernel_api_dma;
  };
- EXPORT_SYMBOL_GPL(amba_bustype);
+ 
+ #define to_platform_driver(drv)	(container_of((drv), struct platform_driver, \
 diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-index 598acf93a360..b4d36b46ab2e 100644
+index b4d36b46ab2e..d5171e44d903 100644
 --- a/drivers/base/platform.c
 +++ b/drivers/base/platform.c
-@@ -1449,8 +1449,7 @@ static void platform_shutdown(struct device *_dev)
- 		drv->shutdown(dev);
- }
+@@ -30,6 +30,7 @@
+ #include <linux/property.h>
+ #include <linux/kmemleak.h>
+ #include <linux/types.h>
++#include <linux/iommu.h>
  
--
--int platform_dma_configure(struct device *dev)
-+static int platform_dma_configure(struct device *dev)
+ #include "base.h"
+ #include "power/power.h"
+@@ -1451,9 +1452,16 @@ static void platform_shutdown(struct device *_dev)
+ 
+ static int platform_dma_configure(struct device *dev)
  {
++	struct platform_driver *drv = to_platform_driver(dev->driver);
  	enum dev_dma_attr attr;
  	int ret = 0;
+ 
++	if (!drv->no_kernel_api_dma) {
++		ret = iommu_device_use_dma_api(dev);
++		if (ret)
++			return ret;
++	}
++
+ 	if (dev->of_node) {
+ 		ret = of_dma_configure(dev, dev->of_node, true);
+ 	} else if (has_acpi_companion(dev)) {
+@@ -1461,9 +1469,20 @@ static int platform_dma_configure(struct device *dev)
+ 		ret = acpi_dma_configure(dev, attr);
+ 	}
+ 
++	if (ret && !drv->no_kernel_api_dma)
++		iommu_device_unuse_dma_api(dev);
++
+ 	return ret;
+ }
+ 
++static void platform_dma_cleanup(struct device *dev)
++{
++	struct platform_driver *drv = to_platform_driver(dev->driver);
++
++	if (!drv->no_kernel_api_dma)
++		iommu_device_unuse_dma_api(dev);
++}
++
+ static const struct dev_pm_ops platform_dev_pm_ops = {
+ 	SET_RUNTIME_PM_OPS(pm_generic_runtime_suspend, pm_generic_runtime_resume, NULL)
+ 	USE_PLATFORM_PM_SLEEP_OPS
+@@ -1478,6 +1497,7 @@ struct bus_type platform_bus_type = {
+ 	.remove		= platform_remove,
+ 	.shutdown	= platform_shutdown,
+ 	.dma_configure	= platform_dma_configure,
++	.dma_cleanup	= platform_dma_cleanup,
+ 	.pm		= &platform_dev_pm_ops,
+ };
+ EXPORT_SYMBOL_GPL(platform_bus_type);
 -- 
 2.25.1
 
