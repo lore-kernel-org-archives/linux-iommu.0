@@ -1,132 +1,75 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 452DCC433F5
-	for <iommu@archiver.kernel.org>; Wed,  5 Jan 2022 00:35:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 17961C433EF
+	for <iommu@archiver.kernel.org>; Wed,  5 Jan 2022 06:53:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id B855D828B5;
-	Wed,  5 Jan 2022 00:35:26 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 9879A40178;
+	Wed,  5 Jan 2022 06:53:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JYXpVCZXrJ1Q; Wed,  5 Jan 2022 00:35:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 7FD67828BA;
-	Wed,  5 Jan 2022 00:35:25 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id w6tCP4F9w5VA; Wed,  5 Jan 2022 06:52:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 4436240004;
+	Wed,  5 Jan 2022 06:52:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5C79AC0030;
-	Wed,  5 Jan 2022 00:35:25 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5588FC001E
- for <iommu@lists.linux-foundation.org>; Wed,  5 Jan 2022 00:35:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0BE9AC0030;
+	Wed,  5 Jan 2022 06:52:59 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C797CC001E
+ for <iommu@lists.linux-foundation.org>; Wed,  5 Jan 2022 06:52:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 4BACA4150E
- for <iommu@lists.linux-foundation.org>; Wed,  5 Jan 2022 00:35:23 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id ADD2082784
+ for <iommu@lists.linux-foundation.org>; Wed,  5 Jan 2022 06:52:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id b-XD-zW-9Lil for <iommu@lists.linux-foundation.org>;
- Wed,  5 Jan 2022 00:35:22 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on2086.outbound.protection.outlook.com [40.107.93.86])
- by smtp4.osuosl.org (Postfix) with ESMTPS id E633B409EA
- for <iommu@lists.linux-foundation.org>; Wed,  5 Jan 2022 00:35:21 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N/aPacn20pPCqdrBmiQdoZHRC3qvECPlnRN/JUqzmyPhHVu5Sevkj4Us7wWT/SyHJcHD+uMvyD7aYH5FsG2epsBK2SuJPKbiPlA+gYkOMwrbY1WDU73pSYxUx+assV/3OzjKkJiXb3mHzDi/qvi6MfAW2dGCTrFyWzpW/m96MEMk52//F3VDrvX7oyDijJGI8jKl19a3T/g54nfU7RfEMEzvG9iGpXVsGAHdwHwinNesWweg9Biow8pUCrd0KFwpxSkGQPEGtQOrKIoFO9nm9Qk7I5zMmsvH4S1YylQy5I5zmaKzmeZ++bui3brZkQMnzC1t1RtUatF+b0zwTWLpeg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7HCt1endtkLN0WZobU041Cj/u6/PSXscaHa8oJmIOSA=;
- b=oXQT/ntefneElREHkwlP9Vp5606B3gdlx7GXXEx2hAiRc8+XlnhQpFIcLBMcp56MZnr7NbzeiMUGpqB9QY8JeEMU1HfagXzYDBLgWoZPGl0r0wp37L5KKLFhMMsoo4xzJ5aq4HHkRMYjv8p4R2JNs2c92mQ5hFBVbdVkW2VxzY2kSzVVnVIXV7qPt10BpEnxkx730yMvmjTAwx+d1+k5yoZlM7paq0svfSTLBE3StDoomE/qiSrYenclM4aBQtaQFRQJnSbYHCj2sIIta9kplECdcm4cZoL3qDPVESvZrLm3NyLcisbnKjyBsb//UQmcSx7i8F940gGdFCalY6CR1Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7HCt1endtkLN0WZobU041Cj/u6/PSXscaHa8oJmIOSA=;
- b=oW3wcVtQ16KY/Xy/kkM4D+rMqfQ9zNpouKFLEUo7L1Zx5TkARalZ3+3bNCfRdQ0WfI6O+TcNk0PCWF2D1Oxhcer98LQUVuNGKNJVEDbdAVZD1ZcSwO4Qa5l45Dd4QfKhj0F6iGQuAIuKllqLCkDlYBtIdeM5TNHR1gBfdXeggGLuBb/L3Do//JrIMwD4zOBViLulNKoaLolyf0JlAVKPAz//VN822Z0QqbnBtbO+ioDERjcUO2FERmZNFdi+6nenmWc5CRnbuMkmHw9WobFdCvW2VqRxqLe96tpUtjqa1t4sCqo05l54skANqkZNpf8IBFQ0b1QCUOlifvgFnupK7g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB5520.namprd12.prod.outlook.com (2603:10b6:5:208::9) by
- DM8PR12MB5494.namprd12.prod.outlook.com (2603:10b6:8:24::9) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4844.15; Wed, 5 Jan 2022 00:35:19 +0000
-Received: from DM6PR12MB5520.namprd12.prod.outlook.com
- ([fe80::218e:ede8:15a4:f00d]) by DM6PR12MB5520.namprd12.prod.outlook.com
- ([fe80::218e:ede8:15a4:f00d%4]) with mapi id 15.20.4844.016; Wed, 5 Jan 2022
- 00:35:19 +0000
-Date: Tue, 4 Jan 2022 20:35:16 -0400
-To: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH v5 09/14] PCI: portdrv: Suppress kernel DMA ownership
- auto-claiming
-Message-ID: <20220105003516.GN2328285@nvidia.com>
-References: <20220104192614.GL2328285@nvidia.com>
- <20220104195130.GA117830@bhelgaas>
-Content-Disposition: inline
-In-Reply-To: <20220104195130.GA117830@bhelgaas>
-X-ClientProxiedBy: BY3PR05CA0019.namprd05.prod.outlook.com
- (2603:10b6:a03:254::24) To DM6PR12MB5520.namprd12.prod.outlook.com
- (2603:10b6:5:208::9)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 1Mhf6TqZlh_6 for <iommu@lists.linux-foundation.org>;
+ Wed,  5 Jan 2022 06:52:57 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 20D7C82786
+ for <iommu@lists.linux-foundation.org>; Wed,  5 Jan 2022 06:52:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1641365577; x=1672901577;
+ h=cc:subject:to:references:from:message-id:date:
+ mime-version:in-reply-to:content-transfer-encoding;
+ bh=NfLc3B58P2xIUXLczC9zkU0pb72XnW/r7ysxWZe4Nnw=;
+ b=Y5ypHrakt2+u9r/4OY2rS7FDeu7zW1MIBaeXKfvS64bmAkFQGyelVqEV
+ LIaZveskix6AYFZc62YjOcwsFrOG+hZV0v1WOpRTBy0Hu57MjlKg7KU5A
+ 9l2Z1m0eolHiiCBRYRHCyHbJ6+Q/k2wvQJo+mTZ3njg8tqCUq7V7oCzhy
+ k9NOxmDvSWeMo3SV5Asod8BJBhgVjnJxfkmpr+ehgxdeHmBd6rmRP4x6u
+ hj5S6wTP4ksE5bLGkZWt6UYqGGBUrkkzvUDBf85gGlfBNJV7TZSIgrnAR
+ Y4xdav7ZeKmQxIrqx8Jmg5TqszXNrCT+HBC4GBU15DPMyot8kLFCCjyYt Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="239923274"
+X-IronPort-AV: E=Sophos;i="5.88,262,1635231600"; d="scan'208";a="239923274"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 04 Jan 2022 22:52:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,262,1635231600"; d="scan'208";a="526391598"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
+ ([10.239.159.118])
+ by orsmga008.jf.intel.com with ESMTP; 04 Jan 2022 22:52:48 -0800
+Subject: Re: [PATCH v5 00/14] Fix BUG_ON in vfio_iommu_group_notifier()
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220104015644.2294354-1-baolu.lu@linux.intel.com>
+ <20220104124800.GF2328285@nvidia.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <f42e5d09-6578-98a4-a0f3-097f69bb7c3a@linux.intel.com>
+Date: Wed, 5 Jan 2022 14:52:11 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1cbd900a-686a-4fc5-36c2-08d9cfe33ff4
-X-MS-TrafficTypeDiagnostic: DM8PR12MB5494:EE_
-X-Microsoft-Antispam-PRVS: <DM8PR12MB5494D8DD1C823FE8DB9DC17FC24B9@DM8PR12MB5494.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3631;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5uz+jICspxd6KiYmf/Ais0HyhuciS0BISd8+diD/c6KWiijrySwhuumK1Dn4oBehGvKWpbKvIxso+ZvSH9peLK/QZlBGbT4ugcXusvk3J/2ameVaje2DPz56fkZcMoYbUGFC8TwFjGRBaYFsJg7accE3YodSEkom0KMlWQdo9oJJXMc2vzqiU+C/fgdTRLWrdQYrPAQZgP23eqtgaxA0/Tt+QgxE2mLotOt1pwjbyAQdA9Yy02aGqBtdM2UwE0zejItnRkS3zTlEKu8YtCcv0hyJRaBX2p40BBLXgTIeO5R7WKJO4vUK+MnC/anq/5mkZRMRnACD4SkiM+RJoeNtGwsIXrXpCpo1Xcb+fMjYWpk5fDRTCOf6vWuPhabnASgFdwMng5ZiyVqEEncUAt5FWTXt4Wudfd5kYBmvp6FMYoPvKGNlYVzrFCPQx2G/ApimDEThqx79uTDrYWoONR6UIyHiVBUOn2nKX2ZTHAb44tNzwXJTicwT2/XJhiRM+LneWA12zt+oBsottYdXMP9fpT42QJto39A7xhDhrWJyC/DCQ02fyYLb9hi6yHt9CkJHt0eUtiDrQJpaBoWPbm1VUhlVc+TMDcG6Kx4SaQdnLCQVtmnuQobjQ5/JAW/95XcfRjE2rD/taHOUh5Tkhcc9rA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM6PR12MB5520.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(186003)(6506007)(66946007)(6486002)(2616005)(36756003)(6666004)(83380400001)(2906002)(6916009)(1076003)(6512007)(7416002)(66476007)(66556008)(26005)(316002)(508600001)(8676002)(4326008)(54906003)(5660300002)(8936002)(38100700002)(86362001)(33656002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hqLtM4LV5HnjtSNcf7TZkJccrBATc3Hux1HB8AJGOlPze2X12Y8M94p41pME?=
- =?us-ascii?Q?Y2DbWjchiyCZFzk/XpikSoVOLKKZvwMc7fdNPQdl3WWDZmqcp2yWXnKVp7zc?=
- =?us-ascii?Q?sgp1rmuMyzw5cQrG8RAxVIrjimfmBIj6LFd9AQLATc+OtQKMfWLKEpX+9MAW?=
- =?us-ascii?Q?xLuEdpr+LG9xLndS7+NHTp546TOfeZVFVGtVOhELrQLp8x5/5QGq4rGwxSGS?=
- =?us-ascii?Q?0G7PFgeUK4vijf6PzdX6kBJ1leIXtLTj5Wdm2mqEO2yloAiSSwg8RGmfphov?=
- =?us-ascii?Q?hd0JsQmGgIVb1+VrxKG/BJutaWhsJicfH0Le68/SVT7xpV/GcDoGbjrp7aOX?=
- =?us-ascii?Q?qSq/fQeovC+ZxGdkuO7w/b51d5v5WEc54EdSkvt+VHfj9Oj/2meZwK8n0AQC?=
- =?us-ascii?Q?0X/pC6oZVh9Aq7vht48e13Onz7bfqAv+GvvLQSOmNnoHx5YXqO+TRFXxMtfI?=
- =?us-ascii?Q?MXtxyvFkO26bfKWPJxnumjySMudZy30U8A62YQCNz1RqHOHQnqY1ILXJlNrJ?=
- =?us-ascii?Q?xGFk2USvlPeQKYoBqxjG7L+xzju9azTjAJCYEe3F3FBhBQ/W6aqmBnnvwrl4?=
- =?us-ascii?Q?POz+7CIbXZe6KzkE412vvLB8cKdwkgh9UZE8Ydh/GsGnOUr8SadatRq/xV6e?=
- =?us-ascii?Q?PUiLIcwJbbeujueBhjkZk3n8Go0K5v70Q99RR0JA+hi/tVR3HAfdN8lSPI58?=
- =?us-ascii?Q?xzqewHTIYb++7HrrsrRpIcxv69rAfoSSJJ5EtT71YQ0wjx9YruryKGFKObh0?=
- =?us-ascii?Q?x0tJSVZn3P7a5PPTb4nw5f5lMzVYbw9KIOsU9tkit9fXLq73QraAGv4BgUGp?=
- =?us-ascii?Q?rI3gsI5WJer2INhjRwWoMWC5uFHgSyCjrl737fO7y62Y/EK1R4oTLXYLgNy0?=
- =?us-ascii?Q?T7iClbNlCKKG24DMO+57YVtDKwhpXvZlwEJFRqAymuDZmCun6grN/m+Zc5lS?=
- =?us-ascii?Q?DPFPdYseOzeTkrCG5xNVidHpQuQfSESlmOxZdps/yMBx39FFtAutyQTGUnkp?=
- =?us-ascii?Q?9pCXl/19MWTEzYE9VvqwqWVvgdvylwWyhQupm/sfshvD0q23MmLMYLyHxSdC?=
- =?us-ascii?Q?DANTfyYPEdkwnKSHexaybkoZwZEKfZ0SdtEUAS9EjB3BjMt/2l47Sd0Ohk0q?=
- =?us-ascii?Q?wfTmPY6PqMn/x/ocq7B4a91luLpSX0w5SHaaJrzG72wyOFeGFLPe1c7G/Fx1?=
- =?us-ascii?Q?gbHVaAUep6+kT1AcR+w5/lKHQBie0LgHYNBEBqDZ5FaQY1YFEnJSteo7a4dO?=
- =?us-ascii?Q?tU18rYRskEW5kuNECjqBCe+t8SgUTxVj0DKI5aYagoLb2VN4UlLdmLvConjF?=
- =?us-ascii?Q?+rYrCMNkPXFe3DWwSAhJ0MRZHFDEGO+Lu/LjaB/LpaL1bo7YLI8HVpygWi2T?=
- =?us-ascii?Q?jOKyE+iUedUNUnaf/LPfl7ZZd84ETb21X93e6Y7yMOyPuIws4fsQ+M5AoJkv?=
- =?us-ascii?Q?eidWjL80cn9EWY6wr1V3VsygOrEIUBfXnmeRcvAByNAOwjAG+IMUac8VSSLh?=
- =?us-ascii?Q?IxvihXkMiDigXUfoJKz6i8icfgcl4+k35TRSe0mYYwSxyM4W/JaT44nHh+O3?=
- =?us-ascii?Q?wLGLUCn23mAzzrPp1dQ=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1cbd900a-686a-4fc5-36c2-08d9cfe33ff4
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB5520.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2022 00:35:19.3080 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zEXkkHblMyiOGb5q6WgUByJpXb/UmAviozTxVh2RRYliQUDRbZ65oOAXiRA1EXuD
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5494
+In-Reply-To: <20220104124800.GF2328285@nvidia.com>
+Content-Language: en-US
 Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
  David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
  Thierry Reding <thierry.reding@gmail.com>,
@@ -153,96 +96,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jan 04, 2022 at 01:51:30PM -0600, Bjorn Helgaas wrote:
-> On Tue, Jan 04, 2022 at 03:26:14PM -0400, Jason Gunthorpe wrote:
-> > On Tue, Jan 04, 2022 at 11:06:31AM -0600, Bjorn Helgaas wrote:
-> > 
-> > > > The existing vfio framework allows the portdrv driver to be bound
-> > > > to the bridge while its downstream devices are assigned to user space.
-> > > 
-> > > I.e., the existing VFIO framework allows a switch to be in the same
-> > > IOMMU group as the devices below it, even though the switch has a
-> > > kernel driver and the other devices may have userspace drivers?
-> > 
-> > Yes, this patch exists to maintain current VFIO behavior which has this
-> > same check.
-> > 
-> > I belive the basis for VFIO doing this is that the these devices
-> > cannot do DMA, so don't care about the DMA API or the group->domain,
-> > and do not expose MMIO memory so do not care about the P2P attack.
+Hi Jason,
+
+On 1/4/22 8:48 PM, Jason Gunthorpe wrote:
+> On Tue, Jan 04, 2022 at 09:56:30AM +0800, Lu Baolu wrote:
 > 
-> "These devices" means bridges, right?  Not sure why we wouldn't care
-> about the P2P attack.
+>> v5:
+>>    - Move kernel dma ownership auto-claiming from driver core to bus
+>>      callback. (Greg)
+>>    - Refactor the iommu interfaces to make them more specific.
+>>      (Jason/Robin)
+>>    - Simplify the dma ownership implementation by removing the owner
+>>      type. (Jason)
+>>    - Commit message refactoring for PCI drivers. (Bjorn)
+>>    - Move iommu_attach/detach_device() improvement patches into another
+>>      series as there are a lot of code refactoring and cleanup staffs
+>>      in various device drivers.
+> 
+> Since you already have the code you should make this 'other series'
+> right now. It should delete iommu_group_attach() and fix
+> iommu_device_attach().
 
-Yes bridges. I said "I belive" because VFIO was changed to ignore
-bridges a long time ago and the security rational was a bit unclear in
-the commit.
+Yes. I am doing the functional and compile tests. I will post it once I
+complete the testing.
 
-See 5f096b14d421 ("vfio: Whitelist PCI bridges")
+> 
+> You also didn't really do my suggestion, this messes up the normal
+> __iommu_attach_group()/__iommu_detach_group() instead of adding the
+> clear to purpose iommu_replace_group() for VFIO to use. This just
+> makes it more difficult to normalize the APIs.
 
-> PCIe switches use MSI or MSI-X for hotplug, PME, etc, so they do DMA
-> for that.  Is that not relevant here?
+I didn't forget that. :-) It's part of the new series.
 
-Alex's comment in the above commit notes about interrupts, but I think
-the answer today is that it does not matter.
+> 
+> Otherwise it does seem to have turned out to be more understandable.
+> 
+> Jason
+> 
 
-For platforms like x86 that keep interrupts and DMA seperate it
-works fine.
-
-For platforms that comingle the iommu_domain and interrupts (do some
-exist?) we expect the platform to do whatever is necessary at
-iommu_domain attach time to ensure interrupts continue to
-work. (AFAICT at least)
-
-In other words we don't have an API restriction to use
-iommu_device_use_dma_api() to use request_irq().
-
-So the main concern should be P2P attacks on bridge MMIO registers.
-
-> Is there something that *prohibits* a bridge from having
-> device-specific functionality including DMA?
-
-I'm not sure, I think not, but the 'Bus Master Enable' language does
-have a different definition for Type 1..
-
-However, it doesn't matter - the question here is not about what the
-device HW is capable of, but what does the kernel driver do. The
-portdrv does not use the DMA API, so that alone is half the
-requirement to skip the iommu_device_use_dma_api() call.
-
-Some future device-specific bridge driver that is able to issue the
-device-specific MMIO's and operate the DMA API should be coded to use
-iommu_device_use_dma_api(), probably by using a different
-device_driver for the bridge.
-
-> I know some bridges have device-specific BARs for performance counters
-> and the like.
-
-Yep.
-
-IMHO it is probably not so great as-is..
-
-However, this patch is just porting the status-quo of commit 5f09 into
-this new framework.
-
-What this new framework does allow is for portdrv to police itself. eg
-it could check if there is a MMIO BAR and call
-iommu_device_use_dma_api() out of caution. It could also have an
-allowance list of devices where we know hostile writes to the MMIO are
-known harmless.
-
-Without knowing more about what motivated 5f09 it is hard to say,
-other than it has been 7 years like this and nobody has complained
-yet :)
-
-Jason
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
