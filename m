@@ -4,97 +4,80 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9CA4FC433EF
-	for <iommu@archiver.kernel.org>; Wed,  5 Jan 2022 21:48:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 899EEC433F5
+	for <iommu@archiver.kernel.org>; Thu,  6 Jan 2022 02:21:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 4AF0D409D2;
-	Wed,  5 Jan 2022 21:48:40 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 1368340441;
+	Thu,  6 Jan 2022 02:21:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6EZHeNJyywPR; Wed,  5 Jan 2022 21:48:39 +0000 (UTC)
+	with ESMTP id Vj65k6enU7CP; Thu,  6 Jan 2022 02:21:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id ED0F7409ED;
-	Wed,  5 Jan 2022 21:48:38 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id AEA9040017;
+	Thu,  6 Jan 2022 02:21:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C5392C0030;
-	Wed,  5 Jan 2022 21:48:38 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 20DEDC001E;
- Wed,  5 Jan 2022 21:48:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8731EC002F;
+	Thu,  6 Jan 2022 02:21:53 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C134FC001E
+ for <iommu@lists.linux-foundation.org>; Thu,  6 Jan 2022 02:21:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id E211F40102;
- Wed,  5 Jan 2022 21:48:30 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 9B3A6402D7
+ for <iommu@lists.linux-foundation.org>; Thu,  6 Jan 2022 02:21:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7kHbjyCanUQU; Wed,  5 Jan 2022 21:48:30 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com
- [66.111.4.230])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 1E97F400D0;
- Wed,  5 Jan 2022 21:48:30 +0000 (UTC)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
- by mailnew.nyi.internal (Postfix) with ESMTP id 4AB4D580571;
- Wed,  5 Jan 2022 16:48:29 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
- by compute1.internal (MEProxy); Wed, 05 Jan 2022 16:48:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=from
- :to:cc:subject:date:message-id:in-reply-to:references:reply-to
- :mime-version:content-transfer-encoding; s=fm2; bh=8yuexR1+nrtHG
- SO8wGNcV0MvB+tGU4p0S4nQ2u6/h9Y=; b=kNcgqXMU4/n+0YyMRK0TyVMysDqOh
- yGnxu3188w1RZak/r6C5GGCMGkYAvYZrGUXVsCm5C/Jb9fk2x8P+Zhkbv2juEiHF
- Xx9yXwsMcFZDgw14URi8KOX4Gq3BjiqSdCn8GKzv3NQXWRkliOB0JVHVM8uS81kz
- FXWoyZvcC8pdi2IY2HIDM9KJjv4NSShQ3V/ljJO+UE1AAlyWOJHG3t1nZ3upZM6c
- K6hHMhVO16bR2AATD8DVfvQ/aYyij27BJTE7NIUx0TvMRg4mNtuYCz5coZkOImzw
- Rby2nrBx/WVcBJxX1xpgf8EFekNemKmfyEiUBjB3mQtzUXARZkQ3mfEPA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
- messagingengine.com; h=cc:content-transfer-encoding:date:from
- :in-reply-to:message-id:mime-version:references:reply-to:subject
- :to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
- fm1; bh=8yuexR1+nrtHGSO8wGNcV0MvB+tGU4p0S4nQ2u6/h9Y=; b=PhZUATg9
- FmZKLL8OPTeqjkwnPLyfUAOaHv5EhgMImn/cYWCeGVksMiYYzIciYyMSBtwa1hDH
- zCMqdscamUNJ9VbKXUa+IXBcuZ4nNEh60LtYJw1Gyy7ZrarTM7wCpYBEirVm+okP
- YES7YEJcbaR5e1IzVbtjM+zqax4CfbcEuaxE6NvYyGcm+/aJJ5AVvkeBkZgiJuFq
- 6idpjFtqRH2qzA1FEI/Uln2s5XO78fxP3GhFfLNoCsG+v6WvjpSukS8udRI4XDeu
- yJj7Gmw41fOmt1fCiz7dqFk+yuPnwHiyM29QUQlFw2sp8YKAXCccMuYCYuzG/BA2
- DQReGxxAcIFXcg==
-X-ME-Sender: <xms:LRLWYQPVidpmgi01iA-MzZbuDuRhT6Z_IJjKkBfP34fKrxdB3GTGRw>
- <xme:LRLWYW-AyiLLpcJde4tItRbz_921Vw_Be1O8-D_3ARqY5j5MeIw-G6ZDKLkPiAqMM
- fabpTHp8Wvjadrqgg>
-X-ME-Received: <xmr:LRLWYXTBUF87OXxBul7SmmYv5X2QdNgcUKdPg2JXNJS8qbfmKQuYz1B3f8TGEP5BJp_-22cV>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrudefjedgieekucetufdoteggodetrfdotf
- fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
- uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
- cujfgurhephffvufffkffojghfrhgggfestdhqredtredttdenucfhrhhomhepkghiucgj
- rghnuceoiihirdihrghnsehsvghnthdrtghomheqnecuggftrfgrthhtvghrnhepieejue
- dvueduuefhgefhheeiuedvtedvuefgieegveetueeiueehtdegudehfeelnecuvehluhhs
- thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepiihirdihrghnsehsvg
- hnthdrtghomh
-X-ME-Proxy: <xmx:LRLWYYsCBFereavIdxgPqU4MOOT3p7BIVnUwwIExBXietPI4jPWS8w>
- <xmx:LRLWYYe7ZcX5PSG-JXwLG-eqVMgwlXFXAbwWTb-NcNTuScSBOo3bQQ>
- <xmx:LRLWYc2-Jua3FPZLC43ywFWwFVHK36Ata-2S4GvbOxjWi2yu6fx06A>
- <xmx:LRLWYe3ONauEy1XZrRc2lxpCjRBxgKLaO5tTCuBjiiinzKzKitiBhw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 5 Jan 2022 16:48:28 -0500 (EST)
-From: Zi Yan <zi.yan@sent.com>
-To: David Hildenbrand <david@redhat.com>,
-	linux-mm@kvack.org
-Subject: [RFC PATCH v3 8/8] arch: powerpc: adjust fadump alignment to be
- pageblock aligned.
-Date: Wed,  5 Jan 2022 16:47:56 -0500
-Message-Id: <20220105214756.91065-9-zi.yan@sent.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220105214756.91065-1-zi.yan@sent.com>
-References: <20220105214756.91065-1-zi.yan@sent.com>
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id yrL7HO1gk_Tf for <iommu@lists.linux-foundation.org>;
+ Thu,  6 Jan 2022 02:21:50 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id B7D6B402D2
+ for <iommu@lists.linux-foundation.org>; Thu,  6 Jan 2022 02:21:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1641435710; x=1672971710;
+ h=from:to:cc:subject:date:message-id:mime-version:
+ content-transfer-encoding;
+ bh=exYGrLYHGT8TzV5cnLFjwED9oszGYl1Sy9IWfWRq36I=;
+ b=cuwTyMkeJolBJHmcVUEKxaW0eLo+70SwxNCTRo71qdu6RO2Qi0BSy9O0
+ ugXDlsncJ1EyHpDcVR7nPg/dEE/aTBOmdT/VLTe120oF9U/b2AMsrkSG/
+ M/NFd/detzUax6hMhgj+3VCnnb/snulDToiBEL+CAHXaCds0fq/4aQzr5
+ ZIFKGtPZ9dY0mpLjvFnJXCea6dD3ljF9tiEkmBl23yJBn69EpSVxgevv6
+ FAADQ7ZOm+MlHTmqDSLgISxoPKzpLrCfud2JxTsmaHHipjLW0nvLZLs3v
+ D2JmHzvR8a15K6mC/Fn8DopYKukqnNZmiUAQKWExGxNCQBI0H56agJXf1 g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="222570890"
+X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; d="scan'208";a="222570890"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 05 Jan 2022 18:21:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; d="scan'208";a="526794259"
+Received: from allen-box.sh.intel.com ([10.239.159.118])
+ by orsmga008.jf.intel.com with ESMTP; 05 Jan 2022 18:21:42 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>
+Subject: [PATCH v1 0/8] Scrap iommu_attach/detach_group() interfaces
+Date: Thu,  6 Jan 2022 10:20:45 +0800
+Message-Id: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Cc: Mel Gorman <mgorman@techsingularity.net>, Zi Yan <ziy@nvidia.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Robin Murphy <robin.murphy@arm.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Eric Ren <renzhengeek@gmail.com>, virtualization@lists.linux-foundation.org,
- linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>,
- Vlastimil Babka <vbabka@suse.cz>
+Cc: kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
+ linux-pci@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Stuart Yoder <stuyoder@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,39 +90,83 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: Zi Yan <ziy@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Zi Yan <ziy@nvidia.com>
+Hi folks,
 
-CMA only requires pageblock alignment now. Change CMA alignment in
-fadump too.
+The iommu_attach_device() added first by commit <fc2100eb4d096> ("add
+frontend implementation for the IOMMU API") in 2008. At that time,
+there was no concept of iommu group yet.
 
-Signed-off-by: Zi Yan <ziy@nvidia.com>
----
- arch/powerpc/include/asm/fadump-internal.h | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+The iommu group was added by commit <d72e31c937462> ("iommu: IOMMU
+Groups") four years later in 2012. The iommu_attach_group() was added
+at the same time.
 
-diff --git a/arch/powerpc/include/asm/fadump-internal.h b/arch/powerpc/include/asm/fadump-internal.h
-index 52189928ec08..fbfca85b4200 100644
---- a/arch/powerpc/include/asm/fadump-internal.h
-+++ b/arch/powerpc/include/asm/fadump-internal.h
-@@ -20,9 +20,7 @@
- #define memblock_num_regions(memblock_type)	(memblock.memblock_type.cnt)
- 
- /* Alignment per CMA requirement. */
--#define FADUMP_CMA_ALIGNMENT	(PAGE_SIZE <<				\
--				 max_t(unsigned long, MAX_ORDER - 1,	\
--				 pageblock_order))
-+#define FADUMP_CMA_ALIGNMENT	(PAGE_SIZE << pageblock_order)
- 
- /* FAD commands */
- #define FADUMP_REGISTER			1
+Then, people realized that iommu_attach_device() allowed different
+device in a same group to attach different domain. This was not in
+line with the concept of iommu group. The commit <426a273834eae>
+("iommu: Limit iommu_attach/detach_device to device with their own
+group") fixed this problem in 2015.
+
+As the result, we have two coexisting interfaces for device drivers
+to do the same thing. But neither is perfect:
+
+  - iommu_attach_device() only works for singleton group.
+  - iommu_attach_group() asks the device drivers to handle iommu group
+    related staff which is beyond the role of a device driver.
+
+Considering from the perspective of a device driver, its motivation is
+very simple: "I want to manage my own I/O address space." Inspired by
+the discussion [1], we consider heading in this direction:
+
+Make the iommu_attach_device() the only and generic interface for the
+device drivers to use their own private domain (I/O address space)
+and replace all iommu_attach_group() uses with iommu_attach_device()
+and deprecate the former.
+
+This is a follow-up series of this discussion: 
+[1] https://lore.kernel.org/linux-iommu/b4405a5e-c4cc-f44a-ab43-8cb62b888565@linux.intel.com/
+
+It depends on the series of "Fix BUG_ON in vfio_iommu_group_notifier()".
+The latest version was posted here:
+https://lore.kernel.org/linux-iommu/20220104015644.2294354-1-baolu.lu@linux.intel.com/
+
+and the whole patches are available on github:
+https://github.com/LuBaolu/intel-iommu/commits/iommu-domain-attach-refactor-v1
+
+Best regards,
+baolu
+
+Jason Gunthorpe (1):
+  drm/tegra: Use iommu_attach/detatch_device()
+
+Lu Baolu (7):
+  iommu: Add iommu_group_replace_domain()
+  vfio/type1: Use iommu_group_replace_domain()
+  iommu: Extend iommu_at[de]tach_device() for multi-device groups
+  iommu/amd: Use iommu_attach/detach_device()
+  gpu/host1x: Use iommu_attach/detach_device()
+  media: staging: media: tegra-vde: Use iommu_attach/detach_device()
+  iommu: Remove iommu_attach/detach_group()
+
+ include/linux/iommu.h                   |  25 ++---
+ drivers/gpu/drm/tegra/dc.c              |   1 +
+ drivers/gpu/drm/tegra/drm.c             |  47 +++-----
+ drivers/gpu/drm/tegra/gr2d.c            |   1 +
+ drivers/gpu/drm/tegra/gr3d.c            |   1 +
+ drivers/gpu/drm/tegra/vic.c             |   1 +
+ drivers/gpu/host1x/dev.c                |   4 +-
+ drivers/iommu/amd/iommu_v2.c            |   4 +-
+ drivers/iommu/iommu.c                   | 136 +++++++++++++++++-------
+ drivers/staging/media/tegra-vde/iommu.c |   6 +-
+ drivers/vfio/vfio_iommu_type1.c         |  22 ++--
+ 11 files changed, 146 insertions(+), 102 deletions(-)
+
 -- 
-2.34.1
+2.25.1
 
 _______________________________________________
 iommu mailing list
