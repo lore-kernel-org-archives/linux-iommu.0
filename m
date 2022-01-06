@@ -1,71 +1,70 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 19835C433EF
-	for <iommu@archiver.kernel.org>; Thu,  6 Jan 2022 02:22:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A8486C433F5
+	for <iommu@archiver.kernel.org>; Thu,  6 Jan 2022 02:22:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id CBBE8428B1;
-	Thu,  6 Jan 2022 02:22:37 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 654EA40017;
+	Thu,  6 Jan 2022 02:22:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NUT3Ym_k6jkn; Thu,  6 Jan 2022 02:22:37 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Q2pC9U7LXohm; Thu,  6 Jan 2022 02:22:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id D6142428A5;
-	Thu,  6 Jan 2022 02:22:36 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 1AD5C40441;
+	Thu,  6 Jan 2022 02:22:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AF012C002F;
-	Thu,  6 Jan 2022 02:22:36 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BDF93C002F
- for <iommu@lists.linux-foundation.org>; Thu,  6 Jan 2022 02:22:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E74A4C002F;
+	Thu,  6 Jan 2022 02:22:51 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6532CC001E
+ for <iommu@lists.linux-foundation.org>; Thu,  6 Jan 2022 02:22:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id ABFE960D72
- for <iommu@lists.linux-foundation.org>; Thu,  6 Jan 2022 02:22:35 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 4159C40424
+ for <iommu@lists.linux-foundation.org>; Thu,  6 Jan 2022 02:22:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Hhq8MvMI7mnG for <iommu@lists.linux-foundation.org>;
- Thu,  6 Jan 2022 02:22:35 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wB4Y4kXQwKFf for <iommu@lists.linux-foundation.org>;
+ Thu,  6 Jan 2022 02:22:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 257EE60B33
- for <iommu@lists.linux-foundation.org>; Thu,  6 Jan 2022 02:22:34 +0000 (UTC)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 4CAE840017
+ for <iommu@lists.linux-foundation.org>; Thu,  6 Jan 2022 02:22:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1641435755; x=1672971755;
+ t=1641435769; x=1672971769;
  h=from:to:cc:subject:date:message-id:in-reply-to:
  references:mime-version:content-transfer-encoding;
- bh=GDCUJufXvlu7Z20AypZ4GsZd9L9C8y8eFXL56cSyTrE=;
- b=DWPH9272X9BFNjgHIs1lexF61dTSRcjOUBMsdxUPzWfBfp+CDUgqZXlu
- eFtPyhpLHc0oFJS+hAdzbxuiXHmrPr8YtMbPSrRfwKnde2W3FAcYtSPE7
- mUach//L+k4vL5SoOqyWBaAvQTPtPmHTQ1NG3OGxi687nrUWSLD+oNM34
- srr45r26GAC6G9CrbpT0CLRj+b/c/d8gYiC5fL8RkBx6CkqmSKhah2dhC
- Ld124+pIT0RFLSuvYjx7OamnyYrrCZ6y0k2gfb6mD/Y7zpDknKnDilKDB
- xMw0CKwdT9dp1PZAiiTd5977eAoafXxHGkUhg+jOMqKL5eb6fs9oOmV31 A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="242531679"
-X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; d="scan'208";a="242531679"
+ bh=rJCHc+7rEGzzzZ26n+LFYyMzqMy4eMF/FP0CIBhFlrQ=;
+ b=QNIX4kw0AjpNz8YvzqvCjXMpPJaaKQXq3ZyKpztEhr3ILg9bHDZFuBXa
+ eP+DJwko95AXKuY+Ri8xt9UQIpoxD/2RGXnx1FP3qLnMJaF8WdyLrxmKv
+ rdqAiLv/+z/slo/ASR8sIHE1IQdyhfwydXxP1PpZymFqmpEkHDFb7ei4j
+ X7iM0nOv+jZcOKU6OG/XuSUJD++QCQyEOuPoK0AuPsJU/HWTg9jVXtO0p
+ pPC8TXhjtAn5IEliiCLAJeMoqToEI/7H6XWSv1rsVURh6Oq8DGeH8367f
+ KWwH21q8E+5jU2Xe2KDxxpU4g3PfaqWSLzRbpDc3sNQoJ/4REJQAFqvH+ Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="223259106"
+X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; d="scan'208";a="223259106"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 05 Jan 2022 18:22:34 -0800
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 05 Jan 2022 18:22:48 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; d="scan'208";a="526794466"
+X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; d="scan'208";a="526794519"
 Received: from allen-box.sh.intel.com ([10.239.159.118])
- by orsmga008.jf.intel.com with ESMTP; 05 Jan 2022 18:22:24 -0800
+ by orsmga008.jf.intel.com with ESMTP; 05 Jan 2022 18:22:31 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
  Alex Williamson <alex.williamson@redhat.com>,
  Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
  Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
  Ashok Raj <ashok.raj@intel.com>
-Subject: [PATCH v1 6/8] gpu/host1x: Use iommu_attach/detach_device()
-Date: Thu,  6 Jan 2022 10:20:51 +0800
-Message-Id: <20220106022053.2406748-7-baolu.lu@linux.intel.com>
+Subject: [PATCH v1 7/8] media: staging: media: tegra-vde: Use
+ iommu_attach/detach_device()
+Date: Thu,  6 Jan 2022 10:20:52 +0800
+Message-Id: <20220106022053.2406748-8-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
 References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
@@ -102,31 +101,40 @@ attaching and detaching.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/gpu/host1x/dev.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/media/tegra-vde/iommu.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
-index fbb6447b8659..6e08cb6202cc 100644
---- a/drivers/gpu/host1x/dev.c
-+++ b/drivers/gpu/host1x/dev.c
-@@ -265,7 +265,7 @@ static struct iommu_domain *host1x_iommu_attach(struct host1x *host)
- 			goto put_cache;
- 		}
+diff --git a/drivers/staging/media/tegra-vde/iommu.c b/drivers/staging/media/tegra-vde/iommu.c
+index adf8dc7ee25c..a6e6eb28f1e3 100644
+--- a/drivers/staging/media/tegra-vde/iommu.c
++++ b/drivers/staging/media/tegra-vde/iommu.c
+@@ -91,7 +91,7 @@ int tegra_vde_iommu_init(struct tegra_vde *vde)
+ 	order = __ffs(vde->domain->pgsize_bitmap);
+ 	init_iova_domain(&vde->iova, 1UL << order, 0);
  
--		err = iommu_attach_group(host->domain, host->group);
-+		err = iommu_attach_device(host->domain, host->dev);
- 		if (err) {
- 			if (err == -ENODEV)
- 				err = 0;
-@@ -335,7 +335,7 @@ static void host1x_iommu_exit(struct host1x *host)
- {
- 	if (host->domain) {
- 		put_iova_domain(&host->iova);
--		iommu_detach_group(host->domain, host->group);
-+		iommu_detach_device(host->domain, host->dev);
+-	err = iommu_attach_group(vde->domain, vde->group);
++	err = iommu_attach_device(vde->domain, dev);
+ 	if (err)
+ 		goto put_iova;
  
- 		iommu_domain_free(host->domain);
- 		host->domain = NULL;
+@@ -129,7 +129,7 @@ int tegra_vde_iommu_init(struct tegra_vde *vde)
+ unreserve_iova:
+ 	__free_iova(&vde->iova, vde->iova_resv_static_addresses);
+ detach_group:
+-	iommu_detach_group(vde->domain, vde->group);
++	iommu_detach_device(vde->domain, dev);
+ put_iova:
+ 	put_iova_domain(&vde->iova);
+ 	iova_cache_put();
+@@ -146,7 +146,7 @@ void tegra_vde_iommu_deinit(struct tegra_vde *vde)
+ 	if (vde->domain) {
+ 		__free_iova(&vde->iova, vde->iova_resv_last_page);
+ 		__free_iova(&vde->iova, vde->iova_resv_static_addresses);
+-		iommu_detach_group(vde->domain, vde->group);
++		iommu_detach_device(vde->domain, vde->miscdev.parent);
+ 		put_iova_domain(&vde->iova);
+ 		iova_cache_put();
+ 		iommu_domain_free(vde->domain);
 -- 
 2.25.1
 
