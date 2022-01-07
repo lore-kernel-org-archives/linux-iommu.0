@@ -1,84 +1,73 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6E8E1C433EF
-	for <iommu@archiver.kernel.org>; Fri,  7 Jan 2022 08:09:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 12CD9C433F5
+	for <iommu@archiver.kernel.org>; Fri,  7 Jan 2022 14:12:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D523A42487;
-	Fri,  7 Jan 2022 08:09:24 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 8D52760AD1;
+	Fri,  7 Jan 2022 14:12:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lnmKvluTJ3iW; Fri,  7 Jan 2022 08:09:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 9A878400E5;
-	Fri,  7 Jan 2022 08:09:23 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 71C66C0030;
-	Fri,  7 Jan 2022 08:09:23 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CDCA4C001E
- for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 08:09:22 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id ACFC86FC45
- for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 08:09:22 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VYFPUNMIy9xr for <iommu@lists.linux-foundation.org>;
- Fri,  7 Jan 2022 08:09:22 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com
- [IPv6:2607:f8b0:4864:20::52f])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 2985660DDF
- for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 08:09:22 +0000 (UTC)
-Received: by mail-pg1-x52f.google.com with SMTP id i8so4833274pgt.13
- for <iommu@lists.linux-foundation.org>; Fri, 07 Jan 2022 00:09:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=from:to:cc:subject:date:message-id;
- bh=caUCLOkN9Sm5eFbTFlsGP0xGxd9i8A6ITsUxSKuDZSU=;
- b=WY/WNVDa2zoOWuTB2YVH4wuHLFq2e9CIso+fXhU/yxNqPV9XnMLUs0wHbcAcoSC8Cp
- ZdE9df2U1E1PBq0RNLJpJ6dAN/1F5Eewfpu4jvb1CSBW6Casb7KuqLiuzl71lW+E7uPj
- GyXI6xs7CBcNKVp1afXOFx23kY9H74FmQyPeklWjevF6nv2LAuEtif3vAvHzUAL+ICE0
- VbjgqgbboWbi4SOZCWoVgDxGTsjYSAfBQOEMIETCvifmIyvbmrNto9X4ZV7AKafuExyM
- kkOibA2PXx04DdKwBSDZ1ZYVq/nIUk2FpDAqJ2NEjKU6qYlO7g/7M5AgML58mJDvEcWO
- 0FOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:from:to:cc:subject:date:message-id;
- bh=caUCLOkN9Sm5eFbTFlsGP0xGxd9i8A6ITsUxSKuDZSU=;
- b=HW4eb11LgAXFdZ1tjoURECKq1Y1PPVoSO6JQTXwtw/Ts6mmAJgLBz6+W2MBFf7L2aj
- QU39sV2rKdUy047uTObpSTGjCvC80X8NSP0sbJSxvSp0j7Ul7nDinKCoUfSJ/MneQXHS
- H1Pjz8sJoNeilUbtNe0c8IUFNqqnTIRdoRYnCk2MzSMAEuScX/e8MKb4I58aAAWI9Jvl
- 6uexIuWYqnK2p9GgJgCiT6YjCz9DjsB+CiyKvpFzdLgszaXDBwxudy5HFpFvnpvNudO+
- wF3KU0CRyfn9iD9QNbeItTs78wkAfFKpp6yqPOfmi9JIVAEeJjh1ePw1k8rqO/U7AXwx
- Ducw==
-X-Gm-Message-State: AOAM533RvhaFyHJqNo9fiFnCap44kgKecrCFfXbBtKS13P3RszVkV42x
- o0GSnSEVSEgEbf6pdAfqveQ=
-X-Google-Smtp-Source: ABdhPJzXiICbOdrKbRllujNfXHikmjg0aDAbByOyuYXvxpGswTzgKfpOmmbL0h/jbB/xfkqNf5bN9A==
-X-Received: by 2002:a62:7813:0:b0:4ba:7afa:3786 with SMTP id
- t19-20020a627813000000b004ba7afa3786mr63360812pfc.55.1641542961614; 
- Fri, 07 Jan 2022 00:09:21 -0800 (PST)
-Received: from localhost.localdomain ([159.226.95.43])
- by smtp.googlemail.com with ESMTPSA id il18sm8686899pjb.37.2022.01.07.00.09.19
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 07 Jan 2022 00:09:21 -0800 (PST)
-From: Miaoqian Lin <linmq006@gmail.com>
-To: 
-Subject: [PATCH] iommu/tegra-smmu: Fix missing put_device() call in
- tegra_smmu_find
-Date: Fri,  7 Jan 2022 08:09:11 +0000
-Message-Id: <20220107080915.12686-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
-Cc: linmq006@gmail.com, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Jonathan Hunter <jonathanh@nvidia.com>,
- Thierry Reding <thierry.reding@gmail.com>, linux-tegra@vger.kernel.org,
- Will Deacon <will@kernel.org>
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Mk8SZxKCYKn0; Fri,  7 Jan 2022 14:12:02 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 5327A60AAF;
+	Fri,  7 Jan 2022 14:12:02 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3513BC0030;
+	Fri,  7 Jan 2022 14:12:02 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A7A4EC001E
+ for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 12:46:31 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with UTF8SMTP id 86EE8429E1
+ for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 12:46:31 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=mg.codeaurora.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with UTF8SMTP id JK_o2j1EgRFD for <iommu@lists.linux-foundation.org>;
+ Fri,  7 Jan 2022 12:46:30 +0000 (UTC)
+X-Greylist: delayed 00:05:04 by SQLgrey-1.8.0
+Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
+ by smtp4.osuosl.org (Postfix) with UTF8SMTPS id 97151429DE
+ for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 12:46:30 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1641559590; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=Ro2y/JOjOo1Q+rpZmwqRvcFh1HOUbWXLk/gFbz/8VXE=;
+ b=FXR31mwbLQdi27xfxltGmwMr+v80r5lJtPsam54DTquQf1QrikbhKSHsJs5cGvFALIzku8zn
+ 0Qk4VWRwJWw388T09OI5hL+AxojieVqmQTakWx1Sk8tpVDOv3FY+fnBKlOA4bmoyOzk3SlTL
+ SlOuQNZ3ubW1CVJOQpLtr94/Cu0=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 61d834f13553c354be1e185f (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 07 Jan 2022 12:41:21
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id E0E09C43619; Fri,  7 Jan 2022 12:41:20 +0000 (UTC)
+Received: from vjitta-linux.qualcomm.com (unknown [202.46.22.19])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: vjitta)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 057B9C4338F;
+ Fri,  7 Jan 2022 12:41:17 +0000 (UTC)
+From: Vijayanand@codeaurora.org, Jitta@codeaurora.org
+To: joro@8bytes.org, will@kernel.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu: Fix potential use-after-free during probe
+Date: Fri,  7 Jan 2022 18:11:06 +0530
+Message-Id: <1641559266-3644-1-git-send-email-quic_vjitta@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+X-Mailman-Approved-At: Fri, 07 Jan 2022 14:12:01 +0000
+Cc: vjitta@codeaurora.org, Vijayanand Jitta <quic_vjitta@quicinc.com>,
+ kernel-team@android.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,34 +86,195 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore.
-Add the corresponding 'put_device()' in the error handling path.
+From: Vijayanand Jitta <quic_vjitta@quicinc.com>
 
-Fixes: 765a9d1d02b2 ("iommu/tegra-smmu: Fix mc errors on tegra124-nyan")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Kasan has reported the following use after free on dev->iommu.
+when a device probe fails and it is in process of freeing dev->iommu
+in dev_iommu_free function, a deferred_probe_work_func runs in parallel
+and tries to access dev->iommu->fwspec in of_iommu_configure path thus
+causing use after free.
+
+BUG: KASAN: use-after-free in of_iommu_configure+0xb4/0x4a4
+Read of size 8 at addr ffffff87a2f1acb8 by task kworker/u16:2/153
+
+Workqueue: events_unbound deferred_probe_work_func
+Call trace:
+ dump_backtrace+0x0/0x33c
+ show_stack+0x18/0x24
+ dump_stack_lvl+0x16c/0x1e0
+ print_address_description+0x84/0x39c
+ __kasan_report+0x184/0x308
+ kasan_report+0x50/0x78
+ __asan_load8+0xc0/0xc4
+ of_iommu_configure+0xb4/0x4a4
+ of_dma_configure_id+0x2fc/0x4d4
+ platform_dma_configure+0x40/0x5c
+ really_probe+0x1b4/0xb74
+ driver_probe_device+0x11c/0x228
+ __device_attach_driver+0x14c/0x304
+ bus_for_each_drv+0x124/0x1b0
+ __device_attach+0x25c/0x334
+ device_initial_probe+0x24/0x34
+ bus_probe_device+0x78/0x134
+ deferred_probe_work_func+0x130/0x1a8
+ process_one_work+0x4c8/0x970
+ worker_thread+0x5c8/0xaec
+ kthread+0x1f8/0x220
+ ret_from_fork+0x10/0x18
+
+Allocated by task 1:
+ ____kasan_kmalloc+0xd4/0x114
+ __kasan_kmalloc+0x10/0x1c
+ kmem_cache_alloc_trace+0xe4/0x3d4
+ __iommu_probe_device+0x90/0x394
+ probe_iommu_group+0x70/0x9c
+ bus_for_each_dev+0x11c/0x19c
+ bus_iommu_probe+0xb8/0x7d4
+ bus_set_iommu+0xcc/0x13c
+ arm_smmu_bus_init+0x44/0x130 [arm_smmu]
+ arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
+ platform_drv_probe+0xe4/0x13c
+ really_probe+0x2c8/0xb74
+ driver_probe_device+0x11c/0x228
+ device_driver_attach+0xf0/0x16c
+ __driver_attach+0x80/0x320
+ bus_for_each_dev+0x11c/0x19c
+ driver_attach+0x38/0x48
+ bus_add_driver+0x1dc/0x3a4
+ driver_register+0x18c/0x244
+ __platform_driver_register+0x88/0x9c
+ init_module+0x64/0xff4 [arm_smmu]
+ do_one_initcall+0x17c/0x2f0
+ do_init_module+0xe8/0x378
+ load_module+0x3f80/0x4a40
+ __se_sys_finit_module+0x1a0/0x1e4
+ __arm64_sys_finit_module+0x44/0x58
+ el0_svc_common+0x100/0x264
+ do_el0_svc+0x38/0xa4
+ el0_svc+0x20/0x30
+ el0_sync_handler+0x68/0xac
+ el0_sync+0x160/0x180
+
+Freed by task 1:
+ kasan_set_track+0x4c/0x84
+ kasan_set_free_info+0x28/0x4c
+ ____kasan_slab_free+0x120/0x15c
+ __kasan_slab_free+0x18/0x28
+ slab_free_freelist_hook+0x204/0x2fc
+ kfree+0xfc/0x3a4
+ __iommu_probe_device+0x284/0x394
+ probe_iommu_group+0x70/0x9c
+ bus_for_each_dev+0x11c/0x19c
+ bus_iommu_probe+0xb8/0x7d4
+ bus_set_iommu+0xcc/0x13c
+ arm_smmu_bus_init+0x44/0x130 [arm_smmu]
+ arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
+ platform_drv_probe+0xe4/0x13c
+ really_probe+0x2c8/0xb74
+ driver_probe_device+0x11c/0x228
+ device_driver_attach+0xf0/0x16c
+ __driver_attach+0x80/0x320
+ bus_for_each_dev+0x11c/0x19c
+ driver_attach+0x38/0x48
+ bus_add_driver+0x1dc/0x3a4
+ driver_register+0x18c/0x244
+ __platform_driver_register+0x88/0x9c
+ init_module+0x64/0xff4 [arm_smmu]
+ do_one_initcall+0x17c/0x2f0
+ do_init_module+0xe8/0x378
+ load_module+0x3f80/0x4a40
+ __se_sys_finit_module+0x1a0/0x1e4
+ __arm64_sys_finit_module+0x44/0x58
+ el0_svc_common+0x100/0x264
+ do_el0_svc+0x38/0xa4
+ el0_svc+0x20/0x30
+ el0_sync_handler+0x68/0xac
+ el0_sync+0x160/0x180
+
+Fix this by adding device_lock for dev->iommu accesses.
+
+Signed-off-by: Vijayanand Jitta <quic_vjitta@quicinc.com>
 ---
- drivers/iommu/tegra-smmu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iommu/iommu.c |  4 ++++
+ include/linux/iommu.h | 22 ++++++++++++++++------
+ 2 files changed, 20 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index e900e3c46903..2561ce8a2ce8 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -808,8 +808,10 @@ static struct tegra_smmu *tegra_smmu_find(struct device_node *np)
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index dd7863e..85a2caa 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -201,15 +201,19 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
  		return NULL;
  
- 	mc = platform_get_drvdata(pdev);
--	if (!mc)
-+	if (!mc) {
-+		put_device(&pdev->dev);
- 		return NULL;
-+	}
- 
- 	return mc->smmu;
+ 	mutex_init(&param->lock);
++	device_lock(dev);
+ 	dev->iommu = param;
++	device_unlock(dev);
+ 	return param;
  }
+ 
+ static void dev_iommu_free(struct device *dev)
+ {
+ 	iommu_fwspec_free(dev);
++	device_lock(dev);
+ 	kfree(dev->iommu);
+ 	dev->iommu = NULL;
++	device_unlock(dev);
+ }
+ 
+ static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index d2f3435..01b09be 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -640,29 +640,39 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
+ 
+ static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
+ {
++	struct iommu_fwspec *fwspec = NULL;
++
++	device_lock(dev);
+ 	if (dev->iommu)
+-		return dev->iommu->fwspec;
+-	else
+-		return NULL;
++		fwspec = dev->iommu->fwspec;
++	device_unlock(dev);
++	return fwspec;
+ }
+ 
+ static inline void dev_iommu_fwspec_set(struct device *dev,
+ 					struct iommu_fwspec *fwspec)
+ {
++	device_lock(dev);
+ 	dev->iommu->fwspec = fwspec;
++	device_unlock(dev);
+ }
+ 
+ static inline void *dev_iommu_priv_get(struct device *dev)
+ {
++	void *priv = NULL;
++
++	device_lock(dev);
+ 	if (dev->iommu)
+-		return dev->iommu->priv;
+-	else
+-		return NULL;
++		priv = dev->iommu->priv;
++	device_unlock(dev);
++	return priv;
+ }
+ 
+ static inline void dev_iommu_priv_set(struct device *dev, void *priv)
+ {
++	device_lock(dev);
+ 	dev->iommu->priv = priv;
++	device_unlock(dev);
+ }
+ 
+ int iommu_probe_device(struct device *dev);
 -- 
-2.17.1
+2.7.4
 
 _______________________________________________
 iommu mailing list
