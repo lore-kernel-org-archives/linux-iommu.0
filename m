@@ -1,73 +1,75 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 92244C433EF
-	for <iommu@archiver.kernel.org>; Fri,  7 Jan 2022 00:27:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0057DC433F5
+	for <iommu@archiver.kernel.org>; Fri,  7 Jan 2022 00:36:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 4A6DA81919;
-	Fri,  7 Jan 2022 00:27:42 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 965444298F;
+	Fri,  7 Jan 2022 00:36:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ETMLL7XBdWli; Fri,  7 Jan 2022 00:27:41 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id rS4Zv5_gsZuJ; Fri,  7 Jan 2022 00:36:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 22000817BD;
-	Fri,  7 Jan 2022 00:27:41 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 7A91742991;
+	Fri,  7 Jan 2022 00:36:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CE989C0030;
-	Fri,  7 Jan 2022 00:27:40 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 82446C001E
- for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 00:27:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A873C0030;
+	Fri,  7 Jan 2022 00:36:24 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F0744C001E
+ for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 00:36:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 61C0C8186B
- for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 00:27:39 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id D609A40184
+ for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 00:36:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MqXo1vm5BbH2 for <iommu@lists.linux-foundation.org>;
- Fri,  7 Jan 2022 00:27:38 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 9ic0NpmKqPWO for <iommu@lists.linux-foundation.org>;
+ Fri,  7 Jan 2022 00:36:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 4F792817BD
- for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 00:27:38 +0000 (UTC)
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A54A1400E5
+ for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 00:36:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1641515258; x=1673051258;
+ t=1641515781; x=1673051781;
  h=cc:subject:to:references:from:message-id:date:
  mime-version:in-reply-to:content-transfer-encoding;
- bh=DHF9LNBkwjjdXkY2HtbzusqrhjTjnQLSGj+vV2UJQkc=;
- b=ZyVcNU6QkF0eOpd97SjOpZf9wwM6fwx3Um9OxxN5NbLWQ1/T8TvMZe3p
- TpFtPT0a0eqXiRtYStUQ4dntxDtqpTBXKJOvUrKRFd/0gXGBeJShAy62G
- f8dPe2kYypRAlPLsWzPiG7HqOJ1UCRA7lkui/GfDFKyrVOkTK91SrA26T
- S8hWNmNu39I/ldyoyNunceq7pmWlyW4XIQyR3rtxp+2lCxeAMm8lfz3+D
- fLi6T8tqGmIum+SgcsbIK5qDxap0KHpYvGiNvqOsTnIcSIT+D7RnB79nQ
- z+oO2nrpJAGLHS2X4Nu6/MhQ7TNjS1xmt8IpxaLJLF+xI+js5T9Y6aM8E w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="222759386"
-X-IronPort-AV: E=Sophos;i="5.88,268,1635231600"; d="scan'208";a="222759386"
+ bh=EkfKPQpb+SxTuleKwyjV6r0f1bhBPsTCAoGe8AyQC4w=;
+ b=D0TCen4FESg0wVQFELmL3mFqto4PjM0A7f2vOtjUcdWZ09PkPPtoAjHl
+ yJ8xUjos2fMJmWH7CiRcaIZvVcNorQJQmyvyU0qKwlvJfnlVgXvWqjq/m
+ 6Z+BlkK4gdao49XJZE7nkGhTiioET2DP+nQ+iJ9V/qSsKezSal8nI3xbY
+ rKjymDk2KhlKROoLQ9E47o5AieUGu4m6qv8pV9eZgURJBPgnSdIICUCgp
+ QA6WL3EXVJSCgkUxbBNUvyvsCLTz4KTExKjfdIsHVOZtzh5O8hzNFXWqh
+ LnFkZIRAfMBTTokUfnQLlSSOO4zN+kSo6b07R6FPwUp4S/5kEBIxK3Yzu Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="303517236"
+X-IronPort-AV: E=Sophos;i="5.88,268,1635231600"; d="scan'208";a="303517236"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 06 Jan 2022 16:27:37 -0800
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 06 Jan 2022 16:36:21 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,268,1635231600"; d="scan'208";a="527180734"
+X-IronPort-AV: E=Sophos;i="5.88,268,1635231600"; d="scan'208";a="527184334"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
  ([10.239.159.118])
- by orsmga008.jf.intel.com with ESMTP; 06 Jan 2022 16:27:30 -0800
-Subject: Re: [PATCH v1 1/8] iommu: Add iommu_group_replace_domain()
+ by orsmga008.jf.intel.com with ESMTP; 06 Jan 2022 16:36:14 -0800
+Subject: Re: [PATCH v1 6/8] gpu/host1x: Use iommu_attach/detach_device()
 To: Jason Gunthorpe <jgg@nvidia.com>
 References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
- <20220106022053.2406748-2-baolu.lu@linux.intel.com>
- <20220106170608.GI2328285@nvidia.com>
+ <20220106022053.2406748-7-baolu.lu@linux.intel.com>
+ <20220106153543.GD2328285@nvidia.com>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <58e2d0d2-649a-a3f5-e8ae-9cbf2719015f@linux.intel.com>
-Date: Fri, 7 Jan 2022 08:26:50 +0800
+Message-ID: <2befad17-05fe-3768-6fbb-67440a5befa3@linux.intel.com>
+Date: Fri, 7 Jan 2022 08:35:34 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <20220106170608.GI2328285@nvidia.com>
+In-Reply-To: <20220106153543.GD2328285@nvidia.com>
 Content-Language: en-US
 Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
  David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
@@ -100,82 +102,62 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 1/7/22 1:06 AM, Jason Gunthorpe wrote:
-> On Thu, Jan 06, 2022 at 10:20:46AM +0800, Lu Baolu wrote:
->> Expose an interface to replace the domain of an iommu group for frameworks
->> like vfio which claims the ownership of the whole iommu group.
+On 1/6/22 11:35 PM, Jason Gunthorpe wrote:
+> On Thu, Jan 06, 2022 at 10:20:51AM +0800, Lu Baolu wrote:
+>> Ordinary drivers should use iommu_attach/detach_device() for domain
+>> attaching and detaching.
 >>
 >> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->>   include/linux/iommu.h | 10 ++++++++++
->>   drivers/iommu/iommu.c | 37 +++++++++++++++++++++++++++++++++++++
->>   2 files changed, 47 insertions(+)
+>>   drivers/gpu/host1x/dev.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
 >>
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index 408a6d2b3034..66ebce3d1e11 100644
->> +++ b/include/linux/iommu.h
->> @@ -677,6 +677,9 @@ void iommu_device_unuse_dma_api(struct device *dev);
->>   int iommu_group_set_dma_owner(struct iommu_group *group, void *owner);
->>   void iommu_group_release_dma_owner(struct iommu_group *group);
->>   bool iommu_group_dma_owner_claimed(struct iommu_group *group);
->> +int iommu_group_replace_domain(struct iommu_group *group,
->> +			       struct iommu_domain *old,
->> +			       struct iommu_domain *new);
+>> diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
+>> index fbb6447b8659..6e08cb6202cc 100644
+>> +++ b/drivers/gpu/host1x/dev.c
+>> @@ -265,7 +265,7 @@ static struct iommu_domain *host1x_iommu_attach(struct host1x *host)
+>>   			goto put_cache;
+>>   		}
 >>   
->>   #else /* CONFIG_IOMMU_API */
->>   
->> @@ -1090,6 +1093,13 @@ static inline bool iommu_group_dma_owner_claimed(struct iommu_group *group)
+>> -		err = iommu_attach_group(host->domain, host->group);
+>> +		err = iommu_attach_device(host->domain, host->dev);
+>>   		if (err) {
+>>   			if (err == -ENODEV)
+>>   				err = 0;
+>> @@ -335,7 +335,7 @@ static void host1x_iommu_exit(struct host1x *host)
 >>   {
->>   	return false;
->>   }
->> +
->> +static inline int
->> +iommu_group_replace_domain(struct iommu_group *group, struct iommu_domain *old,
->> +			   struct iommu_domain *new)
->> +{
->> +	return -ENODEV;
->> +}
->>   #endif /* CONFIG_IOMMU_API */
+>>   	if (host->domain) {
+>>   		put_iova_domain(&host->iova);
+>> -		iommu_detach_group(host->domain, host->group);
+>> +		iommu_detach_device(host->domain, host->dev);
 >>   
->>   /**
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 72a95dea688e..ab8ab95969f5 100644
->> +++ b/drivers/iommu/iommu.c
->> @@ -3431,3 +3431,40 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
->>   	return user;
->>   }
->>   EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
->> +
->> +/**
->> + * iommu_group_replace_domain() - Replace group's domain
->> + * @group: The group.
->> + * @old: The previous attached domain. NULL for none.
->> + * @new: The new domain about to be attached.
->> + *
->> + * This is to support backward compatibility for vfio which manages the dma
->> + * ownership in iommu_group level.
+>>   		iommu_domain_free(host->domain);
+>>   		host->domain = NULL;
 > 
-> This should mention it can only be used with iommu_group_set_dma_owner()
+> Shouldn't this add the flag to tegra_host1x_driver ?
 
-Sure.
+This is called for a single driver. The call trace looks like below:
+
+static struct platform_driver tegra_host1x_driver = {
+         .driver = {
+                 .name = "tegra-host1x",
+                 .of_match_table = host1x_of_match,
+         },
+         .probe = host1x_probe,
+         .remove = host1x_remove,
+};
+
+host1x_probe(dev)
+->host1x_iommu_init(host)	//host is a wrapper of dev
+-->host1x_iommu_attach(host)
+---->iommu_group_get(host->dev)
+      iommu_domain_alloc(&platform_bus_type)
+      iommu_attach_group(domain, group);
+
+It seems that the existing code only works for singleton group.
 
 > 
->> +	if (old)
->> +		__iommu_detach_group(old, group);
->> +
->> +	if (new) {
->> +		ret = __iommu_attach_group(new, group);
->> +		if (ret && old)
->> +			__iommu_attach_group(old, group);
->> +	}
-> 
-> The sketchy error unwind here gives me some pause for sure. Maybe we
-> should define that on error this leaves the domain as NULL
-> 
-> Complicates vfio a tiny bit to cope with this failure but seems
-> cleaner than leaving it indeterminate.
-
-Fair enough.
-
+> And do like we did in the other tegra stuff and switch to the dma api
+> when !host1x_wants_iommu() ?
 > 
 > Jason
 > 
