@@ -1,81 +1,84 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3C364C433EF
-	for <iommu@archiver.kernel.org>; Fri,  7 Jan 2022 08:04:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6E8E1C433EF
+	for <iommu@archiver.kernel.org>; Fri,  7 Jan 2022 08:09:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id D57F8831E7;
-	Fri,  7 Jan 2022 08:04:36 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id D523A42487;
+	Fri,  7 Jan 2022 08:09:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MmhbEN4Fo_mV; Fri,  7 Jan 2022 08:04:36 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id lnmKvluTJ3iW; Fri,  7 Jan 2022 08:09:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id CDDB7831D5;
-	Fri,  7 Jan 2022 08:04:35 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 9A878400E5;
+	Fri,  7 Jan 2022 08:09:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A1406C0030;
-	Fri,  7 Jan 2022 08:04:35 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7B484C001E
- for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 08:04:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 71C66C0030;
+	Fri,  7 Jan 2022 08:09:23 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CDCA4C001E
+ for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 08:09:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 52FAA831E3
- for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 08:04:34 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id ACFC86FC45
+ for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 08:09:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6OC-lmbymWWV for <iommu@lists.linux-foundation.org>;
- Fri,  7 Jan 2022 08:04:33 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id VYFPUNMIy9xr for <iommu@lists.linux-foundation.org>;
+ Fri,  7 Jan 2022 08:09:22 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com
- [IPv6:2607:f8b0:4864:20::1033])
- by smtp1.osuosl.org (Postfix) with ESMTPS id CD60A831D5
- for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 08:04:33 +0000 (UTC)
-Received: by mail-pj1-x1033.google.com with SMTP id
- l16-20020a17090a409000b001b2e9628c9cso5732394pjg.4
- for <iommu@lists.linux-foundation.org>; Fri, 07 Jan 2022 00:04:33 -0800 (PST)
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com
+ [IPv6:2607:f8b0:4864:20::52f])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 2985660DDF
+ for <iommu@lists.linux-foundation.org>; Fri,  7 Jan 2022 08:09:22 +0000 (UTC)
+Received: by mail-pg1-x52f.google.com with SMTP id i8so4833274pgt.13
+ for <iommu@lists.linux-foundation.org>; Fri, 07 Jan 2022 00:09:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
  h=from:to:cc:subject:date:message-id;
- bh=5wW8NfAn9pQjxsJKsrZHm4OzxBBzuThAXcIy8E5AppU=;
- b=C/xfse/uxT2x9U/Tl+654bYJSgGUNOo661B+VyheRZrXA/TtzFIeiRbcIjHxH0RYT3
- Gt1y6wEmMzdV8HTH5F6gk6s7qQfFX5GC4TPFO5rzoerh5MXtn+dw2XgjPTNca20YiBsT
- R+7t5IOsj4DquenT2BiiGtDUXvlqb//qBkTGVoQNFOVTDR14/qfqVu2/KGLImu4ASX3r
- btfkRNgesp8oC4WSYRI9FoknS5gKBUSssP5udDH1o1fHs/0NKNuqaMTBs2xddLVKYAEe
- EvwXR+J+pDbICtJOAydYtPMb2OGRgH+D0PjgGoXXMd1aI7xvFqS2pqQ6MJtIq2k6uOwx
- 7HGw==
+ bh=caUCLOkN9Sm5eFbTFlsGP0xGxd9i8A6ITsUxSKuDZSU=;
+ b=WY/WNVDa2zoOWuTB2YVH4wuHLFq2e9CIso+fXhU/yxNqPV9XnMLUs0wHbcAcoSC8Cp
+ ZdE9df2U1E1PBq0RNLJpJ6dAN/1F5Eewfpu4jvb1CSBW6Casb7KuqLiuzl71lW+E7uPj
+ GyXI6xs7CBcNKVp1afXOFx23kY9H74FmQyPeklWjevF6nv2LAuEtif3vAvHzUAL+ICE0
+ VbjgqgbboWbi4SOZCWoVgDxGTsjYSAfBQOEMIETCvifmIyvbmrNto9X4ZV7AKafuExyM
+ kkOibA2PXx04DdKwBSDZ1ZYVq/nIUk2FpDAqJ2NEjKU6qYlO7g/7M5AgML58mJDvEcWO
+ 0FOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:from:to:cc:subject:date:message-id;
- bh=5wW8NfAn9pQjxsJKsrZHm4OzxBBzuThAXcIy8E5AppU=;
- b=4AJrccLCr00CRrM0ADTOzCUKG7WW8WD9p/e4ZR49XKu0RhY0Ir4lvI7S+XFUKDaAt1
- MQ/R6EDBQZ43QnPNaWv0lJZ3lN5V5jTo3KKFG3d2DW1ssyji+KECpkPc8A4NsqAgl8bS
- daozb4aLVH2mKlIk3NQ5LueNKMg1CnrXD6jYkJQOUjYg5IpDe0zBTN2O3nf1IYn+7tew
- OpwJRlU6ma2d3fcoC93Kj+BlaVfU0xbjdUSgrU5WmKDV2EIonmSOvCvLK6/euC//EwY/
- 7u8GgcpcHlPNM5fKhVIoGQvFhe236wb5ZhYdyMsv6umOVel9XEIGSg4pCQe4ah32+hmO
- goMA==
-X-Gm-Message-State: AOAM5325pl68mmPqA2ATH9hCb4lG9SoKaWYVwzdJ2gzx0e5DlQHI5tMd
- lXZxDIixqgOCe/U4QRCuE7ceq8wGsJM3kILTlLU=
-X-Google-Smtp-Source: ABdhPJxqn041UHbxvVSnHdNKGkj65+PAU2TXMvpsM1SyWkimxkNQbsHYzQdgIS0Tn1N+1c3rRVAyhQ==
-X-Received: by 2002:a17:90a:7f98:: with SMTP id
- m24mr6788243pjl.163.1641542673336; 
- Fri, 07 Jan 2022 00:04:33 -0800 (PST)
+ bh=caUCLOkN9Sm5eFbTFlsGP0xGxd9i8A6ITsUxSKuDZSU=;
+ b=HW4eb11LgAXFdZ1tjoURECKq1Y1PPVoSO6JQTXwtw/Ts6mmAJgLBz6+W2MBFf7L2aj
+ QU39sV2rKdUy047uTObpSTGjCvC80X8NSP0sbJSxvSp0j7Ul7nDinKCoUfSJ/MneQXHS
+ H1Pjz8sJoNeilUbtNe0c8IUFNqqnTIRdoRYnCk2MzSMAEuScX/e8MKb4I58aAAWI9Jvl
+ 6uexIuWYqnK2p9GgJgCiT6YjCz9DjsB+CiyKvpFzdLgszaXDBwxudy5HFpFvnpvNudO+
+ wF3KU0CRyfn9iD9QNbeItTs78wkAfFKpp6yqPOfmi9JIVAEeJjh1ePw1k8rqO/U7AXwx
+ Ducw==
+X-Gm-Message-State: AOAM533RvhaFyHJqNo9fiFnCap44kgKecrCFfXbBtKS13P3RszVkV42x
+ o0GSnSEVSEgEbf6pdAfqveQ=
+X-Google-Smtp-Source: ABdhPJzXiICbOdrKbRllujNfXHikmjg0aDAbByOyuYXvxpGswTzgKfpOmmbL0h/jbB/xfkqNf5bN9A==
+X-Received: by 2002:a62:7813:0:b0:4ba:7afa:3786 with SMTP id
+ t19-20020a627813000000b004ba7afa3786mr63360812pfc.55.1641542961614; 
+ Fri, 07 Jan 2022 00:09:21 -0800 (PST)
 Received: from localhost.localdomain ([159.226.95.43])
- by smtp.googlemail.com with ESMTPSA id f10sm5416663pfj.145.2022.01.07.00.04.31
+ by smtp.googlemail.com with ESMTPSA id il18sm8686899pjb.37.2022.01.07.00.09.19
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 07 Jan 2022 00:04:33 -0800 (PST)
+ Fri, 07 Jan 2022 00:09:21 -0800 (PST)
 From: Miaoqian Lin <linmq006@gmail.com>
 To: 
-Subject: [PATCH] iommu/omap: Fix missing put_device() call in
- omap_iommu_probe_device
-Date: Fri,  7 Jan 2022 08:04:28 +0000
-Message-Id: <20220107080428.10873-1-linmq006@gmail.com>
+Subject: [PATCH] iommu/tegra-smmu: Fix missing put_device() call in
+ tegra_smmu_find
+Date: Fri,  7 Jan 2022 08:09:11 +0000
+Message-Id: <20220107080915.12686-1-linmq006@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Cc: linmq006@gmail.com, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>
+ iommu@lists.linux-foundation.org, Jonathan Hunter <jonathanh@nvidia.com>,
+ Thierry Reding <thierry.reding@gmail.com>, linux-tegra@vger.kernel.org,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,26 +99,30 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 The reference taken by 'of_find_device_by_node()' must be released when
 not needed anymore.
-Add the corresponding 'put_device()' in the error handling paths.
+Add the corresponding 'put_device()' in the error handling path.
 
-Fixes: ede1c2e7d4dc ("iommu/omap: Store iommu_dev pointer in arch_data")
+Fixes: 765a9d1d02b2 ("iommu/tegra-smmu: Fix mc errors on tegra124-nyan")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 ---
- drivers/iommu/omap-iommu.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/tegra-smmu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 91749654fd49..cbc7ca5e890a 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1684,6 +1684,7 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
- 		oiommu = platform_get_drvdata(pdev);
- 		if (!oiommu) {
- 			of_node_put(np);
-+			put_device(&pdev->dev);
- 			kfree(arch_data);
- 			return ERR_PTR(-EINVAL);
- 		}
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index e900e3c46903..2561ce8a2ce8 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -808,8 +808,10 @@ static struct tegra_smmu *tegra_smmu_find(struct device_node *np)
+ 		return NULL;
+ 
+ 	mc = platform_get_drvdata(pdev);
+-	if (!mc)
++	if (!mc) {
++		put_device(&pdev->dev);
+ 		return NULL;
++	}
+ 
+ 	return mc->smmu;
+ }
 -- 
 2.17.1
 
