@@ -1,74 +1,74 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 358E2C433F5
-	for <iommu@archiver.kernel.org>; Sun,  9 Jan 2022 02:47:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E8FA9C433EF
+	for <iommu@archiver.kernel.org>; Sun,  9 Jan 2022 02:48:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D2D2F40439;
-	Sun,  9 Jan 2022 02:47:57 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 9379560AB9;
+	Sun,  9 Jan 2022 02:48:36 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id O1lKpN3tvx5F; Sun,  9 Jan 2022 02:48:35 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7C73A60AB7;
+	Sun,  9 Jan 2022 02:48:35 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6337AC0030;
+	Sun,  9 Jan 2022 02:48:35 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AA018C001E
+ for <iommu@lists.linux-foundation.org>; Sun,  9 Jan 2022 02:48:33 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 88E6840412
+ for <iommu@lists.linux-foundation.org>; Sun,  9 Jan 2022 02:48:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 81-TxT4A9tFG; Sun,  9 Jan 2022 02:47:56 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 463D2403EA;
-	Sun,  9 Jan 2022 02:47:56 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2E050C0030;
-	Sun,  9 Jan 2022 02:47:56 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6CC39C001E
- for <iommu@lists.linux-foundation.org>; Sun,  9 Jan 2022 02:47:54 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 4C5C381756
- for <iommu@lists.linux-foundation.org>; Sun,  9 Jan 2022 02:47:54 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cv8NaRXOOTDs for <iommu@lists.linux-foundation.org>;
- Sun,  9 Jan 2022 02:47:53 +0000 (UTC)
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4YvOzsAehs5m for <iommu@lists.linux-foundation.org>;
+ Sun,  9 Jan 2022 02:48:32 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 4BF5681751
- for <iommu@lists.linux-foundation.org>; Sun,  9 Jan 2022 02:47:53 +0000 (UTC)
-X-UUID: 87e6c757e50c497884fa8f0af50da503-20220109
-X-UUID: 87e6c757e50c497884fa8f0af50da503-20220109
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
- (envelope-from <yong.wu@mediatek.com>)
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 92B7A4040A
+ for <iommu@lists.linux-foundation.org>; Sun,  9 Jan 2022 02:48:32 +0000 (UTC)
+X-UUID: aa644fda6f2f4c9294059b61c4946042-20220109
+X-UUID: aa644fda6f2f4c9294059b61c4946042-20220109
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
+ mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
  (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 53744251; Sun, 09 Jan 2022 10:47:48 +0800
+ with ESMTP id 862979138; Sun, 09 Jan 2022 10:48:30 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Sun, 9 Jan 2022 10:47:47 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
+ Sun, 9 Jan 2022 10:48:28 +0800
 Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 9 Jan 2022 10:47:46 +0800
-Message-ID: <694747210c8da8ae4fc282cd90152e5c81945da5.camel@mediatek.com>
-Subject: Re: [PATCH v3 22/33] iommu/mediatek: Add PCIe support
+ Transport; Sun, 9 Jan 2022 10:48:27 +0800
+Message-ID: <22faee018a36a49e4a507b69d087432c8cd689ec.camel@mediatek.com>
+Subject: Re: [PATCH v3 09/33] iommu/mediatek: Remove for_each_m4u in
+ tlb_sync_all
 From: Yong Wu <yong.wu@mediatek.com>
-To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, "Matthias
- Brugger" <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>, "Robin
- Murphy" <robin.murphy@arm.com>
-Date: Sun, 9 Jan 2022 10:47:46 +0800
-In-Reply-To: <3b5e7072-0935-4383-27a1-dd8d623cc608@collabora.com>
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Date: Sun, 9 Jan 2022 10:48:27 +0800
+In-Reply-To: <bfa33e94-c2e5-5dab-c9af-b674e1669daa@collabora.com>
 References: <20210923115840.17813-1-yong.wu@mediatek.com>
- <20210923115840.17813-23-yong.wu@mediatek.com>
- <3b5e7072-0935-4383-27a1-dd8d623cc608@collabora.com>
+ <20210923115840.17813-10-yong.wu@mediatek.com>
+ <bfa33e94-c2e5-5dab-c9af-b674e1669daa@collabora.com>
 X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
 X-MTK: N
 Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
  srv_heupstream@mediatek.com,
  Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- linux-kernel@vger.kernel.org, yen-chang.chen@mediatek.com,
- chao.hao@mediatek.com, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+ yen-chang.chen@mediatek.com, chao.hao@mediatek.com,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
  linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
- anan.sun@mediatek.com, linux-arm-kernel@lists.infradead.org
+ Matthias Brugger <matthias.bgg@gmail.com>, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,138 +86,70 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 2022-01-04 at 16:54 +0100, AngeloGioacchino Del Regno wrote:
+On Tue, 2022-01-04 at 16:55 +0100, AngeloGioacchino Del Regno wrote:
 > Il 23/09/21 13:58, Yong Wu ha scritto:
-> > Currently the code for of_iommu_configure_dev_id is like this:
+> > The tlb_sync_all is called from these three functions:
+> > a) flush_iotlb_all: it will be called for each a iommu HW.
+> > b) tlb_flush_range_sync: it already has for_each_m4u.
+> > c) in irq: When IOMMU HW translation fault, Only need flush itself.
 > > 
-> > static int of_iommu_configure_dev_id(struct device_node *master_np,
-> >                                       struct device *dev,
-> >                                       const u32 *id)
-> > {
-> >         struct of_phandle_args iommu_spec = { .args_count = 1 };
-> > 
-> >         err = of_map_id(master_np, *id, "iommu-map",
-> >                         "iommu-map-mask", &iommu_spec.np,
-> >                         iommu_spec.args);
-> > ...
-> > }
-> > 
-> > It supports only one id output. BUT our PCIe HW has two ID(one is
-> > for
-> > writing, the other is for reading). I'm not sure if we should
-> > change
-> > of_map_id to support output MAX_PHANDLE_ARGS.
-> > 
-> > Here add the solution in ourselve drivers. If it's pcie case,
-> > enable one
-> > more bit.
-> > 
-> > Not all infra iommu support PCIe, thus add a PCIe support flag
-> > here.
+> > Thus, No need for_each_m4u in this tlb_sync_all. Remove it.
 > > 
 > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 > > ---
-> >   drivers/iommu/mtk_iommu.c | 21 ++++++++++++++++++++-
-> >   1 file changed, 20 insertions(+), 1 deletion(-)
+> >   drivers/iommu/mtk_iommu.c | 18 +++++++-----------
+> >   1 file changed, 7 insertions(+), 11 deletions(-)
 > > 
 > > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index 37d6dfb4feab..3f1fd8036345 100644
+> > index 6f4f6624e3ac..0b4c30baa864 100644
 > > --- a/drivers/iommu/mtk_iommu.c
 > > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -20,6 +20,7 @@
-> >   #include <linux/of_address.h>
-> >   #include <linux/of_irq.h>
-> >   #include <linux/of_platform.h>
-> > +#include <linux/pci.h>
-> >   #include <linux/platform_device.h>
-> >   #include <linux/pm_runtime.h>
-> >   #include <linux/regmap.h>
-> > @@ -132,6 +133,7 @@
-> >   #define MTK_IOMMU_TYPE_MM		(0x0 << 13)
-> >   #define MTK_IOMMU_TYPE_INFRA		(0x1 << 13)
-> >   #define MTK_IOMMU_TYPE_MASK		(0x3 << 13)
-> > +#define IFA_IOMMU_PCIe_SUPPORT		BIT(15)
+> > @@ -206,19 +206,15 @@ static struct mtk_iommu_domain
+> > *to_mtk_domain(struct iommu_domain *dom)
+> >   
+> >   static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
+> >   {
+> > -	struct list_head *head = data->hw_list;
+> > -
+> > -	for_each_m4u(data, head) {
+> > -		if (pm_runtime_get_if_in_use(data->dev) <= 0)
+> > -			continue;
+> > +	if (pm_runtime_get_if_in_use(data->dev) <= 0)
+> > +		return;
+> >   
+> > -		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+> > -			       data->base + data->plat_data-
+> > >inv_sel_reg);
+> > -		writel_relaxed(F_ALL_INVLD, data->base +
+> > REG_MMU_INVALIDATE);
+> > -		wmb(); /* Make sure the tlb flush all done */
+> > +	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+> > +		       data->base + data->plat_data->inv_sel_reg);
+> > +	writel_relaxed(F_ALL_INVLD, data->base + REG_MMU_INVALIDATE);
+> > +	wmb(); /* Make sure the tlb flush all done */
 > 
-> This definition looks like "breaking" the naming convention that's
-> used in this
-> driver... what about MTK_INFRA_IOMMU_PCIE_SUPPORT?
+> There aren't a lot of writes here - not anymore, since you are no
+> longer doing
+> this for_each_m4u()...
+> ...so, please change writel_relaxed() to writel() calls, allowing you
+> to also
+> remove the write barrier at the end (since in the non relaxed
+> version, order is already ensured).
 
-OK for me. I noticed the "PCIE" should called to "PCIe", thus renamed
-this.
+In the "writel", the "__iowmb()" runs before "write_relaxed". Then how
+to guarantee the last register was wrote into the HW. Here the flush
+all don't have sync(waiting it complete)
 
 > 
 > >   
-> >   #define MTK_IOMMU_HAS_FLAG(pdata, _x)	(!!(((pdata)->flags) &
-> > (_x)))
+> > -		pm_runtime_put(data->dev);
+> > -	}
+> > +	pm_runtime_put(data->dev);
+> >   }
 > >   
-> > @@ -401,8 +403,11 @@ static int mtk_iommu_config(struct
-> > mtk_iommu_data *data, struct device *dev,
-> >   				larb_mmu->mmu &=
-> > ~MTK_SMI_MMU_EN(portid);
-> >   		} else if (MTK_IOMMU_IS_TYPE(data->plat_data,
-> > MTK_IOMMU_TYPE_INFRA)) {
-> >   			peri_mmuen_msk = BIT(portid);
-> > -			peri_mmuen = enable ? peri_mmuen_msk : 0;
-> > +			/* PCIdev has only one output id, enable the
-> > next writing bit for PCIe */
-> > +			if (dev_is_pci(dev))
-> > +				peri_mmuen_msk |= BIT(portid + 1);
-> >   
-> > +			peri_mmuen = enable ? peri_mmuen_msk : 0;
-> >   			ret = regmap_update_bits(data->pericfg,
-> > PERICFG_IOMMU_1,
-> >   						 peri_mmuen_msk,
-> > peri_mmuen);
-> >   			if (ret)
-> > @@ -977,6 +982,15 @@ static int mtk_iommu_probe(struct
-> > platform_device *pdev)
-> >   		ret = component_master_add_with_match(dev,
-> > &mtk_iommu_com_ops, match);
-> >   		if (ret)
-> >   			goto out_bus_set_null;
-> > +	} else if (MTK_IOMMU_IS_TYPE(data->plat_data,
-> > MTK_IOMMU_TYPE_INFRA) &&
-> > +		   MTK_IOMMU_HAS_FLAG(data->plat_data,
-> > IFA_IOMMU_PCIe_SUPPORT)) {
-> > +		#ifdef CONFIG_PCI
-> 
-> Please fix the indentation of this ifdef (do not indent).
-
-Thanks. Will fix this.
-
-> 
-> > +		if (!iommu_present(&pci_bus_type)) {
-> > +			ret = bus_set_iommu(&pci_bus_type,
-> > &mtk_iommu_ops);
-> > +			if (ret) /* PCIe fail don't affect
-> > platform_bus. */
-> > +				goto out_list_del;
-> > +		}
-> > +		#endif
-> >   	}
-> >   	return ret;
-> >   
-> > @@ -1007,6 +1021,11 @@ static int mtk_iommu_remove(struct
-> > platform_device *pdev)
-> >   	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
-> >   		device_link_remove(data->smicomm_dev, &pdev->dev);
-> >   		component_master_del(&pdev->dev, &mtk_iommu_com_ops);
-> > +	} else if (MTK_IOMMU_IS_TYPE(data->plat_data,
-> > MTK_IOMMU_TYPE_INFRA) &&
-> > +		   MTK_IOMMU_HAS_FLAG(data->plat_data,
-> > IFA_IOMMU_PCIe_SUPPORT)) {
-> > +		#ifdef CONFIG_PCI
-> 
-> ditto.
-> 
-> > +		bus_set_iommu(&pci_bus_type, NULL);
-> > +		#endif
-> >   	}
-> >   	pm_runtime_disable(&pdev->dev);
-> >   	devm_free_irq(&pdev->dev, data->irq, data);
+> >   static void mtk_iommu_tlb_flush_range_sync(unsigned long iova,
+> > size_t size,
 > > 
-> 
-> 
 
 _______________________________________________
 iommu mailing list
