@@ -1,89 +1,75 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 98996C433FE
-	for <iommu@archiver.kernel.org>; Mon, 10 Jan 2022 02:43:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E2837C433F5
+	for <iommu@archiver.kernel.org>; Mon, 10 Jan 2022 09:16:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3641581A58;
-	Mon, 10 Jan 2022 02:43:21 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 936466059D;
+	Mon, 10 Jan 2022 09:16:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6qxxWu9crnlB; Mon, 10 Jan 2022 02:43:20 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id d6T53piD2To8; Mon, 10 Jan 2022 09:16:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 2C93381886;
-	Mon, 10 Jan 2022 02:43:20 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 601BC6077D;
+	Mon, 10 Jan 2022 09:16:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F13F6C002F;
-	Mon, 10 Jan 2022 02:43:19 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E66FDC001E
- for <iommu@lists.linux-foundation.org>; Mon, 10 Jan 2022 02:43:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4326EC002F;
+	Mon, 10 Jan 2022 09:16:12 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 41412C001E
+ for <iommu@lists.linux-foundation.org>; Mon, 10 Jan 2022 09:16:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id CF690401F1
- for <iommu@lists.linux-foundation.org>; Mon, 10 Jan 2022 02:43:17 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 20F536059D
+ for <iommu@lists.linux-foundation.org>; Mon, 10 Jan 2022 09:16:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LB6niVpBR2Y6 for <iommu@lists.linux-foundation.org>;
- Mon, 10 Jan 2022 02:43:17 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com
- [IPv6:2607:f8b0:4864:20::632])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 3771640374
- for <iommu@lists.linux-foundation.org>; Mon, 10 Jan 2022 02:43:17 +0000 (UTC)
-Received: by mail-pl1-x632.google.com with SMTP id w7so10679498plp.13
- for <iommu@lists.linux-foundation.org>; Sun, 09 Jan 2022 18:43:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=qyKCKCCmcuULoAA1E8bR7TAp/hXUDe7XCt+iKUscsLk=;
- b=d204BN7YeRalLSQLTofWmZ6ROqqMwa0ciqG++whwPpQZ8LnMOSnF622TXHwDxURXep
- RIrcvqT9AQU09Lfw5mMe2Ip4VaO5vINC+TVSz8L2XCTzjKrrm5Fzatae3eT+9hocFK3w
- MMkAu13bYACIkkU53ka3q6+el8HPWVkQIUm7IRExDGqM2QHr613LuUZTOneEw8j67LSB
- cK8vcN4suSP+xcV1jmqO56uKFvmYV4yvPXvM90fgxEzw660DbCuDMjZ8Ez2rWe9hGZvL
- TH5VHSl9lP8SNsRCrTbLYmymDTqXYLrLvJ4NKjHfhAXR/S4wRLMgrT8iNAxk+ndXg7AZ
- yShg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=qyKCKCCmcuULoAA1E8bR7TAp/hXUDe7XCt+iKUscsLk=;
- b=etDhxDjw53VtMjPRTo7Tol64YMoQfRY/ttQWK6FDO1JKrcbRKAF8EuXFUPAPo5bHy6
- +kNfv4MkdqKQP44xnEb6w69VMgV2DfiajTQvjLgNjIe47k93zCJ6RacAXlmzJOKETRtR
- FYgDR2eNcTgOmD7bjdtYgw2C7fYVJutcTngjkjpjE3Dx/bABXgaJS9BlOoEUKx8v+YbD
- q2j1dxDR7EWK+wO+ELANr223RR9kLULCWuLxrooQHUSXkRInzVWnzPpWBa2d4aYZgaDx
- qp0h1NjcDOFdu6tkc04LtMySAwD2pfp4uwc7wK3I0mElHo1ft+Z3BHxR7QYNlI6dQC6D
- MILg==
-X-Gm-Message-State: AOAM532/YDYKGzFiseTe1MDDGj93BwXpmtW0s+X05IDX9i3XTR4a5G9l
- xJqaS9S2V1NAm/UBt+K3tOY=
-X-Google-Smtp-Source: ABdhPJzHvpcwy8jtSMlMuIpFbtSWWCI2itQfdxxE917XOCLsIRhv3vWHpnz1Tp+2gCkbVLApMuioeQ==
-X-Received: by 2002:a17:902:9a8b:b0:149:be04:40ab with SMTP id
- w11-20020a1709029a8b00b00149be0440abmr32242215plp.159.1641782596662; 
- Sun, 09 Jan 2022 18:43:16 -0800 (PST)
-Received: from VICKYMQLIN-NB1.localdomain ([159.226.95.33])
- by smtp.gmail.com with ESMTPSA id o11sm4883817pfu.150.2022.01.09.18.43.14
- (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
- Sun, 09 Jan 2022 18:43:16 -0800 (PST)
-Date: Mon, 10 Jan 2022 10:43:13 +0800
-From: Miaoqian Lin <linmq006@gmail.com>
-To: Suman Anna <s-anna@ti.com>
-Subject: Re: [PATCH] iommu/omap: Fix missing put_device() call in
- omap_iommu_probe_device
-Message-ID: <20220110022531.GA61@VICKYMQLIN-NB1.localdomain>
-References: <20220107080428.10873-1-linmq006@gmail.com>
- <de3a3e1c-6c51-e951-cc7f-9ce2ccb3f283@ti.com>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id QfO962QjIxV4 for <iommu@lists.linux-foundation.org>;
+ Mon, 10 Jan 2022 09:16:10 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 349D56077D
+ for <iommu@lists.linux-foundation.org>; Mon, 10 Jan 2022 09:16:10 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+ (Authenticated sender: kholk11) with ESMTPSA id 6778E1F42A0E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+ s=mail; t=1641806167;
+ bh=ko9PyfHfXUQ54uvKK91bDlr12CFlcFrh5rboB/iLW/Q=;
+ h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+ b=cSzB3wZAcUpfPmzVKbwslpGBvZ95MYxp22jFv/6Y2kPIZv65Sp8v5ge/qEg/CSu+0
+ syDIEP1z3tqZnvjmCBNsgzxZyMTwmrKcgdLBK9D/tsU4OKCgnragTgUkMmiwZOtypn
+ EfKcH46Q9M+zYYEk2NcBW4eu4cwdn9t65yYFzF0BnjvAVpaHkHXVGo+Pn1nZTJHhIl
+ 9gX9AueyH/bMF+Vq8mah2ZA3HxwgfnXW6xC4DYNjCsjCqMBbHn3cQTmr2Wu3OpLdEN
+ mpBEFAKDR4K1X5CUXlZWn0UCYJUp5h+Ht086VJAbvJrx1cVnmwwdJC3hno93cfYaX8
+ SJA1uw4s7DiBQ==
+Subject: Re: [PATCH v3 09/33] iommu/mediatek: Remove for_each_m4u in
+ tlb_sync_all
+To: Yong Wu <yong.wu@mediatek.com>
+References: <20210923115840.17813-1-yong.wu@mediatek.com>
+ <20210923115840.17813-10-yong.wu@mediatek.com>
+ <bfa33e94-c2e5-5dab-c9af-b674e1669daa@collabora.com>
+ <22faee018a36a49e4a507b69d087432c8cd689ec.camel@mediatek.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Message-ID: <85987e9a-dfb0-c241-1dde-43c050a78b51@collabora.com>
+Date: Mon, 10 Jan 2022 10:16:03 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <de3a3e1c-6c51-e951-cc7f-9ce2ccb3f283@ti.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: "Nagalla, Hari" <hnagalla@ti.com>, Will Deacon <will@kernel.org>,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <22faee018a36a49e4a507b69d087432c8cd689ec.camel@mediatek.com>
+Content-Language: en-US
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+ srv_heupstream@mediatek.com,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+ yen-chang.chen@mediatek.com, chao.hao@mediatek.com,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,22 +82,89 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Suman Anna,
-On Fri, Jan 07, 2022 at 08:42:16AM -0600, Suman Anna wrote:
-> Hi Miaoqian,
+Il 09/01/22 03:48, Yong Wu ha scritto:
+> On Tue, 2022-01-04 at 16:55 +0100, AngeloGioacchino Del Regno wrote:
+>> Il 23/09/21 13:58, Yong Wu ha scritto:
+>>> The tlb_sync_all is called from these three functions:
+>>> a) flush_iotlb_all: it will be called for each a iommu HW.
+>>> b) tlb_flush_range_sync: it already has for_each_m4u.
+>>> c) in irq: When IOMMU HW translation fault, Only need flush itself.
+>>>
+>>> Thus, No need for_each_m4u in this tlb_sync_all. Remove it.
+>>>
+>>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+>>> ---
+>>>    drivers/iommu/mtk_iommu.c | 18 +++++++-----------
+>>>    1 file changed, 7 insertions(+), 11 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+>>> index 6f4f6624e3ac..0b4c30baa864 100644
+>>> --- a/drivers/iommu/mtk_iommu.c
+>>> +++ b/drivers/iommu/mtk_iommu.c
+>>> @@ -206,19 +206,15 @@ static struct mtk_iommu_domain
+>>> *to_mtk_domain(struct iommu_domain *dom)
+>>>    
+>>>    static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
+>>>    {
+>>> -	struct list_head *head = data->hw_list;
+>>> -
+>>> -	for_each_m4u(data, head) {
+>>> -		if (pm_runtime_get_if_in_use(data->dev) <= 0)
+>>> -			continue;
+>>> +	if (pm_runtime_get_if_in_use(data->dev) <= 0)
+>>> +		return;
+>>>    
+>>> -		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+>>> -			       data->base + data->plat_data-
+>>>> inv_sel_reg);
+>>> -		writel_relaxed(F_ALL_INVLD, data->base +
+>>> REG_MMU_INVALIDATE);
+>>> -		wmb(); /* Make sure the tlb flush all done */
+>>> +	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+>>> +		       data->base + data->plat_data->inv_sel_reg);
+>>> +	writel_relaxed(F_ALL_INVLD, data->base + REG_MMU_INVALIDATE);
+>>> +	wmb(); /* Make sure the tlb flush all done */
+>>
+>> There aren't a lot of writes here - not anymore, since you are no
+>> longer doing
+>> this for_each_m4u()...
+>> ...so, please change writel_relaxed() to writel() calls, allowing you
+>> to also
+>> remove the write barrier at the end (since in the non relaxed
+>> version, order is already ensured).
 > 
+> In the "writel", the "__iowmb()" runs before "write_relaxed". Then how
+> to guarantee the last register was wrote into the HW. Here the flush
+> all don't have sync(waiting it complete)
 > 
-> > Add the corresponding 'put_device()' in the error handling paths.
+
+That's right, I'm sorry for the invalid proposal.
+
+Though, there's something else to mention here... if writing
+(F_INVLD_EN1 | F_INVLD_EN0) to inv_sel_reg is *required* to happen before
+writing F_ALL_INVLD to REG_MMU_INVALIDATE (which I think is exactly the
+case here), then, in order to ensure write ordering, you should still use
+writel() instead of the relaxed accessor; after which, since (as you mentioned)
+there is no sync readback loop, you can keep that wmb() at the end.
+
+>>
+>>>    
+>>> -		pm_runtime_put(data->dev);
+>>> -	}
+>>> +	pm_runtime_put(data->dev);
+>>>    }
+>>>    
+>>>    static void mtk_iommu_tlb_flush_range_sync(unsigned long iova,
+>>> size_t size,
+>>>
 > 
-> Also, need it in the regular path, not just in error handling path.
-I think after calling platform_get_drvdata() normally, the
-reference will be released in other functions, so don't need it in the
-regular path.
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
