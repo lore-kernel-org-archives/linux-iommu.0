@@ -4,98 +4,65 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EB438C433F5
-	for <iommu@archiver.kernel.org>; Tue, 11 Jan 2022 03:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C26A4C433EF
+	for <iommu@archiver.kernel.org>; Tue, 11 Jan 2022 06:39:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 81F65401AD;
-	Tue, 11 Jan 2022 03:31:56 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 68EB340577;
+	Tue, 11 Jan 2022 06:39:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 61a7iT0VlDDI; Tue, 11 Jan 2022 03:31:55 +0000 (UTC)
+	with ESMTP id UN_vkLeSnmAJ; Tue, 11 Jan 2022 06:39:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id DB73C40583;
-	Tue, 11 Jan 2022 03:31:54 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 2783F4062F;
+	Tue, 11 Jan 2022 06:39:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B83DAC002F;
-	Tue, 11 Jan 2022 03:31:54 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ED805C002F
- for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 03:31:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EE907C0030;
+	Tue, 11 Jan 2022 06:39:25 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D7094C001E
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 06:39:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id CCBCC80F3D
- for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 03:31:51 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id CA5904062F
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 06:39:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=bytedance-com.20210112.gappssmtp.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id OJIsT-MMgNgL for <iommu@lists.linux-foundation.org>;
- Tue, 11 Jan 2022 03:31:50 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com
- [IPv6:2607:f8b0:4864:20::136])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 7DA4B80CD0
- for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 03:31:50 +0000 (UTC)
-Received: by mail-il1-x136.google.com with SMTP id h30so3404854ila.12
- for <iommu@lists.linux-foundation.org>; Mon, 10 Jan 2022 19:31:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=bytedance-com.20210112.gappssmtp.com; s=20210112;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc:content-transfer-encoding;
- bh=WjJwUUWZ/BCy26tG6i0H8TGwk6V985nqQvOicOWTZ4M=;
- b=Kt/SXme2spmF1Q4vRsvS4pG+rCHvAFzpHY6/g+ah9uXn8dEf8B+SiQy74uNTNlfzu+
- fI86pnBPd36ytsLrsYVt+JYuMg4mD2Cbjr+zRIvUoEFk42um/CGgPgZzAJVesTcyceDW
- 1k2nbgWOrjiVu2NGqqueDgsqMN4JvUiPUeB/ILX3mxmPSGxrFW0bZhC7osF093nslXUD
- dQcVO1MjKr7QrGgG6xYLmU9DOzNGYxeQhnk4tBkDGumVMH/auGCVkA/4RWUFHbCLqwcy
- LfvGZ2RjfROO0lVZu8VzzhE+dY1i+pIfTo3kWazj3HlFXLJjk0xUNbsrRXnZytjoJ/tY
- C1gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc:content-transfer-encoding;
- bh=WjJwUUWZ/BCy26tG6i0H8TGwk6V985nqQvOicOWTZ4M=;
- b=F52SS7fWt3W6i0cD1w+/lWdBZyKmohcX13iSvQU8htSpdBLhaQXRNL+ws28giJjTbx
- X+HQeEYZmtC6Q1F8Y61et4J1RSkeZAIU8IILoeGGrzBnr36IdE7zObf8b9CKgE6LSE72
- 95W34buPLv8XpJZjZ5lLhl8msm/+MDfovuY8FXOQF/MHBOv6yG8khqCgMQNTJ78z4fop
- 31C5wWi2ItmJenTI2EmJwtBX0Ibz7JKDUs6DyJ4mrW1Jki+SE9BNPW5Q+ncRfSquAAbZ
- bSweBri85gwm6HlHKsGxSPoO9D9pO/T2h0G+hIzzVeSeIwt1xsfoWgNBZNfcr+Nfuv5G
- aEjA==
-X-Gm-Message-State: AOAM533f/9WXJbYsQuvjjVW5SHd7wFxDkSX57pcSZByyccUX+jSk2oZB
- U3jHJ4jcFBTZbUGH5xwak7BNKSTDRVWfcB3249al
-X-Google-Smtp-Source: ABdhPJzAm1xFKAL/SDZlyq0Folm6Knaez8RQjNeQ6v1fXaBZB6Z4O8nf2/JHKKIjXLTJDZb9MJQc9tdaDTRaMZwQSZ4=
-X-Received: by 2002:a05:6e02:1e08:: with SMTP id
- g8mr1423993ila.270.1641871909341; 
- Mon, 10 Jan 2022 19:31:49 -0800 (PST)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Iqp3jzTg-MuP for <iommu@lists.linux-foundation.org>;
+ Tue, 11 Jan 2022 06:39:19 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id C3E1840577
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 06:39:18 +0000 (UTC)
+X-UUID: 386eb9ecf7214617a1b39daafcb27da5-20220111
+X-UUID: 386eb9ecf7214617a1b39daafcb27da5-20220111
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by
+ mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+ with ESMTP id 113575811; Tue, 11 Jan 2022 14:39:12 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 11 Jan 2022 14:39:11 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 11 Jan 2022 14:39:09 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>, Rob Herring
+ <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
+Subject: [PATCH v2 0/6] MT8186 SMI SUPPORT
+Date: Tue, 11 Jan 2022 14:38:58 +0800
+Message-ID: <20220111063904.7583-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-References: <20210830141737.181-1-xieyongji@bytedance.com>
- <20220110075546-mutt-send-email-mst@kernel.org>
- <CACycT3v1aEViw7vV4x5qeGVPrSrO-BTDvQshEX35rx_X0Au2vw@mail.gmail.com>
- <20220110100911-mutt-send-email-mst@kernel.org>
- <CACycT3v6jo3-8ATWUzf659vV94a2oRrm-zQtGNDZd6OQr-MENA@mail.gmail.com>
- <20220110103938-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220110103938-mutt-send-email-mst@kernel.org>
-From: Yongji Xie <xieyongji@bytedance.com>
-Date: Tue, 11 Jan 2022 11:31:37 +0800
-Message-ID: <CACycT3sbJC1Jn7NeWk_ccQ_2_YgKybjugfxmKpfgCP3Ayoju4w@mail.gmail.com>
-Subject: Re: [PATCH v12 00/13] Introduce VDUSE - vDPA Device in Userspace
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: kvm <kvm@vger.kernel.org>, Jason Wang <jasowang@redhat.com>,
- virtualization <virtualization@lists.linux-foundation.org>,
- Christian Brauner <christian.brauner@canonical.com>,
- Will Deacon <will@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Matthew Wilcox <willy@infradead.org>, Christoph Hellwig <hch@infradead.org>,
- Dan Carpenter <dan.carpenter@oracle.com>,
- Stefano Garzarella <sgarzare@redhat.com>,
- Liu Xiaodong <xiaodong.liu@intel.com>, linux-fsdevel@vger.kernel.org,
- Al Viro <viro@zeniv.linux.org.uk>, Stefan Hajnoczi <stefanha@redhat.com>,
- songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
- He Zhe <zhe.he@windriver.com>, Greg KH <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- bcrl@kvack.org, Netdev <netdev@vger.kernel.org>, Joe Perches <joe@perches.com>,
- Robin Murphy <robin.murphy@arm.com>,
- =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>
+X-MTK: N
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org, yi.kuo@mediatek.com,
+ srv_heupstream@mediatek.com, Will Deacon <will@kernel.org>,
+ linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ lc.kan@mediatek.com, anthony.huang@mediatek.com, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,148 +75,40 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gTW9uLCBKYW4gMTAsIDIwMjIgYXQgMTE6NDQgUE0gTWljaGFlbCBTLiBUc2lya2luIDxtc3RA
-cmVkaGF0LmNvbT4gd3JvdGU6Cj4KPiBPbiBNb24sIEphbiAxMCwgMjAyMiBhdCAxMToyNDo0MFBN
-ICswODAwLCBZb25namkgWGllIHdyb3RlOgo+ID4gT24gTW9uLCBKYW4gMTAsIDIwMjIgYXQgMTE6
-MTAgUE0gTWljaGFlbCBTLiBUc2lya2luIDxtc3RAcmVkaGF0LmNvbT4gd3JvdGU6Cj4gPiA+Cj4g
-PiA+IE9uIE1vbiwgSmFuIDEwLCAyMDIyIGF0IDA5OjU0OjA4UE0gKzA4MDAsIFlvbmdqaSBYaWUg
-d3JvdGU6Cj4gPiA+ID4gT24gTW9uLCBKYW4gMTAsIDIwMjIgYXQgODo1NyBQTSBNaWNoYWVsIFMu
-IFRzaXJraW4gPG1zdEByZWRoYXQuY29tPiB3cm90ZToKPiA+ID4gPiA+Cj4gPiA+ID4gPiBPbiBN
-b24sIEF1ZyAzMCwgMjAyMSBhdCAxMDoxNzoyNFBNICswODAwLCBYaWUgWW9uZ2ppIHdyb3RlOgo+
-ID4gPiA+ID4gPiBUaGlzIHNlcmllcyBpbnRyb2R1Y2VzIGEgZnJhbWV3b3JrIHRoYXQgbWFrZXMg
-aXQgcG9zc2libGUgdG8gaW1wbGVtZW50Cj4gPiA+ID4gPiA+IHNvZnR3YXJlLWVtdWxhdGVkIHZE
-UEEgZGV2aWNlcyBpbiB1c2Vyc3BhY2UuIEFuZCB0byBtYWtlIHRoZSBkZXZpY2UKPiA+ID4gPiA+
-ID4gZW11bGF0aW9uIG1vcmUgc2VjdXJlLCB0aGUgZW11bGF0ZWQgdkRQQSBkZXZpY2UncyBjb250
-cm9sIHBhdGggaXMgaGFuZGxlZAo+ID4gPiA+ID4gPiBpbiB0aGUga2VybmVsIGFuZCBvbmx5IHRo
-ZSBkYXRhIHBhdGggaXMgaW1wbGVtZW50ZWQgaW4gdGhlIHVzZXJzcGFjZS4KPiA+ID4gPiA+ID4K
-PiA+ID4gPiA+ID4gU2luY2UgdGhlIGVtdWxkYXRlZCB2RFBBIGRldmljZSdzIGNvbnRyb2wgcGF0
-aCBpcyBoYW5kbGVkIGluIHRoZSBrZXJuZWwsCj4gPiA+ID4gPiA+IGEgbWVzc2FnZSBtZWNobmlz
-bSBpcyBpbnRyb2R1Y2VkIHRvIG1ha2UgdXNlcnNwYWNlIGJlIGF3YXJlIG9mIHRoZSBkYXRhCj4g
-PiA+ID4gPiA+IHBhdGggcmVsYXRlZCBjaGFuZ2VzLiBVc2Vyc3BhY2UgY2FuIHVzZSByZWFkKCkv
-d3JpdGUoKSB0byByZWNlaXZlL3JlcGx5Cj4gPiA+ID4gPiA+IHRoZSBjb250cm9sIG1lc3NhZ2Vz
-Lgo+ID4gPiA+ID4gPgo+ID4gPiA+ID4gPiBJbiB0aGUgZGF0YSBwYXRoLCB0aGUgY29yZSBpcyBt
-YXBwaW5nIGRtYSBidWZmZXIgaW50byBWRFVTRSBkYWVtb24ncwo+ID4gPiA+ID4gPiBhZGRyZXNz
-IHNwYWNlLCB3aGljaCBjYW4gYmUgaW1wbGVtZW50ZWQgaW4gZGlmZmVyZW50IHdheXMgZGVwZW5k
-aW5nIG9uCj4gPiA+ID4gPiA+IHRoZSB2ZHBhIGJ1cyB0byB3aGljaCB0aGUgdkRQQSBkZXZpY2Ug
-aXMgYXR0YWNoZWQuCj4gPiA+ID4gPiA+Cj4gPiA+ID4gPiA+IEluIHZpcnRpby12ZHBhIGNhc2Us
-IHdlIGltcGxlbWVudHMgYSBNTVUtYmFzZWQgc29mdHdhcmUgSU9UTEIgd2l0aAo+ID4gPiA+ID4g
-PiBib3VuY2UtYnVmZmVyaW5nIG1lY2hhbmlzbSB0byBhY2hpZXZlIHRoYXQuIEFuZCBpbiB2aG9z
-dC12ZHBhIGNhc2UsIHRoZSBkbWEKPiA+ID4gPiA+ID4gYnVmZmVyIGlzIHJlc2lkZSBpbiBhIHVz
-ZXJzcGFjZSBtZW1vcnkgcmVnaW9uIHdoaWNoIGNhbiBiZSBzaGFyZWQgdG8gdGhlCj4gPiA+ID4g
-PiA+IFZEVVNFIHVzZXJzcGFjZSBwcm9jZXNzcyB2aWEgdHJhbnNmZXJyaW5nIHRoZSBzaG1mZC4K
-PiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4gVGhlIGRldGFpbHMgYW5kIG91ciB1c2VyIGNhc2UgaXMg
-c2hvd24gYmVsb3c6Cj4gPiA+ID4gPiA+Cj4gPiA+ID4gPiA+IC0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLSAgICAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tICAgLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo+ID4gPiA+ID4gPiB8ICAgICAgICAgICAgQ29udGFp
-bmVyIHwgICAgfCAgICAgICAgICAgICAgUUVNVShWTSkgfCAgIHwgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgVkRVU0UgZGFlbW9uIHwKPiA+ID4gPiA+ID4gfCAgICAgICAtLS0tLS0tLS0g
-ICAgICB8ICAgIHwgIC0tLS0tLS0tLS0tLS0tLS0tLS0gIHwgICB8IC0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0gLS0tLS0tLS0tLS0tLS0tLSB8Cj4gPiA+ID4gPiA+IHwgICAgICAgfGRldi92ZHh8
-ICAgICAgfCAgICB8ICB8L2Rldi92aG9zdC12ZHBhLXh8ICB8ICAgfCB8IHZEUEEgZGV2aWNlIGVt
-dWxhdGlvbiB8IHwgYmxvY2sgZHJpdmVyIHwgfAo+ID4gPiA+ID4gPiAtLS0tLS0tLS0tLS0rLS0t
-LS0tLS0tLS0gICAgIC0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tLSAgIC0tLS0tLS0tLS0tLS0rLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLSstLS0tLS0tLS0KPiA+ID4gPiA+ID4gICAgICAgICAgICAgfCAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAg
-ICAgICAgICAgICAgICAgICAgICB8Cj4gPiA+ID4gPiA+ICAgICAgICAgICAgIHwgICAgICAgICAg
-ICAgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAgICAg
-ICAgICAgICAgICAgfAo+ID4gPiA+ID4gPiAtLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLSstLS0tLS0tLS0KPiA+ID4gPiA+ID4gfCAgICB8IGJsb2NrIGRldmljZSB8ICAgICAgICAg
-ICB8ICB2aG9zdCBkZXZpY2UgfCAgICAgICAgICAgIHwgdmR1c2UgZHJpdmVyIHwgICAgICAgICAg
-fCBUQ1AvSVAgfCAgICB8Cj4gPiA+ID4gPiA+IHwgICAgLS0tLS0tLSstLS0tLS0tLSAgICAgICAg
-ICAgLS0tLS0tLS0rLS0tLS0tLS0gICAgICAgICAgICAtLS0tLS0tKy0tLS0tLS0tICAgICAgICAg
-IC0tLS0tKy0tLS0gICAgfAo+ID4gPiA+ID4gPiB8ICAgICAgICAgICB8ICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAgICAgICAgICAg
-ICAgICAgIHwgICAgICAgIHwKPiA+ID4gPiA+ID4gfCAtLS0tLS0tLS0tKy0tLS0tLS0tLS0gICAg
-ICAgLS0tLS0tLS0tLSstLS0tLS0tLS0tLSAgICAgICAgIC0tLS0tLS0rLS0tLS0tLSAgICAgICAg
-ICAgICAgICB8ICAgICAgICB8Cj4gPiA+ID4gPiA+IHwgfCB2aXJ0aW8tYmxrIGRyaXZlciB8ICAg
-ICAgIHwgIHZob3N0LXZkcGEgZHJpdmVyIHwgICAgICAgICB8IHZkcGEgZGV2aWNlIHwgICAgICAg
-ICAgICAgICAgfCAgICAgICAgfAo+ID4gPiA+ID4gPiB8IC0tLS0tLS0tLS0rLS0tLS0tLS0tLSAg
-ICAgICAtLS0tLS0tLS0tKy0tLS0tLS0tLS0tICAgICAgICAgLS0tLS0tLSstLS0tLS0tICAgICAg
-ICAgICAgICAgIHwgICAgICAgIHwKPiA+ID4gPiA+ID4gfCAgICAgICAgICAgfCAgICAgIHZpcnRp
-byBidXMgICAgICAgICAgIHwgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgICAgICAg
-ICAgICAgICAgICB8ICAgICAgICB8Cj4gPiA+ID4gPiA+IHwgICAtLS0tLS0tLSstLS0tKy0tLS0t
-LS0tLS0tICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgICAg
-ICAgICAgICAgICAgfCAgICAgICAgfAo+ID4gPiA+ID4gPiB8ICAgICAgICAgICAgICAgIHwgICAg
-ICAgICAgICAgICAgICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAgICAg
-ICAgICAgICAgICAgIHwgICAgICAgIHwKPiA+ID4gPiA+ID4gfCAgICAgIC0tLS0tLS0tLS0rLS0t
-LS0tLS0tLSAgICAgICAgICAgIHwgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgICAg
-ICAgICAgICAgICAgICB8ICAgICAgICB8Cj4gPiA+ID4gPiA+IHwgICAgICB8IHZpcnRpby1ibGsg
-ZGV2aWNlIHwgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAg
-ICAgICAgICAgICAgICAgfCAgICAgICAgfAo+ID4gPiA+ID4gPiB8ICAgICAgLS0tLS0tLS0tLSst
-LS0tLS0tLS0tICAgICAgICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAg
-ICAgICAgICAgICAgICAgIHwgICAgICAgIHwKPiA+ID4gPiA+ID4gfCAgICAgICAgICAgICAgICB8
-ICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAg
-ICAgICAgICAgICAgICAgICB8ICAgICAgICB8Cj4gPiA+ID4gPiA+IHwgICAgIC0tLS0tLS0tLS0t
-Ky0tLS0tLS0tLS0tICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAg
-ICAgICAgICAgICAgICAgICAgfCAgICAgICAgfAo+ID4gPiA+ID4gPiB8ICAgICB8ICB2aXJ0aW8t
-dmRwYSBkcml2ZXIgfCAgICAgICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAg
-ICAgICAgICAgICAgICAgICAgIHwgICAgICAgIHwKPiA+ID4gPiA+ID4gfCAgICAgLS0tLS0tLS0t
-LS0rLS0tLS0tLS0tLS0gICAgICAgICAgIHwgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAg
-ICAgICAgICAgICAgICAgICAgICB8ICAgICAgICB8Cj4gPiA+ID4gPiA+IHwgICAgICAgICAgICAg
-ICAgfCAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAg
-ICB2ZHBhIGJ1cyAgICAgICAgICAgfCAgICAgICAgfAo+ID4gPiA+ID4gPiB8ICAgICAtLS0tLS0t
-LS0tLSstLS0tLS0tLS0tLS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSst
-LS0tLS0tLS0tLS0gICAgICAgICAgIHwgICAgICAgIHwKPiA+ID4gPiA+ID4gfCAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAtLS0rLS0tICAgICB8Cj4gPiA+ID4gPiA+IC0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tfCBOSUMgfC0tLS0tLQo+ID4gPiA+ID4gPiAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIC0tLSstLS0KPiA+ID4gPiA+ID4gICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICB8Cj4gPiA+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgLS0tLS0tLS0tKy0tLS0tLS0tLQo+ID4gPiA+ID4gPiAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIHwgUmVtb3RlIFN0b3JhZ2VzIHwKPiA+ID4gPiA+ID4gICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAtLS0tLS0tLS0tLS0tLS0tLS0tCj4gPiA+ID4gPiA+Cj4gPiA+ID4gPiA+IFdlIG1ha2Ug
-dXNlIG9mIGl0IHRvIGltcGxlbWVudCBhIGJsb2NrIGRldmljZSBjb25uZWN0aW5nIHRvCj4gPiA+
-ID4gPiA+IG91ciBkaXN0cmlidXRlZCBzdG9yYWdlLCB3aGljaCBjYW4gYmUgdXNlZCBib3RoIGlu
-IGNvbnRhaW5lcnMgYW5kCj4gPiA+ID4gPiA+IFZNcy4gVGh1cywgd2UgY2FuIGhhdmUgYW4gdW5p
-ZmllZCB0ZWNobm9sb2d5IHN0YWNrIGluIHRoaXMgdHdvIGNhc2VzLgo+ID4gPiA+ID4gPgo+ID4g
-PiA+ID4gPiBUbyB0ZXN0IGl0IHdpdGggbnVsbC1ibGs6Cj4gPiA+ID4gPiA+Cj4gPiA+ID4gPiA+
-ICAgJCBxZW11LXN0b3JhZ2UtZGFlbW9uIFwKPiA+ID4gPiA+ID4gICAgICAgLS1jaGFyZGV2IHNv
-Y2tldCxpZD1jaGFybW9uaXRvcixwYXRoPS90bXAvcW1wLnNvY2ssc2VydmVyLG5vd2FpdCBcCj4g
-PiA+ID4gPiA+ICAgICAgIC0tbW9uaXRvciBjaGFyZGV2PWNoYXJtb25pdG9yIFwKPiA+ID4gPiA+
-ID4gICAgICAgLS1ibG9ja2RldiBkcml2ZXI9aG9zdF9kZXZpY2UsY2FjaGUuZGlyZWN0PW9uLGFp
-bz1uYXRpdmUsZmlsZW5hbWU9L2Rldi9udWxsYjAsbm9kZS1uYW1lPWRpc2swIFwKPiA+ID4gPiA+
-ID4gICAgICAgLS1leHBvcnQgdHlwZT12ZHVzZS1ibGssaWQ9dGVzdCxub2RlLW5hbWU9ZGlzazAs
-d3JpdGFibGU9b24sbmFtZT12ZHVzZS1udWxsLG51bS1xdWV1ZXM9MTYscXVldWUtc2l6ZT0xMjgK
-PiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4gVGhlIHFlbXUtc3RvcmFnZS1kYWVtb24gY2FuIGJlIGZv
-dW5kIGF0IGh0dHBzOi8vZ2l0aHViLmNvbS9ieXRlZGFuY2UvcWVtdS90cmVlL3ZkdXNlCj4gPiA+
-ID4gPgo+ID4gPiA+ID4gSXQncyBiZWVuIGhhbGYgYSB5ZWFyIC0gYW55IHBsYW5zIHRvIHVwc3Ry
-ZWFtIHRoaXM/Cj4gPiA+ID4KPiA+ID4gPiBZZWFoLCB0aGlzIGlzIG9uIG15IHRvLWRvIGxpc3Qg
-dGhpcyBtb250aC4KPiA+ID4gPgo+ID4gPiA+IFNvcnJ5IGZvciB0YWtpbmcgc28gbG9uZy4uLiBJ
-J3ZlIGJlZW4gd29ya2luZyBvbiBhbm90aGVyIHByb2plY3QKPiA+ID4gPiBlbmFibGluZyB1c2Vy
-c3BhY2UgUkRNQSB3aXRoIFZEVVNFIGZvciB0aGUgcGFzdCBmZXcgbW9udGhzLiBTbyBJCj4gPiA+
-ID4gZGlkbid0IGhhdmUgbXVjaCB0aW1lIGZvciB0aGlzLiBBbnl3YXksIEkgd2lsbCBzdWJtaXQg
-dGhlIGZpcnN0Cj4gPiA+ID4gdmVyc2lvbiBhcyBzb29uIGFzIHBvc3NpYmxlLgo+ID4gPiA+Cj4g
-PiA+ID4gVGhhbmtzLAo+ID4gPiA+IFlvbmdqaQo+ID4gPgo+ID4gPiBPaCBmdW4uIFlvdSBtZWFu
-IGxpa2UgdmlydGlvLXJkbWE/IE9yIFJETUEgYXMgYSBiYWNrZW5kIGZvciByZWd1bGFyCj4gPiA+
-IHZpcnRpbz8KPiA+ID4KPiA+Cj4gPiBZZXMsIGxpa2UgdmlydGlvLXJkbWEuIFRoZW4gd2UgY2Fu
-IGRldmVsb3Agc29tZXRoaW5nIGxpa2UgdXNlcnNwYWNlCj4gPiByeGXjgIFzaXcgb3IgY3VzdG9t
-IHByb3RvY29sIHdpdGggVkRVU0UuCj4gPgo+ID4gVGhhbmtzLAo+ID4gWW9uZ2ppCj4KPiBXb3Vs
-ZCBiZSBpbnRlcmVzdGluZyB0byBzZWUgdGhlIHNwZWMgZm9yIHRoYXQuCgpXaWxsIHNlbmQgaXQg
-QVNBUC4KCj4gVGhlIGlzc3VlcyB3aXRoIFJETUEgcmV2b2x2ZWQgYXJvdW5kIHRoZSBmYWN0IHRo
-YXQgY3VycmVudAo+IGFwcHMgdGVuZCB0byBlaXRoZXIgdXNlIG5vbi1zdGFuZGFyZCBwcm9wb2Nv
-bHMgZm9yIGNvbm5lY3Rpb24KPiBlc3RhYmxpc2htZW50IG9yIHVzZSBVRCB3aGVyZSB0aGVyZSdz
-IElJUkMgbm8gc3RhbmRhcmQKPiBhdCBhbGwuIFNvIFFQIG51bWJlcnMgYXJlIGhhcmQgdG8gdmly
-dHVhbGl6ZS4KPiBTaW1pbGFybHkgbWFueSB1c2UgTElEcyBkaXJlY3RseSB3aXRoIHRoZSBzYW1l
-IGVmZmVjdC4KPiBHVUlEcyBtaWdodCBiZSB2aXJ0dWFsaXplYWJsZSBidXQgbm8gb25lIHdlbnQg
-dG8gdGhlIGVmZm9ydC4KPgoKQWN0dWFsbHkgd2UgYWltZWQgYXQgZW11bGF0aW5nIGEgc29mdCBS
-RE1BIHdpdGggbm9ybWFsIE5JQyAobm90IHVzZQpSRE1BIGNhcGFiaWxpdHkpIHJhdGhlciB0aGFu
-IHZpcnR1YWxpemluZyBhIHBoeXNpY2FsIFJETUEgTklDIGludG8Kc2V2ZXJhbCB2UkRNQSBkZXZp
-Y2VzLiBJZiBzbywgSSB0aGluayB3ZSB3b24ndCBoYXZlIHRob3NlIGlzc3VlcywKcmlnaHQ/Cgo+
-IFRvIHNheSBub3RoaW5nIGFib3V0IHRoZSBpbnRlcmFjdGlvbiB3aXRoIG1lbW9yeSBvdmVyY29t
-bWl0Lgo+CgpJIGRvbid0IGdldCB5b3UgaGVyZS4gQ291bGQgeW91IGdpdmUgbWUgbW9yZSBkZXRh
-aWxzPwoKVGhhbmtzLApZb25namkKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
-b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2lvbW11
+This patchset adds mt8186 smi support, mainly adds a sleep control function.
+
+Change note:
+v2: a) Add two patches for the "make dtbs_check" warning.
+    b) Seperate the "sleep control" into two functions.
+       And add a "TODO" comment while sleep control fails.
+
+v1: https://lore.kernel.org/linux-mediatek/20211203064027.14993-1-yong.wu@mediatek.com/
+    Base on v5.16-rc1.
+
+Yong Wu (6):
+  dt-bindings: memory: mtk-smi: Fix larb-id dtbs_check warning
+  dt-bindings: memory: mtk-smi: Fix the larb clock/clock-names dtbs
+    warning
+  dt-bindings: memory: mediatek: Add mt8186 support
+  memory: mtk-smi: Fix the return value for clk_bulk_prepare_enable
+  memory: mtk-smi: Add sleep ctrl function
+  memory: mtk-smi: mt8186: Add smi support
+
+ .../mediatek,smi-common.yaml                  |  4 +-
+ .../memory-controllers/mediatek,smi-larb.yaml | 10 ++--
+ drivers/memory/mtk-smi.c                      | 50 ++++++++++++++++++-
+ 3 files changed, 57 insertions(+), 7 deletions(-)
+
+-- 
+2.18.0
+
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
