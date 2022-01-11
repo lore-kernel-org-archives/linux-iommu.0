@@ -1,69 +1,68 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 785A0C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E18DBC433EF
 	for <iommu@archiver.kernel.org>; Tue, 11 Jan 2022 10:57:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 3672A60D75;
+	by smtp1.osuosl.org (Postfix) with ESMTP id A81F18343E;
 	Tue, 11 Jan 2022 10:57:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id i5k5QN38miXQ; Tue, 11 Jan 2022 10:57:56 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OyJn1JmejaXx; Tue, 11 Jan 2022 10:57:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 0D74960773;
-	Tue, 11 Jan 2022 10:57:55 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 913EA8343F;
+	Tue, 11 Jan 2022 10:57:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EC751C002F;
-	Tue, 11 Jan 2022 10:57:55 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1D27BC002F
- for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 10:57:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1DAE5C001E;
+	Tue, 11 Jan 2022 10:57:56 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 215CCC001E
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 10:57:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id F02C6410E6
- for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 10:57:53 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id A96D4410E3
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 10:57:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=collabora.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id viYaqPGu7zsS for <iommu@lists.linux-foundation.org>;
+ with ESMTP id HvC-M61tcEKr for <iommu@lists.linux-foundation.org>;
  Tue, 11 Jan 2022 10:57:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 17822410E5
- for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 10:57:52 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id BB420410D5
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 10:57:53 +0000 (UTC)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
- (Authenticated sender: kholk11) with ESMTPSA id 790DD1F43A3B
+ (Authenticated sender: kholk11) with ESMTPSA id 53B6C1F43A3E
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
- s=mail; t=1641898671;
- bh=KxdiyTxbtyGUISJQVKvbV00ATKClSLfkB7WwAzdixIk=;
+ s=mail; t=1641898672;
+ bh=aSvQDDZiVNuGLK0+g5pmKJt4zz1QTtvk8bu0eYABcYE=;
  h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
- b=GHv2Q9Hw9O1BbymA6bPBFesiEoq1kePtT66PJ1DjL9T0Lyuw7pmEQejYX27zrEz4u
- KhuGOzv6vfpDCj5CFrlLnkHBLvzkie3LTBvtrB16YGEWmRcK/Bb2hzvlZVkXsnrFML
- iNuniQCr123u7ZPxvdmcegl9TU+3TZrthSVp7dxcsRMQ/9BZl2LREPItzri5GxaZkm
- /WHSAxGZI10qwOxlOJSRyKR/BAco+r212N+f+NrpdwlLsuvMd58CuxENW+9OLhpIjG
- Rd277bNW5X4zdn5WskZtet5CNVidobI8eHXVog2CXJQkuYeC57x3eV1/JA61Xbmop0
- jQiPE2Mahk5rQ==
-Subject: Re: [PATCH v9 05/15] iommu/mediatek: Add device_link between the
- consumer and the larb devices
+ b=RRn+gK/K6Oe8djLMwl7E0Zru4jSSkxXRUnWQAAfuLZ0AiA2fLNRpLyLimSJNIhMtu
+ GbCmYibe3IdiVyevThwQNpRh3KXcNGbfn7j01ofTIwJnEZPN+qORhigdQ1iVcg8nuS
+ ZON68CYWhNbbK5oABT+8xs7E9Oa1MWcR2JGP5Ca0LTcwd+YSk54BB4Kg+Jvof5vkRI
+ KzK0frlA9SUROFZNEy2aduPWb5c4FqbSQVdv4RPrj69rUl14uTz3hOMqtH/l+MnsL2
+ j7/wUm/JmNhovDWBm9IYHFOnL+5nul/9tnRNeWUnNgejZYTwTHVe0t2PjmYKrTa4Vh
+ NmwUYMSMA4pBg==
+Subject: Re: [PATCH v9 04/15] iommu/mediatek: Add probe_defer for smi-larb
 To: Yong Wu <yong.wu@mediatek.com>, Matthias Brugger
  <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>,
  Rob Herring <robh+dt@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
  David Airlie <airlied@linux.ie>, Mauro Carvalho Chehab <mchehab@kernel.org>
 References: <20211112105509.12010-1-yong.wu@mediatek.com>
- <20211112105509.12010-6-yong.wu@mediatek.com>
+ <20211112105509.12010-5-yong.wu@mediatek.com>
 From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Message-ID: <cb4054ae-4646-ee61-162f-96112ef6dbcf@collabora.com>
-Date: Tue, 11 Jan 2022 11:57:47 +0100
+Message-ID: <eaf59017-49d2-6579-a106-44bd2a21e5af@collabora.com>
+Date: Tue, 11 Jan 2022 11:57:48 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20211112105509.12010-6-yong.wu@mediatek.com>
+In-Reply-To: <20211112105509.12010-5-yong.wu@mediatek.com>
 Content-Language: en-US
 Cc: devicetree@vger.kernel.org, Will Deacon <will.deacon@arm.com>,
  dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
@@ -95,51 +94,21 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 Il 12/11/21 11:54, Yong Wu ha scritto:
-> MediaTek IOMMU-SMI diagram is like below. all the consumer connect with
-> smi-larb, then connect with smi-common.
+> Prepare for adding device_link.
 > 
->          M4U
->           |
->      smi-common
->           |
->    -------------
->    |         |    ...
->    |         |
-> larb1     larb2
->    |         |
-> vdec       venc
+> The iommu consumer should use device_link to connect with the
+> smi-larb(supplier). then the smi-larb should run before the iommu
+> consumer. Here we delay the iommu driver until the smi driver is ready,
+> then all the iommu consumers always are after the smi driver.
 > 
-> When the consumer works, it should enable the smi-larb's power which
-> also need enable the smi-common's power firstly.
+> When there is no this patch, if some consumer drivers run before
+> smi-larb, the supplier link_status is DL_DEV_NO_DRIVER(0) in the
+> device_link_add, then device_links_driver_bound will use WARN_ON
+> to complain that the link_status of supplier is not right.
 > 
-> Thus, First of all, use the device link connect the consumer and the
-> smi-larbs. then add device link between the smi-larb and smi-common.
+> device_is_bound may be more elegant here. but it is not allowed to
+> EXPORT from https://lore.kernel.org/patchwork/patch/1334670/.
 > 
-> This patch adds device_link between the consumer and the larbs.
-> 
-> When device_link_add, I add the flag DL_FLAG_STATELESS to avoid calling
-> pm_runtime_xx to keep the original status of clocks. It can avoid two
-> issues:
-> 1) Display HW show fastlogo abnormally reported in [1]. At the beggining,
-> all the clocks are enabled before entering kernel, but the clocks for
-> display HW(always in larb0) will be gated after clk_enable and clk_disable
-> called from device_link_add(->pm_runtime_resume) and rpm_idle. The clock
-> operation happened before display driver probe. At that time, the display
-> HW will be abnormal.
-> 
-> 2) A deadlock issue reported in [2]. Use DL_FLAG_STATELESS to skip
-> pm_runtime_xx to avoid the deadlock.
-> 
-> Corresponding, DL_FLAG_AUTOREMOVE_CONSUMER can't be added, then
-> device_link_removed should be added explicitly.
-> 
-> Meanwhile, Currently we don't have a device connect with 2 larbs at the
-> same time. Disallow this case, print the error log.
-> 
-> [1] https://lore.kernel.org/linux-mediatek/1564213888.22908.4.camel@mhfsdcap03/
-> [2] https://lore.kernel.org/patchwork/patch/1086569/
-> 
-> Suggested-by: Tomasz Figa <tfiga@chromium.org>
 > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 > Tested-by: Frank Wunderlich <frank-w@public-files.de> # BPI-R2/MT7623
 
