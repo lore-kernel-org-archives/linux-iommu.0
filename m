@@ -4,74 +4,76 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A6FA6C433F5
-	for <iommu@archiver.kernel.org>; Tue, 11 Jan 2022 10:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D8988C433FE
+	for <iommu@archiver.kernel.org>; Tue, 11 Jan 2022 10:57:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 3D2E060A77;
-	Tue, 11 Jan 2022 10:57:43 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 7867B60A77;
+	Tue, 11 Jan 2022 10:57:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id iqYZKaB9C6Ll; Tue, 11 Jan 2022 10:57:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 15C53606FF;
-	Tue, 11 Jan 2022 10:57:42 +0000 (UTC)
+	with ESMTP id h-enFoVJdCXJ; Tue, 11 Jan 2022 10:57:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7C22C60773;
+	Tue, 11 Jan 2022 10:57:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D8FBBC002F;
-	Tue, 11 Jan 2022 10:57:41 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CAAD0C001E
- for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 10:57:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 590BAC002F;
+	Tue, 11 Jan 2022 10:57:48 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0ABD7C001E
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 10:57:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id B8B4D409EE
- for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 10:57:40 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id EAD7A401A2
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 10:57:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=collabora.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2OEkHDGxQPnz for <iommu@lists.linux-foundation.org>;
- Tue, 11 Jan 2022 10:57:40 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id DQPJf81UO-Hi for <iommu@lists.linux-foundation.org>;
+ Tue, 11 Jan 2022 10:57:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk
  [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
- by smtp4.osuosl.org (Postfix) with ESMTPS id D08054099A
- for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 10:57:39 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 3943840133
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 10:57:46 +0000 (UTC)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
- (Authenticated sender: kholk11) with ESMTPSA id BA5D11F43A1E
+ (Authenticated sender: kholk11) with ESMTPSA id ACD031F43A23
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
- s=mail; t=1641898657;
- bh=odIaYUtTLtqDV6yq4bHb+J7fAeN6960RbkGDgDyuzKE=;
+ s=mail; t=1641898664;
+ bh=c1xIViTzhE5aZjvh/zmxFPziUhaMBgmqtz0aUUQn0JE=;
  h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
- b=ntvmSjOyg+6YLC3LW1riENiDGrPvlKiPBVSv/XdDPh9JBuJXY0n3EXj/RGO7SA3bF
- xBFAvubQqCWN0PoADFlikeXf45LiMOs4ZaUud1XGx+ejJgB4HpbvRmERwfpcBc7hY5
- 6k22EDTLby/20VPss4mRejOEONSPkZPGTxHxS1eVa3LmFllh7SFlkP8Eoms0bOOxAb
- bASzAfgJpZrkkrBOXixa3Dc65+e0+vMLCcX7nEg7MGHgkLKA5lFJMxJ6GvhkwrBzQQ
- PHwaeX2kKPXifJFkRQ2BgNjXnl9hq0YLUKy4uGiFdnX6Si3QUddFRszpOUO80X/Xhc
- ikr9p3+pzKYfA==
-Subject: Re: [PATCH v9 13/15] memory: mtk-smi: Get rid of mtk_smi_larb_get/put
+ b=lsCNh0Z5KQAYLXVr59xl7SpD7RMMSCr1N469L/eDLv2P6cgs6iZ+HGXN14kttTQnT
+ 8D5a/9Y28Iyz5j9/HHkBYTt2oPMqkjf0WTyBzPKlGyN4d3uq3gsY6swdMzaQ9joiCd
+ 5gbsfft0GRjb+Z9nx98aALuXSxNg4pinnIfd8on9qYblSkSGXrn+l+CtvzRGL2dKmj
+ ICdPyvFoIsq9iG+TYrGLfeRvx7l4dlbn6JlTRnOG3+n1ZduDmU3Kkno4zfWH2JHOuJ
+ PQYMFwa/bniKw9NLssT1raLg762KvGyAT0jg8i3jPZE+NrQQTN3jA/sUY5OMV4oBLt
+ WrqgW2NhzTuBA==
+Subject: Re: [PATCH v9 12/15] media: mtk-vcodec: enc: Remove
+ mtk_vcodec_release_enc_pm
 To: Yong Wu <yong.wu@mediatek.com>, Matthias Brugger
  <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>,
  Rob Herring <robh+dt@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
  David Airlie <airlied@linux.ie>, Mauro Carvalho Chehab <mchehab@kernel.org>
 References: <20211112105509.12010-1-yong.wu@mediatek.com>
- <20211112105509.12010-14-yong.wu@mediatek.com>
+ <20211112105509.12010-13-yong.wu@mediatek.com>
 From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Message-ID: <d1a6af37-a51a-e31a-aace-d43227ac5e19@collabora.com>
-Date: Tue, 11 Jan 2022 11:57:33 +0100
+Message-ID: <68c3a573-8453-38e9-93b2-2067bedcd06f@collabora.com>
+Date: Tue, 11 Jan 2022 11:57:40 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <20211112105509.12010-14-yong.wu@mediatek.com>
+In-Reply-To: <20211112105509.12010-13-yong.wu@mediatek.com>
 Content-Language: en-US
 Cc: devicetree@vger.kernel.org, Will Deacon <will.deacon@arm.com>,
  dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
  anthony.huang@mediatek.com, youlin.pei@mediatek.com,
- Evan Green <evgreen@chromium.org>, Eizan Miyamoto <eizan@chromium.org>,
- Matthias Kaehlcke <mka@chromium.org>, mingyuan.ma@mediatek.com,
- linux-media@vger.kernel.org, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
- Daniel Vetter <daniel@ffwll.ch>, libo.kang@mediatek.com, yi.kuo@mediatek.com,
+ Irui Wang <irui.wang@mediatek.com>, Evan Green <evgreen@chromium.org>,
+ Eizan Miyamoto <eizan@chromium.org>, Matthias Kaehlcke <mka@chromium.org>,
+ mingyuan.ma@mediatek.com, linux-media@vger.kernel.org,
+ Chun-Kuang Hu <chunkuang.hu@kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
+ libo.kang@mediatek.com, yi.kuo@mediatek.com,
  linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
  Tiffany Lin <tiffany.lin@mediatek.com>, linux-arm-kernel@lists.infradead.org,
  anan.sun@mediatek.com, acourbot@chromium.org, srv_heupstream@mediatek.com,
@@ -95,20 +97,19 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 Il 12/11/21 11:55, Yong Wu ha scritto:
-> After adding device_link between the iommu consumer and smi-larb,
-> the pm_runtime_get(_sync) of smi-larb and smi-common will be called
-> automatically. we can get rid of mtk_smi_larb_get/put.
+> After this patchset, mtk_vcodec_release_enc_pm has only one line.
+> then remove that function, use pm_runtime_disable instead.
 > 
-> CC: Matthias Brugger <matthias.bgg@gmail.com>
+> meanwhile, mtk_vcodec_init_enc_pm only operate for the clocks,
+> rename it from the _pm to _clk.
+> 
+> No functional change.
+> 
+> CC: Tiffany Lin <tiffany.lin@mediatek.com>
+> CC: Irui Wang <irui.wang@mediatek.com>
 > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> Reviewed-by: Evan Green <evgreen@chromium.org>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Acked-by: Matthias Brugger <matthias.bgg@gmail.com>
-> Reviewed-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-> Tested-by: Frank Wunderlich <frank-w@public-files.de> # BPI-R2/MT7623
 
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-
 
 _______________________________________________
 iommu mailing list
