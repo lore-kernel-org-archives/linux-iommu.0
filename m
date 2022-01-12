@@ -1,70 +1,76 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CA50DC433EF
-	for <iommu@archiver.kernel.org>; Wed, 12 Jan 2022 13:21:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 20122C433EF
+	for <iommu@archiver.kernel.org>; Wed, 12 Jan 2022 16:23:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 635BF4290B;
-	Wed, 12 Jan 2022 13:21:04 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id B38F884BC1;
+	Wed, 12 Jan 2022 16:23:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bLEKCi974hfS; Wed, 12 Jan 2022 13:21:01 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id KiQmuZs17cTX; Wed, 12 Jan 2022 16:23:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 8941342908;
-	Wed, 12 Jan 2022 13:21:01 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 0BE8584BB9;
+	Wed, 12 Jan 2022 16:23:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4FA97C002F;
-	Wed, 12 Jan 2022 13:21:01 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7FF5EC001E
- for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 13:20:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DCF51C0030;
+	Wed, 12 Jan 2022 16:23:50 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4A307C001E
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 13:18:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with UTF8SMTP id 24D6160E86
- for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 13:20:59 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with UTF8SMTP id 4389D40191
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 13:18:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=mg.codeaurora.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with UTF8SMTP id pN81znGM4kyk for <iommu@lists.linux-foundation.org>;
- Wed, 12 Jan 2022 13:20:56 +0000 (UTC)
-X-Greylist: delayed 00:05:01 by SQLgrey-1.8.0
-Received: from so254-9.mailgun.net (so254-9.mailgun.net [198.61.254.9])
- by smtp3.osuosl.org (Postfix) with UTF8SMTPS id 5B46460B33
- for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 13:20:56 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with UTF8SMTP id rrppwczTmIZL for <iommu@lists.linux-foundation.org>;
+ Wed, 12 Jan 2022 13:18:27 +0000 (UTC)
+X-Greylist: delayed 00:05:02 by SQLgrey-1.8.0
+Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
+ by smtp2.osuosl.org (Postfix) with UTF8SMTPS id A1412400DA
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 13:18:27 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1641993656; h=Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=NbjsN81+5glnjMYel3L0NP5kJiwyJHrGJEqa1Ex6F+s=;
- b=ii6vUje+KsOXMPvOdB49+xNtios0tsFsZWk4etH70BjbmiKURmvxtbyZJ4Avf4IJ3BlERW5W
- vI9pxr9qIJStOAynSAurK2j1V6NUc3XlE2vCYFs4UidjTjOPJVUHA976ZXAS4NVnJiwoakSh
- nxQ2ElkCrFXfKFLF8RTGeGrbj/Q=
-X-Mailgun-Sending-Ip: 198.61.254.9
+ s=smtp; t=1641993507; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=t8UcX5N7QmTU7XeUfa4gdrtpln6WbR8NBAKQ1OyJ86A=;
+ b=mfeOxuUPOp6/dVHY4JDD45/sDdyvQFaTJ9MvCTo2R2gxdDlBGEjdWm1U0Ob2wWlw3P+LffTH
+ UA2+X3xR7+74s7DB/skLO28gQZibiClhrQzlTeSyDmCB7xLyv1lmj2/9Lw/rTxUuVp6H8tnf
+ dL18Uxolx60HWRv7g7rfHzkQd2k=
+X-Mailgun-Sending-Ip: 69.72.43.7
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
- 61ded48962864ab1016c674a (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 12 Jan 2022 13:15:53
+ smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
+ 61ded3f3e0071250cf781d8f (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 12 Jan 2022 13:13:23
  GMT
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id C21D7C4338F; Wed, 12 Jan 2022 13:15:52 +0000 (UTC)
+ id C307AC4338F; Wed, 12 Jan 2022 13:13:23 +0000 (UTC)
 Received: from vjitta-linux.qualcomm.com (unknown [202.46.22.19])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
  (No client certificate requested) (Authenticated sender: vjitta)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id C8D96C4338F;
- Wed, 12 Jan 2022 13:15:49 +0000 (UTC)
-From: Vijayanand@codeaurora.org, Jitta@codeaurora.org
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 1113DC4338F;
+ Wed, 12 Jan 2022 13:13:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 1113DC4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=fail (p=none dis=none) header.from=quicinc.com
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=fail smtp.mailfrom=quicinc.com
+From: Vijayanand Jitta <quic_vjitta@quicinc.com>
 To: joro@8bytes.org, will@kernel.org, iommu@lists.linux-foundation.org,
  linux-kernel@vger.kernel.org
 Subject: [PATCH v3] iommu: Fix potential use-after-free during probe
-Date: Wed, 12 Jan 2022 18:45:41 +0530
-Message-Id: <1641993341-3019-1-git-send-email-quic_vjitta@quicinc.com>
+Date: Wed, 12 Jan 2022 18:43:04 +0530
+Message-Id: <1641993184-1232-1-git-send-email-quic_vjitta@quicinc.com>
 X-Mailer: git-send-email 2.7.4
+X-Mailman-Approved-At: Wed, 12 Jan 2022 16:23:49 +0000
 Cc: vjitta@codeaurora.org, Vijayanand Jitta <quic_vjitta@quicinc.com>,
  kernel-team@android.com
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -84,8 +90,6 @@ Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
-
-From: Vijayanand Jitta <quic_vjitta@quicinc.com>
 
 Kasan has reported the following use after free on dev->iommu.
 when a device probe fails and it is in process of freeing dev->iommu
