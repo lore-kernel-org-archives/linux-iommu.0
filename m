@@ -1,108 +1,112 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 52E9BC433F5
-	for <iommu@archiver.kernel.org>; Wed, 12 Jan 2022 10:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2340CC433F5
+	for <iommu@archiver.kernel.org>; Wed, 12 Jan 2022 10:55:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 0969D409CC;
-	Wed, 12 Jan 2022 10:28:09 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id BCAC16FB8A;
+	Wed, 12 Jan 2022 10:55:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hc9Y91x_VxZh; Wed, 12 Jan 2022 10:28:07 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 66945409A9;
-	Wed, 12 Jan 2022 10:28:07 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id X5Dg7hG1m9gF; Wed, 12 Jan 2022 10:54:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7154560E86;
+	Wed, 12 Jan 2022 10:54:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 38E30C0030;
-	Wed, 12 Jan 2022 10:28:07 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0F26EC001E
- for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 10:28:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 49F8DC0030;
+	Wed, 12 Jan 2022 10:54:59 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CB967C0030
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 10:54:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id F1E8D408D8
- for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 10:28:04 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id A8259428E9
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 10:54:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=canonical.com
+ dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id T77o-_h5gtS6 for <iommu@lists.linux-foundation.org>;
- Wed, 12 Jan 2022 10:28:04 +0000 (UTC)
+ with ESMTP id VqV7LHS3DoUx for <iommu@lists.linux-foundation.org>;
+ Wed, 12 Jan 2022 10:54:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from smtp-relay-internal-1.canonical.com
- (smtp-relay-internal-1.canonical.com [185.125.188.123])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 2838C4049F
- for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 10:28:04 +0000 (UTC)
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
- (No client certificate requested)
- by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 6E2DE402DE
- for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 10:28:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
- s=20210705; t=1641983282;
- bh=QRI3RyqVgPy+I4GidDpfSQY18QjzUt/rAxNK//Q3/V4=;
- h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
- In-Reply-To:Content-Type;
- b=Y1fNjQm7w8ub4ZmMRDuneay/9gYtEqous4JlodGBJscrJyHmdFuvRyo14jy6wKSvY
- V+9zPbFYSD/HIiBBFFIUlsP3XBHT8FEwl886jLinoFVKartxi89F8fVvh6htIqII74
- ZVDQ4UzsefUGTSEE4oKAi+Xkk+hQwAYmlpsa/AGdoYVEbW7UluARh4dW6+hhAWmUwb
- qN7btD0U7yr1fGtw8rJZRrrMhfB/LXEkIS/LiSdp0kGBL+At50xn7wmPoht+F44fRF
- AQ1BDAlT1PpE4A++eXpfAPgurJL3ekOOkwmUZoL02um/eUPUaBR3oYJyIBLXoo8Jbl
- oLBYVQAGtG4LQ==
-Received: by mail-ed1-f71.google.com with SMTP id
- l14-20020aa7cace000000b003f7f8e1cbbdso1832474edt.20
- for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 02:28:02 -0800 (PST)
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 8B9D341548
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 10:54:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1641984895;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=1nXDaBEqSwcubb9UAlItnBJ/49dksDZCXM8chYBVKNM=;
+ b=P49+/A9B0S1wNyzzEkvaTtZHdNxn2JclDdt6l7fTWa06/n7PG47WC73736Kmv07ZUhQDYf
+ HSl9KAFwh0jKcn85zhOcoNzoO5mVK3Lh+7kvJTl2DWzEfzgrRB+QVUPWLz1OBXD9y3dxjW
+ 6XauWXRHk+jqq3ecf0yt3emKq76XDMg=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-652-VwIiPaJXOfuBKRTP-iHgBg-1; Wed, 12 Jan 2022 05:54:52 -0500
+X-MC-Unique: VwIiPaJXOfuBKRTP-iHgBg-1
+Received: by mail-ed1-f70.google.com with SMTP id
+ i9-20020a05640242c900b003fe97faab62so1913461edc.9
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 02:54:52 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:in-reply-to
- :content-transfer-encoding;
- bh=QRI3RyqVgPy+I4GidDpfSQY18QjzUt/rAxNK//Q3/V4=;
- b=fzWM5/wXARq8gc7Wiaks63R5r92B3uVQ70re7O8GMpOvlgao3XztFHGoctEW4re8Be
- 7cmuSUd3QPwvawlmYZYvnMImbM1shP7+05Cn06r8veGFi3FLkE0d1OwLAAaO+vEcCziU
- W0bN9/fJb6U3ck0WZ5JlVMg+FGUWTbtLH6NOvR50mssU4y5OJ6bYA237VwWJWkqWwavp
- Qli5Bu14FVZVWi4jXbRWMBSXTztFC+u33D5UL7DhWxUeS9bB5O9JajdLwZGZCN9Li4ux
- yyDliDEC/YdXCTyPwkYBI/3hhzvgLg8NQOrWKbIY9rYWx0Epmx3QlUkEJsXcWyj5o7Pe
- FdXA==
-X-Gm-Message-State: AOAM531MsS2+bCWOkcVsUWWm5rE9zEqDUJuZM5UiMI1mbcowMtHcoesN
- Dy046gqLINIfAC3pwFYjMfJqW0Mnut7PZvmJY9GfkyudrlTrGhtgFqK9KY9+1m/3unQ2nC/Os/w
- r/7DvXij8LEjWoGbeKD8ZTO5jl43pjXnmsSxF2r36g5PJtqo=
-X-Received: by 2002:aa7:d554:: with SMTP id u20mr8492738edr.322.1641983281842; 
- Wed, 12 Jan 2022 02:28:01 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxNl0142m+NR0mNOStdmmNLcUcWydkHPUn0K/3hwATxqUffiAMouRTvD80ezk7JLym0RGyLwA==
-X-Received: by 2002:aa7:d554:: with SMTP id u20mr8492708edr.322.1641983281648; 
- Wed, 12 Jan 2022 02:28:01 -0800 (PST)
-Received: from [192.168.0.29] (xdsl-188-155-168-84.adslplus.ch.
- [188.155.168.84])
- by smtp.gmail.com with ESMTPSA id e16sm5905001edu.15.2022.01.12.02.28.00
+ h=x-gm-message-state:message-id:date:mime-version:user-agent
+ :content-language:to:cc:references:from:organization:subject
+ :in-reply-to:content-transfer-encoding;
+ bh=1nXDaBEqSwcubb9UAlItnBJ/49dksDZCXM8chYBVKNM=;
+ b=d867A2Fs2PY3IO3j1WTE1EFY89NVfX+Lm8AOceZJdnI71AOKpaYVCPsjjM/oZRrsB1
+ /P9i7PIEJNNOfdXRoj7fjuYglTtfZKm7TRZ8Y+zjzZLE2LUV95Za0omL9FSXux3lZ9Sc
+ hyPIAiqQJWXoS3gvqAySXP1cO2CkshPuYfmuXM2Fz6/2BIzps7sQTtCrAMWHsSHrDpNX
+ cQKQem+HHITRrdyDyflMNVUpLGjTA2PdomQw6MjyBfbU0eI1uNj1FuQYMYe7bxj7O6OX
+ xONBYHxqRb33q+Pjsdsn95wxlRaSYpoPtI4pkDbiOWs9hbdfNOm8OrJVn4tfwt41FEr5
+ qZnQ==
+X-Gm-Message-State: AOAM530RpXq2VPSX74czGBS+8sYqmxzDt1C6q/IgUTKCkwvGbPP3eal2
+ VDF/fA8B7HUIgGVZvptmboTNom1nv8U7Fq/K3IdnO29HsOSlsfsNYtCcJtOuTKKMI3T+Px25T9r
+ Lz8WYFoMCWG0yrxBQieWdAnIE0nmAPQ==
+X-Received: by 2002:a17:906:3052:: with SMTP id
+ d18mr7112122ejd.675.1641984891159; 
+ Wed, 12 Jan 2022 02:54:51 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyn5fswqQ0dOEoBSWPUJo6KSN9+8h4kCBAhgFotHJOoSPil79OW088szvXQNfhv7fsGVeMxSQ==
+X-Received: by 2002:a17:906:3052:: with SMTP id
+ d18mr7112100ejd.675.1641984890940; 
+ Wed, 12 Jan 2022 02:54:50 -0800 (PST)
+Received: from ?IPV6:2003:cb:c702:4700:e25f:39eb:3cb8:1dec?
+ (p200300cbc7024700e25f39eb3cb81dec.dip0.t-ipconnect.de.
+ [2003:cb:c702:4700:e25f:39eb:3cb8:1dec])
+ by smtp.gmail.com with ESMTPSA id hc40sm1981993ejc.72.2022.01.12.02.54.50
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 12 Jan 2022 02:28:00 -0800 (PST)
-Message-ID: <22935ffa-469c-a609-c30b-919ba85b842c@canonical.com>
-Date: Wed, 12 Jan 2022 11:27:59 +0100
+ Wed, 12 Jan 2022 02:54:50 -0800 (PST)
+Message-ID: <7dc078ef-70f4-159e-b928-34f0fb0ffaea@redhat.com>
+Date: Wed, 12 Jan 2022 11:54:49 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH v2 5/6] memory: mtk-smi: Add sleep ctrl function
+ Thunderbird/91.4.0
+To: Zi Yan <ziy@nvidia.com>, linux-mm@kvack.org
+References: <20220105214756.91065-1-zi.yan@sent.com>
+ <20220105214756.91065-2-zi.yan@sent.com>
+From: David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [RFC PATCH v3 1/8] mm: page_alloc: avoid merging non-fallbackable
+ pageblocks with others.
+In-Reply-To: <20220105214756.91065-2-zi.yan@sent.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=david@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Language: en-US
-To: Yong Wu <yong.wu@mediatek.com>, Rob Herring <robh+dt@kernel.org>,
- Matthias Brugger <matthias.bgg@gmail.com>
-References: <20220111063904.7583-1-yong.wu@mediatek.com>
- <20220111063904.7583-6-yong.wu@mediatek.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220111063904.7583-6-yong.wu@mediatek.com>
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org, yi.kuo@mediatek.com,
- srv_heupstream@mediatek.com, Will Deacon <will@kernel.org>,
- linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- lc.kan@mediatek.com, anthony.huang@mediatek.com, anan.sun@mediatek.com,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: Mel Gorman <mgorman@techsingularity.net>,
+ Michael Ellerman <mpe@ellerman.id.au>, Robin Murphy <robin.murphy@arm.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Eric Ren <renzhengeek@gmail.com>, virtualization@lists.linux-foundation.org,
+ linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>,
+ Vlastimil Babka <vbabka@suse.cz>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -120,110 +124,144 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 11/01/2022 07:39, Yong Wu wrote:
-> Sleep control means that when the larb goes to sleep, we should wait a bit
-> until all the current commands are finished. Thus, when the larb runtime
-> suspends, we need to enable this function to wait until all the existed
-> commands are finished. When the larb resumes, just disable this function.
-> This function only improves the safety of bus. Add a new flag for this
-> function. Prepare for mt8186.
+On 05.01.22 22:47, Zi Yan wrote:
+> From: Zi Yan <ziy@nvidia.com>
 > 
-> Signed-off-by: Anan Sun <anan.sun@mediatek.com>
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> This is done in addition to MIGRATE_ISOLATE pageblock merge avoidance.
+> It prepares for the upcoming removal of the MAX_ORDER-1 alignment
+> requirement for CMA and alloc_contig_range().
+> 
+> MIGRARTE_HIGHATOMIC should not merge with other migratetypes like
+> MIGRATE_ISOLATE and MIGRARTE_CMA[1], so this commit prevents that too.
+> Also add MIGRARTE_HIGHATOMIC to fallbacks array for completeness.
+> 
+> [1] https://lore.kernel.org/linux-mm/20211130100853.GP3366@techsingularity.net/
+> 
+> Signed-off-by: Zi Yan <ziy@nvidia.com>
 > ---
->  drivers/memory/mtk-smi.c | 35 ++++++++++++++++++++++++++++++++++-
->  1 file changed, 34 insertions(+), 1 deletion(-)
+>  include/linux/mmzone.h |  6 ++++++
+>  mm/page_alloc.c        | 28 ++++++++++++++++++----------
+>  2 files changed, 24 insertions(+), 10 deletions(-)
 > 
-> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-> index e7b1a22b12ea..d8552f4caba4 100644
-> --- a/drivers/memory/mtk-smi.c
-> +++ b/drivers/memory/mtk-smi.c
-> @@ -8,6 +8,7 @@
->  #include <linux/device.h>
->  #include <linux/err.h>
->  #include <linux/io.h>
-> +#include <linux/iopoll.h>
->  #include <linux/module.h>
->  #include <linux/of.h>
->  #include <linux/of_platform.h>
-> @@ -32,6 +33,10 @@
->  #define SMI_DUMMY			0x444
+> diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+> index aed44e9b5d89..0aa549653e4e 100644
+> --- a/include/linux/mmzone.h
+> +++ b/include/linux/mmzone.h
+> @@ -83,6 +83,12 @@ static inline bool is_migrate_movable(int mt)
+>  	return is_migrate_cma(mt) || mt == MIGRATE_MOVABLE;
+>  }
 >  
->  /* SMI LARB */
-> +#define SMI_LARB_SLP_CON                0xc
-> +#define SLP_PROT_EN                     BIT(0)
-> +#define SLP_PROT_RDY                    BIT(16)
-> +
->  #define SMI_LARB_CMD_THRT_CON		0x24
->  #define SMI_LARB_THRT_RD_NU_LMT_MSK	GENMASK(7, 4)
->  #define SMI_LARB_THRT_RD_NU_LMT		(5 << 4)
-> @@ -81,6 +86,7 @@
->  
->  #define MTK_SMI_FLAG_THRT_UPDATE	BIT(0)
->  #define MTK_SMI_FLAG_SW_FLAG		BIT(1)
-> +#define MTK_SMI_FLAG_SLEEP_CTL		BIT(2)
->  #define MTK_SMI_CAPS(flags, _x)		(!!((flags) & (_x)))
->  
->  struct mtk_smi_reg_pair {
-> @@ -371,6 +377,26 @@ static const struct of_device_id mtk_smi_larb_of_ids[] = {
->  	{}
->  };
->  
-> +static int mtk_smi_larb_sleep_ctrl_enable(struct mtk_smi_larb *larb)
+> +/* See fallbacks[MIGRATE_TYPES][3] in page_alloc.c */
+> +static inline bool migratetype_has_fallback(int mt)
 > +{
-> +	int ret;
-> +	u32 tmp;
-> +
-> +	writel_relaxed(SLP_PROT_EN, larb->base + SMI_LARB_SLP_CON);
-> +	ret = readl_poll_timeout_atomic(larb->base + SMI_LARB_SLP_CON,
-> +					tmp, !!(tmp & SLP_PROT_RDY), 10, 1000);
-> +	if (ret) {
-> +		/* TODO: Reset this larb if it fails here. */
-> +		dev_warn(larb->smi.dev, "sleep ctrl is not ready(0x%x).\n", tmp);
-> +	}
-> +	return ret;
+> +	return mt < MIGRATE_PCPTYPES;
 > +}
 > +
-> +static void mtk_smi_larb_sleep_ctrl_disable(struct mtk_smi_larb *larb)
+>  #define for_each_migratetype_order(order, type) \
+>  	for (order = 0; order < MAX_ORDER; order++) \
+>  		for (type = 0; type < MIGRATE_TYPES; type++)
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index 8dd6399bafb5..5193c953dbf8 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -1042,6 +1042,12 @@ buddy_merge_likely(unsigned long pfn, unsigned long buddy_pfn,
+>  	return page_is_buddy(higher_page, higher_buddy, order + 1);
+>  }
+>  
+> +static inline bool has_non_fallback_pageblock(struct zone *zone)
 > +{
-> +	writel_relaxed(0, larb->base + SMI_LARB_SLP_CON);
+> +	return has_isolate_pageblock(zone) || zone_cma_pages(zone) != 0 ||
+> +		zone->nr_reserved_highatomic != 0;
 > +}
-> +
->  static int mtk_smi_device_link_common(struct device *dev, struct device **com_dev)
->  {
->  	struct platform_device *smi_com_pdev;
-> @@ -483,6 +509,9 @@ static int __maybe_unused mtk_smi_larb_resume(struct device *dev)
->  	if (ret)
->  		return ret;
->  
-> +	if (MTK_SMI_CAPS(larb->larb_gen->flags_general, MTK_SMI_FLAG_SLEEP_CTL))
-> +		mtk_smi_larb_sleep_ctrl_disable(larb);
-> +
->  	/* Configure the basic setting for this larb */
->  	larb_gen->config_port(dev);
->  
-> @@ -492,9 +521,13 @@ static int __maybe_unused mtk_smi_larb_resume(struct device *dev)
->  static int __maybe_unused mtk_smi_larb_suspend(struct device *dev)
->  {
->  	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
-> +	int ret = 0;
-> +
-> +	if (MTK_SMI_CAPS(larb->larb_gen->flags_general, MTK_SMI_FLAG_SLEEP_CTL))
-> +		ret = mtk_smi_larb_sleep_ctrl_enable(larb);
->  
->  	clk_bulk_disable_unprepare(larb->smi.clk_num, larb->smi.clks);
-> -	return 0;
-> +	return ret;
 
-I am wondering whether disabling clocks in error case is a proper step.
-On suspend error, the PM core won't run any further callbacks on this
-device. This means, it won't be resumed and your clocks stay disabled. I
-think you should return early and leave the device in active state in
-case of error.
+Due to zone_cma_pages(), the unlikely() below will be very wrong on many
+setups. Previously, isolation really was a corner case. CMA and
+highatomic are less of a corner case ...
 
+I'm not even sure if this check is worth having around anymore at all,
+or if it would be easier and cheaper to just always check the both
+migration types unconditionally. Would certainly simplify the code.
 
-Best regards,
-Krzysztof
+Side node: we actually care about has_free_non_fallback_pageblock(), we
+can only merge with free pageblocks. But that might not necessarily be
+cheaper to test/track/check.
+
+> +
+>  /*
+>   * Freeing function for a buddy system allocator.
+>   *
+> @@ -1117,14 +1123,15 @@ static inline void __free_one_page(struct page *page,
+>  	}
+>  	if (order < MAX_ORDER - 1) {
+>  		/* If we are here, it means order is >= pageblock_order.
+> -		 * We want to prevent merge between freepages on isolate
+> -		 * pageblock and normal pageblock. Without this, pageblock
+> -		 * isolation could cause incorrect freepage or CMA accounting.
+> +		 * We want to prevent merge between freepages on pageblock
+> +		 * without fallbacks and normal pageblock. Without this,
+> +		 * pageblock isolation could cause incorrect freepage or CMA
+> +		 * accounting or HIGHATOMIC accounting.
+>  		 *
+>  		 * We don't want to hit this code for the more frequent
+>  		 * low-order merging.
+>  		 */
+> -		if (unlikely(has_isolate_pageblock(zone))) {
+> +		if (unlikely(has_non_fallback_pageblock(zone))) {
+>  			int buddy_mt;
+>  
+>  			buddy_pfn = __find_buddy_pfn(pfn, order);
+> @@ -1132,8 +1139,8 @@ static inline void __free_one_page(struct page *page,
+>  			buddy_mt = get_pageblock_migratetype(buddy);
+>  
+>  			if (migratetype != buddy_mt
+> -					&& (is_migrate_isolate(migratetype) ||
+> -						is_migrate_isolate(buddy_mt)))
+> +					&& (!migratetype_has_fallback(migratetype) ||
+> +						!migratetype_has_fallback(buddy_mt)))
+>  				goto done_merging;
+>  		}
+>  		max_order = order + 1;
+> @@ -2484,6 +2491,7 @@ static int fallbacks[MIGRATE_TYPES][3] = {
+>  	[MIGRATE_UNMOVABLE]   = { MIGRATE_RECLAIMABLE, MIGRATE_MOVABLE,   MIGRATE_TYPES },
+>  	[MIGRATE_MOVABLE]     = { MIGRATE_RECLAIMABLE, MIGRATE_UNMOVABLE, MIGRATE_TYPES },
+>  	[MIGRATE_RECLAIMABLE] = { MIGRATE_UNMOVABLE,   MIGRATE_MOVABLE,   MIGRATE_TYPES },
+> +	[MIGRATE_HIGHATOMIC] = { MIGRATE_TYPES }, /* Never used */
+>  #ifdef CONFIG_CMA
+>  	[MIGRATE_CMA]         = { MIGRATE_TYPES }, /* Never used */
+>  #endif
+> @@ -2795,8 +2803,8 @@ static void reserve_highatomic_pageblock(struct page *page, struct zone *zone,
+>  
+>  	/* Yoink! */
+>  	mt = get_pageblock_migratetype(page);
+> -	if (!is_migrate_highatomic(mt) && !is_migrate_isolate(mt)
+> -	    && !is_migrate_cma(mt)) {
+> +	/* Only reserve normal pageblock */
+> +	if (migratetype_has_fallback(mt)) {
+>  		zone->nr_reserved_highatomic += pageblock_nr_pages;
+>  		set_pageblock_migratetype(page, MIGRATE_HIGHATOMIC);
+>  		move_freepages_block(zone, page, MIGRATE_HIGHATOMIC, NULL);
+> @@ -3545,8 +3553,8 @@ int __isolate_free_page(struct page *page, unsigned int order)
+>  		struct page *endpage = page + (1 << order) - 1;
+>  		for (; page < endpage; page += pageblock_nr_pages) {
+>  			int mt = get_pageblock_migratetype(page);
+> -			if (!is_migrate_isolate(mt) && !is_migrate_cma(mt)
+> -			    && !is_migrate_highatomic(mt))
+> +			/* Only change normal pageblock */
+> +			if (migratetype_has_fallback(mt))
+>  				set_pageblock_migratetype(page,
+>  							  MIGRATE_MOVABLE);
+>  		}
+
+That part is a nice cleanup IMHO. Although the "has fallback" part is a
+bit imprecise. "migratetype_is_mergable()" might be a bit clearer.
+ideally "migratetype_is_mergable_with_other_types()". Can we come up
+with a nice name for that?
+
+-- 
+Thanks,
+
+David / dhildenb
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
