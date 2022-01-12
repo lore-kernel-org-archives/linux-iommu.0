@@ -4,75 +4,46 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 20122C433EF
-	for <iommu@archiver.kernel.org>; Wed, 12 Jan 2022 16:23:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BE847C433EF
+	for <iommu@archiver.kernel.org>; Wed, 12 Jan 2022 17:02:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id B38F884BC1;
-	Wed, 12 Jan 2022 16:23:53 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 6497683F89;
+	Wed, 12 Jan 2022 17:02:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KiQmuZs17cTX; Wed, 12 Jan 2022 16:23:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 0BE8584BB9;
-	Wed, 12 Jan 2022 16:23:51 +0000 (UTC)
+	with ESMTP id 2KDlabaodyr2; Wed, 12 Jan 2022 17:02:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 0FC5D83F65;
+	Wed, 12 Jan 2022 17:02:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DCF51C0030;
-	Wed, 12 Jan 2022 16:23:50 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4A307C001E
- for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 13:18:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CF679C0030;
+	Wed, 12 Jan 2022 17:02:29 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 51D8FC001E
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 17:02:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with UTF8SMTP id 4389D40191
- for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 13:18:31 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 3207E83F89
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 17:02:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=mg.codeaurora.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with UTF8SMTP id rrppwczTmIZL for <iommu@lists.linux-foundation.org>;
- Wed, 12 Jan 2022 13:18:27 +0000 (UTC)
-X-Greylist: delayed 00:05:02 by SQLgrey-1.8.0
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by smtp2.osuosl.org (Postfix) with UTF8SMTPS id A1412400DA
- for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 13:18:27 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1641993507; h=Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=t8UcX5N7QmTU7XeUfa4gdrtpln6WbR8NBAKQ1OyJ86A=;
- b=mfeOxuUPOp6/dVHY4JDD45/sDdyvQFaTJ9MvCTo2R2gxdDlBGEjdWm1U0Ob2wWlw3P+LffTH
- UA2+X3xR7+74s7DB/skLO28gQZibiClhrQzlTeSyDmCB7xLyv1lmj2/9Lw/rTxUuVp6H8tnf
- dL18Uxolx60HWRv7g7rfHzkQd2k=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 61ded3f3e0071250cf781d8f (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 12 Jan 2022 13:13:23
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id C307AC4338F; Wed, 12 Jan 2022 13:13:23 +0000 (UTC)
-Received: from vjitta-linux.qualcomm.com (unknown [202.46.22.19])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: vjitta)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 1113DC4338F;
- Wed, 12 Jan 2022 13:13:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 1113DC4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=fail (p=none dis=none) header.from=quicinc.com
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=fail smtp.mailfrom=quicinc.com
-From: Vijayanand Jitta <quic_vjitta@quicinc.com>
-To: joro@8bytes.org, will@kernel.org, iommu@lists.linux-foundation.org,
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id maUBJj9PEtck for <iommu@lists.linux-foundation.org>;
+ Wed, 12 Jan 2022 17:02:27 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 3EF7B83F65
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 17:02:27 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id 67A4525F; Wed, 12 Jan 2022 18:02:24 +0100 (CET)
+Date: Wed, 12 Jan 2022 18:02:23 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [git pull] IOMMU Updates for Linux v5.17
+Message-ID: <Yd8Jn2aUqblPfRvF@8bytes.org>
+MIME-Version: 1.0
+Cc: iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
  linux-kernel@vger.kernel.org
-Subject: [PATCH v3] iommu: Fix potential use-after-free during probe
-Date: Wed, 12 Jan 2022 18:43:04 +0530
-Message-Id: <1641993184-1232-1-git-send-email-quic_vjitta@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-X-Mailman-Approved-At: Wed, 12 Jan 2022 16:23:49 +0000
-Cc: vjitta@codeaurora.org, Vijayanand Jitta <quic_vjitta@quicinc.com>,
- kernel-team@android.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,156 +56,207 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============4999863351612262148=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Kasan has reported the following use after free on dev->iommu.
-when a device probe fails and it is in process of freeing dev->iommu
-in dev_iommu_free function, a deferred_probe_work_func runs in parallel
-and tries to access dev->iommu->fwspec in of_iommu_configure path thus
-causing use after free.
 
-BUG: KASAN: use-after-free in of_iommu_configure+0xb4/0x4a4
-Read of size 8 at addr ffffff87a2f1acb8 by task kworker/u16:2/153
+--===============4999863351612262148==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="d8vwtHnKPut+5Js9"
+Content-Disposition: inline
 
-Workqueue: events_unbound deferred_probe_work_func
-Call trace:
- dump_backtrace+0x0/0x33c
- show_stack+0x18/0x24
- dump_stack_lvl+0x16c/0x1e0
- print_address_description+0x84/0x39c
- __kasan_report+0x184/0x308
- kasan_report+0x50/0x78
- __asan_load8+0xc0/0xc4
- of_iommu_configure+0xb4/0x4a4
- of_dma_configure_id+0x2fc/0x4d4
- platform_dma_configure+0x40/0x5c
- really_probe+0x1b4/0xb74
- driver_probe_device+0x11c/0x228
- __device_attach_driver+0x14c/0x304
- bus_for_each_drv+0x124/0x1b0
- __device_attach+0x25c/0x334
- device_initial_probe+0x24/0x34
- bus_probe_device+0x78/0x134
- deferred_probe_work_func+0x130/0x1a8
- process_one_work+0x4c8/0x970
- worker_thread+0x5c8/0xaec
- kthread+0x1f8/0x220
- ret_from_fork+0x10/0x18
 
-Allocated by task 1:
- ____kasan_kmalloc+0xd4/0x114
- __kasan_kmalloc+0x10/0x1c
- kmem_cache_alloc_trace+0xe4/0x3d4
- __iommu_probe_device+0x90/0x394
- probe_iommu_group+0x70/0x9c
- bus_for_each_dev+0x11c/0x19c
- bus_iommu_probe+0xb8/0x7d4
- bus_set_iommu+0xcc/0x13c
- arm_smmu_bus_init+0x44/0x130 [arm_smmu]
- arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
- platform_drv_probe+0xe4/0x13c
- really_probe+0x2c8/0xb74
- driver_probe_device+0x11c/0x228
- device_driver_attach+0xf0/0x16c
- __driver_attach+0x80/0x320
- bus_for_each_dev+0x11c/0x19c
- driver_attach+0x38/0x48
- bus_add_driver+0x1dc/0x3a4
- driver_register+0x18c/0x244
- __platform_driver_register+0x88/0x9c
- init_module+0x64/0xff4 [arm_smmu]
- do_one_initcall+0x17c/0x2f0
- do_init_module+0xe8/0x378
- load_module+0x3f80/0x4a40
- __se_sys_finit_module+0x1a0/0x1e4
- __arm64_sys_finit_module+0x44/0x58
- el0_svc_common+0x100/0x264
- do_el0_svc+0x38/0xa4
- el0_svc+0x20/0x30
- el0_sync_handler+0x68/0xac
- el0_sync+0x160/0x180
+--d8vwtHnKPut+5Js9
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Freed by task 1:
- kasan_set_track+0x4c/0x84
- kasan_set_free_info+0x28/0x4c
- ____kasan_slab_free+0x120/0x15c
- __kasan_slab_free+0x18/0x28
- slab_free_freelist_hook+0x204/0x2fc
- kfree+0xfc/0x3a4
- __iommu_probe_device+0x284/0x394
- probe_iommu_group+0x70/0x9c
- bus_for_each_dev+0x11c/0x19c
- bus_iommu_probe+0xb8/0x7d4
- bus_set_iommu+0xcc/0x13c
- arm_smmu_bus_init+0x44/0x130 [arm_smmu]
- arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
- platform_drv_probe+0xe4/0x13c
- really_probe+0x2c8/0xb74
- driver_probe_device+0x11c/0x228
- device_driver_attach+0xf0/0x16c
- __driver_attach+0x80/0x320
- bus_for_each_dev+0x11c/0x19c
- driver_attach+0x38/0x48
- bus_add_driver+0x1dc/0x3a4
- driver_register+0x18c/0x244
- __platform_driver_register+0x88/0x9c
- init_module+0x64/0xff4 [arm_smmu]
- do_one_initcall+0x17c/0x2f0
- do_init_module+0xe8/0x378
- load_module+0x3f80/0x4a40
- __se_sys_finit_module+0x1a0/0x1e4
- __arm64_sys_finit_module+0x44/0x58
- el0_svc_common+0x100/0x264
- do_el0_svc+0x38/0xa4
- el0_svc+0x20/0x30
- el0_sync_handler+0x68/0xac
- el0_sync+0x160/0x180
+Hi Linus,
 
-Fix this by taking device_lock during probe_iommu_group.
+The following changes since commit c9e6606c7fe92b50a02ce51dda82586ebdf99b48:
 
-Signed-off-by: Vijayanand Jitta <quic_vjitta@quicinc.com>
----
- drivers/iommu/iommu.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+  Linux 5.16-rc8 (2022-01-02 14:23:25 -0800)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index dd7863e..261792d 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1617,7 +1617,7 @@ static int probe_iommu_group(struct device *dev, void *data)
- {
- 	struct list_head *group_list = data;
- 	struct iommu_group *group;
--	int ret;
-+	int ret = 0;
- 
- 	/* Device is probed already if in a group */
- 	group = iommu_group_get(dev);
-@@ -1626,9 +1626,13 @@ static int probe_iommu_group(struct device *dev, void *data)
- 		return 0;
- 	}
- 
--	ret = __iommu_probe_device(dev, group_list);
--	if (ret == -ENODEV)
--		ret = 0;
-+	ret = device_trylock(dev);
-+	if (ret) {
-+		ret = __iommu_probe_device(dev, group_list);
-+		if (ret == -ENODEV)
-+			ret = 0;
-+		device_unlock(dev);
-+	}
- 
- 	return ret;
- }
--- 
-2.7.4
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git iommu-update=
+s-v5.17
+
+for you to fetch changes up to 66dc1b791c5839d64d261c8b40250a33e6da050b:
+
+  Merge branches 'arm/smmu', 'virtio', 'x86/amd', 'x86/vt-d' and 'core' int=
+o next (2022-01-04 10:33:45 +0100)
+
+----------------------------------------------------------------
+IOMMU Updates for Linux v5.17
+
+Including:
+
+	- Identity domain support for virtio-iommu
+
+	- Move flush queue code into iommu-dma
+
+	- Some fixes for AMD IOMMU suspend/resume support when x2apic
+	  is used
+
+	- Arm SMMU Updates from Will Deacon:
+	  - Revert evtq and priq back to their former sizes
+	  - Return early on short-descriptor page-table allocation failure
+	  - Fix page fault reporting for Adreno GPU on SMMUv2
+	  - Make SMMUv3 MMU notifier ops 'const'
+	  - Numerous new compatible strings for Qualcomm SMMUv2 implementations
+
+	- Various smaller fixes and cleanups
+
+----------------------------------------------------------------
+Christophe JAILLET (1):
+      iommu/vt-d: Use bitmap_zalloc() when applicable
+
+Dafna Hirschfeld (1):
+      iommu: Log iova range in map/unmap trace events
+
+David Heidelberg (1):
+      dt-bindings: arm-smmu: Add compatible for the SDX55 SoC
+
+Hector Martin (1):
+      iommu/io-pgtable-arm: Fix table descriptor paddr formatting
+
+Jean-Philippe Brucker (5):
+      iommu/virtio: Add definitions for VIRTIO_IOMMU_F_BYPASS_CONFIG
+      iommu/virtio: Support bypass domains
+      iommu/virtio: Sort reserved regions
+      iommu/virtio: Pass end address to viommu_add_mapping()
+      iommu/virtio: Support identity-mapped domains
+
+Joerg Roedel (3):
+      Merge tag 'arm-smmu-updates' of git://git.kernel.org/pub/scm/linux/ke=
+rnel/git/will/linux into arm/smmu
+      iommu/iova: Temporarily include dma-mapping.h from iova.h
+      Merge branches 'arm/smmu', 'virtio', 'x86/amd', 'x86/vt-d' and 'core'=
+ into next
+
+John Garry via iommu (1):
+      iommu/iova: Move fast alloc size roundup into alloc_iova_fast()
+
+Kees Cook (1):
+      iommu/vt-d: Use correctly sized arguments for bit field
+
+Kefeng Wang (1):
+      iommu/vt-d: Drop duplicate check in dma_pte_free_pagetable()
+
+Lu Baolu (2):
+      iommu: Extend mutex lock scope in iommu_probe_device()
+      iommu/vt-d: Remove unused macros
+
+Matthew Wilcox (Oracle) (2):
+      iommu/amd: Use put_pages_list
+      iommu/vt-d: Use put_pages_list
+
+Maxim Levitsky (5):
+      iommu/amd: Restore GA log/tail pointer on host resume
+      iommu/amd: X2apic mode: re-enable after resume
+      iommu/amd: X2apic mode: setup the INTX registers on mask/unmask
+      iommu/amd: X2apic mode: mask/unmask interrupts on suspend/resume
+      iommu/amd: Remove useless irq affinity notifier
+
+Ma=C3=ADra Canal (1):
+      iommu/vt-d: Remove unused dma_to_mm_pfn function
+
+Paul Menzel (1):
+      iommu/amd: Fix typo in *glues =E2=80=A6 together* in comment
+
+Rikard Falkeborn (1):
+      iommu/arm-smmu-v3: Constify arm_smmu_mmu_notifier_ops
+
+Rob Clark (1):
+      iommu/arm-smmu-qcom: Fix TTBR0 read
+
+Robin Murphy (6):
+      iommu/iova: Squash entry_dtor abstraction
+      iommu/iova: Squash flush_cb abstraction
+      iommu/amd: Simplify pagetable freeing
+      iommu/iova: Consolidate flush queue code
+      iommu/iova: Move flush queue code to iommu-dma
+      iommu: Move flush queue data into iommu_dma_cookie
+
+Vinod Koul (2):
+      dt-bindings: arm-smmu: Add compatible for SM8450 SoC
+      iommu: arm-smmu-impl: Add SM8450 qcom iommu implementation
+
+Xiang wangx (1):
+      iommu/virtio: Fix typo in a comment
+
+Xiongfeng Wang (1):
+      iommu/iova: Fix race between FQ timeout and teardown
+
+Yunfei Wang (1):
+      iommu/io-pgtable-arm-v7s: Add error handle for page table allocation =
+failure
+
+Zhou Wang (1):
+      Revert "iommu/arm-smmu-v3: Decrease the queue size of evtq and priq"
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |   2 +
+ drivers/iommu/amd/amd_iommu_types.h                |   2 -
+ drivers/iommu/amd/init.c                           | 109 ++++----
+ drivers/iommu/amd/io_pgtable.c                     | 110 +++------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    |   2 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |   5 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   3 +-
+ drivers/iommu/dma-iommu.c                          | 274 ++++++++++++++++-=
+----
+ drivers/iommu/intel/iommu.c                        | 111 +++------
+ drivers/iommu/io-pgtable-arm-v7s.c                 |   6 +-
+ drivers/iommu/io-pgtable-arm.c                     |   9 +-
+ drivers/iommu/iommu.c                              |   3 +-
+ drivers/iommu/iova.c                               | 209 +---------------
+ drivers/iommu/virtio-iommu.c                       | 115 +++++++--
+ drivers/vdpa/vdpa_user/iova_domain.c               |   8 -
+ include/linux/intel-svm.h                          |   6 -
+ include/linux/iommu.h                              |   3 +-
+ include/linux/iova.h                               |  68 +----
+ include/trace/events/iommu.h                       |  10 +-
+ include/uapi/linux/virtio_iommu.h                  |   8 +-
+ 20 files changed, 493 insertions(+), 570 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--d8vwtHnKPut+5Js9
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmHfCZcACgkQK/BELZcB
+GuPYbA/8DJ3UDORB+m9PPRo59QhfMsTtrJVMNxPUYan3Nfoz+l6K8QZc8lMVG6xY
+TN7I9ptXi0TdZHbGUA/1YKgZlkXqQj60K9YK/0TBkwB/MwN2utQigbjZSRQPT3Zd
+2D6y+mnMSX+j+mCWtwpttJkgriUPtk7eDkK2ur3Ex2QocfBnH1ObuL0ufQrj5XN8
+A68YMLfl3bhn6X9RAuxBh15RZXHYyk7AK1NIFOxY4tKFiSk18QRl1y3in8o39kV2
+lkDs4ggjh+TgE65+1Rrx1Cl9FV3kbwrkAkBVCKtyQjuPsYRZpw38bg1JWOg4imSY
+sp9AXkJdmmFPECdEcE82++CCDp00S89Hh3NgoAhuhLD75h4zV2puYUdv6FgFOBif
+bSZq3/Q7psQ9cjsamkjv8fq7gfqQHGS6P3g5Wtm/MGV4Ksv/dE9MnUcdszqpVVdr
+9Hq1Fd/OvRDaqnuDIPRRTvzD5EbrnVBAEsXHXQEkZWNvlmPRnyfAnCgC5F4/6pw5
+U2w8acAk9sFZHgtEEJK/GqvMGsmZ+Z9P58EXWpZz9/ovwQNpg/LtZp9bLG7cA8vM
+xHe+HpJoEBMjZhaqVrngLBUjntZGac9aq35JRCd7/VlBD3qlEvLiQaAV6uWfomJG
+FweCzpso0Q18sxH+bqOx0b2tFXYTsCylbvygZJqLSbMiU2Jfrio=
+=gWcn
+-----END PGP SIGNATURE-----
+
+--d8vwtHnKPut+5Js9--
+
+--===============4999863351612262148==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============4999863351612262148==--
