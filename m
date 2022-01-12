@@ -1,123 +1,80 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CDC28C433F5
-	for <iommu@archiver.kernel.org>; Tue, 11 Jan 2022 13:04:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3C02CC4167B
+	for <iommu@archiver.kernel.org>; Wed, 12 Jan 2022 02:09:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 7443560B86;
-	Tue, 11 Jan 2022 13:04:27 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id C6AB983ED8;
+	Wed, 12 Jan 2022 02:09:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9LGn873vtq3K; Tue, 11 Jan 2022 13:04:26 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 06FCB60B61;
-	Tue, 11 Jan 2022 13:04:25 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 24ghV230fUHy; Wed, 12 Jan 2022 02:09:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 8B02E83E3A;
+	Wed, 12 Jan 2022 02:09:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C2973C002F;
-	Tue, 11 Jan 2022 13:04:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 53E5BC0030;
+	Wed, 12 Jan 2022 02:09:00 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5E998C001E
- for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 13:04:24 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B4EACC001E
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 02:08:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 368D2813E5
- for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 13:04:24 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id A263683E64
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 02:08:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PKuJvla8DIWR for <iommu@lists.linux-foundation.org>;
- Tue, 11 Jan 2022 13:04:23 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.129.124])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 07736816F5
- for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 13:04:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1641906261;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=CnoXRZzxHpYZJCWWJWjQzv34cSxRuBzuUNROP7tocqU=;
- b=J7ie4awMUKp0X52WIJ4CV5Qxr2LakL28ytYOoKgQITNXvU9CNe3qs3IDReFf5unlz9AKQB
- Tu1X/N+gH1psYAw3N6kdPipV0FuOAX21+FkZgvnO/OLQN6NpKwpiJDY2n6IejNhWeLpMro
- oLdkfXa7LzoZEmEeIM8JQc6SBxRBv/A=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-185-NdPAs3EBOGKEHt5WCzajiQ-1; Tue, 11 Jan 2022 08:04:20 -0500
-X-MC-Unique: NdPAs3EBOGKEHt5WCzajiQ-1
-Received: by mail-ed1-f72.google.com with SMTP id
- x19-20020a05640226d300b003f8b80f5729so13136268edd.13
- for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 05:04:20 -0800 (PST)
+ with ESMTP id tsWVqViPcYsj for <iommu@lists.linux-foundation.org>;
+ Wed, 12 Jan 2022 02:08:57 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com
+ [209.85.210.44])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 65E2A83E3A
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 02:08:57 +0000 (UTC)
+Received: by mail-ot1-f44.google.com with SMTP id
+ t6-20020a9d7746000000b005917e6b96ffso932715otl.7
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Jan 2022 18:08:57 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:content-transfer-encoding
- :in-reply-to;
- bh=CnoXRZzxHpYZJCWWJWjQzv34cSxRuBzuUNROP7tocqU=;
- b=WkyP98yu+YUBcane3r74JeTyhsJW715b65NTdevZTRAttCBdO3NqAoLbjQKFuR2bKb
- Hyjr0tDbyEfjgGnO50eEu/839TUE/FMRCFYILoVbdWNAnwjfyfO9ZeMUhMJx3GEUcAuY
- 9cy52GosgMSbaUXFWXFoyhtWYNogxSSF8pPkmTJ9lV0+oBUCB2aMyAHevukRMz8DvSkl
- lhWuH0JvVC8Mj5HlPJDxKuLeLaH48kHQ+IJkoYn6tN0GzZLExOyhksdSUHYHFuK6Rd8a
- worSi1NJoJOS2QYK7m4yR1D/u/O5qnyL6UC9kl5GSTA0voo5/upRWSSkyrli55uiYJOC
- e6Hw==
-X-Gm-Message-State: AOAM5335UIv0OkakXjGm9uty7DIH1B/UXh2dCgPMmuH+7wbbBZulcg37
- ohObjh59EcY7KCWfkE/z7tdb+keQoviWv+mc7tLTfhbTZtUC0gMyi5bn/mfwGgG0hXzDaBKKSgo
- PCbo4xh+Fsuxb+b9dIwkcnjtQZg0L+Q==
-X-Received: by 2002:a17:906:3707:: with SMTP id
- d7mr3673149ejc.688.1641906259347; 
- Tue, 11 Jan 2022 05:04:19 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyufWlr/Lw1gvdqS0EUpwg1gh0cWIzsXPiLkrC7aOl+Vt8tOWZrM6glrUNIyzIuktDWyNcriw==
-X-Received: by 2002:a17:906:3707:: with SMTP id
- d7mr3673099ejc.688.1641906259017; 
- Tue, 11 Jan 2022 05:04:19 -0800 (PST)
-Received: from redhat.com ([2.55.5.100])
- by smtp.gmail.com with ESMTPSA id j5sm3591214ejo.171.2022.01.11.05.04.13
+ :mime-version:content-disposition:in-reply-to;
+ bh=Qv9s6j6RhpBxf9d3C4bU6cUX2QC6sqzpiw6XcMn6uWs=;
+ b=tcrep2ke+Zsve3RHMdgI7jgw8+e6J115bl4e5YX9ExE4ptUI1KGHebhJpK17QXjNY4
+ +YTXcgM+DflgCVdOG8aZzkHThXf32kYBlrqCgJdqU6ntAWXXTiSrKApdEoQ5A60CzRG0
+ p3TkmadXS5MG/E2pBSrTbyNjDIM+PmJRwYiT+Hs+o8KXmszT+WbrH+YCWE3QEg2qlSrK
+ E7SKWQaYQ3lzrDILWB3pTQfksJKNAYvdtUPDETmYBLVjCMuVhH5aD5povYrOvN67+eRX
+ uX7L+7NBFPneXnFPz9QNFjff0CgTbMx9b1nfWZaUqcxZDQIynqxlBpcAthsDmQNf9VOR
+ ullQ==
+X-Gm-Message-State: AOAM5325OiCPnuPwTU3MCiVaU3xs/fmpfTT3gmL2nGg9N9UKVbJyXrTB
+ 9iON32/8LT5vevW2zX0aFg==
+X-Google-Smtp-Source: ABdhPJxfv0f51SXHqiaN8up+LH1wKKQXWgiNH9sgJV6XwJhYYOsdxuIDMthbn17PAW5R5z5TV6yVGQ==
+X-Received: by 2002:a05:6830:13d5:: with SMTP id
+ e21mr5234752otq.168.1641953336418; 
+ Tue, 11 Jan 2022 18:08:56 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net.
+ [66.90.148.213])
+ by smtp.gmail.com with ESMTPSA id e69sm113007ote.1.2022.01.11.18.08.54
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 11 Jan 2022 05:04:18 -0800 (PST)
-Date: Tue, 11 Jan 2022 08:04:10 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Yongji Xie <xieyongji@bytedance.com>
-Subject: Re: [PATCH v12 00/13] Introduce VDUSE - vDPA Device in Userspace
-Message-ID: <20220111080359-mutt-send-email-mst@kernel.org>
-References: <20210830141737.181-1-xieyongji@bytedance.com>
- <20220110075546-mutt-send-email-mst@kernel.org>
- <CACycT3v1aEViw7vV4x5qeGVPrSrO-BTDvQshEX35rx_X0Au2vw@mail.gmail.com>
- <20220110100911-mutt-send-email-mst@kernel.org>
- <CACycT3v6jo3-8ATWUzf659vV94a2oRrm-zQtGNDZd6OQr-MENA@mail.gmail.com>
- <20220110103938-mutt-send-email-mst@kernel.org>
- <CACycT3sbJC1Jn7NeWk_ccQ_2_YgKybjugfxmKpfgCP3Ayoju4w@mail.gmail.com>
- <20220111065301-mutt-send-email-mst@kernel.org>
- <CACycT3sdfAbdByKJwg8N-Jb2qVDdgfSqprp_aOp5fpYz4LxmgA@mail.gmail.com>
+ Tue, 11 Jan 2022 18:08:55 -0800 (PST)
+Received: (nullmailer pid 3925789 invoked by uid 1000);
+ Wed, 12 Jan 2022 02:08:54 -0000
+Date: Tue, 11 Jan 2022 20:08:54 -0600
+From: Rob Herring <robh@kernel.org>
+To: David Heidelberg <david@ixit.cz>
+Subject: Re: [PATCH v3] dt-bindings: iommu: Convert msm,iommu-v0 to yaml
+Message-ID: <Yd44NhcBWh1c4vuV@robh.at.kernel.org>
+References: <20220108184143.69479-1-david@ixit.cz>
 MIME-Version: 1.0
-In-Reply-To: <CACycT3sdfAbdByKJwg8N-Jb2qVDdgfSqprp_aOp5fpYz4LxmgA@mail.gmail.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=mst@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
 Content-Disposition: inline
-Cc: kvm <kvm@vger.kernel.org>, Jason Wang <jasowang@redhat.com>,
- virtualization <virtualization@lists.linux-foundation.org>,
- Christian Brauner <christian.brauner@canonical.com>,
- Will Deacon <will@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Matthew Wilcox <willy@infradead.org>, Christoph Hellwig <hch@infradead.org>,
- Dan Carpenter <dan.carpenter@oracle.com>,
- Stefano Garzarella <sgarzare@redhat.com>,
- Liu Xiaodong <xiaodong.liu@intel.com>, linux-fsdevel@vger.kernel.org,
- Al Viro <viro@zeniv.linux.org.uk>, Stefan Hajnoczi <stefanha@redhat.com>,
- songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
- He Zhe <zhe.he@windriver.com>, Greg KH <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- bcrl@kvack.org, Netdev <netdev@vger.kernel.org>, Joe Perches <joe@perches.com>,
- Robin Murphy <robin.murphy@arm.com>,
- Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>
+In-Reply-To: <20220108184143.69479-1-david@ixit.cz>
+Cc: devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Andy Gross <agross@kernel.org>, Will Deacon <will@kernel.org>,
+ ~okias/devicetree@lists.sr.ht
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -130,168 +87,211 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gVHVlLCBKYW4gMTEsIDIwMjIgYXQgMDg6NTc6NDlQTSArMDgwMCwgWW9uZ2ppIFhpZSB3cm90
-ZToKPiBPbiBUdWUsIEphbiAxMSwgMjAyMiBhdCA3OjU0IFBNIE1pY2hhZWwgUy4gVHNpcmtpbiA8
-bXN0QHJlZGhhdC5jb20+IHdyb3RlOgo+ID4KPiA+IE9uIFR1ZSwgSmFuIDExLCAyMDIyIGF0IDEx
-OjMxOjM3QU0gKzA4MDAsIFlvbmdqaSBYaWUgd3JvdGU6Cj4gPiA+IE9uIE1vbiwgSmFuIDEwLCAy
-MDIyIGF0IDExOjQ0IFBNIE1pY2hhZWwgUy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+IHdyb3Rl
-Ogo+ID4gPiA+Cj4gPiA+ID4gT24gTW9uLCBKYW4gMTAsIDIwMjIgYXQgMTE6MjQ6NDBQTSArMDgw
-MCwgWW9uZ2ppIFhpZSB3cm90ZToKPiA+ID4gPiA+IE9uIE1vbiwgSmFuIDEwLCAyMDIyIGF0IDEx
-OjEwIFBNIE1pY2hhZWwgUy4gVHNpcmtpbiA8bXN0QHJlZGhhdC5jb20+IHdyb3RlOgo+ID4gPiA+
-ID4gPgo+ID4gPiA+ID4gPiBPbiBNb24sIEphbiAxMCwgMjAyMiBhdCAwOTo1NDowOFBNICswODAw
-LCBZb25namkgWGllIHdyb3RlOgo+ID4gPiA+ID4gPiA+IE9uIE1vbiwgSmFuIDEwLCAyMDIyIGF0
-IDg6NTcgUE0gTWljaGFlbCBTLiBUc2lya2luIDxtc3RAcmVkaGF0LmNvbT4gd3JvdGU6Cj4gPiA+
-ID4gPiA+ID4gPgo+ID4gPiA+ID4gPiA+ID4gT24gTW9uLCBBdWcgMzAsIDIwMjEgYXQgMTA6MTc6
-MjRQTSArMDgwMCwgWGllIFlvbmdqaSB3cm90ZToKPiA+ID4gPiA+ID4gPiA+ID4gVGhpcyBzZXJp
-ZXMgaW50cm9kdWNlcyBhIGZyYW1ld29yayB0aGF0IG1ha2VzIGl0IHBvc3NpYmxlIHRvIGltcGxl
-bWVudAo+ID4gPiA+ID4gPiA+ID4gPiBzb2Z0d2FyZS1lbXVsYXRlZCB2RFBBIGRldmljZXMgaW4g
-dXNlcnNwYWNlLiBBbmQgdG8gbWFrZSB0aGUgZGV2aWNlCj4gPiA+ID4gPiA+ID4gPiA+IGVtdWxh
-dGlvbiBtb3JlIHNlY3VyZSwgdGhlIGVtdWxhdGVkIHZEUEEgZGV2aWNlJ3MgY29udHJvbCBwYXRo
-IGlzIGhhbmRsZWQKPiA+ID4gPiA+ID4gPiA+ID4gaW4gdGhlIGtlcm5lbCBhbmQgb25seSB0aGUg
-ZGF0YSBwYXRoIGlzIGltcGxlbWVudGVkIGluIHRoZSB1c2Vyc3BhY2UuCj4gPiA+ID4gPiA+ID4g
-PiA+Cj4gPiA+ID4gPiA+ID4gPiA+IFNpbmNlIHRoZSBlbXVsZGF0ZWQgdkRQQSBkZXZpY2UncyBj
-b250cm9sIHBhdGggaXMgaGFuZGxlZCBpbiB0aGUga2VybmVsLAo+ID4gPiA+ID4gPiA+ID4gPiBh
-IG1lc3NhZ2UgbWVjaG5pc20gaXMgaW50cm9kdWNlZCB0byBtYWtlIHVzZXJzcGFjZSBiZSBhd2Fy
-ZSBvZiB0aGUgZGF0YQo+ID4gPiA+ID4gPiA+ID4gPiBwYXRoIHJlbGF0ZWQgY2hhbmdlcy4gVXNl
-cnNwYWNlIGNhbiB1c2UgcmVhZCgpL3dyaXRlKCkgdG8gcmVjZWl2ZS9yZXBseQo+ID4gPiA+ID4g
-PiA+ID4gPiB0aGUgY29udHJvbCBtZXNzYWdlcy4KPiA+ID4gPiA+ID4gPiA+ID4KPiA+ID4gPiA+
-ID4gPiA+ID4gSW4gdGhlIGRhdGEgcGF0aCwgdGhlIGNvcmUgaXMgbWFwcGluZyBkbWEgYnVmZmVy
-IGludG8gVkRVU0UgZGFlbW9uJ3MKPiA+ID4gPiA+ID4gPiA+ID4gYWRkcmVzcyBzcGFjZSwgd2hp
-Y2ggY2FuIGJlIGltcGxlbWVudGVkIGluIGRpZmZlcmVudCB3YXlzIGRlcGVuZGluZyBvbgo+ID4g
-PiA+ID4gPiA+ID4gPiB0aGUgdmRwYSBidXMgdG8gd2hpY2ggdGhlIHZEUEEgZGV2aWNlIGlzIGF0
-dGFjaGVkLgo+ID4gPiA+ID4gPiA+ID4gPgo+ID4gPiA+ID4gPiA+ID4gPiBJbiB2aXJ0aW8tdmRw
-YSBjYXNlLCB3ZSBpbXBsZW1lbnRzIGEgTU1VLWJhc2VkIHNvZnR3YXJlIElPVExCIHdpdGgKPiA+
-ID4gPiA+ID4gPiA+ID4gYm91bmNlLWJ1ZmZlcmluZyBtZWNoYW5pc20gdG8gYWNoaWV2ZSB0aGF0
-LiBBbmQgaW4gdmhvc3QtdmRwYSBjYXNlLCB0aGUgZG1hCj4gPiA+ID4gPiA+ID4gPiA+IGJ1ZmZl
-ciBpcyByZXNpZGUgaW4gYSB1c2Vyc3BhY2UgbWVtb3J5IHJlZ2lvbiB3aGljaCBjYW4gYmUgc2hh
-cmVkIHRvIHRoZQo+ID4gPiA+ID4gPiA+ID4gPiBWRFVTRSB1c2Vyc3BhY2UgcHJvY2Vzc3Mgdmlh
-IHRyYW5zZmVycmluZyB0aGUgc2htZmQuCj4gPiA+ID4gPiA+ID4gPiA+Cj4gPiA+ID4gPiA+ID4g
-PiA+IFRoZSBkZXRhaWxzIGFuZCBvdXIgdXNlciBjYXNlIGlzIHNob3duIGJlbG93Ogo+ID4gPiA+
-ID4gPiA+ID4gPgo+ID4gPiA+ID4gPiA+ID4gPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0gICAg
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSAgIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0KPiA+ID4gPiA+ID4gPiA+ID4gfCAgICAgICAgICAgIENvbnRhaW5l
-ciB8ICAgIHwgICAgICAgICAgICAgIFFFTVUoVk0pIHwgICB8ICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgIFZEVVNFIGRhZW1vbiB8Cj4gPiA+ID4gPiA+ID4gPiA+IHwgICAgICAgLS0tLS0t
-LS0tICAgICAgfCAgICB8ICAtLS0tLS0tLS0tLS0tLS0tLS0tICB8ICAgfCAtLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tIC0tLS0tLS0tLS0tLS0tLS0gfAo+ID4gPiA+ID4gPiA+ID4gPiB8ICAgICAg
-IHxkZXYvdmR4fCAgICAgIHwgICAgfCAgfC9kZXYvdmhvc3QtdmRwYS14fCAgfCAgIHwgfCB2RFBB
-IGRldmljZSBlbXVsYXRpb24gfCB8IGJsb2NrIGRyaXZlciB8IHwKPiA+ID4gPiA+ID4gPiA+ID4g
-LS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tICAgICAtLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0gICAt
-LS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rLS0tLS0tLS0tCj4gPiA+ID4gPiA+
-ID4gPiA+ICAgICAgICAgICAgIHwgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIHwgICAgICAgICAgICAgICAgICAgICAgfAo+ID4gPiA+ID4gPiA+
-ID4gPiAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgIHwKPiA+ID4gPiA+ID4gPiA+
-ID4gLS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rLS0tLS0tLS0tCj4gPiA+ID4g
-PiA+ID4gPiA+IHwgICAgfCBibG9jayBkZXZpY2UgfCAgICAgICAgICAgfCAgdmhvc3QgZGV2aWNl
-IHwgICAgICAgICAgICB8IHZkdXNlIGRyaXZlciB8ICAgICAgICAgIHwgVENQL0lQIHwgICAgfAo+
-ID4gPiA+ID4gPiA+ID4gPiB8ICAgIC0tLS0tLS0rLS0tLS0tLS0gICAgICAgICAgIC0tLS0tLS0t
-Ky0tLS0tLS0tICAgICAgICAgICAgLS0tLS0tLSstLS0tLS0tLSAgICAgICAgICAtLS0tLSstLS0t
-ICAgIHwKPiA+ID4gPiA+ID4gPiA+ID4gfCAgICAgICAgICAgfCAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIHwgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAg
-ICB8ICAgICAgICB8Cj4gPiA+ID4gPiA+ID4gPiA+IHwgLS0tLS0tLS0tLSstLS0tLS0tLS0tICAg
-ICAgIC0tLS0tLS0tLS0rLS0tLS0tLS0tLS0gICAgICAgICAtLS0tLS0tKy0tLS0tLS0gICAgICAg
-ICAgICAgICAgfCAgICAgICAgfAo+ID4gPiA+ID4gPiA+ID4gPiB8IHwgdmlydGlvLWJsayBkcml2
-ZXIgfCAgICAgICB8ICB2aG9zdC12ZHBhIGRyaXZlciB8ICAgICAgICAgfCB2ZHBhIGRldmljZSB8
-ICAgICAgICAgICAgICAgIHwgICAgICAgIHwKPiA+ID4gPiA+ID4gPiA+ID4gfCAtLS0tLS0tLS0t
-Ky0tLS0tLS0tLS0gICAgICAgLS0tLS0tLS0tLSstLS0tLS0tLS0tLSAgICAgICAgIC0tLS0tLS0r
-LS0tLS0tLSAgICAgICAgICAgICAgICB8ICAgICAgICB8Cj4gPiA+ID4gPiA+ID4gPiA+IHwgICAg
-ICAgICAgIHwgICAgICB2aXJ0aW8gYnVzICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgfAo+ID4gPiA+ID4gPiA+ID4g
-PiB8ICAgLS0tLS0tLS0rLS0tLSstLS0tLS0tLS0tLSAgICAgICAgICAgfCAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIHwgICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAgIHwKPiA+ID4gPiA+
-ID4gPiA+ID4gfCAgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAg
-ICAgICAgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgICB8Cj4g
-PiA+ID4gPiA+ID4gPiA+IHwgICAgICAtLS0tLS0tLS0tKy0tLS0tLS0tLS0gICAgICAgICAgICB8
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgfCAgICAg
-ICAgfAo+ID4gPiA+ID4gPiA+ID4gPiB8ICAgICAgfCB2aXJ0aW8tYmxrIGRldmljZSB8ICAgICAg
-ICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAgICAgICAgICAgICAgICAg
-IHwgICAgICAgIHwKPiA+ID4gPiA+ID4gPiA+ID4gfCAgICAgIC0tLS0tLS0tLS0rLS0tLS0tLS0t
-LSAgICAgICAgICAgIHwgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAg
-ICAgICAgICB8ICAgICAgICB8Cj4gPiA+ID4gPiA+ID4gPiA+IHwgICAgICAgICAgICAgICAgfCAg
-ICAgICAgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAg
-ICAgICAgICAgICAgICAgfCAgICAgICAgfAo+ID4gPiA+ID4gPiA+ID4gPiB8ICAgICAtLS0tLS0t
-LS0tLSstLS0tLS0tLS0tLSAgICAgICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgIHwg
-ICAgICAgICAgICAgICAgICAgICAgIHwgICAgICAgIHwKPiA+ID4gPiA+ID4gPiA+ID4gfCAgICAg
-fCAgdmlydGlvLXZkcGEgZHJpdmVyIHwgICAgICAgICAgIHwgICAgICAgICAgICAgICAgICAgICAg
-ICAgICB8ICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgICB8Cj4gPiA+ID4gPiA+ID4gPiA+
-IHwgICAgIC0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tICAgICAgICAgICB8ICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgfAo+ID4gPiA+ID4g
-PiA+ID4gPiB8ICAgICAgICAgICAgICAgIHwgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIHwgICAgdmRwYSBidXMgICAgICAgICAgIHwgICAgICAgIHwKPiA+
-ID4gPiA+ID4gPiA+ID4gfCAgICAgLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSst
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tICAgICAgICAgICB8ICAgICAg
-ICB8Cj4gPiA+ID4gPiA+ID4gPiA+IHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLS0t
-Ky0tLSAgICAgfAo+ID4gPiA+ID4gPiA+ID4gPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLXwgTklDIHwtLS0tLS0KPiA+ID4gPiA+ID4gPiA+ID4gICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAtLS0rLS0tCj4gPiA+ID4gPiA+ID4gPiA+ICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgfAo+ID4gPiA+ID4gPiA+ID4gPiAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIC0tLS0tLS0tLSstLS0tLS0tLS0KPiA+ID4gPiA+ID4gPiA+ID4gICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICB8IFJlbW90ZSBTdG9yYWdlcyB8Cj4gPiA+ID4gPiA+ID4gPiA+ICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgLS0tLS0tLS0tLS0tLS0tLS0tLQo+ID4gPiA+ID4gPiA+ID4gPgo+
-ID4gPiA+ID4gPiA+ID4gPiBXZSBtYWtlIHVzZSBvZiBpdCB0byBpbXBsZW1lbnQgYSBibG9jayBk
-ZXZpY2UgY29ubmVjdGluZyB0bwo+ID4gPiA+ID4gPiA+ID4gPiBvdXIgZGlzdHJpYnV0ZWQgc3Rv
-cmFnZSwgd2hpY2ggY2FuIGJlIHVzZWQgYm90aCBpbiBjb250YWluZXJzIGFuZAo+ID4gPiA+ID4g
-PiA+ID4gPiBWTXMuIFRodXMsIHdlIGNhbiBoYXZlIGFuIHVuaWZpZWQgdGVjaG5vbG9neSBzdGFj
-ayBpbiB0aGlzIHR3byBjYXNlcy4KPiA+ID4gPiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4gPiA+ID4g
-VG8gdGVzdCBpdCB3aXRoIG51bGwtYmxrOgo+ID4gPiA+ID4gPiA+ID4gPgo+ID4gPiA+ID4gPiA+
-ID4gPiAgICQgcWVtdS1zdG9yYWdlLWRhZW1vbiBcCj4gPiA+ID4gPiA+ID4gPiA+ICAgICAgIC0t
-Y2hhcmRldiBzb2NrZXQsaWQ9Y2hhcm1vbml0b3IscGF0aD0vdG1wL3FtcC5zb2NrLHNlcnZlcixu
-b3dhaXQgXAo+ID4gPiA+ID4gPiA+ID4gPiAgICAgICAtLW1vbml0b3IgY2hhcmRldj1jaGFybW9u
-aXRvciBcCj4gPiA+ID4gPiA+ID4gPiA+ICAgICAgIC0tYmxvY2tkZXYgZHJpdmVyPWhvc3RfZGV2
-aWNlLGNhY2hlLmRpcmVjdD1vbixhaW89bmF0aXZlLGZpbGVuYW1lPS9kZXYvbnVsbGIwLG5vZGUt
-bmFtZT1kaXNrMCBcCj4gPiA+ID4gPiA+ID4gPiA+ICAgICAgIC0tZXhwb3J0IHR5cGU9dmR1c2Ut
-YmxrLGlkPXRlc3Qsbm9kZS1uYW1lPWRpc2swLHdyaXRhYmxlPW9uLG5hbWU9dmR1c2UtbnVsbCxu
-dW0tcXVldWVzPTE2LHF1ZXVlLXNpemU9MTI4Cj4gPiA+ID4gPiA+ID4gPiA+Cj4gPiA+ID4gPiA+
-ID4gPiA+IFRoZSBxZW11LXN0b3JhZ2UtZGFlbW9uIGNhbiBiZSBmb3VuZCBhdCBodHRwczovL2dp
-dGh1Yi5jb20vYnl0ZWRhbmNlL3FlbXUvdHJlZS92ZHVzZQo+ID4gPiA+ID4gPiA+ID4KPiA+ID4g
-PiA+ID4gPiA+IEl0J3MgYmVlbiBoYWxmIGEgeWVhciAtIGFueSBwbGFucyB0byB1cHN0cmVhbSB0
-aGlzPwo+ID4gPiA+ID4gPiA+Cj4gPiA+ID4gPiA+ID4gWWVhaCwgdGhpcyBpcyBvbiBteSB0by1k
-byBsaXN0IHRoaXMgbW9udGguCj4gPiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4gPiBTb3JyeSBmb3Ig
-dGFraW5nIHNvIGxvbmcuLi4gSSd2ZSBiZWVuIHdvcmtpbmcgb24gYW5vdGhlciBwcm9qZWN0Cj4g
-PiA+ID4gPiA+ID4gZW5hYmxpbmcgdXNlcnNwYWNlIFJETUEgd2l0aCBWRFVTRSBmb3IgdGhlIHBh
-c3QgZmV3IG1vbnRocy4gU28gSQo+ID4gPiA+ID4gPiA+IGRpZG4ndCBoYXZlIG11Y2ggdGltZSBm
-b3IgdGhpcy4gQW55d2F5LCBJIHdpbGwgc3VibWl0IHRoZSBmaXJzdAo+ID4gPiA+ID4gPiA+IHZl
-cnNpb24gYXMgc29vbiBhcyBwb3NzaWJsZS4KPiA+ID4gPiA+ID4gPgo+ID4gPiA+ID4gPiA+IFRo
-YW5rcywKPiA+ID4gPiA+ID4gPiBZb25namkKPiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4gT2ggZnVu
-LiBZb3UgbWVhbiBsaWtlIHZpcnRpby1yZG1hPyBPciBSRE1BIGFzIGEgYmFja2VuZCBmb3IgcmVn
-dWxhcgo+ID4gPiA+ID4gPiB2aXJ0aW8/Cj4gPiA+ID4gPiA+Cj4gPiA+ID4gPgo+ID4gPiA+ID4g
-WWVzLCBsaWtlIHZpcnRpby1yZG1hLiBUaGVuIHdlIGNhbiBkZXZlbG9wIHNvbWV0aGluZyBsaWtl
-IHVzZXJzcGFjZQo+ID4gPiA+ID4gcnhl44CBc2l3IG9yIGN1c3RvbSBwcm90b2NvbCB3aXRoIFZE
-VVNFLgo+ID4gPiA+ID4KPiA+ID4gPiA+IFRoYW5rcywKPiA+ID4gPiA+IFlvbmdqaQo+ID4gPiA+
-Cj4gPiA+ID4gV291bGQgYmUgaW50ZXJlc3RpbmcgdG8gc2VlIHRoZSBzcGVjIGZvciB0aGF0Lgo+
-ID4gPgo+ID4gPiBXaWxsIHNlbmQgaXQgQVNBUC4KPiA+ID4KPiA+ID4gPiBUaGUgaXNzdWVzIHdp
-dGggUkRNQSByZXZvbHZlZCBhcm91bmQgdGhlIGZhY3QgdGhhdCBjdXJyZW50Cj4gPiA+ID4gYXBw
-cyB0ZW5kIHRvIGVpdGhlciB1c2Ugbm9uLXN0YW5kYXJkIHByb3BvY29scyBmb3IgY29ubmVjdGlv
-bgo+ID4gPiA+IGVzdGFibGlzaG1lbnQgb3IgdXNlIFVEIHdoZXJlIHRoZXJlJ3MgSUlSQyBubyBz
-dGFuZGFyZAo+ID4gPiA+IGF0IGFsbC4gU28gUVAgbnVtYmVycyBhcmUgaGFyZCB0byB2aXJ0dWFs
-aXplLgo+ID4gPiA+IFNpbWlsYXJseSBtYW55IHVzZSBMSURzIGRpcmVjdGx5IHdpdGggdGhlIHNh
-bWUgZWZmZWN0Lgo+ID4gPiA+IEdVSURzIG1pZ2h0IGJlIHZpcnR1YWxpemVhYmxlIGJ1dCBubyBv
-bmUgd2VudCB0byB0aGUgZWZmb3J0Lgo+ID4gPiA+Cj4gPiA+Cj4gPiA+IEFjdHVhbGx5IHdlIGFp
-bWVkIGF0IGVtdWxhdGluZyBhIHNvZnQgUkRNQSB3aXRoIG5vcm1hbCBOSUMgKG5vdCB1c2UKPiA+
-ID4gUkRNQSBjYXBhYmlsaXR5KSByYXRoZXIgdGhhbiB2aXJ0dWFsaXppbmcgYSBwaHlzaWNhbCBS
-RE1BIE5JQyBpbnRvCj4gPiA+IHNldmVyYWwgdlJETUEgZGV2aWNlcy4gSWYgc28sIEkgdGhpbmsg
-d2Ugd29uJ3QgaGF2ZSB0aG9zZSBpc3N1ZXMsCj4gPiA+IHJpZ2h0Pwo+ID4KPiA+IFJpZ2h0LCBt
-YXliZSB5b3Ugd29uJ3QuCj4gPgo+ID4gPiA+IFRvIHNheSBub3RoaW5nIGFib3V0IHRoZSBpbnRl
-cmFjdGlvbiB3aXRoIG1lbW9yeSBvdmVyY29tbWl0Lgo+ID4gPiA+Cj4gPiA+Cj4gPiA+IEkgZG9u
-J3QgZ2V0IHlvdSBoZXJlLiBDb3VsZCB5b3UgZ2l2ZSBtZSBtb3JlIGRldGFpbHM/Cj4gPiA+Cj4g
-PiA+IFRoYW5rcywKPiA+ID4gWW9uZ2ppCj4gPgo+ID4gUkRNQSBkZXZpY2VzIHRlbmQgdG8gd2Fu
-dCB0byBwaW4gdGhlIG1lbW9yeSB1bmRlciBETUEuCj4gPgo+IAo+IEkgc2VlLiBNYXliZSBzb21l
-dGhpbmcgbGlrZSBkbSBvciBvZHAgY291bGQgYmUgaGVscGZ1bC4KPiAKPiBUaGFua3MsCj4gWW9u
-Z2ppCgpZZXMgc3VyZS4KCi0tIApNU1QKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3Vu
-ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
-aW5mby9pb21tdQ==
+On Sat, Jan 08, 2022 at 07:41:42PM +0100, David Heidelberg wrote:
+> Convert Qualcomm IOMMU v0 implementation to yaml format.
+> 
+> Signed-off-by: David Heidelberg <david@ixit.cz>
+> ---
+> v2:
+>  - fix wrong path in binding $id
+>  - comment qcom,mdp4 node example (we don't want to validate it yet)
+> 
+> v3:
+>  - I kept the name as -v0, since we have other binding -v1 and it look
+>    good, I can change thou in v4 if requested.
+
+The preference is to use compatible strings for filenames. There's 
+little reason not to do that here.
+
+>  - dropped non-existent smmu_clk part (and adjusted example, which was
+>    using it)
+>  - dropped iommu description
+>  - moved iommu-cells description to the property #iommu-cells
+> Signed-off-by: David Heidelberg <david@ixit.cz>
+> ---
+>  .../bindings/iommu/msm,iommu-v0.txt           | 64 -------------
+>  .../bindings/iommu/qcom,iommu-v0.yaml         | 91 +++++++++++++++++++
+>  2 files changed, 91 insertions(+), 64 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+>  create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu-v0.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+> deleted file mode 100644
+> index 20236385f26e..000000000000
+> --- a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+> +++ /dev/null
+> @@ -1,64 +0,0 @@
+> -* QCOM IOMMU
+> -
+> -The MSM IOMMU is an implementation compatible with the ARM VMSA short
+> -descriptor page tables. It provides address translation for bus masters outside
+> -of the CPU, each connected to the IOMMU through a port called micro-TLB.
+> -
+> -Required Properties:
+> -
+> -  - compatible: Must contain "qcom,apq8064-iommu".
+> -  - reg: Base address and size of the IOMMU registers.
+> -  - interrupts: Specifiers for the MMU fault interrupts. For instances that
+> -    support secure mode two interrupts must be specified, for non-secure and
+> -    secure mode, in that order. For instances that don't support secure mode a
+> -    single interrupt must be specified.
+> -  - #iommu-cells: The number of cells needed to specify the stream id. This
+> -		  is always 1.
+> -  - qcom,ncb:	  The total number of context banks in the IOMMU.
+> -  - clocks	: List of clocks to be used during SMMU register access. See
+> -		  Documentation/devicetree/bindings/clock/clock-bindings.txt
+> -		  for information about the format. For each clock specified
+> -		  here, there must be a corresponding entry in clock-names
+> -		  (see below).
+> -
+> -  - clock-names	: List of clock names corresponding to the clocks specified in
+> -		  the "clocks" property (above).
+> -		  Should be "smmu_pclk" for specifying the interface clock
+> -		  required for iommu's register accesses.
+> -		  Should be "smmu_clk" for specifying the functional clock
+> -		  required by iommu for bus accesses.
+> -
+> -Each bus master connected to an IOMMU must reference the IOMMU in its device
+> -node with the following property:
+> -
+> -  - iommus: A reference to the IOMMU in multiple cells. The first cell is a
+> -	    phandle to the IOMMU and the second cell is the stream id.
+> -	    A single master device can be connected to more than one iommu
+> -	    and multiple contexts in each of the iommu. So multiple entries
+> -	    are required to list all the iommus and the stream ids that the
+> -	    master is connected to.
+> -
+> -Example: mdp iommu and its bus master
+> -
+> -                mdp_port0: iommu@7500000 {
+> -			compatible = "qcom,apq8064-iommu";
+> -			#iommu-cells = <1>;
+> -			clock-names =
+> -			    "smmu_pclk",
+> -			    "smmu_clk";
+> -			clocks =
+> -			    <&mmcc SMMU_AHB_CLK>,
+> -			    <&mmcc MDP_AXI_CLK>;
+> -			reg = <0x07500000 0x100000>;
+> -			interrupts =
+> -			    <GIC_SPI 63 0>,
+> -			    <GIC_SPI 64 0>;
+> -			qcom,ncb = <2>;
+> -		};
+> -
+> -		mdp: qcom,mdp@5100000 {
+> -			compatible = "qcom,mdp";
+> -			...
+> -			iommus = <&mdp_port0 0
+> -				  &mdp_port0 2>;
+> -		};
+> diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu-v0.yaml b/Documentation/devicetree/bindings/iommu/qcom,iommu-v0.yaml
+> new file mode 100644
+> index 000000000000..a506e8ad8902
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iommu/qcom,iommu-v0.yaml
+> @@ -0,0 +1,91 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +
+> +$id: "http://devicetree.org/schemas/iommu/qcom,iommu-v0.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> +
+> +title: Qualcomm IOMMU for APQ8064
+> +
+> +maintainers:
+> +  - Will Deacon <will@kernel.org>
+> +
+> +description: >
+> +  The MSM IOMMU is an implementation compatible with the ARM VMSA short
+> +  descriptor page tables. It provides address translation for bus masters
+> +  outside of the CPU, each connected to the IOMMU through a port called micro-TLB.
+> +
+> +properties:
+> +  compatible:
+> +    const: qcom,apq8064-iommu
+> +
+> +  clocks:
+> +    items:
+> +      - description: interface clock for register accesses
+> +      - description: functional clock for bus accesses
+> +
+> +  clock-names:
+> +    items:
+> +      - const: smmu_pclk
+> +      - const: iommu_clk
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    description: Specifiers for the MMU fault interrupts.
+> +    minItems: 1
+> +    items:
+> +      - description: non-secure mode interrupt
+> +      - description: secure mode interrupt (for instances which supports it)
+> +
+> +  "#iommu-cells":
+> +    const: 1
+> +    description: |
+> +      The first cell is a phandle to the IOMMU and
+> +      the second cell is the stream id.
+> +      A single master device can be connected to more than one iommu
+> +      and multiple contexts in each of the iommu.
+> +      So multiple entries are required to list all the iommus and
+> +      the stream ids that the master is connected to.
+> +
+> +  qcom,ncb:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description: The total number of context banks in the IOMMU.
+> +
+> +required:
+> +  - clocks
+> +  - clock-names
+> +  - reg
+> +  - interrupts
+> +  - qcom,ncb
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/qcom,mmcc-msm8960.h>
+> +
+> +    mdp_port0: iommu@7500000 {
+> +            compatible = "qcom,apq8064-iommu";
+> +            #iommu-cells = <1>;
+> +            clock-names =
+> +                "smmu_pclk",
+> +                "iommu_clk";
+> +            clocks =
+> +                <&clk SMMU_AHB_CLK>,
+> +                <&clk MDP_AXI_CLK>;
+> +            reg = <0x07500000 0x100000>;
+> +            interrupts =
+> +                <0 63 0>,
+> +                <0 64 0>;
+> +            qcom,ncb = <2>;
+> +    };
+> +
+> +    /* mdp: mdp@5100000 {
+> +            compatible = "qcom,mdp4";
+> +            ...
+> +
+> +            iommus = <&mdp_port0 0
+> +                      &mdp_port0 2>;
+> +    };*/
+> -- 
+> 2.34.1
+> 
+> 
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
