@@ -1,101 +1,101 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2340CC433F5
-	for <iommu@archiver.kernel.org>; Wed, 12 Jan 2022 10:55:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7367AC433FE
+	for <iommu@archiver.kernel.org>; Wed, 12 Jan 2022 11:01:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id BCAC16FB8A;
-	Wed, 12 Jan 2022 10:55:00 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 29791409D2;
+	Wed, 12 Jan 2022 11:01:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id X5Dg7hG1m9gF; Wed, 12 Jan 2022 10:54:59 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bA17X-vQ50xl; Wed, 12 Jan 2022 11:01:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 7154560E86;
-	Wed, 12 Jan 2022 10:54:59 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id B7C9B4019B;
+	Wed, 12 Jan 2022 11:01:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 49F8DC0030;
-	Wed, 12 Jan 2022 10:54:59 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CB967C0030
- for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 10:54:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 89A17C0030;
+	Wed, 12 Jan 2022 11:01:46 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 53D2AC0030
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 11:01:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id A8259428E9
- for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 10:54:57 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 30FE06FB8B
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 11:01:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VqV7LHS3DoUx for <iommu@lists.linux-foundation.org>;
- Wed, 12 Jan 2022 10:54:56 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id qfRegDm7BS60 for <iommu@lists.linux-foundation.org>;
+ Wed, 12 Jan 2022 11:01:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 8B9D341548
- for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 10:54:56 +0000 (UTC)
+ (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 7F8486FB8F
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 11:01:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1641984895;
+ s=mimecast20190719; t=1641985303;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=1nXDaBEqSwcubb9UAlItnBJ/49dksDZCXM8chYBVKNM=;
- b=P49+/A9B0S1wNyzzEkvaTtZHdNxn2JclDdt6l7fTWa06/n7PG47WC73736Kmv07ZUhQDYf
- HSl9KAFwh0jKcn85zhOcoNzoO5mVK3Lh+7kvJTl2DWzEfzgrRB+QVUPWLz1OBXD9y3dxjW
- 6XauWXRHk+jqq3ecf0yt3emKq76XDMg=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ bh=8/XZEAdk6QhvWrbmCBXkp2EEmuq+KMqsHqxGoGIR2UA=;
+ b=DK1+lKg2UaD3bNk8Dy8HUxN36HXmHiZQ2CxVywgzFn+l4sE5C0QlCEH0blT7WCCngTkOv0
+ LJS9JjB7pRa+Mt8sb4VgSpnsNnAC4I+OqB/K0oEPHQKAY7Vfosm9cSJQwnrGjdo1YBNZzL
+ RE9MYJPUnAp2JiZeYIJ66hN/ajZm3m0=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-652-VwIiPaJXOfuBKRTP-iHgBg-1; Wed, 12 Jan 2022 05:54:52 -0500
-X-MC-Unique: VwIiPaJXOfuBKRTP-iHgBg-1
-Received: by mail-ed1-f70.google.com with SMTP id
- i9-20020a05640242c900b003fe97faab62so1913461edc.9
- for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 02:54:52 -0800 (PST)
+ us-mta-583-_XrIcovKOJygLCaQTo0D9w-1; Wed, 12 Jan 2022 06:01:40 -0500
+X-MC-Unique: _XrIcovKOJygLCaQTo0D9w-1
+Received: by mail-ed1-f72.google.com with SMTP id
+ ec25-20020a0564020d5900b003fc074c5d21so1895862edb.19
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Jan 2022 03:01:39 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent
- :content-language:to:cc:references:from:organization:subject
- :in-reply-to:content-transfer-encoding;
- bh=1nXDaBEqSwcubb9UAlItnBJ/49dksDZCXM8chYBVKNM=;
- b=d867A2Fs2PY3IO3j1WTE1EFY89NVfX+Lm8AOceZJdnI71AOKpaYVCPsjjM/oZRrsB1
- /P9i7PIEJNNOfdXRoj7fjuYglTtfZKm7TRZ8Y+zjzZLE2LUV95Za0omL9FSXux3lZ9Sc
- hyPIAiqQJWXoS3gvqAySXP1cO2CkshPuYfmuXM2Fz6/2BIzps7sQTtCrAMWHsSHrDpNX
- cQKQem+HHITRrdyDyflMNVUpLGjTA2PdomQw6MjyBfbU0eI1uNj1FuQYMYe7bxj7O6OX
- xONBYHxqRb33q+Pjsdsn95wxlRaSYpoPtI4pkDbiOWs9hbdfNOm8OrJVn4tfwt41FEr5
- qZnQ==
-X-Gm-Message-State: AOAM530RpXq2VPSX74czGBS+8sYqmxzDt1C6q/IgUTKCkwvGbPP3eal2
- VDF/fA8B7HUIgGVZvptmboTNom1nv8U7Fq/K3IdnO29HsOSlsfsNYtCcJtOuTKKMI3T+Px25T9r
- Lz8WYFoMCWG0yrxBQieWdAnIE0nmAPQ==
-X-Received: by 2002:a17:906:3052:: with SMTP id
- d18mr7112122ejd.675.1641984891159; 
- Wed, 12 Jan 2022 02:54:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyn5fswqQ0dOEoBSWPUJo6KSN9+8h4kCBAhgFotHJOoSPil79OW088szvXQNfhv7fsGVeMxSQ==
-X-Received: by 2002:a17:906:3052:: with SMTP id
- d18mr7112100ejd.675.1641984890940; 
- Wed, 12 Jan 2022 02:54:50 -0800 (PST)
+ h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+ :content-language:to:cc:references:from:organization:in-reply-to
+ :content-transfer-encoding;
+ bh=8/XZEAdk6QhvWrbmCBXkp2EEmuq+KMqsHqxGoGIR2UA=;
+ b=MN7HifqYN3Ckc5X9iVm3HceLGwfJ9Y97MmhS01nCm3Ra+/bQ6pZWNNm7TZQPVkDQiU
+ Ee3ItSHM2txhktk2d0cyALZbelB/Hlhdu4JcaEX24ZhUclOMZ0gCiNHC08yw0iNszIPG
+ 02D7CbEkVrL5orxZQ0kMFkEh1aDQ+LvE/1zDns8x9Xg9wnefsQ1clZL9O3Zl7PNNX/uj
+ lUlZlbPMsUc8FhfT8vIiYsZz14RsyNDUNQef9oN9/7Wjap+XWfH0HU0ZSYVAvCyNADYz
+ XtEAhROeShKznNsdlRnq1REee173lB7UuJoaU3dsa9gSf0+Ld8jSglXGTeWMhKKPBW7a
+ HrUQ==
+X-Gm-Message-State: AOAM53001iLmPoGI4z51L9mY8xJ7KGiPQD0I1meE5pYOtUzwwVT8hHZ+
+ +WKQVZW1wkLsNQSXY+lbnSSleQEW17J1TCJaQEYpZyV5Xi4m/0CCglskJE5tn37QcT1ST4esNaO
+ fZCTdDv4clExckVEJHU2GIuC/nQKz9g==
+X-Received: by 2002:a05:6402:4405:: with SMTP id
+ y5mr8374681eda.179.1641985298979; 
+ Wed, 12 Jan 2022 03:01:38 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxWWf+6A4h9fD+VcApry/1ctZSaWE5x9A2DNgQ1rynCwOFlVNP1wLYNq0HbTcp/3NUGR7KzoA==
+X-Received: by 2002:a05:6402:4405:: with SMTP id
+ y5mr8374660eda.179.1641985298747; 
+ Wed, 12 Jan 2022 03:01:38 -0800 (PST)
 Received: from ?IPV6:2003:cb:c702:4700:e25f:39eb:3cb8:1dec?
  (p200300cbc7024700e25f39eb3cb81dec.dip0.t-ipconnect.de.
  [2003:cb:c702:4700:e25f:39eb:3cb8:1dec])
- by smtp.gmail.com with ESMTPSA id hc40sm1981993ejc.72.2022.01.12.02.54.50
+ by smtp.gmail.com with ESMTPSA id 13sm4394200ejh.225.2022.01.12.03.01.37
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 12 Jan 2022 02:54:50 -0800 (PST)
-Message-ID: <7dc078ef-70f4-159e-b928-34f0fb0ffaea@redhat.com>
-Date: Wed, 12 Jan 2022 11:54:49 +0100
+ Wed, 12 Jan 2022 03:01:38 -0800 (PST)
+Message-ID: <a5e029e8-f646-a414-f4f4-ba573171642f@redhat.com>
+Date: Wed, 12 Jan 2022 12:01:36 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.4.0
+Subject: Re: [RFC PATCH v3 2/8] mm: compaction: handle non-lru compound pages
+ properly in isolate_migratepages_block().
 To: Zi Yan <ziy@nvidia.com>, linux-mm@kvack.org
 References: <20220105214756.91065-1-zi.yan@sent.com>
- <20220105214756.91065-2-zi.yan@sent.com>
+ <20220105214756.91065-3-zi.yan@sent.com>
 From: David Hildenbrand <david@redhat.com>
 Organization: Red Hat
-Subject: Re: [RFC PATCH v3 1/8] mm: page_alloc: avoid merging non-fallbackable
- pageblocks with others.
-In-Reply-To: <20220105214756.91065-2-zi.yan@sent.com>
+In-Reply-To: <20220105214756.91065-3-zi.yan@sent.com>
 Authentication-Results: relay.mimecast.com;
  auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=david@redhat.com
 X-Mimecast-Spam-Score: 0
@@ -127,135 +127,54 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 On 05.01.22 22:47, Zi Yan wrote:
 > From: Zi Yan <ziy@nvidia.com>
 > 
-> This is done in addition to MIGRATE_ISOLATE pageblock merge avoidance.
-> It prepares for the upcoming removal of the MAX_ORDER-1 alignment
-> requirement for CMA and alloc_contig_range().
+> In isolate_migratepages_block(), a !PageLRU tail page can be encountered
+> when the page is larger than a pageblock. Use compound head page for the
+> checks inside and skip the entire compound page when isolation succeeds.
 > 
-> MIGRARTE_HIGHATOMIC should not merge with other migratetypes like
-> MIGRATE_ISOLATE and MIGRARTE_CMA[1], so this commit prevents that too.
-> Also add MIGRARTE_HIGHATOMIC to fallbacks array for completeness.
-> 
-> [1] https://lore.kernel.org/linux-mm/20211130100853.GP3366@techsingularity.net/
-> 
+
+This will currently never happen, due to the way we always isolate
+MAX_ORDER -1 ranges, correct?
+
+Better note that in the patch description, because currently it reads
+like it's an actual fix "can be encountered".
+
 > Signed-off-by: Zi Yan <ziy@nvidia.com>
 > ---
->  include/linux/mmzone.h |  6 ++++++
->  mm/page_alloc.c        | 28 ++++++++++++++++++----------
->  2 files changed, 24 insertions(+), 10 deletions(-)
+>  mm/compaction.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
 > 
-> diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-> index aed44e9b5d89..0aa549653e4e 100644
-> --- a/include/linux/mmzone.h
-> +++ b/include/linux/mmzone.h
-> @@ -83,6 +83,12 @@ static inline bool is_migrate_movable(int mt)
->  	return is_migrate_cma(mt) || mt == MIGRATE_MOVABLE;
->  }
->  
-> +/* See fallbacks[MIGRATE_TYPES][3] in page_alloc.c */
-> +static inline bool migratetype_has_fallback(int mt)
-> +{
-> +	return mt < MIGRATE_PCPTYPES;
-> +}
-> +
->  #define for_each_migratetype_order(order, type) \
->  	for (order = 0; order < MAX_ORDER; order++) \
->  		for (type = 0; type < MIGRATE_TYPES; type++)
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index 8dd6399bafb5..5193c953dbf8 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -1042,6 +1042,12 @@ buddy_merge_likely(unsigned long pfn, unsigned long buddy_pfn,
->  	return page_is_buddy(higher_page, higher_buddy, order + 1);
->  }
->  
-> +static inline bool has_non_fallback_pageblock(struct zone *zone)
-> +{
-> +	return has_isolate_pageblock(zone) || zone_cma_pages(zone) != 0 ||
-> +		zone->nr_reserved_highatomic != 0;
-> +}
-
-Due to zone_cma_pages(), the unlikely() below will be very wrong on many
-setups. Previously, isolation really was a corner case. CMA and
-highatomic are less of a corner case ...
-
-I'm not even sure if this check is worth having around anymore at all,
-or if it would be easier and cheaper to just always check the both
-migration types unconditionally. Would certainly simplify the code.
-
-Side node: we actually care about has_free_non_fallback_pageblock(), we
-can only merge with free pageblocks. But that might not necessarily be
-cheaper to test/track/check.
-
-> +
->  /*
->   * Freeing function for a buddy system allocator.
->   *
-> @@ -1117,14 +1123,15 @@ static inline void __free_one_page(struct page *page,
->  	}
->  	if (order < MAX_ORDER - 1) {
->  		/* If we are here, it means order is >= pageblock_order.
-> -		 * We want to prevent merge between freepages on isolate
-> -		 * pageblock and normal pageblock. Without this, pageblock
-> -		 * isolation could cause incorrect freepage or CMA accounting.
-> +		 * We want to prevent merge between freepages on pageblock
-> +		 * without fallbacks and normal pageblock. Without this,
-> +		 * pageblock isolation could cause incorrect freepage or CMA
-> +		 * accounting or HIGHATOMIC accounting.
->  		 *
->  		 * We don't want to hit this code for the more frequent
->  		 * low-order merging.
+> diff --git a/mm/compaction.c b/mm/compaction.c
+> index b4e94cda3019..ad9053fbbe06 100644
+> --- a/mm/compaction.c
+> +++ b/mm/compaction.c
+> @@ -979,19 +979,23 @@ isolate_migratepages_block(struct compact_control *cc, unsigned long low_pfn,
+>  		 * Skip any other type of page
 >  		 */
-> -		if (unlikely(has_isolate_pageblock(zone))) {
-> +		if (unlikely(has_non_fallback_pageblock(zone))) {
->  			int buddy_mt;
+>  		if (!PageLRU(page)) {
+> +			struct page *head = compound_head(page);
+>  			/*
+>  			 * __PageMovable can return false positive so we need
+>  			 * to verify it under page_lock.
+>  			 */
+> -			if (unlikely(__PageMovable(page)) &&
+> -					!PageIsolated(page)) {
+> +			if (unlikely(__PageMovable(head)) &&
+> +					!PageIsolated(head)) {
+>  				if (locked) {
+>  					unlock_page_lruvec_irqrestore(locked, flags);
+>  					locked = NULL;
+>  				}
 >  
->  			buddy_pfn = __find_buddy_pfn(pfn, order);
-> @@ -1132,8 +1139,8 @@ static inline void __free_one_page(struct page *page,
->  			buddy_mt = get_pageblock_migratetype(buddy);
+> -				if (!isolate_movable_page(page, isolate_mode))
+> +				if (!isolate_movable_page(head, isolate_mode)) {
+> +					low_pfn += (1 << compound_order(head)) - 1 - (page - head);
+> +					page = head;
+>  					goto isolate_success;
+> +				}
+>  			}
 >  
->  			if (migratetype != buddy_mt
-> -					&& (is_migrate_isolate(migratetype) ||
-> -						is_migrate_isolate(buddy_mt)))
-> +					&& (!migratetype_has_fallback(migratetype) ||
-> +						!migratetype_has_fallback(buddy_mt)))
->  				goto done_merging;
->  		}
->  		max_order = order + 1;
-> @@ -2484,6 +2491,7 @@ static int fallbacks[MIGRATE_TYPES][3] = {
->  	[MIGRATE_UNMOVABLE]   = { MIGRATE_RECLAIMABLE, MIGRATE_MOVABLE,   MIGRATE_TYPES },
->  	[MIGRATE_MOVABLE]     = { MIGRATE_RECLAIMABLE, MIGRATE_UNMOVABLE, MIGRATE_TYPES },
->  	[MIGRATE_RECLAIMABLE] = { MIGRATE_UNMOVABLE,   MIGRATE_MOVABLE,   MIGRATE_TYPES },
-> +	[MIGRATE_HIGHATOMIC] = { MIGRATE_TYPES }, /* Never used */
->  #ifdef CONFIG_CMA
->  	[MIGRATE_CMA]         = { MIGRATE_TYPES }, /* Never used */
->  #endif
-> @@ -2795,8 +2803,8 @@ static void reserve_highatomic_pageblock(struct page *page, struct zone *zone,
->  
->  	/* Yoink! */
->  	mt = get_pageblock_migratetype(page);
-> -	if (!is_migrate_highatomic(mt) && !is_migrate_isolate(mt)
-> -	    && !is_migrate_cma(mt)) {
-> +	/* Only reserve normal pageblock */
-> +	if (migratetype_has_fallback(mt)) {
->  		zone->nr_reserved_highatomic += pageblock_nr_pages;
->  		set_pageblock_migratetype(page, MIGRATE_HIGHATOMIC);
->  		move_freepages_block(zone, page, MIGRATE_HIGHATOMIC, NULL);
-> @@ -3545,8 +3553,8 @@ int __isolate_free_page(struct page *page, unsigned int order)
->  		struct page *endpage = page + (1 << order) - 1;
->  		for (; page < endpage; page += pageblock_nr_pages) {
->  			int mt = get_pageblock_migratetype(page);
-> -			if (!is_migrate_isolate(mt) && !is_migrate_cma(mt)
-> -			    && !is_migrate_highatomic(mt))
-> +			/* Only change normal pageblock */
-> +			if (migratetype_has_fallback(mt))
->  				set_pageblock_migratetype(page,
->  							  MIGRATE_MOVABLE);
->  		}
+>  			goto isolate_fail;
 
-That part is a nice cleanup IMHO. Although the "has fallback" part is a
-bit imprecise. "migratetype_is_mergable()" might be a bit clearer.
-ideally "migratetype_is_mergable_with_other_types()". Can we come up
-with a nice name for that?
 
 -- 
 Thanks,
