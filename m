@@ -1,69 +1,74 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 63A3EC433EF
-	for <iommu@archiver.kernel.org>; Thu, 13 Jan 2022 11:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 12424C433F5
+	for <iommu@archiver.kernel.org>; Thu, 13 Jan 2022 11:37:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 1FF2B83E4B;
-	Thu, 13 Jan 2022 11:12:00 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B0E0E4099E;
+	Thu, 13 Jan 2022 11:37:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8Ol7MjM6piXl; Thu, 13 Jan 2022 11:11:59 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 10D2983E0A;
-	Thu, 13 Jan 2022 11:11:59 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PApQXjECnkro; Thu, 13 Jan 2022 11:37:06 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 873F04032D;
+	Thu, 13 Jan 2022 11:37:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DD212C0030;
-	Thu, 13 Jan 2022 11:11:58 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 829CCC001E
- for <iommu@lists.linux-foundation.org>; Thu, 13 Jan 2022 11:11:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A6E5C0030;
+	Thu, 13 Jan 2022 11:37:06 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CB53AC001E;
+ Thu, 13 Jan 2022 11:37:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 7B0F2401AE
- for <iommu@lists.linux-foundation.org>; Thu, 13 Jan 2022 11:11:57 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id B8B6D40924;
+ Thu, 13 Jan 2022 11:37:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zHUvXsVjDPwc for <iommu@lists.linux-foundation.org>;
- Thu, 13 Jan 2022 11:11:56 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id WpSexwudVu-s; Thu, 13 Jan 2022 11:37:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 8D7BB400C5
- for <iommu@lists.linux-foundation.org>; Thu, 13 Jan 2022 11:11:56 +0000 (UTC)
-X-UUID: 08e08736c07446a581c2ffd8b856fb21-20220113
-X-UUID: 08e08736c07446a581c2ffd8b856fb21-20220113
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
- (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1095745500; Thu, 13 Jan 2022 19:11:52 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
- Thu, 13 Jan 2022 19:11:51 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 13 Jan 2022 19:11:50 +0800
-From: Yong Wu <yong.wu@mediatek.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>, Rob Herring
- <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Subject: [PATCH v3 7/7] memory: mtk-smi: mt8186: Add smi support
-Date: Thu, 13 Jan 2022 19:10:57 +0800
-Message-ID: <20220113111057.29918-8-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220113111057.29918-1-yong.wu@mediatek.com>
-References: <20220113111057.29918-1-yong.wu@mediatek.com>
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 90DD94032D;
+ Thu, 13 Jan 2022 11:37:02 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by ams.source.kernel.org (Postfix) with ESMTPS id 00A67B82192;
+ Thu, 13 Jan 2022 11:37:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E819C36AE3;
+ Thu, 13 Jan 2022 11:36:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1642073818;
+ bh=+YT0N1Ya5C3GpxZb3D9lx91/TA7aYugOCM+xLuWjYus=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=Y8pNbom+not22khASxC0ueT85weSmm7kwqI+jqij2ZQjNxusyGBuws6c2xcGeS2aN
+ 9swZkNa2lHT+EqUFoHcqwscUUVPriy4Cm4fAIQjZLWNlg7hI9+AtHC/h6in4aJ2vRs
+ 7WBuPU+LvQc6MavLpwW30LJ5V1WHuEA17r/aBUHfdlyYbe4rxmup5KWNk0YUJhq6A4
+ 1fcD63FjDJCSMo+Po0f1aEVflhmsnSpMVI2j8jOkqcPkWMfP5sHyJP3P/iYTWNcU9P
+ LXw/TsOnQN4ucHQJqihS6vgO2Ure2XIVDeeLBPlAh/jMjE6BsbJrJyGGEzGtqUOOm+
+ bwsfmuQCDueEQ==
+Date: Thu, 13 Jan 2022 13:36:50 +0200
+From: Mike Rapoport <rppt@kernel.org>
+To: David Hildenbrand <david@redhat.com>
+Subject: Re: [RFC PATCH v3 1/8] mm: page_alloc: avoid merging
+ non-fallbackable pageblocks with others.
+Message-ID: <YeAO0vtyjWWMRliF@kernel.org>
+References: <20220105214756.91065-1-zi.yan@sent.com>
+ <20220105214756.91065-2-zi.yan@sent.com>
+ <7dc078ef-70f4-159e-b928-34f0fb0ffaea@redhat.com>
 MIME-Version: 1.0
-X-MTK: N
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org, yi.kuo@mediatek.com,
- srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- lc.kan@mediatek.com, anthony.huang@mediatek.com, anan.sun@mediatek.com,
- linux-arm-kernel@lists.infradead.org,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Content-Disposition: inline
+In-Reply-To: <7dc078ef-70f4-159e-b928-34f0fb0ffaea@redhat.com>
+Cc: Mel Gorman <mgorman@techsingularity.net>, Eric Ren <renzhengeek@gmail.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org,
+ linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
+ linux-mm@kvack.org, iommu@lists.linux-foundation.org, Zi Yan <ziy@nvidia.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ Vlastimil Babka <vbabka@suse.cz>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,62 +86,62 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add mt8186 SMI support.
+On Wed, Jan 12, 2022 at 11:54:49AM +0100, David Hildenbrand wrote:
+> On 05.01.22 22:47, Zi Yan wrote:
+> > From: Zi Yan <ziy@nvidia.com>
+> > 
+> > This is done in addition to MIGRATE_ISOLATE pageblock merge avoidance.
+> > It prepares for the upcoming removal of the MAX_ORDER-1 alignment
+> > requirement for CMA and alloc_contig_range().
+> > 
+> > MIGRARTE_HIGHATOMIC should not merge with other migratetypes like
+> > MIGRATE_ISOLATE and MIGRARTE_CMA[1], so this commit prevents that too.
+> > Also add MIGRARTE_HIGHATOMIC to fallbacks array for completeness.
+> > 
+> > [1] https://lore.kernel.org/linux-mm/20211130100853.GP3366@techsingularity.net/
+> > 
+> > Signed-off-by: Zi Yan <ziy@nvidia.com>
+> > ---
+> >  include/linux/mmzone.h |  6 ++++++
+> >  mm/page_alloc.c        | 28 ++++++++++++++++++----------
+> >  2 files changed, 24 insertions(+), 10 deletions(-)
+> > 
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/memory/mtk-smi.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+...
 
-diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index 12d15fcc65e2..378affd43fc4 100644
---- a/drivers/memory/mtk-smi.c
-+++ b/drivers/memory/mtk-smi.c
-@@ -355,6 +355,11 @@ static const struct mtk_smi_larb_gen mtk_smi_larb_mt8183 = {
- 				      /* IPU0 | IPU1 | CCU */
- };
+> > @@ -3545,8 +3553,8 @@ int __isolate_free_page(struct page *page, unsigned int order)
+> >  		struct page *endpage = page + (1 << order) - 1;
+> >  		for (; page < endpage; page += pageblock_nr_pages) {
+> >  			int mt = get_pageblock_migratetype(page);
+> > -			if (!is_migrate_isolate(mt) && !is_migrate_cma(mt)
+> > -			    && !is_migrate_highatomic(mt))
+> > +			/* Only change normal pageblock */
+> > +			if (migratetype_has_fallback(mt))
+> >  				set_pageblock_migratetype(page,
+> >  							  MIGRATE_MOVABLE);
+> >  		}
+> 
+> That part is a nice cleanup IMHO. Although the "has fallback" part is a
+> bit imprecise. "migratetype_is_mergable()" might be a bit clearer.
+> ideally "migratetype_is_mergable_with_other_types()". Can we come up
+> with a nice name for that?
+
+migratetype_is_mergable() kinda implies "_with_other_types", no?
+
+I like migratetype_is_mergable() more than _has_fallback().
+
+My $0.02 to bikeshedding :)
  
-+static const struct mtk_smi_larb_gen mtk_smi_larb_mt8186 = {
-+	.config_port                = mtk_smi_larb_config_port_gen2_general,
-+	.flags_general	            = MTK_SMI_FLAG_SLEEP_CTL,
-+};
-+
- static const struct mtk_smi_larb_gen mtk_smi_larb_mt8192 = {
- 	.config_port                = mtk_smi_larb_config_port_gen2_general,
- };
-@@ -372,6 +377,7 @@ static const struct of_device_id mtk_smi_larb_of_ids[] = {
- 	{.compatible = "mediatek,mt8167-smi-larb", .data = &mtk_smi_larb_mt8167},
- 	{.compatible = "mediatek,mt8173-smi-larb", .data = &mtk_smi_larb_mt8173},
- 	{.compatible = "mediatek,mt8183-smi-larb", .data = &mtk_smi_larb_mt8183},
-+	{.compatible = "mediatek,mt8186-smi-larb", .data = &mtk_smi_larb_mt8186},
- 	{.compatible = "mediatek,mt8192-smi-larb", .data = &mtk_smi_larb_mt8192},
- 	{.compatible = "mediatek,mt8195-smi-larb", .data = &mtk_smi_larb_mt8195},
- 	{}
-@@ -580,6 +586,12 @@ static const struct mtk_smi_common_plat mtk_smi_common_mt8183 = {
- 		    F_MMU1_LARB(7),
- };
- 
-+static const struct mtk_smi_common_plat mtk_smi_common_mt8186 = {
-+	.type     = MTK_SMI_GEN2,
-+	.has_gals = true,
-+	.bus_sel  = F_MMU1_LARB(1) | F_MMU1_LARB(4) | F_MMU1_LARB(7),
-+};
-+
- static const struct mtk_smi_common_plat mtk_smi_common_mt8192 = {
- 	.type     = MTK_SMI_GEN2,
- 	.has_gals = true,
-@@ -614,6 +626,7 @@ static const struct of_device_id mtk_smi_common_of_ids[] = {
- 	{.compatible = "mediatek,mt8167-smi-common", .data = &mtk_smi_common_gen2},
- 	{.compatible = "mediatek,mt8173-smi-common", .data = &mtk_smi_common_gen2},
- 	{.compatible = "mediatek,mt8183-smi-common", .data = &mtk_smi_common_mt8183},
-+	{.compatible = "mediatek,mt8186-smi-common", .data = &mtk_smi_common_mt8186},
- 	{.compatible = "mediatek,mt8192-smi-common", .data = &mtk_smi_common_mt8192},
- 	{.compatible = "mediatek,mt8195-smi-common-vdo", .data = &mtk_smi_common_mt8195_vdo},
- 	{.compatible = "mediatek,mt8195-smi-common-vpp", .data = &mtk_smi_common_mt8195_vpp},
+> -- 
+> Thanks,
+> 
+> David / dhildenb
+> 
+> 
+
 -- 
-2.18.0
-
+Sincerely yours,
+Mike.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
