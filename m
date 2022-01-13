@@ -1,114 +1,110 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 500AFC433FE
-	for <iommu@archiver.kernel.org>; Thu, 13 Jan 2022 15:50:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0D15DC433EF
+	for <iommu@archiver.kernel.org>; Thu, 13 Jan 2022 16:10:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 0020641668;
-	Thu, 13 Jan 2022 15:50:46 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id BE12B84CB6;
+	Thu, 13 Jan 2022 16:10:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id C8IypBiL8GXU; Thu, 13 Jan 2022 15:50:46 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id WaM5Ewmh1o20; Thu, 13 Jan 2022 16:10:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id D1DBD401C8;
-	Thu, 13 Jan 2022 15:50:45 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id E29CB84C9D;
+	Thu, 13 Jan 2022 16:10:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 916AEC0030;
-	Thu, 13 Jan 2022 15:50:45 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EE290C001E
- for <iommu@lists.linux-foundation.org>; Thu, 13 Jan 2022 15:50:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 95CDFC002F;
+	Thu, 13 Jan 2022 16:10:24 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2658DC001E
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Jan 2022 16:10:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D8856409E8
- for <iommu@lists.linux-foundation.org>; Thu, 13 Jan 2022 15:50:43 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0D19341665
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Jan 2022 16:10:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ax160WEyG3c7 for <iommu@lists.linux-foundation.org>;
- Thu, 13 Jan 2022 15:50:43 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.129.124])
- by smtp2.osuosl.org (Postfix) with ESMTPS id E940940901
- for <iommu@lists.linux-foundation.org>; Thu, 13 Jan 2022 15:50:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1642089041;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=0RQ3puUcYuHO/5UfsU4Xhhp2Gu/t2oxOAbK9fU144eE=;
- b=RwcpVaOQpoP3+Jj5f1l3w6B8jXiSIQ40wz45tKZzM54sRhUJyTkeYAENGk7VoN7J0yQnwq
- Rf7o4qiSSmFyQd2XwCKgivDua/xvusrPRcoYdu2yFKgYHuZSMsx7vyKYWlBUWmi2Pp7qax
- GejVf5xk6yZ70cHIDzqdmSENEPQ84e0=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-159-hpOt24UmN6SGycv75wD1lw-1; Thu, 13 Jan 2022 10:50:40 -0500
-X-MC-Unique: hpOt24UmN6SGycv75wD1lw-1
-Received: by mail-ed1-f71.google.com with SMTP id
- m8-20020a056402510800b003f9d22c4d48so5701593edd.21
- for <iommu@lists.linux-foundation.org>; Thu, 13 Jan 2022 07:50:40 -0800 (PST)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Yg0bKC0vfHaf for <iommu@lists.linux-foundation.org>;
+ Thu, 13 Jan 2022 16:10:21 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com
+ [IPv6:2a00:1450:4864:20::336])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9EF5141661
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Jan 2022 16:10:21 +0000 (UTC)
+Received: by mail-wm1-x336.google.com with SMTP id
+ 25-20020a05600c231900b003497473a9c4so5711899wmo.5
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Jan 2022 08:10:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=message-id:date:mime-version:user-agent:subject:content-language:to
+ :cc:references:from:in-reply-to:content-transfer-encoding;
+ bh=SPmaJub/jt94ihGwagtrfHtir8UBrBvypTKNKojeyrA=;
+ b=BVBB+Qut1wf0yDLs2pgabC7QOG2Sq+20jm8ssrux8M/cL6yIEQ1cLoONRsJ3tAFOB7
+ mAVtexOZomadjCBu5HS3//ck38nB8thHf4Vsb7B2Gu4SmYo1PXrWLt2A/RhTYRAs6chT
+ A2yuc9kt7p1baJ7py4FCWgs7rw24L85tVk/4W8LVfElgZ03rT963kaaa4VkbN1DiwUXJ
+ qnZsvby+F23F9gT8jaP+rJib0mnv6iej7oPfza94pno6s+bMVe/moC6XsPcGH0KE1brn
+ /SZzMZYnKFEdbiVSWGxvCwwKgWv2AzgqwSWAiyOixbcDRB9AlAXLXpExApLKl7EkW3Oy
+ FPkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:organization:in-reply-to
+ :content-language:to:cc:references:from:in-reply-to
  :content-transfer-encoding;
- bh=0RQ3puUcYuHO/5UfsU4Xhhp2Gu/t2oxOAbK9fU144eE=;
- b=4dQH0QMv5g87uvQ8fBRSdGpx9qYoS6OCZavTih+90KbQ0gcdCGjycEaXoYyi27Dsbh
- I8b9/QmZvL1Yjg+MlEjbGi3FErarJzN5LVIusOy6HliV7CFwCo46vmF1QWiCSQjlgdvd
- /oX9tbQbkuVfcsXDsLLRU226fZHM0Axbc46d+Bg+SO4dDHRrNgTVQQxd+yTb/2vQyu8E
- 7esu4yazBmDpP3nnTRIpfW5FkGQfK9RTi1gPNKB4RpGolj603LoBx1SJB2nCdCDRj2w7
- /IcCgP33WV6ZkEExwOiD0HhOEqyKtG5AL8QsawVcfQgPVigIFeWYle7yDWHEImywlpF/
- qrVQ==
-X-Gm-Message-State: AOAM532jTejk+7Fzq5mvtSUq5Frgdvm6ecUmayLJOxj1b3OLeggVZ7P6
- paccyEADg8dVsWdvuN9q806eqPJRk5Wbcd+sf2ocKabkkCDHNfmobcdZ1jWWJMwmoBLUPUrV3JY
- cEt+2y3vKkuXgPMX8t3oWAsn3XnTgSg==
-X-Received: by 2002:a05:6402:3588:: with SMTP id
- y8mr4824691edc.147.1642089039314; 
- Thu, 13 Jan 2022 07:50:39 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwNFlqW+90z8MqJGfmQJtPI4aVOG3CgxuC8pcaaa86GGnEzwNl0A4gvDtrNM26vya8mfn/rVA==
-X-Received: by 2002:a05:6402:3588:: with SMTP id
- y8mr4824671edc.147.1642089039121; 
- Thu, 13 Jan 2022 07:50:39 -0800 (PST)
-Received: from ?IPV6:2003:cb:c703:e200:8511:ed0f:ac2c:42f7?
- (p200300cbc703e2008511ed0fac2c42f7.dip0.t-ipconnect.de.
- [2003:cb:c703:e200:8511:ed0f:ac2c:42f7])
- by smtp.gmail.com with ESMTPSA id qw4sm1026745ejc.55.2022.01.13.07.50.32
+ bh=SPmaJub/jt94ihGwagtrfHtir8UBrBvypTKNKojeyrA=;
+ b=4tP8+sirS5raSSlY1mSkB/TmXvE/t5LbfuMaHUl2g8c7iUrUEOuNQ1AWS41xXA8jz+
+ XjYAmrfNwxb3KcQZMQfDk6+wwRChezgHAjG/B+E1XERbv1SLtaGRdjBZL8gij8K/QWjd
+ WW5GdV+QhrZVWLUxWLC6vJjHqtgcnLo+8wqeRIUor31N/4mx+3fsPGSW0W2Swg0+XeMy
+ Xjn9zQfGD52oyyhTN1hM5/avXdmNvDuc6C6DzNXqf124t6Ugr5sHJE+74uupNHnAc13w
+ MtqpfFlo5S+ChNs0Han3UABbH+CZBcPqX/7s3l15Oh1FJLtff8uyQbS3EM2osfagl4YW
+ 3s4Q==
+X-Gm-Message-State: AOAM5313itB9PXYvRaYa5nmnx03MgmH/czOww7TjDZbowplfH85+2ZrJ
+ 3GByfanH4pbDAxL4wamVXQc=
+X-Google-Smtp-Source: ABdhPJz71D45GcRwagirhvSlyWM52OERaCgTDonsBE7CR9XIAMLCsE2GIYUK2N2X+W/NKuR3LQ9Flg==
+X-Received: by 2002:a1c:7316:: with SMTP id d22mr11718665wmb.5.1642090219767; 
+ Thu, 13 Jan 2022 08:10:19 -0800 (PST)
+Received: from [192.168.0.18] (81.172.62.207.dyn.user.ono.com. [81.172.62.207])
+ by smtp.gmail.com with ESMTPSA id f8sm9488614wmg.3.2022.01.13.08.10.17
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 13 Jan 2022 07:50:38 -0800 (PST)
-Message-ID: <5da2e9ae-24bc-a146-053d-a43063bad73e@redhat.com>
-Date: Thu, 13 Jan 2022 16:50:29 +0100
+ Thu, 13 Jan 2022 08:10:19 -0800 (PST)
+Message-ID: <e940d705-2057-4d5e-0a21-8464ca04caaf@gmail.com>
+Date: Thu, 13 Jan 2022 17:10:17 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [RFC PATCH v3 3/8] mm: migrate: allocate the right size of non
- hugetlb or THP compound pages.
-To: Zi Yan <ziy@nvidia.com>
-References: <20220105214756.91065-1-zi.yan@sent.com>
- <20220105214756.91065-4-zi.yan@sent.com>
- <970ca2a4-416d-7e8f-37c7-510c5b050f4b@redhat.com>
- <15E26B9B-8AE2-4916-94E7-D0BBB2491B1B@nvidia.com>
-From: David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <15E26B9B-8AE2-4916-94E7-D0BBB2491B1B@nvidia.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=david@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
+ Thunderbird/91.2.0
+Subject: Re: [PATCH v9 12/15] media: mtk-vcodec: enc: Remove
+ mtk_vcodec_release_enc_pm
 Content-Language: en-US
-Cc: Mel Gorman <mgorman@techsingularity.net>,
- Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org,
- linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
- linux-mm@kvack.org, iommu@lists.linux-foundation.org,
- Eric Ren <renzhengeek@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>, Vlastimil Babka <vbabka@suse.cz>
+To: Hans Verkuil <hverkuil@xs4all.nl>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ David Airlie <airlied@linux.ie>, Mauro Carvalho Chehab <mchehab@kernel.org>
+References: <20211112105509.12010-1-yong.wu@mediatek.com>
+ <20211112105509.12010-13-yong.wu@mediatek.com>
+ <68c3a573-8453-38e9-93b2-2067bedcd06f@collabora.com>
+ <4bd9e849-96dd-6f1c-2841-979459366ee5@collabora.com>
+ <fa9b2b73-c6bb-5737-93ac-ba2ab6b3b771@xs4all.nl>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <fa9b2b73-c6bb-5737-93ac-ba2ab6b3b771@xs4all.nl>
+Cc: devicetree@vger.kernel.org, Will Deacon <will.deacon@arm.com>,
+ dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+ anthony.huang@mediatek.com, youlin.pei@mediatek.com,
+ Irui Wang <irui.wang@mediatek.com>, Evan Green <evgreen@chromium.org>,
+ Eizan Miyamoto <eizan@chromium.org>, Matthias Kaehlcke <mka@chromium.org>,
+ mingyuan.ma@mediatek.com, linux-media@vger.kernel.org,
+ Chun-Kuang Hu <chunkuang.hu@kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
+ libo.kang@mediatek.com, yi.kuo@mediatek.com,
+ linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
+ Tiffany Lin <tiffany.lin@mediatek.com>, linux-arm-kernel@lists.infradead.org,
+ anan.sun@mediatek.com, acourbot@chromium.org, srv_heupstream@mediatek.com,
+ yf.wang@mediatek.com, iommu@lists.linux-foundation.org,
+ Philipp Zabel <p.zabel@pengutronix.de>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -121,53 +117,63 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 13.01.22 16:46, Zi Yan wrote:
-> On 12 Jan 2022, at 6:04, David Hildenbrand wrote:
-> 
->> On 05.01.22 22:47, Zi Yan wrote:
->>> From: Zi Yan <ziy@nvidia.com>
+Hi Hans,
+
+On 13/01/2022 11:15, Hans Verkuil wrote:
+> On 13/01/2022 11:11, AngeloGioacchino Del Regno wrote:
+>> Il 11/01/22 11:57, AngeloGioacchino Del Regno ha scritto:
+>>> Il 12/11/21 11:55, Yong Wu ha scritto:
+>>>> After this patchset, mtk_vcodec_release_enc_pm has only one line.
+>>>> then remove that function, use pm_runtime_disable instead.
+>>>>
+>>>> meanwhile, mtk_vcodec_init_enc_pm only operate for the clocks,
+>>>> rename it from the _pm to _clk.
+>>>>
+>>>> No functional change.
+>>>>
+>>>> CC: Tiffany Lin <tiffany.lin@mediatek.com>
+>>>> CC: Irui Wang <irui.wang@mediatek.com>
+>>>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 >>>
->>> alloc_migration_target() is used by alloc_contig_range() and non-LRU
->>> movable compound pages can be migrated. Current code does not allocate the
->>> right page size for such pages. Check THP precisely using
->>> is_transparent_huge() and add allocation support for non-LRU compound
->>> pages.
+>>> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+>>>
 >>
->> IIRC, we don't have any non-lru migratable pages that are coumpound
->> pages. Read: not used and not supported :)
+>> Hello Yong,
+>> the mtk-vcodec patches were merged in Yunfei's vcodec patch series and Hans has
+>> scheduled that for v5.18.
+>>
+>> Can you please send a v10 and drop patches 10/15, 11/15, 12/15 (all of the
+>> media: mtk-vcodec: *) from this series?
+>>
+>> For the records, I think that after sending v10 this series is ready to be merged,
+>> as it was well reviewed and also tested on many MTK platforms.
 > 
-> OK, but nothing prevents one writing a driver that allocates compound
-> pages and provides address_space->migratepage() and address_space->isolate_page().
+> Good to know. When I have the v10 I'll try to prioritize reviewing it and running
+> my usual tests.
 > 
-> Actually, to test this series, I write a kernel module that allocates
-> an order-10 page, gives it a fake address_space with migratepage() and
-> isolate_page(), __SetPageMovable() on it, then call alloc_contig_range()
-> on the page range. Apparently, my kernel module is not supported by
-> the kernel, thus, I added this patch.
+> Yong, please make sure you run 'checkpatch.pl --strict' over the v10 patches and fix
+> any issues (using common sense).
 > 
-> Do you have an alternative test to my kernel module, so that I do not
-> even need this patch myself?
+
+Can you please take me in the look when you take the patches. I'll take the DTS 
+related as soon as you queue up the others.
+
+Thanks!
+Matthias
+
+> Regards,
 > 
->> Why is this required in the context of this series?
+> 	Hans
 > 
-> It might not be required. I will drop it.
-
-That's why I think it would be best dropping it. If you need it in
-different context, better submit it in different context.
-
-Makes this series easier to digest :)
-
-
--- 
-Thanks,
-
-David / dhildenb
-
+>>
+>> Thank you,
+>> - Angelo
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
