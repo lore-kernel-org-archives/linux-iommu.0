@@ -1,139 +1,76 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 64B81C433F5
-	for <iommu@archiver.kernel.org>; Fri, 14 Jan 2022 15:15:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C0E3DC433F5
+	for <iommu@archiver.kernel.org>; Fri, 14 Jan 2022 15:19:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 0C18260AA2;
-	Fri, 14 Jan 2022 15:15:33 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5594C40222;
+	Fri, 14 Jan 2022 15:19:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fSDViVEp3eqB; Fri, 14 Jan 2022 15:15:32 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id nWwJqoPEUmH3; Fri, 14 Jan 2022 15:19:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id E7765607F2;
-	Fri, 14 Jan 2022 15:15:31 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id DBF72401B2;
+	Fri, 14 Jan 2022 15:19:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D0AD3C002F;
-	Fri, 14 Jan 2022 15:15:31 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A0200C001E;
- Fri, 14 Jan 2022 15:15:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C0C13C002F;
+	Fri, 14 Jan 2022 15:19:32 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 47E5AC001E
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Jan 2022 15:19:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7FF2E84B57;
- Fri, 14 Jan 2022 15:15:30 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 25AC0401CA
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Jan 2022 15:19:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZSM2EEsgfnM1; Fri, 14 Jan 2022 15:15:29 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com
- (mail-bn7nam10on2082.outbound.protection.outlook.com [40.107.92.82])
- by smtp1.osuosl.org (Postfix) with ESMTPS id B670881A64;
- Fri, 14 Jan 2022 15:15:29 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TA2qNpuU9PuUmqmYrS9kTwgqW5XzYf7y3hWKU6Rtkxehpx5JIxcqO7VQQztI6m3QDHhzBemiyIsIRf/WfyuUNTKadKHdmZNfZztj82bKZ7y5XJnlkFNoppn/fUOykgJq4wHAlX3Qx2QOghLhWjwqMUL3YjMDHseVV8eqHuZJ20M0O7PYj+StyZT7Q3mRqpgWneHZbA7ReMKFc4ubhLnS7+pWw/Wbj3OSllO3CscjRMI6hMB4ZTMHM2HZ1aUnlW9P9sXkWBvQS2PJIvEehRuvUPYgVpr3mT+Up3Gv/Lh7X6SSs4sCj50RO+GPGd8wMa3MXNlzTOZHQhFnrOXzTb2RMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ks5QtkzLF/4RgmW1WDyADIc8xUV6vXyMMmEvuZGqSwc=;
- b=Kd2tuYFLUSsfA5QjX93JAX9htJQPH2j7fgEdr5Dz2e2sb8QJI6SZhVLK5O8L5YuTetYipGyZheaLmD2UIGijyMklHylVXOvxlxj6Gy5BF/bHeKjMhVDb/LQXC0IhayVAY2YlK9W6z9fiaPEFdErO5sIRppHvV++w1zraqi+D6dpPSpgLJEofguuEZOACLNU8F7+C8NRGy8woV4DMTP0AcJ0SlQ69cb3z1nc9nIJNua+X/QAeM6YNg3i6UJ6d3YZBTz9D3CZnxCz5vfyvTSlvmp+08LnxDCb74jnIb99uGlHG9RH/PnYb9Q7GVjxQOaSH8/SqgMb0uMEpQJFdVMoIYg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ks5QtkzLF/4RgmW1WDyADIc8xUV6vXyMMmEvuZGqSwc=;
- b=JO2YlFJmlWnILD4EDfrevAb9It8ZYGxjUnWSz45Eg+pNdbMQSqI6Gxm3tqpVR1FLWwNxuzeRd8N89L5N1rvOHW+u2DKq0+5kLavGCy+n9TuJu8FOAzHy/gr9lQtV2S+41kAEHqJ2Eg/w9fiXeSwHqzXc5IpE3S5NhfzGTiBoTMwvbRKaGlYNwY994m3sSEZtvJM/lm6Yx0n1twNTvc2Qf8BrqiaWDZFfyYQgILOC6IMiH8dtpp6hT4VWxm8O+YRihhcMgdJUGZ8V9bL2Ij/2yYJTcBfYnCRE7i/ZTcAH9FIaA5xAR0xp/XK/YT/KrH5eH9OQ0q5ok0ecFI0F1cZ0DQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB3823.namprd12.prod.outlook.com (2603:10b6:208:168::26)
- by BL1PR12MB5078.namprd12.prod.outlook.com (2603:10b6:208:313::11)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Fri, 14 Jan
- 2022 15:15:27 +0000
-Received: from MN2PR12MB3823.namprd12.prod.outlook.com
- ([fe80::a9db:9c46:183e:c213]) by MN2PR12MB3823.namprd12.prod.outlook.com
- ([fe80::a9db:9c46:183e:c213%3]) with mapi id 15.20.4888.012; Fri, 14 Jan 2022
- 15:15:27 +0000
-To: David Hildenbrand <david@redhat.com>
-Subject: Re: [RFC PATCH v3 7/8] drivers: virtio_mem: use pageblock size as the
- minimum virtio_mem size.
-Date: Fri, 14 Jan 2022 10:15:25 -0500
-X-Mailer: MailMate (1.14r5853)
-Message-ID: <FC7DE076-4FB5-44ED-9A57-9112136AE2AC@nvidia.com>
-In-Reply-To: <60778775-b5f5-0837-092f-9911cec84854@redhat.com>
-References: <20220105214756.91065-1-zi.yan@sent.com>
- <20220105214756.91065-8-zi.yan@sent.com>
- <60778775-b5f5-0837-092f-9911cec84854@redhat.com>
-X-ClientProxiedBy: BL1PR13CA0426.namprd13.prod.outlook.com
- (2603:10b6:208:2c3::11) To MN2PR12MB3823.namprd12.prod.outlook.com
- (2603:10b6:208:168::26)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ABzDGT_WriTx for <iommu@lists.linux-foundation.org>;
+ Fri, 14 Jan 2022 15:19:31 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 3764A401B2
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Jan 2022 15:19:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1642173571; x=1673709571;
+ h=date:from:to:cc:subject:message-id:in-reply-to:
+ references:mime-version:content-transfer-encoding;
+ bh=qowLRleV7CksEzwRd59cyb0/LxsFQr8gPBqQKIbcK5c=;
+ b=EXt8v70+q6m2THRpnpSwViRnC4s13fZBpv4er5u9aQCwkVYr6y4G1pCI
+ QtLduMnfql/WIp8fddhnihPtE++pX6kcd0sboOPtkQnZcZL+60ZhyZKpe
+ GQsoTzoYCfoOq9+RvrmyomtaK/i2CGgpDhdEI+lluzRx+xiTiQSbr0e4j
+ nZg7MH9PErPrR/cn6AD+lO2HgDp/hhtUjeoNMrPgGoiRXZOVOz9MljPQN
+ MhkHFaQSYW/vBYb6HRs1K69G1i+jwPzUCC/XKHbajcW8FEiFanRC+nUrS
+ yKBOr4jMEjp7TLgDf7aTm63pMZrm8kL/vlflVhXq9B1pfWgD1S0b4RsaC g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="241824704"
+X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; d="scan'208";a="241824704"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 14 Jan 2022 07:19:30 -0800
+X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; d="scan'208";a="530279733"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 14 Jan 2022 07:19:30 -0800
+Date: Fri, 14 Jan 2022 07:24:07 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH] iommu/vt-d: Fix PCI bus rescan device hot add
+Message-ID: <20220114072407.290691fa@jacob-builder>
+In-Reply-To: <1b8d3145-c404-e952-e61e-5cdc2f6a92a6@linux.intel.com>
+References: <1642080198-10971-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <b2139255-2463-c62f-4746-8df7f3f49221@linux.intel.com>
+ <20220113191122.53bc6ac0@jacob-builder>
+ <1b8d3145-c404-e952-e61e-5cdc2f6a92a6@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bc722e2b-0a17-4ffb-60ea-08d9d770b1f1
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5078:EE_
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5078021DF4A0EF94C652634BC2549@BL1PR12MB5078.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cpdx5Y9PBg8fnb+wqAnL3kUd1q4Xl33sMWFzlZFc9+WJGxAWWFgobINeif0zL7saCuD7EerJAFNLChd7xLU6jxrlUlpnMUQpCCaUJElTbbXYSsVpffSg0SNifrn+cuGCAIYbCUm0XRGfT9CgrRLc9/DB/FPXb4lf+7DORx5oDKhJ7N2kQJ5Cww8owgiGnpX5wyYHSs6LqDgm0lhBtKdkf5NmU+us1PVh+N2n79vzFtNZOyCAUXxJWSznuuNqd4wrPVzNYh/kHoySaegw+V0/+i2vtuYmgoPo2hNC6bud4QDpNpYuR5zfIekOQbPsaU2Fm/XoRVQ2nUoz6lndvIPy1ijbsaDYK4VeWvZYX5Ip9vSQjR6vZrBtLpLoQ39sA8PE4Spg7gGGxcY0cnieWdAvEyBprpUCA2wlrKmnQAG+ADZuADfYSrJ5nEHLtTQSsrwHjDiJkfn0pH1Bgm2z9Nr9ePdXuUOR8hfRav+HWgQG4jVGrp+WkVFBK6Fo1sAK8zDiNklwjGGQHxAU908+pNT+pxOty3ewT987okn+9QfOmbkMEO4nD6x04+Oui+haJ+FfxzXhjbufWh130xVgiOoc0U04yKUChoI9yNEe5RZrFFFyzsH9KBFv/wrdZmp60sS8EvP7/eQkdSZVUauoS/ktaVoPJ36OYDaSIMvHBc6XFhM1A2i+QacF1TFQvO3jNiFJXs+zod37musz2AzgRtAMiw58+YoPY7sMZg5aPsvZJs8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB3823.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(66946007)(66556008)(7416002)(508600001)(316002)(235185007)(6916009)(2616005)(8676002)(8936002)(54906003)(5660300002)(66476007)(36756003)(26005)(38100700002)(21480400003)(83380400001)(2906002)(86362001)(33656002)(6506007)(53546011)(4326008)(186003)(6512007)(6486002)(72826004)(45980500001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/FUHBoOzcZ59htlqJc/G+sDElTtrz8gX5pCDUP0Kmt2HAYIO72B6z+pkNVc9?=
- =?us-ascii?Q?H2WRcIN6PqT4j2/N4l5GDiN4KDrzlIzLcM5+Om1bgmetPmgjxrmdmCCSZlcS?=
- =?us-ascii?Q?QEih8q7SCMi0MZl8O9L7IfuZOsRqpNTzqi7m9BXzL6Y4uwMguyPDc2NV4apw?=
- =?us-ascii?Q?EumtDVUuUB6h/ihPU/B+BF7L2OXcI2wgm6V+xWPYtx/X+V1n9YNYcbk95M8Q?=
- =?us-ascii?Q?ItpKcySTqG1hbqzfcaxoC59ejZh2ED0mosmOZMzlUEjLJkGjyvz7PGPyS5mw?=
- =?us-ascii?Q?82Eb9AjYVCaIqqzfouZ9kRpbm+h1RqTVV5ExxbAtrjkOL/RDYjuzGdbftvWL?=
- =?us-ascii?Q?i+qXZwO/e199TlfNHV7go+aqnAfHHvt1+Ze3H9YSWYF2zhBTcJR32cGvcnju?=
- =?us-ascii?Q?FGEmHH/7zBj+NGX4LYRUJTFdhCtkiSFnyynNbxGcd1NI6a4zVGrwBm566U/7?=
- =?us-ascii?Q?j2G1yPrz9u3NX6iw0uUb3ZlJ77dAyYEmHKxCKgGpT46T9ZD7E9OzsKbPBjWu?=
- =?us-ascii?Q?3vmMclXCWjHToHX1/Pw7yeI/th/YVjKkSLKhvq8c3FP3NJ0mpte5XFnc49cy?=
- =?us-ascii?Q?k5203+Zbd8sHFlvVZ9i4VWxoiSutzVcfmozNaEbMtfpoVn7yDX9TWW47L0hl?=
- =?us-ascii?Q?m4WxPGcWVjfT+/M/7iVxfMu2u1I6emoholoEN0WurpFaEaBPx19LGAFzHm/l?=
- =?us-ascii?Q?07W+pPmLvzJ8Je9swSXIYQpCp6uaXtvXpO0YDG3sN3MUUBMlnAnSE99YHJc2?=
- =?us-ascii?Q?4G2UL4NxlQWmE5oNZctJEDqYVXya/At6hCr/pJPJOZlv/lRO/ajI9mCSUePw?=
- =?us-ascii?Q?3CUOXEkLr2cbqUefwjpUHktER6FGbIq35WymmL8wP1sg1Qzogo4mE71v8YtP?=
- =?us-ascii?Q?9ivzkDQaB/2s3vMYU5NiHwDCUy6r0/sS/Y9E7diVkMVGky9KoqxJW8bnJu66?=
- =?us-ascii?Q?RRlzwuN/zGAhJUk/bXykQsYxqxN0d/WYgAORk3p8Ga37ozGLEjhJ4PllecrE?=
- =?us-ascii?Q?sTFU0/3OPkYh+pr0VBXGNjvDNhwmDEtghTMaXkO5vCGpSdk1kEcNzScAkzS3?=
- =?us-ascii?Q?w8rPdqEXb+nb09RQnehGR7S5lyD+Ei/7MYptA8T3hIPNY5CDef+6S1HpllyW?=
- =?us-ascii?Q?BULgdcsM8AYtVXi5x0T0SnOE/2v8CLx9ZLRN6AbvDKxkiQp1fbxbXfyz43JS?=
- =?us-ascii?Q?em5dTEGZgdfpSVd9FkvCO4pWJvra3MTN83Y0hlvCDj+OX8U6bLHmtMb0Ew91?=
- =?us-ascii?Q?BiInNGx16uHkgmIfmStQz35dylggaMmZTDFWP49VOdl9ZyHnEwldRgYE3TL6?=
- =?us-ascii?Q?MfbZp79ibQvg8VyYyvavIT7z5LldCG1h+TydlF1wK01J3jpXsH/FU2MrXPAQ?=
- =?us-ascii?Q?xpXQ5Ro1wyQk3Kh8ZxhA8znNahSX+W8uebjPfCPkTV+JiCOdbN35g60tY9qv?=
- =?us-ascii?Q?Z2zYmSogTsU6TwvQYWKlZ2Ze1kY7sceYjG00jAVliXI24dKY0Qnx3ekITtqC?=
- =?us-ascii?Q?VAAj5ZgrmCr+F0/PQ0Z34ci9AqAArD/+0J5q5daS+oAet/THx0MbbxKGTMCV?=
- =?us-ascii?Q?dvb0H2uJaTOb9QZlKrY=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bc722e2b-0a17-4ffb-60ea-08d9d770b1f1
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3823.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jan 2022 15:15:27.2737 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EIGrIAwuQRBHYKoxZn8zJ6QaeR2lWQdZT9SvpqzAjh1/N28jjouGBEjHQhXz5/qU
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5078
-Cc: Mel Gorman <mgorman@techsingularity.net>,
- Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org,
- linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
- linux-mm@kvack.org, iommu@lists.linux-foundation.org,
- Eric Ren <renzhengeek@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>, Vlastimil Babka <vbabka@suse.cz>
+Cc: Raj Ashok <ashok.raj@intel.com>, "Kumar,
+ Sanjay K" <sanjay.k.kumar@intel.com>, LKML <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Jacob Pan <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -146,85 +83,109 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Zi Yan via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Zi Yan <ziy@nvidia.com>
-Content-Type: multipart/mixed; boundary="===============0922360545595352859=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
---===============0922360545595352859==
-Content-Type: multipart/signed;
- boundary="=_MailMate_C438F204-3693-4696-9E76-A1C6EFF005F6_=";
- micalg=pgp-sha512; protocol="application/pgp-signature"
+Hi Lu,
 
---=_MailMate_C438F204-3693-4696-9E76-A1C6EFF005F6_=
-Content-Type: text/plain
+On Fri, 14 Jan 2022 11:12:45 +0800, Lu Baolu <baolu.lu@linux.intel.com>
+wrote:
 
-On 14 Jan 2022, at 8:44, David Hildenbrand wrote:
+> On 1/14/22 11:11 AM, Jacob Pan wrote:
+> > On Fri, 14 Jan 2022 08:58:53 +0800, Lu Baolu<baolu.lu@linux.intel.com>
+> > wrote:
+> >   
+> >> Hi Jacob,
+> >>
+> >> On 1/13/22 9:23 PM, Jacob Pan wrote:  
+> >>> During PCI bus rescan, adding new devices involve two notifiers.
+> >>> 1. dmar_pci_bus_notifier()
+> >>> 2. iommu_bus_notifier()
+> >>> The current code sets #1 as low priority (INT_MIN) which resulted in
+> >>> #2 being invoked first. The result is that struct device pointer
+> >>> cannot be found in DRHD search for the new device's DMAR/IOMMU.
+> >>> Subsequently, the device is put under the "catch-all" IOMMU instead
+> >>> of the correct one.
+> >>>
+> >>> This could cause system hang when device TLB invalidation is sent to
+> >>> the wrong IOMMU. Invalidation timeout error or hard lockup can be
+> >>> observed.
+> >>>
+> >>> This patch fixes the issue by setting a higher priority for
+> >>> dmar_pci_bus_notifier. DRHD search for a new device will find the
+> >>> correct IOMMU.
+> >>>
+> >>> Fixes: 59ce0515cdaf ("iommu/vt-d: Update DRHD/RMRR/ATSR device scope")
+> >>> Reported-by: Zhang, Bernice<bernice.zhang@intel.com>
+> >>> Signed-off-by: Jacob Pan<jacob.jun.pan@linux.intel.com>
+> >>> ---
+> >>>    drivers/iommu/intel/dmar.c | 2 +-
+> >>>    1 file changed, 1 insertion(+), 1 deletion(-)
+> >>>
+> >>> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+> >>> index 915bff76fe96..5d07e5b89c2e 100644
+> >>> --- a/drivers/iommu/intel/dmar.c
+> >>> +++ b/drivers/iommu/intel/dmar.c
+> >>> @@ -385,7 +385,7 @@ static int dmar_pci_bus_notifier(struct
+> >>> notifier_block *nb,
+> >>>    static struct notifier_block dmar_pci_bus_nb = {
+> >>>    	.notifier_call = dmar_pci_bus_notifier,
+> >>> -	.priority = INT_MIN,
+> >>> +	.priority = INT_MAX,
+> >>>    };
+> >>>    
+> >>>    static struct dmar_drhd_unit *
+> >>>      
+> >> Nice catch! dmar_pci_bus_add_dev() should take place*before*
+> >> iommu_probe_device(). This change enforces this with a higher notifier
+> >> priority for dmar callback.
+> >>
+> >> Comparably, dmar_pci_bus_del_dev() should take place*after*
+> >> iommu_release_device(). Perhaps we can use two notifiers, one for
+> >> ADD_DEVICE (with .priority=INT_MAX) and the other for REMOVE_DEVICE
+> >> (with .priority=INT_MIN)?
+> >>  
+> > Since device_to_iommu() lookup in intel_iommu_release_device() only
+> > checks if device is under "an" IOMMU, not "the" IOMMU. Then the remove
+> > path order is not needed, right?
+> > 
+> > I know this is not robust, but having so many notifiers with implicit
+> > priority is not clean either.
+> > 
+> > Perhaps, we should have explicit priority defined around iommu_bus
+> > notifier? i.e.
+> > 
+> > @@ -1841,6 +1841,7 @@ static int iommu_bus_init(struct bus_type *bus,
+> > const struct iommu_ops *ops) return -ENOMEM;
+> >          nb->notifier_call = iommu_bus_notifier;
+> >                         
+> > +       nb->priority = IOMMU_BUS_NOTIFY_PRIORITY;
+> >                         
+> > 
+> >   static struct notifier_block dmar_pci_bus_add_nb = {
+> >          .notifier_call = dmar_pci_bus_notifier,
+> > -       .priority = INT_MIN,
+> > +       .priority = IOMMU_BUS_NOTIFY_PRIORITY + 1,
+> >   };
+> > 
+> >   static struct notifier_block dmar_pci_bus_remove_nb = {
+> >          .notifier_call = dmar_pci_bus_notifier,
+> > -       .priority = INT_MIN,
+> > +       .priority = IOMMU_BUS_NOTIFY_PRIORITY - 1,
+> >   };  
+> 
+> IOMMU_BUS_NOTIFY_PRIORITY by default is 0. So you can simply use 1 and
+> -1? Adding a comment around it will be helpful.
+> 
+Yeah, I will add comment.
 
-> On 05.01.22 22:47, Zi Yan wrote:
->> From: Zi Yan <ziy@nvidia.com>
->>
->> alloc_contig_range() now only needs to be aligned to pageblock_order,
->> drop virtio_mem size requirement that it needs to be the max of
->> pageblock_order and MAX_ORDER.
->>
->> Signed-off-by: Zi Yan <ziy@nvidia.com>
->> ---
->>  drivers/virtio/virtio_mem.c | 3 +--
->>  1 file changed, 1 insertion(+), 2 deletions(-)
->>
->> diff --git a/drivers/virtio/virtio_mem.c b/drivers/virtio/virtio_mem.c
->> index a6a78685cfbe..2664dc16d0f9 100644
->> --- a/drivers/virtio/virtio_mem.c
->> +++ b/drivers/virtio/virtio_mem.c
->> @@ -2481,8 +2481,7 @@ static int virtio_mem_init_hotplug(struct virtio_mem *vm)
->>  	 * - Is required for now for alloc_contig_range() to work reliably -
->>  	 *   it doesn't properly handle smaller granularity on ZONE_NORMAL.
->>  	 */
->
-> Please also update this comment.
 
-No problem. Thanks for pointing this out.
+Thanks,
 
-
---
-Best Regards,
-Yan, Zi
-
---=_MailMate_C438F204-3693-4696-9E76-A1C6EFF005F6_=
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQJDBAEBCgAtFiEEh7yFAW3gwjwQ4C9anbJR82th+ooFAmHhk40PHHppeUBudmlk
-aWEuY29tAAoJEJ2yUfNrYfqKSkEP/jaAvAcYFO5gI5Q7dXBn9mlVUbq0RjRXMjbq
-FPo6FfBH+UZjHfjq3MrkPdlPjBOMc0Tgat5mQJRWPI4sKn2FuycNv1cy5H+jA/0+
-P28LCSaYfKzBIW8BOeBtNvCeYkpKEudmzNacWH9TFkZUyB4ML9Ny3VqqNbHWDXXQ
-saQ+ICJ4m1S9AfcaWI+6j8zR1JL6BKhzcb1qzvwgAbjeggd2D6IgDBESUn3FA8u6
-HVCWcdyoIbaH7/mJYhRwoBY1Kce8fQBfhPwcylJqWQQDg/aWeDFYAG46x8VlX/y1
-F/vrvziyB5VhSKYdYMV9Zwe2p2IP0cfJ09+zjqMLMfAey7fx8vDqr3OJ2n+AvNQ1
-+wM7pLvWr/gMoHcbjan0Mve72ZjNMc/531gXzGLitfZoFMGD3L64hQbvoNb4fUJt
-ulrNQWvLpRNxRSUo6EqpGeClQKyeQYyenCO/nESKTuEwLAJbtAvQ3TE0wxRcWYAW
-XgsGVchFB3bzOXRlJ6lFLKvjbXeDh7Xw+lbUp5+eKeMzsdEi25ekGYNtLyRH4koC
-C7xlY67JMTlnoG0LW94+QKm3PS4n4QuyLjYEvQe0j7FQGZuWlF+FxT/kIGiCG5CS
-K3Tw5j3OuxDGE6Ywlw3gpJbi7zTvlnQh75zU4XWcEJg6RNxb0C9R+G2v++Fr2qdv
-I+5DtVna
-=xKpA
------END PGP SIGNATURE-----
-
---=_MailMate_C438F204-3693-4696-9E76-A1C6EFF005F6_=--
-
---===============0922360545595352859==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Jacob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============0922360545595352859==--
