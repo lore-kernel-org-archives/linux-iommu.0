@@ -1,79 +1,76 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 83DFBC433EF
-	for <iommu@archiver.kernel.org>; Fri, 14 Jan 2022 03:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 70101C433F5
+	for <iommu@archiver.kernel.org>; Fri, 14 Jan 2022 09:06:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 39407402C3;
-	Fri, 14 Jan 2022 03:13:39 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 324B58124C;
+	Fri, 14 Jan 2022 09:06:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YPiX8GhaqLiC; Fri, 14 Jan 2022 03:13:38 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mBEaEdmrTgj3; Fri, 14 Jan 2022 09:06:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id C4E1940275;
-	Fri, 14 Jan 2022 03:13:37 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id E884580F75;
+	Fri, 14 Jan 2022 09:06:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 99EADC0030;
-	Fri, 14 Jan 2022 03:13:37 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E0CA1C001E
- for <iommu@lists.linux-foundation.org>; Fri, 14 Jan 2022 03:13:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C252DC0030;
+	Fri, 14 Jan 2022 09:06:46 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 454C5C001E
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Jan 2022 09:06:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id BB47A60AA9
- for <iommu@lists.linux-foundation.org>; Fri, 14 Jan 2022 03:13:36 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 23EE6400E8
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Jan 2022 09:06:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TOkldFfwjZmh for <iommu@lists.linux-foundation.org>;
- Fri, 14 Jan 2022 03:13:36 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id mXRQqnCXFJKi for <iommu@lists.linux-foundation.org>;
+ Fri, 14 Jan 2022 09:06:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 2019460A89
- for <iommu@lists.linux-foundation.org>; Fri, 14 Jan 2022 03:13:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1642130016; x=1673666016;
- h=cc:subject:to:references:from:message-id:date:
- mime-version:in-reply-to:content-transfer-encoding;
- bh=Szmsi12k0LI7khEwP6fZbgXfWxt5yjoq0TShGWuPc+o=;
- b=RzGb35yihIrzCKnfbKbShf42UGHyg+2WwuphQ63cx4z2hcNUlivEzCA1
- 4OUkc9NhkoYYjIW70Bhak5sjF2bLbSF44dkzA0iohRpiIYBFozJOZbiTA
- EjXQKt7NcQz6E5CeE0172Mp9tUlV2L5O3+cc5i2hIJL4eezNlsVa6uZ3M
- +w5OkUZlEUEtP8k8aJoqRO+33cBYeaFjU1raGL+RyVgwZxWxGEDr2nLk0
- SVKEx8ivM8FyaX1RAhlRkfcDJDwsJMO3HRGAgvvfXhkANhOB5+EXMdcgp
- slArw+Z2LWVghXFNL8UwUB4gMcr20eVToTrCGTZJK+PeaWG+6hbsycopm w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="244128683"
-X-IronPort-AV: E=Sophos;i="5.88,287,1635231600"; d="scan'208";a="244128683"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 13 Jan 2022 19:13:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,287,1635231600"; d="scan'208";a="529971183"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
- ([10.239.159.118])
- by orsmga008.jf.intel.com with ESMTP; 13 Jan 2022 19:13:33 -0800
-Subject: Re: [PATCH] iommu/vt-d: Fix PCI bus rescan device hot add
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <1642080198-10971-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <b2139255-2463-c62f-4746-8df7f3f49221@linux.intel.com>
- <20220113191122.53bc6ac0@jacob-builder>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <1b8d3145-c404-e952-e61e-5cdc2f6a92a6@linux.intel.com>
-Date: Fri, 14 Jan 2022 11:12:45 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 0D84E415CD
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Jan 2022 09:06:39 +0000 (UTC)
+X-UUID: 7bded12a5a9841fc8e08ca81fa4b3dbd-20220114
+X-UUID: 7bded12a5a9841fc8e08ca81fa4b3dbd-20220114
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 2126194223; Fri, 14 Jan 2022 17:06:33 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 14 Jan 2022 17:06:32 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 14 Jan 2022 17:06:31 +0800
+Message-ID: <69a10908622512c60790f97942731a8ab989b727.camel@mediatek.com>
+Subject: Re: [PATCH v5 25/32] iommu/mtk: Migrate to aggregate driver
+From: Yong Wu <yong.wu@mediatek.com>
+To: Stephen Boyd <swboyd@chromium.org>
+Date: Fri, 14 Jan 2022 17:06:31 +0800
+In-Reply-To: <CAE-0n53FAHDmCznJ35Xh2aTwXBVwukAM3ioKx8SU9VowSaQSqA@mail.gmail.com>
+References: <20220106214556.2461363-1-swboyd@chromium.org>
+ <20220106214556.2461363-26-swboyd@chromium.org>
+ <1a3b368eb891ca55c33265397cffab0b9f128737.camel@mediatek.com>
+ <CAE-0n53Y3WRy4_QvUm9k9wjjWV7adMDQcK_+1ji4+W25SSeGwg@mail.gmail.com>
+ <ff81bc1fe1f1c2060fcf03ba14f1bef584c47599.camel@mediatek.com>
+ <CAE-0n53FAHDmCznJ35Xh2aTwXBVwukAM3ioKx8SU9VowSaQSqA@mail.gmail.com>
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-In-Reply-To: <20220113191122.53bc6ac0@jacob-builder>
-Content-Language: en-US
-Cc: Raj Ashok <ashok.raj@intel.com>, "Kumar,
- Sanjay K" <sanjay.k.kumar@intel.com>, LKML <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org, Jacob Pan <jacob.jun.pan@intel.com>
+X-MTK: N
+Cc: youlin.pei@mediatek.com, Saravana Kannan <saravanak@google.com>, Will
+ Deacon <will@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J.
+ Wysocki" <rafael@kernel.org>, Douglas Anderson <dianders@chromium.org>,
+ dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+ Daniel Vetter <daniel.vetter@ffwll.ch>, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ Russell King <rmk+kernel@arm.linux.org.uk>, freedreno@lists.freedesktop.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,97 +83,107 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 1/14/22 11:11 AM, Jacob Pan wrote:
-> On Fri, 14 Jan 2022 08:58:53 +0800, Lu Baolu<baolu.lu@linux.intel.com>
-> wrote:
+On Wed, 2022-01-12 at 20:25 -0800, Stephen Boyd wrote:
+> > 
+> > [    2.654526] ------------[ cut here ]------------
+> > [    2.655558] refcount_t: addition on 0; use-after-free.
+> > 
+> > After this patch, the aggregate_driver flow looks ok. But our
+> > driver
+> > still aborts like this:
+> > 
+> > [    2.721316] Unable to handle kernel NULL pointer dereference at
+> > virtual address 0000000000000000
+> > ...
+> > [    2.731658] pc :
+> > mtk_smi_larb_config_port_gen2_general+0xa4/0x138
+> > [    2.732434] lr : mtk_smi_larb_resume+0x54/0x98
+> > ...
+> > [    2.742457] Call trace:
+> > [    2.742768]  mtk_smi_larb_config_port_gen2_general+0xa4/0x138
+> > [    2.743496]  pm_generic_runtime_resume+0x2c/0x48
+> > [    2.744090]  __genpd_runtime_resume+0x30/0xa8
+> > [    2.744648]  genpd_runtime_resume+0x94/0x2c8
+> > [    2.745191]  __rpm_callback+0x44/0x150
+> > [    2.745669]  rpm_callback+0x6c/0x78
+> > [    2.746114]  rpm_resume+0x314/0x558
+> > [    2.746559]  __pm_runtime_resume+0x3c/0x88
+> > [    2.747080]  pm_runtime_get_suppliers+0x7c/0x110
+> > [    2.747668]  __driver_probe_device+0x4c/0xe8
+> > [    2.748212]  driver_probe_device+0x44/0x130
+> > [    2.748745]  __device_attach_driver+0x98/0xd0
+> > [    2.749300]  bus_for_each_drv+0x68/0xd0
+> > [    2.749787]  __device_attach+0xec/0x148
+> > [    2.750277]  device_attach+0x14/0x20
+> > [    2.750733]  bus_rescan_devices_helper+0x50/0x90
+> > [    2.751319]  bus_for_each_dev+0x7c/0xd8
+> > [    2.751806]  bus_rescan_devices+0x20/0x30
+> > [    2.752315]  __component_add+0x7c/0xa0
+> > [    2.752795]  component_add+0x14/0x20
+> > [    2.753253]  mtk_smi_larb_probe+0xe0/0x120
+> > 
+> > This is because the device runtime_resume is called before the bind
+> > operation(In our case this detailed function is mtk_smi_larb_bind).
+> > The issue doesn't happen without this patchset. I'm not sure the
+> > right
+> > sequence. If we should fix in mediatek driver, the patch could be:
 > 
->> Hi Jacob,
->>
->> On 1/13/22 9:23 PM, Jacob Pan wrote:
->>> During PCI bus rescan, adding new devices involve two notifiers.
->>> 1. dmar_pci_bus_notifier()
->>> 2. iommu_bus_notifier()
->>> The current code sets #1 as low priority (INT_MIN) which resulted in #2
->>> being invoked first. The result is that struct device pointer cannot be
->>> found in DRHD search for the new device's DMAR/IOMMU. Subsequently, the
->>> device is put under the "catch-all" IOMMU instead of the correct one.
->>>
->>> This could cause system hang when device TLB invalidation is sent to the
->>> wrong IOMMU. Invalidation timeout error or hard lockup can be observed.
->>>
->>> This patch fixes the issue by setting a higher priority for
->>> dmar_pci_bus_notifier. DRHD search for a new device will find the
->>> correct IOMMU.
->>>
->>> Fixes: 59ce0515cdaf ("iommu/vt-d: Update DRHD/RMRR/ATSR device scope")
->>> Reported-by: Zhang, Bernice<bernice.zhang@intel.com>
->>> Signed-off-by: Jacob Pan<jacob.jun.pan@linux.intel.com>
->>> ---
->>>    drivers/iommu/intel/dmar.c | 2 +-
->>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
->>> index 915bff76fe96..5d07e5b89c2e 100644
->>> --- a/drivers/iommu/intel/dmar.c
->>> +++ b/drivers/iommu/intel/dmar.c
->>> @@ -385,7 +385,7 @@ static int dmar_pci_bus_notifier(struct
->>> notifier_block *nb,
->>>    static struct notifier_block dmar_pci_bus_nb = {
->>>    	.notifier_call = dmar_pci_bus_notifier,
->>> -	.priority = INT_MIN,
->>> +	.priority = INT_MAX,
->>>    };
->>>    
->>>    static struct dmar_drhd_unit *
->>>    
->> Nice catch! dmar_pci_bus_add_dev() should take place*before*
->> iommu_probe_device(). This change enforces this with a higher notifier
->> priority for dmar callback.
->>
->> Comparably, dmar_pci_bus_del_dev() should take place*after*
->> iommu_release_device(). Perhaps we can use two notifiers, one for
->> ADD_DEVICE (with .priority=INT_MAX) and the other for REMOVE_DEVICE
->> (with .priority=INT_MIN)?
->>
-> Since device_to_iommu() lookup in intel_iommu_release_device() only
-> checks if device is under "an" IOMMU, not "the" IOMMU. Then the remove path
-> order is not needed, right?
-> 
-> I know this is not robust, but having so many notifiers with implicit
-> priority is not clean either.
-> 
-> Perhaps, we should have explicit priority defined around iommu_bus
-> notifier? i.e.
-> 
-> @@ -1841,6 +1841,7 @@ static int iommu_bus_init(struct bus_type *bus, const
-> struct iommu_ops *ops) return -ENOMEM;
->          nb->notifier_call = iommu_bus_notifier;
->                         
-> +       nb->priority = IOMMU_BUS_NOTIFY_PRIORITY;
->                         
-> 
->   static struct notifier_block dmar_pci_bus_add_nb = {
->          .notifier_call = dmar_pci_bus_notifier,
-> -       .priority = INT_MIN,
-> +       .priority = IOMMU_BUS_NOTIFY_PRIORITY + 1,
->   };
-> 
->   static struct notifier_block dmar_pci_bus_remove_nb = {
->          .notifier_call = dmar_pci_bus_notifier,
-> -       .priority = INT_MIN,
-> +       .priority = IOMMU_BUS_NOTIFY_PRIORITY - 1,
->   };
+> Oh, the runtime PM is moved around with these patches. The aggregate
+> device is runtime PM enabled before the probe is called, 
 
-IOMMU_BUS_NOTIFY_PRIORITY by default is 0. So you can simply use 1 and
--1? Adding a comment around it will be helpful.
+In our case, the component device may probe before the aggregate
+device. thus the component device runtime PM has already been enabled
+when aggregate device probe.
 
-Best regards,
-baolu
+> and there are
+> supplier links made to each component, so each component is runtime
+> resumed before the aggregate probe function is called. 
+
+Yes. This is the current flow.
+
+> It means that all
+> the component drivers need to have their resources ready to power on
+> before their component_bind() callback is made. 
+
+Sorry, I don't understand here well. In this case, The component
+drivers prepare the resource for power on in the component_bind since
+the resource comes from the aggregate driver. Thus, we expect the
+component_bind run before the runtime resume callback.
+
+Another solution is moving the component's pm_runtime_enable into the
+component_bind(It's mtk_smi_larb_bind here), then the runtime callback
+is called after component_bind in which the resource for power on is
+ready.
+
+> Thinking more about it
+> that may be wrong if something from the aggregate device is needed to
+> fully power on the component. Is that what is happening here?
+> 
+> > diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> > index b883dcc0bbfa..288841555067 100644
+> > --- a/drivers/memory/mtk-smi.c
+> > +++ b/drivers/memory/mtk-smi.c
+> > @@ -483,8 +483,9 @@ static int __maybe_unused
+> > mtk_smi_larb_resume(struct device *dev)
+> >         if (ret < 0)
+> >                 return ret;
+> > 
+> > -       /* Configure the basic setting for this larb */
+> > -       larb_gen->config_port(dev);
+> > +       /* Configure the basic setting for this larb after it binds
+> > with iommu */
+> > +       if (larb->mmu)
+> > +               larb_gen->config_port(dev);
+> > 
+> >         return 0;
+> >  }
+> > 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
