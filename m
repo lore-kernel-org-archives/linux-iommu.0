@@ -1,61 +1,61 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 59A22C43217
-	for <iommu@archiver.kernel.org>; Mon, 17 Jan 2022 07:06:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 22B16C433F5
+	for <iommu@archiver.kernel.org>; Mon, 17 Jan 2022 07:06:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D182140272;
-	Mon, 17 Jan 2022 07:06:11 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id C55F581437;
+	Mon, 17 Jan 2022 07:06:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id g3XpR240oZZa; Mon, 17 Jan 2022 07:06:10 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 70C90401A2;
-	Mon, 17 Jan 2022 07:06:10 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jSDbcxn4dfZy; Mon, 17 Jan 2022 07:06:21 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id ABEE581435;
+	Mon, 17 Jan 2022 07:06:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 59F8CC0039;
-	Mon, 17 Jan 2022 07:06:10 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 48124C002F
- for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 07:06:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 877A1C0039;
+	Mon, 17 Jan 2022 07:06:20 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B2994C002F
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 07:06:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 27E3481431
- for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 07:06:09 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 939E881435
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 07:06:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hFBNti8cLjKU for <iommu@lists.linux-foundation.org>;
- Mon, 17 Jan 2022 07:06:08 +0000 (UTC)
+ with ESMTP id cYCsJsMBkRyq for <iommu@lists.linux-foundation.org>;
+ Mon, 17 Jan 2022 07:06:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 5EFA08142F
- for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 07:06:08 +0000 (UTC)
-X-UUID: da03fcd1b0fe4a34828adc6cef4fcf2c-20220117
-X-UUID: da03fcd1b0fe4a34828adc6cef4fcf2c-20220117
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
+ by smtp1.osuosl.org (Postfix) with ESMTPS id A05498142F
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 07:06:18 +0000 (UTC)
+X-UUID: effb381d9712497db536a0dff025128c-20220117
+X-UUID: effb381d9712497db536a0dff025128c-20220117
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by
  mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 1790191130; Mon, 17 Jan 2022 15:06:04 +0800
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 1837693972; Mon, 17 Jan 2022 15:06:14 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 17 Jan 2022 15:06:03 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
+ Mon, 17 Jan 2022 15:06:13 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 17 Jan 2022 15:06:01 +0800
+ Transport; Mon, 17 Jan 2022 15:06:11 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Matthias Brugger <matthias.bgg@gmail.com>, Hans Verkuil
  <hverkuil@xs4all.nl>, Joerg Roedel <jroedel@suse.de>, Rob Herring
  <robh+dt@kernel.org>, Krzysztof Kozlowski
  <krzysztof.kozlowski@canonical.com>, David Airlie <airlied@linux.ie>, "Mauro
  Carvalho Chehab" <mchehab@kernel.org>
-Subject: [PATCH v10 03/13] iommu/mediatek: Return ENODEV if the device is NULL
-Date: Mon, 17 Jan 2022 15:05:00 +0800
-Message-ID: <20220117070510.17642-4-yong.wu@mediatek.com>
+Subject: [PATCH v10 04/13] iommu/mediatek: Add probe_defer for smi-larb
+Date: Mon, 17 Jan 2022 15:05:01 +0800
+Message-ID: <20220117070510.17642-5-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220117070510.17642-1-yong.wu@mediatek.com>
 References: <20220117070510.17642-1-yong.wu@mediatek.com>
@@ -92,49 +92,60 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The platform device is created at:
-of_platform_default_populate_init:  arch_initcall_sync
-  ->of_platform_populate
-        ->of_platform_device_create_pdata
+Prepare for adding device_link.
 
-When entering our probe, all the devices should be already created.
-if it is null, means NODEV. Currently we don't get the fail case.
-It's a minor fix, no need add fixes tags.
+The iommu consumer should use device_link to connect with the
+smi-larb(supplier). then the smi-larb should run before the iommu
+consumer. Here we delay the iommu driver until the smi driver is ready,
+then all the iommu consumers always are after the smi driver.
+
+When there is no this patch, if some consumer drivers run before
+smi-larb, the supplier link_status is DL_DEV_NO_DRIVER(0) in the
+device_link_add, then device_links_driver_bound will use WARN_ON
+to complain that the link_status of supplier is not right.
+
+device_is_bound may be more elegant here. but it is not allowed to
+EXPORT from https://lore.kernel.org/patchwork/patch/1334670/.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Tested-by: Frank Wunderlich <frank-w@public-files.de> # BPI-R2/MT7623
 Acked-by: Joerg Roedel <jroedel@suse.de>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- drivers/iommu/mtk_iommu.c    | 2 +-
- drivers/iommu/mtk_iommu_v1.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/mtk_iommu.c    | 4 ++++
+ drivers/iommu/mtk_iommu_v1.c | 4 ++++
+ 2 files changed, 8 insertions(+)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 25b834104790..77ae20ff9b35 100644
+index 77ae20ff9b35..5cff5bc556d4 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -848,7 +848,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 		plarbdev = of_find_device_by_node(larbnode);
- 		if (!plarbdev) {
+@@ -850,6 +850,10 @@ static int mtk_iommu_probe(struct platform_device *pdev)
  			of_node_put(larbnode);
--			return -EPROBE_DEFER;
-+			return -ENODEV;
+ 			return -ENODEV;
  		}
++		if (!plarbdev->dev.driver) {
++			of_node_put(larbnode);
++			return -EPROBE_DEFER;
++		}
  		data->larb_imu[id].dev = &plarbdev->dev;
  
+ 		component_match_add_release(dev, &match, release_of,
 diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 1467ba1e4417..68bf02f87cfd 100644
+index 68bf02f87cfd..4089077256f4 100644
 --- a/drivers/iommu/mtk_iommu_v1.c
 +++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -604,7 +604,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 		plarbdev = of_find_device_by_node(larbnode);
- 		if (!plarbdev) {
+@@ -606,6 +606,10 @@ static int mtk_iommu_probe(struct platform_device *pdev)
  			of_node_put(larbnode);
--			return -EPROBE_DEFER;
-+			return -ENODEV;
+ 			return -ENODEV;
  		}
++		if (!plarbdev->dev.driver) {
++			of_node_put(larbnode);
++			return -EPROBE_DEFER;
++		}
  		data->larb_imu[i].dev = &plarbdev->dev;
  
+ 		component_match_add_release(dev, &match, release_of,
 -- 
 2.18.0
 
