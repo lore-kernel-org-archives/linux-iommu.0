@@ -1,68 +1,92 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6948BC433F5
-	for <iommu@archiver.kernel.org>; Mon, 17 Jan 2022 10:28:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5DB9DC43219
+	for <iommu@archiver.kernel.org>; Mon, 17 Jan 2022 11:50:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 090FA81448;
-	Mon, 17 Jan 2022 10:28:02 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 009D540287;
+	Mon, 17 Jan 2022 11:50:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 39IiFVNF8fmD; Mon, 17 Jan 2022 10:28:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id B2B4181367;
-	Mon, 17 Jan 2022 10:28:00 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id YIHUr0hwvbqN; Mon, 17 Jan 2022 11:50:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 7AEC140282;
+	Mon, 17 Jan 2022 11:50:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 72710C0031;
-	Mon, 17 Jan 2022 10:28:00 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F3D6EC002F
- for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 10:27:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3B5D5C0039;
+	Mon, 17 Jan 2022 11:50:03 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 818BDC002F
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 11:50:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id E1B5C607D1
- for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 10:27:58 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 68C14600C9
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 11:50:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=collabora.com
+ dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Mns1775JXeFg for <iommu@lists.linux-foundation.org>;
- Mon, 17 Jan 2022 10:27:57 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 5F49F6079E
- for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 10:27:57 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
- (Authenticated sender: kholk11) with ESMTPSA id 899521F436F7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
- s=mail; t=1642415275;
- bh=Cmf+ki9Vk24rB2D48FhsSedDY9YmalEmBmnVGnqctrk=;
- h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
- b=cZN2aNglRujf2txUQPNOsSikL1Qj/rX9KtqAToPUgaHafbV1bl8jpSDlXrQ9kPDP/
- lxOV7RCedjnOMCKGDws0KlV3uOr9EBMopUw/sqdwVIs0bSwjWGlLCf21WV/+eowj6G
- 6xsQUvlB5N4oLr2dl8LZ7MJheM6rzHBLGXVOBEUmvKQpMfR7SKK1LhQrUiFevKoCAq
- wJz2h1UDAqFfJczhwAj4cdeTv0DFKYj1NBKIfi1+lfwzYeN5bbQi3OVZxdSlXNQ2ig
- NeweolKaAqHKnlm+PLVxKS0UnM6yk0QcvKXpWRz4AfKup1xfL6KJIr6W+FzAKVKO7s
- zEXZWrv9u8JjQ==
+ with ESMTP id rIx-WHE11S9V for <iommu@lists.linux-foundation.org>;
+ Mon, 17 Jan 2022 11:50:01 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com
+ [IPv6:2a00:1450:4864:20::332])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 3088360810
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 11:50:01 +0000 (UTC)
+Received: by mail-wm1-x332.google.com with SMTP id
+ l12-20020a7bc34c000000b003467c58cbdfso23719205wmj.2
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 03:50:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=message-id:date:mime-version:user-agent:subject:content-language:to
+ :cc:references:from:in-reply-to:content-transfer-encoding;
+ bh=Qh9qlD7Xxyuod6l2VHcORITt556iH0cP6xXy3RESnzc=;
+ b=Mlh7ovtSMXfYuLtZJBDHb8iGlTGgdK+kw1r5kJiXwtkbGmEsnjbmlZKUV5ho5ALXtc
+ ErsaGGPcarRlcH0t4J9vPlE7jazy1cyw4hGIdk5wDin+9M1XbOFs7iX0+erqOXDuyLDU
+ N13wuTcAslvW26atfDB8z2bt5QcgcQx0NvYODdDPvmJu5WOEdUigB3+CL6bozU4yXHIO
+ z5RuHGs7a1T0dgtc9eifrjqDUx3C7Cj1uVvulqDbFgE7j4WbdpSwVcPr5oIJjqyg57+1
+ JsTSCgmyV7thCpmP1yut4igRrUJ/m74v/GBfEAf36/FiwfUXtIG2YDJO9iRXKAcSCsHW
+ HgNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+ :content-language:to:cc:references:from:in-reply-to
+ :content-transfer-encoding;
+ bh=Qh9qlD7Xxyuod6l2VHcORITt556iH0cP6xXy3RESnzc=;
+ b=mZ324Jfk3ZTbp0O+Ygj1GeDpNlmNrl2Rc0IND1YTy+OaNb7rv2smLwyxg2yeKKYm8N
+ CyODAgcsvqrFwDWGnMS/rI91AoYj6DOya4uxuKAYt/+nU8BKGohRAFsVdxv2UV4peAhI
+ ifcMuGSCyrqJkqZQvPjJJoxXAu69OwEGxmNZOaWg7v/KHuhaPBnm10UiUp4e7TFRrID6
+ eEh4klcibV89DUyAI7tMftzJcXdiEKNjED9U2KCk7VgWVJZ8UKmrJT6BmkMbnq5BPTi0
+ ammtx4GhbxP6BK5x6vE0yP3iliyWMBOMGo2/Hq0hVFaEuHFOTpq0KDoeOzhFxBIVGH5K
+ EyYw==
+X-Gm-Message-State: AOAM531WjNAy9LtAQTpB4s4gcJFSV7gggLBz3ccyTunvzABr5Xy1yMsV
+ xlGnHHL4NjGmAJqBPUvrkX4=
+X-Google-Smtp-Source: ABdhPJxnzn9RYFSiRwIN27xe7uwz9Ej9yjcj/6lztBm/AGx+ZaPHnqv2QULOgW5amVoWsoNmN1+5pg==
+X-Received: by 2002:a5d:453a:: with SMTP id j26mr15627235wra.348.1642420199348; 
+ Mon, 17 Jan 2022 03:49:59 -0800 (PST)
+Received: from [192.168.0.14] ([37.223.145.74])
+ by smtp.gmail.com with ESMTPSA id n7sm13895148wms.46.2022.01.17.03.49.57
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Mon, 17 Jan 2022 03:49:58 -0800 (PST)
+Message-ID: <c8fc24a2-9ee3-75a2-0928-95a217d9dfdf@gmail.com>
+Date: Mon, 17 Jan 2022 12:49:56 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
 Subject: Re: [PATCH v10 00/13] Clean up "mediatek,larb"
-To: Yong Wu <yong.wu@mediatek.com>, Matthias Brugger
- <matthias.bgg@gmail.com>, Hans Verkuil <hverkuil@xs4all.nl>,
+Content-Language: en-US
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Yong Wu <yong.wu@mediatek.com>, Hans Verkuil <hverkuil@xs4all.nl>,
  Joerg Roedel <jroedel@suse.de>, Rob Herring <robh+dt@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
  David Airlie <airlied@linux.ie>, Mauro Carvalho Chehab <mchehab@kernel.org>
 References: <20220117070510.17642-1-yong.wu@mediatek.com>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Message-ID: <06e5e76c-557a-20a5-b8dd-37b25b3384a3@collabora.com>
-Date: Mon, 17 Jan 2022 11:27:51 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-MIME-Version: 1.0
-In-Reply-To: <20220117070510.17642-1-yong.wu@mediatek.com>
-Content-Language: en-US
+ <06e5e76c-557a-20a5-b8dd-37b25b3384a3@collabora.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <06e5e76c-557a-20a5-b8dd-37b25b3384a3@collabora.com>
 Cc: Chun-Kuang Hu <chunkuang.hu@kernel.org>, Will Deacon <will.deacon@arm.com>,
  dri-devel@lists.freedesktop.org, yf.wang@mediatek.com,
  anthony.huang@mediatek.com, youlin.pei@mediatek.com,
@@ -89,161 +113,152 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Il 17/01/22 08:04, Yong Wu ha scritto:
-> MediaTek IOMMU block diagram always like below:
-> 
->          M4U
->           |
->      smi-common
->           |
->    -------------
->    |         |  ...
->    |         |
-> larb1     larb2
->    |         |
-> vdec       venc
-> 
-> All the consumer connect with smi-larb, then connect with smi-common.
-> 
-> When the consumer works, it should enable the smi-larb's power which also
-> need enable the smi-common's power firstly.
-> 
-> Thus, Firstly, use the device link connect the consumer and the
-> smi-larbs. then add device link between the smi-larb and smi-common.
-> 
-> After adding the device_link, then "mediatek,larb" property can be removed.
-> the iommu consumer don't need call the mtk_smi_larb_get/put to enable
-> the power and clock of smi-larb and smi-common.
-> 
-> Base on the media branch [1] and a jpeg dtbinding patchset[2] that already got
-> the necessary R-b.
-> 
-> [1] git://linuxtv.org/hverkuil/media_tree.git tags/br-v5.18d
-> [2] https://lore.kernel.org/linux-mediatek/20211206130425.184420-1-hsinyi@chromium.org/
-> 
-> Change notes:
-> v10: a) Rebase on the media tree. Respin the "media: mtk-vcodec:" patches.
->       b) Add Joerg's Ack for iommu patches.
-> 
-> v9: https://lore.kernel.org/linux-mediatek/20211112105509.12010-1-yong.wu@mediatek.com/
->      1) Add return -ENODEV when the dev is null.
->      2) Add more strict about the case that a iommu consume device use the ports in
->      different larbs. Don't allow this case.
->      3) Remove two codec interface: mtk_vcodec_release_enc/dec_pm since it only has one
->      line now.
-> 
-> v8: https://lore.kernel.org/linux-mediatek/20210929013719.25120-1-yong.wu@mediatek.com/
->      1) Rebase on v5.15-rc1.
->      2) Don't rebase the below mdp patchset that may still need more discuss.
->      https://lore.kernel.org/linux-mediatek/20210709022324.1607884-1-eizan@chromium.org/
->      3) Add Frank's Tested-by. Remove Dafna's Tested-by as he requested.
-> 
-> v7: https://lore.kernel.org/linux-mediatek/20210730025238.22456-1-yong.wu@mediatek.com/
->      1) Fix a arm32 boot fail issue. reported from Frank.
->      2) Add a return fail in the mtk drm. suggested by Dafna.
-> 
-> v6: https://lore.kernel.org/linux-mediatek/20210714025626.5528-1-yong.wu@mediatek.com/
->      1) rebase on v5.14-rc1.
->      2) Fix the issue commented in v5 from Dafna and Hsin-Yi.
->      3) Remove the patches about using pm_runtime_resume_and_get since they have
->         already been merged by other patches.
-> 
-> v5: https://lore.kernel.org/linux-mediatek/20210410091128.31823-1-yong.wu@mediatek.com/
->      1) Base v5.12-rc2.
->      2) Remove changing the mtk-iommu to module_platform_driver patch, It have already been a
->      independent patch.
-> 
-> v4: https://lore.kernel.org/linux-mediatek/1590826218-23653-1-git-send-email-yong.wu@mediatek.com/
->      base on v5.7-rc1.
->    1) Move drm PM patch before smi patchs.
->    2) Change builtin_platform_driver to module_platform_driver since we may need
->       build as module.
->    3) Rebase many patchset as above.
-> 
-> v3: https://lore.kernel.org/linux-iommu/1567503456-24725-1-git-send-email-yong.wu@mediatek.com/
->      1) rebase on v5.3-rc1 and the latest mt8183 patchset.
->      2) Use device_is_bound to check whether the driver is ready from Matthias.
->      3) Add DL_FLAG_STATELESS flag when calling device_link_add and explain the
->     reason in the commit message[3/14].
->      4) Add a display patch[12/14] into this series. otherwise it may affect
->     display HW fastlogo even though it don't happen in mt8183.
->     
-> v2: https://lore.kernel.org/linux-iommu/1560171313-28299-1-git-send-email-yong.wu@mediatek.com/
->     1) rebase on v5.2-rc1.
->     2) Move adding device_link between the consumer and smi-larb into
-> iommu_add_device from Robin.
->     3) add DL_FLAG_AUTOREMOVE_CONSUMER even though the smi is built-in from Evan.
->     4) Remove the shutdown callback in iommu.
-> 
-> v1: https://lore.kernel.org/linux-iommu/1546318276-18993-1-git-send-email-yong.wu@mediatek.com/
-> 
-> Yong Wu (12):
->    dt-binding: mediatek: Get rid of mediatek,larb for multimedia HW
->    iommu/mediatek-v1: Free the existed fwspec if the master dev already
->      has
->    iommu/mediatek: Return ENODEV if the device is NULL
->    iommu/mediatek: Add probe_defer for smi-larb
->    iommu/mediatek: Add device_link between the consumer and the larb
->      devices
->    media: mtk-jpeg: Get rid of mtk_smi_larb_get/put
->    media: mtk-mdp: Get rid of mtk_smi_larb_get/put
->    drm/mediatek: Get rid of mtk_smi_larb_get/put
->    media: mtk-vcodec: Get rid of mtk_smi_larb_get/put
->    memory: mtk-smi: Get rid of mtk_smi_larb_get/put
->    arm: dts: mediatek: Get rid of mediatek,larb for MM nodes
->    arm64: dts: mediatek: Get rid of mediatek,larb for MM nodes
-> 
-> Yongqiang Niu (1):
->    drm/mediatek: Add pm runtime support for ovl and rdma
-> 
->   .../display/mediatek/mediatek,disp.txt        |  9 ----
->   .../media/mediatek,vcodec-decoder.yaml        |  7 ---
->   .../media/mediatek,vcodec-encoder.yaml        |  8 ----
->   .../bindings/media/mediatek-jpeg-decoder.yaml |  9 ----
->   .../bindings/media/mediatek-jpeg-encoder.yaml |  9 ----
->   .../bindings/media/mediatek-mdp.txt           |  8 ----
->   arch/arm/boot/dts/mt2701.dtsi                 |  2 -
->   arch/arm/boot/dts/mt7623n.dtsi                |  5 ---
->   arch/arm64/boot/dts/mediatek/mt8173.dtsi      | 16 -------
->   arch/arm64/boot/dts/mediatek/mt8183.dtsi      |  6 ---
->   drivers/gpu/drm/mediatek/mtk_disp_ovl.c       |  8 +++-
->   drivers/gpu/drm/mediatek/mtk_disp_rdma.c      |  9 +++-
->   drivers/gpu/drm/mediatek/mtk_drm_crtc.c       | 15 ++++---
->   drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c   | 36 +--------------
->   drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h   |  1 -
->   drivers/gpu/drm/mediatek/mtk_drm_drv.c        |  5 +--
->   drivers/iommu/mtk_iommu.c                     | 34 ++++++++++++++
->   drivers/iommu/mtk_iommu_v1.c                  | 42 ++++++++++++++++-
->   .../media/platform/mtk-jpeg/mtk_jpeg_core.c   | 45 +------------------
->   .../media/platform/mtk-jpeg/mtk_jpeg_core.h   |  2 -
->   drivers/media/platform/mtk-mdp/mtk_mdp_comp.c | 40 -----------------
->   drivers/media/platform/mtk-mdp/mtk_mdp_comp.h |  2 -
->   drivers/media/platform/mtk-mdp/mtk_mdp_core.c |  1 -
->   .../platform/mtk-vcodec/mtk_vcodec_dec_drv.c  |  2 -
->   .../platform/mtk-vcodec/mtk_vcodec_dec_hw.c   |  1 -
->   .../platform/mtk-vcodec/mtk_vcodec_dec_pm.c   | 41 +++--------------
->   .../platform/mtk-vcodec/mtk_vcodec_drv.h      |  3 --
->   .../platform/mtk-vcodec/mtk_vcodec_enc.c      |  1 -
->   .../platform/mtk-vcodec/mtk_vcodec_enc_drv.c  |  2 -
->   .../platform/mtk-vcodec/mtk_vcodec_enc_pm.c   | 45 +++----------------
->   drivers/memory/mtk-smi.c                      | 14 ------
->   include/soc/mediatek/smi.h                    | 20 ---------
->   32 files changed, 115 insertions(+), 333 deletions(-)
-> 
-
-Hello Hans, Matthias,
-on my side, this series is totally ready for merge, hence, green light from here.
-
-Can you please take it for 5.18?
-
-Thank you,
-Angelo
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CgpPbiAxNy8wMS8yMDIyIDExOjI3LCBBbmdlbG9HaW9hY2NoaW5vIERlbCBSZWdubyB3cm90ZToK
+PiBJbCAxNy8wMS8yMiAwODowNCwgWW9uZyBXdSBoYSBzY3JpdHRvOgo+PiBNZWRpYVRlayBJT01N
+VSBibG9jayBkaWFncmFtIGFsd2F5cyBsaWtlIGJlbG93Ogo+Pgo+PiDCoMKgwqDCoMKgwqDCoMKg
+IE00VQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgfAo+PiDCoMKgwqDCoCBzbWktY29tbW9uCj4+IMKg
+wqDCoMKgwqDCoMKgwqDCoCB8Cj4+IMKgwqAgLS0tLS0tLS0tLS0tLQo+PiDCoMKgIHzCoMKgwqDC
+oMKgwqDCoMKgIHzCoCAuLi4KPj4gwqDCoCB8wqDCoMKgwqDCoMKgwqDCoCB8Cj4+IGxhcmIxwqDC
+oMKgwqAgbGFyYjIKPj4gwqDCoCB8wqDCoMKgwqDCoMKgwqDCoCB8Cj4+IHZkZWPCoMKgwqDCoMKg
+wqAgdmVuYwo+Pgo+PiBBbGwgdGhlIGNvbnN1bWVyIGNvbm5lY3Qgd2l0aCBzbWktbGFyYiwgdGhl
+biBjb25uZWN0IHdpdGggc21pLWNvbW1vbi4KPj4KPj4gV2hlbiB0aGUgY29uc3VtZXIgd29ya3Ms
+IGl0IHNob3VsZCBlbmFibGUgdGhlIHNtaS1sYXJiJ3MgcG93ZXIgd2hpY2ggYWxzbwo+PiBuZWVk
+IGVuYWJsZSB0aGUgc21pLWNvbW1vbidzIHBvd2VyIGZpcnN0bHkuCj4+Cj4+IFRodXMsIEZpcnN0
+bHksIHVzZSB0aGUgZGV2aWNlIGxpbmsgY29ubmVjdCB0aGUgY29uc3VtZXIgYW5kIHRoZQo+PiBz
+bWktbGFyYnMuIHRoZW4gYWRkIGRldmljZSBsaW5rIGJldHdlZW4gdGhlIHNtaS1sYXJiIGFuZCBz
+bWktY29tbW9uLgo+Pgo+PiBBZnRlciBhZGRpbmcgdGhlIGRldmljZV9saW5rLCB0aGVuICJtZWRp
+YXRlayxsYXJiIiBwcm9wZXJ0eSBjYW4gYmUgcmVtb3ZlZC4KPj4gdGhlIGlvbW11IGNvbnN1bWVy
+IGRvbid0IG5lZWQgY2FsbCB0aGUgbXRrX3NtaV9sYXJiX2dldC9wdXQgdG8gZW5hYmxlCj4+IHRo
+ZSBwb3dlciBhbmQgY2xvY2sgb2Ygc21pLWxhcmIgYW5kIHNtaS1jb21tb24uCj4+Cj4+IEJhc2Ug
+b24gdGhlIG1lZGlhIGJyYW5jaCBbMV0gYW5kIGEganBlZyBkdGJpbmRpbmcgcGF0Y2hzZXRbMl0g
+dGhhdCBhbHJlYWR5IGdvdAo+PiB0aGUgbmVjZXNzYXJ5IFItYi4KPj4KPj4gWzFdIGdpdDovL2xp
+bnV4dHYub3JnL2h2ZXJrdWlsL21lZGlhX3RyZWUuZ2l0IHRhZ3MvYnItdjUuMThkCj4+IFsyXSAK
+Pj4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtbWVkaWF0ZWsvMjAyMTEyMDYxMzA0MjUu
+MTg0NDIwLTEtaHNpbnlpQGNocm9taXVtLm9yZy8gCj4+Cj4+Cj4+IENoYW5nZSBub3RlczoKPj4g
+djEwOiBhKSBSZWJhc2Ugb24gdGhlIG1lZGlhIHRyZWUuIFJlc3BpbiB0aGUgIm1lZGlhOiBtdGst
+dmNvZGVjOiIgcGF0Y2hlcy4KPj4gwqDCoMKgwqDCoCBiKSBBZGQgSm9lcmcncyBBY2sgZm9yIGlv
+bW11IHBhdGNoZXMuCj4+Cj4+IHY5OiAKPj4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgt
+bWVkaWF0ZWsvMjAyMTExMTIxMDU1MDkuMTIwMTAtMS15b25nLnd1QG1lZGlhdGVrLmNvbS8gCj4+
+Cj4+IMKgwqDCoMKgIDEpIEFkZCByZXR1cm4gLUVOT0RFViB3aGVuIHRoZSBkZXYgaXMgbnVsbC4K
+Pj4gwqDCoMKgwqAgMikgQWRkIG1vcmUgc3RyaWN0IGFib3V0IHRoZSBjYXNlIHRoYXQgYSBpb21t
+dSBjb25zdW1lIGRldmljZSB1c2UgdGhlIAo+PiBwb3J0cyBpbgo+PiDCoMKgwqDCoCBkaWZmZXJl
+bnQgbGFyYnMuIERvbid0IGFsbG93IHRoaXMgY2FzZS4KPj4gwqDCoMKgwqAgMykgUmVtb3ZlIHR3
+byBjb2RlYyBpbnRlcmZhY2U6IG10a192Y29kZWNfcmVsZWFzZV9lbmMvZGVjX3BtIHNpbmNlIGl0
+IAo+PiBvbmx5IGhhcyBvbmUKPj4gwqDCoMKgwqAgbGluZSBub3cuCj4+Cj4+IHY4OiAKPj4gaHR0
+cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtbWVkaWF0ZWsvMjAyMTA5MjkwMTM3MTkuMjUxMjAt
+MS15b25nLnd1QG1lZGlhdGVrLmNvbS8gCj4+Cj4+IMKgwqDCoMKgIDEpIFJlYmFzZSBvbiB2NS4x
+NS1yYzEuCj4+IMKgwqDCoMKgIDIpIERvbid0IHJlYmFzZSB0aGUgYmVsb3cgbWRwIHBhdGNoc2V0
+IHRoYXQgbWF5IHN0aWxsIG5lZWQgbW9yZSBkaXNjdXNzLgo+PiAgICAgIAo+PiBodHRwczovL2xv
+cmUua2VybmVsLm9yZy9saW51eC1tZWRpYXRlay8yMDIxMDcwOTAyMjMyNC4xNjA3ODg0LTEtZWl6
+YW5AY2hyb21pdW0ub3JnLyAKPj4KPj4gwqDCoMKgwqAgMykgQWRkIEZyYW5rJ3MgVGVzdGVkLWJ5
+LiBSZW1vdmUgRGFmbmEncyBUZXN0ZWQtYnkgYXMgaGUgcmVxdWVzdGVkLgo+Pgo+PiB2NzogCj4+
+IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LW1lZGlhdGVrLzIwMjEwNzMwMDI1MjM4LjIy
+NDU2LTEteW9uZy53dUBtZWRpYXRlay5jb20vIAo+Pgo+PiDCoMKgwqDCoCAxKSBGaXggYSBhcm0z
+MiBib290IGZhaWwgaXNzdWUuIHJlcG9ydGVkIGZyb20gRnJhbmsuCj4+IMKgwqDCoMKgIDIpIEFk
+ZCBhIHJldHVybiBmYWlsIGluIHRoZSBtdGsgZHJtLiBzdWdnZXN0ZWQgYnkgRGFmbmEuCj4+Cj4+
+IHY2OiAKPj4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtbWVkaWF0ZWsvMjAyMTA3MTQw
+MjU2MjYuNTUyOC0xLXlvbmcud3VAbWVkaWF0ZWsuY29tLyAKPj4KPj4gwqDCoMKgwqAgMSkgcmVi
+YXNlIG9uIHY1LjE0LXJjMS4KPj4gwqDCoMKgwqAgMikgRml4IHRoZSBpc3N1ZSBjb21tZW50ZWQg
+aW4gdjUgZnJvbSBEYWZuYSBhbmQgSHNpbi1ZaS4KPj4gwqDCoMKgwqAgMykgUmVtb3ZlIHRoZSBw
+YXRjaGVzIGFib3V0IHVzaW5nIHBtX3J1bnRpbWVfcmVzdW1lX2FuZF9nZXQgc2luY2UgdGhleSBo
+YXZlCj4+IMKgwqDCoMKgwqDCoMKgIGFscmVhZHkgYmVlbiBtZXJnZWQgYnkgb3RoZXIgcGF0Y2hl
+cy4KPj4KPj4gdjU6IAo+PiBodHRwczovL2xvcmUua2VybmVsLm9yZy9saW51eC1tZWRpYXRlay8y
+MDIxMDQxMDA5MTEyOC4zMTgyMy0xLXlvbmcud3VAbWVkaWF0ZWsuY29tLyAKPj4KPj4gwqDCoMKg
+wqAgMSkgQmFzZSB2NS4xMi1yYzIuCj4+IMKgwqDCoMKgIDIpIFJlbW92ZSBjaGFuZ2luZyB0aGUg
+bXRrLWlvbW11IHRvIG1vZHVsZV9wbGF0Zm9ybV9kcml2ZXIgcGF0Y2gsIEl0IGhhdmUgCj4+IGFs
+cmVhZHkgYmVlbiBhCj4+IMKgwqDCoMKgIGluZGVwZW5kZW50IHBhdGNoLgo+Pgo+PiB2NDogCj4+
+IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LW1lZGlhdGVrLzE1OTA4MjYyMTgtMjM2NTMt
+MS1naXQtc2VuZC1lbWFpbC15b25nLnd1QG1lZGlhdGVrLmNvbS8gCj4+Cj4+IMKgwqDCoMKgIGJh
+c2Ugb24gdjUuNy1yYzEuCj4+IMKgwqAgMSkgTW92ZSBkcm0gUE0gcGF0Y2ggYmVmb3JlIHNtaSBw
+YXRjaHMuCj4+IMKgwqAgMikgQ2hhbmdlIGJ1aWx0aW5fcGxhdGZvcm1fZHJpdmVyIHRvIG1vZHVs
+ZV9wbGF0Zm9ybV9kcml2ZXIgc2luY2Ugd2UgbWF5IG5lZWQKPj4gwqDCoMKgwqDCoCBidWlsZCBh
+cyBtb2R1bGUuCj4+IMKgwqAgMykgUmViYXNlIG1hbnkgcGF0Y2hzZXQgYXMgYWJvdmUuCj4+Cj4+
+IHYzOiAKPj4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtaW9tbXUvMTU2NzUwMzQ1Ni0y
+NDcyNS0xLWdpdC1zZW5kLWVtYWlsLXlvbmcud3VAbWVkaWF0ZWsuY29tLyAKPj4KPj4gwqDCoMKg
+wqAgMSkgcmViYXNlIG9uIHY1LjMtcmMxIGFuZCB0aGUgbGF0ZXN0IG10ODE4MyBwYXRjaHNldC4K
+Pj4gwqDCoMKgwqAgMikgVXNlIGRldmljZV9pc19ib3VuZCB0byBjaGVjayB3aGV0aGVyIHRoZSBk
+cml2ZXIgaXMgcmVhZHkgZnJvbSBNYXR0aGlhcy4KPj4gwqDCoMKgwqAgMykgQWRkIERMX0ZMQUdf
+U1RBVEVMRVNTIGZsYWcgd2hlbiBjYWxsaW5nIGRldmljZV9saW5rX2FkZCBhbmQgZXhwbGFpbiB0
+aGUKPj4gwqDCoMKgIHJlYXNvbiBpbiB0aGUgY29tbWl0IG1lc3NhZ2VbMy8xNF0uCj4+IMKgwqDC
+oMKgIDQpIEFkZCBhIGRpc3BsYXkgcGF0Y2hbMTIvMTRdIGludG8gdGhpcyBzZXJpZXMuIG90aGVy
+d2lzZSBpdCBtYXkgYWZmZWN0Cj4+IMKgwqDCoCBkaXNwbGF5IEhXIGZhc3Rsb2dvIGV2ZW4gdGhv
+dWdoIGl0IGRvbid0IGhhcHBlbiBpbiBtdDgxODMuCj4+IHYyOiAKPj4gaHR0cHM6Ly9sb3JlLmtl
+cm5lbC5vcmcvbGludXgtaW9tbXUvMTU2MDE3MTMxMy0yODI5OS0xLWdpdC1zZW5kLWVtYWlsLXlv
+bmcud3VAbWVkaWF0ZWsuY29tLyAKPj4KPj4gwqDCoMKgIDEpIHJlYmFzZSBvbiB2NS4yLXJjMS4K
+Pj4gwqDCoMKgIDIpIE1vdmUgYWRkaW5nIGRldmljZV9saW5rIGJldHdlZW4gdGhlIGNvbnN1bWVy
+IGFuZCBzbWktbGFyYiBpbnRvCj4+IGlvbW11X2FkZF9kZXZpY2UgZnJvbSBSb2Jpbi4KPj4gwqDC
+oMKgIDMpIGFkZCBETF9GTEFHX0FVVE9SRU1PVkVfQ09OU1VNRVIgZXZlbiB0aG91Z2ggdGhlIHNt
+aSBpcyBidWlsdC1pbiBmcm9tIEV2YW4uCj4+IMKgwqDCoCA0KSBSZW1vdmUgdGhlIHNodXRkb3du
+IGNhbGxiYWNrIGluIGlvbW11Lgo+Pgo+PiB2MTogCj4+IGh0dHBzOi8vbG9yZS5rZXJuZWwub3Jn
+L2xpbnV4LWlvbW11LzE1NDYzMTgyNzYtMTg5OTMtMS1naXQtc2VuZC1lbWFpbC15b25nLnd1QG1l
+ZGlhdGVrLmNvbS8gCj4+Cj4+Cj4+IFlvbmcgV3UgKDEyKToKPj4gwqDCoCBkdC1iaW5kaW5nOiBt
+ZWRpYXRlazogR2V0IHJpZCBvZiBtZWRpYXRlayxsYXJiIGZvciBtdWx0aW1lZGlhIEhXCj4+IMKg
+wqAgaW9tbXUvbWVkaWF0ZWstdjE6IEZyZWUgdGhlIGV4aXN0ZWQgZndzcGVjIGlmIHRoZSBtYXN0
+ZXIgZGV2IGFscmVhZHkKPj4gwqDCoMKgwqAgaGFzCj4+IMKgwqAgaW9tbXUvbWVkaWF0ZWs6IFJl
+dHVybiBFTk9ERVYgaWYgdGhlIGRldmljZSBpcyBOVUxMCj4+IMKgwqAgaW9tbXUvbWVkaWF0ZWs6
+IEFkZCBwcm9iZV9kZWZlciBmb3Igc21pLWxhcmIKPj4gwqDCoCBpb21tdS9tZWRpYXRlazogQWRk
+IGRldmljZV9saW5rIGJldHdlZW4gdGhlIGNvbnN1bWVyIGFuZCB0aGUgbGFyYgo+PiDCoMKgwqDC
+oCBkZXZpY2VzCj4+IMKgwqAgbWVkaWE6IG10ay1qcGVnOiBHZXQgcmlkIG9mIG10a19zbWlfbGFy
+Yl9nZXQvcHV0Cj4+IMKgwqAgbWVkaWE6IG10ay1tZHA6IEdldCByaWQgb2YgbXRrX3NtaV9sYXJi
+X2dldC9wdXQKPj4gwqDCoCBkcm0vbWVkaWF0ZWs6IEdldCByaWQgb2YgbXRrX3NtaV9sYXJiX2dl
+dC9wdXQKPj4gwqDCoCBtZWRpYTogbXRrLXZjb2RlYzogR2V0IHJpZCBvZiBtdGtfc21pX2xhcmJf
+Z2V0L3B1dAo+PiDCoMKgIG1lbW9yeTogbXRrLXNtaTogR2V0IHJpZCBvZiBtdGtfc21pX2xhcmJf
+Z2V0L3B1dAo+PiDCoMKgIGFybTogZHRzOiBtZWRpYXRlazogR2V0IHJpZCBvZiBtZWRpYXRlayxs
+YXJiIGZvciBNTSBub2Rlcwo+PiDCoMKgIGFybTY0OiBkdHM6IG1lZGlhdGVrOiBHZXQgcmlkIG9m
+IG1lZGlhdGVrLGxhcmIgZm9yIE1NIG5vZGVzCj4+Cj4+IFlvbmdxaWFuZyBOaXUgKDEpOgo+PiDC
+oMKgIGRybS9tZWRpYXRlazogQWRkIHBtIHJ1bnRpbWUgc3VwcG9ydCBmb3Igb3ZsIGFuZCByZG1h
+Cj4+Cj4+IMKgIC4uLi9kaXNwbGF5L21lZGlhdGVrL21lZGlhdGVrLGRpc3AudHh0wqDCoMKgwqDC
+oMKgwqAgfMKgIDkgLS0tLQo+PiDCoCAuLi4vbWVkaWEvbWVkaWF0ZWssdmNvZGVjLWRlY29kZXIu
+eWFtbMKgwqDCoMKgwqDCoMKgIHzCoCA3IC0tLQo+PiDCoCAuLi4vbWVkaWEvbWVkaWF0ZWssdmNv
+ZGVjLWVuY29kZXIueWFtbMKgwqDCoMKgwqDCoMKgIHzCoCA4IC0tLS0KPj4gwqAgLi4uL2JpbmRp
+bmdzL21lZGlhL21lZGlhdGVrLWpwZWctZGVjb2Rlci55YW1sIHzCoCA5IC0tLS0KPj4gwqAgLi4u
+L2JpbmRpbmdzL21lZGlhL21lZGlhdGVrLWpwZWctZW5jb2Rlci55YW1sIHzCoCA5IC0tLS0KPj4g
+wqAgLi4uL2JpbmRpbmdzL21lZGlhL21lZGlhdGVrLW1kcC50eHTCoMKgwqDCoMKgwqDCoMKgwqDC
+oCB8wqAgOCAtLS0tCj4+IMKgIGFyY2gvYXJtL2Jvb3QvZHRzL210MjcwMS5kdHNpwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfMKgIDIgLQo+PiDCoCBhcmNoL2FybS9ib290L2R0cy9t
+dDc2MjNuLmR0c2nCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfMKgIDUgLS0tCj4+IMKg
+IGFyY2gvYXJtNjQvYm9vdC9kdHMvbWVkaWF0ZWsvbXQ4MTczLmR0c2nCoMKgwqDCoMKgIHwgMTYg
+LS0tLS0tLQo+PiDCoCBhcmNoL2FybTY0L2Jvb3QvZHRzL21lZGlhdGVrL210ODE4My5kdHNpwqDC
+oMKgwqDCoCB8wqAgNiAtLS0KPj4gwqAgZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kaXNw
+X292bC5jwqDCoMKgwqDCoMKgIHzCoCA4ICsrKy0KPj4gwqAgZHJpdmVycy9ncHUvZHJtL21lZGlh
+dGVrL210a19kaXNwX3JkbWEuY8KgwqDCoMKgwqAgfMKgIDkgKysrLQo+PiDCoCBkcml2ZXJzL2dw
+dS9kcm0vbWVkaWF0ZWsvbXRrX2RybV9jcnRjLmPCoMKgwqDCoMKgwqAgfCAxNSArKysrLS0tCj4+
+IMKgIGRyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfZHJtX2RkcF9jb21wLmPCoMKgIHwgMzYg
+Ky0tLS0tLS0tLS0tLS0tCj4+IMKgIGRyaXZlcnMvZ3B1L2RybS9tZWRpYXRlay9tdGtfZHJtX2Rk
+cF9jb21wLmjCoMKgIHzCoCAxIC0KPj4gwqAgZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19k
+cm1fZHJ2LmPCoMKgwqDCoMKgwqDCoCB8wqAgNSArLS0KPj4gwqAgZHJpdmVycy9pb21tdS9tdGtf
+aW9tbXUuY8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfCAzNCArKysr
+KysrKysrKysrKwo+PiDCoCBkcml2ZXJzL2lvbW11L210a19pb21tdV92MS5jwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8IDQyICsrKysrKysrKysrKysrKystCj4+IMKgIC4uLi9t
+ZWRpYS9wbGF0Zm9ybS9tdGstanBlZy9tdGtfanBlZ19jb3JlLmPCoMKgIHwgNDUgKy0tLS0tLS0t
+LS0tLS0tLS0tLQo+PiDCoCAuLi4vbWVkaWEvcGxhdGZvcm0vbXRrLWpwZWcvbXRrX2pwZWdfY29y
+ZS5owqDCoCB8wqAgMiAtCj4+IMKgIGRyaXZlcnMvbWVkaWEvcGxhdGZvcm0vbXRrLW1kcC9tdGtf
+bWRwX2NvbXAuYyB8IDQwIC0tLS0tLS0tLS0tLS0tLS0tCj4+IMKgIGRyaXZlcnMvbWVkaWEvcGxh
+dGZvcm0vbXRrLW1kcC9tdGtfbWRwX2NvbXAuaCB8wqAgMiAtCj4+IMKgIGRyaXZlcnMvbWVkaWEv
+cGxhdGZvcm0vbXRrLW1kcC9tdGtfbWRwX2NvcmUuYyB8wqAgMSAtCj4+IMKgIC4uLi9wbGF0Zm9y
+bS9tdGstdmNvZGVjL210a192Y29kZWNfZGVjX2Rydi5jwqAgfMKgIDIgLQo+PiDCoCAuLi4vcGxh
+dGZvcm0vbXRrLXZjb2RlYy9tdGtfdmNvZGVjX2RlY19ody5jwqDCoCB8wqAgMSAtCj4+IMKgIC4u
+Li9wbGF0Zm9ybS9tdGstdmNvZGVjL210a192Y29kZWNfZGVjX3BtLmPCoMKgIHwgNDEgKysrLS0t
+LS0tLS0tLS0tLS0KPj4gwqAgLi4uL3BsYXRmb3JtL210ay12Y29kZWMvbXRrX3Zjb2RlY19kcnYu
+aMKgwqDCoMKgwqAgfMKgIDMgLS0KPj4gwqAgLi4uL3BsYXRmb3JtL210ay12Y29kZWMvbXRrX3Zj
+b2RlY19lbmMuY8KgwqDCoMKgwqAgfMKgIDEgLQo+PiDCoCAuLi4vcGxhdGZvcm0vbXRrLXZjb2Rl
+Yy9tdGtfdmNvZGVjX2VuY19kcnYuY8KgIHzCoCAyIC0KPj4gwqAgLi4uL3BsYXRmb3JtL210ay12
+Y29kZWMvbXRrX3Zjb2RlY19lbmNfcG0uY8KgwqAgfCA0NSArKystLS0tLS0tLS0tLS0tLS0tCj4+
+IMKgIGRyaXZlcnMvbWVtb3J5L210ay1zbWkuY8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCB8IDE0IC0tLS0tLQo+PiDCoCBpbmNsdWRlL3NvYy9tZWRpYXRlay9zbWku
+aMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHwgMjAgLS0tLS0tLS0tCj4+
+IMKgIDMyIGZpbGVzIGNoYW5nZWQsIDExNSBpbnNlcnRpb25zKCspLCAzMzMgZGVsZXRpb25zKC0p
+Cj4+Cj4gCj4gSGVsbG8gSGFucywgTWF0dGhpYXMsCj4gb24gbXkgc2lkZSwgdGhpcyBzZXJpZXMg
+aXMgdG90YWxseSByZWFkeSBmb3IgbWVyZ2UsIGhlbmNlLCBncmVlbiBsaWdodCBmcm9tIGhlcmUu
+Cj4gCj4gQ2FuIHlvdSBwbGVhc2UgdGFrZSBpdCBmb3IgNS4xOD8KPiAKCkBIYW5zOiBJIHVuZGVy
+c3RhbmQgeW91IHRha2UgdGhlIHNlcmllcyB0aHJvdWdoIHlvdXIgdHJlZS4gUGxlYXNlIGxldCBt
+ZSBrbm93IAp3aGVuIHlvdSBkbyBzby4gSSdsbCB0YWtlIGNhcmUgb2YgcGF0Y2ggMTIgYW5kIDEz
+LCB3aGljaCBzaG91bGQgZ28gdGhyb3VnaCBteSB0cmVlLgoKVGhhbmtzIQpNYXR0aGlhcwpfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
+IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
+eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
