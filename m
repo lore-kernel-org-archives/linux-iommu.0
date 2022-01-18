@@ -1,73 +1,59 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8AC10C433F5
-	for <iommu@archiver.kernel.org>; Mon, 17 Jan 2022 12:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6B3A0C433F5
+	for <iommu@archiver.kernel.org>; Tue, 18 Jan 2022 13:49:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1163B606B0;
-	Mon, 17 Jan 2022 12:25:44 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 01F4340951;
+	Tue, 18 Jan 2022 13:49:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9tkdTsAKKPD0; Mon, 17 Jan 2022 12:25:43 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id S6xQsX0VG_FQ; Tue, 18 Jan 2022 13:49:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id EE9B860A8B;
-	Mon, 17 Jan 2022 12:25:42 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id BDBF14092F;
+	Tue, 18 Jan 2022 13:49:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B8E74C0031;
-	Mon, 17 Jan 2022 12:25:42 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 87B2AC002F
- for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 12:25:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D957C0031;
+	Tue, 18 Jan 2022 13:49:44 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 45955C002F
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Jan 2022 13:49:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 7539860A8B
- for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 12:25:41 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 3378160C17
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Jan 2022 13:49:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Fx5KrMiqd7J9 for <iommu@lists.linux-foundation.org>;
- Mon, 17 Jan 2022 12:25:36 +0000 (UTC)
+ with ESMTP id gyRbN91-gAJk for <iommu@lists.linux-foundation.org>;
+ Tue, 18 Jan 2022 13:49:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 97E3E606B0
- for <iommu@lists.linux-foundation.org>; Mon, 17 Jan 2022 12:25:36 +0000 (UTC)
-X-UUID: 0984eb39b4094fda8f758cd6e9dcc5da-20220117
-X-UUID: 0984eb39b4094fda8f758cd6e9dcc5da-20220117
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
- (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 728321395; Mon, 17 Jan 2022 20:25:31 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
- Mon, 17 Jan 2022 20:25:30 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 17 Jan 2022 20:25:29 +0800
-Message-ID: <792f1119b9c848a01e8b8ddd196a1db7acc1f0ae.camel@mediatek.com>
-Subject: Re: [PATCH v3 5/7] memory: mtk-smi: Fix the return value for
- clk_bulk_prepare_enable
-From: Yong Wu <yong.wu@mediatek.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Date: Mon, 17 Jan 2022 20:25:28 +0800
-In-Reply-To: <7370f18b-e273-69f2-1cc9-a42495e04874@canonical.com>
-References: <20220113111057.29918-1-yong.wu@mediatek.com>
- <20220113111057.29918-6-yong.wu@mediatek.com>
- <7370f18b-e273-69f2-1cc9-a42495e04874@canonical.com>
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 0939A60A84
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Jan 2022 13:49:42 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0EAE11FB;
+ Tue, 18 Jan 2022 05:49:42 -0800 (PST)
+Received: from [10.57.67.190] (unknown [10.57.67.190])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E25EB3F766;
+ Tue, 18 Jan 2022 05:49:40 -0800 (PST)
+Message-ID: <9913d026-fddd-c188-0873-0f7a66fb2c3c@arm.com>
+Date: Tue, 18 Jan 2022 13:49:36 +0000
 MIME-Version: 1.0
-X-MTK: N
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org, yi.kuo@mediatek.com,
- Joerg Roedel <jroedel@suse.de>, srv_heupstream@mediatek.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
- lc.kan@mediatek.com, Matthias Brugger <matthias.bgg@gmail.com>,
- anthony.huang@mediatek.com, anan.sun@mediatek.com,
- linux-arm-kernel@lists.infradead.org,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3] iommu: Fix potential use-after-free during probe
+Content-Language: en-GB
+To: Vijayanand Jitta <quic_vjitta@quicinc.com>, joro@8bytes.org,
+ will@kernel.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
+References: <1641993184-1232-1-git-send-email-quic_vjitta@quicinc.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <1641993184-1232-1-git-send-email-quic_vjitta@quicinc.com>
+Cc: vjitta@codeaurora.org, kernel-team@android.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,55 +66,165 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 2022-01-17 at 13:01 +0100, Krzysztof Kozlowski wrote:
-> On 13/01/2022 12:10, Yong Wu wrote:
-> > Function clk_bulk_prepare_enable() returns 0 for success or a
-> > negative
-> > number for error. Fix this code style issue.
+On 2022-01-12 13:13, Vijayanand Jitta wrote:
+> Kasan has reported the following use after free on dev->iommu.
+> when a device probe fails and it is in process of freeing dev->iommu
+> in dev_iommu_free function, a deferred_probe_work_func runs in parallel
+> and tries to access dev->iommu->fwspec in of_iommu_configure path thus
+> causing use after free.
 > 
-> The message does not really make sense. If negative is returned, then
-> the check (ret < 0) was correct.
+> BUG: KASAN: use-after-free in of_iommu_configure+0xb4/0x4a4
+> Read of size 8 at addr ffffff87a2f1acb8 by task kworker/u16:2/153
 > 
-> I guess you wanted to say that common code style is to check for any
-> non-zero return value, just like it's implementation in clk.h does.
+> Workqueue: events_unbound deferred_probe_work_func
+> Call trace:
+>   dump_backtrace+0x0/0x33c
+>   show_stack+0x18/0x24
+>   dump_stack_lvl+0x16c/0x1e0
+>   print_address_description+0x84/0x39c
+>   __kasan_report+0x184/0x308
+>   kasan_report+0x50/0x78
+>   __asan_load8+0xc0/0xc4
+>   of_iommu_configure+0xb4/0x4a4
+>   of_dma_configure_id+0x2fc/0x4d4
+>   platform_dma_configure+0x40/0x5c
+>   really_probe+0x1b4/0xb74
+>   driver_probe_device+0x11c/0x228
+>   __device_attach_driver+0x14c/0x304
+>   bus_for_each_drv+0x124/0x1b0
+>   __device_attach+0x25c/0x334
+>   device_initial_probe+0x24/0x34
+>   bus_probe_device+0x78/0x134
+>   deferred_probe_work_func+0x130/0x1a8
+>   process_one_work+0x4c8/0x970
+>   worker_thread+0x5c8/0xaec
+>   kthread+0x1f8/0x220
+>   ret_from_fork+0x10/0x18
 > 
-> I'll adjust the commit msg when applying.
+> Allocated by task 1:
+>   ____kasan_kmalloc+0xd4/0x114
+>   __kasan_kmalloc+0x10/0x1c
+>   kmem_cache_alloc_trace+0xe4/0x3d4
+>   __iommu_probe_device+0x90/0x394
+>   probe_iommu_group+0x70/0x9c
+>   bus_for_each_dev+0x11c/0x19c
+>   bus_iommu_probe+0xb8/0x7d4
+>   bus_set_iommu+0xcc/0x13c
+>   arm_smmu_bus_init+0x44/0x130 [arm_smmu]
+>   arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
+>   platform_drv_probe+0xe4/0x13c
+>   really_probe+0x2c8/0xb74
+>   driver_probe_device+0x11c/0x228
+>   device_driver_attach+0xf0/0x16c
+>   __driver_attach+0x80/0x320
+>   bus_for_each_dev+0x11c/0x19c
+>   driver_attach+0x38/0x48
+>   bus_add_driver+0x1dc/0x3a4
+>   driver_register+0x18c/0x244
+>   __platform_driver_register+0x88/0x9c
+>   init_module+0x64/0xff4 [arm_smmu]
+>   do_one_initcall+0x17c/0x2f0
+>   do_init_module+0xe8/0x378
+>   load_module+0x3f80/0x4a40
+>   __se_sys_finit_module+0x1a0/0x1e4
+>   __arm64_sys_finit_module+0x44/0x58
+>   el0_svc_common+0x100/0x264
+>   do_el0_svc+0x38/0xa4
+>   el0_svc+0x20/0x30
+>   el0_sync_handler+0x68/0xac
+>   el0_sync+0x160/0x180
+> 
+> Freed by task 1:
+>   kasan_set_track+0x4c/0x84
+>   kasan_set_free_info+0x28/0x4c
+>   ____kasan_slab_free+0x120/0x15c
+>   __kasan_slab_free+0x18/0x28
+>   slab_free_freelist_hook+0x204/0x2fc
+>   kfree+0xfc/0x3a4
+>   __iommu_probe_device+0x284/0x394
+>   probe_iommu_group+0x70/0x9c
+>   bus_for_each_dev+0x11c/0x19c
+>   bus_iommu_probe+0xb8/0x7d4
+>   bus_set_iommu+0xcc/0x13c
+>   arm_smmu_bus_init+0x44/0x130 [arm_smmu]
+>   arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
+>   platform_drv_probe+0xe4/0x13c
+>   really_probe+0x2c8/0xb74
+>   driver_probe_device+0x11c/0x228
+>   device_driver_attach+0xf0/0x16c
+>   __driver_attach+0x80/0x320
+>   bus_for_each_dev+0x11c/0x19c
+>   driver_attach+0x38/0x48
+>   bus_add_driver+0x1dc/0x3a4
+>   driver_register+0x18c/0x244
+>   __platform_driver_register+0x88/0x9c
+>   init_module+0x64/0xff4 [arm_smmu]
+>   do_one_initcall+0x17c/0x2f0
+>   do_init_module+0xe8/0x378
+>   load_module+0x3f80/0x4a40
+>   __se_sys_finit_module+0x1a0/0x1e4
+>   __arm64_sys_finit_module+0x44/0x58
+>   el0_svc_common+0x100/0x264
+>   do_el0_svc+0x38/0xa4
+>   el0_svc+0x20/0x30
+>   el0_sync_handler+0x68/0xac
+>   el0_sync+0x160/0x180
+> 
+> Fix this by taking device_lock during probe_iommu_group.
+> 
+> Signed-off-by: Vijayanand Jitta <quic_vjitta@quicinc.com>
+> ---
+>   drivers/iommu/iommu.c | 12 ++++++++----
+>   1 file changed, 8 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index dd7863e..261792d 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1617,7 +1617,7 @@ static int probe_iommu_group(struct device *dev, void *data)
+>   {
+>   	struct list_head *group_list = data;
+>   	struct iommu_group *group;
+> -	int ret;
+> +	int ret = 0;
+>   
+>   	/* Device is probed already if in a group */
+>   	group = iommu_group_get(dev);
+> @@ -1626,9 +1626,13 @@ static int probe_iommu_group(struct device *dev, void *data)
+>   		return 0;
+>   	}
+>   
+> -	ret = __iommu_probe_device(dev, group_list);
+> -	if (ret == -ENODEV)
+> -		ret = 0;
+> +	ret = device_trylock(dev);
+> +	if (ret) {
 
-Thanks for the help.
+This doesn't seem right - we can't have a non-deterministic situation 
+where __iommu_probe_device() may or may not be called depending on what 
+anyone else might be doing with the device at the same time.
 
-> 
-> > 
-> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > Reviewed-by: AngeloGioacchino Del Regno <
-> > angelogioacchino.delregno@collabora.com>
-> > ---
-> >  drivers/memory/mtk-smi.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-> > index b883dcc0bbfa..e7b1a22b12ea 100644
-> > --- a/drivers/memory/mtk-smi.c
-> > +++ b/drivers/memory/mtk-smi.c
-> > @@ -480,7 +480,7 @@ static int __maybe_unused
-> > mtk_smi_larb_resume(struct device *dev)
-> >  	int ret;
-> >  
-> >  	ret = clk_bulk_prepare_enable(larb->smi.clk_num, larb-
-> > >smi.clks);
-> > -	if (ret < 0)
-> > +	if (ret)
-> >  		return ret;
-> >  
-> >  	/* Configure the basic setting for this larb */
-> 
-> Best regards,
-> Krzysztof
+I don't fully understand how __iommu_probe_device() and 
+of_iommu_configure() can be running for the same device at the same 
+time, but if that's not a race which can be fixed in its own right, then 
+I think adding a refcount to dev_iommu would be a more sensible way to 
+mitigate it.
 
+Robin.
+
+> +		ret = __iommu_probe_device(dev, group_list);
+> +		if (ret == -ENODEV)
+> +			ret = 0;
+> +		device_unlock(dev);
+> +	}
+>   
+>   	return ret;
+>   }
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
