@@ -1,85 +1,62 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9104DC4332F
-	for <iommu@archiver.kernel.org>; Wed, 19 Jan 2022 07:44:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6FB0DC4707A
+	for <iommu@archiver.kernel.org>; Wed, 19 Jan 2022 08:24:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 171D082835;
-	Wed, 19 Jan 2022 07:44:08 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 07D22409A2;
+	Wed, 19 Jan 2022 08:24:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NBb23FZGRbbb; Wed, 19 Jan 2022 07:44:07 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Kk06y0NlfXxG; Wed, 19 Jan 2022 08:24:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 1DFE6827FA;
-	Wed, 19 Jan 2022 07:44:06 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id D581E4099C;
+	Wed, 19 Jan 2022 08:24:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EF66DC0031;
-	Wed, 19 Jan 2022 07:44:05 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7C43AC002F
- for <iommu@lists.linux-foundation.org>; Wed, 19 Jan 2022 07:44:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9EB06C0031;
+	Wed, 19 Jan 2022 08:24:55 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 55701C002F
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Jan 2022 08:24:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5AC27414E7
- for <iommu@lists.linux-foundation.org>; Wed, 19 Jan 2022 07:44:04 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 3C1EB409A2
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Jan 2022 08:24:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Yw5asfOtHGs7 for <iommu@lists.linux-foundation.org>;
- Wed, 19 Jan 2022 07:44:03 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com
- [IPv6:2607:f8b0:4864:20::536])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 198D541499
- for <iommu@lists.linux-foundation.org>; Wed, 19 Jan 2022 07:44:03 +0000 (UTC)
-Received: by mail-pg1-x536.google.com with SMTP id 133so1713004pgb.0
- for <iommu@lists.linux-foundation.org>; Tue, 18 Jan 2022 23:44:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=wgsNFzNpSSdccSgxfw+zCKaHdZrvmLN4TxH4pmEqHFM=;
- b=p+cHoZyZ/KxchMwriiVowMDalr/duztSsP8wupwGCXnhLANZc8nlOxi8DRiXRCJMIe
- ThXD3VtztapjDQndPVMlgQCNBGdaB/6GtGter/A53dpnPy0/ro9sY23pR2hrOCNdpJ6x
- A4o4u75fhuW3Mo06+JGLmcZyvqLXji4TLjjrijhdVwv1S53EEBqkn8vl1ndTRxbd3dZz
- uybHANAtOcV/NY4/riEthmOAO/ZD0wmVB13Z8eWzwiHuCL/kM8zjRhZyQ+O10QzOw4WU
- 8T8YqXxpWNqIHjpyLGArRjsnP8Y9EWKTmKSTB1lK98Rd0uAtb5HaP0a2q3DyQSfNmTwM
- RKFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=wgsNFzNpSSdccSgxfw+zCKaHdZrvmLN4TxH4pmEqHFM=;
- b=BH4rx+TyhiL3iaRdVqb1ly438+kY5DlQVaqkoBwpzVjVxso88HNdX/2MmroENHehSV
- ThJqzomJ2Rhpof+DE4qQ0aaHnU/RdC2rq0qmcBNX8QBUEPibwTNM0jf6kzBCVrNhSh5o
- 8+vQTzQZ/KPcs3b/ig/iGBEVJg/j0ooaluvTjR/anLXcSRK9p3aKjnL7skCQLZNseD9n
- idS4zIpwdrvrUWR+o47QSDl5RfFhZKqzcw5D0x/ZOxZv6lt1Q3DxBd2nlnYUo2iK2IyD
- OGsDeueMrrLXeAGx1DdHwtf1leira2yCPV8WoF/dXPCn9fdIJprfQblwMuxWe6bb/N0P
- 8Ihw==
-X-Gm-Message-State: AOAM533NknjXdKG18m/O7AovwlhbHVH5kqCHew+iZ5I/f0QANwuYCbqC
- U2G9eXHw9QBVdS1rk4TTg2eorA==
-X-Google-Smtp-Source: ABdhPJyNKcbiEGUcgkz9zXpAgkBgubu/10nRg7X8eh23rlI2iY9kKxwwNMydTTsODjGuMFGY0jhtqA==
-X-Received: by 2002:a05:6a00:88f:b0:4bc:3b4e:255a with SMTP id
- q15-20020a056a00088f00b004bc3b4e255amr29453525pfj.79.1642578242462; 
- Tue, 18 Jan 2022 23:44:02 -0800 (PST)
-Received: from localhost ([223.184.90.234])
- by smtp.gmail.com with ESMTPSA id g14sm16984301pgp.76.2022.01.18.23.44.01
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 18 Jan 2022 23:44:01 -0800 (PST)
-Date: Wed, 19 Jan 2022 13:14:00 +0530
-From: Viresh Kumar <viresh.kumar@linaro.org>
+ with ESMTP id o_5FNo44Ec0L for <iommu@lists.linux-foundation.org>;
+ Wed, 19 Jan 2022 08:24:53 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 278E24099C
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Jan 2022 08:24:53 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by ams.source.kernel.org (Postfix) with ESMTPS id 5A4F9B8190B;
+ Wed, 19 Jan 2022 08:24:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A35DAC004E1;
+ Wed, 19 Jan 2022 08:24:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+ s=korg; t=1642580689;
+ bh=+aAjJqYgCB6wYsQ+TkHIz5BRkQQLBlav51rmak29+GE=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=cHtItM4mbfYOPuPhhPbkJhoJxiHZDumIyowKutBRkwdRAonHQ67rICg6LsPDCfHbA
+ QZbjt+9O/l+cvixjJDghPIFQOSzFWgJIJvP8UJlpTRsxxWB39t3m3AvKMSAFq8CBPt
+ bRA3U40sQfvuaUThRuNLKopLBDpeH18K4EpKopH4=
+Date: Wed, 19 Jan 2022 09:24:45 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: Rob Herring <robh@kernel.org>
 Subject: Re: [PATCH] dt-bindings: Improve phandle-array schemas
-Message-ID: <20220119074400.rqldtq6wqo73lqqg@vireshk-i7>
+Message-ID: <YefKzYIDUFC3NW7e@kroah.com>
 References: <20220119015038.2433585-1-robh@kernel.org>
 MIME-Version: 1.0
 Content-Disposition: inline
 In-Reply-To: <20220119015038.2433585-1-robh@kernel.org>
-User-Agent: NeoMutt/20180716-391-311a52
 Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
  Daniel Lezcano <daniel.lezcano@linaro.org>,
  Geert Uytterhoeven <geert+renesas@glider.be>,
@@ -106,7 +83,6 @@ Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
  devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
  Kalle Valo <kvalo@kernel.org>, Sudeep Holla <sudeep.holla@arm.com>,
  linux-can@vger.kernel.org, linux-gpio@vger.kernel.org,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Mark Brown <broonie@kernel.org>, Marc Kleine-Budde <mkl@pengutronix.de>,
  Thomas Gleixner <tglx@linutronix.de>,
  Mauro Carvalho Chehab <mchehab@kernel.org>,
@@ -135,7 +111,7 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 18-01-22, 19:50, Rob Herring wrote:
+On Tue, Jan 18, 2022 at 07:50:38PM -0600, Rob Herring wrote:
 > The 'phandle-array' type is a bit ambiguous. It can be either just an
 > array of phandles or an array of phandles plus args. Many schemas for
 > phandle-array properties aren't clear in the schema which case applies
@@ -157,14 +133,69 @@ On 18-01-22, 19:50, Rob Herring wrote:
 > With this change, some examples need updating so that the bracketing of
 > property values matches the schema.
 > 
+> Cc: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+> Cc: Herbert Xu <herbert@gondor.apana.org.au>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> Cc: Philipp Zabel <p.zabel@pengutronix.de>
+> Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Cc: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Georgi Djakov <djakov@kernel.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Daniel Thompson <daniel.thompson@linaro.org>
+> Cc: Jingoo Han <jingoohan1@gmail.com>
+> Cc: Pavel Machek <pavel@ucw.cz>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Wolfgang Grandegger <wg@grandegger.com>
+> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Vivien Didelot <vivien.didelot@gmail.com>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: Vladimir Oltean <olteanv@gmail.com>
+> Cc: Kalle Valo <kvalo@kernel.org>
+> Cc: Viresh Kumar <vireshk@kernel.org>
+> Cc: Stephen Boyd <sboyd@kernel.org>
+> Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> Cc: Kevin Hilman <khilman@kernel.org>
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Cc: Zhang Rui <rui.zhang@intel.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Jonathan Hunter <jonathanh@nvidia.com>
+> Cc: Sudeep Holla <sudeep.holla@arm.com>
+> Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+> Cc: linux-ide@vger.kernel.org
+> Cc: linux-crypto@vger.kernel.org
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: dmaengine@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: iommu@lists.linux-foundation.org
+> Cc: linux-leds@vger.kernel.org
+> Cc: linux-media@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-can@vger.kernel.org
+> Cc: linux-wireless@vger.kernel.org
+> Cc: linux-phy@lists.infradead.org
+> Cc: linux-gpio@vger.kernel.org
+> Cc: linux-riscv@lists.infradead.org
+> Cc: linux-remoteproc@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-usb@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
 
->  .../devicetree/bindings/opp/opp-v2-base.yaml  |  2 +
->  .../bindings/power/power-domain.yaml          |  4 +
-
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
-
--- 
-viresh
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
