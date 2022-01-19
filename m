@@ -1,94 +1,94 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6845CC4332F
-	for <iommu@archiver.kernel.org>; Wed, 19 Jan 2022 19:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B847EC433EF
+	for <iommu@archiver.kernel.org>; Wed, 19 Jan 2022 19:06:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id EB93B80D5A;
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6717C4050C;
 	Wed, 19 Jan 2022 19:06:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yW5bkWoGk9q8; Wed, 19 Jan 2022 19:06:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 4057980C67;
-	Wed, 19 Jan 2022 19:06:42 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F3B13C007B;
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xZVLqy2cZVCC; Wed, 19 Jan 2022 19:06:42 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id D6956404A8;
 	Wed, 19 Jan 2022 19:06:41 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B1884C002F;
- Wed, 19 Jan 2022 19:06:40 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AA214C0039;
+	Wed, 19 Jan 2022 19:06:41 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3973BC002F;
+ Wed, 19 Jan 2022 19:06:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 9FD0E4159F;
- Wed, 19 Jan 2022 19:06:40 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 1A13B60B58;
+ Wed, 19 Jan 2022 19:06:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=sent.com header.b="Bcb5wJnl";
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=sent.com header.b="jfEgOdn4";
  dkim=pass (2048-bit key) header.d=messagingengine.com
- header.b="AqlcQWYg"
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nOD34AYb5Ifi; Wed, 19 Jan 2022 19:06:39 +0000 (UTC)
+ header.b="a3g6Otxn"
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id iK8Ppdww20CM; Wed, 19 Jan 2022 19:06:38 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com
  [66.111.4.230])
- by smtp4.osuosl.org (Postfix) with ESMTPS id C29A341576;
- Wed, 19 Jan 2022 19:06:39 +0000 (UTC)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
- by mailnew.nyi.internal (Postfix) with ESMTP id C9E8858071F;
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 348A260B08;
+ Wed, 19 Jan 2022 19:06:38 +0000 (UTC)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+ by mailnew.nyi.internal (Postfix) with ESMTP id 41B865806D1;
  Wed, 19 Jan 2022 14:06:36 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
- by compute1.internal (MEProxy); Wed, 19 Jan 2022 14:06:36 -0500
+ by compute5.internal (MEProxy); Wed, 19 Jan 2022 14:06:36 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=from
  :to:cc:subject:date:message-id:in-reply-to:references:reply-to
- :mime-version:content-transfer-encoding; s=fm2; bh=lM5Ud4VXnPfGE
- 4e+o+afQ6u3rvTqVxQH5x8bdxJbj/U=; b=Bcb5wJnlVrRr1fBACKLZM/68ylYyW
- XauW4ZjUGmyFBFRSSAfWApAu7Gm8Mow//QFMWY+BS6xQD73w+ORjT3Bvj8sIoH2F
- ec3MJrdBDthm3kl1Om7YhgBSyfHayTyNGYf6DGlKiGwPlBj/D1p7WDLlFDuMr1Tz
- gaJ239SvQ2Gix740nZS8RFYrvTegf+DcLERjUKgULSG9ph2FjshM86TkU10G40U/
- ZibxH8v5npX7B9T1U9spS8Hqbl6gQ2hxoM++Y4oC3V+Ru6gO5Mgcs9GqZuuB9Sa1
- B2QUjpc+tAHf5221sVAzlI9xXqS+DYdMDOQWfha2R56vvjnwgFzJi+3kw==
+ :mime-version:content-transfer-encoding; s=fm2; bh=q0ih4ZGu7K0TB
+ LC0mgUjnHBfPkRQSf5he8QSdlBoNQ4=; b=jfEgOdn4BGr+TuP2w75Wt10+ZOjWZ
+ 5wtQRYAjlZT1pMOGNZuxExbyYDvzZWs1w/9XgA00oxJjPSD6X72QwLEBnSdgqvUr
+ /f3qIXu854rkelt0A7p+dZdTQluXWD6Pw7JERZbv7EnVpvw1fNAt4Qvo3rHqN0xT
+ J4wK+o2Dt9VD5dXJM9d1MK4hmLWmLtm/8cKcRb4WA14de3KJN7gPjrGfEnnC5/yC
+ NmddZEjk/wbfOQwA1M2N2J7MUhtx2d08+4hFynhkLl5pLNqTCGlyk0hOFMifJ75Y
+ VllWlwUXxHTAztlFsZBKheI8JgrnfniDHVg1Ol2soCLoyyEecxkqQK1cg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
  messagingengine.com; h=cc:content-transfer-encoding:date:from
  :in-reply-to:message-id:mime-version:references:reply-to:subject
  :to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
- fm1; bh=lM5Ud4VXnPfGE4e+o+afQ6u3rvTqVxQH5x8bdxJbj/U=; b=AqlcQWYg
- MO2piJYNJCv6ZkohbtXxE3nvvwGXpKQ5ngsH4V/nnUksWb/koS9tRBJyJMXa3Wit
- 4feKyvzj8DKzlK/rNr9FPLORq0g9O/HgxtAxFsKuN4ONuuGIeaMd44G5yIM94c4b
- zcVYhd0vNTJ9RKxuwoECD2dPrqsOIqvvTnGY9VyO2FdlcbcUn2LRe2wg+pNZtYe9
- JHA3qfYY72Ua2WjAzN9GO4CapZa9waEQ6g6ck02F7cJ70BWscDpKbEVlKZQNwlyD
- ZTNj9ekrFe7H+rMmZLwEA6kYL7FPsg0kF0v4w/+4dDe6DjFZfSo3IsXcqbKtK7dl
- PnfOj0pUnaO3kw==
-X-ME-Sender: <xms:PGHoYbLvKdEzLmKVrCJU-585Dx1CZzXWHYKm4MlWiqbcyd2WPlYwZw>
- <xme:PGHoYfIWQ1i0yiVnz0_UVoOiw0PQe2PFOr6d6rWS8L9xYt16e3j3_p-IT16oPkrnT
- 8G4rBnFJ3MKoHGoZQ>
-X-ME-Received: <xmr:PGHoYTuJptWLgBmxcSS12WKfaJ50afl2Nw0PpXOdnAkCsTDKX0Z5mJRa67__alOv_QUj1xFR>
+ fm1; bh=q0ih4ZGu7K0TBLC0mgUjnHBfPkRQSf5he8QSdlBoNQ4=; b=a3g6Otxn
+ 1P5/QNZvcBTEFQCfKcdFmGDd2DdgRTczVijbu6kDaB9bRBdJreqYjNFHux4rgD+h
+ UkF650jU7mJn4rQPHlV0IpnQwab0MwOu9ikwsmVZQkt6K4pX/5zbh2K+MupmP+BW
+ 0YOhk0bg8/as2lRJFrjtWJECTICLB5yfrzZo36AAtfVJl6C9oqQ+hlp3FIHMpf5T
+ d7y+OuUDYH1rlCS4idv3scy0M9yk3mFf2seAksNTTUT5PJDJECJuxyGHjfRB8Y8S
+ P3E3MhkFkZGVImgoNE2qI1rcQFzllWnyhFKiRxkzE04QUVBHw27flTX6WPs/A95g
+ l/Z0tVucFtM2wA==
+X-ME-Sender: <xms:OmHoYYjDt5bJPnaqv8TrL9lkzpt8adtAHjk8msVKyJ_1IZR0Yw4aeQ>
+ <xme:OmHoYRCNQL-qjZbdM8WhZIMCoSpQJvqf5D_IV-_ZlyOyr2T5o-H3HgJu6Bi25ECZp
+ -l4_pWajbCZChbxXw>
+X-ME-Received: <xmr:OmHoYQHIWE9Xxjhz9TwH30OnS3w0tOUXFmwtO-5UaI2nsRSMx3mgGJ51JlsXySAKecLlGewK>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeigdeivdcutefuodetggdotefrodftvf
  curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
  uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
  fjughrpefhvffufffkofgjfhhrggfgsedtqhertdertddtnecuhfhrohhmpegkihcujggr
- nhcuoeiiihdrhigrnhesshgvnhhtrdgtohhmqeenucggtffrrghtthgvrhhnpeeijeeuvd
- euudeuhfeghfehieeuvdetvdeugfeigeevteeuieeuhedtgeduheefleenucevlhhushht
- vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpeiiihdrhigrnhesshgvnh
- htrdgtohhm
-X-ME-Proxy: <xmx:PGHoYUbceoi1hG7hFjd9paFLam2W2Gts10O2ahpSWy6wXyyZ9XihQA>
- <xmx:PGHoYSZyAn8EzQPczFpW99oG01vfTC2jrhCsmvqkk42ck47gKg9YyQ>
- <xmx:PGHoYYBah_b6SaXXvWiu227uUXlSMW069sg3-IIJz0_h0ZTOudSntA>
- <xmx:PGHoYeSnrCRuPuAS-GJ0u94G0E09oTdUmkR1w833zlMVLQRRIy8SXA>
+ nhcuoeiiihdrhigrnhesshgvnhhtrdgtohhmqeenucggtffrrghtthgvrhhnpeekieeule
+ dvtdetueejhedtgeehjeelvddttefgieeljeefgefhfedtuefffeelveenucffohhmrghi
+ nhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+ hmrghilhhfrhhomhepiihirdihrghnsehsvghnthdrtghomh
+X-ME-Proxy: <xmx:OmHoYZR6TRDNhb7e-1EHAtHNY7Rkgbip-xe-ddvOHHAPmiG7C_lm-w>
+ <xmx:OmHoYVzt0SG_sr589OoAThHOtIIicYY-ANJaP83S8k_6y3LUOZZ3Ug>
+ <xmx:OmHoYX5UWRuqvQWLgsOpiG917uBuXvx2MZj5QFLajPT-BXyag8VPaA>
+ <xmx:PGHoYYriwSXjN_gf2lpBFBkoVaydd2-D6CEK8xxq5MH56St65-B0cQ>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 19 Jan 2022 14:06:36 -0500 (EST)
+ 19 Jan 2022 14:06:34 -0500 (EST)
 From: Zi Yan <zi.yan@sent.com>
 To: David Hildenbrand <david@redhat.com>,
 	linux-mm@kvack.org
-Subject: [PATCH v4 2/7] mm: page_isolation: move has_unmovable_pages() to
- mm/page_isolation.c
-Date: Wed, 19 Jan 2022 14:06:18 -0500
-Message-Id: <20220119190623.1029355-3-zi.yan@sent.com>
+Subject: [PATCH v4 1/7] mm: page_alloc: avoid merging non-fallbackable
+ pageblocks with others.
+Date: Wed, 19 Jan 2022 14:06:17 -0500
+Message-Id: <20220119190623.1029355-2-zi.yan@sent.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220119190623.1029355-1-zi.yan@sent.com>
 References: <20220119190623.1029355-1-zi.yan@sent.com>
@@ -119,289 +119,119 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Zi Yan <ziy@nvidia.com>
 
-has_unmovable_pages() is only used in mm/page_isolation.c. Move it from
-mm/page_alloc.c and make it static.
+This is done in addition to MIGRATE_ISOLATE pageblock merge avoidance.
+It prepares for the upcoming removal of the MAX_ORDER-1 alignment
+requirement for CMA and alloc_contig_range().
+
+MIGRARTE_HIGHATOMIC should not merge with other migratetypes like
+MIGRATE_ISOLATE and MIGRARTE_CMA[1], so this commit prevents that too.
+Also add MIGRARTE_HIGHATOMIC to fallbacks array for completeness.
+
+[1] https://lore.kernel.org/linux-mm/20211130100853.GP3366@techsingularity.net/
 
 Signed-off-by: Zi Yan <ziy@nvidia.com>
 ---
- include/linux/page-isolation.h |   2 -
- mm/page_alloc.c                | 119 ---------------------------------
- mm/page_isolation.c            | 119 +++++++++++++++++++++++++++++++++
- 3 files changed, 119 insertions(+), 121 deletions(-)
+ include/linux/mmzone.h | 11 +++++++++++
+ mm/page_alloc.c        | 37 ++++++++++++++++++++-----------------
+ 2 files changed, 31 insertions(+), 17 deletions(-)
 
-diff --git a/include/linux/page-isolation.h b/include/linux/page-isolation.h
-index 572458016331..e14eddf6741a 100644
---- a/include/linux/page-isolation.h
-+++ b/include/linux/page-isolation.h
-@@ -33,8 +33,6 @@ static inline bool is_migrate_isolate(int migratetype)
- #define MEMORY_OFFLINE	0x1
- #define REPORT_FAILURE	0x2
- 
--struct page *has_unmovable_pages(struct zone *zone, struct page *page,
--				 int migratetype, int flags);
- void set_pageblock_migratetype(struct page *page, int migratetype);
- int move_freepages_block(struct zone *zone, struct page *page,
- 				int migratetype, int *num_movable);
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 15de65215c02..1d812268c2a9 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -8859,125 +8859,6 @@ void *__init alloc_large_system_hash(const char *tablename,
- 	return table;
+diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+index aed44e9b5d89..71b77aab748d 100644
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -83,6 +83,17 @@ static inline bool is_migrate_movable(int mt)
+ 	return is_migrate_cma(mt) || mt == MIGRATE_MOVABLE;
  }
  
--/*
-- * This function checks whether pageblock includes unmovable pages or not.
-- *
-- * PageLRU check without isolation or lru_lock could race so that
-- * MIGRATE_MOVABLE block might include unmovable pages. And __PageMovable
-- * check without lock_page also may miss some movable non-lru pages at
-- * race condition. So you can't expect this function should be exact.
-- *
-- * Returns a page without holding a reference. If the caller wants to
-- * dereference that page (e.g., dumping), it has to make sure that it
-- * cannot get removed (e.g., via memory unplug) concurrently.
-- *
-- */
--struct page *has_unmovable_pages(struct zone *zone, struct page *page,
--				 int migratetype, int flags)
--{
--	unsigned long iter = 0;
--	unsigned long pfn = page_to_pfn(page);
--	unsigned long offset = pfn % pageblock_nr_pages;
--
--	if (is_migrate_cma_page(page)) {
--		/*
--		 * CMA allocations (alloc_contig_range) really need to mark
--		 * isolate CMA pageblocks even when they are not movable in fact
--		 * so consider them movable here.
--		 */
--		if (is_migrate_cma(migratetype))
--			return NULL;
--
--		return page;
--	}
--
--	for (; iter < pageblock_nr_pages - offset; iter++) {
--		page = pfn_to_page(pfn + iter);
--
--		/*
--		 * Both, bootmem allocations and memory holes are marked
--		 * PG_reserved and are unmovable. We can even have unmovable
--		 * allocations inside ZONE_MOVABLE, for example when
--		 * specifying "movablecore".
--		 */
--		if (PageReserved(page))
--			return page;
--
--		/*
--		 * If the zone is movable and we have ruled out all reserved
--		 * pages then it should be reasonably safe to assume the rest
--		 * is movable.
--		 */
--		if (zone_idx(zone) == ZONE_MOVABLE)
--			continue;
--
--		/*
--		 * Hugepages are not in LRU lists, but they're movable.
--		 * THPs are on the LRU, but need to be counted as #small pages.
--		 * We need not scan over tail pages because we don't
--		 * handle each tail page individually in migration.
--		 */
--		if (PageHuge(page) || PageTransCompound(page)) {
--			struct page *head = compound_head(page);
--			unsigned int skip_pages;
--
--			if (PageHuge(page)) {
--				if (!hugepage_migration_supported(page_hstate(head)))
--					return page;
--			} else if (!PageLRU(head) && !__PageMovable(head)) {
--				return page;
--			}
--
--			skip_pages = compound_nr(head) - (page - head);
--			iter += skip_pages - 1;
--			continue;
--		}
--
--		/*
--		 * We can't use page_count without pin a page
--		 * because another CPU can free compound page.
--		 * This check already skips compound tails of THP
--		 * because their page->_refcount is zero at all time.
--		 */
--		if (!page_ref_count(page)) {
--			if (PageBuddy(page))
--				iter += (1 << buddy_order(page)) - 1;
--			continue;
--		}
--
--		/*
--		 * The HWPoisoned page may be not in buddy system, and
--		 * page_count() is not 0.
--		 */
--		if ((flags & MEMORY_OFFLINE) && PageHWPoison(page))
--			continue;
--
--		/*
--		 * We treat all PageOffline() pages as movable when offlining
--		 * to give drivers a chance to decrement their reference count
--		 * in MEM_GOING_OFFLINE in order to indicate that these pages
--		 * can be offlined as there are no direct references anymore.
--		 * For actually unmovable PageOffline() where the driver does
--		 * not support this, we will fail later when trying to actually
--		 * move these pages that still have a reference count > 0.
--		 * (false negatives in this function only)
--		 */
--		if ((flags & MEMORY_OFFLINE) && PageOffline(page))
--			continue;
--
--		if (__PageMovable(page) || PageLRU(page))
--			continue;
--
--		/*
--		 * If there are RECLAIMABLE pages, we need to check
--		 * it.  But now, memory offline itself doesn't call
--		 * shrink_node_slabs() and it still to be fixed.
--		 */
--		return page;
--	}
--	return NULL;
--}
--
- #ifdef CONFIG_CONTIG_ALLOC
- static unsigned long pfn_max_align_down(unsigned long pfn)
- {
-diff --git a/mm/page_isolation.c b/mm/page_isolation.c
-index 6a0ddda6b3c5..6c841274bf46 100644
---- a/mm/page_isolation.c
-+++ b/mm/page_isolation.c
-@@ -15,6 +15,125 @@
- #define CREATE_TRACE_POINTS
- #include <trace/events/page_isolation.h>
- 
 +/*
-+ * This function checks whether pageblock includes unmovable pages or not.
++ * Check whether a migratetype can be merged with another migratetype.
 + *
-+ * PageLRU check without isolation or lru_lock could race so that
-+ * MIGRATE_MOVABLE block might include unmovable pages. And __PageMovable
-+ * check without lock_page also may miss some movable non-lru pages at
-+ * race condition. So you can't expect this function should be exact.
-+ *
-+ * Returns a page without holding a reference. If the caller wants to
-+ * dereference that page (e.g., dumping), it has to make sure that it
-+ * cannot get removed (e.g., via memory unplug) concurrently.
-+ *
++ * It is only mergeable when it can fall back to other migratetypes for
++ * allocation. See fallbacks[MIGRATE_TYPES][3] in page_alloc.c.
 + */
-+static struct page *has_unmovable_pages(struct zone *zone, struct page *page,
-+				 int migratetype, int flags)
++static inline bool migratetype_is_mergeable(int mt)
 +{
-+	unsigned long iter = 0;
-+	unsigned long pfn = page_to_pfn(page);
-+	unsigned long offset = pfn % pageblock_nr_pages;
-+
-+	if (is_migrate_cma_page(page)) {
-+		/*
-+		 * CMA allocations (alloc_contig_range) really need to mark
-+		 * isolate CMA pageblocks even when they are not movable in fact
-+		 * so consider them movable here.
-+		 */
-+		if (is_migrate_cma(migratetype))
-+			return NULL;
-+
-+		return page;
-+	}
-+
-+	for (; iter < pageblock_nr_pages - offset; iter++) {
-+		page = pfn_to_page(pfn + iter);
-+
-+		/*
-+		 * Both, bootmem allocations and memory holes are marked
-+		 * PG_reserved and are unmovable. We can even have unmovable
-+		 * allocations inside ZONE_MOVABLE, for example when
-+		 * specifying "movablecore".
-+		 */
-+		if (PageReserved(page))
-+			return page;
-+
-+		/*
-+		 * If the zone is movable and we have ruled out all reserved
-+		 * pages then it should be reasonably safe to assume the rest
-+		 * is movable.
-+		 */
-+		if (zone_idx(zone) == ZONE_MOVABLE)
-+			continue;
-+
-+		/*
-+		 * Hugepages are not in LRU lists, but they're movable.
-+		 * THPs are on the LRU, but need to be counted as #small pages.
-+		 * We need not scan over tail pages because we don't
-+		 * handle each tail page individually in migration.
-+		 */
-+		if (PageHuge(page) || PageTransCompound(page)) {
-+			struct page *head = compound_head(page);
-+			unsigned int skip_pages;
-+
-+			if (PageHuge(page)) {
-+				if (!hugepage_migration_supported(page_hstate(head)))
-+					return page;
-+			} else if (!PageLRU(head) && !__PageMovable(head)) {
-+				return page;
-+			}
-+
-+			skip_pages = compound_nr(head) - (page - head);
-+			iter += skip_pages - 1;
-+			continue;
-+		}
-+
-+		/*
-+		 * We can't use page_count without pin a page
-+		 * because another CPU can free compound page.
-+		 * This check already skips compound tails of THP
-+		 * because their page->_refcount is zero at all time.
-+		 */
-+		if (!page_ref_count(page)) {
-+			if (PageBuddy(page))
-+				iter += (1 << buddy_order(page)) - 1;
-+			continue;
-+		}
-+
-+		/*
-+		 * The HWPoisoned page may be not in buddy system, and
-+		 * page_count() is not 0.
-+		 */
-+		if ((flags & MEMORY_OFFLINE) && PageHWPoison(page))
-+			continue;
-+
-+		/*
-+		 * We treat all PageOffline() pages as movable when offlining
-+		 * to give drivers a chance to decrement their reference count
-+		 * in MEM_GOING_OFFLINE in order to indicate that these pages
-+		 * can be offlined as there are no direct references anymore.
-+		 * For actually unmovable PageOffline() where the driver does
-+		 * not support this, we will fail later when trying to actually
-+		 * move these pages that still have a reference count > 0.
-+		 * (false negatives in this function only)
-+		 */
-+		if ((flags & MEMORY_OFFLINE) && PageOffline(page))
-+			continue;
-+
-+		if (__PageMovable(page) || PageLRU(page))
-+			continue;
-+
-+		/*
-+		 * If there are RECLAIMABLE pages, we need to check
-+		 * it.  But now, memory offline itself doesn't call
-+		 * shrink_node_slabs() and it still to be fixed.
-+		 */
-+		return page;
-+	}
-+	return NULL;
++	return mt < MIGRATE_PCPTYPES;
 +}
 +
- static int set_migratetype_isolate(struct page *page, int migratetype, int isol_flags)
- {
- 	struct zone *zone = page_zone(page);
+ #define for_each_migratetype_order(order, type) \
+ 	for (order = 0; order < MAX_ORDER; order++) \
+ 		for (type = 0; type < MIGRATE_TYPES; type++)
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 8dd6399bafb5..15de65215c02 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -1117,25 +1117,24 @@ static inline void __free_one_page(struct page *page,
+ 	}
+ 	if (order < MAX_ORDER - 1) {
+ 		/* If we are here, it means order is >= pageblock_order.
+-		 * We want to prevent merge between freepages on isolate
+-		 * pageblock and normal pageblock. Without this, pageblock
+-		 * isolation could cause incorrect freepage or CMA accounting.
++		 * We want to prevent merge between freepages on pageblock
++		 * without fallbacks and normal pageblock. Without this,
++		 * pageblock isolation could cause incorrect freepage or CMA
++		 * accounting or HIGHATOMIC accounting.
+ 		 *
+ 		 * We don't want to hit this code for the more frequent
+ 		 * low-order merging.
+ 		 */
+-		if (unlikely(has_isolate_pageblock(zone))) {
+-			int buddy_mt;
++		int buddy_mt;
+ 
+-			buddy_pfn = __find_buddy_pfn(pfn, order);
+-			buddy = page + (buddy_pfn - pfn);
+-			buddy_mt = get_pageblock_migratetype(buddy);
++		buddy_pfn = __find_buddy_pfn(pfn, order);
++		buddy = page + (buddy_pfn - pfn);
++		buddy_mt = get_pageblock_migratetype(buddy);
+ 
+-			if (migratetype != buddy_mt
+-					&& (is_migrate_isolate(migratetype) ||
+-						is_migrate_isolate(buddy_mt)))
+-				goto done_merging;
+-		}
++		if (migratetype != buddy_mt
++				&& (!migratetype_is_mergeable(migratetype) ||
++					!migratetype_is_mergeable(buddy_mt)))
++			goto done_merging;
+ 		max_order = order + 1;
+ 		goto continue_merging;
+ 	}
+@@ -2484,6 +2483,7 @@ static int fallbacks[MIGRATE_TYPES][3] = {
+ 	[MIGRATE_UNMOVABLE]   = { MIGRATE_RECLAIMABLE, MIGRATE_MOVABLE,   MIGRATE_TYPES },
+ 	[MIGRATE_MOVABLE]     = { MIGRATE_RECLAIMABLE, MIGRATE_UNMOVABLE, MIGRATE_TYPES },
+ 	[MIGRATE_RECLAIMABLE] = { MIGRATE_UNMOVABLE,   MIGRATE_MOVABLE,   MIGRATE_TYPES },
++	[MIGRATE_HIGHATOMIC] = { MIGRATE_TYPES }, /* Never used */
+ #ifdef CONFIG_CMA
+ 	[MIGRATE_CMA]         = { MIGRATE_TYPES }, /* Never used */
+ #endif
+@@ -2795,8 +2795,8 @@ static void reserve_highatomic_pageblock(struct page *page, struct zone *zone,
+ 
+ 	/* Yoink! */
+ 	mt = get_pageblock_migratetype(page);
+-	if (!is_migrate_highatomic(mt) && !is_migrate_isolate(mt)
+-	    && !is_migrate_cma(mt)) {
++	/* Only reserve normal pageblocks (i.e., they can merge with others) */
++	if (migratetype_is_mergeable(mt)) {
+ 		zone->nr_reserved_highatomic += pageblock_nr_pages;
+ 		set_pageblock_migratetype(page, MIGRATE_HIGHATOMIC);
+ 		move_freepages_block(zone, page, MIGRATE_HIGHATOMIC, NULL);
+@@ -3545,8 +3545,11 @@ int __isolate_free_page(struct page *page, unsigned int order)
+ 		struct page *endpage = page + (1 << order) - 1;
+ 		for (; page < endpage; page += pageblock_nr_pages) {
+ 			int mt = get_pageblock_migratetype(page);
+-			if (!is_migrate_isolate(mt) && !is_migrate_cma(mt)
+-			    && !is_migrate_highatomic(mt))
++			/*
++			 * Only change normal pageblocks (i.e., they can merge
++			 * with others)
++			 */
++			if (migratetype_is_mergeable(mt))
+ 				set_pageblock_migratetype(page,
+ 							  MIGRATE_MOVABLE);
+ 		}
 -- 
 2.34.1
 
