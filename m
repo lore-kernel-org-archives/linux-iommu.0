@@ -1,105 +1,77 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A5C3CC433EF
-	for <iommu@archiver.kernel.org>; Wed, 19 Jan 2022 23:13:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0CBE5C433F5
+	for <iommu@archiver.kernel.org>; Thu, 20 Jan 2022 02:59:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 3DF2160B35;
-	Wed, 19 Jan 2022 23:13:49 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 8454381D2D;
+	Thu, 20 Jan 2022 02:59:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id r_MbKU3AEssF; Wed, 19 Jan 2022 23:13:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 10F3760B37;
-	Wed, 19 Jan 2022 23:13:48 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DEC2CC0039;
-	Wed, 19 Jan 2022 23:13:47 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4E5DCC002F
- for <iommu@lists.linux-foundation.org>; Wed, 19 Jan 2022 23:13:47 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 1D1FE81C18
- for <iommu@lists.linux-foundation.org>; Wed, 19 Jan 2022 23:13:47 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=fail (2048-bit key) reason="fail (message has been altered)"
- header.d=kernel.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id v1DWJTjEpL-M for <iommu@lists.linux-foundation.org>;
- Wed, 19 Jan 2022 23:13:46 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id BNSovw0I5QtL; Thu, 20 Jan 2022 02:59:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 52AC081D24;
+	Thu, 20 Jan 2022 02:59:48 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2575CC0031;
+	Thu, 20 Jan 2022 02:59:48 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F332EC002F
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Jan 2022 02:59:46 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id DAA5860A93
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Jan 2022 02:59:46 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id HJo8FiLgj_JX for <iommu@lists.linux-foundation.org>;
+ Thu, 20 Jan 2022 02:59:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org
- [IPv6:2604:1380:4601:e00::1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 3CE7F81BF5
- for <iommu@lists.linux-foundation.org>; Wed, 19 Jan 2022 23:13:46 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id 6E06CB81911;
- Wed, 19 Jan 2022 23:13:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 243A6C340E4;
- Wed, 19 Jan 2022 23:13:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1642634022;
- bh=swuuNiOoGgJBUEQYGiWjhIMC2dkjnsqhYlZe0AHANOo=;
- h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
- b=cU1tiOf+BZz+w8PZnmlU8q0GtNxAwmaF01vGGyE3XwZspIbWMHizXrGd8yZkL4Yrt
- h5DQ/18gPqaCbTu8WDaVSQ0/4NPLmvel2ZHxtkChkb0XoqGT/rftCFwhGrQi32p/c6
- 9C7hQe8s/oSynIw0Dtw8ntcseUFiRBP84OfPPW2apdBoXkP3saHm9/jOoQq9Dyckgs
- p+dC5gx4vPD6KBbmxd/O6N28Yk1wMg/qwXFHqbLkYDEQA6WTCbzcx2gfj1bcCweWBg
- I7Noku7d69aO2G4UcEkom0pGa1IbOs65n1J9X5KFZPhBMNFGzQE4zCfs1As73p5oRT
- FyqULwQqZE0Xg==
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 14220607CE
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Jan 2022 02:59:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1642647586; x=1674183586;
+ h=cc:subject:to:references:from:message-id:date:
+ mime-version:in-reply-to:content-transfer-encoding;
+ bh=/heb/BurK2PbaDI5nZrzWaFOjKv5NZGtP7I5Cv9foiw=;
+ b=EeQXcWzKS/+SFbZmJzXzRmmZqna/vSryKYBzrFVPRoViDZSBgjaneZA2
+ BGcXtpL5lQ2zlsAQo/xmCpqZUPWVoa9s3a/xRhsnqXiD944A01hyjNqw7
+ nD4OR9BFOwfNRFmn/6d7fJVepcdt37bJVQQWWH/3Dr14MPu8WCYD4OCd3
+ 4h01Td/9syvGRWdCoYrN9tr1vwsak12hpjleKRyLP0OIaxSfpB4QYzjnY
+ g5FkSxm3TP6hp0Trl4sB83lz0K/EIY6QfmW9HqaMW8ojohslNYy6v/WG/
+ inhEDQCUwTyrYPk/JaH9HiwPkLzHI5Y7U3HF3SKyWpOKMsDq/Xs4j8cRg w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10232"; a="245051839"
+X-IronPort-AV: E=Sophos;i="5.88,301,1635231600"; d="scan'208";a="245051839"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 19 Jan 2022 18:59:44 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,301,1635231600"; d="scan'208";a="532587638"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
+ ([10.239.159.118])
+ by orsmga008.jf.intel.com with ESMTP; 19 Jan 2022 18:59:43 -0800
+Subject: Re: [PATCH] iommu/vt-d: Do not dump pasid table entries in kdump
+ kernel
+To: Zelin Deng <zelin.deng@linux.alibaba.com>,
+ David Woodhouse <dwmw2@infradead.org>
+References: <1642583260-21095-1-git-send-email-zelin.deng@linux.alibaba.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <846c0ff6-32b1-73a4-0510-f1e809684991@linux.intel.com>
+Date: Thu, 20 Jan 2022 10:58:48 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <20220119015038.2433585-1-robh@kernel.org>
-References: <20220119015038.2433585-1-robh@kernel.org>
-Subject: Re: [PATCH] dt-bindings: Improve phandle-array schemas
-From: Stephen Boyd <sboyd@kernel.org>
-To: Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
-Date: Wed, 19 Jan 2022 15:13:40 -0800
-User-Agent: alot/0.10
-Message-Id: <20220119231342.243A6C340E4@smtp.kernel.org>
-Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
- linux-usb@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>,
- "Rafael J.Wysocki" <rafael@kernel.org>,
- Linus Walleij <linus.walleij@linaro.org>, linux-remoteproc@vger.kernel.org,
- alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org,
- Sebastian Reichel <sre@kernel.org>, linux-ide@vger.kernel.org,
- Thierry Reding <thierry.reding@gmail.com>,
- Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
- Pavel Machek <pavel@ucw.cz>, linux-phy@lists.infradead.org,
- netdev@vger.kernel.org, Jonathan Hunter <jonathanh@nvidia.com>,
- Lee Jones <lee.jones@linaro.org>, linux-riscv@lists.infradead.org,
- linux-leds@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>,
- Florian Fainelli <f.fainelli@gmail.com>,
- Herbert Xu <herbert@gondor.apana.org.au>,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- Marc Zyngier <maz@kernel.org>,
- Damien Le Moal <damien.lemoal@opensource.wdc.com>,
- Daniel Lezcano <daniel.lezcano@linaro.org>, iommu@lists.linux-foundation.org,
- Kishon Vijay Abraham I <kishon@ti.com>, Jakub Kicinski <kuba@kernel.org>,
- Zhang Rui <rui.zhang@intel.com>, Vivien Didelot <vivien.didelot@gmail.com>,
- Wolfgang Grandegger <wg@grandegger.com>, linux-media@vger.kernel.org,
- Chun-Kuang Hu <chunkuang.hu@kernel.org>, linux-pm@vger.kernel.org,
- Kalle Valo <kvalo@kernel.org>, Sudeep Holla <sudeep.holla@arm.com>,
- linux-can@vger.kernel.org, linux-gpio@vger.kernel.org,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Mark Brown <broonie@kernel.org>, Marc Kleine-Budde <mkl@pengutronix.de>,
- linux-@osuosl.org, Thomas Gleixner <tglx@linutronix.de>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Mathieu Poirier <mathieu.poirier@linaro.org>,
- Jingoo Han <jingoohan1@gmail.com>, Kevin Hilman <khilman@kernel.org>,
- linux-kernel@vger.kernel.org, wireless@vger.kernel.org,
- Vinod Koul <vkoul@kernel.org>,
- Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
- linux-crypto@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
- Viresh Kumar <vireshk@kernel.org>, dmaengine@vger.kernel.org,
- Vladimir Oltean <olteanv@gmail.com>, "David S.Miller" <davem@davemloft.net>
+In-Reply-To: <1642583260-21095-1-git-send-email-zelin.deng@linux.alibaba.com>
+Content-Language: en-US
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,38 +84,70 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Quoting Rob Herring (2022-01-18 17:50:38)
-> The 'phandle-array' type is a bit ambiguous. It can be either just an
-> array of phandles or an array of phandles plus args. Many schemas for
-> phandle-array properties aren't clear in the schema which case applies
-> though the description usually describes it.
-> 
-> The array of phandles case boils down to needing:
-> 
-> items:
->   maxItems: 1
-> 
-> The phandle plus args cases should typically take this form:
-> 
-> items:
->   - items:
->       - description: A phandle
->       - description: 1st arg cell
->       - description: 2nd arg cell
-> 
-> With this change, some examples need updating so that the bracketing of
-> property values matches the schema.
-[..]
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
-
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMS8xOS8yMiA1OjA3IFBNLCBaZWxpbiBEZW5nIHdyb3RlOgo+IEluIGtkdW1wIGtlcm5lbCBQ
+QVNJRCB0cmFuc2xhdGlvbnMgd29uJ3QgYmUgY29waWVkIGZyb20gcHJldmlvdXMga2VybmVsCj4g
+ZXZlbiBpZiBzY2FsYWJsZS1tb2RlIGlzIGVuYWJsZWQsIHNvIHBhZ2VzIG9mIFBBU0lEIHRyYW5z
+bGF0aW9ucyBhcmUKClllcy4gVGhlIGNvcHkgdGFibGUgc3VwcG9ydCBmb3Igc2NhbGFibGUgbW9k
+ZSBpcyBzdGlsbCBpbiBteSB0YXNrIGxpc3QuCgo+IG5vbi1wcmVzZW50IGluIGtkdW1wIGtlcm5l
+bC4gQXR0ZW1wdCB0byBhY2Nlc3MgdGhvc2UgYWRkcmVzcyB3aWxsIGNhdXNlCj4gUEYgZmF1bHQ6
+Cj4gCj4gWyAgIDEzLjM5NjQ3Nl0gRE1BUjogRFJIRDogaGFuZGxpbmcgZmF1bHQgc3RhdHVzIHJl
+ZyAzCj4gWyAgIDEzLjM5NjQ3OF0gRE1BUjogW0RNQSBSZWFkIE5PX1BBU0lEXSBSZXF1ZXN0IGRl
+dmljZSBbODE6MDAuMF0gZmF1bHQgYWRkciAweGZmZmZkMDAwIFtmYXVsdCByZWFzb24gMHg1OV0g
+U006IFByZXNlbnQgYml0IGluIFBBJAo+IFsgICAxMy4zOTY0ODBdIERNQVI6IER1bXAgZG1hcjUg
+dGFibGUgZW50cmllcyBmb3IgSU9WQSAweGZmZmZkMDAwCj4gWyAgIDEzLjM5NjQ4MV0gRE1BUjog
+c2NhbGFibGUgbW9kZSByb290IGVudHJ5OiBoaSAweDAwMDAwMDAwMDAwMDAwMDAsIGxvdyAweDAw
+MDAwMDAwNDYwZDEwMDEKPiBbICAgMTMuMzk2NDgyXSBETUFSOiBjb250ZXh0IGVudHJ5OiBoaSAw
+eDAwMDAwMDAwMDAwMDAwMDgsIGxvdyAweDAwMDAwMDEwYzQyMzc0MDEKPiBbICAgMTMuMzk2NDg1
+XSBCVUc6IHVuYWJsZSB0byBoYW5kbGUgcGFnZSBmYXVsdCBmb3IgYWRkcmVzczogZmYxMTAwMTBj
+NDIzNzAwMAo+IFsgICAxMy4zOTY0ODZdICNQRjogc3VwZXJ2aXNvciByZWFkIGFjY2VzcyBpbiBr
+ZXJuZWwgbW9kZQo+IFsgICAxMy4zOTY0ODddICNQRjogZXJyb3JfY29kZSgweDAwMDApIC0gbm90
+LXByZXNlbnQgcGFnZQo+IFsgICAxMy4zOTY0ODhdIFBHRCA1ZDIwMTA2NyBQNEQgNWQyMDIwNjcg
+UFVEIDAKPiBbICAgMTMuMzk2NDkwXSBPb3BzOiAwMDAwIFsjMV0gUFJFRU1QVCBTTVAgTk9QVEkK
+PiBbICAgMTMuMzk2NDkxXSBDUFU6IDAgUElEOiAxIENvbW06IHN3YXBwZXIvMCBOb3QgdGFpbnRl
+ZCA1LjE2LjAtcmM2LW5leHQtMjAyMTEyMjQrICM2Cj4gWyAgIDEzLjM5NjQ5M10gSGFyZHdhcmUg
+bmFtZTogSW50ZWwgQ29ycG9yYXRpb24gRUFHTEVTVFJFQU0vRUFHTEVTVFJFQU0sIEJJT1MgRUdT
+RENSQjEuODZCLjAwNjcuRDEyLjIxMTAxOTA5NTAgMTAvMTkvMjAyMQo+IFsgICAxMy4zOTY0OTRd
+IFJJUDogMDAxMDpkbWFyX2ZhdWx0X2R1bXBfcHRlcysweDEzYi8weDI5NQo+IAo+IEhlbmNlIHNr
+aXAgZHVtcGluZyBwYXNpZCB0YWJsZSBlbnRyaWVzIGlmIGluIGtkdW1wIGtlcm5lbC4KClRoaXMg
+anVzdCBhc2tzIGRtYXJfZmF1bHRfZHVtcF9wdGVzKCkgdG8ga2VlcCBzaWxlbnQuIFRoZSBwcm9i
+bGVtIGlzCnRoYXQgdGhlIGNvbnRleHQgZW50cnkgaXMgbWlzLWNvbmZpZ3VyZWQuIFBlcmhhcHMg
+d2Ugc2hvdWxkIGRpc2FibGUKY29weSB0YWJsZSBmb3Igc2NhbGFibGUgbW9kZSBmb3Igbm93LiBI
+b3cgYWJvdXQgYmVsb3cgY2hhbmdlPwoKLS0tIGEvZHJpdmVycy9pb21tdS9pbnRlbC9pb21tdS5j
+CisrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYwpAQCAtMzMzNywxMCArMzMzNywxMSBA
+QCBzdGF0aWMgaW50IF9faW5pdCBpbml0X2RtYXJzKHZvaWQpCgogICAgICAgICAgICAgICAgIGlu
+aXRfdHJhbnNsYXRpb25fc3RhdHVzKGlvbW11KTsKCi0gICAgICAgICAgICAgICBpZiAodHJhbnNs
+YXRpb25fcHJlX2VuYWJsZWQoaW9tbXUpICYmICFpc19rZHVtcF9rZXJuZWwoKSkgeworICAgICAg
+ICAgICAgICAgaWYgKHRyYW5zbGF0aW9uX3ByZV9lbmFibGVkKGlvbW11KSAmJgorICAgICAgICAg
+ICAgICAgICAgICghaXNfa2R1bXBfa2VybmVsKCkgfHwgc21fc3VwcG9ydGVkKGlvbW11KSkpIHsK
+ICAgICAgICAgICAgICAgICAgICAgICAgIGlvbW11X2Rpc2FibGVfdHJhbnNsYXRpb24oaW9tbXUp
+OwogICAgICAgICAgICAgICAgICAgICAgICAgY2xlYXJfdHJhbnNsYXRpb25fcHJlX2VuYWJsZWQo
+aW9tbXUpOwotICAgICAgICAgICAgICAgICAgICAgICBwcl93YXJuKCJUcmFuc2xhdGlvbiB3YXMg
+ZW5hYmxlZCBmb3IgJXMgYnV0IHdlIAphcmUgbm90IGluIGtkdW1wIG1vZGVcbiIsCisgICAgICAg
+ICAgICAgICAgICAgICAgIHByX3dhcm4oIlRyYW5zbGF0aW9uIHdhcyBlbmFibGVkIGZvciAlcyBi
+dXQgd2UgCmFyZSBub3QgaW4ga2R1bXAgbW9kZSBvciBjb3B5IHRhYmxlIG5vdCBzdXBwb3J0ZWRc
+biIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlvbW11LT5uYW1lKTsKICAgICAg
+ICAgICAgICAgICB9Cgo+IAo+IEZpeGVzOiA5MTRmZjc3MTllOGEgKOKAnGlvbW11L3Z0LWQ6IER1
+bXAgRE1BUiB0cmFuc2xhdGlvbiBzdHJ1Y3R1cmUgd2hlbiBETUEgZmF1bHQgb2NjdXJz4oCdKQo+
+IFNpZ25lZC1vZmYtYnk6IFplbGluIERlbmcgPHplbGluLmRlbmdAbGludXguYWxpYmFiYS5jb20+
+Cj4gLS0tCj4gICBkcml2ZXJzL2lvbW11L2ludGVsL2lvbW11LmMgfCA2ICsrKysrKwo+ICAgMSBm
+aWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKQo+IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lv
+bW11L2ludGVsL2lvbW11LmMgYi9kcml2ZXJzL2lvbW11L2ludGVsL2lvbW11LmMKPiBpbmRleCA5
+MmZlYTNmYi4uZjAxMzRjZiAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2lvbW11L2ludGVsL2lvbW11
+LmMKPiArKysgYi9kcml2ZXJzL2lvbW11L2ludGVsL2lvbW11LmMKPiBAQCAtMTA3NCw2ICsxMDc0
+LDEyIEBAIHZvaWQgZG1hcl9mYXVsdF9kdW1wX3B0ZXMoc3RydWN0IGludGVsX2lvbW11ICppb21t
+dSwgdTE2IHNvdXJjZV9pZCwKPiAgIAlpZiAoIXNtX3N1cHBvcnRlZChpb21tdSkpCj4gICAJCWdv
+dG8gcGd0YWJsZV93YWxrOwo+ICAgCj4gKwkvKiBQQVNJRCB0cmFuc2xhdGlvbnMgaXMgbm90IGNv
+cGllZCwgc2tpcCBkdW1waW5nIHBhc2lkIHRhYmxlIGVudHJpZXMKPiArCSAqIG90aGVyd2lzZSBu
+b24tcHJlc2VudCBwYWdlIHdpbGwgYmUgYWNjZXNzZWQuCj4gKwkgKi8KPiArCWlmIChpc19rZHVt
+cF9rZXJuZWwoKSkKPiArCQlnb3RvIHBndGFibGVfd2FsazsKPiArCj4gICAJLyogZ2V0IHRoZSBw
+b2ludGVyIHRvIHBhc2lkIGRpcmVjdG9yeSBlbnRyeSAqLwo+ICAgCWRpciA9IHBoeXNfdG9fdmly
+dChjdHhfZW50cnktPmxvICYgVlREX1BBR0VfTUFTSyk7Cj4gICAJaWYgKCFkaXIpIHsKPiAKCkJl
+c3QgcmVnYXJkcywKYmFvbHUKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
+b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
+bW11
