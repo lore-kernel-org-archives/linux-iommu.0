@@ -1,59 +1,106 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B24C3C433EF
-	for <iommu@archiver.kernel.org>; Thu, 20 Jan 2022 03:14:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D2BF0C433F5
+	for <iommu@archiver.kernel.org>; Thu, 20 Jan 2022 04:39:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 4F10082423;
-	Thu, 20 Jan 2022 03:14:12 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6184B4011C;
+	Thu, 20 Jan 2022 04:39:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gAApOimzb3eT; Thu, 20 Jan 2022 03:14:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id F3BE781D2D;
-	Thu, 20 Jan 2022 03:14:10 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id tLj28sNKF0Cu; Thu, 20 Jan 2022 04:39:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 0A1D64029B;
+	Thu, 20 Jan 2022 04:39:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D69C4C0039;
-	Thu, 20 Jan 2022 03:14:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DF026C0039;
+	Thu, 20 Jan 2022 04:38:59 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8D02DC002F
- for <iommu@lists.linux-foundation.org>; Thu, 20 Jan 2022 03:14:08 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8B4E3C002F
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Jan 2022 04:38:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 73AB840990
- for <iommu@lists.linux-foundation.org>; Thu, 20 Jan 2022 03:14:08 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 71F1B41517
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Jan 2022 04:38:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JSwq2mwa096u for <iommu@lists.linux-foundation.org>;
- Thu, 20 Jan 2022 03:14:07 +0000 (UTC)
+ with ESMTP id uTmVE84Ym4st for <iommu@lists.linux-foundation.org>;
+ Thu, 20 Jan 2022 04:38:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from out30-43.freemail.mail.aliyun.com
- (out30-43.freemail.mail.aliyun.com [115.124.30.43])
- by smtp4.osuosl.org (Postfix) with ESMTPS id DB52C40283
- for <iommu@lists.linux-foundation.org>; Thu, 20 Jan 2022 03:14:06 +0000 (UTC)
-X-Alimail-AntiSpam: AC=PASS; BC=-1|-1; BR=01201311R991e4; CH=green; DM=||false|;
- DS=||; FP=0|-1|-1|-1|0|-1|-1|-1; HT=e01e04400; MF=zelin.deng@linux.alibaba.com;
- NM=1; PH=DS; RN=4; SR=0; TI=SMTPD_---0V2JWwbh_1642648442; 
-Received: from 30.21.166.20(mailfrom:zelin.deng@linux.alibaba.com
- fp:SMTPD_---0V2JWwbh_1642648442) by smtp.aliyun-inc.com(127.0.0.1);
- Thu, 20 Jan 2022 11:14:03 +0800
-Message-ID: <2ad9b10f-b7b7-afec-38ed-16176a6c55c9@linux.alibaba.com>
-Date: Thu, 20 Jan 2022 11:13:55 +0800
+Received: from dfw.source.kernel.org (dfw.source.kernel.org
+ [IPv6:2604:1380:4641:c500::1])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id C4AF64098E
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Jan 2022 04:38:57 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id 6F04A6165D;
+ Thu, 20 Jan 2022 04:38:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88872C340E0;
+ Thu, 20 Jan 2022 04:38:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1642653535;
+ bh=htKcbIrjG0vVOoiPk/qRtlgHN478W8928ENhwhjbOV8=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=tcjQQaQOiKyW2rup4+boNuKbOg3E4wRGo65VzR07gC+38qSCzvueDNKsXw0qo25YC
+ FSd0ZcH2wQg6ndifOdoQOkK2AJmdoc/+4rI6MmV2c/JFq5Pexryrmw1KB1d/0gPVBl
+ sWawaQ0ExefWlf40mUq9Bc8b+b0Qb2Q5qMv7yPvuNl/Oofe4bBEX/PiYiXEeBZKR0X
+ EjFvQKQ1CgVK+xoQIHG870JcNdkXhCEh0WjV8YV/fIr1+Jk++MmTcC3rf6PE8hP7MQ
+ G3IiXEurawyW3OC2zMo29dGuuRnBtF45ciDi4rN7el/r42r9B4pcaecJpdXwaUbl+p
+ usDTqhZxOraiQ==
+Date: Thu, 20 Jan 2022 10:08:51 +0530
+From: Vinod Koul <vkoul@kernel.org>
+To: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH] dt-bindings: Improve phandle-array schemas
+Message-ID: <YejnW2sEV4Rc8GVO@matsya>
+References: <20220119015038.2433585-1-robh@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.0
-Subject: Re: [PATCH] iommu/vt-d: Do not dump pasid table entries in kdump
- kernel
-To: Lu Baolu <baolu.lu@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>
-References: <1642583260-21095-1-git-send-email-zelin.deng@linux.alibaba.com>
- <846c0ff6-32b1-73a4-0510-f1e809684991@linux.intel.com>
-From: zelin deng <zelin.deng@linux.alibaba.com>
-In-Reply-To: <846c0ff6-32b1-73a4-0510-f1e809684991@linux.intel.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <20220119015038.2433585-1-robh@kernel.org>
+Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>,
+ Geert Uytterhoeven <geert+renesas@glider.be>,
+ Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+ Linus Walleij <linus.walleij@linaro.org>, linux-remoteproc@vger.kernel.org,
+ alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org,
+ Sebastian Reichel <sre@kernel.org>, linux-ide@vger.kernel.org,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ Pavel Machek <pavel@ucw.cz>, linux-phy@lists.infradead.org,
+ netdev@vger.kernel.org, Jonathan Hunter <jonathanh@nvidia.com>,
+ Lee Jones <lee.jones@linaro.org>, linux-riscv@lists.infradead.org,
+ linux-leds@vger.kernel.org, Daniel Thompson <daniel.thompson@linaro.org>,
+ Florian Fainelli <f.fainelli@gmail.com>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ Marc Zyngier <maz@kernel.org>,
+ Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Kishon Vijay Abraham I <kishon@ti.com>, Jakub Kicinski <kuba@kernel.org>,
+ Zhang Rui <rui.zhang@intel.com>, linux-usb@vger.kernel.org,
+ Vivien Didelot <vivien.didelot@gmail.com>,
+ Wolfgang Grandegger <wg@grandegger.com>, linux-media@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+ Kalle Valo <kvalo@kernel.org>, Sudeep Holla <sudeep.holla@arm.com>,
+ linux-can@vger.kernel.org, linux-gpio@vger.kernel.org,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Mark Brown <broonie@kernel.org>, Marc Kleine-Budde <mkl@pengutronix.de>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Mathieu Poirier <mathieu.poirier@linaro.org>, Stephen Boyd <sboyd@kernel.org>,
+ Jingoo Han <jingoohan1@gmail.com>, Kevin Hilman <khilman@kernel.org>,
+ linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org,
+ Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+ linux-crypto@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
+ Viresh Kumar <vireshk@kernel.org>, dmaengine@vger.kernel.org,
+ Vladimir Oltean <olteanv@gmail.com>, "David S. Miller" <davem@davemloft.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -66,87 +113,38 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CuWcqCAyMDIyLzEvMjAg5LiK5Y2IMTA6NTgsIEx1IEJhb2x1IOWGmemBkzoKPiBPbiAxLzE5LzIy
-IDU6MDcgUE0sIFplbGluIERlbmcgd3JvdGU6Cj4+IEluIGtkdW1wIGtlcm5lbCBQQVNJRCB0cmFu
-c2xhdGlvbnMgd29uJ3QgYmUgY29waWVkIGZyb20gcHJldmlvdXMga2VybmVsCj4+IGV2ZW4gaWYg
-c2NhbGFibGUtbW9kZSBpcyBlbmFibGVkLCBzbyBwYWdlcyBvZiBQQVNJRCB0cmFuc2xhdGlvbnMg
-YXJlCj4KPiBZZXMuIFRoZSBjb3B5IHRhYmxlIHN1cHBvcnQgZm9yIHNjYWxhYmxlIG1vZGUgaXMg
-c3RpbGwgaW4gbXkgdGFzayBsaXN0Lgo+Cj4+IG5vbi1wcmVzZW50IGluIGtkdW1wIGtlcm5lbC4g
-QXR0ZW1wdCB0byBhY2Nlc3MgdGhvc2UgYWRkcmVzcyB3aWxsIGNhdXNlCj4+IFBGIGZhdWx0Ogo+
-Pgo+PiBbwqDCoCAxMy4zOTY0NzZdIERNQVI6IERSSEQ6IGhhbmRsaW5nIGZhdWx0IHN0YXR1cyBy
-ZWcgMwo+PiBbwqDCoCAxMy4zOTY0NzhdIERNQVI6IFtETUEgUmVhZCBOT19QQVNJRF0gUmVxdWVz
-dCBkZXZpY2UgWzgxOjAwLjBdIAo+PiBmYXVsdCBhZGRyIDB4ZmZmZmQwMDAgW2ZhdWx0IHJlYXNv
-biAweDU5XSBTTTogUHJlc2VudCBiaXQgaW4gUEEkCj4+IFvCoMKgIDEzLjM5NjQ4MF0gRE1BUjog
-RHVtcCBkbWFyNSB0YWJsZSBlbnRyaWVzIGZvciBJT1ZBIDB4ZmZmZmQwMDAKPj4gW8KgwqAgMTMu
-Mzk2NDgxXSBETUFSOiBzY2FsYWJsZSBtb2RlIHJvb3QgZW50cnk6IGhpIDB4MDAwMDAwMDAwMDAw
-MDAwMCwgCj4+IGxvdyAweDAwMDAwMDAwNDYwZDEwMDEKPj4gW8KgwqAgMTMuMzk2NDgyXSBETUFS
-OiBjb250ZXh0IGVudHJ5OiBoaSAweDAwMDAwMDAwMDAwMDAwMDgsIGxvdyAKPj4gMHgwMDAwMDAx
-MGM0MjM3NDAxCj4+IFvCoMKgIDEzLjM5NjQ4NV0gQlVHOiB1bmFibGUgdG8gaGFuZGxlIHBhZ2Ug
-ZmF1bHQgZm9yIGFkZHJlc3M6IAo+PiBmZjExMDAxMGM0MjM3MDAwCj4+IFvCoMKgIDEzLjM5NjQ4
-Nl0gI1BGOiBzdXBlcnZpc29yIHJlYWQgYWNjZXNzIGluIGtlcm5lbCBtb2RlCj4+IFvCoMKgIDEz
-LjM5NjQ4N10gI1BGOiBlcnJvcl9jb2RlKDB4MDAwMCkgLSBub3QtcHJlc2VudCBwYWdlCj4+IFvC
-oMKgIDEzLjM5NjQ4OF0gUEdEIDVkMjAxMDY3IFA0RCA1ZDIwMjA2NyBQVUQgMAo+PiBbwqDCoCAx
-My4zOTY0OTBdIE9vcHM6IDAwMDAgWyMxXSBQUkVFTVBUIFNNUCBOT1BUSQo+PiBbwqDCoCAxMy4z
-OTY0OTFdIENQVTogMCBQSUQ6IDEgQ29tbTogc3dhcHBlci8wIE5vdCB0YWludGVkIAo+PiA1LjE2
-LjAtcmM2LW5leHQtMjAyMTEyMjQrICM2Cj4+IFvCoMKgIDEzLjM5NjQ5M10gSGFyZHdhcmUgbmFt
-ZTogSW50ZWwgQ29ycG9yYXRpb24gCj4+IEVBR0xFU1RSRUFNL0VBR0xFU1RSRUFNLCBCSU9TIEVH
-U0RDUkIxLjg2Qi4wMDY3LkQxMi4yMTEwMTkwOTUwIAo+PiAxMC8xOS8yMDIxCj4+IFvCoMKgIDEz
-LjM5NjQ5NF0gUklQOiAwMDEwOmRtYXJfZmF1bHRfZHVtcF9wdGVzKzB4MTNiLzB4Mjk1Cj4+Cj4+
-IEhlbmNlIHNraXAgZHVtcGluZyBwYXNpZCB0YWJsZSBlbnRyaWVzIGlmIGluIGtkdW1wIGtlcm5l
-bC4KPgo+IFRoaXMganVzdCBhc2tzIGRtYXJfZmF1bHRfZHVtcF9wdGVzKCkgdG8ga2VlcCBzaWxl
-bnQuIFRoZSBwcm9ibGVtIGlzCj4gdGhhdCB0aGUgY29udGV4dCBlbnRyeSBpcyBtaXMtY29uZmln
-dXJlZC4gUGVyaGFwcyB3ZSBzaG91bGQgZGlzYWJsZQo+IGNvcHkgdGFibGUgZm9yIHNjYWxhYmxl
-IG1vZGUgZm9yIG5vdy4gSG93IGFib3V0IGJlbG93IGNoYW5nZT8KClllcC7CoCBUaGUgY2hhbmdl
-IGxvb2tzIGdvb2QgdG8gbWUuCgpBY3R1YWxseSBJIGhhZCBlbmNvdW50ZXJlZCBhbm90aGVyIGlz
-c3VlIHdoaWNoIGhhZCBibG9ja2VkIHZpcnRpby1uZXQgCmRldmljZSB3aGVuIHNjYWxhYmxlIG1v
-ZGUgaXMgZW5hYmxlZCBpbiBrZHVtcCBrZXJuZWwgc28gdGhhdCBJIGhhZCBtYWRlIAp0aGUgc2Ft
-ZSBjaGFuZ2UgYXMgeW91cnMgLS0gJ3RvIGRpc2FibGUgdHJhbnNsYXRpb24gaWYgc21fb24gaW4g
-a2R1bXAgCmtlcm5lbCcgaW4gb3VyIGludGVybmFsIHRyZWUuCgpJIG9ubHkgb2JzZXJ2ZSB0aGlz
-IGlzc3VlIG9uIG91ciBkcmFnb25mbHkgYmFyZW1ldGFsIHNlcnZlciB3aXRoIAp2aXJ0aW8tbmV0
-IGRldmljZSBpbnNpZGUsIEkgZGlkJ3Qgc2VuZCB0aGUgZml4IHRvIHVwc3RyZWFtIGFzIEkgYW0g
-bm90IApzdXJlIGlmIGl0IGlzIHJlYXNvbmFibGUgdG8gZGlzYWJsZSB0cmFuc2xhdGlvbiBpbiBr
-ZHVtcCBrZXJuZWwuCgoKPgo+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYwo+ICsr
-KyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYwo+IEBAIC0zMzM3LDEwICszMzM3LDExIEBA
-IHN0YXRpYyBpbnQgX19pbml0IGluaXRfZG1hcnModm9pZCkKPgo+IMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCBpbml0X3RyYW5zbGF0aW9uX3N0YXR1cyhpb21tdSk7Cj4KPiAtwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpZiAodHJhbnNsYXRpb25fcHJlX2VuYWJsZWQoaW9tbXUp
-ICYmIAo+ICFpc19rZHVtcF9rZXJuZWwoKSkgewo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIGlmICh0cmFuc2xhdGlvbl9wcmVfZW5hYmxlZChpb21tdSkgJiYKPiArwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICghaXNfa2R1bXBfa2VybmVsKCkgfHwgc21fc3VwcG9y
-dGVkKGlvbW11KSkpIHsKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgIGlvbW11X2Rpc2FibGVfdHJhbnNsYXRpb24oaW9tbXUpOwo+IMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY2xlYXJfdHJhbnNsYXRpb25fcHJlX2Vu
-YWJsZWQoaW9tbXUpOwo+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoCBwcl93YXJuKCJUcmFuc2xhdGlvbiB3YXMgZW5hYmxlZCBmb3IgJXMgYnV0IHdlIAo+IGFy
-ZSBub3QgaW4ga2R1bXAgbW9kZVxuIiwKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgcHJfd2FybigiVHJhbnNsYXRpb24gd2FzIGVuYWJsZWQgZm9yICVzIGJ1
-dCB3ZSAKPiBhcmUgbm90IGluIGtkdW1wIG1vZGUgb3IgY29weSB0YWJsZSBub3Qgc3VwcG9ydGVk
-XG4iLAo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIGlvbW11LT5uYW1lKTsKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgfQo+Cj4+Cj4+IEZpeGVzOiA5MTRmZjc3MTllOGEgKOKAnGlvbW11L3Z0LWQ6IER1bXAgRE1B
-UiB0cmFuc2xhdGlvbiBzdHJ1Y3R1cmUgCj4+IHdoZW4gRE1BIGZhdWx0IG9jY3Vyc+KAnSkKPj4g
-U2lnbmVkLW9mZi1ieTogWmVsaW4gRGVuZyA8emVsaW4uZGVuZ0BsaW51eC5hbGliYWJhLmNvbT4K
-Pj4gLS0tCj4+IMKgIGRyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYyB8IDYgKysrKysrCj4+IMKg
-IDEgZmlsZSBjaGFuZ2VkLCA2IGluc2VydGlvbnMoKykKPj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvaW9tbXUvaW50ZWwvaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYwo+PiBp
-bmRleCA5MmZlYTNmYi4uZjAxMzRjZiAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9pb21tdS9pbnRl
-bC9pb21tdS5jCj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYwo+PiBAQCAtMTA3
-NCw2ICsxMDc0LDEyIEBAIHZvaWQgZG1hcl9mYXVsdF9kdW1wX3B0ZXMoc3RydWN0IGludGVsX2lv
-bW11IAo+PiAqaW9tbXUsIHUxNiBzb3VyY2VfaWQsCj4+IMKgwqDCoMKgwqAgaWYgKCFzbV9zdXBw
-b3J0ZWQoaW9tbXUpKQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBwZ3RhYmxlX3dhbGs7Cj4+
-IMKgICvCoMKgwqAgLyogUEFTSUQgdHJhbnNsYXRpb25zIGlzIG5vdCBjb3BpZWQsIHNraXAgZHVt
-cGluZyBwYXNpZCB0YWJsZSAKPj4gZW50cmllcwo+PiArwqDCoMKgwqAgKiBvdGhlcndpc2Ugbm9u
-LXByZXNlbnQgcGFnZSB3aWxsIGJlIGFjY2Vzc2VkLgo+PiArwqDCoMKgwqAgKi8KPj4gK8KgwqDC
-oCBpZiAoaXNfa2R1bXBfa2VybmVsKCkpCj4+ICvCoMKgwqDCoMKgwqDCoCBnb3RvIHBndGFibGVf
-d2FsazsKPj4gKwo+PiDCoMKgwqDCoMKgIC8qIGdldCB0aGUgcG9pbnRlciB0byBwYXNpZCBkaXJl
-Y3RvcnkgZW50cnkgKi8KPj4gwqDCoMKgwqDCoCBkaXIgPSBwaHlzX3RvX3ZpcnQoY3R4X2VudHJ5
-LT5sbyAmIFZURF9QQUdFX01BU0spOwo+PiDCoMKgwqDCoMKgIGlmICghZGlyKSB7Cj4+Cj4KPiBC
-ZXN0IHJlZ2FyZHMsCj4gYmFvbHUKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
-b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2lvbW11
+On 18-01-22, 19:50, Rob Herring wrote:
+> The 'phandle-array' type is a bit ambiguous. It can be either just an
+> array of phandles or an array of phandles plus args. Many schemas for
+> phandle-array properties aren't clear in the schema which case applies
+> though the description usually describes it.
+> 
+> The array of phandles case boils down to needing:
+> 
+> items:
+>   maxItems: 1
+> 
+> The phandle plus args cases should typically take this form:
+> 
+> items:
+>   - items:
+>       - description: A phandle
+>       - description: 1st arg cell
+>       - description: 2nd arg cell
+> 
+> With this change, some examples need updating so that the bracketing of
+> property values matches the schema.
+
+Acked-By: Vinod Koul <vkoul@kernel.org>
+
+-- 
+~Vinod
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
