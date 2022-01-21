@@ -1,144 +1,63 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 12CE6C433F5
-	for <iommu@archiver.kernel.org>; Fri, 21 Jan 2022 12:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6ACE9C433F5
+	for <iommu@archiver.kernel.org>; Fri, 21 Jan 2022 19:21:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 7C91583E4F;
-	Fri, 21 Jan 2022 12:31:35 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0451160F07;
+	Fri, 21 Jan 2022 19:21:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tiuX_XJlL_1W; Fri, 21 Jan 2022 12:31:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 23C5583E4B;
-	Fri, 21 Jan 2022 12:31:34 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jZ2H0SGn-Fds; Fri, 21 Jan 2022 19:20:58 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 5DA1F606E7;
+	Fri, 21 Jan 2022 19:20:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E0353C0031;
-	Fri, 21 Jan 2022 12:31:33 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 01125C002F
- for <iommu@lists.linux-foundation.org>; Fri, 21 Jan 2022 12:31:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 20BD3C0039;
+	Fri, 21 Jan 2022 19:20:58 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5AC46C002F
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Jan 2022 19:20:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id CAA5083E4C
- for <iommu@lists.linux-foundation.org>; Fri, 21 Jan 2022 12:31:28 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 3498883E88
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Jan 2022 19:20:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xwoHVu-6bC1y for <iommu@lists.linux-foundation.org>;
- Fri, 21 Jan 2022 12:31:25 +0000 (UTC)
+ with ESMTP id YRIFXBv7fIgJ for <iommu@lists.linux-foundation.org>;
+ Fri, 21 Jan 2022 19:20:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com
- [210.118.77.12])
- by smtp1.osuosl.org (Postfix) with ESMTPS id C442483E4B
- for <iommu@lists.linux-foundation.org>; Fri, 21 Jan 2022 12:31:24 +0000 (UTC)
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
- by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id
- 20220121123121euoutp02a215fa86769580de3e90658ad4ac07be~MSQxZBS6D0748107481euoutp02N
- for <iommu@lists.linux-foundation.org>; Fri, 21 Jan 2022 12:31:21 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com
- 20220121123121euoutp02a215fa86769580de3e90658ad4ac07be~MSQxZBS6D0748107481euoutp02N
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
- s=mail20170921; t=1642768281;
- bh=RrzB8h/bMnzcV+j+1Jb+7Ew0T99xNnjQpPe8goU3pU0=;
- h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
- b=r+VH1Tq8fsFunC7dJNx/uB0Iy75wVmmWUEVWCzYZbVJ2bkrCJyP7SxrCw0BzAZKwV
- 0GfRHWH1RmU1T79FDIcF/T0zZvtLu6jnAG24LP89yx4BlMD6kRbkp1tfPizmIqHe9v
- 8qjtnOBpD1XozSsAL7ZN3BLdAQsMQ3dJD6IfHRjM=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
- eucas1p2.samsung.com (KnoxPortal) with ESMTP id
- 20220121123120eucas1p294c92264f37be911af0be1cb16846432~MSQw7SOKC2476624766eucas1p2m;
- Fri, 21 Jan 2022 12:31:20 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
- eusmges1new.samsung.com (EUCPMTA) with SMTP id 14.E8.10009.897AAE16; Fri, 21
- Jan 2022 12:31:20 +0000 (GMT)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
- eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
- 20220121123120eucas1p1b3dd2371deca8485b9d9371097fdb14f~MSQwXdv4K1413914139eucas1p1W;
- Fri, 21 Jan 2022 12:31:20 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
- eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
- 20220121123120eusmtrp24fb48e291e91fbc00debcfbe610aa982~MSQwWYdhl0056800568eusmtrp2Y;
- Fri, 21 Jan 2022 12:31:20 +0000 (GMT)
-X-AuditID: cbfec7f2-e95ff70000002719-5d-61eaa7987050
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
- eusmgms1.samsung.com (EUCPMTA) with SMTP id 2E.18.09522.897AAE16; Fri, 21
- Jan 2022 12:31:20 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
- eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
- 20220121123119eusmtip13e3280ba3efd5ab0ad34cf54b204d2a2~MSQvLEE7k0395503955eusmtip1X;
- Fri, 21 Jan 2022 12:31:19 +0000 (GMT)
-Message-ID: <54b76143-dff3-8a19-7ab9-57fb80d59743@samsung.com>
-Date: Fri, 21 Jan 2022 13:31:17 +0100
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp1.osuosl.org (Postfix) with ESMTP id E52B383E86
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Jan 2022 19:20:54 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1FB156D;
+ Fri, 21 Jan 2022 11:20:54 -0800 (PST)
+Received: from [10.57.68.26] (unknown [10.57.68.26])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E48433F73D;
+ Fri, 21 Jan 2022 11:20:52 -0800 (PST)
+Message-ID: <f9a34680-58b0-c619-cb75-af7bc4439e54@arm.com>
+Date: Fri, 21 Jan 2022 19:20:30 +0000
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.0
-Subject: Re: [RFC 2/3] iommu/samsung: Introduce Exynos sysmmu-v8 driver
-Content-Language: en-US
-To: Sam Protsenko <semen.protsenko@linaro.org>, Krzysztof Kozlowski
- <krzysztof.kozlowski@canonical.com>
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <CAPLW+4kKR+7hM-eZc8-v6Dzeaj+TPBRmCLDSVNEnfx2WmN2TJA@mail.gmail.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA02SfUxTVxjGd27bey81xduC6REWlnViNhNAki0epzG6MWkAs804t4gRL3gH
- VSispdvcQgSlDdTysZkIVESmY7hCEUqDo86PVoQMHFQaWtHCdHYy60qFYjbka16KG/897/O+
- v/fj5JAcUQUeQcrk+YxCTmdLcD63o3t6IKa60Uuvf9QWg3ptCzjquzrORf4fdABNXRskUGWJ
- GkOerrMEmvU6uWiu1M5D9Vc3ofZaJbIYrhNoxl3GQ6WnWgnU5vsHQ6YHTh5yWGpxVD1wBUPz
- ZVaA1Je7CNRQ1IGjsfLn3p9mMeodCRCoSWMAqNj9FjJMLoCtEVKPtQ6TNtc1A6m+sAyX1ptU
- UpOhFJe6nT/j0vbvj0hP3G4E0nKzAUgDpqgP+Hv4mw8w2bLPGUXclv38rKLACTyvN+bLsy6m
- EBRGa0EICak34UlXJa4FfFJEnQdwSDezFEwBaNKXEMEgAOB5tYv3AqldOA6CiUYA7RMNS8gE
- gN90zGNaQJICags0+UNZgEtFw6Jh9SIsoITwlxoPly1ZRaVDXfG7rB1GJcKRpgGM1RxKDO94
- zizqcEoGx61PuGx7DqUhoH+ud7EPTsVDrU+LszqE+hAa5+28IPwKvOir5bAApDR8eL/Yjge3
- ToA+47klHQa9PWYiqF+GC53sNBY4BuD9fiMRDHQAOo5Wg2DVJujuf4aza3OoN+AFS1zQ3gbL
- b01xWBtSofC2TxhcIhR+21G1ZAtgiUYUrF4L9T0t/4212gc5lUCiX/Ys+mX365edo/9/bj3g
- GoCYUSlzMhllvJz5IlZJ5yhV8szYjNwcE3j+Z/vmeyZ/Aqe9E7E2gJHABiDJkYQL8nK9tEhw
- gD78FaPITVOoshmlDUSSXIlYkCFrpUVUJp3PHGKYPEbxIouRIRGFWOouRdjHbdvXRGatH9yQ
- /H7mo/C+tVGH86cfFhx7Tyd2rRpauUIzi1/6vUUkWaHYtbeVf+fBR981KCosuZKn/tHuHXt7
- HBuOYq9pT2/twnYOWYRTjoLV5pPveKOGcdvqyRvnRtH1m2ntD/M4wiL73yoqJfWeP+NXc2B/
- ncOY8FIy71Dq193ptpRPxpK1t5paDlbMNCZ6H8tPFex7u37z8dHdNQ3uy9vvuWqS8pPIFEVV
- emCNDuWvG6DjOp9G1iVcTN7oEbwaabIm7hs+6FQ3v975+O5wAXVltyV7LunTI9v8N4jPqhIu
- jPx1Tebs2vPHyvJnQuOT/ktjgo1p03ejf5vV3xz/UcJVZtHx6zgKJf0vWFLSJSIEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrIKsWRmVeSWpSXmKPExsVy+t/xu7ozlr9KNDg7k93i1KH/bBan979j
- sXi/rIfR4suBS+wWEzpamSyeHFnEbvHn1TUWi7+dF1gtFuy3ttg8p9hi16rD7Ba/7/SyWnTO
- 3sBusfHtDyaLTY+vsVpc3jWHzWLG+X1MFv96DzJatO49wm6xtHEbm8XzPqDYiy3iFqfufma3
- WN22itGi5Y6pxapP/xkdpDyeHJzH5LFm3hpGj1kNvWweCzaVemxa1cnmcefaHjaPzUvqPSbf
- WM7o0bdlFaPH501yAVxRejZF+aUlqQoZ+cUltkrRhhZGeoaWFnpGJpZ6hsbmsVZGpkr6djYp
- qTmZZalF+nYJehmNnyezFZzSrVh0PbWBsUG1i5GTQ0LARGLO/25GEFtIYCmjRPfrAoi4jMTJ
- aQ2sELawxJ9rXWxdjFxANe8ZJR6dO8PcxcjBwStgJ7HpPR9IDYuAqkTjzVawel4BQYmTM5+w
- gNiiAkkSDce62UBsYQF3iburzzOB2MwC4hK3nswHs0UEMiUm329hB5nPLNDBLtG4o4cdYtlR
- Jomt1xeCTWITMJToetsFNolTIFBi7b8LrBCTzCS6tnYxQtjyEtvfzmGewCg0C8khs5AsnIWk
- ZRaSlgWMLKsYRVJLi3PTc4sN9YoTc4tL89L1kvNzNzEC08q2Yz8372Cc9+qj3iFGJg7GQ4wS
- HMxKIrwF+a8ShXhTEiurUovy44tKc1KLDzGaAkNjIrOUaHI+MLHllcQbmhmYGpqYWRqYWpoZ
- K4nzehZ0JAoJpCeWpGanphakFsH0MXFwSjUwpSlda9iyXfiugHD1xrLuj2vuiQXIn5+X9cZA
- 7+Gilsdd04KPWD9ScH9/smH/2x3pb7eG1K46fnFSW6jgAY4j4X9ENWYvX8947B5bisrq/d03
- fhYdWfl85cQXTwRNGNpcsu8Fqnl9LWrYziEkfGyeQ5Vh0c9/Mz7u3LxslZDakYbozxe2q+iz
- fA3q2aV+Zoa5uXRkjtlVO7OatkrftRa5lceTdju/7DsusCp2qQLDshf+K0qyZG1b6v5lfdzQ
- b/BDkpkjonezcLbc5bu/U05vK9fzaZCM5an4G37SKNcsMWDhFb0HR99urz9wZZbmmU99bnrG
- uvKFDirKfoEytd++Nzt7T/4vNs8+X96xs05PiaU4I9FQi7moOBEAOYxUA7QDAAA=
-X-CMS-MailID: 20220121123120eucas1p1b3dd2371deca8485b9d9371097fdb14f
-X-Msg-Generator: CA
-X-RootMTR: 20220121110911eucas1p28d11e1b04773e8174b9d65f011dc1977
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220121110911eucas1p28d11e1b04773e8174b9d65f011dc1977
-References: <20220120201958.2649-1-semen.protsenko@linaro.org>
- <20220120201958.2649-3-semen.protsenko@linaro.org>
- <a111932a-6685-2a9d-abce-87af26b121a4@canonical.com>
- <CGME20220121110911eucas1p28d11e1b04773e8174b9d65f011dc1977@eucas1p2.samsung.com>
- <CAPLW+4kKR+7hM-eZc8-v6Dzeaj+TPBRmCLDSVNEnfx2WmN2TJA@mail.gmail.com>
-Cc: Janghyuck Kim <janghyuck.kim@samsung.com>,
- Catalin Marinas <catalin.marinas@arm.com>, Carlos Llamas <cmllamas@google.com>,
- Will Deacon <will@kernel.org>, Sumit Semwal <sumit.semwal@linaro.org>,
- linux-samsung-soc@vger.kernel.org, Mark Salyzyn <salyzyn@google.com>,
- Jinkyu Yang <jinkyu1.yang@samsung.com>, Thierry Strudel <tstrudel@google.com>,
- Will McVicker <willmcvicker@google.com>, Cho KyongHo <pullip.cho@samsung.com>,
- linux-arm-kernel@lists.infradead.org, Jonglin Lee <jonglin@google.com>,
- "J . Avila" <elavila@google.com>, Alex <acnwigwe@google.com>,
- linux-kernel@vger.kernel.org, Hyesoo Yu <hyesoo.yu@samsung.com>,
- iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- Shawn Guo <shawnguo@kernel.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3] iommu: Fix potential use-after-free during probe
+Content-Language: en-GB
+To: Vijayanand Jitta <vjitta@codeaurora.org>,
+ Vijayanand Jitta <quic_vjitta@quicinc.com>, joro@8bytes.org,
+ will@kernel.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
+References: <1641993184-1232-1-git-send-email-quic_vjitta@quicinc.com>
+ <9913d026-fddd-c188-0873-0f7a66fb2c3c@arm.com>
+ <5f923b2d-645c-a7df-e16b-e8526015db32@quicinc.com>
+ <348bccb5-ae73-d8ea-8450-8c0de92ec497@codeaurora.org>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <348bccb5-ae73-d8ea-8450-8c0de92ec497@codeaurora.org>
+Cc: kernel-team@android.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -151,132 +70,184 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Sam,
-
-On 21.01.2022 12:08, Sam Protsenko wrote:
-> On Fri, 21 Jan 2022 at 10:40, Krzysztof Kozlowski
-> <krzysztof.kozlowski@canonical.com> wrote:
->> On 20/01/2022 21:19, Sam Protsenko wrote:
->>> Introduce new driver for modern Exynos ARMv8 SoCs, e.g. Exynos850. Also
->>> it's used for Google's GS101 SoC.
->>>
->>> This is squashed commit, contains next patches of different authors. See
->>> `iommu-exynos850-dev' branch for details: [1].
->>>
->>> Original authors (Samsung):
->>>
->>>   - Cho KyongHo <pullip.cho@samsung.com>
->>>   - Hyesoo Yu <hyesoo.yu@samsung.com>
->>>   - Janghyuck Kim <janghyuck.kim@samsung.com>
->>>   - Jinkyu Yang <jinkyu1.yang@samsung.com>
->>>
->>> Some improvements were made by Google engineers:
->>>
->>>   - Alex <acnwigwe@google.com>
->>>   - Carlos Llamas <cmllamas@google.com>
->>>   - Daniel Mentz <danielmentz@google.com>
->>>   - Erick Reyes <erickreyes@google.com>
->>>   - J. Avila <elavila@google.com>
->>>   - Jonglin Lee <jonglin@google.com>
->>>   - Mark Salyzyn <salyzyn@google.com>
->>>   - Thierry Strudel <tstrudel@google.com>
->>>   - Will McVicker <willmcvicker@google.com>
->>>
->>> [1] https://protect2.fireeye.com/v1/url?k=19bd3571-46260c3c-19bcbe3e-0cc47aa8f5ba-8a160a7fd38bb35a&q=1&e=eb3f71b3-8df2-46c6-b6d8-0a931ef99024&u=https%3A%2F%2Fgithub.com%2Fjoe-skb7%2Flinux%2Ftree%2Fiommu-exynos850-dev
->>>
->>> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
->>> ---
->>>   drivers/iommu/Kconfig               |   13 +
->>>   drivers/iommu/Makefile              |    3 +
->>>   drivers/iommu/samsung-iommu-fault.c |  617 +++++++++++
->>>   drivers/iommu/samsung-iommu-group.c |   50 +
->>>   drivers/iommu/samsung-iommu.c       | 1521 +++++++++++++++++++++++++++
->>>   drivers/iommu/samsung-iommu.h       |  216 ++++
->>>   6 files changed, 2420 insertions(+)
->>>   create mode 100644 drivers/iommu/samsung-iommu-fault.c
->>>   create mode 100644 drivers/iommu/samsung-iommu-group.c
->>>   create mode 100644 drivers/iommu/samsung-iommu.c
->>>   create mode 100644 drivers/iommu/samsung-iommu.h
->>>
->> Existing driver supports several different Exynos SysMMU IP block
->> versions. Several. Please explain why it cannot support one more version?
->>
->> Similarity of vendor driver with mainline is not an argument.
->>
->>> ...
->> You just copy-pasted vendor stuff, without actually going through it.
->>
->> It is very disappointing because instead of putting your own effort, you
->> expect community to do your job.
->>
->> What the hell is CONFIG_EXYNOS_CONTENT_PATH_PROTECTION?
->>
->> I'll stop reviewing. Please work on extending existing driver. If you
->> submitted something nice and clean, ready for upstream, instead of
->> vendor junk, you could get away with separate driver. But you did not.
->> It looks really bad.
->>
-> Krzysztof, that's not what I asked in my patch 0/3. I probably wasn't
-> really clear, sorry. Let me please try and describe that better, and
-> maybe provide some context.
->
-> I'm just starting to work on that driver, it's basically downstream
-> version of it. Of course I'm going to rework it before sending the
-> actual patch series (that's why this series has RFC tag). I'd never
-> asked community to do my job for me and really review the downstream
-> driver! I just want to know from the starters some *very* basic and
-> high-level info, which could help me to rework the driver in correct
-> way. Like naming of files, compatible strings, should it be part of
-> existing driver or it's ok to have it as another platform_driver. In
-> other words, that kind of "review" shouldn't take more than 2 minutes
-> of your time. And it could spare us all unneeded extra review rounds
-> in future. Right now I don't need the code review per se (and I'm
-> really sorry you had to spend your time on that, knowing how busy
-> maintainers can be during the MW). I thought about omitting the code
-> at all, only asking the questions, but then I figured it's a good idea
-> to attach some code for the reference. Maybe it wasn't a good idea
-> after all.
->
-> For the record, I'm well aware that we don't send downstream code
-> without making it upstreamable first, and I know it must be tested
-> well, etc. For example, you already saw me sending clk-exynos850
-> driver, which I re-implemented from scratch, and it has ~0.0% of
-> downstream code. So why would I change my policy about that all of the
-> sudden... Anyway, hope you understand now that there weren't any ill
-> intentions on my side, w.r.t. this RFC.
-
-
-Well, for starting point the existing exynos-iommu driver is really 
-enough. I've played a bit with newer Exyos SoCs some time ago. If I 
-remember right, if you limit the iommu functionality to the essential 
-things like mapping pages to IO-virtual space, the hardware differences 
-between SYSMMU v5 (already supported by the exynos-iommu driver) and v7 
-are just a matter of changing a one register during the initialization 
-and different bits the page fault reason decoding. You must of course 
-rely on the DMA-mapping framework and its implementation based on 
-mainline DMA-IOMMU helpers. All the code for custom iommu group(s) 
-handling or extended fault management are not needed for the initial 
-version.
-
-The IOMMU driver on its own doesn't really make much sense, so you need 
-the other driver/device pair which will make use of it. You have 
-mentioned DPU, so you are trying to bring the display stack. Please 
-check the existing Exynos DRM driver(s). They nicely use DMA-mapping 
-framework and are really modular, so adding hw-specific sub-drivers for 
-Exynos850 shouldn't be that hard. Don't expect that the vendor's drivers 
-based on custom frameworks will work there though.
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMi0wMS0yMSAwNzoxNiwgVmlqYXlhbmFuZCBKaXR0YSB3cm90ZToKPiAKPiAKPiBPbiAx
+LzE4LzIwMjIgOToyNyBQTSwgVmlqYXlhbmFuZCBKaXR0YSB3cm90ZToKPj4KPj4KPj4gT24gMS8x
+OC8yMDIyIDc6MTkgUE0sIFJvYmluIE11cnBoeSB3cm90ZToKPj4+IE9uIDIwMjItMDEtMTIgMTM6
+MTMsIFZpamF5YW5hbmQgSml0dGEgd3JvdGU6Cj4+Pj4gS2FzYW4gaGFzIHJlcG9ydGVkIHRoZSBm
+b2xsb3dpbmcgdXNlIGFmdGVyIGZyZWUgb24gZGV2LT5pb21tdS4KPj4+PiB3aGVuIGEgZGV2aWNl
+IHByb2JlIGZhaWxzIGFuZCBpdCBpcyBpbiBwcm9jZXNzIG9mIGZyZWVpbmcgZGV2LT5pb21tdQo+
+Pj4+IGluIGRldl9pb21tdV9mcmVlIGZ1bmN0aW9uLCBhIGRlZmVycmVkX3Byb2JlX3dvcmtfZnVu
+YyBydW5zIGluIHBhcmFsbGVsCj4+Pj4gYW5kIHRyaWVzIHRvIGFjY2VzcyBkZXYtPmlvbW11LT5m
+d3NwZWMgaW4gb2ZfaW9tbXVfY29uZmlndXJlIHBhdGggdGh1cwo+Pj4+IGNhdXNpbmcgdXNlIGFm
+dGVyIGZyZWUuCj4+Pj4KPj4+PiBCVUc6IEtBU0FOOiB1c2UtYWZ0ZXItZnJlZSBpbiBvZl9pb21t
+dV9jb25maWd1cmUrMHhiNC8weDRhNAo+Pj4+IFJlYWQgb2Ygc2l6ZSA4IGF0IGFkZHIgZmZmZmZm
+ODdhMmYxYWNiOCBieSB0YXNrIGt3b3JrZXIvdTE2OjIvMTUzCj4+Pj4KPj4+PiBXb3JrcXVldWU6
+IGV2ZW50c191bmJvdW5kIGRlZmVycmVkX3Byb2JlX3dvcmtfZnVuYwo+Pj4+IENhbGwgdHJhY2U6
+Cj4+Pj4gIMKgIGR1bXBfYmFja3RyYWNlKzB4MC8weDMzYwo+Pj4+ICDCoCBzaG93X3N0YWNrKzB4
+MTgvMHgyNAo+Pj4+ICDCoCBkdW1wX3N0YWNrX2x2bCsweDE2Yy8weDFlMAo+Pj4+ICDCoCBwcmlu
+dF9hZGRyZXNzX2Rlc2NyaXB0aW9uKzB4ODQvMHgzOWMKPj4+PiAgwqAgX19rYXNhbl9yZXBvcnQr
+MHgxODQvMHgzMDgKPj4+PiAgwqAga2FzYW5fcmVwb3J0KzB4NTAvMHg3OAo+Pj4+ICDCoCBfX2Fz
+YW5fbG9hZDgrMHhjMC8weGM0Cj4+Pj4gIMKgIG9mX2lvbW11X2NvbmZpZ3VyZSsweGI0LzB4NGE0
+Cj4+Pj4gIMKgIG9mX2RtYV9jb25maWd1cmVfaWQrMHgyZmMvMHg0ZDQKPj4+PiAgwqAgcGxhdGZv
+cm1fZG1hX2NvbmZpZ3VyZSsweDQwLzB4NWMKPj4+PiAgwqAgcmVhbGx5X3Byb2JlKzB4MWI0LzB4
+Yjc0Cj4+Pj4gIMKgIGRyaXZlcl9wcm9iZV9kZXZpY2UrMHgxMWMvMHgyMjgKPj4+PiAgwqAgX19k
+ZXZpY2VfYXR0YWNoX2RyaXZlcisweDE0Yy8weDMwNAo+Pj4+ICDCoCBidXNfZm9yX2VhY2hfZHJ2
+KzB4MTI0LzB4MWIwCj4+Pj4gIMKgIF9fZGV2aWNlX2F0dGFjaCsweDI1Yy8weDMzNAo+Pj4+ICDC
+oCBkZXZpY2VfaW5pdGlhbF9wcm9iZSsweDI0LzB4MzQKPj4+PiAgwqAgYnVzX3Byb2JlX2Rldmlj
+ZSsweDc4LzB4MTM0Cj4+Pj4gIMKgIGRlZmVycmVkX3Byb2JlX3dvcmtfZnVuYysweDEzMC8weDFh
+OAo+Pj4+ICDCoCBwcm9jZXNzX29uZV93b3JrKzB4NGM4LzB4OTcwCj4+Pj4gIMKgIHdvcmtlcl90
+aHJlYWQrMHg1YzgvMHhhZWMKPj4+PiAgwqAga3RocmVhZCsweDFmOC8weDIyMAo+Pj4+ICDCoCBy
+ZXRfZnJvbV9mb3JrKzB4MTAvMHgxOAo+Pj4+Cj4+Pj4gQWxsb2NhdGVkIGJ5IHRhc2sgMToKPj4+
+PiAgwqAgX19fX2thc2FuX2ttYWxsb2MrMHhkNC8weDExNAo+Pj4+ICDCoCBfX2thc2FuX2ttYWxs
+b2MrMHgxMC8weDFjCj4+Pj4gIMKgIGttZW1fY2FjaGVfYWxsb2NfdHJhY2UrMHhlNC8weDNkNAo+
+Pj4+ICDCoCBfX2lvbW11X3Byb2JlX2RldmljZSsweDkwLzB4Mzk0Cj4+Pj4gIMKgIHByb2JlX2lv
+bW11X2dyb3VwKzB4NzAvMHg5Ywo+Pj4+ICDCoCBidXNfZm9yX2VhY2hfZGV2KzB4MTFjLzB4MTlj
+Cj4+Pj4gIMKgIGJ1c19pb21tdV9wcm9iZSsweGI4LzB4N2Q0Cj4+Pj4gIMKgIGJ1c19zZXRfaW9t
+bXUrMHhjYy8weDEzYwo+Pj4+ICDCoCBhcm1fc21tdV9idXNfaW5pdCsweDQ0LzB4MTMwIFthcm1f
+c21tdV0KPj4+PiAgwqAgYXJtX3NtbXVfZGV2aWNlX3Byb2JlKzB4Yjg4LzB4YzU0IFthcm1fc21t
+dV0KPj4+PiAgwqAgcGxhdGZvcm1fZHJ2X3Byb2JlKzB4ZTQvMHgxM2MKPj4+PiAgwqAgcmVhbGx5
+X3Byb2JlKzB4MmM4LzB4Yjc0Cj4+Pj4gIMKgIGRyaXZlcl9wcm9iZV9kZXZpY2UrMHgxMWMvMHgy
+MjgKPj4+PiAgwqAgZGV2aWNlX2RyaXZlcl9hdHRhY2grMHhmMC8weDE2Ywo+Pj4+ICDCoCBfX2Ry
+aXZlcl9hdHRhY2grMHg4MC8weDMyMAo+Pj4+ICDCoCBidXNfZm9yX2VhY2hfZGV2KzB4MTFjLzB4
+MTljCj4+Pj4gIMKgIGRyaXZlcl9hdHRhY2grMHgzOC8weDQ4Cj4+Pj4gIMKgIGJ1c19hZGRfZHJp
+dmVyKzB4MWRjLzB4M2E0Cj4+Pj4gIMKgIGRyaXZlcl9yZWdpc3RlcisweDE4Yy8weDI0NAo+Pj4+
+ICDCoCBfX3BsYXRmb3JtX2RyaXZlcl9yZWdpc3RlcisweDg4LzB4OWMKPj4+PiAgwqAgaW5pdF9t
+b2R1bGUrMHg2NC8weGZmNCBbYXJtX3NtbXVdCj4+Pj4gIMKgIGRvX29uZV9pbml0Y2FsbCsweDE3
+Yy8weDJmMAo+Pj4+ICDCoCBkb19pbml0X21vZHVsZSsweGU4LzB4Mzc4Cj4+Pj4gIMKgIGxvYWRf
+bW9kdWxlKzB4M2Y4MC8weDRhNDAKPj4+PiAgwqAgX19zZV9zeXNfZmluaXRfbW9kdWxlKzB4MWEw
+LzB4MWU0Cj4+Pj4gIMKgIF9fYXJtNjRfc3lzX2Zpbml0X21vZHVsZSsweDQ0LzB4NTgKPj4+PiAg
+wqAgZWwwX3N2Y19jb21tb24rMHgxMDAvMHgyNjQKPj4+PiAgwqAgZG9fZWwwX3N2YysweDM4LzB4
+YTQKPj4+PiAgwqAgZWwwX3N2YysweDIwLzB4MzAKPj4+PiAgwqAgZWwwX3N5bmNfaGFuZGxlcisw
+eDY4LzB4YWMKPj4+PiAgwqAgZWwwX3N5bmMrMHgxNjAvMHgxODAKPj4+Pgo+Pj4+IEZyZWVkIGJ5
+IHRhc2sgMToKPj4+PiAgwqAga2FzYW5fc2V0X3RyYWNrKzB4NGMvMHg4NAo+Pj4+ICDCoCBrYXNh
+bl9zZXRfZnJlZV9pbmZvKzB4MjgvMHg0Ywo+Pj4+ICDCoCBfX19fa2FzYW5fc2xhYl9mcmVlKzB4
+MTIwLzB4MTVjCj4+Pj4gIMKgIF9fa2FzYW5fc2xhYl9mcmVlKzB4MTgvMHgyOAo+Pj4+ICDCoCBz
+bGFiX2ZyZWVfZnJlZWxpc3RfaG9vaysweDIwNC8weDJmYwo+Pj4+ICDCoCBrZnJlZSsweGZjLzB4
+M2E0Cj4+Pj4gIMKgIF9faW9tbXVfcHJvYmVfZGV2aWNlKzB4Mjg0LzB4Mzk0Cj4+Pj4gIMKgIHBy
+b2JlX2lvbW11X2dyb3VwKzB4NzAvMHg5Ywo+Pj4+ICDCoCBidXNfZm9yX2VhY2hfZGV2KzB4MTFj
+LzB4MTljCj4+Pj4gIMKgIGJ1c19pb21tdV9wcm9iZSsweGI4LzB4N2Q0Cj4+Pj4gIMKgIGJ1c19z
+ZXRfaW9tbXUrMHhjYy8weDEzYwo+Pj4+ICDCoCBhcm1fc21tdV9idXNfaW5pdCsweDQ0LzB4MTMw
+IFthcm1fc21tdV0KPj4+PiAgwqAgYXJtX3NtbXVfZGV2aWNlX3Byb2JlKzB4Yjg4LzB4YzU0IFth
+cm1fc21tdV0KPj4+PiAgwqAgcGxhdGZvcm1fZHJ2X3Byb2JlKzB4ZTQvMHgxM2MKPj4+PiAgwqAg
+cmVhbGx5X3Byb2JlKzB4MmM4LzB4Yjc0Cj4+Pj4gIMKgIGRyaXZlcl9wcm9iZV9kZXZpY2UrMHgx
+MWMvMHgyMjgKPj4+PiAgwqAgZGV2aWNlX2RyaXZlcl9hdHRhY2grMHhmMC8weDE2Ywo+Pj4+ICDC
+oCBfX2RyaXZlcl9hdHRhY2grMHg4MC8weDMyMAo+Pj4+ICDCoCBidXNfZm9yX2VhY2hfZGV2KzB4
+MTFjLzB4MTljCj4+Pj4gIMKgIGRyaXZlcl9hdHRhY2grMHgzOC8weDQ4Cj4+Pj4gIMKgIGJ1c19h
+ZGRfZHJpdmVyKzB4MWRjLzB4M2E0Cj4+Pj4gIMKgIGRyaXZlcl9yZWdpc3RlcisweDE4Yy8weDI0
+NAo+Pj4+ICDCoCBfX3BsYXRmb3JtX2RyaXZlcl9yZWdpc3RlcisweDg4LzB4OWMKPj4+PiAgwqAg
+aW5pdF9tb2R1bGUrMHg2NC8weGZmNCBbYXJtX3NtbXVdCj4+Pj4gIMKgIGRvX29uZV9pbml0Y2Fs
+bCsweDE3Yy8weDJmMAo+Pj4+ICDCoCBkb19pbml0X21vZHVsZSsweGU4LzB4Mzc4Cj4+Pj4gIMKg
+IGxvYWRfbW9kdWxlKzB4M2Y4MC8weDRhNDAKPj4+PiAgwqAgX19zZV9zeXNfZmluaXRfbW9kdWxl
+KzB4MWEwLzB4MWU0Cj4+Pj4gIMKgIF9fYXJtNjRfc3lzX2Zpbml0X21vZHVsZSsweDQ0LzB4NTgK
+Pj4+PiAgwqAgZWwwX3N2Y19jb21tb24rMHgxMDAvMHgyNjQKPj4+PiAgwqAgZG9fZWwwX3N2Yysw
+eDM4LzB4YTQKPj4+PiAgwqAgZWwwX3N2YysweDIwLzB4MzAKPj4+PiAgwqAgZWwwX3N5bmNfaGFu
+ZGxlcisweDY4LzB4YWMKPj4+PiAgwqAgZWwwX3N5bmMrMHgxNjAvMHgxODAKPj4+Pgo+Pj4+IEZp
+eCB0aGlzIGJ5IHRha2luZyBkZXZpY2VfbG9jayBkdXJpbmcgcHJvYmVfaW9tbXVfZ3JvdXAuCj4+
+Pj4KPj4+PiBTaWduZWQtb2ZmLWJ5OiBWaWpheWFuYW5kIEppdHRhIDxxdWljX3ZqaXR0YUBxdWlj
+aW5jLmNvbT4KPj4+PiAtLS0KPj4+PiAgwqAgZHJpdmVycy9pb21tdS9pb21tdS5jIHwgMTIgKysr
+KysrKystLS0tCj4+Pj4gIMKgIDEgZmlsZSBjaGFuZ2VkLCA4IGluc2VydGlvbnMoKyksIDQgZGVs
+ZXRpb25zKC0pCj4+Pj4KPj4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pb21tdS5jIGIv
+ZHJpdmVycy9pb21tdS9pb21tdS5jCj4+Pj4gaW5kZXggZGQ3ODYzZS4uMjYxNzkyZCAxMDA2NDQK
+Pj4+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2lvbW11LmMKPj4+PiArKysgYi9kcml2ZXJzL2lvbW11
+L2lvbW11LmMKPj4+PiBAQCAtMTYxNyw3ICsxNjE3LDcgQEAgc3RhdGljIGludCBwcm9iZV9pb21t
+dV9ncm91cChzdHJ1Y3QgZGV2aWNlICpkZXYsCj4+Pj4gdm9pZCAqZGF0YSkKPj4+PiAgwqAgewo+
+Pj4+ICDCoMKgwqDCoMKgIHN0cnVjdCBsaXN0X2hlYWQgKmdyb3VwX2xpc3QgPSBkYXRhOwo+Pj4+
+ICDCoMKgwqDCoMKgIHN0cnVjdCBpb21tdV9ncm91cCAqZ3JvdXA7Cj4+Pj4gLcKgwqDCoCBpbnQg
+cmV0Owo+Pj4+ICvCoMKgwqAgaW50IHJldCA9IDA7Cj4+Pj4gIMKgIMKgwqDCoMKgwqAgLyogRGV2
+aWNlIGlzIHByb2JlZCBhbHJlYWR5IGlmIGluIGEgZ3JvdXAgKi8KPj4+PiAgwqDCoMKgwqDCoCBn
+cm91cCA9IGlvbW11X2dyb3VwX2dldChkZXYpOwo+Pj4+IEBAIC0xNjI2LDkgKzE2MjYsMTMgQEAg
+c3RhdGljIGludCBwcm9iZV9pb21tdV9ncm91cChzdHJ1Y3QgZGV2aWNlCj4+Pj4gKmRldiwgdm9p
+ZCAqZGF0YSkKPj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgIHJldHVybiAwOwo+Pj4+ICDCoMKgwqDC
+oMKgIH0KPj4+PiAgwqAgLcKgwqDCoCByZXQgPSBfX2lvbW11X3Byb2JlX2RldmljZShkZXYsIGdy
+b3VwX2xpc3QpOwo+Pj4+IC3CoMKgwqAgaWYgKHJldCA9PSAtRU5PREVWKQo+Pj4+IC3CoMKgwqDC
+oMKgwqDCoCByZXQgPSAwOwo+Pj4+ICvCoMKgwqAgcmV0ID0gZGV2aWNlX3RyeWxvY2soZGV2KTsK
+Pj4+PiArwqDCoMKgIGlmIChyZXQpIHsKPj4+Cj4+PiBUaGlzIGRvZXNuJ3Qgc2VlbSByaWdodCAt
+IHdlIGNhbid0IGhhdmUgYSBub24tZGV0ZXJtaW5pc3RpYyBzaXR1YXRpb24KPj4+IHdoZXJlIF9f
+aW9tbXVfcHJvYmVfZGV2aWNlKCkgbWF5IG9yIG1heSBub3QgYmUgY2FsbGVkIGRlcGVuZGluZyBv
+biB3aGF0Cj4+PiBhbnlvbmUgZWxzZSBtaWdodCBiZSBkb2luZyB3aXRoIHRoZSBkZXZpY2UgYXQg
+dGhlIHNhbWUgdGltZS4KPj4+Cj4+PiBJIGRvbid0IGZ1bGx5IHVuZGVyc3RhbmQgaG93IF9faW9t
+bXVfcHJvYmVfZGV2aWNlKCkgYW5kCj4+PiBvZl9pb21tdV9jb25maWd1cmUoKSBjYW4gYmUgcnVu
+bmluZyBmb3IgdGhlIHNhbWUgZGV2aWNlIGF0IHRoZSBzYW1lCj4+PiB0aW1lLCBidXQgaWYgdGhh
+dCdzIG5vdCBhIHJhY2Ugd2hpY2ggY2FuIGJlIGZpeGVkIGluIGl0cyBvd24gcmlnaHQsIHRoZW4K
+Pj4KPj4gVGhhbmtzIGZvciB0aGUgcmV2aWV3IGNvbW1lbnRzLgo+Pgo+PiBEdXJpbmcgYXJtX3Nt
+bXUgcHJvYmUsIGJ1c19mb3JfZWFjaF9kZXYgaXMgY2FsbGVkIHdoaWNoIGNhbGxzCj4+IF9faW9t
+bXVfcHJvYmVfZGV2aWNlIGZvciBlYWNoIGFsbCB0aGUgZGV2cyBvbiB0aGF0IGJ1cy4KPj4KPj4g
+ICAgIF9faW9tbXVfcHJvYmVfZGV2aWNlKzB4OTAvMHgzOTQKPj4gICAgIHByb2JlX2lvbW11X2dy
+b3VwKzB4NzAvMHg5Ywo+PiAgICAgYnVzX2Zvcl9lYWNoX2RldisweDExYy8weDE5Ywo+PiAgICAg
+YnVzX2lvbW11X3Byb2JlKzB4YjgvMHg3ZDQKPj4gICAgIGJ1c19zZXRfaW9tbXUrMHhjYy8weDEz
+Ywo+PiAgICAgYXJtX3NtbXVfYnVzX2luaXQrMHg0NC8weDEzMCBbYXJtX3NtbXVdCj4+ICAgICBh
+cm1fc21tdV9kZXZpY2VfcHJvYmUrMHhiODgvMHhjNTQgW2FybV9zbW11XQo+Pgo+PiBhbmQgdGhl
+IGRlZmVycmVkIHByb2JlIGZ1bmN0aW9uIGlzIGNhbGxpbmcgb2ZfaW9tbXVfY29uZmlndXJlIG9u
+IHRoZQo+PiBzYW1lIGRldiB3aGljaCBpcyBjdXJyZW50bHkgaW4gX19pb21tdV9wcm9iZV9kZXZp
+Y2UgcGF0aCBpbiB0aGlzIGNhc2UKPj4gdGh1cyBjYXVzaW5nIHRoZSByYWNlLgo+Pgo+Pj4gSSB0
+aGluayBhZGRpbmcgYSByZWZjb3VudCB0byBkZXZfaW9tbXUgd291bGQgYmUgYSBtb3JlIHNlbnNp
+YmxlIHdheSB0bwo+Pj4gbWl0aWdhdGUgaXQuCj4+Cj4+IFJpZ2h0LCBBZGRpbmcgcmVmY291bnQg
+Zm9yIGRldl9pb21tdSBzaG91bGQgaGVscCAsIEknbGwgcG9zdCBhIG5ldyBwYXRjaAo+PiB3aXRo
+IGl0Lgo+Pgo+IAo+IEkgd2FzIHNlZWluZyBpZiByZWZjb3VudCB3b3VsZCBoZWxwIGhlcmUsIHRo
+ZXJlIGlzIHNvbWUgaXNzdWVzIGlmIHdlIGFkZAo+IGEgcmVmY291bnQgd2l0aGluIHN0cnVjdCBk
+ZXZfaW9tbXUKPiAKPiBIZXJlIHRoZSByYWNlIGJldHdlZW4gYmVsb3cgdHdvIGZ1bmN0aW9ucwo+
+IAo+IHByb2Nlc3MgMToKPiBzdGF0aWMgdm9pZCBkZXZfaW9tbXVfZnJlZShzdHJ1Y3QgZGV2aWNl
+ICpkZXYpCj4gewo+ICAgICAgICAgICBpb21tdV9md3NwZWNfZnJlZShkZXYpOwo+ICAgICAgICAg
+ICBrZnJlZShkZXYtPmlvbW11KTsKPiAgICAgICAgICAgZGV2LT5pb21tdSA9IE5VTEw7Cj4gfQo+
+IAo+IFByb2Nlc3MgMjoKPiBzdGF0aWMgaW5saW5lIHN0cnVjdCBpb21tdV9md3NwZWMgKmRldl9p
+b21tdV9md3NwZWNfZ2V0KHN0cnVjdCBkZXZpY2UgKmRldikKPiB7Cj4gICAgICAgICAgIGlmIChk
+ZXYtPmlvbW11KQo+ICAgICAgICAgICAgICAgICAgIHJldHVybiBkZXYtPmlvbW11LT5md3NwZWM7
+Cj4gICAgICAgICAgIGVsc2UKPiAgICAgICAgICAgICAgICAgICByZXR1cm4gTlVMTDsKPiB9Cj4g
+Cj4gCj4gd2hlbiBwcm9jZXNzMSBpcyBpbiBrZnJlZShkZXYtPmlvbW11KSAsIHByb2Nlc3MyIHBh
+c3NlcyB0aGUgY2hlY2sgb2YKPiBpZihkZXYtPmlvbW11KSBhbmQgbGF0ZXIgZ2V0IHRoZSB1c2Ug
+YWZ0ZXIgZnJlZSBlcnJvciB3aGVuIGl0IGFjY2Vzc2VzCj4gZGV2LT5pb21tLT5md3NwZWMuCj4g
+Cj4gRXZlbiBpZiB3ZSBhZGQgYSByZWZjb3VudCB3aXRoaW4gZGV2X2lvbW11IGFuZCB0aGVuIGNh
+bGwgZGV2X2lvbW11X2ZyZWUKPiB3aGVuIHJlZmNvdW50IHJlYWNoZXMgMCwgd2UgbGF0ZXIgY2Fu
+J3QgY2hlY2sgdGhpcyByZWZjb3VudCBpbgo+IGRldl9pb21tdV9md3NwZWNfZ2V0IHNpbmNlIGl0
+cyBhbHJlYWR5IGZyZWVkIHdpdGgga2ZyZWUuCj4gQW5vdGhlciBpc3N1ZSBpcyBpb21tdV9md3Nw
+ZWNfZnJlZSB3aGljaCBpcyBjYWxsZWQgd2l0aGluIGRldl9pb21tdV9mcmVlCj4gY2FsbHMgZGV2
+X2lvbW11X2Z3c3BlY19nZXQgLCBzbyB0aGlzIGFnYWluIGNhdXNlcyBpc3N1ZSB3aXRoIHJlZmNv
+dW50Lgo+IAo+IFNvLCBJIHdhcyB0aGlua2luZyBvZiBhZGRpbmcgc29tZXRoaW5nIGxpa2UgYSBi
+b29sIHZhciBpb21tdV9kZXZfc2V0Cj4gd2l0aCBpbiBzdHJ1Y3QgZGV2aWNlIGl0c2VsZiBhbmQg
+d2UgaW5pdGlhbGl6ZSBkdXJpbmcgZGV2X2lvbW11X2dldCBhbmQKPiBzZXQgaXQgdG8gemVybyBp
+biBkZXZfaW9tbXVfZnJlZSwgcmVzdCBvZiB0aGUgcGxhY2VzIHdlIGp1c3QgY2hlY2sgaXQuCj4g
+Cj4gQW55IHRob3VnaHRzIG9uIHRoaXMgPwoKV2VsbCwgeWVhaC4uLiAiYWRkaW5nIGEgcmVmY291
+bnQgdG8gZGV2X2lvbW11IiBkb2Vzbid0IG1lYW4gbGl0ZXJhbGx5IApqdXN0IGJvZGdpbmcgYW4g
+ZXh0cmEgdmFyaWFibGUgaW50byBjb2RlIG5vdCBkZXNpZ25lZCBmb3IgY29uY3VycmVuY3ksIApp
+dCB3YXMgbWVhbnQgdG8gaW1wbHkgInRob3JvdWdobHkgcmVkZXNpZ24gdGhlIGN1cnJlbnQgZGV2
+X2lvbW11IAppbnRlcmZhY2VzIHRvIHdvcmsgaW4gYSByZWZlcmVuY2UtY291bnRlZCBtYW5uZXIg
+d2hpY2ggYWN0dWFsbHkgCmFja25vd2xlZGdlcyBjb25jdXJyZW50IHVzYWdlIi4gVGhlIHBsYWNl
+cyB0aGF0IGN1cnJlbnRseSBjYWxsIApkZXZfaW9tbXVfZnJlZSgpIHdvdWxkIHN0aWxsIHNldCBk
+ZXYtPmlvbW11IHRvIE5VTEwsICp0aGVuKiBkcm9wIHRoZSAKcmVmZXJlbmNlIGZyb20gaW9tbXVf
+cHJvYmVfZGV2aWNlKCkuIFRoZXJlIHdvdWxkbid0IGV2ZW4gbmVlZCB0byBiZSBhbiAKaW9tbXVf
+ZndzcGVjX2ZyZWUoKSBhbnkgbW9yZSwganVzdCBhbiBpb21tdV9md3NwZWNfcHV0KCkgdGhhdCBy
+ZWxlYXNlcyAKdGhlIHJlZmVyZW5jZSBmcm9tIGlvbW11X2Z3c3BlY19nZXQoKSwgYW5kIHNvIG9u
+LiBIYXZpbmcgdGhvdWdodCBpdCAKdGhyb3VnaCB0aGlzIGZhciwgdGhvdWdoLCB0aGVyZSBhcmUg
+c29tZSBmaWRkbHkgYml0cywgYW5kIGl0IHdvcnJpZXMgbWUgCnRoYXQgaXQgbWlnaHQgYmUgZ2V0
+dGluZyB0b28gY29tcGxleCBmb3IgYSBxdWljayBmaXgsIHdoZXJlIHRoZSByZWFsIApwcm9ibGVt
+IGlzIHRoYXQgdGhlIGNvbmN1cnJlbmN5IHNob3VsZG4ndCBleGlzdCBpbiB0aGUgZmlyc3QgcGxh
+Y2UuCgpJcyBqdXN0IGJvZGdpbmcgZGV2X2lvbW11X2ZyZWUoKSBpbnRvIGEgbW9yZSBzZW5zaWJs
+ZSBvcmRlciBlbm91Z2ggdG8gCmhpZGUgdGhlIHByb2JsZW0gZm9yIG5vdz8gU3RyaWN0bHkgaXQg
+bWlnaHQgd2FudCBhIG1lbW9yeSBiYXJyaWVyIGluIAp0aGVyZSwgYnV0IG1lbW9yeSBvcmRlcmlu
+ZyBpcyBub3Qgd2hhdCBJIHdhbnQgdG8gYmUgdGhpbmtpbmcgYWJvdXQgYXQgCmRpbm5lcnRpbWUg
+b24gYSBGcmlkYXkgOikKClJvYmluCgotLS0tLT44LS0tLS0KZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+aW9tbXUvaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvaW9tbXUuYwppbmRleCA4Yjg2NDA2YjcxNjIu
+LjlkNThhNTE1NzA5ZSAxMDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9pb21tdS5jCisrKyBiL2Ry
+aXZlcnMvaW9tbXUvaW9tbXUuYwpAQCAtMjA3LDkgKzIwNywxNCBAQCBzdGF0aWMgc3RydWN0IGRl
+dl9pb21tdSAqZGV2X2lvbW11X2dldChzdHJ1Y3QgCmRldmljZSAqZGV2KQoKICBzdGF0aWMgdm9p
+ZCBkZXZfaW9tbXVfZnJlZShzdHJ1Y3QgZGV2aWNlICpkZXYpCiAgewotCWlvbW11X2Z3c3BlY19m
+cmVlKGRldik7Ci0Ja2ZyZWUoZGV2LT5pb21tdSk7CisJc3RydWN0IGRldl9pb21tdSAqcGFyYW0g
+PSBkZXYtPmlvbW11OworCiAgCWRldi0+aW9tbXUgPSBOVUxMOworCWlmIChwYXJhbS0+ZndzcGVj
+KSB7CisJCWZ3bm9kZV9oYW5kbGVfcHV0KHBhcmFtLT5md3NwZWMtPmlvbW11X2Z3bm9kZSk7CisJ
+CWtmcmVlKHBhcmFtLT5md3NwZWMpOworCX0KKwlrZnJlZShwYXJhbSk7CiAgfQoKICBzdGF0aWMg
+aW50IF9faW9tbXVfcHJvYmVfZGV2aWNlKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGxpc3Rf
+aGVhZCAKKmdyb3VwX2xpc3QpCkBAIC0yOTAxLDEzICsyOTA2LDcgQEAgRVhQT1JUX1NZTUJPTF9H
+UEwoaW9tbXVfZndzcGVjX2luaXQpOwoKICB2b2lkIGlvbW11X2Z3c3BlY19mcmVlKHN0cnVjdCBk
+ZXZpY2UgKmRldikKICB7Ci0Jc3RydWN0IGlvbW11X2Z3c3BlYyAqZndzcGVjID0gZGV2X2lvbW11
+X2Z3c3BlY19nZXQoZGV2KTsKLQotCWlmIChmd3NwZWMpIHsKLQkJZndub2RlX2hhbmRsZV9wdXQo
+ZndzcGVjLT5pb21tdV9md25vZGUpOwotCQlrZnJlZShmd3NwZWMpOwotCQlkZXZfaW9tbXVfZndz
+cGVjX3NldChkZXYsIE5VTEwpOwotCX0KKwkvKlRPRE86IGRldl9pb21tdSBtYWRlIHRoaXMgcmVk
+dW5kYW50ICovCiAgfQogIEVYUE9SVF9TWU1CT0xfR1BMKGlvbW11X2Z3c3BlY19mcmVlKTsKCl9f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxp
+bmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxp
+bnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
