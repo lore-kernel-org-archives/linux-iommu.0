@@ -1,58 +1,69 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 92FAAC433EF
-	for <iommu@archiver.kernel.org>; Mon, 24 Jan 2022 16:40:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C69B8C433EF
+	for <iommu@archiver.kernel.org>; Mon, 24 Jan 2022 16:43:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 413344173B;
-	Mon, 24 Jan 2022 16:40:31 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wGNxNaR3_Gi6; Mon, 24 Jan 2022 16:40:30 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 35FC94173A;
-	Mon, 24 Jan 2022 16:40:30 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CAFF7C007B;
-	Mon, 24 Jan 2022 16:40:29 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1EE09C002F
- for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 16:40:28 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id F3A99400F1
- for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 16:40:27 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 73016400F1;
+	Mon, 24 Jan 2022 16:43:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id V3JrLF9T4KhI for <iommu@lists.linux-foundation.org>;
- Mon, 24 Jan 2022 16:40:27 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 1AA474090E
- for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 16:40:27 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 864DAD6E;
- Mon, 24 Jan 2022 08:40:26 -0800 (PST)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
- [10.1.196.40])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 984B63F793;
- Mon, 24 Jan 2022 08:40:25 -0800 (PST)
-From: Robin Murphy <robin.murphy@arm.com>
-To: hch@lst.de,
-	konrad@kernel.org
-Subject: [PATCH 3/3] swiotlb: Simplify array allocation
-Date: Mon, 24 Jan 2022 16:40:19 +0000
-Message-Id: <432f572de793ec5085a048a51fdd977cba6a5f51.1643028164.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.28.0.dirty
-In-Reply-To: <cover.1643028164.git.robin.murphy@arm.com>
-References: <cover.1643028164.git.robin.murphy@arm.com>
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pBIJ2lgqWKCU; Mon, 24 Jan 2022 16:43:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 261A040193;
+	Mon, 24 Jan 2022 16:43:38 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8D2EBC007B;
+	Mon, 24 Jan 2022 16:43:37 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 711F2C002F
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 16:43:36 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 5E19D600C9
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 16:43:35 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ZILo3UsF3Nyj for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Jan 2022 16:43:34 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from outbound-smtp14.blacknight.com (outbound-smtp14.blacknight.com
+ [46.22.139.231])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 2689960B21
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 16:43:34 +0000 (UTC)
+Received: from mail.blacknight.com (pemlinmail05.blacknight.ie [81.17.254.26])
+ by outbound-smtp14.blacknight.com (Postfix) with ESMTPS id
+ 304991C3C37
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 16:43:31 +0000 (GMT)
+Received: (qmail 22301 invoked from network); 24 Jan 2022 16:43:30 -0000
+Received: from unknown (HELO techsingularity.net)
+ (mgorman@techsingularity.net@[84.203.17.223])
+ by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated);
+ 24 Jan 2022 16:43:30 -0000
+Date: Mon, 24 Jan 2022 16:43:29 +0000
+From: Mel Gorman <mgorman@techsingularity.net>
+To: Zi Yan <ziy@nvidia.com>
+Subject: Re: [PATCH v4 1/7] mm: page_alloc: avoid merging non-fallbackable
+ pageblocks with others.
+Message-ID: <20220124164329.GF3366@techsingularity.net>
+References: <20220119190623.1029355-1-zi.yan@sent.com>
+ <20220119190623.1029355-2-zi.yan@sent.com>
+ <20220124140203.GE3366@techsingularity.net>
+ <06467F5D-25F9-42DC-9FEC-6559E6058D01@nvidia.com>
 MIME-Version: 1.0
-Cc: tientzu@chromium.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, guozhengkui@vivo.com
+Content-Disposition: inline
+In-Reply-To: <06467F5D-25F9-42DC-9FEC-6559E6058D01@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: David Hildenbrand <david@redhat.com>, Michael Ellerman <mpe@ellerman.id.au>,
+ linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org, Eric Ren <renzhengeek@gmail.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ Vlastimil Babka <vbabka@suse.cz>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -70,30 +81,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Prefer kcalloc() to kzalloc(array_size()) for allocating an array.
+On Mon, Jan 24, 2022 at 11:12:07AM -0500, Zi Yan wrote:
+> On 24 Jan 2022, at 9:02, Mel Gorman wrote:
+> 
+> > On Wed, Jan 19, 2022 at 02:06:17PM -0500, Zi Yan wrote:
+> >> From: Zi Yan <ziy@nvidia.com>
+> >>
+> >> This is done in addition to MIGRATE_ISOLATE pageblock merge avoidance.
+> >> It prepares for the upcoming removal of the MAX_ORDER-1 alignment
+> >> requirement for CMA and alloc_contig_range().
+> >>
+> >> MIGRARTE_HIGHATOMIC should not merge with other migratetypes like
+> >> MIGRATE_ISOLATE and MIGRARTE_CMA[1], so this commit prevents that too.
+> >> Also add MIGRARTE_HIGHATOMIC to fallbacks array for completeness.
+> >>
+> >> [1] https://lore.kernel.org/linux-mm/20211130100853.GP3366@techsingularity.net/
+> >>
+> >> Signed-off-by: Zi Yan <ziy@nvidia.com>
+> >>
+> >> <SNIP>
+> >>
+> >> @@ -2484,6 +2483,7 @@ static int fallbacks[MIGRATE_TYPES][3] = {
+> >>  	[MIGRATE_UNMOVABLE]   = { MIGRATE_RECLAIMABLE, MIGRATE_MOVABLE,   MIGRATE_TYPES },
+> >>  	[MIGRATE_MOVABLE]     = { MIGRATE_RECLAIMABLE, MIGRATE_UNMOVABLE, MIGRATE_TYPES },
+> >>  	[MIGRATE_RECLAIMABLE] = { MIGRATE_UNMOVABLE,   MIGRATE_MOVABLE,   MIGRATE_TYPES },
+> >> +	[MIGRATE_HIGHATOMIC] = { MIGRATE_TYPES }, /* Never used */
+> >>  #ifdef CONFIG_CMA
+> >>  	[MIGRATE_CMA]         = { MIGRATE_TYPES }, /* Never used */
+> >>  #endif
+> >
+> > If it's never used, why is it added?
+> 
+> Just to make the fallbacks list complete, since MIGRATE_CMA and
+> MIGRATE_ISOLATE are in the list. Instead, I can remove MIGRATE_CMA and
+> MIGRATE_ISOLATE. WDYT?
+> 
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- kernel/dma/swiotlb.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+It probably makes more sense to remove them or replace them with a comment
+stating what migratetypes do not have a fallback list. Do it as a separate
+patch that stands alone. It does not need to be part of this series.
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index f56d6504903c..44c49c3616fe 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -820,8 +820,7 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
- 		if (!mem)
- 			return -ENOMEM;
- 
--		mem->slots = kzalloc(array_size(sizeof(*mem->slots), nslabs),
--				     GFP_KERNEL);
-+		mem->slots = kcalloc(nslabs, sizeof(*mem->slots), GFP_KERNEL);
- 		if (!mem->slots) {
- 			kfree(mem);
- 			return -ENOMEM;
 -- 
-2.28.0.dirty
-
+Mel Gorman
+SUSE Labs
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
