@@ -1,96 +1,70 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7EF20C433FE
-	for <iommu@archiver.kernel.org>; Mon, 24 Jan 2022 10:16:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B5D79C433F5
+	for <iommu@archiver.kernel.org>; Mon, 24 Jan 2022 13:12:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 1F6D5401FE;
-	Mon, 24 Jan 2022 10:16:35 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 5327F83F9B;
+	Mon, 24 Jan 2022 13:12:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9hjEr8xxCqFA; Mon, 24 Jan 2022 10:16:34 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id AF62R3-fveO2; Mon, 24 Jan 2022 13:12:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 0C080403C8;
-	Mon, 24 Jan 2022 10:16:34 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 4803783F05;
+	Mon, 24 Jan 2022 13:12:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DD7EDC0039;
-	Mon, 24 Jan 2022 10:16:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2098AC0031;
+	Mon, 24 Jan 2022 13:12:42 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ABF41C002F
- for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 10:16:32 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B8C52C002F
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 13:12:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 932D0401FE
- for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 10:16:32 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 8ED0D40432
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 13:12:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jm4o6gdT26WT for <iommu@lists.linux-foundation.org>;
- Mon, 24 Jan 2022 10:16:31 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com
- [IPv6:2a00:1450:4864:20::32c])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 684F0400CB
- for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 10:16:31 +0000 (UTC)
-Received: by mail-wm1-x32c.google.com with SMTP id c2so22559801wml.1
- for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 02:16:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=ojZJfUHtm9ovOFBOfA3TS4i8XJuJzbk79ufS2uBVn1k=;
- b=avLmskQetnZLKS5POUDQ2emSgSxJP5gcaKobddCdXaX5XQR+TWhvS/hzwwNKCwC8rn
- oFFjf9l4z1YaETQpoK/vV9EvVjFQzb257aXYGPS7bVURv2toU4x9sZHaqJvfNC16FVuL
- Xo9e/lqUTA7XhuPdWxVSqljH4zcKUV3HGD6OGX18wzRBdWbMeI5KwKsSFPcqt6WM5tfC
- ti8vt1E9MNPepWL0kyFg2l9zFBDatbyVdYsMScFR9iM/NUBttzZ4tlaPVtvXkGIoG+IT
- wbXClwtS/a5uZ+Aq0lzabLrQdz2BPA+nSjem+g9wZZBfnDsLB8447OhCSx9OLu+8pIfP
- +euA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=ojZJfUHtm9ovOFBOfA3TS4i8XJuJzbk79ufS2uBVn1k=;
- b=QBog+garKrb4ga3X0dcgtc7jEQ3zqIO7Y7p+Thceea0/NqUY34Fv8jomnX/aVBZDya
- SwPZ2s7lcX+Ibi5E6FQ29BIA/81M7N11tg4x1kQlOeWCXApwsxcTI8Gvdn29MyCdqBeu
- fCAjLndf6Emc8tmnqTa13zydAAVKXmOkdtiOJqKjZ+cBA0aSM2u/IF3gT1AudtSHEby4
- IIR3pHpgG70ai8sPC49cPVXjMEIPd1YH7FYe5ZC48PLpsKbLeFqWL0g4V7nObyMYqEn6
- pbZxJwp4TlSH906JENOOErwyH0qzrb/ZlODatUQET7UbsY/SgX9Z+aqw6rmT2zMlIW3W
- mmkQ==
-X-Gm-Message-State: AOAM532fQaw3eww1gq539XLELGDqd8JH4qR4c+vEAOExuZBC2YNcIH0t
- Z3E+OSpVB7QDcb5YRtNtofhgNQ==
-X-Google-Smtp-Source: ABdhPJzTyJ37K64BBQ+VM4xpU821ze6oPztog2El56Hbio1gSm89H/59lEo4Gs8K2NJwJCfoSu3rEw==
-X-Received: by 2002:a1c:7312:: with SMTP id d18mr1171835wmb.130.1643019389594; 
- Mon, 24 Jan 2022 02:16:29 -0800 (PST)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
- [82.27.106.168])
- by smtp.gmail.com with ESMTPSA id r7sm17548515wma.39.2022.01.24.02.16.28
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 24 Jan 2022 02:16:29 -0800 (PST)
-Date: Mon, 24 Jan 2022 10:16:07 +0000
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [PATCH 7/7] iommu: Add iommu_domain::domain_ops
-Message-ID: <Ye58Zxi+F9TQszgQ@myrica>
-References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
- <20220124071103.2097118-8-baolu.lu@linux.intel.com>
- <BN9PR11MB5276BE30652988271878E78C8C5E9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ with ESMTP id cruAPaoV4YVw for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Jan 2022 13:12:39 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 9AB5E403FD
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 13:12:39 +0000 (UTC)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
+ by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Jj9KT4yz2z1FCtg;
+ Mon, 24 Jan 2022 21:08:45 +0800 (CST)
+Received: from localhost.localdomain (10.67.164.66) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 24 Jan 2022 21:12:37 +0800
+To: <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
+ <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
+ <will@kernel.org>, <mark.rutland@arm.com>, <mathieu.poirier@linaro.org>,
+ <suzuki.poulose@arm.com>, <mike.leach@linaro.org>, <leo.yan@linaro.org>,
+ <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
+ <joro@8bytes.org>, <john.garry@huawei.com>,
+ <shameerali.kolothum.thodi@huawei.com>, <robin.murphy@arm.com>,
+ <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+ <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+ <linux-perf-users@vger.kernel.org>, <iommu@lists.linux-foundation.org>
+Subject: [PATCH v3 7/8] MAINTAINERS: Add maintainer for HiSilicon PTT driver
+Date: Mon, 24 Jan 2022 21:11:17 +0800
+Message-ID: <20220124131118.17887-8-yangyicong@hisilicon.com>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220124131118.17887-1-yangyicong@hisilicon.com>
+References: <20220124131118.17887-1-yangyicong@hisilicon.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276BE30652988271878E78C8C5E9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, "Raj,
- Ashok" <ashok.raj@intel.com>, David Airlie <airlied@linux.ie>,
- Robin Murphy <robin.murphy@arm.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>, Jonathan Hunter <jonathanh@nvidia.com>,
- Christoph Hellwig <hch@infradead.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Thierry Reding <thierry.reding@gmail.com>, Ben Skeggs <bskeggs@redhat.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Daniel Vetter <daniel@ffwll.ch>,
- Will Deacon <will@kernel.org>
+X-Originating-IP: [10.67.164.66]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
+Cc: prime.zeng@huawei.com, linuxarm@huawei.com, yangyicong@hisilicon.com,
+ zhangshaokun@hisilicon.com, liuqi115@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,36 +77,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Yicong Yang via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Yicong Yang <yangyicong@hisilicon.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jan 24, 2022 at 09:58:18AM +0000, Tian, Kevin wrote:
-> > From: Lu Baolu <baolu.lu@linux.intel.com>
-> > Sent: Monday, January 24, 2022 3:11 PM
-> > +/**
-> > + * struct domain_ops - per-domain ops
-> > + * @attach_dev: attach an iommu domain to a device
-> > + * @detach_dev: detach an iommu domain from a device
-> 
-> What is the criteria about whether an op should be iommu_ops or domain_ops
-> when it requires both domain and device pointers like above two (and future
-> PASID-based attach)?
-> 
-> Other examples include:
-> 	@apply_resv_region
-> 	@is_attach_deferred
+Add maintainer for driver and documentation of HiSilicon PTT device.
 
-Could attach_dev() be an IOMMU op?  So a driver could set the domain ops
-in attach_dev() rather than domain_alloc(). That would allow to install
-map()/unmap() ops that are tailored for the device's IOMMU, which we don't
-know at domain_alloc() time. I'm thinking about a guest that has both
-physical and virtual endpoints, which would ideally use different kinds of
-domain ops to support both efficiently (caching mode vs page tables)
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+---
+ MAINTAINERS | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Thanks,
-Jean
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ea3e6c914384..237c618a74d5 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -8689,6 +8689,13 @@ F:	Documentation/admin-guide/perf/hisi-pcie-pmu.rst
+ F:	Documentation/admin-guide/perf/hisi-pmu.rst
+ F:	drivers/perf/hisilicon
+ 
++HISILICON PTT DRIVER
++M:	Yicong Yang <yangyicong@hisilicon.com>
++L:	linux-kernel@vger.kernel.org
++S:	Maintained
++F:	Documentation/trace/hisi-ptt.rst
++F:	drivers/hwtracing/ptt/
++
+ HISILICON QM AND ZIP Controller DRIVER
+ M:	Zhou Wang <wangzhou1@hisilicon.com>
+ L:	linux-crypto@vger.kernel.org
+-- 
+2.24.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
