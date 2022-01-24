@@ -4,83 +4,93 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 976D8C433EF
-	for <iommu@archiver.kernel.org>; Mon, 24 Jan 2022 04:42:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CB5B1C433EF
+	for <iommu@archiver.kernel.org>; Mon, 24 Jan 2022 05:37:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 5177E40332;
-	Mon, 24 Jan 2022 04:42:00 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 584BE40918;
+	Mon, 24 Jan 2022 05:37:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9NImq1mNdxoZ; Mon, 24 Jan 2022 04:41:58 +0000 (UTC)
+	with ESMTP id b0_ncKBQyL9L; Mon, 24 Jan 2022 05:37:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 279F840342;
-	Mon, 24 Jan 2022 04:41:58 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id C64B240908;
+	Mon, 24 Jan 2022 05:37:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EFEA1C0031;
-	Mon, 24 Jan 2022 04:41:57 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 12D3DC002F
- for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 04:41:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A5A5FC0039;
+	Mon, 24 Jan 2022 05:37:37 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 98D77C002F
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 05:37:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with UTF8SMTP id E9DED40342
- for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 04:41:56 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 85B4B40159
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 05:37:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with UTF8SMTP id Vj0mrt69AdY5 for <iommu@lists.linux-foundation.org>;
- Mon, 24 Jan 2022 04:41:54 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by smtp4.osuosl.org (Postfix) with UTF8SMTPS id A518A40332
- for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 04:41:54 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1642999314; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=Hxrk97vbojw2HrUlucKi6kgVi2seLDDcxbOsGPnGaRQ=;
- b=p2H4I+NT8IjBs0y+55FUUuqcWVjuGpKu+jtMSBo2bQX+BvzEulzg0qnzLAM5//K1M47yE2yC
- S1PN4NlNtCQ0mZYDdnB1oS5GEn4b72zvelpNuonh/UEXGfmVL+cxyEmJOY4j8Fu/L6YnONqU
- nBgosHkuhgtIG0ex7L3XiHXY3mo=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 61ee2e11305e503c094284f9 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 24 Jan 2022 04:41:53
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 59260C4361B; Mon, 24 Jan 2022 04:41:52 +0000 (UTC)
-Received: from [192.168.0.104] (unknown [103.164.200.225])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: vjitta)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 08756C4338F;
- Mon, 24 Jan 2022 04:41:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 08756C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=fail smtp.mailfrom=codeaurora.org
-Subject: Re: [PATCH v3] iommu: Fix potential use-after-free during probe
-To: Robin Murphy <robin.murphy@arm.com>,
- Vijayanand Jitta <quic_vjitta@quicinc.com>, joro@8bytes.org,
- will@kernel.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org
-References: <1641993184-1232-1-git-send-email-quic_vjitta@quicinc.com>
- <9913d026-fddd-c188-0873-0f7a66fb2c3c@arm.com>
- <5f923b2d-645c-a7df-e16b-e8526015db32@quicinc.com>
- <348bccb5-ae73-d8ea-8450-8c0de92ec497@codeaurora.org>
- <f9a34680-58b0-c619-cb75-af7bc4439e54@arm.com>
-From: Vijayanand Jitta <vjitta@codeaurora.org>
-Message-ID: <803b1ddd-b986-8d63-5208-d4e415886bb5@codeaurora.org>
-Date: Mon, 24 Jan 2022 10:11:38 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xM_dqrrbl3aa for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Jan 2022 05:37:34 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com
+ [IPv6:2607:f8b0:4864:20::f36])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id B3EE740119
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 05:37:34 +0000 (UTC)
+Received: by mail-qv1-xf36.google.com with SMTP id g11so13491797qvu.3
+ for <iommu@lists.linux-foundation.org>; Sun, 23 Jan 2022 21:37:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc:content-transfer-encoding;
+ bh=enANyF9xQkci+2IYgkMWCm+5r3Jg0UEtwEQm3CmINp4=;
+ b=ViYwMgY+J+GTZMRnv4xzmrn3GlqntH7w9uLqiFi4gnoOL8InvtSYvPJEKo2/Yhbixy
+ 7XOvJ078YQY6EaxPcoZcs8Pk7NvL5pu+1O3OyRtU5v0qLR/3fv1Ggkhoe53FdQm8EbHw
+ 07iXtSR4xU3fHhiCrVp+0dX0Bxc2HoMEKBuxU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc:content-transfer-encoding;
+ bh=enANyF9xQkci+2IYgkMWCm+5r3Jg0UEtwEQm3CmINp4=;
+ b=aIwVvNUISs/KsQoSmMP6i9iq8ubgV+ty3Qu5cxDY+7/qwEZYQyZi+OBzQUDDfzn73T
+ ZNNpo1OF9FJjg8agCG32HYqzR7MSGeF6uPBjb6A+Ir/Hx3ypNusrQ3eU9oLCQReq9cLf
+ hXfXWrqDTKAOdk768BSyA28m+RhbHKWxi/ThkflZ820BNDa3Q4ovYs+B7W29jsqGC8kB
+ im8FLKmrZDTrrRqrhUDC8rJQvM7yFh5LkJaTI+Hj/1QYR9zCEVvDew9X8HSY6L0d2MS7
+ o/u1o+CSWVsVhHLexdCuEmIbZJxPa0nIzQwVs7pish/8+eDeuR22e5Y45DK98+sr/z57
+ Wa7Q==
+X-Gm-Message-State: AOAM533gdklQC+e0kxXebu2HYZjf/tvtVA4WERar+luWuhu2S5CHSfZ+
+ ymEOpsgaRUNHD7tAQiC+e2dESzx5qq/lFA==
+X-Google-Smtp-Source: ABdhPJyzFBmJe13skQdrndnc5k6bwHRw55DALR1v+60iyRf/HGmsGpOH476KPyBqLp83twOqR16Faw==
+X-Received: by 2002:ad4:5bac:: with SMTP id 12mr13741540qvq.125.1643002653349; 
+ Sun, 23 Jan 2022 21:37:33 -0800 (PST)
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com.
+ [209.85.219.170])
+ by smtp.gmail.com with ESMTPSA id w20sm7564375qkp.102.2022.01.23.21.37.31
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Sun, 23 Jan 2022 21:37:31 -0800 (PST)
+Received: by mail-yb1-f170.google.com with SMTP id l68so47004596ybl.0
+ for <iommu@lists.linux-foundation.org>; Sun, 23 Jan 2022 21:37:31 -0800 (PST)
+X-Received: by 2002:a25:bb45:: with SMTP id b5mr22186057ybk.174.1643002650779; 
+ Sun, 23 Jan 2022 21:37:30 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <f9a34680-58b0-c619-cb75-af7bc4439e54@arm.com>
-Content-Language: en-GB
-Cc: kernel-team@android.com
+References: <1423480761-33453-1-git-send-email-tfiga@chromium.org>
+ <20150303133659.GD10502@8bytes.org>
+ <CAAFQd5Abk6X7AVTFaNuUSiShn31pzwwTE3VjfLnE4kyziAjy2A@mail.gmail.com>
+ <21bb5af8-1d59-9369-6008-2fd7e88007eb@collabora.com>
+In-Reply-To: <21bb5af8-1d59-9369-6008-2fd7e88007eb@collabora.com>
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Mon, 24 Jan 2022 14:37:19 +0900
+X-Gmail-Original-Message-ID: <CAAFQd5CnhE6KBEeG=LKKqb2Ry324Wye=CQCuLjD_2Fd5JzpgcQ@mail.gmail.com>
+Message-ID: <CAAFQd5CnhE6KBEeG=LKKqb2Ry324Wye=CQCuLjD_2Fd5JzpgcQ@mail.gmail.com>
+Subject: Re: [PATCH] CHROMIUM: iommu: rockchip: Make sure that page table
+ state is coherent
+To: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+Cc: Heiko Stuebner <heiko@sntech.de>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Daniel Kurtz <djkurtz@chromium.org>,
+ "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+ iommu@lists.linux-foundation.org, Collabora Kernel ML <kernel@collabora.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,203 +103,248 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CgpPbiAxLzIyLzIwMjIgMTI6NTAgQU0sIFJvYmluIE11cnBoeSB3cm90ZToKPiBPbiAyMDIyLTAx
-LTIxIDA3OjE2LCBWaWpheWFuYW5kIEppdHRhIHdyb3RlOgo+Pgo+Pgo+PiBPbiAxLzE4LzIwMjIg
-OToyNyBQTSwgVmlqYXlhbmFuZCBKaXR0YSB3cm90ZToKPj4+Cj4+Pgo+Pj4gT24gMS8xOC8yMDIy
-IDc6MTkgUE0sIFJvYmluIE11cnBoeSB3cm90ZToKPj4+PiBPbiAyMDIyLTAxLTEyIDEzOjEzLCBW
-aWpheWFuYW5kIEppdHRhIHdyb3RlOgo+Pj4+PiBLYXNhbiBoYXMgcmVwb3J0ZWQgdGhlIGZvbGxv
-d2luZyB1c2UgYWZ0ZXIgZnJlZSBvbiBkZXYtPmlvbW11Lgo+Pj4+PiB3aGVuIGEgZGV2aWNlIHBy
-b2JlIGZhaWxzIGFuZCBpdCBpcyBpbiBwcm9jZXNzIG9mIGZyZWVpbmcgZGV2LT5pb21tdQo+Pj4+
-PiBpbiBkZXZfaW9tbXVfZnJlZSBmdW5jdGlvbiwgYSBkZWZlcnJlZF9wcm9iZV93b3JrX2Z1bmMg
-cnVucyBpbgo+Pj4+PiBwYXJhbGxlbAo+Pj4+PiBhbmQgdHJpZXMgdG8gYWNjZXNzIGRldi0+aW9t
-bXUtPmZ3c3BlYyBpbiBvZl9pb21tdV9jb25maWd1cmUgcGF0aCB0aHVzCj4+Pj4+IGNhdXNpbmcg
-dXNlIGFmdGVyIGZyZWUuCj4+Pj4+Cj4+Pj4+IEJVRzogS0FTQU46IHVzZS1hZnRlci1mcmVlIGlu
-IG9mX2lvbW11X2NvbmZpZ3VyZSsweGI0LzB4NGE0Cj4+Pj4+IFJlYWQgb2Ygc2l6ZSA4IGF0IGFk
-ZHIgZmZmZmZmODdhMmYxYWNiOCBieSB0YXNrIGt3b3JrZXIvdTE2OjIvMTUzCj4+Pj4+Cj4+Pj4+
-IFdvcmtxdWV1ZTogZXZlbnRzX3VuYm91bmQgZGVmZXJyZWRfcHJvYmVfd29ya19mdW5jCj4+Pj4+
-IENhbGwgdHJhY2U6Cj4+Pj4+IMKgwqAgZHVtcF9iYWNrdHJhY2UrMHgwLzB4MzNjCj4+Pj4+IMKg
-wqAgc2hvd19zdGFjaysweDE4LzB4MjQKPj4+Pj4gwqDCoCBkdW1wX3N0YWNrX2x2bCsweDE2Yy8w
-eDFlMAo+Pj4+PiDCoMKgIHByaW50X2FkZHJlc3NfZGVzY3JpcHRpb24rMHg4NC8weDM5Ywo+Pj4+
-PiDCoMKgIF9fa2FzYW5fcmVwb3J0KzB4MTg0LzB4MzA4Cj4+Pj4+IMKgwqAga2FzYW5fcmVwb3J0
-KzB4NTAvMHg3OAo+Pj4+PiDCoMKgIF9fYXNhbl9sb2FkOCsweGMwLzB4YzQKPj4+Pj4gwqDCoCBv
-Zl9pb21tdV9jb25maWd1cmUrMHhiNC8weDRhNAo+Pj4+PiDCoMKgIG9mX2RtYV9jb25maWd1cmVf
-aWQrMHgyZmMvMHg0ZDQKPj4+Pj4gwqDCoCBwbGF0Zm9ybV9kbWFfY29uZmlndXJlKzB4NDAvMHg1
-Ywo+Pj4+PiDCoMKgIHJlYWxseV9wcm9iZSsweDFiNC8weGI3NAo+Pj4+PiDCoMKgIGRyaXZlcl9w
-cm9iZV9kZXZpY2UrMHgxMWMvMHgyMjgKPj4+Pj4gwqDCoCBfX2RldmljZV9hdHRhY2hfZHJpdmVy
-KzB4MTRjLzB4MzA0Cj4+Pj4+IMKgwqAgYnVzX2Zvcl9lYWNoX2RydisweDEyNC8weDFiMAo+Pj4+
-PiDCoMKgIF9fZGV2aWNlX2F0dGFjaCsweDI1Yy8weDMzNAo+Pj4+PiDCoMKgIGRldmljZV9pbml0
-aWFsX3Byb2JlKzB4MjQvMHgzNAo+Pj4+PiDCoMKgIGJ1c19wcm9iZV9kZXZpY2UrMHg3OC8weDEz
-NAo+Pj4+PiDCoMKgIGRlZmVycmVkX3Byb2JlX3dvcmtfZnVuYysweDEzMC8weDFhOAo+Pj4+PiDC
-oMKgIHByb2Nlc3Nfb25lX3dvcmsrMHg0YzgvMHg5NzAKPj4+Pj4gwqDCoCB3b3JrZXJfdGhyZWFk
-KzB4NWM4LzB4YWVjCj4+Pj4+IMKgwqAga3RocmVhZCsweDFmOC8weDIyMAo+Pj4+PiDCoMKgIHJl
-dF9mcm9tX2ZvcmsrMHgxMC8weDE4Cj4+Pj4+Cj4+Pj4+IEFsbG9jYXRlZCBieSB0YXNrIDE6Cj4+
-Pj4+IMKgwqAgX19fX2thc2FuX2ttYWxsb2MrMHhkNC8weDExNAo+Pj4+PiDCoMKgIF9fa2FzYW5f
-a21hbGxvYysweDEwLzB4MWMKPj4+Pj4gwqDCoCBrbWVtX2NhY2hlX2FsbG9jX3RyYWNlKzB4ZTQv
-MHgzZDQKPj4+Pj4gwqDCoCBfX2lvbW11X3Byb2JlX2RldmljZSsweDkwLzB4Mzk0Cj4+Pj4+IMKg
-wqAgcHJvYmVfaW9tbXVfZ3JvdXArMHg3MC8weDljCj4+Pj4+IMKgwqAgYnVzX2Zvcl9lYWNoX2Rl
-disweDExYy8weDE5Ywo+Pj4+PiDCoMKgIGJ1c19pb21tdV9wcm9iZSsweGI4LzB4N2Q0Cj4+Pj4+
-IMKgwqAgYnVzX3NldF9pb21tdSsweGNjLzB4MTNjCj4+Pj4+IMKgwqAgYXJtX3NtbXVfYnVzX2lu
-aXQrMHg0NC8weDEzMCBbYXJtX3NtbXVdCj4+Pj4+IMKgwqAgYXJtX3NtbXVfZGV2aWNlX3Byb2Jl
-KzB4Yjg4LzB4YzU0IFthcm1fc21tdV0KPj4+Pj4gwqDCoCBwbGF0Zm9ybV9kcnZfcHJvYmUrMHhl
-NC8weDEzYwo+Pj4+PiDCoMKgIHJlYWxseV9wcm9iZSsweDJjOC8weGI3NAo+Pj4+PiDCoMKgIGRy
-aXZlcl9wcm9iZV9kZXZpY2UrMHgxMWMvMHgyMjgKPj4+Pj4gwqDCoCBkZXZpY2VfZHJpdmVyX2F0
-dGFjaCsweGYwLzB4MTZjCj4+Pj4+IMKgwqAgX19kcml2ZXJfYXR0YWNoKzB4ODAvMHgzMjAKPj4+
-Pj4gwqDCoCBidXNfZm9yX2VhY2hfZGV2KzB4MTFjLzB4MTljCj4+Pj4+IMKgwqAgZHJpdmVyX2F0
-dGFjaCsweDM4LzB4NDgKPj4+Pj4gwqDCoCBidXNfYWRkX2RyaXZlcisweDFkYy8weDNhNAo+Pj4+
-PiDCoMKgIGRyaXZlcl9yZWdpc3RlcisweDE4Yy8weDI0NAo+Pj4+PiDCoMKgIF9fcGxhdGZvcm1f
-ZHJpdmVyX3JlZ2lzdGVyKzB4ODgvMHg5Ywo+Pj4+PiDCoMKgIGluaXRfbW9kdWxlKzB4NjQvMHhm
-ZjQgW2FybV9zbW11XQo+Pj4+PiDCoMKgIGRvX29uZV9pbml0Y2FsbCsweDE3Yy8weDJmMAo+Pj4+
-PiDCoMKgIGRvX2luaXRfbW9kdWxlKzB4ZTgvMHgzNzgKPj4+Pj4gwqDCoCBsb2FkX21vZHVsZSsw
-eDNmODAvMHg0YTQwCj4+Pj4+IMKgwqAgX19zZV9zeXNfZmluaXRfbW9kdWxlKzB4MWEwLzB4MWU0
-Cj4+Pj4+IMKgwqAgX19hcm02NF9zeXNfZmluaXRfbW9kdWxlKzB4NDQvMHg1OAo+Pj4+PiDCoMKg
-IGVsMF9zdmNfY29tbW9uKzB4MTAwLzB4MjY0Cj4+Pj4+IMKgwqAgZG9fZWwwX3N2YysweDM4LzB4
-YTQKPj4+Pj4gwqDCoCBlbDBfc3ZjKzB4MjAvMHgzMAo+Pj4+PiDCoMKgIGVsMF9zeW5jX2hhbmRs
-ZXIrMHg2OC8weGFjCj4+Pj4+IMKgwqAgZWwwX3N5bmMrMHgxNjAvMHgxODAKPj4+Pj4KPj4+Pj4g
-RnJlZWQgYnkgdGFzayAxOgo+Pj4+PiDCoMKgIGthc2FuX3NldF90cmFjaysweDRjLzB4ODQKPj4+
-Pj4gwqDCoCBrYXNhbl9zZXRfZnJlZV9pbmZvKzB4MjgvMHg0Ywo+Pj4+PiDCoMKgIF9fX19rYXNh
-bl9zbGFiX2ZyZWUrMHgxMjAvMHgxNWMKPj4+Pj4gwqDCoCBfX2thc2FuX3NsYWJfZnJlZSsweDE4
-LzB4MjgKPj4+Pj4gwqDCoCBzbGFiX2ZyZWVfZnJlZWxpc3RfaG9vaysweDIwNC8weDJmYwo+Pj4+
-PiDCoMKgIGtmcmVlKzB4ZmMvMHgzYTQKPj4+Pj4gwqDCoCBfX2lvbW11X3Byb2JlX2RldmljZSsw
-eDI4NC8weDM5NAo+Pj4+PiDCoMKgIHByb2JlX2lvbW11X2dyb3VwKzB4NzAvMHg5Ywo+Pj4+PiDC
-oMKgIGJ1c19mb3JfZWFjaF9kZXYrMHgxMWMvMHgxOWMKPj4+Pj4gwqDCoCBidXNfaW9tbXVfcHJv
-YmUrMHhiOC8weDdkNAo+Pj4+PiDCoMKgIGJ1c19zZXRfaW9tbXUrMHhjYy8weDEzYwo+Pj4+PiDC
-oMKgIGFybV9zbW11X2J1c19pbml0KzB4NDQvMHgxMzAgW2FybV9zbW11XQo+Pj4+PiDCoMKgIGFy
-bV9zbW11X2RldmljZV9wcm9iZSsweGI4OC8weGM1NCBbYXJtX3NtbXVdCj4+Pj4+IMKgwqAgcGxh
-dGZvcm1fZHJ2X3Byb2JlKzB4ZTQvMHgxM2MKPj4+Pj4gwqDCoCByZWFsbHlfcHJvYmUrMHgyYzgv
-MHhiNzQKPj4+Pj4gwqDCoCBkcml2ZXJfcHJvYmVfZGV2aWNlKzB4MTFjLzB4MjI4Cj4+Pj4+IMKg
-wqAgZGV2aWNlX2RyaXZlcl9hdHRhY2grMHhmMC8weDE2Ywo+Pj4+PiDCoMKgIF9fZHJpdmVyX2F0
-dGFjaCsweDgwLzB4MzIwCj4+Pj4+IMKgwqAgYnVzX2Zvcl9lYWNoX2RldisweDExYy8weDE5Ywo+
-Pj4+PiDCoMKgIGRyaXZlcl9hdHRhY2grMHgzOC8weDQ4Cj4+Pj4+IMKgwqAgYnVzX2FkZF9kcml2
-ZXIrMHgxZGMvMHgzYTQKPj4+Pj4gwqDCoCBkcml2ZXJfcmVnaXN0ZXIrMHgxOGMvMHgyNDQKPj4+
-Pj4gwqDCoCBfX3BsYXRmb3JtX2RyaXZlcl9yZWdpc3RlcisweDg4LzB4OWMKPj4+Pj4gwqDCoCBp
-bml0X21vZHVsZSsweDY0LzB4ZmY0IFthcm1fc21tdV0KPj4+Pj4gwqDCoCBkb19vbmVfaW5pdGNh
-bGwrMHgxN2MvMHgyZjAKPj4+Pj4gwqDCoCBkb19pbml0X21vZHVsZSsweGU4LzB4Mzc4Cj4+Pj4+
-IMKgwqAgbG9hZF9tb2R1bGUrMHgzZjgwLzB4NGE0MAo+Pj4+PiDCoMKgIF9fc2Vfc3lzX2Zpbml0
-X21vZHVsZSsweDFhMC8weDFlNAo+Pj4+PiDCoMKgIF9fYXJtNjRfc3lzX2Zpbml0X21vZHVsZSsw
-eDQ0LzB4NTgKPj4+Pj4gwqDCoCBlbDBfc3ZjX2NvbW1vbisweDEwMC8weDI2NAo+Pj4+PiDCoMKg
-IGRvX2VsMF9zdmMrMHgzOC8weGE0Cj4+Pj4+IMKgwqAgZWwwX3N2YysweDIwLzB4MzAKPj4+Pj4g
-wqDCoCBlbDBfc3luY19oYW5kbGVyKzB4NjgvMHhhYwo+Pj4+PiDCoMKgIGVsMF9zeW5jKzB4MTYw
-LzB4MTgwCj4+Pj4+Cj4+Pj4+IEZpeCB0aGlzIGJ5IHRha2luZyBkZXZpY2VfbG9jayBkdXJpbmcg
-cHJvYmVfaW9tbXVfZ3JvdXAuCj4+Pj4+Cj4+Pj4+IFNpZ25lZC1vZmYtYnk6IFZpamF5YW5hbmQg
-Sml0dGEgPHF1aWNfdmppdHRhQHF1aWNpbmMuY29tPgo+Pj4+PiAtLS0KPj4+Pj4gwqDCoCBkcml2
-ZXJzL2lvbW11L2lvbW11LmMgfCAxMiArKysrKysrKy0tLS0KPj4+Pj4gwqDCoCAxIGZpbGUgY2hh
-bmdlZCwgOCBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQo+Pj4+Pgo+Pj4+PiBkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9pb21tdS9pb21tdS5jIGIvZHJpdmVycy9pb21tdS9pb21tdS5jCj4+Pj4+
-IGluZGV4IGRkNzg2M2UuLjI2MTc5MmQgMTAwNjQ0Cj4+Pj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUv
-aW9tbXUuYwo+Pj4+PiArKysgYi9kcml2ZXJzL2lvbW11L2lvbW11LmMKPj4+Pj4gQEAgLTE2MTcs
-NyArMTYxNyw3IEBAIHN0YXRpYyBpbnQgcHJvYmVfaW9tbXVfZ3JvdXAoc3RydWN0IGRldmljZSAq
-ZGV2LAo+Pj4+PiB2b2lkICpkYXRhKQo+Pj4+PiDCoMKgIHsKPj4+Pj4gwqDCoMKgwqDCoMKgIHN0
-cnVjdCBsaXN0X2hlYWQgKmdyb3VwX2xpc3QgPSBkYXRhOwo+Pj4+PiDCoMKgwqDCoMKgwqAgc3Ry
-dWN0IGlvbW11X2dyb3VwICpncm91cDsKPj4+Pj4gLcKgwqDCoCBpbnQgcmV0Owo+Pj4+PiArwqDC
-oMKgIGludCByZXQgPSAwOwo+Pj4+PiDCoMKgIMKgwqDCoMKgwqAgLyogRGV2aWNlIGlzIHByb2Jl
-ZCBhbHJlYWR5IGlmIGluIGEgZ3JvdXAgKi8KPj4+Pj4gwqDCoMKgwqDCoMKgIGdyb3VwID0gaW9t
-bXVfZ3JvdXBfZ2V0KGRldik7Cj4+Pj4+IEBAIC0xNjI2LDkgKzE2MjYsMTMgQEAgc3RhdGljIGlu
-dCBwcm9iZV9pb21tdV9ncm91cChzdHJ1Y3QgZGV2aWNlCj4+Pj4+ICpkZXYsIHZvaWQgKmRhdGEp
-Cj4+Pj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJldHVybiAwOwo+Pj4+PiDCoMKgwqDCoMKgwqAg
-fQo+Pj4+PiDCoMKgIC3CoMKgwqAgcmV0ID0gX19pb21tdV9wcm9iZV9kZXZpY2UoZGV2LCBncm91
-cF9saXN0KTsKPj4+Pj4gLcKgwqDCoCBpZiAocmV0ID09IC1FTk9ERVYpCj4+Pj4+IC3CoMKgwqDC
-oMKgwqDCoCByZXQgPSAwOwo+Pj4+PiArwqDCoMKgIHJldCA9IGRldmljZV90cnlsb2NrKGRldik7
-Cj4+Pj4+ICvCoMKgwqAgaWYgKHJldCkgewo+Pj4+Cj4+Pj4gVGhpcyBkb2Vzbid0IHNlZW0gcmln
-aHQgLSB3ZSBjYW4ndCBoYXZlIGEgbm9uLWRldGVybWluaXN0aWMgc2l0dWF0aW9uCj4+Pj4gd2hl
-cmUgX19pb21tdV9wcm9iZV9kZXZpY2UoKSBtYXkgb3IgbWF5IG5vdCBiZSBjYWxsZWQgZGVwZW5k
-aW5nIG9uIHdoYXQKPj4+PiBhbnlvbmUgZWxzZSBtaWdodCBiZSBkb2luZyB3aXRoIHRoZSBkZXZp
-Y2UgYXQgdGhlIHNhbWUgdGltZS4KPj4+Pgo+Pj4+IEkgZG9uJ3QgZnVsbHkgdW5kZXJzdGFuZCBo
-b3cgX19pb21tdV9wcm9iZV9kZXZpY2UoKSBhbmQKPj4+PiBvZl9pb21tdV9jb25maWd1cmUoKSBj
-YW4gYmUgcnVubmluZyBmb3IgdGhlIHNhbWUgZGV2aWNlIGF0IHRoZSBzYW1lCj4+Pj4gdGltZSwg
-YnV0IGlmIHRoYXQncyBub3QgYSByYWNlIHdoaWNoIGNhbiBiZSBmaXhlZCBpbiBpdHMgb3duIHJp
-Z2h0LAo+Pj4+IHRoZW4KPj4+Cj4+PiBUaGFua3MgZm9yIHRoZSByZXZpZXcgY29tbWVudHMuCj4+
-Pgo+Pj4gRHVyaW5nIGFybV9zbW11IHByb2JlLCBidXNfZm9yX2VhY2hfZGV2IGlzIGNhbGxlZCB3
-aGljaCBjYWxscwo+Pj4gX19pb21tdV9wcm9iZV9kZXZpY2UgZm9yIGVhY2ggYWxsIHRoZSBkZXZz
-IG9uIHRoYXQgYnVzLgo+Pj4KPj4+IMKgwqDCoCBfX2lvbW11X3Byb2JlX2RldmljZSsweDkwLzB4
-Mzk0Cj4+PiDCoMKgwqAgcHJvYmVfaW9tbXVfZ3JvdXArMHg3MC8weDljCj4+PiDCoMKgwqAgYnVz
-X2Zvcl9lYWNoX2RldisweDExYy8weDE5Ywo+Pj4gwqDCoMKgIGJ1c19pb21tdV9wcm9iZSsweGI4
-LzB4N2Q0Cj4+PiDCoMKgwqAgYnVzX3NldF9pb21tdSsweGNjLzB4MTNjCj4+PiDCoMKgwqAgYXJt
-X3NtbXVfYnVzX2luaXQrMHg0NC8weDEzMCBbYXJtX3NtbXVdCj4+PiDCoMKgwqAgYXJtX3NtbXVf
-ZGV2aWNlX3Byb2JlKzB4Yjg4LzB4YzU0IFthcm1fc21tdV0KPj4+Cj4+PiBhbmQgdGhlIGRlZmVy
-cmVkIHByb2JlIGZ1bmN0aW9uIGlzIGNhbGxpbmcgb2ZfaW9tbXVfY29uZmlndXJlIG9uIHRoZQo+
-Pj4gc2FtZSBkZXYgd2hpY2ggaXMgY3VycmVudGx5IGluIF9faW9tbXVfcHJvYmVfZGV2aWNlIHBh
-dGggaW4gdGhpcyBjYXNlCj4+PiB0aHVzIGNhdXNpbmcgdGhlIHJhY2UuCj4+Pgo+Pj4+IEkgdGhp
-bmsgYWRkaW5nIGEgcmVmY291bnQgdG8gZGV2X2lvbW11IHdvdWxkIGJlIGEgbW9yZSBzZW5zaWJs
-ZSB3YXkgdG8KPj4+PiBtaXRpZ2F0ZSBpdC4KPj4+Cj4+PiBSaWdodCwgQWRkaW5nIHJlZmNvdW50
-IGZvciBkZXZfaW9tbXUgc2hvdWxkIGhlbHAgLCBJJ2xsIHBvc3QgYSBuZXcgcGF0Y2gKPj4+IHdp
-dGggaXQuCj4+Pgo+Pgo+PiBJIHdhcyBzZWVpbmcgaWYgcmVmY291bnQgd291bGQgaGVscCBoZXJl
-LCB0aGVyZSBpcyBzb21lIGlzc3VlcyBpZiB3ZSBhZGQKPj4gYSByZWZjb3VudCB3aXRoaW4gc3Ry
-dWN0IGRldl9pb21tdQo+Pgo+PiBIZXJlIHRoZSByYWNlIGJldHdlZW4gYmVsb3cgdHdvIGZ1bmN0
-aW9ucwo+Pgo+PiBwcm9jZXNzIDE6Cj4+IHN0YXRpYyB2b2lkIGRldl9pb21tdV9mcmVlKHN0cnVj
-dCBkZXZpY2UgKmRldikKPj4gewo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgaW9tbXVfZndzcGVjX2Zy
-ZWUoZGV2KTsKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIGtmcmVlKGRldi0+aW9tbXUpOwo+PiDCoMKg
-wqDCoMKgwqDCoMKgwqAgZGV2LT5pb21tdSA9IE5VTEw7Cj4+IH0KPj4KPj4gUHJvY2VzcyAyOgo+
-PiBzdGF0aWMgaW5saW5lIHN0cnVjdCBpb21tdV9md3NwZWMgKmRldl9pb21tdV9md3NwZWNfZ2V0
-KHN0cnVjdCBkZXZpY2UKPj4gKmRldikKPj4gewo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgaWYgKGRl
-di0+aW9tbXUpCj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0dXJuIGRl
-di0+aW9tbXUtPmZ3c3BlYzsKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIGVsc2UKPj4gwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gTlVMTDsKPj4gfQo+Pgo+Pgo+PiB3aGVu
-IHByb2Nlc3MxIGlzIGluIGtmcmVlKGRldi0+aW9tbXUpICwgcHJvY2VzczIgcGFzc2VzIHRoZSBj
-aGVjayBvZgo+PiBpZihkZXYtPmlvbW11KSBhbmQgbGF0ZXIgZ2V0IHRoZSB1c2UgYWZ0ZXIgZnJl
-ZSBlcnJvciB3aGVuIGl0IGFjY2Vzc2VzCj4+IGRldi0+aW9tbS0+ZndzcGVjLgo+Pgo+PiBFdmVu
-IGlmIHdlIGFkZCBhIHJlZmNvdW50IHdpdGhpbiBkZXZfaW9tbXUgYW5kIHRoZW4gY2FsbCBkZXZf
-aW9tbXVfZnJlZQo+PiB3aGVuIHJlZmNvdW50IHJlYWNoZXMgMCwgd2UgbGF0ZXIgY2FuJ3QgY2hl
-Y2sgdGhpcyByZWZjb3VudCBpbgo+PiBkZXZfaW9tbXVfZndzcGVjX2dldCBzaW5jZSBpdHMgYWxy
-ZWFkeSBmcmVlZCB3aXRoIGtmcmVlLgo+PiBBbm90aGVyIGlzc3VlIGlzIGlvbW11X2Z3c3BlY19m
-cmVlIHdoaWNoIGlzIGNhbGxlZCB3aXRoaW4gZGV2X2lvbW11X2ZyZWUKPj4gY2FsbHMgZGV2X2lv
-bW11X2Z3c3BlY19nZXQgLCBzbyB0aGlzIGFnYWluIGNhdXNlcyBpc3N1ZSB3aXRoIHJlZmNvdW50
-Lgo+Pgo+PiBTbywgSSB3YXMgdGhpbmtpbmcgb2YgYWRkaW5nIHNvbWV0aGluZyBsaWtlIGEgYm9v
-bCB2YXIgaW9tbXVfZGV2X3NldAo+PiB3aXRoIGluIHN0cnVjdCBkZXZpY2UgaXRzZWxmIGFuZCB3
-ZSBpbml0aWFsaXplIGR1cmluZyBkZXZfaW9tbXVfZ2V0IGFuZAo+PiBzZXQgaXQgdG8gemVybyBp
-biBkZXZfaW9tbXVfZnJlZSwgcmVzdCBvZiB0aGUgcGxhY2VzIHdlIGp1c3QgY2hlY2sgaXQuCj4+
-Cj4+IEFueSB0aG91Z2h0cyBvbiB0aGlzID8KPiAKPiBXZWxsLCB5ZWFoLi4uICJhZGRpbmcgYSBy
-ZWZjb3VudCB0byBkZXZfaW9tbXUiIGRvZXNuJ3QgbWVhbiBsaXRlcmFsbHkKPiBqdXN0IGJvZGdp
-bmcgYW4gZXh0cmEgdmFyaWFibGUgaW50byBjb2RlIG5vdCBkZXNpZ25lZCBmb3IgY29uY3VycmVu
-Y3ksCj4gaXQgd2FzIG1lYW50IHRvIGltcGx5ICJ0aG9yb3VnaGx5IHJlZGVzaWduIHRoZSBjdXJy
-ZW50IGRldl9pb21tdQo+IGludGVyZmFjZXMgdG8gd29yayBpbiBhIHJlZmVyZW5jZS1jb3VudGVk
-IG1hbm5lciB3aGljaCBhY3R1YWxseQo+IGFja25vd2xlZGdlcyBjb25jdXJyZW50IHVzYWdlIi4g
-VGhlIHBsYWNlcyB0aGF0IGN1cnJlbnRseSBjYWxsCj4gZGV2X2lvbW11X2ZyZWUoKSB3b3VsZCBz
-dGlsbCBzZXQgZGV2LT5pb21tdSB0byBOVUxMLCAqdGhlbiogZHJvcCB0aGUKPiByZWZlcmVuY2Ug
-ZnJvbSBpb21tdV9wcm9iZV9kZXZpY2UoKS4gVGhlcmUgd291bGRuJ3QgZXZlbiBuZWVkIHRvIGJl
-IGFuCj4gaW9tbXVfZndzcGVjX2ZyZWUoKSBhbnkgbW9yZSwganVzdCBhbiBpb21tdV9md3NwZWNf
-cHV0KCkgdGhhdCByZWxlYXNlcwo+IHRoZSByZWZlcmVuY2UgZnJvbSBpb21tdV9md3NwZWNfZ2V0
-KCksIGFuZCBzbyBvbi4gSGF2aW5nIHRob3VnaHQgaXQKPiB0aHJvdWdoIHRoaXMgZmFyLCB0aG91
-Z2gsIHRoZXJlIGFyZSBzb21lIGZpZGRseSBiaXRzLCBhbmQgaXQgd29ycmllcyBtZQo+IHRoYXQg
-aXQgbWlnaHQgYmUgZ2V0dGluZyB0b28gY29tcGxleCBmb3IgYSBxdWljayBmaXgsIHdoZXJlIHRo
-ZSByZWFsCj4gcHJvYmxlbSBpcyB0aGF0IHRoZSBjb25jdXJyZW5jeSBzaG91bGRuJ3QgZXhpc3Qg
-aW4gdGhlIGZpcnN0IHBsYWNlLgo+IAo+IElzIGp1c3QgYm9kZ2luZyBkZXZfaW9tbXVfZnJlZSgp
-IGludG8gYSBtb3JlIHNlbnNpYmxlIG9yZGVyIGVub3VnaCB0bwo+IGhpZGUgdGhlIHByb2JsZW0g
-Zm9yIG5vdz8gU3RyaWN0bHkgaXQgbWlnaHQgd2FudCBhIG1lbW9yeSBiYXJyaWVyIGluCj4gdGhl
-cmUsIGJ1dCBtZW1vcnkgb3JkZXJpbmcgaXMgbm90IHdoYXQgSSB3YW50IHRvIGJlIHRoaW5raW5n
-IGFib3V0IGF0Cj4gZGlubmVydGltZSBvbiBhIEZyaWRheSA6KQo+IAoKVGhhbmtzIGZvciB0aGUg
-cmV2aWV3IGNvbW1lbnRzLgoKSSBTZWUgdGhlIGJlbG93IHJlb3JkZXJpbmcgc2hvdWxkIGZpeCB0
-aGlzIGlzc3VlLCBJIHdvdWxkIGtlZXAKaW9tbXVfZndzcGVjX2ZyZWUgYXMgaXMsIGFzIGl0IGlz
-IGJlaW5nIGV4cG9ydGVkIGFuZCBjYWxsZWQgZnJvbSBvdGhlcgpwYXRocyBhc3dlbGwuIEkgaGF2
-ZSBzZW50IG5ldyBwYXRjaCB3aXRoIGl0LgoKVGhhbmtzLApWaWpheQoKPiBSb2Jpbgo+IAo+IC0t
-LS0tPjgtLS0tLQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2lvbW11LmMgYi9kcml2ZXJz
-L2lvbW11L2lvbW11LmMKPiBpbmRleCA4Yjg2NDA2YjcxNjIuLjlkNThhNTE1NzA5ZSAxMDA2NDQK
-PiAtLS0gYS9kcml2ZXJzL2lvbW11L2lvbW11LmMKPiArKysgYi9kcml2ZXJzL2lvbW11L2lvbW11
-LmMKPiBAQCAtMjA3LDkgKzIwNywxNCBAQCBzdGF0aWMgc3RydWN0IGRldl9pb21tdSAqZGV2X2lv
-bW11X2dldChzdHJ1Y3QKPiBkZXZpY2UgKmRldikKPiAKPiDCoHN0YXRpYyB2b2lkIGRldl9pb21t
-dV9mcmVlKHN0cnVjdCBkZXZpY2UgKmRldikKPiDCoHsKPiAtwqDCoMKgIGlvbW11X2Z3c3BlY19m
-cmVlKGRldik7Cj4gLcKgwqDCoCBrZnJlZShkZXYtPmlvbW11KTsKPiArwqDCoMKgIHN0cnVjdCBk
-ZXZfaW9tbXUgKnBhcmFtID0gZGV2LT5pb21tdTsKPiArCj4gwqDCoMKgwqAgZGV2LT5pb21tdSA9
-IE5VTEw7Cj4gK8KgwqDCoCBpZiAocGFyYW0tPmZ3c3BlYykgewo+ICvCoMKgwqDCoMKgwqDCoCBm
-d25vZGVfaGFuZGxlX3B1dChwYXJhbS0+ZndzcGVjLT5pb21tdV9md25vZGUpOwo+ICvCoMKgwqDC
-oMKgwqDCoCBrZnJlZShwYXJhbS0+ZndzcGVjKTsKPiArwqDCoMKgIH0KPiArwqDCoMKgIGtmcmVl
-KHBhcmFtKTsKPiDCoH0KPiAKPiDCoHN0YXRpYyBpbnQgX19pb21tdV9wcm9iZV9kZXZpY2Uoc3Ry
-dWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgbGlzdF9oZWFkCj4gKmdyb3VwX2xpc3QpCj4gQEAgLTI5
-MDEsMTMgKzI5MDYsNyBAQCBFWFBPUlRfU1lNQk9MX0dQTChpb21tdV9md3NwZWNfaW5pdCk7Cj4g
-Cj4gwqB2b2lkIGlvbW11X2Z3c3BlY19mcmVlKHN0cnVjdCBkZXZpY2UgKmRldikKPiDCoHsKPiAt
-wqDCoMKgIHN0cnVjdCBpb21tdV9md3NwZWMgKmZ3c3BlYyA9IGRldl9pb21tdV9md3NwZWNfZ2V0
-KGRldik7Cj4gLQo+IC3CoMKgwqAgaWYgKGZ3c3BlYykgewo+IC3CoMKgwqDCoMKgwqDCoCBmd25v
-ZGVfaGFuZGxlX3B1dChmd3NwZWMtPmlvbW11X2Z3bm9kZSk7Cj4gLcKgwqDCoMKgwqDCoMKgIGtm
-cmVlKGZ3c3BlYyk7Cj4gLcKgwqDCoMKgwqDCoMKgIGRldl9pb21tdV9md3NwZWNfc2V0KGRldiwg
-TlVMTCk7Cj4gLcKgwqDCoCB9Cj4gK8KgwqDCoCAvKlRPRE86IGRldl9pb21tdSBtYWRlIHRoaXMg
-cmVkdW5kYW50ICovCj4gwqB9Cj4gwqBFWFBPUlRfU1lNQk9MX0dQTChpb21tdV9md3NwZWNfZnJl
-ZSk7Cj4gCgotLSAKUVVBTENPTU0gSU5ESUEsIG9uIGJlaGFsZiBvZiBRdWFsY29tbSBJbm5vdmF0
-aW9uIENlbnRlciwgSW5jLiBpcyBhCm1lbWJlciBvZiBDb2RlIEF1cm9yYSBGb3J1bSwgaG9zdGVk
-IGJ5IFRoZSBMaW51eCBGb3VuZGF0aW9uCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3Vu
-ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
-aW5mby9pb21tdQ==
+Hi Dafna,
+
+On Fri, Dec 10, 2021 at 12:18 AM Dafna Hirschfeld
+<dafna.hirschfeld@collabora.com> wrote:
+>
+>
+>
+> On 23.03.15 10:38, Tomasz Figa wrote:
+> > Sorry, I had to dig my way out through my backlog.
+> >
+> > On Tue, Mar 3, 2015 at 10:36 PM, Joerg Roedel <joro@8bytes.org> wrote:
+> >> On Mon, Feb 09, 2015 at 08:19:21PM +0900, Tomasz Figa wrote:
+> >>> Even though the code uses the dt_lock spin lock to serialize mapping
+> >>> operation from different threads, it does not protect from IOMMU
+> >>> accesses that might be already taking place and thus altering state
+> >>> of the IOTLB. This means that current mapping code which first zaps
+> >>> the page table and only then updates it with new mapping which is
+> >>> prone to mentioned race.
+> >>
+> >> Could you elabortate a bit on the race and why it is sufficient to zap
+> >> only the first and the last iova? From the description and the comments
+> >> in the patch this is not clear to me.
+> >
+> > Let's start with why it's sufficient to zap only first and last iova.
+> >
+> > While unmapping, the driver zaps all iovas belonging to the mapping,
+> > so the page tables not used by any mapping won't be cached. Now when
+> > the driver creates a mapping it might end up occupying several page
+> > tables. However, since the mapping area is virtually contiguous, only
+> > the first and last page table can be shared with different mappings.
+> > This means that only first and last iovas can be already cached. In
+> > fact, we could detect if first and last page tables are shared and do
+> > not zap at all, but this wouldn't really optimize too much. Why
+> > invalidating one iova is enough to invalidate the whole page table is
+> > unclear to me as well, but it seems to be the correct way on this
+> > hardware.
+>
+> Hi,
+> It seems to me that actually each mapping needs exactly one page.
+> Since (as the inline doc in rk_iommu_map states) the pgsize_bitmap
+> makes sure that iova mappings fits exactly into one page table
+> since the mapping size is maximum 4M.
+>
+> This actually means that if rk_dte_get_page_table does not allocate a
+> new page table but returns one that is already partially used from previous
+> mappings then two page tables might be required, but I think the iova
+> allocation somehow make sure that this will not be the case.
+
+Yes, it was exactly for the case. Note that the zap operation is
+per-IO-page and not per IOPT and there is some prefetching going on in
+the TLB of this IOMMU. So neighboring mappings can interfere with each
+other.
+
+>
+> If it was the case then the code would be buggy because it means
+> that the loop in rk_iommu_map_iova will write behind the page table
+> given in rk_dte_get_page_table (which we didn't allocate)
+
+Sorry, I don't see how it could write behind the page table. Could you
+give me an example?
+
+>
+> So I it seems to me that calling 'rk_iommu_zap_iova(rk_domain, iova, SPAGE_SIZE);'
+> as done before this patch should be used, but be moved from
+> rk_dte_get_page_table to where rk_iommu_zap_iova_first_last is now
+>
+> Thanks,
+> Dafna
+>
+> >
+> > As for the race, it's also kind of explained by the above. The already
+> > running hardware can trigger page table look-ups in the IOMMU and so
+> > caching of the page table between our zapping and updating its
+> > contents. With this patch zapping is performed after updating the page
+> > table so the race is gone.
+> >
+> > Best regards,
+> > Tomasz
+> >
+> >  From mboxrd@z Thu Jan  1 00:00:00 1970
+> > Return-Path: <linux-kernel-owner@vger.kernel.org>
+> > Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+> >       id S1753210AbbCWM3R (ORCPT <rfc822;w@1wt.eu>);
+> >       Mon, 23 Mar 2015 08:29:17 -0400
+> > Received: from 8bytes.org ([81.169.241.247]:33957 "EHLO theia.8bytes.org"
+> >       rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+> >       id S1752552AbbCWM3M (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+> >       Mon, 23 Mar 2015 08:29:12 -0400
+> > Date: Mon, 23 Mar 2015 13:29:10 +0100
+> > From: Joerg Roedel <joro@8bytes.org>
+> > To: Tomasz Figa <tfiga@chromium.org>
+> > Cc: iommu@lists.linux-foundation.org,
+> >          "linux-arm-kernel@lists.infradead.org"
+> >       <linux-arm-kernel@lists.infradead.org>,
+> >          "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+> >          "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+> >          Heiko Stuebner <heiko@sntech.de>, Daniel Kurtz <djkurtz@chromium.org>
+> > Subject: Re: [PATCH] CHROMIUM: iommu: rockchip: Make sure that page table
+> >   state is coherent
+> > Message-ID: <20150323122910.GO4441@8bytes.org>
+> > References: <1423480761-33453-1-git-send-email-tfiga@chromium.org>
+> >   <20150303133659.GD10502@8bytes.org>
+> >   <CAAFQd5Abk6X7AVTFaNuUSiShn31pzwwTE3VjfLnE4kyziAjy2A@mail.gmail.com>
+> > MIME-Version: 1.0
+> > Content-Type: text/plain; charset=us-ascii
+> > Content-Disposition: inline
+> > In-Reply-To: <CAAFQd5Abk6X7AVTFaNuUSiShn31pzwwTE3VjfLnE4kyziAjy2A@mail.gmail.com>
+> > User-Agent: Mutt/1.5.21 (2010-09-15)
+> > Sender: linux-kernel-owner@vger.kernel.org
+> > List-ID: <linux-kernel.vger.kernel.org>
+> > X-Mailing-List: linux-kernel@vger.kernel.org
+> >
+> > Hi Tomasz,
+> >
+> > On Mon, Mar 23, 2015 at 05:38:45PM +0900, Tomasz Figa wrote:
+> >> While unmapping, the driver zaps all iovas belonging to the mapping,
+> >> so the page tables not used by any mapping won't be cached. Now when
+> >> the driver creates a mapping it might end up occupying several page
+> >> tables. However, since the mapping area is virtually contiguous, only
+> >> the first and last page table can be shared with different mappings.
+> >> This means that only first and last iovas can be already cached. In
+> >> fact, we could detect if first and last page tables are shared and do
+> >> not zap at all, but this wouldn't really optimize too much. Why
+> >> invalidating one iova is enough to invalidate the whole page table is
+> >> unclear to me as well, but it seems to be the correct way on this
+> >> hardware.
+> >>
+> >> As for the race, it's also kind of explained by the above. The already
+> >> running hardware can trigger page table look-ups in the IOMMU and so
+> >> caching of the page table between our zapping and updating its
+> >> contents. With this patch zapping is performed after updating the page
+> >> table so the race is gone.
+> >
+> > Okay, this makes sense. Can you add this information to the patch
+> > changelog and resend please?
+> >
+> > Thanks,
+> >
+> >       Joerg
+> >
+> >
+> >  From mboxrd@z Thu Jan  1 00:00:00 1970
+> > From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> > Subject: [PATCH] CHROMIUM: iommu: rockchip: Make sure that page table state is
+> >       coherent
+> > Date: Mon,  9 Feb 2015 20:19:21 +0900
+> > Message-ID: <1423480761-33453-1-git-send-email-tfiga@chromium.org>
+> > Mime-Version: 1.0
+> > Content-Type: text/plain; charset="us-ascii"
+> > Content-Transfer-Encoding: 7bit
+> > Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+> > List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+> >       <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+> > List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+> > List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+> > List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+> > List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+> >       <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+> > Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> > Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> > To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> > Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> > List-Id: iommu@lists.linux-foundation.org
+> >
+> > Even though the code uses the dt_lock spin lock to serialize mapping
+> > operation from different threads, it does not protect from IOMMU
+> > accesses that might be already taking place and thus altering state
+> > of the IOTLB. This means that current mapping code which first zaps
+> > the page table and only then updates it with new mapping which is
+> > prone to mentioned race.
+> >
+> > In addition, current code assumes that mappings are always > 4 MiB
+> > (which translates to 1024 PTEs) and so they would always occupy
+> > entire page tables. This is not true for mappings created by V4L2
+> > Videobuf2 DMA contig allocator.
+> >
+> > This patch changes the mapping code to always zap the page table
+> > after it is updated, which avoids the aforementioned race and also
+> > zap the last page of the mapping to make sure that stale data is
+> > not cached from an already existing mapping.
+> >
+> > Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> > Reviewed-by: Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> > ---
+> >   drivers/iommu/rockchip-iommu.c | 23 +++++++++++++++++------
+> >   1 file changed, 17 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> > index 6a8b1ec..b06fe76 100644
+> > --- a/drivers/iommu/rockchip-iommu.c
+> > +++ b/drivers/iommu/rockchip-iommu.c
+> > @@ -544,6 +544,15 @@ static void rk_iommu_zap_iova(struct rk_iommu_domain *rk_domain,
+> >       spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
+> >   }
+> >
+> > +static void rk_iommu_zap_iova_first_last(struct rk_iommu_domain *rk_domain,
+> > +                                      dma_addr_t iova, size_t size)
+> > +{
+> > +     rk_iommu_zap_iova(rk_domain, iova, SPAGE_SIZE);
+> > +     if (size > SPAGE_SIZE)
+> > +             rk_iommu_zap_iova(rk_domain, iova + size - SPAGE_SIZE,
+> > +                                     SPAGE_SIZE);
+> > +}
+> > +
+> >   static u32 *rk_dte_get_page_table(struct rk_iommu_domain *rk_domain,
+> >                                 dma_addr_t iova)
+> >   {
+> > @@ -568,12 +577,6 @@ static u32 *rk_dte_get_page_table(struct rk_iommu_domain *rk_domain,
+> >       rk_table_flush(page_table, NUM_PT_ENTRIES);
+> >       rk_table_flush(dte_addr, 1);
+> >
+> > -     /*
+> > -      * Zap the first iova of newly allocated page table so iommu evicts
+> > -      * old cached value of new dte from the iotlb.
+> > -      */
+> > -     rk_iommu_zap_iova(rk_domain, iova, SPAGE_SIZE);
+> > -
+> >   done:
+> >       pt_phys = rk_dte_pt_address(dte);
+> >       return (u32 *)phys_to_virt(pt_phys);
+> > @@ -623,6 +626,14 @@ static int rk_iommu_map_iova(struct rk_iommu_domain *rk_domain, u32 *pte_addr,
+> >
+> >       rk_table_flush(pte_addr, pte_count);
+> >
+> > +     /*
+> > +      * Zap the first and last iova to evict from iotlb any previously
+> > +      * mapped cachelines holding stale values for its dte and pte.
+> > +      * We only zap the first and last iova, since only they could have
+> > +      * dte or pte shared with an existing mapping.
+> > +      */
+> > +     rk_iommu_zap_iova_first_last(rk_domain, iova, size);
+> > +
+> >       return 0;
+> >   unwind:
+> >       /* Unmap the range of iovas that we just mapped */
+> >
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
