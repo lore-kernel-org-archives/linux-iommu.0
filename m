@@ -4,69 +4,67 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DDD38C4332F
-	for <iommu@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 51AABC433F5
+	for <iommu@archiver.kernel.org>; Mon, 24 Jan 2022 20:56:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 600C660AE1;
-	Mon, 24 Jan 2022 20:52:52 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id EA10E60AE7;
+	Mon, 24 Jan 2022 20:56:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id E3RhWLOHPnTg; Mon, 24 Jan 2022 20:52:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 5789960803;
-	Mon, 24 Jan 2022 20:52:51 +0000 (UTC)
+	with ESMTP id r3AnnlVjw8bK; Mon, 24 Jan 2022 20:56:02 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id C92C760AE1;
+	Mon, 24 Jan 2022 20:56:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 395CEC0039;
-	Mon, 24 Jan 2022 20:52:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ABB2DC0039;
+	Mon, 24 Jan 2022 20:56:01 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E4093C002F
- for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 20:52:49 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D92E0C002F
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 20:55:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id CAF6160AE1
- for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 20:52:49 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id B2F6E60AE7
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 20:55:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gS_DoV5fSseY for <iommu@lists.linux-foundation.org>;
- Mon, 24 Jan 2022 20:52:49 +0000 (UTC)
+ with ESMTP id PEjqLOH0QDw8 for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Jan 2022 20:55:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 05D1960803
- for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 20:52:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1643057569; x=1674593569;
- h=date:from:to:cc:subject:message-id:references:
- mime-version:in-reply-to;
- bh=zk4FsO8id3AQmClLhfi5ct2JYeKgImL1nYfcJmgal4M=;
- b=ISQmz5ZC7dABwtqs/V4uRbl40ghBD6gktxNw+f9TmrA+vS2Da2E6Aset
- u1mr0yCsrYis6XSMoMI3EPnChMJShy5FiG99jJfZUyMt0D52AvedDmOHX
- tkSW033R3m3bTLfizkCY5tF3GBCnnCCIkWFGHxMlyNld9mgS39Cz+oqdg
- 2IxTlR5kkbSzR4VJyWM3fKGmMRlkUR3v4XRnjibjQ4HEaUC7seH2Buwo5
- MhWOnTYMPvXc0agh0Vky0Qyo4MvDNFYI3+9eaEtdR3cgJ/wmJdvh5b8Oz
- c4kbRzQQNw3dy7wAo40n9YZkqzr6LnDJ659TJEFElHPTA0lzbnBfwRpMH g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="226818764"
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; d="scan'208";a="226818764"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 24 Jan 2022 12:52:48 -0800
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; d="scan'208";a="479226615"
-Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
- by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 24 Jan 2022 12:52:47 -0800
-Date: Mon, 24 Jan 2022 12:52:42 -0800
-From: Fenghua Yu <fenghua.yu@intel.com>
-To: Thomas Gleixner <tglx@linutronix.de>
+Received: from galois.linutronix.de (Galois.linutronix.de
+ [IPv6:2a0a:51c0:0:12e:550::1])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 26B1160AE1
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Jan 2022 20:55:59 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020; t=1643057757;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=Ewg7Dhv9g66Ay9i+CemB/iAHIgq8aLwWkreYxw8kj/g=;
+ b=lKXSQDPRwtX3JbI5kY4OS0NvZR/TtL6HQvc1pAby9EDjOYmhD5/59olQqxj2uLie0QcmXD
+ 122jSktPVHZZZXrwOHEgRzWf0nL0CBHeDPrSnDDr8HDOszOc/HBm5rmP9RF+gXhBjXTn5t
+ BOt4I8USw4ZZZYWMNLOZPfxrxIWpgrJJfyajfFitSwYv2H6JgoZMgt5ENKQsfH3WtPxwrh
+ X891rpgKH/dqXmcZFOicjJ/6jhZv/n7K819/xU9XoTJJJG0UmRxK0IBf2I1GcI+nlIFdYZ
+ hcAXac4/1ZFqNnIiV/DS6ITtBOgFtesQaRMiqKByg+iV2ltmyDTXH+IW24cw5w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020e; t=1643057757;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=Ewg7Dhv9g66Ay9i+CemB/iAHIgq8aLwWkreYxw8kj/g=;
+ b=G3ENNrBjyqKPwM/QWySmB1I+RO6YHoUmLNztYTPsSSISUX2jBvJ6FDZadlS6OF25uukxWG
+ XkpauCr0fKJ7TtCA==
+To: Fenghua Yu <fenghua.yu@intel.com>
 Subject: Re: [PATCH v2 05/11] iommu/sva: Assign a PASID to mm on PASID
  allocation and free it on mm exit
-Message-ID: <Ye8RmmKpJT8brmDE@otcwcpicx3.sc.intel.com>
+In-Reply-To: <Ye8RmmKpJT8brmDE@otcwcpicx3.sc.intel.com>
 References: <20211217220136.2762116-1-fenghua.yu@intel.com>
- <20211217220136.2762116-6-fenghua.yu@intel.com>
- <87ee4w6g1n.ffs@tglx> <87bl006fdb.ffs@tglx>
+ <20211217220136.2762116-6-fenghua.yu@intel.com> <87ee4w6g1n.ffs@tglx>
+ <87bl006fdb.ffs@tglx> <Ye8RmmKpJT8brmDE@otcwcpicx3.sc.intel.com>
+Date: Mon, 24 Jan 2022 21:55:56 +0100
+Message-ID: <878rv46eg3.ffs@tglx>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <87bl006fdb.ffs@tglx>
 Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Tony Luck <tony.luck@intel.com>,
  Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
  Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
@@ -90,39 +88,21 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi, Thomas,
+On Mon, Jan 24 2022 at 12:52, Fenghua Yu wrote:
+> On Mon, Jan 24, 2022 at 09:36:00PM +0100, Thomas Gleixner wrote:
+>> On Mon, Jan 24 2022 at 21:21, Thomas Gleixner wrote:
+> Ah. This patch should remove ioasid_get(). So I will change this patch
+> as follows:
+>
+> 1. Remove ioasid_get() because it's not used any more when IOASID's
+>    refcount is set to 1 once the IOASID is allocated and is freed on mm exit.
+> 2. Change mm_pasid_get() to mm_pasid_set().
 
-On Mon, Jan 24, 2022 at 09:36:00PM +0100, Thomas Gleixner wrote:
-> On Mon, Jan 24 2022 at 21:21, Thomas Gleixner wrote:
-> >
-> > Hrm. This is odd.
-> >
-> >> +/* Associate a PASID with an mm_struct: */
-> >> +static inline void mm_pasid_get(struct mm_struct *mm, u32 pasid)
-> >> +{
-> >> +	mm->pasid = pasid;
-> >> +}
-> >
-> > This does not get anything. It sets the allocated PASID in the mm. The
-> > refcount on the PASID was already taken by the allocation. So this
-> > should be mm_pasid_set() or mm_pasid_install(), right?
-> 
-> And as a result of all this ioasid_get() is now left without users...
-> 
-> Thanks,
+Yes. Just resend this one. No need to post the full queue again.
 
-Ah. This patch should remove ioasid_get(). So I will change this patch
-as follows:
+Thanks,
 
-1. Remove ioasid_get() because it's not used any more when IOASID's
-   refcount is set to 1 once the IOASID is allocated and is freed on mm exit.
-2. Change mm_pasid_get() to mm_pasid_set().
-
-Will that work?
-
-Thanks.
-
--Fenghua
+        tglx
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
