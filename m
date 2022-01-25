@@ -1,62 +1,136 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C4146C433EF
-	for <iommu@archiver.kernel.org>; Tue, 25 Jan 2022 14:48:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 90450C433F5
+	for <iommu@archiver.kernel.org>; Tue, 25 Jan 2022 15:00:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 5C72082CD4;
-	Tue, 25 Jan 2022 14:48:14 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 359B440529;
+	Tue, 25 Jan 2022 15:00:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HyMOEkxEGkF8; Tue, 25 Jan 2022 14:48:13 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LV3MUflhcvU8; Tue, 25 Jan 2022 15:00:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 3632682CE4;
-	Tue, 25 Jan 2022 14:48:13 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A5F7140368;
+	Tue, 25 Jan 2022 15:00:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0AD33C0031;
-	Tue, 25 Jan 2022 14:48:13 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 46002C002F
- for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 14:48:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 74DB7C0031;
+	Tue, 25 Jan 2022 15:00:56 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CD7A6C002F
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 15:00:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 33B2760BDF
- for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 14:48:11 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id B2FB940368
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 15:00:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uAnajBCnFfxV for <iommu@lists.linux-foundation.org>;
- Tue, 25 Jan 2022 14:48:10 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 67A3560B5B
- for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 14:48:10 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A7528D6E;
- Tue, 25 Jan 2022 06:48:09 -0800 (PST)
-Received: from [10.57.68.26] (unknown [10.57.68.26])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 95B2B3F793;
- Tue, 25 Jan 2022 06:48:06 -0800 (PST)
-Message-ID: <7febcba4-f5bf-6bf6-6180-895b18d1b806@arm.com>
-Date: Tue, 25 Jan 2022 14:48:02 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 0/7] iommu cleanup and refactoring
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id FRCIf_LbnIoJ for <iommu@lists.linux-foundation.org>;
+ Tue, 25 Jan 2022 15:00:54 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam12on2061d.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:fe59::61d])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 0AB82403A7
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 15:00:53 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CQYB/O6Ld9AtIzXz1zK0XCaz9szpG+BqB6vcOQDvOf/sb7nyOQmhO7Kfk7qUM0U0iXoBPUXAYy9C80fL0Lh1CnHtKjUCGe+yJFikIZkAxgi3qzzq1mcu6f6vCENnDHMehfLC7k4DV5HIam64+Mur2BaZ+jtFrhI6fJ/XDYtOGCP50OpF8lOY3s6OPuXv5ECt48mAwTP0Xw1bmyXk85GIMLVGkcLZStcwhR98Wm/88PB/wGbaR/1V+INDvFP4nLiFVhSYWyrPpkDPvjo/CT6hPsgPfl7jY5d6dvJN/bNLI2tiyo5+nqJQrAfP1YwGO9PtMEuY7l5u+Ide7ccQPrw3DA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oD3pd7HlRaHA5NhpzbYzMfTO5M//PKZKQh8HRBhmZT8=;
+ b=aoNj6M/6dGP/Teko8FCNT5QLWu0gjxhdLYQjwQd4YQIoWfVdbuKLqNqNNbAMgANkvgE0kKA7ZaP7f2Tt/mifey4lTWfw7rW2cTP1AQaSfYIDPDbKtymHdrwOVtvYSIx7U94gmiaUL05RAxU3lq8hyl1eOZ5yev5RHvrvYLADjGYCK8MSHzTAkr/JqUQaq2/qfhFfyoPHXkl7pU8Pj0WSwl/qj6l5FoKBq2fRzhEedkf/nxFro5FDmbacdzM93pCAEpr4aRyqQEVcHH7bcrdRk6svdEeq2vGpmTeA2vE0wgKL+9zIbmz9Tglc9jD8lf6UOI9H4w9z1gyR4ooU+nYphg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oD3pd7HlRaHA5NhpzbYzMfTO5M//PKZKQh8HRBhmZT8=;
+ b=N+IdyyxxXIjpHqd+ltwaAFnoNuadEXRH10EWgdDZp0llqwMUmSQTXHOl/hLIvu8qAxH3tXJGlHIGl9XlHpElzpxcOyeYEG4lZkEm1XoDozXKsuAuMkAzcS1hNkoqVQcFn8YrmkNv3PUpvTJftkWRJxHUTcbxdUwdneZnxcojicatIgjTUrzEbMld2x9eoamH+uGTH/V4hzlmnlgHubTRSOYyD3fKvmt/AH5Od6FtLowlSMnYyn+bNePDsM/5VwFzJm+R1qQ5PonZ9ZgeEQtGbe8c8jtySBHPAwHtTmXS9b21ipLhOw+ckFeJPTHvvOlQvg0AzKUtp0ssKsNa2y/zSQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BY5PR12MB3793.namprd12.prod.outlook.com (2603:10b6:a03:1ad::26)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8; Tue, 25 Jan
+ 2022 15:00:47 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ad3f:373f:b7d3:19c2]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ad3f:373f:b7d3:19c2%7]) with mapi id 15.20.4909.019; Tue, 25 Jan 2022
+ 15:00:47 +0000
+Date: Tue, 25 Jan 2022 11:00:46 -0400
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 7/7] iommu: Add iommu_domain::domain_ops
+Message-ID: <20220125150046.GK84788@nvidia.com>
 References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
- <BN9PR11MB52767F46CC13601306001B9E8C5E9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220124174404.GG966497@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220124174404.GG966497@nvidia.com>
-Cc: "Raj, Ashok" <ashok.raj@intel.com>, David Airlie <airlied@linux.ie>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>, Christoph Hellwig <hch@infradead.org>,
+ <20220124071103.2097118-8-baolu.lu@linux.intel.com>
+ <99023cd7-f037-282f-3f25-629a14a1578b@arm.com>
+ <82c5db53-088f-a51f-6fbc-c977ef871d8f@linux.intel.com>
+ <ab09f75c-08cc-1845-9aa7-81fed779d636@arm.com>
+Content-Disposition: inline
+In-Reply-To: <ab09f75c-08cc-1845-9aa7-81fed779d636@arm.com>
+X-ClientProxiedBy: MN2PR05CA0044.namprd05.prod.outlook.com
+ (2603:10b6:208:236::13) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2a519a13-9f36-4b42-d54f-08d9e0137829
+X-MS-TrafficTypeDiagnostic: BY5PR12MB3793:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR12MB37935598080ADA6A20B6E97DC25F9@BY5PR12MB3793.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0fiRPstVSOKRR6qmNAMVmktDtphqcDQj0PPDiZUubwg1GBn+9o8k09/V8LQ3BobvOdmolvjQ+rGn5sGbt0h3MENdENOg4C+dyjAmOTjMCBdj21VbFCQkLEeAl6r4xpG8H62R5psu3Wf0/xhfMn8XnknuilRaDel41uLB80De4OpCY8Xxb+KZU4IOkM8EwvMxR3xsW75OkJv+x1+lBX8XqgZ2Bx6cEj/mmZZS1OV4/EWxoIcg3EgZBM8Sx4HfmkVwFpOmpen6/zFv0vt1KcAeocBj0Wk9VdXDNmDOlUDd7liHGC5FcDfEz4z7aXcauIi/PJ8I9+2IHH6ZXuFjcm3C6mx2zfdnApGsHrDWtDcOiw+FrNyzrixtFPXqs7KBC4KOMhAf+9R8JJebF4WvwFVAwHfl7pU0dNBboBoz32ig9Xs+G2+4yUWSt9CjeobP4f+/jAl8losdb0ryi9KsHn7NEFiHNR3zANKj7SQdJfqSY9mNkN8jaI/5nhL32YAsNrj0iw78GeWKALDh0j9HZwHjqaYIiGLhSb4HFAbrWdfENK/QkE9ruK4bCfGAuna6viLX7ZAYIgF2oejJBZ60vmdzblDxJocn+bx/46gHdQL3LLC/X3D/XpDeBL2mA5GeqRs+l6Jec7vs7yBJrJ+/Svu5vg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(66476007)(66556008)(36756003)(6512007)(66946007)(38100700002)(2906002)(83380400001)(8676002)(6486002)(8936002)(1076003)(26005)(6916009)(5660300002)(4326008)(2616005)(6506007)(53546011)(7416002)(316002)(186003)(54906003)(33656002)(508600001)(86362001);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Aj2Pud9hQD1/3lU1M2qUQ6Z2ST0q57ARnUEJzxviwud87is8GHNb2nVvXG7X?=
+ =?us-ascii?Q?AuWX+MvYO/XDPVX6YWL9Cs/EDe0N4rzap40hAW5AdaFo5EFbw5p7p+o8GGAT?=
+ =?us-ascii?Q?JWZ1rS7Extl1D8biDG3Q82lc50GcCyMSisEponKtoRAqOusW6kD/IBdb5MJ9?=
+ =?us-ascii?Q?kDIhMBbudVkZeApFTiFQP54WFnJXTryU9OqJ3M7RBf19XExtDynunSMBNkA+?=
+ =?us-ascii?Q?DAb4n8JEiCd4HBMH/RiH51p5gWEF6Bw1aGp7+1e0rdcrx24S+mv8SolnhT4c?=
+ =?us-ascii?Q?/yZTmZHeUwbo8wBXnbLBsM7Q/n/qYXEdyvItLCu2Z5v+w5ZSSQeVI0AUYtyT?=
+ =?us-ascii?Q?q8vjmVX81RFbnu9Rq81ie3JfDNr/BLzOhMvVYgZakC/8pBb+r8BOt1LpxYpS?=
+ =?us-ascii?Q?gQJSWi2xISOidZ8PM1un2YWIs1ysABeXWxGf80JXwYCD4wuL3Yo5X0Ymb2OP?=
+ =?us-ascii?Q?Re/gdXoCdzGJOMDbAqQsYXmIgYRuqF9OJSCB2pd/cFG9OVtmcLyEp8KVTz+u?=
+ =?us-ascii?Q?auhPvLyClnBtVEZieKSLVmqzwlHuFddAxZZd3Ow+TGiNldS8+rGXFWaTkxIT?=
+ =?us-ascii?Q?S6coFndfPWN2ibZGy2UxFjoqgZnTDKwWixk961/B6Yi3AKp6446ll6IPtU1J?=
+ =?us-ascii?Q?1xYx26KuHP6L66Goh8J1JIgNvcGnRoZU2Omx+JBAN27qPi5CSmhhswDPbwKY?=
+ =?us-ascii?Q?VcFonytSgs5pjpYI54yx1HgNU+EWQF3dfZktw6/VRkqb5b3JJCYLKfOFk4EY?=
+ =?us-ascii?Q?lwhdTm92YxtHtCycPCfRfxOvFtov2T9BOKulsWVlMPYKpmSdeZ4wUCvoryr9?=
+ =?us-ascii?Q?TNL2fG7Dap9pDcS6hJ538Bl0zDPt5GG7j7rGd/29SHh7ZZA6Ky7IUO8ulbo2?=
+ =?us-ascii?Q?Z+kkBZOix0rbDBi5cKrjKkryCLPi8Ad72QRBt8meKn6ciBLWYp8dZfH64Nco?=
+ =?us-ascii?Q?idiyD/ugBKaiLswtz6Fi5/zDom3i0tBai17NVObFa/rKFg6K81UvsLTmv6M6?=
+ =?us-ascii?Q?FGF+xMw9iJZot0qk5xelUBmqbDvnrT+8jX/Ucf55rVr++Ovg2qvC5xqjcOXv?=
+ =?us-ascii?Q?PWbJANiyBrTrJE0G1C/pBfnIPDu7BjKL315TIrpGzgKqa7ZhhNcXErHaPhvm?=
+ =?us-ascii?Q?lutnfRHwf99rVVNw7c/emzjFHYzS2A6imzE5a1DICksxX904q2oo/xs42j3N?=
+ =?us-ascii?Q?KOcTycVU6+n99XcArnWlvIjoiRZlfwBKZWM77di/QKusM5esSN6kFNKDPfZh?=
+ =?us-ascii?Q?TL0I7q5R58H3oc14JVQFmLwLtzG7+thCjMHuYnzPgKKTDcZUYFnFLtU2jD78?=
+ =?us-ascii?Q?EPdQ+N0GcUcB3oi+SElYH8EyK8jzOuGtXTIVGtcmRQ8PWO3j27ZubtFLbYYt?=
+ =?us-ascii?Q?I+/wwA5XwOliwBD1JgsDKOjDi4fQbOMOUT6n0GY2LWrzyd3utgbVomoWGU6U?=
+ =?us-ascii?Q?50x3ruTnq3CtJn3fktNiL7GnZZsilY/mTguFm1d54W0D8jTz/nYkI3/T4Wrn?=
+ =?us-ascii?Q?7ZlWzrQ5gQwBnbWrg+j4SzYIbTbcjYitFbYYHzKu1eyvMBHfD3XQkVEgVvAX?=
+ =?us-ascii?Q?kDFEwY1c4Sf+HUY5bqE=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2a519a13-9f36-4b42-d54f-08d9e0137829
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 15:00:47.6987 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dtiZPk1aOj5pklzf+I5xCNG/8JLgvSx0u+LX3rhghn8Oov6zVJ0p1oJS3DZZVUaD
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3793
+Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Christoph Hellwig <hch@infradead.org>,
  Alex Williamson <alex.williamson@redhat.com>,
  Thierry Reding <thierry.reding@gmail.com>, Ben Skeggs <bskeggs@redhat.com>,
  Daniel Vetter <daniel@ffwll.ch>, Jonathan Hunter <jonathanh@nvidia.com>,
@@ -73,75 +147,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-01-24 17:44, Jason Gunthorpe wrote:
-> On Mon, Jan 24, 2022 at 09:46:26AM +0000, Tian, Kevin wrote:
->>> From: Lu Baolu <baolu.lu@linux.intel.com>
->>> Sent: Monday, January 24, 2022 3:11 PM
->>>
->>> Hi,
->>>
->>> The guest pasid and aux-domain related code are dead code in current
->>> iommu subtree. As we have reached a consensus that all these features
->>> should be based on the new iommufd framework (which is under active
->>> development), the first part of this series removes and cleanups all
->>> the dead code.
->>>
->>> The second part of this series refactors the iommu_domain by moving all
->>> domain-specific ops from iommu_ops to a new domain_ops. This makes an
->>> iommu_domain self-contained and represent the abstraction of an I/O
->>> translation table in the IOMMU subsystem. With different type of
->>> iommu_domain providing different set of ops, it's easier to support more
->>> types of I/O translation tables.
->>
->> You may want to give more background on this end goal. In general there
->> are four IOPT types in iommufd discussions:
->>
->> 1) The one currently tracked by iommu_domain, with a map/unmap semantics
->> 2) The one managed by mm and shared to iommu via sva_bind/unbind ops
->> 3) The one managed by userspace and bound to iommu via iommufd (require nesting)
->> 4) The one managed by KVM (e.g. EPT) and shared to iommu via a TBD interface
-> 
-> Yes, at least from an iommufd perspective I'd like to see one struct
-> for all of these types, mainly so we can have a uniform alloc, attach
-> and detatch flow for all io page table types.
+On Tue, Jan 25, 2022 at 02:23:52PM +0000, Robin Murphy wrote:
+> On 2022-01-25 06:27, Lu Baolu wrote:
 
-Agreed, certainly an IOMMU_DOMAIN_SVA type that can both encapsulate the 
-mm and effectively replace iommu_sva seems like a logical and fairly 
-small next step. We already have the paradigm of different domain types 
-supporting different ops, so initially an SVA domain would simply allow 
-bind/unbind rather than attach/detach/map/unmap.
+> Where it's just about which operations are valid for which domains, it's
+> even simpler for the core interface wrappers to validate the domain type,
+> rather than forcing drivers to implement multiple ops structures purely for
+> the sake of having different callbacks populated. We already have this in
+> places, e.g. where iommu_map() checks for __IOMMU_DOMAIN_PAGING.
 
-It might then further be possible to hide SVA bind/unbind behind the 
-attach/detach interface, but AFAICS we'd still need distinct flows for 
-attaching/binding the whole device vs. attaching/binding to a PASID, 
-since they are fundamentally different things in their own right, and 
-the ideal API should give us the orthogonality to also bind a device to 
-an SVA domain without PASID (e.g. for KVM stage 2, or userspace 
-assignment of simpler fault/stall-tolerant devices), or attach PASIDs to 
-regular iommu_domains.
+In my experience it is usually much clearer to directly test the op
+for NULL to know if a feature is supported than to invent flags to do
+the same test.  eg ops->map/etc == NULL means no paging.
 
-That distinction could of course be consolidated by flipping to the 
-other approach of explicitly allocating the PASID first, then wrapping 
-it in a struct device that could then be passed through the same 
-attach/detach interfaces and distinguished internally, but although I 
-still have a fondness for that approach I know I'm about the only one :)
+I think we should not be afraid to have multiple ops in drivers for
+things that are actually different in the driver. This is usually a
+net win vs tying to handle all the cases with different 'if' flows.
 
-Cheers,
-Robin.
+eg identity domains and others really would ideally eventually have a
+NULL ops for map/unmap too.
 
-> If we want to use the iommu_domain, or make iommu_domain a sub-class
-> of a new struct, can be determined as we go along.
-> 
-> Regardless, I think this cleanup stands on its own. Moving the ops and
-> purging the dead code is clearly the right thing to do.
-> 
-> Thanks,
-> Jason
+The 'type' should conceptually be part of the ops, not the mutable
+struct - but we don't have to get there all at once.
+
+> Paging domains are also effectively the baseline level of IOMMU API
+> functionality. All drivers support them, and for the majority of drivers
+> it's all they will ever support. Those drivers really don't benefit from any
+> of the churn and boilerplate in this patch as-is, and it's so easy to
+> compromise with a couple of lines of core code to handle the common case by
+> default when the driver *isn't* one of the handful which ever actually cares
+> to install their own per-domain ops. Consider how much cleaner this patch
+> would look if the typical driver diff could be something completely minimal
+> like this:
+
+It is clever, but I'm not sure if hoisting a single assignment out of
+the driver is worth the small long term complexity of having different
+driver flows?
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
