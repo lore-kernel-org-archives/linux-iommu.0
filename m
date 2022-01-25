@@ -1,141 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9B773C433EF
-	for <iommu@archiver.kernel.org>; Tue, 25 Jan 2022 15:16:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5A95EC433EF
+	for <iommu@archiver.kernel.org>; Tue, 25 Jan 2022 15:18:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3CB59830C5;
-	Tue, 25 Jan 2022 15:16:12 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0049C60AC3;
+	Tue, 25 Jan 2022 15:18:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FmItINd4rAxv; Tue, 25 Jan 2022 15:16:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 049DF82F99;
-	Tue, 25 Jan 2022 15:16:11 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B6A0BC0039;
-	Tue, 25 Jan 2022 15:16:10 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6F6C6C002F
- for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 15:16:09 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 5D6F660AC3
- for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 15:16:09 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id aIPK20SnGAop for <iommu@lists.linux-foundation.org>;
- Tue, 25 Jan 2022 15:16:07 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com
- (mail-dm3nam07on2069.outbound.protection.outlook.com [40.107.95.69])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 4F2B360A7E
- for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 15:16:07 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O669EKuCOWqwE7s2ljkE5hICzW3hrRCIYv7LrJEtSRNpOL428z5QjRuOHdFbjWeq4O6O3I43876UqddXLZ/pVpl7Hk7GN/JdLe1OAO2lEEXdGIInNkeXZ/YvW0Z4Gqp7kCVynH+XH1ICOZvySx2onnhU9fV2BRKU7JYHZJsdkTVNFusLsLonad293uyxTvHvd4kEGjonPAftfUXQ5NSpLwxvrxlylW20msXtx6RDFLWBPZ4Stn57fXO80bK8PRDzUgfeRKRNGCObz8LIodSorW3QoPf7ES2+21//4P5v2ZKgnSOAGZFWBSGT+SnjlvyZR3oo4i3U4Nupsa8l89Gb6g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KHGvXQ78QFu7KagOiUqMS3vQ+pwUnAqPSdOGxLtZZW8=;
- b=FpMdVWRzS69o7RClzY72ng+32mhMs/VRnizbJze5CXdd/RGhOnjoUwsEGIPDRu2M3vPnx5I5apvqAGQl+5hYAkNTqSSCPR8yoBiqdmWoGMq1MbneflxvBB0a+hnQT2HzZlH95+EezfnNh8KzVv5UVwt2NZGaX6SrCPxtiu9qgHlP1DHApPcCoWXoNFAu7OmTxk9nhcyPpMF0r5iEZF4lcnpRN1ogOwl9Vcfx9JNFvtCNgNAXoCkuNJCdRjP/pTgEMPVmDz8pNKZ8VD7hOmYMZyPYnYCOSwzuwARBBLbS/+R6poGG5NPrk4t277sFgSnaJN9oRSGL/v0iaMn3pMD1ag==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KHGvXQ78QFu7KagOiUqMS3vQ+pwUnAqPSdOGxLtZZW8=;
- b=cFVhMEuT3onMSEre+UGsKXbL+KZBtP22RZpSTE+M/KUlMwo4Lm1z3Jyi/DzFnkdWIQtNEdA1yIgXSq9Uvz0xoZzdCyeogeEoWIw/7t2fftDadf6iJqqpuOdPahnDlttd6jfHuLBBF9p+X++3hYmY6lQKeOOjbj0jpKr3Nr9XmIOgmxyZ+0bKOi+H1pfG/In/C/3+V4KhD3H4RbArHrpm25qTyW44Fuj51Gpk00LjvqfEYkvMUrjiGfqGhVUmAzUle7ULp2AOiS4DAg6klrVJXyIclLLlWJd3P6RR825lwkyejWutuhE9fHKDbt4U9xtnGQWS3NyR786Zd8yoqkW++g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BYAPR12MB3077.namprd12.prod.outlook.com (2603:10b6:a03:db::10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.15; Tue, 25 Jan
- 2022 15:16:03 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ad3f:373f:b7d3:19c2]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ad3f:373f:b7d3:19c2%7]) with mapi id 15.20.4909.019; Tue, 25 Jan 2022
- 15:16:03 +0000
-Date: Tue, 25 Jan 2022 11:16:02 -0400
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 0/7] iommu cleanup and refactoring
-Message-ID: <20220125151602.GL84788@nvidia.com>
-References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
- <BN9PR11MB52767F46CC13601306001B9E8C5E9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220124174404.GG966497@nvidia.com>
- <7febcba4-f5bf-6bf6-6180-895b18d1b806@arm.com>
-Content-Disposition: inline
-In-Reply-To: <7febcba4-f5bf-6bf6-6180-895b18d1b806@arm.com>
-X-ClientProxiedBy: MN2PR16CA0052.namprd16.prod.outlook.com
- (2603:10b6:208:234::21) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5yN_0M010BAg; Tue, 25 Jan 2022 15:18:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 526D5600BA;
+	Tue, 25 Jan 2022 15:18:32 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 322EFC0039;
+	Tue, 25 Jan 2022 15:18:32 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EB18CC002F
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 15:18:30 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id CB0F14099E
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 15:18:30 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id iqcd9MdpNvZk for <iommu@lists.linux-foundation.org>;
+ Tue, 25 Jan 2022 15:18:29 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 37BCF40977
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 15:18:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1643123909; x=1674659909;
+ h=date:from:to:cc:subject:message-id:references:
+ mime-version:in-reply-to;
+ bh=s4ZvmzsF0fERLoGFRxsy+2A2MHLZif0dxtVpyXm9a+8=;
+ b=i4zJA7CcPVAXfYPcxhpjTkDrXbae6sTpokM37J5svuJC64el1D5qX8OI
+ cvGn+Nbgw0zP5WUhbCPxqscECbBOhsixfvIVphocik1vtY0AX5Xz7gU1e
+ uXRF73ZQpsLlmdjb0/Gbnsfr8y9xlOKyyY/6xCdN0sLtKHVwhbMEvAfa3
+ ERL3PkqK8uoeqla4CWR2xOXxLB4sP9Iw7Ol9nfgiyHm896qzIdisEY64F
+ u2IRIQ3lnSg3kF/eBdTeOPYTuAxMoUJ9hfazRBIxV70eZ/UijiAJ8Rwor
+ DP01nOsjQbgxO5X4q8kR89NBmxvDJ1hT53VBpHRFIhrr5+NgWccRtIQOq A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="246541748"
+X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; d="scan'208";a="246541748"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 25 Jan 2022 07:18:27 -0800
+X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; d="scan'208";a="520414512"
+Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
+ by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 25 Jan 2022 07:18:27 -0800
+Date: Tue, 25 Jan 2022 07:18:18 -0800
+From: Fenghua Yu <fenghua.yu@intel.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v2 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+Message-ID: <YfAUutQhqS6ejUFU@otcwcpicx3.sc.intel.com>
+References: <20211217220136.2762116-1-fenghua.yu@intel.com>
+ <20211217220136.2762116-6-fenghua.yu@intel.com>
+ <87ee4w6g1n.ffs@tglx> <87bl006fdb.ffs@tglx>
+ <Ye8RmmKpJT8brmDE@otcwcpicx3.sc.intel.com> <878rv46eg3.ffs@tglx>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c5a3a866-9692-4879-2b0a-08d9e0159a2b
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3077:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR12MB30775192D9525C3CE8F9FE87C25F9@BYAPR12MB3077.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: s+J0SKBa5DofkRSV+vpHFr9513oa/N4z+JKVE47Pxg8LLvWry62dN0Snmm+deI03NhnmFFBoPSL33WUVQNuCzfoeDDS+OpfZpRPv8LfngEsfxu6FT2CmX69JPLbhnfYBroCn5uVO/BWZMWjrUQuEExmX78UlP2cEuGEQ3W8aypFPJRjoJ67JAQNu9zdxxwmu9Ws+2j39a3MhyW4E3F7JdqdIF/87/ASau1PfyDFGtFHkY3QF26adx8h351XxMAhQBhSZvfwKGwyLvJtCD5Kw0WvJJDUr9/YSZC9INpSXCzb56g3reiD2+K7YTvAdr4SN6cqFERSiBSZNDXQtxFi7DFuf3PE+Vf3Jz/aAeSuENlJMUYhQ2DfBNWC9t7DfnZc87oYBZRX1W2QW8aYfJ5coFCP828CeYhWA09d0lSqnp/B4bderM/re1131qfUkzbTBT7JABEwEzcD8YNJoAWn2wiaHDPD9h/k4Z6ASfc9o5sfK072TP9R2X+dhHVcgLwom1bxLqXQupps5oG8Pms7S9T3fBZ5aegdWXe6X685l6/+t/DsTuesucDVDcqEspo1M0gR3A8GFhiNC2ZegQ3N8b6vSSnrS7ed0AFPVmuc71tjK9GimwUJuoX13ny21hTLAtv+GK7MvnHnyvhnZZUvhpA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(508600001)(2616005)(54906003)(26005)(186003)(316002)(33656002)(66946007)(1076003)(66556008)(66476007)(6486002)(6916009)(36756003)(5660300002)(6512007)(8676002)(4326008)(7416002)(6506007)(8936002)(38100700002)(2906002)(86362001)(20210929001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3ZwYLpIfzEs+DIRHdmtlIgSQy7ETqCC/scpj9yn0uuEnRcMAi4omVewX8vQd?=
- =?us-ascii?Q?6Dhm/OwGTkAkJ/pQU9BuCsUZN3ZWIc5YBt5o5l0K6gx9WS1OWrMGBQM01lNt?=
- =?us-ascii?Q?UhgCtSwkZsFW+i4u0ucDtossJSFEtYLFbc6+LbVVoRahcI9WwnyhwcCuHqYG?=
- =?us-ascii?Q?/RYbtiyI4sgVbl23TzFDq+T6kcaN3PqVOFa1kLKLw0t2AoW528h0Ai4v5UC0?=
- =?us-ascii?Q?WZCuKIzoe//w+FMAALVdchtgivncPwMRPCXMSuYj1zh8dR8Ggtg/hbGZg/3z?=
- =?us-ascii?Q?9WiTb/v010gO31a/6P3RJZO/LzDvN6B6TX9R7J7AVBTE7gabnkdRPmqN5auy?=
- =?us-ascii?Q?CMQLdXmbp/sJHiVpv8aJJurrxEGrA+NMOrRYGh2RCj8rHrbe4J5KDZNP1iY+?=
- =?us-ascii?Q?8yK8oqDoQewZbgs/4xQAIyxWHDE+amGl6/ydhp7QzbyovwN4L6aoM2jaaWgy?=
- =?us-ascii?Q?saNn7qHfOCsJ5KNjEBFy8kfs4J6yoqfqlSPY8dtTDnW84od9DDQcpKD/FBDb?=
- =?us-ascii?Q?B4Up54AU2pBymfvcy2tADqvsbxaR5oOvEIa1H3nWhenvTAun0gzQhqx5zuhD?=
- =?us-ascii?Q?VdVp/I5rzjLR2Qn9oZ2wCWZtMPkUucT7ORiVgEKcTeW7pA/jPIOI/yvGp7h9?=
- =?us-ascii?Q?MHJDczV+TmsvpOaWxcYlmD8pen//3LPnaxqAN/5FIqJC9fv0U8RjDnup3rCe?=
- =?us-ascii?Q?9g5wLZAPEZIdK5/BsobfdioBkHasVt4fTiQNJZJs/MNGOYiqa32K662FFMt9?=
- =?us-ascii?Q?w/HZQMhIlW3IU/HQ5i2jLN5d9akna5e4EeOnoYQXVeUrDM0UwDwPXdNnxipD?=
- =?us-ascii?Q?lBCmbi9bc48fDda5AfTC5XzTGgD0YzkfGQvhu6gyHF25tFZvVp6b4PcUxfJB?=
- =?us-ascii?Q?oZp2X0Fy6/a2JNHL4tvA6VJpw5EgHNM3s6HIV4A90KE4GD3UDJrR9fiSISwr?=
- =?us-ascii?Q?hpOJ27pIQKPoIIiYbENog4Ug5CMidqoMMRcgf26g4NQCf3bMD7LXhj1ygsrq?=
- =?us-ascii?Q?7LuS+wQmBlz6gNCpzigYKoTJbFMiafHARhakKbU8mPkKqsedGIeHYBTRVOIW?=
- =?us-ascii?Q?UE3RlfZRyL9rAEMNfkhs9onsm3AiIxgTyRntiWyyiYMGd0HOGAWJdJGWPkJs?=
- =?us-ascii?Q?rnbUZdallMfjh+cmkEEIvxkzxyiIvBTyicynetIr2uR+npx55snBXfnIAgLq?=
- =?us-ascii?Q?MKa8nU0we6WdukQkIIXmXz2zQACPYdJdXAKs3sN43iZE0cUy8AoPqDG9HT0B?=
- =?us-ascii?Q?MS9PHeoisRrhx7OXhgY5X5opBo2jykI5ZGGIo5biNqgFWRqoSARmDN8s6H5S?=
- =?us-ascii?Q?ABNEM/mVh7+P3Uyrgq2SughkcXcon2REkVZFBo1xkMVa7bO95pvOr8eGDgHb?=
- =?us-ascii?Q?OPlvMliO26okBzU4A9SsVyPoqXbO98i0ugbJa78wPM62NTPCBezxpRe6fb7P?=
- =?us-ascii?Q?2i4fzqudAxEKd+/RhaYZQJ6TTNxaO8wrg7wTpnmyvvp42Ixf/jVkSpYOAmth?=
- =?us-ascii?Q?K/RBrfx4oOK3hTdBnGko646w2cnEdFpQZf0zzxmuwPl8xoQFj0lrW+TRkxnD?=
- =?us-ascii?Q?9K8vFSaYH86OQOI2fRY=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c5a3a866-9692-4879-2b0a-08d9e0159a2b
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2022 15:16:03.6497 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tXyDcFzAtE+nyECXXmYxXt42KMrVny98o4veJFhPqX/Ya/dpmPtBkmQyOXWwiXs1
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3077
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- David Airlie <airlied@linux.ie>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>, Christoph Hellwig <hch@infradead.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Thierry Reding <thierry.reding@gmail.com>, Ben Skeggs <bskeggs@redhat.com>,
- Daniel Vetter <daniel@ffwll.ch>, Jonathan Hunter <jonathanh@nvidia.com>,
- Will Deacon <will@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <878rv46eg3.ffs@tglx>
+Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -148,43 +88,311 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jan 25, 2022 at 02:48:02PM +0000, Robin Murphy wrote:
+Hi, Thomas,
+
+On Mon, Jan 24, 2022 at 09:55:56PM +0100, Thomas Gleixner wrote:
+> On Mon, Jan 24 2022 at 12:52, Fenghua Yu wrote:
+> > On Mon, Jan 24, 2022 at 09:36:00PM +0100, Thomas Gleixner wrote:
+> >> On Mon, Jan 24 2022 at 21:21, Thomas Gleixner wrote:
+> > Ah. This patch should remove ioasid_get(). So I will change this patch
+> > as follows:
+> >
+> > 1. Remove ioasid_get() because it's not used any more when IOASID's
+> >    refcount is set to 1 once the IOASID is allocated and is freed on mm exit.
+> > 2. Change mm_pasid_get() to mm_pasid_set().
+> 
+> Yes. Just resend this one. No need to post the full queue again.
+
+Here is the updated patch #5. Thank you very much for your review!
+
+From 895f2c15385dc93acf39700014458fe275d996a2 Mon Sep 17 00:00:00 2001
+From: Fenghua Yu <fenghua.yu@intel.com>
+Date: Thu, 18 Nov 2021 14:06:40 -0800
+Subject: [PATCH v2.1 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+
+To avoid complexity of updating each thread's PASID status (e.g. sending
+IPI to update IA32_PASID MSR) on allocating and freeing PASID, once
+allocated and assigned to an mm, the PASID stays with the mm for the
+rest of the mm's lifetime. A reference to the PASID is taken on
+allocating the PASID. Binding/unbinding the PASID won't change refcount.
+The reference is dropped on mm exit and thus the PASID is freed.
+
+Two helpers mm_pasid_set() and mm_pasid_drop() are defined in mm because
+the PASID operations handle the pasid member in mm_struct and should be
+part of mm operations. Unused ioasid_get() and iommu_sva_free_pasid()
+are deleted.
+
+20-bit PASID allows up to 1M processes bound to PASIDs at the same time.
+With cgroups and other controls that might limit the number of process
+creation, the limited number of PASIDs is not a realistic issue for
+lazy PASID free.
+
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+---
+v2.1:
+- Rename mm_pasid_get() to mm_pasid_set() (Thomas).
+- Remove ioasid_get() because it's not used any more when IOASID's
+  refcount is set to 1 once the IOASID is allocated and is freed
+  on mm exit (Thomas).
+
+v2:
+- Free PASID on mm exit instead of in exit(2) or unbind() (Thomas, AndyL,
+  PeterZ)
+- Add mm_pasid_init(), mm_pasid_get(), and mm_pasid_drop() functions in mm.
+  So the mm's PASID operations are generic for both X86 and ARM
+  (Dave Hansen)
+
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  5 +--
+ drivers/iommu/intel/svm.c                     |  9 -----
+ drivers/iommu/ioasid.c                        | 17 --------
+ drivers/iommu/iommu-sva-lib.c                 | 39 ++++++-------------
+ drivers/iommu/iommu-sva-lib.h                 |  1 -
+ include/linux/ioasid.h                        |  5 ---
+ include/linux/sched/mm.h                      | 16 ++++++++
+ kernel/fork.c                                 |  1 +
+ 8 files changed, 30 insertions(+), 63 deletions(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+index a737ba5f727e..22ddd05bbdcd 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+@@ -340,14 +340,12 @@ __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
+ 	bond->smmu_mn = arm_smmu_mmu_notifier_get(smmu_domain, mm);
+ 	if (IS_ERR(bond->smmu_mn)) {
+ 		ret = PTR_ERR(bond->smmu_mn);
+-		goto err_free_pasid;
++		goto err_free_bond;
+ 	}
  
-> Agreed, certainly an IOMMU_DOMAIN_SVA type that can both encapsulate the mm
-> and effectively replace iommu_sva seems like a logical and fairly small next
-> step. We already have the paradigm of different domain types supporting
-> different ops, so initially an SVA domain would simply allow bind/unbind
-> rather than attach/detach/map/unmap.
+ 	list_add(&bond->list, &master->bonds);
+ 	return &bond->sva;
+ 
+-err_free_pasid:
+-	iommu_sva_free_pasid(mm);
+ err_free_bond:
+ 	kfree(bond);
+ 	return ERR_PTR(ret);
+@@ -377,7 +375,6 @@ void arm_smmu_sva_unbind(struct iommu_sva *handle)
+ 	if (refcount_dec_and_test(&bond->refs)) {
+ 		list_del(&bond->list);
+ 		arm_smmu_mmu_notifier_put(bond->smmu_mn);
+-		iommu_sva_free_pasid(bond->mm);
+ 		kfree(bond);
+ 	}
+ 	mutex_unlock(&sva_lock);
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 5b5d69b04fcc..51ac2096b3da 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -514,11 +514,6 @@ static int intel_svm_alloc_pasid(struct device *dev, struct mm_struct *mm,
+ 	return iommu_sva_alloc_pasid(mm, PASID_MIN, max_pasid - 1);
+ }
+ 
+-static void intel_svm_free_pasid(struct mm_struct *mm)
+-{
+-	iommu_sva_free_pasid(mm);
+-}
+-
+ static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
+ 					   struct device *dev,
+ 					   struct mm_struct *mm,
+@@ -662,8 +657,6 @@ static int intel_svm_unbind_mm(struct device *dev, u32 pasid)
+ 				kfree(svm);
+ 			}
+ 		}
+-		/* Drop a PASID reference and free it if no reference. */
+-		intel_svm_free_pasid(mm);
+ 	}
+ out:
+ 	return ret;
+@@ -1047,8 +1040,6 @@ struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm, void
+ 	}
+ 
+ 	sva = intel_svm_bind_mm(iommu, dev, mm, flags);
+-	if (IS_ERR_OR_NULL(sva))
+-		intel_svm_free_pasid(mm);
+ 	mutex_unlock(&pasid_mutex);
+ 
+ 	return sva;
+diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
+index 50ee27bbd04e..cb8e74adb685 100644
+--- a/drivers/iommu/ioasid.c
++++ b/drivers/iommu/ioasid.c
+@@ -347,23 +347,6 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+ }
+ EXPORT_SYMBOL_GPL(ioasid_alloc);
+ 
+-/**
+- * ioasid_get - obtain a reference to the IOASID
+- */
+-void ioasid_get(ioasid_t ioasid)
+-{
+-	struct ioasid_data *ioasid_data;
+-
+-	spin_lock(&ioasid_allocator_lock);
+-	ioasid_data = xa_load(&active_allocator->xa, ioasid);
+-	if (ioasid_data)
+-		refcount_inc(&ioasid_data->refs);
+-	else
+-		WARN_ON(1);
+-	spin_unlock(&ioasid_allocator_lock);
+-}
+-EXPORT_SYMBOL_GPL(ioasid_get);
+-
+ /**
+  * ioasid_put - Release a reference to an ioasid
+  * @ioasid: the ID to remove
+diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
+index bd41405d34e9..106506143896 100644
+--- a/drivers/iommu/iommu-sva-lib.c
++++ b/drivers/iommu/iommu-sva-lib.c
+@@ -18,8 +18,7 @@ static DECLARE_IOASID_SET(iommu_sva_pasid);
+  *
+  * Try to allocate a PASID for this mm, or take a reference to the existing one
+  * provided it fits within the [@min, @max] range. On success the PASID is
+- * available in mm->pasid, and must be released with iommu_sva_free_pasid().
+- * @min must be greater than 0, because 0 indicates an unused mm->pasid.
++ * available in mm->pasid and will be available for the lifetime of the mm.
+  *
+  * Returns 0 on success and < 0 on error.
+  */
+@@ -33,38 +32,24 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
+ 		return -EINVAL;
+ 
+ 	mutex_lock(&iommu_sva_lock);
+-	if (mm->pasid) {
+-		if (mm->pasid >= min && mm->pasid <= max)
+-			ioasid_get(mm->pasid);
+-		else
++	/* Is a PASID already associated with this mm? */
++	if (pasid_valid(mm->pasid)) {
++		if (mm->pasid < min || mm->pasid >= max)
+ 			ret = -EOVERFLOW;
+-	} else {
+-		pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
+-		if (pasid == INVALID_IOASID)
+-			ret = -ENOMEM;
+-		else
+-			mm->pasid = pasid;
++		goto out;
+ 	}
++
++	pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
++	if (!pasid_valid(pasid))
++		ret = -ENOMEM;
++	else
++		mm_pasid_set(mm, pasid);
++out:
+ 	mutex_unlock(&iommu_sva_lock);
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(iommu_sva_alloc_pasid);
+ 
+-/**
+- * iommu_sva_free_pasid - Release the mm's PASID
+- * @mm: the mm
+- *
+- * Drop one reference to a PASID allocated with iommu_sva_alloc_pasid()
+- */
+-void iommu_sva_free_pasid(struct mm_struct *mm)
+-{
+-	mutex_lock(&iommu_sva_lock);
+-	if (ioasid_put(mm->pasid))
+-		mm->pasid = 0;
+-	mutex_unlock(&iommu_sva_lock);
+-}
+-EXPORT_SYMBOL_GPL(iommu_sva_free_pasid);
+-
+ /* ioasid_find getter() requires a void * argument */
+ static bool __mmget_not_zero(void *mm)
+ {
+diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva-lib.h
+index 95dc3ebc1928..8909ea1094e3 100644
+--- a/drivers/iommu/iommu-sva-lib.h
++++ b/drivers/iommu/iommu-sva-lib.h
+@@ -9,7 +9,6 @@
+ #include <linux/mm_types.h>
+ 
+ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max);
+-void iommu_sva_free_pasid(struct mm_struct *mm);
+ struct mm_struct *iommu_sva_find(ioasid_t pasid);
+ 
+ /* I/O Page fault */
+diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
+index 2237f64dbaae..46a41f61ad3e 100644
+--- a/include/linux/ioasid.h
++++ b/include/linux/ioasid.h
+@@ -34,7 +34,6 @@ struct ioasid_allocator_ops {
+ #if IS_ENABLED(CONFIG_IOASID)
+ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+ 		      void *private);
+-void ioasid_get(ioasid_t ioasid);
+ bool ioasid_put(ioasid_t ioasid);
+ void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+ 		  bool (*getter)(void *));
+@@ -53,10 +52,6 @@ static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
+ 	return INVALID_IOASID;
+ }
+ 
+-static inline void ioasid_get(ioasid_t ioasid)
+-{
+-}
+-
+ static inline bool ioasid_put(ioasid_t ioasid)
+ {
+ 	return false;
+diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
+index c74d1edbac2f..1893ecfa93d6 100644
+--- a/include/linux/sched/mm.h
++++ b/include/linux/sched/mm.h
+@@ -439,8 +439,24 @@ static inline void mm_pasid_init(struct mm_struct *mm)
+ {
+ 	mm->pasid = INVALID_IOASID;
+ }
++
++/* Associate a PASID with an mm_struct: */
++static inline void mm_pasid_set(struct mm_struct *mm, u32 pasid)
++{
++	mm->pasid = pasid;
++}
++
++static inline void mm_pasid_drop(struct mm_struct *mm)
++{
++	if (pasid_valid(mm->pasid)) {
++		ioasid_put(mm->pasid);
++		mm->pasid = INVALID_IOASID;
++	}
++}
+ #else
+ static inline void mm_pasid_init(struct mm_struct *mm) {}
++static inline void mm_pasid_set(struct mm_struct *mm, u32 pasid) {}
++static inline void mm_pasid_drop(struct mm_struct *mm) {}
+ #endif
+ 
+ #endif /* _LINUX_SCHED_MM_H */
+diff --git a/kernel/fork.c b/kernel/fork.c
+index deacd2c17a7f..c03c6682464c 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -1115,6 +1115,7 @@ static inline void __mmput(struct mm_struct *mm)
+ 	}
+ 	if (mm->binfmt)
+ 		module_put(mm->binfmt->module);
++	mm_pasid_drop(mm);
+ 	mmdrop(mm);
+ }
+ 
+-- 
+2.34.1
 
-I hope we can quickly get to a PASID enabled generic attach/detach
-scheme - we really need this to do the uAPI part of this interface.
-
-> they are fundamentally different things in their own right, and the ideal
-> API should give us the orthogonality to also bind a device to an SVA domain
-> without PASID (e.g. for KVM stage 2, or userspace assignment of simpler
-> fault/stall-tolerant devices), or attach PASIDs to regular iommu_domains.
-
-Yes, these are orthogonal things. A iommu driver that supports PASID
-ideally should support PASID enabled attach/detatch for every
-iommu_domain type it supports.
-
-SVA should not be entangled with PASID beyond that SVA is often used
-with PASID - a SVA iommu_domain should be fully usable with a RID too.
-
-I'm hoping to see the core iommu code provide some simplified "SVA"
-API that under the covers creates a SVA domain and then does a normal
-PASID attach using the global PASID in the mm_struct - the
-driver should not care what, or even if, PASID is used for a SVA
-domain.
-
-Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
