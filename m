@@ -1,82 +1,95 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id ADFE6C433EF
-	for <iommu@archiver.kernel.org>; Tue, 25 Jan 2022 05:06:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 38FADC433F5
+	for <iommu@archiver.kernel.org>; Tue, 25 Jan 2022 06:23:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 4042740204;
-	Tue, 25 Jan 2022 05:06:07 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id DBF18813A5;
+	Tue, 25 Jan 2022 06:23:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id sowsWaD6i0Mj; Tue, 25 Jan 2022 05:06:03 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id IRdmBdWy2n9R; Tue, 25 Jan 2022 06:23:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 14C6B4016C;
-	Tue, 25 Jan 2022 05:06:03 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id BB8748135E;
+	Tue, 25 Jan 2022 06:23:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DF224C0039;
-	Tue, 25 Jan 2022 05:06:02 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 99C48C002F
- for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 05:06:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 909E6C0031;
+	Tue, 25 Jan 2022 06:23:53 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 22D4FC002F;
+ Tue, 25 Jan 2022 06:23:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 7B2FD401DF
- for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 05:06:01 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 10E8560B62;
+ Tue, 25 Jan 2022 06:23:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FoOdaPJpstQm for <iommu@lists.linux-foundation.org>;
- Tue, 25 Jan 2022 05:05:59 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=suse.de header.b="zzHOzRVp";
+ dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
+ header.d=suse.de header.b="r5M9bjkV"
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id UMbKTqq_pZ2K; Tue, 25 Jan 2022 06:23:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 67B804016C
- for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 05:05:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1643087159; x=1674623159;
- h=cc:subject:to:references:from:message-id:date:
- mime-version:in-reply-to:content-transfer-encoding;
- bh=V9CYJ2kCUBsupqpOKFqBBwFqKIJsJUlTvgIb6c/puoE=;
- b=Rh3JZVRi1ZPgN+IflH68WdaGkAf+Qzni6Vz6HddECzCxK3mKdnr/rhJe
- iVXzo4sfaXXoDifOryJDyrfCssrA+pRG1BBkXMb8BKlfgwe/5Ymi6Tcv0
- fafrtaTh6qdVB8kc75ubgh1yUdb4avV10zpq09/WExY9Nc65oEr7IqxuJ
- iwc42K62HZ+i2nWhM+kO8P/JpRMd6CqsaEoj0j7VxTbrVliX85kPdg1VL
- HF4jqagqN2i2JDxURXRwICeAO2J3vPibKcrH1T6DC97yL96Y3FbxK39rY
- JxktWmJw6jZ6uC2PTfukv+YzkMQYcp0IWmlMbBj984gYDr7vFTxC6qgcm g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="246438483"
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; d="scan'208";a="246438483"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 24 Jan 2022 21:05:49 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,314,1635231600"; d="scan'208";a="534564947"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
- ([10.239.159.118])
- by orsmga008.jf.intel.com with ESMTP; 24 Jan 2022 21:05:43 -0800
-Subject: Re: [PATCH 7/7] iommu: Add iommu_domain::domain_ops
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
- <20220124071103.2097118-8-baolu.lu@linux.intel.com>
- <20220124175542.GA987164@nvidia.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <6fd81c95-6fd6-d678-b7df-f2f747e2b10c@linux.intel.com>
-Date: Tue, 25 Jan 2022 13:04:43 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id D4C2D60A9D;
+ Tue, 25 Jan 2022 06:23:49 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+ (No client certificate requested)
+ by smtp-out2.suse.de (Postfix) with ESMTPS id 064461F380;
+ Tue, 25 Jan 2022 06:23:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+ t=1643091827; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+ mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=SxB22q2urXIdsrmoPoT22ET5VLL7DY5GwQTRZaWBW4k=;
+ b=zzHOzRVpDg59xKWbExTM2/HqgZWsRi4itrBoEkpBmycht04q+RJ8l1Qi1laURT8PHz4Oab
+ LHsGRuS21D2Njw5+Rhxv2AEFlyFZnN9TPzzMn/dKmksWvxMze7T/UsO5biJ0hYg+D0/lxJ
+ ABZ+HQkBmjrYGLC8E1Rc0wWyiwYzVKw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+ s=susede2_ed25519; t=1643091827;
+ h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+ mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=SxB22q2urXIdsrmoPoT22ET5VLL7DY5GwQTRZaWBW4k=;
+ b=r5M9bjkVQyRw9A8wG8mbR8CjiorcPAjhdDcb4urtIt5x1C1NZ/0/s0Hv3QDrLBkE6xzwhc
+ ZyzLjlvANPU60DCQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+ (No client certificate requested)
+ by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D81F113D7B;
+ Tue, 25 Jan 2022 06:23:46 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+ by imap2.suse-dmz.suse.de with ESMTPSA id kQk5NHKX72GxdgAAMHmgww
+ (envelope-from <osalvador@suse.de>); Tue, 25 Jan 2022 06:23:46 +0000
 MIME-Version: 1.0
-In-Reply-To: <20220124175542.GA987164@nvidia.com>
-Content-Language: en-US
-Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- David Airlie <airlied@linux.ie>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
- Christoph Hellwig <hch@infradead.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Thierry Reding <thierry.reding@gmail.com>, Ben Skeggs <bskeggs@redhat.com>,
- Daniel Vetter <daniel@ffwll.ch>, Jonathan Hunter <jonathanh@nvidia.com>,
- Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
+Date: Tue, 25 Jan 2022 07:23:46 +0100
+From: Oscar Salvador <osalvador@suse.de>
+To: Zi Yan <ziy@nvidia.com>
+Subject: Re: [PATCH v4 2/7] mm: page_isolation: move has_unmovable_pages() to
+ mm/page_isolation.c
+In-Reply-To: <20220119190623.1029355-3-zi.yan@sent.com>
+References: <20220119190623.1029355-1-zi.yan@sent.com>
+ <20220119190623.1029355-3-zi.yan@sent.com>
+User-Agent: Roundcube Webmail
+Message-ID: <d8809f69b4e813f981a2f13d81849b7b@suse.de>
+X-Sender: osalvador@suse.de
+Cc: Mel Gorman <mgorman@techsingularity.net>,
+ David Hildenbrand <david@redhat.com>, Michael Ellerman <mpe@ellerman.id.au>,
+ linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org, Eric Ren <renzhengeek@gmail.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ Vlastimil Babka <vbabka@suse.cz>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,22 +107,19 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 1/25/22 1:55 AM, Jason Gunthorpe wrote:
-> On Mon, Jan 24, 2022 at 03:11:02PM +0800, Lu Baolu wrote:
->> -	int (*enable_nesting)(struct iommu_domain *domain);
+On 2022-01-19 20:06, Zi Yan wrote:
+> From: Zi Yan <ziy@nvidia.com>
 > 
+> has_unmovable_pages() is only used in mm/page_isolation.c. Move it from
+> mm/page_alloc.c and make it static.
 > 
-> Lu, there is an implementation in the Intel driver here, is it usable
-> at all?
+> Signed-off-by: Zi Yan <ziy@nvidia.com>
 
-It's useless and I have cleaned it up in this series.
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
 
-> 
-> Jason
-> 
-
-Best regards,
-baolu
+-- 
+Oscar Salvador
+SUSE Labs
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
