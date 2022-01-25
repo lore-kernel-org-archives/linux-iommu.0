@@ -1,75 +1,79 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 381B5C433F5
-	for <iommu@archiver.kernel.org>; Tue, 25 Jan 2022 18:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DDDEDC433F5
+	for <iommu@archiver.kernel.org>; Tue, 25 Jan 2022 19:26:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id BFF4140377;
-	Tue, 25 Jan 2022 18:52:39 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 83B2082611;
+	Tue, 25 Jan 2022 19:26:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qV2KJ-vXraor; Tue, 25 Jan 2022 18:52:38 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 11D294027F;
-	Tue, 25 Jan 2022 18:52:38 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fWT_I7ZMMPzU; Tue, 25 Jan 2022 19:26:36 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 4E0488261C;
+	Tue, 25 Jan 2022 19:26:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E002DC0031;
-	Tue, 25 Jan 2022 18:52:37 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BF0A3C002F
- for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 18:52:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 31E9AC0039;
+	Tue, 25 Jan 2022 19:26:36 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D8E2AC002F
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 19:26:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 997B760A73
- for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 18:52:36 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id B2A0C6080A
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 19:26:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
+ dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0ssj9DK6eF4H for <iommu@lists.linux-foundation.org>;
- Tue, 25 Jan 2022 18:52:35 +0000 (UTC)
+ with ESMTP id KLJfkH6272uC for <iommu@lists.linux-foundation.org>;
+ Tue, 25 Jan 2022 19:26:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 97A2760899
- for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 18:52:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1643136755; x=1674672755;
- h=date:from:to:cc:subject:message-id:in-reply-to:
- references:mime-version:content-transfer-encoding;
- bh=choCxfNZioQkKVdX4wH1ew81T+xV4ZQllbIt3PKl1dc=;
- b=ia8zQ7HzuZtZ3uhtIjb4RzyjW+MBPVy0m0gazSI+Bc9XwxXKKu1oDZ5f
- l68u67DEuSvp+DB385GcwuElIQ89DtX56fEFR1fLFL94kP94fcLXGngi/
- 4B+ug/lepk7CoKxdsZ6HM8iBt+1SisT9HDcZ4AhVquXKBETU8sJ40VgPC
- gzII8fIcn3Ks3DJGh2nwL55Vm+wJpEm7bruQZpmS7LbLAx3T4p05eGXH1
- hE3zaTJFG2FVPGS8Kmf3wLB0CEWCWeN1XO2zSw7JQ1M5WqAD87dvyyFQ8
- Bk3yGbh4fxQ8b7pw7yxta/Sxxrl2iugQ3vMzX9A+o3DkwJuck7gZh4/Ut w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="332737093"
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; d="scan'208";a="332737093"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 25 Jan 2022 10:52:21 -0800
-X-IronPort-AV: E=Sophos;i="5.88,315,1635231600"; d="scan'208";a="479606720"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 25 Jan 2022 10:52:21 -0800
-Date: Tue, 25 Jan 2022 10:57:04 -0800
-From: Jacob Pan <jacob.jun.pan@intel.com>
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
- Joerg Roedel <joro@8bytes.org>, "Lu Baolu" <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2] iommu/vt-d: Fix PCI bus rescan device hot add
-Message-ID: <20220125105704.2375daed@jacob-builder>
-In-Reply-To: <1642148470-11949-1-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1642148470-11949-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id AB134607F7
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 19:26:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1643138792;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=I4oqhYaOJzCMND/PHbdluqZlT5cXmCHSNgWuLWdmml8=;
+ b=Zs/tM3JT1AFxhZXSD88kKVv8F2oHuOWmvb19x2jn9jeSXaPoLsz7fu2DFFZElGvBvuGn4i
+ KE8yBee5hPehrvlFWt+0la72QyNwsmEqrioEL6u2IvmErJgsJ/gXvq4nCezaGqlbU+HPBB
+ jjyds3IVLF40vmrAxfBVzSwgkyIUXjU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-7-OCr_ibQWPMa7Po-5trzdPg-1; Tue, 25 Jan 2022 14:26:26 -0500
+X-MC-Unique: OCr_ibQWPMa7Po-5trzdPg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+ [10.5.11.23])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 04512192D786;
+ Tue, 25 Jan 2022 19:26:25 +0000 (UTC)
+Received: from starship (unknown [10.40.192.15])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 9F69419C59;
+ Tue, 25 Jan 2022 19:26:22 +0000 (UTC)
+Message-ID: <6f0d9b07073ca6d3657500ec076edc1ad2a3e40a.camel@redhat.com>
+Subject: Re: [PATCH 0/5] iommu/amd: fixes for suspend/resume
+From: Maxim Levitsky <mlevitsk@redhat.com>
+To: Mike Lothian <mike@fireburn.co.uk>
+Date: Tue, 25 Jan 2022 21:26:21 +0200
+In-Reply-To: <20220125150832.1570-1-mike@fireburn.co.uk>
+References: <20211123161038.48009-1-mlevitsk@redhat.com>
+ <20220125150832.1570-1-mike@fireburn.co.uk>
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Cc: "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
- Raj Ashok <ashok.raj@intel.com>, jacob.jun.pan@intel.com
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ tglx@linutronix.de, will@kernel.org, dwmw@amazon.co.uk
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,208 +91,81 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi all,
-
-Just wondering if there are any other comments? This fixes a
-regression that can cause system hang.
-
-On Fri, 14 Jan 2022 00:21:10 -0800, Jacob Pan
-<jacob.jun.pan@linux.intel.com> wrote:
-
-> During PCI bus rescan, adding new devices involve two notifiers.
-> 1. dmar_pci_bus_notifier()
-> 2. iommu_bus_notifier()
-> The current code sets #1 as low priority (INT_MIN) which resulted in #2
-> being invoked first. The result is that struct device pointer cannot be
-> found in DRHD search for the new device's DMAR/IOMMU. Subsequently, the
-> device is put under the "catch-all" IOMMU instead of the correct one.
+On Tue, 2022-01-25 at 15:08 +0000, Mike Lothian wrote:
+> Hi
 > 
-> This could cause system hang when device TLB invalidation is sent to the
-> wrong IOMMU. Invalidation timeout error and hard lockup have been
-> observed.
+> I'm seeing a WARNING that I think might be related to these patches, unfortunately another issue is making bisecting difficult
 > 
-> On the reverse direction for device removal, the order should be #2-#1
-> such that DMAR cleanup is done after IOMMU.
+> [    0.359362] AMD-Vi: X2APIC enabled
+> [    0.395140] ------------[ cut here ]------------
+> [    0.395142] WARNING: CPU: 0 PID: 1 at amd_iommu_enable_interrupts+0x1da/0x440
+> [    0.395146] Modules linked in:
+> [    0.395148] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc1-tip+ #2995
+> [    0.395150] Hardware name: ASUSTeK COMPUTER INC. ROG Strix G513QY_G513QY/G513QY, BIOS G513QY.316 11/29/2021
+> [    0.395152] RIP: 0010:amd_iommu_enable_interrupts+0x1da/0x440
+> [    0.395154] Code: 4b 38 48 89 41 18 b8 a0 86 01 00 0f 1f 44 00 00 48 8b 4b 38 8b 89 20 20 00 00 f7 c1 00 01 00 00 0f 85 7a fe ff ff ff c8 75 e6 <0f> 0b e9 6f fe ff ff 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00
+> [    0.395157] RSP: 0018:ffff88810022fc68 EFLAGS: 00010246
+> [    0.395158] RAX: 0000000000000000 RBX: ffff88810004b000 RCX: 0000000000000018
+> [    0.395160] RDX: 0000000000000008 RSI: ffff88810022fc70 RDI: ffffc900000800f0
+> [    0.395161] RBP: ffff88810022fc68 R08: ffff888100fce088 R09: 0000000000000000
+> [    0.395162] R10: 0000000000000000 R11: ffffffffffffffff R12: ffffffff7fffffff
+> [    0.395163] R13: 0000777f80000000 R14: 0000000000000000 R15: ffffffff8357c9e8
+> [    0.395165] FS:  0000000000000000(0000) GS:ffff888fde400000(0000) knlGS:0000000000000000
+> [    0.395166] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [    0.395167] CR2: ffff88901e1ff000 CR3: 00000000b440c000 CR4: 0000000000150ef0
+> [    0.395169] Call Trace:
+> [    0.395170]  <TASK>
+> [    0.395171]  ? iommu_setup+0x29a/0x29a
+> [    0.395174]  ? state_next+0x6e/0x1c9
+> [    0.395177]  ? iommu_setup+0x29a/0x29a
+> [    0.395178]  ? iommu_go_to_state+0x1f/0x33
+> [    0.395180]  ? amd_iommu_init+0xa/0x23
+> [    0.395182]  ? pci_iommu_init+0xf/0x45
+> [    0.395183]  ? iommu_setup+0x29a/0x29a
+> [    0.395184]  ? __initstub__kmod_pci_dma__250_136_pci_iommu_initrootfs+0x5/0x8
+> [    0.395186]  ? do_one_initcall+0x100/0x290
+> [    0.395190]  ? do_initcall_level+0x8b/0xe5
+> [    0.395192]  ? do_initcalls+0x44/0x6d
+> [    0.395194]  ? kernel_init_freeable+0xc7/0x10d
+> [    0.395196]  ? rest_init+0xc0/0xc0
+> [    0.395198]  ? kernel_init+0x11/0x150
+> [    0.395200]  ? ret_from_fork+0x22/0x30
+> [    0.395201]  </TASK>
+> [    0.395202] ---[ end trace 0000000000000000 ]---
+> [    0.395204] PCI-DMA: Using software bounce buffer
 > 
-> This patch fixes the issue by setting proper priorities for
-> dmar_pci_bus_notifier around IOMMU bus notifier. DRHD search for a new
-> device will find the correct IOMMU. The order with this patch is the
-> following:
-> 1. dmar_pci_bus_add_dev()
-> 2. iommu_probe_device()
-> 3. iommu_release_device()
-> 4. dmar_pci_bus_remove_dev()
+> Let me know if you need any more info
 > 
-> Fixes: 59ce0515cdaf ("iommu/vt-d: Update DRHD/RMRR/ATSR device scope")
-> Reported-by: Zhang, Bernice <bernice.zhang@intel.com>
-> Suggested-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->  drivers/iommu/intel/dmar.c | 69 ++++++++++++++++++++++++++++----------
->  drivers/iommu/iommu.c      |  1 +
->  include/linux/iommu.h      |  1 +
->  3 files changed, 53 insertions(+), 18 deletions(-)
+> Cheers
 > 
-> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-> index 915bff76fe96..5f4751ba6bb1 100644
-> --- a/drivers/iommu/intel/dmar.c
-> +++ b/drivers/iommu/intel/dmar.c
-> @@ -340,15 +340,19 @@ static inline void vf_inherit_msi_domain(struct
-> pci_dev *pdev) dev_set_msi_domain(&pdev->dev,
-> dev_get_msi_domain(&physfn->dev)); }
->  
-> -static int dmar_pci_bus_notifier(struct notifier_block *nb,
-> +static int dmar_pci_bus_add_notifier(struct notifier_block *nb,
->  				 unsigned long action, void *data)
->  {
->  	struct pci_dev *pdev = to_pci_dev(data);
->  	struct dmar_pci_notify_info *info;
->  
-> -	/* Only care about add/remove events for physical functions.
-> +	if (action != BUS_NOTIFY_ADD_DEVICE)
-> +		return NOTIFY_DONE;
-> +
-> +	/*
->  	 * For VFs we actually do the lookup based on the corresponding
-> -	 * PF in device_to_iommu() anyway. */
-> +	 * PF in device_to_iommu() anyway.
-> +	 */
->  	if (pdev->is_virtfn) {
->  		/*
->  		 * Ensure that the VF device inherits the irq domain of
-> the @@ -358,13 +362,34 @@ static int dmar_pci_bus_notifier(struct
-> notifier_block *nb,
->  		 * from the PF device, but that's yet another x86'sism to
->  		 * inflict on everybody else.
->  		 */
-> -		if (action == BUS_NOTIFY_ADD_DEVICE)
-> -			vf_inherit_msi_domain(pdev);
-> +		vf_inherit_msi_domain(pdev);
->  		return NOTIFY_DONE;
->  	}
->  
-> -	if (action != BUS_NOTIFY_ADD_DEVICE &&
-> -	    action != BUS_NOTIFY_REMOVED_DEVICE)
-> +	info = dmar_alloc_pci_notify_info(pdev, action);
-> +	if (!info)
-> +		return NOTIFY_DONE;
-> +
-> +	down_write(&dmar_global_lock);
-> +	dmar_pci_bus_add_dev(info);
-> +	up_write(&dmar_global_lock);
-> +	dmar_free_pci_notify_info(info);
-> +
-> +	return NOTIFY_OK;
-> +}
-> +
-> +static struct notifier_block dmar_pci_bus_add_nb = {
-> +	.notifier_call = dmar_pci_bus_add_notifier,
-> +	.priority = IOMMU_BUS_NOTIFY_PRIORITY + 1,
-> +};
-> +
-> +static int dmar_pci_bus_remove_notifier(struct notifier_block *nb,
-> +				 unsigned long action, void *data)
-> +{
-> +	struct pci_dev *pdev = to_pci_dev(data);
-> +	struct dmar_pci_notify_info *info;
-> +
-> +	if (pdev->is_virtfn || action != BUS_NOTIFY_REMOVED_DEVICE)
->  		return NOTIFY_DONE;
->  
->  	info = dmar_alloc_pci_notify_info(pdev, action);
-> @@ -372,10 +397,7 @@ static int dmar_pci_bus_notifier(struct
-> notifier_block *nb, return NOTIFY_DONE;
->  
->  	down_write(&dmar_global_lock);
-> -	if (action == BUS_NOTIFY_ADD_DEVICE)
-> -		dmar_pci_bus_add_dev(info);
-> -	else if (action == BUS_NOTIFY_REMOVED_DEVICE)
-> -		dmar_pci_bus_del_dev(info);
-> +	dmar_pci_bus_del_dev(info);
->  	up_write(&dmar_global_lock);
->  
->  	dmar_free_pci_notify_info(info);
-> @@ -383,11 +405,10 @@ static int dmar_pci_bus_notifier(struct
-> notifier_block *nb, return NOTIFY_OK;
->  }
->  
-> -static struct notifier_block dmar_pci_bus_nb = {
-> -	.notifier_call = dmar_pci_bus_notifier,
-> -	.priority = INT_MIN,
-> +static struct notifier_block dmar_pci_bus_remove_nb = {
-> +	.notifier_call = dmar_pci_bus_remove_notifier,
-> +	.priority = IOMMU_BUS_NOTIFY_PRIORITY - 1,
->  };
-> -
->  static struct dmar_drhd_unit *
->  dmar_find_dmaru(struct acpi_dmar_hardware_unit *drhd)
->  {
-> @@ -835,7 +856,17 @@ int __init dmar_dev_scope_init(void)
->  
->  void __init dmar_register_bus_notifier(void)
->  {
-> -	bus_register_notifier(&pci_bus_type, &dmar_pci_bus_nb);
-> +	/*
-> +	 * We need two notifiers in that we need to make sure the
-> ordering
-> +	 * is enforced as the following:
-> +	 * 1. dmar_pci_bus_add_dev()
-> +	 * 2. iommu_probe_device()
-> +	 * 3. iommu_release_device()
-> +	 * 4. dmar_pci_bus_remove_dev()
-> +	 * Notifier block priority is used to enforce the order
-> +	 */
-> +	bus_register_notifier(&pci_bus_type, &dmar_pci_bus_add_nb);
-> +	bus_register_notifier(&pci_bus_type, &dmar_pci_bus_remove_nb);
->  }
->  
->  
-> @@ -2151,8 +2182,10 @@ static int __init dmar_free_unused_resources(void)
->  	if (dmar_in_use())
->  		return 0;
->  
-> -	if (dmar_dev_scope_status != 1 && !list_empty(&dmar_drhd_units))
-> -		bus_unregister_notifier(&pci_bus_type, &dmar_pci_bus_nb);
-> +	if (dmar_dev_scope_status != 1 && !list_empty(&dmar_drhd_units))
-> {
-> +		bus_unregister_notifier(&pci_bus_type,
-> &dmar_pci_bus_add_nb);
-> +		bus_unregister_notifier(&pci_bus_type,
-> &dmar_pci_bus_remove_nb);
-> +	}
->  
->  	down_write(&dmar_global_lock);
->  	list_for_each_entry_safe(dmaru, dmaru_n, &dmar_drhd_units, list)
-> { diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 8b86406b7162..6103bcde1f65 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1841,6 +1841,7 @@ static int iommu_bus_init(struct bus_type *bus,
-> const struct iommu_ops *ops) return -ENOMEM;
->  
->  	nb->notifier_call = iommu_bus_notifier;
-> +	nb->priority = IOMMU_BUS_NOTIFY_PRIORITY;
->  
->  	err = bus_register_notifier(bus, nb);
->  	if (err)
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index de0c57a567c8..8e13c69980be 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -403,6 +403,7 @@ static inline void iommu_iotlb_gather_init(struct
-> iommu_iotlb_gather *gather) };
->  }
->  
-> +#define IOMMU_BUS_NOTIFY_PRIORITY		0
->  #define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
->  #define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device
-> removed */ #define IOMMU_GROUP_NOTIFY_BIND_DRIVER		3 /* Pre
-> Driver bind */
+> Mike
 
 
-Thanks,
+Could you just apply these patches on top of 5.15 kernel and see if you get the warning?
 
-Jacob
+If something could case it is I think patch 1, it does move the GA log enabled
+to be a bit later.
+I also added few warnings there. I wonder why your dmesg quote doesn't contain the C line
+where the warning happens.
+
+In partucular I added:
+
+if (WARN_ON(status & (MMIO_STATUS_GALOG_RUN_MASK)))
+
+That will fire if GA log is already running (maybe BIOS enabled it? - it really shouldn't do that)
+
+
+And that:
+
+if (WARN_ON(i >= LOOP_TIMEOUT))
+
+also should not happen and worth to be logged IMHO.
+
+Best regards,
+	Maxim Levitsky
+
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
