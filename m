@@ -4,76 +4,109 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CD09CC433FE
-	for <iommu@archiver.kernel.org>; Tue, 25 Jan 2022 13:00:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 580FCC433F5
+	for <iommu@archiver.kernel.org>; Tue, 25 Jan 2022 13:19:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 6C62B60B45;
-	Tue, 25 Jan 2022 13:00:41 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0B72C60B5B;
+	Tue, 25 Jan 2022 13:19:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Ms6aObl4wVMY; Tue, 25 Jan 2022 13:00:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 28BBC607F9;
-	Tue, 25 Jan 2022 13:00:40 +0000 (UTC)
+	with ESMTP id zhpP_Ddni5Y0; Tue, 25 Jan 2022 13:19:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id EDE9D60B0C;
+	Tue, 25 Jan 2022 13:19:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F27FBC0031;
-	Tue, 25 Jan 2022 13:00:39 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D6BA9C002F
- for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 13:00:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C0C76C0039;
+	Tue, 25 Jan 2022 13:19:47 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A146EC002F
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 13:19:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id B854E83F9C
- for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 13:00:38 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 816614028D
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 13:19:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eJRgfk2_C2JG for <iommu@lists.linux-foundation.org>;
- Tue, 25 Jan 2022 13:00:37 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=canonical.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 6D1rioxi3WhR for <iommu@lists.linux-foundation.org>;
+ Tue, 25 Jan 2022 13:19:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 33AB382882
- for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 13:00:37 +0000 (UTC)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
- by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Jjn140vWnz1FCtn;
- Tue, 25 Jan 2022 20:56:40 +0800 (CST)
-Received: from dggpemm500004.china.huawei.com (7.185.36.219) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 25 Jan 2022 21:00:33 +0800
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- dggpemm500004.china.huawei.com (7.185.36.219) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 25 Jan 2022 21:00:32 +0800
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2308.021; Tue, 25 Jan 2022 13:00:30 +0000
-To: "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org"
- <linux-acpi@vger.kernel.org>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>
-Subject: RE: [PATCH v7 0/9] ACPI/IORT: Support for IORT RMR node
-Thread-Topic: [PATCH v7 0/9] ACPI/IORT: Support for IORT RMR node
-Thread-Index: AQHXidEW6lbeFvKh4k2Spj/Qhyfs76x0tQKA
-Date: Tue, 25 Jan 2022 13:00:30 +0000
-Message-ID: <9da65c2504b944398188e468eac1abff@huawei.com>
-References: <20210805080724.480-1-shameerali.kolothum.thodi@huawei.com>
-In-Reply-To: <20210805080724.480-1-shameerali.kolothum.thodi@huawei.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.47.82.150]
+Received: from smtp-relay-internal-1.canonical.com
+ (smtp-relay-internal-1.canonical.com [185.125.188.123])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9E9BD40277
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 13:19:43 +0000 (UTC)
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+ (No client certificate requested)
+ by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 0A76A3F1C9
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 13:19:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+ s=20210705; t=1643116780;
+ bh=7H+kwmtltVSBKx5eHk33vYDBjpgrbeevYoDgB27H+CI=;
+ h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+ In-Reply-To:Content-Type;
+ b=lokDWwC6CE9N/xXzBGFrWAkmoqIQt5tP7uAgs8+EQzRKp0ED6fVN7Yef4QIMOp97s
+ jg2KVzr9h3dwoISj8WO9mPnp96YT9boiNcoBnXQO950r8/CZpAlUus8yi8n+LGtF3i
+ oAwUTJtNhwVj6iBUj+i1rbjs6IRf911/cqtZE5b8ucyfbVsGZXmCBUnMXAWeRCimE2
+ a7sci0pgBRa3gkm4s3ruBSCz60GiTcN+4thtK38rH/XyqgDwSTG7U73L72FA1w96Vu
+ F43EV44S/rx6aDf5H44SsC1tvZHxFefhyDagpqG1mjO8BZHwwYzKicBzTViBvqQFcL
+ oZNxRZzxV7F5w==
+Received: by mail-wm1-f72.google.com with SMTP id
+ w5-20020a1cf605000000b0034b8cb1f55eso1232283wmc.0
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Jan 2022 05:19:40 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+ :content-language:to:cc:references:from:in-reply-to
+ :content-transfer-encoding;
+ bh=7H+kwmtltVSBKx5eHk33vYDBjpgrbeevYoDgB27H+CI=;
+ b=4WJZCvP+xzMFKpDCp4gwm30XsixIcXCHvjvsdY1mQBsEwFYO0Ashnx/O24UpZXEVZO
+ OH5joxN43WQdl7IGeuoWZSvPXMn6La5Eq4jbIAYQCmUZpmou8YOSZIX5un68UdTLB6+W
+ GJuyLZZt5QuXYBkvdLLcBxZombtCkU74wW10tgmcCeAK/3d8uvxPdjciOULVlpSyzH5D
+ 9IjQgsnzEnNBnSQncyWYlnp8vrKvx2oRN7djtALbDq4xngW1gRDnN4jPUvhNdmyzq9Jj
+ iPVVvm/v28anHZevma5nT7IhnBwFo3j9GbcefhA9gTha8qySByVe//LkFru5IAUSsO6G
+ 5pUw==
+X-Gm-Message-State: AOAM531UfVGdY2IIgqBdQZa0er3UKHc7iQxZR2TZGXKo86YjE5BfuxsM
+ l3vuNB1hVDdNwDcKQh2X6lPvfE31cnyo+CNIo2sPj4/fEHXg7DQbOo1Iq6RBm2jEmt5GFveri6t
+ W0zsa6EgOyEL91plerRHLN18/5DhD8WHGTDtbfk26RFRphZ0=
+X-Received: by 2002:a1c:4d0e:: with SMTP id o14mr2930700wmh.1.1643116779760;
+ Tue, 25 Jan 2022 05:19:39 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwa5CbjVgAdTzjpJrtsTBt6f96wmnehH2oqiBhJobNl5d/0gRlB/5PGKzta91V9mOV7mtz02w==
+X-Received: by 2002:a1c:4d0e:: with SMTP id o14mr2930685wmh.1.1643116779550;
+ Tue, 25 Jan 2022 05:19:39 -0800 (PST)
+Received: from [192.168.0.57] (xdsl-188-155-168-84.adslplus.ch.
+ [188.155.168.84])
+ by smtp.gmail.com with ESMTPSA id l20sm552432wms.24.2022.01.25.05.19.37
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 25 Jan 2022 05:19:38 -0800 (PST)
+Message-ID: <9ce18ea8-caed-7d46-8f79-725561429f57@canonical.com>
+Date: Tue, 25 Jan 2022 14:19:36 +0100
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "will@kernel.org" <will@kernel.org>,
- "jon@solid-run.com" <jon@solid-run.com>, Linuxarm <linuxarm@huawei.com>,
- "steven.price@arm.com" <steven.price@arm.com>,
- "Guohanjun \(Hanjun Guo\)" <guohanjun@huawei.com>,
- yangyicong <yangyicong@huawei.com>,
- "Sami.Mujawar@arm.com" <Sami.Mujawar@arm.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- wanghuiqiang <wanghuiqiang@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/2] dt-bindings: mediatek: mt8186: Add binding for MM
+ iommu
+Content-Language: en-US
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ Will Deacon <will@kernel.org>
+References: <20220125093244.18230-1-yong.wu@mediatek.com>
+ <20220125093244.18230-2-yong.wu@mediatek.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220125093244.18230-2-yong.wu@mediatek.com>
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+ srv_heupstream@mediatek.com, chengci.xu@mediatek.com, xueqi.zhang@mediatek.com,
+ linux-kernel@vger.kernel.org, libo.kang@mediatek.com,
+ yen-chang.chen@mediatek.com, iommu@lists.linux-foundation.org,
+ yf.wang@mediatek.com, linux-mediatek@lists.infradead.org,
+ Hsin-Yi Wang <hsinyi@chromium.org>, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, mingyuan.ma@mediatek.com,
+ linux-arm-kernel@lists.infradead.org,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,100 +119,28 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Shameerali Kolothum Thodi via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin/Lorenzo,
-
-> -----Original Message-----
-> From: iommu [mailto:iommu-bounces@lists.linux-foundation.org] On Behalf
-> Of Shameer Kolothum
-> Sent: 05 August 2021 09:07
-> To: linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
-> iommu@lists.linux-foundation.org
-> Cc: robin.murphy@arm.com; jon@solid-run.com; Linuxarm
-> <linuxarm@huawei.com>; steven.price@arm.com; Guohanjun (Hanjun Guo)
-> <guohanjun@huawei.com>; yangyicong <yangyicong@huawei.com>;
-> Sami.Mujawar@arm.com; will@kernel.org; wanghuiqiang
-> <wanghuiqiang@huawei.com>
-> Subject: [PATCH v7 0/9] ACPI/IORT: Support for IORT RMR node
+On 25/01/2022 10:32, Yong Wu wrote:
+> Add mt8186 iommu binding. "-mm" means the iommu is for Multimedia.
 > 
-> Hi,
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>  .../bindings/iommu/mediatek,iommu.yaml        |   4 +
+>  .../dt-bindings/memory/mt8186-memory-port.h   | 217 ++++++++++++++++++
+>  2 files changed, 221 insertions(+)
+>  create mode 100644 include/dt-bindings/memory/mt8186-memory-port.h
 > 
-> The series adds support to IORT RMR nodes specified in IORT
-> Revision E.b -ARM DEN 0049E[0]. RMR nodes are used to describe
-> memory ranges that are used by endpoints and require a unity
-> mapping in SMMU.
-> 
-> We have faced issues with 3408iMR RAID controller cards which
-> fail to boot when SMMU is enabled. This is because these
-> controllers make use of host memory for various caching related
-> purposes and when SMMU is enabled the iMR firmware fails to
-> access these memory regions as there is no mapping for them.
-> IORT RMR provides a way for UEFI to describe and report these
-> memory regions so that the kernel can make a unity mapping for
-> these in SMMU.
-> 
-> Change History:
-> 
-> v6 --> v7
-> 
-> The only change from v6 is the fix pointed out by Steve to
-> the SMMUv2 SMR bypass install in patch #8.
-> 
-> Thanks to the Tested-by tags by Laurentiu with SMMUv2 and
-> Hanjun/Huiqiang with SMMUv3 for v6. I haven't added the tags
-> yet as the series still needs more review[1].
-> 
-> Feedback and tests on this series is very much appreciated.
 
-Since we have an update to IORT spec(E.c) now[1] and includes additional
-attributes/flags for the RMR node, I am planning to respin this series soon.
 
-Going through the new spec, I have a few queries,
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-The memory range attributes can now be described as one of the following,
 
-0x00: Device-nGnRnE memory
-0x01: Device-nGnRE memory
-0x02: Device-nGRE memory
-0x03: Device-GRE memory
-0x04: Normal Inner Non-cacheable Outer Non-cacheable
-0x05: Normal Inner Write-back Outer Write-back Inner Shareable
-
-I am not sure how this needs to be captured and used in the kernel. Is there
-any intention of using these fine-grained attributes in the kernel now
-or a generic mapping of the above to the struct iommu_rev_region prot field
-is enough? i.e., something like,
-
-{
-    ....
-    prot = IOMMU_READ | IOMMU_WRITE;
-
-    if (rmr_attr == normal_mem) // 0x05
-        prot |= IOMMU_CACHE;
-    
-    if (rmr_attr == device_mem) { //0x00 - 0x03
-        prot |= IOMMU_MMIO;
-        prot |= IOMMU_NOEXEC;
-    }
-    ....
-}
-
-Similarly for the 'flags' field, the new 'Access Privilege' is intended to set the
-IOMMU_PRIV ?
-  
-Please let me know.
-
-Thanks,
-Shameer
-
-[1] https://developer.arm.com/documentation/den0049/ec/?lang=en
-
+Best regards,
+Krzysztof
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
