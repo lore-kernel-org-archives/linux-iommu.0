@@ -1,60 +1,80 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 293E1C28CF5
-	for <iommu@archiver.kernel.org>; Wed, 26 Jan 2022 17:00:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 05F8CC28CF5
+	for <iommu@archiver.kernel.org>; Wed, 26 Jan 2022 17:36:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id BB46D83E48;
-	Wed, 26 Jan 2022 17:00:35 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 8259460BD4;
+	Wed, 26 Jan 2022 17:36:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SQ2aoxOdeTE3; Wed, 26 Jan 2022 17:00:34 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id e3OZnA5y7g4R; Wed, 26 Jan 2022 17:36:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 3887183E31;
-	Wed, 26 Jan 2022 17:00:34 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 4202C60EFA;
+	Wed, 26 Jan 2022 17:36:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 17582C0039;
-	Wed, 26 Jan 2022 17:00:34 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 81BD2C002D;
- Wed, 26 Jan 2022 17:00:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1A81CC0031;
+	Wed, 26 Jan 2022 17:36:28 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1792AC002D
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 17:36:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 703EC83E40;
- Wed, 26 Jan 2022 17:00:32 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 05D6760EFA
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 17:36:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WZFjY-Tv9fq3; Wed, 26 Jan 2022 17:00:31 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id lYItRMAT7stg for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Jan 2022 17:36:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 2519E83E31;
- Wed, 26 Jan 2022 17:00:31 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5F9ACD6E;
- Wed, 26 Jan 2022 09:00:30 -0800 (PST)
-Received: from [10.57.68.47] (unknown [10.57.68.47])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C1F033F7D8;
- Wed, 26 Jan 2022 09:00:28 -0800 (PST)
-Message-ID: <ee4593b8-cdf6-935a-0eaf-48a8bfeae912@arm.com>
-Date: Wed, 26 Jan 2022 17:00:23 +0000
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 072E860BD4
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 17:36:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1643218586; x=1674754586;
+ h=date:from:to:cc:subject:message-id:references:
+ mime-version:in-reply-to;
+ bh=YEq+VbUd0qvM6dYGJRXqCaF1eKzMqOSL9aGqV0Ee52U=;
+ b=HKEVRETqvy4/SWSn1id5gdlUKMmXMVHPFUHjJazNqBXq4dlSgkFDfH2q
+ zvEXnHq0hxVNnH5iqwiaLJAviyzM0oJIYMDRN0bdZ2GIRIr6HbGEzga7i
+ MIHh8Yb5IjbPT2yQqFbvSXMehYoOnaLvWb/nGgDlBS/cvDm4YpPQquoFU
+ kV4mYNqDoJlo3ndGj5oG6iIzaW+rxzDV2AosnlwSONH2dPZBaG38lNWEt
+ sv0D/qsnDRcpH06/4WsGv7MoNe3SJrsB8d7ztcm9e7SsEHhpJWT3dqyaN
+ l+4jnqJgfXMNaY1liseQulCBleszQ4Lhfprrh2hHVTTFOWoJrHq5IwRdt w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10238"; a="230178658"
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; d="scan'208";a="230178658"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Jan 2022 09:36:24 -0800
+X-IronPort-AV: E=Sophos;i="5.88,318,1635231600"; d="scan'208";a="535264237"
+Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
+ by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Jan 2022 09:36:24 -0800
+Date: Wed, 26 Jan 2022 09:36:19 -0800
+From: Fenghua Yu <fenghua.yu@intel.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v2 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+Message-ID: <YfGGk7kWNc9q2YwV@otcwcpicx3.sc.intel.com>
+References: <20211217220136.2762116-1-fenghua.yu@intel.com>
+ <20211217220136.2762116-6-fenghua.yu@intel.com>
+ <87ee4w6g1n.ffs@tglx> <87bl006fdb.ffs@tglx>
+ <Ye8RmmKpJT8brmDE@otcwcpicx3.sc.intel.com> <878rv46eg3.ffs@tglx>
+ <YfAUutQhqS6ejUFU@otcwcpicx3.sc.intel.com> <87k0em4lu9.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH] iommu/iova: Separate out rcache init
-Content-Language: en-GB
-To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org,
- mst@redhat.com, jasowang@redhat.com
-References: <1643205319-51669-1-git-send-email-john.garry@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <1643205319-51669-1-git-send-email-john.garry@huawei.com>
-Cc: xieyongji@bytedance.com, iommu@lists.linux-foundation.org,
- linuxarm@huawei.com, linux-kernel@vger.kernel.org,
- virtualization@lists.linux-foundation.org
+Content-Disposition: inline
+In-Reply-To: <87k0em4lu9.ffs@tglx>
+Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -67,321 +87,200 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-01-26 13:55, John Garry wrote:
-> Currently the rcache structures are allocated for all IOVA domains, even if
-> they do not use "fast" alloc+free interface. This is wasteful of memory.
+Hi, Thomas,
+
+On Wed, Jan 26, 2022 at 03:23:42PM +0100, Thomas Gleixner wrote:
+> On Tue, Jan 25 2022 at 07:18, Fenghua Yu wrote:
+> > On Mon, Jan 24, 2022 at 09:55:56PM +0100, Thomas Gleixner wrote:
+> >  /**
+> >   * ioasid_put - Release a reference to an ioasid
+> >   * @ioasid: the ID to remove
 > 
-> In addition, fails in init_iova_rcaches() are not handled safely, which is
-> less than ideal.
+> which in turn makes ioasid_put() a misnomer and the whole refcounting of
+> the ioasid a pointless exercise.
 > 
-> Make "fast" users call a separate rcache init explicitly, which includes
-> error checking.
+> While looking at ioasid_put() usage I tripped over the following UAF
+> issue:
 > 
-> Signed-off-by: John Garry <john.garry@huawei.com>
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4817,8 +4817,10 @@ static int aux_domain_add_dev(struct dma
+>  	auxiliary_unlink_device(domain, dev);
+>  link_failed:
+>  	spin_unlock_irqrestore(&device_domain_lock, flags);
+> -	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
+> +	if (list_empty(&domain->subdevices) && domain->default_pasid > 0) {
+>  		ioasid_put(domain->default_pasid);
+> +		domain->default_pasid = INVALID_IOASID;
+> +	}
+>  
+>  	return ret;
+>  }
+> @@ -4847,8 +4849,10 @@ static void aux_domain_remove_dev(struct
+>  
+>  	spin_unlock_irqrestore(&device_domain_lock, flags);
+>  
+> -	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
+> +	if (list_empty(&domain->subdevices) && domain->default_pasid > 0) {
+>  		ioasid_put(domain->default_pasid);
+> +		domain->default_pasid = INVALID_IOASID;
+> +	}
+>  }
+>  
+>  static int prepare_domain_attach_device(struct iommu_domain *domain,
 
-Mangled patch? (no "---" separator here)
+The above patch fixes an existing issue. I will put it in a separate patch,
+right?
 
-Overall this looks great, just a few comments further down...
+It cannot be applied cleanly to the upstream tree. Do you want me to base
+the above patch (and the whole patch set) to the upstream tree or a specific
+tip branch?
 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 3a46f2cc9e5d..dd066d990809 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -525,6 +525,7 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
->   	struct iommu_dma_cookie *cookie = domain->iova_cookie;
->   	unsigned long order, base_pfn;
->   	struct iova_domain *iovad;
-> +	int ret;
->   
->   	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
->   		return -EINVAL;
-> @@ -559,6 +560,9 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
->   	}
->   
->   	init_iova_domain(iovad, 1UL << order, base_pfn);
-> +	ret = iova_domain_init_rcaches(iovad);
-> +	if (ret)
-> +		return ret;
->   
->   	/* If the FQ fails we can simply fall back to strict mode */
->   	if (domain->type == IOMMU_DOMAIN_DMA_FQ && iommu_dma_init_fq(domain))
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index b28c9435b898..d3adc6ea5710 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -15,13 +15,14 @@
->   /* The anchor node sits above the top of the usable address space */
->   #define IOVA_ANCHOR	~0UL
->   
-> +#define IOVA_RANGE_CACHE_MAX_SIZE 6	/* log of max cached IOVA range size (in pages) */
-> +
->   static bool iova_rcache_insert(struct iova_domain *iovad,
->   			       unsigned long pfn,
->   			       unsigned long size);
->   static unsigned long iova_rcache_get(struct iova_domain *iovad,
->   				     unsigned long size,
->   				     unsigned long limit_pfn);
-> -static void init_iova_rcaches(struct iova_domain *iovad);
->   static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad);
->   static void free_iova_rcaches(struct iova_domain *iovad);
->   
-> @@ -64,8 +65,6 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
->   	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
->   	rb_link_node(&iovad->anchor.node, NULL, &iovad->rbroot.rb_node);
->   	rb_insert_color(&iovad->anchor.node, &iovad->rbroot);
-> -	cpuhp_state_add_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD, &iovad->cpuhp_dead);
-> -	init_iova_rcaches(iovad);
->   }
->   EXPORT_SYMBOL_GPL(init_iova_domain);
->   
-> @@ -497,9 +496,9 @@ void put_iova_domain(struct iova_domain *iovad)
->   {
->   	struct iova *iova, *tmp;
->   
-> -	cpuhp_state_remove_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD,
-> -					    &iovad->cpuhp_dead);
-> -	free_iova_rcaches(iovad);
-> +	if (iovad->rcaches)
-> +		iova_domain_free_rcaches(iovad);
-> +
->   	rbtree_postorder_for_each_entry_safe(iova, tmp, &iovad->rbroot, node)
->   		free_iova_mem(iova);
->   }
-> @@ -608,6 +607,7 @@ EXPORT_SYMBOL_GPL(reserve_iova);
->    */
->   
->   #define IOVA_MAG_SIZE 128
-> +#define MAX_GLOBAL_MAGS 32	/* magazines per bin */
->   
->   struct iova_magazine {
->   	unsigned long size;
-> @@ -620,6 +620,13 @@ struct iova_cpu_rcache {
->   	struct iova_magazine *prev;
->   };
->   
-> +struct iova_rcache {
-> +	spinlock_t lock;
-> +	unsigned long depot_size;
-> +	struct iova_magazine *depot[MAX_GLOBAL_MAGS];
-> +	struct iova_cpu_rcache __percpu *cpu_rcaches;
-> +};
-> +
->   static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
->   {
->   	return kzalloc(sizeof(struct iova_magazine), flags);
-> @@ -693,28 +700,62 @@ static void iova_magazine_push(struct iova_magazine *mag, unsigned long pfn)
->   	mag->pfns[mag->size++] = pfn;
->   }
->   
-> -static void init_iova_rcaches(struct iova_domain *iovad)
-> +int iova_domain_init_rcaches(struct iova_domain *iovad)
->   {
-> -	struct iova_cpu_rcache *cpu_rcache;
-> -	struct iova_rcache *rcache;
->   	unsigned int cpu;
-> -	int i;
-> +	int i, ret;
-> +
-> +	iovad->rcaches = kcalloc(IOVA_RANGE_CACHE_MAX_SIZE,
-> +				 sizeof(struct iova_rcache),
-> +				 GFP_KERNEL);
-> +	if (!iovad->rcaches)
-> +		return -ENOMEM;
->   
->   	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
-> +		struct iova_cpu_rcache *cpu_rcache;
-> +		struct iova_rcache *rcache;
-> +
->   		rcache = &iovad->rcaches[i];
->   		spin_lock_init(&rcache->lock);
->   		rcache->depot_size = 0;
-> -		rcache->cpu_rcaches = __alloc_percpu(sizeof(*cpu_rcache), cache_line_size());
-> -		if (WARN_ON(!rcache->cpu_rcaches))
-> -			continue;
-> +		rcache->cpu_rcaches = __alloc_percpu(sizeof(*cpu_rcache),
-> +						     cache_line_size());
-> +		if (!rcache->cpu_rcaches) {
-> +			ret = -ENOMEM;
-> +			goto out_err;
-> +		}
->   		for_each_possible_cpu(cpu) {
->   			cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
-> +
->   			spin_lock_init(&cpu_rcache->lock);
->   			cpu_rcache->loaded = iova_magazine_alloc(GFP_KERNEL);
->   			cpu_rcache->prev = iova_magazine_alloc(GFP_KERNEL);
-> +			if (!cpu_rcache->loaded || !cpu_rcache->prev) {
-> +				ret = -ENOMEM;
-> +				goto out_err;
-> +			}
->   		}
->   	}
-> +
-> +	ret = cpuhp_state_add_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD,
-> +					       &iovad->cpuhp_dead);
-> +	if (ret)
-> +		goto out_err;
-> +	return 0;
-> +
-> +out_err:
-> +	free_iova_rcaches(iovad);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iova_domain_init_rcaches);
-> +
-> +void iova_domain_free_rcaches(struct iova_domain *iovad)
-> +{
-> +	cpuhp_state_remove_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD,
-> +					    &iovad->cpuhp_dead);
-> +	free_iova_rcaches(iovad);
->   }
-> +EXPORT_SYMBOL_GPL(iova_domain_free_rcaches);
+I will fold the following patch into patch #5. The patch #11 (the doc patch)
+also needs to remove one paragraph talking about refcount.
 
-I think we should continue to expect external callers to clean up with 
-put_iova_domain(). If they aren't doing that already they have a bug 
-(albeit minor), and we don't want to give the impression that it's OK to 
-free the caches at any point *other* than tearing down the whole 
-iova_domain, since the implementation really wouldn't expect that.
+So I will send the whole patch set with the following changes:
+1. One new bug fix patch (the above patch)
+2. Updated patch #5 (with the following patch folded)
+3. Updated patch #11 (removing refcount description)
 
->   /*
->    * Try inserting IOVA range starting with 'iova_pfn' into 'rcache', and
-> @@ -831,7 +872,7 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
->   {
->   	unsigned int log_size = order_base_2(size);
->   
-> -	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE)
-> +	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE || !iovad->rcaches)
->   		return 0;
->   
->   	return __iova_rcache_get(&iovad->rcaches[log_size], limit_pfn - size);
-> @@ -849,6 +890,8 @@ static void free_iova_rcaches(struct iova_domain *iovad)
->   
->   	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
->   		rcache = &iovad->rcaches[i];
-> +		if (!rcache->cpu_rcaches)
-> +			break;
->   		for_each_possible_cpu(cpu) {
->   			cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
->   			iova_magazine_free(cpu_rcache->loaded);
-> @@ -858,6 +901,9 @@ static void free_iova_rcaches(struct iova_domain *iovad)
->   		for (j = 0; j < rcache->depot_size; ++j)
->   			iova_magazine_free(rcache->depot[j]);
->   	}
-> +
-> +	kfree(iovad->rcaches);
-> +	iovad->rcaches = NULL;
->   }
->   
->   /*
-> diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa_user/iova_domain.c
-> index 2b1143f11d8f..87ec9f8015f1 100644
-> --- a/drivers/vdpa/vdpa_user/iova_domain.c
-> +++ b/drivers/vdpa/vdpa_user/iova_domain.c
-> @@ -480,6 +480,7 @@ vduse_domain_create(unsigned long iova_limit, size_t bounce_size)
->   	struct file *file;
->   	struct vduse_bounce_map *map;
->   	unsigned long pfn, bounce_pfns;
-> +	int ret;
->   
->   	bounce_pfns = PAGE_ALIGN(bounce_size) >> PAGE_SHIFT;
->   	if (iova_limit <= bounce_size)
-> @@ -513,10 +514,20 @@ vduse_domain_create(unsigned long iova_limit, size_t bounce_size)
->   	spin_lock_init(&domain->iotlb_lock);
->   	init_iova_domain(&domain->stream_iovad,
->   			PAGE_SIZE, IOVA_START_PFN);
-> +	ret = iova_domain_init_rcaches(&domain->stream_iovad);
-> +	if (ret)
-> +		goto err_iovad_stream;
->   	init_iova_domain(&domain->consistent_iovad,
->   			PAGE_SIZE, bounce_pfns);
-> +	ret = iova_domain_init_rcaches(&domain->consistent_iovad);
-> +	if (ret)
-> +		goto err_iovad_consistent;
->   
->   	return domain;
-> +err_iovad_consistent:
-> +	iova_domain_free_rcaches(&domain->stream_iovad);
-> +err_iovad_stream:
-> +	fput(file);
->   err_file:
->   	vfree(domain->bounce_maps);
->   err_map:
-> diff --git a/include/linux/iova.h b/include/linux/iova.h
-> index cea79cb9f26c..f91679680ee4 100644
-> --- a/include/linux/iova.h
-> +++ b/include/linux/iova.h
-> @@ -21,18 +21,8 @@ struct iova {
->   	unsigned long	pfn_lo; /* Lowest allocated pfn */
->   };
->   
-> -struct iova_magazine;
-> -struct iova_cpu_rcache;
->   
-> -#define IOVA_RANGE_CACHE_MAX_SIZE 6	/* log of max cached IOVA range size (in pages) */
-> -#define MAX_GLOBAL_MAGS 32	/* magazines per bin */
+Are the changes OK to you?
+ 
+> 
+> Vs. ioasid_put() I think we should fold the following:
+> 
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4818,7 +4818,7 @@ static int aux_domain_add_dev(struct dma
+>  link_failed:
+>  	spin_unlock_irqrestore(&device_domain_lock, flags);
+>  	if (list_empty(&domain->subdevices) && domain->default_pasid > 0) {
+> -		ioasid_put(domain->default_pasid);
+> +		ioasid_free(domain->default_pasid);
+>  		domain->default_pasid = INVALID_IOASID;
+>  	}
+>  
+> @@ -4850,7 +4850,7 @@ static void aux_domain_remove_dev(struct
+>  	spin_unlock_irqrestore(&device_domain_lock, flags);
+>  
+>  	if (list_empty(&domain->subdevices) && domain->default_pasid > 0) {
+> -		ioasid_put(domain->default_pasid);
+> +		ioasid_free(domain->default_pasid);
+>  		domain->default_pasid = INVALID_IOASID;
+>  	}
+>  }
+> --- a/drivers/iommu/ioasid.c
+> +++ b/drivers/iommu/ioasid.c
+> @@ -2,7 +2,7 @@
+>  /*
+>   * I/O Address Space ID allocator. There is one global IOASID space, split into
+>   * subsets. Users create a subset with DECLARE_IOASID_SET, then allocate and
+> - * free IOASIDs with ioasid_alloc and ioasid_put.
+> + * free IOASIDs with ioasid_alloc() and ioasid_free().
+>   */
+>  #include <linux/ioasid.h>
+>  #include <linux/module.h>
+> @@ -15,7 +15,6 @@ struct ioasid_data {
+>  	struct ioasid_set *set;
+>  	void *private;
+>  	struct rcu_head rcu;
+> -	refcount_t refs;
+>  };
+>  
+>  /*
+> @@ -315,7 +314,6 @@ ioasid_t ioasid_alloc(struct ioasid_set
+>  
+>  	data->set = set;
+>  	data->private = private;
+> -	refcount_set(&data->refs, 1);
+>  
+>  	/*
+>  	 * Custom allocator needs allocator data to perform platform specific
+> @@ -348,17 +346,11 @@ ioasid_t ioasid_alloc(struct ioasid_set
+>  EXPORT_SYMBOL_GPL(ioasid_alloc);
+>  
+>  /**
+> - * ioasid_put - Release a reference to an ioasid
+> + * ioasid_free - Free an ioasid
+>   * @ioasid: the ID to remove
+> - *
+> - * Put a reference to the IOASID, free it when the number of references drops to
+> - * zero.
+> - *
+> - * Return: %true if the IOASID was freed, %false otherwise.
+>   */
+> -bool ioasid_put(ioasid_t ioasid)
+> +void ioasid_free(ioasid_t ioasid)
+>  {
+> -	bool free = false;
+>  	struct ioasid_data *ioasid_data;
+>  
+>  	spin_lock(&ioasid_allocator_lock);
+> @@ -368,10 +360,6 @@ bool ioasid_put(ioasid_t ioasid)
+>  		goto exit_unlock;
+>  	}
+>  
+> -	free = refcount_dec_and_test(&ioasid_data->refs);
+> -	if (!free)
+> -		goto exit_unlock;
 > -
-> -struct iova_rcache {
-> -	spinlock_t lock;
-> -	unsigned long depot_size;
-> -	struct iova_magazine *depot[MAX_GLOBAL_MAGS];
-> -	struct iova_cpu_rcache __percpu *cpu_rcaches;
-> -};
-> +struct iova_rcache;
->   
->   /* holds all the iova translations for a domain */
->   struct iova_domain {
-> @@ -46,7 +36,7 @@ struct iova_domain {
->   	unsigned long	max32_alloc_size; /* Size of last failed allocation */
->   	struct iova	anchor;		/* rbtree lookup anchor */
->   
-> -	struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];	/* IOVA range caches */
-> +	struct iova_rcache	*rcaches;
->   	struct hlist_node	cpuhp_dead;
->   };
->   
-> @@ -102,6 +92,8 @@ struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
->   	unsigned long pfn_hi);
->   void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
->   	unsigned long start_pfn);
-> +int iova_domain_init_rcaches(struct iova_domain *iovad);
-> +void iova_domain_free_rcaches(struct iova_domain *iovad);
+>  	active_allocator->ops->free(ioasid, active_allocator->ops->pdata);
+>  	/* Custom allocator needs additional steps to free the xa element */
+>  	if (active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) {
+> @@ -381,9 +369,8 @@ bool ioasid_put(ioasid_t ioasid)
+>  
+>  exit_unlock:
+>  	spin_unlock(&ioasid_allocator_lock);
+> -	return free;
+>  }
+> -EXPORT_SYMBOL_GPL(ioasid_put);
+> +EXPORT_SYMBOL_GPL(ioasid_free);
+>  
+>  /**
+>   * ioasid_find - Find IOASID data
+> --- a/include/linux/ioasid.h
+> +++ b/include/linux/ioasid.h
+> @@ -34,7 +34,7 @@ struct ioasid_allocator_ops {
+>  #if IS_ENABLED(CONFIG_IOASID)
+>  ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
+>  		      void *private);
+> -bool ioasid_put(ioasid_t ioasid);
+> +void ioasid_free(ioasid_t ioasid);
+>  void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+>  		  bool (*getter)(void *));
+>  int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
+> @@ -52,10 +52,7 @@ static inline ioasid_t ioasid_alloc(stru
+>  	return INVALID_IOASID;
+>  }
+>  
+> -static inline bool ioasid_put(ioasid_t ioasid)
+> -{
+> -	return false;
+> -}
+> +static inline void ioasid_free(ioasid_t ioasid) { }
+>  
+>  static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
+>  				bool (*getter)(void *))
+> --- a/include/linux/sched/mm.h
+> +++ b/include/linux/sched/mm.h
+> @@ -423,7 +423,7 @@ static inline void mm_pasid_set(struct m
+>  static inline void mm_pasid_drop(struct mm_struct *mm)
+>  {
+>  	if (pasid_valid(mm->pasid)) {
+> -		ioasid_put(mm->pasid);
+> +		ioasid_free(mm->pasid);
+>  		mm->pasid = INVALID_IOASID;
+>  	}
+>  }
 
-As above, I vote for just forward-declaring the free routine in iova.c 
-and keeping it entirely private.
+Thank you very much for your review!
 
->   struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
->   void put_iova_domain(struct iova_domain *iovad);
->   #else
-> @@ -157,6 +149,15 @@ static inline void init_iova_domain(struct iova_domain *iovad,
->   {
->   }
->   
-> +static inline int iova_domain_init_rcaches(struct iova_domain *iovad)
-> +{
-> +	return -ENOTSUPP;
-> +}
-> +
-> +static inline void iova_domain_free_rcaches(struct iova_domain *iovad)
-> +{
-> +}
-> +
-
-I'd be inclined not to add stubs at all - I think it's a reasonable 
-assumption that anyone involved enough to care about rcaches has a hard 
-dependency on IOMMU_IOVA already. It's certainly the case today, and I'd 
-hardly want to encourage more users anyway.
-
-Cheers,
-Robin.
-
->   static inline struct iova *find_iova(struct iova_domain *iovad,
->   				     unsigned long pfn)
->   {
+-Fenghua
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
