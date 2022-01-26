@@ -1,81 +1,98 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CE929C2BA4C
-	for <iommu@archiver.kernel.org>; Wed, 26 Jan 2022 07:35:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 720EDC2BA4C
+	for <iommu@archiver.kernel.org>; Wed, 26 Jan 2022 09:41:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 5532B40183;
-	Wed, 26 Jan 2022 07:35:01 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 16FC160B44;
+	Wed, 26 Jan 2022 09:41:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HI1hq8KkbyH4; Wed, 26 Jan 2022 07:35:00 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id BCD12400F2;
-	Wed, 26 Jan 2022 07:34:59 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9393AC0031;
-	Wed, 26 Jan 2022 07:34:59 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 73E6EC002D
- for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 07:34:58 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 6213160EB2
- for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 07:34:58 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id s_hEwAg6znsq for <iommu@lists.linux-foundation.org>;
- Wed, 26 Jan 2022 07:34:54 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp3.osuosl.org (Postfix) with ESMTPS id BC7CE60EB1
- for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 07:34:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1643182493;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=N/qUgEiGIVOkvJ8elRfl1xMuKai6mJI9yF8F1bcLYAQ=;
- b=DoMqiPeh6xD5tCSkdGXQI/FyBCRPdcvO27i6oFuEvQEr1vLUDBYqWNDU8isylw+DsIQbYR
- qFijSjZ3B6gurffnThnrKsg4hhj5tpLDnEyf5QaxcK6vBYkauOznUbnw6IP+p1l6UmqpNQ
- WL++MYin7qNFgiOMe/PTNbXzf/u2+zk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-166-39q-7M3MMv-kNksOUJuQiA-1; Wed, 26 Jan 2022 02:34:48 -0500
-X-MC-Unique: 39q-7M3MMv-kNksOUJuQiA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
- [10.5.11.13])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A889983DD22;
- Wed, 26 Jan 2022 07:34:46 +0000 (UTC)
-Received: from starship (unknown [10.40.192.15])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 3C4014E2DD;
- Wed, 26 Jan 2022 07:34:44 +0000 (UTC)
-Message-ID: <7809c3253a997330102b9d779206312d6b3bcaf1.camel@redhat.com>
-Subject: Re: [PATCH 0/5] iommu/amd: fixes for suspend/resume
-From: Maxim Levitsky <mlevitsk@redhat.com>
-To: Mike Lothian <mike@fireburn.co.uk>
-Date: Wed, 26 Jan 2022 09:34:43 +0200
-In-Reply-To: <CAHbf0-FJ0c1yAumKCnXLKKFN=tzeJxSd3HyP=dUOBgBTxVG5fw@mail.gmail.com>
-References: <20211123161038.48009-1-mlevitsk@redhat.com>
- <20220125150832.1570-1-mike@fireburn.co.uk>
- <6f0d9b07073ca6d3657500ec076edc1ad2a3e40a.camel@redhat.com>
- <CAHbf0-FJ0c1yAumKCnXLKKFN=tzeJxSd3HyP=dUOBgBTxVG5fw@mail.gmail.com>
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Qv2eD_Nx1R-j; Wed, 26 Jan 2022 09:41:43 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id E73CC60E9A;
+	Wed, 26 Jan 2022 09:41:42 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D2A9C0031;
+	Wed, 26 Jan 2022 09:41:42 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 75204C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 09:41:41 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 5B6164034B
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 09:41:41 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id olICjUqRniuN for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Jan 2022 09:41:39 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com
+ [IPv6:2a00:1450:4864:20::32a])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 9F0D140183
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 09:41:39 +0000 (UTC)
+Received: by mail-wm1-x32a.google.com with SMTP id r126so3113102wma.0
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 01:41:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=DgC3fBf+JMernk9UtJYHLs3WXUQ4WF2uVpf9z50+mN4=;
+ b=KSl6lTYmsVi33WHBN3QnElkvHgGznKo+f/d/ZSM8+9YhM6kZn6ta1q4C0eEBpR7H7H
+ q2pHOPd4qHOfapjgox1untAEzse5dCyt6yyT3CefQZZRFK8z0sNVUWu4xyM9qaQ/lCmz
+ +UfOOiLYGJw99mue93gUeV/HldhzX3TQrtN5o5o/ka41LY2jN0+yuckYPwxVyrDXvIKN
+ D7y6CqTsUwSdza5+t0tNt8p0zDQi9zhZNVyhiANXZjPp2NifE/JOmirFKQeBVO8hTTiq
+ 2PmDXc+706mQQ+8M4xyBRdTU9kB6hy0N6wsGZXqd3kgdyQb7qUDcIchacnRsxDTVOvjt
+ Faog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=DgC3fBf+JMernk9UtJYHLs3WXUQ4WF2uVpf9z50+mN4=;
+ b=h87gsnphs9ZdT3nY6hJNhiqhV6EvF/1GQitcSUt0518kTomF2hp6XtbJ0MP9Hgqh7w
+ 7aFXY3sYi66jwYgRlwkk/vF1+chnaQYLXifFdnG6o+tQF4rYHMZ0CrQEOvQOhCq5BJOY
+ Utzdn7AgObDgNdjT0jXP93fVmLgR/hdKsDqgIxDnaLyTn4Oxs7FJTaucqGLKMbeq/ylS
+ tDVUsDF3LfDtqyDB7SRxjVcwGMh/iAIPTU7oixeB5bszX+KTvYLVqrNW72KlaxHN+fVp
+ EjURTVUI8LocG+og8uAaHCMtTwNzF/jf4xz0tLcbi9HvCm+DgVNNEt4Pr4JIVVdsytyn
+ Rmiw==
+X-Gm-Message-State: AOAM533JmahD+2JDQZ4jb1hiDN/dnM6YsMW8icwEbDHKzqEKXDBVU/0v
+ xAOl0Q1zZCXVg80ph11CPpJLWg==
+X-Google-Smtp-Source: ABdhPJyX5OAK0KhXelGAEpKETNqy81bEQDZkxHDK+f3lOrdKefGHj06CmnX/XERSYPKAu/YjnUtCJg==
+X-Received: by 2002:a05:600c:4a09:: with SMTP id
+ c9mr6475785wmp.83.1643190097727; 
+ Wed, 26 Jan 2022 01:41:37 -0800 (PST)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
+ [82.27.106.168])
+ by smtp.gmail.com with ESMTPSA id m4sm2710543wmc.1.2022.01.26.01.41.35
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 26 Jan 2022 01:41:36 -0800 (PST)
+Date: Wed, 26 Jan 2022 09:41:13 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH 7/7] iommu: Add iommu_domain::domain_ops
+Message-ID: <YfEXOegPuG846NEb@myrica>
+References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
+ <20220124071103.2097118-8-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276BE30652988271878E78C8C5E9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <Ye58Zxi+F9TQszgQ@myrica> <20220124163302.GC966497@nvidia.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- tglx@linutronix.de, will@kernel.org, dwmw@amazon.co.uk
+Content-Disposition: inline
+In-Reply-To: <20220124163302.GC966497@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, David Airlie <airlied@linux.ie>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>, Jonathan Hunter <jonathanh@nvidia.com>,
+ Christoph Hellwig <hch@infradead.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Thierry Reding <thierry.reding@gmail.com>, Ben Skeggs <bskeggs@redhat.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,103 +110,45 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 2022-01-25 at 23:25 +0000, Mike Lothian wrote:
-> On Tue, 25 Jan 2022 at 19:26, Maxim Levitsky <mlevitsk@redhat.com> wrote:
-> > Could you just apply these patches on top of 5.15 kernel and see if you get the warning?
+On Mon, Jan 24, 2022 at 12:33:02PM -0400, Jason Gunthorpe wrote:
+> On Mon, Jan 24, 2022 at 10:16:07AM +0000, Jean-Philippe Brucker wrote:
+> > On Mon, Jan 24, 2022 at 09:58:18AM +0000, Tian, Kevin wrote:
+> > > > From: Lu Baolu <baolu.lu@linux.intel.com>
+> > > > Sent: Monday, January 24, 2022 3:11 PM
+> > > > +/**
+> > > > + * struct domain_ops - per-domain ops
+> > > > + * @attach_dev: attach an iommu domain to a device
+> > > > + * @detach_dev: detach an iommu domain from a device
+> > > 
+> > > What is the criteria about whether an op should be iommu_ops or domain_ops
+> > > when it requires both domain and device pointers like above two (and future
+> > > PASID-based attach)?
+> > > 
+> > > Other examples include:
+> > > 	@apply_resv_region
+> > > 	@is_attach_deferred
 > > 
-> > If something could case it is I think patch 1, it does move the GA log enabled
-> > to be a bit later.
-> > I also added few warnings there. I wonder why your dmesg quote doesn't contain the C line
-> > where the warning happens.
-> > 
-> > In partucular I added:
-> > 
-> > if (WARN_ON(status & (MMIO_STATUS_GALOG_RUN_MASK)))
-> > 
-> > That will fire if GA log is already running (maybe BIOS enabled it? - it really shouldn't do that)
-> > 
-> > 
-> > And that:
-> > 
-> > if (WARN_ON(i >= LOOP_TIMEOUT))
-> > 
-> > also should not happen and worth to be logged IMHO.
-> > 
-> > Best regards,
-> >         Maxim Levitsky
-> > 
+> > Could attach_dev() be an IOMMU op?  So a driver could set the domain ops
+> > in attach_dev() rather than domain_alloc(). That would allow to install
+> > map()/unmap() ops that are tailored for the device's IOMMU, which we don't
+> > know at domain_alloc() time. 
 > 
-> Hi
+> I think we should be moving toward 'domain_alloc' returning the
+> correct domain and the way the driver implements the domain shouldn't
+> change after that.
 > 
-> I applied on top of another kernel as you asked, I also enabled some debugging
+> > I'm thinking about a guest that has both physical and virtual
+> > endpoints, which would ideally use different kinds of domain ops to
+> > support both efficiently (caching mode vs page tables)
 > 
-> [    0.398833] ------------[ cut here ]------------
-> [    0.398835] WARNING: CPU: 0 PID: 1 at drivers/iommu/amd/init.c:839
-> amd_iommu_enable_interrupts+0x1da/0x440
-> [    0.398840] Modules linked in:
-> [    0.398841] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.16.0-rc5-agd5f+ #1388
-> [    0.398843] Hardware name: ASUSTeK COMPUTER INC. ROG Strix
-> G513QY_G513QY/G513QY, BIOS G513QY.316 11/29/2021
-> [    0.398845] RIP: 0010:amd_iommu_enable_interrupts+0x1da/0x440
-> [    0.398847] Code: 4b 38 48 89 41 18 b8 a0 86 01 00 0f 1f 44 00 00
-> 48 8b 4b 38 8b 89 20 20 00 00 f7 c1 00 01 00 00 0f 85 7a fe ff ff ff
-> c8 75 e6 <0f> 0b e9 6f fe ff ff 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44
-> 0
-> 0 00
-> [    0.398850] RSP: 0018:ffff888100927c68 EFLAGS: 00010246
-> [    0.398851] RAX: 0000000000000000 RBX: ffff88810004b000 RCX: 0000000000000018
-> [    0.398853] RDX: 0000000000000008 RSI: ffff888100927c70 RDI: ffffc900000800f0
-> [    0.398854] RBP: ffff888100927c68 R08: ffff8881015b8f88 R09: 0000000000000000
-> [    0.398855] R10: 0000000000000000 R11: ffffffffffffffff R12: ffffffff7fffffff
-> [    0.398856] R13: 0000777f80000000 R14: 0000000000000000 R15: ffffffff8357a758
-> [    0.398858] FS:  0000000000000000(0000) GS:ffff888fde400000(0000)
-> knlGS:0000000000000000
-> [    0.398859] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [    0.398860] CR2: 0000000000000000 CR3: 00000000ac40c000 CR4: 0000000000150ef0
-> [    0.398862] Call Trace:
-> [    0.398864]  <TASK>
-> [    0.398864]  ? iommu_setup+0x29a/0x29a
-> [    0.398867]  ? state_next+0x6e/0x1c9
-> [    0.398870]  ? iommu_setup+0x29a/0x29a
-> [    0.398872]  ? iommu_go_to_state+0x1f/0x33
-> [    0.398873]  ? amd_iommu_init+0xa/0x23
-> [    0.398875]  ? pci_iommu_init+0xf/0x45
-> [    0.398876]  ? iommu_setup+0x29a/0x29a
-> [    0.398878]  ? __initstub__kmod_pci_dma__244_136_pci_iommu_initrootfs+0x5/0x8
-> [    0.398880]  ? do_one_initcall+0x100/0x290
-> [    0.398882]  ? do_initcall_level+0x8b/0xe5
-> [    0.398884]  ? do_initcalls+0x44/0x6d
-> [    0.398885]  ? kernel_init_freeable+0xc7/0x10d
-> [    0.398886]  ? rest_init+0xc0/0xc0
-> [    0.398888]  ? kernel_init+0x11/0x150
-> [    0.398889]  ? ret_from_fork+0x22/0x30
-> [    0.398891]  </TASK>
-> [    0.398892] ---[ end trace f048a4ec907dc976 ]---
-> 
-> Which points to patch one and "if (WARN_ON(i >= LOOP_TIMEOUT))"
+> In this case shouldn't domain_alloc() reached from the struct device
+> already do the correct thing?
 
+Sure, if we can finalise the domains before attach that could also clean
+up the drivers a bit.
 
-Could you post the whole dmesg, or at least:
-
-dmesg | grep AMD-Vi
-
-
-What CPU does your system have?
-
-I suspect that your system doesn't GA log feature enabled in the IOMMU, and the code never checks
-for that, and here it fails enabling it, which  before my patches was just
-ignoring it silently.
-
-
-Best regards,
-	Maxim Levitsky
-> 
-> Hope that helps
-> 
-> Mike
-> 
-
-
+Thanks,
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
