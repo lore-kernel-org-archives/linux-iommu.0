@@ -1,83 +1,84 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4677DC28CF5
-	for <iommu@archiver.kernel.org>; Wed, 26 Jan 2022 10:12:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3C2EEC2BA4C
+	for <iommu@archiver.kernel.org>; Wed, 26 Jan 2022 11:54:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id CD7B260F31;
-	Wed, 26 Jan 2022 10:12:58 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id C17B1401DA;
+	Wed, 26 Jan 2022 11:54:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xYLRmMDuG7MO; Wed, 26 Jan 2022 10:12:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id C421B60F0E;
-	Wed, 26 Jan 2022 10:12:57 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 02CY6U2iOkVE; Wed, 26 Jan 2022 11:54:12 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id A7D4440209;
+	Wed, 26 Jan 2022 11:54:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 930F2C0039;
-	Wed, 26 Jan 2022 10:12:57 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2EF4BC002D
- for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 10:12:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 77DF4C0031;
+	Wed, 26 Jan 2022 11:54:11 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EE753C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 11:54:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 233A740549
- for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 10:12:56 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id E97E340950
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 11:54:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
+ dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vZ2GDKAd62Hu for <iommu@lists.linux-foundation.org>;
- Wed, 26 Jan 2022 10:12:55 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.129.124])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 1BCEF40183
- for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 10:12:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1643191973;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=YLLMjXe8Y984uSaV8UIQRt4tj6QyBzicSXco+B26HtQ=;
- b=EAYP7y7yZlTtJfNuH70wNDlDjmhlme+zJJIyPZyg8o9nlDdZp20CxZ6pOa3Sb/plX6cej7
- FYeewcr7ss3Tknnov3Fr5Ce7nw9saNhSoDlhrjsF00doED4YnQve4CQhL2Y3L/1NbpMQZu
- 9nttRVDRAf2g1bFLR6wJzUI6Wn0lRXI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-397-5d4ldEoyM6aXB6gy3S0T5Q-1; Wed, 26 Jan 2022 05:12:50 -0500
-X-MC-Unique: 5d4ldEoyM6aXB6gy3S0T5Q-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
- [10.5.11.12])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 945018519E2;
- Wed, 26 Jan 2022 10:12:48 +0000 (UTC)
-Received: from starship (unknown [10.40.192.15])
- by smtp.corp.redhat.com (Postfix) with ESMTP id A950078DE9;
- Wed, 26 Jan 2022 10:12:45 +0000 (UTC)
-Message-ID: <6cf58a4cd925726ef10481d38f9f4e8090f5023d.camel@redhat.com>
-Subject: Re: [PATCH 0/5] iommu/amd: fixes for suspend/resume
-From: Maxim Levitsky <mlevitsk@redhat.com>
-To: Mike Lothian <mike@fireburn.co.uk>
-Date: Wed, 26 Jan 2022 12:12:44 +0200
-In-Reply-To: <CAHbf0-F8Uemcu8FVcZvY0CPOf4kFXOcaCzWF1ZCwkpa3tyut3A@mail.gmail.com>
-References: <20211123161038.48009-1-mlevitsk@redhat.com>
- <20220125150832.1570-1-mike@fireburn.co.uk>
- <6f0d9b07073ca6d3657500ec076edc1ad2a3e40a.camel@redhat.com>
- <CAHbf0-FJ0c1yAumKCnXLKKFN=tzeJxSd3HyP=dUOBgBTxVG5fw@mail.gmail.com>
- <7809c3253a997330102b9d779206312d6b3bcaf1.camel@redhat.com>
- <CAHbf0-F8Uemcu8FVcZvY0CPOf4kFXOcaCzWF1ZCwkpa3tyut3A@mail.gmail.com>
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+ with ESMTP id G30pIQd_ms0t for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Jan 2022 11:54:08 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com
+ [IPv6:2607:f8b0:4864:20::431])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id E7A2440949
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 11:54:08 +0000 (UTC)
+Received: by mail-pf1-x431.google.com with SMTP id d187so1126612pfa.10
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 03:54:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+ bh=kaYqw2i/tud2QtGYAWleZSZ9J1D//dGFD3AtM+yU3og=;
+ b=cOdf94Lzw+Uq4Gg/y1YcF1UdWoGOQG4I0hDtooFx2s7YdD5+wgrUfdpWuqGTf04n25
+ gRGLTTiScyvwNY1h2eZtoPYiQcerIGq6THH1YPd0n0ffQfxwb8fK1IRiaVOEU6XotQB4
+ H9sgSoPuiuLfkodG/0KwUisBzSE/ypDxlVEiRtOzbHXln1yIcIN43JYpoqmRgRT9jwPn
+ tP+o7utiOMkI6x1H0oruL8cbA0hHX90mk45XGSS3DAQeL40cl/ExjKLA/UlkVnWEGZ2p
+ awwRKuLIuEltaup0TGJsuHUUeVXfAYlK6pltxuu3q8UYTFq0DnG+iQT/0c6O5Y7t9tW4
+ b+0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+ :content-disposition;
+ bh=kaYqw2i/tud2QtGYAWleZSZ9J1D//dGFD3AtM+yU3og=;
+ b=nNiPUsawlIiXwFbK46hKtBNc5qaeTgecM36/OBf9LuYNqocBVu84f7W1gg16dZs9PV
+ KgQ3+1RrsiFwRfIWyHi3+sEzb6sdkkXPchAkNJlMZJ16zDAluHcbi5Qh7r6oI6RwelAe
+ ZM4fR3l6rpvGy59UIi+xXbk5wbki7DHfqg0sifjF+XiJPHYO3zM16ZKo/6GFFS4dnzqj
+ t2ZOzpXFS8DwlH6KzH+bTl0sDFpc5KAWZWUJI4mfgg91sems8wDY2q09xhfbPtrqHsn3
+ JK/6AhgPIvsA8QkmnV9xXGWFrtN9I4hZ7fjS7IxA6ez14bhTxgDXeJv11Xvc6WOVZ3Kg
+ gZWg==
+X-Gm-Message-State: AOAM531JbUyQ53tcIisA+8IW2ci4BC9kSagFGpMhYm7Mv0Xi+2mIj4Jr
+ fr3cswWGzbM67FSap+jabj/Q3f7lMnBzyQ==
+X-Google-Smtp-Source: ABdhPJxUV4Mp/3bHxZgmvJhucCsib13Mg0qGH6srPxA1dJJL00/YHgrnSe1ZZtb1zC8q0vJFuvFI+Q==
+X-Received: by 2002:a63:5910:: with SMTP id n16mr1718303pgb.415.1643198048232; 
+ Wed, 26 Jan 2022 03:54:08 -0800 (PST)
+Received: from ip-172-31-19-208.ap-northeast-1.compute.internal
+ (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
+ by smtp.gmail.com with ESMTPSA id w19sm2116076pfu.47.2022.01.26.03.54.06
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 26 Jan 2022 03:54:07 -0800 (PST)
+Date: Wed, 26 Jan 2022 11:54:04 +0000
+From: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To: iommu@lists.linux-foundation.org
+Subject: [RFC][DISCUSSION] dma-mapping: allocating noncoherent buffer without
+ mapping
+Message-ID: <YfE2XMSmFtDudXYT@ip-172-31-19-208.ap-northeast-1.compute.internal>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- tglx@linutronix.de, will@kernel.org, dwmw@amazon.co.uk
+Content-Disposition: inline
+Cc: Hyeonggon Yoo <42.hyeyoo@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,62 +96,36 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 2022-01-26 at 09:54 +0000, Mike Lothian wrote:
-> On Wed, 26 Jan 2022 at 07:34, Maxim Levitsky <mlevitsk@redhat.com> wrote:
-> > Could you post the whole dmesg, or at least:
-> > 
-> > dmesg | grep AMD-Vi
-> > 
-> > 
-> > What CPU does your system have?
-> > 
-> > I suspect that your system doesn't GA log feature enabled in the IOMMU, and the code never checks
-> > for that, and here it fails enabling it, which  before my patches was just
-> > ignoring it silently.
-> > 
-> > 
-> > Best regards,
-> >         Maxim Levitsky
-> > > Hope that helps
-> > > 
-> > > Mike
-> > > 
-> 
-> Hi
-> 
-> It's an AMD Ryzen 9 5900HX
-> 
-> [    0.186350] AMD-Vi: ivrs, add hid:AMDI0020, uid:\_SB.FUR0, rdevid:160
-> [    0.186353] AMD-Vi: ivrs, add hid:AMDI0020, uid:\_SB.FUR1, rdevid:160
-> [    0.186354] AMD-Vi: ivrs, add hid:AMDI0020, uid:\_SB.FUR2, rdevid:160
-> [    0.186355] AMD-Vi: ivrs, add hid:AMDI0020, uid:\_SB.FUR3, rdevid:160
-> [    0.355628] pci 0000:00:00.2: AMD-Vi: IOMMU performance counters supported
-> [    0.356134] pci 0000:00:00.2: AMD-Vi: Found IOMMU cap 0x40
-> [    0.356136] AMD-Vi: Extended features (0x206d73ef22254ade): PPR
-> X2APIC NX GT IA GA PC GA_vAPIC
-> [    0.356140] AMD-Vi: Interrupt remapping enabled
-> [    0.356141] AMD-Vi: Virtual APIC enabled
-> [    0.356142] AMD-Vi: X2APIC enabled
-> [    0.431377] AMD-Vi: AMD IOMMUv2 loaded and initialized
-> 
-> I've attached the dmesg, I notice that some boots it doesn't happen
-> 
-> Cheers
-> 
-> Mike
+Last month we discussed drivers that uses kmalloc(GFP_DMA) for 
+noncoherent mapping should be converted to use DMA API [1]. Simple
+grep with GFP_DMA shows that many of drivers are mistakenly
+using GFP_DMA flag.
 
-Great, your system does seem to support GA log 
-(but a patch to check if, other that assume blindly that it is supported is 
-something that should be done).
+So our purpose was to make DMA API choose right zone depending on
+device's dma mask. Baoquan and I are trying to make drivers to
+use dma_alloc_noncoherent() when allocating the buffer.
 
-So could you bump the LOOP_TIMEOUT like by 10x or so and see if the problem goes away?
+But it's not simple for some of drivers; there is a gap between
+dma_alloc_noncoherent() and the previous convention (allocating buffer
+from buddy or slab allocator and mapping it when needed.)
 
-(that code should be rewritten to time based wait and not just blindly loop like that,
-I also can prepare a patch for that as well).
+For example, some drivers allocate buffer and reuse it. it just maps
+and unmaps whenever needed. And some drivers does not even maps the
+buffer. (some drivers that does not use DMA API)
 
-Best regards,
-	Maxim Levitsky
+So I think we need to implement a version of dma_alloc_noncoherent()
+that does not map the buffer.
 
+I think implementing a helper that internally calls
+__dma_direct_alloc_pages() will be okay.
+
+As I'm not expert in this area, I want to hear
+others' opinions.
+
+[1] https://lkml.org/lkml/2021/12/13/1121
+
+Thanks,
+Hyeonggon.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
