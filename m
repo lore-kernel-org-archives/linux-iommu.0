@@ -4,60 +4,55 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 645E2C2BA4C
-	for <iommu@archiver.kernel.org>; Wed, 26 Jan 2022 12:29:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 61260C28CF5
+	for <iommu@archiver.kernel.org>; Wed, 26 Jan 2022 13:08:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D37C940291;
-	Wed, 26 Jan 2022 12:29:46 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 035F240132;
+	Wed, 26 Jan 2022 13:08:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6sS-HS5sA1gj; Wed, 26 Jan 2022 12:29:46 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id B68804098A;
-	Wed, 26 Jan 2022 12:29:45 +0000 (UTC)
+	with ESMTP id VT06ztZ9pdk6; Wed, 26 Jan 2022 13:08:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 722A440977;
+	Wed, 26 Jan 2022 13:08:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7CA81C0039;
-	Wed, 26 Jan 2022 12:29:45 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E93E8C002D
- for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 12:29:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 42E44C0031;
+	Wed, 26 Jan 2022 13:08:15 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E6BB5C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 13:08:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id C35D2833C9
- for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 12:29:43 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id C65D340994
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 13:08:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ehBqijrnh5lV for <iommu@lists.linux-foundation.org>;
- Wed, 26 Jan 2022 12:29:42 +0000 (UTC)
-X-Greylist: delayed 00:05:02 by SQLgrey-1.8.0
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be
- [IPv6:2a02:1800:120:4::f00:14])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 35F8F833C7
- for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 12:29:41 +0000 (UTC)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:c4c8:1afa:4649:d034])
- by xavier.telenet-ops.be with bizsmtp
- id nQQc2600u2MCa5R01QQc3d; Wed, 26 Jan 2022 13:24:37 +0100
-Received: from rox.of.borg ([192.168.97.57])
- by ramsan.of.borg with esmtps (TLS1.3) tls
- TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.93)
- (envelope-from <geert@linux-m68k.org>)
- id 1nChLo-00BUFj-KA; Wed, 26 Jan 2022 13:24:36 +0100
-Received: from geert by rox.of.borg with local (Exim 4.93)
- (envelope-from <geert@linux-m68k.org>)
- id 1nChLo-004bRo-4P; Wed, 26 Jan 2022 13:24:36 +0100
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Rob Herring <robh+dt@kernel.org>,
- Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: [PATCH] dt-bindings: iommu: renesas, ipmmu-vmsa: Reformat renesas,
- ipmmu-main description
-Date: Wed, 26 Jan 2022 13:24:32 +0100
-Message-Id: <ea2205791573e6d99f3cb65cae99bdbfa4f65c97.1643199809.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.25.1
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id laSPKEeZYkyy for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Jan 2022 13:08:09 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id B205340977
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Jan 2022 13:08:09 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EC6401FB;
+ Wed, 26 Jan 2022 05:08:08 -0800 (PST)
+Received: from [10.57.68.47] (unknown [10.57.68.47])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 18CBD3F793;
+ Wed, 26 Jan 2022 05:08:07 -0800 (PST)
+Message-ID: <bbf3b6d4-b2b5-64b3-6dec-f1cc45f96122@arm.com>
+Date: Wed, 26 Jan 2022 13:08:04 +0000
 MIME-Version: 1.0
-Cc: linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
- iommu@lists.linux-foundation.org, Geert Uytterhoeven <geert+renesas@glider.be>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [RFC][DISCUSSION] dma-mapping: allocating noncoherent buffer
+ without mapping
+Content-Language: en-GB
+To: Hyeonggon Yoo <42.hyeyoo@gmail.com>, iommu@lists.linux-foundation.org
+References: <YfE2XMSmFtDudXYT@ip-172-31-19-208.ap-northeast-1.compute.internal>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <YfE2XMSmFtDudXYT@ip-172-31-19-208.ap-northeast-1.compute.internal>
+Cc: Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -70,38 +65,57 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Remove trailing whitespace and break overly long lines.
+On 2022-01-26 11:54, Hyeonggon Yoo wrote:
+> Last month we discussed drivers that uses kmalloc(GFP_DMA) for
+> noncoherent mapping should be converted to use DMA API [1]. Simple
+> grep with GFP_DMA shows that many of drivers are mistakenly
+> using GFP_DMA flag.
+> 
+> So our purpose was to make DMA API choose right zone depending on
+> device's dma mask. Baoquan and I are trying to make drivers to
+> use dma_alloc_noncoherent() when allocating the buffer.
+> 
+> But it's not simple for some of drivers; there is a gap between
+> dma_alloc_noncoherent() and the previous convention (allocating buffer
+> from buddy or slab allocator and mapping it when needed.)
+> 
+> For example, some drivers allocate buffer and reuse it. it just maps
+> and unmaps whenever needed. And some drivers does not even maps the
+> buffer. (some drivers that does not use DMA API)
+> 
+> So I think we need to implement a version of dma_alloc_noncoherent()
+> that does not map the buffer.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- .../devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml       | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+This doesn't make sense to me. The point of dma_alloc_* is you get back 
+a dedicated DMA buffer which can then be used at any time. In the 
+noncoherent case you have to put in explicit dma_sync_*() calls around 
+accesses when the CPU or device is expected to have updated the buffer 
+contents, but it's still fundamentally the same paradigm.
 
-diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-index 507853fcc746eea1..67da53e8d4d10aa0 100644
---- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-+++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-@@ -69,9 +69,9 @@ properties:
-     items:
-       - items:
-           - description: phandle to main IPMMU
--          - description: the interrupt bit number associated with the particular 
--              cache IPMMU device. The interrupt bit number needs to match the main 
--              IPMMU IMSSTR register. Only used by cache IPMMU instances.
-+          - description: the interrupt bit number associated with the particular
-+              cache IPMMU device. The interrupt bit number needs to match the
-+              main IPMMU IMSSTR register. Only used by cache IPMMU instances.
-     description:
-       Reference to the main IPMMU phandle plus 1 cell. The cell is
-       the interrupt bit number associated with the particular cache IPMMU
--- 
-2.25.1
+If you want to update drivers from using streaming mappings on 
+specially-allocated pages to using proper dedicated DMA buffers, then 
+update the logic in those drivers to use dedicated DMA buffers 
+appropriately. Adding an API to allocate a DMA buffer which isn't 
+actually a DMA buffer so we can "update" drivers from misusing streaming 
+mappings to still misusing streaming mappings is nonsense.
 
+Robin.
+
+> I think implementing a helper that internally calls
+> __dma_direct_alloc_pages() will be okay.
+> 
+> As I'm not expert in this area, I want to hear
+> others' opinions.
+> 
+> [1] https://lkml.org/lkml/2021/12/13/1121
+> 
+> Thanks,
+> Hyeonggon.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
