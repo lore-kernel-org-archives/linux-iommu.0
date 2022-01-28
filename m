@@ -1,74 +1,83 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 08E50C433FE
-	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 02:02:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 56E8FC433EF
+	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 02:42:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 9666E84E57;
-	Fri, 28 Jan 2022 02:02:41 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 00F0941608;
+	Fri, 28 Jan 2022 02:42:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2xUdaySEONem; Fri, 28 Jan 2022 02:02:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 4733C84E54;
-	Fri, 28 Jan 2022 02:02:40 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B576DC0039;
-	Fri, 28 Jan 2022 02:02:39 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 13233C000B
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 01:22:54 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id E5E18400D9
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 01:22:53 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=yandex.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id POjp9lpACRws for <iommu@lists.linux-foundation.org>;
- Fri, 28 Jan 2022 01:22:53 +0000 (UTC)
-X-Greylist: delayed 00:06:59 by SQLgrey-1.8.0
-Received: from forward500o.mail.yandex.net (forward500o.mail.yandex.net
- [37.140.190.195])
- by smtp4.osuosl.org (Postfix) with ESMTPS id CC26041608
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 01:22:52 +0000 (UTC)
-Received: from vla1-ae662a693c21.qloud-c.yandex.net
- (vla1-ae662a693c21.qloud-c.yandex.net
- [IPv6:2a02:6b8:c0d:2915:0:640:ae66:2a69])
- by forward500o.mail.yandex.net (Yandex) with ESMTP id 164F994114F;
- Fri, 28 Jan 2022 04:15:50 +0300 (MSK)
-Received: from 2a02:6b8:c0d:4d20:0:640:560:d235
- (2a02:6b8:c0d:4d20:0:640:560:d235 [2a02:6b8:c0d:4d20:0:640:560:d235])
- by vla1-ae662a693c21.qloud-c.yandex.net (mxback/Yandex) with HTTP id
- iFB04g0d6Os1-FndGOcIo; Fri, 28 Jan 2022 04:15:49 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.com; s=mail;
- t=1643332549; bh=bLMsithCdWvmeuCQl3UlhpB+4FzYP69GvS1fS7hEKmo=;
- h=References:Date:Message-Id:Subject:In-Reply-To:To:From;
- b=gqx9o6zwDsHl/SLTy0V0B9Q+1AZjVK/KBD3ZoHpwAnVgds3vHT7SohDFu9pLldKEA
- GrrAjFsDkWs1VNjae62yMfFcmn6X+GOXBcrNENkUloHWUJvLiyUZMlKN60wxRtMu7N
- VwR2YRUbpnU56qixGNqkkw81JPHl7TxtSz6RllEE=
-Authentication-Results: vla1-ae662a693c21.qloud-c.yandex.net;
- dkim=pass header.i=@yandex.com
-Received: by vla1-0560d23566d3.qloud-c.yandex.net with HTTP;
- Fri, 28 Jan 2022 04:15:49 +0300
-From: Will Trives <wilsonyan@yandex.com>
-Envelope-From: wilsonyan@yandex.com
-To: "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-In-Reply-To: <1591643331610@mail.yandex.com>
-References: <1591643331610@mail.yandex.com>
-Subject: Re: amd iommu / xhci  bug
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id s-c8B5W6_Gv5; Fri, 28 Jan 2022 02:42:09 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id B3670415FD;
+	Fri, 28 Jan 2022 02:42:08 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9391CC0011;
+	Fri, 28 Jan 2022 02:42:08 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3A9C1C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 02:42:07 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 214D684E67
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 02:42:07 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id DvajObwLiRXD for <iommu@lists.linux-foundation.org>;
+ Fri, 28 Jan 2022 02:42:06 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 2A77684E62
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 02:42:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1643337726; x=1674873726;
+ h=date:from:to:cc:subject:message-id:references:
+ mime-version:in-reply-to;
+ bh=qJGD54+z4s9uimUk4jVCMGmOmDNCKMZ5udJCxiNXpGY=;
+ b=E9z1ka3gHVU9M5OoRnrT5suKnqkxFfaGVWm3DxXK60g8VWsuQt4zD2te
+ 7+OTNBnYPKWQCUsORG4MleotogsZz8b/tjeTZBAkecTuW4LidRlT/q05u
+ ElQv9RK2s1T7N2nxKEyxVs2sqITJv9h6/565zRizK4euRJ0kKx6L6mqoN
+ TfvV8nfJYxoH7AJhl6HKThfrFAQGjgxDkLjJoyr3ivCdYeW9MkiEANnXw
+ 9FBd1RFCGxWPbdxVi+XTLfKhszpSy7F752jT9CamqpOXuYe/gVLAu1SwS
+ R7wPDESVc6rfrzV5edxmFsC6Ligk+DcekCI7YOpmGSmV5Gxc8Kxed5JeR g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10240"; a="227697341"
+X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; d="scan'208";a="227697341"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Jan 2022 18:42:05 -0800
+X-IronPort-AV: E=Sophos;i="5.88,322,1635231600"; d="scan'208";a="769962897"
+Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
+ by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Jan 2022 18:42:05 -0800
+Date: Thu, 27 Jan 2022 18:42:00 -0800
+From: Fenghua Yu <fenghua.yu@intel.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v2 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+Message-ID: <YfNVBzN67rSu/QcE@otcwcpicx3.sc.intel.com>
+References: <20211217220136.2762116-1-fenghua.yu@intel.com>
+ <20211217220136.2762116-6-fenghua.yu@intel.com>
+ <87ee4w6g1n.ffs@tglx> <87bl006fdb.ffs@tglx>
+ <Ye8RmmKpJT8brmDE@otcwcpicx3.sc.intel.com> <878rv46eg3.ffs@tglx>
+ <YfAUutQhqS6ejUFU@otcwcpicx3.sc.intel.com> <87k0em4lu9.ffs@tglx>
+ <YfGGk7kWNc9q2YwV@otcwcpicx3.sc.intel.com> <8735la41qb.ffs@tglx>
 MIME-Version: 1.0
-X-Mailer: Yamail [ http://yandex.ru ] 5.0
-Date: Fri, 28 Jan 2022 12:15:49 +1100
-Message-Id: <232521643332461@mail.yandex.com>
-X-Mailman-Approved-At: Fri, 28 Jan 2022 02:02:38 +0000
+Content-Disposition: inline
+In-Reply-To: <8735la41qb.ffs@tglx>
+Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,71 +90,93 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============1507626886642465604=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
---===============1507626886642465604==
-Content-Transfer-Encoding: base64
-Content-Type: text/html; charset=utf-8
+Hi, Thomas,
 
-PGRpdj5JIGZvcmdvdCB0byBtZW50aW9uIHRoaXMgaXMgd2l0aCBrZXJuZWwgNS4xNy1yYzEgYW5k
-IGhhcyBiZWVuIGFzIGlzc3VlIGZvciBhIHdoaWxlIGF0IGxlYXN0IHNpbmNlIDUuMTYsIG1heWJl
-IGFsd2F5cy48L2Rpdj48ZGl2PsKgPC9kaXY+PGRpdj4yOC4wMS4yMDIyLCAxMjowOSwgIldpbGwg
-VHJpdmVzIiAmbHQ7d2lsc29ueWFuQHlhbmRleC5jb20mZ3Q7OjwvZGl2PjxibG9ja3F1b3RlPjxk
-aXY+SGVsbG8sPC9kaXY+PGRpdj7CoDwvZGl2PjxkaXY+PGRpdj5bNTE3NzcuNTI5MDQyXSByODE1
-MiA2LTI6MS4wIGVucDRzMGY0dTI6IGNhcnJpZXIgb2ZmPC9kaXY+PGRpdj5bODY0OTMuNDQ1Nzc2
-XSB4aGNpX2hjZCAwMDAwOjA0OjAwLjM6IFdBUk4gU3VjY2Vzc2Z1bCBjb21wbGV0aW9uIG9uIHNo
-b3J0IFRYPC9kaXY+PGRpdj5bODY0OTMuNDkxNzk5XSB4aGNpX2hjZCAwMDAwOjA0OjAwLjM6IEFN
-RC1WaTogRXZlbnQgbG9nZ2VkIFtJT19QQUdFX0ZBVUxUIGRvbWFpbj0weDAwMGMgYWRkcmVzcz0w
-eGJmYWZlMDAwIGZsYWdzPTB4MDAyMF08L2Rpdj48ZGl2Pls4NjU1My42NTIwMTldIHNkIDY6MDow
-OjE6IFtzZGNdIHRhZyMyNSB1YXNfZWhfYWJvcnRfaGFuZGxlciAwIHVhcy10YWcgMiBpbmZsaWdo
-dDogQ01EIElOwqA8L2Rpdj48ZGl2Pls4NjU1My42NTIwMjVdIHNkIDY6MDowOjE6IFtzZGNdIHRh
-ZyMyNSBDREI6IEFUQSBjb21tYW5kIHBhc3MgdGhyb3VnaCgxNikgODUgMDggMGUgMDAgZDAgMDAg
-MDEgMDAgMDAgMDAgNGYgMDAgYzIgMDAgYjAgMDA8L2Rpdj48ZGl2Pls4NjU1OC43NjA5OTBdIHho
-Y2lfaGNkIDAwMDA6MDQ6MDAuMzogeEhDSSBob3N0IG5vdCByZXNwb25kaW5nIHRvIHN0b3AgZW5k
-cG9pbnQgY29tbWFuZC48L2Rpdj48ZGl2Pls4NjU1OC43NjA5OTZdIHhoY2lfaGNkIDAwMDA6MDQ6
-MDAuMzogVVNCU1RTOiBIQ0hhbHRlZCBIU0U8L2Rpdj48ZGl2Pls4NjU1OC43NjEwMDFdIHhoY2lf
-aGNkIDAwMDA6MDQ6MDAuMzogeEhDSSBob3N0IGNvbnRyb2xsZXIgbm90IHJlc3BvbmRpbmcsIGFz
-c3VtZSBkZWFkPC9kaXY+PGRpdj5bODY1NTguNzYxMDE2XSB4aGNpX2hjZCAwMDAwOjA0OjAwLjM6
-IEhDIGRpZWQ7IGNsZWFuaW5nIHVwPC9kaXY+PGRpdj5bODY1NTguNzYxMDY0XSB1c2IgMy0xOiBV
-U0IgZGlzY29ubmVjdCwgZGV2aWNlIG51bWJlciAyPC9kaXY+PGRpdj5bODY1NTguNzYxMDkwXSBz
-ZCA2OjA6MDoxOiBbc2RjXSB0YWcjNSB1YXNfZWhfYWJvcnRfaGFuZGxlciAwIHVhcy10YWcgMSBp
-bmZsaWdodDogQ01EwqA8L2Rpdj48ZGl2Pls4NjU1OC43NjEwOTRdIHNkIDY6MDowOjE6IFtzZGNd
-IHRhZyM1IENEQjogQVRBIGNvbW1hbmQgcGFzcyB0aHJvdWdoKDE2KSA4NSAwOCAwZSAwMCBkMCAw
-MCAwMSAwMCAwMCAwMCA0ZiAwMCBjMiAwMCBiMCAwMDwvZGl2PjxkaXY+Wzg2NTU4Ljc2MTQwM10g
-dXNiIDQtMTogVVNCIGRpc2Nvbm5lY3QsIGRldmljZSBudW1iZXIgMjwvZGl2PjxkaXY+Wzg2NTU4
-Ljc2MTU5NV0gdXNiIDQtMjogVVNCIGRpc2Nvbm5lY3QsIGRldmljZSBudW1iZXIgMzwvZGl2Pjxk
-aXY+Wzg2NTU4Ljc2OTc4OV0gc2NzaSBob3N0NjogdWFzX2VoX2RldmljZV9yZXNldF9oYW5kbGVy
-IEZBSUxFRCB0byBnZXQgbG9jayBlcnIgLTE5PC9kaXY+PGRpdj5bODY1NTguNzY5Nzk0XSBzZCA2
-OjA6MDoxOiBEZXZpY2Ugb2ZmbGluZWQgLSBub3QgcmVhZHkgYWZ0ZXIgZXJyb3IgcmVjb3Zlcnk8
-L2Rpdj48ZGl2Pls4NjU1OC43Njk3OTZdIHNkIDY6MDowOjE6IERldmljZSBvZmZsaW5lZCAtIG5v
-dCByZWFkeSBhZnRlciBlcnJvciByZWNvdmVyeTwvZGl2PjxkaXY+wqA8L2Rpdj48ZGl2PlRoZXJl
-IHNlZW1zIHRvIGJlIHNvbWUga2luZCBvZiBidWcgd2l0aCBpb21tdSBhbmQgcG9zc2libHkgeGhj
-aSBkcml2ZXIuIEkgbGVhdmUgbXkgY29tcHV0ZXIgdW5hdHRlbmRlZCBhdCBuaWdodCwgZGlzY29u
-bmVjdGluZyB0aGUgZXRoZXJuZXQgY29ubmVjdGlvbi4gV2hlbiBJIGNvbWUgYmFjayBpbiB0aGUg
-bW9ybmluZyBJIGNhbid0IGFjY2VzcyBteSBzdG9yYWdlIGRldmljZXMgY29ubmVjdGVkIHZpYSBh
-IDUgYmF5IG9yaWNvIHVzYiBkb2NrLCByZWxvYWRpbmcgdGhlIHhoY2lfcGNpIGFuZCB4aGNpX2hj
-ZCBtb2R1bGVzIGFsbG93cyBtZSB0byBhY2Nlc3MgdGhlIHN0b3JhZ2UgYWdhaW4gd2l0aG91dCBy
-ZWJvb3RpbmcgYnV0IEkgdGhlbiBoYXZlIHRvIHNldCB1cCB0aGUgdXNiIG5ldHdvcmtpbmcgYWdh
-aW4gKGRoY3BjZCBldGMpLiBDdXJpb3VzIHRoYXQgdGhpcyBzZWVtcyB0byBoYXBwZW4gb25seSB3
-aGVuIHRoZSBjb21wdXRlciBpcyB1bmF0dGVuZGVkLCBzb21lIGtpbmQgb2YgcG93ZXIgc2F2aW5n
-IGlzc3VlIHdpdGggdGhlIGRvY2sgPzwvZGl2PjxkaXY+wqA8L2Rpdj48ZGl2PsKgPC9kaXY+PGRp
-dj5Tb21ldGltZXMgd2hlbiBib290aW5nIHRoZSBkZXZpY2VzIGFsc28gYXJlbid0IGRldGVjdGVk
-IGFuZCBJIGhhdmUgdG8gc3dpdGNoIHRoZSBwb3dlciB0byB0aGUgZHJpdmUgYmF5IG9mZiBhbmQg
-YmFjayBvbi48L2Rpdj48ZGl2PsKgPC9kaXY+PGRpdj5Nb3RoZXJib2FyZDogR2lnYWJ5dGUgQW9y
-dXMgQjU1ME0gUHJvLVAgwqAgwqAgwqAgKEI1NTBNIGNoaXBzZXQpPC9kaXY+PGRpdj7CoDwvZGl2
-PjxkaXY+wqA8L2Rpdj48ZGl2PsKgPC9kaXY+PGRpdj5SZWdhcmRzLDwvZGl2PjxkaXY+wqA8L2Rp
-dj48ZGl2PldpbGwgVHJpdmVzPC9kaXY+PC9kaXY+PC9ibG9ja3F1b3RlPg==
+On Wed, Jan 26, 2022 at 10:38:04PM +0100, Thomas Gleixner wrote:
+> On Wed, Jan 26 2022 at 09:36, Fenghua Yu wrote:
+> > On Wed, Jan 26, 2022 at 03:23:42PM +0100, Thomas Gleixner wrote:
+> >> On Tue, Jan 25 2022 at 07:18, Fenghua Yu wrote:
+> >> While looking at ioasid_put() usage I tripped over the following UAF
+> >> issue:
+> >> 
+> >> --- a/drivers/iommu/intel/iommu.c
+> >> +++ b/drivers/iommu/intel/iommu.c
+> >> @@ -4817,8 +4817,10 @@ static int aux_domain_add_dev(struct dma
+> >>  	auxiliary_unlink_device(domain, dev);
+> >>  link_failed:
+> >>  	spin_unlock_irqrestore(&device_domain_lock, flags);
+> >> -	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
+> >> +	if (list_empty(&domain->subdevices) && domain->default_pasid > 0) {
+> >>  		ioasid_put(domain->default_pasid);
+> >> +		domain->default_pasid = INVALID_IOASID;
+> >> +	}
+> >>  
+> >>  	return ret;
+> >>  }
+> >> @@ -4847,8 +4849,10 @@ static void aux_domain_remove_dev(struct
+> >>  
+> >>  	spin_unlock_irqrestore(&device_domain_lock, flags);
+> >>  
+> >> -	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
+> >> +	if (list_empty(&domain->subdevices) && domain->default_pasid > 0) {
+> >>  		ioasid_put(domain->default_pasid);
+> >> +		domain->default_pasid = INVALID_IOASID;
+> >> +	}
+> >>  }
+> >>  
+> >>  static int prepare_domain_attach_device(struct iommu_domain *domain,
+> >
+> > The above patch fixes an existing issue. I will put it in a separate patch,
+> > right?
+> 
+> Correct.
+> 
+> > It cannot be applied cleanly to the upstream tree. Do you want me to base
+> > the above patch (and the whole patch set) to the upstream tree or a specific
+> > tip branch?
+> 
+> Against Linus tree please so that the bugfix applies.
+> 
+> > I will fold the following patch into patch #5. The patch #11 (the doc patch)
+> > also needs to remove one paragraph talking about refcount.
+> >
+> > So I will send the whole patch set with the following changes:
+> > 1. One new bug fix patch (the above patch)
 
---===============1507626886642465604==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+When I study your above aux_domain bug fix path, I find more aux_domain bugs.
+But then I find aux_domain will be completely removed because all aux_domain
+related callbacks are not called and are dead code (no wonder there are
+so many bugs in aux_domain). Please see this series: https://lore.kernel.org/linux-iommu/20220124071103.2097118-4-baolu.lu@linux.intel.com/
+For the series, Baolu confirms that he is "pretty sure that should be part
+of v5.18". And I don't find the series calls any IOASID function after
+removing the aux_domain code.
 
+So that means we don't need to fix those issues in the dead aux_domain
+code any more because it will be completely removed in 5.18, right?
+
+If you agree, I will not include the aux_domain fix patch or any other
+aux_domain fix patches in the up-coming v3. Is that OK?
+
+> > 2. Updated patch #5 (with the following patch folded)
+
+I will still change ioasid_put() in the aux_domain callbacks to ioasid_free()
+in patch #5. So compilation will pass. Baolu's series will remove
+the entire aux_domain code in 5.18.
+
+> > 3. Updated patch #11 (removing refcount description)
+> 
+> Looks good.
+> 
+
+Thanks.
+
+-Fenghua
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============1507626886642465604==--
