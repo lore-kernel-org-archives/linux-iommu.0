@@ -1,98 +1,76 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 438F2C3527B
-	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 00:26:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0506EC433EF
+	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 02:02:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 732BA41C90;
-	Fri, 28 Jan 2022 00:26:47 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 69FA640298;
+	Fri, 28 Jan 2022 02:02:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Ii80qtIT0Usk; Fri, 28 Jan 2022 00:26:46 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id svfdnbGuSzNR; Fri, 28 Jan 2022 02:02:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 1378E41CBA;
-	Fri, 28 Jan 2022 00:26:46 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A365340019;
+	Fri, 28 Jan 2022 02:02:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B2A64C007D;
-	Fri, 28 Jan 2022 00:26:45 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1AE0AC002D
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 00:26:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 63BC0C0011;
+	Fri, 28 Jan 2022 02:02:39 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 14425C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 01:16:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 3EDC860F80
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 00:26:42 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 0A66484D4B
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 01:16:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=deltatee.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BKwE82X-t6TG for <iommu@lists.linux-foundation.org>;
- Fri, 28 Jan 2022 00:26:41 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 8E24B60F4D
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 00:26:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
- Message-Id:Date:Cc:To:From:content-disposition;
- bh=HHp/udGn7DOd58DraTUExtOtELgyrWSCODGG+didgEo=; b=REQ1q6keF1k3wmIvHrJ2N1tUZF
- /8akmrb1y4+4Z+n8KDFTApTCuHTzYuTKoSOQ1Hz0hLwVn+cEXd021htW4RxREBjpYLCk2osB2ZkeQ
- +XpTeIAMs56GK/2+jr7+6JvI1fUbDZTIw2R2iFwKGVs7XFKLRPq56p2eCCIRr6D8Ntmq9vk0nUH55
- btpQhL1YhY4uqH2fP0BOBi/X50wctXiZPq6lMW5hWLTy6kOdr2fr/KwgXPBCIG2vM1AwmUaDa/eZR
- biVZtYLIJTN10PnA5CSNOnpgt61NBiVZBYgA1T+TT8zWfdfCj2i1lSz2xfnXrJtHs/zmzrEsdi9rZ
- D4pR5lGA==;
-Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
- by ale.deltatee.com with esmtps (TLS1.3) tls
- TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94.2)
- (envelope-from <gunthorp@deltatee.com>)
- id 1nDF5w-005Oca-5a; Thu, 27 Jan 2022 17:26:34 -0700
-Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim
- 4.94.2) (envelope-from <gunthorp@deltatee.com>)
- id 1nDF5m-0001cO-QF; Thu, 27 Jan 2022 17:26:18 -0700
-From: Logan Gunthorpe <logang@deltatee.com>
-To: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
- linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org
-Date: Thu, 27 Jan 2022 17:25:55 -0700
-Message-Id: <20220128002614.6136-6-logang@deltatee.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220128002614.6136-1-logang@deltatee.com>
-References: <20220128002614.6136-1-logang@deltatee.com>
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=yandex.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id EqYFBCiPR8zL for <iommu@lists.linux-foundation.org>;
+ Fri, 28 Jan 2022 01:16:54 +0000 (UTC)
+X-Greylist: delayed 00:07:47 by SQLgrey-1.8.0
+Received: from forward104j.mail.yandex.net (forward104j.mail.yandex.net
+ [5.45.198.247])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 4EDA38316F
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 01:16:54 +0000 (UTC)
+Received: from forward102q.mail.yandex.net (forward102q.mail.yandex.net
+ [IPv6:2a02:6b8:c0e:1ba:0:640:516:4e7d])
+ by forward104j.mail.yandex.net (Yandex) with ESMTP id C07452F98374;
+ Fri, 28 Jan 2022 04:09:00 +0300 (MSK)
+Received: from vla1-85d2a0988c40.qloud-c.yandex.net
+ (vla1-85d2a0988c40.qloud-c.yandex.net
+ [IPv6:2a02:6b8:c0d:511a:0:640:85d2:a098])
+ by forward102q.mail.yandex.net (Yandex) with ESMTP id BB9C4BF00002;
+ Fri, 28 Jan 2022 04:09:00 +0300 (MSK)
+Received: from 2a02:6b8:c0d:1686:0:640:2375:e02e
+ (2a02:6b8:c0d:1686:0:640:2375:e02e [2a02:6b8:c0d:1686:0:640:2375:e02e])
+ by vla1-85d2a0988c40.qloud-c.yandex.net (mxback/Yandex) with HTTP id
+ r8BDLf0cfKo1-90cmxu6G; Fri, 28 Jan 2022 04:09:00 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.com; s=mail;
+ t=1643332140; bh=usrA3nlvYA7cg1Id1Zg98Js3Uxn8sedcOQX6bqj2G5Y=;
+ h=Message-Id:Date:Subject:To:From;
+ b=oz/10J/Sc+w1WoEVyfpC81hoRqDjUz7rlC6qyEsjDeYczwQMEZSmRVTM7eEwmu8M9
+ z37V28NyJ/fqyFJCS7Pq/297qM75uVLU/SHqUp+ZDFqSyIwevF16wFn3euXpdtncom
+ 1OLM7mFWeYk0XoFChSb96vHxBY7X/nJN1O1LjqKo=
+Authentication-Results: vla1-85d2a0988c40.qloud-c.yandex.net;
+ dkim=pass header.i=@yandex.com
+Received: by vla1-2375e02e97a8.qloud-c.yandex.net with HTTP;
+ Fri, 28 Jan 2022 04:09:00 +0300
+From: Will Trives <wilsonyan@yandex.com>
+Envelope-From: wilsonyan@yandex.com
+To: "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Subject: amd iommu / xhci  bug
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de,
- jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com,
- willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net,
- dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com,
- andrzej.jakowski@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com,
- ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com,
- ckulkarnilinux@gmail.com, logang@deltatee.com, bhelgaas@google.com,
- jhubbard@nvidia.com, rcampbell@nvidia.com, jgg@nvidia.com, kch@nvidia.com
-X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v5 05/24] PCI/P2PDMA: Expose pci_p2pdma_map_type()
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>,
- Dave Hansen <dave.hansen@linux.intel.com>, Stephen Bates <sbates@raithlin.com>,
- Jason Ekstrand <jason@jlekstrand.net>, Ira Weiny <ira.weiny@intel.com>,
- Christoph Hellwig <hch@lst.de>, Minturn Dave B <dave.b.minturn@intel.com>,
- Martin Oliveira <martin.oliveira@eideticom.com>,
- Matthew Wilcox <willy@infradead.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
- Bjorn Helgaas <helgaas@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>,
- Ralph Campbell <rcampbell@nvidia.com>, Chaitanya Kulkarni <kch@nvidia.com>,
- John Hubbard <jhubbard@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>,
- Dan Williams <dan.j.williams@intel.com>,
- Jakowski Andrzej <andrzej.jakowski@intel.com>,
- Xiong Jianxin <jianxin.xiong@intel.com>, Logan Gunthorpe <logang@deltatee.com>,
- Robin Murphy <robin.murphy@arm.com>,
- =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
+X-Mailer: Yamail [ http://yandex.ru ] 5.0
+Date: Fri, 28 Jan 2022 12:09:00 +1100
+Message-Id: <1591643331610@mail.yandex.com>
+X-Mailman-Approved-At: Fri, 28 Jan 2022 02:02:38 +0000
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,136 +83,67 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============5813184706083757918=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-pci_p2pdma_map_type() will be needed by the dma-iommu map_sg
-implementation because it will need to determine the mapping type
-ahead of actually doing the mapping to create the actual IOMMU mapping.
+--===============5813184706083757918==
+Content-Transfer-Encoding: base64
+Content-Type: text/html; charset=utf-8
 
-Prototypes for this helper are added to dma-map-ops.h as they are only
-useful to dma map implementations and don't need to pollute the public
-pci-p2pdma header
+PGRpdj5IZWxsbyw8L2Rpdj48ZGl2PsKgPC9kaXY+PGRpdj48ZGl2Pls1MTc3Ny41MjkwNDJdIHI4
+MTUyIDYtMjoxLjAgZW5wNHMwZjR1MjogY2FycmllciBvZmY8L2Rpdj48ZGl2Pls4NjQ5My40NDU3
+NzZdIHhoY2lfaGNkIDAwMDA6MDQ6MDAuMzogV0FSTiBTdWNjZXNzZnVsIGNvbXBsZXRpb24gb24g
+c2hvcnQgVFg8L2Rpdj48ZGl2Pls4NjQ5My40OTE3OTldIHhoY2lfaGNkIDAwMDA6MDQ6MDAuMzog
+QU1ELVZpOiBFdmVudCBsb2dnZWQgW0lPX1BBR0VfRkFVTFQgZG9tYWluPTB4MDAwYyBhZGRyZXNz
+PTB4YmZhZmUwMDAgZmxhZ3M9MHgwMDIwXTwvZGl2PjxkaXY+Wzg2NTUzLjY1MjAxOV0gc2QgNjow
+OjA6MTogW3NkY10gdGFnIzI1IHVhc19laF9hYm9ydF9oYW5kbGVyIDAgdWFzLXRhZyAyIGluZmxp
+Z2h0OiBDTUQgSU7CoDwvZGl2PjxkaXY+Wzg2NTUzLjY1MjAyNV0gc2QgNjowOjA6MTogW3NkY10g
+dGFnIzI1IENEQjogQVRBIGNvbW1hbmQgcGFzcyB0aHJvdWdoKDE2KSA4NSAwOCAwZSAwMCBkMCAw
+MCAwMSAwMCAwMCAwMCA0ZiAwMCBjMiAwMCBiMCAwMDwvZGl2PjxkaXY+Wzg2NTU4Ljc2MDk5MF0g
+eGhjaV9oY2QgMDAwMDowNDowMC4zOiB4SENJIGhvc3Qgbm90IHJlc3BvbmRpbmcgdG8gc3RvcCBl
+bmRwb2ludCBjb21tYW5kLjwvZGl2PjxkaXY+Wzg2NTU4Ljc2MDk5Nl0geGhjaV9oY2QgMDAwMDow
+NDowMC4zOiBVU0JTVFM6IEhDSGFsdGVkIEhTRTwvZGl2PjxkaXY+Wzg2NTU4Ljc2MTAwMV0geGhj
+aV9oY2QgMDAwMDowNDowMC4zOiB4SENJIGhvc3QgY29udHJvbGxlciBub3QgcmVzcG9uZGluZywg
+YXNzdW1lIGRlYWQ8L2Rpdj48ZGl2Pls4NjU1OC43NjEwMTZdIHhoY2lfaGNkIDAwMDA6MDQ6MDAu
+MzogSEMgZGllZDsgY2xlYW5pbmcgdXA8L2Rpdj48ZGl2Pls4NjU1OC43NjEwNjRdIHVzYiAzLTE6
+IFVTQiBkaXNjb25uZWN0LCBkZXZpY2UgbnVtYmVyIDI8L2Rpdj48ZGl2Pls4NjU1OC43NjEwOTBd
+IHNkIDY6MDowOjE6IFtzZGNdIHRhZyM1IHVhc19laF9hYm9ydF9oYW5kbGVyIDAgdWFzLXRhZyAx
+IGluZmxpZ2h0OiBDTUTCoDwvZGl2PjxkaXY+Wzg2NTU4Ljc2MTA5NF0gc2QgNjowOjA6MTogW3Nk
+Y10gdGFnIzUgQ0RCOiBBVEEgY29tbWFuZCBwYXNzIHRocm91Z2goMTYpIDg1IDA4IDBlIDAwIGQw
+IDAwIDAxIDAwIDAwIDAwIDRmIDAwIGMyIDAwIGIwIDAwPC9kaXY+PGRpdj5bODY1NTguNzYxNDAz
+XSB1c2IgNC0xOiBVU0IgZGlzY29ubmVjdCwgZGV2aWNlIG51bWJlciAyPC9kaXY+PGRpdj5bODY1
+NTguNzYxNTk1XSB1c2IgNC0yOiBVU0IgZGlzY29ubmVjdCwgZGV2aWNlIG51bWJlciAzPC9kaXY+
+PGRpdj5bODY1NTguNzY5Nzg5XSBzY3NpIGhvc3Q2OiB1YXNfZWhfZGV2aWNlX3Jlc2V0X2hhbmRs
+ZXIgRkFJTEVEIHRvIGdldCBsb2NrIGVyciAtMTk8L2Rpdj48ZGl2Pls4NjU1OC43Njk3OTRdIHNk
+IDY6MDowOjE6IERldmljZSBvZmZsaW5lZCAtIG5vdCByZWFkeSBhZnRlciBlcnJvciByZWNvdmVy
+eTwvZGl2PjxkaXY+Wzg2NTU4Ljc2OTc5Nl0gc2QgNjowOjA6MTogRGV2aWNlIG9mZmxpbmVkIC0g
+bm90IHJlYWR5IGFmdGVyIGVycm9yIHJlY292ZXJ5PC9kaXY+PGRpdj7CoDwvZGl2PjxkaXY+VGhl
+cmUgc2VlbXMgdG8gYmUgc29tZSBraW5kIG9mIGJ1ZyB3aXRoIGlvbW11IGFuZCBwb3NzaWJseSB4
+aGNpIGRyaXZlci4gSSBsZWF2ZSBteSBjb21wdXRlciB1bmF0dGVuZGVkIGF0IG5pZ2h0LCBkaXNj
+b25uZWN0aW5nIHRoZSBldGhlcm5ldCBjb25uZWN0aW9uLiBXaGVuIEkgY29tZSBiYWNrIGluIHRo
+ZSBtb3JuaW5nIEkgY2FuJ3QgYWNjZXNzIG15IHN0b3JhZ2UgZGV2aWNlcyBjb25uZWN0ZWQgdmlh
+IGEgNSBiYXkgb3JpY28gdXNiIGRvY2ssIHJlbG9hZGluZyB0aGUgeGhjaV9wY2kgYW5kIHhoY2lf
+aGNkIG1vZHVsZXMgYWxsb3dzIG1lIHRvIGFjY2VzcyB0aGUgc3RvcmFnZSBhZ2FpbiB3aXRob3V0
+IHJlYm9vdGluZyBidXQgSSB0aGVuIGhhdmUgdG8gc2V0IHVwIHRoZSB1c2IgbmV0d29ya2luZyBh
+Z2FpbiAoZGhjcGNkIGV0YykuIEN1cmlvdXMgdGhhdCB0aGlzIHNlZW1zIHRvIGhhcHBlbiBvbmx5
+IHdoZW4gdGhlIGNvbXB1dGVyIGlzIHVuYXR0ZW5kZWQsIHNvbWUga2luZCBvZiBwb3dlciBzYXZp
+bmcgaXNzdWUgd2l0aCB0aGUgZG9jayA/PC9kaXY+PGRpdj7CoDwvZGl2PjxkaXY+wqA8L2Rpdj48
+ZGl2PlNvbWV0aW1lcyB3aGVuIGJvb3RpbmcgdGhlIGRldmljZXMgYWxzbyBhcmVuJ3QgZGV0ZWN0
+ZWQgYW5kIEkgaGF2ZSB0byBzd2l0Y2ggdGhlIHBvd2VyIHRvIHRoZSBkcml2ZSBiYXkgb2ZmIGFu
+ZCBiYWNrIG9uLjwvZGl2PjxkaXY+wqA8L2Rpdj48ZGl2Pk1vdGhlcmJvYXJkOiBHaWdhYnl0ZSBB
+b3J1cyBCNTUwTSBQcm8tUCDCoCDCoCDCoCAoQjU1ME0gY2hpcHNldCk8L2Rpdj48ZGl2PsKgPC9k
+aXY+PGRpdj7CoDwvZGl2PjxkaXY+wqA8L2Rpdj48ZGl2PlJlZ2FyZHMsPC9kaXY+PGRpdj7CoDwv
+ZGl2PjxkaXY+V2lsbCBUcml2ZXM8L2Rpdj48L2Rpdj4=
 
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
----
- drivers/pci/p2pdma.c        | 25 +++++++++++++--------
- include/linux/dma-map-ops.h | 45 +++++++++++++++++++++++++++++++++++++
- 2 files changed, 61 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
-index bb8900ce073a..751d682e66ae 100644
---- a/drivers/pci/p2pdma.c
-+++ b/drivers/pci/p2pdma.c
-@@ -10,6 +10,7 @@
- 
- #define pr_fmt(fmt) "pci-p2pdma: " fmt
- #include <linux/ctype.h>
-+#include <linux/dma-map-ops.h>
- #include <linux/pci-p2pdma.h>
- #include <linux/module.h>
- #include <linux/slab.h>
-@@ -20,13 +21,6 @@
- #include <linux/seq_buf.h>
- #include <linux/xarray.h>
- 
--enum pci_p2pdma_map_type {
--	PCI_P2PDMA_MAP_UNKNOWN = 0,
--	PCI_P2PDMA_MAP_NOT_SUPPORTED,
--	PCI_P2PDMA_MAP_BUS_ADDR,
--	PCI_P2PDMA_MAP_THRU_HOST_BRIDGE,
--};
--
- struct pci_p2pdma {
- 	struct gen_pool *pool;
- 	bool p2pmem_published;
-@@ -841,8 +835,21 @@ void pci_p2pmem_publish(struct pci_dev *pdev, bool publish)
- }
- EXPORT_SYMBOL_GPL(pci_p2pmem_publish);
- 
--static enum pci_p2pdma_map_type pci_p2pdma_map_type(struct dev_pagemap *pgmap,
--						    struct device *dev)
-+/**
-+ * pci_p2pdma_map_type - return the type of mapping that should be used for
-+ *	a given device and pgmap
-+ * @pgmap: the pagemap of a page to determine the mapping type for
-+ * @dev: device that is mapping the page
-+ *
-+ * Returns one of:
-+ *	PCI_P2PDMA_MAP_NOT_SUPPORTED - The mapping should not be done
-+ *	PCI_P2PDMA_MAP_BUS_ADDR - The mapping should use the PCI bus address
-+ *	PCI_P2PDMA_MAP_THRU_HOST_BRIDGE - The mapping should be done normally
-+ *		using the CPU physical address (in dma-direct) or an IOVA
-+ *		mapping for the IOMMU.
-+ */
-+enum pci_p2pdma_map_type pci_p2pdma_map_type(struct dev_pagemap *pgmap,
-+					     struct device *dev)
- {
- 	enum pci_p2pdma_map_type type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
- 	struct pci_dev *provider = to_p2p_pgmap(pgmap)->provider;
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 0d5b06b3a4a6..d693a0e33bac 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -379,4 +379,49 @@ static inline void debug_dma_dump_mappings(struct device *dev)
- 
- extern const struct dma_map_ops dma_dummy_ops;
- 
-+enum pci_p2pdma_map_type {
-+	/*
-+	 * PCI_P2PDMA_MAP_UNKNOWN: Used internally for indicating the mapping
-+	 * type hasn't been calculated yet. Functions that return this enum
-+	 * never return this value.
-+	 */
-+	PCI_P2PDMA_MAP_UNKNOWN = 0,
-+
-+	/*
-+	 * PCI_P2PDMA_MAP_NOT_SUPPORTED: Indicates the transaction will
-+	 * traverse the host bridge and the host bridge is not in the
-+	 * allowlist. DMA Mapping routines should return an error when
-+	 * this is returned.
-+	 */
-+	PCI_P2PDMA_MAP_NOT_SUPPORTED,
-+
-+	/*
-+	 * PCI_P2PDMA_BUS_ADDR: Indicates that two devices can talk to
-+	 * each other directly through a PCI switch and the transaction will
-+	 * not traverse the host bridge. Such a mapping should program
-+	 * the DMA engine with PCI bus addresses.
-+	 */
-+	PCI_P2PDMA_MAP_BUS_ADDR,
-+
-+	/*
-+	 * PCI_P2PDMA_MAP_THRU_HOST_BRIDGE: Indicates two devices can talk
-+	 * to each other, but the transaction traverses a host bridge on the
-+	 * allowlist. In this case, a normal mapping either with CPU physical
-+	 * addresses (in the case of dma-direct) or IOVA addresses (in the
-+	 * case of IOMMUs) should be used to program the DMA engine.
-+	 */
-+	PCI_P2PDMA_MAP_THRU_HOST_BRIDGE,
-+};
-+
-+#ifdef CONFIG_PCI_P2PDMA
-+enum pci_p2pdma_map_type pci_p2pdma_map_type(struct dev_pagemap *pgmap,
-+					     struct device *dev);
-+#else /* CONFIG_PCI_P2PDMA */
-+static inline enum pci_p2pdma_map_type
-+pci_p2pdma_map_type(struct dev_pagemap *pgmap, struct device *dev)
-+{
-+	return PCI_P2PDMA_MAP_NOT_SUPPORTED;
-+}
-+#endif /* CONFIG_PCI_P2PDMA */
-+
- #endif /* _LINUX_DMA_MAP_OPS_H */
--- 
-2.30.2
+--===============5813184706083757918==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============5813184706083757918==--
