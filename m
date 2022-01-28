@@ -1,64 +1,64 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4BD95C433F5
-	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 00:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2DCC9C3527A
+	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 00:26:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 16AFB84E2A;
-	Fri, 28 Jan 2022 00:26:44 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id B617140515;
+	Fri, 28 Jan 2022 00:26:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wQGdE1GE0RzM; Fri, 28 Jan 2022 00:26:43 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id TaZIJPrsd6Vn; Fri, 28 Jan 2022 00:26:39 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id D545284EB2;
-	Fri, 28 Jan 2022 00:26:42 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id D1A57404FE;
+	Fri, 28 Jan 2022 00:26:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 07332C007B;
-	Fri, 28 Jan 2022 00:26:42 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9CF87C0011
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 00:26:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 03206C007D;
+	Fri, 28 Jan 2022 00:26:38 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AB475C0079
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 00:26:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 74DBB41C7E
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 00:26:40 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 834E741B32
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 00:26:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=deltatee.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id v_wGPiPfC4NC for <iommu@lists.linux-foundation.org>;
- Fri, 28 Jan 2022 00:26:39 +0000 (UTC)
+ with ESMTP id CqkBYP0rWp1c for <iommu@lists.linux-foundation.org>;
+ Fri, 28 Jan 2022 00:26:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp4.osuosl.org (Postfix) with ESMTPS id D51D541C68
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 00:26:39 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 7DA8841826
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 00:26:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
  Message-Id:Date:Cc:To:From:content-disposition;
- bh=uQsXlm3k3BsGKUE9AcXsDkkM/IeKE+SiwnMMrQUs4ow=; b=hrw+tXZiDf1t/jPl6BGYffAfg1
- TSx6zkydAWPh2OjlZjMW/EoVppTVL005Je5Cu2rpgeTkXKCISo7BFPQ4pu1J6XnWW5qlfmqXDsKuS
- KeoGYTx/Q1Asl7/aWcq2oinFsubmteSVEHCswc59bbr835y6HjmmhKg7EKhFacOMfebxAnjhG/HKu
- 9K10iU35orwOCvMgfRbBfQm3RjZkJ7DrKHpEECxR8bjB3oYykPqhhWXweUVShn1Mm8XlLfOr3wZTF
- py/3HQCUszOAEpqeDW4TmGoUIaQFiEA5ueu+ovczMAWThSaldWB7f8w5eqaTpHfQcii5CF7oOlLYb
- tAyP/nGQ==;
+ bh=U7vSOPFFw/mnzHvzDSg8Uaihku8ItnIpN1mcud0fVL4=; b=m3q8Q5z4Xfvua2WxNsEGOK+1JI
+ QwaCMvNl25/IOvUykUm57bn+9Lq6ORFqZJcaNAkukdG+ggqCVFPR09gylNfwcRDykqwWUtunjmObu
+ r2MGL1jyePn0GNfXQly6yyKpqlyfIHS32BJ0BEMHM609iFZaZM6CsccvOjH3JhYW+4S7qnFB7nYXK
+ rPJp0+muqlB8ev8vXJKaRVsk6FT0vMb/D9qPH1OjZAs3orJoNHtxO91tspMfRHFFjaZU34dpNHpde
+ jhKdxf0ZMTQtMn5bCxhnrScpuR6gKQY6qiJv5IY3kW8gIOO/m0CCH7ZKNzERQJJONeP6KSWQZF9Vj
+ 1wTkHRng==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
  by ale.deltatee.com with esmtps (TLS1.3) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94.2)
  (envelope-from <gunthorp@deltatee.com>)
- id 1nDF5t-005OcY-1M; Thu, 27 Jan 2022 17:26:25 -0700
+ id 1nDF5p-005OcY-Lh; Thu, 27 Jan 2022 17:26:23 -0700
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim
  4.94.2) (envelope-from <gunthorp@deltatee.com>)
- id 1nDF5o-0001d5-PB; Thu, 27 Jan 2022 17:26:20 -0700
+ id 1nDF5m-0001cF-CW; Thu, 27 Jan 2022 17:26:18 -0700
 From: Logan Gunthorpe <logang@deltatee.com>
 To: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
  linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
  iommu@lists.linux-foundation.org
-Date: Thu, 27 Jan 2022 17:26:06 -0700
-Message-Id: <20220128002614.6136-17-logang@deltatee.com>
+Date: Thu, 27 Jan 2022 17:25:52 -0700
+Message-Id: <20220128002614.6136-3-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220128002614.6136-1-logang@deltatee.com>
 References: <20220128002614.6136-1-logang@deltatee.com>
@@ -67,31 +67,30 @@ X-SA-Exim-Connect-IP: 172.16.1.31
 X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
  linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
  iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de,
- jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com,
- willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net,
- dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com,
- andrzej.jakowski@intel.com, dave.b.minturn@intel.com, jianxin.xiong@intel.com,
- ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com,
- ckulkarnilinux@gmail.com, jhubbard@nvidia.com, rcampbell@nvidia.com,
+ jgg@ziepe.ca, ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch,
+ jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org,
+ dan.j.williams@intel.com, andrzej.jakowski@intel.com, dave.b.minturn@intel.com,
+ jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com,
+ martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, jhubbard@nvidia.com,
+ rcampbell@nvidia.com, christian.koenig@amd.com, alex.sierra@amd.com,
  logang@deltatee.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v5 16/24] mm: introduce FOLL_PCI_P2PDMA to gate getting PCI
- P2PDMA pages
+Subject: [PATCH v5 02/24] mm: remove extra ZONE_DEVICE struct page refcount
 X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: Minturn Dave B <dave.b.minturn@intel.com>,
+Cc: Alex Sierra <alex.sierra@amd.com>, Daniel Vetter <daniel.vetter@ffwll.ch>,
+ Dave Hansen <dave.hansen@linux.intel.com>, Stephen Bates <sbates@raithlin.com>,
+ Jason Ekstrand <jason@jlekstrand.net>, Ira Weiny <ira.weiny@intel.com>,
+ Christoph Hellwig <hch@lst.de>, Minturn Dave B <dave.b.minturn@intel.com>,
  Martin Oliveira <martin.oliveira@eideticom.com>,
- Ralph Campbell <rcampbell@nvidia.com>, Ira Weiny <ira.weiny@intel.com>,
- John Hubbard <jhubbard@nvidia.com>, Dave Hansen <dave.hansen@linux.intel.com>,
- Robin Murphy <robin.murphy@arm.com>, Matthew Wilcox <willy@infradead.org>,
- =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Logan Gunthorpe <logang@deltatee.com>,
+ Matthew Wilcox <willy@infradead.org>, Jason Gunthorpe <jgg@ziepe.ca>,
  Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
- Jason Ekstrand <jason@jlekstrand.net>, Daniel Vetter <daniel.vetter@ffwll.ch>,
- Bjorn Helgaas <helgaas@kernel.org>, Dan Williams <dan.j.williams@intel.com>,
- Stephen Bates <sbates@raithlin.com>,
- Jakowski Andrzej <andrzej.jakowski@intel.com>, Christoph Hellwig <hch@lst.de>,
- Xiong Jianxin <jianxin.xiong@intel.com>
+ Bjorn Helgaas <helgaas@kernel.org>, Ralph Campbell <rcampbell@nvidia.com>,
+ John Hubbard <jhubbard@nvidia.com>, Dan Williams <dan.j.williams@intel.com>,
+ Jakowski Andrzej <andrzej.jakowski@intel.com>,
+ Xiong Jianxin <jianxin.xiong@intel.com>, Robin Murphy <robin.murphy@arm.com>,
+ Logan Gunthorpe <logang@deltatee.com>,
+ =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,95 +108,472 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Callers that expect PCI P2PDMA pages can now set FOLL_PCI_P2PDMA to
-allow obtaining P2PDMA pages. If a caller does not set this flag
-and tries to map P2PDMA pages it will fail.
+From: Ralph Campbell <rcampbell@nvidia.com>
 
-This is implemented by checking failing if PCI p2pdma pages are
-found when FOLL_PCI_P2PDMA is set. This is only done if pte_devmap()
-is set.
+ZONE_DEVICE struct pages have an extra reference count that complicates the
+code for put_page() and several places in the kernel that need to check the
+reference count to see that a page is not being used (gup, compaction,
+migration, etc.). Clean up the code so the reference count doesn't need to
+be treated specially for ZONE_DEVICE.
 
-FOLL_PCI_P2PDMA cannot be set if FOLL_LONGTERM is set.
-
+[logang: dropped no longer used section from mm.h including
+ page_is_devmap_managed, rebased on v5.17-rc1 (possibly poorly)]
+Signed-off-by: Ralph Campbell <rcampbell@nvidia.com>
+Signed-off-by: Alex Sierra <alex.sierra@amd.com>
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- include/linux/mm.h |  1 +
- mm/gup.c           | 22 +++++++++++++++++++++-
- 2 files changed, 22 insertions(+), 1 deletion(-)
+ arch/powerpc/kvm/book3s_hv_uvmem.c     |  2 +-
+ drivers/gpu/drm/nouveau/nouveau_dmem.c |  2 +-
+ fs/dax.c                               |  4 +-
+ include/linux/dax.h                    |  2 +-
+ include/linux/memremap.h               |  7 +--
+ include/linux/mm.h                     | 44 ----------------
+ lib/test_hmm.c                         |  2 +-
+ mm/internal.h                          |  8 +++
+ mm/memcontrol.c                        |  6 +--
+ mm/memremap.c                          | 70 +++++++-------------------
+ mm/migrate.c                           |  5 --
+ mm/page_alloc.c                        |  3 ++
+ mm/swap.c                              | 45 ++---------------
+ 13 files changed, 46 insertions(+), 154 deletions(-)
 
+diff --git a/arch/powerpc/kvm/book3s_hv_uvmem.c b/arch/powerpc/kvm/book3s_hv_uvmem.c
+index e414ca44839f..ec9b6f08943b 100644
+--- a/arch/powerpc/kvm/book3s_hv_uvmem.c
++++ b/arch/powerpc/kvm/book3s_hv_uvmem.c
+@@ -712,7 +712,7 @@ static struct page *kvmppc_uvmem_get_page(unsigned long gpa, struct kvm *kvm)
+ 
+ 	dpage = pfn_to_page(uvmem_pfn);
+ 	dpage->zone_device_data = pvt;
+-	get_page(dpage);
++	init_page_count(dpage);
+ 	lock_page(dpage);
+ 	return dpage;
+ out_clear:
+diff --git a/drivers/gpu/drm/nouveau/nouveau_dmem.c b/drivers/gpu/drm/nouveau/nouveau_dmem.c
+index 3828aafd3ac4..24cae839e5a4 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_dmem.c
++++ b/drivers/gpu/drm/nouveau/nouveau_dmem.c
+@@ -324,7 +324,7 @@ nouveau_dmem_page_alloc_locked(struct nouveau_drm *drm)
+ 			return NULL;
+ 	}
+ 
+-	get_page(page);
++	init_page_count(page);
+ 	lock_page(page);
+ 	return page;
+ }
+diff --git a/fs/dax.c b/fs/dax.c
+index d9b856cf6436..565ebff24e6e 100644
+--- a/fs/dax.c
++++ b/fs/dax.c
+@@ -572,14 +572,14 @@ static void *grab_mapping_entry(struct xa_state *xas,
+ 
+ /**
+  * dax_layout_busy_page_range - find first pinned page in @mapping
+- * @mapping: address space to scan for a page with ref count > 1
++ * @mapping: address space to scan for a page with ref count > 0
+  * @start: Starting offset. Page containing 'start' is included.
+  * @end: End offset. Page containing 'end' is included. If 'end' is LLONG_MAX,
+  *       pages from 'start' till the end of file are included.
+  *
+  * DAX requires ZONE_DEVICE mapped pages. These pages are never
+  * 'onlined' to the page allocator so they are considered idle when
+- * page->count == 1. A filesystem uses this interface to determine if
++ * page->count == 0. A filesystem uses this interface to determine if
+  * any page in the mapping is busy, i.e. for DMA, or other
+  * get_user_pages() usages.
+  *
+diff --git a/include/linux/dax.h b/include/linux/dax.h
+index 479939b3be40..5e80f3092d72 100644
+--- a/include/linux/dax.h
++++ b/include/linux/dax.h
+@@ -203,7 +203,7 @@ static inline bool dax_mapping(struct address_space *mapping)
+ 
+ static inline bool dax_page_unused(struct page *page)
+ {
+-	return page_ref_count(page) == 1;
++	return page_ref_count(page) == 0;
+ }
+ 
+ #define dax_wait_page(_inode, _page, _wait_cb)				\
+diff --git a/include/linux/memremap.h b/include/linux/memremap.h
+index 1fafcc38acba..9965f6c6282a 100644
+--- a/include/linux/memremap.h
++++ b/include/linux/memremap.h
+@@ -66,9 +66,10 @@ enum memory_type {
+ 
+ struct dev_pagemap_ops {
+ 	/*
+-	 * Called once the page refcount reaches 1.  (ZONE_DEVICE pages never
+-	 * reach 0 refcount unless there is a refcount bug. This allows the
+-	 * device driver to implement its own memory management.)
++	 * Called once the page refcount reaches 0. The reference count
++	 * should be reset to one with init_page_count(page) before reusing
++	 * the page. This allows the device driver to implement its own
++	 * memory management.
+ 	 */
+ 	void (*page_free)(struct page *page);
+ 
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 1ab20ed73678..24f44230dcbf 100644
+index e1a84b1e6787..1ab20ed73678 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
-@@ -2888,6 +2888,7 @@ struct page *follow_page(struct vm_area_struct *vma, unsigned long address,
- #define FOLL_SPLIT_PMD	0x20000	/* split huge pmd before returning */
- #define FOLL_PIN	0x40000	/* pages must be released via unpin_user_page */
- #define FOLL_FAST_ONLY	0x80000	/* gup_fast: prevent fall-back to slow gup */
-+#define FOLL_PCI_P2PDMA	0x100000 /* allow returning PCI P2PDMA pages */
+@@ -1094,39 +1094,6 @@ static inline bool is_zone_movable_page(const struct page *page)
+ 	return page_zonenum(page) == ZONE_MOVABLE;
+ }
  
- /*
-  * FOLL_PIN and FOLL_LONGTERM may be used in various combinations with each
-diff --git a/mm/gup.c b/mm/gup.c
-index f0af462ac1e2..66e8cbd168b6 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -527,6 +527,12 @@ static struct page *follow_page_pte(struct vm_area_struct *vma,
- 			page = pte_page(pte);
- 		else
- 			goto no_page;
+-#ifdef CONFIG_DEV_PAGEMAP_OPS
+-void free_devmap_managed_page(struct page *page);
+-DECLARE_STATIC_KEY_FALSE(devmap_managed_key);
+-
+-static inline bool page_is_devmap_managed(struct page *page)
+-{
+-	if (!static_branch_unlikely(&devmap_managed_key))
+-		return false;
+-	if (!is_zone_device_page(page))
+-		return false;
+-	switch (page->pgmap->type) {
+-	case MEMORY_DEVICE_PRIVATE:
+-	case MEMORY_DEVICE_FS_DAX:
+-		return true;
+-	default:
+-		break;
+-	}
+-	return false;
+-}
+-
+-void put_devmap_managed_page(struct page *page);
+-
+-#else /* CONFIG_DEV_PAGEMAP_OPS */
+-static inline bool page_is_devmap_managed(struct page *page)
+-{
+-	return false;
+-}
+-
+-static inline void put_devmap_managed_page(struct page *page)
+-{
+-}
+-#endif /* CONFIG_DEV_PAGEMAP_OPS */
+-
+ static inline bool is_device_private_page(const struct page *page)
+ {
+ 	return IS_ENABLED(CONFIG_DEV_PAGEMAP_OPS) &&
+@@ -1223,17 +1190,6 @@ static inline void put_page(struct page *page)
+ {
+ 	struct folio *folio = page_folio(page);
+ 
+-	/*
+-	 * For devmap managed pages we need to catch refcount transition from
+-	 * 2 to 1, when refcount reach one it means the page is free and we
+-	 * need to inform the device driver through callback. See
+-	 * include/linux/memremap.h and HMM for details.
+-	 */
+-	if (page_is_devmap_managed(&folio->page)) {
+-		put_devmap_managed_page(&folio->page);
+-		return;
+-	}
+-
+ 	folio_put(folio);
+ }
+ 
+diff --git a/lib/test_hmm.c b/lib/test_hmm.c
+index 767538089a62..e75e34bc16b8 100644
+--- a/lib/test_hmm.c
++++ b/lib/test_hmm.c
+@@ -563,7 +563,7 @@ static struct page *dmirror_devmem_alloc_page(struct dmirror_device *mdevice)
+ 	}
+ 
+ 	dpage->zone_device_data = rpage;
+-	get_page(dpage);
++	init_page_count(dpage);
+ 	lock_page(dpage);
+ 	return dpage;
+ 
+diff --git a/mm/internal.h b/mm/internal.h
+index d80300392a19..05614c3571ad 100644
+--- a/mm/internal.h
++++ b/mm/internal.h
+@@ -718,4 +718,12 @@ void vunmap_range_noflush(unsigned long start, unsigned long end);
+ int numa_migrate_prep(struct page *page, struct vm_area_struct *vma,
+ 		      unsigned long addr, int page_nid, int *flags);
+ 
++#ifdef CONFIG_DEV_PAGEMAP_OPS
++void free_zone_device_page(struct page *page);
++#else
++static inline void free_zone_device_page(struct page *page)
++{
++}
++#endif
 +
-+		if (unlikely(!(flags & FOLL_PCI_P2PDMA) &&
-+			     is_pci_p2pdma_page(page))) {
-+			page = ERR_PTR(-EREMOTEIO);
-+			goto out;
-+		}
- 	} else if (unlikely(!page)) {
- 		if (flags & FOLL_DUMP) {
- 			/* Avoid special (like zero) pages in core dumps */
-@@ -985,6 +991,9 @@ static int check_vma_flags(struct vm_area_struct *vma, unsigned long gup_flags)
- 	if ((gup_flags & FOLL_LONGTERM) && vma_is_fsdax(vma))
- 		return -EOPNOTSUPP;
+ #endif	/* __MM_INTERNAL_H */
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index 09d342c7cbd0..8da3f1b23382 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -5509,11 +5509,7 @@ static struct page *mc_handle_swap_pte(struct vm_area_struct *vma,
+ 	 */
+ 	if (is_device_private_entry(ent)) {
+ 		page = pfn_swap_entry_to_page(ent);
+-		/*
+-		 * MEMORY_DEVICE_PRIVATE means ZONE_DEVICE page and which have
+-		 * a refcount of 1 when free (unlike normal page)
+-		 */
+-		if (!page_ref_add_unless(page, 1, 1))
++		if (!get_page_unless_zero(page))
+ 			return NULL;
+ 		return page;
+ 	}
+diff --git a/mm/memremap.c b/mm/memremap.c
+index 6aa5f0c2d11f..0fc8b85d792e 100644
+--- a/mm/memremap.c
++++ b/mm/memremap.c
+@@ -12,6 +12,7 @@
+ #include <linux/types.h>
+ #include <linux/wait_bit.h>
+ #include <linux/xarray.h>
++#include "internal.h"
  
-+	if ((gup_flags & FOLL_LONGTERM) && (gup_flags & FOLL_PCI_P2PDMA))
-+		return -EOPNOTSUPP;
+ static DEFINE_XARRAY(pgmap_array);
+ 
+@@ -37,32 +38,6 @@ unsigned long memremap_compat_align(void)
+ EXPORT_SYMBOL_GPL(memremap_compat_align);
+ #endif
+ 
+-#ifdef CONFIG_DEV_PAGEMAP_OPS
+-DEFINE_STATIC_KEY_FALSE(devmap_managed_key);
+-EXPORT_SYMBOL(devmap_managed_key);
+-
+-static void devmap_managed_enable_put(struct dev_pagemap *pgmap)
+-{
+-	if (pgmap->type == MEMORY_DEVICE_PRIVATE ||
+-	    pgmap->type == MEMORY_DEVICE_FS_DAX)
+-		static_branch_dec(&devmap_managed_key);
+-}
+-
+-static void devmap_managed_enable_get(struct dev_pagemap *pgmap)
+-{
+-	if (pgmap->type == MEMORY_DEVICE_PRIVATE ||
+-	    pgmap->type == MEMORY_DEVICE_FS_DAX)
+-		static_branch_inc(&devmap_managed_key);
+-}
+-#else
+-static void devmap_managed_enable_get(struct dev_pagemap *pgmap)
+-{
+-}
+-static void devmap_managed_enable_put(struct dev_pagemap *pgmap)
+-{
+-}
+-#endif /* CONFIG_DEV_PAGEMAP_OPS */
+-
+ static void pgmap_array_delete(struct range *range)
+ {
+ 	xa_store_range(&pgmap_array, PHYS_PFN(range->start), PHYS_PFN(range->end),
+@@ -102,23 +77,12 @@ static unsigned long pfn_end(struct dev_pagemap *pgmap, int range_id)
+ 	return (range->start + range_len(range)) >> PAGE_SHIFT;
+ }
+ 
+-static unsigned long pfn_next(struct dev_pagemap *pgmap, unsigned long pfn)
+-{
+-	if (pfn % (1024 << pgmap->vmemmap_shift))
+-		cond_resched();
+-	return pfn + pgmap_vmemmap_nr(pgmap);
+-}
+-
+ static unsigned long pfn_len(struct dev_pagemap *pgmap, unsigned long range_id)
+ {
+ 	return (pfn_end(pgmap, range_id) -
+ 		pfn_first(pgmap, range_id)) >> pgmap->vmemmap_shift;
+ }
+ 
+-#define for_each_device_pfn(pfn, map, i) \
+-	for (pfn = pfn_first(map, i); pfn < pfn_end(map, i); \
+-	     pfn = pfn_next(map, pfn))
+-
+ static void pageunmap_range(struct dev_pagemap *pgmap, int range_id)
+ {
+ 	struct range *range = &pgmap->ranges[range_id];
+@@ -147,13 +111,12 @@ static void pageunmap_range(struct dev_pagemap *pgmap, int range_id)
+ 
+ void memunmap_pages(struct dev_pagemap *pgmap)
+ {
+-	unsigned long pfn;
+ 	int i;
+ 
+ 	percpu_ref_kill(&pgmap->ref);
+ 	for (i = 0; i < pgmap->nr_range; i++)
+-		for_each_device_pfn(pfn, pgmap, i)
+-			put_page(pfn_to_page(pfn));
++		percpu_ref_put_many(&pgmap->ref, pfn_end(pgmap, i) -
++						 pfn_first(pgmap, i));
+ 	wait_for_completion(&pgmap->done);
+ 	percpu_ref_exit(&pgmap->ref);
+ 
+@@ -161,7 +124,6 @@ void memunmap_pages(struct dev_pagemap *pgmap)
+ 		pageunmap_range(pgmap, i);
+ 
+ 	WARN_ONCE(pgmap->altmap.alloc, "failed to free all reserved pages\n");
+-	devmap_managed_enable_put(pgmap);
+ }
+ EXPORT_SYMBOL_GPL(memunmap_pages);
+ 
+@@ -350,8 +312,6 @@ void *memremap_pages(struct dev_pagemap *pgmap, int nid)
+ 	if (error)
+ 		return ERR_PTR(error);
+ 
+-	devmap_managed_enable_get(pgmap);
+-
+ 	/*
+ 	 * Clear the pgmap nr_range as it will be incremented for each
+ 	 * successfully processed range. This communicates how many
+@@ -466,16 +426,9 @@ struct dev_pagemap *get_dev_pagemap(unsigned long pfn,
+ EXPORT_SYMBOL_GPL(get_dev_pagemap);
+ 
+ #ifdef CONFIG_DEV_PAGEMAP_OPS
+-void free_devmap_managed_page(struct page *page)
++static void free_device_page(struct page *page)
+ {
+-	/* notify page idle for dax */
+-	if (!is_device_private_page(page)) {
+-		wake_up_var(&page->_refcount);
+-		return;
+-	}
+-
+ 	__ClearPageWaiters(page);
+-
+ 	mem_cgroup_uncharge(page_folio(page));
+ 
+ 	/*
+@@ -502,4 +455,19 @@ void free_devmap_managed_page(struct page *page)
+ 	page->mapping = NULL;
+ 	page->pgmap->ops->page_free(page);
+ }
 +
- 	if (vma_is_secretmem(vma))
- 		return -EFAULT;
++void free_zone_device_page(struct page *page)
++{
++	switch (page->pgmap->type) {
++	case MEMORY_DEVICE_PRIVATE:
++		free_device_page(page);
++		return;
++	case MEMORY_DEVICE_FS_DAX:
++		/* notify page idle */
++		wake_up_var(&page->_refcount);
++		return;
++	default:
++		return;
++	}
++}
+ #endif /* CONFIG_DEV_PAGEMAP_OPS */
+diff --git a/mm/migrate.c b/mm/migrate.c
+index c7da064b4781..359a698b6b0a 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -341,11 +341,6 @@ static int expected_page_refs(struct address_space *mapping, struct page *page)
+ {
+ 	int expected_count = 1;
  
-@@ -2304,6 +2313,10 @@ static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
- 		VM_BUG_ON(!pfn_valid(pte_pfn(pte)));
- 		page = pte_page(pte);
+-	/*
+-	 * Device private pages have an extra refcount as they are
+-	 * ZONE_DEVICE pages.
+-	 */
+-	expected_count += is_device_private_page(page);
+ 	if (mapping)
+ 		expected_count += compound_nr(page) + page_has_private(page);
  
-+		if (unlikely(pte_devmap(pte) && !(flags & FOLL_PCI_P2PDMA) &&
-+			     is_pci_p2pdma_page(page)))
-+			goto pte_unmap;
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 3589febc6d31..c6a766916137 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -6589,6 +6589,9 @@ static void __ref __init_zone_device_page(struct page *page, unsigned long pfn,
+ 
+ 	__init_single_page(page, pfn, zone_idx, nid);
+ 
++	/* ZONE_DEVICE pages start with a zero reference count. */
++	set_page_count(page, 0);
 +
- 		head = try_grab_compound_head(page, 1, flags);
- 		if (!head)
- 			goto pte_unmap;
-@@ -2381,6 +2394,12 @@ static int __gup_device_huge(unsigned long pfn, unsigned long addr,
- 			undo_dev_pagemap(nr, nr_start, flags, pages);
- 			break;
+ 	/*
+ 	 * Mark page reserved as it will need to wait for onlining
+ 	 * phase for it to be fully associated with a zone.
+diff --git a/mm/swap.c b/mm/swap.c
+index bcf3ac288b56..f5d53ed7e303 100644
+--- a/mm/swap.c
++++ b/mm/swap.c
+@@ -115,12 +115,11 @@ static void __put_compound_page(struct page *page)
+ void __put_page(struct page *page)
+ {
+ 	if (is_zone_device_page(page)) {
+-		put_dev_pagemap(page->pgmap);
+-
+ 		/*
+ 		 * The page belongs to the device that created pgmap. Do
+ 		 * not return it to page allocator.
+ 		 */
++		free_zone_device_page(page);
+ 		return;
+ 	}
+ 
+@@ -925,29 +924,18 @@ void release_pages(struct page **pages, int nr)
+ 		if (is_huge_zero_page(page))
+ 			continue;
+ 
++		if (!put_page_testzero(page))
++			continue;
++
+ 		if (is_zone_device_page(page)) {
+ 			if (lruvec) {
+ 				unlock_page_lruvec_irqrestore(lruvec, flags);
+ 				lruvec = NULL;
+ 			}
+-			/*
+-			 * ZONE_DEVICE pages that return 'false' from
+-			 * page_is_devmap_managed() do not require special
+-			 * processing, and instead, expect a call to
+-			 * put_page_testzero().
+-			 */
+-			if (page_is_devmap_managed(page)) {
+-				put_devmap_managed_page(page);
+-				continue;
+-			}
+-			if (put_page_testzero(page))
+-				put_dev_pagemap(page->pgmap);
++			free_zone_device_page(page);
+ 			continue;
  		}
-+
-+		if (!(flags & FOLL_PCI_P2PDMA) && is_pci_p2pdma_page(page)) {
-+			undo_dev_pagemap(nr, nr_start, flags, pages);
-+			break;
-+		}
-+
- 		SetPageReferenced(page);
- 		pages[*nr] = page;
- 		if (unlikely(!try_grab_page(page, flags))) {
-@@ -2849,7 +2868,8 @@ static int internal_get_user_pages_fast(unsigned long start,
  
- 	if (WARN_ON_ONCE(gup_flags & ~(FOLL_WRITE | FOLL_LONGTERM |
- 				       FOLL_FORCE | FOLL_PIN | FOLL_GET |
--				       FOLL_FAST_ONLY | FOLL_NOFAULT)))
-+				       FOLL_FAST_ONLY | FOLL_NOFAULT |
-+				       FOLL_PCI_P2PDMA)))
- 		return -EINVAL;
- 
- 	if (gup_flags & FOLL_PIN)
+-		if (!put_page_testzero(page))
+-			continue;
+-
+ 		if (PageCompound(page)) {
+ 			if (lruvec) {
+ 				unlock_page_lruvec_irqrestore(lruvec, flags);
+@@ -1153,26 +1141,3 @@ void __init swap_setup(void)
+ 	 * _really_ don't want to cluster much more
+ 	 */
+ }
+-
+-#ifdef CONFIG_DEV_PAGEMAP_OPS
+-void put_devmap_managed_page(struct page *page)
+-{
+-	int count;
+-
+-	if (WARN_ON_ONCE(!page_is_devmap_managed(page)))
+-		return;
+-
+-	count = page_ref_dec_return(page);
+-
+-	/*
+-	 * devmap page refcounts are 1-based, rather than 0-based: if
+-	 * refcount is 1, then the page is free and the refcount is
+-	 * stable because nobody holds a reference on the page.
+-	 */
+-	if (count == 1)
+-		free_devmap_managed_page(page);
+-	else if (!count)
+-		__put_page(page);
+-}
+-EXPORT_SYMBOL(put_devmap_managed_page);
+-#endif
 -- 
 2.30.2
 
