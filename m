@@ -4,54 +4,93 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 46097C433FE
-	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 16:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id F36B5C433F5
+	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 16:52:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D46064040C;
-	Fri, 28 Jan 2022 16:36:56 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 9E062400CF;
+	Fri, 28 Jan 2022 16:52:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7yE7VDSyW0op; Fri, 28 Jan 2022 16:36:55 +0000 (UTC)
+	with ESMTP id 5yjiSLVlVRd6; Fri, 28 Jan 2022 16:52:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 3C2B0404A3;
-	Fri, 28 Jan 2022 16:36:55 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 24D734040C;
+	Fri, 28 Jan 2022 16:52:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0D6ACC001A;
-	Fri, 28 Jan 2022 16:36:55 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 65F77C000B
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 16:36:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F3404C001A;
+	Fri, 28 Jan 2022 16:52:24 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D185AC000B
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 16:52:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 54C62402B9
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 16:36:54 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id BF63684C6B
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 16:52:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mP_zbDIiaz1X for <iommu@lists.linux-foundation.org>;
- Fri, 28 Jan 2022 16:36:53 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=deltatee.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id WDNQwGtdKgmS for <iommu@lists.linux-foundation.org>;
+ Fri, 28 Jan 2022 16:52:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id 6B3D240290
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 16:36:53 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9DC75113E;
- Fri, 28 Jan 2022 08:36:52 -0800 (PST)
-Received: from [10.57.68.47] (unknown [10.57.68.47])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C06223F793;
- Fri, 28 Jan 2022 08:36:51 -0800 (PST)
-Message-ID: <ed9cb725-334a-ace4-9bae-03b9d310f824@arm.com>
-Date: Fri, 28 Jan 2022 16:36:46 +0000
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 3B42284C64
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 16:52:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
+ Message-ID:From:References:Cc:To:content-disposition;
+ bh=b3irqWqF076Mlc+LOntCm6p6KSLN91UqQqA+8Wh01Qc=; b=NHvfIEhF0/ixtc4kadk8afYyfv
+ EmK2moGf6H0lAvy8u0DbEMxKPWG6tkBbObYC2jdqi1BKFMztCPS/5/jPCS4dmimuj6Ls4WHvjpUke
+ sg5zypcVuYlHzobtsvL/RaLwz6aXglMWIrfa47RaTf943xxLqnVdzYhdrL9aPCKHh3Zqzr42Ccqmv
+ m/ilLAMU7wkZ+KQldW2wmsfHg9AWOPN/WUzRFymSWJgUyuysY7Vw3jMQ+svdQK9bVuCk8VNgfYJWn
+ s3uSXiff2qj52lDsdz+bmYd1jd/3Bpiysle+0j0eVgxMIjayh+GpH1awjFx1fNx2dCE4civRe8Pl3
+ A5rYWRhw==;
+Received: from s0106a84e3fe8c3f3.cg.shawcable.net ([24.64.144.200]
+ helo=[192.168.0.10]) by ale.deltatee.com with esmtpsa (TLS1.3) tls
+ TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Exim 4.94.2)
+ (envelope-from <logang@deltatee.com>)
+ id 1nDUTZ-0068W2-0N; Fri, 28 Jan 2022 09:51:54 -0700
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <20220128002614.6136-1-logang@deltatee.com>
+ <20220128002614.6136-3-logang@deltatee.com> <20220128142138.GU8034@ziepe.ca>
+From: Logan Gunthorpe <logang@deltatee.com>
+Message-ID: <11f86dfe-cd3b-e807-8546-bffb3a0b2d1d@deltatee.com>
+Date: Fri, 28 Jan 2022 09:51:47 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH] iommu: Fix some W=1 warnings
-Content-Language: en-GB
-To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org
-References: <1643366673-26803-1-git-send-email-john.garry@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <1643366673-26803-1-git-send-email-john.garry@huawei.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220128142138.GU8034@ziepe.ca>
+Content-Language: en-CA
+X-SA-Exim-Connect-IP: 24.64.144.200
+X-SA-Exim-Rcpt-To: alex.sierra@amd.com, rcampbell@nvidia.com,
+ ckulkarnilinux@gmail.com, martin.oliveira@eideticom.com, robin.murphy@arm.com,
+ ira.weiny@intel.com, helgaas@kernel.org, jianxin.xiong@intel.com,
+ dave.hansen@linux.intel.com, jason@jlekstrand.net, dave.b.minturn@intel.com,
+ andrzej.jakowski@intel.com, daniel.vetter@ffwll.ch, willy@infradead.org,
+ ddutile@redhat.com, jhubbard@nvidia.com, christian.koenig@amd.com,
+ dan.j.williams@intel.com, hch@lst.de, sbates@raithlin.com,
+ iommu@lists.linux-foundation.org, linux-mm@kvack.org,
+ linux-pci@vger.kernel.org, linux-block@vger.kernel.org,
+ linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, jgg@ziepe.ca
+X-SA-Exim-Mail-From: logang@deltatee.com
+Subject: Re: [PATCH v5 02/24] mm: remove extra ZONE_DEVICE struct page refcount
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Cc: Alex Sierra <alex.sierra@amd.com>, linux-pci@vger.kernel.org,
+ Dave Hansen <dave.hansen@linux.intel.com>, linux-nvme@lists.infradead.org,
+ Stephen Bates <sbates@raithlin.com>, linux-mm@kvack.org,
+ Jason Ekstrand <jason@jlekstrand.net>, Ira Weiny <ira.weiny@intel.com>,
+ Christoph Hellwig <hch@lst.de>, Minturn Dave B <dave.b.minturn@intel.com>,
+ Martin Oliveira <martin.oliveira@eideticom.com>,
+ Matthew Wilcox <willy@infradead.org>,
+ Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
+ Bjorn Helgaas <helgaas@kernel.org>, Daniel Vetter <daniel.vetter@ffwll.ch>,
+ Ralph Campbell <rcampbell@nvidia.com>, John Hubbard <jhubbard@nvidia.com>,
+ linux-block@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>,
+ Jakowski Andrzej <andrzej.jakowski@intel.com>,
+ Xiong Jianxin <jianxin.xiong@intel.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+ =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -64,99 +103,52 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-01-28 10:44, John Garry wrote:
-> The code is mostly free of W=1 warning, so fix the following:
+
+
+On 2022-01-28 7:21 a.m., Jason Gunthorpe wrote:
+> On Thu, Jan 27, 2022 at 05:25:52PM -0700, Logan Gunthorpe wrote:
+>> From: Ralph Campbell <rcampbell@nvidia.com>
+>>
+>> ZONE_DEVICE struct pages have an extra reference count that complicates the
+>> code for put_page() and several places in the kernel that need to check the
+>> reference count to see that a page is not being used (gup, compaction,
+>> migration, etc.). Clean up the code so the reference count doesn't need to
+>> be treated specially for ZONE_DEVICE.
+>>
+>> [logang: dropped no longer used section from mm.h including
+>>  page_is_devmap_managed, rebased on v5.17-rc1 (possibly poorly)]
+>> Signed-off-by: Ralph Campbell <rcampbell@nvidia.com>
+>> Signed-off-by: Alex Sierra <alex.sierra@amd.com>
+>> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+>> Reviewed-by: Christoph Hellwig <hch@lst.de>
+>> ---
+>>  arch/powerpc/kvm/book3s_hv_uvmem.c     |  2 +-
+>>  drivers/gpu/drm/nouveau/nouveau_dmem.c |  2 +-
+>>  fs/dax.c                               |  4 +-
+>>  include/linux/dax.h                    |  2 +-
+>>  include/linux/memremap.h               |  7 +--
+>>  include/linux/mm.h                     | 44 ----------------
+>>  lib/test_hmm.c                         |  2 +-
+>>  mm/internal.h                          |  8 +++
+>>  mm/memcontrol.c                        |  6 +--
+>>  mm/memremap.c                          | 70 +++++++-------------------
+>>  mm/migrate.c                           |  5 --
+>>  mm/page_alloc.c                        |  3 ++
+>>  mm/swap.c                              | 45 ++---------------
+>>  13 files changed, 46 insertions(+), 154 deletions(-)
 > 
-> drivers/iommu/iommu.c:996: warning: expecting prototype for iommu_group_for_each_dev(). Prototype was for __iommu_group_for_each_dev() instead
-> drivers/iommu/iommu.c:3048: warning: Function parameter or member 'drvdata' not described in 'iommu_sva_bind_device'
-> drivers/iommu/ioasid.c:354: warning: Function parameter or member 'ioasid' not described in 'ioasid_get'
-> drivers/iommu/omap-iommu.c:1098: warning: expecting prototype for omap_iommu_suspend_prepare(). Prototype was for omap_iommu_prepare() instead
+> This patch still can't be applied until the FSDAX issues are solved,
+> right? See my remarks the last time it was posted..
 
-Certainly no harm in keeping the documentation up to date!
+Yes. As I mentioned in the cover, this is just to show that this
+patchset is compatible with the direction this patch goes.
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-> Signed-off-by: John Garry <john.garry@huawei.com>
-> 
-> diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-> index 50ee27bbd04e..06fee7416816 100644
-> --- a/drivers/iommu/ioasid.c
-> +++ b/drivers/iommu/ioasid.c
-> @@ -349,6 +349,7 @@ EXPORT_SYMBOL_GPL(ioasid_alloc);
->   
->   /**
->    * ioasid_get - obtain a reference to the IOASID
-> + * @ioasid: the ID to get
->    */
->   void ioasid_get(ioasid_t ioasid)
->   {
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 8b86406b7162..75741ce748d5 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -980,17 +980,6 @@ static int iommu_group_device_count(struct iommu_group *group)
->   	return ret;
->   }
->   
-> -/**
-> - * iommu_group_for_each_dev - iterate over each device in the group
-> - * @group: the group
-> - * @data: caller opaque data to be passed to callback function
-> - * @fn: caller supplied callback function
-> - *
-> - * This function is called by group users to iterate over group devices.
-> - * Callers should hold a reference count to the group during callback.
-> - * The group->mutex is held across callbacks, which will block calls to
-> - * iommu_group_add/remove_device.
-> - */
->   static int __iommu_group_for_each_dev(struct iommu_group *group, void *data,
->   				      int (*fn)(struct device *, void *))
->   {
-> @@ -1005,7 +994,17 @@ static int __iommu_group_for_each_dev(struct iommu_group *group, void *data,
->   	return ret;
->   }
->   
-> -
-> +/**
-> + * iommu_group_for_each_dev - iterate over each device in the group
-> + * @group: the group
-> + * @data: caller opaque data to be passed to callback function
-> + * @fn: caller supplied callback function
-> + *
-> + * This function is called by group users to iterate over group devices.
-> + * Callers should hold a reference count to the group during callback.
-> + * The group->mutex is held across callbacks, which will block calls to
-> + * iommu_group_add/remove_device.
-> + */
->   int iommu_group_for_each_dev(struct iommu_group *group, void *data,
->   			     int (*fn)(struct device *, void *))
->   {
-> @@ -3032,6 +3031,7 @@ EXPORT_SYMBOL_GPL(iommu_aux_get_pasid);
->    * iommu_sva_bind_device() - Bind a process address space to a device
->    * @dev: the device
->    * @mm: the mm to bind, caller must hold a reference to it
-> + * @drvdata: opaque data pointer to pass to bind callback
->    *
->    * Create a bond between device and address space, allowing the device to access
->    * the mm using the returned PASID. If a bond already exists between @device and
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index 91749654fd49..980e4af3f06b 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -1085,7 +1085,7 @@ static __maybe_unused int omap_iommu_runtime_resume(struct device *dev)
->   }
->   
->   /**
-> - * omap_iommu_suspend_prepare - prepare() dev_pm_ops implementation
-> + * omap_iommu_prepare - prepare() dev_pm_ops implementation
->    * @dev:	iommu device
->    *
->    * This function performs the necessary checks to determine if the IOMMU
+Logan
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
