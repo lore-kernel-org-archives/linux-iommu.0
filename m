@@ -1,81 +1,117 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7D61FC433EF
-	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 20:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E5FFCC433EF
+	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 22:24:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3762283148;
-	Fri, 28 Jan 2022 20:29:34 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 82D274160E;
+	Fri, 28 Jan 2022 22:24:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mNQ6hf0Rezvl; Fri, 28 Jan 2022 20:29:33 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bVMPpEvDGS9B; Fri, 28 Jan 2022 22:24:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id A427083E93;
-	Fri, 28 Jan 2022 20:29:32 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id A8E1441608;
+	Fri, 28 Jan 2022 22:24:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EDBB0C007C;
-	Fri, 28 Jan 2022 20:29:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 73BFEC001A;
+	Fri, 28 Jan 2022 22:24:33 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 18257C0039
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 20:29:29 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EDC06C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 22:24:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 3064D828BA
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 20:29:25 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id C74A083F84
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 22:24:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=ffwll.ch
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UCAj88-0Bd1H for <iommu@lists.linux-foundation.org>;
- Fri, 28 Jan 2022 20:29:24 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 1444B83148
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 20:29:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1643401764; x=1674937764;
- h=from:to:cc:subject:date:message-id:in-reply-to:
- references:mime-version:content-transfer-encoding;
- bh=S+9m7eyuXn1c2Qq6KqmCa13eplXgcNSM8btSUXiOqqw=;
- b=Vs/pLpVoKTWWriRdxHLPbwDjLefS0XZWEM2eXGWGoyt2oriu4ftc8oGz
- gaNF0P9sjbp14gJC1/fjcrMoo31He+4bwNcs9ayXWeI9bWGlGOQ86b4c7
- UxaQsGcDnYm+Un62NDTXeoQsqcwqI4oc7jUtCCkD9ZXNGrt2punkfTAR0
- ESrjCgEZ3OA6OOakLQReJMP+oFcyIEvc/ar++SPK6NkgjTkgsj7vg9kh7
- SGrG24kxaIICDiuo8lyiLgFvR2WvAkAp/uD5jriVI7VPXJORno5z4RiSW
- OaKJKqGjQka70dT9KRHS27vajbcgTi5j/au2g8yqGP9pWRbcf8lpccXbC Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="227862441"
-X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; d="scan'208";a="227862441"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Jan 2022 12:29:22 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; d="scan'208";a="618827700"
-Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
- by FMSMGA003.fm.intel.com with ESMTP; 28 Jan 2022 12:29:22 -0800
-From: Fenghua Yu <fenghua.yu@intel.com>
-To: "Thomas Gleixner" <tglx@linutronix.de>,
- "Dave Hansen" <dave.hansen@linux.intel.com>,
- "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
- "Peter Zijlstra" <peterz@infradead.org>,
- "Andy Lutomirski" <luto@kernel.org>, "Tony Luck" <tony.luck@intel.com>,
- "Lu Baolu" <baolu.lu@linux.intel.com>, "Joerg Roedel" <joro@8bytes.org>,
- Josh Poimboeuf <jpoimboe@redhat.com>,
- "Jacob Pan" <jacob.jun.pan@linux.intel.com>,
- "Ashok Raj" <ashok.raj@intel.com>,
- "Ravi V Shankar" <ravi.v.shankar@intel.com>
-Subject: [PATCH v3 05/11] iommu/sva: Assign a PASID to mm on PASID allocation
- and free it on mm exit
-Date: Fri, 28 Jan 2022 12:28:59 -0800
-Message-Id: <20220128202905.2274672-6-fenghua.yu@intel.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220128202905.2274672-1-fenghua.yu@intel.com>
-References: <20220128202905.2274672-1-fenghua.yu@intel.com>
+ with ESMTP id LYhkkKwtN55k for <iommu@lists.linux-foundation.org>;
+ Fri, 28 Jan 2022 22:24:30 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com
+ [IPv6:2a00:1450:4864:20::42c])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id E4EE183F81
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 22:24:29 +0000 (UTC)
+Received: by mail-wr1-x42c.google.com with SMTP id e2so13513468wra.2
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 14:24:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ffwll.ch; s=google;
+ h=date:from:to:cc:subject:message-id:mail-followup-to:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=hVe4UGM2j/Oy64Jg/hvtQc5/6XvCQE0MorTi0mtS/Ds=;
+ b=W3F350q2iKhIXPRYjvVIic+6s3eEFpaqacV2xPn9u66qn7+2DrE2FPkZpXRIxBmtMZ
+ jNtEexEH83nzGAnDGKwUxcTyJZ8jiwNwd/YGwlbjerBlz/MDaesVdPB7SL1bjto9IEjk
+ e4gL2p2/vPhNvmflqscW96FWWQHedYKlMNXOc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id
+ :mail-followup-to:references:mime-version:content-disposition
+ :in-reply-to;
+ bh=hVe4UGM2j/Oy64Jg/hvtQc5/6XvCQE0MorTi0mtS/Ds=;
+ b=b/AS32w9l241HvU8YjCku3N2Wn0l1UcQR1jcRsfldm4pVUK/NBCPeAzi9ZqStunyig
+ 5AyTFc72FckEdiZnUdR7RtWQ7uWjIM55wANCzfEgxU6bXMyajqJU+gkKG0GGeJHDjy7B
+ g/zzCkYE52Z9hxUHfHe9E3s5+ZgeuR/qMcZ+hGOff0K05Ws9F+sAJXn55Apr9Y9FEI9J
+ gL8W0rVePdOi7+QE4Wf4aJTARPLXq57/WLemcpgAjzMWcjg1EYFIRfCgY570RWJ1h8bF
+ +65sLz49/xDINVGItayYpLrykLqekNDL8TQUAnFecDKXThgZvMAJE4nQfR3d9n7zefNz
+ bHAA==
+X-Gm-Message-State: AOAM531usMe1JlkZUTgloF8BXEWbVu9svV9/3HpkXErNXoudfAxuF8Qo
+ OStMpHGySn5SW5bqhefW0oS7Sg==
+X-Google-Smtp-Source: ABdhPJywDTYxCw86x7CvarXOabJUVJ5FlChZcUX4YWLwW4hPs/xvTPNEnJnHVPNPMUYivkaA5MjK/A==
+X-Received: by 2002:adf:fcd0:: with SMTP id f16mr8638555wrs.359.1643408667704; 
+ Fri, 28 Jan 2022 14:24:27 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+ by smtp.gmail.com with ESMTPSA id m64sm2913505wmm.31.2022.01.28.14.24.26
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 28 Jan 2022 14:24:27 -0800 (PST)
+Date: Fri, 28 Jan 2022 23:24:24 +0100
+From: Daniel Vetter <daniel@ffwll.ch>
+To: Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [RFC PATCH] component: Add common helpers for compare/release
+ functions
+Message-ID: <YfRtGF3v+BwH5RkG@phenom.ffwll.local>
+Mail-Followup-To: Yong Wu <yong.wu@mediatek.com>,
+ dri-devel@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
+ James Wang <james.qian.wang@arm.com>,
+ Liviu Dudau <liviu.dudau@arm.com>, iommu@lists.linux-foundation.org,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ linux-mediatek@lists.infradead.org,
+ Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+ linux-arm-kernel@lists.infradead.org,
+ Stephen Boyd <sboyd@kernel.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Hsin-Yi Wang <hsinyi@chromium.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Tomasz Figa <tfiga@chromium.org>, srv_heupstream@mediatek.com,
+ Rob Clark <robdclark@gmail.com>,
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+ Sebastian Reichel <sre@kernel.org>
+References: <20220128081101.27837-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-Cc: Fenghua Yu <fenghua.yu@intel.com>, iommu@lists.linux-foundation.org,
- x86 <x86@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20220128081101.27837-1-yong.wu@mediatek.com>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
+Cc: David Airlie <airlied@linux.ie>, Liviu Dudau <liviu.dudau@arm.com>,
+ dri-devel@lists.freedesktop.org, Sebastian Reichel <sre@kernel.org>,
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ Will Deacon <will@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ James Wang <james.qian.wang@arm.com>, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>, linux-mediatek@lists.infradead.org,
+ Hsin-Yi Wang <hsinyi@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ linux-arm-kernel@lists.infradead.org,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ srv_heupstream@mediatek.com, Stephen Boyd <sboyd@kernel.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,375 +129,556 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-To avoid complexity of updating each thread's PASID status (e.g. sending
-IPI to update IA32_PASID MSR) on allocating and freeing PASID, once
-allocated and assigned to an mm, the PASID stays with the mm for the
-rest of the mm's lifetime. A reference to the PASID is taken on
-allocating the PASID. Binding/unbinding the PASID won't change refcount.
-The reference is dropped on mm exit and thus the PASID is freed.
+On Fri, Jan 28, 2022 at 04:11:01PM +0800, Yong Wu wrote:
+> The component requires the compare/release functions, there are so many
+> copy in current kernel. Just define three common helpers for them.
+> No functional change.
+> 
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+> Base on v5.17-rc1
+> ---
+>  .../gpu/drm/arm/display/komeda/komeda_drv.c    |  5 -----
+>  drivers/gpu/drm/arm/hdlcd_drv.c                |  7 +------
+>  drivers/gpu/drm/armada/armada_drv.c            |  5 -----
+>  drivers/gpu/drm/drm_of.c                       |  8 +-------
+>  drivers/gpu/drm/etnaviv/etnaviv_drv.c          |  7 -------
+>  drivers/gpu/drm/exynos/exynos_drm_drv.c        |  5 -----
+>  .../gpu/drm/hisilicon/kirin/kirin_drm_drv.c    |  5 -----
+>  drivers/gpu/drm/imx/imx-drm-core.c             |  4 ++--
+>  drivers/gpu/drm/ingenic/ingenic-drm-drv.c      |  5 -----
+>  drivers/gpu/drm/mcde/mcde_drv.c                |  7 +------
+>  drivers/gpu/drm/mediatek/mtk_drm_drv.c         |  5 -----
+>  drivers/gpu/drm/meson/meson_drv.c              |  8 --------
+>  drivers/gpu/drm/msm/msm_drv.c                  |  9 ---------
+>  drivers/gpu/drm/omapdrm/dss/dss.c              |  8 +-------
+>  drivers/gpu/drm/rockchip/rockchip_drm_drv.c    |  5 -----
+>  drivers/gpu/drm/sti/sti_drv.c                  |  5 -----
+>  drivers/gpu/drm/sun4i/sun4i_drv.c              |  9 ---------
+>  drivers/gpu/drm/vc4/vc4_drv.c                  |  5 -----
+>  drivers/iommu/mtk_iommu.h                      | 10 ----------
+>  drivers/power/supply/ab8500_charger.c          |  8 +-------
+>  drivers/video/fbdev/omap2/omapfb/dss/dss.c     |  8 +-------
+>  include/linux/component.h                      | 18 ++++++++++++++++++
+>  sound/soc/codecs/wcd938x.c                     | 16 ++--------------
 
-Two helpers mm_pasid_set() and mm_pasid_drop() are defined in mm because
-the PASID operations handle the pasid member in mm_struct and should be
-part of mm operations. Because IOASID's reference count is not used any
-more and removed, unused ioasid_get() and iommu_sva_free_pasid()
-are deleted and ioasid_put() is renamed to ioasid_free().
+Seems like a neat idea. Please add kerneldoc for the new functions you're
+adding (bonus point for an example in there) and make sure it all renders
+correctly in
 
-20-bit PASID allows up to 1M processes bound to PASIDs at the same time.
-With cgroups and other controls that might limit the number of process
-creation, the limited number of PASIDs is not a realistic issue for
-lazy PASID free.
+$ make htmldoc
 
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
----
-v3:
-- Rename mm_pasid_get() to mm_pasid_set() (Thomas).
-- Remove ioasid_get() because it's not used any more when the IOASID
-  is freed on mm exit (Thomas).
-- Remove PASID's refcount exercise in ioasid_put() and rename
-  ioasid_put() to ioasid_free() (Thomas).
+Also please split up the patch series per-driver and add the maintainers
+to each patches' Cc: list. With that I think this should be ready for
+merging.
 
-v2:
-- Free PASID on mm exit instead of in exit(2) or unbind() (Thomas, AndyL,
-  PeterZ)
-- Add mm_pasid_init(), mm_pasid_get(), and mm_pasid_drop() functions in mm.
-  So the mm's PASID operations are generic for both X86 and ARM
-  (Dave Hansen)
+Cheers, Daniel
 
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  5 +--
- drivers/iommu/intel/iommu.c                   |  4 +-
- drivers/iommu/intel/svm.c                     |  9 -----
- drivers/iommu/ioasid.c                        | 38 ++----------------
- drivers/iommu/iommu-sva-lib.c                 | 39 ++++++-------------
- drivers/iommu/iommu-sva-lib.h                 |  1 -
- include/linux/ioasid.h                        | 12 +-----
- include/linux/sched/mm.h                      | 16 ++++++++
- kernel/fork.c                                 |  1 +
- 9 files changed, 38 insertions(+), 87 deletions(-)
+>  23 files changed, 28 insertions(+), 144 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/arm/display/komeda/komeda_drv.c b/drivers/gpu/drm/arm/display/komeda/komeda_drv.c
+> index e7933930a657..fe5b97107417 100644
+> --- a/drivers/gpu/drm/arm/display/komeda/komeda_drv.c
+> +++ b/drivers/gpu/drm/arm/display/komeda/komeda_drv.c
+> @@ -92,11 +92,6 @@ static const struct component_master_ops komeda_master_ops = {
+>  	.unbind	= komeda_unbind,
+>  };
+>  
+> -static int compare_of(struct device *dev, void *data)
+> -{
+> -	return dev->of_node == data;
+> -}
+> -
+>  static void komeda_add_slave(struct device *master,
+>  			     struct component_match **match,
+>  			     struct device_node *np,
+> diff --git a/drivers/gpu/drm/arm/hdlcd_drv.c b/drivers/gpu/drm/arm/hdlcd_drv.c
+> index 479c2422a2e0..36d84c439df8 100644
+> --- a/drivers/gpu/drm/arm/hdlcd_drv.c
+> +++ b/drivers/gpu/drm/arm/hdlcd_drv.c
+> @@ -372,11 +372,6 @@ static const struct component_master_ops hdlcd_master_ops = {
+>  	.unbind		= hdlcd_drm_unbind,
+>  };
+>  
+> -static int compare_dev(struct device *dev, void *data)
+> -{
+> -	return dev->of_node == data;
+> -}
+> -
+>  static int hdlcd_probe(struct platform_device *pdev)
+>  {
+>  	struct device_node *port;
+> @@ -387,7 +382,7 @@ static int hdlcd_probe(struct platform_device *pdev)
+>  	if (!port)
+>  		return -ENODEV;
+>  
+> -	drm_of_component_match_add(&pdev->dev, &match, compare_dev, port);
+> +	drm_of_component_match_add(&pdev->dev, &match, compare_of, port);
+>  	of_node_put(port);
+>  
+>  	return component_master_add_with_match(&pdev->dev, &hdlcd_master_ops,
+> diff --git a/drivers/gpu/drm/armada/armada_drv.c b/drivers/gpu/drm/armada/armada_drv.c
+> index 8e3e98f13db4..9edc4912c1a0 100644
+> --- a/drivers/gpu/drm/armada/armada_drv.c
+> +++ b/drivers/gpu/drm/armada/armada_drv.c
+> @@ -177,11 +177,6 @@ static void armada_drm_unbind(struct device *dev)
+>  	drm_mm_takedown(&priv->linear);
+>  }
+>  
+> -static int compare_of(struct device *dev, void *data)
+> -{
+> -	return dev->of_node == data;
+> -}
+> -
+>  static int compare_dev_name(struct device *dev, void *data)
+>  {
+>  	const char *name = data;
+> diff --git a/drivers/gpu/drm/drm_of.c b/drivers/gpu/drm/drm_of.c
+> index 59d368ea006b..f958f48f8ba4 100644
+> --- a/drivers/gpu/drm/drm_of.c
+> +++ b/drivers/gpu/drm/drm_of.c
+> @@ -18,11 +18,6 @@
+>   * properties.
+>   */
+>  
+> -static void drm_release_of(struct device *dev, void *data)
+> -{
+> -	of_node_put(data);
+> -}
+> -
+>  /**
+>   * drm_of_crtc_port_mask - find the mask of a registered CRTC by port OF node
+>   * @dev: DRM device
+> @@ -94,8 +89,7 @@ void drm_of_component_match_add(struct device *master,
+>  				struct device_node *node)
+>  {
+>  	of_node_get(node);
+> -	component_match_add_release(master, matchptr, drm_release_of,
+> -				    compare, node);
+> +	component_match_add_release(master, matchptr, release_of, compare, node);
+>  }
+>  EXPORT_SYMBOL_GPL(drm_of_component_match_add);
+>  
+> diff --git a/drivers/gpu/drm/etnaviv/etnaviv_drv.c b/drivers/gpu/drm/etnaviv/etnaviv_drv.c
+> index 0b756ecb1bc2..15351e26ab00 100644
+> --- a/drivers/gpu/drm/etnaviv/etnaviv_drv.c
+> +++ b/drivers/gpu/drm/etnaviv/etnaviv_drv.c
+> @@ -574,13 +574,6 @@ static const struct component_master_ops etnaviv_master_ops = {
+>  	.unbind = etnaviv_unbind,
+>  };
+>  
+> -static int compare_of(struct device *dev, void *data)
+> -{
+> -	struct device_node *np = data;
+> -
+> -	return dev->of_node == np;
+> -}
+> -
+>  static int compare_str(struct device *dev, void *data)
+>  {
+>  	return !strcmp(dev_name(dev), data);
+> diff --git a/drivers/gpu/drm/exynos/exynos_drm_drv.c b/drivers/gpu/drm/exynos/exynos_drm_drv.c
+> index 9743b6b17447..97f6bc69bee3 100644
+> --- a/drivers/gpu/drm/exynos/exynos_drm_drv.c
+> +++ b/drivers/gpu/drm/exynos/exynos_drm_drv.c
+> @@ -212,11 +212,6 @@ static struct exynos_drm_driver_info exynos_drm_drivers[] = {
+>  	}
+>  };
+>  
+> -static int compare_dev(struct device *dev, void *data)
+> -{
+> -	return dev == (struct device *)data;
+> -}
+> -
+>  static struct component_match *exynos_drm_match_add(struct device *dev)
+>  {
+>  	struct component_match *match = NULL;
+> diff --git a/drivers/gpu/drm/hisilicon/kirin/kirin_drm_drv.c b/drivers/gpu/drm/hisilicon/kirin/kirin_drm_drv.c
+> index 98ae9a48f3fe..8cc6e13e46af 100644
+> --- a/drivers/gpu/drm/hisilicon/kirin/kirin_drm_drv.c
+> +++ b/drivers/gpu/drm/hisilicon/kirin/kirin_drm_drv.c
+> @@ -203,11 +203,6 @@ static int kirin_drm_kms_init(struct drm_device *dev,
+>  	return ret;
+>  }
+>  
+> -static int compare_of(struct device *dev, void *data)
+> -{
+> -	return dev->of_node == data;
+> -}
+> -
+>  static int kirin_drm_kms_cleanup(struct drm_device *dev)
+>  {
+>  	drm_kms_helper_poll_fini(dev);
+> diff --git a/drivers/gpu/drm/imx/imx-drm-core.c b/drivers/gpu/drm/imx/imx-drm-core.c
+> index cb685fe2039b..11b5c0fae045 100644
+> --- a/drivers/gpu/drm/imx/imx-drm-core.c
+> +++ b/drivers/gpu/drm/imx/imx-drm-core.c
+> @@ -176,7 +176,7 @@ static const struct drm_driver imx_drm_driver = {
+>  	.patchlevel		= 0,
+>  };
+>  
+> -static int compare_of(struct device *dev, void *data)
+> +static int imx_compare_of(struct device *dev, void *data)
+>  {
+>  	struct device_node *np = data;
+>  
+> @@ -286,7 +286,7 @@ static const struct component_master_ops imx_drm_ops = {
+>  
+>  static int imx_drm_platform_probe(struct platform_device *pdev)
+>  {
+> -	int ret = drm_of_component_probe(&pdev->dev, compare_of, &imx_drm_ops);
+> +	int ret = drm_of_component_probe(&pdev->dev, imx_compare_of, &imx_drm_ops);
+>  
+>  	if (!ret)
+>  		ret = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
+> diff --git a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
+> index b4943a56be09..194abab14ffe 100644
+> --- a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
+> +++ b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
+> @@ -1322,11 +1322,6 @@ static int ingenic_drm_bind_with_components(struct device *dev)
+>  	return ingenic_drm_bind(dev, true);
+>  }
+>  
+> -static int compare_of(struct device *dev, void *data)
+> -{
+> -	return dev->of_node == data;
+> -}
+> -
+>  static void ingenic_drm_unbind(struct device *dev)
+>  {
+>  	struct ingenic_drm *priv = dev_get_drvdata(dev);
+> diff --git a/drivers/gpu/drm/mcde/mcde_drv.c b/drivers/gpu/drm/mcde/mcde_drv.c
+> index 5b5afc6aaf8e..015690b6d308 100644
+> --- a/drivers/gpu/drm/mcde/mcde_drv.c
+> +++ b/drivers/gpu/drm/mcde/mcde_drv.c
+> @@ -265,11 +265,6 @@ static struct platform_driver *const mcde_component_drivers[] = {
+>  	&mcde_dsi_driver,
+>  };
+>  
+> -static int mcde_compare_dev(struct device *dev, void *data)
+> -{
+> -	return dev == data;
+> -}
+> -
+>  static int mcde_probe(struct platform_device *pdev)
+>  {
+>  	struct device *dev = &pdev->dev;
+> @@ -399,7 +394,7 @@ static int mcde_probe(struct platform_device *pdev)
+>  
+>  		while ((d = platform_find_device_by_driver(p, drv))) {
+>  			put_device(p);
+> -			component_match_add(dev, &match, mcde_compare_dev, d);
+> +			component_match_add(dev, &match, compare_dev, d);
+>  			p = d;
+>  		}
+>  		put_device(p);
+> diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> index 56ff8c57ef8f..72586983ec1d 100644
+> --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
+> @@ -369,11 +369,6 @@ static const struct drm_driver mtk_drm_driver = {
+>  	.minor = DRIVER_MINOR,
+>  };
+>  
+> -static int compare_of(struct device *dev, void *data)
+> -{
+> -	return dev->of_node == data;
+> -}
+> -
+>  static int mtk_drm_bind(struct device *dev)
+>  {
+>  	struct mtk_drm_private *private = dev_get_drvdata(dev);
+> diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
+> index 80f1d439841a..b68631d16eb3 100644
+> --- a/drivers/gpu/drm/meson/meson_drv.c
+> +++ b/drivers/gpu/drm/meson/meson_drv.c
+> @@ -423,14 +423,6 @@ static int __maybe_unused meson_drv_pm_resume(struct device *dev)
+>  	return drm_mode_config_helper_resume(priv->drm);
+>  }
+>  
+> -static int compare_of(struct device *dev, void *data)
+> -{
+> -	DRM_DEBUG_DRIVER("Comparing of node %pOF with %pOF\n",
+> -			 dev->of_node, data);
+> -
+> -	return dev->of_node == data;
+> -}
+> -
+>  static void meson_drv_shutdown(struct platform_device *pdev)
+>  {
+>  	struct meson_drm *priv = dev_get_drvdata(&pdev->dev);
+> diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+> index ad35a5d94053..6250327b1eda 100644
+> --- a/drivers/gpu/drm/msm/msm_drv.c
+> +++ b/drivers/gpu/drm/msm/msm_drv.c
+> @@ -1173,15 +1173,6 @@ static const struct dev_pm_ops msm_pm_ops = {
+>   * Componentized driver support:
+>   */
+>  
+> -/*
+> - * NOTE: duplication of the same code as exynos or imx (or probably any other).
+> - * so probably some room for some helpers
+> - */
+> -static int compare_of(struct device *dev, void *data)
+> -{
+> -	return dev->of_node == data;
+> -}
+> -
+>  /*
+>   * Identify what components need to be added by parsing what remote-endpoints
+>   * our MDP output ports are connected to. In the case of LVDS on MDP4, there
+> diff --git a/drivers/gpu/drm/omapdrm/dss/dss.c b/drivers/gpu/drm/omapdrm/dss/dss.c
+> index 69b3e15b9356..5216000c7657 100644
+> --- a/drivers/gpu/drm/omapdrm/dss/dss.c
+> +++ b/drivers/gpu/drm/omapdrm/dss/dss.c
+> @@ -1344,12 +1344,6 @@ static const struct component_master_ops dss_component_ops = {
+>  	.unbind = dss_unbind,
+>  };
+>  
+> -static int dss_component_compare(struct device *dev, void *data)
+> -{
+> -	struct device *child = data;
+> -	return dev == child;
+> -}
+> -
+>  struct dss_component_match_data {
+>  	struct device *dev;
+>  	struct component_match **match;
+> @@ -1379,7 +1373,7 @@ static int dss_add_child_component(struct device *dev, void *data)
+>  		return device_for_each_child(dev, cmatch,
+>  					     dss_add_child_component);
+>  
+> -	component_match_add(cmatch->dev, match, dss_component_compare, dev);
+> +	component_match_add(cmatch->dev, match, compare_dev, dev);
+>  
+>  	return 0;
+>  }
+> diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c b/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
+> index bec207de4544..276e41168bd0 100644
+> --- a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
+> +++ b/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
+> @@ -290,11 +290,6 @@ int rockchip_drm_endpoint_is_subdriver(struct device_node *ep)
+>  	return false;
+>  }
+>  
+> -static int compare_dev(struct device *dev, void *data)
+> -{
+> -	return dev == (struct device *)data;
+> -}
+> -
+>  static void rockchip_drm_match_remove(struct device *dev)
+>  {
+>  	struct device_link *link;
+> diff --git a/drivers/gpu/drm/sti/sti_drv.c b/drivers/gpu/drm/sti/sti_drv.c
+> index c7efb43b83ee..3c3294c2100d 100644
+> --- a/drivers/gpu/drm/sti/sti_drv.c
+> +++ b/drivers/gpu/drm/sti/sti_drv.c
+> @@ -144,11 +144,6 @@ static const struct drm_driver sti_driver = {
+>  	.minor = DRIVER_MINOR,
+>  };
+>  
+> -static int compare_of(struct device *dev, void *data)
+> -{
+> -	return dev->of_node == data;
+> -}
+> -
+>  static int sti_init(struct drm_device *ddev)
+>  {
+>  	struct sti_private *private;
+> diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c b/drivers/gpu/drm/sun4i/sun4i_drv.c
+> index b630614b3d72..de26c1448486 100644
+> --- a/drivers/gpu/drm/sun4i/sun4i_drv.c
+> +++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
+> @@ -201,15 +201,6 @@ static bool sun4i_drv_node_is_tcon_top(struct device_node *node)
+>  		!!of_match_node(sun8i_tcon_top_of_table, node);
+>  }
+>  
+> -static int compare_of(struct device *dev, void *data)
+> -{
+> -	DRM_DEBUG_DRIVER("Comparing of node %pOF with %pOF\n",
+> -			 dev->of_node,
+> -			 data);
+> -
+> -	return dev->of_node == data;
+> -}
+> -
+>  /*
+>   * The encoder drivers use drm_of_find_possible_crtcs to get upstream
+>   * crtcs from the device tree using of_graph. For the results to be
+> diff --git a/drivers/gpu/drm/vc4/vc4_drv.c b/drivers/gpu/drm/vc4/vc4_drv.c
+> index 16abc3a3d601..43474107a4f2 100644
+> --- a/drivers/gpu/drm/vc4/vc4_drv.c
+> +++ b/drivers/gpu/drm/vc4/vc4_drv.c
+> @@ -187,11 +187,6 @@ static struct drm_driver vc4_drm_driver = {
+>  	.patchlevel = DRIVER_PATCHLEVEL,
+>  };
+>  
+> -static int compare_dev(struct device *dev, void *data)
+> -{
+> -	return dev == data;
+> -}
+> -
+>  static void vc4_match_add_drivers(struct device *dev,
+>  				  struct component_match **match,
+>  				  struct platform_driver *const *drivers,
+> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> index f81fa8862ed0..b742432220c5 100644
+> --- a/drivers/iommu/mtk_iommu.h
+> +++ b/drivers/iommu/mtk_iommu.h
+> @@ -84,16 +84,6 @@ struct mtk_iommu_data {
+>  	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
+>  };
+>  
+> -static inline int compare_of(struct device *dev, void *data)
+> -{
+> -	return dev->of_node == data;
+> -}
+> -
+> -static inline void release_of(struct device *dev, void *data)
+> -{
+> -	of_node_put(data);
+> -}
+> -
+>  static inline int mtk_iommu_bind(struct device *dev)
+>  {
+>  	struct mtk_iommu_data *data = dev_get_drvdata(dev);
+> diff --git a/drivers/power/supply/ab8500_charger.c b/drivers/power/supply/ab8500_charger.c
+> index ce074c018dcb..248dfd8aec19 100644
+> --- a/drivers/power/supply/ab8500_charger.c
+> +++ b/drivers/power/supply/ab8500_charger.c
+> @@ -3414,11 +3414,6 @@ static struct platform_driver *const ab8500_charger_component_drivers[] = {
+>  	&ab8500_chargalg_driver,
+>  };
+>  
+> -static int ab8500_charger_compare_dev(struct device *dev, void *data)
+> -{
+> -	return dev == data;
+> -}
+> -
+>  static int ab8500_charger_probe(struct platform_device *pdev)
+>  {
+>  	struct device *dev = &pdev->dev;
+> @@ -3657,8 +3652,7 @@ static int ab8500_charger_probe(struct platform_device *pdev)
+>  
+>  		while ((d = platform_find_device_by_driver(p, drv))) {
+>  			put_device(p);
+> -			component_match_add(dev, &match,
+> -					    ab8500_charger_compare_dev, d);
+> +			component_match_add(dev, &match, compare_dev, d);
+>  			p = d;
+>  		}
+>  		put_device(p);
+> diff --git a/drivers/video/fbdev/omap2/omapfb/dss/dss.c b/drivers/video/fbdev/omap2/omapfb/dss/dss.c
+> index a6b1c1598040..328aa5d86f1a 100644
+> --- a/drivers/video/fbdev/omap2/omapfb/dss/dss.c
+> +++ b/drivers/video/fbdev/omap2/omapfb/dss/dss.c
+> @@ -1193,12 +1193,6 @@ static const struct component_master_ops dss_component_ops = {
+>  	.unbind = dss_unbind,
+>  };
+>  
+> -static int dss_component_compare(struct device *dev, void *data)
+> -{
+> -	struct device *child = data;
+> -	return dev == child;
+> -}
+> -
+>  static int dss_add_child_component(struct device *dev, void *data)
+>  {
+>  	struct component_match **match = data;
+> @@ -1212,7 +1206,7 @@ static int dss_add_child_component(struct device *dev, void *data)
+>  	if (strstr(dev_name(dev), "rfbi"))
+>  		return 0;
+>  
+> -	component_match_add(dev->parent, match, dss_component_compare, dev);
+> +	component_match_add(dev->parent, match, compare_dev, dev);
+>  
+>  	return 0;
+>  }
+> diff --git a/include/linux/component.h b/include/linux/component.h
+> index 16de18f473d7..5a7468ea827c 100644
+> --- a/include/linux/component.h
+> +++ b/include/linux/component.h
+> @@ -2,6 +2,8 @@
+>  #ifndef COMPONENT_H
+>  #define COMPONENT_H
+>  
+> +#include <linux/device.h>
+> +#include <linux/of.h>
+>  #include <linux/stddef.h>
+>  
+>  
+> @@ -82,6 +84,22 @@ struct component_master_ops {
+>  	void (*unbind)(struct device *master);
+>  };
+>  
+> +/* A set common helpers for compare/release functions */
+> +static inline int compare_of(struct device *dev, void *data)
+> +{
+> +	return dev->of_node == data;
+> +}
+> +
+> +static inline void release_of(struct device *dev, void *data)
+> +{
+> +	of_node_put(data);
+> +}
+> +
+> +static inline int compare_dev(struct device *dev, void *data)
+> +{
+> +	return dev == data;
+> +}
+> +
+>  void component_master_del(struct device *,
+>  	const struct component_master_ops *);
+>  
+> diff --git a/sound/soc/codecs/wcd938x.c b/sound/soc/codecs/wcd938x.c
+> index eff200a07d9f..992132cbfb9f 100644
+> --- a/sound/soc/codecs/wcd938x.c
+> +++ b/sound/soc/codecs/wcd938x.c
+> @@ -4417,16 +4417,6 @@ static const struct component_master_ops wcd938x_comp_ops = {
+>  	.unbind = wcd938x_unbind,
+>  };
+>  
+> -static int wcd938x_compare_of(struct device *dev, void *data)
+> -{
+> -	return dev->of_node == data;
+> -}
+> -
+> -static void wcd938x_release_of(struct device *dev, void *data)
+> -{
+> -	of_node_put(data);
+> -}
+> -
+>  static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
+>  					struct device *dev,
+>  					struct component_match **matchptr)
+> @@ -4442,8 +4432,7 @@ static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
+>  	}
+>  
+>  	of_node_get(wcd938x->rxnode);
+> -	component_match_add_release(dev, matchptr, wcd938x_release_of,
+> -				    wcd938x_compare_of,	wcd938x->rxnode);
+> +	component_match_add_release(dev, matchptr, release_of, compare_of, wcd938x->rxnode);
+>  
+>  	wcd938x->txnode = of_parse_phandle(np, "qcom,tx-device", 0);
+>  	if (!wcd938x->txnode) {
+> @@ -4451,8 +4440,7 @@ static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
+>  		return -ENODEV;
+>  	}
+>  	of_node_get(wcd938x->txnode);
+> -	component_match_add_release(dev, matchptr, wcd938x_release_of,
+> -				    wcd938x_compare_of,	wcd938x->txnode);
+> +	component_match_add_release(dev, matchptr, release_of, compare_of, wcd938x->txnode);
+>  	return 0;
+>  }
+>  
+> -- 
+> 2.18.0
+> 
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index a737ba5f727e..22ddd05bbdcd 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -340,14 +340,12 @@ __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
- 	bond->smmu_mn = arm_smmu_mmu_notifier_get(smmu_domain, mm);
- 	if (IS_ERR(bond->smmu_mn)) {
- 		ret = PTR_ERR(bond->smmu_mn);
--		goto err_free_pasid;
-+		goto err_free_bond;
- 	}
- 
- 	list_add(&bond->list, &master->bonds);
- 	return &bond->sva;
- 
--err_free_pasid:
--	iommu_sva_free_pasid(mm);
- err_free_bond:
- 	kfree(bond);
- 	return ERR_PTR(ret);
-@@ -377,7 +375,6 @@ void arm_smmu_sva_unbind(struct iommu_sva *handle)
- 	if (refcount_dec_and_test(&bond->refs)) {
- 		list_del(&bond->list);
- 		arm_smmu_mmu_notifier_put(bond->smmu_mn);
--		iommu_sva_free_pasid(bond->mm);
- 		kfree(bond);
- 	}
- 	mutex_unlock(&sva_lock);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 92fea3fbbb11..ef03b2176bbd 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4781,7 +4781,7 @@ static int aux_domain_add_dev(struct dmar_domain *domain,
- link_failed:
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- 	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
--		ioasid_put(domain->default_pasid);
-+		ioasid_free(domain->default_pasid);
- 
- 	return ret;
- }
-@@ -4811,7 +4811,7 @@ static void aux_domain_remove_dev(struct dmar_domain *domain,
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- 
- 	if (list_empty(&domain->subdevices) && domain->default_pasid > 0)
--		ioasid_put(domain->default_pasid);
-+		ioasid_free(domain->default_pasid);
- }
- 
- static int prepare_domain_attach_device(struct iommu_domain *domain,
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 5b5d69b04fcc..51ac2096b3da 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -514,11 +514,6 @@ static int intel_svm_alloc_pasid(struct device *dev, struct mm_struct *mm,
- 	return iommu_sva_alloc_pasid(mm, PASID_MIN, max_pasid - 1);
- }
- 
--static void intel_svm_free_pasid(struct mm_struct *mm)
--{
--	iommu_sva_free_pasid(mm);
--}
--
- static struct iommu_sva *intel_svm_bind_mm(struct intel_iommu *iommu,
- 					   struct device *dev,
- 					   struct mm_struct *mm,
-@@ -662,8 +657,6 @@ static int intel_svm_unbind_mm(struct device *dev, u32 pasid)
- 				kfree(svm);
- 			}
- 		}
--		/* Drop a PASID reference and free it if no reference. */
--		intel_svm_free_pasid(mm);
- 	}
- out:
- 	return ret;
-@@ -1047,8 +1040,6 @@ struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm, void
- 	}
- 
- 	sva = intel_svm_bind_mm(iommu, dev, mm, flags);
--	if (IS_ERR_OR_NULL(sva))
--		intel_svm_free_pasid(mm);
- 	mutex_unlock(&pasid_mutex);
- 
- 	return sva;
-diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-index 50ee27bbd04e..a786c034907c 100644
---- a/drivers/iommu/ioasid.c
-+++ b/drivers/iommu/ioasid.c
-@@ -2,7 +2,7 @@
- /*
-  * I/O Address Space ID allocator. There is one global IOASID space, split into
-  * subsets. Users create a subset with DECLARE_IOASID_SET, then allocate and
-- * free IOASIDs with ioasid_alloc and ioasid_put.
-+ * free IOASIDs with ioasid_alloc() and ioasid_free().
-  */
- #include <linux/ioasid.h>
- #include <linux/module.h>
-@@ -15,7 +15,6 @@ struct ioasid_data {
- 	struct ioasid_set *set;
- 	void *private;
- 	struct rcu_head rcu;
--	refcount_t refs;
- };
- 
- /*
-@@ -315,7 +314,6 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
- 
- 	data->set = set;
- 	data->private = private;
--	refcount_set(&data->refs, 1);
- 
- 	/*
- 	 * Custom allocator needs allocator data to perform platform specific
-@@ -348,34 +346,11 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
- EXPORT_SYMBOL_GPL(ioasid_alloc);
- 
- /**
-- * ioasid_get - obtain a reference to the IOASID
-- */
--void ioasid_get(ioasid_t ioasid)
--{
--	struct ioasid_data *ioasid_data;
--
--	spin_lock(&ioasid_allocator_lock);
--	ioasid_data = xa_load(&active_allocator->xa, ioasid);
--	if (ioasid_data)
--		refcount_inc(&ioasid_data->refs);
--	else
--		WARN_ON(1);
--	spin_unlock(&ioasid_allocator_lock);
--}
--EXPORT_SYMBOL_GPL(ioasid_get);
--
--/**
-- * ioasid_put - Release a reference to an ioasid
-+ * ioasid_free - Free an ioasid
-  * @ioasid: the ID to remove
-- *
-- * Put a reference to the IOASID, free it when the number of references drops to
-- * zero.
-- *
-- * Return: %true if the IOASID was freed, %false otherwise.
-  */
--bool ioasid_put(ioasid_t ioasid)
-+void ioasid_free(ioasid_t ioasid)
- {
--	bool free = false;
- 	struct ioasid_data *ioasid_data;
- 
- 	spin_lock(&ioasid_allocator_lock);
-@@ -385,10 +360,6 @@ bool ioasid_put(ioasid_t ioasid)
- 		goto exit_unlock;
- 	}
- 
--	free = refcount_dec_and_test(&ioasid_data->refs);
--	if (!free)
--		goto exit_unlock;
--
- 	active_allocator->ops->free(ioasid, active_allocator->ops->pdata);
- 	/* Custom allocator needs additional steps to free the xa element */
- 	if (active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) {
-@@ -398,9 +369,8 @@ bool ioasid_put(ioasid_t ioasid)
- 
- exit_unlock:
- 	spin_unlock(&ioasid_allocator_lock);
--	return free;
- }
--EXPORT_SYMBOL_GPL(ioasid_put);
-+EXPORT_SYMBOL_GPL(ioasid_free);
- 
- /**
-  * ioasid_find - Find IOASID data
-diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
-index bd41405d34e9..106506143896 100644
---- a/drivers/iommu/iommu-sva-lib.c
-+++ b/drivers/iommu/iommu-sva-lib.c
-@@ -18,8 +18,7 @@ static DECLARE_IOASID_SET(iommu_sva_pasid);
-  *
-  * Try to allocate a PASID for this mm, or take a reference to the existing one
-  * provided it fits within the [@min, @max] range. On success the PASID is
-- * available in mm->pasid, and must be released with iommu_sva_free_pasid().
-- * @min must be greater than 0, because 0 indicates an unused mm->pasid.
-+ * available in mm->pasid and will be available for the lifetime of the mm.
-  *
-  * Returns 0 on success and < 0 on error.
-  */
-@@ -33,38 +32,24 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
- 		return -EINVAL;
- 
- 	mutex_lock(&iommu_sva_lock);
--	if (mm->pasid) {
--		if (mm->pasid >= min && mm->pasid <= max)
--			ioasid_get(mm->pasid);
--		else
-+	/* Is a PASID already associated with this mm? */
-+	if (pasid_valid(mm->pasid)) {
-+		if (mm->pasid < min || mm->pasid >= max)
- 			ret = -EOVERFLOW;
--	} else {
--		pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
--		if (pasid == INVALID_IOASID)
--			ret = -ENOMEM;
--		else
--			mm->pasid = pasid;
-+		goto out;
- 	}
-+
-+	pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
-+	if (!pasid_valid(pasid))
-+		ret = -ENOMEM;
-+	else
-+		mm_pasid_set(mm, pasid);
-+out:
- 	mutex_unlock(&iommu_sva_lock);
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(iommu_sva_alloc_pasid);
- 
--/**
-- * iommu_sva_free_pasid - Release the mm's PASID
-- * @mm: the mm
-- *
-- * Drop one reference to a PASID allocated with iommu_sva_alloc_pasid()
-- */
--void iommu_sva_free_pasid(struct mm_struct *mm)
--{
--	mutex_lock(&iommu_sva_lock);
--	if (ioasid_put(mm->pasid))
--		mm->pasid = 0;
--	mutex_unlock(&iommu_sva_lock);
--}
--EXPORT_SYMBOL_GPL(iommu_sva_free_pasid);
--
- /* ioasid_find getter() requires a void * argument */
- static bool __mmget_not_zero(void *mm)
- {
-diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva-lib.h
-index 95dc3ebc1928..8909ea1094e3 100644
---- a/drivers/iommu/iommu-sva-lib.h
-+++ b/drivers/iommu/iommu-sva-lib.h
-@@ -9,7 +9,6 @@
- #include <linux/mm_types.h>
- 
- int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max);
--void iommu_sva_free_pasid(struct mm_struct *mm);
- struct mm_struct *iommu_sva_find(ioasid_t pasid);
- 
- /* I/O Page fault */
-diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-index 2237f64dbaae..af1c9d62e642 100644
---- a/include/linux/ioasid.h
-+++ b/include/linux/ioasid.h
-@@ -34,8 +34,7 @@ struct ioasid_allocator_ops {
- #if IS_ENABLED(CONFIG_IOASID)
- ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
- 		      void *private);
--void ioasid_get(ioasid_t ioasid);
--bool ioasid_put(ioasid_t ioasid);
-+void ioasid_free(ioasid_t ioasid);
- void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- 		  bool (*getter)(void *));
- int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
-@@ -53,14 +52,7 @@ static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
- 	return INVALID_IOASID;
- }
- 
--static inline void ioasid_get(ioasid_t ioasid)
--{
--}
--
--static inline bool ioasid_put(ioasid_t ioasid)
--{
--	return false;
--}
-+static inline void ioasid_free(ioasid_t ioasid) { }
- 
- static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- 				bool (*getter)(void *))
-diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
-index c74d1edbac2f..a80356e9dc69 100644
---- a/include/linux/sched/mm.h
-+++ b/include/linux/sched/mm.h
-@@ -439,8 +439,24 @@ static inline void mm_pasid_init(struct mm_struct *mm)
- {
- 	mm->pasid = INVALID_IOASID;
- }
-+
-+/* Associate a PASID with an mm_struct: */
-+static inline void mm_pasid_set(struct mm_struct *mm, u32 pasid)
-+{
-+	mm->pasid = pasid;
-+}
-+
-+static inline void mm_pasid_drop(struct mm_struct *mm)
-+{
-+	if (pasid_valid(mm->pasid)) {
-+		ioasid_free(mm->pasid);
-+		mm->pasid = INVALID_IOASID;
-+	}
-+}
- #else
- static inline void mm_pasid_init(struct mm_struct *mm) {}
-+static inline void mm_pasid_set(struct mm_struct *mm, u32 pasid) {}
-+static inline void mm_pasid_drop(struct mm_struct *mm) {}
- #endif
- 
- #endif /* _LINUX_SCHED_MM_H */
-diff --git a/kernel/fork.c b/kernel/fork.c
-index deacd2c17a7f..c03c6682464c 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -1115,6 +1115,7 @@ static inline void __mmput(struct mm_struct *mm)
- 	}
- 	if (mm->binfmt)
- 		module_put(mm->binfmt->module);
-+	mm_pasid_drop(mm);
- 	mmdrop(mm);
- }
- 
 -- 
-2.35.0
-
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
