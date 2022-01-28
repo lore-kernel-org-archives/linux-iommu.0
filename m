@@ -1,65 +1,63 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 04157C4707F
-	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 00:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7A6C2C35270
+	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 00:26:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 81CFE40493;
-	Fri, 28 Jan 2022 00:26:36 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 223666102D;
+	Fri, 28 Jan 2022 00:26:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id h6MJm0llNNqA; Fri, 28 Jan 2022 00:26:35 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id D54D0404DB;
-	Fri, 28 Jan 2022 00:26:34 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id a8ZyR7Y3gv3f; Fri, 28 Jan 2022 00:26:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 9C6D360EFA;
+	Fri, 28 Jan 2022 00:26:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 05BDBC002D;
-	Fri, 28 Jan 2022 00:26:34 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8A228C0011
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 00:26:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C0FCEC007B;
+	Fri, 28 Jan 2022 00:26:37 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A03BBC0039
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 00:26:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 5DDE940180
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 00:26:31 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 80C2160AB1
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 00:26:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jyiNs6zyeEQ1 for <iommu@lists.linux-foundation.org>;
- Fri, 28 Jan 2022 00:26:30 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id hoaYnSfHWzr9 for <iommu@lists.linux-foundation.org>;
+ Fri, 28 Jan 2022 00:26:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 8102D40153
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 7DB6360AA9
  for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 00:26:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
- Message-Id:Date:Cc:To:From:content-disposition;
- bh=UO35KE8YVx2v+yNTFMhmKCQE8ptUbM1lG6ODy8MFD4U=; b=sBbcFg82SAk1otTpMskAScMiG7
- RyAKAQkLTz1xmy8xTlaHSy36dHLKBWxmZ36QoMwA4kkP1Jl1psr1WnOOxIkWmE9XtLADFmwdP9Al8
- ICSCs2cktw8nLKLELqHswQ/9zbp0P2ctwkft2z7KTrR3Sn8uIMRmhiPnKpbppo9L3h5AIBakUCRp6
- ACGKOFIT2MqbGv8JvJsn9xNK3WT0DFPSr3AFe/PofI/wklbT7AxT8jWUom0daiNDBGZ6rcIONs0MR
- Hx6YbD9XhVp29jfmuXGV9Ri0UA0Ly2AAO8I6iJbJsPYwK+DBu9x+77HhVcbEqqwc0x0ilK1AB7U1m
- XP4zUiFw==;
+ d=deltatee.com; s=20200525; h=Subject:MIME-Version:Message-Id:Date:Cc:To:From
+ :references:content-disposition:in-reply-to;
+ bh=Nkw55joMKiqDgie+VfxMcVCT7GpR0RSmwW2xRLO+tno=; b=t2yLq7BIUQ4EFSH2LFcsoa2tP4
+ V0ye62oByQ8Q2ExVdzyYACVbmPz8nA8wIvQTo82I0fY+monLOYjsS8MlfXMe88UsRBJm9A3NIAOow
+ bL9reKbtQoe9snv0O0Du/HIq2ZZLtZl9gbkcUj4Xk2NQweGNKcIUx1uRwmtUNoTZH418Bz/uk+ZmB
+ mov+5DnEau10n2G7Gcvq5mDttrSctPJkpschajnJtQT7C9YcD1mLmFsSVCd/5zbZ8kpztJWt5AXiH
+ 5hpUkM+oZPbN9WJaO6MYRCbBvkQ1WyOn3rsQzo2uEMeHqFvTLBUX2EgAqpKnfhFtIH8hCGcRr+SAJ
+ WsD5RsYg==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
  by ale.deltatee.com with esmtps (TLS1.3) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94.2)
  (envelope-from <gunthorp@deltatee.com>)
- id 1nDF5r-005OcV-Sd; Thu, 27 Jan 2022 17:26:25 -0700
+ id 1nDF5p-005OcV-La; Thu, 27 Jan 2022 17:26:23 -0700
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim
  4.94.2) (envelope-from <gunthorp@deltatee.com>)
- id 1nDF5p-0001dH-Dg; Thu, 27 Jan 2022 17:26:21 -0700
+ id 1nDF5j-0001cA-Ki; Thu, 27 Jan 2022 17:26:15 -0700
 From: Logan Gunthorpe <logang@deltatee.com>
 To: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
  linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
  iommu@lists.linux-foundation.org
-Date: Thu, 27 Jan 2022 17:26:09 -0700
-Message-Id: <20220128002614.6136-20-logang@deltatee.com>
+Date: Thu, 27 Jan 2022 17:25:50 -0700
+Message-Id: <20220128002614.6136-1-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220128002614.6136-1-logang@deltatee.com>
-References: <20220128002614.6136-1-logang@deltatee.com>
 MIME-Version: 1.0
 X-SA-Exim-Connect-IP: 172.16.1.31
 X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -73,8 +71,7 @@ X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
  ckulkarnilinux@gmail.com, jhubbard@nvidia.com, rcampbell@nvidia.com,
  logang@deltatee.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v5 19/24] lib/scatterlist: add check when merging zone device
- pages
+Subject: [PATCH v5 00/24] Userspace P2PDMA with O_DIRECT NVMe devices
 X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Cc: Minturn Dave B <dave.b.minturn@intel.com>,
@@ -107,96 +104,178 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Consecutive zone device pages should not be merged into the same sgl
-or bvec segment with other types of pages or if they belong to different
-pgmaps. Otherwise getting the pgmap of a given segment is not possible
-without scanning the entire segment. This helper returns true either if
-both pages are not zone device pages or both pages are zone device
-pages with the same pgmap.
+Hi,
 
-Factor out the check for page mergability into a pages_are_mergable()
-helper and add a check with zone_device_pages_are_mergeable().
+This patchset continues my work to add userspace P2PDMA access using
+O_DIRECT NVMe devices. This posting fixes a lot of issues that were
+addresed in the last posting, which is here[1].
 
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
----
- lib/scatterlist.c | 25 +++++++++++++++----------
- 1 file changed, 15 insertions(+), 10 deletions(-)
+The patchset is rebased onto v5.17-rc1 as well as a rebased version of
+Ralph Campbell's patches to drop the ZONE_DEVICE page ref count offset.
+My understanding is this patch has some problems that are yet to be
+resolved but this will be the direction taken going forward and is
+included here to show that it is compatible with this patchset.
 
-diff --git a/lib/scatterlist.c b/lib/scatterlist.c
-index d5e82e4a57ad..af53a0984f76 100644
---- a/lib/scatterlist.c
-+++ b/lib/scatterlist.c
-@@ -410,6 +410,15 @@ static struct scatterlist *get_next_sg(struct sg_append_table *table,
- 	return new_sg;
- }
- 
-+static bool pages_are_mergeable(struct page *a, struct page *b)
-+{
-+	if (page_to_pfn(a) != page_to_pfn(b) + 1)
-+		return false;
-+	if (!zone_device_pages_have_same_pgmap(a, b))
-+		return false;
-+	return true;
-+}
-+
- /**
-  * sg_alloc_append_table_from_pages - Allocate and initialize an append sg
-  *                                    table from an array of pages
-@@ -447,6 +456,7 @@ int sg_alloc_append_table_from_pages(struct sg_append_table *sgt_append,
- 	unsigned int chunks, cur_page, seg_len, i, prv_len = 0;
- 	unsigned int added_nents = 0;
- 	struct scatterlist *s = sgt_append->prv;
-+	struct page *last_pg;
- 
- 	/*
- 	 * The algorithm below requires max_segment to be aligned to PAGE_SIZE
-@@ -460,21 +470,17 @@ int sg_alloc_append_table_from_pages(struct sg_append_table *sgt_append,
- 		return -EOPNOTSUPP;
- 
- 	if (sgt_append->prv) {
--		unsigned long paddr =
--			(page_to_pfn(sg_page(sgt_append->prv)) * PAGE_SIZE +
--			 sgt_append->prv->offset + sgt_append->prv->length) /
--			PAGE_SIZE;
--
- 		if (WARN_ON(offset))
- 			return -EINVAL;
- 
- 		/* Merge contiguous pages into the last SG */
- 		prv_len = sgt_append->prv->length;
--		while (n_pages && page_to_pfn(pages[0]) == paddr) {
-+		last_pg = sg_page(sgt_append->prv);
-+		while (n_pages && pages_are_mergeable(last_pg, pages[0])) {
- 			if (sgt_append->prv->length + PAGE_SIZE > max_segment)
- 				break;
- 			sgt_append->prv->length += PAGE_SIZE;
--			paddr++;
-+			last_pg = pages[0];
- 			pages++;
- 			n_pages--;
- 		}
-@@ -488,7 +494,7 @@ int sg_alloc_append_table_from_pages(struct sg_append_table *sgt_append,
- 	for (i = 1; i < n_pages; i++) {
- 		seg_len += PAGE_SIZE;
- 		if (seg_len >= max_segment ||
--		    page_to_pfn(pages[i]) != page_to_pfn(pages[i - 1]) + 1) {
-+		    !pages_are_mergeable(pages[i], pages[i - 1])) {
- 			chunks++;
- 			seg_len = 0;
- 		}
-@@ -504,8 +510,7 @@ int sg_alloc_append_table_from_pages(struct sg_append_table *sgt_append,
- 		for (j = cur_page + 1; j < n_pages; j++) {
- 			seg_len += PAGE_SIZE;
- 			if (seg_len >= max_segment ||
--			    page_to_pfn(pages[j]) !=
--			    page_to_pfn(pages[j - 1]) + 1)
-+			    !pages_are_mergeable(pages[j], pages[j - 1]))
- 				break;
- 		}
- 
--- 
+The patchset enables userspace P2PDMA by allowing userspace to mmap()
+allocated chunks of the CMB. The resulting VMA can be passed only
+to O_DIRECT IO on NVMe backed files or block devices. A flag is added
+to GUP() in Patch 16, then Patches 17 through 21 wire this flag up based
+on whether the block queue indicates P2PDMA support. Patches 22
+through 24 enable the CMB to be mapped into userspace by mmaping
+the nvme char device.
+
+This is relatively straightforward, however the one significant
+problem is that, presently, pci_p2pdma_map_sg() requires a homogeneous
+SGL with all P2PDMA pages or all regular pages. Enhancing GUP to
+support enforcing this rule would require a huge hack that I don't
+expect would be all that pallatable. So patches 3 to 16 add
+support for P2PDMA pages to dma_map_sg[table]() to the dma-direct
+and dma-iommu implementations. Thus systems without an IOMMU plus
+Intel and AMD IOMMUs are supported. (Other IOMMU implementations would
+then be unsupported, notably ARM and PowerPC but support would be added
+when they convert to dma-iommu).
+
+dma_map_sgtable() is preferred when dealing with P2PDMA memory as it
+will return -EREMOTEIO when the DMA device cannot map specific P2PDMA
+pages based on the existing rules in calc_map_type_and_dist().
+
+The other issue is dma_unmap_sg() needs a flag to determine whether a
+given dma_addr_t was mapped regularly or as a PCI bus address. To allow
+this, a third flag is added to the page_link field in struct
+scatterlist. This effectively means support for P2PDMA will now depend
+on CONFIG_64BIT.
+
+Feedback welcome.
+
+This series is based on v5.17-rc1. A git branch is available here:
+
+  https://github.com/sbates130272/linux-p2pmem/  p2pdma_user_cmb_v5
+
+Thanks,
+
+Logan
+
+[1] https://lore.kernel.org/all/20211117215410.3695-1-logang@deltatee.com/T/#u
+
+--
+
+Changes since v4:
+  - Rebase onto v5.17-rc1.
+  - Included Ralph Cambell's patches which removes the ZONE_DEVICE page
+    reference count offset. This is just to demonstrate that this
+    series is compatible with that direction.
+  - Added a comment in pci_p2pdma_map_sg_attrs(), per Chaitanya and
+    included his Reviewed-by tags.
+  - Patch 1 in the last series which cleaned up scatterlist.h
+    has been upstreamed.
+  - Dropped NEED_SG_DMA_BUS_ADDR_FLAG seeing depends on doesn't
+    work with selected symbols, per Christoph.
+  - Switched iov_iter_get_pages_[alloc_]flags to be exported with
+    EXPORT_SYMBOL_GPL, per Christoph.
+  - Renamed zone_device_pages_are_mergeable() to
+    zone_device_pages_have_same_pgmap(), per Christoph.
+  - Renamed .mmap_file_open operation in nvme_ctrl_ops to
+    cdev_file_open(), per Christoph.
+
+Changes since v3:
+  - Add some comment and commit message cleanups I had missed for v3,
+    also moved the prototypes for some of the p2pdma helpers to
+    dma-map-ops.h (which I missed in v3 and was suggested in v2).
+  - Add separate cleanup patch for scatterlist.h and change the macros
+    to functions. (Suggested by Chaitanya and Jason, respectively)
+  - Rename sg_dma_mark_pci_p2pdma() and sg_is_dma_pci_p2pdma() to
+    sg_dma_mark_bus_address() and sg_is_dma_bus_address() which
+    is a more generic name (As requested by Jason)
+  - Fixes to some comments and commit messages as suggested by Bjorn
+    and Jason.
+  - Ensure swiotlb is not used with P2PDMA pages. (Per Jason)
+  - The sgtable coversion in RDMA was split out and sent upstream
+    separately, the new patch is only the removal. (Per Jason)
+  - Moved the FOLL_PCI_P2PDMA check outside of get_dev_pagemap() as
+    Jason suggested this will be removed in the near term.
+  - Add two patches to ensure that zone device pages with different
+    pgmaps are never merged in the block layer or
+    sg_alloc_append_table_from_pages() (Per Jason)
+  - Ensure synchronize_rcu() or call_rcu() is used before returning
+    pages to the genalloc. (Jason pointed out that pages are not
+    gauranteed to be unused in all architectures until at least
+    after an RCU grace period, and that synchronize_rcu() was likely
+    too slow to use in the vma close operation.
+  - Collected Acks and Reviews by Bjorn, Jason and Max.
+
+Logan Gunthorpe (22):
+  lib/scatterlist: add flag for indicating P2PDMA segments in an SGL
+  PCI/P2PDMA: Attempt to set map_type if it has not been set
+  PCI/P2PDMA: Expose pci_p2pdma_map_type()
+  PCI/P2PDMA: Introduce helpers for dma_map_sg implementations
+  dma-mapping: allow EREMOTEIO return code for P2PDMA transfers
+  dma-direct: support PCI P2PDMA pages in dma-direct map_sg
+  dma-mapping: add flags to dma_map_ops to indicate PCI P2PDMA support
+  iommu/dma: support PCI P2PDMA pages in dma-iommu map_sg
+  nvme-pci: check DMA ops when indicating support for PCI P2PDMA
+  nvme-pci: convert to using dma_map_sgtable()
+  RDMA/core: introduce ib_dma_pci_p2p_dma_supported()
+  RDMA/rw: drop pci_p2pdma_[un]map_sg()
+  PCI/P2PDMA: Remove pci_p2pdma_[un]map_sg()
+  mm: introduce FOLL_PCI_P2PDMA to gate getting PCI P2PDMA pages
+  iov_iter: introduce iov_iter_get_pages_[alloc_]flags()
+  block: add check when merging zone device pages
+  lib/scatterlist: add check when merging zone device pages
+  block: set FOLL_PCI_P2PDMA in __bio_iov_iter_get_pages()
+  block: set FOLL_PCI_P2PDMA in bio_map_user_iov()
+  mm: use custom page_free for P2PDMA pages
+  PCI/P2PDMA: Introduce pci_mmap_p2pmem()
+  nvme-pci: allow mmaping the CMB in userspace
+
+Ralph Campbell (2):
+  ext4/xfs: add page refcount helper
+  mm: remove extra ZONE_DEVICE struct page refcount
+
+ arch/powerpc/kvm/book3s_hv_uvmem.c     |   2 +-
+ block/bio.c                            |  10 +-
+ block/blk-map.c                        |   7 +-
+ drivers/gpu/drm/nouveau/nouveau_dmem.c |   2 +-
+ drivers/infiniband/core/rw.c           |  45 +--
+ drivers/iommu/dma-iommu.c              |  67 +++-
+ drivers/nvme/host/core.c               |  18 +-
+ drivers/nvme/host/nvme.h               |   4 +-
+ drivers/nvme/host/pci.c                |  97 +++---
+ drivers/nvme/target/rdma.c             |   2 +-
+ drivers/pci/Kconfig                    |   5 +
+ drivers/pci/p2pdma.c                   | 441 +++++++++++++++++++++----
+ fs/dax.c                               |   8 +-
+ fs/ext4/inode.c                        |   5 +-
+ fs/fuse/dax.c                          |   4 +-
+ fs/xfs/xfs_file.c                      |   4 +-
+ include/linux/dax.h                    |  10 +
+ include/linux/dma-map-ops.h            |  76 +++++
+ include/linux/dma-mapping.h            |   5 +
+ include/linux/memremap.h               |   7 +-
+ include/linux/mm.h                     |  68 ++--
+ include/linux/pci-p2pdma.h             |  38 +--
+ include/linux/scatterlist.h            |  44 ++-
+ include/linux/uio.h                    |   6 +
+ include/rdma/ib_verbs.h                |  11 +
+ include/uapi/linux/magic.h             |   1 +
+ kernel/dma/direct.c                    |  43 ++-
+ kernel/dma/direct.h                    |   7 +-
+ kernel/dma/mapping.c                   |  22 +-
+ lib/iov_iter.c                         |  25 +-
+ lib/scatterlist.c                      |  25 +-
+ lib/test_hmm.c                         |   2 +-
+ mm/gup.c                               |  22 +-
+ mm/internal.h                          |   8 +
+ mm/memcontrol.c                        |   6 +-
+ mm/memremap.c                          |  75 ++---
+ mm/migrate.c                           |   5 -
+ mm/page_alloc.c                        |   3 +
+ mm/swap.c                              |  45 +--
+ 39 files changed, 904 insertions(+), 371 deletions(-)
+
+
+base-commit: e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
+--
 2.30.2
-
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
