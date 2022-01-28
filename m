@@ -1,161 +1,82 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 75EC7C433EF
-	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 18:00:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3F1CAC433F5
+	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 20:29:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 1ECDE83276;
-	Fri, 28 Jan 2022 18:00:21 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id B4F97405D5;
+	Fri, 28 Jan 2022 20:29:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eEvO0LD8AST8; Fri, 28 Jan 2022 18:00:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id F118182D49;
-	Fri, 28 Jan 2022 18:00:19 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id NeNVtFwZcult; Fri, 28 Jan 2022 20:29:25 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 66E78405C2;
+	Fri, 28 Jan 2022 20:29:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CBB35C0011;
-	Fri, 28 Jan 2022 18:00:19 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 85DF9C000B
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 18:00:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 26A25C002D;
+	Fri, 28 Jan 2022 20:29:25 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ED3B1C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 20:29:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 66CD460D52
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 18:00:18 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id DA9B983148
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 20:29:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=microsoft.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6utWb7lKBUKi for <iommu@lists.linux-foundation.org>;
- Fri, 28 Jan 2022 18:00:17 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from na01-obe.outbound.protection.outlook.com
- (mail-cusazlp170100000.outbound.protection.outlook.com
- [IPv6:2a01:111:f403:c111::])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 9CE4960BFC
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 18:00:17 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OzIWLMfP22X/I6SWsFMfRvn+HqNQB04T1Fk8o5DGMoxJd8w/x1UsYNV3GwnVt/+NrK+09OSQkMY5Et1ht1Mf1HGX6jWNhR0tPoCA7A5xzRe5KBoyxR1zFjLqXBn8qBpgcvVuUWFNF8BLNqhN4dIQoRSYgL09IpfS91p3iEknYlBhFKCS9VUnzGx5tnBGZUygCFicGH05YqXenxRXgm6pVx1l8QYH/AVmV5cF/TmMWJy2GmuGwsJlIMeNq60s9EiNApI5CCUhHJPzf/sSOF8bPzcQDCzqIN+k7gGBV4ZnUYN8mvz+55HilEmodjVCU8WhL32tWFC9CRiE54VHu/lczA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4wDO3Z4QOHUFEXogoVML389xDBqXIZHT7mqYpVGs6RA=;
- b=LVsDtq8UgiUWMhJXN4OGAA7ujOiOW+n57NgSlZ2V8Cb1OygpL1vGyB6tYqPYETkR46FfqnYQDZ3ccMaqCyEPSffBckp9DR2JvMoFBQBB4SQztGX8kIEMdgEVvONVDdfpe9RpzDsm8cdArFq6eN1abE14OKKRM+jivk8JI4rSoT68NBnn2bDdvaMtjmWf6ug4ZMoTpTYZb7V8PRvm5+HxpRprectouFC5CSqcdsP3IeXbkGGAao9BtrEZD+wCqd9YNBkysR2PrqKw1nq7N7dCxAKCxFaZhO0VQLcdGzKMgOB+b0GM3WWuYCmnTYCSYezEpA7YQj7UBkKFyuLp+OzdSg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4wDO3Z4QOHUFEXogoVML389xDBqXIZHT7mqYpVGs6RA=;
- b=LUEvc19NN6YDK5AH06DtrrOSn+tDpeV3MziQAgb5oUYgmzgFluxWWUJ767gZP0yb27kY/RTkS69wkgDPXls/uz10YUd3RYvNvIbFMTK8GU6QtmuhgaMI9742LlQHtDx9Q6PR5LynFhp9jsqOTGwulOu49HdwKGOCO3Mbn3HwBGQ=
-Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
- by DM5PR21MB2108.namprd21.prod.outlook.com (2603:10b6:3:ce::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.6; Fri, 28 Jan
- 2022 17:44:54 +0000
-Received: from MWHPR21MB1593.namprd21.prod.outlook.com
- ([fe80::61d3:a4c2:9674:9db6]) by MWHPR21MB1593.namprd21.prod.outlook.com
- ([fe80::61d3:a4c2:9674:9db6%9]) with mapi id 15.20.4951.007; Fri, 28 Jan 2022
- 17:44:54 +0000
-To: Tianyu Lan <ltykernel@gmail.com>, KY Srinivasan <kys@microsoft.com>,
- Haiyang Zhang <haiyangz@microsoft.com>, Stephen Hemminger
- <sthemmin@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan
- Cui <decui@microsoft.com>, "tglx@linutronix.de" <tglx@linutronix.de>,
- "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
- "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, "x86@kernel.org"
- <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>, "hch@infradead.org"
- <hch@infradead.org>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
-Subject: RE: [PATCH 2/2] x86/hyperv: Set swiotlb_alloc_from_low_pages to false
-Thread-Topic: [PATCH 2/2] x86/hyperv: Set swiotlb_alloc_from_low_pages to false
-Thread-Index: AQHYEs9YhKUTn8cbZ0e7UpyxV1riwax4t70Q
-Date: Fri, 28 Jan 2022 17:44:54 +0000
-Message-ID: <MWHPR21MB1593E33B5300F38A201CD523D7229@MWHPR21MB1593.namprd21.prod.outlook.com>
-References: <20220126161053.297386-1-ltykernel@gmail.com>
- <20220126161053.297386-3-ltykernel@gmail.com>
-In-Reply-To: <20220126161053.297386-3-ltykernel@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=5a204df9-826d-42b3-a83b-5cd92774331c;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-01-28T17:44:20Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: edfb67f6-a25b-4391-5875-08d9e285e4d1
-x-ms-traffictypediagnostic: DM5PR21MB2108:EE_
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-ms-exchange-atpmessageproperties: SA|SL
-x-microsoft-antispam-prvs: <DM5PR21MB2108C4D8E140BBE64A246F33D7229@DM5PR21MB2108.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2733;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: S2iSpkbcXhBx5rerYKnGIBE35N6pWqMfh+K9TLye61EV9+MtV1ueOwAwA0muUk1w8QIxrxDjCeiYtp8HpoSFqFz2yRimsOqw07mIymExnQcj9Bhc3ZmgUngPpgtZy77FLQ97e69t2h/IUjfROxp/A81Y4taf+TGvNVMNn/SeAkoxORJzamaWYS3huA4IqVyQqJdGrmry1oIXDT2lLsDOkc5AWiqGGW8EXREk9oeDRKzwzBwnzjShiUQzyux8ckbW4HoXKVtopCv6manyh9MTTf+VKp46iJSDP/MNxfz0upiOf4Mjnk8PwI04ySh2HszfXLltgZM+/GCMpftnalABjg2yEPTlwOTinbteMqOEvjKtFm5f/ZvQJPkQgiKO9LBeFQDK9CvneKctPtJNZ0c4bqT5Oip1IY1xM5mTc9EmcGIox1rpztStWz3EBws8GMQ7xv7rndC9Fvs4xU/9qsUD2tARjYedRoJ9y4mUsMTK9/sS6zWNHl3Fjd3ZtPfhgPH5iD9ey0RP61FCPLcqgxu0epmQFeFPUGx3gLAzL2Lw6bwCz1C5ZcIyITAGFn/2VIu7UxBQsDKfk+sCMrcI2QTNEKyOYnpHRW7NLM4r5G9241cReacW7uPoQFAbab6wlXi1ymM0RssB1wVTwqDoPboX7H1P5jo9gGatdKlCpizuI7mp9V/L4QnGHjEsCh4ZOFK6BdauXPNK2jHscfKmQtZqJsFfb/rtyAjx14CZctQMiDSQgrD0nXctwyobE2VYaHiXEawwaWoAOj2xyLxQfDgjpQ==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MWHPR21MB1593.namprd21.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(8936002)(8676002)(64756008)(66556008)(76116006)(54906003)(52536014)(33656002)(186003)(26005)(38070700005)(82950400001)(4326008)(82960400001)(316002)(66476007)(86362001)(8990500004)(66946007)(66446008)(110136005)(4744005)(71200400001)(7416002)(7696005)(9686003)(6506007)(2906002)(5660300002)(38100700002)(508600001)(55016003)(921005)(122000001)(10290500003)(20210929001);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?m/AH6sQ2oIk00Pi+ysgro+ReI+qRJ2tOU9ieNVp6O2hb2Vmmt0gzxIWTMOd4?=
- =?us-ascii?Q?EGRE5tj8OsffBU+Lcrq9rSqW3PCLGij0LO6K29WmNSgbJxQod8vk2BfBEpNT?=
- =?us-ascii?Q?RHId6H057ef1wzp/bTL9LVSTkwkr7U7M57tJdli9UD7ikzFOUh+UDICb9k8x?=
- =?us-ascii?Q?0NGbotcPE+LoD4UAQlpyIe/Vk0WWVqKz9l6ZiDsjN4OU5OAiiNeVm2PQMvDt?=
- =?us-ascii?Q?9FYMpUlH0xBXTzDfpp77V5SNqip/tVan7mIDFyNl79HsTcMyr+2NYoBc3Y05?=
- =?us-ascii?Q?/NXAgRjjoShvoxgzMFYXT+p297e9yUzCTYmBI2tpTLRq93crKM2bYs6HVlnJ?=
- =?us-ascii?Q?dwTf0JuZEXu/n6OzLZgQEVeKNHaQbDVsR9SGBoo4bj+VCEyn/hyGhTOy4AlT?=
- =?us-ascii?Q?xLNdAnrEyfXQGg8126hVve2soPmpVXz2ei5W3HC5f4WP0Fh7r4R470iiGTm8?=
- =?us-ascii?Q?gNmaYlXRp4rlwsiZ0vvQ8ayi9O2ri4BdT8vEPOh7CRZCBnhtTHdWBT33AOJ2?=
- =?us-ascii?Q?itw5e4nx3Mk2JlzlUFU9VhtwdsAZMf6eZ0iwwTxcBT8M8uizqtugmlE/FcZE?=
- =?us-ascii?Q?YFxzfdeIoOsAL4i3j5N4sY78B5SHIvASd32jJ9KZxs11Xux9hZ63oLGk1W7A?=
- =?us-ascii?Q?8QbgUA7A2u4NVU7QgeGgAybDOCKhofccKpkKLoU730ch8Pi6lMhpcqMvUCBh?=
- =?us-ascii?Q?BOfwD3H+reEVx7P5cDlUb71CYsw7XUnM119ZdjVbSoHkd7zAvoKp+PT4jA0Y?=
- =?us-ascii?Q?fOjj8ouNzCp0BTicZtIK/uMMJ71WgsI0NHY4j8T0SO5ZESLwd9lSsoD6c6sX?=
- =?us-ascii?Q?CEnhgMpP6ywW/11luVEAYvwFH5h56nbUKWz+x2RaAXGB23kzDsJ4/6L8DJt/?=
- =?us-ascii?Q?lK7k4YQOKt6ggEMd9HnjAy39M3+zGaXgpx7SsDjyw3BdDG0NwS1mFPzttthn?=
- =?us-ascii?Q?VWzqAzZnx5qH7+dlksN9ux/xDbiQ2lsa+yfJOx+G2Naf55CEJiEXt2WyfQuL?=
- =?us-ascii?Q?nIDttxTtzxrrTangy09St92fVZfqPyNpEA4ShrsloppVfQGmkFz5k60uxiim?=
- =?us-ascii?Q?3fy7k5OW2R+L4MIYHx2QtG27xrsy1R3DkmDYKY2y6Q7RUlg/F/p2A5FoxD1J?=
- =?us-ascii?Q?nGdDTWePWhcaM5L8MpFaV+kLy5s1CDhguTB+tF8BXlVtyMvGKcCTuLEioNwZ?=
- =?us-ascii?Q?0g6/qd7o+5MWOa3yXIBr0b+o78sU5Kbo4bkriDrI1mxlERxsZnYncYnlHimG?=
- =?us-ascii?Q?HdTreN5uNEIPIa3ihmV1KC35T5rgAB8GLwVagFuSr6D09CejQRewzY6MG9r+?=
- =?us-ascii?Q?YPG3NjL9m3DbQpknIjMef+w5UgLtHTIIYSSinpJbY3P7A7kGYCj+VCVG/eK+?=
- =?us-ascii?Q?5omYMysTq8APx9EM+aiqZgvecbZHl37W83fc2FmiZjD7UVTuLcNBcWfpJKH4?=
- =?us-ascii?Q?3/bkuwc7MJ0/9l8Qn04X3PeXDGya+KxvcZtQzuztjRFbIy1iG9B+y3kW0vbt?=
- =?us-ascii?Q?jn+KNZBA7V4JeMRZVA3K5cBHtOPjgIzLH9+QiusNasiB/xNziBw514QBjkzi?=
- =?us-ascii?Q?CZrItKmcfPUxt3Rqis1XJVTMUHLU+lQqXhOOGmjbxAsWy2dczshfIVRl5cEN?=
- =?us-ascii?Q?rIkyGzgzVcHwsxxSe/FKPHUUwFikjk8IR2zmImWqZpSqMOeGNfrreh3VoPmy?=
- =?us-ascii?Q?NHKDRA=3D=3D?=
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id nOVswyfzHBs8 for <iommu@lists.linux-foundation.org>;
+ Fri, 28 Jan 2022 20:29:23 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 4CA8E8282C
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 20:29:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1643401763; x=1674937763;
+ h=from:to:cc:subject:date:message-id:in-reply-to:
+ references:mime-version:content-transfer-encoding;
+ bh=oEb1gREPv86uZmCPcmbfKhCL3HC1okYdAANBmm9gm8A=;
+ b=Ma3uKlThBWQR8JV58ycnxZrMPnKY1g9jePnzMPqtOWU0qkQV2EMJTHIr
+ +jahSuqNSdbLMUQOhe9ArqB7jDIhxDDCg7ea/P9hZKCXBDKQ0ebGp/m3q
+ hL1lWSKDrIXwjPMeW94ZsI6uivj8pZ4Qw9PGUwYCakSODJBikosM205mE
+ ebgVUbC7RThmjulJy2gtuH1Eoxf3fKUSBzWLWGb3g98VjDHDk0IMGrLoj
+ kuA82aGk5fmDp4H6b7OJjmYxWt4dcvHbPrWVADb+FGXQ0BsGtwlV0Yihp
+ 9EbcUeg1fcosBBLj/eK0zMCe5I5CLn7unt9pAMX+KImYULnSyJQTSkxKA w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10241"; a="227862434"
+X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; d="scan'208";a="227862434"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Jan 2022 12:29:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,324,1635231600"; d="scan'208";a="618827691"
+Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
+ by FMSMGA003.fm.intel.com with ESMTP; 28 Jan 2022 12:29:21 -0800
+From: Fenghua Yu <fenghua.yu@intel.com>
+To: "Thomas Gleixner" <tglx@linutronix.de>,
+ "Dave Hansen" <dave.hansen@linux.intel.com>,
+ "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
+ "Peter Zijlstra" <peterz@infradead.org>,
+ "Andy Lutomirski" <luto@kernel.org>, "Tony Luck" <tony.luck@intel.com>,
+ "Lu Baolu" <baolu.lu@linux.intel.com>, "Joerg Roedel" <joro@8bytes.org>,
+ Josh Poimboeuf <jpoimboe@redhat.com>,
+ "Jacob Pan" <jacob.jun.pan@linux.intel.com>,
+ "Ashok Raj" <ashok.raj@intel.com>,
+ "Ravi V Shankar" <ravi.v.shankar@intel.com>
+Subject: [PATCH v3 02/11] mm: Change CONFIG option for mm->pasid field
+Date: Fri, 28 Jan 2022 12:28:56 -0800
+Message-Id: <20220128202905.2274672-3-fenghua.yu@intel.com>
+X-Mailer: git-send-email 2.35.0
+In-Reply-To: <20220128202905.2274672-1-fenghua.yu@intel.com>
+References: <20220128202905.2274672-1-fenghua.yu@intel.com>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: edfb67f6-a25b-4391-5875-08d9e285e4d1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jan 2022 17:44:54.4888 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: eDzbUjN2iqLSMzYq71u8K0T+35OKGcBEOiMTYJ3W+mXTcXqpwl5LH8MNcxSw+CeMGsjbAq07lDPgoUtrDO42qKo9zMW3SL5FbcC7BNJAGjo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR21MB2108
-Cc: "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
- "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- Tianyu Lan <Tianyu.Lan@microsoft.com>,
- "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
- vkuznets <vkuznets@redhat.com>, "hch@lst.de" <hch@lst.de>
+Cc: Fenghua Yu <fenghua.yu@intel.com>, iommu@lists.linux-foundation.org,
+ x86 <x86@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -168,41 +89,56 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: "Michael Kelley \(LINUX\) via iommu" <iommu@lists.linux-foundation.org>
-Reply-To: "Michael Kelley \(LINUX\)" <mikelley@microsoft.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Tianyu Lan <ltykernel@gmail.com> Sent: Wednesday, January 26, 2022 8:11 AM
-> 
-> In Hyper-V Isolation VM, swiotlb bnounce buffer size maybe 1G at most
-> and there maybe no enough memory from 0 to 4G according to memory layout.
-> Devices in Isolation VM can use memory above 4G as DMA memory. Set swiotlb_
-> alloc_from_low_pages to false in Isolation VM.
-> 
-> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> ---
->  arch/x86/kernel/cpu/mshyperv.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
-> index 5a99f993e639..80a0423ac75d 100644
-> --- a/arch/x86/kernel/cpu/mshyperv.c
-> +++ b/arch/x86/kernel/cpu/mshyperv.c
-> @@ -343,6 +343,7 @@ static void __init ms_hyperv_init_platform(void)
->  		 * use swiotlb bounce buffer for dma transaction.
->  		 */
->  		swiotlb_force = SWIOTLB_FORCE;
-> +		swiotlb_alloc_from_low_pages = false;
->  #endif
->  	}
-> 
-> --
-> 2.25.1
+This currently depends on CONFIG_IOMMU_SUPPORT. But it is only
+needed when CONFIG_IOMMU_SVA option is enabled.
 
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Change the CONFIG guards around definition and initialization
+of mm->pasid field.
+
+Suggested-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+---
+v2:
+- Change condition to more accurate CONFIG_IOMMU_SVA (Jacob and Tony)
+
+ include/linux/mm_types.h | 2 +-
+ kernel/fork.c            | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 9db36dc5d4cf..c959116abd95 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -630,7 +630,7 @@ struct mm_struct {
+ #endif
+ 		struct work_struct async_put_work;
+ 
+-#ifdef CONFIG_IOMMU_SUPPORT
++#ifdef CONFIG_IOMMU_SVA
+ 		u32 pasid;
+ #endif
+ 	} __randomize_layout;
+diff --git a/kernel/fork.c b/kernel/fork.c
+index d75a528f7b21..6ee7551d3bd2 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -1021,7 +1021,7 @@ static void mm_init_owner(struct mm_struct *mm, struct task_struct *p)
+ 
+ static void mm_init_pasid(struct mm_struct *mm)
+ {
+-#ifdef CONFIG_IOMMU_SUPPORT
++#ifdef CONFIG_IOMMU_SVA
+ 	mm->pasid = INIT_PASID;
+ #endif
+ }
+-- 
+2.35.0
 
 _______________________________________________
 iommu mailing list
