@@ -1,87 +1,71 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4CA0BC433EF
-	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 12:59:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 584ABC433EF
+	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 13:04:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D3A4A60B8C;
-	Fri, 28 Jan 2022 12:59:35 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id E285040286;
+	Fri, 28 Jan 2022 13:04:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZyBiXDOjV7Ki; Fri, 28 Jan 2022 12:59:35 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1hDNKL_dO7DC; Fri, 28 Jan 2022 13:04:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 9099760AD1;
-	Fri, 28 Jan 2022 12:59:34 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 4B28C404CA;
+	Fri, 28 Jan 2022 13:04:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 62101C001A;
-	Fri, 28 Jan 2022 12:59:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1C7B1C0021;
+	Fri, 28 Jan 2022 13:04:26 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5125EC000B
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 12:41:12 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F058DC000B
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 13:04:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 2A0D640286
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 12:41:12 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id E554740B3A
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 13:04:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Sz_eM_M9HQPN for <iommu@lists.linux-foundation.org>;
- Fri, 28 Jan 2022 12:41:10 +0000 (UTC)
+ with ESMTP id WFvWJekeRKRf for <iommu@lists.linux-foundation.org>;
+ Fri, 28 Jan 2022 13:04:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 70322400C6
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 12:41:10 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id BFF7DB8250F;
- Fri, 28 Jan 2022 12:41:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA84CC340E6;
- Fri, 28 Jan 2022 12:40:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1643373666;
- bh=QTzghuuSPtxJUTuUKx+W2/InQdxW15PSFwUv7VwUABw=;
- h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
- b=fDDCmQCAaMcJEavgtcJqwJ2QJDBq3pXRsPPc/l3by+2yESxDGmW5Kc9OAQqn3MlGS
- 9u8Jv1ppUGuCND2rokmY9SaMNtaybtUEWIbP9oXZ0jFRJDx82sG3zyppd2O0w9G76o
- Uf6erkYS+tgPQeVG5Z4aajPuWDNl06NAHpm7V+osyHiEA1BafH1iqrwBRt4Nwh5f7b
- wTP3ylF7iEUpGtGw+XjQr3MkFPOrG30hsWP/p9VE+pXFzTebvsbCxultxHFmtTO7Ho
- qvm2eN+tw7ziwQofhdfjUSM4ZDTzEncDr5Kmwnm/HUP8sHcsjZTVNARCCP6qFvyT/z
- eHYTGTk6Yk5gg==
-Date: Fri, 28 Jan 2022 13:40:55 +0100
-From: Mauro Carvalho Chehab <mchehab@kernel.org>
-To: Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v10 02/13] iommu/mediatek-v1: Free the existed fwspec if
- the master dev already has
-Message-ID: <20220128134055.720bb43c@coco.lan>
-In-Reply-To: <20220117070510.17642-3-yong.wu@mediatek.com>
-References: <20220117070510.17642-1-yong.wu@mediatek.com>
- <20220117070510.17642-3-yong.wu@mediatek.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id BBE97404CA
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 13:04:19 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DE9DA11D4;
+ Fri, 28 Jan 2022 05:04:18 -0800 (PST)
+Received: from [10.57.68.47] (unknown [10.57.68.47])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7E4173F766;
+ Fri, 28 Jan 2022 05:04:13 -0800 (PST)
+Message-ID: <29deffd6-aac4-f085-bcd5-f5a2d02784a8@arm.com>
+Date: Fri, 28 Jan 2022 13:04:07 +0000
 MIME-Version: 1.0
-X-Mailman-Approved-At: Fri, 28 Jan 2022 12:59:34 +0000
-Cc: Chun-Kuang Hu <chunkuang.hu@kernel.org>, David Airlie <airlied@linux.ie>,
- Will Deacon <will.deacon@arm.com>, dri-devel@lists.freedesktop.org,
- yf.wang@mediatek.com, Hans Verkuil <hverkuil@xs4all.nl>,
- anthony.huang@mediatek.com,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [RFC PATCH] component: Add common helpers for compare/release
+ functions
+Content-Language: en-GB
+To: Yong Wu <yong.wu@mediatek.com>, dri-devel@lists.freedesktop.org
+References: <20220128081101.27837-1-yong.wu@mediatek.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220128081101.27837-1-yong.wu@mediatek.com>
+Cc: David Airlie <airlied@linux.ie>, Liviu Dudau <liviu.dudau@arm.com>,
+ Sebastian Reichel <sre@kernel.org>,
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ Will Deacon <will@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- Evan Green <evgreen@chromium.org>, Eizan Miyamoto <eizan@chromium.org>,
- Matthias Kaehlcke <mka@chromium.org>, mingyuan.ma@mediatek.com,
- linux-media@vger.kernel.org, devicetree@vger.kernel.org,
- Joerg Roedel <jroedel@suse.de>, Philipp Zabel <p.zabel@pengutronix.de>,
- Frank Wunderlich <frank-w@public-files.de>, libo.kang@mediatek.com,
- yi.kuo@mediatek.com, Rob Herring <robh+dt@kernel.org>,
- linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
- Tiffany Lin <tiffany.lin@mediatek.com>, linux-arm-kernel@lists.infradead.org,
+ James Wang <james.qian.wang@arm.com>, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>, linux-mediatek@lists.infradead.org,
+ Hsin-Yi Wang <hsinyi@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ linux-arm-kernel@lists.infradead.org,
  AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- anan.sun@mediatek.com, srv_heupstream@mediatek.com, acourbot@chromium.org,
+ srv_heupstream@mediatek.com, Stephen Boyd <sboyd@kernel.org>,
  linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>
+ Daniel Vetter <daniel@ffwll.ch>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,89 +78,105 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Matthias/Yong,
+On 2022-01-28 08:11, Yong Wu wrote:
+[...]
+> diff --git a/include/linux/component.h b/include/linux/component.h
+> index 16de18f473d7..5a7468ea827c 100644
+> --- a/include/linux/component.h
+> +++ b/include/linux/component.h
+> @@ -2,6 +2,8 @@
+>   #ifndef COMPONENT_H
+>   #define COMPONENT_H
+>   
+> +#include <linux/device.h>
+> +#include <linux/of.h>
+>   #include <linux/stddef.h>
+>   
+>   
+> @@ -82,6 +84,22 @@ struct component_master_ops {
+>   	void (*unbind)(struct device *master);
+>   };
+>   
+> +/* A set common helpers for compare/release functions */
+> +static inline int compare_of(struct device *dev, void *data)
+> +{
+> +	return dev->of_node == data;
+> +}
 
-Are you ok if this patch gets merged via the media tree together with the
-remaining series, or do you prefer to apply it via SoC tree instead?
+Note that this is effectively just device_match_of_node(), although I 
+guess there is an argument that having a nice consistent set of 
+component_match API helpers might be worth more than a tiny code saving 
+by borrowing one from a different API.
 
-Regards,
-Mauro
-
-
-Em Mon, 17 Jan 2022 15:04:59 +0800
-Yong Wu <yong.wu@mediatek.com> escreveu:
-
-> When the iommu master device enters of_iommu_xlate, the ops may be
-> NULL(iommu dev is defered), then it will initialize the fwspec here:
-> 
-> [<c0c9c5bc>] (dev_iommu_fwspec_set) from [<c06bda80>]
-> (iommu_fwspec_init+0xbc/0xd4)
-> [<c06bd9c4>] (iommu_fwspec_init) from [<c06c0db4>]
-> (of_iommu_xlate+0x7c/0x12c)
-> [<c06c0d38>] (of_iommu_xlate) from [<c06c10e8>]
-> (of_iommu_configure+0x144/0x1e8)
-> 
-> BUT the mtk_iommu_v1.c only supports arm32, the probing flow still is a bit
-> weird. We always expect create the fwspec internally. otherwise it will
-> enter here and return fail.
-> 
-> static int mtk_iommu_create_mapping(struct device *dev,
-> 				    struct of_phandle_args *args)
-> {
->         ...
-> 	if (!fwspec) {
-> 	        ....
-> 	} else if (dev_iommu_fwspec_get(dev)->ops != &mtk_iommu_ops) {
->                 >>>>>>>>>>Enter here. return fail.<<<<<<<<<<<<  
-> 		return -EINVAL;
-> 	}
-> 	...
-> }
-> 
-> Thus, Free the existed fwspec if the master device already has fwspec.
-> 
-> This issue is reported at:
-> https://lore.kernel.org/linux-mediatek/trinity-7d9ebdc9-4849-4d93-bfb5-429dcb4ee449-1626253158870@3c-app-gmx-bs01/
-> 
-> Reported-by: Frank Wunderlich <frank-w@public-files.de>
-> Tested-by: Frank Wunderlich <frank-w@public-files.de> # BPI-R2/MT7623
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> Acked-by: Joerg Roedel <jroedel@suse.de>
-> Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  drivers/iommu/mtk_iommu_v1.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-> index be22fcf988ce..1467ba1e4417 100644
-> --- a/drivers/iommu/mtk_iommu_v1.c
-> +++ b/drivers/iommu/mtk_iommu_v1.c
-> @@ -425,6 +425,15 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
->  	struct mtk_iommu_data *data;
->  	int err, idx = 0;
->  
-> +	/*
-> +	 * In the deferred case, free the existed fwspec.
-> +	 * Always initialize the fwspec internally.
-> +	 */
-> +	if (fwspec) {
-> +		iommu_fwspec_free(dev);
-> +		fwspec = dev_iommu_fwspec_get(dev);
-> +	}
-> +
->  	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
->  					   "#iommu-cells",
->  					   idx, &iommu_spec)) {
-
-
+Either way, however, I don't think there's any good argument for 
+instantiating separate copies of these functions in every driver that 
+uses them. If they're used as callbacks then they can't actually be 
+inlined anyway, so they may as well be exported from component.c as 
+normal so that the code really is shared (plus then there's nice 
+symmetry with the aforementioned device_match API helpers too).
 
 Thanks,
-Mauro
+Robin.
+
+> +static inline void release_of(struct device *dev, void *data)
+> +{
+> +	of_node_put(data);
+> +}
+> +
+> +static inline int compare_dev(struct device *dev, void *data)
+> +{
+> +	return dev == data;
+> +}
+> +
+>   void component_master_del(struct device *,
+>   	const struct component_master_ops *);
+>   
+> diff --git a/sound/soc/codecs/wcd938x.c b/sound/soc/codecs/wcd938x.c
+> index eff200a07d9f..992132cbfb9f 100644
+> --- a/sound/soc/codecs/wcd938x.c
+> +++ b/sound/soc/codecs/wcd938x.c
+> @@ -4417,16 +4417,6 @@ static const struct component_master_ops wcd938x_comp_ops = {
+>   	.unbind = wcd938x_unbind,
+>   };
+>   
+> -static int wcd938x_compare_of(struct device *dev, void *data)
+> -{
+> -	return dev->of_node == data;
+> -}
+> -
+> -static void wcd938x_release_of(struct device *dev, void *data)
+> -{
+> -	of_node_put(data);
+> -}
+> -
+>   static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
+>   					struct device *dev,
+>   					struct component_match **matchptr)
+> @@ -4442,8 +4432,7 @@ static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
+>   	}
+>   
+>   	of_node_get(wcd938x->rxnode);
+> -	component_match_add_release(dev, matchptr, wcd938x_release_of,
+> -				    wcd938x_compare_of,	wcd938x->rxnode);
+> +	component_match_add_release(dev, matchptr, release_of, compare_of, wcd938x->rxnode);
+>   
+>   	wcd938x->txnode = of_parse_phandle(np, "qcom,tx-device", 0);
+>   	if (!wcd938x->txnode) {
+> @@ -4451,8 +4440,7 @@ static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
+>   		return -ENODEV;
+>   	}
+>   	of_node_get(wcd938x->txnode);
+> -	component_match_add_release(dev, matchptr, wcd938x_release_of,
+> -				    wcd938x_compare_of,	wcd938x->txnode);
+> +	component_match_add_release(dev, matchptr, release_of, compare_of, wcd938x->txnode);
+>   	return 0;
+>   }
+>   
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
