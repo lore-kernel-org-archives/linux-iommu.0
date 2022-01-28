@@ -4,68 +4,101 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 584ABC433EF
-	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 13:04:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C4058C43217
+	for <iommu@archiver.kernel.org>; Fri, 28 Jan 2022 14:21:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E285040286;
-	Fri, 28 Jan 2022 13:04:27 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5A56740938;
+	Fri, 28 Jan 2022 14:21:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1hDNKL_dO7DC; Fri, 28 Jan 2022 13:04:26 +0000 (UTC)
+	with ESMTP id JwQOk5vjHk5e; Fri, 28 Jan 2022 14:21:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 4B28C404CA;
-	Fri, 28 Jan 2022 13:04:26 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id F37A240544;
+	Fri, 28 Jan 2022 14:21:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1C7B1C0021;
-	Fri, 28 Jan 2022 13:04:26 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F058DC000B
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 13:04:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C7C1FC001A;
+	Fri, 28 Jan 2022 14:21:43 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BBE79C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 14:21:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id E554740B3A
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 13:04:20 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 9641D4175F
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 14:21:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WFvWJekeRKRf for <iommu@lists.linux-foundation.org>;
- Fri, 28 Jan 2022 13:04:19 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id BBE97404CA
- for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 13:04:19 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DE9DA11D4;
- Fri, 28 Jan 2022 05:04:18 -0800 (PST)
-Received: from [10.57.68.47] (unknown [10.57.68.47])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7E4173F766;
- Fri, 28 Jan 2022 05:04:13 -0800 (PST)
-Message-ID: <29deffd6-aac4-f085-bcd5-f5a2d02784a8@arm.com>
-Date: Fri, 28 Jan 2022 13:04:07 +0000
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=ziepe.ca
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id qO8Am5XvnKwl for <iommu@lists.linux-foundation.org>;
+ Fri, 28 Jan 2022 14:21:41 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com
+ [IPv6:2607:f8b0:4864:20::f32])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id B70C441750
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 14:21:41 +0000 (UTC)
+Received: by mail-qv1-xf32.google.com with SMTP id k4so5932822qvt.6
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Jan 2022 06:21:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziepe.ca; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=makDagrHRlU7vaXpIkbBqsJmR2imX/hQ0vT1IyZGbe8=;
+ b=hagW1D3vrAXgmIdAaPuyb0ZYpBBI5GPj5cGf4t4VMPl2Hby0LDAfvZWMHlJD4RNPqz
+ udQ6uMwMCSFght7z8OXaOlANPe89fBH+JadGzhs2iy3sYKIgrM8DNT9kykuob784vNJb
+ /Y/FgIYpTCK+z7cKXzoYjO1GyqMmNfC0h5hNyGY73VQ5CoPXpXPP9nyVMuQ4vWD+VQga
+ 0hYXfzvwCLnChzgjp4NqFihb4T9f8dI0raxoWaXnXY+5G5GDrUXCHtUcKwBORYZObA9Y
+ YPaqcPq/4bzPj+zORYsBg7/S7b+i2mhRoE+TwNrxyzVcDs3wf6ttmJBlILKVUF4beVAI
+ 0u4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=makDagrHRlU7vaXpIkbBqsJmR2imX/hQ0vT1IyZGbe8=;
+ b=HXaXszMv+5lEM7/u/3Y0EhtKlLpIB+hbFEht+QPAhjRDpFF8qBlu+OpXopyy9sRpKn
+ snj8PYgkaJzBIxfRfG/vQnfdwDXUbw8ufoDrDGhaWQr6HQ5G4Jy7wHISL4G4GYNAUtCy
+ UCqMoEgOnlJgNQCfMDakEDZi65QPBAnSek2Me82dUrBj1w97ZluZ+7tZwHdbiLcWFvsm
+ 788TbgrjxiPSaJ9Pkc7RG55lUqM4iuW2H7DM7zByZ+cG+Iy3NUoxOmndtwXcd5Mfyg4O
+ /zilAw6sr9FfNZ4llDmMVWKcZzGXLWt7UiJS1P0Y3PU5up0JnikUSL5hC+GxP0qE3p+j
+ GeZA==
+X-Gm-Message-State: AOAM531vgTtOLjCVPmSOzHlI8oHr1lC0Bwra7+Gi5Zt9s7EiVDbgUqY7
+ 363sf9NpAZ8FA8OM+Q+T5li4yg==
+X-Google-Smtp-Source: ABdhPJw4cx6/r5UFZ4KcHMvTw88cPD84uAemPNZJJIK7lCC9YLt9fXRF4PueHdJDgL+a1AuPlHcoPg==
+X-Received: by 2002:a05:6214:519a:: with SMTP id
+ kl26mr7027757qvb.68.1643379700472; 
+ Fri, 28 Jan 2022 06:21:40 -0800 (PST)
+Received: from ziepe.ca
+ (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net.
+ [142.162.113.129])
+ by smtp.gmail.com with ESMTPSA id o4sm3070925qtw.53.2022.01.28.06.21.39
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 28 Jan 2022 06:21:39 -0800 (PST)
+Received: from jgg by mlx with local (Exim 4.94) (envelope-from <jgg@ziepe.ca>)
+ id 1nDS8A-007UXM-Bu; Fri, 28 Jan 2022 10:21:38 -0400
+Date: Fri, 28 Jan 2022 10:21:38 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Logan Gunthorpe <logang@deltatee.com>
+Subject: Re: [PATCH v5 02/24] mm: remove extra ZONE_DEVICE struct page refcount
+Message-ID: <20220128142138.GU8034@ziepe.ca>
+References: <20220128002614.6136-1-logang@deltatee.com>
+ <20220128002614.6136-3-logang@deltatee.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [RFC PATCH] component: Add common helpers for compare/release
- functions
-Content-Language: en-GB
-To: Yong Wu <yong.wu@mediatek.com>, dri-devel@lists.freedesktop.org
-References: <20220128081101.27837-1-yong.wu@mediatek.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220128081101.27837-1-yong.wu@mediatek.com>
-Cc: David Airlie <airlied@linux.ie>, Liviu Dudau <liviu.dudau@arm.com>,
- Sebastian Reichel <sre@kernel.org>,
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
- Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
- Will Deacon <will@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- James Wang <james.qian.wang@arm.com>, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
- Arnd Bergmann <arnd@arndb.de>, linux-mediatek@lists.infradead.org,
- Hsin-Yi Wang <hsinyi@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
- linux-arm-kernel@lists.infradead.org,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- srv_heupstream@mediatek.com, Stephen Boyd <sboyd@kernel.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Daniel Vetter <daniel@ffwll.ch>
+Content-Disposition: inline
+In-Reply-To: <20220128002614.6136-3-logang@deltatee.com>
+Cc: Alex Sierra <alex.sierra@amd.com>, linux-pci@vger.kernel.org,
+ Dave Hansen <dave.hansen@linux.intel.com>, linux-nvme@lists.infradead.org,
+ Stephen Bates <sbates@raithlin.com>, linux-mm@kvack.org,
+ Jason Ekstrand <jason@jlekstrand.net>, Ira Weiny <ira.weiny@intel.com>,
+ Christoph Hellwig <hch@lst.de>, Minturn Dave B <dave.b.minturn@intel.com>,
+ Martin Oliveira <martin.oliveira@eideticom.com>,
+ Matthew Wilcox <willy@infradead.org>,
+ Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
+ Bjorn Helgaas <helgaas@kernel.org>, Daniel Vetter <daniel.vetter@ffwll.ch>,
+ Ralph Campbell <rcampbell@nvidia.com>, John Hubbard <jhubbard@nvidia.com>,
+ linux-block@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>,
+ Jakowski Andrzej <andrzej.jakowski@intel.com>,
+ Xiong Jianxin <jianxin.xiong@intel.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+ Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,105 +111,46 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-01-28 08:11, Yong Wu wrote:
-[...]
-> diff --git a/include/linux/component.h b/include/linux/component.h
-> index 16de18f473d7..5a7468ea827c 100644
-> --- a/include/linux/component.h
-> +++ b/include/linux/component.h
-> @@ -2,6 +2,8 @@
->   #ifndef COMPONENT_H
->   #define COMPONENT_H
->   
-> +#include <linux/device.h>
-> +#include <linux/of.h>
->   #include <linux/stddef.h>
->   
->   
-> @@ -82,6 +84,22 @@ struct component_master_ops {
->   	void (*unbind)(struct device *master);
->   };
->   
-> +/* A set common helpers for compare/release functions */
-> +static inline int compare_of(struct device *dev, void *data)
-> +{
-> +	return dev->of_node == data;
-> +}
+On Thu, Jan 27, 2022 at 05:25:52PM -0700, Logan Gunthorpe wrote:
+> From: Ralph Campbell <rcampbell@nvidia.com>
+> 
+> ZONE_DEVICE struct pages have an extra reference count that complicates the
+> code for put_page() and several places in the kernel that need to check the
+> reference count to see that a page is not being used (gup, compaction,
+> migration, etc.). Clean up the code so the reference count doesn't need to
+> be treated specially for ZONE_DEVICE.
+> 
+> [logang: dropped no longer used section from mm.h including
+>  page_is_devmap_managed, rebased on v5.17-rc1 (possibly poorly)]
+> Signed-off-by: Ralph Campbell <rcampbell@nvidia.com>
+> Signed-off-by: Alex Sierra <alex.sierra@amd.com>
+> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/powerpc/kvm/book3s_hv_uvmem.c     |  2 +-
+>  drivers/gpu/drm/nouveau/nouveau_dmem.c |  2 +-
+>  fs/dax.c                               |  4 +-
+>  include/linux/dax.h                    |  2 +-
+>  include/linux/memremap.h               |  7 +--
+>  include/linux/mm.h                     | 44 ----------------
+>  lib/test_hmm.c                         |  2 +-
+>  mm/internal.h                          |  8 +++
+>  mm/memcontrol.c                        |  6 +--
+>  mm/memremap.c                          | 70 +++++++-------------------
+>  mm/migrate.c                           |  5 --
+>  mm/page_alloc.c                        |  3 ++
+>  mm/swap.c                              | 45 ++---------------
+>  13 files changed, 46 insertions(+), 154 deletions(-)
 
-Note that this is effectively just device_match_of_node(), although I 
-guess there is an argument that having a nice consistent set of 
-component_match API helpers might be worth more than a tiny code saving 
-by borrowing one from a different API.
+This patch still can't be applied until the FSDAX issues are solved,
+right? See my remarks the last time it was posted..
 
-Either way, however, I don't think there's any good argument for 
-instantiating separate copies of these functions in every driver that 
-uses them. If they're used as callbacks then they can't actually be 
-inlined anyway, so they may as well be exported from component.c as 
-normal so that the code really is shared (plus then there's nice 
-symmetry with the aforementioned device_match API helpers too).
-
-Thanks,
-Robin.
-
-> +static inline void release_of(struct device *dev, void *data)
-> +{
-> +	of_node_put(data);
-> +}
-> +
-> +static inline int compare_dev(struct device *dev, void *data)
-> +{
-> +	return dev == data;
-> +}
-> +
->   void component_master_del(struct device *,
->   	const struct component_master_ops *);
->   
-> diff --git a/sound/soc/codecs/wcd938x.c b/sound/soc/codecs/wcd938x.c
-> index eff200a07d9f..992132cbfb9f 100644
-> --- a/sound/soc/codecs/wcd938x.c
-> +++ b/sound/soc/codecs/wcd938x.c
-> @@ -4417,16 +4417,6 @@ static const struct component_master_ops wcd938x_comp_ops = {
->   	.unbind = wcd938x_unbind,
->   };
->   
-> -static int wcd938x_compare_of(struct device *dev, void *data)
-> -{
-> -	return dev->of_node == data;
-> -}
-> -
-> -static void wcd938x_release_of(struct device *dev, void *data)
-> -{
-> -	of_node_put(data);
-> -}
-> -
->   static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
->   					struct device *dev,
->   					struct component_match **matchptr)
-> @@ -4442,8 +4432,7 @@ static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
->   	}
->   
->   	of_node_get(wcd938x->rxnode);
-> -	component_match_add_release(dev, matchptr, wcd938x_release_of,
-> -				    wcd938x_compare_of,	wcd938x->rxnode);
-> +	component_match_add_release(dev, matchptr, release_of, compare_of, wcd938x->rxnode);
->   
->   	wcd938x->txnode = of_parse_phandle(np, "qcom,tx-device", 0);
->   	if (!wcd938x->txnode) {
-> @@ -4451,8 +4440,7 @@ static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
->   		return -ENODEV;
->   	}
->   	of_node_get(wcd938x->txnode);
-> -	component_match_add_release(dev, matchptr, wcd938x_release_of,
-> -				    wcd938x_compare_of,	wcd938x->txnode);
-> +	component_match_add_release(dev, matchptr, release_of, compare_of, wcd938x->txnode);
->   	return 0;
->   }
->   
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
