@@ -4,75 +4,85 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7E1B5C433F5
-	for <iommu@archiver.kernel.org>; Mon, 31 Jan 2022 09:48:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4BFCEC433F5
+	for <iommu@archiver.kernel.org>; Mon, 31 Jan 2022 10:57:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 01CFF60AA5;
-	Mon, 31 Jan 2022 09:48:13 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id DCC6660C2D;
+	Mon, 31 Jan 2022 10:57:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id oWNTheeQ7Kz5; Mon, 31 Jan 2022 09:48:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 838B960AE1;
-	Mon, 31 Jan 2022 09:48:11 +0000 (UTC)
+	with ESMTP id zaWb6BfntIO2; Mon, 31 Jan 2022 10:57:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 9CD5B60BD6;
+	Mon, 31 Jan 2022 10:57:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A88FC001A;
-	Mon, 31 Jan 2022 09:48:11 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 64C96C000B
- for <iommu@lists.linux-foundation.org>; Mon, 31 Jan 2022 09:48:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6B0B5C0011;
+	Mon, 31 Jan 2022 10:57:30 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 92B00C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 31 Jan 2022 10:57:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 3F07A40273
- for <iommu@lists.linux-foundation.org>; Mon, 31 Jan 2022 09:48:09 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 71B8440566
+ for <iommu@lists.linux-foundation.org>; Mon, 31 Jan 2022 10:57:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lpie-5jvu-gT for <iommu@lists.linux-foundation.org>;
- Mon, 31 Jan 2022 09:48:07 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id S9YGC9NGdfDR for <iommu@lists.linux-foundation.org>;
+ Mon, 31 Jan 2022 10:57:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org
- [IPv6:2604:1380:4601:e00::1])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 60A1D40252
- for <iommu@lists.linux-foundation.org>; Mon, 31 Jan 2022 09:48:07 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id C6FB8B82A20;
- Mon, 31 Jan 2022 09:48:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7552DC340E8;
- Mon, 31 Jan 2022 09:47:57 +0000 (UTC)
-Message-ID: <79fbb665-25b4-9b54-7bf6-2caa69e10778@xs4all.nl>
-Date: Mon, 31 Jan 2022 10:47:55 +0100
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 86B62404EB
+ for <iommu@lists.linux-foundation.org>; Mon, 31 Jan 2022 10:57:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1643626647; x=1675162647;
+ h=from:to:cc:subject:in-reply-to:references:date:
+ message-id:mime-version;
+ bh=ZdENkAwNTJtD0Npkluazkuj5//kfgKoLfVNh1OSJ8Us=;
+ b=G2/f5EW9iabG8hkLAMWkBLrSworB1oiqC0mWyrlHLic7ucEfKFE8GZDf
+ jn+UgvFk3KtjFvKBsFi6fvld9O7qbi92U7Ix7X9wGm9b9v7NLax5TX/ZI
+ /u0ugDbx6sEv9uCqIBMRpXrTZWqz81N0kCgjWmg+SA/+HPnKuEAxybO+J
+ xesfwdCYp2uikVee7I4rIbiqXNauwB0CS0hCdXL0OyIxgwg4CYxavRXG7
+ UpSxvxqaQgbFUHflifk4zPsxGFqrDEnzRICMr6bHUdd/8sGzsvbFGYECL
+ 3/k0DsElVt0mqbIWv9/DmiEOdIRgB05BnSjS/6cLTfQlbc99dv/Yymtpa Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10243"; a="333795281"
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; d="scan'208";a="333795281"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 31 Jan 2022 02:57:26 -0800
+X-IronPort-AV: E=Sophos;i="5.88,330,1635231600"; d="scan'208";a="481712993"
+Received: from ylian16-mobl1.ccr.corp.intel.com (HELO localhost)
+ ([10.252.16.100])
+ by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 31 Jan 2022 02:57:19 -0800
+From: Jani Nikula <jani.nikula@linux.intel.com>
+To: Daniel Vetter <daniel@ffwll.ch>, Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [RFC PATCH] component: Add common helpers for compare/release
+ functions
+In-Reply-To: <YfRtGF3v+BwH5RkG@phenom.ffwll.local>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220128081101.27837-1-yong.wu@mediatek.com>
+ <YfRtGF3v+BwH5RkG@phenom.ffwll.local>
+Date: Mon, 31 Jan 2022 12:57:16 +0200
+Message-ID: <878ruww4tv.fsf@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v10 00/13] Clean up "mediatek,larb"
-Content-Language: en-US
-To: Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <jroedel@suse.de>,
- Rob Herring <robh+dt@kernel.org>,
+Cc: David Airlie <airlied@linux.ie>, Liviu Dudau <liviu.dudau@arm.com>,
+ dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ Will Deacon <will@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- David Airlie <airlied@linux.ie>, Mauro Carvalho Chehab <mchehab@kernel.org>
-References: <20220117070510.17642-1-yong.wu@mediatek.com>
- <06e5e76c-557a-20a5-b8dd-37b25b3384a3@collabora.com>
- <c8fc24a2-9ee3-75a2-0928-95a217d9dfdf@gmail.com>
-From: Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <c8fc24a2-9ee3-75a2-0928-95a217d9dfdf@gmail.com>
-Cc: Chun-Kuang Hu <chunkuang.hu@kernel.org>, Will Deacon <will.deacon@arm.com>,
- dri-devel@lists.freedesktop.org, yf.wang@mediatek.com,
- anthony.huang@mediatek.com, Evan Green <evgreen@chromium.org>,
- Eizan Miyamoto <eizan@chromium.org>, Matthias Kaehlcke <mka@chromium.org>,
- mingyuan.ma@mediatek.com, linux-media@vger.kernel.org,
- devicetree@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
- Frank Wunderlich <frank-w@public-files.de>, libo.kang@mediatek.com,
- yi.kuo@mediatek.com, linux-mediatek@lists.infradead.org,
- Hsin-Yi Wang <hsinyi@chromium.org>, Tiffany Lin <tiffany.lin@mediatek.com>,
- linux-arm-kernel@lists.infradead.org, anan.sun@mediatek.com,
- srv_heupstream@mediatek.com, acourbot@chromium.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>
+ James Wang <james.qian.wang@arm.com>, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>, linux-mediatek@lists.infradead.org,
+ Hsin-Yi Wang <hsinyi@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ linux-arm-kernel@lists.infradead.org,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ srv_heupstream@mediatek.com, Stephen Boyd <sboyd@kernel.org>,
+ Sebastian Reichel <sre@kernel.org>, iommu@lists.linux-foundation.org,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,156 +95,103 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CgpPbiAxLzE3LzIyIDEyOjQ5LCBNYXR0aGlhcyBCcnVnZ2VyIHdyb3RlOgo+IAo+IAo+IE9uIDE3
-LzAxLzIwMjIgMTE6MjcsIEFuZ2Vsb0dpb2FjY2hpbm8gRGVsIFJlZ25vIHdyb3RlOgo+PiBJbCAx
-Ny8wMS8yMiAwODowNCwgWW9uZyBXdSBoYSBzY3JpdHRvOgo+Pj4gTWVkaWFUZWsgSU9NTVUgYmxv
-Y2sgZGlhZ3JhbSBhbHdheXMgbGlrZSBiZWxvdzoKPj4+Cj4+PiDCoMKgwqDCoMKgwqDCoMKgIE00
-VQo+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgIHwKPj4+IMKgwqDCoMKgIHNtaS1jb21tb24KPj4+IMKg
-wqDCoMKgwqDCoMKgwqDCoCB8Cj4+PiDCoMKgIC0tLS0tLS0tLS0tLS0KPj4+IMKgwqAgfMKgwqDC
-oMKgwqDCoMKgwqAgfMKgIC4uLgo+Pj4gwqDCoCB8wqDCoMKgwqDCoMKgwqDCoCB8Cj4+PiBsYXJi
-McKgwqDCoMKgIGxhcmIyCj4+PiDCoMKgIHzCoMKgwqDCoMKgwqDCoMKgIHwKPj4+IHZkZWPCoMKg
-wqDCoMKgwqAgdmVuYwo+Pj4KPj4+IEFsbCB0aGUgY29uc3VtZXIgY29ubmVjdCB3aXRoIHNtaS1s
-YXJiLCB0aGVuIGNvbm5lY3Qgd2l0aCBzbWktY29tbW9uLgo+Pj4KPj4+IFdoZW4gdGhlIGNvbnN1
-bWVyIHdvcmtzLCBpdCBzaG91bGQgZW5hYmxlIHRoZSBzbWktbGFyYidzIHBvd2VyIHdoaWNoIGFs
-c28KPj4+IG5lZWQgZW5hYmxlIHRoZSBzbWktY29tbW9uJ3MgcG93ZXIgZmlyc3RseS4KPj4+Cj4+
-PiBUaHVzLCBGaXJzdGx5LCB1c2UgdGhlIGRldmljZSBsaW5rIGNvbm5lY3QgdGhlIGNvbnN1bWVy
-IGFuZCB0aGUKPj4+IHNtaS1sYXJicy4gdGhlbiBhZGQgZGV2aWNlIGxpbmsgYmV0d2VlbiB0aGUg
-c21pLWxhcmIgYW5kIHNtaS1jb21tb24uCj4+Pgo+Pj4gQWZ0ZXIgYWRkaW5nIHRoZSBkZXZpY2Vf
-bGluaywgdGhlbiAibWVkaWF0ZWssbGFyYiIgcHJvcGVydHkgY2FuIGJlIHJlbW92ZWQuCj4+PiB0
-aGUgaW9tbXUgY29uc3VtZXIgZG9uJ3QgbmVlZCBjYWxsIHRoZSBtdGtfc21pX2xhcmJfZ2V0L3B1
-dCB0byBlbmFibGUKPj4+IHRoZSBwb3dlciBhbmQgY2xvY2sgb2Ygc21pLWxhcmIgYW5kIHNtaS1j
-b21tb24uCj4+Pgo+Pj4gQmFzZSBvbiB0aGUgbWVkaWEgYnJhbmNoIFsxXSBhbmQgYSBqcGVnIGR0
-YmluZGluZyBwYXRjaHNldFsyXSB0aGF0IGFscmVhZHkgZ290Cj4+PiB0aGUgbmVjZXNzYXJ5IFIt
-Yi4KPj4+Cj4+PiBbMV0gZ2l0Oi8vbGludXh0di5vcmcvaHZlcmt1aWwvbWVkaWFfdHJlZS5naXQg
-dGFncy9ici12NS4xOGQKPj4+IFsyXSBodHRwczovL2xvcmUua2VybmVsLm9yZy9saW51eC1tZWRp
-YXRlay8yMDIxMTIwNjEzMDQyNS4xODQ0MjAtMS1oc2lueWlAY2hyb21pdW0ub3JnLwo+Pj4KPj4+
-IENoYW5nZSBub3RlczoKPj4+IHYxMDogYSkgUmViYXNlIG9uIHRoZSBtZWRpYSB0cmVlLiBSZXNw
-aW4gdGhlICJtZWRpYTogbXRrLXZjb2RlYzoiIHBhdGNoZXMuCj4+PiDCoMKgwqDCoMKgIGIpIEFk
-ZCBKb2VyZydzIEFjayBmb3IgaW9tbXUgcGF0Y2hlcy4KPj4+Cj4+PiB2OTogaHR0cHM6Ly9sb3Jl
-Lmtlcm5lbC5vcmcvbGludXgtbWVkaWF0ZWsvMjAyMTExMTIxMDU1MDkuMTIwMTAtMS15b25nLnd1
-QG1lZGlhdGVrLmNvbS8KPj4+IMKgwqDCoMKgIDEpIEFkZCByZXR1cm4gLUVOT0RFViB3aGVuIHRo
-ZSBkZXYgaXMgbnVsbC4KPj4+IMKgwqDCoMKgIDIpIEFkZCBtb3JlIHN0cmljdCBhYm91dCB0aGUg
-Y2FzZSB0aGF0IGEgaW9tbXUgY29uc3VtZSBkZXZpY2UgdXNlIHRoZSBwb3J0cyBpbgo+Pj4gwqDC
-oMKgwqAgZGlmZmVyZW50IGxhcmJzLiBEb24ndCBhbGxvdyB0aGlzIGNhc2UuCj4+PiDCoMKgwqDC
-oCAzKSBSZW1vdmUgdHdvIGNvZGVjIGludGVyZmFjZTogbXRrX3Zjb2RlY19yZWxlYXNlX2VuYy9k
-ZWNfcG0gc2luY2UgaXQgb25seSBoYXMgb25lCj4+PiDCoMKgwqDCoCBsaW5lIG5vdy4KPj4+Cj4+
-PiB2ODogaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtbWVkaWF0ZWsvMjAyMTA5MjkwMTM3
-MTkuMjUxMjAtMS15b25nLnd1QG1lZGlhdGVrLmNvbS8KPj4+IMKgwqDCoMKgIDEpIFJlYmFzZSBv
-biB2NS4xNS1yYzEuCj4+PiDCoMKgwqDCoCAyKSBEb24ndCByZWJhc2UgdGhlIGJlbG93IG1kcCBw
-YXRjaHNldCB0aGF0IG1heSBzdGlsbCBuZWVkIG1vcmUgZGlzY3Vzcy4KPj4+IMKgwqDCoMKgIGh0
-dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LW1lZGlhdGVrLzIwMjEwNzA5MDIyMzI0LjE2MDc4
-ODQtMS1laXphbkBjaHJvbWl1bS5vcmcvCj4+PiDCoMKgwqDCoCAzKSBBZGQgRnJhbmsncyBUZXN0
-ZWQtYnkuIFJlbW92ZSBEYWZuYSdzIFRlc3RlZC1ieSBhcyBoZSByZXF1ZXN0ZWQuCj4+Pgo+Pj4g
-djc6IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LW1lZGlhdGVrLzIwMjEwNzMwMDI1MjM4
-LjIyNDU2LTEteW9uZy53dUBtZWRpYXRlay5jb20vCj4+PiDCoMKgwqDCoCAxKSBGaXggYSBhcm0z
-MiBib290IGZhaWwgaXNzdWUuIHJlcG9ydGVkIGZyb20gRnJhbmsuCj4+PiDCoMKgwqDCoCAyKSBB
-ZGQgYSByZXR1cm4gZmFpbCBpbiB0aGUgbXRrIGRybS4gc3VnZ2VzdGVkIGJ5IERhZm5hLgo+Pj4K
-Pj4+IHY2OiBodHRwczovL2xvcmUua2VybmVsLm9yZy9saW51eC1tZWRpYXRlay8yMDIxMDcxNDAy
-NTYyNi41NTI4LTEteW9uZy53dUBtZWRpYXRlay5jb20vCj4+PiDCoMKgwqDCoCAxKSByZWJhc2Ug
-b24gdjUuMTQtcmMxLgo+Pj4gwqDCoMKgwqAgMikgRml4IHRoZSBpc3N1ZSBjb21tZW50ZWQgaW4g
-djUgZnJvbSBEYWZuYSBhbmQgSHNpbi1ZaS4KPj4+IMKgwqDCoMKgIDMpIFJlbW92ZSB0aGUgcGF0
-Y2hlcyBhYm91dCB1c2luZyBwbV9ydW50aW1lX3Jlc3VtZV9hbmRfZ2V0IHNpbmNlIHRoZXkgaGF2
-ZQo+Pj4gwqDCoMKgwqDCoMKgwqAgYWxyZWFkeSBiZWVuIG1lcmdlZCBieSBvdGhlciBwYXRjaGVz
-Lgo+Pj4KPj4+IHY1OiBodHRwczovL2xvcmUua2VybmVsLm9yZy9saW51eC1tZWRpYXRlay8yMDIx
-MDQxMDA5MTEyOC4zMTgyMy0xLXlvbmcud3VAbWVkaWF0ZWsuY29tLwo+Pj4gwqDCoMKgwqAgMSkg
-QmFzZSB2NS4xMi1yYzIuCj4+PiDCoMKgwqDCoCAyKSBSZW1vdmUgY2hhbmdpbmcgdGhlIG10ay1p
-b21tdSB0byBtb2R1bGVfcGxhdGZvcm1fZHJpdmVyIHBhdGNoLCBJdCBoYXZlIGFscmVhZHkgYmVl
-biBhCj4+PiDCoMKgwqDCoCBpbmRlcGVuZGVudCBwYXRjaC4KPj4+Cj4+PiB2NDogaHR0cHM6Ly9s
-b3JlLmtlcm5lbC5vcmcvbGludXgtbWVkaWF0ZWsvMTU5MDgyNjIxOC0yMzY1My0xLWdpdC1zZW5k
-LWVtYWlsLXlvbmcud3VAbWVkaWF0ZWsuY29tLwo+Pj4gwqDCoMKgwqAgYmFzZSBvbiB2NS43LXJj
-MS4KPj4+IMKgwqAgMSkgTW92ZSBkcm0gUE0gcGF0Y2ggYmVmb3JlIHNtaSBwYXRjaHMuCj4+PiDC
-oMKgIDIpIENoYW5nZSBidWlsdGluX3BsYXRmb3JtX2RyaXZlciB0byBtb2R1bGVfcGxhdGZvcm1f
-ZHJpdmVyIHNpbmNlIHdlIG1heSBuZWVkCj4+PiDCoMKgwqDCoMKgIGJ1aWxkIGFzIG1vZHVsZS4K
-Pj4+IMKgwqAgMykgUmViYXNlIG1hbnkgcGF0Y2hzZXQgYXMgYWJvdmUuCj4+Pgo+Pj4gdjM6IGh0
-dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LWlvbW11LzE1Njc1MDM0NTYtMjQ3MjUtMS1naXQt
-c2VuZC1lbWFpbC15b25nLnd1QG1lZGlhdGVrLmNvbS8KPj4+IMKgwqDCoMKgIDEpIHJlYmFzZSBv
-biB2NS4zLXJjMSBhbmQgdGhlIGxhdGVzdCBtdDgxODMgcGF0Y2hzZXQuCj4+PiDCoMKgwqDCoCAy
-KSBVc2UgZGV2aWNlX2lzX2JvdW5kIHRvIGNoZWNrIHdoZXRoZXIgdGhlIGRyaXZlciBpcyByZWFk
-eSBmcm9tIE1hdHRoaWFzLgo+Pj4gwqDCoMKgwqAgMykgQWRkIERMX0ZMQUdfU1RBVEVMRVNTIGZs
-YWcgd2hlbiBjYWxsaW5nIGRldmljZV9saW5rX2FkZCBhbmQgZXhwbGFpbiB0aGUKPj4+IMKgwqDC
-oCByZWFzb24gaW4gdGhlIGNvbW1pdCBtZXNzYWdlWzMvMTRdLgo+Pj4gwqDCoMKgwqAgNCkgQWRk
-IGEgZGlzcGxheSBwYXRjaFsxMi8xNF0gaW50byB0aGlzIHNlcmllcy4gb3RoZXJ3aXNlIGl0IG1h
-eSBhZmZlY3QKPj4+IMKgwqDCoCBkaXNwbGF5IEhXIGZhc3Rsb2dvIGV2ZW4gdGhvdWdoIGl0IGRv
-bid0IGhhcHBlbiBpbiBtdDgxODMuCj4+PiB2MjogaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGlu
-dXgtaW9tbXUvMTU2MDE3MTMxMy0yODI5OS0xLWdpdC1zZW5kLWVtYWlsLXlvbmcud3VAbWVkaWF0
-ZWsuY29tLwo+Pj4gwqDCoMKgIDEpIHJlYmFzZSBvbiB2NS4yLXJjMS4KPj4+IMKgwqDCoCAyKSBN
-b3ZlIGFkZGluZyBkZXZpY2VfbGluayBiZXR3ZWVuIHRoZSBjb25zdW1lciBhbmQgc21pLWxhcmIg
-aW50bwo+Pj4gaW9tbXVfYWRkX2RldmljZSBmcm9tIFJvYmluLgo+Pj4gwqDCoMKgIDMpIGFkZCBE
-TF9GTEFHX0FVVE9SRU1PVkVfQ09OU1VNRVIgZXZlbiB0aG91Z2ggdGhlIHNtaSBpcyBidWlsdC1p
-biBmcm9tIEV2YW4uCj4+PiDCoMKgwqAgNCkgUmVtb3ZlIHRoZSBzaHV0ZG93biBjYWxsYmFjayBp
-biBpb21tdS4KPj4+Cj4+PiB2MTogaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtaW9tbXUv
-MTU0NjMxODI3Ni0xODk5My0xLWdpdC1zZW5kLWVtYWlsLXlvbmcud3VAbWVkaWF0ZWsuY29tLwo+
-Pj4KPj4+IFlvbmcgV3UgKDEyKToKPj4+IMKgwqAgZHQtYmluZGluZzogbWVkaWF0ZWs6IEdldCBy
-aWQgb2YgbWVkaWF0ZWssbGFyYiBmb3IgbXVsdGltZWRpYSBIVwo+Pj4gwqDCoCBpb21tdS9tZWRp
-YXRlay12MTogRnJlZSB0aGUgZXhpc3RlZCBmd3NwZWMgaWYgdGhlIG1hc3RlciBkZXYgYWxyZWFk
-eQo+Pj4gwqDCoMKgwqAgaGFzCj4+PiDCoMKgIGlvbW11L21lZGlhdGVrOiBSZXR1cm4gRU5PREVW
-IGlmIHRoZSBkZXZpY2UgaXMgTlVMTAo+Pj4gwqDCoCBpb21tdS9tZWRpYXRlazogQWRkIHByb2Jl
-X2RlZmVyIGZvciBzbWktbGFyYgo+Pj4gwqDCoCBpb21tdS9tZWRpYXRlazogQWRkIGRldmljZV9s
-aW5rIGJldHdlZW4gdGhlIGNvbnN1bWVyIGFuZCB0aGUgbGFyYgo+Pj4gwqDCoMKgwqAgZGV2aWNl
-cwo+Pj4gwqDCoCBtZWRpYTogbXRrLWpwZWc6IEdldCByaWQgb2YgbXRrX3NtaV9sYXJiX2dldC9w
-dXQKPj4+IMKgwqAgbWVkaWE6IG10ay1tZHA6IEdldCByaWQgb2YgbXRrX3NtaV9sYXJiX2dldC9w
-dXQKPj4+IMKgwqAgZHJtL21lZGlhdGVrOiBHZXQgcmlkIG9mIG10a19zbWlfbGFyYl9nZXQvcHV0
-Cj4+PiDCoMKgIG1lZGlhOiBtdGstdmNvZGVjOiBHZXQgcmlkIG9mIG10a19zbWlfbGFyYl9nZXQv
-cHV0Cj4+PiDCoMKgIG1lbW9yeTogbXRrLXNtaTogR2V0IHJpZCBvZiBtdGtfc21pX2xhcmJfZ2V0
-L3B1dAo+Pj4gwqDCoCBhcm06IGR0czogbWVkaWF0ZWs6IEdldCByaWQgb2YgbWVkaWF0ZWssbGFy
-YiBmb3IgTU0gbm9kZXMKPj4+IMKgwqAgYXJtNjQ6IGR0czogbWVkaWF0ZWs6IEdldCByaWQgb2Yg
-bWVkaWF0ZWssbGFyYiBmb3IgTU0gbm9kZXMKPj4+Cj4+PiBZb25ncWlhbmcgTml1ICgxKToKPj4+
-IMKgwqAgZHJtL21lZGlhdGVrOiBBZGQgcG0gcnVudGltZSBzdXBwb3J0IGZvciBvdmwgYW5kIHJk
-bWEKPj4+Cj4+PiDCoCAuLi4vZGlzcGxheS9tZWRpYXRlay9tZWRpYXRlayxkaXNwLnR4dMKgwqDC
-oMKgwqDCoMKgIHzCoCA5IC0tLS0KPj4+IMKgIC4uLi9tZWRpYS9tZWRpYXRlayx2Y29kZWMtZGVj
-b2Rlci55YW1swqDCoMKgwqDCoMKgwqAgfMKgIDcgLS0tCj4+PiDCoCAuLi4vbWVkaWEvbWVkaWF0
-ZWssdmNvZGVjLWVuY29kZXIueWFtbMKgwqDCoMKgwqDCoMKgIHzCoCA4IC0tLS0KPj4+IMKgIC4u
-Li9iaW5kaW5ncy9tZWRpYS9tZWRpYXRlay1qcGVnLWRlY29kZXIueWFtbCB8wqAgOSAtLS0tCj4+
-PiDCoCAuLi4vYmluZGluZ3MvbWVkaWEvbWVkaWF0ZWstanBlZy1lbmNvZGVyLnlhbWwgfMKgIDkg
-LS0tLQo+Pj4gwqAgLi4uL2JpbmRpbmdzL21lZGlhL21lZGlhdGVrLW1kcC50eHTCoMKgwqDCoMKg
-wqDCoMKgwqDCoCB8wqAgOCAtLS0tCj4+PiDCoCBhcmNoL2FybS9ib290L2R0cy9tdDI3MDEuZHRz
-acKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHzCoCAyIC0KPj4+IMKgIGFyY2gvYXJt
-L2Jvb3QvZHRzL210NzYyM24uZHRzacKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8wqAg
-NSAtLS0KPj4+IMKgIGFyY2gvYXJtNjQvYm9vdC9kdHMvbWVkaWF0ZWsvbXQ4MTczLmR0c2nCoMKg
-wqDCoMKgIHwgMTYgLS0tLS0tLQo+Pj4gwqAgYXJjaC9hcm02NC9ib290L2R0cy9tZWRpYXRlay9t
-dDgxODMuZHRzacKgwqDCoMKgwqAgfMKgIDYgLS0tCj4+PiDCoCBkcml2ZXJzL2dwdS9kcm0vbWVk
-aWF0ZWsvbXRrX2Rpc3Bfb3ZsLmPCoMKgwqDCoMKgwqAgfMKgIDggKysrLQo+Pj4gwqAgZHJpdmVy
-cy9ncHUvZHJtL21lZGlhdGVrL210a19kaXNwX3JkbWEuY8KgwqDCoMKgwqAgfMKgIDkgKysrLQo+
-Pj4gwqAgZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kcm1fY3J0Yy5jwqDCoMKgwqDCoMKg
-IHwgMTUgKysrKy0tLQo+Pj4gwqAgZHJpdmVycy9ncHUvZHJtL21lZGlhdGVrL210a19kcm1fZGRw
-X2NvbXAuY8KgwqAgfCAzNiArLS0tLS0tLS0tLS0tLS0KPj4+IMKgIGRyaXZlcnMvZ3B1L2RybS9t
-ZWRpYXRlay9tdGtfZHJtX2RkcF9jb21wLmjCoMKgIHzCoCAxIC0KPj4+IMKgIGRyaXZlcnMvZ3B1
-L2RybS9tZWRpYXRlay9tdGtfZHJtX2Rydi5jwqDCoMKgwqDCoMKgwqAgfMKgIDUgKy0tCj4+PiDC
-oCBkcml2ZXJzL2lvbW11L210a19pb21tdS5jwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoCB8IDM0ICsrKysrKysrKysrKysrCj4+PiDCoCBkcml2ZXJzL2lvbW11L210a19p
-b21tdV92MS5jwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8IDQyICsrKysrKysr
-KysrKysrKystCj4+PiDCoCAuLi4vbWVkaWEvcGxhdGZvcm0vbXRrLWpwZWcvbXRrX2pwZWdfY29y
-ZS5jwqDCoCB8IDQ1ICstLS0tLS0tLS0tLS0tLS0tLS0KPj4+IMKgIC4uLi9tZWRpYS9wbGF0Zm9y
-bS9tdGstanBlZy9tdGtfanBlZ19jb3JlLmjCoMKgIHzCoCAyIC0KPj4+IMKgIGRyaXZlcnMvbWVk
-aWEvcGxhdGZvcm0vbXRrLW1kcC9tdGtfbWRwX2NvbXAuYyB8IDQwIC0tLS0tLS0tLS0tLS0tLS0t
-Cj4+PiDCoCBkcml2ZXJzL21lZGlhL3BsYXRmb3JtL210ay1tZHAvbXRrX21kcF9jb21wLmggfMKg
-IDIgLQo+Pj4gwqAgZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9tdGstbWRwL210a19tZHBfY29yZS5j
-IHzCoCAxIC0KPj4+IMKgIC4uLi9wbGF0Zm9ybS9tdGstdmNvZGVjL210a192Y29kZWNfZGVjX2Ry
-di5jwqAgfMKgIDIgLQo+Pj4gwqAgLi4uL3BsYXRmb3JtL210ay12Y29kZWMvbXRrX3Zjb2RlY19k
-ZWNfaHcuY8KgwqAgfMKgIDEgLQo+Pj4gwqAgLi4uL3BsYXRmb3JtL210ay12Y29kZWMvbXRrX3Zj
-b2RlY19kZWNfcG0uY8KgwqAgfCA0MSArKystLS0tLS0tLS0tLS0tLQo+Pj4gwqAgLi4uL3BsYXRm
-b3JtL210ay12Y29kZWMvbXRrX3Zjb2RlY19kcnYuaMKgwqDCoMKgwqAgfMKgIDMgLS0KPj4+IMKg
-IC4uLi9wbGF0Zm9ybS9tdGstdmNvZGVjL210a192Y29kZWNfZW5jLmPCoMKgwqDCoMKgIHzCoCAx
-IC0KPj4+IMKgIC4uLi9wbGF0Zm9ybS9tdGstdmNvZGVjL210a192Y29kZWNfZW5jX2Rydi5jwqAg
-fMKgIDIgLQo+Pj4gwqAgLi4uL3BsYXRmb3JtL210ay12Y29kZWMvbXRrX3Zjb2RlY19lbmNfcG0u
-Y8KgwqAgfCA0NSArKystLS0tLS0tLS0tLS0tLS0tCj4+PiDCoCBkcml2ZXJzL21lbW9yeS9tdGst
-c21pLmPCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfCAxNCAtLS0t
-LS0KPj4+IMKgIGluY2x1ZGUvc29jL21lZGlhdGVrL3NtaS5owqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgfCAyMCAtLS0tLS0tLS0KPj4+IMKgIDMyIGZpbGVzIGNoYW5nZWQs
-IDExNSBpbnNlcnRpb25zKCspLCAzMzMgZGVsZXRpb25zKC0pCj4+Pgo+Pgo+PiBIZWxsbyBIYW5z
-LCBNYXR0aGlhcywKPj4gb24gbXkgc2lkZSwgdGhpcyBzZXJpZXMgaXMgdG90YWxseSByZWFkeSBm
-b3IgbWVyZ2UsIGhlbmNlLCBncmVlbiBsaWdodCBmcm9tIGhlcmUuCj4+Cj4+IENhbiB5b3UgcGxl
-YXNlIHRha2UgaXQgZm9yIDUuMTg/Cj4+Cj4gCj4gQEhhbnM6IEkgdW5kZXJzdGFuZCB5b3UgdGFr
-ZSB0aGUgc2VyaWVzIHRocm91Z2ggeW91ciB0cmVlLiBQbGVhc2UgbGV0IG1lIGtub3cgd2hlbiB5
-b3UgZG8gc28uIEknbGwgdGFrZSBjYXJlIG9mIHBhdGNoIDEyIGFuZCAxMywgd2hpY2ggc2hvdWxk
-IGdvIHRocm91Z2ggbXkgdHJlZS4KCkZZSTogdGhpcyBzZXJpZXMgaGFzIGJlZW4gbWVyZ2VkIGlu
-dG8gdGhlIG1lZGlhIHRyZWUsIHNvIHlvdSBjYW4gZ28gYWhlYWQgd2l0aCBwYXRjaGVzIDEyIGFu
-ZCAxMy4KClJlZ2FyZHMsCgoJSGFucwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRh
-dGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGlu
-Zm8vaW9tbXU=
+On Fri, 28 Jan 2022, Daniel Vetter <daniel@ffwll.ch> wrote:
+> On Fri, Jan 28, 2022 at 04:11:01PM +0800, Yong Wu wrote:
+>> The component requires the compare/release functions, there are so many
+>> copy in current kernel. Just define three common helpers for them.
+>> No functional change.
+>> 
+>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+>> ---
+>> Base on v5.17-rc1
+>> ---
+>>  .../gpu/drm/arm/display/komeda/komeda_drv.c    |  5 -----
+>>  drivers/gpu/drm/arm/hdlcd_drv.c                |  7 +------
+>>  drivers/gpu/drm/armada/armada_drv.c            |  5 -----
+>>  drivers/gpu/drm/drm_of.c                       |  8 +-------
+>>  drivers/gpu/drm/etnaviv/etnaviv_drv.c          |  7 -------
+>>  drivers/gpu/drm/exynos/exynos_drm_drv.c        |  5 -----
+>>  .../gpu/drm/hisilicon/kirin/kirin_drm_drv.c    |  5 -----
+>>  drivers/gpu/drm/imx/imx-drm-core.c             |  4 ++--
+>>  drivers/gpu/drm/ingenic/ingenic-drm-drv.c      |  5 -----
+>>  drivers/gpu/drm/mcde/mcde_drv.c                |  7 +------
+>>  drivers/gpu/drm/mediatek/mtk_drm_drv.c         |  5 -----
+>>  drivers/gpu/drm/meson/meson_drv.c              |  8 --------
+>>  drivers/gpu/drm/msm/msm_drv.c                  |  9 ---------
+>>  drivers/gpu/drm/omapdrm/dss/dss.c              |  8 +-------
+>>  drivers/gpu/drm/rockchip/rockchip_drm_drv.c    |  5 -----
+>>  drivers/gpu/drm/sti/sti_drv.c                  |  5 -----
+>>  drivers/gpu/drm/sun4i/sun4i_drv.c              |  9 ---------
+>>  drivers/gpu/drm/vc4/vc4_drv.c                  |  5 -----
+>>  drivers/iommu/mtk_iommu.h                      | 10 ----------
+>>  drivers/power/supply/ab8500_charger.c          |  8 +-------
+>>  drivers/video/fbdev/omap2/omapfb/dss/dss.c     |  8 +-------
+>>  include/linux/component.h                      | 18 ++++++++++++++++++
+>>  sound/soc/codecs/wcd938x.c                     | 16 ++--------------
+>
+> Seems like a neat idea. Please add kerneldoc for the new functions you're
+> adding (bonus point for an example in there) and make sure it all renders
+> correctly in
+>
+> $ make htmldoc
+>
+> Also please split up the patch series per-driver and add the maintainers
+> to each patches' Cc: list. With that I think this should be ready for
+> merging.
+
+Aren't the function names perhaps a bit short and generic for the global
+namespace though? If you encounter compare_of, release_of, or
+compare_dev in code, component.h is not where you'd expect to find them.
+
+BR,
+Jani.
+
+
+>> diff --git a/include/linux/component.h b/include/linux/component.h
+>> index 16de18f473d7..5a7468ea827c 100644
+>> --- a/include/linux/component.h
+>> +++ b/include/linux/component.h
+>> @@ -2,6 +2,8 @@
+>>  #ifndef COMPONENT_H
+>>  #define COMPONENT_H
+>>  
+>> +#include <linux/device.h>
+>> +#include <linux/of.h>
+>>  #include <linux/stddef.h>
+>>  
+>>  
+>> @@ -82,6 +84,22 @@ struct component_master_ops {
+>>  	void (*unbind)(struct device *master);
+>>  };
+>>  
+>> +/* A set common helpers for compare/release functions */
+>> +static inline int compare_of(struct device *dev, void *data)
+>> +{
+>> +	return dev->of_node == data;
+>> +}
+>> +
+>> +static inline void release_of(struct device *dev, void *data)
+>> +{
+>> +	of_node_put(data);
+>> +}
+>> +
+>> +static inline int compare_dev(struct device *dev, void *data)
+>> +{
+>> +	return dev == data;
+>> +}
+>> +
+>>  void component_master_del(struct device *,
+>>  	const struct component_master_ops *);
+>>  
+
+-- 
+Jani Nikula, Intel Open Source Graphics Center
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
