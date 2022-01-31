@@ -1,102 +1,77 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AC9BEC433FE
-	for <iommu@archiver.kernel.org>; Sun, 30 Jan 2022 17:12:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9A37AC433F5
+	for <iommu@archiver.kernel.org>; Mon, 31 Jan 2022 07:19:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 3239E4093D;
-	Sun, 30 Jan 2022 17:12:18 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 1E97D40364;
+	Mon, 31 Jan 2022 07:19:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ApjNdqNYQ6l4; Sun, 30 Jan 2022 17:12:17 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id E6E904090E;
-	Sun, 30 Jan 2022 17:12:16 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 6GgFCT1VSJ21; Mon, 31 Jan 2022 07:19:55 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 7EF8840018;
+	Mon, 31 Jan 2022 07:19:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C2089C0011;
-	Sun, 30 Jan 2022 17:12:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4AAF2C0011;
+	Mon, 31 Jan 2022 07:19:55 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 33349C000B
- for <iommu@lists.linux-foundation.org>; Sun, 30 Jan 2022 17:12:15 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7EC02C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 31 Jan 2022 07:19:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 18A0D4093A
- for <iommu@lists.linux-foundation.org>; Sun, 30 Jan 2022 17:12:15 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with UTF8SMTP id 59352404F7
+ for <iommu@lists.linux-foundation.org>; Mon, 31 Jan 2022 07:19:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=mg.codeaurora.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id b76lqK0QyZVx for <iommu@lists.linux-foundation.org>;
- Sun, 30 Jan 2022 17:12:14 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com
- [IPv6:2607:f8b0:4864:20::22c])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 364604090E
- for <iommu@lists.linux-foundation.org>; Sun, 30 Jan 2022 17:12:14 +0000 (UTC)
-Received: by mail-oi1-x22c.google.com with SMTP id q186so22360844oih.8
- for <iommu@lists.linux-foundation.org>; Sun, 30 Jan 2022 09:12:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=sender:date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=w1dNkPhtgiRjushmjZUey1uH/mwMDz9W8IeIjD9XGNU=;
- b=QF78vYBJuFyFO0WuVGOnN8lRblJpn342qlEeX7HiKWboUdAtwbFRe3IeTC6lVcWB/R
- 4N84b2uUq2+PKSm35M7ONMSAwTC/Az0dw0ipKleJzJX2pMSA6J9nhBfISWdZWu5QJVq9
- Fo2KgA4IjFPwqEf7VtfbL+V2p8nzGF2YrZm6hfaaCt06Fag/mTDRnUoBfERcs0XRRgYZ
- 0s6PTUxFBvh1truP4Kw2sc7kHYJm4j/x/3+pTbch9ghHfobfYHWUxsM/TcZgiH2YqryW
- ERjUmG8WbeJ7HXEmt5lTb4D3hBy1mtcBpyRJ9rRCAbaCfkQhD/VimAg/BuhC9lB1hbzA
- Hqmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
- :references:mime-version:content-disposition:in-reply-to;
- bh=w1dNkPhtgiRjushmjZUey1uH/mwMDz9W8IeIjD9XGNU=;
- b=14T7gY1XUm2KeEv6KtKEgw+vHTj11TzZXvU1Ytgkw/kUbeNh6dglTuGvswYqvitBto
- KGFAQvmK5rOptZwneNOeP91yCic6SHBmFy+uN5VF1kZyPClrBerPfpnoUQzEaAqrJoRX
- iCjy2wCrlbN6Xj5a4aQZ8hYfvOJTwx7VhrcdOMXD8EZsxp0nibGzlo7Z5VDnvBYLSbzE
- p9BvxRTz/ZfN46kaNLsBnofaOOz295sURniwJJ9BF6FEi2I7YuyQBfDhnpK3SSkYuLw5
- nqKh3nM+n9LGt7ExBAjaXEMToenEL3yCt9j+plmBmjW2LZS/WMZfrDsfUh1MnUjKFlXp
- QHMg==
-X-Gm-Message-State: AOAM5337wfrhsKlAE3vZzVeL2CltjaPxjn/zyWjhDBwCdv2UgCpA0ZdK
- lxUz0iKiCk1tCQAfzxHjp2Y=
-X-Google-Smtp-Source: ABdhPJzDfpA/kFQ2ZUKPGwyRfaVdw4HLQweTlCDIHi6gw/h077fparPnBlJNMYVufYz9gxu/ali5cg==
-X-Received: by 2002:a05:6808:bca:: with SMTP id
- o10mr6747446oik.58.1643562733195; 
- Sun, 30 Jan 2022 09:12:13 -0800 (PST)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
- by smtp.gmail.com with ESMTPSA id
- w9sm11309793ool.31.2022.01.30.09.12.11
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 30 Jan 2022 09:12:12 -0800 (PST)
-Date: Sun, 30 Jan 2022 09:12:10 -0800
-From: Guenter Roeck <linux@roeck-us.net>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [patch V3 28/35] PCI/MSI: Simplify pci_irq_get_affinity()
-Message-ID: <20220130171210.GA3545402@roeck-us.net>
-References: <20211210221642.869015045@linutronix.de>
- <20211210221814.900929381@linutronix.de>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20211210221814.900929381@linutronix.de>
-Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
- Stuart Yoder <stuyoder@gmail.com>, linux-pci@vger.kernel.org,
- Will Deacon <will@kernel.org>, Peter Ujfalusi <peter.ujfalusi@gmail.com>,
- Ashok Raj <ashok.raj@intel.com>, Michael Ellerman <mpe@ellerman.id.au>,
- Jassi Brar <jassisinghbrar@gmail.com>, Sinan Kaya <okaya@kernel.org>,
- Vinod Koul <vkoul@kernel.org>, Bjorn Helgaas <helgaas@kernel.org>,
- Megha Dey <megha.dey@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- xen-devel@lists.xenproject.org, Kevin Tian <kevin.tian@intel.com>,
- Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org,
- Alex Williamson <alex.williamson@redhat.com>, Cedric Le Goater <clg@kaod.org>,
- Santosh Shilimkar <ssantosh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
- linux-arm-kernel@lists.infradead.org, Juergen Gross <jgross@suse.com>,
- Tero Kristo <kristo@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Marc Zygnier <maz@kernel.org>, dmaengine@vger.kernel.org,
- Robin Murphy <robin.murphy@arm.com>
+ with UTF8SMTP id rD5bSu_OQ4ES for <iommu@lists.linux-foundation.org>;
+ Mon, 31 Jan 2022 07:19:52 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
+ by smtp4.osuosl.org (Postfix) with UTF8SMTPS id 80DDD404CF
+ for <iommu@lists.linux-foundation.org>; Mon, 31 Jan 2022 07:19:52 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1643613592; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=fAF4RUanAymGBY1R99T3dcm3q68uxZwCLqf/mQJa+u8=;
+ b=PjNnPznP7Rv13fuQonK4pqpKKKEuPjIyRsumql3CklS9FmttXY511h0M3jKnUUMG2ctX2ZgY
+ RJHsavgb2Uh6RxRun4qZTXXkobiSH5N+YiCNhveOFz8R+fTeh7vwKjwxDudKX+42rWtNQY23
+ JOMDMpJuL1OqnTBgkYp4BH5HMoE=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
+ 61f78bfe39713d07123bd110 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 31 Jan 2022 07:13:02
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 0FD40C43619; Mon, 31 Jan 2022 07:13:02 +0000 (UTC)
+Received: from vjitta-linux.qualcomm.com (unknown [202.46.22.19])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: vjitta)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 06BBEC4360C;
+ Mon, 31 Jan 2022 07:12:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 06BBEC4360C
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=fail (p=none dis=none) header.from=quicinc.com
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=fail smtp.mailfrom=quicinc.com
+From: Vijayanand Jitta <quic_vjitta@quicinc.com>
+To: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: [REPOST PATCH v4] iommu: Fix potential use-after-free during probe
+Date: Mon, 31 Jan 2022 12:42:35 +0530
+Message-Id: <1643613155-20215-1-git-send-email-quic_vjitta@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+Cc: vjitta@codeaurora.org, Vijayanand Jitta <quic_vjitta@quicinc.com>,
+ kernel-team@android.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,92 +84,149 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Dec 10, 2021 at 11:19:26PM +0100, Thomas Gleixner wrote:
-> From: Thomas Gleixner <tglx@linutronix.de>
-> 
-> Replace open coded MSI descriptor chasing and use the proper accessor
-> functions instead.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Kasan has reported the following use after free on dev->iommu.
+when a device probe fails and it is in process of freeing dev->iommu
+in dev_iommu_free function, a deferred_probe_work_func runs in parallel
+and tries to access dev->iommu->fwspec in of_iommu_configure path thus
+causing use after free.
 
-This patch results in the following runtime warning when booting x86
-(32 bit) nosmp images from NVME in qemu.
+BUG: KASAN: use-after-free in of_iommu_configure+0xb4/0x4a4
+Read of size 8 at addr ffffff87a2f1acb8 by task kworker/u16:2/153
 
-[   14.825482] nvme nvme0: 1/0/0 default/read/poll queues
-ILLOPC: ca7c6d10: 0f 0b
-[   14.826188] ------------[ cut here ]------------
-[   14.826307] WARNING: CPU: 0 PID: 7 at drivers/pci/msi/msi.c:1114 pci_irq_get_affinity+0x80/0x90
-[   14.826455] Modules linked in:
-[   14.826640] CPU: 0 PID: 7 Comm: kworker/u2:0 Not tainted 5.17.0-rc1-00419-g1d2d8baaf053 #1
-[   14.826797] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.15.0-0-g2dd4b9b3f840-prebuilt.qemu.org 04/01/2014
-[   14.827132] Workqueue: nvme-reset-wq nvme_reset_work
-[   14.827336] EIP: pci_irq_get_affinity+0x80/0x90
-[   14.827452] Code: e8 d5 30 af ff 85 c0 75 bd 90 0f 0b 31 c0 5b 5e 5d c3 8d b4 26 00 00 00 00 90 5b b8 24 32 7e cb 5e 5d c3 8d b4 26 00 00 00 00 <0f> 0b eb e0 8d b4 26 00 00 00 00 8d 74 26 00 90 55 89 e5 57 56 53
-[   14.827717] EAX: 00000000 EBX: c18ba000 ECX: 00000000 EDX: c297c210
-[   14.827816] ESI: 00000001 EDI: c18ba000 EBP: c1247e24 ESP: c1247e1c
-[   14.827924] DS: 007b ES: 007b FS: 0000 GS: 0000 SS: 0068 EFLAGS: 00000246
-[   14.828110] CR0: 80050033 CR2: ffda9000 CR3: 0b8ad000 CR4: 000006d0
-[   14.828268] Call Trace:
-[   14.828554]  blk_mq_pci_map_queues+0x26/0x70
-[   14.828710]  nvme_pci_map_queues+0x75/0xc0
-[   14.828808]  blk_mq_update_queue_map+0x86/0xa0
-[   14.828891]  blk_mq_alloc_tag_set+0xf3/0x390
-[   14.828965]  ? nvme_wait_freeze+0x3d/0x50
-[   14.829137]  nvme_reset_work+0xd02/0x1120
-[   14.829269]  ? lock_acquire+0xc3/0x290
-[   14.829435]  process_one_work+0x1ed/0x490
-[   14.829569]  worker_thread+0x15e/0x3c0
-[   14.829665]  kthread+0xd3/0x100
-[   14.829729]  ? process_one_work+0x490/0x490
-[   14.829799]  ? kthread_complete_and_exit+0x20/0x20
-[   14.829890]  ret_from_fork+0x1c/0x28
+Workqueue: events_unbound deferred_probe_work_func
+Call trace:
+ dump_backtrace+0x0/0x33c
+ show_stack+0x18/0x24
+ dump_stack_lvl+0x16c/0x1e0
+ print_address_description+0x84/0x39c
+ __kasan_report+0x184/0x308
+ kasan_report+0x50/0x78
+ __asan_load8+0xc0/0xc4
+ of_iommu_configure+0xb4/0x4a4
+ of_dma_configure_id+0x2fc/0x4d4
+ platform_dma_configure+0x40/0x5c
+ really_probe+0x1b4/0xb74
+ driver_probe_device+0x11c/0x228
+ __device_attach_driver+0x14c/0x304
+ bus_for_each_drv+0x124/0x1b0
+ __device_attach+0x25c/0x334
+ device_initial_probe+0x24/0x34
+ bus_probe_device+0x78/0x134
+ deferred_probe_work_func+0x130/0x1a8
+ process_one_work+0x4c8/0x970
+ worker_thread+0x5c8/0xaec
+ kthread+0x1f8/0x220
+ ret_from_fork+0x10/0x18
 
-Bisect results below.
+Allocated by task 1:
+ ____kasan_kmalloc+0xd4/0x114
+ __kasan_kmalloc+0x10/0x1c
+ kmem_cache_alloc_trace+0xe4/0x3d4
+ __iommu_probe_device+0x90/0x394
+ probe_iommu_group+0x70/0x9c
+ bus_for_each_dev+0x11c/0x19c
+ bus_iommu_probe+0xb8/0x7d4
+ bus_set_iommu+0xcc/0x13c
+ arm_smmu_bus_init+0x44/0x130 [arm_smmu]
+ arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
+ platform_drv_probe+0xe4/0x13c
+ really_probe+0x2c8/0xb74
+ driver_probe_device+0x11c/0x228
+ device_driver_attach+0xf0/0x16c
+ __driver_attach+0x80/0x320
+ bus_for_each_dev+0x11c/0x19c
+ driver_attach+0x38/0x48
+ bus_add_driver+0x1dc/0x3a4
+ driver_register+0x18c/0x244
+ __platform_driver_register+0x88/0x9c
+ init_module+0x64/0xff4 [arm_smmu]
+ do_one_initcall+0x17c/0x2f0
+ do_init_module+0xe8/0x378
+ load_module+0x3f80/0x4a40
+ __se_sys_finit_module+0x1a0/0x1e4
+ __arm64_sys_finit_module+0x44/0x58
+ el0_svc_common+0x100/0x264
+ do_el0_svc+0x38/0xa4
+ el0_svc+0x20/0x30
+ el0_sync_handler+0x68/0xac
+ el0_sync+0x160/0x180
 
-#regzbot introduced: f48235900182d6
+Freed by task 1:
+ kasan_set_track+0x4c/0x84
+ kasan_set_free_info+0x28/0x4c
+ ____kasan_slab_free+0x120/0x15c
+ __kasan_slab_free+0x18/0x28
+ slab_free_freelist_hook+0x204/0x2fc
+ kfree+0xfc/0x3a4
+ __iommu_probe_device+0x284/0x394
+ probe_iommu_group+0x70/0x9c
+ bus_for_each_dev+0x11c/0x19c
+ bus_iommu_probe+0xb8/0x7d4
+ bus_set_iommu+0xcc/0x13c
+ arm_smmu_bus_init+0x44/0x130 [arm_smmu]
+ arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
+ platform_drv_probe+0xe4/0x13c
+ really_probe+0x2c8/0xb74
+ driver_probe_device+0x11c/0x228
+ device_driver_attach+0xf0/0x16c
+ __driver_attach+0x80/0x320
+ bus_for_each_dev+0x11c/0x19c
+ driver_attach+0x38/0x48
+ bus_add_driver+0x1dc/0x3a4
+ driver_register+0x18c/0x244
+ __platform_driver_register+0x88/0x9c
+ init_module+0x64/0xff4 [arm_smmu]
+ do_one_initcall+0x17c/0x2f0
+ do_init_module+0xe8/0x378
+ load_module+0x3f80/0x4a40
+ __se_sys_finit_module+0x1a0/0x1e4
+ __arm64_sys_finit_module+0x44/0x58
+ el0_svc_common+0x100/0x264
+ do_el0_svc+0x38/0xa4
+ el0_svc+0x20/0x30
+ el0_sync_handler+0x68/0xac
+ el0_sync+0x160/0x180
 
-Guenter
+Fix this by setting dev->iommu to NULL first and
+then freeing dev_iommu structure in dev_iommu_free
+function.
 
+Suggested-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Vijayanand Jitta <quic_vjitta@quicinc.com>
 ---
-# bad: [e783362eb54cd99b2cac8b3a9aeac942e6f6ac07] Linux 5.17-rc1
-# good: [df0cc57e057f18e44dac8e6c18aba47ab53202f9] Linux 5.16
-git bisect start 'v5.17-rc1' 'v5.16'
-# good: [fef8dfaea9d6c444b6c2174b3a2b0fca4d226c5e] Merge tag 'regulator-v5.17' of git://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator
-git bisect good fef8dfaea9d6c444b6c2174b3a2b0fca4d226c5e
-# bad: [3ceff4ea07410763d5d4cccd60349bf7691e7e61] Merge tag 'sound-5.17-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound
-git bisect bad 3ceff4ea07410763d5d4cccd60349bf7691e7e61
-# good: [57ea81971b7296b42fc77424af44c5915d3d4ae2] Merge tag 'usb-5.17-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb
-git bisect good 57ea81971b7296b42fc77424af44c5915d3d4ae2
-# bad: [feb7a43de5ef625ad74097d8fd3481d5dbc06a59] Merge tag 'irq-msi-2022-01-13' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
-git bisect bad feb7a43de5ef625ad74097d8fd3481d5dbc06a59
-# good: [ce990f1de0bc6ff3de43d385e0985efa980fba24] Merge tag 'for-linus-5.17-rc1-tag' of git://git.kernel.org/pub/scm/linux/kernel/git/xen/tip
-git bisect good ce990f1de0bc6ff3de43d385e0985efa980fba24
-# good: [4afd2a9355a9deb16ea42b896820dacf49843a8f] Merge branches 'clk-ingenic' and 'clk-mediatek' into clk-next
-git bisect good 4afd2a9355a9deb16ea42b896820dacf49843a8f
-# good: [455e73a07f6e288b0061dfcf4fcf54fa9fe06458] Merge tag 'clk-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/clk/linux
-git bisect good 455e73a07f6e288b0061dfcf4fcf54fa9fe06458
-# bad: [f2948df5f87a722591499da60ab91c611422f755] x86/pci/xen: Use msi_for_each_desc()
-git bisect bad f2948df5f87a722591499da60ab91c611422f755
-# good: [93296cd1325d1d9afede60202d8833011c9001f2] PCI/MSI: Allocate MSI device data on first use
-git bisect good 93296cd1325d1d9afede60202d8833011c9001f2
-# good: [82ff8e6b78fc4587a4255301f0a283506daf11b6] PCI/MSI: Use msi_get_virq() in pci_get_vector()
-git bisect good 82ff8e6b78fc4587a4255301f0a283506daf11b6
-# bad: [125282cd4f33ecd53a24ae4807409da0e5e90fd4] genirq/msi: Move descriptor list to struct msi_device_data
-git bisect bad 125282cd4f33ecd53a24ae4807409da0e5e90fd4
-# bad: [065afdc9c521f05c53f226dabe5dda2d30294d65] iommu/arm-smmu-v3: Use msi_get_virq()
-git bisect bad 065afdc9c521f05c53f226dabe5dda2d30294d65
-# bad: [f6632bb2c1454b857adcd131320379ec16fd8666] dmaengine: mv_xor_v2: Get rid of msi_desc abuse
-git bisect bad f6632bb2c1454b857adcd131320379ec16fd8666
-# bad: [f48235900182d64537c6e8f8dc0932b57a1a0638] PCI/MSI: Simplify pci_irq_get_affinity()
-git bisect bad f48235900182d64537c6e8f8dc0932b57a1a0638
-# first bad commit: [f48235900182d64537c6e8f8dc0932b57a1a0638] PCI/MSI: Simplify pci_irq_get_affinity()
+ drivers/iommu/iommu.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d410311..1d320ee 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -186,9 +186,14 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
+ 
+ static void dev_iommu_free(struct device *dev)
+ {
+-	iommu_fwspec_free(dev);
+-	kfree(dev->iommu);
++	struct dev_iommu *param = dev->iommu;
++
+ 	dev->iommu = NULL;
++	if (param->fwspec) {
++		fwnode_handle_put(param->fwspec->iommu_fwnode);
++		kfree(param->fwspec);
++	}
++	kfree(param);
+ }
+ 
+ static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
+-- 
+2.7.4
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
