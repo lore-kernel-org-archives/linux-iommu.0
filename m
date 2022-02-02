@@ -4,97 +4,137 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id F1DDFC433FE
-	for <iommu@archiver.kernel.org>; Wed,  2 Feb 2022 14:36:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 08C02C433EF
+	for <iommu@archiver.kernel.org>; Wed,  2 Feb 2022 16:25:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 8845A60ADB;
-	Wed,  2 Feb 2022 14:36:45 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id A193160BED;
+	Wed,  2 Feb 2022 16:25:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YVpl68sdREHs; Wed,  2 Feb 2022 14:36:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 6594260A92;
-	Wed,  2 Feb 2022 14:36:44 +0000 (UTC)
+	with ESMTP id lDhNZJz5Ck4U; Wed,  2 Feb 2022 16:25:43 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 6424660BE8;
+	Wed,  2 Feb 2022 16:25:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3C3B7C001A;
-	Wed,  2 Feb 2022 14:36:44 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9FFF3C000B
- for <iommu@lists.linux-foundation.org>; Wed,  2 Feb 2022 14:36:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4822FC001A;
+	Wed,  2 Feb 2022 16:25:43 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E405DC000B;
+ Wed,  2 Feb 2022 16:25:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 8C7F140286
- for <iommu@lists.linux-foundation.org>; Wed,  2 Feb 2022 14:36:43 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id C2A414148A;
+ Wed,  2 Feb 2022 16:25:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Rl_dq8UH0VtJ for <iommu@lists.linux-foundation.org>;
- Wed,  2 Feb 2022 14:36:42 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id hOLSWbDPDma2; Wed,  2 Feb 2022 16:25:39 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com
- [IPv6:2607:f8b0:4864:20::1035])
- by smtp2.osuosl.org (Postfix) with ESMTPS id D39D4404D1
- for <iommu@lists.linux-foundation.org>; Wed,  2 Feb 2022 14:36:42 +0000 (UTC)
-Received: by mail-pj1-x1035.google.com with SMTP id
- g15-20020a17090a67cf00b001b7d5b6bedaso6191147pjm.4
- for <iommu@lists.linux-foundation.org>; Wed, 02 Feb 2022 06:36:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=message-id:date:mime-version:user-agent:subject:content-language:to
- :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=c5ilWsskzu3dpmU/mylu+bxXBWHwHUo4oYiiOl8lnqg=;
- b=j+i2IH9TTmno5Ci2jjglXFh9gBPNQE2OQMt7YSZ8a1DQH78WbW59Aq3Y0q34FjwVeN
- 0kkoijgeIvYexpdiSHjIdr3sR6zvDRIqZrV1R1K9uf7alixm3pzNB+6iGi/6XivHMdBb
- 9aF1qQuWeJkITh1Kys6H9pbIl6PjfJ4NziO/qGJx0vbek3/z41GWzHuzB5GtwX/8hHUB
- Bj+Bl4+G77sMnfbqgZtNGYbgvYRzkuDZvI+Ng0CzO7R0414Wh3jOGq42RbghwCZddTNy
- t7krMJ8BRBUY8eaX05HjjHsJU9OkrI+bIbTsuYhv19ZYwz25jZ9e+vpf6ooSwruSGnJL
- l92Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:in-reply-to
- :content-transfer-encoding;
- bh=c5ilWsskzu3dpmU/mylu+bxXBWHwHUo4oYiiOl8lnqg=;
- b=2YuLFdNHfbVZAfWjRkf9yJY+BXMreYY5hnEa5sh/jOnbOsWzb9SRJeYo2ZXx29S9Lz
- nntiE+G9u8a6hRBbZUi7qxz72VzhRGWe/1kqalW0yQd/wYgaWl3Wn+FTMV4femwuy65s
- aH7z8AO21xnVHgBjYe7OLIFj+A8hohyFNMqXq6/0PjX7MeY9nJvfk5vfCZGWbZs+hJw1
- Em+E1zhAZNWg/qFyMPAi2k+JQeJqm5y+DURwblR/aLoYPpEtqDG8Hr1JdiI3TzvXuDn2
- l+kBY2xECGZSBPeFKooM96MTH8ZXVoITqpQfctzXD+h9hldV+esEpHd2pkr22okRLONB
- Uqyw==
-X-Gm-Message-State: AOAM533DouKPiU4lQn0SgudL9ySGYDBSEB1gQue5i8BpkwCUcgkFZEAt
- I2NoDe0HeQ1X8NwzHkM5WHU=
-X-Google-Smtp-Source: ABdhPJz8auFLIWpqoq6yDdtZumYJt3qYm8v+O3l0kwOtA8BmumK/WvbzPOELeOyiqW7qERFyR3aEZw==
-X-Received: by 2002:a17:90a:1b0d:: with SMTP id
- q13mr8453842pjq.14.1643812602299; 
- Wed, 02 Feb 2022 06:36:42 -0800 (PST)
-Received: from ?IPV6:2404:f801:0:5:8000::50c? ([2404:f801:9000:1a:efea::50c])
- by smtp.gmail.com with ESMTPSA id
- j8sm1148137pfu.55.2022.02.02.06.36.35
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 02 Feb 2022 06:36:42 -0800 (PST)
-Message-ID: <a11c5b65-5284-16e7-5302-23147401eb1c@gmail.com>
-Date: Wed, 2 Feb 2022 22:36:35 +0800
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam12on2082.outbound.protection.outlook.com [40.107.244.82])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id AA548402B2;
+ Wed,  2 Feb 2022 16:25:39 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WRlilx5qEmQVjFiz4Z12Xg3Mfloey4NVLQ3x1vDxTb+ALJqmtnYjLRst7R72biBzZNjtR7K8ovCa/yDpp7rjyVsPYReltOoUeecMvdcWz3STdr40eJ+TlqRcA3HPHHXUU83JU0HzbZjzX45LxrUFazYgUdKGjRK0mZzkFKdCws8tTi3zSJIyFh150rg9EG/ON/ka2AMMIgEUzlXET6W+H0W/rWhQwqiHhku2im2jREkDmQOD9tkSXBaYBK2yS6B+ef5StPDzu9RdMzpMsdNZrV5uy+vMJvlhtWsuWjieB40AmWrpvxhtmxBL3VLkIFupi9wGM7oVlHB1Ub/9kwCKdQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=oOFANyY7rEc+TDIcsKTdvLjfLK3nYfKRWVxY+I3ztNU=;
+ b=WpDSf18RGfPL/+eigJW4/mCnVaggDxq+/uq3AzJvrGXqMZ77B21qrTGf9FnSTVEHrboaoyDookVTNKPWcN9nFlqq++DAjR8LmyBIiw8JXeDFcdGFhyZHskBRv/EkhBwdsRNlx9s6SUPzWXTAMc1KIgqwko0bkk7HkKZMepo27tKaL99bGqgNeZmcJNDezF/MD17m31wsxZ51A+RtHE0CwIE24d9sof1eDFqUkmpsZa6DsRxKo7gIGXX13yNVSOt+S+ePqlOnFbhd1R+ZS/3aT8NPx0ycDFBGyAWQV3ZmNCSVENxzRPUwJQqhphmHf0DrOv0Z0l3dZ9IfvYOAJ9n+gQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oOFANyY7rEc+TDIcsKTdvLjfLK3nYfKRWVxY+I3ztNU=;
+ b=e5OIL9lcG0nD/XLtqAWR/JVfhInJgrwT4mHoEDeBqQmkjIOcdq4rCBGU8rLTgrn4fWZfyVwmsHh7qcPek/zIJVRU7i4odH82bMpZ50AribPQmhf9dkteCAvFs2/4ULmPfjQOmqBJZf737KpYWNpVEadV9lT0hco5pz6jcQ0s61+pOgFtc06oDKfoEiCaBCybhGWC59OqBZCe5tmyOwSUhEXrkJr6keAPAzVMODS2tjakKnMY0Yw+LzzSiBehxutIpQYll2uRWN/ZX1eNIk3pn1dNcAZnSu+8X5Fsq7fskNVnq+oclJxyUAAdVHgx6cYJ0oje6z4KM0fahzs20xCbeA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB3823.namprd12.prod.outlook.com (2603:10b6:208:168::26)
+ by BL0PR12MB4914.namprd12.prod.outlook.com (2603:10b6:208:1c4::16)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.11; Wed, 2 Feb
+ 2022 16:25:37 +0000
+Received: from MN2PR12MB3823.namprd12.prod.outlook.com
+ ([fe80::a9db:9c46:183e:c213]) by MN2PR12MB3823.namprd12.prod.outlook.com
+ ([fe80::a9db:9c46:183e:c213%3]) with mapi id 15.20.4930.022; Wed, 2 Feb 2022
+ 16:25:37 +0000
+To: David Hildenbrand <david@redhat.com>
+Subject: Re: [PATCH v4 3/7] mm: page_isolation: check specified range for
+ unmovable pages
+Date: Wed, 02 Feb 2022 11:25:35 -0500
+X-Mailer: MailMate (1.14r5864)
+Message-ID: <ED2CBE9C-EC92-44BE-87B6-5FF594415FF1@nvidia.com>
+In-Reply-To: <21c196f8-18ca-d720-4241-00c9461854d3@redhat.com>
+References: <20220119190623.1029355-1-zi.yan@sent.com>
+ <20220119190623.1029355-4-zi.yan@sent.com>
+ <Yfp2rv0K6d3cNmwg@localhost.localdomain>
+ <21c196f8-18ca-d720-4241-00c9461854d3@redhat.com>
+X-ClientProxiedBy: MN2PR15CA0041.namprd15.prod.outlook.com
+ (2603:10b6:208:237::10) To MN2PR12MB3823.namprd12.prod.outlook.com
+ (2603:10b6:208:168::26)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 0/2] x86/hyperv/Swiotlb: Add swiotlb_alloc_from_low_pages
- switch
-Content-Language: en-US
-To: Christoph Hellwig <hch@infradead.org>
-References: <20220126161053.297386-1-ltykernel@gmail.com>
- <Yfo84XYBsV7tA6Xd@infradead.org>
-From: Tianyu Lan <ltykernel@gmail.com>
-In-Reply-To: <Yfo84XYBsV7tA6Xd@infradead.org>
-Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
- dave.hansen@linux.intel.com, hpa@zytor.com, kys@microsoft.com, hch@lst.de,
- wei.liu@kernel.org, sthemmin@microsoft.com, x86@kernel.org,
- decui@microsoft.com, michael.h.kelley@microsoft.com, mingo@redhat.com,
- parri.andrea@gmail.com, thomas.lendacky@amd.com,
- Tianyu Lan <Tianyu.Lan@microsoft.com>, konrad.wilk@oracle.com,
- haiyangz@microsoft.com, bp@alien8.de, tglx@linutronix.de,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- vkuznets@redhat.com, robin.murphy@arm.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 78537ba2-54e7-4818-6a68-08d9e668a541
+X-MS-TrafficTypeDiagnostic: BL0PR12MB4914:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB49149B9DC33735213180E455C2279@BL0PR12MB4914.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: J3QKMF8fgNEMm9Z6Sd6GCrLaxFJDsOZ5IgqUTNy0n4yRtn8Jb4B+AAF/NPHxYeu9eYzA5cC0FRqon+xrL1BYUMBCBylLNSXDs29TBGoOB+A98swr1k6hZ3r5YySc2ytd1yJpKBapMdoyvOE0iFZCU4m4GrzTo4BI3tB66ziPfEuhcgVExoAb8iEml8a/8qT3KDg2GLVXBb6k09H9W5HAazCPp/oYVog8q1X44ox+jWnqVjHjmzNZIoiMOC0ZNmNlbrKW+cFZXpkVjdy8OXiPSzCmDBhe8Vz91k1RRbeO1i9f0ZHFlyZax99MMxtk8xd2asX4RhvXq9XQ3DyS84B5wvDvA94JrgLyQ9FgQaUj9j1DNkyszNb2VRopXAGy0x6pDcv/Xmp0zvzJwimS4yIuZGONDy5io7WRAwPxhumowk5mAmbgSeZE9qONqwfXcz4H2YSpD3Wd5HrW1C5Kr+ewWuBDr5A7aYH2RCnG+liCh6JsH0dahCsbfBQSQLwTj8Uqf0cpwoqEJTki8Rw3Xz+dYrpTnOT/ggxYxDVYbDAPlNwHlHI77u6HMqcoo7ZLIV655T0ZIgi3pmfTuM/vYnxiJI8zI6IGKwJegzBDoFGEpKibTWMjh6X/buqc/dgpUt4N7AuOwbc1uiLcqsdZsOctNk29RLyB5o0Pcsl/SmKECGbk8CO0+E8N1g68fq0Ae/swHraV5QkStrSczyhhWmuNf/53PjOxkVB3BYbct2R6558=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB3823.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(66946007)(508600001)(26005)(53546011)(86362001)(6486002)(8676002)(7416002)(4326008)(2906002)(2616005)(83380400001)(5660300002)(8936002)(235185007)(66476007)(36756003)(66556008)(186003)(54906003)(6916009)(38100700002)(33656002)(21480400003)(6506007)(6512007)(316002)(72826004)(45980500001);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Nc/UpiSYzA9tXGcSRJ5pKL4+CLDPGG48cNOyVkVQgVUjHm+9XOvbUJCt5MEI?=
+ =?us-ascii?Q?gJDVVKErBc6Lx3H/psIP19R8+zkU6t2yC1qbogkRb4x78CDJziTL4DCQZ7ko?=
+ =?us-ascii?Q?nLN+ouAoMbrZjlG1gY3p0pEZ9hE/2+au07DcxUiYESH6ixhVU9/lLkQKhCSZ?=
+ =?us-ascii?Q?pZATk/KQd8UmRSaucwJVnQhvEVYF4J9WEC6A0TkwDm/OfC4t4Rrd1ODCstzh?=
+ =?us-ascii?Q?FgJhGYfR2el86eSlaaOk48IugbWe8u1lcS7ItRHb6+ElU/V918J/vByks8gf?=
+ =?us-ascii?Q?hgk9yjh7En40vnlJN4LPPc9KT3NsUClgKXcsezI4HtSl1ivrKzCc4/FQHXKe?=
+ =?us-ascii?Q?88gmufCYWyKHkfkp5ubUHWUoYCl8GW/I1XD7cwLll1CVqiAkQceH8ZIUUoLG?=
+ =?us-ascii?Q?fSoOCk9jh0wITduPmwvc6blwYY7JY3mLndN6NBKWO77O9Z+pwEk60jVcQGSB?=
+ =?us-ascii?Q?9hIpOeipZiKBSiM2aki6guhMPcV+w/9uXofbI7i1P1f+zJkAEzIDkJg3JvXZ?=
+ =?us-ascii?Q?Aq+fXwQEkB/CIA7HlTfoK5W0XcOrn7HAoULpWV16U/xnW7U31M8a9uWFAGO+?=
+ =?us-ascii?Q?1BX4kPqVVvsemWCl9satUxZVEgjp6y1j6BEFcKWOy/dvQaJPtSxBJjJnHoJN?=
+ =?us-ascii?Q?bq+Mu1GR/XvKGOKYftF8yFuBLwww9Dfwl3dNBQt1ESZbNBVY8swkglFjelaB?=
+ =?us-ascii?Q?jjn3hQgzqo4uaQYcUspKV03EF06mCncccWjbq8HmNbFbAGsLwzRgu3tau1Q7?=
+ =?us-ascii?Q?BreZrfg17NVuHBJ+vMaHfeMPAsGFabhw5DjgWbePDNV90qTBLOgWTEGQ7TIs?=
+ =?us-ascii?Q?ew79hRqxgImgsJUKF7rOEct0uOhUKSC2to77DPzVttSyzGVRaTNHktj560SB?=
+ =?us-ascii?Q?H2nzFXDfEE4/RiHd53n4uaQWl85bE/otKESzxfOzSzehOIGUGiPG9l8whmVo?=
+ =?us-ascii?Q?Un1KwpMWTckYq13V1+DjCnoG7xA8tKFQRwQAQrbKrOng1Xb0VN7lsTe0WtX8?=
+ =?us-ascii?Q?lDJueg1Hs7VtxU1j9tcpdRPvNio3d64Ez6WFzML43cgc3HS/8EGs6ig8j9v4?=
+ =?us-ascii?Q?1ujHapkolhF0DQIvVrckTd/2CSusbj97wHl28edRhh/pglgBMkCT9sZmTR4M?=
+ =?us-ascii?Q?A394RZ8Z/bEP9T/1bPUaulsEKqpIPVPMDLDHtNJrLbKnnlD7Ml3dCl4U60sy?=
+ =?us-ascii?Q?TaEgjvTfiOEI9SbLSC1Ip2+Gk8rBC3p/XYQBRkR8vYSyIN2zJ7YKx9/Pqqll?=
+ =?us-ascii?Q?b44+IMI2sAbBQ1uvaMtlJeaeK1CPyxpgOa6lj0ty43omLeLSLTuFgtUSgEAT?=
+ =?us-ascii?Q?F+4egI7dtRBqwd4Wv1l8ecUzDIe3o/Xl8rn9cXWNi4iYHIqyxCuBaug85ZXX?=
+ =?us-ascii?Q?rpwYGPAt7LXNBE1emgBwhpiD2pCBy6ivj6ClNelS1BBrH6RFPY6H06K2nXuw?=
+ =?us-ascii?Q?HIKBD1q1Tm7l2XnSj80kVOafbtQWJRnaqZKulNBQXkzzyH7Mf0HaKqRavesw?=
+ =?us-ascii?Q?v7HjKGMLleX4+XelRvNv2iZvQJMjI7oMnUmx7JJNvrCcgHP/ep81TGK8R++M?=
+ =?us-ascii?Q?vWT7S19E9P36MEqCJjI=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 78537ba2-54e7-4818-6a68-08d9e668a541
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3823.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2022 16:25:37.5338 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: i8ULqr6yukvOOwJX4KOc4zUSUrldSWKPkAWc6f8tgrXMIwxbRvM0MvQmGUaVyNdQ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4914
+Cc: Mel Gorman <mgorman@techsingularity.net>,
+ Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org,
+ linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
+ linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+ Eric Ren <renzhengeek@gmail.com>, Oscar Salvador <osalvador@suse.de>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ Vlastimil Babka <vbabka@suse.cz>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,82 +147,140 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+From: Zi Yan via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Zi Yan <ziy@nvidia.com>
+Content-Type: multipart/mixed; boundary="===============1011652129553128769=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2/2/2022 4:12 PM, Christoph Hellwig wrote:
-> I think this interface is a little too hacky.  In the end all the
-> non-trusted hypervisor schemes (including the per-device swiotlb one)
-> can allocate the memory from everywhere and want for force use of
-> swiotlb.  I think we need some kind of proper interface for that instead
-> of setting all kinds of global variables.
+--===============1011652129553128769==
+Content-Type: multipart/signed;
+ boundary="=_MailMate_DDA32845-4AED-435A-8D84-6088D52B516B_=";
+ micalg=pgp-sha512; protocol="application/pgp-signature"
 
-Hi Christoph:
-      Thanks for your review. I draft the following patch to export a
-interface swiotlb_set_alloc_from_low_pages(). Could you have a look
-whether this looks good for you.
+--=_MailMate_DDA32845-4AED-435A-8D84-6088D52B516B_=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index f6c3638255d5..2b4f92668bc7 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -39,6 +39,7 @@ enum swiotlb_force {
-  extern void swiotlb_init(int verbose);
-  int swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose);
-  unsigned long swiotlb_size_or_default(void);
-+void swiotlb_set_alloc_from_low_pages(bool low);
-  extern int swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs);
-  extern int swiotlb_late_init_with_default_size(size_t default_size);
-  extern void __init swiotlb_update_mem_attributes(void);
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index f1e7ea160b43..62bf8b5cc3e4 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -73,6 +73,8 @@ enum swiotlb_force swiotlb_force;
+On 2 Feb 2022, at 7:25, David Hildenbrand wrote:
 
-  struct io_tlb_mem io_tlb_default_mem;
+> On 02.02.22 13:18, Oscar Salvador wrote:
+>> On Wed, Jan 19, 2022 at 02:06:19PM -0500, Zi Yan wrote:
+>>> From: Zi Yan <ziy@nvidia.com>
+>>>
+>>> Enable set_migratetype_isolate() to check specified sub-range for
+>>> unmovable pages during isolation. Page isolation is done
+>>> at max(MAX_ORDER_NR_PAEGS, pageblock_nr_pages) granularity, but not a=
+ll
+>>> pages within that granularity are intended to be isolated. For exampl=
+e,
+>>> alloc_contig_range(), which uses page isolation, allows ranges withou=
+t
+>>> alignment. This commit makes unmovable page check only look for
+>>> interesting pages, so that page isolation can succeed for any
+>>> non-overlapping ranges.
+>>
+>> Another thing that came to my mind.
+>> Prior to this patch, has_unmovable_pages() was checking on pageblock
+>> granularity, starting at pfn#0 of the pageblock.
+>> With this patch, you no longer check on pageblock granularity, which
+>> means you might isolate a pageblock, but some pages that sneaked in
+>> might actually be unmovable.
+>>
+>> E.g:
+>>
+>> Let's say you have a pageblock that spans (pfn#512,pfn#1024),
+>> and you pass alloc_contig_range() (pfn#514,pfn#1024).
+>> has_unmovable_pages() will start checking the pageblock at pfn#514,
+>> and so it will mis pfn#512 and pfn#513. Isn't that a problem, if those=
 
-+static bool swiotlb_alloc_from_low_pages = true;
-+
-  phys_addr_t swiotlb_unencrypted_base;
+>> pfn turn out to be actually unmovable?
+>
+> That's the whole idea for being able to allocate parts of an unmovable
+> pageblock that are movable.
+>
+> If the first part is unmovable but the second part is movable, nothing
+> should stop us from trying to allocate the second part.
+>
+> Of course, we want to remember the original migratetype of the
+> pageblock, to restore that after isolation -- otherwise we'll end up
+> converting all such pageblocks to MIGRATE_MOVABLE. The next patch does
+> that IIRC.
 
-  /*
-@@ -116,6 +118,11 @@ void swiotlb_set_max_segment(unsigned int val)
-                 max_segment = rounddown(val, PAGE_SIZE);
-  }
+Yes. A desirable optimization is to make MIGRATE_ISOLATE a standalone bit=
+,
+so isolating a pageblock will not remove its original migratetype. It is
+on my todo list.
 
-+void swiotlb_set_alloc_from_low_pages(bool low)
-+{
-+       swiotlb_alloc_from_low_pages = low;
-+}
-+
-  unsigned long swiotlb_size_or_default(void)
-  {
-         return default_nslabs << IO_TLB_SHIFT;
-@@ -284,8 +291,15 @@ swiotlb_init(int verbose)
-         if (swiotlb_force == SWIOTLB_NO_FORCE)
-                 return;
+>
+> However, devil is in the detail, and I still have to review those parts=
 
--       /* Get IO TLB memory from the low pages */
--       tlb = memblock_alloc_low(bytes, PAGE_SIZE);
-+       /*
-+        * Get IO TLB memory from the low pages if 
-swiotlb_alloc_from_low_pages
-+        * is set.
-+        */
-+       if (swiotlb_alloc_from_low_pages)
-+               tlb = memblock_alloc_low(bytes, PAGE_SIZE);
-+       else
-+               tlb = memblock_alloc(bytes, PAGE_SIZE);
-+
-         if (!tlb)
-                 goto fail;
-         if (swiotlb_init_with_tbl(tlb, default_nslabs, verbose))
+> of this series.
 
+Thanks. You can wait for my next version. I am planning to make
+start_isolate_page_range() accept any address range and move migratetype
+save and restore into it, so that the caller do not need to worry about
+alignment.
+
+Basically, start_isolate_page_range() will need to migrate compound pages=
+
+at the beginning and/or the end of the given range [start_pfn, end_pfn) i=
+f
+start_pfn and/or end_pfn-1 is in the middle of a compound page.
+If start_pfn and/or end_pfn-1 is in the middle of a free page, the free
+page will need to be split and put into separate migratetype lists.
+
+>
+>
+> Note that there are no current users of alloc_contig_range() that
+> allocate < MAX_ORDER - 1 -- except CMA, but for CMA we immediately exit=
+
+> has_unmovable_pages() either way.
+>
+> -- =
+
+> Thanks,
+>
+> David / dhildenb
+
+
+--
+Best Regards,
+Yan, Zi
+
+--=_MailMate_DDA32845-4AED-435A-8D84-6088D52B516B_=
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJDBAEBCgAtFiEEh7yFAW3gwjwQ4C9anbJR82th+ooFAmH6sH8PHHppeUBudmlk
+aWEuY29tAAoJEJ2yUfNrYfqKJmYP/iXmUcS1xeOlSjoCiof9XQMxBvznUPT2Ut/h
+uhbd8ZZGGShbY2c+6Eko0/00RwXCfuJx0zmSpBaxHv6dHiJ3dTCg0EAbV0EIjXm4
+AcWVsKx4aIeF+PT+DOih1jjku9+Iypq7knEcnmT5uCmqcgbTK4cCNV4agPKU5H9J
+oi2OqpmbJ8A6fe78sVZgQx94VKXfQ8EZSNkJpMqZOrdv0nsqLlTgnBq5JsEbi/t8
+PMBWYHuqAla+S050tqmK0leiHjbfxxXYb9xq6nYM1f58JV+QnTz+b5wkTj7B7Muh
+sqTLrfRXI0CW0uh0shKfJbTDnqIYcD3Dand+iZDXfwo4kIDrihn7Yvyi+z4Kc7TY
+X8u6xLXDqUH3c4c+a/uRcDwt/3hnVKVntQUBX10ksuE8bXeQOFEWSV0rFDuSgHPB
+1Luw6YOSPBO+WuIayG6YeQ4KaCzg0UjMbWKnrbyqpEIKxBCW7/Ugy2Rjk/97yI7w
+ZNo2lK22QETIeDUjRtQ5BYQ4xDAJF8Y+q4Lyh0ETQyfgsGn1WNiWc+AJvCz9yJgL
+UkKkjfmwdFyEa3tdQntJIE+1g3C6EA+HxqK3L1LuwysYJRinYDAWYKkNyX/kLScC
+dkZt/CenurWv0uMeu0bdhKFdRu7z0w8YQ+1ZhEIkxaNAQ7uLqafmGsdWaQnIrGlM
+8XIMpAeK
+=CvVD
+-----END PGP SIGNATURE-----
+
+--=_MailMate_DDA32845-4AED-435A-8D84-6088D52B516B_=--
+
+--===============1011652129553128769==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============1011652129553128769==--
