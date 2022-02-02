@@ -4,69 +4,72 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 00FD7C433F5
-	for <iommu@archiver.kernel.org>; Wed,  2 Feb 2022 04:18:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C20E1C433EF
+	for <iommu@archiver.kernel.org>; Wed,  2 Feb 2022 08:12:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 91CD581268;
-	Wed,  2 Feb 2022 04:18:52 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 567F281BB0;
+	Wed,  2 Feb 2022 08:12:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9GMqf_CB92zf; Wed,  2 Feb 2022 04:18:51 +0000 (UTC)
+	with ESMTP id C8kIBpblUtRv; Wed,  2 Feb 2022 08:12:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 78DB08124C;
-	Wed,  2 Feb 2022 04:18:51 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 477F7825C7;
+	Wed,  2 Feb 2022 08:12:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 58BC1C0011;
-	Wed,  2 Feb 2022 04:18:51 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 852E7C000B
- for <iommu@lists.linux-foundation.org>; Wed,  2 Feb 2022 02:37:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1FC31C0011;
+	Wed,  2 Feb 2022 08:12:43 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2F732C000B
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Feb 2022 08:12:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 6C991403C8
- for <iommu@lists.linux-foundation.org>; Wed,  2 Feb 2022 02:37:46 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 17F2360B32
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Feb 2022 08:12:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7stbmZCpF7am for <iommu@lists.linux-foundation.org>;
- Wed,  2 Feb 2022 02:37:45 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 3110F40227
- for <iommu@lists.linux-foundation.org>; Wed,  2 Feb 2022 02:37:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1643769465; x=1675305465;
- h=from:to:cc:subject:date:message-id:mime-version:
- content-transfer-encoding;
- bh=zFUncUbhfnvgaEbErIgawnk2kmhFomWqXowKdIic5EE=;
- b=le6jx2gpvSwjsDrTGkMDdNEX4/oYW8ZfJtmyVVlxSYchm/pdP7G2UMDx
- 3jpR9VBrgcuLhg26imQz9lAO50naqPiX/U8/aYMwpHChkCEXCt6M3tC8l
- oXGbV0tAwdhBadihvkgOh5Qry4jw+nExd9B/KC9UpmE25hUre3oR8LjQo
- FfLfiWKuMoh2HqodEqRILCcjV/Se/IOuxgvhMQsIbChb7lFFoWBNgRGXE
- RVzsRS5/M0uvVu2vBQlqeSa2NydxIg/f+iWafj53WQ9yXrDpqXNmkT6dY
- PPOM5KlBT01Il3OiOiZhy7ILvqYcMu8N1B6pqiNYGGxItoCZxsN2P3HqF A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10245"; a="248059024"
-X-IronPort-AV: E=Sophos;i="5.88,335,1635231600"; d="scan'208";a="248059024"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 01 Feb 2022 18:37:44 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,335,1635231600"; d="scan'208";a="583267957"
-Received: from agabodun-lnx.jf.intel.com ([10.165.21.226])
- by fmsmga008.fm.intel.com with ESMTP; 01 Feb 2022 18:37:43 -0800
-From: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>
-To: akeem.g.abodunrin@intel.com, matthew.d.roper@intel.com,
- baolu.lu@linux.intel.com, dri-devel@lists.freedesktop.org
-Subject: [PATCH] iommu/vt-d: Remove comment reference to iommu_dev_has_feature
-Date: Tue,  1 Feb 2022 18:37:43 -0800
-Message-Id: <20220202023743.28135-1-akeem.g.abodunrin@intel.com>
-X-Mailer: git-send-email 2.21.3
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 9d4zzthcGgUe for <iommu@lists.linux-foundation.org>;
+ Wed,  2 Feb 2022 08:12:41 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [IPv6:2607:7c80:54:e::133])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 1E42960B31
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Feb 2022 08:12:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+ :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description;
+ bh=8GJ5K7tr5w0SjCFIVP9oFwV+EwJP4fhHZpV9DwIIpaE=; b=SaGPsaGm+57lnEX5wGtjbquwYs
+ y8VdTUH21OF8ClB7mCR/yuaOGdMU+QSmNNGfgDNZK0aHXR2qD2kxSIwKdV/GtvONfnjYwAh9ZWHmN
+ ZT2UVS034FkvfUNR/OO/aN79vJbTp4fdp7wjgCIFWiuh/5fjK3h2B24/wgGHjYf/0rne5OnZP81JP
+ 6CT/gjgpYnXS+wR4Rz1JLY54WPHi1DpoCsokzuS5a6YzmnkaJy9c892/Hbv1WDvBfLH2/4tMEWfBC
+ FXd0ASzVCeEdjr4P1ojkJiRx6Mf+Qzu+Y0xhoY5dt8JOLPV8p+0cne7OHjfTUoRZt8U5g/D+dJB+P
+ Azxf9qLg==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red
+ Hat Linux)) id 1nFAkT-00EX17-VS; Wed, 02 Feb 2022 08:12:17 +0000
+Date: Wed, 2 Feb 2022 00:12:17 -0800
+From: Christoph Hellwig <hch@infradead.org>
+To: Tianyu Lan <ltykernel@gmail.com>
+Subject: Re: [PATCH 0/2] x86/hyperv/Swiotlb: Add swiotlb_alloc_from_low_pages
+ switch
+Message-ID: <Yfo84XYBsV7tA6Xd@infradead.org>
+References: <20220126161053.297386-1-ltykernel@gmail.com>
 MIME-Version: 1.0
-X-Mailman-Approved-At: Wed, 02 Feb 2022 04:18:49 +0000
-Cc: iommu@lists.linux-foundation.org
+Content-Disposition: inline
+In-Reply-To: <20220126161053.297386-1-ltykernel@gmail.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
+ dave.hansen@linux.intel.com, hpa@zytor.com, kys@microsoft.com, hch@lst.de,
+ hch@infradead.org, wei.liu@kernel.org, sthemmin@microsoft.com, x86@kernel.org,
+ decui@microsoft.com, michael.h.kelley@microsoft.com, mingo@redhat.com,
+ parri.andrea@gmail.com, thomas.lendacky@amd.com,
+ Tianyu Lan <Tianyu.Lan@microsoft.com>, konrad.wilk@oracle.com,
+ haiyangz@microsoft.com, bp@alien8.de, tglx@linutronix.de,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ vkuznets@redhat.com, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,33 +87,11 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-iommu_dev_has_feature() api has been removed by the commit 262948f8ba573
-("iommu: Delete iommu_dev_has_feature()") - So this patch removes comment
-about the api to avoid any confusion.
-
-Signed-off-by: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/iommu.h | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index de0c57a567c8..bea054f2bd4d 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -153,8 +153,7 @@ struct iommu_resv_region {
-  *			 supported, this feature must be enabled before and
-  *			 disabled after %IOMMU_DEV_FEAT_SVA.
-  *
-- * Device drivers query whether a feature is supported using
-- * iommu_dev_has_feature(), and enable it using iommu_dev_enable_feature().
-+ * Device drivers enable the feature via iommu_dev_enable_feature().
-  */
- enum iommu_dev_features {
- 	IOMMU_DEV_FEAT_AUX,
--- 
-2.21.3
-
+I think this interface is a little too hacky.  In the end all the
+non-trusted hypervisor schemes (including the per-device swiotlb one)
+can allocate the memory from everywhere and want for force use of
+swiotlb.  I think we need some kind of proper interface for that instead
+of setting all kinds of global variables.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
