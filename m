@@ -1,77 +1,58 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 406D0C433EF
-	for <iommu@archiver.kernel.org>; Sat,  5 Feb 2022 07:15:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E8ADFC433EF
+	for <iommu@archiver.kernel.org>; Sat,  5 Feb 2022 17:11:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id D0DBB8315C;
-	Sat,  5 Feb 2022 07:15:41 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 795374054B;
+	Sat,  5 Feb 2022 17:11:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FKtOps1K9Tqe; Sat,  5 Feb 2022 07:15:41 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id C94108317B;
-	Sat,  5 Feb 2022 07:15:40 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 904FFC001A;
-	Sat,  5 Feb 2022 07:15:40 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EB560C000B
- for <iommu@lists.linux-foundation.org>; Sat,  5 Feb 2022 07:15:39 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D41E24013D
- for <iommu@lists.linux-foundation.org>; Sat,  5 Feb 2022 07:15:39 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vZBAOMPygcL6 for <iommu@lists.linux-foundation.org>;
- Sat,  5 Feb 2022 07:15:39 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id UDnwPOygJlij; Sat,  5 Feb 2022 17:11:12 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 32D4F40549;
+	Sat,  5 Feb 2022 17:11:12 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 01CB1C001A;
+	Sat,  5 Feb 2022 17:11:12 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1200DC000B
+ for <iommu@lists.linux-foundation.org>; Sat,  5 Feb 2022 17:11:10 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id EC00360B1D
+ for <iommu@lists.linux-foundation.org>; Sat,  5 Feb 2022 17:11:09 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id NTWrV5X3Gd23 for <iommu@lists.linux-foundation.org>;
+ Sat,  5 Feb 2022 17:11:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 1F6FB400BA
- for <iommu@lists.linux-foundation.org>; Sat,  5 Feb 2022 07:15:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1644045339; x=1675581339;
- h=message-id:date:mime-version:cc:subject:to:references:
- from:in-reply-to:content-transfer-encoding;
- bh=wqxjsPauSARkDVGNFGjAynKzR2PwO1TvvGupa+oiPS4=;
- b=cFgPqtxXkdhFs2nBh0uRRYyeVohMQFYbYiQ5LaEsf40UexVO5eCtD1MX
- bGafTdx2EnjVzT3USHFl4ACcdjuOeJ8/TPL2K8v9wp5cwvYwdyoq/jRCy
- jB6irBfWeviBy4TmrNaSOipYKHicT1wAboo/AczGk1utiBBqHdx4DbSrC
- HD+1QBjNOanL2Y+MXode/OqYTIwACQ0hvfayKOyX9QNxfZ4ICXiX9CaDy
- D02csKPXbbUWFF0K3hzAxXF0leI0nH3KOSf1lXL2L/W+RABp/YZJzD93t
- IbvUK+qqzK+uXhZ4TMFBkGYBBzoYY/iZWlVha5a0xJmXyWFIkVD8YSwma A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="235893756"
-X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; d="scan'208";a="235893756"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 04 Feb 2022 23:15:38 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,345,1635231600"; d="scan'208";a="677305032"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
- ([10.239.159.118])
- by fmsmga001.fm.intel.com with ESMTP; 04 Feb 2022 23:15:36 -0800
-Message-ID: <59dac4c6-b238-adb1-75a6-d17a260aa0ee@linux.intel.com>
-Date: Sat, 5 Feb 2022 15:14:29 +0800
+Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr
+ [80.12.242.130])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 47FDB607C9
+ for <iommu@lists.linux-foundation.org>; Sat,  5 Feb 2022 17:11:04 +0000 (UTC)
+Received: from pop-os.home ([90.126.236.122]) by smtp.orange.fr with ESMTPA
+ id GOaSngReQxHdTGOaSnEh5w; Sat, 05 Feb 2022 18:11:02 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sat, 05 Feb 2022 18:11:02 +0100
+X-ME-IP: 90.126.236.122
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 1/2] iommu/arm-smmu-v3: Avoid open coded arithmetic in memory
+ allocation
+Date: Sat,  5 Feb 2022 18:10:59 +0100
+Message-Id: <de9e8705169b5dc873f6ce9f9a17598de89aa6a7.1644081032.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] iommu/vt-d: Remove comment reference to
- iommu_dev_has_feature
-Content-Language: en-US
-To: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>,
- matthew.d.roper@intel.com, dri-devel@lists.freedesktop.org
-References: <20220202023743.28135-1-akeem.g.abodunrin@intel.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220202023743.28135-1-akeem.g.abodunrin@intel.com>
-Cc: iommu@lists.linux-foundation.org
+Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+ iommu@lists.linux-foundation.org, kernel-janitors@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,44 +65,45 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2/2/22 10:37 AM, Akeem G Abodunrin wrote:
-> iommu_dev_has_feature() api has been removed by the commit 262948f8ba573
-> ("iommu: Delete iommu_dev_has_feature()") - So this patch removes comment
-> about the api to avoid any confusion.
-> 
-> Signed-off-by: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>
-> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+kmalloc_array()/kcalloc() should be used to avoid potential overflow when
+a multiplication is needed to compute the size of the requested memory.
 
-It's not a change for iommu/vt-d, but for iommu core.
+So turn a devm_kzalloc()+explicit size computation into an equivalent
+devm_kcalloc().
 
-Please add Joerg in the to list.
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+This is NOT compile tested.
+I don't have the needed cross compiling tools.
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Best regards,
-baolu
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 6dc6d8b6b368..14d06aad0726 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2981,10 +2981,10 @@ static int arm_smmu_init_l1_strtab(struct arm_smmu_device *smmu)
+ {
+ 	unsigned int i;
+ 	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+-	size_t size = sizeof(*cfg->l1_desc) * cfg->num_l1_ents;
+ 	void *strtab = smmu->strtab_cfg.strtab;
+ 
+-	cfg->l1_desc = devm_kzalloc(smmu->dev, size, GFP_KERNEL);
++	cfg->l1_desc = devm_kcalloc(smmu->dev, cfg->num_l1_ents,
++				    sizeof(*cfg->l1_desc), GFP_KERNEL);
+ 	if (!cfg->l1_desc)
+ 		return -ENOMEM;
+ 
+-- 
+2.32.0
 
-> ---
->   include/linux/iommu.h | 3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index de0c57a567c8..bea054f2bd4d 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -153,8 +153,7 @@ struct iommu_resv_region {
->    *			 supported, this feature must be enabled before and
->    *			 disabled after %IOMMU_DEV_FEAT_SVA.
->    *
-> - * Device drivers query whether a feature is supported using
-> - * iommu_dev_has_feature(), and enable it using iommu_dev_enable_feature().
-> + * Device drivers enable the feature via iommu_dev_enable_feature().
->    */
->   enum iommu_dev_features {
->   	IOMMU_DEV_FEAT_AUX,
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
