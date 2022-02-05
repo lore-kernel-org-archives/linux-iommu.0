@@ -1,71 +1,74 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 694B4C433F5
-	for <iommu@archiver.kernel.org>; Sat,  5 Feb 2022 00:25:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7A9B9C433EF
+	for <iommu@archiver.kernel.org>; Sat,  5 Feb 2022 00:33:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id E353940961;
-	Sat,  5 Feb 2022 00:25:46 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 10A178291D;
+	Sat,  5 Feb 2022 00:33:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6GuoRn8-N2CZ; Sat,  5 Feb 2022 00:25:46 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id RDTLToggn2Ej; Sat,  5 Feb 2022 00:33:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id C01A8408DC;
-	Sat,  5 Feb 2022 00:25:45 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id B0600827A8;
+	Sat,  5 Feb 2022 00:33:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 92F1DC001A;
-	Sat,  5 Feb 2022 00:25:45 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 74FA0C000B
- for <iommu@lists.linux-foundation.org>; Sat,  5 Feb 2022 00:25:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 792DCC001A;
+	Sat,  5 Feb 2022 00:33:19 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EC7EEC000B
+ for <iommu@lists.linux-foundation.org>; Sat,  5 Feb 2022 00:33:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 4F67C40912
- for <iommu@lists.linux-foundation.org>; Sat,  5 Feb 2022 00:25:43 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id C3AA860E81
+ for <iommu@lists.linux-foundation.org>; Sat,  5 Feb 2022 00:33:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rI_NDcPgPXvO for <iommu@lists.linux-foundation.org>;
- Sat,  5 Feb 2022 00:25:42 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id r5ujyHTcq8Mz for <iommu@lists.linux-foundation.org>;
+ Sat,  5 Feb 2022 00:33:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 88DFD408DC
- for <iommu@lists.linux-foundation.org>; Sat,  5 Feb 2022 00:25:42 +0000 (UTC)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 0514760E80
+ for <iommu@lists.linux-foundation.org>; Sat,  5 Feb 2022 00:33:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1644020742; x=1675556742;
+ t=1644021197; x=1675557197;
  h=date:from:to:cc:subject:message-id:references:
  mime-version:in-reply-to;
- bh=seqp1K4lOkMWSGy1QhjFDo6IEhqcwqjPfzMecDFWN9w=;
- b=ZFwLYyvxCzmk5Nrjx85Sj6V0uKDqIPO2daFfUMW+Vew/+/izlEvxpvOA
- wmOb61KGsutm3y0sMHYn4YA+E2sLZWaT3oiJwnTyedGvv2EvcfLLfTp10
- juvh/adooxISGZkZtIM1ngUfFzsUZboSarIndRGvHLSgluVJ7o++Nm1ar
- f5QrTLzjOlYqihUbK1lqLDUYNOoxcmZQQqBERSZ6oytVqyD/08OIWN56X
- urIPcMpR6hyqPADw1T+CZ4syZLaCiZDEamcsgVQNA+oUaZ7mh4/mGkYLR
- HEIHyONZZLLcLN2VW2w+xJvzkNhGxkpToT3rfPhDZcL/gP/AClZklti4B Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="232034579"
-X-IronPort-AV: E=Sophos;i="5.88,344,1635231600"; d="scan'208";a="232034579"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 04 Feb 2022 16:25:41 -0800
-X-IronPort-AV: E=Sophos;i="5.88,344,1635231600"; d="scan'208";a="539361229"
+ bh=aJYy2vf0HRnoLnCXkWAcUv8uWypmISO27TeIxy+WR4A=;
+ b=fBSjWmqVzJgtaTfDzcYbje8E59t+kR3Z2NgvCZzHuDxjXkoiDluF7OjS
+ 9F6wMLPl5LrSwbxdROLLBwsaPkjlYsHQ5AfCvw9gpN0WOy874q0KmuafW
+ RM6p4qLmgJ+UzX0y84HoOTR0f6/6hpJa2xrNzew4JL3MCUabHU+7wLr3A
+ DNEivMyE9cD2j4FJIGNu6vQwFL/9PGhdCITP0WrRfm71jGZBUuAGSqAd4
+ UJ+z9tZQeRjVdwrU0ox+o99pHKKkw0yxVHJIrC+YsWfBYpIwC43Bl1OAD
+ Ds+xeMbUScnWOTr28ixAK08nc5irCHW29y2V3sbLRzyJ2wkZO4lh3ad2x g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="229118551"
+X-IronPort-AV: E=Sophos;i="5.88,344,1635231600"; d="scan'208";a="229118551"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 04 Feb 2022 16:33:17 -0800
+X-IronPort-AV: E=Sophos;i="5.88,344,1635231600"; d="scan'208";a="535684857"
 Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 04 Feb 2022 16:25:41 -0800
-Date: Fri, 4 Feb 2022 16:25:34 -0800
+ by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 04 Feb 2022 16:33:17 -0800
+Date: Fri, 4 Feb 2022 16:33:16 -0800
 From: Fenghua Yu <fenghua.yu@intel.com>
 To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v3 04/11] kernel/fork: Initialize mm's PASID
-Message-ID: <Yf3D/ij6S8AbMwpF@otcwcpicx3.sc.intel.com>
+Subject: Re: [PATCH v3 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+Message-ID: <Yf3FzOUSRpFUdM/q@otcwcpicx3.sc.intel.com>
 References: <20220128202905.2274672-1-fenghua.yu@intel.com>
- <20220128202905.2274672-5-fenghua.yu@intel.com>
- <87wniab4kb.ffs@tglx>
+ <20220128202905.2274672-6-fenghua.yu@intel.com>
+ <87r18ib2zz.ffs@tglx>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <87wniab4kb.ffs@tglx>
+In-Reply-To: <87r18ib2zz.ffs@tglx>
 Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Tony Luck <tony.luck@intel.com>,
  Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
  Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
@@ -89,89 +92,79 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi, Thomas,
-
-On Sat, Feb 05, 2022 at 12:22:12AM +0100, Thomas Gleixner wrote:
+On Sat, Feb 05, 2022 at 12:56:00AM +0100, Thomas Gleixner wrote:
 > On Fri, Jan 28 2022 at 12:28, Fenghua Yu wrote:
-> > A new mm doesn't have a PASID yet when it's created. Initialize
-> > the mm's PASID on fork() or for init_mm to INVALID_IOASID (-1).
+> > To avoid complexity of updating each thread's PASID status (e.g. sending
+> > IPI to update IA32_PASID MSR) on allocating and freeing PASID, once
+> > allocated and assigned to an mm, the PASID stays with the mm for the
+> > rest of the mm's lifetime. A reference to the PASID is taken on
+> > allocating the PASID. Binding/unbinding the PASID won't change refcount.
+> > The reference is dropped on mm exit and thus the PASID is freed.
+> >
+> > Two helpers mm_pasid_set() and mm_pasid_drop() are defined in mm because
+> > the PASID operations handle the pasid member in mm_struct and should be
+> > part of mm operations. Because IOASID's reference count is not used any
+> > more and removed, unused ioasid_get() and iommu_sva_free_pasid()
+> > are deleted and ioasid_put() is renamed to ioasid_free().
+> >
+> > 20-bit PASID allows up to 1M processes bound to PASIDs at the same time.
+> > With cgroups and other controls that might limit the number of process
+> > creation, the limited number of PASIDs is not a realistic issue for
+> > lazy PASID free.
 > 
-> I must be missing something here.
+> Please take a step back and think hard about it whether that changelog
+> makes sense to you a year from now.
 > 
-> > diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
-> > index aa5f09ca5bcf..c74d1edbac2f 100644
-> > --- a/include/linux/sched/mm.h
-> > +++ b/include/linux/sched/mm.h
-> > @@ -8,6 +8,7 @@
-> >  #include <linux/mm_types.h>
-> >  #include <linux/gfp.h>
-> >  #include <linux/sync_core.h>
-> > +#include <linux/ioasid.h>
-> >  
-> >  /*
-> >   * Routines for handling mm_structs
-> > @@ -433,4 +434,13 @@ static inline void membarrier_update_current_mm(struct mm_struct *next_mm)
-> >  }
-> >  #endif
-> >  
-> > +#ifdef CONFIG_IOMMU_SVA
-> > +static inline void mm_pasid_init(struct mm_struct *mm)
-> > +{
-> > +	mm->pasid = INVALID_IOASID;
-> > +}
-> > +#else
-> > +static inline void mm_pasid_init(struct mm_struct *mm) {}
-> > +#endif
-> > +
-> >  #endif /* _LINUX_SCHED_MM_H */
+> Let me walk you through:
 > 
-> So this adds mm_pasid_init() to linux/sched/mm.h which replaces:
+> > To avoid complexity of updating each thread's PASID status (e.g. sending
+> > IPI to update IA32_PASID MSR) on allocating and freeing PASID, once
+> > allocated and assigned to an mm, the PASID stays with the mm for the
+> > rest of the mm's lifetime.
 > 
-> > -static void mm_init_pasid(struct mm_struct *mm)
-> > -{
-> > -#ifdef CONFIG_IOMMU_SVA
-> > -	mm->pasid = INIT_PASID;
-> > -#endif
-> > -}
-> > -
+> You are missing the oportunity to tell a story about the history of this
+> decision here:
 > 
-> I.e. already existing code which is initializing mm->pasid with
-> INIT_PASID (0) while the replacement initializes it with INVALID_IOASID
-> (-1).
+>   PASIDs are process wide. It was attempted to use refcounted PASIDs to
+>   free them when the last thread drops the refcount. This turned out to
+>   be complex and error prone. Given the fact that the PASID space is 20
+>   bits, which allows up to 1M processes to have a PASID associated
+>   concurrently, PASID resource exhaustion is not a realistic concern.
 > 
-> The change log does not have any information about why INIT_PASID is the
-> wrong initialization value and why this change is not having any side
-> effects.
-
-I should add the following info in the commit message to explain why
-change INIT_PASID (0) to INVALID_IOASID (-1):
-
-INIT_PASID (0) is reserved for kernel legacy DMA PASID. It cannot be
-allocated to a user process. Initialize the process's PASID to 0 may
-cause confusion that why the process uses reserved kernel legacy DMA
-PASID. Initializing the PASID to INVALID_IOASID (-1) explicitly
-tells the process doesn't have a valid PASID yet initially.
-
-Is it OK for you?
-
+>   Therefore it was decided to simplify the approach and stick with lazy
+>   on demand PASID allocation, but drop the eager free approach and make
+>   a allocated PASID lifetime bound to the life time of the process.
 > 
-> It neither mentions why having this in a global available header makes
-> sense when the only call site is in the C file from which the already
-> existing function is removed.
+> > A reference to the PASID is taken on allocating the
+> > PASID. Binding/unbinding the PASID won't change refcount.  The
+> > reference is dropped on mm exit and thus the PASID is freed.
+> 
+> There is no refcount in play anymore, right? So how does this part of
+> the changelog make any sense?
+> 
+> This is followed by:
+> 
+> > Two helpers mm_pasid_set() and mm_pasid_drop() are defined in mm because
+> > the PASID operations handle the pasid member in mm_struct and should be
+> > part of mm operations. Because IOASID's reference count is not used any
+> > more and removed, unused ioasid_get() and iommu_sva_free_pasid()
+> > are deleted and ioasid_put() is renamed to ioasid_free().
+> 
+> which does not provide much rationale and just blurbs about _what_ the
+> patch is doing and not about the why and the connection to the
+> above. And the refcount removal section contradicts the stale text
+> above.
+> 
+> So this paragraph should be something like this:
+> 
+>   Get rid of the refcounting mechanisms and replace/rename the
+>   interfaces to reflect this new approach.
+> 
+> Hmm?
 
-This series defines three helpers mm_pasid_init(), mm_pasid_set(), and
-mm_pasid_drop() in mm because they handle the pasid member in mm_struct
-and should be part of mm operations. I explained why mm_pasid_set() and
-mm_pasid_drop() are defined in mm, but I didn't explain why mm_pasid_init()
-is define in mm.
+Sure. I will update the commit message with your comments.
 
-Is it OK to add the following explanation on why mm_pasid_init() is defined?
-
-mm_pasid_init() is defined in mm and replaces mm_init_pasid() because
-the PASID init operation initializes the pasid member in mm_struct and
-should be part of mm operations.
-
-Thanks,
+Thanks.
 
 -Fenghua
 _______________________________________________
