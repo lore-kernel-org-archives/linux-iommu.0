@@ -1,75 +1,75 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1592DC433F5
-	for <iommu@archiver.kernel.org>; Mon,  7 Feb 2022 14:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3F07CC433F5
+	for <iommu@archiver.kernel.org>; Mon,  7 Feb 2022 14:14:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id B07F18176F;
-	Mon,  7 Feb 2022 14:13:04 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id DB0A140274;
+	Mon,  7 Feb 2022 14:14:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PUIQLw3N_5el; Mon,  7 Feb 2022 14:13:04 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jqVFSM9uhwI3; Mon,  7 Feb 2022 14:14:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 9714881400;
-	Mon,  7 Feb 2022 14:13:03 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id CAC3A40266;
+	Mon,  7 Feb 2022 14:14:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 61603C0011;
-	Mon,  7 Feb 2022 14:13:03 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4BDBEC000B
- for <iommu@lists.linux-foundation.org>; Mon,  7 Feb 2022 14:13:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B0A32C0011;
+	Mon,  7 Feb 2022 14:14:13 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 995EEC000B
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Feb 2022 14:14:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 2398C40153
- for <iommu@lists.linux-foundation.org>; Mon,  7 Feb 2022 14:13:02 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 867C981336
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Feb 2022 14:14:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id B944jzDtbdt2 for <iommu@lists.linux-foundation.org>;
- Mon,  7 Feb 2022 14:13:00 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 8InjjnebBTqs for <iommu@lists.linux-foundation.org>;
+ Mon,  7 Feb 2022 14:14:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by smtp2.osuosl.org (Postfix) with ESMTPS id C535C40148
- for <iommu@lists.linux-foundation.org>; Mon,  7 Feb 2022 14:13:00 +0000 (UTC)
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id D2A8A81332
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Feb 2022 14:14:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1644243180; x=1675779180;
+ t=1644243251; x=1675779251;
  h=from:to:cc:subject:date:message-id:mime-version:
  content-transfer-encoding;
- bh=hGogMlAz2ABL6mZ3F5RdiX3bnIRNxQzIMwuH0LxLLDw=;
- b=RevW5eBUxPYciAYKsdQxCB5P2nDuV35wQzGyd/OD5GBWBmcesd4RwOyf
- LapcAyGqjWXVYUXCdajjZBuf5hhL+dU1fOnIZk1jYPt+tj28gPrKUecuf
- d1DqBKLtpsBopqsOpljSgY7OVU6xFsHnWjWkRLzmlVnxthpI5SVKxZmKq
- MQ7dj+rxdRWHn8nMwUnG4q4qEV/M0Dy1W4Y5qNj1gT5XZMgBN/BZzFHt3
- 0BJCiP3AkPGXRy/V4gArxZFwImPCG0K8zzsxN87vLZDjwwvquPZQyGtpO
- 54DGIM2u3q7Df0X8soVnAng8YNlrzgRnop0R+ElvLZQYog737HGZ8CNCF A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="309466366"
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; d="scan'208";a="309466366"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 07 Feb 2022 06:12:36 -0800
+ bh=X/LK6sULWZKDmHlbv9YKIUivTejDy195l3r0gIsqar4=;
+ b=O8j+zxmm19WYJTeL2stTgD3dI9cTT7ZqZkABvOGNBBVfsGufpahxl2U9
+ hWqo/UwHnbbk37dTvW1mKETXyUJl80yCUjHEppMpRj+i7xviJ0Wseji1x
+ agFbr/SPngbb3ORdgRUXqGS9ZpV1YbK7n9wJFxLSsAjRCwsffXtmY9kBx
+ 8vNeSed3JPd3VKiQC6sU3+5tHrTIC7Ie5Jqfd8Yg2UdO6u539UidR1egy
+ W/VexMwxvrIMnNoEHIimhkFTT0+arg/z0lLoHOOepkMeIbh6jNUIiQQue
+ LNpOiuWawaXqwaIgZcjbbADuVwbr34yVEp/7OmcZWJ+jVGzee+xYcmZtN w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="312021767"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; d="scan'208";a="312021767"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 07 Feb 2022 06:13:09 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; d="scan'208";a="481594287"
+X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; d="scan'208";a="700477351"
 Received: from black.fi.intel.com ([10.237.72.28])
- by orsmga003.jf.intel.com with ESMTP; 07 Feb 2022 06:12:34 -0800
+ by orsmga005.jf.intel.com with ESMTP; 07 Feb 2022 06:13:07 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
- id DF32A31D; Mon,  7 Feb 2022 16:12:48 +0200 (EET)
+ id B406A31D; Mon,  7 Feb 2022 16:13:22 +0200 (EET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Joerg Roedel <jroedel@suse.de>, Lu Baolu <baolu.lu@linux.intel.com>,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/1] iommu/vt-d: Move intel_iommu_ops to header file
-Date: Mon,  7 Feb 2022 16:12:40 +0200
-Message-Id: <20220207141240.8253-1-andriy.shevchenko@linux.intel.com>
+To: Joerg Roedel <jroedel@suse.de>, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/1] iommu/dma: Use DMA ops setter instead of direct
+ assignment
+Date: Mon,  7 Feb 2022 16:13:21 +0200
+Message-Id: <20220207141321.8293-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Cc: Will Deacon <will@kernel.org>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- David Woodhouse <dwmw2@infradead.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,45 +87,29 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Compiler is not happy about hidden declaration of intel_iommu_ops.
-
-.../iommu.c:414:24: warning: symbol 'intel_iommu_ops' was not declared. Should it be static?
-
-Move declaration to header file to make compiler happy.
+Use DMA ops setter instead of direct assignment. Even we know that
+this module doesn't perform access to the dma_ops member of struct device,
+it's better to use setter to avoid potential problems in the future.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
-v2: made sure it compiles with IRQ_REMAP=y, INTEL_IOMMU=n (Lu)
- drivers/iommu/intel/dmar.c  | 2 --
- include/linux/intel-iommu.h | 2 ++
- 2 files changed, 2 insertions(+), 2 deletions(-)
+v2: rebased on top of the latest codebase
+ drivers/iommu/dma-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 915bff76fe96..b114e09a647d 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -66,8 +66,6 @@ static unsigned long dmar_seq_ids[BITS_TO_LONGS(DMAR_UNITS_SUPPORTED)];
- static int alloc_iommu(struct dmar_drhd_unit *drhd);
- static void free_iommu(struct intel_iommu *iommu);
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index d85d54f2b549..b585a3fdbc56 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -1482,7 +1482,7 @@ void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 dma_limit)
+ 	if (iommu_is_dma_domain(domain)) {
+ 		if (iommu_dma_init_domain(domain, dma_base, dma_limit, dev))
+ 			goto out_err;
+-		dev->dma_ops = &iommu_dma_ops;
++		set_dma_ops(dev, &iommu_dma_ops);
+ 	}
  
--extern const struct iommu_ops intel_iommu_ops;
--
- static void dmar_register_drhd_unit(struct dmar_drhd_unit *drhd)
- {
- 	/*
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 69230fd695ea..1036c1900b5c 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -813,6 +813,8 @@ bool context_present(struct context_entry *context);
- struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
- 					 u8 devfn, int alloc);
- 
-+extern const struct iommu_ops intel_iommu_ops;
-+
- #ifdef CONFIG_INTEL_IOMMU
- extern int iommu_calculate_agaw(struct intel_iommu *iommu);
- extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
+ 	return;
 -- 
 2.34.1
 
