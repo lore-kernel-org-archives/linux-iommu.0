@@ -4,57 +4,59 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 21EBFC4332F
-	for <iommu@archiver.kernel.org>; Mon,  7 Feb 2022 23:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5084BC433F5
+	for <iommu@archiver.kernel.org>; Mon,  7 Feb 2022 23:03:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id BD6A240253;
-	Mon,  7 Feb 2022 23:03:55 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 32B624052E;
+	Mon,  7 Feb 2022 23:03:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FylHvHJhwTJH; Mon,  7 Feb 2022 23:03:54 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 2F4064052E;
+	with ESMTP id waO8flLC-U38; Mon,  7 Feb 2022 23:03:55 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 85CE740535;
 	Mon,  7 Feb 2022 23:03:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2038DC007E;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5C613C0080;
 	Mon,  7 Feb 2022 23:03:53 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E1F29C000B
- for <iommu@lists.linux-foundation.org>; Mon,  7 Feb 2022 23:03:51 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 205DBC000B
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Feb 2022 23:03:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id B6B5F404CD
+ by smtp1.osuosl.org (Postfix) with ESMTP id 1FDA480BC2
  for <iommu@lists.linux-foundation.org>; Mon,  7 Feb 2022 23:03:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Lw1raJZIbQjK for <iommu@lists.linux-foundation.org>;
- Mon,  7 Feb 2022 23:03:51 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id MXWSfqW0Ue4c for <iommu@lists.linux-foundation.org>;
+ Mon,  7 Feb 2022 23:03:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp2.osuosl.org (Postfix) with ESMTPS id D8985400D3
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 4938A80B81
  for <iommu@lists.linux-foundation.org>; Mon,  7 Feb 2022 23:03:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
  t=1644275030; x=1675811030;
  h=from:to:cc:subject:date:message-id:in-reply-to:
  references:mime-version:content-transfer-encoding;
- bh=pSiI5bRDWKZ8wcmfvSwFj0dyl6gbbkbtffSYluVkHLo=;
- b=Dflciez+66v4ikdYlHaEbBwutdllHoEhfINiVoUkCZBiMcgHVR8zPBdA
- Jv/JvCJwrx42U9Fv1+FsqRs4wzUVmUYGnLXhM0VRThmtVrVSuyc+HLL2I
- rrfSZTsdnNuXh5SF8fJIAwpZncnwOBAeZOVNHZbjeDf4XSjZzhyyKpxYP
- a4HAZWEPESrbsw7KVaj8tm6fGoYRXFOXYScbHZpnYkMRLziiy8Xbr7Plf
- nNxs6S1WqqwjKQXViiKufp0QxUW9S3ySs/3p7cWBb3YYh5OMw0WSdtQ1R
- S6D4vqq1k+rDH9SiGL8hdXHJYazD9NwCs4hE+MK1+bCNkTiF5Avz5QTef g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="248774764"
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; d="scan'208";a="248774764"
+ bh=905JQ3YZKvuZYu7D1FVJXac593yX75ihm3basE87bLk=;
+ b=ZKec9betrv25CAZTFgYsyjfmxqsrjqOhTjSP9WKIPRpYXjhUv3tpIGol
+ dBrrKW8KcFN9CGhNV5HMsipBXjrk82Dpuc/vl9xgqFutT24TKv7FG4s7c
+ Swj+CalIsxKoQ5ivK5Ow6zSrnXpRh1AyvMO9xXr3mDfFDd5Y+iMK4RvgG
+ ls6mjGsqElrhAmLnbryaQaiisTA8f+CLpRzpf1c5FsxRcKhaWCl0Hos0D
+ G7QeiJOXoXQ1xDjunILVBb6MqkAMFuKuysTnPjx+nyPi1axJC1P7hELTl
+ h0BUTi+jqCXXegcci62f3Xn6U5sGnaxSquVrcnTgrVFGIqlLFEM4D5O4x w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10251"; a="248774759"
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; d="scan'208";a="248774759"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 07 Feb 2022 15:03:05 -0800
+ 07 Feb 2022 15:03:04 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; d="scan'208";a="540324061"
+X-IronPort-AV: E=Sophos;i="5.88,351,1635231600"; d="scan'208";a="540324041"
 Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
- by orsmga008.jf.intel.com with ESMTP; 07 Feb 2022 15:03:04 -0800
+ by orsmga008.jf.intel.com with ESMTP; 07 Feb 2022 15:03:03 -0800
 From: Fenghua Yu <fenghua.yu@intel.com>
 To: "Thomas Gleixner" <tglx@linutronix.de>,
  "Dave Hansen" <dave.hansen@linux.intel.com>,
@@ -66,9 +68,9 @@ To: "Thomas Gleixner" <tglx@linutronix.de>,
  "Jacob Pan" <jacob.jun.pan@linux.intel.com>,
  "Ashok Raj" <ashok.raj@intel.com>,
  "Ravi V Shankar" <ravi.v.shankar@intel.com>
-Subject: [PATCH v4 06/11] x86/fpu: Clear PASID when copying fpstate
-Date: Mon,  7 Feb 2022 15:02:49 -0800
-Message-Id: <20220207230254.3342514-7-fenghua.yu@intel.com>
+Subject: [PATCH v4 04/11] kernel/fork: Initialize mm's PASID
+Date: Mon,  7 Feb 2022 15:02:47 -0800
+Message-Id: <20220207230254.3342514-5-fenghua.yu@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220207230254.3342514-1-fenghua.yu@intel.com>
 References: <20220207230254.3342514-1-fenghua.yu@intel.com>
@@ -92,67 +94,117 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The kernel must allocate a Process Address Space ID (PASID) on behalf of
-each process which will use ENQCMD and program it into the new MSR to
-communicate the process identity to platform hardware. ENQCMD uses the
-PASID stored in this MSR to tag requests from this process.
+A new mm doesn't have a PASID yet when it's created. Initialize
+the mm's PASID on fork() or for init_mm to INVALID_IOASID (-1).
 
-The PASID state must be cleared on fork() since fork creates a
-new address space.
+INIT_PASID (0) is reserved for kernel legacy DMA PASID. It cannot be
+allocated to a user process. Initializing the process's PASID to 0 may
+cause confusion that why the process uses the reserved kernel legacy DMA
+PASID. Initializing the PASID to INVALID_IOASID (-1) explicitly
+tells the process doesn't have a valid PASID yet.
 
-For clone(), it would be functionally OK to copy the PASID. However,
-clearing it is _also_ functionally OK since any PASID use will trigger
-the #GP handler to populate the MSR.
+Even though the only user of mm_pasid_init() is in fork.c, define it
+in <linux/sched/mm.h> as the first of three mm/pasid life cycle
+functions (init/set/drop) to keep these all together.
 
-Copying the PASID state has two main downsides:
- * It requires differentiating fork() and clone() in the code,
-   both in the FPU code and keeping tsk->pasid_activated consistent.
- * It guarantees that the PASID is out of its init state, which
-   incurs small but non-zero cost on every XSAVE/XRSTOR.
-
-The main downside of clearing the PASID at fpstate copy is the future,
-one-time #GP for the thread.
-
-Use the simplest approach: clear the PASID state both on clone() and
-fork().  Rely on the #GP handler for MSR population in children.
-
-Also, just clear the PASID bit from xfeatures if XSAVE is supported.
-This will have no effect on systems that do not have PASID support.  It
-is virtually zero overhead because 'dst_fpu' was just written and
-the whole thing is cache hot.
-
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
 Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
 v4:
-- Add "Reviewed-by: Thomas Gleixner <tglx@linutronix.de>" (Thomas).
+- Update the commit message to explain why init pasid to -1 and why
+  define mm_pasid_init() (Thomas)
 
 v2:
-- Rewrite changelog (Dave Hansen).
-- Move xfeature tweaking into fpu_clone() and make it unconditional
-  if XSAVE is supported (Dave Hansen).
+- Change condition to more accurate CONFIG_IOMMU_SVA (Jacob)
 
- arch/x86/kernel/fpu/core.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ include/linux/sched/mm.h | 10 ++++++++++
+ kernel/fork.c            | 10 ++--------
+ mm/init-mm.c             |  4 ++++
+ 3 files changed, 16 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
-index 8dea01ffc5c1..19821f027cb3 100644
---- a/arch/x86/kernel/fpu/core.c
-+++ b/arch/x86/kernel/fpu/core.c
-@@ -612,6 +612,13 @@ int fpu_clone(struct task_struct *dst, unsigned long clone_flags)
- 		fpu_inherit_perms(dst_fpu);
- 	fpregs_unlock();
+diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
+index aa5f09ca5bcf..c74d1edbac2f 100644
+--- a/include/linux/sched/mm.h
++++ b/include/linux/sched/mm.h
+@@ -8,6 +8,7 @@
+ #include <linux/mm_types.h>
+ #include <linux/gfp.h>
+ #include <linux/sync_core.h>
++#include <linux/ioasid.h>
  
-+	/*
-+	 * Children never inherit PASID state.
-+	 * Force it to have its init value:
-+	 */
-+	if (use_xsave())
-+		dst_fpu->fpstate->regs.xsave.header.xfeatures &= ~XFEATURE_MASK_PASID;
+ /*
+  * Routines for handling mm_structs
+@@ -433,4 +434,13 @@ static inline void membarrier_update_current_mm(struct mm_struct *next_mm)
+ }
+ #endif
+ 
++#ifdef CONFIG_IOMMU_SVA
++static inline void mm_pasid_init(struct mm_struct *mm)
++{
++	mm->pasid = INVALID_IOASID;
++}
++#else
++static inline void mm_pasid_init(struct mm_struct *mm) {}
++#endif
 +
- 	trace_x86_fpu_copy_src(src_fpu);
- 	trace_x86_fpu_copy_dst(dst_fpu);
+ #endif /* _LINUX_SCHED_MM_H */
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 6ee7551d3bd2..deacd2c17a7f 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -97,6 +97,7 @@
+ #include <linux/scs.h>
+ #include <linux/io_uring.h>
+ #include <linux/bpf.h>
++#include <linux/sched/mm.h>
+ 
+ #include <asm/pgalloc.h>
+ #include <linux/uaccess.h>
+@@ -1019,13 +1020,6 @@ static void mm_init_owner(struct mm_struct *mm, struct task_struct *p)
+ #endif
+ }
+ 
+-static void mm_init_pasid(struct mm_struct *mm)
+-{
+-#ifdef CONFIG_IOMMU_SVA
+-	mm->pasid = INIT_PASID;
+-#endif
+-}
+-
+ static void mm_init_uprobes_state(struct mm_struct *mm)
+ {
+ #ifdef CONFIG_UPROBES
+@@ -1054,7 +1048,7 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
+ 	mm_init_cpumask(mm);
+ 	mm_init_aio(mm);
+ 	mm_init_owner(mm, p);
+-	mm_init_pasid(mm);
++	mm_pasid_init(mm);
+ 	RCU_INIT_POINTER(mm->exe_file, NULL);
+ 	mmu_notifier_subscriptions_init(mm);
+ 	init_tlb_flush_pending(mm);
+diff --git a/mm/init-mm.c b/mm/init-mm.c
+index b4a6f38fb51d..fbe7844d0912 100644
+--- a/mm/init-mm.c
++++ b/mm/init-mm.c
+@@ -10,6 +10,7 @@
+ 
+ #include <linux/atomic.h>
+ #include <linux/user_namespace.h>
++#include <linux/ioasid.h>
+ #include <asm/mmu.h>
+ 
+ #ifndef INIT_MM_CONTEXT
+@@ -38,6 +39,9 @@ struct mm_struct init_mm = {
+ 	.mmlist		= LIST_HEAD_INIT(init_mm.mmlist),
+ 	.user_ns	= &init_user_ns,
+ 	.cpu_bitmap	= CPU_BITS_NONE,
++#ifdef CONFIG_IOMMU_SVA
++	.pasid		= INVALID_IOASID,
++#endif
+ 	INIT_MM_CONTEXT(init_mm)
+ };
  
 -- 
 2.35.1
