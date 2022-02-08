@@ -4,102 +4,76 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 27BD5C4332F
-	for <iommu@archiver.kernel.org>; Tue,  8 Feb 2022 14:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C58CAC433F5
+	for <iommu@archiver.kernel.org>; Tue,  8 Feb 2022 15:02:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id B202160ED9;
-	Tue,  8 Feb 2022 14:19:32 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4E722606DC;
+	Tue,  8 Feb 2022 15:02:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eVuA5zkdVauH; Tue,  8 Feb 2022 14:19:32 +0000 (UTC)
+	with ESMTP id 0TLzJi9ZrFvD; Tue,  8 Feb 2022 15:02:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 8430B607B0;
-	Tue,  8 Feb 2022 14:19:31 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 85B4760598;
+	Tue,  8 Feb 2022 15:02:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 43BC7C001A;
-	Tue,  8 Feb 2022 14:19:31 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A504DC000B
- for <iommu@lists.linux-foundation.org>; Tue,  8 Feb 2022 14:19:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 583D1C0011;
+	Tue,  8 Feb 2022 15:02:00 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AA7C2C000B
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Feb 2022 15:01:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7F1D781B23
- for <iommu@lists.linux-foundation.org>; Tue,  8 Feb 2022 14:19:29 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 86C8F606FF
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Feb 2022 15:01:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wtymNg1yJ12A for <iommu@lists.linux-foundation.org>;
- Tue,  8 Feb 2022 14:19:29 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com
- [IPv6:2607:f8b0:4864:20::1030])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 086A781B7B
- for <iommu@lists.linux-foundation.org>; Tue,  8 Feb 2022 14:19:28 +0000 (UTC)
-Received: by mail-pj1-x1030.google.com with SMTP id qe15so6904139pjb.3
- for <iommu@lists.linux-foundation.org>; Tue, 08 Feb 2022 06:19:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=message-id:date:mime-version:user-agent:subject:content-language:to
- :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=wxTG+XyoVyvm3qwt67A3uD8d+hQFZ2NnOQ/flBE0K98=;
- b=Dcro/51npE6vWkDlp954rF9hqbFflacWu4JiIGGktclCeAmxm93szVWwkjci8bhdFJ
- 36QJEAczLxpsK0jwHsOuPvdjL2WToJgY8N6aGnUP+w9Gj9WgMP5r0XsFE9yIv4NdnMlu
- qfYKz8q0A1LMRLC/dRdGUw94ANm9VgfZC+Ljakagf8CsKcv5Occ3rxLsAfjrGm5Uy37D
- 8lAMM00gBwsDDMrFyNMhI0YpEesWLlk2gvmGPe4Dpra7S+uucD57GJ1CAmsaN5RruBio
- nabdG4q6UQb6hkdxr08YJY9bZObUVDCuO/tlaF1Q2MuUGuo1A8N5HpVqWPXRQDqMcRkJ
- f2pA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:in-reply-to
- :content-transfer-encoding;
- bh=wxTG+XyoVyvm3qwt67A3uD8d+hQFZ2NnOQ/flBE0K98=;
- b=MiLoa5tV+Qwgs2P1An6PHCqoLU1Et111hvwo4MznLFyyG3HxfYZwNxVCsu5Jt3nOOv
- x4s2/TR8DhaUUaWfog9gXJw9FopigYr4+tSi2McQe9wvtVcGb0OzkEiCnjH1AINXlxW6
- 6d9dBiMoSGRN808spJlFj0tpsba5nrK+IRfCFfkYuAzbvrAL29Va6gJQkJTHXb+/epv6
- 8s+VqtsdfaO+Cx+U69KlDo6maJ1T8ct5D/6HUAIswpNzgUeTgnuzHYJWJl+ICV/3v9h7
- o8BIKMW1Hpwely7lBK8J53nqHOkVsylTzNblBaFVJCs00co4OfJQKCLvEQfEfzeCwSVj
- ohvg==
-X-Gm-Message-State: AOAM532YPj8DmnIVyoyjvSzSlA9RFeY6tOTgtbnvxIt0BBU5rmqevJ5M
- L+InKmH7PFxARYZfkH7k3LI=
-X-Google-Smtp-Source: ABdhPJz67xSgge/ra2Q7eUO/CH9AuwGGYdwz22g+8hA50Wkv9TgPYjVaIUTlf8RdSMiEj29u5mBg6A==
-X-Received: by 2002:a17:903:120e:: with SMTP id
- l14mr4691979plh.124.1644329968221; 
- Tue, 08 Feb 2022 06:19:28 -0800 (PST)
-Received: from ?IPV6:2404:f801:10:102:8000::f381? ([2404:f801:8050:1:c1::f381])
- by smtp.gmail.com with ESMTPSA id f15sm16713478pfv.189.2022.02.08.06.19.21
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 08 Feb 2022 06:19:27 -0800 (PST)
-Message-ID: <6ee926b0-5579-bb9b-da94-51d793a3d782@gmail.com>
-Date: Tue, 8 Feb 2022 22:19:19 +0800
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Fop8MzO7B8No for <iommu@lists.linux-foundation.org>;
+ Tue,  8 Feb 2022 15:01:55 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 428EC60598
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Feb 2022 15:01:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1644332515; x=1675868515;
+ h=date:from:to:cc:subject:message-id:references:
+ mime-version:in-reply-to;
+ bh=XpENSQQtkROfpCO6JNc1kJzZlo2IByE0DAYnUc+WpfQ=;
+ b=ETWQZie5gJOOGKO/QCwgxsjnfObs+oLAyNLe1iELbVK2LoNTAQnKUxEi
+ jVcLLZ752yutqSG9wU/z9mDDsYJ2AfxbEXPpegEJLG72jyYheMCVH4Key
+ U/EYUDv7BQYrCVO/HZYg7P8zkZDVYZYYd08XWq7UCX/fyVbtV7O1KMdeI
+ 7A0V0pKOJ05BNa9SBjq+RlXJRyzxNXI6pxEupfALphqjP2GIumPVyKBBJ
+ EsJHR3kh8HTV1UUhys2i1rt7IIckucmMaiG+QJvPoQgSdwFkfqGRgSP2V
+ NK9LAVq0jnWDrsUqtmpYxwxgF2Z7Boddz+Ml1v3S1T7VRknvAQo9seDl8 A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="236369590"
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; d="scan'208";a="236369590"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 08 Feb 2022 07:01:54 -0800
+X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; d="scan'208";a="484835940"
+Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
+ by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 08 Feb 2022 07:01:53 -0800
+Date: Tue, 8 Feb 2022 07:01:44 -0800
+From: Fenghua Yu <fenghua.yu@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+Message-ID: <YgKF2NDMURGq1JD1@otcwcpicx3.sc.intel.com>
+References: <20220207230254.3342514-1-fenghua.yu@intel.com>
+ <20220207230254.3342514-6-fenghua.yu@intel.com>
+ <139b9789-403f-c599-de02-3092847952c0@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] Netvsc: Call hv_unmap_memory() in the
- netvsc_device_remove()
-Content-Language: en-US
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
- KY Srinivasan <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
- Stephen Hemminger <sthemmin@microsoft.com>,
- "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
- "tglx@linutronix.de" <tglx@linutronix.de>,
- "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
- "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
- "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
- "davem@davemloft.net" <davem@davemloft.net>,
- "kuba@kernel.org" <kuba@kernel.org>, "hch@infradead.org"
- <hch@infradead.org>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
-References: <20220201163211.467423-1-ltykernel@gmail.com>
- <MWHPR21MB15935F58E55D05A171AE9ED4D7279@MWHPR21MB1593.namprd21.prod.outlook.com>
-From: Tianyu Lan <ltykernel@gmail.com>
-In-Reply-To: <MWHPR21MB15935F58E55D05A171AE9ED4D7279@MWHPR21MB1593.namprd21.prod.outlook.com>
-Cc: "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Tianyu Lan <Tianyu.Lan@microsoft.com>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <139b9789-403f-c599-de02-3092847952c0@linux.intel.com>
+Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
+ Thomas Gleixner <tglx@linutronix.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,34 +86,38 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2/3/2022 1:05 AM, Michael Kelley (LINUX) wrote:
-> From: Tianyu Lan<ltykernel@gmail.com>  Sent: Tuesday, February 1, 2022 8:32 AM
->> netvsc_device_remove() calls vunmap() inside which should not be
->> called in the interrupt context. Current code calls hv_unmap_memory()
->> in the free_netvsc_device() which is rcu callback and maybe called
->> in the interrupt context. This will trigger BUG_ON(in_interrupt())
->> in the vunmap(). Fix it via moving hv_unmap_memory() to netvsc_device_
->> remove().
-> I think this change can fail to call hv_unmap_memory() in an error case.
+On Tue, Feb 08, 2022 at 10:41:39AM +0800, Lu Baolu wrote:
+> On 2/8/22 7:02 AM, Fenghua Yu wrote:
+> > PASIDs are process wide. It was attempted to use refcounted PASIDs to
+> > free them when the last thread drops the refcount. This turned out to
+> > be complex and error prone. Given the fact that the PASID space is 20
+> > bits, which allows up to 1M processes to have a PASID associated
+> > concurrently, PASID resource exhaustion is not a realistic concern.
+> > 
+> > Therefore it was decided to simplify the approach and stick with lazy
+> > on demand PASID allocation, but drop the eager free approach and make
+> > a allocated PASID lifetime bound to the life time of the process.
+> > 
+> > Get rid of the refcounting mechanisms and replace/rename the interfaces
+> > to reflect this new approach.
+> > 
+> > Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+> > Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+> > Reviewed-by: Tony Luck <tony.luck@intel.com>
+> > ---
+> > v4:
+> > - Update the commit message (Thomas).
 > 
-> If netvsc_init_buf() fails after hv_map_memory() succeeds for the receive
-> buffer or for the send buffer, no corresponding hv_unmap_memory() will
-> be done.  The failure in netvsc_init_buf() will cause netvsc_connect_vsp()
-> to fail, so netvsc_add_device() will "goto close" where free_netvsc_device()
-> will be called.  But free_netvsc_device() no longer calls hv_unmap_memory(),
-> so it won't ever happen.   netvsc_device_remove() is never called in this case
-> because netvsc_add_device() failed.
-> 
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Hi Michael:
-       Thanks for your review. Nice catch and will fix in the next
-version.
+Thank you very much for your review, Baolu!
 
+-Fenghua
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
