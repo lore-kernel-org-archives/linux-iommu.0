@@ -1,79 +1,79 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C58CAC433F5
-	for <iommu@archiver.kernel.org>; Tue,  8 Feb 2022 15:02:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 33173C433FE
+	for <iommu@archiver.kernel.org>; Tue,  8 Feb 2022 15:19:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 4E722606DC;
-	Tue,  8 Feb 2022 15:02:06 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id A4F6540943;
+	Tue,  8 Feb 2022 15:19:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0TLzJi9ZrFvD; Tue,  8 Feb 2022 15:02:00 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id DQ00PUNHPw5w; Tue,  8 Feb 2022 15:19:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 85B4760598;
-	Tue,  8 Feb 2022 15:02:00 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 7C7C340271;
+	Tue,  8 Feb 2022 15:19:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 583D1C0011;
-	Tue,  8 Feb 2022 15:02:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 578DFC0011;
+	Tue,  8 Feb 2022 15:19:44 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AA7C2C000B
- for <iommu@lists.linux-foundation.org>; Tue,  8 Feb 2022 15:01:59 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DAD29C000B
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Feb 2022 15:19:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 86C8F606FF
- for <iommu@lists.linux-foundation.org>; Tue,  8 Feb 2022 15:01:59 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id C9CEB60736
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Feb 2022 15:19:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Fop8MzO7B8No for <iommu@lists.linux-foundation.org>;
- Tue,  8 Feb 2022 15:01:55 +0000 (UTC)
+ with ESMTP id oA3jhXwdfQQ8 for <iommu@lists.linux-foundation.org>;
+ Tue,  8 Feb 2022 15:19:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 428EC60598
- for <iommu@lists.linux-foundation.org>; Tue,  8 Feb 2022 15:01:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1644332515; x=1675868515;
- h=date:from:to:cc:subject:message-id:references:
- mime-version:in-reply-to;
- bh=XpENSQQtkROfpCO6JNc1kJzZlo2IByE0DAYnUc+WpfQ=;
- b=ETWQZie5gJOOGKO/QCwgxsjnfObs+oLAyNLe1iELbVK2LoNTAQnKUxEi
- jVcLLZ752yutqSG9wU/z9mDDsYJ2AfxbEXPpegEJLG72jyYheMCVH4Key
- U/EYUDv7BQYrCVO/HZYg7P8zkZDVYZYYd08XWq7UCX/fyVbtV7O1KMdeI
- 7A0V0pKOJ05BNa9SBjq+RlXJRyzxNXI6pxEupfALphqjP2GIumPVyKBBJ
- EsJHR3kh8HTV1UUhys2i1rt7IIckucmMaiG+QJvPoQgSdwFkfqGRgSP2V
- NK9LAVq0jnWDrsUqtmpYxwxgF2Z7Boddz+Ml1v3S1T7VRknvAQo9seDl8 A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="236369590"
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; d="scan'208";a="236369590"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 08 Feb 2022 07:01:54 -0800
-X-IronPort-AV: E=Sophos;i="5.88,353,1635231600"; d="scan'208";a="484835940"
-Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
- by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 08 Feb 2022 07:01:53 -0800
-Date: Tue, 8 Feb 2022 07:01:44 -0800
-From: Fenghua Yu <fenghua.yu@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-Message-ID: <YgKF2NDMURGq1JD1@otcwcpicx3.sc.intel.com>
-References: <20220207230254.3342514-1-fenghua.yu@intel.com>
- <20220207230254.3342514-6-fenghua.yu@intel.com>
- <139b9789-403f-c599-de02-3092847952c0@linux.intel.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org
+ [IPv6:2604:1380:4601:e00::1])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 804EE606FF
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Feb 2022 15:19:42 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by ams.source.kernel.org (Postfix) with ESMTPS id D6726B81B92;
+ Tue,  8 Feb 2022 15:19:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62CEBC004E1;
+ Tue,  8 Feb 2022 15:19:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1644333578;
+ bh=fIjxqOup6OwNvRXLtgfT5VcCzdLMcW360tWbTxHYLyo=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=A691zmXwYzGeuKQXa/N6uWG/wsfSLBJIJOtIyoGzTkIcBq2+cKkBle4kAQZ3gf+LW
+ 6sbg9V+g9m17lomD+4XR/Fq0Nz1KWjzZJ2z9bvoABFRKK4CWEsDwTS+j9diztxWY5U
+ 5UXR0x7A7qrV8mSM9G9B1Thn/AKdWiSATfqkKb9Oq0w8I+1x5yQItdfX9CJ3aHyB0u
+ c+ouxKI86H33fVqpGBCrVmopDZImiC4X5ciw2dWYaI6AzSGK48MqDIEisJYMwKA0h3
+ FqxURq4I9v4S9ZRK+D6/wRH6yQ9iL48Qy1h7Yr29kRktyncaj9v2KXS2q3qHR2ftsQ
+ 7290lS/6N5klA==
+Date: Tue, 8 Feb 2022 15:19:32 +0000
+From: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 1/2] iommu/arm-smmu: Use platform_irq_count() to get the
+ interrupt count
+Message-ID: <20220208151932.GB1802@willie-the-truck>
+References: <20211223130046.9365-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20211223130046.9365-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <f9efc8e8-9dc6-8a80-15bb-bc2d9aaf60cb@arm.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <139b9789-403f-c599-de02-3092847952c0@linux.intel.com>
-Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Tony Luck <tony.luck@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
- Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
- Thomas Gleixner <tglx@linutronix.de>
+In-Reply-To: <f9efc8e8-9dc6-8a80-15bb-bc2d9aaf60cb@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Rob Clark <robdclark@chromium.org>,
+ "Isaac J. Manjarres" <isaacm@codeaurora.org>, Xin Tan <tanxin.ctf@gmail.com>,
+ Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Rob Herring <robh+dt@kernel.org>, Prabhakar <prabhakar.csengg@gmail.com>,
+ Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,33 +91,61 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Feb 08, 2022 at 10:41:39AM +0800, Lu Baolu wrote:
-> On 2/8/22 7:02 AM, Fenghua Yu wrote:
-> > PASIDs are process wide. It was attempted to use refcounted PASIDs to
-> > free them when the last thread drops the refcount. This turned out to
-> > be complex and error prone. Given the fact that the PASID space is 20
-> > bits, which allows up to 1M processes to have a PASID associated
-> > concurrently, PASID resource exhaustion is not a realistic concern.
+On Thu, Dec 23, 2021 at 02:14:35PM +0000, Robin Murphy wrote:
+> On 2021-12-23 13:00, Lad Prabhakar wrote:
+> > platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
+> > allocation of IRQ resources in DT core code, this causes an issue
+> > when using hierarchical interrupt domains using "interrupts" property
+> > in the node as this bypasses the hierarchical setup and messes up the
+> > irq chaining.
 > > 
-> > Therefore it was decided to simplify the approach and stick with lazy
-> > on demand PASID allocation, but drop the eager free approach and make
-> > a allocated PASID lifetime bound to the life time of the process.
-> > 
-> > Get rid of the refcounting mechanisms and replace/rename the interfaces
-> > to reflect this new approach.
-> > 
-> > Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-> > Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
-> > Reviewed-by: Tony Luck <tony.luck@intel.com>
-> > ---
-> > v4:
-> > - Update the commit message (Thomas).
+> > In preparation for removal of static setup of IRQ resource from DT core
+> > code use platform_get_irq_count().
 > 
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Nit: platform_irq_count()
+> 
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > ---
+> >   drivers/iommu/arm/arm-smmu/arm-smmu.c | 12 ++++++------
+> >   1 file changed, 6 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > index 4bc75c4ce402..4844cd075644 100644
+> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> > @@ -2105,12 +2105,12 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+> >   	if (IS_ERR(smmu))
+> >   		return PTR_ERR(smmu);
+> > -	num_irqs = 0;
+> > -	while ((res = platform_get_resource(pdev, IORESOURCE_IRQ, num_irqs))) {
+> > -		num_irqs++;
+> > -		if (num_irqs > smmu->num_global_irqs)
+> > -			smmu->num_context_irqs++;
+> > -	}
+> > +	num_irqs = platform_irq_count(pdev);
+> > +	if (num_irqs < 0)
+> > +		return num_irqs;
+> > +
+> > +	if (num_irqs > smmu->num_global_irqs)
+> > +		smmu->num_context_irqs += (num_irqs - smmu->num_global_irqs);
+> 
+> This seems a bit overcomplicated. I reckon:
+> 
+> 	smmu->num_context_irqs = num_irqs - smmu->num_global_irqs;
+> 	if (num_irqs <= smmu->num_global_irqs) {
+> 		dev_err(...
+> 
+> should do it.
+> 
+> However, FYI I have some patches refactoring most of the IRQ stuff here that
+> I plan to post next cycle (didn't quite have time to get them done for 5.17
+> as I'd hoped...), so unless this needs to go in right now as an urgent fix,
+> I'm happy to take care of removing platform_get_resource() as part of that
+> if it's easier.
 
-Thank you very much for your review, Baolu!
+Did you get anywhere with this? December 23rd is long forgotten by now ;)
 
--Fenghua
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
