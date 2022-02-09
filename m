@@ -1,68 +1,69 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0C155C433EF
-	for <iommu@archiver.kernel.org>; Wed,  9 Feb 2022 18:36:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6649BC433F5
+	for <iommu@archiver.kernel.org>; Wed,  9 Feb 2022 18:39:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 89D6640396;
-	Wed,  9 Feb 2022 18:36:00 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 0B6AC415EA;
+	Wed,  9 Feb 2022 18:39:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RxTmg_yUsr6s; Wed,  9 Feb 2022 18:35:59 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mi-ge0gE0taS; Wed,  9 Feb 2022 18:39:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 27FB8400C5;
-	Wed,  9 Feb 2022 18:35:59 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id B3703410C1;
+	Wed,  9 Feb 2022 18:39:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 05A57C001A;
-	Wed,  9 Feb 2022 18:35:59 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BC0E8C000B
- for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:35:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 82BF4C001A;
+	Wed,  9 Feb 2022 18:39:28 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DE63EC000B
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:39:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 8C81360AA4
- for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:35:57 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id BF769403A7
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:39:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8UZ8V4SURLQR for <iommu@lists.linux-foundation.org>;
- Wed,  9 Feb 2022 18:35:56 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id PB5HtVKAxV1a for <iommu@lists.linux-foundation.org>;
+ Wed,  9 Feb 2022 18:39:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A81A060A88
- for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:35:56 +0000 (UTC)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org
+ [IPv6:2604:1380:4641:c500::1])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 8EAF640239
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:39:25 +0000 (UTC)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id 9EC8361C12;
- Wed,  9 Feb 2022 18:35:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23537C340E7;
- Wed,  9 Feb 2022 18:35:54 +0000 (UTC)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id A66576006F;
+ Wed,  9 Feb 2022 18:39:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27A36C340ED;
+ Wed,  9 Feb 2022 18:39:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1644431755;
- bh=tWskZiTXrDXJWug6p3w4QO+WmWVMfNU5/wNXLY9woOk=;
+ s=k20201202; t=1644431964;
+ bh=13fe4Gu64rL6bhmzbwQ7D7+42vxeVPMAYd9meoU4fuM=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=HTHv+5iBztik2B2sScx4eoGEzS8LS50I+eV+mfmtx/0fVQiZryr19owxRFCY3nENZ
- bTeHe4erkXvaOjOn4V0FnHylHFGEDWWA6Kr/L9/giV/2wpCMFG+207nkt26yEiuqHL
- dA/serwefA3nWjBSWc1PfKRkFZ3ZrLjwCtc9feTgt8AIiBWzjRUKrA76FI2j4G6PJt
- 5BU7G5SyjUFFHdqunRZvR4U8JWv2iUhsm+fuqsfxiniKTV4zbB6b2zmGPF4UpwQqQw
- pRgZxEvf8iE9z+wmczYAWpUp7A0TmqfftVf+j1Z/fzHH79QhvXuKZkqkZMD3UwjqbC
- BJ7HLIrqG+q9w==
+ b=u6xWgarQVmVNCjnGdwHwUa0cXNH5EIywIS6Sl6GvhWM45pmJmRt31TSlIg1a0WHs2
+ i58maxkffbG08e7eUPDaTen3+2b3GXmlEHBWPUOg89RFuJ8WvaPipRZfUr92x5b6XH
+ OXVBAQLt9dJej4mLHgpofRbaaFDJ8uzyeWh0RblxC1cbEAehBf1djovWQXHzjQkB+P
+ M/+uiO1k5yHsAdlnIutPpFGqALQfZOH8NIVTjTbfbdE24UVCClGO6QEXLgxv6wWbUR
+ Tzwi2XJDdLnmnBgXExG6l2uPIaufbnlKKkcDxUWhA2yosG6pUnmLHYLZAj/PD9wfY/
+ OceMCeFpRwc6w==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 24/42] iommu: Fix potential use-after-free during
+Subject: [PATCH AUTOSEL 5.15 19/36] iommu: Fix potential use-after-free during
  probe
-Date: Wed,  9 Feb 2022 13:32:56 -0500
-Message-Id: <20220209183335.46545-24-sashal@kernel.org>
+Date: Wed,  9 Feb 2022 13:37:42 -0500
+Message-Id: <20220209183759.47134-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209183335.46545-1-sashal@kernel.org>
-References: <20220209183335.46545-1-sashal@kernel.org>
+In-Reply-To: <20220209183759.47134-1-sashal@kernel.org>
+References: <20220209183759.47134-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -208,10 +209,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8b86406b71627..3632bf8b4031c 100644
+index f62fb6a58f109..7f409e9eea4b7 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -207,9 +207,14 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
+@@ -206,9 +206,14 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
  
  static void dev_iommu_free(struct device *dev)
  {
