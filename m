@@ -1,139 +1,66 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 34330C433EF
-	for <iommu@archiver.kernel.org>; Wed,  9 Feb 2022 13:43:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8F005C433F5
+	for <iommu@archiver.kernel.org>; Wed,  9 Feb 2022 13:53:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C73F083032;
-	Wed,  9 Feb 2022 13:43:16 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 434814018B;
+	Wed,  9 Feb 2022 13:53:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0l1Bk_m6GFDx; Wed,  9 Feb 2022 13:43:16 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id EZ-p7_V6DxEQ; Wed,  9 Feb 2022 13:53:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id B9DA583022;
-	Wed,  9 Feb 2022 13:43:15 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 0C9A0401A2;
+	Wed,  9 Feb 2022 13:53:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D661C001A;
-	Wed,  9 Feb 2022 13:43:15 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7BCA7C000B
- for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 13:43:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E6CEFC001A;
+	Wed,  9 Feb 2022 13:53:02 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DD986C000B
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 13:53:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 6886140423
- for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 13:43:14 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id CC938401A2
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 13:53:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qKXEFu-8r0eB for <iommu@lists.linux-foundation.org>;
- Wed,  9 Feb 2022 13:43:12 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam12on2061b.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:fe5b::61b])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 402B34012E
- for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 13:43:12 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nYZusAXeUzmS6YRGcPiDnLoRDEkXqj5sbOi8cKGSpjjFIM6XSXtnDrJaFt2ZaMBFldvMgNxR5oT41aQhTu/P8TErxuRNqZ/1h2IpUOkGtVaAjV7pjGSUld4n/arAEPYlcLmF51NYdR3KQl3jqSvecokVNParwCKOpLPNGffZKrq1DYymQNoAdpyA+I+LzPc8fQeg7vDd2jtFsbClGp71FBYTv/wOmVzVM3m/mEsFN4W6lpRl6BmwgaaY6dx4JlDIj5QCxzrlL3xZinCUnRVISxkdeepFabNoYR5+bxd3VQig1A2tLZq6drVdIvjxYCavYrrNY/Fkqh5kTkCYRP/ujg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ScznlaNlmaEhDn/1H0WI/7SaxVry+0XPViWDGiyM6l0=;
- b=F58/AxtPrdpHqGEZtUIG/PrEzsUKSm2yoU7grFtSnIxaphDLuik9o6VDzIw+tQsJAq4oWmJmzl6/F6CuEEqTH4nr8Kr8yjlZk10RQ+X7/Lu1GVuGXshsobEth+lBrjePoCYjj7Yuh8zyNYmPGTSzbsAnuL9hQ8FlAIAqCp2KdUwNgY0xb7jfN4XVsbI/RmkzrzL/Ab/57pMebAl5HIIK+Q450lKSoKocT08kwC9oxotopHib9dqNMGjpJzR5rijouh05fhVzIkox8UEyAFZGYL0Z0iwc017fHedrz8x7JJvmhKbnyI2ZPQVMqsGVOBeg0Jp/dJEm4mz7dZVufw4B4A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ScznlaNlmaEhDn/1H0WI/7SaxVry+0XPViWDGiyM6l0=;
- b=riECeG1jowz17chHy6t5OdSKr9B/ycUHMQqbOIAwgQYkPqLwCd41gJEBaocsFeeBSR/E8vDfMTcYwlJAtOXk5G1Ot6TvtV2x1J6KxsXL0V1kdXBfAgutWdLaBHjbr65p0mbBjDbH6F8q6fX3YI2XLBt50gz6qQc6YK+r32ZM/VLPClYsaL5JgGSQh4rt49uTswJQwribBvgBuaDbG16QhGum8VE2pt6WZmf1tDxIB1OPW3gkg154R1BQHCo+7BlB/SHFuQbxDHIU/GsreNTn7mmYUXiBQoe2/2iO0zG8k5iGbkgaArx0bHJjlUbQNarlLtwSoGY/Sd+atZ+Qu0c/+A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by DM6PR12MB4988.namprd12.prod.outlook.com (2603:10b6:5:16a::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.11; Wed, 9 Feb
- 2022 13:43:08 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::e8f4:9793:da37:1bd3]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::e8f4:9793:da37:1bd3%4]) with mapi id 15.20.4975.011; Wed, 9 Feb 2022
- 13:43:08 +0000
-Date: Wed, 9 Feb 2022 09:43:07 -0400
-To: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH v2 10/10] iommu: Split struct iommu_ops
-Message-ID: <20220209134307.GB4160@nvidia.com>
-References: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
- <20220208012559.1121729-11-baolu.lu@linux.intel.com>
- <YgNjNu4kVbkruvZN@infradead.org>
-Content-Disposition: inline
-In-Reply-To: <YgNjNu4kVbkruvZN@infradead.org>
-X-ClientProxiedBy: BLAPR03CA0055.namprd03.prod.outlook.com
- (2603:10b6:208:32d::30) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id CrSrRsHJ14-a for <iommu@lists.linux-foundation.org>;
+ Wed,  9 Feb 2022 13:53:00 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp4.osuosl.org (Postfix) with ESMTP id D11784018B
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 13:53:00 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 089BB1FB;
+ Wed,  9 Feb 2022 05:53:00 -0800 (PST)
+Received: from [10.57.70.89] (unknown [10.57.70.89])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0AE473F70D;
+ Wed,  9 Feb 2022 05:52:56 -0800 (PST)
+Message-ID: <290a89f0-8318-6130-468c-6412add62cfb@arm.com>
+Date: Wed, 9 Feb 2022 13:52:55 +0000
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b9fd76e7-89ff-47f1-a491-08d9ebd21b54
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4988:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB498877045DD449D7B84FFD24C22E9@DM6PR12MB4988.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: urAdlVpzZdtIzslhMf6oKfGMfzkHHc7fSFWjTP1CiAD6t2dc4OrqtGJzmkKwjQt7go4A9uVVD9fDto40SgKBnmMP2w0vQxdgBEFTdcMTny1hgGEXVO62RV/u9SBTmO+7Q0Oi6fUUo8Cq62Y9hWiKNjFt+LAsc34IsPwsreY5iR8Okh3YVaBoG4pAWuPJ7mI3H2PsXG/uE3Md+d2Si/EzLSWU2RMuGtfVxVmYUrm59phFngTKkwUFZIBHc1Kvt7hJTeFDBzrcgf4MPgCmg7DwOKgeYW6XJ10o4lzezvPhAC7F7JVdpBdMSuQeckQ4DhCM15um+IDGEipBD8NSFpj93CWNrNeog2YsUvJbw35etm9ujWt75yKiVJiflsemFlKbu3CmC6NMxP8RwfbY6DY6GCgasvB91YTT1SB1Z1+RHMztoN1s7+oKCoEXdtS4f1P2UWDVeW2vj5Szhk5m3lQeKts/Z3PKW0qzApfiKZ1GTkO6EZnhV/uzo5qAZsjIappbOjzH0zSUvOTETa5o8H5J5vIdZQd4SzxPAsYkzP9NcGdGnS/V6Fdrpxk6AEfva9sPsx8/6rScUFw3iCubEazXnTlnsNmHjXYuFYUVh+amzkH+x8Z9DxwcqX5qsSDynMN+kMddI8NjzP/wSYhzGWatsQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(54906003)(4326008)(66556008)(66946007)(66476007)(6916009)(8676002)(316002)(38100700002)(36756003)(8936002)(5660300002)(4744005)(7416002)(86362001)(6512007)(6506007)(2616005)(26005)(186003)(1076003)(508600001)(33656002)(2906002)(6486002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rJpStdMCwXIOux6ybNoOd5dLFqk/q1WSuWu4H6X0cadqKZFhpVqGT/DCzxdj?=
- =?us-ascii?Q?DBPQYrXc35Yrf/UuHnrg/53RtEYDPf3Ra/1KE8jHrSJwGIanVuXphz3pLhV+?=
- =?us-ascii?Q?ZO9+T1p5SlgJ00TmJB1gmXVv28R8jKAphj35wKFXfEJz9x5SiezViP2ixRhW?=
- =?us-ascii?Q?gH87HrFMQ8Y+4VeJhG1Qez2DrXCj5ZXN8kZHqIFClLxggxlgm1oiz2gXmM9K?=
- =?us-ascii?Q?WjjbRy5bpQ29XU4srV8P6Txo+jPdFN/krifWALL/qMQLiWboGuCcaes8hGpc?=
- =?us-ascii?Q?IZeaLm2YBW8oW9ivi4z4X3e3OZ2dHGXEhQ1mAVT932oFduyQiw3Gm6AsTARD?=
- =?us-ascii?Q?pWvH1hSjmc2/K9GgmRCci9O5IQSCNhif7u0Dl7Fs1soFHvYo4KiyJi6lW1YZ?=
- =?us-ascii?Q?UT5POvfAwMeTf71mxDDiF47IyG6GHqMI3YP7f0fzg8w6KNPfZIqNQ14xQ3Ce?=
- =?us-ascii?Q?/BS0VD6eGHU44KQHXRIGLktAhXyTK/PjVaqiR608QZ8BGCEwm7I+rOampGan?=
- =?us-ascii?Q?jwYdt3EayJWDWn5vZ26NaS8D03kGsk6QZQKRjxne9ZoB//boFG4FsiN5Fng8?=
- =?us-ascii?Q?TXpQLT/yEzctLN/QUv0O07g2YNbz5cjM0GuLYX7FN/rm0O0JZ0GPQycCplQV?=
- =?us-ascii?Q?jap6YO6wS/bLbxaRaD1VmDYML7+gtrq9OgcM5p6zQIuLLtErWiFru7YeHvHi?=
- =?us-ascii?Q?Bt6YgGKxK9PpVLhGR7Cp6fCHJiz53XMM7o1nnT6FRVO4acMQxENex+bxQBRA?=
- =?us-ascii?Q?C2j+NnjNcNi9Vmy89aM+iAm4jZxKpTbxMALyF5SduDcIfL/oPawYiuwNRdBo?=
- =?us-ascii?Q?9OD/0c5yLTtN7OJUwJ8I/57B8ZwOruQok6Q1F43QUDItSBenCs5yEXvpQKOF?=
- =?us-ascii?Q?MrYtgQsoYA98jozmiQOrGCG59/xLMtvZYCUsv6+JZ/NsRns42qNcsRbQkNER?=
- =?us-ascii?Q?4H5ByIZ9Lyx9ykwxLFfj2JIcfWnj/dfhy/4TMDqmDekTF4lh+RDgpIj39X/s?=
- =?us-ascii?Q?ApffQMnKlDg9WJsZ26n0faErJsrsWFcwRuQ6C85iNUpdCl9u0QWZea34D0HZ?=
- =?us-ascii?Q?AYIoxtX+zuWTlj1j0vS4HIhmpwDCoY23YAxdn85vUDRW8R6PVe++QjakUp5G?=
- =?us-ascii?Q?9tShc+QAi211wUgQ1h8kwfZB84g6jXahfYsOZz/WXKgDqk+h+LThPE2fv/mH?=
- =?us-ascii?Q?qhw0/SYO7qGBol8sLVZycw15L6iOeaRFhF3MyOaAW4Cc+BoLxRE+fPWBM6is?=
- =?us-ascii?Q?fe/0sDEzGnJ5egVLxpuHNxWnWMMIl12RF7gdohpWf9YbwukrsLF9Tg3+3Ws4?=
- =?us-ascii?Q?fQFNmj0IcfTxPJWKKE/bBUzwKNW58umHD9iIzdamLfnVVoKbSHvdyJTO4ook?=
- =?us-ascii?Q?V2Jkgycs9iu/z8lIrzEqz4Ow8u8Bct52dZaaEFmuHIdnv/KhzYys2C9d0Mmu?=
- =?us-ascii?Q?fwGhoMdFq4v4r3t28JafeRhIMHLGniJkQeua89vLRkX424s4XlCz855dZnPn?=
- =?us-ascii?Q?hYPuip3AJotL9lbvvj2OTtTQOtu6QVS/WUv/FDMqGUbtqPof/iI1JOaNcsoA?=
- =?us-ascii?Q?jmz9y6RJUbw+gGL/1OE=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b9fd76e7-89ff-47f1-a491-08d9ebd21b54
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 13:43:08.4764 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: aMslFsjyO2H/RCltwh+wz30zZUzP/bNqfLHQcYR7UdOQ2Q3SoOLD2axClZa8ea7z
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4988
-Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- David Airlie <airlied@linux.ie>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v2 08/10] iommu: Remove unused argument in
+ is_attach_deferred
+Content-Language: en-GB
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Ben Skeggs <bskeggs@redhat.com>, Kevin Tian <kevin.tian@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>
+References: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
+ <20220208012559.1121729-9-baolu.lu@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220208012559.1121729-9-baolu.lu@linux.intel.com>
+Cc: David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Jonathan Hunter <jonathanh@nvidia.com>,
  Alex Williamson <alex.williamson@redhat.com>,
- Thierry Reding <thierry.reding@gmail.com>, Ben Skeggs <bskeggs@redhat.com>,
- Daniel Vetter <daniel@ffwll.ch>, Jonathan Hunter <jonathanh@nvidia.com>,
- Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
+ Thierry Reding <thierry.reding@gmail.com>,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -146,32 +73,157 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Feb 08, 2022 at 10:46:14PM -0800, Christoph Hellwig wrote:
-> On Tue, Feb 08, 2022 at 09:25:59AM +0800, Lu Baolu wrote:
-> > Move the domain specific operations out of struct iommu_ops into a new
-> > structure that only has domain specific operations. This solves the
-> > problem of needing to know if the method vector for a given operation
-> > needs to be retrieved from the device or the domain. Logically the domain
-> > ops are the ones that make sense for external subsystems and endpoint
-> > drivers to use, while device ops, with the sole exception of domain_alloc,
-> > are IOMMU API internals.
+On 2022-02-08 01:25, Lu Baolu wrote:
+> The is_attach_deferred iommu_ops callback is a device op. The domain
+> argument is unnecessary and never used. Remove it to make code clean.
 > 
-> I can't say I like the default_domain_ops concept all that much, but
-> the split itself looks like a good idea and done nicely.
+> Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>   include/linux/iommu.h         |  2 +-
+>   drivers/iommu/amd/amd_iommu.h |  3 +--
+>   drivers/iommu/amd/iommu.c     |  3 +--
+>   drivers/iommu/amd/iommu_v2.c  |  2 +-
+>   drivers/iommu/intel/iommu.c   |  3 +--
+>   drivers/iommu/iommu.c         | 15 ++++++---------
+>   6 files changed, 11 insertions(+), 17 deletions(-)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index eb2684f95018..47ca7eca5d7b 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -269,7 +269,7 @@ struct iommu_ops {
+>   	void (*put_resv_regions)(struct device *dev, struct list_head *list);
+>   
+>   	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
+> -	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
+> +	bool (*is_attach_deferred)(struct device *dev);
+>   
+>   	/* Per device IOMMU features */
+>   	bool (*dev_has_feat)(struct device *dev, enum iommu_dev_features f);
+> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+> index 416815a525d6..3b2f06b7aca6 100644
+> --- a/drivers/iommu/amd/amd_iommu.h
+> +++ b/drivers/iommu/amd/amd_iommu.h
+> @@ -116,8 +116,7 @@ void amd_iommu_domain_clr_pt_root(struct protection_domain *domain)
+>   
+>   
+>   extern bool translation_pre_enabled(struct amd_iommu *iommu);
+> -extern bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
+> -					 struct device *dev);
+> +extern bool amd_iommu_is_attach_deferred(struct device *dev);
+>   extern int __init add_special_device(u8 type, u8 id, u16 *devid,
+>   				     bool cmd_line);
+>   
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index 461f1844ed1f..37f2fbb4b129 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -2215,8 +2215,7 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+>   	list_add_tail(&region->list, head);
+>   }
+>   
+> -bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
+> -				  struct device *dev)
+> +bool amd_iommu_is_attach_deferred(struct device *dev)
+>   {
+>   	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
+>   
+> diff --git a/drivers/iommu/amd/iommu_v2.c b/drivers/iommu/amd/iommu_v2.c
+> index 58da08cc3d01..7c94ec05d289 100644
+> --- a/drivers/iommu/amd/iommu_v2.c
+> +++ b/drivers/iommu/amd/iommu_v2.c
+> @@ -537,7 +537,7 @@ static int ppr_notifier(struct notifier_block *nb, unsigned long e, void *data)
+>   	ret = NOTIFY_DONE;
+>   
+>   	/* In kdump kernel pci dev is not initialized yet -> send INVALID */
+> -	if (amd_iommu_is_attach_deferred(NULL, &pdev->dev)) {
+> +	if (amd_iommu_is_attach_deferred(&pdev->dev)) {
+>   		amd_iommu_complete_ppr(pdev, iommu_fault->pasid,
+>   				       PPR_INVALID, tag);
+>   		goto out;
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 2b5f4e57a8bb..80f1294be634 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -5052,8 +5052,7 @@ intel_iommu_dev_disable_feat(struct device *dev, enum iommu_dev_features feat)
+>   	}
+>   }
+>   
+> -static bool intel_iommu_is_attach_deferred(struct iommu_domain *domain,
+> -					   struct device *dev)
+> +static bool intel_iommu_is_attach_deferred(struct device *dev)
+>   {
+>   	return attach_deferred(dev);
 
-I agree, but don't think it is worth aruging about. The split is nice
-so:
+Seems like there's no need to wrap this now?
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Robin.
 
-Jason
+>   }
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index de593a9cc09c..3dff30ddebdd 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -825,13 +825,12 @@ static int iommu_create_device_direct_mappings(struct iommu_group *group,
+>   	return ret;
+>   }
+>   
+> -static bool iommu_is_attach_deferred(struct iommu_domain *domain,
+> -				     struct device *dev)
+> +static bool iommu_is_attach_deferred(struct device *dev)
+>   {
+>   	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>   
+>   	if (ops->is_attach_deferred)
+> -		return ops->is_attach_deferred(domain, dev);
+> +		return ops->is_attach_deferred(dev);
+>   
+>   	return false;
+>   }
+> @@ -888,7 +887,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+>   
+>   	mutex_lock(&group->mutex);
+>   	list_add_tail(&device->list, &group->devices);
+> -	if (group->domain  && !iommu_is_attach_deferred(group->domain, dev))
+> +	if (group->domain  && !iommu_is_attach_deferred(dev))
+>   		ret = __iommu_attach_device(group->domain, dev);
+>   	mutex_unlock(&group->mutex);
+>   	if (ret)
+> @@ -1743,7 +1742,7 @@ static int iommu_group_do_dma_attach(struct device *dev, void *data)
+>   	struct iommu_domain *domain = data;
+>   	int ret = 0;
+>   
+> -	if (!iommu_is_attach_deferred(domain, dev))
+> +	if (!iommu_is_attach_deferred(dev))
+>   		ret = __iommu_attach_device(domain, dev);
+>   
+>   	return ret;
+> @@ -2018,9 +2017,7 @@ EXPORT_SYMBOL_GPL(iommu_attach_device);
+>   
+>   int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
+>   {
+> -	const struct iommu_ops *ops = dev_iommu_ops(dev);
+> -
+> -	if (ops->is_attach_deferred && ops->is_attach_deferred(domain, dev))
+> +	if (iommu_is_attach_deferred(dev))
+>   		return __iommu_attach_device(domain, dev);
+>   
+>   	return 0;
+> @@ -2029,7 +2026,7 @@ int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
+>   static void __iommu_detach_device(struct iommu_domain *domain,
+>   				  struct device *dev)
+>   {
+> -	if (iommu_is_attach_deferred(domain, dev))
+> +	if (iommu_is_attach_deferred(dev))
+>   		return;
+>   
+>   	if (unlikely(domain->ops->detach_dev == NULL))
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
