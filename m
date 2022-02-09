@@ -1,75 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AE69AC433F5
-	for <iommu@archiver.kernel.org>; Wed,  9 Feb 2022 18:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C8C08C433EF
+	for <iommu@archiver.kernel.org>; Wed,  9 Feb 2022 18:58:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 6C00E41511;
-	Wed,  9 Feb 2022 18:42:34 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 64ED6404EE;
+	Wed,  9 Feb 2022 18:58:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6_0_vzCV7t7J; Wed,  9 Feb 2022 18:42:33 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 334D1414A2;
-	Wed,  9 Feb 2022 18:42:33 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 07F50C001A;
-	Wed,  9 Feb 2022 18:42:33 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BF194C000B
- for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:42:31 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id AAFA8403A7
- for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:42:31 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mxsH4j2CZiEw for <iommu@lists.linux-foundation.org>;
- Wed,  9 Feb 2022 18:42:30 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 916B9400C5
- for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:42:30 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id 56D346129D;
- Wed,  9 Feb 2022 18:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8BA5C340ED;
- Wed,  9 Feb 2022 18:42:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1644432148;
- bh=suJKmzrOF/tZPhzi4HoXLU0tOFV3oTTcddXjrt1lGu8=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=pl2coBZ2wriT7RDsF6Lr82T5oDBnQMVgQwVwE6sN8+/Hy1C7p9mUqiwYTY1fknctX
- /0vLr3pChnLSDxSxM5UXBOoTwFXGDk4ID2GkSHRTbDklpmCDVfEXTXIu4LU/KH1WXn
- tOX8Lomx75UpU7GlhBhfsb3uAxNXodVUE1OfXDCilAxPm/VxUV+FzFuH3SSpKpUHNP
- jEjQgA0rQrxKh2XnO2Urn54ia4ACY6SQZGRuASMBYBYaeTlc3UIMQAno+Sb84rIPlv
- GxHe4wVdDY1g1P7oUzu4gwlec4kaEcS3bMgisY6RnYtTgZd2rO1YZ3O5IPHZ5/cyoe
- QjrYlKNmwVuYQ==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 17/27] iommu: Fix potential use-after-free during
- probe
-Date: Wed,  9 Feb 2022 13:40:53 -0500
-Message-Id: <20220209184103.47635-17-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209184103.47635-1-sashal@kernel.org>
-References: <20220209184103.47635-1-sashal@kernel.org>
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 30n-d1--L6BT; Wed,  9 Feb 2022 18:58:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 1CFA3403A7;
+	Wed,  9 Feb 2022 18:58:29 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E31B7C001A;
+	Wed,  9 Feb 2022 18:58:28 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 05A52C000B
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:58:27 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id D768960681
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:58:26 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rmezLR8rB4bt for <iommu@lists.linux-foundation.org>;
+ Wed,  9 Feb 2022 18:58:26 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com
+ [209.85.210.43])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 4B1766060A
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:58:26 +0000 (UTC)
+Received: by mail-ot1-f43.google.com with SMTP id
+ l43-20020a9d1cab000000b005aa50ff5869so2221085ota.0
+ for <iommu@lists.linux-foundation.org>; Wed, 09 Feb 2022 10:58:26 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=kfS2tc0AzsIzDQltvbOtE1I0l9vkTyfE/J6yUpGln0c=;
+ b=eMnPEsnadM46V0Ufum4e8ns1B1Je7Vwuu9KuwGNBui+Ti9n2FZMAQz0eWc99NlWjlk
+ W0CIHUZr/I+h9d+f/CA/SVdHei8IRL08+aZxepQ6YBbmI6fWb2NZgK7C92ZWPL1l2JRT
+ w3KuptXbYOssIrx2flR4Jr7sCgX3igoZZ6+OtUx3qamzkriFS/VhtmdEhUFqhPQDMeUM
+ fGCWv5l4rKDpTcbARxKPBAKk9KOfCtG3a1IhvPMTfpDNLnPSFveswc6NzTdaP8Z5hrwa
+ PdeMi5M+sfLf9OtN2TGU/d675bwv4W+1q/wPErOhjeV/yqhFudmG68/NLIafj8foeIrS
+ JstQ==
+X-Gm-Message-State: AOAM530P0ZdFqJ8/pmVr21KUr8DohLtnDt5o962E2fXH73yLqZyVP2Gn
+ 0maw2ZmLUMnDIcubU+ZYMg==
+X-Google-Smtp-Source: ABdhPJy1QLereUHPHn+KQEWWdGdMvIbLw4PjCtA2U9SLf9F3FBDMGU46oKwFhWmbysAO9gyuABLqbA==
+X-Received: by 2002:a05:6830:1019:: with SMTP id
+ a25mr1520526otp.28.1644433105193; 
+ Wed, 09 Feb 2022 10:58:25 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net.
+ [66.90.148.213])
+ by smtp.gmail.com with ESMTPSA id n24sm7838348oao.40.2022.02.09.10.58.23
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 09 Feb 2022 10:58:24 -0800 (PST)
+Received: (nullmailer pid 692950 invoked by uid 1000);
+ Wed, 09 Feb 2022 18:58:23 -0000
+Date: Wed, 9 Feb 2022 12:58:23 -0600
+From: Rob Herring <robh@kernel.org>
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: Re: [PATCH v3 1/2] dt-bindings: iommu: renesas,ipmmu-vmsa: add
+ r8a779f0 support
+Message-ID: <YgQOz+YIkWJJFp/M@robh.at.kernel.org>
+References: <20220208002030.1319984-1-yoshihiro.shimoda.uh@renesas.com>
+ <20220208002030.1319984-2-yoshihiro.shimoda.uh@renesas.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, Joerg Roedel <jroedel@suse.de>,
- Robin Murphy <robin.murphy@arm.com>,
- Vijayanand Jitta <quic_vjitta@quicinc.com>, iommu@lists.linux-foundation.org,
- will@kernel.org
+Content-Disposition: inline
+In-Reply-To: <20220208002030.1319984-2-yoshihiro.shimoda.uh@renesas.com>
+Cc: devicetree@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>,
+ linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org,
+ robh+dt@kernel.org, will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,150 +93,18 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Vijayanand Jitta <quic_vjitta@quicinc.com>
+On Tue, 08 Feb 2022 09:20:29 +0900, Yoshihiro Shimoda wrote:
+> Document the compatible values for the IPMMU-VMSA blocks in
+> the Renesas R-Car S4-8 (R8A779F0) SoC and R-Car Gen4.
+> 
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  .../devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml         | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
 
-[ Upstream commit b54240ad494300ff0994c4539a531727874381f4 ]
-
-Kasan has reported the following use after free on dev->iommu.
-when a device probe fails and it is in process of freeing dev->iommu
-in dev_iommu_free function, a deferred_probe_work_func runs in parallel
-and tries to access dev->iommu->fwspec in of_iommu_configure path thus
-causing use after free.
-
-BUG: KASAN: use-after-free in of_iommu_configure+0xb4/0x4a4
-Read of size 8 at addr ffffff87a2f1acb8 by task kworker/u16:2/153
-
-Workqueue: events_unbound deferred_probe_work_func
-Call trace:
- dump_backtrace+0x0/0x33c
- show_stack+0x18/0x24
- dump_stack_lvl+0x16c/0x1e0
- print_address_description+0x84/0x39c
- __kasan_report+0x184/0x308
- kasan_report+0x50/0x78
- __asan_load8+0xc0/0xc4
- of_iommu_configure+0xb4/0x4a4
- of_dma_configure_id+0x2fc/0x4d4
- platform_dma_configure+0x40/0x5c
- really_probe+0x1b4/0xb74
- driver_probe_device+0x11c/0x228
- __device_attach_driver+0x14c/0x304
- bus_for_each_drv+0x124/0x1b0
- __device_attach+0x25c/0x334
- device_initial_probe+0x24/0x34
- bus_probe_device+0x78/0x134
- deferred_probe_work_func+0x130/0x1a8
- process_one_work+0x4c8/0x970
- worker_thread+0x5c8/0xaec
- kthread+0x1f8/0x220
- ret_from_fork+0x10/0x18
-
-Allocated by task 1:
- ____kasan_kmalloc+0xd4/0x114
- __kasan_kmalloc+0x10/0x1c
- kmem_cache_alloc_trace+0xe4/0x3d4
- __iommu_probe_device+0x90/0x394
- probe_iommu_group+0x70/0x9c
- bus_for_each_dev+0x11c/0x19c
- bus_iommu_probe+0xb8/0x7d4
- bus_set_iommu+0xcc/0x13c
- arm_smmu_bus_init+0x44/0x130 [arm_smmu]
- arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
- platform_drv_probe+0xe4/0x13c
- really_probe+0x2c8/0xb74
- driver_probe_device+0x11c/0x228
- device_driver_attach+0xf0/0x16c
- __driver_attach+0x80/0x320
- bus_for_each_dev+0x11c/0x19c
- driver_attach+0x38/0x48
- bus_add_driver+0x1dc/0x3a4
- driver_register+0x18c/0x244
- __platform_driver_register+0x88/0x9c
- init_module+0x64/0xff4 [arm_smmu]
- do_one_initcall+0x17c/0x2f0
- do_init_module+0xe8/0x378
- load_module+0x3f80/0x4a40
- __se_sys_finit_module+0x1a0/0x1e4
- __arm64_sys_finit_module+0x44/0x58
- el0_svc_common+0x100/0x264
- do_el0_svc+0x38/0xa4
- el0_svc+0x20/0x30
- el0_sync_handler+0x68/0xac
- el0_sync+0x160/0x180
-
-Freed by task 1:
- kasan_set_track+0x4c/0x84
- kasan_set_free_info+0x28/0x4c
- ____kasan_slab_free+0x120/0x15c
- __kasan_slab_free+0x18/0x28
- slab_free_freelist_hook+0x204/0x2fc
- kfree+0xfc/0x3a4
- __iommu_probe_device+0x284/0x394
- probe_iommu_group+0x70/0x9c
- bus_for_each_dev+0x11c/0x19c
- bus_iommu_probe+0xb8/0x7d4
- bus_set_iommu+0xcc/0x13c
- arm_smmu_bus_init+0x44/0x130 [arm_smmu]
- arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
- platform_drv_probe+0xe4/0x13c
- really_probe+0x2c8/0xb74
- driver_probe_device+0x11c/0x228
- device_driver_attach+0xf0/0x16c
- __driver_attach+0x80/0x320
- bus_for_each_dev+0x11c/0x19c
- driver_attach+0x38/0x48
- bus_add_driver+0x1dc/0x3a4
- driver_register+0x18c/0x244
- __platform_driver_register+0x88/0x9c
- init_module+0x64/0xff4 [arm_smmu]
- do_one_initcall+0x17c/0x2f0
- do_init_module+0xe8/0x378
- load_module+0x3f80/0x4a40
- __se_sys_finit_module+0x1a0/0x1e4
- __arm64_sys_finit_module+0x44/0x58
- el0_svc_common+0x100/0x264
- do_el0_svc+0x38/0xa4
- el0_svc+0x20/0x30
- el0_sync_handler+0x68/0xac
- el0_sync+0x160/0x180
-
-Fix this by setting dev->iommu to NULL first and
-then freeing dev_iommu structure in dev_iommu_free
-function.
-
-Suggested-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Vijayanand Jitta <quic_vjitta@quicinc.com>
-Link: https://lore.kernel.org/r/1643613155-20215-1-git-send-email-quic_vjitta@quicinc.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/iommu.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index bcf060b5cf85b..9d65557dfb2ce 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -185,9 +185,14 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
- 
- static void dev_iommu_free(struct device *dev)
- {
--	iommu_fwspec_free(dev);
--	kfree(dev->iommu);
-+	struct dev_iommu *param = dev->iommu;
-+
- 	dev->iommu = NULL;
-+	if (param->fwspec) {
-+		fwnode_handle_put(param->fwspec->iommu_fwnode);
-+		kfree(param->fwspec);
-+	}
-+	kfree(param);
- }
- 
- static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
--- 
-2.34.1
-
+Acked-by: Rob Herring <robh@kernel.org>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
