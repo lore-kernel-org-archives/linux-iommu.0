@@ -4,66 +4,65 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6649BC433F5
-	for <iommu@archiver.kernel.org>; Wed,  9 Feb 2022 18:39:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AE69AC433F5
+	for <iommu@archiver.kernel.org>; Wed,  9 Feb 2022 18:42:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 0B6AC415EA;
-	Wed,  9 Feb 2022 18:39:30 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 6C00E41511;
+	Wed,  9 Feb 2022 18:42:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mi-ge0gE0taS; Wed,  9 Feb 2022 18:39:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id B3703410C1;
-	Wed,  9 Feb 2022 18:39:28 +0000 (UTC)
+	with ESMTP id 6_0_vzCV7t7J; Wed,  9 Feb 2022 18:42:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 334D1414A2;
+	Wed,  9 Feb 2022 18:42:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 82BF4C001A;
-	Wed,  9 Feb 2022 18:39:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 07F50C001A;
+	Wed,  9 Feb 2022 18:42:33 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DE63EC000B
- for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:39:26 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BF194C000B
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:42:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id BF769403A7
- for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:39:26 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id AAFA8403A7
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:42:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PB5HtVKAxV1a for <iommu@lists.linux-foundation.org>;
- Wed,  9 Feb 2022 18:39:25 +0000 (UTC)
+ with ESMTP id mxsH4j2CZiEw for <iommu@lists.linux-foundation.org>;
+ Wed,  9 Feb 2022 18:42:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from dfw.source.kernel.org (dfw.source.kernel.org
- [IPv6:2604:1380:4641:c500::1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 8EAF640239
- for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:39:25 +0000 (UTC)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 916B9400C5
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 18:42:30 +0000 (UTC)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id A66576006F;
- Wed,  9 Feb 2022 18:39:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27A36C340ED;
- Wed,  9 Feb 2022 18:39:23 +0000 (UTC)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id 56D346129D;
+ Wed,  9 Feb 2022 18:42:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8BA5C340ED;
+ Wed,  9 Feb 2022 18:42:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1644431964;
- bh=13fe4Gu64rL6bhmzbwQ7D7+42vxeVPMAYd9meoU4fuM=;
+ s=k20201202; t=1644432148;
+ bh=suJKmzrOF/tZPhzi4HoXLU0tOFV3oTTcddXjrt1lGu8=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=u6xWgarQVmVNCjnGdwHwUa0cXNH5EIywIS6Sl6GvhWM45pmJmRt31TSlIg1a0WHs2
- i58maxkffbG08e7eUPDaTen3+2b3GXmlEHBWPUOg89RFuJ8WvaPipRZfUr92x5b6XH
- OXVBAQLt9dJej4mLHgpofRbaaFDJ8uzyeWh0RblxC1cbEAehBf1djovWQXHzjQkB+P
- M/+uiO1k5yHsAdlnIutPpFGqALQfZOH8NIVTjTbfbdE24UVCClGO6QEXLgxv6wWbUR
- Tzwi2XJDdLnmnBgXExG6l2uPIaufbnlKKkcDxUWhA2yosG6pUnmLHYLZAj/PD9wfY/
- OceMCeFpRwc6w==
+ b=pl2coBZ2wriT7RDsF6Lr82T5oDBnQMVgQwVwE6sN8+/Hy1C7p9mUqiwYTY1fknctX
+ /0vLr3pChnLSDxSxM5UXBOoTwFXGDk4ID2GkSHRTbDklpmCDVfEXTXIu4LU/KH1WXn
+ tOX8Lomx75UpU7GlhBhfsb3uAxNXodVUE1OfXDCilAxPm/VxUV+FzFuH3SSpKpUHNP
+ jEjQgA0rQrxKh2XnO2Urn54ia4ACY6SQZGRuASMBYBYaeTlc3UIMQAno+Sb84rIPlv
+ GxHe4wVdDY1g1P7oUzu4gwlec4kaEcS3bMgisY6RnYtTgZd2rO1YZ3O5IPHZ5/cyoe
+ QjrYlKNmwVuYQ==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 19/36] iommu: Fix potential use-after-free during
+Subject: [PATCH AUTOSEL 5.10 17/27] iommu: Fix potential use-after-free during
  probe
-Date: Wed,  9 Feb 2022 13:37:42 -0500
-Message-Id: <20220209183759.47134-19-sashal@kernel.org>
+Date: Wed,  9 Feb 2022 13:40:53 -0500
+Message-Id: <20220209184103.47635-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209183759.47134-1-sashal@kernel.org>
-References: <20220209183759.47134-1-sashal@kernel.org>
+In-Reply-To: <20220209184103.47635-1-sashal@kernel.org>
+References: <20220209184103.47635-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -209,10 +208,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index f62fb6a58f109..7f409e9eea4b7 100644
+index bcf060b5cf85b..9d65557dfb2ce 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -206,9 +206,14 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
+@@ -185,9 +185,14 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
  
  static void dev_iommu_free(struct device *dev)
  {
