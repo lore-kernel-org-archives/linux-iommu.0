@@ -1,64 +1,64 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B0AA7C433F5
-	for <iommu@archiver.kernel.org>; Wed,  9 Feb 2022 06:36:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BF9A7C433F5
+	for <iommu@archiver.kernel.org>; Wed,  9 Feb 2022 06:41:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 4DBD6414E6;
-	Wed,  9 Feb 2022 06:36:30 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5AE2E40928;
+	Wed,  9 Feb 2022 06:41:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GBJIJjjwbKge; Wed,  9 Feb 2022 06:36:27 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 0bbMR-lecqfc; Wed,  9 Feb 2022 06:41:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 15BDC414CE;
-	Wed,  9 Feb 2022 06:36:27 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 13C0A40917;
+	Wed,  9 Feb 2022 06:41:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C88B8C0011;
-	Wed,  9 Feb 2022 06:36:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DF2DBC0011;
+	Wed,  9 Feb 2022 06:41:34 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3A515C000B
- for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 06:36:25 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4B18CC000B
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 06:41:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 1A9A283133
- for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 06:36:25 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 3CBE7831A9
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 06:41:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=infradead.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gz7-L8NR_Hfn for <iommu@lists.linux-foundation.org>;
- Wed,  9 Feb 2022 06:36:23 +0000 (UTC)
+ with ESMTP id u71O1H7P3AfP for <iommu@lists.linux-foundation.org>;
+ Wed,  9 Feb 2022 06:41:06 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [IPv6:2607:7c80:54:e::133])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 27DF583123
- for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 06:36:22 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id C5FCF83133
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Feb 2022 06:41:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
  :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
  Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=SCxwQAdz6wbuEDyQU5r/YvAwT6
- NYBACdzsuPKuc+Th+LmsWreagdtcwtmKdJwI4QmBunm8dx6DR+iKDSSVFIgmqbSNFvJmtG0PYHuEG
- eQ4JIaTl2M64JBxaYlwTXcnJKX+S9zIZ1rXjOacA+j/yxpDT0oFiL52Ka0e1Yrsd3RN4sOWa3XVBR
- 9A7KLqjj5KuDrsiH4J2KFFOBtI0yB4RFtTxKaByzmcEx5VJ5sdK7f6C0ag+WDAaQSOyH1t4sJGnZ8
- Wmo83TUmxf1vSc1pOKwLD0NZDzzDrYlYqb+1ItTy4sa7IkQoyV6JT335h5WySC8RwscK+a7m3otJT
- 6e/ktDJQ==;
+ bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=FskvZ9rXZL7g1GxBx4Eab4+7TZ
+ uFqua19+tCun6NPjAb5GsunqDipw1alpWpW8Vzx2/Sg4mVl447Zxxp7q7ga7wzdODxdcPm1nwOXeX
+ u5RvmGy+fA8qD2rB9OIv1TMcbH/AqE1MfL4CCvo2addx4E4nX6Zi7JRy3+tWResoxhB+ptXHCrpHq
+ 1V7M54VVIK27YA6N7Bm8eYI2ePdks5p48IDuECh2n4Nk6Pv8v24jQD/2x1csPWmi96pe2J2qppcX1
+ O5aeodz5jiJlJwobSfnrfGVWBnTX+zY0yHDelaJ836bFFOAgTFqRrdgB5N31v2cUiyQVFvqgAma70
+ 4fv8T8kA==;
 Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red
- Hat Linux)) id 1nHgaE-00GMzE-Qt; Wed, 09 Feb 2022 06:36:06 +0000
-Date: Tue, 8 Feb 2022 22:36:06 -0800
+ Hat Linux)) id 1nHgev-00GNLb-Nd; Wed, 09 Feb 2022 06:40:57 +0000
+Date: Tue, 8 Feb 2022 22:40:57 -0800
 From: Christoph Hellwig <hch@infradead.org>
 To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2 05/10] iommu: Remove apply_resv_region
-Message-ID: <YgNg1rhgsLUhdw06@infradead.org>
+Subject: Re: [PATCH v2 07/10] iommu: Use right way to retrieve iommu_ops
+Message-ID: <YgNh+cS/I0FUfJHG@infradead.org>
 References: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
- <20220208012559.1121729-6-baolu.lu@linux.intel.com>
+ <20220208012559.1121729-8-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20220208012559.1121729-6-baolu.lu@linux.intel.com>
+In-Reply-To: <20220208012559.1121729-8-baolu.lu@linux.intel.com>
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
  bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
