@@ -1,79 +1,59 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 17EC1C433EF
-	for <iommu@archiver.kernel.org>; Thu, 10 Feb 2022 07:50:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 82185C433EF
+	for <iommu@archiver.kernel.org>; Thu, 10 Feb 2022 10:43:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id B9D5460E7E;
-	Thu, 10 Feb 2022 07:50:56 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 20E4840862;
+	Thu, 10 Feb 2022 10:43:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id sijZuVbRk2fM; Thu, 10 Feb 2022 07:50:55 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id uSJRV3f9FSZy; Thu, 10 Feb 2022 10:43:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 7FE1360E7A;
-	Thu, 10 Feb 2022 07:50:55 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id EF3614025D;
+	Thu, 10 Feb 2022 10:43:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 688B5C0011;
-	Thu, 10 Feb 2022 07:50:55 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CA74CC000B
- for <iommu@lists.linux-foundation.org>; Thu, 10 Feb 2022 07:50:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CA923C0011;
+	Thu, 10 Feb 2022 10:43:27 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7F375C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Feb 2022 10:43:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id A962040465
- for <iommu@lists.linux-foundation.org>; Thu, 10 Feb 2022 07:50:53 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 51A4181B9D
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Feb 2022 10:43:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Clbu7YKK_CiY for <iommu@lists.linux-foundation.org>;
- Thu, 10 Feb 2022 07:50:52 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id mcHX3QwP8tHn for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Feb 2022 10:43:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 0F17540127
- for <iommu@lists.linux-foundation.org>; Thu, 10 Feb 2022 07:50:51 +0000 (UTC)
-X-UUID: 4423695620764abcbe26e3c483f34dfd-20220210
-X-UUID: 4423695620764abcbe26e3c483f34dfd-20220210
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
- mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 1585935810; Thu, 10 Feb 2022 15:50:49 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 10 Feb 2022 15:50:44 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
- Thu, 10 Feb 2022 15:50:44 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 10 Feb 2022 15:50:42 +0800
-Message-ID: <ebb92c1c8c584464245da68e42bcafac2170558c.camel@mediatek.com>
-Subject: Re: [RFC PATCH] component: Add common helpers for compare/release
- functions
-To: Daniel Vetter <daniel@ffwll.ch>
-Date: Thu, 10 Feb 2022 15:50:43 +0800
-In-Reply-To: <YfRtGF3v+BwH5RkG@phenom.ffwll.local>
-References: <20220128081101.27837-1-yong.wu@mediatek.com>
- <YfRtGF3v+BwH5RkG@phenom.ffwll.local>
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 652BD81B35
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Feb 2022 10:43:25 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 622D9ED1;
+ Thu, 10 Feb 2022 02:43:24 -0800 (PST)
+Received: from [10.57.70.89] (unknown [10.57.70.89])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 845013F718;
+ Thu, 10 Feb 2022 02:43:23 -0800 (PST)
+Message-ID: <b090141f-0822-609f-429d-ea790d7fc828@arm.com>
+Date: Thu, 10 Feb 2022 10:43:17 +0000
 MIME-Version: 1.0
-X-MTK: N
-Cc: David Airlie <airlied@linux.ie>, Liviu Dudau <liviu.dudau@arm.com>,
- dri-devel@lists.freedesktop.org, Sebastian Reichel <sre@kernel.org>,
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
- Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
- Will Deacon <will@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>, James
- Wang <james.qian.wang@arm.com>, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
- Arnd Bergmann <arnd@arndb.de>, linux-mediatek@lists.infradead.org,
- Hsin-Yi Wang <hsinyi@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
- linux-arm-kernel@lists.infradead.org,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- srv_heupstream@mediatek.com, Stephen
- Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH] iommu: explicitly check for NULL in
+ iommu_dma_get_resv_regions()
+Content-Language: en-GB
+To: Aleksandr Fedorov <sanekf@nxt.ru>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
+References: <5481021644415780@myt5-a5512e99e394.qloud-c.yandex.net>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <5481021644415780@myt5-a5512e99e394.qloud-c.yandex.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,146 +66,58 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Yong Wu <yong.wu@mediatek.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 2022-01-28 at 23:24 +0100, Daniel Vetter wrote:
-> On Fri, Jan 28, 2022 at 04:11:01PM +0800, Yong Wu wrote:
-> > The component requires the compare/release functions, there are so
-> > many
-> > copy in current kernel. Just define three common helpers for them.
-> > No functional change.
-> > 
-> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > ---
-> > Base on v5.17-rc1
-> > ---
-> >  .../gpu/drm/arm/display/komeda/komeda_drv.c    |  5 -----
-> >  drivers/gpu/drm/arm/hdlcd_drv.c                |  7 +------
-> >  drivers/gpu/drm/armada/armada_drv.c            |  5 -----
-> >  drivers/gpu/drm/drm_of.c                       |  8 +-------
-> >  drivers/gpu/drm/etnaviv/etnaviv_drv.c          |  7 -------
-> >  drivers/gpu/drm/exynos/exynos_drm_drv.c        |  5 -----
-> >  .../gpu/drm/hisilicon/kirin/kirin_drm_drv.c    |  5 -----
-> >  drivers/gpu/drm/imx/imx-drm-core.c             |  4 ++--
-> >  drivers/gpu/drm/ingenic/ingenic-drm-drv.c      |  5 -----
-> >  drivers/gpu/drm/mcde/mcde_drv.c                |  7 +------
-> >  drivers/gpu/drm/mediatek/mtk_drm_drv.c         |  5 -----
-> >  drivers/gpu/drm/meson/meson_drv.c              |  8 --------
-> >  drivers/gpu/drm/msm/msm_drv.c                  |  9 ---------
-> >  drivers/gpu/drm/omapdrm/dss/dss.c              |  8 +-------
-> >  drivers/gpu/drm/rockchip/rockchip_drm_drv.c    |  5 -----
-> >  drivers/gpu/drm/sti/sti_drv.c                  |  5 -----
-> >  drivers/gpu/drm/sun4i/sun4i_drv.c              |  9 ---------
-> >  drivers/gpu/drm/vc4/vc4_drv.c                  |  5 -----
-> >  drivers/iommu/mtk_iommu.h                      | 10 ----------
-> >  drivers/power/supply/ab8500_charger.c          |  8 +-------
-> >  drivers/video/fbdev/omap2/omapfb/dss/dss.c     |  8 +-------
-> >  include/linux/component.h                      | 18
-> > ++++++++++++++++++
-> >  sound/soc/codecs/wcd938x.c                     | 16 ++----------
-> > ----
+On 2022-02-09 14:09, Aleksandr Fedorov wrote:
+> iommu_dma_get_resv_regions() assumes that iommu_fwspec field for
+> corresponding device is set which is not always true.  Since
+> iommu_dma_get_resv_regions() seems to be a future-proof generic API
+> that can be used by any iommu driver, add an explicit check for NULL.
+
+Except it's not a "generic" interface for drivers to call at random, 
+it's a helper for retrieving common firmware-based information 
+specifically for drivers already using the fwspec mechanism for common 
+firmware bindings. If any driver calls this with a device *without* a 
+valid fwnode, it deserves to crash because it's done something 
+fundamentally wrong.
+
+I concur that it's not exactly obvious that "non-IOMMU-specific" means 
+"based on common firmware bindings, thus implying fwspec".
+
+Robin.
+
+> Currently it can work by accident since compiler can eliminate
+> the 'iommu_fwspec' check altogether when CONFIG_ACPI_IORT=n, but
+> code elimination from optimizations is not reliable.
 > 
-> Seems like a neat idea. Please add kerneldoc for the new functions
-> you're
-> adding (bonus point for an example in there) and make sure it all
-> renders
-> correctly in
-
-OK, I will add it.
-
+> Signed-off-by: Aleksandr Fedorov <halcien@gmail.com>
+> ---
+> A compilation failure has been observed on a gcc-compatible compiler based on EDG.
 > 
-> $ make htmldoc
-
-sorry, I still need some time to run this in my environment.
-
-> 
-> Also please split up the patch series per-driver and add the
-> maintainers
-> to each patches' Cc: list. With that I think this should be ready for
-> merging.
-
-In the orignal idea, I thought the name compare_of/release_of was
-enough, thus I squashed them into one patch, otherwise, it may cause
-build fail due to redefinition when bisecting.
-
-From Jani, It's better to add a namespace for the function name,
-something like comp_ or component_?
-
-If the function name is changed, then I could split them. A question:
-The biggest change are in DRM, and all of these patches will go
-together. Maybe all the DRM parts could be in one patch, to avoid so
-many small patches, is this ok? or We'd better create a patch per a drm
-driver.
-
-In the end, then the code should be something like:
-
---- a/drivers/base/component.c
-+++ b/drivers/base/component.c
-@@ -287,6 +287,24 @@ static void take_down_master(struct master
-*master)
-        }
- }
-
-+int component_compare_of(struct device *dev, void *data)
-+{
-+       return device_match_of_node(dev, data);
-+}
-+EXPORT_SYMBOL_GPL(component_compare_of);
-+
-+void component_release_of(struct device *dev, void *data)
-+{
-+       of_node_put(data);
-+}
-+EXPORT_SYMBOL_GPL(component_release_of);
-
-> 
-> Cheers, Daniel
-> 
-> >  23 files changed, 28 insertions(+), 144 deletions(-)
-
-> > diff --git a/include/linux/component.h b/include/linux/component.h
-> > index 16de18f473d7..5a7468ea827c 100644
-> > --- a/include/linux/component.h
-> > +++ b/include/linux/component.h
-> > @@ -2,6 +2,8 @@
-> >  #ifndef COMPONENT_H
-> >  #define COMPONENT_H
-> >  
-> > +#include <linux/device.h>
-> > +#include <linux/of.h>
-> >  #include <linux/stddef.h>
-> >  
-> >  
-> > @@ -82,6 +84,22 @@ struct component_master_ops {
-> >  	void (*unbind)(struct device *master);
-> >  };
-> >  
-> > +/* A set common helpers for compare/release functions */
-> > +static inline int compare_of(struct device *dev, void *data)
-> > +{
-> > +	return dev->of_node == data;
-> > +}
-> > +
-> > +static inline void release_of(struct device *dev, void *data)
-> > +{
-> > +	of_node_put(data);
-> > +}
-> > +
-> > +static inline int compare_dev(struct device *dev, void *data)
-> > +{
-> > +	return dev == data;
-> > +}
-> > +
-> >  void component_master_del(struct device *,
-> >  	const struct component_master_ops *);
-> 
-> 
-
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index d85d54f2b549..474b1b7211d7 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -382,10 +382,10 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+>    */
+>   void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
+>   {
+> +	struct iommu_fwspec *iommu_fwspec = dev_iommu_fwspec_get(dev);
+>   
+> -	if (!is_of_node(dev_iommu_fwspec_get(dev)->iommu_fwnode))
+> +	if (iommu_fwspec && !is_of_node(iommu_fwspec->iommu_fwnode))
+>   		iort_iommu_msi_get_resv_regions(dev, list);
+> -
+>   }
+>   EXPORT_SYMBOL(iommu_dma_get_resv_regions);
+>   
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
