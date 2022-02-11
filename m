@@ -1,74 +1,60 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5DF76C433FE
-	for <iommu@archiver.kernel.org>; Fri, 11 Feb 2022 03:07:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B6963C433F5
+	for <iommu@archiver.kernel.org>; Fri, 11 Feb 2022 03:14:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 2477983134;
-	Fri, 11 Feb 2022 03:07:02 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 433E260EAC;
+	Fri, 11 Feb 2022 03:14:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mkK27mDv17c5; Fri, 11 Feb 2022 03:07:01 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id eRXJNIYVYdV7; Fri, 11 Feb 2022 03:14:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 1F3448315C;
-	Fri, 11 Feb 2022 03:07:01 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 13D2F607A4;
+	Fri, 11 Feb 2022 03:14:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EE295C0011;
-	Fri, 11 Feb 2022 03:07:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E7344C001A;
+	Fri, 11 Feb 2022 03:14:45 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7B388C000B
- for <iommu@lists.linux-foundation.org>; Fri, 11 Feb 2022 03:06:59 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BD48BC000B
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Feb 2022 03:14:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 76E6A83168
- for <iommu@lists.linux-foundation.org>; Fri, 11 Feb 2022 03:06:59 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 90263817C0
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Feb 2022 03:14:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id M2LUDffjL6vG for <iommu@lists.linux-foundation.org>;
- Fri, 11 Feb 2022 03:06:59 +0000 (UTC)
+ with ESMTP id N6NYio0jMWGq for <iommu@lists.linux-foundation.org>;
+ Fri, 11 Feb 2022 03:14:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 0235283123
- for <iommu@lists.linux-foundation.org>; Fri, 11 Feb 2022 03:06:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1644548818; x=1676084818;
- h=from:to:cc:subject:date:message-id:in-reply-to:
- references:mime-version:content-transfer-encoding;
- bh=EkJfB7vhORyeNDzWL4R0G1atL9YTI01FB+mAIw3VUYg=;
- b=DebwYDIOgdpy1g+PFBf2xUOKhnNqGo0ht7iuo5P5XxyYxY4BRGdmyuOD
- 7poi9vBbwOh41J+zA8nYHpZYK8v9nO5RYwEkhghYJuCWySOi5RJ4ntahs
- NWMC6/XByVB4MQjdmWUePHahRhdwv8AdnBDpiRfshnv82diompu2tDbs6
- jt78dhjSOUs212yZYBhlAq9Z4d9bFf/5nYSGbMt2myfL4MxXbPyDVUsAs
- dF3O5RdNut0kuUIfTnLYcHislXCqcQ2wdiSHqGrXQ5hCq2ff2JRQrWj3t
- n4aShkzjEQ1Fq9nvahKbumH8VjwWTet662tUoBn06WzRzLMUZYIDqXyYr w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="274202604"
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; d="scan'208";a="274202604"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 10 Feb 2022 19:06:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; d="scan'208";a="483062861"
-Received: from allen-box.sh.intel.com ([10.239.159.118])
- by orsmga003.jf.intel.com with ESMTP; 10 Feb 2022 19:06:56 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: David Airlie <airlied@linux.ie>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Chris Wilson <chris@chris-wilson.co.uk>,
- Nathan Myers <ncm@cantrip.org>
-Subject: [PATCH 2/2] iommu/vt-d: Remove unnecessary exported symbol
-Date: Fri, 11 Feb 2022 11:05:31 +0800
-Message-Id: <20220211030531.2398789-3-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220211030531.2398789-1-baolu.lu@linux.intel.com>
-References: <20220211030531.2398789-1-baolu.lu@linux.intel.com>
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id AE15A8175E
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Feb 2022 03:14:41 +0000 (UTC)
+Received: from dggeme759-chm.china.huawei.com (unknown [172.30.72.55])
+ by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JvzBk1nmFzZfYb;
+ Fri, 11 Feb 2022 11:10:22 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ dggeme759-chm.china.huawei.com (10.3.19.105) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Fri, 11 Feb 2022 11:14:37 +0800
+To: <song.bao.hua@hisilicon.com>, <shuah@kernel.org>,
+ <chenxiang66@hisilicon.com>
+Subject: [PATCH] dma-mapping: benchmark: Extract a common header file for
+ map_benchmark definition
+Date: Fri, 11 Feb 2022 11:14:41 +0800
+Message-ID: <20220211031441.41126-1-tiantao6@hisilicon.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Cc: Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
- Lucas De Marchi <lucas.demarchi@intel.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggeme759-chm.china.huawei.com (10.3.19.105)
+X-CFilter-Loop: Reflected
+Cc: iommu@lists.linux-foundation.org, linuxarm@openeuler.org,
+ linux-kselftest@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,58 +67,145 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Tian Tao via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Tian Tao <tiantao6@hisilicon.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The exported symbol intel_iommu_gfx_mapped is not used anywhere in the
-tree. Remove it to avoid dead code.
+kernel/dma/map_benchmark.c and selftests/dma/dma_map_benchmark.c
+have duplicate map_benchmark definitions, which tends to lead to
+inconsistent changes to map_benchmark on both sides, extract a
+common header file to avoid this problem.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Tian Tao <tiantao6@hisilicon.com>
 ---
- include/linux/intel-iommu.h | 1 -
- drivers/iommu/intel/iommu.c | 6 ------
- 2 files changed, 7 deletions(-)
+ kernel/dma/map_benchmark.c                    | 24 +-------------
+ kernel/dma/map_benchmark.h                    | 31 +++++++++++++++++++
+ .../testing/selftests/dma/dma_map_benchmark.c | 25 +--------------
+ 3 files changed, 33 insertions(+), 47 deletions(-)
+ create mode 100644 kernel/dma/map_benchmark.h
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 2f8a4517c929..b8b8be58cb6b 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -789,7 +789,6 @@ extern int iommu_calculate_agaw(struct intel_iommu *iommu);
- extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
- extern int dmar_disabled;
- extern int intel_iommu_enabled;
--extern int intel_iommu_gfx_mapped;
- #else
- static inline int iommu_calculate_agaw(struct intel_iommu *iommu)
+diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
+index 9b9af1bd6be3..c05f4e242991 100644
+--- a/kernel/dma/map_benchmark.c
++++ b/kernel/dma/map_benchmark.c
+@@ -18,29 +18,7 @@
+ #include <linux/slab.h>
+ #include <linux/timekeeping.h>
+ 
+-#define DMA_MAP_BENCHMARK	_IOWR('d', 1, struct map_benchmark)
+-#define DMA_MAP_MAX_THREADS	1024
+-#define DMA_MAP_MAX_SECONDS	300
+-#define DMA_MAP_MAX_TRANS_DELAY	(10 * NSEC_PER_MSEC)
+-
+-#define DMA_MAP_BIDIRECTIONAL	0
+-#define DMA_MAP_TO_DEVICE	1
+-#define DMA_MAP_FROM_DEVICE	2
+-
+-struct map_benchmark {
+-	__u64 avg_map_100ns; /* average map latency in 100ns */
+-	__u64 map_stddev; /* standard deviation of map latency */
+-	__u64 avg_unmap_100ns; /* as above */
+-	__u64 unmap_stddev;
+-	__u32 threads; /* how many threads will do map/unmap in parallel */
+-	__u32 seconds; /* how long the test will last */
+-	__s32 node; /* which numa node this benchmark will run on */
+-	__u32 dma_bits; /* DMA addressing capability */
+-	__u32 dma_dir; /* DMA data direction */
+-	__u32 dma_trans_ns; /* time for DMA transmission in ns */
+-	__u32 granule;	/* how many PAGE_SIZE will do map/unmap once a time */
+-	__u8 expansion[76];	/* For future use */
+-};
++#include "map_benchmark.h"
+ 
+ struct map_benchmark_data {
+ 	struct map_benchmark bparam;
+diff --git a/kernel/dma/map_benchmark.h b/kernel/dma/map_benchmark.h
+new file mode 100644
+index 000000000000..62674c83bde4
+--- /dev/null
++++ b/kernel/dma/map_benchmark.h
+@@ -0,0 +1,31 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (C) 2022 HiSilicon Limited.
++ */
++
++#ifndef _KERNEL_DMA_BENCHMARK_H
++#define _KERNEL_DMA_BENCHMARK_H
++
++#define DMA_MAP_BENCHMARK       _IOWR('d', 1, struct map_benchmark)
++#define DMA_MAP_MAX_THREADS     1024
++#define DMA_MAP_MAX_SECONDS     300
++#define DMA_MAP_MAX_TRANS_DELAY (10 * NSEC_PER_MSEC)
++
++#define DMA_MAP_BIDIRECTIONAL   0
++#define DMA_MAP_TO_DEVICE       1
++#define DMA_MAP_FROM_DEVICE     2
++
++struct map_benchmark {
++	__u64 avg_map_100ns; /* average map latency in 100ns */
++	__u64 map_stddev; /* standard deviation of map latency */
++	__u64 avg_unmap_100ns; /* as above */
++	__u64 unmap_stddev;
++	__u32 threads; /* how many threads will do map/unmap in parallel */
++	__u32 seconds; /* how long the test will last */
++	__s32 node; /* which numa node this benchmark will run on */
++	__u32 dma_bits; /* DMA addressing capability */
++	__u32 dma_dir; /* DMA data direction */
++	__u32 dma_trans_ns; /* time for DMA transmission in ns */
++	__u32 granule;  /* how many PAGE_SIZE will do map/unmap once a time */
++};
++#endif /* _KERNEL_DMA_BENCHMARK_H */
+diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
+index 485dff51bad2..33bf073071aa 100644
+--- a/tools/testing/selftests/dma/dma_map_benchmark.c
++++ b/tools/testing/selftests/dma/dma_map_benchmark.c
+@@ -11,39 +11,16 @@
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
+ #include <linux/types.h>
++#include "../../../../kernel/dma/map_benchmark.h"
+ 
+ #define NSEC_PER_MSEC	1000000L
+ 
+-#define DMA_MAP_BENCHMARK	_IOWR('d', 1, struct map_benchmark)
+-#define DMA_MAP_MAX_THREADS	1024
+-#define DMA_MAP_MAX_SECONDS     300
+-#define DMA_MAP_MAX_TRANS_DELAY	(10 * NSEC_PER_MSEC)
+-
+-#define DMA_MAP_BIDIRECTIONAL	0
+-#define DMA_MAP_TO_DEVICE	1
+-#define DMA_MAP_FROM_DEVICE	2
+-
+ static char *directions[] = {
+ 	"BIDIRECTIONAL",
+ 	"TO_DEVICE",
+ 	"FROM_DEVICE",
+ };
+ 
+-struct map_benchmark {
+-	__u64 avg_map_100ns; /* average map latency in 100ns */
+-	__u64 map_stddev; /* standard deviation of map latency */
+-	__u64 avg_unmap_100ns; /* as above */
+-	__u64 unmap_stddev;
+-	__u32 threads; /* how many threads will do map/unmap in parallel */
+-	__u32 seconds; /* how long the test will last */
+-	__s32 node; /* which numa node this benchmark will run on */
+-	__u32 dma_bits; /* DMA addressing capability */
+-	__u32 dma_dir; /* DMA data direction */
+-	__u32 dma_trans_ns; /* time for DMA transmission in ns */
+-	__u32 granule; /* how many PAGE_SIZE will do map/unmap once a time */
+-	__u8 expansion[76];	/* For future use */
+-};
+-
+ int main(int argc, char **argv)
  {
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 4b06f2f365bd..88a53140c7f1 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -311,9 +311,6 @@ static int iommu_skip_te_disable;
- #define IDENTMAP_GFX		2
- #define IDENTMAP_AZALIA		4
- 
--int intel_iommu_gfx_mapped;
--EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
--
- static DEFINE_XARRAY_ALLOC(device_domain_array);
- 
- /* Convert device source ID into the index of device_domain_array. */
-@@ -4070,9 +4067,6 @@ int __init intel_iommu_init(void)
- 	if (list_empty(&dmar_satc_units))
- 		pr_info("No SATC found\n");
- 
--	if (dmar_map_gfx)
--		intel_iommu_gfx_mapped = 1;
--
- 	init_no_remapping_devices();
- 
- 	ret = init_dmars();
+ 	struct map_benchmark map;
 -- 
-2.25.1
+2.33.0
 
 _______________________________________________
 iommu mailing list
