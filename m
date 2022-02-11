@@ -1,107 +1,94 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id F24B6C4321E
-	for <iommu@archiver.kernel.org>; Fri, 11 Feb 2022 16:41:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 37181C433F5
+	for <iommu@archiver.kernel.org>; Fri, 11 Feb 2022 17:12:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id BE89883E58;
-	Fri, 11 Feb 2022 16:41:59 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id C7EC1416BE;
+	Fri, 11 Feb 2022 17:12:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Gs4fuMQ-XjWe; Fri, 11 Feb 2022 16:41:59 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 99E8F83E0F;
-	Fri, 11 Feb 2022 16:41:58 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id TLzwvBLes3FV; Fri, 11 Feb 2022 17:12:02 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id AC321401FA;
+	Fri, 11 Feb 2022 17:12:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 81CE2C001A;
-	Fri, 11 Feb 2022 16:41:58 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E64A4C000B;
- Fri, 11 Feb 2022 16:41:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7D72DC001A;
+	Fri, 11 Feb 2022 17:12:01 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 20DD9C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Feb 2022 17:12:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id CD34061C2C;
- Fri, 11 Feb 2022 16:41:52 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 0E8FF401AD
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Feb 2022 17:12:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=sent.com header.b="D3VqJlhl";
- dkim=pass (2048-bit key) header.d=messagingengine.com
- header.b="YQN1sACl"
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id isiEJVY4g1KF; Fri, 11 Feb 2022 16:41:52 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com
- [66.111.4.221])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 4484F60B6A;
- Fri, 11 Feb 2022 16:41:52 +0000 (UTC)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
- by mailnew.nyi.internal (Postfix) with ESMTP id 7367F58037F;
- Fri, 11 Feb 2022 11:41:51 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
- by compute4.internal (MEProxy); Fri, 11 Feb 2022 11:41:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
- :cc:content-transfer-encoding:date:date:from:from:in-reply-to
- :in-reply-to:message-id:mime-version:references:reply-to
- :reply-to:sender:subject:subject:to:to; s=fm2; bh=8yuexR1+nrtHGS
- O8wGNcV0MvB+tGU4p0S4nQ2u6/h9Y=; b=D3VqJlhlbyWtV6r6GqE/sdQHhhzfao
- jEbpnb9Wr0ZReRqYHRz6KCXTCd0yivunmYqzFRoQLkQegNx2uHlUfqnjdWV/uzSJ
- zU8M0dPa33aRq+dlCTIv1HKtBD/Kh7pykEWL/ODQJPonFg0wqPv8sIrL0qYanslJ
- /JLrIUPIaJr4Z6KM4Og/F2X8lkSYDPbN7ITWDitlcOlpiq78n71xOGLIXJXz0Odg
- DRLO19YIQToJHSo/aJlV9Z59lWZxCAiI+H1agFbgcJWflqv/7sa6Z/DEHrtZkp3d
- sm83CKxYJVqNKbxcCcoENzJCEn26apNqoREHw+PQFH0GDXE8WDR4bjCQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
- messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
- :from:from:in-reply-to:in-reply-to:message-id:mime-version
- :references:reply-to:reply-to:sender:subject:subject:to:to
- :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
- fm2; bh=8yuexR1+nrtHGSO8wGNcV0MvB+tGU4p0S4nQ2u6/h9Y=; b=YQN1sACl
- 87xj+F47lfbNUuu2eOmgbTwH2DjTS/HIzp4OOKxqbF9Ccp5g2TMpkwWX2gBWSZNt
- EIPNTSk5Nl922Lg6gwveaU2GuyEA3/UfkKtvPP7p+AGcRnn4sIlGCdRzlTfHo2x1
- OxQNvyL/puQhqVLBtDsJccw8y7Iaq1sUjOQ2m/rnf7M6NoneAkAyKwJj4wZzSkaB
- WxyqKOeTGmYirNdGfaMPZnppY7uXdXPT4AHgxf5NVJMRxE3UDqkMzGCzf8L0gtEi
- VzZ9ycKNj3Y88HlVS7sXcuD+X/zVMZSnrQ0sI1ttCUNu1pmn/5U64GI9YlSxP+j6
- Ee5VZdGDqCSGFw==
-X-ME-Sender: <xms:z5EGYoD0HNOZcFFbJ4BM6mXHloZ_7ZKKhfRmcpgqUKvf_v9Nj3klng>
- <xme:z5EGYqg29ZRCUlsrXWU4LEuzwwgbc33fWkpaJRahLkzsJe-fXsry7pQWrWrRrho17
- Ml7Nmn8zyL2dMmaxw>
-X-ME-Received: <xmr:z5EGYrmNw8VWdjs_Tz1ZRVcOLW6HyNjege8PTS3V998EKzdu4gQzO5LRhGwaiyvxWsdezm1N>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrieefgdeklecutefuodetggdotefrodftvf
- curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
- uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
- fjughrpefhvffufffkofgjfhhrggfgsedtqhertdertddtnecuhfhrohhmpegkihcujggr
- nhcuoeiiihdrhigrnhesshgvnhhtrdgtohhmqeenucggtffrrghtthgvrhhnpeeijeeuvd
- euudeuhfeghfehieeuvdetvdeugfeigeevteeuieeuhedtgeduheefleenucevlhhushht
- vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpeiiihdrhigrnhesshgvnh
- htrdgtohhm
-X-ME-Proxy: <xmx:z5EGYuz5Bj9-JaqGriH-MKRe3zFXlOgPQ60DeTL5Jzmwi573abPhjQ>
- <xmx:z5EGYtQ1VmRFqGNTnFcrQNIS2JDX1K0F3ipTVIQHg82r79TtOBAQjQ>
- <xmx:z5EGYpb_ZyVuWCbl_iOa2f738FO1CUfDztTRyhGyeaILcTWnSeqCNQ>
- <xmx:z5EGYpp4NsHG7dNpBbY_x8GNgLUNpaRSeSapkd1LGcqN-l8MqDZo0Q>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 11 Feb 2022 11:41:50 -0500 (EST)
-From: Zi Yan <zi.yan@sent.com>
-To: David Hildenbrand <david@redhat.com>,
-	linux-mm@kvack.org
-Subject: [PATCH v5 6/6] arch: powerpc: adjust fadump alignment to be pageblock
- aligned.
-Date: Fri, 11 Feb 2022 11:41:35 -0500
-Message-Id: <20220211164135.1803616-7-zi.yan@sent.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220211164135.1803616-1-zi.yan@sent.com>
-References: <20220211164135.1803616-1-zi.yan@sent.com>
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=linuxfoundation.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id JtT9XV_pAyho for <iommu@lists.linux-foundation.org>;
+ Fri, 11 Feb 2022 17:11:59 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com
+ [IPv6:2607:f8b0:4864:20::131])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 184E5400A6
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Feb 2022 17:11:58 +0000 (UTC)
+Received: by mail-il1-x131.google.com with SMTP id o10so7400551ilh.0
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Feb 2022 09:11:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=linuxfoundation.org; s=google;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=zjkXwvtCBDId5CtC4jr5PHJd1ckKx2uKu+NSVsZGKoU=;
+ b=dReCiEKgX9kIOa267yo4luUrFq2PdntGD/NuFxdqnAErdYhsQzIpRqQfeIawfY/8FI
+ Vbj/1gorL0l3SE73ULO+qVu1Z9KYe0T1BlAddLSExUCPv9m6QtJK1EIhMlixBaKDMnX2
+ EQY7b6M2ZpxEvwRRIXJ70DpWvA4HvRUiOu1Yk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=zjkXwvtCBDId5CtC4jr5PHJd1ckKx2uKu+NSVsZGKoU=;
+ b=nTBSznNEDTo5ocffxiobf+wFXFsnM3TqCbuv339cm2auevpeh9onNBtShtq32QO50T
+ vEYX7/J2kVuMZxoCBLWGXV8c0YpFpsYWJMi+CVhCJPjIPoncSSTkWtRwXQSmC+SeB1Op
+ zkQWJ925dSRvk/kjLbvVNtFx1XyvGqL/551VlmvPX4NQuaRe7UI5Fglw1f6DiRUNtj9Z
+ lTJx9CEHSrxazhpOlgzN/h+KKI7TG6XxwFCwaxucRB/Wrlx1x+Gi5EulwxUkhEcTCRnQ
+ f3mqd5kWMr6wrDcaQ3fDKY3bqv4i04vBe7MK73136VeJ+k4iDq9nao24BmQ4U2egHc9f
+ x+Nw==
+X-Gm-Message-State: AOAM5317joDgbbOMjdFy23OTjioUJ/wfFrHn2I9n2VzZG+e1c1ecuzQU
+ 3yGAQdZ1T0ybsGHhRR03TpACcnZq
+X-Google-Smtp-Source: ABdhPJy2keANu+GgfebUDtlUmddy8XYQuxvuMxp/ogCEVf9YPKwhW+PnqNnYu4a+JgLRJis//PxEMA==
+X-Received: by 2002:a05:6e02:b25:: with SMTP id
+ e5mr1385991ilu.125.1644599518163; 
+ Fri, 11 Feb 2022 09:11:58 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+ by smtp.gmail.com with ESMTPSA id s10sm12724274ild.84.2022.02.11.09.11.57
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Fri, 11 Feb 2022 09:11:57 -0800 (PST)
+Subject: Re: [PATCH] dma-mapping: benchmark: Extract a common header file for
+ map_benchmark definition
+To: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>,
+ "tiantao (H)" <tiantao6@hisilicon.com>, "shuah@kernel.org"
+ <shuah@kernel.org>, "chenxiang (M)" <chenxiang66@hisilicon.com>,
+ "hch@lst.de" <hch@lst.de>
+References: <20220211031441.41126-1-tiantao6@hisilicon.com>
+ <d3dd5f61efcb41c981b0971e128da907@hisilicon.com>
+From: Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <39bd03ff-d083-5f81-d7d0-f40043cc47a5@linuxfoundation.org>
+Date: Fri, 11 Feb 2022 10:11:57 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Cc: Mel Gorman <mgorman@techsingularity.net>, Zi Yan <ziy@nvidia.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Oscar Salvador <osalvador@suse.de>,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Mike Rapoport <rppt@kernel.org>,
- Eric Ren <renzhengeek@gmail.com>, virtualization@lists.linux-foundation.org,
- linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>,
- Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <d3dd5f61efcb41c981b0971e128da907@hisilicon.com>
+Content-Language: en-US
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linuxarm@openeuler.org" <linuxarm@openeuler.org>,
+ "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+ Shuah Khan <skhan@linuxfoundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,39 +101,53 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: Zi Yan <ziy@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Zi Yan <ziy@nvidia.com>
+On 2/10/22 9:22 PM, Song Bao Hua (Barry Song) wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: tiantao (H)
+>> Sent: Friday, February 11, 2022 4:15 PM
+>> To: Song Bao Hua (Barry Song) <song.bao.hua@hisilicon.com>; shuah@kernel.org;
+>> chenxiang (M) <chenxiang66@hisilicon.com>
+>> Cc: iommu@lists.linux-foundation.org; linux-kselftest@vger.kernel.org;
+>> linuxarm@openeuler.org
+>> Subject: [PATCH] dma-mapping: benchmark: Extract a common header file for
+>> map_benchmark definition
+>>
+>> kernel/dma/map_benchmark.c and selftests/dma/dma_map_benchmark.c
+>> have duplicate map_benchmark definitions, which tends to lead to
+>> inconsistent changes to map_benchmark on both sides, extract a
+>> common header file to avoid this problem.
+>>
+>> Signed-off-by: Tian Tao <tiantao6@hisilicon.com>
+> 
+> +To: Christoph
+> 
+> Looks like a right cleanup. This will help decrease the maintain
+> overhead in the future. Other similar selftests tools are also
+> doing this.
+> 
+> Acked-by: Barry Song <song.bao.hua@hisilicon.com>
+> 
 
-CMA only requires pageblock alignment now. Change CMA alignment in
-fadump too.
++1 on this cleanup making this code maintainable. We are moving in
+the direction of cleaning up defines in selftests for the same
+reason.
 
-Signed-off-by: Zi Yan <ziy@nvidia.com>
----
- arch/powerpc/include/asm/fadump-internal.h | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Let's just make sure this works on older kernels. We do support
+mainline kselftest on stable releases. With that:
 
-diff --git a/arch/powerpc/include/asm/fadump-internal.h b/arch/powerpc/include/asm/fadump-internal.h
-index 52189928ec08..fbfca85b4200 100644
---- a/arch/powerpc/include/asm/fadump-internal.h
-+++ b/arch/powerpc/include/asm/fadump-internal.h
-@@ -20,9 +20,7 @@
- #define memblock_num_regions(memblock_type)	(memblock.memblock_type.cnt)
- 
- /* Alignment per CMA requirement. */
--#define FADUMP_CMA_ALIGNMENT	(PAGE_SIZE <<				\
--				 max_t(unsigned long, MAX_ORDER - 1,	\
--				 pageblock_order))
-+#define FADUMP_CMA_ALIGNMENT	(PAGE_SIZE << pageblock_order)
- 
- /* FAD commands */
- #define FADUMP_REGISTER			1
--- 
-2.34.1
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+
+thanks,
+-- Shuah
+
+
 
 _______________________________________________
 iommu mailing list
