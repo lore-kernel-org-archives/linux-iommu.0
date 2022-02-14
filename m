@@ -4,80 +4,77 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E01F1C433FE
-	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 06:09:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5E5D9C433F5
+	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 06:09:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A7F2081403;
-	Mon, 14 Feb 2022 06:09:43 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 24FC281402;
+	Mon, 14 Feb 2022 06:09:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WCUuGtPZ11Oj; Mon, 14 Feb 2022 06:09:43 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id A00E3813FE;
-	Mon, 14 Feb 2022 06:09:42 +0000 (UTC)
+	with ESMTP id hekMp4haPveb; Mon, 14 Feb 2022 06:09:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 0C7EA813FE;
+	Mon, 14 Feb 2022 06:09:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6E73EC0011;
-	Mon, 14 Feb 2022 06:09:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C715BC0011;
+	Mon, 14 Feb 2022 06:09:52 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0E036C000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 06:09:41 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 74843C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 06:09:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id E2C0060C0C
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 06:09:40 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 6323560C0C
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 06:09:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id P99Z-SvJLgtv for <iommu@lists.linux-foundation.org>;
- Mon, 14 Feb 2022 06:09:40 +0000 (UTC)
+ with ESMTP id YrWV_kZcMCub for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Feb 2022 06:09:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 333A6605A0
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 06:09:40 +0000 (UTC)
-X-UUID: a6bf5cf8c9854c499b42223f49772842-20220214
-X-UUID: a6bf5cf8c9854c499b42223f49772842-20220214
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A6432605A0
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 06:09:50 +0000 (UTC)
+X-UUID: 1cfe2e72faa841be882b6e2979c4cf28-20220214
+X-UUID: 1cfe2e72faa841be882b6e2979c4cf28-20220214
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
  (envelope-from <yong.wu@mediatek.com>)
  (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1471447973; Mon, 14 Feb 2022 14:09:35 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 14 Feb 2022 14:09:34 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
- Mon, 14 Feb 2022 14:09:33 +0800
+ with ESMTP id 23019940; Mon, 14 Feb 2022 14:09:46 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 14 Feb 2022 14:09:44 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 14 Feb 2022 14:09:32 +0800
+ Transport; Mon, 14 Feb 2022 14:09:42 +0800
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, David Airlie
  <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
  <dri-devel@lists.freedesktop.org>
-Subject: [PATCH 04/23] drm/etnaviv: Make use of the helper
- component_compare_of/dev_name
-Date: Mon, 14 Feb 2022 14:08:00 +0800
-Message-ID: <20220214060819.7334-5-yong.wu@mediatek.com>
+Subject: [PATCH 05/23] drm/hirin: Make use of the helper component_compare_of
+Date: Mon, 14 Feb 2022 14:08:01 +0800
+Message-ID: <20220214060819.7334-6-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220214060819.7334-1-yong.wu@mediatek.com>
 References: <20220214060819.7334-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
 X-MTK: N
-Cc: Liviu Dudau <liviu.dudau@arm.com>, linux-kernel@vger.kernel.org,
+Cc: Xinliang Liu <xinliang.liu@linaro.org>, Liviu Dudau <liviu.dudau@arm.com>,
+ linux-kernel@vger.kernel.org,
  Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
  Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
- Will Deacon <will@kernel.org>,
+ Will Deacon <will@kernel.org>, Hao Fang <fanghao11@huawei.com>,
  Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- James Wang <james.qian.wang@arm.com>,
- Russell King <linux+etnaviv@armlinux.org.uk>,
- Chun-Kuang Hu <chunkuang.hu@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
- etnaviv@lists.freedesktop.org, Christian Gmeiner <christian.gmeiner@gmail.com>,
- linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
- Matthias Brugger <matthias.bgg@gmail.com>,
+ Xinwei Kong <kong.kongxinwei@hisilicon.com>,
+ James Wang <james.qian.wang@arm.com>, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+ John Stultz <john.stultz@linaro.org>, Arnd Bergmann <arnd@arndb.de>,
+ Chen Feng <puck.chen@hisilicon.com>, linux-mediatek@lists.infradead.org,
+ Hsin-Yi Wang <hsinyi@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
  linux-arm-kernel@lists.infradead.org,
  AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
  srv_heupstream@mediatek.com, Stephen
  Boyd <sboyd@kernel.org>, Sebastian Reichel <sre@kernel.org>,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Lucas
- Stach <l.stach@pengutronix.de>
+ iommu@lists.linux-foundation.org, Thomas Zimmermann <tzimmermann@suse.de>,
+ Tian Tao <tiantao6@hisilicon.com>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,57 +94,46 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Use the common compare helpers from component.
+Use the common compare helper from component.
 
-Cc: Lucas Stach <l.stach@pengutronix.de>
-Cc: Russell King <linux+etnaviv@armlinux.org.uk>
-Cc: Christian Gmeiner <christian.gmeiner@gmail.com>
-Cc: etnaviv@lists.freedesktop.org
+Cc: Xinliang Liu <xinliang.liu@linaro.org>
+Cc: Tian Tao <tiantao6@hisilicon.com>
+Cc: John Stultz <john.stultz@linaro.org>
+Cc: Xinwei Kong <kong.kongxinwei@hisilicon.com>
+Cc: Chen Feng <puck.chen@hisilicon.com>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc: Hao Fang <fanghao11@huawei.com>
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/gpu/drm/etnaviv/etnaviv_drv.c | 16 ++--------------
- 1 file changed, 2 insertions(+), 14 deletions(-)
+ drivers/gpu/drm/hisilicon/kirin/kirin_drm_drv.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/etnaviv/etnaviv_drv.c b/drivers/gpu/drm/etnaviv/etnaviv_drv.c
-index 0b756ecb1bc2..1d2b4fb4bcf8 100644
---- a/drivers/gpu/drm/etnaviv/etnaviv_drv.c
-+++ b/drivers/gpu/drm/etnaviv/etnaviv_drv.c
-@@ -574,18 +574,6 @@ static const struct component_master_ops etnaviv_master_ops = {
- 	.unbind = etnaviv_unbind,
- };
+diff --git a/drivers/gpu/drm/hisilicon/kirin/kirin_drm_drv.c b/drivers/gpu/drm/hisilicon/kirin/kirin_drm_drv.c
+index 98ae9a48f3fe..8041ec11bd48 100644
+--- a/drivers/gpu/drm/hisilicon/kirin/kirin_drm_drv.c
++++ b/drivers/gpu/drm/hisilicon/kirin/kirin_drm_drv.c
+@@ -203,11 +203,6 @@ static int kirin_drm_kms_init(struct drm_device *dev,
+ 	return ret;
+ }
  
 -static int compare_of(struct device *dev, void *data)
 -{
--	struct device_node *np = data;
--
--	return dev->of_node == np;
+-	return dev->of_node == data;
 -}
 -
--static int compare_str(struct device *dev, void *data)
--{
--	return !strcmp(dev_name(dev), data);
--}
--
- static int etnaviv_pdev_probe(struct platform_device *pdev)
+ static int kirin_drm_kms_cleanup(struct drm_device *dev)
  {
- 	struct device *dev = &pdev->dev;
-@@ -603,14 +591,14 @@ static int etnaviv_pdev_probe(struct platform_device *pdev)
- 				first_node = core_node;
+ 	drm_kms_helper_poll_fini(dev);
+@@ -278,7 +273,7 @@ static int kirin_drm_platform_probe(struct platform_device *pdev)
+ 	if (!remote)
+ 		return -ENODEV;
  
- 			drm_of_component_match_add(&pdev->dev, &match,
--						   compare_of, core_node);
-+						   component_compare_of, core_node);
- 		}
- 	} else {
- 		char **names = dev->platform_data;
- 		unsigned i;
+-	drm_of_component_match_add(dev, &match, compare_of, remote);
++	drm_of_component_match_add(dev, &match, component_compare_of, remote);
+ 	of_node_put(remote);
  
- 		for (i = 0; names[i]; i++)
--			component_match_add(dev, &match, compare_str, names[i]);
-+			component_match_add(dev, &match, component_compare_dev_name, names[i]);
- 	}
- 
- 	/*
+ 	return component_master_add_with_match(dev, &kirin_drm_ops, match);
 -- 
 2.18.0
 
