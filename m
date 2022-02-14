@@ -1,66 +1,66 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CA17EC433F5
-	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 10:12:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 80C12C433EF
+	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 10:12:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 8A47D60E8F;
-	Mon, 14 Feb 2022 10:12:31 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 21D0D81BF5;
+	Mon, 14 Feb 2022 10:12:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BuQb1qoofnT8; Mon, 14 Feb 2022 10:12:30 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 3442060DFD;
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id gsz4kh2MVarr; Mon, 14 Feb 2022 10:12:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id E9A9B81B7B;
 	Mon, 14 Feb 2022 10:12:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 63621C0078;
-	Mon, 14 Feb 2022 10:12:28 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B5E54C0073
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 10:12:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BDD74C001A;
+	Mon, 14 Feb 2022 10:12:30 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6FAD2C007E
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 10:12:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 87AD6405CE
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 10:12:27 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 4D56260E36
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 10:12:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=linuxfoundation.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1c-bldM49yq0 for <iommu@lists.linux-foundation.org>;
- Mon, 14 Feb 2022 10:12:26 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id fkcQM9Kqfa8S for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Feb 2022 10:12:28 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 9A2C5405A6
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 10:12:26 +0000 (UTC)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org
+ [IPv6:2604:1380:4641:c500::1])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id B10EF60E2E
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 10:12:28 +0000 (UTC)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id 66EB0B80E15;
- Mon, 14 Feb 2022 10:12:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66D3CC340E9;
- Mon, 14 Feb 2022 10:12:20 +0000 (UTC)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id A526C6102A;
+ Mon, 14 Feb 2022 10:12:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DDDFC340E9;
+ Mon, 14 Feb 2022 10:12:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
- s=korg; t=1644833541;
- bh=4e6jacegMudm5QOO5r4b8aXUbKWQ/KZagciGyXk0tFQ=;
+ s=korg; t=1644833547;
+ bh=M0BF1S8k6P4/h+amgHnnMxnmmzIHRn78qIWiqCZMTt8=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=dWgOCaq9LwmLUWtMT7HPrs1K+hIb25M6y5lmPLlGADQIWn+ktjprZPDD4AHsRsFdP
- 22C5wQvlEiUCP2TIBNNZG0gJ+dQ4/5WAaA8UbkTfOuU3UVef1Kj4DZOkHgKPZU6q51
- 6mKzlynGQpisdWw3qFqtDq7e6e382gjSAm2McVts=
-Date: Mon, 14 Feb 2022 10:59:50 +0100
+ b=UptKleNcc93DXh/8y4no+0p/Hl1XMjhGS2P6HwvH72Ql1NOdZNhK9XngXZl8Yka7F
+ VtmDV+JhrV/j6jL06nHWv0qvL3jHnPEvB9jfc+o2GYj/i76xty+/rY6wLh03YjI1KQ
+ IiTVtb8hFbVl3YncHAyB2BfGYzLSu8S3+nPbDfhk=
+Date: Mon, 14 Feb 2022 11:02:28 +0100
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v5 04/14] driver core: platform: Add driver dma ownership
- management
-Message-ID: <YgooFjSWLTSapuIs@kroah.com>
+Subject: Re: [PATCH v5 02/14] driver core: Add dma_cleanup callback in bus_type
+Message-ID: <YgootGL4aL+XRE/J@kroah.com>
 References: <20220104015644.2294354-1-baolu.lu@linux.intel.com>
- <20220104015644.2294354-5-baolu.lu@linux.intel.com>
+ <20220104015644.2294354-3-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20220104015644.2294354-5-baolu.lu@linux.intel.com>
+In-Reply-To: <20220104015644.2294354-3-baolu.lu@linux.intel.com>
 Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
  David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
  Thierry Reding <thierry.reding@gmail.com>,
@@ -92,84 +92,31 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jan 04, 2022 at 09:56:34AM +0800, Lu Baolu wrote:
-> Multiple platform devices may be placed in the same IOMMU group because
-> they cannot be isolated from each other. These devices must either be
-> entirely under kernel control or userspace control, never a mixture. This
-> checks and sets DMA ownership during driver binding, and release the
-> ownership during driver unbinding.
+On Tue, Jan 04, 2022 at 09:56:32AM +0800, Lu Baolu wrote:
+> The bus_type structure defines dma_configure() callback for bus drivers
+> to configure DMA on the devices. This adds the paired dma_cleanup()
+> callback and calls it during driver unbinding so that bus drivers can do
+> some cleanup work.
 > 
-> The device driver may set a new flag (no_kernel_api_dma) to skip calling
-> iommu_device_use_dma_api() during the binding process. For instance, the
-> userspace framework drivers (vfio etc.) which need to manually claim
-> their own dma ownership when assigning the device to userspace.
+> One use case for this paired DMA callbacks is for the bus driver to check
+> for DMA ownership conflicts during driver binding, where multiple devices
+> belonging to a same IOMMU group (the minimum granularity of isolation and
+> protection) may be assigned to kernel drivers or user space respectively.
+> 
+> Without this change, for example, the vfio driver has to listen to a bus
+> BOUND_DRIVER event and then BUG_ON() in case of dma ownership conflict.
+> This leads to bad user experience since careless driver binding operation
+> may crash the system if the admin overlooks the group restriction. Aside
+> from bad design, this leads to a security problem as a root user, even with
+> lockdown=integrity, can force the kernel to BUG.
+> 
+> With this change, the bus driver could check and set the DMA ownership in
+> driver binding process and fail on ownership conflicts. The DMA ownership
+> should be released during driver unbinding.
 > 
 > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  include/linux/platform_device.h |  1 +
->  drivers/base/platform.c         | 20 ++++++++++++++++++++
->  2 files changed, 21 insertions(+)
-> 
-> diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
-> index 17fde717df68..8f0eaafcef47 100644
-> --- a/include/linux/platform_device.h
-> +++ b/include/linux/platform_device.h
-> @@ -210,6 +210,7 @@ struct platform_driver {
->  	struct device_driver driver;
->  	const struct platform_device_id *id_table;
->  	bool prevent_deferred_probe;
-> +	bool no_kernel_api_dma;
->  };
->  
->  #define to_platform_driver(drv)	(container_of((drv), struct platform_driver, \
-> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-> index b4d36b46ab2e..d5171e44d903 100644
-> --- a/drivers/base/platform.c
-> +++ b/drivers/base/platform.c
-> @@ -30,6 +30,7 @@
->  #include <linux/property.h>
->  #include <linux/kmemleak.h>
->  #include <linux/types.h>
-> +#include <linux/iommu.h>
->  
->  #include "base.h"
->  #include "power/power.h"
-> @@ -1451,9 +1452,16 @@ static void platform_shutdown(struct device *_dev)
->  
->  static int platform_dma_configure(struct device *dev)
->  {
-> +	struct platform_driver *drv = to_platform_driver(dev->driver);
->  	enum dev_dma_attr attr;
->  	int ret = 0;
->  
-> +	if (!drv->no_kernel_api_dma) {
-> +		ret = iommu_device_use_dma_api(dev);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
->  	if (dev->of_node) {
->  		ret = of_dma_configure(dev, dev->of_node, true);
->  	} else if (has_acpi_companion(dev)) {
-> @@ -1461,9 +1469,20 @@ static int platform_dma_configure(struct device *dev)
->  		ret = acpi_dma_configure(dev, attr);
->  	}
->  
-> +	if (ret && !drv->no_kernel_api_dma)
-> +		iommu_device_unuse_dma_api(dev);
 
-So you are now going to call this for every platform driver _unless_
-they set this flag?
-
-And having "negative" flags is rough to parse at times.  Yes, we have
-"prevent_deferred_probe" already here, so maybe keep this in the same
-nameing scheme and use "prevent_dma_api"?
-
-And it would be good to document this somewhere as to what this means.
-
-thanks,
-
-greg k-h
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
