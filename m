@@ -1,72 +1,59 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 63390C433F5
-	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 14:10:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E2A99C433EF
+	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 14:14:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id F27A0400A4;
-	Mon, 14 Feb 2022 14:10:34 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xchSy-YbOZIO; Mon, 14 Feb 2022 14:10:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 95A22400B8;
-	Mon, 14 Feb 2022 14:10:33 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 39A01C001A;
-	Mon, 14 Feb 2022 14:10:33 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5D904C000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 14:10:31 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4949560ECE
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 14:10:31 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 64A1860EE5;
+	Mon, 14 Feb 2022 14:14:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9hXDYh368UGx for <iommu@lists.linux-foundation.org>;
- Mon, 14 Feb 2022 14:10:30 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 29E2060AFE
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 14:10:30 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3FC2F1042;
- Mon, 14 Feb 2022 06:10:29 -0800 (PST)
-Received: from [10.57.70.89] (unknown [10.57.70.89])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4E40A3F66F;
- Mon, 14 Feb 2022 06:10:24 -0800 (PST)
-Message-ID: <1347f0ef-e046-1332-32f0-07347cc2079c@arm.com>
-Date: Mon, 14 Feb 2022 14:10:19 +0000
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id R1ImYBMheNjW; Mon, 14 Feb 2022 14:14:43 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 3FA8C60AFE;
+	Mon, 14 Feb 2022 14:14:43 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 069D5C0011;
+	Mon, 14 Feb 2022 14:14:43 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CFC07C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 14:14:41 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id AF08F813C6
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 14:14:41 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4cClIqJ-3V5W for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Feb 2022 14:14:41 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id E6E43813C2
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 14:14:40 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id E6060374; Mon, 14 Feb 2022 15:14:37 +0100 (CET)
+Date: Mon, 14 Feb 2022 15:14:36 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v3 00/10] iommu cleanup and refactoring
+Message-ID: <YgpjzNtQlOdq+1AB@8bytes.org>
+References: <20220214015538.2828933-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v1 1/8] iommu: Add iommu_group_replace_domain()
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
- <20220106022053.2406748-2-baolu.lu@linux.intel.com>
- <43f2fc07-19ea-53a4-af86-a9192a950c96@arm.com>
- <20220214124518.GU4160@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220214124518.GU4160@nvidia.com>
-Cc: kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
- linux-pci@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
- Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
- Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Stuart Yoder <stuyoder@gmail.com>, Kevin Tian <kevin.tian@intel.com>,
- Chaitanya Kulkarni <kch@nvidia.com>,
+Content-Disposition: inline
+In-Reply-To: <20220214015538.2828933-1-baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ David Airlie <airlied@linux.ie>, Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux-foundation.org, Jonathan Hunter <jonathanh@nvidia.com>,
+ Christoph Hellwig <hch@infradead.org>,
  Alex Williamson <alex.williamson@redhat.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>
+ Thierry Reding <thierry.reding@gmail.com>, Ben Skeggs <bskeggs@redhat.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,63 +66,42 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-02-14 12:45, Jason Gunthorpe wrote:
-> On Mon, Feb 14, 2022 at 12:09:36PM +0000, Robin Murphy wrote:
->> On 2022-01-06 02:20, Lu Baolu wrote:
->>> Expose an interface to replace the domain of an iommu group for frameworks
->>> like vfio which claims the ownership of the whole iommu group.
->>
->> But if the underlying point is the new expectation that
->> iommu_{attach,detach}_device() operate on the device's whole group where
->> relevant, why should we invent some special mechanism for VFIO to be
->> needlessly inconsistent?
->>
->> I said before that it's trivial for VFIO to resolve a suitable device if it
->> needs to; by now I've actually written the patch ;)
->>
->> https://gitlab.arm.com/linux-arm/linux-rm/-/commit/9f37d8c17c9b606abc96e1f1001c0b97c8b93ed5
+On Mon, Feb 14, 2022 at 09:55:28AM +0800, Lu Baolu wrote:
+> v3:
+>  - Remove ops check when dev_iommu_ops() is used.
+>  - This version of series is available on github:
+>    https://github.com/LuBaolu/intel-iommu/commits/iommu-domain-ops-v3
 > 
-> Er, how does locking work there? What keeps busdev from being
-> concurrently unplugged?
+> Lu Baolu (10):
+>   iommu/vt-d: Remove guest pasid related callbacks
+>   iommu: Remove guest pasid related interfaces and definitions
+>   iommu/vt-d: Remove aux-domain related callbacks
+>   iommu: Remove aux-domain related interfaces and iommu_ops
+>   iommu: Remove apply_resv_region
+>   drm/nouveau/device: Get right pgsize_bitmap of iommu_domain
+>   iommu: Use right way to retrieve iommu_ops
+>   iommu: Remove unused argument in is_attach_deferred
+>   iommu: Use dev_iommu_ops() helper
+>   iommu: Split struct iommu_ops
 
-Same thing that prevents the bus pointer from suddenly becoming invalid 
-in the current code, I guess :)
+Really cool, thanks for doing this, Baolu! I am currently running some
+tests on this series to make sure there are no build breakages. And I
+agree with Jason that:
 
-But yes, holding a group reference alone can't prevent the group itself 
-from changing, and the finer points of locking still need working out - 
-there's a reason you got a link to a WIP branch in my tree rather than a 
-proper patch in your inbox (TBH at the moment that one represents about 
-a 5:1 ratio of time spent on the reasoning behind the commit message vs. 
-the implementation itself).
+	iommu: Use right way to retrieve iommu_ops and
+	iommu: Use dev_iommu_ops() helper
 
-> How can iommu_group_get() be safely called on
-> this pointer?
+can be combined into one patch. Splitting iommu_ops was something I have
+been thinking about for some time, so thanks again for doing this.
 
-VFIO hardly needs to retrieve the iommu_group from a device which it 
-derived from the iommu_group it holds in the first place. What matters 
-is being able to call *other* device-based IOMMU API interfaces in the 
-long term. And once a robust solution for that is in place, it should 
-inevitably work for a device-based attach interface too.
+Regards,
 
-> All of the above only works normally inside a probe/remove context
-> where the driver core is blocking concurrent unplug and descruction.
-> 
-> I think I said this last time you brought it up that lifetime was the
-> challenge with this idea.
-
-Indeed, but it's a challenge that needs tackling, because the bus-based 
-interfaces need to go away. So either we figure it out now and let this 
-attach interface rework benefit immediately, or I spend three times as 
-long solving it on my own and end up deleting 
-iommu_group_replace_domain() in about 6 months' time anyway.
-
-Thanks,
-Robin.
+	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
