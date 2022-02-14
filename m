@@ -4,141 +4,53 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 45458C433F5
-	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 13:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 087B8C433EF
+	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 13:16:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D14364015E;
-	Mon, 14 Feb 2022 13:15:54 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id B4B88400E0;
+	Mon, 14 Feb 2022 13:16:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eURr9f9hBKfn; Mon, 14 Feb 2022 13:15:53 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 41E3E400E0;
-	Mon, 14 Feb 2022 13:15:53 +0000 (UTC)
+	with ESMTP id z0G9GgKZracf; Mon, 14 Feb 2022 13:16:09 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 4E7AE40621;
+	Mon, 14 Feb 2022 13:16:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E7D47C001A;
-	Mon, 14 Feb 2022 13:15:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 36617C001A;
+	Mon, 14 Feb 2022 13:16:09 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1AC35C000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 13:15:51 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E7925C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 13:16:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id ECACF4015E
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 13:15:50 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id C0C7140600
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 13:16:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MpV1i_5pz18h for <iommu@lists.linux-foundation.org>;
- Mon, 14 Feb 2022 13:15:49 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam11on20614.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7eae::614])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 81CD4400E0
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 13:15:49 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a7YLXzF3pDxVpYZG2toC8LShOlNQyvpEfUiao9fTR2mzFgGtz88mbPcHUWTVbOX8EsZl038Nm7i45+kzJy97HymeGXXdEw5ku0kviYuaiIr0M7tWiTwXrXDrnqbarwiD3z7CBH51OfqQ1wxB32MNt2ZN98RqkXGDC/7+UJsAUEw66PWq3UkoZCRb//R9AzWZoSKKCnSloFJLumZi8nJHej1DPysglLA5c0OpwrHq6coEjTo2kEDsoQRVWWpXMqrz98cpCkHCAX/jNeys9yNvbBMP9pFd1xul4zuyzSBA7hJ9AYAJ9PS0nW6pVfBMHSabdUfjAyVK4eSTcRcJSFhZmw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=90pxKIVgUQDwCyLmJ/ClJ3lIRlFSzv6NYIDgpNPWbVs=;
- b=LnKpXXsG4k+ZSHkArno+4fDZEjTKJBCSs2C7IotdJFPSn43BLJagO5YW6ehi3cBa6Fjw8ZRvWXamwh//lRsPweAJvLtmzPMYMP+i0bpqSEuDiyfujOWUEkvLSsWE0+ujXqIzJ+9m6NyIi8FfiBw5agyRZqQK8c1VtN6lO8Mp03mk9OLjyuQrqr2t1S5n/9ijok7A4/RiEBV7yLJ+/r3NZ9WhLfQ1qbLPB+ksKMMy7uyQW6nTaqr19NGb3LKDM4tCuqFvQiQSxGF7uXoLK/odh5nJIgbMkiRGaoDRUrJUZUm74zKWBz3+IjwdpdAP/S+oQsfVx7A1YsRZkzdki0IcDA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=90pxKIVgUQDwCyLmJ/ClJ3lIRlFSzv6NYIDgpNPWbVs=;
- b=TdrXDj9vTCN0q/znMiX0SkzsYB7APPqDVM2HhaBmP7/HT7HqDq2+o+5FkgvUrISkau9o0js8bBDJaDtpA+2SBP1TmbS1J8CG1EzPKWlFN7O9MrJnZBD6SWrIg2wqxfSM9WgIKAg5QzPmfamEwq2/1j7QvrIwT2gBOYJyVeL9lmQZ7CadDMWw9DWxC/JeWVTEuGTknhoGdE1IG1BHSnkESaexCnuyp7kjEj3s0XDvPEd1xnwlKGlTCOywiZzSe8BOtVKXVFGYwMWWzFith2xipBspNtVKAPzPNc0d9dVxX88Cxkj8vgk/mlGr+illjpuSbmlmE5CQKJOXSeFgsl3dxA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BY5PR12MB4817.namprd12.prod.outlook.com (2603:10b6:a03:1fe::13)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.12; Mon, 14 Feb
- 2022 13:15:46 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::e8f4:9793:da37:1bd3]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::e8f4:9793:da37:1bd3%4]) with mapi id 15.20.4975.019; Mon, 14 Feb 2022
- 13:15:46 +0000
-Date: Mon, 14 Feb 2022 09:15:44 -0400
-To: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v1 5/8] iommu/amd: Use iommu_attach/detach_device()
-Message-ID: <20220214131544.GX4160@nvidia.com>
-References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
- <20220106022053.2406748-6-baolu.lu@linux.intel.com>
- <20220106143345.GC2328285@nvidia.com> <Ygo8iek2CwtPp2hj@8bytes.org>
-Content-Disposition: inline
-In-Reply-To: <Ygo8iek2CwtPp2hj@8bytes.org>
-X-ClientProxiedBy: BL1PR13CA0214.namprd13.prod.outlook.com
- (2603:10b6:208:2bf::9) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+ with ESMTP id OQjuOuayVxQW for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Feb 2022 13:16:01 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from theia.8bytes.org (8bytes.org
+ [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A544A400E0
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 13:16:01 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id A1DAB2FB; Mon, 14 Feb 2022 14:15:59 +0100 (CET)
+Date: Mon, 14 Feb 2022 14:15:58 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCH] iommu/rockchip: : Use standard driver registration
+Message-ID: <YgpWDkcftsILEjpq@8bytes.org>
+References: <05ca5e1b29bdd350f4e20b9ceb031a2c281e23d2.1644005728.git.robin.murphy@arm.com>
+ <c08d58bff340da6a829e76d66d2fa090a9718384.1644005728.git.robin.murphy@arm.com>
+ <4984895.Adqdaih0Sd@phil>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8a0134c1-e24a-4d53-8199-08d9efbc1c55
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4817:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB48178F47CD73687A31AFD4F4C2339@BY5PR12MB4817.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: X3HfZdlwBxEzgVMHZ7Qyx7Ob5q5+w7WauXQ2zkUCY/HrzBeMtFXcV7djOwVxLcS2KMLzVpLm9w7nzIFyVTdZNOOnTwAulQPe1YImWmSOdNloY20U5LE/vdMVDdY5I7oJm/wGgkYoEOjL5VhG+dLcEaK++Vqzv4MVknXY5Kw9NRaCTKpsYDGn8O9t/CMTlnz3hmpIazstX36HiZdYlzWpT5u1pdwcLisANlmCzlAv9rH3oGQ5v93qmQX20BIohW9BtX2NSz3tdcH+StsN7oMoAnAupeLQA0SLcwsSWN/RQjMrKO4H4byf8xJr14h2i7llgbwMfIJ3B2hi5begsr2lF7Yrj0nhibzjVOyMDy14gTm50V09UtaJzspaeLVR7tfZP6i7+IyLrB9Fvf65UucqbOWgTPtwfxBkbEvzCgftnIIBhFS3+cT5xBdgXHR5JaacfiBMQwm2SklMJscnq/Q8bvwEynvOyM8wwNx9wqvfvxnUy4A6uqriacHeSXfbPssdCpLxpnaPgssDT0eO6GPAw2tezGHYJmCY7OOAlm2y0rGpY8BkJR3mmVD79I8Y40IxEmEA+ThkQ5H0dmOJbVLR3VRbX7GbQd0lNT54MqIwWe08slucALAvzRBCaNTnfGo2ygMBiTatRg4n56Fwq+7oyA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(7416002)(1076003)(38100700002)(54906003)(4744005)(6916009)(33656002)(8936002)(5660300002)(316002)(186003)(26005)(6512007)(6506007)(2906002)(2616005)(508600001)(86362001)(36756003)(66476007)(66556008)(66946007)(4326008)(6486002)(8676002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4nldyEaxsQRQOzOBvFiTER/N8HVFsqjNBQLPCRZ3ncINdF3yBPLG3tZOzN+V?=
- =?us-ascii?Q?GILBStBOVDXjOvP5tIa/WmTrqR0o9dfx32MVy1Zxi1j+752qyx83ohGsX1dS?=
- =?us-ascii?Q?zKKM6MxgZljX0hycGk0ZPOMwSL+EkvndGYhWPm1P5joIL7JUuhTYrRs73z5p?=
- =?us-ascii?Q?CNixjIT67S5+HhqDzKDplBkQHQXKAcbCK/1XPWcdNIi9bDVMfzlpbrd8bs7A?=
- =?us-ascii?Q?gvjqQ5XJhjElZ8uwoIhtyCO2qMzTVY56ymIPuCuWFv/ckB35/F4bZ5sHtGUn?=
- =?us-ascii?Q?kVjM+FSQnXYre5lufVYMORuiW/J3p/XMHLL+odMRh90uC3nfBJ/6tASPZ7d5?=
- =?us-ascii?Q?aKTAjZIaC0gc4NKzIgvjw3JIdrx9ofnzerW3nOmg2rs96FsEc9FHRvzJjBMC?=
- =?us-ascii?Q?mmDZHB+/fLEkj1MyTHaoyb9FLoiOXSWPYsNlj0jsJ3gFjitTvrxj0YZJLDdA?=
- =?us-ascii?Q?FLxDhKIid7MrsBI6NIC6gK50I74yywiqMid/1w79/anJjo65vBt8WP9q9eTa?=
- =?us-ascii?Q?mIqKD6uJw57eocXcJepGo+ea2azN1lYt5KDQmDBcogfFJgwO64Luu01Ox+oa?=
- =?us-ascii?Q?boBcpDYKTuleO2P2uuOz/tIz+S//LZg3NBHDK+J7sqJwtRStgd0CaI/j/i3R?=
- =?us-ascii?Q?+9ofGnTLf9K3Zuw0WFBN+AyD/eatZVmbMAtdh+HHWx6TTalVdnPH+tT+yndy?=
- =?us-ascii?Q?FSS86F6To6OhnXX6SAsH5A+fP0tunE0I+/mWoX62/JDJXE+q8/sMIgVfiKqE?=
- =?us-ascii?Q?YiqoaAgI+H8TxhjaEfF2aU40G3tGLw08Qsh2si3Ir3SDKYcddyXD4Tc8oxBY?=
- =?us-ascii?Q?pTkKX0PPUJz/2/D2xc4mYr/+71PPRmM9tMQHsJP0nkLl6iyVmij/FArr/rZF?=
- =?us-ascii?Q?zzksOrs+6/ehho5Y50GeJyCmtYKNgnkbeZW5ARdzztCTYE6QrbE76dBov+mx?=
- =?us-ascii?Q?/ULyOEsyQ7hK31O6SAwwLo7tXodByLWoRMAWXOIlMCo8O8hUEjJC0kBukxD0?=
- =?us-ascii?Q?S3Ypf30qr7ZwvUy/77Z71S1iaY4QsvSYA6lhQ0SmLCDtAD2jq9LQNNtEfqV7?=
- =?us-ascii?Q?e1WUq7a9kzZ1oH3a7yYZ6HgEuEmdxFerZyryBMPJz6VZiHqXb9U+KWDsCtb/?=
- =?us-ascii?Q?UiHpMXu8wX3QAHwvaDTqaKqW5XoAsv0JjYtHYuj1Z9d3Df+9wMHunPLFMPwB?=
- =?us-ascii?Q?m7BuIYi6qSMHJ7cJ7mI3sSf+wuEt8hB2HSuKrJR8OfIou6gPa9nnZ4QDQfXl?=
- =?us-ascii?Q?m2dLAs2yv8q1HQ1JFejdlHGs143KL9JV47ztlE1oVkqD1LdHXMuyJeyJCI2t?=
- =?us-ascii?Q?/QtyLbWAuRhPefnBkF4X7Lugxa9CUIsWOFQn4+aNq8RO2LgD+nbTc/f99NdY?=
- =?us-ascii?Q?aiNcs8x/S+DBItLQYgPFrWcpsuOD1NL5srwKr0cKV41kGgDdxJZm+Y7v2wsw?=
- =?us-ascii?Q?7Zuqq0xm/xq58Mp/2fBMvgTPQmaHXD/mnofwgrL4z6yTyaGu7l3ebmm7+ZVE?=
- =?us-ascii?Q?zWnZuo/ciNjfMUyspREP9kMDeHsUqZBcyghwrXH2jZESOJLmXOit/uKR1k9P?=
- =?us-ascii?Q?oXZwId0cP02V+yGtSHw=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a0134c1-e24a-4d53-8199-08d9efbc1c55
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2022 13:15:46.0847 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5hPPuF5fVQP4lsfGmbswK0IOunzvErOpGCKQtHfBUahhbj1QgvvCUJNK2urDfJ0o
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4817
-Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
- David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
- Thierry Reding <thierry.reding@gmail.com>,
- Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
- Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
- Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
- Robin Murphy <robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <4984895.Adqdaih0Sd@phil>
+Cc: will@kernel.org, linux-rockchip@lists.infradead.org,
+ iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -151,29 +63,22 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Feb 14, 2022 at 12:27:05PM +0100, Joerg Roedel wrote:
-> On Thu, Jan 06, 2022 at 10:33:45AM -0400, Jason Gunthorpe wrote:
-> > But I'm not sure how this can work with multi-device groups - this
-> > seems to assigns a domain setup for direct map, so perhaps this only
-> > works if all devices are setup for direct map?
+On Fri, Feb 04, 2022 at 10:34:05PM +0100, Heiko Stuebner wrote:
+> Am Freitag, 4. Februar 2022, 21:16:41 CET schrieb Robin Murphy:
+> > It's been a long time since there was any reason to register IOMMU
+> > drivers early. Convert to the standard platform driver helper.
+> > 
+> > CC: Heiko Stuebner <heiko@sntech.de>
+> > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > 
-> Right, at boot all devices in this group are already setup for using a
-> direct map. There are usually two devices in those groups, the GPU
-> itself and the sound device for HDMI sound output.
+> Reviewed-by: Heiko Stuebner <heiko@sntech.de>
 
-But how does the sound device know that this has been done to it?
-
-eg how do we know the sound device hasn't been bound to VFIO or
-something at this point?
-
-Jason
+Applied both, thanks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
