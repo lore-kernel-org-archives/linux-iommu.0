@@ -4,142 +4,58 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BDAD8C433EF
-	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 12:45:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3F9FEC433F5
+	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 12:49:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 65F5541061;
-	Mon, 14 Feb 2022 12:45:28 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id DFF0C410AC;
+	Mon, 14 Feb 2022 12:49:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OCFoKjcUr6ai; Mon, 14 Feb 2022 12:45:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 53EA7409DA;
-	Mon, 14 Feb 2022 12:45:27 +0000 (UTC)
+	with ESMTP id 9lCQlKpJAJXz; Mon, 14 Feb 2022 12:49:55 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id B5FE341061;
+	Mon, 14 Feb 2022 12:49:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2CF04C0011;
-	Mon, 14 Feb 2022 12:45:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 96F71C0011;
+	Mon, 14 Feb 2022 12:49:54 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2A73AC000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:45:25 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 551E9C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:49:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 2573F404E5
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:45:25 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 3377A4015E
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:49:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id coeZHG9vcVWv for <iommu@lists.linux-foundation.org>;
- Mon, 14 Feb 2022 12:45:23 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam12on2060e.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:fe5b::60e])
- by smtp2.osuosl.org (Postfix) with ESMTPS id CE38440476
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:45:23 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UN9BvCsjSnAPTAjrfK5SHGRp6YrixgTU2+341H6u1g8lPtbqRbqiCmFdgv+6Zf4xk1mF5juvJyS6QHCpEsFjRDgFe8DMQaTIxX7FR+fhN926Dd/r+7uty+iCbggfOrK9JVpcLB/Ro8Gk66vSkwGuG5mnfWllIdvvdSi3DiY67BrbbughfI0gj9AAh1yYKpISaeBSktEMVZqlF0gFerGarMLj3BLKPoGxQIEEbxX+GerHsUXnlYTfckBMuO7Lb0vf0pSUAJU2NB/kOhugtncT+DQRyDKz6lhJw1nAk+Gfk7zLyRwnEbAfgvWJYKyUuCBTMvj6OUgogsuFRNAzeKACfg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dtardRRXKgeCe9/IjvnQyrMmgH6Tv+1wKy/HlxbqTso=;
- b=nulmP7g4GX+VVKcfXy3l4HX0Kq+HwyN6Y3w6v047zNeHTZc1vRkUN3DAWE4Y0v5/v0ySxRUSg6d+EcrvfV0bx/WDDh4s7gXJC4SwQ4N8IrV4G8qEQ16ZDhn2IirdGkLNvt0Tv7LODNb7x27YJVC337PXCn8Nj4q1wAZmcXTg/hgs4OZw+etCbRojLWmClJKroe7K2ZNPIw7w0eR7nOSXcoXLkA2BidjLDAUM/5Qp8TSANUxUxgCnltwnbCP0wW+oU3OT0pAlKUEqGUF4X8LciSdRNUkQ57h2rXYAwlkLjhcNWCxrnpfppOnMAy9ZD/K0qbD7lRXPZVmG4i2t00ONMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dtardRRXKgeCe9/IjvnQyrMmgH6Tv+1wKy/HlxbqTso=;
- b=bzD0H+HF97JWelLs73Hc4zd7piysfp+lYtyXYSjJVG5RQLuW6B8Nkf89aYD/RTZQ27Yyw/PBo/vl9Rxxoy7kpgcsb59tTgYkwnRmYzvO3hmDmz5cKLyWzXJN5BzX675wS+LUXtRIKurxTEMU5IaRl0ghK/hJaQ2pUgtVwL7rFMbrgROFuU7G6kCiOZYuzl8KkBnkN8t9rIpHc2Qs0VAoEmJNskGMyAdo1zcN+BnMh74B7P7O1rfqBKdLbubK5xBv1tgolaAYV/RBW3sH8fIDPeccNAkJESES+KHORpo/WNLHvZErf/2H6bPMTGdn132aONd/ES/W6xZ0OPNCtpFMzQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by DM5PR12MB1594.namprd12.prod.outlook.com (2603:10b6:4:e::18) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4975.15; Mon, 14 Feb 2022 12:45:20 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::e8f4:9793:da37:1bd3]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::e8f4:9793:da37:1bd3%4]) with mapi id 15.20.4975.019; Mon, 14 Feb 2022
- 12:45:20 +0000
-Date: Mon, 14 Feb 2022 08:45:18 -0400
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v1 1/8] iommu: Add iommu_group_replace_domain()
-Message-ID: <20220214124518.GU4160@nvidia.com>
-References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
- <20220106022053.2406748-2-baolu.lu@linux.intel.com>
- <43f2fc07-19ea-53a4-af86-a9192a950c96@arm.com>
-Content-Disposition: inline
-In-Reply-To: <43f2fc07-19ea-53a4-af86-a9192a950c96@arm.com>
-X-ClientProxiedBy: BL0PR01CA0011.prod.exchangelabs.com (2603:10b6:208:71::24)
- To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+ with ESMTP id dKRsehjGh0hI for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Feb 2022 12:49:52 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from theia.8bytes.org (8bytes.org
+ [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 5DDD6400E0
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:49:52 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id C068B2FB; Mon, 14 Feb 2022 13:49:49 +0100 (CET)
+Date: Mon, 14 Feb 2022 13:49:48 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v3 07/10] iommu: Use right way to retrieve iommu_ops
+Message-ID: <YgpP7AhY5hd/DX/C@8bytes.org>
+References: <20220214015538.2828933-1-baolu.lu@linux.intel.com>
+ <20220214015538.2828933-8-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 608d45b6-290e-4749-6164-08d9efb7dc2c
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1594:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR12MB1594FE09CAB57E5F44062744C2339@DM5PR12MB1594.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uhhDTIYx2dHWX8YywQQkdiWXYaq58VeAIjTldPJ1gEkgfjIhcN4MeUVgJT7AVL0PQ+wlAnSF3sG2lvpA6Nk9zdIkbEJz/QaTgn9NtXz0C1iz4HLPPXOt33K3gVN6Y3t4Z9YmofrtRl4NW/JIFrU7HzhGQ4QnCUvUVMVMjKCPT9nfPycZe33Lm5mqOohxfaHUe/6uJcs+Gl2skdfmxuKXqD9DnJxZCj85QufnJIt+L0zuOptLPNxTvxQfRYmpg3bjDIfB+fj1QVWO1HqYu5cBMM4kkaO5hDu9HhpdfnqA+vCFqouhqHjZbVT+J+YS3pAS58AolMDNIDNa0do8NHXjV0XBD+Z5HZIYut0zxXlpcSu3cJ2cWZ/gqPZTPhMRxRtDP+e5xSTWTdDs1gREU47MjgLJV/wyUX4fdW8qiuD9ZKtfiMMZXk3oTeTKltUI3zaK3qdW2g/N44932gZTiLZVsF3O9LQiJ38lXZIER4g5FN3mW4zO8I0aUETyeh4p6ri4W5kHTzxG+wsvSEgKYJtqeCSWHBa24rcTLdMVCwwHIYlSASqzH/UjMn6LB7m4bVdny6xa/nT16qdpskWU2rwcQD2q/o0H08Kc3iXrFSVwzN4Sz7peGDs1pSXMb2Retu1Pbpj5MnGK7GnANvmzm3uvR6spqbfdAt/RDT4LaDxITOlRH64PwuZMa6wv5vMxOMvWG708b1uIUDRdAhXf5dhuCLN9LLdWJFVyyEuVG8HpoKU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(966005)(508600001)(4326008)(6506007)(186003)(66476007)(7416002)(36756003)(66946007)(66556008)(6486002)(8676002)(33656002)(83380400001)(5660300002)(54906003)(6916009)(2906002)(6512007)(316002)(26005)(1076003)(2616005)(86362001)(38100700002)(53546011)(8936002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OfwFlmdjOo/9Dinmk84pjtzz4qIKYXQ9kVBdGE++l21T9w4ztJH6oW2T9rSy?=
- =?us-ascii?Q?WJJUrhKspOzAGbMHhFQBO2ra++mS2iYwO5EOO+zrX6BMbFB74K9zpyUUjaD3?=
- =?us-ascii?Q?g2i7TvRz9ThinOHZRwr5g63vKGaya2B6/ISmf38Bw54x48cRlUHMpwY1cAE+?=
- =?us-ascii?Q?aeKgJQTz7XURfdYT028gFTzJdHk+s2KbFraAxZBse442FKpPL2ll9v2Uonj/?=
- =?us-ascii?Q?uq00qocmp1f8QqwyD2XoAGcdAeFLw2FU2UQKPqHzhEHuFCWdqYI1gQ87n89M?=
- =?us-ascii?Q?xy3gxByf1OMAFVswfuJJp+ByF25Bf8GPyrIYdgKT9+yZGCaYM/Bm/iNMov5h?=
- =?us-ascii?Q?rM3Rx7uHgDAeI1E6FAX9Ut30unwG/BSgXbIcFo5OSYnaf1B0gBsWiIrifrTk?=
- =?us-ascii?Q?qrObPBhBrexYXakfQkCWE2EU4zbzDgj8zJM8Aspv25POoYYJYRD/EsEImlxR?=
- =?us-ascii?Q?4cE506xGhHqIsU22BKISWxrUYVQsleKJdwrghfBoSqqmLT1N8QgGbUKCvYVI?=
- =?us-ascii?Q?eo+9stQjqWe+jJ4+HJmGQqjhILHaTONUfy+KuuNSjtBpHtBAuxJ3EqEPM3U/?=
- =?us-ascii?Q?9tHRY7YGOsMPuBZcGihtQQlOXtMuFqj1hLmSrovWUrc4esQywTqD8uoGWe4b?=
- =?us-ascii?Q?ANe8cYg4Y3PutA4tifiKcq/FuPUuVMBrMw+IPcs0desbHzAfgjLU1bdc+B2y?=
- =?us-ascii?Q?Yv86+EMz/q0iK6uxOmA2vAxXwSkCUTiP/pnCXBsYt01T4rv8kRWLf3FWtOoe?=
- =?us-ascii?Q?NYzXHFRxEpM660VhxquCBsn+rCmc4GZF1fN3JCmG5B2eOoZoyd7hc4rd+WEa?=
- =?us-ascii?Q?Io3NusV6ixLF8zL08dr/xm1hWZaP0QB3KHdew+lQO/xoONo2lzuOpwZexHRR?=
- =?us-ascii?Q?1v/nBEg3AmuhH/XHKeeHbAsHYkvkpOWIMosxd1l96giireWdYYeKDVcuZhVu?=
- =?us-ascii?Q?105Xelr0XTSAeaYqc5VlXx2xEgnXi2uq+r/cpfsqC8HTSzbCjbAoS/v9273W?=
- =?us-ascii?Q?AfmCJol3q0lYSJxI7mTsMZhqLTbZo3NofHNTNQhZxx1J2M4xhpnf6sXiwwOu?=
- =?us-ascii?Q?/840rOzK48+fvg7zN4jaQ9ZT1FoPKgTUEBnRCxQdVYvPgPwrCnt0h1QprZJj?=
- =?us-ascii?Q?kGQP89b+Eqnq64JILaJ9Q/wFquCeJjlshed0z54K5e0mXCwKE9igRakx3MgD?=
- =?us-ascii?Q?ZXADpCZrCfty3Q09PpLaeK/SN5SJ4Anw3ir6lcj2X7QOkW9Q5bjoMOuPfAJM?=
- =?us-ascii?Q?HNUJjxHjuh5hlQF+VGk8SUqbGqSUkW5EuyBerS5hZhGnrglN3pooAuR6bJ6s?=
- =?us-ascii?Q?YwCX/bWt2WXXJ1jpHxl14YqnfZNTUkgBTiSphq8HfM6CgC+PZDaPuCFW6duv?=
- =?us-ascii?Q?Rz2hWazPqAH8ygl9us12Wm942wT8h8t0MqQKy/mUThQjiXLOve6jsBFziCec?=
- =?us-ascii?Q?neU1rfvPt1aChWNhG406u4in6xLXown7/7dcsbP0kIU7H6o+Mo0Dbxgaz3sk?=
- =?us-ascii?Q?a4TRpFIYmIZHsK/AmbUYYhR9lbo62ivffJy3kfvtUT5W431pZsaOHVTtz/N6?=
- =?us-ascii?Q?iYcHumnV6qpOH3HE/Kw=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 608d45b6-290e-4749-6164-08d9efb7dc2c
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2022 12:45:20.4241 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XTV1GEGPhCLnkg07wfovayEI6RB/5t5k0RUvggaO8975iw+73adManUZX5Gj7xDD
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1594
-Cc: kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
- linux-pci@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
- Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
- Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Stuart Yoder <stuyoder@gmail.com>, Kevin Tian <kevin.tian@intel.com>,
- Chaitanya Kulkarni <kch@nvidia.com>,
+Content-Disposition: inline
+In-Reply-To: <20220214015538.2828933-8-baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ David Airlie <airlied@linux.ie>, Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux-foundation.org, Jonathan Hunter <jonathanh@nvidia.com>,
+ Christoph Hellwig <hch@infradead.org>,
  Alex Williamson <alex.williamson@redhat.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>
+ Thierry Reding <thierry.reding@gmail.com>, Ben Skeggs <bskeggs@redhat.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
+ linux-kernel@vger.kernel.org, Jacob jun Pan <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -152,39 +68,26 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Feb 14, 2022 at 12:09:36PM +0000, Robin Murphy wrote:
-> On 2022-01-06 02:20, Lu Baolu wrote:
-> > Expose an interface to replace the domain of an iommu group for frameworks
-> > like vfio which claims the ownership of the whole iommu group.
-> 
-> But if the underlying point is the new expectation that
-> iommu_{attach,detach}_device() operate on the device's whole group where
-> relevant, why should we invent some special mechanism for VFIO to be
-> needlessly inconsistent?
-> 
-> I said before that it's trivial for VFIO to resolve a suitable device if it
-> needs to; by now I've actually written the patch ;)
-> 
-> https://gitlab.arm.com/linux-arm/linux-rm/-/commit/9f37d8c17c9b606abc96e1f1001c0b97c8b93ed5
+On Mon, Feb 14, 2022 at 09:55:35AM +0800, Lu Baolu wrote:
+> +static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
+> +{
+> +	/*
+> +	 * Assume that valid ops must be installed if iommu_probe_device()
+> +	 * has succeeded. The device ops are essentially for internal use
+> +	 * within the IOMMU subsystem itself, so we should be able to trust
+> +	 * ourselves not to misuse the helper.
+> +	 */
+> +	WARN_ON(!dev || !dev->iommu || !dev->iommu->iommu_dev ||
+> +		!dev->iommu->iommu_dev->ops);
 
-Er, how does locking work there? What keeps busdev from being
-concurrently unplugged? How can iommu_group_get() be safely called on
-this pointer?
+There is no need for this WARN_ON, the code will oops anyway when one of
+the pointers checked here is NULL.
 
-All of the above only works normally inside a probe/remove context
-where the driver core is blocking concurrent unplug and descruction.
-
-I think I said this last time you brought it up that lifetime was the
-challenge with this idea.
-
-Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
