@@ -1,80 +1,74 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E1962C433EF
-	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 02:01:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D5F10C433F5
+	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 02:58:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 951CD40463;
-	Mon, 14 Feb 2022 02:01:37 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 75F2960648;
+	Mon, 14 Feb 2022 02:58:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Prfad94ql9eB; Mon, 14 Feb 2022 02:01:36 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id NTAk1u3m13c5; Mon, 14 Feb 2022 02:58:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 27AF7400D3;
-	Mon, 14 Feb 2022 02:01:36 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 540F2606E7;
+	Mon, 14 Feb 2022 02:58:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DAE2FC0011;
-	Mon, 14 Feb 2022 02:01:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B59AC001A;
+	Mon, 14 Feb 2022 02:58:37 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BE0B8C000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 02:01:33 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AC57BC000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 02:58:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id A122A4012A
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 02:01:33 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 89D0840139
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 02:58:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cu6cd3MOsNRy for <iommu@lists.linux-foundation.org>;
- Mon, 14 Feb 2022 02:01:32 +0000 (UTC)
+ with ESMTP id t9DrF9xu0p-B for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Feb 2022 02:58:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 9C58C400D3
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 02:01:32 +0000 (UTC)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 4B6304012A
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 02:58:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1644804092; x=1676340092;
- h=message-id:date:mime-version:cc:subject:to:references:
- from:in-reply-to:content-transfer-encoding;
- bh=uM4eaPEur3eeStm8M6r17HYW2FgzI1a510pLlxYCStU=;
- b=M5vo+x9aEEC4DaICcR9BAwZ/Yn0M7LGVFbn1eYzw5wwXHckLWbU+P635
- vupeylM3wUXhxWnkoN7jrse6FtWaXyXd9uf2ltMAFjn6Foj2dIG8R5jDh
- W9wzE2DT3uCcPq3JLdHE477KvXkC2iPYTehyOhGiIEtqcd2NVOYdvVQhZ
- pCsZgCIfHVyJh3XGljquGPgaaGYXNNyAThC9Wl1XnG5/TOJQE9YurZLUK
- kkdKbyEUkTAFAYyl1tZ0u3h3xR368FTcET4/MgoiBwtVrml1tcO+1dNR6
- rS/jggki0/d62x8QGvd0pUUkqjL6l3WR/eWxbC0szcPY5baQFVN15wPw7 w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="250198695"
-X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; d="scan'208";a="250198695"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 13 Feb 2022 18:01:32 -0800
+ t=1644807515; x=1676343515;
+ h=from:to:cc:subject:date:message-id:mime-version:
+ content-transfer-encoding;
+ bh=U5LogFle85DF75CuzggC6SMHtkreQy9inDpsfSOHuaY=;
+ b=ilj94RoCa7+gofwYu9AFexxKG/cKurRmv+8sUIIlMHUQIYG7Tg6/9LPr
+ FPMbgq8ZsmWilf/E/W0p6524Bl+4dFRW8ELRo7NUFlDiyhZ02/ibRHCOR
+ r9Li1vTxeGc7JscnwxbU/uWkr/a1jNwubaMZebefQ6ogZ+1nQHBjZ67TD
+ iBDNbNAWlcz56jTHza+oygBbUpYCa6qcVwLbZbKDQCA0Q0giawFz1Bl1W
+ xLnMnp0rS8pePxTyjwtDdGRPxjP5gtko3XhygL/PW5tiPCdNUUxyRis+v
+ jpMDdtXf6bCEjxtyfuTXcBzBxU2lD6OulVnd24G/f6VJJXCxFxxpMVElw Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="230637511"
+X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; d="scan'208";a="230637511"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 13 Feb 2022 18:58:34 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; d="scan'208";a="680139430"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
- ([10.239.159.118])
- by fmsmga001.fm.intel.com with ESMTP; 13 Feb 2022 18:01:27 -0800
-Message-ID: <e56ac8fd-151e-fb51-f2ee-7b4cc8b69c5c@linux.intel.com>
-Date: Mon, 14 Feb 2022 10:00:10 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 00/10] iommu cleanup and refactoring
-Content-Language: en-US
-To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
- Christoph Hellwig <hch@infradead.org>, Ben Skeggs <bskeggs@redhat.com>,
- Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-References: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
+X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; d="scan'208";a="501514886"
+Received: from allen-box.sh.intel.com ([10.239.159.118])
+ by orsmga002.jf.intel.com with ESMTP; 13 Feb 2022 18:58:31 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
-Cc: David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Jonathan Hunter <jonathanh@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Thierry Reding <thierry.reding@gmail.com>,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>
+To: Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 00/11] iommu/vt-d: Some Intel IOMMU cleanups
+Date: Mon, 14 Feb 2022 10:56:53 +0800
+Message-Id: <20220214025704.3184654-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,103 +81,68 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2/8/22 9:25 AM, Lu Baolu wrote:
-> Hi,
-> 
-> The guest pasid and aux-domain related code are dead code in current
-> iommu subtree. As we have reached a consensus that all these features
-> should be based on the new iommufd framework (which is under active
-> development), the first part of this series removes and cleanups all
-> the dead code.
-> 
-> The second part of this series refactors the iommu_domain by moving all
-> domain specific ops from iommu_ops to a new iommu_domain_ops. This makes
-> iommu_domain self-contained and represent the abstraction of an I/O
-> translation table in the IOMMU subsystem. With different type of
-> iommu_domain providing different set of ops, it's easier to support more
-> types of I/O translation tables.
-> 
-> Please help to review and comment.
-> 
-> Best regards,
-> baolu
-> 
-> Change log:
-> v1: https://lore.kernel.org/linux-iommu/20220124071103.2097118-1-baolu.lu@linux.intel.com/
-> 
-> v2:
->   - Remove apply_resv_region callback.
->   - Remove domain argument from is_attach_deferred callback.
->   - Convert all feasible instances of dev->bus->iommu_ops to dev_iommu_ops().
->   - Add the default_domain_ops (default iommu_domain_ops) in iommu_ops to
->     avoid big churn in dozens of iommu drivers.
->   - We discussed removing pgsize_bitmap in struct iommu_ops and
->     initialize the domain field in domain_alloc(). Considering that
->     domain_alloc() is being refactored, let's wait until the new domain_alloc()
->     comes.
->   - Various code/description refinement.
->   - This version of series is available on github:
->     https://github.com/LuBaolu/intel-iommu/commits/iommu-domain-ops-v2
-> 
-> Lu Baolu (10):
->    iommu/vt-d: Remove guest pasid related callbacks
->    iommu: Remove guest pasid related interfaces and definitions
->    iommu/vt-d: Remove aux-domain related callbacks
->    iommu: Remove aux-domain related interfaces and iommu_ops
->    iommu: Remove apply_resv_region
->    drm/nouveau/device: Get right pgsize_bitmap of iommu_domain
->    iommu: Use right way to retrieve iommu_ops
->    iommu: Remove unused argument in is_attach_deferred
->    iommu: Use dev_iommu_ops() helper
->    iommu: Split struct iommu_ops
-> 
->   include/linux/intel-iommu.h                   |  27 -
->   include/linux/intel-svm.h                     |  12 -
->   include/linux/iommu.h                         | 184 +++---
->   drivers/iommu/amd/amd_iommu.h                 |   3 +-
->   drivers/iommu/intel/pasid.h                   |   4 -
->   include/uapi/linux/iommu.h                    | 181 ------
->   .../drm/nouveau/nvkm/engine/device/tegra.c    |   2 +-
->   drivers/iommu/amd/iommu.c                     |  23 +-
->   drivers/iommu/amd/iommu_v2.c                  |   2 +-
->   drivers/iommu/apple-dart.c                    |  20 +-
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  18 +-
->   drivers/iommu/arm/arm-smmu/arm-smmu.c         |  20 +-
->   drivers/iommu/arm/arm-smmu/qcom_iommu.c       |  18 +-
->   drivers/iommu/exynos-iommu.c                  |  14 +-
->   drivers/iommu/fsl_pamu_domain.c               |  10 +-
->   drivers/iommu/intel/debugfs.c                 |   3 +-
->   drivers/iommu/intel/iommu.c                   | 540 +-----------------
->   drivers/iommu/intel/pasid.c                   | 161 ------
->   drivers/iommu/intel/svm.c                     | 209 -------
->   drivers/iommu/iommu.c                         | 326 ++---------
->   drivers/iommu/ipmmu-vmsa.c                    |  18 +-
->   drivers/iommu/msm_iommu.c                     |  30 +-
->   drivers/iommu/mtk_iommu.c                     |  20 +-
->   drivers/iommu/mtk_iommu_v1.c                  |  14 +-
->   drivers/iommu/omap-iommu.c                    |  14 +-
->   drivers/iommu/rockchip-iommu.c                |  14 +-
->   drivers/iommu/s390-iommu.c                    |  14 +-
->   drivers/iommu/sprd-iommu.c                    |  18 +-
->   drivers/iommu/sun50i-iommu.c                  |  18 +-
->   drivers/iommu/tegra-gart.c                    |  18 +-
->   drivers/iommu/tegra-smmu.c                    |  14 +-
->   drivers/iommu/virtio-iommu.c                  |  14 +-
->   32 files changed, 303 insertions(+), 1680 deletions(-)
-> 
+Hi folks,
 
-Thank you very much for the comments. A new version of this series has
-been posted here.
+After a long time of evolution, the drivers/iommu/intel/iommu.c
+becomes a bit messy. This series tries to cleanup and refactor
+the driver to make it more concise.
 
-https://lore.kernel.org/linux-iommu/20220214015538.2828933-1-baolu.lu@linux.intel.com/
+It includes,
+
+- Remove some unnecessary code, includes and prototypes;
+- Move creating per-device driver data from domain_attach to
+  device_probe callback.
+- Use an array for global per-device driver data so that they
+  could be searched repidly.
+- Use the rculist for per-domain device driver data and remove
+  the existing spinlock.
+- Code style fix.
+
+Your comments are very appreciated.
 
 Best regards,
 baolu
+
+Change log:
+
+v1: initial post
+ - https://lore.kernel.org/linux-iommu/20220207064142.1092846-1-baolu.lu@linux.intel.com/
+
+v2:
+ - Avoid migration of large amounts of code.
+ - Split the cleanup patches into separated ones for convenient code
+   review.
+ - This version of series is available on github:
+   https://github.com/LuBaolu/intel-iommu/commits/iommu-vtd-cleanup-v2
+
+Lu Baolu (11):
+  iommu/vt-d: Remove intel_iommu::domains
+  iommu/vt-d: Remove finding domain in dmar_insert_one_dev_info()
+  iommu/vt-d: Remove iova_cache_get/put()
+  iommu/vt-d: Remove domain and devinfo mempool
+  iommu/vt-d: Remove DEFER_DEVICE_DOMAIN_INFO
+  iommu/vt-d: Remove unnecessary includes
+  iommu/vt-d: Remove unnecessary prototypes
+  iommu/vt-d: Fix indentation of goto labels
+  iommu/vt-d: Remove commented code
+  iommu/vt-d: Use xarray for global device_domain_info
+  iommu/vt-d: Use rculist for per-domain device list
+
+ include/linux/intel-iommu.h   |   6 +-
+ drivers/iommu/intel/debugfs.c |  14 +-
+ drivers/iommu/intel/iommu.c   | 597 +++++++++-------------------------
+ drivers/iommu/intel/pasid.c   |  12 +-
+ drivers/iommu/intel/svm.c     |   6 +-
+ 5 files changed, 165 insertions(+), 470 deletions(-)
+
+-- 
+2.25.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
