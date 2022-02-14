@@ -1,67 +1,84 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0D787C433EF
-	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 17:35:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1C1A5C433F5
+	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 17:42:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C556880BB3;
-	Mon, 14 Feb 2022 17:35:11 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id B3BD260F34;
+	Mon, 14 Feb 2022 17:42:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jK9v5_9_1gWg; Mon, 14 Feb 2022 17:35:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id A3AA28134A;
-	Mon, 14 Feb 2022 17:35:10 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PktzPOZddjS0; Mon, 14 Feb 2022 17:42:13 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 92E2960F26;
+	Mon, 14 Feb 2022 17:42:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8B62CC001A;
-	Mon, 14 Feb 2022 17:35:10 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2D884C000B;
- Mon, 14 Feb 2022 17:35:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 42748C001A;
+	Mon, 14 Feb 2022 17:42:02 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 07F95C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 17:42:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 0ECBD80C68;
- Mon, 14 Feb 2022 17:35:08 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id DE81D40332
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 17:42:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lHQ1ftdHky5i; Mon, 14 Feb 2022 17:35:07 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id V64pFD2LweMu for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Feb 2022 17:41:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 1FCAC815AB;
- Mon, 14 Feb 2022 17:35:07 +0000 (UTC)
-Received: from fraeml741-chm.china.huawei.com (unknown [172.18.147.226])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JyBDj5LyQz6H6y8;
- Tue, 15 Feb 2022 01:34:45 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml741-chm.china.huawei.com (10.206.15.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 14 Feb 2022 18:35:05 +0100
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 14 Feb 2022 17:35:01 +0000
-To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>
-Subject: [PATCH v5 5/5] iova: Add iova_len argument to
- iova_domain_init_rcaches()
-Date: Tue, 15 Feb 2022 01:29:06 +0800
-Message-ID: <1644859746-20279-6-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1644859746-20279-1-git-send-email-john.garry@huawei.com>
-References: <1644859746-20279-1-git-send-email-john.garry@huawei.com>
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 1193F400A4
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 17:41:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1644860513;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=cosw6xv3oQ315iRMA4qLGgG8Dk1NQk9XlhixQZy/TZU=;
+ b=FSLqkEimDVmEEPmToHFQHbOaUWs0/OeYTiUT8ZPdkdjwy83c4LwDb8EaACL//XfPg5Hazz
+ buVP+uDiX/fMeKkipx5xbGbMdytQFaG4elYh3K48H8fmESjhzjyBUkHCYiXNQ8Ixf+Bw0R
+ uik3HDom0k1y8K/mLM+nMha1VizYA0M=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-447-a7Zmw9YHM-GC7OCHCJrwmQ-1; Mon, 14 Feb 2022 12:41:50 -0500
+X-MC-Unique: a7Zmw9YHM-GC7OCHCJrwmQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
+ [10.5.11.11])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A500C1853024;
+ Mon, 14 Feb 2022 17:41:46 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.194.147])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 0F5A17DE56;
+ Mon, 14 Feb 2022 17:41:33 +0000 (UTC)
+From: David Hildenbrand <david@redhat.com>
+To: linux-kernel@vger.kernel.org
+Subject: [PATCH v1 0/2] mm: enforce pageblock_order < MAX_ORDER
+Date: Mon, 14 Feb 2022 18:41:30 +0100
+Message-Id: <20220214174132.219303-1-david@redhat.com>
 MIME-Version: 1.0
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: mst@redhat.com, jasowang@redhat.com, linuxarm@huawei.com,
- linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
- iommu@lists.linux-foundation.org, hch@lst.de
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Cc: devicetree@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ David Hildenbrand <david@redhat.com>,
+ Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
+ "Michael S. Tsirkin" <mst@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
+ virtualization@lists.linux-foundation.org, linux-mm@kvack.org,
+ Minchan Kim <minchan@kernel.org>, iommu@lists.linux-foundation.org,
+ Rob Herring <robh+dt@kernel.org>, Paul Mackerras <paulus@samba.org>,
+ Michael Ellerman <mpe@ellerman.id.au>, Zi Yan <ziy@nvidia.com>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Frank Rowand <frowand.list@gmail.com>, Christoph Hellwig <hch@lst.de>,
+ Vlastimil Babka <vbabka@suse.cz>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -74,139 +91,79 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: John Garry via iommu <iommu@lists.linux-foundation.org>
-Reply-To: John Garry <john.garry@huawei.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add max opt argument to iova_domain_init_rcaches(), and use it to set the
-rcaches range.
+Having pageblock_order >= MAX_ORDER seems to be able to happen in corner
+cases and some parts of the kernel are not prepared for it.
 
-Also fix up all users to set this value (at 0, meaning use default),
-including a wrapper for that, iova_domain_init_rcaches_default().
+For example, Aneesh has shown [1] that such kernels can be compiled on
+ppc64 with 64k base pages by setting FORCE_MAX_ZONEORDER=8, which will run
+into a WARN_ON_ONCE(order >= MAX_ORDER) in comapction code right during
+boot.
 
-For dma-iommu.c we derive the iova_len argument from the IOMMU group
-max opt DMA size.
+We can get pageblock_order >= MAX_ORDER when the default hugetlb size is
+bigger than the maximum allocation granularity of the buddy, in which case
+we are no longer talking about huge pages but instead gigantic pages.
 
-Signed-off-by: John Garry <john.garry@huawei.com>
----
- drivers/iommu/dma-iommu.c            | 15 ++++++++++++++-
- drivers/iommu/iova.c                 | 19 ++++++++++++++++---
- drivers/vdpa/vdpa_user/iova_domain.c |  4 ++--
- include/linux/iova.h                 |  3 ++-
- 4 files changed, 34 insertions(+), 7 deletions(-)
+Having pageblock_order >= MAX_ORDER can only make alloc_contig_range() of
+such gigantic pages more likely to succeed.
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 908272f0153e..7afa2226c6bd 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -525,6 +525,8 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
- 	unsigned long order, base_pfn;
- 	struct iova_domain *iovad;
-+	size_t max_opt_dma_size;
-+	unsigned long iova_len = 0;
- 	int ret;
- 
- 	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
-@@ -560,7 +562,18 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 	}
- 
- 	init_iova_domain(iovad, 1UL << order, base_pfn);
--	ret = iova_domain_init_rcaches(iovad);
-+
-+	max_opt_dma_size = iommu_group_get_max_opt_dma_size(dev->iommu_group);
-+	if (max_opt_dma_size) {
-+		unsigned long shift = __ffs(1UL << order);
-+
-+		iova_len = roundup_pow_of_two(max_opt_dma_size);
-+		iova_len >>= shift;
-+		if (!iova_len)
-+			iova_len = 1;
-+	}
-+
-+	ret = iova_domain_init_rcaches(iovad, iova_len);
- 	if (ret)
- 		return ret;
- 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index f6eb93c737cb..f05aae044e25 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -705,12 +705,20 @@ static void iova_magazine_push(struct iova_magazine *mag, unsigned long pfn)
- 	mag->pfns[mag->size++] = pfn;
- }
- 
--int iova_domain_init_rcaches(struct iova_domain *iovad)
-+static unsigned long iova_len_to_rcache_max(unsigned long iova_len)
-+{
-+	return order_base_2(iova_len) + 1;
-+}
-+
-+int iova_domain_init_rcaches(struct iova_domain *iovad, unsigned long iova_len)
- {
- 	unsigned int cpu;
- 	int i, ret;
- 
--	iovad->rcache_max_size = 6; /* Arbitrarily high default */
-+	if (iova_len)
-+		iovad->rcache_max_size = iova_len_to_rcache_max(iova_len);
-+	else
-+		iovad->rcache_max_size = 6; /* Arbitrarily high default */
- 
- 	iovad->rcaches = kcalloc(iovad->rcache_max_size,
- 				 sizeof(struct iova_rcache),
-@@ -754,7 +762,12 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
- 	free_iova_rcaches(iovad);
- 	return ret;
- }
--EXPORT_SYMBOL_GPL(iova_domain_init_rcaches);
-+
-+int iova_domain_init_rcaches_default(struct iova_domain *iovad)
-+{
-+	return iova_domain_init_rcaches(iovad, 0);
-+}
-+EXPORT_SYMBOL_GPL(iova_domain_init_rcaches_default);
- 
- /*
-  * Try inserting IOVA range starting with 'iova_pfn' into 'rcache', and
-diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa_user/iova_domain.c
-index 22f7d43f8a68..74471bc463ec 100644
---- a/drivers/vdpa/vdpa_user/iova_domain.c
-+++ b/drivers/vdpa/vdpa_user/iova_domain.c
-@@ -514,12 +514,12 @@ vduse_domain_create(unsigned long iova_limit, size_t bounce_size)
- 	spin_lock_init(&domain->iotlb_lock);
- 	init_iova_domain(&domain->stream_iovad,
- 			PAGE_SIZE, IOVA_START_PFN);
--	ret = iova_domain_init_rcaches(&domain->stream_iovad);
-+	ret = iova_domain_init_rcaches_default(&domain->stream_iovad);
- 	if (ret)
- 		goto err_iovad_stream;
- 	init_iova_domain(&domain->consistent_iovad,
- 			PAGE_SIZE, bounce_pfns);
--	ret = iova_domain_init_rcaches(&domain->consistent_iovad);
-+	ret = iova_domain_init_rcaches_default(&domain->consistent_iovad);
- 	if (ret)
- 		goto err_iovad_consistent;
- 
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index 02f7222fa85a..56281434ce0c 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -95,7 +95,8 @@ struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
- 	unsigned long pfn_hi);
- void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	unsigned long start_pfn);
--int iova_domain_init_rcaches(struct iova_domain *iovad);
-+int iova_domain_init_rcaches(struct iova_domain *iovad, unsigned long iova_len);
-+int iova_domain_init_rcaches_default(struct iova_domain *iovad);
- struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
- void put_iova_domain(struct iova_domain *iovad);
- #else
+Reliable use of gigantic pages either requires boot time allcoation or CMA,
+no need to overcomplicate some places in the kernel to optimize for corner
+cases that are broken in other areas of the kernel.
+
+Let's enforce pageblock_order < MAX_ORDER and simplify.
+
+Especially patch #1 can be regarded a cleanup before:
+	[PATCH v5 0/6] Use pageblock_order for cma and alloc_contig_range
+	alignment. [2]
+
+[1] https://lkml.kernel.org/r/87r189a2ks.fsf@linux.ibm.com
+[2] https://lkml.kernel.org/r/20220211164135.1803616-1-zi.yan@sent.com
+
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
+Cc: Zi Yan <ziy@nvidia.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Frank Rowand <frowand.list@gmail.com>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Minchan Kim <minchan@kernel.org>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: devicetree@vger.kernel.org
+Cc: virtualization@lists.linux-foundation.org
+Cc: iommu@lists.linux-foundation.org
+Cc: linux-mm@kvack.org
+
+David Hildenbrand (2):
+  cma: factor out minimum alignment requirement
+  mm: enforce pageblock_order < MAX_ORDER
+
+ arch/powerpc/include/asm/fadump-internal.h |  5 ----
+ arch/powerpc/kernel/fadump.c               |  2 +-
+ drivers/of/of_reserved_mem.c               |  9 ++----
+ drivers/virtio/virtio_mem.c                |  9 ++----
+ include/linux/cma.h                        |  8 ++++++
+ include/linux/pageblock-flags.h            |  7 +++--
+ kernel/dma/contiguous.c                    |  4 +--
+ mm/Kconfig                                 |  3 ++
+ mm/cma.c                                   | 20 ++++----------
+ mm/page_alloc.c                            | 32 ++++++----------------
+ 10 files changed, 37 insertions(+), 62 deletions(-)
+
+
+base-commit: 754e0b0e35608ed5206d6a67a791563c631cec07
 -- 
-2.26.2
+2.34.1
 
 _______________________________________________
 iommu mailing list
