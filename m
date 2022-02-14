@@ -1,83 +1,65 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8B8ADC433EF
-	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 09:33:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8C551C433F5
+	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 10:03:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 2365540491;
-	Mon, 14 Feb 2022 09:33:09 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 2534A60E2A;
+	Mon, 14 Feb 2022 10:03:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vOTURDpSZmCF; Mon, 14 Feb 2022 09:33:03 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 7OU5oZ3PxkLm; Mon, 14 Feb 2022 10:03:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 36FE6403AC;
-	Mon, 14 Feb 2022 09:33:03 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 1FCB560C09;
+	Mon, 14 Feb 2022 10:03:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 08537C001A;
-	Mon, 14 Feb 2022 09:33:03 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 616F6C000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 09:33:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E1591C001A;
+	Mon, 14 Feb 2022 10:03:19 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 55280C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 10:03:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 4E213401FB
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 09:33:02 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 436354018B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 10:03:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pzeg0jXIpogA for <iommu@lists.linux-foundation.org>;
- Mon, 14 Feb 2022 09:32:56 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com
- [IPv6:2607:f8b0:4864:20::e2b])
- by smtp2.osuosl.org (Postfix) with ESMTPS id ADB90403AC
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 09:32:56 +0000 (UTC)
-Received: by mail-vs1-xe2b.google.com with SMTP id r20so18100450vsn.0
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 01:32:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=PLcOLPtWWBqmDDHWEpO34tYOTTm7+UHIWiSVGaIprIg=;
- b=kg7kZyOb9/YPB2k+M73IONRXz0ib37KQkPxENT9vkKJhUhnBd8pRRHgbxHfmDHuwaI
- Qp0xORBGpq8I118nzQGSimsTjEb/8C0E2jTHe4NQ39vqZnvaykMSBztw2sBlX7jIU20I
- kiZbcEw7bF3GAHyAntGEJZ50THUb/HaulyM4G1Y8nq+8KVTiTHr6iAL4nVJdIYXXKpL2
- bPROl28fDbRGWgfe4O1nqP5CGVm0w6sJq+14a0KLXytgO2KZS6zorANr24VCnVDLUZ5k
- eRp4SBUhHR/IHYZSa27xAmqszPkdSAIA/vvO2wCMBqeLB7xyLe3ZX5sDaHOOtHyqFLsb
- Bgsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=PLcOLPtWWBqmDDHWEpO34tYOTTm7+UHIWiSVGaIprIg=;
- b=wH332EEkSUKvTLnIxjmBRqyM8nNYndn01Q17zPrO0M9F+v4JnVUPLYd34DryTiH+sa
- lKKGwceMQqisGaYAv2D9djLUx9r+tyF03BXtwPruQcCuAiAVWgeKWZryk8dNb9i+E2/V
- YBOKtjJhaTTHPDQXmWJVUuUmXRhvIcabTAUoAmA2myZY0jvOa6rvLvelUoeYFP/uuayz
- mr4oOl+TQ/wTjjFd1EfvisL5MlcAMacJf14LQP6Qz1M/z6Xyw8FjxPoFZ4Rkz12tIn1I
- HYoWVxfePB61gw3Tav9WKDGkwh7IkvWyiC8v6kqIk8UABmDR+ErcmNDxkJ4dJLXXk+LP
- Bwiw==
-X-Gm-Message-State: AOAM532FDjizH4LuM6kyznAuSDoSAPJg7yU8gkacghR0nlUSqxDc+edj
- geCtH1PbHOGOiyXGMZn3nlVkYEQGHVBXbiONELc=
-X-Google-Smtp-Source: ABdhPJy4V/CniEFw8ajNIlkx7WvD0RKtlAJV/VatU6txf3/yRAN7MFYb/HrmUclI/GBtLwYDypffXY+IlaXcTaG1q7A=
-X-Received: by 2002:a05:6102:3e90:: with SMTP id
- m16mr3333445vsv.4.1644831175514; 
- Mon, 14 Feb 2022 01:32:55 -0800 (PST)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id uymX_MSUUqa9 for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Feb 2022 10:03:17 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from aposti.net (aposti.net [89.234.176.197])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 83CFA4016F
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 10:03:17 +0000 (UTC)
+Date: Mon, 14 Feb 2022 10:03:01 +0000
+From: Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH 06/23] drm/ingenic: Make use of the helper
+ component_compare_of
+To: Yong Wu <yong.wu@mediatek.com>
+Message-Id: <19HA7R.NEIIBC5SNORY1@crapouillou.net>
+In-Reply-To: <20220214060819.7334-7-yong.wu@mediatek.com>
+References: <20220214060819.7334-1-yong.wu@mediatek.com>
+ <20220214060819.7334-7-yong.wu@mediatek.com>
 MIME-Version: 1.0
-References: <20220211024515.21884-1-adrianhuang0701@gmail.com>
- <1627d563-ff48-6204-33be-361db75011f9@linux.intel.com>
-In-Reply-To: <1627d563-ff48-6204-33be-361db75011f9@linux.intel.com>
-From: Huang Adrian <adrianhuang0701@gmail.com>
-Date: Mon, 14 Feb 2022 17:32:43 +0800
-Message-ID: <CAHKZfL3os22ADrC=C3JVO-4h-hAa_cLYNq7c3_+vo3jkbtrCrg@mail.gmail.com>
-Subject: Re: [PATCH] iommu/vt-d: Fix list_add double add when enabling VMD and
- scalable mode
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>,
- Nirmal Patel <nirmal.patel@linux.intel.com>, iommu@lists.linux-foundation.org,
- Adrian Huang <ahuang12@lenovo.com>,
- Jonathan Derrick <jonathan.derrick@linux.dev>,
- David Woodhouse <dwmw2@infradead.org>
+Cc: David Airlie <airlied@linux.ie>, Liviu Dudau <liviu.dudau@arm.com>,
+ dri-devel@lists.freedesktop.org, Sebastian Reichel <sre@kernel.org>,
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ Will Deacon <will@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ James Wang <james.qian.wang@arm.com>, linux-mips@vger.kernel.org,
+ Chun-Kuang Hu <chunkuang.hu@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+ linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ linux-arm-kernel@lists.infradead.org,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ srv_heupstream@mediatek.com, Stephen Boyd <sboyd@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,31 +72,75 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Baolu,
+Hi,
 
-On Mon, Feb 14, 2022 at 8:35 AM Lu Baolu <baolu.lu@linux.intel.com> wrote:
->
-> Hi Adrian,
->
-> > The solution is to prevent from allocating pasid table if those
-> > devices are subdevices of the VMD device.
->
-> Thanks for your patch!
->
-> Is this the only patch that is needed to make VMD devices work in VT-d
-> scalable mode?
+Le lun., f=E9vr. 14 2022 at 14:08:02 +0800, Yong Wu =
 
-Yes, it is. With this patch, the system can boot successfully and the
-RAID device connected to the VMD device can be recognized by the host
-OS. I also ran a simple IO stress on the RAID device by compiling
-kernel `$ make -j $(nproc)`. Everything looks good.
+<yong.wu@mediatek.com> a =E9crit :
+> Use the common compare helper from component.
+> =
 
--- Adrian
+> Cc: Paul Cercueil <paul@crapouillou.net>
+> Cc: linux-mips@vger.kernel.org
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+
+Acked-by: Paul Cercueil <paul@crapouillou.net>
+
+Cheers,
+-Paul
+
+> ---
+>  drivers/gpu/drm/ingenic/ingenic-drm-drv.c | 7 +------
+>  1 file changed, 1 insertion(+), 6 deletions(-)
+> =
+
+> diff --git a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c =
+
+> b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
+> index b4943a56be09..23b8f012b418 100644
+> --- a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
+> +++ b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
+> @@ -1322,11 +1322,6 @@ static int =
+
+> ingenic_drm_bind_with_components(struct device *dev)
+>  	return ingenic_drm_bind(dev, true);
+>  }
+> =
+
+> -static int compare_of(struct device *dev, void *data)
+> -{
+> -	return dev->of_node =3D=3D data;
+> -}
+> -
+>  static void ingenic_drm_unbind(struct device *dev)
+>  {
+>  	struct ingenic_drm *priv =3D dev_get_drvdata(dev);
+> @@ -1360,7 +1355,7 @@ static int ingenic_drm_probe(struct =
+
+> platform_device *pdev)
+>  	if (!np)
+>  		return ingenic_drm_bind(dev, false);
+> =
+
+> -	drm_of_component_match_add(dev, &match, compare_of, np);
+> +	drm_of_component_match_add(dev, &match, component_compare_of, np);
+>  	of_node_put(np);
+> =
+
+>  	return component_master_add_with_match(dev, &ingenic_master_ops, =
+
+> match);
+> --
+> 2.18.0
+> =
+
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
