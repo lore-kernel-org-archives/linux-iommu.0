@@ -4,96 +4,65 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C40B0C433F5
-	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 11:28:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C4E92C4332F
+	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 11:39:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 69C4E60EBF;
-	Mon, 14 Feb 2022 11:28:53 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 75D8860EF5;
+	Mon, 14 Feb 2022 11:39:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qdY3g26wyyLM; Mon, 14 Feb 2022 11:28:52 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 471586059F;
-	Mon, 14 Feb 2022 11:28:52 +0000 (UTC)
+	with ESMTP id CJVxjvfP09sX; Mon, 14 Feb 2022 11:39:42 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 3B64060DB2;
+	Mon, 14 Feb 2022 11:39:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 222ABC001A;
-	Mon, 14 Feb 2022 11:28:52 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 38D50C000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 11:28:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 103EBC001A;
+	Mon, 14 Feb 2022 11:39:42 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 88568C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 11:39:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 267454092D
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 11:28:50 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 6785081383
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 11:39:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zz9QFO6_xotF for <iommu@lists.linux-foundation.org>;
- Mon, 14 Feb 2022 11:28:49 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com
- [IPv6:2607:f8b0:4864:20::1034])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 02E9C40913
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 11:28:48 +0000 (UTC)
-Received: by mail-pj1-x1034.google.com with SMTP id
- d9-20020a17090a498900b001b8bb1d00e7so15485816pjh.3
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 03:28:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=message-id:date:mime-version:user-agent:subject:content-language:to
- :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=UTXgoU8n+KrzppBWMa0hmTFNwCf9odk0keuvKtaxU/k=;
- b=cnBuoZw/RKHhZsGhbrd4qubVrdgqaBcgF2vbB3TLWl8veImaTHi6FiowKDVE2OsPaQ
- 3+hEBVsaBZoUrga9sKj4zUSo7mwvsBepRCyWZAOkpyC7qZ/1ezKf3T64rZSWOA4XrXXs
- 5K5UEu+nNpRJzOuKQyecbIjxZdyKqqVqMdQmmH/y99QQZ2kLWX23TkzeaP7dwJYBhTGx
- KWdHVfBFhbFbPJNr7CIbLXk7xUbGCPvkEZRtzuQdqKA4zrI/dlxwPXgbsbEVTWQ3y65D
- c4EGfc4mJuFpDkcNpdzxW1BLPwFzNXaHGJKkG/2srCpvk64MoTle8XsxOayWytNs2HVr
- dFAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:in-reply-to
- :content-transfer-encoding;
- bh=UTXgoU8n+KrzppBWMa0hmTFNwCf9odk0keuvKtaxU/k=;
- b=VxvyhYQ/JXDCb3I3SotADXXb7hr3eZwrtaIGEHa7041wLT0DW+uvRYR2ibZIr10wvc
- KBJeqxqyvlcxqeeYNV+K5x5V7DSN/yfweCuywVEuaYa8nxdwbnUmw7zyaWGLAqwm9a0N
- JQvoK0f+uQoM0mEM84grouxM9tTi5KsYV9eKmkZouuFh16kEII3jT7HI7Gr9YiYbV/Lc
- VvITk8megGRtxaibEBknG/ssi10u3wQGJqRbBk3qQ3MJdwPskTIsLz2mN90zB4cG/CkL
- d240WEJkKpLfTuymhVRN1TzORvQC9/EG3J40VHM6h2w75aBbBiyst6qHcdihLMw9Ta07
- Z8iQ==
-X-Gm-Message-State: AOAM5329Rf+ReJ6cXUmlM06gVxwCfMF8XUsxTRkdCcKIcJGTVAXtH8da
- ecNBKJPpc5xX/nR4FQCXPNs=
-X-Google-Smtp-Source: ABdhPJzFsd/ZU8jacmR8tjLDWME3wdGPlEDldYIhUxu28Eo9nQBVjMthkkAZOx//XOQb15xsKiE/EA==
-X-Received: by 2002:a17:90b:4c06:: with SMTP id
- na6mr14002951pjb.62.1644838128522; 
- Mon, 14 Feb 2022 03:28:48 -0800 (PST)
-Received: from ?IPV6:2404:f801:0:5:8000::52c? ([2404:f801:9000:1a:efea::52c])
- by smtp.gmail.com with ESMTPSA id
- 16sm14490561pgz.76.2022.02.14.03.28.41
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 14 Feb 2022 03:28:48 -0800 (PST)
-Message-ID: <4f433f07-05be-f81f-43e8-55c3f1af23b3@gmail.com>
-Date: Mon, 14 Feb 2022 19:28:40 +0800
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id CEJzs2EsNvbC for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Feb 2022 11:39:40 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from theia.8bytes.org (8bytes.org
+ [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 9011381353
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 11:39:40 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id 727E836D; Mon, 14 Feb 2022 12:39:37 +0100 (CET)
+Date: Mon, 14 Feb 2022 12:39:36 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v1 3/8] iommu: Extend iommu_at[de]tach_device() for
+ multi-device groups
+Message-ID: <Ygo/eCRFnraY01WA@8bytes.org>
+References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
+ <20220106022053.2406748-4-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH V2 1/2] Swiotlb: Add swiotlb_alloc_from_low_pages switch
-Content-Language: en-US
-To: Christoph Hellwig <hch@lst.de>
-References: <20220209122302.213882-1-ltykernel@gmail.com>
- <20220209122302.213882-2-ltykernel@gmail.com> <20220214081919.GA18337@lst.de>
-From: Tianyu Lan <ltykernel@gmail.com>
-In-Reply-To: <20220214081919.GA18337@lst.de>
-Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
- dave.hansen@linux.intel.com, hpa@zytor.com, kys@microsoft.com,
- hch@infradead.org, wei.liu@kernel.org, sthemmin@microsoft.com, x86@kernel.org,
- decui@microsoft.com, michael.h.kelley@microsoft.com, mingo@redhat.com,
- parri.andrea@gmail.com, thomas.lendacky@amd.com,
- Tianyu Lan <Tianyu.Lan@microsoft.com>, konrad.wilk@oracle.com,
- haiyangz@microsoft.com, bp@alien8.de, tglx@linutronix.de,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- vkuznets@redhat.com, robin.murphy@arm.com
+Content-Disposition: inline
+In-Reply-To: <20220106022053.2406748-4-baolu.lu@linux.intel.com>
+Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
+ David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+ Chaitanya Kulkarni <kch@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,20 +75,99 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2/14/2022 4:19 PM, Christoph Hellwig wrote:
-> Adding a function to set the flag doesn't really change much.  As Robin
-> pointed out last time you should fine a way to just call
-> swiotlb_init_with_tbl directly with the memory allocated the way you
-> like it.  Or given that we have quite a few of these trusted hypervisor
-> schemes maybe add an argument to swiotlb_init that specifies how to
-> allocate the memory.
+On Thu, Jan 06, 2022 at 10:20:48AM +0800, Lu Baolu wrote:
+>  int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+>  {
+>  	struct iommu_group *group;
+> -	int ret;
+> +	int ret = 0;
+> +
+> +	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+> +		return -EINVAL;
+>  
+>  	group = iommu_group_get(dev);
+>  	if (!group)
+>  		return -ENODEV;
+>  
+> -	/*
+> -	 * Lock the group to make sure the device-count doesn't
+> -	 * change while we are attaching
+> -	 */
+>  	mutex_lock(&group->mutex);
+> -	ret = -EINVAL;
+> -	if (iommu_group_device_count(group) != 1)
+> -		goto out_unlock;
+> +	if (group->owner_cnt) {
+> +		/*
+> +		 * Group has been used for kernel-api dma or claimed explicitly
+> +		 * for exclusive occupation. For backward compatibility, device
+> +		 * in a singleton group is allowed to ignore setting the
+> +		 * drv.no_kernel_api_dma field.
+> +		 */
+> +		if ((group->domain == group->default_domain &&
+> +		     iommu_group_device_count(group) != 1) ||
+> +		    group->owner) {
+> +			ret = -EBUSY;
+> +			goto unlock_out;
+> +		}
+> +	}
+>  
+> -	ret = __iommu_attach_group(domain, group);
+> +	if (!group->attach_cnt) {
+> +		ret = __iommu_attach_group(domain, group);
+> +		if (ret)
+> +			goto unlock_out;
+> +	} else {
+> +		if (group->domain != domain) {
+> +			ret = -EPERM;
+> +			goto unlock_out;
+> +		}
+> +	}
+>  
+> -out_unlock:
+> +	group->owner_cnt++;
+> +	group->attach_cnt++;
+> +
+> +unlock_out:
+>  	mutex_unlock(&group->mutex);
+>  	iommu_group_put(group);
 
-Thanks for your suggestion. I will try the first approach first approach.
+This extends iommu_attach_device() to behave as iommu_attach_group(),
+changing the domain for the whole group. Wouldn't it be better to scrap
+the iommu_attach_device() interface instead and only rely on
+iommu_attach_group()? This way it is clear that a call changes the whole
+group.
+
+IIUC this work is heading towards allowing multiple domains in one group
+as long as the group is owned by one entity. That is a valid
+requirement, but the way to get there is in my eyes:
+
+	1) Introduce a concept of a sub-group (or whatever we want to
+	   call it), which groups devices together which must be in the
+	   same domain because they use the same request ID and thus
+	   look all the same to the IOMMU.
+
+	2) Keep todays IOMMU groups to group devices together which can
+	   bypass the IOMMU when talking to each other, like
+	   multi-function devices and devices behind a no-ACS bridge.
+
+	3) Rework group->domain and group->default_domain, eventually
+	   moving them to sub-groups.
+
+This is an important distinction to make and also the reason the
+iommu_attach/detach_device() interface will always be misleading. Item
+1) in this list will also be beneficial to other parts of the iommu
+code, namely iommu-dma code which can have finer-grained DMA-API domains
+with sub-groups instead of groups.
+
+Regards,
+
+	Joerg
 
 _______________________________________________
 iommu mailing list
