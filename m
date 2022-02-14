@@ -4,53 +4,53 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 49D0DC433EF
-	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 17:35:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 87DF2C433EF
+	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 17:35:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id EC57940423;
-	Mon, 14 Feb 2022 17:35:05 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 3FAD440332;
+	Mon, 14 Feb 2022 17:35:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3rLLwIuhyI6S; Mon, 14 Feb 2022 17:35:04 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 2DB7E400A4;
-	Mon, 14 Feb 2022 17:35:04 +0000 (UTC)
+	with ESMTP id I_J6OtovjxKr; Mon, 14 Feb 2022 17:35:06 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 770A0400A4;
+	Mon, 14 Feb 2022 17:35:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 13DBDC001A;
-	Mon, 14 Feb 2022 17:35:04 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 32D88C000B;
- Mon, 14 Feb 2022 17:35:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 53339C0021;
+	Mon, 14 Feb 2022 17:35:06 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7B678C000B;
+ Mon, 14 Feb 2022 17:35:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 1F76F81378;
- Mon, 14 Feb 2022 17:35:02 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id BE15460F30;
+ Mon, 14 Feb 2022 17:35:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1zBPkwwZHVHD; Mon, 14 Feb 2022 17:35:01 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id tb0sQgrAfyB8; Mon, 14 Feb 2022 17:35:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
  [185.176.79.56])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 4128C8175A;
- Mon, 14 Feb 2022 17:35:01 +0000 (UTC)
-Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.206])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JyB7v1KYzz67drY;
- Tue, 15 Feb 2022 01:30:35 +0800 (CST)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A378B60A8C;
+ Mon, 14 Feb 2022 17:35:03 +0000 (UTC)
+Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.206])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JyBDf14gMz6H7KH;
+ Tue, 15 Feb 2022 01:34:42 +0800 (CST)
 Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
+ fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 14 Feb 2022 18:34:57 +0100
+ 15.1.2308.21; Mon, 14 Feb 2022 18:35:01 +0100
 Received: from localhost.localdomain (10.69.192.58) by
  lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 14 Feb 2022 17:34:54 +0000
+ 15.1.2308.21; Mon, 14 Feb 2022 17:34:57 +0000
 To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>
-Subject: [PATCH v5 3/5] iommu: Allow iommu_change_dev_def_domain() realloc
- same default domain type
-Date: Tue, 15 Feb 2022 01:29:04 +0800
-Message-ID: <1644859746-20279-4-git-send-email-john.garry@huawei.com>
+Subject: [PATCH v5 4/5] iommu: Allow max opt DMA len be set for a group via
+ sysfs
+Date: Tue, 15 Feb 2022 01:29:05 +0800
+Message-ID: <1644859746-20279-5-git-send-email-john.garry@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1644859746-20279-1-git-send-email-john.garry@huawei.com>
 References: <1644859746-20279-1-git-send-email-john.garry@huawei.com>
@@ -81,105 +81,216 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Allow iommu_change_dev_def_domain() to create a new default domain, keeping
-the same as current.
+Add support to allow the maximum optimised DMA len be set for an IOMMU
+group via sysfs.
 
-Also remove comment about the function purpose, which will become stale.
+This is much the same with the method to change the default domain type
+for a group.
 
 Signed-off-by: John Garry <john.garry@huawei.com>
 ---
- drivers/iommu/iommu.c | 49 ++++++++++++++++++++++---------------------
- include/linux/iommu.h |  1 +
- 2 files changed, 26 insertions(+), 24 deletions(-)
+ .../ABI/testing/sysfs-kernel-iommu_groups     | 16 +++++
+ drivers/iommu/iommu.c                         | 59 ++++++++++++++++++-
+ include/linux/iommu.h                         |  6 ++
+ 3 files changed, 79 insertions(+), 2 deletions(-)
 
+diff --git a/Documentation/ABI/testing/sysfs-kernel-iommu_groups b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
+index b15af6a5bc08..ed6f72794f6c 100644
+--- a/Documentation/ABI/testing/sysfs-kernel-iommu_groups
++++ b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
+@@ -63,3 +63,19 @@ Description:	/sys/kernel/iommu_groups/<grp_id>/type shows the type of default
+ 		system could lead to catastrophic effects (the users might
+ 		need to reboot the machine to get it to normal state). So, it's
+ 		expected that the users understand what they're doing.
++
++What:		/sys/kernel/iommu_groups/<grp_id>/max_opt_dma_size
++Date:		Feb 2022
++KernelVersion:	v5.18
++Contact:	iommu@lists.linux-foundation.org
++Description:	/sys/kernel/iommu_groups/<grp_id>/max_opt_dma_size shows the
++		max optimised DMA size for the default IOMMU domain associated
++		with the group.
++		Each IOMMU domain has an IOVA domain. The IOVA domain caches
++		IOVAs upto a certain size as a performance optimisation.
++		This sysfs file allows the range of the IOVA domain caching be
++		set, such that larger than default IOVAs may be cached.
++		A value of 0 means that the default caching range is chosen.
++		A privileged user could request the kernel the change the range
++		by writing to this file. For this to happen, the same rules
++		and procedure applies as in changing the default domain type.
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 5e7ed969b870..df9ffd76c184 100644
+index df9ffd76c184..79f5cbea5c95 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -3124,6 +3124,7 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
- }
- EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
+@@ -48,6 +48,7 @@ struct iommu_group {
+ 	struct iommu_domain *default_domain;
+ 	struct iommu_domain *domain;
+ 	struct list_head entry;
++	size_t max_opt_dma_size;
+ };
  
+ struct group_device {
+@@ -89,6 +90,9 @@ static int iommu_create_device_direct_mappings(struct iommu_group *group,
+ static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+ static ssize_t iommu_group_store_type(struct iommu_group *group,
+ 				      const char *buf, size_t count);
++static ssize_t iommu_group_store_max_opt_dma_size(struct iommu_group *group,
++						  const char *buf,
++						  size_t count);
+ 
+ #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
+ struct iommu_group_attribute iommu_group_attr_##_name =		\
+@@ -570,6 +574,12 @@ static ssize_t iommu_group_show_type(struct iommu_group *group,
+ 	return strlen(type);
+ }
+ 
++static ssize_t iommu_group_show_max_opt_dma_size(struct iommu_group *group,
++				     char *buf)
++{
++	return sprintf(buf, "%zu\n", group->max_opt_dma_size);
++}
++
+ static IOMMU_GROUP_ATTR(name, S_IRUGO, iommu_group_show_name, NULL);
+ 
+ static IOMMU_GROUP_ATTR(reserved_regions, 0444,
+@@ -578,6 +588,9 @@ static IOMMU_GROUP_ATTR(reserved_regions, 0444,
+ static IOMMU_GROUP_ATTR(type, 0644, iommu_group_show_type,
+ 			iommu_group_store_type);
+ 
++static IOMMU_GROUP_ATTR(max_opt_dma_size, 0644, iommu_group_show_max_opt_dma_size,
++			iommu_group_store_max_opt_dma_size);
++
+ static void iommu_group_release(struct kobject *kobj)
+ {
+ 	struct iommu_group *group = to_iommu_group(kobj);
+@@ -664,6 +677,10 @@ struct iommu_group *iommu_group_alloc(void)
+ 	if (ret)
+ 		return ERR_PTR(ret);
+ 
++	ret = iommu_group_create_file(group, &iommu_group_attr_max_opt_dma_size);
++	if (ret)
++		return ERR_PTR(ret);
++
+ 	pr_debug("Allocated group %d\n", group->id);
+ 
+ 	return group;
+@@ -2302,6 +2319,11 @@ struct iommu_domain *iommu_get_dma_domain(struct device *dev)
+ 	return dev->iommu_group->default_domain;
+ }
+ 
++size_t iommu_group_get_max_opt_dma_size(struct iommu_group *group)
++{
++	return group->max_opt_dma_size;
++}
 +
  /*
-  * Changes the default domain of an iommu group that has *only* one device
-  *
-@@ -3134,10 +3135,6 @@ EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
+  * IOMMU groups are really the natural working unit of the IOMMU, but
+  * the IOMMU API works on domains and devices.  Bridge that gap by
+@@ -3132,12 +3154,14 @@ EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
+  * @prev_dev: The device in the group (this is used to make sure that the device
+  *	 hasn't changed after the caller has called this function)
+  * @type: The type of the new default domain that gets associated with the group
++ * @max_opt_dma_size: Set the IOMMU group max_opt_dma_size if non-zero
   *
   * Returns 0 on success and error code on failure
   *
-- * Note:
-- * 1. Presently, this function is called only when user requests to change the
-- *    group's default domain type through /sys/kernel/iommu_groups/<grp_id>/type
-- *    Please take a closer look if intended to use for other purposes.
   */
  static int iommu_change_dev_def_domain(struct iommu_group *group,
- 				       struct device *prev_dev, int type)
-@@ -3190,28 +3187,32 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
- 		goto out;
- 	}
+-				       struct device *prev_dev, int type)
++				       struct device *prev_dev, int type,
++				       unsigned long max_opt_dma_size)
+ {
+ 	struct iommu_domain *prev_dom;
+ 	struct group_device *grp_dev;
+@@ -3238,6 +3262,9 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
  
--	dev_def_dom = iommu_get_def_domain_type(dev);
--	if (!type) {
-+	if (type == __IOMMU_DOMAIN_SAME) {
-+		type = prev_dom->type;
-+	} else {
-+		dev_def_dom = iommu_get_def_domain_type(dev);
-+		if (!type) {
-+			/*
-+			 * If the user hasn't requested any specific type of domain and
-+			 * if the device supports both the domains, then default to the
-+			 * domain the device was booted with
-+			 */
-+			type = dev_def_dom ? : iommu_def_domain_type;
-+		} else if (dev_def_dom && type != dev_def_dom) {
-+			dev_err_ratelimited(prev_dev, "Device cannot be in %s domain\n",
-+					    iommu_domain_type_str(type));
-+			ret = -EINVAL;
-+			goto out;
-+		}
+ 	group->domain = group->default_domain;
+ 
++	if (max_opt_dma_size)
++		group->max_opt_dma_size = max_opt_dma_size;
 +
- 		/*
--		 * If the user hasn't requested any specific type of domain and
--		 * if the device supports both the domains, then default to the
--		 * domain the device was booted with
-+		 * Switch to a new domain only if the requested domain type is different
-+		 * from the existing default domain type
- 		 */
--		type = dev_def_dom ? : iommu_def_domain_type;
--	} else if (dev_def_dom && type != dev_def_dom) {
--		dev_err_ratelimited(prev_dev, "Device cannot be in %s domain\n",
--				    iommu_domain_type_str(type));
--		ret = -EINVAL;
--		goto out;
--	}
--
--	/*
--	 * Switch to a new domain only if the requested domain type is different
--	 * from the existing default domain type
--	 */
--	if (prev_dom->type == type) {
--		ret = 0;
--		goto out;
-+		if (prev_dom->type == type) {
-+			ret = 0;
-+			goto out;
-+		}
+ 	/*
+ 	 * Release the mutex here because ops->probe_finalize() call-back of
+ 	 * some vendor IOMMU drivers calls arm_iommu_attach_device() which
+@@ -3264,6 +3291,7 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
+ 
+ enum iommu_group_op {
+ 	CHANGE_GROUP_TYPE,
++	CHANGE_DMA_OPT_SIZE,
+ };
+ 
+ static int __iommu_group_store_type(const char *buf, struct iommu_group *group,
+@@ -3292,7 +3320,24 @@ static int __iommu_group_store_type(const char *buf, struct iommu_group *group,
+ 		return -EINVAL;
  	}
  
- 	/* We can bring up a flush queue without tearing down the domain */
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index de0c57a567c8..d242fccc7c2d 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -62,6 +62,7 @@ struct iommu_domain_geometry {
- 					      implementation              */
- #define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
- #define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
-+#define __IOMMU_DOMAIN_SAME	(1U << 4)  /* Keep same type (internal)   */
+-	return iommu_change_dev_def_domain(group, dev, type);
++	return iommu_change_dev_def_domain(group, dev, type, 0);
++}
++
++static int __iommu_group_store_max_opt_dma_size(const char *buf,
++						struct iommu_group *group,
++						struct device *dev)
++{
++	unsigned long val;
++
++	if (kstrtoul(buf, 0, &val) || !val)
++		return -EINVAL;
++
++	if (device_is_bound(dev)) {
++		pr_err_ratelimited("Device is still bound to driver\n");
++		return -EINVAL;
++	}
++
++	return iommu_change_dev_def_domain(group, dev, __IOMMU_DOMAIN_SAME, val);
+ }
  
  /*
-  * This are the possible domain-types
+@@ -3369,6 +3414,9 @@ static ssize_t iommu_group_store_common(struct iommu_group *group,
+ 	case CHANGE_GROUP_TYPE:
+ 		ret = __iommu_group_store_type(buf, group, dev);
+ 		break;
++	case CHANGE_DMA_OPT_SIZE:
++		ret = __iommu_group_store_max_opt_dma_size(buf, group, dev);
++		break;
+ 	default:
+ 		ret = -EINVAL;
+ 	}
+@@ -3385,3 +3433,10 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
+ {
+ 	return iommu_group_store_common(group, CHANGE_GROUP_TYPE, buf, count);
+ }
++
++static ssize_t iommu_group_store_max_opt_dma_size(struct iommu_group *group,
++						  const char *buf,
++						  size_t count)
++{
++	return iommu_group_store_common(group, CHANGE_DMA_OPT_SIZE, buf, count);
++}
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index d242fccc7c2d..f7f1799fb07a 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -434,6 +434,7 @@ extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
+ 				   struct device *dev, ioasid_t pasid);
+ extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
+ extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
++extern size_t iommu_group_get_max_opt_dma_size(struct iommu_group *group);
+ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		     phys_addr_t paddr, size_t size, int prot);
+ extern int iommu_map_atomic(struct iommu_domain *domain, unsigned long iova,
+@@ -732,6 +733,11 @@ static inline struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
+ 	return NULL;
+ }
+ 
++static inline size_t iommu_group_get_max_opt_dma_size(struct iommu_group *group)
++{
++	return 0;
++}
++
+ static inline int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 			    phys_addr_t paddr, size_t size, int prot)
+ {
 -- 
 2.26.2
 
