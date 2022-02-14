@@ -4,67 +4,57 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 71189C4332F
-	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 12:09:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3C9D8C433EF
+	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 12:32:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 0807D82538;
-	Mon, 14 Feb 2022 12:09:51 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id EB72B828AA;
+	Mon, 14 Feb 2022 12:32:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VXtr7n3BmO4W; Mon, 14 Feb 2022 12:09:50 +0000 (UTC)
+	with ESMTP id YqpyQ54e-aCQ; Mon, 14 Feb 2022 12:32:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id D8C7482422;
-	Mon, 14 Feb 2022 12:09:49 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id AC38181432;
+	Mon, 14 Feb 2022 12:32:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B0FCCC0011;
-	Mon, 14 Feb 2022 12:09:49 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4CA10C000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:09:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8FEF6C0011;
+	Mon, 14 Feb 2022 12:32:30 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1C132C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:32:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 22E2882433
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:09:48 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id F0F2560F1D
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:32:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LmyhMBgHAAe2 for <iommu@lists.linux-foundation.org>;
- Mon, 14 Feb 2022 12:09:47 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id dExy15pViD4B for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Feb 2022 12:32:28 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 134C282422
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:09:46 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 5312060F18
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:32:28 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3E8861396;
- Mon, 14 Feb 2022 04:09:46 -0800 (PST)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6694C1396;
+ Mon, 14 Feb 2022 04:32:27 -0800 (PST)
 Received: from [10.57.70.89] (unknown [10.57.70.89])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3A6763F718;
- Mon, 14 Feb 2022 04:09:41 -0800 (PST)
-Message-ID: <43f2fc07-19ea-53a4-af86-a9192a950c96@arm.com>
-Date: Mon, 14 Feb 2022 12:09:36 +0000
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 572EB3F718;
+ Mon, 14 Feb 2022 04:32:26 -0800 (PST)
+Message-ID: <c95e5d3a-d2b4-dcc1-b6ba-2e4e9ebc5bb0@arm.com>
+Date: Mon, 14 Feb 2022 12:32:21 +0000
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
  Thunderbird/91.6.0
-Subject: Re: [PATCH v1 1/8] iommu: Add iommu_group_replace_domain()
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: Check for error num after setting mask
 Content-Language: en-GB
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>
-References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
- <20220106022053.2406748-2-baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+References: <20220106024302.2574180-1-jiasheng@iscas.ac.cn>
+ <YgpAfVVhkNljJhJY@8bytes.org>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220106022053.2406748-2-baolu.lu@linux.intel.com>
-Cc: Chaitanya Kulkarni <kch@nvidia.com>, Stuart Yoder <stuyoder@gmail.com>,
- kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
- linux-pci@vger.kernel.org, Cornelia Huck <cohuck@redhat.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jonathan Hunter <jonathanh@nvidia.com>, iommu@lists.linux-foundation.org,
- Thierry Reding <thierry.reding@gmail.com>,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
- Diana Craciun <diana.craciun@oss.nxp.com>, Bjorn Helgaas <bhelgaas@google.com>,
- Dmitry Osipenko <digetx@gmail.com>, Li Yang <leoyang.li@nxp.com>,
- Will Deacon <will@kernel.org>, Dan Williams <dan.j.williams@intel.com>,
+In-Reply-To: <YgpAfVVhkNljJhJY@8bytes.org>
+Cc: Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+ iommu@lists.linux-foundation.org,
+ Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, will@kernel.org,
  linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -83,101 +73,51 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-01-06 02:20, Lu Baolu wrote:
-> Expose an interface to replace the domain of an iommu group for frameworks
-> like vfio which claims the ownership of the whole iommu group.
+On 2022-02-14 11:43, Joerg Roedel wrote:
+> Adding more potential reviewers.
+> 
+> On Thu, Jan 06, 2022 at 10:43:02AM +0800, Jiasheng Jiang wrote:
+>> Because of the possible failure of the dma_supported(), the
+>> dma_set_mask_and_coherent() may return error num.
+>> Therefore, it should be better to check it and return the error if
+>> fails.
 
-But if the underlying point is the new expectation that 
-iommu_{attach,detach}_device() operate on the device's whole group where 
-relevant, why should we invent some special mechanism for VFIO to be 
-needlessly inconsistent?
+In this particular case it cannot fail on any system the driver actually 
+runs on - it's a platform device so the dma_mask pointer is always 
+initialised, then dma_direct_supported() on arm64 will always return 
+true for any mask wider than 32 bits, while arm_dma_supported() will 
+also always pass since a 32-bit system cannot have memory above 40 bits 
+either.
 
-I said before that it's trivial for VFIO to resolve a suitable device if 
-it needs to; by now I've actually written the patch ;)
+There's no great harm in adding the check for the sake of consistency, I 
+guess, but it's purely cosmetic and not fixing anything.
 
-https://gitlab.arm.com/linux-arm/linux-rm/-/commit/9f37d8c17c9b606abc96e1f1001c0b97c8b93ed5
-
+Thanks,
 Robin.
 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->   include/linux/iommu.h | 10 ++++++++++
->   drivers/iommu/iommu.c | 37 +++++++++++++++++++++++++++++++++++++
->   2 files changed, 47 insertions(+)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 408a6d2b3034..66ebce3d1e11 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -677,6 +677,9 @@ void iommu_device_unuse_dma_api(struct device *dev);
->   int iommu_group_set_dma_owner(struct iommu_group *group, void *owner);
->   void iommu_group_release_dma_owner(struct iommu_group *group);
->   bool iommu_group_dma_owner_claimed(struct iommu_group *group);
-> +int iommu_group_replace_domain(struct iommu_group *group,
-> +			       struct iommu_domain *old,
-> +			       struct iommu_domain *new);
->   
->   #else /* CONFIG_IOMMU_API */
->   
-> @@ -1090,6 +1093,13 @@ static inline bool iommu_group_dma_owner_claimed(struct iommu_group *group)
->   {
->   	return false;
->   }
-> +
-> +static inline int
-> +iommu_group_replace_domain(struct iommu_group *group, struct iommu_domain *old,
-> +			   struct iommu_domain *new)
-> +{
-> +	return -ENODEV;
-> +}
->   #endif /* CONFIG_IOMMU_API */
->   
->   /**
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 72a95dea688e..ab8ab95969f5 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3431,3 +3431,40 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
->   	return user;
->   }
->   EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
-> +
-> +/**
-> + * iommu_group_replace_domain() - Replace group's domain
-> + * @group: The group.
-> + * @old: The previous attached domain. NULL for none.
-> + * @new: The new domain about to be attached.
-> + *
-> + * This is to support backward compatibility for vfio which manages the dma
-> + * ownership in iommu_group level.
-> + */
-> +int iommu_group_replace_domain(struct iommu_group *group,
-> +			       struct iommu_domain *old,
-> +			       struct iommu_domain *new)
-> +{
-> +	int ret = 0;
-> +
-> +	mutex_lock(&group->mutex);
-> +	if (!group->owner || group->domain != old) {
-> +		ret = -EPERM;
-> +		goto unlock_out;
-> +	}
-> +
-> +	if (old)
-> +		__iommu_detach_group(old, group);
-> +
-> +	if (new) {
-> +		ret = __iommu_attach_group(new, group);
-> +		if (ret && old)
-> +			__iommu_attach_group(old, group);
-> +	}
-> +
-> +unlock_out:
-> +	mutex_unlock(&group->mutex);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_group_replace_domain);
+>> Fixes: 1c894225bf5b ("iommu/ipmmu-vmsa: IPMMU device is 40-bit bus master")
+>> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+>> ---
+>>   drivers/iommu/ipmmu-vmsa.c | 4 +++-
+>>   1 file changed, 3 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+>> index aaa6a4d59057..7df5da44a004 100644
+>> --- a/drivers/iommu/ipmmu-vmsa.c
+>> +++ b/drivers/iommu/ipmmu-vmsa.c
+>> @@ -1003,7 +1003,9 @@ static int ipmmu_probe(struct platform_device *pdev)
+>>   	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
+>>   	mmu->features = of_device_get_match_data(&pdev->dev);
+>>   	memset(mmu->utlb_ctx, IPMMU_CTX_INVALID, mmu->features->num_utlbs);
+>> -	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(40));
+>> +	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(40));
+>> +	if (ret)
+>> +		return ret;
+>>   
+>>   	/* Map I/O memory and request IRQ. */
+>>   	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>> -- 
+>> 2.25.1
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
