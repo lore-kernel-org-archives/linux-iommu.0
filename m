@@ -1,80 +1,72 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AE764C433F5
-	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 00:52:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EECB2C433FE
+	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 01:57:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 459FC4031F;
-	Mon, 14 Feb 2022 00:52:15 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 85D0D60BF7;
+	Mon, 14 Feb 2022 01:57:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ixbJXD5sYMfK; Mon, 14 Feb 2022 00:52:14 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id s-6GDRNYeoCi; Mon, 14 Feb 2022 01:57:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id ED201402FB;
-	Mon, 14 Feb 2022 00:52:13 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 46578607A8;
+	Mon, 14 Feb 2022 01:57:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C0656C001A;
-	Mon, 14 Feb 2022 00:52:13 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 754E5C000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 00:52:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2694EC0011;
+	Mon, 14 Feb 2022 01:57:32 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 43466C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 01:57:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 4BE4640463
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 00:52:12 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2F41140325
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 01:57:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Ttl26mMgQBXf for <iommu@lists.linux-foundation.org>;
- Mon, 14 Feb 2022 00:52:11 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id mbsuIHXnNLqN for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Feb 2022 01:57:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 03198400F1
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 00:52:10 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 07E67402BE
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 01:57:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1644799931; x=1676335931;
- h=message-id:date:mime-version:cc:subject:to:references:
- from:in-reply-to:content-transfer-encoding;
- bh=A7I9zLwsVImPNRQZmWXcl3s9YjInQxRy4fAobdgLVV8=;
- b=Jjc0+XjmX2nI7okoSDBQuT4JZj9Pj/BUfs48xg8ABBCrcKAOBhhD7tNm
- kOV1RJ4xrgbMo1NdQ2fGN2Ka6B91Y6LsRbmiXVMOKeWtFlI07Ahii2t6X
- OHDjmu7DPxxHdfXGkJTr3mF7iLn8s/sJ0MBICKo8J+bgIhrhE8QsEKKEg
- REc5nmKVODetczquhI5WiP+e6muYqc05LbvUa2GaXC1YHU5GRCG1YsfcG
- MxRuxlCNTUi9zP7VVuSXnEdA8f06jc9TP4c5OqTtTBhm2GPpxaSzvRiSx
- UPd3P8nGC/a8Phpks52uXUAibozEoT42QLfrlIAc37dB+vFx9PQ+6+NyH w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="249933243"
-X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; d="scan'208";a="249933243"
+ t=1644803850; x=1676339850;
+ h=from:to:cc:subject:date:message-id:mime-version:
+ content-transfer-encoding;
+ bh=/oHMo00IGwehh8uwpydos/dBPlyzaHycXSK02c7jDmA=;
+ b=F8EejQuQEKZs/4mTF7DKFJ2QBcphA27wO1gQ/n/a3vMNzWkp+wWwjNMI
+ d+7V8L7iMflcPhGOVnklil4yaUsNGDCfAdm3q5wQTP74FF/z3fttZiky1
+ LAsRxRplPqZ+GiEoB95kvRPI/SX6gJBMNmvYTSIzDB1TBji0C+rE+Pef9
+ YNOf1uDI9GRHQdKdLlDJNFu0X2I+Y1oUuQAaucUogKGy05r6HeWpX+kJ0
+ G6L8Y4alg20AJZj4hFBw9FO+xocOiIF/EuwD+hfftRuSAJbQCFt/f39I2
+ rWP4tXmzEKSARDU8zdGXG/Fc2e7uB/eUWeTZeJSm9O4wGEnhjia+rDOi0 g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="249938487"
+X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; d="scan'208";a="249938487"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 13 Feb 2022 16:52:10 -0800
+ 13 Feb 2022 17:57:28 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; d="scan'208";a="680109475"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
- ([10.239.159.118])
- by fmsmga001.fm.intel.com with ESMTP; 13 Feb 2022 16:52:05 -0800
-Message-ID: <73989fc7-b01e-fbfc-3fbd-cef0ec326334@linux.intel.com>
-Date: Mon, 14 Feb 2022 08:50:48 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 08/10] iommu: Remove unused argument in
- is_attach_deferred
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Ben Skeggs <bskeggs@redhat.com>, Kevin Tian <kevin.tian@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>
-References: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
- <20220208012559.1121729-9-baolu.lu@linux.intel.com>
- <290a89f0-8318-6130-468c-6412add62cfb@arm.com>
+X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; d="scan'208";a="680137069"
+Received: from allen-box.sh.intel.com ([10.239.159.118])
+ by fmsmga001.fm.intel.com with ESMTP; 13 Feb 2022 17:57:24 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <290a89f0-8318-6130-468c-6412add62cfb@arm.com>
+To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+ Christoph Hellwig <hch@infradead.org>, Ben Skeggs <bskeggs@redhat.com>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH v3 00/10] iommu cleanup and refactoring
+Date: Mon, 14 Feb 2022 09:55:28 +0800
+Message-Id: <20220214015538.2828933-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
 Cc: David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
  iommu@lists.linux-foundation.org, Jonathan Hunter <jonathanh@nvidia.com>,
  Alex Williamson <alex.williamson@redhat.com>,
@@ -92,85 +84,104 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgUm9iaW4sCgpPbiAyLzkvMjIgOTo1MiBQTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDIw
-MjItMDItMDggMDE6MjUsIEx1IEJhb2x1IHdyb3RlOgo+PiBUaGUgaXNfYXR0YWNoX2RlZmVycmVk
-IGlvbW11X29wcyBjYWxsYmFjayBpcyBhIGRldmljZSBvcC4gVGhlIGRvbWFpbgo+PiBhcmd1bWVu
-dCBpcyB1bm5lY2Vzc2FyeSBhbmQgbmV2ZXIgdXNlZC4gUmVtb3ZlIGl0IHRvIG1ha2UgY29kZSBj
-bGVhbi4KPj4KPj4gU3VnZ2VzdGVkLWJ5OiBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0u
-Y29tPgo+PiBTaWduZWQtb2ZmLWJ5OiBMdSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29t
-Pgo+PiAtLS0KPj4gwqAgaW5jbHVkZS9saW51eC9pb21tdS5owqDCoMKgwqDCoMKgwqDCoCB8wqAg
-MiArLQo+PiDCoCBkcml2ZXJzL2lvbW11L2FtZC9hbWRfaW9tbXUuaCB8wqAgMyArLS0KPj4gwqAg
-ZHJpdmVycy9pb21tdS9hbWQvaW9tbXUuY8KgwqDCoMKgIHzCoCAzICstLQo+PiDCoCBkcml2ZXJz
-L2lvbW11L2FtZC9pb21tdV92Mi5jwqAgfMKgIDIgKy0KPj4gwqAgZHJpdmVycy9pb21tdS9pbnRl
-bC9pb21tdS5jwqDCoCB8wqAgMyArLS0KPj4gwqAgZHJpdmVycy9pb21tdS9pb21tdS5jwqDCoMKg
-wqDCoMKgwqDCoCB8IDE1ICsrKysrKy0tLS0tLS0tLQo+PiDCoCA2IGZpbGVzIGNoYW5nZWQsIDEx
-IGluc2VydGlvbnMoKyksIDE3IGRlbGV0aW9ucygtKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVk
-ZS9saW51eC9pb21tdS5oIGIvaW5jbHVkZS9saW51eC9pb21tdS5oCj4+IGluZGV4IGViMjY4NGY5
-NTAxOC4uNDdjYTdlY2E1ZDdiIDEwMDY0NAo+PiAtLS0gYS9pbmNsdWRlL2xpbnV4L2lvbW11LmgK
-Pj4gKysrIGIvaW5jbHVkZS9saW51eC9pb21tdS5oCj4+IEBAIC0yNjksNyArMjY5LDcgQEAgc3Ry
-dWN0IGlvbW11X29wcyB7Cj4+IMKgwqDCoMKgwqAgdm9pZCAoKnB1dF9yZXN2X3JlZ2lvbnMpKHN0
-cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGxpc3RfaGVhZCAKPj4gKmxpc3QpOwo+PiDCoMKgwqDC
-oMKgIGludCAoKm9mX3hsYXRlKShzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBvZl9waGFuZGxl
-X2FyZ3MgKmFyZ3MpOwo+PiAtwqDCoMKgIGJvb2wgKCppc19hdHRhY2hfZGVmZXJyZWQpKHN0cnVj
-dCBpb21tdV9kb21haW4gKmRvbWFpbiwgc3RydWN0IAo+PiBkZXZpY2UgKmRldik7Cj4+ICvCoMKg
-wqAgYm9vbCAoKmlzX2F0dGFjaF9kZWZlcnJlZCkoc3RydWN0IGRldmljZSAqZGV2KTsKPj4gwqDC
-oMKgwqDCoCAvKiBQZXIgZGV2aWNlIElPTU1VIGZlYXR1cmVzICovCj4+IMKgwqDCoMKgwqAgYm9v
-bCAoKmRldl9oYXNfZmVhdCkoc3RydWN0IGRldmljZSAqZGV2LCBlbnVtIGlvbW11X2Rldl9mZWF0
-dXJlcyAKPj4gZik7Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FtZC9hbWRfaW9tbXUu
-aCAKPj4gYi9kcml2ZXJzL2lvbW11L2FtZC9hbWRfaW9tbXUuaAo+PiBpbmRleCA0MTY4MTVhNTI1
-ZDYuLjNiMmYwNmI3YWNhNiAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9pb21tdS9hbWQvYW1kX2lv
-bW11LmgKPj4gKysrIGIvZHJpdmVycy9pb21tdS9hbWQvYW1kX2lvbW11LmgKPj4gQEAgLTExNiw4
-ICsxMTYsNyBAQCB2b2lkIGFtZF9pb21tdV9kb21haW5fY2xyX3B0X3Jvb3Qoc3RydWN0IAo+PiBw
-cm90ZWN0aW9uX2RvbWFpbiAqZG9tYWluKQo+PiDCoCBleHRlcm4gYm9vbCB0cmFuc2xhdGlvbl9w
-cmVfZW5hYmxlZChzdHJ1Y3QgYW1kX2lvbW11ICppb21tdSk7Cj4+IC1leHRlcm4gYm9vbCBhbWRf
-aW9tbXVfaXNfYXR0YWNoX2RlZmVycmVkKHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwKPj4g
-LcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3RydWN0IGRldmljZSAq
-ZGV2KTsKPj4gK2V4dGVybiBib29sIGFtZF9pb21tdV9pc19hdHRhY2hfZGVmZXJyZWQoc3RydWN0
-IGRldmljZSAqZGV2KTsKPj4gwqAgZXh0ZXJuIGludCBfX2luaXQgYWRkX3NwZWNpYWxfZGV2aWNl
-KHU4IHR5cGUsIHU4IGlkLCB1MTYgKmRldmlkLAo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoCBib29sIGNtZF9saW5lKTsKPj4gZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvaW9tbXUvYW1kL2lvbW11LmMgYi9kcml2ZXJzL2lvbW11L2FtZC9pb21tdS5jCj4+IGluZGV4
-IDQ2MWYxODQ0ZWQxZi4uMzdmMmZiYjRiMTI5IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2lvbW11
-L2FtZC9pb21tdS5jCj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYW1kL2lvbW11LmMKPj4gQEAgLTIy
-MTUsOCArMjIxNSw3IEBAIHN0YXRpYyB2b2lkIGFtZF9pb21tdV9nZXRfcmVzdl9yZWdpb25zKHN0
-cnVjdCAKPj4gZGV2aWNlICpkZXYsCj4+IMKgwqDCoMKgwqAgbGlzdF9hZGRfdGFpbCgmcmVnaW9u
-LT5saXN0LCBoZWFkKTsKPj4gwqAgfQo+PiAtYm9vbCBhbWRfaW9tbXVfaXNfYXR0YWNoX2RlZmVy
-cmVkKHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwKPj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgc3RydWN0IGRldmljZSAqZGV2KQo+PiArYm9vbCBhbWRfaW9tbXVfaXNf
-YXR0YWNoX2RlZmVycmVkKHN0cnVjdCBkZXZpY2UgKmRldikKPj4gwqAgewo+PiDCoMKgwqDCoMKg
-IHN0cnVjdCBpb21tdV9kZXZfZGF0YSAqZGV2X2RhdGEgPSBkZXZfaW9tbXVfcHJpdl9nZXQoZGV2
-KTsKPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYW1kL2lvbW11X3YyLmMgYi9kcml2ZXJz
-L2lvbW11L2FtZC9pb21tdV92Mi5jCj4+IGluZGV4IDU4ZGEwOGNjM2QwMS4uN2M5NGVjMDVkMjg5
-IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2FtZC9pb21tdV92Mi5jCj4+ICsrKyBiL2Ry
-aXZlcnMvaW9tbXUvYW1kL2lvbW11X3YyLmMKPj4gQEAgLTUzNyw3ICs1MzcsNyBAQCBzdGF0aWMg
-aW50IHBwcl9ub3RpZmllcihzdHJ1Y3Qgbm90aWZpZXJfYmxvY2sgKm5iLCAKPj4gdW5zaWduZWQg
-bG9uZyBlLCB2b2lkICpkYXRhKQo+PiDCoMKgwqDCoMKgIHJldCA9IE5PVElGWV9ET05FOwo+PiDC
-oMKgwqDCoMKgIC8qIEluIGtkdW1wIGtlcm5lbCBwY2kgZGV2IGlzIG5vdCBpbml0aWFsaXplZCB5
-ZXQgLT4gc2VuZCAKPj4gSU5WQUxJRCAqLwo+PiAtwqDCoMKgIGlmIChhbWRfaW9tbXVfaXNfYXR0
-YWNoX2RlZmVycmVkKE5VTEwsICZwZGV2LT5kZXYpKSB7Cj4+ICvCoMKgwqAgaWYgKGFtZF9pb21t
-dV9pc19hdHRhY2hfZGVmZXJyZWQoJnBkZXYtPmRldikpIHsKPj4gwqDCoMKgwqDCoMKgwqDCoMKg
-IGFtZF9pb21tdV9jb21wbGV0ZV9wcHIocGRldiwgaW9tbXVfZmF1bHQtPnBhc2lkLAo+PiDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgUFBSX0lOVkFMSUQs
-IHRhZyk7Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBnb3RvIG91dDsKPj4gZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYwo+
-PiBpbmRleCAyYjVmNGU1N2E4YmIuLjgwZjEyOTRiZTYzNCAxMDA2NDQKPj4gLS0tIGEvZHJpdmVy
-cy9pb21tdS9pbnRlbC9pb21tdS5jCj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUu
-Ywo+PiBAQCAtNTA1Miw4ICs1MDUyLDcgQEAgaW50ZWxfaW9tbXVfZGV2X2Rpc2FibGVfZmVhdChz
-dHJ1Y3QgZGV2aWNlICpkZXYsIAo+PiBlbnVtIGlvbW11X2Rldl9mZWF0dXJlcyBmZWF0KQo+PiDC
-oMKgwqDCoMKgIH0KPj4gwqAgfQo+PiAtc3RhdGljIGJvb2wgaW50ZWxfaW9tbXVfaXNfYXR0YWNo
-X2RlZmVycmVkKHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwKPj4gLcKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0cnVjdCBkZXZpY2UgKmRldikKPj4gK3N0
-YXRpYyBib29sIGludGVsX2lvbW11X2lzX2F0dGFjaF9kZWZlcnJlZChzdHJ1Y3QgZGV2aWNlICpk
-ZXYpCj4+IMKgIHsKPj4gwqDCoMKgwqDCoCByZXR1cm4gYXR0YWNoX2RlZmVycmVkKGRldik7Cj4g
-Cj4gU2VlbXMgbGlrZSB0aGVyZSdzIG5vIG5lZWQgdG8gd3JhcCB0aGlzIG5vdz8KCkkganVzdCBy
-ZWFsaXplZCB0aGF0IEkgaGF2ZSBjbGVhbmVkIHRoaXMgdXAgaW4gdGhpcyBwYXRjaC4KCmh0dHBz
-Oi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LWlvbW11LzIwMjIwMjA3MDY0MTQyLjEwOTI4NDYtNy1i
-YW9sdS5sdUBsaW51eC5pbnRlbC5jb20vCgpCZXN0IHJlZ2FyZHMsCmJhb2x1Cl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
-b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
-dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+Hi,
+
+The guest pasid and aux-domain related code are dead code in current
+iommu subtree. As we have reached a consensus that all these features
+should be based on the new iommufd framework (which is under active
+development), the first part of this series removes and cleanups all
+the dead code.
+
+The second part of this series refactors the iommu_domain by moving all
+domain specific ops from iommu_ops to a new iommu_domain_ops. This makes
+iommu_domain self-contained and represent the abstraction of an I/O
+translation table in the IOMMU subsystem. With different type of
+iommu_domain providing different set of ops, it's easier to support more
+types of I/O translation tables.
+
+Please help to review and comment.
+
+Best regards,
+baolu
+
+Change log:
+v1: https://lore.kernel.org/linux-iommu/20220124071103.2097118-1-baolu.lu@linux.intel.com/
+
+v2:
+ - https://lore.kernel.org/linux-iommu/20220208012559.1121729-1-baolu.lu@linux.intel.com/
+ - Remove apply_resv_region callback.
+ - Remove domain argument from is_attach_deferred callback.
+ - Convert all feasible instances of dev->bus->iommu_ops to dev_iommu_ops().
+ - Add the default_domain_ops (default iommu_domain_ops) in iommu_ops to
+   avoid big churn in dozens of iommu drivers.
+ - We discussed removing pgsize_bitmap in struct iommu_ops and
+   initialize the domain field in domain_alloc(). Considering that
+   domain_alloc() is being refactored, let's wait until the new domain_alloc()
+   comes.
+ - Various code/description refinement.
+ - This version of series is available on github:
+   https://github.com/LuBaolu/intel-iommu/commits/iommu-domain-ops-v2
+
+v3:
+ - Remove ops check when dev_iommu_ops() is used.
+ - This version of series is available on github:
+   https://github.com/LuBaolu/intel-iommu/commits/iommu-domain-ops-v3
+
+Lu Baolu (10):
+  iommu/vt-d: Remove guest pasid related callbacks
+  iommu: Remove guest pasid related interfaces and definitions
+  iommu/vt-d: Remove aux-domain related callbacks
+  iommu: Remove aux-domain related interfaces and iommu_ops
+  iommu: Remove apply_resv_region
+  drm/nouveau/device: Get right pgsize_bitmap of iommu_domain
+  iommu: Use right way to retrieve iommu_ops
+  iommu: Remove unused argument in is_attach_deferred
+  iommu: Use dev_iommu_ops() helper
+  iommu: Split struct iommu_ops
+
+ include/linux/intel-iommu.h                   |  27 -
+ include/linux/intel-svm.h                     |  12 -
+ include/linux/iommu.h                         | 184 +++---
+ drivers/iommu/amd/amd_iommu.h                 |   3 +-
+ drivers/iommu/intel/pasid.h                   |   4 -
+ include/uapi/linux/iommu.h                    | 181 ------
+ .../drm/nouveau/nvkm/engine/device/tegra.c    |   2 +-
+ drivers/iommu/amd/iommu.c                     |  23 +-
+ drivers/iommu/amd/iommu_v2.c                  |   2 +-
+ drivers/iommu/apple-dart.c                    |  20 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  18 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c         |  20 +-
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c       |  18 +-
+ drivers/iommu/exynos-iommu.c                  |  14 +-
+ drivers/iommu/fsl_pamu_domain.c               |  10 +-
+ drivers/iommu/intel/debugfs.c                 |   3 +-
+ drivers/iommu/intel/iommu.c                   | 540 +-----------------
+ drivers/iommu/intel/pasid.c                   | 161 ------
+ drivers/iommu/intel/svm.c                     | 209 -------
+ drivers/iommu/iommu.c                         | 339 ++---------
+ drivers/iommu/ipmmu-vmsa.c                    |  18 +-
+ drivers/iommu/msm_iommu.c                     |  30 +-
+ drivers/iommu/mtk_iommu.c                     |  20 +-
+ drivers/iommu/mtk_iommu_v1.c                  |  14 +-
+ drivers/iommu/omap-iommu.c                    |  14 +-
+ drivers/iommu/rockchip-iommu.c                |  14 +-
+ drivers/iommu/s390-iommu.c                    |  14 +-
+ drivers/iommu/sprd-iommu.c                    |  18 +-
+ drivers/iommu/sun50i-iommu.c                  |  18 +-
+ drivers/iommu/tegra-gart.c                    |  18 +-
+ drivers/iommu/tegra-smmu.c                    |  14 +-
+ drivers/iommu/virtio-iommu.c                  |  14 +-
+ 32 files changed, 308 insertions(+), 1688 deletions(-)
+
+-- 
+2.25.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
