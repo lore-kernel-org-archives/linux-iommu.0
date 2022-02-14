@@ -1,62 +1,73 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 05D82C433EF
-	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 12:52:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9A132C433EF
+	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 12:55:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id A75B240476;
-	Mon, 14 Feb 2022 12:52:38 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 458854087B;
+	Mon, 14 Feb 2022 12:55:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id sUqCFvUStMDX; Mon, 14 Feb 2022 12:52:35 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 55474400E0;
-	Mon, 14 Feb 2022 12:52:35 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id dLWIc75nX-sh; Mon, 14 Feb 2022 12:55:27 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 185F141061;
+	Mon, 14 Feb 2022 12:55:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 31C0EC0011;
-	Mon, 14 Feb 2022 12:52:35 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 45FCBC000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:52:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D20E9C0011;
+	Mon, 14 Feb 2022 12:55:26 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9CF91C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:55:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 352FC60EC0
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:52:34 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 8BD3160EC0
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:55:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ryMDpoFp0jux for <iommu@lists.linux-foundation.org>;
- Mon, 14 Feb 2022 12:52:33 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from theia.8bytes.org (8bytes.org
- [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 5E51860EBF
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:52:33 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id D371C36D; Mon, 14 Feb 2022 13:52:29 +0100 (CET)
-Date: Mon, 14 Feb 2022 13:52:28 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v3 06/10] drm/nouveau/device: Get right pgsize_bitmap of
- iommu_domain
-Message-ID: <YgpQjJPZnnOJUepv@8bytes.org>
-References: <20220214015538.2828933-1-baolu.lu@linux.intel.com>
- <20220214015538.2828933-7-baolu.lu@linux.intel.com>
+ with ESMTP id fD5cx9ABIIos for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Feb 2022 12:55:24 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A135460EBF
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 12:55:24 +0000 (UTC)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
+ by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Jy414298PzccxJ;
+ Mon, 14 Feb 2022 20:54:16 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 14 Feb 2022 20:55:20 +0800
+Subject: Re: [PATCH v3 8/8] iommu/arm-smmu-v3: Make default domain type of
+ HiSilicon PTT device to identity
+To: Yicong Yang <yangyicong@hisilicon.com>, <gregkh@linuxfoundation.org>,
+ <helgaas@kernel.org>, <alexander.shishkin@linux.intel.com>,
+ <lorenzo.pieralisi@arm.com>, <will@kernel.org>, <mark.rutland@arm.com>,
+ <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+ <mike.leach@linaro.org>, <leo.yan@linaro.org>, <jonathan.cameron@huawei.com>, 
+ <daniel.thompson@linaro.org>, <joro@8bytes.org>, <john.garry@huawei.com>,
+ <shameerali.kolothum.thodi@huawei.com>, <robin.murphy@arm.com>,
+ <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+ <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+ <linux-perf-users@vger.kernel.org>, <iommu@lists.linux-foundation.org>
+References: <20220124131118.17887-1-yangyicong@hisilicon.com>
+ <20220124131118.17887-9-yangyicong@hisilicon.com>
+Message-ID: <e58888c1-5448-77c7-7f6c-f5db999a888f@huawei.com>
+Date: Mon, 14 Feb 2022 20:55:20 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220214015538.2828933-7-baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- David Airlie <airlied@linux.ie>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux-foundation.org, Jonathan Hunter <jonathanh@nvidia.com>,
- Christoph Hellwig <hch@infradead.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Thierry Reding <thierry.reding@gmail.com>, Ben Skeggs <bskeggs@redhat.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Daniel Vetter <daniel@ffwll.ch>,
- Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
- linux-kernel@vger.kernel.org, Jacob jun Pan <jacob.jun.pan@intel.com>
+In-Reply-To: <20220124131118.17887-9-yangyicong@hisilicon.com>
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
+Cc: zhangshaokun@hisilicon.com, liuqi115@huawei.com, linuxarm@huawei.com,
+ prime.zeng@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -69,25 +80,65 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Yicong Yang via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Yicong Yang <yangyicong@huawei.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Feb 14, 2022 at 09:55:34AM +0800, Lu Baolu wrote:
-> The supported page sizes of an iommu_domain are saved in the pgsize_bitmap
-> field. Retrieve the value from the right place.
+Hi Robin,
+
+Is this quirk ok with the SMMU v3 driver? Just want to confirm that I'm on the
+right way to dealing with the issue of our device.
+
+Thanks.
+
+On 2022/1/24 21:11, Yicong Yang wrote:
+> The DMA of HiSilicon PTT device can only work with identical
+> mapping. So add a quirk for the device to force the domain
+> passthrough.
 > 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> Link: https://lore.kernel.org/r/20211218074546.1772553-1-baolu.lu@linux.intel.com
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Acked-by: Joerg Roedel <jroedel@suse.de>
-
-I guess this is picked up by the DRM maintainers?
-
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 6dc6d8b6b368..6f67a2b1dd27 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2838,6 +2838,21 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
+>  	}
+>  }
+>  
+> +#define IS_HISI_PTT_DEVICE(pdev)	((pdev)->vendor == PCI_VENDOR_ID_HUAWEI && \
+> +					 (pdev)->device == 0xa12e)
+> +
+> +static int arm_smmu_def_domain_type(struct device *dev)
+> +{
+> +	if (dev_is_pci(dev)) {
+> +		struct pci_dev *pdev = to_pci_dev(dev);
+> +
+> +		if (IS_HISI_PTT_DEVICE(pdev))
+> +			return IOMMU_DOMAIN_IDENTITY;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static struct iommu_ops arm_smmu_ops = {
+>  	.capable		= arm_smmu_capable,
+>  	.domain_alloc		= arm_smmu_domain_alloc,
+> @@ -2863,6 +2878,7 @@ static struct iommu_ops arm_smmu_ops = {
+>  	.sva_unbind		= arm_smmu_sva_unbind,
+>  	.sva_get_pasid		= arm_smmu_sva_get_pasid,
+>  	.page_response		= arm_smmu_page_response,
+> +	.def_domain_type	= arm_smmu_def_domain_type,
+>  	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+>  	.owner			= THIS_MODULE,
+>  };
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
