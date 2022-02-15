@@ -4,62 +4,77 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1017AC4332F
-	for <iommu@archiver.kernel.org>; Mon, 14 Feb 2022 21:16:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CC849C433F5
+	for <iommu@archiver.kernel.org>; Tue, 15 Feb 2022 01:26:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id ACAC6410CF;
-	Mon, 14 Feb 2022 21:16:14 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 5FB22410E7;
+	Tue, 15 Feb 2022 01:26:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gdDwaV7dNNCs; Mon, 14 Feb 2022 21:16:13 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 3A1FF409EA;
-	Mon, 14 Feb 2022 21:16:13 +0000 (UTC)
+	with ESMTP id IseH8sceM61G; Tue, 15 Feb 2022 01:26:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 4EA53410D4;
+	Tue, 15 Feb 2022 01:26:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 10AD3C001A;
-	Mon, 14 Feb 2022 21:16:13 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A802EC000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 21:16:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1FB06C001A;
+	Tue, 15 Feb 2022 01:26:11 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A1F4AC000B
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 01:26:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 96322819BC
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 21:16:11 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 77BED410E7
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 01:26:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=linux-foundation.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zrdTwT3IeS5b for <iommu@lists.linux-foundation.org>;
- Mon, 14 Feb 2022 21:16:10 +0000 (UTC)
-X-Greylist: delayed 00:09:53 by SQLgrey-1.8.0
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 71EC981992
- for <iommu@lists.linux-foundation.org>; Mon, 14 Feb 2022 21:16:09 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id BAAD46114B;
- Mon, 14 Feb 2022 21:06:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19CCAC340E9;
- Mon, 14 Feb 2022 21:06:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
- s=korg; t=1644872776;
- bh=ikT3XF1+9R7fmCmDNk9Nu90FI91DbyzzkNtboUh4Yh0=;
- h=Date:To:From:Subject:From;
- b=OdSpNUfg89VVeN6YU5GI6FxlhatS5t1FRS22z64WivEMv242MFYuWNdPvhur3Og6L
- 1cccw2pJ9v8V2tXziwh0cZxsvTMCHQnJmJv/H/WXQl2rTORzUySAD0/jnkLtm3hzIl
- eGmkeuMbn8iwGmh1XxRC7BjZpD/gJH6J3WjHDq6Y=
-Date: Mon, 14 Feb 2022 13:06:15 -0800
-To: mm-commits@vger.kernel.org, ziy@nvidia.com, vbabka@suse.cz,
- robin.murphy@arm.com, robh+dt@kernel.org, paulus@samba.org,
- m.szyprowski@samsung.com, mst@redhat.com, mpe@ellerman.id.au,
- minchan@kernel.org, iommu@lists.linux-foundation.org, hch@lst.de,
- frowand.list@gmail.com, benh@kernel.crashing.org, aneesh.kumar@linux.ibm.com,
- david@redhat.com, akpm@linux-foundation.org
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: + mm-enforce-pageblock_order-max_order.patch added to -mm tree
-Message-Id: <20220214210616.19CCAC340E9@smtp.kernel.org>
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id yDq89FKhJSxj for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Feb 2022 01:26:08 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 1BA8D411C6
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 01:26:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1644888368; x=1676424368;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=cB516WHICBMVCfyEMJJW3zZzqDHx0ua5ykKXoZ04vNk=;
+ b=evL/LBnqr0wMDcEH4o99ddEX2RtUgBETrFCgQLBGPXV8qIa9FvH0yrcl
+ pE0TZT/3mfxE1Gn/GNo2iPWvQ5ZNfIHVoGdBo/fhRGTmuYh9ctOcgkyh8
+ sXhRe3/yat4vDzXEKBYP3Vh3eV+45jj5HRxTOPSfp3SGNxFGRhJgcGi+Z
+ wykKnBIA8ESdOAd9T+uCmk7OZ7EkWlz0O3MDNAXKATgrB2G6IclZRj9km
+ c6G1Cda3zynOeJUiy/mUmF4K2KX+2e9JRYldAzo6lJN/IK8hSCQgiSy9W
+ bADW+GkeL1IogeK9Oj5zPI8LOAmxCM3Rx5HLKa9Ze6P8OAqgtOhStcRVC w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="247818100"
+X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; d="scan'208";a="247818100"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 14 Feb 2022 17:26:07 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; d="scan'208";a="680785249"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
+ ([10.239.159.118])
+ by fmsmga001.fm.intel.com with ESMTP; 14 Feb 2022 17:26:04 -0800
+Message-ID: <464ca69f-7f59-bb1e-45f9-f352d80fbcbe@linux.intel.com>
+Date: Tue, 15 Feb 2022 09:24:46 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] iommu/vt-d: Fix list_add double add when enabling VMD and
+ scalable mode
+Content-Language: en-US
+To: Huang Adrian <adrianhuang0701@gmail.com>
+References: <20220211024515.21884-1-adrianhuang0701@gmail.com>
+ <1627d563-ff48-6204-33be-361db75011f9@linux.intel.com>
+ <CAHKZfL3os22ADrC=C3JVO-4h-hAa_cLYNq7c3_+vo3jkbtrCrg@mail.gmail.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <CAHKZfL3os22ADrC=C3JVO-4h-hAa_cLYNq7c3_+vo3jkbtrCrg@mail.gmail.com>
+Cc: Kevin Tian <kevin.tian@intel.com>,
+ Nirmal Patel <nirmal.patel@linux.intel.com>, iommu@lists.linux-foundation.org,
+ Adrian Huang <ahuang12@lenovo.com>,
+ Jonathan Derrick <jonathan.derrick@linux.dev>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -72,252 +87,39 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On 2/14/22 5:32 PM, Huang Adrian wrote:
+> Hi Baolu,
+> 
+> On Mon, Feb 14, 2022 at 8:35 AM Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>>
+>> Hi Adrian,
+>>
+>>> The solution is to prevent from allocating pasid table if those
+>>> devices are subdevices of the VMD device.
+>>
+>> Thanks for your patch!
+>>
+>> Is this the only patch that is needed to make VMD devices work in VT-d
+>> scalable mode?
+> 
+> Yes, it is. With this patch, the system can boot successfully and the
+> RAID device connected to the VMD device can be recognized by the host
+> OS. I also ran a simple IO stress on the RAID device by compiling
+> kernel `$ make -j $(nproc)`. Everything looks good.
 
-The patch titled
-     Subject: mm: enforce pageblock_order < MAX_ORDER
-has been added to the -mm tree.  Its filename is
-     mm-enforce-pageblock_order-max_order.patch
+Thank you! So how far should this patch be back ported? Can you please
+add a Fixes tag?
 
-This patch should soon appear at
-    https://ozlabs.org/~akpm/mmots/broken-out/mm-enforce-pageblock_order-max_order.patch
-and later at
-    https://ozlabs.org/~akpm/mmotm/broken-out/mm-enforce-pageblock_order-max_order.patch
+> 
+> -- Adrian
 
-Before you just go and hit "reply", please:
-   a) Consider who else should be cc'ed
-   b) Prefer to cc a suitable mailing list as well
-   c) Ideally: find the original patch on the mailing list and do a
-      reply-to-all to that, adding suitable additional cc's
-
-*** Remember to use Documentation/process/submit-checklist.rst when testing your code ***
-
-The -mm tree is included into linux-next and is updated
-there every 3-4 working days
-
-------------------------------------------------------
-From: David Hildenbrand <david@redhat.com>
-Subject: mm: enforce pageblock_order < MAX_ORDER
-
-Some places in the kernel don't really expect pageblock_order >=
-MAX_ORDER, and it looks like this is only possible in corner cases:
-
-1) CONFIG_DEFERRED_STRUCT_PAGE_INIT we'll end up freeing pageblock_order
-   pages via __free_pages_core(), which cannot possibly work.
-
-2) find_zone_movable_pfns_for_nodes() will roundup the ZONE_MOVABLE
-   start PFN to MAX_ORDER_NR_PAGES. Consequently with a bigger
-   pageblock_order, we could have a single pageblock partially managed by
-   two zones.
-
-3) compaction code runs into __fragmentation_index() with order
-   >= MAX_ORDER, when checking WARN_ON_ONCE(order >= MAX_ORDER). [1]
-
-4) mm/page_reporting.c won't be reporting any pages with default
-   page_reporting_order == pageblock_order, as we'll be skipping the
-   reporting loop inside page_reporting_process_zone().
-
-5) __rmqueue_fallback() will never be able to steal with
-   ALLOC_NOFRAGMENT.
-
-pageblock_order >= MAX_ORDER is weird either way: it's a pure optimization
-for making alloc_contig_range(), as used for allcoation of gigantic pages,
-a little more reliable to succeed.  However, if there is demand for
-somewhat reliable allocation of gigantic pages, affected setups should be
-using CMA or boottime allocations instead.
-
-So let's make sure that pageblock_order < MAX_ORDER and simplify.
-
-[1] https://lkml.kernel.org/r/87r189a2ks.fsf@linux.ibm.com
-
-Link: https://lkml.kernel.org/r/20220214174132.219303-3-david@redhat.com
-Signed-off-by: David Hildenbrand <david@redhat.com>
-Reviewed-by: Zi Yan <ziy@nvidia.com>
-Cc: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Frank Rowand <frowand.list@gmail.com>
-Cc: John Garry via iommu <iommu@lists.linux-foundation.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Michael S. Tsirkin <mst@redhat.com>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
----
-
- drivers/virtio/virtio_mem.c     |    9 ++------
- include/linux/cma.h             |    3 --
- include/linux/pageblock-flags.h |    7 ++++--
- mm/Kconfig                      |    3 ++
- mm/page_alloc.c                 |   32 +++++++-----------------------
- 5 files changed, 20 insertions(+), 34 deletions(-)
-
---- a/drivers/virtio/virtio_mem.c~mm-enforce-pageblock_order-max_order
-+++ a/drivers/virtio/virtio_mem.c
-@@ -2476,13 +2476,10 @@ static int virtio_mem_init_hotplug(struc
- 				      VIRTIO_MEM_DEFAULT_OFFLINE_THRESHOLD);
- 
- 	/*
--	 * We want subblocks to span at least MAX_ORDER_NR_PAGES and
--	 * pageblock_nr_pages pages. This:
--	 * - Is required for now for alloc_contig_range() to work reliably -
--	 *   it doesn't properly handle smaller granularity on ZONE_NORMAL.
-+	 * TODO: once alloc_contig_range() works reliably with pageblock
-+	 * granularity on ZONE_NORMAL, use pageblock_nr_pages instead.
- 	 */
--	sb_size = max_t(uint64_t, MAX_ORDER_NR_PAGES,
--			pageblock_nr_pages) * PAGE_SIZE;
-+	sb_size = PAGE_SIZE * MAX_ORDER_NR_PAGES;
- 	sb_size = max_t(uint64_t, vm->device_block_size, sb_size);
- 
- 	if (sb_size < memory_block_size_bytes() && !force_bbm) {
---- a/include/linux/cma.h~mm-enforce-pageblock_order-max_order
-+++ a/include/linux/cma.h
-@@ -25,8 +25,7 @@
-  * -- can deal with only some pageblocks of a higher-order page being
-  *  MIGRATE_CMA, we can use pageblock_nr_pages.
-  */
--#define CMA_MIN_ALIGNMENT_PAGES max_t(phys_addr_t, MAX_ORDER_NR_PAGES, \
--				      pageblock_nr_pages)
-+#define CMA_MIN_ALIGNMENT_PAGES MAX_ORDER_NR_PAGES
- #define CMA_MIN_ALIGNMENT_BYTES (PAGE_SIZE * CMA_MIN_ALIGNMENT_PAGES)
- 
- struct cma;
---- a/include/linux/pageblock-flags.h~mm-enforce-pageblock_order-max_order
-+++ a/include/linux/pageblock-flags.h
-@@ -37,8 +37,11 @@ extern unsigned int pageblock_order;
- 
- #else /* CONFIG_HUGETLB_PAGE_SIZE_VARIABLE */
- 
--/* Huge pages are a constant size */
--#define pageblock_order		HUGETLB_PAGE_ORDER
-+/*
-+ * Huge pages are a constant size, but don't exceed the maximum allocation
-+ * granularity.
-+ */
-+#define pageblock_order		min_t(unsigned int, HUGETLB_PAGE_ORDER, MAX_ORDER - 1)
- 
- #endif /* CONFIG_HUGETLB_PAGE_SIZE_VARIABLE */
- 
---- a/mm/Kconfig~mm-enforce-pageblock_order-max_order
-+++ a/mm/Kconfig
-@@ -262,6 +262,9 @@ config HUGETLB_PAGE_SIZE_VARIABLE
- 	  HUGETLB_PAGE_ORDER when there are multiple HugeTLB page sizes available
- 	  on a platform.
- 
-+	  Note that the pageblock_order cannot exceed MAX_ORDER - 1 and will be
-+	  clamped down to MAX_ORDER - 1.
-+
- config CONTIG_ALLOC
- 	def_bool (MEMORY_ISOLATION && COMPACTION) || CMA
- 
---- a/mm/page_alloc.c~mm-enforce-pageblock_order-max_order
-+++ a/mm/page_alloc.c
-@@ -1054,14 +1054,12 @@ static inline void __free_one_page(struc
- 		int migratetype, fpi_t fpi_flags)
- {
- 	struct capture_control *capc = task_capc(zone);
-+	unsigned int max_order = pageblock_order;
- 	unsigned long buddy_pfn;
- 	unsigned long combined_pfn;
--	unsigned int max_order;
- 	struct page *buddy;
- 	bool to_tail;
- 
--	max_order = min_t(unsigned int, MAX_ORDER - 1, pageblock_order);
--
- 	VM_BUG_ON(!zone_is_initialized(zone));
- 	VM_BUG_ON_PAGE(page->flags & PAGE_FLAGS_CHECK_AT_PREP, page);
- 
-@@ -2262,19 +2260,8 @@ void __init init_cma_reserved_pageblock(
- 	} while (++p, --i);
- 
- 	set_pageblock_migratetype(page, MIGRATE_CMA);
--
--	if (pageblock_order >= MAX_ORDER) {
--		i = pageblock_nr_pages;
--		p = page;
--		do {
--			set_page_refcounted(p);
--			__free_pages(p, MAX_ORDER - 1);
--			p += MAX_ORDER_NR_PAGES;
--		} while (i -= MAX_ORDER_NR_PAGES);
--	} else {
--		set_page_refcounted(page);
--		__free_pages(page, pageblock_order);
--	}
-+	set_page_refcounted(page);
-+	__free_pages(page, pageblock_order);
- 
- 	adjust_managed_page_count(page, pageblock_nr_pages);
- 	page_zone(page)->cma_pages += pageblock_nr_pages;
-@@ -7429,16 +7416,15 @@ static inline void setup_usemap(struct z
- /* Initialise the number of pages represented by NR_PAGEBLOCK_BITS */
- void __init set_pageblock_order(void)
- {
--	unsigned int order;
-+	unsigned int order = MAX_ORDER - 1;
- 
- 	/* Check that pageblock_nr_pages has not already been setup */
- 	if (pageblock_order)
- 		return;
- 
--	if (HPAGE_SHIFT > PAGE_SHIFT)
-+	/* Don't let pageblocks exceed the maximum allocation granularity. */
-+	if (HPAGE_SHIFT > PAGE_SHIFT && HUGETLB_PAGE_ORDER < order)
- 		order = HUGETLB_PAGE_ORDER;
--	else
--		order = MAX_ORDER - 1;
- 
- 	/*
- 	 * Assume the largest contiguous order of interest is a huge page.
-@@ -9026,14 +9012,12 @@ struct page *has_unmovable_pages(struct
- #ifdef CONFIG_CONTIG_ALLOC
- static unsigned long pfn_max_align_down(unsigned long pfn)
- {
--	return pfn & ~(max_t(unsigned long, MAX_ORDER_NR_PAGES,
--			     pageblock_nr_pages) - 1);
-+	return ALIGN_DOWN(pfn, MAX_ORDER_NR_PAGES);
- }
- 
- static unsigned long pfn_max_align_up(unsigned long pfn)
- {
--	return ALIGN(pfn, max_t(unsigned long, MAX_ORDER_NR_PAGES,
--				pageblock_nr_pages));
-+	return ALIGN(pfn, MAX_ORDER_NR_PAGES);
- }
- 
- #if defined(CONFIG_DYNAMIC_DEBUG) || \
-_
-
-Patches currently in -mm which might be from david@redhat.com are
-
-mm-optimize-do_wp_page-for-exclusive-pages-in-the-swapcache.patch
-mm-optimize-do_wp_page-for-fresh-pages-in-local-lru-pagevecs.patch
-mm-slightly-clarify-ksm-logic-in-do_swap_page.patch
-mm-streamline-cow-logic-in-do_swap_page.patch
-mm-huge_memory-streamline-cow-logic-in-do_huge_pmd_wp_page.patch
-mm-khugepaged-remove-reuse_swap_page-usage.patch
-mm-swapfile-remove-stale-reuse_swap_page.patch
-mm-huge_memory-remove-stale-page_trans_huge_mapcount.patch
-mm-huge_memory-remove-stale-locking-logic-from-__split_huge_pmd.patch
-cma-factor-out-minimum-alignment-requirement.patch
-mm-enforce-pageblock_order-max_order.patch
-drivers-base-memory-add-memory-block-to-memory-group-after-registration-succeeded.patch
-drivers-base-node-consolidate-node-device-subsystem-initialization-in-node_dev_init.patch
-drivers-base-node-rename-link_mem_sections-to-register_memory_block_under_node.patch
-drivers-base-memory-determine-and-store-zone-for-single-zone-memory-blocks.patch
-proc-vmcore-fix-possible-deadlock-on-concurrent-mmap-and-read.patch
-
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
