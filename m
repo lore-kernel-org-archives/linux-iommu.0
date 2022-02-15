@@ -4,54 +4,53 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1D0FDC433F5
-	for <iommu@archiver.kernel.org>; Tue, 15 Feb 2022 08:58:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 01EE2C4332F
+	for <iommu@archiver.kernel.org>; Tue, 15 Feb 2022 09:11:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id AF5044000B;
-	Tue, 15 Feb 2022 08:58:24 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 921754012A;
+	Tue, 15 Feb 2022 09:11:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Vkv7PIuZP8jM; Tue, 15 Feb 2022 08:58:23 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 580DE4012A;
-	Tue, 15 Feb 2022 08:58:23 +0000 (UTC)
+	with ESMTP id EDrYwxEcdPI3; Tue, 15 Feb 2022 09:11:08 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 1D9F240604;
+	Tue, 15 Feb 2022 09:11:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1A429C001A;
-	Tue, 15 Feb 2022 08:58:23 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F2639C000B
- for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 08:58:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CA036C0011;
+	Tue, 15 Feb 2022 09:11:07 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C61EBC000B
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 09:11:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id D1BED40188
- for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 08:58:21 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id B3D7D60E4C
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 09:11:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id U8aF6x46pyBN for <iommu@lists.linux-foundation.org>;
- Tue, 15 Feb 2022 08:58:21 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id hH3RHCAna61F for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Feb 2022 09:11:06 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from theia.8bytes.org (8bytes.org
  [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 2E9954016F
- for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 08:58:21 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 060D660A6B
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 09:11:05 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 8935936D; Tue, 15 Feb 2022 09:58:18 +0100 (CET)
-Date: Tue, 15 Feb 2022 09:58:13 +0100
+ id CA08436D; Tue, 15 Feb 2022 10:11:02 +0100 (CET)
+Date: Tue, 15 Feb 2022 10:11:01 +0100
 From: Joerg Roedel <joro@8bytes.org>
 To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v1 3/8] iommu: Extend iommu_at[de]tach_device() for
- multi-device groups
-Message-ID: <YgtrJVI9wGMFdPWk@8bytes.org>
+Subject: Re: [PATCH v1 5/8] iommu/amd: Use iommu_attach/detach_device()
+Message-ID: <YgtuJQhY8SNlv9/6@8bytes.org>
 References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
- <20220106022053.2406748-4-baolu.lu@linux.intel.com>
- <Ygo/eCRFnraY01WA@8bytes.org> <20220214130313.GV4160@nvidia.com>
- <Ygppub+Wjq6mQEAX@8bytes.org>
- <08e90a61-8491-acf1-ab0f-f93f97366d24@arm.com>
- <20220214154626.GF4160@nvidia.com>
+ <20220106022053.2406748-6-baolu.lu@linux.intel.com>
+ <20220106143345.GC2328285@nvidia.com> <Ygo8iek2CwtPp2hj@8bytes.org>
+ <20220214131544.GX4160@nvidia.com> <Ygpb6CxmTdUHiN50@8bytes.org>
+ <20220214140236.GC929467@nvidia.com> <YgplyyjofwlM+1tc@8bytes.org>
+ <20220214150059.GE4160@nvidia.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20220214154626.GF4160@nvidia.com>
+In-Reply-To: <20220214150059.GE4160@nvidia.com>
 Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
  David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
  Thierry Reding <thierry.reding@gmail.com>,
@@ -83,34 +82,51 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Feb 14, 2022 at 11:46:26AM -0400, Jason Gunthorpe wrote:
-> On Mon, Feb 14, 2022 at 03:18:31PM +0000, Robin Murphy wrote:
+On Mon, Feb 14, 2022 at 11:00:59AM -0400, Jason Gunthorpe wrote:
+> On Mon, Feb 14, 2022 at 03:23:07PM +0100, Joerg Roedel wrote:
 > 
-> > Arguably, iommu_attach_device() could be renamed something like
-> > iommu_attach_group_for_dev(), since that's effectively the semantic that all
-> > the existing API users want anyway (even VFIO at the high level - the group
-> > is the means for the user to assign their GPU/NIC/whatever device to their
-> > process, not the end in itself). That's just a lot more churn.
+> > Device drivers calling into iommu_attach_device() is seldom a good
+> > idea.  In this case the sound device has some generic hardware
+> > interface so that an existing sound driver can be re-used. Making this
+> > driver call iommu-specific functions for some devices is something hard
+> > to justify.
 > 
-> Right
+> Er, so this is transparent to the generic sound device? I guess
+> something fixed up the dma_api on that device to keep working?
 
-Okay, good point. I can live with an iommu_attach_group_for_dev()
-interface, it is still better than making iommu_attach_device() silently
-operate on whole groups.
+Right, this is completly transparent to the sound device. The IOMMU code
+will not set dma_ops on the device because it uses a direct mapping and
+so the standard implementation will be used.
 
-> VFIO needs them because its uAPI is tied, but even so we keep talking
-> about ways to narrow the amount of group API it consumes.
-> 
-> We should not set the recommended/good kAPI based on VFIOs uAPI
-> design.
+> But, then, the requirement is that nobody is using the dma API when we
+> make this change?
 
-Agree here too. The current way groups are implemented can be turned
-into a VFIO specific interface to keep its semantics and kABI. But the
-IOMMU core code still needs the concept of alias groups.
+That is the tricky part. DMA-API keeps working after the change is made,
+because the new domain is also direct mapped. The new domain just has
+the ability to assign host page-tables to device PASIDs, so that DMA
+requests with a PASID TLP will be remapped.
+
+It was actually a requirement for this code that when it jumps in, the
+DMA-API mappings stay live. And the reason a direct mapping is used at
+all is that the page-table walker of the IOMMU is a two-dimensional
+walker, which will treat the addresses found in the host page-tables as
+IO-virtual an translates them through the underlying page-table. So to
+use host-pagetables the underlying mapping must be direct mapped.
+
+
+> I don't think it matters how big/small the group is, only that when we
+> change the domain we know everything flowing through the domain is
+> still happy.
+
+Yes, that matters. The group size matters too for DMA-API performance.
+If two devices compete for the same lock in the allocator and/or the
+same cached magazines, things will slow down. That only matters for
+high-throughput devices, but still...
 
 Regards,
 
 	Joerg
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
