@@ -1,65 +1,63 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2E1AEC433EF
-	for <iommu@archiver.kernel.org>; Tue, 15 Feb 2022 01:48:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BAE95C433FE
+	for <iommu@archiver.kernel.org>; Tue, 15 Feb 2022 02:02:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 8E66B40523;
-	Tue, 15 Feb 2022 01:48:23 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4B89D60D51;
+	Tue, 15 Feb 2022 02:02:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ezYoM3RZXV2L; Tue, 15 Feb 2022 01:48:22 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 7hKKeuapRRxi; Tue, 15 Feb 2022 02:02:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 2C5D840475;
-	Tue, 15 Feb 2022 01:48:22 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 3D4E860A98;
+	Tue, 15 Feb 2022 02:02:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 093CBC001A;
-	Tue, 15 Feb 2022 01:48:22 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 958F6C000B
- for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 01:48:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EA3BEC001A;
+	Tue, 15 Feb 2022 02:02:49 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2639DC000B
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 02:02:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 6FC8F60D51
- for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 01:48:20 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id E0BB960AD0
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 02:02:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1A8vvJGTNAZa for <iommu@lists.linux-foundation.org>;
- Tue, 15 Feb 2022 01:48:19 +0000 (UTC)
+ with ESMTP id Sbu4upsSL-ld for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Feb 2022 02:02:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by smtp3.osuosl.org (Postfix) with ESMTPS id B1B7C60A6F
- for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 01:48:19 +0000 (UTC)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 402F960A98
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 02:02:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1644889699; x=1676425699;
+ t=1644890568; x=1676426568;
  h=message-id:date:mime-version:cc:subject:to:references:
  from:in-reply-to:content-transfer-encoding;
- bh=nV7806JD+BvncEFIlyRfAtuzlBcLLqH1yrxrTkQsvYc=;
- b=Oma3f4ax5G7osIZZpcGOyWWTjLoS6TxOOGXkubJBldqc2BCByvRV8Q1L
- YLm47x+QHiWgv2U4x+OI/bO07fxx9deh/5SQzejcVNzPZ9dKYk8dpkxen
- rek5ZIM1wPopLlmQ+S4SMvtOYcim3WQNFfPubHS+Yj074VBKpFRjYcAaI
- 5SZipFGPAqiAxfsadM7KGgR6V+i3EACpwaeOs68k5lWNbVtNYWgLfDNXH
- RUl29yJERun91bbfO7h81+oRqb03nmW/AFgi5ktnriSWcAbZXyjWy0Esq
- 1AFqmeHSrw0Y9kMZaucpTn4Hdvqv/lGCPvHqh59JbTwaTISLgUy1oM52C g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="233773304"
-X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; d="scan'208";a="233773304"
+ bh=PQx1bi+RZ7llbsZzitox0+KHCY/gJAuQuxLD+34SPaA=;
+ b=A+5gpWf6AFIaQxEQUvOn2xWVR08N/tl9CqOv7MasjjOuIADKe1KarweR
+ cpHWBeY5RNIy+5reQem8yqgOB//2Q4U2GLxjr0ASBtB0s6N97Ux3pxsoT
+ r2FotITXY3j7D/EloAdeyPlDOfvd/ho77B2z28YYXwnmaW+A/Kct3IPfU
+ yO4cjbnBrXUvFhGt9nDREGSiSWTjkfveG/t9JYS1GRcDSoqvTBYybvKU0
+ ZiI+dxqzQZ4+X5WA3sUeu0QaEqOI4zXb+mV6VU7Q+qpjyj1yZ8NXZ4cMY
+ 6BLN0G9JokRusqZJBmBjQH18sZCEBN/1vmiF4Ff9zhUtD9/PYZNo979bf w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="250435771"
+X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; d="scan'208";a="250435771"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 14 Feb 2022 17:48:18 -0800
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 14 Feb 2022 18:02:47 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; d="scan'208";a="680789537"
+X-IronPort-AV: E=Sophos;i="5.88,369,1635231600"; d="scan'208";a="680793619"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
  ([10.239.159.118])
- by fmsmga001.fm.intel.com with ESMTP; 14 Feb 2022 17:48:14 -0800
-Message-ID: <0dd0f4c9-37a6-0418-3f19-22c40ccc8265@linux.intel.com>
-Date: Tue, 15 Feb 2022 09:46:56 +0800
+ by fmsmga001.fm.intel.com with ESMTP; 14 Feb 2022 18:02:43 -0800
+Message-ID: <0bf678af-1905-de87-322b-43703992030b@linux.intel.com>
+Date: Tue, 15 Feb 2022 10:01:24 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
@@ -69,8 +67,9 @@ To: Joerg Roedel <joro@8bytes.org>
 References: <20220214015538.2828933-1-baolu.lu@linux.intel.com>
  <20220214015538.2828933-8-baolu.lu@linux.intel.com>
  <YgpP7AhY5hd/DX/C@8bytes.org>
+ <0dd0f4c9-37a6-0418-3f19-22c40ccc8265@linux.intel.com>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <YgpP7AhY5hd/DX/C@8bytes.org>
+In-Reply-To: <0dd0f4c9-37a6-0418-3f19-22c40ccc8265@linux.intel.com>
 Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
  David Airlie <airlied@linux.ie>, Robin Murphy <robin.murphy@arm.com>,
  iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
@@ -92,35 +91,32 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2/14/22 8:49 PM, Joerg Roedel wrote:
-> On Mon, Feb 14, 2022 at 09:55:35AM +0800, Lu Baolu wrote:
->> +static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
->> +{
->> +	/*
->> +	 * Assume that valid ops must be installed if iommu_probe_device()
->> +	 * has succeeded. The device ops are essentially for internal use
->> +	 * within the IOMMU subsystem itself, so we should be able to trust
->> +	 * ourselves not to misuse the helper.
->> +	 */
->> +	WARN_ON(!dev || !dev->iommu || !dev->iommu->iommu_dev ||
->> +		!dev->iommu->iommu_dev->ops);
-> 
-> There is no need for this WARN_ON, the code will oops anyway when one of
-> the pointers checked here is NULL.
-> 
-
-We really don't need to WARN_ON intermediate null pointers. But I would
-argue that we could add a WARN() on null dev->iommu->iommu_dev->ops, so
-that callers have no need to check the returned ops.
-
-Best regards,
-baolu
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMi8xNS8yMiA5OjQ2IEFNLCBMdSBCYW9sdSB3cm90ZToKPiBPbiAyLzE0LzIyIDg6NDkgUE0s
+IEpvZXJnIFJvZWRlbCB3cm90ZToKPj4gT24gTW9uLCBGZWIgMTQsIDIwMjIgYXQgMDk6NTU6MzVB
+TSArMDgwMCwgTHUgQmFvbHUgd3JvdGU6Cj4+PiArc3RhdGljIGlubGluZSBjb25zdCBzdHJ1Y3Qg
+aW9tbXVfb3BzICpkZXZfaW9tbXVfb3BzKHN0cnVjdCBkZXZpY2UgKmRldikKPj4+ICt7Cj4+PiAr
+wqDCoMKgIC8qCj4+PiArwqDCoMKgwqAgKiBBc3N1bWUgdGhhdCB2YWxpZCBvcHMgbXVzdCBiZSBp
+bnN0YWxsZWQgaWYgaW9tbXVfcHJvYmVfZGV2aWNlKCkKPj4+ICvCoMKgwqDCoCAqIGhhcyBzdWNj
+ZWVkZWQuIFRoZSBkZXZpY2Ugb3BzIGFyZSBlc3NlbnRpYWxseSBmb3IgaW50ZXJuYWwgdXNlCj4+
+PiArwqDCoMKgwqAgKiB3aXRoaW4gdGhlIElPTU1VIHN1YnN5c3RlbSBpdHNlbGYsIHNvIHdlIHNo
+b3VsZCBiZSBhYmxlIHRvIHRydXN0Cj4+PiArwqDCoMKgwqAgKiBvdXJzZWx2ZXMgbm90IHRvIG1p
+c3VzZSB0aGUgaGVscGVyLgo+Pj4gK8KgwqDCoMKgICovCj4+PiArwqDCoMKgIFdBUk5fT04oIWRl
+diB8fCAhZGV2LT5pb21tdSB8fCAhZGV2LT5pb21tdS0+aW9tbXVfZGV2IHx8Cj4+PiArwqDCoMKg
+wqDCoMKgwqAgIWRldi0+aW9tbXUtPmlvbW11X2Rldi0+b3BzKTsKPj4KPj4gVGhlcmUgaXMgbm8g
+bmVlZCBmb3IgdGhpcyBXQVJOX09OLCB0aGUgY29kZSB3aWxsIG9vcHMgYW55d2F5IHdoZW4gb25l
+IG9mCj4+IHRoZSBwb2ludGVycyBjaGVja2VkIGhlcmUgaXMgTlVMTC4KPj4KPiAKPiBXZSByZWFs
+bHkgZG9uJ3QgbmVlZCB0byBXQVJOX09OIGludGVybWVkaWF0ZSBudWxsIHBvaW50ZXJzLiBCdXQg
+SSB3b3VsZAo+IGFyZ3VlIHRoYXQgd2UgY291bGQgYWRkIGEgV0FSTigpIG9uIG51bGwgZGV2LT5p
+b21tdS0+aW9tbXVfZGV2LT5vcHMsIHNvCj4gdGhhdCBjYWxsZXJzIGhhdmUgbm8gbmVlZCB0byBj
+aGVjayB0aGUgcmV0dXJuZWQgb3BzLgoKT2gsIHNvcnJ5ISBXZSBkb24ndCBuZWVkIHRvIGNoZWNr
+IG51bGwgb3BzIGVpdGhlci4gVGhhdCB3aWxsIGFsc28gcmVzdWx0CmluIGEgbnVsbCBwb2ludGVy
+IHJlZmVyZW5jZSBvb3BzIGluIHRoZSBjYWxsZXIuCgpTbywgeWVzLiBObyBuZWVkIGZvciB0aGlz
+IFdBUk5fT04oKS4KCkJlc3QgcmVnYXJkcywKYmFvbHUKX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxp
+bnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWls
+bWFuL2xpc3RpbmZvL2lvbW11
