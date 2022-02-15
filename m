@@ -1,74 +1,70 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6291AC4332F
-	for <iommu@archiver.kernel.org>; Tue, 15 Feb 2022 13:03:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 56788C433EF
+	for <iommu@archiver.kernel.org>; Tue, 15 Feb 2022 13:30:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id F2420404CC;
-	Tue, 15 Feb 2022 13:03:11 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id F1EB740364;
+	Tue, 15 Feb 2022 13:30:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6Rhqq-sAN8kw; Tue, 15 Feb 2022 13:03:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id AAB9340249;
-	Tue, 15 Feb 2022 13:03:10 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mkwg6Pq2cw0O; Tue, 15 Feb 2022 13:30:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 595D74016A;
+	Tue, 15 Feb 2022 13:30:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7941FC001A;
-	Tue, 15 Feb 2022 13:03:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 23946C0011;
+	Tue, 15 Feb 2022 13:30:38 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2CFD5C000B
- for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 13:03:09 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 50EDFC000B
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 13:30:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 0DC0182486
- for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 13:03:09 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 31E62830C2
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 13:30:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QOY46zYMxsIO for <iommu@lists.linux-foundation.org>;
- Tue, 15 Feb 2022 13:03:08 +0000 (UTC)
+ with ESMTP id Z0IPkDgm5w-l for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Feb 2022 13:30:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 17476819FC
- for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 13:03:07 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 4761C83026
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 13:30:35 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2C0581480;
- Tue, 15 Feb 2022 05:03:07 -0800 (PST)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8934F1480;
+ Tue, 15 Feb 2022 05:30:34 -0800 (PST)
 Received: from [10.57.70.89] (unknown [10.57.70.89])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D094A3F718;
- Tue, 15 Feb 2022 05:03:02 -0800 (PST)
-Message-ID: <b2fd22a1-b52b-8eb1-91e9-9829830f1400@arm.com>
-Date: Tue, 15 Feb 2022 13:02:58 +0000
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BC2253F718;
+ Tue, 15 Feb 2022 05:30:30 -0800 (PST)
+Message-ID: <9018a1d9-4d42-3a99-dbc6-c55139abcb1e@arm.com>
+Date: Tue, 15 Feb 2022 13:30:26 +0000
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
  Thunderbird/91.6.0
-Subject: Re: [PATCH v1 5/8] iommu/amd: Use iommu_attach/detach_device()
+Subject: Re: [PATCH v3 8/8] iommu/arm-smmu-v3: Make default domain type of
+ HiSilicon PTT device to identity
 Content-Language: en-GB
-To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>
-References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
- <20220106022053.2406748-6-baolu.lu@linux.intel.com>
- <20220106143345.GC2328285@nvidia.com> <Ygo8iek2CwtPp2hj@8bytes.org>
- <20220214131544.GX4160@nvidia.com> <Ygpb6CxmTdUHiN50@8bytes.org>
- <20220214140236.GC929467@nvidia.com> <YgplyyjofwlM+1tc@8bytes.org>
- <20220214150059.GE4160@nvidia.com> <YgtuJQhY8SNlv9/6@8bytes.org>
+To: Will Deacon <will@kernel.org>, Yicong Yang <yangyicong@huawei.com>
+References: <20220124131118.17887-1-yangyicong@hisilicon.com>
+ <20220124131118.17887-9-yangyicong@hisilicon.com>
+ <e58888c1-5448-77c7-7f6c-f5db999a888f@huawei.com>
+ <20220215130044.GA7154@willie-the-truck>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <YgtuJQhY8SNlv9/6@8bytes.org>
-Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
- David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
- Thierry Reding <thierry.reding@gmail.com>,
- Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
- Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
- Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>
+In-Reply-To: <20220215130044.GA7154@willie-the-truck>
+Cc: mark.rutland@arm.com, prime.zeng@huawei.com,
+ alexander.shishkin@linux.intel.com, linux-pci@vger.kernel.org,
+ linuxarm@huawei.com, Yicong Yang <yangyicong@hisilicon.com>,
+ daniel.thompson@linaro.org, peterz@infradead.org, mingo@redhat.com,
+ helgaas@kernel.org, liuqi115@huawei.com, mike.leach@linaro.org,
+ suzuki.poulose@arm.com, coresight@lists.linaro.org, acme@kernel.org,
+ zhangshaokun@hisilicon.com, linux-arm-kernel@lists.infradead.org,
+ mathieu.poirier@linaro.org, gregkh@linuxfoundation.org,
+ linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+ iommu@lists.linux-foundation.org, leo.yan@linaro.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,60 +82,79 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-02-15 09:11, Joerg Roedel wrote:
-> On Mon, Feb 14, 2022 at 11:00:59AM -0400, Jason Gunthorpe wrote:
->> On Mon, Feb 14, 2022 at 03:23:07PM +0100, Joerg Roedel wrote:
+On 2022-02-15 13:00, Will Deacon wrote:
+> On Mon, Feb 14, 2022 at 08:55:20PM +0800, Yicong Yang wrote:
+>> On 2022/1/24 21:11, Yicong Yang wrote:
+>>> The DMA of HiSilicon PTT device can only work with identical
+>>> mapping. So add a quirk for the device to force the domain
+>>> passthrough.
+>>>
+>>> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+>>> ---
+>>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 ++++++++++++++++
+>>>   1 file changed, 16 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> index 6dc6d8b6b368..6f67a2b1dd27 100644
+>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> @@ -2838,6 +2838,21 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
+>>>   	}
+>>>   }
+>>>   
+>>> +#define IS_HISI_PTT_DEVICE(pdev)	((pdev)->vendor == PCI_VENDOR_ID_HUAWEI && \
+>>> +					 (pdev)->device == 0xa12e)
+>>> +
+>>> +static int arm_smmu_def_domain_type(struct device *dev)
+>>> +{
+>>> +	if (dev_is_pci(dev)) {
+>>> +		struct pci_dev *pdev = to_pci_dev(dev);
+>>> +
+>>> +		if (IS_HISI_PTT_DEVICE(pdev))
+>>> +			return IOMMU_DOMAIN_IDENTITY;
+>>> +	}
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>>   static struct iommu_ops arm_smmu_ops = {
+>>>   	.capable		= arm_smmu_capable,
+>>>   	.domain_alloc		= arm_smmu_domain_alloc,
+>>> @@ -2863,6 +2878,7 @@ static struct iommu_ops arm_smmu_ops = {
+>>>   	.sva_unbind		= arm_smmu_sva_unbind,
+>>>   	.sva_get_pasid		= arm_smmu_sva_get_pasid,
+>>>   	.page_response		= arm_smmu_page_response,
+>>> +	.def_domain_type	= arm_smmu_def_domain_type,
+>>>   	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+>>>   	.owner			= THIS_MODULE,
+>>>   };
+>>>
 >>
->>> Device drivers calling into iommu_attach_device() is seldom a good
->>> idea.  In this case the sound device has some generic hardware
->>> interface so that an existing sound driver can be re-used. Making this
->>> driver call iommu-specific functions for some devices is something hard
->>> to justify.
->>
->> Er, so this is transparent to the generic sound device? I guess
->> something fixed up the dma_api on that device to keep working?
+>> Is this quirk ok with the SMMU v3 driver? Just want to confirm that I'm on the
+>> right way to dealing with the issue of our device.
 > 
-> Right, this is completly transparent to the sound device. The IOMMU code
-> will not set dma_ops on the device because it uses a direct mapping and
-> so the standard implementation will be used.
-> 
->> But, then, the requirement is that nobody is using the dma API when we
->> make this change?
-> 
-> That is the tricky part. DMA-API keeps working after the change is made,
-> because the new domain is also direct mapped. The new domain just has
-> the ability to assign host page-tables to device PASIDs, so that DMA
-> requests with a PASID TLP will be remapped.
-> 
-> It was actually a requirement for this code that when it jumps in, the
-> DMA-API mappings stay live. And the reason a direct mapping is used at
-> all is that the page-table walker of the IOMMU is a two-dimensional
-> walker, which will treat the addresses found in the host page-tables as
-> IO-virtual an translates them through the underlying page-table. So to
-> use host-pagetables the underlying mapping must be direct mapped.
+> I don't think the quirk should be in the SMMUv3 driver. Assumedly, you would
+> have the exact same problem if you stuck the PTT device behind a different
+> type of IOMMU, and so the quirk should be handled by a higher level of the
+> stack.
 
-Given how things have evolved since that code was originally written, 
-and that we seemingly now have the def_domain_type override kicking in 
-as soon as we first see an IOMMUv2-capable device, do we even need to 
-then subsequently switch to this special unmanaged domain with its 
-pagetable sucked out, or could we just install the PASID table in the 
-default domain itself?
+Conceptually, yes, but I'm inclined to be pragmatic here. Default domain 
+quirks could only move out as far as the other end of the call from 
+iommu_get_def_domain_type() - it's not like we could rely on some flag 
+in a driver which may not even be loaded yet, let alone matched to the 
+device. And even then there's an equal and opposite argument for why the 
+core code should have to maintain a list of platform-specific quirks 
+rather than code specific to the relevant platforms. The fact is that a 
+HiSilicon RCiEP is not going to end up behind anything other than a 
+HiSilicon IOMMU, and if those ever stop being SMMUv3 *and* such a quirk 
+still exists we can worry about it then.
 
+Ugly as it is, this is the status quo. I don't recall anyone ever 
+arguing that the equivalent quirks for Intel integrated graphics should 
+be made generic ;)
+
+Cheers,
 Robin.
-
->> I don't think it matters how big/small the group is, only that when we
->> change the domain we know everything flowing through the domain is
->> still happy.
-> 
-> Yes, that matters. The group size matters too for DMA-API performance.
-> If two devices compete for the same lock in the allocator and/or the
-> same cached magazines, things will slow down. That only matters for
-> high-throughput devices, but still...
-> 
-> Regards,
-> 
-> 	Joerg
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
