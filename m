@@ -1,70 +1,63 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8D88EC433EF
-	for <iommu@archiver.kernel.org>; Wed, 16 Feb 2022 19:36:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2A1A1C433F5
+	for <iommu@archiver.kernel.org>; Wed, 16 Feb 2022 19:49:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id E8F8241670;
-	Wed, 16 Feb 2022 19:36:24 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id A40B540A14;
+	Wed, 16 Feb 2022 19:49:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AsDYh2TaWAFb; Wed, 16 Feb 2022 19:36:24 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id u2VaQjhWPnZq; Wed, 16 Feb 2022 19:49:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id B2D754166D;
-	Wed, 16 Feb 2022 19:36:23 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 0A91540A59;
+	Wed, 16 Feb 2022 19:49:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 90E87C001A;
-	Wed, 16 Feb 2022 19:36:23 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D35CAC000B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 19:36:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D1829C001A;
+	Wed, 16 Feb 2022 19:49:10 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B05E8C000B
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 19:49:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id AD9CD41676
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 19:36:22 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 90A8A409F6
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 19:49:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id A4avg25k9hYw for <iommu@lists.linux-foundation.org>;
- Wed, 16 Feb 2022 19:36:18 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ZEtvgC5NVKQT for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Feb 2022 19:49:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 919B24166D
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 19:36:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1645040178; x=1676576178;
- h=from:to:subject:date:message-id:mime-version:
- content-transfer-encoding;
- bh=5szMQlEDye63aiiwYqhef/hAzPhF9F7nlQ69TY5qzo0=;
- b=DPoGQkCU8kNjgT1jMi8B3DiM2sxKR3uoQnoZFUlmw6jY5+uhlC8Baq+t
- KtrHGcikZ1WPL0AuKlS5dMWWDnevr848lMTrckDl7qQwvhFSlvxYwJEVE
- +zK4EZWybdAYAzULL47IFhUyjWE2du20XMKtiD42MsuDn2W/VbMss7F3G
- njevQEbwA/sKP4mhAt4X0BoUOuWYmX3AW+ec/FWLkR/1mhg/5oFFypbzh
- RYC7/16IItC58gTA41vw5ixbgl+OYdltw7wpFVS0h1KSlPls8R+IUF5o1
- odsU933krZ6cS/yxpXTno4ZWzzcE9Kosa8VngxekTXTLuPXcLGqFlhTN7 g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10260"; a="230670117"
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; d="scan'208";a="230670117"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 16 Feb 2022 11:36:17 -0800
-X-IronPort-AV: E=Sophos;i="5.88,374,1635231600"; d="scan'208";a="529669418"
-Received: from oux.sc.intel.com ([10.3.52.57])
- by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 16 Feb 2022 11:36:17 -0800
-From: Yian Chen <yian.chen@intel.com>
-To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Sohil Mehta <sohil.mehta@intel.com>,
- Jacob jun Pan <jacob.jun.pan@intel.com>, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, Yian Chen <yian.chen@intel.com>
-Subject: [PATCH] iommu/vt-d: Enable ATS for the devices in SATC table
-Date: Wed, 16 Feb 2022 11:36:09 -0800
-Message-Id: <20220216193609.686107-1-yian.chen@intel.com>
-X-Mailer: git-send-email 2.25.1
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 0910141DE7
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 19:49:05 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1602A12FC;
+ Wed, 16 Feb 2022 11:49:05 -0800 (PST)
+Received: from [10.57.40.147] (unknown [10.57.40.147])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 342B73F70D;
+ Wed, 16 Feb 2022 11:49:03 -0800 (PST)
+Message-ID: <27b10c12-e3f2-6ac4-26b5-44625e61d7ae@arm.com>
+Date: Wed, 16 Feb 2022 19:48:57 +0000
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] dma-contiguous: Prioritize restricted DMA pool over
+ shared DMA pool
+Content-Language: en-GB
+To: Florian Fainelli <f.fainelli@gmail.com>, linux-kernel@vger.kernel.org
+References: <20220215224344.1779145-1-f.fainelli@gmail.com>
+ <39ed2187-2345-297d-2dd3-0b0974ce8b31@arm.com>
+ <50ae9c05-2ec4-09a8-965c-0d70ea74d879@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <50ae9c05-2ec4-09a8-965c-0d70ea74d879@gmail.com>
+Cc: robh@kernel.org, opendmb@gmail.com,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux-foundation.org>,
+ jim2101024@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+ tientzu@chromium.org, will@kernel.org, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,136 +70,113 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Starting from Intel VT-d v3.2, Intel platform BIOS can provide
-additional SATC table structure. SATC table includes a list of
-SoC integrated devices that support ATC (Address translation
-cache).
+On 2022-02-16 17:37, Florian Fainelli wrote:
+> On 2/16/22 3:13 AM, Robin Murphy wrote:
+>> On 2022-02-15 22:43, Florian Fainelli wrote:
+>>> Some platforms might define the same memory region to be suitable for
+>>> used by a kernel supporting CONFIG_DMA_RESTRICTED_POOL while maintaining
+>>> compatibility with older kernels that do not support that. This is
+>>> achieved by declaring the node this way;
+>>
+>> Those platforms are doing something inexplicably wrong, then.
+> 
+> Matter of perspective I guess.
+> 
+>>
+>> "restricted-dma-pool" says that DMA for the device has to be bounced
+>> through a dedicated pool because it can't be trusted with visibility of
+>> regular OS memory. "reusable" tells the OS that it's safe to use the
+>> pool as regular OS memory while it's idle. Do you see how those concepts
+>> are fundamentally incompatible?
+> 
+>  From the perspective of the software or firmware agent that is
+> responsible for setting up the appropriate protection on the reserved
+> memory, it does not matter what the compatible string is, the only
+> properties that matter are the base address, size, and possibly whether
+> 'no-map' is specified or not to set-up appropriate protection for the
+> various memory controller agents (CPU, PCIe, everything else).
+> 
+> Everything else is just information provided to the OS in order to
+> provide a different implementation keyed off the compatible string. So
+> with that in mind, you can imagine that before the introduction of
+> 'restricted-dma-pool' in 5.15, some platforms already had such a concept
+> of a reserved DMA region, that was backed by a device private CMA pool,
+> they would allocate memory from that region and would create their own
+> middle layer for bounce buffering if they liked to. This is obviously
+> not ideal on a number of levels starting from not being done at the
+> appropriate level but it was done.
+> 
+> Now that 'restricted-dma-pool' is supported, transitioning them over is
+> obviously better and updating the compatible string for those specific
+> regions to include the more descriptive 'restrictded-dma-pool' sounded
+> to me as an acceptable way to maintain forward/backward DTB
+> compatibility rather than doubly reserving these region one with the
+> "old" compatible and one with the "new" compatible, not that the system
+> is even capable of doing that anyway, so we would have had to
+> essentially make them adjacent.
+> 
+> And no, we are not bringing Linux version awareness to our boot loader
+> mangling the Device Tree blob, that's not happening, hence this patch.
 
-Enabling ATC (via ATS capability) can be a functional requirement
-for SATC device operation or an optional to enhance device
-performance/functionality. This is determined by the bit of
-ATC_REQUIRED in SATC table. When IOMMU is working in scalable
-mode, software chooses to always enable ATS for every device in
-SATC table because Intel SoC devices in SATC table are trusted
-to use ATS.
+If the patch was adding a "brcm,insecure-dma-pool" compatible and 
+hooking it up, I'd be less bothered. As it is, I remain unconvinced that 
+describing two things that are not interchangeable with each other as 
+interchangeable with each other is in any way "better".
 
-On the other hand, if IOMMU is in legacy mode, ATS of SATC
-capable devices can work transparently to software and be
-automatically enabled by IOMMU hardware. As the result,
-there is no need for software to enable ATS on these devices.
+>> Linux is right to reject contradictory information rather than attempt
+>> to guess at what might be safe or not.
+> 
+> The piece of contradictory information here specifically is the
+> 'reusable' boolean property, but as I explain the commit message
+> message, if you have a "properly formed" 'restricted-dma-pool' region
+> then it should not have that property in the first place, but even if it
+> does, it does not harm anything to have it.
+> 
+>>
+>> Furthermore, down at the practical level, a SWIOTLB pool is used for
+>> bouncing streaming DMA API mappings, while a coherent/CMA pool is used
+>> for coherent DMA API allocations; they are not functionally
+>> interchangeable either. If a device depends on coherent allocations
+>> rather than streaming DMA, it should still have a coherent pool even
+>> under a physical memory protection scheme, and if it needs both
+>> streaming DMA and coherent buffers then it can have both types of pool -
+>> the bindings explicitly call that out. It's true that SWIOTLB pools can
+>> act as an emergency fallback for small allocations for I/O-coherent
+>> devices, but that's not really intended to be relied upon heavily.
+>>
+>> So no, I do not see anything wrong with the current handling of
+>> nonsensical DTs here, sorry.
+> 
+> There is nothing wrong in the current code, but with changes that have
+> no adverse effect on "properly" constructed reserved memory entries we
+> can accept both types of reservation and maintain forward/backward
+> compatibility in our case. So why not?
 
-Signed-off-by: Yian Chen <yian.chen@intel.com>
----
- drivers/iommu/intel/iommu.c | 53 ++++++++++++++++++++++++++++++++++---
- include/linux/intel-iommu.h |  2 +-
- 2 files changed, 51 insertions(+), 4 deletions(-)
+Would you be happy to give me blanket permission to point a gun at your 
+foot and pull the trigger at any point in the future, if right now I 
+show you an unloaded gun?
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 92fea3fbbb11..58a80cec50bb 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -872,7 +872,6 @@ static bool iommu_is_dummy(struct intel_iommu *iommu, struct device *dev)
- 
- 	return false;
- }
--
- struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn)
- {
- 	struct dmar_drhd_unit *drhd = NULL;
-@@ -2684,7 +2683,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 
- 		if (ecap_dev_iotlb_support(iommu->ecap) &&
- 		    pci_ats_supported(pdev) &&
--		    dmar_find_matched_atsr_unit(pdev))
-+		    dmar_ats_supported(pdev, iommu))
- 			info->ats_supported = 1;
- 
- 		if (sm_supported(iommu)) {
-@@ -4020,7 +4019,42 @@ static void intel_iommu_free_dmars(void)
- 	}
- }
- 
--int dmar_find_matched_atsr_unit(struct pci_dev *dev)
-+/* dev_satc_state - Find if dev is in a DMAR SATC table
-+ *
-+ * return value:
-+ *    1: dev is in STAC table and ATS is required
-+ *    0: dev is in SATC table and ATS is optional
-+ *    -1: dev isn't in SATC table
-+ */
-+static int dev_satc_state(struct pci_dev *dev)
-+{
-+	int i, ret = -1;
-+	struct device *tmp;
-+	struct dmar_satc_unit *satcu;
-+	struct acpi_dmar_satc *satc;
-+
-+	dev = pci_physfn(dev);
-+	rcu_read_lock();
-+
-+	list_for_each_entry_rcu(satcu, &dmar_satc_units, list) {
-+		satc = container_of(satcu->hdr, struct acpi_dmar_satc, header);
-+		if (satc->segment != pci_domain_nr(dev->bus))
-+			continue;
-+		for_each_dev_scope(satcu->devices, satcu->devices_cnt, i, tmp)
-+			if (to_pci_dev(tmp) == dev) {
-+				if (satc->flags)
-+					ret = 1;
-+				else
-+					ret = 0;
-+				goto out;
-+			}
-+	}
-+out:
-+	rcu_read_unlock();
-+	return ret;
-+}
-+
-+int dmar_ats_supported(struct pci_dev *dev, struct intel_iommu *iommu)
- {
- 	int i, ret = 1;
- 	struct pci_bus *bus;
-@@ -4030,6 +4064,19 @@ int dmar_find_matched_atsr_unit(struct pci_dev *dev)
- 	struct dmar_atsr_unit *atsru;
- 
- 	dev = pci_physfn(dev);
-+	i = dev_satc_state(dev);
-+	if (i >= 0) {
-+		/* This dev supports ATS as it is in SATC table!
-+		 * When IOMMU is in legacy mode, enabling ATS is done
-+		 * automatically by HW for the device that requires
-+		 * ATS, hence OS should not enable this device ATS
-+		 * to avoid duplicated TLB invalidation
-+		 */
-+		if (i && !sm_supported(iommu))
-+			ret = 0;
-+		return ret;
-+	}
-+
- 	for (bus = dev->bus; bus; bus = bus->parent) {
- 		bridge = bus->self;
- 		/* If it's an integrated device, allow ATS */
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 69230fd695ea..fe9fd417d611 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -717,7 +717,7 @@ static inline int nr_pte_to_next_page(struct dma_pte *pte)
- }
- 
- extern struct dmar_drhd_unit * dmar_find_matched_drhd_unit(struct pci_dev *dev);
--extern int dmar_find_matched_atsr_unit(struct pci_dev *dev);
-+extern int dmar_ats_supported(struct pci_dev *dev, struct intel_iommu *iommu);
- 
- extern int dmar_enable_qi(struct intel_iommu *iommu);
- extern void dmar_disable_qi(struct intel_iommu *iommu);
--- 
-2.25.1
+Security and lazy shortcuts do not mix well. You are literally arguing 
+that mainline Linux should support a back-door ABI for illegal DT 
+properties which at worst has the potential to defeat a generic security 
+feature. The "restricted-dma-pool" binding explicitly says "When using 
+this, the no-map and reusable properties must not be set" (I should spin 
+up a patch enforcing that in the schema...). No matter how convinced you 
+are that no OS past present or future could possibly ever behave 
+differently from the particular downstream software stack you care 
+about, NAK to subverting the "restricted-dma-pool" compatible in any 
+way, sorry. I for one wish to have no part in the next 
+trendy-name-compromise down the line where a protected VM can be tricked 
+into exposing its page cache to a "DMA attack" by an untrusted 
+hypervisor because fixing Florian's bootloader is hard.
 
+Cheers,
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
