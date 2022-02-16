@@ -1,99 +1,93 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1910FC433EF
-	for <iommu@archiver.kernel.org>; Wed, 16 Feb 2022 05:59:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 44B1CC433EF
+	for <iommu@archiver.kernel.org>; Wed, 16 Feb 2022 06:29:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id AE0C5408D4;
-	Wed, 16 Feb 2022 05:59:23 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id BA60640154;
+	Wed, 16 Feb 2022 06:29:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id c_-zCwXgUVgF; Wed, 16 Feb 2022 05:59:22 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 813E6408C1;
-	Wed, 16 Feb 2022 05:59:22 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id oRjcpVhciZrp; Wed, 16 Feb 2022 06:29:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 500CC4010E;
+	Wed, 16 Feb 2022 06:29:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5490FC001A;
-	Wed, 16 Feb 2022 05:59:22 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 02292C000B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 05:59:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1DA21C0011;
+	Wed, 16 Feb 2022 06:29:39 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DE496C000B
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 06:29:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id D6C36408D4
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 05:59:20 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id C16A3415E2
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 06:29:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0u5kzynP1ZeL for <iommu@lists.linux-foundation.org>;
- Wed, 16 Feb 2022 05:59:20 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com
- [IPv6:2607:f8b0:4864:20::82a])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 27DB0408C1
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 05:59:20 +0000 (UTC)
-Received: by mail-qt1-x82a.google.com with SMTP id r9so1190505qta.1
- for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 21:59:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=CDBQKjrOHx1jFqanGpjTZz0mkLi+B8rGvMm6ZK2mah0=;
- b=ANYaNLWFCQkj69oiskZkSh6DjZmPGeiq9PrEgU2cP3v3dn1nkwLwYm7cx+4vS6oOKw
- RwNzEIyq3NLxuuxq6/pXX241+VkGVJtb86AlOXZXiNaOF+o9MwFTZ3Ial6STIS1UiAA5
- dhBgfFPAMgGgTKfxv7tknbGcdLXT5auCslnVM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=CDBQKjrOHx1jFqanGpjTZz0mkLi+B8rGvMm6ZK2mah0=;
- b=5bUKmtXINlrTk+Ik8MW1qfW9eUv9hKwl9HUtgf6yrsta6Us9lonyCzKWQ6EZqnIj0L
- WWmy1ixP8OzFHXx0aqOZuBBcPdn64jEyKDqRX/+XBzRDi8zW1BhUqwl41f/FlraEnue9
- fR44E0Ii8TU5pDyHr0J/XmNS7BK7UIdTlxHB181zN9dKYP8Ql7egx43kb93dzZZ3gcOK
- nIwnG9Dd+nNCrZRWFsKoyrjpbI9eNP0JOv0iX8NegDEV8NTHWJzWoqk6TKilsl7TwLjB
- yX6ESK4qVYKaDv8whyyfGTvFCPHOxu/AHeq2Cl981NMzgpv0SuvEwEcTnVQaoYQ1kLFl
- LXqw==
-X-Gm-Message-State: AOAM531ISj7iTcnxYIxUY/XC+L3V8swuzD8u4kXF5shiTV8QUZr3ki4H
- Pq+gHnhk6V+fKcKjfQ+/XwNlu4e1MqiW02KP
-X-Google-Smtp-Source: ABdhPJykz/9kNkGz3sTp5JSAIKRqX76X0B4HGjWPFdoaxH/nSyZHOeIuSPp4aFaIfJyyYKC0NKOQYA==
-X-Received: by 2002:ac8:5c8a:0:b0:2dc:e1a6:72f2 with SMTP id
- r10-20020ac85c8a000000b002dce1a672f2mr1032451qta.50.1644991158821; 
- Tue, 15 Feb 2022 21:59:18 -0800 (PST)
-Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com.
- [209.85.219.176])
- by smtp.gmail.com with ESMTPSA id j15sm21641981qta.83.2022.02.15.21.59.16
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 15 Feb 2022 21:59:17 -0800 (PST)
-Received: by mail-yb1-f176.google.com with SMTP id y129so2851693ybe.7
- for <iommu@lists.linux-foundation.org>; Tue, 15 Feb 2022 21:59:16 -0800 (PST)
-X-Received: by 2002:a0d:c383:0:b0:2d0:f04e:7ada with SMTP id
- f125-20020a0dc383000000b002d0f04e7adamr1070020ywd.229.1644991156422; Tue, 15
- Feb 2022 21:59:16 -0800 (PST)
+ with ESMTP id WGRm_24cLOXX for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Feb 2022 06:29:36 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 5BA09415E0
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 06:29:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1644992976; x=1676528976;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=xhIOhZqbmXasqsL4PSTwgu2wa99Ybi4SJBWDqbME8bE=;
+ b=Fk9SGiprp71N6RQgfyQE1RY97fgYWERmGbhQqkMbRTaAX7Hv2XoWqBis
+ O684FoS4+I0oIiHNXUAL5xmtekSKp2MFxmeuL70AGhvY8KxyzUATkwQAg
+ F1x9zZxWMcICteSY/QVz89tN/bDfiP0Lqi0aqkZKxRvmq+MGXehcr+D9Q
+ nQfdU93dDisUL8bWwdL0RtAZhYgRS0bFEbdHR5NtjSgVTimfmgR8klkeK
+ Ej+vcSW8MnoQX1bRG54th/ERfwz041G4yZHiTmg0/AllT67R0aDvhxO24
+ glZxpkRPquAzaQzENX4YOURZtOPfo+H7y/90OFht9eV9fzNA3V9ieXJoZ Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="249366367"
+X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; d="scan'208";a="249366367"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Feb 2022 22:29:35 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; d="scan'208";a="681371490"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
+ ([10.239.159.118])
+ by fmsmga001.fm.intel.com with ESMTP; 15 Feb 2022 22:29:29 -0800
+Message-ID: <69f26767-66d6-12df-1754-45ee1932d513@linux.intel.com>
+Date: Wed, 16 Feb 2022 14:28:09 +0800
 MIME-Version: 1.0
-References: <20220125085634.17972-1-yong.wu@mediatek.com>
- <20220125085634.17972-9-yong.wu@mediatek.com>
- <ca47becf-adc9-f11e-5e59-03f203920344@collabora.com>
- <d9637b40196873f392ac9cebfe369106a6f0eee7.camel@mediatek.com>
-In-Reply-To: <d9637b40196873f392ac9cebfe369106a6f0eee7.camel@mediatek.com>
-From: Tomasz Figa <tfiga@chromium.org>
-Date: Wed, 16 Feb 2022 14:59:05 +0900
-X-Gmail-Original-Message-ID: <CAAFQd5Cqg2xPwtzcom_EZ1tw1tOBsND_i1YAQCO4kF=+eWePBQ@mail.gmail.com>
-Message-ID: <CAAFQd5Cqg2xPwtzcom_EZ1tw1tOBsND_i1YAQCO4kF=+eWePBQ@mail.gmail.com>
-Subject: Re: [PATCH v4 08/35] iommu/mediatek: Use kmalloc for protect buffer
-To: Yong Wu <Yong.Wu@mediatek.com>
-Cc: yf.wang@mediatek.com, yen-chang.chen@mediatek.com,
- Will Deacon <will@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- xueqi.zhang@mediatek.com, mingyuan.ma@mediatek.com, devicetree@vger.kernel.org,
- chengci.xu@mediatek.com, libo.kang@mediatek.com,
- Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
- Hsin-Yi Wang <hsinyi@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
- linux-arm-kernel@lists.infradead.org,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- anan.sun@mediatek.com, srv_heupstream@mediatek.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 3/8] iommu: Extend iommu_at[de]tach_device() for
+ multi-device groups
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>
+References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
+ <20220106022053.2406748-4-baolu.lu@linux.intel.com>
+ <Ygo/eCRFnraY01WA@8bytes.org> <20220214130313.GV4160@nvidia.com>
+ <Ygppub+Wjq6mQEAX@8bytes.org> <08e90a61-8491-acf1-ab0f-f93f97366d24@arm.com>
+ <20220214154626.GF4160@nvidia.com> <YgtrJVI9wGMFdPWk@8bytes.org>
+ <20220215134744.GO4160@nvidia.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220215134744.GO4160@nvidia.com>
+Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
+ David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
  Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -107,47 +101,73 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Feb 16, 2022 at 2:55 PM Yong Wu <yong.wu@mediatek.com> wrote:
->
-> On Thu, 2022-01-27 at 12:08 +0100, AngeloGioacchino Del Regno wrote:
-> > Il 25/01/22 09:56, Yong Wu ha scritto:
-> > > No need zero for the protect buffer that is only accessed by the
-> > > IOMMU HW
-> > > translation fault happened.
-> > >
-> > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> >
-> > I would rather keep this a devm_kzalloc instead... the cost is very
-> > minimal and
-> > this will be handy when new hardware will be introduced, as it may
-> > require a bigger
-> > buffer: in that case, "older" platforms will use only part of it and
-> > we may get
-> > garbage data at the end.
->
-> Currently this is to avoid zero 512 bytes for all the platforms.
->
-> Sorry, I don't understand why it is unnecessary when the new hardware
-> requires a bigger buffer. If the buffer becomes bigger, then clearing
-> it to 0 need more cost. then this patch is more helpful?
->
-> The content in this buffer is garbage, we won't care about or analyse
-> it.
+On 2/15/22 9:47 PM, Jason Gunthorpe via iommu wrote:
+> On Tue, Feb 15, 2022 at 09:58:13AM +0100, Joerg Roedel wrote:
+>> On Mon, Feb 14, 2022 at 11:46:26AM -0400, Jason Gunthorpe wrote:
+>>> On Mon, Feb 14, 2022 at 03:18:31PM +0000, Robin Murphy wrote:
+>>>
+>>>> Arguably, iommu_attach_device() could be renamed something like
+>>>> iommu_attach_group_for_dev(), since that's effectively the semantic that all
+>>>> the existing API users want anyway (even VFIO at the high level - the group
+>>>> is the means for the user to assign their GPU/NIC/whatever device to their
+>>>> process, not the end in itself). That's just a lot more churn.
+>>>
+>>> Right
+>>
+>> Okay, good point. I can live with an iommu_attach_group_for_dev()
+>> interface, it is still better than making iommu_attach_device() silently
+>> operate on whole groups.
+> 
+> I think this is what Lu's series currently does, it just doesn't do
+> the rename churn as Robin noted. Lu, why not add a note like Robin
+> explained to the kdoc so it is clear this api impacts the whole group?
 
-I think we should zero it for security reasons regardless of any other
-aspects. With this patch it's leaking kernel data to the hardware.
+I feel that the debate here is not about API name, but how should
+iommu_attach/detach_device() be implemented and used.
 
-At the same time, we're talking here about something executed just 1
-time when the driver probes. I don't think the cost would really
-matter.
+It seems everyone agrees that for device assignment (where the I/O
+address is owned by the user-space application), the iommu_group-based
+APIs should always be used. Otherwise, the isolation and protection are
+not guaranteed.
+
+For kernel DMA (where the I/O address space is owned by the kernel
+drivers), the device driver oriented interface should meet below
+expectations:
+
+  - the concept of iommu_group should be transparent to the device
+    drivers;
+  - but internally, iommu core only allows a single domain to attach to
+    a group.
+
+If the device driver uses default domain, the above expectations are
+naturally met. But when the driver wants to attach its own domain, the
+problem arises.
+
+This series tries to use the DMA ownership mechanism to solve this. The
+devices drivers explicitly declare that
+
+  - I know that the device I am driving shares the iommu_group with
+    others;
+  - Other device drivers with the same awareness can only be bound to the
+    devices in the shared group;
+  - We can sync with each other so that only a shared domain could be
+    attached to the devices in the group.
+
+Another proposal (as suggested by Joerg) is to introduce the concept of
+"sub-group". An iommu group could have one or multiple sub-groups with
+non-aliased devices sitting in different sub-groups and use different
+domains.
+
+Above are what I get so far. If there's any misunderstanding, please
+help to correct.
 
 Best regards,
-Tomasz
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
