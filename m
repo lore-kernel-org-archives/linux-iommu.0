@@ -4,56 +4,90 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2A1A1C433F5
-	for <iommu@archiver.kernel.org>; Wed, 16 Feb 2022 19:49:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8C2C9C433FE
+	for <iommu@archiver.kernel.org>; Wed, 16 Feb 2022 20:39:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id A40B540A14;
-	Wed, 16 Feb 2022 19:49:12 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 33F13404F4;
+	Wed, 16 Feb 2022 20:39:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id u2VaQjhWPnZq; Wed, 16 Feb 2022 19:49:11 +0000 (UTC)
+	with ESMTP id QQ0XgwyKeVDS; Wed, 16 Feb 2022 20:39:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 0A91540A59;
-	Wed, 16 Feb 2022 19:49:11 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 3BC53400A6;
+	Wed, 16 Feb 2022 20:39:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D1829C001A;
-	Wed, 16 Feb 2022 19:49:10 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B05E8C000B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 19:49:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1368DC002D;
+	Wed, 16 Feb 2022 20:39:46 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B286FC0011
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 20:39:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 90A8A409F6
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 19:49:09 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 9B11C8142C
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 20:39:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZEtvgC5NVKQT for <iommu@lists.linux-foundation.org>;
- Wed, 16 Feb 2022 19:49:07 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 0910141DE7
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 19:49:05 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1602A12FC;
- Wed, 16 Feb 2022 11:49:05 -0800 (PST)
-Received: from [10.57.40.147] (unknown [10.57.40.147])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 342B73F70D;
- Wed, 16 Feb 2022 11:49:03 -0800 (PST)
-Message-ID: <27b10c12-e3f2-6ac4-26b5-44625e61d7ae@arm.com>
-Date: Wed, 16 Feb 2022 19:48:57 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id GtAnZsTKH-yg for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Feb 2022 20:39:43 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com
+ [IPv6:2607:f8b0:4864:20::102d])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 10AFB81425
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 20:39:42 +0000 (UTC)
+Received: by mail-pj1-x102d.google.com with SMTP id
+ ki18-20020a17090ae91200b001b8be87e9abso4615794pjb.1
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 12:39:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=l0yXqLaXkDzRuyoi2/xFAHFgcqQhOzk3wyGzx4DsOBc=;
+ b=FHD4YA3TmZO7g1EKJUaWqk3dV1npJy/TrX2A5AVZIpUX7DJ0xdg+N/z9bMVlC/+Sy7
+ Sa9xo9PmeRKA524z91+WdTp+uDpAuxgQh54PByyR9WaHt0BQpRp3rEI6T5sXuvGrkVuH
+ tTd0WvtPd0VP8pP0msvIDzAusFPw/mGvttecf2jsslkI6nb6F/x64hQ3zMr6d9KFYaIc
+ /RkCKILuGfObiD1WAimgZwwveFO1TN64oXGX+b2K7Fv2eybT2kM61B3Ef5AVYj1nXDY4
+ UDC7SJRBdDK+pr7+0JT9LbzYhoglViL7XzrtDSrhmanaiuj0DqDLzfAnr7UJzudf+pf5
+ 7Fbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=l0yXqLaXkDzRuyoi2/xFAHFgcqQhOzk3wyGzx4DsOBc=;
+ b=Dw6c2SfoaXLeKoQWCId/0nnZHbpKeh3SSvO9AOR/6f+DDKNaX04euYdTjw6j4Ewdp7
+ UMh05avvnx1Q8/gEz7lmuWjykbVQtMfscGWzrVFmcx7dHdBo/E49NWTjkKpNJWw4G7a3
+ 6yVz1CxTq8mwyYZBz0Y+LVTcrR1KgpOZEtiIqtYnn3DpbJqS9UprAi6+mEyeCAj4vQlc
+ hja+fkwhup+Si4tiKRh0KEn7di7VHUO7wmAPYHTWB36Yq3IXqz1DbwPV2DrixNh2Ll0i
+ AmvMpcmXH8zlT6oMCjpEl8pvdsM/dWQsSMMELwN4qc/kKm+EF/321RBuGhVTKoseD4NY
+ Wm3g==
+X-Gm-Message-State: AOAM533GQKv1cHCFHKXw0czea75B/BdDN6r4JcoE6PE9gFS2Iq0vH+nr
+ lEuzh0iV1mkSTyL2lZ/GhFDM+Dql79A=
+X-Google-Smtp-Source: ABdhPJxxTUxkvqVV5KxYqxbtqqKN+2upRC+YRlTBpZlKqg9JidgNjV2PqilWoTKxwaK8PPD236G0Cw==
+X-Received: by 2002:a17:90b:4b52:b0:1b8:c554:3bdd with SMTP id
+ mi18-20020a17090b4b5200b001b8c5543bddmr3739118pjb.5.1645043982006; 
+ Wed, 16 Feb 2022 12:39:42 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+ by smtp.googlemail.com with ESMTPSA id h14sm50167772pfh.95.2022.02.16.12.39.40
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 16 Feb 2022 12:39:41 -0800 (PST)
 Subject: Re: [PATCH] dma-contiguous: Prioritize restricted DMA pool over
  shared DMA pool
-Content-Language: en-GB
-To: Florian Fainelli <f.fainelli@gmail.com>, linux-kernel@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>,
+ Florian Fainelli <f.fainelli@gmail.com>, linux-kernel@vger.kernel.org
 References: <20220215224344.1779145-1-f.fainelli@gmail.com>
  <39ed2187-2345-297d-2dd3-0b0974ce8b31@arm.com>
  <50ae9c05-2ec4-09a8-965c-0d70ea74d879@gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <50ae9c05-2ec4-09a8-965c-0d70ea74d879@gmail.com>
+ <27b10c12-e3f2-6ac4-26b5-44625e61d7ae@arm.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <4eac1aac-8fe6-3629-df17-b1264d976f3a@gmail.com>
+Date: Wed, 16 Feb 2022 12:39:39 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <27b10c12-e3f2-6ac4-26b5-44625e61d7ae@arm.com>
+Content-Language: en-US
 Cc: robh@kernel.org, opendmb@gmail.com,
  "open list:DMA MAPPING HELPERS" <iommu@lists.linux-foundation.org>,
  jim2101024@gmail.com, bcm-kernel-feedback-list@broadcom.com,
@@ -70,114 +104,163 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-02-16 17:37, Florian Fainelli wrote:
-> On 2/16/22 3:13 AM, Robin Murphy wrote:
->> On 2022-02-15 22:43, Florian Fainelli wrote:
->>> Some platforms might define the same memory region to be suitable for
->>> used by a kernel supporting CONFIG_DMA_RESTRICTED_POOL while maintaining
->>> compatibility with older kernels that do not support that. This is
->>> achieved by declaring the node this way;
->>
->> Those platforms are doing something inexplicably wrong, then.
-> 
-> Matter of perspective I guess.
-> 
->>
->> "restricted-dma-pool" says that DMA for the device has to be bounced
->> through a dedicated pool because it can't be trusted with visibility of
->> regular OS memory. "reusable" tells the OS that it's safe to use the
->> pool as regular OS memory while it's idle. Do you see how those concepts
->> are fundamentally incompatible?
-> 
->  From the perspective of the software or firmware agent that is
-> responsible for setting up the appropriate protection on the reserved
-> memory, it does not matter what the compatible string is, the only
-> properties that matter are the base address, size, and possibly whether
-> 'no-map' is specified or not to set-up appropriate protection for the
-> various memory controller agents (CPU, PCIe, everything else).
-> 
-> Everything else is just information provided to the OS in order to
-> provide a different implementation keyed off the compatible string. So
-> with that in mind, you can imagine that before the introduction of
-> 'restricted-dma-pool' in 5.15, some platforms already had such a concept
-> of a reserved DMA region, that was backed by a device private CMA pool,
-> they would allocate memory from that region and would create their own
-> middle layer for bounce buffering if they liked to. This is obviously
-> not ideal on a number of levels starting from not being done at the
-> appropriate level but it was done.
-> 
-> Now that 'restricted-dma-pool' is supported, transitioning them over is
-> obviously better and updating the compatible string for those specific
-> regions to include the more descriptive 'restrictded-dma-pool' sounded
-> to me as an acceptable way to maintain forward/backward DTB
-> compatibility rather than doubly reserving these region one with the
-> "old" compatible and one with the "new" compatible, not that the system
-> is even capable of doing that anyway, so we would have had to
-> essentially make them adjacent.
-> 
-> And no, we are not bringing Linux version awareness to our boot loader
-> mangling the Device Tree blob, that's not happening, hence this patch.
-
-If the patch was adding a "brcm,insecure-dma-pool" compatible and 
-hooking it up, I'd be less bothered. As it is, I remain unconvinced that 
-describing two things that are not interchangeable with each other as 
-interchangeable with each other is in any way "better".
-
->> Linux is right to reject contradictory information rather than attempt
->> to guess at what might be safe or not.
-> 
-> The piece of contradictory information here specifically is the
-> 'reusable' boolean property, but as I explain the commit message
-> message, if you have a "properly formed" 'restricted-dma-pool' region
-> then it should not have that property in the first place, but even if it
-> does, it does not harm anything to have it.
-> 
->>
->> Furthermore, down at the practical level, a SWIOTLB pool is used for
->> bouncing streaming DMA API mappings, while a coherent/CMA pool is used
->> for coherent DMA API allocations; they are not functionally
->> interchangeable either. If a device depends on coherent allocations
->> rather than streaming DMA, it should still have a coherent pool even
->> under a physical memory protection scheme, and if it needs both
->> streaming DMA and coherent buffers then it can have both types of pool -
->> the bindings explicitly call that out. It's true that SWIOTLB pools can
->> act as an emergency fallback for small allocations for I/O-coherent
->> devices, but that's not really intended to be relied upon heavily.
->>
->> So no, I do not see anything wrong with the current handling of
->> nonsensical DTs here, sorry.
-> 
-> There is nothing wrong in the current code, but with changes that have
-> no adverse effect on "properly" constructed reserved memory entries we
-> can accept both types of reservation and maintain forward/backward
-> compatibility in our case. So why not?
-
-Would you be happy to give me blanket permission to point a gun at your 
-foot and pull the trigger at any point in the future, if right now I 
-show you an unloaded gun?
-
-Security and lazy shortcuts do not mix well. You are literally arguing 
-that mainline Linux should support a back-door ABI for illegal DT 
-properties which at worst has the potential to defeat a generic security 
-feature. The "restricted-dma-pool" binding explicitly says "When using 
-this, the no-map and reusable properties must not be set" (I should spin 
-up a patch enforcing that in the schema...). No matter how convinced you 
-are that no OS past present or future could possibly ever behave 
-differently from the particular downstream software stack you care 
-about, NAK to subverting the "restricted-dma-pool" compatible in any 
-way, sorry. I for one wish to have no part in the next 
-trendy-name-compromise down the line where a protected VM can be tricked 
-into exposing its page cache to a "DMA attack" by an untrusted 
-hypervisor because fixing Florian's bootloader is hard.
-
-Cheers,
-Robin.
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMi8xNi8yMiAxMTo0OCBBTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDIwMjItMDItMTYg
+MTc6MzcsIEZsb3JpYW4gRmFpbmVsbGkgd3JvdGU6Cj4+IE9uIDIvMTYvMjIgMzoxMyBBTSwgUm9i
+aW4gTXVycGh5IHdyb3RlOgo+Pj4gT24gMjAyMi0wMi0xNSAyMjo0MywgRmxvcmlhbiBGYWluZWxs
+aSB3cm90ZToKPj4+PiBTb21lIHBsYXRmb3JtcyBtaWdodCBkZWZpbmUgdGhlIHNhbWUgbWVtb3J5
+IHJlZ2lvbiB0byBiZSBzdWl0YWJsZSBmb3IKPj4+PiB1c2VkIGJ5IGEga2VybmVsIHN1cHBvcnRp
+bmcgQ09ORklHX0RNQV9SRVNUUklDVEVEX1BPT0wgd2hpbGUKPj4+PiBtYWludGFpbmluZwo+Pj4+
+IGNvbXBhdGliaWxpdHkgd2l0aCBvbGRlciBrZXJuZWxzIHRoYXQgZG8gbm90IHN1cHBvcnQgdGhh
+dC4gVGhpcyBpcwo+Pj4+IGFjaGlldmVkIGJ5IGRlY2xhcmluZyB0aGUgbm9kZSB0aGlzIHdheTsK
+Pj4+Cj4+PiBUaG9zZSBwbGF0Zm9ybXMgYXJlIGRvaW5nIHNvbWV0aGluZyBpbmV4cGxpY2FibHkg
+d3JvbmcsIHRoZW4uCj4+Cj4+IE1hdHRlciBvZiBwZXJzcGVjdGl2ZSBJIGd1ZXNzLgo+Pgo+Pj4K
+Pj4+ICJyZXN0cmljdGVkLWRtYS1wb29sIiBzYXlzIHRoYXQgRE1BIGZvciB0aGUgZGV2aWNlIGhh
+cyB0byBiZSBib3VuY2VkCj4+PiB0aHJvdWdoIGEgZGVkaWNhdGVkIHBvb2wgYmVjYXVzZSBpdCBj
+YW4ndCBiZSB0cnVzdGVkIHdpdGggdmlzaWJpbGl0eSBvZgo+Pj4gcmVndWxhciBPUyBtZW1vcnku
+ICJyZXVzYWJsZSIgdGVsbHMgdGhlIE9TIHRoYXQgaXQncyBzYWZlIHRvIHVzZSB0aGUKPj4+IHBv
+b2wgYXMgcmVndWxhciBPUyBtZW1vcnkgd2hpbGUgaXQncyBpZGxlLiBEbyB5b3Ugc2VlIGhvdyB0
+aG9zZSBjb25jZXB0cwo+Pj4gYXJlIGZ1bmRhbWVudGFsbHkgaW5jb21wYXRpYmxlPwo+Pgo+PiDC
+oEZyb20gdGhlIHBlcnNwZWN0aXZlIG9mIHRoZSBzb2Z0d2FyZSBvciBmaXJtd2FyZSBhZ2VudCB0
+aGF0IGlzCj4+IHJlc3BvbnNpYmxlIGZvciBzZXR0aW5nIHVwIHRoZSBhcHByb3ByaWF0ZSBwcm90
+ZWN0aW9uIG9uIHRoZSByZXNlcnZlZAo+PiBtZW1vcnksIGl0IGRvZXMgbm90IG1hdHRlciB3aGF0
+IHRoZSBjb21wYXRpYmxlIHN0cmluZyBpcywgdGhlIG9ubHkKPj4gcHJvcGVydGllcyB0aGF0IG1h
+dHRlciBhcmUgdGhlIGJhc2UgYWRkcmVzcywgc2l6ZSwgYW5kIHBvc3NpYmx5IHdoZXRoZXIKPj4g
+J25vLW1hcCcgaXMgc3BlY2lmaWVkIG9yIG5vdCB0byBzZXQtdXAgYXBwcm9wcmlhdGUgcHJvdGVj
+dGlvbiBmb3IgdGhlCj4+IHZhcmlvdXMgbWVtb3J5IGNvbnRyb2xsZXIgYWdlbnRzIChDUFUsIFBD
+SWUsIGV2ZXJ5dGhpbmcgZWxzZSkuCj4+Cj4+IEV2ZXJ5dGhpbmcgZWxzZSBpcyBqdXN0IGluZm9y
+bWF0aW9uIHByb3ZpZGVkIHRvIHRoZSBPUyBpbiBvcmRlciB0bwo+PiBwcm92aWRlIGEgZGlmZmVy
+ZW50IGltcGxlbWVudGF0aW9uIGtleWVkIG9mZiB0aGUgY29tcGF0aWJsZSBzdHJpbmcuIFNvCj4+
+IHdpdGggdGhhdCBpbiBtaW5kLCB5b3UgY2FuIGltYWdpbmUgdGhhdCBiZWZvcmUgdGhlIGludHJv
+ZHVjdGlvbiBvZgo+PiAncmVzdHJpY3RlZC1kbWEtcG9vbCcgaW4gNS4xNSwgc29tZSBwbGF0Zm9y
+bXMgYWxyZWFkeSBoYWQgc3VjaCBhIGNvbmNlcHQKPj4gb2YgYSByZXNlcnZlZCBETUEgcmVnaW9u
+LCB0aGF0IHdhcyBiYWNrZWQgYnkgYSBkZXZpY2UgcHJpdmF0ZSBDTUEgcG9vbCwKPj4gdGhleSB3
+b3VsZCBhbGxvY2F0ZSBtZW1vcnkgZnJvbSB0aGF0IHJlZ2lvbiBhbmQgd291bGQgY3JlYXRlIHRo
+ZWlyIG93bgo+PiBtaWRkbGUgbGF5ZXIgZm9yIGJvdW5jZSBidWZmZXJpbmcgaWYgdGhleSBsaWtl
+ZCB0by4gVGhpcyBpcyBvYnZpb3VzbHkKPj4gbm90IGlkZWFsIG9uIGEgbnVtYmVyIG9mIGxldmVs
+cyBzdGFydGluZyBmcm9tIG5vdCBiZWluZyBkb25lIGF0IHRoZQo+PiBhcHByb3ByaWF0ZSBsZXZl
+bCBidXQgaXQgd2FzIGRvbmUuCj4+Cj4+IE5vdyB0aGF0ICdyZXN0cmljdGVkLWRtYS1wb29sJyBp
+cyBzdXBwb3J0ZWQsIHRyYW5zaXRpb25pbmcgdGhlbSBvdmVyIGlzCj4+IG9idmlvdXNseSBiZXR0
+ZXIgYW5kIHVwZGF0aW5nIHRoZSBjb21wYXRpYmxlIHN0cmluZyBmb3IgdGhvc2Ugc3BlY2lmaWMK
+Pj4gcmVnaW9ucyB0byBpbmNsdWRlIHRoZSBtb3JlIGRlc2NyaXB0aXZlICdyZXN0cmljdGRlZC1k
+bWEtcG9vbCcgc291bmRlZAo+PiB0byBtZSBhcyBhbiBhY2NlcHRhYmxlIHdheSB0byBtYWludGFp
+biBmb3J3YXJkL2JhY2t3YXJkIERUQgo+PiBjb21wYXRpYmlsaXR5IHJhdGhlciB0aGFuIGRvdWJs
+eSByZXNlcnZpbmcgdGhlc2UgcmVnaW9uIG9uZSB3aXRoIHRoZQo+PiAib2xkIiBjb21wYXRpYmxl
+IGFuZCBvbmUgd2l0aCB0aGUgIm5ldyIgY29tcGF0aWJsZSwgbm90IHRoYXQgdGhlIHN5c3RlbQo+
+PiBpcyBldmVuIGNhcGFibGUgb2YgZG9pbmcgdGhhdCBhbnl3YXksIHNvIHdlIHdvdWxkIGhhdmUg
+aGFkIHRvCj4+IGVzc2VudGlhbGx5IG1ha2UgdGhlbSBhZGphY2VudC4KPj4KPj4gQW5kIG5vLCB3
+ZSBhcmUgbm90IGJyaW5naW5nIExpbnV4IHZlcnNpb24gYXdhcmVuZXNzIHRvIG91ciBib290IGxv
+YWRlcgo+PiBtYW5nbGluZyB0aGUgRGV2aWNlIFRyZWUgYmxvYiwgdGhhdCdzIG5vdCBoYXBwZW5p
+bmcsIGhlbmNlIHRoaXMgcGF0Y2guCj4gCj4gSWYgdGhlIHBhdGNoIHdhcyBhZGRpbmcgYSAiYnJj
+bSxpbnNlY3VyZS1kbWEtcG9vbCIgY29tcGF0aWJsZSBhbmQKPiBob29raW5nIGl0IHVwLCBJJ2Qg
+YmUgbGVzcyBib3RoZXJlZC4gQXMgaXQgaXMsIEkgcmVtYWluIHVuY29udmluY2VkIHRoYXQKPiBk
+ZXNjcmliaW5nIHR3byB0aGluZ3MgdGhhdCBhcmUgbm90IGludGVyY2hhbmdlYWJsZSB3aXRoIGVh
+Y2ggb3RoZXIgYXMKPiBpbnRlcmNoYW5nZWFibGUgd2l0aCBlYWNoIG90aGVyIGlzIGluIGFueSB3
+YXkgImJldHRlciIuCgpXZSBtb3N0IGRlZmluaXRpdmVseSBzaG91bGQgaGF2ZSBkb25lIHRoYXQg
+YnV0IHdlIGRpZCBub3QgYmVjYXVzZSB3ZQpzb3J0IG9mIGxpa2UgdG8gbWFpbnRhaW4gYXMgZmV3
+ZXIgcGF0Y2hlcyBhcyBwb3NzaWJsZSBhZ2FpbnN0IHRoZQptYWlubGluZSBrZXJuZWwsIGJlbGll
+dmUgaXQgb3Igbm90LiBBbHNvLCBpdCB3b3VsZCBoYXZlIGJlZW4gZnVuIHRvCmV4cGxhaW4gd2h5
+IHdlIHdlbnQgd2l0aCBvdXIgb3duIGNvbXBhdGlibGUgc3RyaW5nIHRvIG9idGFpbiB0aGUgc2Ft
+ZQpzZW1hbnRpY3MgZnJvbSB0aGUga2VybmVsIGFzIHRoZSBnZW5lcmljIG9uZSwgYnV0IEkgd2ls
+bCBzdGljayBhIHBpbiBpbgp0aGF0IGlkZWEuCgo+IAo+Pj4gTGludXggaXMgcmlnaHQgdG8gcmVq
+ZWN0IGNvbnRyYWRpY3RvcnkgaW5mb3JtYXRpb24gcmF0aGVyIHRoYW4gYXR0ZW1wdAo+Pj4gdG8g
+Z3Vlc3MgYXQgd2hhdCBtaWdodCBiZSBzYWZlIG9yIG5vdC4KPj4KPj4gVGhlIHBpZWNlIG9mIGNv
+bnRyYWRpY3RvcnkgaW5mb3JtYXRpb24gaGVyZSBzcGVjaWZpY2FsbHkgaXMgdGhlCj4+ICdyZXVz
+YWJsZScgYm9vbGVhbiBwcm9wZXJ0eSwgYnV0IGFzIEkgZXhwbGFpbiB0aGUgY29tbWl0IG1lc3Nh
+Z2UKPj4gbWVzc2FnZSwgaWYgeW91IGhhdmUgYSAicHJvcGVybHkgZm9ybWVkIiAncmVzdHJpY3Rl
+ZC1kbWEtcG9vbCcgcmVnaW9uCj4+IHRoZW4gaXQgc2hvdWxkIG5vdCBoYXZlIHRoYXQgcHJvcGVy
+dHkgaW4gdGhlIGZpcnN0IHBsYWNlLCBidXQgZXZlbiBpZiBpdAo+PiBkb2VzLCBpdCBkb2VzIG5v
+dCBoYXJtIGFueXRoaW5nIHRvIGhhdmUgaXQuCj4+Cj4+Pgo+Pj4gRnVydGhlcm1vcmUsIGRvd24g
+YXQgdGhlIHByYWN0aWNhbCBsZXZlbCwgYSBTV0lPVExCIHBvb2wgaXMgdXNlZCBmb3IKPj4+IGJv
+dW5jaW5nIHN0cmVhbWluZyBETUEgQVBJIG1hcHBpbmdzLCB3aGlsZSBhIGNvaGVyZW50L0NNQSBw
+b29sIGlzIHVzZWQKPj4+IGZvciBjb2hlcmVudCBETUEgQVBJIGFsbG9jYXRpb25zOyB0aGV5IGFy
+ZSBub3QgZnVuY3Rpb25hbGx5Cj4+PiBpbnRlcmNoYW5nZWFibGUgZWl0aGVyLiBJZiBhIGRldmlj
+ZSBkZXBlbmRzIG9uIGNvaGVyZW50IGFsbG9jYXRpb25zCj4+PiByYXRoZXIgdGhhbiBzdHJlYW1p
+bmcgRE1BLCBpdCBzaG91bGQgc3RpbGwgaGF2ZSBhIGNvaGVyZW50IHBvb2wgZXZlbgo+Pj4gdW5k
+ZXIgYSBwaHlzaWNhbCBtZW1vcnkgcHJvdGVjdGlvbiBzY2hlbWUsIGFuZCBpZiBpdCBuZWVkcyBi
+b3RoCj4+PiBzdHJlYW1pbmcgRE1BIGFuZCBjb2hlcmVudCBidWZmZXJzIHRoZW4gaXQgY2FuIGhh
+dmUgYm90aCB0eXBlcyBvZiBwb29sIC0KPj4+IHRoZSBiaW5kaW5ncyBleHBsaWNpdGx5IGNhbGwg
+dGhhdCBvdXQuIEl0J3MgdHJ1ZSB0aGF0IFNXSU9UTEIgcG9vbHMgY2FuCj4+PiBhY3QgYXMgYW4g
+ZW1lcmdlbmN5IGZhbGxiYWNrIGZvciBzbWFsbCBhbGxvY2F0aW9ucyBmb3IgSS9PLWNvaGVyZW50
+Cj4+PiBkZXZpY2VzLCBidXQgdGhhdCdzIG5vdCByZWFsbHkgaW50ZW5kZWQgdG8gYmUgcmVsaWVk
+IHVwb24gaGVhdmlseS4KPj4+Cj4+PiBTbyBubywgSSBkbyBub3Qgc2VlIGFueXRoaW5nIHdyb25n
+IHdpdGggdGhlIGN1cnJlbnQgaGFuZGxpbmcgb2YKPj4+IG5vbnNlbnNpY2FsIERUcyBoZXJlLCBz
+b3JyeS4KPj4KPj4gVGhlcmUgaXMgbm90aGluZyB3cm9uZyBpbiB0aGUgY3VycmVudCBjb2RlLCBi
+dXQgd2l0aCBjaGFuZ2VzIHRoYXQgaGF2ZQo+PiBubyBhZHZlcnNlIGVmZmVjdCBvbiAicHJvcGVy
+bHkiIGNvbnN0cnVjdGVkIHJlc2VydmVkIG1lbW9yeSBlbnRyaWVzIHdlCj4+IGNhbiBhY2NlcHQg
+Ym90aCB0eXBlcyBvZiByZXNlcnZhdGlvbiBhbmQgbWFpbnRhaW4gZm9yd2FyZC9iYWNrd2FyZAo+
+PiBjb21wYXRpYmlsaXR5IGluIG91ciBjYXNlLiBTbyB3aHkgbm90Pwo+IAo+IFdvdWxkIHlvdSBi
+ZSBoYXBweSB0byBnaXZlIG1lIGJsYW5rZXQgcGVybWlzc2lvbiB0byBwb2ludCBhIGd1biBhdCB5
+b3VyCj4gZm9vdCBhbmQgcHVsbCB0aGUgdHJpZ2dlciBhdCBhbnkgcG9pbnQgaW4gdGhlIGZ1dHVy
+ZSwgaWYgcmlnaHQgbm93IEkKPiBzaG93IHlvdSBhbiB1bmxvYWRlZCBndW4/Cj4gCj4gU2VjdXJp
+dHkgYW5kIGxhenkgc2hvcnRjdXRzIGRvIG5vdCBtaXggd2VsbC4KClNlY3VyaXR5IGlzIG5vdCBl
+bmZvcmNlZCBieSB0aGUga2VybmVsIGhlcmUgYnV0IGJ5IGEgcGllY2Ugb2YgaGFyZHdhcmUKZXh0
+ZXJuYWwgdG8gdGhlIENQVSwgdGhhdCBpcyB0cnVlIG9mIHRoZSBwbGF0Zm9ybXMgdGhhdCBwcm9t
+cHRlZCB0aGUKJ3Jlc3RyaWN0ZWQtZG1hLXBvb2wnIHdvcmsgaW4gdGhlIGZpcnN0IHBsYWNlIGJ5
+IENsYWlyZS4gVGhlIGNvbXBhdGlibGUKc3RyaW5nIGlzIGlycmVsZXZhbnQgdG8gdGhhdCBlbnRp
+dHkuIFRoZXJlIGlzIG5vIHF1ZXN0aW9uIHRoaXMgaXMgbGF6eSwKdGhhdCBpcyB0aGUgd2hvbGUg
+cG9pbnQgYWN0dWFsbHkuIFRoZSBrZXJuZWwgaXMganVzdCBjb21tdW5pY2F0ZWQgYQpyZXNlcnZl
+ZCBtZW1vcnkgcmVnaW9uLCBpZiBpdCBjYW4gc3VwcG9ydCBhIGdpdmVuIGJlaGF2aW9yIGFuZCBl
+eHBvc2UgYQpzZXQgb2Ygc2VydmljZXMgdG8gZG8gdGhhdCwgZ3JlYXQsIHdlIGxldmVyYWdlIHRo
+YXQsIGVsc2Ugd2UgZmFsbCBiYWNrCnRvIGFub3RoZXIga2luZCB0aGF0IHdlIGNhbiBhbHNvIHVz
+ZSwgYWxiZWl0IGRpZmZlcmVudGx5LgoKPiBZb3UgYXJlIGxpdGVyYWxseSBhcmd1aW5nCj4gdGhh
+dCBtYWlubGluZSBMaW51eCBzaG91bGQgc3VwcG9ydCBhIGJhY2stZG9vciBBQkkgZm9yIGlsbGVn
+YWwgRFQKPiBwcm9wZXJ0aWVzIHdoaWNoIGF0IHdvcnN0IGhhcyB0aGUgcG90ZW50aWFsIHRvIGRl
+ZmVhdCBhIGdlbmVyaWMgc2VjdXJpdHkKPiBmZWF0dXJlLgoKTm90IHF1aXRlLCBJIGFtIGFyZ3Vp
+bmcgdGhhdCBpbiB0aGUgZXZlbnQgdGhhdCBzb21lb25lIHRob3VnaHQgaXQgd2FzCnBvc3NpYmxl
+IHRvIG1haW50YWluIGhpcy9oZXIgb3duIG5vdGlvbiBvZiBiYWNrd2FyZCBhbmQgZm9yd2FyZApj
+b21wYXRpYmlsaXR5IHdlICpjb3VsZCogYmUgc3VwcG9ydGluZyB0aGlzLiBhbmQgd2l0aCBtaW5p
+bWFsIGFtb3VudHMgb2YKY29kZSB0byB0aGUga2VybmVsLgoKVGhlIGtlcm5lbCBpcyBub3QgYSB0
+cnVzdGVkIGVudGl0eSBpbiB0aGUgc2VjdXJpdHkgbW9kZWwgcmV2b2x2aW5nCmFyb3VuZCB0aGUg
+J3Jlc3RyaWN0ZWQtZG1hLXBvb2wnIGFueXdheSB3aGljaCBpcyB3aHkgaXQgaXMgdG9sZCB3aGVy
+ZQp0aGVzZSByZXNlcnZlZCBtZW1vcnkgcmVnaW9ucyBhcmUgZGVmaW5lZCwgYW5kIGRvZXMgbm90
+IGRlY2lkZSB3aGVyZSB0bwpwbGFjZSB0aGVtLiBJZiB0aGUgYXBlcnR1cmUgaXMgbm90IHNldC11
+cCBwcm9wZXJseSB0aGVyZSBpcyBubyBETUEKdG8vZnJvbSB0aGF0IHJlZ2lvbiBwZXJpb2Qgc28g
+dGhlIHJlc3VsdHMgYXJlIHByZXR0eSBjbGVhcjogeW91IGRvIG5vdApnZXQgeW91ciBkZXZpY2Ug
+dG8gd29yay4gV2hldGhlciB0aGUga2VybmVsIHRoaW5rcyB0aGF0IHJlZ2lvbiBpcyBhCmRldmlj
+ZS1wcml2YXRlIENNQSBwb29sIG9yIGEgZGV2aWNlLXByaXZhdGUgU1dJT1RMQiBwb29sIGlzIGxh
+cmdlbHkKaXJyZWxldmFudCBpbiB0aGUgc2VjdXJpdHkgbW9kZWwgdGhhdCBpcyBhIGtlcm5lbCBt
+ZWNoYW5pc20gb24gaG93IHlvdQp3YW50IHRvIGxldmVyYWdlIHRoZSByZWdpb24uCgo+IFRoZSAi
+cmVzdHJpY3RlZC1kbWEtcG9vbCIgYmluZGluZyBleHBsaWNpdGx5IHNheXMgIldoZW4gdXNpbmcK
+PiB0aGlzLCB0aGUgbm8tbWFwIGFuZCByZXVzYWJsZSBwcm9wZXJ0aWVzIG11c3Qgbm90IGJlIHNl
+dCIgKEkgc2hvdWxkIHNwaW4KPiB1cCBhIHBhdGNoIGVuZm9yY2luZyB0aGF0IGluIHRoZSBzY2hl
+bWEuLi4pLgo+IE5vIG1hdHRlciBob3cgY29udmluY2VkIHlvdQo+IGFyZSB0aGF0IG5vIE9TIHBh
+c3QgcHJlc2VudCBvciBmdXR1cmUgY291bGQgcG9zc2libHkgZXZlciBiZWhhdmUKPiBkaWZmZXJl
+bnRseSBmcm9tIHRoZSBwYXJ0aWN1bGFyIGRvd25zdHJlYW0gc29mdHdhcmUgc3RhY2sgeW91IGNh
+cmUKPiBhYm91dCwgTkFLIHRvIHN1YnZlcnRpbmcgdGhlICJyZXN0cmljdGVkLWRtYS1wb29sIiBj
+b21wYXRpYmxlIGluIGFueQo+IHdheSwgc29ycnkuCj4gSSBmb3Igb25lIHdpc2ggdG8gaGF2ZSBu
+byBwYXJ0IGluIHRoZSBuZXh0Cj4gdHJlbmR5LW5hbWUtY29tcHJvbWlzZSBkb3duIHRoZSBsaW5l
+IHdoZXJlIGEgcHJvdGVjdGVkIFZNIGNhbiBiZSB0cmlja2VkCj4gaW50byBleHBvc2luZyBpdHMg
+cGFnZSBjYWNoZSB0byBhICJETUEgYXR0YWNrIiBieSBhbiB1bnRydXN0ZWQKPiBoeXBlcnZpc29y
+IGJlY2F1c2UgZml4aW5nIEZsb3JpYW4ncyBib290bG9hZGVyIGlzIGhhcmQuCgpJIHN1cHBvc2Ug
+eW91ciBjb25jZXJuIGlzIHRoYXQgaWYgd2UgYWNjZXB0IG15IHBhdGNoLCBvbmUgY291bGQgYnVp
+bGQgYQprZXJuZWwgd2l0aCBDT05GSUdfRE1BX1JFU1RSSUNURURfUE9PTCB0dXJuZWQgb2ZmIHRv
+IG9idGFpbiBhIGRldmljZQpwcml2YXRlIENNQSBwb29sIGluc3RlYWQgb2YgYSB0cnVseSByZXN0
+cmljdGVkIERNQSBwb29sLCB0aGVuIHRoZQpoeXBlcnZpc29yIGFsbG9jYXRlcyBmcm9tIHRoYXQg
+YXJlYSBhbmQgcHV0IHNlbnNpdGl2ZSBzdHVmZiBpbiB0aGVyZSwKYnV0IGxhdGVyIG9uIHdlIGxl
+dCBhIG1hbGljaW91cyBWTS1vd25lZCBQQ0llIFZGIG9yIGFjdHVhbCBQRiBETUEgZnJvbQp0aGF0
+IGxvY2F0aW9uIGFuZCB3ZSBleGZpbHRyYXRlIG91dCBvZiB0aGF0IGxvY2F0aW9uPwoKVGhhdCBl
+eGlzdHMgdG9kYXkgaG93ZXZlciBhcyBzb29uIGFzIGFuIHVuLXRydXN0ZWQgRFRCIGNhbiBiZSBw
+YXNzZWQgdG8KdGhhdCBoeXBlcnZpc29yLCBzbyB3aGF0IGlzIG5ldyBoZXJlIHRoYXQgSSBhbSBt
+aXNzaW5nPyBJZiB5b3UgdXNlIHRoZQpleGFtcGxlIEkgcHJvdmlkZSBpbiB0aGUgcGF0Y2gsIGFu
+ZCBnaXZlbiBob3cgdGhlIGNvZGUgaXMgc3RydWN0dXJlZCBhbmQKdGhlIGxpbmsgb3JkZXIsIHlv
+dSB3aWxsIGdldCBhIGRldmljZSBwcml2YXRlIENNQSBwb29sIGluc3RlYWQgb2YgYQpyZXN0cmlj
+dGVkIERNQSBwb29sIGJlY2F1c2Uga2VybmVsL2RtYS9jb250aWd1b3VzLmMgd2lsbCBtYXRjaCB0
+aGF0CmVudHJ5IGJlZm9yZSBrZXJuZWwvZG1hL3N3aW90bGIuYyAoaWYgYnVpbHQpIGRvZXMuIFNp
+bWlsYXJseSBpZiBJIGNhbgptYW5nbGUgdGhlIERUQiBwYXNzZWQgdG8gdGhlIGtlcm5lbCB0byBz
+dWJzdGl0dXRlICJyZXN0cmljdGVkLWRtYS1wb29sJwp3aXRoICdzaGFyZWQtZG1hLXBvb2wnIEkg
+d291bGQgb2J0YWluIGEgZGlmZmVyZW50IGJlaGF2aW9yIGZvciB0aGUKa2VybmVsIHRoYW4gb3Jp
+Z2luYWxseSBpbnRlbmRlZC4gVGhlIHBvaW50IHRob3VnaCBpcyB0aGF0IHRoZXJlIHNob3VsZApi
+ZSBhZGVxdWF0ZSBzZWN1cml0eSBlbmZvcmNlZCBhcm91bmQgdGhlIHJlc2VydmVkIG1lbW9yeSBy
+ZWdpb24gaW4gYSB3YXkKdGhhdCBpcyBvcnRob2dvbmFsIHRvIHRoZSBrZXJuZWwuCgpBbnl3YXks
+IEkgdGhvdWdodCB0aGlzIG1pZ2h0IGJlIGFjY2VwdGFibGUsIEkgd291bGQgbGlrZSB0byBoZWFy
+IGZyb20Kb3RoZXJzIGp1c3QgaW4gY2FzZSwgYnV0IHdpbGwgbm90IHB1cnN1ZSB0aGlzIHJvdXRl
+ciBhbnltb3JlIHVubGVzcwpzb21lb25lIHRlbGxzIG1lIG90aGVyd2lzZS4gVGhhbmsgeW91LCBJ
+IGd1ZXNzLgotLSAKRmxvcmlhbgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlv
+bi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8v
+aW9tbXU=
