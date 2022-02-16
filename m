@@ -1,78 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6420DC433F5
-	for <iommu@archiver.kernel.org>; Wed, 16 Feb 2022 07:04:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5A29FC433EF
+	for <iommu@archiver.kernel.org>; Wed, 16 Feb 2022 07:12:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 034C460ACC;
-	Wed, 16 Feb 2022 07:04:50 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id F21A2415FB;
+	Wed, 16 Feb 2022 07:12:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2VRAY6Rp2VDy; Wed, 16 Feb 2022 07:04:49 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id I5SmWBbDHgtd; Wed, 16 Feb 2022 07:12:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id E1C7260B4D;
-	Wed, 16 Feb 2022 07:04:48 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id ED6E24159E;
+	Wed, 16 Feb 2022 07:12:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B4E3FC0011;
-	Wed, 16 Feb 2022 07:04:48 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BC636C000B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 07:04:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BE855C0011;
+	Wed, 16 Feb 2022 07:12:41 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A6EDAC000B
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 07:12:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 9BF3E60B4D
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 07:04:46 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 775F0408D8
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 07:12:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id j9X34WKw4WOM for <iommu@lists.linux-foundation.org>;
- Wed, 16 Feb 2022 07:04:45 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id uS2S0EZ688WN for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Feb 2022 07:12:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by smtp3.osuosl.org (Postfix) with ESMTPS id D199B60ACC
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 07:04:45 +0000 (UTC)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 64F4C4010E
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 07:12:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1644995085; x=1676531085;
+ t=1644995558; x=1676531558;
  h=message-id:date:mime-version:cc:subject:to:references:
  from:in-reply-to:content-transfer-encoding;
- bh=Rtxj1UDHxt0cG+aH0MjVGov4YzjQBNtjm2W/22eZowE=;
- b=giUnJ/9N08U4RaiUDCBd2gUfxqQ9MpICmhr4KQzTc9ZxrSqOCN1yPEEY
- Tcs9+3yhuxjMv8OV1xVa7bHSJssT+SoLay/84KUZl6zfel+2yN21U8JRA
- x5Wtd+pPiIp303qD/igSGr5WT1YETCdqJDDUCLbuM633QSjWzyx4gJwv/
- /FkeKVJ9UdKDGkVthLm4mFbx5KlaaPKN2RcReKKm1a7RG/SVO//MEWSjV
- VSwzx66P+a9HPzrxsUK+Yl60knffddQPVlSelBaHUZtE0s1yqvwCN6Tmi
- 24PiHmNoicDd3hx76eOUTZPiKDrl041g/EOlnH4iK2BZW7YzFMlhU/i0g A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="275118931"
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; d="scan'208";a="275118931"
+ bh=f1SXQpu92IOX79PPCsU+PF8QzhMB5xnZr5Wm6Vd3XBk=;
+ b=FPq3x+ywNajS37KJdJbW7Enep+IXXV04gLtjaMSe/6Eojy8TnR/dtuCn
+ O4DDFoFn7uLzwsXMWDkPXHzsogyBsSuvj876kxXOqbQLAhhHrjX9oTl6a
+ scAl0TOcZlq7I3nbVcbKDaxrhU3/z3tCD+zVNNZcgirgr0C2rOC3MZqFQ
+ A+h+y8McVAKcPf0N9zMS18iNEKas2+aS/nvzptABici3XCNRJmnP+jkFV
+ Ft5ZMf7HmmlHT5eumxPc9FKOl/th/DBzwL5pZo2W50637xyHZOSITrqvn
+ OJrXAeaIExxfr36S6+jGoa0DXFjfTea52NW4CeqQt6IuyrvJNjV4o7SSF w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10259"; a="250740934"
+X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; d="scan'208";a="250740934"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 15 Feb 2022 23:04:45 -0800
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Feb 2022 23:12:37 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; d="scan'208";a="681387754"
+X-IronPort-AV: E=Sophos;i="5.88,373,1635231600"; d="scan'208";a="681390279"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
  ([10.239.159.118])
- by fmsmga001.fm.intel.com with ESMTP; 15 Feb 2022 23:04:43 -0800
-Message-ID: <ae863355-3f44-5eae-4f35-90a62cb2d89f@linux.intel.com>
-Date: Wed, 16 Feb 2022 15:03:23 +0800
+ by fmsmga001.fm.intel.com with ESMTP; 15 Feb 2022 23:12:35 -0800
+Message-ID: <fad3abe8-f69f-1339-7bca-e0283f9182d5@linux.intel.com>
+Date: Wed, 16 Feb 2022 15:11:15 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v2 1/1] iommu/vt-d: Move intel_iommu_ops to header file
+Subject: Re: [PATCH v2 09/11] iommu/vt-d: Remove commented code
 Content-Language: en-US
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-References: <20220207141240.8253-1-andriy.shevchenko@linux.intel.com>
- <YgpY1IIBkFIxxjbm@8bytes.org>
- <30e45a7e-088d-7479-a284-68effadf3cbe@linux.intel.com>
- <Ygt3jibBVRyCn909@smile.fi.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>, Christoph Hellwig <hch@lst.de>
+References: <20220214025704.3184654-1-baolu.lu@linux.intel.com>
+ <20220214025704.3184654-10-baolu.lu@linux.intel.com>
+ <20220214073424.GE17411@lst.de>
+ <BN9PR11MB527698691A1DF10EEB514AA08C359@BN9PR11MB5276.namprd11.prod.outlook.com>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <Ygt3jibBVRyCn909@smile.fi.intel.com>
-Cc: Joerg Roedel <jroedel@suse.de>, Will Deacon <will@kernel.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <BN9PR11MB527698691A1DF10EEB514AA08C359@BN9PR11MB5276.namprd11.prod.outlook.com>
+Cc: "Raj, Ashok" <ashok.raj@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,27 +93,34 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2/15/22 5:51 PM, Andy Shevchenko wrote:
-> On Tue, Feb 15, 2022 at 09:31:37AM +0800, Lu Baolu wrote:
->> On 2/14/22 9:27 PM, Joerg Roedel wrote:
->>> On Mon, Feb 07, 2022 at 04:12:40PM +0200, Andy Shevchenko wrote:
-> 
-> ...
-> 
->>>> +extern const struct iommu_ops intel_iommu_ops;
-> 
->>> The intel_iommu_ops symbol is only used in drivers/iommu/intel, so I
->>> would prefer a header in that directory. But I leave that up to Baolu to
->>> decide.
+On 2/16/22 11:45 AM, Tian, Kevin wrote:
+>> From: Christoph Hellwig<hch@lst.de>
+>> Sent: Monday, February 14, 2022 3:34 PM
 >>
->> Agreed. I also have a plan to split them out into a internal header.
-> 
-> The above change is hanging for more than a year, can we apply it and then
-> you can do a split?
-> 
+>> On Mon, Feb 14, 2022 at 10:57:02AM +0800, Lu Baolu wrote:
+>>> This removes unnecessary commented code.
+>> Removing dead code is always good:
+>>
+>> Reviewed-by: Christoph Hellwig<hch@lst.de>
+>>
+>> But someone might really want to take a look if draining makes sense here
+>> or not.
+> Looks that dead code has been there since intel-iommu driver was
+> firstly introduced in 2007. I don't know whether we can dig out
+> the reason (Baolu, can you have a check?) why it's only special
+> cased for read draining but not write draining. I cannot find any
+> such recommendation from VT-d spec.
 
-Yeah. This is my plan. The include/linux/intel-iommu.h also keeps other
-internal only helpers. It worth a separated cleanup patch.
+Emm, I have no idea either. Let me check it with the architecture
+experts.
+
+> 
+> Looking at VT-d spec it stated that since VT-d major version 2
+> drain is conducted automatically by hardware and above flags
+> are essentially ignored.
+> 
+> Given that possibly a safer option is to always set read/write
+> draining flags before version 2 and skip it after.
 
 Best regards,
 baolu
