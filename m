@@ -1,88 +1,153 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 10E3CC433FE
-	for <iommu@archiver.kernel.org>; Wed, 16 Feb 2022 13:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 52F15C433EF
+	for <iommu@archiver.kernel.org>; Wed, 16 Feb 2022 13:55:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9F4AE40448;
-	Wed, 16 Feb 2022 13:48:37 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id E16806103B;
+	Wed, 16 Feb 2022 13:55:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id T6QWzQ2E7SrG; Wed, 16 Feb 2022 13:48:36 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 36D2C40440;
-	Wed, 16 Feb 2022 13:48:36 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F3C5AC001A;
-	Wed, 16 Feb 2022 13:48:35 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B82C5C000B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 13:48:34 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 98EA6606EB
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 13:48:34 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QJDE91CzduJb for <iommu@lists.linux-foundation.org>;
- Wed, 16 Feb 2022 13:48:32 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 6I2n6eQxReUK; Wed, 16 Feb 2022 13:55:06 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id B6B84605BA;
+	Wed, 16 Feb 2022 13:55:05 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9A3C5C001A;
+	Wed, 16 Feb 2022 13:55:05 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CDB8DC000B
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 13:55:03 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id AC6E54036F
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 13:55:03 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id UYFhZ9owSyWr for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Feb 2022 13:55:02 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com
- [IPv6:2a00:1450:4864:20::52e])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 7F964605BA
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 13:48:32 +0000 (UTC)
-Received: by mail-ed1-x52e.google.com with SMTP id b13so4107656edn.0
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 05:48:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=FlRChV2ED66U1fV2UHlPevpzTBOWajWUQYxF7iIvvyk=;
- b=qv/vc03s2YbobtXaOohRYrtMGKaiPeoul7yaXpDYp9Y8BCPMXPgdTH8hkDVyyxKKzc
- ieV6spSKvomI4/UXpEouoWG/oY9V63xQPHlTU7P8iAwoRd29MbwfCS8x/HPZ5daqjKpo
- 7FdSTmIpY9smQlACRWFTIsUn6Yas6dm9VrbtgNW1T/+ZOmd2WVPBUWzcCbXeXRwIa3o4
- fABK7daW4Y09JE81WsWyCmDM2Bv/HN7mg7tAmU2psxcdCsBBqOLelrT9DmZkY4ZIyPdO
- QwG4SrNtCZ5km0oe8JP1kO67fwzSI4/gG2rx79OPI5NhQQTn+zqAfRivbZNvEsonmdYa
- NbeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=FlRChV2ED66U1fV2UHlPevpzTBOWajWUQYxF7iIvvyk=;
- b=xGzcO5pN/qhrvw1rv79pzm2HxnHeBwkllOuqy4MQUIT8OXrTm7XOoN0kZrD9SkLTty
- Tbh4l+ejJZmeInU0EMt/mSvuP1/PhWGWZz9kp0MVxBPxWxdRFvq6OE1mdwjdP5LC3Q5v
- QuovsEzSAaPX0yCJDSs5vfEFXZ7AjHSz/1MrS0PYOH6/gX6F+5wdvCsL11xPgzWn59HC
- DvCDceeZCgEB1ig9Gv+NmNYu51ahP3g9+cPZC4q6JvC6QyZTSVsKTuA051DodlItKOMl
- BftW5L7sd4vURmdJMuBctOAghsacE4aH7DHAxU8fblXWRhueMENFdsMXshB68s3KshqN
- xdcA==
-X-Gm-Message-State: AOAM530V4ljuzEV0GCgRGVy3I9dqrKdQSF/T+eKHuwXwOXZwiOjWmz3m
- DuB1Xi4DHuBxtMxgLab2Ack=
-X-Google-Smtp-Source: ABdhPJywvjh3cUfTL6Z618E7/SfBQBXo7KQhw71ZpUbdF4ZEaTN3AkTWga5vyZBBC2CiwwhHXNUqdQ==
-X-Received: by 2002:a05:6402:2694:b0:411:f0b1:7f90 with SMTP id
- w20-20020a056402269400b00411f0b17f90mr2995670edd.398.1645019310575; 
- Wed, 16 Feb 2022 05:48:30 -0800 (PST)
-Received: from orome ([193.209.96.43])
- by smtp.gmail.com with ESMTPSA id p25sm5245206ejn.33.2022.02.16.05.48.28
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 16 Feb 2022 05:48:29 -0800 (PST)
-Date: Wed, 16 Feb 2022 14:48:26 +0100
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Miaoqian Lin <linmq006@gmail.com>
-Subject: Re: [PATCH] iommu/tegra-smmu: Fix missing put_device() call in
- tegra_smmu_find
-Message-ID: <Yg0AqkLA7eXQOuh2@orome>
-References: <20220107080915.12686-1-linmq006@gmail.com>
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com
+ (mail-bn8nam08on2060c.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e8d::60c])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 9E52140125
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 13:55:02 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NkZzc2s8TcIrO37RXMFo6XuK0nV4+3s7xqolmB8KG/S2BGkr97gyVVD3nAfNm3ceDywPsMGFxFgeC5ASk0nY/w1z2fnDXjlQQj5OPkZ4Z6lDhO9SdHPIbm+7o5AO12vderJRZ7ZnU322e2MSzphbX0HAwaF55SS7Xhe8KwnkZPP2s/hM8kP0eXu9H6RTWfuu4ZFZFASxwrYKySo4+ho28g0WpzGyTO/CebLYZ/CKSGq0672P7nkajtVAZF1+WFSgsTLb1mgvl0UJuLs/wQrTJ4tUN18UmMvjEawWhPKppduk5YJAWiRypS5XtUmHeU8VAzOKzO2Z85am1rc+ZOa7hg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Y45mihYmFTho5NIEGydamjQBTM5g939SS8D57Km7vhk=;
+ b=GHmZqBc5Z6wgMDbYbQS263fldqmi3U58EG13ZfsxpwfyY5Ur3s15neoRoDG7jI2NWRYKzBWA01/BccX7wPoO9KMFhVzVQRvtpDlfn8tOqyk23ADlJqrQMckA2LYZYEOvN6U63UJDVW7wvH/nrHMQmJomTRoYf3+cZvHxH+Y+XHLpJKz5ISCR5I+bdJVJWOkCiWMofF3PLgqIywUmt2mG7DZJcoDd5YdQQ4EHfxAwJQiooIRUoNmKqQitRfwCC2VudnaM9jGXnjwxR3AIlSsLwTaaIh0mgsrAdwm2RDy1WAggopgMNCGewYOYMfc2Vr/T1labPWLS8TpgHbXA+QwigQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Y45mihYmFTho5NIEGydamjQBTM5g939SS8D57Km7vhk=;
+ b=Q+Y1Io8uJLm3hHo6uXNmsyqt0mvD/8SkhWB2LQWeUZOV/rDi3gapZzo0w5j0+j2HnucXoWmTV5ykec5C/EMd2y0zsbbjgBQK6XeS2UXbnR1r96+pb9XOsTWXDwmDemx0y0St8Ap+WO1ZaR/aDd/TCqUkao1YTkUDVGKiXonr2xONP2AcwLejMxHjCGDc+5i3DSvK+Lkmbyo4XrhYVJKQSAM3/ELfquOgdVZL0UyQDPe1IwWuvKgr8wmmQ+iN9Z+hlGsQ4StJclrwz7phFGKDQKGXM6MzzRdLHnn/HjSzD4ygTlRo6y19HOOsZAPSSznN+fmTAlg2i8H9TtzvEBjEKA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by SN6PR12MB2640.namprd12.prod.outlook.com (2603:10b6:805:6c::20)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.14; Wed, 16 Feb
+ 2022 13:54:59 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::e8f4:9793:da37:1bd3]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::e8f4:9793:da37:1bd3%5]) with mapi id 15.20.4995.016; Wed, 16 Feb 2022
+ 13:54:59 +0000
+Date: Wed, 16 Feb 2022 09:54:58 -0400
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v1 3/8] iommu: Extend iommu_at[de]tach_device() for
+ multi-device groups
+Message-ID: <20220216135458.GH4160@nvidia.com>
+References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
+ <20220106022053.2406748-4-baolu.lu@linux.intel.com>
+ <Ygo/eCRFnraY01WA@8bytes.org> <20220214130313.GV4160@nvidia.com>
+ <Ygppub+Wjq6mQEAX@8bytes.org>
+ <08e90a61-8491-acf1-ab0f-f93f97366d24@arm.com>
+ <20220214154626.GF4160@nvidia.com> <YgtrJVI9wGMFdPWk@8bytes.org>
+ <20220215134744.GO4160@nvidia.com>
+ <69f26767-66d6-12df-1754-45ee1932d513@linux.intel.com>
+Content-Disposition: inline
+In-Reply-To: <69f26767-66d6-12df-1754-45ee1932d513@linux.intel.com>
+X-ClientProxiedBy: BL1PR13CA0076.namprd13.prod.outlook.com
+ (2603:10b6:208:2b8::21) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-In-Reply-To: <20220107080915.12686-1-linmq006@gmail.com>
-User-Agent: Mutt/2.2 (7160e05a) (2022-02-12)
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Jonathan Hunter <jonathanh@nvidia.com>, linux-tegra@vger.kernel.org,
- Will Deacon <will@kernel.org>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 86d0d7d8-eafd-4da4-1cef-08d9f153ec09
+X-MS-TrafficTypeDiagnostic: SN6PR12MB2640:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR12MB26401A49DF31FC38EAA085B1C2359@SN6PR12MB2640.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rvv7lMGb9Z0KdAMN/A9OqxMtVKVIfkFUYTs7ZwHpFF8u7rPAQA/6TyEYe7JntFkEilqrw46o5cQgDjr9r85/LBytzjWkYLosmPeW3n1n3zGC2j9i/tzQd93ugNW49N2gnMZvs4v9Mw3dhfOSk26UQSAtqDSKg6jcN2SdrGwRl3SFLi4m9SqS/iyhPr6kpbNqlCKkiPP2NkVzfAV/UV6EkWhMhtScu6PT/eYA0Fs2L/JyaDOOYquOJhN7Gy8dx6rxlQIpHMOwtAOKI34ZSWf1GjpBGK+pXr6PkLtSFQ657vIC26d6nh/G4JrB6LJSfsO2K7uDcwliv8+jT9SWTwck7cKvvpkkhad7XK2HKkpW6Za6Elqn+YUfls7MCJ3U4w+ynJ4G5N+psrRt6KxkPrbS8Lpad1aU8W+l5yz3mSkoW4o2rD/SswNv21/LEFbD1Evw9EI7zlBrtGNFSs+y+qVeEZs1YxNOjiMJzftWDV4n4pFH2vaaxT+4DD7X4ey8dhk1tFJ1kUc4NkrmC2ulBgwANICDJce09jIAguWy6RhR2QPzzbB0g1CD3hl2XBvHS9sTo3ZYRnl71o/lMZAc1nlALLhEVDG7XRcIJlBD8Z+BfsWKQMg3bzvayZ19h57V962Z7qL9ey++++TgNzGkxtLtBA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(6512007)(6506007)(8676002)(7416002)(66946007)(4326008)(66476007)(66556008)(186003)(26005)(2616005)(1076003)(2906002)(508600001)(6486002)(86362001)(33656002)(36756003)(6916009)(316002)(54906003)(5660300002)(8936002)(38100700002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NCk5UuiDLBjp2KBpSna1PT7QVZ/IMrDWVaOjFFG2LmTl5PfTnTLoe5FR5OBt?=
+ =?us-ascii?Q?UFmL2eECPJa61zU2enqQqVHbbIQhX0zm74wxQxKw3WPk9M2DHyyBfvd62HiB?=
+ =?us-ascii?Q?udvylJoGvS8oICoMCVffkY2ZA1+peimQeDnVyozmgi9kziLRfGnvhV9bz+X3?=
+ =?us-ascii?Q?SAoIlslZK8IctTHzbNwefyPBZVuZbxsXpdWj9lCP8XphKieuEHALDwYYK6Fa?=
+ =?us-ascii?Q?L7Spopd9ZssfQFtj4hEsnwT8wkvIeLISZNRqSsZSDkUKWsPpvhWFmCNBqx+9?=
+ =?us-ascii?Q?BVyHiUCU5XXOaZmQB7H6L4tMrwqHXiNR32feCrB2l9QkJSsLxkxw0q0HnMTk?=
+ =?us-ascii?Q?sM8VHpujcBA+7giUZ5jGxlEoPuDCnjTGvDRRbmbZBJ/ZRIcD5xClNHHR2pSD?=
+ =?us-ascii?Q?Xdm/EP7lMJ2bONmodSU+Wk+9Mj2rYyi1QvUjBdshzR2zmDeB4Te2DBFMfh34?=
+ =?us-ascii?Q?gjyRKDOMYSKhX6JQOBG8F9euyGKPzvNtSD1fskQsXEmG78oz3CdQitzDp1zy?=
+ =?us-ascii?Q?2OzaAA2i+bVYUI2cFLNmmh/uNUdghbJ+BjbL0gFkpwfkAjcOGxgGR5NgfD1l?=
+ =?us-ascii?Q?4CoXABe0G5coL3btE+C7wD3sNVVwNF2gNTxt2t+H5MM6eeMLDuUW8zBpecPT?=
+ =?us-ascii?Q?pcUkKGkwo8f95HicPsp5JRW6hVbljBBlTKVxHibXNwra/HYYC1qB4Zy0MMUU?=
+ =?us-ascii?Q?7qvJSHwFCRDOm3yE8YPoh3FvDGc6xEEotwOA/WF8GDvcuKkg2qokiHAPuD0d?=
+ =?us-ascii?Q?rFwXsKEb70MqBmUVhCfj4WaKXtP/JGho+VTviFTQHAhTbbO7tr83D6REvwBd?=
+ =?us-ascii?Q?jZY3Qar9Rb8ZoB5vaofFcwe6Df775kSKQMy9Pe0wmT5V/2sh0RtYIT9e7NYN?=
+ =?us-ascii?Q?l4ZioosE9NU06wAvz4ep/BoSUW5LLztJmzjPnt8rtoTMtDh3JiIOTYjr5laq?=
+ =?us-ascii?Q?0zqd+pLRetbKMeMFAJq7o7ySKXrot9EZKtv6Lr7ROq2tetvy1pw32Q/fwwrR?=
+ =?us-ascii?Q?dSv5Ll4r019rrXBl3IESigZYt5CWrIPkOi22U5xL0+VQCmHRE/53hwo0xCBR?=
+ =?us-ascii?Q?EAXsa2tKNd8JZpynNDFc9RJhhVbJuuRftiQdTw0lpkbVLXytqoADjYDH2F2T?=
+ =?us-ascii?Q?J7cKGU5xvRWA97L1nTByR631BbWFgWXFo96Oi5YGV0WsueQ5PpmLf2gC6n66?=
+ =?us-ascii?Q?v7AiPYbbsi7SXLMQxAgUk+vVo0SaIPMbKTxWbs8KrkuGBoCYEqxRgnLlSUfD?=
+ =?us-ascii?Q?kYKQ8J/NkPH56T8ceiPZYltXV5TmHzrdUQBjdP1FUtCf6mbEzjw8KkMzWLHw?=
+ =?us-ascii?Q?BdFDfF3Su+vBjVOVJy51NgCLmJjSu9bY2S5Go279WWXwH4iHeJs3nPRttaS7?=
+ =?us-ascii?Q?cWgttau45SUB3NUg+tbZCzcS7ekTJ+iQitcD4aPweqmVjUP28awr4MMZFeKp?=
+ =?us-ascii?Q?WpF7iGF7kVzvy2F0+Fmv6qQ5yUKiKRRlKsazidFF+B2hspOR9cXp4sHUPBKh?=
+ =?us-ascii?Q?46OUneVl16OwgkQZ1zWvqls6C+MwuWv2PzgXybwjk+oGHsCpp10tv5se9zAd?=
+ =?us-ascii?Q?xggIbO1s9nPat//2X3M=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 86d0d7d8-eafd-4da4-1cef-08d9f153ec09
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2022 13:54:59.5797 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2iPCOqwOn8IEnRqKV2gqIQBGNBIfeNNnNlfIGWxzDU/9KiyrVnqCHZq7sHiHyDDx
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB2640
+Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
+ David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,90 +160,46 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============4363719690908242286=="
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Wed, Feb 16, 2022 at 02:28:09PM +0800, Lu Baolu wrote:
 
---===============4363719690908242286==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="enq9AsaXPXANugPJ"
-Content-Disposition: inline
+> It seems everyone agrees that for device assignment (where the I/O
+> address is owned by the user-space application), the iommu_group-based
+> APIs should always be used. Otherwise, the isolation and protection are
+> not guaranteed.
 
+This group/device split is all just driven by VFIO. There is nothing
+preventing a struct device * API from being used with user-space, and
+Robin has been pushing that way. With enough fixing of VFIO we can do
+it.
 
---enq9AsaXPXANugPJ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+eg the device-centric VFIO patches should be able to eventually work
+entirely on an iommu device API.
 
-On Fri, Jan 07, 2022 at 08:09:11AM +0000, Miaoqian Lin wrote:
-> The reference taken by 'of_find_device_by_node()' must be released when
-> not needed anymore.
-> Add the corresponding 'put_device()' in the error handling path.
->=20
-> Fixes: 765a9d1d02b2 ("iommu/tegra-smmu: Fix mc errors on tegra124-nyan")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
->  drivers/iommu/tegra-smmu.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> index e900e3c46903..2561ce8a2ce8 100644
-> --- a/drivers/iommu/tegra-smmu.c
-> +++ b/drivers/iommu/tegra-smmu.c
-> @@ -808,8 +808,10 @@ static struct tegra_smmu *tegra_smmu_find(struct dev=
-ice_node *np)
->  		return NULL;
-> =20
->  	mc =3D platform_get_drvdata(pdev);
-> -	if (!mc)
-> +	if (!mc) {
-> +		put_device(&pdev->dev);
->  		return NULL;
-> +	}
-> =20
->  	return mc->smmu;
->  }
+> Another proposal (as suggested by Joerg) is to introduce the concept of
+> "sub-group". An iommu group could have one or multiple sub-groups with
+> non-aliased devices sitting in different sub-groups and use different
+> domains.
 
-Sorry for the late reply, looks correct. We probably also need a similar
-call in ->release_device(). I also wonder if we should be returning an
--EPROBE_DEFER here, which is technically the correct thing to do, though
-in practice that will likely never happen because these pointers are set
-during an arch_initcall, so should always be available by the time a
-driver tries to attach to an IOMMU.
+I still don't see how sub groups help or really change anything here.
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+The API already has the concept of 'ownership' seperated from the
+concept of 'attach a domain to a device'.
 
---enq9AsaXPXANugPJ
-Content-Type: application/pgp-signature; name="signature.asc"
+Ownership works on the ACS group and attach works on the 'same RID'
+group.
 
------BEGIN PGP SIGNATURE-----
+The API can take in the struct device and select which internal group
+to use based on which action is being done.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmINAKcACgkQ3SOs138+
-s6E1Dw/+JdYuxQb5lyl9zrWDXni3KEEqylRty/S9yBZqB5op/xogYj6rZ/tCOc66
-CAA/cFSERk918QsbfuuajpAwiDBoivU8XAjn2pRhwfS30pE1wttCbvnYx/Pa6fhj
-rFCI7P86LtlW8ppsKt2j2YE6Ro6iBe78vMu2NHsRyF/dTqdF77LBBbHc/1D7jvKJ
-E516Wgps8uBmnElGaBXaWqBJm9gF+1DUcRB2iCqqKoKcZGd4cU1Z97caIfwzmxF8
-+Pfy3xsZQUM/q0NEUQkYS24RhFaPIMSlVNJuBq4X8RUkobx/bSaQQybtY+CYeOfE
-CdZhCt1Uvwt3REBb4crS1obr39XHDrmg9DPhwBPOxXJdoT+gHntny13RVB9PysER
-SXDv62b8R/ZR4ORh9vNSlY355IauVLEJGgRqyloH0W6ylj5QVM1/PEnHUJu+E6Bp
-tXAyNRwUfysUryxZgjhVjYTJnCzxhszhR8hPhwk5uxyyyzBI7oB8T9FwIuVukkqW
-bw5UvHWlrKj1dQVu1Eup9qn039PjZs4cHldFi9gkjMFAupaS07mAY1FHPe2U1lD0
-bq+aIHuenFUa3F+sfC4PTptGWxEcfPWEPk0QHts7FTRLEBwy4b97RLRKHwa942v6
-wPzUzR62Raw96lTAPiq8UYPqB82nxDiRTIqalgVPL9DJTyk4lOA=
-=FvXw
------END PGP SIGNATURE-----
-
---enq9AsaXPXANugPJ--
-
---===============4363719690908242286==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============4363719690908242286==--
