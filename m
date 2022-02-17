@@ -1,57 +1,58 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4CA9BC433F5
-	for <iommu@archiver.kernel.org>; Thu, 17 Feb 2022 11:37:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 10D14C433F5
+	for <iommu@archiver.kernel.org>; Thu, 17 Feb 2022 11:37:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 0288F83E35;
-	Thu, 17 Feb 2022 11:37:03 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id B1E3641E3D;
+	Thu, 17 Feb 2022 11:37:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id x5nRNYyOzElt; Thu, 17 Feb 2022 11:37:02 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id XHQrC9kt9q_a; Thu, 17 Feb 2022 11:37:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id F3B0E83F24;
-	Thu, 17 Feb 2022 11:37:01 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 6059A41E36;
+	Thu, 17 Feb 2022 11:37:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CDC2CC0021;
-	Thu, 17 Feb 2022 11:37:01 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B7E41C000B
- for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:37:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3AA1BC0021;
+	Thu, 17 Feb 2022 11:37:10 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0D8C9C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:37:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id A5E9161B81
- for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:37:00 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id DEC106F6D5
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:37:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id S4ZtRO6pxMWt for <iommu@lists.linux-foundation.org>;
- Thu, 17 Feb 2022 11:37:00 +0000 (UTC)
+ with ESMTP id hUP3TJOWKL19 for <iommu@lists.linux-foundation.org>;
+ Thu, 17 Feb 2022 11:37:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp3.osuosl.org (Postfix) with ESMTPS id E9C8D6F6C9
- for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:36:59 +0000 (UTC)
-X-UUID: 8691bec4284d46f6835fdb3561175423-20220217
-X-UUID: 8691bec4284d46f6835fdb3561175423-20220217
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by
- mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 3298D61B81
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:37:07 +0000 (UTC)
+X-UUID: 983fa521a43e4c6da8a58c781d3fec44-20220217
+X-UUID: 983fa521a43e4c6da8a58c781d3fec44-20220217
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
  (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1557431581; Thu, 17 Feb 2022 19:36:56 +0800
+ with ESMTP id 1927798015; Thu, 17 Feb 2022 19:37:03 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 17 Feb 2022 19:36:54 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
+ Thu, 17 Feb 2022 19:37:03 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Feb 2022 19:36:53 +0800
+ Transport; Thu, 17 Feb 2022 19:37:02 +0800
 To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
  "Matthias Brugger" <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>
-Subject: [PATCH v5 12/34] iommu/mediatek: Remove the granule in the tlb flush
-Date: Thu, 17 Feb 2022 19:34:31 +0800
-Message-ID: <20220217113453.13658-13-yong.wu@mediatek.com>
+Subject: [PATCH v5 13/34] iommu/mediatek: Always enable output PA over 32bits
+ in isr
+Date: Thu, 17 Feb 2022 19:34:32 +0800
+Message-ID: <20220217113453.13658-14-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220217113453.13658-1-yong.wu@mediatek.com>
 References: <20220217113453.13658-1-yong.wu@mediatek.com>
@@ -86,46 +87,40 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The MediaTek IOMMU don't care about granule when tlb flushing.
-Remove this variable.
+Currently the output PA[32:33] is contained by the flag IOVA_34.
+This is not right. the iova_34 has no relation with pa[32:33], the 32bits
+iova still could map to pa[32:33]. Move it out from the flag.
+
+No need fix tag since currently only mt8192 use the calulation and it
+always has this IOVA_34 flag.
+
+Prepare for the IOMMU that still use IOVA 32bits but its dram size may be
+over 4GB.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- drivers/iommu/mtk_iommu.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/iommu/mtk_iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index ce593f77649f..19bdb51f47bc 100644
+index 19bdb51f47bc..9703eb16013c 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -219,7 +219,6 @@ static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
- }
+@@ -283,11 +283,11 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 	write = fault_iova & F_MMU_FAULT_VA_WRITE_BIT;
+ 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, IOVA_34_EN)) {
+ 		va34_32 = FIELD_GET(F_MMU_INVAL_VA_34_32_MASK, fault_iova);
+-		pa34_32 = FIELD_GET(F_MMU_INVAL_PA_34_32_MASK, fault_iova);
+ 		fault_iova = fault_iova & F_MMU_INVAL_VA_31_12_MASK;
+ 		fault_iova |= (u64)va34_32 << 32;
+-		fault_pa |= (u64)pa34_32 << 32;
+ 	}
++	pa34_32 = FIELD_GET(F_MMU_INVAL_PA_34_32_MASK, fault_iova);
++	fault_pa |= (u64)pa34_32 << 32;
  
- static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
--					   size_t granule,
- 					   struct mtk_iommu_data *data)
- {
- 	struct list_head *head = data->hw_list;
-@@ -541,8 +540,7 @@ static void mtk_iommu_iotlb_sync(struct iommu_domain *domain,
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
- 	size_t length = gather->end - gather->start + 1;
- 
--	mtk_iommu_tlb_flush_range_sync(gather->start, length, gather->pgsize,
--				       dom->data);
-+	mtk_iommu_tlb_flush_range_sync(gather->start, length, dom->data);
- }
- 
- static void mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
-@@ -550,7 +548,7 @@ static void mtk_iommu_sync_map(struct iommu_domain *domain, unsigned long iova,
- {
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
- 
--	mtk_iommu_tlb_flush_range_sync(iova, size, size, dom->data);
-+	mtk_iommu_tlb_flush_range_sync(iova, size, dom->data);
- }
- 
- static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	fault_port = F_MMU_INT_ID_PORT_ID(regval);
+ 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_SUB_COMM)) {
 -- 
 2.18.0
 
