@@ -1,97 +1,70 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8C2C9C433FE
-	for <iommu@archiver.kernel.org>; Wed, 16 Feb 2022 20:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9E77FC433F5
+	for <iommu@archiver.kernel.org>; Thu, 17 Feb 2022 11:35:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 33F13404F4;
-	Wed, 16 Feb 2022 20:39:48 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3647E417F6;
+	Thu, 17 Feb 2022 11:35:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QQ0XgwyKeVDS; Wed, 16 Feb 2022 20:39:46 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id yPuycZ_L55Ml; Thu, 17 Feb 2022 11:35:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 3BC53400A6;
-	Wed, 16 Feb 2022 20:39:46 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id BEBC041708;
+	Thu, 17 Feb 2022 11:35:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1368DC002D;
-	Wed, 16 Feb 2022 20:39:46 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B286FC0011
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 20:39:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 96883C0021;
+	Thu, 17 Feb 2022 11:35:13 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ED475C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:35:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 9B11C8142C
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 20:39:44 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id C5A5F6F6C9
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:35:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GtAnZsTKH-yg for <iommu@lists.linux-foundation.org>;
- Wed, 16 Feb 2022 20:39:43 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com
- [IPv6:2607:f8b0:4864:20::102d])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 10AFB81425
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 20:39:42 +0000 (UTC)
-Received: by mail-pj1-x102d.google.com with SMTP id
- ki18-20020a17090ae91200b001b8be87e9abso4615794pjb.1
- for <iommu@lists.linux-foundation.org>; Wed, 16 Feb 2022 12:39:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=l0yXqLaXkDzRuyoi2/xFAHFgcqQhOzk3wyGzx4DsOBc=;
- b=FHD4YA3TmZO7g1EKJUaWqk3dV1npJy/TrX2A5AVZIpUX7DJ0xdg+N/z9bMVlC/+Sy7
- Sa9xo9PmeRKA524z91+WdTp+uDpAuxgQh54PByyR9WaHt0BQpRp3rEI6T5sXuvGrkVuH
- tTd0WvtPd0VP8pP0msvIDzAusFPw/mGvttecf2jsslkI6nb6F/x64hQ3zMr6d9KFYaIc
- /RkCKILuGfObiD1WAimgZwwveFO1TN64oXGX+b2K7Fv2eybT2kM61B3Ef5AVYj1nXDY4
- UDC7SJRBdDK+pr7+0JT9LbzYhoglViL7XzrtDSrhmanaiuj0DqDLzfAnr7UJzudf+pf5
- 7Fbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=l0yXqLaXkDzRuyoi2/xFAHFgcqQhOzk3wyGzx4DsOBc=;
- b=Dw6c2SfoaXLeKoQWCId/0nnZHbpKeh3SSvO9AOR/6f+DDKNaX04euYdTjw6j4Ewdp7
- UMh05avvnx1Q8/gEz7lmuWjykbVQtMfscGWzrVFmcx7dHdBo/E49NWTjkKpNJWw4G7a3
- 6yVz1CxTq8mwyYZBz0Y+LVTcrR1KgpOZEtiIqtYnn3DpbJqS9UprAi6+mEyeCAj4vQlc
- hja+fkwhup+Si4tiKRh0KEn7di7VHUO7wmAPYHTWB36Yq3IXqz1DbwPV2DrixNh2Ll0i
- AmvMpcmXH8zlT6oMCjpEl8pvdsM/dWQsSMMELwN4qc/kKm+EF/321RBuGhVTKoseD4NY
- Wm3g==
-X-Gm-Message-State: AOAM533GQKv1cHCFHKXw0czea75B/BdDN6r4JcoE6PE9gFS2Iq0vH+nr
- lEuzh0iV1mkSTyL2lZ/GhFDM+Dql79A=
-X-Google-Smtp-Source: ABdhPJxxTUxkvqVV5KxYqxbtqqKN+2upRC+YRlTBpZlKqg9JidgNjV2PqilWoTKxwaK8PPD236G0Cw==
-X-Received: by 2002:a17:90b:4b52:b0:1b8:c554:3bdd with SMTP id
- mi18-20020a17090b4b5200b001b8c5543bddmr3739118pjb.5.1645043982006; 
- Wed, 16 Feb 2022 12:39:42 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
- by smtp.googlemail.com with ESMTPSA id h14sm50167772pfh.95.2022.02.16.12.39.40
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 16 Feb 2022 12:39:41 -0800 (PST)
-Subject: Re: [PATCH] dma-contiguous: Prioritize restricted DMA pool over
- shared DMA pool
-To: Robin Murphy <robin.murphy@arm.com>,
- Florian Fainelli <f.fainelli@gmail.com>, linux-kernel@vger.kernel.org
-References: <20220215224344.1779145-1-f.fainelli@gmail.com>
- <39ed2187-2345-297d-2dd3-0b0974ce8b31@arm.com>
- <50ae9c05-2ec4-09a8-965c-0d70ea74d879@gmail.com>
- <27b10c12-e3f2-6ac4-26b5-44625e61d7ae@arm.com>
-From: Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <4eac1aac-8fe6-3629-df17-b1264d976f3a@gmail.com>
-Date: Wed, 16 Feb 2022 12:39:39 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id saDaUZA5XoY0 for <iommu@lists.linux-foundation.org>;
+ Thu, 17 Feb 2022 11:35:07 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A7AC061B81
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:35:06 +0000 (UTC)
+X-UUID: 6506b093061d4570b82df3c4bbc2e244-20220217
+X-UUID: 6506b093061d4570b82df3c4bbc2e244-20220217
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
+ mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+ with ESMTP id 1611236504; Thu, 17 Feb 2022 19:35:01 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
+ Thu, 17 Feb 2022 19:34:59 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 17 Feb 2022 19:34:58 +0800
+To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+ "Matthias Brugger" <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>
+Subject: [PATCH v5 00/34] MT8195 IOMMU SUPPORT
+Date: Thu, 17 Feb 2022 19:34:19 +0800
+Message-ID: <20220217113453.13658-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-In-Reply-To: <27b10c12-e3f2-6ac4-26b5-44625e61d7ae@arm.com>
-Content-Language: en-US
-Cc: robh@kernel.org, opendmb@gmail.com,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux-foundation.org>,
- jim2101024@gmail.com, bcm-kernel-feedback-list@broadcom.com,
- tientzu@chromium.org, will@kernel.org, Christoph Hellwig <hch@lst.de>
+X-MTK: N
+Cc: devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ chengci.xu@mediatek.com, xueqi.zhang@mediatek.com,
+ linux-kernel@vger.kernel.org, libo.kang@mediatek.com,
+ yen-chang.chen@mediatek.com, iommu@lists.linux-foundation.org,
+ yf.wang@mediatek.com, linux-mediatek@lists.infradead.org,
+ Hsin-Yi Wang <hsinyi@chromium.org>, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, mingyuan.ma@mediatek.com,
+ linux-arm-kernel@lists.infradead.org, AngeloGioacchino
+ Del Regno <angelogioacchino.delregno@collabora.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,163 +77,150 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Yong Wu <yong.wu@mediatek.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMi8xNi8yMiAxMTo0OCBBTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDIwMjItMDItMTYg
-MTc6MzcsIEZsb3JpYW4gRmFpbmVsbGkgd3JvdGU6Cj4+IE9uIDIvMTYvMjIgMzoxMyBBTSwgUm9i
-aW4gTXVycGh5IHdyb3RlOgo+Pj4gT24gMjAyMi0wMi0xNSAyMjo0MywgRmxvcmlhbiBGYWluZWxs
-aSB3cm90ZToKPj4+PiBTb21lIHBsYXRmb3JtcyBtaWdodCBkZWZpbmUgdGhlIHNhbWUgbWVtb3J5
-IHJlZ2lvbiB0byBiZSBzdWl0YWJsZSBmb3IKPj4+PiB1c2VkIGJ5IGEga2VybmVsIHN1cHBvcnRp
-bmcgQ09ORklHX0RNQV9SRVNUUklDVEVEX1BPT0wgd2hpbGUKPj4+PiBtYWludGFpbmluZwo+Pj4+
-IGNvbXBhdGliaWxpdHkgd2l0aCBvbGRlciBrZXJuZWxzIHRoYXQgZG8gbm90IHN1cHBvcnQgdGhh
-dC4gVGhpcyBpcwo+Pj4+IGFjaGlldmVkIGJ5IGRlY2xhcmluZyB0aGUgbm9kZSB0aGlzIHdheTsK
-Pj4+Cj4+PiBUaG9zZSBwbGF0Zm9ybXMgYXJlIGRvaW5nIHNvbWV0aGluZyBpbmV4cGxpY2FibHkg
-d3JvbmcsIHRoZW4uCj4+Cj4+IE1hdHRlciBvZiBwZXJzcGVjdGl2ZSBJIGd1ZXNzLgo+Pgo+Pj4K
-Pj4+ICJyZXN0cmljdGVkLWRtYS1wb29sIiBzYXlzIHRoYXQgRE1BIGZvciB0aGUgZGV2aWNlIGhh
-cyB0byBiZSBib3VuY2VkCj4+PiB0aHJvdWdoIGEgZGVkaWNhdGVkIHBvb2wgYmVjYXVzZSBpdCBj
-YW4ndCBiZSB0cnVzdGVkIHdpdGggdmlzaWJpbGl0eSBvZgo+Pj4gcmVndWxhciBPUyBtZW1vcnku
-ICJyZXVzYWJsZSIgdGVsbHMgdGhlIE9TIHRoYXQgaXQncyBzYWZlIHRvIHVzZSB0aGUKPj4+IHBv
-b2wgYXMgcmVndWxhciBPUyBtZW1vcnkgd2hpbGUgaXQncyBpZGxlLiBEbyB5b3Ugc2VlIGhvdyB0
-aG9zZSBjb25jZXB0cwo+Pj4gYXJlIGZ1bmRhbWVudGFsbHkgaW5jb21wYXRpYmxlPwo+Pgo+PiDC
-oEZyb20gdGhlIHBlcnNwZWN0aXZlIG9mIHRoZSBzb2Z0d2FyZSBvciBmaXJtd2FyZSBhZ2VudCB0
-aGF0IGlzCj4+IHJlc3BvbnNpYmxlIGZvciBzZXR0aW5nIHVwIHRoZSBhcHByb3ByaWF0ZSBwcm90
-ZWN0aW9uIG9uIHRoZSByZXNlcnZlZAo+PiBtZW1vcnksIGl0IGRvZXMgbm90IG1hdHRlciB3aGF0
-IHRoZSBjb21wYXRpYmxlIHN0cmluZyBpcywgdGhlIG9ubHkKPj4gcHJvcGVydGllcyB0aGF0IG1h
-dHRlciBhcmUgdGhlIGJhc2UgYWRkcmVzcywgc2l6ZSwgYW5kIHBvc3NpYmx5IHdoZXRoZXIKPj4g
-J25vLW1hcCcgaXMgc3BlY2lmaWVkIG9yIG5vdCB0byBzZXQtdXAgYXBwcm9wcmlhdGUgcHJvdGVj
-dGlvbiBmb3IgdGhlCj4+IHZhcmlvdXMgbWVtb3J5IGNvbnRyb2xsZXIgYWdlbnRzIChDUFUsIFBD
-SWUsIGV2ZXJ5dGhpbmcgZWxzZSkuCj4+Cj4+IEV2ZXJ5dGhpbmcgZWxzZSBpcyBqdXN0IGluZm9y
-bWF0aW9uIHByb3ZpZGVkIHRvIHRoZSBPUyBpbiBvcmRlciB0bwo+PiBwcm92aWRlIGEgZGlmZmVy
-ZW50IGltcGxlbWVudGF0aW9uIGtleWVkIG9mZiB0aGUgY29tcGF0aWJsZSBzdHJpbmcuIFNvCj4+
-IHdpdGggdGhhdCBpbiBtaW5kLCB5b3UgY2FuIGltYWdpbmUgdGhhdCBiZWZvcmUgdGhlIGludHJv
-ZHVjdGlvbiBvZgo+PiAncmVzdHJpY3RlZC1kbWEtcG9vbCcgaW4gNS4xNSwgc29tZSBwbGF0Zm9y
-bXMgYWxyZWFkeSBoYWQgc3VjaCBhIGNvbmNlcHQKPj4gb2YgYSByZXNlcnZlZCBETUEgcmVnaW9u
-LCB0aGF0IHdhcyBiYWNrZWQgYnkgYSBkZXZpY2UgcHJpdmF0ZSBDTUEgcG9vbCwKPj4gdGhleSB3
-b3VsZCBhbGxvY2F0ZSBtZW1vcnkgZnJvbSB0aGF0IHJlZ2lvbiBhbmQgd291bGQgY3JlYXRlIHRo
-ZWlyIG93bgo+PiBtaWRkbGUgbGF5ZXIgZm9yIGJvdW5jZSBidWZmZXJpbmcgaWYgdGhleSBsaWtl
-ZCB0by4gVGhpcyBpcyBvYnZpb3VzbHkKPj4gbm90IGlkZWFsIG9uIGEgbnVtYmVyIG9mIGxldmVs
-cyBzdGFydGluZyBmcm9tIG5vdCBiZWluZyBkb25lIGF0IHRoZQo+PiBhcHByb3ByaWF0ZSBsZXZl
-bCBidXQgaXQgd2FzIGRvbmUuCj4+Cj4+IE5vdyB0aGF0ICdyZXN0cmljdGVkLWRtYS1wb29sJyBp
-cyBzdXBwb3J0ZWQsIHRyYW5zaXRpb25pbmcgdGhlbSBvdmVyIGlzCj4+IG9idmlvdXNseSBiZXR0
-ZXIgYW5kIHVwZGF0aW5nIHRoZSBjb21wYXRpYmxlIHN0cmluZyBmb3IgdGhvc2Ugc3BlY2lmaWMK
-Pj4gcmVnaW9ucyB0byBpbmNsdWRlIHRoZSBtb3JlIGRlc2NyaXB0aXZlICdyZXN0cmljdGRlZC1k
-bWEtcG9vbCcgc291bmRlZAo+PiB0byBtZSBhcyBhbiBhY2NlcHRhYmxlIHdheSB0byBtYWludGFp
-biBmb3J3YXJkL2JhY2t3YXJkIERUQgo+PiBjb21wYXRpYmlsaXR5IHJhdGhlciB0aGFuIGRvdWJs
-eSByZXNlcnZpbmcgdGhlc2UgcmVnaW9uIG9uZSB3aXRoIHRoZQo+PiAib2xkIiBjb21wYXRpYmxl
-IGFuZCBvbmUgd2l0aCB0aGUgIm5ldyIgY29tcGF0aWJsZSwgbm90IHRoYXQgdGhlIHN5c3RlbQo+
-PiBpcyBldmVuIGNhcGFibGUgb2YgZG9pbmcgdGhhdCBhbnl3YXksIHNvIHdlIHdvdWxkIGhhdmUg
-aGFkIHRvCj4+IGVzc2VudGlhbGx5IG1ha2UgdGhlbSBhZGphY2VudC4KPj4KPj4gQW5kIG5vLCB3
-ZSBhcmUgbm90IGJyaW5naW5nIExpbnV4IHZlcnNpb24gYXdhcmVuZXNzIHRvIG91ciBib290IGxv
-YWRlcgo+PiBtYW5nbGluZyB0aGUgRGV2aWNlIFRyZWUgYmxvYiwgdGhhdCdzIG5vdCBoYXBwZW5p
-bmcsIGhlbmNlIHRoaXMgcGF0Y2guCj4gCj4gSWYgdGhlIHBhdGNoIHdhcyBhZGRpbmcgYSAiYnJj
-bSxpbnNlY3VyZS1kbWEtcG9vbCIgY29tcGF0aWJsZSBhbmQKPiBob29raW5nIGl0IHVwLCBJJ2Qg
-YmUgbGVzcyBib3RoZXJlZC4gQXMgaXQgaXMsIEkgcmVtYWluIHVuY29udmluY2VkIHRoYXQKPiBk
-ZXNjcmliaW5nIHR3byB0aGluZ3MgdGhhdCBhcmUgbm90IGludGVyY2hhbmdlYWJsZSB3aXRoIGVh
-Y2ggb3RoZXIgYXMKPiBpbnRlcmNoYW5nZWFibGUgd2l0aCBlYWNoIG90aGVyIGlzIGluIGFueSB3
-YXkgImJldHRlciIuCgpXZSBtb3N0IGRlZmluaXRpdmVseSBzaG91bGQgaGF2ZSBkb25lIHRoYXQg
-YnV0IHdlIGRpZCBub3QgYmVjYXVzZSB3ZQpzb3J0IG9mIGxpa2UgdG8gbWFpbnRhaW4gYXMgZmV3
-ZXIgcGF0Y2hlcyBhcyBwb3NzaWJsZSBhZ2FpbnN0IHRoZQptYWlubGluZSBrZXJuZWwsIGJlbGll
-dmUgaXQgb3Igbm90LiBBbHNvLCBpdCB3b3VsZCBoYXZlIGJlZW4gZnVuIHRvCmV4cGxhaW4gd2h5
-IHdlIHdlbnQgd2l0aCBvdXIgb3duIGNvbXBhdGlibGUgc3RyaW5nIHRvIG9idGFpbiB0aGUgc2Ft
-ZQpzZW1hbnRpY3MgZnJvbSB0aGUga2VybmVsIGFzIHRoZSBnZW5lcmljIG9uZSwgYnV0IEkgd2ls
-bCBzdGljayBhIHBpbiBpbgp0aGF0IGlkZWEuCgo+IAo+Pj4gTGludXggaXMgcmlnaHQgdG8gcmVq
-ZWN0IGNvbnRyYWRpY3RvcnkgaW5mb3JtYXRpb24gcmF0aGVyIHRoYW4gYXR0ZW1wdAo+Pj4gdG8g
-Z3Vlc3MgYXQgd2hhdCBtaWdodCBiZSBzYWZlIG9yIG5vdC4KPj4KPj4gVGhlIHBpZWNlIG9mIGNv
-bnRyYWRpY3RvcnkgaW5mb3JtYXRpb24gaGVyZSBzcGVjaWZpY2FsbHkgaXMgdGhlCj4+ICdyZXVz
-YWJsZScgYm9vbGVhbiBwcm9wZXJ0eSwgYnV0IGFzIEkgZXhwbGFpbiB0aGUgY29tbWl0IG1lc3Nh
-Z2UKPj4gbWVzc2FnZSwgaWYgeW91IGhhdmUgYSAicHJvcGVybHkgZm9ybWVkIiAncmVzdHJpY3Rl
-ZC1kbWEtcG9vbCcgcmVnaW9uCj4+IHRoZW4gaXQgc2hvdWxkIG5vdCBoYXZlIHRoYXQgcHJvcGVy
-dHkgaW4gdGhlIGZpcnN0IHBsYWNlLCBidXQgZXZlbiBpZiBpdAo+PiBkb2VzLCBpdCBkb2VzIG5v
-dCBoYXJtIGFueXRoaW5nIHRvIGhhdmUgaXQuCj4+Cj4+Pgo+Pj4gRnVydGhlcm1vcmUsIGRvd24g
-YXQgdGhlIHByYWN0aWNhbCBsZXZlbCwgYSBTV0lPVExCIHBvb2wgaXMgdXNlZCBmb3IKPj4+IGJv
-dW5jaW5nIHN0cmVhbWluZyBETUEgQVBJIG1hcHBpbmdzLCB3aGlsZSBhIGNvaGVyZW50L0NNQSBw
-b29sIGlzIHVzZWQKPj4+IGZvciBjb2hlcmVudCBETUEgQVBJIGFsbG9jYXRpb25zOyB0aGV5IGFy
-ZSBub3QgZnVuY3Rpb25hbGx5Cj4+PiBpbnRlcmNoYW5nZWFibGUgZWl0aGVyLiBJZiBhIGRldmlj
-ZSBkZXBlbmRzIG9uIGNvaGVyZW50IGFsbG9jYXRpb25zCj4+PiByYXRoZXIgdGhhbiBzdHJlYW1p
-bmcgRE1BLCBpdCBzaG91bGQgc3RpbGwgaGF2ZSBhIGNvaGVyZW50IHBvb2wgZXZlbgo+Pj4gdW5k
-ZXIgYSBwaHlzaWNhbCBtZW1vcnkgcHJvdGVjdGlvbiBzY2hlbWUsIGFuZCBpZiBpdCBuZWVkcyBi
-b3RoCj4+PiBzdHJlYW1pbmcgRE1BIGFuZCBjb2hlcmVudCBidWZmZXJzIHRoZW4gaXQgY2FuIGhh
-dmUgYm90aCB0eXBlcyBvZiBwb29sIC0KPj4+IHRoZSBiaW5kaW5ncyBleHBsaWNpdGx5IGNhbGwg
-dGhhdCBvdXQuIEl0J3MgdHJ1ZSB0aGF0IFNXSU9UTEIgcG9vbHMgY2FuCj4+PiBhY3QgYXMgYW4g
-ZW1lcmdlbmN5IGZhbGxiYWNrIGZvciBzbWFsbCBhbGxvY2F0aW9ucyBmb3IgSS9PLWNvaGVyZW50
-Cj4+PiBkZXZpY2VzLCBidXQgdGhhdCdzIG5vdCByZWFsbHkgaW50ZW5kZWQgdG8gYmUgcmVsaWVk
-IHVwb24gaGVhdmlseS4KPj4+Cj4+PiBTbyBubywgSSBkbyBub3Qgc2VlIGFueXRoaW5nIHdyb25n
-IHdpdGggdGhlIGN1cnJlbnQgaGFuZGxpbmcgb2YKPj4+IG5vbnNlbnNpY2FsIERUcyBoZXJlLCBz
-b3JyeS4KPj4KPj4gVGhlcmUgaXMgbm90aGluZyB3cm9uZyBpbiB0aGUgY3VycmVudCBjb2RlLCBi
-dXQgd2l0aCBjaGFuZ2VzIHRoYXQgaGF2ZQo+PiBubyBhZHZlcnNlIGVmZmVjdCBvbiAicHJvcGVy
-bHkiIGNvbnN0cnVjdGVkIHJlc2VydmVkIG1lbW9yeSBlbnRyaWVzIHdlCj4+IGNhbiBhY2NlcHQg
-Ym90aCB0eXBlcyBvZiByZXNlcnZhdGlvbiBhbmQgbWFpbnRhaW4gZm9yd2FyZC9iYWNrd2FyZAo+
-PiBjb21wYXRpYmlsaXR5IGluIG91ciBjYXNlLiBTbyB3aHkgbm90Pwo+IAo+IFdvdWxkIHlvdSBi
-ZSBoYXBweSB0byBnaXZlIG1lIGJsYW5rZXQgcGVybWlzc2lvbiB0byBwb2ludCBhIGd1biBhdCB5
-b3VyCj4gZm9vdCBhbmQgcHVsbCB0aGUgdHJpZ2dlciBhdCBhbnkgcG9pbnQgaW4gdGhlIGZ1dHVy
-ZSwgaWYgcmlnaHQgbm93IEkKPiBzaG93IHlvdSBhbiB1bmxvYWRlZCBndW4/Cj4gCj4gU2VjdXJp
-dHkgYW5kIGxhenkgc2hvcnRjdXRzIGRvIG5vdCBtaXggd2VsbC4KClNlY3VyaXR5IGlzIG5vdCBl
-bmZvcmNlZCBieSB0aGUga2VybmVsIGhlcmUgYnV0IGJ5IGEgcGllY2Ugb2YgaGFyZHdhcmUKZXh0
-ZXJuYWwgdG8gdGhlIENQVSwgdGhhdCBpcyB0cnVlIG9mIHRoZSBwbGF0Zm9ybXMgdGhhdCBwcm9t
-cHRlZCB0aGUKJ3Jlc3RyaWN0ZWQtZG1hLXBvb2wnIHdvcmsgaW4gdGhlIGZpcnN0IHBsYWNlIGJ5
-IENsYWlyZS4gVGhlIGNvbXBhdGlibGUKc3RyaW5nIGlzIGlycmVsZXZhbnQgdG8gdGhhdCBlbnRp
-dHkuIFRoZXJlIGlzIG5vIHF1ZXN0aW9uIHRoaXMgaXMgbGF6eSwKdGhhdCBpcyB0aGUgd2hvbGUg
-cG9pbnQgYWN0dWFsbHkuIFRoZSBrZXJuZWwgaXMganVzdCBjb21tdW5pY2F0ZWQgYQpyZXNlcnZl
-ZCBtZW1vcnkgcmVnaW9uLCBpZiBpdCBjYW4gc3VwcG9ydCBhIGdpdmVuIGJlaGF2aW9yIGFuZCBl
-eHBvc2UgYQpzZXQgb2Ygc2VydmljZXMgdG8gZG8gdGhhdCwgZ3JlYXQsIHdlIGxldmVyYWdlIHRo
-YXQsIGVsc2Ugd2UgZmFsbCBiYWNrCnRvIGFub3RoZXIga2luZCB0aGF0IHdlIGNhbiBhbHNvIHVz
-ZSwgYWxiZWl0IGRpZmZlcmVudGx5LgoKPiBZb3UgYXJlIGxpdGVyYWxseSBhcmd1aW5nCj4gdGhh
-dCBtYWlubGluZSBMaW51eCBzaG91bGQgc3VwcG9ydCBhIGJhY2stZG9vciBBQkkgZm9yIGlsbGVn
-YWwgRFQKPiBwcm9wZXJ0aWVzIHdoaWNoIGF0IHdvcnN0IGhhcyB0aGUgcG90ZW50aWFsIHRvIGRl
-ZmVhdCBhIGdlbmVyaWMgc2VjdXJpdHkKPiBmZWF0dXJlLgoKTm90IHF1aXRlLCBJIGFtIGFyZ3Vp
-bmcgdGhhdCBpbiB0aGUgZXZlbnQgdGhhdCBzb21lb25lIHRob3VnaHQgaXQgd2FzCnBvc3NpYmxl
-IHRvIG1haW50YWluIGhpcy9oZXIgb3duIG5vdGlvbiBvZiBiYWNrd2FyZCBhbmQgZm9yd2FyZApj
-b21wYXRpYmlsaXR5IHdlICpjb3VsZCogYmUgc3VwcG9ydGluZyB0aGlzLiBhbmQgd2l0aCBtaW5p
-bWFsIGFtb3VudHMgb2YKY29kZSB0byB0aGUga2VybmVsLgoKVGhlIGtlcm5lbCBpcyBub3QgYSB0
-cnVzdGVkIGVudGl0eSBpbiB0aGUgc2VjdXJpdHkgbW9kZWwgcmV2b2x2aW5nCmFyb3VuZCB0aGUg
-J3Jlc3RyaWN0ZWQtZG1hLXBvb2wnIGFueXdheSB3aGljaCBpcyB3aHkgaXQgaXMgdG9sZCB3aGVy
-ZQp0aGVzZSByZXNlcnZlZCBtZW1vcnkgcmVnaW9ucyBhcmUgZGVmaW5lZCwgYW5kIGRvZXMgbm90
-IGRlY2lkZSB3aGVyZSB0bwpwbGFjZSB0aGVtLiBJZiB0aGUgYXBlcnR1cmUgaXMgbm90IHNldC11
-cCBwcm9wZXJseSB0aGVyZSBpcyBubyBETUEKdG8vZnJvbSB0aGF0IHJlZ2lvbiBwZXJpb2Qgc28g
-dGhlIHJlc3VsdHMgYXJlIHByZXR0eSBjbGVhcjogeW91IGRvIG5vdApnZXQgeW91ciBkZXZpY2Ug
-dG8gd29yay4gV2hldGhlciB0aGUga2VybmVsIHRoaW5rcyB0aGF0IHJlZ2lvbiBpcyBhCmRldmlj
-ZS1wcml2YXRlIENNQSBwb29sIG9yIGEgZGV2aWNlLXByaXZhdGUgU1dJT1RMQiBwb29sIGlzIGxh
-cmdlbHkKaXJyZWxldmFudCBpbiB0aGUgc2VjdXJpdHkgbW9kZWwgdGhhdCBpcyBhIGtlcm5lbCBt
-ZWNoYW5pc20gb24gaG93IHlvdQp3YW50IHRvIGxldmVyYWdlIHRoZSByZWdpb24uCgo+IFRoZSAi
-cmVzdHJpY3RlZC1kbWEtcG9vbCIgYmluZGluZyBleHBsaWNpdGx5IHNheXMgIldoZW4gdXNpbmcK
-PiB0aGlzLCB0aGUgbm8tbWFwIGFuZCByZXVzYWJsZSBwcm9wZXJ0aWVzIG11c3Qgbm90IGJlIHNl
-dCIgKEkgc2hvdWxkIHNwaW4KPiB1cCBhIHBhdGNoIGVuZm9yY2luZyB0aGF0IGluIHRoZSBzY2hl
-bWEuLi4pLgo+IE5vIG1hdHRlciBob3cgY29udmluY2VkIHlvdQo+IGFyZSB0aGF0IG5vIE9TIHBh
-c3QgcHJlc2VudCBvciBmdXR1cmUgY291bGQgcG9zc2libHkgZXZlciBiZWhhdmUKPiBkaWZmZXJl
-bnRseSBmcm9tIHRoZSBwYXJ0aWN1bGFyIGRvd25zdHJlYW0gc29mdHdhcmUgc3RhY2sgeW91IGNh
-cmUKPiBhYm91dCwgTkFLIHRvIHN1YnZlcnRpbmcgdGhlICJyZXN0cmljdGVkLWRtYS1wb29sIiBj
-b21wYXRpYmxlIGluIGFueQo+IHdheSwgc29ycnkuCj4gSSBmb3Igb25lIHdpc2ggdG8gaGF2ZSBu
-byBwYXJ0IGluIHRoZSBuZXh0Cj4gdHJlbmR5LW5hbWUtY29tcHJvbWlzZSBkb3duIHRoZSBsaW5l
-IHdoZXJlIGEgcHJvdGVjdGVkIFZNIGNhbiBiZSB0cmlja2VkCj4gaW50byBleHBvc2luZyBpdHMg
-cGFnZSBjYWNoZSB0byBhICJETUEgYXR0YWNrIiBieSBhbiB1bnRydXN0ZWQKPiBoeXBlcnZpc29y
-IGJlY2F1c2UgZml4aW5nIEZsb3JpYW4ncyBib290bG9hZGVyIGlzIGhhcmQuCgpJIHN1cHBvc2Ug
-eW91ciBjb25jZXJuIGlzIHRoYXQgaWYgd2UgYWNjZXB0IG15IHBhdGNoLCBvbmUgY291bGQgYnVp
-bGQgYQprZXJuZWwgd2l0aCBDT05GSUdfRE1BX1JFU1RSSUNURURfUE9PTCB0dXJuZWQgb2ZmIHRv
-IG9idGFpbiBhIGRldmljZQpwcml2YXRlIENNQSBwb29sIGluc3RlYWQgb2YgYSB0cnVseSByZXN0
-cmljdGVkIERNQSBwb29sLCB0aGVuIHRoZQpoeXBlcnZpc29yIGFsbG9jYXRlcyBmcm9tIHRoYXQg
-YXJlYSBhbmQgcHV0IHNlbnNpdGl2ZSBzdHVmZiBpbiB0aGVyZSwKYnV0IGxhdGVyIG9uIHdlIGxl
-dCBhIG1hbGljaW91cyBWTS1vd25lZCBQQ0llIFZGIG9yIGFjdHVhbCBQRiBETUEgZnJvbQp0aGF0
-IGxvY2F0aW9uIGFuZCB3ZSBleGZpbHRyYXRlIG91dCBvZiB0aGF0IGxvY2F0aW9uPwoKVGhhdCBl
-eGlzdHMgdG9kYXkgaG93ZXZlciBhcyBzb29uIGFzIGFuIHVuLXRydXN0ZWQgRFRCIGNhbiBiZSBw
-YXNzZWQgdG8KdGhhdCBoeXBlcnZpc29yLCBzbyB3aGF0IGlzIG5ldyBoZXJlIHRoYXQgSSBhbSBt
-aXNzaW5nPyBJZiB5b3UgdXNlIHRoZQpleGFtcGxlIEkgcHJvdmlkZSBpbiB0aGUgcGF0Y2gsIGFu
-ZCBnaXZlbiBob3cgdGhlIGNvZGUgaXMgc3RydWN0dXJlZCBhbmQKdGhlIGxpbmsgb3JkZXIsIHlv
-dSB3aWxsIGdldCBhIGRldmljZSBwcml2YXRlIENNQSBwb29sIGluc3RlYWQgb2YgYQpyZXN0cmlj
-dGVkIERNQSBwb29sIGJlY2F1c2Uga2VybmVsL2RtYS9jb250aWd1b3VzLmMgd2lsbCBtYXRjaCB0
-aGF0CmVudHJ5IGJlZm9yZSBrZXJuZWwvZG1hL3N3aW90bGIuYyAoaWYgYnVpbHQpIGRvZXMuIFNp
-bWlsYXJseSBpZiBJIGNhbgptYW5nbGUgdGhlIERUQiBwYXNzZWQgdG8gdGhlIGtlcm5lbCB0byBz
-dWJzdGl0dXRlICJyZXN0cmljdGVkLWRtYS1wb29sJwp3aXRoICdzaGFyZWQtZG1hLXBvb2wnIEkg
-d291bGQgb2J0YWluIGEgZGlmZmVyZW50IGJlaGF2aW9yIGZvciB0aGUKa2VybmVsIHRoYW4gb3Jp
-Z2luYWxseSBpbnRlbmRlZC4gVGhlIHBvaW50IHRob3VnaCBpcyB0aGF0IHRoZXJlIHNob3VsZApi
-ZSBhZGVxdWF0ZSBzZWN1cml0eSBlbmZvcmNlZCBhcm91bmQgdGhlIHJlc2VydmVkIG1lbW9yeSBy
-ZWdpb24gaW4gYSB3YXkKdGhhdCBpcyBvcnRob2dvbmFsIHRvIHRoZSBrZXJuZWwuCgpBbnl3YXks
-IEkgdGhvdWdodCB0aGlzIG1pZ2h0IGJlIGFjY2VwdGFibGUsIEkgd291bGQgbGlrZSB0byBoZWFy
-IGZyb20Kb3RoZXJzIGp1c3QgaW4gY2FzZSwgYnV0IHdpbGwgbm90IHB1cnN1ZSB0aGlzIHJvdXRl
-ciBhbnltb3JlIHVubGVzcwpzb21lb25lIHRlbGxzIG1lIG90aGVyd2lzZS4gVGhhbmsgeW91LCBJ
-IGd1ZXNzLgotLSAKRmxvcmlhbgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlv
-bi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8v
-aW9tbXU=
+This patchset adds MT8195 iommu support.
+
+MT8195 have 3 IOMMU HWs. 2 IOMMU HW is for multimedia, and 1 IOMMU HW is
+for infra-master, like PCIe/USB.
+
+About the 2 MM IOMMU HW, something like this:
+
+        IOMMU(VDO)          IOMMU(VPP)
+           |                   |
+      SMI_COMMON(VDO)      SMI_COMMON(VPP)
+      ---------------     ----------------
+      |      |   ...      |      |     ...
+    larb0 larb2  ...    larb1 larb3    ...
+
+these two MM IOMMU HW share a pgtable.
+
+About the INFRA IOMMU, it don't have larbs, the master connects the iommu
+directly. It use a independent pgtable.
+
+Also, mt8195 IOMMU bank supports. Normally the IOMMU register size only
+is 0x1000. In this IOMMU HW, the register size is 5 * 0x1000. each 0x1000
+is a bank. the banks' register look like this:
+     ----------------------------------------
+     |bank0  | bank1 | bank2 | bank3 | bank4|
+     ----------------------------------------
+     |global |
+     |control|         null
+     |regs   |
+     -----------------------------------------
+     |bank   |bank   |bank   |bank   |bank   |
+     |regs   |regs   |regs   |regs   |regs   |
+     |       |       |       |       |       |
+     -----------------------------------------
+All the banks share some global control registers, and each bank have its
+special bank registers, like pgtable base register, tlb operation registers,
+the fault status registers.
+ 
+In mt8195, we enable this bank feature for infra iommu, We put PCIe in bank0
+and USB in bank4. they have independent pgtable.
+
+This patchset bases on next-20220216 which has already contained the smi
+clean-up v10[1] patchset and the tlb logic patchset[2] for MediaTek iommu.
+
+[1] https://lore.kernel.org/linux-iommu/20220117070510.17642-1-yong.wu@mediatek.com/
+[2] https://lore.kernel.org/linux-mediatek/20211208120744.2415-1-dafna.hirschfeld@collabora.com/
+
+Change note:
+v5:1) Base on next-20220216
+   2) Remove a patch for kmalloc for protect buffer. keep the kzalloc for it.
+   3) minor fix from AngeloGioacchino, like rename the error label name
+   (data_unlock to err_unlock).
+   Note, keep the TODO for component compare_of[26/34].
+
+v4: https://lore.kernel.org/linux-iommu/20220125085634.17972-1-yong.wu@mediatek.com/
+   1) Base on v5.16-rc1
+   2) Base on tlb logic 2 patchset, some patches in v3 has already gone
+   through that patchset.
+   3) Due to the unreadable union for v1/v2(comment in 26/33 of v3), I
+   separate mtk_iommu_data for v1 and v2 totally, then remove mtk_iommu.h.
+   please see patch[26/35][27/35].
+   4) add two mutex for the internal data. patch[6/35][7/35].
+   5) add a new flag PM_CLK_AO.
+
+v3: https://lore.kernel.org/linux-mediatek/20210923115840.17813-1-yong.wu@mediatek.com/
+    1) base on v5.15-rc1
+    2) Adjust devlink with smi-common, not use the property(sub-sommon).
+    3) Adjust tlb_flush_all flow,
+       a) Fix tlb_flush_all only is supported in bank0.
+       b) add tlb-flush-all in the resume callback.
+       c) remove the pm status checking in tlb-flush-all.
+       The reason are showed in the commit message.
+    4) Allow IOMMU_DOMAIN_UNMANAGED since PCIe VFIO use that.
+    5) Fix a clk warning and a null abort when unbind the iommu driver.
+
+v2: https://lore.kernel.org/linux-mediatek/20210813065324.29220-1-yong.wu@mediatek.com/
+    1) Base on v5.14-rc1.
+    2) Fix build fail for arm32.
+    3) Fix dt-binding issue from Rob.
+    4) Fix the bank issue when tlb flush. v1 always use bank->base.
+    5) adjust devlink with smi-common since the node may be smi-sub-common.
+    6) other changes: like reword some commit message(removing many
+       "This patch..."); seperate serveral patches.
+
+v1: https://lore.kernel.org/linux-mediatek/20210630023504.18177-1-yong.wu@mediatek.com/
+    Base on v5.13-rc1
+
+Yong Wu (34):
+  dt-bindings: mediatek: mt8195: Add binding for MM IOMMU
+  dt-bindings: mediatek: mt8195: Add binding for infra IOMMU
+  iommu/mediatek: Fix 2 HW sharing pgtable issue
+  iommu/mediatek: Add list_del in mtk_iommu_remove
+  iommu/mediatek: Remove clk_disable in mtk_iommu_remove
+  iommu/mediatek: Add mutex for m4u_group and m4u_dom in data
+  iommu/mediatek: Add mutex for data in the mtk_iommu_domain
+  iommu/mediatek: Adapt sharing and non-sharing pgtable case
+  iommu/mediatek: Add 12G~16G support for multi domains
+  iommu/mediatek: Add a flag DCM_DISABLE
+  iommu/mediatek: Add a flag NON_STD_AXI
+  iommu/mediatek: Remove the granule in the tlb flush
+  iommu/mediatek: Always enable output PA over 32bits in isr
+  iommu/mediatek: Add SUB_COMMON_3BITS flag
+  iommu/mediatek: Add IOMMU_TYPE flag
+  iommu/mediatek: Contain MM IOMMU flow with the MM TYPE
+  iommu/mediatek: Adjust device link when it is sub-common
+  iommu/mediatek: Allow IOMMU_DOMAIN_UNMANAGED for PCIe VFIO
+  iommu/mediatek: Add a PM_CLK_AO flag for infra iommu
+  iommu/mediatek: Add infra iommu support
+  iommu/mediatek: Add PCIe support
+  iommu/mediatek: Add mt8195 support
+  iommu/mediatek: Only adjust code about register base
+  iommu/mediatek: Just move code position in hw_init
+  iommu/mediatek: Separate mtk_iommu_data for v1 and v2
+  iommu/mediatek: Remove mtk_iommu.h
+  iommu/mediatek-v1: Just rename mtk_iommu to mtk_iommu_v1
+  iommu/mediatek: Add mtk_iommu_bank_data structure
+  iommu/mediatek: Initialise bank HW for each a bank
+  iommu/mediatek: Change the domid to iova_region_id
+  iommu/mediatek: Get the proper bankid for multi banks
+  iommu/mediatek: Initialise/Remove for multi bank dev
+  iommu/mediatek: Backup/restore regsiters for multi banks
+  iommu/mediatek: mt8195: Enable multi banks for infra iommu
+
+ .../bindings/iommu/mediatek,iommu.yaml        |  20 +-
+ drivers/iommu/mtk_iommu.c                     | 966 +++++++++++++-----
+ drivers/iommu/mtk_iommu.h                     | 111 --
+ drivers/iommu/mtk_iommu_v1.c                  | 243 +++--
+ .../dt-bindings/memory/mt8195-memory-port.h   | 408 ++++++++
+ include/dt-bindings/memory/mtk-memory-port.h  |   2 +
+ 6 files changed, 1264 insertions(+), 486 deletions(-)
+ delete mode 100644 drivers/iommu/mtk_iommu.h
+ create mode 100644 include/dt-bindings/memory/mt8195-memory-port.h
+
+-- 
+2.18.0
+
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
