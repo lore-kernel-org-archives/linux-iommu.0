@@ -1,58 +1,57 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 10D14C433F5
-	for <iommu@archiver.kernel.org>; Thu, 17 Feb 2022 11:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EF744C433F5
+	for <iommu@archiver.kernel.org>; Thu, 17 Feb 2022 11:37:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id B1E3641E3D;
-	Thu, 17 Feb 2022 11:37:11 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B2FC14180A;
+	Thu, 17 Feb 2022 11:37:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XHQrC9kt9q_a; Thu, 17 Feb 2022 11:37:10 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 6059A41E36;
-	Thu, 17 Feb 2022 11:37:10 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PcFrkTYr3TEI; Thu, 17 Feb 2022 11:37:21 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 86213417F9;
+	Thu, 17 Feb 2022 11:37:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3AA1BC0021;
-	Thu, 17 Feb 2022 11:37:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 623BCC0021;
+	Thu, 17 Feb 2022 11:37:21 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0D8C9C000B
- for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:37:09 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 17C5BC000B
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:37:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id DEC106F6D5
- for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:37:08 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id ED4726F6C9
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:37:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hUP3TJOWKL19 for <iommu@lists.linux-foundation.org>;
- Thu, 17 Feb 2022 11:37:08 +0000 (UTC)
+ with ESMTP id LuPGE0gMOHCa for <iommu@lists.linux-foundation.org>;
+ Thu, 17 Feb 2022 11:37:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 3298D61B81
- for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:37:07 +0000 (UTC)
-X-UUID: 983fa521a43e4c6da8a58c781d3fec44-20220217
-X-UUID: 983fa521a43e4c6da8a58c781d3fec44-20220217
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
- (envelope-from <yong.wu@mediatek.com>)
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 03FC961B81
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:37:18 +0000 (UTC)
+X-UUID: 53119817481248e2a6ae2990b1e5748f-20220217
+X-UUID: 53119817481248e2a6ae2990b1e5748f-20220217
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
+ mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
  (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1927798015; Thu, 17 Feb 2022 19:37:03 +0800
+ with ESMTP id 850263235; Thu, 17 Feb 2022 19:37:14 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
- Thu, 17 Feb 2022 19:37:03 +0800
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 17 Feb 2022 19:37:12 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Feb 2022 19:37:02 +0800
+ Transport; Thu, 17 Feb 2022 19:37:11 +0800
 To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
  "Matthias Brugger" <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>
-Subject: [PATCH v5 13/34] iommu/mediatek: Always enable output PA over 32bits
- in isr
-Date: Thu, 17 Feb 2022 19:34:32 +0800
-Message-ID: <20220217113453.13658-14-yong.wu@mediatek.com>
+Subject: [PATCH v5 14/34] iommu/mediatek: Add SUB_COMMON_3BITS flag
+Date: Thu, 17 Feb 2022 19:34:33 +0800
+Message-ID: <20220217113453.13658-15-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220217113453.13658-1-yong.wu@mediatek.com>
 References: <20220217113453.13658-1-yong.wu@mediatek.com>
@@ -87,40 +86,98 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Currently the output PA[32:33] is contained by the flag IOVA_34.
-This is not right. the iova_34 has no relation with pa[32:33], the 32bits
-iova still could map to pa[32:33]. Move it out from the flag.
-
-No need fix tag since currently only mt8192 use the calulation and it
-always has this IOVA_34 flag.
-
-Prepare for the IOMMU that still use IOVA 32bits but its dram size may be
-over 4GB.
+In prevous SoC, the sub common id occupy 2 bits. the mt8195's sub common
+id has 3bits. Add a new flag for this. and rename the previous flag to
+_2BITS. For readable, I put these two flags together, then move the
+other flags. no functional change.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- drivers/iommu/mtk_iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/mtk_iommu.c | 26 ++++++++++++++++----------
+ drivers/iommu/mtk_iommu.h |  2 +-
+ 2 files changed, 17 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 19bdb51f47bc..9703eb16013c 100644
+index 9703eb16013c..9f57354d2562 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -283,11 +283,11 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
- 	write = fault_iova & F_MMU_FAULT_VA_WRITE_BIT;
- 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, IOVA_34_EN)) {
- 		va34_32 = FIELD_GET(F_MMU_INVAL_VA_34_32_MASK, fault_iova);
--		pa34_32 = FIELD_GET(F_MMU_INVAL_PA_34_32_MASK, fault_iova);
- 		fault_iova = fault_iova & F_MMU_INVAL_VA_31_12_MASK;
- 		fault_iova |= (u64)va34_32 << 32;
--		fault_pa |= (u64)pa34_32 << 32;
- 	}
-+	pa34_32 = FIELD_GET(F_MMU_INVAL_PA_34_32_MASK, fault_iova);
-+	fault_pa |= (u64)pa34_32 << 32;
+@@ -105,6 +105,8 @@
+ #define REG_MMU1_INT_ID				0x154
+ #define F_MMU_INT_ID_COMM_ID(a)			(((a) >> 9) & 0x7)
+ #define F_MMU_INT_ID_SUB_COMM_ID(a)		(((a) >> 7) & 0x3)
++#define F_MMU_INT_ID_COMM_ID_EXT(a)		(((a) >> 10) & 0x7)
++#define F_MMU_INT_ID_SUB_COMM_ID_EXT(a)		(((a) >> 7) & 0x7)
+ #define F_MMU_INT_ID_LARB_ID(a)			(((a) >> 7) & 0x7)
+ #define F_MMU_INT_ID_PORT_ID(a)			(((a) >> 2) & 0x1f)
+ 
+@@ -116,13 +118,14 @@
+ #define HAS_VLD_PA_RNG			BIT(2)
+ #define RESET_AXI			BIT(3)
+ #define OUT_ORDER_WR_EN			BIT(4)
+-#define HAS_SUB_COMM			BIT(5)
+-#define WR_THROT_EN			BIT(6)
+-#define HAS_LEGACY_IVRP_PADDR		BIT(7)
+-#define IOVA_34_EN			BIT(8)
+-#define SHARE_PGTABLE			BIT(9) /* 2 HW share pgtable */
+-#define DCM_DISABLE			BIT(10)
+-#define NOT_STD_AXI_MODE		BIT(11)
++#define HAS_SUB_COMM_2BITS		BIT(5)
++#define HAS_SUB_COMM_3BITS		BIT(6)
++#define WR_THROT_EN			BIT(7)
++#define HAS_LEGACY_IVRP_PADDR		BIT(8)
++#define IOVA_34_EN			BIT(9)
++#define SHARE_PGTABLE			BIT(10) /* 2 HW share pgtable */
++#define DCM_DISABLE			BIT(11)
++#define NOT_STD_AXI_MODE		BIT(12)
+ 
+ #define MTK_IOMMU_HAS_FLAG(pdata, _x) \
+ 		((((pdata)->flags) & (_x)) == (_x))
+@@ -290,9 +293,12 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 	fault_pa |= (u64)pa34_32 << 32;
  
  	fault_port = F_MMU_INT_ID_PORT_ID(regval);
- 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_SUB_COMM)) {
+-	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_SUB_COMM)) {
++	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_SUB_COMM_2BITS)) {
+ 		fault_larb = F_MMU_INT_ID_COMM_ID(regval);
+ 		sub_comm = F_MMU_INT_ID_SUB_COMM_ID(regval);
++	} else if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_SUB_COMM_3BITS)) {
++		fault_larb = F_MMU_INT_ID_COMM_ID_EXT(regval);
++		sub_comm = F_MMU_INT_ID_SUB_COMM_ID_EXT(regval);
+ 	} else {
+ 		fault_larb = F_MMU_INT_ID_LARB_ID(regval);
+ 	}
+@@ -1067,7 +1073,7 @@ static const struct mtk_iommu_plat_data mt2712_data = {
+ 
+ static const struct mtk_iommu_plat_data mt6779_data = {
+ 	.m4u_plat      = M4U_MT6779,
+-	.flags         = HAS_SUB_COMM | OUT_ORDER_WR_EN | WR_THROT_EN |
++	.flags         = HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN | WR_THROT_EN |
+ 			 NOT_STD_AXI_MODE,
+ 	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
+ 	.iova_region   = single_domain,
+@@ -1105,7 +1111,7 @@ static const struct mtk_iommu_plat_data mt8183_data = {
+ 
+ static const struct mtk_iommu_plat_data mt8192_data = {
+ 	.m4u_plat       = M4U_MT8192,
+-	.flags          = HAS_BCLK | HAS_SUB_COMM | OUT_ORDER_WR_EN |
++	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
+ 			  WR_THROT_EN | IOVA_34_EN | NOT_STD_AXI_MODE,
+ 	.inv_sel_reg    = REG_MMU_INV_SEL_GEN2,
+ 	.iova_region    = mt8192_multi_dom,
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index c10f5630e55d..82c51a034e6b 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -20,7 +20,7 @@
+ #include <dt-bindings/memory/mtk-memory-port.h>
+ 
+ #define MTK_LARB_COM_MAX	8
+-#define MTK_LARB_SUBCOM_MAX	4
++#define MTK_LARB_SUBCOM_MAX	8
+ 
+ #define MTK_IOMMU_GROUP_MAX	8
+ 
 -- 
 2.18.0
 
