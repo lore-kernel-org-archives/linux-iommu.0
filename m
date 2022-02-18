@@ -1,73 +1,77 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 693DFC4332F
-	for <iommu@archiver.kernel.org>; Fri, 18 Feb 2022 12:12:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 857E5C433EF
+	for <iommu@archiver.kernel.org>; Fri, 18 Feb 2022 12:52:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 2D2D741DE2;
-	Fri, 18 Feb 2022 12:12:23 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 24C2E6116D;
+	Fri, 18 Feb 2022 12:52:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8nAsSvy8eino; Fri, 18 Feb 2022 12:12:22 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 06ED141DD7;
-	Fri, 18 Feb 2022 12:12:22 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D670BC0021;
-	Fri, 18 Feb 2022 12:12:21 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E727AC000B
- for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 12:12:20 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id C5A25611CF
- for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 12:12:20 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kapsi.fi
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gCUITCY_0EIx for <iommu@lists.linux-foundation.org>;
- Fri, 18 Feb 2022 12:12:20 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 0AA9F611D4
- for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 12:12:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
- s=20161220; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
- Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
- Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
- :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
- List-Post:List-Owner:List-Archive;
- bh=inygvsTKfEXEunoehkv9TOnDCh7ocDzvGgEnXeVlJ14=; b=fC7/UvtxWrNHz/LroVaKr+xyNi
- CULXHBM749m/qv3rsSOwNjnBb+c5NE/ftC+esIUeYhY4UIAEm0bL9CODzshLXks1B8azo8iJxoDPB
- 8j4Mmq+xY2nZppIlU8SMrMCqIZ+kkYgicrC78UF6reAdFEzJnVvQP/91HDXLDmKLGJU1dfHDzCKe4
- ZmZ8aKY3iYC5VeoNARcKylFM5onaGAvSkOXV4eAy0la8P4QrU3Uvjje2QWUaqxNGnMZ2Ul7FDXOLl
- viLknOHFEBMb8H7/2K014Hio+EBQpS4sQFaY3vEKi2qyIzGzUqGLwIpAqw88RlyMqBFBOp3fCozhw
- NZ7nquaw==;
-Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70]
- helo=toshino.localdomain)
- by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
- (Exim 4.89) (envelope-from <mperttunen@nvidia.com>)
- id 1nL1fp-0006eP-U9; Fri, 18 Feb 2022 13:43:41 +0200
-To: thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
- will@kernel.org, robh+dt@kernel.org, robin.murphy@arm.com
-Subject: [PATCH v3 2/9] gpu: host1x: Add context bus
-Date: Fri, 18 Feb 2022 13:39:45 +0200
-Message-Id: <20220218113952.3077606-3-mperttunen@nvidia.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220218113952.3077606-1-mperttunen@nvidia.com>
-References: <20220218113952.3077606-1-mperttunen@nvidia.com>
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id CH0SQbvQ8JZx; Fri, 18 Feb 2022 12:52:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id F2BA4610C5;
+	Fri, 18 Feb 2022 12:52:30 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B00A8C0021;
+	Fri, 18 Feb 2022 12:52:30 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CB599C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 12:52:28 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id B862C84C1E
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 12:52:28 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=collabora.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id CMEqTX3WFQjz for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Feb 2022 12:52:26 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk
+ [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 96EF284C0E
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 12:52:26 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+ (Authenticated sender: kholk11) with ESMTPSA id 281841F46910
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+ s=mail; t=1645188744;
+ bh=XVKS75XpYQxb5/TVvYHVixSh4Vl0aBXRGf/YFk8Ta7w=;
+ h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+ b=SIGILJp6htL6o7lcCxedptEr2v14pHNt09Vrw6JNFphmrJAukrVO189Vh24oMXrPI
+ 9vWL65qlnN0jlhLfVMM4uHAb3DBCt0Z2vZbg7Li8fDKINWurPLaq7nqi1Fen2h2puJ
+ 5hfWkLAuXRZvi37rGQ9UjY6jpHS8g1EpBPPcjBruJ8Kl+j2/3abxB7oDSZp8TpGaZO
+ StC+31dsaX8r+TWfIAL8CkSMdDsvqWJEJTY07p3+ca3fzCqaCf3j/q/CLuP7UOs8Mz
+ +jn4/xLVPwn+lkbm9goa29rrHMv6hsGTeYP6ucU8D9gET5qmbIcow1CCx2a+vGV2mV
+ oTp8lxApvRhtQ==
+Message-ID: <71d7c940-63d5-bf65-527d-b27a8e0e5edc@collabora.com>
+Date: Fri, 18 Feb 2022 13:52:20 +0100
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 91.158.25.70
-X-SA-Exim-Mail-From: mperttunen@nvidia.com
-X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org, Mikko Perttunen <mperttunen@nvidia.com>,
- iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v5 19/34] iommu/mediatek: Add a PM_CLK_AO flag for infra
+ iommu
+Content-Language: en-US
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ Will Deacon <will@kernel.org>
+References: <20220217113453.13658-1-yong.wu@mediatek.com>
+ <20220217113453.13658-20-yong.wu@mediatek.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220217113453.13658-20-yong.wu@mediatek.com>
+Cc: devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ chengci.xu@mediatek.com, xueqi.zhang@mediatek.com,
+ linux-kernel@vger.kernel.org, libo.kang@mediatek.com,
+ yen-chang.chen@mediatek.com, iommu@lists.linux-foundation.org,
+ yf.wang@mediatek.com, linux-mediatek@lists.infradead.org,
+ Hsin-Yi Wang <hsinyi@chromium.org>, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, mingyuan.ma@mediatek.com,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -81,131 +85,22 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Mikko Perttunen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Mikko Perttunen <mperttunen@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The context bus is a "dummy" bus that contains struct devices that
-correspond to IOMMU contexts assigned through Host1x to processes.
+Il 17/02/22 12:34, Yong Wu ha scritto:
+> The power/clock of infra iommu is always on, and it doesn't have the
+> device link with the master devices, then the infra iommu device's pm
+> statua is not active, thus we add A PM_CLK_AO flag for infra iommu.
+> 
+> The tlb operation is a bit not clear in this file, Comment them in the
+> code here.
+> 
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 
-Even when host1x itself is built as a module, the bus is registered
-in built-in code so that the built-in ARM SMMU driver is able to
-reference it.
-
-Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
----
- drivers/gpu/Makefile               |  3 +--
- drivers/gpu/host1x/Kconfig         |  5 +++++
- drivers/gpu/host1x/Makefile        |  1 +
- drivers/gpu/host1x/context_bus.c   | 31 ++++++++++++++++++++++++++++++
- include/linux/host1x_context_bus.h | 15 +++++++++++++++
- 5 files changed, 53 insertions(+), 2 deletions(-)
- create mode 100644 drivers/gpu/host1x/context_bus.c
- create mode 100644 include/linux/host1x_context_bus.h
-
-diff --git a/drivers/gpu/Makefile b/drivers/gpu/Makefile
-index 835c88318cec..8997f0096545 100644
---- a/drivers/gpu/Makefile
-+++ b/drivers/gpu/Makefile
-@@ -2,7 +2,6 @@
- # drm/tegra depends on host1x, so if both drivers are built-in care must be
- # taken to initialize them in the correct order. Link order is the only way
- # to ensure this currently.
--obj-$(CONFIG_TEGRA_HOST1X)	+= host1x/
--obj-y			+= drm/ vga/
-+obj-y			+= host1x/ drm/ vga/
- obj-$(CONFIG_IMX_IPUV3_CORE)	+= ipu-v3/
- obj-$(CONFIG_TRACE_GPU_MEM)		+= trace/
-diff --git a/drivers/gpu/host1x/Kconfig b/drivers/gpu/host1x/Kconfig
-index 6815b4db17c1..1861a8180d3f 100644
---- a/drivers/gpu/host1x/Kconfig
-+++ b/drivers/gpu/host1x/Kconfig
-@@ -1,8 +1,13 @@
- # SPDX-License-Identifier: GPL-2.0-only
-+
-+config TEGRA_HOST1X_CONTEXT_BUS
-+	bool
-+
- config TEGRA_HOST1X
- 	tristate "NVIDIA Tegra host1x driver"
- 	depends on ARCH_TEGRA || (ARM && COMPILE_TEST)
- 	select DMA_SHARED_BUFFER
-+	select TEGRA_HOST1X_CONTEXT_BUS
- 	select IOMMU_IOVA
- 	help
- 	  Driver for the NVIDIA Tegra host1x hardware.
-diff --git a/drivers/gpu/host1x/Makefile b/drivers/gpu/host1x/Makefile
-index d2b6f7de0498..c891a3e33844 100644
---- a/drivers/gpu/host1x/Makefile
-+++ b/drivers/gpu/host1x/Makefile
-@@ -18,3 +18,4 @@ host1x-y = \
- 	hw/host1x07.o
- 
- obj-$(CONFIG_TEGRA_HOST1X) += host1x.o
-+obj-$(CONFIG_TEGRA_HOST1X_CONTEXT_BUS) += context_bus.o
-diff --git a/drivers/gpu/host1x/context_bus.c b/drivers/gpu/host1x/context_bus.c
-new file mode 100644
-index 000000000000..2625914f3c7d
---- /dev/null
-+++ b/drivers/gpu/host1x/context_bus.c
-@@ -0,0 +1,31 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (c) 2021, NVIDIA Corporation.
-+ */
-+
-+#include <linux/device.h>
-+#include <linux/of.h>
-+
-+struct bus_type host1x_context_device_bus_type = {
-+	.name = "host1x-context",
-+};
-+EXPORT_SYMBOL(host1x_context_device_bus_type);
-+
-+static int __init host1x_context_device_bus_init(void)
-+{
-+	int err;
-+
-+	if (!of_machine_is_compatible("nvidia,tegra186") &&
-+	    !of_machine_is_compatible("nvidia,tegra194") &&
-+	    !of_machine_is_compatible("nvidia,tegra234"))
-+		return 0;
-+
-+	err = bus_register(&host1x_context_device_bus_type);
-+	if (err < 0) {
-+		pr_err("bus type registration failed: %d\n", err);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+postcore_initcall(host1x_context_device_bus_init);
-diff --git a/include/linux/host1x_context_bus.h b/include/linux/host1x_context_bus.h
-new file mode 100644
-index 000000000000..72462737a6db
---- /dev/null
-+++ b/include/linux/host1x_context_bus.h
-@@ -0,0 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+/*
-+ * Copyright (c) 2021, NVIDIA Corporation. All rights reserved.
-+ */
-+
-+#ifndef __LINUX_HOST1X_CONTEXT_BUS_H
-+#define __LINUX_HOST1X_CONTEXT_BUS_H
-+
-+#include <linux/device.h>
-+
-+#ifdef CONFIG_TEGRA_HOST1X_CONTEXT_BUS
-+extern struct bus_type host1x_context_device_bus_type;
-+#endif
-+
-+#endif
--- 
-2.35.0
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
 _______________________________________________
 iommu mailing list
