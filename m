@@ -1,73 +1,83 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8B118C433F5
-	for <iommu@archiver.kernel.org>; Thu, 17 Feb 2022 11:40:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2F36DC433EF
+	for <iommu@archiver.kernel.org>; Fri, 18 Feb 2022 00:58:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 420D083DFF;
-	Thu, 17 Feb 2022 11:40:48 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 88AD041ECB;
+	Fri, 18 Feb 2022 00:58:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XwzTuNjUBvFw; Thu, 17 Feb 2022 11:40:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 3050683DEF;
-	Thu, 17 Feb 2022 11:40:47 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PsPQ5zlIxEgz; Fri, 18 Feb 2022 00:58:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id C990440A13;
+	Fri, 18 Feb 2022 00:58:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EA0D2C0021;
-	Thu, 17 Feb 2022 11:40:46 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B097EC000B
- for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:40:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9DF44C0011;
+	Fri, 18 Feb 2022 00:58:00 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A4B81C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 00:57:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 9F4ED6F6E2
- for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:40:45 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 9AC0041EBE
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 00:57:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mplsbVf2opsq for <iommu@lists.linux-foundation.org>;
- Thu, 17 Feb 2022 11:40:45 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id kD5KARmDL7ey for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Feb 2022 00:57:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp3.osuosl.org (Postfix) with ESMTPS id EA7AD6F6DB
- for <iommu@lists.linux-foundation.org>; Thu, 17 Feb 2022 11:40:44 +0000 (UTC)
-X-UUID: 703c41c94143403296040a888cc5b8dd-20220217
-X-UUID: 703c41c94143403296040a888cc5b8dd-20220217
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
- (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1646086001; Thu, 17 Feb 2022 19:40:42 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
- Thu, 17 Feb 2022 19:40:40 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 17 Feb 2022 19:40:39 +0800
-To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
- "Matthias Brugger" <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>
-Subject: [PATCH v5 34/34] iommu/mediatek: mt8195: Enable multi banks for infra
- iommu
-Date: Thu, 17 Feb 2022 19:34:53 +0800
-Message-ID: <20220217113453.13658-35-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220217113453.13658-1-yong.wu@mediatek.com>
-References: <20220217113453.13658-1-yong.wu@mediatek.com>
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 6D3C040A13
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 00:57:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1645145877; x=1676681877;
+ h=from:to:cc:subject:date:message-id:in-reply-to:
+ references:mime-version:content-transfer-encoding;
+ bh=f6wc9OlSg4rQokL1ZkwL4XG3KnhfZB89/WTbGAYuHAc=;
+ b=MWrAoK14nVfTLr8A+xobFnmBu2pU95d+y3tm9VZp9XJMgn+uergRXxoZ
+ lmbE0WlqDZAPjpqhQti83Alw5s8vdwiPkdrbzf0d4liGhLiSeCKaC5ejI
+ GNk6IB4s5GG+xQwkzsFrGnFjSdvRh3qQi3TBGAEK4xLKPtGKny4siTKaA
+ lSi1gme4l0ILDP23u/v3CdEGVMjlhzGUIOBlIPW4UkE/tee94BcF+rCA3
+ PzwpRWjI7/GW9URHAtuNQML11FN5y2J9rj9CnNvwiECLaowXR05CIkhtn
+ ZIAs34+/rqa4vJ7p/GVqEXSpdX0JGAzLnASlO4NxbDGrMrzDsiQ+XCRBd A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="234548567"
+X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; d="scan'208";a="234548567"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 17 Feb 2022 16:57:30 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; d="scan'208";a="637491059"
+Received: from allen-box.sh.intel.com ([10.239.159.118])
+ by orsmga004.jf.intel.com with ESMTP; 17 Feb 2022 16:57:23 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Joerg Roedel <joro@8bytes.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Bjorn Helgaas <bhelgaas@google.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>
+Subject: [PATCH v6 05/11] PCI: pci_stub: Set driver_managed_dma
+Date: Fri, 18 Feb 2022 08:55:15 +0800
+Message-Id: <20220218005521.172832-6-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220218005521.172832-1-baolu.lu@linux.intel.com>
+References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-X-MTK: N
-Cc: devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- chengci.xu@mediatek.com, xueqi.zhang@mediatek.com,
- linux-kernel@vger.kernel.org, libo.kang@mediatek.com,
- yen-chang.chen@mediatek.com, iommu@lists.linux-foundation.org,
- yf.wang@mediatek.com, linux-mediatek@lists.infradead.org,
- Hsin-Yi Wang <hsinyi@chromium.org>, anan.sun@mediatek.com,
- Robin Murphy <robin.murphy@arm.com>, mingyuan.ma@mediatek.com,
- linux-arm-kernel@lists.infradead.org, AngeloGioacchino
- Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
+ linux-pci@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Stuart Yoder <stuyoder@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Dan Williams <dan.j.williams@intel.com>, Cornelia Huck <cohuck@redhat.com>,
+ linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
+ iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,43 +90,42 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Yong Wu <yong.wu@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Enable the multi-bank functions for infra-iommu. We put PCIE in bank0
-and USB in the last bank(bank4). and we don't use the other banks
-currently, disable them.
+The current VFIO implementation allows pci-stub driver to be bound to
+a PCI device with other devices in the same IOMMU group being assigned
+to userspace. The pci-stub driver has no dependencies on DMA or the
+IOVA mapping of the device, but it does prevent the user from having
+direct access to the device, which is useful in some circumstances.
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+The pci_dma_configure() marks the iommu_group as containing only devices
+with kernel drivers that manage DMA. For compatibility with the VFIO
+usage, avoid this default behavior for the pci_stub. This allows the
+pci_stub still able to be used by the admin to block driver binding after
+applying the DMA ownership to VFIO.
+
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/mtk_iommu.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/pci/pci-stub.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index d3b6c80bf51a..d9ca9ffe404c 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1458,8 +1458,11 @@ static const struct mtk_iommu_plat_data mt8195_data_infra = {
- 			    MTK_IOMMU_TYPE_INFRA | IFA_IOMMU_PCIE_SUPPORT,
- 	.pericfg_comp_str = "mediatek,mt8195-pericfg_ao",
- 	.inv_sel_reg      = REG_MMU_INV_SEL_GEN2,
--	.banks_num        = 1,
--	.banks_enable     = {true},
-+	.banks_num	  = 5,
-+	.banks_enable     = {true, false, false, false, true},
-+	.banks_portmsk    = {[0] = GENMASK(19, 16),     /* PCIe */
-+			     [4] = GENMASK(31, 20),     /* USB */
-+			    },
- 	.iova_region      = single_domain,
- 	.iova_region_nr   = ARRAY_SIZE(single_domain),
+diff --git a/drivers/pci/pci-stub.c b/drivers/pci/pci-stub.c
+index e408099fea52..d1f4c1ce7bd1 100644
+--- a/drivers/pci/pci-stub.c
++++ b/drivers/pci/pci-stub.c
+@@ -36,6 +36,7 @@ static struct pci_driver stub_driver = {
+ 	.name		= "pci-stub",
+ 	.id_table	= NULL,	/* only dynamic id's */
+ 	.probe		= pci_stub_probe,
++	.driver_managed_dma = true,
  };
+ 
+ static int __init pci_stub_init(void)
 -- 
-2.18.0
+2.25.1
 
 _______________________________________________
 iommu mailing list
