@@ -1,62 +1,60 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DE7D2C433F5
-	for <iommu@archiver.kernel.org>; Fri, 18 Feb 2022 00:58:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 40D7EC43219
+	for <iommu@archiver.kernel.org>; Fri, 18 Feb 2022 00:58:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 9B6B8425AC;
+	by smtp3.osuosl.org (Postfix) with ESMTP id D514C60A7E;
+	Fri, 18 Feb 2022 00:58:29 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id C7-U-rBt23KN; Fri, 18 Feb 2022 00:58:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 9ABEB6F790;
 	Fri, 18 Feb 2022 00:58:28 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gfdY2ZpUXbG3; Fri, 18 Feb 2022 00:58:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 44EE24260F;
-	Fri, 18 Feb 2022 00:58:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 20F3AC0011;
-	Fri, 18 Feb 2022 00:58:27 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DB7BBC000B
- for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 00:58:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6C854C0070;
+	Fri, 18 Feb 2022 00:58:28 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C183EC000B
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 00:58:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id BC40B6F79D
- for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 00:58:25 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id B120460A7E
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 00:58:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LaLM6p6xqohb for <iommu@lists.linux-foundation.org>;
- Fri, 18 Feb 2022 00:58:25 +0000 (UTC)
+ with ESMTP id XrBG0svV2XPo for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Feb 2022 00:58:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by smtp3.osuosl.org (Postfix) with ESMTPS id E5B1D6F6FE
- for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 00:58:24 +0000 (UTC)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 1E6A6600B4
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 00:58:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1645145904; x=1676681904;
+ t=1645145907; x=1676681907;
  h=from:to:cc:subject:date:message-id:in-reply-to:
  references:mime-version:content-transfer-encoding;
- bh=7KOmZ+klU6/LDsWuLK/VaepbRn1CKPfgE908Jbrglpk=;
- b=YuQrvfNgiH5vuyUpdy1gWrm6zgV6nbDS0px2wqoiIEEbgqDZdUvcqqQT
- QWXjYbgTZ7LIZxY4HGJHGkluwT/vnvyjJrNe8UGZxqdsPtx0Z9SyTCBiX
- Q8GGbx3I+ThH4Xfqg4Nwiv/rD4fu8ERRRbKXxTUVSZSQbiFLjfyB47P51
- T/eIBDvW3ylUqeyt6mgWCrGfMqNJ/yuondXNblExg/e08iSdOwKEKTvca
- mRTzZxbLHW1/u6B2vp8vpNATyL7krTvQXtoB1Abi2nTuGXIMuZAbRA4Np
- VeuzrdHmbBsa280F2YbwwY1eiO+3DrmHuvp96+5a5htnOuj1gqzZbv3y6 g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="249852006"
-X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; d="scan'208";a="249852006"
+ bh=XVtrp5CXpsHCwBQycR6v9oNHcVdGH3D8kDHPzvy+WZQ=;
+ b=KvbAksedtig64Nm8niY7N59HRx84Y4VCeiBwYaLnRNRqdVD1yknhrZIk
+ lxIhMYl+rhTAEl4AgGVyxhURoDUaW3kJ8Rty0pJkyil5WlsXFNLJr0dS3
+ idbdz4jvu2MLy1/3/U9VR6LsrWwg2ySF6xj8eft/7R+PsZoQ3e4rtVDh+
+ fnt1v4oSHaBIE0GLnM1GP9mdyL5wlz1oGsUmJ+PqWyj1QhGlmOcwE6Uwi
+ zPzLKmH8sTP8+r5ObBWj9swMTVMssHAZN6PSlVc7OGiOBD7xIwd3bpA5z
+ oZzf0hkHo3RzEk77akFGm1EhaM5m4tg8gz4glYLgqJERZRQ9z8kB3TQVA g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10261"; a="231001120"
+X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; d="scan'208";a="231001120"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 17 Feb 2022 16:58:08 -0800
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 17 Feb 2022 16:57:16 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; d="scan'208";a="637491552"
+X-IronPort-AV: E=Sophos;i="5.88,377,1635231600"; d="scan'208";a="637490811"
 Received: from allen-box.sh.intel.com ([10.239.159.118])
- by orsmga004.jf.intel.com with ESMTP; 17 Feb 2022 16:58:00 -0800
+ by orsmga004.jf.intel.com with ESMTP; 17 Feb 2022 16:57:09 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Joerg Roedel <joro@8bytes.org>,
@@ -64,9 +62,9 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Bjorn Helgaas <bhelgaas@google.com>, Jason Gunthorpe <jgg@nvidia.com>,
  Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
  Ashok Raj <ashok.raj@intel.com>
-Subject: [PATCH v6 10/11] vfio: Remove iommu group notifier
-Date: Fri, 18 Feb 2022 08:55:20 +0800
-Message-Id: <20220218005521.172832-11-baolu.lu@linux.intel.com>
+Subject: [PATCH v6 03/11] amba: Stop sharing platform_dma_configure()
+Date: Fri, 18 Feb 2022 08:55:13 +0800
+Message-Id: <20220218005521.172832-4-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220218005521.172832-1-baolu.lu@linux.intel.com>
 References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
@@ -97,231 +95,87 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The iommu core and driver core have been enhanced to avoid unsafe driver
-binding to a live group after iommu_group_set_dma_owner(PRIVATE_USER)
-has been called. There's no need to register iommu group notifier. This
-removes the iommu group notifer which contains BUG_ON() and WARN().
-
-The commit 5f096b14d421b ("vfio: Whitelist PCI bridges") allowed all
-pcieport drivers to be bound with devices while the group is assigned to
-user space. This is not always safe. For example, The shpchp_core driver
-relies on the PCI MMIO access for the controller functionality. With its
-downstream devices assigned to the userspace, the MMIO might be changed
-through user initiated P2P accesses without any notification. This might
-break the kernel driver integrity and lead to some unpredictable
-consequences. As the result, currently we only allow the portdrv driver.
-
-For any bridge driver, in order to avoiding default kernel DMA ownership
-claiming, we should consider:
-
- 1) Does the bridge driver use DMA? Calling pci_set_master() or
-    a dma_map_* API is a sure indicate the driver is doing DMA
-
- 2) If the bridge driver uses MMIO, is it tolerant to hostile
-    userspace also touching the same MMIO registers via P2P DMA
-    attacks?
-
-Conservatively if the driver maps an MMIO region at all, we can say that
-it fails the test.
+Stop sharing platform_dma_configure() helper as they are about to have
+their own bus dma_configure callbacks.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/vfio/vfio.c | 147 --------------------------------------------
- 1 file changed, 147 deletions(-)
+ include/linux/platform_device.h |  2 --
+ drivers/amba/bus.c              | 19 ++++++++++++++++++-
+ drivers/base/platform.c         |  3 +--
+ 3 files changed, 19 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-index e0df2bc692b2..dd3fac0d6bc9 100644
---- a/drivers/vfio/vfio.c
-+++ b/drivers/vfio/vfio.c
-@@ -71,7 +71,6 @@ struct vfio_group {
- 	struct vfio_container		*container;
- 	struct list_head		device_list;
- 	struct mutex			device_lock;
--	struct notifier_block		nb;
- 	struct list_head		vfio_next;
- 	struct list_head		container_next;
- 	atomic_t			opened;
-@@ -274,8 +273,6 @@ void vfio_unregister_iommu_driver(const struct vfio_iommu_driver_ops *ops)
+diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
+index 7c96f169d274..17fde717df68 100644
+--- a/include/linux/platform_device.h
++++ b/include/linux/platform_device.h
+@@ -328,8 +328,6 @@ extern int platform_pm_restore(struct device *dev);
+ #define platform_pm_restore		NULL
+ #endif
+ 
+-extern int platform_dma_configure(struct device *dev);
+-
+ #ifdef CONFIG_PM_SLEEP
+ #define USE_PLATFORM_PM_SLEEP_OPS \
+ 	.suspend = platform_pm_suspend, \
+diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+index e1a5eca3ae3c..8392f4aa251b 100644
+--- a/drivers/amba/bus.c
++++ b/drivers/amba/bus.c
+@@ -20,6 +20,8 @@
+ #include <linux/platform_device.h>
+ #include <linux/reset.h>
+ #include <linux/of_irq.h>
++#include <linux/of_device.h>
++#include <linux/acpi.h>
+ 
+ #define to_amba_driver(d)	container_of(d, struct amba_driver, drv)
+ 
+@@ -273,6 +275,21 @@ static void amba_shutdown(struct device *dev)
+ 		drv->shutdown(to_amba_device(dev));
  }
- EXPORT_SYMBOL_GPL(vfio_unregister_iommu_driver);
  
--static int vfio_iommu_group_notifier(struct notifier_block *nb,
--				     unsigned long action, void *data);
- static void vfio_group_get(struct vfio_group *group);
- 
++static int amba_dma_configure(struct device *dev)
++{
++	enum dev_dma_attr attr;
++	int ret = 0;
++
++	if (dev->of_node) {
++		ret = of_dma_configure(dev, dev->of_node, true);
++	} else if (has_acpi_companion(dev)) {
++		attr = acpi_get_dma_attr(to_acpi_device_node(dev->fwnode));
++		ret = acpi_dma_configure(dev, attr);
++	}
++
++	return ret;
++}
++
+ #ifdef CONFIG_PM
  /*
-@@ -395,13 +392,6 @@ static struct vfio_group *vfio_create_group(struct iommu_group *iommu_group,
- 		goto err_put;
- 	}
- 
--	group->nb.notifier_call = vfio_iommu_group_notifier;
--	err = iommu_group_register_notifier(iommu_group, &group->nb);
--	if (err) {
--		ret = ERR_PTR(err);
--		goto err_put;
--	}
--
- 	mutex_lock(&vfio.group_lock);
- 
- 	/* Did we race creating this group? */
-@@ -422,7 +412,6 @@ static struct vfio_group *vfio_create_group(struct iommu_group *iommu_group,
- 
- err_unlock:
- 	mutex_unlock(&vfio.group_lock);
--	iommu_group_unregister_notifier(group->iommu_group, &group->nb);
- err_put:
- 	put_device(&group->dev);
- 	return ret;
-@@ -447,7 +436,6 @@ static void vfio_group_put(struct vfio_group *group)
- 	cdev_device_del(&group->cdev, &group->dev);
- 	mutex_unlock(&vfio.group_lock);
- 
--	iommu_group_unregister_notifier(group->iommu_group, &group->nb);
- 	put_device(&group->dev);
+  * Hooks to provide runtime PM of the pclk (bus clock).  It is safe to
+@@ -341,7 +358,7 @@ struct bus_type amba_bustype = {
+ 	.probe		= amba_probe,
+ 	.remove		= amba_remove,
+ 	.shutdown	= amba_shutdown,
+-	.dma_configure	= platform_dma_configure,
++	.dma_configure	= amba_dma_configure,
+ 	.pm		= &amba_pm,
+ };
+ EXPORT_SYMBOL_GPL(amba_bustype);
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index 6cb04ac48bf0..acbc6eae37b8 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -1454,8 +1454,7 @@ static void platform_shutdown(struct device *_dev)
+ 		drv->shutdown(dev);
  }
  
-@@ -503,141 +491,6 @@ static struct vfio_device *vfio_group_get_device(struct vfio_group *group,
- 	return NULL;
- }
- 
--/*
-- * Some drivers, like pci-stub, are only used to prevent other drivers from
-- * claiming a device and are therefore perfectly legitimate for a user owned
-- * group.  The pci-stub driver has no dependencies on DMA or the IOVA mapping
-- * of the device, but it does prevent the user from having direct access to
-- * the device, which is useful in some circumstances.
-- *
-- * We also assume that we can include PCI interconnect devices, ie. bridges.
-- * IOMMU grouping on PCI necessitates that if we lack isolation on a bridge
-- * then all of the downstream devices will be part of the same IOMMU group as
-- * the bridge.  Thus, if placing the bridge into the user owned IOVA space
-- * breaks anything, it only does so for user owned devices downstream.  Note
-- * that error notification via MSI can be affected for platforms that handle
-- * MSI within the same IOVA space as DMA.
-- */
--static const char * const vfio_driver_allowed[] = { "pci-stub" };
 -
--static bool vfio_dev_driver_allowed(struct device *dev,
--				    struct device_driver *drv)
--{
--	if (dev_is_pci(dev)) {
--		struct pci_dev *pdev = to_pci_dev(dev);
--
--		if (pdev->hdr_type != PCI_HEADER_TYPE_NORMAL)
--			return true;
--	}
--
--	return match_string(vfio_driver_allowed,
--			    ARRAY_SIZE(vfio_driver_allowed),
--			    drv->name) >= 0;
--}
--
--/*
-- * A vfio group is viable for use by userspace if all devices are in
-- * one of the following states:
-- *  - driver-less
-- *  - bound to a vfio driver
-- *  - bound to an otherwise allowed driver
-- *  - a PCI interconnect device
-- *
-- * We use two methods to determine whether a device is bound to a vfio
-- * driver.  The first is to test whether the device exists in the vfio
-- * group.  The second is to test if the device exists on the group
-- * unbound_list, indicating it's in the middle of transitioning from
-- * a vfio driver to driver-less.
-- */
--static int vfio_dev_viable(struct device *dev, void *data)
--{
--	struct vfio_group *group = data;
--	struct vfio_device *device;
--	struct device_driver *drv = READ_ONCE(dev->driver);
--
--	if (!drv || vfio_dev_driver_allowed(dev, drv))
--		return 0;
--
--	device = vfio_group_get_device(group, dev);
--	if (device) {
--		vfio_device_put(device);
--		return 0;
--	}
--
--	return -EINVAL;
--}
--
--/*
-- * Async device support
-- */
--static int vfio_group_nb_add_dev(struct vfio_group *group, struct device *dev)
--{
--	struct vfio_device *device;
--
--	/* Do we already know about it?  We shouldn't */
--	device = vfio_group_get_device(group, dev);
--	if (WARN_ON_ONCE(device)) {
--		vfio_device_put(device);
--		return 0;
--	}
--
--	/* Nothing to do for idle groups */
--	if (!atomic_read(&group->container_users))
--		return 0;
--
--	/* TODO Prevent device auto probing */
--	dev_WARN(dev, "Device added to live group %d!\n",
--		 iommu_group_id(group->iommu_group));
--
--	return 0;
--}
--
--static int vfio_group_nb_verify(struct vfio_group *group, struct device *dev)
--{
--	/* We don't care what happens when the group isn't in use */
--	if (!atomic_read(&group->container_users))
--		return 0;
--
--	return vfio_dev_viable(dev, group);
--}
--
--static int vfio_iommu_group_notifier(struct notifier_block *nb,
--				     unsigned long action, void *data)
--{
--	struct vfio_group *group = container_of(nb, struct vfio_group, nb);
--	struct device *dev = data;
--
--	switch (action) {
--	case IOMMU_GROUP_NOTIFY_ADD_DEVICE:
--		vfio_group_nb_add_dev(group, dev);
--		break;
--	case IOMMU_GROUP_NOTIFY_DEL_DEVICE:
--		/*
--		 * Nothing to do here.  If the device is in use, then the
--		 * vfio sub-driver should block the remove callback until
--		 * it is unused.  If the device is unused or attached to a
--		 * stub driver, then it should be released and we don't
--		 * care that it will be going away.
--		 */
--		break;
--	case IOMMU_GROUP_NOTIFY_BIND_DRIVER:
--		dev_dbg(dev, "%s: group %d binding to driver\n", __func__,
--			iommu_group_id(group->iommu_group));
--		break;
--	case IOMMU_GROUP_NOTIFY_BOUND_DRIVER:
--		dev_dbg(dev, "%s: group %d bound to driver %s\n", __func__,
--			iommu_group_id(group->iommu_group), dev->driver->name);
--		BUG_ON(vfio_group_nb_verify(group, dev));
--		break;
--	case IOMMU_GROUP_NOTIFY_UNBIND_DRIVER:
--		dev_dbg(dev, "%s: group %d unbinding from driver %s\n",
--			__func__, iommu_group_id(group->iommu_group),
--			dev->driver->name);
--		break;
--	}
--	return NOTIFY_OK;
--}
--
- /*
-  * VFIO driver API
-  */
+-int platform_dma_configure(struct device *dev)
++static int platform_dma_configure(struct device *dev)
+ {
+ 	enum dev_dma_attr attr;
+ 	int ret = 0;
 -- 
 2.25.1
 
