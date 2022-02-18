@@ -1,83 +1,79 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3EF9FC433F5
-	for <iommu@archiver.kernel.org>; Fri, 18 Feb 2022 08:22:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A4C3DC433EF
+	for <iommu@archiver.kernel.org>; Fri, 18 Feb 2022 08:41:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D44F66076C;
-	Fri, 18 Feb 2022 08:22:10 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 31A8041DB9;
+	Fri, 18 Feb 2022 08:41:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id q1Imhr_yldc4; Fri, 18 Feb 2022 08:22:10 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id KCawCiv-3wzY; Fri, 18 Feb 2022 08:41:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 9F7E7607D6;
-	Fri, 18 Feb 2022 08:22:09 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id B0AE141DB7;
+	Fri, 18 Feb 2022 08:41:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5F4AFC0011;
-	Fri, 18 Feb 2022 08:22:09 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 15016C000B
- for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 08:22:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 78DCCC0011;
+	Fri, 18 Feb 2022 08:41:47 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E9A92C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 08:41:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 02990607D6
- for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 08:22:08 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id CE2A140184
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 08:41:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FaKwtckitkvx for <iommu@lists.linux-foundation.org>;
- Fri, 18 Feb 2022 08:22:07 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com
- [IPv6:2607:f8b0:4864:20::e2b])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 519476076C
- for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 08:22:07 +0000 (UTC)
-Received: by mail-vs1-xe2b.google.com with SMTP id i27so9082743vsr.10
- for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 00:22:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=eMllH6SqtmgTmAnOJGaH+RpoEMH0PN5Is8QhFl+6HxM=;
- b=HL0wvkvGe2eP4np3H58p9xh104v5TkTJEGcm2ZjEC8IxhSg9P85EuQemODe8R9Tte0
- qkvcUJdoLwgX4yY24qQB9GWFnVgumjIpIhQIhMEESf15ibGXNnSr8c3k5r3+akfxI1/q
- 8YKI4SgITdEfG0fZZJgGMMvqFAIO/514sC/iXvoNojHOV8S30aCCjHMXawdsRNsnDPIR
- yBCWJAFuPbL0NS/r2wWaxWvXV8xM3fYGLgeKR54IqD6kk3hfgU84fDC+xfiaUNKO+15B
- lWjXVMyAfuQ4AQE9W29lJKd0DZL62Tc5YvksLasFXzg8R8tic3gM0t3DjM3EWeZqpkby
- O2Hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=eMllH6SqtmgTmAnOJGaH+RpoEMH0PN5Is8QhFl+6HxM=;
- b=G932X9B3Hxc9LvzOjLbVyR0z4b0HOmzhq2Szy6GnYjvTBhVvGsDJt4Sgg1P+ur4RUj
- KoDaytEb8jwijm87I3KK4wzybykAAJsahVzqh6k+1+eSFxz9+lUMDLRhb0PPYyjIVAbu
- 8fGgawXP2orI5X8ojFKzHLNODz0eyspm+bIDjQu45BgreeYgYS3xniPax83HJQC/zfM0
- SXuiGyp8vh3tnpyaKn+2ycp4sdFo9u1QJ0ZRfSKdd5Eg7i9RQZziMz5G2Rv7FgOYcF7b
- Y30deJ6m1eD91LifLOTzIzAXZpkayz6gHGwRwvX2HeWugKZlkMH7FDnV6+tFtPIiLMfs
- L7GQ==
-X-Gm-Message-State: AOAM533YfKYSMVLJueixXQDq22SiNTXBD4PEausLhYAVFQSx/Hck1wyF
- 3Cbc0tBDubg09as0f6ba4yC5TaWG5tO2Bhzi14E=
-X-Google-Smtp-Source: ABdhPJyCzfXvNtee5NBtD8m4thIouz/upC6brVCpl5NMEty8kQbjo0ufFCmtxWrnRxqYd+vLzCwWxODQf/SH3xyxQoY=
-X-Received: by 2002:a05:6102:38c9:b0:31b:e4b3:5106 with SMTP id
- k9-20020a05610238c900b0031be4b35106mr3080505vst.39.1645172525992; Fri, 18 Feb
- 2022 00:22:05 -0800 (PST)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=collabora.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id siuwDvHnjZWe for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Feb 2022 08:41:44 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 7C73D40147
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Feb 2022 08:41:44 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+ (Authenticated sender: kholk11) with ESMTPSA id 3F9AD1F4417B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+ s=mail; t=1645173701;
+ bh=y1MQQgamboxKWXR250aZ3v7J3tHKl044R2X9kxvJNdI=;
+ h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+ b=hryznIMs6S1YAgP5BqLwjtosco6cTHMhj8+u3FKZgapd5mLfncU7NthBVXO5JlV/K
+ uV3Y2xOjmgTMbN71Usw1XA6qLIlGbCLHg7Fb/4CxzQPdFGiVwcPLyhRRsp6xas6EoI
+ rt0DZ24LBHflRQEkcdLvCH4JYZwN/yFYchX0c96GaOHzYoroYIwuzhc7JrEXdNR4xQ
+ mqCZ1Ld8DDobZ6EniAvDXDGa6GjGor8eXqWhKJpOJi37BCg2wFuhw1lgfVW8BxIdr2
+ ZBCDZUBjSN/xOmGmP9h8SO3jzWdulFseuCCj71qC4MnDJ8jv40LOK/caehosqx4iKM
+ ZoQfCXpD9PUbQ==
+Message-ID: <a4e66e61-35c4-adb5-fb65-e1f076bbe6ba@collabora.com>
+Date: Fri, 18 Feb 2022 09:41:37 +0100
 MIME-Version: 1.0
-References: <20220216091307.703-1-adrianhuang0701@gmail.com>
- <989cf124-13d7-5601-a942-e515c81a72a9@linux.intel.com>
-In-Reply-To: <989cf124-13d7-5601-a942-e515c81a72a9@linux.intel.com>
-From: Huang Adrian <adrianhuang0701@gmail.com>
-Date: Fri, 18 Feb 2022 16:21:54 +0800
-Message-ID: <CAHKZfL0dx8HuuB1AqN3fkcHjPZDJMTfPqRgW4XnuFVE8Cw4iFQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] iommu/vt-d: Fix list_add double add when enabling
- VMD and scalable mode
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>,
- Nirmal Patel <nirmal.patel@linux.intel.com>, stable@vger.kernel.org,
- iommu@lists.linux-foundation.org, Adrian Huang <ahuang12@lenovo.com>,
- Jonathan Derrick <jonathan.derrick@linux.dev>,
- David Woodhouse <dwmw2@infradead.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH 2/2] iommu/mediatek: Add mt8186 iommu support
+Content-Language: en-US
+To: Yong Wu <yong.wu@mediatek.com>
+References: <20220125093244.18230-1-yong.wu@mediatek.com>
+ <20220125093244.18230-3-yong.wu@mediatek.com>
+ <b52a1df8-58f4-baa2-cfb6-9c56244caa0f@collabora.com>
+ <01cc69cdf7773962140c01fe37b12ab2c9491c25.camel@mediatek.com>
+ <0e430d1e-ee25-1b3d-4a2c-8641db255adb@collabora.com>
+ <8b63983222a4a304586a7b880379fcf4a7036c4a.camel@mediatek.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <8b63983222a4a304586a7b880379fcf4a7036c4a.camel@mediatek.com>
+Cc: yf.wang@mediatek.com, yen-chang.chen@mediatek.com,
+ Will Deacon <will@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ xueqi.zhang@mediatek.com, mingyuan.ma@mediatek.com, devicetree@vger.kernel.org,
+ chengci.xu@mediatek.com, libo.kang@mediatek.com,
+ Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
+ Hsin-Yi Wang <hsinyi@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ linux-arm-kernel@lists.infradead.org, anan.sun@mediatek.com,
+ srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,57 +86,96 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Feb 18, 2022 at 10:30 AM Lu Baolu <baolu.lu@linux.intel.com> wrote:
->
-> On 2/16/22 5:13 PM, Adrian Huang wrote:
-> > pci_real_dma_dev() in pci_for_each_dma_alias() gets the real dma device
-> > which is the VMD device 0000:59:00.5. However, pte of the VMD device
-> > 0000:59:00.5 has been configured during this message "pci 0000:59:00.5:
-> > Adding to iommu group 42". So, the status -EBUSY is returned when
-> > configuring pasid entry for device 10000:80:01.0.
->
-> So the VMD subdevice (pci 10000:80:01.0) is an alias device of the "pci
-> 0000:59:00.5", and it uses the Source-ID of "pci 0000:59:00.5" for DMA
-> transactions. Do I understand it right? If so, it makes sense to skip
-> setting up pasid entry for VMD subdevices.
+Il 18/02/22 04:32, Yong Wu ha scritto:
+> On Mon, 2022-01-31 at 10:25 +0100, AngeloGioacchino Del Regno wrote:
+>> Il 28/01/22 10:39, Yong Wu ha scritto:
+>>> On Thu, 2022-01-27 at 12:28 +0100, AngeloGioacchino Del Regno
+>>> wrote:
+>>>> Il 25/01/22 10:32, Yong Wu ha scritto:
+>>>>> Add mt8186 iommu supports.
+>>>>>
+>>>>> Signed-off-by: Anan Sun <anan.sun@mediatek.com>
+>>>>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+>>>>> ---
+>>>>>     drivers/iommu/mtk_iommu.c | 17 +++++++++++++++++
+>>>>>     1 file changed, 17 insertions(+)
+>>>
+>>> [snip]
+>>>
+>>>>>     static const struct mtk_iommu_plat_data mt8192_data = {
+>>>>>     	.m4u_plat       = M4U_MT8192,
+>>>>>     	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS |
+>>>>> OUT_ORDER_WR_EN |
+>>>>> @@ -1470,6 +1486,7 @@ static const struct of_device_id
+>>>>> mtk_iommu_of_ids[] = {
+>>>>>     	{ .compatible = "mediatek,mt8167-m4u", .data =
+>>>>> &mt8167_data},
+>>>>>     	{ .compatible = "mediatek,mt8173-m4u", .data =
+>>>>> &mt8173_data},
+>>>>>     	{ .compatible = "mediatek,mt8183-m4u", .data =
+>>>>> &mt8183_data},
+>>>>> +	{ .compatible = "mediatek,mt8186-iommu-mm", .data =
+>>>>> &mt8186_data_mm},
+>>>>
+>>>> Hello!
+>>>>
+>>>> Is there any particular reason why this compatible is not
+>>>> "mediatek,mt8186-m4u"?
+>>>
+>>> There is no special reason. In the previous SoC, We only support MM
+>>> IOMMU, it was called by "m4u". In the lastest SoC, We have the
+>>> other
+>>> types IOMMU, like for INFRA masters and APU, thus they are called
+>>> "mm
+>>> iommu", "infra iommu" and "apu iommu". Of course, "m4u" means "mm
+>>> iommu".
+>>>
+>>
+>> I suggest, at this point, to change it to "mediatek,mt8186-m4u" for
+>> naming
+>> consistency with the other bindings and to avoid any kind of
+>> confusion.
+> 
+> Understand. But we don't call it "m4u" anymore. I'd not like to use a
+> outdated name. For readable, I could add a comment like this:
+> 
+> { .compatible = "mediatek,mt8186-iommu-mm", xx}, /* iommu-mm: m4u */
+> 
+> Is this ok for you?
+> Thanks.
+> 
 
-Yes, your understanding is correct.
+Ok, go on with that.
 
-> Another thing I am still concerned is about the context entry setup.
-> What does the context entries look like for both VMD and subdevices
-> after domain_context_mapping() being called?
+Cheers,
+Angelo
 
-pasid_table in struct device_domain_info is NULL because the field
-pasid_table is configured in intel_pasid_alloc_table().
+>> Thank you!
+>>
+>>>>
+>>>> Thanks,
+>>>> Angelo
+>>>>
+>>>>>     	{ .compatible = "mediatek,mt8192-m4u", .data =
+>>>>> &mt8192_data},
+>>>>>     	{ .compatible = "mediatek,mt8195-iommu-infra", .data =
+>>>>> &mt8195_data_infra},
+>>>>>     	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data =
+>>>>> &mt8195_data_vdo},
+>>>>
+>>>> _______________________________________________
+>>>> Linux-mediatek mailing list
+>>>> Linux-mediatek@lists.infradead.org
+>>>> http://lists.infradead.org/mailman/listinfo/linux-mediatek
+>>
+>>
+> 
 
-The following statement in domain_context_mapping_one() is true for
-subdevices because the context is configured by the real VMD device
-0000:59:00.5. So, domain_context_mapping() does nothing for
-subdevices.
-                if (context_present(context))
-                              goto out_unlock;
-
-Here is the log for your reference with pr_debug() enabled.
-
-[   19.063445] pci 0000:59:00.5: Adding to iommu group 42
-...
-[   22.673502] DMAR: Set context mapping for 59:00.5
-..
-[   32.089696] vmd 0000:59:00.5: PCI host bridge to bus 10000:80
-[   32.119452] pci 10000:80:01.0: [8086:352a] type 01 class 0x060400
-[   32.126302] pci 10000:80:01.0: reg 0x10: [mem 0x00000000-0x0001ffff 64bit]
-[   32.134023] pci 10000:80:01.0: enabling Extended Tags
-[   32.139730] pci 10000:80:01.0: PME# supported from D0 D3hot D3cold
-[   32.160526] DMAR: Set context mapping for 59:00.5
-[   32.171090] pci 10000:80:01.0: Adding to iommu group 42
-...
-
--- Adrian
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
