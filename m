@@ -1,118 +1,76 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7B9DDC4167B
-	for <iommu@archiver.kernel.org>; Mon, 21 Feb 2022 10:54:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 97AF3C433EF
+	for <iommu@archiver.kernel.org>; Mon, 21 Feb 2022 11:18:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 138E8401C9;
-	Mon, 21 Feb 2022 10:54:08 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3198940291;
+	Mon, 21 Feb 2022 11:18:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 48R2-ydjcjE8; Mon, 21 Feb 2022 10:54:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id BA41340545;
-	Mon, 21 Feb 2022 10:54:05 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 6V97CLZjset8; Mon, 21 Feb 2022 11:18:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 9E250401B4;
+	Mon, 21 Feb 2022 11:18:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A739EC0084;
-	Mon, 21 Feb 2022 10:54:04 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6851DC0011
- for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 05:00:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 68C08C001A;
+	Mon, 21 Feb 2022 11:18:22 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E98A2C0011
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 11:18:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 56D6681431
- for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 05:00:55 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id C31DE60E05
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 11:18:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=amd.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id t5bIFu8xUmS0 for <iommu@lists.linux-foundation.org>;
- Mon, 21 Feb 2022 05:00:54 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com
- (mail-co1nam11on20620.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7eab::620])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 1EF038142F
- for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 05:00:54 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f+XiRQNnWZlypXeepPgilYxaoxynz+7rv5cKXQRXa8iIuErxUTpTkyy+OpRzlhjWwe4uVhblh/6h8UKq/1MsvRJuqYAIo73tiIy/PHHqeU26krfWM84inMNUiz1d+I02Lvf36jo/VaBFh1OAaPmu1UvHZnH59JhfDpaLd+Pgr+L0DcclxdlahGNEPpB+kIKT2HxC5lgpLHohK21wxHw9ZA+NW68Gs3Go2Nfo1QmVt1CF1ZItiQXnUJA9oSN3jOFWvyw71VMmPwvfFfveNM/pd8RZ8jss/m1vYjOaz9Svc0WZfetH9JcIyPcEIQvBmzGL6+4YJGaWPCnTeFH8UuSK+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OyhGL/e9IY5Csj5vKEa+2wbhNF7NoHXqVQHnNAgAmU4=;
- b=hb6RBwzy939bQ2uGjnyAqjFsQ+R4eAdEaufXu+VUZIO8jW5dXxSrUqXAd6xAvkUT7TLWUCu+Xlqklt/CnZ/3qs5SnCFyIGTc7CwCFnE+JjXcKKkjlzqYezcFjTLU9zkxpqI2ni/dHMNi6kpMD4DHhuQ5ii3/q9v9U6/dmeyBh9CFc/ORzDYtv3FsTyof/mjnqz9rP1lsWhv9Vx3EtBBMNFC+IizNsH4bI9YNX2w2QJ9u4kO/gTkx31pyjLX+ul2JlLd4+11M2pYFFeXUi9Ro6Fcfs0qKC/Rokw1VSrTQxCWd+eTlkc5cqqpbp6RvFBmsh9SfEN3IvkidrUQN9P07TQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OyhGL/e9IY5Csj5vKEa+2wbhNF7NoHXqVQHnNAgAmU4=;
- b=JOb+Lb2fcp9KQBrZ7mV07QIGujHimTDC6LWDky8hySBiLOd15x6trk4VHtjnYa9VGxjvpuN567Wradm4vXn+8Gz5z0dkMt4qTTBZtxUtp3ToA2GHLy92hzY/5TFyyJSwVNS61T/9iGt/sRBTa8DsIJbM5qBXzBUkLH9I75Aewck=
-Received: from BN9PR03CA0166.namprd03.prod.outlook.com (2603:10b6:408:f4::21)
- by DM6PR12MB3708.namprd12.prod.outlook.com (2603:10b6:5:1c5::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.17; Mon, 21 Feb
- 2022 05:00:50 +0000
-Received: from BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:f4:cafe::3f) by BN9PR03CA0166.outlook.office365.com
- (2603:10b6:408:f4::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.19 via Frontend
- Transport; Mon, 21 Feb 2022 05:00:50 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT049.mail.protection.outlook.com (10.13.177.157) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4995.15 via Frontend Transport; Mon, 21 Feb 2022 05:00:49 +0000
-Received: from kali.amdval.net (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Sun, 20 Feb
- 2022 23:00:47 -0600
-To: <joro@8bytes.org>, <iommu@lists.linux-foundation.org>
-Subject: [PATCH 5/5] iommu/amd: Improve amd_iommu_v2_exit()
-Date: Mon, 21 Feb 2022 10:29:16 +0530
-Message-ID: <20220221045916.19701-6-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220221045916.19701-1-vasant.hegde@amd.com>
-References: <20220221045916.19701-1-vasant.hegde@amd.com>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id oz-WAF-5SaPn for <iommu@lists.linux-foundation.org>;
+ Mon, 21 Feb 2022 11:18:19 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 24AE360DE5
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 11:18:18 +0000 (UTC)
+Received: from fraeml715-chm.china.huawei.com (unknown [172.18.147.201])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K2KWt6JfVz67xdt;
+ Mon, 21 Feb 2022 19:17:14 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml715-chm.china.huawei.com (10.206.15.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 21 Feb 2022 12:18:14 +0100
+Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 21 Feb
+ 2022 11:18:13 +0000
+Date: Mon, 21 Feb 2022 11:18:12 +0000
+To: Yicong Yang <yangyicong@hisilicon.com>
+Subject: Re: [PATCH v4 2/8] hwtracing: Add trace function support for
+ HiSilicon PCIe Tune and Trace device
+Message-ID: <20220221111812.00004c0f@Huawei.com>
+In-Reply-To: <20220221084307.33712-3-yangyicong@hisilicon.com>
+References: <20220221084307.33712-1-yangyicong@hisilicon.com>
+ <20220221084307.33712-3-yangyicong@hisilicon.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 249da55e-5e4c-45f1-96cf-08d9f4f720dc
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3708:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB370818079ACF5C9265818A5E873A9@DM6PR12MB3708.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4OXPZup9uKFObakAbWzNL9wMG+bd4IQPSPRoHTZNGR1wNGv1teTUKg67X8nxjg2J/y5Jf2VaDf+j5HGcsY/7jBk4NZzYvj5BJuUM9YI/DXL5IYzrh74wrrbvCPWT1oIjzLHnGsQ888uWNBAneE8p2hSH5Ub/Mgn94MmJvED0979jbKUir3u7GiXdWfxgpaCUkNyjr4InZ3iLdb2qG6JYa/inYz9IqVzCB3M0OZp8q1JdzNGg3D3bQ+/Bv4gdfFfN3s5TwMFJ5NupQ0NDG7/e7DJBEpkyTGw0TyZgrCTxlF+TAx9Xpb22x9h4ejzjZkeViObd5dDP1qvRpPk2hHXQlFgnC8BiaU9f6VAo0pi29pUv+Lkboqi1tDeE7ndG5ILEoS5hNK7UdfMJcUYf9367LgwISXVFZkzMl1eRrf+E/Sy49f7lF7oKCJmAZW+myGnkCCDo04nf+IEFRAPLCkJp/EVZnRCE+xl+CAD6AHPqqiHZFqFpIyqQR0TOC9+5GajI6yAr0eNWIYxFix2lVjCBfMrRQCr24fOEMh6TaF1bipqCaea0npeEZvxRsB4c17qmoe074j4vnZmlvjORyGGhc9NWD8j4yaOssI8JmfCBTUXlO6wQzg7+eeZs7V8QdKEFiWBGwGXQOiJ2nPf5xTIS938B+8w6fpQJU+sDT0yS164seD1sgPdjMOoLqbJXycjSIG8ltash9S91oUnhx1vSEA==
-X-Forefront-Antispam-Report: CIP:165.204.84.17; CTRY:US; LANG:en; SCL:1; SRV:;
- IPV:CAL; SFV:NSPM; H:SATLEXMB04.amd.com; PTR:InfoDomainNonexistent; CAT:NONE;
- SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(47076005)(2906002)(26005)(426003)(16526019)(336012)(186003)(81166007)(1076003)(2616005)(356005)(36756003)(5660300002)(44832011)(40460700003)(8936002)(54906003)(4326008)(70206006)(82310400004)(508600001)(70586007)(110136005)(6666004)(8676002)(83380400001)(36860700001)(86362001)(316002)(36900700001);
- DIR:OUT; SFP:1101; 
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Feb 2022 05:00:49.4281 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 249da55e-5e4c-45f1-96cf-08d9f4f720dc
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d; Ip=[165.204.84.17];
- Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3708
-X-Mailman-Approved-At: Mon, 21 Feb 2022 10:54:02 +0000
-Cc: Vasant Hegde <vasant.hegde@amd.com>
+X-Originating-IP: [10.202.226.41]
+X-ClientProxiedBy: lhreml732-chm.china.huawei.com (10.201.108.83) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
+Cc: mark.rutland@arm.com, prime.zeng@huawei.com,
+ alexander.shishkin@linux.intel.com, linux-pci@vger.kernel.org,
+ linuxarm@huawei.com, will@kernel.org, daniel.thompson@linaro.org,
+ peterz@infradead.org, mingo@redhat.com, helgaas@kernel.org,
+ liuqi115@huawei.com, mike.leach@linaro.org, suzuki.poulose@arm.com,
+ coresight@lists.linaro.org, acme@kernel.org, zhangshaokun@hisilicon.com,
+ linux-arm-kernel@lists.infradead.org, mathieu.poirier@linaro.org,
+ gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+ linux-perf-users@vger.kernel.org, iommu@lists.linux-foundation.org,
+ leo.yan@linaro.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -125,112 +83,333 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Vasant Hegde via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Vasant Hegde <vasant.hegde@amd.com>
+From: Jonathan Cameron via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+On Mon, 21 Feb 2022 16:43:01 +0800
+Yicong Yang <yangyicong@hisilicon.com> wrote:
 
-During module exit, the current logic loops through all possible
-16-bit device ID space to search for existing devices and clean up
-device state structures. This can be simplified by looping through
-the device state list.
+> HiSilicon PCIe tune and trace device(PTT) is a PCIe Root Complex
+> integrated Endpoint(RCiEP) device, providing the capability
+> to dynamically monitor and tune the PCIe traffic, and trace
+> the TLP headers.
+> 
+> Add the driver for the device to enable the trace function.
+> This patch adds basic function of trace, including the device's
+> probe and initialization, functions for trace buffer allocation
+> and trace enable/disable, register an interrupt handler to
+> simply response to the DMA events. The user interface of trace
+> will be added in the following patch.
+> 
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
 
-Also, refactor various clean up logic into free_device_state()
-for better reusability.
+Hi Yicong,
 
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/iommu_v2.c | 34 +++++++++++++++++-----------------
- 1 file changed, 17 insertions(+), 17 deletions(-)
+A few really minor things inline, particularly one place
+where you can improve the error handling.
+It's always fiddly to handle errors in a pci_walk_bus() but
+in this case it's not too difficult as you just need to store
+the retval somewhere in the private data then retrieve it
+after the pci_walk_bus() call.
 
-diff --git a/drivers/iommu/amd/iommu_v2.c b/drivers/iommu/amd/iommu_v2.c
-index 2daf37c21b85..c72969ac4956 100644
---- a/drivers/iommu/amd/iommu_v2.c
-+++ b/drivers/iommu/amd/iommu_v2.c
-@@ -24,7 +24,6 @@
- MODULE_LICENSE("GPL v2");
- MODULE_AUTHOR("Joerg Roedel <jroedel@suse.de>");
- 
--#define MAX_DEVICES		0x10000
- #define PRI_QUEUE_SIZE		512
- 
- struct pri_queue {
-@@ -124,6 +123,15 @@ static void free_device_state(struct device_state *dev_state)
- {
- 	struct iommu_group *group;
- 
-+	/* Get rid of any remaining pasid states */
-+	free_pasid_states(dev_state);
-+
-+	/*
-+	 * Wait until the last reference is dropped before freeing
-+	 * the device state.
-+	 */
-+	wait_event(dev_state->wq, !atomic_read(&dev_state->count));
-+
- 	/*
- 	 * First detach device from domain - No more PRI requests will arrive
- 	 * from that device after it is unbound from the IOMMUv2 domain.
-@@ -849,15 +857,7 @@ void amd_iommu_free_device(struct pci_dev *pdev)
- 
- 	spin_unlock_irqrestore(&state_lock, flags);
- 
--	/* Get rid of any remaining pasid states */
--	free_pasid_states(dev_state);
--
- 	put_device_state(dev_state);
--	/*
--	 * Wait until the last reference is dropped before freeing
--	 * the device state.
--	 */
--	wait_event(dev_state->wq, !atomic_read(&dev_state->count));
- 	free_device_state(dev_state);
- }
- EXPORT_SYMBOL(amd_iommu_free_device);
-@@ -954,8 +954,8 @@ static int __init amd_iommu_v2_init(void)
- 
- static void __exit amd_iommu_v2_exit(void)
- {
--	struct device_state *dev_state;
--	int i;
-+	struct device_state *dev_state, *next;
-+	unsigned long flags;
- 
- 	if (!amd_iommu_v2_supported())
- 		return;
-@@ -968,18 +968,18 @@ static void __exit amd_iommu_v2_exit(void)
- 	 * The loop below might call flush_workqueue(), so call
- 	 * destroy_workqueue() after it
- 	 */
--	for (i = 0; i < MAX_DEVICES; ++i) {
--		dev_state = get_device_state(i);
--
--		if (dev_state == NULL)
--			continue;
-+	spin_lock_irqsave(&state_lock, flags);
- 
-+	list_for_each_entry_safe(dev_state, next, &state_list, list) {
- 		WARN_ON_ONCE(1);
- 
- 		put_device_state(dev_state);
--		amd_iommu_free_device(dev_state->pdev);
-+		list_del(&dev_state->list);
-+		free_device_state(dev_state);
- 	}
- 
-+	spin_unlock_irqrestore(&state_lock, flags);
-+
- 	destroy_workqueue(iommu_wq);
- }
- 
--- 
-2.27.0
+Thanks,
 
+Jonathan
+
+
+
+> ---
+>  drivers/Makefile                 |   1 +
+>  drivers/hwtracing/Kconfig        |   2 +
+>  drivers/hwtracing/ptt/Kconfig    |  11 +
+>  drivers/hwtracing/ptt/Makefile   |   2 +
+>  drivers/hwtracing/ptt/hisi_ptt.c | 370 +++++++++++++++++++++++++++++++
+>  drivers/hwtracing/ptt/hisi_ptt.h | 149 +++++++++++++
+>  6 files changed, 535 insertions(+)
+>  create mode 100644 drivers/hwtracing/ptt/Kconfig
+>  create mode 100644 drivers/hwtracing/ptt/Makefile
+>  create mode 100644 drivers/hwtracing/ptt/hisi_ptt.c
+>  create mode 100644 drivers/hwtracing/ptt/hisi_ptt.h
+> 
+> diff --git a/drivers/Makefile b/drivers/Makefile
+> index a110338c860c..ab3411e4eba5 100644
+> --- a/drivers/Makefile
+> +++ b/drivers/Makefile
+> @@ -175,6 +175,7 @@ obj-$(CONFIG_USB4)		+= thunderbolt/
+>  obj-$(CONFIG_CORESIGHT)		+= hwtracing/coresight/
+>  obj-y				+= hwtracing/intel_th/
+>  obj-$(CONFIG_STM)		+= hwtracing/stm/
+> +obj-$(CONFIG_HISI_PTT)		+= hwtracing/ptt/
+>  obj-$(CONFIG_ANDROID)		+= android/
+>  obj-$(CONFIG_NVMEM)		+= nvmem/
+>  obj-$(CONFIG_FPGA)		+= fpga/
+> diff --git a/drivers/hwtracing/Kconfig b/drivers/hwtracing/Kconfig
+> index 13085835a636..911ee977103c 100644
+> --- a/drivers/hwtracing/Kconfig
+> +++ b/drivers/hwtracing/Kconfig
+> @@ -5,4 +5,6 @@ source "drivers/hwtracing/stm/Kconfig"
+>  
+>  source "drivers/hwtracing/intel_th/Kconfig"
+>  
+> +source "drivers/hwtracing/ptt/Kconfig"
+> +
+>  endmenu
+> diff --git a/drivers/hwtracing/ptt/Kconfig b/drivers/hwtracing/ptt/Kconfig
+> new file mode 100644
+> index 000000000000..41fa83921a07
+> --- /dev/null
+> +++ b/drivers/hwtracing/ptt/Kconfig
+> @@ -0,0 +1,11 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +config HISI_PTT
+> +	tristate "HiSilicon PCIe Tune and Trace Device"
+> +	depends on ARM64 && PCI && HAS_DMA && HAS_IOMEM
+> +	help
+> +	  HiSilicon PCIe Tune and Trace Device exists as a PCIe RCiEP
+> +	  device, and it provides support for PCIe traffic tuning and
+> +	  tracing TLP headers to the memory.
+> +
+> +	  This driver can also be built as a module. If so, the module
+> +	  will be called hisi_ptt.
+> diff --git a/drivers/hwtracing/ptt/Makefile b/drivers/hwtracing/ptt/Makefile
+> new file mode 100644
+> index 000000000000..908c09a98161
+> --- /dev/null
+> +++ b/drivers/hwtracing/ptt/Makefile
+> @@ -0,0 +1,2 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +obj-$(CONFIG_HISI_PTT) += hisi_ptt.o
+> diff --git a/drivers/hwtracing/ptt/hisi_ptt.c b/drivers/hwtracing/ptt/hisi_ptt.c
+> new file mode 100644
+> index 000000000000..a5b4f09ccd1e
+> --- /dev/null
+> +++ b/drivers/hwtracing/ptt/hisi_ptt.c
+> @@ -0,0 +1,370 @@
+
+...
+
+> +static void hisi_ptt_free_trace_buf(struct hisi_ptt *hisi_ptt)
+> +{
+> +	struct hisi_ptt_trace_ctrl *ctrl = &hisi_ptt->trace_ctrl;
+> +	struct device *dev = &hisi_ptt->pdev->dev;
+> +	int i;
+> +
+> +	if (!ctrl->trace_buf)
+> +		return;
+> +
+> +	for (i = 0; i < HISI_PTT_TRACE_BUF_CNT; i++)
+> +		if (ctrl->trace_buf[i].addr)
+> +			dma_free_coherent(dev, HISI_PTT_TRACE_BUF_SIZE,
+> +					  ctrl->trace_buf[i].addr,
+> +					  ctrl->trace_buf[i].dma);
+> +
+> +	kfree(ctrl->trace_buf);
+> +	ctrl->trace_buf = NULL;
+> +}
+> +
+> +static int hisi_ptt_alloc_trace_buf(struct hisi_ptt *hisi_ptt)
+> +{
+> +	struct hisi_ptt_trace_ctrl *ctrl = &hisi_ptt->trace_ctrl;
+> +	struct device *dev = &hisi_ptt->pdev->dev;
+> +	int i;
+> +
+> +	hisi_ptt->trace_ctrl.buf_index = 0;
+> +
+> +	/* If the trace buffer has already been allocated, zero it. */
+> +	if (ctrl->trace_buf) {
+> +		for (i = 0; i < HISI_PTT_TRACE_BUF_CNT; i++)
+> +			memset(ctrl->trace_buf[i].addr, 0, HISI_PTT_TRACE_BUF_SIZE);
+> +		return 0;
+> +	}
+> +
+> +	ctrl->trace_buf = kcalloc(HISI_PTT_TRACE_BUF_CNT, sizeof(struct hisi_ptt_dma_buffer),
+
+Slight preference for sizeof(*ctrl->trace_buf) as it saves a reviewer from scrolling down
+to check the type is correct.
+
+> +				  GFP_KERNEL);
+> +	if (!ctrl->trace_buf)
+> +		return -ENOMEM;
+> +
+> +	for (i = 0; i < HISI_PTT_TRACE_BUF_CNT; ++i) {
+> +		ctrl->trace_buf[i].addr = dma_alloc_coherent(dev, HISI_PTT_TRACE_BUF_SIZE,
+> +							     &ctrl->trace_buf[i].dma,
+> +							     GFP_KERNEL);
+> +		if (!ctrl->trace_buf[i].addr) {
+> +			hisi_ptt_free_trace_buf(hisi_ptt);
+> +			return -ENOMEM;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+
+...
+
+> +
+> +static int hisi_ptt_init_filters(struct pci_dev *pdev, void *data)
+> +{
+> +	struct hisi_ptt_filter_desc *filter;
+> +	struct hisi_ptt *hisi_ptt = data;
+> +	struct list_head *target_list;
+> +
+> +	target_list = pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT ?
+> +		      &hisi_ptt->port_filters : &hisi_ptt->req_filters;
+> +
+> +	filter = kzalloc(sizeof(*filter), GFP_KERNEL);
+> +	if (!filter)
+
+As below, if this happens we'll be left in an odd intermediate state
+where the error is not communicated up to the probe function but the
+filters are only partly set up.
+
+> +		return -ENOMEM;
+> +
+> +	filter->pdev = pdev;
+> +	list_add_tail(&filter->list, target_list);
+> +
+> +	/* Update the available port mask */
+> +	if (pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT)
+> +		hisi_ptt->port_mask |= hisi_ptt_get_filter_val(pdev);
+> +
+> +	return 0;
+> +}
+> +
+> +static void hisi_ptt_release_filters(struct hisi_ptt *hisi_ptt)
+> +{
+> +	struct hisi_ptt_filter_desc *filter, *tfilter;
+> +
+> +	list_for_each_entry_safe(filter, tfilter, &hisi_ptt->req_filters, list) {
+> +		list_del(&filter->list);
+> +		kfree(filter);
+> +	}
+> +
+> +	list_for_each_entry_safe(filter, tfilter, &hisi_ptt->port_filters, list) {
+> +		list_del(&filter->list);
+> +		kfree(filter);
+> +	}
+> +}
+> +
+> +static void hisi_ptt_init_ctrls(struct hisi_ptt *hisi_ptt)
+> +{
+> +	struct pci_dev *pdev = hisi_ptt->pdev;
+> +	struct pci_bus *bus;
+> +	u32 reg;
+> +
+> +	INIT_LIST_HEAD(&hisi_ptt->port_filters);
+> +	INIT_LIST_HEAD(&hisi_ptt->req_filters);
+> +
+> +	/*
+> +	 * The device range register provides the information about the
+> +	 * root ports which the RCiEP can control and trace. The RCiEP
+> +	 * and the root ports it support are on the same PCIe core, with
+> +	 * same domain number but maybe different bus number. The device
+> +	 * range register will tell us which root ports we can support,
+> +	 * Bit[31:16] indicates the upper BDF numbers of the root port,
+> +	 * while Bit[15:0] indicates the lower.
+> +	 */
+> +	reg = readl(hisi_ptt->iobase + HISI_PTT_DEVICE_RANGE);
+> +	hisi_ptt->upper = FIELD_GET(HISI_PTT_DEVICE_RANGE_UPPER, reg);
+> +	hisi_ptt->lower = FIELD_GET(HISI_PTT_DEVICE_RANGE_LOWER, reg);
+> +
+> +	bus = pci_find_bus(pci_domain_nr(pdev->bus), PCI_BUS_NUM(hisi_ptt->upper));
+> +	if (bus)
+> +		pci_walk_bus(bus, hisi_ptt_init_filters, hisi_ptt);
+
+Error handling needed for the hisi_ptt_init_filters call though that will require
+placing a retval somewhere in hisi_ptt so we can know there was an error.
+
+> +
+> +	hisi_ptt->trace_ctrl.default_cpu = cpumask_first(cpumask_of_node(dev_to_node(&pdev->dev)));
+> +}
+> +
+> +/*
+> + * The DMA of PTT trace can only use direct mapping, due to some
+> + * hardware restriction. Check whether there is an IOMMU or the
+> + * policy of the IOMMU domain is passthrough, otherwise the trace
+> + * cannot work.
+> + *
+> + * The PTT device is supposed to behind the ARM SMMUv3, which
+> + * should have passthrough the device by a quirk.
+
+Trivial but perhaps a clearer wording is:
+
+The PTT Device is behind an ARM SMMUv3 which should be set to
+passthrough for this device using a quirk.
+
+
+> + */
+> +static int hisi_ptt_check_iommu_mapping(struct pci_dev *pdev)
+> +{
+> +	struct iommu_domain *iommu_domain;
+> +
+> +	iommu_domain = iommu_get_domain_for_dev(&pdev->dev);
+> +	if (!iommu_domain || iommu_domain->type == IOMMU_DOMAIN_IDENTITY)
+> +		return 0;
+> +
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +static int hisi_ptt_probe(struct pci_dev *pdev,
+> +			  const struct pci_device_id *id)
+> +{
+> +	struct hisi_ptt *hisi_ptt;
+> +	int ret;
+> +
+> +	ret = hisi_ptt_check_iommu_mapping(pdev);
+> +	if (ret) {
+> +		pci_err(pdev, "cannot work with non-direct DMA mapping.\n");
+> +		return ret;
+> +	}
+> +
+> +	hisi_ptt = devm_kzalloc(&pdev->dev, sizeof(*hisi_ptt), GFP_KERNEL);
+> +	if (!hisi_ptt)
+> +		return -ENOMEM;
+> +
+> +	mutex_init(&hisi_ptt->mutex);
+> +	hisi_ptt->pdev = pdev;
+> +	pci_set_drvdata(pdev, hisi_ptt);
+> +
+> +	ret = pcim_enable_device(pdev);
+> +	if (ret) {
+> +		pci_err(pdev, "failed to enable device, ret = %d.\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = pcim_iomap_regions(pdev, BIT(2), DRV_NAME);
+> +	if (ret) {
+> +		pci_err(pdev, "failed to remap io memory, ret = %d.\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	hisi_ptt->iobase = pcim_iomap_table(pdev)[2];
+> +
+> +	ret = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
+> +	if (ret) {
+> +		pci_err(pdev, "failed to set 64 bit dma mask, ret = %d.\n", ret);
+> +		return ret;
+> +	}
+> +	pci_set_master(pdev);
+> +
+> +	ret = hisi_ptt_register_irq(hisi_ptt);
+> +	if (ret)
+> +		return ret;
+> +
+> +	hisi_ptt_init_ctrls(hisi_ptt);
+
+There are some elements of this call that can fail so probably should return an
+error code an have appropriate cleanup in here.
+
+> +
+> +	return 0;
+> +}
+
+...
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
