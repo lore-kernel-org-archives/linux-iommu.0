@@ -4,80 +4,80 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D6D17C433FE
-	for <iommu@archiver.kernel.org>; Mon, 21 Feb 2022 03:39:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1FE70C433EF
+	for <iommu@archiver.kernel.org>; Mon, 21 Feb 2022 04:03:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 66EAA40018;
-	Mon, 21 Feb 2022 03:39:54 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id A997540018;
+	Mon, 21 Feb 2022 04:03:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Ty7_hJoufnO7; Mon, 21 Feb 2022 03:39:53 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1DEA9404D7;
-	Mon, 21 Feb 2022 03:39:53 +0000 (UTC)
+	with ESMTP id Ipm3OdrtKZnq; Mon, 21 Feb 2022 04:03:35 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 69916400D7;
+	Mon, 21 Feb 2022 04:03:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E6146C0033;
-	Mon, 21 Feb 2022 03:39:52 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DFF4DC001A
- for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 03:39:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2FE8AC0033;
+	Mon, 21 Feb 2022 04:03:35 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D6E90C001A
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 04:03:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id BEE92402C3
- for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 03:39:51 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id BD8A7607C9
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 04:03:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TBcJ7h1jcm2D for <iommu@lists.linux-foundation.org>;
- Mon, 21 Feb 2022 03:39:50 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id O1fZDweNxmb8 for <iommu@lists.linux-foundation.org>;
+ Mon, 21 Feb 2022 04:03:32 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 7B286402B1
- for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 03:39:50 +0000 (UTC)
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 855C360087
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 04:03:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1645414790; x=1676950790;
+ t=1645416212; x=1676952212;
  h=message-id:date:mime-version:cc:subject:to:references:
  from:in-reply-to:content-transfer-encoding;
- bh=60/MPdEQofHhnUr7veVOqJ/oCjaVN9C6ovq/oXXWh9A=;
- b=UHr1P9ih8WOjUbFc9VDcuGLkfnLkGSBabapLrSt03WXxGooRHsRKVwrf
- mqXr5JI95Es90tiaDFf866fsAIVVjVoJKlvm0bG97PPnkSD0L5qf3ubuN
- Cwi3VaLD7HKQstiJNjNOmf1SRBa8SzwNVTqgpIPFKkVf2YXMewI6BcPHY
- kJV7YbeFVIvHL8+ytc2FAfyVLeZ/S6CqjWoXqLm8se8/JpTgYDpiZYXMH
- GrEPSaKUc3oSNdjLrllwLRF3tjEyyrsrvhvhW41LS6tCe0sZMBzj3fe1j
- os9y3D2wA35Z0wtEvKt6YMO63kXX+PzlcLa5rcO35VxpW1INR/iXvafy7 g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="238841801"
-X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; d="scan'208";a="238841801"
+ bh=a8s6oPn2OepoA76s//VWNsP4UZFDI+9oeHKC9k5AQGM=;
+ b=M/HWzCybvLl4fVSsSHXzBFMOejqsHoIpnejBmbC63ebvvpFfRWaBfo0y
+ RowkODqI9IL8q4lONkg5x3YmZgh/Cphv2ieXocCEjEEI0gnUg5lRKAoQI
+ uw6tJdmJCwyC5V3xXqedLFwJbnogxO4uoKGafr5liQ0rNSLJzTiSzE8RA
+ dzVKfDNrQ/bA0CAZz859yo2lCdIfqTIbYFCROhNEe46wud9vCSVT2sTkO
+ sVNFz2Pd1V/kO8NuvcHnXRGuQ0y9WJmRC6Lf93PTa7t/R6S9OJvri7kHJ
+ ek4OXwrdIwFfe6VyaXJBdaOHP7PQSj39JvjzqupVKD0156Ht4zuqWqWXB g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10264"; a="249010546"
+X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; d="scan'208";a="249010546"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 20 Feb 2022 19:39:49 -0800
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 20 Feb 2022 20:03:31 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; d="scan'208";a="683075535"
+X-IronPort-AV: E=Sophos;i="5.88,384,1635231600"; d="scan'208";a="683079024"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
  ([10.239.159.118])
- by fmsmga001.fm.intel.com with ESMTP; 20 Feb 2022 19:39:42 -0800
-Message-ID: <48fbee94-6726-de98-5161-877c80073ac8@linux.intel.com>
-Date: Mon, 21 Feb 2022 11:38:17 +0800
+ by fmsmga001.fm.intel.com with ESMTP; 20 Feb 2022 20:03:25 -0800
+Message-ID: <97485ead-2570-2782-8766-9a4d8c4c8535@linux.intel.com>
+Date: Mon, 21 Feb 2022 12:02:00 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v6 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
+Subject: Re: [PATCH v6 01/11] iommu: Add dma ownership management interfaces
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
+To: Christoph Hellwig <hch@infradead.org>
 References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
- <20220218155121.GU4160@nvidia.com>
+ <20220218005521.172832-2-baolu.lu@linux.intel.com>
+ <YhCc6dKyojInJe7u@infradead.org>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220218155121.GU4160@nvidia.com>
-Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
- David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
- Thierry Reding <thierry.reding@gmail.com>,
+In-Reply-To: <YhCc6dKyojInJe7u@infradead.org>
+Cc: kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
+ linux-pci@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
  Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
  Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Stuart Yoder <stuyoder@gmail.com>,
  Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+ Jason Gunthorpe <jgg@nvidia.com>, Alex Williamson <alex.williamson@redhat.com>,
  Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
@@ -101,32 +101,40 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2/18/22 11:51 PM, Jason Gunthorpe wrote:
-> On Fri, Feb 18, 2022 at 08:55:10AM +0800, Lu Baolu wrote:
->> Hi folks,
->>
->> The iommu group is the minimal isolation boundary for DMA. Devices in
->> a group can access each other's MMIO registers via peer to peer DMA
->> and also need share the same I/O address space.
->>
->> Once the I/O address space is assigned to user control it is no longer
->> available to the dma_map* API, which effectively makes the DMA API
->> non-working.
->>
->> Second, userspace can use DMA initiated by a device that it controls
->> to access the MMIO spaces of other devices in the group. This allows
->> userspace to indirectly attack any kernel owned device and it's driver.
-> This series has changed quite a lot since v1 - but I couldn't spot
-> anything wrong with this. It is a small incremental step and I think
-> it is fine now, so
+On 2/19/22 3:31 PM, Christoph Hellwig wrote:
+> The overall API and patch looks fine, but:
 > 
-> Reviewed-by: Jason Gunthorpe<jgg@nvidia.com>
+>> + * iommu_group_dma_owner_claimed() - Query group dma ownership status
+>> + * @group: The group.
+>> + *
+>> + * This provides status query on a given group. It is racey and only for
+>> + * non-binding status reporting.
 > 
-> I hope you continue to work on the "Scrap iommu_attach/detach_group()
-> interfaces" series and try to minimize all the special places testing
-> against the default domain
+> s/racey/racy/
 
-Sure.
+Yes.
+
+> 
+>> + */
+>> +bool iommu_group_dma_owner_claimed(struct iommu_group *group)
+>> +{
+>> +	unsigned int user;
+>> +
+>> +	mutex_lock(&group->mutex);
+>> +	user = group->owner_cnt;
+>> +	mutex_unlock(&group->mutex);
+>> +
+>> +	return user;
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
+> 
+> Still no no need for the lock here.
+
+We've discussed this before. I tend to think that is right.
+
+We don't lose anything with this lock held and it also follows the rule
+that all accesses to the internal group structure must be done with the
+group->mutex held.
 
 Best regards,
 baolu
