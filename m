@@ -1,78 +1,75 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id F16F0C433EF
-	for <iommu@archiver.kernel.org>; Mon, 21 Feb 2022 11:38:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4D1C3C433EF
+	for <iommu@archiver.kernel.org>; Mon, 21 Feb 2022 11:44:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 928DA60E1E;
-	Mon, 21 Feb 2022 11:38:10 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id F3D254022C;
+	Mon, 21 Feb 2022 11:44:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2HTb7MXOXN0Z; Mon, 21 Feb 2022 11:38:09 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OFNbpQK6H2hu; Mon, 21 Feb 2022 11:44:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 9274060E35;
-	Mon, 21 Feb 2022 11:38:09 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 8738840205;
+	Mon, 21 Feb 2022 11:44:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 77B56C001A;
-	Mon, 21 Feb 2022 11:38:09 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 848CFC0011
- for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 11:38:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5EFCAC001A;
+	Mon, 21 Feb 2022 11:44:36 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 87BFDC0011
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 11:44:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 6244060E35
- for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 11:38:08 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 75DBA60C34
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 11:44:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eEJimowYscvE for <iommu@lists.linux-foundation.org>;
- Mon, 21 Feb 2022 11:38:07 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C496960E33
- for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 11:38:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
- s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
- References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=k++dA0QZ/l0Udf5bpYqTGcUCwXaoUM28Erkwayg30Jc=; b=DjFpUsSjsqvQ/gdEZdw8Rwa5Qo
- 9bXoOF1KTGBZPvp/rgZaf8yjzzKLP/CnTfXLXHxNahmNv+N3orhjP30d45zXNSyVNLdhnYAfKwb4Z
- RdZDWWyx5V+p2DZX1qChy8TvuoqPeByQau/37fzk1n2ruNUWTV+klAJ0okIv3AqAd/re6huAOP/Cs
- Z3al4naD7nxzxQhO5ec1AdRE8qA0HgbWtD/xEGMtJdjmIAer25KKsinCjvChQ/QbnHc9hgoI0UObV
- MtWELb4j25Syy6af3x6augoBrkrIZbIX1nPAE9ui+L3bLUFM7FwBo4yvzXLF5HNwa8VteE/Kid7IW
- ikdpDZ2A==;
-Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70]
- helo=[192.168.1.10])
- by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
- (Exim 4.89) (envelope-from <cyndis@kapsi.fi>)
- id 1nM70t-0002ZP-Mh; Mon, 21 Feb 2022 13:37:55 +0200
-Message-ID: <8a1387e5-b68f-db90-9ab5-0b8606ca8841@kapsi.fi>
-Date: Mon, 21 Feb 2022 13:37:54 +0200
+ with ESMTP id zNC5mRm5P9Jq for <iommu@lists.linux-foundation.org>;
+ Mon, 21 Feb 2022 11:44:34 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 2873660AD2
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 11:44:34 +0000 (UTC)
+Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.200])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K2L6C0brlz67xLh;
+ Mon, 21 Feb 2022 19:43:31 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 21 Feb 2022 12:44:31 +0100
+Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 21 Feb
+ 2022 11:44:30 +0000
+Date: Mon, 21 Feb 2022 11:44:28 +0000
+To: Yicong Yang <yangyicong@hisilicon.com>
+Subject: Re: [PATCH v4 3/8] hisi_ptt: Register PMU device for PTT trace
+Message-ID: <20220221114428.000062cd@Huawei.com>
+In-Reply-To: <20220221084307.33712-4-yangyicong@hisilicon.com>
+References: <20220221084307.33712-1-yangyicong@hisilicon.com>
+ <20220221084307.33712-4-yangyicong@hisilicon.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v3 3/9] gpu: host1x: Add context device management code
-Content-Language: en-US
-To: Dmitry Osipenko <digetx@gmail.com>,
- Mikko Perttunen <mperttunen@nvidia.com>, thierry.reding@gmail.com,
- jonathanh@nvidia.com, joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
- robin.murphy@arm.com
-References: <20220218113952.3077606-1-mperttunen@nvidia.com>
- <20220218113952.3077606-4-mperttunen@nvidia.com>
- <2605a614-0a2c-85ac-576a-048f38f9d366@gmail.com>
-From: Mikko Perttunen <cyndis@kapsi.fi>
-In-Reply-To: <2605a614-0a2c-85ac-576a-048f38f9d366@gmail.com>
-X-SA-Exim-Connect-IP: 91.158.25.70
-X-SA-Exim-Mail-From: cyndis@kapsi.fi
-X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
- linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+X-Originating-IP: [10.202.226.41]
+X-ClientProxiedBy: lhreml732-chm.china.huawei.com (10.201.108.83) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
+Cc: mark.rutland@arm.com, prime.zeng@huawei.com,
+ alexander.shishkin@linux.intel.com, linux-pci@vger.kernel.org,
+ linuxarm@huawei.com, will@kernel.org, daniel.thompson@linaro.org,
+ peterz@infradead.org, mingo@redhat.com, helgaas@kernel.org,
+ liuqi115@huawei.com, mike.leach@linaro.org, suzuki.poulose@arm.com,
+ coresight@lists.linaro.org, acme@kernel.org, zhangshaokun@hisilicon.com,
+ linux-arm-kernel@lists.infradead.org, mathieu.poirier@linaro.org,
+ gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+ linux-perf-users@vger.kernel.org, iommu@lists.linux-foundation.org,
+ leo.yan@linaro.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,24 +82,260 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+From: Jonathan Cameron via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMi8xOS8yMiAxOTo1MiwgRG1pdHJ5IE9zaXBlbmtvIHdyb3RlOgo+IDE4LjAyLjIwMjIgMTQ6
-MzksIE1pa2tvIFBlcnR0dW5lbiDQv9C40YjQtdGCOgo+PiArCWZvciAoaW5kZXggPSAwOyBpbmRl
-eCA8IGNkbC0+bGVuOyBpbmRleCsrKSB7Cj4+ICsJCXN0cnVjdCBpb21tdV9md3NwZWMgKmZ3c3Bl
-YzsKPj4gKwo+PiArCQljdHggPSAmY2RsLT5kZXZzW2luZGV4XTsKPj4gKwo+PiArCQljdHgtPmhv
-c3QgPSBob3N0MXg7Cj4+ICsKPj4gKwkJZGV2aWNlX2luaXRpYWxpemUoJmN0eC0+ZGV2KTsKPj4g
-Kwo+PiArCQljdHgtPmRldi5kbWFfbWFzayA9ICZjb250ZXh0X2RldmljZV9kbWFfbWFzazsKPj4g
-KwkJY3R4LT5kZXYuY29oZXJlbnRfZG1hX21hc2sgPSBjb250ZXh0X2RldmljZV9kbWFfbWFzazsK
-Pj4gKwkJZGV2X3NldF9uYW1lKCZjdHgtPmRldiwgImhvc3QxeC1jdHguJWQiLCBpbmRleCk7Cj4+
-ICsJCWN0eC0+ZGV2LmJ1cyA9ICZob3N0MXhfY29udGV4dF9kZXZpY2VfYnVzX3R5cGU7Cj4gCj4g
-aG9zdDF4X2NvbnRleHRfZGV2aWNlX2J1c190eXBlIHdpbGwgYmUgYW4gdW5kZWZpbmVkIHN5bWJv
-bCBpZgo+IENPTkZJR19URUdSQV9IT1NUMVhfQ09OVEVYVF9CVVM9bj8gUGxlYXNlIGNvbXBpbGUg
-YW5kIHRlc3QgYWxsIGNvbWJpbmF0aW9ucy4KCkJ1dCB0aGlzIGZpbGUgaXMgb25seSBidWlsdCBp
-ZiBDT05GSUdfSE9TVDFYLCB3aGljaCBzZWxlY3RzIApDT05GSUdfVEVHUkFfSE9TVDFYX0NPTlRF
-WFRfQlVTPwoKTWlra28KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
-Cmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Mon, 21 Feb 2022 16:43:02 +0800
+Yicong Yang <yangyicong@hisilicon.com> wrote:
+
+> Register PMU device of PTT trace, then users can use
+> trace through perf command. The driver makes use of perf
+> AUX trace and support following events to configure the
+> trace:
+> 
+> - filter: select Root port or Endpoint to trace
+> - type: select the type of traced TLP headers
+> - direction: select the direction of traced TLP headers
+> - format: select the data format of the traced TLP headers
+> 
+> This patch adds the PMU driver part of PTT trace. The perf
+> command support of PTT trace is added in the following
+> patch.
+> 
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+
+A few minor comments inline.
+
+Thanks,
+
+Jonathan
+
+> +static int hisi_ptt_trace_init_filter(struct hisi_ptt *hisi_ptt, u64 config)
+> +{
+> +	unsigned long val, port_mask = hisi_ptt->port_mask;
+> +	struct hisi_ptt_filter_desc *filter;
+> +	int ret = -EINVAL;
+> +
+> +	hisi_ptt->trace_ctrl.is_port = FIELD_GET(HISI_PTT_PMU_FILTER_IS_PORT, config);
+> +	val = FIELD_GET(HISI_PTT_PMU_FILTER_VAL_MASK, config);
+> +
+> +	/*
+> +	 * Port filters are defined as bit mask. For port filters, check
+> +	 * the bits in the @val are within the range of hisi_ptt->port_mask
+> +	 * and whether it's empty or not, otherwise user has specified
+> +	 * some unsupported root ports.
+> +	 *
+> +	 * For Requester ID filters, walk the available filter list to see
+> +	 * whether we have one matched.
+> +	 */
+> +	if (!hisi_ptt->trace_ctrl.is_port) {
+> +		list_for_each_entry(filter, &hisi_ptt->req_filters, list)
+> +			if (val == hisi_ptt_get_filter_val(filter->pdev)) {
+> +				ret = 0;
+> +				break;
+> +			}
+> +	} else if (bitmap_subset(&val, &port_mask, BITS_PER_LONG)) {
+> +		ret = 0;
+> +	}
+> +
+> +	if (ret)
+> +		return ret;
+> +
+> +	hisi_ptt->trace_ctrl.filter = val;
+> +	return 0;
+> +}
+> +
+> +static int hisi_ptt_pmu_event_init(struct perf_event *event)
+> +{
+> +	struct hisi_ptt *hisi_ptt = to_hisi_ptt(event->pmu);
+> +	struct hisi_ptt_trace_ctrl *ctrl = &hisi_ptt->trace_ctrl;
+> +	int ret;
+> +	u32 val;
+> +
+> +	if (event->attr.type != hisi_ptt->hisi_ptt_pmu.type)
+> +		return -ENOENT;
+> +
+> +	mutex_lock(&hisi_ptt->mutex);
+> +
+> +	ret = hisi_ptt_trace_init_filter(hisi_ptt, event->attr.config);
+> +	if (ret < 0)
+> +		goto out;
+> +
+> +	val = FIELD_GET(HISI_PTT_PMU_DIRECTION_MASK, event->attr.config);
+> +	ret = hisi_ptt_trace_valid_config_onehot(val, hisi_ptt_trace_available_direction,
+> +						 ARRAY_SIZE(hisi_ptt_trace_available_direction));
+> +	if (ret < 0)
+> +		goto out;
+> +	ctrl->direction = val;
+> +
+> +	val = FIELD_GET(HISI_PTT_PMU_TYPE_MASK, event->attr.config);
+> +
+
+For consistency, no blank line here.
+
+> +	ret = hisi_ptt_trace_valid_config(val, hisi_ptt_trace_available_type,
+> +					  ARRAY_SIZE(hisi_ptt_trace_available_type));
+> +	if (ret < 0)
+> +		goto out;
+> +	ctrl->type = val;
+> +
+> +	val = FIELD_GET(HISI_PTT_PMU_FORMAT_MASK, event->attr.config);
+> +	ret = hisi_ptt_trace_valid_config_onehot(val, hisi_ptt_trace_availble_format,
+> +						 ARRAY_SIZE(hisi_ptt_trace_availble_format));
+> +	if (ret < 0)
+> +		goto out;
+> +	ctrl->format = val;
+> +
+> +out:
+> +	mutex_unlock(&hisi_ptt->mutex);
+> +	return ret;
+> +}
+
+...
+
+> +
+> +static void hisi_ptt_pmu_start(struct perf_event *event, int flags)
+> +{
+> +	struct hisi_ptt *hisi_ptt = to_hisi_ptt(event->pmu);
+> +	struct perf_output_handle *handle = &hisi_ptt->trace_ctrl.handle;
+> +	struct hw_perf_event *hwc = &event->hw;
+> +	struct hisi_ptt_pmu_buf *buf;
+> +	int cpu = event->cpu;
+> +	int ret;
+> +
+> +	hwc->state = 0;
+> +	mutex_lock(&hisi_ptt->mutex);
+> +	if (hisi_ptt->trace_ctrl.status == HISI_PTT_TRACE_STATUS_ON) {
+> +		pci_dbg(hisi_ptt->pdev, "trace has already started\n");
+> +		goto stop;
+
+If it is already started setting the state to STOPPED without doing anything
+to change the hardware state doesn't feel right.
+I'm assuming we only get here as a result of a bug, so perhaps its fine
+to do this.
+
+> +	}
+> +
+> +	if (cpu == -1)
+> +		cpu = hisi_ptt->trace_ctrl.default_cpu;
+> +
+> +	/*
+> +	 * Handle the interrupt on the same cpu which starts the trace to avoid
+> +	 * context mismatch. Otherwise we'll trigger the WARN from the perf
+> +	 * core in event_function_local().
+> +	 */
+> +	WARN_ON(irq_set_affinity(pci_irq_vector(hisi_ptt->pdev, HISI_PTT_TRACE_DMA_IRQ),
+> +				 cpumask_of(cpu)));
+> +
+> +	ret = hisi_ptt_alloc_trace_buf(hisi_ptt);
+> +	if (ret) {
+> +		pci_dbg(hisi_ptt->pdev, "alloc trace buf failed, ret = %d\n", ret);
+> +		goto stop;
+> +	}
+> +
+> +	buf = perf_aux_output_begin(handle, event);
+> +	if (!buf) {
+> +		pci_dbg(hisi_ptt->pdev, "aux output begin failed\n");
+> +		goto stop;
+> +	}
+> +
+> +	buf->pos = handle->head % buf->length;
+> +
+> +	ret = hisi_ptt_trace_start(hisi_ptt);
+> +	if (ret) {
+> +		pci_dbg(hisi_ptt->pdev, "trace start failed, ret = %d\n", ret);
+> +		perf_aux_output_end(handle, 0);
+> +		goto stop;
+> +	}
+> +
+> +	mutex_unlock(&hisi_ptt->mutex);
+> +	return;
+> +stop:
+> +	event->hw.state |= PERF_HES_STOPPED;
+> +	mutex_unlock(&hisi_ptt->mutex);
+> +}
+> +
+
+...
+
+> +static int hisi_ptt_register_pmu(struct hisi_ptt *hisi_ptt)
+> +{
+> +	u16 core_id, sicl_id;
+> +	char *pmu_name;
+> +	int ret;
+> +	u32 reg;
+> +
+> +	hisi_ptt->hisi_ptt_pmu = (struct pmu) {
+> +		.module		= THIS_MODULE,
+> +		.capabilities	= PERF_PMU_CAP_EXCLUSIVE | PERF_PMU_CAP_ITRACE,
+> +		.task_ctx_nr	= perf_sw_context,
+> +		.attr_groups	= hisi_ptt_pmu_groups,
+> +		.event_init	= hisi_ptt_pmu_event_init,
+> +		.setup_aux	= hisi_ptt_pmu_setup_aux,
+> +		.free_aux	= hisi_ptt_pmu_free_aux,
+> +		.start		= hisi_ptt_pmu_start,
+> +		.stop		= hisi_ptt_pmu_stop,
+> +		.add		= hisi_ptt_pmu_add,
+> +		.del		= hisi_ptt_pmu_del,
+> +	};
+> +
+> +	reg = readl(hisi_ptt->iobase + HISI_PTT_LOCATION);
+> +	core_id = FIELD_GET(HISI_PTT_CORE_ID, reg);
+> +	sicl_id = FIELD_GET(HISI_PTT_SICL_ID, reg);
+> +
+> +	pmu_name = devm_kasprintf(&hisi_ptt->pdev->dev, GFP_KERNEL, "hisi_ptt%u_%u",
+> +				  sicl_id, core_id);
+> +	if (!pmu_name)
+> +		return -ENOMEM;
+> +
+> +	ret = perf_pmu_register(&hisi_ptt->hisi_ptt_pmu, pmu_name, -1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return devm_add_action_or_reset(&hisi_ptt->pdev->dev,
+> +					hisi_ptt_unregister_pmu,
+> +					&hisi_ptt->hisi_ptt_pmu);
+
+This result in the cleanup of the driver being slightly out of order wrt to
+the setup as we have the filters cleared after this (in remove())
+Ideally the remove() ordering should be the precise reverse of the
+probe() order except where it is necessary to deviate from that and
+in those deviations I'd expect to see a comment saying why.
+
+So either clear up the filters using a devm_add_action_or_reset()
+or do a manual unregister of the pmu in remove. I prefer the
+devm_add_action_or_reset for hisi_ptt_release_filters() option.
+
+There may well not be a race here, but it is always good to avoid
+reviewers having to think about whether there might be one!
+
+Note that other reviewers may have different views on this however
+so perhaps go with what they say as this subsystem isn't my area
+of expertise!
+
+> +}
+> +
+>  /*
+>   * The DMA of PTT trace can only use direct mapping, due to some
+>   * hardware restriction. Check whether there is an IOMMU or the
+> @@ -337,6 +826,12 @@ static int hisi_ptt_probe(struct pci_dev *pdev,
+>  
+>  	hisi_ptt_init_ctrls(hisi_ptt);
+>  
+> +	ret = hisi_ptt_register_pmu(hisi_ptt);
+> +	if (ret) {
+> +		pci_err(pdev, "failed to register pmu device, ret = %d", ret);
+> +		return ret;
+> +	}
+> +
+>  	return 0;
+>  }
+>  
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
