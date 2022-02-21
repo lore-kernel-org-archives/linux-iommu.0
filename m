@@ -1,46 +1,46 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B84EFC43217
-	for <iommu@archiver.kernel.org>; Mon, 21 Feb 2022 08:44:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E26BAC4321E
+	for <iommu@archiver.kernel.org>; Mon, 21 Feb 2022 08:44:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 6721D40515;
-	Mon, 21 Feb 2022 08:44:31 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 8A69F60DFA;
+	Mon, 21 Feb 2022 08:44:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KRojZhHC-3KI; Mon, 21 Feb 2022 08:44:27 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id V9eUsx-7i18x; Mon, 21 Feb 2022 08:44:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id D066440510;
-	Mon, 21 Feb 2022 08:44:26 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 25F2F60D93;
+	Mon, 21 Feb 2022 08:44:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9F5D4C0084;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E7778C0087;
 	Mon, 21 Feb 2022 08:44:25 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6C7EFC0011
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A8B8BC0011
  for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 08:44:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 4B9434010E
- for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 08:44:23 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 95864600C6
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 08:44:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hinKd8prFmZS for <iommu@lists.linux-foundation.org>;
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id D_OCU0pxlpuJ for <iommu@lists.linux-foundation.org>;
  Mon, 21 Feb 2022 08:44:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 54D81404FA
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 6DBBB600B5
  for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 08:44:20 +0000 (UTC)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
- by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K2G2D6dXyzbbfF;
- Mon, 21 Feb 2022 16:39:48 +0800 (CST)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
+ by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K2G636Bk2zdZSG;
+ Mon, 21 Feb 2022 16:43:07 +0800 (CST)
 Received: from localhost.localdomain (10.67.164.66) by
  canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 21 Feb 2022 16:44:16 +0800
+ 15.1.2308.21; Mon, 21 Feb 2022 16:44:17 +0800
 To: <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
  <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
  <will@kernel.org>, <mark.rutland@arm.com>, <mathieu.poirier@linaro.org>,
@@ -52,10 +52,10 @@ To: <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
  <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
  <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
  <linux-perf-users@vger.kernel.org>, <iommu@lists.linux-foundation.org>
-Subject: [PATCH v4 2/8] hwtracing: Add trace function support for HiSilicon
- PCIe Tune and Trace device
-Date: Mon, 21 Feb 2022 16:43:01 +0800
-Message-ID: <20220221084307.33712-3-yangyicong@hisilicon.com>
+Subject: [PATCH v4 4/8] hisi_ptt: Add support for dynamically updating the
+ filter list
+Date: Mon, 21 Feb 2022 16:43:03 +0800
+Message-ID: <20220221084307.33712-5-yangyicong@hisilicon.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220221084307.33712-1-yangyicong@hisilicon.com>
 References: <20220221084307.33712-1-yangyicong@hisilicon.com>
@@ -85,611 +85,284 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-HiSilicon PCIe tune and trace device(PTT) is a PCIe Root Complex
-integrated Endpoint(RCiEP) device, providing the capability
-to dynamically monitor and tune the PCIe traffic, and trace
-the TLP headers.
-
-Add the driver for the device to enable the trace function.
-This patch adds basic function of trace, including the device's
-probe and initialization, functions for trace buffer allocation
-and trace enable/disable, register an interrupt handler to
-simply response to the DMA events. The user interface of trace
-will be added in the following patch.
+The PCIe devices supported by the PTT trace can be removed/rescanned
+by hotplug or through sysfs.  Add support for dynamically updating
+the available filter list by registering a PCI bus notifier block.
+Then user can always get latest information about available tracing
+filters and driver can block the invalid filters of which related
+devices no longer exist in the system.
 
 Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
 ---
- drivers/Makefile                 |   1 +
- drivers/hwtracing/Kconfig        |   2 +
- drivers/hwtracing/ptt/Kconfig    |  11 +
- drivers/hwtracing/ptt/Makefile   |   2 +
- drivers/hwtracing/ptt/hisi_ptt.c | 370 +++++++++++++++++++++++++++++++
- drivers/hwtracing/ptt/hisi_ptt.h | 149 +++++++++++++
- 6 files changed, 535 insertions(+)
- create mode 100644 drivers/hwtracing/ptt/Kconfig
- create mode 100644 drivers/hwtracing/ptt/Makefile
- create mode 100644 drivers/hwtracing/ptt/hisi_ptt.c
- create mode 100644 drivers/hwtracing/ptt/hisi_ptt.h
+ drivers/hwtracing/ptt/hisi_ptt.c | 138 ++++++++++++++++++++++++++++---
+ drivers/hwtracing/ptt/hisi_ptt.h |  34 ++++++++
+ 2 files changed, 160 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/Makefile b/drivers/Makefile
-index a110338c860c..ab3411e4eba5 100644
---- a/drivers/Makefile
-+++ b/drivers/Makefile
-@@ -175,6 +175,7 @@ obj-$(CONFIG_USB4)		+= thunderbolt/
- obj-$(CONFIG_CORESIGHT)		+= hwtracing/coresight/
- obj-y				+= hwtracing/intel_th/
- obj-$(CONFIG_STM)		+= hwtracing/stm/
-+obj-$(CONFIG_HISI_PTT)		+= hwtracing/ptt/
- obj-$(CONFIG_ANDROID)		+= android/
- obj-$(CONFIG_NVMEM)		+= nvmem/
- obj-$(CONFIG_FPGA)		+= fpga/
-diff --git a/drivers/hwtracing/Kconfig b/drivers/hwtracing/Kconfig
-index 13085835a636..911ee977103c 100644
---- a/drivers/hwtracing/Kconfig
-+++ b/drivers/hwtracing/Kconfig
-@@ -5,4 +5,6 @@ source "drivers/hwtracing/stm/Kconfig"
- 
- source "drivers/hwtracing/intel_th/Kconfig"
- 
-+source "drivers/hwtracing/ptt/Kconfig"
-+
- endmenu
-diff --git a/drivers/hwtracing/ptt/Kconfig b/drivers/hwtracing/ptt/Kconfig
-new file mode 100644
-index 000000000000..41fa83921a07
---- /dev/null
-+++ b/drivers/hwtracing/ptt/Kconfig
-@@ -0,0 +1,11 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+config HISI_PTT
-+	tristate "HiSilicon PCIe Tune and Trace Device"
-+	depends on ARM64 && PCI && HAS_DMA && HAS_IOMEM
-+	help
-+	  HiSilicon PCIe Tune and Trace Device exists as a PCIe RCiEP
-+	  device, and it provides support for PCIe traffic tuning and
-+	  tracing TLP headers to the memory.
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called hisi_ptt.
-diff --git a/drivers/hwtracing/ptt/Makefile b/drivers/hwtracing/ptt/Makefile
-new file mode 100644
-index 000000000000..908c09a98161
---- /dev/null
-+++ b/drivers/hwtracing/ptt/Makefile
-@@ -0,0 +1,2 @@
-+# SPDX-License-Identifier: GPL-2.0
-+obj-$(CONFIG_HISI_PTT) += hisi_ptt.o
 diff --git a/drivers/hwtracing/ptt/hisi_ptt.c b/drivers/hwtracing/ptt/hisi_ptt.c
-new file mode 100644
-index 000000000000..a5b4f09ccd1e
---- /dev/null
+index c2b6f8aa9f1e..50193a331faa 100644
+--- a/drivers/hwtracing/ptt/hisi_ptt.c
 +++ b/drivers/hwtracing/ptt/hisi_ptt.c
-@@ -0,0 +1,370 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Driver for HiSilicon PCIe tune and trace device
-+ *
-+ * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
-+ * Author: Yicong Yang <yangyicong@hisilicon.com>
-+ */
+@@ -269,25 +269,118 @@ static int hisi_ptt_register_irq(struct hisi_ptt *hisi_ptt)
+ 	return 0;
+ }
+ 
+-static int hisi_ptt_init_filters(struct pci_dev *pdev, void *data)
++static void hisi_ptt_update_filters(struct work_struct *work)
+ {
++	struct delayed_work *delayed_work = to_delayed_work(work);
++	struct hisi_ptt_filter_update_info info;
+ 	struct hisi_ptt_filter_desc *filter;
+-	struct hisi_ptt *hisi_ptt = data;
+ 	struct list_head *target_list;
++	struct hisi_ptt *hisi_ptt;
+ 
+-	target_list = pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT ?
+-		      &hisi_ptt->port_filters : &hisi_ptt->req_filters;
++	hisi_ptt = container_of(delayed_work, struct hisi_ptt, work);
+ 
+-	filter = kzalloc(sizeof(*filter), GFP_KERNEL);
+-	if (!filter)
+-		return -ENOMEM;
++	if (!mutex_trylock(&hisi_ptt->mutex)) {
++		schedule_delayed_work(&hisi_ptt->work, HISI_PTT_WORK_DELAY_MS);
++		return;
++	}
+ 
+-	filter->pdev = pdev;
+-	list_add_tail(&filter->list, target_list);
++	while (kfifo_get(&hisi_ptt->filter_update_kfifo, &info)) {
++		bool is_port = pci_pcie_type(info.pdev) == PCI_EXP_TYPE_ROOT_PORT;
++		u16 val = hisi_ptt_get_filter_val(info.pdev);
 +
-+#include <linux/bitfield.h>
-+#include <linux/bitops.h>
-+#include <linux/delay.h>
-+#include <linux/dma-iommu.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/interrupt.h>
-+#include <linux/io.h>
-+#include <linux/iommu.h>
-+#include <linux/iopoll.h>
-+#include <linux/module.h>
-+#include <linux/sysfs.h>
++		target_list = is_port ? &hisi_ptt->port_filters : &hisi_ptt->req_filters;
 +
-+#include "hisi_ptt.h"
++		if (info.is_add) {
++			filter = kzalloc(sizeof(*filter), GFP_KERNEL);
++			if (!filter)
++				continue;
 +
-+static u16 hisi_ptt_get_filter_val(struct pci_dev *pdev)
-+{
-+	if (pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT)
-+		return BIT(HISI_PCIE_CORE_PORT_ID(PCI_SLOT(pdev->devfn)));
++			filter->pdev = info.pdev;
++			list_add_tail(&filter->list, target_list);
++		} else {
++			list_for_each_entry(filter, target_list, list)
++				if (hisi_ptt_get_filter_val(filter->pdev) == val) {
++					list_del(&filter->list);
++					kfree(filter);
++					break;
++				}
++		}
+ 
+-	/* Update the available port mask */
+-	if (pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT)
+-		hisi_ptt->port_mask |= hisi_ptt_get_filter_val(pdev);
++		/* Update the available port mask */
++		if (!is_port)
++			continue;
 +
-+	return PCI_DEVID(pdev->bus->number, pdev->devfn);
++		if (info.is_add)
++			hisi_ptt->port_mask |= val;
++		else
++			hisi_ptt->port_mask &= ~val;
++	}
++
++	mutex_unlock(&hisi_ptt->mutex);
 +}
 +
-+static int hisi_ptt_wait_trace_hw_idle(struct hisi_ptt *hisi_ptt)
++static void hisi_ptt_update_fifo_in(struct hisi_ptt *hisi_ptt,
++				    struct hisi_ptt_filter_update_info *info)
 +{
-+	u32 val;
++	struct pci_dev *root_port = pcie_find_root_port(info->pdev);
++	u32 port_devid;
 +
-+	return readl_poll_timeout_atomic(hisi_ptt->iobase + HISI_PTT_TRACE_STS,
-+					 val, val & HISI_PTT_TRACE_IDLE,
-+					 HISI_PTT_WAIT_POLL_INTERVAL_US,
-+					 HISI_PTT_WAIT_TIMEOUT_US);
-+}
-+
-+static int hisi_ptt_wait_dma_reset_done(struct hisi_ptt *hisi_ptt)
-+{
-+	u32 val;
-+
-+	return readl_poll_timeout_atomic(hisi_ptt->iobase + HISI_PTT_TRACE_WR_STS,
-+					 val, !val, HISI_PTT_RESET_POLL_INTERVAL_US,
-+					 HISI_PTT_RESET_TIMEOUT_US);
-+}
-+
-+static void hisi_ptt_free_trace_buf(struct hisi_ptt *hisi_ptt)
-+{
-+	struct hisi_ptt_trace_ctrl *ctrl = &hisi_ptt->trace_ctrl;
-+	struct device *dev = &hisi_ptt->pdev->dev;
-+	int i;
-+
-+	if (!ctrl->trace_buf)
++	if (!root_port)
 +		return;
 +
-+	for (i = 0; i < HISI_PTT_TRACE_BUF_CNT; i++)
-+		if (ctrl->trace_buf[i].addr)
-+			dma_free_coherent(dev, HISI_PTT_TRACE_BUF_SIZE,
-+					  ctrl->trace_buf[i].addr,
-+					  ctrl->trace_buf[i].dma);
++	port_devid = PCI_DEVID(root_port->bus->number, root_port->devfn);
++	if (port_devid < hisi_ptt->lower ||
++	    port_devid > hisi_ptt->upper)
++		return;
 +
-+	kfree(ctrl->trace_buf);
-+	ctrl->trace_buf = NULL;
++	if (kfifo_in_spinlocked(&hisi_ptt->filter_update_kfifo, info, 1,
++				&hisi_ptt->filter_update_lock))
++		schedule_delayed_work(&hisi_ptt->work, 0);
++	else
++		pci_warn(hisi_ptt->pdev,
++			 "filter update fifo overflow for target %s\n",
++			 pci_name(info->pdev));
 +}
 +
-+static int hisi_ptt_alloc_trace_buf(struct hisi_ptt *hisi_ptt)
++/*
++ * A PCI bus notifier is used here for dynamically updating the filter
++ * list.
++ */
++static int hisi_ptt_notifier_call(struct notifier_block *nb, unsigned long action,
++				  void *data)
 +{
-+	struct hisi_ptt_trace_ctrl *ctrl = &hisi_ptt->trace_ctrl;
-+	struct device *dev = &hisi_ptt->pdev->dev;
-+	int i;
++	struct hisi_ptt *hisi_ptt = container_of(nb, struct hisi_ptt, hisi_ptt_nb);
++	struct hisi_ptt_filter_update_info info;
++	struct device *dev = data;
++	struct pci_dev *pdev = to_pci_dev(dev);
 +
-+	hisi_ptt->trace_ctrl.buf_index = 0;
++	info.pdev = pdev;
 +
-+	/* If the trace buffer has already been allocated, zero it. */
-+	if (ctrl->trace_buf) {
-+		for (i = 0; i < HISI_PTT_TRACE_BUF_CNT; i++)
-+			memset(ctrl->trace_buf[i].addr, 0, HISI_PTT_TRACE_BUF_SIZE);
++	switch (action) {
++	case BUS_NOTIFY_ADD_DEVICE:
++		info.is_add = true;
++		break;
++	case BUS_NOTIFY_DEL_DEVICE:
++		info.is_add = false;
++		break;
++	default:
 +		return 0;
 +	}
 +
-+	ctrl->trace_buf = kcalloc(HISI_PTT_TRACE_BUF_CNT, sizeof(struct hisi_ptt_dma_buffer),
-+				  GFP_KERNEL);
-+	if (!ctrl->trace_buf)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < HISI_PTT_TRACE_BUF_CNT; ++i) {
-+		ctrl->trace_buf[i].addr = dma_alloc_coherent(dev, HISI_PTT_TRACE_BUF_SIZE,
-+							     &ctrl->trace_buf[i].dma,
-+							     GFP_KERNEL);
-+		if (!ctrl->trace_buf[i].addr) {
-+			hisi_ptt_free_trace_buf(hisi_ptt);
-+			return -ENOMEM;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static void hisi_ptt_trace_end(struct hisi_ptt *hisi_ptt)
-+{
-+	writel(0, hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
-+	hisi_ptt->trace_ctrl.status = HISI_PTT_TRACE_STATUS_OFF;
-+}
-+
-+static int hisi_ptt_trace_start(struct hisi_ptt *hisi_ptt)
-+{
-+	struct hisi_ptt_trace_ctrl *ctrl = &hisi_ptt->trace_ctrl;
-+	u32 val;
-+	int i;
-+
-+	/* Check device idle before start trace */
-+	if (hisi_ptt_wait_trace_hw_idle(hisi_ptt)) {
-+		pci_err(hisi_ptt->pdev, "Failed to start trace, the device is still busy.\n");
-+		return -EBUSY;
-+	}
-+
-+	/* Reset the DMA before start tracing */
-+	val = readl(hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
-+	val |= HISI_PTT_TRACE_CTRL_RST;
-+	writel(val, hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
-+
-+	hisi_ptt_wait_dma_reset_done(hisi_ptt);
-+
-+	val = readl(hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
-+	val &= ~HISI_PTT_TRACE_CTRL_RST;
-+	writel(val, hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
-+
-+	/* Clear the interrupt status */
-+	writel(HISI_PTT_TRACE_INT_STAT_MASK, hisi_ptt->iobase + HISI_PTT_TRACE_INT_STAT);
-+	writel(0, hisi_ptt->iobase + HISI_PTT_TRACE_INT_MASK);
-+
-+	/* Configure the trace DMA buffer */
-+	for (i = 0; i < HISI_PTT_TRACE_BUF_CNT; i++) {
-+		writel(lower_32_bits(ctrl->trace_buf[i].dma),
-+		       hisi_ptt->iobase + HISI_PTT_TRACE_ADDR_BASE_LO_0 +
-+		       i * HISI_PTT_TRACE_ADDR_STRIDE);
-+		writel(upper_32_bits(ctrl->trace_buf[i].dma),
-+		       hisi_ptt->iobase + HISI_PTT_TRACE_ADDR_BASE_HI_0 +
-+		       i * HISI_PTT_TRACE_ADDR_STRIDE);
-+	}
-+	writel(HISI_PTT_TRACE_BUF_SIZE, hisi_ptt->iobase + HISI_PTT_TRACE_ADDR_SIZE);
-+
-+	/* Set the trace control register */
-+	val = FIELD_PREP(HISI_PTT_TRACE_CTRL_TYPE_SEL, ctrl->type);
-+	val |= FIELD_PREP(HISI_PTT_TRACE_CTRL_RXTX_SEL, ctrl->direction);
-+	val |= FIELD_PREP(HISI_PTT_TRACE_CTRL_DATA_FORMAT, ctrl->format);
-+	val |= FIELD_PREP(HISI_PTT_TRACE_CTRL_TARGET_SEL, hisi_ptt->trace_ctrl.filter);
-+	if (!hisi_ptt->trace_ctrl.is_port)
-+		val |= HISI_PTT_TRACE_CTRL_FILTER_MODE;
-+
-+	/* Start the Trace */
-+	val |= HISI_PTT_TRACE_CTRL_EN;
-+	writel(val, hisi_ptt->iobase + HISI_PTT_TRACE_CTRL);
-+
-+	ctrl->status = HISI_PTT_TRACE_STATUS_ON;
-+
-+	return 0;
-+}
-+
-+static irqreturn_t hisi_ptt_irq(int irq, void *context)
-+{
-+	struct hisi_ptt *hisi_ptt = context;
-+	u32 status;
-+
-+	status = readl(hisi_ptt->iobase + HISI_PTT_TRACE_INT_STAT);
-+	if (!(status & HISI_PTT_TRACE_INT_STAT_MASK))
-+		return IRQ_NONE;
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static void hisi_ptt_irq_free_vectors(void *pdev)
-+{
-+	pci_free_irq_vectors(pdev);
-+}
-+
-+static int hisi_ptt_register_irq(struct hisi_ptt *hisi_ptt)
-+{
-+	struct pci_dev *pdev = hisi_ptt->pdev;
-+	int ret;
-+
-+	ret = pci_alloc_irq_vectors(pdev, 1, 1, PCI_IRQ_MSI);
-+	if (ret < 0) {
-+		pci_err(pdev, "failed to allocate irq vector, ret = %d.\n", ret);
-+		return ret;
-+	}
-+
-+	ret = devm_add_action_or_reset(&pdev->dev, hisi_ptt_irq_free_vectors, pdev);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = devm_request_irq(&pdev->dev, pci_irq_vector(pdev, HISI_PTT_TRACE_DMA_IRQ),
-+			       hisi_ptt_irq, 0, DRV_NAME, hisi_ptt);
-+	if (ret) {
-+		pci_err(pdev, "failed to request irq %d, ret = %d.\n",
-+			pci_irq_vector(pdev, HISI_PTT_TRACE_DMA_IRQ), ret);
-+		return ret;
-+	}
++	hisi_ptt_update_fifo_in(hisi_ptt, &info);
 +
 +	return 0;
 +}
 +
 +static int hisi_ptt_init_filters(struct pci_dev *pdev, void *data)
 +{
-+	struct hisi_ptt_filter_desc *filter;
++	struct hisi_ptt_filter_update_info info = {
++		.pdev = pdev,
++		.is_add = true,
++	};
 +	struct hisi_ptt *hisi_ptt = data;
-+	struct list_head *target_list;
 +
-+	target_list = pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT ?
-+		      &hisi_ptt->port_filters : &hisi_ptt->req_filters;
-+
-+	filter = kzalloc(sizeof(*filter), GFP_KERNEL);
-+	if (!filter)
-+		return -ENOMEM;
-+
-+	filter->pdev = pdev;
-+	list_add_tail(&filter->list, target_list);
-+
-+	/* Update the available port mask */
-+	if (pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT)
-+		hisi_ptt->port_mask |= hisi_ptt_get_filter_val(pdev);
-+
-+	return 0;
-+}
-+
-+static void hisi_ptt_release_filters(struct hisi_ptt *hisi_ptt)
-+{
-+	struct hisi_ptt_filter_desc *filter, *tfilter;
-+
-+	list_for_each_entry_safe(filter, tfilter, &hisi_ptt->req_filters, list) {
-+		list_del(&filter->list);
-+		kfree(filter);
-+	}
-+
-+	list_for_each_entry_safe(filter, tfilter, &hisi_ptt->port_filters, list) {
-+		list_del(&filter->list);
-+		kfree(filter);
-+	}
-+}
-+
-+static void hisi_ptt_init_ctrls(struct hisi_ptt *hisi_ptt)
-+{
-+	struct pci_dev *pdev = hisi_ptt->pdev;
-+	struct pci_bus *bus;
-+	u32 reg;
-+
-+	INIT_LIST_HEAD(&hisi_ptt->port_filters);
-+	INIT_LIST_HEAD(&hisi_ptt->req_filters);
-+
++	hisi_ptt_update_fifo_in(hisi_ptt, &info);
+ 
+ 	return 0;
+ }
+@@ -313,6 +406,9 @@ static void hisi_ptt_init_ctrls(struct hisi_ptt *hisi_ptt)
+ 	struct pci_bus *bus;
+ 	u32 reg;
+ 
++	INIT_DELAYED_WORK(&hisi_ptt->work, hisi_ptt_update_filters);
++	spin_lock_init(&hisi_ptt->filter_update_lock);
++	INIT_KFIFO(hisi_ptt->filter_update_kfifo);
+ 	INIT_LIST_HEAD(&hisi_ptt->port_filters);
+ 	INIT_LIST_HEAD(&hisi_ptt->req_filters);
+ 
+@@ -329,6 +425,13 @@ static void hisi_ptt_init_ctrls(struct hisi_ptt *hisi_ptt)
+ 	hisi_ptt->upper = FIELD_GET(HISI_PTT_DEVICE_RANGE_UPPER, reg);
+ 	hisi_ptt->lower = FIELD_GET(HISI_PTT_DEVICE_RANGE_LOWER, reg);
+ 
 +	/*
-+	 * The device range register provides the information about the
-+	 * root ports which the RCiEP can control and trace. The RCiEP
-+	 * and the root ports it support are on the same PCIe core, with
-+	 * same domain number but maybe different bus number. The device
-+	 * range register will tell us which root ports we can support,
-+	 * Bit[31:16] indicates the upper BDF numbers of the root port,
-+	 * while Bit[15:0] indicates the lower.
++	 * No need to fail if the bus is NULL here as the device
++	 * maybe hotplugged after the PTT driver probe, in which
++	 * case we can detect the event and update the list as
++	 * we register a bus notifier for dynamically updating
++	 * the filter list.
 +	 */
-+	reg = readl(hisi_ptt->iobase + HISI_PTT_DEVICE_RANGE);
-+	hisi_ptt->upper = FIELD_GET(HISI_PTT_DEVICE_RANGE_UPPER, reg);
-+	hisi_ptt->lower = FIELD_GET(HISI_PTT_DEVICE_RANGE_LOWER, reg);
-+
-+	bus = pci_find_bus(pci_domain_nr(pdev->bus), PCI_BUS_NUM(hisi_ptt->upper));
-+	if (bus)
-+		pci_walk_bus(bus, hisi_ptt_init_filters, hisi_ptt);
-+
-+	hisi_ptt->trace_ctrl.default_cpu = cpumask_first(cpumask_of_node(dev_to_node(&pdev->dev)));
-+}
-+
-+/*
-+ * The DMA of PTT trace can only use direct mapping, due to some
-+ * hardware restriction. Check whether there is an IOMMU or the
-+ * policy of the IOMMU domain is passthrough, otherwise the trace
-+ * cannot work.
-+ *
-+ * The PTT device is supposed to behind the ARM SMMUv3, which
-+ * should have passthrough the device by a quirk.
-+ */
-+static int hisi_ptt_check_iommu_mapping(struct pci_dev *pdev)
-+{
-+	struct iommu_domain *iommu_domain;
-+
-+	iommu_domain = iommu_get_domain_for_dev(&pdev->dev);
-+	if (!iommu_domain || iommu_domain->type == IOMMU_DOMAIN_IDENTITY)
-+		return 0;
-+
-+	return -EOPNOTSUPP;
-+}
-+
-+static int hisi_ptt_probe(struct pci_dev *pdev,
-+			  const struct pci_device_id *id)
-+{
-+	struct hisi_ptt *hisi_ptt;
-+	int ret;
-+
-+	ret = hisi_ptt_check_iommu_mapping(pdev);
-+	if (ret) {
-+		pci_err(pdev, "cannot work with non-direct DMA mapping.\n");
-+		return ret;
-+	}
-+
-+	hisi_ptt = devm_kzalloc(&pdev->dev, sizeof(*hisi_ptt), GFP_KERNEL);
-+	if (!hisi_ptt)
-+		return -ENOMEM;
-+
-+	mutex_init(&hisi_ptt->mutex);
-+	hisi_ptt->pdev = pdev;
-+	pci_set_drvdata(pdev, hisi_ptt);
-+
-+	ret = pcim_enable_device(pdev);
-+	if (ret) {
-+		pci_err(pdev, "failed to enable device, ret = %d.\n", ret);
-+		return ret;
-+	}
-+
-+	ret = pcim_iomap_regions(pdev, BIT(2), DRV_NAME);
-+	if (ret) {
-+		pci_err(pdev, "failed to remap io memory, ret = %d.\n", ret);
-+		return ret;
-+	}
-+
-+	hisi_ptt->iobase = pcim_iomap_table(pdev)[2];
-+
-+	ret = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
-+	if (ret) {
-+		pci_err(pdev, "failed to set 64 bit dma mask, ret = %d.\n", ret);
-+		return ret;
-+	}
-+	pci_set_master(pdev);
-+
-+	ret = hisi_ptt_register_irq(hisi_ptt);
+ 	bus = pci_find_bus(pci_domain_nr(pdev->bus), PCI_BUS_NUM(hisi_ptt->upper));
+ 	if (bus)
+ 		pci_walk_bus(bus, hisi_ptt_init_filters, hisi_ptt);
+@@ -832,6 +935,12 @@ static int hisi_ptt_probe(struct pci_dev *pdev,
+ 		return ret;
+ 	}
+ 
++	/* Register the bus notifier for dynamically updating the filter list */
++	hisi_ptt->hisi_ptt_nb.notifier_call = hisi_ptt_notifier_call;
++	ret = bus_register_notifier(&pci_bus_type, &hisi_ptt->hisi_ptt_nb);
 +	if (ret)
-+		return ret;
++		pci_warn(pdev, "failed to register filter update notifier, ret = %d", ret);
 +
-+	hisi_ptt_init_ctrls(hisi_ptt);
+ 	return 0;
+ }
+ 
+@@ -839,6 +948,11 @@ void hisi_ptt_remove(struct pci_dev *pdev)
+ {
+ 	struct hisi_ptt *hisi_ptt = pci_get_drvdata(pdev);
+ 
++	bus_unregister_notifier(&pci_bus_type, &hisi_ptt->hisi_ptt_nb);
 +
-+	return 0;
-+}
++	/* Cancel any work that has been queued */
++	cancel_delayed_work_sync(&hisi_ptt->work);
 +
-+void hisi_ptt_remove(struct pci_dev *pdev)
-+{
-+	struct hisi_ptt *hisi_ptt = pci_get_drvdata(pdev);
-+
-+	if (hisi_ptt->trace_ctrl.status == HISI_PTT_TRACE_STATUS_ON)
-+		hisi_ptt_trace_end(hisi_ptt);
-+
-+	hisi_ptt_free_trace_buf(hisi_ptt);
-+	hisi_ptt_release_filters(hisi_ptt);
-+}
-+
-+static const struct pci_device_id hisi_ptt_id_tbl[] = {
-+	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, 0xa12e) },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(pci, hisi_ptt_id_tbl);
-+
-+static struct pci_driver hisi_ptt_driver = {
-+	.name = DRV_NAME,
-+	.id_table = hisi_ptt_id_tbl,
-+	.probe = hisi_ptt_probe,
-+	.remove = hisi_ptt_remove,
-+};
-+module_pci_driver(hisi_ptt_driver);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("Yicong Yang <yangyicong@hisilicon.com>");
-+MODULE_DESCRIPTION("Driver for HiSilicon PCIe tune and trace device");
+ 	if (hisi_ptt->trace_ctrl.status == HISI_PTT_TRACE_STATUS_ON)
+ 		hisi_ptt_trace_end(hisi_ptt);
+ 
 diff --git a/drivers/hwtracing/ptt/hisi_ptt.h b/drivers/hwtracing/ptt/hisi_ptt.h
-new file mode 100644
-index 000000000000..8bf5b7be56c0
---- /dev/null
+index ea012ae74c6b..b8f2d520443c 100644
+--- a/drivers/hwtracing/ptt/hisi_ptt.h
 +++ b/drivers/hwtracing/ptt/hisi_ptt.h
-@@ -0,0 +1,149 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Driver for HiSilicon PCIe tune and trace device
-+ *
-+ * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
-+ * Author: Yicong Yang <yangyicong@hisilicon.com>
-+ */
-+
-+#ifndef _HISI_PTT_H
-+#define _HISI_PTT_H
-+
-+#include <linux/bits.h>
-+#include <linux/list.h>
-+#include <linux/mutex.h>
-+#include <linux/pci.h>
-+#include <linux/types.h>
-+
-+#define DRV_NAME "hisi_ptt"
-+
-+/*
-+ * The definition of the device registers and register fields.
-+ */
-+#define HISI_PTT_TRACE_ADDR_SIZE	0x0800
-+#define HISI_PTT_TRACE_ADDR_BASE_LO_0	0x0810
-+#define HISI_PTT_TRACE_ADDR_BASE_HI_0	0x0814
-+#define HISI_PTT_TRACE_ADDR_STRIDE	0x8
-+#define HISI_PTT_TRACE_CTRL		0x0850
-+#define   HISI_PTT_TRACE_CTRL_EN	BIT(0)
-+#define   HISI_PTT_TRACE_CTRL_RST	BIT(1)
-+#define   HISI_PTT_TRACE_CTRL_RXTX_SEL	GENMASK(3, 2)
-+#define   HISI_PTT_TRACE_CTRL_TYPE_SEL	GENMASK(7, 4)
-+#define   HISI_PTT_TRACE_CTRL_DATA_FORMAT	BIT(14)
-+#define   HISI_PTT_TRACE_CTRL_FILTER_MODE	BIT(15)
-+#define   HISI_PTT_TRACE_CTRL_TARGET_SEL	GENMASK(31, 16)
-+#define HISI_PTT_TRACE_INT_STAT		0x0890
-+#define   HISI_PTT_TRACE_INT_STAT_MASK	GENMASK(3, 0)
-+#define HISI_PTT_TRACE_INT_MASK		0x0894
-+#define HISI_PTT_TRACE_WR_STS		0x08a0
-+#define   HISI_PTT_TRACE_WR_STS_WRITE	GENMASK(27, 0)
-+#define   HISI_PTT_TRACE_WR_STS_BUFFER	GENMASK(29, 28)
-+#define HISI_PTT_TRACE_STS		0x08b0
-+#define   HISI_PTT_TRACE_IDLE		BIT(0)
-+#define HISI_PTT_DEVICE_RANGE		0x0fe0
-+#define   HISI_PTT_DEVICE_RANGE_UPPER	GENMASK(31, 16)
-+#define   HISI_PTT_DEVICE_RANGE_LOWER	GENMASK(15, 0)
-+#define HISI_PTT_LOCATION		0x0fe8
-+#define   HISI_PTT_CORE_ID		GENMASK(15, 0)
-+#define   HISI_PTT_SICL_ID		GENMASK(31, 16)
-+
-+/* Parameters of PTT trace DMA part. */
-+#define HISI_PTT_TRACE_DMA_IRQ			0
-+#define HISI_PTT_TRACE_BUF_CNT			4
-+#define HISI_PTT_TRACE_BUF_SIZE			SZ_4M
-+#define HISI_PTT_TRACE_TOTAL_BUF_SIZE		(HISI_PTT_TRACE_BUF_SIZE * \
-+						 HISI_PTT_TRACE_BUF_CNT)
-+/* Wait time for hardware DMA to reset */
-+#define HISI_PTT_RESET_TIMEOUT_US	10UL
-+#define HISI_PTT_RESET_POLL_INTERVAL_US	1UL
-+/* Poll timeout and interval for waiting hardware work to finish */
-+#define HISI_PTT_WAIT_TIMEOUT_US	100UL
-+#define HISI_PTT_WAIT_POLL_INTERVAL_US	10UL
-+
-+#define HISI_PCIE_CORE_PORT_ID(devfn)	(PCI_FUNC(devfn) << 1)
-+
-+enum hisi_ptt_trace_status {
-+	HISI_PTT_TRACE_STATUS_OFF = 0,
-+	HISI_PTT_TRACE_STATUS_ON,
-+};
-+
+@@ -10,11 +10,15 @@
+ #define _HISI_PTT_H
+ 
+ #include <linux/bits.h>
++#include <linux/kfifo.h>
+ #include <linux/list.h>
+ #include <linux/mutex.h>
++#include <linux/notifier.h>
+ #include <linux/pci.h>
+ #include <linux/perf_event.h>
++#include <linux/spinlock.h>
+ #include <linux/types.h>
++#include <linux/workqueue.h>
+ 
+ #define DRV_NAME "hisi_ptt"
+ 
+@@ -57,6 +61,12 @@
+ /* Wait time for hardware DMA to reset */
+ #define HISI_PTT_RESET_TIMEOUT_US	10UL
+ #define HISI_PTT_RESET_POLL_INTERVAL_US	1UL
++/* FIFO size for dynamically updating the PTT trace filter list. */
++#define HISI_PTT_FILTER_UPDATE_FIFO_SIZE	16
++/* Delay time for filter updating work */
++#define HISI_PTT_WORK_DELAY_MS		100UL
++/* Wait time for DMA hardware to reset */
++#define HISI_PTT_RESET_WAIT_MS		1000UL
+ /* Poll timeout and interval for waiting hardware work to finish */
+ #define HISI_PTT_WAIT_TIMEOUT_US	100UL
+ #define HISI_PTT_WAIT_POLL_INTERVAL_US	10UL
+@@ -117,6 +127,15 @@ struct hisi_ptt_filter_desc {
+ 	struct pci_dev *pdev;
+ };
+ 
 +/**
-+ * struct hisi_ptt_dma_buffer - describe a single trace buffer of PTT trace.
-+ *                              The detail of the data format is described
-+ *                              in the documentation of PTT device.
-+ * @dma:   DMA address of this buffer visible to the device
-+ * @addr:  virtual address of this buffer visible to the cpu
++ * struct hisi_ptt_filter_update_info - information for PTT filter updating
++ * @pdev:       the PCI device to update in the filter list
++ * @is_add:     adding to the filter or not
 + */
-+struct hisi_ptt_dma_buffer {
-+	dma_addr_t dma;
-+	void *addr;
-+};
-+
-+/**
-+ * struct hisi_ptt_trace_ctrl - control and status of PTT trace
-+ * @trace_buf:   array of the trace buffers for holding the trace data.
-+ *               the length will be HISI_PTT_TRACE_BUF_CNT.
-+ * @status:      current trace status
-+ * @default_cpu: default cpu to start the trace session
-+ * @buf_index:   the index of current using trace buffer
-+ * @is_port:     whether we're tracing root port or not
-+ * @direction:   direction of the TLP headers to trace
-+ * @filter:      filter value for tracing the TLP headers
-+ * @format:      format of the TLP headers to trace
-+ * @type:        type of the TLP headers to trace
-+ */
-+struct hisi_ptt_trace_ctrl {
-+	struct hisi_ptt_dma_buffer *trace_buf;
-+	enum hisi_ptt_trace_status status;
-+	int default_cpu;
-+	u32 buf_index;
-+	bool is_port;
-+	u32 direction:2;
-+	u32 filter:16;
-+	u32 format:1;
-+	u32 type:4;
-+};
-+
-+/**
-+ * struct hisi_ptt_filter_desc - descriptor of the PTT trace filter
-+ * @list: entry of this descriptor in the filter list
-+ * @pdev: pci_dev related to this filter
-+ */
-+struct hisi_ptt_filter_desc {
-+	struct list_head list;
++struct hisi_ptt_filter_update_info {
 +	struct pci_dev *pdev;
++	bool is_add;
 +};
-+
-+/**
-+ * struct hisi_ptt - per PTT device data
-+ * @trace_ctrl:   the control information of PTT trace
-+ * @iobase:       base IO address of the device
-+ * @pdev:         pci_dev of this PTT device
-+ * @mutex:        mutex to protect the filter list and serialize the perf process.
-+ * @upper:        the upper BDF range of the PCI devices managed by this PTT device
-+ * @lower:        the lower BDF range of the PCI devices managed by this PTT device
-+ * @port_filters: the filter list of root ports
-+ * @req_filters:  the filter list of requester ID
-+ * @port_mask:    port mask of the managed root ports
-+ */
-+struct hisi_ptt {
-+	struct hisi_ptt_trace_ctrl trace_ctrl;
-+	void __iomem *iobase;
-+	struct pci_dev *pdev;
-+	struct mutex mutex;
-+	u32 upper;
-+	u32 lower;
+ 
+ /**
+  * struct hisi_ptt_pmu_buf - descriptor of the AUX buffer of PTT trace
+@@ -144,9 +163,13 @@ struct hisi_ptt_pmu_buf {
+  * @port_filters: the filter list of root ports
+  * @req_filters:  the filter list of requester ID
+  * @port_mask:    port mask of the managed root ports
++ * @work:         delayed work for filter updating
++ * @filter_update_lock: spinlock to protect the filter update fifo
++ * @filter_update_fifo: fifo of the filters waiting to update the filter list
+  */
+ struct hisi_ptt {
+ 	struct hisi_ptt_trace_ctrl trace_ctrl;
++	struct notifier_block hisi_ptt_nb;
+ 	struct pmu hisi_ptt_pmu;
+ 	void __iomem *iobase;
+ 	struct pci_dev *pdev;
+@@ -164,6 +187,17 @@ struct hisi_ptt {
+ 	struct list_head port_filters;
+ 	struct list_head req_filters;
+ 	u16 port_mask;
 +
 +	/*
-+	 * The trace TLP headers can either be filtered by certain
-+	 * root port, or by the requester ID. Organize the filters
-+	 * by @port_filters and @req_filters here. The mask of all
-+	 * the valid ports is also cached for doing sanity check
-+	 * of user input.
++	 * We use a delayed work here to avoid indefinitely waiting for
++	 * the hisi_ptt->mutex which protecting the filter list. The
++	 * work will be delayed only if the mutex can not be held,
++	 * otherwise no delay will be applied.
 +	 */
-+	struct list_head port_filters;
-+	struct list_head req_filters;
-+	u16 port_mask;
-+};
-+
-+#endif /* _HISI_PTT_H */
++	struct delayed_work work;
++	spinlock_t filter_update_lock;
++	DECLARE_KFIFO(filter_update_kfifo, struct hisi_ptt_filter_update_info,
++		      HISI_PTT_FILTER_UPDATE_FIFO_SIZE);
+ };
+ 
+ #define to_hisi_ptt(pmu) container_of(pmu, struct hisi_ptt, hisi_ptt_pmu)
 -- 
 2.24.0
 
