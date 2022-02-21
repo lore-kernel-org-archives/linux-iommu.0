@@ -1,81 +1,76 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 127CCC43219
-	for <iommu@archiver.kernel.org>; Mon, 21 Feb 2022 11:44:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 64DDBC433F5
+	for <iommu@archiver.kernel.org>; Mon, 21 Feb 2022 11:51:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C14A760E35;
-	Mon, 21 Feb 2022 11:44:41 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 04AF040543;
+	Mon, 21 Feb 2022 11:51:17 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id dXxpzlX85E9K; Mon, 21 Feb 2022 11:51:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 78F714051F;
+	Mon, 21 Feb 2022 11:51:15 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 36FCFC001A;
+	Mon, 21 Feb 2022 11:51:15 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B61FEC0011
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 11:51:14 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id A40D060E3C
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 11:51:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tFP9ldo_WxFZ; Mon, 21 Feb 2022 11:44:41 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id AE7F060AD2;
-	Mon, 21 Feb 2022 11:44:40 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 89C17C001A;
-	Mon, 21 Feb 2022 11:44:40 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DF7C1C0011
- for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 11:44:39 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id DAF2D4025F
- for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 11:44:39 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kapsi.fi
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id agrA8f7B_kGA for <iommu@lists.linux-foundation.org>;
- Mon, 21 Feb 2022 11:44:39 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 3E9EB4022A
- for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 11:44:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
- s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
- References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=1NO9ODjqcIpFwr4c+SwXrmtjZPwEE+Ho+Rm0iiAPZyk=; b=ltlJ6oqpzZfDZZpM5E7jwuYZYf
- LKiDxa/KysRWN/yC3XV7t7SitKMQav4x0qO1o2l8kSprsgH6uINegAmPkius7bdHj7KdhmZDFs1Oy
- vhgS4ZQPTX4aIo5snwtlgLJDeK8HIKg1HSmupKaUjCEsJnY6Ycmqua69rHfV3DpT+wfDZfEE5UT4u
- 2Ldu99oOnoZGcCuZf4pL/Pq3NYuFJQcjGdOASfTw1Fa1c6LpnWdZRAhzYQFrybMVRcvlskFF47ka3
- 0BC3ydM6R61myM7Hl9uU8MA6hAmv9Rd2ssw1DibR7BjdRnKyC8vQ5oKyrwzjroyUYsO/ta3aQEWCk
- 6Lw+KhBA==;
-Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70]
- helo=[192.168.1.10])
- by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
- (Exim 4.89) (envelope-from <cyndis@kapsi.fi>)
- id 1nM77D-0004LU-51; Mon, 21 Feb 2022 13:44:27 +0200
-Message-ID: <5d1b6e82-2c9d-8388-697f-0d7305a1206f@kapsi.fi>
-Date: Mon, 21 Feb 2022 13:44:26 +0200
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id aKraCP5Rtgir for <iommu@lists.linux-foundation.org>;
+ Mon, 21 Feb 2022 11:51:13 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 8D9DF60E37
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 11:51:13 +0000 (UTC)
+Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.207])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K2LFt5Hsdz67jnf;
+ Mon, 21 Feb 2022 19:50:10 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 21 Feb 2022 12:51:10 +0100
+Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 21 Feb
+ 2022 11:51:09 +0000
+Date: Mon, 21 Feb 2022 11:51:08 +0000
+To: Yicong Yang <yangyicong@hisilicon.com>
+Subject: Re: [PATCH v4 4/8] hisi_ptt: Add support for dynamically updating
+ the filter list
+Message-ID: <20220221115108.000033bf@Huawei.com>
+In-Reply-To: <20220221084307.33712-5-yangyicong@hisilicon.com>
+References: <20220221084307.33712-1-yangyicong@hisilicon.com>
+ <20220221084307.33712-5-yangyicong@hisilicon.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v3 8/9] drm/tegra: vic: Implement get_streamid_offset
-Content-Language: en-US
-To: Dmitry Osipenko <digetx@gmail.com>,
- Mikko Perttunen <mperttunen@nvidia.com>, thierry.reding@gmail.com,
- jonathanh@nvidia.com, joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
- robin.murphy@arm.com
-References: <20220218113952.3077606-1-mperttunen@nvidia.com>
- <20220218113952.3077606-9-mperttunen@nvidia.com>
- <b1df816b-6838-c435-1a23-5029144e4cfe@gmail.com>
- <7f4e4c47-59f1-1def-36bf-a2ded912f76d@gmail.com>
-From: Mikko Perttunen <cyndis@kapsi.fi>
-In-Reply-To: <7f4e4c47-59f1-1def-36bf-a2ded912f76d@gmail.com>
-X-SA-Exim-Connect-IP: 91.158.25.70
-X-SA-Exim-Mail-From: cyndis@kapsi.fi
-X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
- linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+X-Originating-IP: [10.202.226.41]
+X-ClientProxiedBy: lhreml732-chm.china.huawei.com (10.201.108.83) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
+Cc: mark.rutland@arm.com, prime.zeng@huawei.com,
+ alexander.shishkin@linux.intel.com, linux-pci@vger.kernel.org,
+ linuxarm@huawei.com, will@kernel.org, daniel.thompson@linaro.org,
+ peterz@infradead.org, mingo@redhat.com, helgaas@kernel.org,
+ liuqi115@huawei.com, mike.leach@linaro.org, suzuki.poulose@arm.com,
+ coresight@lists.linaro.org, acme@kernel.org, zhangshaokun@hisilicon.com,
+ linux-arm-kernel@lists.infradead.org, mathieu.poirier@linaro.org,
+ gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+ linux-perf-users@vger.kernel.org, iommu@lists.linux-foundation.org,
+ leo.yan@linaro.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,27 +83,104 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+From: Jonathan Cameron via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMi8xOS8yMiAyMDo1NCwgRG1pdHJ5IE9zaXBlbmtvIHdyb3RlOgo+IDE5LjAyLjIwMjIgMjE6
-NDksIERtaXRyeSBPc2lwZW5rbyDQv9C40YjQtdGCOgo+PiAxOC4wMi4yMDIyIDE0OjM5LCBNaWtr
-byBQZXJ0dHVuZW4g0L/QuNGI0LXRgjoKPj4+ICtzdGF0aWMgaW50IHZpY19nZXRfc3RyZWFtaWRf
-b2Zmc2V0KHN0cnVjdCB0ZWdyYV9kcm1fY2xpZW50ICpjbGllbnQpCj4+PiArewo+Pj4gKwlzdHJ1
-Y3QgdmljICp2aWMgPSB0b192aWMoY2xpZW50KTsKPj4+ICsJaW50IGVycjsKPj4+ICsKPj4+ICsJ
-ZXJyID0gdmljX2xvYWRfZmlybXdhcmUodmljKTsKPj4KPj4gWW91IGNhbid0IGludm9rZSB2aWNf
-bG9hZF9maXJtd2FyZSgpIHdoaWxlIFJQTSBpcyBzdXNwZW5kZWQuIEVpdGhlcgo+PiByZXBsYWNl
-IHRoaXMgd2l0aCBSUE0gZ2V0L3B1dCBvciBkbyBzb21ldGhpbmcgZWxzZS4KCldoeSBub3QsIEkn
-bSBub3Qgc2VlaW5nIGFueSBIVyBhY2Nlc3NlcyBpbiB2aWNfbG9hZF9maXJtd2FyZT8gQWx0aG91
-Z2ggCml0IGxvb2tzIGxpa2UgaXQgbWlnaHQgcmFjZSB3aXRoIHRoZSB2aWNfbG9hZF9maXJtd2Fy
-ZSBjYWxsIGluIAp2aWNfcnVudGltZV9yZXN1bWUgd2hpY2ggcHJvYmFibHkgbmVlZHMgdG8gYmUg
-Zml4ZWQuCgo+Pgo+Pj4gKwlpZiAoZXJyIDwgMCkKPj4+ICsJCXJldHVybiBlcnI7Cj4+PiArCj4+
-PiArCWlmICh2aWMtPmNhbl91c2VfY29udGV4dCkKPj4+ICsJCXJldHVybiAweDMwOwo+Pj4gKwll
-bHNlCj4+PiArCQlyZXR1cm4gLUVOT1RTVVBQOwo+Pgo+PiBJZiAoIXZpYy0+Y2FuX3VzZV9jb250
-ZXh0KQo+PiAJcmV0dXJuIC1FTk9UU1VQUDsKPj4KPj4gcmV0dXJuIDB4MzA7Cj4gCj4gYW5kIHMv
-RU5PVFNVUFAvRU9QTk9UU1VQUC8KCk9rLgoKTWlra28KX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxp
-bnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWls
-bWFuL2xpc3RpbmZvL2lvbW11
+On Mon, 21 Feb 2022 16:43:03 +0800
+Yicong Yang <yangyicong@hisilicon.com> wrote:
+
+> The PCIe devices supported by the PTT trace can be removed/rescanned
+> by hotplug or through sysfs.  Add support for dynamically updating
+> the available filter list by registering a PCI bus notifier block.
+> Then user can always get latest information about available tracing
+> filters and driver can block the invalid filters of which related
+> devices no longer exist in the system.
+> 
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+
+One comment following on from ordering of mixed devm and manual cleanup
+in earlier patches.
+
+Otherwise looks fine to me.
+
+> ---
+>  drivers/hwtracing/ptt/hisi_ptt.c | 138 ++++++++++++++++++++++++++++---
+>  drivers/hwtracing/ptt/hisi_ptt.h |  34 ++++++++
+>  2 files changed, 160 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/hwtracing/ptt/hisi_ptt.c b/drivers/hwtracing/ptt/hisi_ptt.c
+> index c2b6f8aa9f1e..50193a331faa 100644
+> --- a/drivers/hwtracing/ptt/hisi_ptt.c
+> +++ b/drivers/hwtracing/ptt/hisi_ptt.c
+> @@ -269,25 +269,118 @@ static int hisi_ptt_register_irq(struct hisi_ptt *hisi_ptt)
+>  	return 0;
+>  }
+>  
+
+
+...
+
+> @@ -313,6 +406,9 @@ static void hisi_ptt_init_ctrls(struct hisi_ptt *hisi_ptt)
+>  	struct pci_bus *bus;
+>  	u32 reg;
+>  
+> +	INIT_DELAYED_WORK(&hisi_ptt->work, hisi_ptt_update_filters);
+> +	spin_lock_init(&hisi_ptt->filter_update_lock);
+> +	INIT_KFIFO(hisi_ptt->filter_update_kfifo);
+>  	INIT_LIST_HEAD(&hisi_ptt->port_filters);
+>  	INIT_LIST_HEAD(&hisi_ptt->req_filters);
+>  
+> @@ -329,6 +425,13 @@ static void hisi_ptt_init_ctrls(struct hisi_ptt *hisi_ptt)
+>  	hisi_ptt->upper = FIELD_GET(HISI_PTT_DEVICE_RANGE_UPPER, reg);
+>  	hisi_ptt->lower = FIELD_GET(HISI_PTT_DEVICE_RANGE_LOWER, reg);
+>  
+> +	/*
+> +	 * No need to fail if the bus is NULL here as the device
+> +	 * maybe hotplugged after the PTT driver probe, in which
+> +	 * case we can detect the event and update the list as
+> +	 * we register a bus notifier for dynamically updating
+> +	 * the filter list.
+> +	 */
+>  	bus = pci_find_bus(pci_domain_nr(pdev->bus), PCI_BUS_NUM(hisi_ptt->upper));
+>  	if (bus)
+>  		pci_walk_bus(bus, hisi_ptt_init_filters, hisi_ptt);
+> @@ -832,6 +935,12 @@ static int hisi_ptt_probe(struct pci_dev *pdev,
+>  		return ret;
+>  	}
+>  
+> +	/* Register the bus notifier for dynamically updating the filter list */
+> +	hisi_ptt->hisi_ptt_nb.notifier_call = hisi_ptt_notifier_call;
+> +	ret = bus_register_notifier(&pci_bus_type, &hisi_ptt->hisi_ptt_nb);
+> +	if (ret)
+> +		pci_warn(pdev, "failed to register filter update notifier, ret = %d", ret);
+> +
+>  	return 0;
+>  }
+>  
+> @@ -839,6 +948,11 @@ void hisi_ptt_remove(struct pci_dev *pdev)
+>  {
+>  	struct hisi_ptt *hisi_ptt = pci_get_drvdata(pdev);
+>  
+> +	bus_unregister_notifier(&pci_bus_type, &hisi_ptt->hisi_ptt_nb);
+> +
+
+wrt to earlier comment on ordering you'll also need to move these to
+a devm_action() call to keep the ordering clean wrt to probe vs remove().
+
+> +	/* Cancel any work that has been queued */
+> +	cancel_delayed_work_sync(&hisi_ptt->work);
+> +
+>  	if (hisi_ptt->trace_ctrl.status == HISI_PTT_TRACE_STATUS_ON)
+>  		hisi_ptt_trace_end(hisi_ptt);
+>  
+
+...
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
