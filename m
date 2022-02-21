@@ -1,46 +1,46 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 96B25C35278
-	for <iommu@archiver.kernel.org>; Mon, 21 Feb 2022 08:44:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C7F59C433EF
+	for <iommu@archiver.kernel.org>; Mon, 21 Feb 2022 08:44:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 260204051C;
-	Mon, 21 Feb 2022 08:44:28 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 6FA4081248;
+	Mon, 21 Feb 2022 08:44:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RkxBoxAV-3TO; Mon, 21 Feb 2022 08:44:26 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1122F404FB;
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id J9pA5S1NAZ08; Mon, 21 Feb 2022 08:44:26 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 35C1180DB9;
 	Mon, 21 Feb 2022 08:44:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0F2E7C007B;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 45B5FC007E;
 	Mon, 21 Feb 2022 08:44:25 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B8D2FC0011
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ED403C0011
  for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 08:44:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id B4C2A40873
+ by smtp2.osuosl.org (Postfix) with ESMTP id C1AE24010E
  for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 08:44:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Ltjp3MXdkPBG for <iommu@lists.linux-foundation.org>;
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4gTsQbwOrEwT for <iommu@lists.linux-foundation.org>;
  Mon, 21 Feb 2022 08:44:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 70D5C403ED
- for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 08:44:21 +0000 (UTC)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
- by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K2G643NVwzcg14;
- Mon, 21 Feb 2022 16:43:08 +0800 (CST)
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id D5BC1404FB
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Feb 2022 08:44:20 +0000 (UTC)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
+ by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K2G2F6Sb0zbbZs;
+ Mon, 21 Feb 2022 16:39:49 +0800 (CST)
 Received: from localhost.localdomain (10.67.164.66) by
  canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 21 Feb 2022 16:44:18 +0800
+ 15.1.2308.21; Mon, 21 Feb 2022 16:44:17 +0800
 To: <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
  <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
  <will@kernel.org>, <mark.rutland@arm.com>, <mathieu.poirier@linaro.org>,
@@ -52,9 +52,10 @@ To: <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
  <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
  <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
  <linux-perf-users@vger.kernel.org>, <iommu@lists.linux-foundation.org>
-Subject: [PATCH v4 7/8] docs: Add HiSilicon PTT device driver documentation
-Date: Mon, 21 Feb 2022 16:43:06 +0800
-Message-ID: <20220221084307.33712-8-yangyicong@hisilicon.com>
+Subject: [PATCH v4 5/8] hisi_ptt: Add tune function support for HiSilicon PCIe
+ Tune and Trace device
+Date: Mon, 21 Feb 2022 16:43:04 +0800
+Message-ID: <20220221084307.33712-6-yangyicong@hisilicon.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220221084307.33712-1-yangyicong@hisilicon.com>
 References: <20220221084307.33712-1-yangyicong@hisilicon.com>
@@ -84,323 +85,232 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Document the introduction and usage of HiSilicon PTT device driver.
+Add tune function for the HiSilicon Tune and Trace device. The interface
+of tune is exposed through sysfs attributes of PTT PMU device.
 
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
 ---
- Documentation/trace/hisi-ptt.rst | 303 +++++++++++++++++++++++++++++++
- 1 file changed, 303 insertions(+)
- create mode 100644 Documentation/trace/hisi-ptt.rst
+ drivers/hwtracing/ptt/hisi_ptt.c | 154 +++++++++++++++++++++++++++++++
+ drivers/hwtracing/ptt/hisi_ptt.h |  19 ++++
+ 2 files changed, 173 insertions(+)
 
-diff --git a/Documentation/trace/hisi-ptt.rst b/Documentation/trace/hisi-ptt.rst
-new file mode 100644
-index 000000000000..13677705ee1f
---- /dev/null
-+++ b/Documentation/trace/hisi-ptt.rst
-@@ -0,0 +1,303 @@
-+.. SPDX-License-Identifier: GPL-2.0
+diff --git a/drivers/hwtracing/ptt/hisi_ptt.c b/drivers/hwtracing/ptt/hisi_ptt.c
+index 50193a331faa..4aafaf6f752f 100644
+--- a/drivers/hwtracing/ptt/hisi_ptt.c
++++ b/drivers/hwtracing/ptt/hisi_ptt.c
+@@ -21,6 +21,159 @@
+ 
+ #include "hisi_ptt.h"
+ 
++static int hisi_ptt_wait_tuning_finish(struct hisi_ptt *hisi_ptt)
++{
++	u32 val;
 +
-+======================================
-+HiSilicon PCIe Tune and Trace device
-+======================================
++	return readl_poll_timeout(hisi_ptt->iobase + HISI_PTT_TUNING_INT_STAT,
++				  val, !(val & HISI_PTT_TUNING_INT_STAT_MASK),
++				  HISI_PTT_WAIT_POLL_INTERVAL_US,
++				  HISI_PTT_WAIT_TIMEOUT_US);
++}
 +
-+Introduction
-+============
++static int hisi_ptt_tune_data_get(struct hisi_ptt *hisi_ptt,
++				  u32 event, u16 *data)
++{
++	u32 reg;
 +
-+HiSilicon PCIe tune and trace device (PTT) is a PCIe Root Complex
-+integrated Endpoint (RCiEP) device, providing the capability
-+to dynamically monitor and tune the PCIe link's events (tune),
-+and trace the TLP headers (trace). The two functions are independent,
-+but is recommended to use them together to analyze and enhance the
-+PCIe link's performance.
++	reg = readl(hisi_ptt->iobase + HISI_PTT_TUNING_CTRL);
++	reg &= ~(HISI_PTT_TUNING_CTRL_CODE | HISI_PTT_TUNING_CTRL_SUB);
++	reg |= FIELD_PREP(HISI_PTT_TUNING_CTRL_CODE | HISI_PTT_TUNING_CTRL_SUB,
++			  event);
++	writel(reg, hisi_ptt->iobase + HISI_PTT_TUNING_CTRL);
 +
-+On Kunpeng 930 SoC, the PCIe Root Complex is composed of several
-+PCIe cores. Each PCIe core includes several Root Ports and a PTT
-+RCiEP, like below. The PTT device is capable of tuning and
-+tracing the links of the PCIe core.
-+::
-+          +--------------Core 0-------+
-+          |       |       [   PTT   ] |
-+          |       |       [Root Port]---[Endpoint]
-+          |       |       [Root Port]---[Endpoint]
-+          |       |       [Root Port]---[Endpoint]
-+    Root Complex  |------Core 1-------+
-+          |       |       [   PTT   ] |
-+          |       |       [Root Port]---[ Switch ]---[Endpoint]
-+          |       |       [Root Port]---[Endpoint] `-[Endpoint]
-+          |       |       [Root Port]---[Endpoint]
-+          +---------------------------+
++	/* Write all 1 to indicates it's the read process */
++	writel(~0UL, hisi_ptt->iobase + HISI_PTT_TUNING_DATA);
 +
-+The PTT device driver registers one PMU device for each PTT device.
-+The name of each PTT device is composed of 'hisi_ptt' prefix with
-+the id of the SICL and the Core where it locates. The Kunpeng 930
-+SoC encapsulates multiple CPU dies (SCCL, Super CPU Cluster) and
-+IO dies (SICL, Super I/O Cluster), where there's one PCIe Root
-+Complex for each SICL.
-+::
-+    /sys/devices/hisi_ptt<sicl_id>_<core_id>
++	if (hisi_ptt_wait_tuning_finish(hisi_ptt))
++		return -ETIMEDOUT;
 +
-+Tune
-+====
++	reg = readl(hisi_ptt->iobase + HISI_PTT_TUNING_DATA);
++	reg &= HISI_PTT_TUNING_DATA_VAL_MASK;
++	*data = FIELD_GET(HISI_PTT_TUNING_DATA_VAL_MASK, reg);
 +
-+PTT tune is designed for monitoring and adjusting PCIe link parameters (events).
-+Currently we support events in 4 classes. The scope of the events
-+covers the PCIe core to which the PTT device belongs.
++	return 0;
++}
 +
-+Each event is presented as a file under $(PTT PMU dir)/tune, and
-+a simple open/read/write/close cycle will be used to tune the event.
-+::
-+    $ cd /sys/devices/hisi_ptt<sicl_id>_<core_id>/tune
-+    $ ls
-+    qos_tx_cpl    qos_tx_np    qos_tx_p
-+    tx_path_rx_req_alloc_buf_level
-+    tx_path_tx_req_alloc_buf_level
-+    $ cat qos_tx_dp
-+    1
-+    $ echo 2 > qos_tx_dp
-+    $ cat qos_tx_dp
-+    2
++static int hisi_ptt_tune_data_set(struct hisi_ptt *hisi_ptt,
++				  u32 event, u16 data)
++{
++	u32 reg;
 +
-+Current value (numerical value) of the event can be simply read
-+from the file, and the desired value written to the file to tune.
++	reg = readl(hisi_ptt->iobase + HISI_PTT_TUNING_CTRL);
++	reg &= ~(HISI_PTT_TUNING_CTRL_CODE | HISI_PTT_TUNING_CTRL_SUB);
++	reg |= FIELD_PREP(HISI_PTT_TUNING_CTRL_CODE | HISI_PTT_TUNING_CTRL_SUB,
++			  event);
++	writel(reg, hisi_ptt->iobase + HISI_PTT_TUNING_CTRL);
 +
-+1. Tx path QoS control
-+------------------------
++	writel(FIELD_PREP(HISI_PTT_TUNING_DATA_VAL_MASK, data),
++	       hisi_ptt->iobase + HISI_PTT_TUNING_DATA);
 +
-+The following files are provided to tune the QoS of the tx path of
-+the PCIe core.
++	if (hisi_ptt_wait_tuning_finish(hisi_ptt))
++		return -ETIMEDOUT;
 +
-+- qos_tx_cpl: weight of Tx completion TLPs
-+- qos_tx_np: weight of Tx non-posted TLPs
-+- qos_tx_p: weight of Tx posted TLPs
++	return 0;
++}
 +
-+The weight influences the proportion of certain packets on the PCIe link.
-+For example, for the storage scenario, increase the proportion
-+of the completion packets on the link to enhance the performance as
-+more completions are consumed.
++static ssize_t hisi_ptt_tune_attr_show(struct device *dev,
++				       struct device_attribute *attr,
++				       char *buf)
++{
++	struct hisi_ptt *hisi_ptt = to_hisi_ptt(dev_get_drvdata(dev));
++	struct dev_ext_attribute *ext_attr;
++	struct hisi_ptt_tune_desc *desc;
++	int ret;
++	u16 val;
 +
-+The available tune data of these events is [0, 1, 2].
-+Writing a negative value will return an error, and out of range
-+values will be converted to 2. Note that the event value just
-+indicates a probable level, but is not precise.
++	ext_attr = container_of(attr, struct dev_ext_attribute, attr);
++	desc = ext_attr->var;
 +
-+2. Tx path buffer control
-+-------------------------
++	if (!mutex_trylock(&hisi_ptt->mutex))
++		return -EBUSY;
 +
-+Following files are provided to tune the buffer of tx path of the PCIe core.
++	ret = hisi_ptt_tune_data_get(hisi_ptt, desc->event_code, &val);
 +
-+- tx_path_rx_req_alloc_buf_level: watermark of Rx requested
-+- tx_path_tx_req_alloc_buf_level: watermark of Tx requested
++	mutex_unlock(&hisi_ptt->mutex);
++	return ret ? ret : sysfs_emit(buf, "%u\n", val);
++}
 +
-+These events influence the watermark of the buffer allocated for each
-+type. Rx means the inbound while Tx means outbound. The packets will
-+be stored in the buffer first and then transmitted either when the
-+watermark reached or when timed out. For a busy direction, you should
-+increase the related buffer watermark to avoid frequently posting and
-+thus enhance the performance. In most cases just keep the default value.
++static ssize_t hisi_ptt_tune_attr_store(struct device *dev,
++					struct device_attribute *attr,
++					const char *buf, size_t count)
++{
++	struct hisi_ptt *hisi_ptt = to_hisi_ptt(dev_get_drvdata(dev));
++	struct dev_ext_attribute *ext_attr;
++	struct hisi_ptt_tune_desc *desc;
++	int ret;
++	u16 val;
 +
-+The available tune data of above events is [0, 1, 2].
-+Writing a negative value will return an error, and out of range
-+values will be converted to 2. Note that the event value just
-+indicates a probable level, but is not precise.
++	ext_attr = container_of(attr, struct dev_ext_attribute, attr);
++	desc = ext_attr->var;
 +
-+Trace
-+=====
++	if (kstrtou16(buf, 10, &val))
++		return -EINVAL;
 +
-+PTT trace is designed for dumping the TLP headers to the memory, which
-+can be used to analyze the transactions and usage condition of the PCIe
-+Link. You can choose to filter the traced headers by either requester ID,
-+or those downstream of a set of Root Ports on the same core of the PTT
-+device. It's also supported to trace the headers of certain type and of
-+certain direction.
++	if (!mutex_trylock(&hisi_ptt->mutex))
++		return -EBUSY;
 +
-+You can use the perf command `perf record` to set the parameters, start
-+trace and get the data. It's also supported to decode the trace
-+data with `perf report`. The control parameters for trace is inputted
-+as event code for each events, which will be further illustrated later.
-+An example usage is like
-+::
-+    $ perf record -e hisi_ptt0_2/filter=0x80001,type=1,direction=1,
-+      format=1/ -- sleep 5
++	ret = hisi_ptt_tune_data_set(hisi_ptt, desc->event_code, val);
 +
-+This will trace the TLP headers downstream root port 0000:00:10.1 (event
-+code for event 'filter' is 0x80001) with type of posted TLP requests,
-+direction of inbound and traced data format of 8DW.
++	mutex_unlock(&hisi_ptt->mutex);
++	return ret ? ret : count;
++}
 +
-+1. filter
-+---------
++#define HISI_PTT_TUNE_ATTR(_name, _val, _show, _store)			\
++	static struct hisi_ptt_tune_desc _name##_desc = {		\
++		.name = #_name,						\
++		.event_code = _val,					\
++	};								\
++	static struct dev_ext_attribute hisi_ptt_##_name##_attr = {	\
++		.attr	= __ATTR(_name, 0600, _show, _store),		\
++		.var	= &_name##_desc,				\
++	}
 +
-+The TLP headers to trace can be filtered by the Root Ports or the requester
-+ID of the endpoints, which are located on the same core of the PTT device.
-+You can set the filter by specifying the `filter` parameter which is required
-+to start the trace. The parameter value is 20 bit. The supported filters and
-+related values are outputted through `available_root_port_filters` and
-+`available_requester_filters` sysfs attributes for Root Ports and Requesters
-+respectively.
-+::
-+    $ cat available_root_port_filters
-+    0000:00:10.0	0x80001
-+    0000:00:11.0	0x80004
-+    $ cat available_requester_filters
-+    0000:01:00.0	0x00100
-+    0000:01:00.1	0x00101
++#define HISI_PTT_TUNE_ATTR_COMMON(_name, _val)		\
++	HISI_PTT_TUNE_ATTR(_name, _val,			\
++			   hisi_ptt_tune_attr_show,	\
++			   hisi_ptt_tune_attr_store)
 +
-+Note that multiple Root Ports can be specified at one time, but only
-+one Endpoint function can be specified in one trace. Specifying both
-+Root Port and function at the same time is not supported.
++/*
++ * The value of the tuning event are composed of two parts: main event code in bit[0,15] and
++ * subevent code in bit[16,23]. For example, qox_tx_cpl is a subevent of 'Tx path QoS control'
++ * which for tuning the weight of Tx completion TLPs. See hisi_ptt.rst documentation for
++ * more information.
++ */
++#define HISI_PTT_TUNE_QOS_TX_CPL				(0x4 | (3 << 16))
++#define HISI_PTT_TUNE_QOS_TX_NP					(0x4 | (4 << 16))
++#define HISI_PTT_TUNE_QOS_TX_P					(0x4 | (5 << 16))
++#define HISI_PTT_TUNE_TX_PATH_IOB_RX_REQ_ALLOC_BUF_LEVEL	(0x5 | (6 << 16))
++#define HISI_PTT_TUNE_TX_PATH_TX_REQ_ALLOC_BUF_LEVEL		(0x5 | (7 << 16))
 +
-+If no filter is available, reading the related filter sysfs attribute
-+will get an empty string.
-+::
-+    $ cat available_root_port_filters
++HISI_PTT_TUNE_ATTR_COMMON(qos_tx_cpl,
++			  HISI_PTT_TUNE_QOS_TX_CPL);
++HISI_PTT_TUNE_ATTR_COMMON(qos_tx_np,
++			  HISI_PTT_TUNE_QOS_TX_NP);
++HISI_PTT_TUNE_ATTR_COMMON(qos_tx_p,
++			  HISI_PTT_TUNE_QOS_TX_P);
++HISI_PTT_TUNE_ATTR_COMMON(tx_path_iob_rx_req_alloc_buf_level,
++			  HISI_PTT_TUNE_TX_PATH_IOB_RX_REQ_ALLOC_BUF_LEVEL);
++HISI_PTT_TUNE_ATTR_COMMON(tx_path_tx_req_alloc_buf_level,
++			  HISI_PTT_TUNE_TX_PATH_TX_REQ_ALLOC_BUF_LEVEL);
 +
-+    $ cat available_requester_filters
++static struct attribute *hisi_ptt_tune_attrs[] = {
++	&hisi_ptt_qos_tx_cpl_attr.attr.attr,
++	&hisi_ptt_qos_tx_np_attr.attr.attr,
++	&hisi_ptt_qos_tx_p_attr.attr.attr,
++	&hisi_ptt_tx_path_iob_rx_req_alloc_buf_level_attr.attr.attr,
++	&hisi_ptt_tx_path_tx_req_alloc_buf_level_attr.attr.attr,
++	NULL,
++};
 +
-+The available filters can be dynamically updated, which means you can always
-+get correct filter information when hotplug events happen, or when you manually
-+remove/rescan the devices.
++static struct attribute_group hisi_ptt_tune_group = {
++	.attrs	= hisi_ptt_tune_attrs,
++	.name	= "tune",
++};
 +
-+2. type
-+-------
+ static u16 hisi_ptt_get_filter_val(struct pci_dev *pdev)
+ {
+ 	if (pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT)
+@@ -521,6 +674,7 @@ static struct attribute_group hisi_ptt_pmu_filter_group = {
+ static const struct attribute_group *hisi_ptt_pmu_groups[] = {
+ 	&hisi_ptt_pmu_format_group,
+ 	&hisi_ptt_pmu_filter_group,
++	&hisi_ptt_tune_group,
+ 	NULL
+ };
+ 
+diff --git a/drivers/hwtracing/ptt/hisi_ptt.h b/drivers/hwtracing/ptt/hisi_ptt.h
+index b8f2d520443c..70b662393af9 100644
+--- a/drivers/hwtracing/ptt/hisi_ptt.h
++++ b/drivers/hwtracing/ptt/hisi_ptt.h
+@@ -25,6 +25,11 @@
+ /*
+  * The definition of the device registers and register fields.
+  */
++#define HISI_PTT_TUNING_CTRL		0x0000
++#define   HISI_PTT_TUNING_CTRL_CODE	GENMASK(15, 0)
++#define   HISI_PTT_TUNING_CTRL_SUB	GENMASK(23, 16)
++#define HISI_PTT_TUNING_DATA		0x0004
++#define   HISI_PTT_TUNING_DATA_VAL_MASK	GENMASK(15, 0)
+ #define HISI_PTT_TRACE_ADDR_SIZE	0x0800
+ #define HISI_PTT_TRACE_ADDR_BASE_LO_0	0x0810
+ #define HISI_PTT_TRACE_ADDR_BASE_HI_0	0x0814
+@@ -40,6 +45,8 @@
+ #define HISI_PTT_TRACE_INT_STAT		0x0890
+ #define   HISI_PTT_TRACE_INT_STAT_MASK	GENMASK(3, 0)
+ #define HISI_PTT_TRACE_INT_MASK		0x0894
++#define HISI_PTT_TUNING_INT_STAT	0x0898
++#define   HISI_PTT_TUNING_INT_STAT_MASK	BIT(0)
+ #define HISI_PTT_TRACE_WR_STS		0x08a0
+ #define   HISI_PTT_TRACE_WR_STS_WRITE	GENMASK(27, 0)
+ #define   HISI_PTT_TRACE_WR_STS_BUFFER	GENMASK(29, 28)
+@@ -78,6 +85,18 @@ enum hisi_ptt_trace_status {
+ 	HISI_PTT_TRACE_STATUS_ON,
+ };
+ 
++/**
++ * struct hisi_ptt_tune_desc - describe tune event for PTT tune
++ * @hisi_ptt:   PTT device this tune event belongs to
++ * @name:       name of this event
++ * @event_code: code of the event
++ */
++struct hisi_ptt_tune_desc {
++	struct hisi_ptt *hisi_ptt;
++	const char *name;
++	u32 event_code;
++};
 +
-+You can trace the TLP headers of certain types by specifying the `type`
-+parameter, which is required to start the trace. The parameter value is
-+8 bit. Current supported types and related values are shown below:
-+
-+8'b00000001: posted requests (P)
-+8'b00000010: non-posted requests (NP)
-+8'b00000100: completions (CPL)
-+
-+You can specify multiple types when tracing inbound TLP headers, but can only
-+specify one when tracing outbound TLP headers.
-+
-+3. direction
-+------------
-+
-+You can trace the TLP headers from certain direction, which is relative
-+to the Root Port or the PCIe core, by specifying the `direction` parameter.
-+This is optional and the default parameter is inbound. The parameter value
-+is 4 bit. When the desired format is 4DW, directions and related values
-+supported are shown below:
-+
-+4'b0000: inbound TLPs (P, NP, CPL)
-+4'b0001: outbound TLPs (P, NP, CPL)
-+4'b0010: outbound TLPs (P, NP, CPL) and inbound TLPs (P, NP, CPL B)
-+4'b0011: outbound TLPs (P, NP, CPL) and inbound TLPs (CPL A)
-+
-+When the desired format is 8DW, directions and related values supported are
-+shown below:
-+
-+4'b0000: reserved
-+4'b0001: outbound TLPs (P, NP, CPL)
-+4'b0010: inbound TLPs (P, NP, CPL B)
-+4'b0011: inbound TLPs (CPL A)
-+
-+Inbound completions are classified into two types:
-+
-+completion A (CPL A): completion of CHI/DMA/Native non-posted requests, except for CPL B
-+completion B (CPL B): completion of DMA remote2local and P2P non-posted requests
-+
-+4. format
-+--------------
-+
-+You can change the format of the traced TLP headers by specifying the
-+`format` parameter. The default format is 4DW. The parameter value is 4 bit.
-+Current supported formats and related values are shown below:
-+
-+4'b0000: 4DW length per TLP header
-+4'b0001: 8DW length per TLP header
-+
-+The traced TLP header format is different from the PCIe standard.
-+
-+When using the 8DW data format, the entire TLP header is logged
-+(Header DW0-3 shown below). For example, the TLP header for Memory
-+Reads with 64-bit addresses is shown in PCIe r5.0, Figure 2-17;
-+the header for Configuration Requests is shown in Figure 2.20, etc.
-+
-+In addition, 8DW trace buffer entries contain a timestamp and
-+possibly a prefix for a PASID TLP prefix (see Figure 6-20, PCIe r5.0).
-+Otherwise this field will be all 0.
-+
-+The bit[31:11] of DW0 is always 0x1fffff, which can be
-+used to distinguish the data format. 8DW format is like
-+::
-+    bits [                 31:11                 ][       10:0       ]
-+         |---------------------------------------|-------------------|
-+     DW0 [                0x1fffff               ][ Reserved (0x7ff) ]
-+     DW1 [                       Prefix                              ]
-+     DW2 [                     Header DW0                            ]
-+     DW3 [                     Header DW1                            ]
-+     DW4 [                     Header DW2                            ]
-+     DW5 [                     Header DW3                            ]
-+     DW6 [                   Reserved (0x0)                          ]
-+     DW7 [                        Time                               ]
-+
-+When using the 4DW data format, DW0 of the trace buffer entry
-+contains selected fields of DW0 of the TLP, together with a
-+timestamp.  DW1-DW3 of the trace buffer entry contain DW1-DW3
-+directly from the TLP header.
-+
-+4DW format is like
-+::
-+    bits [31:30] [ 29:25 ][24][23][22][21][    20:11   ][    10:0    ]
-+         |-----|---------|---|---|---|---|-------------|-------------|
-+     DW0 [ Fmt ][  Type  ][T9][T8][TH][SO][   Length   ][    Time    ]
-+     DW1 [                     Header DW1                            ]
-+     DW2 [                     Header DW2                            ]
-+     DW3 [                     Header DW3                            ]
-+
-+5. memory management
-+--------------------
-+
-+The traced TLP headers will be written to the memory allocated
-+by the driver. The hardware accepts 4 DMA address with same size,
-+and writes the buffer sequentially like below. If DMA addr 3 is
-+finished and the trace is still on, it will return to addr 0.
-+::
-+    +->[DMA addr 0]->[DMA addr 1]->[DMA addr 2]->[DMA addr 3]-+
-+    +---------------------------------------------------------+
-+
-+Driver will allocate each DMA buffer of 4MiB. The finished buffer
-+will be copied to the perf AUX buffer allocated by the perf core.
-+Once the AUX buffer is full while the trace is still on, driver
-+will commit the AUX buffer first and then apply for a new one with
-+the same size. The size of AUX buffer is default to 16MiB. User can
-+adjust the size by specifying the `-m` parameter of the perf command.
-+
-+Note that there is a gap between committing the old AUX buffer and
-+applying a new one, which means the trace is stopped during the
-+moment and TLPs transferred in the moment cannot be traced. To avoid
-+this situation, you should begin the trace with large AUX buffer
-+enough to avoid this gap.
-+
-+6. decoding
-+-----------
-+
-+You can decode the traced data with `perf report -D` command (currently
-+only support to dump the raw trace data). The traced data will be decoded
-+according to the format described previously (take 8DW as an example):
-+::
-+    [...perf headers and other information]
-+    . ... HISI PTT data: size 4194304 bytes
-+    .  00000000: 00 00 00 00                                 Prefix
-+    .  00000004: 01 00 00 60                                 Header DW0
-+    .  00000008: 0f 1e 00 01                                 Header DW1
-+    .  0000000c: 04 00 00 00                                 Header DW2
-+    .  00000010: 40 00 81 02                                 Header DW3
-+    .  00000014: 33 c0 04 00                                 Time
-+    .  00000020: 00 00 00 00                                 Prefix
-+    .  00000024: 01 00 00 60                                 Header DW0
-+    .  00000028: 0f 1e 00 01                                 Header DW1
-+    .  0000002c: 04 00 00 00                                 Header DW2
-+    .  00000030: 40 00 81 02                                 Header DW3
-+    .  00000034: 02 00 00 00                                 Time
-+    .  00000040: 00 00 00 00                                 Prefix
-+    .  00000044: 01 00 00 60                                 Header DW0
-+    .  00000048: 0f 1e 00 01                                 Header DW1
-+    .  0000004c: 04 00 00 00                                 Header DW2
-+    .  00000050: 40 00 81 02                                 Header DW3
-+    [...]
+ /**
+  * struct hisi_ptt_dma_buffer - describe a single trace buffer of PTT trace.
+  *                              The detail of the data format is described
 -- 
 2.24.0
 
