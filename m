@@ -1,91 +1,65 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C4871C433F5
-	for <iommu@archiver.kernel.org>; Tue, 22 Feb 2022 04:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1BC1AC433EF
+	for <iommu@archiver.kernel.org>; Tue, 22 Feb 2022 08:05:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 3FCCC408FE;
-	Tue, 22 Feb 2022 04:50:16 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id BD0D460E91;
+	Tue, 22 Feb 2022 08:05:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6cAwkM-Ft-NG; Tue, 22 Feb 2022 04:50:15 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qxqAxYuz4Hyp; Tue, 22 Feb 2022 08:05:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 18086408E7;
-	Tue, 22 Feb 2022 04:50:15 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 97AC860803;
+	Tue, 22 Feb 2022 08:05:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DE310C0021;
-	Tue, 22 Feb 2022 04:50:14 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 37615C0011
- for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 04:50:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C509C001A;
+	Tue, 22 Feb 2022 08:05:52 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 11AF6C0011
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 08:05:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 31D614058C
- for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 04:50:14 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id EFF5E81433
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 08:05:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xuByIjnB9BxP for <iommu@lists.linux-foundation.org>;
- Tue, 22 Feb 2022 04:50:13 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 2166640145
- for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 04:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1645505413; x=1677041413;
- h=message-id:date:mime-version:cc:subject:to:references:
- from:in-reply-to:content-transfer-encoding;
- bh=7bEcFXv/PBrDnpJkRJDcOGeL+LDolQ6d+dndBSOh350=;
- b=OynYmG91V6PR7jjP7JxxeTVU62vdQkFD+Zjpefce0srvegQb9yHN6plE
- OtUs5yutGkGBKdCyzvbb+7i7L/0fbdMEgXVp8TiRbyWafAjP0J/F9LnQx
- S7roeSwOdmJaaMVZ+28YGXNz4BcCNSFlESFfHsouGWjeFxoGW9SH87sPC
- IID+GYc3O5Jx0rv0TJCLrrjpJoxRioLiPYlL+3bmtZOWnvnCm/Z7ek/er
- X+PAtRzUFyDbvgo1NEp7cUucqO/oM6/CrOPyoY/R3rhHlNMfQCHJvxW1u
- WPwuA40o74VilO9YrVU09yI3OsWYbhkLmNbSTkPn/g6/mtsiDO2btamHB A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="232230488"
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; d="scan'208";a="232230488"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 21 Feb 2022 20:50:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; d="scan'208";a="683385469"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
- ([10.239.159.118])
- by fmsmga001.fm.intel.com with ESMTP; 21 Feb 2022 20:50:06 -0800
-Message-ID: <c212094a-399e-1038-99e0-7a08d0da2a61@linux.intel.com>
-Date: Tue, 22 Feb 2022 12:48:39 +0800
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id RF0UyRx8jy5B for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Feb 2022 08:05:49 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id BF04A81431
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 08:05:49 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id B968768AA6; Tue, 22 Feb 2022 09:05:43 +0100 (CET)
+Date: Tue, 22 Feb 2022 09:05:43 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Tianyu Lan <ltykernel@gmail.com>
+Subject: Re: [PATCH V2 1/2] Swiotlb: Add swiotlb_alloc_from_low_pages switch
+Message-ID: <20220222080543.GA5412@lst.de>
+References: <20220209122302.213882-1-ltykernel@gmail.com>
+ <20220209122302.213882-2-ltykernel@gmail.com> <20220214081919.GA18337@lst.de>
+ <4f433f07-05be-f81f-43e8-55c3f1af23b3@gmail.com>
+ <20220214135834.GA30150@lst.de>
+ <8d052867-ccff-f00f-7c89-cc26a4bfa347@gmail.com>
+ <23f4a64d-5977-1816-8faa-fe7691ace2ff@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v6 02/11] driver core: Add dma_cleanup callback in bus_type
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
-References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
- <20220218005521.172832-3-baolu.lu@linux.intel.com>
- <YhCdEmC2lYStmUSL@infradead.org>
- <1d8004d3-1887-4fc7-08d2-0e2ee6b5fdcb@arm.com>
- <20220221234837.GA10061@nvidia.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220221234837.GA10061@nvidia.com>
-Cc: kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
- linux-pci@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
- Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
- Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Stuart Yoder <stuyoder@gmail.com>, Kevin Tian <kevin.tian@intel.com>,
- Chaitanya Kulkarni <kch@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>
+Content-Disposition: inline
+In-Reply-To: <23f4a64d-5977-1816-8faa-fe7691ace2ff@gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
+ dave.hansen@linux.intel.com, hpa@zytor.com, kys@microsoft.com,
+ Christoph Hellwig <hch@lst.de>, hch@infradead.org, wei.liu@kernel.org,
+ sthemmin@microsoft.com, x86@kernel.org, decui@microsoft.com,
+ michael.h.kelley@microsoft.com, mingo@redhat.com, parri.andrea@gmail.com,
+ thomas.lendacky@amd.com, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ konrad.wilk@oracle.com, haiyangz@microsoft.com, bp@alien8.de,
+ tglx@linutronix.de, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, vkuznets@redhat.com, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,32 +72,26 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2/22/22 7:48 AM, Jason Gunthorpe wrote:
->> since we should only care about ownership at probe, hotplug, and other
->> places well outside critical fast-paths, I'm not sure we really need to keep
->> track of that anyway - it can always be recalculated by walking the
->> group->devices list,
-> It has to be locked against concurrent probe, and there isn't
-> currently any locking scheme that can support this. The owner_cnt is
-> effectively a new lock for this purpose. It is the same issue we
-> talked about with that VFIO patch you showed me.
-> 
-> So, using the group->device_list would require adding something else
-> somewhere - which I think should happen when someone has
-> justification for another use of whatever that something else is.
+On Mon, Feb 21, 2022 at 11:14:58PM +0800, Tianyu Lan wrote:
+> Sorry. The boot failure is not related with these patches and the issue
+> has been fixed in the latest upstream code.
+>
+> There is a performance bottleneck due to io tlb mem's spin lock during
+> performance test. All devices'io queues uses same io tlb mem entry
+> and the spin lock of io tlb mem introduce overheads. There is a fix patch 
+> from Andi Kleen in the github. Could you have a look?
+>
+> https://github.com/intel/tdx/commit/4529b5784c141782c72ec9bd9a92df2b68cb7d45
 
-This series was originated from the similar idea by adding some fields
-in driver structure and intercepting it in iommu core. We stopped doing
-that due to the lack of lock mechanism between iommu and driver core.
-It then evolved into what it is today.
+Please post these things to the list.
 
-Best regards,
-baolu
+But I suspect the right answer for the "secure" hypervisor case is to
+use the per-device swiotlb regions that we've recently added.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
