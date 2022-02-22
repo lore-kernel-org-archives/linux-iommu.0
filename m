@@ -1,65 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1BC1AC433EF
-	for <iommu@archiver.kernel.org>; Tue, 22 Feb 2022 08:05:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 59C62C433EF
+	for <iommu@archiver.kernel.org>; Tue, 22 Feb 2022 08:27:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id BD0D460E91;
-	Tue, 22 Feb 2022 08:05:53 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 09FA6812E2;
+	Tue, 22 Feb 2022 08:27:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qxqAxYuz4Hyp; Tue, 22 Feb 2022 08:05:53 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id VU8u0dZldozS; Tue, 22 Feb 2022 08:27:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 97AC860803;
-	Tue, 22 Feb 2022 08:05:52 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id D9CCF8146C;
+	Tue, 22 Feb 2022 08:27:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C509C001A;
-	Tue, 22 Feb 2022 08:05:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8DB44C001A;
+	Tue, 22 Feb 2022 08:27:21 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 11AF6C0011
- for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 08:05:51 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CD322C0011
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 08:27:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id EFF5E81433
- for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 08:05:50 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id A6E5E8146C
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 08:27:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RF0UyRx8jy5B for <iommu@lists.linux-foundation.org>;
- Tue, 22 Feb 2022 08:05:49 +0000 (UTC)
+ with ESMTP id w_IUkzGztrTF for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Feb 2022 08:27:17 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp1.osuosl.org (Postfix) with ESMTPS id BF04A81431
- for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 08:05:49 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id B968768AA6; Tue, 22 Feb 2022 09:05:43 +0100 (CET)
-Date: Tue, 22 Feb 2022 09:05:43 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Tianyu Lan <ltykernel@gmail.com>
-Subject: Re: [PATCH V2 1/2] Swiotlb: Add swiotlb_alloc_from_low_pages switch
-Message-ID: <20220222080543.GA5412@lst.de>
-References: <20220209122302.213882-1-ltykernel@gmail.com>
- <20220209122302.213882-2-ltykernel@gmail.com> <20220214081919.GA18337@lst.de>
- <4f433f07-05be-f81f-43e8-55c3f1af23b3@gmail.com>
- <20220214135834.GA30150@lst.de>
- <8d052867-ccff-f00f-7c89-cc26a4bfa347@gmail.com>
- <23f4a64d-5977-1816-8faa-fe7691ace2ff@gmail.com>
+Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id B4A40812E2
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 08:27:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+ s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+ References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=zfYHUsgUj9bMp9XYzGWc9eCMGjpGs1SMSVRvMazWtpo=; b=QHyYx+SEEBJQcikLDxVb11HMI/
+ 2DeGvHzOW+RxzucK9R5fB+ys4CS7odv616RThf4BocUwCSEmx+Lgo8ekre1mE+DOGH5lndthE7cuF
+ LJgPVhqRqWgWCAwG2TShhc4y5cDEJ63yjNi8IHNyaSJLrMcgUDNYKl7HJyGUK2qTaSkzVh4tyafcG
+ tX4n0/urq6mUwVFF5eL9hyy7tytH9AsCsf4Fic8G6mLH/0FQc9k8/jPHwKQCHQ+f9xZty259++SHc
+ THiCCaySgOh3OTTdIV5o2RXnNsbn/dhsifKpI422xSjAbDXK5+DFwC3r7RAsQ7fYFLz9LiuepQ1Sf
+ AEBNkh5g==;
+Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70]
+ helo=[192.168.1.10])
+ by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+ (Exim 4.89) (envelope-from <cyndis@kapsi.fi>)
+ id 1nMQVk-0003Nm-2i; Tue, 22 Feb 2022 10:27:04 +0200
+Message-ID: <30033f5b-3fd1-22c7-896b-af034a4041df@kapsi.fi>
+Date: Tue, 22 Feb 2022 10:27:03 +0200
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <23f4a64d-5977-1816-8faa-fe7691ace2ff@gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
- dave.hansen@linux.intel.com, hpa@zytor.com, kys@microsoft.com,
- Christoph Hellwig <hch@lst.de>, hch@infradead.org, wei.liu@kernel.org,
- sthemmin@microsoft.com, x86@kernel.org, decui@microsoft.com,
- michael.h.kelley@microsoft.com, mingo@redhat.com, parri.andrea@gmail.com,
- thomas.lendacky@amd.com, Tianyu Lan <Tianyu.Lan@microsoft.com>,
- konrad.wilk@oracle.com, haiyangz@microsoft.com, bp@alien8.de,
- tglx@linutronix.de, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, vkuznets@redhat.com, robin.murphy@arm.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v3 8/9] drm/tegra: vic: Implement get_streamid_offset
+Content-Language: en-US
+To: Dmitry Osipenko <digetx@gmail.com>,
+ Mikko Perttunen <mperttunen@nvidia.com>, thierry.reding@gmail.com,
+ jonathanh@nvidia.com, joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
+ robin.murphy@arm.com
+References: <20220218113952.3077606-1-mperttunen@nvidia.com>
+ <20220218113952.3077606-9-mperttunen@nvidia.com>
+ <b1df816b-6838-c435-1a23-5029144e4cfe@gmail.com>
+ <7f4e4c47-59f1-1def-36bf-a2ded912f76d@gmail.com>
+ <5d1b6e82-2c9d-8388-697f-0d7305a1206f@kapsi.fi>
+ <ee648994-b296-2ac4-a676-ddcac463a428@gmail.com>
+From: Mikko Perttunen <cyndis@kapsi.fi>
+In-Reply-To: <ee648994-b296-2ac4-a676-ddcac463a428@gmail.com>
+X-SA-Exim-Connect-IP: 91.158.25.70
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -72,27 +88,30 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Feb 21, 2022 at 11:14:58PM +0800, Tianyu Lan wrote:
-> Sorry. The boot failure is not related with these patches and the issue
-> has been fixed in the latest upstream code.
->
-> There is a performance bottleneck due to io tlb mem's spin lock during
-> performance test. All devices'io queues uses same io tlb mem entry
-> and the spin lock of io tlb mem introduce overheads. There is a fix patch 
-> from Andi Kleen in the github. Could you have a look?
->
-> https://github.com/intel/tdx/commit/4529b5784c141782c72ec9bd9a92df2b68cb7d45
-
-Please post these things to the list.
-
-But I suspect the right answer for the "secure" hypervisor case is to
-use the per-device swiotlb regions that we've recently added.
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMi8yMS8yMiAyMjoxMCwgRG1pdHJ5IE9zaXBlbmtvIHdyb3RlOgo+IDIxLjAyLjIwMjIgMTQ6
+NDQsIE1pa2tvIFBlcnR0dW5lbiDQv9C40YjQtdGCOgo+PiBPbiAyLzE5LzIyIDIwOjU0LCBEbWl0
+cnkgT3NpcGVua28gd3JvdGU6Cj4+PiAxOS4wMi4yMDIyIDIxOjQ5LCBEbWl0cnkgT3NpcGVua28g
+0L/QuNGI0LXRgjoKPj4+PiAxOC4wMi4yMDIyIDE0OjM5LCBNaWtrbyBQZXJ0dHVuZW4g0L/QuNGI
+0LXRgjoKPj4+Pj4gK3N0YXRpYyBpbnQgdmljX2dldF9zdHJlYW1pZF9vZmZzZXQoc3RydWN0IHRl
+Z3JhX2RybV9jbGllbnQgKmNsaWVudCkKPj4+Pj4gK3sKPj4+Pj4gK8KgwqDCoCBzdHJ1Y3Qgdmlj
+ICp2aWMgPSB0b192aWMoY2xpZW50KTsKPj4+Pj4gK8KgwqDCoCBpbnQgZXJyOwo+Pj4+PiArCj4+
+Pj4+ICvCoMKgwqAgZXJyID0gdmljX2xvYWRfZmlybXdhcmUodmljKTsKPj4+Pgo+Pj4+IFlvdSBj
+YW4ndCBpbnZva2UgdmljX2xvYWRfZmlybXdhcmUoKSB3aGlsZSBSUE0gaXMgc3VzcGVuZGVkLiBF
+aXRoZXIKPj4+PiByZXBsYWNlIHRoaXMgd2l0aCBSUE0gZ2V0L3B1dCBvciBkbyBzb21ldGhpbmcg
+ZWxzZS4KPj4KPj4gV2h5IG5vdCwgSSdtIG5vdCBzZWVpbmcgYW55IEhXIGFjY2Vzc2VzIGluIHZp
+Y19sb2FkX2Zpcm13YXJlPyBBbHRob3VnaAo+PiBpdCBsb29rcyBsaWtlIGl0IG1pZ2h0IHJhY2Ug
+d2l0aCB0aGUgdmljX2xvYWRfZmlybXdhcmUgY2FsbCBpbgo+PiB2aWNfcnVudGltZV9yZXN1bWUg
+d2hpY2ggcHJvYmFibHkgbmVlZHMgdG8gYmUgZml4ZWQuCj4gCj4gSXQgd2FzIG5vdCBjbGVhciBm
+cm9tIHRoZSBmdW5jdGlvbidzIG5hbWUgdGhhdCBoL3cgaXMgdW50b3VjaGVkLCBJIHJlYWQKPiAi
+bG9hZCIgYXMgInVwbG9hZCIgYW5kIHRoZW4gbG9va2VkIGF0IHZpY19ydW50aW1lX3Jlc3VtZSgp
+LiBJJ2QgcmVuYW1lCj4gdmljX2xvYWRfZmlybXdhcmUoKSB0byB2aWNfcHJlcGFyZV9maXJtd2Fy
+ZV9pbWFnZSgpLgo+IAo+IEFuZCB5ZXMsIHRlY2huaWNhbGx5IGxvY2sgaXMgbmVlZGVkLgoKWWVw
+LCBJJ2xsIGNvbnNpZGVyIHJlbmFtaW5nIGl0LgoKTWlra28KX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3Rz
+LmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9t
+YWlsbWFuL2xpc3RpbmZvL2lvbW11
