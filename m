@@ -1,148 +1,72 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 238B1C433EF
-	for <iommu@archiver.kernel.org>; Tue, 22 Feb 2022 15:16:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6DDC3C433F5
+	for <iommu@archiver.kernel.org>; Tue, 22 Feb 2022 15:35:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id B7DBF40143;
-	Tue, 22 Feb 2022 15:16:43 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0B44960EF6;
+	Tue, 22 Feb 2022 15:35:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PBYR6T_J8cc4; Tue, 22 Feb 2022 15:16:42 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 7EoMEqw9l3XX; Tue, 22 Feb 2022 15:35:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1C14C4017B;
-	Tue, 22 Feb 2022 15:16:42 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id BE2F260ED7;
+	Tue, 22 Feb 2022 15:35:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D7269C0021;
-	Tue, 22 Feb 2022 15:16:41 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0DAD4C0011
- for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 15:16:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7E419C0021;
+	Tue, 22 Feb 2022 15:35:24 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0FC26C0011
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 15:35:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E810E81A9C
- for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 15:16:40 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id E4E5381280
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 15:35:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
+ dkim=pass (2048-bit key) header.d=infradead.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mSO65ESbAJP2 for <iommu@lists.linux-foundation.org>;
- Tue, 22 Feb 2022 15:16:39 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam11on20627.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7eae::627])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 40E7A813B8
- for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 15:16:39 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bFR8NuwRb4v0Gf0Vryc3VcDFklN7BuowGVu8qhihXbVgx61YV764qDRVI94tjAkCajhVIKhrasRK0qHTe2jbaBrmarkCr70LRhIMnmT+73ucnXbzrMpe3vxcTFPyC4utlSkpFh/RQ/22cPeiAOhSNIBI6/oWh/moAtlt5FmBAK5dYa9KLwFyBd26c4Fm1cQaqJmFb/teRHsp0s7sYrAfbOMOIkCX/2NlA//O6WE/5dkZcSrspgp71Vrc9vb2lBPThnpcu6ijioCJgN6kOb/iERyRjjJraSRoPImelASe7eOudqcUhGmhXtj7yyi/ME8IDh3+Vml/axOPGa/38cfuYA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=y9XzsfuLeJXNBW7a/VTPcYELUkge63lXlNUCPu5vD8w=;
- b=AGDJGys2dN7NS6EwQ+GH14HIFwaIKnHKcBeU9g6YHm7wNUpk1ndwO+LN+ls4gAoGP68ZXMNZmMJIACATRA/7A1KB1yt/ay+Tg9uMud868bwakrYodBZskdCM6a3Lk+oJ0uQSpBseZSTazgd0NlVf1DirZWVhjhv/OpSucKvNSttg1HbMnEv0emXzh+7XsxEhOjz8G8Hn+rhxdVs+ASQAccxIFsQPHIRy5RyUJnMvHiHrhLWRsfOxYwkfLIjPf/Hza6rbbWCvyOY/n8H/vVDDr51SE2q8flgo78ZT7u5WwHzPaq5BGI13YCP/gKyaYNnQR3lu/0ZcQHJ+XgPkiXmWiQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y9XzsfuLeJXNBW7a/VTPcYELUkge63lXlNUCPu5vD8w=;
- b=MRfrQhlbkwpgaF+69adru+szYgAHZqK5zdBuDLVpVoUQSQgBX2hmn1QkjW+s3DdrITYBI/WrQEFbZFnOmvuge07lw2NWF/y167cQ/Tjbcab/yiBZrDGGb4bjwtIbqu8ex6WMLgOPxVvRNwI0pHeTqYV1dGBfJbmlb/bK2zI0gwjBc3SWI6n7AFsP9rhhhnlxCN/3AAvtnwYfZAZ9yXK0JL21Pu6peyANkf8z+57F3JpjGutUi+33txXC9nZz68FUghOfMsZqVjWhraV6s+q1UAs2/joTJq17M8ymdM1hTNLngdE7Msmgha6gChtk5thvuBuFaPgO6ouVwag8hgcU6A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BY5PR12MB3810.namprd12.prod.outlook.com (2603:10b6:a03:1a6::13)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.16; Tue, 22 Feb
- 2022 15:16:34 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::e8f4:9793:da37:1bd3]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::e8f4:9793:da37:1bd3%4]) with mapi id 15.20.5017.022; Tue, 22 Feb 2022
- 15:16:34 +0000
-Date: Tue, 22 Feb 2022 11:16:32 -0400
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v6 02/11] driver core: Add dma_cleanup callback in bus_type
-Message-ID: <20220222151632.GB10061@nvidia.com>
-References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
- <20220218005521.172832-3-baolu.lu@linux.intel.com>
- <YhCdEmC2lYStmUSL@infradead.org>
- <1d8004d3-1887-4fc7-08d2-0e2ee6b5fdcb@arm.com>
- <20220221234837.GA10061@nvidia.com>
- <1acb8748-8d44-688d-2380-f39ec820776f@arm.com>
-Content-Disposition: inline
-In-Reply-To: <1acb8748-8d44-688d-2380-f39ec820776f@arm.com>
-X-ClientProxiedBy: BLAP220CA0012.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:208:32c::17) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+ with ESMTP id 7rtCWVpfbHoz for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Feb 2022 15:35:19 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [IPv6:2607:7c80:54:e::133])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id D14E380D8C
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 15:35:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+ MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+ Content-ID:Content-Description:In-Reply-To:References;
+ bh=16nouNo24ejNp/bHBqFUpHpMmYYgIL88sf6fCnA5oxw=; b=Evl4OhdNJ9vFGI4KBDyMJ2uY4v
+ ahlgofRSzpQsvpw+qbnrer3aKbB3W7rQQSWiEtHPv1GOLM+A33NRlrQJtcbKPQZsq8ZJ0Ur1vnRRo
+ g3p2qbcU3jr70C8mOofs0g3hzUW4uVlAhWSisJaMMZC6wOX8A4tQ90Hk2vLNc+kmD6djArF9T8eoW
+ 9u4suY2drGIZP4mp6SqQGG0Ti0UU5XC5RKqrHf1fSU30Q1huprZkGdvFxmCo5kR0DDj/lBC1BQkHm
+ KDzcPMMmVkYt9l5nGrPt5RR+4vvyTE3FSJuO351gMgi78pWHFgl6Edsr7ZHkmjhcz+ut06I1oIQyx
+ rYiE4tRw==;
+Received: from [2001:4bb8:198:f8fc:c22a:ebfc:be8d:63c2] (helo=localhost)
+ by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+ id 1nMXC9-00AGnS-1u; Tue, 22 Feb 2022 15:35:17 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: iommu@lists.linux-foundation.org
+Subject: cleanup swiotlb initialization
+Date: Tue, 22 Feb 2022 16:35:03 +0100
+Message-Id: <20220222153514.593231-1-hch@lst.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e2afaa44-cc08-4637-15ce-08d9f6164fd5
-X-MS-TrafficTypeDiagnostic: BY5PR12MB3810:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB381061159E93B3946002D85EC23B9@BY5PR12MB3810.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vAd6HiL0JBSgbuLjDl1Ff1jb/C7N+9DfDhMRuuVy1CVIR9jyQQdghp3HNUrUAz4Aq8bPDEaySwJVOXVgR7mjHfwtRg00q45SPBy1RAcsXaLetsjnZaGYeW0UDf8MeSFXvTE9J0yUSsg5Dv5gC7RF/LbPKy76ZAJoQBX0bxiVYgTNTGpr5zv0sDQtIGCyVmE1JK5axNr3iE8r316noDl/mnU3Hp2xPINJvVxfX2hdd0JCviJCXnrWzMUjhxEWwNt6qJlZsZ20gow3d39MRpk0fKUUYfVcUrd9XHtpj3TEc7P16CmZv1oW0Zrs/cCxC+vGGtaLIve9GKR37GFMSXg7DlObvqx0M964ARwjZ3k5L38PJ6k4FBtR5aEHI6sLssqg3WmxDeKbPyA04IT7M51IzMKz3iRn+ZqDsjxsfb8jSPYiK2K6rMwoNnyBmqe5v7yzeu0kORYyrSGwCBk73rPDT7jSfNsRQXVLrJ/z8FhLw46myKC0xkPmnhZgivb56u5aUSWNueTSrNP6ne9dp0NqMp5/ATo1sHQpWDRbdrPYl9qofSLUlNu152vMLb4a+wOF+qOVDMxRn0EhjgdjXNmXjA6xSm25H24c+RyFXTpG0+dGaOAxSh32/A0AuTK1/BszDNHbCjGy22e9TY1FRtMowA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(8936002)(6512007)(508600001)(33656002)(6486002)(1076003)(54906003)(83380400001)(7416002)(6916009)(2906002)(316002)(5660300002)(2616005)(86362001)(186003)(8676002)(38100700002)(6506007)(4326008)(26005)(53546011)(66946007)(66476007)(36756003)(66556008);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XYNuuFqGVvEsQTsjDMwaEjRgOr+pYUAUHJGOQ6NuESJPVWg+whJ0ObpvdBD4?=
- =?us-ascii?Q?BpKF0CKBqfyK6NnY5J/rZkMwfQTJC9pjzf9KjEo3S3RfpmR3bdvAx44Z0l7O?=
- =?us-ascii?Q?4IwGcwaVb9GBo8Ky6NJv9WCYKIDO9wqsnW/Nvr2L9TAvyxpBxXPVvp90ZsrH?=
- =?us-ascii?Q?lEA9zxaF/ZbmNIDTJLPkGS/Iwysm/BAAQ6GzdMXJWZ+ErI+Oh2RA/zsY8OK0?=
- =?us-ascii?Q?jqKbWwF1l7tudTwf80rSVbNWWs60NiB4cMyFAUj93vQsvfSPoz1PLR9pA5Ee?=
- =?us-ascii?Q?Lk3ahtQJnUNwFDzAApoO6dlVntYBj29iHFHIo5RT70ijU1ffF0SlmqKEYQXZ?=
- =?us-ascii?Q?1WkTB+B/BDHhb/oIqdgsShA02b9xGenCckMbztkxxgd1nHAwFs4hX9Z2eaCm?=
- =?us-ascii?Q?Yq4RHeKAZ8pXYcTyWwiC33pVY2EWf88cVKX0Cq7fF2AsBkGTIrDVDzGcLX0F?=
- =?us-ascii?Q?t8DSKvBHLDdvkSUiX7Fi63vfhEIm2cWi39TZpjWq6RPIKey1NPT285np999Z?=
- =?us-ascii?Q?J2xT9iBOb0t2b5FTFCl9Nv4fdksmiKj8vParfeBqxMRkSbsvNHYzDFftC82A?=
- =?us-ascii?Q?ambX8/4wJaBC6LOXKa6O7W+NQZkS1CDwDFfum0UdQ5qspXAJau3sgUD78+1Z?=
- =?us-ascii?Q?cIvJBhHZQQLCmzVUEShFmlyxGQqiRrI7suhSdQwtu+JL5LRc3nqkTkSEouvm?=
- =?us-ascii?Q?glU+1SY+dnIpfYNPtX9hdB5V8HvaZrZYtjyVOuvoqcBkBi8B+h5GC7gjMXuO?=
- =?us-ascii?Q?aqGz3MiJel2Z9emIe9vLpWn24BrgV5N8RavyAAJSlpr/QlKohwscV+Qk2uCl?=
- =?us-ascii?Q?16SVG6yEGlhEcTVSZieWlGIuijtkLTUiI19YwKXCqVxRWcrTNt9ih+qcn/3d?=
- =?us-ascii?Q?TliY954eAWTPVQSb5kRRpjkov8+L62zaPhSIXpRsDVU5ko8ats/JGYQ1yuMO?=
- =?us-ascii?Q?n96kH9OMUs/IKdAThGrdnBJGk5Jz1BSppqdt4L0ClK0W1q+/sePEyuA+2Nz+?=
- =?us-ascii?Q?eibbxq7u0GMBtn50urp8sozQIWuKYVo90n6m0zoVUDIAjIp5uMdr0kUVmbxZ?=
- =?us-ascii?Q?EATPiXQFCEre2+TL8fEyjiKnIFNBEfb2X/fifIsHYHhNcg4z4UL0uQEnEeUI?=
- =?us-ascii?Q?Ixvop4gGraoK75o9Z7MWSFPHj8U2VZt+l6kjws+OR8YKdVqI5hMUhEKBbcNa?=
- =?us-ascii?Q?Uwb2VNy1w6UIkp7d2Rm7xPgPvEZrpR2W8Y66KByX8IfbHSwo4z4hZ8P7WpY/?=
- =?us-ascii?Q?meRDv8DdOYhe0bpIMRi9YuGE+Fr+3Pz24Gzew1fvf192IQiGM4wJqkIwgNAB?=
- =?us-ascii?Q?qqE5LKbOWWsamBnQmSrbHnln1U/wbS81+fDYHUVuWjyBrF9IBWIREnmErxcj?=
- =?us-ascii?Q?Iv4h2P9B7w642tpO5+Sc4arJtgqjHdss8acgkj1TN7VvTVqdchNJguvWuuSH?=
- =?us-ascii?Q?RZvSX0BFGTENv5C+aX52Y+VA/SbmuRVg117P2z1fGbg0XHwe8QuvLMKFfpjW?=
- =?us-ascii?Q?e0xFKPbBn4+wDCmz6Mzr0azu2oOOGYbdKkNoRHpfoFvVTPYtI6nMQ+OpHmp2?=
- =?us-ascii?Q?jzbOBvIK0COTILTl7zc=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e2afaa44-cc08-4637-15ce-08d9f6164fd5
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2022 15:16:34.2463 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cmxsdG+WNaeD8x39vSNrdESpKSwUJH/DEANfgs4nlknHIsD5OMDBaO5XjAZ3JgtJ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3810
-Cc: kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
- linux-pci@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
- Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
- Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Stuart Yoder <stuyoder@gmail.com>, Kevin Tian <kevin.tian@intel.com>,
- Chaitanya Kulkarni <kch@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Juergen Gross <jgross@suse.com>, linux-s390@vger.kernel.org,
+ linux-hyperv@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>,
+ linux-ia64@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ x86@kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ tboot-devel@lists.sourceforge.net, linux-pci@vger.kernel.org,
+ xen-devel@lists.xenproject.org, Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ David Woodhouse <dwmw2@infradead.org>, linux-riscv@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -155,108 +79,74 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Feb 22, 2022 at 10:58:37AM +0000, Robin Murphy wrote:
-> On 2022-02-21 23:48, Jason Gunthorpe wrote:
-> > On Mon, Feb 21, 2022 at 08:43:33PM +0000, Robin Murphy wrote:
-> > > On 2022-02-19 07:32, Christoph Hellwig wrote:
-> > > > So we are back to the callback madness instead of the nice and simple
-> > > > flag?  Sigh.
-> > > 
-> > > TBH, I *think* this part could be a fair bit simpler. It looks like this
-> > > whole callback mess is effectively just to decrement
-> > > group->owner_cnt, but
-> > 
-> > Right, the new callback is because of Greg's push to put all the work
-> > into the existing bus callback. Having symetrical callbacks is
-> > cleaner.
-> 
-> I'll continue to disagree that having tons more code purely for the sake of
-> it is cleaner. The high-level requirements are fundamentally asymmetrical -
-> ownership has to be actively claimed by the bus code at a point during probe
-> where it can block probing if necessary, but it can be released anywhere at
-> all during remove since that cannot fail. I don't personally see the value
-> in a bunch of code bloat for no reason other than trying to pretend that an
-> asymmetrical thing isn't.
+Hi all,
 
-Then we should put this in the share core code like most of us want.
+this series tries to clean up the swiotlb initialization, including
+that of swiotlb-xen.  To get there is also removes the x86 iommu table
+infrastructure that massively obsfucates the initialization path.
 
-If we are doing this distorted thing then it may as well make some
-kind of self consistent sense with a configure/unconfigure op pair.
+Git tree:
 
-> group->owner?  Walking the list would only have to be done for *releasing*
-> ownership and I'm pretty sure all the races there are benign - only
-> probe/remove of the driver (or DMA API token) matching a current non-NULL
-> owner matter; if two removes race, the first might end up releasing
-> ownership "early", but the second is waiting to do that anyway so it's OK;
-> if a remove races with a probe, the remove may end up leaving the owner set,
-> but the probe is waiting to do that anyway so it's OK.
+    git://git.infradead.org/users/hch/misc.git swiotlb-init-cleanup
 
-With a lockless algorithm the race is probably wrongly releasing an
-ownership that probe just set in the multi-device group case.
+Gitweb:
 
-Still not sure I see what you are thinking though..
+    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/swiotlb-init-cleanup
 
-How did we get from adding a few simple lines to dd.c into building
-some complex lockless algorithm and hoping we did it right?
-
-> > > It has to be s It should be pretty straightforward for
-> > > iommu_bus_notifier to clear group->owner automatically upon an
-> > > unbind of the matching driver when it's no longer bound to any other
-> > > devices in the group either.
-> > 
-> > That not_bound/unbind notifier isn't currently triggred during
-> > necessary failure paths of really_probe().
-> 
-> Eh? Just look at the context of patch #2, let alone the rest of the
-> function, and tell me how, if we can't rely on BUS_NOTIFY_DRIVER_NOT_BOUND,
-> calling .dma_cleanup *from the exact same place* is somehow more reliable?
-
-Yeah, OK
-
-> AFAICS, a notifier handling both BUS_NOTIFY_UNBOUND_DRIVER and
-> BUS_NOTIFY_DRIVER_NOT_BOUND would be directly equivalent to the callers of
-> .dma_cleanup here.
-
-Yes, but why hide this in a notifier, it is still spaghetti
-
-> > > use-case) then it should be up to VFIO to decide when it's finally
-> > > finished with the whole group, rather than pretending we can keep
-> > > track of nested ownership claims from inside the API.
-> > 
-> > What nesting?
-> 
-> The current implementation of iommu_group_claim_dma_owner() allows owner_cnt
-> to increase beyond 1, and correspondingly requires
-> iommu_group_release_dma_owner() to be called the same number of times. It
-> doesn't appear that VFIO needs that, and I'm not sure I'd trust any other
-> potential users to get it right either.
-
-That isn't for "nesting" it is keeping track of multi-device
-groups. Each count represents a device, not a nest.
-
-> > > FWIW I have some ideas for re-converging .dma_configure in future
-> > > which I think should probably be able to subsume this into a
-> > > completely generic common path, given a common flag.
-> > 
-> > This would be great!
-> 
-> Indeed, so if we're enthusiastic about future cleanup that necessitates a
-> generic flag, why not make the flag generic to start with?
-
-Maybe when someone has patches to delete the bus ops completely they
-can convince Greg. The good news is that it isn't much work to flip
-the flag, Lu has already done it 3 times in the previous versions..
-
-It has already been 8 weeks on this point, lets just move on please.
-
-Jason
+Diffstat:
+ arch/ia64/include/asm/iommu_table.h      |    7 -
+ arch/x86/include/asm/iommu_table.h       |  102 -------------------
+ arch/x86/include/asm/swiotlb.h           |   30 -----
+ arch/x86/kernel/pci-iommu_table.c        |   77 --------------
+ arch/x86/kernel/pci-swiotlb.c            |   77 --------------
+ arch/x86/xen/pci-swiotlb-xen.c           |   96 ------------------
+ b/arch/arm/mm/init.c                     |    6 -
+ b/arch/arm/xen/mm.c                      |   23 ++--
+ b/arch/arm64/mm/init.c                   |    6 -
+ b/arch/ia64/mm/init.c                    |    4 
+ b/arch/mips/cavium-octeon/dma-octeon.c   |   15 --
+ b/arch/mips/loongson64/dma.c             |    2 
+ b/arch/mips/pci/pci-octeon.c             |    2 
+ b/arch/mips/sibyte/common/dma.c          |    2 
+ b/arch/powerpc/include/asm/svm.h         |    4 
+ b/arch/powerpc/include/asm/swiotlb.h     |    1 
+ b/arch/powerpc/mm/mem.c                  |    6 -
+ b/arch/powerpc/platforms/pseries/setup.c |    3 
+ b/arch/powerpc/platforms/pseries/svm.c   |   26 ----
+ b/arch/riscv/mm/init.c                   |    8 -
+ b/arch/s390/mm/init.c                    |    3 
+ b/arch/x86/include/asm/dma-mapping.h     |   12 --
+ b/arch/x86/include/asm/gart.h            |    5 
+ b/arch/x86/include/asm/iommu.h           |    8 +
+ b/arch/x86/include/asm/xen/page.h        |    5 
+ b/arch/x86/include/asm/xen/swiotlb-xen.h |    2 
+ b/arch/x86/kernel/Makefile               |    2 
+ b/arch/x86/kernel/amd_gart_64.c          |    5 
+ b/arch/x86/kernel/aperture_64.c          |   14 --
+ b/arch/x86/kernel/cpu/mshyperv.c         |    8 -
+ b/arch/x86/kernel/pci-dma.c              |  114 +++++++++++++++++----
+ b/arch/x86/kernel/tboot.c                |    1 
+ b/arch/x86/kernel/vmlinux.lds.S          |   12 --
+ b/arch/x86/mm/mem_encrypt_amd.c          |    3 
+ b/arch/x86/pci/sta2x11-fixup.c           |    2 
+ b/arch/x86/xen/Makefile                  |    2 
+ b/drivers/iommu/amd/init.c               |    6 -
+ b/drivers/iommu/amd/iommu.c              |    5 
+ b/drivers/iommu/intel/dmar.c             |    6 -
+ b/drivers/xen/swiotlb-xen.c              |  132 -------------------------
+ b/include/linux/dmar.h                   |    6 -
+ b/include/linux/swiotlb.h                |   22 ++--
+ b/include/trace/events/swiotlb.h         |   29 +----
+ b/include/xen/arm/page.h                 |    1 
+ b/include/xen/swiotlb-xen.h              |    8 +
+ b/kernel/dma/direct.h                    |    2 
+ b/kernel/dma/swiotlb.c                   |  163 +++++++++++++++----------------
+ 47 files changed, 258 insertions(+), 817 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
