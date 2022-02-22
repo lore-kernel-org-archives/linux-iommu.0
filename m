@@ -4,71 +4,72 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 51FE9C433F5
-	for <iommu@archiver.kernel.org>; Tue, 22 Feb 2022 18:54:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 10A2EC433F5
+	for <iommu@archiver.kernel.org>; Tue, 22 Feb 2022 21:18:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id F214A401CC;
-	Tue, 22 Feb 2022 18:54:40 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id A0F3640207;
+	Tue, 22 Feb 2022 21:18:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UP_Q68IGaHNn; Tue, 22 Feb 2022 18:54:39 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 5B41940167;
-	Tue, 22 Feb 2022 18:54:39 +0000 (UTC)
+	with ESMTP id a6YbxgZ2DlII; Tue, 22 Feb 2022 21:18:40 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id B92EC40168;
+	Tue, 22 Feb 2022 21:18:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 44589C001A;
-	Tue, 22 Feb 2022 18:54:39 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 907E8C0011
- for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 18:54:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8F684C0021;
+	Tue, 22 Feb 2022 21:18:39 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1C319C0011
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 21:18:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4288C60EE0
- for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 18:54:35 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 034FF401E8
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 21:18:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QeeIVTlc6rde for <iommu@lists.linux-foundation.org>;
- Tue, 22 Feb 2022 18:54:34 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id iTW2F5UjhBZd for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Feb 2022 21:18:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 7508B60B6A
- for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 18:54:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1645556074; x=1677092074;
- h=from:to:subject:date:message-id:in-reply-to:references:
- mime-version:content-transfer-encoding;
- bh=0eEVoBEoLghU3hLOEP5nLnPp5kV4RYKvZKL/+tFfRYo=;
- b=lUyyX0vJg8qk5t9wiR72U+j6w23dT+TdSXh7Nozm2I8c8DUk1MHq64Ds
- ynvVUpNgt9copWdfGyu3Y7qv3tPmeBAs+P+m4tz0SIM91kj8CDda/GyFl
- R7I9EJFaSqy0i9FVCh2Bknr2jrrJ1MoIEYiNxI67Gy6i6plvVuC8+3vA8
- tRv8QYN/ChH20vIXipIbE8QU3aIIZU4UrDudvhTCxdaSa8eRm52iF6cLS
- eHpoyODCaYpPCXKPhsEgvSLa46M/uji2eBAznLlxbesYAqvK0djXl4K9e
- /8LU0hHNw5ZANSBsJq83o4H56YQ3Ugrc6S66srTwcxzyQpg/J8Gi5FYhX g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="239168608"
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; d="scan'208";a="239168608"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Feb 2022 10:54:24 -0800
-X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; d="scan'208";a="508105495"
-Received: from oux.sc.intel.com ([10.3.52.57])
- by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Feb 2022 10:54:24 -0800
-From: Yian Chen <yian.chen@intel.com>
-To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Sohil Mehta <sohil.mehta@intel.com>,
- Jacob jun Pan <jacob.jun.pan@intel.com>, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, Yian Chen <yian.chen@intel.com>
-Subject: =?UTF-8?q?=5BPATCH=20v2=C2=A0=202/2=5D=20iommu/vt-d=3A=20Declare=20dmar=5Fats=5Fsupported=28=29=20as=20static=20function?=
-Date: Tue, 22 Feb 2022 10:54:16 -0800
-Message-Id: <20220222185416.1722611-3-yian.chen@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220222185416.1722611-1-yian.chen@intel.com>
-References: <20220222185416.1722611-1-yian.chen@intel.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp4.osuosl.org (Postfix) with ESMTP id A7B38401E4
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 21:18:37 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9C670139F;
+ Tue, 22 Feb 2022 13:18:36 -0800 (PST)
+Received: from [10.57.40.147] (unknown [10.57.40.147])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6E55F3F70D;
+ Tue, 22 Feb 2022 13:18:32 -0800 (PST)
+Message-ID: <3d4c3bf1-fed6-f640-dc20-36d667de7461@arm.com>
+Date: Tue, 22 Feb 2022 21:18:23 +0000
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v6 02/11] driver core: Add dma_cleanup callback in bus_type
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
+ <20220218005521.172832-3-baolu.lu@linux.intel.com>
+ <YhCdEmC2lYStmUSL@infradead.org>
+ <1d8004d3-1887-4fc7-08d2-0e2ee6b5fdcb@arm.com>
+ <20220221234837.GA10061@nvidia.com>
+ <1acb8748-8d44-688d-2380-f39ec820776f@arm.com>
+ <20220222151632.GB10061@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220222151632.GB10061@nvidia.com>
+Cc: kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
+ linux-pci@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Stuart Yoder <stuyoder@gmail.com>, Kevin Tian <kevin.tian@intel.com>,
+ Chaitanya Kulkarni <kch@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,218 +82,190 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-dmar_ats_supported() is defined in and only used by iommu.c
-so that declare it as a static function and move the
-code accordingly.
+On 2022-02-22 15:16, Jason Gunthorpe wrote:
+> On Tue, Feb 22, 2022 at 10:58:37AM +0000, Robin Murphy wrote:
+>> On 2022-02-21 23:48, Jason Gunthorpe wrote:
+>>> On Mon, Feb 21, 2022 at 08:43:33PM +0000, Robin Murphy wrote:
+>>>> On 2022-02-19 07:32, Christoph Hellwig wrote:
+>>>>> So we are back to the callback madness instead of the nice and simple
+>>>>> flag?  Sigh.
+>>>>
+>>>> TBH, I *think* this part could be a fair bit simpler. It looks like this
+>>>> whole callback mess is effectively just to decrement
+>>>> group->owner_cnt, but
+>>>
+>>> Right, the new callback is because of Greg's push to put all the work
+>>> into the existing bus callback. Having symetrical callbacks is
+>>> cleaner.
+>>
+>> I'll continue to disagree that having tons more code purely for the sake of
+>> it is cleaner. The high-level requirements are fundamentally asymmetrical -
+>> ownership has to be actively claimed by the bus code at a point during probe
+>> where it can block probing if necessary, but it can be released anywhere at
+>> all during remove since that cannot fail. I don't personally see the value
+>> in a bunch of code bloat for no reason other than trying to pretend that an
+>> asymmetrical thing isn't.
+> 
+> Then we should put this in the share core code like most of us want.
+> 
+> If we are doing this distorted thing then it may as well make some
+> kind of self consistent sense with a configure/unconfigure op pair.
+> 
+>> group->owner?  Walking the list would only have to be done for *releasing*
+>> ownership and I'm pretty sure all the races there are benign - only
+>> probe/remove of the driver (or DMA API token) matching a current non-NULL
+>> owner matter; if two removes race, the first might end up releasing
+>> ownership "early", but the second is waiting to do that anyway so it's OK;
+>> if a remove races with a probe, the remove may end up leaving the owner set,
+>> but the probe is waiting to do that anyway so it's OK.
+> 
+> With a lockless algorithm the race is probably wrongly releasing an
+> ownership that probe just set in the multi-device group case.
+> 
+> Still not sure I see what you are thinking though..
 
-Signed-off-by: Yian Chen <yian.chen@intel.com>
----
- drivers/iommu/intel/iommu.c | 164 ++++++++++++++++++------------------
- include/linux/intel-iommu.h |   1 -
- 2 files changed, 82 insertions(+), 83 deletions(-)
+What part of "How hard is it to hold group->mutex when reading or 
+writing group->owner?" sounded like "complex lockless algorithm", exactly?
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index aa0b27b5bf83..eaf9764c476d 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2643,6 +2643,88 @@ static bool dev_is_real_dma_subdevice(struct device *dev)
- 	       pci_real_dma_dev(to_pci_dev(dev)) != to_pci_dev(dev);
- }
- 
-+static struct dmar_satc_unit *dmar_find_matched_satc_unit(struct pci_dev *dev)
-+{
-+	int i;
-+	struct device *tmp;
-+	struct dmar_satc_unit *satcu;
-+	struct acpi_dmar_satc *satc;
-+
-+	dev = pci_physfn(dev);
-+	rcu_read_lock();
-+
-+	list_for_each_entry_rcu(satcu, &dmar_satc_units, list) {
-+		satc = container_of(satcu->hdr, struct acpi_dmar_satc, header);
-+		if (satc->segment != pci_domain_nr(dev->bus))
-+			continue;
-+		for_each_dev_scope(satcu->devices, satcu->devices_cnt, i, tmp)
-+			if (to_pci_dev(tmp) == dev)
-+				goto out;
-+	}
-+	satcu = NULL;
-+out:
-+	rcu_read_unlock();
-+	return satcu;
-+}
-+
-+static int dmar_ats_supported(struct pci_dev *dev, struct intel_iommu *iommu)
-+{
-+	int i, ret = 1;
-+	struct pci_bus *bus;
-+	struct pci_dev *bridge = NULL;
-+	struct device *tmp;
-+	struct acpi_dmar_atsr *atsr;
-+	struct dmar_atsr_unit *atsru;
-+	struct dmar_satc_unit *satcu;
-+
-+	dev = pci_physfn(dev);
-+	satcu = dmar_find_matched_satc_unit(dev);
-+	if (satcu) {
-+		/* This dev supports ATS as it is in SATC table!
-+		 * When IOMMU is in legacy mode, enabling ATS is done
-+		 * automatically by HW for the device that requires
-+		 * ATS, hence OS should not enable this device ATS
-+		 * to avoid duplicated TLB invalidation
-+		 */
-+		if (satcu->atc_required && !sm_supported(iommu))
-+			ret = 0;
-+		return ret;
-+	}
-+
-+	for (bus = dev->bus; bus; bus = bus->parent) {
-+		bridge = bus->self;
-+		/* If it's an integrated device, allow ATS */
-+		if (!bridge)
-+			return 1;
-+		/* Connected via non-PCIe: no ATS */
-+		if (!pci_is_pcie(bridge) ||
-+		    pci_pcie_type(bridge) == PCI_EXP_TYPE_PCI_BRIDGE)
-+			return 0;
-+		/* If we found the root port, look it up in the ATSR */
-+		if (pci_pcie_type(bridge) == PCI_EXP_TYPE_ROOT_PORT)
-+			break;
-+	}
-+
-+	rcu_read_lock();
-+	list_for_each_entry_rcu(atsru, &dmar_atsr_units, list) {
-+		atsr = container_of(atsru->hdr, struct acpi_dmar_atsr, header);
-+		if (atsr->segment != pci_domain_nr(dev->bus))
-+			continue;
-+
-+		for_each_dev_scope(atsru->devices, atsru->devices_cnt, i, tmp)
-+			if (tmp == &bridge->dev)
-+				goto out;
-+
-+		if (atsru->include_all)
-+			goto out;
-+	}
-+	ret = 0;
-+out:
-+	rcu_read_unlock();
-+
-+	return ret;
-+}
-+
- static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 						    int bus, int devfn,
- 						    struct device *dev,
-@@ -4020,88 +4102,6 @@ static void intel_iommu_free_dmars(void)
- 	}
- }
- 
--static struct dmar_satc_unit *dmar_find_matched_satc_unit(struct pci_dev *dev)
--{
--	int i;
--	struct device *tmp;
--	struct dmar_satc_unit *satcu;
--	struct acpi_dmar_satc *satc;
--
--	dev = pci_physfn(dev);
--	rcu_read_lock();
--
--	list_for_each_entry_rcu(satcu, &dmar_satc_units, list) {
--		satc = container_of(satcu->hdr, struct acpi_dmar_satc, header);
--		if (satc->segment != pci_domain_nr(dev->bus))
--			continue;
--		for_each_dev_scope(satcu->devices, satcu->devices_cnt, i, tmp)
--			if (to_pci_dev(tmp) == dev)
--				goto out;
--	}
--	satcu = NULL;
--out:
--	rcu_read_unlock();
--	return satcu;
--}
--
--int dmar_ats_supported(struct pci_dev *dev, struct intel_iommu *iommu)
--{
--	int i, ret = 1;
--	struct pci_bus *bus;
--	struct pci_dev *bridge = NULL;
--	struct device *tmp;
--	struct acpi_dmar_atsr *atsr;
--	struct dmar_atsr_unit *atsru;
--	struct dmar_satc_unit *satcu;
--
--	dev = pci_physfn(dev);
--	satcu = dmar_find_matched_satc_unit(dev);
--	if (satcu) {
--		/* This dev supports ATS as it is in SATC table!
--		 * When IOMMU is in legacy mode, enabling ATS is done
--		 * automatically by HW for the device that requires
--		 * ATS, hence OS should not enable this device ATS
--		 * to avoid duplicated TLB invalidation
--		 */
--		if (satcu->atc_required && !sm_supported(iommu))
--			ret = 0;
--		return ret;
--	}
--
--	for (bus = dev->bus; bus; bus = bus->parent) {
--		bridge = bus->self;
--		/* If it's an integrated device, allow ATS */
--		if (!bridge)
--			return 1;
--		/* Connected via non-PCIe: no ATS */
--		if (!pci_is_pcie(bridge) ||
--		    pci_pcie_type(bridge) == PCI_EXP_TYPE_PCI_BRIDGE)
--			return 0;
--		/* If we found the root port, look it up in the ATSR */
--		if (pci_pcie_type(bridge) == PCI_EXP_TYPE_ROOT_PORT)
--			break;
--	}
--
--	rcu_read_lock();
--	list_for_each_entry_rcu(atsru, &dmar_atsr_units, list) {
--		atsr = container_of(atsru->hdr, struct acpi_dmar_atsr, header);
--		if (atsr->segment != pci_domain_nr(dev->bus))
--			continue;
--
--		for_each_dev_scope(atsru->devices, atsru->devices_cnt, i, tmp)
--			if (tmp == &bridge->dev)
--				goto out;
--
--		if (atsru->include_all)
--			goto out;
--	}
--	ret = 0;
--out:
--	rcu_read_unlock();
--
--	return ret;
--}
--
- int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
- {
- 	int ret;
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index fe9fd417d611..9262cdf04f05 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -717,7 +717,6 @@ static inline int nr_pte_to_next_page(struct dma_pte *pte)
- }
- 
- extern struct dmar_drhd_unit * dmar_find_matched_drhd_unit(struct pci_dev *dev);
--extern int dmar_ats_supported(struct pci_dev *dev, struct intel_iommu *iommu);
- 
- extern int dmar_enable_qi(struct intel_iommu *iommu);
- extern void dmar_disable_qi(struct intel_iommu *iommu);
--- 
-2.25.1
+To spell it out, the scheme I'm proposing looks like this:
 
+probe/claim:
+	void *owner = driver_or_DMA_API_token(dev);//oversimplification!
+	if (owner) {
+		mutex_lock(group->mutex);
+		if (!group->owner)
+			group->owner = owner;
+		else if (group->owner != owner);
+			ret = -EBUSY;
+		mutex_unlock(group->mutex);
+	}
+
+remove:
+	bool still_owned = false;
+	mutex_lock(group->mutex);
+	list_for_each_entry(tmp, &group->devices, list) {
+		void *owner = driver_or_DMA_API_token(tmp);
+		if (tmp == dev || !owner || owner != group->owner)
+			continue;
+		still_owned = true;
+		break;
+	}
+	if (!still_owned)
+		group->owner = NULL;
+	mutex_unlock(group->mutex);
+
+Of course now that I've made it more concrete I realise that the remove 
+hook does need to run *after* dev->driver is cleared, so not quite 
+"anywhere at all", but the main point remains: as long as actual changes 
+of ownership are always serialised, even if the list walk in the remove 
+hook sees "future" information WRT other devices' drivers, at worst it 
+should merely short-cut to a corresponding pending reclaim of ownership.
+
+> How did we get from adding a few simple lines to dd.c into building
+> some complex lockless algorithm and hoping we did it right?
+
+Because the current alternative to adding a few simple lines to dd.c is 
+adding loads of lines all over the place to end up calling back into 
+common IOMMU code, to do something I'm 99% certain the common IOMMU code 
+could do for itself in private. That said, having worked through the 
+above, it does start looking like a bit of a big change for this series 
+at this point, so I'm happy to keep it on the back burner for when I 
+have to rip .dma_configure to pieces anyway.
+
+According to lockdep, I think I've solved the VFIO locking issue 
+provided vfio_group_viable() goes away, so I'm certainly keen not to 
+delay that for another cycle!
+
+>>>> It has to be s It should be pretty straightforward for
+>>>> iommu_bus_notifier to clear group->owner automatically upon an
+>>>> unbind of the matching driver when it's no longer bound to any other
+>>>> devices in the group either.
+>>>
+>>> That not_bound/unbind notifier isn't currently triggred during
+>>> necessary failure paths of really_probe().
+>>
+>> Eh? Just look at the context of patch #2, let alone the rest of the
+>> function, and tell me how, if we can't rely on BUS_NOTIFY_DRIVER_NOT_BOUND,
+>> calling .dma_cleanup *from the exact same place* is somehow more reliable?
+> 
+> Yeah, OK
+> 
+>> AFAICS, a notifier handling both BUS_NOTIFY_UNBOUND_DRIVER and
+>> BUS_NOTIFY_DRIVER_NOT_BOUND would be directly equivalent to the callers of
+>> .dma_cleanup here.
+> 
+> Yes, but why hide this in a notifier, it is still spaghetti
+
+Quick quiz!
+
+1: The existing IOMMU group management has spent the last 10 years being 
+driven from:
+
+   A - All over random bits of bus code and the driver core
+   B - A private bus notifier
+
+
+2: The functionality that this series replaces and improves upon was 
+split between VFIO and...
+
+   A - Random bits of bus code and the driver core
+   B - The same private bus notifier
+
+>>>> use-case) then it should be up to VFIO to decide when it's finally
+>>>> finished with the whole group, rather than pretending we can keep
+>>>> track of nested ownership claims from inside the API.
+>>>
+>>> What nesting?
+>>
+>> The current implementation of iommu_group_claim_dma_owner() allows owner_cnt
+>> to increase beyond 1, and correspondingly requires
+>> iommu_group_release_dma_owner() to be called the same number of times. It
+>> doesn't appear that VFIO needs that, and I'm not sure I'd trust any other
+>> potential users to get it right either.
+> 
+> That isn't for "nesting" it is keeping track of multi-device
+> groups. Each count represents a device, not a nest.
+
+I was originally going to say "recursion", but then thought that might 
+carry too much risk of misinterpretation, oh well. Hold your favourite 
+word for "taking a mutual-exclusion token that you already hold" in mind 
+and read my paragraph quoted above again. I'm not talking about 
+automatic DMA API claiming, that clearly happens per-device; I'm talking 
+about explicit callers of iommu_group_claim_dma_owner(). Does VFIO call 
+that multiple times for individual devices? No. Should it? No. Is it 
+reasonable that any other future callers should need to? I don't think 
+so. Would things be easier to reason about if we just disallowed it 
+outright? For sure.
+
+>>>> FWIW I have some ideas for re-converging .dma_configure in future
+>>>> which I think should probably be able to subsume this into a
+>>>> completely generic common path, given a common flag.
+>>>
+>>> This would be great!
+>>
+>> Indeed, so if we're enthusiastic about future cleanup that necessitates a
+>> generic flag, why not make the flag generic to start with?
+> 
+> Maybe when someone has patches to delete the bus ops completely they
+> can convince Greg. The good news is that it isn't much work to flip
+> the flag, Lu has already done it 3 times in the previous versions..
+> 
+> It has already been 8 weeks on this point, lets just move on please.
+
+Sure, if it was rc7 with the merge window looming I'd be saying "this is 
+close enough, let's get it in now and fix the small stuff next cycle". 
+However while there's still potentially time to get things right first 
+time, I for one am going to continue to point them out because I'm not a 
+fan of avoidable churn. I'm sorry I haven't had a chance to look 
+properly at this series between v1 and v6, but that's just how things 
+have been.
+
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
