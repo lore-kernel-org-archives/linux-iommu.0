@@ -1,59 +1,60 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DEEDDC433F5
-	for <iommu@archiver.kernel.org>; Tue, 22 Feb 2022 15:35:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 54EA0C433EF
+	for <iommu@archiver.kernel.org>; Tue, 22 Feb 2022 15:35:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A1D214148A;
-	Tue, 22 Feb 2022 15:35:52 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id F2CB081CEF;
+	Tue, 22 Feb 2022 15:35:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5OhxDNGl1h8c; Tue, 22 Feb 2022 15:35:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 6E91D410E6;
-	Tue, 22 Feb 2022 15:35:51 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id MNUF0jaCebdz; Tue, 22 Feb 2022 15:35:56 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id F003A81286;
+	Tue, 22 Feb 2022 15:35:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A3ADC0021;
-	Tue, 22 Feb 2022 15:35:51 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 64C85C0011
- for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 15:35:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9F574C0077;
+	Tue, 22 Feb 2022 15:35:55 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A8A53C0011
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 15:35:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 53A2F4136C
- for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 15:35:50 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 89C7860EF9
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 15:35:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ABgHOEDh-kOw for <iommu@lists.linux-foundation.org>;
- Tue, 22 Feb 2022 15:35:49 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 2zHs7xJW7o7A for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Feb 2022 15:35:54 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [IPv6:2607:7c80:54:e::133])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 902A841298
- for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 15:35:49 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id F1E0A60EF6
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Feb 2022 15:35:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
  :Reply-To:Content-Type:Content-ID:Content-Description;
- bh=e5WrycmUWO29UJfUDorb7NMshMB8lzYVa/Mc+LVTrQY=; b=PVO9XcrDHa5m2ERE3jOCfMddZ8
- VgqNwjEPjMv/voqlXJPqq/Gijq6BadY/wUGg+lCdJIiS/Wm20KPvFL/fb3JaVsj9SgXTgKj/msBMc
- AUtnTN2/CsgeN7vGXwogaFALjfmJg6+5bVutlBng3wk3Vm1xTJf0dqCzaQiQ16e0PpRZ1TpwNrAb2
- Tbp9EBwVd/VQ5Bd719hErc8P9S8oE+PJN5a/LNV1F+lMJfD+HOKEg7jdT+jvqNbzCNX5haPiRafDS
- zkkrMaLQIzYbe/DL4RXwKjXZ7XEjARtDiWibLpsbJPdcqWJ1NV9wVAKal56Wpmncbpzif8mdAuBMT
- wzYHLs2Q==;
+ bh=zCMW1Q+QCPXYuvBuEGOZUQKFwE9OwdLFtYhltvQ29K4=; b=UivVJu0xfBlRElPO98LGgBvic3
+ FgFkBA8tXOAwbzm4ASFviz4SOlLZ2Xk5ojd8aBpgvcYaCCrlUt0AmrI5QXz9BLb9cU7dErlkZgnz3
+ IzVqfHy80xQHgtYs4YtsJIktFe5xVp6loPXsAhY+LqtEtDSPdoKeEjZiqWlkk7Equu3WmJaFkQpSY
+ nCZa1Oyt2hQQICm8D2KgV+1H1RPCuXGZ7ggZgJ+BM2gIRjfpfUXSW4OsSGdg/5dox+XsD7+FHqwZ8
+ loSXrmeHFqVxP2h0pkLAiL/0DZ/bH24KlkPtKONU0U65lHnthcy9X8oVbBAOSQMLGRq8tZSF7/H/x
+ UnbZJ7Dg==;
 Received: from [2001:4bb8:198:f8fc:c22a:ebfc:be8d:63c2] (helo=localhost)
  by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
- id 1nMXCY-00AH3K-TD; Tue, 22 Feb 2022 15:35:43 +0000
+ id 1nMXCe-00AH73-Qo; Tue, 22 Feb 2022 15:35:49 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 09/11] swiotlb: add a SWIOTLB_ANY flag to lift the low memory
- restriction
-Date: Tue, 22 Feb 2022 16:35:12 +0100
-Message-Id: <20220222153514.593231-10-hch@lst.de>
+Subject: [PATCH 11/11] x86: remove cruft from <asm/dma-mapping.h>
+Date: Tue, 22 Feb 2022 16:35:14 +0100
+Message-Id: <20220222153514.593231-12-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220222153514.593231-1-hch@lst.de>
 References: <20220222153514.593231-1-hch@lst.de>
@@ -85,133 +86,50 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Power SVM wants to allocate a swiotlb buffer that is not restricted to
-low memory for the trusted hypervisor scheme.  Consolidate the support
-for this into the swiotlb_init interface by adding a new flag.
+<asm/dma-mapping.h> gets pulled in by all drivers using the DMA API.
+Remove x86 internal variables and unnecessary includes from it.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/powerpc/include/asm/svm.h       |  4 ----
- arch/powerpc/mm/mem.c                |  5 +----
- arch/powerpc/platforms/pseries/svm.c | 26 +-------------------------
- include/linux/swiotlb.h              |  1 +
- kernel/dma/swiotlb.c                 |  9 +++++++--
- 5 files changed, 10 insertions(+), 35 deletions(-)
+ arch/x86/include/asm/dma-mapping.h | 11 -----------
+ arch/x86/include/asm/iommu.h       |  2 ++
+ 2 files changed, 2 insertions(+), 11 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/svm.h b/arch/powerpc/include/asm/svm.h
-index 7546402d796af..85580b30aba48 100644
---- a/arch/powerpc/include/asm/svm.h
-+++ b/arch/powerpc/include/asm/svm.h
-@@ -15,8 +15,6 @@ static inline bool is_secure_guest(void)
- 	return mfmsr() & MSR_S;
- }
- 
--void __init svm_swiotlb_init(void);
--
- void dtl_cache_ctor(void *addr);
- #define get_dtl_cache_ctor()	(is_secure_guest() ? dtl_cache_ctor : NULL)
- 
-@@ -27,8 +25,6 @@ static inline bool is_secure_guest(void)
- 	return false;
- }
- 
--static inline void svm_swiotlb_init(void) {}
--
- #define get_dtl_cache_ctor() NULL
- 
- #endif /* CONFIG_PPC_SVM */
-diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
-index d99b8b5b40ca6..a4d65418c30a9 100644
---- a/arch/powerpc/mm/mem.c
-+++ b/arch/powerpc/mm/mem.c
-@@ -249,10 +249,7 @@ void __init mem_init(void)
- 	 * back to to-down.
- 	 */
- 	memblock_set_bottom_up(true);
--	if (is_secure_guest())
--		svm_swiotlb_init();
--	else
--		swiotlb_init(ppc_swiotlb_enable, ppc_swiotlb_flags);
-+	swiotlb_init(ppc_swiotlb_enable, ppc_swiotlb_flags);
- #endif
- 
- 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
-diff --git a/arch/powerpc/platforms/pseries/svm.c b/arch/powerpc/platforms/pseries/svm.c
-index c5228f4969eb2..3b4045d508ec8 100644
---- a/arch/powerpc/platforms/pseries/svm.c
-+++ b/arch/powerpc/platforms/pseries/svm.c
-@@ -28,7 +28,7 @@ static int __init init_svm(void)
- 	 * need to use the SWIOTLB buffer for DMA even if dma_capable() says
- 	 * otherwise.
- 	 */
--	swiotlb_force = SWIOTLB_FORCE;
-+	ppc_swiotlb_flags |= SWIOTLB_ANY | SWIOTLB_FORCE;
- 
- 	/* Share the SWIOTLB buffer with the host. */
- 	swiotlb_update_mem_attributes();
-@@ -37,30 +37,6 @@ static int __init init_svm(void)
- }
- machine_early_initcall(pseries, init_svm);
+diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
+index 256fd8115223d..1c66708e30623 100644
+--- a/arch/x86/include/asm/dma-mapping.h
++++ b/arch/x86/include/asm/dma-mapping.h
+@@ -2,17 +2,6 @@
+ #ifndef _ASM_X86_DMA_MAPPING_H
+ #define _ASM_X86_DMA_MAPPING_H
  
 -/*
-- * Initialize SWIOTLB. Essentially the same as swiotlb_init(), except that it
-- * can allocate the buffer anywhere in memory. Since the hypervisor doesn't have
-- * any addressing limitation, we don't need to allocate it in low addresses.
+- * IOMMU interface. See Documentation/core-api/dma-api-howto.rst and
+- * Documentation/core-api/dma-api.rst for documentation.
 - */
--void __init svm_swiotlb_init(void)
--{
--	unsigned char *vstart;
--	unsigned long bytes, io_tlb_nslabs;
 -
--	io_tlb_nslabs = (swiotlb_size_or_default() >> IO_TLB_SHIFT);
--	io_tlb_nslabs = ALIGN(io_tlb_nslabs, IO_TLB_SEGSIZE);
+-#include <linux/scatterlist.h>
+-#include <asm/io.h>
 -
--	bytes = io_tlb_nslabs << IO_TLB_SHIFT;
+-extern int iommu_merge;
+-extern int panic_on_overflow;
 -
--	vstart = memblock_alloc(PAGE_ALIGN(bytes), PAGE_SIZE);
--	if (vstart && !swiotlb_init_with_tbl(vstart, io_tlb_nslabs, false))
--		return;
--
--
--	memblock_free(vstart, PAGE_ALIGN(io_tlb_nslabs << IO_TLB_SHIFT));
--	panic("SVM: Cannot allocate SWIOTLB buffer");
--}
--
- int set_memory_encrypted(unsigned long addr, int numpages)
- {
- 	if (!cc_platform_has(CC_ATTR_MEM_ENCRYPT))
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index dcecf953f7997..ee655f2e4d28b 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -15,6 +15,7 @@ struct scatterlist;
+ extern const struct dma_map_ops *dma_ops;
  
- #define SWIOTLB_VERBOSE	(1 << 0) /* verbose initialization */
- #define SWIOTLB_FORCE	(1 << 1) /* force bounce buffering */
-+#define SWIOTLB_ANY	(1 << 2) /* allow any memory for the buffer */
+ static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
+index dba89ed40d38d..0bef44d30a278 100644
+--- a/arch/x86/include/asm/iommu.h
++++ b/arch/x86/include/asm/iommu.h
+@@ -8,6 +8,8 @@
  
- /*
-  * Maximum allowable number of contiguous slabs to map,
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index ad604e5a0983d..ec200e40fc397 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -275,8 +275,13 @@ void __init swiotlb_init(bool addressing_limit, unsigned int flags)
- 	if (swiotlb_force_disable)
- 		return;
+ extern int force_iommu, no_iommu;
+ extern int iommu_detected;
++extern int iommu_merge;
++extern int panic_on_overflow;
  
--	/* Get IO TLB memory from the low pages */
--	tlb = memblock_alloc_low(bytes, PAGE_SIZE);
-+	/*
-+	 * By default allocate the bonuce buffer memory from low memory.
-+	 */
-+	if (flags & SWIOTLB_ANY)
-+		tlb = memblock_alloc(bytes, PAGE_SIZE);
-+	else
-+		tlb = memblock_alloc_low(bytes, PAGE_SIZE);
- 	if (!tlb)
- 		goto fail;
- 	if (swiotlb_init_with_tbl(tlb, default_nslabs, flags))
+ #ifdef CONFIG_SWIOTLB
+ extern bool x86_swiotlb_enable;
 -- 
 2.30.2
 
