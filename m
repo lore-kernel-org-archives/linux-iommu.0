@@ -4,69 +4,75 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9DBF4C433FE
-	for <iommu@archiver.kernel.org>; Wed, 23 Feb 2022 07:24:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 794D5C433EF
+	for <iommu@archiver.kernel.org>; Wed, 23 Feb 2022 09:44:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 4D7798144C;
-	Wed, 23 Feb 2022 07:24:41 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 1379F813E2;
+	Wed, 23 Feb 2022 09:44:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wPzRKbC_9yQC; Wed, 23 Feb 2022 07:24:40 +0000 (UTC)
+	with ESMTP id 9bpseQ9_iE3c; Wed, 23 Feb 2022 09:44:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 2DD2B813E2;
-	Wed, 23 Feb 2022 07:24:40 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id E7F7A813DC;
+	Wed, 23 Feb 2022 09:44:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 071A1C0021;
-	Wed, 23 Feb 2022 07:24:40 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D9030C0011
- for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 07:24:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BC9BDC001A;
+	Wed, 23 Feb 2022 09:44:31 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 925C6C0011
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 09:44:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9142740012
- for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 07:24:38 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 728D88136B
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 09:44:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5OHgfJwawqe8 for <iommu@lists.linux-foundation.org>;
- Wed, 23 Feb 2022 07:24:37 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 93A9C408AE
- for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 07:24:37 +0000 (UTC)
-X-UUID: 2ff794e87c794a37b6fee2fb7769465e-20220223
-X-UUID: 2ff794e87c794a37b6fee2fb7769465e-20220223
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
- (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 926593344; Wed, 23 Feb 2022 15:24:31 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 23 Feb 2022 15:24:30 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 23 Feb 2022 15:24:28 +0800
-To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
- "Matthias Brugger" <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>
-Subject: [PATCH v2 2/2] iommu/mediatek: Add mt8186 iommu support
-Date: Wed, 23 Feb 2022 15:24:02 +0800
-Message-ID: <20220223072402.17518-3-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220223072402.17518-1-yong.wu@mediatek.com>
-References: <20220223072402.17518-1-yong.wu@mediatek.com>
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id mmy2PPpIi8FZ for <iommu@lists.linux-foundation.org>;
+ Wed, 23 Feb 2022 09:44:27 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 3447381362
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 09:44:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+ s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+ References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=uD+YdSB7BK2YZwHIlrFrUTb1ozQHZ1Cv2M2UMS1FjFg=; b=ddUFMN63QJ6TBX1ryUpKDsU/sP
+ +7bMajKfZDclWj9HZR+nZqarXuhOYEc6+hQbWxMk1nIPbkJT3HthlJ+E3J7gP+aY9mkI12PxJTwVz
+ j5o4v0FG6u/gMKV4m/QztKGHnt4kpcUZrULZUio4pv6LvX8W9HuQ+EaSsI9UA1MTfYL2wRR0+siSb
+ 8+VsToOmQMrcizomZAYvuvXA1fqbsA30K5w1Xbfa/4JFtCLIOP4S5Sxd+MR15CRsWy1QPPk6NaoIz
+ OXPOpzYJ93NSv7xV6y6zIGnswVRXmhe45W0UBnXxJV4IBbSb9j4ZVAbXKcNb7/9F5yjdZDB2l8pd9
+ Aid3wUXg==;
+Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70]
+ helo=[192.168.1.10])
+ by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+ (Exim 4.89) (envelope-from <cyndis@kapsi.fi>)
+ id 1nMoBn-0003QL-UA; Wed, 23 Feb 2022 11:44:03 +0200
+Message-ID: <d2579e10-e5c2-0d99-4233-19318a1db6c1@kapsi.fi>
+Date: Wed, 23 Feb 2022 11:44:02 +0200
 MIME-Version: 1.0
-X-MTK: N
-Cc: devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- chengci.xu@mediatek.com, xueqi.zhang@mediatek.com,
- linux-kernel@vger.kernel.org, libo.kang@mediatek.com,
- yen-chang.chen@mediatek.com, iommu@lists.linux-foundation.org,
- yf.wang@mediatek.com, linux-mediatek@lists.infradead.org,
- Hsin-Yi Wang <hsinyi@chromium.org>, anan.sun@mediatek.com,
- Robin Murphy <robin.murphy@arm.com>, mingyuan.ma@mediatek.com,
- linux-arm-kernel@lists.infradead.org, AngeloGioacchino
- Del Regno <angelogioacchino.delregno@collabora.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v3 3/9] gpu: host1x: Add context device management code
+Content-Language: en-US
+To: Christoph Hellwig <hch@infradead.org>,
+ Mikko Perttunen <mperttunen@nvidia.com>
+References: <20220218113952.3077606-1-mperttunen@nvidia.com>
+ <20220218113952.3077606-4-mperttunen@nvidia.com>
+ <YhUOKaoCA7dyAZAh@infradead.org>
+From: Mikko Perttunen <cyndis@kapsi.fi>
+In-Reply-To: <YhUOKaoCA7dyAZAh@infradead.org>
+X-SA-Exim-Connect-IP: 91.158.25.70
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
+Cc: devicetree@vger.kernel.org, will@kernel.org, linux-kernel@vger.kernel.org,
+ robh+dt@kernel.org, jonathanh@nvidia.com, iommu@lists.linux-foundation.org,
+ thierry.reding@gmail.com, dri-devel@lists.freedesktop.org,
+ linux-tegra@vger.kernel.org, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,66 +85,30 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Yong Wu <yong.wu@mediatek.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add mt8186 iommu supports.
+On 2/22/22 18:24, Christoph Hellwig wrote:
+> On Fri, Feb 18, 2022 at 01:39:46PM +0200, Mikko Perttunen wrote:
+>> +
+>> +/*
+>> + * Due to an issue with T194 NVENC, only 38 bits can be used.
+>> + * Anyway, 256GiB of IOVA ought to be enough for anyone.
+>> + */
+>> +static dma_addr_t context_device_dma_mask = DMA_BIT_MASK(38);
+> 
+> You need a mask per device.  Please don't share the same variable
+> for multiple masks.
+> 
+>> +EXPORT_SYMBOL(host1x_context_alloc);
+> 
+> All this low-level code really should be EXPORT_SYMBOL_GPL.
 
-Signed-off-by: Anan Sun <anan.sun@mediatek.com>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+Thanks, will fix (and same for patch 2).
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index d9ca9ffe404c..174a2f3bd68a 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -160,6 +160,7 @@ enum mtk_iommu_plat {
- 	M4U_MT8167,
- 	M4U_MT8173,
- 	M4U_MT8183,
-+	M4U_MT8186,
- 	M4U_MT8192,
- 	M4U_MT8195,
- };
-@@ -1438,6 +1439,21 @@ static const struct mtk_iommu_plat_data mt8183_data = {
- 	.larbid_remap = {{0}, {4}, {5}, {6}, {7}, {2}, {3}, {1}},
- };
- 
-+static const struct mtk_iommu_plat_data mt8186_data_mm = {
-+	.m4u_plat       = M4U_MT8186,
-+	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
-+			  WR_THROT_EN | IOVA_34_EN | NOT_STD_AXI_MODE |
-+			  MTK_IOMMU_TYPE_MM,
-+	.larbid_remap   = {{0}, {1, MTK_INVALID_LARBID, 8}, {4}, {7}, {2}, {9, 11, 19, 20},
-+			   {MTK_INVALID_LARBID, 14, 16},
-+			   {MTK_INVALID_LARBID, 13, MTK_INVALID_LARBID, 17}},
-+	.inv_sel_reg    = REG_MMU_INV_SEL_GEN2,
-+	.banks_num      = 1,
-+	.banks_enable   = {true},
-+	.iova_region    = mt8192_multi_dom,
-+	.iova_region_nr = ARRAY_SIZE(mt8192_multi_dom),
-+};
-+
- static const struct mtk_iommu_plat_data mt8192_data = {
- 	.m4u_plat       = M4U_MT8192,
- 	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
-@@ -1507,6 +1523,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt8167-m4u", .data = &mt8167_data},
- 	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
- 	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
-+	{ .compatible = "mediatek,mt8186-iommu-mm",    .data = &mt8186_data_mm}, /* mm: m4u */
- 	{ .compatible = "mediatek,mt8192-m4u", .data = &mt8192_data},
- 	{ .compatible = "mediatek,mt8195-iommu-infra", .data = &mt8195_data_infra},
- 	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data = &mt8195_data_vdo},
--- 
-2.18.0
-
+Mikko
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
