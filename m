@@ -1,82 +1,72 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3357AC4332F
-	for <iommu@archiver.kernel.org>; Wed, 23 Feb 2022 17:47:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2E824C433F5
+	for <iommu@archiver.kernel.org>; Wed, 23 Feb 2022 18:00:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A9620415BC;
-	Wed, 23 Feb 2022 17:47:36 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id C12A382983;
+	Wed, 23 Feb 2022 18:00:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 15P0WmXmXWIb; Wed, 23 Feb 2022 17:47:35 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id TBJQoNY-g6qf; Wed, 23 Feb 2022 18:00:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 849754034C;
-	Wed, 23 Feb 2022 17:47:35 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 2CCE880F5C;
+	Wed, 23 Feb 2022 18:00:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 59C5EC001A;
-	Wed, 23 Feb 2022 17:47:35 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 58DBCC0011
- for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 17:47:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F1F76C001A;
+	Wed, 23 Feb 2022 18:00:20 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E99DAC0011
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 18:00:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 44D444152A
- for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 17:47:34 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id C452C82865
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 18:00:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0rieHRcb26k6 for <iommu@lists.linux-foundation.org>;
- Wed, 23 Feb 2022 17:47:33 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org
- [IPv6:2604:1380:4601:e00::1])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 5568D4034C
- for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 17:47:33 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id 8F41FB8210A;
- Wed, 23 Feb 2022 17:47:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1CDCC340E7;
- Wed, 23 Feb 2022 17:47:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
- s=korg; t=1645638449;
- bh=PzqyA2XrzzGeBSeh0QDm0Df3zNauEEpV0xJ738q5m/o=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=GQ5bixyNFUH7AJNZGLnUkHJBuszfRkKABSy2/C2lsveMJsuQFFxLDUDGH5B7VsWWa
- ISD0DgXptmhra66h9sdr8wPimVDvIAfn/bzFfXZ8z5OasBUTwbI2wpXCoOwQN2cbFE
- 3I95qlanVxIUnpn5ViUUsymh3+vZj7EP6Hc3G9Xw=
-Date: Wed, 23 Feb 2022 18:47:26 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v6 02/11] driver core: Add dma_cleanup callback in bus_type
-Message-ID: <YhZzLmjVckPRLYj2@kroah.com>
-References: <3d4c3bf1-fed6-f640-dc20-36d667de7461@arm.com>
- <20220222235353.GF10061@nvidia.com>
- <171bec90-5ea6-b35b-f027-1b5e961f5ddf@linux.intel.com>
- <880a269d-d39d-bab3-8d19-b493e874ec99@arm.com>
- <20220223134627.GO10061@nvidia.com> <YhY/a9wTjmYXsuwt@kroah.com>
- <20220223140901.GP10061@nvidia.com>
- <20220223143011.GQ10061@nvidia.com> <YhZa3D5Xwv5oZm7L@kroah.com>
- <78d2dd11-db30-39c8-6df4-d20f0dfbfce2@arm.com>
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id UkVtfKhasYn5 for <iommu@lists.linux-foundation.org>;
+ Wed, 23 Feb 2022 18:00:18 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp1.osuosl.org (Postfix) with ESMTP id E0AC380F5C
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 18:00:17 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DA723D6E;
+ Wed, 23 Feb 2022 10:00:16 -0800 (PST)
+Received: from [10.57.40.147] (unknown [10.57.40.147])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C7A5F3F70D;
+ Wed, 23 Feb 2022 10:00:10 -0800 (PST)
+Message-ID: <f830c268-daca-8e8f-a429-0c80496a7273@arm.com>
+Date: Wed, 23 Feb 2022 18:00:06 +0000
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <78d2dd11-db30-39c8-6df4-d20f0dfbfce2@arm.com>
-Cc: kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
- linux-pci@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
- Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
- Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Stuart Yoder <stuyoder@gmail.com>, Kevin Tian <kevin.tian@intel.com>,
- Chaitanya Kulkarni <kch@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v6 01/11] iommu: Add dma ownership management interfaces
+Content-Language: en-GB
+To: Lu Baolu <baolu.lu@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Joerg Roedel <joro@8bytes.org>, Alex Williamson
+ <alex.williamson@redhat.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>
+References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
+ <20220218005521.172832-2-baolu.lu@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220218005521.172832-2-baolu.lu@linux.intel.com>
+Cc: Chaitanya Kulkarni <kch@nvidia.com>, kvm@vger.kernel.org,
+ Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
+ David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
  Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>
+ Jonathan Hunter <jonathanh@nvidia.com>, iommu@lists.linux-foundation.org,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Diana Craciun <diana.craciun@oss.nxp.com>,
+ Dan Williams <dan.j.williams@intel.com>, Li Yang <leoyang.li@nxp.com>,
+ Will Deacon <will@kernel.org>, Dmitry Osipenko <digetx@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,72 +79,113 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Feb 23, 2022 at 05:05:23PM +0000, Robin Murphy wrote:
-> On 2022-02-23 16:03, Greg Kroah-Hartman wrote:
-> > On Wed, Feb 23, 2022 at 10:30:11AM -0400, Jason Gunthorpe wrote:
-> > > On Wed, Feb 23, 2022 at 10:09:01AM -0400, Jason Gunthorpe wrote:
-> > > > On Wed, Feb 23, 2022 at 03:06:35PM +0100, Greg Kroah-Hartman wrote:
-> > > > > On Wed, Feb 23, 2022 at 09:46:27AM -0400, Jason Gunthorpe wrote:
-> > > > > > On Wed, Feb 23, 2022 at 01:04:00PM +0000, Robin Murphy wrote:
-> > > > > > 
-> > > > > > > 1 - tmp->driver is non-NULL because tmp is already bound.
-> > > > > > >    1.a - If tmp->driver->driver_managed_dma == 0, the group must currently be
-> > > > > > > DMA-API-owned as a whole. Regardless of what driver dev has unbound from,
-> > > > > > > its removal does not release someone else's DMA API (co-)ownership.
-> > > > > > 
-> > > > > > This is an uncommon locking pattern, but it does work. It relies on
-> > > > > > the mutex being an effective synchronization barrier for an unlocked
-> > > > > > store:
-> > > > > > 
-> > > > > > 				      WRITE_ONCE(dev->driver, NULL)
-> > > > > 
-> > > > > Only the driver core should be messing with the dev->driver pointer as
-> > > > > when it does so, it already has the proper locks held.  Do I need to
-> > > > > move that to a "private" location so that nothing outside of the driver
-> > > > > core can mess with it?
-> > > > 
-> > > > It would be nice, I've seen a abuse and mislocking of it in drivers
-> > > 
-> > > Though to be clear, what Robin is describing is still keeping the
-> > > dev->driver stores in dd.c, just reading it in a lockless way from
-> > > other modules.
-> > 
-> > "other modules" should never care if a device has a driver bound to it
-> > because instantly after the check happens, it can change so what ever
-> > logic it wanted to do with that knowledge is gone.
-> > 
-> > Unless the bus lock is held that the device is on, but that should be
-> > only accessable from within the driver core as it controls that type of
-> > stuff, not any random other part of the kernel.
-> > 
-> > And in looking at this, ick, there are loads of places in the kernel
-> > that are thinking that this pointer being set to something actually
-> > means something.  Sometimes it does, but lots of places, it doesn't as
-> > it can change.
-> 
-> That's fine. In this case we're only talking about the low-level IOMMU code
-> which has to be in cahoots with the driver core to some degree (via these
-> new callbacks) anyway, but if you're uncomfortable about relying on
-> dev->driver even there, I can live with that. There are several potential
-> places to capture the relevant information in IOMMU API private data, from
-> the point in really_probe() where it *is* stable, and then never look at
-> dev->driver ever again - even from .dma_cleanup() or future equivalent,
-> which is the aspect from whence this whole proof-of-concept tangent span
-> out.
+On 2022-02-18 00:55, Lu Baolu wrote:
+[...]
+> +/**
+> + * iommu_group_claim_dma_owner() - Set DMA ownership of a group
+> + * @group: The group.
+> + * @owner: Caller specified pointer. Used for exclusive ownership.
+> + *
+> + * This is to support backward compatibility for vfio which manages
+> + * the dma ownership in iommu_group level. New invocations on this
+> + * interface should be prohibited.
+> + */
+> +int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner)
+> +{
+> +	int ret = 0;
+> +
+> +	mutex_lock(&group->mutex);
+> +	if (group->owner_cnt) {
 
-For a specific driver core callback, like dma_cleanup(), all is fine,
-but you shouldn't be caring about a driver pointer in your bus callback
-for stuff like this as you "know" what happened by virtue of the
-callback being called.
+To clarify the comment buried in the other thread, I really think we 
+should just unconditionally flag the error here...
 
-thanks,
+> +		if (group->owner != owner) {
+> +			ret = -EPERM;
+> +			goto unlock_out;
+> +		}
+> +	} else {
+> +		if (group->domain && group->domain != group->default_domain) {
+> +			ret = -EBUSY;
+> +			goto unlock_out;
+> +		}
+> +
+> +		group->owner = owner;
+> +		if (group->domain)
+> +			__iommu_detach_group(group->domain, group);
+> +	}
+> +
+> +	group->owner_cnt++;
+> +unlock_out:
+> +	mutex_unlock(&group->mutex);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_group_claim_dma_owner);
+> +
+> +/**
+> + * iommu_group_release_dma_owner() - Release DMA ownership of a group
+> + * @group: The group.
+> + *
+> + * Release the DMA ownership claimed by iommu_group_claim_dma_owner().
+> + */
+> +void iommu_group_release_dma_owner(struct iommu_group *group)
+> +{
+> +	mutex_lock(&group->mutex);
+> +	if (WARN_ON(!group->owner_cnt || !group->owner))
+> +		goto unlock_out;
+> +
+> +	if (--group->owner_cnt > 0)
+> +		goto unlock_out;
 
-greg k-h
+...and equivalently just set owner_cnt directly to 0 here. I don't see a 
+realistic use-case for any driver to claim the same group more than 
+once, and allowing it in the API just feels like opening up various 
+potential corners for things to get out of sync.
+
+I think that's the only significant concern I have left with the series 
+as a whole - you can consider my other grumbles non-blocking :)
+
+Thanks,
+Robin.
+
+> +
+> +	/*
+> +	 * The UNMANAGED domain should be detached before all USER
+> +	 * owners have been released.
+> +	 */
+> +	if (!WARN_ON(group->domain) && group->default_domain)
+> +		__iommu_attach_group(group->default_domain, group);
+> +	group->owner = NULL;
+> +
+> +unlock_out:
+> +	mutex_unlock(&group->mutex);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_group_release_dma_owner);
+> +
+> +/**
+> + * iommu_group_dma_owner_claimed() - Query group dma ownership status
+> + * @group: The group.
+> + *
+> + * This provides status query on a given group. It is racey and only for
+> + * non-binding status reporting.
+> + */
+> +bool iommu_group_dma_owner_claimed(struct iommu_group *group)
+> +{
+> +	unsigned int user;
+> +
+> +	mutex_lock(&group->mutex);
+> +	user = group->owner_cnt;
+> +	mutex_unlock(&group->mutex);
+> +
+> +	return user;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
