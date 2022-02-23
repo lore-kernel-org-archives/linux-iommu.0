@@ -1,81 +1,82 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 70FB1C433EF
-	for <iommu@archiver.kernel.org>; Wed, 23 Feb 2022 17:45:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3357AC4332F
+	for <iommu@archiver.kernel.org>; Wed, 23 Feb 2022 17:47:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 24C528141A;
-	Wed, 23 Feb 2022 17:45:21 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id A9620415BC;
+	Wed, 23 Feb 2022 17:47:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id smRWnuh0pZKD; Wed, 23 Feb 2022 17:45:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 192E18139C;
-	Wed, 23 Feb 2022 17:45:20 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 15P0WmXmXWIb; Wed, 23 Feb 2022 17:47:35 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 849754034C;
+	Wed, 23 Feb 2022 17:47:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0117FC001A;
-	Wed, 23 Feb 2022 17:45:20 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5C61EC0011
- for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 17:45:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 59C5EC001A;
+	Wed, 23 Feb 2022 17:47:35 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 58DBCC0011
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 17:47:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4B7D360D74
- for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 17:45:19 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 44D444152A
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 17:47:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3nB8PQ4AdZwa for <iommu@lists.linux-foundation.org>;
- Wed, 23 Feb 2022 17:45:18 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 827D7600CC
- for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 17:45:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1645638318; x=1677174318;
- h=message-id:date:mime-version:subject:to:cc:references:
- from:in-reply-to:content-transfer-encoding;
- bh=aeb0qt4wCCz7I/mFg9ArXVeLtAeRSHAS90P4rnXgYoM=;
- b=fLaE1VRyF54q4q+9xEdC2RvHffs+9HUjINYIimaRYKqdp7yfkN9fo62I
- poeUUmds354sVOZNctSmR3yVEc4RW6lPJSoC5GX3l+vErRrIGUlDj/8AV
- ZWj/3blCNao8HM+1LPcGhNSiDA1OsgKQDLsJlZvT8aCRGxpZMS/cs8d0n
- nEhxvzOR6+2M7B/gGtJb/NAbfIc3f5lVNZShP/iY1OshI8DqXpQdPTumo
- MAbpqsQaylmVIfKC0JJYFgIdf+b8ZTB0wJqns3IHCj9FKaodooTgXcv1B
- Us7F0fsbtiSpUhie71gaYUvbEaeXOxToYGy5rBQc1DHhuZo4wScEswsjr Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="232659135"
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; d="scan'208";a="232659135"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Feb 2022 09:45:17 -0800
-X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; d="scan'208";a="491292157"
-Received: from chakanog-mobl.amr.corp.intel.com (HELO [10.212.198.215])
- ([10.212.198.215])
- by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Feb 2022 09:45:17 -0800
-Message-ID: <04080c88-3e69-b4e6-0af2-0690accaa02f@intel.com>
-Date: Wed, 23 Feb 2022 09:45:12 -0800
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0rieHRcb26k6 for <iommu@lists.linux-foundation.org>;
+ Wed, 23 Feb 2022 17:47:33 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from ams.source.kernel.org (ams.source.kernel.org
+ [IPv6:2604:1380:4601:e00::1])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 5568D4034C
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 17:47:33 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by ams.source.kernel.org (Postfix) with ESMTPS id 8F41FB8210A;
+ Wed, 23 Feb 2022 17:47:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1CDCC340E7;
+ Wed, 23 Feb 2022 17:47:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+ s=korg; t=1645638449;
+ bh=PzqyA2XrzzGeBSeh0QDm0Df3zNauEEpV0xJ738q5m/o=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=GQ5bixyNFUH7AJNZGLnUkHJBuszfRkKABSy2/C2lsveMJsuQFFxLDUDGH5B7VsWWa
+ ISD0DgXptmhra66h9sdr8wPimVDvIAfn/bzFfXZ8z5OasBUTwbI2wpXCoOwQN2cbFE
+ 3I95qlanVxIUnpn5ViUUsymh3+vZj7EP6Hc3G9Xw=
+Date: Wed, 23 Feb 2022 18:47:26 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v6 02/11] driver core: Add dma_cleanup callback in bus_type
+Message-ID: <YhZzLmjVckPRLYj2@kroah.com>
+References: <3d4c3bf1-fed6-f640-dc20-36d667de7461@arm.com>
+ <20220222235353.GF10061@nvidia.com>
+ <171bec90-5ea6-b35b-f027-1b5e961f5ddf@linux.intel.com>
+ <880a269d-d39d-bab3-8d19-b493e874ec99@arm.com>
+ <20220223134627.GO10061@nvidia.com> <YhY/a9wTjmYXsuwt@kroah.com>
+ <20220223140901.GP10061@nvidia.com>
+ <20220223143011.GQ10061@nvidia.com> <YhZa3D5Xwv5oZm7L@kroah.com>
+ <78d2dd11-db30-39c8-6df4-d20f0dfbfce2@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v5 00/12] x86: Trenchboot secure dynamic launch Linux
- kernel support
-Content-Language: en-US
-To: Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org, 
- x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-crypto@vger.kernel.org, kexec@lists.infradead.org
-References: <1645070085-14255-1-git-send-email-ross.philipson@oracle.com>
-From: Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <1645070085-14255-1-git-send-email-ross.philipson@oracle.com>
-Cc: dpsmith@apertussolutions.com, nivedita@alum.mit.edu, luto@amacapital.net,
- iommu@lists.linux-foundation.org, mingo@redhat.com, bp@alien8.de,
- hpa@zytor.com, kanth.ghatraju@oracle.com, tglx@linutronix.de,
- trenchboot-devel@googlegroups.com
+Content-Disposition: inline
+In-Reply-To: <78d2dd11-db30-39c8-6df4-d20f0dfbfce2@arm.com>
+Cc: kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
+ linux-pci@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Stuart Yoder <stuyoder@gmail.com>, Kevin Tian <kevin.tian@intel.com>,
+ Chaitanya Kulkarni <kch@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,27 +94,67 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2/16/22 19:54, Ross Philipson wrote:
-> The larger focus of the TrenchBoot project (https://github.com/TrenchBoot) is to
-> enhance the boot security and integrity in a unified manner. The first area of
-> focus has been on the Trusted Computing Group's Dynamic Launch for establishing
-> a hardware Root of Trust for Measurement, also know as DRTM (Dynamic Root of
-> Trust for Measurement). The project has been and continues to work on providing
-> a unified means to Dynamic Launch that is a cross-platform (Intel and AMD) and
-> cross-architecture (x86 and Arm), with our recent involvment in the upcoming
-> Arm DRTM specification. The order of introducing DRTM to the Linux kernel
-> follows the maturity of DRTM in the architectures. Intel's Trusted eXecution
-> Technology (TXT) is present today and only requires a preamble loader, e.g. a
-> boot loader, and an OS kernel that is TXT-aware. AMD DRTM implementation has
-> been present since the introduction of AMD-V but requires an additional
-> component that is AMD specific and referred to in the specification as the
-> Secure Loader, which the TrenchBoot project has an active prototype in
-> development. Finally Arm's implementation is in specification development stage
-> and the project is looking to support it when it becomes available.
+On Wed, Feb 23, 2022 at 05:05:23PM +0000, Robin Murphy wrote:
+> On 2022-02-23 16:03, Greg Kroah-Hartman wrote:
+> > On Wed, Feb 23, 2022 at 10:30:11AM -0400, Jason Gunthorpe wrote:
+> > > On Wed, Feb 23, 2022 at 10:09:01AM -0400, Jason Gunthorpe wrote:
+> > > > On Wed, Feb 23, 2022 at 03:06:35PM +0100, Greg Kroah-Hartman wrote:
+> > > > > On Wed, Feb 23, 2022 at 09:46:27AM -0400, Jason Gunthorpe wrote:
+> > > > > > On Wed, Feb 23, 2022 at 01:04:00PM +0000, Robin Murphy wrote:
+> > > > > > 
+> > > > > > > 1 - tmp->driver is non-NULL because tmp is already bound.
+> > > > > > >    1.a - If tmp->driver->driver_managed_dma == 0, the group must currently be
+> > > > > > > DMA-API-owned as a whole. Regardless of what driver dev has unbound from,
+> > > > > > > its removal does not release someone else's DMA API (co-)ownership.
+> > > > > > 
+> > > > > > This is an uncommon locking pattern, but it does work. It relies on
+> > > > > > the mutex being an effective synchronization barrier for an unlocked
+> > > > > > store:
+> > > > > > 
+> > > > > > 				      WRITE_ONCE(dev->driver, NULL)
+> > > > > 
+> > > > > Only the driver core should be messing with the dev->driver pointer as
+> > > > > when it does so, it already has the proper locks held.  Do I need to
+> > > > > move that to a "private" location so that nothing outside of the driver
+> > > > > core can mess with it?
+> > > > 
+> > > > It would be nice, I've seen a abuse and mislocking of it in drivers
+> > > 
+> > > Though to be clear, what Robin is describing is still keeping the
+> > > dev->driver stores in dd.c, just reading it in a lockless way from
+> > > other modules.
+> > 
+> > "other modules" should never care if a device has a driver bound to it
+> > because instantly after the check happens, it can change so what ever
+> > logic it wanted to do with that knowledge is gone.
+> > 
+> > Unless the bus lock is held that the device is on, but that should be
+> > only accessable from within the driver core as it controls that type of
+> > stuff, not any random other part of the kernel.
+> > 
+> > And in looking at this, ick, there are loads of places in the kernel
+> > that are thinking that this pointer being set to something actually
+> > means something.  Sometimes it does, but lots of places, it doesn't as
+> > it can change.
+> 
+> That's fine. In this case we're only talking about the low-level IOMMU code
+> which has to be in cahoots with the driver core to some degree (via these
+> new callbacks) anyway, but if you're uncomfortable about relying on
+> dev->driver even there, I can live with that. There are several potential
+> places to capture the relevant information in IOMMU API private data, from
+> the point in really_probe() where it *is* stable, and then never look at
+> dev->driver ever again - even from .dma_cleanup() or future equivalent,
+> which is the aspect from whence this whole proof-of-concept tangent span
+> out.
 
-What problem is this patch series solving?  Is the same problem solved
-in a different way in the kernel today?  What is wrong with that
-solution?  What effects will end users see if they apply this series?
+For a specific driver core callback, like dma_cleanup(), all is fine,
+but you shouldn't be caring about a driver pointer in your bus callback
+for stuff like this as you "know" what happened by virtue of the
+callback being called.
+
+thanks,
+
+greg k-h
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
