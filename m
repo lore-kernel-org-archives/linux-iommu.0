@@ -1,108 +1,93 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 351B8C43217
-	for <iommu@archiver.kernel.org>; Wed, 23 Feb 2022 04:31:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 07A22C4332F
+	for <iommu@archiver.kernel.org>; Wed, 23 Feb 2022 05:02:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D977A410C7;
-	Wed, 23 Feb 2022 04:30:59 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 8608D81C38;
+	Wed, 23 Feb 2022 05:02:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WPU1rzcagwzg; Wed, 23 Feb 2022 04:30:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 6BCD9409BB;
-	Wed, 23 Feb 2022 04:30:58 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bWHC_2kDnI7C; Wed, 23 Feb 2022 05:02:49 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 6DB9D81BC2;
+	Wed, 23 Feb 2022 05:02:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2D521C001A;
-	Wed, 23 Feb 2022 04:30:58 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E002BC0011;
- Wed, 23 Feb 2022 04:30:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 29C5DC001A;
+	Wed, 23 Feb 2022 05:02:49 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 26773C0011
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 05:02:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id C75C360ACB;
- Wed, 23 Feb 2022 04:30:51 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 0728081C18
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 05:02:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=sent.com header.b="qtmg2sm/";
- dkim=pass (2048-bit key) header.d=messagingengine.com
- header.b="J1z7OFHu"
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0tXgoUVqyY75; Wed, 23 Feb 2022 04:30:49 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com
- [66.111.4.224])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 386A160B53;
- Wed, 23 Feb 2022 04:30:49 +0000 (UTC)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
- by mailnew.nyi.internal (Postfix) with ESMTP id 9DF55580113;
- Tue, 22 Feb 2022 23:30:46 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
- by compute1.internal (MEProxy); Tue, 22 Feb 2022 23:30:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
- :cc:content-transfer-encoding:date:date:from:from:in-reply-to
- :in-reply-to:message-id:mime-version:references:reply-to
- :reply-to:sender:subject:subject:to:to; s=fm2; bh=ScaHljs36KhhiK
- 6PzqhhwR0BIonYDvtJP+MyRb43DFE=; b=qtmg2sm/u2imcdgR7BJ1R+zq14C3X6
- M0AJ/vLlvw3/OC+S9TsOEuRsda/vfEJ3TWEp5T79TTG/c1yiHT9nt6E6lSTtqPLw
- IOQ/QJt4pS/PznXT8BzmOWVXccYX8tRmTKr444aHi97+kc8IqvMZFlblUSjJnoug
- cO6hqs8UedYZdlVT6WAiciAk4ymaKAnqTeorHuqMOe06rK1VLwsXg3OgT5nhKFYr
- dLZ83urqPJ6C5s1dvEQnoWyNwv9kVem05KQi+9rbEPf0ZmLU/bs4MxbPzFk2fnbs
- 7UDpI4ureCqggEUiBHeCr+ZfBQ6EJePHWkdy0unHaLX+808K5+4GYu4A==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
- messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
- :from:from:in-reply-to:in-reply-to:message-id:mime-version
- :references:reply-to:reply-to:sender:subject:subject:to:to
- :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
- fm2; bh=ScaHljs36KhhiK6PzqhhwR0BIonYDvtJP+MyRb43DFE=; b=J1z7OFHu
- BsaRe3/7KohNi2RRiUGxXE6s5RoefkDRM6FWPYgOu0n8Aljwz5g2IvIqp5vLM/7w
- rjDTZF6h0gW3dpQKypFN04gx/wdEMmJI+ldphszSQg63yljJ2ioE8H2S0zT1kwAA
- 0u2tqJM/r2duo4TCe44FjJ69Lxo+MsgNtRnzPN4OtExWh+3DQla4onSToQ1sNMLX
- LLQWFAHFSfwrgU4BYJgQ1+kXYZ9NW0d6IjPBRSE/yEbeESIWhGNvILqrzZve+X99
- PYdlgo74o+4RO0a5yoxQdvUlyX5GumKe9u2S4sZHckod9KqekW1/tF8W2PEI4Ar1
- FJwk2nfkSRhhGg==
-X-ME-Sender: <xms:dbgVYnixGveUuR5D-elI4i5LwdoahQZAMpSQ9BY93OKzB8pSeDlGNw>
- <xme:dbgVYkB8ZSTT51637n2aLq_aF5GoSquhpDCWLQ3UnZ5TBJHbP12ds_kBhCkdjAV1Z
- C4HX9nXZSY5I92DsQ>
-X-ME-Received: <xmr:dbgVYnG_N6-r-EqTWwzomkRz5lxwi444FFd8WFop1zJ1tioNCI0gmp7iRsUmqANW2E3AUQpO>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrkeelgdejudcutefuodetggdotefrodftvf
- curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
- uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
- fjughrpefhvffufffkofgjfhhrggfgsedtqhertdertddtnecuhfhrohhmpegkihcujggr
- nhcuoeiiihdrhigrnhesshgvnhhtrdgtohhmqeenucggtffrrghtthgvrhhnpeeijeeuvd
- euudeuhfeghfehieeuvdetvdeugfeigeevteeuieeuhedtgeduheefleenucevlhhushht
- vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpeiiihdrhigrnhesshgvnh
- htrdgtohhm
-X-ME-Proxy: <xmx:dbgVYkR1y2_uYjSQ-qvYeQBOAM_jlA92VqIowGE0hq-aRH3BVCjuUQ>
- <xmx:dbgVYkzK77MYwBF1iovbzLI4MjclB3aIeF-97nEJ9kFb69oLQYbe3Q>
- <xmx:dbgVYq4G0PMHMVe0ezzbcJt3Pdrr7lRMOJXCWm-4d64YF5N6L1h4DQ>
- <xmx:drgVYpj-Fpo8VbhaEnDlsGg_-Mbh92SljxUpc0-5VF3JUKheXDRrhg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 22 Feb 2022 23:30:45 -0500 (EST)
-From: Zi Yan <zi.yan@sent.com>
-To: David Hildenbrand <david@redhat.com>,
-	linux-mm@kvack.org
-Subject: [PATCH v6 1/5] mm: page_isolation: move has_unmovable_pages() to
- mm/page_isolation.c
-Date: Tue, 22 Feb 2022 23:30:33 -0500
-Message-Id: <20220223043037.715205-2-zi.yan@sent.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220223043037.715205-1-zi.yan@sent.com>
-References: <20220223043037.715205-1-zi.yan@sent.com>
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id dUp9OTfmMw6Y for <iommu@lists.linux-foundation.org>;
+ Wed, 23 Feb 2022 05:02:47 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 3AC3781BC2
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Feb 2022 05:02:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1645592567; x=1677128567;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=FNDR7wni8O9F98zBun4+rCEdedHrEYsctc1r1OAxlDU=;
+ b=h3vZbMfgX1W31zHx390r2Ofsf283Cxp7JS/QgzH+ioCooCMU+JG6fd7K
+ ulTA1W/aKKkbeBE0PGPRo5VMrLqMTAyb3gQGq2bx+/qzuUCL31bhwKpjE
+ 8f6n0rNOfo/7uLlFIpT9oVDXXckWY5QUHhcQix55NF2oWGmHdLmKZEcaM
+ 93Gpb7gInTxMzVcZ6SypEnkDjUJmqaS+27x3ePaptASf9AyUiLOzNOs8v
+ xQRXnFFD9XUAEa1KqreHScRVwhWfNUUtyXpAtkUySDFZKyxdWtwapEO1E
+ t54UNna+HU2NtXJPYhxTX8wnM6DAbc18F4RWfNAqpTsg9LVNAOFxVIDSW A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="250711070"
+X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; d="scan'208";a="250711070"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 22 Feb 2022 21:02:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,390,1635231600"; d="scan'208";a="683771422"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
+ ([10.239.159.118])
+ by fmsmga001.fm.intel.com with ESMTP; 22 Feb 2022 21:02:40 -0800
+Message-ID: <171bec90-5ea6-b35b-f027-1b5e961f5ddf@linux.intel.com>
+Date: Wed, 23 Feb 2022 13:01:13 +0800
 MIME-Version: 1.0
-Cc: Mel Gorman <mgorman@techsingularity.net>, Zi Yan <ziy@nvidia.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Oscar Salvador <osalvador@suse.de>,
- Robin Murphy <robin.murphy@arm.com>,
- Christophe Leroy <christophe.leroy@csgroup.eu>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Mike Rapoport <rppt@kernel.org>,
- Eric Ren <renzhengeek@gmail.com>, Mike Rapoport <rppt@linux.ibm.com>,
- virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
- Christoph Hellwig <hch@lst.de>, Vlastimil Babka <vbabka@suse.cz>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v6 02/11] driver core: Add dma_cleanup callback in bus_type
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
+References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
+ <20220218005521.172832-3-baolu.lu@linux.intel.com>
+ <YhCdEmC2lYStmUSL@infradead.org>
+ <1d8004d3-1887-4fc7-08d2-0e2ee6b5fdcb@arm.com>
+ <20220221234837.GA10061@nvidia.com>
+ <1acb8748-8d44-688d-2380-f39ec820776f@arm.com>
+ <20220222151632.GB10061@nvidia.com>
+ <3d4c3bf1-fed6-f640-dc20-36d667de7461@arm.com>
+ <20220222235353.GF10061@nvidia.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220222235353.GF10061@nvidia.com>
+Cc: kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
+ linux-pci@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Stuart Yoder <stuyoder@gmail.com>, Kevin Tian <kevin.tian@intel.com>,
+ Chaitanya Kulkarni <kch@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,302 +100,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: Zi Yan <ziy@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Zi Yan <ziy@nvidia.com>
+On 2/23/22 7:53 AM, Jason Gunthorpe wrote:
+>> To spell it out, the scheme I'm proposing looks like this:
+> Well, I already got this, it is what is in driver_or_DMA_API_token()
+> that matters
+> 
+> I think you are suggesting to do something like:
+> 
+>     if (!READ_ONCE(dev->driver) ||  ???)
+>         return NULL;
+>     return group;  // A DMA_API 'token'
+> 
+> Which is locklessly reading dev->driver, and why you are talking about
+> races, I guess.
+> 
 
-has_unmovable_pages() is only used in mm/page_isolation.c. Move it from
-mm/page_alloc.c and make it static.
+I am afraid that we are not able to implement a race-free
+driver_or_DMA_API_token() helper. The lock problem between the IOMMU
+core and driver core always exists.
 
-Signed-off-by: Zi Yan <ziy@nvidia.com>
-Reviewed-by: Oscar Salvador <osalvador@suse.de>
-Reviewed-by: Mike Rapoport <rppt@linux.ibm.com>
----
- include/linux/page-isolation.h |   2 -
- mm/page_alloc.c                | 119 ---------------------------------
- mm/page_isolation.c            | 119 +++++++++++++++++++++++++++++++++
- 3 files changed, 119 insertions(+), 121 deletions(-)
+For example, when we implemented iommu_group_store_type() to change the
+default domain type of a device through sysfs, we could only comprised
+and limited this functionality to singleton groups to avoid the lock
+issue.
 
-diff --git a/include/linux/page-isolation.h b/include/linux/page-isolation.h
-index 572458016331..e14eddf6741a 100644
---- a/include/linux/page-isolation.h
-+++ b/include/linux/page-isolation.h
-@@ -33,8 +33,6 @@ static inline bool is_migrate_isolate(int migratetype)
- #define MEMORY_OFFLINE	0x1
- #define REPORT_FAILURE	0x2
- 
--struct page *has_unmovable_pages(struct zone *zone, struct page *page,
--				 int migratetype, int flags);
- void set_pageblock_migratetype(struct page *page, int migratetype);
- int move_freepages_block(struct zone *zone, struct page *page,
- 				int migratetype, int *num_movable);
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 7ff1efc84205..228751019fd8 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -8948,125 +8948,6 @@ void *__init alloc_large_system_hash(const char *tablename,
- 	return table;
- }
- 
--/*
-- * This function checks whether pageblock includes unmovable pages or not.
-- *
-- * PageLRU check without isolation or lru_lock could race so that
-- * MIGRATE_MOVABLE block might include unmovable pages. And __PageMovable
-- * check without lock_page also may miss some movable non-lru pages at
-- * race condition. So you can't expect this function should be exact.
-- *
-- * Returns a page without holding a reference. If the caller wants to
-- * dereference that page (e.g., dumping), it has to make sure that it
-- * cannot get removed (e.g., via memory unplug) concurrently.
-- *
-- */
--struct page *has_unmovable_pages(struct zone *zone, struct page *page,
--				 int migratetype, int flags)
--{
--	unsigned long iter = 0;
--	unsigned long pfn = page_to_pfn(page);
--	unsigned long offset = pfn % pageblock_nr_pages;
--
--	if (is_migrate_cma_page(page)) {
--		/*
--		 * CMA allocations (alloc_contig_range) really need to mark
--		 * isolate CMA pageblocks even when they are not movable in fact
--		 * so consider them movable here.
--		 */
--		if (is_migrate_cma(migratetype))
--			return NULL;
--
--		return page;
--	}
--
--	for (; iter < pageblock_nr_pages - offset; iter++) {
--		page = pfn_to_page(pfn + iter);
--
--		/*
--		 * Both, bootmem allocations and memory holes are marked
--		 * PG_reserved and are unmovable. We can even have unmovable
--		 * allocations inside ZONE_MOVABLE, for example when
--		 * specifying "movablecore".
--		 */
--		if (PageReserved(page))
--			return page;
--
--		/*
--		 * If the zone is movable and we have ruled out all reserved
--		 * pages then it should be reasonably safe to assume the rest
--		 * is movable.
--		 */
--		if (zone_idx(zone) == ZONE_MOVABLE)
--			continue;
--
--		/*
--		 * Hugepages are not in LRU lists, but they're movable.
--		 * THPs are on the LRU, but need to be counted as #small pages.
--		 * We need not scan over tail pages because we don't
--		 * handle each tail page individually in migration.
--		 */
--		if (PageHuge(page) || PageTransCompound(page)) {
--			struct page *head = compound_head(page);
--			unsigned int skip_pages;
--
--			if (PageHuge(page)) {
--				if (!hugepage_migration_supported(page_hstate(head)))
--					return page;
--			} else if (!PageLRU(head) && !__PageMovable(head)) {
--				return page;
--			}
--
--			skip_pages = compound_nr(head) - (page - head);
--			iter += skip_pages - 1;
--			continue;
--		}
--
--		/*
--		 * We can't use page_count without pin a page
--		 * because another CPU can free compound page.
--		 * This check already skips compound tails of THP
--		 * because their page->_refcount is zero at all time.
--		 */
--		if (!page_ref_count(page)) {
--			if (PageBuddy(page))
--				iter += (1 << buddy_order(page)) - 1;
--			continue;
--		}
--
--		/*
--		 * The HWPoisoned page may be not in buddy system, and
--		 * page_count() is not 0.
--		 */
--		if ((flags & MEMORY_OFFLINE) && PageHWPoison(page))
--			continue;
--
--		/*
--		 * We treat all PageOffline() pages as movable when offlining
--		 * to give drivers a chance to decrement their reference count
--		 * in MEM_GOING_OFFLINE in order to indicate that these pages
--		 * can be offlined as there are no direct references anymore.
--		 * For actually unmovable PageOffline() where the driver does
--		 * not support this, we will fail later when trying to actually
--		 * move these pages that still have a reference count > 0.
--		 * (false negatives in this function only)
--		 */
--		if ((flags & MEMORY_OFFLINE) && PageOffline(page))
--			continue;
--
--		if (__PageMovable(page) || PageLRU(page))
--			continue;
--
--		/*
--		 * If there are RECLAIMABLE pages, we need to check
--		 * it.  But now, memory offline itself doesn't call
--		 * shrink_node_slabs() and it still to be fixed.
--		 */
--		return page;
--	}
--	return NULL;
--}
--
- #ifdef CONFIG_CONTIG_ALLOC
- static unsigned long pfn_max_align_down(unsigned long pfn)
- {
-diff --git a/mm/page_isolation.c b/mm/page_isolation.c
-index f67c4c70f17f..b34f1310aeaa 100644
---- a/mm/page_isolation.c
-+++ b/mm/page_isolation.c
-@@ -15,6 +15,125 @@
- #define CREATE_TRACE_POINTS
- #include <trace/events/page_isolation.h>
- 
-+/*
-+ * This function checks whether pageblock includes unmovable pages or not.
-+ *
-+ * PageLRU check without isolation or lru_lock could race so that
-+ * MIGRATE_MOVABLE block might include unmovable pages. And __PageMovable
-+ * check without lock_page also may miss some movable non-lru pages at
-+ * race condition. So you can't expect this function should be exact.
-+ *
-+ * Returns a page without holding a reference. If the caller wants to
-+ * dereference that page (e.g., dumping), it has to make sure that it
-+ * cannot get removed (e.g., via memory unplug) concurrently.
-+ *
-+ */
-+static struct page *has_unmovable_pages(struct zone *zone, struct page *page,
-+				 int migratetype, int flags)
-+{
-+	unsigned long iter = 0;
-+	unsigned long pfn = page_to_pfn(page);
-+	unsigned long offset = pfn % pageblock_nr_pages;
-+
-+	if (is_migrate_cma_page(page)) {
-+		/*
-+		 * CMA allocations (alloc_contig_range) really need to mark
-+		 * isolate CMA pageblocks even when they are not movable in fact
-+		 * so consider them movable here.
-+		 */
-+		if (is_migrate_cma(migratetype))
-+			return NULL;
-+
-+		return page;
-+	}
-+
-+	for (; iter < pageblock_nr_pages - offset; iter++) {
-+		page = pfn_to_page(pfn + iter);
-+
-+		/*
-+		 * Both, bootmem allocations and memory holes are marked
-+		 * PG_reserved and are unmovable. We can even have unmovable
-+		 * allocations inside ZONE_MOVABLE, for example when
-+		 * specifying "movablecore".
-+		 */
-+		if (PageReserved(page))
-+			return page;
-+
-+		/*
-+		 * If the zone is movable and we have ruled out all reserved
-+		 * pages then it should be reasonably safe to assume the rest
-+		 * is movable.
-+		 */
-+		if (zone_idx(zone) == ZONE_MOVABLE)
-+			continue;
-+
-+		/*
-+		 * Hugepages are not in LRU lists, but they're movable.
-+		 * THPs are on the LRU, but need to be counted as #small pages.
-+		 * We need not scan over tail pages because we don't
-+		 * handle each tail page individually in migration.
-+		 */
-+		if (PageHuge(page) || PageTransCompound(page)) {
-+			struct page *head = compound_head(page);
-+			unsigned int skip_pages;
-+
-+			if (PageHuge(page)) {
-+				if (!hugepage_migration_supported(page_hstate(head)))
-+					return page;
-+			} else if (!PageLRU(head) && !__PageMovable(head)) {
-+				return page;
-+			}
-+
-+			skip_pages = compound_nr(head) - (page - head);
-+			iter += skip_pages - 1;
-+			continue;
-+		}
-+
-+		/*
-+		 * We can't use page_count without pin a page
-+		 * because another CPU can free compound page.
-+		 * This check already skips compound tails of THP
-+		 * because their page->_refcount is zero at all time.
-+		 */
-+		if (!page_ref_count(page)) {
-+			if (PageBuddy(page))
-+				iter += (1 << buddy_order(page)) - 1;
-+			continue;
-+		}
-+
-+		/*
-+		 * The HWPoisoned page may be not in buddy system, and
-+		 * page_count() is not 0.
-+		 */
-+		if ((flags & MEMORY_OFFLINE) && PageHWPoison(page))
-+			continue;
-+
-+		/*
-+		 * We treat all PageOffline() pages as movable when offlining
-+		 * to give drivers a chance to decrement their reference count
-+		 * in MEM_GOING_OFFLINE in order to indicate that these pages
-+		 * can be offlined as there are no direct references anymore.
-+		 * For actually unmovable PageOffline() where the driver does
-+		 * not support this, we will fail later when trying to actually
-+		 * move these pages that still have a reference count > 0.
-+		 * (false negatives in this function only)
-+		 */
-+		if ((flags & MEMORY_OFFLINE) && PageOffline(page))
-+			continue;
-+
-+		if (__PageMovable(page) || PageLRU(page))
-+			continue;
-+
-+		/*
-+		 * If there are RECLAIMABLE pages, we need to check
-+		 * it.  But now, memory offline itself doesn't call
-+		 * shrink_node_slabs() and it still to be fixed.
-+		 */
-+		return page;
-+	}
-+	return NULL;
-+}
-+
- static int set_migratetype_isolate(struct page *page, int migratetype, int isol_flags)
- {
- 	struct zone *zone = page_zone(page);
--- 
-2.34.1
+Unfortunately, that compromise cannot simply applied to the problem to
+be solved by this series, because the iommu core cannot abort the driver
+binding when the conflict is detected in the bus notifier.
 
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
