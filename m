@@ -4,63 +4,78 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id ED195C43217
-	for <iommu@archiver.kernel.org>; Thu, 24 Feb 2022 10:41:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7C871C433EF
+	for <iommu@archiver.kernel.org>; Thu, 24 Feb 2022 12:33:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 901BC4166A;
-	Thu, 24 Feb 2022 10:41:48 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1E0FD402AF;
+	Thu, 24 Feb 2022 12:33:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KpUUumsfcmv3; Thu, 24 Feb 2022 10:41:47 +0000 (UTC)
+	with ESMTP id 31wnzlS3ZMhn; Thu, 24 Feb 2022 12:33:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 6617F41630;
-	Thu, 24 Feb 2022 10:41:47 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id E91474018F;
+	Thu, 24 Feb 2022 12:33:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2237EC001A;
-	Thu, 24 Feb 2022 10:41:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C0CD1C001A;
+	Thu, 24 Feb 2022 12:33:08 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5E571C0011
- for <iommu@lists.linux-foundation.org>; Thu, 24 Feb 2022 10:41:45 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BB8D5C0011
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Feb 2022 12:33:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5634C41638
- for <iommu@lists.linux-foundation.org>; Thu, 24 Feb 2022 10:41:45 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 937B54018F
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Feb 2022 12:33:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id P1SXNewVlEsc for <iommu@lists.linux-foundation.org>;
- Thu, 24 Feb 2022 10:41:44 +0000 (UTC)
+ with ESMTP id XSNH3VzxdfpY for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Feb 2022 12:33:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id 8C80841630
- for <iommu@lists.linux-foundation.org>; Thu, 24 Feb 2022 10:41:44 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DB6B0ED1;
- Thu, 24 Feb 2022 02:41:43 -0800 (PST)
-Received: from [10.163.48.178] (unknown [10.163.48.178])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1BF8A3F70D;
- Thu, 24 Feb 2022 02:41:36 -0800 (PST)
-From: Anshuman Khandual <anshuman.khandual@arm.com>
-Subject: Re: [PATCH 05/11] swiotlb: pass a gfp_mask argument to
- swiotlb_init_late
-To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
-References: <20220222153514.593231-1-hch@lst.de>
- <20220222153514.593231-6-hch@lst.de>
-Message-ID: <e3eb6441-129e-35fe-b07c-fea86908222c@arm.com>
-Date: Thu, 24 Feb 2022 16:11:39 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 680E6401D2
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Feb 2022 12:33:06 +0000 (UTC)
+Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.200])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K4C304K1Pz67dyM;
+ Thu, 24 Feb 2022 20:32:12 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Thu, 24 Feb 2022 13:33:02 +0100
+Received: from [10.47.86.126] (10.47.86.126) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 24 Feb
+ 2022 12:33:00 +0000
+Message-ID: <aabd5f0a-1a54-e4da-734c-f940c45d66b4@huawei.com>
+Date: Thu, 24 Feb 2022 12:32:59 +0000
 MIME-Version: 1.0
-In-Reply-To: <20220222153514.593231-6-hch@lst.de>
-Content-Language: en-US
-Cc: Juergen Gross <jgross@suse.com>, linux-s390@vger.kernel.org,
- linux-hyperv@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>,
- linux-ia64@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
- x86@kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- tboot-devel@lists.sourceforge.net, linux-pci@vger.kernel.org,
- xen-devel@lists.xenproject.org, Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- David Woodhouse <dwmw2@infradead.org>, linux-riscv@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v4 2/8] hwtracing: Add trace function support for
+ HiSilicon PCIe Tune and Trace device
+To: Yicong Yang <yangyicong@huawei.com>, Yicong Yang
+ <yangyicong@hisilicon.com>, <gregkh@linuxfoundation.org>,
+ <helgaas@kernel.org>, <alexander.shishkin@linux.intel.com>,
+ <lorenzo.pieralisi@arm.com>, <will@kernel.org>, <mark.rutland@arm.com>,
+ <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+ <mike.leach@linaro.org>, <leo.yan@linaro.org>, <jonathan.cameron@huawei.com>, 
+ <daniel.thompson@linaro.org>, <joro@8bytes.org>,
+ <shameerali.kolothum.thodi@huawei.com>, <robin.murphy@arm.com>,
+ <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+ <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+ <linux-perf-users@vger.kernel.org>, <iommu@lists.linux-foundation.org>
+References: <20220221084307.33712-1-yangyicong@hisilicon.com>
+ <20220221084307.33712-3-yangyicong@hisilicon.com>
+ <c7d8cff4-b84e-1b73-1d54-2e221b90dac1@huawei.com>
+ <e78f6e5e-a0c3-4976-4f46-e3369635ee3d@huawei.com>
+In-Reply-To: <e78f6e5e-a0c3-4976-4f46-e3369635ee3d@huawei.com>
+X-Originating-IP: [10.47.86.126]
+X-ClientProxiedBy: lhreml752-chm.china.huawei.com (10.201.108.202) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: zhangshaokun@hisilicon.com, liuqi115@huawei.com, linuxarm@huawei.com,
+ prime.zeng@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -73,77 +88,57 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+From: John Garry via iommu <iommu@lists.linux-foundation.org>
+Reply-To: John Garry <john.garry@huawei.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-On 2/22/22 9:05 PM, Christoph Hellwig wrote:
-> Let the caller chose a zone to allocate from.
-
-This is being used later via xen_swiotlb_gfp() on arm platform.
-
+On 24/02/2022 03:53, Yicong Yang wrote:
+> On 2022/2/22 19:06, John Garry wrote:
+>> On 21/02/2022 08:43, Yicong Yang wrote:
+>>> HiSilicon PCIe tune and trace device(PTT) is a PCIe Root Complex
+>>> integrated Endpoint(RCiEP) device, providing the capability
+>>> to dynamically monitor and tune the PCIe traffic, and trace
+>>> the TLP headers.
+>>>
+>>> Add the driver for the device to enable the trace function.
+>>> This patch adds basic function of trace, including the device's
+>>> probe and initialization, functions for trace buffer allocation
+>>> and trace enable/disable, register an interrupt handler to
+>>> simply response to the DMA events. The user interface of trace
+>>> will be added in the following patch.
+>>>
+>>
+>> Fill commit message lines upto 75 characters
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/x86/pci/sta2x11-fixup.c | 2 +-
->  include/linux/swiotlb.h      | 2 +-
->  kernel/dma/swiotlb.c         | 4 ++--
->  3 files changed, 4 insertions(+), 4 deletions(-)
+> Hi John,
 > 
-> diff --git a/arch/x86/pci/sta2x11-fixup.c b/arch/x86/pci/sta2x11-fixup.c
-> index e0c039a75b2db..c7e6faf59a861 100644
-> --- a/arch/x86/pci/sta2x11-fixup.c
-> +++ b/arch/x86/pci/sta2x11-fixup.c
-> @@ -57,7 +57,7 @@ static void sta2x11_new_instance(struct pci_dev *pdev)
->  		int size = STA2X11_SWIOTLB_SIZE;
->  		/* First instance: register your own swiotlb area */
->  		dev_info(&pdev->dev, "Using SWIOTLB (size %i)\n", size);
-> -		if (swiotlb_init_late(size))
-> +		if (swiotlb_init_late(size, GFP_DMA))
->  			dev_emerg(&pdev->dev, "init swiotlb failed\n");
->  	}
->  	list_add(&instance->list, &sta2x11_instance_list);
-> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> index b48b26bfa0edb..1befd6b2ccf5e 100644
-> --- a/include/linux/swiotlb.h
-> +++ b/include/linux/swiotlb.h
-> @@ -40,7 +40,7 @@ extern void swiotlb_init(int verbose);
->  int swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose);
->  unsigned long swiotlb_size_or_default(void);
->  extern int swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs);
-> -int swiotlb_init_late(size_t size);
-> +int swiotlb_init_late(size_t size, gfp_t gfp_mask);
->  extern void __init swiotlb_update_mem_attributes(void);
->  
->  phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t phys,
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 5f64b02fbb732..a653fcf1fe6c2 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -290,7 +290,7 @@ swiotlb_init(int verbose)
->   * initialize the swiotlb later using the slab allocator if needed.
->   * This should be just like above, but with some error catching.
->   */
-> -int swiotlb_init_late(size_t size)
-> +int swiotlb_init_late(size_t size, gfp_t gfp_mask)
->  {
->  	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
->  	unsigned long bytes;
-> @@ -309,7 +309,7 @@ int swiotlb_init_late(size_t size)
->  	bytes = nslabs << IO_TLB_SHIFT;
->  
->  	while ((SLABS_PER_PAGE << order) > IO_TLB_MIN_SLABS) {
-> -		vstart = (void *)__get_free_pages(GFP_DMA | __GFP_NOWARN,
-> +		vstart = (void *)__get_free_pages(gfp_mask | __GFP_NOWARN,
->  						  order);
->  		if (vstart)
->  			break;
+> Thanks for the comments.
 > 
+> The commit message is within 75 characters. I checked again and checkpatch
+> didn't warning for this.
 
-Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+I mean to fill the lines up as much as possible, upto 75 char max, if 
+not already done so. I am not sure if you are doing this already, but it 
+looks like you were not.
+
+Checkpatch
+will
+no
+warn
+about
+a
+commit
+message
+like
+this
+:)
+
+
+Thanks,
+john
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
