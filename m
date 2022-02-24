@@ -1,94 +1,60 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 35F87C433EF
-	for <iommu@archiver.kernel.org>; Thu, 24 Feb 2022 13:58:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AA3D2C433F5
+	for <iommu@archiver.kernel.org>; Thu, 24 Feb 2022 15:59:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id DA7E2416D0;
-	Thu, 24 Feb 2022 13:58:24 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 49E4881B23;
+	Thu, 24 Feb 2022 15:59:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Lm1EskRAxPns; Thu, 24 Feb 2022 13:58:24 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SDj7-KMcbrOO; Thu, 24 Feb 2022 15:59:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 96AE04089A;
-	Thu, 24 Feb 2022 13:58:23 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 2A64F813B9;
+	Thu, 24 Feb 2022 15:59:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7DF59C0035;
-	Thu, 24 Feb 2022 13:58:23 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 81704C0011
- for <iommu@lists.linux-foundation.org>; Thu, 24 Feb 2022 13:40:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 07F00C0021;
+	Thu, 24 Feb 2022 15:59:04 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 62027C0011
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Feb 2022 15:59:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 61D25416D0
- for <iommu@lists.linux-foundation.org>; Thu, 24 Feb 2022 13:40:02 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 4DD6A607FE
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Feb 2022 15:59:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1f9qd8B0N6Bf for <iommu@lists.linux-foundation.org>;
- Thu, 24 Feb 2022 13:40:01 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 6A8B341687
- for <iommu@lists.linux-foundation.org>; Thu, 24 Feb 2022 13:40:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1645710001; x=1677246001;
- h=from:to:cc:subject:date:message-id:references:
- in-reply-to:content-id:content-transfer-encoding: mime-version;
- bh=eE+AHaeX8gqlL4SXf4lazvI3uw60slvmNHnGSKkztuY=;
- b=FBEKTSOyzLymUaENwog2rkicyBMhX69iwa8RGrLtP/2/FhREf5qIEilN
- pEom5/xpwn1REPy28URsX38mlcly0qIEz8EtSdHYSry8KxMyn/FrW2ZUF
- KpJ1mL545tvnIZw/ZQw+bHV2SGWtAW/j60qomoEL/Q+RaAdU+m9IWLHMg
- 0MZbFlepGyTK4gUxKye4T1/DATtDavZ/hUQq9Mq9wV+o0U2ojhgEA6yoT
- kISg/HtCR/ygBusaXrQOYBJzPiXP0PxbVZS9E35VZIsGKTZ6oaw0vG0mE
- 1HjMLJK3NG90s3hT4pYEv/NyNrSdeUTvbgsZEK0nxrAaoE/fRn5OI3xmX Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="251968284"
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; d="scan'208";a="251968284"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 24 Feb 2022 05:40:00 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; d="scan'208";a="607421547"
-Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
- by fmsmga004.fm.intel.com with ESMTP; 24 Feb 2022 05:40:00 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 24 Feb 2022 05:40:00 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Thu, 24 Feb 2022 05:39:59 -0800
-Received: from fmsmsx610.amr.corp.intel.com ([10.18.126.90]) by
- fmsmsx610.amr.corp.intel.com ([10.18.126.90]) with mapi id 15.01.2308.020;
- Thu, 24 Feb 2022 05:39:59 -0800
-From: "Vivi, Rodrigo" <rodrigo.vivi@intel.com>
-To: "Surendrakumar Upadhyay, TejaskumarX"
- <tejaskumarx.surendrakumar.upadhyay@intel.com>, "baolu.lu@linux.intel.com"
- <baolu.lu@linux.intel.com>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>
-Subject: Re: [PATCH] iommu/vt-d: Add RPLS to quirk list to skip TE disabling
-Thread-Topic: [PATCH] iommu/vt-d: Add RPLS to quirk list to skip TE disabling
-Thread-Index: AQHYKICtFQkFA46yO0OFPY9iSTfQxqyit6oAgACFdoA=
-Date: Thu, 24 Feb 2022 13:39:59 +0000
-Message-ID: <2eb4e522d6294a6ade91b89ea1c5cc7c8dac1e51.camel@intel.com>
-References: <20220223062957.31797-1-tejaskumarx.surendrakumar.upadhyay@intel.com>
- <8dcb852f-ef40-5b93-3713-a2d701d90320@linux.intel.com>
-In-Reply-To: <8dcb852f-ef40-5b93-3713-a2d701d90320@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.40.4 (3.40.4-2.fc34) 
-x-originating-ip: [10.1.200.100]
-Content-ID: <2BA4D9D90750824C9BFC5E6B93D1ADA9@intel.com>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id FX9FiOmlcWiR for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Feb 2022 15:59:01 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 1BA816076A
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Feb 2022 15:59:00 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id 88B5268AFE; Thu, 24 Feb 2022 16:58:54 +0100 (CET)
+Date: Thu, 24 Feb 2022 16:58:54 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Subject: Re: cleanup swiotlb initialization
+Message-ID: <20220224155854.GA30938@lst.de>
+References: <20220222153514.593231-1-hch@lst.de>
+ <09cb4ad3-88e7-3744-b4b8-a6d745ecea9e@oracle.com>
 MIME-Version: 1.0
-X-Mailman-Approved-At: Thu, 24 Feb 2022 13:58:22 +0000
-Cc: "Talla, RavitejaX Goud" <ravitejax.goud.talla@intel.com>
+Content-Disposition: inline
+In-Reply-To: <09cb4ad3-88e7-3744-b4b8-a6d745ecea9e@oracle.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: Juergen Gross <jgross@suse.com>, linux-s390@vger.kernel.org,
+ linux-hyperv@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>,
+ linux-ia64@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ x86@kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ iommu@lists.linux-foundation.org, tboot-devel@lists.sourceforge.net,
+ linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
+ linux-riscv@lists.infradead.org, David Woodhouse <dwmw2@infradead.org>,
+ Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,61 +67,96 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gVGh1LCAyMDIyLTAyLTI0IGF0IDEzOjQyICswODAwLCBMdSBCYW9sdSB3cm90ZToNCj4gT24g
-Mi8yMy8yMiAyOjI5IFBNLCBUZWphcyBVcGFkaHlheSB3cm90ZToNCj4gPiBUaGUgVlQtZCBzcGVj
-IHJlcXVpcmVzICgxMC40LjQgR2xvYmFsIENvbW1hbmQgUmVnaXN0ZXIsIFRFDQo+ID4gZmllbGQp
-IHRoYXQ6DQo+ID4gDQo+ID4gSGFyZHdhcmUgaW1wbGVtZW50YXRpb25zIHN1cHBvcnRpbmcgRE1B
-IGRyYWluaW5nIG11c3QgZHJhaW4NCj4gPiBhbnkgaW4tZmxpZ2h0IERNQSByZWFkL3dyaXRlIHJl
-cXVlc3RzIHF1ZXVlZCB3aXRoaW4gdGhlDQo+ID4gUm9vdC1Db21wbGV4IGJlZm9yZSBjb21wbGV0
-aW5nIHRoZSB0cmFuc2xhdGlvbiBlbmFibGUNCj4gPiBjb21tYW5kIGFuZCByZWZsZWN0aW5nIHRo
-ZSBzdGF0dXMgb2YgdGhlIGNvbW1hbmQgdGhyb3VnaA0KPiA+IHRoZSBURVMgZmllbGQgaW4gdGhl
-IEdsb2JhbCBTdGF0dXMgcmVnaXN0ZXIuDQo+ID4gDQo+ID4gVW5mb3J0dW5hdGVseSwgc29tZSBp
-bnRlZ3JhdGVkIGdyYXBoaWMgZGV2aWNlcyBmYWlsIHRvIGRvDQo+ID4gc28gYWZ0ZXIgc29tZSBr
-aW5kIG9mIHBvd2VyIHN0YXRlIHRyYW5zaXRpb24uIEFzIHRoZQ0KPiA+IHJlc3VsdCwgdGhlIHN5
-c3RlbSBtaWdodCBzdHVjayBpbiBpb21tdV9kaXNhYmxlX3RyYW5zbGF0aQ0KPiA+IG9uKCksIHdh
-aXRpbmcgZm9yIHRoZSBjb21wbGV0aW9uIG9mIFRFIHRyYW5zaXRpb24uDQo+ID4gDQo+ID4gVGhp
-cyBhZGRzIFJQTFMgdG8gYSBxdWlyayBsaXN0IGZvciB0aG9zZSBkZXZpY2VzIGFuZCBza2lwcw0K
-PiA+IFRFIGRpc2FibGluZyBpZiB0aGUgcXVyaWsgaGl0cy4NCj4gPiANCj4gPiBGaXhlczogaHR0
-cHM6Ly9naXRsYWIuZnJlZWRlc2t0b3Aub3JnL2RybS9pbnRlbC8tL2lzc3Vlcy80ODk4DQo+ID4g
-Rml4ZXM6IExDSy0xMDc4OQ0KPiANCj4gUmVtb3ZlIHRoaXMgcGxlYXNlLg0KDQpnb29kIGNhdGNo
-LiBXcm9uZyB1c2Ugb2YgRml4ZXMgdGFnLg0KIkZpeGVzOiIgc2hvdWxkIG9ubHkgYmUgdXNlZCBm
-b3IgcGF0Y2hlcyBmaXhpbmcgb3RoZXIgcGF0Y2hlcyBhbmQNCm1lbnRpb25pbmcgdGhlIGNvbW1p
-dCBpZC4NCg0KQmFvbHUsDQpjb3VsZCB5b3UgbWluZCBpZiB3ZSB1c2UNCg0KQ2xvc2VzOiBodHRw
-czovL2dpdGxhYi5mcmVlZGVza3RvcC5vcmcvZHJtL2ludGVsLy0vaXNzdWVzLzQ4OTgNCg0Kb3Ig
-bWF5YmUNCg0KUmVmZXJlbmNlczogaHR0cHM6Ly9naXRsYWIuZnJlZWRlc2t0b3Aub3JnL2RybS9p
-bnRlbC8tL2lzc3Vlcy80ODk4DQoNClRoaXMgbGFzdCBvbmUgc2VlbXMgdG8gYmUgdGhlIG9uZSB1
-c2UgaW4gZHJpdmVycy9pb21tdQ0KYW5kIHRoZSBDbG9zZXMgaXMgd2hhdCB3ZSB1c2UgaW4gZHJt
-LWludGVsLCBoZW5jZSB0aGUgb25lIHVzZWQNCndpdGggZ2l0bGFiLmZyZWVkZXNrdG9wIGxpbmtz
-IGluIGdlbmVyYWwuDQoNCj4gDQo+ID4gVGVzdGVkLWJ5OiBSYXZpdGVqYSBHb3VkIFRhbGxhIDxy
-YXZpdGVqYXguZ291ZC50YWxsYUBpbnRlbC5jb20+DQo+ID4gQ2M6IFJvZHJpZ28gVml2aSA8cm9k
-cmlnby52aXZpQGludGVsLmNvbT4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBUZWphcyBVcGFkaHlheQ0K
-PiA+IDx0ZWphc2t1bWFyeC5zdXJlbmRyYWt1bWFyLnVwYWRoeWF5QGludGVsLmNvbT4NCg0KeW91
-IGNhbiBrZWVwIG15IHJ2LWINCg0KPiA+IC0tLQ0KPiA+IMKgIGRyaXZlcnMvaW9tbXUvaW50ZWwv
-aW9tbXUuYyB8IDIgKy0NCj4gPiDCoCAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEg
-ZGVsZXRpb24oLSkNCj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRlbC9p
-b21tdS5jDQo+ID4gYi9kcml2ZXJzL2lvbW11L2ludGVsL2lvbW11LmMNCj4gPiBpbmRleCA5MmZl
-YTNmYmJiMTEuLmJlOTQ4NzUxNjYxNyAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL2lvbW11L2lu
-dGVsL2lvbW11LmMNCj4gPiArKysgYi9kcml2ZXJzL2lvbW11L2ludGVsL2lvbW11LmMNCj4gPiBA
-QCAtNTc0Myw3ICs1NzQzLDcgQEAgc3RhdGljIHZvaWQgcXVpcmtfaWdmeF9za2lwX3RlX2Rpc2Fi
-bGUoc3RydWN0DQo+ID4gcGNpX2RldiAqZGV2KQ0KPiA+IMKgwqDCoMKgwqDCoMKgwqB2ZXIgPSAo
-ZGV2LT5kZXZpY2UgPj4gOCkgJiAweGZmOw0KPiA+IMKgwqDCoMKgwqDCoMKgwqBpZiAodmVyICE9
-IDB4NDUgJiYgdmVyICE9IDB4NDYgJiYgdmVyICE9IDB4NGMgJiYNCj4gPiDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgIHZlciAhPSAweDRlICYmIHZlciAhPSAweDhhICYmIHZlciAhPSAweDk4ICYmDQo+
-ID4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgIHZlciAhPSAweDlhKQ0KPiA+ICvCoMKgwqDCoMKgwqDC
-oMKgwqDCoCB2ZXIgIT0gMHg5YSAmJiB2ZXIgIT0gMHhhNykNCj4gPiDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoHJldHVybjsNCj4gPiDCoCANCj4gPiDCoMKgwqDCoMKgwqDCoMKgaWYg
-KHJpc2t5X2RldmljZShkZXYpKQ0KPiANCj4gVGhpcyBpcyBhIHF1aXJrIGZvciBpbnRlZ3JhdGVk
-IGdyYXBoaWMgZGV2aWNlLiBSb2RyaWdvLCBkb2VzIHRoaXMNCj4gaGFyZHdhcmUgbmVlZHMgdGhp
-cyBxdWlyayBhcyB3ZWxsPw0KDQpZZXMsIDB4YTcqIGFyZSBSUEwtUyB0aGF0IGFyZSBpbnRlZ3Jh
-dGVkIGFuZCB2ZXJ5IHNpbWlsYXIgdG8gMHg0NioNCihBREwtUykNCg0KSSB3b3VsZCBwcmVmZXIg
-dG8gaGF2ZSBhIG1vcmUgZXhwYW5kZWQgbGlzdCBpbnN0ZWFkIG9mIGdyb3VwIG9yIGF0DQpsZWFz
-dCBzb21lIGRlZmluZXMgd2l0aCB0aGUgcGxhdGZvcm0gbmFtZXMuDQoNClRoYW5rcywNClJvZHJp
-Z28uDQoNCj4gDQo+IEJlc3QgcmVnYXJkcywNCj4gYmFvbHUNCg0KX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxp
-c3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Thanks.
+
+This looks really strange as early_amd_iommu_init should not interact much
+with the changes.  I'll see if I can find a AMD system to test on.
+
+On Wed, Feb 23, 2022 at 07:57:49PM -0500, Boris Ostrovsky wrote:
+> [=A0=A0 37.377313] BUG: unable to handle page fault for address: ffffc900=
+42880018
+> [=A0=A0 37.378219] #PF: supervisor read access in kernel mode
+> [=A0=A0 37.378219] #PF: error_code(0x0000) - not-present page
+> [=A0=A0 37.378219] PGD 7c2f2ee067 P4D 7c2f2ee067 PUD 7bf019b067 PMD 105a3=
+0067 PTE 0
+> [=A0=A0 37.378219] Oops: 0000 [#1] PREEMPT SMP NOPTI
+> [=A0=A0 37.378219] CPU: 14 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc5s=
+wiotlb #9
+> [=A0=A0 37.378219] Hardware name: Oracle Corporation ORACLE SERVER E1-2c/=
+ASY,Generic,SM,E1-2c, BIOS 49004900 12/23/2020
+> [=A0=A0 37.378219] RIP: e030:init_iommu_one+0x248/0x2f0
+> [=A0=A0 37.378219] Code: 48 89 43 68 48 85 c0 74 c4 be 00 20 00 00 48 89 =
+df e8 ea ee ff ff 48 89 43 78 48 85 c0 74 ae c6 83 98 00 00 00 00 48 8b 43 =
+38 <48> 8b 40 18 a8 01 74 07 83 8b a8 04 00 00 01 f6 83 a8 04 00 00 01
+> [=A0=A0 37.378219] RSP: e02b:ffffc9004044bd18 EFLAGS: 00010286
+> [=A0=A0 37.378219] RAX: ffffc90042880000 RBX: ffff888107260800 RCX: 00000=
+00000000000
+> [=A0=A0 37.378219] RDX: 0000000080000000 RSI: ffffea00041cab80 RDI: 00000=
+000ffffffff
+> [=A0=A0 37.378219] RBP: ffffc9004044bd38 R08: 0000000000000901 R09: ffffe=
+a00041cab00
+> [=A0=A0 37.378219] R10: 0000000000000002 R11: 0000000000000000 R12: ffffc=
+90040435008
+> [=A0=A0 37.378219] R13: 0000000000080000 R14: 00000000efa00000 R15: 00000=
+00000000000
+> [=A0=A0 37.378219] FS:=A0 0000000000000000(0000) GS:ffff88fef4180000(0000=
+) knlGS:0000000000000000
+> [=A0=A0 37.378219] CS:=A0 e030 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [=A0=A0 37.378219] CR2: ffffc90042880018 CR3: 000000000260a000 CR4: 00000=
+00000050660
+> [=A0=A0 37.378219] Call Trace:
+> [=A0=A0 37.378219]=A0 <TASK>
+> [=A0=A0 37.378219]=A0 early_amd_iommu_init+0x3c5/0x72d
+> [=A0=A0 37.378219]=A0 ? iommu_setup+0x284/0x284
+> [=A0=A0 37.378219]=A0 state_next+0x158/0x68f
+> [=A0=A0 37.378219]=A0 ? iommu_setup+0x284/0x284
+> [=A0=A0 37.378219]=A0 iommu_go_to_state+0x28/0x2d
+> [=A0=A0 37.378219]=A0 amd_iommu_init+0x15/0x4b
+> [=A0=A0 37.378219]=A0 ? iommu_setup+0x284/0x284
+> [=A0=A0 37.378219]=A0 pci_iommu_init+0x12/0x37
+> [=A0=A0 37.378219]=A0 do_one_initcall+0x48/0x210
+> [=A0=A0 37.378219]=A0 kernel_init_freeable+0x229/0x28c
+> [=A0=A0 37.378219]=A0 ? rest_init+0xe0/0xe0
+> [=A0=A0 37.963966]=A0 kernel_init+0x1a/0x130
+> [=A0=A0 37.979415]=A0 ret_from_fork+0x22/0x30
+> [=A0=A0 37.991436]=A0 </TASK>
+> [=A0=A0 37.999465] Modules linked in:
+> [=A0=A0 38.007413] CR2: ffffc90042880018
+> [=A0=A0 38.019416] ---[ end trace 0000000000000000 ]---
+> [=A0=A0 38.023418] RIP: e030:init_iommu_one+0x248/0x2f0
+> [=A0=A0 38.023418] Code: 48 89 43 68 48 85 c0 74 c4 be 00 20 00 00 48 89 =
+df e8 ea ee ff ff 48 89 43 78 48 85 c0 74 ae c6 83 98 00 00 00 00 48 8b 43 =
+38 <48> 8b 40 18 a8 01 74 07 83 8b a8 04 00 00 01 f6 83 a8 04 00 00 01
+> [=A0=A0 38.023418] RSP: e02b:ffffc9004044bd18 EFLAGS: 00010286
+> [=A0=A0 38.023418] RAX: ffffc90042880000 RBX: ffff888107260800 RCX: 00000=
+00000000000
+> [=A0=A0 38.155413] RDX: 0000000080000000 RSI: ffffea00041cab80 RDI: 00000=
+000ffffffff
+> [=A0=A0 38.175965] Freeing initrd memory: 62640K
+> [=A0=A0 38.155413] RBP: ffffc9004044bd38 R08: 0000000000000901 R09: ffffe=
+a00041cab00
+> [=A0=A0 38.155413] R10: 0000000000000002 R11: 0000000000000000 R12: ffffc=
+90040435008
+> [=A0=A0 38.155413] R13: 0000000000080000 R14: 00000000efa00000 R15: 00000=
+00000000000
+> [=A0=A0 38.155413] FS:=A0 0000000000000000(0000) GS:ffff88fef4180000(0000=
+) knlGS:0000000000000000
+> [=A0=A0 38.287414] CS:=A0 e030 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [=A0=A0 38.309557] CR2: ffffc90042880018 CR3: 000000000260a000 CR4: 00000=
+00000050660
+> [=A0=A0 38.332403] Kernel panic - not syncing: Fatal exception
+> [=A0=A0 38.351414] Rebooting in 20 seconds..
+>
+>
+>
+> -boris
+---end quoted text---
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
