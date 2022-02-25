@@ -1,71 +1,64 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E0CD1C433F5
-	for <iommu@archiver.kernel.org>; Fri, 25 Feb 2022 05:26:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C4026C433EF
+	for <iommu@archiver.kernel.org>; Fri, 25 Feb 2022 08:48:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 6C7116068B;
-	Fri, 25 Feb 2022 05:26:55 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 4E94741705;
+	Fri, 25 Feb 2022 08:48:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NgoNTJBwGbBp; Fri, 25 Feb 2022 05:26:54 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 19ZxnDMTbVko; Fri, 25 Feb 2022 08:48:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 5315560AE2;
-	Fri, 25 Feb 2022 05:26:54 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 9D00241719;
+	Fri, 25 Feb 2022 08:48:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 07CB5C0033;
-	Fri, 25 Feb 2022 05:26:54 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7F170C001A
- for <iommu@lists.linux-foundation.org>; Fri, 25 Feb 2022 05:26:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A39CEC007A;
+	Fri, 25 Feb 2022 08:48:05 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1C629C001A
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Feb 2022 08:48:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 582E640270
- for <iommu@lists.linux-foundation.org>; Fri, 25 Feb 2022 05:26:52 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id DD48340211
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Feb 2022 08:48:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Q1Hp49n7hgV9 for <iommu@lists.linux-foundation.org>;
- Fri, 25 Feb 2022 05:26:51 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 1431E400F4
- for <iommu@lists.linux-foundation.org>; Fri, 25 Feb 2022 05:26:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1645766811; x=1677302811;
- h=from:to:cc:subject:date:message-id:mime-version:
- content-transfer-encoding;
- bh=emEj9f2p+/wpD1xkSTpzgY4vdBL3m1sDZweir9nvenM=;
- b=ZHDindqWlaSk8bfiSPdMYeyZzv3bUQLv3chjD36SgPwim2rOip1w4Udr
- h96GNpAsnx+EhYajxh40fO3CWpMwPShbLfBXNYrLXLiMkTg+84qDaeold
- rNCJmypPhLVwL9Jch41TBsIXxCJ/3JIEzCkT6sCunzT5wrhctZXbscZv4
- ccnsAN64rJq3UYMfW6poz2tXUVxgcydWc2ljnL0t4eSg8U0XO87xOzsKs
- Ow2Bste29/7hlTKOwqVrj2wsmEaSYJnn5XLJ9D3UHQK88JDvKd30h3LDP
- yqdriuEzIdcNj977g8fHFOwQahrTZubiGC9lacR9nAsnvGow1pzxxwoOD g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="239827442"
-X-IronPort-AV: E=Sophos;i="5.90,135,1643702400"; d="scan'208";a="239827442"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 24 Feb 2022 21:26:50 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,135,1643702400"; d="scan'208";a="491869943"
-Received: from tejas-system-product-name.iind.intel.com ([10.145.162.130])
- by orsmga003.jf.intel.com with ESMTP; 24 Feb 2022 21:26:48 -0800
-From: Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH V2] iommu/vt-d: Add RPLS to quirk list to skip TE disabling
-Date: Fri, 25 Feb 2022 10:43:17 +0530
-Message-Id: <20220225051317.152960-1-tejaskumarx.surendrakumar.upadhyay@intel.com>
-X-Mailer: git-send-email 2.34.1
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Bome4AsNN5G7 for <iommu@lists.linux-foundation.org>;
+ Fri, 25 Feb 2022 08:48:03 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id C336940265
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Feb 2022 08:48:02 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id 364BF68AA6; Fri, 25 Feb 2022 09:47:56 +0100 (CET)
+Date: Fri, 25 Feb 2022 09:47:55 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Subject: Re: cleanup swiotlb initialization
+Message-ID: <20220225084755.GA29630@lst.de>
+References: <20220222153514.593231-1-hch@lst.de>
+ <09cb4ad3-88e7-3744-b4b8-a6d745ecea9e@oracle.com>
+ <20220224155854.GA30938@lst.de>
+ <206ba6a3-770a-70ad-96bc-76c6380da988@oracle.com>
+ <20220224163943.GA32088@lst.de>
+ <8ffd8587-7eb3-d5b6-eab0-b86df5c0ebbd@oracle.com>
 MIME-Version: 1.0
-Cc: Raviteja Goud Talla <ravitejax.goud.talla@intel.com>,
- stable@vger.kernel.org, Rodrigo Vivi <rodrigo.vivi@intel.com>
+Content-Disposition: inline
+In-Reply-To: <8ffd8587-7eb3-d5b6-eab0-b86df5c0ebbd@oracle.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: Juergen Gross <jgross@suse.com>, linux-s390@vger.kernel.org,
+ linux-hyperv@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>,
+ linux-ia64@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ x86@kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ iommu@lists.linux-foundation.org, tboot-devel@lists.sourceforge.net,
+ linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
+ linux-riscv@lists.infradead.org, David Woodhouse <dwmw2@infradead.org>,
+ Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,48 +76,85 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The VT-d spec requires (10.4.4 Global Command Register, TE
-field) that:
+On Thu, Feb 24, 2022 at 12:07:26PM -0500, Boris Ostrovsky wrote:
+>>> Just to be clear: this crashes only as dom0. Boots fine as baremetal.
+>> Ah.  I can gues what this might be.  On Xen the hypervisor controls the
+>> IOMMU and we should never end up initializing it in Linux, right?
+>
+>
+> Right, we shouldn't be in that code path.
 
-Hardware implementations supporting DMA draining must drain
-any in-flight DMA read/write requests queued within the
-Root-Complex before completing the translation enable
-command and reflecting the status of the command through
-the TES field in the Global Status register.
+Can you try the patch below on top of the series?
 
-Unfortunately, some integrated graphic devices fail to do
-so after some kind of power state transition. As the
-result, the system might stuck in iommu_disable_translati
-on(), waiting for the completion of TE transition.
 
-This adds RPLS to a quirk list for those devices and skips
-TE disabling if the qurik hits.
-
-Fixes: b1012ca8dc4f9 "iommu/vt-d: Skip TE disabling on quirky gfx dedicated iommu"
-Tested-by: Raviteja Goud Talla <ravitejax.goud.talla@intel.com>
-Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Tejas Upadhyay <tejaskumarx.surendrakumar.upadhyay@intel.com>
----
- drivers/iommu/intel/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 92fea3fbbb11..be9487516617 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -5743,7 +5743,7 @@ static void quirk_igfx_skip_te_disable(struct pci_dev *dev)
- 	ver = (dev->device >> 8) & 0xff;
- 	if (ver != 0x45 && ver != 0x46 && ver != 0x4c &&
- 	    ver != 0x4e && ver != 0x8a && ver != 0x98 &&
--	    ver != 0x9a)
-+	    ver != 0x9a && ver != 0xa7)
- 		return;
+diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
+index b849f11a756d0..f88c9a4a5ed12 100644
+--- a/arch/x86/kernel/pci-dma.c
++++ b/arch/x86/kernel/pci-dma.c
+@@ -47,22 +47,6 @@ static unsigned int x86_swiotlb_flags;
+  */
+ static void __init pci_swiotlb_detect_4gb(void)
+ {
+-#ifdef CONFIG_SWIOTLB_XEN
+-	if (xen_pv_domain()) {
+-		if (xen_initial_domain())
+-			x86_swiotlb_enable = true;
+-
+-		if (x86_swiotlb_enable) {
+-			dma_ops = &xen_swiotlb_dma_ops;
+-#ifdef CONFIG_PCI
+-			/* Make sure ACS will be enabled */
+-			pci_request_acs();
+-#endif
+-		}
+-		return;
+-	}
+-#endif /* CONFIG_SWIOTLB_XEN */
+-
+ 	/* don't initialize swiotlb if iommu=off (no_iommu=1) */
+ 	if (!no_iommu && max_possible_pfn > MAX_DMA32_PFN)
+ 		x86_swiotlb_enable = true;
+@@ -82,16 +66,36 @@ static inline void __init pci_swiotlb_detect_4gb(void)
+ }
+ #endif /* CONFIG_SWIOTLB */
  
- 	if (risky_device(dev))
--- 
-2.34.1
-
++#ifdef CONFIG_SWIOTLB_XEN
++static void __init xen_swiotlb_init(void)
++{
++	if (!xen_initial_domain() && !x86_swiotlb_enable)
++		return;
++	x86_swiotlb_enable = true;
++	dma_ops = &xen_swiotlb_dma_ops;
++#ifdef CONFIG_PCI
++	/* Make sure ACS will be enabled */
++	pci_request_acs();
++#endif
++	swiotlb_init_remap(true, x86_swiotlb_flags, xen_swiotlb_fixup);
++}
++#else
++static inline void __init xen_swiotlb_init(void)
++{
++}
++#endif /* CONFIG_SWIOTLB_XEN */
++
+ void __init pci_iommu_alloc(void)
+ {
++	if (xen_pv_domain()) {
++		xen_swiotlb_init();
++		return;
++	}
+ 	pci_swiotlb_detect_4gb();
+ 	gart_iommu_hole_init();
+ 	amd_iommu_detect();
+ 	detect_intel_iommu();
+-#ifdef CONFIG_SWIOTLB
+-	swiotlb_init_remap(x86_swiotlb_enable, x86_swiotlb_flags,
+-			   xen_pv_domain() ? xen_swiotlb_fixup : NULL);
+-#endif
++	swiotlb_init(x86_swiotlb_enable, x86_swiotlb_flags);
+ }
+ 
+ /*
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
