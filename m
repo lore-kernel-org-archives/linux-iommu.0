@@ -1,64 +1,82 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C4026C433EF
-	for <iommu@archiver.kernel.org>; Fri, 25 Feb 2022 08:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1D571C4332F
+	for <iommu@archiver.kernel.org>; Fri, 25 Feb 2022 11:07:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 4E94741705;
-	Fri, 25 Feb 2022 08:48:09 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id A6FBB61208;
+	Fri, 25 Feb 2022 11:07:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 19ZxnDMTbVko; Fri, 25 Feb 2022 08:48:08 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1XHZSC0kQ4H7; Fri, 25 Feb 2022 11:07:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 9D00241719;
-	Fri, 25 Feb 2022 08:48:07 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7249460C1F;
+	Fri, 25 Feb 2022 11:07:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A39CEC007A;
-	Fri, 25 Feb 2022 08:48:05 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1C629C001A
- for <iommu@lists.linux-foundation.org>; Fri, 25 Feb 2022 08:48:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 29B2EC0033;
+	Fri, 25 Feb 2022 11:07:44 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EE260C001A
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Feb 2022 11:07:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id DD48340211
- for <iommu@lists.linux-foundation.org>; Fri, 25 Feb 2022 08:48:03 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id E449B83E89
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Feb 2022 11:07:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Bome4AsNN5G7 for <iommu@lists.linux-foundation.org>;
- Fri, 25 Feb 2022 08:48:03 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=linuxfoundation.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id dLY7CWx2JRzZ for <iommu@lists.linux-foundation.org>;
+ Fri, 25 Feb 2022 11:07:42 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp4.osuosl.org (Postfix) with ESMTPS id C336940265
- for <iommu@lists.linux-foundation.org>; Fri, 25 Feb 2022 08:48:02 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 364BF68AA6; Fri, 25 Feb 2022 09:47:56 +0100 (CET)
-Date: Fri, 25 Feb 2022 09:47:55 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Subject: Re: cleanup swiotlb initialization
-Message-ID: <20220225084755.GA29630@lst.de>
-References: <20220222153514.593231-1-hch@lst.de>
- <09cb4ad3-88e7-3744-b4b8-a6d745ecea9e@oracle.com>
- <20220224155854.GA30938@lst.de>
- <206ba6a3-770a-70ad-96bc-76c6380da988@oracle.com>
- <20220224163943.GA32088@lst.de>
- <8ffd8587-7eb3-d5b6-eab0-b86df5c0ebbd@oracle.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 4837483E80
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Feb 2022 11:07:42 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id 6ED9160ECB;
+ Fri, 25 Feb 2022 11:07:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 584D7C340E7;
+ Fri, 25 Feb 2022 11:07:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+ s=korg; t=1645787260;
+ bh=oLPnU/B1EfAHSSx2pwR9mNAhPWw9h8esfJmG0nixOJ4=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=youXPU4HsasCohDyHjU+UExa7esUpBXqe83BkpO4oys3ggTwaVwU0EqcoU9p7OJFz
+ zGObCtr4r04McxUGh6hTF96Id21c4DxsOjZZkFLvs23Le5pH7mzB/BiPhsmwE1eJtj
+ oCn2NhOtflKcUj11rzp9mZivMS6eMmmPjaovNUjk=
+Date: Fri, 25 Feb 2022 12:07:38 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Helge Deller <deller@gmx.de>
+Subject: Re: [PATCH 22/23] video: omapfb: dss: Make use of the helper
+ component_compare_dev
+Message-ID: <Yhi4errwyhNi6pFw@kroah.com>
+References: <20220214060819.7334-1-yong.wu@mediatek.com>
+ <20220214060819.7334-23-yong.wu@mediatek.com>
+ <7e60cd01-8afc-ddb5-a1bb-6e9f53ccfba5@gmx.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <8ffd8587-7eb3-d5b6-eab0-b86df5c0ebbd@oracle.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: Juergen Gross <jgross@suse.com>, linux-s390@vger.kernel.org,
- linux-hyperv@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>,
- linux-ia64@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
- x86@kernel.org, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- iommu@lists.linux-foundation.org, tboot-devel@lists.sourceforge.net,
- linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
- linux-riscv@lists.infradead.org, David Woodhouse <dwmw2@infradead.org>,
- Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <7e60cd01-8afc-ddb5-a1bb-6e9f53ccfba5@gmx.de>
+Cc: linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>,
+ Liviu Dudau <liviu.dudau@arm.com>, dri-devel@lists.freedesktop.org,
+ Sebastian Reichel <sre@kernel.org>,
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ Will Deacon <will@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ James Wang <james.qian.wang@arm.com>, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>, linux-mediatek@lists.infradead.org,
+ Hsin-Yi Wang <hsinyi@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ srv_heupstream@mediatek.com, Stephen Boyd <sboyd@kernel.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,85 +94,19 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Feb 24, 2022 at 12:07:26PM -0500, Boris Ostrovsky wrote:
->>> Just to be clear: this crashes only as dom0. Boots fine as baremetal.
->> Ah.  I can gues what this might be.  On Xen the hypervisor controls the
->> IOMMU and we should never end up initializing it in Linux, right?
->
->
-> Right, we shouldn't be in that code path.
+On Tue, Feb 15, 2022 at 09:46:24PM +0100, Helge Deller wrote:
+> On 2/14/22 07:08, Yong Wu wrote:
+> > Use the common compare helper from component.
+> >
+> > Cc: Helge Deller <deller@gmx.de>
+> > Cc: linux-omap@vger.kernel.org
+> > Cc: linux-fbdev@vger.kernel.org
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> 
+> Applied to the fbdev for-next branch.
 
-Can you try the patch below on top of the series?
+That will break the build, it needs patch 1/23 to build properly :(
 
-
-diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
-index b849f11a756d0..f88c9a4a5ed12 100644
---- a/arch/x86/kernel/pci-dma.c
-+++ b/arch/x86/kernel/pci-dma.c
-@@ -47,22 +47,6 @@ static unsigned int x86_swiotlb_flags;
-  */
- static void __init pci_swiotlb_detect_4gb(void)
- {
--#ifdef CONFIG_SWIOTLB_XEN
--	if (xen_pv_domain()) {
--		if (xen_initial_domain())
--			x86_swiotlb_enable = true;
--
--		if (x86_swiotlb_enable) {
--			dma_ops = &xen_swiotlb_dma_ops;
--#ifdef CONFIG_PCI
--			/* Make sure ACS will be enabled */
--			pci_request_acs();
--#endif
--		}
--		return;
--	}
--#endif /* CONFIG_SWIOTLB_XEN */
--
- 	/* don't initialize swiotlb if iommu=off (no_iommu=1) */
- 	if (!no_iommu && max_possible_pfn > MAX_DMA32_PFN)
- 		x86_swiotlb_enable = true;
-@@ -82,16 +66,36 @@ static inline void __init pci_swiotlb_detect_4gb(void)
- }
- #endif /* CONFIG_SWIOTLB */
- 
-+#ifdef CONFIG_SWIOTLB_XEN
-+static void __init xen_swiotlb_init(void)
-+{
-+	if (!xen_initial_domain() && !x86_swiotlb_enable)
-+		return;
-+	x86_swiotlb_enable = true;
-+	dma_ops = &xen_swiotlb_dma_ops;
-+#ifdef CONFIG_PCI
-+	/* Make sure ACS will be enabled */
-+	pci_request_acs();
-+#endif
-+	swiotlb_init_remap(true, x86_swiotlb_flags, xen_swiotlb_fixup);
-+}
-+#else
-+static inline void __init xen_swiotlb_init(void)
-+{
-+}
-+#endif /* CONFIG_SWIOTLB_XEN */
-+
- void __init pci_iommu_alloc(void)
- {
-+	if (xen_pv_domain()) {
-+		xen_swiotlb_init();
-+		return;
-+	}
- 	pci_swiotlb_detect_4gb();
- 	gart_iommu_hole_init();
- 	amd_iommu_detect();
- 	detect_intel_iommu();
--#ifdef CONFIG_SWIOTLB
--	swiotlb_init_remap(x86_swiotlb_enable, x86_swiotlb_flags,
--			   xen_pv_domain() ? xen_swiotlb_fixup : NULL);
--#endif
-+	swiotlb_init(x86_swiotlb_enable, x86_swiotlb_flags);
- }
- 
- /*
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
