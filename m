@@ -1,100 +1,66 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 730C3C433FE
-	for <iommu@archiver.kernel.org>; Mon, 28 Feb 2022 12:20:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 161FEC433F5
+	for <iommu@archiver.kernel.org>; Mon, 28 Feb 2022 12:22:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 21AB060B52;
-	Mon, 28 Feb 2022 12:20:51 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B07E44090B;
+	Mon, 28 Feb 2022 12:22:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PwSmotjhg7p2; Mon, 28 Feb 2022 12:20:50 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5P9I_kG_nAtO; Mon, 28 Feb 2022 12:22:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 0C73760ACD;
-	Mon, 28 Feb 2022 12:20:50 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 638B0408CA;
+	Mon, 28 Feb 2022 12:22:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CE66EC0033;
-	Mon, 28 Feb 2022 12:20:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 47B71C0033;
+	Mon, 28 Feb 2022 12:22:26 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 000B1C001A
- for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 12:20:47 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6067BC001A
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 12:22:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id E182C40275
- for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 12:20:47 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 4D7E940275
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 12:22:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
+ dkim=pass (2048-bit key) header.d=infradead.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id M2xQy1dRwVt4 for <iommu@lists.linux-foundation.org>;
- Mon, 28 Feb 2022 12:20:47 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com
- [IPv6:2a00:1450:4864:20::430])
- by smtp2.osuosl.org (Postfix) with ESMTPS id E986F40012
- for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 12:20:46 +0000 (UTC)
-Received: by mail-wr1-x430.google.com with SMTP id b5so15197399wrr.2
- for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 04:20:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=message-id:date:mime-version:user-agent:subject:content-language:to
- :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=O2NOZlmqA7RgvZF4C7hoJG5AVQ4LzwSODZXV8jIzeG0=;
- b=ZrWnP68mmzEBBgBVYEcIMymr/Sic0PyF33XFAz9HwOzwsBwZSOuL3daxzw192vv/yw
- u4w9FmdrHcw/PUi+GQ3t4PATV1xvnxjv6Smph9MQWR3lcWgSEnXcgJvVb/fBvB+TZfuj
- du1RNrmOYaQLwN04wqseYfnrJ0nmogX55HvCgjyKWKOdjqa3EzFBEzSj8N6vQi/Q8uTt
- ppPYhdQWebpq/I6OuDQR8QbhVSFigTg5a7FIvUlXnFaVWKGLtkhKF7dqKgJCRy7py8zV
- nDMJPSDcKTrDsx+Q3721fQSebTDT7LJHc8EIVL2qkjzOCzv2F14YcsZVXVhT5MdlZFvF
- 5/Pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:in-reply-to
- :content-transfer-encoding;
- bh=O2NOZlmqA7RgvZF4C7hoJG5AVQ4LzwSODZXV8jIzeG0=;
- b=zNA+xFxQhaXiDgVxeIff/NzO5sDedV2qVMRKSwYDLNS+KkPNU/12GQVPRoY7mbN5L+
- W1btgciiWq0hxoRzwSuGDu/iWJhZfrlOKk5PuxDduXRmyY/2cPIfEhgszUxmMPFYgNjP
- OY45bjS+bZKTVHBA51ntWVx+faMqpwOA8edFeNgv8+PAwnHJcFSOQDHV6AslDHtm9snl
- HlEQ3qtbbftSOr1tDfItkKln2TOM1Idsc35ubN7/n4Q+ByR8rlJPq0tAKPwZy038kAlL
- JXaPTd8V86FemRLGbLznxAC3rr+fo/S3HldP6r7JT0C4U0FqprOtXrAhTYuHDvOWKSin
- k/Kg==
-X-Gm-Message-State: AOAM533Ssm3RnrRU5gwFHb4L3H2wGxdKzxSnpCLNDDrwZTu6acgqyTt7
- pSb61pNXbvJHDbcxwCJ6KjE=
-X-Google-Smtp-Source: ABdhPJwLaVfMPHuk8PUaO5u3HtsyXrViUDwFSuAZmGbc36/B95ADkzmeSzxSbvAicTIRVC/nO9f3Lg==
-X-Received: by 2002:a5d:6d83:0:b0:1ef:d78a:41fb with SMTP id
- l3-20020a5d6d83000000b001efd78a41fbmr2817571wrs.355.1646050845207; 
- Mon, 28 Feb 2022 04:20:45 -0800 (PST)
-Received: from [192.168.0.14] (static-63-182-85-188.ipcom.comunitel.net.
- [188.85.182.63]) by smtp.gmail.com with ESMTPSA id
- a3-20020adfe5c3000000b001e68a5e1c20sm10460233wrn.4.2022.02.28.04.20.43
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 28 Feb 2022 04:20:44 -0800 (PST)
-Message-ID: <d4c5b734-1a29-8359-e5fa-b53fc58dd3e5@gmail.com>
-Date: Mon, 28 Feb 2022 13:20:42 +0100
+ with ESMTP id WVR9f9FQdouS for <iommu@lists.linux-foundation.org>;
+ Mon, 28 Feb 2022 12:22:23 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [IPv6:2607:7c80:54:e::133])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id B2A2240012
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 12:22:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+ MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+ Content-ID:Content-Description:In-Reply-To:References;
+ bh=xpRzNym3LsY5nRIvzwNRw6/4XtU7jP5KpqP7Ea6YLTg=; b=eNyDByh6x+wTCv1YMV7eZKFGmp
+ Ys9ClGvGIGVBZQ1cG37XqyXPQFqP5VApuetxl7RPlc2rDvDeEnNIHc9W03bSQoilInoWRmaG9DSYF
+ /xVO0UdVykk269zwwmAccjLO2SvfY+U5IpXwtABFmX77e0g3IelSu6ON4juiHSZP0URdPH0FPgFhP
+ G/eyNDcvz2XpuXnCt8Cjqe9H+QXly5Uqpg+/7q9xnzgUAR/h/a/fvKwC9NgOJuaxtUqaT9vPtgboB
+ +Mgih1OAKjjihsH3Fkv3DcR2DekTfqFFIYCfOiZt4mF9VhQ0izWqryO6Clunyv2lJSkpnM+CAjCKM
+ 5rxGxHoA==;
+Received: from [2.53.163.181] (helo=localhost)
+ by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+ id 1nOf2j-00C9v3-N5; Mon, 28 Feb 2022 12:22:22 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH v2] dma-mapping: remove CONFIG_DMA_REMAP
+Date: Mon, 28 Feb 2022 14:22:18 +0200
+Message-Id: <20220228122218.853094-1-hch@lst.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 2/2] iommu/mediatek: Add mt8186 iommu support
-Content-Language: en-US
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>, Will Deacon <will@kernel.org>
-References: <20220223072402.17518-1-yong.wu@mediatek.com>
- <20220223072402.17518-3-yong.wu@mediatek.com>
-From: Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220223072402.17518-3-yong.wu@mediatek.com>
-Cc: devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- chengci.xu@mediatek.com, xueqi.zhang@mediatek.com,
- linux-kernel@vger.kernel.org, libo.kang@mediatek.com,
- yen-chang.chen@mediatek.com, iommu@lists.linux-foundation.org,
- yf.wang@mediatek.com, linux-mediatek@lists.infradead.org,
- Hsin-Yi Wang <hsinyi@chromium.org>, anan.sun@mediatek.com,
- Robin Murphy <robin.murphy@arm.com>, mingyuan.ma@mediatek.com,
- linux-arm-kernel@lists.infradead.org,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: will@kernel.org, x86@kernel.org, robin.murphy@arm.com,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,67 +73,216 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+CONFIG_DMA_REMAP is used to build a few helpers around the core
+vmalloc code, and to use them in case there is a highmem page in
+dma-direct, and to make dma coherent allocations be able to use
+non-contiguous pages allocations for DMA allocations in the dma-iommu
+layer.
 
+Right now it needs to be explicitly selected by architectures, and
+is only done so by architectures that require remapping to deal
+with devices that are not DMA coherent.  Make it unconditional for
+builds with CONFIG_MMU as it is very little extra code, but makes
+it much more likely that large DMA allocations succeed on x86.
 
-On 23/02/2022 08:24, Yong Wu wrote:
-> Add mt8186 iommu supports.
-> 
-> Signed-off-by: Anan Sun <anan.sun@mediatek.com>
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+This fixes hot plugging a NVMe thunderbolt SSD for me, which tries
+to allocate a 1MB buffer that is otherwise hard to obtain due to
+memory fragmentation on a heavily used laptop.
 
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+---
 
-> ---
->   drivers/iommu/mtk_iommu.c | 17 +++++++++++++++++
->   1 file changed, 17 insertions(+)
-> 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index d9ca9ffe404c..174a2f3bd68a 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -160,6 +160,7 @@ enum mtk_iommu_plat {
->   	M4U_MT8167,
->   	M4U_MT8173,
->   	M4U_MT8183,
-> +	M4U_MT8186,
->   	M4U_MT8192,
->   	M4U_MT8195,
->   };
-> @@ -1438,6 +1439,21 @@ static const struct mtk_iommu_plat_data mt8183_data = {
->   	.larbid_remap = {{0}, {4}, {5}, {6}, {7}, {2}, {3}, {1}},
->   };
->   
-> +static const struct mtk_iommu_plat_data mt8186_data_mm = {
-> +	.m4u_plat       = M4U_MT8186,
-> +	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
-> +			  WR_THROT_EN | IOVA_34_EN | NOT_STD_AXI_MODE |
-> +			  MTK_IOMMU_TYPE_MM,
-> +	.larbid_remap   = {{0}, {1, MTK_INVALID_LARBID, 8}, {4}, {7}, {2}, {9, 11, 19, 20},
-> +			   {MTK_INVALID_LARBID, 14, 16},
-> +			   {MTK_INVALID_LARBID, 13, MTK_INVALID_LARBID, 17}},
-> +	.inv_sel_reg    = REG_MMU_INV_SEL_GEN2,
-> +	.banks_num      = 1,
-> +	.banks_enable   = {true},
-> +	.iova_region    = mt8192_multi_dom,
-> +	.iova_region_nr = ARRAY_SIZE(mt8192_multi_dom),
-> +};
-> +
->   static const struct mtk_iommu_plat_data mt8192_data = {
->   	.m4u_plat       = M4U_MT8192,
->   	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
-> @@ -1507,6 +1523,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
->   	{ .compatible = "mediatek,mt8167-m4u", .data = &mt8167_data},
->   	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
->   	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
-> +	{ .compatible = "mediatek,mt8186-iommu-mm",    .data = &mt8186_data_mm}, /* mm: m4u */
->   	{ .compatible = "mediatek,mt8192-m4u", .data = &mt8192_data},
->   	{ .compatible = "mediatek,mt8195-iommu-infra", .data = &mt8195_data_infra},
->   	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data = &mt8195_data_vdo},
+Changes since v1:
+ - drop a not required CONFIG_MMU check
+
+ arch/arm/Kconfig          |  2 +-
+ arch/xtensa/Kconfig       |  2 +-
+ drivers/iommu/dma-iommu.c | 14 +++++---------
+ kernel/dma/Kconfig        |  7 +------
+ kernel/dma/Makefile       |  2 +-
+ kernel/dma/direct.c       | 18 +++++++-----------
+ 6 files changed, 16 insertions(+), 29 deletions(-)
+
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 4c97cb40eebb6..83fb277e50759 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -47,7 +47,7 @@ config ARM
+ 	select DMA_DECLARE_COHERENT
+ 	select DMA_GLOBAL_POOL if !MMU
+ 	select DMA_OPS
+-	select DMA_REMAP if MMU
++	select DMA_NONCOHERENT_MMAP if MMU
+ 	select EDAC_SUPPORT
+ 	select EDAC_ATOMIC_SCRUB
+ 	select GENERIC_ALLOCATOR
+diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
+index 8ac599aa6d994..76438ee313d16 100644
+--- a/arch/xtensa/Kconfig
++++ b/arch/xtensa/Kconfig
+@@ -17,7 +17,7 @@ config XTENSA
+ 	select BUILDTIME_TABLE_SORT
+ 	select CLONE_BACKWARDS
+ 	select COMMON_CLK
+-	select DMA_REMAP if MMU
++	select DMA_NONCOHERENT_MMAP if MMU
+ 	select GENERIC_ATOMIC64
+ 	select GENERIC_IRQ_SHOW
+ 	select GENERIC_PCI_IOMAP
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index d85d54f2b5496..cebced7ddf390 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -852,7 +852,6 @@ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
+ 	return NULL;
+ }
+ 
+-#ifdef CONFIG_DMA_REMAP
+ static struct sg_table *iommu_dma_alloc_noncontiguous(struct device *dev,
+ 		size_t size, enum dma_data_direction dir, gfp_t gfp,
+ 		unsigned long attrs)
+@@ -882,7 +881,6 @@ static void iommu_dma_free_noncontiguous(struct device *dev, size_t size,
+ 	sg_free_table(&sh->sgt);
+ 	kfree(sh);
+ }
+-#endif /* CONFIG_DMA_REMAP */
+ 
+ static void iommu_dma_sync_single_for_cpu(struct device *dev,
+ 		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
+@@ -1276,7 +1274,7 @@ static void __iommu_dma_free(struct device *dev, size_t size, void *cpu_addr)
+ 	    dma_free_from_pool(dev, cpu_addr, alloc_size))
+ 		return;
+ 
+-	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
++	if (is_vmalloc_addr(cpu_addr)) {
+ 		/*
+ 		 * If it the address is remapped, then it's either non-coherent
+ 		 * or highmem CMA, or an iommu_dma_alloc_remap() construction.
+@@ -1318,7 +1316,7 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
+ 	if (!page)
+ 		return NULL;
+ 
+-	if (IS_ENABLED(CONFIG_DMA_REMAP) && (!coherent || PageHighMem(page))) {
++	if (!coherent || PageHighMem(page)) {
+ 		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
+ 
+ 		cpu_addr = dma_common_contiguous_remap(page, alloc_size,
+@@ -1350,7 +1348,7 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+ 
+ 	gfp |= __GFP_ZERO;
+ 
+-	if (IS_ENABLED(CONFIG_DMA_REMAP) && gfpflags_allow_blocking(gfp) &&
++	if (gfpflags_allow_blocking(gfp) &&
+ 	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS)) {
+ 		return iommu_dma_alloc_remap(dev, size, handle, gfp,
+ 				dma_pgprot(dev, PAGE_KERNEL, attrs), attrs);
+@@ -1391,7 +1389,7 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+ 	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
+ 		return -ENXIO;
+ 
+-	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
++	if (is_vmalloc_addr(cpu_addr)) {
+ 		struct page **pages = dma_common_find_pages(cpu_addr);
+ 
+ 		if (pages)
+@@ -1413,7 +1411,7 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
+ 	struct page *page;
+ 	int ret;
+ 
+-	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
++	if (is_vmalloc_addr(cpu_addr)) {
+ 		struct page **pages = dma_common_find_pages(cpu_addr);
+ 
+ 		if (pages) {
+@@ -1445,10 +1443,8 @@ static const struct dma_map_ops iommu_dma_ops = {
+ 	.free			= iommu_dma_free,
+ 	.alloc_pages		= dma_common_alloc_pages,
+ 	.free_pages		= dma_common_free_pages,
+-#ifdef CONFIG_DMA_REMAP
+ 	.alloc_noncontiguous	= iommu_dma_alloc_noncontiguous,
+ 	.free_noncontiguous	= iommu_dma_free_noncontiguous,
+-#endif
+ 	.mmap			= iommu_dma_mmap,
+ 	.get_sgtable		= iommu_dma_get_sgtable,
+ 	.map_page		= iommu_dma_map_page,
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 1b02179758cbc..56866aaa2ae1a 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -110,15 +110,10 @@ config DMA_GLOBAL_POOL
+ 	select DMA_DECLARE_COHERENT
+ 	bool
+ 
+-config DMA_REMAP
+-	bool
+-	depends on MMU
+-	select DMA_NONCOHERENT_MMAP
+-
+ config DMA_DIRECT_REMAP
+ 	bool
+-	select DMA_REMAP
+ 	select DMA_COHERENT_POOL
++	select DMA_NONCOHERENT_MMAP
+ 
+ config DMA_CMA
+ 	bool "DMA Contiguous Memory Allocator"
+diff --git a/kernel/dma/Makefile b/kernel/dma/Makefile
+index 0dd65ec1d234b..21926e46ef4fb 100644
+--- a/kernel/dma/Makefile
++++ b/kernel/dma/Makefile
+@@ -8,5 +8,5 @@ obj-$(CONFIG_DMA_DECLARE_COHERENT)	+= coherent.o
+ obj-$(CONFIG_DMA_API_DEBUG)		+= debug.o
+ obj-$(CONFIG_SWIOTLB)			+= swiotlb.o
+ obj-$(CONFIG_DMA_COHERENT_POOL)		+= pool.o
+-obj-$(CONFIG_DMA_REMAP)			+= remap.o
++obj-$(CONFIG_MMU)			+= remap.o
+ obj-$(CONFIG_DMA_MAP_BENCHMARK)		+= map_benchmark.o
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 50f48e9e45987..35a1d29d6a2e9 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -265,17 +265,13 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO);
+ 	if (!page)
+ 		return NULL;
++
++	/*
++	 * dma_alloc_contiguous can return highmem pages depending on a
++	 * combination the cma= arguments and per-arch setup.  These need to be
++	 * remapped to return a kernel virtual address.
++	 */
+ 	if (PageHighMem(page)) {
+-		/*
+-		 * Depending on the cma= arguments and per-arch setup,
+-		 * dma_alloc_contiguous could return highmem pages.
+-		 * Without remapping there is no way to return them here, so
+-		 * log an error and fail.
+-		 */
+-		if (!IS_ENABLED(CONFIG_DMA_REMAP)) {
+-			dev_info(dev, "Rejecting highmem page from CMA.\n");
+-			goto out_free_pages;
+-		}
+ 		remap = true;
+ 		set_uncached = false;
+ 	}
+@@ -349,7 +345,7 @@ void dma_direct_free(struct device *dev, size_t size,
+ 	    dma_free_from_pool(dev, cpu_addr, PAGE_ALIGN(size)))
+ 		return;
+ 
+-	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
++	if (is_vmalloc_addr(cpu_addr)) {
+ 		vunmap(cpu_addr);
+ 	} else {
+ 		if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
+-- 
+2.30.2
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
