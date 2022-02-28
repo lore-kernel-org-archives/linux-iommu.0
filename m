@@ -1,60 +1,62 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4F270C433EF
-	for <iommu@archiver.kernel.org>; Mon, 28 Feb 2022 00:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CD0DDC433F5
+	for <iommu@archiver.kernel.org>; Mon, 28 Feb 2022 00:53:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 031AE82B81;
-	Mon, 28 Feb 2022 00:53:21 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 7B6D54056B;
+	Mon, 28 Feb 2022 00:53:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id G708AzvHtpqE; Mon, 28 Feb 2022 00:53:20 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id IsvTy7pQlvIl; Mon, 28 Feb 2022 00:53:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id E121682B08;
-	Mon, 28 Feb 2022 00:53:19 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 2319240556;
+	Mon, 28 Feb 2022 00:53:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BF902C0077;
-	Mon, 28 Feb 2022 00:53:19 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 52562C001A
- for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 00:53:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F2113C0077;
+	Mon, 28 Feb 2022 00:53:27 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E4449C001A
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 00:53:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 3E33782B3E
- for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 00:53:18 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id D2AF54032D
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 00:53:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id z-GOIe12G3rV for <iommu@lists.linux-foundation.org>;
- Mon, 28 Feb 2022 00:53:17 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wDjgl5qxwws2 for <iommu@lists.linux-foundation.org>;
+ Mon, 28 Feb 2022 00:53:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp1.osuosl.org (Postfix) with ESMTPS id A67F082B08
- for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 00:53:17 +0000 (UTC)
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 350D04032B
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 00:53:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1646009597; x=1677545597;
+ t=1646009605; x=1677545605;
  h=from:to:cc:subject:date:message-id:in-reply-to:
  references:mime-version:content-transfer-encoding;
- bh=0Sinm9F79Trbz2xG2vi/p9cQ3AApJUaGznjrG5yUk/Y=;
- b=LwJIOXHJTZm4EefvNIyCuj+N4oNjXxVVAv9f5B6e1SzOAk1jmUA8WMx7
- OQjuNo53Kf0RKT+faLrT08QLPXNlH8MjEdgOe/LPxWEj/jicAYcpOtVF5
- S00hHd85Zl0VzzwdBlIMD35Lyk24OW7djusr7dgPuhkcbfBHOJ1FIUWHD
- VNpMVkqlZr1BFVptpf88lB02qIbOpZqLWmywYilqG0O6MIBuxYnD4Lxi7
- FCQ+99ZUwpJSOdEGJXX9vydx2RbIdK/jW0fOyKrADeGUxdfu/VwwCPCeO
- Z/MT5VrMPJrxNvFgeVuTmPj7B1Wz3CtO0eeoy7OldEGxpDqGJbFMKss8F A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="240184693"
-X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; d="scan'208";a="240184693"
+ bh=4jk0c0xjR9fwFUZr9dOqxwTyTpKhy2X63dKiNs7wWd8=;
+ b=aTXFNLQJptX5jbuhpnjW8OQ+5BAisXAbTdyeadxYq3AXMp1bQwcCJCjh
+ uHigVmhTURvvvUFtf8KD7j+TXNiQu1OlWAHyFAS1+3qfmk/9aUuqDT7d8
+ DEcd83i6T/XJtDX19MS6+17rMwcDhJFmVaSaeJ43R/Uae808pIRgsD14K
+ e3SlGgp2ldszXIXQiWx1dYzcbtH7hh3y3zDEprA45Wt1XZp9N6yUNYiRs
+ +DLCErLCqcwcZNDvQLP7FJppNo1GGl3mfFnCUyqGni3i5RFB0VPvC1a7C
+ 5zOqMRRJCAM/+1K+JxxJl9PPNA87lz1StnHa/ZsC14HgYGuoSDN46qbQu g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="252504215"
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; d="scan'208";a="252504215"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 27 Feb 2022 16:53:17 -0800
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Feb 2022 16:53:24 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; d="scan'208";a="550020232"
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; d="scan'208";a="550020255"
 Received: from allen-box.sh.intel.com ([10.239.159.118])
- by orsmga008.jf.intel.com with ESMTP; 27 Feb 2022 16:53:09 -0800
+ by orsmga008.jf.intel.com with ESMTP; 27 Feb 2022 16:53:17 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Joerg Roedel <joro@8bytes.org>,
@@ -62,9 +64,9 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Bjorn Helgaas <bhelgaas@google.com>, Jason Gunthorpe <jgg@nvidia.com>,
  Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
  Ashok Raj <ashok.raj@intel.com>
-Subject: [PATCH v7 05/11] PCI: pci_stub: Set driver_managed_dma
-Date: Mon, 28 Feb 2022 08:50:50 +0800
-Message-Id: <20220228005056.599595-6-baolu.lu@linux.intel.com>
+Subject: [PATCH v7 06/11] PCI: portdrv: Set driver_managed_dma
+Date: Mon, 28 Feb 2022 08:50:51 +0800
+Message-Id: <20220228005056.599595-7-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220228005056.599595-1-baolu.lu@linux.intel.com>
 References: <20220228005056.599595-1-baolu.lu@linux.intel.com>
@@ -95,36 +97,38 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The current VFIO implementation allows pci-stub driver to be bound to
-a PCI device with other devices in the same IOMMU group being assigned
-to userspace. The pci-stub driver has no dependencies on DMA or the
-IOVA mapping of the device, but it does prevent the user from having
-direct access to the device, which is useful in some circumstances.
+If a switch lacks ACS P2P Request Redirect, a device below the switch can
+bypass the IOMMU and DMA directly to other devices below the switch, so
+all the downstream devices must be in the same IOMMU group as the switch
+itself.
 
-The pci_dma_configure() marks the iommu_group as containing only devices
-with kernel drivers that manage DMA. For compatibility with the VFIO
-usage, avoid this default behavior for the pci_stub. This allows the
-pci_stub still able to be used by the admin to block driver binding after
-applying the DMA ownership to VFIO.
+The existing VFIO framework allows the portdrv driver to be bound to the
+bridge while its downstream devices are assigned to user space. The
+pci_dma_configure() marks the IOMMU group as containing only devices
+with kernel drivers that manage DMA. Avoid this default behavior for the
+portdrv driver in order for compatibility with the current VFIO usage.
 
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+Suggested-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/pci/pci-stub.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/pcie/portdrv_pci.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pci/pci-stub.c b/drivers/pci/pci-stub.c
-index e408099fea52..d1f4c1ce7bd1 100644
---- a/drivers/pci/pci-stub.c
-+++ b/drivers/pci/pci-stub.c
-@@ -36,6 +36,7 @@ static struct pci_driver stub_driver = {
- 	.name		= "pci-stub",
- 	.id_table	= NULL,	/* only dynamic id's */
- 	.probe		= pci_stub_probe,
+diff --git a/drivers/pci/pcie/portdrv_pci.c b/drivers/pci/pcie/portdrv_pci.c
+index 35eca6277a96..6b2adb678c21 100644
+--- a/drivers/pci/pcie/portdrv_pci.c
++++ b/drivers/pci/pcie/portdrv_pci.c
+@@ -202,6 +202,8 @@ static struct pci_driver pcie_portdriver = {
+ 
+ 	.err_handler	= &pcie_portdrv_err_handler,
+ 
 +	.driver_managed_dma = true,
++
+ 	.driver.pm	= PCIE_PORTDRV_PM_OPS,
  };
  
- static int __init pci_stub_init(void)
 -- 
 2.25.1
 
