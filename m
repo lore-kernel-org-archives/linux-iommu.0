@@ -1,91 +1,93 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B2E46C433EF
-	for <iommu@archiver.kernel.org>; Mon, 28 Feb 2022 22:06:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CBA12C433EF
+	for <iommu@archiver.kernel.org>; Mon, 28 Feb 2022 22:06:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 57CA760E66;
-	Mon, 28 Feb 2022 22:06:27 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 7AE988246F;
+	Mon, 28 Feb 2022 22:06:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NaqGgwJ1fqtV; Mon, 28 Feb 2022 22:06:26 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id WeVuAHhKtpzO; Mon, 28 Feb 2022 22:06:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 2C2BA60E5A;
-	Mon, 28 Feb 2022 22:06:26 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 5504F82444;
+	Mon, 28 Feb 2022 22:06:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0D9C0C0077;
-	Mon, 28 Feb 2022 22:06:26 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C46F3C001A
- for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 22:06:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3DC42C0077;
+	Mon, 28 Feb 2022 22:06:30 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EE31EC001A
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 22:06:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id AC2A060E66
- for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 22:06:24 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id DB10940273
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 22:06:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 37cS4oAOXqjQ for <iommu@lists.linux-foundation.org>;
- Mon, 28 Feb 2022 22:06:24 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id sD5hYqadS6ZQ for <iommu@lists.linux-foundation.org>;
+ Mon, 28 Feb 2022 22:06:28 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 0952760E5A
- for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 22:06:23 +0000 (UTC)
+ (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 02A91405F3
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 22:06:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1646085982;
+ s=mimecast20190719; t=1646085986;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=6g76Q1f7wfMD5s0Iq9NnNAaHx7TEHAaZl0n65azkoF4=;
- b=H3evcegnpuHA2tFn0WlhRJzlGiAL1tBZEzVjhikGwLSK0tdVSAt4MceNPiYYugyeL8AbvT
- Nl9YAX/WcgJXaR6/pqv9pGJTA5lLyxoIPTtxMhR6fx6bBFz//Mx6OqXLrT/KEOCaozFR9f
- vpKlv5n9RBvMbYSyV9L41AUjdLhNKQY=
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
- [209.85.161.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ bh=kSd2olf1jnjo/HsSgbCsJs5j16VEb70bfQ7PmeMY2VY=;
+ b=X/fORx8DSqlRSB8Kj0AT7WQ4mIydJNZ8yGnDnfTiiCILfmMY4YTVyQqc/KTWk20cu3Lp05
+ gcqNApxHkHOb0nBVBbdJ+TvApXevCtXuBdMuenLi0tThipEY1iZnmcHFajZ9sr/zCf9ctf
+ 7lkPLi5sMG4Gt3kdeSixnT7ksu0Yj5E=
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
+ [209.85.167.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-608-L_PkwpPbNKOkmbBTJ-PF8A-1; Mon, 28 Feb 2022 17:06:19 -0500
-X-MC-Unique: L_PkwpPbNKOkmbBTJ-PF8A-1
-Received: by mail-oo1-f69.google.com with SMTP id
- t72-20020a4a3e4b000000b0031af9ab8cc6so9362834oot.18
- for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 14:06:19 -0800 (PST)
+ us-mta-385-0Gjn6IZ_POqBZj7-V_Xchw-1; Mon, 28 Feb 2022 17:06:25 -0500
+X-MC-Unique: 0Gjn6IZ_POqBZj7-V_Xchw-1
+Received: by mail-oi1-f197.google.com with SMTP id
+ t34-20020a05680815a200b002d51d9e681dso6268867oiw.10
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 14:06:25 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=6g76Q1f7wfMD5s0Iq9NnNAaHx7TEHAaZl0n65azkoF4=;
- b=Zwa8cwHxcEl8w5Qoj3mXauNoj1xkw5TaNPI5Pc0eWjssvWLl8/LVVq4hKJCj8Dgzvo
- Xm4i/bIyXwgNo1f+vwHRHwszZra1+bVTy5G33edYygP/2xfJ5A3Fd2vm1u9+nf8u+KY8
- gNCSzCCkfAqbmDYGEt5lrYQ9jbiFUN/YjMXpD6HyGVtu55hHCKfuOgN14KZczX9KrknG
- R7ZyPm0vcrAXRvUcH7tOtst6mWPmGkYBlVyrfUGuHID/A4VXIAHH57d5VAFJq7AArUHh
- NSl5vT8V+6U48LUp7BIE/C5V9w4TUFuJalsj3S7pl/GKpuNo0L1z9kH+O2qXRcKJm5vT
- M5NQ==
-X-Gm-Message-State: AOAM53007eQaeHlkfNEGE6Jq2KjJas5P4myK/3hY8zyBraIBzwv+Cm6q
- wyNmLop/f4HxWkLmkMrxjkpBJA7plKSv9DuYhvdsm+H7irGg+FwWKiEkilbVXi1ir+KY64lo4eH
- 7MBWm5DcL61OEOQSr/XGDsBEH0RlVag==
-X-Received: by 2002:a05:6808:1a28:b0:2d7:3c61:e0d6 with SMTP id
- bk40-20020a0568081a2800b002d73c61e0d6mr12441297oib.32.1646085978581; 
- Mon, 28 Feb 2022 14:06:18 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyqktaI7nRschXFm6WIqpt/NJToJOLyZXiuWVFpjpKCqY9bZVPBmjxyvo/DJelsgeXDszQizg==
-X-Received: by 2002:a05:6808:1a28:b0:2d7:3c61:e0d6 with SMTP id
- bk40-20020a0568081a2800b002d73c61e0d6mr12441258oib.32.1646085978346; 
- Mon, 28 Feb 2022 14:06:18 -0800 (PST)
+ bh=kSd2olf1jnjo/HsSgbCsJs5j16VEb70bfQ7PmeMY2VY=;
+ b=m6MnzrSXpHGWwczFR/0kFOwIZR7riyR290/iN7rHiPZycBrruvvHK6piAxZa8+VG3e
+ Isay8cbNbk2liKO1PYfmUIOnyqwlpG/+rNtW2mHjQ3hL/7BWawk984qfqEF3h4slqtuC
+ o90GcILTta47ao7I0LOfz9KPv6Ei0NfQxlM5f73+c5u9ujaKZ1u116EnlJhK/IhaON5X
+ 9QWB310HRaznUtX0Qes8ElKyCWOvWWDvDiS6mm/t8EnXJ4R+CzVepyYtu7VRjs5K9Q6H
+ nvxHqRoVWlR+5DwmHcTQjmJz/sFH8NL+l5JHdihf4npwwyck6FEF2ULFaPrVrUQ+ihz9
+ 2yQg==
+X-Gm-Message-State: AOAM5309hD+bhSGlJ1BeT6YBuGDNVj5abklB4ejYpxuf2nKxbGl/Fkg3
+ pgQ7LmvG4T9D+F71QLpa93DZDYiKFh/O/LR4essL+0ss3GeGSyMvSAZJCHPow+aWT5Et3EXLyY2
+ b3bl3rouIkSoOspHXdciQba1ppcMMsg==
+X-Received: by 2002:a05:6808:1148:b0:2d5:2333:bbb1 with SMTP id
+ u8-20020a056808114800b002d52333bbb1mr10736870oiu.130.1646085984685; 
+ Mon, 28 Feb 2022 14:06:24 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyXyd5cLZVXv21R215ahGVE59QoOxgoKUS9B2IAT3b2Nrgqe4ENaiagVjBUsTuHIIBNYSayzQ==
+X-Received: by 2002:a05:6808:1148:b0:2d5:2333:bbb1 with SMTP id
+ u8-20020a056808114800b002d52333bbb1mr10736822oiu.130.1646085984239; 
+ Mon, 28 Feb 2022 14:06:24 -0800 (PST)
 Received: from redhat.com ([38.15.36.239]) by smtp.gmail.com with ESMTPSA id
- y2-20020a056808130200b002d542a72882sm7034767oiv.3.2022.02.28.14.06.16
+ i47-20020a9d172f000000b005aed7ea7b44sm5393010ota.73.2022.02.28.14.06.22
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 28 Feb 2022 14:06:17 -0800 (PST)
-Date: Mon, 28 Feb 2022 15:06:15 -0700
+ Mon, 28 Feb 2022 14:06:23 -0800 (PST)
+Date: Mon, 28 Feb 2022 15:06:21 -0700
 From: Alex Williamson <alex.williamson@redhat.com>
 To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v7 07/11] vfio: Set DMA ownership for VFIO devices
-Message-ID: <20220228150615.7026b3ae.alex.williamson@redhat.com>
-In-Reply-To: <20220228005056.599595-8-baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v7 08/11] vfio: Remove use of vfio_group_viable()
+Message-ID: <20220228150621.5984595b.alex.williamson@redhat.com>
+In-Reply-To: <20220228005056.599595-9-baolu.lu@linux.intel.com>
 References: <20220228005056.599595-1-baolu.lu@linux.intel.com>
- <20220228005056.599595-8-baolu.lu@linux.intel.com>
+ <20220228005056.599595-9-baolu.lu@linux.intel.com>
 X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
 Authentication-Results: relay.mimecast.com;
@@ -123,46 +125,23 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 28 Feb 2022 08:50:52 +0800
+On Mon, 28 Feb 2022 08:50:53 +0800
 Lu Baolu <baolu.lu@linux.intel.com> wrote:
 
-> Claim group dma ownership when an IOMMU group is set to a container,
-> and release the dma ownership once the iommu group is unset from the
-> container.
+> As DMA ownership is claimed for the iommu group when a VFIO group is
+> added to a VFIO container, the VFIO group viability is guaranteed as long
+> as group->container_users > 0. Remove those unnecessary group viability
+> checks which are only hit when group->container_users is not zero.
 > 
-> This change disallows some unsafe bridge drivers to bind to non-ACS
-> bridges while devices under them are assigned to user space. This is an
-> intentional enhancement and possibly breaks some existing
-> configurations. The recommendation to such an affected user would be
-> that the previously allowed host bridge driver was unsafe for this use
-> case and to continue to enable assignment of devices within that group,
-> the driver should be unbound from the bridge device or replaced with the
-> pci-stub driver.
-> 
-> For any bridge driver, we consider it unsafe if it satisfies any of the
-> following conditions:
-> 
->   1) The bridge driver uses DMA. Calling pci_set_master() or calling any
->      kernel DMA API (dma_map_*() and etc.) is an indicate that the
->      driver is doing DMA.
-> 
->   2) If the bridge driver uses MMIO, it should be tolerant to hostile
->      userspace also touching the same MMIO registers via P2P DMA
->      attacks.
-> 
-> If the bridge driver turns out to be a safe one, it could be used as
-> before by setting the driver's .driver_managed_dma field, just like what
-> we have done in the pcieport driver.
+> The only remaining reference is in GROUP_GET_STATUS, which could be called
+> at any time when group fd is valid. Here we just replace the
+> vfio_group_viable() by directly calling IOMMU core to get viability status.
 > 
 > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  drivers/vfio/fsl-mc/vfio_fsl_mc.c     |  1 +
->  drivers/vfio/pci/vfio_pci.c           |  1 +
->  drivers/vfio/platform/vfio_amba.c     |  1 +
->  drivers/vfio/platform/vfio_platform.c |  1 +
->  drivers/vfio/vfio.c                   | 10 +++++++++-
->  5 files changed, 13 insertions(+), 1 deletion(-)
+>  drivers/vfio/vfio.c | 18 ++++++------------
+>  1 file changed, 6 insertions(+), 12 deletions(-)
 
 Acked-by: Alex Williamson <alex.williamson@redhat.com>
 
