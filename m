@@ -1,84 +1,87 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 00DE5C433F5
-	for <iommu@archiver.kernel.org>; Mon, 28 Feb 2022 00:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CB50BC433F5
+	for <iommu@archiver.kernel.org>; Mon, 28 Feb 2022 01:00:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id BBE6260D79;
-	Mon, 28 Feb 2022 00:54:06 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 7815F82B08;
+	Mon, 28 Feb 2022 01:00:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZTdUocnSccQF; Mon, 28 Feb 2022 00:54:05 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 712AC600BA;
-	Mon, 28 Feb 2022 00:54:05 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fqiNF6Csbp5d; Mon, 28 Feb 2022 01:00:44 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 4C07D82B1A;
+	Mon, 28 Feb 2022 01:00:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 46596C0077;
-	Mon, 28 Feb 2022 00:54:05 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3813EC001A
- for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 00:54:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 19186C0077;
+	Mon, 28 Feb 2022 01:00:44 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B6771C001A
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 01:00:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 196CD60D79
- for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 00:54:04 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 90A3240929
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 01:00:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hY5SyZRtTdUQ for <iommu@lists.linux-foundation.org>;
- Mon, 28 Feb 2022 00:54:03 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id q_IMC8Au6gfq for <iommu@lists.linux-foundation.org>;
+ Mon, 28 Feb 2022 01:00:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 41F26600BA
- for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 00:54:03 +0000 (UTC)
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id BC7074091F
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 01:00:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1646009643; x=1677545643;
- h=from:to:cc:subject:date:message-id:in-reply-to:
- references:mime-version:content-transfer-encoding;
- bh=e4zKevnerCv3swR38QOP36pCi6FNMKl3EHNwss6IlEU=;
- b=Fl0MjYYPfyesl86opBIslfzHC3401AhsoS4DR3M72N4Bq6V5KmQQyS9J
- MzKTvRrkItEa9cifDulSYzutw14j2qM9JnIn0AFVNHkCYPh7tFkqv8L4H
- 2cl6vkZiakNvtp86+kVNJ6QUo+b2+PvQXVoKTucqdOa+qu6f0iVrEpSGF
- lwBgPz+qrtRWerQc803QRI5rT3KQpTt8xo6sJ+e5CJx+E22OThEdxqVDY
- QEJFEzVpI0Eth3axoisbAQVZth3BAo8KcYU/mZe9aaWo82vvrBlZCnusC
- pR/w0JS9KVL/8w0rqB2TlaH3EUB6x0qogPV3Zqei/qMiyjsXsjnhXMvdx A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="252966971"
-X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; d="scan'208";a="252966971"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 27 Feb 2022 16:54:02 -0800
+ t=1646010041; x=1677546041;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=5ATRL4rQ1IyZjNEW/fMNHknvLJWziKwt7KwEQHMNLqg=;
+ b=Pb29J0F0u4X1f7W9oXBVQ/4hk/fHzPDW4K9w8ZJ7iN/z1wFlbkiNDLsf
+ M+AIsO24VEngASbwKnX1XjsB8t8Ak9iAVR338sAWt4HsyR5wignG1LK0b
+ 9mg97WiRpZ+a5q429t73nXOUDAr0ZO+jNyYdPO5opi30pcSdMAbCUhHBm
+ CNMH0JTNpl0f/9m4QzI4Pgn8gDh5O0x/zPgxf5owXrpaSifOPlBRoMPce
+ KUOa6gsC8nxjLTDGssM1ZuX+duinmHF975nR0oeRdXjjWKwzLCW06YZAe
+ IB3f0LnjkGo0YIHbfdaambiF6sA+0JnObTD9QOyKrumX0cunhokEIXuRB A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="250355478"
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; d="scan'208";a="250355478"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Feb 2022 17:00:41 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; d="scan'208";a="550020359"
-Received: from allen-box.sh.intel.com ([10.239.159.118])
- by orsmga008.jf.intel.com with ESMTP; 27 Feb 2022 16:53:55 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Joerg Roedel <joro@8bytes.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
- Ashok Raj <ashok.raj@intel.com>
-Subject: [PATCH v7 11/11] iommu: Remove iommu group changes notifier
-Date: Mon, 28 Feb 2022 08:50:56 +0800
-Message-Id: <20220228005056.599595-12-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220228005056.599595-1-baolu.lu@linux.intel.com>
-References: <20220228005056.599595-1-baolu.lu@linux.intel.com>
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; d="scan'208";a="534251537"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
+ ([10.239.159.118])
+ by orsmga007.jf.intel.com with ESMTP; 27 Feb 2022 17:00:30 -0800
+Message-ID: <f78b3bce-513a-a14c-d12e-1a328d5ddc87@linux.intel.com>
+Date: Mon, 28 Feb 2022 08:58:57 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v6 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
+Content-Language: en-US
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Joerg Roedel <joro@8bytes.org>, Alex Williamson
+ <alex.williamson@redhat.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>
+References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220218005521.172832-1-baolu.lu@linux.intel.com>
 Cc: kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
  linux-pci@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
  Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
- Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
- Stuart Yoder <stuyoder@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>,
- Chaitanya Kulkarni <kch@nvidia.com>, Dan Williams <dan.j.williams@intel.com>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
- Robin Murphy <robin.murphy@arm.com>
+ Will Deacon <will@kernel.org>, Stuart Yoder <stuyoder@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Dan Williams <dan.j.williams@intel.com>, Cornelia Huck <cohuck@redhat.com>,
+ linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
+ iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,210 +94,31 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The iommu group changes notifer is not referenced in the tree. Remove it
-to avoid dead code.
+On 2/18/22 8:55 AM, Lu Baolu wrote:
+> v6:
+>    - Refine comments and commit mesages.
+>    - Rename iommu_group_set_dma_owner() to iommu_group_claim_dma_owner().
+>    - Rename iommu_device_use/unuse_kernel_dma() to
+>      iommu_device_use/unuse_default_domain().
+>    - Remove unnecessary EXPORT_SYMBOL_GPL.
+>    - Change flag name from no_kernel_api_dma to driver_managed_dma.
+>    - Merge 4 "Add driver dma ownership management" patches into single
+>      one.
 
-Suggested-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
----
- include/linux/iommu.h | 23 -------------
- drivers/iommu/iommu.c | 75 -------------------------------------------
- 2 files changed, 98 deletions(-)
+Thanks you very much for review and comments. A new version (v7) has
+been posted.
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 77972ef978b5..6ef2df258673 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -407,13 +407,6 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
- 	return dev->iommu->iommu_dev->ops;
- }
- 
--#define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
--#define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device removed */
--#define IOMMU_GROUP_NOTIFY_BIND_DRIVER		3 /* Pre Driver bind */
--#define IOMMU_GROUP_NOTIFY_BOUND_DRIVER		4 /* Post Driver bind */
--#define IOMMU_GROUP_NOTIFY_UNBIND_DRIVER	5 /* Pre Driver unbind */
--#define IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER	6 /* Post Driver unbind */
--
- extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
- extern int bus_iommu_probe(struct bus_type *bus);
- extern bool iommu_present(struct bus_type *bus);
-@@ -478,10 +471,6 @@ extern int iommu_group_for_each_dev(struct iommu_group *group, void *data,
- extern struct iommu_group *iommu_group_get(struct device *dev);
- extern struct iommu_group *iommu_group_ref_get(struct iommu_group *group);
- extern void iommu_group_put(struct iommu_group *group);
--extern int iommu_group_register_notifier(struct iommu_group *group,
--					 struct notifier_block *nb);
--extern int iommu_group_unregister_notifier(struct iommu_group *group,
--					   struct notifier_block *nb);
- extern int iommu_register_device_fault_handler(struct device *dev,
- 					iommu_dev_fault_handler_t handler,
- 					void *data);
-@@ -878,18 +867,6 @@ static inline void iommu_group_put(struct iommu_group *group)
- {
- }
- 
--static inline int iommu_group_register_notifier(struct iommu_group *group,
--						struct notifier_block *nb)
--{
--	return -ENODEV;
--}
--
--static inline int iommu_group_unregister_notifier(struct iommu_group *group,
--						  struct notifier_block *nb)
--{
--	return 0;
--}
--
- static inline
- int iommu_register_device_fault_handler(struct device *dev,
- 					iommu_dev_fault_handler_t handler,
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index eba8e8ccf19d..0c42ece25854 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -18,7 +18,6 @@
- #include <linux/errno.h>
- #include <linux/iommu.h>
- #include <linux/idr.h>
--#include <linux/notifier.h>
- #include <linux/err.h>
- #include <linux/pci.h>
- #include <linux/bitops.h>
-@@ -40,7 +39,6 @@ struct iommu_group {
- 	struct kobject *devices_kobj;
- 	struct list_head devices;
- 	struct mutex mutex;
--	struct blocking_notifier_head notifier;
- 	void *iommu_data;
- 	void (*iommu_data_release)(void *iommu_data);
- 	char *name;
-@@ -632,7 +630,6 @@ struct iommu_group *iommu_group_alloc(void)
- 	mutex_init(&group->mutex);
- 	INIT_LIST_HEAD(&group->devices);
- 	INIT_LIST_HEAD(&group->entry);
--	BLOCKING_INIT_NOTIFIER_HEAD(&group->notifier);
- 
- 	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
- 	if (ret < 0) {
-@@ -905,10 +902,6 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
- 	if (ret)
- 		goto err_put_group;
- 
--	/* Notify any listeners about change to group. */
--	blocking_notifier_call_chain(&group->notifier,
--				     IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev);
--
- 	trace_add_device_to_group(group->id, dev);
- 
- 	dev_info(dev, "Adding to iommu group %d\n", group->id);
-@@ -950,10 +943,6 @@ void iommu_group_remove_device(struct device *dev)
- 
- 	dev_info(dev, "Removing from iommu group %d\n", group->id);
- 
--	/* Pre-notify listeners that a device is being removed. */
--	blocking_notifier_call_chain(&group->notifier,
--				     IOMMU_GROUP_NOTIFY_DEL_DEVICE, dev);
--
- 	mutex_lock(&group->mutex);
- 	list_for_each_entry(tmp_device, &group->devices, list) {
- 		if (tmp_device->dev == dev) {
-@@ -1075,36 +1064,6 @@ void iommu_group_put(struct iommu_group *group)
- }
- EXPORT_SYMBOL_GPL(iommu_group_put);
- 
--/**
-- * iommu_group_register_notifier - Register a notifier for group changes
-- * @group: the group to watch
-- * @nb: notifier block to signal
-- *
-- * This function allows iommu group users to track changes in a group.
-- * See include/linux/iommu.h for actions sent via this notifier.  Caller
-- * should hold a reference to the group throughout notifier registration.
-- */
--int iommu_group_register_notifier(struct iommu_group *group,
--				  struct notifier_block *nb)
--{
--	return blocking_notifier_chain_register(&group->notifier, nb);
--}
--EXPORT_SYMBOL_GPL(iommu_group_register_notifier);
--
--/**
-- * iommu_group_unregister_notifier - Unregister a notifier
-- * @group: the group to watch
-- * @nb: notifier block to signal
-- *
-- * Unregister a previously registered group notifier block.
-- */
--int iommu_group_unregister_notifier(struct iommu_group *group,
--				    struct notifier_block *nb)
--{
--	return blocking_notifier_chain_unregister(&group->notifier, nb);
--}
--EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
--
- /**
-  * iommu_register_device_fault_handler() - Register a device fault handler
-  * @dev: the device
-@@ -1650,14 +1609,8 @@ static int remove_iommu_group(struct device *dev, void *data)
- static int iommu_bus_notifier(struct notifier_block *nb,
- 			      unsigned long action, void *data)
- {
--	unsigned long group_action = 0;
- 	struct device *dev = data;
--	struct iommu_group *group;
- 
--	/*
--	 * ADD/DEL call into iommu driver ops if provided, which may
--	 * result in ADD/DEL notifiers to group->notifier
--	 */
- 	if (action == BUS_NOTIFY_ADD_DEVICE) {
- 		int ret;
- 
-@@ -1668,34 +1621,6 @@ static int iommu_bus_notifier(struct notifier_block *nb,
- 		return NOTIFY_OK;
- 	}
- 
--	/*
--	 * Remaining BUS_NOTIFYs get filtered and republished to the
--	 * group, if anyone is listening
--	 */
--	group = iommu_group_get(dev);
--	if (!group)
--		return 0;
--
--	switch (action) {
--	case BUS_NOTIFY_BIND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_BIND_DRIVER;
--		break;
--	case BUS_NOTIFY_BOUND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_BOUND_DRIVER;
--		break;
--	case BUS_NOTIFY_UNBIND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_UNBIND_DRIVER;
--		break;
--	case BUS_NOTIFY_UNBOUND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER;
--		break;
--	}
--
--	if (group_action)
--		blocking_notifier_call_chain(&group->notifier,
--					     group_action, dev);
--
--	iommu_group_put(group);
- 	return 0;
- }
- 
--- 
-2.25.1
+https://lore.kernel.org/linux-iommu/20220228005056.599595-1-baolu.lu@linux.intel.com/
 
+If I missed anything there, please let me know.
+
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
