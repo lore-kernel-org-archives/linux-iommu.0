@@ -1,58 +1,60 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E6279C433FE
-	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 10:53:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EDBB4C4321E
+	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 10:53:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8A6CD40382;
-	Tue,  1 Mar 2022 10:53:36 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id B227560BED;
+	Tue,  1 Mar 2022 10:53:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tH79wGnZ0krG; Tue,  1 Mar 2022 10:53:35 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Xr-pBpD6vSgs; Tue,  1 Mar 2022 10:53:39 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 64830410D3;
-	Tue,  1 Mar 2022 10:53:35 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 8A3A960ACE;
+	Tue,  1 Mar 2022 10:53:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 380BEC0033;
-	Tue,  1 Mar 2022 10:53:35 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 58466C001A
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 10:53:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 64C4BC0033;
+	Tue,  1 Mar 2022 10:53:38 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C5E28C001A
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 10:53:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 39039410D1
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 10:53:33 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id B461F81434
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 10:53:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id m2eqlvb1Jtfp for <iommu@lists.linux-foundation.org>;
- Tue,  1 Mar 2022 10:53:32 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id cIFzCmD7c9Kv for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Mar 2022 10:53:36 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [IPv6:2607:7c80:54:e::133])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 95A6F40382
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 10:53:32 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id E939181757
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 10:53:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
  :Reply-To:Content-Type:Content-ID:Content-Description;
- bh=F4csY1Wi5RcD4CgfgCj72ltp02xg/m2xFaHFXHqOV2U=; b=gUOyui1yxriv3hEEp272+80Q2F
- jOUBGJQGyIAeVliqSLArMsnw436LgJOzQQeLiq8Znfql2Jzag37nquPrG4dNyHN+wJZUIZ2FEmRzL
- VetzMUhB2WM68xOFhcY+0twrsScsxFZRaJt9+pmIRX6UcYn20suPG6XdsffIdmq5rXRvBHNeguSP6
- 73Oo9X1RQUGpHCIZ8XhrqVixxc0FBrQmM8ahlSO4qbkUI47d8dhdpqpl9jgxT9jiZs3SXGePiT3FS
- QCl1IiCbPqW8OCmr4X8Yypy8l194Dn26SoA6d0HIiT/r1YIQZq+YYFI7NtNdVbJlD///I5zwGw4OC
- NqAx9Geg==;
+ bh=fw5CJGRWfS2qx4RLqYxqctHTinwQ2YN+lYk2/GZzFw8=; b=oQNBKGhMS01GkNaiykQiJM1eLd
+ vRESuDJanvP54R4ITyrRLSUuGPOceoi6GtUCJmeVTcVbKIb6HTNWTn8kqxugSvDOVcDgZUsHy96pd
+ dby66LZxGUvs/10nECjNWAMAguYvHKX/psdAJm7rWIlvynPLP9IcrWBmaDFf8HN+9J23CvC37TQaD
+ sgY0/HEmNw6l5ck0Svp0ox8NUlX7Wa8dRG069/BR78zpB4VwRhg6mko9moUsppjv1oXN0aPQQse2j
+ pJlWW5h93gf9TjjeUODJPDnwEXoacsoZV+pfZoJ6c/3jXpMoyweSQk7ch/UNQaDSu053oytWfCM3Q
+ vHimhqeg==;
 Received: from [2.53.44.23] (helo=localhost)
  by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
- id 1nP08H-00GD0g-Sa; Tue, 01 Mar 2022 10:53:30 +0000
+ id 1nP08L-00GD2p-Cd; Tue, 01 Mar 2022 10:53:34 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 04/12] swiotlb: rename swiotlb_late_init_with_default_size
-Date: Tue,  1 Mar 2022 12:53:03 +0200
-Message-Id: <20220301105311.885699-5-hch@lst.de>
+Subject: [PATCH 05/12] swiotlb: pass a gfp_mask argument to swiotlb_init_late
+Date: Tue,  1 Mar 2022 12:53:04 +0200
+Message-Id: <20220301105311.885699-6-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220301105311.885699-1-hch@lst.de>
 References: <20220301105311.885699-1-hch@lst.de>
@@ -87,64 +89,65 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-swiotlb_late_init_with_default_size is an overly verbose name that
-doesn't even catch what the function is doing, given that the size is
-not just a default but the actual requested size.
-
-Rename it to swiotlb_init_late.
+Let the caller chose a zone to allocate from.  This will be used
+later on by the xen-swiotlb initialization on arm.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
 ---
  arch/x86/pci/sta2x11-fixup.c | 2 +-
  include/linux/swiotlb.h      | 2 +-
- kernel/dma/swiotlb.c         | 6 ++----
- 3 files changed, 4 insertions(+), 6 deletions(-)
+ kernel/dma/swiotlb.c         | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/arch/x86/pci/sta2x11-fixup.c b/arch/x86/pci/sta2x11-fixup.c
-index 101081ad64b6d..e0c039a75b2db 100644
+index e0c039a75b2db..c7e6faf59a861 100644
 --- a/arch/x86/pci/sta2x11-fixup.c
 +++ b/arch/x86/pci/sta2x11-fixup.c
 @@ -57,7 +57,7 @@ static void sta2x11_new_instance(struct pci_dev *pdev)
  		int size = STA2X11_SWIOTLB_SIZE;
  		/* First instance: register your own swiotlb area */
  		dev_info(&pdev->dev, "Using SWIOTLB (size %i)\n", size);
--		if (swiotlb_late_init_with_default_size(size))
-+		if (swiotlb_init_late(size))
+-		if (swiotlb_init_late(size))
++		if (swiotlb_init_late(size, GFP_DMA))
  			dev_emerg(&pdev->dev, "init swiotlb failed\n");
  	}
  	list_add(&instance->list, &sta2x11_instance_list);
 diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 9fb3a568f0c51..b48b26bfa0edb 100644
+index b48b26bfa0edb..1befd6b2ccf5e 100644
 --- a/include/linux/swiotlb.h
 +++ b/include/linux/swiotlb.h
 @@ -40,7 +40,7 @@ extern void swiotlb_init(int verbose);
  int swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose);
  unsigned long swiotlb_size_or_default(void);
  extern int swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs);
--extern int swiotlb_late_init_with_default_size(size_t default_size);
-+int swiotlb_init_late(size_t size);
+-int swiotlb_init_late(size_t size);
++int swiotlb_init_late(size_t size, gfp_t gfp_mask);
  extern void __init swiotlb_update_mem_attributes(void);
  
  phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t phys,
 diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index e31c235b5fd9e..0b1992c355f36 100644
+index 0b1992c355f36..9a38ea3a46e9f 100644
 --- a/kernel/dma/swiotlb.c
 +++ b/kernel/dma/swiotlb.c
-@@ -290,11 +290,9 @@ swiotlb_init(int verbose)
+@@ -290,7 +290,7 @@ swiotlb_init(int verbose)
   * initialize the swiotlb later using the slab allocator if needed.
   * This should be just like above, but with some error catching.
   */
--int
--swiotlb_late_init_with_default_size(size_t default_size)
-+int swiotlb_init_late(size_t size)
+-int swiotlb_init_late(size_t size)
++int swiotlb_init_late(size_t size, gfp_t gfp_mask)
  {
--	unsigned long nslabs =
--		ALIGN(default_size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
-+	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
+ 	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
  	unsigned long bytes;
- 	unsigned char *vstart = NULL;
- 	unsigned int order;
+@@ -309,7 +309,7 @@ int swiotlb_init_late(size_t size)
+ 	bytes = nslabs << IO_TLB_SHIFT;
+ 
+ 	while ((SLABS_PER_PAGE << order) > IO_TLB_MIN_SLABS) {
+-		vstart = (void *)__get_free_pages(GFP_DMA | __GFP_NOWARN,
++		vstart = (void *)__get_free_pages(gfp_mask | __GFP_NOWARN,
+ 						  order);
+ 		if (vstart)
+ 			break;
 -- 
 2.30.2
 
