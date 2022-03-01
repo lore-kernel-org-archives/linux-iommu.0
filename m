@@ -1,73 +1,66 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 43D95C433F5
-	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 20:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D6483C433EF
+	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 23:30:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id E5946410DC;
-	Tue,  1 Mar 2022 20:16:49 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 7A84060EDB;
+	Tue,  1 Mar 2022 23:30:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JLGCnTye6LvA; Tue,  1 Mar 2022 20:16:49 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id AC0FF409A7;
-	Tue,  1 Mar 2022 20:16:48 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id oQx7U8FgcStY; Tue,  1 Mar 2022 23:30:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 23CEF60EFC;
+	Tue,  1 Mar 2022 23:30:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7DA4FC0082;
-	Tue,  1 Mar 2022 20:16:48 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 55880C000B
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 20:16:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EE395C0012;
+	Tue,  1 Mar 2022 23:30:09 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5334AC000B
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 23:30:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 34F204051B
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 20:16:47 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 370B740600
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 23:30:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dGfRZqMCAgWp for <iommu@lists.linux-foundation.org>;
- Tue,  1 Mar 2022 20:16:46 +0000 (UTC)
+ with ESMTP id PBo7BzsuvVDC for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Mar 2022 23:30:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 331B7400EF
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 20:16:46 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id 4F2F961660;
- Tue,  1 Mar 2022 20:16:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4C46C340EE;
- Tue,  1 Mar 2022 20:16:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1646165804;
- bh=s5v3aJ4Hatm+c5hU9aGN5lqd1epV2EFt5fKUeQ2bViM=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=f8L55RLwv2lVHQjW50iDaUDGKNnGVjVupe88rjQv8xIDAmfu0iRIzm6En2DIUFgXw
- BLqybHT9CpxMwdgzRu9me9QYZtwsZ+U9Y4YjjGy3kuDk3DTHEJJO4xNbqyc74LDjGY
- 3dZuCB1re1zfB4TpS8NdzHi8uwx8hrSV+5tSVdOztKqFFoy01Z3iFm4NZivUsk1d5a
- oeybn2pe/1Cr05FIRnCIkuDs0FHDBzxSvfTDJ+ZpyIV/TKGPxhNvdJpu9n4PyUBWga
- Yw+llytXCa/9LRd4EbHxTkIiXM9MCrH5ASeaxE950hYJTbRe5jMabo4d/xm89jWslp
- fXepy/OWHbFZw==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 02/23] swiotlb: fix info leak with DMA_FROM_DEVICE
-Date: Tue,  1 Mar 2022 15:16:01 -0500
-Message-Id: <20220301201629.18547-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220301201629.18547-1-sashal@kernel.org>
-References: <20220301201629.18547-1-sashal@kernel.org>
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 2FE4B40017
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 23:30:02 +0000 (UTC)
+X-UUID: bbcaa81436984a8397dd5bbe6dff26f7-20220302
+X-UUID: bbcaa81436984a8397dd5bbe6dff26f7-20220302
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
+ mailgw01.mediatek.com (envelope-from <miles.chen@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 118112189; Wed, 02 Mar 2022 07:29:55 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 2 Mar 2022 07:29:53 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via
+ Frontend Transport; Wed, 2 Mar 2022 07:29:53 +0800
+To: <robin.murphy@arm.com>
+Subject: Re: [PATCH v2] iommu/iova: Reset max32_alloc_size after cleaning
+Date: Wed, 2 Mar 2022 07:29:53 +0800
+Message-ID: <20220301232953.17331-1-miles.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <b10031aa-8e49-70b3-b498-8aa6b7021fbb@arm.com>
+References: <b10031aa-8e49-70b3-b498-8aa6b7021fbb@arm.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, linux-doc@vger.kernel.org, corbet@lwn.net,
- Halil Pasic <pasic@linux.ibm.com>, iommu@lists.linux-foundation.org,
- Christoph Hellwig <hch@lst.de>
+X-MTK: N
+Cc: wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
+ Libo.Kang@mediatek.com, yf.wang@mediatek.com, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, Ning.Li@mediatek.com,
+ matthias.bgg@gmail.com, stable@vger.kernel.org, will@kernel.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,117 +73,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Miles Chen via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Miles Chen <miles.chen@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Halil Pasic <pasic@linux.ibm.com>
+Hi Yunfei,
 
-[ Upstream commit ddbd89deb7d32b1fbb879f48d68fda1a8ac58e8e ]
+>> Since __alloc_and_insert_iova_range fail will set the current alloc
+>> iova size to max32_alloc_size (iovad->max32_alloc_size = size),
+>> when the retry is executed into the __alloc_and_insert_iova_range
+>> function, the retry action will be blocked by the check condition
+>> (size >= iovad->max32_alloc_size) and goto iova32_full directly,
+>> causes the action of retry regular alloc iova in
+>> __alloc_and_insert_iova_range to not actually be executed.
+>> 
+>> Based on the above, so need reset max32_alloc_size before retry alloc
+>> iova when alloc iova fail, that is set the initial dma_32bit_pfn value
+>> of iovad to max32_alloc_size, so that the action of retry alloc iova
+>> in __alloc_and_insert_iova_range can be executed.
+>
+> Have you observed this making any difference in practice?
+> 
+> Given that both free_cpu_cached_iovas() and free_global_cached_iovas() 
+> call iova_magazine_free_pfns(), which calls remove_iova(), which calls 
+> __cached_rbnode_delete_update(), I'm thinking no...
+> 
+> Robin.
+>
 
-The problem I'm addressing was discovered by the LTP test covering
-cve-2018-1000204.
+Like Robin pointed out, if some cached iovas are freed by
+free_global_cached_iovas()/free_cpu_cached_iovas(), 
+the max32_alloc_size should be reset to iovad->dma_32bit_pfn.
 
-A short description of what happens follows:
-1) The test case issues a command code 00 (TEST UNIT READY) via the SG_IO
-   interface with: dxfer_len == 524288, dxdfer_dir == SG_DXFER_FROM_DEV
-   and a corresponding dxferp. The peculiar thing about this is that TUR
-   is not reading from the device.
-2) In sg_start_req() the invocation of blk_rq_map_user() effectively
-   bounces the user-space buffer. As if the device was to transfer into
-   it. Since commit a45b599ad808 ("scsi: sg: allocate with __GFP_ZERO in
-   sg_build_indirect()") we make sure this first bounce buffer is
-   allocated with GFP_ZERO.
-3) For the rest of the story we keep ignoring that we have a TUR, so the
-   device won't touch the buffer we prepare as if the we had a
-   DMA_FROM_DEVICE type of situation. My setup uses a virtio-scsi device
-   and the  buffer allocated by SG is mapped by the function
-   virtqueue_add_split() which uses DMA_FROM_DEVICE for the "in" sgs (here
-   scatter-gather and not scsi generics). This mapping involves bouncing
-   via the swiotlb (we need swiotlb to do virtio in protected guest like
-   s390 Secure Execution, or AMD SEV).
-4) When the SCSI TUR is done, we first copy back the content of the second
-   (that is swiotlb) bounce buffer (which most likely contains some
-   previous IO data), to the first bounce buffer, which contains all
-   zeros.  Then we copy back the content of the first bounce buffer to
-   the user-space buffer.
-5) The test case detects that the buffer, which it zero-initialized,
-  ain't all zeros and fails.
+If no cached iova is freed, resetting max32_alloc_size before
+the retry allocation only give us a retry. Is it possible that
+other users free their iovas during the additional retry?
 
-One can argue that this is an swiotlb problem, because without swiotlb
-we leak all zeros, and the swiotlb should be transparent in a sense that
-it does not affect the outcome (if all other participants are well
-behaved).
+alloc_iova_fast()
+  retry:
+    alloc_iova() // failed, iovad->max32_alloc_size = size
+    free_cpu_cached_iovas()
+      iova_magazine_free_pfns()
+        remove_iova()
+	  __cached_rbnode_delete_update()
+	    iovad->max32_alloc_size = iovad->dma_32bit_pfn // reset
+    free_global_cached_iovas()
+      iova_magazine_free_pfns()
+        remove_iova()
+	  __cached_rbnode_delete_update()
+	    iovad->max32_alloc_size = iovad->dma_32bit_pfn // reset
+    goto retry;
 
-Copying the content of the original buffer into the swiotlb buffer is
-the only way I can think of to make swiotlb transparent in such
-scenarios. So let's do just that if in doubt, but allow the driver
-to tell us that the whole mapped buffer is going to be overwritten,
-in which case we can preserve the old behavior and avoid the performance
-impact of the extra bounce.
-
-Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- Documentation/core-api/dma-attributes.rst | 8 ++++++++
- include/linux/dma-mapping.h               | 8 ++++++++
- kernel/dma/swiotlb.c                      | 3 ++-
- 3 files changed, 18 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
-index 1887d92e8e926..17706dc91ec9f 100644
---- a/Documentation/core-api/dma-attributes.rst
-+++ b/Documentation/core-api/dma-attributes.rst
-@@ -130,3 +130,11 @@ accesses to DMA buffers in both privileged "supervisor" and unprivileged
- subsystem that the buffer is fully accessible at the elevated privilege
- level (and ideally inaccessible or at least read-only at the
- lesser-privileged levels).
-+
-+DMA_ATTR_OVERWRITE
-+------------------
-+
-+This is a hint to the DMA-mapping subsystem that the device is expected to
-+overwrite the entire mapped size, thus the caller does not require any of the
-+previous buffer contents to be preserved. This allows bounce-buffering
-+implementations to optimise DMA_FROM_DEVICE transfers.
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index dca2b1355bb13..6150d11a607e1 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -61,6 +61,14 @@
-  */
- #define DMA_ATTR_PRIVILEGED		(1UL << 9)
- 
-+/*
-+ * This is a hint to the DMA-mapping subsystem that the device is expected
-+ * to overwrite the entire mapped size, thus the caller does not require any
-+ * of the previous buffer contents to be preserved. This allows
-+ * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
-+ */
-+#define DMA_ATTR_OVERWRITE		(1UL << 10)
-+
- /*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
-  * be given to a device to use as a DMA source or target.  It is specific to a
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 87c40517e8227..aca0690550e2f 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -579,7 +579,8 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 		mem->slots[index + i].orig_addr = slot_addr(orig_addr, i);
- 	tlb_addr = slot_addr(mem->start, index) + offset;
- 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
--	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
-+	    (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
-+	    dir == DMA_BIDIRECTIONAL))
- 		swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
- 	return tlb_addr;
- }
--- 
-2.34.1
-
+thanks,
+Miles
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
