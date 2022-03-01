@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id ACBB9C433F5
-	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 16:15:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4C32CC41535
+	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 16:15:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 4410181BA8;
+	by smtp1.osuosl.org (Postfix) with ESMTP id 9F1B881CA7;
 	Tue,  1 Mar 2022 16:15:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7g_0AcHZ2c6a; Tue,  1 Mar 2022 16:15:46 +0000 (UTC)
+	with ESMTP id BCYMnbYDTlLO; Tue,  1 Mar 2022 16:15:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 00A6181BFA;
-	Tue,  1 Mar 2022 16:15:45 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 3BA5A81D7D;
+	Tue,  1 Mar 2022 16:15:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 104BAC0082;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 406BFC0085;
 	Tue,  1 Mar 2022 16:15:45 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 07530C007A
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 16650C007B
  for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 16:15:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id D532D41513
+ by smtp3.osuosl.org (Postfix) with ESMTP id DCE0860E56
  for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 16:15:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=kapsi.fi
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xFzjCYqnny0m for <iommu@lists.linux-foundation.org>;
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id WlJrQdcG0zia for <iommu@lists.linux-foundation.org>;
  Tue,  1 Mar 2022 16:15:42 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
- by smtp4.osuosl.org (Postfix) with ESMTPS id CDF78414CE
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 0376960E65
  for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 16:15:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
  s=20161220; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
@@ -42,24 +42,25 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=6+Oq8jelzlqbQiX8GzoogawtERz/ajBxD9i6+lY5xew=; b=u02XHB57b1GKnYc4eKtQlwP+YU
- mQzI2aQ7gBpzvs/NLdHuaJcj18KHwWj5mPIxm/UxGyNTVVhNKFXQkXnjlqjTGWzwB/cR4TgPw7yyT
- 7WWxqwhn+jNSSP8Au3EryjQFWS/gwY9znJ+iMU0NkZ7qhAGWEpHM4Q6cpjoalrSNTuquqhQyI0Hr7
- Hqmnb+iKXftQObzvgg4sZfrc11i+9mcYqG9Gkmiq6l1Cb5qhmsq2pPEF77KXFLuVbp0KlK4tzvbCh
- CUBizMBlQib5poaAKt5Lg4INTaoDCMw+VFETwlf0b0EOyK6bf+FvTSGWyORprvJjwCJwPjVMJXCwE
- LDx23K7g==;
+ bh=SOhCWnsi2t3D4LR/n4Y2cxYT8gNTWo6B/sYLLWbarWo=; b=ry96fM4P0DbDps0nXx+7kN0lsK
+ SEheXJV/7qe1CsqlvLm/jUgoVQJGHO7vA8zlkuWWyiBDeSovU9D8T2w8+SrkA8Ab38BuMg1vqpemv
+ 2U7BbJbP6j8x74bKmgZLtFegmFH54mdFL23HlVWAPyRuu5BuO+4scr+zhQa1EONWi9udf5TfAVlY+
+ PVumDecXngxzXdaYhu8CGdKU2TqFDly2FA7b1TDaLxXgcW/c6wUNrA4fx0imolqVj617Z9tpEzacE
+ FLEhVZ9V6Q/JwXk//mXgEEUgnrMyfcUi3NwdBrxTRaz+0fBSu8Grj4WWMjQIdwjqcGNu5bAqnfGWt
+ dCqaEkKg==;
 Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70]
  helo=toshino.localdomain)
  by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
  (Exim 4.89) (envelope-from <cyndis@kapsi.fi>)
- id 1nP59q-0003Z8-TY; Tue, 01 Mar 2022 18:15:26 +0200
+ id 1nP59r-0003Z8-3Y; Tue, 01 Mar 2022 18:15:27 +0200
 From: cyndis@kapsi.fi
 To: thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
  will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
  krzysztof.kozlowski@canonical.com
-Subject: [PATCH v4 4/9] gpu: host1x: Program context stream ID on submission
-Date: Tue,  1 Mar 2022 18:14:50 +0200
-Message-Id: <20220301161455.4037062-5-cyndis@kapsi.fi>
+Subject: [PATCH v4 6/9] arm64: tegra: Add Host1x context stream IDs on
+ Tegra186+
+Date: Tue,  1 Mar 2022 18:14:52 +0200
+Message-Id: <20220301161455.4037062-7-cyndis@kapsi.fi>
 X-Mailer: git-send-email 2.35.0
 In-Reply-To: <20220301161455.4037062-1-cyndis@kapsi.fi>
 References: <20220301161455.4037062-1-cyndis@kapsi.fi>
@@ -90,160 +91,69 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Mikko Perttunen <mperttunen@nvidia.com>
 
-Add code to do stream ID switching at the beginning of a job. The
-stream ID is switched to the stream ID specified by the context
-passed in the job structure.
+Add Host1x context stream IDs on systems that support Host1x context
+isolation. Host1x and attached engines can use these stream IDs to
+allow isolation between memory used by different processes.
 
-Before switching the stream ID, an OP_DONE wait is done on the
-channel's engine to ensure that there is no residual ongoing
-work that might do DMA using the new stream ID.
+The specified stream IDs must match those configured by the hypervisor,
+if one is present.
 
 Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
 ---
+v2:
+* Added context devices on T194.
+* Use iommu-map instead of custom property.
 v4:
-* Rename job->context to job->memory_context for clarity
+* Remove memory-contexts subnode.
 ---
- drivers/gpu/host1x/hw/channel_hw.c        | 52 +++++++++++++++++++++--
- drivers/gpu/host1x/hw/host1x06_hardware.h | 10 +++++
- drivers/gpu/host1x/hw/host1x07_hardware.h | 10 +++++
- include/linux/host1x.h                    |  4 ++
- 4 files changed, 72 insertions(+), 4 deletions(-)
+ arch/arm64/boot/dts/nvidia/tegra186.dtsi | 11 +++++++++++
+ arch/arm64/boot/dts/nvidia/tegra194.dtsi | 11 +++++++++++
+ 2 files changed, 22 insertions(+)
 
-diff --git a/drivers/gpu/host1x/hw/channel_hw.c b/drivers/gpu/host1x/hw/channel_hw.c
-index 6b40e9af1e88..f84caf06621a 100644
---- a/drivers/gpu/host1x/hw/channel_hw.c
-+++ b/drivers/gpu/host1x/hw/channel_hw.c
-@@ -180,6 +180,45 @@ static void host1x_enable_gather_filter(struct host1x_channel *ch)
- #endif
- }
+diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+index c91afff1b757..1b71cba0df06 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+@@ -1406,6 +1406,17 @@ host1x@13e00000 {
  
-+static void host1x_channel_program_engine_streamid(struct host1x_job *job)
-+{
-+#if HOST1X_HW >= 6
-+	u32 fence;
-+
-+	if (!job->memory_context)
-+		return;
-+
-+	fence = host1x_syncpt_incr_max(job->syncpt, 1);
-+
-+	/* First, increment a syncpoint on OP_DONE condition.. */
-+
-+	host1x_cdma_push(&job->channel->cdma,
-+		host1x_opcode_nonincr(HOST1X_UCLASS_INCR_SYNCPT, 1),
-+		HOST1X_UCLASS_INCR_SYNCPT_INDX_F(job->syncpt->id) |
-+			HOST1X_UCLASS_INCR_SYNCPT_COND_F(1));
-+
-+	/* Wait for syncpoint to increment */
-+
-+	host1x_cdma_push(&job->channel->cdma,
-+		host1x_opcode_setclass(HOST1X_CLASS_HOST1X,
-+			host1x_uclass_wait_syncpt_r(), 1),
-+		host1x_class_host_wait_syncpt(job->syncpt->id, fence));
-+
-+	/*
-+	 * Now that we know the engine is idle, return to class and
-+	 * change stream ID.
-+	 */
-+
-+	host1x_cdma_push(&job->channel->cdma,
-+		host1x_opcode_setclass(job->class, 0, 0),
-+		HOST1X_OPCODE_NOP);
-+
-+	host1x_cdma_push(&job->channel->cdma,
-+		host1x_opcode_setpayload(job->memory_context->stream_id),
-+		host1x_opcode_setstreamid(job->engine_streamid_offset / 4));
-+#endif
-+}
-+
- static int channel_submit(struct host1x_job *job)
- {
- 	struct host1x_channel *ch = job->channel;
-@@ -236,18 +275,23 @@ static int channel_submit(struct host1x_job *job)
- 	if (sp->base)
- 		synchronize_syncpt_base(job);
+ 		iommus = <&smmu TEGRA186_SID_HOST1X>;
  
--	syncval = host1x_syncpt_incr_max(sp, user_syncpt_incrs);
--
- 	host1x_hw_syncpt_assign_to_channel(host, sp, ch);
- 
--	job->syncpt_end = syncval;
--
- 	/* add a setclass for modules that require it */
- 	if (job->class)
- 		host1x_cdma_push(&ch->cdma,
- 				 host1x_opcode_setclass(job->class, 0, 0),
- 				 HOST1X_OPCODE_NOP);
- 
-+	/*
-+	 * Ensure engine DMA is idle and set new stream ID. May increment
-+	 * syncpt max.
-+	 */
-+	host1x_channel_program_engine_streamid(job);
++		/* Context isolation domains */
++		iommu-map = <
++			0 &smmu TEGRA186_SID_HOST1X_CTX0 1
++			1 &smmu TEGRA186_SID_HOST1X_CTX1 1
++			2 &smmu TEGRA186_SID_HOST1X_CTX2 1
++			3 &smmu TEGRA186_SID_HOST1X_CTX3 1
++			4 &smmu TEGRA186_SID_HOST1X_CTX4 1
++			5 &smmu TEGRA186_SID_HOST1X_CTX5 1
++			6 &smmu TEGRA186_SID_HOST1X_CTX6 1
++			7 &smmu TEGRA186_SID_HOST1X_CTX7 1>;
 +
-+	syncval = host1x_syncpt_incr_max(sp, user_syncpt_incrs);
-+	job->syncpt_end = syncval;
-+
- 	submit_gathers(job, syncval - user_syncpt_incrs);
+ 		dpaux1: dpaux@15040000 {
+ 			compatible = "nvidia,tegra186-dpaux";
+ 			reg = <0x15040000 0x10000>;
+diff --git a/arch/arm64/boot/dts/nvidia/tegra194.dtsi b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
+index 2d48c3715fc6..eb0d2ba89cb1 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra194.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
+@@ -1686,6 +1686,17 @@ host1x@13e00000 {
+ 			interconnect-names = "dma-mem";
+ 			iommus = <&smmu TEGRA194_SID_HOST1X>;
  
- 	/* end CDMA submit & stash pinned hMems into sync queue */
-diff --git a/drivers/gpu/host1x/hw/host1x06_hardware.h b/drivers/gpu/host1x/hw/host1x06_hardware.h
-index 01a142a09800..5d515745eee7 100644
---- a/drivers/gpu/host1x/hw/host1x06_hardware.h
-+++ b/drivers/gpu/host1x/hw/host1x06_hardware.h
-@@ -127,6 +127,16 @@ static inline u32 host1x_opcode_gather_incr(unsigned offset, unsigned count)
- 	return (6 << 28) | (offset << 16) | BIT(15) | BIT(14) | count;
- }
- 
-+static inline u32 host1x_opcode_setstreamid(unsigned streamid)
-+{
-+	return (7 << 28) | streamid;
-+}
++			/* Context isolation domains */
++			iommu-map = <
++				0 &smmu TEGRA194_SID_HOST1X_CTX0 1
++				1 &smmu TEGRA194_SID_HOST1X_CTX1 1
++				2 &smmu TEGRA194_SID_HOST1X_CTX2 1
++				3 &smmu TEGRA194_SID_HOST1X_CTX3 1
++				4 &smmu TEGRA194_SID_HOST1X_CTX4 1
++				5 &smmu TEGRA194_SID_HOST1X_CTX5 1
++				6 &smmu TEGRA194_SID_HOST1X_CTX6 1
++				7 &smmu TEGRA194_SID_HOST1X_CTX7 1>;
 +
-+static inline u32 host1x_opcode_setpayload(unsigned payload)
-+{
-+	return (9 << 28) | payload;
-+}
-+
- static inline u32 host1x_opcode_gather_wide(unsigned count)
- {
- 	return (12 << 28) | count;
-diff --git a/drivers/gpu/host1x/hw/host1x07_hardware.h b/drivers/gpu/host1x/hw/host1x07_hardware.h
-index e6582172ebfd..82c0cc9bb0b5 100644
---- a/drivers/gpu/host1x/hw/host1x07_hardware.h
-+++ b/drivers/gpu/host1x/hw/host1x07_hardware.h
-@@ -127,6 +127,16 @@ static inline u32 host1x_opcode_gather_incr(unsigned offset, unsigned count)
- 	return (6 << 28) | (offset << 16) | BIT(15) | BIT(14) | count;
- }
- 
-+static inline u32 host1x_opcode_setstreamid(unsigned streamid)
-+{
-+	return (7 << 28) | streamid;
-+}
-+
-+static inline u32 host1x_opcode_setpayload(unsigned payload)
-+{
-+	return (9 << 28) | payload;
-+}
-+
- static inline u32 host1x_opcode_gather_wide(unsigned count)
- {
- 	return (12 << 28) | count;
-diff --git a/include/linux/host1x.h b/include/linux/host1x.h
-index 9dbdc4b0bb82..2793131e8c96 100644
---- a/include/linux/host1x.h
-+++ b/include/linux/host1x.h
-@@ -321,6 +321,10 @@ struct host1x_job {
- 
- 	/* Whether host1x-side firewall should be ran for this job or not */
- 	bool enable_firewall;
-+
-+	/* Options for configuring engine data stream ID */
-+	struct host1x_context *memory_context;
-+	u32 engine_streamid_offset;
- };
- 
- struct host1x_job *host1x_job_alloc(struct host1x_channel *ch,
+ 			nvdec@15140000 {
+ 				compatible = "nvidia,tegra194-nvdec";
+ 				reg = <0x15140000 0x00040000>;
 -- 
 2.35.0
 
