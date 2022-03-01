@@ -4,71 +4,112 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CED5EC433F5
-	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 07:49:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EF0E4C433F5
+	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 08:57:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 59751814B5;
-	Tue,  1 Mar 2022 07:49:34 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 7C03081A0D;
+	Tue,  1 Mar 2022 08:57:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fRBI3B1yOntr; Tue,  1 Mar 2022 07:49:33 +0000 (UTC)
+	with ESMTP id YWXUkga3rbZG; Tue,  1 Mar 2022 08:57:05 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 3B17182419;
-	Tue,  1 Mar 2022 07:49:33 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 5684D81A24;
+	Tue,  1 Mar 2022 08:57:05 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E6E7C0033;
-	Tue,  1 Mar 2022 07:49:33 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 76CF3C001A
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 07:49:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2A862C007B;
+	Tue,  1 Mar 2022 08:57:05 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EB607C001A
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 08:57:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 6548560B26
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 07:49:32 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id C744F4136C
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 08:57:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dxnHtapbkY-u for <iommu@lists.linux-foundation.org>;
- Tue,  1 Mar 2022 07:49:27 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 5C25A606F5
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 07:49:27 +0000 (UTC)
-X-UUID: 5ddf81f3816d4d73888bb7d609c8aac6-20220301
-X-UUID: 5ddf81f3816d4d73888bb7d609c8aac6-20220301
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
- mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 555010733; Tue, 01 Mar 2022 15:49:21 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
- Tue, 1 Mar 2022 15:49:20 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 1 Mar 2022 15:49:18 +0800
-Message-ID: <5ed9278fa0b72b993512cff2316218ab88cafe50.camel@mediatek.com>
-Subject: Re: [PATCH v5 00/34] MT8195 IOMMU SUPPORT
-To: Joerg Roedel <joro@8bytes.org>, AngeloGioacchino Del Regno
- <angelogioacchino.delregno@collabora.com>
-Date: Tue, 1 Mar 2022 15:49:18 +0800
-In-Reply-To: <7ba0ee87-c193-9834-d0b4-ff3e06ced82b@collabora.com>
-References: <20220217113453.13658-1-yong.wu@mediatek.com>
- <YhzBSsn/zUlGg5JE@8bytes.org>
- <7ba0ee87-c193-9834-d0b4-ff3e06ced82b@collabora.com>
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=amd.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id pgIKKMU02Oq0 for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Mar 2022 08:57:02 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam08on2062f.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e8c::62f])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 629ED41299
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 08:57:02 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JZWFMLlcRARKHD9tGKiRU48X6PB1cXSbKf3VSTreYMMjkDoGWFZiadHzDw3hIFv4nopn6iiuJRF0vn3tJ3Za0jFrHVbsJJQPlnm6YUnVNTh0LOQv7BPFOG2ssuYp/C59z8GmUGJPOAZkFv1IsrjMl3+jdtcM4qixgIzgVdY7L0C2deHq5m2J6ycIKLgAe/+aW9PCvIOXYi+YkhchQ12JqQVRnlHLKb3oNnIlRkJsrZpltMfncI0aMNqYHTGDaPid9v2gbvv4i8zlW6gdN2f7gcNnf391rLb2K0KWmJDfwMxZMzEIYyJe7Lkaf9a5ed1EKpKAdkNCWMT7fDjTSZptAw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yOATbEWG1QXGY5nSw5Gb8Jii+BpgCtO+cwuD95erw/w=;
+ b=VXb4Kn1yEL1bRPj3rUmOL+N65wFdXeFry43YA8Ao3E/rfv/sD+jqtL7Gmi13EU9G6StsGDbkaFLrhYI2hWCCJW5wyCAxH/mSJJGeTJk8zKHRK3jGdOqPFwObp8VuJxCbtp8pA41afBZqoFK6dWiJ9tQgRNTOxI9XU8MGJQTzRNPmJLyiOa+g4mHUxZJvLyR1QO/uWcwj76HqrckiC9LanUmXNlqA9i+P+fp6xwMx7rIcHH+uvXsfE9gGnaQm9OMq3mDiOyjwnjSgHpiKNg+py096GIGUo6B4vlIbiBZAGxZTQ+vBGm6Gmnai4/3jczZp6K7mhrPYc3rgr+ZMU3tvWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yOATbEWG1QXGY5nSw5Gb8Jii+BpgCtO+cwuD95erw/w=;
+ b=QUWgvXzAh3mpoiNzpWn9MnRu9KGYislzkCb7OJ0R0NA4Ng/zokKnT2ShiBWKhYtva+NAl/aBW+mbQb6iTNkInVIqcyVQQTGwnjgTumQl/utv5uHpUONN0SgIXlWB8SWo9CXaCWFw4EJ/K87IouZ0LX9LRKlvZ+U+6K/cjfiwAYc=
+Received: from MWHPR21CA0042.namprd21.prod.outlook.com (2603:10b6:300:129::28)
+ by DM4PR12MB5103.namprd12.prod.outlook.com (2603:10b6:5:392::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.23; Tue, 1 Mar
+ 2022 08:56:59 +0000
+Received: from CO1NAM11FT057.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:129:cafe::ba) by MWHPR21CA0042.outlook.office365.com
+ (2603:10b6:300:129::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.1 via Frontend
+ Transport; Tue, 1 Mar 2022 08:56:59 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT057.mail.protection.outlook.com (10.13.174.205) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5017.22 via Frontend Transport; Tue, 1 Mar 2022 08:56:58 +0000
+Received: from kali.amdval.net (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 1 Mar
+ 2022 02:56:50 -0600
+To: <joro@8bytes.org>, <iommu@lists.linux-foundation.org>
+Subject: [PATCH v2 0/5] iommu/amd: Cleanup and fixes
+Date: Tue, 1 Mar 2022 14:26:21 +0530
+Message-ID: <20220301085626.87680-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-MTK: N
-Cc: devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- chengci.xu@mediatek.com, Will Deacon <will@kernel.org>,
- linux-kernel@vger.kernel.org, libo.kang@mediatek.com,
- yen-chang.chen@mediatek.com, xueqi.zhang@mediatek.com,
- iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- linux-mediatek@lists.infradead.org, yf.wang@mediatek.com,
- Hsin-Yi Wang <hsinyi@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
- anan.sun@mediatek.com, Robin Murphy <robin.murphy@arm.com>,
- mingyuan.ma@mediatek.com, linux-arm-kernel@lists.infradead.org
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ff261f18-1934-4c92-1ba0-08d9fb6171b6
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5103:EE_
+X-Microsoft-Antispam-PRVS: <DM4PR12MB510364AA3A719F451D60210A87029@DM4PR12MB5103.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: P8necD74AKSmapTbP8sHmtQvIwF+uLQ25ROyIxGvpToTdxwhTIp/lMwBxblrwK2hJ7Yp+uCS/2d2JWjWwhW6au1VQ0zgicEYj2Bb0v4ygGvygi1PCbBRy9c2ChVR2nMAlsAhwFQhSY7lXJzUIZPhbe5lRvcWxW3rPikW2u8BVnunyCiZAlARwzMOVNpIMo/GhZkZJpQRUcrtOJi3d/UtacjaI1yla5+Xm6ZVQu8CWFsuJy5LVgYabqlrxXsl+RSTokOm/KCCze4FN7iAUEwi4JaPt07FnZMVjRmjVuKop/lEpe579i714qlZ4VmZNhBiby8986wGfzCt8LBIj2kBL8eKDfyMvA3ljn94z0zaBctLMU7cFaahytDl72Wv/FGV/eIqOQNPtzvvr47u5Srk52+8Y4KqSw0BXUDkHmznL6VO6dQVBlqWCrNhTHwG+W52I1zsoLpOik3xNka1m+6synIEsFLvYW7OfET31bstjormbrYhckHFSP7UKObvZx4SemJOrFUgpBoDSNOSiXOtICIuthY+Chkp9T6sn/i470rtt3+zz9mmxNF7TVgnv/6+rveeuWfTq/ULvLNu+TcBK3zPpeHOMMz15ebFj5ZE/jRyVgyCkLNrfuLYma1RnXBykvGw85rchmYEDvsswHXElSmqNSeb8g3/Cj/xT0DZ4eU+hMSArrDrG53ltI4499EFhnRWkWZm4WDq0GE2hs7SZQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17; CTRY:US; LANG:en; SCL:1; SRV:;
+ IPV:CAL; SFV:NSPM; H:SATLEXMB04.amd.com; PTR:InfoDomainNonexistent; CAT:NONE;
+ SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(5660300002)(2616005)(86362001)(4326008)(336012)(426003)(1076003)(316002)(8936002)(44832011)(82310400004)(70206006)(70586007)(8676002)(2906002)(16526019)(4744005)(26005)(186003)(36756003)(356005)(81166007)(6666004)(508600001)(54906003)(83380400001)(110136005)(36860700001)(40460700003)(47076005)(36900700001);
+ DIR:OUT; SFP:1101; 
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2022 08:56:58.5920 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ff261f18-1934-4c92-1ba0-08d9fb6171b6
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d; Ip=[165.204.84.17];
+ Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT057.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5103
+Cc: Vasant Hegde <vasant.hegde@amd.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,97 +122,35 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Yong Wu <yong.wu@mediatek.com>
+From: Vasant Hegde via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Vasant Hegde <vasant.hegde@amd.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 2022-02-28 at 14:50 +0100, AngeloGioacchino Del Regno wrote:
-> Il 28/02/22 13:34, Joerg Roedel ha scritto:
-> > Hi Yong Wu,
-> > 
-> > On Thu, Feb 17, 2022 at 07:34:19PM +0800, Yong Wu wrote:
-> > > Yong Wu (34):
-> > >    dt-bindings: mediatek: mt8195: Add binding for MM IOMMU
-> > >    dt-bindings: mediatek: mt8195: Add binding for infra IOMMU
-> > >    iommu/mediatek: Fix 2 HW sharing pgtable issue
-> > >    iommu/mediatek: Add list_del in mtk_iommu_remove
-> > >    iommu/mediatek: Remove clk_disable in mtk_iommu_remove
-> > >    iommu/mediatek: Add mutex for m4u_group and m4u_dom in data
-> > >    iommu/mediatek: Add mutex for data in the mtk_iommu_domain
-> > >    iommu/mediatek: Adapt sharing and non-sharing pgtable case
-> > >    iommu/mediatek: Add 12G~16G support for multi domains
-> > >    iommu/mediatek: Add a flag DCM_DISABLE
-> > >    iommu/mediatek: Add a flag NON_STD_AXI
-> > >    iommu/mediatek: Remove the granule in the tlb flush
-> > >    iommu/mediatek: Always enable output PA over 32bits in isr
-> > >    iommu/mediatek: Add SUB_COMMON_3BITS flag
-> > >    iommu/mediatek: Add IOMMU_TYPE flag
-> > >    iommu/mediatek: Contain MM IOMMU flow with the MM TYPE
-> > >    iommu/mediatek: Adjust device link when it is sub-common
-> > >    iommu/mediatek: Allow IOMMU_DOMAIN_UNMANAGED for PCIe VFIO
-> > >    iommu/mediatek: Add a PM_CLK_AO flag for infra iommu
-> > >    iommu/mediatek: Add infra iommu support
-> > >    iommu/mediatek: Add PCIe support
-> > >    iommu/mediatek: Add mt8195 support
-> > >    iommu/mediatek: Only adjust code about register base
-> > >    iommu/mediatek: Just move code position in hw_init
-> > >    iommu/mediatek: Separate mtk_iommu_data for v1 and v2
-> > >    iommu/mediatek: Remove mtk_iommu.h
-> > >    iommu/mediatek-v1: Just rename mtk_iommu to mtk_iommu_v1
-> > >    iommu/mediatek: Add mtk_iommu_bank_data structure
-> > >    iommu/mediatek: Initialise bank HW for each a bank
-> > >    iommu/mediatek: Change the domid to iova_region_id
-> > >    iommu/mediatek: Get the proper bankid for multi banks
-> > >    iommu/mediatek: Initialise/Remove for multi bank dev
-> > >    iommu/mediatek: Backup/restore regsiters for multi banks
-> > >    iommu/mediatek: mt8195: Enable multi banks for infra iommu
-> > 
-> > This doesn't apply cleanly, can you please send a version rebased
-> > to
-> > v5.17-rc4?
+This series contains various cleanup and trivial fixes.
 
-As in the cover letter, this patchset doesn't base on v5.17-rc4, it
-bases on next-20220216 which has contained [1] and Dafna's patchset
-below.
+Changes in v2:
+  - Fixed error log message in patch 1 as suggested by Joerg.
 
-By the way, It still conflicts with the latest next-20220228 which has
-just contained[2].
 
-In this case, How should I do? Send a version base on the latest next?
+Suravee Suthikulpanit (2):
+  iommu/amd: Improve error handling for amd_iommu_init_pci
+  iommu/amd: Improve amd_iommu_v2_exit()
 
-[1] 
-https://lore.kernel.org/linux-iommu/20220117070510.17642-1-yong.wu@mediatek.com/
+Vasant Hegde (3):
+  iommu/amd: Call memunmap in error path
+  iommu/amd: Clean up function declarations
+  iommu/amd: Remove unused struct fault.devid
 
-[2] 
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/log/?h=next-20220228&qt=grep&q=component_compare
+ drivers/iommu/amd/amd_iommu.h |  4 ----
+ drivers/iommu/amd/init.c      | 18 ++++++++++++++----
+ drivers/iommu/amd/iommu_v2.c  | 35 +++++++++++++++++------------------
+ 3 files changed, 31 insertions(+), 26 deletions(-)
 
-Thanks.
-
-> > 
-> > Thanks,
-> > 
-> > 	Joerg
-> 
-> Hello Joerg,
-> 
-> this series depends on the following series:
-> 
-https://patchwork.kernel.org/project/linux-mediatek/list/?series=592275
-> 
-> ...which is also well tested and ready to be merged in.
-> 
-> Applying Yong's series without the mentioned series from Dafna would
-> not work.
-
-Yes. Thanks.
-
-> 
-> 
-> Thanks,
-> Angelo
+-- 
+2.27.0
 
 _______________________________________________
 iommu mailing list
