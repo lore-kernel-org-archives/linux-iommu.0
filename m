@@ -1,61 +1,63 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CD515C433F5
-	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 10:53:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D42C4C433F5
+	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 10:53:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6E779812CC;
-	Tue,  1 Mar 2022 10:53:25 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4531A60B7C;
+	Tue,  1 Mar 2022 10:53:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id USIZd06DIlLW; Tue,  1 Mar 2022 10:53:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id A31E3812C0;
-	Tue,  1 Mar 2022 10:53:23 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6C725C0033;
-	Tue,  1 Mar 2022 10:53:23 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 60D9DC001A
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 10:53:21 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D6F8B60BD4
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 10:53:20 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=infradead.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id h1j8SMKeg8LJ for <iommu@lists.linux-foundation.org>;
- Tue,  1 Mar 2022 10:53:18 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bXfC4ThHiFMC; Tue,  1 Mar 2022 10:53:24 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 2A5BC60E88;
+	Tue,  1 Mar 2022 10:53:24 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B1D36C007C;
+	Tue,  1 Mar 2022 10:53:23 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2A646C001A
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 10:53:22 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0B11040382
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 10:53:22 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id H8zVozQtWEBP for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Mar 2022 10:53:21 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [IPv6:2607:7c80:54:e::133])
- by smtp3.osuosl.org (Postfix) with ESMTPS id DC0F360784
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 10:53:18 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 7BF574035E
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 10:53:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
- MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
- Content-ID:Content-Description:In-Reply-To:References;
- bh=FLoPcwp8W110QTyBUFSAYe56vwqhsB+0w1jgowBLDrQ=; b=x4Ls4LGXlw3mqit2JgZ989HyZb
- T5qpKmQGteCGW5NyuTbuloRJzt7HhHDSWBkn6XMthvcPktTNRGiMhEjm3jNCxNFXallKVQH7jYfkV
- yMP1NQbMBXexGqNGRQAxlptnMjCU6iBaEsSYx496tSDH97RR6D0tylDgXaeXfMovaKcRHhD1mlnuz
- OQ2BdFcAyA097bBGDwCVXhJV6sp+r3vCa43JaFB+f/7FaiduK6PaxwT2gDQredky9tC0CHGWz/iGt
- MF2HppH9e3IKlAYjXSzy/Ts9RTiST6h6Fjh5rDDovAP92KH/7Uv2VhH/n7QVymPp/mWYAgqqJl+PH
- rhUuKZnQ==;
+ MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+ :Reply-To:Content-Type:Content-ID:Content-Description;
+ bh=fpYq2gch6ejmPkcFKPjSyDr7OAs4OQSLe0uyAoUEPa0=; b=fPAUDOwUGnyXtx+hZA5zj2Ej4o
+ HV9I6mYI0fayhovoE3oLXfq8qlMel6pFXXEc1mFWZvLXjhqfrbEyGhTBlOaKUDjaA5CMiNeYGJSlR
+ GdeXeohIETuTXXnuIlqxqGPh/VMWo8hZjPyELE8feSOsKIkrkw8+qaC6yMhYVu17XpDc82M+q7Bjt
+ P632yeVc6VELpePyjZp8VgOAEAH7yaxooKuzgDiHjXqCwex8uGIgNuXO8DeKOfVen/Dat6rNPrxN6
+ ijjP0c7VtoQrVKhle4tTPRFAXwLIjwChLUwuVEdyRedzAx7rh05DpVyMdlXZjiKBQ/Hagn5ofY1Vr
+ BAWrqPTg==;
 Received: from [2.53.44.23] (helo=localhost)
  by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
- id 1nP083-00GCvx-8y; Tue, 01 Mar 2022 10:53:16 +0000
+ id 1nP086-00GCwl-PS; Tue, 01 Mar 2022 10:53:19 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux-foundation.org
-Subject: cleanup swiotlb initialization v4
-Date: Tue,  1 Mar 2022 12:52:59 +0200
-Message-Id: <20220301105311.885699-1-hch@lst.de>
+Subject: [PATCH 01/12] dma-direct: use is_swiotlb_active in dma_direct_map_page
+Date: Tue,  1 Mar 2022 12:53:00 +0200
+Message-Id: <20220301105311.885699-2-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220301105311.885699-1-hch@lst.de>
+References: <20220301105311.885699-1-hch@lst.de>
 MIME-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
  bombadil.infradead.org. See http://www.infradead.org/rpr.html
@@ -87,35 +89,31 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi all,
+Use the more specific is_swiotlb_active check instead of checking the
+global swiotlb_force variable.
 
-this series tries to clean up the swiotlb initialization, including
-that of swiotlb-xen.  To get there is also removes the x86 iommu table
-infrastructure that massively obsfucates the initialization path.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+ kernel/dma/direct.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Git tree:
+diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
+index 4632b0f4f72eb..4dc16e08c7e1a 100644
+--- a/kernel/dma/direct.h
++++ b/kernel/dma/direct.h
+@@ -91,7 +91,7 @@ static inline dma_addr_t dma_direct_map_page(struct device *dev,
+ 		return swiotlb_map(dev, phys, size, dir, attrs);
+ 
+ 	if (unlikely(!dma_capable(dev, dma_addr, size, true))) {
+-		if (swiotlb_force != SWIOTLB_NO_FORCE)
++		if (is_swiotlb_active(dev))
+ 			return swiotlb_map(dev, phys, size, dir, attrs);
+ 
+ 		dev_WARN_ONCE(dev, 1,
+-- 
+2.30.2
 
-    git://git.infradead.org/users/hch/misc.git swiotlb-init-cleanup
-
-Gitweb:
-
-    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/swiotlb-init-cleanup
-
-Changes since v3:
- - fix a compilation issue on some powerpc configfs
- - fix and cleanup how forced bounce buffering is enabled for
-   guest memory encryption
-
-Changes since v2:
- - make ppc_swiotlb_flags actually work again
- - also force enable swiotlb for guest encrypted memory to cater
-   to hyperv which doesn't set the host encrypted memory flag
-
-Changes since v1:
- - skip IOMMU initialization on Xen PV kernels
- - various small whitespace / typo fixes
-
-Diffstat:
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
