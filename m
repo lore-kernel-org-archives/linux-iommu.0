@@ -1,65 +1,65 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 50BBAC4167B
-	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 16:15:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 804F8C4321E
+	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 16:15:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 42EC060EA4;
-	Tue,  1 Mar 2022 16:15:49 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 351204046D;
+	Tue,  1 Mar 2022 16:15:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IAQDnG7e5mUQ; Tue,  1 Mar 2022 16:15:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 6566A60EB2;
-	Tue,  1 Mar 2022 16:15:47 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E8442C0081;
-	Tue,  1 Mar 2022 16:15:45 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7576EC001A
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 16:15:44 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 63AA240116
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 16:15:44 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kapsi.fi
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IJuHNpY_7HIU for <iommu@lists.linux-foundation.org>;
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id GvBnI8HTYIdm; Tue,  1 Mar 2022 16:15:50 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A00104051B;
+	Tue,  1 Mar 2022 16:15:49 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 78C86C0033;
+	Tue,  1 Mar 2022 16:15:49 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5F35CC0033
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 16:15:45 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 58495414CE
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 16:15:43 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kapsi.fi
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id zhCbPQ1jiXpP for <iommu@lists.linux-foundation.org>;
  Tue,  1 Mar 2022 16:15:42 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 0720540370
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 16:15:41 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9B6E741508
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 16:15:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
  s=20161220; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
  Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=6sRdRmuArPB9M+DZhEXPrB8b5Pq6lEbN63VVfh3955E=; b=hghlNdvKgM7ALxY2nJrCubp8BI
- XPNh06HpEJya/ZJJK4ZhiiqygiGORv5OIM5sLeb8wEZlMUUJtmoP17eV3WW2ZFqPn3kA8+WBKzz4M
- +koy7DKYiq6WlfWT6zMJ4t3h1dM2M0rzlLpJLd7iskKEw8P5rAWyAfLR9IlcMRr3fgFN4FtybcHkh
- P0I3h3d6kY4YKr8iITrY9D+DcfXwmgH0/Wh31pJV3MBG8CqxDosDy08yB1nC7ZZY4UXxdW3gUGZDe
- pnDBPIFHftenPECJFbOVvgcpe2HeLj92e06W7eqWthuyaQAcxZ/yETzOOj0ovGMaYtnU2HEB/iANK
- 7BhbbcNw==;
+ bh=ha+4JdGR01aPCEcI+dlbBNP+Ioox1ADjVil79AF8qOA=; b=zeM6jd67B0+PzUFDZuFDCJDo+G
+ Cg49AY8Id9mWUKWuqyAngYieIIp2FboCKYyppzOjnPihz278hPHJ++lE0DKlex2EPwUF1Zajlu/ms
+ XBnEf43ICpeygIBhdTORDydoKEvyc91k1FdEEFWGOMeAssgJ8kFLtFofH7c518Gn/ZM0jFxYmh6ve
+ unMAh7ZazXwuLev2KfH6v7kJwULXm1INE+4D4MxGiBgAPbf2zkugUdZlPo/wsskF9jfVWTb0pG7Qe
+ Wdf4mpQAfg9wiLSG0zFZLk/jLJGGvltwjGZGQsk5isv6+58C0dpNbKy+quBkaEmrwC45CWUgEf++6
+ IHH9vmfg==;
 Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70]
  helo=toshino.localdomain)
  by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
  (Exim 4.89) (envelope-from <cyndis@kapsi.fi>)
- id 1nP59q-0003Z8-LR; Tue, 01 Mar 2022 18:15:26 +0200
+ id 1nP59r-0003Z8-Bb; Tue, 01 Mar 2022 18:15:27 +0200
 From: cyndis@kapsi.fi
 To: thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
  will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
  krzysztof.kozlowski@canonical.com
-Subject: [PATCH v4 2/9] gpu: host1x: Add context bus
-Date: Tue,  1 Mar 2022 18:14:48 +0200
-Message-Id: <20220301161455.4037062-3-cyndis@kapsi.fi>
+Subject: [PATCH v4 9/9] drm/tegra: vic: Implement get_streamid_offset
+Date: Tue,  1 Mar 2022 18:14:55 +0200
+Message-Id: <20220301161455.4037062-10-cyndis@kapsi.fi>
 X-Mailer: git-send-email 2.35.0
 In-Reply-To: <20220301161455.4037062-1-cyndis@kapsi.fi>
 References: <20220301161455.4037062-1-cyndis@kapsi.fi>
@@ -90,125 +90,149 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Mikko Perttunen <mperttunen@nvidia.com>
 
-The context bus is a "dummy" bus that contains struct devices that
-correspond to IOMMU contexts assigned through Host1x to processes.
-
-Even when host1x itself is built as a module, the bus is registered
-in built-in code so that the built-in ARM SMMU driver is able to
-reference it.
+Implement the get_streamid_offset required for supporting context
+isolation. Since old firmware cannot support context isolation
+without hacks that we don't want to implement, check the firmware
+binary to see if context isolation should be enabled.
 
 Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
 ---
 v4:
-* Export bus as GPL
+* Add locking in vic_load_firmware
+* Return -EOPNOTSUPP if context isolation is not available
+* Update for changed get_streamid_offset declaration
+* Add comment noting that vic_load_firmware is safe to call
+  without the hardware being powered on
 ---
- drivers/gpu/Makefile               |  3 +--
- drivers/gpu/host1x/Kconfig         |  5 +++++
- drivers/gpu/host1x/Makefile        |  1 +
- drivers/gpu/host1x/context_bus.c   | 31 ++++++++++++++++++++++++++++++
- include/linux/host1x_context_bus.h | 15 +++++++++++++++
- 5 files changed, 53 insertions(+), 2 deletions(-)
- create mode 100644 drivers/gpu/host1x/context_bus.c
- create mode 100644 include/linux/host1x_context_bus.h
+ drivers/gpu/drm/tegra/vic.c | 68 ++++++++++++++++++++++++++++++++-----
+ 1 file changed, 60 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/Makefile b/drivers/gpu/Makefile
-index 835c88318cec..8997f0096545 100644
---- a/drivers/gpu/Makefile
-+++ b/drivers/gpu/Makefile
-@@ -2,7 +2,6 @@
- # drm/tegra depends on host1x, so if both drivers are built-in care must be
- # taken to initialize them in the correct order. Link order is the only way
- # to ensure this currently.
--obj-$(CONFIG_TEGRA_HOST1X)	+= host1x/
--obj-y			+= drm/ vga/
-+obj-y			+= host1x/ drm/ vga/
- obj-$(CONFIG_IMX_IPUV3_CORE)	+= ipu-v3/
- obj-$(CONFIG_TRACE_GPU_MEM)		+= trace/
-diff --git a/drivers/gpu/host1x/Kconfig b/drivers/gpu/host1x/Kconfig
-index 6815b4db17c1..1861a8180d3f 100644
---- a/drivers/gpu/host1x/Kconfig
-+++ b/drivers/gpu/host1x/Kconfig
-@@ -1,8 +1,13 @@
- # SPDX-License-Identifier: GPL-2.0-only
-+
-+config TEGRA_HOST1X_CONTEXT_BUS
-+	bool
-+
- config TEGRA_HOST1X
- 	tristate "NVIDIA Tegra host1x driver"
- 	depends on ARCH_TEGRA || (ARM && COMPILE_TEST)
- 	select DMA_SHARED_BUFFER
-+	select TEGRA_HOST1X_CONTEXT_BUS
- 	select IOMMU_IOVA
- 	help
- 	  Driver for the NVIDIA Tegra host1x hardware.
-diff --git a/drivers/gpu/host1x/Makefile b/drivers/gpu/host1x/Makefile
-index d2b6f7de0498..c891a3e33844 100644
---- a/drivers/gpu/host1x/Makefile
-+++ b/drivers/gpu/host1x/Makefile
-@@ -18,3 +18,4 @@ host1x-y = \
- 	hw/host1x07.o
+diff --git a/drivers/gpu/drm/tegra/vic.c b/drivers/gpu/drm/tegra/vic.c
+index 1e342fa3d27b..61eb0407de2a 100644
+--- a/drivers/gpu/drm/tegra/vic.c
++++ b/drivers/gpu/drm/tegra/vic.c
+@@ -38,6 +38,8 @@ struct vic {
+ 	struct clk *clk;
+ 	struct reset_control *rst;
  
- obj-$(CONFIG_TEGRA_HOST1X) += host1x.o
-+obj-$(CONFIG_TEGRA_HOST1X_CONTEXT_BUS) += context_bus.o
-diff --git a/drivers/gpu/host1x/context_bus.c b/drivers/gpu/host1x/context_bus.c
-new file mode 100644
-index 000000000000..b0d35b2bbe89
---- /dev/null
-+++ b/drivers/gpu/host1x/context_bus.c
-@@ -0,0 +1,31 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (c) 2021, NVIDIA Corporation.
-+ */
++	bool can_use_context;
 +
-+#include <linux/device.h>
-+#include <linux/of.h>
+ 	/* Platform configuration */
+ 	const struct vic_config *config;
+ };
+@@ -229,28 +231,38 @@ static int vic_load_firmware(struct vic *vic)
+ {
+ 	struct host1x_client *client = &vic->client.base;
+ 	struct tegra_drm *tegra = vic->client.drm;
++	static DEFINE_MUTEX(lock);
++	u32 fce_bin_data_offset;
+ 	dma_addr_t iova;
+ 	size_t size;
+ 	void *virt;
+ 	int err;
+ 
+-	if (vic->falcon.firmware.virt)
+-		return 0;
++	mutex_lock(&lock);
 +
-+struct bus_type host1x_context_device_bus_type = {
-+	.name = "host1x-context",
-+};
-+EXPORT_SYMBOL_GPL(host1x_context_device_bus_type);
++	if (vic->falcon.firmware.virt) {
++		err = 0;
++		goto unlock;
++	}
+ 
+ 	err = falcon_read_firmware(&vic->falcon, vic->config->firmware);
+ 	if (err < 0)
+-		return err;
++		goto unlock;
+ 
+ 	size = vic->falcon.firmware.size;
+ 
+ 	if (!client->group) {
+ 		virt = dma_alloc_coherent(vic->dev, size, &iova, GFP_KERNEL);
+-		if (!virt)
+-			return -ENOMEM;
++		if (!virt) {
++			err = -ENOMEM;
++			goto unlock;
++		}
+ 	} else {
+ 		virt = tegra_drm_alloc(tegra, size, &iova);
+-		if (IS_ERR(virt))
+-			return PTR_ERR(virt);
++		if (IS_ERR(virt)) {
++			err = PTR_ERR(virt);
++			goto unlock;
++		}
+ 	}
+ 
+ 	vic->falcon.firmware.virt = virt;
+@@ -277,7 +289,28 @@ static int vic_load_firmware(struct vic *vic)
+ 		vic->falcon.firmware.phys = phys;
+ 	}
+ 
+-	return 0;
++	/*
++	 * Check if firmware is new enough to not require mapping firmware
++	 * to data buffer domains.
++	 */
++	fce_bin_data_offset = *(u32 *)(virt + VIC_UCODE_FCE_DATA_OFFSET);
 +
-+static int __init host1x_context_device_bus_init(void)
-+{
-+	int err;
-+
-+	if (!of_machine_is_compatible("nvidia,tegra186") &&
-+	    !of_machine_is_compatible("nvidia,tegra194") &&
-+	    !of_machine_is_compatible("nvidia,tegra234"))
-+		return 0;
-+
-+	err = bus_register(&host1x_context_device_bus_type);
-+	if (err < 0) {
-+		pr_err("bus type registration failed: %d\n", err);
-+		return err;
++	if (!vic->config->supports_sid) {
++		vic->can_use_context = false;
++	} else if (fce_bin_data_offset != 0x0 && fce_bin_data_offset != 0xa5a5a5a5) {
++		/*
++		 * Firmware will access FCE through STREAMID0, so context
++		 * isolation cannot be used.
++		 */
++		vic->can_use_context = false;
++		dev_warn_once(vic->dev, "context isolation disabled due to old firmware\n");
++	} else {
++		vic->can_use_context = true;
 +	}
 +
++unlock:
++	mutex_unlock(&lock);
++	return err;
+ 
+ cleanup:
+ 	if (!client->group)
+@@ -285,6 +318,7 @@ static int vic_load_firmware(struct vic *vic)
+ 	else
+ 		tegra_drm_free(tegra, size, virt, iova);
+ 
++	mutex_unlock(&lock);
+ 	return err;
+ }
+ 
+@@ -358,10 +392,28 @@ static void vic_close_channel(struct tegra_drm_context *context)
+ 	host1x_channel_put(context->channel);
+ }
+ 
++static int vic_get_streamid_offset(struct tegra_drm_client *client, u32 *offset)
++{
++	struct vic *vic = to_vic(client);
++	int err;
++
++	/* This doesn't access HW so it's safe to call without powering up. */
++	err = vic_load_firmware(vic);
++	if (err < 0)
++		return err;
++
++	if (!vic->can_use_context)
++		return -EOPNOTSUPP;
++
++	*offset = 0x30;
 +	return 0;
 +}
-+postcore_initcall(host1x_context_device_bus_init);
-diff --git a/include/linux/host1x_context_bus.h b/include/linux/host1x_context_bus.h
-new file mode 100644
-index 000000000000..72462737a6db
---- /dev/null
-+++ b/include/linux/host1x_context_bus.h
-@@ -0,0 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+/*
-+ * Copyright (c) 2021, NVIDIA Corporation. All rights reserved.
-+ */
 +
-+#ifndef __LINUX_HOST1X_CONTEXT_BUS_H
-+#define __LINUX_HOST1X_CONTEXT_BUS_H
-+
-+#include <linux/device.h>
-+
-+#ifdef CONFIG_TEGRA_HOST1X_CONTEXT_BUS
-+extern struct bus_type host1x_context_device_bus_type;
-+#endif
-+
-+#endif
+ static const struct tegra_drm_client_ops vic_ops = {
+ 	.open_channel = vic_open_channel,
+ 	.close_channel = vic_close_channel,
+ 	.submit = tegra_drm_submit,
++	.get_streamid_offset = vic_get_streamid_offset,
+ };
+ 
+ #define NVIDIA_TEGRA_124_VIC_FIRMWARE "nvidia/tegra124/vic03_ucode.bin"
 -- 
 2.35.0
 
