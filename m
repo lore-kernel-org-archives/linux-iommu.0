@@ -1,67 +1,67 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3C676C433FE
-	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 20:14:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 43D95C433F5
+	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 20:16:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id B793060DCB;
-	Tue,  1 Mar 2022 20:14:07 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id E5946410DC;
+	Tue,  1 Mar 2022 20:16:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ju6KiLMXeuhg; Tue,  1 Mar 2022 20:14:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 3344360A79;
-	Tue,  1 Mar 2022 20:14:06 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0FD9BC0082;
-	Tue,  1 Mar 2022 20:14:06 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EC1A7C000B
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 20:14:04 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id E1FB5409A0
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 20:14:04 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id aGbc2nlzW88N for <iommu@lists.linux-foundation.org>;
- Tue,  1 Mar 2022 20:14:04 +0000 (UTC)
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JLGCnTye6LvA; Tue,  1 Mar 2022 20:16:49 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id AC0FF409A7;
+	Tue,  1 Mar 2022 20:16:48 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7DA4FC0082;
+	Tue,  1 Mar 2022 20:16:48 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 55880C000B
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 20:16:47 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 34F204051B
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 20:16:47 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id dGfRZqMCAgWp for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Mar 2022 20:16:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 131664098E
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 20:14:03 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 331B7400EF
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 20:16:46 +0000 (UTC)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id 9CE7E6153D;
- Tue,  1 Mar 2022 20:14:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B9D5C340F2;
- Tue,  1 Mar 2022 20:13:56 +0000 (UTC)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id 4F2F961660;
+ Tue,  1 Mar 2022 20:16:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4C46C340EE;
+ Tue,  1 Mar 2022 20:16:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1646165640;
- bh=p41vAUTEwrbRH9Ku4EH0h2EV1Rk8kpZdtERxY0TL2yg=;
+ s=k20201202; t=1646165804;
+ bh=s5v3aJ4Hatm+c5hU9aGN5lqd1epV2EFt5fKUeQ2bViM=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=NKjSSlJTHTDuL4u2v3GWRa+ZqEHAMbCfzXHiftI7XvFzS1HXGI75+UCfo1FWERTPV
- IbJZR4QMdL/KS/1P7HuFUJoZkhmUeaytDyKcKgrKiT10+MEcwv/GCt/DpvHQy3FuKP
- X/lBfDSlDIeOVrEm7PH+2ATYsx1F5uE2XgiZAh3GxiLkbEJ5p4+uWwms0Uaiv62+sz
- dB5V/7QW1Dap3HVllRxaeHWkDEYOW4kQuZjFuXWzY3wtxMEQ3mATYcmT7mOR/GQsCt
- c30ZfA2rFGuJzubdKSbGZQHubQi51vviJFUlD9GzjGlY1QcHc0+MnaIUPeCK27TkSS
- QB+fGZl/4Dzmw==
+ b=f8L55RLwv2lVHQjW50iDaUDGKNnGVjVupe88rjQv8xIDAmfu0iRIzm6En2DIUFgXw
+ BLqybHT9CpxMwdgzRu9me9QYZtwsZ+U9Y4YjjGy3kuDk3DTHEJJO4xNbqyc74LDjGY
+ 3dZuCB1re1zfB4TpS8NdzHi8uwx8hrSV+5tSVdOztKqFFoy01Z3iFm4NZivUsk1d5a
+ oeybn2pe/1Cr05FIRnCIkuDs0FHDBzxSvfTDJ+ZpyIV/TKGPxhNvdJpu9n4PyUBWga
+ Yw+llytXCa/9LRd4EbHxTkIiXM9MCrH5ASeaxE950hYJTbRe5jMabo4d/xm89jWslp
+ fXepy/OWHbFZw==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 02/28] swiotlb: fix info leak with DMA_FROM_DEVICE
-Date: Tue,  1 Mar 2022 15:13:07 -0500
-Message-Id: <20220301201344.18191-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 02/23] swiotlb: fix info leak with DMA_FROM_DEVICE
+Date: Tue,  1 Mar 2022 15:16:01 -0500
+Message-Id: <20220301201629.18547-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220301201344.18191-1-sashal@kernel.org>
-References: <20220301201344.18191-1-sashal@kernel.org>
+In-Reply-To: <20220301201629.18547-1-sashal@kernel.org>
+References: <20220301201629.18547-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -175,10 +175,10 @@ index dca2b1355bb13..6150d11a607e1 100644
   * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
   * be given to a device to use as a DMA source or target.  It is specific to a
 diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 8e840fbbed7c7..d958b1201092c 100644
+index 87c40517e8227..aca0690550e2f 100644
 --- a/kernel/dma/swiotlb.c
 +++ b/kernel/dma/swiotlb.c
-@@ -582,7 +582,8 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+@@ -579,7 +579,8 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
  		mem->slots[index + i].orig_addr = slot_addr(orig_addr, i);
  	tlb_addr = slot_addr(mem->start, index) + offset;
  	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
