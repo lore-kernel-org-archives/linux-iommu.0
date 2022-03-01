@@ -1,87 +1,74 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1905FC433EF
-	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 06:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CED5EC433F5
+	for <iommu@archiver.kernel.org>; Tue,  1 Mar 2022 07:49:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A3042410BC;
-	Tue,  1 Mar 2022 06:33:43 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 59751814B5;
+	Tue,  1 Mar 2022 07:49:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fOm_mdu4UzUF; Tue,  1 Mar 2022 06:33:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 75FF24059D;
-	Tue,  1 Mar 2022 06:33:42 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fRBI3B1yOntr; Tue,  1 Mar 2022 07:49:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 3B17182419;
+	Tue,  1 Mar 2022 07:49:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 43A08C0077;
-	Tue,  1 Mar 2022 06:33:42 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2BD16C001A
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 06:33:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E6E7C0033;
+	Tue,  1 Mar 2022 07:49:33 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 76CF3C001A
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 07:49:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 00C5840620
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 06:33:41 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 6548560B26
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 07:49:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NkE8tPxa2xVT for <iommu@lists.linux-foundation.org>;
- Tue,  1 Mar 2022 06:33:40 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com
- [IPv6:2607:f8b0:4864:20::1029])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 37E7D4061F
- for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 06:33:40 +0000 (UTC)
-Received: by mail-pj1-x1029.google.com with SMTP id v4so13256015pjh.2
- for <iommu@lists.linux-foundation.org>; Mon, 28 Feb 2022 22:33:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=3mPo8lvO91fSVL2zNMVudPsfj5UeWu8/OYFDNcv6JjI=;
- b=EyPMwTGdSNloKDGKnCt8Rx2I35rLxgk25XazRMqOUdZAnlqtNAaW0nMyonJiVrtKmE
- yP3lz59YCiJ8K1jROjN7oh95FFAscuHexJXRDsuSXRCPYUJO3PqAPkirtQx94qiQsqnY
- PaSrbE1Ef+S/4DJ8DYi++i3W3+G5mD8JjK3gW/DaFx6VaepqdN9IPFSzmUj+XFZyV8Ce
- YbG8WLEop0vY5p68XEc5rcCMF4toOedFJ73D2Cn0B8b2JIFOfd8lg7cG8YPaUlVPx5c+
- Y9JrVKc4EytbyKW4xRpAOMB8NtJLaRlTWVnGoPY8k+jx9p6eCQyaJynwOg+jehwCnycx
- yhog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references;
- bh=3mPo8lvO91fSVL2zNMVudPsfj5UeWu8/OYFDNcv6JjI=;
- b=DQa2+hRFN5sbbzft4j2etVkA9uBkjfeRnp/GASWNSbu2w04EvtyvKHrYQ8139gAS+Q
- tbJny6Rh2nzDjFaPFEpYINqeFduXf+WQqW1/O9arROfhlVKveT2wq1Y9ZHzUvGBRDsAf
- +xJjyrZ9E0RHqTjsAi+NUO7QMqOjAux1X6542E6QsSUFfTD+U9I1t9JVHAva3LLWxnKN
- WD9WnxHTgjRNi40zC3XVVe7m5r0MZ2X5z2MLqGXg3AuyXM0UmCWQSTspQ6SDavXGZrA2
- lO+L/zoAcrEM6nWLPv7EyKcvD+59yihqCqfFJ0cmzdBd7kaZwKEWFSuqkMZ5kZXo181V
- ne2A==
-X-Gm-Message-State: AOAM530bizywFIf+LAbnlcmRpoBjXrFsp/ECcv8j7QjjngwfjgMkug4Z
- aOMfJ3ZMNLC2b95GIBjz7RA=
-X-Google-Smtp-Source: ABdhPJxdw4f+rvERiG34ZF0VdlqFmBtf/joQpRNDllZHRbpWuzAwzWwF9v2uTYwiaAQTf/T2yM4txg==
-X-Received: by 2002:a17:902:b58d:b0:14d:3d38:2690 with SMTP id
- a13-20020a170902b58d00b0014d3d382690mr23671504pls.78.1646116419615; 
- Mon, 28 Feb 2022 22:33:39 -0800 (PST)
-Received: from localhost.localdomain ([159.226.95.43])
- by smtp.googlemail.com with ESMTPSA id
- s17-20020a17090a441100b001bc1b59fe1asm1087916pjg.38.2022.02.28.22.33.37
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 28 Feb 2022 22:33:39 -0800 (PST)
-From: Miaoqian Lin <linmq006@gmail.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Suman Anna <s-anna@ti.com>, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iommu/omap: Fix missing put_device() call in
- omap_iommu_probe_device
-Date: Tue,  1 Mar 2022 06:33:25 +0000
-Message-Id: <20220301063326.18120-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <de3a3e1c-6c51-e951-cc7f-9ce2ccb3f283@ti.com>
-References: <de3a3e1c-6c51-e951-cc7f-9ce2ccb3f283@ti.com>
-Cc: linmq006@gmail.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id dxnHtapbkY-u for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Mar 2022 07:49:27 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 5C25A606F5
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Mar 2022 07:49:27 +0000 (UTC)
+X-UUID: 5ddf81f3816d4d73888bb7d609c8aac6-20220301
+X-UUID: 5ddf81f3816d4d73888bb7d609c8aac6-20220301
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
+ mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+ with ESMTP id 555010733; Tue, 01 Mar 2022 15:49:21 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
+ Tue, 1 Mar 2022 15:49:20 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 1 Mar 2022 15:49:18 +0800
+Message-ID: <5ed9278fa0b72b993512cff2316218ab88cafe50.camel@mediatek.com>
+Subject: Re: [PATCH v5 00/34] MT8195 IOMMU SUPPORT
+To: Joerg Roedel <joro@8bytes.org>, AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>
+Date: Tue, 1 Mar 2022 15:49:18 +0800
+In-Reply-To: <7ba0ee87-c193-9834-d0b4-ff3e06ced82b@collabora.com>
+References: <20220217113453.13658-1-yong.wu@mediatek.com>
+ <YhzBSsn/zUlGg5JE@8bytes.org>
+ <7ba0ee87-c193-9834-d0b4-ff3e06ced82b@collabora.com>
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+X-MTK: N
+Cc: devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ chengci.xu@mediatek.com, Will Deacon <will@kernel.org>,
+ linux-kernel@vger.kernel.org, libo.kang@mediatek.com,
+ yen-chang.chen@mediatek.com, xueqi.zhang@mediatek.com,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ linux-mediatek@lists.infradead.org, yf.wang@mediatek.com,
+ Hsin-Yi Wang <hsinyi@chromium.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ anan.sun@mediatek.com, Robin Murphy <robin.murphy@arm.com>,
+ mingyuan.ma@mediatek.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,49 +81,97 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
+From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Yong Wu <yong.wu@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore.
-Add the corresponding 'put_device()' in the error handling path and
-the regular path.
+On Mon, 2022-02-28 at 14:50 +0100, AngeloGioacchino Del Regno wrote:
+> Il 28/02/22 13:34, Joerg Roedel ha scritto:
+> > Hi Yong Wu,
+> > 
+> > On Thu, Feb 17, 2022 at 07:34:19PM +0800, Yong Wu wrote:
+> > > Yong Wu (34):
+> > >    dt-bindings: mediatek: mt8195: Add binding for MM IOMMU
+> > >    dt-bindings: mediatek: mt8195: Add binding for infra IOMMU
+> > >    iommu/mediatek: Fix 2 HW sharing pgtable issue
+> > >    iommu/mediatek: Add list_del in mtk_iommu_remove
+> > >    iommu/mediatek: Remove clk_disable in mtk_iommu_remove
+> > >    iommu/mediatek: Add mutex for m4u_group and m4u_dom in data
+> > >    iommu/mediatek: Add mutex for data in the mtk_iommu_domain
+> > >    iommu/mediatek: Adapt sharing and non-sharing pgtable case
+> > >    iommu/mediatek: Add 12G~16G support for multi domains
+> > >    iommu/mediatek: Add a flag DCM_DISABLE
+> > >    iommu/mediatek: Add a flag NON_STD_AXI
+> > >    iommu/mediatek: Remove the granule in the tlb flush
+> > >    iommu/mediatek: Always enable output PA over 32bits in isr
+> > >    iommu/mediatek: Add SUB_COMMON_3BITS flag
+> > >    iommu/mediatek: Add IOMMU_TYPE flag
+> > >    iommu/mediatek: Contain MM IOMMU flow with the MM TYPE
+> > >    iommu/mediatek: Adjust device link when it is sub-common
+> > >    iommu/mediatek: Allow IOMMU_DOMAIN_UNMANAGED for PCIe VFIO
+> > >    iommu/mediatek: Add a PM_CLK_AO flag for infra iommu
+> > >    iommu/mediatek: Add infra iommu support
+> > >    iommu/mediatek: Add PCIe support
+> > >    iommu/mediatek: Add mt8195 support
+> > >    iommu/mediatek: Only adjust code about register base
+> > >    iommu/mediatek: Just move code position in hw_init
+> > >    iommu/mediatek: Separate mtk_iommu_data for v1 and v2
+> > >    iommu/mediatek: Remove mtk_iommu.h
+> > >    iommu/mediatek-v1: Just rename mtk_iommu to mtk_iommu_v1
+> > >    iommu/mediatek: Add mtk_iommu_bank_data structure
+> > >    iommu/mediatek: Initialise bank HW for each a bank
+> > >    iommu/mediatek: Change the domid to iova_region_id
+> > >    iommu/mediatek: Get the proper bankid for multi banks
+> > >    iommu/mediatek: Initialise/Remove for multi bank dev
+> > >    iommu/mediatek: Backup/restore regsiters for multi banks
+> > >    iommu/mediatek: mt8195: Enable multi banks for infra iommu
+> > 
+> > This doesn't apply cleanly, can you please send a version rebased
+> > to
+> > v5.17-rc4?
 
-Fixes: ede1c2e7d4dc ("iommu/omap: Store iommu_dev pointer in arch_data")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
-changes in v2:
-- move put_device() before of_node_put().
-- add put_device() in the regular path.
----
- drivers/iommu/omap-iommu.c | 2 ++
- 1 file changed, 2 insertions(+)
+As in the cover letter, this patchset doesn't base on v5.17-rc4, it
+bases on next-20220216 which has contained [1] and Dafna's patchset
+below.
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 91749654fd49..2222b30a0a00 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1683,6 +1683,7 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
- 
- 		oiommu = platform_get_drvdata(pdev);
- 		if (!oiommu) {
-+			put_device(&pdev->dev);
- 			of_node_put(np);
- 			kfree(arch_data);
- 			return ERR_PTR(-EINVAL);
-@@ -1691,6 +1692,7 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
- 		tmp->iommu_dev = oiommu;
- 		tmp->dev = &pdev->dev;
- 
-+		put_device(&pdev->dev);
- 		of_node_put(np);
- 	}
- 
--- 
-2.17.1
+By the way, It still conflicts with the latest next-20220228 which has
+just contained[2].
+
+In this case, How should I do? Send a version base on the latest next?
+
+[1] 
+https://lore.kernel.org/linux-iommu/20220117070510.17642-1-yong.wu@mediatek.com/
+
+[2] 
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/log/?h=next-20220228&qt=grep&q=component_compare
+
+Thanks.
+
+> > 
+> > Thanks,
+> > 
+> > 	Joerg
+> 
+> Hello Joerg,
+> 
+> this series depends on the following series:
+> 
+https://patchwork.kernel.org/project/linux-mediatek/list/?series=592275
+> 
+> ...which is also well tested and ready to be merged in.
+> 
+> Applying Yong's series without the mentioned series from Dafna would
+> not work.
+
+Yes. Thanks.
+
+> 
+> 
+> Thanks,
+> Angelo
 
 _______________________________________________
 iommu mailing list
