@@ -1,67 +1,54 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8FF14C43219
-	for <iommu@archiver.kernel.org>; Thu,  3 Mar 2022 10:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5778FC433F5
+	for <iommu@archiver.kernel.org>; Thu,  3 Mar 2022 11:02:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 305DB408FF;
-	Thu,  3 Mar 2022 10:59:40 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 034DA415F3;
+	Thu,  3 Mar 2022 11:02:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1T8OCTeTKlcD; Thu,  3 Mar 2022 10:59:39 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Qz2rdDdAY_DK; Thu,  3 Mar 2022 11:02:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id EC9C5400D7;
-	Thu,  3 Mar 2022 10:59:38 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id EF7B0415EE;
+	Thu,  3 Mar 2022 11:02:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BFFE6C0082;
-	Thu,  3 Mar 2022 10:59:38 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 774E0C000B
- for <iommu@lists.linux-foundation.org>; Thu,  3 Mar 2022 10:59:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BA2CEC0082;
+	Thu,  3 Mar 2022 11:02:22 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 452FAC000B
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Mar 2022 11:02:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 5746382883
- for <iommu@lists.linux-foundation.org>; Thu,  3 Mar 2022 10:59:37 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2BB8C415F0
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Mar 2022 11:02:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Eum7S6JkyXft for <iommu@lists.linux-foundation.org>;
- Thu,  3 Mar 2022 10:59:37 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id iN38yZv-pgis for <iommu@lists.linux-foundation.org>;
+ Thu,  3 Mar 2022 11:02:20 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp1.osuosl.org (Postfix) with ESMTPS id C915F827C6
- for <iommu@lists.linux-foundation.org>; Thu,  3 Mar 2022 10:59:36 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id A3FA7415EE
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Mar 2022 11:02:20 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
- id DB58D68AFE; Thu,  3 Mar 2022 11:59:31 +0100 (CET)
-Date: Thu, 3 Mar 2022 11:59:31 +0100
+ id 806AC68AFE; Thu,  3 Mar 2022 12:02:16 +0100 (CET)
+Date: Thu, 3 Mar 2022 12:02:16 +0100
 From: Christoph Hellwig <hch@lst.de>
-To: Stefano Stabellini <sstabellini@kernel.org>
-Subject: Re: [PATCH 11/12] swiotlb: merge swiotlb-xen initialization into
- swiotlb
-Message-ID: <20220303105931.GA15137@lst.de>
-References: <20220301105311.885699-1-hch@lst.de>
- <20220301105311.885699-12-hch@lst.de>
- <alpine.DEB.2.22.394.2203011720150.3261@ubuntu-linux-20-04-desktop>
- <20220302081500.GB23075@lst.de>
- <alpine.DEB.2.22.394.2203021709470.3261@ubuntu-linux-20-04-desktop>
+To: Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH] kernel: dma-debug: fix return value of __setup handlers
+Message-ID: <20220303110216.GA15318@lst.de>
+References: <20220228220453.23726-1-rdunlap@infradead.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.22.394.2203021709470.3261@ubuntu-linux-20-04-desktop>
+In-Reply-To: <20220228220453.23726-1-rdunlap@infradead.org>
 User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: linux-hyperv@vger.kernel.org, x86@kernel.org, linux-ia64@vger.kernel.org,
- linux-pci@vger.kernel.org, linux-riscv@lists.infradead.org,
- Christoph Hellwig <hch@lst.de>, linux-s390@vger.kernel.org,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- tboot-devel@lists.sourceforge.net, xen-devel@lists.xenproject.org,
- David Woodhouse <dwmw2@infradead.org>, Tom Lendacky <thomas.lendacky@amd.com>,
- Anshuman Khandual <anshuman.khandual@arm.com>,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- linux-arm-kernel@lists.infradead.org, Juergen Gross <jgross@suse.com>,
- Robin Murphy <robin.murphy@arm.com>, linux-mips@vger.kernel.org,
- iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org
+Cc: linux-kernel@vger.kernel.org, Igor Zhbanov <i.zhbanov@omprussia.ru>,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,12 +66,9 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Mar 02, 2022 at 05:25:10PM -0800, Stefano Stabellini wrote:
-> Thinking more about it we actually need to drop the xen_initial_domain()
-> check otherwise some cases won't be functional (Dom0 not 1:1 mapped, or
-> DomU 1:1 mapped).
+Thanks,
 
-Hmm, but that would be the case even before this series, right?
+applied to the dma-mapping tree.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
