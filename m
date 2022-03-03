@@ -1,66 +1,84 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 36D2CC433FE
-	for <iommu@archiver.kernel.org>; Wed,  2 Mar 2022 23:53:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 125E1C433EF
+	for <iommu@archiver.kernel.org>; Thu,  3 Mar 2022 01:25:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9E2F840187;
-	Wed,  2 Mar 2022 23:53:01 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id A0F3660AF2;
+	Thu,  3 Mar 2022 01:25:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tUYr6pBxgX1L; Wed,  2 Mar 2022 23:53:00 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 2BB6D40156;
-	Wed,  2 Mar 2022 23:53:00 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mumAXUX64WmF; Thu,  3 Mar 2022 01:25:17 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7804D60B2E;
+	Thu,  3 Mar 2022 01:25:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E4ED1C0082;
-	Wed,  2 Mar 2022 23:52:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3598CC0082;
+	Thu,  3 Mar 2022 01:25:17 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 79938C000B
- for <iommu@lists.linux-foundation.org>; Wed,  2 Mar 2022 23:52:58 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 75200C000B
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Mar 2022 01:25:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 5241C40156
- for <iommu@lists.linux-foundation.org>; Wed,  2 Mar 2022 23:52:58 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 4E7FB40156
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Mar 2022 01:25:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id t3W9Ze3Z00PG for <iommu@lists.linux-foundation.org>;
- Wed,  2 Mar 2022 23:52:53 +0000 (UTC)
+ with ESMTP id jIW-3OdKle1Z for <iommu@lists.linux-foundation.org>;
+ Thu,  3 Mar 2022 01:25:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 4597A40159
- for <iommu@lists.linux-foundation.org>; Wed,  2 Mar 2022 23:52:53 +0000 (UTC)
-X-UUID: e55578293866465f8f422d077c288aa3-20220303
-X-UUID: e55578293866465f8f422d077c288aa3-20220303
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
- (envelope-from <miles.chen@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 342637879; Thu, 03 Mar 2022 07:52:45 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
- Thu, 3 Mar 2022 07:52:43 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via
- Frontend Transport; Thu, 3 Mar 2022 07:52:43 +0800
-To: <robin.murphy@arm.com>
-Subject: Re: [PATCH v2] iommu/iova: Reset max32_alloc_size after cleaning
-Date: Thu, 3 Mar 2022 07:52:38 +0800
-Message-ID: <20220302235238.13099-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <ca208635-449b-2c94-7317-09ed8eb86a2c@arm.com>
-References: <ca208635-449b-2c94-7317-09ed8eb86a2c@arm.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org
+ [IPv6:2604:1380:4601:e00::1])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 364CF400FE
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Mar 2022 01:25:15 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by ams.source.kernel.org (Postfix) with ESMTPS id 7F309B82358;
+ Thu,  3 Mar 2022 01:25:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2074AC340F2;
+ Thu,  3 Mar 2022 01:25:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1646270712;
+ bh=OIWkR7Zp9BS5KcWgPGvH+7lGxsauASKPDzT5dWHRzcg=;
+ h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+ b=fyTcnY079RGVSWj1/bqnWf9UBPrXZmiZ32cJHGCuHKFrvhhlGSoeO8XnjyAULGbxy
+ xuEeYIRqhVQfty7l070VwdiiUBm+vhQMOyp1/UPCRCwJW1H8chwVFdTWSqF8JxQ7i6
+ pmngu4i/qw99iSRs7nF8V/KUQPfZMnX0OhdBfoyB3K0uXmVGkSCue1VhFC37hRyoHl
+ lqT9JrJPLf0sbQoGpagSmC+bBJdDfAOOQZXY1qQ2kFojarLkPJJigndyp3UGVx/CEp
+ 1XnqlJ8dDyOAxVpGwUR+l8DwgqcaHVrJmCy/f+O96VijhpAG5o/2FbsTqBKQIZTLrT
+ qEo+TADXZ7B8A==
+Date: Wed, 2 Mar 2022 17:25:10 -0800 (PST)
+From: Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 11/12] swiotlb: merge swiotlb-xen initialization into
+ swiotlb
+In-Reply-To: <20220302081500.GB23075@lst.de>
+Message-ID: <alpine.DEB.2.22.394.2203021709470.3261@ubuntu-linux-20-04-desktop>
+References: <20220301105311.885699-1-hch@lst.de>
+ <20220301105311.885699-12-hch@lst.de>
+ <alpine.DEB.2.22.394.2203011720150.3261@ubuntu-linux-20-04-desktop>
+ <20220302081500.GB23075@lst.de>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-X-MTK: N
-Cc: miles.chen@mediatek.com, wsd_upstream@mediatek.com,
- linux-kernel@vger.kernel.org, Libo.Kang@mediatek.com, yf.wang@mediatek.com,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- Ning.Li@mediatek.com, matthias.bgg@gmail.com, stable@vger.kernel.org,
- will@kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: linux-hyperv@vger.kernel.org, x86@kernel.org, linux-ia64@vger.kernel.org,
+ linux-pci@vger.kernel.org, linux-riscv@lists.infradead.org,
+ linux-s390@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ tboot-devel@lists.sourceforge.net, xen-devel@lists.xenproject.org,
+ David Woodhouse <dwmw2@infradead.org>, Tom Lendacky <thomas.lendacky@amd.com>,
+ Anshuman Khandual <anshuman.khandual@arm.com>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ linux-arm-kernel@lists.infradead.org, Juergen Gross <jgross@suse.com>,
+ linuxppc-dev@lists.ozlabs.org, linux-mips@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -73,52 +91,92 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Miles Chen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Miles Chen <miles.chen@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
->> If no cached iova is freed, resetting max32_alloc_size before
->> the retry allocation only give us a retry. Is it possible that
->> other users free their iovas during the additional retry?
->
-> No, it's not possible, since everyone's serialised by iova_rbtree_lock. 
-> If the caches were already empty and the retry gets the lock first, it 
-> will still fail again - forcing a reset of max32_alloc_size only means 
-> it has to take the slow path to that failure. If another caller *did* 
-> manage to get in and free something between free_global_cached_iovas() 
-> dropping the lock and alloc_iova() re-taking it, then that would have 
-> legitimately reset max32_alloc_size anyway.
+On Wed, 2 Mar 2022, Christoph Hellwig wrote:
+> On Tue, Mar 01, 2022 at 06:55:47PM -0800, Stefano Stabellini wrote:
+> > Unrelated to this specific patch series: now that I think about it, if
+> > io_tlb_default_mem.nslabs is already allocated by the time xen_mm_init
+> > is called, wouldn't we potentially have an issue with the GFP flags used
+> > for the earlier allocation (e.g. GFP_DMA32 not used)? Maybe something
+> > for another day.
+> 
+> swiotlb_init allocates low memory from meblock, which is roughly
+> equivalent to GFP_DMA allocations, so we'll be fine.
+> 
+> > > @@ -143,10 +141,15 @@ static int __init xen_mm_init(void)
+> > >  	if (!xen_swiotlb_detect())
+> > >  		return 0;
+> > >  
+> > > -	rc = xen_swiotlb_init();
+> > >  	/* we can work with the default swiotlb */
+> > > -	if (rc < 0 && rc != -EEXIST)
+> > > -		return rc;
+> > > +	if (!io_tlb_default_mem.nslabs) {
+> > > +		if (!xen_initial_domain())
+> > > +			return -EINVAL;
+> > 
+> > I don't think we need this xen_initial_domain() check. It is all
+> > already sorted out by the xen_swiotlb_detect() check above.
+> 
+> Is it?
+> 
+> static inline int xen_swiotlb_detect(void)
+> {
+> 	if (!xen_domain())
+> 		return 0;
+> 	if (xen_feature(XENFEAT_direct_mapped))
+> 		return 1;
+> 	/* legacy case */
+> 	if (!xen_feature(XENFEAT_not_direct_mapped) && xen_initial_domain())
+> 		return 1;
+> 	return 0;
+> }
 
-Thanks for your explanation.
+It used to be that we had a
 
-YF showed me some numbers yesterday and maybe we can have a further
-discussion in that test case. (It looks like that some iovas are freed but
-their pfn_lo(s) are less than cached_iova->pfn_lo, so max32_alloc_size is not
-reset. So there are enought free iovas but the allocation still failed)
+  if (!xen_initial_domain())
+      return -EINVAL;
 
-__cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
-{
-	struct iova *cached_iova;
+check in the initialization of swiotlb-xen on ARM. Then we replaced it
+with the more sophisticated xen_swiotlb_detect().
 
-	cached_iova = to_iova(iovad->cached32_node);
-	if (free == cached_iova ||
-		(free->pfn_hi < iovad->dma_32bit_pfn &&
-		 free->pfn_lo >= cached_iova->pfn_lo)) {
-		iovad->cached32_node = rb_next(&free->node);
-		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
-	}
-	...
-}
+The reason is that swiotlb-xen on ARM relies on Dom0 being 1:1 mapped
+(guest physical addresses == physical addresses). Recent changes in Xen
+allowed also DomUs to be 1:1 mapped. Changes still under discussion will
+allow Dom0 not to be 1:1 mapped.
 
-Hi YF,
-Could your share your observation of the iova allocation failure you hit?
+So, before all the Xen-side changes, knowing what was going to happen, I
+introduced a clearer interface: XENFEAT_direct_mapped and
+XENFEAT_not_direct_mapped tell us whether the guest (Linux) is 1:1
+mapped or not. If it is 1:1 mapped then Linux can take advantage of
+swiotlb-xen. Now xen_swiotlb_detect() returns true if Linux is 1:1
+mapped.
 
-Thanks,
-Miles
+Then of course there is the legacy case. That's taken care of by:
 
+ 	if (!xen_feature(XENFEAT_not_direct_mapped) && xen_initial_domain())
+ 		return 1;
+
+The intention is to say that if
+XENFEAT_direct_mapped/XENFEAT_not_direct_mapped are not present, then
+use xen_initial_domain() like we did before.
+
+So if xen_swiotlb_detect() returns true we know that Linux is either
+dom0 (xen_initial_domain() == true) or we have very good reasons to
+think we should initialize swiotlb-xen anyway
+(xen_feature(XENFEAT_direct_mapped) == true).
+
+
+> I think I'd keep it as-is for now, as my planned next step would be to
+> fold xen-swiotlb into swiotlb entirely.
+
+Thinking more about it we actually need to drop the xen_initial_domain()
+check otherwise some cases won't be functional (Dom0 not 1:1 mapped, or
+DomU 1:1 mapped).
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
