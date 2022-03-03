@@ -1,78 +1,64 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 970D1C433EF
-	for <iommu@archiver.kernel.org>; Thu,  3 Mar 2022 13:02:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 20D98C433EF
+	for <iommu@archiver.kernel.org>; Thu,  3 Mar 2022 13:05:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 2E65783F68;
-	Thu,  3 Mar 2022 13:02:26 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id A2414415A3;
+	Thu,  3 Mar 2022 13:05:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IiS8KDUwl57Z; Thu,  3 Mar 2022 13:02:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 9A52683EDD;
-	Thu,  3 Mar 2022 13:02:23 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id HVAdgUkbkbUM; Thu,  3 Mar 2022 13:05:09 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 2F08D4156F;
+	Thu,  3 Mar 2022 13:05:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C4E1C0082;
-	Thu,  3 Mar 2022 13:02:23 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6AD9EC000B
- for <iommu@lists.linux-foundation.org>; Thu,  3 Mar 2022 13:02:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F1BD2C0012;
+	Thu,  3 Mar 2022 13:05:08 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 18420C000B
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Mar 2022 13:05:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 45C4E83F68
- for <iommu@lists.linux-foundation.org>; Thu,  3 Mar 2022 13:02:22 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id F3DA241582
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Mar 2022 13:05:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id S9hunkrsU3EC for <iommu@lists.linux-foundation.org>;
- Thu,  3 Mar 2022 13:02:21 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 5QELBilwknBB for <iommu@lists.linux-foundation.org>;
+ Thu,  3 Mar 2022 13:05:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
- by smtp1.osuosl.org (Postfix) with ESMTPS id D4C8183EDD
- for <iommu@lists.linux-foundation.org>; Thu,  3 Mar 2022 13:02:20 +0000 (UTC)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
- by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K8WLL2JXZzBrbT;
- Thu,  3 Mar 2022 21:00:26 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 3 Mar 2022 21:02:16 +0800
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 3 Mar 2022 21:02:15 +0800
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2308.021; Thu, 3 Mar 2022 13:02:13 +0000
-To: Steven Price <steven.price@arm.com>, "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org"
- <linux-acpi@vger.kernel.org>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>
-Subject: RE: [PATCH v8 00/11] ACPI/IORT: Support for IORT RMR node
-Thread-Topic: [PATCH v8 00/11] ACPI/IORT: Support for IORT RMR node
-Thread-Index: AQHYJznkm20llCW58kat42rWyx2T0aythveAgAAnagA=
-Date: Thu, 3 Mar 2022 13:02:13 +0000
-Message-ID: <f62c9542a9ab46cab0ef26919a47e8b9@huawei.com>
-References: <20220221154344.2126-1-shameerali.kolothum.thodi@huawei.com>
- <dc755b11-ece7-4028-b153-cc8b9301099c@arm.com>
-In-Reply-To: <dc755b11-ece7-4028-b153-cc8b9301099c@arm.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.47.82.4]
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp4.osuosl.org (Postfix) with ESMTP id C8DC94156F
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Mar 2022 13:05:05 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F005C1480;
+ Thu,  3 Mar 2022 05:05:04 -0800 (PST)
+Received: from [10.57.39.47] (unknown [10.57.39.47])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 94FC73F70D;
+ Thu,  3 Mar 2022 05:05:02 -0800 (PST)
+Message-ID: <c63267a4-31f1-720e-c0e7-22a58ed4577a@arm.com>
+Date: Thu, 3 Mar 2022 13:04:58 +0000
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "jon@solid-run.com" <jon@solid-run.com>, Linuxarm <linuxarm@huawei.com>,
- "Guohanjun \(Hanjun
- Guo\)" <guohanjun@huawei.com>, yangyicong <yangyicong@huawei.com>,
- "Sami.Mujawar@arm.com" <Sami.Mujawar@arm.com>,
- "will@kernel.org" <will@kernel.org>, wanghuiqiang <wanghuiqiang@huawei.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v2] iommu/iova: Reset max32_alloc_size after cleaning
+Content-Language: en-GB
+To: "yf.wang@mediatek.com" <yf.wang@medaitek.com>,
+ Miles Chen <miles.chen@mediatek.com>
+References: <ca208635-449b-2c94-7317-09ed8eb86a2c@arm.com>
+ <20220302235238.13099-1-miles.chen@mediatek.com>
+ <7a56546b6333cfac175080ff35c74415d35cd628.camel@medaitek.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <7a56546b6333cfac175080ff35c74415d35cd628.camel@medaitek.com>
+Cc: wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
+ Libo.Kang@mediatek.com, yf.wang@mediatek.com, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, Ning.Li@mediatek.com,
+ matthias.bgg@gmail.com, stable@vger.kernel.org, will@kernel.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,64 +71,190 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Shameerali Kolothum Thodi via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On 2022-03-03 03:43, yf.wang@mediatek.com wrote:
+> On Thu, 2022-03-03 at 07:52 +0800, Miles Chen wrote:
+>> Thanks for your explanation.
+>>
+>> YF showed me some numbers yesterday and maybe we can have a further
+>> discussion in that test case. (It looks like that some iovas are
+>> freed but
+>> their pfn_lo(s) are less than cached_iova->pfn_lo, so
+>> max32_alloc_size is not
+>> reset. So there are enought free iovas but the allocation still
+>> failed)
+>>
+>> __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova
+>> *free)
+>> {
+>> 	struct iova *cached_iova;
+>>
+>> 	cached_iova = to_iova(iovad->cached32_node);
+>> 	if (free == cached_iova ||
+>> 		(free->pfn_hi < iovad->dma_32bit_pfn &&
+>> 		 free->pfn_lo >= cached_iova->pfn_lo)) {
+>> 		iovad->cached32_node = rb_next(&free->node);
+>> 		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
+>> 	}
+>> 	...
+>> }
+>>
+>> Hi YF,
+>> Could your share your observation of the iova allocation failure you
+>> hit?
+>>
+>> Thanks,
+>> Miles
+> 
+> Hi Miles & Robin,
+> 
+> The scenario we encountered in our actual test:
+> An iova domain with a 3GB iova region (0x4000_0000~0x1_0000_0000),
+> only alloc iova total size 614788KB), then alloc iova size=0x731f000
+> fail, and then the retry mechanism is free 300 cache iova at first,
+> and then retry still fail, the reason for fail is blocked by the
+> check condition (size >= iovad->max32_alloc_size) and goto iova32_full
+> directly.
+> 
+> Why is no reset max32_alloc_size in __cached_rbnode_delete_update?
+> Because of the pfn_lo of the freed cache iova is smaller than the
+> current cached32_node's pfn_lo (free->pfn_lo < cached_iova->pfn_lo),
+> so will not execute (iovad->max32_alloc_size = iovad->dma_32bit_pfn),
+> is blocked by the check condition (free->pfn_lo >= cached_iova-
+>> pfn_lo).
+> 
+> The issue observed during stress testing, when alloc fail reset
+> max32_alloc_size to retry can help to allocate iova to those lower
+> addresses.
 
+Oh, now I see what's going on, thanks for clarifying. This is a 
+wonderfully obscure corner case, but ultimately what comes out of it is 
+that there's an assumption in __cached_rbnode_delete_update() which I 
+think was OK at the time it was written (due to other limitations), but 
+now deserves to be remedied.
 
-> -----Original Message-----
-> From: Steven Price [mailto:steven.price@arm.com]
-> Sent: 03 March 2022 10:38
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
-> linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
-> iommu@lists.linux-foundation.org
-> Cc: Linuxarm <linuxarm@huawei.com>; lorenzo.pieralisi@arm.com;
-> joro@8bytes.org; robin.murphy@arm.com; will@kernel.org; wanghuiqiang
-> <wanghuiqiang@huawei.com>; Guohanjun (Hanjun Guo)
-> <guohanjun@huawei.com>; Sami.Mujawar@arm.com; jon@solid-run.com;
-> eric.auger@redhat.com; yangyicong <yangyicong@huawei.com>
-> Subject: Re: [PATCH v8 00/11] ACPI/IORT: Support for IORT RMR node
-> 
-> On 21/02/2022 15:43, Shameer Kolothum wrote:
-> > Hi,
-> >
-> > Since we now have an updated verion[0] of IORT spec(E.d) which
-> > addresses the memory attributes issues discussed here [1],
-> > this series now make use of it.
-> >
-> > The pull request for ACPICA E.d related changes are already
-> > raised and can be found here,
-> > https://github.com/acpica/acpica/pull/752
-> >
-> > v7 --> v8
-> >   - Patch #1 has temp definitions for RMR related changes till
-> >     the ACPICA header changes are part of kernel.
-> >   - No early parsing of RMR node info and is only parsed at the
-> >     time of use.
-> >   - Changes to the RMR get/put API format compared to the
-> >     previous version.
-> >   - Support for RMR descriptor shared by multiple stream IDs.
-> >
-> > Please take a look and let me know your thoughts.
-> 
-> Hi Shameer,
-> 
-> I've now been able to test this on the Juno platform with a modified
-> firmware supporting the newer spec (thanks Sami!). Everything works, so
-> feel free to add my:
-> 
-> Tested-by: Steven Price <steven.price@arm.com>
-> 
-> (Note that I haven't tested the smmu-v3 support)
+The proper fix is simple to make, but I think I'll need to have my lunch 
+before trying to write up the reasoning behind it for a patch... :)
 
-Thanks Steve, for giving it a spin and verifying.
+Thanks,
+Robin.
 
-Cheers,
-Shameer
+> The following is the actual stress test log dump:
+> ('pfn_lo', 'size' and 'pfn_hi' has iova_shift in dump log)
+> size:                 0x731f000
+> max32_alloc_size:     0x731f000
+> cached_iova:          0xffffff814751a1c0
+> cached_iova->pfn_lo:  0xf3500000
+> cached_iova->pfn_hi:  0xf35ff000
+> 
+> 1.__alloc_and_insert_iova_range_fail
+> [name:iova&]__alloc_and_insert_iova_range_fail:
+> iovad:0xffffff80d5be2808
+>    {granule:0x1000, start_pfn:0x40000, dma_32bit_pfn:0x100000,
+>    max32_alloc_size:0x731f},size:0x731f
+> 
+> 2.dump all iova nodes of rbtree, contain cached iova:
+> [name:iova&]dump_iova_rbtree start, iovad:0xffffff80d5be2808
+>    {rbroot:0xffffff814751a4c0, cached_node:0xffffff80d5be2860,
+>    cached32_node:0xffffff814751a1c0, granule:0x1000, start_pfn:0x40000,
+>    dma_32bit_pfn:0x100000, max32_alloc_size:0x731f}
+> 
+> ('pfn_lo', 'size' and 'pfn_hi' has iova_shift in dump log)
+> [name:iova&]index    iova_object       pfn_lo     size       pfn_hi
+> [name:iova&]  1 0xffffff814751ae00  0x40800000  0x4c9000     0x40cc8000
+> [name:iova&]  2 0xffffff807c960880  0x40d00000  0xc4000      0x40dc3000
+>    ...322 lines of log are omitted here...
+> [name:iova&]325 0xffffff814751a1c0  0xf3500000  0x100000     0xf35ff000
+> [name:iova&]326 0xffffff8004552080  0xf3600000  0x100000     0xf36ff000
+> [name:iova&]327 0xffffff80045524c0  0xf3700000  0xbc000      0xf37bb000
+> [name:iova&]328 0xffffff814751a700  0xf3800000  0x265000     0xf3a64000
+> [name:iova&]329 0xffffff8004552180  0xf3c00000  0xa13000     0xf4612000
+> [name:iova&]330 0xffffff80c1b3eb40  0xf4800000  0xb400000    0xffbff000
+> [name:iova&]331 0xffffff80d6e0b580  0xffcff000  0x1000       0xffcff000
+> [name:iova&]332 0xffffff80c8395140  0xffd00000  0x80000      0xffd7f000
+> [name:iova&]333 0xffffff80c8395000  0xffde0000  0x20000      0xffdff000
+> [name:iova&]334 0xffffff80c8395380  0xffe00000  0x80000      0xffe7f000
+> [name:iova&]335 0xffffff80c8395880  0xffec0000  0x20000      0xffedf000
+> [name:iova&]336 0xffffff80c83957c0  0xffef9000  0x1000       0xffef9000
+> [name:iova&]337 0xffffff80c83956c0  0xffefa000  0x1000       0xffefa000
+> [name:iova&]338 0xffffff80c8395f40  0xffefb000  0x1000       0xffefb000
+> [name:iova&]339 0xffffff80c8395a80  0xffefc000  0x4000       0xffeff000
+> [name:iova&]340 0xffffff80c1b3e840  0xfff00000  0x100000     0xfffff000
+> [name:iova&] 41 0xffffff80d5be2860  0xfffffffffffff000 0x1000
+> 0xfffffffffffff000
+> [name:iova&]dump_iova_rbtree done, iovad:0xffffff80d5be2808,
+>    count:341, total_size:625876KB
+> 
+> 3.alloc fail, flushing rcache and retry.
+> [name:iova&]alloc_iova_fast, flushing rcache and retry,
+>    iovad:0xffffff80d5be2808, size:0x731f, limit_pfn:0xfffff
+> 
+> 4.retry is executed into the __alloc_and_insert_iova_range function:
+> [name:iova&]__alloc_and_insert_iova_range fail goto iova32_full,
+>    iovad:0xffffff80d5be2808 {granule:0x1000, start_pfn:0x40000,
+>    dma_32bit_pfn:0x100000, max32_alloc_size:0x731f},size:0x731f
+> 
+> 5.dump all iova nodes of rbtree, current caches is already empty:
+> [name:iova&]dump_iova_rbtree start, iovad:0xffffff80d5be2808
+>    {rbroot:0xffffff80fe76da80, cached_node:0xffffff80d5be2860,
+>    cached32_node:0xffffff814751a1c0, granule:0x1000, start_pfn:0x40000,
+>    dma_32bit_pfn:0x100000, max32_alloc_size:0x731f}
+> 
+> ('pfn_lo', 'size' and 'pfn_hi' has iova_shift in dump log)
+> [name:iova&]index    iova_object       pfn_lo     size       pfn_hi
+> [name:iova&]  1 0xffffff814751ae00  0x40800000  0x4c9000     0x40cc8000
+> [name:iova&]  2 0xffffff807c960880  0x40d00000  0xc4000      0x40dc3000
+> [name:iova&]  3 0xffffff81487ce840  0x40e00000  0x37a000     0x41179000
+> [name:iova&]  4 0xffffff80fe76d600  0x41200000  0x2400000    0x435ff000
+> [name:iova&]  5 0xffffff8004552000  0x46800000  0x47e2000    0x4afe1000
+> [name:iova&]  6 0xffffff807c960a40  0x50200000  0x400000     0x505ff000
+> [name:iova&]  7 0xffffff818cdb5780  0x50600000  0x265000     0x50864000
+> [name:iova&]  8 0xffffff814751a440  0x50a00000  0x2ae000     0x50cad000
+> [name:iova&]  9 0xffffff818cdb5d40  0x50e00000  0x4c9000     0x512c8000
+> [name:iova&] 10 0xffffff81487cef40  0x51400000  0x1a25000    0x52e24000
+> [name:iova&] 11 0xffffff818cdb5140  0x53c00000  0x400000     0x53fff000
+> [name:iova&] 12 0xffffff814751a7c0  0x54000000  0x400000     0x543ff000
+> [name:iova&] 13 0xffffff80fe76d2c0  0x54500000  0xbc000      0x545bb000
+> [name:iova&] 14 0xffffff81487ce0c0  0x54600000  0x400000     0x549ff000
+> [name:iova&] 15 0xffffff80fe76d740  0x54a00000  0xbc000      0x54abb000
+> [name:iova&] 16 0xffffff8004552440  0x54b00000  0xbc000      0x54bbb000
+> [name:iova&] 17 0xffffff80fe76db80  0x54c00000  0x47e2000    0x593e1000
+> [name:iova&] 18 0xffffff818cdb5440  0x65000000  0x400000     0x653ff000
+> [name:iova&] 19 0xffffff8004552880  0x65400000  0x47e2000    0x69be1000
+> [name:iova&] 20 0xffffff814751acc0  0x6c7e0000  0x20000      0x6c7ff000
+> [name:iova&] 21 0xffffff80fe76d700  0x6c800000  0x47e2000    0x70fe1000
+> //0x70fe1000 - 0xebc00000 = 0x7ac1f000:This free range is large enough
+> [name:iova&] 22 0xffffff80fe76da80  0xebc00000  0x400000     0xebfff000
+> [name:iova&] 23 0xffffff80045523c0  0xec000000  0x400000     0xec3ff000
+> [name:iova&] 24 0xffffff8004552780  0xec400000  0x400000     0xec7ff000
+> [name:iova&] 25 0xffffff814751a1c0  0xf3500000  0x100000     0xf35ff000
+> [name:iova&] 26 0xffffff8004552080  0xf3600000  0x100000     0xf36ff000
+> [name:iova&] 27 0xffffff80045524c0  0xf3700000  0xbc000      0xf37bb000
+> [name:iova&] 28 0xffffff814751a700  0xf3800000  0x265000     0xf3a64000
+> [name:iova&] 29 0xffffff8004552180  0xf3c00000  0xa13000     0xf4612000
+> [name:iova&] 30 0xffffff80c1b3eb40  0xf4800000  0xb400000    0xffbff000
+> [name:iova&] 31 0xffffff80d6e0b580  0xffcff000  0x1000       0xffcff000
+> [name:iova&] 32 0xffffff80c8395140  0xffd00000  0x80000      0xffd7f000
+> [name:iova&] 33 0xffffff80c8395000  0xffde0000  0x20000      0xffdff000
+> [name:iova&] 34 0xffffff80c8395380  0xffe00000  0x80000      0xffe7f000
+> [name:iova&] 35 0xffffff80c8395880  0xffec0000  0x20000      0xffedf000
+> [name:iova&] 36 0xffffff80c83957c0  0xffef9000  0x1000       0xffef9000
+> [name:iova&] 37 0xffffff80c83956c0  0xffefa000  0x1000       0xffefa000
+> [name:iova&] 38 0xffffff80c8395f40  0xffefb000  0x1000       0xffefb000
+> [name:iova&] 39 0xffffff80c8395a80  0xffefc000  0x4000       0xffeff000
+> [name:iova&] 40 0xffffff80c1b3e840  0xfff00000  0x100000     0xfffff000
+> [name:iova&] 41 0xffffff80d5be2860  0xfffffffffffff000 0x1000
+> 0xfffffffffffff000
+> [name:iova&]dump_iova_rbtree done, iovad:0xffffff80d5be2808,
+> count:41, total_size:614788KB
+> 
+> Thanks,
+> Yunfei.
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
