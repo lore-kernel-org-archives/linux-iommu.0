@@ -1,67 +1,103 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6847AC433EF
-	for <iommu@archiver.kernel.org>; Fri,  4 Mar 2022 04:52:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E52E9C433EF
+	for <iommu@archiver.kernel.org>; Fri,  4 Mar 2022 04:57:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id E35EA83366;
-	Fri,  4 Mar 2022 04:52:52 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 8A7A860BD9;
+	Fri,  4 Mar 2022 04:57:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JyLXCxVnKqJG; Fri,  4 Mar 2022 04:52:52 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9BMCaOgEtnmM; Fri,  4 Mar 2022 04:57:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id A386C83313;
-	Fri,  4 Mar 2022 04:52:51 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 3E62A60D4E;
+	Fri,  4 Mar 2022 04:57:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7796AC001D;
-	Fri,  4 Mar 2022 04:52:51 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ACA21C000B
- for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 04:52:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0F627C001D;
+	Fri,  4 Mar 2022 04:57:01 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 31C4FC000B
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 04:56:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 92525415DC
- for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 04:52:49 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 1888340182
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 04:56:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EstwMivc3CI9 for <iommu@lists.linux-foundation.org>;
- Fri,  4 Mar 2022 04:52:44 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xAJSNvLd8ft4 for <iommu@lists.linux-foundation.org>;
+ Fri,  4 Mar 2022 04:56:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 6C5E4409A3
- for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 04:52:44 +0000 (UTC)
-X-UUID: a9fa9b595d30426180269d85e18dfcb4-20220304
-X-UUID: a9fa9b595d30426180269d85e18dfcb4-20220304
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by
- mailgw01.mediatek.com (envelope-from <yf.wang@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 200241363; Fri, 04 Mar 2022 12:52:38 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
- Fri, 4 Mar 2022 12:52:37 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via
- Frontend Transport; Fri, 4 Mar 2022 12:52:36 +0800
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Matthias
- Brugger" <matthias.bgg@gmail.com>, "open list:IOMMU DRIVERS"
- <iommu@lists.linux-foundation.org>, open list <linux-kernel@vger.kernel.org>, 
- "moderated list:ARM/Mediatek SoC support"
- <linux-arm-kernel@lists.infradead.org>, "moderated list:ARM/Mediatek SoC
- support" <linux-mediatek@lists.infradead.org>
-Subject: [PATCH] iommu/iova: Free all CPU rcache for retry when iova alloc
- failure
-Date: Fri, 4 Mar 2022 12:46:34 +0800
-Message-ID: <20220304044635.4273-1-yf.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 2C4AB40164
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 04:56:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1646369815;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=tYZUapdRWCJT08rXyjVTAkvzYeSG2bwC+wCu8ZAu0f0=;
+ b=UBpX5uUUiU53N2/VX787Lijbn/BrlSuehcpUhTkaeZNcAksB3VPYW9KW0eWAs4A9w74I6+
+ B8AD35lRGzxi/BcVwFk5h2ldYo1r2gGgX08w9OWJ69nmEgUbCTH4n+rHLqZbD3a6+EoR1O
+ XQO5bdfsmQTVPtjgvWB17ti4uUN9M5E=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-46-LcxVg0DCMyuBFbhCJ0_QGQ-1; Thu, 03 Mar 2022 23:56:53 -0500
+X-MC-Unique: LcxVg0DCMyuBFbhCJ0_QGQ-1
+Received: by mail-wr1-f71.google.com with SMTP id
+ p18-20020adfba92000000b001e8f7697cc7so2917130wrg.20
+ for <iommu@lists.linux-foundation.org>; Thu, 03 Mar 2022 20:56:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:content-transfer-encoding
+ :in-reply-to;
+ bh=tYZUapdRWCJT08rXyjVTAkvzYeSG2bwC+wCu8ZAu0f0=;
+ b=fRSk9NcSAzJ4WmoHueT/pfpk/BBsb5wlrG9DbP3X9dhkG9EMi4ZEUKShTmW+z6dIEc
+ j9tLeEva/i6XHMu6IFe5FJ0Dy+j9hluINkMPbqyozIkOu0G/e8T3zbn4LFxsfrvO1BoR
+ rqKPDao3r6fQkFeqQp52pthy+kQYprGnBukJ8sXvVufxC7G0/Pmh5sWYf0+TIsZl0/To
+ taT/VWEDzvFKa/Vl/k+scYssM/mwBxmM2n8J+EarTA53vC1D6Ier0c/SG81p4MlU4Nbb
+ vk7kpKNFUhLIIt2Zipa+qYhnRBHO9sh+nb0j5XVdTzRa6arRgbhpzeLtgS6xBKdUUfgM
+ U2oQ==
+X-Gm-Message-State: AOAM533QxLVMWpAWYz5849gFKPlF2l9HcpCoEacZA1BQVxuwy/6XO0Zv
+ gOLam7l790hT+L4aSsDw8Z6+6yyGcHQRqXD6Qvb2zs8orD/Z7KP05nzgMF+v0GmaCtI5kuXnpLH
+ 71drASrvPKJHzSDBWs0VrWTyBGYJXtg==
+X-Received: by 2002:a05:6000:168c:b0:1f0:567b:3cf8 with SMTP id
+ y12-20020a056000168c00b001f0567b3cf8mr4201018wrd.46.1646369812266; 
+ Thu, 03 Mar 2022 20:56:52 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwWmlImZmlUewursTtuG9a0VfeOnB81lJClVXMkt6n0KTYklCl1tr8ju6EJBGBQrkZhvE6aMQ==
+X-Received: by 2002:a05:6000:168c:b0:1f0:567b:3cf8 with SMTP id
+ y12-20020a056000168c00b001f0567b3cf8mr4201009wrd.46.1646369811967; 
+ Thu, 03 Mar 2022 20:56:51 -0800 (PST)
+Received: from redhat.com ([2.53.6.39]) by smtp.gmail.com with ESMTPSA id
+ s17-20020adfdb11000000b001f02d5fea43sm3869294wri.98.2022.03.03.20.56.48
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 03 Mar 2022 20:56:51 -0800 (PST)
+Date: Thu, 3 Mar 2022 23:56:46 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Gurchetan Singh <gurchetansingh@google.com>
+Subject: Re: virtio-gpu dedicated heap
+Message-ID: <20220303235527-mutt-send-email-mst@kernel.org>
+References: <CAAfnVBmDf1fA1ZAufPsPhyOWj0=ynGCVfzX_Cx=pgVmkXe8Tog@mail.gmail.com>
+ <CAAfnVBmCUHKRUVA=UouoSUH-eTyTTpNReU6i8TSD94iyYWyQzg@mail.gmail.com>
 MIME-Version: 1.0
-Cc: wsd_upstream@mediatek.com, Libo Kang <Libo.Kang@mediatek.com>,
- Yunfei Wang <yf.wang@mediatek.com>, stable@vger.kernel.org,
- Ning Li <Ning.Li@mediatek.com>
+In-Reply-To: <CAAfnVBmCUHKRUVA=UouoSUH-eTyTTpNReU6i8TSD94iyYWyQzg@mail.gmail.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=mst@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Disposition: inline
+Cc: virtio-dev@lists.oasis-open.org, Claire Chang <tientzu@google.com>,
+ peterz@infradead.org, will@kernel.org, Tomasz Figa <tfiga@google.com>,
+ iommu@lists.linux-foundation.org, robin.murphy@arm.com, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -74,106 +110,130 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: "yf.wang--- via iommu" <iommu@lists.linux-foundation.org>
-Reply-To: yf.wang@mediatek.com
-Content-Type: multipart/mixed; boundary="===============4022180605654451877=="
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
---===============4022180605654451877==
-Content-Type: multipart/alternative;
-	boundary="__=_Part_Boundary_001_818319673.1538494052"
+$ ./scripts/get_maintainer.pl -f ./drivers/gpu/drm/virtio/
 
---__=_Part_Boundary_001_818319673.1538494052
-Content-Type: text/html;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
+David Airlie <airlied@linux.ie> (maintainer:VIRTIO GPU DRIVER)
+Gerd Hoffmann <kraxel@redhat.com> (maintainer:VIRTIO GPU DRIVER)
+Daniel Vetter <daniel@ffwll.ch> (maintainer:DRM DRIVERS)
+dri-devel@lists.freedesktop.org (open list:VIRTIO GPU DRIVER)
+virtualization@lists.linux-foundation.org (open list:VIRTIO GPU DRIVER)
+linux-kernel@vger.kernel.org (open list)
 
-PHByZT4NCkZyb206IFl1bmZlaSBXYW5nICZsdDt5Zi53YW5nQG1lZGlhdGVrLmNvbSZndDsNCg0K
-SW4gYWxsb2NfaW92YV9mYXN0IGZ1bmN0aW9uLCBpZiBhbiBpb3ZhIGFsbG9jIHJlcXVlc3QgZmFp
-bCwNCml0IHdpbGwgZnJlZSB0aGUgaW92YSByYW5nZXMgcHJlc2VudCBpbiB0aGUgcGVyY3B1IGlv
-dmENCnJjYWNoZXMgYW5kIGZyZWUgZ2xvYmFsIGlvdmEgcmNhY2hlIGFuZCB0aGVuIHJldHJ5LCBi
-dXQNCmZsdXNoaW5nIENQVSBpb3ZhIHJjYWNoZXMgb25seSBmb3IgZWFjaCBvbmxpbmUgQ1BVLCB3
-aGljaA0Kd2lsbCBjYXVzZSBpbmNvbXBsZXRlIHJjYWNoZSBjbGVhbmluZywgYW5kIGlvdmEgcmNh
-Y2hlcyBvZg0Kbm90IG9ubGluZSBDUFUgY2Fubm90IGJlIGZsdXNoZWQsIGJlY2F1c2UgaW92YSBy
-Y2FjaGVzIG1heQ0KYWxzbyBsZWFkIHRvIGZyYWdtZW50YXRpb24gb2YgaW92YSBzcGFjZSwgc28g
-dGhlIG5leHQgcmV0cnkNCmFjdGlvbiBtYXkgc3RpbGwgYmUgZmFpbC4NCg0KQmFzZWQgb24gdGhl
-IGFib3ZlLCBzbyBuZWVkIHRvIGZsdXNoaW5nIGFsbCBpb3ZhIHJjYWNoZXMNCmZvciBlYWNoIHBv
-c3NpYmxlIENQVSwgdXNlIGZvcl9lYWNoX3Bvc3NpYmxlX2NwdSBpbnN0ZWFkIG9mDQpmb3JfZWFj
-aF9vbmxpbmVfY3B1IGxpa2UgaW4gZnJlZV9pb3ZhX3JjYWNoZXMgZnVuY3Rpb24sDQpzbyB0aGF0
-IGFsbCByY2FjaGVzIGNhbiBiZSBjb21wbGV0ZWx5IHJlbGVhc2VkIHRvIHRyeQ0KcmVwbGVuaXNo
-aW5nIElPVkFzLg0KDQpTaWduZWQtb2ZmLWJ5OiBZdW5mZWkgV2FuZyAmbHQ7eWYud2FuZ0BtZWRp
-YXRlay5jb20mZ3Q7DQpDYzogJmx0O3N0YWJsZUB2Z2VyLmtlcm5lbC5vcmcmZ3Q7ICMgNS40LioN
-Ci0tLQ0KIGRyaXZlcnMvaW9tbXUvaW92YS5jIHwgMiArLQ0KIDEgZmlsZSBjaGFuZ2VkLCAxIGlu
-c2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9p
-b3ZhLmMgYi9kcml2ZXJzL2lvbW11L2lvdmEuYw0KaW5kZXggYjI4Yzk0MzViODk4Li41YTA2Mzdj
-ZDdiYzIgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL2lvbW11L2lvdmEuYw0KKysrIGIvZHJpdmVycy9p
-b21tdS9pb3ZhLmMNCkBAIC00NjAsNyArNDYwLDcgQEAgYWxsb2NfaW92YV9mYXN0KHN0cnVjdCBp
-b3ZhX2RvbWFpbiAqaW92YWQsIHVuc2lnbmVkIGxvbmcgc2l6ZSwNCiANCiAJCS8qIFRyeSByZXBs
-ZW5pc2hpbmcgSU9WQXMgYnkgZmx1c2hpbmcgcmNhY2hlLiAqLw0KIAkJZmx1c2hfcmNhY2hlID0g
-ZmFsc2U7DQotCQlmb3JfZWFjaF9vbmxpbmVfY3B1KGNwdSkNCisJCWZvcl9lYWNoX3Bvc3NpYmxl
-X2NwdShjcHUpDQogCQkJZnJlZV9jcHVfY2FjaGVkX2lvdmFzKGNwdSwgaW92YWQpOw0KIAkJZnJl
-ZV9nbG9iYWxfY2FjaGVkX2lvdmFzKGlvdmFkKTsNCiAJCWdvdG8gcmV0cnk7DQotLSANCjIuMTgu
-MA0KPC9wcmU+PCEtLXR5cGU6dGV4dC0tPjwhLS17LS0+PHByZT4qKioqKioqKioqKioqIE1FRElB
-VEVLIENvbmZpZGVudGlhbGl0eSBOb3RpY2UgKioqKioqKioqKioqKioqKioqKioNClRoZSBpbmZv
-cm1hdGlvbiBjb250YWluZWQgaW4gdGhpcyBlLW1haWwgbWVzc2FnZSAoaW5jbHVkaW5nIGFueSAN
-CmF0dGFjaG1lbnRzKSBtYXkgYmUgY29uZmlkZW50aWFsLCBwcm9wcmlldGFyeSwgcHJpdmlsZWdl
-ZCwgb3Igb3RoZXJ3aXNlDQpleGVtcHQgZnJvbSBkaXNjbG9zdXJlIHVuZGVyIGFwcGxpY2FibGUg
-bGF3cy4gSXQgaXMgaW50ZW5kZWQgdG8gYmUgDQpjb252ZXllZCBvbmx5IHRvIHRoZSBkZXNpZ25h
-dGVkIHJlY2lwaWVudChzKS4gQW55IHVzZSwgZGlzc2VtaW5hdGlvbiwgDQpkaXN0cmlidXRpb24s
-IHByaW50aW5nLCByZXRhaW5pbmcgb3IgY29weWluZyBvZiB0aGlzIGUtbWFpbCAoaW5jbHVkaW5n
-IGl0cyANCmF0dGFjaG1lbnRzKSBieSB1bmludGVuZGVkIHJlY2lwaWVudChzKSBpcyBzdHJpY3Rs
-eSBwcm9oaWJpdGVkIGFuZCBtYXkgDQpiZSB1bmxhd2Z1bC4gSWYgeW91IGFyZSBub3QgYW4gaW50
-ZW5kZWQgcmVjaXBpZW50IG9mIHRoaXMgZS1tYWlsLCBvciBiZWxpZXZlIA0KdGhhdCB5b3UgaGF2
-ZSByZWNlaXZlZCB0aGlzIGUtbWFpbCBpbiBlcnJvciwgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVy
-IA0KaW1tZWRpYXRlbHkgKGJ5IHJlcGx5aW5nIHRvIHRoaXMgZS1tYWlsKSwgZGVsZXRlIGFueSBh
-bmQgYWxsIGNvcGllcyBvZiANCnRoaXMgZS1tYWlsIChpbmNsdWRpbmcgYW55IGF0dGFjaG1lbnRz
-KSBmcm9tIHlvdXIgc3lzdGVtLCBhbmQgZG8gbm90DQpkaXNjbG9zZSB0aGUgY29udGVudCBvZiB0
-aGlzIGUtbWFpbCB0byBhbnkgb3RoZXIgcGVyc29uLiBUaGFuayB5b3UhDQo8L3ByZT48IS0tfS0t
-Pg==
+You might want to CC these people.
 
---__=_Part_Boundary_001_818319673.1538494052
-Content-Type: text/plain
-Content-Transfer-Encoding: base64
+On Thu, Mar 03, 2022 at 08:07:03PM -0800, Gurchetan Singh wrote:
+> +iommu@lists.linux-foundation.org=A0not iommu-request
+> =
 
-RnJvbTogWXVuZmVpIFdhbmcgPHlmLndhbmdAbWVkaWF0ZWsuY29tPg0KDQpJbiBhbGxvY19pb3Zh
-X2Zhc3QgZnVuY3Rpb24sIGlmIGFuIGlvdmEgYWxsb2MgcmVxdWVzdCBmYWlsLA0KaXQgd2lsbCBm
-cmVlIHRoZSBpb3ZhIHJhbmdlcyBwcmVzZW50IGluIHRoZSBwZXJjcHUgaW92YQ0KcmNhY2hlcyBh
-bmQgZnJlZSBnbG9iYWwgaW92YSByY2FjaGUgYW5kIHRoZW4gcmV0cnksIGJ1dA0KZmx1c2hpbmcg
-Q1BVIGlvdmEgcmNhY2hlcyBvbmx5IGZvciBlYWNoIG9ubGluZSBDUFUsIHdoaWNoDQp3aWxsIGNh
-dXNlIGluY29tcGxldGUgcmNhY2hlIGNsZWFuaW5nLCBhbmQgaW92YSByY2FjaGVzIG9mDQpub3Qg
-b25saW5lIENQVSBjYW5ub3QgYmUgZmx1c2hlZCwgYmVjYXVzZSBpb3ZhIHJjYWNoZXMgbWF5DQph
-bHNvIGxlYWQgdG8gZnJhZ21lbnRhdGlvbiBvZiBpb3ZhIHNwYWNlLCBzbyB0aGUgbmV4dCByZXRy
-eQ0KYWN0aW9uIG1heSBzdGlsbCBiZSBmYWlsLg0KDQpCYXNlZCBvbiB0aGUgYWJvdmUsIHNvIG5l
-ZWQgdG8gZmx1c2hpbmcgYWxsIGlvdmEgcmNhY2hlcw0KZm9yIGVhY2ggcG9zc2libGUgQ1BVLCB1
-c2UgZm9yX2VhY2hfcG9zc2libGVfY3B1IGluc3RlYWQgb2YNCmZvcl9lYWNoX29ubGluZV9jcHUg
-bGlrZSBpbiBmcmVlX2lvdmFfcmNhY2hlcyBmdW5jdGlvbiwNCnNvIHRoYXQgYWxsIHJjYWNoZXMg
-Y2FuIGJlIGNvbXBsZXRlbHkgcmVsZWFzZWQgdG8gdHJ5DQpyZXBsZW5pc2hpbmcgSU9WQXMuDQoN
-ClNpZ25lZC1vZmYtYnk6IFl1bmZlaSBXYW5nIDx5Zi53YW5nQG1lZGlhdGVrLmNvbT4NCkNjOiA8
-c3RhYmxlQHZnZXIua2VybmVsLm9yZz4gIyA1LjQuKg0KLS0tDQogZHJpdmVycy9pb21tdS9pb3Zh
-LmMgfCAyICstDQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0p
-DQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2lvdmEuYyBiL2RyaXZlcnMvaW9tbXUvaW92
-YS5jDQppbmRleCBiMjhjOTQzNWI4OTguLjVhMDYzN2NkN2JjMiAxMDA2NDQNCi0tLSBhL2RyaXZl
-cnMvaW9tbXUvaW92YS5jDQorKysgYi9kcml2ZXJzL2lvbW11L2lvdmEuYw0KQEAgLTQ2MCw3ICs0
-NjAsNyBAQCBhbGxvY19pb3ZhX2Zhc3Qoc3RydWN0IGlvdmFfZG9tYWluICppb3ZhZCwgdW5zaWdu
-ZWQgbG9uZyBzaXplLA0KIA0KIAkJLyogVHJ5IHJlcGxlbmlzaGluZyBJT1ZBcyBieSBmbHVzaGlu
-ZyByY2FjaGUuICovDQogCQlmbHVzaF9yY2FjaGUgPSBmYWxzZTsNCi0JCWZvcl9lYWNoX29ubGlu
-ZV9jcHUoY3B1KQ0KKwkJZm9yX2VhY2hfcG9zc2libGVfY3B1KGNwdSkNCiAJCQlmcmVlX2NwdV9j
-YWNoZWRfaW92YXMoY3B1LCBpb3ZhZCk7DQogCQlmcmVlX2dsb2JhbF9jYWNoZWRfaW92YXMoaW92
-YWQpOw0KIAkJZ290byByZXRyeTsNCi0tIA0KMi4xOC4w
+> On Thu, Mar 3, 2022 at 8:05 PM Gurchetan Singh <gurchetansingh@chromium.o=
+rg>
+> wrote:
+> =
 
---__=_Part_Boundary_001_818319673.1538494052--
+>     Hi everyone,
+> =
 
+>     With the current virtio setup, all of guest memory is shared with host
+>     devices.=A0 There=A0has been=A0interest in changing this, to improve =
+isolation of
+>     guest memory and increase confidentiality.=A0=A0
+> =
 
---===============4022180605654451877==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+>     The recently introduced restricted DMA mechanism makes excellent prog=
+ress
+>     in this area:
+> =
+
+>     https://patchwork.kernel.org/project/xen-devel/cover/
+>     20210624155526.2775863-1-tientzu@chromium.org/=A0=A0
+> =
+
+>     Devices without an IOMMU (traditional virtio devices for example) wou=
+ld
+>     allocate from a specially designated region.=A0 Swiotlb bouncing is d=
+one for
+>     all DMA transfers.=A0 This is controlled by the VIRTIO_F_ACCESS_PLATF=
+ORM
+>     feature bit.
+> =
+
+>     https://chromium-review.googlesource.com/c/chromiumos/platform/crosvm=
+/+/
+>     3064198
+> =
+
+>     This mechanism works great for the devices it was designed for, such =
+as
+>     virtio-net.=A0 However, when trying to adapt to it for other devices,=
+ there
+>     are some limitations.=A0=A0
+> =
+
+>     It would be great=A0to have a dedicated heap for virtio-gpu rather th=
+an
+>     allocating from guest memory.=A0=A0
+> =
+
+>     We would like to use dma_alloc_noncontiguous on the restricted dma po=
+ol,
+>     ideally with page-level granularity somehow.=A0 Continuous buffers are
+>     definitely going out of fashion.
+> =
+
+>     There are two considerations when using it with the restricted DMA
+>     approach:
+> =
+
+>     1) No bouncing (aka memcpy)
+> =
+
+>     Expensive with graphics buffers, since guest=A0user space would desig=
+nate
+>     shareable graphics buffers with the host.=A0 We plan to use
+>     DMA_ATTR_SKIP_CPU_SYNC when doing any DMA transactions with GPU buffe=
+rs.
+> =
+
+>     Bounce buffering will be utilized with virtio-cmds, like the other vi=
+rtio
+>     devices that use the restricted DMA mechanism.
+> =
+
+>     2) IO_TLB_SEGSIZE is too small for graphics buffers
+> =
+
+>     This issue was hit before here too:
+> =
+
+>     https://www.spinics.net/lists/kernel/msg4154086.html
+> =
+
+>     The suggestion was to use shared-dma-pool rather than restricted DMA.=
+=A0 But
+>     we're not sure a single device can have restricted DMA (for
+>     VIRTIO_F_ACCESS_PLATFORM) and shared-dma-pool (for larger buffers) at=
+ the
+>     same time.=A0 Does anyone know?=A0
+> =
+
+>     If not, it sounds like "splitting the allocation into dma_max_mapping=
+_size
+>     () chunks" for restricted-dma is also possible.=A0 What is the prefer=
+red
+>     method?
+> =
+
+>     More generally, we would love more feedback on the proposed design or
+>     consider alternatives!
+> =
+
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============4022180605654451877==--
-
