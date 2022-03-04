@@ -1,76 +1,194 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1C404C433F5
-	for <iommu@archiver.kernel.org>; Fri,  4 Mar 2022 18:49:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 71538C4332F
+	for <iommu@archiver.kernel.org>; Fri,  4 Mar 2022 20:19:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id B41EB40516;
-	Fri,  4 Mar 2022 18:49:39 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id F179E60D88;
+	Fri,  4 Mar 2022 20:19:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id esPvQxdjt3L1; Fri,  4 Mar 2022 18:49:38 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 4EAB740153;
-	Fri,  4 Mar 2022 18:49:38 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mnAvAB3rMMcQ; Fri,  4 Mar 2022 20:19:04 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id E056760881;
+	Fri,  4 Mar 2022 20:19:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 26DE7C0012;
-	Fri,  4 Mar 2022 18:49:38 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EE3D4C000B
- for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 18:49:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C1814C0012;
+	Fri,  4 Mar 2022 20:19:03 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0EB26C000B
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 20:19:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E9CDD841A1
- for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 18:49:36 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id DCD7181C58
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 20:19:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=infradead.org
+ dkim=pass (2048-bit key) header.d=oracle.com header.b="X67tZTA/";
+ dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
+ header.b="vfDSotFZ"
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sxM5pRIqIynk for <iommu@lists.linux-foundation.org>;
- Fri,  4 Mar 2022 18:49:35 +0000 (UTC)
+ with ESMTP id S6ycJPAJV1Xo for <iommu@lists.linux-foundation.org>;
+ Fri,  4 Mar 2022 20:19:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from casper.infradead.org (casper.infradead.org
- [IPv6:2001:8b0:10b:1236::1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 9F5F88419E
- for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 18:49:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
- References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=vdCOfW9AA5pXpyysIv5oA6baxsdWJvIveo/FjSSwSb0=; b=OF7MGL/zQ7Zt2b8OOThljpYjTW
- ty2cu1wmG4x8JrCx4Qifj7YhWqJ6gt3qL2jRDZ2IrYkpR+FzNwOa2NL/uj2Ky7W0ps22YwLUHlanH
- EoMI6jlstrEUYM2l11LatKIp0GzBPwEO64nOYC1t1tmRTFPkWFiOGynAkLcvIk0n1A+M9KaX3CUQG
- 82guEbNFyGF4Lqg9A5yRaHMCmcpcsCWJzpAJV6+RIDkkdJ+o+FvnS4QhS3AZY4xk2167Hv/K8Nbwb
- 2Iln+dud1D8cD3q0rbyODLqsA8Q0wJhtUUccipr2ax2e88ISa7a0touBwuCfSThUagQqGrVgdXePM
- tFpLSabg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red
- Hat Linux)) id 1nQCzE-00CtOx-Bj; Fri, 04 Mar 2022 18:49:08 +0000
-Date: Fri, 4 Mar 2022 18:49:08 +0000
-From: Matthew Wilcox <willy@infradead.org>
-To: Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [PATCH 0/2] swiotlb: rework fix info leak with DMA_FROM_DEVICE
-Message-ID: <YiJfJEo4xvq/YIZW@casper.infradead.org>
-References: <20220304135859.3521513-1-pasic@linux.ibm.com>
- <YiI2DPIrNLKwanZw@infradead.org>
- <20220304172908.43ab261d.pasic@linux.ibm.com>
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com
+ [205.220.177.32])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id D5358814BA
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 20:19:00 +0000 (UTC)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+ by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 224HFvRS019110; 
+ Fri, 4 Mar 2022 20:18:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=g1zl/jtSQUcv6zq5IH8TsnBi6aRZ+imTi1+joGXQAjg=;
+ b=X67tZTA/uVEO4CnS81ENaHWi3A7hafrQn4IZcb+uWh7Adspl7Uyq9ezdqYNszdSqAvE8
+ S33Qx0lx3EZtxt9qdgPtgA+lvoT3/pprjdJiaQTO6lh5IQOOKAPiZZsJxg5L3BF1O+7A
+ ZF6lIBlNBEmybXxN22J6r7hd7rVP490gx70yeVBKC7yXcQoXJK5qXCqphvXKkHCk7nnY
+ D/7W5/5lj6TCxTLQEh3O50NP/2k+fkdua7I+Gk1kz+L92GrwZR0Ni/A6di5Nlt3stnxY
+ KCa6zTNvhQFrEpje7SsUNdbfc9dkIvekI2yeS4sFQMtZKIW1arYvBh0PLoqg+dvwzqFs uA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+ by mx0b-00069f02.pphosted.com with ESMTP id 3ek4hvar45-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Fri, 04 Mar 2022 20:18:34 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+ by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 224KBTqf043959;
+ Fri, 4 Mar 2022 20:18:33 GMT
+Received: from nam10-mw2-obe.outbound.protection.outlook.com
+ (mail-mw2nam10lp2105.outbound.protection.outlook.com [104.47.55.105])
+ by userp3020.oracle.com with ESMTP id 3ek4jhcggj-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Fri, 04 Mar 2022 20:18:33 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OhGarKdRSorgd/CEDvE1i2bAtbM6QhxahtIAy3DZCcJWfUcdlz1lKSu+KVGSSTi6ETYg2DbHsaxEudu37OePhs/kfYUY/f+qpFCPLB8NqErO82r95sf0buZKEFWmQZuU9EUuhEQEyRuLIqBQarsJTD087W8WyCQxg8MXJnkgHHE/ENEB8ZsPD6tnEgIVCVmYUVcbUcbzk6nxGiG5kZGTyf77H5ZZBxqCSG3E2Q7boGtVTxSq7Qm6V6yj2b5LhcsMrScFk9S4ctqnWbQTlxAYMXsokcuKNqfUrNwymZr7t5XM/uOtBKs82YRBOvzc/MAg6801FOmlKIw9B+DweOHnSg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=g1zl/jtSQUcv6zq5IH8TsnBi6aRZ+imTi1+joGXQAjg=;
+ b=PtvWc7g9PEdMkY7/88sO2XzUd3hhiS8fkVbr4Z4W8KXNfwRymBm+UO/OYPEr5uIkcjarU4IYcEMLcWZYPobe3tmOjD5JqOSQMaaDvvs0ax/1ccmOKBrxWvng4L868qJGjSg3QuEGrYBM6Z89ldiP7YmzmeDZ+Q25AuousH6lcvviQIeUHSmbpQaTsyf720o6n+JYTuFmwWBQElHs521x1nMgh7OO4JVY2W3udr4mV8EB2Gm7heE/Fu40WvqP7/So352v9hfWojeVDz00DVPI+jEmIhbcpjchEJfw5tUdScyipuIsFvC6AF+FREon/5ZWHCesH8qtsJgOnpkmcqDoqg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=g1zl/jtSQUcv6zq5IH8TsnBi6aRZ+imTi1+joGXQAjg=;
+ b=vfDSotFZI8+Of/YHYjFPFb8zoiBL0WfcJPGV5JvJw8mXUV8e8D6amRRR5eOAQR4cXvXh58eU8Du/SBCVmVHDKO/fAPV/LFoeWK8RKTvR0e/+J2y7Bkcd3B5UBDHlcfZ3fjTvFGLCYp73N4ZMVZWdG/QtOvJMiq2iZtlK4GKcAak=
+Received: from BLAPR10MB5009.namprd10.prod.outlook.com (2603:10b6:208:321::10)
+ by BN7PR10MB2418.namprd10.prod.outlook.com (2603:10b6:406:cb::16)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Fri, 4 Mar
+ 2022 20:18:30 +0000
+Received: from BLAPR10MB5009.namprd10.prod.outlook.com
+ ([fe80::6d20:6694:a16:56f7]) by BLAPR10MB5009.namprd10.prod.outlook.com
+ ([fe80::6d20:6694:a16:56f7%3]) with mapi id 15.20.5038.017; Fri, 4 Mar 2022
+ 20:18:30 +0000
+Message-ID: <75cb15b5-d861-1b88-5413-df326c3f1144@oracle.com>
+Date: Fri, 4 Mar 2022 15:18:23 -0500
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH 11/12] swiotlb: merge swiotlb-xen initialization into
+ swiotlb
+Content-Language: en-US
+To: Christoph Hellwig <hch@lst.de>
+References: <20220301105311.885699-1-hch@lst.de>
+ <20220301105311.885699-12-hch@lst.de>
+ <alpine.DEB.2.22.394.2203011720150.3261@ubuntu-linux-20-04-desktop>
+ <ca748512-12bb-7d75-13f1-8d5ec9703e26@oracle.com>
+ <20220304172859.GA12860@lst.de>
+ <fc3992a8-896b-f0fc-e500-9010ec085c57@oracle.com>
+ <20220304174308.GA13515@lst.de>
+From: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+In-Reply-To: <20220304174308.GA13515@lst.de>
+X-ClientProxiedBy: SJ0PR13CA0218.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c1::13) To BLAPR10MB5009.namprd10.prod.outlook.com
+ (2603:10b6:208:321::10)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220304172908.43ab261d.pasic@linux.ibm.com>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>,
- "Martin K. Petersen" <martin.petersen@oracle.com>,
- "Michael S. Tsirkin" <mst@redhat.com>,
- Linus Torvalds <torvalds@linux-foundation.org>,
- "James E.J. Bottomley" <jejb@linux.ibm.com>, linux-doc@vger.kernel.org,
- stable@vger.kernel.org, Christoph Hellwig <hch@infradead.org>,
- Christian Borntraeger <borntraeger@de.ibm.com>,
- iommu@lists.linux-foundation.org, Doug Gilbert <dgilbert@interlog.com>,
- Anshuman Khandual <khandual@linux.vnet.ibm.com>,
- Robin Murphy <robin.murphy@arm.com>,
- Thiago Jung Bauermann <bauerman@linux.ibm.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 30b5e278-3965-457b-18f6-08d9fe1c262e
+X-MS-TrafficTypeDiagnostic: BN7PR10MB2418:EE_
+X-Microsoft-Antispam-PRVS: <BN7PR10MB241890FD23B08A445411034E8A059@BN7PR10MB2418.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Nocj07XcbmJrvdPiYW/qSck1N32eVRKcrdh6rTaclqIVJHPZSnzlefVkdJMIw50PFKxiBmlyPrDIV0osUmX3pB2Ofm3oL0RjbZ1zfamE4PR5OQL1umoasZfbyMmo4gjdEfesSb83V+qXlieDfDWY3Hzd0koHSEQxDUWxH2+6YL/+iFA2MxVOBSr5fRpjSaScip6tbhYdLNE7zFm81/daimeempItWRi294b4OU/2mlE4f2xGyCX8qkKUKycBTMJZJ7YLRIrsKYT+Yx30cPGDH8Gta5ARuUfrXKc+IUPqKx91vpn633HRjfXRL63/6M+yPA+GErmVjynuEyGvDFLmMdr45g1zhNPAKrUbUgwlZ4SlM1PxYWFVcTMasiry3H1jhAZcbJgV4tBgDlZCkjLTNCmb3kBuwkuW38UIFVXmg2fAjcfk0fXSOG++ZnFKjZE20LMzK5MBgusm9s+CtPOkzXbNhyxJGZVltnVRimU8Zti/oDITM8uRwEGemxxfU+IgXD+WYwbw7zpjdTz3FuDrpRqU8zrnCoJzoZe1CDjgqdoXhEl1hGBmUiMjCrOUGViZXOd43DUyzjzwMGxYhUbQXPry4ZuLDNyZoXvRi4ZevKE5eJAJjUTfK0WQ+K8qS5QEUhotZLzr9Eoy7UbiEtcjIzMzLyh9BVm0Us8RiRsdWGpuRLdPgrL6mWTw0ZldPvmvRL2Rk2sSlMG094psobP64RK/mB+rR+wexLYTpo1MC/E=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BLAPR10MB5009.namprd10.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(6506007)(8936002)(31686004)(316002)(36756003)(66946007)(66476007)(6666004)(2616005)(66556008)(6486002)(53546011)(54906003)(508600001)(6512007)(6916009)(31696002)(8676002)(4326008)(83380400001)(86362001)(186003)(26005)(44832011)(4744005)(7416002)(38100700002)(2906002)(5660300002)(45980500001)(43740500002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YUFZUnV5Z0R1TFFPcTlhdm5BMWx1Z3dkczJWc3Q3Sjh0aWJFTk1OeHRIa0ll?=
+ =?utf-8?B?eGZIc05ua3gvVmZESXAxWlJiU2QzWGlCNDcwRWt4eEQ1RWFDako1ZU41UHBv?=
+ =?utf-8?B?MkF4K2R2RUJkUWtHTGxDaXdLcE1UWXQ4OFlWd1NyRlV1UmtxTllLTUkralJn?=
+ =?utf-8?B?enJaVU9Mbjd3d3NKLzN4aU5sMkdGMjF6K2Y2RWU5S3NLMVZMZjltL1Y1U1JV?=
+ =?utf-8?B?b2daeG14SlFNcHd2QUxGVUJtZzVjUE1pNnh4VEZiemYwYURzMTBVc21BTTZS?=
+ =?utf-8?B?Qm9tRTVjRUFFZzcrUTJQNXI0YnFkY1FSUHA0MjZXcFJWSWg3L1g3Sjl5K3I5?=
+ =?utf-8?B?dEZXQjU1ZGJkc3dFdnNmMXNIMW5JT3FHYzlseWxTVUppRTV6aDRSM1hOdXp1?=
+ =?utf-8?B?a1lpZzdVNU0xN1NMeU81bCtPeE1CbkVJd1R5VnNBT0xYVXplN3FUVmkzYVIz?=
+ =?utf-8?B?SXU3aEJYclg1dnN0SlgyeGlpaDk1YlRvWTE2YlJoaGdzelZld1lFSXZla1U2?=
+ =?utf-8?B?dUNTVzZ0NnZYcHhyRGYyYVMxYVFrbVk1UU43cElBejluY3dPdlkwL3E1TG0v?=
+ =?utf-8?B?a2FKL0NUeWpwNGZWRFBDbzVYMXJBbHZzdWU4WjFmMVlOT0JpK1ZtbHRFVXgv?=
+ =?utf-8?B?TXJyeHBSOGJuV1l0SDRxMUROaUZCejNSaFhXVjczV3JRU1F5QW5qc241VDgx?=
+ =?utf-8?B?R24yNEJVRVFQR3JBeFlRVkowL09IZkhidHdUUXdKSUMxTTNOMVJIeHlOMGI1?=
+ =?utf-8?B?ZzBFVmx5TUtWM0IvSGdqUkhCQzZBZ1lVelk1Y2tRRE1jVTl3UEo3QUpmZW4x?=
+ =?utf-8?B?bHlOeGliNHVJREhIbkZhL0RiQjM4Mzh1eHlSQkU3RTFOMXl3K29Ick9jdXdS?=
+ =?utf-8?B?TDhKZGFQRlB5UTZVWkNQSHl2OW9pUmRJdS9lQk5wRzRYWHNMYk01RlJwVTdC?=
+ =?utf-8?B?NUcyZ1p0UmpGVmdqTzg4VXowbGg3THhOb21ESU1XZVNDZVAvTFJIQm5aYTRk?=
+ =?utf-8?B?cDRkWlFORG9NTlNhVSs5M2RrV0VmdTJERU9TU2RWVXpGM1RuU3REby9iUXda?=
+ =?utf-8?B?cEh0allyRXBzMUVqek5YanJVS3pLR2dva2RLL1RkcW91K1FSR0h2U1RtblY2?=
+ =?utf-8?B?Z0JVTWtCaUN6ZXNXcTdhNzk2Q3VkVndTSHBwMS9iL29pTnBBOXVNd24vNCsz?=
+ =?utf-8?B?YkRrSjg5MGpBcFhMbUgrY01sVnhraHVDU28wV3ZiakRyL282WEw2Rm12Wmoz?=
+ =?utf-8?B?TmtZbXFyN1BPRVdQWEI0OStUZjlldmFnVDFrTHBhS3ZzdEl5UmVnSEZFemRU?=
+ =?utf-8?B?TjJTdnMycmZDSzlqL2daU1ZXUXBQdVRUaWc5QThJemlGcUNzVDBlallrR2VS?=
+ =?utf-8?B?SHRma25mdFBKdWE5QzBJc0RRN2hMblJkV3pndjdtckF1UFkzMzFCQWRTZ3FU?=
+ =?utf-8?B?cGVKaWx5eGlLVm5TN05CQTVYdW1WRmVyc3lXdFhmSGg0bGwvQmZSSVFrTGtM?=
+ =?utf-8?B?V3JuUGNwSXAxVzN0QlliRFREVkwrRHFmUEpEbnFGKzdlWFllTGpOa0VqVHBa?=
+ =?utf-8?B?OU1GUy9tdUw4Q0RTdlZlSnZZTllJenBZRGhJcTBKZkpUYlE5MDZoZmNzRWFD?=
+ =?utf-8?B?c2l2OXp5T2NySHY3NHZEc0VpRldYVnA3bnZ5N1ZrUno0ODBmZURrOXNwK0xj?=
+ =?utf-8?B?aGpYZ24xMDIvZ0dRc0pIQzhNYmxpc2ptSVJFY1c2WitUSTVLWkpPUldVSHdo?=
+ =?utf-8?B?WnJnSGVqWk9JWFE3akdEZ3Boci8xYS95NmN2bEhET0lsK0lPL29QTjltRG96?=
+ =?utf-8?B?ak1CVzF6OTRCbnNuZDR5NnZaU3oxNGFhSjZFMXZXNXBXcGIrQ09TTXIrNDZM?=
+ =?utf-8?B?WmtDRXZZdFNMbVlZUjZnWkxrVGVUWHhZK2ZxT2tsWkc2dGVua3dybmMvUTJH?=
+ =?utf-8?B?Rms4czZGUVpzUUtmMlBXN1NkclYyczdOa2l4a1BGM2dCR2paT2w4L2JlNDJW?=
+ =?utf-8?B?dGxOSUhSR1BNVDZsNk01cURUZWVXUEtIblpDYXBLaGlQSDF3bVN4Zlg0QVI5?=
+ =?utf-8?B?ZG84VkFnNE1rS0RNbHFkdEVsZzA1NDBjeXNJVnRaeHcyOHBLZ0ltZXR1bnlH?=
+ =?utf-8?B?Qmsxd1ByQ1hvZVdDVmNWL05PakQ5RTF1S0dZdDBUaXV3MEFxWlNhTTk4UERU?=
+ =?utf-8?B?Mk14OG9xZG5xZGI1OE1QSEUvaUJuOWVpQzREVDZzNi9rZ1BKZUl5OGF6RWd2?=
+ =?utf-8?Q?7TtBsC9N4JQqfrX++FXqcxmF06UPoaqPsyQClstjWE=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 30b5e278-3965-457b-18f6-08d9fe1c262e
+X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB5009.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2022 20:18:30.5230 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: mV48hjgWHi6Pbqx447K51UJ+OGtJbfpJe9pSO8+HAKAEtv/1bzJFBKyy5we1zMg7V9o3tXqkdgD6bnD8ytxaTZM4SUSjr4v+bRwGlIY7Qoc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR10MB2418
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10276
+ signatures=690470
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0
+ mlxlogscore=823
+ adultscore=0 spamscore=0 phishscore=0 suspectscore=0 bulkscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203040101
+X-Proofpoint-GUID: 8hJhYIJeTbw-Nq1Sqvvk0fd9jQeRkrHK
+X-Proofpoint-ORIG-GUID: 8hJhYIJeTbw-Nq1Sqvvk0fd9jQeRkrHK
+Cc: Juergen Gross <jgross@suse.com>, Tom Lendacky <thomas.lendacky@amd.com>,
+ linux-s390@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>,
+ linux-ia64@vger.kernel.org, Anshuman Khandual <anshuman.khandual@arm.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Robin Murphy <robin.murphy@arm.com>, x86@kernel.org,
+ linux-mips@vger.kernel.org, tboot-devel@lists.sourceforge.net,
+ linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org,
+ linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
+ xen-devel@lists.xenproject.org, linux-riscv@lists.infradead.org,
+ David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,19 +201,37 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Mar 04, 2022 at 05:29:08PM +0100, Halil Pasic wrote:
-> No problem, I can do that. It isn't hard to squash things together, but
-> when I was about to write the commit message, I had the feeling doing
-> a revert is cleaner.
-> 
-> Any other opinions?
 
-One patch, not two.
+On 3/4/22 12:43 PM, Christoph Hellwig wrote:
+> On Fri, Mar 04, 2022 at 12:36:17PM -0500, Boris Ostrovsky wrote:
+>>>> I bisected it to "x86: remove the IOMMU table infrastructure" but haven't actually looked at the code yet.
+>>> That looks like the swiotlb buffer did not get initialized at all, but I
+>>> can't really explain why.
+>>>
+>>> Can you stick in a printk and see if xen_swiotlb_init_early gets called
+>>> at all?
+>>
+>>
+>> Actually, that's the only thing I did do so far and yes, it does get called.
+> So, specifically for "x86: remove the IOMMU table infrastructure" I
+> think we need the one-liner below so that swiotlb_exit doesn't get called
+> for the Xen case.  But that should have been fixed up by the next
+> patch already.
+
+
+This indeed allows dom0 to boot. Not sure I see where in the next patch this would have been fixed?
+
+
+(BTW, just noticed in iommu_setup() you set this variable to 1. Should be 'true')
+
+
+-boris
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
