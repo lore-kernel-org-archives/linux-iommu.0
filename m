@@ -1,77 +1,66 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6ABA1C433F5
-	for <iommu@archiver.kernel.org>; Fri,  4 Mar 2022 16:55:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 57A9AC433F5
+	for <iommu@archiver.kernel.org>; Fri,  4 Mar 2022 17:29:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id EDA10841A2;
-	Fri,  4 Mar 2022 16:55:51 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id E1F6940A03;
+	Fri,  4 Mar 2022 17:29:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id c6Gv1GcnDMGa; Fri,  4 Mar 2022 16:55:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id C3E9283312;
-	Fri,  4 Mar 2022 16:55:50 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9MNfMYiVJhGt; Fri,  4 Mar 2022 17:29:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 8E09F40A0B;
+	Fri,  4 Mar 2022 17:29:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9B5A7C0012;
-	Fri,  4 Mar 2022 16:55:50 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AD565C000B
- for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 16:55:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5D2A0C001D;
+	Fri,  4 Mar 2022 17:29:09 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CC6EAC000B
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 17:29:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 87D638418F
- for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 16:55:49 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id B4870416C5
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 17:29:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rk7CO65Cc838 for <iommu@lists.linux-foundation.org>;
- Fri,  4 Mar 2022 16:55:49 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id jRiGA5s8Al94 for <iommu@lists.linux-foundation.org>;
+ Fri,  4 Mar 2022 17:29:05 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org
- [IPv6:2604:1380:4601:e00::1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id DBCB383312
- for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 16:55:48 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id 200DAB82A88;
- Fri,  4 Mar 2022 16:55:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1876C340E9;
- Fri,  4 Mar 2022 16:55:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
- s=korg; t=1646412944;
- bh=B+UV2G70h7lvv+8DpIMYl/VkQqHKKqEhFln4Go7FLAs=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=Yrtl1+N2serLhyYw9ro0Lc+ScqdI+QhjwGsZ0Xcn8nioqaibMGTcmY1W15X8iYB1F
- qAxiCwOm2XWiux8ofFHdnD0uHKn8HsMYLNsBVOnRmslIyO7dFoMT2jypzsNiaDbhAq
- 9eFsm7WD16wtZniLKMPz3NP/VREUDo22CgO2S7xA=
-Date: Fri, 4 Mar 2022 17:55:40 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [PATCH 1/2] Revert "swiotlb: fix info leak with DMA_FROM_DEVICE"
-Message-ID: <YiJEjLdpXoGxtJsO@kroah.com>
-References: <20220304135859.3521513-1-pasic@linux.ibm.com>
- <20220304135859.3521513-2-pasic@linux.ibm.com>
- <YiIiHD7uA1o7Sj1X@kroah.com>
- <20220304173447.27dc0798.pasic@linux.ibm.com>
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 4D69E4091D
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Mar 2022 17:29:05 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id C0EE168AFE; Fri,  4 Mar 2022 18:28:59 +0100 (CET)
+Date: Fri, 4 Mar 2022 18:28:59 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Subject: Re: [PATCH 11/12] swiotlb: merge swiotlb-xen initialization into
+ swiotlb
+Message-ID: <20220304172859.GA12860@lst.de>
+References: <20220301105311.885699-1-hch@lst.de>
+ <20220301105311.885699-12-hch@lst.de>
+ <alpine.DEB.2.22.394.2203011720150.3261@ubuntu-linux-20-04-desktop>
+ <ca748512-12bb-7d75-13f1-8d5ec9703e26@oracle.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20220304173447.27dc0798.pasic@linux.ibm.com>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>,
- "Martin K. Petersen" <martin.petersen@oracle.com>,
- "Michael S. Tsirkin" <mst@redhat.com>,
- Linus Torvalds <torvalds@linux-foundation.org>,
- "James E.J. Bottomley" <jejb@linux.ibm.com>, linux-doc@vger.kernel.org,
- stable@vger.kernel.org, Christoph Hellwig <hch@infradead.org>,
- Christian Borntraeger <borntraeger@de.ibm.com>,
- iommu@lists.linux-foundation.org, Doug Gilbert <dgilbert@interlog.com>,
- Anshuman Khandual <khandual@linux.vnet.ibm.com>,
- Robin Murphy <robin.murphy@arm.com>,
- Thiago Jung Bauermann <bauerman@linux.ibm.com>
+In-Reply-To: <ca748512-12bb-7d75-13f1-8d5ec9703e26@oracle.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: linux-hyperv@vger.kernel.org, x86@kernel.org, linux-ia64@vger.kernel.org,
+ linux-pci@vger.kernel.org, linux-riscv@lists.infradead.org,
+ Christoph Hellwig <hch@lst.de>, linux-s390@vger.kernel.org,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Anshuman Khandual <anshuman.khandual@arm.com>,
+ tboot-devel@lists.sourceforge.net, xen-devel@lists.xenproject.org,
+ David Woodhouse <dwmw2@infradead.org>, Tom Lendacky <thomas.lendacky@amd.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ linux-arm-kernel@lists.infradead.org, Juergen Gross <jgross@suse.com>,
+ linuxppc-dev@lists.ozlabs.org, linux-mips@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,24 +78,21 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Mar 04, 2022 at 05:34:47PM +0100, Halil Pasic wrote:
-> On Fri, 4 Mar 2022 15:28:44 +0100
-> Greg KH <gregkh@linuxfoundation.org> wrote:
-> 
-> > On Fri, Mar 04, 2022 at 02:58:58PM +0100, Halil Pasic wrote:
-> > > This reverts commit ddbd89deb7d32b1fbb879f48d68fda1a8ac58e8e.  
-> > 
-> > Why???
-> 
-> TLDR; We got v4 merged instead of v7
+On Wed, Mar 02, 2022 at 08:15:03AM -0500, Boris Ostrovsky wrote:
+> Not for me, I fail to boot with
+>
+> [   52.202000] bnxt_en 0000:31:00.0: swiotlb buffer is full (sz: 256 bytes), total 0 (slots), used 0 (slots)
+>
+> (this is iscsi root so I need the NIC).
+>
+>
+> I bisected it to "x86: remove the IOMMU table infrastructure" but haven't actually looked at the code yet.
 
-That makes no sense at all to me, you need to describe it in detail.
+That looks like the swiotlb buffer did not get initialized at all, but I
+can't really explain why.
 
-You know better than this :(
-
-thanks,
-
-greg k-h
+Can you stick in a printk and see if xen_swiotlb_init_early gets called
+at all?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
