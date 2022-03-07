@@ -1,57 +1,57 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 768D7C433EF
-	for <iommu@archiver.kernel.org>; Mon,  7 Mar 2022 03:39:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4E314C433F5
+	for <iommu@archiver.kernel.org>; Mon,  7 Mar 2022 03:55:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 2C0F7812DB;
-	Mon,  7 Mar 2022 03:39:13 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 02B5260D6D;
+	Mon,  7 Mar 2022 03:55:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qTz3frjNjeKL; Mon,  7 Mar 2022 03:39:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 036EC812E4;
-	Mon,  7 Mar 2022 03:39:11 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id YZmjs76xK9Gm; Mon,  7 Mar 2022 03:55:41 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id DDC9960D88;
+	Mon,  7 Mar 2022 03:55:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C9537C0012;
-	Mon,  7 Mar 2022 03:39:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B253CC0012;
+	Mon,  7 Mar 2022 03:55:40 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A8882C000B
- for <iommu@lists.linux-foundation.org>; Mon,  7 Mar 2022 03:39:10 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EC6EEC000B
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Mar 2022 03:55:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 8EC0A40150
- for <iommu@lists.linux-foundation.org>; Mon,  7 Mar 2022 03:39:10 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id E15B340193
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Mar 2022 03:55:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hs7vbBEGxNmO for <iommu@lists.linux-foundation.org>;
- Mon,  7 Mar 2022 03:39:09 +0000 (UTC)
+ with ESMTP id xHSMbRxEZHI1 for <iommu@lists.linux-foundation.org>;
+ Mon,  7 Mar 2022 03:55:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 552BA400B9
- for <iommu@lists.linux-foundation.org>; Mon,  7 Mar 2022 03:39:09 +0000 (UTC)
-X-UUID: f7e21676e1fd457d8434de712293e217-20220307
-X-UUID: f7e21676e1fd457d8434de712293e217-20220307
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
- (envelope-from <yf.wang@mediatek.com>)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id D5C12400B9
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Mar 2022 03:55:34 +0000 (UTC)
+X-UUID: 2c5287f01a0f4632a8214a70db01be8c-20220307
+X-UUID: 2c5287f01a0f4632a8214a70db01be8c-20220307
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by
+ mailgw01.mediatek.com (envelope-from <yf.wang@mediatek.com>)
  (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 801078150; Mon, 07 Mar 2022 11:39:03 +0800
+ with ESMTP id 1052100488; Mon, 07 Mar 2022 11:55:30 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
  mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 7 Mar 2022 11:39:01 +0800
+ 15.2.792.15; Mon, 7 Mar 2022 11:55:29 +0800
 Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via
- Frontend Transport; Mon, 7 Mar 2022 11:38:47 +0800
+ Frontend Transport; Mon, 7 Mar 2022 11:55:28 +0800
 To: <robin.murphy@arm.com>
 Subject: RE: [PATCH] iommu/iova: Free all CPU rcache for retry when iova alloc
  failure
-Date: Mon, 7 Mar 2022 11:32:46 +0800
-Message-ID: <20220307033246.23051-1-yf.wang@mediatek.com>
+Date: Mon, 7 Mar 2022 11:49:27 +0800
+Message-ID: <20220307034927.23159-1-yf.wang@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <906a446e-3e25-5813-d380-de699a84b6f4@arm.com>
 References: <906a446e-3e25-5813-d380-de699a84b6f4@arm.com>
@@ -98,17 +98,8 @@ On Fri, 2022-03-04 at 14:03 +0000, Robin Murphy wrote:
 
 Hi Robin,
 
-1.As long as iova domain is not destroyed, the cached iovas will always
-exist, the only chance to free the cache is the retry flushing
-mechanism when alloc fail, but not free cached iova of not online CPU.
-
-2.Iova rcache mechanism is by cpu, but there is no free rcache
-mechanism when the CPU state switch.
-
-3.iova.c does not know about CPU state switching, eg.online <--> offline.
-
-Based on the above basic information, this is not a user bug, it is
-more like a defect of the iova rcache mechanism.
+You are right, kernel 5.15 already has this patch, but kernel 5.10
+not contain.
 
 Thanks,
 Yunfei.
