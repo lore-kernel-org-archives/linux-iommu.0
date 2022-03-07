@@ -1,95 +1,93 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2E3A2C433FE
-	for <iommu@archiver.kernel.org>; Mon,  7 Mar 2022 13:56:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1949BC433EF
+	for <iommu@archiver.kernel.org>; Mon,  7 Mar 2022 14:05:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C5CE7823E3;
-	Mon,  7 Mar 2022 13:56:29 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id C5FEB40386;
+	Mon,  7 Mar 2022 14:05:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6QGqwzKg8ELX; Mon,  7 Mar 2022 13:56:28 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3fcKrcNduuMa; Mon,  7 Mar 2022 14:05:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 4B7D88141A;
-	Mon,  7 Mar 2022 13:56:28 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 4EB59402B3;
+	Mon,  7 Mar 2022 14:05:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3378DC001D;
-	Mon,  7 Mar 2022 13:56:28 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 04A56C000B
- for <iommu@lists.linux-foundation.org>; Mon,  7 Mar 2022 13:56:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 23235C001D;
+	Mon,  7 Mar 2022 14:05:31 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DA1F0C000B
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Mar 2022 14:05:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id E6486400F3
- for <iommu@lists.linux-foundation.org>; Mon,  7 Mar 2022 13:56:26 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id D86224092D
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Mar 2022 14:05:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iFbTtKbYfdx3 for <iommu@lists.linux-foundation.org>;
- Mon,  7 Mar 2022 13:56:25 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id tAqffO_yKXpf for <iommu@lists.linux-foundation.org>;
+ Mon,  7 Mar 2022 14:05:28 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com
- [IPv6:2a00:1450:4864:20::434])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 365EA40004
- for <iommu@lists.linux-foundation.org>; Mon,  7 Mar 2022 13:56:25 +0000 (UTC)
-Received: by mail-wr1-x434.google.com with SMTP id j26so13048914wrb.1
- for <iommu@lists.linux-foundation.org>; Mon, 07 Mar 2022 05:56:24 -0800 (PST)
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com
+ [IPv6:2a00:1450:4864:20::329])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 712C440893
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Mar 2022 14:05:28 +0000 (UTC)
+Received: by mail-wm1-x329.google.com with SMTP id 19so8983040wmy.3
+ for <iommu@lists.linux-foundation.org>; Mon, 07 Mar 2022 06:05:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
  h=date:from:to:cc:subject:message-id:references:mime-version
  :content-disposition:content-transfer-encoding:in-reply-to;
- bh=dOWHiNiW1gr75BNGnyFXSXkC6oa3oOMnwuKYpwVf/zg=;
- b=RaPfV/UsQxEg5bWCmVlslKdDwz6ZY0Zvenpban7wYG9mlFG+j7bdGoTMGNN/W8n354
- /ia3shXKCrWRm74NAwLqrHFxy0fL1OCkSXtvRTFcXwvvRFyR42AINNU4CpLK/lpG5SUK
- SYTe1Ho8aMmsr3ndRsJHY58SzIeiWon2/ny7ik4Ru8ob2vWtlOZTr5wMZh03plEpVT6e
- JOYOxTyfD/F/bqLsym9s/t5X9DrH9OtOJPmjmHOUb3s97dslG1sXRfCuXxh206Gx1yz0
- l1i52Glt6NGbb1f4SaA04BPvz9qL5yqmNnSX0eoYmiVISE1D+4D9Yte5H7VXWF0vi5DZ
- gd6A==
+ bh=cPCPfCto9HtHcoYx4KA9jMbfoIz/FloUnMSSYA+d0k4=;
+ b=BTE2/1Qef0yz/V0uaAKthJorX2GBLbkZzcxKGR2Nm4au3qlnPQyrgfu1mlgXoaQXXJ
+ t+FWXJxNMjy1iKehlIo+ZxIxlHmvTo0CBFhEGJ+mBZY2b0uf7Yzjw4TuR4Y7ZWGloLAx
+ kqo2yu7tTvYID8HDIjWa3CQghSghXo74XdMeaKJt22fUxv2L66PkJ7QfQXQskV0vb+el
+ 3EO3CjnPepNlZXn7wfRukXbwps/Z5cv4IMONsqLWIddmhdlkz4EZR9ErQ/yN66pquo3C
+ z7Rafkbyu8kmfTzpIpeVSBWk69OL34Jl4NVgf3IwTxKzUKvQL0JeiEaiK638iSnonExN
+ It5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:content-transfer-encoding
  :in-reply-to;
- bh=dOWHiNiW1gr75BNGnyFXSXkC6oa3oOMnwuKYpwVf/zg=;
- b=cgF/Vwn2WxVG78ASs+CK8Pvav/xOlZAFlrudd4kxu/jnapj4EH1zQ/0XZpecCq8AE5
- Mh9dcyQOwxhxrUPA7YdrI3RbKNcXiWIPqOG7adbZDfNQKmPeschhhG84VPdb8FxS2brO
- 7CKI/tB4+rBf62+3lQrf0d2CUcuFoltBgRA1INAJ3hkYGf0/DQxoJeneK5HBKNjPMlTA
- 4U5TCm2Yg3zuL6UwB7Zp4nN1XyBSc4mS6EuwonT+3BaJwy4Fix0gnUVrgOnOGVwbj8/E
- Yr3N0++RWjOFQmNHISOzHWpNgtZ1FDwvN3jYBU64NmigSXGmZlAasNNMju+Da7DlGATQ
- VRug==
-X-Gm-Message-State: AOAM5318a7ibUWLjXMJUa7ZToroLASRsaUhokBC33YOva/92f4Bb92Q6
- +0SaknMGii09ZRPweh3UxHY=
-X-Google-Smtp-Source: ABdhPJyHF69crih2bQZgeoDk9AFEi+v+pd0yO3k4wwr/m/iYgpOSvZl8QMgfjJCcXC1BszPAFF1bvA==
-X-Received: by 2002:a05:6000:168e:b0:1f1:faee:f1c4 with SMTP id
- y14-20020a056000168e00b001f1faeef1c4mr2494524wrd.173.1646661383296; 
- Mon, 07 Mar 2022 05:56:23 -0800 (PST)
+ bh=cPCPfCto9HtHcoYx4KA9jMbfoIz/FloUnMSSYA+d0k4=;
+ b=K2NHoqU+l5XFqL+aCYVyc55IXJEcrvKox+6hyzIj3DJ7XkOCpwIz84etxlw87ZBYUf
+ nYPGpfxSjt9nJ4Nb2+QO9ctHUqkfoTQdj5maZYhGKvdt812H1WeuWZNoIiJIeJ/w3QM+
+ Q2PcURqDOeIkvXtJk6h01E5L6v9wOdq94Eg9mqQ1Rj0/cwg1SXxGXN7hUIpz5S72+UWv
+ ULVze5hRtUbUG6qY7OhGW3tCzuYsJN/K1877I2NjNR14/ROBfJld7qPmYP+sUKrxhiPq
+ 2ttGYaYDRw7C+06au2UmO8Fu8aoByfEl6YxSRXy9EUPVKsvZmD/RzN3N1NIh63uNqO2W
+ L1kw==
+X-Gm-Message-State: AOAM533CnnTknJOd1tlg2qMzMrbVNgmfXJNqN9WjbaP9/J9m0cC+KeO2
+ ldpR6UCKvJpstwzuhwhf9Cs=
+X-Google-Smtp-Source: ABdhPJw/5N67lpL9Hf7fIZQLVJfIywdH1lBuwaVVedppeZ7Dkl2OG1Z7eQ0bXKp6L3JocgQWhHw8qA==
+X-Received: by 2002:a7b:c30a:0:b0:389:9e1e:a15f with SMTP id
+ k10-20020a7bc30a000000b003899e1ea15fmr6709974wmj.28.1646661926469; 
+ Mon, 07 Mar 2022 06:05:26 -0800 (PST)
 Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
  by smtp.googlemail.com with ESMTPSA id
- p22-20020a1c5456000000b00389a558670fsm2820409wmi.11.2022.03.07.05.56.22
+ z5-20020a05600c0a0500b0037bb8df81a2sm24852516wmp.13.2022.03.07.06.05.25
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 07 Mar 2022 05:56:22 -0800 (PST)
-Date: Mon, 7 Mar 2022 14:56:21 +0100
+ Mon, 07 Mar 2022 06:05:26 -0800 (PST)
+Date: Mon, 7 Mar 2022 15:05:24 +0100
 From: Corentin Labbe <clabbe.montjoie@gmail.com>
 To: Gilad Ben-Yossef <gilad@benyossef.com>
 Subject: Re: [BUG] crypto: ccree: driver does not handle case where cryptlen
  = authsize =0
-Message-ID: <YiYPBdRIi4+HYsmW@Red>
-References: <YhOcEQEjIKBrbMIZ@Red>
- <CAOtvUMfN8U4+eG-TEVW4bSE6kOzuOSsJE4dOYGXYuWQKNzv7wQ@mail.gmail.com>
- <CAOtvUMeRb=j=NDrc88x8aB-3=D1mxZ_-aA1d4FfvJmj7Jrbi4w@mail.gmail.com>
+Message-ID: <YiYRJH+EtVA4hJMX@Red>
+References: <CAOtvUMeRb=j=NDrc88x8aB-3=D1mxZ_-aA1d4FfvJmj7Jrbi4w@mail.gmail.com>
  <YiIUXtxd44ut5uzV@Red> <YiUsWosH+MKMF7DQ@gondor.apana.org.au>
  <CAOtvUMcudG3ySU+VeE7hfneDVWGLKFTnws-xjhq4hgFYSj0qOg@mail.gmail.com>
  <YiXjCcXXk0f18FDL@Red>
  <aca4117c-b7a5-f7eb-eb03-4e1f1a93a730@arm.com>
  <YiYMeFf+Lsa9y4ss@Red>
  <CAOtvUMccCai9gFrTv6CZB-U56UtCPtmnZUyW5WmUr=+6YiUHZg@mail.gmail.com>
+ <YiYPBdRIi4+HYsmW@Red>
+ <CAOtvUMewFLaNHu1UmoHhnszBNmLrcVV6nCTd7-th8s9=1+h4bg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <CAOtvUMccCai9gFrTv6CZB-U56UtCPtmnZUyW5WmUr=+6YiUHZg@mail.gmail.com>
+In-Reply-To: <CAOtvUMewFLaNHu1UmoHhnszBNmLrcVV6nCTd7-th8s9=1+h4bg@mail.gmail.com>
 Cc: Herbert Xu <herbert@gondor.apana.org.au>,
  Linux kernel mailing list <linux-kernel@vger.kernel.org>,
  iommu@lists.linux-foundation.org,
@@ -107,268 +105,225 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Le Mon, Mar 07, 2022 at 03:53:02PM +0200, Gilad Ben-Yossef a =E9crit :
-> On Mon, Mar 7, 2022 at 3:45 PM Corentin Labbe <clabbe.montjoie@gmail.com>=
- wrote:
-> >
-> > Le Mon, Mar 07, 2022 at 11:14:16AM +0000, Robin Murphy a =E9crit :
-> > > On 2022-03-07 10:48, Corentin Labbe wrote:
-> > > > Le Mon, Mar 07, 2022 at 09:59:29AM +0200, Gilad Ben-Yossef a =EF=BF=
-=BDcrit :
-> > > >> On Sun, Mar 6, 2022 at 11:49 PM Herbert Xu <herbert@gondor.apana.o=
-rg.au> wrote:
-> > > >>>
-> > > >>> On Fri, Mar 04, 2022 at 02:30:06PM +0100, Corentin Labbe wrote:
-> > > >>>>
-> > > >>>> Hello
-> > > >>>>
-> > > >>>> I got:
-> > > >>>> [   17.563793] ------------[ cut here ]------------
-> > > >>>> [   17.568492] DMA-API: ccree e6601000.crypto: device driver fre=
-es DMA memory with different direction [device address=3D0x0000000078fe5800=
-] [size=3D8 bytes] [mapped with DMA_TO_DEVICE] [unmapped with DMA_BIDIRECTI=
-ONAL]
-> > > >>>
-> > > >>> The direction argument during unmap must match whatever direction
-> > > >>> you used during the original map call.
-> > > >>
-> > > >>
-> > > >> Yes, of course. I changed one but forgot the other.
-> > > >>
-> > > >> Corentin, could you be kind and check that this solves the original
-> > > >> problem and does not produce new warnings?
-> > > >>
-> > > >> diff --git a/drivers/crypto/ccree/cc_buffer_mgr.c
-> > > >> b/drivers/crypto/ccree/cc_buffer_mgr.c
-> > > >> index 11e0278c8631..31cfe014922e 100644
-> > > >> --- a/drivers/crypto/ccree/cc_buffer_mgr.c
-> > > >> +++ b/drivers/crypto/ccree/cc_buffer_mgr.c
-> > > >> @@ -356,12 +356,14 @@ void cc_unmap_cipher_request(struct device *=
-dev,
-> > > >> void *ctx,
-> > > >>                                req_ctx->mlli_params.mlli_dma_addr);
-> > > >>          }
-> > > >>
-> > > >> -       dma_unmap_sg(dev, src, req_ctx->in_nents, DMA_BIDIRECTIONA=
-L);
-> > > >> -       dev_dbg(dev, "Unmapped req->src=3D%pK\n", sg_virt(src));
-> > > >> -
-> > > >>          if (src !=3D dst) {
-> > > >> -               dma_unmap_sg(dev, dst, req_ctx->out_nents, DMA_BID=
-IRECTIONAL);
-> > > >> +               dma_unmap_sg(dev, src, req_ctx->in_nents, DMA_TO_D=
-EVICE);
-> > > >> +               dma_unmap_sg(dev, dst, req_ctx->out_nents, DMA_FRO=
-M_DEVICE);
-> > > >>                  dev_dbg(dev, "Unmapped req->dst=3D%pK\n", sg_virt=
-(dst));
-> > > >> +               dev_dbg(dev, "Unmapped req->src=3D%pK\n", sg_virt(=
-src));
-> > > >> +       } else {
-> > > >> +               dma_unmap_sg(dev, src, req_ctx->in_nents, DMA_BIDI=
-RECTIONAL);
-> > > >> +               dev_dbg(dev, "Unmapped req->src=3D%pK\n", sg_virt(=
-src));
-> > > >>          }
-> > > >>   }
-> > > >>
-> > > >> @@ -377,6 +379,7 @@ int cc_map_cipher_request(struct cc_drvdata
-> > > >> *drvdata, void *ctx,
-> > > >>          u32 dummy =3D 0;
-> > > >>          int rc =3D 0;
-> > > >>          u32 mapped_nents =3D 0;
-> > > >> +       int src_direction =3D (src !=3D dst ? DMA_TO_DEVICE : DMA_=
-BIDIRECTIONAL);
-> > > >>
-> > > >>          req_ctx->dma_buf_type =3D CC_DMA_BUF_DLLI;
-> > > >>          mlli_params->curr_pool =3D NULL;
-> > > >> @@ -399,7 +402,7 @@ int cc_map_cipher_request(struct cc_drvdata
-> > > >> *drvdata, void *ctx,
-> > > >>          }
-> > > >>
-> > > >>          /* Map the src SGL */
-> > > >> -       rc =3D cc_map_sg(dev, src, nbytes, DMA_BIDIRECTIONAL, &req=
-_ctx->in_nents,
-> > > >> +       rc =3D cc_map_sg(dev, src, nbytes, src_direction, &req_ctx=
-->in_nents,
-> > > >>                         LLI_MAX_NUM_OF_DATA_ENTRIES, &dummy, &mapp=
-ed_nents);
-> > > >>          if (rc)
-> > > >>                  goto cipher_exit;
-> > > >> @@ -416,7 +419,7 @@ int cc_map_cipher_request(struct cc_drvdata
-> > > >> *drvdata, void *ctx,
-> > > >>                  }
-> > > >>          } else {
-> > > >>                  /* Map the dst sg */
-> > > >> -               rc =3D cc_map_sg(dev, dst, nbytes, DMA_BIDIRECTION=
-AL,
-> > > >> +               rc =3D cc_map_sg(dev, dst, nbytes, DMA_FROM_DEVICE,
-> > > >>                                 &req_ctx->out_nents, LLI_MAX_NUM_O=
-F_DATA_ENTRIES,
-> > > >>                                 &dummy, &mapped_nents);
-> > > >>                  if (rc)
-> > > >>
-> > > >>
-> > > >
-> > > > Hello
-> > > >
-> > > > I still get the warning:
-> > > > [  433.406230] ------------[ cut here ]------------
-> > > > [  433.406326] DMA-API: ccree e6601000.crypto: cacheline tracking E=
-EXIST, overlapping mappings aren't supported
-> > > > [  433.406386] WARNING: CPU: 7 PID: 31074 at /home/clabbe/linux-nex=
-t/kernel/dma/debug.c:571 add_dma_entry+0x1d0/0x288
-> > > > [  433.406434] Modules linked in:
-> > > > [  433.406458] CPU: 7 PID: 31074 Comm: kcapi Not tainted 5.17.0-rc6=
--next-20220303-00130-g30042e47ee47-dirty #54
-> > > > [  433.406473] Hardware name: Renesas Salvator-X board based on r8a=
-77950 (DT)
-> > > > [  433.406484] pstate: 40000005 (nZcv daif -PAN -UAO -TCO -DIT -SSB=
-S BTYPE=3D--)
-> > > > [  433.406498] pc : add_dma_entry+0x1d0/0x288
-> > > > [  433.406510] lr : add_dma_entry+0x1d0/0x288
-> > > > [  433.406522] sp : ffff800015da3690
-> > > > [  433.406531] x29: ffff800015da3690 x28: 0000000000000000 x27: 000=
-0000000000000
-> > > > [  433.406562] x26: 0000000000000000 x25: ffff80000b4c7bc0 x24: fff=
-f80000b4c7000
-> > > > [  433.406593] x23: 0000000000000000 x22: 00000000ffffffef x21: fff=
-f80000a9b6000
-> > > > [  433.406623] x20: ffff0004c0af5c00 x19: ffff80000b420000 x18: fff=
-fffffffffffff
-> > > > [  433.406653] x17: 6c7265766f202c54 x16: 534958454520676e x15: 000=
-000000000022e
-> > > > [  433.406683] x14: ffff800015da3380 x13: 00000000ffffffea x12: fff=
-f80000b4be010
-> > > > [  433.406713] x11: 0000000000000001 x10: 0000000000000001 x9 : fff=
-f80000b4a6028
-> > > > [  433.406743] x8 : c0000000ffffefff x7 : 0000000000017fe8 x6 : fff=
-f80000b4a5fd0
-> > > > [  433.406773] x5 : ffff0006ff795c48 x4 : 0000000000000000 x3 : 000=
-0000000000027
-> > > > [  433.406802] x2 : 0000000000000023 x1 : 8ca4e4fbf4b87900 x0 : 000=
-0000000000000
-> > > > [  433.406833] Call trace:
-> > > > [  433.406841]  add_dma_entry+0x1d0/0x288
-> > > > [  433.406854]  debug_dma_map_sg+0x150/0x398
-> > > > [  433.406869]  __dma_map_sg_attrs+0x9c/0x108
-> > > > [  433.406889]  dma_map_sg_attrs+0x10/0x28
-> > > > [  433.406904]  cc_map_sg+0x80/0x100
-> > > > [  433.406924]  cc_map_cipher_request+0x178/0x3c8
-> > > > [  433.406939]  cc_cipher_process+0x210/0xb58
-> > > > [  433.406953]  cc_cipher_encrypt+0x2c/0x38
-> > > > [  433.406967]  crypto_skcipher_encrypt+0x44/0x78
-> > > > [  433.406986]  skcipher_recvmsg+0x36c/0x420
-> > > > [  433.407003]  ____sys_recvmsg+0x90/0x280
-> > > > [  433.407024]  ___sys_recvmsg+0x88/0xd0
-> > > > [  433.407038]  __sys_recvmsg+0x6c/0xd0
-> > > > [  433.407049]  __arm64_sys_recvmsg+0x24/0x30
-> > > > [  433.407061]  invoke_syscall+0x44/0x100
-> > > > [  433.407082]  el0_svc_common.constprop.3+0x90/0x120
-> > > > [  433.407096]  do_el0_svc+0x24/0x88
-> > > > [  433.407110]  el0_svc+0x4c/0x100
-> > > > [  433.407131]  el0t_64_sync_handler+0x90/0xb8
-> > > > [  433.407145]  el0t_64_sync+0x170/0x174
-> > > > [  433.407160] irq event stamp: 5624
-> > > > [  433.407168] hardirqs last  enabled at (5623): [<ffff80000812f6a8=
->] __up_console_sem+0x60/0x98
-> > > > [  433.407191] hardirqs last disabled at (5624): [<ffff800009c9a060=
->] el1_dbg+0x28/0x90
-> > > > [  433.407208] softirqs last  enabled at (5570): [<ffff8000097e62f8=
->] lock_sock_nested+0x80/0xa0
-> > > > [  433.407226] softirqs last disabled at (5568): [<ffff8000097e62d8=
->] lock_sock_nested+0x60/0xa0
-> > > > [  433.407241] ---[ end trace 0000000000000000 ]---
-> > > > [  433.407381] DMA-API: Mapped at:
-> > > > [  433.407396]  debug_dma_map_sg+0x16c/0x398
-> > > > [  433.407416]  __dma_map_sg_attrs+0x9c/0x108
-> > > > [  433.407436]  dma_map_sg_attrs+0x10/0x28
-> > > > [  433.407455]  cc_map_sg+0x80/0x100
-> > > > [  433.407475]  cc_map_cipher_request+0x178/0x3c8
-> > > >
-> > > >
-> > > > BUT I start to thing this is a bug in DMA-API debug.
-> > > >
-> > > >
-> > > > My sun8i-ss driver hit the same warning:
-> > > > [  142.458351] WARNING: CPU: 1 PID: 90 at kernel/dma/debug.c:597 ad=
-d_dma_entry+0x2ec/0x4cc
-> > > > [  142.458429] DMA-API: sun8i-ss 1c15000.crypto: cacheline tracking=
- EEXIST, overlapping mappings aren't supported
-> > > > [  142.458455] Modules linked in: ccm algif_aead xts cmac
-> > > > [  142.458563] CPU: 1 PID: 90 Comm: 1c15000.crypto- Not tainted 5.1=
-7.0-rc6-next-20220307-00132-g39dad568d20a-dirty #223
-> > > > [  142.458581] Hardware name: Allwinner A83t board
-> > > > [  142.458596]  unwind_backtrace from show_stack+0x10/0x14
-> > > > [  142.458627]  show_stack from 0xf0abdd1c
-> > > > [  142.458646] irq event stamp: 31747
-> > > > [  142.458660] hardirqs last  enabled at (31753): [<c019316c>] __up=
-_console_sem+0x50/0x60
-> > > > [  142.458688] hardirqs last disabled at (31758): [<c0193158>] __up=
-_console_sem+0x3c/0x60
-> > > > [  142.458710] softirqs last  enabled at (31600): [<c06990c8>] sun8=
-i_ss_handle_cipher_request+0x300/0x8b8
-> > > > [  142.458738] softirqs last disabled at (31580): [<c06990c8>] sun8=
-i_ss_handle_cipher_request+0x300/0x8b8
-> > > > [  142.458758] ---[ end trace 0000000000000000 ]---
-> > > > [  142.458771] DMA-API: Mapped at:
-> > > >
-> > > > Yes the mapped at is empty just after.
-> > > >
-> > > > And the sequence of DMA operations in my driver is simple, so I can=
-not see how any overlap could occur.
-> > >
-> > > The "overlap" is in the sense of having more than one mapping within =
-the
-> > > same cacheline:
-> > >
-> > > [  142.458120] DMA-API: add_dma_entry start P=3Dba79f200 N=3Dba79f
-> > > D=3Dba79f200 L=3D10 DMA_FROM_DEVICE attrs=3D0
-> > > [  142.458156] DMA-API: add_dma_entry start P=3D445dc010 N=3D445dc
-> > > D=3D445dc010 L=3D10 DMA_TO_DEVICE attrs=3D0
-> > > [  142.458178] sun8i-ss 1c15000.crypto: SRC 0/1/1 445dc000 len=3D16 b=
-i=3D0
-> > > [  142.458215] sun8i-ss 1c15000.crypto: DST 0/1/1 ba79f200 len=3D16 b=
-i=3D0
-> > > [  142.458234] DMA-API: add_dma_entry start P=3Dba79f210 N=3Dba79f
-> > > D=3Dba79f210 L=3D10 DMA_FROM_DEVICE attrs=3D0
-> > >
-> > > This actually illustrates exactly the reason why this is unsupportabl=
-e.
-> > > ba79f200 is mapped for DMA_FROM_DEVICE, therefore subsequently mapping
-> > > ba79f210 for DMA_TO_DEVICE may cause the cacheline covering the range
-> > > ba79f200-ba79f23f to be written back over the top of data that the
-> > > device has already started to write to memory. Hello data corruption.
-> > >
-> > > Separate DMA mappings should be from separate memory allocations,
-> > > respecting ARCH_DMA_MINALIGN.
-> > >
-> >
-> > I just saw something strange, only one SG is involved, and I dont see a=
-ny DMA_TO_DEVICE for ba79f210.
-> > I see 2 DMA_FROM_DEVICE (ba79f200 and ba79f210), but only one should be=
- done.
-> > Why 2 FROM mappings are added with only one sg ?
-> >
-> =
-
-> The thing that does the memory allocation of user calls from libkcapi
-> tests is the crypto/af_alg.c code ...
-> =
-
-> I assume the sglist has two buffers? could it be that somehow they are
-> not DMA aligned? that would be weird indeed...
-> =
-
-
-The SGlist has only one SG, so only one buffer, it is why I dont understand=
- the double call to add_dma_entry().
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+TGUgTW9uLCBNYXIgMDcsIDIwMjIgYXQgMDQ6MDA6NDRQTSArMDIwMCwgR2lsYWQgQmVuLVlvc3Nl
+ZiBhIMOpY3JpdCA6Cj4gT24gTW9uLCBNYXIgNywgMjAyMiBhdCAzOjU2IFBNIENvcmVudGluIExh
+YmJlIDxjbGFiYmUubW9udGpvaWVAZ21haWwuY29tPiB3cm90ZToKPiA+Cj4gPiBMZSBNb24sIE1h
+ciAwNywgMjAyMiBhdCAwMzo1MzowMlBNICswMjAwLCBHaWxhZCBCZW4tWW9zc2VmIGEgw6ljcml0
+IDoKPiA+ID4gT24gTW9uLCBNYXIgNywgMjAyMiBhdCAzOjQ1IFBNIENvcmVudGluIExhYmJlIDxj
+bGFiYmUubW9udGpvaWVAZ21haWwuY29tPiB3cm90ZToKPiA+ID4gPgo+ID4gPiA+IExlIE1vbiwg
+TWFyIDA3LCAyMDIyIGF0IDExOjE0OjE2QU0gKzAwMDAsIFJvYmluIE11cnBoeSBhIMOpY3JpdCA6
+Cj4gPiA+ID4gPiBPbiAyMDIyLTAzLTA3IDEwOjQ4LCBDb3JlbnRpbiBMYWJiZSB3cm90ZToKPiA+
+ID4gPiA+ID4gTGUgTW9uLCBNYXIgMDcsIDIwMjIgYXQgMDk6NTk6MjlBTSArMDIwMCwgR2lsYWQg
+QmVuLVlvc3NlZiBhIMSPxbzLnWNyaXQgOgo+ID4gPiA+ID4gPj4gT24gU3VuLCBNYXIgNiwgMjAy
+MiBhdCAxMTo0OSBQTSBIZXJiZXJ0IFh1IDxoZXJiZXJ0QGdvbmRvci5hcGFuYS5vcmcuYXU+IHdy
+b3RlOgo+ID4gPiA+ID4gPj4+Cj4gPiA+ID4gPiA+Pj4gT24gRnJpLCBNYXIgMDQsIDIwMjIgYXQg
+MDI6MzA6MDZQTSArMDEwMCwgQ29yZW50aW4gTGFiYmUgd3JvdGU6Cj4gPiA+ID4gPiA+Pj4+Cj4g
+PiA+ID4gPiA+Pj4+IEhlbGxvCj4gPiA+ID4gPiA+Pj4+Cj4gPiA+ID4gPiA+Pj4+IEkgZ290Ogo+
+ID4gPiA+ID4gPj4+PiBbICAgMTcuNTYzNzkzXSAtLS0tLS0tLS0tLS1bIGN1dCBoZXJlIF0tLS0t
+LS0tLS0tLS0KPiA+ID4gPiA+ID4+Pj4gWyAgIDE3LjU2ODQ5Ml0gRE1BLUFQSTogY2NyZWUgZTY2
+MDEwMDAuY3J5cHRvOiBkZXZpY2UgZHJpdmVyIGZyZWVzIERNQSBtZW1vcnkgd2l0aCBkaWZmZXJl
+bnQgZGlyZWN0aW9uIFtkZXZpY2UgYWRkcmVzcz0weDAwMDAwMDAwNzhmZTU4MDBdIFtzaXplPTgg
+Ynl0ZXNdIFttYXBwZWQgd2l0aCBETUFfVE9fREVWSUNFXSBbdW5tYXBwZWQgd2l0aCBETUFfQklE
+SVJFQ1RJT05BTF0KPiA+ID4gPiA+ID4+Pgo+ID4gPiA+ID4gPj4+IFRoZSBkaXJlY3Rpb24gYXJn
+dW1lbnQgZHVyaW5nIHVubWFwIG11c3QgbWF0Y2ggd2hhdGV2ZXIgZGlyZWN0aW9uCj4gPiA+ID4g
+PiA+Pj4geW91IHVzZWQgZHVyaW5nIHRoZSBvcmlnaW5hbCBtYXAgY2FsbC4KPiA+ID4gPiA+ID4+
+Cj4gPiA+ID4gPiA+Pgo+ID4gPiA+ID4gPj4gWWVzLCBvZiBjb3Vyc2UuIEkgY2hhbmdlZCBvbmUg
+YnV0IGZvcmdvdCB0aGUgb3RoZXIuCj4gPiA+ID4gPiA+Pgo+ID4gPiA+ID4gPj4gQ29yZW50aW4s
+IGNvdWxkIHlvdSBiZSBraW5kIGFuZCBjaGVjayB0aGF0IHRoaXMgc29sdmVzIHRoZSBvcmlnaW5h
+bAo+ID4gPiA+ID4gPj4gcHJvYmxlbSBhbmQgZG9lcyBub3QgcHJvZHVjZSBuZXcgd2FybmluZ3M/
+Cj4gPiA+ID4gPiA+Pgo+ID4gPiA+ID4gPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvY3J5cHRvL2Nj
+cmVlL2NjX2J1ZmZlcl9tZ3IuYwo+ID4gPiA+ID4gPj4gYi9kcml2ZXJzL2NyeXB0by9jY3JlZS9j
+Y19idWZmZXJfbWdyLmMKPiA+ID4gPiA+ID4+IGluZGV4IDExZTAyNzhjODYzMS4uMzFjZmUwMTQ5
+MjJlIDEwMDY0NAo+ID4gPiA+ID4gPj4gLS0tIGEvZHJpdmVycy9jcnlwdG8vY2NyZWUvY2NfYnVm
+ZmVyX21nci5jCj4gPiA+ID4gPiA+PiArKysgYi9kcml2ZXJzL2NyeXB0by9jY3JlZS9jY19idWZm
+ZXJfbWdyLmMKPiA+ID4gPiA+ID4+IEBAIC0zNTYsMTIgKzM1NiwxNCBAQCB2b2lkIGNjX3VubWFw
+X2NpcGhlcl9yZXF1ZXN0KHN0cnVjdCBkZXZpY2UgKmRldiwKPiA+ID4gPiA+ID4+IHZvaWQgKmN0
+eCwKPiA+ID4gPiA+ID4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICByZXFfY3R4LT5t
+bGxpX3BhcmFtcy5tbGxpX2RtYV9hZGRyKTsKPiA+ID4gPiA+ID4+ICAgICAgICAgIH0KPiA+ID4g
+PiA+ID4+Cj4gPiA+ID4gPiA+PiAtICAgICAgIGRtYV91bm1hcF9zZyhkZXYsIHNyYywgcmVxX2N0
+eC0+aW5fbmVudHMsIERNQV9CSURJUkVDVElPTkFMKTsKPiA+ID4gPiA+ID4+IC0gICAgICAgZGV2
+X2RiZyhkZXYsICJVbm1hcHBlZCByZXEtPnNyYz0lcEtcbiIsIHNnX3ZpcnQoc3JjKSk7Cj4gPiA+
+ID4gPiA+PiAtCj4gPiA+ID4gPiA+PiAgICAgICAgICBpZiAoc3JjICE9IGRzdCkgewo+ID4gPiA+
+ID4gPj4gLSAgICAgICAgICAgICAgIGRtYV91bm1hcF9zZyhkZXYsIGRzdCwgcmVxX2N0eC0+b3V0
+X25lbnRzLCBETUFfQklESVJFQ1RJT05BTCk7Cj4gPiA+ID4gPiA+PiArICAgICAgICAgICAgICAg
+ZG1hX3VubWFwX3NnKGRldiwgc3JjLCByZXFfY3R4LT5pbl9uZW50cywgRE1BX1RPX0RFVklDRSk7
+Cj4gPiA+ID4gPiA+PiArICAgICAgICAgICAgICAgZG1hX3VubWFwX3NnKGRldiwgZHN0LCByZXFf
+Y3R4LT5vdXRfbmVudHMsIERNQV9GUk9NX0RFVklDRSk7Cj4gPiA+ID4gPiA+PiAgICAgICAgICAg
+ICAgICAgIGRldl9kYmcoZGV2LCAiVW5tYXBwZWQgcmVxLT5kc3Q9JXBLXG4iLCBzZ192aXJ0KGRz
+dCkpOwo+ID4gPiA+ID4gPj4gKyAgICAgICAgICAgICAgIGRldl9kYmcoZGV2LCAiVW5tYXBwZWQg
+cmVxLT5zcmM9JXBLXG4iLCBzZ192aXJ0KHNyYykpOwo+ID4gPiA+ID4gPj4gKyAgICAgICB9IGVs
+c2Ugewo+ID4gPiA+ID4gPj4gKyAgICAgICAgICAgICAgIGRtYV91bm1hcF9zZyhkZXYsIHNyYywg
+cmVxX2N0eC0+aW5fbmVudHMsIERNQV9CSURJUkVDVElPTkFMKTsKPiA+ID4gPiA+ID4+ICsgICAg
+ICAgICAgICAgICBkZXZfZGJnKGRldiwgIlVubWFwcGVkIHJlcS0+c3JjPSVwS1xuIiwgc2dfdmly
+dChzcmMpKTsKPiA+ID4gPiA+ID4+ICAgICAgICAgIH0KPiA+ID4gPiA+ID4+ICAgfQo+ID4gPiA+
+ID4gPj4KPiA+ID4gPiA+ID4+IEBAIC0zNzcsNiArMzc5LDcgQEAgaW50IGNjX21hcF9jaXBoZXJf
+cmVxdWVzdChzdHJ1Y3QgY2NfZHJ2ZGF0YQo+ID4gPiA+ID4gPj4gKmRydmRhdGEsIHZvaWQgKmN0
+eCwKPiA+ID4gPiA+ID4+ICAgICAgICAgIHUzMiBkdW1teSA9IDA7Cj4gPiA+ID4gPiA+PiAgICAg
+ICAgICBpbnQgcmMgPSAwOwo+ID4gPiA+ID4gPj4gICAgICAgICAgdTMyIG1hcHBlZF9uZW50cyA9
+IDA7Cj4gPiA+ID4gPiA+PiArICAgICAgIGludCBzcmNfZGlyZWN0aW9uID0gKHNyYyAhPSBkc3Qg
+PyBETUFfVE9fREVWSUNFIDogRE1BX0JJRElSRUNUSU9OQUwpOwo+ID4gPiA+ID4gPj4KPiA+ID4g
+PiA+ID4+ICAgICAgICAgIHJlcV9jdHgtPmRtYV9idWZfdHlwZSA9IENDX0RNQV9CVUZfRExMSTsK
+PiA+ID4gPiA+ID4+ICAgICAgICAgIG1sbGlfcGFyYW1zLT5jdXJyX3Bvb2wgPSBOVUxMOwo+ID4g
+PiA+ID4gPj4gQEAgLTM5OSw3ICs0MDIsNyBAQCBpbnQgY2NfbWFwX2NpcGhlcl9yZXF1ZXN0KHN0
+cnVjdCBjY19kcnZkYXRhCj4gPiA+ID4gPiA+PiAqZHJ2ZGF0YSwgdm9pZCAqY3R4LAo+ID4gPiA+
+ID4gPj4gICAgICAgICAgfQo+ID4gPiA+ID4gPj4KPiA+ID4gPiA+ID4+ICAgICAgICAgIC8qIE1h
+cCB0aGUgc3JjIFNHTCAqLwo+ID4gPiA+ID4gPj4gLSAgICAgICByYyA9IGNjX21hcF9zZyhkZXYs
+IHNyYywgbmJ5dGVzLCBETUFfQklESVJFQ1RJT05BTCwgJnJlcV9jdHgtPmluX25lbnRzLAo+ID4g
+PiA+ID4gPj4gKyAgICAgICByYyA9IGNjX21hcF9zZyhkZXYsIHNyYywgbmJ5dGVzLCBzcmNfZGly
+ZWN0aW9uLCAmcmVxX2N0eC0+aW5fbmVudHMsCj4gPiA+ID4gPiA+PiAgICAgICAgICAgICAgICAg
+ICAgICAgICBMTElfTUFYX05VTV9PRl9EQVRBX0VOVFJJRVMsICZkdW1teSwgJm1hcHBlZF9uZW50
+cyk7Cj4gPiA+ID4gPiA+PiAgICAgICAgICBpZiAocmMpCj4gPiA+ID4gPiA+PiAgICAgICAgICAg
+ICAgICAgIGdvdG8gY2lwaGVyX2V4aXQ7Cj4gPiA+ID4gPiA+PiBAQCAtNDE2LDcgKzQxOSw3IEBA
+IGludCBjY19tYXBfY2lwaGVyX3JlcXVlc3Qoc3RydWN0IGNjX2RydmRhdGEKPiA+ID4gPiA+ID4+
+ICpkcnZkYXRhLCB2b2lkICpjdHgsCj4gPiA+ID4gPiA+PiAgICAgICAgICAgICAgICAgIH0KPiA+
+ID4gPiA+ID4+ICAgICAgICAgIH0gZWxzZSB7Cj4gPiA+ID4gPiA+PiAgICAgICAgICAgICAgICAg
+IC8qIE1hcCB0aGUgZHN0IHNnICovCj4gPiA+ID4gPiA+PiAtICAgICAgICAgICAgICAgcmMgPSBj
+Y19tYXBfc2coZGV2LCBkc3QsIG5ieXRlcywgRE1BX0JJRElSRUNUSU9OQUwsCj4gPiA+ID4gPiA+
+PiArICAgICAgICAgICAgICAgcmMgPSBjY19tYXBfc2coZGV2LCBkc3QsIG5ieXRlcywgRE1BX0ZS
+T01fREVWSUNFLAo+ID4gPiA+ID4gPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAm
+cmVxX2N0eC0+b3V0X25lbnRzLCBMTElfTUFYX05VTV9PRl9EQVRBX0VOVFJJRVMsCj4gPiA+ID4g
+PiA+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICZkdW1teSwgJm1hcHBlZF9uZW50
+cyk7Cj4gPiA+ID4gPiA+PiAgICAgICAgICAgICAgICAgIGlmIChyYykKPiA+ID4gPiA+ID4+Cj4g
+PiA+ID4gPiA+Pgo+ID4gPiA+ID4gPgo+ID4gPiA+ID4gPiBIZWxsbwo+ID4gPiA+ID4gPgo+ID4g
+PiA+ID4gPiBJIHN0aWxsIGdldCB0aGUgd2FybmluZzoKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNjIz
+MF0gLS0tLS0tLS0tLS0tWyBjdXQgaGVyZSBdLS0tLS0tLS0tLS0tCj4gPiA+ID4gPiA+IFsgIDQz
+My40MDYzMjZdIERNQS1BUEk6IGNjcmVlIGU2NjAxMDAwLmNyeXB0bzogY2FjaGVsaW5lIHRyYWNr
+aW5nIEVFWElTVCwgb3ZlcmxhcHBpbmcgbWFwcGluZ3MgYXJlbid0IHN1cHBvcnRlZAo+ID4gPiA+
+ID4gPiBbICA0MzMuNDA2Mzg2XSBXQVJOSU5HOiBDUFU6IDcgUElEOiAzMTA3NCBhdCAvaG9tZS9j
+bGFiYmUvbGludXgtbmV4dC9rZXJuZWwvZG1hL2RlYnVnLmM6NTcxIGFkZF9kbWFfZW50cnkrMHgx
+ZDAvMHgyODgKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNjQzNF0gTW9kdWxlcyBsaW5rZWQgaW46Cj4g
+PiA+ID4gPiA+IFsgIDQzMy40MDY0NThdIENQVTogNyBQSUQ6IDMxMDc0IENvbW06IGtjYXBpIE5v
+dCB0YWludGVkIDUuMTcuMC1yYzYtbmV4dC0yMDIyMDMwMy0wMDEzMC1nMzAwNDJlNDdlZTQ3LWRp
+cnR5ICM1NAo+ID4gPiA+ID4gPiBbICA0MzMuNDA2NDczXSBIYXJkd2FyZSBuYW1lOiBSZW5lc2Fz
+IFNhbHZhdG9yLVggYm9hcmQgYmFzZWQgb24gcjhhNzc5NTAgKERUKQo+ID4gPiA+ID4gPiBbICA0
+MzMuNDA2NDg0XSBwc3RhdGU6IDQwMDAwMDA1IChuWmN2IGRhaWYgLVBBTiAtVUFPIC1UQ08gLURJ
+VCAtU1NCUyBCVFlQRT0tLSkKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNjQ5OF0gcGMgOiBhZGRfZG1h
+X2VudHJ5KzB4MWQwLzB4Mjg4Cj4gPiA+ID4gPiA+IFsgIDQzMy40MDY1MTBdIGxyIDogYWRkX2Rt
+YV9lbnRyeSsweDFkMC8weDI4OAo+ID4gPiA+ID4gPiBbICA0MzMuNDA2NTIyXSBzcCA6IGZmZmY4
+MDAwMTVkYTM2OTAKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNjUzMV0geDI5OiBmZmZmODAwMDE1ZGEz
+NjkwIHgyODogMDAwMDAwMDAwMDAwMDAwMCB4Mjc6IDAwMDAwMDAwMDAwMDAwMDAKPiA+ID4gPiA+
+ID4gWyAgNDMzLjQwNjU2Ml0geDI2OiAwMDAwMDAwMDAwMDAwMDAwIHgyNTogZmZmZjgwMDAwYjRj
+N2JjMCB4MjQ6IGZmZmY4MDAwMGI0YzcwMDAKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNjU5M10geDIz
+OiAwMDAwMDAwMDAwMDAwMDAwIHgyMjogMDAwMDAwMDBmZmZmZmZlZiB4MjE6IGZmZmY4MDAwMGE5
+YjYwMDAKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNjYyM10geDIwOiBmZmZmMDAwNGMwYWY1YzAwIHgx
+OTogZmZmZjgwMDAwYjQyMDAwMCB4MTg6IGZmZmZmZmZmZmZmZmZmZmYKPiA+ID4gPiA+ID4gWyAg
+NDMzLjQwNjY1M10geDE3OiA2YzcyNjU3NjZmMjAyYzU0IHgxNjogNTM0OTU4NDU0NTIwNjc2ZSB4
+MTU6IDAwMDAwMDAwMDAwMDAyMmUKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNjY4M10geDE0OiBmZmZm
+ODAwMDE1ZGEzMzgwIHgxMzogMDAwMDAwMDBmZmZmZmZlYSB4MTI6IGZmZmY4MDAwMGI0YmUwMTAK
+PiA+ID4gPiA+ID4gWyAgNDMzLjQwNjcxM10geDExOiAwMDAwMDAwMDAwMDAwMDAxIHgxMDogMDAw
+MDAwMDAwMDAwMDAwMSB4OSA6IGZmZmY4MDAwMGI0YTYwMjgKPiA+ID4gPiA+ID4gWyAgNDMzLjQw
+Njc0M10geDggOiBjMDAwMDAwMGZmZmZlZmZmIHg3IDogMDAwMDAwMDAwMDAxN2ZlOCB4NiA6IGZm
+ZmY4MDAwMGI0YTVmZDAKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNjc3M10geDUgOiBmZmZmMDAwNmZm
+Nzk1YzQ4IHg0IDogMDAwMDAwMDAwMDAwMDAwMCB4MyA6IDAwMDAwMDAwMDAwMDAwMjcKPiA+ID4g
+PiA+ID4gWyAgNDMzLjQwNjgwMl0geDIgOiAwMDAwMDAwMDAwMDAwMDIzIHgxIDogOGNhNGU0ZmJm
+NGI4NzkwMCB4MCA6IDAwMDAwMDAwMDAwMDAwMDAKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNjgzM10g
+Q2FsbCB0cmFjZToKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNjg0MV0gIGFkZF9kbWFfZW50cnkrMHgx
+ZDAvMHgyODgKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNjg1NF0gIGRlYnVnX2RtYV9tYXBfc2crMHgx
+NTAvMHgzOTgKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNjg2OV0gIF9fZG1hX21hcF9zZ19hdHRycysw
+eDljLzB4MTA4Cj4gPiA+ID4gPiA+IFsgIDQzMy40MDY4ODldICBkbWFfbWFwX3NnX2F0dHJzKzB4
+MTAvMHgyOAo+ID4gPiA+ID4gPiBbICA0MzMuNDA2OTA0XSAgY2NfbWFwX3NnKzB4ODAvMHgxMDAK
+PiA+ID4gPiA+ID4gWyAgNDMzLjQwNjkyNF0gIGNjX21hcF9jaXBoZXJfcmVxdWVzdCsweDE3OC8w
+eDNjOAo+ID4gPiA+ID4gPiBbICA0MzMuNDA2OTM5XSAgY2NfY2lwaGVyX3Byb2Nlc3MrMHgyMTAv
+MHhiNTgKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNjk1M10gIGNjX2NpcGhlcl9lbmNyeXB0KzB4MmMv
+MHgzOAo+ID4gPiA+ID4gPiBbICA0MzMuNDA2OTY3XSAgY3J5cHRvX3NrY2lwaGVyX2VuY3J5cHQr
+MHg0NC8weDc4Cj4gPiA+ID4gPiA+IFsgIDQzMy40MDY5ODZdICBza2NpcGhlcl9yZWN2bXNnKzB4
+MzZjLzB4NDIwCj4gPiA+ID4gPiA+IFsgIDQzMy40MDcwMDNdICBfX19fc3lzX3JlY3Ztc2crMHg5
+MC8weDI4MAo+ID4gPiA+ID4gPiBbICA0MzMuNDA3MDI0XSAgX19fc3lzX3JlY3Ztc2crMHg4OC8w
+eGQwCj4gPiA+ID4gPiA+IFsgIDQzMy40MDcwMzhdICBfX3N5c19yZWN2bXNnKzB4NmMvMHhkMAo+
+ID4gPiA+ID4gPiBbICA0MzMuNDA3MDQ5XSAgX19hcm02NF9zeXNfcmVjdm1zZysweDI0LzB4MzAK
+PiA+ID4gPiA+ID4gWyAgNDMzLjQwNzA2MV0gIGludm9rZV9zeXNjYWxsKzB4NDQvMHgxMDAKPiA+
+ID4gPiA+ID4gWyAgNDMzLjQwNzA4Ml0gIGVsMF9zdmNfY29tbW9uLmNvbnN0cHJvcC4zKzB4OTAv
+MHgxMjAKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNzA5Nl0gIGRvX2VsMF9zdmMrMHgyNC8weDg4Cj4g
+PiA+ID4gPiA+IFsgIDQzMy40MDcxMTBdICBlbDBfc3ZjKzB4NGMvMHgxMDAKPiA+ID4gPiA+ID4g
+WyAgNDMzLjQwNzEzMV0gIGVsMHRfNjRfc3luY19oYW5kbGVyKzB4OTAvMHhiOAo+ID4gPiA+ID4g
+PiBbICA0MzMuNDA3MTQ1XSAgZWwwdF82NF9zeW5jKzB4MTcwLzB4MTc0Cj4gPiA+ID4gPiA+IFsg
+IDQzMy40MDcxNjBdIGlycSBldmVudCBzdGFtcDogNTYyNAo+ID4gPiA+ID4gPiBbICA0MzMuNDA3
+MTY4XSBoYXJkaXJxcyBsYXN0ICBlbmFibGVkIGF0ICg1NjIzKTogWzxmZmZmODAwMDA4MTJmNmE4
+Pl0gX191cF9jb25zb2xlX3NlbSsweDYwLzB4OTgKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNzE5MV0g
+aGFyZGlycXMgbGFzdCBkaXNhYmxlZCBhdCAoNTYyNCk6IFs8ZmZmZjgwMDAwOWM5YTA2MD5dIGVs
+MV9kYmcrMHgyOC8weDkwCj4gPiA+ID4gPiA+IFsgIDQzMy40MDcyMDhdIHNvZnRpcnFzIGxhc3Qg
+IGVuYWJsZWQgYXQgKDU1NzApOiBbPGZmZmY4MDAwMDk3ZTYyZjg+XSBsb2NrX3NvY2tfbmVzdGVk
+KzB4ODAvMHhhMAo+ID4gPiA+ID4gPiBbICA0MzMuNDA3MjI2XSBzb2Z0aXJxcyBsYXN0IGRpc2Fi
+bGVkIGF0ICg1NTY4KTogWzxmZmZmODAwMDA5N2U2MmQ4Pl0gbG9ja19zb2NrX25lc3RlZCsweDYw
+LzB4YTAKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNzI0MV0gLS0tWyBlbmQgdHJhY2UgMDAwMDAwMDAw
+MDAwMDAwMCBdLS0tCj4gPiA+ID4gPiA+IFsgIDQzMy40MDczODFdIERNQS1BUEk6IE1hcHBlZCBh
+dDoKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNzM5Nl0gIGRlYnVnX2RtYV9tYXBfc2crMHgxNmMvMHgz
+OTgKPiA+ID4gPiA+ID4gWyAgNDMzLjQwNzQxNl0gIF9fZG1hX21hcF9zZ19hdHRycysweDljLzB4
+MTA4Cj4gPiA+ID4gPiA+IFsgIDQzMy40MDc0MzZdICBkbWFfbWFwX3NnX2F0dHJzKzB4MTAvMHgy
+OAo+ID4gPiA+ID4gPiBbICA0MzMuNDA3NDU1XSAgY2NfbWFwX3NnKzB4ODAvMHgxMDAKPiA+ID4g
+PiA+ID4gWyAgNDMzLjQwNzQ3NV0gIGNjX21hcF9jaXBoZXJfcmVxdWVzdCsweDE3OC8weDNjOAo+
+ID4gPiA+ID4gPgo+ID4gPiA+ID4gPgo+ID4gPiA+ID4gPiBCVVQgSSBzdGFydCB0byB0aGluZyB0
+aGlzIGlzIGEgYnVnIGluIERNQS1BUEkgZGVidWcuCj4gPiA+ID4gPiA+Cj4gPiA+ID4gPiA+Cj4g
+PiA+ID4gPiA+IE15IHN1bjhpLXNzIGRyaXZlciBoaXQgdGhlIHNhbWUgd2FybmluZzoKPiA+ID4g
+PiA+ID4gWyAgMTQyLjQ1ODM1MV0gV0FSTklORzogQ1BVOiAxIFBJRDogOTAgYXQga2VybmVsL2Rt
+YS9kZWJ1Zy5jOjU5NyBhZGRfZG1hX2VudHJ5KzB4MmVjLzB4NGNjCj4gPiA+ID4gPiA+IFsgIDE0
+Mi40NTg0MjldIERNQS1BUEk6IHN1bjhpLXNzIDFjMTUwMDAuY3J5cHRvOiBjYWNoZWxpbmUgdHJh
+Y2tpbmcgRUVYSVNULCBvdmVybGFwcGluZyBtYXBwaW5ncyBhcmVuJ3Qgc3VwcG9ydGVkCj4gPiA+
+ID4gPiA+IFsgIDE0Mi40NTg0NTVdIE1vZHVsZXMgbGlua2VkIGluOiBjY20gYWxnaWZfYWVhZCB4
+dHMgY21hYwo+ID4gPiA+ID4gPiBbICAxNDIuNDU4NTYzXSBDUFU6IDEgUElEOiA5MCBDb21tOiAx
+YzE1MDAwLmNyeXB0by0gTm90IHRhaW50ZWQgNS4xNy4wLXJjNi1uZXh0LTIwMjIwMzA3LTAwMTMy
+LWczOWRhZDU2OGQyMGEtZGlydHkgIzIyMwo+ID4gPiA+ID4gPiBbICAxNDIuNDU4NTgxXSBIYXJk
+d2FyZSBuYW1lOiBBbGx3aW5uZXIgQTgzdCBib2FyZAo+ID4gPiA+ID4gPiBbICAxNDIuNDU4NTk2
+XSAgdW53aW5kX2JhY2t0cmFjZSBmcm9tIHNob3dfc3RhY2srMHgxMC8weDE0Cj4gPiA+ID4gPiA+
+IFsgIDE0Mi40NTg2MjddICBzaG93X3N0YWNrIGZyb20gMHhmMGFiZGQxYwo+ID4gPiA+ID4gPiBb
+ICAxNDIuNDU4NjQ2XSBpcnEgZXZlbnQgc3RhbXA6IDMxNzQ3Cj4gPiA+ID4gPiA+IFsgIDE0Mi40
+NTg2NjBdIGhhcmRpcnFzIGxhc3QgIGVuYWJsZWQgYXQgKDMxNzUzKTogWzxjMDE5MzE2Yz5dIF9f
+dXBfY29uc29sZV9zZW0rMHg1MC8weDYwCj4gPiA+ID4gPiA+IFsgIDE0Mi40NTg2ODhdIGhhcmRp
+cnFzIGxhc3QgZGlzYWJsZWQgYXQgKDMxNzU4KTogWzxjMDE5MzE1OD5dIF9fdXBfY29uc29sZV9z
+ZW0rMHgzYy8weDYwCj4gPiA+ID4gPiA+IFsgIDE0Mi40NTg3MTBdIHNvZnRpcnFzIGxhc3QgIGVu
+YWJsZWQgYXQgKDMxNjAwKTogWzxjMDY5OTBjOD5dIHN1bjhpX3NzX2hhbmRsZV9jaXBoZXJfcmVx
+dWVzdCsweDMwMC8weDhiOAo+ID4gPiA+ID4gPiBbICAxNDIuNDU4NzM4XSBzb2Z0aXJxcyBsYXN0
+IGRpc2FibGVkIGF0ICgzMTU4MCk6IFs8YzA2OTkwYzg+XSBzdW44aV9zc19oYW5kbGVfY2lwaGVy
+X3JlcXVlc3QrMHgzMDAvMHg4YjgKPiA+ID4gPiA+ID4gWyAgMTQyLjQ1ODc1OF0gLS0tWyBlbmQg
+dHJhY2UgMDAwMDAwMDAwMDAwMDAwMCBdLS0tCj4gPiA+ID4gPiA+IFsgIDE0Mi40NTg3NzFdIERN
+QS1BUEk6IE1hcHBlZCBhdDoKPiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4gWWVzIHRoZSBtYXBwZWQg
+YXQgaXMgZW1wdHkganVzdCBhZnRlci4KPiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4gQW5kIHRoZSBz
+ZXF1ZW5jZSBvZiBETUEgb3BlcmF0aW9ucyBpbiBteSBkcml2ZXIgaXMgc2ltcGxlLCBzbyBJIGNh
+bm5vdCBzZWUgaG93IGFueSBvdmVybGFwIGNvdWxkIG9jY3VyLgo+ID4gPiA+ID4KPiA+ID4gPiA+
+IFRoZSAib3ZlcmxhcCIgaXMgaW4gdGhlIHNlbnNlIG9mIGhhdmluZyBtb3JlIHRoYW4gb25lIG1h
+cHBpbmcgd2l0aGluIHRoZQo+ID4gPiA+ID4gc2FtZSBjYWNoZWxpbmU6Cj4gPiA+ID4gPgo+ID4g
+PiA+ID4gWyAgMTQyLjQ1ODEyMF0gRE1BLUFQSTogYWRkX2RtYV9lbnRyeSBzdGFydCBQPWJhNzlm
+MjAwIE49YmE3OWYKPiA+ID4gPiA+IEQ9YmE3OWYyMDAgTD0xMCBETUFfRlJPTV9ERVZJQ0UgYXR0
+cnM9MAo+ID4gPiA+ID4gWyAgMTQyLjQ1ODE1Nl0gRE1BLUFQSTogYWRkX2RtYV9lbnRyeSBzdGFy
+dCBQPTQ0NWRjMDEwIE49NDQ1ZGMKPiA+ID4gPiA+IEQ9NDQ1ZGMwMTAgTD0xMCBETUFfVE9fREVW
+SUNFIGF0dHJzPTAKPiA+ID4gPiA+IFsgIDE0Mi40NTgxNzhdIHN1bjhpLXNzIDFjMTUwMDAuY3J5
+cHRvOiBTUkMgMC8xLzEgNDQ1ZGMwMDAgbGVuPTE2IGJpPTAKPiA+ID4gPiA+IFsgIDE0Mi40NTgy
+MTVdIHN1bjhpLXNzIDFjMTUwMDAuY3J5cHRvOiBEU1QgMC8xLzEgYmE3OWYyMDAgbGVuPTE2IGJp
+PTAKPiA+ID4gPiA+IFsgIDE0Mi40NTgyMzRdIERNQS1BUEk6IGFkZF9kbWFfZW50cnkgc3RhcnQg
+UD1iYTc5ZjIxMCBOPWJhNzlmCj4gPiA+ID4gPiBEPWJhNzlmMjEwIEw9MTAgRE1BX0ZST01fREVW
+SUNFIGF0dHJzPTAKPiA+ID4gPiA+Cj4gPiA+ID4gPiBUaGlzIGFjdHVhbGx5IGlsbHVzdHJhdGVz
+IGV4YWN0bHkgdGhlIHJlYXNvbiB3aHkgdGhpcyBpcyB1bnN1cHBvcnRhYmxlLgo+ID4gPiA+ID4g
+YmE3OWYyMDAgaXMgbWFwcGVkIGZvciBETUFfRlJPTV9ERVZJQ0UsIHRoZXJlZm9yZSBzdWJzZXF1
+ZW50bHkgbWFwcGluZwo+ID4gPiA+ID4gYmE3OWYyMTAgZm9yIERNQV9UT19ERVZJQ0UgbWF5IGNh
+dXNlIHRoZSBjYWNoZWxpbmUgY292ZXJpbmcgdGhlIHJhbmdlCj4gPiA+ID4gPiBiYTc5ZjIwMC1i
+YTc5ZjIzZiB0byBiZSB3cml0dGVuIGJhY2sgb3ZlciB0aGUgdG9wIG9mIGRhdGEgdGhhdCB0aGUK
+PiA+ID4gPiA+IGRldmljZSBoYXMgYWxyZWFkeSBzdGFydGVkIHRvIHdyaXRlIHRvIG1lbW9yeS4g
+SGVsbG8gZGF0YSBjb3JydXB0aW9uLgo+ID4gPiA+ID4KPiA+ID4gPiA+IFNlcGFyYXRlIERNQSBt
+YXBwaW5ncyBzaG91bGQgYmUgZnJvbSBzZXBhcmF0ZSBtZW1vcnkgYWxsb2NhdGlvbnMsCj4gPiA+
+ID4gPiByZXNwZWN0aW5nIEFSQ0hfRE1BX01JTkFMSUdOLgo+ID4gPiA+ID4KPiA+ID4gPgo+ID4g
+PiA+IEkganVzdCBzYXcgc29tZXRoaW5nIHN0cmFuZ2UsIG9ubHkgb25lIFNHIGlzIGludm9sdmVk
+LCBhbmQgSSBkb250IHNlZSBhbnkgRE1BX1RPX0RFVklDRSBmb3IgYmE3OWYyMTAuCj4gPiA+ID4g
+SSBzZWUgMiBETUFfRlJPTV9ERVZJQ0UgKGJhNzlmMjAwIGFuZCBiYTc5ZjIxMCksIGJ1dCBvbmx5
+IG9uZSBzaG91bGQgYmUgZG9uZS4KPiA+ID4gPiBXaHkgMiBGUk9NIG1hcHBpbmdzIGFyZSBhZGRl
+ZCB3aXRoIG9ubHkgb25lIHNnID8KPiA+ID4gPgo+ID4gPgo+ID4gPiBUaGUgdGhpbmcgdGhhdCBk
+b2VzIHRoZSBtZW1vcnkgYWxsb2NhdGlvbiBvZiB1c2VyIGNhbGxzIGZyb20gbGlia2NhcGkKPiA+
+ID4gdGVzdHMgaXMgdGhlIGNyeXB0by9hZl9hbGcuYyBjb2RlIC4uLgo+ID4gPgo+ID4gPiBJIGFz
+c3VtZSB0aGUgc2dsaXN0IGhhcyB0d28gYnVmZmVycz8gY291bGQgaXQgYmUgdGhhdCBzb21laG93
+IHRoZXkgYXJlCj4gPiA+IG5vdCBETUEgYWxpZ25lZD8gdGhhdCB3b3VsZCBiZSB3ZWlyZCBpbmRl
+ZWQuLi4KPiA+ID4KPiA+Cj4gPiBUaGUgU0dsaXN0IGhhcyBvbmx5IG9uZSBTRywgc28gb25seSBv
+bmUgYnVmZmVyLCBpdCBpcyB3aHkgSSBkb250IHVuZGVyc3RhbmQgdGhlIGRvdWJsZSBjYWxsIHRv
+IGFkZF9kbWFfZW50cnkoKS4KPiAKPiBCdXQuLi4gYSBzY2F0dGVyIGdhdGhlciBsaXN0IGJ5IGl0
+cyBuYXR1cmUgY2FuIGhvbGQgbW9yZSB0aGFuIG9uZQo+IGJ1ZmZlciwgbm8/IHRoYXQgaXMgdGhl
+IHdob2xlIHB1cnBvc2Ugb2YgYSBzY2F0dGVyIGdhdGhlciBsaXN0Li4uPwo+IAoKRWFjaCBidWZm
+ZXIgaXMgImluIiBvbmUgc3RydWN0IHNjYXR0ZXJsaXN0ICh0aGlzIGlzIHdoYXQgSSBjYWxsIFNH
+LCBwZXJoYXBzIHdyb25nbHkpLgpUaGUgZGVidWcgc3VuOGktc3MgMWMxNTAwMC5jcnlwdG86IERT
+VCAwLzEvMSBzaG93IHRoYXQgd2UgaGF2ZSBvbmx5IG9uZSBlbnRyeSAoYXMgZ2l2ZW4gYnkgc2df
+bmVudHNfZm9yX2xlbigpIGFuZCBkbWFfbWFwX3NnKCkpCgpTb3JyeSBmb3IgbXkgbWlzbGVhZGlu
+ZyBTRy4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
+bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
+bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
