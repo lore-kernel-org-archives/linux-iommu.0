@@ -4,94 +4,80 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C51C2C433FE
-	for <iommu@archiver.kernel.org>; Tue,  8 Mar 2022 00:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2267FC433F5
+	for <iommu@archiver.kernel.org>; Tue,  8 Mar 2022 05:46:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 4E9D04173C;
-	Tue,  8 Mar 2022 00:31:28 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B761D41739;
+	Tue,  8 Mar 2022 05:46:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id duGse3chbx3r; Tue,  8 Mar 2022 00:31:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id D341C41737;
-	Tue,  8 Mar 2022 00:31:26 +0000 (UTC)
+	with ESMTP id D4aMehLdCEic; Tue,  8 Mar 2022 05:46:13 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 4943F41733;
+	Tue,  8 Mar 2022 05:46:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A1F50C0012;
-	Tue,  8 Mar 2022 00:31:26 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 98403C000B
- for <iommu@lists.linux-foundation.org>; Tue,  8 Mar 2022 00:31:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 21027C001D;
+	Tue,  8 Mar 2022 05:46:13 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5A278C000B
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Mar 2022 05:46:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 77DA560BA3
- for <iommu@lists.linux-foundation.org>; Tue,  8 Mar 2022 00:31:25 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id BD4D64013D
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Mar 2022 05:46:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Vs9Zsnd74lBs for <iommu@lists.linux-foundation.org>;
- Tue,  8 Mar 2022 00:31:24 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 9s9AKK3ygscy for <iommu@lists.linux-foundation.org>;
+ Tue,  8 Mar 2022 05:46:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 5CC9560B29
- for <iommu@lists.linux-foundation.org>; Tue,  8 Mar 2022 00:31:24 +0000 (UTC)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 226C1404C5
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Mar 2022 05:46:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1646699484; x=1678235484;
- h=message-id:date:mime-version:cc:subject:to:references:
- from:in-reply-to:content-transfer-encoding;
- bh=oSu0Z2jGUkfhbuVOaedzXc4LteEqQxU2xU+auVYA8/8=;
- b=U9yulwL7j4BvFnyJpDekyAKW8xTG0OGrMCCn0iglzcFi4bOBXawNbRlS
- yqgNkbdI6CRRuNkTZmfuntRj0sLP+AZ9609OjjSwRnPeo5G3Mfua5cF/s
- 9YyFYuvpl/Vt0KdnccPre1wMGlURCa++TYiC9F3cXj9Mfl4Pl0lVBDpuC
- Xbaf2Wvq4fBiuR57gR/JuNe8ELv62gv+bIFzoT+9qYOloIpTCPq5/2IO4
- w1+tW1WMSd9O1LTCRWswjYAZ6ZSD/tjEFLXqoKDmham+3HVl7ACxBUR2G
- 8VdZJYsz6/IkIK2w6jYqHIqL+4EJ1XfglsY6WMttbn8NMSpTKPK6VAJiN g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="254736070"
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; d="scan'208";a="254736070"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 07 Mar 2022 16:31:23 -0800
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; d="scan'208";a="711324392"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.209.195])
- ([10.254.209.195])
- by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 07 Mar 2022 16:31:16 -0800
-Message-ID: <5fb85230-466c-9615-0867-bb17cab34be5@linux.intel.com>
-Date: Tue, 8 Mar 2022 08:31:14 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH v7 01/11] iommu: Add DMA ownership management interfaces
-Content-Language: en-US
-To: eric.auger@redhat.com, Robin Murphy <robin.murphy@arm.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Joerg Roedel <joro@8bytes.org>, Alex Williamson
- <alex.williamson@redhat.com>, Bjorn Helgaas <bhelgaas@google.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>
-References: <20220228005056.599595-1-baolu.lu@linux.intel.com>
- <20220228005056.599595-2-baolu.lu@linux.intel.com>
- <c75b6e04-bc1b-b9f6-1a44-bf1567a8c19d@redhat.com>
- <7a3dc977-0c5f-6d88-6d3a-8e49bc717690@linux.intel.com>
- <1648bc97-a0d3-4051-58d0-e24fa9e9d183@arm.com>
- <350a8e09-08a9-082b-3ad1-b711c7d98d73@redhat.com>
- <e2698dbe-18e2-1a82-8a12-fe45bc9be534@arm.com>
- <b1a5db0a-0373-5ca0-6256-85a96d029ec9@linux.intel.com>
- <ac75c521-fb13-8414-a81b-9178cbed3471@redhat.com>
+ t=1646718368; x=1678254368;
+ h=from:to:cc:subject:date:message-id:mime-version:
+ content-transfer-encoding;
+ bh=h5Gl6i6ysgskZd8ciPyhjY2DGz3Py3n895BxmTYcWhk=;
+ b=YB9BJD+9zmBg1RCe+oV8TWhGqirwAV9IoPBjBkSuHfXg05Kt2m0TsWzi
+ MVwSgMiNaCfV74m8cCxDCgc9V2ot4mRjHGg1g+fW1kIc3nF/FIEimLHZl
+ HcpEJ2x1RLgWOqe9Z1dpYaB04ZmX1pSBFMaO18UsqvOJ3Wip1V+gw8zmL
+ PEt8Boj+z+4XG3XYKXTF4aw9MkbTYndxCV3R8zEK3XrBFFgrfferEVjB0
+ qxiVCzCuPZOBKDRBjf3+nVSiHkVW/WihC9sNV/Q2qZgzNBXdRU/Rjilfa
+ szyzFuEEAMb8h5ZOYEgX+a/fxglTBCezVMUy8ETNiPraAPQTkY8xjU13o A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="234553074"
+X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; d="scan'208";a="234553074"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 07 Mar 2022 21:46:07 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; d="scan'208";a="537429984"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+ by orsmga007.jf.intel.com with ESMTP; 07 Mar 2022 21:46:00 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <ac75c521-fb13-8414-a81b-9178cbed3471@redhat.com>
-Cc: Chaitanya Kulkarni <kch@nvidia.com>, kvm@vger.kernel.org,
- Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
- David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Jonathan Hunter <jonathanh@nvidia.com>, iommu@lists.linux-foundation.org,
- Thierry Reding <thierry.reding@gmail.com>,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
- Diana Craciun <diana.craciun@oss.nxp.com>,
- Dan Williams <dan.j.williams@intel.com>, Li Yang <leoyang.li@nxp.com>,
- Will Deacon <will@kernel.org>, Dmitry Osipenko <digetx@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Joerg Roedel <joro@8bytes.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Bjorn Helgaas <bhelgaas@google.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>
+Subject: [PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
+Date: Tue,  8 Mar 2022 13:44:10 +0800
+Message-Id: <20220308054421.847385-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Cc: kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
+ linux-pci@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Stuart Yoder <stuyoder@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Dan Williams <dan.j.williams@intel.com>, Cornelia Huck <cohuck@redhat.com>,
+ linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
+ iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,133 +90,202 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMi8zLzcgMjA6NDIsIEVyaWMgQXVnZXIgd3JvdGU6Cj4gSGkgTHUsCj4gCj4gT24gMy83
-LzIyIDQ6MjcgQU0sIEx1IEJhb2x1IHdyb3RlOgo+PiBIaSBSb2JpbiwKPj4KPj4gT24gMy80LzIy
-IDEwOjEwIFBNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+PiBPbiAyMDIyLTAzLTA0IDEzOjU1LCBF
-cmljIEF1Z2VyIHdyb3RlOgo+Pj4+IEhpIFJvYmluLAo+Pj4+Cj4+Pj4gT24gMy80LzIyIDE6MjIg
-UE0sIFJvYmluIE11cnBoeSB3cm90ZToKPj4+Pj4gT24gMjAyMi0wMy0wNCAxMDo0MywgTHUgQmFv
-bHUgd3JvdGU6Cj4+Pj4+PiBIaSBFcmljLAo+Pj4+Pj4KPj4+Pj4+IE9uIDIwMjIvMy80IDE4OjM0
-LCBFcmljIEF1Z2VyIHdyb3RlOgo+Pj4+Pj4+IEkgaGl0IGEgV0FSTl9PTigpIHdoZW4gdW5iaW5k
-aW5nIGFuIGUxMDAwZSBkcml2ZXIganVzdCBhZnRlciBib290Ogo+Pj4+Pj4+Cj4+Pj4+Pj4gc3Vk
-byBtb2Rwcm9iZSAtdiB2ZmlvLXBjaQo+Pj4+Pj4+IGVjaG8gdmZpby1wY2kgfCBzdWRvIHRlZSAt
-YQo+Pj4+Pj4+IC9zeXMvYnVzL3BjaS9kZXZpY2VzLzAwMDQ6MDE6MDAuMC9kcml2ZXJfb3ZlcnJp
-ZGUKPj4+Pj4+PiB2ZmlvLXBjaQo+Pj4+Pj4+IGVjaG8gMDAwNDowMTowMC4wIHwgc3VkbyB0ZWUg
-LWHCoCAvc3lzL2J1cy9wY2kvZHJpdmVycy9lMTAwMGUvdW5iaW5kCj4+Pj4+Pj4KPj4+Pj4+Pgo+
-Pj4+Pj4+IFvCoCAzOTAuMDQyODExXSAtLS0tLS0tLS0tLS1bIGN1dCBoZXJlIF0tLS0tLS0tLS0t
-LS0KPj4+Pj4+PiBbwqAgMzkwLjA0NjQ2OF0gV0FSTklORzogQ1BVOiA0MiBQSUQ6IDU1ODkgYXQK
-Pj4+Pj4+PiBkcml2ZXJzL2lvbW11L2lvbW11LmM6MzEyMwo+Pj4+Pj4+IGlvbW11X2RldmljZV91
-bnVzZV9kZWZhdWx0X2RvbWFpbisweDY4LzB4MTAwCj4+Pj4+Pj4gW8KgIDM5MC4wNTY3MTBdIE1v
-ZHVsZXMgbGlua2VkIGluOiB2ZmlvX3BjaSB2ZmlvX3BjaV9jb3JlIHZmaW9fdmlycWZkCj4+Pj4+
-Pj4gdmZpb19pb21tdV90eXBlMSB2ZmlvIHh0X0NIRUNLU1VNIHh0X01BU1FVRVJBREUgeHRfY29u
-bnRyYWNrCj4+Pj4+Pj4gaXB0X1JFSkVDVAo+Pj4+Pj4+IG5mX3JlamVjdF9pcHY0IG5mdF9jb21w
-YXQgbmZ0X2NoYWluX25hdCBuZl9uYXQgbmZfY29ubnRyYWNrCj4+Pj4+Pj4gbmZfZGVmcmFnX2lw
-djYgbmZfZGVmcmFnX2lwdjQgbmZfdGFibGVzIG5mbmV0bGluayBicmlkZ2Ugc3RwIGxsYwo+Pj4+
-Pj4+IHJma2lsbAo+Pj4+Pj4+IHN1bnJwYyB2ZmF0IGZhdCBtbHg1X2liIGliX3V2ZXJicyBpYl9j
-b3JlIGFjcGlfaXBtaSBpcG1pX3NzaWYKPj4+Pj4+PiBpcG1pX2RldmludGYgaXBtaV9tc2doYW5k
-bGVyIGNwcGNfY3B1ZnJlcSBkcm0geGZzIGxpYmNyYzMyYwo+Pj4+Pj4+IG1seDVfY29yZSBzZwo+
-Pj4+Pj4+IG1seGZ3IGNyY3QxMGRpZl9jZSB0bHMgZ2hhc2hfY2Ugc2hhMl9jZSBzaGEyNTZfYXJt
-NjQgc2hhMV9jZQo+Pj4+Pj4+IHNic2FfZ3dkdAo+Pj4+Pj4+IGUxMDAwZSBwc2FtcGxlIHNkaGNp
-X2FjcGkgYWhjaV9wbGF0Zm9ybSBzZGhjaSBsaWJhaGNpX3BsYXRmb3JtCj4+Pj4+Pj4gcWNvbV9l
-bWFjCj4+Pj4+Pj4gbW1jX2NvcmUgaGRtYSBoZG1hX21nbXQgZG1fbWlycm9yIGRtX3JlZ2lvbl9o
-YXNoIGRtX2xvZyBkbV9tb2QgZnVzZQo+Pj4+Pj4+IFvCoCAzOTAuMTEwNjE4XSBDUFU6IDQyIFBJ
-RDogNTU4OSBDb21tOiB0ZWUgS2R1bXA6IGxvYWRlZCBOb3QgdGFpbnRlZAo+Pj4+Pj4+IDUuMTcu
-MC1yYzQtbHUtdjctb2ZmaWNpYWwrICMyNAo+Pj4+Pj4+IFvCoCAzOTAuMTE5Mzg0XSBIYXJkd2Fy
-ZSBuYW1lOiBXSVdZTk4gUURGMjQwMCBSZWZlcmVuY2UgRXZhbHVhdGlvbgo+Pj4+Pj4+IFBsYXRm
-b3JtIENWOTAtTEExMTUtUDEyMC9RREYyNDAwIEN1c3RvbWVyIFJlZmVyZW5jZSBCb2FyZCwgQklP
-Uwo+Pj4+Pj4+IDBBQ0pBNTcwCj4+Pj4+Pj4gMTEvMDUvMjAxOAo+Pj4+Pj4+IFvCoCAzOTAuMTMy
-NDkyXSBwc3RhdGU6IGEwNDAwMDA1IChOekN2IGRhaWYgK1BBTiAtVUFPIC1UQ08gLURJVCAtU1NC
-Uwo+Pj4+Pj4+IEJUWVBFPS0tKQo+Pj4+Pj4+IFvCoCAzOTAuMTM5NDM2XSBwYyA6IGlvbW11X2Rl
-dmljZV91bnVzZV9kZWZhdWx0X2RvbWFpbisweDY4LzB4MTAwCj4+Pj4+Pj4gW8KgIDM5MC4xNDUx
-NjVdIGxyIDogaW9tbXVfZGV2aWNlX3VudXNlX2RlZmF1bHRfZG9tYWluKzB4MzgvMHgxMDAKPj4+
-Pj4+PiBbwqAgMzkwLjE1MDg5NF0gc3AgOiBmZmZmODAwMDBmYmIzYmMwCj4+Pj4+Pj4gW8KgIDM5
-MC4xNTQxOTNdIHgyOTogZmZmZjgwMDAwZmJiM2JjMCB4Mjg6IGZmZmYwM2MwY2Y2YjI0MDAgeDI3
-Ogo+Pj4+Pj4+IDAwMDAwMDAwMDAwMDAwMDAKPj4+Pj4+PiBbwqAgMzkwLjE2MTMxMV0geDI2OiAw
-MDAwMDAwMDAwMDAwMDAwIHgyNTogMDAwMDAwMDAwMDAwMDAwMCB4MjQ6Cj4+Pj4+Pj4gZmZmZjAz
-YzBjN2NjNTcyMAo+Pj4+Pj4+IFvCoCAzOTAuMTY4NDI5XSB4MjM6IGZmZmYwM2MwYzJiOWQxNTAg
-eDIyOiBmZmZmYjRlNjFkZjIyM2Y4IHgyMToKPj4+Pj4+PiBmZmZmYjRlNjFkZjIyM2Y4Cj4+Pj4+
-Pj4gW8KgIDM5MC4xNzU1NDddIHgyMDogZmZmZjAzYzdjMDNjMzc1OCB4MTk6IGZmZmYwM2M3YzAz
-YzM3MDAgeDE4Ogo+Pj4+Pj4+IDAwMDAwMDAwMDAwMDAwMDAKPj4+Pj4+PiBbwqAgMzkwLjE4MjY2
-NV0geDE3OiAwMDAwMDAwMDAwMDAwMDAwIHgxNjogMDAwMDAwMDAwMDAwMDAwMCB4MTU6Cj4+Pj4+
-Pj4gMDAwMDAwMDAwMDAwMDAwMAo+Pj4+Pj4+IFvCoCAzOTAuMTg5NzgzXSB4MTQ6IDAwMDAwMDAw
-MDAwMDAwMDAgeDEzOiAwMDAwMDAwMDAwMDAwMDMwIHgxMjoKPj4+Pj4+PiBmZmZmMDNjMGQ1MTlj
-ZDgwCj4+Pj4+Pj4gW8KgIDM5MC4xOTY5MDFdIHgxMTogN2Y3ZjdmN2Y3ZjdmN2Y3ZiB4MTA6IDAw
-MDAwMDAwMDAwMDBkYzAgeDkgOgo+Pj4+Pj4+IGZmZmZiNGU2MjBiNTRmOGMKPj4+Pj4+PiBbwqAg
-MzkwLjIwNDAxOV0geDggOiBmZmZmMDNjMGNmNmIzMjIwIHg3IDogZmZmZjRlZjEzMmJiYTAwMCB4
-NiA6Cj4+Pj4+Pj4gMDAwMDAwMDAwMDAwMDBmZgo+Pj4+Pj4+IFvCoCAzOTAuMjExMTM3XSB4NSA6
-IGZmZmYwM2MwYzJiOWYxMDggeDQgOiBmZmZmMDNjMGQ1MWY2NDM4IHgzIDoKPj4+Pj4+PiAwMDAw
-MDAwMDAwMDAwMDAwCj4+Pj4+Pj4gW8KgIDM5MC4yMTgyNTVdIHgyIDogZmZmZjAzYzBjZjZiMjQw
-MCB4MSA6IDAwMDAwMDAwMDAwMDAwMDAgeDAgOgo+Pj4+Pj4+IDAwMDAwMDAwMDAwMDAwMDAKPj4+
-Pj4+PiBbwqAgMzkwLjIyNTM3NF0gQ2FsbCB0cmFjZToKPj4+Pj4+PiBbwqAgMzkwLjIyNzgwNF3C
-oCBpb21tdV9kZXZpY2VfdW51c2VfZGVmYXVsdF9kb21haW4rMHg2OC8weDEwMAo+Pj4+Pj4+IFvC
-oCAzOTAuMjMzMTg3XcKgIHBjaV9kbWFfY2xlYW51cCsweDM4LzB4NDQKPj4+Pj4+PiBbwqAgMzkw
-LjIzNjkxOV3CoCBfX2RldmljZV9yZWxlYXNlX2RyaXZlcisweDFhOC8weDI2MAo+Pj4+Pj4+IFvC
-oCAzOTAuMjQxNTE5XcKgIGRldmljZV9kcml2ZXJfZGV0YWNoKzB4NTAvMHhkMAo+Pj4+Pj4+IFvC
-oCAzOTAuMjQ1Njg2XcKgIHVuYmluZF9zdG9yZSsweGY4LzB4MTIwCj4+Pj4+Pj4gW8KgIDM5MC4y
-NDkyNDVdwqAgZHJ2X2F0dHJfc3RvcmUrMHgzMC8weDQ0Cj4+Pj4+Pj4gW8KgIDM5MC4yNTI4OTFd
-wqAgc3lzZnNfa2Zfd3JpdGUrMHg1MC8weDYwCj4+Pj4+Pj4gW8KgIDM5MC4yNTY1MzddwqAga2Vy
-bmZzX2ZvcF93cml0ZV9pdGVyKzB4MTM0LzB4MWNjCj4+Pj4+Pj4gW8KgIDM5MC4yNjA5NjRdwqAg
-bmV3X3N5bmNfd3JpdGUrMHhmMC8weDE4Ywo+Pj4+Pj4+IFvCoCAzOTAuMjY0Njk2XcKgIHZmc193
-cml0ZSsweDIzMC8weDJkMAo+Pj4+Pj4+IFvCoCAzOTAuMjY4MDgyXcKgIGtzeXNfd3JpdGUrMHg3
-NC8weDEwMAo+Pj4+Pj4+IFvCoCAzOTAuMjcxNDY3XcKgIF9fYXJtNjRfc3lzX3dyaXRlKzB4Mjgv
-MHgzYwo+Pj4+Pj4+IFvCoCAzOTAuMjc1MzczXcKgIGludm9rZV9zeXNjYWxsLmNvbnN0cHJvcC4w
-KzB4NTgvMHhmMAo+Pj4+Pj4+IFvCoCAzOTAuMjgwMDYxXcKgIGVsMF9zdmNfY29tbW9uLmNvbnN0
-cHJvcC4wKzB4MTYwLzB4MTY0Cj4+Pj4+Pj4gW8KgIDM5MC4yODQ5MjJdwqAgZG9fZWwwX3N2Yysw
-eDM0LzB4Y2MKPj4+Pj4+PiBbwqAgMzkwLjI4ODIyMV3CoCBlbDBfc3ZjKzB4MzAvMHgxNDAKPj4+
-Pj4+PiBbwqAgMzkwLjI5MTM0Nl3CoCBlbDB0XzY0X3N5bmNfaGFuZGxlcisweGE0LzB4MTMwCj4+
-Pj4+Pj4gW8KgIDM5MC4yOTU1OTldwqAgZWwwdF82NF9zeW5jKzB4MWEwLzB4MWE0Cj4+Pj4+Pj4g
-W8KgIDM5MC4yOTkyNDVdIC0tLVsgZW5kIHRyYWNlIDAwMDAwMDAwMDAwMDAwMDAgXS0tLQo+Pj4+
-Pj4+Cj4+Pj4+Pj4KPj4+Pj4+PiBJIHB1dCBzb21lIHRyYWNlcyBpbiB0aGUgY29kZSBhbmQgSSBj
-YW4gc2VlIHRoYXQKPj4+Pj4+PiBpb21tdV9kZXZpY2VfdXNlX2RlZmF1bHRfZG9tYWluKCkgZWZm
-ZWN0aXZlbHkgaXMgY2FsbGVkIG9uCj4+Pj4+Pj4gMDAwNDowMTowMC4wIGUxMDAwZSBkZXZpY2Ug
-b24gcGNpX2RtYV9jb25maWd1cmUoKSBidXQgYXQgdGhhdCB0aW1lCj4+Pj4+Pj4gdGhlIGlvbW11
-IGdyb3VwIGlzIE5VTEw6Cj4+Pj4+Pj4gW8KgwqAgMTAuNTY5NDI3XSBlMTAwMGUgMDAwNDowMTow
-MC4wOiAtLS0tLS0gRU5UUlkgcGNpX2RtYV9jb25maWd1cmUKPj4+Pj4+PiBkcml2ZXJfbWFuYWdl
-ZF9hcmVhPTAKPj4+Pj4+PiBbwqDCoCAxMC41Njk0MzFdIGUxMDAwZSAwMDA0OjAxOjAwLjA6ICoq
-KioKPj4+Pj4+PiBpb21tdV9kZXZpY2VfdXNlX2RlZmF1bHRfZG9tYWluIEVOVFJZCj4+Pj4+Pj4g
-W8KgwqAgMTAuNTY5NDMzXSBlMTAwMGUgMDAwNDowMTowMC4wOiAqKioqCj4+Pj4+Pj4gaW9tbXVf
-ZGV2aWNlX3VzZV9kZWZhdWx0X2RvbWFpbiBubyBncm91cAo+Pj4+Pj4+IFvCoMKgIDEwLjU2OTQz
-NV0gZTEwMDBlIDAwMDQ6MDE6MDAuMDogcGNpX2RtYV9jb25maWd1cmUKPj4+Pj4+PiBpb21tdV9k
-ZXZpY2VfdXNlX2RlZmF1bHRfZG9tYWluIHJldHVybmVkIDAKPj4+Pj4+PiBbwqDCoCAxMC41Njk0
-OTJdIGUxMDAwZSAwMDA0OjAxOjAwLjA6IEFkZGluZyB0byBpb21tdSBncm91cCAzCj4+Pj4+Pj4K
-Pj4+Pj4+PiBeXl50aGUgZ3JvdXAgaXMgYWRkZWQgYWZ0ZXIgdGhlCj4+Pj4+Pj4gaW9tbXVfZGV2
-aWNlX3VzZV9kZWZhdWx0X2RvbWFpbigpIGNhbGwKPj4+Pj4+PiBTbyB0aGUgZ3JvdXAtPm93bmVy
-X2NudCBpcyBub3QgaW5jcmVtZW50ZWQgYXMgZXhwZWN0ZWQuCj4+Pj4+Pgo+Pj4+Pj4gVGhhbmsg
-eW91IGZvciByZXBvcnRpbmcgdGhpcy4gRG8geW91IGhhdmUgYW55IGlkZWEgd2h5IHRoZSBkcml2
-ZXIgaXMKPj4+Pj4+IGxvYWRlZCBiZWZvcmUgaW9tbXVfcHJvYmVfZGV2aWNlKCk/Cj4+Pj4+Cj4+
-Pj4+IFVyZ2gsIHRoaXMgaXMgdGhlIGhvcnJpYmxlIGZpcm13YXJlLWRhdGEtb3JkZXJpbmcgdGhp
-bmcgYWdhaW4uIFRoZQo+Pj4+PiBzdHVmZiBJJ3ZlIGJlZW4gc2F5aW5nIGFib3V0IGhhdmluZyB0
-byByZXdvcmsgdGhlIHdob2xlIC5kbWFfY29uZmlndXJlCj4+Pj4+IG1lY2hhbmlzbSBpbiB0aGUg
-bmVhciBmdXR1cmUgaXMgdG8gZml4IHRoaXMgcHJvcGVybHkuCj4+Pj4+Cj4+Pj4+IFRoZSBzdW1t
-YXJ5IGlzIHRoYXQgaW4gcGF0Y2ggIzQsIGNhbGxpbmcKPj4+Pj4gaW9tbXVfZGV2aWNlX3VzZV9k
-ZWZhdWx0X2RvbWFpbigpICpiZWZvcmUqIHtvZixhY3BpfV9kbWFfY29uZmlndXJlIGlzCj4+Pj4+
-IGN1cnJlbnRseSBhIHByb2JsZW0uIEFzIHRoaW5ncyBzdGFuZCwgdGhlIElPTU1VIGRyaXZlciBp
-Z25vcmVkIHRoZQo+Pj4+PiBpbml0aWFsIGlvbW11X3Byb2JlX2RldmljZSgpIGNhbGwgd2hlbiB0
-aGUgZGV2aWNlIHdhcyBhZGRlZCwgc2luY2UgYXQKPj4+Pj4gdGhhdCBwb2ludCBpdCBoYWQgbm8g
-ZndzcGVjIHlldC4gSW4gdGhpcyBzaXR1YXRpb24sCj4+Pj4+IHtvZixhY3BpfV9pb21tdV9jb25m
-aWd1cmUoKSBhcmUgcmV0cmlnZ2VyaW5nIGlvbW11X3Byb2JlX2RldmljZSgpCj4+Pj4+IGFmdGVy
-IHRoZSBJT01NVSBkcml2ZXIgaGFzIHNlZW4gdGhlIGZpcm13YXJlIGRhdGEgdmlhIC5vZl94bGF0
-ZSB0bwo+Pj4+PiBsZWFybiB0aGF0IGl0IGl0IGFjdHVhbGx5IHJlc3BvbnNpYmxlIGZvciB0aGUg
-Z2l2ZW4gZGV2aWNlLgo+Pj4+Cj4+Pj4gdGhhbmsgeW91IGZvciBwcm92aWRpbmcgdGhlIGluZm8u
-IEhvcGUgdGhpcyBpcyBzb21ldGhpbmcgTHUgY2FuIHdvcmsKPj4+PiBhcm91bmQuCj4+Pgo+Pj4g
-SG9wZWZ1bGx5IGl0J3MganVzdCBhIGNhc2Ugb2YgZmxpcHBpbmcgdGhlIGNhbGxzIGFyb3VuZCwg
-c28gdGhhdAo+Pj4gaW9tbXVfdXNlX2RlZmF1bHRfZG9tYWluKCkgZ29lcyBhdCB0aGUgZW5kLCBh
-bmQgY2FsbHMKPj4+IGFyY2hfdGVhcmRvd25fZG1hX29wcygpIGlmIGl0IGZhaWxzLiBGcm9tIGEg
-cXVpY2sgc2tpbSBJICp0aGluayogdGhhdAo+Pj4gc2hvdWxkIHN0aWxsIHdvcmsgb3V0IHRvIHRo
-ZSBkZXNpcmVkIGJlaGF2aW91ciAob3IgYXQgbGVhc3QgY2xvc2UKPj4+IGVub3VnaCB0aGF0IHdl
-IGNhbiBtb3ZlIGZvcndhcmQgd2l0aG91dCBhIGNpcmN1bGFyIGRlcGVuZGVuY3kgYmV0d2Vlbgo+
-Pj4gZml4ZXMuLi4pCj4+Cj4+IFRoaXMgaXMgYSByZWFzb25hYmxlIHNvbHV0aW9uIHRvIG1lLiBU
-aGFuayB5b3UgZm9yIHRoZSBpbmZvcm1hdGlvbiBhbmQKPj4gc3VnZ2VzdGlvbi4KPj4KPj4gRXJp
-YywgSSBoYXZlIHVwZGF0ZWQgdGhlIHBhdGNoICM0IGFuZCB1cGxvYWRlZCBhIG5ldyB2ZXJzaW9u
-IGhlcmU6Cj4+Cj4+IGh0dHBzOi8vZ2l0aHViLmNvbS9MdUJhb2x1L2ludGVsLWlvbW11L2NvbW1p
-dHMvaW9tbXUtZG1hLW93bmVyc2hpcC12OAo+IAo+IHdpdGggdjggSSBkbyBub3QgaGl0IHRoZSB3
-YXJuaW5nIGFueW1vcmUgYW5kIHRoZSBvd25lciBhY2NvdW50aW5nIHNlZW1zCj4gdG8gd29yayBh
-cyBleHBlY3RlZC4KClRoYW5rIHlvdSwgRXJpYyEgSSB3aWxsIHBvc3QgdGhlIHY4IHNvb24uCgpC
-ZXN0IHJlZ2FyZHMsCmJhb2x1Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
-Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
-b21tdQ==
+Hi folks,
+
+The iommu group is the minimal isolation boundary for DMA. Devices in
+a group can access each other's MMIO registers via peer to peer DMA
+and also need share the same I/O address space.
+
+Once the I/O address space is assigned to user control it is no longer
+available to the dma_map* API, which effectively makes the DMA API
+non-working.
+
+Second, userspace can use DMA initiated by a device that it controls
+to access the MMIO spaces of other devices in the group. This allows
+userspace to indirectly attack any kernel owned device and it's driver.
+
+Therefore groups must either be entirely under kernel control or
+userspace control, never a mixture. Unfortunately some systems have
+problems with the granularity of groups and there are a couple of
+important exceptions:
+
+ - pci_stub allows the admin to block driver binding on a device and
+   make it permanently shared with userspace. Since PCI stub does not
+   do DMA it is safe, however the admin must understand that using
+   pci_stub allows userspace to attack whatever device it was bound
+   it.
+
+ - PCI bridges are sometimes included in groups. Typically PCI bridges
+   do not use DMA, and generally do not have MMIO regions.
+
+Generally any device that does not have any MMIO registers is a
+possible candidate for an exception.
+
+Currently vfio adopts a workaround to detect violations of the above
+restrictions by monitoring the driver core BOUND event, and hardwiring
+the above exceptions. Since there is no way for vfio to reject driver
+binding at this point, BUG_ON() is triggered if a violation is
+captured (kernel driver BOUND event on a group which already has some
+devices assigned to userspace). Aside from the bad user experience
+this opens a way for root userspace to crash the kernel, even in high
+integrity configurations, by manipulating the module binding and
+triggering the BUG_ON.
+
+This series solves this problem by making the user/kernel ownership a
+core concept at the IOMMU layer. The driver core enforces kernel
+ownership while drivers are bound and violations now result in a error
+codes during probe, not BUG_ON failures.
+
+Patch partitions:
+  [PATCH 1-4]: Detect DMA ownership conflicts during driver binding;
+  [PATCH 5-7]: Add security context management for assigned devices;
+  [PATCH 8-11]: Various cleanups.
+
+This is also part one of three initial series for IOMMUFD:
+ * Move IOMMU Group security into the iommu layer
+ - Generic IOMMUFD implementation
+ - VFIO ability to consume IOMMUFD
+
+Change log:
+v1: initial post
+  - https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/
+
+v2:
+  - https://lore.kernel.org/linux-iommu/20211128025051.355578-1-baolu.lu@linux.intel.com/
+
+  - Move kernel dma ownership auto-claiming from driver core to bus
+    callback. [Greg/Christoph/Robin/Jason]
+    https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/T/#m153706912b770682cb12e3c28f57e171aa1f9d0c
+
+  - Code and interface refactoring for iommu_set/release_dma_owner()
+    interfaces. [Jason]
+    https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/T/#mea70ed8e4e3665aedf32a5a0a7db095bf680325e
+
+  - [NEW]Add new iommu_attach/detach_device_shared() interfaces for
+    multiple devices group. [Robin/Jason]
+    https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/T/#mea70ed8e4e3665aedf32a5a0a7db095bf680325e
+
+  - [NEW]Use iommu_attach/detach_device_shared() in drm/tegra drivers.
+
+  - Refactoring and description refinement.
+
+v3:
+  - https://lore.kernel.org/linux-iommu/20211206015903.88687-1-baolu.lu@linux.intel.com/
+
+  - Rename bus_type::dma_unconfigure to bus_type::dma_cleanup. [Greg]
+    https://lore.kernel.org/linux-iommu/c3230ace-c878-39db-1663-2b752ff5384e@linux.intel.com/T/#m6711e041e47cb0cbe3964fad0a3466f5ae4b3b9b
+
+  - Avoid _platform_dma_configure for platform_bus_type::dma_configure.
+    [Greg]
+    https://lore.kernel.org/linux-iommu/c3230ace-c878-39db-1663-2b752ff5384e@linux.intel.com/T/#m43fc46286611aa56a5c0eeaad99d539e5519f3f6
+
+  - Patch "0012-iommu-Add-iommu_at-de-tach_device_shared-for-mult.patch"
+    and "0018-drm-tegra-Use-the-iommu-dma_owner-mechanism.patch" have
+    been tested by Dmitry Osipenko <digetx@gmail.com>.
+
+v4:
+  - https://lore.kernel.org/linux-iommu/20211217063708.1740334-1-baolu.lu@linux.intel.com/
+  - Remove unnecessary tegra->domain chech in the tegra patch. (Jason)
+  - Remove DMA_OWNER_NONE. (Joerg)
+  - Change refcount to unsigned int. (Christoph)
+  - Move mutex lock into group set_dma_owner functions. (Christoph)
+  - Add kernel doc for iommu_attach/detach_domain_shared(). (Christoph)
+  - Move dma auto-claim into driver core. (Jason/Christoph)
+
+v5:
+  - https://lore.kernel.org/linux-iommu/20220104015644.2294354-1-baolu.lu@linux.intel.com/
+  - Move kernel dma ownership auto-claiming from driver core to bus
+    callback. (Greg)
+  - Refactor the iommu interfaces to make them more specific.
+    (Jason/Robin)
+  - Simplify the dma ownership implementation by removing the owner
+    type. (Jason)
+  - Commit message refactoring for PCI drivers. (Bjorn)
+  - Move iommu_attach/detach_device() improvement patches into another
+    series as there are a lot of code refactoring and cleanup staffs
+    in various device drivers.
+
+v6:
+  - https://lore.kernel.org/linux-iommu/20220218005521.172832-1-baolu.lu@linux.intel.com/
+  - Refine comments and commit mesages.
+  - Rename iommu_group_set_dma_owner() to iommu_group_claim_dma_owner().
+  - Rename iommu_device_use/unuse_kernel_dma() to
+    iommu_device_use/unuse_default_domain().
+  - Remove unnecessary EXPORT_SYMBOL_GPL.
+  - Change flag name from no_kernel_api_dma to driver_managed_dma.
+  - Merge 4 "Add driver dma ownership management" patches into single
+    one.
+
+v7:
+  - We discussed about adding some fields in driver structure and
+    intercepting it in the bus notifier for driver unbinding. We agreed
+    that the driver structure should not be used out of the driver core.
+  - As iommu_group_claim/release_dma_owner() are only used by the VFIO,
+    there're no use cases for multiple calls for a single group.
+  - Add some commit messages in "vfio: Set DMA ownership for
+    VFIO" to describe the intentional enhancement of unsafe bridge
+    drivers.
+  - Comments refinement.
+
+v8:
+  - Move iommu_use_default_domain() to the end of .dma_configure
+    callback to avoid firmware-data-ordering thing.
+    Link: https://lore.kernel.org/linux-iommu/e2698dbe-18e2-1a82-8a12-fe45bc9be534@arm.com/
+  - Add Acked-by from PCI and VFIO maintainers.
+
+This is based on next branch of linux-iommu tree:
+https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+and also available on github:
+https://github.com/LuBaolu/intel-iommu/commits/iommu-dma-ownership-v8
+
+Best regards,
+baolu
+
+Jason Gunthorpe (1):
+  vfio: Delete the unbound_list
+
+Lu Baolu (10):
+  iommu: Add DMA ownership management interfaces
+  driver core: Add dma_cleanup callback in bus_type
+  amba: Stop sharing platform_dma_configure()
+  bus: platform,amba,fsl-mc,PCI: Add device DMA ownership management
+  PCI: pci_stub: Set driver_managed_dma
+  PCI: portdrv: Set driver_managed_dma
+  vfio: Set DMA ownership for VFIO devices
+  vfio: Remove use of vfio_group_viable()
+  vfio: Remove iommu group notifier
+  iommu: Remove iommu group changes notifier
+
+ include/linux/amba/bus.h              |   8 +
+ include/linux/device/bus.h            |   3 +
+ include/linux/fsl/mc.h                |   8 +
+ include/linux/iommu.h                 |  54 +++---
+ include/linux/pci.h                   |   8 +
+ include/linux/platform_device.h       |  10 +-
+ drivers/amba/bus.c                    |  37 +++-
+ drivers/base/dd.c                     |   5 +
+ drivers/base/platform.c               |  21 ++-
+ drivers/bus/fsl-mc/fsl-mc-bus.c       |  24 ++-
+ drivers/iommu/iommu.c                 | 228 ++++++++++++++++--------
+ drivers/pci/pci-driver.c              |  18 ++
+ drivers/pci/pci-stub.c                |   1 +
+ drivers/pci/pcie/portdrv_pci.c        |   2 +
+ drivers/vfio/fsl-mc/vfio_fsl_mc.c     |   1 +
+ drivers/vfio/pci/vfio_pci.c           |   1 +
+ drivers/vfio/platform/vfio_amba.c     |   1 +
+ drivers/vfio/platform/vfio_platform.c |   1 +
+ drivers/vfio/vfio.c                   | 245 ++------------------------
+ 19 files changed, 338 insertions(+), 338 deletions(-)
+
+-- 
+2.25.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
