@@ -1,86 +1,60 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4517AC433F5
-	for <iommu@archiver.kernel.org>; Tue,  8 Mar 2022 05:47:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6C387C433F5
+	for <iommu@archiver.kernel.org>; Tue,  8 Mar 2022 06:29:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 02EFD41732;
-	Tue,  8 Mar 2022 05:47:28 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 1479160B98;
+	Tue,  8 Mar 2022 06:29:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id e9HFtwPYS1w6; Tue,  8 Mar 2022 05:47:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id BEDF541722;
-	Tue,  8 Mar 2022 05:47:26 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9442FC001D;
-	Tue,  8 Mar 2022 05:47:26 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E1FC4C000B
- for <iommu@lists.linux-foundation.org>; Tue,  8 Mar 2022 05:47:24 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D051260C08
- for <iommu@lists.linux-foundation.org>; Tue,  8 Mar 2022 05:47:24 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nMq2ZMhz2kPV for <iommu@lists.linux-foundation.org>;
- Tue,  8 Mar 2022 05:47:24 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 996F0wuuCGbJ; Tue,  8 Mar 2022 06:29:21 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id A3299600B4;
+	Tue,  8 Mar 2022 06:29:20 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 83B9CC0012;
+	Tue,  8 Mar 2022 06:29:20 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2F29EC000B
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Mar 2022 06:29:19 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 10A148148A
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Mar 2022 06:29:19 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id fTBpN_i2AFiA for <iommu@lists.linux-foundation.org>;
+ Tue,  8 Mar 2022 06:29:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 1777860D78
- for <iommu@lists.linux-foundation.org>; Tue,  8 Mar 2022 05:47:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1646718444; x=1678254444;
- h=from:to:cc:subject:date:message-id:in-reply-to:
- references:mime-version:content-transfer-encoding;
- bh=e4zKevnerCv3swR38QOP36pCi6FNMKl3EHNwss6IlEU=;
- b=KpfNHiYYEFT5Rmezb9YkzIns8bMMQN31sji2XroyQ7pyvocbOPMrBLKP
- wtELASF404jUp6ExxBA9Pxg9zh9+i9XDIi3/QzsuanSmSshd/rv4nlXoW
- Vw2u+CBY9LhRLotdASdl25+uv4LR39eKU3mOVWgICen0dt0vfw9B3rucO
- Q48OZDVDzBQQ7JjTlD1kXalKXEopz3uhGx5BEIztGEPe1DC7lE9Iz8OSK
- 41RseRicTgm2r3iA2WnU9Gw4nbrWmJSjfpU9LmZerqSaLw0oKNGLlizXN
- dwGcTF03z+kdpm+JmDt0s9fVVKyRYdsgmuTgfoaLqWLfBsTHTlAbnkbwI g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10279"; a="341031225"
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; d="scan'208";a="341031225"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 07 Mar 2022 21:47:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,163,1643702400"; d="scan'208";a="537430375"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
- by orsmga007.jf.intel.com with ESMTP; 07 Mar 2022 21:47:16 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Joerg Roedel <joro@8bytes.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
- Ashok Raj <ashok.raj@intel.com>
-Subject: [PATCH v8 11/11] iommu: Remove iommu group changes notifier
-Date: Tue,  8 Mar 2022 13:44:21 +0800
-Message-Id: <20220308054421.847385-12-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220308054421.847385-1-baolu.lu@linux.intel.com>
-References: <20220308054421.847385-1-baolu.lu@linux.intel.com>
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 88F4B81378
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Mar 2022 06:29:17 +0000 (UTC)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.56])
+ by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KCQP25z2mzdZkh;
+ Tue,  8 Mar 2022 14:27:50 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 8 Mar 2022 14:29:11 +0800
+To: <song.bao.hua@hisilicon.com>, <hch@lst.de>, <shuah@kernel.org>,
+ <chenxiang66@hisilicon.com>, <skhan@linuxfoundation.org>
+Subject: [RESEND] dma-mapping: benchmark: Extract a common header file for
+ map_benchmark definition
+Date: Tue, 8 Mar 2022 14:28:57 +0800
+Message-ID: <20220308062857.45585-1-tiantao6@hisilicon.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Cc: kvm@vger.kernel.org, rafael@kernel.org, David Airlie <airlied@linux.ie>,
- linux-pci@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
- Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
- Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
- Stuart Yoder <stuyoder@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>,
- Chaitanya Kulkarni <kch@nvidia.com>, Dan Williams <dan.j.williams@intel.com>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
- Robin Murphy <robin.murphy@arm.com>
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
+Cc: iommu@lists.linux-foundation.org, linuxarm@openeuler.org,
+ linux-kselftest@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,209 +67,147 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Tian Tao via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Tian Tao <tiantao6@hisilicon.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The iommu group changes notifer is not referenced in the tree. Remove it
-to avoid dead code.
+kernel/dma/map_benchmark.c and selftests/dma/dma_map_benchmark.c
+have duplicate map_benchmark definitions, which tends to lead to
+inconsistent changes to map_benchmark on both sides, extract a
+common header file to avoid this problem.
 
-Suggested-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Tian Tao <tiantao6@hisilicon.com>
+Acked-by: Barry Song <song.bao.hua@hisilicon.com>
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
 ---
- include/linux/iommu.h | 23 -------------
- drivers/iommu/iommu.c | 75 -------------------------------------------
- 2 files changed, 98 deletions(-)
+ kernel/dma/map_benchmark.c                    | 24 +-------------
+ kernel/dma/map_benchmark.h                    | 31 +++++++++++++++++++
+ .../testing/selftests/dma/dma_map_benchmark.c | 25 +--------------
+ 3 files changed, 33 insertions(+), 47 deletions(-)
+ create mode 100644 kernel/dma/map_benchmark.h
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 77972ef978b5..6ef2df258673 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -407,13 +407,6 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
- 	return dev->iommu->iommu_dev->ops;
- }
+diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
+index 9b9af1bd6be3..c05f4e242991 100644
+--- a/kernel/dma/map_benchmark.c
++++ b/kernel/dma/map_benchmark.c
+@@ -18,29 +18,7 @@
+ #include <linux/slab.h>
+ #include <linux/timekeeping.h>
  
--#define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
--#define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device removed */
--#define IOMMU_GROUP_NOTIFY_BIND_DRIVER		3 /* Pre Driver bind */
--#define IOMMU_GROUP_NOTIFY_BOUND_DRIVER		4 /* Post Driver bind */
--#define IOMMU_GROUP_NOTIFY_UNBIND_DRIVER	5 /* Pre Driver unbind */
--#define IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER	6 /* Post Driver unbind */
+-#define DMA_MAP_BENCHMARK	_IOWR('d', 1, struct map_benchmark)
+-#define DMA_MAP_MAX_THREADS	1024
+-#define DMA_MAP_MAX_SECONDS	300
+-#define DMA_MAP_MAX_TRANS_DELAY	(10 * NSEC_PER_MSEC)
 -
- extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
- extern int bus_iommu_probe(struct bus_type *bus);
- extern bool iommu_present(struct bus_type *bus);
-@@ -478,10 +471,6 @@ extern int iommu_group_for_each_dev(struct iommu_group *group, void *data,
- extern struct iommu_group *iommu_group_get(struct device *dev);
- extern struct iommu_group *iommu_group_ref_get(struct iommu_group *group);
- extern void iommu_group_put(struct iommu_group *group);
--extern int iommu_group_register_notifier(struct iommu_group *group,
--					 struct notifier_block *nb);
--extern int iommu_group_unregister_notifier(struct iommu_group *group,
--					   struct notifier_block *nb);
- extern int iommu_register_device_fault_handler(struct device *dev,
- 					iommu_dev_fault_handler_t handler,
- 					void *data);
-@@ -878,18 +867,6 @@ static inline void iommu_group_put(struct iommu_group *group)
+-#define DMA_MAP_BIDIRECTIONAL	0
+-#define DMA_MAP_TO_DEVICE	1
+-#define DMA_MAP_FROM_DEVICE	2
+-
+-struct map_benchmark {
+-	__u64 avg_map_100ns; /* average map latency in 100ns */
+-	__u64 map_stddev; /* standard deviation of map latency */
+-	__u64 avg_unmap_100ns; /* as above */
+-	__u64 unmap_stddev;
+-	__u32 threads; /* how many threads will do map/unmap in parallel */
+-	__u32 seconds; /* how long the test will last */
+-	__s32 node; /* which numa node this benchmark will run on */
+-	__u32 dma_bits; /* DMA addressing capability */
+-	__u32 dma_dir; /* DMA data direction */
+-	__u32 dma_trans_ns; /* time for DMA transmission in ns */
+-	__u32 granule;	/* how many PAGE_SIZE will do map/unmap once a time */
+-	__u8 expansion[76];	/* For future use */
+-};
++#include "map_benchmark.h"
+ 
+ struct map_benchmark_data {
+ 	struct map_benchmark bparam;
+diff --git a/kernel/dma/map_benchmark.h b/kernel/dma/map_benchmark.h
+new file mode 100644
+index 000000000000..62674c83bde4
+--- /dev/null
++++ b/kernel/dma/map_benchmark.h
+@@ -0,0 +1,31 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (C) 2022 HiSilicon Limited.
++ */
++
++#ifndef _KERNEL_DMA_BENCHMARK_H
++#define _KERNEL_DMA_BENCHMARK_H
++
++#define DMA_MAP_BENCHMARK       _IOWR('d', 1, struct map_benchmark)
++#define DMA_MAP_MAX_THREADS     1024
++#define DMA_MAP_MAX_SECONDS     300
++#define DMA_MAP_MAX_TRANS_DELAY (10 * NSEC_PER_MSEC)
++
++#define DMA_MAP_BIDIRECTIONAL   0
++#define DMA_MAP_TO_DEVICE       1
++#define DMA_MAP_FROM_DEVICE     2
++
++struct map_benchmark {
++	__u64 avg_map_100ns; /* average map latency in 100ns */
++	__u64 map_stddev; /* standard deviation of map latency */
++	__u64 avg_unmap_100ns; /* as above */
++	__u64 unmap_stddev;
++	__u32 threads; /* how many threads will do map/unmap in parallel */
++	__u32 seconds; /* how long the test will last */
++	__s32 node; /* which numa node this benchmark will run on */
++	__u32 dma_bits; /* DMA addressing capability */
++	__u32 dma_dir; /* DMA data direction */
++	__u32 dma_trans_ns; /* time for DMA transmission in ns */
++	__u32 granule;  /* how many PAGE_SIZE will do map/unmap once a time */
++};
++#endif /* _KERNEL_DMA_BENCHMARK_H */
+diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
+index 485dff51bad2..33bf073071aa 100644
+--- a/tools/testing/selftests/dma/dma_map_benchmark.c
++++ b/tools/testing/selftests/dma/dma_map_benchmark.c
+@@ -11,39 +11,16 @@
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
+ #include <linux/types.h>
++#include "../../../../kernel/dma/map_benchmark.h"
+ 
+ #define NSEC_PER_MSEC	1000000L
+ 
+-#define DMA_MAP_BENCHMARK	_IOWR('d', 1, struct map_benchmark)
+-#define DMA_MAP_MAX_THREADS	1024
+-#define DMA_MAP_MAX_SECONDS     300
+-#define DMA_MAP_MAX_TRANS_DELAY	(10 * NSEC_PER_MSEC)
+-
+-#define DMA_MAP_BIDIRECTIONAL	0
+-#define DMA_MAP_TO_DEVICE	1
+-#define DMA_MAP_FROM_DEVICE	2
+-
+ static char *directions[] = {
+ 	"BIDIRECTIONAL",
+ 	"TO_DEVICE",
+ 	"FROM_DEVICE",
+ };
+ 
+-struct map_benchmark {
+-	__u64 avg_map_100ns; /* average map latency in 100ns */
+-	__u64 map_stddev; /* standard deviation of map latency */
+-	__u64 avg_unmap_100ns; /* as above */
+-	__u64 unmap_stddev;
+-	__u32 threads; /* how many threads will do map/unmap in parallel */
+-	__u32 seconds; /* how long the test will last */
+-	__s32 node; /* which numa node this benchmark will run on */
+-	__u32 dma_bits; /* DMA addressing capability */
+-	__u32 dma_dir; /* DMA data direction */
+-	__u32 dma_trans_ns; /* time for DMA transmission in ns */
+-	__u32 granule; /* how many PAGE_SIZE will do map/unmap once a time */
+-	__u8 expansion[76];	/* For future use */
+-};
+-
+ int main(int argc, char **argv)
  {
- }
- 
--static inline int iommu_group_register_notifier(struct iommu_group *group,
--						struct notifier_block *nb)
--{
--	return -ENODEV;
--}
--
--static inline int iommu_group_unregister_notifier(struct iommu_group *group,
--						  struct notifier_block *nb)
--{
--	return 0;
--}
--
- static inline
- int iommu_register_device_fault_handler(struct device *dev,
- 					iommu_dev_fault_handler_t handler,
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index eba8e8ccf19d..0c42ece25854 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -18,7 +18,6 @@
- #include <linux/errno.h>
- #include <linux/iommu.h>
- #include <linux/idr.h>
--#include <linux/notifier.h>
- #include <linux/err.h>
- #include <linux/pci.h>
- #include <linux/bitops.h>
-@@ -40,7 +39,6 @@ struct iommu_group {
- 	struct kobject *devices_kobj;
- 	struct list_head devices;
- 	struct mutex mutex;
--	struct blocking_notifier_head notifier;
- 	void *iommu_data;
- 	void (*iommu_data_release)(void *iommu_data);
- 	char *name;
-@@ -632,7 +630,6 @@ struct iommu_group *iommu_group_alloc(void)
- 	mutex_init(&group->mutex);
- 	INIT_LIST_HEAD(&group->devices);
- 	INIT_LIST_HEAD(&group->entry);
--	BLOCKING_INIT_NOTIFIER_HEAD(&group->notifier);
- 
- 	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
- 	if (ret < 0) {
-@@ -905,10 +902,6 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
- 	if (ret)
- 		goto err_put_group;
- 
--	/* Notify any listeners about change to group. */
--	blocking_notifier_call_chain(&group->notifier,
--				     IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev);
--
- 	trace_add_device_to_group(group->id, dev);
- 
- 	dev_info(dev, "Adding to iommu group %d\n", group->id);
-@@ -950,10 +943,6 @@ void iommu_group_remove_device(struct device *dev)
- 
- 	dev_info(dev, "Removing from iommu group %d\n", group->id);
- 
--	/* Pre-notify listeners that a device is being removed. */
--	blocking_notifier_call_chain(&group->notifier,
--				     IOMMU_GROUP_NOTIFY_DEL_DEVICE, dev);
--
- 	mutex_lock(&group->mutex);
- 	list_for_each_entry(tmp_device, &group->devices, list) {
- 		if (tmp_device->dev == dev) {
-@@ -1075,36 +1064,6 @@ void iommu_group_put(struct iommu_group *group)
- }
- EXPORT_SYMBOL_GPL(iommu_group_put);
- 
--/**
-- * iommu_group_register_notifier - Register a notifier for group changes
-- * @group: the group to watch
-- * @nb: notifier block to signal
-- *
-- * This function allows iommu group users to track changes in a group.
-- * See include/linux/iommu.h for actions sent via this notifier.  Caller
-- * should hold a reference to the group throughout notifier registration.
-- */
--int iommu_group_register_notifier(struct iommu_group *group,
--				  struct notifier_block *nb)
--{
--	return blocking_notifier_chain_register(&group->notifier, nb);
--}
--EXPORT_SYMBOL_GPL(iommu_group_register_notifier);
--
--/**
-- * iommu_group_unregister_notifier - Unregister a notifier
-- * @group: the group to watch
-- * @nb: notifier block to signal
-- *
-- * Unregister a previously registered group notifier block.
-- */
--int iommu_group_unregister_notifier(struct iommu_group *group,
--				    struct notifier_block *nb)
--{
--	return blocking_notifier_chain_unregister(&group->notifier, nb);
--}
--EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
--
- /**
-  * iommu_register_device_fault_handler() - Register a device fault handler
-  * @dev: the device
-@@ -1650,14 +1609,8 @@ static int remove_iommu_group(struct device *dev, void *data)
- static int iommu_bus_notifier(struct notifier_block *nb,
- 			      unsigned long action, void *data)
- {
--	unsigned long group_action = 0;
- 	struct device *dev = data;
--	struct iommu_group *group;
- 
--	/*
--	 * ADD/DEL call into iommu driver ops if provided, which may
--	 * result in ADD/DEL notifiers to group->notifier
--	 */
- 	if (action == BUS_NOTIFY_ADD_DEVICE) {
- 		int ret;
- 
-@@ -1668,34 +1621,6 @@ static int iommu_bus_notifier(struct notifier_block *nb,
- 		return NOTIFY_OK;
- 	}
- 
--	/*
--	 * Remaining BUS_NOTIFYs get filtered and republished to the
--	 * group, if anyone is listening
--	 */
--	group = iommu_group_get(dev);
--	if (!group)
--		return 0;
--
--	switch (action) {
--	case BUS_NOTIFY_BIND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_BIND_DRIVER;
--		break;
--	case BUS_NOTIFY_BOUND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_BOUND_DRIVER;
--		break;
--	case BUS_NOTIFY_UNBIND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_UNBIND_DRIVER;
--		break;
--	case BUS_NOTIFY_UNBOUND_DRIVER:
--		group_action = IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER;
--		break;
--	}
--
--	if (group_action)
--		blocking_notifier_call_chain(&group->notifier,
--					     group_action, dev);
--
--	iommu_group_put(group);
- 	return 0;
- }
- 
+ 	struct map_benchmark map;
 -- 
-2.25.1
+2.33.0
 
 _______________________________________________
 iommu mailing list
