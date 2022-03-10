@@ -1,119 +1,111 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1162AC433EF
-	for <iommu@archiver.kernel.org>; Thu, 10 Mar 2022 09:47:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 82562C433F5
+	for <iommu@archiver.kernel.org>; Thu, 10 Mar 2022 10:32:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C1C19611C2;
-	Thu, 10 Mar 2022 09:47:04 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 1D5BF400C9;
+	Thu, 10 Mar 2022 10:32:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PQfasOuJ74EH; Thu, 10 Mar 2022 09:47:03 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 39D7860FBF;
-	Thu, 10 Mar 2022 09:47:03 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E74FC001D;
-	Thu, 10 Mar 2022 09:47:03 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 076CFC000B
- for <iommu@lists.linux-foundation.org>; Thu, 10 Mar 2022 09:47:02 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D0E7B40A2F
- for <iommu@lists.linux-foundation.org>; Thu, 10 Mar 2022 09:47:01 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kU_fY0MhDVZD for <iommu@lists.linux-foundation.org>;
- Thu, 10 Mar 2022 09:47:00 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id slXd7_MPcGzY; Thu, 10 Mar 2022 10:32:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 5A78040B44;
+	Thu, 10 Mar 2022 10:32:16 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2D09BC0012;
+	Thu, 10 Mar 2022 10:32:16 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4F46CC000B
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Mar 2022 10:32:14 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 28240611E7
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Mar 2022 10:32:14 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id K-q6xL4LElhi for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Mar 2022 10:32:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from us-smtp-delivery-124.mimecast.com
  (us-smtp-delivery-124.mimecast.com [170.10.129.124])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 53A19400C9
- for <iommu@lists.linux-foundation.org>; Thu, 10 Mar 2022 09:47:00 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 05620611E2
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Mar 2022 10:32:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1646905619;
+ s=mimecast20190719; t=1646908330;
  h=from:from:reply-to:reply-to:subject:subject:date:date:
  message-id:message-id:to:to:cc:cc:mime-version:mime-version:
  content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=BJj1yH1VXfhLvRJ8+zGrbpkPmlf5E1ndVM90qQ671Jg=;
- b=IwK/r9iSevY9Rv2K0Q3zT68I2jpmN8D1vGBZL1DCpRCPj6wNRUxcxJBzWQuVeEKH/6Ytf4
- uLUD3AERhwtzIw1muSsn3Jdqd7TrCI2My8XF4njvCwTKky+VYESnGHTCkj/kHyBiD88BJK
- OWcc3i91yBNwDpRi3Ch/A7EoNNvE1tY=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ bh=aqZfieWFaoTQyfoYU2cd+k7oJA/upC8Un56CVcZd2Ys=;
+ b=Ve7URYDLUy6MqtUu84oMUFvGzqFDT1Y32cP9BccdP1fsWnsbn6rRW74b2hgnQqrDZW/Yt0
+ +pHdou+Tio9n4/zGdc0crpQ5zEykImoiH1lzRZpQAeBtq2wEIXOLo1GoIR2u7bQGmVnLr1
+ AkhvUHWxKOje0Cp+TYsDfrWYB5hdIm4=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-571-xJXJfkY6Nh-EUCEkrdvztQ-1; Thu, 10 Mar 2022 04:46:56 -0500
-X-MC-Unique: xJXJfkY6Nh-EUCEkrdvztQ-1
-Received: by mail-wm1-f72.google.com with SMTP id
- a26-20020a7bc1da000000b003857205ec7cso2083185wmj.2
- for <iommu@lists.linux-foundation.org>; Thu, 10 Mar 2022 01:46:55 -0800 (PST)
+ us-mta-657-ofO97VfOPtSUB1FyaE39Sg-1; Thu, 10 Mar 2022 05:32:09 -0500
+X-MC-Unique: ofO97VfOPtSUB1FyaE39Sg-1
+Received: by mail-wr1-f72.google.com with SMTP id
+ p18-20020adfba92000000b001e8f7697cc7so1528252wrg.20
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Mar 2022 02:32:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:reply-to:subject:to:cc:references:from
  :message-id:date:user-agent:mime-version:in-reply-to
  :content-transfer-encoding:content-language;
- bh=BJj1yH1VXfhLvRJ8+zGrbpkPmlf5E1ndVM90qQ671Jg=;
- b=cKTW513QIXQo1AZk5Flq7Wk6iHo4ldsXf+w/xvgfn0MevubOajUWEYqQ778QD+CISn
- Tc9AgwYtNeH8qprxCKsbjP2FuOCD4B04xgdFyCxfY6Fu8NKNTar3bEpMX7zS+l0EG/2S
- +sTWT5/ph7KV84sjd4km5fjagQ1eFcnxhwnsf8Tn1LbGhblg3bnlcBfIxLVols1Mus/Y
- LNppi0vZwR/yRiiGG5yf+tLu1Eds8QtX86UIse6nYFLB69gG4sPEMFUJI/JsGbizKT7x
- sf1cCqeDJgvVS9w19S5dhi/P9NCx+PxLwXWVg8CIjA6pw54RE6y0hrjdU7ZRmxka8wh0
- wTzQ==
-X-Gm-Message-State: AOAM530RWbK2UCP2mZKrWzK5sHHXndh3nZXlLDmUl+BSd/R3yUYXPC2y
- pIvBnvpDmblStrXsAqd04sJkfEbFkQJW7TK97R8YJ9BtjpBOC76NXITm7i8xk/+OoWKl70C1nZe
- RofoZjbcPA2rPY3SgUmBezfz4JaODXg==
-X-Received: by 2002:a5d:5009:0:b0:1f1:f87e:2e26 with SMTP id
- e9-20020a5d5009000000b001f1f87e2e26mr2912954wrt.404.1646905614783; 
- Thu, 10 Mar 2022 01:46:54 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz7wzT+XTVpeEzBUmQvpXc+eICuFzdxvcvXTNLQwGJIuVjVygEpg34U15LBeet6UiFJhxQ4/g==
-X-Received: by 2002:a5d:5009:0:b0:1f1:f87e:2e26 with SMTP id
- e9-20020a5d5009000000b001f1f87e2e26mr2912935wrt.404.1646905614477; 
- Thu, 10 Mar 2022 01:46:54 -0800 (PST)
+ bh=aqZfieWFaoTQyfoYU2cd+k7oJA/upC8Un56CVcZd2Ys=;
+ b=mGQ1WsnJL41Go79sPkk0t8kZ632t3tVFtD3eXCMRNsmWURatt8ZYl15/9xS9x9rT1g
+ kv8Usv6lODT/zTWGifqlCwqLRxO1q3AuLqlNM267mVBK+Sh2aTjjtooWJf9S7+N9UyDQ
+ n18E4OO/7p6qDg3uEIhbdamBBETN+DAU3/ByqA0EptYBaUQgmEofAoc+O2o+EwgPe1+i
+ MxjQKm0ACjPTcUIM7T1uQSCTLqfPDNdaLPs/zVw9yVI9BV+mD6v6mCgO5ByveSYbMx6h
+ Kvfj79aYe/mI9Kjxp60aDpxVA/gD96I2HiiRbn7oWqNvHv//FYyiibFWQwiorUUNY+Sb
+ Ua7A==
+X-Gm-Message-State: AOAM532BRmCN0wIioyGsdpOFsIrxY2bPYg2cLzMdzZ6N793sIyW3z8xi
+ +s8IsgAOVF/4sd0QTITJd9/WcEOnklPNK2PEZd5fFKASmigEB/IZsMjGlKL1i3sh/rUXEbdOzSe
+ NSjp1l00xaJcGqfV6Ymi9yK29A4bkCQ==
+X-Received: by 2002:a05:600c:1906:b0:389:a5c0:23cb with SMTP id
+ j6-20020a05600c190600b00389a5c023cbmr11020917wmq.96.1646908328179; 
+ Thu, 10 Mar 2022 02:32:08 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwMjFs69jHMpjU+b0/ecnP20PxF4UByxjwTYY1588fpNSG85NATW81wHOOCegpkBuj4Zc0pwA==
+X-Received: by 2002:a05:600c:1906:b0:389:a5c0:23cb with SMTP id
+ j6-20020a05600c190600b00389a5c023cbmr11020884wmq.96.1646908327807; 
+ Thu, 10 Mar 2022 02:32:07 -0800 (PST)
 Received: from ?IPv6:2a01:e0a:59e:9d80:527b:9dff:feef:3874?
  ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
  by smtp.gmail.com with ESMTPSA id
- p12-20020a056000018c00b001f079518150sm3776956wrx.93.2022.03.10.01.46.51
+ e4-20020adffc44000000b001f1dba38a65sm3801263wrs.105.2022.03.10.02.32.06
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 10 Mar 2022 01:46:53 -0800 (PST)
-Subject: Re: [PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
-To: Lu Baolu <baolu.lu@linux.intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Joerg Roedel <joro@8bytes.org>, Alex Williamson
- <alex.williamson@redhat.com>, Bjorn Helgaas <bhelgaas@google.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>
-References: <20220308054421.847385-1-baolu.lu@linux.intel.com>
+ Thu, 10 Mar 2022 02:32:07 -0800 (PST)
+Subject: Re: [PATCH v8 03/11] ACPI/IORT: Add helper functions to parse RMR
+ nodes
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+ linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org,
+ iommu@lists.linux-foundation.org
+References: <20220221154344.2126-1-shameerali.kolothum.thodi@huawei.com>
+ <20220221154344.2126-4-shameerali.kolothum.thodi@huawei.com>
 From: Eric Auger <eric.auger@redhat.com>
-Message-ID: <fb386c59-2359-0230-6340-3f8c8710b0f1@redhat.com>
-Date: Thu, 10 Mar 2022 10:46:51 +0100
+Message-ID: <d5740467-f070-bd29-5ef4-de071b751292@redhat.com>
+Date: Thu, 10 Mar 2022 11:32:05 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <20220308054421.847385-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20220221154344.2126-4-shameerali.kolothum.thodi@huawei.com>
 Authentication-Results: relay.mimecast.com;
  auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=eric.auger@redhat.com
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Language: en-US
-Cc: Chaitanya Kulkarni <kch@nvidia.com>, kvm@vger.kernel.org,
- Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
- David Airlie <airlied@linux.ie>, Will Deacon <will@kernel.org>,
- Cornelia Huck <cohuck@redhat.com>, linux-pci@vger.kernel.org,
- linux-kernel@vger.kernel.org, Jonathan Hunter <jonathanh@nvidia.com>,
- iommu@lists.linux-foundation.org, Thierry Reding <thierry.reding@gmail.com>,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
- Diana Craciun <diana.craciun@oss.nxp.com>,
- Dan Williams <dan.j.williams@intel.com>, Li Yang <leoyang.li@nxp.com>,
- Robin Murphy <robin.murphy@arm.com>, Dmitry Osipenko <digetx@gmail.com>
+Cc: robin.murphy@arm.com, jon@solid-run.com, linuxarm@huawei.com,
+ steven.price@arm.com, guohanjun@huawei.com, yangyicong@huawei.com,
+ Sami.Mujawar@arm.com, will@kernel.org, wanghuiqiang@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -132,203 +124,261 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Lu,
+Hi Shameer,
 
-On 3/8/22 6:44 AM, Lu Baolu wrote:
-> Hi folks,
+On 2/21/22 4:43 PM, Shameer Kolothum wrote:
+> The helper functions here parse through the IORT RMR nodes and
+> populate a reserved region list  corresponding to a given iommu
+> and device(optional). These also go through the ID mappings of
+> the RMR node and retrieves all the SIDs associated with a RMR
+> descriptor.
 >
-> The iommu group is the minimal isolation boundary for DMA. Devices in
-> a group can access each other's MMIO registers via peer to peer DMA
-> and also need share the same I/O address space.
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> ---
+>  drivers/acpi/arm64/iort.c | 225 ++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 225 insertions(+)
 >
-> Once the I/O address space is assigned to user control it is no longer
-> available to the dma_map* API, which effectively makes the DMA API
-> non-working.
->
-> Second, userspace can use DMA initiated by a device that it controls
-> to access the MMIO spaces of other devices in the group. This allows
-> userspace to indirectly attack any kernel owned device and it's driver.
->
-> Therefore groups must either be entirely under kernel control or
-> userspace control, never a mixture. Unfortunately some systems have
-> problems with the granularity of groups and there are a couple of
-> important exceptions:
->
->  - pci_stub allows the admin to block driver binding on a device and
->    make it permanently shared with userspace. Since PCI stub does not
->    do DMA it is safe, however the admin must understand that using
->    pci_stub allows userspace to attack whatever device it was bound
->    it.
->
->  - PCI bridges are sometimes included in groups. Typically PCI bridges
->    do not use DMA, and generally do not have MMIO regions.
->
-> Generally any device that does not have any MMIO registers is a
-> possible candidate for an exception.
->
-> Currently vfio adopts a workaround to detect violations of the above
-> restrictions by monitoring the driver core BOUND event, and hardwiring
-> the above exceptions. Since there is no way for vfio to reject driver
-> binding at this point, BUG_ON() is triggered if a violation is
-> captured (kernel driver BOUND event on a group which already has some
-> devices assigned to userspace). Aside from the bad user experience
-> this opens a way for root userspace to crash the kernel, even in high
-> integrity configurations, by manipulating the module binding and
-> triggering the BUG_ON.
->
-> This series solves this problem by making the user/kernel ownership a
-> core concept at the IOMMU layer. The driver core enforces kernel
-> ownership while drivers are bound and violations now result in a error
-> codes during probe, not BUG_ON failures.
->
-> Patch partitions:
->   [PATCH 1-4]: Detect DMA ownership conflicts during driver binding;
->   [PATCH 5-7]: Add security context management for assigned devices;
->   [PATCH 8-11]: Various cleanups.
->
-> This is also part one of three initial series for IOMMUFD:
->  * Move IOMMU Group security into the iommu layer
->  - Generic IOMMUFD implementation
->  - VFIO ability to consume IOMMUFD
->
-> Change log:
-> v1: initial post
->   - https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/
->
-> v2:
->   - https://lore.kernel.org/linux-iommu/20211128025051.355578-1-baolu.lu@linux.intel.com/
->
->   - Move kernel dma ownership auto-claiming from driver core to bus
->     callback. [Greg/Christoph/Robin/Jason]
->     https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/T/#m153706912b770682cb12e3c28f57e171aa1f9d0c
->
->   - Code and interface refactoring for iommu_set/release_dma_owner()
->     interfaces. [Jason]
->     https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/T/#mea70ed8e4e3665aedf32a5a0a7db095bf680325e
->
->   - [NEW]Add new iommu_attach/detach_device_shared() interfaces for
->     multiple devices group. [Robin/Jason]
->     https://lore.kernel.org/linux-iommu/20211115020552.2378167-1-baolu.lu@linux.intel.com/T/#mea70ed8e4e3665aedf32a5a0a7db095bf680325e
->
->   - [NEW]Use iommu_attach/detach_device_shared() in drm/tegra drivers.
->
->   - Refactoring and description refinement.
->
-> v3:
->   - https://lore.kernel.org/linux-iommu/20211206015903.88687-1-baolu.lu@linux.intel.com/
->
->   - Rename bus_type::dma_unconfigure to bus_type::dma_cleanup. [Greg]
->     https://lore.kernel.org/linux-iommu/c3230ace-c878-39db-1663-2b752ff5384e@linux.intel.com/T/#m6711e041e47cb0cbe3964fad0a3466f5ae4b3b9b
->
->   - Avoid _platform_dma_configure for platform_bus_type::dma_configure.
->     [Greg]
->     https://lore.kernel.org/linux-iommu/c3230ace-c878-39db-1663-2b752ff5384e@linux.intel.com/T/#m43fc46286611aa56a5c0eeaad99d539e5519f3f6
->
->   - Patch "0012-iommu-Add-iommu_at-de-tach_device_shared-for-mult.patch"
->     and "0018-drm-tegra-Use-the-iommu-dma_owner-mechanism.patch" have
->     been tested by Dmitry Osipenko <digetx@gmail.com>.
->
-> v4:
->   - https://lore.kernel.org/linux-iommu/20211217063708.1740334-1-baolu.lu@linux.intel.com/
->   - Remove unnecessary tegra->domain chech in the tegra patch. (Jason)
->   - Remove DMA_OWNER_NONE. (Joerg)
->   - Change refcount to unsigned int. (Christoph)
->   - Move mutex lock into group set_dma_owner functions. (Christoph)
->   - Add kernel doc for iommu_attach/detach_domain_shared(). (Christoph)
->   - Move dma auto-claim into driver core. (Jason/Christoph)
->
-> v5:
->   - https://lore.kernel.org/linux-iommu/20220104015644.2294354-1-baolu.lu@linux.intel.com/
->   - Move kernel dma ownership auto-claiming from driver core to bus
->     callback. (Greg)
->   - Refactor the iommu interfaces to make them more specific.
->     (Jason/Robin)
->   - Simplify the dma ownership implementation by removing the owner
->     type. (Jason)
->   - Commit message refactoring for PCI drivers. (Bjorn)
->   - Move iommu_attach/detach_device() improvement patches into another
->     series as there are a lot of code refactoring and cleanup staffs
->     in various device drivers.
->
-> v6:
->   - https://lore.kernel.org/linux-iommu/20220218005521.172832-1-baolu.lu@linux.intel.com/
->   - Refine comments and commit mesages.
->   - Rename iommu_group_set_dma_owner() to iommu_group_claim_dma_owner().
->   - Rename iommu_device_use/unuse_kernel_dma() to
->     iommu_device_use/unuse_default_domain().
->   - Remove unnecessary EXPORT_SYMBOL_GPL.
->   - Change flag name from no_kernel_api_dma to driver_managed_dma.
->   - Merge 4 "Add driver dma ownership management" patches into single
->     one.
->
-> v7:
->   - We discussed about adding some fields in driver structure and
->     intercepting it in the bus notifier for driver unbinding. We agreed
->     that the driver structure should not be used out of the driver core.
->   - As iommu_group_claim/release_dma_owner() are only used by the VFIO,
->     there're no use cases for multiple calls for a single group.
->   - Add some commit messages in "vfio: Set DMA ownership for
->     VFIO" to describe the intentional enhancement of unsafe bridge
->     drivers.
->   - Comments refinement.
->
-> v8:
->   - Move iommu_use_default_domain() to the end of .dma_configure
->     callback to avoid firmware-data-ordering thing.
->     Link: https://lore.kernel.org/linux-iommu/e2698dbe-18e2-1a82-8a12-fe45bc9be534@arm.com/
-
-Feel free to add my T-b
-Tested-by: Eric Auger <eric.auger@redhat.com>
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index 0730c4dbb700..05da9ebff50a 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -830,6 +830,231 @@ static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
+>  	return NULL;
+>  }
+>  
+> +static void iort_rmr_desc_check_overlap(struct acpi_iort_rmr_desc *desc, u32 count)
+> +{
+> +	int i, j;
+> +
+> +	for (i = 0; i < count; i++) {
+> +		u64 end, start = desc[i].base_address, length = desc[i].length;
+> +
+> +		end = start + length - 1;
+> +
+> +		/* Check for address overlap */
+> +		for (j = i + 1; j < count; j++) {
+> +			u64 e_start = desc[j].base_address;
+> +			u64 e_end = e_start + desc[j].length - 1;
+> +
+> +			if (start <= e_end && end >= e_start)
+> +				pr_err(FW_BUG "RMR descriptor[0x%llx - 0x%llx] overlaps, continue anyway\n",
+> +				       start, end);
+> +		}
+> +	}
+> +}
+> +
+> +/*
+> + * Please note, we will keep the already allocated RMR reserve
+> + * regions in case of a memory allocation failure.
+> + */
+> +static void iort_rmr_get_resv_regions(struct acpi_iort_node *node,
+> +				      struct acpi_iort_node *smmu,
+> +				      u32 *sids, u32 num_sids,
+> +				      struct list_head *head)
+> +{
+> +	struct acpi_iort_rmr *rmr = (struct acpi_iort_rmr *)node->node_data;
+> +	struct acpi_iort_rmr_desc *rmr_desc;
+> +	int i;
+> +
+> +	rmr_desc = ACPI_ADD_PTR(struct acpi_iort_rmr_desc, node,
+> +				rmr->rmr_offset);
+> +
+> +	iort_rmr_desc_check_overlap(rmr_desc, rmr->rmr_count);
+> +
+> +	for (i = 0; i < rmr->rmr_count; i++, rmr_desc++) {
+> +		struct iommu_resv_region *region;
+> +		enum iommu_resv_type type;
+> +		u32  *sids_copy;
+> +		int prot = IOMMU_READ | IOMMU_WRITE;
+> +		u64 addr = rmr_desc->base_address, size = rmr_desc->length;
+> +
+> +		if (!IS_ALIGNED(addr, SZ_64K) || !IS_ALIGNED(size, SZ_64K)) {
+> +			/* PAGE align base addr and size */
+> +			addr &= PAGE_MASK;
+> +			size = PAGE_ALIGN(size + offset_in_page(rmr_desc->base_address));
+> +
+> +			pr_err(FW_BUG "RMR descriptor[0x%llx - 0x%llx] not aligned to 64K, continue with [0x%llx - 0x%llx]\n",
+> +			       rmr_desc->base_address,
+> +			       rmr_desc->base_address + rmr_desc->length - 1,
+> +			       addr, addr + size - 1);
+> +		}
+> +
+> +		if (rmr->flags & ACPI_IORT_RMR_REMAP_PERMITTED)
+> +			type = IOMMU_RESV_DIRECT_RELAXABLE;
+> +		else
+> +			type = IOMMU_RESV_DIRECT;
+> +
+> +		if (rmr->flags & ACPI_IORT_RMR_ACCESS_PRIVILEGE)
+> +			prot |= IOMMU_PRIV;
+> +
+> +		/* Attributes 0x00 - 0x03 represents device memory */
+> +		if (ACPI_IORT_RMR_ACCESS_ATTRIBUTES(rmr->flags) <=
+> +				ACPI_IORT_RMR_ATTR_DEVICE_GRE)
+> +			prot |= IOMMU_MMIO;
+> +		else if (ACPI_IORT_RMR_ACCESS_ATTRIBUTES(rmr->flags) ==
+> +				ACPI_IORT_RMR_ATTR_NORMAL)
+> +			prot |= IOMMU_CACHE;
+> +
+> +		/* Create a copy of sids array to associate with this resv region */
+> +		sids_copy = kmemdup(sids, num_sids * sizeof(*sids), GFP_KERNEL);
+> +		if (!sids_copy)
+> +			return;
+> +
+> +		region = iommu_alloc_resv_region(addr, size, prot, type);
+> +		if (!region) {
+> +			kfree(sids_copy);
+> +			return;
+> +		}
+> +
+> +		region->fw_data.rmr.sids = sids_copy;
+> +		region->fw_data.rmr.num_sids = num_sids;
+> +		list_add_tail(&region->list, head);
+> +	}
+> +}
+> +
+> +static u32 *iort_rmr_alloc_sids(u32 *sids, u32 count, u32 id_start,
+> +				u32 new_count)
+> +{
+> +	u32 *new_sids;
+> +	u32 total_count = count + new_count;
+> +	int i;
+> +
+> +	new_sids = krealloc_array(sids, count + new_count,
+> +				  sizeof(*new_sids), GFP_KERNEL);
+> +	if (!new_sids)
+> +		return NULL;
+> +
+> +	/*Update new ones */
+> +	for (i = count; i < total_count; i++)
+> +		new_sids[i] = id_start++;
+> +
+> +	return new_sids;
+> +}
+> +
+> +static bool iort_rmr_has_dev(struct device *dev, u32 id_start,
+> +			     u32 id_count)
+> +{
+> +	int i;
+> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +
+> +	if (dev_is_pci(dev)) {
+> +		struct pci_dev *pdev = to_pci_dev(dev);
+> +		struct pci_host_bridge *host = pci_find_host_bridge(pdev->bus);
+> +
+> +		if (!host->preserve_config)
+> +			return false;
+> +	}
+> +
+> +	for (i = 0; i < fwspec->num_ids; i++) {
+> +		if (fwspec->ids[i] >= id_start &&
+> +		    fwspec->ids[i] <= id_start + id_count)
+> +			return true;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +static void iort_node_get_rmr_info(struct acpi_iort_node *node,
+> +				   struct acpi_iort_node *iommu,
+> +				   struct device *dev, struct list_head *head)
+> +{
+> +	struct acpi_iort_node *smmu = NULL;
+> +	struct acpi_iort_rmr *rmr;
+> +	struct acpi_iort_id_mapping *map;
+> +	u32 *sids = NULL;
+> +	u32 num_sids = 0;
+> +	int i;
+> +
+> +	if (!node->mapping_offset || !node->mapping_count) {
+> +		pr_err(FW_BUG "Invalid ID mapping, skipping RMR node %p\n",
+> +		       node);
+> +		return;
+> +	}
+> +
+> +	rmr = (struct acpi_iort_rmr *)node->node_data;
+> +	if (!rmr->rmr_offset || !rmr->rmr_count)
+> +		return;
+> +
+> +	map = ACPI_ADD_PTR(struct acpi_iort_id_mapping, node,
+> +			   node->mapping_offset);
+> +
+> +	/*
+> +	 * Go through the ID mappings and see if we have a match
+> +	 * for smmu and dev(if !NULL). If found, get the sids
+> +	 * for the Node.
+> +	 * Please note, id_count is equal to the number of IDs
+> +	 * in the range minus one.
+> +	 */
+> +	for (i = 0; i < node->mapping_count; i++, map++) {
+> +		struct acpi_iort_node *parent;
+> +
+> +		if (!map->id_count)
+> +			continue;
+> +
+> +		parent = ACPI_ADD_PTR(struct acpi_iort_node, iort_table,
+> +				      map->output_reference);
+> +		if (parent != iommu)
+> +			continue;
+> +
+> +		/* If dev is valid, check RMR node corresponds to the dev sid */
+> +		if (dev && !iort_rmr_has_dev(dev, map->output_base,
+> +					     map->id_count))
+> +			continue;
+> +
+> +		/* Retrieve sids associated with the Node. */
+> +		sids = iort_rmr_alloc_sids(sids, num_sids, map->output_base,
+> +					   map->id_count + 1);
+> +		if (!sids)
+> +			return;
+> +
+> +		num_sids += map->id_count + 1;
+> +	}
+> +
+> +	if (!sids)
+> +		return;
+> +
+> +	iort_rmr_get_resv_regions(node, smmu, sids, num_sids, head);
+> +	kfree(sids);
+> +}
+> +
+> +static void iort_find_rmrs(struct acpi_iort_node *iommu, struct device *dev,
+> +			   struct list_head *head)
+> +{
+> +	struct acpi_table_iort *iort;
+> +	struct acpi_iort_node *iort_node, *iort_end;
+> +	int i;
+> +
+> +	if (iort_table->revision < 5)
+This means E.b and E.c revs are not supported. Is it what we want?
 
 Thanks
 
 Eric
->   - Add Acked-by from PCI and VFIO maintainers.
->
-> This is based on next branch of linux-iommu tree:
-> https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
-> and also available on github:
-> https://github.com/LuBaolu/intel-iommu/commits/iommu-dma-ownership-v8
->
-> Best regards,
-> baolu
->
-> Jason Gunthorpe (1):
->   vfio: Delete the unbound_list
->
-> Lu Baolu (10):
->   iommu: Add DMA ownership management interfaces
->   driver core: Add dma_cleanup callback in bus_type
->   amba: Stop sharing platform_dma_configure()
->   bus: platform,amba,fsl-mc,PCI: Add device DMA ownership management
->   PCI: pci_stub: Set driver_managed_dma
->   PCI: portdrv: Set driver_managed_dma
->   vfio: Set DMA ownership for VFIO devices
->   vfio: Remove use of vfio_group_viable()
->   vfio: Remove iommu group notifier
->   iommu: Remove iommu group changes notifier
->
->  include/linux/amba/bus.h              |   8 +
->  include/linux/device/bus.h            |   3 +
->  include/linux/fsl/mc.h                |   8 +
->  include/linux/iommu.h                 |  54 +++---
->  include/linux/pci.h                   |   8 +
->  include/linux/platform_device.h       |  10 +-
->  drivers/amba/bus.c                    |  37 +++-
->  drivers/base/dd.c                     |   5 +
->  drivers/base/platform.c               |  21 ++-
->  drivers/bus/fsl-mc/fsl-mc-bus.c       |  24 ++-
->  drivers/iommu/iommu.c                 | 228 ++++++++++++++++--------
->  drivers/pci/pci-driver.c              |  18 ++
->  drivers/pci/pci-stub.c                |   1 +
->  drivers/pci/pcie/portdrv_pci.c        |   2 +
->  drivers/vfio/fsl-mc/vfio_fsl_mc.c     |   1 +
->  drivers/vfio/pci/vfio_pci.c           |   1 +
->  drivers/vfio/platform/vfio_amba.c     |   1 +
->  drivers/vfio/platform/vfio_platform.c |   1 +
->  drivers/vfio/vfio.c                   | 245 ++------------------------
->  19 files changed, 338 insertions(+), 338 deletions(-)
->
+> +		return;
+> +
+> +	iort = (struct acpi_table_iort *)iort_table;
+> +
+> +	iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort,
+> +				 iort->node_offset);
+> +	iort_end = ACPI_ADD_PTR(struct acpi_iort_node, iort,
+> +				iort_table->length);
+> +
+> +	for (i = 0; i < iort->node_count; i++) {
+> +		if (WARN_TAINT(iort_node >= iort_end, TAINT_FIRMWARE_WORKAROUND,
+> +			       "IORT node pointer overflows, bad table!\n"))
+> +			return;
+> +
+> +		if (iort_node->type == ACPI_IORT_NODE_RMR)
+> +			iort_node_get_rmr_info(iort_node, iommu, dev, head);
+> +
+> +		iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort_node,
+> +					 iort_node->length);
+> +	}
+> +}
+> +
+>  /**
+>   * iort_iommu_msi_get_resv_regions - Reserved region driver helper
+>   * @dev: Device from iommu_get_resv_regions()
 
 _______________________________________________
 iommu mailing list
