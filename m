@@ -1,110 +1,107 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9E620C433EF
-	for <iommu@archiver.kernel.org>; Mon, 14 Mar 2022 19:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A2260C4332F
+	for <iommu@archiver.kernel.org>; Mon, 14 Mar 2022 19:50:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 59C1C4027A;
-	Mon, 14 Mar 2022 19:50:22 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 63116409A2;
+	Mon, 14 Mar 2022 19:50:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pxd_RUwT5EA8; Mon, 14 Mar 2022 19:50:21 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id q4X7WGIMLjWq; Mon, 14 Mar 2022 19:50:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 229FD4074E;
-	Mon, 14 Mar 2022 19:50:21 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 453F8408CB;
+	Mon, 14 Mar 2022 19:50:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EB14BC001D;
-	Mon, 14 Mar 2022 19:50:20 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E6884C000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 19:50:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 265F2C001D;
+	Mon, 14 Mar 2022 19:50:29 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6B469C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 19:50:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D5A3C60C21
- for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 19:50:18 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 4CE5D408CB
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 19:50:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ibm.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5T99n6P4XYNU for <iommu@lists.linux-foundation.org>;
- Mon, 14 Mar 2022 19:50:18 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id FTQLEy1NOEcl for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Mar 2022 19:50:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
  [148.163.156.1])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 6066D6058D
- for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 19:50:18 +0000 (UTC)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
- by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22EJlVOw002680; 
- Mon, 14 Mar 2022 19:50:13 GMT
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9445D408BC
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 19:50:27 +0000 (UTC)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+ by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22EJlYtp025603; 
+ Mon, 14 Mar 2022 19:50:23 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
  h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=67AWJ2p19Rw/MnXoxakt2Evr7rWlJmgaPwFcSm2xlKo=;
- b=Y9hHR9FMyogek0UYzheYdwYlsBmW2qNOq/WgF4kj25zS3Nui6nsLPtbvDglE14LJcysp
- 4myWKY/e695NBg9as6AqDfSJlUbz6Str96/TrHFnwC0IQ4DE9XBOyPrADcEVP1RmR/U/
- l2yCzhHviBhxmHxIjZYSYDFIlDGSuvm7U6nXoe6m/gVDsU4yUWj5Y8hmUPFAkO5LYTfU
- /iGq5HszsyU+3AnkJ1ggyzQvnYzkyXeC3oH8Cb+SXTefFz0XpAS4CWnMjU0WmpC+Et4a
- ToNS5ACCBY9XSN8frFSoD5YabP1vsxkKEjd2MbWGSePvasQzmHXsGC8aAxCjaQQQOftQ Pg== 
+ : date : message-id : in-reply-to : references : content-transfer-encoding
+ : mime-version; s=pp1; bh=EIN5YKNShvtpefl6wXDR1mrno0orRYnzj0xkq2tV9tY=;
+ b=IuUXQ4g6nE6s+CbTewHR0HBK37VysywtedFxJHDgFICWNQzV7p/4IZFO1RU+QR1pIw3/
+ 7nK49OonFLPkFQreR8DASVesWL3DQF8oP6URCY9fQSb2cwD8IKRnVohFEToNRCRkeEip
+ 30BJPEMJW5HVV3+OVIao2fGpm+Pq/GhyWYnUr5g+KErgO8KtgyVOasjqucCQFq3aITWR
+ DBEEJX2WFxtHUunstvBvuGfnOSf3cShnvvuHJ6ylR5jbJUeHox1BAhWKCFS7A9T5UpZK
+ 12oK519Uw6GsMJvF81y1o+2JkcpKJE0w1jT2jlz5sHuf/UC5ID0QnqJ7tdn3iaVBC/jU xw== 
 Received: from pps.reinject (localhost [127.0.0.1])
- by mx0a-001b2d01.pphosted.com with ESMTP id 3et6ah92mr-1
+ by mx0a-001b2d01.pphosted.com with ESMTP id 3et6ag101c-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Mon, 14 Mar 2022 19:50:13 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
- by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22EJnLSN007716;
- Mon, 14 Mar 2022 19:50:13 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com
- [169.53.41.122])
- by mx0a-001b2d01.pphosted.com with ESMTP id 3et6ah92mf-1
+ Mon, 14 Mar 2022 19:50:23 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+ by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22EJlklL026151;
+ Mon, 14 Mar 2022 19:50:22 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com
+ [169.62.189.10])
+ by mx0a-001b2d01.pphosted.com with ESMTP id 3et6ag100w-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Mon, 14 Mar 2022 19:50:13 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
- by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22EJl8ai028267;
- Mon, 14 Mar 2022 19:50:12 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com
- [9.57.198.23]) by ppma04dal.us.ibm.com with ESMTP id 3erk59cce9-1
+ Mon, 14 Mar 2022 19:50:22 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+ by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22EJlqUq003136;
+ Mon, 14 Mar 2022 19:50:21 GMT
+Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com
+ [9.57.198.27]) by ppma02dal.us.ibm.com with ESMTP id 3etaj6gpse-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Mon, 14 Mar 2022 19:50:12 +0000
+ Mon, 14 Mar 2022 19:50:21 +0000
 Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com
  [9.57.199.109])
- by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
- 22EJoAQG33358158
+ by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+ 22EJoJMH22020566
  (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Mon, 14 Mar 2022 19:50:10 GMT
+ Mon, 14 Mar 2022 19:50:19 GMT
 Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 47A49112062;
+ by IMSVA (Postfix) with ESMTP id 622A9112069;
+ Mon, 14 Mar 2022 19:50:19 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id A3F57112065;
  Mon, 14 Mar 2022 19:50:10 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id BA36C11206F;
- Mon, 14 Mar 2022 19:50:00 +0000 (GMT)
 Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown
  [9.211.32.184]) by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
- Mon, 14 Mar 2022 19:50:00 +0000 (GMT)
+ Mon, 14 Mar 2022 19:50:10 +0000 (GMT)
 From: Matthew Rosato <mjrosato@linux.ibm.com>
 To: linux-s390@vger.kernel.org
-Subject: [PATCH v4 31/32] MAINTAINERS: additional files related kvm s390 pci
- passthrough
-Date: Mon, 14 Mar 2022 15:44:50 -0400
-Message-Id: <20220314194451.58266-32-mjrosato@linux.ibm.com>
+Subject: [PATCH v4 32/32] MAINTAINERS: update s390 IOMMU entry
+Date: Mon, 14 Mar 2022 15:44:51 -0400
+Message-Id: <20220314194451.58266-33-mjrosato@linux.ibm.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220314194451.58266-1-mjrosato@linux.ibm.com>
 References: <20220314194451.58266-1-mjrosato@linux.ibm.com>
-MIME-Version: 1.0
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 4yMtETw5zpch6ZLIPviSr9iKm8zFLR7_
-X-Proofpoint-ORIG-GUID: 5HVlPH_7SIExJBJWcOSyU7jHEQVOGOSd
+X-Proofpoint-ORIG-GUID: M3EoNyUKbnbOabH4Rxt-JZJHmpcH11J5
+X-Proofpoint-GUID: gSFlrQQ5rUK4xe3pNmkYLRLcmVNL5p4l
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
  definitions=2022-03-14_13,2022-03-14_02,2022-02-23_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 mlxscore=0
- suspectscore=0 bulkscore=0 mlxlogscore=840 phishscore=0 spamscore=0
- malwarescore=0 impostorscore=0 adultscore=0 priorityscore=1501
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ clxscore=1015
+ lowpriorityscore=0 priorityscore=1501 bulkscore=0 malwarescore=0
+ adultscore=0 phishscore=0 impostorscore=0 mlxscore=0 mlxlogscore=865
+ suspectscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2202240000 definitions=main-2203140116
 Cc: kvm@vger.kernel.org, david@redhat.com, thuth@redhat.com,
  linux-kernel@vger.kernel.org, vneethv@linux.ibm.com, agordeev@linux.ibm.com,
@@ -132,27 +129,26 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add entries from the s390 kvm subdirectory related to pci passthrough.
+Use wildcard to pick up new parts added by KVM domain support.
 
-Acked-by: Christian Borntraeger <borntraeger@linux.ibm.com>
 Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
 ---
- MAINTAINERS | 2 ++
- 1 file changed, 2 insertions(+)
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index e127c2fb08a7..6c76eb66b10a 100644
+index 6c76eb66b10a..d803f490eafb 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -16928,6 +16928,8 @@ M:	Eric Farman <farman@linux.ibm.com>
+@@ -16867,7 +16867,7 @@ M:	Gerald Schaefer <gerald.schaefer@linux.ibm.com>
  L:	linux-s390@vger.kernel.org
- L:	kvm@vger.kernel.org
  S:	Supported
-+F:	arch/s390/include/asm/kvm_pci.h
-+F:	arch/s390/kvm/pci*
- F:	drivers/vfio/pci/vfio_pci_zdev.c
- F:	include/uapi/linux/vfio_zdev.h
+ W:	http://www.ibm.com/developerworks/linux/linux390/
+-F:	drivers/iommu/s390-iommu.c
++F:	drivers/iommu/s390*
  
+ S390 IUCV NETWORK LAYER
+ M:	Alexandra Winter <wintera@linux.ibm.com>
 -- 
 2.27.0
 
