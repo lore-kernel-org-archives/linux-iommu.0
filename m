@@ -1,110 +1,111 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 42284C433F5
-	for <iommu@archiver.kernel.org>; Mon, 14 Mar 2022 19:50:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 78E44C433EF
+	for <iommu@archiver.kernel.org>; Mon, 14 Mar 2022 19:50:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 0940981493;
-	Mon, 14 Mar 2022 19:50:02 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3D1634157B;
+	Mon, 14 Mar 2022 19:50:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BOgli9AWFUnP; Mon, 14 Mar 2022 19:50:00 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 8A03082435;
-	Mon, 14 Mar 2022 19:50:00 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id v8cW5CTOgvKv; Mon, 14 Mar 2022 19:50:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id CEA02408CB;
+	Mon, 14 Mar 2022 19:50:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 720F2C001D;
-	Mon, 14 Mar 2022 19:50:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A679DC001D;
+	Mon, 14 Mar 2022 19:50:09 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 98C25C000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 19:49:59 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 94F28C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 19:50:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 774944027A
- for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 19:49:59 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 8FFA84064B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 19:50:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=ibm.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tMfA5Zfsndpp for <iommu@lists.linux-foundation.org>;
- Mon, 14 Mar 2022 19:49:58 +0000 (UTC)
+ with ESMTP id XwmSooUgWxNJ for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Mar 2022 19:50:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
  [148.163.156.1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 9945940157
- for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 19:49:58 +0000 (UTC)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
- by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22EJlVR0004992; 
- Mon, 14 Mar 2022 19:49:54 GMT
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 67773405CD
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 19:50:07 +0000 (UTC)
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+ by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22EJlWhx002808; 
+ Mon, 14 Mar 2022 19:50:03 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
  h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=0JqSqWbwpvY3vV8DEXGuT4nLzp1JbsR0s/621Oc4Ou8=;
- b=afRBzSL68askdbPpez+SLbQg4YAYnZFvCMWfx97HmryzqmqD5f3+gpqcpYQZFxxY39Ht
- YUNtY0HRWKDTysOiKYP1ckRbb7zHOiUZES2qtR+VJCRGVflztAhywbdwSUXeTFh/Ne7O
- 27EmL2S52QbORNUSLbNMsJ6IVShB2OZaqzXJwKf2xtxtVMvZ5SC+tJIqmBJ/ndCiEDPT
- IFRTgI5z3Xfe/IfIBGnpR6QEnm8Obg4LwFzaIDn+1RlTr578aETzWHoE2IsWiwSiNmvw
- H0909vHvluTJV5ZjSdRws9laJFstVTNSj34tgWMv1nutP49YGE5ToDdFwiekOfjKDC8m Pw== 
+ bh=NtvaafqQawGeW536gL8Hl+D6uOSeQNQSIU3t8O8kAGo=;
+ b=U+Q8AXbREqKtoBSy1OfYbPcKMqlf/LZ5J8MN4imLZOcjfcZpfO2i6d803VjHFvAW1OQ6
+ IZoRL/DBhS+yQYPffMj0jGXkqzGYKKTj3MJyK7WgVdmo9lsoJPKr9TtFI9cnnCAeoHiE
+ TzLaPd9m8x6lYhXhA3HdmxRO2TmW9j4+zPHdQCZckN8LeuRAlWCHokD1oXGqGX8qQSuV
+ VyVqIXwvJIwwHWEP2zHo35hyPi0zNZ/ZYLiJUNMsnyTTW0wSeYafLB6qhjQ7eByMyX/1
+ FyT1EvRdDjdj3VJqaX1dJg/HtUm/pwlS2kIpxFuNOCdPZOotj/XIKRWYTjiRz+CFl56Y Ng== 
 Received: from pps.reinject (localhost [127.0.0.1])
- by mx0a-001b2d01.pphosted.com with ESMTP id 3et6af0wpc-1
+ by mx0a-001b2d01.pphosted.com with ESMTP id 3et6ah92hd-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Mon, 14 Mar 2022 19:49:54 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
- by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22EJms1Q012077;
- Mon, 14 Mar 2022 19:49:53 GMT
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com
- [169.55.85.253])
- by mx0a-001b2d01.pphosted.com with ESMTP id 3et6af0wp1-1
+ Mon, 14 Mar 2022 19:50:03 +0000
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+ by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22EJlXF3002902;
+ Mon, 14 Mar 2022 19:50:03 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com
+ [169.63.121.186])
+ by mx0a-001b2d01.pphosted.com with ESMTP id 3et6ah92gr-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Mon, 14 Mar 2022 19:49:53 +0000
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
- by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22EJlB1m005387;
- Mon, 14 Mar 2022 19:49:52 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com
- [9.57.198.26]) by ppma01wdc.us.ibm.com with ESMTP id 3erk5989hh-1
+ Mon, 14 Mar 2022 19:50:02 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+ by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22EJm5XG002536;
+ Mon, 14 Mar 2022 19:50:01 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com
+ [9.57.198.29]) by ppma03wdc.us.ibm.com with ESMTP id 3erk58r9an-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Mon, 14 Mar 2022 19:49:52 +0000
+ Mon, 14 Mar 2022 19:50:01 +0000
 Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com
  [9.57.199.109])
- by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
- 22EJnogE3802068
+ by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+ 22EJo0lT52232548
  (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Mon, 14 Mar 2022 19:49:50 GMT
+ Mon, 14 Mar 2022 19:50:00 GMT
 Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id BCB90112071;
- Mon, 14 Mar 2022 19:49:50 +0000 (GMT)
+ by IMSVA (Postfix) with ESMTP id 25108112062;
+ Mon, 14 Mar 2022 19:50:00 +0000 (GMT)
 Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 303BB112067;
- Mon, 14 Mar 2022 19:49:42 +0000 (GMT)
+ by IMSVA (Postfix) with ESMTP id 3195D11206D;
+ Mon, 14 Mar 2022 19:49:51 +0000 (GMT)
 Received: from li-c92d2ccc-254b-11b2-a85c-a700b5bfb098.ibm.com.com (unknown
  [9.211.32.184]) by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
- Mon, 14 Mar 2022 19:49:41 +0000 (GMT)
+ Mon, 14 Mar 2022 19:49:50 +0000 (GMT)
 From: Matthew Rosato <mjrosato@linux.ibm.com>
 To: linux-s390@vger.kernel.org
-Subject: [PATCH v4 29/32] vfio-pci/zdev: add DTSM to clp group capability
-Date: Mon, 14 Mar 2022 15:44:48 -0400
-Message-Id: <20220314194451.58266-30-mjrosato@linux.ibm.com>
+Subject: [PATCH v4 30/32] KVM: s390: introduce CPU feature for zPCI
+ Interpretation
+Date: Mon, 14 Mar 2022 15:44:49 -0400
+Message-Id: <20220314194451.58266-31-mjrosato@linux.ibm.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220314194451.58266-1-mjrosato@linux.ibm.com>
 References: <20220314194451.58266-1-mjrosato@linux.ibm.com>
 MIME-Version: 1.0
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: GRwQeuVCT5F-vCDI6_JY93A5evlZh8F3
-X-Proofpoint-ORIG-GUID: SMVsEWAAPSVZ1Cczp3DF2PXStnn78aV5
+X-Proofpoint-GUID: Qe627T8D3VOl9Qp75zzIwElIOid11C8C
+X-Proofpoint-ORIG-GUID: irMXp6E0xak-vS7Ir70D8fq3nQLZJrBd
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
  definitions=2022-03-14_13,2022-03-14_02,2022-02-23_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 clxscore=1015
- lowpriorityscore=0 malwarescore=0 phishscore=0 suspectscore=0 spamscore=0
- mlxlogscore=999 mlxscore=0 impostorscore=0 priorityscore=1501 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203140116
+ clxscore=1015 mlxscore=0
+ suspectscore=0 bulkscore=0 mlxlogscore=972 phishscore=0 spamscore=0
+ malwarescore=0 impostorscore=0 adultscore=0 priorityscore=1501
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203140116
 Cc: kvm@vger.kernel.org, david@redhat.com, thuth@redhat.com,
  linux-kernel@vger.kernel.org, vneethv@linux.ibm.com, agordeev@linux.ibm.com,
  imbrenda@linux.ibm.com, will@kernel.org, frankja@linux.ibm.com, corbet@lwn.net,
@@ -131,71 +132,44 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The DTSM, or designation type supported mask, indicates what IOAT formats
-are available to the guest.  For an interpreted device, userspace will not
-know what format(s) the IOAT assist supports, so pass it via the
-capability chain.  Since the value belongs to the Query PCI Function Group
-clp, let's extend the existing capability with a new version.
+KVM_S390_VM_CPU_FEAT_ZPCI_INTERP relays whether zPCI interpretive
+execution is possible based on the available hardware facilities.
 
-Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
 Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
 ---
- drivers/vfio/pci/vfio_pci_zdev.c | 12 ++++++++++--
- include/uapi/linux/vfio_zdev.h   |  3 +++
- 2 files changed, 13 insertions(+), 2 deletions(-)
+ arch/s390/include/uapi/asm/kvm.h | 1 +
+ arch/s390/kvm/kvm-s390.c         | 6 ++++++
+ 2 files changed, 7 insertions(+)
 
-diff --git a/drivers/vfio/pci/vfio_pci_zdev.c b/drivers/vfio/pci/vfio_pci_zdev.c
-index 4a653ce480c7..aadd2b58b822 100644
---- a/drivers/vfio/pci/vfio_pci_zdev.c
-+++ b/drivers/vfio/pci/vfio_pci_zdev.c
-@@ -13,6 +13,7 @@
- #include <linux/vfio_zdev.h>
- #include <asm/pci_clp.h>
- #include <asm/pci_io.h>
-+#include <asm/kvm_pci.h>
- 
- #include <linux/vfio_pci_core.h>
- 
-@@ -44,16 +45,23 @@ static int zpci_group_cap(struct zpci_dev *zdev, struct vfio_info_cap *caps)
- {
- 	struct vfio_device_info_cap_zpci_group cap = {
- 		.header.id = VFIO_DEVICE_INFO_CAP_ZPCI_GROUP,
--		.header.version = 1,
-+		.header.version = 2,
- 		.dasm = zdev->dma_mask,
- 		.msi_addr = zdev->msi_addr,
- 		.flags = VFIO_DEVICE_INFO_ZPCI_FLAG_REFRESH,
- 		.mui = zdev->fmb_update,
- 		.noi = zdev->max_msi,
- 		.maxstbl = ZPCI_MAX_WRITE_SIZE,
--		.version = zdev->version
-+		.version = zdev->version,
-+		.dtsm = 0
- 	};
- 
-+	/* Some values are different for interpreted devices */
-+	if (zdev->kzdev) {
-+		cap.maxstbl = zdev->maxstbl;
-+		cap.dtsm = kvm_s390_pci_get_dtsm(zdev);
-+	}
-+
- 	return vfio_info_add_capability(caps, &cap.header, sizeof(cap));
- }
- 
-diff --git a/include/uapi/linux/vfio_zdev.h b/include/uapi/linux/vfio_zdev.h
-index 78c022af3d29..29351687e914 100644
---- a/include/uapi/linux/vfio_zdev.h
-+++ b/include/uapi/linux/vfio_zdev.h
-@@ -50,6 +50,9 @@ struct vfio_device_info_cap_zpci_group {
- 	__u16 noi;		/* Maximum number of MSIs */
- 	__u16 maxstbl;		/* Maximum Store Block Length */
- 	__u8 version;		/* Supported PCI Version */
-+	/* End of version 1 */
-+	__u8 dtsm;		/* Supported IOAT Designations */
-+	/* End of version 2 */
+diff --git a/arch/s390/include/uapi/asm/kvm.h b/arch/s390/include/uapi/asm/kvm.h
+index 7a6b14874d65..ed06458a871f 100644
+--- a/arch/s390/include/uapi/asm/kvm.h
++++ b/arch/s390/include/uapi/asm/kvm.h
+@@ -130,6 +130,7 @@ struct kvm_s390_vm_cpu_machine {
+ #define KVM_S390_VM_CPU_FEAT_PFMFI	11
+ #define KVM_S390_VM_CPU_FEAT_SIGPIF	12
+ #define KVM_S390_VM_CPU_FEAT_KSS	13
++#define KVM_S390_VM_CPU_FEAT_ZPCI_INTERP 14
+ struct kvm_s390_vm_cpu_feat {
+ 	__u64 feat[16];
  };
+diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+index 613101ba29be..137ab8c09b82 100644
+--- a/arch/s390/kvm/kvm-s390.c
++++ b/arch/s390/kvm/kvm-s390.c
+@@ -434,6 +434,12 @@ static void kvm_s390_cpu_feat_init(void)
+ 	if (test_facility(151)) /* DFLTCC */
+ 		__insn32_query(INSN_DFLTCC, kvm_s390_available_subfunc.dfltcc);
  
- /**
++	/* zPCI Interpretation */
++	if (IS_ENABLED(CONFIG_VFIO_PCI) && IS_ENABLED(CONFIG_S390_KVM_IOMMU) &&
++	    test_facility(69) && test_facility(70) && test_facility(71) &&
++	    test_facility(72))
++		allow_cpu_feat(KVM_S390_VM_CPU_FEAT_ZPCI_INTERP);
++
+ 	if (MACHINE_HAS_ESOP)
+ 		allow_cpu_feat(KVM_S390_VM_CPU_FEAT_ESOP);
+ 	/*
 -- 
 2.27.0
 
