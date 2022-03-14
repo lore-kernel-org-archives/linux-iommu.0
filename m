@@ -1,116 +1,73 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8EF2CC433F5
-	for <iommu@archiver.kernel.org>; Mon, 14 Mar 2022 07:03:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C2300C433EF
+	for <iommu@archiver.kernel.org>; Mon, 14 Mar 2022 07:31:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 2D95360D9C;
-	Mon, 14 Mar 2022 07:03:13 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 487FE400D6;
+	Mon, 14 Mar 2022 07:31:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lu_i7Jct5UfM; Mon, 14 Mar 2022 07:03:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id DEEEE60D91;
-	Mon, 14 Mar 2022 07:03:11 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id kJJhs7LUWxum; Mon, 14 Mar 2022 07:31:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id E6510400A6;
+	Mon, 14 Mar 2022 07:31:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A163DC0012;
-	Mon, 14 Mar 2022 07:03:11 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CFC55C000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 07:03:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A4DF7C001D;
+	Mon, 14 Mar 2022 07:31:37 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A4E75C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 07:31:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id B000440274
- for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 07:03:09 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 89208400BF
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 07:31:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=amd.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id y0UCamEb8N1m for <iommu@lists.linux-foundation.org>;
- Mon, 14 Mar 2022 07:03:08 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam10on20606.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e89::606])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 7F99940265
- for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 07:03:08 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jQhuWaJLN2AvApHp9dYl9T28W/JY+0eJD1QFrNKx20+unaEf/66tGcwmdckbm5wgJu6FgkvnDqPDctyTmc3EH6+Z7Vr6SyE/XrJzStlitHS7L9F3hY17Maf8x07prNPg8WIj14soJ3aMc+EqIor27o4KIEnuRGvy0vuPaYIq+VX1vPjlo/nGmfh7J+U0+gXEstylvw6en1UFKnKd0/F4pF66KMNtCtsQLHfj0ezTybxub3SE5NzpApSUmt8vguziPxy5GNMxscMAc36jYC5vkhbpnFO6ViCanQ/HjWStKYW8e+UxNL8zjrlQ2GH48PkRv1rzoHnxCKU/j1QCWr5DUA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=h04LVpfKRdjn/6+VsmUV2cqbvoHE3jXJ87IprWIAANE=;
- b=N0SQX98ozRokGUZdD5WopkwN3Nf1W1GYuYODengsdBftxPTCYY7/d2DyBMZMGcq5XSMc7rCUesAMUmQRbXu0Qo2NMP5lMPMt+qEwVdFzLdVXnqkHuQupeID7VHB3hSDecoDuKG3fT6aTGRlOPSjP3wBnq15C0DpvucJuou3IIFWvSMjlTYHx45Hh0oz1x5huSqiVHuXiRNXxxXBd2j9gNkyAledIg/xuAUZn8PEGGrJxkGxIBbNjv53trV16/8o+h5rGWEJsLtyem5zq64XTAag3vWmgp4/5IvqXSk3GSLkGCt3ejDFlr3VkHsXc1BD4UAjUIVlCOMB+M71iTfJRNA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux-foundation.org
- smtp.mailfrom=amd.com; dmarc=pass (p=quarantine sp=quarantine pct=100)
- action=none header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h04LVpfKRdjn/6+VsmUV2cqbvoHE3jXJ87IprWIAANE=;
- b=Ct18ikIdaBwIwpvcWZVjdDaL645VKOsoPmV0UNTmj85W+whcCPTujJFoE7W3wuLPMDUpp6Inr9xOkHq6x+tTZ0FZVmG4skp5TDDwCcZIN6upx6E5FEYGhkdP9GNu+wJ20JhpqNuaFToO85tGj1DTLvKMS8jPqNFowRiU7DUMpFE=
-Received: from BN6PR13CA0041.namprd13.prod.outlook.com (2603:10b6:404:13e::27)
- by DM6PR12MB4698.namprd12.prod.outlook.com (2603:10b6:5:34::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.21; Mon, 14 Mar
- 2022 07:03:05 +0000
-Received: from BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:13e:cafe::11) by BN6PR13CA0041.outlook.office365.com
- (2603:10b6:404:13e::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.13 via Frontend
- Transport; Mon, 14 Mar 2022 07:03:05 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT049.mail.protection.outlook.com (10.13.177.157) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5061.22 via Frontend Transport; Mon, 14 Mar 2022 07:03:04 +0000
-Received: from kali.amdval.net (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 14 Mar
- 2022 02:02:57 -0500
-To: <iommu@lists.linux-foundation.org>, <joro@8bytes.org>
-Subject: [PATCH] iommu/amd: Remove redundant check
-Date: Mon, 14 Mar 2022 12:32:26 +0530
-Message-ID: <20220314070226.40641-1-vasant.hegde@amd.com>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id qNy3ompc11P4 for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Mar 2022 07:31:34 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [IPv6:2607:7c80:54:e::133])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A64CF400A6
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Mar 2022 07:31:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+ MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+ Content-ID:Content-Description:In-Reply-To:References;
+ bh=HhGavQ6qvlf8H5F/ZlRZDjP5Hg4YmQaPJkbgnrtpMJI=; b=x1HmPcRq+EIQAGkkRG5r3Q2ccQ
+ wnlPc6HT3VpJAMMRF1p4SFikzmXOQYomeT6ykxwmWCxoebP1bN2ceE+8XNvoM8N5VllZnT75DHXGC
+ h4wekLHOCpTAFXijUS4GI7cBuhiIwxysA4rgf8RJTlGS2pKLIVQjT1AeGrirHMuQmzJkixPdmUiaw
+ cmRW8o6cqr3klWE3JQHi+2CDOTmN7yN+qKBICbgnWeDRcK/2hY0uiepsrGceY5FvPtk+56Vn9gD0m
+ a70FwFmi8fEZWw8s5/U6tP9pIaV7UquRjOae803zd4ky95pR5AVFQCHxkh5K/hYSfr0VZAdOqR1aQ
+ rxPZmEfQ==;
+Received: from [46.140.54.162] (helo=localhost)
+ by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+ id 1nTfAx-0044RD-TW; Mon, 14 Mar 2022 07:31:32 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: iommu@lists.linux-foundation.org
+Subject: cleanup swiotlb initialization v5
+Date: Mon, 14 Mar 2022 08:31:14 +0100
+Message-Id: <20220314073129.1862284-1-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6cf9ec8e-176f-4868-adba-08da0588afc7
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4698:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB469881B8ACB6601B7C98E1F7870F9@DM6PR12MB4698.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: t/w4r5gKOiVRLeGFhK0ox6spqrCkIxtl2sFNYBUAE4ij7a1oRTPTqc761Y7NCQW1kQoOch6ush3NlE10EYhnWl7STr/erOd+XW8DpxEzS7ZBVbYs5VKC1ftiDRxxV50nSKkON26jSafBwdH8fI+3TOREQ4D3yy3sCVfJ9QSmOg72pWfWi7dFERiQZi8ADbsZCBInMcNZ8dDr33/DtdqRdFScXLQEDzCKVV19I540zi4iwXMmhFTsKUc3qGhkYH/p98HI/XjhyNdbhyLK9a/crwwXfnuDGbENTpo3rV4V2mx93DOfWPgkVOr59F3jNT8FGjsvHZgTlCIwYhErol2FQ1pnR8nBszUr1PZ5MZh0VFPMOxH7a5NwGNIs81YmZhO+qAPmwK+Err/8NAczwwp6eZgu5/dHxxXutTRsCJoAO4Z4i6U1c+Nodl1sKE7dig5LKn9ZRSrYAlJaRT1v+rWOUyVxvT5oz1NgQhNbyzJ3YhOibgxOuSeKFi9+SswZddmry+32Thu4p/MbGVm59PsbDUQ+QBTBlzf1HxPxa+nYI1F6ZNqbYDu0vkn99oMJP5L7h2K9HWHdo/0YJPGtc+piIK1THDGLRpJkcKe3WpdDLJGxPNkt5aMIY7QXnhkhAl7A8YS5jb0gcw5sHAyUEcTAy4W4Z7wYu0ctDXTGB061R22FcrVdO5+CscS89UIkWtVr22pH5DwMXd+pC7UA2AVM6g==
-X-Forefront-Antispam-Report: CIP:165.204.84.17; CTRY:US; LANG:en; SCL:1; SRV:;
- IPV:CAL; SFV:NSPM; H:SATLEXMB04.amd.com; PTR:InfoDomainNonexistent; CAT:NONE;
- SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(2616005)(8936002)(6666004)(356005)(70206006)(70586007)(1076003)(508600001)(4744005)(16526019)(5660300002)(26005)(81166007)(186003)(336012)(44832011)(426003)(110136005)(54906003)(36756003)(82310400004)(2906002)(83380400001)(316002)(40460700003)(47076005)(8676002)(4326008)(86362001)(36860700001)(36900700001);
- DIR:OUT; SFP:1101; 
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2022 07:03:04.8199 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6cf9ec8e-176f-4868-adba-08da0588afc7
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d; Ip=[165.204.84.17];
- Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4698
-Cc: Dan
- Carpenter <dan.carpenter@oracle.com>, Vasant Hegde <vasant.hegde@amd.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Juergen Gross <jgross@suse.com>, Tom Lendacky <thomas.lendacky@amd.com>,
+ linux-s390@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>,
+ linux-ia64@vger.kernel.org, Anshuman Khandual <anshuman.khandual@arm.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Robin Murphy <robin.murphy@arm.com>, x86@kernel.org,
+ linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ tboot-devel@lists.sourceforge.net, linux-hyperv@vger.kernel.org,
+ linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ David Woodhouse <dwmw2@infradead.org>, linux-riscv@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -123,41 +80,97 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Vasant Hegde via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Vasant Hegde <vasant.hegde@amd.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-smatch static checker warning:
-  drivers/iommu/amd/init.c:1989 amd_iommu_init_pci()
-  warn: duplicate check 'ret' (previous on line 1978)
+Hi all,
 
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: 06687a03805e ("iommu/amd: Improve error handling for amd_iommu_init_pci")
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/init.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+this series tries to clean up the swiotlb initialization, including
+that of swiotlb-xen.  To get there is also removes the x86 iommu table
+infrastructure that massively obsfucates the initialization path.
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 2586e589e54e..8ed1f86fe93d 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -2137,8 +2137,7 @@ static int __init amd_iommu_init_pci(void)
- 	for_each_iommu(iommu)
- 		iommu_flush_all_caches(iommu);
- 
--	if (!ret)
--		print_iommu_info();
-+	print_iommu_info();
- 
- out:
- 	return ret;
--- 
-2.27.0
+Git tree:
 
+    git://git.infradead.org/users/hch/misc.git swiotlb-init-cleanup
+
+Gitweb:
+
+    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/swiotlb-init-cleanup
+
+Changes since v5:
+ - split a patch into three
+ - fix setting x86_swiotlb_enable for Xen
+ - fix a comment about forced bounce buffering for guest memory
+   encryption
+ - remove the xen_initial_domain check from
+   xen_create_contiguous_region
+
+Changes since v3:
+ - fix a compilation issue on some powerpc configfs
+ - fix and cleanup how forced bounce buffering is enabled for
+   guest memory encryption
+
+Changes since v2:
+ - make ppc_swiotlb_flags actually work again
+ - also force enable swiotlb for guest encrypted memory to cater
+   to hyperv which doesn't set the host encrypted memory flag
+
+Changes since v1:
+ - skip IOMMU initialization on Xen PV kernels
+ - various small whitespace / typo fixes
+
+Diffstat:
+ arch/ia64/include/asm/iommu_table.h      |    7 -
+ arch/x86/include/asm/iommu_table.h       |  102 ------------------
+ arch/x86/include/asm/swiotlb.h           |   30 -----
+ arch/x86/kernel/pci-iommu_table.c        |   77 -------------
+ arch/x86/kernel/pci-swiotlb.c            |   77 -------------
+ arch/x86/xen/pci-swiotlb-xen.c           |   96 -----------------
+ b/arch/arm/mm/init.c                     |    6 -
+ b/arch/arm/xen/mm.c                      |   26 ++--
+ b/arch/arm64/mm/init.c                   |    6 -
+ b/arch/ia64/mm/init.c                    |    4 
+ b/arch/mips/cavium-octeon/dma-octeon.c   |   15 --
+ b/arch/mips/loongson64/dma.c             |    2 
+ b/arch/mips/pci/pci-octeon.c             |    2 
+ b/arch/mips/sibyte/common/dma.c          |    2 
+ b/arch/powerpc/include/asm/svm.h         |    4 
+ b/arch/powerpc/include/asm/swiotlb.h     |    1 
+ b/arch/powerpc/kernel/dma-swiotlb.c      |    1 
+ b/arch/powerpc/mm/mem.c                  |    6 -
+ b/arch/powerpc/platforms/pseries/setup.c |    3 
+ b/arch/powerpc/platforms/pseries/svm.c   |   26 ----
+ b/arch/riscv/mm/init.c                   |    8 -
+ b/arch/s390/mm/init.c                    |    3 
+ b/arch/x86/include/asm/dma-mapping.h     |   12 --
+ b/arch/x86/include/asm/gart.h            |    5 
+ b/arch/x86/include/asm/iommu.h           |    8 +
+ b/arch/x86/include/asm/xen/page.h        |    5 
+ b/arch/x86/include/asm/xen/swiotlb-xen.h |    2 
+ b/arch/x86/kernel/Makefile               |    2 
+ b/arch/x86/kernel/amd_gart_64.c          |    5 
+ b/arch/x86/kernel/aperture_64.c          |   14 --
+ b/arch/x86/kernel/cpu/mshyperv.c         |    8 -
+ b/arch/x86/kernel/pci-dma.c              |  113 ++++++++++++++++----
+ b/arch/x86/kernel/tboot.c                |    1 
+ b/arch/x86/kernel/vmlinux.lds.S          |   12 --
+ b/arch/x86/mm/mem_encrypt_amd.c          |    3 
+ b/arch/x86/pci/sta2x11-fixup.c           |    2 
+ b/arch/x86/xen/Makefile                  |    2 
+ b/drivers/iommu/amd/init.c               |    6 -
+ b/drivers/iommu/amd/iommu.c              |    5 
+ b/drivers/iommu/intel/dmar.c             |    6 -
+ b/drivers/xen/swiotlb-xen.c              |  132 -----------------------
+ b/include/linux/dmar.h                   |    6 -
+ b/include/linux/swiotlb.h                |   22 +--
+ b/include/trace/events/swiotlb.h         |   29 +----
+ b/include/xen/arm/page.h                 |    1 
+ b/include/xen/swiotlb-xen.h              |    8 +
+ b/kernel/dma/direct.h                    |    2 
+ b/kernel/dma/swiotlb.c                   |  175 +++++++++++++++----------------
+ 48 files changed, 264 insertions(+), 826 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
