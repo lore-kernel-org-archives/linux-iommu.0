@@ -1,92 +1,172 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BBA24C433F5
-	for <iommu@archiver.kernel.org>; Tue, 15 Mar 2022 11:38:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id ADCD7C433F5
+	for <iommu@archiver.kernel.org>; Tue, 15 Mar 2022 11:50:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 64EEC60F94;
-	Tue, 15 Mar 2022 11:38:04 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 4C8B540A0D;
+	Tue, 15 Mar 2022 11:50:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 33lUPzDrhxv4; Tue, 15 Mar 2022 11:38:03 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 078AA60F9E;
-	Tue, 15 Mar 2022 11:38:03 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CDBA3C0012;
-	Tue, 15 Mar 2022 11:38:02 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CDD7DC000B
- for <iommu@lists.linux-foundation.org>; Tue, 15 Mar 2022 11:38:00 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id B7D09408CD
- for <iommu@lists.linux-foundation.org>; Tue, 15 Mar 2022 11:38:00 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZCUYaNadShpq for <iommu@lists.linux-foundation.org>;
- Tue, 15 Mar 2022 11:37:59 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com
- [IPv6:2a00:1450:4864:20::42f])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 28F4F40260
- for <iommu@lists.linux-foundation.org>; Tue, 15 Mar 2022 11:37:58 +0000 (UTC)
-Received: by mail-wr1-x42f.google.com with SMTP id b19so6166747wrh.11
- for <iommu@lists.linux-foundation.org>; Tue, 15 Mar 2022 04:37:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=ahx7UKZv0OoL24Ag2nb4+cGfcAOKb10fU0eUtMYyFm0=;
- b=oNyYmghoO8s47essImFCeMVvf9Lwty1wLVtvs+FnbiU/CrfsQNMzuXtgpP5GDS1vVJ
- k5Q/OmwV/Ww6UvQ/bt0Zh+K8ayrXy288SL1GvFmZg+5otu5v0ZlKXW90l+4o4/DthgC6
- t+G8flZRiUhSSNKNvyVOLHFCb2kh8QQ7K9Q6iHRzNb7CS1FgKN0aasGCA0d+zfH0Xj++
- LHcVs/vZwSdCE4QPKmV7EE3afy3qeGu0btjUhuWfriqEMfgRSgTr3uzl65XTKveWH3oY
- Mhjb0CewGkyoZEV9Sx5HDO9/c+tpHd04Yx3hxv8oj8J9aTQuUjXuxzHSnenpPxmo6Nj7
- a+sg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=ahx7UKZv0OoL24Ag2nb4+cGfcAOKb10fU0eUtMYyFm0=;
- b=leSDdnYoGaqBL7kDEGXMU9FLLa4UF5IreH1oN31vGxhw3hh+BOwedHmvMc3lKb5iEk
- wqeArSs9nBnzveWhoPaQx2U3aj0qX/XCw0cqEYtQ4f0/5sVaIUfN1bSq6KNX7RCDL+m2
- cTA8Z0tKhwUlvUEStu5dLLs/yKXpD1VXp5AaxMMUEhkqbeaf4yHcp/qToy8brnW+PvFm
- OtzEfobIGt8pKUwD+Z5VS0mUevKODTkARkDY7psclkImuinsYDvIZs8OTsUsokc1sUIn
- 8Cbsae2SBT8BEvus+n/3OZfuSNeXKactLKZ5caHOa/FJj1up8KLxI6P8ebqSlPwObIRz
- oGqg==
-X-Gm-Message-State: AOAM530410xqlh0lMyl6XsHkYRx8Knag9oIGvHwWfqs3uiCa+ibqkBVH
- 4nk6QLbDOqEuFcguPV1mjzPhZw==
-X-Google-Smtp-Source: ABdhPJzVyTk9rbag8GQe4T4tKekK4pTCAy2iYJXtULFol/QinSOn1Gmbq4I1+NoJCpN/wq6kurGSWw==
-X-Received: by 2002:a5d:5342:0:b0:1ef:7f26:df46 with SMTP id
- t2-20020a5d5342000000b001ef7f26df46mr19373979wrv.600.1647344277114; 
- Tue, 15 Mar 2022 04:37:57 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
- [82.27.106.168]) by smtp.gmail.com with ESMTPSA id
- n15-20020a05600c4f8f00b003842f011bc5sm2263815wmq.2.2022.03.15.04.37.56
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 15 Mar 2022 04:37:56 -0700 (PDT)
-Date: Tue, 15 Mar 2022 11:37:30 +0000
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v2 8/8] iommu: Remove unused driver data in sva_bind_device
-Message-ID: <YjB6ettzNkHZ7EnW@myrica>
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3HTY39Ovwbmk; Tue, 15 Mar 2022 11:50:06 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A408C408CD;
+	Tue, 15 Mar 2022 11:50:05 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 76738C0012;
+	Tue, 15 Mar 2022 11:50:05 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ADB76C000B
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Mar 2022 11:50:03 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 88B398129F
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Mar 2022 11:50:03 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id POkfh3dInt3a for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Mar 2022 11:50:01 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id CA79C8126B
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Mar 2022 11:50:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1647345001; x=1678881001;
+ h=from:to:cc:subject:date:message-id:references:
+ in-reply-to:content-transfer-encoding:mime-version;
+ bh=zHMnp4Uv5Xqii/NVxN/gxrw4QoBid1upSS5ZUenXc1g=;
+ b=fqg9Ii+zGFWgFiMLwWWUmaHvJm2EvqZmnK+K9Ft6jER19Dvlb7wr5skM
+ WKEuqnhDHvgOVg4YUUb99p7zkS1jRF8XRNXtm7XyLka/ZTJ60/9tp+WCK
+ 6fXMTDDN9WsSHrDBXPjG7uWnTAuPCEA+0vHdyGZUX2u1Xp+X6Hf2nbNTP
+ iiqUDt7Yagqerh2S29TDUnocLfI7A4WyOVrALFO9O3B9izjBVnCLfsjN/
+ 5RnbKyjr3joxS8Aop0++lULBeKCQ3KpfhNQ3sN3uZ0r0lSf+AF4dgWK6C
+ JN7SMcnD43jRVDOg8DeQYj9c6a8Q6RwbMtGqwSMc7q4MP614eE3XRCqYI g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="236882368"
+X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; d="scan'208";a="236882368"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Mar 2022 04:50:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; d="scan'208";a="714125533"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+ by orsmga005.jf.intel.com with ESMTP; 15 Mar 2022 04:50:00 -0700
+Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Mar 2022 04:50:00 -0700
+Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
+ fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Mar 2022 04:50:00 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21 via Frontend Transport; Tue, 15 Mar 2022 04:50:00 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.177)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.21; Tue, 15 Mar 2022 04:49:59 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WMVCzbuyHkG6ssZ8Bh6dPScY9KC05599PoY3ImGxFCkr7IeAyblE0e3ZAhUorx2RH19ZZNOV/kRFRDH62+t1GzLT9L3S6Jj5Qz46IP5atwhdrCeRQdAs710ev0IYY0+/eX5lzVfoaJ7c9RWJUCuAdxM5Ddt7CDLL4T2F03iKSl6/UA/7GIXhNrexg2USLU7l1YTOT6cOQMGkth8DGpQ9Ydqc6ACchLhV2p+mL+vLP32h5SUW2BWpQVxMAu0dft9gc3MQvxwBHlEEQCsxCPDU2tbEBZgkRWwQ4LYOdkW10w8NAU3LTgqidfl+xNm9CFD05l1cW6+wVcb6dR0mavyOIw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=v259uTkQbFxC2uGiMSJpJpFBoM2OPdJkRGOoXPVcTJs=;
+ b=J32qpf8t9Fwd811UoJYA82hDjuqVdtlAdSfDlVQ995KwstzK2OpuJEWNd694zsMVl4ieA8K2fc5meOxlmFPSL0S3PeygRBvJz8e4ZBccGaopPnFJdsEzGdGllSLko8P1fQDeh4gvk2svEGAf9XtJijlj4N0nJZwnh1qOsMT0ItnX0ksneYwOnF3XbKwskmLFRd1a3mzd1YLTPw2qlBlb/yJoVlL51unAc+THWw9X27iOJev1Rzz+3CoObXmmulLlnDzFk7oNYbnzQ5w7LrU35Pr2tuWxYaGSEpZZh9QQUcRYkYwERSuCB2vNSxMTU8/e9htuJV9xT9VWXpOUx3oQFQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by BYAPR11MB2805.namprd11.prod.outlook.com (2603:10b6:a02:c1::15)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.26; Tue, 15 Mar
+ 2022 11:49:57 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::c8aa:b5b2:dc34:e893]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::c8aa:b5b2:dc34:e893%8]) with mapi id 15.20.5081.014; Tue, 15 Mar 2022
+ 11:49:57 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>, Jacob Pan
+ <jacob.jun.pan@linux.intel.com>
+Subject: RE: [PATCH v2 2/8] iommu: Add attach/detach_dev_pasid domain ops
+Thread-Topic: [PATCH v2 2/8] iommu: Add attach/detach_dev_pasid domain ops
+Thread-Index: AQHYOCoYv35DknzN5kqPD8yptRL1a6zATtaAgAAEIvA=
+Date: Tue, 15 Mar 2022 11:49:57 +0000
+Message-ID: <BN9PR11MB5276D5B88C05B509C2C790A98C109@BN9PR11MB5276.namprd11.prod.outlook.com>
 References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
- <20220315050713.2000518-9-jacob.jun.pan@linux.intel.com>
+ <20220315050713.2000518-3-jacob.jun.pan@linux.intel.com>
+ <YjB4AyrgsnbUrlLe@myrica>
+In-Reply-To: <YjB4AyrgsnbUrlLe@myrica>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 130de06b-a1a5-4763-05f1-08da0679ed85
+x-ms-traffictypediagnostic: BYAPR11MB2805:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr,ExtFwd
+x-microsoft-antispam-prvs: <BYAPR11MB28052B7B0EEDC564002FEEAB8C109@BYAPR11MB2805.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: xGQzFcCiFzqcBgZHmCaMqNX5RqHhk0+lUMNST9x2sjKpD7FXBNJP77wEjl0uv3OOf0HN/N6FomQDF9rE/AnK3fkXTFFWRNlpwhv6jNqTspu3YwPqusijFLLRqg0JPF/BojEo44PRKS7nM4CbNgh8asP12481cO5UTc8WL/PqTAfF9UQbYeSwjIwpGZkjFTGzubvNMojPoD994hyLqmoWYJirfQ4VXHLx89aSQ9LtAYAAmDLNrdv4CJlNd7gyadwNrawcM/7zvbqrIZ03DSXZSBnBBnRas/oe/xlgWbwr98tShObrZl88JAb0DejTzdKvbiaZotX+sjxw5r52qxdPUFxN6Tokng24J8CqOtRWRFX3lZTTemjt/QwFQGnuh+Jw4yjnv9D9Q2PTOBhYCoVmRQUMCSB8IeSRA5Wfbzt9JsMUjUJdbfIHNuuK+5aF3diMvJYF1mDNqDTi8szcW7rh11mPMRk9B3/ncQED4mg0aGb4bvYgUnENEFDozwS3VrJCKYf8GSTVhulXVvFG7v/bzkQ69SAgsYvp02adXL9ySbRPiH/82WcoiDnsoHqvbkHcPsbN0ar/WqSbGN9n6ubMq1Vc+FbHdeWltNJFU629gIeQB4NFiXVBVx7b4hVz0g+BpaPh4NRyaRjcmp1pcN/SHXFCvZpartloLsjvZTyjLiXehzZw3bt08CRhj2uq/3R0JZMRQkncrKyoMXEgv8GbnQ==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(186003)(26005)(71200400001)(82960400001)(122000001)(2906002)(7696005)(86362001)(38100700002)(6506007)(9686003)(508600001)(38070700005)(7416002)(316002)(8676002)(4326008)(5660300002)(64756008)(66946007)(66556008)(76116006)(66476007)(66446008)(8936002)(52536014)(55016003)(83380400001)(110136005)(33656002)(54906003);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?K7fyT7Xxpy3js0XuNqQR7pVFdmwbAidD34bA6g0PCtluk4iZRQCBibMNCF0h?=
+ =?us-ascii?Q?xxPAk+/vy9DhH6qgxreabfhX4+5kcStvTiPY0ddQKwca9N5WboVz6nisNtqN?=
+ =?us-ascii?Q?p5+/3uhEz2P/dTxBUjkkjPDqkWeAwf04nM6Bvvz4wMPbcSaAMb2Dp2zl9glR?=
+ =?us-ascii?Q?ocYc0a6QlWssSy0dJZLlq0XMf/aTLEDfT4cMv96ffjPR03ZGLJqa7qXzPeK+?=
+ =?us-ascii?Q?iHY2CrQI1L55i7MVw68METPc1/jGu1ZD7X4uM6V4EmqKl4Fw5/WN3gkE/Up4?=
+ =?us-ascii?Q?CtKD39tjaq/DMdKSwcjIEsxsgJYORlTvgyFkAUDes6kaqzKcDABzhvRbqId8?=
+ =?us-ascii?Q?ZmyVrluHdZKiLcjtE0pRAnU45sf9AbrGa1/jx8TiTuDhnk8SQfRAECpjGB6P?=
+ =?us-ascii?Q?eiracePQgFIl+kpKl3cwMVywqETr7Wfr99zpP+yz7AiqrOZgn7dgBH3hFN2+?=
+ =?us-ascii?Q?DVjc6LY4EdpSaNAbPq/Qyz4EXzYNXfXUqgtXHLpcUaaRazY/IpEPmTYcOlch?=
+ =?us-ascii?Q?ddI2zJ67hBqMbafTj3FxcUcIM5m2kHyJ+j1riUY19ZK5si3MMXh9r+fC/QrW?=
+ =?us-ascii?Q?irUzyutYvkhlHdAZ+0cROaeOkLy4soLBgRhXyZ0VnIwtLI1icoa2eXXuY09x?=
+ =?us-ascii?Q?CbTFQhZnwftEIxJNLN92nP8mdT3nqqHqhvn8wCY/NSWt3ZpRAUP3d/LVj9zB?=
+ =?us-ascii?Q?DuZ/RNCDevuxL8bP9JBQAKTaR/9o69MDocegrIHFN9kLEaYYpQ3yy8YCFw41?=
+ =?us-ascii?Q?0uZgda0vN7adbMTPdk1N2gHdIVdWRIy5APwbW/2C4DVSykk9+UD0fs7GvY1o?=
+ =?us-ascii?Q?XSrqeVUHn8ah3HDkYqDnZ4RjgBqZ6epw+wHqJLNQDZDpQq3f6Hqq4DIYlIjD?=
+ =?us-ascii?Q?VMalw2WyfZIl6ebf0JGMuY3z757t7omMwS2/Uj6OJoRPJ1PvIOyPFt782+u5?=
+ =?us-ascii?Q?nKyYom3KELm2T6KyC2jnQ1Qb1Wi/u8wRIreWmrT6fYKx5FVmNgRqMU86RmOg?=
+ =?us-ascii?Q?sfwITU+oPF12/ymFL45ZiqB3ShxpIt+iqD0bkeU6suBQf2Zsd7Myg78Q0TC2?=
+ =?us-ascii?Q?o0lp1LETr81QaZe3Z10IeefJ68kIJvztna4ZGdUYkFC8k6lscDQaemmxKObh?=
+ =?us-ascii?Q?jnkzDhUF/qcBlsMUQINv42grZmsObRoix0Jfde+4r8UiPiYuk2JIlFOZtrj3?=
+ =?us-ascii?Q?/jvV1INN5rvqMtHXpe88EmZZ8OpBKellEdHUTrq1qvVSk1ayOCORT/3YENeE?=
+ =?us-ascii?Q?CaEezXGWvXv1ZAACE96xMRJ7T6mwks3ZmHviRGpQpNNpxfDDqXIk1TpTNSk+?=
+ =?us-ascii?Q?HNIuyZ9wPtR3M4IYHvT3TE8dc5bgBAzRsFhziaTMhr3avTvREwKP5IazTI1k?=
+ =?us-ascii?Q?if35d3tajz1G8XTyFWWOFNO3aK0BxoRYprMka3ny9yepHqpWmwMKet6wlZwH?=
+ =?us-ascii?Q?yGLqVGdd/OGdXQbsCyqtrPKDEodKHaoA?=
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220315050713.2000518-9-jacob.jun.pan@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Tony Luck <tony.luck@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>, "Zanussi,
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 130de06b-a1a5-4763-05f1-08da0679ed85
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Mar 2022 11:49:57.0667 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: PBIozWutrrfJlI7DGXGV9KQK/r1CjQX3DiTVd6bUSsSxdMdNZfUVwEzraaDowin36x++Z+an+EY0pnP4vghMDQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2805
+X-OriginatorOrg: intel.com
+Cc: "Luck, Tony" <tony.luck@intel.com>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, "Zanussi,
  Tom" <tom.zanussi@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
  LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
- iommu@lists.linux-foundation.org, Jacob Pan <jacob.jun.pan@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Dan Williams <dan.j.williams@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>, Jason
+ Gunthorpe <jgg@nvidia.com>, "Williams, Dan J" <dan.j.williams@intel.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -105,198 +185,78 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Mar 14, 2022 at 10:07:12PM -0700, Jacob Pan wrote:
-> No one is using drvdata for sva_bind_device after kernel SVA support is
-> removed from VT-d driver. Remove the drvdata parameter as well.
+> From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Sent: Tuesday, March 15, 2022 7:27 PM
 > 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> On Mon, Mar 14, 2022 at 10:07:06PM -0700, Jacob Pan wrote:
+> > From: Lu Baolu <baolu.lu@linux.intel.com>
+> >
+> > An IOMMU domain represents an address space which can be attached by
+> > devices that perform DMA within a domain. However, for platforms with
+> > PASID capability the domain attachment needs be handled at device+PASID
+> > level. There can be multiple PASIDs within a device and multiple devices
+> > attached to a given domain.
+> > This patch introduces a new IOMMU op which support device, PASID, and
+> > IOMMU domain attachment. The immediate use case is for PASID capable
+> > devices to perform DMA under DMA APIs.
+> >
+> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >  include/linux/iommu.h | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> >
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index 369f05c2a4e2..fde5b933dbe3 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -227,6 +227,8 @@ struct iommu_iotlb_gather {
+> >   * @aux_get_pasid: get the pasid given an aux-domain
+> >   * @sva_bind: Bind process address space to device
+> >   * @sva_unbind: Unbind process address space from device
+> > + * @attach_dev_pasid: attach an iommu domain to a pasid of device
+> > + * @detach_dev_pasid: detach an iommu domain from a pasid of device
+> 
+> Isn't that operation "assign a PASID to a domain" instead?  In patch 5,
+> the domain is already attached to the device, so set_domain_pasid() might
+> be clearer and to the point. If the IOMMU driver did the allocation we
+> could also avoid patch 1.
 
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+iiuc this API can also work for future SIOV usage where each mdev attached
+to the domain has its own pasid. "assigning a PASID to a domain" sounds
+like going back to the previous aux domain approach which has one PASID
+per domain and that PASID is used on all devices attached to the aux domain...
 
-> ---
->  drivers/dma/idxd/cdev.c                         | 2 +-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 2 +-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     | 5 ++---
->  drivers/iommu/intel/svm.c                       | 9 ++++-----
->  drivers/iommu/iommu.c                           | 4 ++--
->  drivers/misc/uacce/uacce.c                      | 2 +-
->  include/linux/intel-iommu.h                     | 3 +--
->  include/linux/iommu.h                           | 9 +++------
->  8 files changed, 15 insertions(+), 21 deletions(-)
 > 
-> diff --git a/drivers/dma/idxd/cdev.c b/drivers/dma/idxd/cdev.c
-> index b9b2b4a4124e..312ec37ebf91 100644
-> --- a/drivers/dma/idxd/cdev.c
-> +++ b/drivers/dma/idxd/cdev.c
-> @@ -100,7 +100,7 @@ static int idxd_cdev_open(struct inode *inode, struct file *filp)
->  	filp->private_data = ctx;
->  
->  	if (device_pasid_enabled(idxd)) {
-> -		sva = iommu_sva_bind_device(dev, current->mm, NULL);
-> +		sva = iommu_sva_bind_device(dev, current->mm);
->  		if (IS_ERR(sva)) {
->  			rc = PTR_ERR(sva);
->  			dev_err(dev, "pasid allocation failed: %d\n", rc);
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index a737ba5f727e..eb2f5cb0701a 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -354,7 +354,7 @@ __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
->  }
->  
->  struct iommu_sva *
-> -arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm, void *drvdata)
-> +arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
->  {
->  	struct iommu_sva *handle;
->  	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index cd48590ada30..d2ba86470c42 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -754,8 +754,7 @@ bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master);
->  int arm_smmu_master_enable_sva(struct arm_smmu_master *master);
->  int arm_smmu_master_disable_sva(struct arm_smmu_master *master);
->  bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master);
-> -struct iommu_sva *arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm,
-> -				    void *drvdata);
-> +struct iommu_sva *arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm);
->  void arm_smmu_sva_unbind(struct iommu_sva *handle);
->  u32 arm_smmu_sva_get_pasid(struct iommu_sva *handle);
->  void arm_smmu_sva_notifier_synchronize(void);
-> @@ -791,7 +790,7 @@ static inline bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master
->  }
->  
->  static inline struct iommu_sva *
-> -arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm, void *drvdata)
-> +arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
->  {
->  	return ERR_PTR(-ENODEV);
->  }
-> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-> index 37d6218f173b..94deb58375f5 100644
-> --- a/drivers/iommu/intel/svm.c
-> +++ b/drivers/iommu/intel/svm.c
-> @@ -500,8 +500,7 @@ int intel_svm_unbind_gpasid(struct device *dev, u32 pasid)
->  	return ret;
->  }
->  
-> -static int intel_svm_alloc_pasid(struct device *dev, struct mm_struct *mm,
-> -				 unsigned int flags)
-> +static int intel_svm_alloc_pasid(struct device *dev, struct mm_struct *mm)
->  {
->  	ioasid_t max_pasid = dev_is_pci(dev) ?
->  			pci_max_pasids(to_pci_dev(dev)) : intel_pasid_max_id;
-> @@ -1002,20 +1001,20 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->  	return IRQ_RETVAL(handled);
->  }
->  
-> -struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm, void *drvdata)
-> +struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm)
->  {
->  	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
->  	struct iommu_sva *sva;
->  	int ret;
->  
->  	mutex_lock(&pasid_mutex);
-> -	ret = intel_svm_alloc_pasid(dev, mm, flags);
-> +	ret = intel_svm_alloc_pasid(dev, mm);
->  	if (ret) {
->  		mutex_unlock(&pasid_mutex);
->  		return ERR_PTR(ret);
->  	}
->  
-> -	sva = intel_svm_bind_mm(iommu, dev, mm, flags);
-> +	sva = intel_svm_bind_mm(iommu, dev, mm);
->  	if (IS_ERR_OR_NULL(sva))
->  		intel_svm_free_pasid(mm);
->  	mutex_unlock(&pasid_mutex);
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 107dcf5938d6..fef34879bc0c 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3049,7 +3049,7 @@ EXPORT_SYMBOL_GPL(iommu_aux_get_pasid);
->   * On error, returns an ERR_PTR value.
->   */
->  struct iommu_sva *
-> -iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
-> +iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
->  {
->  	struct iommu_group *group;
->  	struct iommu_sva *handle = ERR_PTR(-EINVAL);
-> @@ -3074,7 +3074,7 @@ iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
->  	if (iommu_group_device_count(group) != 1)
->  		goto out_unlock;
->  
-> -	handle = ops->sva_bind(dev, mm, drvdata);
-> +	handle = ops->sva_bind(dev, mm);
->  
->  out_unlock:
->  	mutex_unlock(&group->mutex);
-> diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
-> index 281c54003edc..3238a867ea51 100644
-> --- a/drivers/misc/uacce/uacce.c
-> +++ b/drivers/misc/uacce/uacce.c
-> @@ -99,7 +99,7 @@ static int uacce_bind_queue(struct uacce_device *uacce, struct uacce_queue *q)
->  	if (!(uacce->flags & UACCE_DEV_SVA))
->  		return 0;
->  
-> -	handle = iommu_sva_bind_device(uacce->parent, current->mm, NULL);
-> +	handle = iommu_sva_bind_device(uacce->parent, current->mm);
->  	if (IS_ERR(handle))
->  		return PTR_ERR(handle);
->  
-> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-> index 3f4c98f170ec..9dc855d7479d 100644
-> --- a/include/linux/intel-iommu.h
-> +++ b/include/linux/intel-iommu.h
-> @@ -777,8 +777,7 @@ extern int intel_svm_finish_prq(struct intel_iommu *iommu);
->  int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
->  			  struct iommu_gpasid_bind_data *data);
->  int intel_svm_unbind_gpasid(struct device *dev, u32 pasid);
-> -struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm,
-> -				 void *drvdata);
-> +struct iommu_sva *intel_svm_bind(struct device *dev, struct mm_struct *mm);
->  void intel_svm_unbind(struct iommu_sva *handle);
->  u32 intel_svm_get_pasid(struct iommu_sva *handle);
->  int intel_svm_page_response(struct device *dev, struct iommu_fault_event *evt,
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index fb011722e4f8..b570b37181ad 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -294,9 +294,7 @@ struct iommu_ops {
->  	int (*aux_attach_dev)(struct iommu_domain *domain, struct device *dev);
->  	void (*aux_detach_dev)(struct iommu_domain *domain, struct device *dev);
->  	int (*aux_get_pasid)(struct iommu_domain *domain, struct device *dev);
-> -
-> -	struct iommu_sva *(*sva_bind)(struct device *dev, struct mm_struct *mm,
-> -				      void *drvdata);
-> +	struct iommu_sva *(*sva_bind)(struct device *dev, struct mm_struct *mm);
->  	void (*sva_unbind)(struct iommu_sva *handle);
->  	int (*attach_dev_pasid)(struct iommu_domain *domain,
->  				struct device *dev, ioasid_t id);
-> @@ -705,8 +703,7 @@ void iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev);
->  int iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev);
->  
->  struct iommu_sva *iommu_sva_bind_device(struct device *dev,
-> -					struct mm_struct *mm,
-> -					void *drvdata);
-> +					struct mm_struct *mm);
->  void iommu_sva_unbind_device(struct iommu_sva *handle);
->  u32 iommu_sva_get_pasid(struct iommu_sva *handle);
->  
-> @@ -1065,7 +1062,7 @@ iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
->  }
->  
->  static inline struct iommu_sva *
-> -iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
-> +iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
->  {
->  	return NULL;
->  }
-> -- 
-> 2.25.1
+> If I understand correctly this series is not about a generic PASID API
+> that allows drivers to manage multiple DMA address spaces, because there
+> still doesn't seem to be any interest in that. It's about the specific
+> IDXD use-case, so let's focus on that. We can introduce a specialized call
+> such as (iommu|dma)_set_device_pasid(), which will be easy to consolidate
+> later into a more generic "dma_enable_pasid()" API if that ever seems
+> useful.
 > 
+> Thanks,
+> Jean
+> 
+> >   * @sva_get_pasid: Get PASID associated to a SVA handle
+> >   * @page_response: handle page request response
+> >   * @cache_invalidate: invalidate translation caches
+> > @@ -296,6 +298,10 @@ struct iommu_ops {
+> >  	struct iommu_sva *(*sva_bind)(struct device *dev, struct mm_struct
+> *mm,
+> >  				      void *drvdata);
+> >  	void (*sva_unbind)(struct iommu_sva *handle);
+> > +	int (*attach_dev_pasid)(struct iommu_domain *domain,
+> > +				struct device *dev, ioasid_t id);
+> > +	void (*detach_dev_pasid)(struct iommu_domain *domain,
+> > +				 struct device *dev, ioasid_t id);
+> >  	u32 (*sva_get_pasid)(struct iommu_sva *handle);
+> >
+> >  	int (*page_response)(struct device *dev,
+> > --
+> > 2.25.1
+> >
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
