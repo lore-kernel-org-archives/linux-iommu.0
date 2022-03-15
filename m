@@ -4,169 +4,65 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 72329C433FE
-	for <iommu@archiver.kernel.org>; Tue, 15 Mar 2022 10:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0845FC433EF
+	for <iommu@archiver.kernel.org>; Tue, 15 Mar 2022 10:49:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1554560F9C;
-	Tue, 15 Mar 2022 10:33:16 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 9DC3860FA9;
+	Tue, 15 Mar 2022 10:49:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MVZLT0JQqglK; Tue, 15 Mar 2022 10:33:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 8F7D060F9B;
-	Tue, 15 Mar 2022 10:33:14 +0000 (UTC)
+	with ESMTP id y60xlDLZDuHi; Tue, 15 Mar 2022 10:49:14 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 44AD260F94;
+	Tue, 15 Mar 2022 10:49:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5CBE6C001A;
-	Tue, 15 Mar 2022 10:33:14 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 499C8C000B
- for <iommu@lists.linux-foundation.org>; Tue, 15 Mar 2022 10:33:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1B850C001A;
+	Tue, 15 Mar 2022 10:49:14 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 88C39C000B
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Mar 2022 10:49:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 1D93260F9C
- for <iommu@lists.linux-foundation.org>; Tue, 15 Mar 2022 10:33:13 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 5E4B8404B6
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Mar 2022 10:49:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Z9hzvqOSrZ_y for <iommu@lists.linux-foundation.org>;
- Tue, 15 Mar 2022 10:33:12 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Ii0M7S9w2DPZ for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Mar 2022 10:49:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 60C0360F9B
- for <iommu@lists.linux-foundation.org>; Tue, 15 Mar 2022 10:33:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1647340392; x=1678876392;
- h=from:to:cc:subject:date:message-id:references:
- in-reply-to:content-transfer-encoding:mime-version;
- bh=HRY5KaTvOKbOc9yQZu6SSdEGi4Jg5eBaf81lm5PgVQM=;
- b=gOnyhx2+8/hJMckCtknAw0IAJtmBeU1SPhKd0JCUzU4DiDJw6KJ/RCnS
- X4PRYi6LjaoOXZf9Kcx3iGnNc8BATgnXFIvrIzyeph6hy8eN/N5ILPCxj
- Ki4IowhUUWUXg9wxLqj3nozouWTg9INgsz1c8TUsjnkkvBRSGxF1yGXFA
- AjiJSQGyYgz/2wovfFbff7UCJHEVZ0itZzvzKbtGrIW5Gm5w1Sq5/4t50
- wSwuUezM8sSQgy7aT3lBsFwnzKPJXSIIH1fM8vgjyXqug4CzWVVxSC9DV
- Rvcxj7rDDWoNpmwwtfyHCH/AHSOplOmluvsvXzZ0a5WGj0KRwkrSlF/kJ g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256456319"
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; d="scan'208";a="256456319"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 15 Mar 2022 03:33:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; d="scan'208";a="644211463"
-Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
- by fmsmga002.fm.intel.com with ESMTP; 15 Mar 2022 03:33:11 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 15 Mar 2022 03:33:11 -0700
-Received: from fmsmsx606.amr.corp.intel.com (10.18.126.86) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 15 Mar 2022 03:33:11 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21 via Frontend Transport; Tue, 15 Mar 2022 03:33:11 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.42) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.21; Tue, 15 Mar 2022 03:33:10 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nvksQsBgFSoxDRqAAuS2ct0JSln8fTwShf2UgnRCuX7aFQ12quNC8GY3rz2l+kFJNDFC3jM3Xw4LzyStop18eu8VKnMR0abRqFmV2g5131TNH1kKTUnU243dY1iIK1QDUr3FZmvobIaB2M3euLRi34wAbNLw1W5ipUuYomQl7EZL4IFDsew2ve1cCQV7LwnsnqZfuohASQXN4sQjeoRTtlf83PoQUgFueQkK+9uVjFXMaSoFUFOlvFOGAXgaydvFsfCi4jxcQthPwtqgTv3mB3zruwbNAtSgnhFNrogPcH1yXQ9NsZWUsbjBHu0kGHDc0BGw33zn9mdKc/KML28ZIg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Wvib42Np+Xwlf8RaSfKuxnC9nDkSI8rysRw+uNTq7Ic=;
- b=lDI0ovEEWMJJwQn7MK5Sb268nji939eCfSfWKIxwRxfN6379GALBuPbhoKi5cF8c4jDm+jy27Pqu671ZlYyB4aI6posQgBnF701wBIElt5NYi4vknd1YOiS2bjbc0/CPF47hCaSXyC/FhJKw0wF7RZTHp7BFMN1025z3u6wramu5Ln7Dm7KplW+4Py4V8R6D8iewEx01E1rAjjDXnW6ys3c9YFfiu1rIWwa3J38+FVWQ7gpYqTj7K0MI9bSQj+cXbXMiDw2EPAvQg9TCQhtG7tezM2ftHIzh+CMHu4oHKgBdvN/ay3sKetGMykUbgVtY9wjazDEkCcfQw+sdQAudfA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by BN6PR11MB1873.namprd11.prod.outlook.com (2603:10b6:404:106::19)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.14; Tue, 15 Mar
- 2022 10:33:08 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::c8aa:b5b2:dc34:e893]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::c8aa:b5b2:dc34:e893%8]) with mapi id 15.20.5081.014; Tue, 15 Mar 2022
- 10:33:08 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML
- <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, "Jason
- Gunthorpe" <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu
- <baolu.lu@linux.intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.com>
-Subject: RE: [PATCH v2 3/8] iommu/vt-d: Implement device_pasid domain attach
- ops
-Thread-Topic: [PATCH v2 3/8] iommu/vt-d: Implement device_pasid domain attach
- ops
-Thread-Index: AQHYOCoddoPAbs8qR0GMuSnaaH7P9KzAPgkw
-Date: Tue, 15 Mar 2022 10:33:08 +0000
-Message-ID: <BN9PR11MB52768A46ED515D2E02FFEF5D8C109@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
- <20220315050713.2000518-4-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <20220315050713.2000518-4-jacob.jun.pan@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2a67615b-f505-4125-68d1-08da066f327c
-x-ms-traffictypediagnostic: BN6PR11MB1873:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr,ExtFwd
-x-microsoft-antispam-prvs: <BN6PR11MB1873451F4AF4F5FAD2FFA43F8C109@BN6PR11MB1873.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: AWI74FyFbHiQZ4gzh0SAdyaggtZojIpKs6uHNcf4upKBzAzrB81C47IX3J1Qu8DHfKVMGkrOnyCtQgAgoGFuDEev9cHf5E/OIg2rFwo/egm2SPICFcebUytancrMMbJHzOozwqS5DCGx+OT7z8z3rbo7Q3GDhfc0qRiDkmgK/IVzpmZIIwYlHqwzWf/jeu5BuGcjZ46+zfbpURdA8NbtteLyTFjd9qP0lqKODMvFV157iUzfVUp2TFAxItJYZ5TPJE3t/R/+E0rvraQKyurKq+CUubGF5WBm0gEopoEgPOmsqxyqFBNYsJzA/iT30V29BGAWLEav8qH1xNzEZ7yZR5eLhD/wNmD2bTV17YS86p7SYiPIWPL2brxDYAQuYI0iizDJ/B1ZzpUP+XTazYkSnfxCCes3sLjyH5l9eDZBlzYNiEIACbWXZDdCTF7d6fO011Xm9fT7uHokWgQcNMQohBTSzQV29PBMwLtUA3oXsbzdyaLJXgVwHHJ1AvA3Zj3gHnv1OaWrDzJfzpBVm0Fk0IF8AjVYpSDvd4QZkCneIYTxf6CUxIKxIMxF6IQyR/Y5Ta7MzDm1FpXSb+f/rG9jYkdjUeu4t95d0NhRNZzrzdbUhxJ+YLsRyFs2yVD6/ycgUJZWviK1rYBWofgQASTWwlK8835dDlpxEDuNC/pX4RMwh91o3tizhvzP6uWhAN8VUs2Vp7I3E7rs+NGGZ3I3bw==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(366004)(66946007)(66556008)(2906002)(8936002)(66446008)(66476007)(55016003)(64756008)(86362001)(6506007)(7696005)(9686003)(508600001)(76116006)(82960400001)(122000001)(38100700002)(71200400001)(110136005)(33656002)(5660300002)(83380400001)(186003)(26005)(38070700005)(8676002)(4326008)(52536014)(316002)(54906003);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?VN48KfmfN+5iU9xgOwgVEnldgjAr/kYGIBtb1r9/vTDnVawEYxyYer0v8ZCd?=
- =?us-ascii?Q?ackJMmfgyL6DA8IX5+pZaaoFkGx4yAz/d4EdfMHxtAiv4mTUnIxT2zG8K6qQ?=
- =?us-ascii?Q?fimPKx2KWbCgDWxaAVOTd2ph4y4jiM6REcJSmXaKQ5Cvv8shT/ZdEiiAhjXb?=
- =?us-ascii?Q?7t7BFnmpMinlvE40riHdNhyvLEaZGcxyE3CiHGFfybIjU77rCqi/x0nQ3XzJ?=
- =?us-ascii?Q?B9taDlMq4ZJ4wLbvZl+YK5+UOvvn976OmlZrudGJKuRvlwOTqPO8XOt6q3ck?=
- =?us-ascii?Q?DrO3BVpDNXvo7xSmx+3uzrkOaQC2dxRMR5XLp0BfTkxTf7w79qQwJnjke3+I?=
- =?us-ascii?Q?h2mrg3UL6dwIixggz9xgKzsmWxlLzEifUA9718xvMecrOqgmhzw41upEmo8d?=
- =?us-ascii?Q?eZqyELZyK2pvKn6RHs/fbSlG0kIrvyXzL6Wp1iUoJk9Bo3nG6IsdZ2SbHicI?=
- =?us-ascii?Q?bDiCkitz39f4Jdj7TP6Jv7JwwX28q+VAcAuO/9+rdHpcMWUZxngPdsxGFxyL?=
- =?us-ascii?Q?TRCmvTZPArO1lSl1DYoI9QIxYjt9Ud1vbUsBUlc2XxQVMb72SGg1sT86lsR1?=
- =?us-ascii?Q?sCZZ8i2VWVsdrM7eW+Zn0ITv78cM1AmyMEpTH7GmQ51PzqoUEiYmKtRdQYtR?=
- =?us-ascii?Q?ln94fgqufJhzc+02eEhYVE99V+lyBFppq8JJOK9W+sKz+ivd/kvmbSpRmJmw?=
- =?us-ascii?Q?Qy4tRhZZYKfNBlnJVsIUFOGoVAMeqr72UxBqxOiMoch9jRlyETZFKd6vFxpY?=
- =?us-ascii?Q?DnJUeK29pwzuuVgJ5LK2qe8TH3gcs6evupsiRfLHv3AQeIH1L3krcMaLt5Xs?=
- =?us-ascii?Q?a42DugqBJHE6UwRtlBlsrMNoX+j0t3LICjoiCZARAi8LK+GJ6nUYz7/J31JM?=
- =?us-ascii?Q?Q5rMMEBI6Wz1ztEpiyIaoVUAR4Eiz8v27DwTvCjd89YsLB9j+q/SJyoN1L+T?=
- =?us-ascii?Q?7LAYHGCt90x3TH5H/4cP5lNJoOGAzPx8GgfXHkgjXqGQtrwyWnmzdHuxSwlL?=
- =?us-ascii?Q?OxLawa+r/OfUxnlURBKNGO2Y69OI5YhuOmQuwtisgqBa/QaJhNuBxRmIEN6+?=
- =?us-ascii?Q?V9ufwWk1rwL8+rfgHShc5+sij+r3EgL/nsmTt2xHHwW3naTBz/ku04SfPtY7?=
- =?us-ascii?Q?iq4IHV7h5m5hZABsEa6KXyuWZV3TKzqPtEI9JicauwznNR4zry2g/Kb1/0aa?=
- =?us-ascii?Q?Ppc7CIDAFiam1hsU+nL2ESsDClfQiq+5A0XhoKu8aFZ12VvPizqu26yBxDyI?=
- =?us-ascii?Q?yP0QJexBQ7a3z9GNCO4UpLarmy/7tXu8n5gZHM7pzhd1dx9D/upyYtgUUmxT?=
- =?us-ascii?Q?rFR1xDQCdmc4kMVonXyK2I/jnUEi2cYKV42MXYowEY20y91NrMbCW2T6mmv2?=
- =?us-ascii?Q?7U1ygHlp3eUJlCZ+UlAGyG6YqJ+rINJyoJxg40VN1V7uYmin9MsEfSwd6wvL?=
- =?us-ascii?Q?WboiHLRfofI9s+PIjgU5bK5LdD2LuKvW?=
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 87F85404A6
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Mar 2022 10:49:12 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 945BE1474;
+ Tue, 15 Mar 2022 03:49:11 -0700 (PDT)
+Received: from [10.57.42.204] (unknown [10.57.42.204])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1B3C03F66F;
+ Tue, 15 Mar 2022 03:49:06 -0700 (PDT)
+Message-ID: <a9637631-c23b-4158-d2cb-597a36b09a6b@arm.com>
+Date: Tue, 15 Mar 2022 10:49:02 +0000
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2a67615b-f505-4125-68d1-08da066f327c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Mar 2022 10:33:08.3872 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: i7OEx9BNLmjYVzaeIIxWGB9J1/ldkMyt6/mHrCyAps0BtXKQlkA7Chu9xzIHYZ268+7drRh2Zz1mxIyOx4G2yA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1873
-X-OriginatorOrg: intel.com
-Cc: "Luck, Tony" <tony.luck@intel.com>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, "Zanussi,
- Tom" <tom.zanussi@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
- "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "Williams,
- Dan J" <dan.j.williams@intel.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v4 14/32] iommu: introduce iommu_domain_alloc_type and the
+ KVM type
+Content-Language: en-GB
+To: Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
+References: <20220314194451.58266-1-mjrosato@linux.ibm.com>
+ <20220314194451.58266-15-mjrosato@linux.ibm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220314194451.58266-15-mjrosato@linux.ibm.com>
+Cc: kvm@vger.kernel.org, david@redhat.com, farman@linux.ibm.com,
+ oberpar@linux.ibm.com, vneethv@linux.ibm.com, agordeev@linux.ibm.com,
+ imbrenda@linux.ibm.com, will@kernel.org,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, frankja@linux.ibm.com,
+ corbet@lwn.net, linux-doc@vger.kernel.org, pasic@linux.ibm.com, jgg@nvidia.com,
+ gerald.schaefer@linux.ibm.com, borntraeger@linux.ibm.com, thuth@redhat.com,
+ gor@linux.ibm.com, schnelle@linux.ibm.com, hca@linux.ibm.com,
+ alex.williamson@redhat.com, freude@linux.ibm.com, pmorel@linux.ibm.com,
+ cohuck@redhat.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, svens@linux.ibm.com, pbonzini@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -179,114 +75,104 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Sent: Tuesday, March 15, 2022 1:07 PM
-> 
-> On VT-d platforms with scalable mode enabled, devices issue DMA requests
-> with PASID need to attach to the correct IOMMU domains.
-> The attach operation involves the following:
-> - programming the PASID into device's PASID table
-> - tracking device domain and the PASID relationship
-> - managing IOTLB and device TLB invalidations
-> 
-> This patch extends DMAR domain and device domain info with xarrays to
-> track per domain and per device PASIDs.  It provides the flexibility to
-> be used beyond DMA API PASID support.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+On 2022-03-14 19:44, Matthew Rosato wrote:
+> s390x will introduce an additional domain type that is used for
+> managing IOMMU owned by KVM.  Define the type here and add an
+> interface for allocating a specified type vs the default type.
+
+I'm also not a huge fan of adding a new domain_alloc interface like 
+this, however if it is justifiable, then please make it take struct 
+device rather than struct bus_type as an argument.
+
+It also sounds like there may be a degree of conceptual overlap here 
+with what Jean-Philippe is working on for sharing pagetables between KVM 
+and SMMU for Android pKVM, so it's probably worth some thought over 
+whether there's any scope for common interfaces in terms of actual 
+implementation.
+
+Thanks,
+Robin.
+
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
 > ---
->  drivers/iommu/intel/iommu.c | 194
-> +++++++++++++++++++++++++++++++++++-
->  include/linux/intel-iommu.h |  12 ++-
->  2 files changed, 202 insertions(+), 4 deletions(-)
+>   drivers/iommu/iommu.c |  7 +++++++
+>   include/linux/iommu.h | 12 ++++++++++++
+>   2 files changed, 19 insertions(+)
 > 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 881f8361eca2..9267194eaed3 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1622,20 +1622,48 @@ static void __iommu_flush_dev_iotlb(struct
-> device_domain_info *info,
->  			   qdep, addr, mask);
->  }
-> 
-> +static void __iommu_flush_dev_piotlb(struct device_domain_info *info,
-
-piotlb is confusing, better be:
-
-	__iommu_flush_dev_iotlb_pasid()
-
-> +					u64 address,
-> +				     ioasid_t pasid, unsigned int mask)
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index f2c45b85b9fc..8bb57e0e3945 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1976,6 +1976,13 @@ void iommu_domain_free(struct iommu_domain *domain)
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_domain_free);
+>   
+> +struct iommu_domain *iommu_domain_alloc_type(struct bus_type *bus,
+> +					     unsigned int t)
 > +{
-> +	u16 sid, qdep;
+> +	return __iommu_domain_alloc(bus, t);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_domain_alloc_type);
 > +
-> +	if (!info || !info->ats_enabled)
-> +		return;
-> +
-> +	sid = info->bus << 8 | info->devfn;
-> +	qdep = info->ats_qdep;
-> +	qi_flush_dev_iotlb_pasid(info->iommu, sid, info->pfsid,
-> +				 pasid, qdep, address, mask);
+>   static int __iommu_attach_device(struct iommu_domain *domain,
+>   				 struct device *dev)
+>   {
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 9208eca4b0d1..b427bbb9f387 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -63,6 +63,7 @@ struct iommu_domain_geometry {
+>   					      implementation              */
+>   #define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
+>   #define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
+> +#define __IOMMU_DOMAIN_KVM	(1U << 4)  /* Domain is controlled by KVM */
+>   
+>   /*
+>    * This are the possible domain-types
+> @@ -77,6 +78,7 @@ struct iommu_domain_geometry {
+>    *				  certain optimizations for these domains
+>    *	IOMMU_DOMAIN_DMA_FQ	- As above, but definitely using batched TLB
+>    *				  invalidation.
+> + *	IOMMU_DOMAIN_KVM	- DMA mappings managed by KVM, used for VMs
+>    */
+>   #define IOMMU_DOMAIN_BLOCKED	(0U)
+>   #define IOMMU_DOMAIN_IDENTITY	(__IOMMU_DOMAIN_PT)
+> @@ -86,6 +88,8 @@ struct iommu_domain_geometry {
+>   #define IOMMU_DOMAIN_DMA_FQ	(__IOMMU_DOMAIN_PAGING |	\
+>   				 __IOMMU_DOMAIN_DMA_API |	\
+>   				 __IOMMU_DOMAIN_DMA_FQ)
+> +#define IOMMU_DOMAIN_KVM	(__IOMMU_DOMAIN_PAGING |	\
+> +				 __IOMMU_DOMAIN_KVM)
+>   
+>   struct iommu_domain {
+>   	unsigned type;
+> @@ -421,6 +425,8 @@ extern bool iommu_capable(struct bus_type *bus, enum iommu_cap cap);
+>   extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
+>   extern struct iommu_group *iommu_group_get_by_id(int id);
+>   extern void iommu_domain_free(struct iommu_domain *domain);
+> +extern struct iommu_domain *iommu_domain_alloc_type(struct bus_type *bus,
+> +						    unsigned int t);
+>   extern int iommu_attach_device(struct iommu_domain *domain,
+>   			       struct device *dev);
+>   extern void iommu_detach_device(struct iommu_domain *domain,
+> @@ -708,6 +714,12 @@ static inline void iommu_domain_free(struct iommu_domain *domain)
+>   {
+>   }
+>   
+> +static inline struct iommu_domain *iommu_domain_alloc_type(struct bus_type *bus,
+> +							   unsigned int t)
+> +{
+> +	return NULL;
 > +}
 > +
->  static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
->  				  u64 addr, unsigned mask)
->  {
->  	unsigned long flags;
->  	struct device_domain_info *info;
->  	struct subdev_domain_info *sinfo;
-> +	unsigned long pasid;
-> +	struct pasid_info *pinfo;
-> 
->  	if (!domain->has_iotlb_device)
->  		return;
-> 
->  	spin_lock_irqsave(&device_domain_lock, flags);
-> -	list_for_each_entry(info, &domain->devices, link)
-> -		__iommu_flush_dev_iotlb(info, addr, mask);
-> -
-> +	list_for_each_entry(info, &domain->devices, link) {
-> +		/*
-> +		 * We cannot use PASID based devTLB invalidation on
-> RID2PASID
-> +		 * Device does not understand RID2PASID/0. This is different
-
-Lack of a conjunction word between 'RID2PASID' and 'Device'.
-
-and what is RID2PASID/0? It would be clearer to point out that RID2PASID
-is visible only within the iommu to mark out requests without PASID, 
-thus this PASID value should never be sent to the device side.
-
-> +		 * than IOTLB invalidation where RID2PASID is also used for
-> +		 * tagging.
-
-Then it would be obvious because IOTLB is iommu internal agent thus takes 
-use of RID2PASID for tagging.
-
-> +		 */
-> +		xa_for_each(&info->pasids, pasid, pinfo) {
-> +			if (!pasid)
-
-this should be compared to PASID_RID2PASID (though it's zero today).
-
-> +				__iommu_flush_dev_iotlb(info, addr, mask);
-> +			else
-> +				__iommu_flush_dev_piotlb(info, addr, pasid,
-> mask);
-> +		}
-> +	}
->  	list_for_each_entry(sinfo, &domain->subdevices, link_domain) {
->  		info = get_domain_info(sinfo->pdev);
->  		__iommu_flush_dev_iotlb(info, addr, mask);
-
-Thanks
-Kevin
+>   static inline int iommu_attach_device(struct iommu_domain *domain,
+>   				      struct device *dev)
+>   {
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
