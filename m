@@ -4,180 +4,81 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 23158C433EF
-	for <iommu@archiver.kernel.org>; Wed, 16 Mar 2022 00:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8EE87C433FE
+	for <iommu@archiver.kernel.org>; Wed, 16 Mar 2022 00:51:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A3B49841FB;
-	Wed, 16 Mar 2022 00:40:33 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 37A4E8428F;
+	Wed, 16 Mar 2022 00:51:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EYB_BTiqck5X; Wed, 16 Mar 2022 00:40:32 +0000 (UTC)
+	with ESMTP id al3UNRLQbfZf; Wed, 16 Mar 2022 00:51:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 74BE1818BE;
-	Wed, 16 Mar 2022 00:40:32 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 0D8678424C;
+	Wed, 16 Mar 2022 00:51:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 525D6C001D;
-	Wed, 16 Mar 2022 00:40:32 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E30F5C0012
- for <iommu@lists.linux-foundation.org>; Wed, 16 Mar 2022 00:40:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D3460C001D;
+	Wed, 16 Mar 2022 00:51:34 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 53871C0012
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Mar 2022 00:51:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id C7D1A841FB
- for <iommu@lists.linux-foundation.org>; Wed, 16 Mar 2022 00:40:30 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 2F1218424D
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Mar 2022 00:51:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Q2D2ocwtuWkW for <iommu@lists.linux-foundation.org>;
- Wed, 16 Mar 2022 00:40:29 +0000 (UTC)
+ with ESMTP id BLfI9eKn0cKl for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Mar 2022 00:51:32 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com
- [205.220.177.32])
- by smtp1.osuosl.org (Postfix) with ESMTPS id D9613818BE
- for <iommu@lists.linux-foundation.org>; Wed, 16 Mar 2022 00:40:28 +0000 (UTC)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
- by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22FKiVtF011483; 
- Wed, 16 Mar 2022 00:39:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=djr6kN0TcawL+ku/NK2R0BtYVj8lg5bDD1C02JuafMc=;
- b=EBYUADnZPAOiAe6ii2Z0V+oPucuY/Cn266HvKd5+/l46tYcXVvj7/YitoCXO8zmROodR
- h6OJ5ORH5KnLf52aiKKxUKCdV2BiW5Mt4M8AgloktDvi6pR8RAqzTRn57DaA6SOhw3j4
- V9HrGVZHStjvj+iuXGRtDBzRs3hwncQWPiO+ZZvHbM+TwidRrOo3+/VqltYiP2hJQZQY
- B0oYHq5xATW7YHTcOwrc5bsbyngL35yzxKZaetRItMww9TbzIEWsbr3IEbVC27SHlkMi
- YHdtMgHIFsnI76td2YA9MQYKoSWw9BLR8fh/TqPbPODOYyO+FJnF+ijki5HCwbJU6RsJ Uw== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
- by mx0b-00069f02.pphosted.com with ESMTP id 3et5s6mref-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Wed, 16 Mar 2022 00:39:56 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
- by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22G0W1lN149534;
- Wed, 16 Mar 2022 00:39:54 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com
- (mail-mw2nam12lp2046.outbound.protection.outlook.com [104.47.66.46])
- by aserp3020.oracle.com with ESMTP id 3et64kc83y-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Wed, 16 Mar 2022 00:39:54 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NCf1GgmtgU38mK3x65627G1OHXxN9fBlOrOzqvWNaC5H5COvyCcmdOi/ZxWSBB5pKMnGlUWX42HlduLuWgBnaKl8ca8mbOH5KWYvyBhcCYLDAkpGMx7gF5hv+0qt+un2SbrKfhCkjpoEsuSM2g7JqQ0OdIQgQsozeNguicDaxmIOupUPUwGJZq03vwEew2hCGVdIZfrCNvq7tZiGg7bFkhK0YpRWEre5VgSgyi2s5YLdw+Gp83SNKRSwZhrg9SBQj+yJCGpeO3KN4k45ZbZClb/b1KBFoER+ihdNVyQXbgop9n3Nu3miDvGSQ6BX00H29nSia21iZw1yzFTvW+iUfA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=djr6kN0TcawL+ku/NK2R0BtYVj8lg5bDD1C02JuafMc=;
- b=dtE4oz7YZxKUYUofSCCAVkvQRBm4EGM/hPwXLL+y9NNadZekU7K7NCy1glPwFLG6tKNbGLCyWFggYGVEY1m5AmBTrdjeRUlD/tVzz0yhas1nkgsF1rQHR5WUK+Z4whkfO3Qalq3KBO6sBLKrJ/EXIr25e2BcgX6B5PcE1mGX7X1A0do1YbwadmzmHwmeW9+tZM88uSU5I2S8Giuu1SOgfZuIG8iMyvFigOXZ9GA0kgCIXy+UAIO8j3rDkG2o67K71rApAusnhS1apVejtZsMy0GgCFA8kNGjZFwkhgbADbhzAsJGK698BOSzijRXFFh6gqYQ7D5F+WvA5aNYn/v5tQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=djr6kN0TcawL+ku/NK2R0BtYVj8lg5bDD1C02JuafMc=;
- b=jx0go0yY6nbYsdwLI+pIXNpFlvP59jfq7l0bVX7CKVkiei3RaaIgql97qHG3X9Q6SjPE+zT8lHXm3lELEbP45kc5rvh+aIk61yv3tPKn8hjd6K133om7KrgJovt+eElqZfMuXs4YAlW9MRz5zLC79/P0bCNjWL2YQt4/uGaSieQ=
-Received: from BLAPR10MB5009.namprd10.prod.outlook.com (2603:10b6:208:321::10)
- by BY5PR10MB4147.namprd10.prod.outlook.com (2603:10b6:a03:20e::14)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.14; Wed, 16 Mar
- 2022 00:39:51 +0000
-Received: from BLAPR10MB5009.namprd10.prod.outlook.com
- ([fe80::1b2:b41c:b2f0:c755]) by BLAPR10MB5009.namprd10.prod.outlook.com
- ([fe80::1b2:b41c:b2f0:c755%9]) with mapi id 15.20.5081.014; Wed, 16 Mar 2022
- 00:39:51 +0000
-Message-ID: <3a8cc553-4b60-b6bb-a2d8-2b33c4c1cf23@oracle.com>
-Date: Tue, 15 Mar 2022 20:39:29 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH 12/15] swiotlb: provide swiotlb_init variants that remap
- the buffer
-Content-Language: en-US
-To: Christoph Hellwig <hch@lst.de>
-References: <20220314073129.1862284-1-hch@lst.de>
- <20220314073129.1862284-13-hch@lst.de>
- <4d800aa8-5e38-1ad9-284f-1754c83d0f8a@oracle.com>
- <20220315063618.GA1244@lst.de>
-From: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-In-Reply-To: <20220315063618.GA1244@lst.de>
-X-ClientProxiedBy: SN1PR12CA0075.namprd12.prod.outlook.com
- (2603:10b6:802:20::46) To BLAPR10MB5009.namprd10.prod.outlook.com
- (2603:10b6:208:321::10)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 2C8EE8424C
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Mar 2022 00:51:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1647391892; x=1678927892;
+ h=date:from:to:cc:subject:message-id:references:
+ mime-version:in-reply-to;
+ bh=YXFKpERtBJQFxnnvLc21al+Vghk+4iLs8WPaY6XgGEQ=;
+ b=OAnngdi9oh2AeneZiD1tZm5q+Pn269/V5eCsaPHWqqRLz197rwrIfMYw
+ R2UjzsLJ5vLEvSXSzgCmYP5a1X/z/XzVtr6ee4n91QO1cIOjq+hby69zc
+ H/Xbv8pTZb1tUtFZwnNEQ5TyM/NegUGbix+k46zTAKrkcBdqUrTSiB8Go
+ 51p9qgQIAlWg28yQquob5oNc7A99kUXKSRJS3Wh+IJDkZ221Mq6Hncan3
+ inz/IfmduQ6kSJh0tczj+dxlR2mHVB8ge0okg9HVsMG54GClezou+SxF5
+ 0e22/4eRVhhniB/CO4HhyUwx6WoGD4uR5AvlKeMsT4zYMrdAc/0uelFbv w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="236402494"
+X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; d="scan'208";a="236402494"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Mar 2022 17:51:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,185,1643702400"; d="scan'208";a="714391253"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+ by orsmga005.jf.intel.com with ESMTP; 15 Mar 2022 17:51:28 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+ (envelope-from <lkp@intel.com>)
+ id 1nUHst-000Bj2-F4; Wed, 16 Mar 2022 00:51:27 +0000
+Date: Wed, 16 Mar 2022 08:51:16 +0800
+From: kernel test robot <lkp@intel.com>
+To: Mario Limonciello <mario.limonciello@amd.com>,
+ Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH 1/2] iommu/amd: Add support to indicate whether DMA remap
+ support is enabled
+Message-ID: <202203160844.lKviWR1Q-lkp@intel.com>
+References: <20220315162455.5190-1-mario.limonciello@amd.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3e5cdd27-5357-4844-66be-08da06e57b07
-X-MS-TrafficTypeDiagnostic: BY5PR10MB4147:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR10MB414758A1650DD7DEDCA267AA8A119@BY5PR10MB4147.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Uy1tmGQRi05CoYG/1TM0569ITNymGf/zYpC7r28gCMp0pa423BF75gvKu00jVL7g9ths/7kV+CPK19h2EJTCErXbcns4YEVEXELJl6tprFPrOtyJuCfCCjJ7TJrxqdlT87yL0toLjH2MQIp8RuCLBBX63CZin+2EOK66ceYJ6+1e59TDw8Of9zJ4fmh2uBaWjH+aGh5ULM322wwzr/TkD3w+H8TOKxGjYX5QV20Ev/Fe2oIe2PKRJWiyIloskXk03tRUtSc9U0hbKG8UtM4DLC5m0K4Ru1P9BkjP4zRH3poSKDSnRKVsy5mBy5JlepNhX+AlErQcPFa8uXFdq09eL1bITYtcx7s37h8D1cgRpOBQIqEEq2vjZHNs3XMjLdVLLi48XkL2TToqDp19eKdukQt9nIDcorhnfSvfkUuI2CbFPoV3U7ch6VCWI2ISLpWQbmJzMPG3LHE+FGZfmeydUzOGOmaE7HVgqdAQJUKlMnChBNC+GswPSQgW9LFrmrJdJ4R7AML6uyzZhnZW/r8DwF037RzPcuu6mjPfZc3410bgPuIkZLLLzd3RyTvEUCrTIXlAzbgzUS8Lax7HErG+HaG7jKJcLzyv4ws1ZOUmlicBCRQ9DCbBu8HTKr+CohONxpbIt/sVstytQygqJXUNpRpdlJSPBHbkY0Ty0wusYuKaCwYR1a1wC5RuZP2Zpe/hGLVr0UVPNoVjBlHLY6Lv+VtVL8MvcKl1DLVQF67GsHGoFgcVKviraS/FWpR5lI4A
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BLAPR10MB5009.namprd10.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(366004)(508600001)(6486002)(86362001)(31696002)(54906003)(316002)(6916009)(2616005)(53546011)(6506007)(6666004)(26005)(186003)(83380400001)(6512007)(8936002)(44832011)(7416002)(5660300002)(8676002)(66476007)(66556008)(4326008)(66946007)(2906002)(31686004)(38100700002)(36756003)(45980500001)(43740500002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NU45NTZoaENrVkdoL3U4SjRhTjJLRmxRR2VjYytKZXU4Q0RDWEZQMUE5RWNv?=
- =?utf-8?B?dDJ5WmVjZ1daVWd4cWNlekl4NG9aakhhZGV1NmxKcWl2VEJ3aWFvbE1Sc0R3?=
- =?utf-8?B?RTBEZitVaUVRSHJKNTZrQ0NQeEgralArK2p2c1Q5YUhVa1Yvb040alJUU204?=
- =?utf-8?B?dllEdi9Tc3M0d3lFM01hUEk5Z0JLNFZ0UlVsRlF2emFHMTVtTjdQcTJkYXds?=
- =?utf-8?B?eHZVaUxsdWUzQ05SNnhLRmxkcXF2ODlVblNHRHBmcFkzL2UwZVVwZXlNMEdy?=
- =?utf-8?B?T1A2QmhjTUZRWEZUTVlvRndpOERITUl4WC9WcnJINGNGblpKREJPZjArWlNt?=
- =?utf-8?B?TnBqMmZ3U0Eyd0p2cHNxMW54dytHd1JHY0VacldwaEFObVdpcTVicGxsUnQw?=
- =?utf-8?B?Q041ZFNBbkdwTDljNnhDYythc0h1dkVxazB1N0tlME5tR1B1WXlVeXFaNmNK?=
- =?utf-8?B?ZGxFRVY0OVNTZW1UeW82cGRQNjhQRzdpQTc1dHM1dWx3ZDBIUEdndnd5S001?=
- =?utf-8?B?enhlWHhHanZjQk9EK0pvaTJYVjRTenNwUmJ2NGFSMTBLZHhiN01heXg3R09R?=
- =?utf-8?B?VUdwSVZUL21PbkhVV1JXbklZMzJENkRQbGpmZVptWDRkWDhqbzluWWpOdFVX?=
- =?utf-8?B?dkxLUm92czJHTGo3QXpXekVFaXZKbTdrNnZuM0FGL0tLZldIZ2h3TkRpTHhw?=
- =?utf-8?B?aFpOOXl6OWxjR1FPWjhQcFdTN1F0K3RndlBER2E5U2ZFeEdDSWpaalNKYS92?=
- =?utf-8?B?OGFCZkp6eW16cHZCOVdNR1pTdTk0Kzk5ZmJPeXluTk5BNFpqdlF3d0FyKzdX?=
- =?utf-8?B?VkViRVFKa0s4bytINzc2UWRVM2EwOENiTWM5VEpnYWRUMGZhVHJMQ09ZVmN2?=
- =?utf-8?B?NVRkdGcvVDZjTzFXTDlrT0NRb3Z6ZnEzT3BCbG9lWERBUUxTbGxuNFozNWJj?=
- =?utf-8?B?Q2pGRFhYYy8ydmV2Q1VVcllRMnVpbk5KT0pmTFRkcGJnQnBHMGY0STh4OVFU?=
- =?utf-8?B?K1VId0ZManJkM09XZHBOdnNFYVNNNmpEd2FJMDM1VWxrZnJQbjl1eitJeTFN?=
- =?utf-8?B?N29nd05EQndrU3dMaGpvUXZOS0RVRjZpMHlLZ0p4TnhOUTlFbldjWlZ0MTgy?=
- =?utf-8?B?cG5EQldKb1Zhb0VhYkJ6cDFBUUx5anRlTjh6bStXOGFtRUdDS01hekd3U25Q?=
- =?utf-8?B?ZmkwRG5GZVBUTjd5SXhUc1FOUlRFd1Z3TVFOcXVFM3pyQUZiWE1hbHpqc0x1?=
- =?utf-8?B?V3dHM1gzQnAwM29PZG9yd2RYb1Bkb2Nhd1BkcnVTUVFTeldRQlZNcUZhRGhk?=
- =?utf-8?B?REltYTdidGE2Nm43MUxQWEl0QXA0RFdnZHkzVHY2OTNOemhLYlM5UFBKdDh5?=
- =?utf-8?B?dmJLSTZycGVhRG9PSGMxdEJVQndSN1FLM2tBYzZUS3k1VXdPTVhDT1IwWmhh?=
- =?utf-8?B?SWhicCtQdmJzVDc5dy9KVTNrREM2cXRxUnJoa3NNWVozeXZyblJJbVFXbDhr?=
- =?utf-8?B?YzQwMVVtZEttR0QzUjJCTVRHMFh6RDFqRlF6b3hQbzdDMXI1U29QM01WVzRB?=
- =?utf-8?B?c29mWGwwVzJyQVprSEdDdjRpWTdJaGZrTjlidzNYYWFNZlZRU3hQb0lwdkJs?=
- =?utf-8?B?SGp5TFRoYWN0QTFIZmR1OFJvcEQ0d1FUYjhOczkvSHBLNUMrUnJoTU5iVTlG?=
- =?utf-8?B?MENmTy9tTVRmUFFNUzhMdUdscFNQVFdkb25WdFIwcldSZzJlUHRjY1BYbTRC?=
- =?utf-8?B?NS92TE00QitoYmdkd3pIVGVPaG9ZMUlZOENadHpnQVcyellmSFExUVN6aEFh?=
- =?utf-8?B?Z3RaMWxXZHBLdDNCSVpraWpPSUZLNFRqc1VZNDYzbXd3aEI5bnlQRHF3emt6?=
- =?utf-8?B?MDBWd1VKcmZOVlk5eXVrQlNVL2xCV2RjS0JScS85TnFraCtEaVBEeWVua1BY?=
- =?utf-8?B?Uzd3cUc0YmhCeW1iYkNhN2x0aDFQcGEwT3pHRVIyV2hINFJhelFzajFmSE0w?=
- =?utf-8?B?LzdOVWVsTjNBPT0=?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3e5cdd27-5357-4844-66be-08da06e57b07
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB5009.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2022 00:39:51.0206 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9TF2vJtebLSAdleNi6D9YetFLcgmSTX4xMsfZC7SUCCVEZYWXQpsxgZnKXWVvpiGxky5mlpaee7FuakjCFAEO10lkRh1KySJSMuwMBNfLwA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR10MB4147
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10287
- signatures=693139
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
- phishscore=0
- malwarescore=0 mlxscore=0 suspectscore=0 spamscore=0 bulkscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203160001
-X-Proofpoint-GUID: eIH6PojFSQs8pjue0vLu4KGA-a1ppM4Y
-X-Proofpoint-ORIG-GUID: eIH6PojFSQs8pjue0vLu4KGA-a1ppM4Y
-Cc: Juergen Gross <jgross@suse.com>, Tom Lendacky <thomas.lendacky@amd.com>,
- linux-s390@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>,
- linux-ia64@vger.kernel.org, Anshuman Khandual <anshuman.khandual@arm.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Robin Murphy <robin.murphy@arm.com>, x86@kernel.org,
- linux-mips@vger.kernel.org, tboot-devel@lists.sourceforge.net,
- linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org,
- linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
- xen-devel@lists.xenproject.org, linux-riscv@lists.infradead.org,
- David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <20220315162455.5190-1-mario.limonciello@amd.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: kbuild-all@lists.01.org, Michael Jamet <michael.jamet@intel.com>,
+ "open list:THUNDERBOLT DRIVER" <linux-usb@vger.kernel.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ Yehezkel Bernat <YehezkelShB@gmail.com>,
+ "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
+ Mario Limonciello <mario.limonciello@amd.com>,
+ Andreas Noever <andreas.noever@gmail.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -190,110 +91,70 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Mario,
+
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on joro-iommu/next]
+[also build test ERROR on arm-perf/for-next/perf linus/master v5.17-rc8 next-20220315]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Mario-Limonciello/iommu-amd-Add-support-to-indicate-whether-DMA-remap-support-is-enabled/20220316-002821
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
+config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220316/202203160844.lKviWR1Q-lkp@intel.com/config)
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
+reproduce (this is a W=1 build):
+        # https://github.com/0day-ci/linux/commit/fa63035401902e438c5ef3213112901a1054c621
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Mario-Limonciello/iommu-amd-Add-support-to-indicate-whether-DMA-remap-support-is-enabled/20220316-002821
+        git checkout fa63035401902e438c5ef3213112901a1054c621
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/iommu/amd/init.c:3294:6: error: redefinition of 'amd_ivrs_remap_support'
+    3294 | bool amd_ivrs_remap_support(void)
+         |      ^~~~~~~~~~~~~~~~~~~~~~
+   In file included from drivers/iommu/amd/init.c:20:
+   include/linux/amd-iommu.h:198:20: note: previous definition of 'amd_ivrs_remap_support' was here
+     198 | static inline bool amd_ivrs_remap_support(void)
+         |                    ^~~~~~~~~~~~~~~~~~~~~~
 
 
-On 3/15/22 2:36 AM, Christoph Hellwig wrote:
+vim +/amd_ivrs_remap_support +3294 drivers/iommu/amd/init.c
 
-> @@ -271,12 +273,23 @@ void __init swiotlb_init(bool addressing_limit, unsigned int flags)
->   	 * allow to pick a location everywhere for hypervisors with guest
->   	 * memory encryption.
->   	 */
-> +retry:
-> +	bytes = PAGE_ALIGN(default_nslabs << IO_TLB_SHIFT);
->   	if (flags & SWIOTLB_ANY)
->   		tlb = memblock_alloc(bytes, PAGE_SIZE);
->   	else
->   		tlb = memblock_alloc_low(bytes, PAGE_SIZE);
->   	if (!tlb)
->   		goto fail;
-> +	if (remap && remap(tlb, nslabs) < 0) {
-> +		memblock_free(tlb, PAGE_ALIGN(bytes));
-> +
-> +		if (nslabs <= IO_TLB_MIN_SLABS)
-> +			panic("%s: Failed to remap %zu bytes\n",
-> +			      __func__, bytes);
-> +		nslabs = max(1024UL, ALIGN(nslabs >> 1, IO_TLB_SEGSIZE));
+  3284	
+  3285	/*
+  3286	 * ivrs_remap_support - Is %IOMMU_IVINFO_DMA_REMAP set in IVRS table
+  3287	 *
+  3288	 * Returns true if the platform has %IOMMU_IVINFO_DMA_REMAP% set in the IOMMU
+  3289	 * IVRS IVInfo field.
+  3290	 * Presence of this flag indicates to the OS/HV that the IOMMU is used for
+  3291	 * Preboot DMA protection and device accessed memory should be remapped after
+  3292	 * the OS has loaded.
+  3293	 */
+> 3294	bool amd_ivrs_remap_support(void)
+  3295	{
+  3296		return amdr_ivrs_remap_support;
+  3297	}
+  3298	EXPORT_SYMBOL_GPL(amd_ivrs_remap_support);
+  3299	
 
-
-I spoke with Konrad (who wrote the original patch --- f4b2f07b2ed9b469ead87e06fc2fc3d12663a725) and apparently the reason for 2MB was to optimize for Xen's slab allocator, it had nothing to do with IO_TLB_MIN_SLABS. Since this is now common code we should not expose Xen-specific optimizations here and smaller values will still work so IO_TLB_MIN_SLABS is fine.
-
-I think this should be mentioned in the commit message though, probably best in the next patch where you switch to this code.
-
-As far as the hunk above, I don't think we need the max() here: with IO_TLB_MIN_SLABS being 512 we may get stuck in an infinite loop. Something like
-
-	nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
-	if (nslabs <= IO_TLB_MIN_SLABS)
-		panic()
-
-should be sufficient.
-
-
-> +		goto retry;
-> +	}
->   	if (swiotlb_init_with_tbl(tlb, default_nslabs, flags))
->   		goto fail_free_mem;
->   	return;
-> @@ -287,12 +300,18 @@ void __init swiotlb_init(bool addressing_limit, unsigned int flags)
->   	pr_warn("Cannot allocate buffer");
->   }
->   
-> +void __init swiotlb_init(bool addressing_limit, unsigned int flags)
-> +{
-> +	return swiotlb_init_remap(addressing_limit, flags, NULL);
-> +}
-> +
->   /*
->    * Systems with larger DMA zones (those that don't support ISA) can
->    * initialize the swiotlb later using the slab allocator if needed.
->    * This should be just like above, but with some error catching.
->    */
-> -int swiotlb_init_late(size_t size, gfp_t gfp_mask)
-> +int swiotlb_init_late(size_t size, gfp_t gfp_mask,
-> +		int (*remap)(void *tlb, unsigned long nslabs))
->   {
->   	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
->   	unsigned long bytes;
-> @@ -303,6 +322,7 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask)
->   	if (swiotlb_force_disable)
->   		return 0;
->   
-> +retry:
->   	order = get_order(nslabs << IO_TLB_SHIFT);
->   	nslabs = SLABS_PER_PAGE << order;
->   	bytes = nslabs << IO_TLB_SHIFT;
-> @@ -317,6 +337,16 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask)
->   
->   	if (!vstart)
->   		return -ENOMEM;
-> +	if (remap)
-> +		rc = remap(vstart, nslabs);
-> +	if (rc) {
-> +		free_pages((unsigned long)vstart, order);
-> +
-> +		if (IO_TLB_MIN_SLABS <= 1024)
-> +			return rc;
-> +		nslabs = max(1024UL, ALIGN(nslabs >> 1, IO_TLB_SEGSIZE));
-
-
-Same here. (The 'if' check above is wrong anyway).
-
-Patches 13 and 14 look good.
-
-
--boris
-
-
-
-> +		goto retry;
-> +	}
->   
->   	if (order != get_order(bytes)) {
->   		pr_warn("only able to allocate %ld MB\n",
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
