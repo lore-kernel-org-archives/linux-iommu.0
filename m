@@ -4,74 +4,77 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 38A2EC433EF
-	for <iommu@archiver.kernel.org>; Wed, 16 Mar 2022 17:53:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A997CC433EF
+	for <iommu@archiver.kernel.org>; Wed, 16 Mar 2022 18:09:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id B81F540AAD;
-	Wed, 16 Mar 2022 17:53:50 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 3A8EB403AC;
+	Wed, 16 Mar 2022 18:09:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2HlhDUanhiqE; Wed, 16 Mar 2022 17:53:49 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1EAF7403AC;
-	Wed, 16 Mar 2022 17:53:49 +0000 (UTC)
+	with ESMTP id jBQP6TGOkCrS; Wed, 16 Mar 2022 18:09:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 7F26140493;
+	Wed, 16 Mar 2022 18:08:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E1CF0C0012;
-	Wed, 16 Mar 2022 17:53:48 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C03A2C000B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Mar 2022 17:53:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4FA28C001A;
+	Wed, 16 Mar 2022 18:08:59 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CC411C000B
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Mar 2022 18:08:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id A59B3405F1
- for <iommu@lists.linux-foundation.org>; Wed, 16 Mar 2022 17:53:47 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id B4BA481400
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Mar 2022 18:08:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DaZqOrnCenGH for <iommu@lists.linux-foundation.org>;
- Wed, 16 Mar 2022 17:53:45 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=amd.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id YkH8abzAatnh for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Mar 2022 18:08:56 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam12on2061d.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:fe5a::61d])
- by smtp2.osuosl.org (Postfix) with ESMTPS id D36B0403AC
- for <iommu@lists.linux-foundation.org>; Wed, 16 Mar 2022 17:53:45 +0000 (UTC)
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com
+ (mail-bn7nam10on2060a.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e8a::60a])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 282C9813FB
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Mar 2022 18:08:56 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gxmlhsPJEq3Hmq7ev58EMo8lm0Xj4tdJRlfAcretAnWdFP704srmGmq5Op2d8quPGM6aG2sGCiO4dPDuiusiaAKe+YxGRfZV13owRsCRQN/cF1LJ7KZdRAISf5BFiiWrIjjXy8c9Bjc1mdzQUz7Gaz4AiaKiLrxDkQmxErhRHjZKBK2sgDo9S3YVs/bjO2O77rqhTJM4OqGS4P5ZYqDvvmfD7I+BGlvScHIMRt1dKRMKo9aDjwo+4lF64kZjQwlJLCRf4TXWz/J/C6dxzvPLZl8dgePHQVBh79ugrpW0JdsG2330MRYq4O5x/6LhnVPY3Gv0q73v1UCx7IvklZ7UWQ==
+ b=EzzRhMyp889f0uOHTJrYjTCc7nrix2lN6i2SQCx2bQ7vtZuG9fDYDI4zT/FHP9sIzei7tAODrGFyFrqRcm5+t3mxXLzLO2//KNcWvJTj1YDm21FbJw0Km0t6RKBtiicK5kO0kn3TR1GLeIlUQlEt/VhylnwG9ZUft0Ca9UM+0Lylu9P6v1vqOp9QXvUIN8E6CTPY2Js2PRPSi73nrYCOreri/wHtqveVKcKFUTAl853n/zo0yovEBHWz6XxFj43X1xWavAPsF51g1PbT83u9HpeebV/YmvK9fRSpXd39QV+fobjDhAUGOagScFs2SJA+sOXpOaJnvLWIfgFy2Y/+FA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=54k10UHs89HwQ9lyDnhHdOdzNhcCfQP6O8Lm5bzgL7o=;
- b=aFw1FF9xEI3A+PKZa/3ikhQZWLEr6RTh9d70HAXSZmRNge3Kz8w2IaDdxU6SlPanQ20KZ6Zv/gYGLf7+52h4Qic1pj/6vJJAmubdEXDml8/uHE/RcUJ1BNzvwxrC+O9Oo6X1AYC70xUZVUN7q80Ob3WjxYXkHEhmbjw3UKwZ+f/x50+PWJ7BfAzv0KWz4IAl7fZjGL9jX0yg8EsMMtqRDSdT4OFyeujWcJwmWpiOdLQ7KIDOGzNrcOvnJSzKY28qBkRyuHMMmLt4FRW5UaIAx2Wi+9AyeR71z3sTOVFhZsdsAB6RQjdUVMWk+KsoybynAlINvEQxltIEoerMR4Ubyg==
+ bh=Pfqg7UaZmiGlVxPaf9oFU/gk1/Rgw4D1OqW1oq21hMU=;
+ b=djkT2lpyyqLmrSya0CskcKB12EbdgRAlJzZlHRxYWl8QnL7pOPqBumj44KH7qd5b4JthyhnTlul4Pp0AbUDN08vn8x/+QJIevtL34cM9kJfkacCr0jDdM7Xba0eGYa8cG2zLF01EWjtphFvM4bgx+Se6o/Hk7oM11sUb4zrC0YDmW2OUxkcMHL474JxAkaWFqUniOi3H1aT2zi021vWyPdYxvyNlvSaedElo/ueyyuJFbHo2dzAnxREb+Gvaxnqjm7W2eIBEIwmXJ5qrwIvvjqhIM4ekgNb1tuMsstIG4O0Fy7QVnzF2Hmld0SjP3I97wQ82wibArgmlWcNwRtUlWQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=54k10UHs89HwQ9lyDnhHdOdzNhcCfQP6O8Lm5bzgL7o=;
- b=EC9eqzMG4II2Yd+vXQ2zVdc3yJN1Fg4Bdi9E+StjPHAwa6daZuPJqYiy3zRiHNAfwpjIteKlLqYCxmwpjJeea7/hZhzafHP3+f++/XIIZjzKobZtM1Fpl3LnSCT5U8kAXKSeS+KrJqx1hQI48b4IQIkjKZutF8IuSxFRG32hYUs=
+ bh=Pfqg7UaZmiGlVxPaf9oFU/gk1/Rgw4D1OqW1oq21hMU=;
+ b=yMGeTp+qU7bk6ya3ZTPt+s0AoQEBsDY8SQpg4snrUhJXlsFTNiglo/yKkGYaBxSl0eU9Cl3S9LpXIztsaGCYMAa0hCYeEBSOcAoLoLqlAnzhu9mY5LVp1YLOejKjjugLcccSqwfNvBnEEMxSO53bNH/DXiT9hPIy4SVwnxpaYoA=
 Received: from BL1PR12MB5157.namprd12.prod.outlook.com (2603:10b6:208:308::15)
- by DM6PR12MB4942.namprd12.prod.outlook.com (2603:10b6:5:1be::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.14; Wed, 16 Mar
- 2022 17:53:42 +0000
+ by MN2PR12MB3822.namprd12.prod.outlook.com (2603:10b6:208:166::15)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.24; Wed, 16 Mar
+ 2022 18:08:53 +0000
 Received: from BL1PR12MB5157.namprd12.prod.outlook.com
  ([fe80::692d:9532:906b:2b08]) by BL1PR12MB5157.namprd12.prod.outlook.com
  ([fe80::692d:9532:906b:2b08%5]) with mapi id 15.20.5081.014; Wed, 16 Mar 2022
- 17:53:42 +0000
+ 18:08:52 +0000
 To: Robin Murphy <robin.murphy@arm.com>, Mika Westerberg
  <mika.westerberg@linux.intel.com>
 Subject: RE: [PATCH] thunderbolt: Stop using iommu_present()
 Thread-Topic: [PATCH] thunderbolt: Stop using iommu_present()
-Thread-Index: AQHYOSidJZwMFUwbGEibeELZIyT74azB9QiAgAAiooCAACnRgIAAAPcAgAAEJICAAANtgIAAAECw
-Date: Wed, 16 Mar 2022 17:53:42 +0000
-Message-ID: <BL1PR12MB5157DA58C3BDAFB5736676F6E2119@BL1PR12MB5157.namprd12.prod.outlook.com>
+Thread-Index: AQHYOSidJZwMFUwbGEibeELZIyT74azB9QiAgAAiooCAACnRgIAAAPcAgAAEJICAAANtgIAAAECwgAAE99A=
+Date: Wed, 16 Mar 2022 18:08:52 +0000
+Message-ID: <BL1PR12MB51577CBCE5E86298530B53A3E2119@BL1PR12MB5157.namprd12.prod.outlook.com>
 References: <b4356b228db9cb88d12db6559e28714ce26e022e.1647429348.git.robin.murphy@arm.com>
  <YjHb1xCx4UAmUjrR@lahna> <16852eb2-98bb-6337-741f-8c2f06418b08@arm.com>
  <YjIb+XOGZbWKpQDa@lahna>
  <BL1PR12MB515762E68F3A48A97EB2DC89E2119@BL1PR12MB5157.namprd12.prod.outlook.com>
  <YjIgQfmcw6fydkXd@lahna> <3bb6a2f8-005b-587a-7d7a-7a9a5391ec05@arm.com>
-In-Reply-To: <3bb6a2f8-005b-587a-7d7a-7a9a5391ec05@arm.com>
+ <BL1PR12MB5157DA58C3BDAFB5736676F6E2119@BL1PR12MB5157.namprd12.prod.outlook.com>
+In-Reply-To: <BL1PR12MB5157DA58C3BDAFB5736676F6E2119@BL1PR12MB5157.namprd12.prod.outlook.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -84,64 +87,64 @@ msip_labels: MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Enabled=true;
  MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_ActionId=a32c2a09-b0c2-4794-916a-a4afd648a123;
  MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_ContentBits=1
 msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_enabled: true
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_setdate: 2022-03-16T17:53:40Z
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_setdate: 2022-03-16T18:08:50Z
 msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_method: Privileged
 msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_name: Public-AIP 2.0
 msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
-msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_actionid: 82aebe48-d2e8-4d27-9474-70f6cad9933f
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_actionid: 43f448ca-6adf-433f-937f-0c3525b2a965
 msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_contentbits: 0
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7c19e976-74e4-4f31-2f36-08da0775e8c8
-x-ms-traffictypediagnostic: DM6PR12MB4942:EE_
-x-microsoft-antispam-prvs: <DM6PR12MB49422DA337BB3BEE9A0E0D3BE2119@DM6PR12MB4942.namprd12.prod.outlook.com>
+x-ms-office365-filtering-correlation-id: 88752f87-c9e3-432d-6fab-08da07780770
+x-ms-traffictypediagnostic: MN2PR12MB3822:EE_
+x-microsoft-antispam-prvs: <MN2PR12MB38227D935D0F122545BABFFFE2119@MN2PR12MB3822.namprd12.prod.outlook.com>
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: nSmVNX1lM4CgrQQxy3yiF8e5s9ONe1vhHMKj1rRzPa0EojHXMMETiTUNq4kR7GOmF6m2GbSjt8fFScYdsQWCNqv33E6a5GUGOFsBRsCpQd0vN+AF9JQrl8FFkitW2XVgHyp7YzVJ+pYgPLj83WUoNEIzxzZVkd5NVQhKcZWk8PN0ZpMbfE/uQwDQVqqUiLHHqtMnkJtKhNpFHSiAipavxNPupY3CBW6Iy1/OUJWw3okrvjTxW6+J28ckCMoYhRFjwwk6rCjGDO48hfWuLnjxnkexoarYy5PtOztFoG5eX38B271uw7c+FenOCRkXAXgdaOdnaHCdH1fqDfSqMbgQTcRgYdRl+d/M5nTwEAfogLHsk3M3sqAR7Oxe7Ix24PhepDmN4bZXIjfsxw0Sb+TI/al1dmf7CiHButUCNrxGvbTH0m27c0EkyA2DtyomE+GWVS2GUObacZYRo4xdwQRgjgMqCYrdkgQ/l7chvCMUX9mGHGoRtPDd6N9pCtunW1LBEzOkFVC0IonO2tFUN5iUTO6B87Y8F0YY0wzOZnEoeV487EopxXw8wX5iD8rh6Oo62OFXvrOOQSGrFHR/NWiXR0DTbE97WvcTnqQi6YugOZhc328HroULZvRous2rmE1GQAWuU2aiB2U4GTq3C/tnA1Jk8zXvxfdBDUVBksIZaQNj7jLcprkCPoV9qmhxQ03GOhV4yQJFiG98LjmHxC/kIty7FAYHBZD7B0dbCybBlD3YoEGdZNlDuBpDnNGrX1JZDh/cl/OhoZP5GQK15rmZVE9MiPU4Lb02dYi4e20D/ag=
+x-microsoft-antispam-message-info: hvf+GH8EpksPseAWOIzGNbXkOV/6G5r6fzDFESZSQaK68Rj8vN40C70ohNNYIEL9Mtf1EQ7tYy8e2TYpBa7Sqagx5Zn6l+rfBw9dPGQbd77qsAUiYmk/0kWeQ/t3b9i5xfvZV6brFakgnhnjbJ27rXWbY3MCp4a71bMeuNLeefNGqJUZgGFm+nOtmuwXLF/bROd8WRxn/YsTUZ2Je4fAQ3H97AlyubxbKY3wXz0flqHwHHJea1Tgx9Rcf0YYPciAuv/KSbajj292t4iUsq/mUPURkGhMVLrJv76JByO1DMAwP0Znngi+QgIwBZPl8l+cqIMvgrO9DQX+u61upyoDcZq4OUIJJawK9I/9bszBhWYSI3CuwixUAvA1ji+z6/2HuXxmZ1u1RXNBcutmkSu1EOB/t3S4/SNbZ0ySiHU0dZPD2dBvXKo32TWkCISv1Ko59oPz22vAMF0Vl6/95+OwSziKiqoFdgws58+c34rb+c/f6zbyyG55aUS376B3TGOQAT8fcMSnfmpCfmW4xmcLAklg0hKOTh6xoaDE0knjD01sgNJDTmbmLjf3DfQ6BDL/d13vjVCOSXVUC0rk8Yp+nsJJogyLYalBYBTfgNscDDjun+VzKWN/KICNQRPcEdnUj15JB9PjW8yYR8BaqcKd87xdRLIIy4i8AW4l9ovsvZ2Gwxuw32ngpE2CDb4k/d7i5QKMHTtz2xVkBHOPJ30EUJ8Ff5t5pXPjcM/uzjHyobaRbOwdk3fwL/hUgT8tID6nDdhpKWBcvz7KbADEIoWvhlDfTAIFylX0f8uV+/Fxyds=
 x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:BL1PR12MB5157.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(64756008)(76116006)(66446008)(66556008)(66946007)(66476007)(508600001)(8676002)(5660300002)(86362001)(4326008)(38070700005)(71200400001)(7696005)(45080400002)(54906003)(966005)(110136005)(6506007)(316002)(9686003)(52536014)(8936002)(83380400001)(186003)(2906002)(38100700002)(122000001)(33656002)(55016003);
+ SFS:(13230001)(4636009)(366004)(4326008)(2940100002)(83380400001)(508600001)(122000001)(45080400002)(38100700002)(9686003)(5660300002)(71200400001)(6506007)(7696005)(33656002)(966005)(52536014)(8936002)(53546011)(316002)(2906002)(55016003)(38070700005)(186003)(54906003)(110136005)(76116006)(86362001)(8676002)(66946007)(66556008)(66476007)(64756008)(66446008);
  DIR:OUT; SFP:1101; 
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?XBdNkfy2Zep+5tuFqp/Jy6PDfGoLPI7AwsLjXPWAgWdjP4nAOXYTfVexJb2E?=
- =?us-ascii?Q?zFBNJTK56aP8uxCF/VJsyImjpgO+V6coDrmRAjrzJx+YjHZu+qByGu0qrvWg?=
- =?us-ascii?Q?TvBJjQ9e+wXl1ba+92Z313Z/JQE8m3/xmycaXU1lF/tB/6iLpkdoY9RgkHng?=
- =?us-ascii?Q?MC61q01WDFPNrpkOY5OgCVBAHkYKXIjjipXVveEQUr48VLmStmhh1H4a5lEB?=
- =?us-ascii?Q?YQF/xqnMtTJmXTxCIqlJgAgnqmc6uLC+7NWx5K5/SJrnXzTpdWk23+2N/NeV?=
- =?us-ascii?Q?+U0db1gGCEpHYAEWbe0sHD1VgAPTg1obwL8Bl4aWPk0mimMDGGzF/v3yja9Z?=
- =?us-ascii?Q?jbTPMXXYNSyEe+KWT+qkCgsWzFcw3KQVV6ZsijsW26Ts7IyNevztu95c71xk?=
- =?us-ascii?Q?ju5yuH6NRxdzaM8RhpoILCoI2Vj5ENlCB4HeWtonkj6QleNLMNDLsIRfK5xN?=
- =?us-ascii?Q?LJI2oth2XJEnX1ggQoLtjPnidq4cEK3TQH2jHeE4c/bwACKCRLElnS6Vi6Uy?=
- =?us-ascii?Q?GIC5//ztXe8jfKMaCHU3CsWmAXkOrCasSy3DSqGajrRJrL69CqatU+Rj6KPt?=
- =?us-ascii?Q?74hf0C6+ZCyx/u9JaVQEJeDUUl/P0Tn9cnbDsvya7REudpkFvCuWosgG9cuY?=
- =?us-ascii?Q?P4npc2J11IIa8mXHwjIkDJGk7xycpFdDsbUBOBmUSP0WAUF4qDlrpdec+5N+?=
- =?us-ascii?Q?xoBJzxHRqHWWsl5WMwTd2JvD1UD9KA5j3vW42xbLVO78c1nVF85E3KRxLXfq?=
- =?us-ascii?Q?YF0fIg/y1tAwV5TwOR/OaWL+9/dfgv5RIkcEu9fUmS9qbivDjfZQY8MtjoNh?=
- =?us-ascii?Q?ByjLGICBmEmYYzdW8EfZYgWBA71xfFzwB9Kqatqv3gRo/88/eyo1XRORhA2i?=
- =?us-ascii?Q?Cl9jTJVLyGuZYh0KwpLquFCHK5H4LiuEAuSGBaC2Y9s5jzmmIPqUSykGhQ6F?=
- =?us-ascii?Q?x9GCB/KmtJNJGknJbGHcvpjISMUZRmmsaZp+VhziYVNEMjxixbvvD4/cnDHS?=
- =?us-ascii?Q?1eEPwUAjNtbQ7wW8DZ25CfdMdrLAK1bvTIEgPG9HLpMnQOTXNSaP/j68uhjs?=
- =?us-ascii?Q?Y7o4Rd+g9bfLp5Mb/rKrheGlKv+PimqGVMNCSZ08eEBpIcttRXfl0kziXxsu?=
- =?us-ascii?Q?B7sg348xOza5339VutqNYSWsMLtx0zqtcozaL8S3GabJ8ZsKnR+93cW8Us5l?=
- =?us-ascii?Q?+JfEU6nmCnI/tCF3dDZk7QASh6fYUq920AsMVAWdP/Lz9qtofH1sLxw7Wovl?=
- =?us-ascii?Q?aFyzzQfvXPfs1IVFmt7zAz/VSoTM2r+yQyR+q0NIGGVCJ9LrVQZqt6EsY/sy?=
- =?us-ascii?Q?eVj1YMUkT6yy8OynISQJqzispK1Hl5Bd9C8E2bP35utJ1+zmDOwgWdftAHPg?=
- =?us-ascii?Q?N0yIM05y3Pa214xb4+M35tWfo9A9vpchCCaSiwhflGq6MX86Zzj9qlA/MibI?=
- =?us-ascii?Q?kGmuk1VwZ4ZUfGNUmDitYpPb1iyRTEFMO0XRoT825IF2FGHkcLat3/D987mb?=
- =?us-ascii?Q?8g/J98iSlRM/G0foccixN2qc/dhcuTn9dixF?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?nccvCjyAVUNHH0cBfV1yVacMU+i555k7LWiy6uAG2dxy82aDaL3lJoLJZjzi?=
+ =?us-ascii?Q?Sgern0MGDb0LOl5q1f9sV0wWqGiQ49KeeLXtSRXN4EsnAy675EefXkZAtV24?=
+ =?us-ascii?Q?7r3TBoNmplLOlV11kvk7JNbHh4S9SqUD7arNXQ+Z4wbKOtg6mVXrno2KhG1e?=
+ =?us-ascii?Q?I1VpaTR9Ci5tRE37NbLtPcpioro7Z0Y4hQr0IMbzyCTpr7e5oGoiN71vNUtJ?=
+ =?us-ascii?Q?Xw6H/vyrfLWYBtBvkwZf8ew6Xl427A8C9XKLBaiep5Mk+SHz/PAlWApmfVZz?=
+ =?us-ascii?Q?2tKTF4Nvn4CJ32y4Qr4KukQcbUonUw0ZlRAtgHNR+LEYXToANroNnK0sEX8D?=
+ =?us-ascii?Q?miijnhj6Cywo417LhZLM9iqkb2lJ9eQQCqB4EkduIejMiXpxaylgn0QHqPF7?=
+ =?us-ascii?Q?S7RKZRklMtyP1th6VqNgl5YtJH04ni7J9YqNQkfgtkYiphzku2g578bark6G?=
+ =?us-ascii?Q?nAMq6DAwBgbQ8lu00iT/mWr5jQD8FKFqdvN8XtaX+GdSQaHxjNgD726ENGyj?=
+ =?us-ascii?Q?CzM1V97ndhRHwfaubwy/GHR/0UiHqL6hrWuPQgefvJpitmHdbVXPfcCshLwf?=
+ =?us-ascii?Q?b7oVqr+yc0wcErqE5PD5NOv4GK/qx/YmIZ5yIb6AByCMSpoO6tCuMjMV5xrp?=
+ =?us-ascii?Q?00NNpofDhFvLjFvAgSbZrYkKfYo5kJVW8VQTS7Z/Cpkxpu0+SJw51nz0D24P?=
+ =?us-ascii?Q?hXhgRB5W5fqs9Rg1ae/64BEXyN8vKodRR7zMTXJYZXvuSP+enMxv32wWgKC8?=
+ =?us-ascii?Q?/adE1PgTfdREdDnAf8YTOxBmUuPruSwZsh91wv1RyDzNqSol9Ozq1pcrCtK4?=
+ =?us-ascii?Q?69xh8lbyZbIhgV+UgxonC2zAsVvD5NgE4p8s6cfDdDjn/ixlFKp1iBkzRO90?=
+ =?us-ascii?Q?iEH0efuC539StCvXQD3DrW/nOrLPYRPIXtoo81MkUoLcWAUtGzzJtcrcLAzt?=
+ =?us-ascii?Q?TQb+AZha5iNlj8euwjDXCV4amp6OpmyD6c9JDnjjWJvm3DRYm7x0TZkkxPP9?=
+ =?us-ascii?Q?tDKGz7pzKsLvMuhPKy051HDsdzf4C+rvxuPIAtSqNAlAfEez3D1YKeEaP/Sj?=
+ =?us-ascii?Q?whaU5UVrDN6eY6Ze2YzS5lXN0ek1Il5J7KlmvtoXCXAvtNbo0EkZ0yRFjOkY?=
+ =?us-ascii?Q?WYxD3h5a0qSyx3z3jnYydX5LgJzCs7mS1de3PMproFYpXbcE/4Mbcod0BOHn?=
+ =?us-ascii?Q?SVKZe7WPhBxtX41u+bxxkvTsRCbP+CHKWVuPQH17aTL/E6kCFnzXvsr0e5Fj?=
+ =?us-ascii?Q?pNcDjdX85QJjDL2GXVGMxwAc27ngaPYYbkYe3q65fd4Leyq8h1emOJgoIU6H?=
+ =?us-ascii?Q?097+SVjAny6kYBSpu5yUTNnr9BUm7w8rFdR9K3IxLC8291tToC99MF5h6j8h?=
+ =?us-ascii?Q?H5ZMxf3hnodepKMvyW7oxhyVndrBRspOKR/8PhzQeo1SchweI1o7A/DKRIa+?=
+ =?us-ascii?Q?MgmU4WrJ6dFwBew3Cp989QAoXqqHDdtqaUBFKVMs0khMvhdYOjYlUw5oYhRZ?=
+ =?us-ascii?Q?o0BVfzf5+4wkGPf4JsuPaX1hKl1lEinBalc9?=
 MIME-Version: 1.0
 X-OriginatorOrg: amd.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5157.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7c19e976-74e4-4f31-2f36-08da0775e8c8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Mar 2022 17:53:42.3254 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 88752f87-c9e3-432d-6fab-08da07780770
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Mar 2022 18:08:52.7532 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: keKHj1uALfB/TYYbj7/smWp9Wsxezvb+Zs1ACMuep4SWL9xXli6KN4/0sJTtDSXsZjP1xKxpQwwb1/ULT5brfA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4942
+X-MS-Exchange-CrossTenant-userprincipalname: x3PrXeAjiICqAbm93ANNnvjME8wag51NUF86QF6mdtuAu3VvTQegYwzbZJ2CsXifEU1vyT5m9KEIgFHQYnAjYQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3822
 Cc: "michael.jamet@intel.com" <michael.jamet@intel.com>,
  "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
@@ -169,92 +172,121 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 [Public]
 
-> >>>
-> >>> There is a way to figure out the "tunneled" PCIe ports by looking at
-> >>> certain properties and we do that already actually. The BIOS has the
-> >>> following under these ports:
-> >>>
-> >>>
+
+
+> -----Original Message-----
+> From: Limonciello, Mario
+> Sent: Wednesday, March 16, 2022 12:54
+> To: Robin Murphy <robin.murphy@arm.com>; Mika Westerberg
+> <mika.westerberg@linux.intel.com>
+> Cc: michael.jamet@intel.com; linux-usb@vger.kernel.org; linux-
+> kernel@vger.kernel.org; YehezkelShB@gmail.com; iommu@lists.linux-
+> foundation.org; andreas.noever@gmail.com; hch@lst.de
+> Subject: RE: [PATCH] thunderbolt: Stop using iommu_present()
+> 
+> [Public]
+> 
+> > >>>
+> > >>> There is a way to figure out the "tunneled" PCIe ports by looking at
+> > >>> certain properties and we do that already actually. The BIOS has the
+> > >>> following under these ports:
+> > >>>
+> > >>>
+> >
 > https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fdocs
-> >>> .microsoft.com%2Fen-us%2Fwindows-
-> hardware%2Fdrivers%2Fpci%2Fdsd-
-> >>> for-pcie-root-ports%23identifying-externally-exposed-pcie-root-
-> >>>
+> > >>> .microsoft.com%2Fen-us%2Fwindows-
+> > hardware%2Fdrivers%2Fpci%2Fdsd-
+> > >>> for-pcie-root-ports%23identifying-externally-exposed-pcie-root-
+> > >>>
+> >
 > ports&amp;data=04%7C01%7Cmario.limonciello%40amd.com%7C0465d319a
-> >>>
+> > >>>
+> >
 > 6684335d9c208da07710e7c%7C3dd8961fe4884e608e11a82d994e183d%7C0%7
-> >>>
+> > >>>
+> >
 > C0%7C637830479402895833%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4w
-> >>>
+> > >>>
+> >
 > LjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&am
-> >>>
+> > >>>
+> >
 > p;sdata=z6hpYGpj%2B%2BVvz9d6MXiO4N66PUm4zwhOdI%2Br6l3PjhQ%3D
-> >>> &amp;reserved=0
-> >>>
-> >>> and the ports will have dev->external_facing set to 1. Perhaps looking
-> >>> at that field helps here?
-> >>
-> >> External facing isn't a guarantee from the firmware though.  It's
-> something we
-> >> all expect in practice, but I think it's better to look at the ones that are
-> from
-> >> the _DSD usb4-host-interface to be safer.
-> >
-> > Right but then we have the discrete ones with the DVSEC that exposes the
-> > tunneled ports :(
-> >
-
-Can the USB4 CM make the device links in the DVSEC case perhaps too?  I would
-think we want that anyway to control device suspend ordering.
-
-If I had something discrete to try I'd dust off the DVSEC patch I wrote before to
-try it, but alas all I have is integrated stuff on my hand.
-
-> >> Mika, you might not have seen it yet, but I sent a follow up diff in this
-> thread
-> >> to Robin's patch.  If that looks good Robin can submit a v2 (or I'm happy to
-> do
-> >> so as well as I confirmed it helps my original intent too).
-> >
-> > I saw it now and I'm thinking are we making this unnecessary complex? I
-> > mean Microsoft solely depends on the DMAR platform opt-in flag:
-> >
+> > >>> &amp;reserved=0
+> > >>>
+> > >>> and the ports will have dev->external_facing set to 1. Perhaps looking
+> > >>> at that field helps here?
+> > >>
+> > >> External facing isn't a guarantee from the firmware though.  It's
+> > something we
+> > >> all expect in practice, but I think it's better to look at the ones that are
+> > from
+> > >> the _DSD usb4-host-interface to be safer.
+> > >
+> > > Right but then we have the discrete ones with the DVSEC that exposes
+> the
+> > > tunneled ports :(
+> > >
+> 
+> Can the USB4 CM make the device links in the DVSEC case perhaps too?  I
+> would
+> think we want that anyway to control device suspend ordering.
+> 
+> If I had something discrete to try I'd dust off the DVSEC patch I wrote before
+> to
+> try it, but alas all I have is integrated stuff on my hand.
+> 
+> > >> Mika, you might not have seen it yet, but I sent a follow up diff in this
+> > thread
+> > >> to Robin's patch.  If that looks good Robin can submit a v2 (or I'm happy
+> to
+> > do
+> > >> so as well as I confirmed it helps my original intent too).
+> > >
+> > > I saw it now and I'm thinking are we making this unnecessary complex? I
+> > > mean Microsoft solely depends on the DMAR platform opt-in flag:
+> > >
+> > >
 > >
 > 
-
-I think Microsoft doesn't allow you to turn off the IOMMU though or put it in
-passthrough through on the kernel command line.
-
-> > We also do turn on full IOMMU mappings in that case for devices that are
-> > marked as external facing by the same firmware that provided the DMAR
-> > bit. If the user decides to disable IOMMU from command line for instance
-> > then we expect she knows what she is doing.
+> I think Microsoft doesn't allow you to turn off the IOMMU though or put it in
+> passthrough through on the kernel command line.
 > 
-> Yeah, if external_facing is set correctly then we can safely expect the
-> the IOMMU layer to do the right thing, so in that case it probably is OK
-> to infer that if an IOMMU is present for the NHI then it'll be managing
-> that whole bus hierarchy. What I'm really thinking about here is whether
-> we can defend against a case when external_facing *isn't* set, so we
-> treat the tunnelled ports as normal PCI buses, assume it's OK since
-> we've got an IOMMU and everything else is getting translation domains by
-> default, but then a Thunderbolt device shows up masquerading the VID:DID
-> of something that gets a passthrough quirk, and thus tricks its way
-> through the perceived protection.
+> > > We also do turn on full IOMMU mappings in that case for devices that are
+> > > marked as external facing by the same firmware that provided the DMAR
+> > > bit. If the user decides to disable IOMMU from command line for instance
+> > > then we expect she knows what she is doing.
+> >
+> > Yeah, if external_facing is set correctly then we can safely expect the
+> > the IOMMU layer to do the right thing, so in that case it probably is OK
+> > to infer that if an IOMMU is present for the NHI then it'll be managing
+> > that whole bus hierarchy. What I'm really thinking about here is whether
+> > we can defend against a case when external_facing *isn't* set, so we
+> > treat the tunnelled ports as normal PCI buses, assume it's OK since
+> > we've got an IOMMU and everything else is getting translation domains by
+> > default, but then a Thunderbolt device shows up masquerading the
+> VID:DID
+> > of something that gets a passthrough quirk, and thus tricks its way
+> > through the perceived protection.
+> >
+> > Robin.
 > 
-> Robin.
+> Unless it happened after 5.17-rc8 looking at the code I think that's Intel
+> specific behavior though at the moment (has_external_pci).  I don't see it
+> in a generic layer.
 
-Unless it happened after 5.17-rc8 looking at the code I think that's Intel
-specific behavior though at the moment (has_external_pci).  I don't see it
-in a generic layer.
+Oh it's via dev_is_untrusted.  A few layers through external facing translates
+to untrusted and then dev_use_swiotlb is used, got it.
 
-In addition to the point Robin said about firmware not setting external facing
-if the IOMMU was disabled on command line then iommu_dma_protection
-would be showing the wrong values meaning userspace may choose to
-authorize the device automatically in a potentially unsafe scenario.
-
-Even if the user "knew what they were doing", I would expect that we still
-do our best to protect them from themselves and not advertise something
-that will cause automatic authorization.
+> 
+> In addition to the point Robin said about firmware not setting external facing
+> if the IOMMU was disabled on command line then iommu_dma_protection
+> would be showing the wrong values meaning userspace may choose to
+> authorize the device automatically in a potentially unsafe scenario.
+> 
+> Even if the user "knew what they were doing", I would expect that we still
+> do our best to protect them from themselves and not advertise something
+> that will cause automatic authorization.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
