@@ -1,69 +1,69 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CD014C433FE
-	for <iommu@archiver.kernel.org>; Thu, 17 Mar 2022 16:13:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E7B87C4332F
+	for <iommu@archiver.kernel.org>; Thu, 17 Mar 2022 16:13:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 025FD80B65;
-	Thu, 17 Mar 2022 16:13:30 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 9CAC740463;
+	Thu, 17 Mar 2022 16:13:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ut3oro6maHUn; Thu, 17 Mar 2022 16:13:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id C518F84823;
-	Thu, 17 Mar 2022 16:13:28 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id dRkKQiL3D2w4; Thu, 17 Mar 2022 16:13:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A47BE40B4B;
+	Thu, 17 Mar 2022 16:13:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AC7E4C0012;
-	Thu, 17 Mar 2022 16:13:28 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 33F5AC000B
- for <iommu@lists.linux-foundation.org>; Thu, 17 Mar 2022 16:13:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 190B0C0033;
+	Thu, 17 Mar 2022 16:13:29 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 486EAC000B
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Mar 2022 16:13:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 22C26410E0
+ by smtp3.osuosl.org (Postfix) with ESMTP id 5E2D4600CA
  for <iommu@lists.linux-foundation.org>; Thu, 17 Mar 2022 16:13:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=microsoft.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8GP10c6EYBeU for <iommu@lists.linux-foundation.org>;
- Thu, 17 Mar 2022 16:13:24 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id a1M9GhPZFuSV for <iommu@lists.linux-foundation.org>;
+ Thu, 17 Mar 2022 16:13:26 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
 Received: from na01-obe.outbound.protection.outlook.com
  (mail-eus2azlp170100001.outbound.protection.outlook.com
  [IPv6:2a01:111:f403:c110::1])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 04492408F2
- for <iommu@lists.linux-foundation.org>; Thu, 17 Mar 2022 16:13:23 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id C272A600D1
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Mar 2022 16:13:26 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jLzN/OhbanPe3vVYMW+8WhCIZxsWgXd97JJvu7Qmu3bNRtUcTEiBkTVlmYtx85rIuKoqYla7glWF9Z3XDor13mpUIMA/guXE52iiOKI+LjgpRDy98Zg8DEQ8YbXFD39vImneY8mFs7bEIrucb4qv44JTuKKUuJSGRpN8qcJLxyl0esgm0hlW6q/MhoAlZwWSd9bSwuKIKznRe5zoid1fswuDINJdhkvaXig1uE98Lz2sK+9pBxwy96GtxNKKNAB4Rt1fy0zRgr9OFe1H5DwgJV53+s+vYm5NMGJZ0qRmCP/hWxiBZkZH9tUp0TCLo7ghXXegVWGceRnYLltKRS4hWw==
+ b=H0UOWmYjeXeP9nbSsdL4EPDUB7jifsnNtB9BUTB9CH0nU+nHMLUWLtIkfom9zdShQ6ILjKKVvgd8ipfhIh7AZ8GaAedFceH5k99HHzPY/Bzk7FkFkkMj6tMjeeHVlNJbwz55B91gXGQnXww2m8cD7DjnifjIrnwxhUgzWu4Q+0HVOTeJAspAwD9JlPPn74nNF+0NzcHdNrF9Q4Orc4weteycCi3057jYfiQp0bddmOZQ2dkUxE+OqA9xEuQZpMABY6kM3mrI9i4WyXNjzWG8yjnwh9dGf5wkgyu3vCWK12lAOyKVZpd5X9eRj3vdasXeTGdP2yQLNFFq1kBeB2v5kA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LO1YdWsiEnaF9VQyrEJVPHKwnv+MhPiQSoaZvJ3DwgI=;
- b=KagHVo8lhKlVmhfHauJRHMqTKYY5/2u++phJHsNYhEUsrcWcZd2JriIzhdOV5OmWSp2wfeAXPax1YghSCa2H5yj+vWNPDNgg3sYI1yEVeeU9uEpD3BspoiG64w/pRGwP/XysEp+sbcZketzkNiumbkfL9zmAUtZTqT12xW+D9PhmFm8wyeyNY9Nt/Da1riKE0IanRrueO4gfu0OZq9E8FVUcda7Obm1sOHfcgv/zW/yX2yW6UVGP0drqVghwE8Pvp6Y9BJZp+Vj3dRiVJwDzrT3QCffqgXXHEwHOi6Y/5Zw4XJ7p5iQ1zSXYIIgylCV6qBvDqfuKkJklABZnsQUOog==
+ bh=2yDLDyXVr4lWPvqstJjFwb/JQmGOxqMwR4p51AL2DjA=;
+ b=h6+XIkbi/bCBWsWoAF6tfNDrWfpWIAvcSuwxVpkpA6tWdEUHJ9tPQ+sa7j4tv5RFb/tfuSdVAHKWPi2Ib934H7ynojyAJ8kcu44qZ4ZvEF3kedd7hb4jDC+r+ui5+FK5pnGo/DbxdB+pHpqGuDEPc5QFwZHHTQn60pPAbZo5xOXtAi0dCpnRCeXgrF9z1w3VjO0SWe8JhsCnmg/HP4LmM9C6tbcLpz+R3WDFx8p1/Rl64PQuRiExKQGvs+4dcMXNsQ8xNEydN3Hs1n50/4PR/0iXuogFTjdQmNTE2HIdcNTi12UZtKuoHx/jFELMlVxy6V2D8/l+LM0XaYiGDm6rtg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microsoft.com; dmarc=pass action=none
  header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LO1YdWsiEnaF9VQyrEJVPHKwnv+MhPiQSoaZvJ3DwgI=;
- b=ZqhDBm4l1xIbRE9Wv2qAgM7me4xuB7l9tsTx5Tay6cAFyrOypFOFrzbTE6XqQHXavLDYZHXJKj83wQSW8XfXKLE4lhijXSNoimX+yD9Zwb3ztxg+lyk2jnIkoyedWzDjy69dexdweItitovYEKHhwNJYrcSexP6mMeLv+SjT9cc=
+ bh=2yDLDyXVr4lWPvqstJjFwb/JQmGOxqMwR4p51AL2DjA=;
+ b=WIcvQ/0q/VM9rZVkzFEG+B4z1xPDDaIs33kqB18OgPeeI85YaAwIGepIXBkGSFsV0YjLnel1l2NauMTT5s2S9e9ep7YkVOMkk2n/o8QMh+i265o01zG9RSbKxDkkeWCc5M3oDJk3XZRgFxKLW0OBI1wPI5KSCqNZaMImR+ttiB8=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=microsoft.com;
 Received: from DM6PR21MB1514.namprd21.prod.outlook.com (2603:10b6:5:22d::11)
  by BL0PR2101MB0995.namprd21.prod.outlook.com (2603:10b6:207:36::29) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.15; Thu, 17 Mar
- 2022 16:13:19 +0000
+ 2022 16:13:23 +0000
 Received: from DM6PR21MB1514.namprd21.prod.outlook.com
  ([fe80::8c81:f644:fc1c:1357]) by DM6PR21MB1514.namprd21.prod.outlook.com
  ([fe80::8c81:f644:fc1c:1357%4]) with mapi id 15.20.5102.007; Thu, 17 Mar 2022
- 16:13:19 +0000
+ 16:13:22 +0000
 To: sthemmin@microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
  wei.liu@kernel.org, decui@microsoft.com, rafael@kernel.org,
  lenb@kernel.org, lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
@@ -71,64 +71,66 @@ To: sthemmin@microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
  robin.murphy@arm.com, linux-acpi@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
  linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org
-Subject: [PATCH 0/4] Fix coherence for VMbus and PCI pass-thru devices in
- Hyper-V VM
-Date: Thu, 17 Mar 2022 09:12:39 -0700
-Message-Id: <1647533563-2170-1-git-send-email-mikelley@microsoft.com>
+Subject: [PATCH 3/4] Drivers: hv: vmbus: Propagate VMbus coherence to each
+ VMbus device
+Date: Thu, 17 Mar 2022 09:12:42 -0700
+Message-Id: <1647533563-2170-4-git-send-email-mikelley@microsoft.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1647533563-2170-1-git-send-email-mikelley@microsoft.com>
+References: <1647533563-2170-1-git-send-email-mikelley@microsoft.com>
 X-ClientProxiedBy: MW3PR06CA0007.namprd06.prod.outlook.com
  (2603:10b6:303:2a::12) To DM6PR21MB1514.namprd21.prod.outlook.com
  (2603:10b6:5:22d::11)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 73609d37-2d96-4d66-c85c-08da08310cf1
+X-MS-Office365-Filtering-Correlation-Id: eb52f53b-986b-4294-bdf5-08da08310f12
 X-MS-TrafficTypeDiagnostic: BL0PR2101MB0995:EE_
 X-MS-Exchange-AtpMessageProperties: SA|SL
-X-Microsoft-Antispam-PRVS: <BL0PR2101MB0995005F7E4BE8BA03737FC4D7129@BL0PR2101MB0995.namprd21.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <BL0PR2101MB09952EFD1861F9F90C31E0F8D7129@BL0PR2101MB0995.namprd21.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nPxtzWIhT4uj8csDWBf/oPbwaFLBrNKhhyNPkMd6y149rVFqSWTR/OdlVchReScvPk7zh+Vgtw8hg/SO90sViHaF/+XnfJY8pwLp+9QQVs7VyHvR2nIeiwP/Qhjtq3nwB6kA7K1nmsFwIUoEB6xDW4Mn6qImBIX0KGN2wpHszdw3BZEalNvnlAe2D5TKM3wXhc5b7v6AT8Iqvaw6yKCmEGVO86qUisBJaLd5zwgvHioJL/SWW3jCaFAFaFvYPjBdmzYNJRelyKnS+PNa531IjglhkdCZUxyMlatHnLCWg8Zq5dZVG17IKo1AilkG0dqy9dtNutcjBO4rR+/yowjlJkpvPYYz1aF1crDB2OnQl+uZJwdghQfWnrvJqmqM3Y0pNiLqnt/T+SnzgguTZvfhEy3mMu8Qm+WX/wfyzJ2QeyWLJHu15/DToTX6OCwFTCJ1TB0SVfpW5AsflaGTgCClKE5WCjs0aw/aL3Eql7iB+m0gDFg8jlCMvDdNymEr1l/4zmQ5CDogDo9lgisYku20PPp0bqLnJdQFyVcVongUQYq1bazRcC6GaaK8b3hVWs4FovuGFUmXYHlsScTIn0Ly65x74JGxmHh0U902qo0bmlUxvNzmnz7JtSFvBo9hRceV4qlUJQTlnb7iE4RpA9qW949g2ljYC/mKa66GHZhAk4m0XMwY40jkDEOHyaAdSegF3kXV4zy5L7k8pDZXp5mxLfBBHG0tDW7k3E7JKcZB5gRastENzsuaHGptIHuu2mEeByunqRDUffwmv30wBMGGbw==
+X-Microsoft-Antispam-Message-Info: 4EHNXLwFM+R8VxJ/0zskQBaT6T7uigvIqQvkJp+MGE4ZvpnyCaQIM8ZlrEOUF2BWau1LEKqPInxpw8iyUPuxHuYIfHZJdn7FHwP1m35+Oo/ZQPyUR3EcyHb0TURsNGc+Jqk7hiuHPVi/DOeHXHwLePEaZL+Aw/46PbwI8+RbZdVkc//SKXSZapJGaZhU6hC1FtJ4QuRr/XedTDXmarne/tHotLEekmhSSMy94Brta5toRa+HDl66S2v5jyVFfAKhoWiy6azsIa8Uydy4oEo7WQ2KbnJT15jZpgQ3eAaG4r4pRAnCfS0GYTKE/I6IOZIYoOuIbr2JK63LTMdWx1ncijxQeZxmCZMOKVCuK+0CXMxkLRSYTXnrmhIOb0Rcc8gmfRRdkfDLOe91ohFUXafk8bqJ04dOJo9ej1WWtq+d24pEIUsnE757+ed92/uOsWIwaXPG3UK3kUO18uHjhNDlUdarfHaSd1eYWNU8iL2zC6PeBSdXxdEeJIKIiXqwC7xwCGFkqWUBwYRszkAsBWexj2GsvCIKWco/h6pM68NtD9+RVMYnDVguqzHqzvpWU7b6bnHyBlQV2iFoquUwyY2eMZP8XPVMzVn8ddohiU9LAad8Dh0iBFMsiyM7K17SRm14Btf5z0+jLI1xhf42i7S8yRBkObwiuA7SqC9NjY9evrerdyJd3YgBYBJLBmKs17RW/PT8hIF6N6Y82uKk3Q5EUgApXg1G1zLcZMXeNtz5DsCLfnadaMFGyZOFNu0JAM9omEtY7rvQ+ymc+BNkIy5v8Q==
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:DM6PR21MB1514.namprd21.prod.outlook.com; PTR:; CAT:NONE;
  SFS:(13230001)(4636009)(366004)(451199009)(83380400001)(186003)(26005)(4326008)(8676002)(2616005)(8936002)(66946007)(66476007)(66556008)(107886003)(38100700002)(38350700002)(316002)(36756003)(10290500003)(6486002)(86362001)(5660300002)(921005)(6512007)(82960400001)(7416002)(82950400001)(6506007)(2906002)(508600001)(6666004)(52116002);
  DIR:OUT; SFP:1102; 
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tZ6Lpu8LrHgb1aJq3omqdCAXMAps5ZKWhCPLtY1Ko2t1fsPWniSEVg73m5Fa?=
- =?us-ascii?Q?dt7j1x5OE4aHYns8PagRQR17htU9KBns8L0gZn/jHp66dy43fl25UYYwIOss?=
- =?us-ascii?Q?uUOQqwY/oWVyh2sIQvDr9rAWpw8YNGjk5Euk7a7/K+/G5A0qCf0Xmh255OMa?=
- =?us-ascii?Q?lV3bachgGKJkicYdcQZPMe9/E7eHQXvcpmYS5L3Cczq3Ix/UQ8JqTLN/ZmM4?=
- =?us-ascii?Q?Wr6x6HkoU8Z43xbDZfhf/3EQIVbG+7+qzs0CxD7kZtEl7UvfU4uQ5NFm89s6?=
- =?us-ascii?Q?5SVPO3I5McJMCBct6wlsXUdHmGixNF6DW33GPY+eVMWcaHgaH7YPPDFoEcWr?=
- =?us-ascii?Q?NZhCBhyJsBNnRZzX6dFuc0+s+ZANcbZ2trsa/y+fp99YgAZYmA4+7yaQgvMP?=
- =?us-ascii?Q?TDVr5ViherFy2ZO6+2b+NN2SyyP3WEsll2o43M0iswZSokZPpObUSdp25Vtm?=
- =?us-ascii?Q?yR1nPfOG8JprGN7HDkB6pef/2bx9sQbSjWznZNNXH5auLYXy/kiJW8CRnA4Z?=
- =?us-ascii?Q?gOXdWYc1pK6NDmkzMx9VnxhOcRHFB8AX15Z2vFjpIlIisGSK8zrEY0vHUTZc?=
- =?us-ascii?Q?gXJKTKoq1tmaDhEWBMPkQbVxRNIZP1M7XfNChTK26cErHFP76D49wXCL6yv2?=
- =?us-ascii?Q?LrvOhMsPabyADcRhJCB5YKF0A26OwzEEtLDycNkfKVQKNpQF6Z22G2HkBtLO?=
- =?us-ascii?Q?KA7QajJl/ocP+tBRXDrDHLYrr051TXYGfVQo2GyVMFQVHcMJqnWU/GUdwfmr?=
- =?us-ascii?Q?DfsNHloP5HD50sEMno8Wo/lV/A7yL37m86ODDcd2aXj91LP/ajVQtM0p5VLp?=
- =?us-ascii?Q?HZOT/hM4ybtTIfc9rRALNY/KqzxskO6xuKrK81Ah0u+GAEuhMvsIyjXZbgN9?=
- =?us-ascii?Q?QKepvWqhApC1P4/cBvNxrhQ5Rimi6WEaSyZGO9L1j+pqc5b0hyQ1b8DajJ1j?=
- =?us-ascii?Q?FaJ0DFPLjLRqPEUWfmtUKK6E1Pe9R4bUtkwgIr8Ynt1otmPfbnIcEnVgdQtJ?=
- =?us-ascii?Q?cKmIzdkHiOx6GE5zm2OgX9g7GEos/GX1srd7ri8UOakUj2UGtaFdNnPNggKT?=
- =?us-ascii?Q?uIjGo5MlL1HXWyZBmh+owCGvZ4HvmKfycAwIS3d3OGfNBGH5rEkQyqHSlutg?=
- =?us-ascii?Q?d7nLaAjaVg0kU/YFbaaKnD52arT1eJTXtcdhh0BO53Ko/C9f1Rf4nAdx6I46?=
- =?us-ascii?Q?rFAFgqqhGcxx50U9YARYtZK9kt7u7CezRJw0cUFG11o5bUaD8rwHFKres+9H?=
- =?us-ascii?Q?c6/M1+hBDudaKB06WkCGMpz1xlH/hZbjCjhQjDnfR2OTmkZ7+zPGdIr2veKF?=
- =?us-ascii?Q?Air6iwr6kjWHpAO8JwuXO4+IXv4PG0mMBMZWkjFKLe/nV7WC3RfrYvTbFty3?=
- =?us-ascii?Q?GTHVj2b7FlChfzSTSHGdrzsNpyCiVdp88lDiJXAGkcJfTrarTPe83NwdVM8m?=
- =?us-ascii?Q?3vyFH10M5S9pl1COoz5HDDbHLnfhuW5MRUdMvFy0TdqHxT5sE7kYCg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?U6UHLyLM3WVJ9lT05bFYn97qJVgRV+uVmD0YFVhcnZclkCpCAwfafjmem24f?=
+ =?us-ascii?Q?oppDtruXtI7g7qAXIfxyYRmV9/tAJwIrH05WyJ+a7mhKyjtVAYTMQrSjvkRS?=
+ =?us-ascii?Q?uWMkfjMp5knlWpPDfK5adJ2vFe8gSt7pRVxzZqjHVuscwhb8DqgUm7FM7Tp+?=
+ =?us-ascii?Q?NiV6jAsCIcm0OdZBFSP9+76Tp49izfX/um/k/tfMCgV+zhnGlJp8fTpmvCcG?=
+ =?us-ascii?Q?f0DBahJHF41lQpuGxwwqW/qaxswhKY0YDFbPUzPNvqPB0NnNv3gqRF1yDbQK?=
+ =?us-ascii?Q?mrzei+Kze4o+3phBcKbaXVZlPZHqMf8XzEKLradwEVEfFNIYaLepzlsmIULN?=
+ =?us-ascii?Q?ZAUqS17GEGDkHlQUt8AAZ8XH3etr0mDAIvPzQcwWuvoEoHrfZIe5a2J23eWA?=
+ =?us-ascii?Q?7d3C/zGY6bTm/z+pKcucByZtLjwVltnRpDsO1Rjz29IsslvK7nx3JyR6hBz7?=
+ =?us-ascii?Q?MbhrH2dYOhfrmruffIIw1oHwCoUiHi0haxI3hhOV8vjSLPHsoL0gF+uMPmae?=
+ =?us-ascii?Q?4aeh50u/DPr8A1eQh/qrr5scSUmzHMyGrkyHRey/rReQLcK79d6O/8Q5dtMs?=
+ =?us-ascii?Q?rOz4rdWrr7R0ziPABgwKizeBXouQPIjfJT/3uAv3QlPxRgo3eraOSyT43vCz?=
+ =?us-ascii?Q?YjGQtP0dwRzAluX7cDtPr/vfyJ1JQnuImQ0robR/D3IcSg61fp7zH09gzdbl?=
+ =?us-ascii?Q?H+et3DbrNfizkJQe0u4EtDiRfgaWhxMlZgOtZvQ33NXtXotgkXMUx6ruCREL?=
+ =?us-ascii?Q?WOZWyyX5w7Msel5yNmZqHLbb7JHa4miGbxNahmCCImT/h8aZ6EU9dHN16ibC?=
+ =?us-ascii?Q?NY/TeuSuf0Q5WX0xE9y5R8/e3Y1UVZLVJl5Yhw645r38A89WrYkKMnsFg0AJ?=
+ =?us-ascii?Q?9lyJAQ/GgIk2XBZ/9KF1o4bbcZRD3eLBGbD35KhAMQ8TPoUiUUJ1brdOmH5s?=
+ =?us-ascii?Q?7Orh+gB/ntomOVjE5YOU//9hMwnEzeUCw5oQc3rUj1P4FbCucLXAZIoFCKxp?=
+ =?us-ascii?Q?FBggvyA01jSzpJa/ASmTvPLwTiyaC+Q+TxmTJoBOQWApzAOaYIVnuqcsQsUY?=
+ =?us-ascii?Q?rbumHu3XUVhdB6NpxzGLdkHgzEyCI0AssDD+qO7k5bZJsgLsilRvrMcisOCL?=
+ =?us-ascii?Q?Z1qHIRcSNpx5qEtsx0BAmTS4eBjpreqqWCD2lIvWsLcUS+0gYtzMfRnY4l2J?=
+ =?us-ascii?Q?wurlPJ39Rk2wNpE/PwNvHrm5fKgUGfIE0yfNILJ4trIAEUzvElWC9nTYwWRb?=
+ =?us-ascii?Q?o4Ds5MHo9BF40mMKLVj/ckUVsOExbIJRFpIbr5HvmLAmYs+bJzgf3Okp1NTC?=
+ =?us-ascii?Q?tIWSmizfPZY6pS2gRF6sheZNqxjuGM0K9wnunGzvUeAzylC7qkq1fRCghzYx?=
+ =?us-ascii?Q?t25zW1D+eQ4gdZPEbbWZ9NTCiaKmOGdZ6+zDJPkFTVnjhlJTnRMTlDVfmd15?=
+ =?us-ascii?Q?jSECS+ddOQK44ine1G4sOk6WPHvgTwY9/OT/d5UWRCATV/4vqGnw/w=3D=3D?=
 X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73609d37-2d96-4d66-c85c-08da08310cf1
+X-MS-Exchange-CrossTenant-Network-Message-Id: eb52f53b-986b-4294-bdf5-08da08310f12
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR21MB1514.namprd21.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2022 16:13:19.1337 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2022 16:13:22.6963 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: snRMojjKXjofr4oHeNQb1QzwyF8HWDkMxFGF6POyVlxjLxaV+A215yEYWNz/A/rDfbgDwAytrDrqIrjyO5dEiw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: PfRB4pibcMHQ2eo2nV+doiyNol2bg7KWwTLGKiLlXqNt4xPDdBcmf83alNOrlHDI5LjdB+CK4ayY0xgWF38Gcg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR2101MB0995
 Cc: mikelley@microsoft.com
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -150,40 +152,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hyper-V VMs have VMbus synthetic devices and PCI pass-thru devices that are added
-dynamically via the VMbus protocol and are not represented in the ACPI DSDT. Only
-the top level VMbus node exists in the DSDT. As such, on ARM64 these devices don't
-pick up coherence information and default to not hardware coherent.  This results
-in extra software coherence management overhead since the synthetic devices are
-always hardware coherent. PCI pass-thru devices are also hardware coherent in all
-current usage scenarios.
+VMbus synthetic devices are not represented in the ACPI DSDT -- only
+the top level VMbus device is represented. As a result, on ARM64
+coherence information in the _CCA method is not specified for
+synthetic devices, so they default to not hardware coherent.
+Drivers for some of these synthetic devices have been recently
+updated to use the standard DMA APIs, and they are incurring extra
+overhead of unneeded software coherence management.
 
-Fix this by propagating coherence information from the top level VMbus node in
-the DSDT to all VMbus synthetic devices and PCI pass-thru devices. While smaller
-granularity of control would be better, basing on the VMbus node in the DSDT
-gives as escape path if a future scenario arises with devices that are not
-hardware coherent.
+Fix this by propagating coherence information from the VMbus node
+in ACPI to the individual synthetic devices. There's no effect on
+x86/x64 where devices are always hardware coherent.
 
-The first two patches are prep to allow manipulating device coherence from a
-module (since the VMbus driver can be built as a module) and from architecture
-independent code without having a bunch of #ifdef's.
+Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+---
+ drivers/hv/vmbus_drv.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-The third patch propagates the VMbus node coherence to VMbus synthetic devices.
-
-The fourth patch propagates the coherence to PCI pass-thru devices.
-
-Michael Kelley (4):
-  ACPI: scan: Export acpi_get_dma_attr()
-  dma-mapping: Add wrapper function to set dma_coherent
-  Drivers: hv: vmbus: Propagate VMbus coherence to each VMbus device
-  PCI: hv: Propagate coherence from VMbus device to PCI device
-
- drivers/acpi/scan.c                 |  1 +
- drivers/hv/vmbus_drv.c              | 15 +++++++++++++++
- drivers/pci/controller/pci-hyperv.c | 17 +++++++++++++----
- include/linux/dma-map-ops.h         |  9 +++++++++
- 4 files changed, 38 insertions(+), 4 deletions(-)
-
+diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
+index 12a2b37..c0e993ad 100644
+--- a/drivers/hv/vmbus_drv.c
++++ b/drivers/hv/vmbus_drv.c
+@@ -904,6 +904,21 @@ static int vmbus_probe(struct device *child_device)
+ 			drv_to_hv_drv(child_device->driver);
+ 	struct hv_device *dev = device_to_hv_device(child_device);
+ 	const struct hv_vmbus_device_id *dev_id;
++	enum dev_dma_attr coherent;
++
++	/*
++	 * On ARM64, propagate the DMA coherence setting from the top level
++	 * VMbus ACPI device to the child VMbus device being added here.
++	 * Older Hyper-V ARM64 versions don't set the _CCA method on the
++	 * top level VMbus ACPI device as they should.  Treat these cases
++	 * as DMA coherent since that's the assumption made by Hyper-V.
++	 *
++	 * On x86/x64 these calls assume coherence and have no effect.
++	 */
++	coherent = acpi_get_dma_attr(hv_acpi_dev);
++	if (coherent == DEV_DMA_NOT_SUPPORTED)
++		coherent = DEV_DMA_COHERENT;
++	acpi_dma_configure(child_device, coherent);
+ 
+ 	dev_id = hv_vmbus_get_id(drv, dev);
+ 	if (drv->probe) {
 -- 
 1.8.3.1
 
