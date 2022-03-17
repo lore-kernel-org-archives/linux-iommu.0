@@ -1,128 +1,162 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6CBB5C433F5
-	for <iommu@archiver.kernel.org>; Thu, 17 Mar 2022 18:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C22F1C433EF
+	for <iommu@archiver.kernel.org>; Thu, 17 Mar 2022 18:56:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 0CB6D40497;
-	Thu, 17 Mar 2022 18:52:25 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 54C6C6074C;
+	Thu, 17 Mar 2022 18:56:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0_pqgIcGqFfE; Thu, 17 Mar 2022 18:52:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 8E3AE402A8;
-	Thu, 17 Mar 2022 18:52:23 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 4orSKHwJ6-mf; Thu, 17 Mar 2022 18:56:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 39F7F60A7E;
+	Thu, 17 Mar 2022 18:56:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 51600C0012;
-	Thu, 17 Mar 2022 18:52:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 01A5BC0012;
+	Thu, 17 Mar 2022 18:56:52 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7B321C000B
- for <iommu@lists.linux-foundation.org>; Thu, 17 Mar 2022 18:52:21 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5EA41C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Mar 2022 18:56:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 63F6A418BF
- for <iommu@lists.linux-foundation.org>; Thu, 17 Mar 2022 18:52:21 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 55022418BF
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Mar 2022 18:56:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ibm.com
+ dkim=pass (1024-bit key) header.d=microsoft.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2wOLsgBcQgzp for <iommu@lists.linux-foundation.org>;
- Thu, 17 Mar 2022 18:52:20 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
- [148.163.156.1])
- by smtp4.osuosl.org (Postfix) with ESMTPS id B6081416B7
- for <iommu@lists.linux-foundation.org>; Thu, 17 Mar 2022 18:52:20 +0000 (UTC)
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
- by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22HGA5i9001293; 
- Thu, 17 Mar 2022 18:52:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
- h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=AQwtyhv7u4jjFpfrN5RAEteV2hqGptEPoejBb+YABXE=;
- b=rgUPGTIEIbdE4SFQusnyo0PLGn5H5QdjWIq+wdTNqYnVxKxoS/Fyw1wz4DKaUrCgHPbV
- 4NJQlezP1RokvPtYLAT1n7SDet4P1x5+UQ9fcN0XjUbEeARReVtWNLojBgA1EJoUo8ML
- PL1yqaC+FVuc9hnJ6r4KAUuDdPyNpzbTMkyK4doFIjnyDJ2eOE25SkMcQpjfr4C4IPuq
- gEQyELT1susg4Cw76LfqRVKni9RUeFJAGhM2Ohla0CIXuLLfm6cjhShufl34cYKKqhVp
- p9fjvf4ICvxH1Znuu4JUh0cXiIpxwa5ouw2qA+IjNgtlJkI1Y7dxjLXlWbBMq+Mhuyy2 eA== 
-Received: from pps.reinject (localhost [127.0.0.1])
- by mx0a-001b2d01.pphosted.com with ESMTP id 3ev1vq3peq-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Thu, 17 Mar 2022 18:52:15 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
- by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22HIHWe4020959;
- Thu, 17 Mar 2022 18:52:15 GMT
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com
- [169.47.144.26])
- by mx0a-001b2d01.pphosted.com with ESMTP id 3ev1vq3peb-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Thu, 17 Mar 2022 18:52:15 +0000
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
- by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22HIltAc002410;
- Thu, 17 Mar 2022 18:52:13 GMT
-Received: from b03cxnp08028.gho.boulder.ibm.com
- (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
- by ppma04wdc.us.ibm.com with ESMTP id 3erk5a59u5-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Thu, 17 Mar 2022 18:52:13 +0000
-Received: from b03ledav003.gho.boulder.ibm.com
- (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
- by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
- 22HIqCAc24903946
- (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Thu, 17 Mar 2022 18:52:12 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id DFFAC6A054;
- Thu, 17 Mar 2022 18:52:11 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 9285C6A05D;
- Thu, 17 Mar 2022 18:52:09 +0000 (GMT)
-Received: from [9.211.32.184] (unknown [9.211.32.184])
- by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
- Thu, 17 Mar 2022 18:52:09 +0000 (GMT)
-Message-ID: <494fe1b2-cf44-23a6-a494-52a44041ad79@linux.ibm.com>
-Date: Thu, 17 Mar 2022 14:51:34 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v4 15/32] vfio: introduce KVM-owned IOMMU type
+ with ESMTP id xcTDHDAy12rm for <iommu@lists.linux-foundation.org>;
+ Thu, 17 Mar 2022 18:56:50 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from na01-obe.outbound.protection.outlook.com
+ (mail-eus2azlp170110002.outbound.protection.outlook.com
+ [IPv6:2a01:111:f403:c110::2])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 91B12418B8
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Mar 2022 18:56:50 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WMiOIKv4VIDtrn1ttY0I1O0a6mh+7QE5RyZDmh1noUed4NprOULGJozuGK8e4571UFBWWOFd58ro8b/FIs1/peJnuTjXnIEtU32B4cOETE7qoktj5zjARdhhwaK7UuYZpkj+JljrMPEbzPyWp3pyXLI/2jRSj97dBX2m3JU9EN9GLqNbqntUyxF9JGI0p8dH2E3PH47Gb4nB6PZGtCIIhuY9bQ/rPBE49VtKf0s9FSIb9HKn1K5xL4rNIbw++Kwq2m0vpm2UzEgQTb8mRUG6NKK6VjeWh2fEYp+YsJiI4nVHpjVmi/Y0nholnPvN//TR9p92TFMFVxc+jcBVnruMXQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ffu29KJY9fIgvSoo/bNxnM1qDvx0qGr2msJgxbK/BXk=;
+ b=CVsZmhvrRA9Enq/E8GtyT1/Cjtl/TEs0jkHV2/ZgopmSZnvqGNrOAEZBgGdEENKflkq7u2RZUlU40JwJjmvjsGDmbHdKfVjpA0L5WmXgoXK0LZBnoRSFlOwHGr99xoAYQL5/LyGC5AopXoklE2M+JW3Z/5NpZDrMWO9JLdEM4scISq8vMiUxvDXxk1t1O6o28yZS6h9fUVoChQY9NHX7OkYUFF3C2/LbVwH9sBLnesZK1zgz1jrQHGnt/SpjCIihS8yPp69juahS14CAdJjmaT5VvXoM8t9GUyHyxwXCri8ZJbwp5cmsk0fQWL2x25lF4o+3d7rVfjyWm7vu3WsJ9A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ffu29KJY9fIgvSoo/bNxnM1qDvx0qGr2msJgxbK/BXk=;
+ b=ep9Ip8SpGvBbkKfpIrgXo/E3ME6WfOi+nFIcsaea1pF0TOlfzP/MK6wBqSBCeDbsZHt1r1CESocl57yRmNl142Jouqi+uF4qXQmid9qxZG20vm+2J0RZL4cL5lKTH5rgnOYI26W40tmJk7AcYwVRFYL0rroyYKDRTP/g2E1+Y8M=
+Received: from PH0PR21MB3025.namprd21.prod.outlook.com (2603:10b6:510:d2::21)
+ by DM6PR21MB1436.namprd21.prod.outlook.com (2603:10b6:5:25c::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.7; Thu, 17 Mar
+ 2022 18:56:46 +0000
+Received: from PH0PR21MB3025.namprd21.prod.outlook.com
+ ([fe80::44a2:4767:f55:7f2b]) by PH0PR21MB3025.namprd21.prod.outlook.com
+ ([fe80::44a2:4767:f55:7f2b%5]) with mapi id 15.20.5081.013; Thu, 17 Mar 2022
+ 18:56:46 +0000
+To: Robin Murphy <robin.murphy@arm.com>, Stephen Hemminger
+ <sthemmin@microsoft.com>, KY Srinivasan <kys@microsoft.com>, Haiyang Zhang
+ <haiyangz@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan
+ Cui <decui@microsoft.com>, "rafael@kernel.org" <rafael@kernel.org>,
+ "lenb@kernel.org" <lenb@kernel.org>, "lorenzo.pieralisi@arm.com"
+ <lorenzo.pieralisi@arm.com>, "robh@kernel.org" <robh@kernel.org>,
+ "kw@linux.com" <kw@linux.com>, "bhelgaas@google.com" <bhelgaas@google.com>,
+ "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
+ <m.szyprowski@samsung.com>, "linux-acpi@vger.kernel.org"
+ <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
+ <linux-hyperv@vger.kernel.org>, "linux-pci@vger.kernel.org"
+ <linux-pci@vger.kernel.org>, "iommu@lists.linux-foundation.org"
+ <iommu@lists.linux-foundation.org>
+Subject: RE: [PATCH 1/4 RESEND] ACPI: scan: Export acpi_get_dma_attr()
+Thread-Topic: [PATCH 1/4 RESEND] ACPI: scan: Export acpi_get_dma_attr()
+Thread-Index: AQHYOhumuW5iP23iyEiwCHfZIloepqzDxKCAgAAoc0A=
+Date: Thu, 17 Mar 2022 18:56:46 +0000
+Message-ID: <PH0PR21MB3025F5D00F7261283396FEDDD7129@PH0PR21MB3025.namprd21.prod.outlook.com>
+References: <1647534311-2349-1-git-send-email-mikelley@microsoft.com>
+ <1647534311-2349-2-git-send-email-mikelley@microsoft.com>
+ <59aa0151-a51d-0def-6d5d-4788c1fbc21c@arm.com>
+In-Reply-To: <59aa0151-a51d-0def-6d5d-4788c1fbc21c@arm.com>
+Accept-Language: en-US
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20220314194451.58266-1-mjrosato@linux.ibm.com>
- <20220314194451.58266-16-mjrosato@linux.ibm.com>
- <20220314213808.GI11336@nvidia.com>
- <decc5320-eb3e-af25-fd2b-77fabe56a897@linux.ibm.com>
- <20220315143858.GY11336@nvidia.com>
- <5a1c64ac-df10-fb66-ad6d-39adf786f32b@linux.ibm.com>
- <20220315172555.GJ11336@nvidia.com>
-From: Matthew Rosato <mjrosato@linux.ibm.com>
-In-Reply-To: <20220315172555.GJ11336@nvidia.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: kuQpxA9M7txDOpig1s9KywXmLwC1zk1i
-X-Proofpoint-ORIG-GUID: mz6xbnGtBK1Vtsvhdc1q5_yO2bxU49u5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-17_07,2022-03-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 mlxscore=0
- suspectscore=0 spamscore=0 clxscore=1015 impostorscore=0 adultscore=0
- priorityscore=1501 bulkscore=0 malwarescore=0 mlxlogscore=999 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203170104
-Cc: kvm@vger.kernel.org, david@redhat.com, thuth@redhat.com,
- linux-kernel@vger.kernel.org, vneethv@linux.ibm.com, agordeev@linux.ibm.com,
- imbrenda@linux.ibm.com, will@kernel.org, linux-s390@vger.kernel.org,
- frankja@linux.ibm.com, corbet@lwn.net, linux-doc@vger.kernel.org,
- pasic@linux.ibm.com, gerald.schaefer@linux.ibm.com, borntraeger@linux.ibm.com,
- farman@linux.ibm.com, gor@linux.ibm.com, schnelle@linux.ibm.com,
- hca@linux.ibm.com, alex.williamson@redhat.com, freude@linux.ibm.com,
- pmorel@linux.ibm.com, cohuck@redhat.com, oberpar@linux.ibm.com,
- iommu@lists.linux-foundation.org, svens@linux.ibm.com, pbonzini@redhat.com
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=9184c307-f85f-4f33-af74-d2cc36c5f672;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-03-17T18:56:01Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e147cef1-0e22-480c-f840-08da0847e2e0
+x-ms-traffictypediagnostic: DM6PR21MB1436:EE_
+x-ms-exchange-atpmessageproperties: SA|SL
+x-microsoft-antispam-prvs: <DM6PR21MB14360A6473FAB920E8090CFAD7129@DM6PR21MB1436.namprd21.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: EN3rNWU1zSjrd1NMniViIVXO/Qi80aaKN1NIWL93HPDBXKsEjK425Kr1wfJPKdFtul/g/JZ2UAfl7iGz/TBwMFCKVjAI37lylKpl+/rapV4FsjgJfrzEuiSaI+lNAU/C7FaofAc+5dfWU8lgcc27ePCQ2V7ypLxQeDb+HbA4LpfwDR8OYFFCa7VAb2eSe2k60UuDJShH81hHWszmXwddHHuVjQkin3R8+REfnp2pIOJzKBHlginjPFc9OG0Lr4Ly1FdU9+iUF3opLyxAryNsTEyCQbzDStnIIxRPHGHg79ZVNdEZ2FPvBppcyLpJP4Wy24bIdC1hXBc60+3CAEM6VoPiWvkXCYdGSIUrCe7t1Bo7RcLXTVl9x4KufyKKxby96PyDr5zeWaCF+UN7pKwOFKfYoOvqCMHZjJrJPxM3fRis6tKZQ6KAo3YMZgCn6bBuS4UNde9ziP5fcrtzVIPMAdA5SZHiCclW19ihCvNPDzD69dZ7tJafLvrRI6KdCIZGqcUfCw1jSwb0SmHJgh4s+T5Goip9+nx5bWN2XhREY/OB4FLS9FkA+cn/gDNKAdyZVp2FSHYVBiDW3gBWSx50f1DJ5SGMB/GNYl1pW41VeUg5OX0WP+sCwqx65/x7e5nNwLvqKFfq9uaIYoqS1k11TCsbbPv8q7lAWEUcKACeP+cRnJ2yMDUaWhDG69Eywc8TxEBZGHYwtTw8wHwJgxoTk5Z+cmlUjot/IednaeBv07QGNehtHQ8BTtWfY9FiECLxgMlefrj0LDo0xWk3O0T8yg==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:PH0PR21MB3025.namprd21.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(451199009)(52536014)(508600001)(10290500003)(7416002)(5660300002)(8936002)(53546011)(7696005)(38070700005)(6506007)(55016003)(64756008)(66446008)(66476007)(66556008)(8676002)(66946007)(26005)(76116006)(316002)(186003)(71200400001)(8990500004)(86362001)(2906002)(33656002)(110136005)(82960400001)(82950400001)(9686003)(4744005)(921005)(122000001)(38100700002);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dzlvcVNqVnQ0UDN4Vm5DMjVlYjQwb0xlaW40QkNhdXJMRFVEaFcvNFJWWVd5?=
+ =?utf-8?B?Rmw1RnFha1RVZ2wrV1FWOU0xQWx5ZGFaNlRqREs0M0J0eUZBWTJWbVRXZGxj?=
+ =?utf-8?B?Uk9iUkNMcUpBU2R3VnNrKzZ6Z3U1bzdaWGlKZ2lRNEhhT29lelFwTUZWQ0lD?=
+ =?utf-8?B?dWpIVDNpSmtoMlhmeFcwekcwK2Rza3VKNWZWRVVZdWxndWZzRG9pQ1dTZWRx?=
+ =?utf-8?B?d3Z0b3NZMzltQllZMjlsV3d2Q1JYdEE5TjlWWUtlZWVzcytOUTE5QktONFUz?=
+ =?utf-8?B?eFF4T1ZwT1NqRmZDS0RIUEp1TVpySHphNUEvV0JEVXRKSi9heCs5YWNleUNE?=
+ =?utf-8?B?clNFR1RrQ3FnYjEwZkovM0JrQXRVQ0U1ZnFZeHNJN2IreXhQZ3kxVnlRNGZQ?=
+ =?utf-8?B?aHdZbTVMdklPd1owdDJObWRxYy9jTHBoNkxka1FWaWt6VWgxMEhTSzlmYWk3?=
+ =?utf-8?B?Q2g2eHIrSzIyRGZYQU1BOEREWHFBWWRveWNoWEk4ZVZhSWIyUnhldkFvRXVZ?=
+ =?utf-8?B?VENNWit1ZkxpUk9Ja09Lb3FseHp2eVVUV2NBMldmT3ExdkY2dnkzWkxqUUdR?=
+ =?utf-8?B?eThGRlFINVRvRnlYRGdkODVpQnRQZDlUdXowZ20vY2pOMy9nWjcyT1JLL3hX?=
+ =?utf-8?B?NlZHczVoeTRUaVF4ZVM5T2YzekVRMFgrKzVjTEFWWXZDZGoyOTRZTlROMUVR?=
+ =?utf-8?B?WDJHMTc4VVBONGoyTFI2WGc2eWdKM2NYZnJRYWcwWXJEVSs5ZGtqV3MvSm8w?=
+ =?utf-8?B?YW10VDV2NmdwV3lEVWlDa0hqNlM2d1dhQTJLNkFCOU1BWkM3cThXN2l1ZTZW?=
+ =?utf-8?B?alQ4VFhtc1QzVTN6ZUowZjRncnBaY1ZSNmZNNFVzRjJQUjh5L0FwcUY4cjdY?=
+ =?utf-8?B?cSs5Yk9HT2tCdmFIblA2SE1iZTlBLzQ5VEEvdEliaWw1UHNhNzVpSU1OeENm?=
+ =?utf-8?B?TUxibWJyTjdGaWxRalh0SG1KRnpVUmxobklKbEtRWERyQzUycThrWlRIWXZ1?=
+ =?utf-8?B?UjdDNmFmZlpSNXUzRDJpLzRDeDIweWxqYUtkTi9WNWdNSEk0M1V6ZkNhMjZz?=
+ =?utf-8?B?a3ViM1hvcm5aWmZJNlhtc0NaZDFyQkhmVkNld3oxZHQ2RzVZazdUUGYwWEVO?=
+ =?utf-8?B?QTlBS0JaWHNFY3krZUJOcXExeE1XTDRRYTdOeEQ1Y2JNQnE0MzZvWG1uSnZ5?=
+ =?utf-8?B?cFcyUjF6Uk1aQjY3TVRlaC81T2czRzJvdTFIOFF5YnVYOVZSVEhaSDJlM3ZX?=
+ =?utf-8?B?OTUrYjZPd1ZoZklGcFFTRWNvQUJkK2g2QlJKaGJrTlJrb0pxSDF5akJPbW5Y?=
+ =?utf-8?B?UWtab25ZQ2lNUVZGYWNiOElpQ3c1ZU1DbWt0aW9PSjd5akQ2WENzNE4wSDFW?=
+ =?utf-8?B?RzliQ3FzTVBueEJ0M3FoUzlmSE9YY2dqR3IvclpsT00xNlh5STZkOG9zdU9h?=
+ =?utf-8?B?dFVaK1hNYitLeno0SXd2eFBTbFIwN1FEOXNVOFI3UXBwOWlrSnM1b1BpNnJO?=
+ =?utf-8?B?dk9XK3NXVmU2ZHg4b25sZzBhME1NNVRuYncyMlVUL1EzTFQzZUVmakV5MHBU?=
+ =?utf-8?B?UmZKQWpJV3NDN2pUMnU3MGZQTW5lNWJhSjhLalRUM3MweDJ2M2MvWnpBNmJY?=
+ =?utf-8?B?TXIvTEJaTjBGYlF6Qkw0S0F0K3pNcHZhb2N2YXg1c2gxNUViL2JCUzVvUVJO?=
+ =?utf-8?B?TEhYSjdWS3hwbTB4bVkxc1YxUkRyTHNHdGU4dzluQk8xTFRlZmFtSDBVTERZ?=
+ =?utf-8?B?Y1gvOG14Tmxqb1Z4SVg1NENmcWNoUDU3RnNGUklHMTQ2cVNnYWpOaFpmdGVG?=
+ =?utf-8?B?K0RMajlDT3NDTXRDZFdCc3U2RXdxdTgzU21WMCthamo2VUprU1AwK0RtcW5E?=
+ =?utf-8?B?SXZ5VjlONG00eXZxMGJUTDF0WEpzbmRyQ1Z6b01FZkJFc1ZkT1lHamZkUjV4?=
+ =?utf-8?B?WnBEd1NnMWdZV3B2ODJ6QXhzbkF0WkNzT3J2a2xMOW9QRFg1OEZ2RjFGRkFp?=
+ =?utf-8?B?SE5TMHJjUyt3PT0=?=
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR21MB3025.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e147cef1-0e22-480c-f840-08da0847e2e0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Mar 2022 18:56:46.6441 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yjRqwSkjRmTQ0qEA/fJmBx2O4kuwUmUzPrKNPzeD1pgj47pzbZtKwWpM9Xv9742dOFWz85WWjM9Cr3kDUl+SaMGQpK17rL8OAKFx2wbxyN8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1436
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -135,53 +169,27 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: "Michael Kelley \(LINUX\) via iommu" <iommu@lists.linux-foundation.org>
+Reply-To: "Michael Kelley \(LINUX\)" <mikelley@microsoft.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 3/15/22 1:25 PM, Jason Gunthorpe wrote:
-> On Tue, Mar 15, 2022 at 12:29:02PM -0400, Matthew Rosato wrote:
->> On 3/15/22 10:38 AM, Jason Gunthorpe wrote:
->>> On Tue, Mar 15, 2022 at 09:49:01AM -0400, Matthew Rosato wrote:
->>>
->>>> The rationale for splitting steps 1 and 2 are that VFIO_SET_IOMMU doesn't
->>>> have a mechanism for specifying more than the type as an arg, no?  Otherwise
->>>> yes, you could specify a kvm fd at this point and it would have some other
->>>> advantages (e.g. skip notifier).  But we still can't use the IOMMU for
->>>> mapping until step 3.
->>>
->>> Stuff like this is why I'd be much happier if this could join our
->>> iommfd project so we can have clean modeling of the multiple iommu_domains.
->>>
->>
->> I'd certainly be willing to collaborate so feel free to loop me in on the
->> discussions;
+From: Robin Murphy <robin.murphy@arm.com> Sent: Thursday, March 17, 2022 9:31 AM
 > 
-> Sure, I have you on my list. I've been waiting for Eric to get a bit
-> further along on his ARM work so you have something appropriate to
-> look at.
+> On 2022-03-17 16:25, Michael Kelley wrote:
+> > Export acpi_get_dma_attr() so that it can be used by the Hyper-V
+> > VMbus driver, which may be built as a module. The related function
+> > acpi_dma_configure_id() is already exported.
 > 
-> In the mean time you can certainly work out the driver details as
-> you've been doing here and hacking through VFIO. The iommu_domain
-> logic is the big work item in this series, not the integration with
-> the uAPI.
+> No. Use device_get_dma_attr() like everyone else, please.
 >
 
-A subset of this series (enabling some s390x firmware-assist facilities) 
-is not tied to the iommu and would still provide value while continuing 
-to use vfio_iommu_type1 for all mapping -- so I think I'll look into a 
-next version that shrinks down to that subset (+ re-visit the setup API).
+Got it.  That works.
 
-Separate from that, I will continue looking at implementing the nested 
-iommu_domain logic for s390, and continue to hack through VFIO for now. 
-I'll use an RFC series when I have something more to look at, likely 
-starting with the fully-pinned guest as you suggest; ultimately I'm 
-interested in both scenarios (pinned kvm guest & dynamic pinning during 
-shadow)
+Michael
 
-Thanks,
-Matt
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
