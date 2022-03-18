@@ -4,51 +4,50 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A2E63C433EF
-	for <iommu@archiver.kernel.org>; Fri, 18 Mar 2022 14:59:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 336B4C433F5
+	for <iommu@archiver.kernel.org>; Fri, 18 Mar 2022 15:10:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 4C1FD417BF;
-	Fri, 18 Mar 2022 14:59:57 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id D099341879;
+	Fri, 18 Mar 2022 15:10:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RjqV8uC31ttn; Fri, 18 Mar 2022 14:59:56 +0000 (UTC)
+	with ESMTP id UVHYsHu_ihNt; Fri, 18 Mar 2022 15:10:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 38121417AE;
-	Fri, 18 Mar 2022 14:59:56 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id B4FDF4054E;
+	Fri, 18 Mar 2022 15:10:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 05862C001A;
-	Fri, 18 Mar 2022 14:59:56 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CD5F9C000B
- for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 14:59:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 81031C0033;
+	Fri, 18 Mar 2022 15:10:39 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1CCA8C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 15:10:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id B6148417BF
- for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 14:59:53 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id F056840510
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 15:10:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PqAmzgf_yDeH for <iommu@lists.linux-foundation.org>;
- Fri, 18 Mar 2022 14:59:52 +0000 (UTC)
-X-Greylist: delayed 00:08:25 by SQLgrey-1.8.0
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id DQWjjymnMwKQ for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Mar 2022 15:10:36 +0000 (UTC)
+X-Greylist: delayed 00:19:12 by SQLgrey-1.8.0
 Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net
- [83.223.78.240])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 55E36417AE
- for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 14:59:52 +0000 (UTC)
-Received: from h08.hostsharing.net (h08.hostsharing.net
- [IPv6:2a01:37:1000::53df:5f1c:0])
+ [IPv6:2a01:37:3000::53df:4ef0:0])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id BC7CE4049C
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 15:10:36 +0000 (UTC)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (Client CN "*.hostsharing.net",
  Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
- by bmailout2.hostsharing.net (Postfix) with ESMTPS id 385E128042B86;
- Fri, 18 Mar 2022 15:51:21 +0100 (CET)
+ by bmailout2.hostsharing.net (Postfix) with ESMTPS id 2C573280472B6;
+ Fri, 18 Mar 2022 16:10:35 +0100 (CET)
 Received: by h08.hostsharing.net (Postfix, from userid 100393)
- id 2CB204ADE5; Fri, 18 Mar 2022 15:51:21 +0100 (CET)
-Date: Fri, 18 Mar 2022 15:51:21 +0100
+ id 1EFCF5F03C; Fri, 18 Mar 2022 16:10:35 +0100 (CET)
+Date: Fri, 18 Mar 2022 16:10:35 +0100
 From: Lukas Wunner <lukas@wunner.de>
 To: Robin Murphy <robin.murphy@arm.com>
 Subject: Re: [PATCH] thunderbolt: Make iommu_dma_protection more accurate
-Message-ID: <20220318145121.GA11127@wunner.de>
+Message-ID: <20220318151035.GB11127@wunner.de>
 References: <2d01fa50c2650c730b0244929097737918e302e7.1647533152.git.robin.murphy@arm.com>
  <BL1PR12MB515783C0F998169D49D92A55E2129@BL1PR12MB5157.namprd12.prod.outlook.com>
  <BL1PR12MB51573F55B3C2B3922BAAA7F1E2129@BL1PR12MB5157.namprd12.prod.outlook.com>
@@ -56,9 +55,10 @@ References: <2d01fa50c2650c730b0244929097737918e302e7.1647533152.git.robin.murph
  <65207fdf-c4ab-5165-dbda-8ab55b51adb7@arm.com>
  <YjSCWaq7Ej/2iJPp@lahna>
  <78fc0426-c22a-ec62-f92b-0019bea5947e@arm.com>
+ <20220318145121.GA11127@wunner.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <78fc0426-c22a-ec62-f92b-0019bea5947e@arm.com>
+In-Reply-To: <20220318145121.GA11127@wunner.de>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: "michael.jamet@intel.com" <michael.jamet@intel.com>,
  "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
@@ -86,39 +86,28 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Mar 18, 2022 at 02:08:16PM +0000, Robin Murphy wrote:
-> OK, so do we have any realistic options for identifying the correct PCI
-> devices, if USB4 PCIe adapters might be anywhere relative to their
-> associated NHI? Short of maintaining a list of known IDs, the only thought I
-> have left is that if we walk the whole PCI segment looking specifically for
-> hotplug-capable Gen1 ports, any system modern enough to have Thunderbolt is
-> *probably* not going to have any real PCIe Gen1 hotplug slots, so maybe
-> false negatives might be tolerable, but it still feels like a bit of a
-> sketchy heuristic.
+On Fri, Mar 18, 2022 at 03:51:21PM +0100, Lukas Wunner wrote:
+> On Fri, Mar 18, 2022 at 02:08:16PM +0000, Robin Murphy wrote:
+> > OK, so do we have any realistic options for identifying the correct PCI
+> > devices, if USB4 PCIe adapters might be anywhere relative to their
+> > associated NHI? Short of maintaining a list of known IDs, the only thought I
+> > have left is that if we walk the whole PCI segment looking specifically for
+> > hotplug-capable Gen1 ports, any system modern enough to have Thunderbolt is
+> > *probably* not going to have any real PCIe Gen1 hotplug slots, so maybe
+> > false negatives might be tolerable, but it still feels like a bit of a
+> > sketchy heuristic.
+> 
+> The Thunderbolt Device ROM contains the PCI slot number, so you can
+> correlate the Thunderbolt switch ports with PCIe downstream ports
+> and know exactly where PCIe tunnels are terminated.
+[...]
+> I implemented that in 2018, so it won't apply cleanly to current
+> mainline.  But I kept forward-porting it on my private branch and
+> could push that to GitHub if anyone is interested.
 
-The Thunderbolt Device ROM contains the PCI slot number, so you can
-correlate the Thunderbolt switch ports with PCIe downstream ports
-and know exactly where PCIe tunnels are terminated.
+FWIW, here's the most recent forward-port I've done:
 
-Code is here:
-* thunderbolt: Obtain PCI slot number from DROM
-  https://github.com/l1k/linux/commit/756f7148bc10
-* thunderbolt: Move upstream_port to struct tb
-  https://github.com/l1k/linux/commit/58f16e7dd431
-* thunderbolt: Correlate PCI devices with Thunderbolt ports
-  https://github.com/l1k/linux/commit/f53ea40a7487
-
-I implemented that in 2018, so it won't apply cleanly to current
-mainline.  But I kept forward-porting it on my private branch and
-could push that to GitHub if anyone is interested.
-
-I don't know if this will work out-of-the-box for SoC-integrated
-Thunderbolt controllers.  It was developed with the discrete
-controllers in mind, which was the only thing available back then.
-
-Thanks,
-
-Lukas
+https://github.com/l1k/linux/commits/thunderbolt_correlate_5.13
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
