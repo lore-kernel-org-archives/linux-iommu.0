@@ -4,64 +4,80 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 14835C433EF
-	for <iommu@archiver.kernel.org>; Fri, 18 Mar 2022 12:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9DAAFC433EF
+	for <iommu@archiver.kernel.org>; Fri, 18 Mar 2022 12:44:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id CADD2419CB;
-	Fri, 18 Mar 2022 12:01:52 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 318DE410A6;
+	Fri, 18 Mar 2022 12:44:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id u7ibA21E11Lm; Fri, 18 Mar 2022 12:01:51 +0000 (UTC)
+	with ESMTP id d2n1rIKEgn0D; Fri, 18 Mar 2022 12:44:05 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 86A91419BD;
-	Fri, 18 Mar 2022 12:01:51 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id E79AB40469;
+	Fri, 18 Mar 2022 12:44:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 521F8C0033;
-	Fri, 18 Mar 2022 12:01:51 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 061C3C0012
- for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 12:01:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BA8D4C001A;
+	Fri, 18 Mar 2022 12:44:04 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 073CCC000B
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 12:44:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E70DE81B01
- for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 12:01:49 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id DC7FB60B33
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 12:44:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cmVetqcZP1ma for <iommu@lists.linux-foundation.org>;
- Fri, 18 Mar 2022 12:01:49 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id JXS69ht28_qt for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Mar 2022 12:44:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id EDBA381858
- for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 12:01:48 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3269A1424;
- Fri, 18 Mar 2022 05:01:48 -0700 (PDT)
-Received: from [10.57.43.230] (unknown [10.57.43.230])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7177A3F7F5;
- Fri, 18 Mar 2022 05:01:46 -0700 (PDT)
-Message-ID: <65207fdf-c4ab-5165-dbda-8ab55b51adb7@arm.com>
-Date: Fri, 18 Mar 2022 12:01:42 +0000
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 04B8B60759
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 12:44:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1647607441; x=1679143441;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=cBzttHQ/NxcKzzWyus9FZJ24e/6VrYhchpsezLYC81s=;
+ b=iko6GY+MtyK0QzuSpnJ1+jkMDTkGj37Vp8fiU+muQHoHOtnGo4qrorma
+ AKkjDxECtZx6dfAFA5G9xfTK/O6xu0LsSACElWEM37UIW9SgzpVsSpDVz
+ bKUUul2syB5jnVLNMa7YHA8jO9HxTv7cuqMwVcvVk3IOMsQkTEtIkdxZW
+ CFBuMCerOdk24ZZfiMdUHrOIJyNIXWXPJM7snjlXn7uG2pZ76vswqNhMp
+ toyBLCK1govXy6+iYN26ljzAtpw4u6aQCl3LcYIwOov5Y/bVVskUG+vKY
+ kLKaIwnhqFNwtoxanQiv2pm6mo6jhCkYRZtZSNttlyDTJllHhjdGj+GdN A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="237073657"
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; d="scan'208";a="237073657"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 18 Mar 2022 05:44:01 -0700
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; d="scan'208";a="558421237"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.215.248])
+ ([10.254.215.248])
+ by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 18 Mar 2022 05:43:57 -0700
+Message-ID: <12390112-c497-1f02-5ddc-ad8ee3645347@linux.intel.com>
+Date: Fri, 18 Mar 2022 20:43:54 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH] thunderbolt: Make iommu_dma_protection more accurate
-Content-Language: en-GB
-To: "mika.westerberg@linux.intel.com" <mika.westerberg@linux.intel.com>,
- "Limonciello, Mario" <Mario.Limonciello@amd.com>
-References: <2d01fa50c2650c730b0244929097737918e302e7.1647533152.git.robin.murphy@arm.com>
- <BL1PR12MB515783C0F998169D49D92A55E2129@BL1PR12MB5157.namprd12.prod.outlook.com>
- <BL1PR12MB51573F55B3C2B3922BAAA7F1E2129@BL1PR12MB5157.namprd12.prod.outlook.com>
- <YjRvMk1kcbMwJvx+@lahna>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <YjRvMk1kcbMwJvx+@lahna>
-Cc: "michael.jamet@intel.com" <michael.jamet@intel.com>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "YehezkelShB@gmail.com" <YehezkelShB@gmail.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "andreas.noever@gmail.com" <andreas.noever@gmail.com>
+Subject: Re: [PATCH v2 5/8] iommu: Add PASID support for DMA mapping API users
+Content-Language: en-US
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+ Christoph Hellwig <hch@infradead.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>
+References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
+ <20220315050713.2000518-6-jacob.jun.pan@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220315050713.2000518-6-jacob.jun.pan@linux.intel.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>, "Zanussi,
+ Tom" <tom.zanussi@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+ Jacob Pan <jacob.jun.pan@intel.com>, Dan Williams <dan.j.williams@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,139 +95,165 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-03-18 11:38, mika.westerberg@linux.intel.com wrote:
-> Hi Mario,
+On 2022/3/15 13:07, Jacob Pan wrote:
+> DMA mapping API is the de facto standard for in-kernel DMA. It operates
+> on a per device/RID basis which is not PASID-aware.
 > 
-> On Thu, Mar 17, 2022 at 08:36:13PM +0000, Limonciello, Mario wrote:
->> Here is a proposal on top of what you did for this.
->> The idea being check the ports right when the links are made if they exist
->> (all the new USB4 stuff) and then check all siblings on TBT3 stuff.
->>
->> diff --git a/drivers/thunderbolt/acpi.c b/drivers/thunderbolt/acpi.c
->> index 79b5abf9d042..89432456dbea 100644
->> --- a/drivers/thunderbolt/acpi.c
->> +++ b/drivers/thunderbolt/acpi.c
->> @@ -14,6 +14,7 @@
->>   static acpi_status tb_acpi_add_link(acpi_handle handle, u32 level, void *data,
->>                                      void **return_value)
->>   {
->> +       enum nhi_iommu_status iommu_status = IOMMU_UNKNOWN;
->>          struct fwnode_reference_args args;
->>          struct fwnode_handle *fwnode;
->>          struct tb_nhi *nhi = data;
->> @@ -91,6 +92,8 @@ static acpi_status tb_acpi_add_link(acpi_handle handle, u32 level, void *data,
->>                  if (link) {
->>                          dev_dbg(&nhi->pdev->dev, "created link from %s\n",
->>                                  dev_name(&pdev->dev));
->> +                       if (iommu_status != IOMMU_DISABLED)
->> +                               iommu_status = nhi_check_iommu_for_port(pdev);
->>                  } else {
->>                          dev_warn(&nhi->pdev->dev, "device link creation from %s failed\n",
->>                                   dev_name(&pdev->dev));
->> @@ -101,6 +104,7 @@ static acpi_status tb_acpi_add_link(acpi_handle handle, u32 level, void *data,
->>
->>   out_put:
->>          fwnode_handle_put(args.fwnode);
->> +       nhi->iommu_dma_protection = (iommu_status == IOMMU_ENABLED);
->>          return AE_OK;
->>   }
->>
->> diff --git a/drivers/thunderbolt/nhi.c b/drivers/thunderbolt/nhi.c
->> index e12c2e266741..b5eb0cab392f 100644
->> --- a/drivers/thunderbolt/nhi.c
->> +++ b/drivers/thunderbolt/nhi.c
->> @@ -1103,10 +1103,30 @@ static void nhi_check_quirks(struct tb_nhi *nhi)
->>                  nhi->quirks |= QUIRK_AUTO_CLEAR_INT;
->>   }
->>
->> +enum nhi_iommu_status nhi_check_iommu_for_port(struct pci_dev *pdev)
->> +{
->> +       if (!pci_is_pcie(pdev) ||
->> +           !(pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT ||
->> +            pci_pcie_type(pdev) == PCI_EXP_TYPE_DOWNSTREAM)) {
->> +               return IOMMU_UNKNOWN;
->> +       }
->> +
->> +       if (!device_iommu_mapped(&pdev->dev)) {
->> +               return IOMMU_DISABLED;
->> +       }
->> +
->> +       if (!pdev->untrusted) {
->> +               dev_info(&pdev->dev,
->> +                       "Assuming unreliable Kernel DMA protection\n");
->> +               return IOMMU_DISABLED;
->> +       }
->> +       return IOMMU_ENABLED;
->> +}
->> +
->>   static void nhi_check_iommu(struct tb_nhi *nhi)
->>   {
->> -       struct pci_dev *pdev;
->> -       bool port_ok = false;
->> +       enum nhi_iommu_status iommu_status = nhi->iommu_dma_protection ?
->> +                                       IOMMU_ENABLED : IOMMU_UNKNOWN;
->>
->>          /*
->>           * Check for sibling devices that look like they should be our
->> @@ -1117,23 +1137,13 @@ static void nhi_check_iommu(struct tb_nhi *nhi)
->>           * otherwise even if translation is enabled for existing devices it
->>           * may potentially be overridden for a future tunnelled endpoint.
->>           */
->> -       for_each_pci_bridge(pdev, nhi->pdev->bus) {
->> -               if (!pci_is_pcie(pdev) ||
->> -                   !(pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT ||
->> -                     pci_pcie_type(pdev) == PCI_EXP_TYPE_DOWNSTREAM))
->> -                       continue;
->> -
->> -               if (!device_iommu_mapped(&pdev->dev))
->> -                       return;
->> -
->> -               if (!pdev->untrusted) {
->> -                       dev_info(&nhi->pdev->dev,
->> -                                "Assuming unreliable Kernel DMA protection\n");
->> -                       return;
->> -               }
->> -               port_ok = true;
->> +       if (iommu_status == IOMMU_UNKNOWN) {
->> +               struct pci_dev *pdev;
->> +               for_each_pci_bridge(pdev, nhi->pdev->bus)
->> +                       if (iommu_status != IOMMU_DISABLED)
->> +                               iommu_status = nhi_check_iommu_for_port(pdev);
->>          }
->> -       nhi->iommu_dma_protection = port_ok;
->> +       nhi->iommu_dma_protection = (iommu_status == IOMMU_ENABLED);
->>   }
->>
->>   static int nhi_init_msi(struct tb_nhi *nhi)
->>
->> diff --git a/drivers/thunderbolt/nhi.h b/drivers/thunderbolt/nhi.h
->> index 69083aab2736..1622d49b1763 100644
->> --- a/drivers/thunderbolt/nhi.h
->> +++ b/drivers/thunderbolt/nhi.h
->> @@ -11,6 +11,13 @@
->>
->>   #include <linux/thunderbolt.h>
->>
->> +enum nhi_iommu_status {
->> +       IOMMU_UNKNOWN,
->> +       IOMMU_DISABLED,
->> +       IOMMU_ENABLED,
->> +};
->> +enum nhi_iommu_status nhi_check_iommu_for_port(struct pci_dev *pdev);
->> +
+> Some modern devices such as Intel Data Streaming Accelerator, PASID is
+> required for certain work submissions. To allow such devices use DMA
+> mapping API, we need the following functionalities:
+> 1. Provide device a way to retrieve a PASID for work submission within
+> the kernel
+> 2. Enable the kernel PASID on the IOMMU for the device
+> 3. Attach the kernel PASID to the device's default DMA domain, let it
+> be IOVA or physical address in case of pass-through.
 > 
-> This adds quite a lot code and complexity, and honestly I would like to
-> keep it as simple as possible (and this is not enough because we need to
-> make sure the DMAR bit is there so that none of the possible connected
-> devices were able to overwrite our memory already).
+> This patch introduces a driver facing API that enables DMA API
+> PASID usage. Once enabled, device drivers can continue to use DMA APIs as
+> is. There is no difference in dma_handle between without PASID and with
+> PASID.
+> 
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>   drivers/iommu/dma-iommu.c | 65 +++++++++++++++++++++++++++++++++++++++
+>   include/linux/dma-iommu.h |  7 +++++
+>   include/linux/iommu.h     |  9 ++++++
+>   3 files changed, 81 insertions(+)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index b22034975301..d0ff1a34b1b6 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -39,6 +39,8 @@ enum iommu_dma_cookie_type {
+>   	IOMMU_DMA_MSI_COOKIE,
+>   };
+>   
+> +static DECLARE_IOASID_SET(iommu_dma_pasid);
+> +
+>   struct iommu_dma_cookie {
+>   	enum iommu_dma_cookie_type	type;
+>   	union {
+> @@ -370,6 +372,69 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+>   	domain->iova_cookie = NULL;
+>   }
+>   
+> +/**
+> + * iommu_enable_pasid_dma --Enable in-kernel DMA request with PASID
+> + * @dev:	Device to be enabled
+> + *
+> + * DMA request with PASID will be mapped the same way as the legacy DMA.
+> + * If the device is in pass-through, PASID will also pass-through. If the
+> + * device is in IOVA map, the supervisor PASID will point to the same IOVA
+> + * page table.
+> + *
+> + * @return the kernel PASID to be used for DMA or INVALID_IOASID on failure
 
-Shall we forget the standalone sibling check and just make the 
-pdev->untrusted check directly in tb_acpi_add_link() then? On reflection 
-I guess the DMAR bit makes iommu_dma_protection functionally dependent 
-on ACPI already, so we don't actually lose anything (and anyone can come 
-back and revisit firmware-agnostic methods later if a need appears).
+The comment on the return value should be rephrased according to the
+real code.
 
-Robin.
+> + */
+> +int iommu_enable_pasid_dma(struct device *dev, ioasid_t *pasid)
+> +{
+> +	struct iommu_domain *dom;
+> +	ioasid_t id, max;
+> +	int ret;
+> +
+> +	dom = iommu_get_domain_for_dev(dev);
+> +	if (!dom || !dom->ops || !dom->ops->attach_dev_pasid)
+> +		return -ENODEV;
+> +	max = iommu_get_dev_pasid_max(dev);
+> +	if (!max)
+> +		return -EINVAL;
+> +
+> +	id = ioasid_alloc(&iommu_dma_pasid, 1, max, dev);
+> +	if (id == INVALID_IOASID)
+> +		return -ENOMEM;
+> +
+> +	ret = dom->ops->attach_dev_pasid(dom, dev, id);
+> +	if (ret) {
+> +		ioasid_put(id);
+> +		return ret;
+> +	}
+> +	*pasid = id;
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(iommu_enable_pasid_dma);
+> +
+> +/**
+> + * iommu_disable_pasid_dma --Disable in-kernel DMA request with PASID
+> + * @dev:	Device's PASID DMA to be disabled
+> + *
+> + * It is the device driver's responsibility to ensure no more incoming DMA
+> + * requests with the kernel PASID before calling this function. IOMMU driver
+> + * ensures PASID cache, IOTLBs related to the kernel PASID are cleared and
+> + * drained.
+> + *
+> + * @return 0 on success or error code on failure
+
+Ditto.
+
+> + */
+> +void iommu_disable_pasid_dma(struct device *dev, ioasid_t pasid)
+> +{
+> +	struct iommu_domain *dom;
+> +
+> +	/* TODO: check the given PASID is within the ioasid_set */
+> +	dom = iommu_get_domain_for_dev(dev);
+> +	if (!dom->ops->detach_dev_pasid)
+> +		return;
+> +	dom->ops->detach_dev_pasid(dom, dev, pasid);
+> +	ioasid_put(pasid);
+> +}
+> +EXPORT_SYMBOL(iommu_disable_pasid_dma);
+> +
+>   /**
+>    * iommu_dma_get_resv_regions - Reserved region driver helper
+>    * @dev: Device from iommu_get_resv_regions()
+> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+> index 24607dc3c2ac..e6cb9b52a420 100644
+> --- a/include/linux/dma-iommu.h
+> +++ b/include/linux/dma-iommu.h
+> @@ -18,6 +18,13 @@ int iommu_get_dma_cookie(struct iommu_domain *domain);
+>   int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base);
+>   void iommu_put_dma_cookie(struct iommu_domain *domain);
+>   
+> +/*
+> + * For devices that can do DMA request with PASID, setup a system PASID.
+> + * Address modes (IOVA, PA) are selected by the platform code.
+> + */
+
+No need for a comment here. Or move it to the function if need.
+
+> +int iommu_enable_pasid_dma(struct device *dev, ioasid_t *pasid);
+> +void iommu_disable_pasid_dma(struct device *dev, ioasid_t pasid);
+> +
+>   /* Setup call for arch DMA mapping code */
+>   void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 dma_limit);
+>   int iommu_dma_init_fq(struct iommu_domain *domain);
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index fde5b933dbe3..fb011722e4f8 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -395,6 +395,15 @@ static inline void iommu_set_dev_pasid_max(struct device *dev,
+>   
+>   	param->pasid_max = max;
+>   }
+> +static inline ioasid_t iommu_get_dev_pasid_max(struct device *dev)
+> +{
+> +	struct dev_iommu *param = dev->iommu;
+> +
+> +	if (WARN_ON(!param))
+> +		return 0;
+> +
+> +	return param->pasid_max;
+> +}
+>   
+>   int iommu_device_register(struct iommu_device *iommu,
+>   			  const struct iommu_ops *ops,
+
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
