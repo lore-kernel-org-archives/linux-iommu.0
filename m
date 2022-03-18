@@ -1,61 +1,87 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 94F04C4332F
-	for <iommu@archiver.kernel.org>; Fri, 18 Mar 2022 11:55:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E1AF6C433EF
+	for <iommu@archiver.kernel.org>; Fri, 18 Mar 2022 12:01:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3DCF040114;
-	Fri, 18 Mar 2022 11:55:04 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 7BABF419BD;
+	Fri, 18 Mar 2022 12:01:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FzsCcpfa0TMN; Fri, 18 Mar 2022 11:55:02 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id WGzoFt4XiVl1; Fri, 18 Mar 2022 12:01:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 33733400FE;
-	Fri, 18 Mar 2022 11:55:02 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 416DC4154D;
+	Fri, 18 Mar 2022 12:01:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F20A8C0033;
-	Fri, 18 Mar 2022 11:55:01 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3695AC0012
- for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 11:55:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0DD93C0033;
+	Fri, 18 Mar 2022 12:01:15 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4C850C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 12:01:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 1078160B69
- for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 11:55:00 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 28D9C40545
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 12:01:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EsESAeZsgsJN for <iommu@lists.linux-foundation.org>;
- Fri, 18 Mar 2022 11:54:58 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id K4M-eTkaM--V for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Mar 2022 12:01:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id CC5A560B44
- for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 11:54:58 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 146031515;
- Fri, 18 Mar 2022 04:54:58 -0700 (PDT)
-Received: from [10.57.43.230] (unknown [10.57.43.230])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9F7FC3F7F5;
- Fri, 18 Mar 2022 04:54:56 -0700 (PDT)
-Message-ID: <f887686a-e7e4-f031-97e8-dbeb1c088095@arm.com>
-Date: Fri, 18 Mar 2022 11:54:50 +0000
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id ADED840474
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 12:01:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1647604871; x=1679140871;
+ h=message-id:date:mime-version:cc:to:references:from:
+ subject:in-reply-to:content-transfer-encoding;
+ bh=pBffoB48lXGmhcQ4bn5CKS0U9vBbO6aigybptR2nzow=;
+ b=TuRdTD+9U1TK32wJgGzkaqBHciLNBmxpEOq7JzqOasM+TZ3VnkCytSvw
+ t/KPKX9SQZhh7IshhzsQiVpOBP0eEqfDav5EoFIokxRtaLE9CoastDzNb
+ QtprtiNprGT3K8d0DC/228kQN9PPCBkZOej37siBbdd2GZKoBx35U3gZ7
+ JzazhzCiD+ZRuBuMKT3rr8bEq85fdnI/SEvAGBpy68J21rNVmTEgv0i3r
+ OdRCuEvK/Iz0ODYSfzbhMjfRiy3d8nUyQ4jfaMnzCI7Rbj0ARXvb8bXzm
+ DnCy0R6fvuniq4jUjSmeNGHwSKn6BSxunpvw+CmwDOejUaQDkmE64L/tT g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="254676596"
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; d="scan'208";a="254676596"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 18 Mar 2022 05:01:11 -0700
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; d="scan'208";a="558405336"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.215.248])
+ ([10.254.215.248])
+ by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 18 Mar 2022 05:01:06 -0700
+Message-ID: <a10f3fcc-9e31-913d-853e-b6da5fcb36a0@linux.intel.com>
+Date: Fri, 18 Mar 2022 20:01:04 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH] thunderbolt: Make iommu_dma_protection more accurate
-Content-Language: en-GB
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-References: <2d01fa50c2650c730b0244929097737918e302e7.1647533152.git.robin.murphy@arm.com>
- <YjQqY/Nq0pgpcAaI@lahna>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <YjQqY/Nq0pgpcAaI@lahna>
-Cc: michael.jamet@intel.com, linux-pci@vger.kernel.org,
- linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org, YehezkelShB@gmail.com,
- iommu@lists.linux-foundation.org, mario.limonciello@amd.com,
- andreas.noever@gmail.com
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
+ <20220315050713.2000518-3-jacob.jun.pan@linux.intel.com>
+ <YjB4AyrgsnbUrlLe@myrica>
+ <BN9PR11MB5276D5B88C05B509C2C790A98C109@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v2 2/8] iommu: Add attach/detach_dev_pasid domain ops
+In-Reply-To: <BN9PR11MB5276D5B88C05B509C2C790A98C109@BN9PR11MB5276.namprd11.prod.outlook.com>
+Cc: "Luck, Tony" <tony.luck@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
+ "Raj, Ashok" <ashok.raj@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
+ "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+ LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ "Williams, Dan J" <dan.j.williams@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -73,185 +99,54 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-03-18 06:44, Mika Westerberg wrote:
-> Hi Robin,
+On 2022/3/15 19:49, Tian, Kevin wrote:
+>> From: Jean-Philippe Brucker<jean-philippe@linaro.org>
+>> Sent: Tuesday, March 15, 2022 7:27 PM
+>>
+>> On Mon, Mar 14, 2022 at 10:07:06PM -0700, Jacob Pan wrote:
+>>> From: Lu Baolu<baolu.lu@linux.intel.com>
+>>>
+>>> An IOMMU domain represents an address space which can be attached by
+>>> devices that perform DMA within a domain. However, for platforms with
+>>> PASID capability the domain attachment needs be handled at device+PASID
+>>> level. There can be multiple PASIDs within a device and multiple devices
+>>> attached to a given domain.
+>>> This patch introduces a new IOMMU op which support device, PASID, and
+>>> IOMMU domain attachment. The immediate use case is for PASID capable
+>>> devices to perform DMA under DMA APIs.
+>>>
+>>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>>> Signed-off-by: Jacob Pan<jacob.jun.pan@linux.intel.com>
+>>> ---
+>>>   include/linux/iommu.h | 6 ++++++
+>>>   1 file changed, 6 insertions(+)
+>>>
+>>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>>> index 369f05c2a4e2..fde5b933dbe3 100644
+>>> --- a/include/linux/iommu.h
+>>> +++ b/include/linux/iommu.h
+>>> @@ -227,6 +227,8 @@ struct iommu_iotlb_gather {
+>>>    * @aux_get_pasid: get the pasid given an aux-domain
+>>>    * @sva_bind: Bind process address space to device
+>>>    * @sva_unbind: Unbind process address space from device
+>>> + * @attach_dev_pasid: attach an iommu domain to a pasid of device
+>>> + * @detach_dev_pasid: detach an iommu domain from a pasid of device
+>> Isn't that operation "assign a PASID to a domain" instead?  In patch 5,
+>> the domain is already attached to the device, so set_domain_pasid() might
+>> be clearer and to the point. If the IOMMU driver did the allocation we
+>> could also avoid patch 1.
+> iiuc this API can also work for future SIOV usage where each mdev attached
+> to the domain has its own pasid. "assigning a PASID to a domain" sounds
+> like going back to the previous aux domain approach which has one PASID
+> per domain and that PASID is used on all devices attached to the aux domain...
 > 
-> Thanks for working on this!
-> 
-> On Thu, Mar 17, 2022 at 04:17:07PM +0000, Robin Murphy wrote:
->> Between me trying to get rid of iommu_present() and Mario wanting to
->> support the AMD equivalent of DMAR_PLATFORM_OPT_IN, scrutiny has shown
->> that the iommu_dma_protection attribute is being far too optimistic.
->> Even if an IOMMU might be present for some PCI segment in the system,
->> that doesn't necessarily mean it provides translation for the device(s)
->> we care about. Furthermore, all that DMAR_PLATFORM_OPT_IN really does
->> is tell us that memory was protected before the kernel was loaded, and
->> prevent the user from disabling the intel-iommu driver entirely. What
->> actually matters is whether we trust individual devices, based on the
->> "external facing" property that we expect firmware to describe for
->> Thunderbolt ports.
-> 
-> We still want to know that DMAR_PLATFORM_OPT_IN is set by the firmware
-> because that tells us that none of the devices connected before OS got
-> control had the ability to perform DMA outside of the RMRR regions. If
-> they did then all this is pointless because they could have modified the
-> system memory as they wished.
 
-Ah, right, it does still matter in terms of whether we can trust our 
-*own* integrity. I was thinking that it's OK since by this point the 
-IOMMU driver should have reset the hardware and allocated new 
-configuration tables etc. such that any previous modifications wouldn't 
-matter, but of course the theoretical worst case is that the malicious 
-device manages to corrupt the kernel code in memory just before that 
-point to subvert the IOMMU driver itself. Got it, thanks again!
+This also works for SVA as far as I can see. The sva_bind essentially is
+to  attach an SVA domain to the PASID of a device. The sva_bind/unbind
+ops could be removed with these two new callbacks.
 
-So yes, I think we *do* want to abstract that through the IOMMU API (and 
-I'll follow up with our ACPI folks internally to check whether anyone's 
-thought about this for Arm-based systems yet). Gosh, this is becoming 
-quite the adventure, but it's all for good in the end :)
-
-Robin.
-
->> Avoid false positives by looking as close as possible to the same PCI
->> topology that the IOMMU layer will consider once a Thunderbolt endpoint
->> appears. Crucially, we can't assume that IOMMU translation being enabled
->> for any reason is sufficient on its own; full (expensive) DMA protection
->> will still only be imposed on untrusted devices.
->>
->> CC: Mario Limonciello <mario.limonciello@amd.com>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>
->> This supersedes my previous attempt just trying to replace
->> iommu_present() at [1], further to the original discussion at [2].
->>
->> [1] https://lore.kernel.org/linux-iommu/BL1PR12MB515799C0BE396377DBBEF055E2119@BL1PR12MB5157.namprd12.prod.outlook.com/T/
->> [2] https://lore.kernel.org/linux-iommu/202203160844.lKviWR1Q-lkp@intel.com/T/
->>
->>   drivers/thunderbolt/domain.c | 12 +++---------
->>   drivers/thunderbolt/nhi.c    | 35 +++++++++++++++++++++++++++++++++++
->>   include/linux/thunderbolt.h  |  2 ++
->>   3 files changed, 40 insertions(+), 9 deletions(-)
->>
->> diff --git a/drivers/thunderbolt/domain.c b/drivers/thunderbolt/domain.c
->> index 7018d959f775..d5c825e84ac8 100644
->> --- a/drivers/thunderbolt/domain.c
->> +++ b/drivers/thunderbolt/domain.c
->> @@ -7,9 +7,7 @@
->>    */
->>   
->>   #include <linux/device.h>
->> -#include <linux/dmar.h>
->>   #include <linux/idr.h>
->> -#include <linux/iommu.h>
->>   #include <linux/module.h>
->>   #include <linux/pm_runtime.h>
->>   #include <linux/slab.h>
->> @@ -257,13 +255,9 @@ static ssize_t iommu_dma_protection_show(struct device *dev,
->>   					 struct device_attribute *attr,
->>   					 char *buf)
->>   {
->> -	/*
->> -	 * Kernel DMA protection is a feature where Thunderbolt security is
->> -	 * handled natively using IOMMU. It is enabled when IOMMU is
->> -	 * enabled and ACPI DMAR table has DMAR_PLATFORM_OPT_IN set.
->> -	 */
->> -	return sprintf(buf, "%d\n",
->> -		       iommu_present(&pci_bus_type) && dmar_platform_optin());
->> +	struct tb *tb = container_of(dev, struct tb, dev);
->> +
->> +	return sprintf(buf, "%d\n", tb->nhi->iommu_dma_protection);
->>   }
->>   static DEVICE_ATTR_RO(iommu_dma_protection);
->>   
->> diff --git a/drivers/thunderbolt/nhi.c b/drivers/thunderbolt/nhi.c
->> index c73da0532be4..e12c2e266741 100644
->> --- a/drivers/thunderbolt/nhi.c
->> +++ b/drivers/thunderbolt/nhi.c
->> @@ -14,6 +14,7 @@
->>   #include <linux/errno.h>
->>   #include <linux/pci.h>
->>   #include <linux/interrupt.h>
->> +#include <linux/iommu.h>
->>   #include <linux/module.h>
->>   #include <linux/delay.h>
->>   #include <linux/property.h>
->> @@ -1102,6 +1103,39 @@ static void nhi_check_quirks(struct tb_nhi *nhi)
->>   		nhi->quirks |= QUIRK_AUTO_CLEAR_INT;
->>   }
->>   
->> +static void nhi_check_iommu(struct tb_nhi *nhi)
->> +{
->> +	struct pci_dev *pdev;
->> +	bool port_ok = false;
-> 
-> 
-> So for here somewhere we should call dmar_platform_optin() first. I
-> think this is something we want to move inside the IOMMU API (alongside
-> with the below checks).
-> 
->> +
->> +	/*
->> +	 * Check for sibling devices that look like they should be our
->> +	 * tunnelled ports. We can reasonably assume that if an IOMMU is
->> +	 * managing the bridge it will manage any future devices beyond it
->> +	 * too. If firmware has described a port as external-facing as
->> +	 * expected then we can trust the IOMMU layer to enforce isolation;
->> +	 * otherwise even if translation is enabled for existing devices it
->> +	 * may potentially be overridden for a future tunnelled endpoint.
->> +	 */
->> +	for_each_pci_bridge(pdev, nhi->pdev->bus) {
->> +		if (!pci_is_pcie(pdev) ||
->> +		    !(pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT ||
->> +		      pci_pcie_type(pdev) == PCI_EXP_TYPE_DOWNSTREAM))
->> +			continue;
->> +
->> +		if (!device_iommu_mapped(&pdev->dev))
->> +			return;
->> +
->> +		if (!pdev->untrusted) {
->> +			dev_info(&nhi->pdev->dev,
->> +				 "Assuming unreliable Kernel DMA protection\n");
->> +			return;
->> +		}
->> +		port_ok = true;
->> +	}
->> +	nhi->iommu_dma_protection = port_ok;
->> +}
->> +
->>   static int nhi_init_msi(struct tb_nhi *nhi)
->>   {
->>   	struct pci_dev *pdev = nhi->pdev;
->> @@ -1219,6 +1253,7 @@ static int nhi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->>   		return -ENOMEM;
->>   
->>   	nhi_check_quirks(nhi);
->> +	nhi_check_iommu(nhi);
->>   
->>   	res = nhi_init_msi(nhi);
->>   	if (res) {
->> diff --git a/include/linux/thunderbolt.h b/include/linux/thunderbolt.h
->> index 124e13cb1469..7a8ad984e651 100644
->> --- a/include/linux/thunderbolt.h
->> +++ b/include/linux/thunderbolt.h
->> @@ -465,6 +465,7 @@ static inline struct tb_xdomain *tb_service_parent(struct tb_service *svc)
->>    * @msix_ida: Used to allocate MSI-X vectors for rings
->>    * @going_away: The host controller device is about to disappear so when
->>    *		this flag is set, avoid touching the hardware anymore.
->> + * @iommu_dma_protection: An IOMMU will isolate external-facing ports.
->>    * @interrupt_work: Work scheduled to handle ring interrupt when no
->>    *		    MSI-X is used.
->>    * @hop_count: Number of rings (end point hops) supported by NHI.
->> @@ -479,6 +480,7 @@ struct tb_nhi {
->>   	struct tb_ring **rx_rings;
->>   	struct ida msix_ida;
->>   	bool going_away;
->> +	bool iommu_dma_protection;
->>   	struct work_struct interrupt_work;
->>   	u32 hop_count;
->>   	unsigned long quirks;
->> -- 
->> 2.28.0.dirty
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
