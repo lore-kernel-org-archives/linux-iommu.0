@@ -1,66 +1,54 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 98A10C4332F
-	for <iommu@archiver.kernel.org>; Fri, 18 Mar 2022 14:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A2E63C433EF
+	for <iommu@archiver.kernel.org>; Fri, 18 Mar 2022 14:59:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 2D85440510;
-	Fri, 18 Mar 2022 14:47:45 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 4C1FD417BF;
+	Fri, 18 Mar 2022 14:59:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4baubFYM04OY; Fri, 18 Mar 2022 14:47:44 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id RjqV8uC31ttn; Fri, 18 Mar 2022 14:59:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id A94AC400FD;
-	Fri, 18 Mar 2022 14:47:43 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 38121417AE;
+	Fri, 18 Mar 2022 14:59:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 74F64C001A;
-	Fri, 18 Mar 2022 14:47:43 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 83A98C000B
- for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 14:47:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 05862C001A;
+	Fri, 18 Mar 2022 14:59:56 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CD5F9C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 14:59:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 5D0E44013E
- for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 14:47:42 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id B6148417BF
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 14:59:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xgm6mprxKAEx for <iommu@lists.linux-foundation.org>;
- Fri, 18 Mar 2022 14:47:41 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 48AEC400FD
- for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 14:47:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1647614861; x=1679150861;
- h=date:from:to:cc:subject:message-id:references:
- mime-version:in-reply-to;
- bh=NoF7DUUBnepgXUQfSAA2zocvCsU667YxNsq4hF4qw40=;
- b=HiHpgjkov8/U8Nz6kIrSdeoq63HIDkewPl91S4cCA1fmrH3hr/b2ftAn
- 7oRmzAcDdACL5wrmxbR8oPatXggrpLpgwq6rStLbHaKXUKSOxmR3ysWSE
- qa9rpO45Wmjg5hKOgiYKWyD+VZBJ5jrToYerXRBnll6WpkH8xvGxl25MG
- BS2eBQqbL52OMYdzMw2Pc2hyhdi41G3EctHVIUC3L3Y98Yh5e8P5iqrOQ
- YtrHzdZa+6zMDNyHPRZnHpTgWXhaPnZMzQ/FHne/SWHM8fKQJ0RP6QTEK
- CStyg9hM8I5NgwnEy7/4p/2dKLYrjSfY9srVb4/adua+AJSOGuj830o5S g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="320358417"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; d="scan'208";a="320358417"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
- by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 18 Mar 2022 07:47:32 -0700
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; d="scan'208";a="647486665"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
- by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 18 Mar 2022 07:47:28 -0700
-Received: by lahna (sSMTP sendmail emulation); Fri, 18 Mar 2022 16:47:25 +0200
-Date: Fri, 18 Mar 2022 16:47:25 +0200
-From: "mika.westerberg@linux.intel.com" <mika.westerberg@linux.intel.com>
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id PqAmzgf_yDeH for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Mar 2022 14:59:52 +0000 (UTC)
+X-Greylist: delayed 00:08:25 by SQLgrey-1.8.0
+Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net
+ [83.223.78.240])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 55E36417AE
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 14:59:52 +0000 (UTC)
+Received: from h08.hostsharing.net (h08.hostsharing.net
+ [IPv6:2a01:37:1000::53df:5f1c:0])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (Client CN "*.hostsharing.net",
+ Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+ by bmailout2.hostsharing.net (Postfix) with ESMTPS id 385E128042B86;
+ Fri, 18 Mar 2022 15:51:21 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+ id 2CB204ADE5; Fri, 18 Mar 2022 15:51:21 +0100 (CET)
+Date: Fri, 18 Mar 2022 15:51:21 +0100
+From: Lukas Wunner <lukas@wunner.de>
 To: Robin Murphy <robin.murphy@arm.com>
 Subject: Re: [PATCH] thunderbolt: Make iommu_dma_protection more accurate
-Message-ID: <YjSbfScU0Ssuca3y@lahna>
+Message-ID: <20220318145121.GA11127@wunner.de>
 References: <2d01fa50c2650c730b0244929097737918e302e7.1647533152.git.robin.murphy@arm.com>
  <BL1PR12MB515783C0F998169D49D92A55E2129@BL1PR12MB5157.namprd12.prod.outlook.com>
  <BL1PR12MB51573F55B3C2B3922BAAA7F1E2129@BL1PR12MB5157.namprd12.prod.outlook.com>
@@ -71,7 +59,7 @@ References: <2d01fa50c2650c730b0244929097737918e302e7.1647533152.git.robin.murph
 MIME-Version: 1.0
 Content-Disposition: inline
 In-Reply-To: <78fc0426-c22a-ec62-f92b-0019bea5947e@arm.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: "michael.jamet@intel.com" <michael.jamet@intel.com>,
  "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
  "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
@@ -79,7 +67,8 @@ Cc: "michael.jamet@intel.com" <michael.jamet@intel.com>,
  "YehezkelShB@gmail.com" <YehezkelShB@gmail.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
  "Limonciello, Mario" <Mario.Limonciello@amd.com>,
- "andreas.noever@gmail.com" <andreas.noever@gmail.com>
+ "andreas.noever@gmail.com" <andreas.noever@gmail.com>,
+ "mika.westerberg@linux.intel.com" <mika.westerberg@linux.intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,35 +87,6 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On Fri, Mar 18, 2022 at 02:08:16PM +0000, Robin Murphy wrote:
-> On 2022-03-18 13:25, mika.westerberg@linux.intel.com wrote:
-> > Hi Robin,
-> > 
-> > On Fri, Mar 18, 2022 at 12:01:42PM +0000, Robin Murphy wrote:
-> > > > This adds quite a lot code and complexity, and honestly I would like to
-> > > > keep it as simple as possible (and this is not enough because we need to
-> > > > make sure the DMAR bit is there so that none of the possible connected
-> > > > devices were able to overwrite our memory already).
-> > > 
-> > > Shall we forget the standalone sibling check and just make the
-> > > pdev->untrusted check directly in tb_acpi_add_link() then?
-> > 
-> > I think we should leave tb_acpi_add_link() untouched if possible ;-)
-> > This is because it is used to add the device links from firmware
-> > description that we need for proper power management of the tunneled
-> > devices. It has little to do with the identification of the external
-> > facing DMA-capable PCIe ports.
-> > 
-> > Furthermore these links only exists in USB4 software connection manager
-> > systems so we do not have those in the existing Thunderbolt 3/4 systems
-> > that use firmware based connection manager (pretty much all out there).
-> > 
-> > > On reflection I guess the DMAR bit makes iommu_dma_protection
-> > > functionally dependent on ACPI already, so we don't actually lose
-> > > anything (and anyone can come back and revisit firmware-agnostic
-> > > methods later if a need appears).
-> > 
-> > I agree.
-> 
 > OK, so do we have any realistic options for identifying the correct PCI
 > devices, if USB4 PCIe adapters might be anywhere relative to their
 > associated NHI? Short of maintaining a list of known IDs, the only thought I
@@ -136,36 +96,29 @@ On Fri, Mar 18, 2022 at 02:08:16PM +0000, Robin Murphy wrote:
 > false negatives might be tolerable, but it still feels like a bit of a
 > sketchy heuristic.
 
-Indeed.
+The Thunderbolt Device ROM contains the PCI slot number, so you can
+correlate the Thunderbolt switch ports with PCIe downstream ports
+and know exactly where PCIe tunnels are terminated.
 
-> I suppose we could just look to see if any device anywhere is marked as
-> external-facing, and hope that if firmware's done that much then it's done
-> everything right. That's still at least slightly better than what we have
-> today, but AFAICS still carries significant risk of a false positive for an
-> add-in card that firmware didn't recognise.
+Code is here:
+* thunderbolt: Obtain PCI slot number from DROM
+  https://github.com/l1k/linux/commit/756f7148bc10
+* thunderbolt: Move upstream_port to struct tb
+  https://github.com/l1k/linux/commit/58f16e7dd431
+* thunderbolt: Correlate PCI devices with Thunderbolt ports
+  https://github.com/l1k/linux/commit/f53ea40a7487
 
-The port in this case, that is marked as external facing, is the PCIe
-root port that the add-in-card is connected to and that is known for the
-firmware in advance. 
+I implemented that in 2018, so it won't apply cleanly to current
+mainline.  But I kept forward-porting it on my private branch and
+could push that to GitHub if anyone is interested.
 
-> I'm satisfied that we've come round to the right conclusion on the DMAR
-> opt-in - I'm in the middle or writing up patches for that now - but even
-> Microsoft's spec gives that as a separate requirement from the flagging of
-> external ports, with both being necessary for Kernel DMA Protection.
+I don't know if this will work out-of-the-box for SoC-integrated
+Thunderbolt controllers.  It was developed with the discrete
+controllers in mind, which was the only thing available back then.
 
-Is the problem that we are here trying to solve the fact that user can
-disable the IOMMU protection from the command line? Or the fact that the
-firmware might not declare all the ports properly so we may end up in a
-situation that some of the ports do not get the full IOMMU protection.
+Thanks,
 
-These are Microsoft requirements for the OEMs in order to pass their
-firmware test suite so here I would not expect to have issues. Otherwise
-they simply cannot ship the thing with Windows installed.
-
-IMHO we should just trust the firmare provided information here
-(otherwise we are screwed anyway as there is no way to tell if the
-devices connected prior the OS can still do DMA), and use the external
-facing port indicator to idenfity the ports that need DMA protection.
+Lukas
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
