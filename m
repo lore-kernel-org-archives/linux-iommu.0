@@ -4,201 +4,161 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2FABEC433EF
-	for <iommu@archiver.kernel.org>; Fri, 18 Mar 2022 02:24:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 652AFC433EF
+	for <iommu@archiver.kernel.org>; Fri, 18 Mar 2022 05:13:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C527F84312;
-	Fri, 18 Mar 2022 02:24:12 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D524C8436B;
+	Fri, 18 Mar 2022 05:13:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4IaLR50S_iir; Fri, 18 Mar 2022 02:24:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id A303984307;
-	Fri, 18 Mar 2022 02:24:11 +0000 (UTC)
+	with ESMTP id mIRl66mqTMCE; Fri, 18 Mar 2022 05:13:09 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id BA95B84356;
+	Fri, 18 Mar 2022 05:13:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 77777C0033;
-	Fri, 18 Mar 2022 02:24:11 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 54B71C0012
- for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 02:24:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9B9E8C0033;
+	Fri, 18 Mar 2022 05:13:08 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 33308C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 05:13:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 4A554418A8
- for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 02:24:10 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 270DA40101
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 05:13:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VYWV4M86py8R for <iommu@lists.linux-foundation.org>;
- Fri, 18 Mar 2022 02:24:08 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 24DF541894
- for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 02:24:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1647570248; x=1679106248;
- h=from:to:cc:subject:date:message-id:references:
- in-reply-to:content-transfer-encoding:mime-version;
- bh=n4DGeMIQMi+sYIZ1hFmSwBxLMAekUrKitQjPfq7YYEA=;
- b=RlQKBv3egswJoZim7vb2NODuErNw7M9TN0NITAQJrsIdeMjzPm4/qMeX
- qQMQeIwTWIH8KoN52H/pPg2rOJNILOLoJ/OigJIUO3uOvvBrN5chSBmgL
- 4irMq/sw0gtUWzPN4FNJLJzAFMlhdJsWEOygVUFo/ofUx06ixNdD1153z
- LDgWx1wfUY2TAJyythyqnYGvA6EntfdCuctYCKPne88qf/Cf4xpRZQ61r
- h4t8laAeP/M1Q6SMmfVg534EwH2zPAR27136GhS3VD3bQbo6Z5jG8zuvO
- kQejBEKeex3Vqv+WK4Arn8B8Vud3uwtDRYbhsEyw2OE3OUo6ZckzcjE+3 Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="255857697"
-X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; d="scan'208";a="255857697"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 17 Mar 2022 19:24:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,191,1643702400"; d="scan'208";a="614203180"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
- by fmsmga004.fm.intel.com with ESMTP; 17 Mar 2022 19:24:06 -0700
-Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Mar 2022 19:24:06 -0700
-Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
- ORSMSX609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 17 Mar 2022 19:24:05 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21 via Frontend Transport; Thu, 17 Mar 2022 19:24:05 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.176)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.21; Thu, 17 Mar 2022 19:24:05 -0700
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=microsoft.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id yzdJLMrae_MY for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Mar 2022 05:13:06 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from na01-obe.outbound.protection.outlook.com
+ (mail-eus2azlp170100001.outbound.protection.outlook.com
+ [IPv6:2a01:111:f403:c110::1])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 70F37401D2
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Mar 2022 05:13:06 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bfsupyr1X/g8/yL0udq3qXKuiaxwaJL7qGSLp1sE3m5EmCSVq5/aokOnng+Ly9V7cU+mEJVcjLRM4hVU2WM4E3Pf1ugrKiHr4HrYFwTC0r7vj/qKEp2/XElT/SFAKwhhGDYmFBevV43pMupkW8c6Sy5UcFpW9SG/Cf651m2X1KxFM0vfTWRE9x/nxzl5VcrYtXHLBkjK0OLh+9BtovEU7MVQGYTZ+VjsktburkvRmDWVMJshS6UEiaWhr30AdV6ag9bA4wLiuc8BaPr4wIdBZC0Rgcx36QfbtVQC1C4Ka4yIYRX6mKb5LPgHG7oVgjfn8PXvfEjBTfl3+v+IhRt7GA==
+ b=iIaWOUMalxIXWGdcUT+wyVvGJnO4eET3UGFZTmkeoLqtpMQbjkPmD4ga6l/pgbFTKKeEbAudyjUo3FAb1KIkMz7/RC9NPQQDFlq5CNn22zvfJUD2rSmBPCFIJu5EP4XS9PvvdGie7zilAXBgQOpvcI/ehG6TnX6WZSXgoKsyHv0d+RVtelj8q9/tXH70R0qDBaMBkW12AhDMQ8go9eQAnHvOUUgEHIEnYdfLzRU8II5PuUFUvTkm/PeHVdCxdRTnoYYQbGoDrwVqBJFjv2MmG+LMsKeMwtlaF0MnxntQZXg5LfQ7+P7IEKWZ1APbDiH6QiIQ64VoJbs7byIv6EhPyw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=n4DGeMIQMi+sYIZ1hFmSwBxLMAekUrKitQjPfq7YYEA=;
- b=a8snpaA2Xo7YPYhybJXwEEjkuYJe/ZEMW2hbdfjQ08fSrKGzZRUqO6Pp1R80mvrkLHaqSlLcrA8fscCGT9JXo68//431ouzd/ZSqrXOunPYuJjDbHnx3ZRaNHlkjQ/jjAQivlVFhpbYxwUsrpCRTa+l3l21SlymOfq7X7d0rU3N1PUAQ/v7iyyb546jn2logiOkCBi059phMH2n5DqsI0NRPfttJubaftG0OudUvtrOpIywWYQV8qU6B/0xm3YPwI3UM7uuwhm3uuyYH9HiEH252fd1G8H/JJXhByxP1iAhyoNYSHwbMXOHTeWDpG+VmyXaJtWo9UjdmBYb/Su/qRA==
+ bh=drdLC9M+ZAveSPuI87rpXPqL6vFqltjDVfNTnL7M5FI=;
+ b=MycaaLhwCQ6Wks7BVTqHOKrx8rMfBl40INizDPAEKEJB8rqlfok8P2qrFyp50mKhgxNKW3j677M801kIh1BV2KEKMcVUX3mmF2bqa/06Z4BrKFV5sfB2hWRmqFfzwt/J2M6MHnZWOibR5a6TlYmNqk31w9+O27lA2W4OLmgg0iGuv7e0cgF/sI8pejDBaZT3q1VTGp9S+hBkb6WQcbcCi7UgePsNpY8i4b9sgRoO/qM54DUlmqsq8ccu6x5Tk/9HGj7XBNjDG74uokLzFH++GrFm2HDtiR77J2lrvOp0b3daTaumNiSLHwX1MqO4xuojxZNPb4cfZ3Y6jhYqUUb4+A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DM4PR11MB5261.namprd11.prod.outlook.com (2603:10b6:5:388::13) with
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=drdLC9M+ZAveSPuI87rpXPqL6vFqltjDVfNTnL7M5FI=;
+ b=E1156XXa0ANgz3lvJ5hVJPm9duH663GNmcFyiTUkCVyvL8K7tAFmO8yo8UScxnhU7HtvajERPbGpKqfJNhnzm9qZCqyrpDfH/STq+jzJchhE/oHGhjr3gy9hM7yIbgRF/JIQu38NImpZ/RTW3PxIlgdi3lokCl0lwfnlOvJAVkU=
+Received: from PH0PR21MB3025.namprd21.prod.outlook.com (2603:10b6:510:d2::21)
+ by DM6PR21MB1466.namprd21.prod.outlook.com (2603:10b6:5:258::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.17; Fri, 18 Mar
- 2022 02:23:57 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::c8aa:b5b2:dc34:e893]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::c8aa:b5b2:dc34:e893%8]) with mapi id 15.20.5081.018; Fri, 18 Mar 2022
- 02:23:57 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: RE: [PATCH v4 14/32] iommu: introduce iommu_domain_alloc_type and the
- KVM type
-Thread-Topic: [PATCH v4 14/32] iommu: introduce iommu_domain_alloc_type and
- the KVM type
-Thread-Index: AQHYN9xnDDDBVY4pLUqXQfRGdryZ0KzARNcAgALO3mCAAIkrAIAAzPRA
-Date: Fri, 18 Mar 2022 02:23:57 +0000
-Message-ID: <BN9PR11MB52764EF888DDB7822B88CF918C139@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220314194451.58266-1-mjrosato@linux.ibm.com>
- <20220314194451.58266-15-mjrosato@linux.ibm.com>
- <a9637631-c23b-4158-d2cb-597a36b09a6b@arm.com>
- <BN9PR11MB5276360F6DBDC3A238F3E41A8C129@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220317135254.GZ11336@nvidia.com>
-In-Reply-To: <20220317135254.GZ11336@nvidia.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.8; Fri, 18 Mar
+ 2022 05:13:03 +0000
+Received: from PH0PR21MB3025.namprd21.prod.outlook.com
+ ([fe80::44a2:4767:f55:7f2b]) by PH0PR21MB3025.namprd21.prod.outlook.com
+ ([fe80::44a2:4767:f55:7f2b%5]) with mapi id 15.20.5081.013; Fri, 18 Mar 2022
+ 05:12:57 +0000
+To: Robin Murphy <robin.murphy@arm.com>, Stephen Hemminger
+ <sthemmin@microsoft.com>, KY Srinivasan <kys@microsoft.com>, Haiyang Zhang
+ <haiyangz@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan
+ Cui <decui@microsoft.com>, "rafael@kernel.org" <rafael@kernel.org>,
+ "lenb@kernel.org" <lenb@kernel.org>, "lorenzo.pieralisi@arm.com"
+ <lorenzo.pieralisi@arm.com>, "robh@kernel.org" <robh@kernel.org>,
+ "kw@linux.com" <kw@linux.com>, "bhelgaas@google.com" <bhelgaas@google.com>,
+ "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
+ <m.szyprowski@samsung.com>, "linux-acpi@vger.kernel.org"
+ <linux-acpi@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "linux-hyperv@vger.kernel.org"
+ <linux-hyperv@vger.kernel.org>, "linux-pci@vger.kernel.org"
+ <linux-pci@vger.kernel.org>, "iommu@lists.linux-foundation.org"
+ <iommu@lists.linux-foundation.org>
+Subject: RE: [PATCH 4/4 RESEND] PCI: hv: Propagate coherence from VMbus device
+ to PCI device
+Thread-Topic: [PATCH 4/4 RESEND] PCI: hv: Propagate coherence from VMbus
+ device to PCI device
+Thread-Index: AQHYOhuoZPOAPXCXP0q01eTUICYXTKzD0PMAgADGUgA=
+Date: Fri, 18 Mar 2022 05:12:56 +0000
+Message-ID: <PH0PR21MB302533BCD6707DAACC13E64DD7139@PH0PR21MB3025.namprd21.prod.outlook.com>
+References: <1647534311-2349-1-git-send-email-mikelley@microsoft.com>
+ <1647534311-2349-5-git-send-email-mikelley@microsoft.com>
+ <9c52c5a0-163d-e2dd-d95b-9f382e665215@arm.com>
+In-Reply-To: <9c52c5a0-163d-e2dd-d95b-9f382e665215@arm.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=bc4ff47c-b5d9-4f99-8999-baf3e627d00a;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-03-18T05:05:11Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
 authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7f224b20-f026-4a59-84e0-08da08865b38
-x-ms-traffictypediagnostic: DM4PR11MB5261:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <DM4PR11MB5261894331BCC29C6752F2A08C139@DM4PR11MB5261.namprd11.prod.outlook.com>
+x-ms-office365-filtering-correlation-id: c6b5710b-d766-4eb2-8eb2-08da089df6d7
+x-ms-traffictypediagnostic: DM6PR21MB1466:EE_
+x-ms-exchange-atpmessageproperties: SA|SL
+x-microsoft-antispam-prvs: <DM6PR21MB146695175A86A4F8E7AB9745D7139@DM6PR21MB1466.namprd21.prod.outlook.com>
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: M/FXHztr4MeyZ1gzIG2eWyqrH32y5Q6eUubUWvuhPXTIS+O3CoYCiChWQmSQExEv/RDQ997Hi9YXhbhOh243R7WTzWn0rh1RM8cj8Ee99akDTHMjMU5qVHDInd0nwv5zpDKRzJbiiek+0+qcvbGg+5TZVnUnzlzMDywayY6ycRaS+xffbLEVxAbsNQJ7UoPVdYBRrNZkrPgqmJFV8egotL39cGJ+mqJg68NhaTlIcR4Q7GnsF51WCEeipxyYW394PI4RohvfDtorfFctwit+0ejsDhvLpxmTC6kFoyxuVgKtKC78ruCjTuuTV/vpiM7sW8I/GkQd4PiUIIHqHEahP/mQIl+pVLsqOMKibtUT6lRncvYBhpMz+YO30qu0xZJG28tninKPRYe5lFkKmMVS8TvO/ToiQhBHeDlDODjV9sRyoR32jao1SRsTkBSwxTSBMGegvvxdyXs66PNEB1HpC9mkDkbI2y9zcz8g/c8h3nQbhXTjMf32Ku/nwcYcXUaYpzub046bw2wZz93Fxs8amzQKjYhAHbsautI11vc1mwCora+QDLv1uRgTK4OKvV+NN7X9fbKXpyZ7zefumTl+WbhZgZTaoQG2UNx2lXSIwp8xUKyClI4mnK2ipqGT4h6YtiyAISyLUvRU+1oJJDLNwBCD8uBPLDljQumsmn1tk0yNPefUVOqIcfiHIJL8dgkJJQ2LObaVKu17Qkp/JIAtPw==
+x-microsoft-antispam-message-info: Cr3hxrN8cjQZrLERscsG1/FFzhBAEcjp9e4dd/D8rxopMhNuYC+gOgKaS9INF6rmN7EgqMlA4VGR3nZCtbWF983xGAqJ2ZDcecUcXB8yvfNtz1xfy0O6H2slVtyrtLoJQy8WgUheEHn8Rd/dfbYKL1lEbyeH/kCtmkz/+z40JDjC4WgUjT3bylrf4j3PQbkwcZPBokFahD7sygeCwNBDf9zQ7UW9dDSgOmkQD//kIhpNPQi8Qv+aSzSCkLO0kBIGjVnyI/Zg1vtcD7s30SAu4rs7hl4sQGKxZ2w0CpvpAGIzkmsf6jyPEn+m3bnjsFQnxsun8pB+V/FnqSQxg/imxr5Rsb3Y0GpcQ2DsIZ5rjeol000JtJZRq01YWjdmDYVX6rP/kL9jRDifscHwjz4spzw97e60yOhlK1/UrlY68dvOjlqxJ5A+jKPmaPfaM5Y8ApPS3FFwObGnqpyGDD2UUjZrBJ0ha5bVmmuihMZEEpLss+sm5p3cLqeYTX1gljzrqa0fgoIKir4ROEKt3qWp+ZeBlus4AqJb1B//glmyr2e7hKHNvMs1KoYu5/CuAeyHWBr9IqaQP/D3vVSozZGDUkSF7vGNFhGFlG3S7Z2hQ9d6dn2T5dzngvT3yOe7NI118W/kVPfBhpZPhQBpsS5E4ruJ0zEwOiT87OWawMdb1eEEKWuzKmo/2LVvYuk6TigodsMzNxNlVaY+LIKby5ZP2WaPNlIrOPBXkMx7I5/LX2XCrMQTCfXpRRuJi5LRKcNsne3iOsjje2diTENabCH1cQ==
 x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(366004)(55016003)(33656002)(316002)(2906002)(53546011)(9686003)(7696005)(6506007)(8936002)(5660300002)(7406005)(7416002)(52536014)(8676002)(26005)(186003)(64756008)(107886003)(82960400001)(38070700005)(71200400001)(122000001)(86362001)(6916009)(54906003)(508600001)(38100700002)(66446008)(76116006)(66946007)(66556008)(66476007)(4326008)(83380400001);
+ IPV:NLI; SFV:NSPM; H:PH0PR21MB3025.namprd21.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(451199009)(6506007)(508600001)(82960400001)(10290500003)(110136005)(8990500004)(82950400001)(53546011)(55016003)(921005)(7416002)(8676002)(66476007)(66946007)(71200400001)(316002)(86362001)(5660300002)(66556008)(64756008)(66446008)(76116006)(52536014)(38070700005)(186003)(26005)(122000001)(9686003)(33656002)(7696005)(83380400001)(8936002)(38100700002)(2906002);
  DIR:OUT; SFP:1102; 
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Qi9WVzhFcXlVVWdCZklZeDlNMTdvWm9yQ1FwMks4dWw0clJLell5SWdPVHlW?=
- =?utf-8?B?dmJ2RmQrcFZOcWRnbjlmZW01eTNQZlRpZXh0U3pHSVpXenh3Sm53QzhwbHQx?=
- =?utf-8?B?Z0laVU4wVGpodVNldGpvYmxTOGorakhlbTVWdWwyaFluclJkbnF0QmI5NXk1?=
- =?utf-8?B?ZzVEYU9xSHBxZThXNFdBNGQ4Z1VseUFiSHJLRFdXdGpodFVyekVlQUR0VUhT?=
- =?utf-8?B?VUhJVjJDZkdnUEtnSC9SaW1vUVQ5b2tEdDNEa3BWdVdBSkFrT3hZMkNWS3A4?=
- =?utf-8?B?NFUvWmxjT2ZXaWxHOTBRM0lZeW5OUmszVWUrSFFIdXhiTm5POFNoMHBZUHRR?=
- =?utf-8?B?eFptNkFNbXdWR2hRMnZqaUpYaEtIVFBDcnhac2h1K0VhTUpEREZJeWh1U3hX?=
- =?utf-8?B?YTFuTDU1aTgwZ3U3R3FFWHdPMlpwbnR3N2VxYUJqZFl6YXFxREtxRy9JT0Zz?=
- =?utf-8?B?eCt2K3c1cktDbThremxDWTNMZ3pZckJ4dXROekpzM2tWMXdxUTB4Y1I0VThy?=
- =?utf-8?B?eVgrQXVtZ3lNaWNBOHh5ZjZCN0FyM1lyZWxRTEhxejREN3NNa1o5WTlYVWEz?=
- =?utf-8?B?TXdYaUFRMmJ6RXlmdStqUUhCSmE0blpZU0t3WlB3SW1NOG9BbG5ZMlZwSGhT?=
- =?utf-8?B?TUJEbzNkZlk0Q2xESE11OXJPR3BLazJzSUJ1S1dUbngrUCtLT09UYk1BbG5T?=
- =?utf-8?B?QkF6bUJ2V29hMjhQUVVzYjZuaVBDZTJBM2RseGxnODBGWGpMSVdMQ2lzNVNs?=
- =?utf-8?B?RWpPSjl4MktVUjhhYWxtbUEvOFEvTk5CNDJ2bjVpejZ2R0RPZFBSV3BhcTg4?=
- =?utf-8?B?RnB2TXIzVU9pWFkrMEplZmF5Zms1SXdkciszRUJtRGQrNEJuMWp1N2ZZOHZp?=
- =?utf-8?B?WjdEZ2ZJSXFIWktEQjBSKzFTQ0VHZVdza05TK3JsOHFaYjdVMzhpbTdiVmlX?=
- =?utf-8?B?NEpwSUorVjI2MHZsUjIzc2t3RWd6VitCZDRJb0F0NUFIWEIxeDI4RVF1Q3Za?=
- =?utf-8?B?V01mc0RUVW5weExiMVpDcS9PVTBXRHkvTVhudk9vYUc3aVNqVVpQaDZ2bUw5?=
- =?utf-8?B?MVhMbzZlN1hEYnBNRkMvYSs5d3R5Yit1N2tNWWZFcDcvK01HRHJGSTVZZ0d1?=
- =?utf-8?B?RFRVWDZDYXgxK05KQ3VXZ1R3R1Z2aURNTy9uSkhEWExvcWRMS0tzVnRDLzVP?=
- =?utf-8?B?aWNuNDdmdkZSbEFsbjBROHlZaW1jcVh1S0FIWHZXcTRHdkxmUDlvZGpjWXc3?=
- =?utf-8?B?MFNWcDhsZjJQU25IZEJRQnA3Mm91WXJZTDh0MTlYV0ZjRmZ0Qk1lRDZFMzEx?=
- =?utf-8?B?TGpKOWp5ZmNFSC9zUDQrc3pXTDRIYnJCY1N6SmtxNXJyYWYxZlhreEJLcExv?=
- =?utf-8?B?ZXppbXJzUUZodDNlM0duSkJDZmpYT0NtMlcrVHphNXExSlUxZ3BMM3d3L2hs?=
- =?utf-8?B?ZjZ3YmlGMzFkRHNzVDRZYysyRWh2emMrTnhTb3lxWFRqWkJqSnFLYnM4RTFO?=
- =?utf-8?B?TjhNSmsrRVVlaVRCckx2YVp4djkvV0QrdnFsZ2xXSUdIcXVsOVFxRytTNFM0?=
- =?utf-8?B?U0tJY0lDdE9BSjVJTXVGKytJcE4vaVB0SlVJUzZZaHU0VDRnLzRJWnJQM2RY?=
- =?utf-8?B?dW1zSzNNdnJUaVdpaE9CV0dyRXdnMEI1WGFiYjBwQkoxMFFYaWpoNEZXNWJS?=
- =?utf-8?B?a2Q2Vm92T2Z6WXNqbmVwdGNEMnVja2pmaGdBbXcreUxQTFp3bjRPWUxNRHpE?=
- =?utf-8?B?WlA4QXphZGY4OW05NVIyZGQvVGI5MmtkTFZTelluWXpoanNQTlNpbjlHU1VB?=
- =?utf-8?B?TGlIOWdJdUQxSzhoR2lMWFArbWtaVE9IK1Z3b0lBOTJWbExkQkcweXUvZ3or?=
- =?utf-8?B?djF6T2VYUXRKV0lUYXpEai9HYU1kWWpDSzdSVUxZckltNHhTNTRtNFBCbVpD?=
- =?utf-8?Q?SZOxp6/Ujkb9SZPN1pmHXe0lpeZRve3p?=
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bjNBbWdpSUxXK1R4U3dKcndwU1l4NmZsZGpNdG5NUFhxcUVsZjJ2cHp5TW5G?=
+ =?utf-8?B?R2VNemhKbU9TdHUzWndxZVZCcFd0SXloekJvNnNMQ0lFdzMwYTlSWldPdXJF?=
+ =?utf-8?B?cDJ0eGxZTHAvSUhrR0crMzdCVkdZMm1uT0N3eFhzY0wraUdBeFpIb0xLV1Jy?=
+ =?utf-8?B?RysyWWo5U2k4bWwzaG9CN09XTDBuSUJhcERJMmFneGNmT2kyRS9tWGsrUlQv?=
+ =?utf-8?B?Ykh1Y0JJZE5LOUZEWkFmMzVyaEtOMnRzRGF6cEx3ZElSVjk3K2hZRmo5WjZY?=
+ =?utf-8?B?c3dNcmplOGRrazcxZEtKcmlEbGU0d0lSUkFQMC9WVGJObU9GR1FyTVk1bFl3?=
+ =?utf-8?B?c1dpN1N0U1o0UU05dFRDaXB5UEdtUUw1YVZQR1RQZUdrU09TMjR5UWNlQ2FJ?=
+ =?utf-8?B?djNPWUNiNGZYeVRKejZlZVFGL0VFaDU2UDNidzhmaUtxTnpDWDlWRzZzdUxH?=
+ =?utf-8?B?dmhZNzVxMjRGRTVycllxNGFYRkJVbld5bGlxSlJNT2wrSFF5UzZXci8ybitB?=
+ =?utf-8?B?bFpyczhGMzEzNmdHMDA4ckl6M1NXSGJJQWZmaXYra3ZwUzJKcHpvNld6UHBt?=
+ =?utf-8?B?NGIvdGFycVpBd2dGdWFHeVZjeFRFdGhWQnJBckh0TjJnaURDamFMZXI4VVdj?=
+ =?utf-8?B?OWRyTnJOOXRwOC9aSk12ODFZczI3dDJjMEI5eGdoVktnS1ZIamxmM1JnRGJq?=
+ =?utf-8?B?Rnl5eU13SlMwRjJyVTYzb1hUcG93Q1JMRi9weFM0ODJxQk5PV1FpcUF6YVRD?=
+ =?utf-8?B?eGkvMlNKc0FlQ2VIKzF2ZFQ1RmhRL3JoZG9SelJROVIzb1diOHo0K2djaFFm?=
+ =?utf-8?B?cEsxVVFKWEFaeC85aUt5eTJDWXBxQ1VSbFJYOXYweTc3N2RwY25LS1lSWFpX?=
+ =?utf-8?B?ZFpGeEVZcDEvKzYrYlhmV2ZHRzhGRGRXM2lQY1hYMXpkTmhhKzNSZmdTN1Ux?=
+ =?utf-8?B?ZGFRZGM2SWZzdThHeS9rMDVQNTJydXBuT3ZoSllDRXM0ZnVLMkFDSXk0dFBE?=
+ =?utf-8?B?U0J1REJibHIwUlFCSk44VWhPMEpSdkxVbFJsVkFEcmhSZDRXOFFpUE9YOFhG?=
+ =?utf-8?B?MDRmb2R1ZFgwdE1ONTM2SldLbFc1YmVKRVYxTkx1Vk9FWlNObHlvbGFqRU9Y?=
+ =?utf-8?B?YTQwUkRKRSsra2tUNzBGN3hYMEo3ZnBJZHdhOFB1SHU2MmxNWllmU2s3Vkcv?=
+ =?utf-8?B?d0ZSWjBVT3QxS2lYNThLdVd0d0YzZTlsZGRabXlRMU5TeVQxcnlVMHIxV3lm?=
+ =?utf-8?B?Uy9DcTh3QjR2Mk9XcEpYaDlZQVpVekwzM0Z3NGF6VC8wZ1V4a2hQbTZ1dmpL?=
+ =?utf-8?B?OFpsT21vd2tQUmRYd2JGMy9uQXZLSWNyMEQxa2M1QUZ5b0Jxa2RtbTNscUZX?=
+ =?utf-8?B?RTZ6N2w3dDN6ZlQvaXRnalNCMG9nWFVkUDVKVDFIMmh0cklVd2pNRUoxdVZ2?=
+ =?utf-8?B?cUgycEVRdWhhenV5aTZHbW5oT01vblRldXZhTUJXYkxvN2hKMWpCTmtaMTZm?=
+ =?utf-8?B?NlpEaDVBRk1wWldIZUhPaFRnTmJRTEc3L0RON3ZCTFlqUGk1SjY0dWI1Skg3?=
+ =?utf-8?B?aEJlU0R0dTdOZFZxRG9pUlVUSVVpa0lLSE5aLzFFS2tlZ1ZrZGdSVUtYNG1t?=
+ =?utf-8?B?SjJtMlZDZHd1K0NSV1dMK0liaXVTYUFKbDNzQ09SakRmaElCQno5emxTRXNz?=
+ =?utf-8?B?TmRDK3dCeTB1NVJTMVdDRW9BaVBUUERkb3o2dnplS0dCVzVFNU5VRGdQdnlI?=
+ =?utf-8?B?Q0dpaGUxcFByOVFlZGZQd003QWJWckIydTZJbWVrQ1pGV1JnVEU4NWQxNE1U?=
+ =?utf-8?B?VFpuakd5cmczU3BPWndHVmVrWGNOWmZ0TUJ1UHhvZHhTMWczSFI1OWFNTFpM?=
+ =?utf-8?B?d3NKeHIrSFV1TDFJT3F1TngxOEgxY0xOdG9OYVVRalpHRUdzTldrZlFROTBh?=
+ =?utf-8?B?eGN6L3pyMkFrM3ZMcXY3WlU2d1Q1U2xSQTN0eFRCU2x2dlNjNGtKSVllN0dM?=
+ =?utf-8?B?cXd3UzJNcGJnPT0=?=
 MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7f224b20-f026-4a59-84e0-08da08865b38
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Mar 2022 02:23:57.4322 (UTC)
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR21MB3025.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c6b5710b-d766-4eb2-8eb2-08da089df6d7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Mar 2022 05:12:56.7755 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5k1Qerkv4ULucZ+tSh511vqul0pKGsWKyCY1KQoGHkqc9d/mWWdBoQtEdtgVXV63bNgc+ulMmfyAz0CegnGZ5w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5261
-X-OriginatorOrg: intel.com
-Cc: "david@redhat.com" <david@redhat.com>,
- "thuth@redhat.com" <thuth@redhat.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "vneethv@linux.ibm.com" <vneethv@linux.ibm.com>,
- "agordeev@linux.ibm.com" <agordeev@linux.ibm.com>,
- "imbrenda@linux.ibm.com" <imbrenda@linux.ibm.com>,
- "will@kernel.org" <will@kernel.org>,
- "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "corbet@lwn.net" <corbet@lwn.net>,
- "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
- "pasic@linux.ibm.com" <pasic@linux.ibm.com>,
- "gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>,
- "borntraeger@linux.ibm.com" <borntraeger@linux.ibm.com>,
- "farman@linux.ibm.com" <farman@linux.ibm.com>, "Zhao, 
- Yan Y" <yan.y.zhao@intel.com>, "gor@linux.ibm.com" <gor@linux.ibm.com>,
- "schnelle@linux.ibm.com" <schnelle@linux.ibm.com>,
- "hca@linux.ibm.com" <hca@linux.ibm.com>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "freude@linux.ibm.com" <freude@linux.ibm.com>,
- "pbonzini@redhat.com" <pbonzini@redhat.com>,
- "frankja@linux.ibm.com" <frankja@linux.ibm.com>,
- "pmorel@linux.ibm.com" <pmorel@linux.ibm.com>,
- "cohuck@redhat.com" <cohuck@redhat.com>,
- "oberpar@linux.ibm.com" <oberpar@linux.ibm.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "svens@linux.ibm.com" <svens@linux.ibm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Robin Murphy <robin.murphy@arm.com>
+X-MS-Exchange-CrossTenant-userprincipalname: r9lwAvjQmsDwiwCgo1Z7qpQfsnrXly65Q4HIEmcfUgYGYD9IBJXbM3DqRXey4IGqZmlhxzrzacSaYB64t9rxdWsm3zXRPHZDKWY4vux6NO0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1466
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -211,53 +171,112 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: "Michael Kelley \(LINUX\) via iommu" <iommu@lists.linux-foundation.org>
+Reply-To: "Michael Kelley \(LINUX\)" <mikelley@microsoft.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-PiBGcm9tOiBKYXNvbiBHdW50aG9ycGUgPGpnZ0BudmlkaWEuY29tPg0KPiBTZW50OiBUaHVyc2Rh
-eSwgTWFyY2ggMTcsIDIwMjIgOTo1MyBQTQ0KPiANCj4gT24gVGh1LCBNYXIgMTcsIDIwMjIgYXQg
-MDU6NDc6MzZBTSArMDAwMCwgVGlhbiwgS2V2aW4gd3JvdGU6DQo+ID4gPiBGcm9tOiBSb2JpbiBN
-dXJwaHkNCj4gPiA+IFNlbnQ6IFR1ZXNkYXksIE1hcmNoIDE1LCAyMDIyIDY6NDkgUE0NCj4gPiA+
-DQo+ID4gPiBPbiAyMDIyLTAzLTE0IDE5OjQ0LCBNYXR0aGV3IFJvc2F0byB3cm90ZToNCj4gPiA+
-ID4gczM5MHggd2lsbCBpbnRyb2R1Y2UgYW4gYWRkaXRpb25hbCBkb21haW4gdHlwZSB0aGF0IGlz
-IHVzZWQgZm9yDQo+ID4gPiA+IG1hbmFnaW5nIElPTU1VIG93bmVkIGJ5IEtWTS4gIERlZmluZSB0
-aGUgdHlwZSBoZXJlIGFuZCBhZGQgYW4NCj4gPiA+ID4gaW50ZXJmYWNlIGZvciBhbGxvY2F0aW5n
-IGEgc3BlY2lmaWVkIHR5cGUgdnMgdGhlIGRlZmF1bHQgdHlwZS4NCj4gPiA+DQo+ID4gPiBJJ20g
-YWxzbyBub3QgYSBodWdlIGZhbiBvZiBhZGRpbmcgYSBuZXcgZG9tYWluX2FsbG9jIGludGVyZmFj
-ZSBsaWtlDQo+ID4gPiB0aGlzLCBob3dldmVyIGlmIGl0IGlzIGp1c3RpZmlhYmxlLCB0aGVuIHBs
-ZWFzZSBtYWtlIGl0IHRha2Ugc3RydWN0DQo+ID4gPiBkZXZpY2UgcmF0aGVyIHRoYW4gc3RydWN0
-IGJ1c190eXBlIGFzIGFuIGFyZ3VtZW50Lg0KPiA+ID4NCj4gPiA+IEl0IGFsc28gc291bmRzIGxp
-a2UgdGhlcmUgbWF5IGJlIGEgZGVncmVlIG9mIGNvbmNlcHR1YWwgb3ZlcmxhcCBoZXJlDQo+ID4g
-PiB3aXRoIHdoYXQgSmVhbi1QaGlsaXBwZSBpcyB3b3JraW5nIG9uIGZvciBzaGFyaW5nIHBhZ2V0
-YWJsZXMgYmV0d2Vlbg0KPiBLVk0NCj4gPiA+IGFuZCBTTU1VIGZvciBBbmRyb2lkIHBLVk0sIHNv
-IGl0J3MgcHJvYmFibHkgd29ydGggc29tZSB0aG91Z2h0IG92ZXINCj4gPiA+IHdoZXRoZXIgdGhl
-cmUncyBhbnkgc2NvcGUgZm9yIGNvbW1vbiBpbnRlcmZhY2VzIGluIHRlcm1zIG9mIGFjdHVhbA0K
-PiA+ID4gaW1wbGVtZW50YXRpb24uDQo+ID4NCj4gPiBTYW1lIGhlcmUuIFlhbiBaaGFvIGlzIHdv
-cmtpbmcgb24gcGFnZSB0YWJsZSBzaGFyaW5nIGJldHdlZW4gS1ZNDQo+ID4gYW5kIFZULWQuIFRo
-aXMgaXMgb25lIGltcG9ydGFudCB1c2FnZSB0byBidWlsZCBhdG9wIGlvbW11ZmQgYW5kDQo+ID4g
-YSBzZXQgb2YgY29tbW9uIGludGVyZmFjZXMgYXJlIGRlZmluaXRlbHkgbmVjZXNzYXJ5IGhlcmUu
-IPCfmIoNCj4gDQo+IEkgYWx3YXlzIHRob3VnaHQgJ3BhZ2UgdGFibGUgc2hhcmluZyB3aXRoIEtW
-TScgaXMgU1ZBIC0gaWUgaXQgcmVxdWlyZXMNCj4gUFJJIGluIHRoZSBJT01NVSBkcml2ZXIgYXMg
-dGhlIEtWTSBwYWdlIHRhYmxlIGlzIGZ1bGx5IHVucGlubmVkIGFuZA0KPiBkeW5hbWljLiBUaGlz
-IFMzOTAgY2FzZSBpcyBub3QgZG9pbmcgU1ZBL1BSSQ0KPiANCj4gQXJlIHBlb3BsZSB3b3JraW5n
-IG9uIHRlYWNoaW5nIEtWTSB0byBETUEgcGluIGV2ZXJ5IHBhZ2UgYW5kIGF2b2lkDQo+IGhhdmlu
-ZyBhIGR5bmFtaWMgcGFnZSB0YWJsZT8gSSdtIHN1cnByaXNlZCwgYSBsb3Qgb2Ygc3R1ZmYgd29u
-J3Qgd29yaywNCj4gZWcgd3JpdGUgcHJvdGVjdC4uDQo+IA0KDQpZZXMsIHRoYXQgaXMgYW5vdGhl
-ciBtYWpvciBwYXJ0IHdvcmsgYmVzaWRlcyB0aGUgaW9tbXVmZCB3b3JrLiBBbmQNCml0IGlzIG5v
-dCBjb21wYXRpYmxlIHdpdGggS1ZNIGZlYXR1cmVzIHdoaWNoIHJlbHkgb24gdGhlIGR5bmFtaWMN
-Cm1hbm5lciBvZiBFUFQuIFRob3VnaCBJdCBpcyBhIGJpdCBxdWVzdGlvbmFibGUgd2hldGhlciBp
-dCdzIHdvcnRoeSBvZiANCmRvaW5nIHNvIGp1c3QgZm9yIHNhdmluZyBtZW1vcnkgZm9vdHByaW50
-IHdoaWxlIGxvc2luZyBvdGhlciBjYXBhYmlsaXRpZXMsDQppdCBpcyBhIHJlcXVpcmVtZW50IGZv
-ciBzb21lIGZ1dHVyZSBzZWN1cml0eSBleHRlbnNpb24gaW4gSW50ZWwgdHJ1c3RlZA0KY29tcHV0
-aW5nIGFyY2hpdGVjdHVyZS4gQW5kIEtWTSBoYXMgYmVlbiBwaW5uaW5nIHBhZ2VzIGZvciBTRVYv
-VERYL2V0Yy4NCnRvZGF5IHRodXMgc29tZSBmYWNpbGl0aWVzIGNhbiBiZSByZXVzZWQuIEJ1dCBJ
-IGFncmVlIGl0IGlzIG5vdCBhIHNpbXBsZQ0KdGFzayB0aHVzIHdlIG5lZWQgc3RhcnQgZGlzY3Vz
-c2lvbiBlYXJseSB0byBleHBsb3JlIHZhcmlvdXMgZ2FwcyBpbg0KaW9tbXUgYW5kIGt2bS4NCg0K
-SW1hZ2luZSBtYW55IHRocmVhZHMgKGRpcnR5IHRyYWNraW5nLCBuZXN0ZWQsIEtWTSBwYWdlIHRh
-YmxlIHNoYXJpbmcsDQpldGMuKSB3aWxsIHJ1biBpbiBwYXJhbGxlbCBzb29uIGFmdGVyIHRoZSBu
-ZXcgaW9tbXVmZCBSRkMgaXMgb3V0LiBsb3RzIG9mDQpmdW4gYWhlYWQuIPCfmIoNCg0KVGhhbmtz
-DQpLZXZpbg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
-Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+From: Robin Murphy <robin.murphy@arm.com> Sent: Thursday, March 17, 2022 10:15 AM
+> 
+> On 2022-03-17 16:25, Michael Kelley via iommu wrote:
+> > PCI pass-thru devices in a Hyper-V VM are represented as a VMBus
+> > device and as a PCI device.  The coherence of the VMbus device is
+> > set based on the VMbus node in ACPI, but the PCI device has no
+> > ACPI node and defaults to not hardware coherent.  This results
+> > in extra software coherence management overhead on ARM64 when
+> > devices are hardware coherent.
+> >
+> > Fix this by propagating the coherence of the VMbus device to the
+> > PCI device.  There's no effect on x86/x64 where devices are
+> > always hardware coherent.
+> >
+> > Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+> > ---
+> >   drivers/pci/controller/pci-hyperv.c | 17 +++++++++++++----
+> >   1 file changed, 13 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+> > index ae0bc2f..14276f5 100644
+> > --- a/drivers/pci/controller/pci-hyperv.c
+> > +++ b/drivers/pci/controller/pci-hyperv.c
+> > @@ -49,6 +49,7 @@
+> >   #include <linux/refcount.h>
+> >   #include <linux/irqdomain.h>
+> >   #include <linux/acpi.h>
+> > +#include <linux/dma-map-ops.h>
+> >   #include <asm/mshyperv.h>
+> >
+> >   /*
+> > @@ -2142,9 +2143,9 @@ static void hv_pci_remove_slots(struct hv_pcibus_device
+> *hbus)
+> >   }
+> >
+> >   /*
+> > - * Set NUMA node for the devices on the bus
+> > + * Set NUMA node and DMA coherence for the devices on the bus
+> >    */
+> > -static void hv_pci_assign_numa_node(struct hv_pcibus_device *hbus)
+> > +static void hv_pci_assign_properties(struct hv_pcibus_device *hbus)
+> >   {
+> >   	struct pci_dev *dev;
+> >   	struct pci_bus *bus = hbus->bridge->bus;
+> > @@ -2167,6 +2168,14 @@ static void hv_pci_assign_numa_node(struct
+> hv_pcibus_device *hbus)
+> >   				     numa_map_to_online_node(
+> >   					     hv_dev->desc.virtual_numa_node));
+> >
+> > +		/*
+> > +		 * On ARM64, propagate the DMA coherence from the VMbus device
+> > +		 * to the corresponding PCI device. On x86/x64, these calls
+> > +		 * have no effect because DMA is always hardware coherent.
+> > +		 */
+> > +		dev_set_dma_coherent(&dev->dev,
+> > +			dev_is_dma_coherent(&hbus->hdev->device));
+> 
+> Eww... if you really have to do this, I'd prefer to see a proper
+> hv_dma_configure() helper implemented and wired up to
+> pci_dma_configure(). Although since it's a generic property I guess at
+> worst pci_dma_configure could perhaps propagate coherency from the host
+> bridge to its children by itself in the absence of any other firmware
+> info. And it's built-in so could use arch_setup_dma_ops() like everyone
+> else.
+> 
+
+I'm not seeing an existing mechanism to provide a "helper" or override
+of pci_dma_configure().   Could you elaborate?  Or is this something
+that needs to be created?
+
+Michael
+
+> Robin.
+> 
+> > +
+> >   		put_pcichild(hv_dev);
+> >   	}
+> >   }
+> > @@ -2191,7 +2200,7 @@ static int create_root_hv_pci_bus(struct hv_pcibus_device
+> *hbus)
+> >   		return error;
+> >
+> >   	pci_lock_rescan_remove();
+> > -	hv_pci_assign_numa_node(hbus);
+> > +	hv_pci_assign_properties(hbus);
+> >   	pci_bus_assign_resources(bridge->bus);
+> >   	hv_pci_assign_slots(hbus);
+> >   	pci_bus_add_devices(bridge->bus);
+> > @@ -2458,7 +2467,7 @@ static void pci_devices_present_work(struct work_struct
+> *work)
+> >   		 */
+> >   		pci_lock_rescan_remove();
+> >   		pci_scan_child_bus(hbus->bridge->bus);
+> > -		hv_pci_assign_numa_node(hbus);
+> > +		hv_pci_assign_properties(hbus);
+> >   		hv_pci_assign_slots(hbus);
+> >   		pci_unlock_rescan_remove();
+> >   		break;
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
