@@ -1,68 +1,92 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0C4ADC433EF
-	for <iommu@archiver.kernel.org>; Mon, 21 Mar 2022 11:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BCAF1C433FE
+	for <iommu@archiver.kernel.org>; Mon, 21 Mar 2022 11:22:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 91D7181882;
-	Mon, 21 Mar 2022 11:11:53 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 159C240643;
+	Mon, 21 Mar 2022 11:22:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id usrvednwqAF8; Mon, 21 Mar 2022 11:11:52 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QXiUni47g35l; Mon, 21 Mar 2022 11:22:39 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 70715826E7;
-	Mon, 21 Mar 2022 11:11:52 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id B381E4017A;
+	Mon, 21 Mar 2022 11:22:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A054C001A;
-	Mon, 21 Mar 2022 11:11:52 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C17A5C000B
- for <iommu@lists.linux-foundation.org>; Mon, 21 Mar 2022 11:11:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7FC68C001A;
+	Mon, 21 Mar 2022 11:22:38 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4A2C4C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Mar 2022 11:22:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id A226B409F5
- for <iommu@lists.linux-foundation.org>; Mon, 21 Mar 2022 11:11:50 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 264964035D
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Mar 2022 11:22:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EtCc3ANWwTQ0 for <iommu@lists.linux-foundation.org>;
- Mon, 21 Mar 2022 11:11:49 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id AECBF409F4
- for <iommu@lists.linux-foundation.org>; Mon, 21 Mar 2022 11:11:49 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DF93C1042;
- Mon, 21 Mar 2022 04:11:48 -0700 (PDT)
-Received: from [10.57.43.230] (unknown [10.57.43.230])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EA0783F766;
- Mon, 21 Mar 2022 04:11:46 -0700 (PDT)
-Message-ID: <fd86c2cf-3068-1bea-2a6f-46cabb019062@arm.com>
-Date: Mon, 21 Mar 2022 11:11:42 +0000
+ with ESMTP id sV5OxxRITEbI for <iommu@lists.linux-foundation.org>;
+ Mon, 21 Mar 2022 11:22:36 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com
+ [IPv6:2a00:1450:4864:20::42c])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 0D2FC40356
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Mar 2022 11:22:35 +0000 (UTC)
+Received: by mail-wr1-x42c.google.com with SMTP id t11so20227344wrm.5
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Mar 2022 04:22:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=EjTFhP6pLNh8SP7hia+QSRERJDUH8MZHoqCvzO3yUHk=;
+ b=SiNU4Iz/MmLcp3Eg9/x5F8VpGL82FE7rcP2CgSbbjSbZVCkNb9npsiF2VHJWukpJ00
+ rX9Gk4ui/c/pu5QZvgSi6a4DHQRqXMGRO0Seg4Lx7aB2q5kafVb9xYMIJXXI5TkAjcnu
+ tWYE09gta3z5KQFnQodJorT66odExJ6+jCHTg2j2FxZxB0kL1jWZGRdb47YijoAs/5ww
+ FY7YtXQJ+IPm1fYgCnEy78OpBcOik3zN+7I4lVo5ZPJM1hIxCShrHM+yFNcM6XXcuMG7
+ +SK41gum0BHXXK2FCoL/8mSBYlCz5WL+WE7sNjjqAg6Bmt2DRIsl7OrO1IcmjPGmPY8c
+ BS/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=EjTFhP6pLNh8SP7hia+QSRERJDUH8MZHoqCvzO3yUHk=;
+ b=Psa+hkkB8aV+1e3ero1v+SzSPV81r3rlCtKaHeBPBNtBtbNfb8i7qFlZsVk3TJXWDs
+ AsAff0rtSLecRi/Fe/egOc334LGaH+870tDuArZyfezVkvgMG/E/fOY1iGgmhOGMlax7
+ ESuWTSXr+4a1dklWjCYvQnfRi5hDZpX5B3N1pssA1RdaAVSTFOz4ZUKta7DCf6IOPiLT
+ LLdL6gVnTI8nyzDgQfpyF5ZX5dya66+O9dJFlB56x5OuCdLm91+fsDDCvC21uU5XbwOv
+ zs2psybDdXW+VMTqHJhZ5jzsZDsgdsVNiF7bts3Zx5QW1z5rZzLVvI2tUlsKCxAav9LK
+ OT7Q==
+X-Gm-Message-State: AOAM531YsptGDEd3aKqdA1QU2PJyS63sGUH7Q36cPdgVfGHmjmt/Hc6M
+ ZpRxsOZKF/3f4Fx65CkSVz71Hg==
+X-Google-Smtp-Source: ABdhPJxxiqoqWBhnbWtqpG8g8SqCncPhXvaJfxdi+9fEwzbBfwr4SieS2NKJ2O3yzbYubf5rUoZPOg==
+X-Received: by 2002:a05:6000:2c8:b0:204:f83:ba35 with SMTP id
+ o8-20020a05600002c800b002040f83ba35mr4508092wry.539.1647861754143; 
+ Mon, 21 Mar 2022 04:22:34 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
+ [82.27.106.168]) by smtp.gmail.com with ESMTPSA id
+ l13-20020a05600002ad00b00203d64c5289sm14817902wry.112.2022.03.21.04.22.33
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 21 Mar 2022 04:22:33 -0700 (PDT)
+Date: Mon, 21 Mar 2022 11:22:09 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH RFC 01/11] iommu: Add pasid_bits field in struct dev_iommu
+Message-ID: <Yjhf4dlthDkHBICr@myrica>
+References: <20220320064030.2936936-1-baolu.lu@linux.intel.com>
+ <20220320064030.2936936-2-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/2] thunderbolt: Make iommu_dma_protection more
- accurate
-Content-Language: en-GB
-To: "mika.westerberg@linux.intel.com" <mika.westerberg@linux.intel.com>,
- "Limonciello, Mario" <Mario.Limonciello@amd.com>
-References: <cover.1647624084.git.robin.murphy@arm.com>
- <0dd14883930c9f55ace22162e23765a37d91a057.1647624084.git.robin.murphy@arm.com>
- <DM4PR12MB51683722CF9A553563D0C721E2139@DM4PR12MB5168.namprd12.prod.outlook.com>
- <YjhaViFzmEjBgmmu@lahna>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <YjhaViFzmEjBgmmu@lahna>
-Cc: "michael.jamet@intel.com" <michael.jamet@intel.com>,
- "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "YehezkelShB@gmail.com" <YehezkelShB@gmail.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "andreas.noever@gmail.com" <andreas.noever@gmail.com>,
- "hch@lst.de" <hch@lst.de>
+Content-Disposition: inline
+In-Reply-To: <20220320064030.2936936-2-baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ Christoph Hellwig <hch@infradead.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,82 +99,32 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-03-21 10:58, mika.westerberg@linux.intel.com wrote:
-> Hi Mario,
-> 
-> On Fri, Mar 18, 2022 at 10:29:59PM +0000, Limonciello, Mario wrote:
->> [Public]
->>
->>> Between me trying to get rid of iommu_present() and Mario wanting to
->>> support the AMD equivalent of DMAR_PLATFORM_OPT_IN, scrutiny has
->>> shown
->>> that the iommu_dma_protection attribute is being far too optimistic.
->>> Even if an IOMMU might be present for some PCI segment in the system,
->>> that doesn't necessarily mean it provides translation for the device(s)
->>> we care about. Furthermore, all that DMAR_PLATFORM_OPT_IN really does
->>> is tell us that memory was protected before the kernel was loaded, and
->>> prevent the user from disabling the intel-iommu driver entirely. While
->>> that lets us assume kernel integrity, what matters for actual runtime
->>> DMA protection is whether we trust individual devices, based on the
->>> "external facing" property that we expect firmware to describe for
->>> Thunderbolt ports.
->>>
->>> It's proven challenging to determine the appropriate ports accurately
->>> given the variety of possible topologies, so while still not getting a
->>> perfect answer, by putting enough faith in firmware we can at least get
->>> a good bit closer. If we can see that any device near a Thunderbolt NHI
->>> has all the requisites for Kernel DMA Protection, chances are that it
->>> *is* a relevant port, but moreover that implies that firmware is playing
->>> the game overall, so we'll use that to assume that all Thunderbolt ports
->>> should be correctly marked and thus will end up fully protected.
->>>
->>
->> This approach looks generally good to me.  I do worry a little bit about older
->> systems that didn't set ExternalFacingPort in the FW but were previously setting
->> iommu_dma_protection, but I think that those could be treated on a quirk
->> basis to set PCI IDs for those root ports as external facing if/when they come
->> up.
-> 
-> There are no such systems out there AFAICT.
+Hi Baolu,
 
-And even if there are, as above they've never actually been fully 
-protected and still won't be, so it's arguably a good thing for them to 
-stop thinking so.
+On Sun, Mar 20, 2022 at 02:40:20PM +0800, Lu Baolu wrote:
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 627a3ed5ee8f..8e262210b5ad 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2812,6 +2812,7 @@ static int arm_smmu_dev_enable_feature(struct device *dev,
+>  		master->iopf_enabled = true;
+>  		return 0;
+>  	case IOMMU_DEV_FEAT_SVA:
+> +		dev->iommu->pasid_bits = master->ssid_bits;
 
->> I'll send up a follow up patch that adds the AMD ACPI table check.
->> If it looks good can roll it into your series for v3, or if this series goes
->> as is for v2 it can come on its own.
->>
->>> CC: Mario Limonciello <mario.limonciello@amd.com>
->>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->>> ---
->>>
->>> v2: Give up trying to look for specific devices, just look for evidence
->>>      that firmware cares at all.
->>
->> I still do think you could know exactly which devices to use if you're in
->> SW CM mode, but I guess the consensus is to not bifurcate the way this
->> can be checked.
-> 
-> Indeed.
-> 
-> The patch looks good to me now. I will give it a try on a couple of
-> systems later today or tomorrow and let you guys know how it went. I
-> don't expect any problems but let's see.
-> 
-> Thanks a lot Robin for working on this :)
+This would be better in arm_smmu_probe_device()
 
-Heh, let's just hope the other half-dozen or so subsystems I need to 
-touch for this IOMMU cleanup aren't all quite as involved as this turned 
-out to be :)
+Thanks,
+Jean
 
-Cheers,
-Robin.
+>  		return arm_smmu_master_enable_sva(master);
+>  	default:
+>  		return -EINVAL;
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
