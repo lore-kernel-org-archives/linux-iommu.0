@@ -1,63 +1,94 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B0024C433EF
-	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 19:31:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 20269C433F5
+	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 20:10:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 56CDD418DC;
-	Tue, 22 Mar 2022 19:31:42 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id B901260DF6;
+	Tue, 22 Mar 2022 20:10:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zoqcRE9tZ09w; Tue, 22 Mar 2022 19:31:41 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 3046D418CF;
-	Tue, 22 Mar 2022 19:31:41 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id MtkpwVyVGdWl; Tue, 22 Mar 2022 20:10:35 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 8D5E360DE5;
+	Tue, 22 Mar 2022 20:10:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D74ACC0012;
-	Tue, 22 Mar 2022 19:31:40 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 447F2C000B
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 19:31:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 60EB6C0012;
+	Tue, 22 Mar 2022 20:10:34 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3350FC000B
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 20:10:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 322C840B0F
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 19:31:39 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 1552841864
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 20:10:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qPOnPeqGZD5K for <iommu@lists.linux-foundation.org>;
- Tue, 22 Mar 2022 19:31:38 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 1417C40004
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 19:31:37 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0299023A;
- Tue, 22 Mar 2022 12:31:37 -0700 (PDT)
-Received: from [10.57.43.230] (unknown [10.57.43.230])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3CD2D3F66F;
- Tue, 22 Mar 2022 12:31:35 -0700 (PDT)
-Message-ID: <065a11de-da43-6854-f940-d1537227f191@arm.com>
-Date: Tue, 22 Mar 2022 19:31:31 +0000
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=google.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wUCpps1wf0VF for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Mar 2022 20:10:32 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com
+ [IPv6:2607:f8b0:4864:20::42a])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 842E541863
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 20:10:32 +0000 (UTC)
+Received: by mail-pf1-x42a.google.com with SMTP id u17so19069067pfk.11
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 13:10:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=yxRoOuDAQ32T7epvmjmCMUDa2ze+iRE6nt0uAlg4Cn4=;
+ b=lmELaTz7WP/HCCZzx81ngJJsBsHi+8NNkFAdHtPQ8AA9Up+PwmmEc27JoRzPCC3bGF
+ ypk4x3onyQ3gaTiIYEwIDn5jRK/vCJg3N5JhJf6RAjv4NRF5GENUps0Ntr+1PcidHWaB
+ 2a6jKQMajECNEYH6nQUEqAFRtx2s1//6L8S/oUjHhiCItaEBkG9fYZMeHRARLVRof+fU
+ VeqU2FeJGUYPCNnYajwC2MZNe12kKcEphyLwe+XM0C13pKnxJoNN8QEk0KXf4o5afx/X
+ Kq+6r3tYjHYxjwRpkEyKGU0QDVqvlg29oIG0TAs3YSO/LyFvemSnXsoHZLDq+hg0KcvL
+ 9tcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=yxRoOuDAQ32T7epvmjmCMUDa2ze+iRE6nt0uAlg4Cn4=;
+ b=10TeujkCxJ66dm4M+X+7hAzRsCxRbvzB+H9BdIsimeg6xhNE49HeBna07diEmFMyMJ
+ D0NNxT9hDEGJhK3wnDb14yNpbmH63rTGgFJFQgwpAC5Vj/PH5Dh0W/5Kx5KyiXLctM/+
+ rrb0wUL3j6G3GAkJOX1vaE25DvjVxuBMHo2v3mg+ybYGiw3OQLLhJRuj/VIy78nFR3SM
+ Av81wuvFG4qfuIRQOwasL/0Llh1A8uqCHaPiVfZ3AGa5KRe5jNZPAlIFtILAGC4OPYgM
+ /xHVbiSJpbrIng+vOyIgsjuj1Oxsk0Iae2/opIxZmZBbQ0q068byTpJv0+gfNFoCn0zV
+ 9M2A==
+X-Gm-Message-State: AOAM5306aSq2xBuanQxiLpYky79VLCuT4Crx2/aAIqtN2a5m+SjZ3hAy
+ 6KEuws+pBKqC4la3GBltVDJZwuLUlNKUGIBJZtQUIA==
+X-Google-Smtp-Source: ABdhPJyiLa4J6HZobaRPPLdsxYqNc7OtUXhU/czFKSJbwUv9zO/SiqHx4I4DyNmue6FaGBfUb/DumAGOIvZe5zD0WZc=
+X-Received: by 2002:a63:416:0:b0:386:66e:33d9 with SMTP id
+ 22-20020a630416000000b00386066e33d9mr833745pge.146.1647979831669; 
+ Tue, 22 Mar 2022 13:10:31 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v8 01/11] ACPI/IORT: Add temporary RMR node flag
- definitions
-Content-Language: en-GB
-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
- linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org
-References: <20220221154344.2126-1-shameerali.kolothum.thodi@huawei.com>
- <20220221154344.2126-2-shameerali.kolothum.thodi@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220221154344.2126-2-shameerali.kolothum.thodi@huawei.com>
-Cc: jon@solid-run.com, linuxarm@huawei.com, steven.price@arm.com,
- guohanjun@huawei.com, yangyicong@huawei.com, Sami.Mujawar@arm.com,
- will@kernel.org, wanghuiqiang@huawei.com
+References: <20220320062907.3272903-1-rajatja@google.com>
+ <YjmQq1DvWnJwUh6R@infradead.org>
+ <CAJZ5v0h9TnUELahzkO59Vqoio1QRHfixk58Yxgffa72rmEBgOA@mail.gmail.com>
+In-Reply-To: <CAJZ5v0h9TnUELahzkO59Vqoio1QRHfixk58Yxgffa72rmEBgOA@mail.gmail.com>
+Date: Tue, 22 Mar 2022 13:09:55 -0700
+Message-ID: <CACK8Z6Fz-TPW1fMpQB09fw11neq8eyn89XB8vy0ioB5zB0Hb9Q@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] PCI: Rename "pci_dev->untrusted" to
+ "pci_dev->poses_dma_risk"
+To: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Rajat Jain <rajatxjain@gmail.com>, Will Deacon <will@kernel.org>,
+ Pavel Machek <pavel@denx.de>, Linux PCI <linux-pci@vger.kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+ "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
+ Bjorn Helgaas <helgaas@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Oliver O'Halloran <oohall@gmail.com>,
+ David Woodhouse <dwmw2@infradead.org>,
+ Mika Westerberg <mika.westerberg@linux.intel.com>,
+ Jesse Barnes <jsbarnes@google.com>, Dmitry Torokhov <dtor@google.com>,
+ Len Brown <lenb@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -70,46 +101,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+From: Rajat Jain via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Rajat Jain <rajatja@google.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMi0wMi0yMSAxNTo0MywgU2hhbWVlciBLb2xvdGh1bSB2aWEgaW9tbXUgd3JvdGU6Cj4g
-SU9SVCByZXYgRS5kIGludHJvZHVjZXMgbW9yZSBkZXRhaWxzIGludG8gdGhlIFJNUiBub2RlIEZs
-YWdzCj4gZmllbGQuIEFkZCB0ZW1wb3JhcnkgZGVmaW5pdGlvbnMgdG8gZGVzY3JpYmUgYW5kIGFj
-Y2VzcyB0aGVzZQo+IEZsYWdzIGZpZWxkIHVudGlsIEFDUElDQSBoZWFkZXIgaXMgdXBkYXRlZCB0
-byBzdXBwb3J0IEUuZC4KPiAKPiBUaGlzIHBhdGNoIGNhbiBiZSByZXZlcnRlZMKgb25jZSB0aGUg
-aW5jbHVkZS9hY3BpL2FjdGJsMi5oIGhhcwo+IGFsbCB0aGUgcmVsZXZhbnTCoGRlZmluaXRpb25z
-Lgo+IAo+IFNpZ25lZC1vZmYtYnk6IFNoYW1lZXIgS29sb3RodW0gPHNoYW1lZXJhbGkua29sb3Ro
-dW0udGhvZGlAaHVhd2VpLmNvbT4KPiAtLS0KPiBQbGVhc2UgZmluZCB0aGUgQUNQSUNBIEUuZCBy
-ZWxhdGVkIGNoYW5nZXMgcHVsbCByZXF1ZXN0IGhlcmUsCj4gaHR0cHM6Ly9naXRodWIuY29tL2Fj
-cGljYS9hY3BpY2EvcHVsbC83NTIKPiAKPiAtLS0KPiAgIGRyaXZlcnMvYWNwaS9hcm02NC9pb3J0
-LmMgfCAyNCArKysrKysrKysrKysrKysrKysrKysrKysKPiAgIDEgZmlsZSBjaGFuZ2VkLCAyNCBp
-bnNlcnRpb25zKCspCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvYWNwaS9hcm02NC9pb3J0LmMg
-Yi9kcml2ZXJzL2FjcGkvYXJtNjQvaW9ydC5jCj4gaW5kZXggZjJmOGYwNTY2MmRlLi4wNzMwYzRk
-YmI3MDAgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9hY3BpL2FybTY0L2lvcnQuYwo+ICsrKyBiL2Ry
-aXZlcnMvYWNwaS9hcm02NC9pb3J0LmMKPiBAQCAtMjUsNiArMjUsMzAgQEAKPiAgICNkZWZpbmUg
-SU9SVF9JT01NVV9UWVBFCQkoKDEgPDwgQUNQSV9JT1JUX05PREVfU01NVSkgfAlcCj4gICAJCQkJ
-KDEgPDwgQUNQSV9JT1JUX05PREVfU01NVV9WMykpCj4gICAKPiArLyoKPiArICogVGhlIGZvbGxv
-d2luZyBSTVIgcmVsYXRlZCBkZWZpbml0aW9ucyBhcmUgdGVtcG9yYXJ5IGFuZAo+ICsgKiBjYW4g
-YmUgcmVtb3ZlZCBvbmNlIEFDUElDQSBoZWFkZXJzIHN1cHBvcnQgSU9SVCByZXYgRS5kCj4gKyAq
-Lwo+ICsjaWZuZGVmIEFDUElfSU9SVF9STVJfUkVNQVBfUEVSTUlUVEVECj4gKyNkZWZpbmUgQUNQ
-SV9JT1JUX1JNUl9SRU1BUF9QRVJNSVRURUQJKDEpCj4gKyNlbmRpZgo+ICsKPiArI2lmbmRlZiBB
-Q1BJX0lPUlRfUk1SX0FDQ0VTU19QUklWSUxFR0UKPiArI2RlZmluZSBBQ1BJX0lPUlRfUk1SX0FD
-Q0VTU19QUklWSUxFR0UJKDEgPDwgMSkKPiArI2VuZGlmCj4gKwo+ICsjaWZuZGVmIEFDUElfSU9S
-VF9STVJfQUNDRVNTX0FUVFJJQlVURVMKPiArI2RlZmluZSBBQ1BJX0lPUlRfUk1SX0FDQ0VTU19B
-VFRSSUJVVEVTKGZsYWdzKQkoKChmbGFncykgPj4gMikgJiAweEZGKQo+ICsjZW5kaWYKPiArCj4g
-KyNpZm5kZWYgQUNQSV9JT1JUX1JNUl9BVFRSX0RFVklDRV9HUkUKPiArI2RlZmluZSBBQ1BJX0lP
-UlRfUk1SX0FUVFJfREVWSUNFX0dSRQkweDAzCj4gKyNlbmRpZgo+ICsKPiArI2lmbmRlZiBBQ1BJ
-X0lPUlRfUk1SX0FUVFJfTk9STUFMCj4gKyNkZWZpbmUgQUNQSV9JT1JUX1JNUl9BVFRSX05PUk1B
-TAkweDA1CgpGb3IgdGhlIHJlY29yZCwgSSd2ZSBjb21tZW50ZWQgZGlyZWN0bHkgb24gdGhlIEFD
-UElDQSBwdWxsIHJlcXVlc3QgdGhhdCAKSSB0aGluayB0aGlzIHNob3VsZCBiZSBtb3JlIGNsZWFy
-bHkgbmFtZWQgdG8gaW5kaWNhdGUgdGhhdCBpdCBtZWFucyAKTm9ybWFsIFdyaXRlLUJhY2sgQ2Fj
-aGVhYmxlLCByYXRoZXIgdGhhbiBiZWluZyBwb3RlbnRpYWxseSBhbWJpZ3VvdXMgCmFib3V0IGNh
-Y2hlYWJpbGl0eS4KClJvYmluLgoKPiArI2VuZGlmCj4gKwo+ICAgc3RydWN0IGlvcnRfaXRzX21z
-aV9jaGlwIHsKPiAgIAlzdHJ1Y3QgbGlzdF9oZWFkCWxpc3Q7Cj4gICAJc3RydWN0IGZ3bm9kZV9o
-YW5kbGUJKmZ3X25vZGU7Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9y
-ZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21t
-dQ==
+On Tue, Mar 22, 2022 at 4:12 AM Rafael J. Wysocki <rafael@kernel.org> wrote:
+>
+> On Tue, Mar 22, 2022 at 10:02 AM Christoph Hellwig <hch@infradead.org> wrote:
+> >
+> > On Sat, Mar 19, 2022 at 11:29:05PM -0700, Rajat Jain wrote:
+> > > Rename the field to make it more clear, that the device can execute DMA
+> > > attacks on the system, and thus the system may need protection from
+> > > such attacks from this device.
+> > >
+> > > No functional change intended.
+> > >
+> > > Signed-off-by: Rajat Jain <rajatja@google.com>
+> > > ---
+> > > v4: Initial version, created based on comments on other patch
+> >
+> > What a horrible name.  Why not untrusted_dma which captures the
+> > intent much better?
+>
+> FWIW, I like this one much better too.
+
+Sure, no problems. I can change the name to "untrusted_dma".
+
+Mika, can I carry forward your "Reviewed-by" tag with this name change too?
+
+Thanks & Best Regards,
+
+Rajat
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
