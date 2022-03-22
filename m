@@ -1,57 +1,62 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CBBD6C433F5
-	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 09:16:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B2DDCC433F5
+	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 09:53:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 51FB340AA0;
-	Tue, 22 Mar 2022 09:16:35 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 426AF60BF3;
+	Tue, 22 Mar 2022 09:53:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FBgCjmUBVrEu; Tue, 22 Mar 2022 09:16:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 036A6404C0;
-	Tue, 22 Mar 2022 09:16:33 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id tBt5bGwQfjMk; Tue, 22 Mar 2022 09:53:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 0422A60BAC;
+	Tue, 22 Mar 2022 09:53:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C08D7C0012;
-	Tue, 22 Mar 2022 09:16:33 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8AA58C000B
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 09:16:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D1A28C0012;
+	Tue, 22 Mar 2022 09:53:38 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 378A6C000B
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 09:53:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 65149404C0
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 09:16:32 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 34CAE60BF3
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 09:53:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tq4B_5y9LQNV for <iommu@lists.linux-foundation.org>;
- Tue, 22 Mar 2022 09:16:31 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 84C8D40220
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 09:16:31 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 6556268AFE; Tue, 22 Mar 2022 10:16:26 +0100 (CET)
-Date: Tue, 22 Mar 2022 10:16:26 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 2/2] thunderbolt: Make iommu_dma_protection more
- accurate
-Message-ID: <20220322091626.GB27069@lst.de>
-References: <cover.1647624084.git.robin.murphy@arm.com>
- <0dd14883930c9f55ace22162e23765a37d91a057.1647624084.git.robin.murphy@arm.com>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 9fnsVtjhrtug for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Mar 2022 09:53:36 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 1F43E60BAC
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 09:53:35 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 531B3106F;
+ Tue, 22 Mar 2022 02:53:35 -0700 (PDT)
+Received: from [10.57.43.230] (unknown [10.57.43.230])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B62283F66F;
+ Tue, 22 Mar 2022 02:53:33 -0700 (PDT)
+Message-ID: <3e715fb9-7a0d-046a-c32c-bc6afbecf55e@arm.com>
+Date: Tue, 22 Mar 2022 09:53:29 +0000
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <0dd14883930c9f55ace22162e23765a37d91a057.1647624084.git.robin.murphy@arm.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 1/2] iommu: Add capability for pre-boot DMA protection
+Content-Language: en-GB
+To: Christoph Hellwig <hch@lst.de>
+References: <cover.1647624084.git.robin.murphy@arm.com>
+ <797c70d255f946c4d631f2ffc67f277cfe0cb97c.1647624084.git.robin.murphy@arm.com>
+ <20220322091432.GA27069@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220322091432.GA27069@lst.de>
 Cc: michael.jamet@intel.com, linux-usb@vger.kernel.org,
- linux-kernel@vger.kernel.org, YehezkelShB@gmail.com,
+ linux-kernel@vger.kernel.org, andreas.noever@gmail.com,
  iommu@lists.linux-foundation.org, mario.limonciello@amd.com,
- andreas.noever@gmail.com, mika.westerberg@linux.intel.com, hch@lst.de
+ YehezkelShB@gmail.com, mika.westerberg@linux.intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -64,40 +69,45 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Mar 18, 2022 at 05:42:58PM +0000, Robin Murphy wrote:
-> Between me trying to get rid of iommu_present() and Mario wanting to
-> support the AMD equivalent of DMAR_PLATFORM_OPT_IN, scrutiny has shown
-> that the iommu_dma_protection attribute is being far too optimistic.
-> Even if an IOMMU might be present for some PCI segment in the system,
-> that doesn't necessarily mean it provides translation for the device(s)
-> we care about. Furthermore, all that DMAR_PLATFORM_OPT_IN really does
-> is tell us that memory was protected before the kernel was loaded, and
-> prevent the user from disabling the intel-iommu driver entirely. While
-> that lets us assume kernel integrity, what matters for actual runtime
-> DMA protection is whether we trust individual devices, based on the
-> "external facing" property that we expect firmware to describe for
-> Thunderbolt ports.
+On 2022-03-22 09:14, Christoph Hellwig wrote:
+> On Fri, Mar 18, 2022 at 05:42:57PM +0000, Robin Murphy wrote:
+>> VT-d's dmar_platform_optin() actually represents a combination of
+>> properties fairly well standardised by Microsoft as "Pre-boot DMA
+>> Protection" and "Kernel DMA Protection"[1]. As such, we can provide
+>> interested consumers with an abstracted capability rather than
+>> driver-specific interfaces that won't scale. We name it for the former
+>> aspect since that's what external callers are most likely to be
+>> interested in; the latter is for the IOMMU layer to handle itself.
+>>
+>> Also use this as an opportunity to draw a line in the sand and add a
+>> new interface so as not to introduce any more callers of iommu_capable()
+>> which I also want to get rid of. For now it's a quick'n'dirty wrapper
+>> function, but will evolve to subsume the internal interface in future.
+>>
+>> [1] https://docs.microsoft.com/en-us/windows-hardware/design/device-experiences/oem-kernel-dma-protection
+>>
+>> Suggested-by: Christoph Hellwig <hch@lst.de>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > 
-> It's proven challenging to determine the appropriate ports accurately
-> given the variety of possible topologies, so while still not getting a
-> perfect answer, by putting enough faith in firmware we can at least get
-> a good bit closer. If we can see that any device near a Thunderbolt NHI
-> has all the requisites for Kernel DMA Protection, chances are that it
-> *is* a relevant port, but moreover that implies that firmware is playing
-> the game overall, so we'll use that to assume that all Thunderbolt ports
-> should be correctly marked and thus will end up fully protected.
-> 
-> CC: Mario Limonciello <mario.limonciello@amd.com>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> I can't really think of a way in which I suggested this, but it does
+> looks like a good interface:
 
-Looks sensible to me:
+Well, you were the first to say it should be abstracted[1], and since my 
+initial thought that it could be hidden completely didn't pan out, I 
+felt I should give you credit for being right all along :)
 
-Acked-by: Christoph Hellwig <hch@lst.de>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+
+Thanks!
+
+Robin.
+
+[1] https://lore.kernel.org/linux-iommu/YjDDUUeZ%2FdvUZoDN@infradead.org/
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
