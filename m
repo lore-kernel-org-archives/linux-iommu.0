@@ -1,136 +1,107 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EBE04C433EF
-	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 14:57:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 24065C433F5
+	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 15:29:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 7CC824000B;
-	Tue, 22 Mar 2022 14:57:51 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id CB40B84107;
+	Tue, 22 Mar 2022 15:29:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EKSCEiSC2xpB; Tue, 22 Mar 2022 14:57:49 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id yVEkG4ujRTZx; Tue, 22 Mar 2022 15:29:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 0689240B09;
-	Tue, 22 Mar 2022 14:57:49 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 9F3F8841BF;
+	Tue, 22 Mar 2022 15:29:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CB18EC001A;
-	Tue, 22 Mar 2022 14:57:48 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4159DC000B
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:57:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 68B4BC0012;
+	Tue, 22 Mar 2022 15:29:34 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DDFF6C000B
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 15:29:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 3D9B0417F7
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:57:47 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id DA25A60B18
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 15:29:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id g4_B5Wri-7_F for <iommu@lists.linux-foundation.org>;
- Tue, 22 Mar 2022 14:57:46 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on20601.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e88::601])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 651BB41813
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:57:46 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OZRISRVskdQXx1w4ljT3xbZHS2jpHaRQr6zXhqF87iRakKwpnlP2Vil0Q6wvB5Sovqq6uX7Sm29pxlQNrs9MFBYOsLYwWCh5a6HBro+4GZRVbIJRbwp2kgJnfkAWCc629lpLI+x85cys/HBMmfij7HTUlhajHA0aRPSUGwm2roqaa1JMMNXS/TfC6gih7lVllbSOo4cEfWaWEi4sfDQN/cGaM/yNrcqrfSmRTCLs2uNIZ7EjEsxNBrUIR7hjsDy0NNKFQEGDNQhg3JZtG4blg6XbdMPB48zr39XkVeyhD3fVeAnQiBL5Tus7P6Ra7GYJpTA/GTbEM4VIgKUhAq4ZHg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rjYYEBJvvKUs3YMYTvbolHNdV9MuFT5UBjkNcjMrJRg=;
- b=WBYyGsW8LU9JQ7EjsKXIdxU88BsZqJ6N0JWt6FIttn61iNMQE1/qryP3KQFEeEWs5w4BPMCOpgnqwHxH0LKk43bKCWSOMSFiI29MU53lGsZ4bR+0WHJC+LR5inpSBiWVCiSms1uzrPG+1b/MMK9V24oVmMkVB+Ohj39Pm5GIb5SSvGR1nYWZDNWfAWmh+P1DLjokUiT5vssK5OoQf3CTcpIf+wDGnYGn0So2tbHZljUaXav//bJx0ay21VoHYJ9Fj8JmcdTbHmjXM81LrzP+eJ2lTTBywW0JlApSY/kXnJbJEhKTRdIFM57Rot+dqgmwcSmTv7CgmGBK113amhgjIg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rjYYEBJvvKUs3YMYTvbolHNdV9MuFT5UBjkNcjMrJRg=;
- b=K5O/nd8f3il9aWL929lTmAqJYksmEnyUGn7IPygZMoVNZ2GyUWbzqcoSMG03+kxNQcvtcNUk2ITRjTpFcDXPVwxOUNlzFlGH6GBhbTp4NZgT/ZVefGiJHZCGqcDKYLMTpSrh2BU5dgMixFnbgHV5b63hPkHxDwzHZKJaaKGrIHwc7ncGai1H+BFVfUlAJwXZ9h8+vbWjjiDwBxqXaE94N+FRTZqloJCyvUY0lXlvUKLcENIpeiYNQu0SRG4X2UdA2SSk5UD1iVdx8n7ngVnxRd96laLPWakDK61vjqd8LPVY2G39wna73vYFOB51YiF36zo1Ai1yZLwjJw5Gh91lOQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BY5PR12MB4002.namprd12.prod.outlook.com (2603:10b6:a03:1ad::13)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.17; Tue, 22 Mar
- 2022 14:57:42 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::11a0:970a:4c24:c70c]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::11a0:970a:4c24:c70c%5]) with mapi id 15.20.5081.023; Tue, 22 Mar 2022
- 14:57:42 +0000
-Date: Tue, 22 Mar 2022 11:57:41 -0300
-To: Niklas Schnelle <schnelle@linux.ibm.com>
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id cV7RArL_p1MU for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Mar 2022 15:29:31 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A381460601
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 15:29:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1647962970;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=MScNzTeLACv/blJ5opJ1hO/EvqNLQgxKvQznIBl9/rI=;
+ b=V5ZmiIzA6pQrgxqaKRytnJ1VC3bvgzwvYC2OGLa9Y0gaHwy/BiEWGyfhEzkLxn+sOVDij5
+ zTo/XNWo1dZIVzRXQrJdx9+xQErwP79dsh8pZ8hgR6z1VQML954XKHo51SPQ31ZTb0s6M3
+ ni6jXtZ3NFwyor9frr3XBjk9gsZetQE=
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
+ [209.85.166.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-267-gsHRs3zoOKSaWEj5TyMKEQ-1; Tue, 22 Mar 2022 11:29:27 -0400
+X-MC-Unique: gsHRs3zoOKSaWEj5TyMKEQ-1
+Received: by mail-io1-f70.google.com with SMTP id
+ d19-20020a0566022bf300b00645eba5c992so12705868ioy.4
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 08:29:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+ :references:organization:mime-version:content-transfer-encoding;
+ bh=MScNzTeLACv/blJ5opJ1hO/EvqNLQgxKvQznIBl9/rI=;
+ b=povwsXOtf5Yk0GkEj9N0CCTZBdFq7XmEOdn0tpFGh12s+pdI7XtmfK3yOpJ+Z8ZAMU
+ 35Js2b6hRZSJgO7O5tkX3YqUsKg8NNvnEAhcWx9Z5s8tUVpvpIZsr7fEbUnfMqfod+nq
+ 1VZa2oHrFa9SoI5cUZIyo0Vc3QXTKcu1kiUzxwkh3899rcUXkaiODyXQuT8W6bo8VuMr
+ AAsqQXekGqaL/VYfbLQCufwdUUOOnIKp3j44vnQ9a2yMuJ+1PH6oLnsq6NKQw9koxatn
+ 2FFVSXqpqK6FI6fJkDpxbqi64qZwCVRWCUXiFV4/S3AhTG0T+LkBRThkc9mYgBvsTPxw
+ BhGg==
+X-Gm-Message-State: AOAM533sKfkxIIFq6leyOp5shW8vnWv4P7hqgUhh4P4b1ry5+ol08J7I
+ uwVmgrsQ2umJaNOwlHIfOrBo+QxGFFSm5sACNC9Vub8eDwbNaEszXfgin7McuH8k06F5ioTzTR+
+ 3Fegw9aAG7GiXr/vHtCBIqWykVAh6FA==
+X-Received: by 2002:a05:6e02:154f:b0:2c7:d5da:f12f with SMTP id
+ j15-20020a056e02154f00b002c7d5daf12fmr12617534ilu.66.1647962966469; 
+ Tue, 22 Mar 2022 08:29:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxbHmZV3ynK+/wJmFgzfxYFXrwfco3PQ0Ay6mx5+mA3xyESZZvxvI4GkxLR+NiZ77fhbkDDvQ==
+X-Received: by 2002:a05:6e02:154f:b0:2c7:d5da:f12f with SMTP id
+ j15-20020a056e02154f00b002c7d5daf12fmr12617512ilu.66.1647962966167; 
+ Tue, 22 Mar 2022 08:29:26 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239]) by smtp.gmail.com with ESMTPSA id
+ i11-20020a056e021b0b00b002c83d5df5a2sm1727094ilv.81.2022.03.22.08.29.25
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 22 Mar 2022 08:29:25 -0700 (PDT)
+Date: Tue, 22 Mar 2022 09:29:23 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
 Subject: Re: [PATCH RFC 04/12] kernel/user: Allow user::locked_vm to be
  usable for iommufd
-Message-ID: <20220322145741.GH11336@nvidia.com>
+Message-ID: <20220322092923.5bc79861.alex.williamson@redhat.com>
+In-Reply-To: <20220322145741.GH11336@nvidia.com>
 References: <4-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
  <808a871b3918dc067031085de3e8af6b49c6ef89.camel@linux.ibm.com>
-Content-Disposition: inline
-In-Reply-To: <808a871b3918dc067031085de3e8af6b49c6ef89.camel@linux.ibm.com>
-X-ClientProxiedBy: MN2PR15CA0052.namprd15.prod.outlook.com
- (2603:10b6:208:237::21) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+ <20220322145741.GH11336@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 587eb0e5-20eb-46dc-a481-08da0c1450f2
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4002:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB40025FAD2C89B4053C1EB72DC2179@BY5PR12MB4002.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tfPxg/jJKmhoOtKc7sxPLidGA9R1cG3a3OJPMwU3OG1Vt70iIIYUwi+dxxSB02u146H9Xa+l8GJAc1ik4exrKbT/uI7LGop84tBqYNZStkWsNPuSnmsOoLmRzhq4aO5tfsXzpHh4wfzWjxKBGP707WKBHF16JVKC4M0YlxjRjHffqDTO8z6FDNym233sG6QC0f0rZAMB9RgZYS5y3k2oCzXxy19l3xbr7lacbOexEf4Rk1vf7MXFeWfPaY8MPDepYKaXbh58tomwtFGpo/DU5TipxVUEdmYwuQgjOcDPGLSS9movDO7EzA8FOF9r7Dgd0MFERAOS+CZ41at9FX7qj5zqSVjMDkOO4d79GOLG1ssvOHg92jxwJk+f6nKl01AxyBL0/YwV5iPMG6wYWH0UGpuAueXHFLvstyFvJO6D2TdZAWVIYT/5dCKwnWsAld8wG/hKx1XmhoU7HziEz+RqN6utX9FHELk3e3MGqgpmGVZP3BMimAG7CEXUVKr+gM8bM2sczr+Twtn436BfwvMZF3r/RmHm0KK81QcVovyJ/VYaiF0SELGk8NfWQu9nl8E5B9iQV6TF+AGtktouuiGJU+GL7n3aMcIwyoJnjt11D0EDSuph2wlT0IyqCkw0U3XjXl9Gk0Nh2n55KpsjU4IQ9bkA0AWKK3Kmkxyqj1DHITnufXIsWgtb3Tr2ztXlVn/nNt/Ll2SA3s6187FR70xqdg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(26005)(186003)(1076003)(83380400001)(4326008)(38100700002)(8936002)(2616005)(6916009)(5660300002)(7416002)(66946007)(66476007)(66556008)(8676002)(2906002)(508600001)(6506007)(316002)(6512007)(54906003)(6486002)(86362001)(33656002)(36756003)(367364002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TIAvFpJA/8ik/kMA3mSWEA+lrbGEkUHw6QGdxjB111/IsoFyvLQXSaKHWVii?=
- =?us-ascii?Q?rfOUxLjLtJJsEzgYY73s4pOmnkZtKYEuSt7hGhr11gLHfiaQnsBFGdBTqZU8?=
- =?us-ascii?Q?Q+KHQ66EGhz7yE0tJmQsxBBzSCFJg9S8BOwK1hVL8N8rKZ/E3whVhSChtXoy?=
- =?us-ascii?Q?4g15Ga/p5lM44Kc/jD/Ilf6w/H29Uw8sV/ThSyeL9P8eW9/Oi+tMHl0Iwv0s?=
- =?us-ascii?Q?rg7wFLG+vsbnfopYItjvfthXIJeNYSPV9KUW1zQCkHE/pNd+3U8la7IEd5lS?=
- =?us-ascii?Q?pG/a6vYaPI6cxzmSH2TayL3UOsS9+JR5RFXFAKOSPwXRejij8OgcJlophPKA?=
- =?us-ascii?Q?hsZpsIFlZU9MeTzx8nW27gNeE+6fraf8BIy7rOA8haHlZiGZozYtZVO34tR1?=
- =?us-ascii?Q?xKuLvJRrn/cX2/r0KvOmjWp9fTxhVs8dYrcL368RnWIErWnCg/dtX0LpdaHZ?=
- =?us-ascii?Q?eu766OxD+RlEwgr8ZkrmturL65IlgdyenixZkwP6wKfhJ6ral6WYO9NMaEUQ?=
- =?us-ascii?Q?zqse7AUAd5kq3vyD9cNq5KC/S2TdJ9EmeYdcgzlbpD7LSxCq0Zo+DQZYpbRX?=
- =?us-ascii?Q?ZL865Ft5aHvmBhwmX7E62dcy96Ky2Oxs74aLypRna35oCIerO7AmzIGPJwUf?=
- =?us-ascii?Q?v1c9FGDEfkN0Vq4P/fu5UIMzHumkOveZN4uFeWQeYwlKlw+Z2fSyvqVWWjVQ?=
- =?us-ascii?Q?KLjHEkPtdlMDwNkggaszLcgszJkGz7ATFKBdIG0AC0jWpjaHJMzEX2wQuii/?=
- =?us-ascii?Q?mLGP5JHKDr0dAecdJdh1tdJHgZ7X6e5jynpL4xXwHzWrraylc0gbT4N8YKVY?=
- =?us-ascii?Q?TPADH1P4ICS6WSjwFVaxBxmEChWsnsyGid0yIw+96R27Q/8TRMxkO4yOZVpS?=
- =?us-ascii?Q?XTvTQ1fU2ne/rmM0bWCUmXsmRpy1kUawHLfTACeGF7aIlsZkokO/iXifQSQM?=
- =?us-ascii?Q?2ealCUpIlLDUbqdmzYoQG4L4SnmiQ0lOZca0IQgwpA5LGcnuKRt6LAVLkkw4?=
- =?us-ascii?Q?auOeM6SLdkgbDSvdhEvnEoIexuC1kwppwoUWwnyHiFvPhvrAMqOLfAXhto9n?=
- =?us-ascii?Q?IPnC/iFhnKT2/1Zu3587axsULpN9RbQzhfyAVoATRrI5AAcay3s4NJlhIDri?=
- =?us-ascii?Q?GUdldV1ihkyhtCypwAv29O0Yq5zL4YEy3fDPEBnHX2Jbm/LQSIRxxAjp0nc6?=
- =?us-ascii?Q?KQ9AvAtI0WiReMQoltD0JAJskhYsInRYYjUQV8tewqJam3i6PJi5AgwEdhfW?=
- =?us-ascii?Q?4FALtb1OM9SYhMGA1wHc2Phk8hFVrU05r8FDRKxMxRR5KHp1RVRwKG/NKLpc?=
- =?us-ascii?Q?nXBETfMxyW70cd625F7DGvHj7UmhUUtt5arp49lqpx2Lr+52qP0kMHFkX2Xq?=
- =?us-ascii?Q?hs7j0MqbtDL5/ztTBZ0VMuuzXn0a0nxY9CR36XdXJ2jTdnMC0+SrsuK3+wj5?=
- =?us-ascii?Q?dJIryPTfAXk/sZjVduZ2/hDxmhWPa8VH?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 587eb0e5-20eb-46dc-a481-08da0c1450f2
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2022 14:57:42.6585 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FZz7fuyF3CE75jI9SQ1GcbdrVZrZcIXW8XnPTQxQJ0DC0AeBZeGZhT1a1+MbFeU8
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4002
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
- "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux-foundation.org,
- Daniel Jordan <daniel.m.jordan@oracle.com>, Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>, Jason Wang <jasowang@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>, Kevin Tian <kevin.tian@intel.com>,
+ Daniel Jordan <daniel.m.jordan@oracle.com>, iommu@lists.linux-foundation.org,
+ "Michael S. Tsirkin" <mst@redhat.com>,
  Joao Martins <joao.m.martins@oracle.com>,
  David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -145,62 +116,44 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Mar 22, 2022 at 03:28:22PM +0100, Niklas Schnelle wrote:
-> On Fri, 2022-03-18 at 14:27 -0300, Jason Gunthorpe wrote:
-> > Following the pattern of io_uring, perf, skb, and bpf iommfd will use
->                                                 iommufd ----^
-> > user->locked_vm for accounting pinned pages. Ensure the value is included
-> > in the struct and export free_uid() as iommufd is modular.
+On Tue, 22 Mar 2022 11:57:41 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Tue, Mar 22, 2022 at 03:28:22PM +0100, Niklas Schnelle wrote:
+> > On Fri, 2022-03-18 at 14:27 -0300, Jason Gunthorpe wrote:  
+> > > 
+> > > user->locked_vm is the correct accounting to use for ulimit because it is
+> > > per-user, and the ulimit is not supposed to be per-process. Other
+> > > places (vfio, vdpa and infiniband) have used mm->pinned_vm and/or
+> > > mm->locked_vm for accounting pinned pages, but this is only per-process
+> > > and inconsistent with the majority of the kernel.  
 > > 
-> > user->locked_vm is the correct accounting to use for ulimit because it is
-> > per-user, and the ulimit is not supposed to be per-process. Other
-> > places (vfio, vdpa and infiniband) have used mm->pinned_vm and/or
-> > mm->locked_vm for accounting pinned pages, but this is only per-process
-> > and inconsistent with the majority of the kernel.
+> > Since this will replace parts of vfio this difference seems
+> > significant. Can you explain this a bit more?  
 > 
-> Since this will replace parts of vfio this difference seems
-> significant. Can you explain this a bit more?
+> I'm not sure what to say more, this is the correct way to account for
+> this. It is natural to see it is right because the ulimit is supposted
+> to be global to the user, not effectively reset every time the user
+> creates a new process.
+> 
+> So checking the ulimit against a per-process variable in the mm_struct
+> doesn't make too much sense.
 
-I'm not sure what to say more, this is the correct way to account for
-this. It is natural to see it is right because the ulimit is supposted
-to be global to the user, not effectively reset every time the user
-creates a new process.
+I'm still picking my way through the series, but the later compat
+interface doesn't mention this difference as an outstanding issue.
+Doesn't this difference need to be accounted in how libvirt manages VM
+resource limits?  AIUI libvirt uses some form of prlimit(2) to set
+process locked memory limits.  A compat interface might be an
+interesting feature, but does it only provide ioctl compatibility and
+not resource ulimit compatibility?  Thanks,
 
-So checking the ulimit against a per-process variable in the mm_struct
-doesn't make too much sense.
+Alex
 
-> I'm also a bit confused how io_uring handles this. When I stumbled over
-> the problem fixed by 6b7898eb180d ("io_uring: fix imbalanced sqo_mm
-> accounting") and from that commit description I seem to rember that
-> io_uring also accounts in mm->locked_vm too? 
-
-locked/pinned_pages in the mm is kind of a debugging counter, it
-indicates how many pins the user obtained through this mm. AFAICT its
-only correct use is to report through proc. Things are supposed to
-update it, but there is no reason to limit it as the user limit
-supersedes it.
-
-The commit you pointed at is fixing that io_uring corrupted the value.
-
-Since VFIO checks locked/pinned_pages against the ulimit would blow up
-when the value was wrong.
-
-> In fact I stumbled over that because the wrong accounting in
-> io_uring exhausted the applied to vfio (I was using a QEMU utilizing
-> io_uring itself).
-
-I'm pretty interested in this as well, do you have anything you can
-share?
-
-Thanks,
-Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
