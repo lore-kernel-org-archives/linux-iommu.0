@@ -1,82 +1,85 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 19F24C433EF
-	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 04:51:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 81B98C433F5
+	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 05:03:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id B98DE60E39;
-	Tue, 22 Mar 2022 04:50:59 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 0DD9B40871;
+	Tue, 22 Mar 2022 05:03:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vzQPYjjiJL0x; Tue, 22 Mar 2022 04:50:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 60BC560A8A;
-	Tue, 22 Mar 2022 04:50:58 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 37D81C001A;
-	Tue, 22 Mar 2022 04:50:58 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E0870C000B
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 04:50:56 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id C664B416D2
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 04:50:56 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pjyglxatqVhY for <iommu@lists.linux-foundation.org>;
- Tue, 22 Mar 2022 04:50:56 +0000 (UTC)
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id twyZgWtElMYU; Tue, 22 Mar 2022 05:03:26 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id E078C415D5;
+	Tue, 22 Mar 2022 05:03:25 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A4BA7C0012;
+	Tue, 22 Mar 2022 05:03:25 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 54783C000B
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 05:03:24 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 1F39E40A17
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 05:03:24 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 127XBdCrBF7c for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Mar 2022 05:03:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp4.osuosl.org (Postfix) with ESMTPS id EF65F4168F
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 04:50:55 +0000 (UTC)
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 51DDF400B8
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 05:03:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1647924655; x=1679460655;
- h=message-id:date:mime-version:cc:subject:to:references:
- from:in-reply-to:content-transfer-encoding;
- bh=cTZrAGX+t69jJcCH7JXAi2XQzqRxygaDZLgYJyVhgpM=;
- b=byX4nrBBiJi9UqvnW7BtBleW/9Z7nn3KzRmHjTab/bP173b3PCO2McAE
- kR+lMqiJNVMADSa+YP53awVywElf5ry0Clvc6rMFMJJGnKow7X0E0Pk/6
- s7G77Xop/E8sP7yRr9XqRmim32uM7YnW/5xf+UEkohqnj8y/kUFczeLYm
- jgCRso75aPNfjKz5So2jKql8RDdR0LMVIhQjFlScR5q87y75X+nqLz3+3
- Z95uEPvhqRLB6N7YsvziN+1MCGUH8ZaW/w8xZA00N3imNMpPIbbIMJe5L
- dNBulW4E4juC1iUe/d4ELSy9tqlYEpNGXsy+D3ESoVf88QDDLXwFsuQWt g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="257913031"
-X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; d="scan'208";a="257913031"
+ t=1647925403; x=1679461403;
+ h=message-id:date:mime-version:cc:to:references:from:
+ subject:in-reply-to:content-transfer-encoding;
+ bh=9uqPM+FOjSZGcrtq3DsRrRPnxlYdv1cSjJxdC+pFnns=;
+ b=atJSAirMyoThKBZDI78SAODTtPNIf0cNq7y/7iDFjE+PVB7pU1RRGHKO
+ z8qv6xPefs1JMSYqaFC6IeSJV18sHB9EjEe7fZrZMWiZHauOFSMKl1aoP
+ kTKK1qNyacgs3bEkXjonU7G/BO5tTv5LOu58cn2q9WsRJj+DwVblhsuI5
+ pDElX66SBCb/HDWeRaB+Hej5rd+68hGek4/fGBHoGrFGW8iSLIKePoZCn
+ ZEG3yFkMF+8gv7rqQM5Aqukttat1x8MGqqpuCMnW/Jb12rb4SGTprclVq
+ k1kZH70It+YaxBl/Fj3H1MLOYMT4b0VbbEIZhOI28FEXqu/N4yThyCMXc Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="344152576"
+X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; d="scan'208";a="344152576"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 21 Mar 2022 21:50:54 -0700
-X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; d="scan'208";a="518724693"
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 21 Mar 2022 22:03:22 -0700
+X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; d="scan'208";a="518728164"
 Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.209.186])
  ([10.254.209.186])
  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 21 Mar 2022 21:50:47 -0700
-Message-ID: <966d28f6-3b87-45c5-e758-f38eb339e3c6@linux.intel.com>
-Date: Tue, 22 Mar 2022 12:50:45 +0800
+ 21 Mar 2022 22:03:17 -0700
+Message-ID: <64fa931b-ea2d-f425-5baa-654216bac779@linux.intel.com>
+Date: Tue, 22 Mar 2022 13:03:14 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH RFC 09/11] iommu: Add iommu_get_domain_for_dev_pasid()
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
 References: <20220320064030.2936936-1-baolu.lu@linux.intel.com>
- <20220320064030.2936936-10-baolu.lu@linux.intel.com>
- <20220321124058.GO11336@nvidia.com>
+ <20220320064030.2936936-11-baolu.lu@linux.intel.com>
+ <BL1PR11MB5271DE11A868204D2E0D5B548C169@BL1PR11MB5271.namprd11.prod.outlook.com>
+ <YjhkmDEGwF4EcM8R@myrica> <20220321124346.GP11336@nvidia.com>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220321124058.GO11336@nvidia.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+Subject: Re: [PATCH RFC 10/11] iommu: Make IOPF handling framework generic
+In-Reply-To: <20220321124346.GP11336@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
  Christoph Hellwig <hch@infradead.org>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>,
- iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
- Will Deacon <will@kernel.org>
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,61 +97,22 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/3/21 20:40, Jason Gunthorpe wrote:
-> On Sun, Mar 20, 2022 at 02:40:28PM +0800, Lu Baolu wrote:
->> @@ -3098,7 +3101,16 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
->>   	if (iommu_group_device_count(group) != 1)
->>   		goto out_unlock;
->>   
->> +	xa_lock(&group->pasid_array);
->> +	curr = __xa_cmpxchg(&group->pasid_array, pasid, NULL,
->> +			    domain, GFP_KERNEL);
->> +	xa_unlock(&group->pasid_array);
->> +	if (curr)
+On 2022/3/21 20:43, Jason Gunthorpe wrote:
+> On Mon, Mar 21, 2022 at 11:42:16AM +0000, Jean-Philippe Brucker wrote:
 > 
-> curr can be an xa_err that should be propogated.
-
-Yes, should check xa_err().
-
+>> I tend to disagree with that last part. The fault is caused by a specific
+>> device accessing shared page tables. We should keep that device
+>> information throughout the fault handling, so that we can report it to the
+>> driver when things go wrong.
+> SVA faults should never be reported to drivers??
 > 
->> +		goto out_unlock;
->> +
->>   	ret = domain->ops->attach_dev_pasid(domain, dev, pasid);
->> +	if (ret)
->> +		xa_erase(&group->pasid_array, pasid);
->>   
->>   out_unlock:
->>   	mutex_unlock(&group->mutex);
->> @@ -3118,6 +3130,25 @@ void iommu_detach_device_pasid(struct iommu_domain *domain,
->>   
->>   	mutex_lock(&group->mutex);
->>   	domain->ops->detach_dev_pasid(domain, dev, pasid);
->> +	xa_erase(&group->pasid_array, pasid);
->> +	mutex_unlock(&group->mutex);
->> +	iommu_group_put(group);
->> +}
->> +
->> +struct iommu_domain *
->> +iommu_get_domain_for_dev_pasid(struct device *dev, ioasid_t pasid)
->> +{
->> +	struct iommu_domain *domain;
->> +	struct iommu_group *group;
->> +
->> +	group = iommu_group_get(dev);
->> +	if (!group)
->> +		return NULL;
->> +
->> +	mutex_lock(&group->mutex);
->> +	domain = xa_load(&group->pasid_array, pasid);
->>   	mutex_unlock(&group->mutex);
->>   	iommu_group_put(group);
-> 
-> This whole API seems sketchy - what is the lifecycle of the returned
-> iommu_domain and what prevents it from being concurrently freed after
-> unlocking?
 
-Agreed. The domain could be used in page fault handling thread, hence
-need a mechanism to guarantee the concurrence.
+When things go wrong, the corresponding response code will be responded
+to the device through iommu_page_response(). The hardware should then
+report the failure to the device driver and the device driver will
+handle it in the device-specific way. There's no need to propagate the
+I/O page faults to the device driver in any case. Do I understand it
+right?
 
 Best regards,
 baolu
