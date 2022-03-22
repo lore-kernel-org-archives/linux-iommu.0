@@ -1,138 +1,116 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AE439C433F5
-	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 12:15:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0EEB5C433EF
+	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 14:19:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 51CDB842C4;
-	Tue, 22 Mar 2022 12:15:29 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id A254840AF3;
+	Tue, 22 Mar 2022 14:19:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kVYsD2kVBSyn; Tue, 22 Mar 2022 12:15:28 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jE323qayW83c; Tue, 22 Mar 2022 14:19:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 223C3841FF;
-	Tue, 22 Mar 2022 12:15:28 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 9C75940104;
+	Tue, 22 Mar 2022 14:19:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E8D44C001A;
-	Tue, 22 Mar 2022 12:15:27 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 42A42C000B
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 12:15:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 80EF8C001A;
+	Tue, 22 Mar 2022 14:19:53 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B69D2C000B
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:19:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 280A68428B
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 12:15:27 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 945DC40AF6
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:19:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NnTY9a5wOzbS for <iommu@lists.linux-foundation.org>;
- Tue, 22 Mar 2022 12:15:25 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam12on2061d.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:fe5b::61d])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 04CE2841FF
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 12:15:24 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=G3UXT5aW3jITjUtJrwEktGdfKeh8Udy9mF4yaMacGU0vj/TsGanjyf7Q3MfJ/U+X/TETwSBhovI41o8I+B/31DBQhssf4yfWptN6EPRMhhn19JbxdY7s+t4Bz6HdYiQpNKtauBWPs9AmCkuOSYmP46Lnkx2/4DfHBcYSqNs/u9TTZ8kyk/Zom4XULwwJB0rSOHFeZxH2VBHUSePfWcmrlf14SEihSgRUv5Duh6AyKw/Ufs0/LBPRLHvHj3gR9q+X7lF+x1/dYpWu5paQcLsqVtlpRwKs6SaHdwsMFY7isxwUro+0vh7pfGmjUMWv2maJorQ9eqXOYTiE1bwaJWpj5A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=P/sICpqMA2qREnwegtdbMpQ4pqTJRjQiPrcVvjVTI5Q=;
- b=a36efj8E7vgXeDgDcONVycTUOgXS+u9UhPPW1YtNYETxGSLMFg2vx55R3sj8ZeH4ypRkoYVE2rVO8Rcdl/N0h6eQnJgOto7YNEIqIrjM07uaPofA3ukv4RWIkvC6SCIsjoeWycqHJjU0THnRO9cQFgElRkB+72HyMheF52FLd8F+Y7PSPo744ROzN86GjGtl9KJEi1f0VNlkSew3eStfhZAxG5irhJ3qek82OeYnocgd0WKbU/M1iYyWpIWzPgl0scjhXjF9KB8kkprXruPLwmoaXOKKzreEZyEVMUBLlzlyHEL5ADVQAF2mv2nCs2JJtNU0GSdQYocMDdx4lvLRTw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=P/sICpqMA2qREnwegtdbMpQ4pqTJRjQiPrcVvjVTI5Q=;
- b=bQ8VocR/9wanL7MPrrFwSy8SBDTfmzjjrdTC8DiMmDtCzVPzYkPC5rRNQv/wU18gCNhkCNDHd1l68iJt81+ZIp5iCfFcgBmkD1m38ewXUEkkUZrby7n9VIJTyHHJ38+QUFB2PlW74/EZ1RAJbK5v8vUyzBSJ7+n5Vfw1bwSbb9idFHJhOZFquQ6OiDWJx0aVi3gPeYxz83f5eqKXYhk2Jirx5i/m92zQMRU05OzBvmVG+qO8uW46WH9Px3y1py6jcHeqMytpvdxcJb3Kx9dcWusF5B9g+3qMT3bwUEvW5p0OmYm/SMRy7DNOIgVmxeGGGCNJOVQF1PrE5P9DKQkijw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by MW2PR12MB2393.namprd12.prod.outlook.com (2603:10b6:907:11::17)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.17; Tue, 22 Mar
- 2022 12:15:21 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::11a0:970a:4c24:c70c]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::11a0:970a:4c24:c70c%5]) with mapi id 15.20.5081.023; Tue, 22 Mar 2022
- 12:15:21 +0000
-Date: Tue, 22 Mar 2022 09:15:20 -0300
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH RFC 10/11] iommu: Make IOPF handling framework generic
-Message-ID: <20220322121520.GB11336@nvidia.com>
-References: <20220320064030.2936936-1-baolu.lu@linux.intel.com>
- <20220320064030.2936936-11-baolu.lu@linux.intel.com>
- <BL1PR11MB5271DE11A868204D2E0D5B548C169@BL1PR11MB5271.namprd11.prod.outlook.com>
- <YjhkmDEGwF4EcM8R@myrica> <20220321124346.GP11336@nvidia.com>
- <64fa931b-ea2d-f425-5baa-654216bac779@linux.intel.com>
-Content-Disposition: inline
-In-Reply-To: <64fa931b-ea2d-f425-5baa-654216bac779@linux.intel.com>
-X-ClientProxiedBy: MN2PR20CA0029.namprd20.prod.outlook.com
- (2603:10b6:208:e8::42) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id UwYa1N3Dr72o for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Mar 2022 14:19:51 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+ [148.163.158.5])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 0014240104
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:19:50 +0000 (UTC)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+ by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22MDlQ0n018127; 
+ Tue, 22 Mar 2022 14:19:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
+ h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=a3fMQ631gIDMAZqQPIcdPgZaKBp5XLM8demZhk/wGVM=;
+ b=apItDN+tukHCG5IJzKeOSZMfufU4q9QZ43J4aBD/Ug0mqWJLfrFMEDydkMxMXbBendWA
+ A+SMi8VbPBRO8BgF+gm7LT8xTs3cUzMdHJU8tWvV4iXRtOizbf16ie2VL+1/K2/FzsnI
+ EvVfOfIhGVwxesRW+vqMiNcD81d5sFB+Y9f8Ph0cTgLjQkl4lgHkXtdkrj0i4NngKiVY
+ /EpQuBSpkmN9iTyvHDJZ/ZFqJ4V3b0fWL0DHTbVxiuh1ZyTBg6Ym9Awn5PJ4CPH/FPLH
+ gGtfkHCrjhGZmTa/CB/4/rn/cLqRFqO5EI4sEFbscr4rWDlVryQ7r+Q8CCsETqdDbfLz 5g== 
+Received: from pps.reinject (localhost [127.0.0.1])
+ by mx0a-001b2d01.pphosted.com with ESMTP id 3eyautqrqy-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Tue, 22 Mar 2022 14:19:35 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+ by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22MEJPNM016051;
+ Tue, 22 Mar 2022 14:19:35 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com
+ [159.122.73.72])
+ by mx0a-001b2d01.pphosted.com with ESMTP id 3eyautqrkc-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Tue, 22 Mar 2022 14:19:34 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+ by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22MEHfWC021054;
+ Tue, 22 Mar 2022 14:18:55 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com
+ (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+ by ppma06fra.de.ibm.com with ESMTP id 3ew6ehwhkn-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Tue, 22 Mar 2022 14:18:55 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com
+ [9.149.105.232])
+ by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+ 22MEIqvp11469094
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 22 Mar 2022 14:18:52 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id C6CB152052;
+ Tue, 22 Mar 2022 14:18:52 +0000 (GMT)
+Received: from sig-9-145-28-179.uk.ibm.com (unknown [9.145.28.179])
+ by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id AAC295204E;
+ Tue, 22 Mar 2022 14:18:51 +0000 (GMT)
+Message-ID: <5f1e2f85e45d7cc5c7cade7042a681186d3d7bd3.camel@linux.ibm.com>
+Subject: Re: [PATCH RFC 03/12] iommufd: File descriptor, context, kconfig
+ and makefiles
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Date: Tue, 22 Mar 2022 15:18:51 +0100
+In-Reply-To: <3-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+References: <3-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 7kporxZV40xpg43zgjOvdjKvr58YSj7w
+X-Proofpoint-ORIG-GUID: DNF914Ae1RvMI7_AaHjenmtkKgzHN_By
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a770cedc-b401-4519-f5bb-08da0bfda2eb
-X-MS-TrafficTypeDiagnostic: MW2PR12MB2393:EE_
-X-Microsoft-Antispam-PRVS: <MW2PR12MB239373FC12592104DFBB4E3DC2179@MW2PR12MB2393.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Kz3wPfPVZjrwnbovWe1vPE1Hvd6oTgmJ+SX3dFQQygP1OUVsuOAsB1fv80uNpbrLRAXea9RDHC7qAtGo2768ecGnOTgU9m9Wlzi415Kw81Fnk/0YLyNwHbTI0D2kjk1Y8mGSDEjy9sdr5BFW2IQY+9VwWTBxvQqOUYFrUazP31GFihOvB8Pa4f/TjHF7e4NEEHikRqnYQPdV02CJ7v492M/IcH7oMkkJTrn5X80HjImyggsipPAFRioi24uGRKg+BgLpZ7ppUP/raqvcC7nAQC+Vhh47a3ShJ6RV0AUaxFKhpN7i7eYof1cAFLMfa4R0Vy/8T642ocTtxYiDBbLrH/+fBqwOrDsG/WQKZcBzk/E/bNjL6tZ0dT4/OvMSR6Z9gBCSkKQbm2Q7xfGRuVPcy/Cu+CgV5XPHNNtm1DkuArBARcQGtGPH5a2GHMKpznYMyRCZMToOHuVACJW/P+CRHoWsAM53Yj+OklPhfegUkhAUjcgnpmBXI+UWxYiB0Gpy3wNWjw7sp4ib2X0OxyZrrmdmbm0anHRiksF4SLlmOTxVLWFw3F5vy/YEwCKfXu9YT4txM/9LzCWy+3Vb59arShJI4zmfgsA4LTlV04gTHohiqDhr52LW6flhJFrJX9zM+v6zReQIl5XIpJQtT3WsTkxwrIf3CFzHYJfFhWvMeb6WuYGqHhz1k7Id+C/lpwjh
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(6486002)(6512007)(8936002)(66556008)(66476007)(508600001)(86362001)(4326008)(6506007)(8676002)(66946007)(33656002)(53546011)(38100700002)(36756003)(186003)(2616005)(6916009)(1076003)(26005)(83380400001)(54906003)(316002)(5660300002)(2906002)(7416002)(41533002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OyvP5SaPyxBapWwc4lw1TY63szSLIsQD3zMWeeP62KsS8sXPM9CytXvv/ecL?=
- =?us-ascii?Q?el1phWXk7i+aRnVGmc627SMVdN+7G8H8HFoJNIOUd1+BNJfwX0EuxL4IgVVn?=
- =?us-ascii?Q?d5TdA+SezjiNDgzVfvllDRcFnHFv4X/3b9A7F/s+0Z4OTiIojBswPMHsk9fi?=
- =?us-ascii?Q?aJRAcQEUSbmULiayyZUQ7ARUlPjJZ1ik402jL1ZB+VOzFYIKTncHWiTBTiyu?=
- =?us-ascii?Q?aXYyNpmGqSQ+NTSuEqMAKAGBIebdsZ9jYVw1rGTZXq39jQmg4Dyc9LgffhDk?=
- =?us-ascii?Q?J8+k/FYRPvsH9NF+Mr2ZCEnq38M5ocoCjU2+DQGBL6Lx+p7CQww6hY3Mgm0p?=
- =?us-ascii?Q?Vc78ty229t07Xv8UOtJNE0I+W7veo4UuFEmuTZ7Jk6JidY56r0QZ/ieWr6IY?=
- =?us-ascii?Q?dZLygAqJX4IFN8G2dmApXOPzlU1zqd2bT/YHURZ6FvNJxZM7Xv4RvkGd+aD7?=
- =?us-ascii?Q?5rqlzZwx4qqYbsQvpnVJvuMb4qsASGaKYuinwUdXvhy6UiIYMofdWEtLfkrA?=
- =?us-ascii?Q?7ZCQiFtmWEsqKn4vlIr5rNz5kATxnkgPg3Mk0sZLgZVk+oY97idbpUktKDKU?=
- =?us-ascii?Q?1fHy4jr56ElKVR7gLjtGDJL2A1uoNmDWmWR7PQBAGQ6Uppw1IXfc71+9tLtY?=
- =?us-ascii?Q?FCcEPiCRLzS9cTgNzvmduHp+eNsoGwzANQdL4eDtrtGVJ3YtVi7yHl3geppK?=
- =?us-ascii?Q?ru4wkM9ZEPz3Mx0jl/uDMF/re9SLiyyoM7tIh+gAF7wxayChLa8RJ3HOhbhX?=
- =?us-ascii?Q?ggoHmUnTeiQArLT5DTX0WaROmIeE8X61MDN48022sdPj4I3jJytvlztes2xl?=
- =?us-ascii?Q?JM2Af9CEoQE2VbHcuDxVLA7iTGzVCrziC2IRJwA/bTWdb1+jFlbHd4A544rp?=
- =?us-ascii?Q?jiD77bFuMfEh29JMYQV9+FzqNfREvGucZ7aaxzWNpwt0gc2v8BK9g5ay9WdU?=
- =?us-ascii?Q?uboUQurwebDn+zWbhM3clRYbgS418MRIEFGm9Z4I9KWXKHWGcNEqS36g1q8o?=
- =?us-ascii?Q?f+mHWxye9uMc95YdTl+mmRP87HLsluW31lLnBv+eCzhR2e1fJQz9Wli8wvtB?=
- =?us-ascii?Q?19HlhjNNhF5CF2Tz0XOBQCOoIFYxoHE1QXUtAcfhkkIbz8viKNYYUxSxNUZN?=
- =?us-ascii?Q?i+c2w/4SVA57jtcPPht9t4yx4o4omL6s9E7cOx7hLbkA6JQqvqeIndcuzUkt?=
- =?us-ascii?Q?PUrUmBBK75KdOtD1cG8CLybB4b8pJemieRsVjHIaRO/r+mtNQ6JDLsUz5nZW?=
- =?us-ascii?Q?Fs4+QN1Xq4MtM/61awpJAzGSUKQM6bkzKautT9vxA9fKkuWstpao90o5sYpc?=
- =?us-ascii?Q?SpUkFpwpWvMChNhtx3P3lKKqwiFTSHenaSA2+fILDBiUBdP9hpMHnLJWGoyF?=
- =?us-ascii?Q?EOvy3SN2OkHL6mvaOcUQOADcmPbfsj0Da5gv+Z/yCHZse5tAfZS0dIAbIELM?=
- =?us-ascii?Q?SB/t/QAZvD8V2LMdFbzVhDaGSj9eX6AP?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a770cedc-b401-4519-f5bb-08da0bfda2eb
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2022 12:15:21.5600 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NogS9V4zAEikSB6J9W+PPVI1dsv79NlJiKd0OX3g+98Vp3N/fLk+NY8jloP8otmV
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2393
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- Robin Murphy <robin.murphy@arm.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@infradead.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>, Will Deacon <will@kernel.org>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-22_06,2022-03-22_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0
+ mlxlogscore=635 priorityscore=1501 mlxscore=0 malwarescore=0 bulkscore=0
+ adultscore=0 lowpriorityscore=0 impostorscore=0 clxscore=1011 phishscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203220082
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux-foundation.org,
+ Daniel Jordan <daniel.m.jordan@oracle.com>, Kevin Tian <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Joao Martins <joao.m.martins@oracle.com>,
+ David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -145,40 +123,473 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Mar 22, 2022 at 01:03:14PM +0800, Lu Baolu wrote:
-> On 2022/3/21 20:43, Jason Gunthorpe wrote:
-> > On Mon, Mar 21, 2022 at 11:42:16AM +0000, Jean-Philippe Brucker wrote:
-> > 
-> > > I tend to disagree with that last part. The fault is caused by a specific
-> > > device accessing shared page tables. We should keep that device
-> > > information throughout the fault handling, so that we can report it to the
-> > > driver when things go wrong.
-> > SVA faults should never be reported to drivers??
-> > 
+On Fri, 2022-03-18 at 14:27 -0300, Jason Gunthorpe wrote:
+> This is the basic infrastructure of a new miscdevice to hold the iommufd
+> IOCTL API.
 > 
-> When things go wrong, the corresponding response code will be responded
-> to the device through iommu_page_response(). The hardware should then
-> report the failure to the device driver and the device driver will
-> handle it in the device-specific way. There's no need to propagate the
-> I/O page faults to the device driver in any case. Do I understand it
-> right?
+> It provides:
+>  - A miscdevice to create file descriptors to run the IOCTL interface over
+> 
+>  - A table based ioctl dispatch and centralized extendable pre-validation
+>    step
+> 
+>  - An xarray mapping user ID's to kernel objects. The design has multiple
+>    inter-related objects held within in a single IOMMUFD fd
+> 
+>  - A simple usage count to build a graph of object relations and protect
+>    against hostile userspace racing ioctls
 
-Something like that, I would expect fault failure to be similar to
-accessing somethiing that is not in the iommu map. An Error TLP like
-thing toward the device and whatever normal device-specific error
-propagation happens.
+For me at this point it seems hard to grok what this "graph of object
+relations" is about. Maybe an example would help? I'm assuming this is
+about e.g. the DEVICE -depends-on-> HW_PAGETABLE -depends-on-> IOAS  so
+the arrows in the picture of PATCH 02? Or is it the other way around
+and the IOAS -depends-on-> HW_PAGETABLE because it's about which
+references which? From the rest of the patch I seem to understand that
+this mostly establishes the order of destruction. So is HW_PAGETABLE
+destroyed before the IOAS because a HW_PAGETABLE must never reference
+an invalid/destoryed IOAS or is it the other way arund because the IOAS
+has a reference to the HW_PAGETABLES in it? I'd guess the former but
+I'm a bit confused still.
 
-SVA shouldn't require any special support in the using driver beyond
-turing on PRI/ATS
+> 
+> The only IOCTL provided in this patch is the generic 'destroy any object
+> by handle' operation.
+> 
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  .../userspace-api/ioctl/ioctl-number.rst      |   1 +
+>  MAINTAINERS                                   |  10 +
+>  drivers/iommu/Kconfig                         |   1 +
+>  drivers/iommu/Makefile                        |   2 +-
+>  drivers/iommu/iommufd/Kconfig                 |  13 +
+>  drivers/iommu/iommufd/Makefile                |   5 +
+>  drivers/iommu/iommufd/iommufd_private.h       |  95 ++++++
+>  drivers/iommu/iommufd/main.c                  | 305 ++++++++++++++++++
+>  include/uapi/linux/iommufd.h                  |  55 ++++
+>  9 files changed, 486 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/iommu/iommufd/Kconfig
+>  create mode 100644 drivers/iommu/iommufd/Makefile
+>  create mode 100644 drivers/iommu/iommufd/iommufd_private.h
+>  create mode 100644 drivers/iommu/iommufd/main.c
+>  create mode 100644 include/uapi/linux/iommufd.h
+> 
+> diff --git a/Documentation/userspace-api/ioctl/ioctl-number.rst b/Documentation/userspace-api/ioctl/ioctl-number.rst
+> index e6fce2cbd99ed4..4a041dfc61fe95 100644
+> --- a/Documentation/userspace-api/ioctl/ioctl-number.rst
+> +++ b/Documentation/userspace-api/ioctl/ioctl-number.rst
+> @@ -105,6 +105,7 @@ Code  Seq#    Include File                                           Comments
+>  '8'   all                                                            SNP8023 advanced NIC card
+>                                                                       <mailto:mcr@solidum.com>
+>  ';'   64-7F  linux/vfio.h
+> +';'   80-FF  linux/iommufd.h
+>  '='   00-3f  uapi/linux/ptp_clock.h                                  <mailto:richardcochran@gmail.com>
+>  '@'   00-0F  linux/radeonfb.h                                        conflict!
+>  '@'   00-0F  drivers/video/aty/aty128fb.c                            conflict!
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 1ba1e4af2cbc80..23a9c631051ee8 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -10038,6 +10038,16 @@ L:	linux-mips@vger.kernel.org
+>  S:	Maintained
+>  F:	drivers/net/ethernet/sgi/ioc3-eth.c
+>  
+> +IOMMU FD
+> +M:	Jason Gunthorpe <jgg@nvidia.com>
+> +M:	Kevin Tian <kevin.tian@intel.com>
+> +L:	iommu@lists.linux-foundation.org
+> +S:	Maintained
+> +F:	Documentation/userspace-api/iommufd.rst
+> +F:	drivers/iommu/iommufd/
+> +F:	include/uapi/linux/iommufd.h
+> +F:	include/linux/iommufd.h
+> +
+>  IOMAP FILESYSTEM LIBRARY
+>  M:	Christoph Hellwig <hch@infradead.org>
+>  M:	Darrick J. Wong <djwong@kernel.org>
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 3eb68fa1b8cc02..754d2a9ff64623 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -177,6 +177,7 @@ config MSM_IOMMU
+>  
+>  source "drivers/iommu/amd/Kconfig"
+>  source "drivers/iommu/intel/Kconfig"
+> +source "drivers/iommu/iommufd/Kconfig"
+>  
+>  config IRQ_REMAP
+>  	bool "Support for Interrupt Remapping"
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index bc7f730edbb0be..6b38d12692b213 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -1,5 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> -obj-y += amd/ intel/ arm/
+> +obj-y += amd/ intel/ arm/ iommufd/
+>  obj-$(CONFIG_IOMMU_API) += iommu.o
+>  obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+>  obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
+> diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfig
+> new file mode 100644
+> index 00000000000000..fddd453bb0e764
+> --- /dev/null
+> +++ b/drivers/iommu/iommufd/Kconfig
+> @@ -0,0 +1,13 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +config IOMMUFD
+> +	tristate "IOMMU Userspace API"
+> +	select INTERVAL_TREE
+> +	select IOMMU_API
+> +	default n
+> +	help
+> +	  Provides /dev/iommu the user API to control the IOMMU subsystem as
+> +	  it relates to managing IO page tables that point at user space memory.
+> +
+> +	  This would commonly be used in combination with VFIO.
+> +
+> +	  If you don't know what to do here, say N.
+> diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
+> new file mode 100644
+> index 00000000000000..a07a8cffe937c6
+> --- /dev/null
+> +++ b/drivers/iommu/iommufd/Makefile
+> @@ -0,0 +1,5 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +iommufd-y := \
+> +	main.o
+> +
+> +obj-$(CONFIG_IOMMUFD) += iommufd.o
+> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+> new file mode 100644
+> index 00000000000000..2d0bba3965be1a
+> --- /dev/null
+> +++ b/drivers/iommu/iommufd/iommufd_private.h
+> @@ -0,0 +1,95 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
+> + */
+> +#ifndef __IOMMUFD_PRIVATE_H
+> +#define __IOMMUFD_PRIVATE_H
+> +
+> +#include <linux/rwsem.h>
+> +#include <linux/xarray.h>
+> +#include <linux/refcount.h>
+> +#include <linux/uaccess.h>
+> +
+> +struct iommufd_ctx {
+> +	struct file *filp;
+> +	struct xarray objects;
+> +};
+> +
+> +struct iommufd_ctx *iommufd_fget(int fd);
+> +
+> +struct iommufd_ucmd {
+> +	struct iommufd_ctx *ictx;
+> +	void __user *ubuffer;
+> +	u32 user_size;
+> +	void *cmd;
+> +};
+> +
+> +/* Copy the response in ucmd->cmd back to userspace. */
+> +static inline int iommufd_ucmd_respond(struct iommufd_ucmd *ucmd,
+> +				       size_t cmd_len)
+> +{
+> +	if (copy_to_user(ucmd->ubuffer, ucmd->cmd,
+> +			 min_t(size_t, ucmd->user_size, cmd_len)))
+> +		return -EFAULT;
+> +	return 0;
+> +}
+> +
+> +/*
+> + * The objects for an acyclic graph through the users refcount. This enum must
+> + * be sorted by type depth first so that destruction completes lower objects and
+> + * releases the users refcount before reaching higher objects in the graph.
+> + */
 
-Jason
+A bit like my first comment I think this would benefit from an example
+what lower/higher mean in this case. I believe a lower object must only
+reference/depend on higher objects, correct?
+
+> +enum iommufd_object_type {
+> +	IOMMUFD_OBJ_NONE,
+> +	IOMMUFD_OBJ_ANY = IOMMUFD_OBJ_NONE,
+> +	IOMMUFD_OBJ_MAX,
+> +};
+> +
+> +/* Base struct for all objects with a userspace ID handle. */
+> +struct iommufd_object {
+> +	struct rw_semaphore destroy_rwsem;
+> +	refcount_t users;
+> +	enum iommufd_object_type type;
+> +	unsigned int id;
+> +};
+> +
+> +static inline bool iommufd_lock_obj(struct iommufd_object *obj)
+> +{
+> +	if (!down_read_trylock(&obj->destroy_rwsem))
+> +		return false;
+> +	if (!refcount_inc_not_zero(&obj->users)) {
+> +		up_read(&obj->destroy_rwsem);
+> +		return false;
+> +	}
+> +	return true;
+> +}
+> +
+> +struct iommufd_object *iommufd_get_object(struct iommufd_ctx *ictx, u32 id,
+> +					  enum iommufd_object_type type);
+> +static inline void iommufd_put_object(struct iommufd_object *obj)
+> +{
+> +	refcount_dec(&obj->users);
+> +	up_read(&obj->destroy_rwsem);
+> +}
+> +static inline void iommufd_put_object_keep_user(struct iommufd_object *obj)
+> +{
+> +	up_read(&obj->destroy_rwsem);
+> +}
+> +void iommufd_object_abort(struct iommufd_ctx *ictx, struct iommufd_object *obj);
+> +void iommufd_object_finalize(struct iommufd_ctx *ictx,
+> +			     struct iommufd_object *obj);
+> +bool iommufd_object_destroy_user(struct iommufd_ctx *ictx,
+> +				 struct iommufd_object *obj);
+> +struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
+> +					     size_t size,
+> +					     enum iommufd_object_type type);
+> +
+> +#define iommufd_object_alloc(ictx, ptr, type)                                  \
+> +	container_of(_iommufd_object_alloc(                                    \
+> +			     ictx,                                             \
+> +			     sizeof(*(ptr)) + BUILD_BUG_ON_ZERO(               \
+> +						      offsetof(typeof(*(ptr)), \
+> +							       obj) != 0),     \
+> +			     type),                                            \
+> +		     typeof(*(ptr)), obj)
+> +
+> +#endif
+> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+> new file mode 100644
+> index 00000000000000..ae8db2f663004f
+> --- /dev/null
+> +++ b/drivers/iommu/iommufd/main.c
+> @@ -0,0 +1,305 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/* Copyright (C) 2021 Intel Corporation
+> + * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
+> + *
+> + * iommfd provides control over the IOMMU HW objects created by IOMMU kernel
+      ^^^^^^ iommufd
+> + * drivers. IOMMU HW objects revolve around IO page tables that map incoming DMA
+> + * addresses (IOVA) to CPU addresses.
+> + *
+> + * The API is divided into a general portion that is intended to work with any
+> + * kernel IOMMU driver, and a device specific portion that  is intended to be
+> + * used with a userspace HW driver paired with the specific kernel driver. This
+> + * mechanism allows all the unique functionalities in individual IOMMUs to be
+> + * exposed to userspace control.
+> + */
+> +#define pr_fmt(fmt) "iommufd: " fmt
+> +
+> +#include <linux/file.h>
+> +#include <linux/fs.h>
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/miscdevice.h>
+> +#include <linux/mutex.h>
+> +#include <linux/bug.h>
+> +#include <uapi/linux/iommufd.h>
+> +
+> +#include "iommufd_private.h"
+> +
+> +struct iommufd_object_ops {
+> +	void (*destroy)(struct iommufd_object *obj);
+> +};
+> +static struct iommufd_object_ops iommufd_object_ops[];
+> +
+> +struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
+> +					     size_t size,
+> +					     enum iommufd_object_type type)
+> +{
+> +	struct iommufd_object *obj;
+> +	int rc;
+> +
+> +	obj = kzalloc(size, GFP_KERNEL);
+> +	if (!obj)
+> +		return ERR_PTR(-ENOMEM);
+> +	obj->type = type;
+> +	init_rwsem(&obj->destroy_rwsem);
+> +	refcount_set(&obj->users, 1);
+> +
+> +	/*
+> +	 * Reserve an ID in the xarray but do not publish the pointer yet since
+> +	 * the caller hasn't initialized it yet. Once the pointer is published
+> +	 * in the xarray and visible to other threads we can't reliably destroy
+> +	 * it anymore, so the caller must complete all errorable operations
+> +	 * before calling iommufd_object_finalize().
+> +	 */
+> +	rc = xa_alloc(&ictx->objects, &obj->id, XA_ZERO_ENTRY,
+> +		      xa_limit_32b, GFP_KERNEL);
+> +	if (rc)
+> +		goto out_free;
+> +	return obj;
+> +out_free:
+> +	kfree(obj);
+> +	return ERR_PTR(rc);
+> +}
+> +
+> +/*
+> + * Allow concurrent access to the object. This should only be done once the
+> + * system call that created the object is guaranteed to succeed.
+> + */
+> +void iommufd_object_finalize(struct iommufd_ctx *ictx,
+> +			     struct iommufd_object *obj)
+
+Not sure about the name here. Finalize kind of sounds like
+destruction/going away. That might just be me though. Maybe having a
+"..abort.." function, "commit" or "complete" come to mind.
+
+> +{
+> +	void *old;
+> +
+> +	old = xa_store(&ictx->objects, obj->id, obj, GFP_KERNEL);
+> +	/* obj->id was returned from xa_alloc() so the xa_store() cannot fail */
+> +	WARN_ON(old);
+> +}
+> +
+> +/* Undo _iommufd_object_alloc() if iommufd_object_finalize() was not called */
+> +void iommufd_object_abort(struct iommufd_ctx *ictx, struct iommufd_object *obj)
+> +{
+> +	void *old;
+> +
+> +	old = xa_erase(&ictx->objects, obj->id);
+> +	WARN_ON(old);
+> +	kfree(obj);
+> +}
+> +
+> +struct iommufd_object *iommufd_get_object(struct iommufd_ctx *ictx, u32 id,
+> +					  enum iommufd_object_type type)
+> +{
+> +	struct iommufd_object *obj;
+> +
+> +	xa_lock(&ictx->objects);
+> +	obj = xa_load(&ictx->objects, id);
+> +	if (!obj || (type != IOMMUFD_OBJ_ANY && obj->type != type) ||
+> +	    !iommufd_lock_obj(obj))
+
+Looking at the code it seems iommufd_lock_obj() locks against
+destroy_rw_sem and increases the reference count but there is also an
+iommufd_put_object_keep_user() which only unlocks the destroy_rw_sem. I
+think I personally would benefit from a comment/commit message
+explaining the lifecycle.
+
+There is the below comment in iommufd_object_destroy_user() but I think
+it would be better placed near the destroy_rwsem decleration and to
+also explain the interaction between the destroy_rwsem and the
+reference count.
+
+> +		obj = ERR_PTR(-ENOENT);
+> +	xa_unlock(&ictx->objects);
+> +	return obj;
+> +}
+> +
+> +/*
+> + * The caller holds a users refcount and wants to destroy the object. Returns
+> + * true if the object was destroyed. In all cases the caller no longer has a
+> + * reference on obj.
+> + */
+> +bool iommufd_object_destroy_user(struct iommufd_ctx *ictx,
+> +				 struct iommufd_object *obj)
+> +{
+> +	/*
+> +	 * The purpose of the destroy_rwsem is to ensure deterministic
+> +	 * destruction of objects used by external drivers and destroyed by this
+> +	 * function. Any temporary increment of the refcount must hold the read
+> +	 * side of this, such as during ioctl execution.
+> +	 */
+> +	down_write(&obj->destroy_rwsem);
+> +	xa_lock(&ictx->objects);
+> +	refcount_dec(&obj->users);
+> +	if (!refcount_dec_if_one(&obj->users)) {
+> +		xa_unlock(&ictx->objects);
+> +		up_write(&obj->destroy_rwsem);
+> +		return false;
+> +	}
+> +	__xa_erase(&ictx->objects, obj->id);
+> +	xa_unlock(&ictx->objects);
+> +
+> +	iommufd_object_ops[obj->type].destroy(obj);
+> +	up_write(&obj->destroy_rwsem);
+> +	kfree(obj);
+> +	return true;
+> +}
+> +
+> +static int iommufd_destroy(struct iommufd_ucmd *ucmd)
+> +{
+> +	struct iommu_destroy *cmd = ucmd->cmd;
+> +	struct iommufd_object *obj;
+> +
+> +	obj = iommufd_get_object(ucmd->ictx, cmd->id, IOMMUFD_OBJ_ANY);
+> +	if (IS_ERR(obj))
+> +		return PTR_ERR(obj);
+> +	iommufd_put_object_keep_user(obj);
+> +	if (!iommufd_object_destroy_user(ucmd->ictx, obj))
+> +		return -EBUSY;
+> +	return 0;
+> +}
+> +
+> +static int iommufd_fops_open(struct inode *inode, struct file *filp)
+> +{
+> +	struct iommufd_ctx *ictx;
+> +
+> +	ictx = kzalloc(sizeof(*ictx), GFP_KERNEL);
+> +	if (!ictx)
+> +		return -ENOMEM;
+> +
+> +	xa_init_flags(&ictx->objects, XA_FLAGS_ALLOC1);
+> +	ictx->filp = filp;
+> +	filp->private_data = ictx;
+> +	return 0;
+> +}
+> +
+> +static int iommufd_fops_release(struct inode *inode, struct file *filp)
+> +{
+> +	struct iommufd_ctx *ictx = filp->private_data;
+> +	struct iommufd_object *obj;
+> +	unsigned long index = 0;
+> +	int cur = 0;
+> +
+> +	/* Destroy the graph from depth first */
+> +	while (cur < IOMMUFD_OBJ_MAX) {
+> +		xa_for_each(&ictx->objects, index, obj) {
+> +			if (obj->type != cur)
+> +				continue;
+> +			xa_erase(&ictx->objects, index);
+> +			if (WARN_ON(!refcount_dec_and_test(&obj->users)))
+
+I think if this warning ever triggers it would be good to have a
+comment here what it means. As I understand it this would mean that the
+graph isn't acyclic and the types aren't in the correct order i.e. we
+attempted to destroy a higher order object before a lower one?
+
+> +				continue;
+> +			iommufd_object_ops[obj->type].destroy(obj);
+> +			kfree(obj);
+> +		}
+> +		cur++;
+> +	}
+> +	WARN_ON(!xa_empty(&ictx->objects));
+> +	kfree(ictx);
+> +	return 0;
+> +}
+> +
+> 
+---8<---
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
