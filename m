@@ -4,91 +4,62 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 20269C433F5
-	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 20:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8A8FDC433FE
+	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 21:43:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id B901260DF6;
-	Tue, 22 Mar 2022 20:10:35 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 9D49561291;
+	Tue, 22 Mar 2022 21:43:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MtkpwVyVGdWl; Tue, 22 Mar 2022 20:10:35 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 8D5E360DE5;
-	Tue, 22 Mar 2022 20:10:34 +0000 (UTC)
+	with ESMTP id pnjPToqfTKc3; Tue, 22 Mar 2022 21:43:28 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 431A0607DE;
+	Tue, 22 Mar 2022 21:43:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 60EB6C0012;
-	Tue, 22 Mar 2022 20:10:34 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3350FC000B
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 20:10:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 24B8FC0012;
+	Tue, 22 Mar 2022 21:43:28 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EC231C000B
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 21:43:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 1552841864
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 20:10:33 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id DA72C60592
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 21:43:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=google.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wUCpps1wf0VF for <iommu@lists.linux-foundation.org>;
- Tue, 22 Mar 2022 20:10:32 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com
- [IPv6:2607:f8b0:4864:20::42a])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 842E541863
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 20:10:32 +0000 (UTC)
-Received: by mail-pf1-x42a.google.com with SMTP id u17so19069067pfk.11
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 13:10:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=yxRoOuDAQ32T7epvmjmCMUDa2ze+iRE6nt0uAlg4Cn4=;
- b=lmELaTz7WP/HCCZzx81ngJJsBsHi+8NNkFAdHtPQ8AA9Up+PwmmEc27JoRzPCC3bGF
- ypk4x3onyQ3gaTiIYEwIDn5jRK/vCJg3N5JhJf6RAjv4NRF5GENUps0Ntr+1PcidHWaB
- 2a6jKQMajECNEYH6nQUEqAFRtx2s1//6L8S/oUjHhiCItaEBkG9fYZMeHRARLVRof+fU
- VeqU2FeJGUYPCNnYajwC2MZNe12kKcEphyLwe+XM0C13pKnxJoNN8QEk0KXf4o5afx/X
- Kq+6r3tYjHYxjwRpkEyKGU0QDVqvlg29oIG0TAs3YSO/LyFvemSnXsoHZLDq+hg0KcvL
- 9tcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=yxRoOuDAQ32T7epvmjmCMUDa2ze+iRE6nt0uAlg4Cn4=;
- b=10TeujkCxJ66dm4M+X+7hAzRsCxRbvzB+H9BdIsimeg6xhNE49HeBna07diEmFMyMJ
- D0NNxT9hDEGJhK3wnDb14yNpbmH63rTGgFJFQgwpAC5Vj/PH5Dh0W/5Kx5KyiXLctM/+
- rrb0wUL3j6G3GAkJOX1vaE25DvjVxuBMHo2v3mg+ybYGiw3OQLLhJRuj/VIy78nFR3SM
- Av81wuvFG4qfuIRQOwasL/0Llh1A8uqCHaPiVfZ3AGa5KRe5jNZPAlIFtILAGC4OPYgM
- /xHVbiSJpbrIng+vOyIgsjuj1Oxsk0Iae2/opIxZmZBbQ0q068byTpJv0+gfNFoCn0zV
- 9M2A==
-X-Gm-Message-State: AOAM5306aSq2xBuanQxiLpYky79VLCuT4Crx2/aAIqtN2a5m+SjZ3hAy
- 6KEuws+pBKqC4la3GBltVDJZwuLUlNKUGIBJZtQUIA==
-X-Google-Smtp-Source: ABdhPJyiLa4J6HZobaRPPLdsxYqNc7OtUXhU/czFKSJbwUv9zO/SiqHx4I4DyNmue6FaGBfUb/DumAGOIvZe5zD0WZc=
-X-Received: by 2002:a63:416:0:b0:386:66e:33d9 with SMTP id
- 22-20020a630416000000b00386066e33d9mr833745pge.146.1647979831669; 
- Tue, 22 Mar 2022 13:10:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220320062907.3272903-1-rajatja@google.com>
- <YjmQq1DvWnJwUh6R@infradead.org>
- <CAJZ5v0h9TnUELahzkO59Vqoio1QRHfixk58Yxgffa72rmEBgOA@mail.gmail.com>
-In-Reply-To: <CAJZ5v0h9TnUELahzkO59Vqoio1QRHfixk58Yxgffa72rmEBgOA@mail.gmail.com>
-Date: Tue, 22 Mar 2022 13:09:55 -0700
-Message-ID: <CACK8Z6Fz-TPW1fMpQB09fw11neq8eyn89XB8vy0ioB5zB0Hb9Q@mail.gmail.com>
-Subject: Re: [PATCH v4 1/2] PCI: Rename "pci_dev->untrusted" to
- "pci_dev->poses_dma_risk"
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Rajat Jain <rajatxjain@gmail.com>, Will Deacon <will@kernel.org>,
- Pavel Machek <pavel@denx.de>, Linux PCI <linux-pci@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@infradead.org>,
- ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
- "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
- Bjorn Helgaas <helgaas@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Oliver O'Halloran <oohall@gmail.com>,
- David Woodhouse <dwmw2@infradead.org>,
- Mika Westerberg <mika.westerberg@linux.intel.com>,
- Jesse Barnes <jsbarnes@google.com>, Dmitry Torokhov <dtor@google.com>,
- Len Brown <lenb@kernel.org>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Sxi6AKSGlwYO for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Mar 2022 21:43:22 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 30A5B60AEC
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 21:43:22 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by ams.source.kernel.org (Postfix) with ESMTPS id B3932B81D9E;
+ Tue, 22 Mar 2022 21:43:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52B6BC340EC;
+ Tue, 22 Mar 2022 21:43:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+ s=korg; t=1647985398;
+ bh=nU4vuK1+X2bVEE65CPSbHW/aMzkv7aCM7r+8wsnsy3o=;
+ h=Date:To:From:In-Reply-To:Subject:From;
+ b=0QBUERgUSQl5aw7ljy8yAmzC1xafCBJgzWhPQ2DrUkHwcw77++PESKH15vVWVF2B4
+ RHAzGbmSKBwwjGME0CFTesjT7Up+yTjC4BbY1Og4kxd6evZLOcTvUZs1vX8pfSuqwK
+ F9HXx7XaOhQ+CtPD/yrz6pYgknX5kQ+IRwiqhHEE=
+Date: Tue, 22 Mar 2022 14:43:17 -0700
+To: ziy@nvidia.com, vbabka@suse.cz, robin.murphy@arm.com, robh@kernel.org,
+ paulus@samba.org, m.szyprowski@samsung.com, mst@redhat.com, mpe@ellerman.id.au,
+ minchan@kernel.org, iommu@lists.linux-foundation.org, hch@lst.de,
+ frowand.list@gmail.com, benh@kernel.crashing.org, aneesh.kumar@linux.ibm.com,
+ david@redhat.com, akpm@linux-foundation.org, patches@lists.linux.dev,
+ linux-mm@kvack.org, mm-commits@vger.kernel.org, torvalds@linux-foundation.org,
+ akpm@linux-foundation.org
+From: Andrew Morton <akpm@linux-foundation.org>
+In-Reply-To: <20220322143803.04a5e59a07e48284f196a2f9@linux-foundation.org>
+Subject: [patch 094/227] cma: factor out minimum alignment requirement
+Message-Id: <20220322214318.52B6BC340EC@smtp.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,40 +72,211 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Rajat Jain via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Rajat Jain <rajatja@google.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Mar 22, 2022 at 4:12 AM Rafael J. Wysocki <rafael@kernel.org> wrote:
->
-> On Tue, Mar 22, 2022 at 10:02 AM Christoph Hellwig <hch@infradead.org> wrote:
-> >
-> > On Sat, Mar 19, 2022 at 11:29:05PM -0700, Rajat Jain wrote:
-> > > Rename the field to make it more clear, that the device can execute DMA
-> > > attacks on the system, and thus the system may need protection from
-> > > such attacks from this device.
-> > >
-> > > No functional change intended.
-> > >
-> > > Signed-off-by: Rajat Jain <rajatja@google.com>
-> > > ---
-> > > v4: Initial version, created based on comments on other patch
-> >
-> > What a horrible name.  Why not untrusted_dma which captures the
-> > intent much better?
->
-> FWIW, I like this one much better too.
+From: David Hildenbrand <david@redhat.com>
+Subject: cma: factor out minimum alignment requirement
 
-Sure, no problems. I can change the name to "untrusted_dma".
+Patch series "mm: enforce pageblock_order < MAX_ORDER".
 
-Mika, can I carry forward your "Reviewed-by" tag with this name change too?
+Having pageblock_order >= MAX_ORDER seems to be able to happen in corner
+cases and some parts of the kernel are not prepared for it.
 
-Thanks & Best Regards,
+For example, Aneesh has shown [1] that such kernels can be compiled on
+ppc64 with 64k base pages by setting FORCE_MAX_ZONEORDER=8, which will run
+into a WARN_ON_ONCE(order >= MAX_ORDER) in comapction code right during
+boot.
 
-Rajat
+We can get pageblock_order >= MAX_ORDER when the default hugetlb size is
+bigger than the maximum allocation granularity of the buddy, in which case
+we are no longer talking about huge pages but instead gigantic pages.
+
+Having pageblock_order >= MAX_ORDER can only make alloc_contig_range() of
+such gigantic pages more likely to succeed.
+
+Reliable use of gigantic pages either requires boot time allcoation or
+CMA, no need to overcomplicate some places in the kernel to optimize for
+corner cases that are broken in other areas of the kernel.
+
+
+This patch (of 2):
+
+Let's enforce pageblock_order < MAX_ORDER and simplify.
+
+Especially patch #1 can be regarded a cleanup before:
+	[PATCH v5 0/6] Use pageblock_order for cma and alloc_contig_range
+	alignment. [2]
+
+[1] https://lkml.kernel.org/r/87r189a2ks.fsf@linux.ibm.com
+[2] https://lkml.kernel.org/r/20220211164135.1803616-1-zi.yan@sent.com
+
+Link: https://lkml.kernel.org/r/20220214174132.219303-2-david@redhat.com
+Signed-off-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Zi Yan <ziy@nvidia.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Cc: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: Frank Rowand <frowand.list@gmail.com>
+Cc: Michael S. Tsirkin <mst@redhat.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Minchan Kim <minchan@kernel.org>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: John Garry via iommu <iommu@lists.linux-foundation.org>
+
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+---
+
+ arch/powerpc/include/asm/fadump-internal.h |    5 ----
+ arch/powerpc/kernel/fadump.c               |    2 -
+ drivers/of/of_reserved_mem.c               |    9 ++------
+ include/linux/cma.h                        |    9 ++++++++
+ kernel/dma/contiguous.c                    |    4 ---
+ mm/cma.c                                   |   20 ++++---------------
+ 6 files changed, 19 insertions(+), 30 deletions(-)
+
+--- a/arch/powerpc/include/asm/fadump-internal.h~cma-factor-out-minimum-alignment-requirement
++++ a/arch/powerpc/include/asm/fadump-internal.h
+@@ -19,11 +19,6 @@
+ 
+ #define memblock_num_regions(memblock_type)	(memblock.memblock_type.cnt)
+ 
+-/* Alignment per CMA requirement. */
+-#define FADUMP_CMA_ALIGNMENT	(PAGE_SIZE <<				\
+-				 max_t(unsigned long, MAX_ORDER - 1,	\
+-				 pageblock_order))
+-
+ /* FAD commands */
+ #define FADUMP_REGISTER			1
+ #define FADUMP_UNREGISTER		2
+--- a/arch/powerpc/kernel/fadump.c~cma-factor-out-minimum-alignment-requirement
++++ a/arch/powerpc/kernel/fadump.c
+@@ -544,7 +544,7 @@ int __init fadump_reserve_mem(void)
+ 		if (!fw_dump.nocma) {
+ 			fw_dump.boot_memory_size =
+ 				ALIGN(fw_dump.boot_memory_size,
+-				      FADUMP_CMA_ALIGNMENT);
++				      CMA_MIN_ALIGNMENT_BYTES);
+ 		}
+ #endif
+ 
+--- a/drivers/of/of_reserved_mem.c~cma-factor-out-minimum-alignment-requirement
++++ a/drivers/of/of_reserved_mem.c
+@@ -22,6 +22,7 @@
+ #include <linux/slab.h>
+ #include <linux/memblock.h>
+ #include <linux/kmemleak.h>
++#include <linux/cma.h>
+ 
+ #include "of_private.h"
+ 
+@@ -116,12 +117,8 @@ static int __init __reserved_mem_alloc_s
+ 	if (IS_ENABLED(CONFIG_CMA)
+ 	    && of_flat_dt_is_compatible(node, "shared-dma-pool")
+ 	    && of_get_flat_dt_prop(node, "reusable", NULL)
+-	    && !nomap) {
+-		unsigned long order =
+-			max_t(unsigned long, MAX_ORDER - 1, pageblock_order);
+-
+-		align = max(align, (phys_addr_t)PAGE_SIZE << order);
+-	}
++	    && !nomap)
++		align = max_t(phys_addr_t, align, CMA_MIN_ALIGNMENT_BYTES);
+ 
+ 	prop = of_get_flat_dt_prop(node, "alloc-ranges", &len);
+ 	if (prop) {
+--- a/include/linux/cma.h~cma-factor-out-minimum-alignment-requirement
++++ a/include/linux/cma.h
+@@ -20,6 +20,15 @@
+ 
+ #define CMA_MAX_NAME 64
+ 
++/*
++ * TODO: once the buddy -- especially pageblock merging and alloc_contig_range()
++ * -- can deal with only some pageblocks of a higher-order page being
++ *  MIGRATE_CMA, we can use pageblock_nr_pages.
++ */
++#define CMA_MIN_ALIGNMENT_PAGES max_t(phys_addr_t, MAX_ORDER_NR_PAGES, \
++				      pageblock_nr_pages)
++#define CMA_MIN_ALIGNMENT_BYTES (PAGE_SIZE * CMA_MIN_ALIGNMENT_PAGES)
++
+ struct cma;
+ 
+ extern unsigned long totalcma_pages;
+--- a/kernel/dma/contiguous.c~cma-factor-out-minimum-alignment-requirement
++++ a/kernel/dma/contiguous.c
+@@ -399,8 +399,6 @@ static const struct reserved_mem_ops rme
+ 
+ static int __init rmem_cma_setup(struct reserved_mem *rmem)
+ {
+-	phys_addr_t align = PAGE_SIZE << max(MAX_ORDER - 1, pageblock_order);
+-	phys_addr_t mask = align - 1;
+ 	unsigned long node = rmem->fdt_node;
+ 	bool default_cma = of_get_flat_dt_prop(node, "linux,cma-default", NULL);
+ 	struct cma *cma;
+@@ -416,7 +414,7 @@ static int __init rmem_cma_setup(struct
+ 	    of_get_flat_dt_prop(node, "no-map", NULL))
+ 		return -EINVAL;
+ 
+-	if ((rmem->base & mask) || (rmem->size & mask)) {
++	if (!IS_ALIGNED(rmem->base | rmem->size, CMA_MIN_ALIGNMENT_BYTES)) {
+ 		pr_err("Reserved memory: incorrect alignment of CMA region\n");
+ 		return -EINVAL;
+ 	}
+--- a/mm/cma.c~cma-factor-out-minimum-alignment-requirement
++++ a/mm/cma.c
+@@ -168,7 +168,6 @@ int __init cma_init_reserved_mem(phys_ad
+ 				 struct cma **res_cma)
+ {
+ 	struct cma *cma;
+-	phys_addr_t alignment;
+ 
+ 	/* Sanity checks */
+ 	if (cma_area_count == ARRAY_SIZE(cma_areas)) {
+@@ -179,15 +178,12 @@ int __init cma_init_reserved_mem(phys_ad
+ 	if (!size || !memblock_is_region_reserved(base, size))
+ 		return -EINVAL;
+ 
+-	/* ensure minimal alignment required by mm core */
+-	alignment = PAGE_SIZE <<
+-			max_t(unsigned long, MAX_ORDER - 1, pageblock_order);
+-
+ 	/* alignment should be aligned with order_per_bit */
+-	if (!IS_ALIGNED(alignment >> PAGE_SHIFT, 1 << order_per_bit))
++	if (!IS_ALIGNED(CMA_MIN_ALIGNMENT_PAGES, 1 << order_per_bit))
+ 		return -EINVAL;
+ 
+-	if (ALIGN(base, alignment) != base || ALIGN(size, alignment) != size)
++	/* ensure minimal alignment required by mm core */
++	if (!IS_ALIGNED(base | size, CMA_MIN_ALIGNMENT_BYTES))
+ 		return -EINVAL;
+ 
+ 	/*
+@@ -262,14 +258,8 @@ int __init cma_declare_contiguous_nid(ph
+ 	if (alignment && !is_power_of_2(alignment))
+ 		return -EINVAL;
+ 
+-	/*
+-	 * Sanitise input arguments.
+-	 * Pages both ends in CMA area could be merged into adjacent unmovable
+-	 * migratetype page by page allocator's buddy algorithm. In the case,
+-	 * you couldn't get a contiguous memory, which is not what we want.
+-	 */
+-	alignment = max(alignment,  (phys_addr_t)PAGE_SIZE <<
+-			  max_t(unsigned long, MAX_ORDER - 1, pageblock_order));
++	/* Sanitise input arguments. */
++	alignment = max_t(phys_addr_t, alignment, CMA_MIN_ALIGNMENT_BYTES);
+ 	if (fixed && base & (alignment - 1)) {
+ 		ret = -EINVAL;
+ 		pr_err("Region at %pa must be aligned to %pa bytes\n",
+_
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
