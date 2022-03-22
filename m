@@ -1,77 +1,138 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 05549C433EF
-	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 11:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AE439C433F5
+	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 12:15:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 97130611E8;
-	Tue, 22 Mar 2022 11:41:39 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 51CDB842C4;
+	Tue, 22 Mar 2022 12:15:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eNWAdNBKsff2; Tue, 22 Mar 2022 11:41:38 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id kVYsD2kVBSyn; Tue, 22 Mar 2022 12:15:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 5F3AF611E6;
-	Tue, 22 Mar 2022 11:41:38 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 223C3841FF;
+	Tue, 22 Mar 2022 12:15:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 324A0C0012;
-	Tue, 22 Mar 2022 11:41:38 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 10322C000B
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 11:41:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E8D44C001A;
+	Tue, 22 Mar 2022 12:15:27 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 42A42C000B
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 12:15:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id DE2D8611E7
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 11:41:35 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 280A68428B
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 12:15:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JAzRs7zpkd6T for <iommu@lists.linux-foundation.org>;
- Tue, 22 Mar 2022 11:41:35 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp3.osuosl.org (Postfix) with ESMTPS id E524B611E6
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 11:41:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1647949294; x=1679485294;
- h=date:from:to:cc:subject:message-id:references:
- mime-version:in-reply-to;
- bh=HvgOL6YZgSy7nSW+sywrpP3lBboqncbKKW+arHb8epo=;
- b=k7nuf0NjCH3ynlm2385jDtNxxR03r0xnx3djkafRp/Zk2VNkBnRVjt59
- Sjes4ewHPoKWDnRqezh0dYc08YO25zBOHw/hZ3xsLa3Kkcp+axDSNgmWJ
- UU1tZr0c3dWPnCmjFuuIGNoB771ZihdGzNkFCEJlNbjF4ReMM9N6seFOG
- rdmQPJETY9qKNL5aCQilFFnVRj+bQ4jayyKeEfuH1BThdse9rVPzluq/F
- gS0RTcNpe6X1dX/tjmpFCK4OQcWhObNlZ+IXLzZKTv0LeRJrsPh1lqTWO
- muJfUA+K7I3TWDzIodV5pGd4fcG9gReiWOsWHfIEig249e+rEXqKaUtsW w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="257745183"
-X-IronPort-AV: E=Sophos;i="5.90,201,1643702400"; d="scan'208";a="257745183"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Mar 2022 04:41:33 -0700
-X-IronPort-AV: E=Sophos;i="5.90,201,1643702400"; d="scan'208";a="646992054"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
- by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Mar 2022 04:41:30 -0700
-Received: by lahna (sSMTP sendmail emulation); Tue, 22 Mar 2022 13:41:27 +0200
-Date: Tue, 22 Mar 2022 13:41:27 +0200
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 2/2] thunderbolt: Make iommu_dma_protection more
- accurate
-Message-ID: <Yjm150r3KPKp/2O4@lahna>
-References: <cover.1647624084.git.robin.murphy@arm.com>
- <0dd14883930c9f55ace22162e23765a37d91a057.1647624084.git.robin.murphy@arm.com>
-MIME-Version: 1.0
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id NnTY9a5wOzbS for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Mar 2022 12:15:25 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com
+ (mail-bn8nam12on2061d.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:fe5b::61d])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 04CE2841FF
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 12:15:24 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G3UXT5aW3jITjUtJrwEktGdfKeh8Udy9mF4yaMacGU0vj/TsGanjyf7Q3MfJ/U+X/TETwSBhovI41o8I+B/31DBQhssf4yfWptN6EPRMhhn19JbxdY7s+t4Bz6HdYiQpNKtauBWPs9AmCkuOSYmP46Lnkx2/4DfHBcYSqNs/u9TTZ8kyk/Zom4XULwwJB0rSOHFeZxH2VBHUSePfWcmrlf14SEihSgRUv5Duh6AyKw/Ufs0/LBPRLHvHj3gR9q+X7lF+x1/dYpWu5paQcLsqVtlpRwKs6SaHdwsMFY7isxwUro+0vh7pfGmjUMWv2maJorQ9eqXOYTiE1bwaJWpj5A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=P/sICpqMA2qREnwegtdbMpQ4pqTJRjQiPrcVvjVTI5Q=;
+ b=a36efj8E7vgXeDgDcONVycTUOgXS+u9UhPPW1YtNYETxGSLMFg2vx55R3sj8ZeH4ypRkoYVE2rVO8Rcdl/N0h6eQnJgOto7YNEIqIrjM07uaPofA3ukv4RWIkvC6SCIsjoeWycqHJjU0THnRO9cQFgElRkB+72HyMheF52FLd8F+Y7PSPo744ROzN86GjGtl9KJEi1f0VNlkSew3eStfhZAxG5irhJ3qek82OeYnocgd0WKbU/M1iYyWpIWzPgl0scjhXjF9KB8kkprXruPLwmoaXOKKzreEZyEVMUBLlzlyHEL5ADVQAF2mv2nCs2JJtNU0GSdQYocMDdx4lvLRTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=P/sICpqMA2qREnwegtdbMpQ4pqTJRjQiPrcVvjVTI5Q=;
+ b=bQ8VocR/9wanL7MPrrFwSy8SBDTfmzjjrdTC8DiMmDtCzVPzYkPC5rRNQv/wU18gCNhkCNDHd1l68iJt81+ZIp5iCfFcgBmkD1m38ewXUEkkUZrby7n9VIJTyHHJ38+QUFB2PlW74/EZ1RAJbK5v8vUyzBSJ7+n5Vfw1bwSbb9idFHJhOZFquQ6OiDWJx0aVi3gPeYxz83f5eqKXYhk2Jirx5i/m92zQMRU05OzBvmVG+qO8uW46WH9Px3y1py6jcHeqMytpvdxcJb3Kx9dcWusF5B9g+3qMT3bwUEvW5p0OmYm/SMRy7DNOIgVmxeGGGCNJOVQF1PrE5P9DKQkijw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by MW2PR12MB2393.namprd12.prod.outlook.com (2603:10b6:907:11::17)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.17; Tue, 22 Mar
+ 2022 12:15:21 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::11a0:970a:4c24:c70c]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::11a0:970a:4c24:c70c%5]) with mapi id 15.20.5081.023; Tue, 22 Mar 2022
+ 12:15:21 +0000
+Date: Tue, 22 Mar 2022 09:15:20 -0300
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH RFC 10/11] iommu: Make IOPF handling framework generic
+Message-ID: <20220322121520.GB11336@nvidia.com>
+References: <20220320064030.2936936-1-baolu.lu@linux.intel.com>
+ <20220320064030.2936936-11-baolu.lu@linux.intel.com>
+ <BL1PR11MB5271DE11A868204D2E0D5B548C169@BL1PR11MB5271.namprd11.prod.outlook.com>
+ <YjhkmDEGwF4EcM8R@myrica> <20220321124346.GP11336@nvidia.com>
+ <64fa931b-ea2d-f425-5baa-654216bac779@linux.intel.com>
 Content-Disposition: inline
-In-Reply-To: <0dd14883930c9f55ace22162e23765a37d91a057.1647624084.git.robin.murphy@arm.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-Cc: michael.jamet@intel.com, linux-usb@vger.kernel.org,
- linux-kernel@vger.kernel.org, YehezkelShB@gmail.com,
- iommu@lists.linux-foundation.org, mario.limonciello@amd.com,
- andreas.noever@gmail.com, hch@lst.de
+In-Reply-To: <64fa931b-ea2d-f425-5baa-654216bac779@linux.intel.com>
+X-ClientProxiedBy: MN2PR20CA0029.namprd20.prod.outlook.com
+ (2603:10b6:208:e8::42) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a770cedc-b401-4519-f5bb-08da0bfda2eb
+X-MS-TrafficTypeDiagnostic: MW2PR12MB2393:EE_
+X-Microsoft-Antispam-PRVS: <MW2PR12MB239373FC12592104DFBB4E3DC2179@MW2PR12MB2393.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Kz3wPfPVZjrwnbovWe1vPE1Hvd6oTgmJ+SX3dFQQygP1OUVsuOAsB1fv80uNpbrLRAXea9RDHC7qAtGo2768ecGnOTgU9m9Wlzi415Kw81Fnk/0YLyNwHbTI0D2kjk1Y8mGSDEjy9sdr5BFW2IQY+9VwWTBxvQqOUYFrUazP31GFihOvB8Pa4f/TjHF7e4NEEHikRqnYQPdV02CJ7v492M/IcH7oMkkJTrn5X80HjImyggsipPAFRioi24uGRKg+BgLpZ7ppUP/raqvcC7nAQC+Vhh47a3ShJ6RV0AUaxFKhpN7i7eYof1cAFLMfa4R0Vy/8T642ocTtxYiDBbLrH/+fBqwOrDsG/WQKZcBzk/E/bNjL6tZ0dT4/OvMSR6Z9gBCSkKQbm2Q7xfGRuVPcy/Cu+CgV5XPHNNtm1DkuArBARcQGtGPH5a2GHMKpznYMyRCZMToOHuVACJW/P+CRHoWsAM53Yj+OklPhfegUkhAUjcgnpmBXI+UWxYiB0Gpy3wNWjw7sp4ib2X0OxyZrrmdmbm0anHRiksF4SLlmOTxVLWFw3F5vy/YEwCKfXu9YT4txM/9LzCWy+3Vb59arShJI4zmfgsA4LTlV04gTHohiqDhr52LW6flhJFrJX9zM+v6zReQIl5XIpJQtT3WsTkxwrIf3CFzHYJfFhWvMeb6WuYGqHhz1k7Id+C/lpwjh
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(6486002)(6512007)(8936002)(66556008)(66476007)(508600001)(86362001)(4326008)(6506007)(8676002)(66946007)(33656002)(53546011)(38100700002)(36756003)(186003)(2616005)(6916009)(1076003)(26005)(83380400001)(54906003)(316002)(5660300002)(2906002)(7416002)(41533002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?OyvP5SaPyxBapWwc4lw1TY63szSLIsQD3zMWeeP62KsS8sXPM9CytXvv/ecL?=
+ =?us-ascii?Q?el1phWXk7i+aRnVGmc627SMVdN+7G8H8HFoJNIOUd1+BNJfwX0EuxL4IgVVn?=
+ =?us-ascii?Q?d5TdA+SezjiNDgzVfvllDRcFnHFv4X/3b9A7F/s+0Z4OTiIojBswPMHsk9fi?=
+ =?us-ascii?Q?aJRAcQEUSbmULiayyZUQ7ARUlPjJZ1ik402jL1ZB+VOzFYIKTncHWiTBTiyu?=
+ =?us-ascii?Q?aXYyNpmGqSQ+NTSuEqMAKAGBIebdsZ9jYVw1rGTZXq39jQmg4Dyc9LgffhDk?=
+ =?us-ascii?Q?J8+k/FYRPvsH9NF+Mr2ZCEnq38M5ocoCjU2+DQGBL6Lx+p7CQww6hY3Mgm0p?=
+ =?us-ascii?Q?Vc78ty229t07Xv8UOtJNE0I+W7veo4UuFEmuTZ7Jk6JidY56r0QZ/ieWr6IY?=
+ =?us-ascii?Q?dZLygAqJX4IFN8G2dmApXOPzlU1zqd2bT/YHURZ6FvNJxZM7Xv4RvkGd+aD7?=
+ =?us-ascii?Q?5rqlzZwx4qqYbsQvpnVJvuMb4qsASGaKYuinwUdXvhy6UiIYMofdWEtLfkrA?=
+ =?us-ascii?Q?7ZCQiFtmWEsqKn4vlIr5rNz5kATxnkgPg3Mk0sZLgZVk+oY97idbpUktKDKU?=
+ =?us-ascii?Q?1fHy4jr56ElKVR7gLjtGDJL2A1uoNmDWmWR7PQBAGQ6Uppw1IXfc71+9tLtY?=
+ =?us-ascii?Q?FCcEPiCRLzS9cTgNzvmduHp+eNsoGwzANQdL4eDtrtGVJ3YtVi7yHl3geppK?=
+ =?us-ascii?Q?ru4wkM9ZEPz3Mx0jl/uDMF/re9SLiyyoM7tIh+gAF7wxayChLa8RJ3HOhbhX?=
+ =?us-ascii?Q?ggoHmUnTeiQArLT5DTX0WaROmIeE8X61MDN48022sdPj4I3jJytvlztes2xl?=
+ =?us-ascii?Q?JM2Af9CEoQE2VbHcuDxVLA7iTGzVCrziC2IRJwA/bTWdb1+jFlbHd4A544rp?=
+ =?us-ascii?Q?jiD77bFuMfEh29JMYQV9+FzqNfREvGucZ7aaxzWNpwt0gc2v8BK9g5ay9WdU?=
+ =?us-ascii?Q?uboUQurwebDn+zWbhM3clRYbgS418MRIEFGm9Z4I9KWXKHWGcNEqS36g1q8o?=
+ =?us-ascii?Q?f+mHWxye9uMc95YdTl+mmRP87HLsluW31lLnBv+eCzhR2e1fJQz9Wli8wvtB?=
+ =?us-ascii?Q?19HlhjNNhF5CF2Tz0XOBQCOoIFYxoHE1QXUtAcfhkkIbz8viKNYYUxSxNUZN?=
+ =?us-ascii?Q?i+c2w/4SVA57jtcPPht9t4yx4o4omL6s9E7cOx7hLbkA6JQqvqeIndcuzUkt?=
+ =?us-ascii?Q?PUrUmBBK75KdOtD1cG8CLybB4b8pJemieRsVjHIaRO/r+mtNQ6JDLsUz5nZW?=
+ =?us-ascii?Q?Fs4+QN1Xq4MtM/61awpJAzGSUKQM6bkzKautT9vxA9fKkuWstpao90o5sYpc?=
+ =?us-ascii?Q?SpUkFpwpWvMChNhtx3P3lKKqwiFTSHenaSA2+fILDBiUBdP9hpMHnLJWGoyF?=
+ =?us-ascii?Q?EOvy3SN2OkHL6mvaOcUQOADcmPbfsj0Da5gv+Z/yCHZse5tAfZS0dIAbIELM?=
+ =?us-ascii?Q?SB/t/QAZvD8V2LMdFbzVhDaGSj9eX6AP?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a770cedc-b401-4519-f5bb-08da0bfda2eb
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2022 12:15:21.5600 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NogS9V4zAEikSB6J9W+PPVI1dsv79NlJiKd0OX3g+98Vp3N/fLk+NY8jloP8otmV
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2393
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,150 +145,40 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin,
-
-I tried this now on two Intel systems. One with integrated Thunderbolt
-and one with discrete. There was a small issue, see below but once fixed
-it worked as expected :)
-
-On Fri, Mar 18, 2022 at 05:42:58PM +0000, Robin Murphy wrote:
-> Between me trying to get rid of iommu_present() and Mario wanting to
-> support the AMD equivalent of DMAR_PLATFORM_OPT_IN, scrutiny has shown
-> that the iommu_dma_protection attribute is being far too optimistic.
-> Even if an IOMMU might be present for some PCI segment in the system,
-> that doesn't necessarily mean it provides translation for the device(s)
-> we care about. Furthermore, all that DMAR_PLATFORM_OPT_IN really does
-> is tell us that memory was protected before the kernel was loaded, and
-> prevent the user from disabling the intel-iommu driver entirely. While
-> that lets us assume kernel integrity, what matters for actual runtime
-> DMA protection is whether we trust individual devices, based on the
-> "external facing" property that we expect firmware to describe for
-> Thunderbolt ports.
+On Tue, Mar 22, 2022 at 01:03:14PM +0800, Lu Baolu wrote:
+> On 2022/3/21 20:43, Jason Gunthorpe wrote:
+> > On Mon, Mar 21, 2022 at 11:42:16AM +0000, Jean-Philippe Brucker wrote:
+> > 
+> > > I tend to disagree with that last part. The fault is caused by a specific
+> > > device accessing shared page tables. We should keep that device
+> > > information throughout the fault handling, so that we can report it to the
+> > > driver when things go wrong.
+> > SVA faults should never be reported to drivers??
+> > 
 > 
-> It's proven challenging to determine the appropriate ports accurately
-> given the variety of possible topologies, so while still not getting a
-> perfect answer, by putting enough faith in firmware we can at least get
-> a good bit closer. If we can see that any device near a Thunderbolt NHI
-> has all the requisites for Kernel DMA Protection, chances are that it
-> *is* a relevant port, but moreover that implies that firmware is playing
-> the game overall, so we'll use that to assume that all Thunderbolt ports
-> should be correctly marked and thus will end up fully protected.
-> 
-> CC: Mario Limonciello <mario.limonciello@amd.com>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
-> 
-> v2: Give up trying to look for specific devices, just look for evidence
->     that firmware cares at all.
-> 
->  drivers/thunderbolt/domain.c | 12 +++--------
->  drivers/thunderbolt/nhi.c    | 41 ++++++++++++++++++++++++++++++++++++
->  include/linux/thunderbolt.h  |  2 ++
->  3 files changed, 46 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/thunderbolt/domain.c b/drivers/thunderbolt/domain.c
-> index 7018d959f775..2889a214dadc 100644
-> --- a/drivers/thunderbolt/domain.c
-> +++ b/drivers/thunderbolt/domain.c
-> @@ -7,9 +7,7 @@
->   */
->  
->  #include <linux/device.h>
-> -#include <linux/dmar.h>
->  #include <linux/idr.h>
-> -#include <linux/iommu.h>
->  #include <linux/module.h>
->  #include <linux/pm_runtime.h>
->  #include <linux/slab.h>
-> @@ -257,13 +255,9 @@ static ssize_t iommu_dma_protection_show(struct device *dev,
->  					 struct device_attribute *attr,
->  					 char *buf)
->  {
-> -	/*
-> -	 * Kernel DMA protection is a feature where Thunderbolt security is
-> -	 * handled natively using IOMMU. It is enabled when IOMMU is
-> -	 * enabled and ACPI DMAR table has DMAR_PLATFORM_OPT_IN set.
-> -	 */
-> -	return sprintf(buf, "%d\n",
-> -		       iommu_present(&pci_bus_type) && dmar_platform_optin());
-> +	struct tb *tb = container_of(dev, struct tb, dev);
-> +
-> +	return sysfs_emit(buf, "%d\n", tb->nhi->iommu_dma_protection);
->  }
->  static DEVICE_ATTR_RO(iommu_dma_protection);
->  
-> diff --git a/drivers/thunderbolt/nhi.c b/drivers/thunderbolt/nhi.c
-> index c73da0532be4..9e396e283792 100644
-> --- a/drivers/thunderbolt/nhi.c
-> +++ b/drivers/thunderbolt/nhi.c
-> @@ -14,6 +14,7 @@
->  #include <linux/errno.h>
->  #include <linux/pci.h>
->  #include <linux/interrupt.h>
-> +#include <linux/iommu.h>
->  #include <linux/module.h>
->  #include <linux/delay.h>
->  #include <linux/property.h>
-> @@ -1102,6 +1103,45 @@ static void nhi_check_quirks(struct tb_nhi *nhi)
->  		nhi->quirks |= QUIRK_AUTO_CLEAR_INT;
->  }
->  
-> +static int nhi_check_iommu_pdev(struct pci_dev *pdev, void *data)
-> +{
-> +	if (!pdev->untrusted ||
-> +	    !dev_iommu_capable(&pdev->dev, IOMMU_CAP_PRE_BOOT_PROTECTION))
+> When things go wrong, the corresponding response code will be responded
+> to the device through iommu_page_response(). The hardware should then
+> report the failure to the device driver and the device driver will
+> handle it in the device-specific way. There's no need to propagate the
+> I/O page faults to the device driver in any case. Do I understand it
+> right?
 
-This one needs to take the pdev->external_facing into account too
-because most of the time there are no existing tunnels when the driver
-is loaded so we only see the PCIe root/downstream port. I think this is
-enough actually:
+Something like that, I would expect fault failure to be similar to
+accessing somethiing that is not in the iommu map. An Error TLP like
+thing toward the device and whatever normal device-specific error
+propagation happens.
 
-	if (!pdev->external_facing ||
-	    !dev_iommu_capable(&pdev->dev, IOMMU_CAP_PRE_BOOT_PROTECTION))
+SVA shouldn't require any special support in the using driver beyond
+turing on PRI/ATS
 
-> +		return 0;
-> +	*(bool *)data = true;
-> +	return 1; /* Stop walking */
-> +}
-> +
-> +static void nhi_check_iommu(struct tb_nhi *nhi)
-> +{
-> +	struct pci_bus *bus = nhi->pdev->bus;
-> +	bool port_ok = false;
-> +
-> +	/*
-> +	 * Ideally what we'd do here is grab every PCI device that
-> +	 * represents a tunnelling adapter for this NHI and check their
-> +	 * status directly, but unfortunately USB4 seems to make it
-> +	 * obnoxiously difficult to reliably make any correlation.
-> +	 *
-> +	 * So for now we'll have to bodge it... Hoping that the system
-> +	 * is at least sane enough that an adapter is in the same PCI
-> +	 * segment as its NHI, if we can find *something* on that segment
-> +	 * which meets the requirements for Kernel DMA Protection, we'll
-> +	 * take that to imply that firmware is aware and has (hopefully)
-> +	 * done the right thing in general. We need to know that the PCI
-> +	 * layer has seen the ExternalFacingPort property and propagated
-> +	 * it to the "untrusted" flag that the IOMMU layer will then
-> +	 * enforce, but also that the IOMMU driver itself can be trusted
-> +	 * not to have been subverted by a pre-boot DMA attack.
-> +	 */
-> +	while (bus->parent)
-> +		bus = bus->parent;
-> +
-> +	pci_walk_bus(bus, nhi_check_iommu_pdev, &port_ok);
-> +
-> +	nhi->iommu_dma_protection = port_ok;
-
-I would put here a log debug, something like this:
-
-dev_dbg(&nhi->pdev->dev, "IOMMU DMA protection is %sabled\n",
-	port_ok ? "en" : "dis");
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
