@@ -1,63 +1,136 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2D5F1C433FE
-	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 14:40:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 87FEAC433F5
+	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 14:50:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id CA7C14091F;
-	Tue, 22 Mar 2022 14:40:16 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 27754841F3;
+	Tue, 22 Mar 2022 14:50:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id iJzJC-om3YbX; Tue, 22 Mar 2022 14:40:14 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mkVK2lHSdmzi; Tue, 22 Mar 2022 14:50:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 536354000B;
-	Tue, 22 Mar 2022 14:40:14 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id D340684200;
+	Tue, 22 Mar 2022 14:50:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 391D3C001A;
-	Tue, 22 Mar 2022 14:40:14 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3EBEDC000B
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:40:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B5901C001A;
+	Tue, 22 Mar 2022 14:50:43 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B770DC000B
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:50:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 38C1E40180
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:40:13 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id A530784392
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:50:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zDeNfLjLPOIa for <iommu@lists.linux-foundation.org>;
- Tue, 22 Mar 2022 14:40:11 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 3162F4000B
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:40:11 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4B1821042;
- Tue, 22 Mar 2022 07:40:10 -0700 (PDT)
-Received: from [10.57.43.230] (unknown [10.57.43.230])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 10C753F73B;
- Tue, 22 Mar 2022 07:40:06 -0700 (PDT)
-Message-ID: <8b47440b-91df-ba2f-b004-33e4c6dc1f20@arm.com>
-Date: Tue, 22 Mar 2022 14:40:02 +0000
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id LxR8Z79k3TmB for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Mar 2022 14:50:41 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com
+ (mail-co1nam11on2061b.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7eab::61b])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 5D289842EF
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:50:41 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YAldbMAvUT0UoP0QBseXTFt89RagMsxsQcHZNWq3A5GaZCFrWF2OCnmM9PgfoIcLI0F6Cb7/yYHrtMTvmntj9dcjIsadfTMUN//AhmbttwUoZTkgY0xJiQKLy7iNHBCZlzUr/2gTPHJtjElUSk36dtQdS1oWgAjUlhZF5ZEc4uc0lVytghYD1J0xuYnW1IaYck9ubcs3TTYA/HgwX3nMryiM9mE5EDXM9xFJFYioG7Yqszxi/MqaEFmhv66RJWZ6USss1CuG4/qI5f2H3xRT7UZNO6ZNvod0QqXgj6qiZ1YRLVcwEE+faQFmuLGX97T6FqbsdVGDhIW23bEvzngnmg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=C2Dzw6yW5aqNSQuCODrQ73eonfdC7hIG3aX1y7+JHDM=;
+ b=g7dhQjDimQZKNVn+oiKb1U2U7n/4PgX9njSGz90Oh+kB6eZxkTvL/PaO+2HY45Gb7sRLB5IN2GMDW7SUJuzVZTz0MfNs/KyGj2RfWIyEJviX3+0Ez2PEVyQsQ5wIGN3Lzhj5ODER2banSWUQcG2pZRPM3Xc+xoV14mnIVJJle4SPJKv7Ec32jUHOpc8L8Bqb0Up4ueZZMERyMNRL5M9OTlwutacG0vnmIjL97lsq+E7sGJ4JVFiBOhOCzaMot46AIIrIIejarKEnevzwWoMnHZETePn43TPW2ew0lAnV7340NKin0NqDqdjjt/0t8nreH0zNyg+HUicLstBA6B594A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C2Dzw6yW5aqNSQuCODrQ73eonfdC7hIG3aX1y7+JHDM=;
+ b=Sjiy8AoHELu1JceasJR2H5+r88pM46nznZpZIaYgHBzTWm6ESvAAXfCOKBQh3TAej1EAS37UAKGRBhWnivvaBJTa6EbnluynDphRKSrec1ucqHuoep72lzT0ZPlvoXj8g/VHoaDwagpsmGe4zLj+jJ+97+UI0ROLpldsvHMDghsBeEJa/SGJVXO90fWHAppXXCjFgUxmWyzsRGXZ6zUYh9ECOcRNKdavM7rX8rYnV9I8HDRK3DlWkL68CP0XlytzBWhjNHdJC1LleFZ0k3j63liDLTcOwyJYjJqFyNrbckuwvDjFO8PKx2vluffNcArS48KPgkZZaX38c2ViLfOI4w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BN6PR12MB1425.namprd12.prod.outlook.com (2603:10b6:404:1f::19)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.15; Tue, 22 Mar
+ 2022 14:50:37 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::11a0:970a:4c24:c70c]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::11a0:970a:4c24:c70c%5]) with mapi id 15.20.5081.023; Tue, 22 Mar 2022
+ 14:50:37 +0000
+Date: Tue, 22 Mar 2022 11:50:36 -0300
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Subject: Re: [PATCH RFC 03/12] iommufd: File descriptor, context, kconfig and
+ makefiles
+Message-ID: <20220322145036.GG11336@nvidia.com>
+References: <3-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <5f1e2f85e45d7cc5c7cade7042a681186d3d7bd3.camel@linux.ibm.com>
+Content-Disposition: inline
+In-Reply-To: <5f1e2f85e45d7cc5c7cade7042a681186d3d7bd3.camel@linux.ibm.com>
+X-ClientProxiedBy: MN2PR22CA0010.namprd22.prod.outlook.com
+ (2603:10b6:208:238::15) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/2] thunderbolt: Make iommu_dma_protection more
- accurate
-Content-Language: en-GB
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-References: <cover.1647624084.git.robin.murphy@arm.com>
- <0dd14883930c9f55ace22162e23765a37d91a057.1647624084.git.robin.murphy@arm.com>
- <Yjm150r3KPKp/2O4@lahna>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <Yjm150r3KPKp/2O4@lahna>
-Cc: michael.jamet@intel.com, linux-usb@vger.kernel.org,
- linux-kernel@vger.kernel.org, YehezkelShB@gmail.com,
- iommu@lists.linux-foundation.org, mario.limonciello@amd.com,
- andreas.noever@gmail.com, hch@lst.de
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 106c6912-ac8c-4b64-9503-08da0c1353c3
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1425:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR12MB1425425895841AA33EE8DBD3C2179@BN6PR12MB1425.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FBzfMVh+BesCF5gxZJX7HUmxgnkTbFi3uxehE1eY/c/NEzb6Z0oOOdWAlXuhEAPZGSbuiH/03h9ruVG+/E8W2tm0Rs501hpNyBPOTDDWYbQi7PWxo97kr2Le86qGSgwkIHL9TrmVT/xU0yovrjAmROJC5rCRlyZ/Aq4SdPmOiKp5I/e2rjB4R2zAjN1Z+S2qpprOqLKmaV63TxviaewXuDAbJnlXOt2RurbBH3HRp3i+asqBmcXo4JZ64jNg+Z0W2U4ofFaPKSeJzDmrFWz+EoPC2zbC45okgh1SR+7bPE2tEk5ZGpxmscv4KDOXGuM2r9MLV3UEE6fQgK7UiV6VaTEk0MWA2UU+Q49JTtEZ9TQmk2VYQuO4TVvhYRzJTBxnSmCGCe9qT3lP1E0vi63YQxazW0gWPaHDjJIfq4mr6+HAUvvE/d0jOvn/NpIJgFb9HT/IAt24hgYWzBYKn9HDuQ9JF2ye+/Y/QOG7snX+Hcwz2oFTTRQ1j13qk59cjXKGEe7J/DVazfjEVePjVMpLvfUFHSwzrlxNSaNd5mZykcI3QU4dtPn6zCETXVDE0O94g0CIQuNsqe9OTSJ/a1Ck8SFucuUL35tS6gdZ60Oz3eD/PKkyyQUReEMgmgMUN+ANZfkbtPHZthmBrnNR6SBJgw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(8936002)(26005)(7416002)(1076003)(2616005)(6916009)(508600001)(83380400001)(316002)(4326008)(66946007)(2906002)(6486002)(66476007)(66556008)(86362001)(8676002)(54906003)(36756003)(6512007)(6506007)(38100700002)(33656002)(5660300002)(186003);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Gz00Nbc0GBVGuxaV6Nshna2z+8U1UJxiVEzzkzuoQCKX9GrYxor2VY51DHnI?=
+ =?us-ascii?Q?WqcEQOYf2FpoIgEN+gSRubwG5UHQpsUUQgjAGve0x0a484/OPe35ySP0rH9h?=
+ =?us-ascii?Q?DHdDN9aFtqg011AvaoQQ4+YI292m6czzmDO6ZGsA3XSBC89qf+vmVEw01+25?=
+ =?us-ascii?Q?L9i92s7/eciSiwQo8mkIZ1xfLsU/yb7HRXtFky0tQVKIJtizn+3SDdR5/cWD?=
+ =?us-ascii?Q?VG9d80ptsUZYnxkd4FDR0RdMj2njUNZ6W1HrrPGdalHTkipQF212ZA+tuUZi?=
+ =?us-ascii?Q?fffwTok5nk2bIMNFnhq/kIjqmj15YiiDo37EtaSl+IbqzEkpJ7U2D8aFjroa?=
+ =?us-ascii?Q?6/3Gh6E1XU5t+gHg0nNn5NUzIbQur4xShN0lKuF0dAEGq+9dd2/ni7CYCHAM?=
+ =?us-ascii?Q?hZQQWri33f2PeK+6C/wlBgWnOg2q2uR2fGf9Ppy2pzaLND7RrgUygRVI0iwL?=
+ =?us-ascii?Q?Dp1q8UpS8dBW0ipe40cU+emjcNFU1tvKEEz2mHdHAczb7gLptwMyGPSEmCQ7?=
+ =?us-ascii?Q?EGTpz8mFLlSeq3X2sl3FXtB98togJ4xj0pqFNaOGwgz5cf9EG4VVzwRa+kZU?=
+ =?us-ascii?Q?DZbdczerhKmYgN7A9QYArXle72zI+SlL2vp3cswE3QUpqJJy7Ux/5Bvj4E1Z?=
+ =?us-ascii?Q?a6hKQGHMdNieKsV0IOW2ZHZaQzlonLtle550tAKQSZyrygCaC4Su3GDbrnvn?=
+ =?us-ascii?Q?xauwdNq3kli3oneRsNoqUBRuIQ5Sg22jpvqgLZWDEOvO/ltCexbAEJZmhgdy?=
+ =?us-ascii?Q?3H5EhF0ub0i0Z0FwD2KwPgVh0t3fZsf8Hwjv5zMzxHkS2wP5ptGiwdJPXj+v?=
+ =?us-ascii?Q?lU9OfyEOw6oEfmYpCmBMwAVEMvs8JhsWfndtplr+3bLd+JwaqllesOly4h9v?=
+ =?us-ascii?Q?wbsWK2l5j16TedOCpjkKh/JCgwBTAlZnqQYoN3kuR0nZlYhKgiOK1DSpIZ3F?=
+ =?us-ascii?Q?5ZX55SMNOQdKr8aGo3j7cQDaJTUTkt9z3R4/kSnILG8lX6q+uDqNVPJCWJzn?=
+ =?us-ascii?Q?s+BNnZglgPmdib1xSLC4oLiyhVQ1jp4HeHpBTY9fxl/4o8OzMgSsNb6R0LtL?=
+ =?us-ascii?Q?GF3rbsk4GXd1bwQOXdqPdv3eL+glu8RFspfRQNlZCCjH6DpqspnLIgOYpYbL?=
+ =?us-ascii?Q?x2xYhM9jBJE5JjM+0L7GhlUThtI6whsHYA93UaWRxd0eyMjTSKqvozXj7WUG?=
+ =?us-ascii?Q?11+bDXtNXElVzef8zHfCq1qmDKkkru36jXkiK5vVV0YduQsdrJojKptY4Vw3?=
+ =?us-ascii?Q?/e2ZB07Y/14cs4dRIkuLeh19w/AU4e4B7ITZY02kYvwNiX8we/wknTaqftyY?=
+ =?us-ascii?Q?czGk9XVlc4GaK2EhVBEZm7H5OsZEWx49JTjY2zXUgdeHwQSWoG2LSGdzxJPZ?=
+ =?us-ascii?Q?hkKQ8g/WFXgZjs/k0roz5C3ZSK6DqxQlxoDD5wBonj08v2CViBVax68/Ne5S?=
+ =?us-ascii?Q?OmOuCO08ARIe4EhQdZiFTCaeIFnYjGZS?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 106c6912-ac8c-4b64-9503-08da0c1353c3
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2022 14:50:37.6991 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2u4tYfHzYf1Fa9M1QcKYnYoSoZN64XhU1Ny1rB+T9UFGrM0jdivMCpnDavdmDWIA
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1425
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux-foundation.org,
+ Daniel Jordan <daniel.m.jordan@oracle.com>, Kevin Tian <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Joao Martins <joao.m.martins@oracle.com>,
+ David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -70,161 +143,143 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-03-22 11:41, Mika Westerberg wrote:
-> Hi Robin,
+On Tue, Mar 22, 2022 at 03:18:51PM +0100, Niklas Schnelle wrote:
+> On Fri, 2022-03-18 at 14:27 -0300, Jason Gunthorpe wrote:
+> > This is the basic infrastructure of a new miscdevice to hold the iommufd
+> > IOCTL API.
+> > 
+> > It provides:
+> >  - A miscdevice to create file descriptors to run the IOCTL interface over
+> > 
+> >  - A table based ioctl dispatch and centralized extendable pre-validation
+> >    step
+> > 
+> >  - An xarray mapping user ID's to kernel objects. The design has multiple
+> >    inter-related objects held within in a single IOMMUFD fd
+> > 
+> >  - A simple usage count to build a graph of object relations and protect
+> >    against hostile userspace racing ioctls
 > 
-> I tried this now on two Intel systems. One with integrated Thunderbolt
-> and one with discrete. There was a small issue, see below but once fixed
-> it worked as expected :)
-> 
-> On Fri, Mar 18, 2022 at 05:42:58PM +0000, Robin Murphy wrote:
->> Between me trying to get rid of iommu_present() and Mario wanting to
->> support the AMD equivalent of DMAR_PLATFORM_OPT_IN, scrutiny has shown
->> that the iommu_dma_protection attribute is being far too optimistic.
->> Even if an IOMMU might be present for some PCI segment in the system,
->> that doesn't necessarily mean it provides translation for the device(s)
->> we care about. Furthermore, all that DMAR_PLATFORM_OPT_IN really does
->> is tell us that memory was protected before the kernel was loaded, and
->> prevent the user from disabling the intel-iommu driver entirely. While
->> that lets us assume kernel integrity, what matters for actual runtime
->> DMA protection is whether we trust individual devices, based on the
->> "external facing" property that we expect firmware to describe for
->> Thunderbolt ports.
->>
->> It's proven challenging to determine the appropriate ports accurately
->> given the variety of possible topologies, so while still not getting a
->> perfect answer, by putting enough faith in firmware we can at least get
->> a good bit closer. If we can see that any device near a Thunderbolt NHI
->> has all the requisites for Kernel DMA Protection, chances are that it
->> *is* a relevant port, but moreover that implies that firmware is playing
->> the game overall, so we'll use that to assume that all Thunderbolt ports
->> should be correctly marked and thus will end up fully protected.
->>
->> CC: Mario Limonciello <mario.limonciello@amd.com>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>
->> v2: Give up trying to look for specific devices, just look for evidence
->>      that firmware cares at all.
->>
->>   drivers/thunderbolt/domain.c | 12 +++--------
->>   drivers/thunderbolt/nhi.c    | 41 ++++++++++++++++++++++++++++++++++++
->>   include/linux/thunderbolt.h  |  2 ++
->>   3 files changed, 46 insertions(+), 9 deletions(-)
->>
->> diff --git a/drivers/thunderbolt/domain.c b/drivers/thunderbolt/domain.c
->> index 7018d959f775..2889a214dadc 100644
->> --- a/drivers/thunderbolt/domain.c
->> +++ b/drivers/thunderbolt/domain.c
->> @@ -7,9 +7,7 @@
->>    */
->>   
->>   #include <linux/device.h>
->> -#include <linux/dmar.h>
->>   #include <linux/idr.h>
->> -#include <linux/iommu.h>
->>   #include <linux/module.h>
->>   #include <linux/pm_runtime.h>
->>   #include <linux/slab.h>
->> @@ -257,13 +255,9 @@ static ssize_t iommu_dma_protection_show(struct device *dev,
->>   					 struct device_attribute *attr,
->>   					 char *buf)
->>   {
->> -	/*
->> -	 * Kernel DMA protection is a feature where Thunderbolt security is
->> -	 * handled natively using IOMMU. It is enabled when IOMMU is
->> -	 * enabled and ACPI DMAR table has DMAR_PLATFORM_OPT_IN set.
->> -	 */
->> -	return sprintf(buf, "%d\n",
->> -		       iommu_present(&pci_bus_type) && dmar_platform_optin());
->> +	struct tb *tb = container_of(dev, struct tb, dev);
->> +
->> +	return sysfs_emit(buf, "%d\n", tb->nhi->iommu_dma_protection);
->>   }
->>   static DEVICE_ATTR_RO(iommu_dma_protection);
->>   
->> diff --git a/drivers/thunderbolt/nhi.c b/drivers/thunderbolt/nhi.c
->> index c73da0532be4..9e396e283792 100644
->> --- a/drivers/thunderbolt/nhi.c
->> +++ b/drivers/thunderbolt/nhi.c
->> @@ -14,6 +14,7 @@
->>   #include <linux/errno.h>
->>   #include <linux/pci.h>
->>   #include <linux/interrupt.h>
->> +#include <linux/iommu.h>
->>   #include <linux/module.h>
->>   #include <linux/delay.h>
->>   #include <linux/property.h>
->> @@ -1102,6 +1103,45 @@ static void nhi_check_quirks(struct tb_nhi *nhi)
->>   		nhi->quirks |= QUIRK_AUTO_CLEAR_INT;
->>   }
->>   
->> +static int nhi_check_iommu_pdev(struct pci_dev *pdev, void *data)
->> +{
->> +	if (!pdev->untrusted ||
->> +	    !dev_iommu_capable(&pdev->dev, IOMMU_CAP_PRE_BOOT_PROTECTION))
-> 
-> This one needs to take the pdev->external_facing into account too
-> because most of the time there are no existing tunnels when the driver
-> is loaded so we only see the PCIe root/downstream port. I think this is
-> enough actually:
-> 
-> 	if (!pdev->external_facing ||
-> 	    !dev_iommu_capable(&pdev->dev, IOMMU_CAP_PRE_BOOT_PROTECTION))
+> For me at this point it seems hard to grok what this "graph of object
+> relations" is about. Maybe an example would help? I'm assuming this is
+> about e.g. the DEVICE -depends-on-> HW_PAGETABLE -depends-on-> IOAS  so
+> the arrows in the picture of PATCH 02? 
 
-Ah yes, my bad, for some reason I got the misapprehension into my head 
-that untrusted was propagated to the port as well, not just the devices 
-behind it. I'll fix this and tweak the comment below to match.
+Yes, it is basically standard reference relations, think
+'kref'. Object A referenced B because A has a pointer to B in its
+struct.
 
->> +		return 0;
->> +	*(bool *)data = true;
->> +	return 1; /* Stop walking */
->> +}
->> +
->> +static void nhi_check_iommu(struct tb_nhi *nhi)
->> +{
->> +	struct pci_bus *bus = nhi->pdev->bus;
->> +	bool port_ok = false;
->> +
->> +	/*
->> +	 * Ideally what we'd do here is grab every PCI device that
->> +	 * represents a tunnelling adapter for this NHI and check their
->> +	 * status directly, but unfortunately USB4 seems to make it
->> +	 * obnoxiously difficult to reliably make any correlation.
->> +	 *
->> +	 * So for now we'll have to bodge it... Hoping that the system
->> +	 * is at least sane enough that an adapter is in the same PCI
->> +	 * segment as its NHI, if we can find *something* on that segment
->> +	 * which meets the requirements for Kernel DMA Protection, we'll
->> +	 * take that to imply that firmware is aware and has (hopefully)
->> +	 * done the right thing in general. We need to know that the PCI
->> +	 * layer has seen the ExternalFacingPort property and propagated
->> +	 * it to the "untrusted" flag that the IOMMU layer will then
->> +	 * enforce, but also that the IOMMU driver itself can be trusted
->> +	 * not to have been subverted by a pre-boot DMA attack.
->> +	 */
->> +	while (bus->parent)
->> +		bus = bus->parent;
->> +
->> +	pci_walk_bus(bus, nhi_check_iommu_pdev, &port_ok);
->> +
->> +	nhi->iommu_dma_protection = port_ok;
-> 
-> I would put here a log debug, something like this:
-> 
-> dev_dbg(&nhi->pdev->dev, "IOMMU DMA protection is %sabled\n",
-> 	port_ok ? "en" : "dis");
+Therefore B cannot be destroyed before A without creating a dangling
+reference.
 
-Ack. I'll wait and send a v3 once the merge window's over, and can roll 
-Mario's AMD IOMMU patch into that too.
+> Or is it the other way around
+> and the IOAS -depends-on-> HW_PAGETABLE because it's about which
+> references which? From the rest of the patch I seem to understand that
+> this mostly establishes the order of destruction. So is HW_PAGETABLE
+> destroyed before the IOAS because a HW_PAGETABLE must never reference
+> an invalid/destoryed IOAS or is it the other way arund because the IOAS
+> has a reference to the HW_PAGETABLES in it? I'd guess the former but
+> I'm a bit confused still.
+
+Yes HW_PAGETABLE is first because it is responsible to remove the
+iommu_domain from the IOAS and the IOAS cannot be destroyed with
+iommu_domains in it.
+
+> > +/*
+> > + * The objects for an acyclic graph through the users refcount. This enum must
+> > + * be sorted by type depth first so that destruction completes lower objects and
+> > + * releases the users refcount before reaching higher objects in the graph.
+> > + */
+> 
+> A bit like my first comment I think this would benefit from an example
+> what lower/higher mean in this case. I believe a lower object must only
+> reference/depend on higher objects, correct?
+
+Maybe it is too confusing - I was debating using a try and fail
+approach instead which achieves the same thing with a little different
+complexity. It seems we may need to do this anyhow for nesting..
+
+Would look like this:
+
+	/* Destroy the graph from depth first */
+	while (!xa_empty(&ictx->objects)) {
+		unsigned int destroyed = 0;
+		unsigned long index = 0;
+
+		xa_for_each (&ictx->objects, index, obj) {
+			/*
+			 * Since we are in release elevated users must come from
+			 * other objects holding the users. We will eventually
+			 * destroy the object that holds this one and the next
+			 * pass will progress it.
+			 */
+			if (!refcount_dec_if_one(&obj->users))
+				continue;
+			destroyed++;
+			xa_erase(&ictx->objects, index);
+			iommufd_object_ops[obj->type].destroy(obj);
+			kfree(obj);
+		}
+		/* Bug related to users refcount */
+		if (WARN_ON(!destroyed))
+			break;
+	}
+	kfree(ictx);
+
+> > +struct iommufd_object *iommufd_get_object(struct iommufd_ctx *ictx, u32 id,
+> > +					  enum iommufd_object_type type)
+> > +{
+> > +	struct iommufd_object *obj;
+> > +
+> > +	xa_lock(&ictx->objects);
+> > +	obj = xa_load(&ictx->objects, id);
+> > +	if (!obj || (type != IOMMUFD_OBJ_ANY && obj->type != type) ||
+> > +	    !iommufd_lock_obj(obj))
+> 
+> Looking at the code it seems iommufd_lock_obj() locks against
+> destroy_rw_sem and increases the reference count but there is also an
+> iommufd_put_object_keep_user() which only unlocks the destroy_rw_sem. I
+> think I personally would benefit from a comment/commit message
+> explaining the lifecycle.
+> 
+> There is the below comment in iommufd_object_destroy_user() but I think
+> it would be better placed near the destroy_rwsem decleration and to
+> also explain the interaction between the destroy_rwsem and the
+> reference count.
+
+I do prefer it near the destroy because that is the only place that
+actually requires the property it gives. The code outside this layer
+shouldn't know about this at all beyond folowing some rules about
+iommufd_put_object_keep_user(). Lets add a comment there instead:
+
+/**
+ * iommufd_put_object_keep_user() - Release part of the refcount on obj
+ * @obj - Object to release
+ *
+ * Objects have two protections to ensure that userspace has a consistent
+ * experience with destruction. Normally objects are locked so that destroy will
+ * block while there are concurrent users, and wait for the object to be
+ * unlocked.
+ *
+ * However, destroy can also be blocked by holding users reference counts on the
+ * objects, in that case destroy will immediately return EBUSY and will not wait
+ * for reference counts to go to zero.
+ *
+ * This function releases the destroy lock and destroy will return EBUSY.
+ *
+ * It should be used in places where the users will be held beyond a single
+ * system call.
+ */
 
 Thanks,
-Robin.
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
