@@ -4,79 +4,81 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DEC85C433EF
-	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 05:49:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 80E28C433EF
+	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 06:36:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 88A4841687;
-	Tue, 22 Mar 2022 05:49:01 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 37E6F41687;
+	Tue, 22 Mar 2022 06:36:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KHtdH6ywvaxy; Tue, 22 Mar 2022 05:49:00 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 4C31941676;
-	Tue, 22 Mar 2022 05:49:00 +0000 (UTC)
+	with ESMTP id NJ_Eo8xtVzUD; Tue, 22 Mar 2022 06:36:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id F005541680;
+	Tue, 22 Mar 2022 06:36:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 18A6BC0012;
-	Tue, 22 Mar 2022 05:49:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AB2C9C001A;
+	Tue, 22 Mar 2022 06:36:37 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 03804C000B
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 05:48:58 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 58634C000B
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 06:36:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D137B40332
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 05:48:57 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 28E0440386
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 06:36:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
+ dkim=pass (1024-bit key) header.d=chromium.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9s9FaWPEaliX for <iommu@lists.linux-foundation.org>;
- Tue, 22 Mar 2022 05:48:56 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp2.osuosl.org (Postfix) with ESMTPS id A1B6E400B8
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 05:48:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1647928136; x=1679464136;
- h=message-id:date:mime-version:cc:to:references:from:
- subject:in-reply-to:content-transfer-encoding;
- bh=1SnuodTzmo2WR9Zf0tKGMtHe4Kb2aNMr0wspGadKIwY=;
- b=bHa0TFWukQqYDq1rZl2yBHbBO8XOZ09CdZ3f8nAsoRUPGtkkrxMhqndX
- yuPp4oFVnoyng6UqdQ8RFhZ/7RKt99wAFB/387Nh30dglWn17MFzkpS/u
- oMqqQsgyCPi89RIvuBCoUIUZx5KT58QKCoZPG+McxiDf6rRZ2/EV7RLpj
- ptzba96yMsphDgCg/Fj5VuTWQyW5+rhpAMcLqUL36tQRebwOoewru5pXP
- Sb5SOcG/6aiYNjcxyd0Kt5TlBNtgmGmOMbw60wPIa+gvkIcGBFx91r97G
- 056OBiDPmZ6ZCkCKZoslVf9QnuPWx/mMkvozQ2U/kukyXz6rwqdNHP/wA Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="344159049"
-X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; d="scan'208";a="344159049"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 21 Mar 2022 22:48:55 -0700
-X-IronPort-AV: E=Sophos;i="5.90,200,1643702400"; d="scan'208";a="560217417"
-Received: from ellenyin-mobl.ccr.corp.intel.com (HELO [10.254.213.205])
- ([10.254.213.205])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 21 Mar 2022 22:48:52 -0700
-Message-ID: <45860360-4648-3f0b-6758-fe398aca4204@linux.intel.com>
-Date: Tue, 22 Mar 2022 13:48:49 +0800
+ with ESMTP id 1jT0NQ-rGPqN for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Mar 2022 06:36:35 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com
+ [IPv6:2607:f8b0:4864:20::630])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id F15B1400B8
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 06:36:34 +0000 (UTC)
+Received: by mail-pl1-x630.google.com with SMTP id i11so13963741plr.1
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Mar 2022 23:36:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=G6vvJq5zoMKlH4LeyY++zNuuhHapBdcqnf3yKUaAlL4=;
+ b=EFWlNhWZpicfIkIQP2h4g+pbFMtlmTLoWAm+LXiEA0O4kM1lViKFAHnYxbXcPrcx5E
+ SprX6bMQEVYLdXjPKX3ZO/bPWgoY5ZaNNnqWJJKPHnSxzklPbBxQT3Ofcaqv1gWy7TAQ
+ Sv0o60MHo6ih6uoTTCZvQKZveKBweJ6+VPj6o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=G6vvJq5zoMKlH4LeyY++zNuuhHapBdcqnf3yKUaAlL4=;
+ b=XRFJXKhPGBKAmo01J0q0p5FauorF1Rmrlor+zFUd9FHiEAQkoOe4e/VyPALRBDubVf
+ aKBQEbJ+orjhty7lnMEaZZUqosX2ZAQXNHvEy4WHBXtHF4vE/TPPct46sgN6mgY/EVnB
+ ohTsjvUIbO5SnHj163Q/K0MD7TdQUyGL6nyff+1YdJyBBaOnEX5kL8X/awurPaM85e2d
+ eKxXueFmC2iEA1rLfVDRwb2zUOOdP833mUZiNI/Hi3rKJcfAxLQl6t8hcBhRnpB7gtWo
+ 7u7XP8fiQcUKJeJgbXAemGgt6pQ40+DzjUwd957sOZxvLxJWXG3b8DEeZYXE8fcnGNsA
+ wkYg==
+X-Gm-Message-State: AOAM530HRBNg4cW2MbP/bRMYJRJ3tZFk4BX0wzJKRQKGYdtIsEs3/ge8
+ MZakPym8k5fEc/k0HU/A60F2Dw==
+X-Google-Smtp-Source: ABdhPJwYVDLjrioQC821Tnchg1fLRlY6qHPW4SoqkFywCCr1nD6wcEkSOGlMlHmEuN5luqRgjiFbtw==
+X-Received: by 2002:a17:902:bcc2:b0:14f:23c6:c8c5 with SMTP id
+ o2-20020a170902bcc200b0014f23c6c8c5mr16437126pls.131.1647930994318; 
+ Mon, 21 Mar 2022 23:36:34 -0700 (PDT)
+Received: from localhost ([2401:fa00:8f:203:e974:e434:a940:4f9f])
+ by smtp.gmail.com with UTF8SMTPSA id
+ gb5-20020a17090b060500b001c6d46f7e75sm1491413pjb.30.2022.03.21.23.36.32
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Mon, 21 Mar 2022 23:36:33 -0700 (PDT)
+From: David Stevens <stevensd@chromium.org>
+X-Google-Original-From: David Stevens <stevensd@google.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>
+Subject: [PATCH v2] iommu/vt-d: calculate mask for non-aligned flushes
+Date: Tue, 22 Mar 2022 15:35:55 +0900
+Message-Id: <20220322063555.1422042-1-stevensd@google.com>
+X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20220320064030.2936936-1-baolu.lu@linux.intel.com>
- <20220320064030.2936936-11-baolu.lu@linux.intel.com>
- <20220321125021.GQ11336@nvidia.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH RFC 10/11] iommu: Make IOPF handling framework generic
-In-Reply-To: <20220321125021.GQ11336@nvidia.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- Christoph Hellwig <hch@infradead.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
- Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux-foundation.org, David Stevens <stevensd@chromium.org>,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,71 +91,81 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/3/21 20:50, Jason Gunthorpe wrote:
-> On Sun, Mar 20, 2022 at 02:40:29PM +0800, Lu Baolu wrote:
-> 
->> +static enum iommu_page_response_code
->> +iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
->> +{
->> +	vm_fault_t ret;
->> +	struct mm_struct *mm;
->> +	struct vm_area_struct *vma;
->> +	unsigned int access_flags = 0;
->> +	struct iommu_domain *domain = data;
-> 
-> Why is the iommu_domain not passed in as a fully typed object? I would
-> think data should some opaque value used by non-sva cases.
+From: David Stevens <stevensd@chromium.org>
 
-The "data" is set together with the fault handler when the caller
-installs a fault handler for an iommu domain. We will add a generic
-interface to install fault handler for an iommu domain later when a real
-non-sva case comes.
+Calculate the appropriate mask for non-size-aligned page selective
+invalidation. Since psi uses the mask value to mask out the lower order
+bits of the target address, properly flushing the iotlb requires using a
+mask value such that [pfn, pfn+pages) all lie within the flushed
+size-aligned region.  This is not normally an issue because iova.c
+always allocates iovas that are aligned to their size. However, iovas
+which come from other sources (e.g. userspace via VFIO) may not be
+aligned.
 
-> 
-> What is the lifetime model here anyhow?
+Signed-off-by: David Stevens <stevensd@chromium.org>
+---
+v1 -> v2:
+ - Calculate an appropriate mask for non-size-aligned iovas instead
+   of falling back to domain selective flush.
 
-I simply thought that the device driver should guarantee that there are
-no pending faults after sva_unbind(). This is insufficient. I need to
-rework this.
+ drivers/iommu/intel/iommu.c | 27 ++++++++++++++++++++++++---
+ 1 file changed, 24 insertions(+), 3 deletions(-)
 
-> 
->> +	unsigned int fault_flags = FAULT_FLAG_REMOTE;
->> +	struct iommu_fault_page_request *prm = &fault->prm;
->> +	enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
->> +
->> +	if (!(prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID))
->> +		return status;
->> +
->> +	mm = domain->sva_cookie;
->> +	if (IS_ERR_OR_NULL(mm))
-> 
-> Do not use this function
-> 
-> Do not store err pointers in structs.
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 5b196cfe9ed2..ab2273300346 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1717,7 +1717,8 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
+ 				  unsigned long pfn, unsigned int pages,
+ 				  int ih, int map)
+ {
+-	unsigned int mask = ilog2(__roundup_pow_of_two(pages));
++	unsigned int aligned_pages = __roundup_pow_of_two(pages);
++	unsigned int mask = ilog2(aligned_pages);
+ 	uint64_t addr = (uint64_t)pfn << VTD_PAGE_SHIFT;
+ 	u16 did = domain->iommu_did[iommu->seq_id];
+ 
+@@ -1729,10 +1730,30 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
+ 	if (domain_use_first_level(domain)) {
+ 		domain_flush_piotlb(iommu, domain, addr, pages, ih);
+ 	} else {
++		unsigned long bitmask = aligned_pages - 1;
++
++		/*
++		 * PSI masks the low order bits of the base address. If the
++		 * address isn't aligned to the mask, then compute a mask value
++		 * needed to ensure the target range is flushed.
++		 */
++		if (unlikely(bitmask & pfn)) {
++			unsigned long end_pfn = pfn + pages - 1, shared_bits;
++
++			/*
++			 * Since end_pfn <= pfn + bitmask, the only way bits
++			 * higher than bitmask can differ in pfn and end_pfn is
++			 * by carrying. This means after masking out bitmask,
++			 * high bits starting with the first set bit in
++			 * shared_bits are all equal in both pfn and end_pfn.
++			 */
++			shared_bits = ~(pfn ^ end_pfn) & ~bitmask;
++			mask = shared_bits ? __ffs(shared_bits) : BITS_PER_LONG;
++		}
++
+ 		/*
+ 		 * Fallback to domain selective flush if no PSI support or
+-		 * the size is too big. PSI requires page size to be 2 ^ x,
+-		 * and the base address is naturally aligned to the size.
++		 * the size is too big.
+ 		 */
+ 		if (!cap_pgsel_inv(iommu->cap) ||
+ 		    mask > cap_max_amask_val(iommu->cap))
+-- 
+2.35.1.894.gb6a874cedc-goog
 
-Sure.
-
-> 
->> +out_put_mm:
->> +	mmap_read_unlock(mm);
->> +	mmput(mm);
-> 
-> mm structs are weird, they have two refcounts.
-> 
-> The 'sva_cookie' should hold a mmgrab/mmdrop() refcount to keep the
-> pointer alive but to touch the mmap lock you have to upgrade it to a
-> refcount that prevents destruction using mmget_not_zero() just for
-> this short period.
-
-Yes. Will look into it.
-
-Best regards,
-baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
