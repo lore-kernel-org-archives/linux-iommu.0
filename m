@@ -1,120 +1,63 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 74EBBC433F5
-	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 14:28:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2D5F1C433FE
+	for <iommu@archiver.kernel.org>; Tue, 22 Mar 2022 14:40:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 1AC54813D4;
-	Tue, 22 Mar 2022 14:28:43 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id CA7C14091F;
+	Tue, 22 Mar 2022 14:40:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3h_0bt6aesU9; Tue, 22 Mar 2022 14:28:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id EA2CC813A6;
-	Tue, 22 Mar 2022 14:28:41 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id iJzJC-om3YbX; Tue, 22 Mar 2022 14:40:14 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 536354000B;
+	Tue, 22 Mar 2022 14:40:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BB917C001A;
-	Tue, 22 Mar 2022 14:28:41 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6C8ACC000B
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:28:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 391D3C001A;
+	Tue, 22 Mar 2022 14:40:14 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3EBEDC000B
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:40:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 5EDE740179
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:28:40 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 38C1E40180
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:40:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ibm.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JHt9Ux_ixqhT for <iommu@lists.linux-foundation.org>;
- Tue, 22 Mar 2022 14:28:39 +0000 (UTC)
+ with ESMTP id zDeNfLjLPOIa for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Mar 2022 14:40:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
- [148.163.156.1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 26A164000B
- for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:28:38 +0000 (UTC)
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
- by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22MCNC6c015818; 
- Tue, 22 Mar 2022 14:28:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
- h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=Z11ip5jrLOij8BXLnCPgbTlxu3V4V2bH59QABl1feLg=;
- b=BczGLBtEMxnowfT8fLOgC1GFwTyCE/2HfKvumu6qJLy8/qhSr58Xv/NV1gDqqGD7wqfH
- yqnrXGSHgknAZty02m9eyuTGjUhN9WIEu+OHItaqjgUY4/Kpds+UbKra3KuN7l45+3KX
- qwesFXxcS/QcDiDC+znU/AfluG2pfgxbwCEv73crkmiJi5HS5SFyDRF02hQrV+/17PpU
- QcZs6O2904T/FCCI/in2lQ7m92LEh2CUBWeaTcrLF2kMD2nGTsfGfBdw06N9Roa2uWnd
- lVwoz2lSGWvCt7LSGgYncKixjkHN4fMCB/0AQr7G2peUyG2hv2rN4NpBtAQH9VwDqO2w 8Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
- by mx0a-001b2d01.pphosted.com with ESMTP id 3ey86uucc8-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Tue, 22 Mar 2022 14:28:29 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
- by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22MDPw2E015728;
- Tue, 22 Mar 2022 14:28:29 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com
- [159.122.73.71])
- by mx0a-001b2d01.pphosted.com with ESMTP id 3ey86uucbe-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Tue, 22 Mar 2022 14:28:29 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
- by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22MEHoxM028025;
- Tue, 22 Mar 2022 14:28:26 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com
- (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
- by ppma02fra.de.ibm.com with ESMTP id 3ew6t8ngak-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Tue, 22 Mar 2022 14:28:26 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com
- [9.149.105.59])
- by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
- 22MESNIX25821494
- (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Tue, 22 Mar 2022 14:28:24 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id BC18DA4059;
- Tue, 22 Mar 2022 14:28:23 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 7AFA8A4040;
- Tue, 22 Mar 2022 14:28:22 +0000 (GMT)
-Received: from sig-9-145-28-179.uk.ibm.com (unknown [9.145.28.179])
- by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
- Tue, 22 Mar 2022 14:28:22 +0000 (GMT)
-Message-ID: <808a871b3918dc067031085de3e8af6b49c6ef89.camel@linux.ibm.com>
-Subject: Re: [PATCH RFC 04/12] kernel/user: Allow user::locked_vm to be
- usable for iommufd
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Date: Tue, 22 Mar 2022 15:28:22 +0100
-In-Reply-To: <4-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
-References: <4-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: ZmEmteEVUeELimln3m8Svl5vaJY_h_ne
-X-Proofpoint-ORIG-GUID: 2jgrEHbOtCoiWH372ljhi9hP5boIxdqN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-22_04,2022-03-22_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 mlxlogscore=999
- impostorscore=0 bulkscore=0 adultscore=0 suspectscore=0 malwarescore=0
- priorityscore=1501 lowpriorityscore=0 mlxscore=0 spamscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203220082
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
- "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux-foundation.org,
- Daniel Jordan <daniel.m.jordan@oracle.com>, Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Joao Martins <joao.m.martins@oracle.com>,
- David Gibson <david@gibson.dropbear.id.au>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 3162F4000B
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Mar 2022 14:40:11 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4B1821042;
+ Tue, 22 Mar 2022 07:40:10 -0700 (PDT)
+Received: from [10.57.43.230] (unknown [10.57.43.230])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 10C753F73B;
+ Tue, 22 Mar 2022 07:40:06 -0700 (PDT)
+Message-ID: <8b47440b-91df-ba2f-b004-33e4c6dc1f20@arm.com>
+Date: Tue, 22 Mar 2022 14:40:02 +0000
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 2/2] thunderbolt: Make iommu_dma_protection more
+ accurate
+Content-Language: en-GB
+To: Mika Westerberg <mika.westerberg@linux.intel.com>
+References: <cover.1647624084.git.robin.murphy@arm.com>
+ <0dd14883930c9f55ace22162e23765a37d91a057.1647624084.git.robin.murphy@arm.com>
+ <Yjm150r3KPKp/2O4@lahna>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <Yjm150r3KPKp/2O4@lahna>
+Cc: michael.jamet@intel.com, linux-usb@vger.kernel.org,
+ linux-kernel@vger.kernel.org, YehezkelShB@gmail.com,
+ iommu@lists.linux-foundation.org, mario.limonciello@amd.com,
+ andreas.noever@gmail.com, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -127,67 +70,161 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 2022-03-18 at 14:27 -0300, Jason Gunthorpe wrote:
-> Following the pattern of io_uring, perf, skb, and bpf iommfd will use
-                                                iommufd ----^
-> user->locked_vm for accounting pinned pages. Ensure the value is included
-> in the struct and export free_uid() as iommufd is modular.
+On 2022-03-22 11:41, Mika Westerberg wrote:
+> Hi Robin,
 > 
-> user->locked_vm is the correct accounting to use for ulimit because it is
-> per-user, and the ulimit is not supposed to be per-process. Other
-> places (vfio, vdpa and infiniband) have used mm->pinned_vm and/or
-> mm->locked_vm for accounting pinned pages, but this is only per-process
-> and inconsistent with the majority of the kernel.
-
-Since this will replace parts of vfio this difference seems
-significant. Can you explain this a bit more?
-
-I'm also a bit confused how io_uring handles this. When I stumbled over
-the problem fixed by 6b7898eb180d ("io_uring: fix imbalanced sqo_mm
-accounting") and from that commit description I seem to rember that
-io_uring also accounts in mm->locked_vm too? In fact I stumbled over
-that because the wrong accounting in io_uring exhausted the applied to
-vfio (I was using a QEMU utilizing io_uring itself).
-
+> I tried this now on two Intel systems. One with integrated Thunderbolt
+> and one with discrete. There was a small issue, see below but once fixed
+> it worked as expected :)
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  include/linux/sched/user.h | 2 +-
->  kernel/user.c              | 1 +
->  2 files changed, 2 insertions(+), 1 deletion(-)
+> On Fri, Mar 18, 2022 at 05:42:58PM +0000, Robin Murphy wrote:
+>> Between me trying to get rid of iommu_present() and Mario wanting to
+>> support the AMD equivalent of DMAR_PLATFORM_OPT_IN, scrutiny has shown
+>> that the iommu_dma_protection attribute is being far too optimistic.
+>> Even if an IOMMU might be present for some PCI segment in the system,
+>> that doesn't necessarily mean it provides translation for the device(s)
+>> we care about. Furthermore, all that DMAR_PLATFORM_OPT_IN really does
+>> is tell us that memory was protected before the kernel was loaded, and
+>> prevent the user from disabling the intel-iommu driver entirely. While
+>> that lets us assume kernel integrity, what matters for actual runtime
+>> DMA protection is whether we trust individual devices, based on the
+>> "external facing" property that we expect firmware to describe for
+>> Thunderbolt ports.
+>>
+>> It's proven challenging to determine the appropriate ports accurately
+>> given the variety of possible topologies, so while still not getting a
+>> perfect answer, by putting enough faith in firmware we can at least get
+>> a good bit closer. If we can see that any device near a Thunderbolt NHI
+>> has all the requisites for Kernel DMA Protection, chances are that it
+>> *is* a relevant port, but moreover that implies that firmware is playing
+>> the game overall, so we'll use that to assume that all Thunderbolt ports
+>> should be correctly marked and thus will end up fully protected.
+>>
+>> CC: Mario Limonciello <mario.limonciello@amd.com>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>
+>> v2: Give up trying to look for specific devices, just look for evidence
+>>      that firmware cares at all.
+>>
+>>   drivers/thunderbolt/domain.c | 12 +++--------
+>>   drivers/thunderbolt/nhi.c    | 41 ++++++++++++++++++++++++++++++++++++
+>>   include/linux/thunderbolt.h  |  2 ++
+>>   3 files changed, 46 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/drivers/thunderbolt/domain.c b/drivers/thunderbolt/domain.c
+>> index 7018d959f775..2889a214dadc 100644
+>> --- a/drivers/thunderbolt/domain.c
+>> +++ b/drivers/thunderbolt/domain.c
+>> @@ -7,9 +7,7 @@
+>>    */
+>>   
+>>   #include <linux/device.h>
+>> -#include <linux/dmar.h>
+>>   #include <linux/idr.h>
+>> -#include <linux/iommu.h>
+>>   #include <linux/module.h>
+>>   #include <linux/pm_runtime.h>
+>>   #include <linux/slab.h>
+>> @@ -257,13 +255,9 @@ static ssize_t iommu_dma_protection_show(struct device *dev,
+>>   					 struct device_attribute *attr,
+>>   					 char *buf)
+>>   {
+>> -	/*
+>> -	 * Kernel DMA protection is a feature where Thunderbolt security is
+>> -	 * handled natively using IOMMU. It is enabled when IOMMU is
+>> -	 * enabled and ACPI DMAR table has DMAR_PLATFORM_OPT_IN set.
+>> -	 */
+>> -	return sprintf(buf, "%d\n",
+>> -		       iommu_present(&pci_bus_type) && dmar_platform_optin());
+>> +	struct tb *tb = container_of(dev, struct tb, dev);
+>> +
+>> +	return sysfs_emit(buf, "%d\n", tb->nhi->iommu_dma_protection);
+>>   }
+>>   static DEVICE_ATTR_RO(iommu_dma_protection);
+>>   
+>> diff --git a/drivers/thunderbolt/nhi.c b/drivers/thunderbolt/nhi.c
+>> index c73da0532be4..9e396e283792 100644
+>> --- a/drivers/thunderbolt/nhi.c
+>> +++ b/drivers/thunderbolt/nhi.c
+>> @@ -14,6 +14,7 @@
+>>   #include <linux/errno.h>
+>>   #include <linux/pci.h>
+>>   #include <linux/interrupt.h>
+>> +#include <linux/iommu.h>
+>>   #include <linux/module.h>
+>>   #include <linux/delay.h>
+>>   #include <linux/property.h>
+>> @@ -1102,6 +1103,45 @@ static void nhi_check_quirks(struct tb_nhi *nhi)
+>>   		nhi->quirks |= QUIRK_AUTO_CLEAR_INT;
+>>   }
+>>   
+>> +static int nhi_check_iommu_pdev(struct pci_dev *pdev, void *data)
+>> +{
+>> +	if (!pdev->untrusted ||
+>> +	    !dev_iommu_capable(&pdev->dev, IOMMU_CAP_PRE_BOOT_PROTECTION))
 > 
-> diff --git a/include/linux/sched/user.h b/include/linux/sched/user.h
-> index 00ed419dd46413..c47dae71dad3c8 100644
-> --- a/include/linux/sched/user.h
-> +++ b/include/linux/sched/user.h
-> @@ -24,7 +24,7 @@ struct user_struct {
->  	kuid_t uid;
->  
->  #if defined(CONFIG_PERF_EVENTS) || defined(CONFIG_BPF_SYSCALL) || \
-> -    defined(CONFIG_NET) || defined(CONFIG_IO_URING)
-> +    defined(CONFIG_NET) || defined(CONFIG_IO_URING) || IS_ENABLED(CONFIG_IOMMUFD)
->  	atomic_long_t locked_vm;
->  #endif
->  #ifdef CONFIG_WATCH_QUEUE
-> diff --git a/kernel/user.c b/kernel/user.c
-> index e2cf8c22b539a7..d667debeafd609 100644
-> --- a/kernel/user.c
-> +++ b/kernel/user.c
-> @@ -185,6 +185,7 @@ void free_uid(struct user_struct *up)
->  	if (refcount_dec_and_lock_irqsave(&up->__count, &uidhash_lock, &flags))
->  		free_user(up, flags);
->  }
-> +EXPORT_SYMBOL_GPL(free_uid);
->  
->  struct user_struct *alloc_uid(kuid_t uid)
->  {
+> This one needs to take the pdev->external_facing into account too
+> because most of the time there are no existing tunnels when the driver
+> is loaded so we only see the PCIe root/downstream port. I think this is
+> enough actually:
+> 
+> 	if (!pdev->external_facing ||
+> 	    !dev_iommu_capable(&pdev->dev, IOMMU_CAP_PRE_BOOT_PROTECTION))
 
+Ah yes, my bad, for some reason I got the misapprehension into my head 
+that untrusted was propagated to the port as well, not just the devices 
+behind it. I'll fix this and tweak the comment below to match.
 
+>> +		return 0;
+>> +	*(bool *)data = true;
+>> +	return 1; /* Stop walking */
+>> +}
+>> +
+>> +static void nhi_check_iommu(struct tb_nhi *nhi)
+>> +{
+>> +	struct pci_bus *bus = nhi->pdev->bus;
+>> +	bool port_ok = false;
+>> +
+>> +	/*
+>> +	 * Ideally what we'd do here is grab every PCI device that
+>> +	 * represents a tunnelling adapter for this NHI and check their
+>> +	 * status directly, but unfortunately USB4 seems to make it
+>> +	 * obnoxiously difficult to reliably make any correlation.
+>> +	 *
+>> +	 * So for now we'll have to bodge it... Hoping that the system
+>> +	 * is at least sane enough that an adapter is in the same PCI
+>> +	 * segment as its NHI, if we can find *something* on that segment
+>> +	 * which meets the requirements for Kernel DMA Protection, we'll
+>> +	 * take that to imply that firmware is aware and has (hopefully)
+>> +	 * done the right thing in general. We need to know that the PCI
+>> +	 * layer has seen the ExternalFacingPort property and propagated
+>> +	 * it to the "untrusted" flag that the IOMMU layer will then
+>> +	 * enforce, but also that the IOMMU driver itself can be trusted
+>> +	 * not to have been subverted by a pre-boot DMA attack.
+>> +	 */
+>> +	while (bus->parent)
+>> +		bus = bus->parent;
+>> +
+>> +	pci_walk_bus(bus, nhi_check_iommu_pdev, &port_ok);
+>> +
+>> +	nhi->iommu_dma_protection = port_ok;
+> 
+> I would put here a log debug, something like this:
+> 
+> dev_dbg(&nhi->pdev->dev, "IOMMU DMA protection is %sabled\n",
+> 	port_ok ? "en" : "dis");
+
+Ack. I'll wait and send a v3 once the merge window's over, and can roll 
+Mario's AMD IOMMU patch into that too.
+
+Thanks,
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
