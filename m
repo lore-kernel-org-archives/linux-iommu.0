@@ -1,90 +1,85 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D48E8C433F5
-	for <iommu@archiver.kernel.org>; Wed, 23 Mar 2022 06:17:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3A7ADC433F5
+	for <iommu@archiver.kernel.org>; Wed, 23 Mar 2022 09:49:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 67721419B1;
-	Wed, 23 Mar 2022 06:17:33 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D5D4A849A1;
+	Wed, 23 Mar 2022 09:49:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MsfeSUS6aVZB; Wed, 23 Mar 2022 06:17:32 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id tQ7-wMH1a1pb; Wed, 23 Mar 2022 09:49:17 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 24028418F5;
-	Wed, 23 Mar 2022 06:17:32 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 9F6EB84953;
+	Wed, 23 Mar 2022 09:49:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E7010C001A;
-	Wed, 23 Mar 2022 06:17:31 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F3F87C000B
- for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 06:17:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6B575C001A;
+	Wed, 23 Mar 2022 09:49:16 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3B75FC000B
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 09:49:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id CA9F2404F3
- for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 06:17:29 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 255A14185F
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 09:49:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DO2ZqAVx7SwJ for <iommu@lists.linux-foundation.org>;
- Wed, 23 Mar 2022 06:17:28 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id jd77yXKFa5om for <iommu@lists.linux-foundation.org>;
+ Wed, 23 Mar 2022 09:49:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 85EF5401D2
- for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 06:17:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1648016248; x=1679552248;
- h=date:from:to:cc:subject:message-id:references:
- mime-version:in-reply-to;
- bh=8vzD92UhHfMzrQ/OOVyGmFmDcRcFc7OySsWTT7LpWT4=;
- b=NPKSS7DoayzTvRCnMWnIdrtpnWUgWstqMFR+IwGnt4P0wNlkkgAEJUI1
- mJGE3rXxuYk/W8RoHw63BD9scav+gkWNrHN/gos0pUyfp/07R33QsijS8
- 3IU8nS0vKFfp8dWYPTzA4AJDHzVs8MxVRLXW19GJ5RKqAADpcU3RJ2CnH
- frlyEl/VdMrYHOVEiN6MKWYzSoP6EMyDqQZEznBGJNu7Gl/2k3dNuAIJy
- /Wn3223S9+gKfdTMEWG4nDcJ/kiPQvUp7nFjw0jnk4mC4wjhwCQHI6Yd9
- xzzjouvBD3s3iF1ZT82/5dUcebdlUFXQKq1PLHw4KNnjFXe72lv/YSDuu Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="237974275"
-X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; d="scan'208";a="237974275"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Mar 2022 23:17:27 -0700
-X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; d="scan'208";a="692833797"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
- by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Mar 2022 23:17:22 -0700
-Received: by lahna (sSMTP sendmail emulation); Wed, 23 Mar 2022 08:16:15 +0200
-Date: Wed, 23 Mar 2022 08:16:15 +0200
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-To: Rajat Jain <rajatja@google.com>
-Subject: Re: [PATCH v4 1/2] PCI: Rename "pci_dev->untrusted" to
- "pci_dev->poses_dma_risk"
-Message-ID: <Yjq7LzdQDIhtxSJM@lahna>
-References: <20220320062907.3272903-1-rajatja@google.com>
- <YjmQq1DvWnJwUh6R@infradead.org>
- <CAJZ5v0h9TnUELahzkO59Vqoio1QRHfixk58Yxgffa72rmEBgOA@mail.gmail.com>
- <CACK8Z6Fz-TPW1fMpQB09fw11neq8eyn89XB8vy0ioB5zB0Hb9Q@mail.gmail.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CACK8Z6Fz-TPW1fMpQB09fw11neq8eyn89XB8vy0ioB5zB0Hb9Q@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Rajat Jain <rajatxjain@gmail.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Linux PCI <linux-pci@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@infradead.org>,
- ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
- "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
- Bjorn Helgaas <helgaas@kernel.org>, Pavel Machek <pavel@denx.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Oliver O'Halloran <oohall@gmail.com>,
- David Woodhouse <dwmw2@infradead.org>, Will Deacon <will@kernel.org>,
- Jesse Barnes <jsbarnes@google.com>, Dmitry Torokhov <dtor@google.com>,
- Len Brown <lenb@kernel.org>
+Received: from ams.source.kernel.org (ams.source.kernel.org
+ [IPv6:2604:1380:4601:e00::1])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 794D141857
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 09:49:14 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by ams.source.kernel.org (Postfix) with ESMTPS id ACE00B81E5A;
+ Wed, 23 Mar 2022 09:49:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AF95C340ED;
+ Wed, 23 Mar 2022 09:49:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1648028951;
+ bh=4VQO87LsN3C7aIxtCY4P30XsNOmbPkENQiXxqekgQes=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+ b=PGZLnsJgdClJtcu5wiJqnkSHycaiHr34n9/7lFxuGpXN8sXtXl0GPJ06H8LzAlut1
+ TUenp4Ir2wDjwNAbIn+KKD4gENOt+5g6l/Hr1lJiev5Q5fHL1NHmfiGpC652daKA9C
+ 6anBMZrz1BW6vWsJRWwltzo5xL3CSFe1sSGNnAX3ZTPPfUtU8kX3SFcMxcGdopaRPP
+ Z+50TNcr54w357TkPxvffU81oDn/m3R3VaCXZ3fwrikKZ+k2pm7tTsopf4cMBbzVwT
+ ZuRnjSJNSZHcejGvh4otSdr/xE6yvZ8M50C2V6W/4iMFlEZndhZswoiWiF7O25KVnS
+ wP3q5n3J4Qexw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+ by disco-boy.misterjones.org with esmtpsa (TLS1.3) tls
+ TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94.2)
+ (envelope-from <maz@kernel.org>)
+ id 1nWxc5-00GStO-3I; Wed, 23 Mar 2022 09:49:09 +0000
+Date: Wed, 23 Mar 2022 09:49:04 +0000
+Message-ID: <874k3pxalr.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/dma: Explicitly sort PCI DMA windows
+In-Reply-To: <65657c5370fa0161739ba094ea948afdfa711b8a.1647967875.git.robin.murphy@arm.com>
+References: <65657c5370fa0161739ba094ea948afdfa711b8a.1647967875.git.robin.murphy@arm.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
+ iommu@lists.linux-foundation.org, bhelgaas@google.com,
+ linux-pci@vger.kernel.org, robh@kernel.org, dann.frazier@canonical.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
+ SAEximRunCond expanded to false
+Cc: robh@kernel.org, linux-pci@vger.kernel.org,
+ iommu@lists.linux-foundation.org, dann.frazier@canonical.com,
+ bhelgaas@google.com, will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,32 +97,36 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Mar 22, 2022 at 01:09:55PM -0700, Rajat Jain wrote:
-> On Tue, Mar 22, 2022 at 4:12 AM Rafael J. Wysocki <rafael@kernel.org> wrote:
-> >
-> > On Tue, Mar 22, 2022 at 10:02 AM Christoph Hellwig <hch@infradead.org> wrote:
-> > >
-> > > On Sat, Mar 19, 2022 at 11:29:05PM -0700, Rajat Jain wrote:
-> > > > Rename the field to make it more clear, that the device can execute DMA
-> > > > attacks on the system, and thus the system may need protection from
-> > > > such attacks from this device.
-> > > >
-> > > > No functional change intended.
-> > > >
-> > > > Signed-off-by: Rajat Jain <rajatja@google.com>
-> > > > ---
-> > > > v4: Initial version, created based on comments on other patch
-> > >
-> > > What a horrible name.  Why not untrusted_dma which captures the
-> > > intent much better?
-> >
-> > FWIW, I like this one much better too.
+On Tue, 22 Mar 2022 17:27:36 +0000,
+Robin Murphy <robin.murphy@arm.com> wrote:
 > 
-> Sure, no problems. I can change the name to "untrusted_dma".
+> Originally, creating the dma_ranges resource list in pre-sorted fashion
+> was the simplest and most efficient way to enforce the order required by
+> iova_reserve_pci_windows(). However since then at least one PCI host
+> driver is now re-sorting the list for its own probe-time processing,
+> which doesn't seem entirely unreasonable, so that basic assumption no
+> longer holds. Make iommu-dma robust and get the sort order it needs by
+> explicitly sorting, which means we can also save the effort at creation
+> time and just build the list in whatever natural order the DT had.
 > 
-> Mika, can I carry forward your "Reviewed-by" tag with this name change too?
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+> 
+> Looking at this area off the back of the XGene thread[1] made me realise
+> that we need to do it anyway, regardless of whether it might also happen
+> to restore the previous XGene behaviour or not. Presumably nobody's
+> tried to use pcie-cadence-host behind an IOMMU yet...
 
-Sure :)
+This definitely restores PCIe functionality on my Mustang (XGene-1).
+Hopefully dann can comment on whether this addresses his own issue, as
+his firmware is significantly different.
+
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
