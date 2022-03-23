@@ -4,66 +4,103 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8065CC4332F
-	for <iommu@archiver.kernel.org>; Wed, 23 Mar 2022 19:06:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0A0A4C433EF
+	for <iommu@archiver.kernel.org>; Wed, 23 Mar 2022 19:10:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 12DD484A1D;
-	Wed, 23 Mar 2022 19:06:35 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id A2EB184A4C;
+	Wed, 23 Mar 2022 19:10:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6LIbyCfSAHqD; Wed, 23 Mar 2022 19:06:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id D34B284A16;
-	Wed, 23 Mar 2022 19:06:33 +0000 (UTC)
+	with ESMTP id SwVb2cvw37TZ; Wed, 23 Mar 2022 19:10:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 6654B84A24;
+	Wed, 23 Mar 2022 19:10:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 991ACC0012;
-	Wed, 23 Mar 2022 19:06:33 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3C4FCC000B
- for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 19:06:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 47899C0012;
+	Wed, 23 Mar 2022 19:10:47 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 68844C000B
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 19:10:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 2476184A1C
- for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 19:06:32 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 57457418C5
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 19:10:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Tj00bDXbkEEt for <iommu@lists.linux-foundation.org>;
- Wed, 23 Mar 2022 19:06:31 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4Kz1wFUl1j1Y for <iommu@lists.linux-foundation.org>;
+ Wed, 23 Mar 2022 19:10:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 001FE84A16
- for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 19:06:30 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 409D0D6E;
- Wed, 23 Mar 2022 12:06:30 -0700 (PDT)
-Received: from [10.57.43.230] (unknown [10.57.43.230])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5A5F83F73B;
- Wed, 23 Mar 2022 12:06:27 -0700 (PDT)
-Message-ID: <27b5a287-7a33-9a8b-ad6d-04746735fb0c@arm.com>
-Date: Wed, 23 Mar 2022 19:06:23 +0000
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 6646C418C1
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 19:10:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1648062644;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=hMSz6R8MljxH5tNM923iQc7Lkarfhq9MPHr06b3TmaI=;
+ b=UIgzG7lk1qtjm84hfE7EoMgs6eelfBcA3N2vS8YWjvqHun95RRmd5Wg5RkxDMY7CcjKa/m
+ nY+kEMvjuUYMk0Ese/fm4tPpSWhbkwfRFVMO+E3jXY3Cy362dL1aZAX3hdECV8vCcT0uPL
+ iarNc9E4hRD1fZuynGl27o3HBuPuG5M=
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
+ [209.85.167.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-471-ij408z34NEuTpw3fFNF4fg-1; Wed, 23 Mar 2022 15:10:42 -0400
+X-MC-Unique: ij408z34NEuTpw3fFNF4fg-1
+Received: by mail-oi1-f197.google.com with SMTP id
+ c11-20020aca1c0b000000b002da42e09f96so1465217oic.1
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 12:10:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+ :references:organization:mime-version:content-transfer-encoding;
+ bh=hMSz6R8MljxH5tNM923iQc7Lkarfhq9MPHr06b3TmaI=;
+ b=1RidnlmP0kpzFNfVSSh0ZgAWfJz888uLhfYp2ycCJV2ngsXvb7HJ3J8v4mIOgKrsyB
+ uyEXLtSismNRjAnY/eI/lXGRx9JFHa6RRdXyEN1q5gFEUfDzUR0QmO6mG4qBo8qWOFS8
+ 3TKRnMbEjoEEkQNhGRCciZo6LHPcz7S4l+aWBtCTSHcEKkDxpjkiTBCI72fPGcaNz+nG
+ 0wPMZJwWJkTPU77hn/AXEvR3b8d0p12lUpPwO6M0P/JgLk5Dmr1Lo4Wg+FpZKc5Q0vCr
+ xfxft43q2pBiyCkmWtMa9dj3zmnhNEpMZEAbGUKCNzGER+zFmPpHrdWCsnwfZJSeLG59
+ peZQ==
+X-Gm-Message-State: AOAM530+0gTL4NjeBqR5jrR5P/06rVuxgLYpvsTblFcmR9PhfN/ZyLz8
+ LMEIyZMvaj04fegEL84B/H03qzJ0zih49WzDhXaTBpMLPKwRJmAMrSW30SWMmRt4YpGZi8X1lKX
+ 37wuA3lUeHfTrqeKV1mzpEfKWAABPWw==
+X-Received: by 2002:aca:220c:0:b0:2d9:eb5e:f4d0 with SMTP id
+ b12-20020aca220c000000b002d9eb5ef4d0mr5440152oic.232.1648062642084; 
+ Wed, 23 Mar 2022 12:10:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyTy7pF0/xnQnJ15xFLURJLPj9g6wz5WiKdNGKM06ryRsQgJ9LxrLcXzTDlwF53gvwtUDHQ9g==
+X-Received: by 2002:aca:220c:0:b0:2d9:eb5e:f4d0 with SMTP id
+ b12-20020aca220c000000b002d9eb5ef4d0mr5440120oic.232.1648062641909; 
+ Wed, 23 Mar 2022 12:10:41 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239]) by smtp.gmail.com with ESMTPSA id
+ d9-20020a9d51c9000000b005b2466cd7b3sm352588oth.36.2022.03.23.12.10.39
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 23 Mar 2022 12:10:41 -0700 (PDT)
+Date: Wed, 23 Mar 2022 13:10:38 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH RFC 08/12] iommufd: IOCTLs for the io_pagetable
+Message-ID: <20220323131038.3b5cb95b.alex.williamson@redhat.com>
+In-Reply-To: <8-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+References: <0-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <8-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-Content-Language: en-GB
-To: Linus Torvalds <torvalds@linux-foundation.org>,
- Oleksandr Natalenko <oleksandr@natalenko.name>
-References: <1812355.tdWV9SEqCh@natalenko.name>
- <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
-Cc: =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
- Netdev <netdev@vger.kernel.org>, Kalle Valo <kvalo@kernel.org>,
- linux-wireless <linux-wireless@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- stable <stable@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
- Halil Pasic <pasic@linux.ibm.com>, iommu <iommu@lists.linux-foundation.org>,
- Olha Cherevyk <olha.cherevyk@gmail.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Christoph Hellwig <hch@lst.de>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
+ iommu@lists.linux-foundation.org, Joao Martins <joao.m.martins@oracle.com>,
+ David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,76 +113,43 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-03-23 17:27, Linus Torvalds wrote:
-> On Wed, Mar 23, 2022 at 12:19 AM Oleksandr Natalenko
-> <oleksandr@natalenko.name> wrote:
->>
->> The following upstream commits:
->>
->> aa6f8dcbab47 swiotlb: rework "fix info leak with DMA_FROM_DEVICE"
->> ddbd89deb7d3 swiotlb: fix info leak with DMA_FROM_DEVICE
->>
->> break ath9k-based Wi-Fi access point for me. The AP emits beacons, but
->> no client can connect to it, either from the very beginning, or
->> shortly after start. These are the only symptoms I've noticed (i.e.,
->> no BUG/WARNING messages in `dmesg` etc).
-> 
-> Funky, but clearly true:
-> 
->> These commits appeared in v5.17 and v5.16.15, and both kernels are
->> broken for me. I'm pretty confident these commits make the difference
->> since I've built both v5.17 and v5.16.15 without them, and it fixed
->> the issue.
-> 
-> Can you double-check (or just explicitly confirm if you already did
-> that test) that you need to revert *both* of those commits, and it's
-> the later "rework" fix that triggers it?
-> 
->> So, I do understand this might be an issue with regard to SG I/O
->> handling in ath9k, hence relevant people in Cc.
-> 
-> Yeah, almost certainly an ath9k bug, but a regression is a regression,
-> so if people can't find the issue in ath9k, we'll have to revert those
-> commits.
-> 
-> Honestly, I personally think they were a bit draconian to begin with,
-> and didn't limit their effects sufficiently.
-> 
-> I'm assuming that the ath9k issue is that it gives DMA mapping a big
-> enough area to handle any possible packet size, and just expects -
-> quite reasonably - smaller packets to only fill the part they need.
-> 
-> Which that "info leak" patch obviously breaks entirely.
+On Fri, 18 Mar 2022 14:27:33 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-Except that's the exact case which the new patch is addressing - by 
-copying the whole original area into the SWIOTLB bounce buffer to begin 
-with, if we bounce the whole lot back after the device has only updated 
-part of it, the non-updated parts now get overwritten with the same 
-original contents, rather than whatever random crap happened to be left 
-in the SWIOTLB buffer by its previous user. I'm extremely puzzled how 
-any driver could somehow be dependent on non-device-written data getting 
-replaced with random crap, given that it wouldn't happen with a real 
-IOMMU, or if SWIOTLB just didn't need to bounce, and the data would 
-hardly be deterministic either.
+> +static int conv_iommu_prot(u32 map_flags)
+> +{
+> +	int iommu_prot;
+> +
+> +	/*
+> +	 * We provide no manual cache coherency ioctls to userspace and most
+> +	 * architectures make the CPU ops for cache flushing privileged.
+> +	 * Therefore we require the underlying IOMMU to support CPU coherent
+> +	 * operation.
+> +	 */
+> +	iommu_prot = IOMMU_CACHE;
 
-I think I can see how aa6f8dcbab47 might increase the severity of a 
-driver bug where it calls dma_sync_*_for_device() on part of a 
-DMA_FROM_DEVICE mapping that the device *has* written to, without having 
-called a corresponding dma_sync_*_for_cpu() first - previously that 
-would have had no effect, but now SWIOTLB will effectively behave more 
-like an eagerly-prefetching non-coherent cache and write back old data 
-over new - but if ddbd89deb7d3 alone makes a difference then something 
-really weird must be going on.
+Where is this requirement enforced?  AIUI we'd need to test
+IOMMU_CAP_CACHE_COHERENCY somewhere since functions like
+intel_iommu_map() simply drop the flag when not supported by HW.
 
-Has anyone run a sanity check with CONFIG_DMA_API_DEBUG enabled to see 
-if that flags anything up?
+This also seems like an issue relative to vfio compatibility that I
+don't see mentioned in that patch.  Thanks,
 
-Robin.
+Alex
+
+> +	if (map_flags & IOMMU_IOAS_MAP_WRITEABLE)
+> +		iommu_prot |= IOMMU_WRITE;
+> +	if (map_flags & IOMMU_IOAS_MAP_READABLE)
+> +		iommu_prot |= IOMMU_READ;
+> +	return iommu_prot;
+> +}
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
