@@ -1,85 +1,72 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3A7ADC433F5
-	for <iommu@archiver.kernel.org>; Wed, 23 Mar 2022 09:49:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 10787C433EF
+	for <iommu@archiver.kernel.org>; Wed, 23 Mar 2022 12:19:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id D5D4A849A1;
-	Wed, 23 Mar 2022 09:49:17 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 96558415D4;
+	Wed, 23 Mar 2022 12:19:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tQ7-wMH1a1pb; Wed, 23 Mar 2022 09:49:17 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 9F6EB84953;
-	Wed, 23 Mar 2022 09:49:16 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6B575C001A;
-	Wed, 23 Mar 2022 09:49:16 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3B75FC000B
- for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 09:49:15 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 255A14185F
- for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 09:49:15 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jd77yXKFa5om for <iommu@lists.linux-foundation.org>;
- Wed, 23 Mar 2022 09:49:14 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org
- [IPv6:2604:1380:4601:e00::1])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 794D141857
- for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 09:49:14 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id etdRsYODKGhQ; Wed, 23 Mar 2022 12:19:04 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 381D74154F;
+	Wed, 23 Mar 2022 12:19:04 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0846FC0012;
+	Wed, 23 Mar 2022 12:19:04 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 28960C000B
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 07:25:34 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 088BB84937
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 07:25:34 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=natalenko.name
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id hnRGawmGLJoH for <iommu@lists.linux-foundation.org>;
+ Wed, 23 Mar 2022 07:25:32 +0000 (UTC)
+X-Greylist: delayed 00:06:00 by SQLgrey-1.8.0
+Received: from vulcan.natalenko.name (vulcan.natalenko.name
+ [IPv6:2001:19f0:6c00:8846:5400:ff:fe0c:dfa0])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id B31AE8492E
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 07:25:32 +0000 (UTC)
+Received: from spock.localnet (unknown [83.148.33.151])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
  (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id ACE00B81E5A;
- Wed, 23 Mar 2022 09:49:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AF95C340ED;
- Wed, 23 Mar 2022 09:49:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1648028951;
- bh=4VQO87LsN3C7aIxtCY4P30XsNOmbPkENQiXxqekgQes=;
- h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
- b=PGZLnsJgdClJtcu5wiJqnkSHycaiHr34n9/7lFxuGpXN8sXtXl0GPJ06H8LzAlut1
- TUenp4Ir2wDjwNAbIn+KKD4gENOt+5g6l/Hr1lJiev5Q5fHL1NHmfiGpC652daKA9C
- 6anBMZrz1BW6vWsJRWwltzo5xL3CSFe1sSGNnAX3ZTPPfUtU8kX3SFcMxcGdopaRPP
- Z+50TNcr54w357TkPxvffU81oDn/m3R3VaCXZ3fwrikKZ+k2pm7tTsopf4cMBbzVwT
- ZuRnjSJNSZHcejGvh4otSdr/xE6yvZ8M50C2V6W/4iMFlEZndhZswoiWiF7O25KVnS
- wP3q5n3J4Qexw==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
- by disco-boy.misterjones.org with esmtpsa (TLS1.3) tls
- TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94.2)
- (envelope-from <maz@kernel.org>)
- id 1nWxc5-00GStO-3I; Wed, 23 Mar 2022 09:49:09 +0000
-Date: Wed, 23 Mar 2022 09:49:04 +0000
-Message-ID: <874k3pxalr.wl-maz@kernel.org>
-From: Marc Zyngier <maz@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/dma: Explicitly sort PCI DMA windows
-In-Reply-To: <65657c5370fa0161739ba094ea948afdfa711b8a.1647967875.git.robin.murphy@arm.com>
-References: <65657c5370fa0161739ba094ea948afdfa711b8a.1647967875.git.robin.murphy@arm.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
- iommu@lists.linux-foundation.org, bhelgaas@google.com,
- linux-pci@vger.kernel.org, robh@kernel.org, dann.frazier@canonical.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
- SAEximRunCond expanded to false
-Cc: robh@kernel.org, linux-pci@vger.kernel.org,
- iommu@lists.linux-foundation.org, dann.frazier@canonical.com,
- bhelgaas@google.com, will@kernel.org
+ by vulcan.natalenko.name (Postfix) with ESMTPSA id B6133E4442C;
+ Wed, 23 Mar 2022 08:19:25 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
+ s=dkim-20170712; t=1648019965;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=Aq3wTOLIRg4bKiBb83fzJSvp8UW1zQslkrUCWcBYITQ=;
+ b=LG3o6z1WaJFYjUM/dvlifvqemxa7QhfYYuRyQw8zynNLBKallm7YPeYl4s3i1uXRuwucCa
+ IiYCtbrGOZwKeFtfW23igHSCVIiopYSMYKtYlLf+dzplA8xjOhLHSc/W0mvqenoN9hgQBq
+ 656paAFP8ET1YwXu8lqE2uhasmwMoNw=
+To: Halil Pasic <pasic@linux.ibm.com>
+Subject: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break ath9k-based AP
+Date: Wed, 23 Mar 2022 08:19:24 +0100
+Message-ID: <1812355.tdWV9SEqCh@natalenko.name>
+MIME-Version: 1.0
+X-Mailman-Approved-At: Wed, 23 Mar 2022 12:19:03 +0000
+Cc: Toke =?ISO-8859-1?Q?H=F8iland=2DJ=F8rgensen?= <toke@toke.dk>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Linus Torvalds <torvalds@linux-foundation.org>, Kalle Valo <kvalo@kernel.org>,
+ linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+ iommu@lists.linux-foundation.org, Olha Cherevyk <olha.cherevyk@gmail.com>,
+ netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,41 +79,119 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Oleksandr Natalenko via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Oleksandr Natalenko <oleksandr@natalenko.name>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 22 Mar 2022 17:27:36 +0000,
-Robin Murphy <robin.murphy@arm.com> wrote:
-> 
-> Originally, creating the dma_ranges resource list in pre-sorted fashion
-> was the simplest and most efficient way to enforce the order required by
-> iova_reserve_pci_windows(). However since then at least one PCI host
-> driver is now re-sorting the list for its own probe-time processing,
-> which doesn't seem entirely unreasonable, so that basic assumption no
-> longer holds. Make iommu-dma robust and get the sort order it needs by
-> explicitly sorting, which means we can also save the effort at creation
-> time and just build the list in whatever natural order the DT had.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
-> 
-> Looking at this area off the back of the XGene thread[1] made me realise
-> that we need to do it anyway, regardless of whether it might also happen
-> to restore the previous XGene behaviour or not. Presumably nobody's
-> tried to use pcie-cadence-host behind an IOMMU yet...
+Hello.
 
-This definitely restores PCIe functionality on my Mustang (XGene-1).
-Hopefully dann can comment on whether this addresses his own issue, as
-his firmware is significantly different.
+The following upstream commits:
 
-Thanks,
+aa6f8dcbab47 swiotlb: rework "fix info leak with DMA_FROM_DEVICE"
+ddbd89deb7d3 swiotlb: fix info leak with DMA_FROM_DEVICE
 
-	M.
+break ath9k-based Wi-Fi access point for me. The AP emits beacons, but no client can connect to it, either from the very beginning, or shortly after start. These are the only symptoms I've noticed (i.e., no BUG/WARNING messages in `dmesg` etc).
+
+The hardware is:
+
+```
+$ dmesg | grep -i swiotlb
+[    0.426785] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+
+BIOS Information
+    Vendor: American Megatrends Inc.
+    Version: P1.50
+    Release Date: 04/16/2018
+
+Base Board Information
+    Manufacturer: ASRock
+    Product Name: J3710-ITX
+
+02:00.0 Network controller: Qualcomm Atheros AR9462 Wireless Network Adapter (rev 01)
+	Subsystem: Lite-On Communications Inc Device 6621
+	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+	Latency: 0, Cache Line Size: 64 bytes
+	Interrupt: pin A routed to IRQ 17
+	Region 0: Memory at 81400000 (64-bit, non-prefetchable) [size=512K]
+	Expansion ROM at 81480000 [disabled] [size=64K]
+	Capabilities: [40] Power Management version 2
+		Flags: PMEClk- DSI- D1+ D2+ AuxCurrent=375mA PME(D0+,D1+,D2+,D3hot+,D3cold+)
+		Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=0 PME-
+	Capabilities: [50] MSI: Enable- Count=1/4 Maskable+ 64bit+
+		Address: 0000000000000000  Data: 0000
+		Masking: 00000000  Pending: 00000000
+	Capabilities: [70] Express (v2) Endpoint, MSI 00
+		DevCap:	MaxPayload 128 bytes, PhantFunc 0, Latency L0s unlimited, L1 <64us
+			ExtTag- AttnBtn- AttnInd- PwrInd- RBE+ FLReset- SlotPowerLimit 10.000W
+		DevCtl:	CorrErr- NonFatalErr- FatalErr- UnsupReq-
+			RlxdOrd+ ExtTag- PhantFunc- AuxPwr- NoSnoop-
+			MaxPayload 128 bytes, MaxReadReq 512 bytes
+		DevSta:	CorrErr- NonFatalErr- FatalErr- UnsupReq- AuxPwr+ TransPend-
+		LnkCap:	Port #0, Speed 2.5GT/s, Width x1, ASPM L0s L1, Exit Latency L0s <4us, L1 <64us
+			ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp-
+		LnkCtl:	ASPM Disabled; RCB 64 bytes, Disabled- CommClk+
+			ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+		LnkSta:	Speed 2.5GT/s (ok), Width x1 (ok)
+			TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
+		DevCap2: Completion Timeout: Not Supported, TimeoutDis+ NROPrPrP- LTR-
+			 10BitTagComp- 10BitTagReq- OBFF Not Supported, ExtFmt- EETLPPrefix-
+			 EmergencyPowerReduction Not Supported, EmergencyPowerReductionInit-
+			 FRS- TPHComp- ExtTPHComp-
+			 AtomicOpsCap: 32bit- 64bit- 128bitCAS-
+		DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- LTR- OBFF Disabled,
+			 AtomicOpsCtl: ReqEn-
+		LnkCap2: Supported Link Speeds: 2.5GT/s, Crosslink- Retimer- 2Retimers- DRS-
+		LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- SpeedDis-
+			 Transmit Margin: Normal Operating Range, EnterModifiedCompliance- ComplianceSOS-
+			 Compliance De-emphasis: -6dB
+		LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete- EqualizationPhase1-
+			 EqualizationPhase2- EqualizationPhase3- LinkEqualizationRequest-
+			 Retimer- 2Retimers- CrosslinkRes: unsupported
+	Capabilities: [100 v1] Advanced Error Reporting
+		UESta:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
+		UEMsk:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
+		UESvrt:	DLP+ SDES+ TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+ MalfTLP+ ECRC- UnsupReq- ACSViol-
+		CESta:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr-
+		CEMsk:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
+		AERCap:	First Error Pointer: 00, ECRCGenCap- ECRCGenEn- ECRCChkCap- ECRCChkEn-
+			MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
+		HeaderLog: 00000000 00000000 00000000 00000000
+	Capabilities: [140 v1] Virtual Channel
+		Caps:	LPEVC=0 RefClk=100ns PATEntryBits=1
+		Arb:	Fixed- WRR32- WRR64- WRR128-
+		Ctrl:	ArbSelect=Fixed
+		Status:	InProgress-
+		VC0:	Caps:	PATOffset=00 MaxTimeSlots=1 RejSnoopTrans-
+			Arb:	Fixed- WRR32- WRR64- WRR128- TWRR128- WRR256-
+			Ctrl:	Enable+ ID=0 ArbSelect=Fixed TC/VC=ff
+			Status:	NegoPending- InProgress-
+	Capabilities: [160 v1] Device Serial Number 00-00-00-00-00-00-00-00
+	Kernel driver in use: ath9k
+	Kernel modules: ath9k
+```
+
+These commits appeared in v5.17 and v5.16.15, and both kernels are broken for me. I'm pretty confident these commits make the difference since I've built both v5.17 and v5.16.15 without them, and it fixed the issue.
+
+The machine has also got another Wi-Fi card that acts as a 802.11ax AP, and it is not affected:
+
+```
+01:00.0 Unclassified device [0002]: MEDIATEK Corp. MT7915E 802.11ax PCI Express Wireless Network Adapter (prog-if 80)
+```
+
+So, I do understand this might be an issue with regard to SG I/O handling in ath9k, hence relevant people in Cc.
+
+Please suggest on how to deal with this. Both me and Olha (in Cc) will be glad to test patches if needed. In case any extra info is required, please also let me know.
+
+Thanks.
 
 -- 
-Without deviation from the norm, progress is not possible.
+Oleksandr Natalenko (post-factum)
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
