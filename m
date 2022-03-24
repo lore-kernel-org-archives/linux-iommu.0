@@ -1,71 +1,150 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 38A8AC433FE
-	for <iommu@archiver.kernel.org>; Thu, 24 Mar 2022 11:30:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7FA9FC433EF
+	for <iommu@archiver.kernel.org>; Thu, 24 Mar 2022 11:46:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C857A60E54;
-	Thu, 24 Mar 2022 11:30:50 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1AFFA41C44;
+	Thu, 24 Mar 2022 11:46:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6I7Qu-fPsGBO; Thu, 24 Mar 2022 11:30:50 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ESFNHgsGjAZs; Thu, 24 Mar 2022 11:46:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id A3D0960E2C;
-	Thu, 24 Mar 2022 11:30:49 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 1CCF441C41;
+	Thu, 24 Mar 2022 11:46:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 707DAC0012;
-	Thu, 24 Mar 2022 11:30:49 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0986BC000B
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 11:30:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DE804C0012;
+	Thu, 24 Mar 2022 11:46:13 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4FC7EC000B
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 11:46:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id EA5274103D
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 11:30:47 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 29AE641C42
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 11:46:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qdgJkEfip22O for <iommu@lists.linux-foundation.org>;
- Thu, 24 Mar 2022 11:30:46 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id BF55A400A6
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 11:30:46 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B74C511FB;
- Thu, 24 Mar 2022 04:30:45 -0700 (PDT)
-Received: from [10.57.43.230] (unknown [10.57.43.230])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D247D3F73D;
- Thu, 24 Mar 2022 04:30:42 -0700 (PDT)
-Message-ID: <0baff803-b0ea-529f-095a-897398b4f63f@arm.com>
-Date: Thu, 24 Mar 2022 11:30:38 +0000
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id GcHZX5BNxFwz for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Mar 2022 11:46:10 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com
+ (mail-bn8nam11on20625.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7eae::625])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id CD36241C41
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 11:46:10 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fPwYcX6gSGDNmhCssST61aSphAlQeZFP8Th5lqFq34mnp5y1vbcQBL8unjN+GynhyfvyP/6R5gfyNMqo61QpTNlZulYQGf8UeE7DHMQz+faAg4Xk5cAb2qXI8jjndO/js2KoZMzeUyhVPzjOqQDlz0MZ1a3JGy5zH3Bo1vuLwzB+p3gYvURQweptq9ye4rnyo7+QL3vUim9ZVE30q05Z59Q1RmRhu1L0A3kxL1euHTpfZUxl60nuUqGze/TUILn+16FfTE5waBi8CbPzYdMq1C1pNhWEiglHQsZ6EiTjLsHEer/xNefn/teoP/Py4v+Uv2PbW0iK1GFj/zYYSLYafQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2rNICa+fbUVe7PFjeh614Tq7B3bIjAEJcciDe/hwns4=;
+ b=fc2iEwPqLu3hb5ydn3QgM2mNl96EXmbshm0EOcjER71pFKfhGNeHrSF43AJLUFs9rAwQpR7OkCUZHvdzglrj/0EzzTlzDHz1T2LHbl6OeH1TLPlEfOYLHp/KU1V19utmcIUUbGRy9SajC0tVxi0Xn3r+13kKEz0BP2hhT9OMryqXK6MjcSeArA+IvZSIlTslSd99MtD0pTNeMs0RbYFbLMLhTJBAkE+AArSDSA4Nu6C0fPbtFHa1Kw2BBUpW2Jhy9NiLhX3vgcNt9MQR/B2qhK5VfQBNvs5wUjpwd5mAOwMkQb+RZ31u/M7uMQCidWF/01pBE9YSAxCDQ8pIBgN2OQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2rNICa+fbUVe7PFjeh614Tq7B3bIjAEJcciDe/hwns4=;
+ b=ZFCTYFNauz9y5O5eOBzQlWJVVMF4N1uyOE3cKXxMh/OflSx0r7tFtEhUVULkhV+UWPUuZkYJVyaD4sc4PMxkyWbCNKAb5Jei1DBg68tpGyrOzURyCu6bqQzkC63MJ8Ng5O7a8BL3k87hqVj+BYPd2bRFnZoaVlkJCLA5XqmF0kj5teIlCDqpFLJSI53sFvTQTOiFRhAZPaEX3ZYiIlgSb7NbbFAO9eUJpSprWK/Rt+5Asf+N37kUiplv7bBS3vL0+RgJATi+K5q4AMPkeGZIP4N0NbxZ6rPGZ2kPoiMRFaCe3yAlDXGCISNYsKsSRjkOMxz0z1Agbrbjzt1L0hf/lA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BN8PR12MB3027.namprd12.prod.outlook.com (2603:10b6:408:64::29)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Thu, 24 Mar
+ 2022 11:46:07 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::11a0:970a:4c24:c70c]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::11a0:970a:4c24:c70c%6]) with mapi id 15.20.5102.019; Thu, 24 Mar 2022
+ 11:46:06 +0000
+Date: Thu, 24 Mar 2022 08:46:05 -0300
+To: Jason Wang <jasowang@redhat.com>
+Subject: Re: [PATCH RFC 04/12] kernel/user: Allow user::locked_vm to be
+ usable for iommufd
+Message-ID: <20220324114605.GX11336@nvidia.com>
+References: <808a871b3918dc067031085de3e8af6b49c6ef89.camel@linux.ibm.com>
+ <20220322145741.GH11336@nvidia.com>
+ <20220322092923.5bc79861.alex.williamson@redhat.com>
+ <20220322161521.GJ11336@nvidia.com>
+ <BN9PR11MB5276BED72D82280C0A4C6F0C8C199@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <CACGkMEutpbOc_+5n3SDuNDyHn19jSH4ukSM9i0SUgWmXDydxnA@mail.gmail.com>
+ <BN9PR11MB5276E3566D633CEE245004D08C199@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <CACGkMEvTmCFqAsc4z=2OXOdr7X--0BSDpH06kCiAP5MHBjaZtg@mail.gmail.com>
+ <BN9PR11MB5276ECF1F1C7D0A80DA086D18C199@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <CACGkMEtpWemw6tj=suxNjvSHuixyzhMJBYmqdbhQkinuWNADCQ@mail.gmail.com>
+Content-Disposition: inline
+In-Reply-To: <CACGkMEtpWemw6tj=suxNjvSHuixyzhMJBYmqdbhQkinuWNADCQ@mail.gmail.com>
+X-ClientProxiedBy: BL0PR02CA0144.namprd02.prod.outlook.com
+ (2603:10b6:208:35::49) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 03/25] dma-direct: take dma-ranges/offsets into account in
- resource mapping
-Content-Language: en-GB
-To: Serge Semin <Sergey.Semin@baikalelectronics.ru>,
- Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
- Vinod Koul <vkoul@kernel.org>, Jingoo Han <jingoohan1@gmail.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Frank Li <Frank.Li@nxp.com>,
- Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
- Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Vladimir Murzin <vladimir.murzin@arm.com>
-References: <20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru>
- <20220324014836.19149-4-Sergey.Semin@baikalelectronics.ru>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220324014836.19149-4-Sergey.Semin@baikalelectronics.ru>
-Cc: =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
- Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
- linux-kernel@vger.kernel.org, Serge Semin <fancer.lancer@gmail.com>,
- Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
- iommu@lists.linux-foundation.org,
- Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
- dmaengine@vger.kernel.org
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 286fd7d7-bcff-45de-4734-08da0d8be1a3
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3027:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR12MB30273E66833127E6EE5920ADC2199@BN8PR12MB3027.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: cJdXXkFhHIfdQ3J28U5KmjkqQrifyZkNBdR1JjBhmCWEXBm9cic2GB/0snUQG5IWCLL/skptEgpUxOGncva+QfmyBAieD3a8q5ikCTTpO4gKpil7ja8y08MQDiKFLTPPr5Q3fP/aCfvWf5Ldb31zCLslBOSN8Y+PLMjZyLpvojPMOJRVdYkG+dS8DP3AyyHldmLxcfAOR52UclpU4BT3fk1vRL0G+Sw86UdEW786ZnYSONWmgbmyQSiaJRDU0fy0sbeJ7OYUzAQCFNXDc+vRdOMo4IgbWqx7iM1gPAUYOD15pkiA0uX/Av4RXgwY0Lzglj0Uj1ZkBAlLLaEkZj4KSTlygw9jIgr5ghnGLSj1ym7g1p468AZuKaG6hodZ18X3Pn7vQtFlmxSVxwK4czpogLDW+xG1CIYaNgjnclx7VDstu9WiVOT90d+I412SHUjM5+Ccv5OoguD74yKkXkn0S570M6+SNTTEk+GsF+GQkrRGtyRLAIMwsjgsTY+7ZLsL/xYLKzxw82lraqOzVY9OhV6Gpw5eiZZhF6txQ1qPu0LROUuvrFSEa+UjQ66mLd1Ev3iabjR1M+8ZSeCwZ/4q+YrtdXssPJjZz/greS5IaAiCX1/EuEBiCcRSTotX4KF/93IIHyh6MU/zl/l1hUsS8g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(316002)(4326008)(66946007)(66556008)(66476007)(8676002)(33656002)(38100700002)(6506007)(2616005)(6486002)(86362001)(186003)(1076003)(26005)(6512007)(54906003)(6916009)(508600001)(83380400001)(4744005)(5660300002)(8936002)(2906002)(7416002)(36756003);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cs6PHT7qBtqfPPQOwP4buEMYCrSNNHMW26vOXlWSlIiEsQSrhHvJ0vI1Hd78?=
+ =?us-ascii?Q?pcvAU0HvfaWPxgLEs7YJYyQtBfjUXunHCa7yVXxPLkt1RQaZzO6iDw/Lc1v1?=
+ =?us-ascii?Q?iv/bU1NDvQJg1mpVhM17DVkVwEuLVXifi4TxtfNuUmBc77zF0vMgrIwjnoPx?=
+ =?us-ascii?Q?biS/S8bOCttGC1wCB+WWuwaOnZwCOC+XVeTntLeITl0eunafcoVsF7NePoRz?=
+ =?us-ascii?Q?Te6GlrtiK6jsDvMdWK5toDU9V6YeYqiqfqdHCgQFc5J8Ce7FWcE45DqLhyfd?=
+ =?us-ascii?Q?05njo55SUro0wETPUBw4tMwEHQjVoAPTbrWaewjBoDkvNraVYz4hicpK+o5e?=
+ =?us-ascii?Q?Hmkqniwe5983tdzMGM5Hhe+yGx7hh8fERWFunadNCVOnzf2KChe3tfWwKUg7?=
+ =?us-ascii?Q?zJTkrAM71/ogKk1WhckozOVh0s+GspMnrnARHtjrRIFrC25PantJhMzHWN8T?=
+ =?us-ascii?Q?oVSfDaJnpzAF0HkwAGK0pP0Uxg66m7UJmfPlXV32VtJ/N7YlVp0xBBSA4a7u?=
+ =?us-ascii?Q?kZvJg6SkCeEBHBARQG0GhBm79Etf1wpIuZxHNvgbXaMOYIue2fbXj4HENvai?=
+ =?us-ascii?Q?Dt0pg4oMulYzEGqpQWLGrIMA06PI287EpyCgBeF8BDL7xUYu2R68e0zXLrUn?=
+ =?us-ascii?Q?tyN5PiLTeQz64t0wDH1uKMW2c7bemSpaN0jq757HOiJAp5khIgRbr6CDQDcm?=
+ =?us-ascii?Q?/pTzNxGpSlOkm0XJt1eTEJXPy38sB/G6xbmVcLl0WPujyQzJ4W1OdLzBsy3j?=
+ =?us-ascii?Q?+zxYlVBiyCMf9kxsuzL6Hi8eG5ic4XuvuIg3CXG/jyelFbgqRh/2oKRDdyrs?=
+ =?us-ascii?Q?jFWFAyvY9qiETnherQmn3g+CW+uL9cM0RG9zmVYiQko6wbgwqLTnlvcNuhH/?=
+ =?us-ascii?Q?/vnq4vf6CWSiKJDbNJQmVz/UpRp9dUfmsbaxShO8kx7qib8FKjP/0Bwgw4rT?=
+ =?us-ascii?Q?53B03S59C8D81WfkvUJoAH4EGCy6qJcvfxeFwIx/2rKMy0ZZhmgULg1saeui?=
+ =?us-ascii?Q?pQVH1l4uVlXBb/dpvDiZmFr/Yz1FA67wZhabhOgehSyWKRVw9zP7WFSNTZJP?=
+ =?us-ascii?Q?LYtAw7u4OcybntkHCl8GSfudikNEtsHtpUSecXwbP0BdzMO5W6iwxv2DSiLO?=
+ =?us-ascii?Q?+ayVAHLpA9HzLYBU3EOwfKgZAM3nDmNrfoyrMF15rL2lxP8n5yvzskQMQtOh?=
+ =?us-ascii?Q?JqrZS20gKVu4I6mq+6bW7SykfxA5eYuycDfKrbZclavzKMXlBLPgPD4IRyDu?=
+ =?us-ascii?Q?6DXC/OCBtZmJyKWC8oulRAlWcdWkdQV5t5suN7jeGoI07LXV5jg57rGctwWU?=
+ =?us-ascii?Q?eqXUtUnwt5o8voGCzlGJ+HRriApNc6JnEog7NE0LclTwiC4qUApCtuyOB/EF?=
+ =?us-ascii?Q?Vl89FKv7c/TiKc38NMhNz2K7EooSHQHh6cP3dSary1L0PPJCRQE1aSV/uSAW?=
+ =?us-ascii?Q?HSV+nF+fGkOtZ2AaSL1Pv0gQ+gNmiN9+BzWaFtZVq1Go+vpMhaObMsFD48TC?=
+ =?us-ascii?Q?irHVGJm0K0yFaJ3/wBkHf4nNey74mLlneeNraaE8N356f7osqW5h42T82IF0?=
+ =?us-ascii?Q?GBdbUXyYHe7VgZ60oyKA6v2en486dCLgO4xR2XZLe9M2v+4ID7DY5fVZX8Yj?=
+ =?us-ascii?Q?Lx+uIe/6D4qn3DZUvFn+fycUbWdxF2jlMAzwkkpM+fjQsXI5iURcWBT7+cfO?=
+ =?us-ascii?Q?pLKH6/MOI+rlHY9K2qUBNp1NdUQs/CjQkuL5NCOrTdaL2Pk3OeiAUhktgpOH?=
+ =?us-ascii?Q?rPx12HdrsQ=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 286fd7d7-bcff-45de-4734-08da0d8be1a3
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2022 11:46:06.8847 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: X4fNg0yOuxpyztNcvdGXqigg4P8vZ919T53L8EkbfM/PPqoaes5H8kFjyPmmO2Aa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3027
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Niklas Schnelle <schnelle@linux.ibm.com>, Cornelia Huck <cohuck@redhat.com>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Daniel Jordan <daniel.m.jordan@oracle.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ "Michael S. Tsirkin" <mst@redhat.com>, "Martins,
+ Joao" <joao.m.martins@oracle.com>, David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,69 +157,27 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-03-24 01:48, Serge Semin wrote:
-> A basic device-specific linear memory mapping was introduced back in
-> commit ("dma: Take into account dma_pfn_offset") as a single-valued offset
-> preserved in the device.dma_pfn_offset field, which was initialized for
-> instance by means of the "dma-ranges" DT property. Afterwards the
-> functionality was extended to support more than one device-specific region
-> defined in the device.dma_range_map list of maps. But all of these
-> improvements concerned a single pointer, page or sg DMA-mapping methods,
-> while the system resource mapping function turned to miss the
-> corresponding modification. Thus the dma_direct_map_resource() method now
-> just casts the CPU physical address to the device DMA address with no
-> dma-ranges-based mapping taking into account, which is obviously wrong.
-> Let's fix it by using the phys_to_dma_direct() method to get the
-> device-specific bus address from the passed memory resource for the case
-> of the directly mapped DMA.
+On Thu, Mar 24, 2022 at 11:50:47AM +0800, Jason Wang wrote:
 
-It may not have been well-documented at the time, but this was largely 
-intentional. The assumption based on known systems was that where 
-dma_pfn_offset existed, it would *not* apply to peer MMIO addresses.
+> It's simply because we don't want to break existing userspace. [1]
 
-For instance, DTs for TI Keystone 2 platforms only describe an offset 
-for RAM:
+I'm still waiting to hear what exactly breaks in real systems.
 
-	dma-ranges = <0x80000000 0x8 0x00000000 0x80000000>;
+As I explained this is not a significant change, but it could break
+something in a few special scenarios.
 
-but a DMA controller might also want to access something in the MMIO 
-range 0x0-0x7fffffff, of which it still has an identical non-offset 
-view. If a driver was previously using dma_map_resource() for that, it 
-would now start getting DMA_MAPPING_ERROR because the dma_range_map 
-exists but doesn't describe the MMIO region. I agree that in hindsight 
-it's not an ideal situation, but it's how things have ended up, so at 
-this point I'm wary of making potentially-breaking changes.
+Also the one place we do have ABI breaks is security, and ulimit is a
+security mechanism that isn't working right. So we do clearly need to
+understand *exactly* what real thing breaks - if anything.
 
-May I ask what exactly your setup looks like, if you have a DMA 
-controller with an offset view of its "own" MMIO space?
-
-Thanks,
-Robin.
-
-> Fixes: 25f1e1887088 ("dma: Take into account dma_pfn_offset")
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> ---
->   kernel/dma/direct.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 50f48e9e4598..9ce8192b29ab 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -497,7 +497,7 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
->   dma_addr_t dma_direct_map_resource(struct device *dev, phys_addr_t paddr,
->   		size_t size, enum dma_data_direction dir, unsigned long attrs)
->   {
-> -	dma_addr_t dma_addr = paddr;
-> +	dma_addr_t dma_addr = phys_to_dma_direct(dev, paddr);
->   
->   	if (unlikely(!dma_capable(dev, dma_addr, size, false))) {
->   		dev_err_once(dev,
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
