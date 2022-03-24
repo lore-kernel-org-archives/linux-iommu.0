@@ -1,106 +1,111 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1E185C433EF
-	for <iommu@archiver.kernel.org>; Thu, 24 Mar 2022 19:34:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EC0BEC433F5
+	for <iommu@archiver.kernel.org>; Thu, 24 Mar 2022 20:40:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8F883417B4;
-	Thu, 24 Mar 2022 19:34:41 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 8F50260BC5;
+	Thu, 24 Mar 2022 20:40:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gES39_2EztBn; Thu, 24 Mar 2022 19:34:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 4528E41732;
-	Thu, 24 Mar 2022 19:34:40 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PWf0UTfZTVTZ; Thu, 24 Mar 2022 20:40:26 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 49A9B605C9;
+	Thu, 24 Mar 2022 20:40:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0DD2BC001A;
-	Thu, 24 Mar 2022 19:34:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1A923C0012;
+	Thu, 24 Mar 2022 20:40:26 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 12947C000B
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 19:34:39 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 503E7C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 20:40:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id E1D4060A6F
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 19:34:38 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 2A3C760B5E
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 20:40:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=linux-foundation.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Jy5omWunvRbb for <iommu@lists.linux-foundation.org>;
- Thu, 24 Mar 2022 19:34:38 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com
- [IPv6:2a00:1450:4864:20::12e])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 1F02B60759
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 19:34:38 +0000 (UTC)
-Received: by mail-lf1-x12e.google.com with SMTP id h7so9840680lfl.2
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 12:34:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=linux-foundation.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc:content-transfer-encoding;
- bh=7ocr+zNBzLy/6V5R8wtgclLYODnbC8wqaRaDBOcpGsE=;
- b=WXJOxqP+A5zMAAeglXUwwXwm6CdqHnTIlvW7/xITHkfLm0l9NrhvUsL/He558mycRA
- VdKU9P7nwZJx35e0DULKlv5C9sFMFPTxUzNh9GE1D85zKtfkg1cfIBWUR6eKr8fMZSMt
- poa1NyRAI1YJ+p+Bz/tVZQpcDzOAbj8llkHVA=
+ with ESMTP id kwLOPk0T3qTA for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Mar 2022 20:40:24 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 38708605C9
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 20:40:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1648154423;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=YcqkWAtIoHhKaWHguuTSHckFy2uV+KOK7nFBpa+JxJo=;
+ b=em4wD0rtdSBJQX2Dm1/gTtxGd7l9quNqfyB009HTAEfMY/FpmAzlXB7E5Bk7iAMOUOtUPo
+ KHo1HpI74JPl8yCS/6gRA1x4HukOGjDHuE4JrEcpziGfj37NL7q//LVmNGjMJE4oIOPTdx
+ KBrld5Y9Yh1N19Ai8DHrZ72CnnE5I9Y=
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
+ [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-424-rn96SBANP5qNjVXFRgpgeg-1; Thu, 24 Mar 2022 16:40:20 -0400
+X-MC-Unique: rn96SBANP5qNjVXFRgpgeg-1
+Received: by mail-il1-f198.google.com with SMTP id
+ x6-20020a923006000000b002bea39c3974so3443190ile.12
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 13:40:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc:content-transfer-encoding;
- bh=7ocr+zNBzLy/6V5R8wtgclLYODnbC8wqaRaDBOcpGsE=;
- b=dMndCwHLPrLXBztnIJDcBtUGMUIp/btQSvBVlsI4P5bz+X3Yljm2oplROu2A0qhP4C
- pEsb2K/YTdolRLPXckOs1d/X0b0FM8/qPmPws6jPaCCpGoSbY+qag9A4s3AkCR+VCcEd
- wvbpWZr262PKXEBw6nFFnJbnzJofQqp1UNS9gWUoJryh5boYDLpq5gHXauLoHMnK6xVl
- wPa0nnDyPsRnGaC+cb0qnzdS2gFnCwtlfkHZjZduFFfOqAja1vWlAQPs/WLl4SsuzyLi
- wB1ZTAFj8BIRin2Pz0NxI7uWnliqHlz0syPb+zWLDzR3h4/LyMelV7/1QK/BWOVWLqej
- N7sw==
-X-Gm-Message-State: AOAM532pu5PcGhzJWie4GnCeZH4UxoBrN4SjB5yOC6fEkafc2hwdi3BR
- g1CYU0zIoT+sYIwz9ZOU2kOiJCoKXNk2sVGDT09MnQ==
-X-Google-Smtp-Source: ABdhPJxZ/iIdVstRNDp4xJX7QoPqlcBUwZOU6GCOLBc1+q6gk67dY6JcZbgWxefeQWF+ZaI43XNujg==
-X-Received: by 2002:a05:6512:ea7:b0:44a:2d87:fffc with SMTP id
- bi39-20020a0565120ea700b0044a2d87fffcmr4924508lfb.290.1648150475513; 
- Thu, 24 Mar 2022 12:34:35 -0700 (PDT)
-Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com.
- [209.85.208.180]) by smtp.gmail.com with ESMTPSA id
- x11-20020a2e9dcb000000b00249800fc660sm438076ljj.17.2022.03.24.12.34.34
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 24 Mar 2022 12:34:35 -0700 (PDT)
-Received: by mail-lj1-f180.google.com with SMTP id r22so7567852ljd.4
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 12:34:34 -0700 (PDT)
-X-Received: by 2002:a05:6512:3055:b0:44a:3914:6603 with SMTP id
- b21-20020a056512305500b0044a39146603mr4836615lfb.435.1648150029811; Thu, 24
- Mar 2022 12:27:09 -0700 (PDT)
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+ :references:organization:mime-version:content-transfer-encoding;
+ bh=YcqkWAtIoHhKaWHguuTSHckFy2uV+KOK7nFBpa+JxJo=;
+ b=twYA8wfQxLPgDCKnUxNSbOdWbTu7NPEa1h2947SQDhHt2di83h+RVp7SXAKOlXSqGx
+ m0dPOcIQ15Ym4HpO1StwgoVj2h0DgrV1hvo1N894yyTT8EgOvp8LEjf/JrrjRzGbIXQA
+ hwrBlyCcd/FDa5GwuLvmi/VD6TCKCZqTN3wkkCKslC6Q5953xNejXj4eNe3VtlS4ZsQr
+ 3vO0esrx3WwrdaCZVzhM9Q9j7kO9FawS/Yja0e9Q8g5TJ7/WaIp+Ia0yTlYR9euzygUJ
+ ufNNXRgEzQwQffozXwZevtQm+KVW2urw5+4wuw8BLHv59tIV3SzrNlc/Z5w1GnKf2r9u
+ Erkw==
+X-Gm-Message-State: AOAM5323BQN44M95PuM/owI7pr+Ge83p9R8ocNIN8i1b11eHcDOUnj4L
+ sDwvlb2h4FoMxRkeXTgu72EjdLBExsgNhhLJmfeD36tE1db5UmSr2m1hK0l87Ks4SY1Ux2LCuCb
+ L8iWQtygJ0Lwwug+PjsqhYNN1rV1WK/mGS+nqVT1neCyoUUHbdGQUK5BCoICu3ELuDA74OOXz6h
+ jL985TQoiac++vqTI=
+X-Received: by 2002:a5d:9da0:0:b0:646:4297:19de with SMTP id
+ ay32-20020a5d9da0000000b00646429719demr3763048iob.192.1648154419030; 
+ Thu, 24 Mar 2022 13:40:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwopmqoCIMeyEsE8B56txeb229eqdmXoF3CZI0belX8dei6vqWnikSzyfxA9iLbrgAEVuuhIw==
+X-Received: by 2002:a5d:9da0:0:b0:646:4297:19de with SMTP id
+ ay32-20020a5d9da0000000b00646429719demr3763023iob.192.1648154418710; 
+ Thu, 24 Mar 2022 13:40:18 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239]) by smtp.gmail.com with ESMTPSA id
+ q4-20020a056e0215c400b002c5fdff3087sm2320928ilu.29.2022.03.24.13.40.17
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 24 Mar 2022 13:40:18 -0700 (PDT)
+Date: Thu, 24 Mar 2022 14:40:15 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Subject: Re: [PATCH RFC 04/12] kernel/user: Allow user::locked_vm to be
+ usable for iommufd
+Message-ID: <20220324144015.031ca277.alex.williamson@redhat.com>
+In-Reply-To: <20220322161521.GJ11336@nvidia.com>
+References: <4-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <808a871b3918dc067031085de3e8af6b49c6ef89.camel@linux.ibm.com>
+ <20220322145741.GH11336@nvidia.com>
+ <20220322092923.5bc79861.alex.williamson@redhat.com>
+ <20220322161521.GJ11336@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-References: <1812355.tdWV9SEqCh@natalenko.name>
- <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
- <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
- <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
- <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
- <20220324163132.GB26098@lst.de> <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
- <871qyr9t4e.fsf@toke.dk>
-In-Reply-To: <871qyr9t4e.fsf@toke.dk>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Thu, 24 Mar 2022 12:26:53 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
-Message-ID: <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-To: =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Netdev <netdev@vger.kernel.org>, Kalle Valo <kvalo@kernel.org>,
- linux-wireless <linux-wireless@vger.kernel.org>,
- Oleksandr Natalenko <oleksandr@natalenko.name>,
- stable <stable@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
- Halil Pasic <pasic@linux.ibm.com>, iommu <iommu@lists.linux-foundation.org>,
- Olha Cherevyk <olha.cherevyk@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
- Maxime Bizon <mbizon@freebox.fr>, Paolo Abeni <pabeni@redhat.com>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+ "Daniel P. =?UTF-8?B?QmVycmFuZ8Op?=" <berrange@redhat.com>,
+ kvm@vger.kernel.org, Niklas Schnelle <schnelle@linux.ibm.com>,
+ Jason Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>,
+ Kevin Tian <kevin.tian@intel.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Joao Martins <joao.m.martins@oracle.com>,
+ David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,43 +118,108 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gVGh1LCBNYXIgMjQsIDIwMjIgYXQgMTA6MDcgQU0gVG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu
-IDx0b2tlQHRva2UuZGs+IHdyb3RlOgo+Cj4gUmlnaHQsIGJ1dCBpcyB0aGF0IHN5bmNfZm9yX2Rl
-dmljZSBjYWxsIHJlYWxseSBuZWVkZWQ/CgpXZWxsLCBpbWFnaW5lIHRoYXQgeW91IGhhdmUgYSBu
-b24tY2FjaGUtY29oZXJlbnQgRE1BIChub3QgYm91bmNlCmJ1ZmZlcnMgLSBqdXN0IGJhZCBoYXJk
-d2FyZSkuLi4KClNvIHRoZSBkcml2ZXIgZmlyc3QgZG9lcyB0aGF0IGRtYV9zeW5jX3NpbmdsZV9m
-b3JfY3B1KCkgZm9yIHRoZSBDUFUKc2VlIHRoZSBjdXJyZW50IHN0YXRlIChmb3IgdGhlIG5vbi1j
-YWNoZS1jb2hlcmVudCBjYXNlIGl0IHdvdWxkIGp1c3QKaW52YWxpZGF0ZSBjYWNoZXMpLgoKVGhl
-IGRyaXZlciB0aGVuIGV4YW1pbmVzIHRoZSBjb21tYW5kIGJ1ZmZlciBzdGF0ZSwgc2VlcyB0aGF0
-IGl0J3MKc3RpbGwgaW4gcHJvZ3Jlc3MsIGFuZCBkb2VzIHRoYXQgcmV0dXJuIC1FSU5QUk9HUkVT
-Uy4KCkl0J3MgYWN0dWFsbHkgdmVyeSBuYXR1cmFsIGluIHRoYXQgc2l0dWF0aW9uIHRvIGZsdXNo
-IHRoZSBjYWNoZXMgZnJvbQp0aGUgQ1BVIHNpZGUgYWdhaW4uIEFuZCBzbyBkbWFfc3luY19zaW5n
-bGVfZm9yX2RldmljZSgpIGlzIGEgZmFpcmx5CnJlYXNvbmFibGUgdGhpbmcgdG8gZG8gaW4gdGhh
-dCBzaXR1YXRpb24uCgpCdXQgaXQgZG9lc24ndCBzZWVtICpyZXF1aXJlZCosIG5vLiBUaGUgQ1BV
-IGNhY2hlcyBvbmx5IGhhdmUgYSBjb3B5IG9mCnRoZSBkYXRhIGluIHRoZW0sIG5vIHdyaXRlYmFj
-ayBuZWVkZWQgKGFuZCB3cml0ZWJhY2sgd291bGRuJ3Qgd29yawpzaW5jZSBETUEgZnJvbSB0aGUg
-ZGV2aWNlIG1heSBiZSBpbiBwcm9ncmVzcykuCgpTbyBJIGRvbid0IHRoaW5rIHRoZSBkbWFfc3lu
-Y19zaW5nbGVfZm9yX2RldmljZSgpIGlzICp3cm9uZyogcGVyIHNlLApiZWNhdXNlIHRoZSBDUFUg
-ZGlkbid0IGFjdHVhbGx5IGRvIGFueSBtb2RpZmljYXRpb25zLgoKQnV0IHllcywgSSB0aGluayBp
-dCdzIHVubmVjZXNzYXJ5IC0gYmVjYXVzZSBhbnkgbGF0ZXIgQ1BVIGFjY2Vzc2VzCndvdWxkIG5l
-ZWQgdGhhdCBkbWFfc3luY19zaW5nbGVfZm9yX2NwdSgpIGFueXdheSwgd2hpY2ggc2hvdWxkCmlu
-dmFsaWRhdGUgYW55IHN0YWxlIGNhY2hlcy4KCkFuZCBpdCBjbGVhcmx5IGRvZXNuJ3Qgd29yayBp
-biBhIGJvdW5jZS1idWZmZXIgc2l0dWF0aW9uLCBidXQgaG9uZXN0bHkKSSBkb24ndCB0aGluayBh
-ICJDUFUgbW9kaWZpZWQgYnVmZmVycyBjb25jdXJyZW50bHkgd2l0aCBETUEiIGNhbgoqZXZlciog
-d29yayBpbiB0aGF0IHNpdHVhdGlvbiwgc28gSSB0aGluayBpdCdzIHdyb25nIGZvciBhIGJvdW5j
-ZQpidWZmZXIgbW9kZWwgdG8gZXZlciBkbyBhbnl0aGluZyBpbiB0aGUgZG1hX3N5bmNfc2luZ2xl
-X2Zvcl9kZXZpY2UoKQpzaXR1YXRpb24uCgpEb2VzIHJlbW92aW5nIHRoYXQgZG1hX3N5bmNfc2lu
-Z2xlX2Zvcl9kZXZpY2UoKSBhY3R1YWxseSBmaXggdGhlCnByb2JsZW0gZm9yIHRoZSBhdGggZHJp
-dmVyPwoKVGhlcmUncyBhIGZhaXIgbnVtYmVyIG9mIHRob3NlIGRtYV9zeW5jX3NpbmdsZV9mb3Jf
-ZGV2aWNlKCkgdGhpbmdzIGFsbApvdmVyLiBDb3VsZCB3ZSBmaW5kIG1pcy11c2VzIGFuZCB3YXJu
-IGFib3V0IHRoZW0gc29tZSB3YXk/IEl0IHNlZW1zIHRvCmJlIGEgdmVyeSBuYXR1cmFsIHRoaW5n
-IHRvIGRvIGluIHRoaXMgY29udGV4dCwgYnV0IGJvdW5jZSBidWZmZXJpbmcKZG9lcyBtYWtlIHRo
-ZW0gdmVyeSBmcmFnaWxlLgoKICAgICAgICAgICAgICAgICBMaW51cwpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVA
-bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24u
-b3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Tue, 22 Mar 2022 13:15:21 -0300
+Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org> wrote:
+
+> On Tue, Mar 22, 2022 at 09:29:23AM -0600, Alex Williamson wrote:
+> 
+> > I'm still picking my way through the series, but the later compat
+> > interface doesn't mention this difference as an outstanding issue.
+> > Doesn't this difference need to be accounted in how libvirt manages VM
+> > resource limits?    
+> 
+> AFACIT, no, but it should be checked.
+> 
+> > AIUI libvirt uses some form of prlimit(2) to set process locked
+> > memory limits.  
+> 
+> Yes, and ulimit does work fully. prlimit adjusts the value:
+> 
+> int do_prlimit(struct task_struct *tsk, unsigned int resource,
+> 		struct rlimit *new_rlim, struct rlimit *old_rlim)
+> {
+> 	rlim = tsk->signal->rlim + resource;
+> [..]
+> 		if (new_rlim)
+> 			*rlim = *new_rlim;
+> 
+> Which vfio reads back here:
+> 
+> drivers/vfio/vfio_iommu_type1.c:        unsigned long pfn, limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
+> drivers/vfio/vfio_iommu_type1.c:        unsigned long limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
+> 
+> And iommufd does the same read back:
+> 
+> 	lock_limit =
+> 		task_rlimit(pages->source_task, RLIMIT_MEMLOCK) >> PAGE_SHIFT;
+> 	npages = pages->npinned - pages->last_npinned;
+> 	do {
+> 		cur_pages = atomic_long_read(&pages->source_user->locked_vm);
+> 		new_pages = cur_pages + npages;
+> 		if (new_pages > lock_limit)
+> 			return -ENOMEM;
+> 	} while (atomic_long_cmpxchg(&pages->source_user->locked_vm, cur_pages,
+> 				     new_pages) != cur_pages);
+> 
+> So it does work essentially the same.
+
+Well, except for the part about vfio updating mm->locked_vm and iommufd
+updating user->locked_vm, a per-process counter versus a per-user
+counter.  prlimit specifically sets process resource limits, which get
+reflected in task_rlimit.
+
+For example, let's say a user has two 4GB VMs and they're hot-adding
+vfio devices to each of them, so libvirt needs to dynamically modify
+the locked memory limit for each VM.  AIUI, libvirt would look at the
+VM size and call prlimit to set that value.  If libvirt does this to
+both VMs, then each has a task_rlimit of 4GB.  In vfio we add pinned
+pages to mm->locked_vm, so this works well.  In the iommufd loop above,
+we're comparing a per-task/process limit to a per-user counter.  So I'm
+a bit lost how both VMs can pin their pages here.
+
+Am I missing some assumption about how libvirt users prlimit or
+sandboxes users?
+
+> The difference is more subtle, iouring/etc puts the charge in the user
+> so it is additive with things like iouring and additively spans all
+> the users processes.
+> 
+> However vfio is accounting only per-process and only for itself - no
+> other subsystem uses locked as the charge variable for DMA pins.
+> 
+> The user visible difference will be that a limit X that worked with
+> VFIO may start to fail after a kernel upgrade as the charge accounting
+> is now cross user and additive with things like iommufd.
+
+And that's exactly the concern.
+ 
+> This whole area is a bit peculiar (eg mlock itself works differently),
+> IMHO, but with most of the places doing pins voting to use
+> user->locked_vm as the charge it seems the right path in today's
+> kernel.
+
+The philosophy of whether it's ultimately a better choice for the
+kernel aside, if userspace breaks because we're accounting in a
+per-user pool rather than a per-process pool, then our compatibility
+layer ain't so transparent.
+
+> Ceratinly having qemu concurrently using three different subsystems
+> (vfio, rdma, iouring) issuing FOLL_LONGTERM and all accounting for
+> RLIMIT_MEMLOCK differently cannot be sane or correct.
+
+I think everyone would agree with that, but it also seems there are
+real differences between task_rlimits and per-user vs per-process
+accounting buckets and I'm confused how that's not a blocker for trying
+to implement transparent compatibility.  Thanks,
+
+Alex
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
