@@ -4,137 +4,108 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 168BCC433EF
-	for <iommu@archiver.kernel.org>; Thu, 24 Mar 2022 22:27:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7E19FC433EF
+	for <iommu@archiver.kernel.org>; Thu, 24 Mar 2022 22:41:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 9780B41C7B;
-	Thu, 24 Mar 2022 22:27:51 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 2C4D141CCB;
+	Thu, 24 Mar 2022 22:41:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id A7MPOSqBG0HL; Thu, 24 Mar 2022 22:27:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 50E4A41C79;
-	Thu, 24 Mar 2022 22:27:50 +0000 (UTC)
+	with ESMTP id R3MPA0731FvA; Thu, 24 Mar 2022 22:41:22 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id CF6F941CC7;
+	Thu, 24 Mar 2022 22:41:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2A08AC0012;
-	Thu, 24 Mar 2022 22:27:50 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F1F89C000B
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 22:27:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8D80BC0012;
+	Thu, 24 Mar 2022 22:41:21 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CA8B4C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 22:41:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D0F4260A8D
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 22:27:48 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id A3DB360AF4
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 22:41:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
+ dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Ea9cg3Q-qEMm for <iommu@lists.linux-foundation.org>;
- Thu, 24 Mar 2022 22:27:44 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com
- (mail-co1nam11on20627.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7eab::627])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 1993F60A69
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 22:27:43 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L/KaCteWdqg2rpedbPUCZaxg2QRFOUbgIvXa5ffvA5ZEPx48P8ZzIhU15Dsz53WLXhAZ9TXJP8Pl+q/tB2T+s9KxUS2ZKemfkjoHQY/teUhB/DvMJRGMUyN/yOUbmIWWmfo9L3yLblk0+0QTbVhtIUQmyzOblRFqP3aUYR+9b53+s0KUcnIFGIk1jyZt27FkpXpfk3bX9V7l7H7523ij9OQSMKpKvO+HbG4qsqtD2/z4sAX9IrgdySjnAeIB/UfUDOirbRh5Y4iLd+PjEl9aSuF9QYM3R7lpQ7XoSNTwJd9z+JFteOLlflEZYzTpd4KvWH5VrTyBOEAs6Xh2QkHc+g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4gPBkYv17GgaCnchvWVFsKty1aq+9Gi8oVs/m/f9a6U=;
- b=ASceTw3c9VVs2E+P5JFTztpKu5G9U7zIBdxWG172brXUc2XDolfVC9O7DiF5NR7x7Lj5dEmTTlv0uQ4w5J2rjfqNZ5CsgQXdGivFtdNdWkBHwZ7JulSjEegTYzK9M47zygurI+QnW51G9G715z7dLppfy04MT+S2lU0Qmi8t3Hs80NQyVlJBMXH4nnb1fvu9jc8Nl6qey1jvZ3JHMAdsMjWj9M+lFF3aUkJNKfxiu1/inK+FGGSr8IwRHRq1wiBMJhSR/k6kgO9U9Gm58gRsYOpu4v1wStIt3Jt01Z7STdT4jPEXGnL9mZx0hIESs69NoczEQYQTACOpCEcmlBzZig==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4gPBkYv17GgaCnchvWVFsKty1aq+9Gi8oVs/m/f9a6U=;
- b=ZWZ/jByBD2Rg3KzU1gmBgc7VNFMSWPWUwsc3IxDMZjfHOpFNSdlB/dGawD6dKAtMlBs4B9D0etUWrYf9Tz9ZnHtKfhf1acuu6xLUpIMASyi79t1E3KirUMsPgoW5Ao2cN7YvCB1YMq8Mr/UfOe9SFZ1OAKY2v5by5vq/rEbQYwdmgPccIy0kjWnLemDriM+0BwNE9HT3egYN96ezx6NA0CEkxfxjIRwYB5QadLboNvf/n0vHTY4CeHPntMYngdHxtj0zQ3L/LaUgp+p8Y+gQ+0k9hxi1XVzMCp1pj3z7PFKhDLHWTk/DUMi0DMNZLrNnE631Iqy8TAjxkg3riqERPA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by PH7PR12MB5902.namprd12.prod.outlook.com (2603:10b6:510:1d6::8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.17; Thu, 24 Mar
- 2022 22:27:41 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::11a0:970a:4c24:c70c]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::11a0:970a:4c24:c70c%6]) with mapi id 15.20.5102.019; Thu, 24 Mar 2022
- 22:27:41 +0000
-Date: Thu, 24 Mar 2022 19:27:39 -0300
-To: Alex Williamson <alex.williamson@redhat.com>
+ with ESMTP id S-KnYq7yaXYy for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Mar 2022 22:41:19 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id D41AA60ADC
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 22:41:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1648161677;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=0+hoh4jfjE01vsVfZmT2GJ8qlpm5OtKcpQZnExTmPL0=;
+ b=RKNWe3tegusMXJ8zxPj/bEjxByiOHoSuHoNtt0JFLeTsccfJckmEfdzRj9WsSCRY8pWWCw
+ /5MK5kFwOLVNc1V2KuN9gDFFBqOxBGbrRDNltKuDJcC+rMU2poVXcd/bPcqTyUABCcu4Iq
+ /j8jn9peTClZDX1YpQjNNzvE5BSsevg=
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
+ [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-448-iFeR59PhM1Oh0WqTIIDAKA-1; Thu, 24 Mar 2022 18:41:16 -0400
+X-MC-Unique: iFeR59PhM1Oh0WqTIIDAKA-1
+Received: by mail-io1-f72.google.com with SMTP id
+ f5-20020a6be805000000b00649b9faf257so3974415ioh.9
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 15:41:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+ :references:organization:mime-version:content-transfer-encoding;
+ bh=l9WNoz/FzvLksUXnj3LwqVUaZSJ8tKS3cuqgqvhdHn0=;
+ b=RTiAEdkHRpv7ZJOYBn0JxUjQjazKn2r2cONmuBXusVeNjZ59BsljBaPGobE5n9aTzp
+ 52VQG23dOJKAA//8Spd9oZ7TqRTo0FvF4LNFuzmbIKL+Oea4dHfdz5RRDCRWuKAAW+y+
+ SzdxaQFZYgQK3nxWkJWkMWpsLi/FKJr1W7C53Ydxu1F1T7yZDwKTHLNhnK85xTz1QiSc
+ FNpizcDA4D0QuXNwZYa43XsshCGIScVFvTSTlA5P0QKXPfAwA7XcZGBKtiPeuqRHDPZB
+ 6jFRbcBagS1dc0dcpt1KzReX1kNN33s508wIA5XMxIbcRaa5iQ3os9LQi3X7uCLdMqKB
+ ywDA==
+X-Gm-Message-State: AOAM532fUpFNpZWbmxZWg5KzQYZZ1tuMdGqd6mufHu0Jl383D32eVZcJ
+ xItoHrFtS/7iwQan06euIIk5UrAvGyBvFmpA1kYaICOZcU2lk5k7LmGn5Up6PtOLOvzcZyvaIdE
+ gkwFL14jQYok9OsvFl9/K1v9yGuwFZQ==
+X-Received: by 2002:a05:6638:371f:b0:31a:8654:e49c with SMTP id
+ k31-20020a056638371f00b0031a8654e49cmr3994486jav.197.1648161675851; 
+ Thu, 24 Mar 2022 15:41:15 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy8BahSZl1L2C0PBuAAPzP0FUv2fHadswqtKoqwYknCJfEeQpET1HU5FEk+lcbhTyW3Tu6Gjg==
+X-Received: by 2002:a05:6638:371f:b0:31a:8654:e49c with SMTP id
+ k31-20020a056638371f00b0031a8654e49cmr3994469jav.197.1648161675601; 
+ Thu, 24 Mar 2022 15:41:15 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239]) by smtp.gmail.com with ESMTPSA id
+ q197-20020a6b8ece000000b00648d615e80csm2082175iod.41.2022.03.24.15.41.14
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 24 Mar 2022 15:41:15 -0700 (PDT)
+Date: Thu, 24 Mar 2022 16:41:14 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
 Subject: Re: [PATCH RFC 04/12] kernel/user: Allow user::locked_vm to be
  usable for iommufd
-Message-ID: <20220324222739.GZ11336@nvidia.com>
+Message-ID: <20220324164114.78f2e63a.alex.williamson@redhat.com>
+In-Reply-To: <20220324222739.GZ11336@nvidia.com>
 References: <4-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
  <808a871b3918dc067031085de3e8af6b49c6ef89.camel@linux.ibm.com>
  <20220322145741.GH11336@nvidia.com>
  <20220322092923.5bc79861.alex.williamson@redhat.com>
  <20220322161521.GJ11336@nvidia.com>
  <20220324144015.031ca277.alex.williamson@redhat.com>
-Content-Disposition: inline
-In-Reply-To: <20220324144015.031ca277.alex.williamson@redhat.com>
-X-ClientProxiedBy: MN2PR03CA0009.namprd03.prod.outlook.com
- (2603:10b6:208:23a::14) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+ <20220324222739.GZ11336@nvidia.com>
+Organization: Red Hat
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d45c3de4-d089-4578-efe2-08da0de5822a
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5902:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR12MB59029C9EAEA2E8DE05DAE5DAC2199@PH7PR12MB5902.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: x5Bs7aJv+k8U9fYb+dOTWfWJdJmYOwKnY97rVqW3ssPcZE+zigttB964Y9pBBUyRk8jLeTIqAAzh5ckTqc6FnZ5UzFd+p8gXvS/TAYwtxwPZq7q5QLz4JA1ZWre8bdJ1LfKZ2kWcWdXy3DAIitmJHzzYGMhN/SgWxyoulJtmYJsqFD98seZ2cBg7Z/FBQVkjemtIgXl/bH07t72afXytHLsyG6kcnoamG6Gwecsqxpj7guyUz+f66wzepvJ3l2P86oPHacazuudxNuiN2nsu67VJvaZ/DX1LESJJbUodBkOD+L/kGuF/UeV30QSSaYAFq7rPu100dMHefmvLAi1IqCbuAFHT1MXyGNDOQazl86ngB+g7fuw+MnqelmQLrvQHRbxAFMpgW9UZJ2bj2upzhDmJjC/aL9Ar3wWEt5Xop/6gErgRI86dRG/C1It6x9olATQkY6o3Lvs0t6TSdAnQDW+YLyvV13P9zpEFrMREv3yI8+rEvqFuoNP+NRrs4t6T5r9SFYkx6Z1Kedc9Kru81tTxcTk0zC69b25ox291+lQg+uJpMBZVpeSUO2E2WmI6xsrkurAP7nIdOBr1ni9/AWEslpOU9Snw2BcatiKMtbEJkD7T/Mg4w67dBBUPp1PJHf5HOvOypux3qrwtQRhq/g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(6916009)(36756003)(316002)(38100700002)(54906003)(33656002)(6512007)(6506007)(8676002)(66476007)(86362001)(1076003)(7416002)(4326008)(8936002)(66946007)(2906002)(26005)(2616005)(186003)(83380400001)(66556008)(5660300002)(6486002)(508600001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZwPkJyQPnOR0uZn4YduRRGnZjvEIek/T0+jZ5d4jzbcjqiwpsf0TT/5ywpR+?=
- =?us-ascii?Q?qD47vL74Cu8U0SArLBlWYysZ6cXoNy95O2YuExqGw66MvXcVsHplzqW5hVI1?=
- =?us-ascii?Q?9LODSlhi6F8omj1Hc9U/wi8ecC3SynMlOho1h3LBqzlmuLMAnS9L3+HJ6Ebg?=
- =?us-ascii?Q?QEkuuWGRgm5+fGEQ5kfM9oXrvrV60dCkFpZKa+9TXYDnlYzOW0V26x8Xc+tY?=
- =?us-ascii?Q?653jwRp/eFH0p7ex/AC6XPSRT/k6mNsoqiHMBIhu6txbjZDqrRYKH5vC0lve?=
- =?us-ascii?Q?PQc2z4WJrWwmsMy+oL+6eh4abTY77jb6bk2jpBRXVQS20f+qUqpmPCLOkOv5?=
- =?us-ascii?Q?gseWDsKYVIwhlbu9+2OzSO3BPPwUJtWUPogKcR/0p5hWpHTx4kAWcbjAD5ZH?=
- =?us-ascii?Q?Qzq4D4YONEi/cp/ZsWvGBVEQXNZcWz7tByTseCorBvUyb3FoNSXCcA0s2s+f?=
- =?us-ascii?Q?NA+KWHex9WIL/PGykszDdGomUSae5E6mJrBRAq3YsNNjFFE0+2KH1+YznJ4h?=
- =?us-ascii?Q?Ab0UOskf1BIV/ny82zR2Tyox6OWwDcKX7uljPTPyPBpO8VdBqD9ryJmL+XIs?=
- =?us-ascii?Q?NKkbYqUNoFyoTZxZm13r+sxfu39k6/fUn1dpIfm6P3zWTzx88M7l3p0sJqFP?=
- =?us-ascii?Q?Q16/KKUDaN+hnA35UnSPZDNcJrY6Av7MMMnK39nr+zlYPIcmLBn65F8xbWXV?=
- =?us-ascii?Q?+vYHh/n6c3qSeOvUGQO5COpVn8c2/UDXM1WjAYvpJYl8a2pYIq0lYIybJKw0?=
- =?us-ascii?Q?tg5ELauzGZ3M28yFonlWHL5GKRQ8MR5btoVgNFnQUH1iGXF0c/Sc+Ino0bFi?=
- =?us-ascii?Q?LAvjZOluNIDLiLPsglWxRo6TTnyvGZmph6gjuPETi1GMYV6vlgUVBnnw3FFK?=
- =?us-ascii?Q?93n8d3FaHLImvPqvtsk1Bj2SErWTBd4lLRE5OMCKr42oaYHyT5r98ibd0iMi?=
- =?us-ascii?Q?ZxU2vcpumeCakBAqxMKEopDLFC3//v1ene6gnsZvysrslUA+6g2idSQ1EgDA?=
- =?us-ascii?Q?Wzu86l8nTn2lxI8u1WF+7jad2GwiY5NxAu8GenoPBENlp+ZwcWB2yQEnNgaP?=
- =?us-ascii?Q?E/UrJoSuAyF4k60jTAf42OD4ExJr/L87trXnYwyfij7ndMvgCmcd/9tOfFzz?=
- =?us-ascii?Q?IXs+tzZbSeOKhU38yfxZyj/l6XiQNegx7qC3jx3xWs5+sdcgTFRaTQArNofR?=
- =?us-ascii?Q?aEnVd2vuJD1i1x7DwHUt3uUATMw85Wkjt1dCEgz5thY/dljuU3Nrt0EFD5qj?=
- =?us-ascii?Q?TslP79gm+k5rw4I5ZzyDzCf0PM4cQLx0vC809p8CMO+cMowH0+5ly6DlmSaw?=
- =?us-ascii?Q?fmDIKYly6lEYoKeb+vahinEU+lGNC0LnritDIIT2RX1/gTn/ph4MuzvQSB7O?=
- =?us-ascii?Q?htpJafm2Zwnh62mD/yqHp1TVuUgWom20TM4Gz+SE95ondoNLJNAQcmNP80KP?=
- =?us-ascii?Q?GsRePu0MbVCfH2hdLvKoAiAEZXf0Mr3S?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d45c3de4-d089-4578-efe2-08da0de5822a
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2022 22:27:41.1994 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: W7gHnQTvKcE15NS5Kt7olCyi1QIL3OhcHz01rfInFfBuaFArdS8dyUVSmDcgwDSW
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5902
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Chaitanya Kulkarni <chaitanyak@nvidia.com>,
- Daniel =?utf-8?B?UC4gQmVycmFuZ8Op?= <berrange@redhat.com>, kvm@vger.kernel.org,
- Niklas Schnelle <schnelle@linux.ibm.com>, Jason Wang <jasowang@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, Kevin Tian <kevin.tian@intel.com>,
- Daniel Jordan <daniel.m.jordan@oracle.com>,
+ "Daniel P. =?UTF-8?B?QmVycmFuZ8Op?=" <berrange@redhat.com>,
+ kvm@vger.kernel.org, Niklas Schnelle <schnelle@linux.ibm.com>,
+ Jason Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>,
+ Kevin Tian <kevin.tian@intel.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
  Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>,
  "Michael S. Tsirkin" <mst@redhat.com>,
  Joao Martins <joao.m.martins@oracle.com>,
@@ -151,109 +122,90 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Mar 24, 2022 at 02:40:15PM -0600, Alex Williamson wrote:
-> On Tue, 22 Mar 2022 13:15:21 -0300
-> Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org> wrote:
-> 
-> > On Tue, Mar 22, 2022 at 09:29:23AM -0600, Alex Williamson wrote:
-> > 
-> > > I'm still picking my way through the series, but the later compat
-> > > interface doesn't mention this difference as an outstanding issue.
-> > > Doesn't this difference need to be accounted in how libvirt manages VM
-> > > resource limits?    
-> > 
-> > AFACIT, no, but it should be checked.
-> > 
-> > > AIUI libvirt uses some form of prlimit(2) to set process locked
-> > > memory limits.  
-> > 
-> > Yes, and ulimit does work fully. prlimit adjusts the value:
-> > 
-> > int do_prlimit(struct task_struct *tsk, unsigned int resource,
-> > 		struct rlimit *new_rlim, struct rlimit *old_rlim)
-> > {
-> > 	rlim = tsk->signal->rlim + resource;
-> > [..]
-> > 		if (new_rlim)
-> > 			*rlim = *new_rlim;
-> > 
-> > Which vfio reads back here:
-> > 
-> > drivers/vfio/vfio_iommu_type1.c:        unsigned long pfn, limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
-> > drivers/vfio/vfio_iommu_type1.c:        unsigned long limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
-> > 
-> > And iommufd does the same read back:
-> > 
-> > 	lock_limit =
-> > 		task_rlimit(pages->source_task, RLIMIT_MEMLOCK) >> PAGE_SHIFT;
-> > 	npages = pages->npinned - pages->last_npinned;
-> > 	do {
-> > 		cur_pages = atomic_long_read(&pages->source_user->locked_vm);
-> > 		new_pages = cur_pages + npages;
-> > 		if (new_pages > lock_limit)
-> > 			return -ENOMEM;
-> > 	} while (atomic_long_cmpxchg(&pages->source_user->locked_vm, cur_pages,
-> > 				     new_pages) != cur_pages);
-> > 
-> > So it does work essentially the same.
-> 
-> Well, except for the part about vfio updating mm->locked_vm and iommufd
-> updating user->locked_vm, a per-process counter versus a per-user
-> counter.  prlimit specifically sets process resource limits, which get
-> reflected in task_rlimit.
-
-Indeed, but that is not how the majority of other things seem to
-operate it.
-
-> For example, let's say a user has two 4GB VMs and they're hot-adding
-> vfio devices to each of them, so libvirt needs to dynamically modify
-> the locked memory limit for each VM.  AIUI, libvirt would look at the
-> VM size and call prlimit to set that value.  If libvirt does this to
-> both VMs, then each has a task_rlimit of 4GB.  In vfio we add pinned
-> pages to mm->locked_vm, so this works well.  In the iommufd loop above,
-> we're comparing a per-task/process limit to a per-user counter.  So I'm
-> a bit lost how both VMs can pin their pages here.
-
-I don't know anything about libvirt - it seems strange to use a
-securityish feature like ulimit but not security isolate processes
-with real users.
-
-But if it really does this then it really does this.
-
-So at the very least VFIO container has to keep working this way.
-
-The next question is if we want iommufd's own device node to work this
-way and try to change libvirt somehow. It seems libvirt will have to
-deal with this at some point as iouring will trigger the same problem.
-
-> > This whole area is a bit peculiar (eg mlock itself works differently),
-> > IMHO, but with most of the places doing pins voting to use
-> > user->locked_vm as the charge it seems the right path in today's
-> > kernel.
-> 
-> The philosophy of whether it's ultimately a better choice for the
-> kernel aside, if userspace breaks because we're accounting in a
-> per-user pool rather than a per-process pool, then our compatibility
-> layer ain't so transparent.
-
-Sure, if it doesn't work it doesn't work. Lets be sure and clearly
-document what the compatability issue is and then we have to keep it
-per-process.
-
-And the same reasoning likely means I can't change RDMA either as qemu
-will break just as well when qemu uses rdma mode.
-
-Which is pretty sucky, but it is what it is..
-
-Jason
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gVGh1LCAyNCBNYXIgMjAyMiAxOToyNzozOSAtMDMwMApKYXNvbiBHdW50aG9ycGUgPGpnZ0Bu
+dmlkaWEuY29tPiB3cm90ZToKCj4gT24gVGh1LCBNYXIgMjQsIDIwMjIgYXQgMDI6NDA6MTVQTSAt
+MDYwMCwgQWxleCBXaWxsaWFtc29uIHdyb3RlOgo+ID4gT24gVHVlLCAyMiBNYXIgMjAyMiAxMzox
+NToyMSAtMDMwMAo+ID4gSmFzb24gR3VudGhvcnBlIHZpYSBpb21tdSA8aW9tbXVAbGlzdHMubGlu
+dXgtZm91bmRhdGlvbi5vcmc+IHdyb3RlOgo+ID4gICAKPiA+ID4gT24gVHVlLCBNYXIgMjIsIDIw
+MjIgYXQgMDk6Mjk6MjNBTSAtMDYwMCwgQWxleCBXaWxsaWFtc29uIHdyb3RlOgo+ID4gPiAgIAo+
+ID4gPiA+IEknbSBzdGlsbCBwaWNraW5nIG15IHdheSB0aHJvdWdoIHRoZSBzZXJpZXMsIGJ1dCB0
+aGUgbGF0ZXIgY29tcGF0Cj4gPiA+ID4gaW50ZXJmYWNlIGRvZXNuJ3QgbWVudGlvbiB0aGlzIGRp
+ZmZlcmVuY2UgYXMgYW4gb3V0c3RhbmRpbmcgaXNzdWUuCj4gPiA+ID4gRG9lc24ndCB0aGlzIGRp
+ZmZlcmVuY2UgbmVlZCB0byBiZSBhY2NvdW50ZWQgaW4gaG93IGxpYnZpcnQgbWFuYWdlcyBWTQo+
+ID4gPiA+IHJlc291cmNlIGxpbWl0cz8gICAgICAKPiA+ID4gCj4gPiA+IEFGQUNJVCwgbm8sIGJ1
+dCBpdCBzaG91bGQgYmUgY2hlY2tlZC4KPiA+ID4gICAKPiA+ID4gPiBBSVVJIGxpYnZpcnQgdXNl
+cyBzb21lIGZvcm0gb2YgcHJsaW1pdCgyKSB0byBzZXQgcHJvY2VzcyBsb2NrZWQKPiA+ID4gPiBt
+ZW1vcnkgbGltaXRzLiAgICAKPiA+ID4gCj4gPiA+IFllcywgYW5kIHVsaW1pdCBkb2VzIHdvcmsg
+ZnVsbHkuIHBybGltaXQgYWRqdXN0cyB0aGUgdmFsdWU6Cj4gPiA+IAo+ID4gPiBpbnQgZG9fcHJs
+aW1pdChzdHJ1Y3QgdGFza19zdHJ1Y3QgKnRzaywgdW5zaWduZWQgaW50IHJlc291cmNlLAo+ID4g
+PiAJCXN0cnVjdCBybGltaXQgKm5ld19ybGltLCBzdHJ1Y3QgcmxpbWl0ICpvbGRfcmxpbSkKPiA+
+ID4gewo+ID4gPiAJcmxpbSA9IHRzay0+c2lnbmFsLT5ybGltICsgcmVzb3VyY2U7Cj4gPiA+IFsu
+Ll0KPiA+ID4gCQlpZiAobmV3X3JsaW0pCj4gPiA+IAkJCSpybGltID0gKm5ld19ybGltOwo+ID4g
+PiAKPiA+ID4gV2hpY2ggdmZpbyByZWFkcyBiYWNrIGhlcmU6Cj4gPiA+IAo+ID4gPiBkcml2ZXJz
+L3ZmaW8vdmZpb19pb21tdV90eXBlMS5jOiAgICAgICAgdW5zaWduZWQgbG9uZyBwZm4sIGxpbWl0
+ID0gcmxpbWl0KFJMSU1JVF9NRU1MT0NLKSA+PiBQQUdFX1NISUZUOwo+ID4gPiBkcml2ZXJzL3Zm
+aW8vdmZpb19pb21tdV90eXBlMS5jOiAgICAgICAgdW5zaWduZWQgbG9uZyBsaW1pdCA9IHJsaW1p
+dChSTElNSVRfTUVNTE9DSykgPj4gUEFHRV9TSElGVDsKPiA+ID4gCj4gPiA+IEFuZCBpb21tdWZk
+IGRvZXMgdGhlIHNhbWUgcmVhZCBiYWNrOgo+ID4gPiAKPiA+ID4gCWxvY2tfbGltaXQgPQo+ID4g
+PiAJCXRhc2tfcmxpbWl0KHBhZ2VzLT5zb3VyY2VfdGFzaywgUkxJTUlUX01FTUxPQ0spID4+IFBB
+R0VfU0hJRlQ7Cj4gPiA+IAlucGFnZXMgPSBwYWdlcy0+bnBpbm5lZCAtIHBhZ2VzLT5sYXN0X25w
+aW5uZWQ7Cj4gPiA+IAlkbyB7Cj4gPiA+IAkJY3VyX3BhZ2VzID0gYXRvbWljX2xvbmdfcmVhZCgm
+cGFnZXMtPnNvdXJjZV91c2VyLT5sb2NrZWRfdm0pOwo+ID4gPiAJCW5ld19wYWdlcyA9IGN1cl9w
+YWdlcyArIG5wYWdlczsKPiA+ID4gCQlpZiAobmV3X3BhZ2VzID4gbG9ja19saW1pdCkKPiA+ID4g
+CQkJcmV0dXJuIC1FTk9NRU07Cj4gPiA+IAl9IHdoaWxlIChhdG9taWNfbG9uZ19jbXB4Y2hnKCZw
+YWdlcy0+c291cmNlX3VzZXItPmxvY2tlZF92bSwgY3VyX3BhZ2VzLAo+ID4gPiAJCQkJICAgICBu
+ZXdfcGFnZXMpICE9IGN1cl9wYWdlcyk7Cj4gPiA+IAo+ID4gPiBTbyBpdCBkb2VzIHdvcmsgZXNz
+ZW50aWFsbHkgdGhlIHNhbWUuICAKPiA+IAo+ID4gV2VsbCwgZXhjZXB0IGZvciB0aGUgcGFydCBh
+Ym91dCB2ZmlvIHVwZGF0aW5nIG1tLT5sb2NrZWRfdm0gYW5kIGlvbW11ZmQKPiA+IHVwZGF0aW5n
+IHVzZXItPmxvY2tlZF92bSwgYSBwZXItcHJvY2VzcyBjb3VudGVyIHZlcnN1cyBhIHBlci11c2Vy
+Cj4gPiBjb3VudGVyLiAgcHJsaW1pdCBzcGVjaWZpY2FsbHkgc2V0cyBwcm9jZXNzIHJlc291cmNl
+IGxpbWl0cywgd2hpY2ggZ2V0Cj4gPiByZWZsZWN0ZWQgaW4gdGFza19ybGltaXQuICAKPiAKPiBJ
+bmRlZWQsIGJ1dCB0aGF0IGlzIG5vdCBob3cgdGhlIG1ham9yaXR5IG9mIG90aGVyIHRoaW5ncyBz
+ZWVtIHRvCj4gb3BlcmF0ZSBpdC4KPiAKPiA+IEZvciBleGFtcGxlLCBsZXQncyBzYXkgYSB1c2Vy
+IGhhcyB0d28gNEdCIFZNcyBhbmQgdGhleSdyZSBob3QtYWRkaW5nCj4gPiB2ZmlvIGRldmljZXMg
+dG8gZWFjaCBvZiB0aGVtLCBzbyBsaWJ2aXJ0IG5lZWRzIHRvIGR5bmFtaWNhbGx5IG1vZGlmeQo+
+ID4gdGhlIGxvY2tlZCBtZW1vcnkgbGltaXQgZm9yIGVhY2ggVk0uICBBSVVJLCBsaWJ2aXJ0IHdv
+dWxkIGxvb2sgYXQgdGhlCj4gPiBWTSBzaXplIGFuZCBjYWxsIHBybGltaXQgdG8gc2V0IHRoYXQg
+dmFsdWUuICBJZiBsaWJ2aXJ0IGRvZXMgdGhpcyB0bwo+ID4gYm90aCBWTXMsIHRoZW4gZWFjaCBo
+YXMgYSB0YXNrX3JsaW1pdCBvZiA0R0IuICBJbiB2ZmlvIHdlIGFkZCBwaW5uZWQKPiA+IHBhZ2Vz
+IHRvIG1tLT5sb2NrZWRfdm0sIHNvIHRoaXMgd29ya3Mgd2VsbC4gIEluIHRoZSBpb21tdWZkIGxv
+b3AgYWJvdmUsCj4gPiB3ZSdyZSBjb21wYXJpbmcgYSBwZXItdGFzay9wcm9jZXNzIGxpbWl0IHRv
+IGEgcGVyLXVzZXIgY291bnRlci4gIFNvIEknbQo+ID4gYSBiaXQgbG9zdCBob3cgYm90aCBWTXMg
+Y2FuIHBpbiB0aGVpciBwYWdlcyBoZXJlLiAgCj4gCj4gSSBkb24ndCBrbm93IGFueXRoaW5nIGFi
+b3V0IGxpYnZpcnQgLSBpdCBzZWVtcyBzdHJhbmdlIHRvIHVzZSBhCj4gc2VjdXJpdHlpc2ggZmVh
+dHVyZSBsaWtlIHVsaW1pdCBidXQgbm90IHNlY3VyaXR5IGlzb2xhdGUgcHJvY2Vzc2VzCj4gd2l0
+aCByZWFsIHVzZXJzLgo+IAo+IEJ1dCBpZiBpdCByZWFsbHkgZG9lcyB0aGlzIHRoZW4gaXQgcmVh
+bGx5IGRvZXMgdGhpcy4KPiAKPiBTbyBhdCB0aGUgdmVyeSBsZWFzdCBWRklPIGNvbnRhaW5lciBo
+YXMgdG8ga2VlcCB3b3JraW5nIHRoaXMgd2F5Lgo+IAo+IFRoZSBuZXh0IHF1ZXN0aW9uIGlzIGlm
+IHdlIHdhbnQgaW9tbXVmZCdzIG93biBkZXZpY2Ugbm9kZSB0byB3b3JrIHRoaXMKPiB3YXkgYW5k
+IHRyeSB0byBjaGFuZ2UgbGlidmlydCBzb21laG93LiBJdCBzZWVtcyBsaWJ2aXJ0IHdpbGwgaGF2
+ZSB0bwo+IGRlYWwgd2l0aCB0aGlzIGF0IHNvbWUgcG9pbnQgYXMgaW91cmluZyB3aWxsIHRyaWdn
+ZXIgdGhlIHNhbWUgcHJvYmxlbS4KPiAKPiA+ID4gVGhpcyB3aG9sZSBhcmVhIGlzIGEgYml0IHBl
+Y3VsaWFyIChlZyBtbG9jayBpdHNlbGYgd29ya3MgZGlmZmVyZW50bHkpLAo+ID4gPiBJTUhPLCBi
+dXQgd2l0aCBtb3N0IG9mIHRoZSBwbGFjZXMgZG9pbmcgcGlucyB2b3RpbmcgdG8gdXNlCj4gPiA+
+IHVzZXItPmxvY2tlZF92bSBhcyB0aGUgY2hhcmdlIGl0IHNlZW1zIHRoZSByaWdodCBwYXRoIGlu
+IHRvZGF5J3MKPiA+ID4ga2VybmVsLiAgCj4gPiAKPiA+IFRoZSBwaGlsb3NvcGh5IG9mIHdoZXRo
+ZXIgaXQncyB1bHRpbWF0ZWx5IGEgYmV0dGVyIGNob2ljZSBmb3IgdGhlCj4gPiBrZXJuZWwgYXNp
+ZGUsIGlmIHVzZXJzcGFjZSBicmVha3MgYmVjYXVzZSB3ZSdyZSBhY2NvdW50aW5nIGluIGEKPiA+
+IHBlci11c2VyIHBvb2wgcmF0aGVyIHRoYW4gYSBwZXItcHJvY2VzcyBwb29sLCB0aGVuIG91ciBj
+b21wYXRpYmlsaXR5Cj4gPiBsYXllciBhaW4ndCBzbyB0cmFuc3BhcmVudC4gIAo+IAo+IFN1cmUs
+IGlmIGl0IGRvZXNuJ3Qgd29yayBpdCBkb2Vzbid0IHdvcmsuIExldHMgYmUgc3VyZSBhbmQgY2xl
+YXJseQo+IGRvY3VtZW50IHdoYXQgdGhlIGNvbXBhdGFiaWxpdHkgaXNzdWUgaXMgYW5kIHRoZW4g
+d2UgaGF2ZSB0byBrZWVwIGl0Cj4gcGVyLXByb2Nlc3MuCj4gCj4gQW5kIHRoZSBzYW1lIHJlYXNv
+bmluZyBsaWtlbHkgbWVhbnMgSSBjYW4ndCBjaGFuZ2UgUkRNQSBlaXRoZXIgYXMgcWVtdQo+IHdp
+bGwgYnJlYWsganVzdCBhcyB3ZWxsIHdoZW4gcWVtdSB1c2VzIHJkbWEgbW9kZS4KPiAKPiBXaGlj
+aCBpcyBwcmV0dHkgc3Vja3ksIGJ1dCBpdCBpcyB3aGF0IGl0IGlzLi4KCkkgYWRkZWQgRGFuaWVs
+IEJlcnJhbmfDqSB0byB0aGUgY2MgbGlzdCBmb3IgbXkgcHJldmlvdXMgcmVwbHksIGhvcGVmdWxs
+eQpoZSBjYW4gY29tbWVudCB3aGV0aGVyIGxpYnZpcnQgaGFzIHRoZSBzb3J0IG9mIHVzZXIgc2Vj
+dXJpdHkgbW9kZWwgeW91CmFsbHVkZSB0byBhYm92ZSB0aGF0IG1heWJlIG1ha2VzIHRoaXMgYSBu
+b24taXNzdWUgZm9yIHRoaXMgdXNlIGNhc2UuClVuZm9ydHVuYXRlbHkgaXQncyBleHRyZW1lbHkg
+ZGlmZmljdWx0IHRvIHByb3ZlIHRoYXQgdGhlcmUgYXJlIG5vIHN1Y2gKdXNlIGNhc2VzIG91dCB0
+aGVyZSBldmVuIGlmIGxpYnZpcnQgaXMgb2suICBUaGFua3MsCgpBbGV4CgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9t
+bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRp
+b24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
