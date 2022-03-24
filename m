@@ -1,81 +1,100 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 28AFAC433F5
-	for <iommu@archiver.kernel.org>; Thu, 24 Mar 2022 03:51:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DEE54C433EF
+	for <iommu@archiver.kernel.org>; Thu, 24 Mar 2022 04:29:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id AD03140128;
-	Thu, 24 Mar 2022 03:51:10 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 717A4607F2;
+	Thu, 24 Mar 2022 04:29:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CHsBAoYGkLb4; Thu, 24 Mar 2022 03:51:09 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 4N-ou3QUFcPl; Thu, 24 Mar 2022 04:29:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id BD763404BA;
-	Thu, 24 Mar 2022 03:51:08 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 47AF660B77;
+	Thu, 24 Mar 2022 04:29:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 75E62C0012;
-	Thu, 24 Mar 2022 03:51:08 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 80E22C000B
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 03:51:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1762DC001A;
+	Thu, 24 Mar 2022 04:29:20 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1D37DC000B
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 04:29:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 625DC417D3
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 03:51:07 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 0601060B77
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 04:29:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VQk3VKDJmIh6 for <iommu@lists.linux-foundation.org>;
- Thu, 24 Mar 2022 03:51:06 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id An0yKU6W8Hke for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Mar 2022 04:29:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp4.osuosl.org (Postfix) with ESMTPS id DF0D9417C7
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 03:51:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1648093864;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=V7NhbFMhYxIOK3QQQY7EdzshZjWLB3YvUuiYy4wdKbE=;
- b=BGw7KL4Pfztp58NHH2JZ55gGwwyHehzpspRyI06GbBAVvOBO8H8okxy5gkgWm3/lMNurFe
- 3ohvlxmhXUhS0yBt8JvgzrScwwrCyNzlpxQab3j5HnWwuRwkjZ1lpfI0VgwD42PrMjHvdw
- KCrNNZYXqhx9brkQCTkSiGGMyTqX6AU=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-634-rKabnfODNgi3rOWqXlX1VA-1; Wed, 23 Mar 2022 23:51:01 -0400
-X-MC-Unique: rKabnfODNgi3rOWqXlX1VA-1
-Received: by mail-lj1-f197.google.com with SMTP id
- j7-20020a2e3c07000000b00247f8eb86a4so1338693lja.3
- for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 20:51:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=V7NhbFMhYxIOK3QQQY7EdzshZjWLB3YvUuiYy4wdKbE=;
- b=hosQHKMv/M+9HHgFyKfPai+KY9Og8sK+g78D3qgCfbQNUv7DEzCUF7iNoQzn+wgR9G
- Yi16oOiIZAhnUf81p9L89DXiXEGGuvVhFlDWa+Nvs3Nl3pbVeh+6V7on5iXJ/tjYGYFD
- v+k1QcfHtppb4SuLCCNtQhWbyuh4qS4iR2K6Tmeo96JOQxoZLxFpeIvi9BuVaJHkwVrE
- 998lLLAP0XDmf9vd8wgyi5Hj0f/axPj2lBNkaXEyw3PT5nYfw7Hrz1K01obRfp9rPj+h
- LBuxtvgtm5uk36zLM7p25/RtH7SjBcJajCogvlRis5dKCpQOqRJE9X8cBvu32rRhuPKC
- IC+g==
-X-Gm-Message-State: AOAM532RQI6gXipCivVEndMX7cfuoeByue0Hhhti6DHY5/GoiD/Ry0ha
- oo20MEFUFRPxLzoDvZEqoswzLcYKY7eQ23diDykJcN3T3ZK1uMBZ60EE3x6JDqZLSw/HBJXCKpk
- IWAwjJvkAkCGrMrYliYuxi/28kyUYLx5Xeli6uBldMBMzqw==
-X-Received: by 2002:a2e:9b96:0:b0:249:8705:8f50 with SMTP id
- z22-20020a2e9b96000000b0024987058f50mr2738923lji.73.1648093859537; 
- Wed, 23 Mar 2022 20:50:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwYtKGYWcSY2Sgu56bZylQAsgrviUPcGmGWq1IhXvSpUyuWowTqG56BQkHyORMkrCBcteqM6RkdCUvWbY7A7Lg=
-X-Received: by 2002:a2e:9b96:0:b0:249:8705:8f50 with SMTP id
- z22-20020a2e9b96000000b0024987058f50mr2738901lji.73.1648093859240; Wed, 23
- Mar 2022 20:50:59 -0700 (PDT)
-MIME-Version: 1.0
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 18E12607F2
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 04:29:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1648096158; x=1679632158;
+ h=from:to:cc:subject:date:message-id:references:
+ in-reply-to:content-transfer-encoding:mime-version;
+ bh=T602Qy6Yi6mg7Y/J2BhGCl9WOE2nWUHY55jMRCZzQJA=;
+ b=fiW/xvIHrt/4xuSEJ8XIWH+D/VN5sdR0qinTWlTzSLDPcs/brRvofiBh
+ mcp3x17mvKjjiF74kvzcNLU8QJZoOCJ2sGTxf7ayi0eXgVqOofHzT67+e
+ 4xS5Tb1NDI1talIiT2raJ1I5/1v1AbUQQsU8y4t+R0dXHZ0RdpBGupY55
+ y+6tK5Da4U1XZEDtPK6xlLX2MixfwwqZyGvdZT76cdwzkX5OfawR4NV2f
+ Y17z/cLYUhtodcK2ERUzalBqr1mDfF9Y97UpIc/nYHbL+SidBHShw77JL
+ 3eYcPBNYW1HgZEpN8FHNr9QBHnk3yrFhpEJw8ENGMB987vglJoeowli/5 Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="255849456"
+X-IronPort-AV: E=Sophos;i="5.90,206,1643702400"; d="scan'208";a="255849456"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 23 Mar 2022 21:29:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,206,1643702400"; d="scan'208";a="647726843"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+ by fmsmga002.fm.intel.com with ESMTP; 23 Mar 2022 21:29:17 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 23 Mar 2022 21:29:16 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21 via Frontend Transport; Wed, 23 Mar 2022 21:29:16 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.21; Wed, 23 Mar 2022 21:29:16 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jsNpsIyUV4ttKPuY1HmsHrWE80HjAo78EOcn01/0rSQOCGgp9TVUXsVbZ9vhFlt4rfuGdSoHTmlPruOPmUS8dgd9EKUobBTunOiv/jkQKp/ooSZffdo+j9PGNCGZTXuTuK3u561Hz2JXYGSKxMgxu1HTwGeYlTKLm7w2Qbswg8JIrLMKhxNX7YKRlk5DKKpe3ilzjU8CQugzLEdq3N9K9NsqusY2yK6aVh4/OsBtZuHsN01/AnacvVHsdPB442cifrkG4B/KD40HD8vttmSeCpO48iqXFUoA3+UcvXMVJewYeUwNE1tWKjWGHjSF9x2hiUvs9mP/aRk2yDKu0Lxaqw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=T602Qy6Yi6mg7Y/J2BhGCl9WOE2nWUHY55jMRCZzQJA=;
+ b=dqq70pjETYu4YghVS+EdYOIx0ovl8vMgghgw8ADhlUg4e5Wnv1esbKGXGHeNbYdFOXpJCzBZdLV+sutzhb+taSh7H3BihLJIF5Gi6z7wn1c/np9vL9Lcf9Q7ran1/NXyCuLefxdvnsZ5uCMbqLmyKANnYerfLjbj93Iqtduh9CuUBagNRO76CyyPHKeN/XbZKN8CzG0a7kFRc5vBMtZI/c1KDk8ZDfSYIzxN4bSyM6/B4BQBizc871IFA0Vc8SLrMVbRi8g4teQZstrQqnJTTrpVpIGh2fhytBpf+qLLYGPEoAjLbgjh6p7gx6K21PqIoyRHD5WDRdQXP1InbYxoaA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by CY4PR11MB1845.namprd11.prod.outlook.com (2603:10b6:903:128::16)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.15; Thu, 24 Mar
+ 2022 04:29:14 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::4df7:2fc6:c7cf:ffa0]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::4df7:2fc6:c7cf:ffa0%4]) with mapi id 15.20.5102.018; Thu, 24 Mar 2022
+ 04:29:14 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Wang <jasowang@redhat.com>
+Subject: RE: [PATCH RFC 04/12] kernel/user: Allow user::locked_vm to be usable
+ for iommufd
+Thread-Topic: [PATCH RFC 04/12] kernel/user: Allow user::locked_vm to be
+ usable for iommufd
+Thread-Index: AQHYOu2DSsSjQi9eMEu6J1ns8GLP6azLfE8AgAAIMYCAAAjbgIAADNiAgAI1J0CAAAhSgIAAAkLwgAAF7YCAAAOIEIAAC3KAgAAIBoA=
+Date: Thu, 24 Mar 2022 04:29:14 +0000
+Message-ID: <BN9PR11MB5276FB52D63497FC67CB7ABE8C199@BN9PR11MB5276.namprd11.prod.outlook.com>
 References: <4-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
  <808a871b3918dc067031085de3e8af6b49c6ef89.camel@linux.ibm.com>
  <20220322145741.GH11336@nvidia.com>
@@ -86,17 +105,75 @@ References: <4-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
  <BN9PR11MB5276E3566D633CEE245004D08C199@BN9PR11MB5276.namprd11.prod.outlook.com>
  <CACGkMEvTmCFqAsc4z=2OXOdr7X--0BSDpH06kCiAP5MHBjaZtg@mail.gmail.com>
  <BN9PR11MB5276ECF1F1C7D0A80DA086D18C199@BN9PR11MB5276.namprd11.prod.outlook.com>
-In-Reply-To: <BN9PR11MB5276ECF1F1C7D0A80DA086D18C199@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Thu, 24 Mar 2022 11:50:47 +0800
-Message-ID: <CACGkMEtpWemw6tj=suxNjvSHuixyzhMJBYmqdbhQkinuWNADCQ@mail.gmail.com>
-Subject: Re: [PATCH RFC 04/12] kernel/user: Allow user::locked_vm to be usable
- for iommufd
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jasowang@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
+ <CACGkMEtpWemw6tj=suxNjvSHuixyzhMJBYmqdbhQkinuWNADCQ@mail.gmail.com>
+In-Reply-To: <CACGkMEtpWemw6tj=suxNjvSHuixyzhMJBYmqdbhQkinuWNADCQ@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.6.401.20
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2f889dec-217a-4a10-8a66-08da0d4ed9f4
+x-ms-traffictypediagnostic: CY4PR11MB1845:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <CY4PR11MB184508798FFF84EA5B1B8E7F8C199@CY4PR11MB1845.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: abc8y0WtKnz3VMRor3Sv32lHyihFGg7QOh6/isqPXxLwSo5K3eTHeqq2DCrr5ittWDxgHrxfNbAf0Ae1wRjOHeNyXcXfeomIAHBATSlEJjvwN78MQv1UfPPIB1LfyTAwyAaM5UcpVjgx+eehXMlQ/DH7X1DvLAM3P1E5eAr7P1kfglUOkF5RZZ8dj/bW4ov4JWlHUYsj41xiDhSdx17uh0CLF0ynHk3RUQFVZtqftZeRQVbooQXH7AxpZqifrNS7QchLfQy7uK6GJlK+kPHmN7ZBzedegTyNhUzG0OTSuvHuygdZdYzBFfPvVVv9d5yDaaVO877Skai7lHDRIy6wqQLAXjIMGC+aEeDsDFAEdvoWa+SF+fyhUh9FNzUPwVY35/g0Ed4QSZEqm+r/nHj3JBjjZr92BsjpdT0FXJuwCGNab1xJ1x09cj9/x79y7+mDPz2Az8fem+uKXsC9FO1k+biOCvMmRyibC6QN833dIKBJxHu4q+HLh5fz45MaKiumpCSKWB1oF5nZ1N/qSzVnKfWyarutoJNvkJLYuTg/F0G3fhOanWloEdokXLYOLZqkEEwwk0vg5nVyPicodIloVx2mGeuAuJfh0Pp4LHi2Rk2O6e3iXiNdUmPZjdSGBJ0uwfnCtiBJ9Xk988bhjnxmP+iZ6LMSKndZ8xoNziKsFT71fOnJ6kCMqyzY7geLekwCM40N/QHiSqA9D6ZIF7E+GAUfYsErg/egzljoI+2vz3MO/oK5GtBRtw6S77bgpUm6pkBztlcqIhRdYI8xV2g42j53BgkpcQ8VJhZKSd5vowg=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(66556008)(8676002)(64756008)(6506007)(966005)(7696005)(66446008)(2906002)(6916009)(186003)(71200400001)(508600001)(26005)(33656002)(55016003)(66476007)(5660300002)(76116006)(316002)(66946007)(8936002)(7416002)(52536014)(4326008)(82960400001)(54906003)(38100700002)(9686003)(122000001)(86362001)(38070700005);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?UEMzaWlENkh0cWVOZkIwM0U1R2FTUnlNd21sN2o5OTFrTUxyc3lrM25RMjRQ?=
+ =?utf-8?B?M3RISnFxWlRQQ1JuR2xwYW5teVcyYkhGSnpIQnFIbTBQeW5nMU9PdTBCR1lv?=
+ =?utf-8?B?N3hBRHBWcVBIemdYWVVzd29McFhKK1JnWlpQbGZTQlJaODl4N0ZHamlma3da?=
+ =?utf-8?B?Q1ZzQXBlMkljSEFkWkNwQlFjRWZhOVRuSjFFQmR6R2NSOUtyOXVqU251WEp3?=
+ =?utf-8?B?NnI3SzlmT0ZiS0dxdFl6aDdKWDAzSUxOc1hIbUUzL0l2am5XQUtJY3F0enB6?=
+ =?utf-8?B?UkhPVVZIMjBVUkhvbzhNaFhNc1M2a2lJQVFTbXUrUG8vWjZmdHhweE5zKzdT?=
+ =?utf-8?B?MlFwZDU4SjdHTWdtNmcyendaU0dwS0laN21XQkZLellCVEVUTDZkcXFqSEtx?=
+ =?utf-8?B?V05FS0M5STVPMi9YY2NOVmdHRWdydE45RDZpUWF1Z04wdXBTeEN4WW1nclpr?=
+ =?utf-8?B?R1EyMWd1SWZyUWZjOHMrNUxRbU8rZTUwV05XbXNPS0hUSmV5RFkwcWJRekxq?=
+ =?utf-8?B?YXJ3MXdnS0ZKZVFxQzY4RXltWkR0citDT1Y0U2V6Y0Fkei9nRkVBVy8zRUVC?=
+ =?utf-8?B?amh6N0R0dXFUM3dMOTVNQ2t5UDVTZmVHV0EzRW9yTktlbm51N2xJRERQL0c3?=
+ =?utf-8?B?ajREK21GRHhnL3RUVmlsNDRaTjJQSHhtekZFRWpxdTExMHZZeWVPZlFtb3da?=
+ =?utf-8?B?aGpqTC8yTTZuVWtOd09FaWs0U3RBdFlaQUJvQVNMb1RuTFNCMGxMTzl1b0pj?=
+ =?utf-8?B?QWwwUFJIampvVWFPaVA4a01VU1crRDg5YklsM3R5dXFjdVlZbk1wN3BoRlAz?=
+ =?utf-8?B?ZU4rL3I0bldsa2pqWURxL2p5U3lQWTJuTU1kMDZLTE5PdUZYdWFlRDM4M2ZS?=
+ =?utf-8?B?NTJHSGNQRng5ZjhZQlVzZ0xVMC80Rll0VC94Zm55QWdUYTV1SndBTjNJL0pG?=
+ =?utf-8?B?b2M5L0xCRnovWm5ZdWp3eVRjZy9PZDhaR0luV3A3aE5kblBpVDRmcVhwKzZO?=
+ =?utf-8?B?VUcrRW05TVpweUhIN0ZKNHNGejFORi9EMXJBVVRmMGw2N0pSWGQ1T1VKVUl6?=
+ =?utf-8?B?N3I4WFYrMXZFMDVUdEtnbk9wd2NHSnFzUy9vVDh4VW5yTXRlSk1aVG9xZGIw?=
+ =?utf-8?B?TVd1NDczY2w0dFNmQzdBRmVKN0hsaXJKWTY1MjVaWklHUGZ0SWowaGNZVHVo?=
+ =?utf-8?B?dFdRYkFsNGJKd0YyMEhJVmJPeklIM2ZIclVpek5TdklUL2pkalp6VStYTlIx?=
+ =?utf-8?B?MzZSM2QySXZKa056MUlsRStnU2tnU3QwSEZtem5oZkJneU1rd25XS3RhVGF1?=
+ =?utf-8?B?QmRrTDczOFY5NXo0WkJxb2treGsrbE14L2lhNWVSSzF6TzRIS20zRlB4RkRw?=
+ =?utf-8?B?RW1aQk5ONWFyRGZFOU5YTThBekJ4OHVIQlJUV3c4OGk3NVBxdXBTQUVUUkpa?=
+ =?utf-8?B?eHlzQ000U0V0RFE2cUVLR1QrUlRWeHJXb296V0h4ZHlYODBERmRVdWdUQ3A2?=
+ =?utf-8?B?VEFOcDhDeXFZeE45SHNUSmIyQWdGL2xQZGhCRWFzQnpnQS9jTzJ5K010Ym5q?=
+ =?utf-8?B?dWFEeUxtOXpTTmllOS82MGN2alVrQzlwOVZ4UjhpcHZsQXFUWFJOcHYxY0Ur?=
+ =?utf-8?B?NDlmR2hEZC9zOHRDWFVkODI2L0pHNXJXdDVsL1A2SjRVRW51NUVJU1RoYzBX?=
+ =?utf-8?B?Yzl4U01lSEtkSVBwQTZTdHBaOUZGb0JlSnlQOUVIeVcvMVFmNElQS3FuQ0Uy?=
+ =?utf-8?B?ME9Sa2EvU284NVBPamNmWDBpODRqSFN1UGRTN0NIYStTcVRaMmJ3MFBGbUNq?=
+ =?utf-8?B?ckNBNnRxNUJGL0JSRjcyZVgrMGE1SmVtK3ZXVTBDRysyMkVVSGZoeDhXRWo0?=
+ =?utf-8?B?azZTOEp4MkNJOUx4bFVlb0VCVjVxeGg1cWNpM0FVQkRHdkFYa1FURGJoMzFr?=
+ =?utf-8?Q?35vi6WIKGHoKXKgzeWE6m44j78V6eBtf?=
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2f889dec-217a-4a10-8a66-08da0d4ed9f4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Mar 2022 04:29:14.0232 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Z/1Rv9IthQBQs7KaG6Iogfv5CqDTUC9+89nWNVpAi4Q5pxn7r2Uj9PMpQ+HYo8GcOwzFyYzKtMEpL03yWt2mbw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR11MB1845
+X-OriginatorOrg: intel.com
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Chaitanya Kulkarni <chaitanyak@nvidia.com>,
  "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
@@ -124,166 +201,38 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Mar 24, 2022 at 11:15 AM Tian, Kevin <kevin.tian@intel.com> wrote:
->
-> > From: Jason Wang <jasowang@redhat.com>
-> > Sent: Thursday, March 24, 2022 10:57 AM
-> >
-> > On Thu, Mar 24, 2022 at 10:42 AM Tian, Kevin <kevin.tian@intel.com> wrote:
+> From: Jason Wang <jasowang@redhat.com>
+> Sent: Thursday, March 24, 2022 11:51 AM
+> 
 > > >
-> > > > From: Jason Wang <jasowang@redhat.com>
-> > > > Sent: Thursday, March 24, 2022 10:28 AM
-> > > >
-> > > > On Thu, Mar 24, 2022 at 10:12 AM Tian, Kevin <kevin.tian@intel.com>
-> > wrote:
-> > > > >
-> > > > > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > > > > Sent: Wednesday, March 23, 2022 12:15 AM
-> > > > > >
-> > > > > > On Tue, Mar 22, 2022 at 09:29:23AM -0600, Alex Williamson wrote:
-> > > > > >
-> > > > > > > I'm still picking my way through the series, but the later compat
-> > > > > > > interface doesn't mention this difference as an outstanding issue.
-> > > > > > > Doesn't this difference need to be accounted in how libvirt manages
-> > VM
-> > > > > > > resource limits?
-> > > > > >
-> > > > > > AFACIT, no, but it should be checked.
-> > > > > >
-> > > > > > > AIUI libvirt uses some form of prlimit(2) to set process locked
-> > > > > > > memory limits.
-> > > > > >
-> > > > > > Yes, and ulimit does work fully. prlimit adjusts the value:
-> > > > > >
-> > > > > > int do_prlimit(struct task_struct *tsk, unsigned int resource,
-> > > > > >               struct rlimit *new_rlim, struct rlimit *old_rlim)
-> > > > > > {
-> > > > > >       rlim = tsk->signal->rlim + resource;
-> > > > > > [..]
-> > > > > >               if (new_rlim)
-> > > > > >                       *rlim = *new_rlim;
-> > > > > >
-> > > > > > Which vfio reads back here:
-> > > > > >
-> > > > > > drivers/vfio/vfio_iommu_type1.c:        unsigned long pfn, limit =
-> > > > > > rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
-> > > > > > drivers/vfio/vfio_iommu_type1.c:        unsigned long limit =
-> > > > > > rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
-> > > > > >
-> > > > > > And iommufd does the same read back:
-> > > > > >
-> > > > > >       lock_limit =
-> > > > > >               task_rlimit(pages->source_task, RLIMIT_MEMLOCK) >>
-> > > > > > PAGE_SHIFT;
-> > > > > >       npages = pages->npinned - pages->last_npinned;
-> > > > > >       do {
-> > > > > >               cur_pages = atomic_long_read(&pages->source_user-
-> > > > > > >locked_vm);
-> > > > > >               new_pages = cur_pages + npages;
-> > > > > >               if (new_pages > lock_limit)
-> > > > > >                       return -ENOMEM;
-> > > > > >       } while (atomic_long_cmpxchg(&pages->source_user->locked_vm,
-> > > > > > cur_pages,
-> > > > > >                                    new_pages) != cur_pages);
-> > > > > >
-> > > > > > So it does work essentially the same.
-> > > > > >
-> > > > > > The difference is more subtle, iouring/etc puts the charge in the user
-> > > > > > so it is additive with things like iouring and additively spans all
-> > > > > > the users processes.
-> > > > > >
-> > > > > > However vfio is accounting only per-process and only for itself - no
-> > > > > > other subsystem uses locked as the charge variable for DMA pins.
-> > > > > >
-> > > > > > The user visible difference will be that a limit X that worked with
-> > > > > > VFIO may start to fail after a kernel upgrade as the charge accounting
-> > > > > > is now cross user and additive with things like iommufd.
-> > > > > >
-> > > > > > This whole area is a bit peculiar (eg mlock itself works differently),
-> > > > > > IMHO, but with most of the places doing pins voting to use
-> > > > > > user->locked_vm as the charge it seems the right path in today's
-> > > > > > kernel.
-> > > > > >
-> > > > > > Ceratinly having qemu concurrently using three different subsystems
-> > > > > > (vfio, rdma, iouring) issuing FOLL_LONGTERM and all accounting for
-> > > > > > RLIMIT_MEMLOCK differently cannot be sane or correct.
-> > > > > >
-> > > > > > I plan to fix RDMA like this as well so at least we can have
-> > > > > > consistency within qemu.
-> > > > > >
-> > > > >
-> > > > > I have an impression that iommufd and vfio type1 must use
-> > > > > the same accounting scheme given the management stack
-> > > > > has no insight into qemu on which one is actually used thus
-> > > > > cannot adapt to the subtle difference in between. in this
-> > > > > regard either we start fixing vfio type1 to use user->locked_vm
-> > > > > now or have iommufd follow vfio type1 for upward compatibility
-> > > > > and then change them together at a later point.
-> > > > >
-> > > > > I prefer to the former as IMHO I don't know when will be a later
-> > > > > point w/o certain kernel changes to actually break the userspace
-> > > > > policy built on a wrong accounting scheme...
-> > > >
-> > > > I wonder if the kernel is the right place to do this. We have new uAPI
-> > >
-> > > I didn't get this. This thread is about that VFIO uses a wrong accounting
-> > > scheme and then the discussion is about the impact of fixing it to the
-> > > userspace.
 > >
-> > It's probably too late to fix the kernel considering it may break the userspace.
-> >
-> > > I didn't see the question on the right place part.
-> >
-> > I meant it would be easier to let userspace know the difference than
-> > trying to fix or workaround in the kernel.
->
-> Jason already plans to fix RDMA which will also leads to user-aware
-> impact when Qemu uses both VFIO and RDMA. Why is VFIO so special
-> and left behind to carry the legacy misdesign?
+> > In the end vfio type1 will be replaced by iommufd compat layer. With
+> > that goal in mind iommufd has to inherit type1 behaviors.
+> 
+> So the compatibility should be provided by the compat layer instead of
+> the core iommufd.
+> 
+> And I wonder what happens if iommufd is used by other subsystems like
+> vDPA. Does it mean vDPA needs to inherit type1 behaviours? If yes, do
+> we need a per subsystem new uAPI to expose this capability? If yes,
+> why can't VFIO have such an API then we don't even need the compat
+> layer at all?
+> 
 
-It's simply because we don't want to break existing userspace. [1]
+No, compat layer is just for vfio. other subsystems including vdpa is
+expected to use iommu uAPI directly, except having their own
+bind_iommufd and attach_ioas uAPIs to build the connection between
+device and iommufd/ioas.
 
->
-> >
-> > >
-> > > > so management layer can know the difference of the accounting in
-> > > > advance by
-> > > >
-> > > > -device vfio-pci,iommufd=on
-> > > >
-> > >
-> > > I suppose iommufd will be used once Qemu supports it, as long as
-> > > the compatibility opens that Jason/Alex discussed in another thread
-> > > are well addressed. It is not necessarily to be a control knob exposed
-> > > to the caller.
-> >
-> > It has a lot of implications if we do this, it means iommufd needs to
-> > inherit all the userspace noticeable behaviour as well as the "bugs"
-> > of VFIO.
-> >
-> > We know it's easier to find the difference than saying no difference.
-> >
->
-> In the end vfio type1 will be replaced by iommufd compat layer. With
-> that goal in mind iommufd has to inherit type1 behaviors.
+And having a compat layer for vfio is just for transition purpose. Yi has
+demonstrated how vfio can follow what other subsystems are
+expected to do here:
 
-So the compatibility should be provided by the compat layer instead of
-the core iommufd.
-
-And I wonder what happens if iommufd is used by other subsystems like
-vDPA. Does it mean vDPA needs to inherit type1 behaviours? If yes, do
-we need a per subsystem new uAPI to expose this capability? If yes,
-why can't VFIO have such an API then we don't even need the compat
-layer at all?
+https://github.com/luxis1999/iommufd/commits/iommufd-v5.17-rc6
+(specifically commits related to "cover-letter: Adapting vfio-pci to iommufd")
 
 Thanks
-
-[1] https://lkml.org/lkml/2012/12/23/75
-
->
-> Thanks
-> Kevin
-
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
