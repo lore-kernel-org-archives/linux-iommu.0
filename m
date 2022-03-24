@@ -1,135 +1,80 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1724AC433F5
-	for <iommu@archiver.kernel.org>; Thu, 24 Mar 2022 00:33:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C87DFC433EF
+	for <iommu@archiver.kernel.org>; Thu, 24 Mar 2022 00:55:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9FD81613BB;
-	Thu, 24 Mar 2022 00:33:52 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 67C5784A2A;
+	Thu, 24 Mar 2022 00:55:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RTn-Wpw8_Nzg; Thu, 24 Mar 2022 00:33:51 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Uu93Lmt0L5FY; Thu, 24 Mar 2022 00:55:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 49BC260784;
-	Thu, 24 Mar 2022 00:33:51 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 2BB1B84A1E;
+	Thu, 24 Mar 2022 00:55:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1E887C0012;
-	Thu, 24 Mar 2022 00:33:51 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 98557C000B
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 00:33:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F3B7CC0012;
+	Thu, 24 Mar 2022 00:55:40 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 381D3C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 00:55:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 78A31613BB
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 00:33:49 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 194EC418E8
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 00:55:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6Kh6KMyHCrq4 for <iommu@lists.linux-foundation.org>;
- Thu, 24 Mar 2022 00:33:48 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam11on20628.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7eaa::628])
- by smtp3.osuosl.org (Postfix) with ESMTPS id EDFE160784
- for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 00:33:47 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nTjaM64RyN8TanDNCYybRRqhiPp8YB7+5ABIorhDsP5JB+cvuTRQ5ggr9yDaxA+CUT9FKt11Zgg4hqQVfCIDmYQRzJYptbm24d1v+e3l2pKvP2bMuzMaOA0hcWp5K0NRr3bwnmh7YC1A81BMPJJ891+JzCvwT6BSpGEJENCQA82Z/6F5GzSHTUjyLE5vIKkb5RUgtwvtfzMgwv8fB4mGRb26p8Vm8RCa8636mzRUatboQEaiImZfYk9C5z6CObluqlKynDNGA93ILgqCcokjaiH/hfzz0bkEFklW1xiV2+F6RdNn1ZY58CPjH3btN4MYVgyKkp/sXKIMHbB+XUJfqA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gTvv8Ft76zbg6Ek+SGWbAEMX593J51FgfzosdomK6vU=;
- b=F8ggEO2EUKWqjccKBphbT7W+7MQ2GHwh0XRlK6ysjU2/CqRMY1/eD3nJVPTiISWqrDf12VrV5Suu6hikym7SG+kHmnI5eV4siJMKkb+XXKphZLKQYMgro4fr+9aACGxjjZh3rttpnEDnrLGN7Ig8OJt+tbFslsufTrrDI3ktJGTD9dxfGLjdQQfXev8kxr31Ng6l6sC+p3yE9hnjZycO/DIM4exbITmc1bC5q7kpvugnz9oA/div1S1HojYXP5vs6YQRykn+jhCvuClRaV+wvdk3LWqNvfEhAiotyWAT7qPXLwYhPUl+dj4iYuEiYdLqplCcY85YF+JtptRNjhGlCA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gTvv8Ft76zbg6Ek+SGWbAEMX593J51FgfzosdomK6vU=;
- b=gie+lEUuCVtLfbMz90X+dDVgiBIOh/74nBtQBoNQYHxur6BMReFHTLArgavm0XjJ4nwSYS5CbTzl/dJzDX77oVJgWnFuIlx3Yo5eeLYK6hZ39tadKpq4Zx7J5G1lYvlZfL229B6qsNeBwrJGkIUMlAefYPViJox4Lg4CMuY8tbP3G2G2eQmk351mt7QSEzMvC5V+9eWcU0tTeTS41ivnA4fXknUDFEmcqxVtOlOHQmAJa1qME0eKXblpsYGB+oVSWWD/60erxF9hk9lyDXs2KPyzYNOE9qZ7Jp4fU453PNmCgrmEPuHgZqwMDUYs6CGEYQHjMpYIKkMpm9ERhlpLQw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by DM6PR12MB4762.namprd12.prod.outlook.com (2603:10b6:5:7b::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Thu, 24 Mar
- 2022 00:33:44 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::11a0:970a:4c24:c70c]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::11a0:970a:4c24:c70c%6]) with mapi id 15.20.5102.017; Thu, 24 Mar 2022
- 00:33:44 +0000
-Date: Wed, 23 Mar 2022 21:33:42 -0300
-To: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH RFC 11/12] iommufd: vfio container FD ioctl compatibility
-Message-ID: <20220324003342.GV11336@nvidia.com>
-References: <0-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
- <11-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
- <20220323165125.5efd5976.alex.williamson@redhat.com>
-Content-Disposition: inline
-In-Reply-To: <20220323165125.5efd5976.alex.williamson@redhat.com>
-X-ClientProxiedBy: MN2PR01CA0020.prod.exchangelabs.com (2603:10b6:208:10c::33)
- To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id XL7ZS9zsWB3t for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Mar 2022 00:55:39 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 55DD341716
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 00:55:39 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id 3A88961912
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 00:55:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34D03C340F3
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Mar 2022 00:55:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1648083337;
+ bh=Y0on+fjdMzikugBt55YCOFCiUxO2vyhhnfZ1+tZj3dM=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=YbgA8cNEkOuzUPh9PdBF+YfFt1LYibT6+Ty2RvBN2xiDZ0J6uoPuExioJsIUlM2Xi
+ btPcoPpxpLU2vae+NgcGO1sV9/N3pfb2xN09MVKaFYsFj2ir5u+yPQmdc931mP8BWc
+ dUfLnsULyuPzjQ6nUjE8CHOEj454uePbpUDn0NTx9GhTuaG8yim7zIn58nuphAGmVU
+ cTIk5H5Nmk0WlBiB+llVc1EjCRUEd1eKMdb0Q/OpWdJLtKa/rjetOQo6Oypuro9i8Z
+ 4QZGYUOv7yvfB+bQvCBVn/1J8PGE63EC/kPAfT0Q36k9uihQUQkEib8L7eObwu9qqP
+ nmua1yTbwzAiQ==
+Received: by mail-ed1-f42.google.com with SMTP id u26so3812403eda.12
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Mar 2022 17:55:37 -0700 (PDT)
+X-Gm-Message-State: AOAM532ImicTx2Qma408QswD7VdVV/ebdzKIAPPgNSqM0bWQTLaaadtL
+ gB0q61KriK/vd8OqqF8Obyg1u25TPjp8rh/4sw==
+X-Google-Smtp-Source: ABdhPJx1W8QOEZ5hwqRlDF/QFZDT+YJ7hcxbg7cfyRwDqZy6yyOAfpfXWiF/SIW30v36rh26i+KiOFb4/HbLsjBblEc=
+X-Received: by 2002:a05:6402:686:b0:418:edaa:9cbc with SMTP id
+ f6-20020a056402068600b00418edaa9cbcmr3676164edy.67.1648083335299; Wed, 23 Mar
+ 2022 17:55:35 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b3e88ebb-4cb7-4e26-a257-08da0d2df3d7
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4762:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB476295CB65609C78512DCDA6C2199@DM6PR12MB4762.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BSScVDpbgNy0trT9bABQtZeVC3GUyFvl1v/ZZ/k5ydnrkq88G0EuyO9Vpw8eBn/Iyuwyfv/gDzJDSqvSvUMECwlbJ80qxpiesl9VyC0TMhs69SXI0WTtrVvi1Cm6ZoqPoPrkr1xatxqR1NLG0I/I5dSlTFrScBXGGZIeec6IcA3STYoqORwb4jyBPwqACehpU4tS56sx5q2NKkRrEEqp9+baolBWqWAR0t5UYVgg/vG++Qmomvd/wZgWZQXsvZvLp0QxbSEl66viN6uNx6lT8SWeRvtCkUh7lke/iizXmZYBBA31ZAf24TyzUZSL6Yzyz2GBoASF5eIAovXebcme9Clt3Qu4Jg/SW7aDLOxfz9qIro+p2/lKtK0fwkA/CzQTNcljtWoYcAb9KnRuELnelgv0C1FhrqzgIuV9C8hbYDL6bMs8pS135XHIba0mnvbH+P8hvHStioFMdQsq/+birNk6/qVZnAjwmX6tlWMrL+ijZapeV/g+Ex5Ujq00/SWj2NaNddfOvKsxPvLqwmIEMTfrebMdVs1bsi0V7OeHWLoWp0dSSw1AgCX2MG7sPg5JUTksAqN63Hj+tnSEpBoH5gse1M8MWDEDPaUHRLm1ckIqN+i4TXV5rOBPnyynRWhkwYwqNWfRsbT6rN26Xt+oVg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(54906003)(66556008)(6916009)(66476007)(66946007)(2616005)(26005)(186003)(36756003)(4326008)(8676002)(316002)(1076003)(6506007)(6512007)(33656002)(86362001)(6486002)(508600001)(2906002)(83380400001)(38100700002)(5660300002)(7416002)(8936002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bz9YUfmaU5ZGeYl/Wki/MrIr2ykHl03H9KrgQjZFb3svAYs7WbiBxXeCF84W?=
- =?us-ascii?Q?CrusJqWtdH3x4gMUsj4mEIfsXJjmj56hPNs2c7HnVe72sETj3wBJ2wkMtOHU?=
- =?us-ascii?Q?VvIkMlyDzUDtOxnxfmVFLSctiv3ZfxU6C3Mkl+9g90BNYIlVaTJyZIvx7wuL?=
- =?us-ascii?Q?SjqZo+DxApXyRN31lVkDsQJ9IXcIYDcFnyPKL+L91mtqlMG7nuZd1BjzpuKM?=
- =?us-ascii?Q?WxG2IVAaj+UbO8Zj8bEDnvTILjSStb12pwludTKuB45nO2m918yqiyfMQLtH?=
- =?us-ascii?Q?BgvRl0nzaxjNWSnE3EVb3J+YkrGRXe8FCOnkVDivhvoRVqBUTw5lmWSsJCVq?=
- =?us-ascii?Q?qFdeDPrXwaQ4smTm+rMfYY2L10aG/wm9LnAUGMjBYwuPo2AvI/pR/hv80ElW?=
- =?us-ascii?Q?4YmMEKA0xSqv2068rRm6DQ04UDNQHXHe4EHi7eQWD9QAaUxf7+qvHQKweCRu?=
- =?us-ascii?Q?8UsAzmleTK1OIH/kFp0Laduvf6mGLsVcik8ZOCvssNBAQHE7Us1OKxPcEqnc?=
- =?us-ascii?Q?Ceoh3iaGVYzP6wceuysBE74CwxxrFLQQ8q35MnbeIaENLOzYnS6teWEL3z3n?=
- =?us-ascii?Q?Jp9PWOjqFHBlQ9myncHytnBiGxYORqWZpYDPOoWCfWDcVjxZzjOLB3zdCSMn?=
- =?us-ascii?Q?vawCQOzKYPFxOldYFtKx3DlQqBKTdpYv+iJas18BYBOIuBo8uRD/9CClMdWH?=
- =?us-ascii?Q?lVPfwMmRxnSksjrqCIGrfHlBq9ggABlXqa1+J5ZryN//6bEM1RdwlMC/02IX?=
- =?us-ascii?Q?rv7y+wemK57fA0oxbO4RrOndNjriZTvx8BptmMzVVhFSzChej+VpB+y9EHpE?=
- =?us-ascii?Q?vbvNY8hextNMsL6XDV5ldlaUChNSlGJVtrNkn+bcCQYSDaoVSl2T2ZobpxOe?=
- =?us-ascii?Q?RV5JcNR59/ngshIAniS8kng6WVddpeb1wql9DZen7jyGr0/I4FQWmVC8kNUF?=
- =?us-ascii?Q?63QPta8Q39N4M3+zggznjbTCQa+2aaJQHgWZZ8t7auFEz4IcCGBIyzugiI1C?=
- =?us-ascii?Q?tlyeg3SKzPpdUjwTQ845UtknXPTXuZAJtji6uTonUGC3rpVgvS9sI19NbT47?=
- =?us-ascii?Q?baPZHHl+Au8Yac/SIe8j6H0gsRnt5rj2wm5f+8yuk8a35rbWIwm8yPrTMqj9?=
- =?us-ascii?Q?oIxZyWYiY9tTZQHzrzLHAXRH8f7rt0WhvITB8zmzXBQmf9Zm5ZqUW1PpzKah?=
- =?us-ascii?Q?kUZLteSYtwbUk6CHP7EsN/SQKjYs1QbaA2NDQN5lrXrJNvjxpLXMKXb7GuYu?=
- =?us-ascii?Q?kFDKNvWp0d+Vqb9hrg1HCsGueFFhk6OgP31O+jGIQdctLoCCytTJBBrNhVbq?=
- =?us-ascii?Q?1uqI+DJ68JiGdvAcDF0SreQWZPQtZ+s2hvKpMO6SfrEHSGuigC3M0FoxY+xc?=
- =?us-ascii?Q?3AxM8wdcI2/bjOr0NIHvXBoX0kLk+aH7iMvKgcqzqQniEMP/Z2hPGKdjVx2k?=
- =?us-ascii?Q?iA4V53gL5RVIX63EQsQQDPFSGeO7rwBg?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b3e88ebb-4cb7-4e26-a257-08da0d2df3d7
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2022 00:33:44.3593 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CJ0RdnMv5LUIz4/Z9Vp+nYKmMkTH833C43Blb3EiRlEdSJ9Qes1K4+yi02FYYHPR
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4762
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
- "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
- Kevin Tian <kevin.tian@intel.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
- iommu@lists.linux-foundation.org, Joao Martins <joao.m.martins@oracle.com>,
- David Gibson <david@gibson.dropbear.id.au>
+References: <65657c5370fa0161739ba094ea948afdfa711b8a.1647967875.git.robin.murphy@arm.com>
+ <874k3pxalr.wl-maz@kernel.org> <Yjub51Ct3esuNA9B@xps13.dannf>
+In-Reply-To: <Yjub51Ct3esuNA9B@xps13.dannf>
+From: Rob Herring <robh@kernel.org>
+Date: Wed, 23 Mar 2022 19:55:23 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqLFnN46WixKwsuhPswNo8fye4ERhU7_hPdPABi=70p7HA@mail.gmail.com>
+Message-ID: <CAL_JsqLFnN46WixKwsuhPswNo8fye4ERhU7_hPdPABi=70p7HA@mail.gmail.com>
+Subject: Re: [PATCH] iommu/dma: Explicitly sort PCI DMA windows
+To: dann frazier <dann.frazier@canonical.com>
+Cc: Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ PCI <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -142,105 +87,54 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Mar 23, 2022 at 04:51:25PM -0600, Alex Williamson wrote:
+On Wed, Mar 23, 2022 at 5:15 PM dann frazier <dann.frazier@canonical.com> wrote:
+>
+> On Wed, Mar 23, 2022 at 09:49:04AM +0000, Marc Zyngier wrote:
+> > On Tue, 22 Mar 2022 17:27:36 +0000,
+> > Robin Murphy <robin.murphy@arm.com> wrote:
+> > >
+> > > Originally, creating the dma_ranges resource list in pre-sorted fashion
+> > > was the simplest and most efficient way to enforce the order required by
+> > > iova_reserve_pci_windows(). However since then at least one PCI host
+> > > driver is now re-sorting the list for its own probe-time processing,
+> > > which doesn't seem entirely unreasonable, so that basic assumption no
+> > > longer holds. Make iommu-dma robust and get the sort order it needs by
+> > > explicitly sorting, which means we can also save the effort at creation
+> > > time and just build the list in whatever natural order the DT had.
+> > >
+> > > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> > > ---
+> > >
+> > > Looking at this area off the back of the XGene thread[1] made me realise
+> > > that we need to do it anyway, regardless of whether it might also happen
+> > > to restore the previous XGene behaviour or not. Presumably nobody's
+> > > tried to use pcie-cadence-host behind an IOMMU yet...
+> >
+> > This definitely restores PCIe functionality on my Mustang (XGene-1).
+> > Hopefully dann can comment on whether this addresses his own issue, as
+> > his firmware is significantly different.
+>
+> Robin, Marc,
+>
+> Adding just this patch on top of v5.17 (w/ vendor dtb) isn't enough to
+> fix m400 networking:
 
-> My overall question here would be whether we can actually achieve a
-> compatibility interface that has sufficient feature transparency that we
-> can dump vfio code in favor of this interface, or will there be enough
-> niche use cases that we need to keep type1 and vfio containers around
-> through a deprecation process?
+I wouldn't expect it to given both the IB register selection changed
+and the 2nd dma-ranges entry is ignored.
 
-Other than SPAPR, I think we can.
+Can you (and others) try out this branch:
 
-> The locked memory differences for one seem like something that
-> libvirt wouldn't want hidden
+git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git xgene-pci-fix
 
-I'm first interested to have an understanding how this change becomes
-a real problem in practice that requires libvirt to do something
-different for vfio or iommufd. We can discuss in the other thread
+It should maintain the same IB register usage for both cases and
+handle the error in 'dma-ranges'.
 
-If this is the make or break point then I think we can deal with it
-either by going back to what vfio does now or perhaps some other
-friendly compat approach..
-
-> and we have questions regarding support for vaddr hijacking
-
-I'm not sure what vaddr hijacking is? Do you mean
-VFIO_DMA_MAP_FLAG_VADDR ? There is a comment that outlines my plan to
-implement it in a functionally compatible way without the deadlock
-problem. I estimate this as a small project.
-
-> and different ideas how to implement dirty page tracking, 
-
-I don't think this is compatibility. No kernel today triggers qemu to
-use this feature as no kernel supports live migration. No existing
-qemu will trigger this feature with new kernels that support live
-migration v2. Therefore we can adjust qemu's dirty tracking at the
-same time we enable migration v2 in qemu.
-
-With Joao's work we are close to having a solid RFC to come with
-something that can be fully implemented.
-
-Hopefully we can agree to this soon enough that qemu can come with a
-full package of migration v2 support including the dirty tracking
-solution.
-
-> not to mention the missing features that are currently well used,
-> like p2p mappings, coherency tracking, mdev, etc.
-
-I consider these all mandatory things, they won't be left out.
-
-The reason they are not in the RFC is mostly because supporting them
-requires work outside just this iommufd area, and I'd like this series
-to remain self-contained.
-
-I've already got a draft to add DMABUF support to VFIO PCI which
-nicely solves the follow_pfn security problem, we want to do this for
-another reason already. I'm waiting for some testing feedback before
-posting it. Need some help from Daniel make the DMABUF revoke semantic
-him and I have been talking about. In the worst case can copy the
-follow_pfn approach.
-
-Intel no-snoop is simple enough, just needs some Intel cleanup parts.
-
-mdev will come along with the final VFIO integration, all the really
-hard parts are done already. The VFIO integration is a medium sized
-task overall.
-
-So, I'm not ready to give up yet :)
-
-> Where do we focus attention?  Is symlinking device files our proposal
-> to userspace and is that something achievable, or do we want to use
-> this compatibility interface as a means to test the interface and
-> allow userspace to make use of it for transition, if their use cases
-> allow it, perhaps eventually performing the symlink after deprecation
-> and eventual removal of the vfio container and type1 code?  Thanks,
-
-symlinking device files is definitely just a suggested way to expedite
-testing.
-
-Things like qemu that are learning to use iommufd-only features should
-learn to directly open iommufd instead of vfio container to activate
-those features.
-
-Looking long down the road I don't think we want to have type 1 and
-iommufd code forever. So, I would like to make an option to compile
-out vfio container support entirely and have that option arrange for
-iommufd to provide the container device node itself.
-
-I think we can get there pretty quickly, or at least I haven't got
-anything that is scaring me alot (beyond SPAPR of course)
-
-For the dpdk/etcs of the world I think we are already there.
-
-Jason
+Rob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
