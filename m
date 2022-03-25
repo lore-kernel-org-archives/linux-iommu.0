@@ -4,97 +4,76 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8D25CC433F5
-	for <iommu@archiver.kernel.org>; Fri, 25 Mar 2022 20:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 77515C4332F
+	for <iommu@archiver.kernel.org>; Fri, 25 Mar 2022 21:13:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 2881E405D8;
-	Fri, 25 Mar 2022 20:48:12 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 04561408E8;
+	Fri, 25 Mar 2022 21:13:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7-I4RuFit4g6; Fri, 25 Mar 2022 20:48:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 93CDE4013D;
-	Fri, 25 Mar 2022 20:48:10 +0000 (UTC)
+	with ESMTP id EJSM1PODXwlb; Fri, 25 Mar 2022 21:13:27 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 5B4424013D;
+	Fri, 25 Mar 2022 21:13:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4BC85C002C;
-	Fri, 25 Mar 2022 20:48:10 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A8253C0012
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 20:48:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 243BDC001D;
+	Fri, 25 Mar 2022 21:13:27 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A200CC0012
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 21:13:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 889D460B64
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 20:48:08 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 81A9560648
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 21:13:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=linux-foundation.org
+ dkim=pass (2048-bit key) header.d=sipsolutions.net
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id W-wdEG_dNZUe for <iommu@lists.linux-foundation.org>;
- Fri, 25 Mar 2022 20:48:04 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com
- [IPv6:2a00:1450:4864:20::12f])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C4ACD60B2C
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 20:48:03 +0000 (UTC)
-Received: by mail-lf1-x12f.google.com with SMTP id k21so15295184lfe.4
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 13:48:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=linux-foundation.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=qTyIfzc6eWn8tPRbJvu4pItLGCLIkdX7GJakm9zDrl8=;
- b=gm5AHFVvThRrK7sA/BQ6fJ/iDwpQq6O0/7tOPWKWfF0gNOKqop2SvIcH4r/OClE48L
- VFW0eVhGjvjiyVqrrrPg6Q1OkP1qou04a5ugVipBYO9VTlVyEcQ7kokZzVjAoN7pS1Ch
- +u+3DjL5YncJtUcCyN3Ju5WCdBaFHsUNObffo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=qTyIfzc6eWn8tPRbJvu4pItLGCLIkdX7GJakm9zDrl8=;
- b=uMjDGSFK8fSoqqGW3YziwzzdjiRUJnppKBsjNnbeXXJPBBbegh6p90b4yiTl6tSUZg
- riyGceMJGr74xf/YpFT++HkRSsWziVqNewmoJa8FpcpthtJh9VU7iGIg5Whj7z0QROs/
- FkeM08otXvnwfnx4FthM6ZX0Vm0ymeTPvqtF72KAtslm/g2a8u3xUGjuwPrj+xN/AoYj
- a3NtdysQCcVXhjVx4WHsM2pOAhsV6UrUzY4GWMxHyKvOg0vLU8sBA3c84RltN0NVmZ+c
- HAqRcTRJB5t1yPXwhusLAL16HeotM7ICOGlyWE5d6/VrMQ25jrF1tahsTyDFsaoaJbRA
- tH4w==
-X-Gm-Message-State: AOAM533vi+NoQG8MKo/4ozhRKvZsyJ8LGUHDHRQWELaa/NPwQvGwJ/O5
- 6xfgiPNjtrw7BPGn4vFoBHkGsmQQIctjvPOlkYLKVQ==
-X-Google-Smtp-Source: ABdhPJyMQBIhFXiPeMFTfOZoHfuNQzU1dvQKV/y26eqiW7QMeRKYPDlmHGN1QUyyBKouk3k/qgPCEg==
-X-Received: by 2002:a05:6512:3b25:b0:44a:108d:cc4c with SMTP id
- f37-20020a0565123b2500b0044a108dcc4cmr9579932lfv.36.1648241281230; 
- Fri, 25 Mar 2022 13:48:01 -0700 (PDT)
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com.
- [209.85.167.54]) by smtp.gmail.com with ESMTPSA id
- i27-20020a0565123e1b00b0044a6cd739b6sm513351lfv.15.2022.03.25.13.47.59
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 25 Mar 2022 13:48:00 -0700 (PDT)
-Received: by mail-lf1-f54.google.com with SMTP id h7so15306692lfl.2
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 13:47:59 -0700 (PDT)
-X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
- y3-20020ac24203000000b004488053d402mr9094484lfh.687.1648241278691; Fri, 25
- Mar 2022 13:47:58 -0700 (PDT)
-MIME-Version: 1.0
+ with ESMTP id zCbYK4ggZPP2 for <iommu@lists.linux-foundation.org>;
+ Fri, 25 Mar 2022 21:13:25 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from sipsolutions.net (s3.sipsolutions.net
+ [IPv6:2a01:4f8:191:4433::2])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A4FBC600C6
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 21:13:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+ Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+ :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+ Resent-Cc:Resent-Message-ID; bh=lbD/A+mPwRg8dZJHLfabQrV74g1iS2RTgXnbR4+XnGY=; 
+ t=1648242805; x=1649452405; b=Ib9JNvmIrbaIq4qyxKnZ9Tkmka/mOeq9EwrctRUr/3VGkEK
+ J7LUg2Py9S/VyTcFA/wF0aQ/Cvj0UZTS6PCiaXsEHS2z04WMDbHCBCju/ieGO/48w+e982A10R/zX
+ eLQVkmMHFP3vMT1jFaV/wwWNfdk0isI/lfsKCzDaStrv+48+efPD3hx+skgIWAAeJogOxJi4X96SY
+ nga/8Td2RNuZ05G7xisTtrW0JigPDQlSZedfh9WYXifrBhC3Ygb490+Tr/beWKqj/KJBwvViyx7X3
+ AtKxNNj0joHKS64Jj6Rdg4/QVEunFT7PvYrfDYMrD1B8hxSYV6a8B7/J8TI5W0qw==;
+Received: by sipsolutions.net with esmtpsa
+ (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+ (Exim 4.95) (envelope-from <johannes@sipsolutions.net>)
+ id 1nXrF7-000VW3-JE; Fri, 25 Mar 2022 22:13:09 +0100
+Message-ID: <e42e4c8bf35b62c671ec20ec6c21a43216e7daa6.camel@sipsolutions.net>
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+From: Johannes Berg <johannes@sipsolutions.net>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Fri, 25 Mar 2022 22:13:08 +0100
+In-Reply-To: <CAHk-=whXAan2ExANMryPSFaBWeyzikPi+fPUseMoVhQAxR7cEA@mail.gmail.com>
 References: <1812355.tdWV9SEqCh@natalenko.name>
  <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
  <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
  <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
  <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
- <20220324163132.GB26098@lst.de> <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
- <871qyr9t4e.fsf@toke.dk>
+ <20220324163132.GB26098@lst.de>
+ <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
  <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
  <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
  <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com>
  <298f4f9ccad7c3308d3a1fd8b4b4740571305204.camel@sipsolutions.net>
-In-Reply-To: <298f4f9ccad7c3308d3a1fd8b4b4740571305204.camel@sipsolutions.net>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Fri, 25 Mar 2022 13:47:42 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whXAan2ExANMryPSFaBWeyzikPi+fPUseMoVhQAxR7cEA@mail.gmail.com>
-Message-ID: <CAHk-=whXAan2ExANMryPSFaBWeyzikPi+fPUseMoVhQAxR7cEA@mail.gmail.com>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-To: Johannes Berg <johannes@sipsolutions.net>
-Cc: =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+ <CAHk-=whXAan2ExANMryPSFaBWeyzikPi+fPUseMoVhQAxR7cEA@mail.gmail.com>
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+MIME-Version: 1.0
+X-malware-bazaar: not-scanned
+Cc: Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Netdev <netdev@vger.kernel.org>, Kalle Valo <kvalo@kernel.org>,
  linux-wireless <linux-wireless@vger.kernel.org>,
@@ -122,79 +101,153 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Mar 25, 2022 at 1:38 PM Johannes Berg <johannes@sipsolutions.net> wrote:
->
-> >  (2) The CPU now wants to see any state written by the device since
-> > the last sync
-> >
-> >     This is "dma_sync_single_for_cpu(DMA_FROM_DEVICE)".
-> >
-> >     A bounce-buffer implementation needs to copy *from* the bounce buffer.
-> >
-> >     A cache-coherent implementation needs to do nothing.
-> >
-> >     A non-coherent implementation maybe needs to do nothing (ie it
-> > assumes that previous ops have flushed the cache, and just accessing
-> > the data will bring the rigth thing back into it). Or it could just
-> > flush the cache.
->
-> Doesn't that just need to *invalidate* the cache, rather than *flush*
-> it?
+On Fri, 2022-03-25 at 13:47 -0700, Linus Torvalds wrote:
+> On Fri, Mar 25, 2022 at 1:38 PM Johannes Berg <johannes@sipsolutions.net> wrote:
+> > 
+> > >  (2) The CPU now wants to see any state written by the device since
+> > > the last sync
+> > > 
+> > >     This is "dma_sync_single_for_cpu(DMA_FROM_DEVICE)".
+> > > 
+> > >     A bounce-buffer implementation needs to copy *from* the bounce buffer.
+> > > 
+> > >     A cache-coherent implementation needs to do nothing.
+> > > 
+> > >     A non-coherent implementation maybe needs to do nothing (ie it
+> > > assumes that previous ops have flushed the cache, and just accessing
+> > > the data will bring the rigth thing back into it). Or it could just
+> > > flush the cache.
+> > 
+> > Doesn't that just need to *invalidate* the cache, rather than *flush*
+> > it?
+> 
+> Yes.  I should have been more careful.
 
-Yes.  I should have been more careful.
+Well I see now that you said 'cache "writeback"' in (1), and 'flush' in
+(2), so perhaps you were thinking of the same, and I'm just calling it
+"flush" and "invalidate" respectively?
 
-That said, I think "invalidate without writeback" is a really
-dangerous operation (it can generate some *really* hard to debug
-memory state), so on the whole I think you should always strive to
-just do "flush-and-invalidate".
+> That said, I think "invalidate without writeback" is a really
+> dangerous operation (it can generate some *really* hard to debug
+> memory state), so on the whole I think you should always strive to
+> just do "flush-and-invalidate".
 
-If the core has support for "invalidate clean cache lines only", then
-that's possibly a good alternative.
+Hmm. Yeah, can't really disagree with that.
 
-> >   A non-coherent implementation needs to flush the cache again, bot
-> > not necessarily do a writeback-flush if there is some cheaper form
-> > (assuming it does nothing in the "CPU now wants to see any state" case
-> > because it depends on the data not having been in the caches)
->
-> And similarly here, it would seem that the implementation can't _flush_
-> the cache as the device might be writing concurrently (which it does in
-> fact do in the ath9k case), but it must invalidate the cache?
+However, this seems to be the wrong spot to flush (writeback?) the
+cache, as we're trying to get data from the device, not potentially
+overwrite the data that the device wrote because we have a dirty
+cacheline. Hmm. Then again, how could we possibly have a dirty
+cacheline?
 
-Right, again, when I said "flush" I really should have said "invalidate".
 
-> I'm not sure about the (2) case, but here it seems fairly clear cut that
-> if you have a cache, don't expect the CPU to write to the buffer (as
-> evidenced by DMA_FROM_DEVICE), you wouldn't want to write out the cache
-> to DRAM?
+Which starts to clarify in my mind why we have a sort of (implied)
+ownership model: if the CPU dirties a cacheline while the device has
+ownership then the cache writeback might overwrite the DMA data. So it's
+easier to think of it as "CPU has ownership" and "device has ownership",
+but evidently that simple model breaks down in real-world cases such as
+ath9k where the CPU wants to look, but not write, and the device
+continues doing DMA at the same time.
 
-See above: I'd *really* want to avoid a pure "invalidate cacheline"
-model. The amount of debug issues that can cause is not worth it.
 
-So please flush-and-invalidate, or invalidate-non-dirty, but not just
-"invalidate".
+Now in that case the cache wouldn't be considered dirty either since the
+CPU was just reading, but who knows? Hence the suggestion of just
+invalidate, not flush.
 
-> Then, however, we need to define what happens if you pass
-> DMA_BIDIRECTIONAL to the sync_for_cpu() and sync_for_device() functions,
-> which adds two more cases? Or maybe we eventually just think that's not
-> valid at all, since you have to specify how you're (currently?) using
-> the buffer, which can't be DMA_BIDIRECTIONAL?
+> If the core has support for "invalidate clean cache lines only", then
+> that's possibly a good alternative.
 
-Ugh. Do we actually have cases that do it? That sounds really odd for
-a "sync" operation. It sounds very reasonable for _allocating_ DMA,
-but for syncing I'm left scratching my head what the semantics would
-be.
+Well if you actually did dirty the cacheline, then you have a bug one
+way or the other, and it's going to be really hard to debug - either you
+lose the CPU write, or you lose the device write, there's no way you're
+not losing one of them?
 
-But yes, if we do and people come up with semantics for it, those
-semantics should be clearly documented.
 
-And if we don't - or people can't come up with semantics for it - we
-should actively warn about it and not have some code that does odd
-things that we don't know what they mean.
+ath9k doesn't write, of course, so hopefully the core wouldn't write
+back what it must think of as clean cachelines, even if the device
+modified the memory underneath already.
 
-But it sounds like you agree with my analysis, just not with some of
-my bad/incorrect word choices.
 
-            Linus
+So really while I agree with your semantics, I was previously privately
+suggesting to Toke we should probably have something like
+
+dma_single_cpu_peek()
+// read buffer and check if it was done
+dma_single_cpu_peek_finish()
+
+which really is equivalent to the current
+
+dma_sync_single_for_cpu(DMA_FROM_DEVICE)
+// ...
+dma_sync_single_for_device(DMA_FROM_DEVICE)
+
+that ath9k does, but makes it clearer that you really can't write to the
+buffer... but, water under the bridge, I guess.
+
+Thinking about the ownership model again - it seems that we need to at
+least modify that ownership model in the sense that we have *write*
+ownership that we pass around, not just "ownership". But if we do that,
+then we need to clarify which operations pass write ownership and which
+don't.
+
+So the operations
+(1) dma_sync_single_for_device(DMA_TO_DEVICE)
+(2) dma_sync_single_for_cpu(DMA_FROM_DEVICE)
+(3) dma_sync_single_for_device(DMA_FROM_DEVICE)
+
+really only (1) passes write ownership to the device, but then you can't
+get it back?
+
+But that cannot be true, because ath9k maps the buffer as
+DMA_BIDIRECTIONAL, and then eventually might want to recycle it.
+
+Actually though, perhaps passing write ownership back to the CPU isn't
+an operation that the DMA API needs to worry about - if the CPU has read
+ownership and the driver knows separately that the device is no longer
+accessing it, then basically the CPU already got write ownership, and
+passes that back uses (1)?
+
+
+> > Then, however, we need to define what happens if you pass
+> > DMA_BIDIRECTIONAL to the sync_for_cpu() and sync_for_device() functions,
+> > which adds two more cases? Or maybe we eventually just think that's not
+> > valid at all, since you have to specify how you're (currently?) using
+> > the buffer, which can't be DMA_BIDIRECTIONAL?
+> 
+> Ugh. Do we actually have cases that do it?
+
+Yes, a few.
+
+> That sounds really odd for
+> a "sync" operation. It sounds very reasonable for _allocating_ DMA,
+> but for syncing I'm left scratching my head what the semantics would
+> be.
+
+I agree.
+
+> But yes, if we do and people come up with semantics for it, those
+> semantics should be clearly documented.
+
+I'm not sure? I'm wondering if this isn't just because - like me
+initially - people misunderstood the direction argument, or didn't
+understand it well enough, and then just passed the same value as for
+the map()/unmap()?
+
+You have to pass the size to all of them too, after all ... but I'm
+speculating.
+
+> And if we don't - or people can't come up with semantics for it - we
+> should actively warn about it and not have some code that does odd
+> things that we don't know what they mean.
+
+Makes sense.
+
+> But it sounds like you agree with my analysis, just not with some of
+> my bad/incorrect word choices.
+
+Yes.
+
+johannes
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
