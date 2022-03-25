@@ -1,183 +1,76 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B5844C433F5
-	for <iommu@archiver.kernel.org>; Fri, 25 Mar 2022 11:25:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4E6B9C4332F
+	for <iommu@archiver.kernel.org>; Fri, 25 Mar 2022 11:27:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 5A8A484168;
-	Fri, 25 Mar 2022 11:25:25 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id DDFA341CF6;
+	Fri, 25 Mar 2022 11:27:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NDLzMiJ5TWjS; Fri, 25 Mar 2022 11:25:24 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id w1KaobcP1irA; Fri, 25 Mar 2022 11:27:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 2A7E1843A1;
-	Fri, 25 Mar 2022 11:25:24 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id A6E1741CF8;
+	Fri, 25 Mar 2022 11:27:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E74FFC001D;
-	Fri, 25 Mar 2022 11:25:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 733C6C001D;
+	Fri, 25 Mar 2022 11:27:51 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 654C8C0012
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 11:25:22 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1D9AFC0012
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 11:27:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 3FA0841CF8
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 11:25:22 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0CFD341CF8
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 11:27:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=oracle.com header.b="ZH1qYHQs";
- dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
- header.b="M5UzGxP0"
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CD16XXr15IAO for <iommu@lists.linux-foundation.org>;
- Fri, 25 Mar 2022 11:25:20 +0000 (UTC)
+ with ESMTP id 3uibSElQxbym for <iommu@lists.linux-foundation.org>;
+ Fri, 25 Mar 2022 11:27:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com
- [205.220.177.32])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 555ED41CF6
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 11:25:20 +0000 (UTC)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
- by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22P7WHgF010788; 
- Fri, 25 Mar 2022 11:24:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=jKlTTwhrD05StucjmQBrdRJbm7x/VgJkSTD2VparJps=;
- b=ZH1qYHQs2NtSoy3hevPG3rc5GwGN29QenpB7yC+toLTWVY3GstBs7y4wXML1xgcwbJ1Y
- WKuJzLbxIMANG4D/wIK6qlzPs1pRj70qltzzpN+duLLm/A2ZhWpOyOxlYzNCb5Ir1Bya
- zNCo/RzNjDqx05YL+XrigdOxdPuL7wjgwdl1I4tsv9uXuQDLh35CyjmCruhg0/gSMmJ2
- 9pfR7LJSM55foMRIKHQYaW0fPMysev3ebJ7HKDXvst5Zv5pY1zxfEkptP3l1xw4etCrH
- b5TIlrC70vsrgX9VFd53AQBmSGWkgSkJ6LflkZ3OLwXIKSO+X8Sw1gGdtuj+gBdpKqx9 EQ== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
- by mx0b-00069f02.pphosted.com with ESMTP id 3ew6ssey8n-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Fri, 25 Mar 2022 11:24:58 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
- by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22PBO0dB179732;
- Fri, 25 Mar 2022 11:24:57 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com
- (mail-mw2nam12lp2042.outbound.protection.outlook.com [104.47.66.42])
- by userp3020.oracle.com with ESMTP id 3exawjgpfh-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Fri, 25 Mar 2022 11:24:56 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hOfkhtwXwDCZX0Igsft9PCHaXSfINyY1V21X+4xEQiH+GEltPcN6jOK8YrKr3hdNWYTHs6bzpwnPTfvHxWwMeBLQ37bTfKZKtjoWG8VhcZrUZ2XFkzzOWNXp380Lgy2Dhu8aQh9XFW5/QqmVg+ZSosuOHrqccAdJHsrrUMpH4o0xEosxOiVryqCgaDGPj/b66HRpUNXIzrH0AMLDFbSEUu6wcm0EJ4Jn0PGu6adDZAbVvmrDM11HZW3Z5q8DZmE68dPORJMDZYkUKRtxWgcJXRea6ViK3ywf/wMcAY/jEBP2Y6NsLebixVEOaGAEMBBDxceFW8WgugqFU9Hnq5bdxg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jKlTTwhrD05StucjmQBrdRJbm7x/VgJkSTD2VparJps=;
- b=aemhH/vgY8MUe/E41hh/UxP/qBNtHUeHj7aAOVcwKwZKeNBluR4gBoqCHew8pvi49dWn9GIGQh4TRZwoh6D0YBsIKfrPu7r7DkOqrXoC/MKIzs80UjcsdtIxWU0Nm+y2Gs56T7FL83sJYP/5rQdJBKOVzB1tzg+m0wLaex4NEuIWA9syJKOQwRe1XR8TVwtx+6ZYwBSGd4YYnBFxCRisSPRrtnWzKnbDP8E7Mvb+IV0VHNcFl00lTO/YoHe0Pmz1wfHFzPKyCHdxkGbq83r2phong2eUlNNAVI+7Q/jhR3SLGFVasBlpdCKtzpiWeSKKEgpqWEP/msX4/kzONxWwdw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jKlTTwhrD05StucjmQBrdRJbm7x/VgJkSTD2VparJps=;
- b=M5UzGxP0gnnt1ZUbFwKFClrbEl4WusoESnksKg9XXpFml3eatWTFZY6vfAmY+8KryeXA3sabTfgXCTF5PYUyykcn59V1rygKQRKzgJfamO7W54sh4zhDDVjKNBmcbqIb601dJWmdSqVaiMt3emh/U1tTnTcdNRLVUzJWaQIgsKc=
-Received: from BLAPR10MB4835.namprd10.prod.outlook.com (2603:10b6:208:331::11)
- by BYAPR10MB3654.namprd10.prod.outlook.com (2603:10b6:a03:123::17)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Fri, 25 Mar
- 2022 11:24:53 +0000
-Received: from BLAPR10MB4835.namprd10.prod.outlook.com
- ([fe80::694b:b7c8:a322:febe]) by BLAPR10MB4835.namprd10.prod.outlook.com
- ([fe80::694b:b7c8:a322:febe%5]) with mapi id 15.20.5102.019; Fri, 25 Mar 2022
- 11:24:53 +0000
-Message-ID: <a222ce0f-8be2-10e4-6856-7d58d45a3082@oracle.com>
-Date: Fri, 25 Mar 2022 11:24:40 +0000
-Subject: Re: [PATCH RFC 11/12] iommufd: vfio container FD ioctl compatibility
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>
-References: <0-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
- <11-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
- <20220323165125.5efd5976.alex.williamson@redhat.com>
- <20220324003342.GV11336@nvidia.com>
- <20220324160403.42131028.alex.williamson@redhat.com>
- <20220324231159.GA11336@nvidia.com>
-From: Joao Martins <joao.m.martins@oracle.com>
-In-Reply-To: <20220324231159.GA11336@nvidia.com>
-X-ClientProxiedBy: LO2P265CA0252.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:8a::24) To BLAPR10MB4835.namprd10.prod.outlook.com
- (2603:10b6:208:331::11)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 1EFE941CF6
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 11:27:48 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1EEFB12FC;
+ Fri, 25 Mar 2022 04:27:48 -0700 (PDT)
+Received: from [10.57.41.19] (unknown [10.57.41.19])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5B7E03F73B;
+ Fri, 25 Mar 2022 04:27:45 -0700 (PDT)
+Message-ID: <cce202fb-5185-aa3e-9e9b-11626192cb49@arm.com>
+Date: Fri, 25 Mar 2022 11:27:41 +0000
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 624e037e-de48-4830-596a-08da0e521561
-X-MS-TrafficTypeDiagnostic: BYAPR10MB3654:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR10MB3654F8D17A9D282491FCBB86BB1A9@BYAPR10MB3654.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uWUaR30s/+/FCslo0/sdzq1G9prFrN3qKz/w+NLxjLnOKIc7fyfcayrWxNsaL2cL2vgk1QM+T7PEqBWDEl7f/ynhKlflgrli/3Hw4TaP78KzJSR0NJMyzkoHHQM0c74fz2VWpHlh3p3v2asy702P0XudfpUDmHizKvVjivNoIwotBjAK5DG9mmQovXNYV5iT5XWsx5Z6BnjWXBzsRUXfIRkJ2t3C2YvdgL5TPmvSC4BUBbKk7B2IUbEbAngz0I7vnxkS8/VwCgwAS4kkULa3D2TTJVqTOJ4BOL2a/8BRSwNB6hz4pkNU66wxfq4C+XA2ZXDLZ7Dlm5DxSFGi0itKd3/ACuvu0EnDxRSB3/R+e8qlS4om/cSQFTqDA8O10rEk3D0Swk8MdAbw45bNr0Xy8VzaiZnuMnY8EtjSC787FlBV+iedy4JJ5Iz7fL31Thq/0PS596FIgFYjQzrm4C0NEp8a0Y1HRouf29g+XixMBTpNJrj9NcRnc6WJz3FdD8rCv8Bxf9yFbVpebw9dtVWhI1Qwr1HMwJbb35CCJakAHw9RJWKCr3FitcqQ51s1vmbuvS1DDd950x8eu/4KeOhZZ61J95k9Pqkp3a4jyD3IaImTwJjIkBUy1CMNiZRHFF6hAle6l5KKwXBo7GtnyKnb54eg4Pw+8bSArlH7zh6jN70mPYyJ6RRP9U03q/n0zF6dbTdepbKdMYefUwyT9NX03g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BLAPR10MB4835.namprd10.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(366004)(508600001)(6486002)(36756003)(54906003)(186003)(6506007)(316002)(6666004)(6512007)(2906002)(66476007)(2616005)(83380400001)(5660300002)(8676002)(4326008)(66556008)(66946007)(8936002)(7416002)(110136005)(26005)(38100700002)(53546011)(31696002)(86362001)(31686004)(45980500001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Rm15eTVoZHcvczlQckdlT1BGdFhxWk9WRDIvbnZKMkVaNlJuMWtFcWlOYkFt?=
- =?utf-8?B?eUVyM2Z1d2JCcWhQTEhLdUpUZ0xnZU9PTmF2OHJFYVg3dWp4Rmt2MFJUamlM?=
- =?utf-8?B?bEtZSXRtUkhETTJXKzhaOGNMc05kQXFZZlZYeFFFTlNPVE05MHFjYVU3ajFR?=
- =?utf-8?B?aVA1Q1NSbHEzK0dXTXk1QTVLMGZkRjB1VGhOWVlwV2FSczJKVGloT01lR2hu?=
- =?utf-8?B?NStyVzlrc1NiZTBqcm1mNzNVMVZRTnBvNUZmL2tMeUZLLzc1Si9NaDlISnlT?=
- =?utf-8?B?bXp5bjNYYWNiZDdOS3VyZVZpaXJOZU1tL2tnTUpFYVY1ZzFRalNyZjVvbFNr?=
- =?utf-8?B?LzY2UWFibnFOc2xudCtrKzlQZFJqTzcyTnUzR0l0N0UrRTFmRkZxeDRlWGFQ?=
- =?utf-8?B?WDBYdXhtMVAyUWlQeEhWNk1MRlUyMFplWVNYZXRnVmNtT2txZUlTQTEzVkFx?=
- =?utf-8?B?YWF0M0F6RldIbHFuZU1paVZGWFR2SHlUQjhYcnVCeFpJWUxhNkdOcDVtZHp2?=
- =?utf-8?B?VW43MjhNZ2hZU2VvWmh5YnVST1ZOOEc4UGJqUURvb0xscU1IL1NCT21WTXh0?=
- =?utf-8?B?M25uYWZaZzV0bklGL2xkTVM4WUJRQVpYY1Z6WjNXVVFHRGtqNjE1eDVENnJT?=
- =?utf-8?B?MlpxZ0dMeDNvR0srZFZ1QWFhN2kwUGFHY1pIQWVuV3YzRDhvbEl2QjZrcWsy?=
- =?utf-8?B?U1JxK0ZhQUhaVGdTdXllNDhUYkpBaFdiRkgyM0JsTThjWFVuRzcvbW5wVjUx?=
- =?utf-8?B?NldobmpJZzRpQUFJOGwrNHRTTkJyNFFWNWRPVUwwSWxSQy9kN3NRVDZYWXZ4?=
- =?utf-8?B?dldodERISkxqU3g5dFR2amJJMjh6VTFZazVyL1RmTWV2Yis5WGpvdnFMNkZr?=
- =?utf-8?B?U1cwS1B4TTR3VWhMWlRnQjNVUUVMV1FscnlCc21VUWZ6L2NGd3ZPay9OSVBB?=
- =?utf-8?B?T1BoWVNaVi80dm5LUDdjTG9CRXdqdlEzdkh0dFZJMXZvVG5INU5BQzM0WXpm?=
- =?utf-8?B?bXo1REJtMUI1TGZtTDUzQlByYVYraWpnUGdwbm9VQUtPSUM0STBZZ3RtTWVw?=
- =?utf-8?B?L05NTW1rOXhlaWsyclRuaGk1NUZEc1Y0aVkrV2hlWHZERkhtSkwvR2xvbWxm?=
- =?utf-8?B?RmRKek9YRHp2aWQwTkNLbGwrcDZvcHVueFVaRmZSckIyV3RORy9qM0tNS0tZ?=
- =?utf-8?B?UEkxWW1MdnNjdFhHbTNYcy9LSzVXTWtDcm95QnNGTjJRSFp6UEpIM0hHQkZW?=
- =?utf-8?B?RXJ3WUF2R1RyekprZXJXRnJCcmFoRjBqeGlHUXJpb001NzhwYU91UXdlWWlL?=
- =?utf-8?B?WGtWbHJtdHJsQlpXSlMwc2U1SnROcW1zdE5jM2d3c0RDYUpPZ20xQTA4bkVC?=
- =?utf-8?B?d214WFlxb3BJWDJtbWs3SkprS2pnQ200VzFrUEFINFJCMkREMzZjMU5oK1ln?=
- =?utf-8?B?dXhNTFdTc1NzTCtsYmRUYzExeUhJcnplYXpURFFiQ0pxb2hvV0RxelVadDZv?=
- =?utf-8?B?bi9FZGFmU05RWFAzSHdmNGsxZUhWSFdmRDQ5VW9pdEtNNHk5M1dEZWdTUThw?=
- =?utf-8?B?UGlpNzgyYWY4aTJoSCtlSEdHMVlha0U3NCtmTm10dFFrME95TU1hR25sU05x?=
- =?utf-8?B?TWF1RTFRQS8vWEVTaGxNM1RDUExjbE9SL2Y1NHlyRlo5ZXo5VmF2WmdncHhL?=
- =?utf-8?B?dTZBSTkwRnpXdlc0ZS9rMmZCRHRybWxYb1ZSbjltRnBMam5GbUE4T3E0WTZQ?=
- =?utf-8?B?M1pwTUY5T2s3UUtSU01ZRHFMK1FDSDNhVFk2UU5yakd6WnFNbTJKc2orS0V6?=
- =?utf-8?B?YnArS1Q5OE9NTEhMaGNtNzNlem8rMGQxcFVjdC8vaGtyT0RtNU9sbGJwTUlu?=
- =?utf-8?B?V3lCM0ZORlpYR0lSdGZmdm5qbVJyL0YxSEg2NUQrb1JKWjlIaHUxZWc0ckMr?=
- =?utf-8?B?U09uYk9KK0ZpelBZbUZIUWt0YjBaWldrdHpXSExuUlhPSkpGdkpyZGNnUXJ1?=
- =?utf-8?B?UmVDcGIyUUp3PT0=?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 624e037e-de48-4830-596a-08da0e521561
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB4835.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2022 11:24:53.7810 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: v4Goi3KCOamayP/xaHlgVsSwhoP022Gei7vmSNmrPoXtuDqIFvZG+svFgZscjro17tzGZzK9rXxliWKbL6J/RZ7ltezpMwHtEJT8J157T/0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB3654
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10296
- signatures=694973
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0
- phishscore=0
- mlxlogscore=999 adultscore=0 suspectscore=0 malwarescore=0 spamscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203250064
-X-Proofpoint-ORIG-GUID: mLJzLhq3-sCw5QtC3FLGPhvoXJrdn9jI
-X-Proofpoint-GUID: mLJzLhq3-sCw5QtC3FLGPhvoXJrdn9jI
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
- "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
- Kevin Tian <kevin.tian@intel.com>, Daniel Jordan <daniel.m.jordan@oracle.com>,
- iommu@lists.linux-foundation.org, David Gibson <david@gibson.dropbear.id.au>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+Content-Language: en-GB
+To: mbizon@freebox.fr, Linus Torvalds <torvalds@linux-foundation.org>,
+ =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+ <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+ <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
+ <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
+ <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
+ <20220324163132.GB26098@lst.de>
+ <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
+ <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
+ <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
+Cc: Netdev <netdev@vger.kernel.org>, Kalle Valo <kvalo@kernel.org>,
+ linux-wireless <linux-wireless@vger.kernel.org>,
+ Oleksandr Natalenko <oleksandr@natalenko.name>,
+ stable <stable@vger.kernel.org>, Christoph Hellwig <hch@lst.de>,
+ Halil Pasic <pasic@linux.ibm.com>, iommu <iommu@lists.linux-foundation.org>,
+ Olha Cherevyk <olha.cherevyk@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ "David S. Miller" <davem@davemloft.net>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -190,61 +83,134 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 3/24/22 23:11, Jason Gunthorpe wrote:
-> On Thu, Mar 24, 2022 at 04:04:03PM -0600, Alex Williamson wrote:
->> On Wed, 23 Mar 2022 21:33:42 -0300
->> Jason Gunthorpe <jgg@nvidia.com> wrote:
->>> On Wed, Mar 23, 2022 at 04:51:25PM -0600, Alex Williamson wrote:
->>> I don't think this is compatibility. No kernel today triggers qemu to
->>> use this feature as no kernel supports live migration. No existing
->>> qemu will trigger this feature with new kernels that support live
->>> migration v2. Therefore we can adjust qemu's dirty tracking at the
->>> same time we enable migration v2 in qemu.
+On 2022-03-25 10:25, Maxime Bizon wrote:
+> 
+> On Thu, 2022-03-24 at 12:26 -0700, Linus Torvalds wrote:
+> 
 >>
->> I guess I was assuming that enabling v2 migration in QEMU was dependent
->> on the existing type1 dirty tracking because it's the only means we
->> have to tell QEMU that all memory is perpetually dirty when we have a
->> DMA device.  Is that not correct?
+>> It's actually very natural in that situation to flush the caches from
+>> the CPU side again. And so dma_sync_single_for_device() is a fairly
+>> reasonable thing to do in that situation.
+>>
 > 
-> I haven't looked closely at this part in qemu, but IMHO, if qemu sees
-> that it has VFIO migration support but does not have any DMA dirty
-> tracking capability it should not do precopy flows.
+> In the non-cache-coherent scenario, and assuming dma_map() did an
+> initial cache invalidation, you can write this:
 > 
-> If there is a bug here we should certainly fix it before progressing
-> the v2 patches. I'll ask Yishai & Co to take a look.
+> rx_buffer_complete_1(buf)
+> {
+> 	invalidate_cache(buf, size)
+> 	if (!is_ready(buf))
+> 		return;
+> 	<proceed with receive>
+> }
+> 
+> or
+> 
+> rx_buffer_complete_2(buf)
+> {
+> 	if (!is_ready(buf)) {
+> 		invalidate_cache(buf, size)
+> 		return;
+> 	}
+> 	<proceed with receive>
+> }
+> 
+> The latter is preferred for performance because dma_map() did the
+> initial invalidate.
+> 
+> Of course you could write:
+> 
+> rx_buffer_complete_3(buf)
+> {
+> 	invalidate_cache(buf, size)
+> 	if
+> (!is_ready(buf)) {
+> 		invalidate_cache(buf, size)
+> 		return;
+> 	}
+> 	
+> <proceed with receive>
+> }
+> 
+> 
+> but it's a waste of CPU cycles
+> 
+> So I'd be very cautious assuming sync_for_cpu() and sync_for_device()
+> are both doing invalidation in existing implementation of arch DMA ops,
+> implementers may have taken some liberty around DMA-API to avoid
+> unnecessary cache operation (not to blame them).
 
-I think that's already the case.
+Right, if you have speculatively-prefetching caches, you have to 
+invalidate DMA_FROM_DEVICE in unmap/sync_for_cpu, since a cache may have 
+pulled in a snapshot of partly-written data at any point beforehand. But 
+if you don't, then you can simply invalidate up-front in 
+map/sync_for_device to tie in with the other directions, and trust that 
+it stays that way for the duration.
 
-wrt to VFIO IOMMU type1, kernel always exports a migration capability
-and the page sizes it supports. In the VMM if it matches the page size
-qemu is using (x86 it is PAGE_SIZE) it determines for Qemu it will /use/ vfio
-container ioctls. Which well, I guess it's always if the syscall is
-there considering we dirty every page.
+What muddies the waters a bit is that the opposite combination 
+sync_for_cpu(DMA_TO_DEVICE) really *should* always be a no-op, and I for 
+one have already made the case for eliding that in code elsewhere, but 
+it doesn't necessarily hold for the inverse here, hence why I'm not sure 
+there even is a robust common solution for peeking at a live 
+DMA_FROM_DEVICE buffer.
 
-In qemu, the start and stop of dirty tracking is actually unbounded (it attempts
-to do it without checking if the capability is there), although
-syncing the dirties from vfio against Qemu private tracking, it does check
-if the dirty page tracking is supported prior to even trying the syncing via the
-ioctl. /Most importantly/ prior to all of this, starting/stopping/syncing dirty
-tracking, Qemu adds a live migration blocker if either the device doesn't support
-migration or VFIO container doesn't support it (so migration won't even start).
-So I think VMM knows how to deal with the lack of the dirty container ioctls as
-far as my understanding goes.
+Robin.
 
-TBH, I am not overly concerned with dirty page tracking in vfio-compat layer --
-I have been doing both in tandem (old and new). We mainly need to decide what do
-we wanna maintain in the compat layer. I can drop that IOMMU support code I have
-from vfio-compat or we do the 'perpectual dirtying' that current does, or not
-support the dirty ioctls in vfio-compat at all. Maybe the latter makes more sense,
-as that might mimmic more accurately what hardware supports, and deprive VMMs from
-even starting migration. The second looks useful for testing, but doing dirty of all
-DMA-mapped memory seems to be too much in a real world migration scenario :(
-specially as the guest size increases.
+> For example looking at arch/arm/mm/dma-mapping.c, for DMA_FROM_DEVICE
+> 
+> sync_single_for_device()
+>    => __dma_page_cpu_to_dev()
+>      => dma_cache_maint_page(op=dmac_map_area)
+>        => cpu_cache.dma_map_area()
+> 
+> sync_single_for_cpu()
+>    => __dma_page_dev_to_cpu()
+>      =>
+> __dma_page_cpu_to_dev(op=dmac_unmap_area)
+>        =>
+> cpu_cache.dma_unmap_area()
+> 
+> dma_map_area() always does cache invalidate.
+> 
+> But for a couple of CPU variant, dma_unmap_area() is a noop, so
+> sync_for_cpu() does nothing.
+> 
+> Toke's patch will break ath9k on those platforms (mostly silent
+> breakage, rx corruption leading to bad performance)
+> 
+> 
+>> There's a fair number of those dma_sync_single_for_device() things
+>> all over. Could we find mis-uses and warn about them some way? It
+>> seems to be a very natural thing to do in this context, but bounce
+>> buffering does make them very fragile.
+> 
+> At least in network drivers, there are at least two patterns:
+> 
+> 1) The issue at hand, hardware mixing rx_status and data inside the
+> same area. Usually very old hardware, very quick grep in network
+> drivers only revealed slicoss.c. Probably would have gone unnoticed if
+> ath9k hardware wasn't so common.
+> 
+> 
+> 2) The very common "copy break" pattern. If a received packet is
+> smaller than a certain threshold, the driver rx path is changed to do:
+> 
+>   sync_for_cpu()
+>   alloc_small_skb()
+>   memcpy(small_skb, rx_buffer_data)
+>   sync_for_device()
+> 
+> Original skb is left in the hardware, this reduces memory wasted.
+> 
+> This pattern is completely valid wrt DMA-API, the buffer is always
+> either owned by CPU or device.
+> 
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
