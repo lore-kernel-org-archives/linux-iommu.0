@@ -1,64 +1,176 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E3A4BC433EF
-	for <iommu@archiver.kernel.org>; Fri, 25 Mar 2022 01:42:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6505CC433F5
+	for <iommu@archiver.kernel.org>; Fri, 25 Mar 2022 02:15:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 738C461061;
-	Fri, 25 Mar 2022 01:42:12 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 0329141CE0;
+	Fri, 25 Mar 2022 02:15:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ImRVXH2jFyXc; Fri, 25 Mar 2022 01:42:11 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id uVhWAuM9BQwI; Fri, 25 Mar 2022 02:15:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 1611161028;
-	Fri, 25 Mar 2022 01:42:11 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id B8F6841CDF;
+	Fri, 25 Mar 2022 02:15:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DE972C001A;
-	Fri, 25 Mar 2022 01:42:10 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1528DC000B
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 01:42:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 68E56C0012;
+	Fri, 25 Mar 2022 02:15:55 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 33429C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 02:15:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id E279261061
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 01:42:09 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 19C3D41CDD
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 02:15:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nw5L_ibMBMNP for <iommu@lists.linux-foundation.org>;
- Fri, 25 Mar 2022 01:42:08 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
- by smtp3.osuosl.org (Postfix) with ESMTPS id B8F7661028
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 01:42:08 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id 926AF61937;
- Fri, 25 Mar 2022 01:31:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9CA7C340ED;
- Fri, 25 Mar 2022 01:31:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
- s=korg; t=1648171881;
- bh=ngtK92yaOtvyyys5GeO1CJFn5VXiYDyvLoR04iFBZes=;
- h=Date:To:From:Subject:From;
- b=ryg06K4wyNGzQ1TXAmL6aCD7/if1HgPgcbErY3QxMpQUKgo9KpSDbYjJwxGdp+JrU
- 09SnwcjvXiLC7/hE2TXYjT3/Yw/1UaYyFXKg1S8MTSRS+SFITJWuLSRQZqzNgEB1hV
- 9i6kH1u4tMn5bGFebOWusFbZxHVpMn+TlH3wQZYg=
-Date: Thu, 24 Mar 2022 18:31:20 -0700
-To: mm-commits@vger.kernel.org, ziy@nvidia.com, vbabka@suse.cz,
- robin.murphy@arm.com, robh+dt@kernel.org, paulus@samba.org,
- m.szyprowski@samsung.com, mst@redhat.com, mpe@ellerman.id.au,
- minchan@kernel.org, iommu@lists.linux-foundation.org, hch@lst.de,
- frowand.list@gmail.com, benh@kernel.crashing.org, aneesh.kumar@linux.ibm.com,
- david@redhat.com, akpm@linux-foundation.org
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: [merged] mm-enforce-pageblock_order-max_order.patch removed from -mm
- tree
-Message-Id: <20220325013120.E9CA7C340ED@smtp.kernel.org>
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 7F0zlVwWL4EY for <iommu@lists.linux-foundation.org>;
+ Fri, 25 Mar 2022 02:15:53 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 3AA4B41CD5
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 02:15:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1648174553; x=1679710553;
+ h=from:to:cc:subject:date:message-id:references:
+ in-reply-to:content-transfer-encoding:mime-version;
+ bh=adbhdo2VMSJqYoXEPossRs4HmFEjaXYdxs/Ci/Xz93Q=;
+ b=PDmjUjYmTsBlP62Vs7oWZY+RbD4lKB+d+p04xuWwz22NAMZQpoG+nI5R
+ vtzdoi8BowUFsRUCkwCEpnHyrK6BcleiISyteStMWkzVoIkC7RVG5guqv
+ gdKTMiVIfCyQTUIWcablxscxdH2c88O7LVi6pw3JrBdAtGWzLzTwxJRoV
+ q/8RjHOwPRMVn8zEuwn70O7j28PmJoJceP01R5uVqeJdscsYDblsbURjy
+ 26ORQ/DH3ypKHKf8Id7/QkTmhAiU9dR7lY0Iiligy1+6mUDv1fBmphr7g
+ lfoON2qhtLg1ouuIlncp8WDtx9swLf+8EecuP1VBuPo15So6yUYNpmU3n g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10296"; a="257361367"
+X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; d="scan'208";a="257361367"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 24 Mar 2022 19:15:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,209,1643702400"; d="scan'208";a="650079052"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+ by orsmga004.jf.intel.com with ESMTP; 24 Mar 2022 19:15:51 -0700
+Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Thu, 24 Mar 2022 19:15:50 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Thu, 24 Mar 2022 19:15:50 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Thu, 24 Mar 2022 19:15:50 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.177)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.21; Thu, 24 Mar 2022 19:15:50 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Rz/aP8L2HY/efpnUuIhGn20Omuj2i9o9TdbGTxL+R+wkA2H6SofWm8Uw8GP9xoduGiHVucXyfUN02WYIWkIwk9lLFN0cFyHg7X8lHtpGlmIeoOLOjPBie2mL2fediYBfCCZ16xklrGhSK2W5jtHkPH5OPaU5nh+nSEHfYel/+250noLlKE1H6cTSR+KOCWtcx1PeGsYM/57I/knyg/k0Tx8ib2bfa8Iin72cLzIaYBHbK96mlv8Q4dyDJ9do1V4l/1GtGUjsxNkDN9e4RengkTMT7xeihfleBDhxJ+z+wwX6X9I94oFeglwfezzw6TjhUXHWmuC6UVLWTq8I2NttbQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=adbhdo2VMSJqYoXEPossRs4HmFEjaXYdxs/Ci/Xz93Q=;
+ b=l1A5P8ZdPeWpRfnHklM4s/IYg/uNulh5FrRH/Z52dW6LxsPMcTULqnSly0/bEeBhNOhkidQjw65qhKUNT5su2hc5dkGjwrRkCBU32Rr3g3zdi/gMoZGMU0lBjQtKVSacEVKA1u98X1QEY17FJYs2YR02N39Ez7p4Kzo94cC5r9IJ4vvg9p2izNYSvxqYyhPwYoxPVwNhHnyLq8RmHeBWTTzSTfNwa7tzVmO/J/eqmte3kkT8lhJgcKk206fZj5kpC4EA9ruYmU0eZWndoElZk01fIdX2POxKVtUEdVZizCB/VfaKzEMkh33eCe6aoiuLcJwJNG4BkUQWWrxm9Akjog==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by BL0PR11MB3057.namprd11.prod.outlook.com (2603:10b6:208:76::21)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Fri, 25 Mar
+ 2022 02:15:47 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::4df7:2fc6:c7cf:ffa0]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::4df7:2fc6:c7cf:ffa0%4]) with mapi id 15.20.5102.018; Fri, 25 Mar 2022
+ 02:15:47 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: RE: [PATCH RFC 08/12] iommufd: IOCTLs for the io_pagetable
+Thread-Topic: [PATCH RFC 08/12] iommufd: IOCTLs for the io_pagetable
+Thread-Index: AQHYOu2GUDY5OA7cJEqND2xJuT5HJqzNXYEAgAAGtoCAAAhqAIAACEAAgAAnNgCAAIPcQIAAdUoAgADP8YA=
+Date: Fri, 25 Mar 2022 02:15:46 +0000
+Message-ID: <BN9PR11MB5276AD62538C8F87C76466EC8C1A9@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <0-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <8-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <20220323131038.3b5cb95b.alex.williamson@redhat.com>
+ <20220323193439.GS11336@nvidia.com>
+ <20220323140446.097fd8cc.alex.williamson@redhat.com>
+ <20220323203418.GT11336@nvidia.com> <20220323225438.GA1228113@nvidia.com>
+ <BN9PR11MB5276EB80AFCC3003955A46248C199@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220324134622.GB1184709@nvidia.com>
+In-Reply-To: <20220324134622.GB1184709@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f732dd4d-f668-4e1d-bffc-08da0e055fcc
+x-ms-traffictypediagnostic: BL0PR11MB3057:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <BL0PR11MB3057B73A0B95CF26C3A426188C1A9@BL0PR11MB3057.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: pp9Wlo05t1uGZyLn7IH/u7k5KAhfnM5XG+GkbY8M4f3SdN+n18IOdHcpz8GdDae8keCOEFumd9dbt3n3IfiNd+q82LbJrk91x0YuqkEZHIRlOWWqkd+N5nQQVILSbFRXr0eeF6JT++7Tgc9uVr5nFTHtb6s23Qlr0E/FUMvdNcCSrn2wppKEt72P3f0fsLs96LCijYYbE7TRQj/7QZRmMDEGdIn0NB9ffHwqvGh9mSmWRzatgAVn3HlASqwuVclbv7NFYI10JlXvVFuaHyv15BsSMSgJC9PyMBJ92HvOrX4lLrophmI3+cjTCa2KUS9Pl/hnFNmdK+LGfCSDTlgkZOsCjMnfNyLdnzFU/wMVHv9yr+Gn1XPy5hL8tDwjheyNT/lir9XZd/YrnWYNU3+fc4iqU3jTdURyQcIl4fQP70XyEx8BTFvI45z0gK4LAgdUIMdVoxHZlSnSJ52H0mabTeBs/rBq7cNPx1r0pFEpouTFYNP1T/94lQ5QA+GWqZz8gsDdFeBE3q5xuZo+gOACRrcjsQQK9bERBIPhBZropKTgD/zEs84LkGxXb9ThZrUcxVVcOFiMGYd6SbdKJmHcbj4O7caAT84tiPX7mE7TmX4wo8irRe0mNDmOw3svJBMNK8Qu+diGEcCR8RNe0qYIbMtEWV3Vffc1jrrb6F6vyHwKMS86BaymseXgAS8+rWXgA3UXasME2sW705RoTO1stGbIuufsRvLY9MSEXwLNNMpOdn378No6ejoJn1HMk2t2BEWhcyc8uPGGbo6aoKYUkZOVfOdfXDyLj0pnW+Flfuw=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(71200400001)(966005)(9686003)(5660300002)(6506007)(7696005)(186003)(33656002)(86362001)(66556008)(26005)(55016003)(2906002)(66946007)(38070700005)(7416002)(8936002)(76116006)(508600001)(64756008)(38100700002)(316002)(122000001)(6916009)(54906003)(52536014)(82960400001)(66446008)(4326008)(66476007)(8676002)(83380400001);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Ygg05TbopIcjYS4lDM+8NkMtTQIyInwxcgBQMty1KJLsfeT6ursQaVJ+8F0h?=
+ =?us-ascii?Q?g+7MvE4HSacAl3fbT6+vRszsZn8JXfIOEOWobnn+T2ymEYFo6lZjyWcl8wQp?=
+ =?us-ascii?Q?kynfUKN6rYPUx3WTsBlBw07Dw12bm0mJ0lQeOIw9JUUfmbZJro4gm9RnDmSZ?=
+ =?us-ascii?Q?NNAd/mDc6bmiUolvEgFgXEBr09k00yg8tsvjShPOrAepgi6bcBiw6xRdFLxn?=
+ =?us-ascii?Q?mwY2OawXe4e0HmCcFaVxt2XsFUqHmbhBXkXrYQ1b9eEZfyzlKosfADemlDGk?=
+ =?us-ascii?Q?dQe0Q3YUyRdjSaVA3z+d4TqUYZ2gZtqgjMQ5oszsLDketP6e44wbbATldAZw?=
+ =?us-ascii?Q?dFz7eQYEPMwZ0Ay5htu4i7jIss4xJiYCbTL+/Fjd3TJhogX7hmGRxTgz+tji?=
+ =?us-ascii?Q?M9MjCwWzgfIly/dWeUfEL1C602JmoRLqb1yjDlvNDaBGmjhROmctvBKi3n/P?=
+ =?us-ascii?Q?HbFCKfcPuxCs4VEP3Fs/fM0QJy+4IUVi4cCORv7Y4uHdQx/hQV+zylO9PkJf?=
+ =?us-ascii?Q?vA0V0HWqoYKFdrFia0ZU3db1iMM2F1DhhhYxlFhDeAAAS+imS5Ciymv+GTrk?=
+ =?us-ascii?Q?xV7O21RQs4fm5PkpopqDJrtV6B7PU90xdfbvQJaWKMT5Rk7QDn/6wtVEV09k?=
+ =?us-ascii?Q?G0NbotQfQogo1+JwrhApB3csczGg8M0uLV/v38xepNj92iW6ZjcsqJt7sPMX?=
+ =?us-ascii?Q?e7O4gAnxVC0CE/bX4iTgZWvconZDgS96oMdxW0BT9BSEvvSlRUqKqRIKXqkz?=
+ =?us-ascii?Q?4alvBfzSzsX3vz0pBSmYVaBO89lffjRiDsDVqzkCR1Nwz6o81C/THXo6DNbA?=
+ =?us-ascii?Q?9Cwhcn+VZNrOb0iRExQIaL96xz+IqXxMe3s0NZQRI6IM9XChz+v7smwp+Eot?=
+ =?us-ascii?Q?fHgNJSiDGHUJc+4LATk9fCNLbS2PISl4wpjrt9/cv9KtG1kdRZaS3A76nFs+?=
+ =?us-ascii?Q?GWwI4Yt4Y9NvqVtphWN3C0+uCCk52mJt9iBdeli+dxR5/dzsu8zmIFwnjLtE?=
+ =?us-ascii?Q?Dxld/AnvtFIyM66alUBo2CURao6qiHJV/XiI4shQR/tlwwTUvceY0IM0/cBt?=
+ =?us-ascii?Q?qH1pzXbN4OR/ur1Xf+rtVLEoRzLx+ZOcZIpYyK3Ttbug4NmSD5dSODJ2h2Y/?=
+ =?us-ascii?Q?ghdLIAku9St9S5VKtm+PazAiIVGlNo6mvvZ8hGF2up+vuIWDJTfHHTkqd99p?=
+ =?us-ascii?Q?UUvEs8aLR8fsHyopBJ14hydzC+Kxf9ClB0LQc9lQSOmYXiVGvFjSoCsTQDt3?=
+ =?us-ascii?Q?6qZGQKRD4tJI7Zt6dP5D3KXbznWHyZRpgyP3omYrXMcQhmo9Zc6M0Pzy986Q?=
+ =?us-ascii?Q?GNUW+mumbJvdj5JAG9XHNjVeVdn9wz55e1zarwPhEC5e+oEp0qRqXJBln1D3?=
+ =?us-ascii?Q?JCFpPHuOnH3Bu116OpLHNcCXqd6i8Kc3eUIsfik89NTSMOmsXIWxXLhi1MbG?=
+ =?us-ascii?Q?PxsZ9VvNYupe+yJVh8wDGRPNlmihn2Fn?=
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f732dd4d-f668-4e1d-bffc-08da0e055fcc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Mar 2022 02:15:47.0132 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: WE9WreaJe3HYvSJtztuSzNw25gT6qTsu8i47mcBscqaZ4tD1zAK18MVUY0AN0kL++ufW9t+inOzUGjnWA8GpxA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR11MB3057
+X-OriginatorOrg: intel.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Daniel Jordan <daniel.m.jordan@oracle.com>,
+ Alex Williamson <alex.williamson@redhat.com>, "Martins,
+ Joao" <joao.m.martins@oracle.com>, David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -71,231 +183,44 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Thursday, March 24, 2022 9:46 PM
+> 
+> On Thu, Mar 24, 2022 at 07:25:03AM +0000, Tian, Kevin wrote:
+> 
+> > Based on that here is a quick tweak of the force-snoop part (not compiled).
+> 
+> I liked your previous idea better, that IOMMU_CAP_CACHE_COHERENCY
+> started out OK but got weird. So lets fix it back to the way it was.
+> 
+> How about this:
+> 
+> https://github.com/jgunthorpe/linux/commits/intel_no_snoop
+> 
+> b11c19a4b34c2a iommu: Move the Intel no-snoop control off of
+> IOMMU_CACHE
+> 5263947f9d5f36 vfio: Require that device support DMA cache coherence
+> eab4b381c64a30 iommu: Restore IOMMU_CAP_CACHE_COHERENCY to its
+> original meaning
+> 2752e12bed48f6 iommu: Replace uses of IOMMU_CAP_CACHE_COHERENCY
+> with dev_is_dma_coherent()
+> 
+> If you like it could you take it from here?
+> 
 
-The patch titled
-     Subject: mm: enforce pageblock_order < MAX_ORDER
-has been removed from the -mm tree.  Its filename was
-     mm-enforce-pageblock_order-max_order.patch
+this looks good to me except that the 2nd patch (eab4b381) should be
+the last one otherwise it affects bisect. and in that case the subject 
+would be simply about removing the capability instead of restoring...
 
-This patch was dropped because it was merged into mainline or a subsystem tree
+let me find a box to verify it.
 
-------------------------------------------------------
-From: David Hildenbrand <david@redhat.com>
-Subject: mm: enforce pageblock_order < MAX_ORDER
-
-Some places in the kernel don't really expect pageblock_order >=
-MAX_ORDER, and it looks like this is only possible in corner cases:
-
-1) CONFIG_DEFERRED_STRUCT_PAGE_INIT we'll end up freeing pageblock_order
-   pages via __free_pages_core(), which cannot possibly work.
-
-2) find_zone_movable_pfns_for_nodes() will roundup the ZONE_MOVABLE
-   start PFN to MAX_ORDER_NR_PAGES. Consequently with a bigger
-   pageblock_order, we could have a single pageblock partially managed by
-   two zones.
-
-3) compaction code runs into __fragmentation_index() with order
-   >= MAX_ORDER, when checking WARN_ON_ONCE(order >= MAX_ORDER). [1]
-
-4) mm/page_reporting.c won't be reporting any pages with default
-   page_reporting_order == pageblock_order, as we'll be skipping the
-   reporting loop inside page_reporting_process_zone().
-
-5) __rmqueue_fallback() will never be able to steal with
-   ALLOC_NOFRAGMENT.
-
-pageblock_order >= MAX_ORDER is weird either way: it's a pure optimization
-for making alloc_contig_range(), as used for allcoation of gigantic pages,
-a little more reliable to succeed.  However, if there is demand for
-somewhat reliable allocation of gigantic pages, affected setups should be
-using CMA or boottime allocations instead.
-
-So let's make sure that pageblock_order < MAX_ORDER and simplify.
-
-[1] https://lkml.kernel.org/r/87r189a2ks.fsf@linux.ibm.com
-
-Link: https://lkml.kernel.org/r/20220214174132.219303-3-david@redhat.com
-Signed-off-by: David Hildenbrand <david@redhat.com>
-Reviewed-by: Zi Yan <ziy@nvidia.com>
-Cc: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Frank Rowand <frowand.list@gmail.com>
-Cc: John Garry via iommu <iommu@lists.linux-foundation.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Michael S. Tsirkin <mst@redhat.com>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
----
-
- drivers/virtio/virtio_mem.c     |    9 ++------
- include/linux/cma.h             |    3 --
- include/linux/pageblock-flags.h |    7 ++++--
- mm/Kconfig                      |    3 ++
- mm/page_alloc.c                 |   32 +++++++-----------------------
- 5 files changed, 20 insertions(+), 34 deletions(-)
-
---- a/drivers/virtio/virtio_mem.c~mm-enforce-pageblock_order-max_order
-+++ a/drivers/virtio/virtio_mem.c
-@@ -2476,13 +2476,10 @@ static int virtio_mem_init_hotplug(struc
- 				      VIRTIO_MEM_DEFAULT_OFFLINE_THRESHOLD);
- 
- 	/*
--	 * We want subblocks to span at least MAX_ORDER_NR_PAGES and
--	 * pageblock_nr_pages pages. This:
--	 * - Is required for now for alloc_contig_range() to work reliably -
--	 *   it doesn't properly handle smaller granularity on ZONE_NORMAL.
-+	 * TODO: once alloc_contig_range() works reliably with pageblock
-+	 * granularity on ZONE_NORMAL, use pageblock_nr_pages instead.
- 	 */
--	sb_size = max_t(uint64_t, MAX_ORDER_NR_PAGES,
--			pageblock_nr_pages) * PAGE_SIZE;
-+	sb_size = PAGE_SIZE * MAX_ORDER_NR_PAGES;
- 	sb_size = max_t(uint64_t, vm->device_block_size, sb_size);
- 
- 	if (sb_size < memory_block_size_bytes() && !force_bbm) {
---- a/include/linux/cma.h~mm-enforce-pageblock_order-max_order
-+++ a/include/linux/cma.h
-@@ -25,8 +25,7 @@
-  * -- can deal with only some pageblocks of a higher-order page being
-  *  MIGRATE_CMA, we can use pageblock_nr_pages.
-  */
--#define CMA_MIN_ALIGNMENT_PAGES max_t(phys_addr_t, MAX_ORDER_NR_PAGES, \
--				      pageblock_nr_pages)
-+#define CMA_MIN_ALIGNMENT_PAGES MAX_ORDER_NR_PAGES
- #define CMA_MIN_ALIGNMENT_BYTES (PAGE_SIZE * CMA_MIN_ALIGNMENT_PAGES)
- 
- struct cma;
---- a/include/linux/pageblock-flags.h~mm-enforce-pageblock_order-max_order
-+++ a/include/linux/pageblock-flags.h
-@@ -37,8 +37,11 @@ extern unsigned int pageblock_order;
- 
- #else /* CONFIG_HUGETLB_PAGE_SIZE_VARIABLE */
- 
--/* Huge pages are a constant size */
--#define pageblock_order		HUGETLB_PAGE_ORDER
-+/*
-+ * Huge pages are a constant size, but don't exceed the maximum allocation
-+ * granularity.
-+ */
-+#define pageblock_order		min_t(unsigned int, HUGETLB_PAGE_ORDER, MAX_ORDER - 1)
- 
- #endif /* CONFIG_HUGETLB_PAGE_SIZE_VARIABLE */
- 
---- a/mm/Kconfig~mm-enforce-pageblock_order-max_order
-+++ a/mm/Kconfig
-@@ -262,6 +262,9 @@ config HUGETLB_PAGE_SIZE_VARIABLE
- 	  HUGETLB_PAGE_ORDER when there are multiple HugeTLB page sizes available
- 	  on a platform.
- 
-+	  Note that the pageblock_order cannot exceed MAX_ORDER - 1 and will be
-+	  clamped down to MAX_ORDER - 1.
-+
- config CONTIG_ALLOC
- 	def_bool (MEMORY_ISOLATION && COMPACTION) || CMA
- 
---- a/mm/page_alloc.c~mm-enforce-pageblock_order-max_order
-+++ a/mm/page_alloc.c
-@@ -1072,14 +1072,12 @@ static inline void __free_one_page(struc
- 		int migratetype, fpi_t fpi_flags)
- {
- 	struct capture_control *capc = task_capc(zone);
-+	unsigned int max_order = pageblock_order;
- 	unsigned long buddy_pfn;
- 	unsigned long combined_pfn;
--	unsigned int max_order;
- 	struct page *buddy;
- 	bool to_tail;
- 
--	max_order = min_t(unsigned int, MAX_ORDER - 1, pageblock_order);
--
- 	VM_BUG_ON(!zone_is_initialized(zone));
- 	VM_BUG_ON_PAGE(page->flags & PAGE_FLAGS_CHECK_AT_PREP, page);
- 
-@@ -2259,19 +2257,8 @@ void __init init_cma_reserved_pageblock(
- 	} while (++p, --i);
- 
- 	set_pageblock_migratetype(page, MIGRATE_CMA);
--
--	if (pageblock_order >= MAX_ORDER) {
--		i = pageblock_nr_pages;
--		p = page;
--		do {
--			set_page_refcounted(p);
--			__free_pages(p, MAX_ORDER - 1);
--			p += MAX_ORDER_NR_PAGES;
--		} while (i -= MAX_ORDER_NR_PAGES);
--	} else {
--		set_page_refcounted(page);
--		__free_pages(page, pageblock_order);
--	}
-+	set_page_refcounted(page);
-+	__free_pages(page, pageblock_order);
- 
- 	adjust_managed_page_count(page, pageblock_nr_pages);
- 	page_zone(page)->cma_pages += pageblock_nr_pages;
-@@ -7382,16 +7369,15 @@ static inline void setup_usemap(struct z
- /* Initialise the number of pages represented by NR_PAGEBLOCK_BITS */
- void __init set_pageblock_order(void)
- {
--	unsigned int order;
-+	unsigned int order = MAX_ORDER - 1;
- 
- 	/* Check that pageblock_nr_pages has not already been setup */
- 	if (pageblock_order)
- 		return;
- 
--	if (HPAGE_SHIFT > PAGE_SHIFT)
-+	/* Don't let pageblocks exceed the maximum allocation granularity. */
-+	if (HPAGE_SHIFT > PAGE_SHIFT && HUGETLB_PAGE_ORDER < order)
- 		order = HUGETLB_PAGE_ORDER;
--	else
--		order = MAX_ORDER - 1;
- 
- 	/*
- 	 * Assume the largest contiguous order of interest is a huge page.
-@@ -8979,14 +8965,12 @@ struct page *has_unmovable_pages(struct
- #ifdef CONFIG_CONTIG_ALLOC
- static unsigned long pfn_max_align_down(unsigned long pfn)
- {
--	return pfn & ~(max_t(unsigned long, MAX_ORDER_NR_PAGES,
--			     pageblock_nr_pages) - 1);
-+	return ALIGN_DOWN(pfn, MAX_ORDER_NR_PAGES);
- }
- 
- static unsigned long pfn_max_align_up(unsigned long pfn)
- {
--	return ALIGN(pfn, max_t(unsigned long, MAX_ORDER_NR_PAGES,
--				pageblock_nr_pages));
-+	return ALIGN(pfn, MAX_ORDER_NR_PAGES);
- }
- 
- #if defined(CONFIG_DYNAMIC_DEBUG) || \
-_
-
-Patches currently in -mm which might be from david@redhat.com are
-
-mm-optimize-do_wp_page-for-exclusive-pages-in-the-swapcache.patch
-mm-optimize-do_wp_page-for-fresh-pages-in-local-lru-pagevecs.patch
-mm-slightly-clarify-ksm-logic-in-do_swap_page.patch
-mm-streamline-cow-logic-in-do_swap_page.patch
-mm-huge_memory-streamline-cow-logic-in-do_huge_pmd_wp_page.patch
-mm-khugepaged-remove-reuse_swap_page-usage.patch
-mm-swapfile-remove-stale-reuse_swap_page.patch
-mm-huge_memory-remove-stale-page_trans_huge_mapcount.patch
-mm-huge_memory-remove-stale-locking-logic-from-__split_huge_pmd.patch
-
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
