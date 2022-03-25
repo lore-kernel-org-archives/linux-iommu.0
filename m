@@ -4,70 +4,73 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 97BC3C433EF
-	for <iommu@archiver.kernel.org>; Fri, 25 Mar 2022 16:23:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B45FBC433F5
+	for <iommu@archiver.kernel.org>; Fri, 25 Mar 2022 16:25:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 2A6A960BCF;
-	Fri, 25 Mar 2022 16:23:49 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 5C9EC60AE5;
+	Fri, 25 Mar 2022 16:25:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id f3qbAW92UuP7; Fri, 25 Mar 2022 16:23:48 +0000 (UTC)
+	with ESMTP id ik70relhvF5r; Fri, 25 Mar 2022 16:25:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id E4DF760AE5;
-	Fri, 25 Mar 2022 16:23:47 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 4784460FFB;
+	Fri, 25 Mar 2022 16:25:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BBA96C002C;
-	Fri, 25 Mar 2022 16:23:47 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3C69FC0012
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 16:23:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 22F90C002C;
+	Fri, 25 Mar 2022 16:25:28 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 72834C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 16:25:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 173EB408EB
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 16:23:46 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 518204027F
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 16:25:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3a1oF9aldMLK for <iommu@lists.linux-foundation.org>;
- Fri, 25 Mar 2022 16:23:41 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id 91482408E4
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 16:23:41 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8E0F1D6E;
- Fri, 25 Mar 2022 09:23:40 -0700 (PDT)
-Received: from [10.57.41.19] (unknown [10.57.41.19])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E48393F73D;
- Fri, 25 Mar 2022 09:23:37 -0700 (PDT)
-Message-ID: <11d4c863-5bee-aa98-526c-ac7170296485@arm.com>
-Date: Fri, 25 Mar 2022 16:23:34 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=toke.dk
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ZEiPW-ahEWdW for <iommu@lists.linux-foundation.org>;
+ Fri, 25 Mar 2022 16:25:25 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.toke.dk (mail.toke.dk [45.145.95.4])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 9DE40401D5
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 16:25:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+ t=1648225521; bh=CQVTQ0YWUyVqJTQIKyyy3fv+ewiFx6OvdfGg4mW6pTQ=;
+ h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+ b=dY6s8FZcGbx4M3Ov5kHFWbz37pKFj65G1OC6fBB8z/tVV+am88ZfoF14ED65xxRfy
+ fOLQlXZTlO9XnrrFbC9jdp9qP8CzWxIoIJ9tmfXHq2P/R5yHN396bTH6CKZYI5a8WW
+ DD3bdPHqaN8gCGW78pwoabnJBY2snukIyApgMIoAqaA9Vdl2OUjDqBtuq40B49gIBc
+ w+FVDx4iSZKjE/araq8XXw8Ex3/qMIjxUaNZ8Exy3fR+fRHCPfJikWMxuYW7fVYSRZ
+ iv5BKTJDyv5nkS+fmdfKnF9fqjQ8Q5kgi4mjFJqFWUv15ynkDAsA+TI670+ZfI4GOK
+ IWwWkpT3eVt0w==
+To: mbizon@freebox.fr, Linus Torvalds <torvalds@linux-foundation.org>
 Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
  ath9k-based AP
-Content-Language: en-GB
-To: Halil Pasic <pasic@linux.ibm.com>
+In-Reply-To: <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
 References: <1812355.tdWV9SEqCh@natalenko.name>
- <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
- <27b5a287-7a33-9a8b-ad6d-04746735fb0c@arm.com>
- <CAHk-=wip7TCD_+2STTepuEZvGMg6wcz+o=kyFUvHjuKziTMixw@mail.gmail.com>
  <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
- <20220324190216.0efa067f.pasic@linux.ibm.com>
- <20220325162508.3273e0db.pasic@linux.ibm.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220325162508.3273e0db.pasic@linux.ibm.com>
-Cc: =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
- Netdev <netdev@vger.kernel.org>, Kalle Valo <kvalo@kernel.org>,
+ <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
+ <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
+ <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
+ <20220324163132.GB26098@lst.de>
+ <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
+ <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
+ <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
+Date: Fri, 25 Mar 2022 17:25:21 +0100
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87a6de80em.fsf@toke.dk>
+MIME-Version: 1.0
+Cc: Netdev <netdev@vger.kernel.org>, Kalle Valo <kvalo@kernel.org>,
  linux-wireless <linux-wireless@vger.kernel.org>,
  Oleksandr Natalenko <oleksandr@natalenko.name>,
  stable <stable@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
- iommu <iommu@lists.linux-foundation.org>,
+ Halil Pasic <pasic@linux.ibm.com>, iommu <iommu@lists.linux-foundation.org>,
  Olha Cherevyk <olha.cherevyk@gmail.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Linus Torvalds <torvalds@linux-foundation.org>, Christoph Hellwig <hch@lst.de>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
  Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -81,57 +84,101 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= via iommu
+ <iommu@lists.linux-foundation.org>
+Reply-To: Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-03-25 15:25, Halil Pasic wrote:
-> On Thu, 24 Mar 2022 19:02:16 +0100
-> Halil Pasic <pasic@linux.ibm.com> wrote:
-> 
->>> I'll admit I still never quite grasped the reason for also adding the
->>> override to swiotlb_sync_single_for_device() in aa6f8dcbab47, but I
->>> think by that point we were increasingly tired and confused and starting
->>> to second-guess ourselves (well, I was, at least).
->>
->> I raised the question, do we need to do the same for
->> swiotlb_sync_single_for_device(). Did that based on my understanding of the
->> DMA API documentation. I had the following scenario in mind
->>
->> SWIOTLB without the snyc_single:
->>                                    Memory      Bounce buffer      Owner
->> --------------------------------------------------------------------------
->> start                             12345678    xxxxxxxx             C
->> dma_map(DMA_FROM_DEVICE)          12345678 -> 12345678             C->D
->> device writes partial data        12345678    12ABC678 <- ABC      D
->> sync_for_cpu(DMA_FROM_DEVICE)     12ABC678 <- 12ABC678             D->C
->> cpu modifies buffer               66666666    12ABC678             C
->> sync_for_device(DMA_FROM_DEVICE)  66666666    12ABC678             C->D
->> device writes partial data        66666666    1EFGC678 <-EFG       D
->> dma_unmap(DMA_FROM_DEVICE)        1EFGC678 <- 1EFGC678             D->C
->>
->> Legend: in Owner column C stands for cpu and D for device.
->>
->> Without swiotlb, I believe we should have arrived at 6EFG6666. To get the
->> same result, IMHO, we need to do a sync in sync_for_device().
->> And aa6f8dcbab47 is an imperfect solution to that (because of size).
->>
-> 
-> @Robin, Christoph: Do we consider this a valid scenario?
+Maxime Bizon <mbizon@freebox.fr> writes:
 
-Aha, I see it now (turns out diagrams really do help!) - so essentially 
-the original situation but with buffer recycling thrown into the mix as 
-well... I think it's technically valid, but do we know if anything's 
-actually doing that in a way which ends up affected? For sure it would 
-be nice to know that we had all bases covered without having to audit 
-whether we need to, but if it's fundamentally incompatible with what 
-other code expects, that we know *is* being widely used, and however 
-questionable it may be we don't have an easy fix for, then we're in a 
-bit of a tough spot :(
+> On Thu, 2022-03-24 at 12:26 -0700, Linus Torvalds wrote:
+>
+>> 
+>> It's actually very natural in that situation to flush the caches from
+>> the CPU side again. And so dma_sync_single_for_device() is a fairly
+>> reasonable thing to do in that situation.
+>> 
+>
+> In the non-cache-coherent scenario, and assuming dma_map() did an
+> initial cache invalidation, you can write this:
+>
+> rx_buffer_complete_1(buf)
+> {
+> 	invalidate_cache(buf, size)
+> 	if (!is_ready(buf))
+> 		return;
+> 	<proceed with receive>
+> }
+>
+> or 
+>
+> rx_buffer_complete_2(buf)
+> {
+> 	if (!is_ready(buf)) {
+> 		invalidate_cache(buf, size)
+> 		return;
+> 	}
+> 	<proceed with receive>
+> }
+>
+> The latter is preferred for performance because dma_map() did the
+> initial invalidate.
+>
+> Of course you could write:
+>
+> rx_buffer_complete_3(buf)
+> {
+> 	invalidate_cache(buf, size)
+> 	if
+> (!is_ready(buf)) {
+> 		invalidate_cache(buf, size)
+> 		return;
+> 	}
+> 	
+> <proceed with receive>
+> }
+>
+>
+> but it's a waste of CPU cycles
+>
+> So I'd be very cautious assuming sync_for_cpu() and sync_for_device()
+> are both doing invalidation in existing implementation of arch DMA ops,
+> implementers may have taken some liberty around DMA-API to avoid
+> unnecessary cache operation (not to blame them).
 
-Thanks,
-Robin.
+I sense an implicit "and the driver can't (or shouldn't) influence
+this" here, right?
+
+> For example looking at arch/arm/mm/dma-mapping.c, for DMA_FROM_DEVICE
+>
+> sync_single_for_device()
+>   => __dma_page_cpu_to_dev()
+>     => dma_cache_maint_page(op=dmac_map_area)
+>       => cpu_cache.dma_map_area()
+>
+> sync_single_for_cpu()
+>   => __dma_page_dev_to_cpu()
+>     =>
+> __dma_page_cpu_to_dev(op=dmac_unmap_area)
+>       =>
+> cpu_cache.dma_unmap_area()
+>
+> dma_map_area() always does cache invalidate.
+>
+> But for a couple of CPU variant, dma_unmap_area() is a noop, so
+> sync_for_cpu() does nothing.
+>
+> Toke's patch will break ath9k on those platforms (mostly silent
+> breakage, rx corruption leading to bad performance)
+
+Okay, so that would be bad obviously. So if I'm reading you correctly
+(cf my question above), we can't fix this properly from the driver side,
+and we should go with the partial SWIOTLB revert instead?
+
+-Toke
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
