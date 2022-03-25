@@ -1,106 +1,88 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4BF1AC433EF
-	for <iommu@archiver.kernel.org>; Fri, 25 Mar 2022 20:21:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8B051C433F5
+	for <iommu@archiver.kernel.org>; Fri, 25 Mar 2022 20:38:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id BBCF941923;
-	Fri, 25 Mar 2022 20:21:34 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 11AD7400A4;
+	Fri, 25 Mar 2022 20:38:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1XjX2qSAvRcD; Fri, 25 Mar 2022 20:21:33 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id R4GtoqSXgLHE; Fri, 25 Mar 2022 20:38:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id E32FF41921;
-	Fri, 25 Mar 2022 20:21:32 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 801734013D;
+	Fri, 25 Mar 2022 20:38:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B1A2DC002C;
-	Fri, 25 Mar 2022 20:21:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5989DC002C;
+	Fri, 25 Mar 2022 20:38:20 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BCD2FC0012
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 20:06:47 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6163BC0012
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 20:38:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 9D22960B6F
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 20:06:47 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 4F7E8606A9
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 20:38:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ibm.com
+ dkim=pass (2048-bit key) header.d=sipsolutions.net
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XuQBxJnvcATT for <iommu@lists.linux-foundation.org>;
- Fri, 25 Mar 2022 20:06:45 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
- [148.163.156.1])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 91E4D60B00
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 20:06:45 +0000 (UTC)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
- by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22PHhYtN022151
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 20:06:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
- h=date : from : to :
- subject : message-id : reply-to : mime-version : content-type; s=pp1;
- bh=9ZJq0fu/agTNFC4TkzFFqIrgDHxSyLKCU5xKg5Foa80=;
- b=mnUy4jI01jw24Nq7+0nVdHt4v4LhVoHOXqKl37MNomQkXH9kKRC0WcVpC5BGuwiAsP5s
- y2LQt5dtE5Mnd48CYUTbJaBnmSh+tYuLJjwzn3r99+Nu4LwJsJFjMTGVf7qRjrSKLJLL
- q/pi2J+O3f3td5ZTBlsx7smZA0sGracu5oyPDOYpAHDqIqckgCXQA16gPiT9AU0nTNbx
- m6IJS8dYZVw3fWIrVTyJr005qlSEdfkJrFaJX9MlpgoQZ5/6h1WT976wixXJ4AQo65Bb
- 8cy3+tVv/PTTMAgv56BzqEZkvbEyZ6zH/Af7p3CSjtbPLkpBOodHTNxMYYqyWKI8TnQO 0A== 
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com
- [169.62.189.10])
- by mx0a-001b2d01.pphosted.com with ESMTP id 3f0c708w5w-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 20:06:44 +0000
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
- by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22PK3MkX003816
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 20:06:43 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com
- [9.57.198.24]) by ppma02dal.us.ibm.com with ESMTP id 3ew6tb18n2-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
- for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 20:06:43 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com
- [9.57.199.111])
- by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
- 22PK6fBI47645084
- (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Fri, 25 Mar 2022 20:06:41 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 14303AC065;
- Fri, 25 Mar 2022 20:06:41 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id EBE60AC05B;
- Fri, 25 Mar 2022 20:06:40 +0000 (GMT)
-Received: from porter (unknown [9.1.104.123])
- by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTPS;
- Fri, 25 Mar 2022 20:06:40 +0000 (GMT)
-Received: from dfsmith by porter with local (Exim 4.92)
- (envelope-from <dfsmith@porter.almaden.ibm.com>)
- id 1nXqCm-0007qT-4q; Fri, 25 Mar 2022 13:06:40 -0700
-Date: Fri, 25 Mar 2022 13:06:40 -0700
-From: "Daniel F. Smith" <dfsmith@us.ibm.com>
-To: iommu@lists.linux-foundation.org
-Subject: Bug report: VFIO map/unmep mem subject to race and DMA data goes to
- incorrect page (4.18.0)
-Message-ID: <20220325200640.GA29990@porter.almaden.ibm.com>
+ with ESMTP id F6uMyc--ZagQ for <iommu@lists.linux-foundation.org>;
+ Fri, 25 Mar 2022 20:38:18 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from sipsolutions.net (s3.sipsolutions.net
+ [IPv6:2a01:4f8:191:4433::2])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 41B2C60692
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Mar 2022 20:38:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+ Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+ :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+ Resent-Cc:Resent-Message-ID; bh=hew7fHVL6FBQI77veB2hwuoO4Es9nvwsanNbsTy12PY=; 
+ t=1648240698; x=1649450298; b=PxFb+cxH1F5Ob9Hh8gOR/XulGWvBkFVKkY3m9WqQpmSS5vP
+ elGgFVntHV8gCpZcR5VigbHYs1weDKVePC/MlY3BCRIN/wr0pXamY/d08p7BioTCsfq9MXy2Q47oA
+ XoUgSGaHIJstcs4oWtaR/Ee+QPhUZSnu1t01HGQfbJwAOPpkGhbPBfUxi8ZR+JTis4WYR5JkGGVI9
+ 7kgEoTHBBiwdREorkL6xid1BUJhkQP+23/RiWFKcT4WZqOv/Nq6G6/x575l/Xa34YWcm65domhuyr
+ SwVb8uaxQSfytQKq6x1cMeM4zGmtD/o7g/0BR//NhQnH9zjc9Jfo1lFRZUG+FqcA==;
+Received: by sipsolutions.net with esmtpsa
+ (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+ (Exim 4.95) (envelope-from <johannes@sipsolutions.net>)
+ id 1nXqgi-000Uby-Lq; Fri, 25 Mar 2022 21:37:36 +0100
+Message-ID: <298f4f9ccad7c3308d3a1fd8b4b4740571305204.camel@sipsolutions.net>
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+From: Johannes Berg <johannes@sipsolutions.net>
+To: Linus Torvalds <torvalds@linux-foundation.org>, Maxime Bizon
+ <mbizon@freebox.fr>
+Date: Fri, 25 Mar 2022 21:37:35 +0100
+In-Reply-To: <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+ <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+ <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
+ <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
+ <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
+ <20220324163132.GB26098@lst.de>
+ <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
+ <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
+ <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
+ <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com>
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: k-5Z9wBwaUn8t2K1iLFEPsav_y9HcBu0
-X-Proofpoint-ORIG-GUID: k-5Z9wBwaUn8t2K1iLFEPsav_y9HcBu0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-25_06,2022-03-24_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0
- lowpriorityscore=0 bulkscore=0 phishscore=0 clxscore=1011 malwarescore=0
- impostorscore=0 priorityscore=1501 mlxscore=0 suspectscore=0 adultscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203250111
-X-Mailman-Approved-At: Fri, 25 Mar 2022 20:21:31 +0000
+X-malware-bazaar: not-scanned
+Cc: Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>,
+ Netdev <netdev@vger.kernel.org>, Kalle Valo <kvalo@kernel.org>,
+ linux-wireless <linux-wireless@vger.kernel.org>,
+ Oleksandr Natalenko <oleksandr@natalenko.name>,
+ stable <stable@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+ Halil Pasic <pasic@linux.ibm.com>, iommu <iommu@lists.linux-foundation.org>,
+ Olha Cherevyk <olha.cherevyk@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,62 +95,103 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: dfsmith@us.ibm.com
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This email is to document an insidious (incorrect data, no error or warning)
-VFIO bug found when using the Intel IOMMU to perform DMA transfers; and the
-associated workaround.
+So I've been watching this from the sidelines mostly, and discussing a
+bit with Toke, but:
 
-There may be security implications (unsure).
+On Fri, 2022-03-25 at 11:30 -0700, Linus Torvalds wrote:
+> 
+>  (2) The CPU now wants to see any state written by the device since
+> the last sync
+> 
+>     This is "dma_sync_single_for_cpu(DMA_FROM_DEVICE)".
+> 
+>     A bounce-buffer implementation needs to copy *from* the bounce buffer.
+> 
+>     A cache-coherent implementation needs to do nothing.
+> 
+>     A non-coherent implementation maybe needs to do nothing (ie it
+> assumes that previous ops have flushed the cache, and just accessing
+> the data will bring the rigth thing back into it). Or it could just
+> flush the cache.
 
-/sys/devices/virtual/iommu/dmar0/intel-iommu/version: 1:0
-/sys/devices/virtual/iommu/dmar0/intel-iommu/cap: d2008c40660462
-Linux xxxxx.ibm.com 4.18.0-348.20.1.el8_5.x86_64 #1 SMP Tue Mar 8 12:56:54 EST 2022 x86_64 x86_64 x86_64 GNU/Linux
-Red Hat Enterprise Linux release 8.5 (Ootpa)
+Doesn't that just need to *invalidate* the cache, rather than *flush*
+it? The cache is somewhat similar to the bounce buffer, and here you're
+copying _from_ the bounce buffer (which is where the device is
+accessing), so shouldn't it be the same for the cache, i.e. you
+invalidate it so you read again from the real memory?
 
-In our testing of VFIO DMA to an FPGA card in rootless mode, we discovered a
-glitch where DMA data are transferred to/from the incorrect page.  It
-appears timing based.  Under some specific conditions the test could trigger
-the bug every loop.  Sometimes the bug would only emerge after 20+ minutes
-of testing.
+>  (3) The CPU has seen the state, but wants to leave it to the device
+> 
+>    This is "dma_sync_single_for_device(DMA_FROM_DEVICE)".
+> 
+>    A bounce buffer implementation needs to NOT DO ANYTHING (this is
+> the current ath9k bug - copying to the bounce buffer is wrong)
+> 
+>   A cache coherent implementation needs to do nothing
+> 
+>   A non-coherent implementation needs to flush the cache again, bot
+> not necessarily do a writeback-flush if there is some cheaper form
+> (assuming it does nothing in the "CPU now wants to see any state" case
+> because it depends on the data not having been in the caches)
 
-Basics of test:
-	Get memory with mmap(anonymous): size can change.
-	VFIO_IOMMU_MAP_DMA with a block of memory, fixed IOVA.
-	Fill memory with pattern.
-	Do DMA transfer to FPGA from memory at IOVA.
-	Do DMA transfer from FPGA to memory at IOVA+offset.
-	Compare memory to ensure match.  Miscompare is bug.
-	VFIO_IOMMU_UNMAP_DMA 
-	unmap()
-	Repeat.
+And similarly here, it would seem that the implementation can't _flush_
+the cache as the device might be writing concurrently (which it does in
+fact do in the ath9k case), but it must invalidate the cache?
 
-Using the fixed IOVA address* caused sporadic memory miscompares.  The
-nature of the miscompares is that the received data was mixed with pages
-that had been returned by mmap in a *previous* loop.
+I'm not sure about the (2) case, but here it seems fairly clear cut that
+if you have a cache, don't expect the CPU to write to the buffer (as
+evidenced by DMA_FROM_DEVICE), you wouldn't want to write out the cache
+to DRAM?
 
-Workaround: Randomizing the IOVA eliminated the memory miscompares.
 
-Hypothesis/conjecture: Possible race condition in UNMAP_DMA such that pages
-can be released/munlocked *after* the MAP_DMA with the same IOVA has
-occurred.
+I'll also note independently that ath9k actually maps the buffers as
+DMA_BIDIRECTIONAL, but the flush operations happen with DMA_FROM_DEVICE,
+at least after the setup is done. I must admit that I was scratching my
+head about this, I had sort of expected one should be passing the same
+DMA direction to all different APIs for the same buffer, but clearly, as
+we can see in your list of cases here, that's _not_ true.
 
-Suggestion: Document issue when using fixed IOVA, or fix if security is a
-concern.
 
-Daniel F. Smith
-dfsmith@us.ibm.com
+Then, however, we need to define what happens if you pass
+DMA_BIDIRECTIONAL to the sync_for_cpu() and sync_for_device() functions,
+which adds two more cases? Or maybe we eventually just think that's not
+valid at all, since you have to specify how you're (currently?) using
+the buffer, which can't be DMA_BIDIRECTIONAL?
 
-* We cannot use physical page address for the IOVA since we are running
-  without root, so /proc/pagemap is blanked out.  We also cannot use the VMA
-  as the IOVA since MAP_DMA only permits us up to bit 39 in the IOVA.
 
-VMA = virtual memory address (process space)
-IOVA = IOV / IOMMU address
+>  (4) There is a fourth case: dma_sync_single_for_cpu(DMA_TO_DEVICE)
+> which maybe should generate a warning because it seems to make no
+> sense? I can't think of a case where this would be an issue - the data
+> is specifically for the device, but it's synced "for the CPU"?
+
+I'd tend to agree with that, that's fairly much useless, since if only
+the CPU wrote to it, then you wouldn't care about any caching or bounce
+buffers, so no need to sync back.
+
+> In other words, I think commit aa6f8dcbab47 ("swiotlb: rework 'fix
+> info leak with DMA_FROM_DEVICE'") is fundamentally wrong. It doesn't
+> just break ath9k, it fundamentally break that "case 3" above. It's
+> doing a DMA_TO_DEVICE copy, even though it was a DMA_FROM_DEVICE sync.
+> 
+> So I really think that "revert aa6f8dcbab47" is not only inevitable
+> because of practical worries about what it breaks, but because that
+> commit was just entirely and utterly WRONG.
+
+Honestly, I was scratching my head about this too - sadly it just says
+"what was agreed", without a pointer to how that was derived, but it
+seemed that the original issue was:
+
+ "we're leaking old bounce buffer data to the device"
+
+or was it not? In which case doing any copies during map should've been
+sufficient, since then later no more data leaks could occur?
+
+johannes
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
