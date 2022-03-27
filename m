@@ -1,79 +1,77 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B139CC433F5
-	for <iommu@archiver.kernel.org>; Sun, 27 Mar 2022 19:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E3250C433F5
+	for <iommu@archiver.kernel.org>; Sun, 27 Mar 2022 20:11:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 52D0581B98;
-	Sun, 27 Mar 2022 19:29:12 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 94EC540948;
+	Sun, 27 Mar 2022 20:11:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id y-hooU0zh3mv; Sun, 27 Mar 2022 19:29:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id E76C081B3E;
-	Sun, 27 Mar 2022 19:29:10 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1V8B0B9adfMn; Sun, 27 Mar 2022 20:11:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 5CDFF415B0;
+	Sun, 27 Mar 2022 20:11:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C7A9FC002C;
-	Sun, 27 Mar 2022 19:29:10 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D4819C0012
- for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 19:29:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1AE4DC001D;
+	Sun, 27 Mar 2022 20:11:39 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B1BB6C0012
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 20:11:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id BFC4760EE2
- for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 19:29:08 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 9A83B415B0
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 20:11:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=linux-foundation.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id g-Aeh32GoHta for <iommu@lists.linux-foundation.org>;
- Sun, 27 Mar 2022 19:29:08 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id diRA_vAY5ENK for <iommu@lists.linux-foundation.org>;
+ Sun, 27 Mar 2022 20:11:37 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com
- [IPv6:2a00:1450:4864:20::236])
- by smtp3.osuosl.org (Postfix) with ESMTPS id CC09E60D59
- for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 19:29:07 +0000 (UTC)
-Received: by mail-lj1-x236.google.com with SMTP id q14so16538283ljc.12
- for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 12:29:07 -0700 (PDT)
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com
+ [IPv6:2a00:1450:4864:20::229])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id C43B640948
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 20:11:36 +0000 (UTC)
+Received: by mail-lj1-x229.google.com with SMTP id s25so16657409lji.5
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 13:11:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=linux-foundation.org; s=google;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=81R8ObTvU5bcOjgPkhjrVdYMQgLpHwwmsUh10DuWTXw=;
- b=QVswRSXvuEFhZlnuaBAnMB1TOMg78uyn8mRLwSOZtWi/86mVxTdWeJmg8H09RYWcp4
- O6lvIOKP0C2OxXUCyV3ffNy61gxSdcLR6Kl9jGUx2xgYt16l8oVTj7BEMInCe8aUUdRF
- U28WrmitywInVLFpJqv3NSZNOfcB3kKShK/cw=
+ :cc; bh=wob/7GSQVIpO7i1InQcutyEWYgbvdwTICG96D7RFBB8=;
+ b=MBKpZ1UtrtPBVIHqjdSKYB/rkJWZ1f0vdHzhtdISyO5M6IfCasC0hYp5oS9+XwcX2g
+ onX3toZbyl+fJ/Tk2m9EN2QoWGToeUma4YxombZeY5ZkW09xgeyTm/fWrkUSPf9q19W+
+ djbSzf2EiLGwXDF9V4ce2XqsgWTUpumTDa/0Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=81R8ObTvU5bcOjgPkhjrVdYMQgLpHwwmsUh10DuWTXw=;
- b=atLLoX2XrmiGZF3FTJVHjG/l/MmIsk0/QERirWfTqxdTTxE7UAdM2kKHNv+DvQXGaF
- iq5yQ23Gbdv3Bxh/7Okiz5cuEhju7bEOqUMlxJHbdtqwEn0ajdzb8AAUPEzpblSsPlia
- QKJNCLZpTVwJxCQLwEkazyYh5VKwasgOMDvWTbsCXfrzIYj8iNFfSjPa5MHBIG6gRpXz
- K+T9tTzjIe+OiClMYCg0ljMKHIg2GtRLrPJ+sOYwW1v1vTeu2m2XW57k7XxDTXTMkEDp
- m36EY4k4XGOUoQGitepLSuhGW7jaeAzx/48Sy8qkubquRB9RQ/QeIdjPxYIBbMEKbsnQ
- cU3A==
-X-Gm-Message-State: AOAM533apT6UaeDoRdQP1M2e9iBk6PzMMGPXyes6MTP8/y3YnwlavPFk
- jH4Pp15AS7EAYYUWFMzPrD2JTRI4rC+lfuuDWibO1w==
-X-Google-Smtp-Source: ABdhPJw0YuHjdpYUEp51CwvbVBcB66pJu0GGdCz3G2fQLJ3OEY/SFgy8kBUGWFnMk3lZUfyMvdED8w==
-X-Received: by 2002:a05:651c:1594:b0:247:dce8:b0ec with SMTP id
- h20-20020a05651c159400b00247dce8b0ecmr17408399ljq.404.1648409345160; 
- Sun, 27 Mar 2022 12:29:05 -0700 (PDT)
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com.
- [209.85.208.182]) by smtp.gmail.com with ESMTPSA id
- h7-20020ac25d67000000b0044836d7c475sm1435276lft.147.2022.03.27.12.29.04
+ bh=wob/7GSQVIpO7i1InQcutyEWYgbvdwTICG96D7RFBB8=;
+ b=yCd6G8/XdExNpe8YnQ2zt3rZmm7NYV10hgd8MelDwIZa+MotwjOwRzoXQEP/F8kGCK
+ ufEWmh98FZz3Ju2dGQm4OSLLCDQcCUzoMO7OWE3fWlwGVCBMJG6eZon2ZLtXrLXKvPbb
+ U0r9SXb7JJJ1YGuDKkJIJOtm9TjD8Fc+lMS3Mxf6YpSyyBBzihcKhYbZY7x1pOVbwr7p
+ hgSmsucoop/2zqold4d1ipTxX0qF18FnuMd8FzDhBLRt6CnJFOHjDrL6PBi8kOFHub4g
+ 6eVhuQtM0VefA2Y86VCIcvVoKMx+DxyxCmZGHnW1w/59pEknlcgXPlBvm06/7j0tXSXN
+ KW1g==
+X-Gm-Message-State: AOAM530zBf5uYuZQFR755XhDhLPvr433vjzIoS1Ifar3bpSFxjHeawYc
+ LNaQuXaexfTySk9ppiz+H4YftZ+mTOOZEzGXCtQJkA==
+X-Google-Smtp-Source: ABdhPJyqlIu+xdVKdnzCf3NYvomMCzLBT3aLD55kOEjp6VWS+Anw5l6ogGq5QPA8yDXD3RHEqkdXjQ==
+X-Received: by 2002:a05:651c:1508:b0:249:b843:208f with SMTP id
+ e8-20020a05651c150800b00249b843208fmr11634944ljf.239.1648411894265; 
+ Sun, 27 Mar 2022 13:11:34 -0700 (PDT)
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com.
+ [209.85.167.49]) by smtp.gmail.com with ESMTPSA id
+ d23-20020a0565123d1700b0044a342b4e59sm1442257lfv.239.2022.03.27.13.11.33
  for <iommu@lists.linux-foundation.org>
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Sun, 27 Mar 2022 12:29:04 -0700 (PDT)
-Received: by mail-lj1-f182.google.com with SMTP id q14so16538214ljc.12
- for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 12:29:04 -0700 (PDT)
-X-Received: by 2002:a05:651c:1213:b0:247:e2d9:cdda with SMTP id
- i19-20020a05651c121300b00247e2d9cddamr17499555lja.443.1648409031649; Sun, 27
- Mar 2022 12:23:51 -0700 (PDT)
+ Sun, 27 Mar 2022 13:11:33 -0700 (PDT)
+Received: by mail-lf1-f49.google.com with SMTP id bt26so21488811lfb.3
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 13:11:33 -0700 (PDT)
+X-Received: by 2002:a2e:9b10:0:b0:247:f28c:ffd3 with SMTP id
+ u16-20020a2e9b10000000b00247f28cffd3mr16821393lji.152.1648411509868; Sun, 27
+ Mar 2022 13:05:09 -0700 (PDT)
 MIME-Version: 1.0
 References: <1812355.tdWV9SEqCh@natalenko.name>
  <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
@@ -87,11 +85,12 @@ References: <1812355.tdWV9SEqCh@natalenko.name>
  <CAHk-=whUJ=tMEgP3KiWwk0pzmHn+1QORUu50syE+zOGk4UnFog@mail.gmail.com>
  <CAHk-=wgUx5CVF_1aEkhhEiRGXHgKzUdKiyctBKcHAxkxPpbiaw@mail.gmail.com>
  <0745b44456d44d1e9fc364e5a3780d9a@AcuMS.aculab.com>
-In-Reply-To: <0745b44456d44d1e9fc364e5a3780d9a@AcuMS.aculab.com>
+ <CAHk-=wgLyqNJx=bb8=o0Nk5U8gMnf0-=qx53ShLEb3V=Yrt8fw@mail.gmail.com>
+In-Reply-To: <CAHk-=wgLyqNJx=bb8=o0Nk5U8gMnf0-=qx53ShLEb3V=Yrt8fw@mail.gmail.com>
 From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Sun, 27 Mar 2022 12:23:34 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgLyqNJx=bb8=o0Nk5U8gMnf0-=qx53ShLEb3V=Yrt8fw@mail.gmail.com>
-Message-ID: <CAHk-=wgLyqNJx=bb8=o0Nk5U8gMnf0-=qx53ShLEb3V=Yrt8fw@mail.gmail.com>
+Date: Sun, 27 Mar 2022 13:04:53 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wh+TzZhMCiPPnchC4FSeS53-QCN3RYqxLAh4ahKMLoj9A@mail.gmail.com>
+Message-ID: <CAHk-=wh+TzZhMCiPPnchC4FSeS53-QCN3RYqxLAh4ahKMLoj9A@mail.gmail.com>
 Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
  ath9k-based AP
 To: David Laight <David.Laight@aculab.com>
@@ -123,167 +122,97 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, Mar 27, 2022 at 8:24 AM David Laight <David.Laight@aculab.com> wrote:
+On Sun, Mar 27, 2022 at 12:23 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 >
-> Aren't bounce buffers just a more extreme case on non-coherent
-> memory accesses?
+> So I will propose that we really make it very much about practical
+> concerns, and we document things as
+>
+>  (a) the "sync" operation has by definition a "whose _future_ access
+> do we sync for" notion.
+>
+>      So "dma_sync_single_for_cpu()" says that the future accesses to
+> this dma area is for the CPU.
+>
+>      Note how it does *NOT* say that the "CPU owns the are". That's
+> bullsh*t, and we now know it's BS.
+>
+>  (b) but the sync operation also has a "who wrote the data we're syncing"
+>
+>      Note that this is *not* "who accessed or owned it last", because
+> that's nonsensical: if we're syncing for the CPU, then the only reason
+> to do so is because we expect that the last access was by the device,
+> so specifying that separately would just be redundant and stupid.
+>
+>      But specifying who *wrote* to the area is meaningful and matters.
 
-No.
+We could also simply require that the bounce buffer code *remember*
+who wrote to it last.
 
-In fact, this whoe change came about exactly because bounce buffers
-are different.
+So when the ath9k driver does
 
-The difference is that bounce buffers have that (wait for it) bounce
-buffer, which can have stale contents.
+ - setup:
 
-> They just need explicit memory copies rather than just cache
-> writeback and invalidate operations.
+                bf->bf_buf_addr = dma_map_single(sc->dev, skb->data,
+                                                 common->rx_bufsize,
+                                                 DMA_FROM_DEVICE);
 
-That's the thing - the memory copies introduce entirely new issues.
+we clear the bounce buffer and remember that the state of the bounce
+buffer is "device wrote to it" (because DMA_FROM_DEVICE).
 
-I really think that instead of making up abstract rules ("ownership"
-or "bounce buffers are just extreme cases of non-coherency") we should
-make the rules very much practical and down to earth, and write out
-exactly what they *do*.
+Then, we have an interrupt or other event, and ath9k does
 
-The whole "sync DMA" is odd and abstract enough as a concept on its
-own, we shouldn't then make the rules for it odd and abstract. We
-should make them very very practical.
+ - rc event:
 
-So I will propose that we really make it very much about practical
-concerns, and we document things as
+        dma_sync_single_for_cpu(sc->dev, bf->bf_buf_addr,
+                                common->rx_bufsize, DMA_FROM_DEVICE);
 
- (a) the "sync" operation has by definition a "whose _future_ access
-do we sync for" notion.
+        ret = ath9k_hw_process_rxdesc_edma(ah, rs, skb->data);
+        if (ret == -EINPROGRESS) {
+                /*let device gain the buffer again*/
+                dma_sync_single_for_device(sc->dev, bf->bf_buf_addr,
+                                common->rx_bufsize, DMA_FROM_DEVICE);
+                return false;
+        }
 
-     So "dma_sync_single_for_cpu()" says that the future accesses to
-this dma area is for the CPU.
+and the first dma_sync_single_for_cpu() now sees "Ok, I want the CPU
+buffer, and I remember that the device wrote to it, so I will copy
+from the bounce buffer". It's still DMA_FROM_DEVICE, so that "the
+device wrote to it" doesn't change.
 
-     Note how it does *NOT* say that the "CPU owns the are". That's
-bullsh*t, and we now know it's BS.
+When the CPU then decides "ok, that wasn't it", and does that
+dma_sync_single_for_device(), the bounce buffer code goes "Ok, the
+last operation was that the device wrote to the buffer, so the bounce
+buffer is still valid and I should do nothing".
 
- (b) but the sync operation also has a "who wrote the data we're syncing"
+Voila, no ath9k breakage, and it all still makes perfect sense.
 
-     Note that this is *not* "who accessed or owned it last", because
-that's nonsensical: if we're syncing for the CPU, then the only reason
-to do so is because we expect that the last access was by the device,
-so specifying that separately would just be redundant and stupid.
+And that sounds like an even more logical model than the one where we
+tell the bounce buffer code what the previous operation was, but it
+involves basically the DMA mapping code remembering what the last
+direction was. That makes perfect sense to me, but it's certainly not
+what the DMA mapping code has traditionally done, which makes me
+nervous that it would just expose a _lot_ of other drivers that do odd
+things.
 
-     But specifying who *wrote* to the area is meaningful and matters.
-It matters for the non-coherent cache case (because of writeback
-issues), but it also matters for the bounce buffer case (becasue it
-determines which way we should copy).
+The "good news" (if there is such a thing) is that usually the
+direction doesn't actually change. So if you use DMA_FROM_DEVICE
+initially, you'll continue to use that. So there is probably basically
+never any difference between "what was the previous operation" and
+"what is the next operation".
 
-Note how this makes sense: a "sync" operation is clearly about taking
-some past state, and making it palatable for a future use. The past
-state is pretty much defined by who wrote the data, and then we can
-use that and the "the next thing to access it" to determine what we
-need to do about the sync.
+So maybe practically speaking, we don't care.
 
-It is *NOT* about "ownership".
+Anyway, I do think we have choices here on how to describe things.
 
-So let's go through the cases, and I'm going to ignore the "CPU caches
-are coherent with device DMA" case because that's always going to be a
-no-op wrt data movement (but it will still generally need a memory
-barrier, which I will mention here and then ignore going forward).
+I do think that the "DMA code doesn't have to remember" model has the
+advantage that remembering is always an added complexity, and
+operations that behave differently depending on previous history are
+always a bit harder to think about because of that. Which is why I
+think that model I outlined in the previous email is probably the most
+straightforward one.
 
-Syncing for *CPU* accesses (ie dma_sync_single_for_cpu()) has four
-choices I can see:
-
- - nobody wrote the data at all (aka DMA_NONE).
-
-   This is nonsensical and should warn. If nobody wrote to it, why
-would the CPU ever validly access it?
-
-   Maybe you should have written "memset(buffer, 0, size)" instead?
-
- - the CPU wrote the data in the first place (aka DMA_TO_DEVICE)
-
-   This is a no-op (possibly a memory barrier), because even stale CPU
-caches are fine, and even if it was in a bounce buffer, the original
-CPU-side data is fine.
-
- - the device wrote the data (aka DMA_FROM_DEVICE)
-
-   This is just the regular case of a device having written something,
-and the CPU wants to see it.
-
-   It obviously needs real work, but it's simple and straightforward.
-
-   For non-coherent caches, it needs a cache invalidate. For a bounce
-buffer, it needs a copy from the bounce buffer to the "real" buffer.
-
- - it's not clear who write the data (aka DMA_BIDIRECTIONAL)
-
-   This is not really doable for a bounce buffer - we just don't know
-which buffer contents are valid.
-
-   I think it's very very questionable for non-coherent caches too,
-but "writeback and invalidate" probably can't hurt.
-
-   So probably warn about it, and do whatever we used to do historically.
-
-Syncing for device accesses (ie dma_sync_single_for_device()) also has
-the same four choices I can see, but obviously does different things:
-
- - nobody wrote the data at all (aka DMA_NONE)
-
-   This sounds as nonsensical as the CPU case, but maybe isn't.
-
-   We may not have any previous explicit writes, but we *do* have that
-"insecure and possibly stale buffer contents" bounce buffer thing on
-the device side.
-
-   So with a bounce buffer, it's actually somewhat sane to say
-"initialize the bounce buffer to a known state".
-
-   Because bounce buffers *are* special. Unlike even the "noncoherent
-caches" issue, they have that entirely *other* hidden state in the
-form of the bounce buffer itself.
-
-   Discuss.
-
- - the CPU wrote the data in the first place (aka DMA_TO_DEVICE).
-
-   This is the regular and common case of "we have data on the CPU
-side that is written to the device".
-
-   Again, needs work, but is simple and straightforward.
-
-   For non-coherent caches, we need a writeback on the CPU. For a
-bounce buffer, we need to copy from the regular buffer to the bounce
-buffer.
-
- - the device wrote the data in the first place (aka DMA_FROM_DEVICE)
-
-   This is the case that we hit on ath9k. It's *not* obvious, but when
-we write this out this way, I really think the semantics are pretty
-clear.
-
-   For non-coherent caches, we may need an "invalidate". For a bounce
-buffer, it's a no-op (because the bounce buffer already contains the
-data)
-
- - it's not clear who write the data (aka DMA_BIDIRECTIONAL)
-
-   This is again not really doable for a bounce buffer. We don't know
-which buffer contains the right data, we should warn about it and do
-whatever we used to do historically.
-
-   Again, it's very questionable for non-coherent caches too, but
-"writeback and invalidate" probably at least can't hurt.
-
-So hey, that's my thinking. The whole "ownership"  model is, I think,
-obviously untenable.
-
-But just going through and listing the different cases and making them
-explicit I think explains exactly what the different situations are,
-and that then makes it fairly clear what the different combinations
-should do.
-
-No?
-
-           Linus
+                 Linus
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
