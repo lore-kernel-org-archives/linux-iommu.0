@@ -1,109 +1,85 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6D2BFC433F5
-	for <iommu@archiver.kernel.org>; Sun, 27 Mar 2022 05:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5F027C433F5
+	for <iommu@archiver.kernel.org>; Sun, 27 Mar 2022 08:15:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 095514025D;
-	Sun, 27 Mar 2022 05:21:29 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id E41616068A;
+	Sun, 27 Mar 2022 08:15:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1yLSVhsnUk-g; Sun, 27 Mar 2022 05:21:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 6E74540025;
-	Sun, 27 Mar 2022 05:21:27 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id uOHvk3n7Bqiv; Sun, 27 Mar 2022 08:15:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id CA7B66060A;
+	Sun, 27 Mar 2022 08:15:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2E4D6C002C;
-	Sun, 27 Mar 2022 05:21:27 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8965EC0012
- for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 05:21:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8E111C001D;
+	Sun, 27 Mar 2022 08:15:22 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8C749C0012
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 05:36:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 7E6C0409F9
- for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 05:21:25 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 73B8940025
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 05:36:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=linux-foundation.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id q1zOvZvNu4DC for <iommu@lists.linux-foundation.org>;
- Sun, 27 Mar 2022 05:21:24 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 5kE7QSOa43fj for <iommu@lists.linux-foundation.org>;
+ Sun, 27 Mar 2022 05:36:05 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com
- [IPv6:2a00:1450:4864:20::130])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 98323409F8
- for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 05:21:24 +0000 (UTC)
-Received: by mail-lf1-x130.google.com with SMTP id m3so19670602lfj.11
- for <iommu@lists.linux-foundation.org>; Sat, 26 Mar 2022 22:21:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=linux-foundation.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=3AIrmmPfx/ZOrHBctYZwCCwGfAaK/1/IH4psZd3wsUE=;
- b=djCcgOaCULO1J4pux52MUZuwiPblxKGguZJ9FLwYib2dSNo188P6jyJlcS/Z3+Vjqp
- NuxHz+nULM3zYzdCDc/LCticaRTrzP6Eu8i5lYrUz9D+Qn4hFWHokDkpiq4ZgcyhM3fv
- 2VMFEP6rvt3FcDITehwTGDWmAXZRTRWN+Beak=
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com
+ [IPv6:2607:f8b0:4864:20::102e])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 4736F404C3
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 05:36:05 +0000 (UTC)
+Received: by mail-pj1-x102e.google.com with SMTP id
+ o68-20020a17090a0a4a00b001c686a48263so9651820pjo.1
+ for <iommu@lists.linux-foundation.org>; Sat, 26 Mar 2022 22:36:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=from:to:cc:subject:date:message-id;
+ bh=BXdefmByfbS7iadyHNuWA+1dWRCSn9oFrWGYl5Fm5mk=;
+ b=WD/emqxoTCqSinxwNm9zYC0BhVut37NKvVjalaC3AKb8//RwbBJ0HSEAfuKaQ4TRfn
+ 6kwLAZMOADsCvtCO24agk+3gzGKGTzkJYK5VEESmUvDd0AwLk8MOqqqbGIxQADK8aLnO
+ cnQOeYl0dNZheOli0EHPxR4XCURTaCEwk+DA6AttIClrfhjRFRZ7eNgaXmT3Q5TRifxb
+ oWKTyZ27SYlho/bS0fQMj4jMBTHcATU1sYK+99WO7WA4uv1bNod4RcYqMHfWk7DyqCSQ
+ Qc0paAN62/Th0TsFECWtb5Pb6fzEURwe3BBOKcRwTf5utyKHkZHcplpnGv6lEJDDO1pv
+ w6fQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=3AIrmmPfx/ZOrHBctYZwCCwGfAaK/1/IH4psZd3wsUE=;
- b=E0BT9IW7zIYSp5OdkVxtJOi9Z1plktlOgWg1bFKTFMU9cxwd0I38Niasx+eRywRfbT
- 7kzH1eeqouV0yXmLHOCKGu8DcXc8bmwdXyrZlRrzrDhdvQmSrvxRm4Jou0Z8cV9r6mVi
- 0hLVdZIwKpaXgDBpeXQPt8MjOK++72TQwFyX2iXa5VkFM4M7Jz8vSpJiweR45ZSwsnuW
- zcHqCVWB05d/bttT0/tyTM/LML6Q/ovNS8ReoHpV31cBQszlnh3YMxohGMnxWsgyOLvB
- wlYJ5Kwo9LHqrxzs7SWKs29k7yCvqsrlK1B8Q+ORO+FOnSFRdoxjcx+u1sh7C0OyUErx
- LzhQ==
-X-Gm-Message-State: AOAM530W3QJpAeCZqKj5q4vQ7CZlIuB7tz4WbVawQ9tWJlpdoFlm5OPt
- INgYrIsIY17ELQgGzy6BdDX/tNuYh9rN2G2yBjYD5A==
-X-Google-Smtp-Source: ABdhPJziv3co30WCPiBT+uaN+QLeKnRNZwUVYyuM8uy9LrXmyZYxjA8bvbraUFj7EWZaRp3W3BZcPg==
-X-Received: by 2002:ac2:5dd5:0:b0:44a:581c:dda5 with SMTP id
- x21-20020ac25dd5000000b0044a581cdda5mr14435150lfq.344.1648358482276; 
- Sat, 26 Mar 2022 22:21:22 -0700 (PDT)
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com.
- [209.85.208.175]) by smtp.gmail.com with ESMTPSA id
- f1-20020a2e1f01000000b0024602522b5dsm1246103ljf.120.2022.03.26.22.21.19
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Sat, 26 Mar 2022 22:21:20 -0700 (PDT)
-Received: by mail-lj1-f175.google.com with SMTP id a30so7709308ljq.13
- for <iommu@lists.linux-foundation.org>; Sat, 26 Mar 2022 22:21:19 -0700 (PDT)
-X-Received: by 2002:a2e:6f17:0:b0:248:124:9c08 with SMTP id
- k23-20020a2e6f17000000b0024801249c08mr14918936ljc.506.1648358479393; Sat, 26
- Mar 2022 22:21:19 -0700 (PDT)
-MIME-Version: 1.0
-References: <1812355.tdWV9SEqCh@natalenko.name>
- <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
- <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
- <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
- <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
- <20220324163132.GB26098@lst.de> <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
- <871qyr9t4e.fsf@toke.dk>
- <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
- <20220327054848.1a545b12.pasic@linux.ibm.com>
- <CAHk-=whUJ=tMEgP3KiWwk0pzmHn+1QORUu50syE+zOGk4UnFog@mail.gmail.com>
-In-Reply-To: <CAHk-=whUJ=tMEgP3KiWwk0pzmHn+1QORUu50syE+zOGk4UnFog@mail.gmail.com>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Sat, 26 Mar 2022 22:21:03 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgUx5CVF_1aEkhhEiRGXHgKzUdKiyctBKcHAxkxPpbiaw@mail.gmail.com>
-Message-ID: <CAHk-=wgUx5CVF_1aEkhhEiRGXHgKzUdKiyctBKcHAxkxPpbiaw@mail.gmail.com>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-To: Halil Pasic <pasic@linux.ibm.com>
-Cc: =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Netdev <netdev@vger.kernel.org>, Kalle Valo <kvalo@kernel.org>,
- linux-wireless <linux-wireless@vger.kernel.org>,
- Oleksandr Natalenko <oleksandr@natalenko.name>,
- stable <stable@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
- iommu <iommu@lists.linux-foundation.org>,
- Olha Cherevyk <olha.cherevyk@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
- Maxime Bizon <mbizon@freebox.fr>, Paolo Abeni <pabeni@redhat.com>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+ h=x-gm-message-state:from:to:cc:subject:date:message-id;
+ bh=BXdefmByfbS7iadyHNuWA+1dWRCSn9oFrWGYl5Fm5mk=;
+ b=5d9t42b0O/xx8u2NMUSLVSlBwiYLPSqvmxwIuH/2Z+UPLdTvgoXS+ZC7g6I26T48xl
+ tQBCxP14EpN5Z06aVD+xd5tZ/G/8vt1edu59Q+hOwQbZ317NItNj9f0uW6AdA++7ULuv
+ G2F7rqmd2oqah4SGNMFYNCGGm6wIvOQk4S7QIuzcWk8RWNfBbCUEhlmASby6homuiDIX
+ 67o8n1TIC2DmB36RwvycgUd1hseIuT5X3SyfXjYujy56HMOetlziI1nkLqICSr2l/BxF
+ B+1GSJslBnt0kWhZ1h58GxrKJu6v84tqBtuv0adSqj6ASjvVJxk3EU/mjobIwPmu7Nkx
+ gyOA==
+X-Gm-Message-State: AOAM531P7K7tT4Wp/0018fjUpyK+seu3nBqHW0uqYOx5aOFq6MDCZYkL
+ TeJQ428eVb9vRlUTpwwQ6po=
+X-Google-Smtp-Source: ABdhPJzLDpKQkrWzztdlJpJD0lzsWQyEl0Qpi9c3Hry9x9AKCEmmWC14C7eZiUH7Vhej5pAm1C+3YQ==
+X-Received: by 2002:a17:90a:4217:b0:1c7:c203:b4f3 with SMTP id
+ o23-20020a17090a421700b001c7c203b4f3mr18995680pjg.177.1648359364587; 
+ Sat, 26 Mar 2022 22:36:04 -0700 (PDT)
+Received: from localhost.localdomain ([115.220.243.108])
+ by smtp.googlemail.com with ESMTPSA id
+ u10-20020a63b54a000000b00380ea901cd2sm9296275pgo.6.2022.03.26.22.36.01
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sat, 26 Mar 2022 22:36:04 -0700 (PDT)
+From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To: agross@kernel.org
+Subject: [PATCH] iommu: fix an incorrect NULL check on list iterator
+Date: Sun, 27 Mar 2022 13:35:58 +0800
+Message-Id: <20220327053558.2821-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Mailman-Approved-At: Sun, 27 Mar 2022 08:15:21 +0000
+Cc: will@kernel.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+ linux-arm-msm@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,47 +92,67 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, Mar 26, 2022 at 10:06 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Sat, Mar 26, 2022 at 8:49 PM Halil Pasic <pasic@linux.ibm.com> wrote:
-> >
-> > I agree it CPU modified buffers *concurrently* with DMA can never work,
-> > and I believe the ownership model was conceived to prevent this
-> > situation.
->
-> But that just means that the "ownership" model is garbage, and cannot
-> handle this REAL LIFE situation.
+The bug is here:
+	if (!iommu || iommu->dev->of_node != spec->np) {
 
-Just to clarify: I obviously agree that the "both sides modify
-concurrently" obviously cannot work with bounce buffers.
+The list iterator value 'iommu' will *always* be set and non-NULL by
+list_for_each_entry(), so it is incorrect to assume that the iterator
+value will be NULL if the list is empty or no element is found (in fact,
+it will point to a invalid structure object containing HEAD).
 
-People still do want to do that, but they'll limit themselves to
-actual cache-coherent DMA when they do so (or do nasty uncached
-accesses but at least no bounce buffering).
+To fix the bug, run insert_iommu_master(dev, &iommu, spec); unlock and
+return 0 when found, otherwise unlock and return -ENODEV.
 
-But the "bounce ownership back and forth" model comes up empty when
-the CPU wants to read while the DMA is still going on. And that not
-only can work, but *has* worked.
+Cc: stable@vger.kernel.org
+Fixes: f78ebca8ff3d6 ("iommu/msm: Add support for generic master bindings")
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+---
+ drivers/iommu/msm_iommu.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
-You could have a new "get me a non-ownership copy" operation of
-course, but that hits the problem of "which existing drivers need it?"
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 3a38352b603f..1dbb8b0695ec 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -617,23 +617,17 @@ static int qcom_iommu_of_xlate(struct device *dev,
+ {
+ 	struct msm_iommu_dev *iommu;
+ 	unsigned long flags;
+-	int ret = 0;
+ 
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+ 	list_for_each_entry(iommu, &qcom_iommu_devices, dev_node)
+-		if (iommu->dev->of_node == spec->np)
+-			break;
+-
+-	if (!iommu || iommu->dev->of_node != spec->np) {
+-		ret = -ENODEV;
+-		goto fail;
+-	}
+-
+-	insert_iommu_master(dev, &iommu, spec);
+-fail:
++		if (iommu->dev->of_node == spec->np) {
++			insert_iommu_master(dev, &iommu, spec);
++			spin_unlock_irqrestore(&msm_iommu_lock, flags);
++			return 0;
++		}
+ 	spin_unlock_irqrestore(&msm_iommu_lock, flags);
+ 
+-	return ret;
++	return -ENODEV;
+ }
+ 
+ irqreturn_t msm_iommu_fault_handler(int irq, void *dev_id)
+-- 
+2.17.1
 
-We have no idea, outside of ath9k.
-
-This is why I believe we have to keep the existing semantics in a way
-that keep ath9k - and any number of unknown other drivers - happy.
-
-And then for the cases where you want to introduce the zeroing because
-you don't know how much data the DMA returned - those are the ones
-you'll have to mark some way.
-
-                  Linus
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
