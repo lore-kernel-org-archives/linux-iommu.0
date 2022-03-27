@@ -1,96 +1,111 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8A85AC433F5
-	for <iommu@archiver.kernel.org>; Sun, 27 Mar 2022 15:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B139CC433F5
+	for <iommu@archiver.kernel.org>; Sun, 27 Mar 2022 19:29:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 397AE60AB3;
-	Sun, 27 Mar 2022 15:25:02 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 52D0581B98;
+	Sun, 27 Mar 2022 19:29:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NDXsR3dL9l5y; Sun, 27 Mar 2022 15:25:01 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id y-hooU0zh3mv; Sun, 27 Mar 2022 19:29:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 06948605EA;
-	Sun, 27 Mar 2022 15:25:00 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id E76C081B3E;
+	Sun, 27 Mar 2022 19:29:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ADCB0C002C;
-	Sun, 27 Mar 2022 15:25:00 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3E21FC0012
- for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 15:24:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C7A9FC002C;
+	Sun, 27 Mar 2022 19:29:10 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D4819C0012
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 19:29:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 2D2C7408D8
- for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 15:24:59 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id BFC4760EE2
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 19:29:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GX2JLVXgfTcn for <iommu@lists.linux-foundation.org>;
- Sun, 27 Mar 2022 15:24:55 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from eu-smtp-delivery-151.mimecast.com
- (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 57A54408D7
- for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 15:24:55 +0000 (UTC)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-160-sYhtiCskO1qRFgnKRoKrFA-1; Sun, 27 Mar 2022 16:24:51 +0100
-X-MC-Unique: sYhtiCskO1qRFgnKRoKrFA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Sun, 27 Mar 2022 16:24:48 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Sun, 27 Mar 2022 16:24:48 +0100
-From: David Laight <David.Laight@ACULAB.COM>
-To: 'Linus Torvalds' <torvalds@linux-foundation.org>, Halil Pasic
- <pasic@linux.ibm.com>
-Subject: RE: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-Thread-Topic: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-Thread-Index: AQHYQZpzK/9JYQDqEEKfLChLw6SC36zTVWUA
-Date: Sun, 27 Mar 2022 15:24:48 +0000
-Message-ID: <0745b44456d44d1e9fc364e5a3780d9a@AcuMS.aculab.com>
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=linux-foundation.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id g-Aeh32GoHta for <iommu@lists.linux-foundation.org>;
+ Sun, 27 Mar 2022 19:29:08 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com
+ [IPv6:2a00:1450:4864:20::236])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id CC09E60D59
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 19:29:07 +0000 (UTC)
+Received: by mail-lj1-x236.google.com with SMTP id q14so16538283ljc.12
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 12:29:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=linux-foundation.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=81R8ObTvU5bcOjgPkhjrVdYMQgLpHwwmsUh10DuWTXw=;
+ b=QVswRSXvuEFhZlnuaBAnMB1TOMg78uyn8mRLwSOZtWi/86mVxTdWeJmg8H09RYWcp4
+ O6lvIOKP0C2OxXUCyV3ffNy61gxSdcLR6Kl9jGUx2xgYt16l8oVTj7BEMInCe8aUUdRF
+ U28WrmitywInVLFpJqv3NSZNOfcB3kKShK/cw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=81R8ObTvU5bcOjgPkhjrVdYMQgLpHwwmsUh10DuWTXw=;
+ b=atLLoX2XrmiGZF3FTJVHjG/l/MmIsk0/QERirWfTqxdTTxE7UAdM2kKHNv+DvQXGaF
+ iq5yQ23Gbdv3Bxh/7Okiz5cuEhju7bEOqUMlxJHbdtqwEn0ajdzb8AAUPEzpblSsPlia
+ QKJNCLZpTVwJxCQLwEkazyYh5VKwasgOMDvWTbsCXfrzIYj8iNFfSjPa5MHBIG6gRpXz
+ K+T9tTzjIe+OiClMYCg0ljMKHIg2GtRLrPJ+sOYwW1v1vTeu2m2XW57k7XxDTXTMkEDp
+ m36EY4k4XGOUoQGitepLSuhGW7jaeAzx/48Sy8qkubquRB9RQ/QeIdjPxYIBbMEKbsnQ
+ cU3A==
+X-Gm-Message-State: AOAM533apT6UaeDoRdQP1M2e9iBk6PzMMGPXyes6MTP8/y3YnwlavPFk
+ jH4Pp15AS7EAYYUWFMzPrD2JTRI4rC+lfuuDWibO1w==
+X-Google-Smtp-Source: ABdhPJw0YuHjdpYUEp51CwvbVBcB66pJu0GGdCz3G2fQLJ3OEY/SFgy8kBUGWFnMk3lZUfyMvdED8w==
+X-Received: by 2002:a05:651c:1594:b0:247:dce8:b0ec with SMTP id
+ h20-20020a05651c159400b00247dce8b0ecmr17408399ljq.404.1648409345160; 
+ Sun, 27 Mar 2022 12:29:05 -0700 (PDT)
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com.
+ [209.85.208.182]) by smtp.gmail.com with ESMTPSA id
+ h7-20020ac25d67000000b0044836d7c475sm1435276lft.147.2022.03.27.12.29.04
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Sun, 27 Mar 2022 12:29:04 -0700 (PDT)
+Received: by mail-lj1-f182.google.com with SMTP id q14so16538214ljc.12
+ for <iommu@lists.linux-foundation.org>; Sun, 27 Mar 2022 12:29:04 -0700 (PDT)
+X-Received: by 2002:a05:651c:1213:b0:247:e2d9:cdda with SMTP id
+ i19-20020a05651c121300b00247e2d9cddamr17499555lja.443.1648409031649; Sun, 27
+ Mar 2022 12:23:51 -0700 (PDT)
+MIME-Version: 1.0
 References: <1812355.tdWV9SEqCh@natalenko.name>
  <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
  <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
  <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
  <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
- <20220324163132.GB26098@lst.de>
- <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
+ <20220324163132.GB26098@lst.de> <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
+ <871qyr9t4e.fsf@toke.dk>
  <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
  <20220327054848.1a545b12.pasic@linux.ibm.com>
  <CAHk-=whUJ=tMEgP3KiWwk0pzmHn+1QORUu50syE+zOGk4UnFog@mail.gmail.com>
  <CAHk-=wgUx5CVF_1aEkhhEiRGXHgKzUdKiyctBKcHAxkxPpbiaw@mail.gmail.com>
-In-Reply-To: <CAHk-=wgUx5CVF_1aEkhhEiRGXHgKzUdKiyctBKcHAxkxPpbiaw@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Cc: =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+ <0745b44456d44d1e9fc364e5a3780d9a@AcuMS.aculab.com>
+In-Reply-To: <0745b44456d44d1e9fc364e5a3780d9a@AcuMS.aculab.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Sun, 27 Mar 2022 12:23:34 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgLyqNJx=bb8=o0Nk5U8gMnf0-=qx53ShLEb3V=Yrt8fw@mail.gmail.com>
+Message-ID: <CAHk-=wgLyqNJx=bb8=o0Nk5U8gMnf0-=qx53ShLEb3V=Yrt8fw@mail.gmail.com>
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+To: David Laight <David.Laight@aculab.com>
+Cc: =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Netdev <netdev@vger.kernel.org>, Kalle Valo <kvalo@kernel.org>,
  linux-wireless <linux-wireless@vger.kernel.org>,
  Oleksandr Natalenko <oleksandr@natalenko.name>,
- stable <stable@vger.kernel.org>, "David
- S. Miller" <davem@davemloft.net>, iommu <iommu@lists.linux-foundation.org>,
+ stable <stable@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+ Halil Pasic <pasic@linux.ibm.com>, iommu <iommu@lists.linux-foundation.org>,
  Olha Cherevyk <olha.cherevyk@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
- Maxime Bizon <mbizon@freebox.fr>, Paolo
- Abeni <pabeni@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>, Linux
- Kernel Mailing List <linux-kernel@vger.kernel.org>
+ Maxime Bizon <mbizon@freebox.fr>, Paolo Abeni <pabeni@redhat.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,50 +123,167 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Linus Torvalds
-> Sent: 27 March 2022 06:21
-> 
-> On Sat, Mar 26, 2022 at 10:06 PM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> >
-> > On Sat, Mar 26, 2022 at 8:49 PM Halil Pasic <pasic@linux.ibm.com> wrote:
-> > >
-> > > I agree it CPU modified buffers *concurrently* with DMA can never work,
-> > > and I believe the ownership model was conceived to prevent this
-> > > situation.
-> >
-> > But that just means that the "ownership" model is garbage, and cannot
-> > handle this REAL LIFE situation.
-> 
-> Just to clarify: I obviously agree that the "both sides modify
-> concurrently" obviously cannot work with bounce buffers.
+On Sun, Mar 27, 2022 at 8:24 AM David Laight <David.Laight@aculab.com> wrote:
+>
+> Aren't bounce buffers just a more extreme case on non-coherent
+> memory accesses?
 
-Aren't bounce buffers just a more extreme case on non-coherent
-memory accesses?
-They just need explicit memory copies rather than just cache
-writeback and invalidate operations.
+No.
 
-So 'both sides modify concurrently' just has the same issue
-as it does with non-coherent memory in that the locations
-need to be in separate (dma) cache lines.
-Indeed, if the bounce buffers are actually coherent then
-arbitrary concurrent updates are possible.
+In fact, this whoe change came about exactly because bounce buffers
+are different.
 
-One issue is that the driver needs to indicate which parts
-of any buffer are dirty.
-Whereas the any 'cache writeback' request will only write
-dirty data.
+The difference is that bounce buffers have that (wait for it) bounce
+buffer, which can have stale contents.
 
-Get everything right and you can even support hardware where
-the 'bounce buffers' are actually on the card and the copies
-are MMIO (or better, especially on PCIe, synchronous host
-initiated dma transfers).
+> They just need explicit memory copies rather than just cache
+> writeback and invalidate operations.
 
-	David
+That's the thing - the memory copies introduce entirely new issues.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+I really think that instead of making up abstract rules ("ownership"
+or "bounce buffers are just extreme cases of non-coherency") we should
+make the rules very much practical and down to earth, and write out
+exactly what they *do*.
+
+The whole "sync DMA" is odd and abstract enough as a concept on its
+own, we shouldn't then make the rules for it odd and abstract. We
+should make them very very practical.
+
+So I will propose that we really make it very much about practical
+concerns, and we document things as
+
+ (a) the "sync" operation has by definition a "whose _future_ access
+do we sync for" notion.
+
+     So "dma_sync_single_for_cpu()" says that the future accesses to
+this dma area is for the CPU.
+
+     Note how it does *NOT* say that the "CPU owns the are". That's
+bullsh*t, and we now know it's BS.
+
+ (b) but the sync operation also has a "who wrote the data we're syncing"
+
+     Note that this is *not* "who accessed or owned it last", because
+that's nonsensical: if we're syncing for the CPU, then the only reason
+to do so is because we expect that the last access was by the device,
+so specifying that separately would just be redundant and stupid.
+
+     But specifying who *wrote* to the area is meaningful and matters.
+It matters for the non-coherent cache case (because of writeback
+issues), but it also matters for the bounce buffer case (becasue it
+determines which way we should copy).
+
+Note how this makes sense: a "sync" operation is clearly about taking
+some past state, and making it palatable for a future use. The past
+state is pretty much defined by who wrote the data, and then we can
+use that and the "the next thing to access it" to determine what we
+need to do about the sync.
+
+It is *NOT* about "ownership".
+
+So let's go through the cases, and I'm going to ignore the "CPU caches
+are coherent with device DMA" case because that's always going to be a
+no-op wrt data movement (but it will still generally need a memory
+barrier, which I will mention here and then ignore going forward).
+
+Syncing for *CPU* accesses (ie dma_sync_single_for_cpu()) has four
+choices I can see:
+
+ - nobody wrote the data at all (aka DMA_NONE).
+
+   This is nonsensical and should warn. If nobody wrote to it, why
+would the CPU ever validly access it?
+
+   Maybe you should have written "memset(buffer, 0, size)" instead?
+
+ - the CPU wrote the data in the first place (aka DMA_TO_DEVICE)
+
+   This is a no-op (possibly a memory barrier), because even stale CPU
+caches are fine, and even if it was in a bounce buffer, the original
+CPU-side data is fine.
+
+ - the device wrote the data (aka DMA_FROM_DEVICE)
+
+   This is just the regular case of a device having written something,
+and the CPU wants to see it.
+
+   It obviously needs real work, but it's simple and straightforward.
+
+   For non-coherent caches, it needs a cache invalidate. For a bounce
+buffer, it needs a copy from the bounce buffer to the "real" buffer.
+
+ - it's not clear who write the data (aka DMA_BIDIRECTIONAL)
+
+   This is not really doable for a bounce buffer - we just don't know
+which buffer contents are valid.
+
+   I think it's very very questionable for non-coherent caches too,
+but "writeback and invalidate" probably can't hurt.
+
+   So probably warn about it, and do whatever we used to do historically.
+
+Syncing for device accesses (ie dma_sync_single_for_device()) also has
+the same four choices I can see, but obviously does different things:
+
+ - nobody wrote the data at all (aka DMA_NONE)
+
+   This sounds as nonsensical as the CPU case, but maybe isn't.
+
+   We may not have any previous explicit writes, but we *do* have that
+"insecure and possibly stale buffer contents" bounce buffer thing on
+the device side.
+
+   So with a bounce buffer, it's actually somewhat sane to say
+"initialize the bounce buffer to a known state".
+
+   Because bounce buffers *are* special. Unlike even the "noncoherent
+caches" issue, they have that entirely *other* hidden state in the
+form of the bounce buffer itself.
+
+   Discuss.
+
+ - the CPU wrote the data in the first place (aka DMA_TO_DEVICE).
+
+   This is the regular and common case of "we have data on the CPU
+side that is written to the device".
+
+   Again, needs work, but is simple and straightforward.
+
+   For non-coherent caches, we need a writeback on the CPU. For a
+bounce buffer, we need to copy from the regular buffer to the bounce
+buffer.
+
+ - the device wrote the data in the first place (aka DMA_FROM_DEVICE)
+
+   This is the case that we hit on ath9k. It's *not* obvious, but when
+we write this out this way, I really think the semantics are pretty
+clear.
+
+   For non-coherent caches, we may need an "invalidate". For a bounce
+buffer, it's a no-op (because the bounce buffer already contains the
+data)
+
+ - it's not clear who write the data (aka DMA_BIDIRECTIONAL)
+
+   This is again not really doable for a bounce buffer. We don't know
+which buffer contains the right data, we should warn about it and do
+whatever we used to do historically.
+
+   Again, it's very questionable for non-coherent caches too, but
+"writeback and invalidate" probably at least can't hurt.
+
+So hey, that's my thinking. The whole "ownership"  model is, I think,
+obviously untenable.
+
+But just going through and listing the different cases and making them
+explicit I think explains exactly what the different situations are,
+and that then makes it fairly clear what the different combinations
+should do.
+
+No?
+
+           Linus
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
