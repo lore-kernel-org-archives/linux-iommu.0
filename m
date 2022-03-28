@@ -4,91 +4,72 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id F2087C43219
-	for <iommu@archiver.kernel.org>; Mon, 28 Mar 2022 08:15:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 628F1C433EF
+	for <iommu@archiver.kernel.org>; Mon, 28 Mar 2022 08:53:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 78E6641752;
-	Mon, 28 Mar 2022 08:15:41 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id DDC76400E4;
+	Mon, 28 Mar 2022 08:53:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id m8grCly1J0S7; Mon, 28 Mar 2022 08:15:40 +0000 (UTC)
+	with ESMTP id hK9cMhoCW1XX; Mon, 28 Mar 2022 08:53:17 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 512B04174F;
-	Mon, 28 Mar 2022 08:15:40 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id A54C8400D7;
+	Mon, 28 Mar 2022 08:53:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2FAFEC001D;
-	Mon, 28 Mar 2022 08:15:40 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1B5F0C0012
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 08:15:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 72E78C001D;
+	Mon, 28 Mar 2022 08:53:16 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9069AC0012
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 08:53:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id ECBFE40189
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 08:15:38 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 6FC5460DB2
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 08:53:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EfKBXB2SRV-X for <iommu@lists.linux-foundation.org>;
- Mon, 28 Mar 2022 08:15:38 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from eu-smtp-delivery-151.mimecast.com
- (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 9431B40186
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 08:15:37 +0000 (UTC)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-82-73TuQx5vMi6TZZlGtDoZUA-1; Mon, 28 Mar 2022 09:15:33 +0100
-X-MC-Unique: 73TuQx5vMi6TZZlGtDoZUA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Mon, 28 Mar 2022 09:15:29 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Mon, 28 Mar 2022 09:15:29 +0100
-From: David Laight <David.Laight@ACULAB.COM>
-To: 'Christoph Hellwig' <hch@lst.de>, Linus Torvalds
- <torvalds@linux-foundation.org>
-Subject: RE: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-Thread-Topic: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-Thread-Index: AQHYQm5IK/9JYQDqEEKfLChLw6SC36zUb2Ng
-Date: Mon, 28 Mar 2022 08:15:29 +0000
-Message-ID: <eb33d98e65104d98abf9bd752787a9ea@AcuMS.aculab.com>
-References: <1812355.tdWV9SEqCh@natalenko.name>
- <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
- <27b5a287-7a33-9a8b-ad6d-04746735fb0c@arm.com>
- <CAHk-=wip7TCD_+2STTepuEZvGMg6wcz+o=kyFUvHjuKziTMixw@mail.gmail.com>
- <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
- <20220324190216.0efa067f.pasic@linux.ibm.com> <20220325163204.GB16426@lst.de>
- <87y20x7vaz.fsf@toke.dk> <e077b229-c92b-c9a6-3581-61329c4b4a4b@arm.com>
- <CAHk-=wgKF5GfLXyVGDQDifh0MpMccDdmBvJBG3dt2+idCa5DzQ@mail.gmail.com>
- <20220328063723.GA29405@lst.de>
-In-Reply-To: <20220328063723.GA29405@lst.de>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id QG5GgaBy-kTK for <iommu@lists.linux-foundation.org>;
+ Mon, 28 Mar 2022 08:53:13 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 4C9A260AE6
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 08:53:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1648457593; x=1679993593;
+ h=message-id:date:mime-version:cc:to:references:from:
+ subject:in-reply-to:content-transfer-encoding;
+ bh=KY/woiP3Ikl6M8527fLcfhM7r8Pg9Vb7dRAlz6bGG2I=;
+ b=Toq2J827O79NkQco6uMmdljj2r1cwCECrTkcwuAZd4SK7Y/Tba32BE4o
+ bkxGfMnokN+1CGckKgcEiwE65E+BG3DtcE4ke1GRpW9QoT8ZMHATMnVma
+ FVG7mGZyIwU6Q5gG5IKI99hW8Cj9/OoHmen0QcEpRKVKPRtrInCdId8TJ
+ FpXwSlsNVCNpsD6QeMNXFkl7sFdnOrZlMXm8CN1cWFoRQZSHFu8yz6fcP
+ TwY5+Dkqa8azNa4YoiGRcR+JK7fRdOHPWrw8jsm12LIredslSBeJF3lma
+ A/kBcQYHmxUoURKWgcm+5ULekEhy3Mrp95HHHMh3fhhHQp3JtHDMnGfCt Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10299"; a="238883090"
+X-IronPort-AV: E=Sophos;i="5.90,216,1643702400"; d="scan'208";a="238883090"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Mar 2022 01:53:12 -0700
+X-IronPort-AV: E=Sophos;i="5.90,216,1643702400"; d="scan'208";a="502440248"
+Received: from zgao13-mobl2.ccr.corp.intel.com (HELO [10.254.210.12])
+ ([10.254.210.12])
+ by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Mar 2022 01:53:09 -0700
+Message-ID: <21bc406b-96f0-ae99-1606-9493f3cc2621@linux.intel.com>
+Date: Mon, 28 Mar 2022 16:53:06 +0800
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
 Content-Language: en-US
-Cc: =?iso-8859-1?Q?Toke_H=F8iland-J=F8rgensen?= <toke@toke.dk>,
- Netdev <netdev@vger.kernel.org>, Kalle Valo <kvalo@kernel.org>,
- linux-wireless <linux-wireless@vger.kernel.org>,
- Oleksandr Natalenko <oleksandr@natalenko.name>,
- stable <stable@vger.kernel.org>, Linux
- Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Halil Pasic <pasic@linux.ibm.com>, iommu <iommu@lists.linux-foundation.org>,
- Olha Cherevyk <olha.cherevyk@gmail.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jakub Kicinski <kuba@kernel.org>, Paolo
- Abeni <pabeni@redhat.com>, Robin Murphy <robin.murphy@arm.com>, "David
- S. Miller" <davem@davemloft.net>
+To: David Stevens <stevensd@chromium.org>, Kevin Tian <kevin.tian@intel.com>
+References: <20220322063555.1422042-1-stevensd@google.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v2] iommu/vt-d: calculate mask for non-aligned flushes
+In-Reply-To: <20220322063555.1422042-1-stevensd@google.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,53 +82,92 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Christoph Hellwig
-> Sent: 28 March 2022 07:37
+Hi David,
+
+On 2022/3/22 14:35, David Stevens wrote:
+> From: David Stevens <stevensd@chromium.org>
 > 
-> On Fri, Mar 25, 2022 at 11:46:09AM -0700, Linus Torvalds wrote:
-> > I think my list of three different sync cases (not just two! It's not
-> > just about whether to sync for the CPU or the device, it's also about
-> > what direction the data itself is taking) is correct.
-> >
-> > But maybe I'm wrong.
+> Calculate the appropriate mask for non-size-aligned page selective
+> invalidation. Since psi uses the mask value to mask out the lower order
+> bits of the target address, properly flushing the iotlb requires using a
+> mask value such that [pfn, pfn+pages) all lie within the flushed
+> size-aligned region.  This is not normally an issue because iova.c
+> always allocates iovas that are aligned to their size. However, iovas
+> which come from other sources (e.g. userspace via VFIO) may not be
+> aligned.
+
+This is bug fix, right? Can you please add "Fixes" and "Cc stable" tags?
+
 > 
-> At the high level you are correct.  It is all about which direction
-> the data is taking.  That is the direction argument that all the
-> map/unmap/sync call take.  The sync calls then just toggle the ownership.
-> You seem to hate that ownership concept, but I don't see how things
-> could work without that ownership concept as we're going to be in
-> trouble without having that.  And yes, a peek operation could work in
-> some cases, but it would have to be at the cache line granularity.
+> Signed-off-by: David Stevens <stevensd@chromium.org>
+> ---
+> v1 -> v2:
+>   - Calculate an appropriate mask for non-size-aligned iovas instead
+>     of falling back to domain selective flush.
+> 
+>   drivers/iommu/intel/iommu.c | 27 ++++++++++++++++++++++++---
+>   1 file changed, 24 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 5b196cfe9ed2..ab2273300346 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -1717,7 +1717,8 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
+>   				  unsigned long pfn, unsigned int pages,
+>   				  int ih, int map)
+>   {
+> -	unsigned int mask = ilog2(__roundup_pow_of_two(pages));
+> +	unsigned int aligned_pages = __roundup_pow_of_two(pages);
+> +	unsigned int mask = ilog2(aligned_pages);
+>   	uint64_t addr = (uint64_t)pfn << VTD_PAGE_SHIFT;
+>   	u16 did = domain->iommu_did[iommu->seq_id];
+>   
+> @@ -1729,10 +1730,30 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
+>   	if (domain_use_first_level(domain)) {
+>   		domain_flush_piotlb(iommu, domain, addr, pages, ih);
+>   	} else {
+> +		unsigned long bitmask = aligned_pages - 1;
+> +
+> +		/*
+> +		 * PSI masks the low order bits of the base address. If the
+> +		 * address isn't aligned to the mask, then compute a mask value
+> +		 * needed to ensure the target range is flushed.
+> +		 */
+> +		if (unlikely(bitmask & pfn)) {
+> +			unsigned long end_pfn = pfn + pages - 1, shared_bits;
+> +
+> +			/*
+> +			 * Since end_pfn <= pfn + bitmask, the only way bits
+> +			 * higher than bitmask can differ in pfn and end_pfn is
+> +			 * by carrying. This means after masking out bitmask,
+> +			 * high bits starting with the first set bit in
+> +			 * shared_bits are all equal in both pfn and end_pfn.
+> +			 */
+> +			shared_bits = ~(pfn ^ end_pfn) & ~bitmask;
+> +			mask = shared_bits ? __ffs(shared_bits) : BITS_PER_LONG;
 
-I don't think it is really 'ownership' but more about who has
-write access.
-Only one side can have write access (to a cache line [1]) at any
-one time.
+Can you please add some lines in the commit message to explain how this
+magic line works? It's easier for people to understand it if you can
+take a real example. :-)
 
-Read access is different.
-You need a 'synchronise' action to pick up newly written data.
-This might be a data copy, cache flush or cache invalidate.
-It only need affect the area that needs to be read - not
-full buffer.
-Partial cache flush/invalidate will almost certainly speed
-up receipt of short network packets that are copied into a
-new skb - leaving the old one mapped for another receive.
+Best regards,
+baolu
 
-[1] The cache line size might be a property of the device
-and dma subsystem, not just the cpu.
-I have used hardware when the effective size was 1kB.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+> +		}
+> +
+>   		/*
+>   		 * Fallback to domain selective flush if no PSI support or
+> -		 * the size is too big. PSI requires page size to be 2 ^ x,
+> -		 * and the base address is naturally aligned to the size.
+> +		 * the size is too big.
+>   		 */
+>   		if (!cap_pgsel_inv(iommu->cap) ||
+>   		    mask > cap_max_amask_val(iommu->cap))
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
