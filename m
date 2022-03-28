@@ -1,117 +1,86 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 734AFC433F5
-	for <iommu@archiver.kernel.org>; Mon, 28 Mar 2022 21:27:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 96652C433EF
+	for <iommu@archiver.kernel.org>; Mon, 28 Mar 2022 21:38:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 136604099A;
-	Mon, 28 Mar 2022 21:27:01 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 33F6360F4C;
+	Mon, 28 Mar 2022 21:38:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mCzhwu02I9lQ; Mon, 28 Mar 2022 21:27:00 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id nXmO_Yult95F; Mon, 28 Mar 2022 21:38:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id CCE87415EF;
-	Mon, 28 Mar 2022 21:26:59 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id EC6D160FBF;
+	Mon, 28 Mar 2022 21:38:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7F942C001D;
-	Mon, 28 Mar 2022 21:26:59 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 02C16C0012
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 21:26:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BEF62C001D;
+	Mon, 28 Mar 2022 21:38:36 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9149EC0012
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 21:38:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id CF2B340242
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 21:26:57 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 7025240213
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 21:38:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RWjUiAalbZ8F for <iommu@lists.linux-foundation.org>;
- Mon, 28 Mar 2022 21:26:57 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id KNBQV_Qg35Xv for <iommu@lists.linux-foundation.org>;
+ Mon, 28 Mar 2022 21:38:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.129.124])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 1142B4016C
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 21:26:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1648502815;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=AhA4dUFlPR118hhpX2PsAoIqQjvFZQbvAcfxVPt1G38=;
- b=V71GLXt3O34AyseUUE/ErIpH6xVrIYm0PCiEU2U154FTfGjHLf5EcAB8Om2f9+4AcaHX9a
- 2isHVwTIQsT7Kzh4MkGqBoMPS2e/GPeFTENwdwKJOszZpT3i/+yaCctpVY6rsRl3pK+CIi
- D8l9tsSM/pa6PCo9C6kx4BjI510xsE8=
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
- [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-259-SIyvclMXPiiK8fElXcV5Qg-1; Mon, 28 Mar 2022 17:26:54 -0400
-X-MC-Unique: SIyvclMXPiiK8fElXcV5Qg-1
-Received: by mail-il1-f198.google.com with SMTP id
- s4-20020a92c5c4000000b002c7884b8608so8497126ilt.21
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 14:26:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
- :references:organization:mime-version:content-transfer-encoding;
- bh=AhA4dUFlPR118hhpX2PsAoIqQjvFZQbvAcfxVPt1G38=;
- b=T0LWMe1CZz71EBYOAwpgjgtF5/Ul3XK8syhVp/iay2B7E8dlh90oZyz70110Cs3FG8
- LQxXp2VfWkq+31/wWIySpJfLfPbNXHNDkew4hJ18Rix1DJK6AgH3x33iUCJBPN63AV9/
- njT3okiO/V5z97vc3MQ3lSovvzQmdlI6XMo8ZzAhlFCjedDI/UU1y5mKsdoH12R6p0/m
- 842eGk7ZPOxhiuVUOAwX02aUS18XucqLbGqo9mx+4PyY1Hz676pPU3gwPklck1X98Dni
- o3tHJwHIFWeLZ2d3/v5YB3MXuvHcqnHBsdhDoGNxCaRllDkPJCbeU8WlX6koMZ6sargc
- B8Bg==
-X-Gm-Message-State: AOAM5323A4ubw3EsjTTB7WW3+ETu6oeHkmHto8i22OBLsSaSXYSVUQG4
- XANJDpsyQZTsD3SFvn9AAb244BvYvOuzqqKOga1f62PmFELNXEbdmbMaVAkUnT6KXll3xl2yAEB
- PJuN+QOr1Mq8KhE3i5znM8luKDTKqDA==
-X-Received: by 2002:a05:6638:1490:b0:323:6863:fd0f with SMTP id
- j16-20020a056638149000b003236863fd0fmr3955833jak.20.1648502813606; 
- Mon, 28 Mar 2022 14:26:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJypxL5wkwODjtfYMS8ID4x491eGOOpE6QbjSXOKlH5MMMTvT9ty6p3YM6m6FKhe9EFHLEL44w==
-X-Received: by 2002:a05:6638:1490:b0:323:6863:fd0f with SMTP id
- j16-20020a056638149000b003236863fd0fmr3955814jak.20.1648502813325; 
- Mon, 28 Mar 2022 14:26:53 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239]) by smtp.gmail.com with ESMTPSA id
- f8-20020a056e02168800b002c654e0f592sm7880621ila.58.2022.03.28.14.26.52
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 28 Mar 2022 14:26:52 -0700 (PDT)
-Date: Mon, 28 Mar 2022 15:26:51 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH RFC 08/12] iommufd: IOCTLs for the io_pagetable
-Message-ID: <20220328152651.4882d8e9.alex.williamson@redhat.com>
-In-Reply-To: <20220328194749.GA1746678@nvidia.com>
-References: <8-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
- <20220323131038.3b5cb95b.alex.williamson@redhat.com>
- <20220323193439.GS11336@nvidia.com>
- <20220323140446.097fd8cc.alex.williamson@redhat.com>
- <20220323203418.GT11336@nvidia.com>
- <20220323225438.GA1228113@nvidia.com>
- <BN9PR11MB5276EB80AFCC3003955A46248C199@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220324134622.GB1184709@nvidia.com>
- <20220328111723.24fa5118.alex.williamson@redhat.com>
- <20220328185753.GA1716663@nvidia.com>
- <20220328194749.GA1746678@nvidia.com>
-Organization: Red Hat
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 4BAC34014A
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 21:38:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1648503514; x=1680039514;
+ h=date:from:to:cc:subject:message-id:in-reply-to:
+ references:mime-version:content-transfer-encoding;
+ bh=MoJJ7PpyY30zJiWm4s27HVjf2QmYd2IbqH48aFV+r4o=;
+ b=K2r/qAXzWarpVx8KS+lKtIkwnGZjziZwkFKg8tGErJKFkW4SppVlBG/a
+ 2WH+y7/XmDUcypwtHS8pGV15VcFjX4dt2gkUhP7Y2gkHAUsFeTOhln3Sy
+ pEyMKyorF0ikiWFjYVUv2uwqC1DJEOIsnTocRdnURFZbAsdwd4c7l7xXO
+ tVgauMqYwvTJHlrbCsChWxu2jj/OF+9O8PWrzLQvmHn+grj9u75yPKofc
+ GPxb9MfvVs9S6/IV7KLAUhfsovJDJY7j71cqS2rxzt626wCRFKR+xXsxl
+ ClJ+opMx156fWUinWseyK73ipZKaouBEFsGjZ4+bV+Sj1VzOkJUs6b6D+ A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="259295124"
+X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; d="scan'208";a="259295124"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Mar 2022 14:38:33 -0700
+X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; d="scan'208";a="564026275"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+ by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Mar 2022 14:38:33 -0700
+Date: Mon, 28 Mar 2022 14:41:56 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH v2 3/8] iommu/vt-d: Implement device_pasid domain attach
+ ops
+Message-ID: <20220328144156.66ba6f39@jacob-builder>
+In-Reply-To: <BN9PR11MB5276FF347A54098F469936978C139@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
+ <20220315050713.2000518-4-jacob.jun.pan@linux.intel.com>
+ <20220315143322.GW11336@nvidia.com>
+ <BN9PR11MB5276E98AE37EA912B01EB0B68C119@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220316140140.76bb24c6@jacob-builder>
+ <BN9PR11MB5276FF347A54098F469936978C139@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>,
- Daniel Jordan <daniel.m.jordan@oracle.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "Martins, Joao" <joao.m.martins@oracle.com>,
- David Gibson <david@gibson.dropbear.id.au>
+Cc: "Luck, Tony" <tony.luck@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
+ "Raj, Ashok" <ashok.raj@intel.com>, "Zanussi, Tom" <tom.zanussi@intel.com>,
+ "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+ LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ "Williams, Dan J" <dan.j.williams@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -129,66 +98,61 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 28 Mar 2022 16:47:49 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+Hi Kevin,
 
-> On Mon, Mar 28, 2022 at 03:57:53PM -0300, Jason Gunthorpe wrote:
-> 
-> > So, currently AMD and Intel have exactly the same HW feature with a
-> > different kAPI..  
-> 
-> I fixed it like below and made the ordering changes Kevin pointed
-> to. Will send next week after the merge window:
-> 
-> 527e438a974a06 iommu: Delete IOMMU_CAP_CACHE_COHERENCY
-> 5cbc8603ffdf20 vfio: Move the Intel no-snoop control off of IOMMU_CACHE
-> ebc961f93d1af3 iommu: Introduce the domain op enforce_cache_coherency()
-> 79c52a2bb1e60b vfio: Require that devices support DMA cache coherence
-> 02168f961b6a75 iommu: Replace uses of IOMMU_CAP_CACHE_COHERENCY with dev_is_dma_coherent()
-> 
-> '79c can be avoided, we'd just drive IOMMU_CACHE off of
-> dev_is_dma_coherent() - but if we do that I'd like to properly
-> document the arch/iommu/platform/kvm combination that is using this..
+On Fri, 18 Mar 2022 05:33:38 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
 
-We can try to enforce dev_is_dma_coherent(), as you note it's not going
-to affect any x86 users.  arm64 is the only obviously relevant arch that
-defines ARCH_HAS_SYNC_DMA_FOR_{DEVICE,CPU} but the device.dma_coherent
-setting comes from ACPI/OF firmware, so someone from ARM land will need
-to shout if this is an issue.  I think we'd need to back off and go
-with documentation if a broken use case shows up.  Thanks,
-
-Alex
-
- 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 3c0ac3c34a7f9a..f144eb9fea8e31 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -2269,6 +2269,12 @@ static int amd_iommu_def_domain_type(struct device *dev)
->  	return 0;
->  }
->  
-> +static bool amd_iommu_enforce_cache_coherency(struct iommu_domain *domain)
-> +{
-> +	/* IOMMU_PTE_FC is always set */
-> +	return true;
-> +}
-> +
->  const struct iommu_ops amd_iommu_ops = {
->  	.capable = amd_iommu_capable,
->  	.domain_alloc = amd_iommu_domain_alloc,
-> @@ -2291,6 +2297,7 @@ const struct iommu_ops amd_iommu_ops = {
->  		.flush_iotlb_all = amd_iommu_flush_iotlb_all,
->  		.iotlb_sync	= amd_iommu_iotlb_sync,
->  		.free		= amd_iommu_domain_free,
-> +		.enforce_cache_coherency = amd_iommu_enforce_cache_coherency,
->  	}
->  };
+> > From: Jacob Pan
+> > Sent: Thursday, March 17, 2022 5:02 AM
+> > 
+> > Hi Kevin,
+> > 
+> > On Wed, 16 Mar 2022 07:41:34 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+> > wrote:
+> >   
+> > > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > > Sent: Tuesday, March 15, 2022 10:33 PM
+> > > >
+> > > > On Mon, Mar 14, 2022 at 10:07:07PM -0700, Jacob Pan wrote:  
+> > > > > +	/*
+> > > > > +	 * Each domain could have multiple devices attached with
+> > > > > shared or  
+> > > > per  
+> > > > > +	 * device PASIDs. At the domain level, we keep track of
+> > > > > unique PASIDs  
+> > > > and  
+> > > > > +	 * device user count.
+> > > > > +	 * E.g. If a domain has two devices attached, device A
+> > > > > has PASID 0, 1;
+> > > > > +	 * device B has PASID 0, 2. Then the domain would have
+> > > > > PASID 0, 1, 2.
+> > > > > +	 */  
+> > > >
+> > > > A 2d array of xarray's seems like a poor data structure for this
+> > > > task.  
+> > >  
+> > Perhaps i mis-presented here, I am not using 2D array. It is an 1D
+> > xarray for domain PASIDs only. Then I use the existing device list in
+> > each domain, adding another xa to track per-device-domain PASIDs.  
+> > > besides that it also doesn't work when we support per-device PASID
+> > > allocation in the future. In that case merging device PASIDs together
+> > > is conceptually wrong.
+> > >  
+> > Sorry, could you elaborate? If we do per-dev PASID allocation, we could
+> > use the ioasid_set for each pdev, right?  
 > 
-> Thanks,
-> Jason
+> My point is simply about the comment above which says the domain
+> will have PASID 0, 1, 2 when there is [devA, PASID0] and [devB, PASID0].
+> You can maintain a single  PASID list only when it's globally allocated
+> cross devices. otherwise this has to be a tuple including device and
+> PASID.
 > 
+Got you, you are right we don't want to limit to globally allocated scheme.
 
+Thanks,
+
+Jacob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
