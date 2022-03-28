@@ -1,79 +1,100 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4B280C433F5
-	for <iommu@archiver.kernel.org>; Mon, 28 Mar 2022 21:41:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 690D1C433F5
+	for <iommu@archiver.kernel.org>; Mon, 28 Mar 2022 23:06:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id CACFC4029F;
-	Mon, 28 Mar 2022 21:41:06 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id DCE5A401BE;
+	Mon, 28 Mar 2022 23:06:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0oqvt4SqwTSD; Mon, 28 Mar 2022 21:41:05 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 50PHdVRZAP4l; Mon, 28 Mar 2022 23:06:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 44C194016C;
-	Mon, 28 Mar 2022 21:41:05 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id DD9FD414CC;
+	Mon, 28 Mar 2022 23:06:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 33775C001D;
-	Mon, 28 Mar 2022 21:41:05 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4D177C0012
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 21:41:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8995EC001D;
+	Mon, 28 Mar 2022 23:06:09 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DB22BC0012
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 23:06:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 0CEFA40273
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 21:41:03 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id D569F414CC
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 23:06:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kOfIkP_zqwtl for <iommu@lists.linux-foundation.org>;
- Mon, 28 Mar 2022 21:41:01 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id XE_2oEwo38DQ for <iommu@lists.linux-foundation.org>;
+ Mon, 28 Mar 2022 23:06:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by smtp2.osuosl.org (Postfix) with ESMTPS id C5EE24016C
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 21:41:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1648503661; x=1680039661;
- h=date:from:to:cc:subject:message-id:in-reply-to:
- references:mime-version:content-transfer-encoding;
- bh=gg5QwhP4YCgK1cnFnIvMFqJVjZwNm4QeiHPCuwP2Rc8=;
- b=TzS1mKEs+17vHHA2TiUyBSRi/DKvdyBMlhcMq8EQRux9shv4WlwDy/bz
- mzQU+BrhasiPMSEdZseqdcwaIxuJgZ6OuVXTF/tV9VofDYQsJcKrdliIq
- p5XdcOkkumTeS+1uWHkbKASrY8DH9nLpW45DpQp0xZrcevQz8msH2p3Qw
- O/HxejQWqk/YJK7URw82lu8/mlExQ0GFMco36gigEketPetgldb7BlirB
- LzSr92aEqlqAqtAtoYfXVayr2+UNgqzsj/Gxr+morpS8nsEMTIUm5uD4A
- CLJjZfh6WSgJkR90+Ssrt/pQD9/SFA6cVMW1ADpFbXEzLCMaHLszlcpzf A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="241262679"
-X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; d="scan'208";a="241262679"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Mar 2022 14:41:01 -0700
-X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; d="scan'208";a="617924058"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
- by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Mar 2022 14:41:00 -0700
-Date: Mon, 28 Mar 2022 14:44:23 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2 5/8] iommu: Add PASID support for DMA mapping API users
-Message-ID: <20220328144423.39ba9b9b@jacob-builder>
-In-Reply-To: <12390112-c497-1f02-5ddc-ad8ee3645347@linux.intel.com>
-References: <20220315050713.2000518-1-jacob.jun.pan@linux.intel.com>
- <20220315050713.2000518-6-jacob.jun.pan@linux.intel.com>
- <12390112-c497-1f02-5ddc-ad8ee3645347@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 21D87401BE
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 23:06:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1648508764;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=/pxpSsyLbwmiHoLxXFbyVJ/FnVtdO6+a2Mb99oUfeyw=;
+ b=RPoVrTMnagDdSlSc6b0XOdNGf2ofhUL+XgedVHDnEbfvfoG+914NU8ZiTB7ynBcHIj9wHm
+ YKof2+35UEUkWoUhg/ktP7glkm/vwQZ6VQyvtP7byZ1Q5+3IfMmd1HaBAnNtvrRsywTJHc
+ PbmOnL7dVOnJzTPNxLeqPV0yYwli3Gw=
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-441-J6Ygtes-NZ6lVy6EL6ZM8g-1; Mon, 28 Mar 2022 19:06:01 -0400
+X-MC-Unique: J6Ygtes-NZ6lVy6EL6ZM8g-1
+Received: by mail-il1-f197.google.com with SMTP id
+ x6-20020a923006000000b002bea39c3974so8620218ile.12
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 16:06:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+ :references:organization:mime-version:content-transfer-encoding;
+ bh=/pxpSsyLbwmiHoLxXFbyVJ/FnVtdO6+a2Mb99oUfeyw=;
+ b=1FNaFjnbaDVjNtAZhdutUqCrEiuedfX0JHTiCLFciuaC4j9i9VrjpsAHUU+F4zYkle
+ GO4rd6/3rmREP/R0V4FljOEsxcIvpq5v6OhQUel8+6fWc2Ydi70EMM9wOcBRIGt+V119
+ yV2G3+0z1+ZGkksN8T5XHUXtPQfRiNIlgh6V8w8iq6mCbMhHWj+2vRTNe2BtyN0b2EIq
+ RB5NeeTpQtFGBmJiweGGC8Vy95SZxeLA/IXKTvMaYxsYTVVWItlo4bkHCHUuOOiQ783g
+ oyWy0YOBZ5uKs+c/q5wJaRsJJvAmOHpv/IjD6H6SzkI7Li5lZmsBfXDMvP2l4RUq0iMM
+ /XnQ==
+X-Gm-Message-State: AOAM530mLWWlnb8SDSVRUU3q5QaUVpIQUKLWbkvYkdNpsQel+3SqHAeE
+ 0XX66Uxj1b7TCz8HvhfaPCxJfzkNwCdM1EXe1Hzd85Gxk8ryVPDwkTKaa9O9m7VDmec+moFf/xr
+ 7kXF8gkaIi0j23M/alfkBSn0ubILMYw==
+X-Received: by 2002:a05:6638:1455:b0:323:6814:5095 with SMTP id
+ l21-20020a056638145500b0032368145095mr4177168jad.62.1648508760485; 
+ Mon, 28 Mar 2022 16:06:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwEE1d3+Xw9AuHSSz27P+6LwlaOfc1OqepbZawz9IsBd534R0ThgdhiDyS1OWieLbVLfFp5uQ==
+X-Received: by 2002:a05:6638:1455:b0:323:6814:5095 with SMTP id
+ l21-20020a056638145500b0032368145095mr4177151jad.62.1648508760084; 
+ Mon, 28 Mar 2022 16:06:00 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239]) by smtp.gmail.com with ESMTPSA id
+ d8-20020a056e02214800b002c7bea34e3dsm8069642ilv.46.2022.03.28.16.05.59
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 28 Mar 2022 16:05:59 -0700 (PDT)
+Date: Mon, 28 Mar 2022 17:05:58 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: "Daniel F. Smith" <dfsmith@us.ibm.com>
+Subject: Re: Bug report: VFIO map/unmep mem subject to race and DMA data
+ goes to incorrect page (4.18.0)
+Message-ID: <20220328170558.79af68ff.alex.williamson@redhat.com>
+In-Reply-To: <20220328191451.GA18248@porter.almaden.ibm.com>
+References: <20220325200640.GA29990@porter.almaden.ibm.com>
+ <20220325161022.00ab43ff.alex.williamson@redhat.com>
+ <20220328191451.GA18248@porter.almaden.ibm.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Tony Luck <tony.luck@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>, "Zanussi, 
- Tom" <tom.zanussi@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
- LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
- iommu@lists.linux-foundation.org, Jacob Pan <jacob.jun.pan@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Dan Williams <dan.j.williams@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Cc: iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,189 +112,181 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi BaoLu,
+On Mon, 28 Mar 2022 12:14:51 -0700
+"Daniel F. Smith" <dfsmith@us.ibm.com> wrote:
 
-On Fri, 18 Mar 2022 20:43:54 +0800, Lu Baolu <baolu.lu@linux.intel.com>
-wrote:
-
-> On 2022/3/15 13:07, Jacob Pan wrote:
-> > DMA mapping API is the de facto standard for in-kernel DMA. It operates
-> > on a per device/RID basis which is not PASID-aware.
-> > 
-> > Some modern devices such as Intel Data Streaming Accelerator, PASID is
-> > required for certain work submissions. To allow such devices use DMA
-> > mapping API, we need the following functionalities:
-> > 1. Provide device a way to retrieve a PASID for work submission within
-> > the kernel
-> > 2. Enable the kernel PASID on the IOMMU for the device
-> > 3. Attach the kernel PASID to the device's default DMA domain, let it
-> > be IOVA or physical address in case of pass-through.
-> > 
-> > This patch introduces a driver facing API that enables DMA API
-> > PASID usage. Once enabled, device drivers can continue to use DMA APIs
-> > as is. There is no difference in dma_handle between without PASID and
-> > with PASID.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >   drivers/iommu/dma-iommu.c | 65 +++++++++++++++++++++++++++++++++++++++
-> >   include/linux/dma-iommu.h |  7 +++++
-> >   include/linux/iommu.h     |  9 ++++++
-> >   3 files changed, 81 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> > index b22034975301..d0ff1a34b1b6 100644
-> > --- a/drivers/iommu/dma-iommu.c
-> > +++ b/drivers/iommu/dma-iommu.c
-> > @@ -39,6 +39,8 @@ enum iommu_dma_cookie_type {
-> >   	IOMMU_DMA_MSI_COOKIE,
-> >   };
+> Hi Alex,
+> 
+> Answers to questions I can answer are in-line.  First an apology
+> though---the machine with the FPGA board is 1000 miles remote, and I don't
+> have root access.  It's unlikely I will be able to do kernel patch testing.
+> 
+> 
+> Alex Williamson scribed the following, on or around Fri, Mar 25, 2022 at 04:10:22PM -0600:
+> > Hi Daniel,
 > >   
-> > +static DECLARE_IOASID_SET(iommu_dma_pasid);
-> > +
-> >   struct iommu_dma_cookie {
-> >   	enum iommu_dma_cookie_type	type;
-> >   	union {
-> > @@ -370,6 +372,69 @@ void iommu_put_dma_cookie(struct iommu_domain
-> > *domain) domain->iova_cookie = NULL;
-> >   }
-> >   
-> > +/**
-> > + * iommu_enable_pasid_dma --Enable in-kernel DMA request with PASID
-> > + * @dev:	Device to be enabled
-> > + *
-> > + * DMA request with PASID will be mapped the same way as the legacy
-> > DMA.
-> > + * If the device is in pass-through, PASID will also pass-through. If
-> > the
-> > + * device is in IOVA map, the supervisor PASID will point to the same
-> > IOVA
-> > + * page table.
-> > + *
-> > + * @return the kernel PASID to be used for DMA or INVALID_IOASID on
-> > failure  
+> ...
+> >
+> > Coherency possibly.
+> > 
+> > There's a possible coherency issue at the compare depending on the
+> > IOMMU capabilities which could affect whether DMA is coherent to memory
+> > or requires an explicit flush.  I'm a little suspicious whether dmar0
+> > is really the IOMMU controlling this device since you mention a 39bit
+> > IOVA space, which is more typical of Intel client platforms which can
+> > also have integrated graphics which often have a dedicated IOMMU at
+> > dmar0 that isn't necessarily representative of the other IOMMUs in the
+> > system, especially with regard to snoop-control.  Each dmar lists the
+> > managed devices under it in sysfs to verify.  Support for snoop-control
+> > would be identified in the ecap register rather than the cap register.
+> > VFIO can also report coherency via the VFIO_DMA_CC_IOMMU extension
+> > reported by VFIO_CHECK_EXTENSION ioctl.  
 > 
-> The comment on the return value should be rephrased according to the
-> real code.
-> 
-yes, will do.
+> $ cat /sys/devices/virtual/iommu/dmar0/intel-iommu/cap
+> d2008c40660462
+> $ cat /sys/devices/virtual/iommu/dmar0/intel-iommu/ecap
+> f050da
+> $ lscpu | grep Model
+> Model:               165
+> Model name:          Intel(R) Xeon(R) W-1290P CPU @ 3.70GHz
+> $ ls -l /sys/devices/virtual/iommu/dmar0/devices | wc -l
+> 24
+> $ ... ioctl(container_fd, VFIO_CHECK_EXTENSION, VFIO_DMA_CC_IOMMU)
+> 0
 
-> > + */
-> > +int iommu_enable_pasid_dma(struct device *dev, ioasid_t *pasid)
-> > +{
-> > +	struct iommu_domain *dom;
-> > +	ioasid_t id, max;
-> > +	int ret;
-> > +
-> > +	dom = iommu_get_domain_for_dev(dev);
-> > +	if (!dom || !dom->ops || !dom->ops->attach_dev_pasid)
-> > +		return -ENODEV;
-> > +	max = iommu_get_dev_pasid_max(dev);
-> > +	if (!max)
-> > +		return -EINVAL;
-> > +
-> > +	id = ioasid_alloc(&iommu_dma_pasid, 1, max, dev);
-> > +	if (id == INVALID_IOASID)
-> > +		return -ENOMEM;
-> > +
-> > +	ret = dom->ops->attach_dev_pasid(dom, dev, id);
-> > +	if (ret) {
-> > +		ioasid_put(id);
-> > +		return ret;
-> > +	}
-> > +	*pasid = id;
-> > +
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL(iommu_enable_pasid_dma);
-> > +
-> > +/**
-> > + * iommu_disable_pasid_dma --Disable in-kernel DMA request with PASID
-> > + * @dev:	Device's PASID DMA to be disabled
-> > + *
-> > + * It is the device driver's responsibility to ensure no more incoming
-> > DMA
-> > + * requests with the kernel PASID before calling this function. IOMMU
-> > driver
-> > + * ensures PASID cache, IOTLBs related to the kernel PASID are cleared
-> > and
-> > + * drained.
-> > + *
-> > + * @return 0 on success or error code on failure  
-> 
-> Ditto.
-> 
-same
+Your ecap register reports bit 7 (Snoop Control) set, which should mean
+that VT-d is enforcing coherency regardless of no-snoop transactions.
+I suspect maybe the different result from the ioctl could be from
+testing this extension before the IOMMU has been set for the
+container(?)
 
-> > + */
-> > +void iommu_disable_pasid_dma(struct device *dev, ioasid_t pasid)
-> > +{
-> > +	struct iommu_domain *dom;
-> > +
-> > +	/* TODO: check the given PASID is within the ioasid_set */
-> > +	dom = iommu_get_domain_for_dev(dev);
-> > +	if (!dom->ops->detach_dev_pasid)
-> > +		return;
-> > +	dom->ops->detach_dev_pasid(dom, dev, pasid);
-> > +	ioasid_put(pasid);
-> > +}
-> > +EXPORT_SYMBOL(iommu_disable_pasid_dma);
-> > +
-> >   /**
-> >    * iommu_dma_get_resv_regions - Reserved region driver helper
-> >    * @dev: Device from iommu_get_resv_regions()
-> > diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-> > index 24607dc3c2ac..e6cb9b52a420 100644
-> > --- a/include/linux/dma-iommu.h
-> > +++ b/include/linux/dma-iommu.h
-> > @@ -18,6 +18,13 @@ int iommu_get_dma_cookie(struct iommu_domain
-> > *domain); int iommu_get_msi_cookie(struct iommu_domain *domain,
-> > dma_addr_t base); void iommu_put_dma_cookie(struct iommu_domain
-> > *domain); 
-> > +/*
-> > + * For devices that can do DMA request with PASID, setup a system
-> > PASID.
-> > + * Address modes (IOVA, PA) are selected by the platform code.
-> > + */  
+> What are the implications of having no "IOMMU enforces DMA cache
+> conherence"?  On this machine there is no access to a PCIe bus analyzer, but
+> it's very unlikely that the TLPs would have NoSnoop set.
+
+There's also bit 11 (Enable No Snoop) that could be cleared in the PCI
+device control register, which would theoretically prevent the device
+from using no-snoop TLPs.
+ 
+> Is there a good way How can I tell what IOMMU I'm using?
+
+Which DMAR?  Like this for example:
+
+$ readlink -f /sys/bus/pci/devices/0000:04:00.0/iommu
+/sys/devices/virtual/iommu/dmar3
+
+Your listing of devices piped to wc would also reciprocally list the
+device in that output.  With 24 devices there's a fair chance that
+dmar0 is the only one used.
+
+> (I did think it was strange that the IOMMU in this machine cannot handle
+> enough bits for mapping IOVA==VMA.  The test code is running in a podman
+> container, but (naively) I wouldn't expect that to make a difference.)
+
+Single socket Xeon processors like this tend to share more similarities
+to consumer desktop processors than to the "Scalable" line of Xeons.
+
+FWIW, there's a proposal[1] for a new, shared userspace IOMMU interface
+that includes an option for the kernel to allocate IOVAs for these
+cases.
+
+[1]https://lore.kernel.org/all/0-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com/
+
+> > However, CPU coherency might lead to a miscompare, but not necessarily a
+> > miscompare matching the previous iteration.  Still, for completeness
+> > let's make sure this isn't a gap in the test programming making invalid
+> > assumptions about CPU/DMA coherency.
+> > 
+> > The fact that randomizing the IOVA provides a workaround though might
+> > suggest something relative to the IOMMU page table coherency.  But for
+> > the new mmap target to have the data from the previous iteration, the
+> > IOMMU PTE would need to be stale on read, but correct on write in order
+> > to land back in your new mmap.  That seems peculiar.  Are we sure the
+> > FPGA device isn't caching the value at the IOVA or using any sort of
+> > IOTLB caching such as ATS that might not be working correctly?  
 > 
-> No need for a comment here. Or move it to the function if need.
+> I cannot say for certain what the FPGA caches, if anything.  The IP for that
+> part is closed (search for Xilinx PG302 QDMA).  It should (!) be
+> well-tested... oh for an analyzer!
 > 
-right, this comment is obsolete. will remove.
-
-> > +int iommu_enable_pasid_dma(struct device *dev, ioasid_t *pasid);
-> > +void iommu_disable_pasid_dma(struct device *dev, ioasid_t pasid);
-> > +
-> >   /* Setup call for arch DMA mapping code */
-> >   void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64
-> > dma_limit); int iommu_dma_init_fq(struct iommu_domain *domain);
-> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> > index fde5b933dbe3..fb011722e4f8 100644
-> > --- a/include/linux/iommu.h
-> > +++ b/include/linux/iommu.h
-> > @@ -395,6 +395,15 @@ static inline void iommu_set_dev_pasid_max(struct
-> > device *dev, 
-> >   	param->pasid_max = max;
-> >   }
-> > +static inline ioasid_t iommu_get_dev_pasid_max(struct device *dev)
-> > +{
-> > +	struct dev_iommu *param = dev->iommu;
-> > +
-> > +	if (WARN_ON(!param))
-> > +		return 0;
-> > +
-> > +	return param->pasid_max;
-> > +}
-> >   
-> >   int iommu_device_register(struct iommu_device *iommu,
-> >   			  const struct iommu_ops *ops,  
+> > > Suggestion: Document issue when using fixed IOVA, or fix if security
+> > > is a concern.  
+> > 
+> > I don't know that there's enough information here to make any
+> > conclusions.  Here are some further questions:
+> > 
+> >  * What size mappings are being used, both for the mmap and the VFIO
+> >    MAP/UNMAP operations.  
 > 
-> Best regards,
-> baolu
+> The test would often fail switching from an 8KB allocation to 12KB where the
+> VMA would grow down by a page.  The mmap() always returned a 4KB aligned
+> VMA, and the requested mmap() size was always an exact number of 4KB pages. 
+> The VFIO map operations were always on the full extent of the mmap'd memory
+> (likely makes Baulu's patch moot in this case).
+> 
+> A typical (not consistent) syndrome would be:
+>   1st page: ok
+>   2nd page: previous mmap'd data.
+>   3rd page: ok
+> We saw the issue on transfers both to and from the card.  I.e., we placed a
+> memory block in the FPGA that we could interrogate when data were corrupted.
 
+If we assume the previous mapping was for 8KB and the new mapping was
+for 12KB, I might hypothesize that the extent of the IOTLB invalidation
+when unmapping the 8KB mapping could have an off-by-one such that the
+IOMMU has a stale entry for the 2nd page.  The 1st page would have been
+invalidated correctly and the behavior of the 3rd page might depend on
+where it fell in the mapping previously, and arbitrary pressures on the
+IOTLB otherwise.
 
-Thanks,
+> (And as mentioned, just changing the IOVA fixed this issue.)
 
-Jacob
+And that would also avoid a large number of IOTLB invalidation issues.
+
+> >  * If the above is venturing into super page support (2MB), does the
+> >    vfio_iommu_type1 module option disable_hugepages=1 affect the
+> >    results.  
+> 
+> N/A.
+
+Probably not, but I would be interested whether the results are more
+consistent if you were to call MAP_DMA for each page rather than for
+the whole buffer.  This would result in UNMAP_DMA across the whole IOVA
+range of the buffer making individual unmaps for each page from the
+IOMMU, which may point to something like the hypothesis above.
+ 
+> >  * Along the same lines, does the kernel command line option
+> >    intel_iommu=sp_off produce different results.  
+> 
+> Would this affect small pages?
+
+Not likely.
+ 
+> >  * Does this behavior also occur on upstream kernels (ie. v5.17)?  
+> 
+> Unknown, and (unfortunately) untestable at present.
+> 
+> >  * Do additional CPU cache flushes in the test program produce different
+> >    results?  
+> 
+> We did a number of experiments using combinations of MAP_LOCKED, mlock(),
+> barrier(), _mm_clflush().  They all affected reliability of the test
+> (through timing?), but all ultimately failed.  I'm happy to try other
+> flushes that can be achieved in non-root user space!
+> 
+> >  * Is this a consumer available FPGA device that others might be able
+> >    to reproduce this issue?  I've always wanted such a device for
+> >    testing, but also we can't rule out that the FPGA itself or its
+> >    programming is the source of the miscompare.  
+> 
+> https://www.xilinx.com/products/boards-and-kits/vcu118.html
+> Just don't look at the price too hard!
+
+Yikes!  Thanks, and I'll be curious if breaking down the DMA_MAP calls
+give us any further leads,
+
+Alex
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
