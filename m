@@ -1,63 +1,63 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C099AC43217
-	for <iommu@archiver.kernel.org>; Mon, 28 Mar 2022 09:49:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 81AA1C433EF
+	for <iommu@archiver.kernel.org>; Mon, 28 Mar 2022 09:51:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 542C64062A;
-	Mon, 28 Mar 2022 09:49:05 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 1893B82C21;
+	Mon, 28 Mar 2022 09:51:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Q9unwUiIcVcr; Mon, 28 Mar 2022 09:49:04 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id A1EE3404B4;
-	Mon, 28 Mar 2022 09:49:03 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id s7oNAHdY22h1; Mon, 28 Mar 2022 09:51:12 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 12C6782C7C;
+	Mon, 28 Mar 2022 09:51:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 65DBBC001D;
-	Mon, 28 Mar 2022 09:49:03 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 873BCC0012
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 09:49:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D6F66C001D;
+	Mon, 28 Mar 2022 09:51:11 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ACCCFC0012
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 09:51:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5FAAA402C4
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 09:49:02 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id A73534062A
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 09:51:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=sipsolutions.net
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id z3byAXyVoCmG for <iommu@lists.linux-foundation.org>;
- Mon, 28 Mar 2022 09:49:01 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id e1tXaow5rE0n for <iommu@lists.linux-foundation.org>;
+ Mon, 28 Mar 2022 09:51:09 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from sipsolutions.net (s3.sipsolutions.net
  [IPv6:2a01:4f8:191:4433::2])
- by smtp4.osuosl.org (Postfix) with ESMTPS id EC68F4032F
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 09:49:00 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id C0AD4404B4
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 09:51:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
  Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
  :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
- Resent-Cc:Resent-Message-ID; bh=/93dChLt+Za1uKCUhSTu2aRMCha+vAJZKphFzk7McsE=; 
- t=1648460941; x=1649670541; b=f41zugckrB2OqXauAT9sfc852LXFz3Tai61DGZPQdaY13M1
- ogVz3Dp/nhTuxFsrIA3peAM4o5k1eDD1oFwi4GuL8vF/oOmAu/2t1KhUj/LXQRi2Rg4NVQgA8eXDV
- Zmou+4a6qfxPG/vQrsB/mhObs5uAvQ1ePo8biVx/TrxnDac1LPDj0AU4Fmt5JQiltkK+5SekPmnlg
- uoKhXAl5B2Xf2bjme0Brkj7kvjgKpTt0unHvVoHMIcEV73Rkq2OlUs1YmaaNN9eYjlg1Oi+knUpXl
- iP2gq2269xIymjVv2eqAP8baeEE7d4mVTV8F76dc/JOQZn4chb85oDWzrP/cVV4w==;
+ Resent-Cc:Resent-Message-ID; bh=nJO5E5YD857Be4i83ypHN59i/VCIHMrXJalTXZF8ChM=; 
+ t=1648461069; x=1649670669; b=C05y9be4r1d/3L6NqqZFyYj52dYAFACJYDaB6ts5vEaDQDp
+ D9Zg59Tpl+r4IzEJq5sLQaLX3cEIkrTJi40xM60dccElUJXhzOx7Tizj9AFi8CoTGoVzHPELU3Hai
+ Q835EpOHBgSln4HUo9Sf4+9pRof4kG8EZpL62DZPCLUKpylBtKZDwjgia2iFccmw6UF+BLfkLtA59
+ MLX0RjyIfhYbX3o/J110PHMOD4JoGw9Sb3qrTKB0MxBTaAnUdAbC5AsCNeoWTT0JFyIDLplD8TS2L
+ PG/tEcspmTcGclxxYCY5SEPkbWx9rqNPAVYgIljkYLDKUw1P4YRSTfpU14UBrBsA==;
 Received: by sipsolutions.net with esmtpsa
  (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
  (Exim 4.95) (envelope-from <johannes@sipsolutions.net>)
- id 1nYlzJ-001WuR-EZ; Mon, 28 Mar 2022 11:48:37 +0200
-Message-ID: <f94c4fc26251262de0ecab003c74833617c1b305.camel@sipsolutions.net>
+ id 1nYm1Y-001X37-2H; Mon, 28 Mar 2022 11:50:56 +0200
+Message-ID: <bf9a4949635c01c5dec53b0e873eccec4e2b0d33.camel@sipsolutions.net>
 Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
  ath9k-based AP
 From: Johannes Berg <johannes@sipsolutions.net>
 To: Halil Pasic <pasic@linux.ibm.com>
-Date: Mon, 28 Mar 2022 11:48:36 +0200
-In-Reply-To: <20220327051502.63fde20a.pasic@linux.ibm.com>
+Date: Mon, 28 Mar 2022 11:50:54 +0200
+In-Reply-To: <f94c4fc26251262de0ecab003c74833617c1b305.camel@sipsolutions.net>
 References: <1812355.tdWV9SEqCh@natalenko.name>
  <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
  <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
@@ -72,6 +72,7 @@ References: <1812355.tdWV9SEqCh@natalenko.name>
  <CAHk-=whXAan2ExANMryPSFaBWeyzikPi+fPUseMoVhQAxR7cEA@mail.gmail.com>
  <e42e4c8bf35b62c671ec20ec6c21a43216e7daa6.camel@sipsolutions.net>
  <20220327051502.63fde20a.pasic@linux.ibm.com>
+ <f94c4fc26251262de0ecab003c74833617c1b305.camel@sipsolutions.net>
 User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
 X-malware-bazaar: not-scanned
@@ -104,49 +105,19 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, 2022-03-27 at 05:15 +0200, Halil Pasic wrote:
-
+On Mon, 2022-03-28 at 11:48 +0200, Johannes Berg wrote:
 > 
-> The key here is "sync_sg API, all the parameters must be the same
-> as those passed into the single mapping API", but I have to admit,
-> I don't understand the *single* in here.
+> However, this basically means that the direction argument to the flush
+> APIs are completely useless, and we do have to define something
+> new/else...
 > 
 
-Hah. So I wasn't imagining things after all.
-
-However, as the rest of the thread arrives, this still means it's all
-broken ... :)
-
-> The intended meaning of the
-> last sentence is that one can do partial sync by choose 
-> dma_hande_sync, size_sync such that dma_handle_mapping <= dma_handle_sync
-> < dma_handle_mapping + size_mapping and dma_handle_sync + size_sync <=
-> dma_handle_mapping + size_mapping. But the direction has to remain the
-> same.
-
-Right.
-
-> BTW, the current documented definition of the direction is about the
-> data transfer direction between memory and the device, and how the CPU
-> is interacting with the memory is not in scope. A quote form the
-> documentation.
-> 
-> """
-> ======================= =============================================
-> DMA_NONE                no direction (used for debugging)
-> DMA_TO_DEVICE           data is going from the memory to the device
-> DMA_FROM_DEVICE         data is coming from the device to the memory
-> DMA_BIDIRECTIONAL       direction isn't known
-> ======================= =============================================
-> """
-> (Documentation/core-api/dma-api.rst)
-> 
-> My feeling is, that re-defining the dma direction is not a good idea. But
-> I don't think my opinion has much weight here.
-
-However, this basically means that the direction argument to the flush
-APIs are completely useless, and we do have to define something
-new/else...
+No I worded that badly - the direction isn't useless, but thinking of it
+in terms of a buffer property rather than data movement is inaccurate.
+So then if we need something else to indicate how data was expected to
+be moved, the direction argument becomes useless, since it's not a
+buffer property but rather a temporal thing on a specific place that
+expected certain data movement.
 
 johannes
 _______________________________________________
