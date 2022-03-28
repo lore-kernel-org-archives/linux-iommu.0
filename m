@@ -4,114 +4,146 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EEF4AC433EF
-	for <iommu@archiver.kernel.org>; Mon, 28 Mar 2022 19:15:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A97F6C433EF
+	for <iommu@archiver.kernel.org>; Mon, 28 Mar 2022 19:47:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 8F31E40A89;
-	Mon, 28 Mar 2022 19:15:01 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 2B54240184;
+	Mon, 28 Mar 2022 19:47:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id k-qpneAd8ZgE; Mon, 28 Mar 2022 19:15:00 +0000 (UTC)
+	with ESMTP id Gqq8j3uYDcmv; Mon, 28 Mar 2022 19:47:58 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id BA24B400FD;
-	Mon, 28 Mar 2022 19:14:59 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 8D234400E2;
+	Mon, 28 Mar 2022 19:47:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 99677C002C;
-	Mon, 28 Mar 2022 19:14:59 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 95BCEC0012
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 19:14:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6D911C001D;
+	Mon, 28 Mar 2022 19:47:57 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C91C0C0012
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 19:47:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 8B31360ACA
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 19:14:58 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id A64DE4026F
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 19:47:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ibm.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id c0eZs74HG3aT for <iommu@lists.linux-foundation.org>;
- Mon, 28 Mar 2022 19:14:57 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
- [148.163.156.1])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 8202060ABB
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 19:14:57 +0000 (UTC)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
- by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22SJ7COh009301; 
- Mon, 28 Mar 2022 19:14:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
- h=date : from : to : cc :
- subject : message-id : reply-to : references : content-type : in-reply-to
- : mime-version; s=pp1; bh=FjYCX+Y243xE0VklB5ptHy12OvBRB+CsNXos3UJeMn4=;
- b=Fha71A0kfcKrqpBNMaktuOEjobZnd8F5ntwDVnQzGypfQ1e41HtsN+gBBN3zj8p1q/+j
- PqQWM8i+EzfVHd0NYt3GOZ9qKkamgPa4FiVaNi3GuIqS6NKJiXUf2l4wUFDb5cEj/q56
- ejK7HAGelTZ+uvetF+lMVfVc2ayTGuds6BJmgETz9xP9F3TDu7rhBWwdyrzJZCudRVMv
- 6XX4z49tIqNxFTsvQr84rnFBaLEyOKWjj1kwtFZ9Cfi3D4+aQJfGau4H08ddk5bhSLB6
- k1+mugefDLF9e3NWYmGpIZ+bXT0WBtng+jJQ0dHsfmKEtaZq+hmL4kCqDqGWU4WKNOFA iw== 
-Received: from pps.reinject (localhost [127.0.0.1])
- by mx0a-001b2d01.pphosted.com with ESMTP id 3f3hbr1sax-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Mon, 28 Mar 2022 19:14:54 +0000
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
- by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22SJApSF027093;
- Mon, 28 Mar 2022 19:14:54 GMT
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com
- [169.62.189.11])
- by mx0a-001b2d01.pphosted.com with ESMTP id 3f3hbr1san-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Mon, 28 Mar 2022 19:14:54 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
- by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22SJDegC012562;
- Mon, 28 Mar 2022 19:14:53 GMT
-Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com
- [9.57.198.25]) by ppma03dal.us.ibm.com with ESMTP id 3f1tf9k5n4-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Mon, 28 Mar 2022 19:14:53 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com
- [9.57.199.108])
- by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
- 22SJEqdZ22413670
- (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Mon, 28 Mar 2022 19:14:53 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id D65DFB2066;
- Mon, 28 Mar 2022 19:14:52 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id BA127B2068;
- Mon, 28 Mar 2022 19:14:52 +0000 (GMT)
-Received: from porter (unknown [9.1.104.123])
- by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTPS;
- Mon, 28 Mar 2022 19:14:52 +0000 (GMT)
-Received: from dfsmith by porter with local (Exim 4.92)
- (envelope-from <dfsmith@porter.almaden.ibm.com>)
- id 1nYupH-0004qe-Un; Mon, 28 Mar 2022 12:14:52 -0700
-Date: Mon, 28 Mar 2022 12:14:51 -0700
-From: "Daniel F. Smith" <dfsmith@us.ibm.com>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id oBoEXNkqRH1r for <iommu@lists.linux-foundation.org>;
+ Mon, 28 Mar 2022 19:47:55 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam12on20607.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:fe5a::607])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 843D8400E2
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 19:47:55 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kv7QI1lXWFD+J4a8ylFZYi+YJsgmP/5zM1OogT3QuD27Z/yEtpIkyOY+oMdHeaoe72Kq89VO8ZbWmlhFdJRjhUIkOqml6U4RGQRTZQ9ZVqXITyDEYTeSr2HI+bfNxznhbVpWJ87H0nLgQ1eYct5vu0P//TvZu0rg9NmtO16dnWxt0H6Zw78xoVpeNNRwf9RnuaKNJL0kdMQ5KNjKsU+67VsljJxrPKmckUIJeCvl/IhEjsnuQTN/9BaxvYL9zxc8oKFqnBgAESpy7QYB5QOeUrbo4p9+Kdcqv9atJOJ8FgxysjTdu5QNb1g8z/6XwAfrSWxZWEdPMTpcAC0zvD+Rrw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4fhQznTWnsIYpiz/BVgNfIZ8RJkswgK9lYdyJsqZPLY=;
+ b=n4Uc65R/V1NreD+NUJ4LsoK+oRtmKQfAkZdevmpfYuuKVSq3wDQQwSgD6iIJYD5VVRqpvOy3mNpwCnDtrvqk0wM9HQJ02qzOLp2lBHCr/GuR5tqynKaXNRylXeYfq3NAHowEvxu6mGGqR7RSdqvFNBElXnggk8VyRRKXGKvV+OVTPimD3OWPhoBw75S9ptKQjeaC/hov2dTpZFM6yew5XOnEE56DB/wAuSms08FqaJXQEbm+TBOUVicjYdcGB8PaJisBcqmsxG0BhKrmySX4QwiSi/2xIzOmn/VA4tMLep8mhpDusNo5Lqe0rX5pJCWi7Wr1WduVUqy4OCps7+ZcJw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4fhQznTWnsIYpiz/BVgNfIZ8RJkswgK9lYdyJsqZPLY=;
+ b=mjLz1C5bSXRAZWcRQsqztxfetMWwB3O4tsTqn9o6c/MRVcWK1PHfJM/0sEYbMt3p31ZTtwIV/FJSGYOpIf6DqJ0JFWAelC1pjkhCLyoHtr3aehsYqvIZ+37n9PH47nKOM40jCqi8CplUHakd6iW6o/+tDzWZJHO0zQOYIITm425rC3hkkS2XjrHGAUEBHJcghIk5QB2D+BkqfUVRFJRSJ9vlqnNk3FPtMEMoFCvBDJYCQm840tM3vgjeNVYL+PjFgaEYbVGoD3VUgfcEikkxm5/16q2slyuCp9gKrJRj5wycAUcS+X56fben3DA4PXgFTtJ2w7DSo+k8NSEedW3Rnw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BN8PR12MB2900.namprd12.prod.outlook.com (2603:10b6:408:69::18)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Mon, 28 Mar
+ 2022 19:47:51 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::11a0:970a:4c24:c70c]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::11a0:970a:4c24:c70c%6]) with mapi id 15.20.5102.023; Mon, 28 Mar 2022
+ 19:47:51 +0000
+Date: Mon, 28 Mar 2022 16:47:49 -0300
 To: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: Bug report: VFIO map/unmep mem subject to race and DMA data goes
- to incorrect page (4.18.0)
-Message-ID: <20220328191451.GA18248@porter.almaden.ibm.com>
-References: <20220325200640.GA29990@porter.almaden.ibm.com>
- <20220325161022.00ab43ff.alex.williamson@redhat.com>
+Subject: Re: [PATCH RFC 08/12] iommufd: IOCTLs for the io_pagetable
+Message-ID: <20220328194749.GA1746678@nvidia.com>
+References: <8-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <20220323131038.3b5cb95b.alex.williamson@redhat.com>
+ <20220323193439.GS11336@nvidia.com>
+ <20220323140446.097fd8cc.alex.williamson@redhat.com>
+ <20220323203418.GT11336@nvidia.com>
+ <20220323225438.GA1228113@nvidia.com>
+ <BN9PR11MB5276EB80AFCC3003955A46248C199@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220324134622.GB1184709@nvidia.com>
+ <20220328111723.24fa5118.alex.williamson@redhat.com>
+ <20220328185753.GA1716663@nvidia.com>
 Content-Disposition: inline
-In-Reply-To: <20220325161022.00ab43ff.alex.williamson@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: ktKAFhHu5tFBQFfRLMm1k7x7lnG8F0cA
-X-Proofpoint-ORIG-GUID: -MbKslIAxpB5KIJRQZ-9Gx4Jfuq9tXlR
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+In-Reply-To: <20220328185753.GA1716663@nvidia.com>
+X-ClientProxiedBy: BL1PR13CA0320.namprd13.prod.outlook.com
+ (2603:10b6:208:2c1::25) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-28_09,2022-03-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 mlxlogscore=999
- lowpriorityscore=0 priorityscore=1501 clxscore=1011 impostorscore=0
- mlxscore=0 adultscore=0 spamscore=0 phishscore=0 malwarescore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203280100
-Cc: iommu@lists.linux-foundation.org
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8871fa3d-2f51-446f-55a6-08da10f3d74b
+X-MS-TrafficTypeDiagnostic: BN8PR12MB2900:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR12MB29000BE3FE7CEDDF9036D04CC21D9@BN8PR12MB2900.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8ehmf8r9rcTgG5htAEaqLJ+9Jh9efi9MigG7gh0JIwRaADjFSB3KAK2bSaaKKFtoBOjpMsLtkT/7AphvxtebcCIZhUb9+7rUzUgZPciRplOT/j4vK6Aos48vkJbWi5I4V6WmVY+61CQJceW7Tw4qaa2fPOJ0yV3MV1/Hu2FznPEch/B/zGAkJB69Fwi0whbREczbP0rmIUl0+f2lrtHOQXrz060DQxLJUzDrHM35yCRbWzsYmIKb1KfA8M3PeHKMN7LCJ3w8iz31uOOgMusrGsqk/tYUX8TtHzEDBFsgIZqaECVxk7E62BADVJONP7Er04+PAM02J2nNqpsQFrh175WzIPyUwMVpQ2ujx3wv9xHl155lv+x/k8a9doa9vW4beLgoENswDqBi6doGvQk7Mg8wfG2qa1vLpaDc0uzo8e+HQkpskzkQzinW0x0tBhW1FmUEy1ylIRsfrp+uaD58tbGFCBIxwl7dxkvq4pHRWuvERwK6Lgr1TphP8ZN1E1Oqk+Cqz2At/f8eibeaykJvuf/IEQN0Jej3tmbDpJWdJjDzSx8YqSk+O5cEmXrhaBpyuv41bQqTY79yq3KBTr0w5R5k7NBnkXHCJNEJObXpd3Z2acGZgr5tiBbIsMd6aqmKiPOkuC+0071WajNjkCGtXw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(86362001)(6916009)(38100700002)(54906003)(316002)(66946007)(66476007)(8676002)(26005)(36756003)(66556008)(186003)(1076003)(4326008)(83380400001)(2906002)(33656002)(7416002)(6512007)(5660300002)(508600001)(2616005)(8936002)(6486002)(6506007);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pqGiuR3wPoTrd/M4dv8R5nr0+nxQBN8E4+78dB1apGMoyP9b/g77QkVbmBeK?=
+ =?us-ascii?Q?RVEKLiQAKogi7Tcrwy3fUjxJKk+fAtGLhtOwhoAzFeMNIIa34+uZ2aSAF0fD?=
+ =?us-ascii?Q?g28YuswZZY6OFdQpgs4P15fWSViHVK2yucSCMPI42V7RdmGN7QfgFSjtDPu8?=
+ =?us-ascii?Q?aKLIoMU+Jyg9WHji/J8fy2S0ySWmaIxlAsY5kduZRvJU8DRWKmbmBI52DDAf?=
+ =?us-ascii?Q?h2QflKoNpJINa9BgqOILICIY9zpr4fuy9kXmpfvuhr8BxntNAioxIbv0xS3x?=
+ =?us-ascii?Q?41yR7Xxgx93v5kln/1CvsyLj3odZfwnxqmxSz8qMcgtRGWrAjrlpDd31RGI/?=
+ =?us-ascii?Q?ZV5V6TTnVMofnrkodAs3fI7ec8/ZJj1BAyAVlaVcsGoXwcyLf2rBz4LCcFoW?=
+ =?us-ascii?Q?ILKU/7bIL/xl+vFx1yythhZmYQDQ1DknEzySRV+fm4nqM/TdyKgquj1jcQXj?=
+ =?us-ascii?Q?Co06T5uC+JO4Pyzg9pQteTAiMf471uU6yBm0tv7qzQVJ27iANEGvNQ+enEhA?=
+ =?us-ascii?Q?L6wSzfZ0i5RS9Ex6UAfP1ghDWk78QIV/t/C9Nb+HF27likKT8VYy3LohHRZp?=
+ =?us-ascii?Q?LrO8lA03A9siC+a2QH5D0Z+cLRQfxPifMvzSbXfreBsSGseSF6G1oU8cf7J+?=
+ =?us-ascii?Q?qt+oTGlE+8908qELE8y9UhNGc6O7M30kWJypHi+E2eBMKcrfD5CJBb4X/Nem?=
+ =?us-ascii?Q?IIKxwD56t3CJBKW6TL43R2KXhvRMy0DFpUdbVDtJeGy9u2/0GB1/g+hGZ5rU?=
+ =?us-ascii?Q?gECVTC0xlyPzx+GPOHBnYK9C4CQRLa9GbunXXafe0pCduq7IOg96DbVFMRJo?=
+ =?us-ascii?Q?YB1qr9S1R4EyDpvdPKEHjUOT5U+NDSGRgOnXp5GzQoxyQiNyxvL3+lolnw19?=
+ =?us-ascii?Q?N63LH1odlPOV76NGwTTwJl8hrv9KxZhf0XoCHyoFu3F8QbB4rZS7G/KV/wTe?=
+ =?us-ascii?Q?BdIMIdg+FcvMt2wORpYnf/14Mrt49TQ4y/gV0vZuZ/xbPBkAdNWEZfccjB14?=
+ =?us-ascii?Q?X/SUbF5CQ6s//4DB5CH+1bmOF7wk40ThpDb9nz1e62/AcYTEs271W0Cm6LPU?=
+ =?us-ascii?Q?FQCVe3fKXjHymMwHf0ETiudcadsyjAY28elTVNDMVJihykEfzXN3idfev+o+?=
+ =?us-ascii?Q?CZL1MoPL+tfWHzqH2EIMpI0famUTWNTwgjuMqoPjnoO9E+bG+ctdzneUI9Ux?=
+ =?us-ascii?Q?NGGyaPFErleridcu315hYiMrh1RwAfVRQ4FftXzidtT2x+Jfs514aSUKyYCb?=
+ =?us-ascii?Q?mrU19Sor9a1ztmME/OAzBSUFCgC7cr7BB2a/+j1aUq+KM4pdAk4KlnnMqRJJ?=
+ =?us-ascii?Q?wk/4MUWI/uqk9oveWaRbPOuZlBf1jO1FAlAzYFSVX4aqZQxHOD6zTp3+CGov?=
+ =?us-ascii?Q?Xpen2c6Pn2rR6DDj4ksP7d27k0C8Jyhj4Tdc6p/SsCcys6bxziUA4vdnoVO7?=
+ =?us-ascii?Q?Tl/kVoKN5ylyWJVdg3bTCplf446H1XLJAvf9PZkhmjvSeFIBP7wLgX5IZ4fA?=
+ =?us-ascii?Q?4ZGa4xzoXGDBv4cyW2fPft1zoW0u8phWBFJl8PoUAeYAuh+AwTv970AQPf0o?=
+ =?us-ascii?Q?O4nrUkAvg25QIixNpCE+USgclExA7dKL3mXZTQOi+RaHCAbgdm3WCTEDgjTW?=
+ =?us-ascii?Q?/T/Ocw2d4IAsav7SIiLrtCo4KBd7XqJbaxt0X8ILWVF/HsOdTY1ijsZDFyOt?=
+ =?us-ascii?Q?Vm4omXc3FXpIOipU6c7QEzcyaWSk1xqe2TueGf5xJU38BDCDP3PdtbeukuLJ?=
+ =?us-ascii?Q?M4mJgVW8Kg=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8871fa3d-2f51-446f-55a6-08da10f3d74b
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Mar 2022 19:47:51.0387 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7qN6RJqrtZERy5qWWU+FytuiRLuvTz4cOWrV6lNTUB7TB9j+BcriOovYuFOVS+H8
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB2900
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+ Daniel Jordan <daniel.m.jordan@oracle.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "Martins, Joao" <joao.m.martins@oracle.com>,
+ David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -124,145 +156,58 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: dfsmith@us.ibm.com
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Alex,
+On Mon, Mar 28, 2022 at 03:57:53PM -0300, Jason Gunthorpe wrote:
 
-Answers to questions I can answer are in-line.  First an apology
-though---the machine with the FPGA board is 1000 miles remote, and I don't
-have root access.  It's unlikely I will be able to do kernel patch testing.
+> So, currently AMD and Intel have exactly the same HW feature with a
+> different kAPI..
 
+I fixed it like below and made the ordering changes Kevin pointed
+to. Will send next week after the merge window:
 
-Alex Williamson scribed the following, on or around Fri, Mar 25, 2022 at 04:10:22PM -0600:
-> Hi Daniel,
-> 
-...
->
-> Coherency possibly.
-> 
-> There's a possible coherency issue at the compare depending on the
-> IOMMU capabilities which could affect whether DMA is coherent to memory
-> or requires an explicit flush.  I'm a little suspicious whether dmar0
-> is really the IOMMU controlling this device since you mention a 39bit
-> IOVA space, which is more typical of Intel client platforms which can
-> also have integrated graphics which often have a dedicated IOMMU at
-> dmar0 that isn't necessarily representative of the other IOMMUs in the
-> system, especially with regard to snoop-control.  Each dmar lists the
-> managed devices under it in sysfs to verify.  Support for snoop-control
-> would be identified in the ecap register rather than the cap register.
-> VFIO can also report coherency via the VFIO_DMA_CC_IOMMU extension
-> reported by VFIO_CHECK_EXTENSION ioctl.
+527e438a974a06 iommu: Delete IOMMU_CAP_CACHE_COHERENCY
+5cbc8603ffdf20 vfio: Move the Intel no-snoop control off of IOMMU_CACHE
+ebc961f93d1af3 iommu: Introduce the domain op enforce_cache_coherency()
+79c52a2bb1e60b vfio: Require that devices support DMA cache coherence
+02168f961b6a75 iommu: Replace uses of IOMMU_CAP_CACHE_COHERENCY with dev_is_dma_coherent()
 
-$ cat /sys/devices/virtual/iommu/dmar0/intel-iommu/cap
-d2008c40660462
-$ cat /sys/devices/virtual/iommu/dmar0/intel-iommu/ecap
-f050da
-$ lscpu | grep Model
-Model:               165
-Model name:          Intel(R) Xeon(R) W-1290P CPU @ 3.70GHz
-$ ls -l /sys/devices/virtual/iommu/dmar0/devices | wc -l
-24
-$ ... ioctl(container_fd, VFIO_CHECK_EXTENSION, VFIO_DMA_CC_IOMMU)
-0
+'79c can be avoided, we'd just drive IOMMU_CACHE off of
+dev_is_dma_coherent() - but if we do that I'd like to properly
+document the arch/iommu/platform/kvm combination that is using this..
 
-What are the implications of having no "IOMMU enforces DMA cache
-conherence"?  On this machine there is no access to a PCIe bus analyzer, but
-it's very unlikely that the TLPs would have NoSnoop set.
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 3c0ac3c34a7f9a..f144eb9fea8e31 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2269,6 +2269,12 @@ static int amd_iommu_def_domain_type(struct device *dev)
+ 	return 0;
+ }
+ 
++static bool amd_iommu_enforce_cache_coherency(struct iommu_domain *domain)
++{
++	/* IOMMU_PTE_FC is always set */
++	return true;
++}
++
+ const struct iommu_ops amd_iommu_ops = {
+ 	.capable = amd_iommu_capable,
+ 	.domain_alloc = amd_iommu_domain_alloc,
+@@ -2291,6 +2297,7 @@ const struct iommu_ops amd_iommu_ops = {
+ 		.flush_iotlb_all = amd_iommu_flush_iotlb_all,
+ 		.iotlb_sync	= amd_iommu_iotlb_sync,
+ 		.free		= amd_iommu_domain_free,
++		.enforce_cache_coherency = amd_iommu_enforce_cache_coherency,
+ 	}
+ };
 
-Is there a good way How can I tell what IOMMU I'm using?
-
-(I did think it was strange that the IOMMU in this machine cannot handle
-enough bits for mapping IOVA==VMA.  The test code is running in a podman
-container, but (naively) I wouldn't expect that to make a difference.)
-
-> However, CPU coherency might lead to a miscompare, but not necessarily a
-> miscompare matching the previous iteration.  Still, for completeness
-> let's make sure this isn't a gap in the test programming making invalid
-> assumptions about CPU/DMA coherency.
-> 
-> The fact that randomizing the IOVA provides a workaround though might
-> suggest something relative to the IOMMU page table coherency.  But for
-> the new mmap target to have the data from the previous iteration, the
-> IOMMU PTE would need to be stale on read, but correct on write in order
-> to land back in your new mmap.  That seems peculiar.  Are we sure the
-> FPGA device isn't caching the value at the IOVA or using any sort of
-> IOTLB caching such as ATS that might not be working correctly?
-
-I cannot say for certain what the FPGA caches, if anything.  The IP for that
-part is closed (search for Xilinx PG302 QDMA).  It should (!) be
-well-tested... oh for an analyzer!
-
-> > Suggestion: Document issue when using fixed IOVA, or fix if security
-> > is a concern.
-> 
-> I don't know that there's enough information here to make any
-> conclusions.  Here are some further questions:
-> 
->  * What size mappings are being used, both for the mmap and the VFIO
->    MAP/UNMAP operations.
-
-The test would often fail switching from an 8KB allocation to 12KB where the
-VMA would grow down by a page.  The mmap() always returned a 4KB aligned
-VMA, and the requested mmap() size was always an exact number of 4KB pages. 
-The VFIO map operations were always on the full extent of the mmap'd memory
-(likely makes Baulu's patch moot in this case).
-
-A typical (not consistent) syndrome would be:
-  1st page: ok
-  2nd page: previous mmap'd data.
-  3rd page: ok
-We saw the issue on transfers both to and from the card.  I.e., we placed a
-memory block in the FPGA that we could interrogate when data were corrupted.
-
-(And as mentioned, just changing the IOVA fixed this issue.)
-
->  * If the above is venturing into super page support (2MB), does the
->    vfio_iommu_type1 module option disable_hugepages=1 affect the
->    results.
-
-N/A.
-
->  * Along the same lines, does the kernel command line option
->    intel_iommu=sp_off produce different results.
-
-Would this affect small pages?
-
->  * Does this behavior also occur on upstream kernels (ie. v5.17)?
-
-Unknown, and (unfortunately) untestable at present.
-
->  * Do additional CPU cache flushes in the test program produce different
->    results?
-
-We did a number of experiments using combinations of MAP_LOCKED, mlock(),
-barrier(), _mm_clflush().  They all affected reliability of the test
-(through timing?), but all ultimately failed.  I'm happy to try other
-flushes that can be achieved in non-root user space!
-
->  * Is this a consumer available FPGA device that others might be able
->    to reproduce this issue?  I've always wanted such a device for
->    testing, but also we can't rule out that the FPGA itself or its
->    programming is the source of the miscompare.
-
-https://www.xilinx.com/products/boards-and-kits/vcu118.html
-Just don't look at the price too hard!
-
-> >From the vfio perspective, UNMAP_DMA should first unmap the pages at
-> the IOMMU to prevent device access before unpinning the pages.  We do
-> make use of batch unmapping to reduce iotlb flushing, but the result is
-> expected to be that the IOMMU PTE entries are invalidated before the
-> UNMAP_DMA operation completes.  A stale IOVA would not be expected or
-> correct operation.  Thanks,
-> 
-> Alex
-
-Thanks.
-
-Daniel
+Thanks,
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
