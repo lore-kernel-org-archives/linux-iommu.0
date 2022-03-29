@@ -4,74 +4,83 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8A5C3C433F5
-	for <iommu@archiver.kernel.org>; Tue, 29 Mar 2022 05:40:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E2898C433EF
+	for <iommu@archiver.kernel.org>; Tue, 29 Mar 2022 05:53:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 50BCA60B58;
-	Tue, 29 Mar 2022 05:40:56 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 9B6F760A82;
+	Tue, 29 Mar 2022 05:53:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Y0x89rkH9xZB; Tue, 29 Mar 2022 05:40:55 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 0A08160B54;
-	Tue, 29 Mar 2022 05:40:55 +0000 (UTC)
+	with ESMTP id YjVndogdkvUM; Tue, 29 Mar 2022 05:53:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 8E61A605AB;
+	Tue, 29 Mar 2022 05:53:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E95E6C001D;
-	Tue, 29 Mar 2022 05:40:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 58BE5C001D;
+	Tue, 29 Mar 2022 05:53:32 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7EED7C0012
- for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 05:40:53 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1979AC0012
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 05:53:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 7C0B140377
- for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 05:40:53 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id E5C2A404D3
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 05:53:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
+ dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id o424x3EefsIk for <iommu@lists.linux-foundation.org>;
- Tue, 29 Mar 2022 05:40:52 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp2.osuosl.org (Postfix) with ESMTPS id C789640588
- for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 05:40:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1648532452; x=1680068452;
- h=from:to:cc:subject:date:message-id:in-reply-to:
- references:mime-version:content-transfer-encoding;
- bh=JfGjVHRgrpt8QUxiPQxKQ7422++u6wuqZXu+sum80fQ=;
- b=B4aSTVmffRyGJjLRBEjaJZ31AqWmSjJ4sM4EUkFsEvBPJ5eo3PjhWS59
- WEJdWAoKp5+QDwQrjWWpsijWIY1YLVpAD3WjauHAkIWyzt2QgGYe9EnUf
- DnwjXmiBhfpQiu6fxCl1WSdsr5jAu0hE7gU84XBl7sVEN5bfIwLgt6Gp7
- pVv6nSmNfK++FfLpBxqh71N+VnaGqiUQz+ZVXRDFYQ/IfGMyN/+QVvZ5Q
- SnSTm6bQ8rKlDpK/MCqu7m6bPQF7IpQsZJF9T1zoZAbKy7v4xzAQp4U5m
- YL/HJBJE2nQzrP+bnTbdSljLanPLtvoebZN5mLBoNlgrvWThMIL66ozzn w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="239099199"
-X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; d="scan'208";a="239099199"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Mar 2022 22:40:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; d="scan'208";a="694603691"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
- by fmsmga001.fm.intel.com with ESMTP; 28 Mar 2022 22:40:49 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
- Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>
-Subject: [PATCH RFC v2 11/11] iommu: Rename iommu-sva-lib.{c,h}
-Date: Tue, 29 Mar 2022 13:38:00 +0800
-Message-Id: <20220329053800.3049561-12-baolu.lu@linux.intel.com>
+ with ESMTP id 28Dfpiqnvt0m for <iommu@lists.linux-foundation.org>;
+ Tue, 29 Mar 2022 05:53:30 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com
+ [IPv6:2607:f8b0:4864:20::732])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 472E640377
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 05:53:30 +0000 (UTC)
+Received: by mail-qk1-x732.google.com with SMTP id w141so13034381qkb.6
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 22:53:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=z0ES53g0OOqsPoiGi2d2Co81xUcv6Z1BfsAHsJmc4I4=;
+ b=RlMWCaOrAo5dN1BiL6EVuuy1RvRkHVnOIIbStddIbRL5Tff3uKYocdMkA+X90v6Fp6
+ q61Ck7S19m2JKbIxic+yoY97H1FNks/88LSGlKfUWzPRfdNrUa4koSZn2i8z9XOxU7Y4
+ JoECdrQIT8aOikMti6FwwT1MMczrwysp7zevGR8L97OMkJ5RwafEOZGEWHgjWkAPrNm8
+ 2hagbnApe8/dJ7jwkppFVBWFWS4pjXfbddsBMdUocBkc4w+uZtBGml7Xaqu+iqPLxz0s
+ I4d3z93wekZmLNdVuSz+LaySzuN7N5OXi6jV8X5bPqeCivCAH4GlhqcqFu91MEB0ERPs
+ wzFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=z0ES53g0OOqsPoiGi2d2Co81xUcv6Z1BfsAHsJmc4I4=;
+ b=377sqND5tK7faIP+z7UsmqDrXJMEk1c0shxHfOkQmEXYorrzIAoRlopurwBZWJEhvM
+ NWxHwHcrrgENUjABNW1o44psXTMhY9Q7pk4A9e2mIHoOe6kmf95lNmQqV//FyYVvsYFg
+ kq2AzeSw4SUzThM0eJibbgAaZIqTl34Ziypr+2syDcGzLSVbFS1HOgqjHh2SXufpVK7r
+ 2/Dv/P7J08buDeileff+J0QWLnnZ3qFNGs+GSF67ksF/H3g72b3C6Yb2jlsAOkZe7CDN
+ LUg1jA43asJOu+lcfgMo+BtgzjaF6l7xgD9WtkSn7g4YaQ5Q/dJaekOgJc6dKRCTbsem
+ fkZg==
+X-Gm-Message-State: AOAM533m1pZKBdIkZoY48GPLIpejMrFcEwKsbLxgVOrV49Uapi2NhA/p
+ G49c0cJOMbqgRu/Z/PisKnM=
+X-Google-Smtp-Source: ABdhPJzx5EMjqNBolLzGQPqTHbHt0diMdH9y1Q1vkoKXBy0Bq3/cBK5s99yJKHmDbeOjCWuRtwLKkw==
+X-Received: by 2002:a05:620a:4491:b0:67d:9929:ddb6 with SMTP id
+ x17-20020a05620a449100b0067d9929ddb6mr18554334qkp.47.1648533209079; 
+ Mon, 28 Mar 2022 22:53:29 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+ by smtp.gmail.com with ESMTPSA id
+ h8-20020ac87d48000000b002e1c6faae9csm14153307qtb.28.2022.03.28.22.53.25
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 28 Mar 2022 22:53:28 -0700 (PDT)
+From: cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To: joro@8bytes.org
+Subject: [PATCH] iommu: add null pointer check
+Date: Tue, 29 Mar 2022 05:53:22 +0000
+Message-Id: <20220329055322.2375563-1-lv.ruyi@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220329053800.3049561-1-baolu.lu@linux.intel.com>
-References: <20220329053800.3049561-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>
+Cc: Lv Ruyi <lv.ruyi@zte.com.cn>, iommu@lists.linux-foundation.org,
+ Zeal Robot <zealci@zte.com.cn>, will@kernel.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,134 +98,33 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Rename iommu-sva-lib.c[h] to iommu-sva.c[h] as it contains all code
-for SVA implementation in iommu core.
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+kmem_cache_zalloc is a memory allocation function which can return NULL
+when some internal memory errors happen. Add null pointer check to avoid
+dereferencing null pointer.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
 ---
- drivers/iommu/{iommu-sva-lib.h => iommu-sva.h}  | 0
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 2 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 2 +-
- drivers/iommu/intel/iommu.c                     | 2 +-
- drivers/iommu/intel/svm.c                       | 2 +-
- drivers/iommu/io-pgfault.c                      | 2 +-
- drivers/iommu/{iommu-sva-lib.c => iommu-sva.c}  | 2 +-
- drivers/iommu/iommu.c                           | 2 +-
- drivers/iommu/Makefile                          | 2 +-
- 9 files changed, 8 insertions(+), 8 deletions(-)
- rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (100%)
- rename drivers/iommu/{iommu-sva-lib.c => iommu-sva.c} (99%)
+ drivers/iommu/fsl_pamu_domain.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva.h
-similarity index 100%
-rename from drivers/iommu/iommu-sva-lib.h
-rename to drivers/iommu/iommu-sva.h
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 5591321f9e11..a13543aa9df4 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -9,7 +9,7 @@
- #include <linux/slab.h>
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index 69a4a62dc3b9..43849c027298 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -152,6 +152,10 @@ static void attach_device(struct fsl_dma_domain *dma_domain, int liodn, struct d
+ 	}
  
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- #include "../../io-pgtable-arm.h"
+ 	info = kmem_cache_zalloc(iommu_devinfo_cache, GFP_ATOMIC);
++	if (!info) {
++		spin_unlock_irqrestore(&device_domain_lock, flags);
++		return;
++	}
  
- struct arm_smmu_mmu_notifier {
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 543d3ef1c102..ca2bd17eec41 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -31,7 +31,7 @@
- #include <linux/amba/bus.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- 
- static bool disable_bypass = true;
- module_param(disable_bypass, bool, 0444);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 1d6a62512bca..57a3d54c414b 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -27,7 +27,7 @@
- #include <linux/tboot.h>
- 
- #include "../irq_remapping.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- #include "pasid.h"
- #include "cap_audit.h"
- 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index c76b99b46626..b6b83ca705d5 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -25,7 +25,7 @@
- 
- #include "pasid.h"
- #include "perf.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
- static void intel_svm_drain_prq(struct device *dev, u32 pasid);
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index 159e4f107fe3..5468993c8c6c 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -11,7 +11,7 @@
- #include <linux/slab.h>
- #include <linux/workqueue.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- /**
-  * struct iopf_queue - IO Page Fault queue
-diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva.c
-similarity index 99%
-rename from drivers/iommu/iommu-sva-lib.c
-rename to drivers/iommu/iommu-sva.c
-index a53574f9559a..dbe4b9958e48 100644
---- a/drivers/iommu/iommu-sva-lib.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -7,7 +7,7 @@
- #include <linux/slab.h>
- #include <linux/sched/mm.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static DEFINE_MUTEX(iommu_sva_lock);
- static DECLARE_IOASID_SET(iommu_sva_pasid);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 6b51ead9d63b..f4a5d6351421 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -27,7 +27,7 @@
- #include <linux/cc_platform.h>
- #include <trace/events/iommu.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 44475a9b3eea..c1763476162b 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -27,6 +27,6 @@ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
- obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
- obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
- obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
--obj-$(CONFIG_IOMMU_SVA) += iommu-sva-lib.o io-pgfault.o
-+obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o io-pgfault.o
- obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
- obj-$(CONFIG_APPLE_DART) += apple-dart.o
+ 	info->dev = dev;
+ 	info->liodn = liodn;
 -- 
 2.25.1
 
