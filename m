@@ -4,108 +4,70 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 12879C433F5
-	for <iommu@archiver.kernel.org>; Tue, 29 Mar 2022 05:00:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 36EB2C433F5
+	for <iommu@archiver.kernel.org>; Tue, 29 Mar 2022 05:40:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id B44A840483;
-	Tue, 29 Mar 2022 05:00:11 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id C681D404F1;
+	Tue, 29 Mar 2022 05:40:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HOli9Qu0YJCF; Tue, 29 Mar 2022 05:00:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 713A640AE5;
-	Tue, 29 Mar 2022 05:00:10 +0000 (UTC)
+	with ESMTP id 0X-QHQUuzY5C; Tue, 29 Mar 2022 05:40:18 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A7C9840377;
+	Tue, 29 Mar 2022 05:40:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 279DEC002C;
-	Tue, 29 Mar 2022 05:00:10 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9CEB4C0012
- for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 05:00:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5C191C001D;
+	Tue, 29 Mar 2022 05:40:17 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3E649C0012
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 05:40:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 817F640ADB
- for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 05:00:09 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 250BB40377
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 05:40:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id liceyB8f5UXo for <iommu@lists.linux-foundation.org>;
- Tue, 29 Mar 2022 05:00:08 +0000 (UTC)
+ with ESMTP id LZEQVlq3fhHs for <iommu@lists.linux-foundation.org>;
+ Tue, 29 Mar 2022 05:40:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.129.124])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 5C47C4047D
- for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 05:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1648530007;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=K7gDC8bShBI9LHGd+WbA3yzlonPiUS4KeezNJU72OYg=;
- b=GhIW3Mky1w+z5GH5fHQjxpE9xVDald90TAiqXMu6eYVsDte2bFENjJez/EcizL7kIHHJro
- XO+7/TmldOqKfbM+yzfiO6z6uanZLA7kNWQJMesSn2TKCvp3utD+HvD4623AqqKrFM2TZg
- QNBA+El7XmGddoZmlQ8n40LS0bhgI7c=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-335-k_VeFBZoOumdBzhjXT2Phg-1; Tue, 29 Mar 2022 01:00:05 -0400
-X-MC-Unique: k_VeFBZoOumdBzhjXT2Phg-1
-Received: by mail-lj1-f200.google.com with SMTP id
- q5-20020a2e9145000000b002497bf0eaa1so6964295ljg.5
- for <iommu@lists.linux-foundation.org>; Mon, 28 Mar 2022 22:00:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=K7gDC8bShBI9LHGd+WbA3yzlonPiUS4KeezNJU72OYg=;
- b=IZDX1rzygZQUGm6g0opOY4MafbVW0MpzfL4lWWWKbzDWlg6YeDk/JwH/VJPdhq8eHj
- Si6WIqEE4JZQPx/qXM42McZLYDPsQNZVbWW/egjOQIrgJ3ZkpB0640ensMEvZXX82A2+
- O1zVhLbxbfC7JpoiXhZEKBYa7JjLGBTlyAj9WH3KkiDThvB5PiJf1KdOckYOSqE4ch7J
- aNUzla6GTB413XGE6HSe8gjzz/jAF5n+RgY4prkeQO4l35Dn/8mb4GAdEobRispBe0/P
- CHJPB1MBalQUzuKlppQtODlFAWeDUEU7tZAgbSj3aYn3VZHg75PpKLMBHeI/CU1cF8Wz
- K8Gw==
-X-Gm-Message-State: AOAM530uJHWiKkWyL2Z1SWlow3d1gSytQWNV3qFFZ3NJwsGnrT30ruRn
- xGwqI6CBQIW/RdTlJooOib9sw1luheBUTIFVmdcDFVIl2CwiOmKHjhuSmSA/qIIuoiqZ92DJakc
- qkzsENK5sERA55Zjn/gr27/r4YvVXPWU0odqIQ7iardXSBg==
-X-Received: by 2002:a05:6512:2203:b0:44a:12c9:8696 with SMTP id
- h3-20020a056512220300b0044a12c98696mr993994lfu.98.1648530003444; 
- Mon, 28 Mar 2022 22:00:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzfk6lHA5WhshEQEE6YBIv+08Bg/UEgteU+mmeSwvo4lkCbmpArIaObJ6kzGXap+UvxE8xNiz9kZzmdXgTc6hA=
-X-Received: by 2002:a05:6512:2203:b0:44a:12c9:8696 with SMTP id
- h3-20020a056512220300b0044a12c98696mr993973lfu.98.1648530003271; Mon, 28 Mar
- 2022 22:00:03 -0700 (PDT)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 4F626404BA
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 05:40:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1648532414; x=1680068414;
+ h=from:to:cc:subject:date:message-id:mime-version:
+ content-transfer-encoding;
+ bh=tknkKS8klJn8jY0SolaOVo53TFN54BvuIWRpHY8TEAU=;
+ b=XPF/j88gz1rjFiDq3L+oDALH4Eegis/QNTXhMVwifORTLcvdi/0+GFSY
+ lG7ElxADcJqdMxEAiBfKfDMszb7L/GRcZJgw4QbgRf2DGvat1jy2Zgsys
+ 8pRhgX/u+MVVCsCfKtXv41prj+XXEvPWm8xPlRaUtUMoXHcyCOjT1cy64
+ oIhG7uiQqxUBovShuSYT91qN97vsgbHMfdNitB7UnAmbsjRA3albfM4JQ
+ pqQn83+JxZ0C+IqPehoIQVQnQkF2IIfr2HMA4fTeE0m6jApwMjC1uvJGc
+ 2uid5TDDFplJuvZp560SshvHgQ68OuYSCCWQEAqXpos4tjDeG4f20cYyw A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="239099099"
+X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; d="scan'208";a="239099099"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Mar 2022 22:40:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; d="scan'208";a="694603557"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+ by fmsmga001.fm.intel.com with ESMTP; 28 Mar 2022 22:40:10 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+ Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>
+Subject: [PATCH RFC v2 00/11] iommu: SVA and IOPF refactoring
+Date: Tue, 29 Mar 2022 13:37:49 +0800
+Message-Id: <20220329053800.3049561-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220322092923.5bc79861.alex.williamson@redhat.com>
- <20220322161521.GJ11336@nvidia.com>
- <BN9PR11MB5276BED72D82280C0A4C6F0C8C199@BN9PR11MB5276.namprd11.prod.outlook.com>
- <CACGkMEutpbOc_+5n3SDuNDyHn19jSH4ukSM9i0SUgWmXDydxnA@mail.gmail.com>
- <BN9PR11MB5276E3566D633CEE245004D08C199@BN9PR11MB5276.namprd11.prod.outlook.com>
- <CACGkMEvTmCFqAsc4z=2OXOdr7X--0BSDpH06kCiAP5MHBjaZtg@mail.gmail.com>
- <BN9PR11MB5276ECF1F1C7D0A80DA086D18C199@BN9PR11MB5276.namprd11.prod.outlook.com>
- <CACGkMEtpWemw6tj=suxNjvSHuixyzhMJBYmqdbhQkinuWNADCQ@mail.gmail.com>
- <20220324114605.GX11336@nvidia.com>
- <CACGkMEtTVMuc-JebEbTrb3vRUVaNJ28FV_VyFRdRquVQN9VeQA@mail.gmail.com>
- <20220328122239.GL1342626@nvidia.com>
-In-Reply-To: <20220328122239.GL1342626@nvidia.com>
-From: Jason Wang <jasowang@redhat.com>
-Date: Tue, 29 Mar 2022 12:59:52 +0800
-Message-ID: <CACGkMEu_Zc+xBR0G9qNR6XQKNY9MLfTvbpgzpL2kNC4ri3DRQg@mail.gmail.com>
-Subject: Re: [PATCH RFC 04/12] kernel/user: Allow user::locked_vm to be usable
- for iommufd
-To: Jason Gunthorpe <jgg@nvidia.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jasowang@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- Niklas Schnelle <schnelle@linux.ibm.com>, Cornelia Huck <cohuck@redhat.com>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Daniel Jordan <daniel.m.jordan@oracle.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- "Michael S. Tsirkin" <mst@redhat.com>, "Martins,
- Joao" <joao.m.martins@oracle.com>, David Gibson <david@gibson.dropbear.id.au>,
- Sean Mooney <smooney@redhat.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -123,33 +85,80 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Mar 28, 2022 at 8:23 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
->
-> On Mon, Mar 28, 2022 at 09:53:27AM +0800, Jason Wang wrote:
-> > To me, it looks more easier to not answer this question by letting
-> > userspace know about the change,
->
-> That is not backwards compatbile, so I don't think it helps unless we
-> say if you open /dev/vfio/vfio you get old behavior and if you open
-> /dev/iommu you get new...
+Hi,
 
-Actually, this is one way to go. Trying to behave exactly like typ1
-might be not easy.
+The former part of this series refactors the IOMMU SVA code by assigning
+an SVA type of iommu_domain to a shared virtual address and replacing
+sva_bind/unbind iommu ops with attach/detach_dev_pasid domain ops.
 
->
-> Nor does it answer if I can fix RDMA or not :\
->
+The latter part changes the existing I/O page fault handling framework
+from only serving SVA to a generic one. Any driver or component could
+handle the I/O page faults for its domain in its own way by installing
+an I/O page fault handler.
 
-vDPA has a backend feature negotiation, then actually, userspace can
-tell vDPA to go with the new accounting approach. Not sure RDMA can do
-the same.
+This series overlaps with another series posted here [1]. For the
+convenience of review, I included all relevant patches in this series.
+We will solve the overlap problem later.
 
-Thanks
+This series is also available on github here [2].
 
-> So we really do need to know what exactly is the situation here.
->
-> Jason
->
+[1] https://lore.kernel.org/lkml/20220315050713.2000518-1-jacob.jun.pan@linux.intel.com/
+[2] https://github.com/LuBaolu/intel-iommu/commits/iommu-sva-refactoring-v2
+
+Please help review and suggest.
+
+Best regards,
+baolu
+
+Change log:
+v1:
+ - https://lore.kernel.org/linux-iommu/20220320064030.2936936-1-baolu.lu@linux.intel.com/
+ - Initial post.
+
+v2:
+ - Add sva domain life cycle management to avoid race between unbind and
+   page fault handling.
+ - Use a single domain for each mm.
+ - Return a single sva handler for the same binding.
+ - Add a new helper to meet singleton group requirement.
+ - Rework the SVA domain allocation for arm smmu v3 driver and move the
+   pasid_bit initialization to device probe.
+ - Drop the patch "iommu: Handle IO page faults directly".
+ - Add mmget_not_zero(mm) in SVA page fault handler.
+
+Lu Baolu (11):
+  iommu: Add pasid_bits field in struct dev_iommu
+  iommu: Add iommu_group_singleton_lockdown()
+  iommu/sva: Add iommu_domain type for SVA
+  iommu: Add attach/detach_dev_pasid domain ops
+  iommu/vt-d: Remove SVM_FLAG_SUPERVISOR_MODE suport
+  iommu/vt-d: Add SVA domain support
+  arm-smmu-v3/sva: Add SVA domain support
+  iommu/sva: Use attach/detach_pasid_dev in SVA interfaces
+  iommu: Remove SVA related callbacks from iommu ops
+  iommu: Per-domain I/O page fault handling
+  iommu: Rename iommu-sva-lib.{c,h}
+
+ include/linux/intel-iommu.h                   |   5 +-
+ include/linux/iommu.h                         | 107 ++++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  25 +-
+ .../iommu/{iommu-sva-lib.h => iommu-sva.h}    |  12 +-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  85 ++---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  28 +-
+ drivers/iommu/intel/iommu.c                   |  20 +-
+ drivers/iommu/intel/svm.c                     | 135 +++-----
+ drivers/iommu/io-pgfault.c                    |  72 +---
+ drivers/iommu/iommu-sva-lib.c                 |  71 ----
+ drivers/iommu/iommu-sva.c                     | 307 ++++++++++++++++++
+ drivers/iommu/iommu.c                         | 208 ++++++------
+ drivers/iommu/Makefile                        |   2 +-
+ 13 files changed, 655 insertions(+), 422 deletions(-)
+ rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (80%)
+ delete mode 100644 drivers/iommu/iommu-sva-lib.c
+ create mode 100644 drivers/iommu/iommu-sva.c
+
+-- 
+2.25.1
 
 _______________________________________________
 iommu mailing list
