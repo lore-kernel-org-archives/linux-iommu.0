@@ -4,60 +4,77 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 50D19C433EF
-	for <iommu@archiver.kernel.org>; Tue, 29 Mar 2022 13:50:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EAA53C433F5
+	for <iommu@archiver.kernel.org>; Tue, 29 Mar 2022 15:24:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id DCAE3610E7;
-	Tue, 29 Mar 2022 13:50:39 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 7FB0160E6A;
+	Tue, 29 Mar 2022 15:24:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pFuojvtO85py; Tue, 29 Mar 2022 13:50:38 +0000 (UTC)
+	with ESMTP id 6u-Cl-e1eNXF; Tue, 29 Mar 2022 15:24:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 7B59D60FFD;
-	Tue, 29 Mar 2022 13:50:38 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 5B5CB605E8;
+	Tue, 29 Mar 2022 15:24:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E3C2C002C;
-	Tue, 29 Mar 2022 13:50:38 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B352FC0012
- for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 13:50:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B7EEC002C;
+	Tue, 29 Mar 2022 15:24:33 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6828EC0012
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 15:24:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id A0243610E7
- for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 13:50:35 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 55EDC8176A
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 15:24:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hRy0o6VII-A4 for <iommu@lists.linux-foundation.org>;
- Tue, 29 Mar 2022 13:50:34 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [IPv6:2607:7c80:54:e::133])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 16AB860FFD
- for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 13:50:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=bombadil.20210309; h=Content-Type:MIME-Version:Message-ID:
- Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
- Content-Description:In-Reply-To:References;
- bh=ODMBabnsXoaSPQ4J62+3KQQ9EqF6RtG+JR584HtkzK4=; b=VVb09FbrukffSXfPwT0Cd2Ue23
- F8NA988Wzmuv2kVkdI7kL8O619md0CaBEj69NYvCSjiKDkhZk76ZPTvfnFsOoaX5AKivqz7rlkiVQ
- jfmNy7Ho+j3YsoYgoEqqVjVUU33yY2svthZnW5nvDNe/YKS1WmeqoX2KYgQaQiB/jg/3vqbJ2aFbf
- O7FratjUm9+R0GHsdApXhgiv14LlbjGmiavwpoZ+q+7k2myzVOZGPfCcCZQDVNxPaGEU8qYJDKxYT
- F/mU3nmGSIM1WoH7YHmpuyKzntTAsyfYjGaEP0rMwUBO3F52PbYQ7m2IIvfnzg9VvqZ8B4gw6Cp0i
- PBZXK8HA==;
-Received: from [2001:4bb8:18c:41aa:1dc5:164d:d6fd:e657] (helo=localhost)
- by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
- id 1nZCEx-00CQJ4-A3; Tue, 29 Mar 2022 13:50:31 +0000
-Date: Tue, 29 Mar 2022 15:50:24 +0200
-From: Christoph Hellwig <hch@infradead.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [GIT PULL] dma-mapping updates for Linux 5.18
-Message-ID: <YkMOoNaIpyQf/LKL@infradead.org>
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ojhZnA-c5hcP for <iommu@lists.linux-foundation.org>;
+ Tue, 29 Mar 2022 15:24:31 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id A9A6A81762
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Mar 2022 15:24:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1648567471; x=1680103471;
+ h=message-id:date:mime-version:to:references:from:subject:
+ in-reply-to:content-transfer-encoding;
+ bh=EXfw2h4ApJqsKLt0jwN7JfP5ypNKmGZfOtuabYM0CYw=;
+ b=TOUhQ3B958jMAsvgCQ1pYN+eFE0E3jWlLDc6jwW4K6fCb+3rqX+IQ0iD
+ 7xoLR3HWhgUyKeCQoFjmJnU+SkkXpdygJuQUN3RKwVDO+/+d3qtAchI+C
+ K0UM4t47gWf4qkkW3jF3eBVZRfR5pw7IFCIwpmnSxRZkaCDbMFe2AP6y3
+ dxp4mkqatdU0pQwErDvrk9MiYlowmIH0YGoi1JrhEujTf+eChvW86Q5SW
+ uXBdha7/8tlbwfTMjhAcN8VuZ6kfKKE1/Pg/Hb0vz5tCI1e+WaeC8XPMC
+ U5b2CtnjnOAzGw835Xlkmgq2gl54XF8+pzosxi3D76Ivd4fAkCggdWnZf A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="284175880"
+X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; d="scan'208";a="284175880"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 29 Mar 2022 08:24:30 -0700
+X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; d="scan'208";a="604840564"
+Received: from acstuden-mobl.amr.corp.intel.com (HELO [10.209.45.17])
+ ([10.209.45.17])
+ by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 29 Mar 2022 08:24:30 -0700
+Message-ID: <b3998af9-24bc-6191-a8ed-de747e895799@intel.com>
+Date: Tue, 29 Mar 2022 08:24:31 -0700
 MIME-Version: 1.0
-Content-Disposition: inline
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To: Alex Deucher <alexander.deucher@amd.com>, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, corbet@lwn.net, hpa@zytor.com, x86@kernel.org,
+ dave.hansen@linux.intel.com, bp@alien8.de, mingo@redhat.com,
+ tglx@linutronix.de, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+ will@kernel.org, iommu@lists.linux-foundation.org, robin.murphy@arm.com,
+ vasant.hegde@amd.com
+References: <20220328172829.718235-1-alexander.deucher@amd.com>
+ <20220328172829.718235-2-alexander.deucher@amd.com>
+From: Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH V3 1/2] Documentation: x86: Add documentation for AMD IOMMU
+In-Reply-To: <20220328172829.718235-2-alexander.deucher@amd.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,79 +92,22 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The following changes since commit 0280e3c58f92b2fe0e8fbbdf8d386449168de4a8:
+On 3/28/22 10:28, Alex Deucher wrote:
+> +How is IOVA generated?
+> +----------------------
+> +
+> +Well behaved drivers call dma_map_*() calls before sending command to device
+> +that needs to perform DMA. Once DMA is completed and mapping is no longer
+> +required, driver performs dma_unmap_*() calls to unmap the region.
+> +
+> +Fault reporting
+> +---------------
+> +
+> +When errors are reported, the IOMMU signals via an interrupt. The fault
+> +reason and device that caused it is printed on the console.
 
-  Merge tag 'nfs-for-5.17-1' of git://git.linux-nfs.org/projects/anna/linux-nfs (2022-01-25 20:16:03 +0200)
-
-are available in the Git repository at:
-
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.18
-
-for you to fetch changes up to 8ddde07a3d285a0f3cec14924446608320fdc013:
-
-  dma-mapping: benchmark: extract a common header file for map_benchmark definition (2022-03-10 07:41:14 +0100)
-
-----------------------------------------------------------------
-dma-mapping updates for Linux 5.18
-
- - do not zero buffer in set_memory_decrypted (Kirill A. Shutemov)
- - fix return value of dma-debug __setup handlers (Randy Dunlap)
- - swiotlb cleanups (Robin Murphy)
- - remove most remaining users of the pci-dma-compat.h API
-   (Christophe JAILLET)
- - share the ABI header for the DMA map_benchmark with userspace
-   (Tian Tao)
- - update the maintainer for DMA MAPPING BENCHMARK (Xiang Chen)
- - remove CONFIG_DMA_REMAP (me)
-
-----------------------------------------------------------------
-Christoph Hellwig (1):
-      dma-mapping: remove CONFIG_DMA_REMAP
-
-Christophe JAILLET (5):
-      alpha: Remove usage of the deprecated "pci-dma-compat.h" API
-      agp/intel: Remove usage of the deprecated "pci-dma-compat.h" API
-      sparc: Remove usage of the deprecated "pci-dma-compat.h" API
-      rapidio/tsi721: Remove usage of the deprecated "pci-dma-compat.h" API
-      media: v4l2-pci-skeleton: Remove usage of the deprecated "pci-dma-compat.h" API
-
-Kirill A. Shutemov (1):
-      swiotlb: do not zero buffer in set_memory_decrypted()
-
-Randy Dunlap (1):
-      dma-debug: fix return value of __setup handlers
-
-Robin Murphy (3):
-      swiotlb: simplify debugfs setup
-      swiotlb: tidy up includes
-      swiotlb: simplify array allocation
-
-Tian Tao (1):
-      dma-mapping: benchmark: extract a common header file for map_benchmark definition
-
-Xiang Chen (1):
-      MAINTAINERS: update maintainer list of DMA MAPPING BENCHMARK
-
- MAINTAINERS                                     |  2 +-
- arch/alpha/include/asm/floppy.h                 |  7 ++-
- arch/alpha/kernel/pci_iommu.c                   | 12 ++--
- arch/arm/Kconfig                                |  2 +-
- arch/sparc/kernel/ioport.c                      |  2 +-
- arch/xtensa/Kconfig                             |  2 +-
- drivers/char/agp/intel-gtt.c                    | 26 ++++-----
- drivers/iommu/dma-iommu.c                       | 14 ++---
- drivers/rapidio/devices/tsi721.c                |  8 +--
- include/linux/map_benchmark.h                   | 31 ++++++++++
- kernel/dma/Kconfig                              |  7 +--
- kernel/dma/Makefile                             |  2 +-
- kernel/dma/debug.c                              |  4 +-
- kernel/dma/direct.c                             | 18 +++---
- kernel/dma/map_benchmark.c                      | 25 +-------
- kernel/dma/swiotlb.c                            | 76 ++++++++-----------------
- samples/v4l/v4l2-pci-skeleton.c                 |  2 +-
- tools/testing/selftests/dma/dma_map_benchmark.c | 25 +-------
- 18 files changed, 105 insertions(+), 160 deletions(-)
- create mode 100644 include/linux/map_benchmark.h
+Just scanning this, it looks *awfully* generic.  Is anything in here
+AMD-specific?  Should this be in an AMD-specific file?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
