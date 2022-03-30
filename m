@@ -1,87 +1,77 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EB4C0C433FE
-	for <iommu@archiver.kernel.org>; Wed, 30 Mar 2022 10:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7F20EC433F5
+	for <iommu@archiver.kernel.org>; Wed, 30 Mar 2022 11:47:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8ACEB41C2E;
-	Wed, 30 Mar 2022 10:37:30 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 282B840320;
+	Wed, 30 Mar 2022 11:47:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Kogr7HPdmypj; Wed, 30 Mar 2022 10:37:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 9365741C2B;
-	Wed, 30 Mar 2022 10:37:28 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ct6IJM_2t9jA; Wed, 30 Mar 2022 11:47:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 0253D4038B;
+	Wed, 30 Mar 2022 11:47:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 737A7C002C;
-	Wed, 30 Mar 2022 10:37:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CE248C001D;
+	Wed, 30 Mar 2022 11:47:09 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C95ACC0012
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 10:37:27 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BF5FEC0012
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 11:47:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id A73EE41C2D
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 10:37:27 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id BA4DA41C4F
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 11:47:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id z1GXweVARHvA for <iommu@lists.linux-foundation.org>;
- Wed, 30 Mar 2022 10:37:26 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com
- [IPv6:2a00:1450:4864:20::535])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 2D9F441C2B
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 10:37:26 +0000 (UTC)
-Received: by mail-ed1-x535.google.com with SMTP id r23so23905591edb.0
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 03:37:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=zk0PakqhMYo2nFjmrTKxunyt2MpesAgQERWC2WnfNEk=;
- b=qtB20WeQ8TqlA5Az/Y82F+D7x/DnDTFKbEzzFPSMBk0QRxFPiiRUGmWElNr2kbE9vD
- Gfcy3Q9HTiwvBsb7+8eSkCqzWmPE42L6sDxbqqgDapgUufsDVmdujlzTukO+yeqnpMxS
- hs+XySx0uq4x20C9bpF/3udDDwX7Hw1+hV2eQlBYHNd99uNHRN+BlLksKbOnjnXykiG/
- UU3JwQ+f6jKnjIp37pISID9iryLk7UfNteJgXzLMNvnjAyyPC+fH+oADq0eC0J0Ebhr1
- ZR5ZC4PM1hMfCWp96oIF4tDmHrETVbhAeZJim8Z1X4WJ/CinwApkMzeozj7SKZQlhUtC
- /faA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=zk0PakqhMYo2nFjmrTKxunyt2MpesAgQERWC2WnfNEk=;
- b=xEpTHr4OP8vwQFNZa/3FbXVrYlhT4Mhzrve7+Ds+/qu/Ti7Yv4trww9q+fVGaaL9AD
- duPccEqKR/V4if3jl/dtUNoUQ6qvcCm9LCq7eaU2FCJ3A8YFL+YaSc4ksaRNLCcFYVhZ
- He8TZPFhH4gwQG4/b4f1RGPqqjKwJsMwLmxbBW/KF2AsYd7W8kip9zJiZZGep+axpoBC
- b5h5VfkQ5K7ECpv8h3+9E3I5D8oXFhYs29L180WtLan67z1VH6ufJi4SBbbMUbDYV+sM
- mIl7imZ4ct2RxzyPS2TQhMfg2OPWWQkV2rrJnMri8PxZH2hbY0HH7dctOpHSEFhdGH7u
- iv8w==
-X-Gm-Message-State: AOAM532i03KFttwCQm7EFsd1Tcty6z8ztc+ObHU2nU8isGC1ZYZNq/6B
- NsNnUGuCAt6LND3aNMTPkpk=
-X-Google-Smtp-Source: ABdhPJw9D+m3ZJO4IlSutzipSpKEnO5i52pnHm9z5H4lL7rXz7bfI7kYfdoWNGgI3f6lSq8FklVM3A==
-X-Received: by 2002:a50:8707:0:b0:41a:68df:1a6e with SMTP id
- i7-20020a508707000000b0041a68df1a6emr9756964edb.31.1648636644169; 
- Wed, 30 Mar 2022 03:37:24 -0700 (PDT)
-Received: from orome ([62.96.65.119]) by smtp.gmail.com with ESMTPSA id
- h14-20020a056402280e00b0041957289726sm10438767ede.79.2022.03.30.03.37.22
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 30 Mar 2022 03:37:23 -0700 (PDT)
-Date: Wed, 30 Mar 2022 12:37:21 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [Patch v1] iommu: arm-smmu: Use arm-smmu-nvidia impl for Tegra234
-Message-ID: <YkQy4W07fe+PlcT/@orome>
-References: <20220329044436.27732-1-amhetre@nvidia.com>
+ with ESMTP id Qsl-pXMTa1GM for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Mar 2022 11:47:08 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 06AD541BEC
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 11:47:07 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id 176266162F;
+ Wed, 30 Mar 2022 11:47:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D552C34116;
+ Wed, 30 Mar 2022 11:47:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1648640826;
+ bh=Yw9KpInkgsNYhh+OCNup/aC8fKxzxvvo6UbYxOjbCnQ=;
+ h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+ b=THURKuO+016Jj/dRUJW8cU2xinHysPHJdTx+xm635fpa8ffHVW+DngVkU8rwW+MVt
+ MKoM5ymB62/ufnqlPHYg9RZWBy1El38hDyi9ar/pMvAuoB3qWc/dIFs+/T83IhprS/
+ KLE0ZrgzywyR4iBHPhnScst6TIF4duMWpKnj1cucKCVUxd2SaFuPCeyrPt0P/vwNgr
+ FcmduX9I+HkoAzj0w0RgNHuK/fmh+UY61F7RBEuIGx8YqZvaY+iDAVmg2uhVdo6heI
+ d0FnphB6XcHSVeWMIr30+Ob4YwHEaQyHNz2cXL7dscD8XPAGo2RXjLObLwrVzNFKKD
+ Ls/4DyO54nVig==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 12/66] media: iommu/mediatek: Return ENODEV if
+ the device is NULL
+Date: Wed, 30 Mar 2022 07:45:51 -0400
+Message-Id: <20220330114646.1669334-12-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
+References: <20220330114646.1669334-1-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20220329044436.27732-1-amhetre@nvidia.com>
-User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
-Cc: Snikam@nvidia.com, linux-kernel@vger.kernel.org,
- Ashish Mhetre <amhetre@nvidia.com>, robin.murphy@arm.com,
- iommu@lists.linux-foundation.org, jonathanh@nvidia.com,
- linux-tegra@vger.kernel.org, mperttunen@nvidia.com, will@kernel.org,
- linux-arm-kernel@lists.infradead.org
+X-stable: review
+X-Patchwork-Hint: Ignore
+Cc: Sasha Levin <sashal@kernel.org>, Joerg Roedel <jroedel@suse.de>,
+ matthias.bgg@gmail.com, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+ Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,81 +84,65 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============1415243909569756473=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+From: Yong Wu <yong.wu@mediatek.com>
 
---===============1415243909569756473==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="/KyzvAGB3/jpeRiy"
-Content-Disposition: inline
+[ Upstream commit 2fb0feed51085db77606de9b9477c96894328809 ]
 
+The platform device is created at:
+of_platform_default_populate_init:  arch_initcall_sync
+  ->of_platform_populate
+        ->of_platform_device_create_pdata
 
---/KyzvAGB3/jpeRiy
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+When entering our probe, all the devices should be already created.
+if it is null, means NODEV. Currently we don't get the fail case.
+It's a minor fix, no need add fixes tags.
 
-On Tue, Mar 29, 2022 at 10:14:36AM +0530, Ashish Mhetre wrote:
-> Tegra234 has 2 pairs of ARM MMU-500 instances. Each pair is used
-> together and should be programmed identically.
-> Add compatible string of Tegra234 iommu nodes in arm_smmu_impl_init()
-> so that arm-smmu-nvidia implementation will be used for programming
-> these SMMU instances.
->=20
-> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-impl.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Acked-by: Joerg Roedel <jroedel@suse.de>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/mtk_iommu.c    | 2 +-
+ drivers/iommu/mtk_iommu_v1.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-I already sent out this patch a couple of months ago, though I realize
-that it still hasn't been applied:
-
-	http://patchwork.ozlabs.org/project/linux-tegra/list/?series=3D276030
-
-Joerg, any chance we can still get that series into v5.18? I've already
-applied patch 4 given that Rob had acked the DT bindings changes. I know
-it's a bit late, but this has been on the list for a couple of months
-and has Rob's Reviewed-by on the bindings and Will's Acked-by on the ARM
-SMMU driver patches.
-
-If it's too late for v5.18, is there anything else you're waiting for so
-that this can go into v5.19?
-
-Thanks,
-Thierry
-
---/KyzvAGB3/jpeRiy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmJEMuEACgkQ3SOs138+
-s6HlOg//TjNJ4z0WyKy0AxRsqlIcw2z3MucsPxsaWi4GkY7aRO7MwWwkFgO47mZZ
-eQ+C5Jqy6la7Z9jWrpjDqKUDS7LqNIHq0u5sC+i2eEmmk+97aejtm5LwguwOp1qv
-3zq88Yy8OjA+sfH8wwQ3stqmnNNHMS56eqAgNlItBbiDkreYsR75TtAOhu7zrJZa
-UABYC3Uhl4fYAJUiWI9Acf/ggrvCk8q6h/XNL0eRzxXY4s7nvOBWkTJHDqiGlTUG
-TsqGx9w3T5IVbB+gkYMy/vW24HbeE19eYCgSxXXcR2sbBCB/eFXdG9SsfIQiUT37
-KR6nriHdNNmR4mrGQPWfhj1Myo5DW59aRNliWvJWE7lpNpUo1OvIrX7s1WPYIvLn
-ooc7da5IFZgFsD6QQX6DaM58pZeYvMmgzwB2dtbq5D/6UEDlsiSFb4nunHkfVuZO
-yQT+7Xh2ck0kxnugqvEij9UzGXBjLZkeBlUGhs7+0KIUFUekRuh/ppbL1ZtijQNA
-Um4IeRw425O7qRDbBwl/T9sxeKIJif//QbUKrNHCeXaiyRApf54DnQOTbY3YbTdE
-9bTHNbC1Q+fUS92lRe+DpFVUPVvjZeti5lUcFqyfMDrqEumIa7zK9vorP4w6/QQK
-LTCzBjImHuiI7mrEuRkRGFfM6a6emMdmPrVHyyHY4BrM0c8D1tc=
-=8a7i
------END PGP SIGNATURE-----
-
---/KyzvAGB3/jpeRiy--
-
---===============1415243909569756473==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 25b834104790..77ae20ff9b35 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -848,7 +848,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 		plarbdev = of_find_device_by_node(larbnode);
+ 		if (!plarbdev) {
+ 			of_node_put(larbnode);
+-			return -EPROBE_DEFER;
++			return -ENODEV;
+ 		}
+ 		data->larb_imu[id].dev = &plarbdev->dev;
+ 
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 1467ba1e4417..68bf02f87cfd 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -604,7 +604,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 		plarbdev = of_find_device_by_node(larbnode);
+ 		if (!plarbdev) {
+ 			of_node_put(larbnode);
+-			return -EPROBE_DEFER;
++			return -ENODEV;
+ 		}
+ 		data->larb_imu[i].dev = &plarbdev->dev;
+ 
+-- 
+2.34.1
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============1415243909569756473==--
