@@ -1,143 +1,109 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 83181C4332F
-	for <iommu@archiver.kernel.org>; Wed, 30 Mar 2022 14:30:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 38A0FC433EF
+	for <iommu@archiver.kernel.org>; Wed, 30 Mar 2022 15:04:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 15A6341CA4;
-	Wed, 30 Mar 2022 14:30:17 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id CE0AF6109B;
+	Wed, 30 Mar 2022 15:04:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id u5joGGiqEUT3; Wed, 30 Mar 2022 14:30:16 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 8A5D041CA0;
-	Wed, 30 Mar 2022 14:30:15 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5E1CDC002C;
-	Wed, 30 Mar 2022 14:30:15 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 64ACEC0012
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 14:30:13 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 51BC3611EE
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 14:30:13 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id b1mJ_cOoN293 for <iommu@lists.linux-foundation.org>;
- Wed, 30 Mar 2022 14:30:12 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam11on2053.outbound.protection.outlook.com [40.107.223.53])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A54E76080A
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 14:30:12 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C2t6LlKjyha94TuEfWpGxRCVj5C7zx7e9rtJJ7oiwLiBhy3WcTmT0rYLU1M9lRPMZ/myJFIqMD+8hTcVbKU7oOKvSHOT0+rEtsjC5oVrO4vSDifFcx9854vYi1lM8N9II6RpQlKcXRulv8em9wzXfwF55Tk0B/bX4YLsHhLlyf3WKRoMDBtwkOORtl+T6zCxgMMATRuKr7UVw4kJhWENtE7Pot58nqJ4xEV5CNcmlpEtbrXkObUTXVrK2fpBb4/ygCk2AeSVIEs2RcvtZzpz8zZanyMj03QJ/CTccsyf740isv4fQMYBXj1MdqFjvC52FrLVaO3K7WeXSknQcWtfpQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/Ijkh0W5MAR6R6l8INNBZANDHYB7WgucgSG1hWLFd10=;
- b=gMnIjSEQcTZCyTO/l/j2PbC9cDt5Q9P5mxZkc+FgW7RaiqMqaQo9E026IHDSBO1qRBTZeuMPdtDMKi6vd0PTT2DaRWfwOceod0uuSLpDynPNGkYcmQv0HC12oybpZe8HehALqfktoLEOAvxkMkbr0FAipuV1qZpf9B89Jv1DnJ9rHV+ImTRl0N/MlNr56aUBti7ZUateRQA9ZkjsP1UPxeqiyrCE2pBGHuGyZwcukoSHA3iM9xbKnMdUiJh+6IYUOH8phASVA3Plr+T3obNxGCs3SvRMJkyRTTBTuuLG1O2uhrNetoCQyTUMkFfIZgnl8C6mfmNppySovXRosF0XGQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/Ijkh0W5MAR6R6l8INNBZANDHYB7WgucgSG1hWLFd10=;
- b=TotZMlOTYhU53Ij1BjPmA7yoYAepH91dSdQ2HIi3pIunczLPmjjX/yBDnqhwNrY/EuoEeCmB0DdbmNu1W4aG3DRTQkWXYDfh3TPH57G7mOrvdnVKkZyWNTs4ZRFARId1xldPJV1bkD8Avq1Z9hyuN5VEYlKpVWUkeFpy6lpl1jYedD5fSbxmh1F7M55/jC0O2f6gbfo8Sfvf3Veip3KrPFiT7JtE4ZQy88Esoc/V7Ew+GHwT2i4kvMgtOBGrUaBWMLEFgf9S1Xi74tzX0S/kCBuywvcIHzzcp1gbZq/2/wTxDOzJ2mydhRMhQGIEiEVofKmp71/xpC3lcK72NsEhjg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by DM6PR12MB4602.namprd12.prod.outlook.com (2603:10b6:5:168::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17; Wed, 30 Mar
- 2022 14:30:10 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::11a0:970a:4c24:c70c]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::11a0:970a:4c24:c70c%6]) with mapi id 15.20.5102.027; Wed, 30 Mar 2022
- 14:30:10 +0000
-Date: Wed, 30 Mar 2022 11:30:08 -0300
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jvvd6WKdZzRV; Wed, 30 Mar 2022 15:04:42 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id A3EB0608D8;
+	Wed, 30 Mar 2022 15:04:41 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 777E4C002C;
+	Wed, 30 Mar 2022 15:04:41 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A76FEC0012
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 15:04:40 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 9477941C45
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 15:04:40 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id X62iNCJ6IFSf for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Mar 2022 15:04:39 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 87FE141C42
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 15:04:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1648652678;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=Tw2K5gl/MCSB4/A/fbU1d6ws7c+ie+K5t32hD35xsYk=;
+ b=c6vpyXFSk5rqkJai2V17tt56byBC3Fzs8nWgZjP/ke5HZpC0TbTMb3XBc+uSqJ7PK0BxlP
+ WA38ziMdl4gh7CqPmzzDyHKXreR4Y7NPfjd5okNv2uYYB4vUVEeaWFte/9a+otrW7+di/q
+ 6zKdqDnBwm+FGzAZPBWewWWJdfJj7uU=
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
+ [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-403-h1DEZbjQNgmH-ZMHH7N8mg-1; Wed, 30 Mar 2022 11:04:36 -0400
+X-MC-Unique: h1DEZbjQNgmH-ZMHH7N8mg-1
+Received: by mail-il1-f198.google.com with SMTP id
+ k5-20020a056e02134500b002c9af0334e2so5294929ilr.11
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 08:04:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=Tw2K5gl/MCSB4/A/fbU1d6ws7c+ie+K5t32hD35xsYk=;
+ b=c8ELABbgrfII/3O5qOPk+GWr3quHy4R3mg4VPET5V3DCETEPtdY8cbJtvz2Ow9rk6t
+ rXyBw3BsUaxAEEhFoD8CQkEdeilIX1k4WSPraAk7GXEkRs8y6UU7MiWFYNx0jrMEx19b
+ M9KFZMrvW0w94FI0oT/umrBjQb09K/+gx7lob1sKl12LDnbiNmnnPACky47KwajFWMn1
+ pkO4Om1vNi1OyX9oTMcRzB/HfqFeFS6mD0pVlcWJBAfC7tjTLDr81dvZIumD55SujRqp
+ bzuLUsoCy9iSHMb9XWn083Tj9j+npg3423dta8ej2FdElEEBskrgPyEGvifXxy+ew6UW
+ gdyg==
+X-Gm-Message-State: AOAM5322B6ptrY1qO0UaDZxYq/sUnpAE3aJs7ZGPIxXo4p74iG5Ao4Cz
+ TJEE8jXlKnZaR63A3u9Q9UqWQnpd63zLZOSeSfUfGZfQ/daLPGzgyKqM5wWJdFx3ih2Xta/mFB/
+ t4/Ywyjd90OpZU4bGGDUeI+IRl2JTMQ==
+X-Received: by 2002:a05:6638:191d:b0:321:3acb:ac8a with SMTP id
+ p29-20020a056638191d00b003213acbac8amr28069jal.212.1648652676283; 
+ Wed, 30 Mar 2022 08:04:36 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyfihFwMtBBStLXYs+CPqbLhTdE7s40ejm+m3PFDIPROzfPRQ4jcPPTcNt2jC4McnNSgGoDWg==
+X-Received: by 2002:a05:6638:191d:b0:321:3acb:ac8a with SMTP id
+ p29-20020a056638191d00b003213acbac8amr28045jal.212.1648652675990; 
+ Wed, 30 Mar 2022 08:04:35 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239]) by smtp.gmail.com with ESMTPSA id
+ h24-20020a6bfb18000000b006497692016bsm11938613iog.15.2022.03.30.08.04.35
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 30 Mar 2022 08:04:35 -0700 (PDT)
+Date: Wed, 30 Mar 2022 09:04:34 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
 To: "Tian, Kevin" <kevin.tian@intel.com>
 Subject: Re: [PATCH RFC v2 02/11] iommu: Add iommu_group_singleton_lockdown()
-Message-ID: <20220330143008.GB2111031@nvidia.com>
+Message-ID: <20220330090434.22224951.alex.williamson@redhat.com>
+In-Reply-To: <BN9PR11MB52766A3E3BC82EEF437258198C1F9@BN9PR11MB5276.namprd11.prod.outlook.com>
 References: <20220329053800.3049561-1-baolu.lu@linux.intel.com>
  <20220329053800.3049561-3-baolu.lu@linux.intel.com>
  <BN9PR11MB52760F455B3319789BAB1E0E8C1E9@BN9PR11MB5276.namprd11.prod.outlook.com>
  <20220329114259.GB1716663@nvidia.com>
  <BN9PR11MB5276239993592FF808726EF68C1F9@BN9PR11MB5276.namprd11.prod.outlook.com>
  <20220330115820.GE1716663@nvidia.com>
- <BN9PR11MB527691E38BAC4F89FB17BDB98C1F9@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB527691E38BAC4F89FB17BDB98C1F9@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BL0PR05CA0003.namprd05.prod.outlook.com
- (2603:10b6:208:91::13) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+ <BN9PR11MB52766A3E3BC82EEF437258198C1F9@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a4d04116-715a-4cb7-70d5-08da1259cb4c
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4602:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB460236A966F7042D3007CE33C21F9@DM6PR12MB4602.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: C3mRi0n0Y0x6r1dF9jqqoJTOK5IPGg1WMg2lytiKaXtOvU6ttqORqixJYRscTMcxghyvrPWGNKptNbmeqybfkKnhhePOtRLjFpPlw00wvAWyUbkBxVyxbZnrpRJor/rx14YfOoBq9zfTmDVOznYKEu28mq9Cfc2ZtaKvUI5XRC2Sn88+1v0WxQqIZr0zGfeUYnx+WvXU1tpVxWneMRZdQl8mOz4D38EPnUbC4lR/3mo/UHj8F/5JQqmMvPI9jYS0fTDxGjHyO39BfLqbsEExlJlqKIxBW4JEHOmPiuHB6a3LUmlwTkSBnf7V1ki0vsqWDoai40B3B7MuT7jGb7tYTjzHdDsi37YXagRBDtUJgZ+xxzm3VKtUEt3/yqCxbEggYReMW+U7hrJlpvQCbcDiNYRc7PuaxuwrOWTQaVhNlTQbERS/ghCfjPsth4ZUYDUHMXoS0AlxK/p0O9xjqMkBMVIAk528D24VZ3DW+E2hnQ/GNtX0CSxi9WXrrCPOMpQSorHSAFqyNhrM+5Jyu578g/OVwGODSd25eoqitIQJMMOnqwPVzYx4npANhk5wjT2yy0TPgtRa3LFTTH+BBrme06gimO1hHauA/H9RvJWWnPcZWpwEh7nRYBSC+y9o2jdO5A6FOyW9WXQin9Kakmgqiw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(38100700002)(1076003)(6506007)(6512007)(33656002)(5660300002)(2616005)(83380400001)(6486002)(508600001)(26005)(186003)(2906002)(66556008)(8676002)(66476007)(4326008)(54906003)(66946007)(8936002)(36756003)(86362001)(6916009)(316002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0shwvUipBsPO6sEvDnOuVdfbSP/R7WcHnEXiEwgi0Ik2/79qfmK8yaHFsgIT?=
- =?us-ascii?Q?c4ZJAUOPs52hqEwuWgrJukdoL18WNPYwcCERoYQMLx+bTLV6tlhypLcE+M7Q?=
- =?us-ascii?Q?SBpfD64X+BQNMlOOzLUEwTn1tNLaUhHU5wbxheJMPlsFEkawDPyC7BitGDWA?=
- =?us-ascii?Q?F9COf8NqMoOBKKSgdxm9vj+adt3kdUyIrYYQw+SOB4wfGivEuKXlYT8FHdW8?=
- =?us-ascii?Q?9/sF40LUEDe+Rt5EWam3U6kCHziO+EOpkLuzqpg4DgLqLSZynnBvRXqDby89?=
- =?us-ascii?Q?kzDin/GYh+xR/NzizBw3vxgEpESy2gwIuEp6sH1vKXjUj2UfQlZb64Js/3n/?=
- =?us-ascii?Q?9e4wv4Pu/ZV5r0bVXliod0/twQZgH0iSniyfZpGdV7JpiLuZOdn0m+N5B0tI?=
- =?us-ascii?Q?YMcmN+RpA/+i3ChVC3UGNl7+V90mVQRdFQWemeeeJKUeQIQsTpBEcaDI50Xx?=
- =?us-ascii?Q?xrilzd7RYXuYxMTTlvRg+k81kK5gesV+U2hMQa4JZryZHSLobwBYsx/lDMpr?=
- =?us-ascii?Q?Wu1Bj8A6XcLVqjXwgPePUYd9fUNcxJOlSNr66ik1BhXLI7U7Q6VXSX8iFCj3?=
- =?us-ascii?Q?gensJKI453EHytHsBvSprLfegqrJ6FZgRFVZ+ADusXmH/zmTxeCE6zYfPNip?=
- =?us-ascii?Q?3jtHcWogkW+uYU9dGpy/l7DQOOqEKUfGXtxxhSrX0HTor4u1Q1LQS/JusAF7?=
- =?us-ascii?Q?DuX2ihWS3j6iiu0fxqWOgk7OD4SyzNJ2a1K2BYVA991IMchXM2X+LjHQjEny?=
- =?us-ascii?Q?0bTlRRgLGSCesb61SqgApt0cUYRZOo26/KLcs7dWeeIFsdmPS7ZjL79lD3eK?=
- =?us-ascii?Q?CvdlDQPDUWKfTMNwzhQ32vg+Bd64LWKUx0m4jA3Hw17neaW6WmplapksGKpG?=
- =?us-ascii?Q?PsVHNyFPnubzl7llWMaV8ZR/w0L2fEt19XknF/7uRAX20EqtBOLP8odUmblY?=
- =?us-ascii?Q?bryQTy1GD6ijGvdsci2XsNCoQaT3bdeDVJB8/I4YdrlCCFr7FTLyplqu1ZEy?=
- =?us-ascii?Q?Yqg0/XdOOE0dF6FCSiI7Kmzcg+kWR1blno4n3QX23jsbFV811WSnACORXWtx?=
- =?us-ascii?Q?SfUSDi6i9yUcaCPg5wEjguZr0ZUQVz14kQA+2Ym5e6IwzXuBTRuwYw69la0w?=
- =?us-ascii?Q?PFx0rueYR8rz0MvI2aZC1pLu62/NoFzV91GJP7VLXjcyHTQP7dvgcCsg3sKY?=
- =?us-ascii?Q?Yt6UbmQyRVMCn/zPK3EtVzMi//7XwjyZ9H3a1gB4at3xd0loHS2orbNCmU6M?=
- =?us-ascii?Q?3H+fr/qgD6eQoc1gAyCGVofJEPyvnn0oUYHKGO7pN/PfG3PmISI+wXutlnto?=
- =?us-ascii?Q?hbaKEeRqKBtd79MjUI/l+vwyug5bf6Boi+6Bgw287SlD8UbcWIprY9y1qWOv?=
- =?us-ascii?Q?3RLVqeikhfjjo8wRu9yd5muCWunwmGIkZ2Yl2TKDI5DKdYY9J96gC2zVqJHl?=
- =?us-ascii?Q?mhYlpdl9ZRpIKC7Czwg8AfeX1tEaaz3FL5wHM/96sm8keHo30VCsNoudWPb5?=
- =?us-ascii?Q?jDn35bfkU3TN/azINL33nsrlKgGUwhv7k3dIz9b4+P97ohRD+oFKbzVjV7z/?=
- =?us-ascii?Q?DQWsHW0R/8gqHyDC/JroQl0yZLQJHy8OrcrMjjjbaI6yzVRAyc4MHz8b9Qsj?=
- =?us-ascii?Q?IsHMjxhrBIpcmdhk5QjS16iMjYZPg/EhaKhyAGcWU69X9A01vz5dFBpv2edC?=
- =?us-ascii?Q?+3ujxn3hyGFdIc3FI05C0GVul5BK4R1L4xOe4QGVagiuBKVcgBLqf+s9PSKo?=
- =?us-ascii?Q?MQ/ojIQDUQ=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a4d04116-715a-4cb7-70d5-08da1259cb4c
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 14:30:10.0082 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Gv8x8UmjCstkeG1OCzhagjJ2s7RWAgFFDWnuCUNU9acJ0MbjzHYnZstpg3aXsCfd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4602
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Cc: "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
  Christoph Hellwig <hch@infradead.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>,
+ Jacob jun" <jacob.jun.pan@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>,
  Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -152,54 +118,43 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Mar 30, 2022 at 02:12:57PM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe
-> > Sent: Wednesday, March 30, 2022 7:58 PM
-> > 
-> > On Wed, Mar 30, 2022 at 06:50:11AM +0000, Tian, Kevin wrote:
-> > 
-> > > One thing that I'm not very sure is about DMA alias. Even when physically
-> > > there is only a single device within the group the aliasing could lead
-> > > to multiple RIDs in the group making it non-singleton. But probably we
-> > > don't need support SVA on such device until a real demand comes?
-> > 
-> > How can we have multiple RIDs in the same group and have only one
-> > device in the group?
+On Wed, 30 Mar 2022 14:18:47 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
+
+> +Alex
 > 
-> Alex may help throw some insight here. Per what I read from the code
-> looks like certain device can generate traffic with multiple RIDs.
+> > From: Tian, Kevin
+> > Sent: Wednesday, March 30, 2022 10:13 PM
+> >   
+> > > From: Jason Gunthorpe
+> > > Sent: Wednesday, March 30, 2022 7:58 PM
+> > >
+> > > On Wed, Mar 30, 2022 at 06:50:11AM +0000, Tian, Kevin wrote:
+> > >  
+> > > > One thing that I'm not very sure is about DMA alias. Even when physically
+> > > > there is only a single device within the group the aliasing could lead
+> > > > to multiple RIDs in the group making it non-singleton. But probably we
+> > > > don't need support SVA on such device until a real demand comes?  
+> > >
+> > > How can we have multiple RIDs in the same group and have only one
+> > > device in the group?  
+> > 
+> > Alex may help throw some insight here. Per what I read from the code
+> > looks like certain device can generate traffic with multiple RIDs.
 
-IIRC "dma alias" refers to things like legacy PCI to PCIe bridges that
-do still have multiple PCI ID's behind the bridge used in
-configuration cycles however the PCI to PCIe bridge will tag all PCIe
-TLPs with its own RID because classic PCI has no way for the requestor
-to convey a RID to the bridge.
+You only need to look so far as the dma alias quirks to find devices
+that use the wrong RID for DMA.  In general I don't think we have
+enough confidence to say that for all these devices the wrong RID is
+exclusively used versus some combination of both RIDs.  Also, the
+aliased RID is not always a physical device.  Thanks,
 
-So, from a Linux perspective the group should have have multiple
-struct devices behind the bridge, the bridge itself, and the RID the
-IOMMU HW matches on is only the RID of the PCI bridge.
+Alex
 
-But we know this because we know there is classic PCI stuff in the
-heigharchy, so we can just mark that group as incompatible.
-
-> > Add a flag to the group that positively indicates the group can never
-> > have more than one member, even after hot plug. eg because it is
-> > impossible due to ACS, or lack of bridges, and so on.
-> 
-> OK, I see your point. It essentially refers to a singleton group which
-> is immutable to hotplug.
-
-Yes, known at creation time, not retroactively enforced because
-someone used SVA
-
-Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
