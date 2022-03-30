@@ -1,57 +1,57 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CD1F0C433EF
-	for <iommu@archiver.kernel.org>; Wed, 30 Mar 2022 17:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0C3ABC433FE
+	for <iommu@archiver.kernel.org>; Wed, 30 Mar 2022 18:01:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 7F23F40E08;
-	Wed, 30 Mar 2022 17:55:35 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 922CF41D7F;
+	Wed, 30 Mar 2022 18:01:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id et6k94-RtikN; Wed, 30 Mar 2022 17:55:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 48796401D5;
-	Wed, 30 Mar 2022 17:55:34 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 2iY4hKGY3qLt; Wed, 30 Mar 2022 18:01:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 39D7641CF5;
+	Wed, 30 Mar 2022 18:01:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2137DC001D;
-	Wed, 30 Mar 2022 17:55:34 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DB908C0012
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 17:55:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F0D9BC001D;
+	Wed, 30 Mar 2022 18:01:31 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AD4B7C0012
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 18:01:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id BA4DF405A7
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 17:55:32 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 8BB5341CF6
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 18:01:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qOBN51ymvSNT for <iommu@lists.linux-foundation.org>;
- Wed, 30 Mar 2022 17:55:31 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id GDOrrp4G009N for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Mar 2022 18:01:29 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [IPv6:2607:7c80:54:e::133])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 4C2C0401D5
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 17:55:30 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id E51BE41CF5
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 18:01:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
  :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
  Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=SSKi39PDpsQvMNgCfkcWVHQSLGZLiPgFI8QRLkyxSyY=; b=SJnzdWhnhu1gvA7Efu9RcTl+A2
- z7PdgE1deeP5jyFNyL/D5kZe6Cm6S+bTlzBOgWYNmh/S2eSgdrZowCNHvTS9p6PyD486pRo1xa0y9
- TXmrU2cUfn9krlLbrfjVnMMBkdlv6rdZfEdZ1gOkgofp9tjPqbxPE3rUtm64kyqX6C9RKagXWhZjI
- sWkf0PuxUUppvonwUVDTrkSC/i/wksPR5LQkqbCx5YQjq/dSkc7/zrk3Hgr5G1l/2zi9L0ohR4FqP
- 4lEHJLXc9bKF3apW3rCT+Z5PA9dwunQsc9IvwtvKkQ7yUXMaQzbkPt9qfzkKIKFo4/FS98bx8iJbL
- wV2ozBuw==;
+ bh=8sQ6SQCM7+eekKWwRavWR33/gb8wY09eRtrYpsnuNfQ=; b=yUXTtYD7LDJ8eYXzNSyyQftYQp
+ S3O3C63uKLospuC5Mh4AL7JUStHkfwaRMljYo1yNjIR4OiIFD0WCK6jyi4GeT6zDxpQJ1+vdcHAMr
+ Q9GQ8fNuoqDTs+qyoLgpt5fZSxYSIBkGtonuYlUG6ikqvFlpI2GChXbsKYHjI4IF/xYbqm+ndyIMd
+ ZT3PM5Bm0h4mo51aGi0q6qMUxCjahNmfVAewOXBnIkSgPBXAUY3oAv4hW8yl+qZwlGs/YmUtbLjqG
+ wX+ok7SDr/YclbDU4s+KHcUp+FpF2CmEH5tEZs9x1mHwaVvFaNUhDxmbduA7BR2uyfpRiyCw7IYfk
+ eQNcXaFA==;
 Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red
- Hat Linux)) id 1nZcXX-00H3Sa-Pd; Wed, 30 Mar 2022 17:55:27 +0000
-Date: Wed, 30 Mar 2022 10:55:27 -0700
+ Hat Linux)) id 1nZcdJ-00H3zL-To; Wed, 30 Mar 2022 18:01:25 +0000
+Date: Wed, 30 Mar 2022 11:01:25 -0700
 From: Christoph Hellwig <hch@infradead.org>
 To: "Alex Xu (Hello71)" <alex_y_xu@yahoo.ca>
 Subject: Re: "dma-mapping: remove CONFIG_DMA_REMAP" causes AMD SME boot fail
-Message-ID: <YkSZjwDfD+EFuenm@infradead.org>
+Message-ID: <YkSa9d3JOExAiBXU@infradead.org>
 References: <1648659326.eabkokyuym.none.ref@localhost>
  <1648659326.eabkokyuym.none@localhost>
 MIME-Version: 1.0
@@ -78,23 +78,22 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Mar 30, 2022 at 01:51:07PM -0400, Alex Xu (Hello71) wrote:
-> Hi,
-> 
-> After a recent kernel update, booting one of my machines causes it to 
-> hang on a black screen. Pressing Lock keys on the USB keyboard does not 
-> turn on the indicators, and the machine does not appear on the Ethernet 
-> network. I don't have a serial port on this machine. I didn't try 
-> netconsole, but I suspect it won't work.
-> 
-> Setting mem_encrypt=0 seems to resolve the issue. Reverting f5ff79fddf0e 
-> ("dma-mapping: remove CONFIG_DMA_REMAP") also appears to resolve the 
-> issue.
-> 
-> The machine in question has an AMD Ryzen 5 1600 and ASRock B450 Pro4.
+Can you try this patch, which is a bit of a hack?
 
-This looks like something in the AMD IOMMU code or it's users can't
-deal with vmalloc addresses.  I'll start looking for a culprit ASAP.
+diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+index 50d209939c66c..61997c2ee0a17 100644
+--- a/arch/x86/mm/mem_encrypt.c
++++ b/arch/x86/mm/mem_encrypt.c
+@@ -28,7 +28,8 @@ bool force_dma_unencrypted(struct device *dev)
+ 	 * device does not support DMA to addresses that include the
+ 	 * encryption mask.
+ 	 */
+-	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT)) {
++	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT) &&
++	    !get_dma_ops(dev)) {
+ 		u64 dma_enc_mask = DMA_BIT_MASK(__ffs64(sme_me_mask));
+ 		u64 dma_dev_mask = min_not_zero(dev->coherent_dma_mask,
+ 						dev->bus_dma_limit);
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
