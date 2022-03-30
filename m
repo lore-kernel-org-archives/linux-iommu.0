@@ -1,185 +1,170 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id F154EC433F5
-	for <iommu@archiver.kernel.org>; Wed, 30 Mar 2022 13:36:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 24069C433F5
+	for <iommu@archiver.kernel.org>; Wed, 30 Mar 2022 14:01:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 95770402F3;
-	Wed, 30 Mar 2022 13:36:32 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id A67C9611FA;
+	Wed, 30 Mar 2022 14:01:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id I6zQcJL1arb5; Wed, 30 Mar 2022 13:36:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id E01DC40112;
-	Wed, 30 Mar 2022 13:36:30 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id lY5RN5AajWmM; Wed, 30 Mar 2022 14:01:35 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 4D2086109B;
+	Wed, 30 Mar 2022 14:01:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AE68EC001D;
-	Wed, 30 Mar 2022 13:36:30 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 14708C0012
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 13:36:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 318DCC001D;
+	Wed, 30 Mar 2022 14:01:35 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8528CC0012
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 14:01:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id DF53E84780
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 13:36:29 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 71E3441C7A
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 14:01:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 067u5fl2xIqs for <iommu@lists.linux-foundation.org>;
- Wed, 30 Mar 2022 13:36:28 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 50B358453E
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 13:36:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1648647388; x=1680183388;
- h=message-id:date:subject:to:cc:references:from:
- in-reply-to:content-transfer-encoding:mime-version;
- bh=XlOrzMjIgjga9Qogp/sf4WoZdQBlzvyEx62qpd/HivA=;
- b=KBZbjc6RhhAgFYf7wf5swVSRMYk47uYgyQwYnFQPR/P8SVs+Dw2rkTr9
- mK1SSg7nekpk8RMvgokKKpNrb3YQFlmqpmw+VlJDWHJ597Qg2NdOBePfa
- 8eGr2emfmOP+PnL2qf20ns3etYmLY2FwUc3YUyB1DC2KIQLXed2M5T2xa
- PFihuanajblPGXV05BZO0kCFQKMe9mJs86F7yoy7GDEtjmOY1MZgxNjhy
- ibWhbBhJwf9HWcZk/YOTCNZ+QZ7hdM9DYpGfmDWfHO214LvHFapbm3CUT
- LRp8OrEkFyVJvap/HhbNlWLk5OUMI0n8Cf+bkNLGfGiKJHZwzfptdoMWG g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="247042955"
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; d="scan'208";a="247042955"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 30 Mar 2022 06:36:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; d="scan'208";a="719977304"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
- by orsmga005.jf.intel.com with ESMTP; 30 Mar 2022 06:36:26 -0700
-Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Wed, 30 Mar 2022 06:36:25 -0700
-Received: from fmsmsx605.amr.corp.intel.com (10.18.126.85) by
- fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Wed, 30 Mar 2022 06:36:25 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Wed, 30 Mar 2022 06:36:25 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.105)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Wed, 30 Mar 2022 06:36:23 -0700
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=amd.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id T0cumg6QbVwg for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Mar 2022 14:01:29 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam08on2061d.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e8b::61d])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 901DD41C77
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 14:01:29 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jc7NNTcxNUhPH9PGG3JID5E3SvXke7luZ2S+65qsV7R7COj1hgh44RxkDwN4WWiL0QiTlXQTFuQ10XDxFaYZS6TbIvT8cI9dYA+Duervkpg44hwb/pS014V/FsaCjHHjQei30ZXNqX4zsDp87OnowwZvx3CWZrrS7rcQFuX5o7NnsWue+fsvmPKWvAa4ZNexG9tA39MY2jIplf3/ccBgBY/K/e/sjwmmAYz52eX6s8EcGWjYtCsEapQ30JEWjgEZP40OhlJdgfVUqpvU1Me7rpRIGfk53QcAxu+xldj2qh6pSZjbB1g2BZVhVPnq2UDzbTT4FSRYiZdeqipwWVLBnQ==
+ b=YjugiOUNZNCPRe3Pgjgp9T71DZKoP2l6ekaYjmt38RRehgUpsNQ+h+gpJAwUO9YCJK15wGuOOp6/TkVFE7+g2pTpqM52Sc8sbrhJfzxLTGqjc8LRcyC1MDn5de/5/my7Dy6zQW1Ox3+PZcJGTyLcIwk2rfEpuVB2euJG+k/qVURXxakJKrTyR8e7cut3lDhFRAO2NPByuWN8v6l1HEH4ibR0AjLazi//IGWn/sBFnW2gqrB57CUyl8TVO4YLZvOag1995fonoTghVKR6/+9AsKwA+mKKnkwPuRT6IpBf9rO07fAXHVAwByclud/ZJT54pOYYZDrpv5CWGnndC420QQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=txIBlilEltMW8RqivGs/wPvKlZgViV+oBKB1v0A9HVo=;
- b=BzuN2Fe8jwhT1QvXUVu3feeM5iAesjhn40PKzqQtT3uieKoZU9+BGs2jhG7oaRQNUN0IJvVTJc++AaH2or6YMWzLCStg/zISy+YXVbCG18QniDliAL9FJ8FQVo9aEfVkJNbx7vFOjLNRaxEr7DtVAygBKRIEci8OO131RQnivpziCD1r+lGmbo4SWAfbHbJ6er5z3hdsZFWhls1kqYF51T4jhyh40R5veWv+ZQTUsMi7hG2silh8DP9qRnAidr4Cfy7225/e770273RaSNOr4YBPIf5vdc3rfoXooZ13TnGY1Rx+VaRrpfGDHyFynOhQ8V5rnww1gZQ7MXkzof5lBg==
+ bh=9pb/jmlrY7sr6Tb9ZcbJvD6hALEgabCQCan9f4Lk6HE=;
+ b=lCB+RWjZFZ4r78mD7Z9uXsncIj4hppwBX6Rd6s9S2xs6gdcikEPuHydsNe3Ci1dOz0E52QDLdMZNfLXXnJ7TV0Czb3hMh5iMgYiqQNzHFbVf9LWwoxX9a/355wVvYKxtyLvjMGddzJ9JuNkp5eRDK4mxs06GN/LZNAgxIPdIi4b8n7EeEnt1dqV3FJ7FCm/emykl8jE7e/CWDjLejxZLUuARmQJB540afVqikQApiRmkAoh3jv1odzAEEAqZrYMgAr/bP8+0KNO45Q7vQqkfBt9wCOdo8hKnGq8ltWTTKYyO60eckR6Lb0DbZ2zY+JXgxppxlEmWTLIP+blSQTsYjA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB5658.namprd11.prod.outlook.com (2603:10b6:510:e2::23)
- by PH0PR11MB4904.namprd11.prod.outlook.com (2603:10b6:510:40::10)
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9pb/jmlrY7sr6Tb9ZcbJvD6hALEgabCQCan9f4Lk6HE=;
+ b=i0gtK6t5nmvZPkNUGuKu57ihM12j8LpC5CGm43LeMPgSCMf0D3kZkmsD1kpD/3djR/iw/sjKCJZtoSavkDvJMqszQHJSDyH8jrKCrNFs7/DzPzUZhy9RuQ+zWrnGO7x1gBn/XuNk8wBs9ZKtDKarUBBcTDXbQhYMSribREm6ZCg=
+Received: from BL1PR12MB5144.namprd12.prod.outlook.com (2603:10b6:208:316::6)
+ by SN6PR12MB2736.namprd12.prod.outlook.com (2603:10b6:805:75::30)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.17; Wed, 30 Mar
- 2022 13:36:19 +0000
-Received: from PH0PR11MB5658.namprd11.prod.outlook.com
- ([fe80::bc9d:6f72:8bb1:ca36]) by PH0PR11MB5658.namprd11.prod.outlook.com
- ([fe80::bc9d:6f72:8bb1:ca36%8]) with mapi id 15.20.5123.019; Wed, 30 Mar 2022
- 13:36:19 +0000
-Message-ID: <cf303486-fd80-591c-f9a4-d39591c7d0b8@intel.com>
-Date: Wed, 30 Mar 2022 21:35:52 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH RFC 08/12] iommufd: IOCTLs for the io_pagetable
+ 2022 14:01:00 +0000
+Received: from BL1PR12MB5144.namprd12.prod.outlook.com
+ ([fe80::4566:560c:e193:d210]) by BL1PR12MB5144.namprd12.prod.outlook.com
+ ([fe80::4566:560c:e193:d210%6]) with mapi id 15.20.5102.023; Wed, 30 Mar 2022
+ 14:01:00 +0000
+To: Dave Hansen <dave.hansen@intel.com>, "linux-doc@vger.kernel.org"
+ <linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "corbet@lwn.net" <corbet@lwn.net>,
+ "hpa@zytor.com" <hpa@zytor.com>, "x86@kernel.org" <x86@kernel.org>,
+ "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>, "bp@alien8.de"
+ <bp@alien8.de>, "mingo@redhat.com" <mingo@redhat.com>, "tglx@linutronix.de"
+ <tglx@linutronix.de>, "joro@8bytes.org" <joro@8bytes.org>, "Suthikulpanit,
+ Suravee" <Suravee.Suthikulpanit@amd.com>, "will@kernel.org"
+ <will@kernel.org>, "iommu@lists.linux-foundation.org"
+ <iommu@lists.linux-foundation.org>, "robin.murphy@arm.com"
+ <robin.murphy@arm.com>, "Hegde, Vasant" <Vasant.Hegde@amd.com>
+Subject: RE: [PATCH V3 1/2] Documentation: x86: Add documentation for AMD IOMMU
+Thread-Topic: [PATCH V3 1/2] Documentation: x86: Add documentation for AMD
+ IOMMU
+Thread-Index: AQHYQslLqpWUeg5qeEmTRh77YLEneKzWfJmAgAF6XmA=
+Date: Wed, 30 Mar 2022 14:01:00 +0000
+Message-ID: <BL1PR12MB5144C7172FCB8ED2C1AB013AF71F9@BL1PR12MB5144.namprd12.prod.outlook.com>
+References: <20220328172829.718235-1-alexander.deucher@amd.com>
+ <20220328172829.718235-2-alexander.deucher@amd.com>
+ <b3998af9-24bc-6191-a8ed-de747e895799@intel.com>
+In-Reply-To: <b3998af9-24bc-6191-a8ed-de747e895799@intel.com>
+Accept-Language: en-US
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <8-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <8-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
-X-ClientProxiedBy: HK2PR02CA0170.apcprd02.prod.outlook.com
- (2603:1096:201:1f::30) To PH0PR11MB5658.namprd11.prod.outlook.com
- (2603:10b6:510:e2::23)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Enabled=true;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_SetDate=2022-03-30T13:58:54Z; 
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Method=Privileged;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_Name=Public-AIP 2.0;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_ActionId=827e65ef-7505-4c1b-8d76-7aeedc3eb3b4;
+ MSIP_Label_d4243a53-6221-4f75-8154-e4b33a5707a1_ContentBits=1
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_enabled: true
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_setdate: 2022-03-30T14:00:58Z
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_method: Privileged
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_name: Public-AIP 2.0
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_actionid: da794e31-0788-4ca0-bc57-cd53cce220fd
+msip_label_d4243a53-6221-4f75-8154-e4b33a5707a1_contentbits: 0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: abe5420f-8898-4e92-1dbd-08da1255b882
+x-ms-traffictypediagnostic: SN6PR12MB2736:EE_
+x-microsoft-antispam-prvs: <SN6PR12MB2736F3974ECCBD319C2E7EE9F71F9@SN6PR12MB2736.namprd12.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 9MB+EzelkOMwT9p0wFkWNd24cMPkcbaqOMwUQBeMG+xlLFLXvOdRknSuhurz+z/F9xogoJ2mg31O5vlWqlLHo+sj0HEPhdb3JAok9RX1CI2j31cALqBhHMh2jIhycK2kWfd4qjx+8dJ9Bfx715POXur7bvQtWWi+iBZEKl7sCC+BKP9GugQ0kAHXh6d1i/rCF7odIUSNmh3rQo1L9ZQbGw1xsxKztReOA5MV2sgMP/AcEAxuMucJJuhG99PlXjOK2HKGTGjI0v1jXm/xyVIyZSxDOySgBM+lb8HQXHEK+ve4kgu9xq9/lLA9Ub9XWB/NB2R1B1LJkT+DhPuZ7TYJcpPCRve3xkCt89VgfJhcFgupzt5n3EiUCWsOCPXNcaPAdyeIxpizmK7EIHRN/F3ojgdzuvtVil9SsWxOjIWpWs0Q+AHfDMvEtAZmWpRAjujsTd/jNXzl0gh7Y23PqvZBTiAPkgv33QnSu3sdRnJXJ79gSihZE+5JqOlF/fpi/BxXgX2uah96Wz07PD+TG8jr2e/nImPT83VSTYSv4RAWEJnQ0Qv1C2iwGdAiDS1nb506av+tg+qw7E/INBakrfSS9v+EWG6PXIFH6sgyJ6VxTDWSzlL+voDLK8DLRcQJySKiRqVsAL6EEqMg8jrott9ZWIqspxXgMjubWkp6c9vLpdh0MtYQCPd7RB8DPb4KelNPKDpdsJbFDdYT9roC+tYRQN9xz7qoW3yygvm3MzpuubI=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BL1PR12MB5144.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(8936002)(71200400001)(6506007)(7416002)(66946007)(5660300002)(2906002)(76116006)(7696005)(9686003)(53546011)(38070700005)(83380400001)(66446008)(921005)(66476007)(122000001)(66556008)(110136005)(508600001)(8676002)(86362001)(52536014)(64756008)(33656002)(316002)(6636002)(55016003)(186003)(26005)(38100700002);
+ DIR:OUT; SFP:1101; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?c3k1NmlkdDEwRUh3WTRnY3BoUnliMTg5cWlHM2NONGxTemhBLzlWVEZKTnVQ?=
+ =?utf-8?B?UHh2endheGtuZmh1VlB3OUgvUDY3bW1RaU1qTXlRSDV3b1k0dDVpaVFvYXBl?=
+ =?utf-8?B?VDRxZGpqcTQ2dW1BQWRtM21uMk5hbFIrZTU1SzdCWUthWm5QNDg5L1VweFNY?=
+ =?utf-8?B?WWs4QTlPSEdSa1Jwa2ZNNWVrUjJuZnFYdHEzV0d0MGtnSHo1SFM0anF3M2Yy?=
+ =?utf-8?B?U1JJZktpeXpyZDcxaWY0Vmswek1CUnBZS1k0dDg4c0Z1YWhQOU9NZzlBaGtG?=
+ =?utf-8?B?YXRDdWNVMUJsVlhQb2NvekE0Q21NWnJpOUdkUWU2bTRyTld6WG9HTlJIb3Rm?=
+ =?utf-8?B?UlZtNzUxNk9KclN3am1JdE1vUVpjQ2NEN2VjcThlcmtWZ042ZFpXdEcwYkV0?=
+ =?utf-8?B?aEpnQ1Qyekd6amE4VGxyUW9Pb3VUOUU4VEo0WlYvUkVncXpXaFdmSDFjdVJK?=
+ =?utf-8?B?SzZJdlVmLzFIOGd5dU5XUEdJeUZxcFlRcUdqZXpXY0V5T1gxTVQ1YkhBUXJ6?=
+ =?utf-8?B?ZUNzMUZYM0NqazBmdDZVaUtabXl3ZjMwajRIVElSQm9QQWN1Mmt4bzBoandN?=
+ =?utf-8?B?QzhVTmdsZmhaUlZIOXJwVmNQamlZMUp5YkN4Q0RGVlo5bmhLQXo2b1g5Y0FT?=
+ =?utf-8?B?VnloazVsNXZVdytIbHFpQW9uMWdUTE1SOCs5R3F0OXFCekdrSjFxTkZHd0w4?=
+ =?utf-8?B?UWM0SHc3YTI1V3Zqakd4WWV2YzU3NWhOZFJqQTNUUW1EcDZkYVczR3NyQi9W?=
+ =?utf-8?B?OFJFZDZhZUQyMTFMc0JVbUpWb2FubUpEakJpTEVIRU5RYkVqdmdUQS9RcWJF?=
+ =?utf-8?B?TXBUbWttam9QMTJjcENWZjJabTFiQXhwRTlXc1F4MmhnRHhmK0w5MlRnc0lP?=
+ =?utf-8?B?ZlB1aDRQN3VGeXdKN24yNmFGOHJzL01NTy9jZ2xmRnBQUDNXbGdaSVBTTGZS?=
+ =?utf-8?B?dVE3bTMvWFA4QkdBZms3cWcrZnF1M204N2FPbysyVWdXUjNVV0ZUYUV1Qnln?=
+ =?utf-8?B?VTR6RFRUQ0RYRjJOam9Ga1FuVzIwTW9ZNGZ1Z05jME5sNzlTajJ0c2hHWlZV?=
+ =?utf-8?B?bENXRlNVL2RDNkVaV3dZaDZRWHRNRnR3YXcwanc3M3NYeGlIMjR5amV1VGVP?=
+ =?utf-8?B?a2VrZTN1SkhuRzJoeVFyVE9oaEdTTU9RY2JOVTg0N0JTNytaSDZxTDQxQVNP?=
+ =?utf-8?B?c3NPUUg2cHM2VTRsblh6S2M2dmt1WmU2WTZScnlEUE9DQTJrUCsrdUxsQ1RY?=
+ =?utf-8?B?OXNHME1WM0pWdzM5U3o2dFNiNTRTQ3lyTDlqaEw2L1FhU0VpcHJBa0lKOXdx?=
+ =?utf-8?B?ZW0vQVU0ZkN1WFBXRzNoV2dYTFV0aDRLbGlQZGhJbWlrcDVrczlLbDhxY0Jp?=
+ =?utf-8?B?TUFWQlZPSXRqaHAzTmxhWEtZZkloSks5V3E1aXpMVks4M3ZiQWY0WHZCVk55?=
+ =?utf-8?B?VHN4RnV1K0p6NE1XN0h5YjcvQ2J6QTByczA1YzhXSTBkTElkdEdqZ2I2b1cw?=
+ =?utf-8?B?UFdlWDQvUzBkK0g2SUpoa0w0cFdtRzJHdDFJdEFGT2JOMVdzbUJSOXBXWE14?=
+ =?utf-8?B?VnFIN1hCUEUwZHV1Ykt1ZEZZNDRlYVIvWWZzSDZaMCt3MlBySUtuMkpGNVlN?=
+ =?utf-8?B?K1k5ZmlkeWFOcm81bDVJdC9xS0JnVTdEckZ6ZFdxd2J5dEtYajA3TEdBTnVl?=
+ =?utf-8?B?eGJ5V1MxL0tUQUMzR0F1T3lVOWlveHZPZ0VvNXprdzhTMFBVOUs5U09SQ0dl?=
+ =?utf-8?B?amVnMkM2T21tWW5hY2E2a2JIZHh1bk9sZWFJc1RneG0rVE1uVVhaZ094Qmsw?=
+ =?utf-8?B?TGducXN5eiswcFl6SFcrT1lmMmZ4aklPeDdvVlZhZnFXaGZVazY5WHNnVkxx?=
+ =?utf-8?B?Y0N6Z1hDZ1FUSW43WkpLTVpySHVlQUxBMU11eTdSckFsSy84Y000YzhVZXBB?=
+ =?utf-8?B?clorcVAxVGNMa1dNcW11dTNlWUVmMjg1NEZKZWx4ZWZZR05kTWtkYVUrV3ZH?=
+ =?utf-8?B?ZXFCOXNPeU1jVmt2anNtM2MrTVBVemxDdTNZRW01blNjU1ExN0Q1QXcwSnJG?=
+ =?utf-8?B?dWNlWWJpVzllRnBvVHljUndMaHArUWxaV0J5c0FjcEM5M2JLYTFUcUR4alpE?=
+ =?utf-8?B?T1hYalgwdDFNWXZqZEZrSmNuR0tvd2labk9LektPKy8xeisvbE1MTXZzWXRy?=
+ =?utf-8?B?RTFwRlQ3dG5FenYwd0dEN0dxekl3YXFpRExwcThSMFdnbmtOVE9STzd1VERB?=
+ =?utf-8?B?azFrNGZIcFNRTVhXbFFVbGk5MzBBcXRBWGFpbW5oS1ZCY2lnOXlMbUlLME5W?=
+ =?utf-8?B?eHlnNTJ5K2tqUXJ0Vld6R3FwT2UzUHJWZklOODVSVE1nN0ZVa0JFQT09?=
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 15a29cba-35e6-444a-0beb-08da125245eb
-X-MS-TrafficTypeDiagnostic: PH0PR11MB4904:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-Microsoft-Antispam-PRVS: <PH0PR11MB4904981A908CDFAC475D24E9C31F9@PH0PR11MB4904.namprd11.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UMAkcNFmpn9xoyu7GCZ5BAMRjSs9lIfjmAVTTR7iq4Gx647K9QluehHhyyyV9pYhkJGZ9fHqpXt4nNE58bhKme+5O7QJ6jrLoMhbyvVZahMKjTx3+PYXQwyJuNsVh0Eu6kateCZpoN22pic8/FP+h39H7hv9u3uMFt3tCJbYI+fnSB5xO80ianJZM3G7jRvChLtIg4TA88BhbyosbIx6s+D4imp5w9UJQn6U6VMGpMyPeuTgT7X/tLkrGoDZjK8kyaQU2+9UmLpKUK2YrCmnLJphrD/NgfU/BgaIFsIFLjTvEJw9uAipKDqdSKYIraq7hQDVMkI1odmtdcbtnPh+k/zEc+hPiELwud4n+4DdMoKZvHLyGu3DrFqJn5H4mGw3XJuWYBERnyTIbpT9KsyubHpZ7Z2GX9dXn7DJKGX+6HpgEAiWEIFB/ral0ndeB92AhUd7gx0QcQ99RgfkTNY6XGsXiDZH6W9wFpeMJMvFt8TBlW9vE1fNZ1aoD5uxnoZK46PWkDlCVJknZHNNj7F8GlWdrBkv/axBVoPNsBhchVjGRvICi40BL4NU/BKfjXY3meAzPWnZGFmWjmJXhyW/KtjVMAM23lfxVsM3f1WtpaQYACXsOa9wVSWHOf2LA+LPepjfzGwKUlwgpcD35AzSnmBaymLVaCM734GM5zjDXfr08Cw9GjOJmB9Lo0LpUjGya4nWeXlw/ZY8o60UTGLkOW5SRKvRcYpX4xzoSQZ9UXqYNBh63ibR/WekBj14YSrg
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:PH0PR11MB5658.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(366004)(7416002)(30864003)(54906003)(53546011)(5660300002)(508600001)(6506007)(66556008)(6666004)(66476007)(66946007)(6486002)(8936002)(6916009)(316002)(36756003)(6512007)(82960400001)(26005)(86362001)(83380400001)(186003)(4326008)(2906002)(31696002)(8676002)(31686004)(38100700002)(2616005)(43740500002)(45980500001);
- DIR:OUT; SFP:1102; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Q2IrM040Ri9kaEt1dzBoVEh4M2ZBTWp1RDR4ZTQrY2trenp4bVcxTEdLZjlR?=
- =?utf-8?B?VjdiZFhaRmE2QXQxM1Z0THFsZ01rU2hZa2thUFJBUys1d1VLRXdRSHRjUnRj?=
- =?utf-8?B?eWFPOW14bjZEa3RkaGVlSzdhWWpwWkx3eHB4MUROZVhYQkJkU2ZqejN0L1ZV?=
- =?utf-8?B?R216aFBpZ3UrRWFVMWQySUNYdytPd0VlMENMaXBvZ2E2NjgxbGlCZXNvWnpi?=
- =?utf-8?B?WXpuYlZRczhTdW9ZVkFEamZhakpONU9sYU1XbEZ2S3pXeUovUUpxd1lOYjR4?=
- =?utf-8?B?N1YxUkhQbHlMdUhCVldkczRLMEdaMm82eUdoeEVWd0xqMi96UEs0aDg3Slh6?=
- =?utf-8?B?MUJ1em41V0pubk1QSWsrbHJQRHdpSmU2SGo3TTNqcEZZelg2WVFKdHV0WGFo?=
- =?utf-8?B?WjA0QUd2Q2o1V0hEUkw1aGZsbiszdFFmcVM0aFJoUGYxM0NYUFJjd3JVZEhn?=
- =?utf-8?B?cGtvaXkxM0VmVjFHSXZCQjhUcmVyVjZOdUVLVVZHUjlLTWZvQTc5MEUyNzdw?=
- =?utf-8?B?bGJCaFQ2OUNubldmd2RwZEhiK1Zwa0ZGWERxZEFodnFIMytvUy9acTdOYlR1?=
- =?utf-8?B?TWVuWVZ6L1FwcnpxVEpsN0c0ZHIwQlBLUFdtTHNqTXpIWjlCRHFvb0RUN1ZQ?=
- =?utf-8?B?TXVMUU9oUWJ3c0tVeTVjT1RtelE3MXlicWlvV1Y1bnFDVndqWDQzWS81dDVF?=
- =?utf-8?B?RXVrSXl0L05LRi9kaEgxbG4vT2lOZEd3WVFnbFZpTDhWR2txTkIrc3ZmSXRq?=
- =?utf-8?B?V3Z0S0pUREExWkxxTjdRZGRUbmkrV2RaaVN2cERkL0s5Rndwamx4YkhFUXhV?=
- =?utf-8?B?R1RJaXVJeWhBQXRob3FWQnpKVFlhVGJ3TUxHcHgyejRRaVVTL2thWW1iQ3FZ?=
- =?utf-8?B?RUFyamtmL0lrQm5TVnlHdVpDVmJ0ZmpyQ0V4VWMyVUEya3Uya2kvU0ZoL00x?=
- =?utf-8?B?YXNvMWd0Rit3a3VTYTkyREtPOTUzME9COENLeUZwd1VSK21qUTk0WWJPZVp1?=
- =?utf-8?B?QUNQN3IxSzZaZDlpYXovVlozRUkrbjJtV0FzRzVxRmZrMzhSNEVvR0l4M05w?=
- =?utf-8?B?SEtETHd6Mjd0WXV1REwzemZEcVdMNTg2djFERy9peTQwZTFIbDkyKzFsa21h?=
- =?utf-8?B?bGR0b3AxSjhLUHpQK0kreXhxNTBiWWRtZDg4UElneU1CMEdNeVdqbHJnY3Fu?=
- =?utf-8?B?V3pYYWtUam5SUHhkVEJ1TkcxYXUwUCtYcENXSWNyZjZ4R0FUdCsyaWx0dlgz?=
- =?utf-8?B?Y3ltYWs3QWFJcUsxS3dQOHlPaWZQRnZ5OCtKaS9LOGZTc2E3RE1ZVmIvUzgr?=
- =?utf-8?B?dlRqOUtBaktncEQzVHJUV1lOd3R4YXczSktYZ0lDTlZxRUdrcENpYmhZK0Vo?=
- =?utf-8?B?S0ZPQ1daZkV1L2U0cWlIeFNVaFpRQVZRcG1PcUs2WndoSFRxT1FLTURGNDNY?=
- =?utf-8?B?NCsrWTRPaWxoT2h6bTE5TFlyUnl3OWI5Qy9GUHJYdldUancrRW5ZM1FYQ0ZD?=
- =?utf-8?B?ZmRRa09mMjBuUXVIZ1JFZWNtQVBnVVhBbjNlcmZpemRtWlh5ZUVyVXh0SUMx?=
- =?utf-8?B?d0IwY3pBT01NK25qTE9EVHVwZXBzS2VsL1NoS3FLVHdjMm5ZbUlFWkUvMEI2?=
- =?utf-8?B?NHZ0akZQM3dFb2RKWmhlT2JQUHdYN2xheGUvdEswamxmL1NhQ0wxeEtvUnVl?=
- =?utf-8?B?akhUdlRncGxIWEJiRERTOTNFWm8xYkRMdFB1ZXpLNnlNQWxoUDZ6RDhaMlU1?=
- =?utf-8?B?bkx5RDd4R2UyMmNKbjBaejBZaWZleXAxUlBXelNYSXQvZ0NaN1c1NE5UbzE3?=
- =?utf-8?B?SllkYUlDbU9ZTFFNY2FySnBaVjZhamJDT2xsYjR1VVc5d29sVmNQOEttcTNa?=
- =?utf-8?B?cm0yYXI3bGxCKytiN3N0bjlVWmp2WjBwdGlEMHlPL2dTZmI1QTd4S1pmNEFh?=
- =?utf-8?B?K0tWVUpsN2w4VUZjQ056OWFRd1ZIWFd1bTRoeFVhRldTTzZ5U05wdGJvTU5G?=
- =?utf-8?B?aituUmxqYmlCT3dwTXJlcXJOQTdTdFdERmpqajh6d1N4SVVoUDExbHV6bEQy?=
- =?utf-8?B?RDNLU3ZMMnVrcjB1NUhpSFZQblY1eXB2TTJGa3ZNWVpXbXVlcFhPRGI2MW9x?=
- =?utf-8?B?RWVRcXFEWU9jYmxudFJ2MURVdGFhbUpmWGtpVGhUam9paFBwaEVzaTkzdUw3?=
- =?utf-8?B?Q2hYcnpsR3lKS0hIMDJXeEU4akU2dVFMWXE5aUhCNDRXYTFJS2RxendodXlk?=
- =?utf-8?B?SkxtN3c1emxsSHlTNlZ1dXRsSnVXdEVvbEU5dG1sVWZwYTZnd0dpaDl2WU8z?=
- =?utf-8?B?RnFwZkhKWk5KWnJBZ25mSFI5WEZUMXJMdUNPNkJLVTRqZnRGYU9lZz09?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 15a29cba-35e6-444a-0beb-08da125245eb
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5658.namprd11.prod.outlook.com
+X-OriginatorOrg: amd.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 13:36:19.7403 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Fz4v5GigqERd06BcL3n1Uxw5atShnFxTRFBFGaP+hxw158qYL8u7ABc57OHP2CNqE+G+aD+9zAqnQ95FN+PO0Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4904
-X-OriginatorOrg: intel.com
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
- "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
- iommu@lists.linux-foundation.org, Daniel Jordan <daniel.m.jordan@oracle.com>,
- Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Joao Martins <joao.m.martins@oracle.com>,
- David Gibson <david@gibson.dropbear.id.au>
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5144.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: abe5420f-8898-4e92-1dbd-08da1255b882
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Mar 2022 14:01:00.2151 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 8qqx3/LPPzN+aLAbZCSz2CL9MoFz3OR7oVvG2u8jXLI/qqLCqmSjO5mAPqBRckNE9+M7OCxTSBxbODtB9mhzmA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB2736
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -192,551 +177,49 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: "Deucher, Alexander via iommu" <iommu@lists.linux-foundation.org>
+Reply-To: "Deucher, Alexander" <Alexander.Deucher@amd.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jason,
+[Public]
 
-On 2022/3/19 01:27, Jason Gunthorpe wrote:
-> Connect the IOAS to its IOCTL interface. This exposes most of the
-> functionality in the io_pagetable to userspace.
+> -----Original Message-----
+> From: Dave Hansen <dave.hansen@intel.com>
+> Sent: Tuesday, March 29, 2022 11:25 AM
+> To: Deucher, Alexander <Alexander.Deucher@amd.com>; linux-
+> doc@vger.kernel.org; linux-kernel@vger.kernel.org; corbet@lwn.net;
+> hpa@zytor.com; x86@kernel.org; dave.hansen@linux.intel.com;
+> bp@alien8.de; mingo@redhat.com; tglx@linutronix.de; joro@8bytes.org;
+> Suthikulpanit, Suravee <Suravee.Suthikulpanit@amd.com>; will@kernel.org;
+> iommu@lists.linux-foundation.org; robin.murphy@arm.com; Hegde, Vasant
+> <Vasant.Hegde@amd.com>
+> Subject: Re: [PATCH V3 1/2] Documentation: x86: Add documentation for
+> AMD IOMMU
 > 
-> This is intended to be the core of the generic interface that IOMMUFD will
-> provide. Every IOMMU driver should be able to implement an iommu_domain
-> that is compatible with this generic mechanism.
+> On 3/28/22 10:28, Alex Deucher wrote:
+> > +How is IOVA generated?
+> > +----------------------
+> > +
+> > +Well behaved drivers call dma_map_*() calls before sending command to
+> > +device that needs to perform DMA. Once DMA is completed and mapping
+> > +is no longer required, driver performs dma_unmap_*() calls to unmap the
+> region.
+> > +
+> > +Fault reporting
+> > +---------------
+> > +
+> > +When errors are reported, the IOMMU signals via an interrupt. The
+> > +fault reason and device that caused it is printed on the console.
 > 
-> It is also designed to be easy to use for simple non virtual machine
-> monitor users, like DPDK:
->   - Universal simple support for all IOMMUs (no PPC special path)
->   - An IOVA allocator that considerds the aperture and the reserved ranges
->   - io_pagetable allows any number of iommu_domains to be connected to the
->     IOAS
-> 
-> Along with room in the design to add non-generic features to cater to
-> specific HW functionality.
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/iommu/iommufd/Makefile          |   1 +
->   drivers/iommu/iommufd/ioas.c            | 248 ++++++++++++++++++++++++
->   drivers/iommu/iommufd/iommufd_private.h |  27 +++
->   drivers/iommu/iommufd/main.c            |  17 ++
->   include/uapi/linux/iommufd.h            | 132 +++++++++++++
->   5 files changed, 425 insertions(+)
->   create mode 100644 drivers/iommu/iommufd/ioas.c
-> 
-> diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
-> index b66a8c47ff55ec..2b4f36f1b72f9d 100644
-> --- a/drivers/iommu/iommufd/Makefile
-> +++ b/drivers/iommu/iommufd/Makefile
-> @@ -1,6 +1,7 @@
->   # SPDX-License-Identifier: GPL-2.0-only
->   iommufd-y := \
->   	io_pagetable.o \
-> +	ioas.o \
->   	main.o \
->   	pages.o
->   
-> diff --git a/drivers/iommu/iommufd/ioas.c b/drivers/iommu/iommufd/ioas.c
-> new file mode 100644
-> index 00000000000000..c530b2ba74b06b
-> --- /dev/null
-> +++ b/drivers/iommu/iommufd/ioas.c
-> @@ -0,0 +1,248 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-> + */
-> +#include <linux/interval_tree.h>
-> +#include <linux/iommufd.h>
-> +#include <linux/iommu.h>
-> +#include <uapi/linux/iommufd.h>
-> +
-> +#include "io_pagetable.h"
-> +
-> +void iommufd_ioas_destroy(struct iommufd_object *obj)
-> +{
-> +	struct iommufd_ioas *ioas = container_of(obj, struct iommufd_ioas, obj);
-> +	int rc;
-> +
-> +	rc = iopt_unmap_all(&ioas->iopt);
-> +	WARN_ON(rc);
-> +	iopt_destroy_table(&ioas->iopt);
-> +}
-> +
-> +struct iommufd_ioas *iommufd_ioas_alloc(struct iommufd_ctx *ictx)
-> +{
-> +	struct iommufd_ioas *ioas;
-> +	int rc;
-> +
-> +	ioas = iommufd_object_alloc(ictx, ioas, IOMMUFD_OBJ_IOAS);
-> +	if (IS_ERR(ioas))
-> +		return ioas;
-> +
-> +	rc = iopt_init_table(&ioas->iopt);
-> +	if (rc)
-> +		goto out_abort;
-> +	return ioas;
-> +
-> +out_abort:
-> +	iommufd_object_abort(ictx, &ioas->obj);
-> +	return ERR_PTR(rc);
-> +}
-> +
-> +int iommufd_ioas_alloc_ioctl(struct iommufd_ucmd *ucmd)
-> +{
-> +	struct iommu_ioas_alloc *cmd = ucmd->cmd;
-> +	struct iommufd_ioas *ioas;
-> +	int rc;
-> +
-> +	if (cmd->flags)
-> +		return -EOPNOTSUPP;
-> +
-> +	ioas = iommufd_ioas_alloc(ucmd->ictx);
-> +	if (IS_ERR(ioas))
-> +		return PTR_ERR(ioas);
-> +
-> +	cmd->out_ioas_id = ioas->obj.id;
-> +	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-> +	if (rc)
-> +		goto out_table;
-> +	iommufd_object_finalize(ucmd->ictx, &ioas->obj);
-> +	return 0;
-> +
-> +out_table:
-> +	iommufd_ioas_destroy(&ioas->obj);
-> +	return rc;
-> +}
-> +
-> +int iommufd_ioas_iova_ranges(struct iommufd_ucmd *ucmd)
-> +{
-> +	struct iommu_ioas_iova_ranges __user *uptr = ucmd->ubuffer;
-> +	struct iommu_ioas_iova_ranges *cmd = ucmd->cmd;
-> +	struct iommufd_ioas *ioas;
-> +	struct interval_tree_span_iter span;
-> +	u32 max_iovas;
-> +	int rc;
-> +
-> +	if (cmd->__reserved)
-> +		return -EOPNOTSUPP;
-> +
-> +	max_iovas = cmd->size - sizeof(*cmd);
-> +	if (max_iovas % sizeof(cmd->out_valid_iovas[0]))
-> +		return -EINVAL;
-> +	max_iovas /= sizeof(cmd->out_valid_iovas[0]);
-> +
-> +	ioas = iommufd_get_ioas(ucmd, cmd->ioas_id);
-> +	if (IS_ERR(ioas))
-> +		return PTR_ERR(ioas);
-> +
-> +	down_read(&ioas->iopt.iova_rwsem);
-> +	cmd->out_num_iovas = 0;
-> +	for (interval_tree_span_iter_first(
-> +		     &span, &ioas->iopt.reserved_iova_itree, 0, ULONG_MAX);
-> +	     !interval_tree_span_iter_done(&span);
-> +	     interval_tree_span_iter_next(&span)) {
-> +		if (!span.is_hole)
-> +			continue;
-> +		if (cmd->out_num_iovas < max_iovas) {
-> +			rc = put_user((u64)span.start_hole,
-> +				      &uptr->out_valid_iovas[cmd->out_num_iovas]
-> +					       .start);
-> +			if (rc)
-> +				goto out_put;
-> +			rc = put_user(
-> +				(u64)span.last_hole,
-> +				&uptr->out_valid_iovas[cmd->out_num_iovas].last);
-> +			if (rc)
-> +				goto out_put;
-> +		}
-> +		cmd->out_num_iovas++;
-> +	}
-> +	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-> +	if (rc)
-> +		goto out_put;
-> +	if (cmd->out_num_iovas > max_iovas)
-> +		rc = -EMSGSIZE;
-> +out_put:
-> +	up_read(&ioas->iopt.iova_rwsem);
-> +	iommufd_put_object(&ioas->obj);
-> +	return rc;
-> +}
-> +
-> +static int conv_iommu_prot(u32 map_flags)
-> +{
-> +	int iommu_prot;
-> +
-> +	/*
-> +	 * We provide no manual cache coherency ioctls to userspace and most
-> +	 * architectures make the CPU ops for cache flushing privileged.
-> +	 * Therefore we require the underlying IOMMU to support CPU coherent
-> +	 * operation.
-> +	 */
-> +	iommu_prot = IOMMU_CACHE;
-> +	if (map_flags & IOMMU_IOAS_MAP_WRITEABLE)
-> +		iommu_prot |= IOMMU_WRITE;
-> +	if (map_flags & IOMMU_IOAS_MAP_READABLE)
-> +		iommu_prot |= IOMMU_READ;
-> +	return iommu_prot;
-> +}
-> +
-> +int iommufd_ioas_map(struct iommufd_ucmd *ucmd)
-> +{
-> +	struct iommu_ioas_map *cmd = ucmd->cmd;
-> +	struct iommufd_ioas *ioas;
-> +	unsigned int flags = 0;
-> +	unsigned long iova;
-> +	int rc;
-> +
-> +	if ((cmd->flags &
-> +	     ~(IOMMU_IOAS_MAP_FIXED_IOVA | IOMMU_IOAS_MAP_WRITEABLE |
-> +	       IOMMU_IOAS_MAP_READABLE)) ||
-> +	    cmd->__reserved)
-> +		return -EOPNOTSUPP;
-> +	if (cmd->iova >= ULONG_MAX || cmd->length >= ULONG_MAX)
-> +		return -EOVERFLOW;
-> +
-> +	ioas = iommufd_get_ioas(ucmd, cmd->ioas_id);
-> +	if (IS_ERR(ioas))
-> +		return PTR_ERR(ioas);
-> +
-> +	if (!(cmd->flags & IOMMU_IOAS_MAP_FIXED_IOVA))
-> +		flags = IOPT_ALLOC_IOVA;
-> +	iova = cmd->iova;
-> +	rc = iopt_map_user_pages(&ioas->iopt, &iova,
-> +				 u64_to_user_ptr(cmd->user_va), cmd->length,
-> +				 conv_iommu_prot(cmd->flags), flags);
-> +	if (rc)
-> +		goto out_put;
-> +
-> +	cmd->iova = iova;
-> +	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-> +out_put:
-> +	iommufd_put_object(&ioas->obj);
-> +	return rc;
-> +}
-> +
-> +int iommufd_ioas_copy(struct iommufd_ucmd *ucmd)
-> +{
-> +	struct iommu_ioas_copy *cmd = ucmd->cmd;
-> +	struct iommufd_ioas *src_ioas;
-> +	struct iommufd_ioas *dst_ioas;
-> +	struct iopt_pages *pages;
-> +	unsigned int flags = 0;
-> +	unsigned long iova;
-> +	unsigned long start_byte;
-> +	int rc;
-> +
-> +	if ((cmd->flags &
-> +	     ~(IOMMU_IOAS_MAP_FIXED_IOVA | IOMMU_IOAS_MAP_WRITEABLE |
-> +	       IOMMU_IOAS_MAP_READABLE)))
-> +		return -EOPNOTSUPP;
-> +	if (cmd->length >= ULONG_MAX)
-> +		return -EOVERFLOW;
-> +
-> +	src_ioas = iommufd_get_ioas(ucmd, cmd->src_ioas_id);
-> +	if (IS_ERR(src_ioas))
-> +		return PTR_ERR(src_ioas);
-> +	/* FIXME: copy is not limited to an exact match anymore */
-> +	pages = iopt_get_pages(&src_ioas->iopt, cmd->src_iova, &start_byte,
-> +			       cmd->length);
-> +	iommufd_put_object(&src_ioas->obj);
-> +	if (IS_ERR(pages))
-> +		return PTR_ERR(pages);
-> +
-> +	dst_ioas = iommufd_get_ioas(ucmd, cmd->dst_ioas_id);
-> +	if (IS_ERR(dst_ioas)) {
-> +		iopt_put_pages(pages);
-> +		return PTR_ERR(dst_ioas);
-> +	}
-> +
-> +	if (!(cmd->flags & IOMMU_IOAS_MAP_FIXED_IOVA))
-> +		flags = IOPT_ALLOC_IOVA;
-> +	iova = cmd->dst_iova;
-> +	rc = iopt_map_pages(&dst_ioas->iopt, pages, &iova, start_byte,
-> +			    cmd->length, conv_iommu_prot(cmd->flags), flags);
-> +	if (rc) {
-> +		iopt_put_pages(pages);
-> +		goto out_put_dst;
-> +	}
-> +
-> +	cmd->dst_iova = iova;
-> +	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-> +out_put_dst:
-> +	iommufd_put_object(&dst_ioas->obj);
-> +	return rc;
-> +}
-> +
-> +int iommufd_ioas_unmap(struct iommufd_ucmd *ucmd)
-> +{
-> +	struct iommu_ioas_unmap *cmd = ucmd->cmd;
-> +	struct iommufd_ioas *ioas;
-> +	int rc;
-> +
-> +	ioas = iommufd_get_ioas(ucmd, cmd->ioas_id);
-> +	if (IS_ERR(ioas))
-> +		return PTR_ERR(ioas);
-> +
-> +	if (cmd->iova == 0 && cmd->length == U64_MAX) {
-> +		rc = iopt_unmap_all(&ioas->iopt);
-> +	} else {
-> +		if (cmd->iova >= ULONG_MAX || cmd->length >= ULONG_MAX) {
-> +			rc = -EOVERFLOW;
-> +			goto out_put;
-> +		}
-> +		rc = iopt_unmap_iova(&ioas->iopt, cmd->iova, cmd->length);
-> +	}
-> +
-> +out_put:
-> +	iommufd_put_object(&ioas->obj);
-> +	return rc;
-> +}
-> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-> index bcf08e61bc87e9..d24c9dac5a82a9 100644
-> --- a/drivers/iommu/iommufd/iommufd_private.h
-> +++ b/drivers/iommu/iommufd/iommufd_private.h
-> @@ -96,6 +96,7 @@ static inline int iommufd_ucmd_respond(struct iommufd_ucmd *ucmd,
->   enum iommufd_object_type {
->   	IOMMUFD_OBJ_NONE,
->   	IOMMUFD_OBJ_ANY = IOMMUFD_OBJ_NONE,
-> +	IOMMUFD_OBJ_IOAS,
->   	IOMMUFD_OBJ_MAX,
->   };
->   
-> @@ -147,4 +148,30 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
->   			     type),                                            \
->   		     typeof(*(ptr)), obj)
->   
-> +/*
-> + * The IO Address Space (IOAS) pagetable is a virtual page table backed by the
-> + * io_pagetable object. It is a user controlled mapping of IOVA -> PFNs. The
-> + * mapping is copied into all of the associated domains and made available to
-> + * in-kernel users.
-> + */
-> +struct iommufd_ioas {
-> +	struct iommufd_object obj;
-> +	struct io_pagetable iopt;
-> +};
-> +
-> +static inline struct iommufd_ioas *iommufd_get_ioas(struct iommufd_ucmd *ucmd,
-> +						    u32 id)
-> +{
-> +	return container_of(iommufd_get_object(ucmd->ictx, id,
-> +					       IOMMUFD_OBJ_IOAS),
-> +			    struct iommufd_ioas, obj);
-> +}
-> +
-> +struct iommufd_ioas *iommufd_ioas_alloc(struct iommufd_ctx *ictx);
-> +int iommufd_ioas_alloc_ioctl(struct iommufd_ucmd *ucmd);
-> +void iommufd_ioas_destroy(struct iommufd_object *obj);
-> +int iommufd_ioas_iova_ranges(struct iommufd_ucmd *ucmd);
-> +int iommufd_ioas_map(struct iommufd_ucmd *ucmd);
-> +int iommufd_ioas_copy(struct iommufd_ucmd *ucmd);
-> +int iommufd_ioas_unmap(struct iommufd_ucmd *ucmd);
->   #endif
-> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-> index ae8db2f663004f..e506f493b54cfe 100644
-> --- a/drivers/iommu/iommufd/main.c
-> +++ b/drivers/iommu/iommufd/main.c
-> @@ -184,6 +184,10 @@ static int iommufd_fops_release(struct inode *inode, struct file *filp)
->   }
->   
->   union ucmd_buffer {
-> +	struct iommu_ioas_alloc alloc;
-> +	struct iommu_ioas_iova_ranges iova_ranges;
-> +	struct iommu_ioas_map map;
-> +	struct iommu_ioas_unmap unmap;
->   	struct iommu_destroy destroy;
->   };
->   
-> @@ -205,6 +209,16 @@ struct iommufd_ioctl_op {
->   	}
->   static struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
->   	IOCTL_OP(IOMMU_DESTROY, iommufd_destroy, struct iommu_destroy, id),
-> +	IOCTL_OP(IOMMU_IOAS_ALLOC, iommufd_ioas_alloc_ioctl,
-> +		 struct iommu_ioas_alloc, out_ioas_id),
-> +	IOCTL_OP(IOMMU_IOAS_COPY, iommufd_ioas_copy, struct iommu_ioas_copy,
-> +		 src_iova),
-> +	IOCTL_OP(IOMMU_IOAS_IOVA_RANGES, iommufd_ioas_iova_ranges,
-> +		 struct iommu_ioas_iova_ranges, __reserved),
-> +	IOCTL_OP(IOMMU_IOAS_MAP, iommufd_ioas_map, struct iommu_ioas_map,
-> +		 __reserved),
-> +	IOCTL_OP(IOMMU_IOAS_UNMAP, iommufd_ioas_unmap, struct iommu_ioas_unmap,
-> +		 length),
->   };
->   
->   static long iommufd_fops_ioctl(struct file *filp, unsigned int cmd,
-> @@ -270,6 +284,9 @@ struct iommufd_ctx *iommufd_fget(int fd)
->   }
->   
->   static struct iommufd_object_ops iommufd_object_ops[] = {
-> +	[IOMMUFD_OBJ_IOAS] = {
-> +		.destroy = iommufd_ioas_destroy,
-> +	},
->   };
->   
->   static struct miscdevice iommu_misc_dev = {
-> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> index 2f7f76ec6db4cb..ba7b17ec3002e3 100644
-> --- a/include/uapi/linux/iommufd.h
-> +++ b/include/uapi/linux/iommufd.h
-> @@ -37,6 +37,11 @@
->   enum {
->   	IOMMUFD_CMD_BASE = 0x80,
->   	IOMMUFD_CMD_DESTROY = IOMMUFD_CMD_BASE,
-> +	IOMMUFD_CMD_IOAS_ALLOC,
-> +	IOMMUFD_CMD_IOAS_IOVA_RANGES,
-> +	IOMMUFD_CMD_IOAS_MAP,
-> +	IOMMUFD_CMD_IOAS_COPY,
-> +	IOMMUFD_CMD_IOAS_UNMAP,
->   };
->   
->   /**
-> @@ -52,4 +57,131 @@ struct iommu_destroy {
->   };
->   #define IOMMU_DESTROY _IO(IOMMUFD_TYPE, IOMMUFD_CMD_DESTROY)
->   
-> +/**
-> + * struct iommu_ioas_alloc - ioctl(IOMMU_IOAS_ALLOC)
-> + * @size: sizeof(struct iommu_ioas_alloc)
-> + * @flags: Must be 0
-> + * @out_ioas_id: Output IOAS ID for the allocated object
-> + *
-> + * Allocate an IO Address Space (IOAS) which holds an IO Virtual Address (IOVA)
-> + * to memory mapping.
-> + */
-> +struct iommu_ioas_alloc {
-> +	__u32 size;
-> +	__u32 flags;
-> +	__u32 out_ioas_id;
-> +};
-> +#define IOMMU_IOAS_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_ALLOC)
-> +
-> +/**
-> + * struct iommu_ioas_iova_ranges - ioctl(IOMMU_IOAS_IOVA_RANGES)
-> + * @size: sizeof(struct iommu_ioas_iova_ranges)
-> + * @ioas_id: IOAS ID to read ranges from
-> + * @out_num_iovas: Output total number of ranges in the IOAS
-> + * @__reserved: Must be 0
-> + * @out_valid_iovas: Array of valid IOVA ranges. The array length is the smaller
-> + *                   of out_num_iovas or the length implied by size.
-> + * @out_valid_iovas.start: First IOVA in the allowed range
-> + * @out_valid_iovas.last: Inclusive last IOVA in the allowed range
-> + *
-> + * Query an IOAS for ranges of allowed IOVAs. Operation outside these ranges is
-> + * not allowed. out_num_iovas will be set to the total number of iovas
-> + * and the out_valid_iovas[] will be filled in as space permits.
-> + * size should include the allocated flex array.
-> + */
-> +struct iommu_ioas_iova_ranges {
-> +	__u32 size;
-> +	__u32 ioas_id;
-> +	__u32 out_num_iovas;
-> +	__u32 __reserved;
-> +	struct iommu_valid_iovas {
-> +		__aligned_u64 start;
-> +		__aligned_u64 last;
-> +	} out_valid_iovas[];
-> +};
-> +#define IOMMU_IOAS_IOVA_RANGES _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_IOVA_RANGES)
-> +
-> +/**
-> + * enum iommufd_ioas_map_flags - Flags for map and copy
-> + * @IOMMU_IOAS_MAP_FIXED_IOVA: If clear the kernel will compute an appropriate
-> + *                             IOVA to place the mapping at
-> + * @IOMMU_IOAS_MAP_WRITEABLE: DMA is allowed to write to this mapping
-> + * @IOMMU_IOAS_MAP_READABLE: DMA is allowed to read from this mapping
-> + */
-> +enum iommufd_ioas_map_flags {
-> +	IOMMU_IOAS_MAP_FIXED_IOVA = 1 << 0,
-> +	IOMMU_IOAS_MAP_WRITEABLE = 1 << 1,
-> +	IOMMU_IOAS_MAP_READABLE = 1 << 2,
-> +};
-> +
-> +/**
-> + * struct iommu_ioas_map - ioctl(IOMMU_IOAS_MAP)
-> + * @size: sizeof(struct iommu_ioas_map)
-> + * @flags: Combination of enum iommufd_ioas_map_flags
-> + * @ioas_id: IOAS ID to change the mapping of
-> + * @__reserved: Must be 0
-> + * @user_va: Userspace pointer to start mapping from
-> + * @length: Number of bytes to map
-> + * @iova: IOVA the mapping was placed at. If IOMMU_IOAS_MAP_FIXED_IOVA is set
-> + *        then this must be provided as input.
-> + *
-> + * Set an IOVA mapping from a user pointer. If FIXED_IOVA is specified then the
-> + * mapping will be established at iova, otherwise a suitable location will be
-> + * automatically selected and returned in iova.
-> + */
-> +struct iommu_ioas_map {
-> +	__u32 size;
-> +	__u32 flags;
-> +	__u32 ioas_id;
-> +	__u32 __reserved;
-> +	__aligned_u64 user_va;
-> +	__aligned_u64 length;
-> +	__aligned_u64 iova;
-> +};
-> +#define IOMMU_IOAS_MAP _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_MAP)
-> +
-> +/**
-> + * struct iommu_ioas_copy - ioctl(IOMMU_IOAS_COPY)
-> + * @size: sizeof(struct iommu_ioas_copy)
-> + * @flags: Combination of enum iommufd_ioas_map_flags
-> + * @dst_ioas_id: IOAS ID to change the mapping of
-> + * @src_ioas_id: IOAS ID to copy from
+> Just scanning this, it looks *awfully* generic.  Is anything in here AMD-
+> specific?  Should this be in an AMD-specific file?
 
-so the dst and src ioas_id are allocated via the same iommufd.
-right? just out of curious, do you think it is possible that
-the srs/dst ioas_ids are from different iommufds? In that case
-may need to add src/dst iommufd. It's not needed today, just to
-see if any blocker in kernel to support such copy. :-)
+There is some information about the ACPI tables used to enumerate the IOMMUs and a link to the AMD IOMMU programming documentation.  Would you prefer I just create a combined x86 IOMMU document?
 
-> + * @length: Number of bytes to copy and map
-> + * @dst_iova: IOVA the mapping was placed at. If IOMMU_IOAS_MAP_FIXED_IOVA is
-> + *            set then this must be provided as input.
-> + * @src_iova: IOVA to start the copy
-> + *
-> + * Copy an already existing mapping from src_ioas_id and establish it in
-> + * dst_ioas_id. The src iova/length must exactly match a range used with
-> + * IOMMU_IOAS_MAP.
-> + */
-> +struct iommu_ioas_copy {
-> +	__u32 size;
-> +	__u32 flags;
-> +	__u32 dst_ioas_id;
-> +	__u32 src_ioas_id;
-> +	__aligned_u64 length;
-> +	__aligned_u64 dst_iova;
-> +	__aligned_u64 src_iova;
-> +};
-> +#define IOMMU_IOAS_COPY _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_COPY)
-> +
-> +/**
-> + * struct iommu_ioas_unmap - ioctl(IOMMU_IOAS_UNMAP)
-> + * @size: sizeof(struct iommu_ioas_copy)
-> + * @ioas_id: IOAS ID to change the mapping of
-> + * @iova: IOVA to start the unmapping at
-> + * @length: Number of bytes to unmap
-> + *
-> + * Unmap an IOVA range. The iova/length must exactly match a range
-> + * used with IOMMU_IOAS_PAGETABLE_MAP, or be the values 0 & U64_MAX.
-> + * In the latter case all IOVAs will be unmaped.
-> + */
-> +struct iommu_ioas_unmap {
-> +	__u32 size;
-> +	__u32 ioas_id;
-> +	__aligned_u64 iova;
-> +	__aligned_u64 length;
-> +};
-> +#define IOMMU_IOAS_UNMAP _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_UNMAP)
->   #endif
-
--- 
-Regards,
-Yi Liu
+Alex
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
