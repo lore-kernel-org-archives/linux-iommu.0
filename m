@@ -1,68 +1,69 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 33679C433F5
-	for <iommu@archiver.kernel.org>; Wed, 30 Mar 2022 11:47:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3DB07C433EF
+	for <iommu@archiver.kernel.org>; Wed, 30 Mar 2022 11:48:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D49E240CC5;
-	Wed, 30 Mar 2022 11:47:14 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id E923D60BFC;
+	Wed, 30 Mar 2022 11:48:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UECtwufh-WlW; Wed, 30 Mar 2022 11:47:14 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id B59E740CD8;
-	Wed, 30 Mar 2022 11:47:13 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 46D59C0083;
-	Wed, 30 Mar 2022 11:47:13 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8A853C0012
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 11:47:11 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 76FCB611E1
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 11:47:11 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 55f28YuRqr1z for <iommu@lists.linux-foundation.org>;
- Wed, 30 Mar 2022 11:47:09 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id KqD-MHattqMR; Wed, 30 Mar 2022 11:48:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id C29C360B8D;
+	Wed, 30 Mar 2022 11:48:53 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A67A3C001D;
+	Wed, 30 Mar 2022 11:48:53 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 86031C0012
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 11:48:52 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 6415B40CB0
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 11:48:52 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id gNSbTXzNFAx4 for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Mar 2022 11:48:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 3CD50611D8
- for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 11:47:09 +0000 (UTC)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org
+ [IPv6:2604:1380:4641:c500::1])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 832E040320
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Mar 2022 11:48:51 +0000 (UTC)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id 67604B81C28;
- Wed, 30 Mar 2022 11:47:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEF2EC34112;
- Wed, 30 Mar 2022 11:47:03 +0000 (UTC)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id DDD6C61656;
+ Wed, 30 Mar 2022 11:48:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6BE3C36AE2;
+ Wed, 30 Mar 2022 11:48:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1648640825;
+ s=k20201202; t=1648640930;
  bh=or7vMsAJ5qPVBHGYQ8AZJOSb3BRjqMrEX/v6pBzhP1A=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=CxX03L89TSoBxONZnPq1dWY2lUOs+WFCfvVAOp5gHwu67xMjF86suY9bf9x3TXag3
- JdwcUKRAN+5Xtab7hU1W5DA2Cp0+33/d6Q0eZJg86qI7V4WCBQdZAPjvDZgkuPSSFz
- v2/QPCH5sqknvcpK85d+3F7enSRTnR8Sz0BYJbSzJXm99rVj1h74/ifZm/nD6P1C80
- qsHZlJdStBzF2nPiLnscIBo0dtcaG+dS1/3bmUWk79XWtWbb0tK+DjhGyRev7fllJ/
- arEsopXvmnc+jxEXboRIndEMoRhKzqUh80FYTe6VyJOSNa0QmYmcLQwzrL6wbZDXx5
- SBAl4dMgwB1/w==
+ b=jS/AzIAt8uZVMw/JSjOYzrxQIk074ZtSYTVr1qHd2g06qb1vdRenqbdSHofy3zahD
+ DK0ly6txaxNd/6ymfu+f4QVMm9t8BeydDEY3td8VVGjJSwu6U1M8sMCB5Ju8y0eO3A
+ TF3msroFpTLLgVniJUjP4h6W2Mx0r8VGgEF7uLElXDIZQJh/DnIvbF3E3AXzDavEfE
+ Ah/3O2m52PEcsloOgVbPfjMf/ywpZsCF+uGN8wJ0kgpfJ2yxvqDi5yUlkPZAat3Lnl
+ rEzKvjiYwUBtlP/ANJhuedQKu+inVVx5Hl8y/TWEq8mbEqhHqZFaThZaY+6S0yBmCB
+ Ui1EnrPQsTYuQ==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 11/66] media: iommu/mediatek-v1: Free the existed
+Subject: [PATCH AUTOSEL 5.16 11/59] media: iommu/mediatek-v1: Free the existed
  fwspec if the master dev already has
-Date: Wed, 30 Mar 2022 07:45:50 -0400
-Message-Id: <20220330114646.1669334-11-sashal@kernel.org>
+Date: Wed, 30 Mar 2022 07:47:43 -0400
+Message-Id: <20220330114831.1670235-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220330114646.1669334-1-sashal@kernel.org>
-References: <20220330114646.1669334-1-sashal@kernel.org>
+In-Reply-To: <20220330114831.1670235-1-sashal@kernel.org>
+References: <20220330114831.1670235-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
