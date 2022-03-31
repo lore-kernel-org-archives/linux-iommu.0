@@ -1,97 +1,97 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C37B6C433F5
-	for <iommu@archiver.kernel.org>; Thu, 31 Mar 2022 16:23:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 32F6AC433F5
+	for <iommu@archiver.kernel.org>; Thu, 31 Mar 2022 16:25:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 5EDAA812D2;
-	Thu, 31 Mar 2022 16:23:33 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id C5D7741ECE;
+	Thu, 31 Mar 2022 16:25:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id R0GEck-iwjwV; Thu, 31 Mar 2022 16:23:32 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ff2VOriPWWOC; Thu, 31 Mar 2022 16:25:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 23B32812B7;
-	Thu, 31 Mar 2022 16:23:32 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 797D241DDC;
+	Thu, 31 Mar 2022 16:25:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EA4F1C001D;
-	Thu, 31 Mar 2022 16:23:31 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 74CBEC0012
- for <iommu@lists.linux-foundation.org>; Thu, 31 Mar 2022 16:23:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 48507C001D;
+	Thu, 31 Mar 2022 16:25:15 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 83A2DC0012
+ for <iommu@lists.linux-foundation.org>; Thu, 31 Mar 2022 16:25:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 625A661346
- for <iommu@lists.linux-foundation.org>; Thu, 31 Mar 2022 16:23:31 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 70D0C41ECC
+ for <iommu@lists.linux-foundation.org>; Thu, 31 Mar 2022 16:25:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=yahoo.ca
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FaQqyK516l7w for <iommu@lists.linux-foundation.org>;
- Thu, 31 Mar 2022 16:23:30 +0000 (UTC)
-X-Greylist: delayed 22:22:13 by SQLgrey-1.8.0
-Received: from sonic301-22.consmr.mail.gq1.yahoo.com
- (sonic301-22.consmr.mail.gq1.yahoo.com [98.137.64.148])
- by smtp3.osuosl.org (Postfix) with ESMTPS id BB3CB61324
- for <iommu@lists.linux-foundation.org>; Thu, 31 Mar 2022 16:23:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.ca; s=s2048;
- t=1648743809; bh=vh0mN54GaPK2olsZPvxEEBFBlhw6zVFMSWnf5S6k/K8=;
- h=Date:From:Subject:To:Cc:References:In-Reply-To:From:Subject:Reply-To;
- b=lUG/t005sV86fkrmw7jO6ARLqmcI/rvGuZSbn0hN2oCmZjxNWr5XsTunls0YtfvbYcbq/+qexFt5FdS+uZfLyYiwrIXTAwK38NS29m8aMzX9FzM2yf5GuyGS0Gdv4lUSPuzSzc/e9zcs8HEMpFoyg05YcHyI+tvQ/HfEPOWQaWbcd15SouKl8r9NO+fRdNx0aRIqBInU8mQU4/UZO8CSzTYpQfIGRT7zN+McUr6W0hn4soNu5omAzVNvnntJKFc2yuxvSj9a8uReAz7+HcPTaqo5IPiwxgmsv5ROVV70r7PJNrAI0DLE3ZYqAEl21j+qrkEGgrK2pIlwkuW0nndlgA==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048;
- t=1648743809; bh=qPa8ahLJRVoqFulp4q/eRPQp66IwnGI/8i5JIBZYKES=;
- h=X-Sonic-MF:Date:From:Subject:To:From:Subject;
- b=KB1NtuYmPn5m+4K2EVjKgb2lZHQvN0E+uwcWZ/244BbxQ/oRxMmmPi3+Sre++YuABXusOAqQcJ2KfYNZMFF6UKqKLbP7ZWSXDPt/IQWqXlug16UnRaCrmI0Tc7FLF5fGv5S2zeVdveiDMUmfh5UgB/F5UaeJAxjMyegzMVKtWqRjKIQSiG/1D9zuSYmu78ihv0iQemYPpbx11eC7GtON5v1zAkUuxJQGjsphILWeZe0K4+t0jB+OpsTcWoiPnbRRZqbEDzn6ioC0wAO+nYZnuKVdB0zB2nPp4D4JnlMYlVIpPkfmJwv5HgELISlDKxenlS0WeF0Up6An75nJoYq8UQ==
-X-YMail-OSG: Vm2v7M0VM1khhNMOPyt8w12a5p9m0922buS4EdHIeYfvsECbJb3Go9GEp1C3z2S
- bxPWhMvlBLNKlYlB_hjn9Zmj6o_eOgAAaGJ6dlSHGHGKxqj_IAEoDjZ2a4piDKxZ7BEY1lU1B1JL
- P0IfuFBGZ3dODUl8bU5qNFf4q8wX8Tsr5KZgfaFZMxw8hFGNK61RoU100FA6Dxftz4PJ3_XI21kr
- kuhOkI6HCZpa54_jheZ4JeD8K7si_Hm4nWQzMBxV2qld.QoYoLEnqcpHL.mApxO5wLxBoV9.MFww
- HxoC5sI74swndC9Pgta1S_37ZPsNIhGETWexQ3MV_XrzqbC8rOd1i.iqImr3KziHqcVd7ssfjrM.
- j6uvPD70XxJmKWEJ9INsry2gns52Usv8AFMSOvdj.DqF.CBXoOTlYhk5114FJZsuFZkkcKft2xiq
- jitnrT7HSeVWZQdXKxzYKauqlIP.7TyM6zQ.RAMNbsi7gAszwylXFTwqvB34ZqJ38ATCVTngtDlq
- EfazQnvA2JhfV62mIEVi8bE.pTM54JqO982BEKUiuHy9Gpw4Wryh_T6tfiLhg40csYcYDINDHpv8
- 4bhCZs5Etelj7kwVJvjBZ1DxtHjGIpMz9_C8Xua7thgkNkDT4KyFmbOdUOlFR91.lgtRgD0D.X9z
- Uy8DjqjAaIe15pPVqY2_Xwe4RQnA5_1WNUeXF8e_yM_c3G1krZZn_h4EBNt8XFdf_nkVhccsFCR6
- V.77_k1vs5RWPAjqenRvPkln7es962ppiocB5pvQrTvvKzJZ40ew9T81W.YRNEfCgbJ6peoZudrC
- PfmQ.YIAz1cr5lVv1HKsFbuO98MCxUYU7jaGsxIONpU5.ro8yNzIVq_41PGOlsLKusDIxY2rMn3w
- GyQB7uaEQ7y5zTCAadkbbJNN.t59mbSzSX19Y23QTxDjUF1eFQwJfUbKXbJkZFG07lybb4i6t0.z
- .K1C63_ybB1gE3WcL548t5ToIRgDzs40AJLi3._S6xXTJHmDhrr3IZWqwejtBf9MSE4LCs9VBAsy
- eq1UHRfkEUDlz9IIDf_eK_fi7n0NYKGB_Lifxh981OakIiU2iretESzW.pu1m3kGiXpmU21o6.Gc
- Q41e1c8E3uRdFfIF9GiH2QwtTbgD8h4H3Q8N4VXGgYtM3eGc8E0zTnj6VMgL2HJFjazzV_9awzeh
- 0apOVkiME3nNZmm6NHq.Tk15cp6zUHLDXja6KdNJKtmJEWAwlgSf9WLSaxuuEHWg_OitXM_ARf5G
- 54fxfqzy_UTGAkTjbg4WGwE_k831rG3.5MSsJwGiMicLIjsWSuLSCEBv2pUOEEfiNmC5zVKyjS53
- DdPUJW7ORiqAcEYFoio5Rx6qtsQmGWsOwSmfwLDUcR1d5BixM3sGeXpRHPAmwcljCvj7aREQl2bH
- Qb.2RVmLM6XLz5STHphwy9gaoN5UvjUv3w8w3jcPOJNkqKYlSzqArIBEiWCUBkp61njYdU31wCrO
- z3H8Olk8P2ndkdfamGhy8Z07H9HtBQTo_Qr83kw2tX.W_BU5fVgKr4YogyHuF1kz.QuZ1d2CYjKW
- 5a5okEqIRtbxuoJXgGDd18Otyjc5bAty3wzTcuqOAaaY4L8WNoHZS4W4Qc9Fxqs20uixR4oclJ5T
- ksZ43uY_YSJpdIcSwo3SA5TCEieBtzrID.gg1AtRks9l6sW4UpHLxYBbvxTNBwy4vOl9tCCEmyXH
- BG7v0uXISB8rA8xgFdV7cmGRmtyXngz6J.aUGDvQJwhyUd7359kN.IXqRiAMY4RiD9F8d20LK6hS
- P.g8TMoz.VhvaVi38p4rwcQS5hHn_25Dxxcw0sIlljbEVxj7nCu0SuxyWRTXzvHSzNEVeiSLOvmC
- fuSwg9HGBhYSBaJ9WffjxzOadZ._aEtfytEK9D33fc.aovHoWHyd5P07h0T1W38FccPexF6Sqemf
- nBFgrvqv302v5IEBnRh8jXJKAtYoSKmmgFGj32s_6MrGDQCvlBSr2IrOoL8_h.szfGl.CQHYDhNo
- NPNpaLLIJVWAKoiVXWrinegfb6QGabtRTmyBig4ek.fwLpm5skeYUg1VhENvwmchWwrQbA9TDpXv
- BOyIZz_1SZO1QF0KVVCFEnXbCjBjf9gKwwxP_FnGOdCKXfo.j0qgTbyptQCfQnWLorqoCN7A98hV
- yd4KgByl9kcTAdASx6CEOfbFZDed9OzOGBWpJQ13G0h7LbNmxI8C2ZIvkEVcbZZM8RxqBbSwWMnA
- xT5dF.cQZYQthSFd7nOUihArtPbTAVKe9RqXfaDE2_jEn3Y._iiH83.qQEQl8TspK
-X-Sonic-MF: <alex_y_xu@yahoo.ca>
-Received: from sonic.gate.mail.ne1.yahoo.com by
- sonic301.consmr.mail.gq1.yahoo.com with HTTP; Thu, 31 Mar 2022 16:23:29 +0000
-Received: by kubenode531.mail-prod1.omega.ne1.yahoo.com (VZM Hermes SMTP
- Server) with ESMTPA ID 82036486bf6898d8a478e0f881737164; 
- Thu, 31 Mar 2022 16:13:22 +0000 (UTC)
-Date: Thu, 31 Mar 2022 12:13:19 -0400
-Subject: Re: [PATCH] dma-mapping: move pgprot_decrypted out of dma_pgprot
-To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
-References: <20220331060627.2872150-1-hch@lst.de>
-In-Reply-To: <20220331060627.2872150-1-hch@lst.de>
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 83st9ofepcJL for <iommu@lists.linux-foundation.org>;
+ Thu, 31 Mar 2022 16:25:12 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com
+ [IPv6:2a00:1450:4864:20::62c])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id B1CD641DDC
+ for <iommu@lists.linux-foundation.org>; Thu, 31 Mar 2022 16:25:11 +0000 (UTC)
+Received: by mail-ej1-x62c.google.com with SMTP id lr4so365346ejb.11
+ for <iommu@lists.linux-foundation.org>; Thu, 31 Mar 2022 09:25:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=cu1l/8PgdxMWyzuZznsggXHzKS6a3wbdW116MMUScCM=;
+ b=M2lPiF2nuJevzAoT9OTJNxVkSi7JLdTynVTeHULvgf+vZ8oIA+w2zikb6VVMHAEUn1
+ JiM76RCK0Gurg7s64egfv31fjf9XO+5oJt5Ic1ay0j7vw5MB+lC0olEz29eKeYOcSaVE
+ 0KXyV33BgGU4gBZpUq5VmM+LnWa3aqj8EF1j1aDTpIm5ukktWyUdlp+hYP9j55u+PkEY
+ Py5Hnr9xvoDItD69znI7140RincPcCq5bpNEm2vc0FPYmAHLbXkquyRwxgQ/VKP9XI2E
+ 9SkbmwGJDc5JRyBMYwGeh1Te1QbFBS45diHkvqtjnzS6MP+1Su8MXwErwfWzj9wV4LOp
+ WLRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=cu1l/8PgdxMWyzuZznsggXHzKS6a3wbdW116MMUScCM=;
+ b=EpNan65zS/HBUfSO1rkr/zKMsZJFTet1delsqMGVeYsi7NYodvLucO6oCAvNZi8dI6
+ BWGuMc3wIUalE2mNEyXJfO1rpFLWAHzZePlOyIgiPoV5rI9rJ7FuZOIzRv24R0cEoEIQ
+ tk6nPPEfsTtjDJiCFyRB/8kZubQa/fGWTDKyvsrqDW7KTyOD1/FMHBogVKgi7pASZJWs
+ As3pT4mctS6oJKYBQUP0jfYhlGt6zUCMFUwfBqPNB2woIHAMlzxq8jy3R96a6UqJlpgy
+ sD+JfqeWkmEMORYu7h3U5/yGlDUcwzzFJ/BEFXlAmjve/b7BaHJ5zYBNm8MNHtVWw/aH
+ Rh+g==
+X-Gm-Message-State: AOAM533zFuzD8Q1lFvI/dnKMF7BJGacSthmjzK/YVztQKjb5blTnRJlN
+ P7MqGnBIzuAIQ0zRIZLq2ZI=
+X-Google-Smtp-Source: ABdhPJxmejwpcRbUX2eKd1Wr/KCtQM3cY7rv6DEY8AnfjnD8rrdVvMpG4jWNQS5CimgwFAmEw2otuQ==
+X-Received: by 2002:a17:907:2ce3:b0:6df:b0ad:1f1a with SMTP id
+ hz3-20020a1709072ce300b006dfb0ad1f1amr5641527ejc.392.1648743909304; 
+ Thu, 31 Mar 2022 09:25:09 -0700 (PDT)
+Received: from orome ([62.96.65.119]) by smtp.gmail.com with ESMTPSA id
+ oz2-20020a170906cd0200b006e096dd0611sm8050818ejb.45.2022.03.31.09.25.07
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 31 Mar 2022 09:25:08 -0700 (PDT)
+Date: Thu, 31 Mar 2022 18:25:05 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Janne Grunau <j@jannau.net>, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 1/5] dt-bindings: reserved-memory: Document memory
+ region specifier
+Message-ID: <YkXV4TWetsl4Rh5A@orome>
+References: <CAL_Jsq+TQeb56UbrO1xKFSb1yo0d8U29DPynw3_jQ6gH6Peatw@mail.gmail.com>
+ <YTIogpQDJjqJUTkG@orome.fritz.box>
+ <CAL_JsqKG4+n_eNj+at3m7WuAbeJ1Kyi0mYD=8-MaVjfhzdPwkA@mail.gmail.com>
+ <YTJA2xARFuNUMgMc@orome.fritz.box>
+ <CAL_JsqJWt6ZELEpMi+tS6S6S4MYyMHysAC2ce_CfDQFqjfgnGQ@mail.gmail.com>
+ <YTelDHx2REIIvV/N@orome.fritz.box>
+ <YUIPCxnyRutMS47/@orome.fritz.box>
+ <20220206222700.GA1848@jannau.net> <YgPsVAsEcUYKHNIj@orome>
+ <20220210231544.GC1848@jannau.net>
 MIME-Version: 1.0
-Message-Id: <1648742102.xmws9oicm6.none@localhost>
-X-Mailer: WebService/1.1.20001
- mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
-Cc: thomas.lendacky@amd.com, robin.murphy@arm.com
+In-Reply-To: <20220210231544.GC1848@jannau.net>
+User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
+Cc: devicetree@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ dri-devel <dri-devel@lists.freedesktop.org>,
+ Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+ linux-tegra <linux-tegra@vger.kernel.org>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,86 +104,689 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: "Alex Xu \(Hello71\) via iommu" <iommu@lists.linux-foundation.org>
-Reply-To: "Alex Xu \(Hello71\)" <alex_y_xu@yahoo.ca>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============2429068835309059328=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Excerpts from Christoph Hellwig's message of March 31, 2022 2:06 am:
-> pgprot_decrypted is used by AMD SME systems to allow access to memory
-> that was set to not encrypted using set_memory_decrypted.  That only
-> happens for dma-direct memory as the IOMMU solves the addressing
-> challenges for the encryption bit using its own remapping.
-> 
-> Move the pgprot_decrypted call out of dma_pgprot which is also used
-> by the IOMMU mappings and into dma-direct so that it is only used with
-> memory that was set decrypted.
-> 
-> Fixes: 5ff79fddf0ef ("dma-mapping: remove CONFIG_DMA_REMAP")
-> Reported-by: Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  kernel/dma/direct.c  | 10 ++++++++--
->  kernel/dma/mapping.c |  2 --
->  2 files changed, 8 insertions(+), 4 deletions(-)
-> 
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 35a1d29d6a2e9..9743c6ccce1a9 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -277,12 +277,16 @@ void *dma_direct_alloc(struct device *dev, size_t size,
->  	}
->  
->  	if (remap) {
-> +		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
-> +
-> +		if (force_dma_unencrypted(dev))
-> +			prot = pgprot_decrypted(prot);
-> +
->  		/* remove any dirty cache lines on the kernel alias */
->  		arch_dma_prep_coherent(page, size);
->  
->  		/* create a coherent mapping */
-> -		ret = dma_common_contiguous_remap(page, size,
-> -				dma_pgprot(dev, PAGE_KERNEL, attrs),
-> +		ret = dma_common_contiguous_remap(page, size, prot,
->  				__builtin_return_address(0));
->  		if (!ret)
->  			goto out_free_pages;
-> @@ -535,6 +539,8 @@ int dma_direct_mmap(struct device *dev, struct vm_area_struct *vma,
->  	int ret = -ENXIO;
->  
->  	vma->vm_page_prot = dma_pgprot(dev, vma->vm_page_prot, attrs);
-> +	if (force_dma_unencrypted(dev))
-> +		vma->vm_page_prot = pgprot_decrypted(vma->vm_page_prot);
->  
->  	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
->  		return ret;
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index 559461a826bab..db7244291b745 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -407,8 +407,6 @@ EXPORT_SYMBOL(dma_get_sgtable_attrs);
->   */
->  pgprot_t dma_pgprot(struct device *dev, pgprot_t prot, unsigned long attrs)
->  {
-> -	if (force_dma_unencrypted(dev))
-> -		prot = pgprot_decrypted(prot);
->  	if (dev_is_dma_coherent(dev))
->  		return prot;
->  #ifdef CONFIG_ARCH_HAS_DMA_WRITE_COMBINE
-> -- 
-> 2.30.2
-> 
-> 
 
-Tested-by: Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
+--===============2429068835309059328==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="7Tuyp66Xcb8lGb33"
+Content-Disposition: inline
 
-Thanks,
-Alex.
+
+--7Tuyp66Xcb8lGb33
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Feb 11, 2022 at 12:15:44AM +0100, Janne Grunau wrote:
+> On 2022-02-09 17:31:16 +0100, Thierry Reding wrote:
+> > On Sun, Feb 06, 2022 at 11:27:00PM +0100, Janne Grunau wrote:
+> > > On 2021-09-15 17:19:39 +0200, Thierry Reding wrote:
+> > > > On Tue, Sep 07, 2021 at 07:44:44PM +0200, Thierry Reding wrote:
+> > > > > On Tue, Sep 07, 2021 at 10:33:24AM -0500, Rob Herring wrote:
+> > > > > > On Fri, Sep 3, 2021 at 10:36 AM Thierry Reding <thierry.reding@=
+gmail.com> wrote:
+> > > > > > >
+> > > > > > > On Fri, Sep 03, 2021 at 09:36:33AM -0500, Rob Herring wrote:
+> > > > > > > > On Fri, Sep 3, 2021 at 8:52 AM Thierry Reding <thierry.redi=
+ng@gmail.com> wrote:
+> > > > > > > > >
+> > > > > > > > > On Fri, Sep 03, 2021 at 08:20:55AM -0500, Rob Herring wro=
+te:
+> > > > > > > > > >
+> > > > > > > > > > Couldn't we keep this all in /reserved-memory? Just add=
+ an iova
+> > > > > > > > > > version of reg. Perhaps abuse 'assigned-address' for th=
+is purpose. The
+> > > > > > > > > > issue I see would be handling reserved iova areas witho=
+ut a physical
+> > > > > > > > > > area. That can be handled with just a iova and no reg. =
+We already have
+> > > > > > > > > > a no reg case.
+> > > > > > > > >
+> > > > > > > > > I had thought about that initially. One thing I'm worried=
+ about is that
+> > > > > > > > > every child node in /reserved-memory will effectively cau=
+se the memory
+> > > > > > > > > that it described to be reserved. But we don't want that =
+for regions
+> > > > > > > > > that are "virtual only" (i.e. IOMMU reservations).
+> > > > > > > >
+> > > > > > > > By virtual only, you mean no physical mapping, just a regio=
+n of
+> > > > > > > > virtual space, right? For that we'd have no 'reg' and there=
+fore no
+> > > > > > > > (physical) reservation by the OS. It's similar to non-stati=
+c regions.
+> > > > > > > > You need a specific handler for them. We'd probably want a =
+compatible
+> > > > > > > > as well for these virtual reservations.
+> > > > > > >
+> > > > > > > Yeah, these would be purely used for reserving regions in the=
+ IOVA so
+> > > > > > > that they won't be used by the IOVA allocator. Typically thes=
+e would be
+> > > > > > > used for cases where those addresses have some special meanin=
+g.
+> > > > > > >
+> > > > > > > Do we want something like:
+> > > > > > >
+> > > > > > >         compatible =3D "iommu-reserved";
+> > > > > > >
+> > > > > > > for these? Or would that need to be:
+> > > > > > >
+> > > > > > >         compatible =3D "linux,iommu-reserved";
+> > > > > > >
+> > > > > > > ? There seems to be a mix of vendor-prefix vs. non-vendor-pre=
+fix
+> > > > > > > compatible strings in the reserved-memory DT bindings directo=
+ry.
+> > > > > >=20
+> > > > > > I would not use 'linux,' here.
+> > > > > >=20
+> > > > > > >
+> > > > > > > On the other hand, do we actually need the compatible string?=
+ Because we
+> > > > > > > don't really want to associate much extra information with th=
+is like we
+> > > > > > > do for example with "shared-dma-pool". The logic to handle th=
+is would
+> > > > > > > all be within the IOMMU framework. All we really need is for =
+the
+> > > > > > > standard reservation code to skip nodes that don't have a reg=
+ property
+> > > > > > > so we don't reserve memory for "virtual-only" allocations.
+> > > > > >=20
+> > > > > > It doesn't hurt to have one and I can imagine we might want to =
+iterate
+> > > > > > over all the nodes. It's slightly easier and more common to ite=
+rate
+> > > > > > over compatible nodes rather than nodes with some property.
+> > > > > >=20
+> > > > > > > > Are these being global in DT going to be a problem? Presuma=
+bly we have
+> > > > > > > > a virtual space per IOMMU. We'd know which IOMMU based on a=
+ device's
+> > > > > > > > 'iommus' and 'memory-region' properties, but within /reserv=
+ed-memory
+> > > > > > > > we wouldn't be able to distinguish overlapping addresses fr=
+om separate
+> > > > > > > > address spaces. Or we could have 2 different IOVAs for 1 ph=
+ysical
+> > > > > > > > space. That could be solved with something like this:
+> > > > > > > >
+> > > > > > > > iommu-addresses =3D <&iommu1 <address cells> <size cells>>;
+> > > > > > >
+> > > > > > > The only case that would be problematic would be if we have o=
+verlapping
+> > > > > > > physical regions, because that will probably trip up the stan=
+dard code.
+> > > > > > >
+> > > > > > > But this could also be worked around by looking at iommu-addr=
+esses. For
+> > > > > > > example, if we had something like this:
+> > > > > > >
+> > > > > > >         reserved-memory {
+> > > > > > >                 fb_dc0: fb@80000000 {
+> > > > > > >                         reg =3D <0x80000000 0x01000000>;
+> > > > > > >                         iommu-addresses =3D <0xa0000000 0x010=
+00000>;
+> > > > > > >                 };
+> > > > > > >
+> > > > > > >                 fb_dc1: fb@80000000 {
+> > > > > >=20
+> > > > > > You can't have 2 nodes with the same name (actually, you can, t=
+hey
+> > > > > > just get merged together). Different names with the same unit-a=
+ddress
+> > > > > > is a dtc warning. I'd really like to make that a full blown
+> > > > > > overlapping region check.
+> > > > >=20
+> > > > > Right... so this would be a lot easier to deal with using that ea=
+rlier
+> > > > > proposal where the IOMMU regions were a separate thing and refere=
+ncing
+> > > > > the reserved-memory nodes. In those cases we could just have the
+> > > > > physical reservation for the framebuffer once (so we don't get any
+> > > > > duplicates or overlaps) and then have each IOVA reservation refer=
+ence
+> > > > > that to create the mapping.
+> > > > >=20
+> > > > > >=20
+> > > > > > >                         reg =3D <0x80000000 0x01000000>;
+> > > > > > >                         iommu-addresses =3D <0xb0000000 0x010=
+00000>;
+> > > > > > >                 };
+> > > > > > >         };
+> > > > > > >
+> > > > > > > We could make the code identify that this is for the same phy=
+sical
+> > > > > > > reservation (maybe make it so that reg needs to match exactly=
+ for this
+> > > > > > > to be recognized) but with different virtual allocations.
+> > > > > > >
+> > > > > > > On a side-note: do we really need to repeat the size? I'd thi=
+nk if we
+> > > > > > > want mappings then we'd likely want them for the whole reserv=
+ation.
+> > > > > >=20
+> > > > > > Humm, I suppose not, but dropping it paints us into a corner if=
+ we
+> > > > > > come up with wanting a different size later. You could have a c=
+arveout
+> > > > > > for double/triple buffering your framebuffer, but the bootloader
+> > > > > > framebuffer is only single buffered. So would you want actual s=
+ize?
+> > > > >=20
+> > > > > Perhaps this needs to be a bit more verbose then. If we want the =
+ability
+> > > > > to create a mapping for only a partial reservation, I could imagi=
+ne we
+> > > > > may as well want one that doesn't start at the beginning. So perh=
+aps an
+> > > > > ever better solution would be to have a complete mapping, somethi=
+ng that
+> > > > > works similar to "ranges" perhaps, like so:
+> > > > >=20
+> > > > > 	fb@80000000 {
+> > > > > 		reg =3D <0x80000000 0x01000000>;
+> > > > > 		iommu-ranges =3D <0x80000000 0x01000000 0x80000000>;
+> > > > > 	};
+> > > > >=20
+> > > > > That would be for a full identity mapping, but we could also have
+> > > > > something along the lines of this:
+> > > > >=20
+> > > > > 	fb@80000000 {
+> > > > > 		reg =3D <0x80000000 0x01000000>;
+> > > > > 		iommu-ranges =3D <0x80100000 0x00100000 0xa0000000>;
+> > > > > 	};
+> > > > >=20
+> > > > > So that would only map a 1 MiB chunk at offset 1 MiB (of the phys=
+ical
+> > > > > reservation) to I/O virtual address 0xa0000000.
+> > > > >=20
+> > > > > > > I'd like to keep references to IOMMUs out of this because the=
+y would be
+> > > > > > > duplicated. We will only use these nodes if they are referenc=
+ed by a
+> > > > > > > device node that also has an iommus property. Also, the IOMMU=
+ reference
+> > > > > > > itself isn't enough. We'd also need to support the complete s=
+pecifier
+> > > > > > > because you can have things like SIDs in there to specify the=
+ exact
+> > > > > > > address space that a device uses.
+> > > > > > >
+> > > > > > > Also, for some of these they may be reused independently of t=
+he IOMMU
+> > > > > > > address space. For example the Tegra framebuffer identity map=
+ping can
+> > > > > > > be used by either of the 2-4 display controllers, each with (=
+at least
+> > > > > > > potentially) their own address space. But we don't want to ha=
+ve to
+> > > > > > > describe the identity mapping separately for each display con=
+troller.
+> > > > > >=20
+> > > > > > Okay, but I'd rather have to duplicate things in your case than=
+ not be
+> > > > > > able to express some other case.
+> > > > >=20
+> > > > > The earlier "separate iov-reserved-memory" proposal would be a go=
+od
+> > > > > compromise here. It'd allow us to duplicate only the necessary bi=
+ts
+> > > > > (i.e. the IOVA mappings) but keep the common bits simple. And even
+> > > > > the IOVA mappings could be shared for cases like identity mapping=
+s.
+> > > > > See below for more on that.
+> > > > >=20
+> > > > > > > Another thing to consider is that these nodes will often be a=
+dded by
+> > > > > > > firmware (e.g. firmware will allocate the framebuffer and set=
+ up the
+> > > > > > > corresponding reserved memory region in DT). Wiring up refere=
+nces like
+> > > > > > > this would get very complicated very quickly.
+> > > > > >=20
+> > > > > > Yes.
+> > > > > >=20
+> > > > > > The using 'iommus' property option below can be optional and do=
+esn't
+> > > > > > have to be defined/supported now. Just trying to think ahead an=
+d not
+> > > > > > be stuck with something that can't be extended.
+> > > > >=20
+> > > > > One other benefit of the separate iov-reserved-memory node would =
+be that
+> > > > > the iommus property could be simplified. If we have a physical
+> > > > > reservation that needs to be accessed by multiple different displ=
+ay
+> > > > > controllers, we'd end up with something fairly complex, such as t=
+his:
+> > > > >=20
+> > > > > 	fb: fb@80000000 {
+> > > > > 		reg =3D <0x80000000 0x01000000>;
+> > > > > 		iommus =3D <&dc0_iommu 0xa0000000 0x01000000>,
+> > > > > 			 <&dc1_iommu 0xb0000000 0x01000000>,
+> > > > > 			 <&dc2_iommu 0xc0000000 0x01000000>;
+> > > > > 	};
+> > > > >=20
+> > > > > This would get even worse if we want to support partial mappings.=
+ Also,
+> > > > > it'd become quite complicated to correlate this with the memory-r=
+egion
+> > > > > references:
+> > > > >=20
+> > > > > 	dc0: dc@40000000 {
+> > > > > 		...
+> > > > > 		memory-region =3D <&fb>;
+> > > > > 		iommus =3D <&dc0_iommu>;
+> > > > > 		...
+> > > > > 	};
+> > > > >=20
+> > > > > So now you have to go match up the phandle (and potentially speci=
+fier)
+> > > > > in the iommus property of the disp0 node with an entry in the fb =
+node's
+> > > > > iommus property. That's all fairly complicated stuff.
+> > > > >=20
+> > > > > With separate iov-reserved-memory, this would be a bit more verbo=
+se, but
+> > > > > each individual node would be simpler:
+> > > > >=20
+> > > > > 	reserved-memory {
+> > > > > 		fb: fb@80000000 {
+> > > > > 			reg =3D <0x80000000 0x01000000>;
+> > > > > 		};
+> > > > > 	};
+> > > > >=20
+> > > > > 	iov-reserved-memory {
+> > > > > 		fb0: fb@80000000 {
+> > > > > 			/* identity mapping, "reg" optional? */
+> > > > > 			reg =3D <0x80000000 0x01000000>;
+> > > > > 			memory-region =3D <&fb>;
+> > > > > 		};
+> > > > >=20
+> > > > > 		fb1: fb@90000000 {
+> > > > > 			/* but doesn't have to be */
+> > > > > 			reg =3D <0x90000000 0x01000000>;
+> > > > > 			memory-region =3D <&fb>;
+> > > > > 		};
+> > > > >=20
+> > > > > 		fb2: fb@a0000000 {
+> > > > > 			/* can be partial, too */
+> > > > > 			ranges =3D <0x80000000 0x00800000 0xa0000000>;
+> > > > > 			memory-region =3D <&fb>;
+> > > > > 		};
+> > > > > 	}
+> > > > >=20
+> > > > > 	dc0: dc@40000000 {
+> > > > > 		iov-memory-regions =3D <&fb0>;
+> > > > > 		/* optional? */
+> > > > > 		memory-region =3D <&fb>;
+> > > > > 		iommus =3D <&dc0_iommu>;
+> > > > > 	};
+> > > > >=20
+> > > > > Alternatively, if we want to support partial mappings, we could r=
+eplace
+> > > > > those reg properties by ranges properties that I showed earlier. =
+We may
+> > > > > even want to support both. Use "reg" for virtual-only reservation=
+s and
+> > > > > identity mappings, or "simple partial mappings" (that map a sub-r=
+egion
+> > > > > starting from the beginning). Identity mappings could still be
+> > > > > simplified by just omitting the "reg" property. For more complica=
+ted
+> > > > > mappings, such as the ones on M1, the "ranges" property could be =
+used.
+> > > > >=20
+> > > > > Note how this looks a bit boilerplate-y, but it's actually really=
+ quite
+> > > > > simple to understand, even for humans, I think.
+> > > > >=20
+> > > > > Also, the phandles in this are comparatively easy to wire up beca=
+use
+> > > > > they can all be generated in a hierarchical way: generate physical
+> > > > > reservation and store phandle, then generate I/O virtual reservat=
+ion
+> > > > > to reference that phandle and store the new phandle as well. Fina=
+lly,
+> > > > > wire this up to the display controller (using either the IOV phan=
+dle or
+> > > > > both).
+> > > > >=20
+> > > > > Granted, this requires the addition of a new top-level node, but =
+given
+> > > > > how expressive this becomes, I think it might be worth a second
+> > > > > consideration.
+> > > >=20
+> > > > I guess as a middle-ground between your suggestion and mine, we cou=
+ld
+> > > > also move the IOV nodes back into reserved-memory. If we make sure =
+the
+> > > > names (together with unit-addresses) are unique, to support cases w=
+here
+> > > > we want to identity map, or have multiple mappings at the same addr=
+ess.
+> > > > So it'd look something like this:
+> > > >=20
+> > > > 	reserved-memory {
+> > > > 		fb: fb@80000000 {
+> > > > 			reg =3D <0x80000000 0x01000000>;
+> > > > 		};
+> > > >=20
+> > > > 		audio-firmware@ff000000 {
+> > > > 			/* perhaps add "iommu-reserved" for this case */
+> > > > 			compatible =3D "iommu-mapping";
+> > > > 			/*
+> > > > 			 * no memory-region referencing a physical
+> > > > 			 * reservation, indicates that this is an
+> > > > 			 * IOMMU reservation, rather than a mapping
+> > > > 			 /
+> > > > 			reg =3D <0xff000000 0x01000000>;
+> > > > 		};
+> > > >=20
+> > > > 		fb0: fb-mapping@80000000 {
+> > > > 			compatible =3D "iommu-mapping";
+> > > > 			/* identity mapping, "reg" optional? */
+> > > > 			reg =3D <0x80000000 0x01000000>;
+> > > > 			memory-region =3D <&fb>;
+> > > > 		};
+> > > >=20
+> > > > 		fb1: fb-mapping@90000000 {
+> > > > 			compatible =3D "iommu-mapping";
+> > > > 			/* but doesn't have to be */
+> > > > 			reg =3D <0x90000000 0x01000000>;
+> > > > 			memory-region =3D <&fb>;
+> > > > 		};
+> > > >=20
+> > > > 		fb2: fb-mapping@a0000000 {
+> > > > 			compatible =3D "iommu-mapping";
+> > > > 			/* can be partial, too */
+> > > > 			ranges =3D <0xa0000000 0x00800000 0x80000000>;
+> > > > 			memory-region =3D <&fb>;
+> > > > 		};
+> > > > 	}
+> > > >=20
+> > > > 	dc0: dc@40000000 {
+> > > > 		memory-region =3D <&fb0>;
+> > > > 		iommus =3D <&dc0_iommu>;
+> > > > 	};
+> > > >=20
+> > > > What do you think?
+> > >=20
+> > > I converted the Apple M1 display controller driver to using reserved=
+=20
+> > > regions using these bindings. It is sufficient for the needs of the M=
+1=20
+> > > display controller which is so far the only device requiring this.
+> >=20
+> > Thanks for trying this out. I've been meaning to resume this discussion
+> > to finally get closure because we really want to enable this for various
+> > Tegra SoCs.
+> >=20
+> > > I encountered two problems with this bindings proposal:
+> > >=20
+> > > 1) It is impossible to express which iommu needs to be used if a devi=
+ce=20
+> > > has multiple "iommus" specified. This is on the M1 only a theoretical=
+=20
+> > > problem as the display co-processor devices use a single iommu.
+> >=20
+> > From what I recall this is something that we don't fully support either
+> > way. If you've got a struct device and you want to allocate DMA'able
+> > memory, you can only pass that struct device to the DMA API upon
+> > allocation but you have no way of specifying separate instances
+> > depending on use-case.
+>=20
+> Ok, let's us ignore then my complicated proposal. It is not a problem we=
+=20
+> need to solve for the M1.
+>=20
+> > > 2) The reserved regions can not easily looked up at iommu probe=20
+> > > time.  The Apple M1 iommu driver resets the iommu at probe. This=20
+> > > breaks the framebuffer. The display controller appears to crash then=
+=20
+> > > an active scan-out framebuffer is unmapped. Resetting the iommu=20
+> > > looks like a sensible approach though.
+> > >=20
+> > > To work around this I added custom property to the affected iommu nod=
+e=20
+> > > to avoid the reset. This doesn't feel correct since the reason to avo=
+id=20
+> > > the reset is that we have to maintain the reserved regions mapping un=
+til=20
+> > > the display controller driver takes over.
+> > > As far as I can see the only method to retrieve devices with reserved=
+=20
+> > > memory from the iommu is to iterate over all devices. This looks=20
+> > > impractical. The M1 has over 20 distinct iommus.
+> >=20
+> > Do I understand correctly that on the M1, the firmware sets up a mapping
+> > in the IOMMU already and then you want to recreate that mapping after
+> > the IOMMU driver has reset the IOMMU?
+>=20
+> The mappings are already set up by firmware as it uses the frame buffer=
+=20
+> already itself. We need to make the kernel aware of the existing mapping=
+=20
+> so it can use the IOMMU. Using reserved memory regions and mappings=20
+> seems to be clean way to do this. We want to reset IOMMUs without=20
+> pre-existing mappings (the M1 has over 20 IOMMUs). We need a way to=20
+> identify the two IOMMUs which must not be reseted at driver probe time. =
+=20
+> A simple property in the IOMMU node would be enough. It would duplicate=
+=20
+> information though since the only reason why we can't reset the IOMMU is=
+=20
+> the pre-existing mapping
+>=20
+> > In that case, how do you make sure that you atomically transition from
+> > the firmware mapping to the kernel mapping? As soon as you reset the
+> > IOMMU, the display controller will cause IOMMU faults because its now
+> > scanning out from an unmapped buffer, right?
+>=20
+> We are replacing the entire firmware managed page table with a kernel=20
+> managed one with a TTBR MMIO register write. The second IOMMU with=20
+> pre-existing mapping has unfortunately the TTBR locked. Dealing with=20
+> this is more complicated but the device using this IOMMU appears to
+> sleep.
+>=20
+> > So that approach of avoiding the reset doesn't seem wrong to me.
+> > Obviously that's not altogether trivial to do either. Typically the
+> > IOMMU mappings would be contained in system memory, so you'd have to
+> > reserve those via reserved-memory nodes as well, etc.
+>=20
+> The system memory is currently not expressed as reserved-memory but=20
+> simply outside of the specified memory.
+> =20
+> > > One way to avoid both problems would be to move the mappings to the=
+=20
+> > > iommu node as sub nodes. The device would then reference those. =20
+> > > This way the mapping is readily available at iommu probe time and=20
+> > > adding iommu type specific parameters to map the region correctly is=
+=20
+> > > possible.
+> > >=20
+> > > The sample above would transfor to:
+> > >=20
+> > > 	reserved-memory {
+> > > 		fb: fb@80000000 {
+> > > 			reg =3D <0x80000000 0x01000000>;
+> > > 		};
+> > > 	};
+> > >=20
+> > > 	dc0_iommu: iommu@20000000 {
+> > > 		#iommu-cells =3D <1>;
+> > >=20
+> > > 		fb0: fb-mapping@80000000 {
+> > > 			compatible =3D "iommu-mapping";
+> > > 			/* identity mapping, "reg" optional? */
+> > > 			reg =3D <0x80000000 0x01000000>;
+> > > 			memory-region =3D <&fb>;
+> > > 			device-id =3D <0>; /* for #iommu-cells*/
+> > > 		};
+> > >=20
+> > > 		fb1: fb-mapping@90000000 {
+> > > 			compatible =3D "iommu-mapping";
+> > > 			/* but doesn't have to be */
+> > > 			reg =3D <0x90000000 0x01000000>;
+> > > 			memory-region =3D <&fb>;
+> > > 			device-id =3D <1>; /* for #iommu-cells*/
+> > > 		};
+> > > 	};
+> > >=20
+> > > 	dc0: dc@40000000 {
+> > > 		iommu-region =3D <&fb0>;
+> > > 		iommus =3D <&dc0_iommu 0>;
+> > > 	};
+> > >=20
+> > > Does anyone see problems with this approach or can think of something=
+=20
+> > > better?
+> >=20
+> > The device tree description of this looks a bit weird because it
+> > sprinkles things all around. For instance now we've got the "stream ID"
+> > (i.e. what you seem to be referring to as "device-id") in two places,
+> > once in the iommus property of the DC node and once in the mapping.
+>=20
+> Yes, stream_id would be the device-id. It is the term used in the=20
+> apple-dart IOMMU driver. It is duplicated to deal with the multiple=20
+> IOMMU problem. Let's ignore that and scrape my proposal.
+> =20
+> > Would it work if you added back-references to the devices that are
+> > active on boot to the IOMMU node? Something along these lines:
+> >=20
+> > 	reserved-memory {
+> > 		fb: fb@80000000 {
+> > 			reg =3D <0x80000000 0x01000000>;
+> > 		};
+> > 	};
+> >=20
+> > 	dc0_iommu: iommu@20000000 {
+> > 		#iommu-cells =3D <1>;
+> >=20
+> > 		mapped-devices =3D <&dc0>;
+> > 	};
+> >=20
+> > 	dc0: dc@40000000 {
+> > 		memory-region =3D <&fb0>;
+> > 		iommus =3D <&dc0_iommu 0>;
+> > 	};
+> >=20
+> > Depending on how you look at it that's a circular dependency, but it
+> > won't be in practice. It makes things a bit more compact and puts the
+> > data where it belongs.
+>=20
+> Yes, this works for the Apple M1 display co-processor. I've changed the=
+=20
+> dts and my apple-dart private parsing code to use "mapped-devices"=20
+> back-references and it works as before. We probably need an automated=20
+> check to ensure the references between device and IOMMU remains=20
+> consistent.
+
+Circling back to this... again. I've been thinking about this some more
+and have come up with a mix between what Rob, Janne and I had proposed.
+This is how it would look (based on Tegra210):
+
+	reserved-memory {
+		fb: framebuffer@80000000 {
+			/*
+			 * Physical memory region that is reserved. If
+			 * this property is omitted, this region should
+			 * be treated as an IOVA reservation.
+			 */
+			reg =3D <0x80000000 0x01000000>;
+
+			/*
+			 * Create 1:1 mapping for display controller.
+			 *
+			 * Note how instead of the IOMMU reference we
+			 * actually pass the device reference here. This
+			 * combines the "mapped-devices" property that
+			 * was proposed earlier and makes it easier to
+			 * find the device that needs this mapping. The
+			 * IOMMU phandle and specifier can be obtained
+			 * via this backlink to the consumer device.
+			 *
+			 * More than one entry could be specified here
+			 * to allow mappings for multiple devices. This
+			 * avoids the problem of having multiple nodes
+			 * with the same name.
+			 *
+			 * Could also be "iommu-addresses" as Rob had
+			 * suggested earlier, but "iommu-mapping" seems
+			 * a bit more appropriate given that there's
+			 * also the phandle now.
+			 */
+			iommu-mapping =3D <&dc 0x80000000 0x01000000>;
+		};
+	};
+
+	mc: memory-controller@70019000 {
+		...
+		#iommu-cells =3D <1>;
+		...
+	};
+
+	dc: dc@54200000 {
+		...
+		iommus =3D <&mc TEGRA_SWGROUP_DC>;
+
+		/*
+		 * As in earlier proposals, this could be optional if
+		 * all we need is the IOMMU mapping. It can be specified
+		 * if there's a need for the driver to use the physical
+		 * memory region (i.e. to copy out existing framebuffer
+		 * content and recycle memory).
+		 */
+		memory-region =3D <&fb>;
+		...
+	};
+
+One last remaining question that I have for this is whether we also need
+some sort of #address-cells and #size-cells for the IOMMU which we need
+to determine how many cells the addresses in iommu-mapping need to have.
+I suppose we could derive that from the dma-ranges property somehow,
+since that defines the addressable region of the device that needs the
+mapping.
+
+Thierry
+
+--7Tuyp66Xcb8lGb33
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmJF1d8ACgkQ3SOs138+
+s6HRRQ//UQ/ew8hhoRXdaIpMyqAExm8b5afE8d6eLidN+1KlX1ygwpxjibiGW71H
+ljS/iHQogujvHLC+gRSZmpqpkY1nR03RzE9+ZWEDe8mag/8TEvMXa8EtETAIKp58
++JkT1hVHe10iDEdIU2Rz9x0zcUuSppq2OWNRgxl/DEynBTP3xRmNIa8Xt6wRdNHw
+mjWKQ+cl4BtoAarJw5Ao6TAtAmWVokrJrry1XAlkHU9btLR25Zx2DNijO34GNrSW
+Y9RwLWkTZiC5BPeiR2IgutieENg3KW6JlLXiqVylWAqM0OCC8O2rozq2kr+m4IMD
+0S2JOEy9K/WK1E/JU5vvD1NzduXYYQO/FDvY/9Stko8dZOzzpdEOIElryTTnr9k7
+DUOYqRyRHn0EgYbIPrrLCv1ldBi7CDdMsK3il7rEtZvlqg5HgbL6WGfgGyTynmK0
+T67gVkpYKeP83Sa08T2gjHR1ToDDQTEs7LvkCnLUQi3QZ+AINbmLhkH52OUfB+RO
+85yudOK3k63dgqAjP6AaQqa+qJdqMQscSYLQoFTq9XBrLCf1e8rgVCi69qW7PeuH
+D3wq4KfXwfYSWmKmK4ZxN1/fSRiuYq1L2AxMh1Wy333R8Ycv2Jp1WWnAAa+8ebVf
++U5RLfWhmOMupd+RRaIUSrlXijDL107yT4+xmdwYIdzswPhSW6M=
+=TiDP
+-----END PGP SIGNATURE-----
+
+--7Tuyp66Xcb8lGb33--
+
+--===============2429068835309059328==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============2429068835309059328==--
