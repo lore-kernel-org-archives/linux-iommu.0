@@ -4,65 +4,175 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 08562C433EF
-	for <iommu@archiver.kernel.org>; Thu, 31 Mar 2022 04:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2F546C433EF
+	for <iommu@archiver.kernel.org>; Thu, 31 Mar 2022 05:41:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 800D141D2E;
-	Thu, 31 Mar 2022 04:50:22 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id A5EDB41DBA;
+	Thu, 31 Mar 2022 05:41:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id niaz-YUPPq4a; Thu, 31 Mar 2022 04:50:21 +0000 (UTC)
+	with ESMTP id qyn7d05U3gzU; Thu, 31 Mar 2022 05:41:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id CD82941D24;
-	Thu, 31 Mar 2022 04:50:20 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id D287941DB0;
+	Thu, 31 Mar 2022 05:41:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A256C001D;
-	Thu, 31 Mar 2022 04:50:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8BDF0C002C;
+	Thu, 31 Mar 2022 05:41:28 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3271BC0012
- for <iommu@lists.linux-foundation.org>; Thu, 31 Mar 2022 04:50:19 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1AC19C0012
+ for <iommu@lists.linux-foundation.org>; Thu, 31 Mar 2022 05:41:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 0999660B72
- for <iommu@lists.linux-foundation.org>; Thu, 31 Mar 2022 04:50:19 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id E638960C0D
+ for <iommu@lists.linux-foundation.org>; Thu, 31 Mar 2022 05:41:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
+ dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iePN8e5LYpmP for <iommu@lists.linux-foundation.org>;
- Thu, 31 Mar 2022 04:50:18 +0000 (UTC)
-X-Greylist: delayed 00:08:18 by SQLgrey-1.8.0
-Received: from gandalf.ozlabs.org (mail.ozlabs.org
- [IPv6:2404:9400:2221:ea00::3])
- by smtp3.osuosl.org (Postfix) with ESMTPS id D095A60B5B
- for <iommu@lists.linux-foundation.org>; Thu, 31 Mar 2022 04:50:17 +0000 (UTC)
-Received: by gandalf.ozlabs.org (Postfix, from userid 1007)
- id 4KTVyC5hnpz4xLb; Thu, 31 Mar 2022 15:41:55 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=gibson.dropbear.id.au; s=201602; t=1648701715;
- bh=PYjTDL7MyWr9MF/EKQzb1+YssBWFGuseGQUQm0EYzOI=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=hljvYbKRI0/OVRWMOFkiCOykYE3S+tyl0XaoxCCS0HUVMmZAgStteoI/N2F6RkOCz
- 6u5B3yeo4OryUwU2LRvnrEZ/nkI+axkAaXkcPf5vuMUz4kQRA5gqiJ0osIH0qz0Gf6
- H4PL5QT/ACfEOtY74diCJImdwDVX+1QFBQ/da2ng=
-Date: Thu, 31 Mar 2022 15:36:29 +1100
-From: David Gibson <david@gibson.dropbear.id.au>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH RFC 08/12] iommufd: IOCTLs for the io_pagetable
-Message-ID: <YkUvzfHM00FEAemt@yekko>
+ with ESMTP id QeOD9x03vDSh for <iommu@lists.linux-foundation.org>;
+ Thu, 31 Mar 2022 05:41:27 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 2EEFE60C03
+ for <iommu@lists.linux-foundation.org>; Thu, 31 Mar 2022 05:41:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1648705287; x=1680241287;
+ h=from:to:cc:subject:date:message-id:references:
+ in-reply-to:content-transfer-encoding:mime-version;
+ bh=/0TLdDJp1ZyMGFPLeKZuC+0lrHDQl5oEG/3aHNgZqVM=;
+ b=U0OCwB6i7L7UV+A40fSaINoriDqHvSnIhzHFiJGZG/TWzW0IYlm6xDm+
+ T2c93a9rmfIszKd06+YIeq/mcndZQoHe/hJlOALYLi4Cd58Vmj5HMRXBJ
+ EawQPPgaHeXrRZgUorzKXNKI4LLSvXa8uSw583TU2ojAHC52Ip1G+Y/eK
+ 2/tBsBbqAddAQUdV21dwcq7IsZBDNZXGVty6DmOA2nEvm2rJqHp5aJW8a
+ ErA9hcRgE9BICmo+bQwgfoqQa+15K8jIVlPWXISXiHa4FTXEnf7BX5XWu
+ yr+muLq9n4W9h6U1E2RhewJEb755ZmJvm0eM+HnB0MsbNkHGE5UEOGRfV Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="259908900"
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; d="scan'208";a="259908900"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 30 Mar 2022 22:41:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,224,1643702400"; d="scan'208";a="566160488"
+Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
+ by orsmga008.jf.intel.com with ESMTP; 30 Mar 2022 22:41:25 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 30 Mar 2022 22:41:25 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Wed, 30 Mar 2022 22:41:25 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.47) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Wed, 30 Mar 2022 22:41:24 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fJn1hQDgVXORy14wUaULFWVNLv89T4Z5XFA6Ge7HuhLnqpins0+BpTdLLHzArSMGp8t3d46wjjNNhKWn+3TK8JWdt/+3smaN4SabuZ0HavSsTmFEfXux59kyXK/iYMLugLrKQlXbcmi03OmMSfSYSqDw57cOFCKEImstww2tjtQDU5YpyWyFuIPVzZVeKEgDIPuEaC8U7VD/sQlGRrWe0p81NmURepV9KqqPdvEJuEm7x1sg2M/bqXpW2ZBc+Xb4YauMtSNbx7F4nmxdB7UvOlQkk+zNHQ5GNHB+yDS21pRI8x965YIXgVLcd/i8EttihaOFbNwCyUGwWc6G6m9kUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=807Iz4ciVubdrNm9ryVFz47xWUJ3AtFepJjoj2x3xUU=;
+ b=msxmskWDdLFNxaJk+sG1kBD/cLA+G/oYeheG3Zh44DR8r649jAAOeidesph/2j9LBIGF9jn/ik07s97USsrqqNF+kN43RuQw2XrUHWQfuBDw5x6qeqOjpXhRwOxkKaSEkepzJhyvlbDaN/G9hACqXMj1vTscHh1gEq2CrwWHFYGt5SGZWJCwiynBzvZlf/CB2O0ZJv8/FqzxXFf35dgmm3ZWSSc5RWjqjE4I55L03HCsJw1kZJLIl/xtYpQuPQ5GWh2yX+Mx1LDdiAIJ9rOPjsBoiBk9S9Xg9xb3H3Nqoicl4K4OII78q25hQWzf0c4yLPRSHCsuryJVaB5GRx3LqA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by BN8PR11MB3827.namprd11.prod.outlook.com (2603:10b6:408:90::31)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.21; Thu, 31 Mar
+ 2022 05:41:23 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::4df7:2fc6:c7cf:ffa0]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::4df7:2fc6:c7cf:ffa0%4]) with mapi id 15.20.5102.023; Thu, 31 Mar 2022
+ 05:41:23 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: David Gibson <david@gibson.dropbear.id.au>, Jason Gunthorpe
+ <jgg@nvidia.com>
+Subject: RE: [PATCH RFC 08/12] iommufd: IOCTLs for the io_pagetable
+Thread-Topic: [PATCH RFC 08/12] iommufd: IOCTLs for the io_pagetable
+Thread-Index: AQHYOu2GUDY5OA7cJEqND2xJuT5HJqzY++yAgAAPfuA=
+Date: Thu, 31 Mar 2022 05:41:23 +0000
+Message-ID: <BN9PR11MB52761227DFAC6E3D322BEDF98CE19@BN9PR11MB5276.namprd11.prod.outlook.com>
 References: <0-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
- <8-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <8-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com> <YkUvzfHM00FEAemt@yekko>
+In-Reply-To: <YkUvzfHM00FEAemt@yekko>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.6.401.20
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a15c835f-3b48-4cab-3bcd-08da12d9172b
+x-ms-traffictypediagnostic: BN8PR11MB3827:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <BN8PR11MB3827B2664FDC6BFAD8A315528CE19@BN8PR11MB3827.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ICQmcZoJAGbXdTIPsri+HL8VtDk4hFKK3uNffGRZ0hji9aO+8aBjAMYfkZTioACYJ9ajM149VVVexr6Wpcv+LIjKo/9wv60FaX2Q8Fj3vRkSXdsRmnGsIXQc4o9raVPkDajqwbJNuIcKnNXlLuSzTUTNGIZnP1ofvmYh9Nnm40MAflRo0/DwyYzAEj+t3ASNNtz6TH4ZEXMCOkthRoaFjZAKbVmPFCrRKcm/erg+GNESHcs2volvF1KK98Havl6mFO5BCkOTXFD3Oz+wubNn3vmSivJHvT/DfEx+V7CdhutXoo4LLLdjw45VmmswIVV6YLxophQ5fqpFgdH2825ab3fUgyioIMPwUE74eBVyfkSNYkgH2Xf7ymm3gxGP8T/JGumi7Sfas53R4nzPVgelv7JaFQ9e5EgCI3D1DEwk2xrmKsFbgODQ+5wm3oLsYME+L7T1dm2EhGSDteT87jjmFp/UEfjeCe96U+Hhi6RQ7ji6rZrZ5v5TWGkOOoRgJgjKxtN5gK6Lo0yc9W433ZhV13+hGLcaHMLxgVyDi1umiH93vhAUtiPClGhWlOOYD7M8FBYpKn9L4xuJlSXsRAMSpk3EoTi6V0SkKWWWJTCw9uU2Fnr4W8kOM/pNZB/b4FkzIVy8XKNNhJvEFsFBe48YcXdxzITMz7B6RFT68DMtXbDXp+aM0Qm7BL2BBTiSb/TpDX7DFm7paC5C+Nf5+UwAcA==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(33656002)(64756008)(316002)(4326008)(110136005)(54906003)(71200400001)(86362001)(8676002)(66476007)(66946007)(66556008)(66446008)(76116006)(83380400001)(5660300002)(8936002)(7696005)(9686003)(38070700005)(52536014)(26005)(186003)(82960400001)(7416002)(55016003)(38100700002)(508600001)(122000001)(2906002)(6506007);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?6HUwYjYToOieGaCJjGMpl/QyMLtvyW1vGAh23Z29wL1TibjQzKvfLcOzG2r/?=
+ =?us-ascii?Q?8/cRi1VVwxjYFUNzEQJol3ZJMyCyskRgS9xTRebzHQIHdbWBMNsh5chcynjk?=
+ =?us-ascii?Q?xtR1eUFkl8WSd9TRi+HNf2jVtVoEKFvP/SGESfWa0li9JsEd1VyTIAMOkH4Y?=
+ =?us-ascii?Q?tXnsIWQIJVwSEQiGHpZnkwO8dYmzBIUO/kzYT+21uHAcnBd2lFXQqhnmtXvA?=
+ =?us-ascii?Q?6cpwMCBD6g9tZR+5NDqCXO8RgFr9U5vDexIWLZ6GQ1Fq8vwdqPJcauDiZNQ1?=
+ =?us-ascii?Q?si7voQFokv+g41YqL6h+5iZj/3/0fLU7U95P4urRFRoF+eQhbB5dzo4Q3sSz?=
+ =?us-ascii?Q?MD4lrKlhcDE7cy5nDWMJkC4aJTujVcb86MB8vPTDCQ3KT/NOpd5J4qGMa7VO?=
+ =?us-ascii?Q?ihdpCmpTsiFIf8jvl5QbGVRq3m1BZAngFU9DKeOUJxXG6LZeBFumKechM8T0?=
+ =?us-ascii?Q?RWGuDe2fEwh73tkCK1XR5qnU4DAbpMorXojVnt2gl7FjsgMchoUugfcfgILP?=
+ =?us-ascii?Q?LQ1GyQE9cHM1iwPgCW2V8tyjE0ZZl519f0IP5kPVOIMluPddaf0Ymt8lfTLq?=
+ =?us-ascii?Q?SoOIHafxoRlZLJ6psg/KgJiWYZ2/QP+IIGLeYb0Cs2HYFN/L7kajgziMURKm?=
+ =?us-ascii?Q?4HXK7tqflVz1tKeLIla5dvzxpcHh3MYLd0rkWQkVgeaavvSQfS18IB4Eb7QP?=
+ =?us-ascii?Q?yxcIJwAgI1tgBPNDMDtolsKS2EC7r2H1oUI2UIvcdhSABvyzEdCnkPfX/H/h?=
+ =?us-ascii?Q?w1srrLW9Tt2HpGoKFeaC2nHOXqYcsAsKs8fStGUg/ZRF+OhqLwcbodwxcUZG?=
+ =?us-ascii?Q?PUTMnQKiU7aEP3fBxpxFd55A6/ANjSaXnYWZ0Ahya/zQYeN9aEWMU0ukd3fn?=
+ =?us-ascii?Q?h/yx7DnJkaa2QrD/a+OLRzyS8/OBSkpEBAuRJbD1+RdD6ZL4emLACIYXqoq2?=
+ =?us-ascii?Q?jCRka/wgs8W87rgivZZTC+YdTLYewWEfWPf1j49SBkMZ8rcelitkVcWOP3HN?=
+ =?us-ascii?Q?olyPNTvnJ5h4m1UWBLcMR/coFS/wAgGJwIqyqHXYvemEvodrlp5H9w44M1er?=
+ =?us-ascii?Q?b+EFQ+muX3v5yqxfNUTc5dQDBtNI44u5MbYBDGT0tjz964Ot8Yw3p6xQHdnu?=
+ =?us-ascii?Q?LeBxGpWdavjp2xlt8gLFqWCFyPOm9SF+ZdNwuoeyw/MtS3qEoI94NHQp81MM?=
+ =?us-ascii?Q?KzlZuVtKpXUYg1bbrzuDMISpA8QgcHTNuNLw5CFhuOg3NF0gRL7T4eZomXN3?=
+ =?us-ascii?Q?rvobWIFlqF4dhkPERuXv+TzX9RO/hfwgOKQ3Nf4tmfQR7PMY5vI783a+ANaV?=
+ =?us-ascii?Q?fB2smepSK9wErWVPGsbJOmxe2/Hsqw/yKKjD3eYCDe1u1F2WudNFEKFMNNIX?=
+ =?us-ascii?Q?YLskLEx82hAOnEQER+GD6tGkCa4it8YovFwmWSdY9bZtTn+pq6wHmt+FzjC6?=
+ =?us-ascii?Q?gWQt37Pcc5YQ0l5TOiCfiGq9A1c9nX9CmM4/WhKIXRDVsd9JZpl4VG16ym4O?=
+ =?us-ascii?Q?MIoITAhSrYOjwqiQdrdEzpktJw/LvExY40yJdBYTutQlOjsJ4ei7WUeTzMbG?=
+ =?us-ascii?Q?QQrxmYoHVlAs+8RplLAtFlIJGSdIKnXiPX2R/qfthUaSDxQbEKqQSiIP73+G?=
+ =?us-ascii?Q?rTOt4bSCL9cZCA1iHxf5nEjK0ZTLhFpBOGZ+MLy0o7muxNKpwn9UxuZnKwc7?=
+ =?us-ascii?Q?2K6OeZxtEk9C0/oHbKD5bi2aYeZC3CP4eLQlDh/cfDazgxmBvqT5h7LCkw/m?=
+ =?us-ascii?Q?2KzkuSVGuA=3D=3D?=
 MIME-Version: 1.0
-In-Reply-To: <8-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a15c835f-3b48-4cab-3bcd-08da12d9172b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Mar 2022 05:41:23.1634 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: qfx5ts7Am7e/w4C+5ooEb8KuFXD26+gfQPYmNkNKLN6S1oUuEGhPQdWBElUEPPEeB0A2mqrBer2Ymmog68FArw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3827
+X-OriginatorOrg: intel.com
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
- "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
- iommu@lists.linux-foundation.org, Daniel Jordan <daniel.m.jordan@oracle.com>,
- Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Joao Martins <joao.m.martins@oracle.com>
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason
+ Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Daniel Jordan <daniel.m.jordan@oracle.com>,
+ Alex Williamson <alex.williamson@redhat.com>, "Martins,
+ Joao" <joao.m.martins@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,226 +185,63 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============2597867105001627385=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+> From: David Gibson <david@gibson.dropbear.id.au>
+> Sent: Thursday, March 31, 2022 12:36 PM
+> > +
+> > +/**
+> > + * struct iommu_ioas_iova_ranges - ioctl(IOMMU_IOAS_IOVA_RANGES)
+> > + * @size: sizeof(struct iommu_ioas_iova_ranges)
+> > + * @ioas_id: IOAS ID to read ranges from
+> > + * @out_num_iovas: Output total number of ranges in the IOAS
+> > + * @__reserved: Must be 0
+> > + * @out_valid_iovas: Array of valid IOVA ranges. The array length is the
+> smaller
+> > + *                   of out_num_iovas or the length implied by size.
+> > + * @out_valid_iovas.start: First IOVA in the allowed range
+> > + * @out_valid_iovas.last: Inclusive last IOVA in the allowed range
+> > + *
+> > + * Query an IOAS for ranges of allowed IOVAs. Operation outside these
+> ranges is
+> > + * not allowed. out_num_iovas will be set to the total number of iovas
+> > + * and the out_valid_iovas[] will be filled in as space permits.
+> > + * size should include the allocated flex array.
+> > + */
+> > +struct iommu_ioas_iova_ranges {
+> > +	__u32 size;
+> > +	__u32 ioas_id;
+> > +	__u32 out_num_iovas;
+> > +	__u32 __reserved;
+> > +	struct iommu_valid_iovas {
+> > +		__aligned_u64 start;
+> > +		__aligned_u64 last;
+> > +	} out_valid_iovas[];
+> > +};
+> > +#define IOMMU_IOAS_IOVA_RANGES _IO(IOMMUFD_TYPE,
+> IOMMUFD_CMD_IOAS_IOVA_RANGES)
+> 
+> Is the information returned by this valid for the lifeime of the IOAS,
+> or can it change?  If it can change, what events can change it?
+> 
 
---===============2597867105001627385==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="WfdTxXupCMJl/Tke"
-Content-Disposition: inline
+It can change when a new device is attached to an ioas.
 
+You can look at iopt_table_enforce_group_resv_regions() in patch7
+which is called by iommufd_device_attach() in patch10. That function
+will first check whether new reserved ranges from the attached device
+have been used and if no conflict then add them to the list of reserved
+ranges of this ioas.
 
---WfdTxXupCMJl/Tke
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Userspace can call this ioctl to retrieve updated IOVA range info after
+attaching a device.
 
-On Fri, Mar 18, 2022 at 02:27:33PM -0300, Jason Gunthorpe wrote:
-> Connect the IOAS to its IOCTL interface. This exposes most of the
-> functionality in the io_pagetable to userspace.
->=20
-> This is intended to be the core of the generic interface that IOMMUFD will
-> provide. Every IOMMU driver should be able to implement an iommu_domain
-> that is compatible with this generic mechanism.
->=20
-> It is also designed to be easy to use for simple non virtual machine
-> monitor users, like DPDK:
->  - Universal simple support for all IOMMUs (no PPC special path)
->  - An IOVA allocator that considerds the aperture and the reserved ranges
->  - io_pagetable allows any number of iommu_domains to be connected to the
->    IOAS
->=20
-> Along with room in the design to add non-generic features to cater to
-> specific HW functionality.
-
-
-[snip]
-> +/**
-> + * struct iommu_ioas_alloc - ioctl(IOMMU_IOAS_ALLOC)
-> + * @size: sizeof(struct iommu_ioas_alloc)
-> + * @flags: Must be 0
-> + * @out_ioas_id: Output IOAS ID for the allocated object
-> + *
-> + * Allocate an IO Address Space (IOAS) which holds an IO Virtual Address=
- (IOVA)
-> + * to memory mapping.
-> + */
-> +struct iommu_ioas_alloc {
-> +	__u32 size;
-> +	__u32 flags;
-> +	__u32 out_ioas_id;
-> +};
-> +#define IOMMU_IOAS_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_ALLOC)
-> +
-> +/**
-> + * struct iommu_ioas_iova_ranges - ioctl(IOMMU_IOAS_IOVA_RANGES)
-> + * @size: sizeof(struct iommu_ioas_iova_ranges)
-> + * @ioas_id: IOAS ID to read ranges from
-> + * @out_num_iovas: Output total number of ranges in the IOAS
-> + * @__reserved: Must be 0
-> + * @out_valid_iovas: Array of valid IOVA ranges. The array length is the=
- smaller
-> + *                   of out_num_iovas or the length implied by size.
-> + * @out_valid_iovas.start: First IOVA in the allowed range
-> + * @out_valid_iovas.last: Inclusive last IOVA in the allowed range
-> + *
-> + * Query an IOAS for ranges of allowed IOVAs. Operation outside these ra=
-nges is
-> + * not allowed. out_num_iovas will be set to the total number of iovas
-> + * and the out_valid_iovas[] will be filled in as space permits.
-> + * size should include the allocated flex array.
-> + */
-> +struct iommu_ioas_iova_ranges {
-> +	__u32 size;
-> +	__u32 ioas_id;
-> +	__u32 out_num_iovas;
-> +	__u32 __reserved;
-> +	struct iommu_valid_iovas {
-> +		__aligned_u64 start;
-> +		__aligned_u64 last;
-> +	} out_valid_iovas[];
-> +};
-> +#define IOMMU_IOAS_IOVA_RANGES _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_IOVA_R=
-ANGES)
-
-Is the information returned by this valid for the lifeime of the IOAS,
-or can it change?  If it can change, what events can change it?
-
-If it *can't* change, then how do we have enough information to
-determine this at ALLOC time, since we don't necessarily know which
-(if any) hardware IOMMU will be attached to it.
-
-> +/**
-> + * enum iommufd_ioas_map_flags - Flags for map and copy
-> + * @IOMMU_IOAS_MAP_FIXED_IOVA: If clear the kernel will compute an appro=
-priate
-> + *                             IOVA to place the mapping at
-> + * @IOMMU_IOAS_MAP_WRITEABLE: DMA is allowed to write to this mapping
-> + * @IOMMU_IOAS_MAP_READABLE: DMA is allowed to read from this mapping
-> + */
-> +enum iommufd_ioas_map_flags {
-> +	IOMMU_IOAS_MAP_FIXED_IOVA =3D 1 << 0,
-> +	IOMMU_IOAS_MAP_WRITEABLE =3D 1 << 1,
-> +	IOMMU_IOAS_MAP_READABLE =3D 1 << 2,
-> +};
-> +
-> +/**
-> + * struct iommu_ioas_map - ioctl(IOMMU_IOAS_MAP)
-> + * @size: sizeof(struct iommu_ioas_map)
-> + * @flags: Combination of enum iommufd_ioas_map_flags
-> + * @ioas_id: IOAS ID to change the mapping of
-> + * @__reserved: Must be 0
-> + * @user_va: Userspace pointer to start mapping from
-> + * @length: Number of bytes to map
-> + * @iova: IOVA the mapping was placed at. If IOMMU_IOAS_MAP_FIXED_IOVA i=
-s set
-> + *        then this must be provided as input.
-> + *
-> + * Set an IOVA mapping from a user pointer. If FIXED_IOVA is specified t=
-hen the
-> + * mapping will be established at iova, otherwise a suitable location wi=
-ll be
-> + * automatically selected and returned in iova.
-> + */
-> +struct iommu_ioas_map {
-> +	__u32 size;
-> +	__u32 flags;
-> +	__u32 ioas_id;
-> +	__u32 __reserved;
-> +	__aligned_u64 user_va;
-> +	__aligned_u64 length;
-> +	__aligned_u64 iova;
-> +};
-> +#define IOMMU_IOAS_MAP _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_MAP)
-> +
-> +/**
-> + * struct iommu_ioas_copy - ioctl(IOMMU_IOAS_COPY)
-> + * @size: sizeof(struct iommu_ioas_copy)
-> + * @flags: Combination of enum iommufd_ioas_map_flags
-> + * @dst_ioas_id: IOAS ID to change the mapping of
-> + * @src_ioas_id: IOAS ID to copy from
-> + * @length: Number of bytes to copy and map
-> + * @dst_iova: IOVA the mapping was placed at. If IOMMU_IOAS_MAP_FIXED_IO=
-VA is
-> + *            set then this must be provided as input.
-> + * @src_iova: IOVA to start the copy
-> + *
-> + * Copy an already existing mapping from src_ioas_id and establish it in
-> + * dst_ioas_id. The src iova/length must exactly match a range used with
-> + * IOMMU_IOAS_MAP.
-> + */
-> +struct iommu_ioas_copy {
-> +	__u32 size;
-> +	__u32 flags;
-> +	__u32 dst_ioas_id;
-> +	__u32 src_ioas_id;
-> +	__aligned_u64 length;
-> +	__aligned_u64 dst_iova;
-> +	__aligned_u64 src_iova;
-> +};
-> +#define IOMMU_IOAS_COPY _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_COPY)
-
-Since it can only copy a single mapping, what's the benefit of this
-over just repeating an IOAS_MAP in the new IOAS?
-
-> +/**
-> + * struct iommu_ioas_unmap - ioctl(IOMMU_IOAS_UNMAP)
-> + * @size: sizeof(struct iommu_ioas_copy)
-> + * @ioas_id: IOAS ID to change the mapping of
-> + * @iova: IOVA to start the unmapping at
-> + * @length: Number of bytes to unmap
-> + *
-> + * Unmap an IOVA range. The iova/length must exactly match a range
-> + * used with IOMMU_IOAS_PAGETABLE_MAP, or be the values 0 & U64_MAX.
-> + * In the latter case all IOVAs will be unmaped.
-> + */
-> +struct iommu_ioas_unmap {
-> +	__u32 size;
-> +	__u32 ioas_id;
-> +	__aligned_u64 iova;
-> +	__aligned_u64 length;
-> +};
-> +#define IOMMU_IOAS_UNMAP _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_UNMAP)
->  #endif
-
---=20
-David Gibson			| I'll have my music baroque, and my code
-david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
-				| _way_ _around_!
-http://www.ozlabs.org/~dgibson
-
---WfdTxXupCMJl/Tke
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEoULxWu4/Ws0dB+XtgypY4gEwYSIFAmJFL8YACgkQgypY4gEw
-YSJl+w//R6dOO7b4WSMtrZrAlHdvvE/xztVJlWrC1ZrygwI97F/VZWbGEz3YMfTv
-CqIDPUnfP0FRG/thFZqk6IHpZ7kXXZSZTKfjx+5HMCk13hylBWQ5eE4nj9OzqkaU
-hPf5yxY+sERKRCBxDnqv7KaMzJO4eXn8PkAz0lKgq36AhyMk9vnhVZm5h365mfAg
-hqAhE8ytCzV0kZwv86sZRdjV8QGiNajnV1InnfXqGAAK1kJupJZEQ5f/R1Uqc/Bx
-X27xeedN6JVkwo3jEzs6EJF4DWLGwzVYY8deYHBo1iSrgDVex/IVeR4ffFln2N39
-CvCv73uutv8uiYbG18TDjDC98Qa9OgIhYQ6TEca6rkVc4qx5MjrgBS+WFTraK7tY
-H2Q37WcYyDxQtAL1fTObGIgGbDD97pEgDHD/XlhyLwDemhC3PH/f/7uTMayM9TDE
-XF6QQMMF0+oE8UMKjxVt7VK2jW6WpbpncBNCXMFJKdeOkxwPWUnyNn4+e4cIQYie
-Nu/J2oyVIBuvU5dvxP5RMZQXShYSSruKWRftoofB77vAiw2qFKlq/6ylmxh5LBqI
-X20V61mmXIEo1rK2ufkRWegXMd9h5C0dIGlyBAwl1nsv19/OO9ThTzj2l5MZHoNc
-uRguyJjdHde+g7W0c+6lFsakPBigI/m1+IkmaSKIS0YsysjBgwg=
-=zpWz
------END PGP SIGNATURE-----
-
---WfdTxXupCMJl/Tke--
-
---===============2597867105001627385==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============2597867105001627385==--
