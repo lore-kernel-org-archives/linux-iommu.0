@@ -4,81 +4,181 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DB06CC433F5
-	for <iommu@archiver.kernel.org>; Fri,  1 Apr 2022 02:24:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 79BABC433F5
+	for <iommu@archiver.kernel.org>; Fri,  1 Apr 2022 05:49:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 73C4E84049;
-	Fri,  1 Apr 2022 02:24:45 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 0702F82F11;
+	Fri,  1 Apr 2022 05:49:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8uwFIUU1UGej; Fri,  1 Apr 2022 02:24:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 2D4C884046;
-	Fri,  1 Apr 2022 02:24:44 +0000 (UTC)
+	with ESMTP id iDGbk_ig4n61; Fri,  1 Apr 2022 05:49:57 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id BE3BF82A8F;
+	Fri,  1 Apr 2022 05:49:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F099AC001D;
-	Fri,  1 Apr 2022 02:24:43 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A4E61C0012
- for <iommu@lists.linux-foundation.org>; Fri,  1 Apr 2022 02:24:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 90FB5C001D;
+	Fri,  1 Apr 2022 05:49:56 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8B687C0012
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Apr 2022 05:49:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 8D37441260
- for <iommu@lists.linux-foundation.org>; Fri,  1 Apr 2022 02:24:42 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 79A5282BF5
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Apr 2022 05:49:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=chromium.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sfVI7OoDVnEx for <iommu@lists.linux-foundation.org>;
- Fri,  1 Apr 2022 02:24:41 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com
- [IPv6:2607:f8b0:4864:20::102e])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 5D38640126
- for <iommu@lists.linux-foundation.org>; Fri,  1 Apr 2022 02:24:41 +0000 (UTC)
-Received: by mail-pj1-x102e.google.com with SMTP id cm17so1170628pjb.2
- for <iommu@lists.linux-foundation.org>; Thu, 31 Mar 2022 19:24:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=LooVy6HxBljYsBOT5BZDR0fJDc4Rp8fN59jEgY+o0DI=;
- b=PJAxfuVD6PmKHxbahwunHYBhTlcgqbr8BH03aEQ7YdBeYh0l8U1M+pgy+mr9SEeoJX
- spL22iG8LTYMgQoBYGlE7JsmG25ZPJjbYzqJgTUYalOgziSNfj4aEBd0+3qR4DQedjLu
- ZRZPZr/+0ck7AP7BQvcFp4UV2cft/iM9QSGzE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=LooVy6HxBljYsBOT5BZDR0fJDc4Rp8fN59jEgY+o0DI=;
- b=mMdtQTqOG+e2dR4HwYxBGmKzK6YkKOyjVOaBwygmUoR7g+HD59btf6T8hqSTyXcXPy
- WY0QcosLq2itIW3Kv53rY2Ew3V5pWZCzyUhay5XozFxAuPvRMMNEqtN2ex92B50rXjZj
- zi6TUPIg8SwRHWhC3t5ajW6pzRbtwPeBLcbO/5tXOcfz4RqbAqflmZFuyo3X7fFyyrM5
- EQxdcQbZD8tQF1hCdxEnoqrumbj23gN2LUsVs6dqhLVnAjrsqtonpwx0anX6iiCOEjLL
- bbENGWJ+aH+1/cLJ3TVuCjwMBlWU0xr16MIFAMNdB1McBRD8UiVUgC3lYmqgJpk+GX8Z
- KVZg==
-X-Gm-Message-State: AOAM530WBwrS9nARV+meHg09GCe50KtJwovI0SPE1ADP1nhnexg3aKUo
- 0heek6M9ey3QPUNNcFs84764LA==
-X-Google-Smtp-Source: ABdhPJx3cds3IJYsBVyQKsdjyy6GrzZdmfUcleihi5PO6oQwuyC6RYYe7HrHRCWYE9lO/XrCkzT6Rw==
-X-Received: by 2002:a17:903:110f:b0:154:c7a4:9371 with SMTP id
- n15-20020a170903110f00b00154c7a49371mr8265857plh.75.1648779880649; 
- Thu, 31 Mar 2022 19:24:40 -0700 (PDT)
-Received: from localhost ([2401:fa00:8f:203:2248:fc58:91aa:767])
- by smtp.gmail.com with UTF8SMTPSA id
- b7-20020a056a00114700b004f7be3231d6sm815989pfm.7.2022.03.31.19.24.38
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 31 Mar 2022 19:24:40 -0700 (PDT)
-From: David Stevens <stevensd@chromium.org>
-X-Google-Original-From: David Stevens <stevensd@google.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>,
-	Kevin Tian <kevin.tian@intel.com>
-Subject: [PATCH v3] iommu/vt-d: calculate mask for non-aligned flushes
-Date: Fri,  1 Apr 2022 11:24:30 +0900
-Message-Id: <20220401022430.1262215-1-stevensd@google.com>
-X-Mailer: git-send-email 2.35.1.1094.g7c7d902a7c-goog
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id BldOH3UyFgGe for <iommu@lists.linux-foundation.org>;
+ Fri,  1 Apr 2022 05:49:54 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 4711382A8F
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Apr 2022 05:49:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1648792194; x=1680328194;
+ h=message-id:date:subject:to:cc:references:from:
+ in-reply-to:content-transfer-encoding:mime-version;
+ bh=B/Yz/XI/qef9KgssG7DJdUHIi3r9Vw11cBFZBvFlugc=;
+ b=JKJgpkvzXPGfzxkY+Nnp4Nmkf93ucOPPu5rtLNffOgH5mGM/jXaynbYa
+ fBNjW66TYGkoSqglBPePU7ZzK7s/s1zALTBkFFGXu5IbPFqoc113WyRNx
+ ZQDU+gqwa0zJxCksC7v03OEBQmv5uR8WoLZAh+aO+m683jwv5BWV/xHqd
+ R23FtSpzxryn/k+SXP9cR1qillKP+EKqBfHh9cjNASVRU91fYjYkvKNpB
+ vGK+XzLnzfmywI6FAW61hTTRMH38Ou/RdoKq3P14mqmhrBbdiGBKTql76
+ Nia0/lsL23mzdW9j/HpckmDDxayjjyZ70BRaVHscbVx4hPythp8lZNdIt w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10303"; a="259752089"
+X-IronPort-AV: E=Sophos;i="5.90,226,1643702400"; d="scan'208";a="259752089"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 31 Mar 2022 22:49:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,226,1643702400"; d="scan'208";a="586727210"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+ by orsmga001.jf.intel.com with ESMTP; 31 Mar 2022 22:49:53 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Thu, 31 Mar 2022 22:49:52 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Thu, 31 Mar 2022 22:49:52 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Thu, 31 Mar 2022 22:49:52 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.172)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Thu, 31 Mar 2022 22:49:52 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VE7FF+IzS8tfQlLk/xa5YyPg2Gw7mNIxkQxXTQwz2HYamEejAD4QQ5eoMYB/iUjxDaK/NBNNf3HAz8Kz2s8fc+LVurw4hsj6Scb6+WvVmBkoCgZVS/ECpQMRaE3LzsmTOS8bvnmonEwGsFrbFOpCCy8syR8JJOI58ldDj61M2BfGhcaDY6KZdNiMi5G0weNAJHWOAHyIadJhCu2Qay/NCoRpcpLUceZvutEc8Q+SgznEkL6dr59SJm4u06SSuHAy+QodFjRJAn/N5RFEU559kraxILCjzVCiOGxdnxUo3DthdigRrum4qPUmH7PIeCXyOpjQ3O4kO6tagXGC5PJgxg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BgXQ3D1SuLdpzvd0SWwz++8+VIQyNuNjncimSsO4E3Y=;
+ b=UBVipfoJ7lFkyDki8fcSbzgrBpX3B6PyOOEt/xvxinnlGdxSRQKoG28WyFLW0YnaoPLeyvxNCh+1RaBkj78hIgirVABBfwEeYu6/GldHjBrJCjvNRNDL7BE9YWBWEVJHVbSufQIy+5NUC4fv6aW1ZbdhSftONX6LzTjuUm5KXOB78/KpUBPEiRPBJjPaMVAGaV4lOGdT5De4CSy9N/RSuBG5ZKmktkQ4e1FW2CberS1CNvKcC8VBSme04sEMx4U1RzGADZP/KusRIC6FOor5EHS/eVS5N1LHzzeFwJGQelXp43Fo3Jb80rlQOhswyfNkOZo5IjGSHJfq/ZiyoD0h0g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH0PR11MB5658.namprd11.prod.outlook.com (2603:10b6:510:e2::23)
+ by CY4PR11MB1655.namprd11.prod.outlook.com (2603:10b6:910:f::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.18; Fri, 1 Apr
+ 2022 05:49:49 +0000
+Received: from PH0PR11MB5658.namprd11.prod.outlook.com
+ ([fe80::bc9d:6f72:8bb1:ca36]) by PH0PR11MB5658.namprd11.prod.outlook.com
+ ([fe80::bc9d:6f72:8bb1:ca36%8]) with mapi id 15.20.5123.025; Fri, 1 Apr 2022
+ 05:49:49 +0000
+Message-ID: <041cb131-2a61-afcf-69b8-5c84234935a1@intel.com>
+Date: Fri, 1 Apr 2022 13:49:24 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH RFC v2 02/11] iommu: Add iommu_group_singleton_lockdown()
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+ Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+ "Christoph
+ Hellwig" <hch@infradead.org>, "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Jean-Philippe Brucker
+ <jean-philippe@linaro.com>
+References: <20220329053800.3049561-1-baolu.lu@linux.intel.com>
+ <20220329053800.3049561-3-baolu.lu@linux.intel.com>
+ <BN9PR11MB52760F455B3319789BAB1E0E8C1E9@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <BN9PR11MB52760F455B3319789BAB1E0E8C1E9@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: HK2PR02CA0174.apcprd02.prod.outlook.com
+ (2603:1096:201:1f::34) To PH0PR11MB5658.namprd11.prod.outlook.com
+ (2603:10b6:510:e2::23)
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, David Stevens <stevensd@chromium.org>,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f12c91cd-bbd4-48e5-55cd-08da13a36f45
+X-MS-TrafficTypeDiagnostic: CY4PR11MB1655:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-Microsoft-Antispam-PRVS: <CY4PR11MB16558CC739F4E4904CF38301C3E09@CY4PR11MB1655.namprd11.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gLV25zJwOa4RtjbkT+7SU3ZeOSp/7NkUvBnceA/RnWbWDH1caFSKH+UqdiuBIAL44HZALWPJ3wDx2sfjemp3SQjabv/K1fG9FTTWl6G0Z2ofij9qHvrOF8UiYNW8t86SZDKHOnRTRNW9KBxY+yVBRIlCa/MmZk6dc8JTwYcFT0JiDKAtvQ9dFSFSN0yxVfmShPKKCSuI05sMVQQa/CHHaYkLzvfrX3l5Lb67DQmUZbgVEHs+aWiEvYx+siWnTAudMHMQalLXcYpP8PfGJiFnAqjNpOE5kgx3gI/AuMVanzK9WaCWyPnvXLkBdVl8ftKnTgfAZZiT+LmahBTWgmDLuW4rfmL7v81R27qJVZrwSOjWvdOvleYb7YBfmUh7YmGc+gkHLgJUxtcoVMLBA82qAw/fVxYe2U7gkEjIhzPXj4MC943fU7nHSMUwfsOHk1ymJ3zGTAP/LIni4f9TfwCO/WL84IFvWwJgP1tKQ7sfqAtj+Tels66vwxpkqsn0kdh/Yu8Nvr2BcOkVpXF0KrA4mokoC4JYgjffRI5qDmStry3kzDAN+BAs0o4/0X66cMvOkitXT6xxRn1btnwVfJiyUM28P8kV8PvOEh1g4OWjg44erIfUPz4MhUZwK4u3TRg2Wud+9m1h3zxm0+5GUZ1oVq2kExycq01Armyw91Cc8frh1ntIewNzwhhRAN6aoE3LafJtlfnMeMtWAAuNXfPuy6NC/JwqaSwprk9Uhr2/nTJgbR6X46GW6mPrSb4mCqjs4IRGIruQZbzZWE1LwJRugwBJ6U9Ig1XM1+KxPRHvbJXpkZOMyGtFgzYWwrAAReLSCrQV94ds+g3y2L2LCMkBbA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:PH0PR11MB5658.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(966005)(82960400001)(508600001)(6486002)(6506007)(31696002)(921005)(5660300002)(86362001)(8936002)(7416002)(53546011)(31686004)(6666004)(4326008)(66946007)(316002)(6512007)(36756003)(110136005)(2906002)(54906003)(2616005)(83380400001)(66476007)(38100700002)(66556008)(186003)(26005)(8676002)(43740500002)(45980500001);
+ DIR:OUT; SFP:1102; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eGc5b0JvSHQzeENad0FRcURabXhUQkhhZ3BjVERsRStvU1RkOS9yTjFnaUlY?=
+ =?utf-8?B?M2VqUDFTaVAzS3ZsNk1aUjdQTjVyZUdvRXRHWDNoWEZ6RE1DWCtWRUpnWFJw?=
+ =?utf-8?B?QjhMdzZzY1pISGhOYTVVcktWcWExckVNblF0ZFdRNGd0VTdBaTIzRVgxRlFY?=
+ =?utf-8?B?WXFLRWRpTHhtUFRwY1dmR0JGOW9lUFowZ2RlUVQ0N2JWSnFrRWhyVThNVW14?=
+ =?utf-8?B?eDhxTmgvL1RsSWl2OGhobzhNSGdCakwveSt4ejN1ek5KU3N4QTkxZXRCQXR6?=
+ =?utf-8?B?ZS9TOTdOS2tyalJGSmxPeFFGbkVaaWRidWxjeGI1ZDlRQWhCV3JlYytNOWNq?=
+ =?utf-8?B?R3BPRExFT2RGT2FpOXNxUzhEWlZoVG5KcXdmZHZOTWxwRVVwOGxGb3pVSW1H?=
+ =?utf-8?B?R3JPbEtsaFlHNDFGV3ZwZXBPNTVxRlV3NlllMVMyaHpTMlFlYXFlNVdXbXZE?=
+ =?utf-8?B?UXJyZ1ROZ3B3dDRWRk5pOFo5QllTaUdNQkNCQXhUNWVxZ05nZk1EME41YldW?=
+ =?utf-8?B?Uld6ZlZZUzlKSzRpdldFVldLRWwxTU5NeS9ENG1aOWt0MWsxelZuckQ3Vkcw?=
+ =?utf-8?B?cDFsNjZWRW4zZEphSlJneEZyWGZoOFVBbm1SSDA3UVJXamdlWDU5RmtrdXdo?=
+ =?utf-8?B?dzNzYm1vOWZEbDFjNVBaZGx1R1Z5a3FZT2M4R25IbGwxZ01zWXVUU0NvYk5y?=
+ =?utf-8?B?OHExb0VuelNoSGViaTlSNWRYOGpqTlc3SzBEbTdoK3lBeDdVQUcyTmo4SEM3?=
+ =?utf-8?B?RG9qazRaL3hpWmJseWV5ZjU3bUF1Y1hySWNkVzJidzlpRVVhSGtVbWRjWjVY?=
+ =?utf-8?B?aVY1cGhQSHFaanVOZkpYemlMZFNFaTJOZ0ZkQzZ3cU5RcDh3L21zbnJ1bUpt?=
+ =?utf-8?B?V0xSd1dhRytQUHVpWVVTQ01mbzd0UjZ5WVczMVNaT2xHbkh4TUZmUFoyc2gx?=
+ =?utf-8?B?VjBGUmJvK1FZaTNTZkZGSys5Q0ZhZDZiMFV2ZkhFVnk4Z2w5OHl6dGhKOXc2?=
+ =?utf-8?B?cXFXMlVKRFBnUWthdWl5TndiOE9FTjlJYTBvMGUxb3dkNFFFb05rWDBKVG5j?=
+ =?utf-8?B?UVRQcUxnZCtMQUYyelVjS3ErQThCV0FyRnAwYkUyZTVTei9McGFnRnpITW5I?=
+ =?utf-8?B?eFBGQTZmUFAwQXY4UjRHbThHc1RuMVhHWTNGQXI5M1k5U3Vya2VOU09vTStV?=
+ =?utf-8?B?OFRjbmxuOWRtakZ5Nk8wZHZFZHdUc0ZGZDRYbEpOZi9sQnFTQUI0eGZWNGkx?=
+ =?utf-8?B?c0tXeHJyVU44dUJxOWhZR2xwd2xEdXhZUmlnMGpselBZMHQzZUtERzdSTGRS?=
+ =?utf-8?B?eElNSVdvTzgwaVJlV3NxRUtocjR6cEsvOUZKOHE1Ny96Yk5jS1hqQTMzdXNu?=
+ =?utf-8?B?QmZFZURuUjZkb0RrMW5LVTJuS0RieEFNVzlVbW1zZTA1eE51TWZ5UkorS1R6?=
+ =?utf-8?B?OGZaYUl3SFQxdnhuc3pVMU5GSlVzc3Y2TzM0ZEJydDBuaUVrb3FqSTBiMHRW?=
+ =?utf-8?B?YzJ2empyRTU3S05FTHpaL0hIU1BXZng5aFRNOWhZOWJIL0FCU1lraDBqZzJE?=
+ =?utf-8?B?djJYbjM1eGdrZjFUaE5yRXM4MnhDMHlJclo1Y3d2VG5rb0RGVWY3ejFhYVA0?=
+ =?utf-8?B?ZFZ2RWtpNnFmQnAvUGc4SlZJNlNvUXJ0SExOYVF2S0lremFTaENzOGI1VjVQ?=
+ =?utf-8?B?d2EzTVg4cndRV1pVVGlsQ1BtMXNsYlE2STBId24wZVp5SjcyMkhkMGdoSUJQ?=
+ =?utf-8?B?WXhaNEZyUVVoVkhIVDNNRm1naEw3L3dmN1ZDY1F6c0FlbkM4ckEzZ0c3QWJu?=
+ =?utf-8?B?SDZDdjNabkJVSXptNjFyd0cvdy9zSUplWXZndVRJSFdiQ0JYamJKT1VWSTlp?=
+ =?utf-8?B?WFpnRlRBL3UvZUQxeVhaS29NR2N5bG1IYVZKaDRzN2xWeTZKTUpqZlFJR2ht?=
+ =?utf-8?B?S2dGTWFhUW4rRG9idmZKWmQwUmRiSEVxNGxZOXNBM1RKanZVY1FRb09WTFRE?=
+ =?utf-8?B?N2V0b2VTeXpYWUpWU0UvNmNiVm1VUElxNklkc2VQY1lJWXl1MGdJWmRNZTcz?=
+ =?utf-8?B?am9XeFpScEhoaDI3aFlFNURTamNhSi9BVFYrQW1VNDVrYlVjVTRGUjY3YXps?=
+ =?utf-8?B?QVphbmdWU0RSVUs3UEtPOEExbUhlYURHVmN4NW1GZTdRRlpzTk9hejJyeU91?=
+ =?utf-8?B?VHBGL1JSYWJDNXZuRkdhRFlPcDZNRnpmRFFwUUp4cnZSa085ZGM1a253RUNZ?=
+ =?utf-8?B?eGZNRGUrNjViQVpyKzFISXg0Yno1dzh3dytCdmFveFVwM0JERHRIUDFMblF4?=
+ =?utf-8?B?UW4ydjhOck9CbVJ6TERrdGkyYjJSbzc0RzA3aFVJUE5lZkVZYjhEdz09?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: f12c91cd-bbd4-48e5-55cd-08da13a36f45
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5658.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Apr 2022 05:49:49.6897 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: suV+EuBEJobkgHRIe7QPEsmujsVCKrixwOU+YFESVINnc4rQrhXt7kbpYFi/laJZn1do+N6vvUw5jyE5rt6c0A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR11MB1655
+X-OriginatorOrg: intel.com
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,103 +191,107 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: David Stevens <stevensd@chromium.org>
 
-Calculate the appropriate mask for non-size-aligned page selective
-invalidation. Since psi uses the mask value to mask out the lower order
-bits of the target address, properly flushing the iotlb requires using a
-mask value such that [pfn, pfn+pages) all lie within the flushed
-size-aligned region.  This is not normally an issue because iova.c
-always allocates iovas that are aligned to their size. However, iovas
-which come from other sources (e.g. userspace via VFIO) may not be
-aligned.
+On 2022/3/29 16:42, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Tuesday, March 29, 2022 1:38 PM
+>>
+>> Some of the interfaces in the IOMMU core require that only a single
+>> kernel device driver controls the device in the IOMMU group. The
+>> existing method is to check the device count in the IOMMU group in
+>> the interfaces. This is unreliable because any device added to the
+>> IOMMU group later breaks this assumption without notifying the driver
+>> using the interface. This adds iommu_group_singleton_lockdown() that
+>> checks the requirement and locks down the IOMMU group with only single
+>> device driver bound.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/iommu.c | 30 ++++++++++++++++++------------
+>>   1 file changed, 18 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 0c42ece25854..9fb8a5b4491e 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -48,6 +48,7 @@ struct iommu_group {
+>>   	struct list_head entry;
+>>   	unsigned int owner_cnt;
+>>   	void *owner;
+>> +	bool singleton_lockdown;
+>>   };
+>>
+>>   struct group_device {
+>> @@ -968,15 +969,16 @@ void iommu_group_remove_device(struct device
+>> *dev)
+>>   }
+>>   EXPORT_SYMBOL_GPL(iommu_group_remove_device);
+>>
+>> -static int iommu_group_device_count(struct iommu_group *group)
+>> +/* Callers should hold the group->mutex. */
+>> +static bool iommu_group_singleton_lockdown(struct iommu_group *group)
+>>   {
+>> -	struct group_device *entry;
+>> -	int ret = 0;
+>> -
+>> -	list_for_each_entry(entry, &group->devices, list)
+>> -		ret++;
+>> +	if (group->owner_cnt != 1 ||
+>> +	    group->domain != group->default_domain ||
+>> +	    group->owner)
+>> +		return false;
+> 
+> Curious why there will be a case where group uses default_domain
+> while still having a owner? I have the impression that owner is used
+> for userspace DMA where a different domain is used.
+> 
+>> +	group->singleton_lockdown = true;
+>>
+>> -	return ret;
+>> +	return true;
+>>   }
+> 
+> btw I'm not sure whether this is what SVA requires. IIRC the problem with
+> SVA is because PASID TLP prefix is not counted in PCI packet routing thus
+> a DMA target address with PASID might be treated as P2P if the address
+> falls into the MMIO BAR of other devices in the group. This is why the
+> original code needs to strictly apply SVA in a group containing a single
+> device, instead of a group attached by a single driver, unless we want to
+> reserve those MMIO ranges in CPU VA space.
+> 
+> Jean can correct me if my memory is wrong.
 
-To properly flush the IOTLB, both the start and end pfns need to be
-equal after applying the mask. That means that the most efficient mask
-to use is the index of the lowest bit that is equal where all higher
-bits are also equal. For example, if pfn=0x17f and pages=3, then
-end_pfn=0x181, so the smallest mask we can use is 8. Any differences
-above the highest bit of pages are due to carrying, so by xnor'ing pfn
-and end_pfn and then masking out the lower order bits based on pages, we
-get 0xffffff00, where the first set bit is the mask we want to use.
+I think so. I remember the major gap is PASID info is not used in the PCI's 
+address based TLP routing mechanism. So P2P may happen if the address
+happens to be device MMIO. Per the commit message from Jean. Even for 
+singular groups, it's not an easy thing. So non-sigleton groups are not
+considered so far.
 
-Fixes: 6fe1010d6d9c ("vfio/type1: DMA unmap chunking")
-Cc: stable@vger.kernel.org
-Signed-off-by: David Stevens <stevensd@chromium.org>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
----
-The seeds of the bug were introduced by f76aec76ec7f6, which
-simultaniously added the alignement requirement to the iommu driver and
-made the iova allocator return aligned iovas. However, I don't think
-there was any way to trigger the bug at that time. The tagged VFIO
-change is one that actually introduced a code path that could trigger
-the bug. There may also be other ways to trigger the bug that I am not
-aware of.
+"
+IOMMU groups with more than one device aren't supported for SVA at the
+moment. There may be P2P traffic between devices within a group, which
+cannot be seen by an IOMMU (note that supporting PASID doesn't add any
+form of isolation with regard to P2P). Supporting groups would require
+calling bind() for all bound processes every time a device is added to a
+group, to perform sanity checks (e.g. ensure that new devices support
+PASIDs at least as big as those already allocated in the group). It also
+means making sure that reserved ranges (IOMMU_RESV_*) of all devices are
+carved out of processes. This is already tricky with single devices, but
+becomes very difficult with groups. Since SVA-capable devices are expected
+to be cleanly isolated, and since we don't have any way to test groups or
+hot-plug, we only allow singular groups for now.
+"
 
-v1 -> v2:
- - Calculate an appropriate mask for non-size-aligned iovas instead
-   of falling back to domain selective flush.
-v2 -> v3:
- - Add more detail to commit message.
+https://lore.kernel.org/kvm/20180511190641.23008-3-jean-philippe.brucker@arm.com/
 
- drivers/iommu/intel/iommu.c | 27 ++++++++++++++++++++++++---
- 1 file changed, 24 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 5b196cfe9ed2..ab2273300346 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1717,7 +1717,8 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
- 				  unsigned long pfn, unsigned int pages,
- 				  int ih, int map)
- {
--	unsigned int mask = ilog2(__roundup_pow_of_two(pages));
-+	unsigned int aligned_pages = __roundup_pow_of_two(pages);
-+	unsigned int mask = ilog2(aligned_pages);
- 	uint64_t addr = (uint64_t)pfn << VTD_PAGE_SHIFT;
- 	u16 did = domain->iommu_did[iommu->seq_id];
- 
-@@ -1729,10 +1730,30 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
- 	if (domain_use_first_level(domain)) {
- 		domain_flush_piotlb(iommu, domain, addr, pages, ih);
- 	} else {
-+		unsigned long bitmask = aligned_pages - 1;
-+
-+		/*
-+		 * PSI masks the low order bits of the base address. If the
-+		 * address isn't aligned to the mask, then compute a mask value
-+		 * needed to ensure the target range is flushed.
-+		 */
-+		if (unlikely(bitmask & pfn)) {
-+			unsigned long end_pfn = pfn + pages - 1, shared_bits;
-+
-+			/*
-+			 * Since end_pfn <= pfn + bitmask, the only way bits
-+			 * higher than bitmask can differ in pfn and end_pfn is
-+			 * by carrying. This means after masking out bitmask,
-+			 * high bits starting with the first set bit in
-+			 * shared_bits are all equal in both pfn and end_pfn.
-+			 */
-+			shared_bits = ~(pfn ^ end_pfn) & ~bitmask;
-+			mask = shared_bits ? __ffs(shared_bits) : BITS_PER_LONG;
-+		}
-+
- 		/*
- 		 * Fallback to domain selective flush if no PSI support or
--		 * the size is too big. PSI requires page size to be 2 ^ x,
--		 * and the base address is naturally aligned to the size.
-+		 * the size is too big.
- 		 */
- 		if (!cap_pgsel_inv(iommu->cap) ||
- 		    mask > cap_max_amask_val(iommu->cap))
 -- 
-2.35.1.1094.g7c7d902a7c-goog
-
+Regards,
+Yi Liu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
