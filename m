@@ -1,75 +1,76 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 05C50C433F5
-	for <iommu@archiver.kernel.org>; Fri,  1 Apr 2022 14:43:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B4AB2C433EF
+	for <iommu@archiver.kernel.org>; Fri,  1 Apr 2022 14:44:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9663C60EDF;
-	Fri,  1 Apr 2022 14:43:20 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 6DFEF83408;
+	Fri,  1 Apr 2022 14:44:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3aOjjalUTW02; Fri,  1 Apr 2022 14:43:19 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id iyvK6zWr46rY; Fri,  1 Apr 2022 14:44:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 088C960E95;
-	Fri,  1 Apr 2022 14:43:18 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 2B0DA833D3;
+	Fri,  1 Apr 2022 14:44:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A7B24C002C;
-	Fri,  1 Apr 2022 14:43:18 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1AEDCC0012
- for <iommu@lists.linux-foundation.org>; Fri,  1 Apr 2022 14:43:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F3842C002C;
+	Fri,  1 Apr 2022 14:44:00 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CD6A9C0012
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Apr 2022 14:43:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 05BCE60E95
- for <iommu@lists.linux-foundation.org>; Fri,  1 Apr 2022 14:43:17 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id C9068405EB
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Apr 2022 14:43:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ArNhkT1aAAJD for <iommu@lists.linux-foundation.org>;
- Fri,  1 Apr 2022 14:43:16 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ZIG55CkJ5gd6 for <iommu@lists.linux-foundation.org>;
+ Fri,  1 Apr 2022 14:43:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org
- [IPv6:2604:1380:4601:e00::1])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 106A960E93
- for <iommu@lists.linux-foundation.org>; Fri,  1 Apr 2022 14:43:15 +0000 (UTC)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id EDB71405C4
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Apr 2022 14:43:58 +0000 (UTC)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id 7B83EB82370;
- Fri,  1 Apr 2022 14:43:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 758FDC2BBE4;
- Fri,  1 Apr 2022 14:43:11 +0000 (UTC)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id 465D460AC9;
+ Fri,  1 Apr 2022 14:43:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AC80C34112;
+ Fri,  1 Apr 2022 14:43:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1648824192;
- bh=JnF4kJS7E34D+Ls3+jnc6FhaP0lY3jxcchq/2J9G21c=;
+ s=k20201202; t=1648824237;
+ bh=5SOjOQu++aaei18q5/nxEsl1dvMapYKvR0+id35pwL4=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=WyJQYVu8DEgRxDBHvEH9uQTpic/37OoThUWlTzbsYEUkascSGjMy2iDkUBZBUe+Xm
- kJrPmLIN7JhjzUw24Q9xMP8b/aJPRn8yNQhLOWBlpIzti16OepyUugzcmmkACAabNw
- Mh7pY558S/uiqTSOb53NMdHIkPGTebnPbKhgDLZomXbnVVQj5J7jfx+q4zgJCkXtS5
- rFE/VdLhJtP5cKwUl41zMDMnFD8QPHUYGa6yOV60JC8nI95+3uU30Vrr9jpH05q2KT
- yHMuFl0NOXePtAcMiD+bN9hoCVGcM22ayF3wodofJEspzCWTrMm5Xi9vWRWsL+w/rS
- i4hHuZXvCNWaw==
+ b=ZlCGCs1/OktvkGqhMLlxR27e9HsUqFFowQAkpJKzVzM3PmHByLpydrwPy6ktEgK+U
+ 4O9nqQRqukv8Nb1BojmaTEkDWECTrM/hRa1zpLCuIE4GHK7h6yrCEnUT7KAtH+420V
+ YU9Nhe8qk6L0UU5DUW2azs+k0GHGXLUxcAW4iMJZGZC32FJ9usZ36jfokLOpnc5D5S
+ G0m5jQr4Ve7ZIcuQnEaASAfHWVU0E86RYneQiJ4S3OielVqyNI51dFrShPHoqTQe/Y
+ qsrX+nDKOchz0GbRGQeeaW5yTEy1y0vMDZ52l2lNbMTJszf9396ATnhYD7aRXBVOO2
+ oaHVlC+NThdNQ==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 22/65] iommu/arm-smmu-v3: fix event handling soft
- lockup
-Date: Fri,  1 Apr 2022 10:41:23 -0400
-Message-Id: <20220401144206.1953700-22-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 45/65] iommu/iova: Improve 32-bit free space
+ estimate
+Date: Fri,  1 Apr 2022 10:41:46 -0400
+Message-Id: <20220401144206.1953700-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
 References: <20220401144206.1953700-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, jean-philippe@linaro.org,
- robin.murphy@arm.com, iommu@lists.linux-foundation.org,
- christophe.jaillet@wanadoo.fr, Zhou Guanghui <zhouguanghui1@huawei.com>,
- tglx@linutronix.de, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org
+Cc: Sasha Levin <sashal@kernel.org>, Joerg Roedel <jroedel@suse.de>,
+ will@kernel.org, Yunfei Wang <yf.wang@mediatek.com>,
+ iommu@lists.linux-foundation.org, Miles Chen <miles.chen@mediatek.com>,
+ linux-mediatek@lists.infradead.org, matthias.bgg@gmail.com,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,53 +88,54 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Zhou Guanghui <zhouguanghui1@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
 
-[ Upstream commit 30de2b541af98179780054836b48825fcfba4408 ]
+[ Upstream commit 5b61343b50590fb04a3f6be2cdc4868091757262 ]
 
-During event processing, events are read from the event queue one
-by one until the queue is empty.If the master device continuously
-requests address access at the same time and the SMMU generates
-events, the cyclic processing of the event takes a long time and
-softlockup warnings may be reported.
+For various reasons based on the allocator behaviour and typical
+use-cases at the time, when the max32_alloc_size optimisation was
+introduced it seemed reasonable to couple the reset of the tracked
+size to the update of cached32_node upon freeing a relevant IOVA.
+However, since subsequent optimisations focused on helping genuine
+32-bit devices make best use of even more limited address spaces, it
+is now a lot more likely for cached32_node to be anywhere in a "full"
+32-bit address space, and as such more likely for space to become
+available from IOVAs below that node being freed.
 
-arm-smmu-v3 arm-smmu-v3.34.auto: event 0x0a received:
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00007f220000280a
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x000010000000007e
-arm-smmu-v3 arm-smmu-v3.34.auto: 	0x00000000034e8670
-watchdog: BUG: soft lockup - CPU#0 stuck for 22s! [irq/268-arm-smm:247]
-Call trace:
- _dev_info+0x7c/0xa0
- arm_smmu_evtq_thread+0x1c0/0x230
- irq_thread_fn+0x30/0x80
- irq_thread+0x128/0x210
- kthread+0x134/0x138
- ret_from_fork+0x10/0x1c
-Kernel panic - not syncing: softlockup: hung tasks
+At this point, the short-cut in __cached_rbnode_delete_update() really
+doesn't hold up any more, and we need to fix the logic to reliably
+provide the expected behaviour. We still want cached32_node to only move
+upwards, but we should reset the allocation size if *any* 32-bit space
+has become available.
 
-Fix this by calling cond_resched() after the event information is
-printed.
-
-Signed-off-by: Zhou Guanghui <zhouguanghui1@huawei.com>
-Link: https://lore.kernel.org/r/20220119070754.26528-1-zhouguanghui1@huawei.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Reported-by: Yunfei Wang <yf.wang@mediatek.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Miles Chen <miles.chen@mediatek.com>
+Link: https://lore.kernel.org/r/033815732d83ca73b13c11485ac39336f15c3b40.1646318408.git.robin.murphy@arm.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/iova.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 7067b7c11626..483c1362cc4a 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1368,6 +1368,7 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 				dev_info(smmu->dev, "\t0x%016llx\n",
- 					 (unsigned long long)evt[i]);
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 1164d1a42cbc..4600e97acb26 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -138,10 +138,11 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+ 	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
+ 	if (free == cached_iova ||
+ 	    (free->pfn_hi < iovad->dma_32bit_pfn &&
+-	     free->pfn_lo >= cached_iova->pfn_lo)) {
++	     free->pfn_lo >= cached_iova->pfn_lo))
+ 		iovad->cached32_node = rb_next(&free->node);
++
++	if (free->pfn_lo < iovad->dma_32bit_pfn)
+ 		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
+-	}
  
-+			cond_resched();
- 		}
- 
- 		/*
+ 	cached_iova = rb_entry(iovad->cached_node, struct iova, node);
+ 	if (free->pfn_lo >= cached_iova->pfn_lo)
 -- 
 2.34.1
 
