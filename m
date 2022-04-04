@@ -1,68 +1,66 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 46FC1C433F5
-	for <iommu@archiver.kernel.org>; Mon,  4 Apr 2022 10:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 453F1C433F5
+	for <iommu@archiver.kernel.org>; Mon,  4 Apr 2022 10:07:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 021B340183;
-	Mon,  4 Apr 2022 10:07:13 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0A11A60C34;
+	Mon,  4 Apr 2022 10:07:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id irKcq-9QtyuW; Mon,  4 Apr 2022 10:07:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id A72E74002B;
-	Mon,  4 Apr 2022 10:07:11 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id twyJ5zFsV9v9; Mon,  4 Apr 2022 10:07:25 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id CF5EC607F7;
+	Mon,  4 Apr 2022 10:07:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A144C002C;
-	Mon,  4 Apr 2022 10:07:11 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4AD03C0012
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 10:07:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B7CFFC002C;
+	Mon,  4 Apr 2022 10:07:24 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B4094C0012
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 10:07:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4709360C1C
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 10:07:10 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id A1E4C60C1C
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 10:07:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=amd.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2BG4IrVgfzIE for <iommu@lists.linux-foundation.org>;
- Mon,  4 Apr 2022 10:07:08 +0000 (UTC)
+ with ESMTP id e2a-nTH63iHW for <iommu@lists.linux-foundation.org>;
+ Mon,  4 Apr 2022 10:07:22 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on20607.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e88::607])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 4738C607F7
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 10:07:08 +0000 (UTC)
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam12on20618.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:fe59::618])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 69C70607F7
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 10:07:22 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=V2HloUseoV5nV1hYz650oYPtJwRAtLUNDS7Tc3OoBxVMMXusywXjjRUcsb8o2laBUzsX4uC5ifKtis6IPvExU2ekNkjHQ0wlizaVUk9xWY3GU8eUpqsQWPDMA2NZuMNKYwsSZIdmUY9yaNS1iNIsmF7mI/M4GvWAdeiA0CAIWC6H9kNcbR3sVj5TNb14v2zSkMt4i0kaYXFuFX8IkYYAI3fVycC28kbnUzSr4LMQ0jGCNNDFemcGMWzqv/pSnWKbA0hS657PouIKtJHYA9wGq3W7U+9ztnbE/qV1Tpztpd4dndV5PvUCIw3DIJw3yW6cn+2efAqDwR0PcDwhwmIxiQ==
+ b=KmaxQSFKfNSEzqYQRE8JBdpA52PaaKb7+AB8T42CfRO92v8S2sdZxgOHgKj/nsM71QA2hb8Vcwlb1VjcOATZyBudU1WQnjge3Op7xkB3c9pllj1GrCnjjoesYfNisRiyqWorc6rZOSN5zoAxEPZqoYyQCRdwybWS04/CdFdFmY++82GKLd/ci0sK9ms9wxdTxEHFfMqvstTkHZXcbkjMxWwj98poRiIV61nCooSVdIU9KIpZLeE2wEfTsQArUq0he/jwKDtYaL/QqzEAcrd40vazvHkR7L1I4OYdf7OSKrf3ZKoqLrP0iRBE8fSH/LTXYHBaorkAl/wn8VvKuAdlnA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jEUqQ9HuyZ/Xz4Qi0Og+utfZ7M+Qu91OqZoJUEvtY0w=;
- b=DteSFilM1q42VoDHIdz0zyKr0h/+i4yWyu9cAquIF2lIv8C46Ve8QzKTESHidNu14wW2F7Gl1Brkq8KNCHkdB9ag33z8Bdtuk4sckDqZo3pHSYGcVU7gjJiJjL93Yclni2DSnQHswmVz+oUa78+dtFtBLo16Fx/i8xgayyWcTZ+gA709EfXzhlpXVq83yCXZ1E/UHwJU3CTukJBVXjb3qUme+XxQTYZ+b64EMw9Te8AekWSGdJ09+ukoHH808Ph1GeuOga5ZUbc/yc+3Fwq/LSPozY/HWBM3k9kYCZY3Gogj48l3206BMsGusHik4ztPnpp4aDGwHuTMcKyKk7Xq+g==
+ bh=rNyuNsG4dqE2MGdVLyYDxh9R4wFd6sJoo5h7z7j2eZA=;
+ b=CXw75v6upFkuJgrJdUwjHNLsYyCz32OO2tDHLVAaWJaWQOo80pVzyxbVcIjvgRf02nqlbFGPU3Zkzfk5PlNIVCm2b1wQ836NuYgiCGYbqyv4PP3HtY0/+cy+5H3/GXfW/w4vYPlqsoIboy8tVSGaB5Xz1Pwe4juCj2LX1+pLCfxPiGbMVF97l/4WwVj78yWLHqaIdANoHfoMkKT8EH5Fanr6cwWxPkd60aiPJCeRur7wFihjtasOAXbkH40Ku4KLZPMmHAGjP0sD+F4Ta07W6TIKce2gaqtRRBe0lGfIaQKsZmzd41v/mEuhq/8L5yK+7AELJGV+jF8L06r2E/XuxA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux-foundation.org
  smtp.mailfrom=amd.com; dmarc=pass (p=quarantine sp=quarantine pct=100)
  action=none header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jEUqQ9HuyZ/Xz4Qi0Og+utfZ7M+Qu91OqZoJUEvtY0w=;
- b=AUy0Y3wVpmjkWVRrP0uQFdKa/mdlk5DMVwR/XWbWCd5BQqj9gvor00wBDBJPfdehOqfeYyzwhL5/6NPnTMHUqxddzy9m58oHfBs18STPBgVyzM6iSgCYrkx4yTe59S2QtnYcgdukLsKJHJt4ICVr+fXZh8kcoHrm2QddpDNbonU=
-Received: from MW4PR03CA0090.namprd03.prod.outlook.com (2603:10b6:303:b6::35)
- by DM6PR12MB4973.namprd12.prod.outlook.com (2603:10b6:5:1b7::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
- 2022 10:07:06 +0000
-Received: from CO1NAM11FT011.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b6:cafe::e6) by MW4PR03CA0090.outlook.office365.com
- (2603:10b6:303:b6::35) with Microsoft SMTP Server (version=TLS1_2,
+ bh=rNyuNsG4dqE2MGdVLyYDxh9R4wFd6sJoo5h7z7j2eZA=;
+ b=COAHLQQERDHGxKw88cKng/Xasu9YIP681XKmejUzarniZZ7s83anngIYNfDI+ob0er5xNlWKE0GNabV7SZ9sS/ugx4l1jguvAUnBBUcdtx5I7khdLAJiSDCzNKmOqpkzVI0p88RwOn5Ob3GbYaw+sYJbaSEKJJJfrk1BpU1XOeI=
+Received: from MW4PR03CA0056.namprd03.prod.outlook.com (2603:10b6:303:8e::31)
+ by DM4PR12MB5769.namprd12.prod.outlook.com (2603:10b6:8:60::6) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5123.31; Mon, 4 Apr 2022 10:07:20 +0000
+Received: from CO1NAM11FT064.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8e:cafe::4e) by MW4PR03CA0056.outlook.office365.com
+ (2603:10b6:303:8e::31) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
- Transport; Mon, 4 Apr 2022 10:07:05 +0000
+ Transport; Mon, 4 Apr 2022 10:07:20 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -70,17 +68,18 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT011.mail.protection.outlook.com (10.13.175.186) with Microsoft SMTP
+ CO1NAM11FT064.mail.protection.outlook.com (10.13.175.77) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5123.19 via Frontend Transport; Mon, 4 Apr 2022 10:07:04 +0000
+ 15.20.5123.19 via Frontend Transport; Mon, 4 Apr 2022 10:07:19 +0000
 Received: from kali.amdval.net (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Apr
- 2022 05:07:02 -0500
+ 2022 05:07:17 -0500
 To: <iommu@lists.linux-foundation.org>, <joro@8bytes.org>
-Subject: [RESEND PATCH v1 25/37] iommu/amd: Update (un)init_device_table_dma()
-Date: Mon, 4 Apr 2022 15:30:11 +0530
-Message-ID: <20220404100023.324645-26-vasant.hegde@amd.com>
+Subject: [RESEND PATCH v1 26/37] iommu/amd: Update set_dev_entry_bit() and
+ get_dev_entry_bit()
+Date: Mon, 4 Apr 2022 15:30:12 +0530
+Message-ID: <20220404100023.324645-27-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220404100023.324645-1-vasant.hegde@amd.com>
 References: <20220404100023.324645-1-vasant.hegde@amd.com>
@@ -90,27 +89,27 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: aa35828b-db18-42c5-25fe-08da1622ded4
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4973:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB49739D94F8235AF839C14B7B87E59@DM6PR12MB4973.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 23991341-eb3d-413b-96b7-08da1622e7a3
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5769:EE_
+X-Microsoft-Antispam-PRVS: <DM4PR12MB5769F2556616D57EF0750E4387E59@DM4PR12MB5769.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GH/s0pEIxS+AY9wjTYNBlt1rA6eu5UCCLumVZlFB2yx5jZRKUqFeRLhdHFD0Ceb08PtnxO7tl+j0uS4htua8RoelBklu7g8KZwTI56cD9emJdmJdHibqFAZj/TZ4qMtZOy7pj6Xxdchg/1hJEPBlW0F7OvZ5ja4/3Mfbq0nwL3cqRZrqu+yZwWGus7zoTrXKuKZBLrO01TxUWkMx5YLLd0/Gb1lvBhFY7tFGFXW0vuAYBZ/peSJaISEO+i3XnAwCScyHddb2+hvLzTJnr+C3rC+ea/BVHzwJCquC4/4l8g2Dx5kMN7falUS91Z48OvyzKuB0GZgO1NV/KWf55YKSw2vDNQa6M8D5vj2jn5wbklq1FY6IsuotPN9Q3/AxYkueIPWwENcG0S4bRQYAskOcO81ZR1Vuf2g2jdwLz36OoClCAVjQYbPaE1bOgqdJwAxTs/ZuXYBoNDIAeMdGtuyRv2revrFDzidnLIraz2XSIkparfE3Z1FmxEhNPyuZ4mPM5sUwZMHBT0jfp8jG45Z0sHKWnhY5SriNsk2oEZFW7FCHliNzQKdH80advIiljP9OWrw3bvSzCRm7Ys2jcecocuoWqibuPI2PjJ1L4J9gVXyUeobTEn0ZBKOzhMV2hlahEdB8eVxNQWlWm3ESFAxNC++/3ng6uGQPTF46m4kxNBRScYiiL3Do6CfAzbfVyaRZArgat3b4g7uqJITtO2Y3yQ==
+X-Microsoft-Antispam-Message-Info: XPjvKCPRrDSVxrJa97NHm0qkgUkmYlNl9uviw/2p4aenT25HPP1VQQZBWYnNwklU2G7M6CD0VGRFCyaY6LHzXcZrO9qqXO0RddeRgQhfhLqz2h4EI/Nmg0xXAqqZI1i5Cexm+UlNeVmx61NL/DYzIC5mKAzSovG+aG1a+zvjSK/PhlIipuWGmXRvknE7L0ZOfXB+vXTeBUby4JQbP1ZeE/K0eckXsYmupsqBqufNUyGmfZfJv7/eVGwaH279NDXYw+jr+zYn5KOng27LjdrsmIQXfvjqvboSeHqW5O98IQTe/ZttEfqRsxTiwLwSdwH1h32A84LdBm3LcAdhNYLTnY0gLLKoOk5FRFDgCyGPAp4RBh9GoQfhtQH9RstyWDiFtDIpgdn7P4g7VRI8edKhPdQAFgSow4WPO4zDMarc3LUe5oSPUv2YyFGZ8Nkjk9e/cHLWwHompudHDCnJw122RBfvC20F4h1iOjPI5Oj/ljefXqEBIc7IUT8LfCl5/uD0mHO6So2VFY++jLtW8SGEgUPBJnHodBGVQ7PA9GCzCwhHzguK60VE+sqC7LWVKhvQp6pINCzGke0V34uifVXEIOZ/dNccXapDdmJv2nCZeeD0WIa51MQJ3nQC+jJUNEZVgtvb+ZHqLrK8MZkeyski0jKB6OBkr3IQ8fkYFCKnCOfYptERJLFipTJXwZUsCrL+tQpuGij+8cgh5tRIu4Ei2w==
 X-Forefront-Antispam-Report: CIP:165.204.84.17; CTRY:US; LANG:en; SCL:1; SRV:;
  IPV:CAL; SFV:NSPM; H:SATLEXMB04.amd.com; PTR:InfoDomainNonexistent; CAT:NONE;
- SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(86362001)(2906002)(6666004)(83380400001)(16526019)(47076005)(8676002)(70586007)(70206006)(36756003)(54906003)(110136005)(81166007)(4326008)(316002)(8936002)(36860700001)(508600001)(5660300002)(1076003)(426003)(336012)(82310400004)(44832011)(356005)(2616005)(26005)(186003)(40460700003)(36900700001);
+ SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(16526019)(336012)(26005)(186003)(426003)(1076003)(86362001)(5660300002)(6666004)(508600001)(2616005)(82310400004)(70586007)(70206006)(36860700001)(4326008)(40460700003)(8936002)(2906002)(54906003)(356005)(36756003)(83380400001)(110136005)(316002)(47076005)(81166007)(44832011)(8676002)(36900700001);
  DIR:OUT; SFP:1101; 
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 10:07:04.7772 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa35828b-db18-42c5-25fe-08da1622ded4
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 10:07:19.5272 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23991341-eb3d-413b-96b7-08da1622e7a3
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d; Ip=[165.204.84.17];
  Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT011.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT064.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4973
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5769
 Cc: Vasant Hegde <vasant.hegde@amd.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -133,96 +132,173 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
-Include struct amd_iommu_pci_seg as a function parameter since
-we need to access per PCI segment device table.
+To include a pointer to per PCI segment device table.
+
+Also include struct amd_iommu as one of the function parameter to
+amd_iommu_apply_erratum_63() since it is needed when setting up DTE.
 
 Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
 Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/iommu/amd/init.c | 27 ++++++++++++++++++++-------
- 1 file changed, 20 insertions(+), 7 deletions(-)
+ drivers/iommu/amd/amd_iommu.h |  2 +-
+ drivers/iommu/amd/init.c      | 59 +++++++++++++++++++++++------------
+ drivers/iommu/amd/iommu.c     |  2 +-
+ 3 files changed, 41 insertions(+), 22 deletions(-)
 
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index 2947239700ce..64c954e168d7 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -13,7 +13,7 @@
+ 
+ extern irqreturn_t amd_iommu_int_thread(int irq, void *data);
+ extern irqreturn_t amd_iommu_int_handler(int irq, void *data);
+-extern void amd_iommu_apply_erratum_63(u16 devid);
++extern void amd_iommu_apply_erratum_63(struct amd_iommu *iommu, u16 devid);
+ extern void amd_iommu_restart_event_logging(struct amd_iommu *iommu);
+ extern int amd_iommu_init_devices(void);
+ extern void amd_iommu_uninit_devices(void);
 diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 70eb6338b45d..dba1e03e0cd2 100644
+index dba1e03e0cd2..b2ddf407e967 100644
 --- a/drivers/iommu/amd/init.c
 +++ b/drivers/iommu/amd/init.c
-@@ -238,7 +238,7 @@ static enum iommu_init_state init_state = IOMMU_START_STATE;
+@@ -988,22 +988,37 @@ static void iommu_enable_gt(struct amd_iommu *iommu)
+ }
  
- static int amd_iommu_enable_interrupts(void);
- static int __init iommu_go_to_state(enum iommu_init_state state);
--static void init_device_table_dma(void);
-+static void init_device_table_dma(struct amd_iommu_pci_seg *pci_seg);
- 
- static bool amd_iommu_pre_enabled = true;
- 
-@@ -2115,6 +2115,7 @@ static void print_iommu_info(void)
- static int __init amd_iommu_init_pci(void)
+ /* sets a specific bit in the device table entry. */
+-static void set_dev_entry_bit(u16 devid, u8 bit)
++static void __set_dev_entry_bit(struct dev_table_entry *dev_table,
++				u16 devid, u8 bit)
  {
- 	struct amd_iommu *iommu;
+ 	int i = (bit >> 6) & 0x03;
+ 	int _bit = bit & 0x3f;
+ 
+-	amd_iommu_dev_table[devid].data[i] |= (1UL << _bit);
++	dev_table[devid].data[i] |= (1UL << _bit);
+ }
+ 
+-static int get_dev_entry_bit(u16 devid, u8 bit)
++static void set_dev_entry_bit(struct amd_iommu *iommu, u16 devid, u8 bit)
++{
++	struct dev_table_entry *dev_table = get_dev_table(iommu);
++
++	return __set_dev_entry_bit(dev_table, devid, bit);
++}
++
++static int __get_dev_entry_bit(struct dev_table_entry *dev_table,
++			       u16 devid, u8 bit)
+ {
+ 	int i = (bit >> 6) & 0x03;
+ 	int _bit = bit & 0x3f;
+ 
+-	return (amd_iommu_dev_table[devid].data[i] & (1UL << _bit)) >> _bit;
++	return (dev_table[devid].data[i] & (1UL << _bit)) >> _bit;
+ }
+ 
++static int get_dev_entry_bit(struct amd_iommu *iommu, u16 devid, u8 bit)
++{
++	struct dev_table_entry *dev_table = get_dev_table(iommu);
++
++	return __get_dev_entry_bit(dev_table, devid, bit);
++}
+ 
+ static bool __copy_device_table(struct amd_iommu *iommu)
+ {
+@@ -1122,15 +1137,15 @@ static bool copy_device_table(void)
+ 	return true;
+ }
+ 
+-void amd_iommu_apply_erratum_63(u16 devid)
++void amd_iommu_apply_erratum_63(struct amd_iommu *iommu, u16 devid)
+ {
+ 	int sysmgt;
+ 
+-	sysmgt = get_dev_entry_bit(devid, DEV_ENTRY_SYSMGT1) |
+-		 (get_dev_entry_bit(devid, DEV_ENTRY_SYSMGT2) << 1);
++	sysmgt = get_dev_entry_bit(iommu, devid, DEV_ENTRY_SYSMGT1) |
++		 (get_dev_entry_bit(iommu, devid, DEV_ENTRY_SYSMGT2) << 1);
+ 
+ 	if (sysmgt == 0x01)
+-		set_dev_entry_bit(devid, DEV_ENTRY_IW);
++		set_dev_entry_bit(iommu, devid, DEV_ENTRY_IW);
+ }
+ 
+ /* Writes the specific IOMMU for a device into the rlookup table */
+@@ -1147,21 +1162,21 @@ static void __init set_dev_entry_from_acpi(struct amd_iommu *iommu,
+ 					   u16 devid, u32 flags, u32 ext_flags)
+ {
+ 	if (flags & ACPI_DEVFLAG_INITPASS)
+-		set_dev_entry_bit(devid, DEV_ENTRY_INIT_PASS);
++		set_dev_entry_bit(iommu, devid, DEV_ENTRY_INIT_PASS);
+ 	if (flags & ACPI_DEVFLAG_EXTINT)
+-		set_dev_entry_bit(devid, DEV_ENTRY_EINT_PASS);
++		set_dev_entry_bit(iommu, devid, DEV_ENTRY_EINT_PASS);
+ 	if (flags & ACPI_DEVFLAG_NMI)
+-		set_dev_entry_bit(devid, DEV_ENTRY_NMI_PASS);
++		set_dev_entry_bit(iommu, devid, DEV_ENTRY_NMI_PASS);
+ 	if (flags & ACPI_DEVFLAG_SYSMGT1)
+-		set_dev_entry_bit(devid, DEV_ENTRY_SYSMGT1);
++		set_dev_entry_bit(iommu, devid, DEV_ENTRY_SYSMGT1);
+ 	if (flags & ACPI_DEVFLAG_SYSMGT2)
+-		set_dev_entry_bit(devid, DEV_ENTRY_SYSMGT2);
++		set_dev_entry_bit(iommu, devid, DEV_ENTRY_SYSMGT2);
+ 	if (flags & ACPI_DEVFLAG_LINT0)
+-		set_dev_entry_bit(devid, DEV_ENTRY_LINT0_PASS);
++		set_dev_entry_bit(iommu, devid, DEV_ENTRY_LINT0_PASS);
+ 	if (flags & ACPI_DEVFLAG_LINT1)
+-		set_dev_entry_bit(devid, DEV_ENTRY_LINT1_PASS);
++		set_dev_entry_bit(iommu, devid, DEV_ENTRY_LINT1_PASS);
+ 
+-	amd_iommu_apply_erratum_63(devid);
++	amd_iommu_apply_erratum_63(iommu, devid);
+ 
+ 	set_iommu_for_device(iommu, devid);
+ }
+@@ -2519,8 +2534,8 @@ static void init_device_table_dma(struct amd_iommu_pci_seg *pci_seg)
+ 		return;
+ 
+ 	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
+-		set_dev_entry_bit(devid, DEV_ENTRY_VALID);
+-		set_dev_entry_bit(devid, DEV_ENTRY_TRANSLATION);
++		__set_dev_entry_bit(dev_table, devid, DEV_ENTRY_VALID);
++		__set_dev_entry_bit(dev_table, devid, DEV_ENTRY_TRANSLATION);
+ 	}
+ }
+ 
+@@ -2540,13 +2555,17 @@ static void __init uninit_device_table_dma(struct amd_iommu_pci_seg *pci_seg)
+ 
+ static void init_device_table(void)
+ {
 +	struct amd_iommu_pci_seg *pci_seg;
- 	int ret;
- 
- 	for_each_iommu(iommu) {
-@@ -2145,7 +2146,8 @@ static int __init amd_iommu_init_pci(void)
- 		goto out;
- 	}
- 
--	init_device_table_dma();
-+	for_each_pci_segment(pci_seg)
-+		init_device_table_dma(pci_seg);
- 
- 	for_each_iommu(iommu)
- 		iommu_flush_all_caches(iommu);
-@@ -2508,9 +2510,13 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
- /*
-  * Init the device table to not allow DMA access for devices
-  */
--static void init_device_table_dma(void)
-+static void init_device_table_dma(struct amd_iommu_pci_seg *pci_seg)
- {
  	u32 devid;
-+	struct dev_table_entry *dev_table = pci_seg->dev_table;
-+
-+	if (dev_table == NULL)
-+		return;
  
- 	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
- 		set_dev_entry_bit(devid, DEV_ENTRY_VALID);
-@@ -2518,13 +2524,17 @@ static void init_device_table_dma(void)
- 	}
+ 	if (!amd_iommu_irq_remap)
+ 		return;
+ 
+-	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid)
+-		set_dev_entry_bit(devid, DEV_ENTRY_IRQ_TBL_EN);
++	for_each_pci_segment(pci_seg) {
++		for (devid = 0; devid <= amd_iommu_last_bdf; ++devid)
++			__set_dev_entry_bit(pci_seg->dev_table,
++					    devid, DEV_ENTRY_IRQ_TBL_EN);
++	}
  }
  
--static void __init uninit_device_table_dma(void)
-+static void __init uninit_device_table_dma(struct amd_iommu_pci_seg *pci_seg)
- {
- 	u32 devid;
-+	struct dev_table_entry *dev_table = pci_seg->dev_table;
-+
-+	if (dev_table == NULL)
-+		return;
+ static void iommu_init_flags(struct amd_iommu *iommu)
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index dad84f76c1a0..7fb9e9a3291b 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1604,7 +1604,7 @@ static void clear_dte_entry(struct amd_iommu *iommu, u16 devid)
+ 	dev_table[devid].data[0]  = DTE_FLAG_V | DTE_FLAG_TV;
+ 	dev_table[devid].data[1] &= DTE_FLAG_MASK;
  
- 	for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
--		amd_iommu_dev_table[devid].data[0] = 0ULL;
--		amd_iommu_dev_table[devid].data[1] = 0ULL;
-+		dev_table[devid].data[0] = 0ULL;
-+		dev_table[devid].data[1] = 0ULL;
- 	}
+-	amd_iommu_apply_erratum_63(devid);
++	amd_iommu_apply_erratum_63(iommu, devid);
  }
  
-@@ -3117,8 +3127,11 @@ static int __init state_next(void)
- 			free_iommu_resources();
- 		} else {
- 			struct amd_iommu *iommu;
-+			struct amd_iommu_pci_seg *pci_seg;
-+
-+			for_each_pci_segment(pci_seg)
-+				uninit_device_table_dma(pci_seg);
- 
--			uninit_device_table_dma();
- 			for_each_iommu(iommu)
- 				iommu_flush_all_caches(iommu);
- 		}
+ static void do_attach(struct iommu_dev_data *dev_data,
 -- 
 2.27.0
 
