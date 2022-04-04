@@ -4,53 +4,54 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 82B79C433FE
-	for <iommu@archiver.kernel.org>; Mon,  4 Apr 2022 12:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 58F63C433EF
+	for <iommu@archiver.kernel.org>; Mon,  4 Apr 2022 12:44:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 25DFF81331;
-	Mon,  4 Apr 2022 12:44:23 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 24B8D813DA;
+	Mon,  4 Apr 2022 12:44:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7ThEhxDb9Rij; Mon,  4 Apr 2022 12:44:22 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id E8ACA812FC;
-	Mon,  4 Apr 2022 12:44:21 +0000 (UTC)
+	with ESMTP id q7_S7ZHztt5l; Mon,  4 Apr 2022 12:44:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 1E1D881380;
+	Mon,  4 Apr 2022 12:44:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B7C20C001D;
-	Mon,  4 Apr 2022 12:44:21 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F2CF3C0012
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 12:44:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EC52BC001D;
+	Mon,  4 Apr 2022 12:44:31 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 40CB6C0012
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 12:44:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id EE8594032E
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 12:44:19 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 1EFD640320
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 12:44:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 214rUI9wo1ST for <iommu@lists.linux-foundation.org>;
- Mon,  4 Apr 2022 12:44:19 +0000 (UTC)
+ with ESMTP id yabgjtuTZeGR for <iommu@lists.linux-foundation.org>;
+ Mon,  4 Apr 2022 12:44:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
  [185.176.79.56])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 455D1401F2
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 12:44:19 +0000 (UTC)
-Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.201])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KX9Qz6r20z685ZZ;
- Mon,  4 Apr 2022 20:42:35 +0800 (CST)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 5376C401F2
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 12:44:29 +0000 (UTC)
+Received: from fraeml715-chm.china.huawei.com (unknown [172.18.147.206])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KX9Qq2SdKz68652;
+ Mon,  4 Apr 2022 20:42:27 +0800 (CST)
 Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
+ fraeml715-chm.china.huawei.com (10.206.15.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 4 Apr 2022 14:44:17 +0200
+ 15.1.2375.24; Mon, 4 Apr 2022 14:44:27 +0200
 Received: from A2006125610.china.huawei.com (10.47.93.34) by
  lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 4 Apr 2022 13:44:08 +0100
+ 15.1.2375.24; Mon, 4 Apr 2022 13:44:18 +0100
 To: <linux-arm-kernel@lists.infradead.org>, <linux-acpi@vger.kernel.org>,
  <iommu@lists.linux-foundation.org>
-Subject: [PATCH v9 08/11] iommu/arm-smmu-v3: Introduce strtab init helper
-Date: Mon, 4 Apr 2022 13:42:06 +0100
-Message-ID: <20220404124209.1086-9-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v9 09/11] iommu/arm-smmu-v3: Refactor
+ arm_smmu_init_bypass_stes() to force bypass
+Date: Mon, 4 Apr 2022 13:42:07 +0100
+Message-ID: <20220404124209.1086-10-shameerali.kolothum.thodi@huawei.com>
 X-Mailer: git-send-email 2.12.0.windows.1
 In-Reply-To: <20220404124209.1086-1-shameerali.kolothum.thodi@huawei.com>
 References: <20220404124209.1086-1-shameerali.kolothum.thodi@huawei.com>
@@ -81,62 +82,67 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Introduce a helper to check the sid range and to init the l2 strtab
-entries(bypass). This will be useful when we have to initialize the
-l2 strtab with bypass for RMR SIDs.
+By default, disable_bypass flag is set and any dev without
+an iommu domain installs STE with CFG_ABORT during
+arm_smmu_init_bypass_stes(). Introduce a "force" flag and
+move the STE update logic to arm_smmu_init_bypass_stes()
+so that we can force it to install CFG_BYPASS STE for specific
+SIDs.
+
+This will be useful in a follow-up patch to install bypass
+for IORT RMR SIDs.
 
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 28 +++++++++++----------
- 1 file changed, 15 insertions(+), 13 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index efa38b4411f3..61558fdabbe3 100644
+index 61558fdabbe3..57f831c44155 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2537,6 +2537,19 @@ static bool arm_smmu_sid_in_range(struct arm_smmu_device *smmu, u32 sid)
- 	return sid < limit;
+@@ -1380,12 +1380,21 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+ 		arm_smmu_cmdq_issue_cmd(smmu, &prefetch_cmd);
  }
  
-+static int arm_smmu_init_sid_strtab(struct arm_smmu_device *smmu, u32 sid)
-+{
-+	/* Check the SIDs are in range of the SMMU and our stream table */
-+	if (!arm_smmu_sid_in_range(smmu, sid))
-+		return -ERANGE;
-+
-+	/* Ensure l2 strtab is initialised */
-+	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB)
-+		return arm_smmu_init_l2_strtab(smmu, sid);
-+
-+	return 0;
-+}
-+
- static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
- 				  struct arm_smmu_master *master)
+-static void arm_smmu_init_bypass_stes(__le64 *strtab, unsigned int nent)
++static void arm_smmu_init_bypass_stes(__le64 *strtab, unsigned int nent, bool force)
  {
-@@ -2560,20 +2573,9 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
- 		new_stream->id = sid;
- 		new_stream->master = master;
+ 	unsigned int i;
++	u64 val = STRTAB_STE_0_V;
++
++	if (disable_bypass && !force)
++		val |= FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_ABORT);
++	else
++		val |= FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_BYPASS);
  
--		/*
--		 * Check the SIDs are in range of the SMMU and our stream table
--		 */
--		if (!arm_smmu_sid_in_range(smmu, sid)) {
--			ret = -ERANGE;
-+		ret = arm_smmu_init_sid_strtab(smmu, sid);
-+		if (ret)
- 			break;
--		}
--
--		/* Ensure l2 strtab is initialised */
--		if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
--			ret = arm_smmu_init_l2_strtab(smmu, sid);
--			if (ret)
--				break;
--		}
+ 	for (i = 0; i < nent; ++i) {
+-		arm_smmu_write_strtab_ent(NULL, -1, strtab);
++		strtab[0] = cpu_to_le64(val);
++		strtab[1] = cpu_to_le64(FIELD_PREP(STRTAB_STE_1_SHCFG,
++						   STRTAB_STE_1_SHCFG_INCOMING));
++		strtab[2] = 0;
+ 		strtab += STRTAB_STE_DWORDS;
+ 	}
+ }
+@@ -1413,7 +1422,7 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+ 		return -ENOMEM;
+ 	}
  
- 		/* Insert into SID tree */
- 		new_node = &(smmu->streams.rb_node);
+-	arm_smmu_init_bypass_stes(desc->l2ptr, 1 << STRTAB_SPLIT);
++	arm_smmu_init_bypass_stes(desc->l2ptr, 1 << STRTAB_SPLIT, false);
+ 	arm_smmu_write_strtab_l1_desc(strtab, desc);
+ 	return 0;
+ }
+@@ -3051,7 +3060,7 @@ static int arm_smmu_init_strtab_linear(struct arm_smmu_device *smmu)
+ 	reg |= FIELD_PREP(STRTAB_BASE_CFG_LOG2SIZE, smmu->sid_bits);
+ 	cfg->strtab_base_cfg = reg;
+ 
+-	arm_smmu_init_bypass_stes(strtab, cfg->num_l1_ents);
++	arm_smmu_init_bypass_stes(strtab, cfg->num_l1_ents, false);
+ 	return 0;
+ }
+ 
 -- 
 2.25.1
 
