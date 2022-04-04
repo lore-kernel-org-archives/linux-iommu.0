@@ -4,65 +4,145 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C22B8C433F5
-	for <iommu@archiver.kernel.org>; Mon,  4 Apr 2022 12:44:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8B528C433EF
+	for <iommu@archiver.kernel.org>; Mon,  4 Apr 2022 14:13:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 7B8BE605A1;
-	Mon,  4 Apr 2022 12:44:54 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 26F9260FDC;
+	Mon,  4 Apr 2022 14:13:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4tj1wCaDLB17; Mon,  4 Apr 2022 12:44:53 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id A4F37600C9;
-	Mon,  4 Apr 2022 12:44:52 +0000 (UTC)
+	with ESMTP id 0T4JiX5JU3QQ; Mon,  4 Apr 2022 14:13:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id C3E6660758;
+	Mon,  4 Apr 2022 14:13:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8A4EAC001D;
-	Mon,  4 Apr 2022 12:44:52 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 551F4C0012
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 12:44:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8ECEFC001D;
+	Mon,  4 Apr 2022 14:13:46 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 85AEAC0012
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 06:34:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id CBE4D40320
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 12:44:49 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 6CB7B818AC
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 06:34:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SU-Uix-7rFbA for <iommu@lists.linux-foundation.org>;
- Mon,  4 Apr 2022 12:44:49 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 0BC4540492
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 12:44:49 +0000 (UTC)
-Received: from fraeml712-chm.china.huawei.com (unknown [172.18.147.200])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KX9QC3msTz67wsC;
- Mon,  4 Apr 2022 20:41:55 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml712-chm.china.huawei.com (10.206.15.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 4 Apr 2022 14:44:46 +0200
-Received: from A2006125610.china.huawei.com (10.47.93.34) by
- lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 4 Apr 2022 13:44:38 +0100
-To: <linux-arm-kernel@lists.infradead.org>, <linux-acpi@vger.kernel.org>,
- <iommu@lists.linux-foundation.org>
-Subject: [PATCH v9 11/11] iommu/arm-smmu: Get associated RMR info and install
- bypass SMR
-Date: Mon, 4 Apr 2022 13:42:09 +0100
-Message-ID: <20220404124209.1086-12-shameerali.kolothum.thodi@huawei.com>
-X-Mailer: git-send-email 2.12.0.windows.1
-In-Reply-To: <20220404124209.1086-1-shameerali.kolothum.thodi@huawei.com>
-References: <20220404124209.1086-1-shameerali.kolothum.thodi@huawei.com>
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=fujitsu.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id F9nkxWIUVT2F for <iommu@lists.linux-foundation.org>;
+ Mon,  4 Apr 2022 06:34:26 +0000 (UTC)
+X-Greylist: delayed 00:13:00 by SQLgrey-1.8.0
+Received: from mail1.bemta36.messagelabs.com (mail1.bemta36.messagelabs.com
+ [85.158.142.1])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 1818D81865
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 06:34:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fujitsu.com;
+ s=170520fj; t=1649053283; i=@fujitsu.com;
+ bh=b7vEbVpHlcau47iLeXRDHN/idN8gpdHUoNjZroKIPeE=;
+ h=Date:To:Cc:Subject:Message-ID:Reply-To:References:MIME-Version:
+ Content-Type:In-Reply-To:From;
+ b=AaIuI+NVYBx0pSQjblOU1uOigYvSV6YRIjvJ66Vklj/Ejksf411E887/O2drI5l/Q
+ SMZMyGyRF3qkUYgkKGzVhdiGqL6Y/4WVKwpoWtiERltD5l8WYanb/1W7nTf+htR9q8
+ l2EKb9PC/E+uGcX7wgAryjzycCyybMmwdSUFjfIhXXYAdynlS9JHmetNa0asK32Xrg
+ CzUwHoWPlEjCwUVCaNdh+7KtcfEUi22V9juMg/QzN/L4tqYWqo3mvmyOxYa24UdcW+
+ luiOexRQlX/nLZV54FX47w9lftfJhmpUZl9KG6PxCLwmYxMKGrKoyc41A6F2kykIZn
+ 7fjn8hi79IEIQ==
+Authentication-Results: mx.messagelabs.com; spf=pass 
+ (server-7.tower-528.messagelabs.com: domain of fujitsu.com designates 
+ 85.158.142.210 as permitted sender) smtp.mailfrom=fujitsu.com; dkim=none 
+ (message not signed); dmarc=pass (p=none sp=none adkim=r aspf=r) 
+ header.from=fujitsu.com
+X-Brightmail-Tracker: H4sIAAAAAAAAA1WSbUxTVxiAe257LxdCyW3RcajotNsSRmzXEpW
+ zuC3G8OMOCWN/EMVYb+mF1rUVe9sJYgIbEKRbCRWIirPUiTo+Vmv50AzHJojCBjIJne2Myxxl
+ UeYYk2y4NJD10vixf0/Oc97n/fOSQuknhIxkS62sxcwY5USc6J23yCbF3vosrWo5tBaNjHyKo
+ YGRQtTt7CXQ7eM1IuRsbxSi9s5hDLm/2Yo+C6ajulPeGHT+7AxAvukfcdTsnCfQ/NE5HNX5eg
+ Ead90kUN9CNYEazlQJUXhxGUfX5kM46vRo0KXHUzHoetMAjp54p3G02NOIbYN06JoLo2smlwi
+ 6y9UFaO/Hjwi6+4s02tdRR9Cu0ffp7rYKujFwAdATJ84Aut+9gNFD81Miuj9YSdB/zfwkoi/2
+ +EX0gm9dLrUbN5i1B0r34Xr3nZ+JkqNppfbrf+OVYFFuB7GklDoNYLU/L8o2+MjrAjyLqFfh5
+ c6eGJ5XUXI4MzseeY8jhVRHHGweDa+IRCofBm56VlhMpcOq/n5hNPQKPO1fIvgBMfUgFrYufY
+ 5HRTk89q1DFB2QwNGToRUWUmkwsPwQswMywmvghWWSx1gqD95reJ3/AakUGG5fJHheHcl7zo4
+ C/gtBvQFnHUwDkLS80Gx5odnyvOkGwg7wttZiKNZbTYzBqFCrVAq1erNiC1Kkb1IyhxWMkrUp
+ Clmz1cJErJI5xClZjlNyZaZCo05pZq0+ELkRHZcJr4Bg/b/KQZBMYvLV4j/sWVppgvaArkzPc
+ HqNxWZkuUGQQpJyKG7jncTCFrOlRQZj5NKeakjGy1eJW3kt5koYE2cojqrvwAZZkniHIyIoXu
+ ht5mdjT290EqyVJYqBQCCQxpewFpPB+n8/C5JIIE8U5/KVeIPZ+qw+G1mMRRbPjb3LL7Yyz5W
+ sEkt4kFTrDmz9faL4cUCyfeK34Jrd/2wPLH/0/f4m77r8sZmFiUF714mpQ84M4j4orKYU3S9X
+ iHuTaXpYec7l8idU3G7csGtb3VjRr3szN+l7Lw4Jb5FW55uJKeE+TJh8f1AjzXDiBXez5/w3i
+ jyck9iSNzTu+eWOJ2xzbRZNk+vBDt1Jx0PBLnT40kaYXTZ2RV5/1ZSbX6WkajQ7v5y8d3dn7d
+ c/pNrOfTA8EH98/RHW7ZUVtanKUzuCexw5Bbmqfc6Y2oOprW6g3fNS8/msrwSqI9kaRagr872
+ rt1I+LLgheaIr65NnqC5vXDKfOrZfTcqGg76c1/6sDmXlHCyXDclFnJ5RpwktHPMfZBBxiR4E
+ AAA=
+X-Env-Sender: Alan.Robinson@fujitsu.com
+X-Msg-Ref: server-7.tower-528.messagelabs.com!1649053277!135886!1
+X-Originating-IP: [62.60.8.148]
+X-SYMC-ESS-Client-Auth: outbound-route-from=pass
+X-StarScan-Received: 
+X-StarScan-Version: 9.85.5; banners=-,-,-
+X-VirusChecked: Checked
+Received: (qmail 8161 invoked from network); 4 Apr 2022 06:21:18 -0000
+Received: from unknown (HELO mailhost1.uk.fujitsu.com) (62.60.8.148)
+ by server-7.tower-528.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384
+ encrypted SMTP; 4 Apr 2022 06:21:18 -0000
+Received: from nera.osd.abg.fsc.net ([172.17.20.8])
+ by mailhost1.uk.fujitsu.com (8.14.5/8.14.5) with SMTP id 2346Jn5d030109;
+ Mon, 4 Apr 2022 07:19:56 +0100
+Received: by nera.osd.abg.fsc.net (Postfix, from userid 5004)
+ id 1A288174782; Mon,  4 Apr 2022 08:19:46 +0200 (CEST)
+Date: Mon, 4 Apr 2022 08:19:46 +0200
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 12/15] swiotlb: provide swiotlb_init variants that remap
+ the buffer
+Message-ID: <20220404061946.GA1905@ts.fujitsu.com>
+Mail-Followup-To: Alan.Robinson@fujitsu.com, Christoph Hellwig <hch@lst.de>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "x86@kernel.org" <x86@kernel.org>,
+ Anshuman Khandual <anshuman.khandual@arm.com>,
+ Tom Lendacky <thomas.lendacky@amd.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ Juergen Gross <jgross@suse.com>, Joerg Roedel <joro@8bytes.org>,
+ David Woodhouse <dwmw2@infradead.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, 
+ "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+ "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
+ "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+ "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+ "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+ "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "tboot-devel@lists.sourceforge.net" <tboot-devel@lists.sourceforge.net>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
+References: <20220404050559.132378-1-hch@lst.de>
+ <67c1784af6f24f3e871ddfb1478e821c@FR3P281MB0843.DEUP281.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-X-Originating-IP: [10.47.93.34]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
-Cc: robin.murphy@arm.com, jon@solid-run.com, linuxarm@huawei.com,
- steven.price@arm.com, guohanjun@huawei.com, yangyicong@huawei.com,
- Sami.Mujawar@arm.com, will@kernel.org, wanghuiqiang@huawei.com
+Content-Disposition: inline
+In-Reply-To: <67c1784af6f24f3e871ddfb1478e821c@FR3P281MB0843.DEUP281.PROD.OUTLOOK.COM>
+X-sent-by-me: robin@sanpedro
+User-Agent: Mutt/1.9.3 (2018-01-21)
+From: Alan.Robinson@fujitsu.com (Alan Robinson)
+X-Mailman-Approved-At: Mon, 04 Apr 2022 14:13:44 +0000
+Cc: "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "x86@kernel.org" <x86@kernel.org>,
+ "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+ "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+ "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ "tboot-devel@lists.sourceforge.net" <tboot-devel@lists.sourceforge.net>,
+ "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+ David Woodhouse <dwmw2@infradead.org>, Tom Lendacky <thomas.lendacky@amd.com>,
+ Anshuman Khandual <anshuman.khandual@arm.com>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ Juergen Gross <jgross@suse.com>,
+ "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+ "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,100 +155,157 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Shameer Kolothum via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Reply-To: Alan.Robinson@fujitsu.com
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Jon Nettleton <jon@solid-run.com>
+Hi Christoph,
 
-Check if there is any RMR info associated with the devices behind
-the SMMU and if any, install bypass SMRs for them. This is to
-keep any ongoing traffic associated with these devices alive
-when we enable/reset SMMU during probe().
+On Mon, Apr 04, 2022 at 05:05:56AM +0000, Christoph Hellwig wrote:
+> From: Christoph Hellwig <hch@lst.de>
+> Subject: [PATCH 12/15] swiotlb: provide swiotlb_init variants that remap
+>  the buffer
+> 
+> To shared more code between swiotlb and xen-swiotlb, offer a
+> swiotlb_init_remap interface and add a remap callback to
+> swiotlb_init_late that will allow Xen to remap the buffer the
 
-Signed-off-by: Jon Nettleton <jon@solid-run.com>
-Signed-off-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
----
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 52 +++++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+s/the buffer//
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 9a5b785d28fd..d1d0473b8b88 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -2068,6 +2068,54 @@ err_reset_platform_ops: __maybe_unused;
- 	return err;
- }
- 
-+static void arm_smmu_rmr_install_bypass_smr(struct arm_smmu_device *smmu)
-+{
-+	struct list_head rmr_list;
-+	struct iommu_resv_region *e;
-+	int idx, cnt = 0;
-+	u32 reg;
-+
-+	INIT_LIST_HEAD(&rmr_list);
-+	iort_get_rmr_sids(dev_fwnode(smmu->dev), &rmr_list);
-+
-+	/*
-+	 * Rather than trying to look at existing mappings that
-+	 * are setup by the firmware and then invalidate the ones
-+	 * that do no have matching RMR entries, just disable the
-+	 * SMMU until it gets enabled again in the reset routine.
-+	 */
-+	reg = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_sCR0);
-+	reg |= ARM_SMMU_sCR0_CLIENTPD;
-+	arm_smmu_gr0_write(smmu, ARM_SMMU_GR0_sCR0, reg);
-+
-+	list_for_each_entry(e, &rmr_list, list) {
-+		const u32 *sids = e->fw_data.rmr.sids;
-+		u32 num_sids = e->fw_data.rmr.num_sids;
-+		int i;
-+
-+		for (i = 0; i < num_sids; i++) {
-+			idx = arm_smmu_find_sme(smmu, sids[i], ~0);
-+			if (idx < 0)
-+				continue;
-+
-+			if (smmu->s2crs[idx].count == 0) {
-+				smmu->smrs[idx].id = sids[i];
-+				smmu->smrs[idx].mask = 0;
-+				smmu->smrs[idx].valid = true;
-+			}
-+			smmu->s2crs[idx].count++;
-+			smmu->s2crs[idx].type = S2CR_TYPE_BYPASS;
-+			smmu->s2crs[idx].privcfg = S2CR_PRIVCFG_DEFAULT;
-+
-+			cnt++;
-+		}
-+	}
-+
-+	dev_notice(smmu->dev, "\tpreserved %d boot mapping%s\n", cnt,
-+		   cnt == 1 ? "" : "s");
-+	iort_put_rmr_sids(dev_fwnode(smmu->dev), &rmr_list);
-+}
-+
- static int arm_smmu_device_probe(struct platform_device *pdev)
- {
- 	struct resource *res;
-@@ -2189,6 +2237,10 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	}
- 
- 	platform_set_drvdata(pdev, smmu);
-+
-+	/* Check for RMRs and install bypass SMRs if any */
-+	arm_smmu_rmr_install_bypass_smr(smmu);
-+
- 	arm_smmu_device_reset(smmu);
- 	arm_smmu_test_smr_masks(smmu);
- 
--- 
-2.25.1
+> buffer without duplicating much of the logic.
 
+Alan
+
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/x86/pci/sta2x11-fixup.c |  2 +-
+>  include/linux/swiotlb.h      |  5 ++++-
+>  kernel/dma/swiotlb.c         | 36 +++++++++++++++++++++++++++++++++---
+>  3 files changed, 38 insertions(+), 5 deletions(-)
+> 
+> diff --git a/arch/x86/pci/sta2x11-fixup.c b/arch/x86/pci/sta2x11-fixup.c
+> index c7e6faf59a861..7368afc039987 100644
+> --- a/arch/x86/pci/sta2x11-fixup.c
+> +++ b/arch/x86/pci/sta2x11-fixup.c
+> @@ -57,7 +57,7 @@ static void sta2x11_new_instance(struct pci_dev *pdev)
+>  		int size = STA2X11_SWIOTLB_SIZE;
+>  		/* First instance: register your own swiotlb area */
+>  		dev_info(&pdev->dev, "Using SWIOTLB (size %i)\n", size);
+> -		if (swiotlb_init_late(size, GFP_DMA))
+> +		if (swiotlb_init_late(size, GFP_DMA, NULL))
+>  			dev_emerg(&pdev->dev, "init swiotlb failed\n");
+>  	}
+>  	list_add(&instance->list, &sta2x11_instance_list);
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index ee655f2e4d28b..7b50c82f84ce9 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -36,8 +36,11 @@ struct scatterlist;
+>  
+>  int swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, unsigned int flags);
+>  unsigned long swiotlb_size_or_default(void);
+> +void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+> +	int (*remap)(void *tlb, unsigned long nslabs));
+> +int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+> +	int (*remap)(void *tlb, unsigned long nslabs));
+>  extern int swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs);
+> -int swiotlb_init_late(size_t size, gfp_t gfp_mask);
+>  extern void __init swiotlb_update_mem_attributes(void);
+>  
+>  phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t phys,
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 119187afc65ec..d5fe8f5e08300 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -256,9 +256,11 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs,
+>   * Statically reserve bounce buffer space and initialize bounce buffer data
+>   * structures for the software IO TLB used to implement the DMA API.
+>   */
+> -void __init swiotlb_init(bool addressing_limit, unsigned int flags)
+> +void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+> +		int (*remap)(void *tlb, unsigned long nslabs))
+>  {
+> -	size_t bytes = PAGE_ALIGN(default_nslabs << IO_TLB_SHIFT);
+> +	unsigned long nslabs = default_nslabs;
+> +	size_t bytes;
+>  	void *tlb;
+>  
+>  	if (!addressing_limit && !swiotlb_force_bounce)
+> @@ -271,12 +273,23 @@ void __init swiotlb_init(bool addressing_limit, unsigned int flags)
+>  	 * allow to pick a location everywhere for hypervisors with guest
+>  	 * memory encryption.
+>  	 */
+> +retry:
+> +	bytes = PAGE_ALIGN(default_nslabs << IO_TLB_SHIFT);
+>  	if (flags & SWIOTLB_ANY)
+>  		tlb = memblock_alloc(bytes, PAGE_SIZE);
+>  	else
+>  		tlb = memblock_alloc_low(bytes, PAGE_SIZE);
+>  	if (!tlb)
+>  		goto fail;
+> +	if (remap && remap(tlb, nslabs) < 0) {
+> +		memblock_free(tlb, PAGE_ALIGN(bytes));
+> +
+> +		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
+> +		if (nslabs < IO_TLB_MIN_SLABS)
+> +			panic("%s: Failed to remap %zu bytes\n",
+> +			      __func__, bytes);
+> +		goto retry;
+> +	}
+>  	if (swiotlb_init_with_tbl(tlb, default_nslabs, flags))
+>  		goto fail_free_mem;
+>  	return;
+> @@ -287,12 +300,18 @@ void __init swiotlb_init(bool addressing_limit, unsigned int flags)
+>  	pr_warn("Cannot allocate buffer");
+>  }
+>  
+> +void __init swiotlb_init(bool addressing_limit, unsigned int flags)
+> +{
+> +	return swiotlb_init_remap(addressing_limit, flags, NULL);
+> +}
+> +
+>  /*
+>   * Systems with larger DMA zones (those that don't support ISA) can
+>   * initialize the swiotlb later using the slab allocator if needed.
+>   * This should be just like above, but with some error catching.
+>   */
+> -int swiotlb_init_late(size_t size, gfp_t gfp_mask)
+> +int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+> +		int (*remap)(void *tlb, unsigned long nslabs))
+>  {
+>  	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
+>  	unsigned long bytes;
+> @@ -303,6 +322,7 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask)
+>  	if (swiotlb_force_disable)
+>  		return 0;
+>  
+> +retry:
+>  	order = get_order(nslabs << IO_TLB_SHIFT);
+>  	nslabs = SLABS_PER_PAGE << order;
+>  	bytes = nslabs << IO_TLB_SHIFT;
+> @@ -323,6 +343,16 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask)
+>  			(PAGE_SIZE << order) >> 20);
+>  		nslabs = SLABS_PER_PAGE << order;
+>  	}
+> +	if (remap)
+> +		rc = remap(vstart, nslabs);
+> +	if (rc) {
+> +		free_pages((unsigned long)vstart, order);
+> + 
+> +		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
+> +		if (nslabs < IO_TLB_MIN_SLABS)
+> +			return rc;
+> +		goto retry;
+> +	}
+>  	rc = swiotlb_late_init_with_tbl(vstart, nslabs);
+>  	if (rc)
+>  		free_pages((unsigned long)vstart, order);
+> -- 
+> 2.30.2
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
