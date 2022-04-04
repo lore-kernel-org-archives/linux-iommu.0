@@ -1,147 +1,118 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8B528C433EF
-	for <iommu@archiver.kernel.org>; Mon,  4 Apr 2022 14:13:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0CE31C433F5
+	for <iommu@archiver.kernel.org>; Mon,  4 Apr 2022 16:47:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 26F9260FDC;
-	Mon,  4 Apr 2022 14:13:48 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 9622C8289B;
+	Mon,  4 Apr 2022 16:47:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0T4JiX5JU3QQ; Mon,  4 Apr 2022 14:13:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id C3E6660758;
-	Mon,  4 Apr 2022 14:13:46 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8ECEFC001D;
-	Mon,  4 Apr 2022 14:13:46 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 85AEAC0012
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 06:34:27 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 6CB7B818AC
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 06:34:27 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=fujitsu.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id F9nkxWIUVT2F for <iommu@lists.linux-foundation.org>;
- Mon,  4 Apr 2022 06:34:26 +0000 (UTC)
-X-Greylist: delayed 00:13:00 by SQLgrey-1.8.0
-Received: from mail1.bemta36.messagelabs.com (mail1.bemta36.messagelabs.com
- [85.158.142.1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 1818D81865
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 06:34:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fujitsu.com;
- s=170520fj; t=1649053283; i=@fujitsu.com;
- bh=b7vEbVpHlcau47iLeXRDHN/idN8gpdHUoNjZroKIPeE=;
- h=Date:To:Cc:Subject:Message-ID:Reply-To:References:MIME-Version:
- Content-Type:In-Reply-To:From;
- b=AaIuI+NVYBx0pSQjblOU1uOigYvSV6YRIjvJ66Vklj/Ejksf411E887/O2drI5l/Q
- SMZMyGyRF3qkUYgkKGzVhdiGqL6Y/4WVKwpoWtiERltD5l8WYanb/1W7nTf+htR9q8
- l2EKb9PC/E+uGcX7wgAryjzycCyybMmwdSUFjfIhXXYAdynlS9JHmetNa0asK32Xrg
- CzUwHoWPlEjCwUVCaNdh+7KtcfEUi22V9juMg/QzN/L4tqYWqo3mvmyOxYa24UdcW+
- luiOexRQlX/nLZV54FX47w9lftfJhmpUZl9KG6PxCLwmYxMKGrKoyc41A6F2kykIZn
- 7fjn8hi79IEIQ==
-Authentication-Results: mx.messagelabs.com; spf=pass 
- (server-7.tower-528.messagelabs.com: domain of fujitsu.com designates 
- 85.158.142.210 as permitted sender) smtp.mailfrom=fujitsu.com; dkim=none 
- (message not signed); dmarc=pass (p=none sp=none adkim=r aspf=r) 
- header.from=fujitsu.com
-X-Brightmail-Tracker: H4sIAAAAAAAAA1WSbUxTVxiAe257LxdCyW3RcajotNsSRmzXEpW
- zuC3G8OMOCWN/EMVYb+mF1rUVe9sJYgIbEKRbCRWIirPUiTo+Vmv50AzHJojCBjIJne2Myxxl
- UeYYk2y4NJD10vixf0/Oc97n/fOSQuknhIxkS62sxcwY5USc6J23yCbF3vosrWo5tBaNjHyKo
- YGRQtTt7CXQ7eM1IuRsbxSi9s5hDLm/2Yo+C6ajulPeGHT+7AxAvukfcdTsnCfQ/NE5HNX5eg
- Ead90kUN9CNYEazlQJUXhxGUfX5kM46vRo0KXHUzHoetMAjp54p3G02NOIbYN06JoLo2smlwi
- 6y9UFaO/Hjwi6+4s02tdRR9Cu0ffp7rYKujFwAdATJ84Aut+9gNFD81Miuj9YSdB/zfwkoi/2
- +EX0gm9dLrUbN5i1B0r34Xr3nZ+JkqNppfbrf+OVYFFuB7GklDoNYLU/L8o2+MjrAjyLqFfh5
- c6eGJ5XUXI4MzseeY8jhVRHHGweDa+IRCofBm56VlhMpcOq/n5hNPQKPO1fIvgBMfUgFrYufY
- 5HRTk89q1DFB2QwNGToRUWUmkwsPwQswMywmvghWWSx1gqD95reJ3/AakUGG5fJHheHcl7zo4
- C/gtBvQFnHUwDkLS80Gx5odnyvOkGwg7wttZiKNZbTYzBqFCrVAq1erNiC1Kkb1IyhxWMkrUp
- Clmz1cJErJI5xClZjlNyZaZCo05pZq0+ELkRHZcJr4Bg/b/KQZBMYvLV4j/sWVppgvaArkzPc
- HqNxWZkuUGQQpJyKG7jncTCFrOlRQZj5NKeakjGy1eJW3kt5koYE2cojqrvwAZZkniHIyIoXu
- ht5mdjT290EqyVJYqBQCCQxpewFpPB+n8/C5JIIE8U5/KVeIPZ+qw+G1mMRRbPjb3LL7Yyz5W
- sEkt4kFTrDmz9faL4cUCyfeK34Jrd/2wPLH/0/f4m77r8sZmFiUF714mpQ84M4j4orKYU3S9X
- iHuTaXpYec7l8idU3G7csGtb3VjRr3szN+l7Lw4Jb5FW55uJKeE+TJh8f1AjzXDiBXez5/w3i
- jyck9iSNzTu+eWOJ2xzbRZNk+vBDt1Jx0PBLnT40kaYXTZ2RV5/1ZSbX6WkajQ7v5y8d3dn7d
- c/pNrOfTA8EH98/RHW7ZUVtanKUzuCexw5Bbmqfc6Y2oOprW6g3fNS8/msrwSqI9kaRagr872
- rt1I+LLgheaIr65NnqC5vXDKfOrZfTcqGg76c1/6sDmXlHCyXDclFnJ5RpwktHPMfZBBxiR4E
- AAA=
-X-Env-Sender: Alan.Robinson@fujitsu.com
-X-Msg-Ref: server-7.tower-528.messagelabs.com!1649053277!135886!1
-X-Originating-IP: [62.60.8.148]
-X-SYMC-ESS-Client-Auth: outbound-route-from=pass
-X-StarScan-Received: 
-X-StarScan-Version: 9.85.5; banners=-,-,-
-X-VirusChecked: Checked
-Received: (qmail 8161 invoked from network); 4 Apr 2022 06:21:18 -0000
-Received: from unknown (HELO mailhost1.uk.fujitsu.com) (62.60.8.148)
- by server-7.tower-528.messagelabs.com with ECDHE-RSA-AES256-GCM-SHA384
- encrypted SMTP; 4 Apr 2022 06:21:18 -0000
-Received: from nera.osd.abg.fsc.net ([172.17.20.8])
- by mailhost1.uk.fujitsu.com (8.14.5/8.14.5) with SMTP id 2346Jn5d030109;
- Mon, 4 Apr 2022 07:19:56 +0100
-Received: by nera.osd.abg.fsc.net (Postfix, from userid 5004)
- id 1A288174782; Mon,  4 Apr 2022 08:19:46 +0200 (CEST)
-Date: Mon, 4 Apr 2022 08:19:46 +0200
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 12/15] swiotlb: provide swiotlb_init variants that remap
- the buffer
-Message-ID: <20220404061946.GA1905@ts.fujitsu.com>
-Mail-Followup-To: Alan.Robinson@fujitsu.com, Christoph Hellwig <hch@lst.de>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "x86@kernel.org" <x86@kernel.org>,
- Anshuman Khandual <anshuman.khandual@arm.com>,
- Tom Lendacky <thomas.lendacky@amd.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- Juergen Gross <jgross@suse.com>, Joerg Roedel <joro@8bytes.org>,
- David Woodhouse <dwmw2@infradead.org>,
- Lu Baolu <baolu.lu@linux.intel.com>,
- Robin Murphy <robin.murphy@arm.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, 
- "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
- "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
- "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
- "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
- "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
- "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "tboot-devel@lists.sourceforge.net" <tboot-devel@lists.sourceforge.net>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
-References: <20220404050559.132378-1-hch@lst.de>
- <67c1784af6f24f3e871ddfb1478e821c@FR3P281MB0843.DEUP281.PROD.OUTLOOK.COM>
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id zSPG0LEJxf0j; Mon,  4 Apr 2022 16:47:36 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 75B51828A5;
+	Mon,  4 Apr 2022 16:47:36 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 32561C001D;
+	Mon,  4 Apr 2022 16:47:36 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EBC2CC0012
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 16:47:34 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id C616C60BD7
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 16:47:34 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=amd.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 03oaS6l3_mRb for <iommu@lists.linux-foundation.org>;
+ Mon,  4 Apr 2022 16:47:33 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com
+ (mail-co1nam11on20605.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7eab::605])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A9E0960672
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 16:47:33 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QfzNfsFxyTgkYz4mCp0kYUL5jQXzA34/Uu449ruGff3J2h11/nc1FqsHW8EuxFIQyNifOrcLe2iknJSPQztBI/9VILeR5nyKq80C4MtoXTPCWfwPvVfBDSLNwiKOF0ZBpECeUPnHiYjhA6tSkFGX997syRS2zQbT+xXqEgG6Qwsn3Vgzks64BKvwvzWcUrCk3TmmJDGQBIzYEHEd6DKPpWo8wsG1T44xQGirUPgImKMVYPS9L+E6LZP9ZqBBCH3Rhh45+MzqkG3hzPWoDo0ct/kBX+nDTy3C4gZKOcbc7Au0eS+SPw0YUbpgpgZ6SifDi9cd1MSEqToWjLNt9kZL2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=eEd8QmK3Y1nSAMnzZe3OZ627GVk9DCTl1dw4qnU8vPY=;
+ b=kUGAv8F9mbt83FL2QujwDN9tBK2+8IEcdSWShsrRdieQ5l9HjFcIJtW5O+4hJvKnuTdLESJCW0YwddTOAoSCy+utuCLIOfNkWCl22e6GmVXNbdRrDANS0Gfu5QeHr2luUnby9J94WOpcZA2iaEnczqU2hvrA1YslwTPBhyIDLpy89LyR2JJKX9fey8nxwdOyBl98k1/r8zzeVa9dgscxTyJfEHze+Lctd5BdXxWCQQCzO0m05Brc1DCt/RVMjW68XwwajfUE3c7x7fur2M6oIabt6cdTeyLN+G3+PqVQD1Stg0nYbl63hMvCUfkUEFXDIa25Gp2hR12EEqi9SNBCEg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eEd8QmK3Y1nSAMnzZe3OZ627GVk9DCTl1dw4qnU8vPY=;
+ b=WWnL2Bqxjo65DzLOz0f9Cbm7M5DMJ5QLysjnLlaac3wGmvZzBtgycCwqVULGpNLsmAw0+t5agQBheSF3ptEB6dvSpDpemR5V/0T9Xe2vueB8UnvtjIpOgaqatuKWE9c57Qg5YkfNJywl0VTJLxmlCR8RYhecSF4gzS6+WvK3q1k=
+Received: from BN6PR19CA0079.namprd19.prod.outlook.com (2603:10b6:404:133::17)
+ by MW3PR12MB4396.namprd12.prod.outlook.com (2603:10b6:303:59::17)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
+ 2022 16:47:29 +0000
+Received: from BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:133:cafe::90) by BN6PR19CA0079.outlook.office365.com
+ (2603:10b6:404:133::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
+ Transport; Mon, 4 Apr 2022 16:47:28 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BN8NAM11FT017.mail.protection.outlook.com (10.13.177.93) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5123.19 via Frontend Transport; Mon, 4 Apr 2022 16:47:28 +0000
+Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Apr
+ 2022 11:47:25 -0500
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Subject: [PATCH 0/2] Fix issues with untrusted devices and AMD IOMMU
+Date: Mon, 4 Apr 2022 11:47:05 -0500
+Message-ID: <20220404164707.1128-1-mario.limonciello@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <67c1784af6f24f3e871ddfb1478e821c@FR3P281MB0843.DEUP281.PROD.OUTLOOK.COM>
-X-sent-by-me: robin@sanpedro
-User-Agent: Mutt/1.9.3 (2018-01-21)
-From: Alan.Robinson@fujitsu.com (Alan Robinson)
-X-Mailman-Approved-At: Mon, 04 Apr 2022 14:13:44 +0000
-Cc: "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "x86@kernel.org" <x86@kernel.org>,
- "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
- "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- "tboot-devel@lists.sourceforge.net" <tboot-devel@lists.sourceforge.net>,
- "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
- David Woodhouse <dwmw2@infradead.org>, Tom Lendacky <thomas.lendacky@amd.com>,
- Anshuman Khandual <anshuman.khandual@arm.com>,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- Juergen Gross <jgross@suse.com>,
- "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
- "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b94de659-901d-46eb-fa7a-08da165acdfd
+X-MS-TrafficTypeDiagnostic: MW3PR12MB4396:EE_
+X-Microsoft-Antispam-PRVS: <MW3PR12MB4396BFA0D52BFDBE12E913EFE2E59@MW3PR12MB4396.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: UrBsskV5TlLTwbiLExPPZhjngvNOjkxVCaCR6xgtnjauw00x22xTFKZniozO6eEcVSmTSYuudHreXur/07El7GwN1tU4YHGQaoaHoNPwoGa9uA1Ru6NXoyljcosFw6tv3YOOaMH6QJD3gtugzU4FmexfTIusMixq77melQmKN57anrFFqZfONFquERhqAIsskGkerFI9lIllwSx2F0ugLcYN6ncAsMe9Sd1yyTa55E3uHUr3clVNWuG279lVtuTXukxYpCP48eeWzRl87PZ0qktRx9WncFM0+yKdimWHcZ4WgufKGmMPZRlm4bUfLLJ11rRYSqrwWuzaoi3m4zU6o7DLUGmx9OBfJ0C15FSjez1jsh3IApyOo4uLUtNwHzO3Aw0FQj9LudMvgjhPjYX2ZqDWSFbwKx9Z7ubuVZlnQ4K69zzggYh75Ujq/tdjmiO0BNTiJ/zziCHuSreJQw6WFqdoAEbe/cIchFge3h+120+9ub2EU9nO74DSP/02whN4hkLa/41SdtX3CtKCm/K2EAy50OaaL3FQKSfndve38iV4q+56LGfmDWaZCtNVTQlIBdLnw9aR0oLobeuQaWAmwWgZnXHmfb4ii5iyPBfkPg5RfazS1nVbSjKyAwNWFV/tGFiO55Nyj6kUiH3jEypohG78zeX/4hqLZ0FxK6+6BBDaZefRbWNikJx7WuwiEX0OCtR7y+zWjVdLqYQa06zhzQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17; CTRY:US; LANG:en; SCL:1; SRV:;
+ IPV:CAL; SFV:NSPM; H:SATLEXMB04.amd.com; PTR:InfoDomainNonexistent; CAT:NONE;
+ SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(2616005)(1076003)(110136005)(36860700001)(44832011)(82310400004)(54906003)(316002)(83380400001)(356005)(2906002)(8676002)(26005)(4326008)(186003)(47076005)(16526019)(70586007)(70206006)(426003)(7696005)(508600001)(36756003)(81166007)(336012)(6666004)(8936002)(40460700003)(5660300002)(86362001)(36900700001);
+ DIR:OUT; SFP:1101; 
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 16:47:28.4563 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b94de659-901d-46eb-fa7a-08da165acdfd
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d; Ip=[165.204.84.17];
+ Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT017.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4396
+Cc: Hegde Vasant <Vasant.Hegde@amd.com>, open
+ list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Mario Limonciello <mario.limonciello@amd.com>,
  Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -155,157 +126,52 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: Alan.Robinson@fujitsu.com
+From: Mario Limonciello via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Mario Limonciello <mario.limonciello@amd.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Christoph,
+It's been observed that plugging in a TBT3 NVME device to a port marked
+with ExternalFacingPort that some DMA transactions occur that are not a
+full page and so the DMA API attempts to use software bounce buffers
+instead of relying upon the IOMMU translation.
 
-On Mon, Apr 04, 2022 at 05:05:56AM +0000, Christoph Hellwig wrote:
-> From: Christoph Hellwig <hch@lst.de>
-> Subject: [PATCH 12/15] swiotlb: provide swiotlb_init variants that remap
->  the buffer
-> 
-> To shared more code between swiotlb and xen-swiotlb, offer a
-> swiotlb_init_remap interface and add a remap callback to
-> swiotlb_init_late that will allow Xen to remap the buffer the
+This doesn't work and leads to messaging like:
 
-s/the buffer//
+swiotlb buffer is full (sz: 4096 bytes), total 0 (slots), used 0 (slots)
 
-> buffer without duplicating much of the logic.
+The bounce buffers were originally set up, but torn down during
+the boot process.
+* This happens because as part of IOMMU initialization
+  `amd_iommu_init_dma_ops` gets called and resets the global swiotlb to 0.
+* When late_init gets called `pci_swiotlb_late_init` `swiotlb_exit` is
+  called and the buffers are torn down.
 
-Alan
+This can be observed in the logs:
+```
+[    0.407286] AMD-Vi: Extended features (0x246577efa2254afa): PPR NX GT [5] IA GA PC GA_vAPIC
+[    0.407291] AMD-Vi: Interrupt remapping enabled
+[    0.407292] AMD-Vi: Virtual APIC enabled
+[    0.407872] software IO TLB: tearing down default memory pool
+```
 
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/x86/pci/sta2x11-fixup.c |  2 +-
->  include/linux/swiotlb.h      |  5 ++++-
->  kernel/dma/swiotlb.c         | 36 +++++++++++++++++++++++++++++++++---
->  3 files changed, 38 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/x86/pci/sta2x11-fixup.c b/arch/x86/pci/sta2x11-fixup.c
-> index c7e6faf59a861..7368afc039987 100644
-> --- a/arch/x86/pci/sta2x11-fixup.c
-> +++ b/arch/x86/pci/sta2x11-fixup.c
-> @@ -57,7 +57,7 @@ static void sta2x11_new_instance(struct pci_dev *pdev)
->  		int size = STA2X11_SWIOTLB_SIZE;
->  		/* First instance: register your own swiotlb area */
->  		dev_info(&pdev->dev, "Using SWIOTLB (size %i)\n", size);
-> -		if (swiotlb_init_late(size, GFP_DMA))
-> +		if (swiotlb_init_late(size, GFP_DMA, NULL))
->  			dev_emerg(&pdev->dev, "init swiotlb failed\n");
->  	}
->  	list_add(&instance->list, &sta2x11_instance_list);
-> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> index ee655f2e4d28b..7b50c82f84ce9 100644
-> --- a/include/linux/swiotlb.h
-> +++ b/include/linux/swiotlb.h
-> @@ -36,8 +36,11 @@ struct scatterlist;
->  
->  int swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, unsigned int flags);
->  unsigned long swiotlb_size_or_default(void);
-> +void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
-> +	int (*remap)(void *tlb, unsigned long nslabs));
-> +int swiotlb_init_late(size_t size, gfp_t gfp_mask,
-> +	int (*remap)(void *tlb, unsigned long nslabs));
->  extern int swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs);
-> -int swiotlb_init_late(size_t size, gfp_t gfp_mask);
->  extern void __init swiotlb_update_mem_attributes(void);
->  
->  phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t phys,
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 119187afc65ec..d5fe8f5e08300 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -256,9 +256,11 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs,
->   * Statically reserve bounce buffer space and initialize bounce buffer data
->   * structures for the software IO TLB used to implement the DMA API.
->   */
-> -void __init swiotlb_init(bool addressing_limit, unsigned int flags)
-> +void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
-> +		int (*remap)(void *tlb, unsigned long nslabs))
->  {
-> -	size_t bytes = PAGE_ALIGN(default_nslabs << IO_TLB_SHIFT);
-> +	unsigned long nslabs = default_nslabs;
-> +	size_t bytes;
->  	void *tlb;
->  
->  	if (!addressing_limit && !swiotlb_force_bounce)
-> @@ -271,12 +273,23 @@ void __init swiotlb_init(bool addressing_limit, unsigned int flags)
->  	 * allow to pick a location everywhere for hypervisors with guest
->  	 * memory encryption.
->  	 */
-> +retry:
-> +	bytes = PAGE_ALIGN(default_nslabs << IO_TLB_SHIFT);
->  	if (flags & SWIOTLB_ANY)
->  		tlb = memblock_alloc(bytes, PAGE_SIZE);
->  	else
->  		tlb = memblock_alloc_low(bytes, PAGE_SIZE);
->  	if (!tlb)
->  		goto fail;
-> +	if (remap && remap(tlb, nslabs) < 0) {
-> +		memblock_free(tlb, PAGE_ALIGN(bytes));
-> +
-> +		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
-> +		if (nslabs < IO_TLB_MIN_SLABS)
-> +			panic("%s: Failed to remap %zu bytes\n",
-> +			      __func__, bytes);
-> +		goto retry;
-> +	}
->  	if (swiotlb_init_with_tbl(tlb, default_nslabs, flags))
->  		goto fail_free_mem;
->  	return;
-> @@ -287,12 +300,18 @@ void __init swiotlb_init(bool addressing_limit, unsigned int flags)
->  	pr_warn("Cannot allocate buffer");
->  }
->  
-> +void __init swiotlb_init(bool addressing_limit, unsigned int flags)
-> +{
-> +	return swiotlb_init_remap(addressing_limit, flags, NULL);
-> +}
-> +
->  /*
->   * Systems with larger DMA zones (those that don't support ISA) can
->   * initialize the swiotlb later using the slab allocator if needed.
->   * This should be just like above, but with some error catching.
->   */
-> -int swiotlb_init_late(size_t size, gfp_t gfp_mask)
-> +int swiotlb_init_late(size_t size, gfp_t gfp_mask,
-> +		int (*remap)(void *tlb, unsigned long nslabs))
->  {
->  	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
->  	unsigned long bytes;
-> @@ -303,6 +322,7 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask)
->  	if (swiotlb_force_disable)
->  		return 0;
->  
-> +retry:
->  	order = get_order(nslabs << IO_TLB_SHIFT);
->  	nslabs = SLABS_PER_PAGE << order;
->  	bytes = nslabs << IO_TLB_SHIFT;
-> @@ -323,6 +343,16 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask)
->  			(PAGE_SIZE << order) >> 20);
->  		nslabs = SLABS_PER_PAGE << order;
->  	}
-> +	if (remap)
-> +		rc = remap(vstart, nslabs);
-> +	if (rc) {
-> +		free_pages((unsigned long)vstart, order);
-> + 
-> +		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
-> +		if (nslabs < IO_TLB_MIN_SLABS)
-> +			return rc;
-> +		goto retry;
-> +	}
->  	rc = swiotlb_late_init_with_tbl(vstart, nslabs);
->  	if (rc)
->  		free_pages((unsigned long)vstart, order);
-> -- 
-> 2.30.2
-> 
+This series adds some better messaging in case something like this comes
+up again and also adds checks that swiotlb really is active before
+trying to use it.
+
+Mario Limonciello (2):
+  swiotlb: Check that slabs have been allocated when requested
+  iommu: Don't use swiotlb unless it's active
+
+ drivers/iommu/dma-iommu.c | 3 ++-
+ kernel/dma/swiotlb.c      | 5 +++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+-- 
+2.34.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
