@@ -1,68 +1,66 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3B498C4332F
-	for <iommu@archiver.kernel.org>; Mon,  4 Apr 2022 10:09:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 69DF3C433EF
+	for <iommu@archiver.kernel.org>; Mon,  4 Apr 2022 10:09:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id F1B74402F5;
-	Mon,  4 Apr 2022 10:09:11 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 2C32382A2D;
+	Mon,  4 Apr 2022 10:09:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yvdV4SEjIjJq; Mon,  4 Apr 2022 10:09:11 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id YfbqdFSc1vtD; Mon,  4 Apr 2022 10:09:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id B7B184002B;
-	Mon,  4 Apr 2022 10:09:10 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id D5B7580DC0;
+	Mon,  4 Apr 2022 10:09:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 70BA9C002C;
-	Mon,  4 Apr 2022 10:09:10 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B74EDC0012
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 10:09:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AEF31C002C;
+	Mon,  4 Apr 2022 10:09:24 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CE330C0012
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 10:09:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id A49DD41295
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 10:09:09 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id AEB9C813CE
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 10:09:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=amd.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id e39-nTH3TZwA for <iommu@lists.linux-foundation.org>;
- Mon,  4 Apr 2022 10:09:08 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id XkzcKBP-ej5P for <iommu@lists.linux-foundation.org>;
+ Mon,  4 Apr 2022 10:09:22 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam12on2060d.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:fe59::60d])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 00102410E5
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 10:09:07 +0000 (UTC)
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam10on20608.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e88::608])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id BDF5680DC0
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 10:09:22 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e+LUviryjPGp1vyVHcKUs3EeMErOTXzxRLTo0WWM4+ZnMjApVeK+vlgBbqV3BT/ty/QrZj2lWs6/DbxnN/gsW+Z7p+hPw9qm+U3tmIHmSdOAyFj3h8/B17gyVB2cEnBShQGVYxXAeChqN87XRTErW0nQD7LflJN3VaYiIyKRvMxzqf2OyuzZrJ8DiE8ZEnirVV8DWDIkjkPm0h43IRpSsnjt16YO3XPp9U2dHyQDQ7k2icE2Pa1Kd8KpJ8zqK3GMGAGt/ZFvB7o5+2JOJJMqF61JbpgMSU/86weLgkTBpo/phVL86tzZ+deFE0hGTcYvWTucVtj1oLLHMR58NZgNBg==
+ b=nAgRzoGbJZdY5hYKmwHcOWRCEm3svFzsqrLea22DjU7ZRdPoqONxMaB8cj9RCHNSO5ajnP1bq8kJwEXTN7Bt7XwoKAGzkvmZcEt+NLaFUOQlNrQRRJhcaeRKGHBT55em1zHROtFlhXU9lFDoJZ4ShBHVQBrUGMtPilaBUEHm5HZaHvxmZFMjuMoNPxmqyZKvwo6jjZlcU5uaK83Sl/LePEGAYHo9VUIq2Ee44iy/hvL38m+n6+RgSwRS6/JVt46vVjODnTUo24hfkZsK/0p+6g9NuTqBVjtPem2jylwPcj/QaoN0UWGrsb6l7OZcaigXDJbXPBVc9un5B/emduMRPg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hrVXP5e/ReOUTv2/bNjY9MgQW5vP3FHwSZkrwM1Kd8U=;
- b=FWLshBfe4LRPJ57fL3HA/0frm3iJGMGkt5r6a3wR/xRS8fAZw4gkUJjNmc5ZvpDfv7gALRj9vJjqvAHaoaUm1y3RBAo71AlwFBy2cHQ5XXIlUx4/r01d1U6wMQoOxgeiDtbo+jQTH5PwIepxIWeynzm6z+1I9pdEw9tfd+6UJoQPR/RwlCFmKxlZeKUNY8TkEojUGn/uKKcNljlCPz2lxJmSAbGemrydjnVKXT7F4vhT3H5jD+h71gt45bjY5d081XWrwlR9iLlbvpzVeoV/TLEfT1nLTC+nlnckxq8z7vDk2Bgapfg+jouG/cqznKV5TPpgvDDu4z69/oo2py1m1Q==
+ bh=t9vJiM6VpPds2yeSLnnX3YZUVu4nEeYrJQ5QDox3gN0=;
+ b=ZX76xFml/2lj+Q9BPXrahiIAxTSBcEseJo1fz8Q2ZpwXUmtseiiifsymWYtRwv9a8fgjKHXsI84wLL/JA6/FVKaWFHIjVIUVlVcH7IcNxD3Fy4brqKMOtetTQMzTwMgHbJojPBxZ3C0hzT9xg5CGV/6jnD9SdQgObcgZzrVJqBY9Dvbdo+83u5EegNKO/9jsPbu4l6HZUnBuKPluGtviAksDhFo0hEu0a3WG8O/NPJatg2UACO2WstjZ169Awo5ubH8ic9RAby1V+spNvEg+fier9VypFHJ8oAs2c2Ey3W9XhwU4p4Nqmt9MrjaHXhRMU0xqO2QEYcH2oEd8rglKVA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux-foundation.org
  smtp.mailfrom=amd.com; dmarc=pass (p=quarantine sp=quarantine pct=100)
  action=none header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hrVXP5e/ReOUTv2/bNjY9MgQW5vP3FHwSZkrwM1Kd8U=;
- b=jPOx9Ze8oaMb3xyYgIMFSsGXjYOSxrDtNLaWmkciuSfo1pl/zFCDwRSEUo3C/EL8L2/3IEgDvDVr7b5Lr3d6d5joDIYwYg3fib3mLrQ15fQC0JVW92ott0jJTZbqupcXoDZH2RhguLvHrBIjb0qyNCPFSvVQWOvbNELykQKjCsw=
-Received: from MW4PR04CA0249.namprd04.prod.outlook.com (2603:10b6:303:88::14)
- by DM6PR12MB3978.namprd12.prod.outlook.com (2603:10b6:5:1c5::14) with
+ bh=t9vJiM6VpPds2yeSLnnX3YZUVu4nEeYrJQ5QDox3gN0=;
+ b=S0zx3G8ZPa0HmaffFi/vzAV3JOd+GGxcr3CHVTjc48zjIiAgKv7sosEMPQgxJ6Qecqa4LGLTCQ+W1oqu7sVq83o3JzHYpCnRIXMm/cKo4LTg/4nt6z+2WWwwi5ZSbmK9I70pQEKWCk7tQEMZBMTlJwMJmo9SCzojjyBu9uQnwP4=
+Received: from MW4P220CA0005.NAMP220.PROD.OUTLOOK.COM (2603:10b6:303:115::10)
+ by DM6PR12MB4928.namprd12.prod.outlook.com (2603:10b6:5:1b8::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
- 2022 10:09:05 +0000
-Received: from CO1NAM11FT067.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:88:cafe::9a) by MW4PR04CA0249.outlook.office365.com
- (2603:10b6:303:88::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31 via Frontend
- Transport; Mon, 4 Apr 2022 10:09:05 +0000
+ 2022 10:09:20 +0000
+Received: from CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:115:cafe::f1) by MW4P220CA0005.outlook.office365.com
+ (2603:10b6:303:115::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.13 via Frontend
+ Transport; Mon, 4 Apr 2022 10:09:20 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -70,18 +68,18 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT067.mail.protection.outlook.com (10.13.174.212) with Microsoft SMTP
+ CO1NAM11FT017.mail.protection.outlook.com (10.13.175.108) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5123.19 via Frontend Transport; Mon, 4 Apr 2022 10:09:04 +0000
+ 15.20.5123.19 via Frontend Transport; Mon, 4 Apr 2022 10:09:20 +0000
 Received: from kali.amdval.net (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 4 Apr
- 2022 05:09:02 -0500
+ 2022 05:09:17 -0500
 To: <iommu@lists.linux-foundation.org>, <joro@8bytes.org>
-Subject: [RESEND PATCH v1 33/37] iommu/amd: Specify PCI segment ID when
- getting pci device
-Date: Mon, 4 Apr 2022 15:30:19 +0530
-Message-ID: <20220404100023.324645-34-vasant.hegde@amd.com>
+Subject: [RESEND PATCH v1 34/37] iommu/amd: Add PCI segment support for
+ ivrs_ioapic, ivrs_hpet, ivrs_acpihid commands
+Date: Mon, 4 Apr 2022 15:30:20 +0530
+Message-ID: <20220404100023.324645-35-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220404100023.324645-1-vasant.hegde@amd.com>
 References: <20220404100023.324645-1-vasant.hegde@amd.com>
@@ -91,27 +89,27 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 38fd08d1-238c-4450-8aab-08da1623263d
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3978:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB3978C9498AA5402512F5087A87E59@DM6PR12MB3978.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 9716a9c9-c4ff-4b54-13c9-08da16232f94
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4928:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB49287DFE15B28804644F10E187E59@DM6PR12MB4928.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lyubTbaxJE9XlNQWxGmBSLYpXIreiSKouqfoalEwN1O82wfipDCSO6UFz2wKnCcMbkogbdsdunOIZEgQXX5M95MqsA9mnTWLj80EF7N4V0LkwRIYT+wEFZ4rgA+zUb/sY4ndqziedfXyC8Bga8b/TV8YdgcxK/3IeKSzY7rc9WvwjJfRvpzpgEQ0KOzPcJFNXhzqx7u8V/kKmGJkiJHCBWUe0CfHgF8oqKEnFJp2VkbVHPooohCA8GWwRAHKRGtoegKtBbKulgfx8s7nbz56kguKXPP1XZubIwzu0g4ZarXQUU6f3pMl6QDBuiQhNE72SkU+xTH/pqzq/kEnkkKPeZspHqiI+Tj5cvwvPYembwyOLBGmt2PuFATOsyASdRb9hjjEuroJsf957HJO6Hyoom3sYobOXXBmuF+QfE3UWgQbaPxOUxijD80jTqOLhGgWKJKK5mDSYzvjXvfJEuYUolIK6fVzrGEsJyJRjjvN6NBygXZ057QVrmYEegyJX5n0KxfI6LhVNU3wzspiD6an7AX696BIgkFgV5Zwlklap8MU9imU4/g66eutXcjCOmrPSvkwsPcMQR7KFX2Lkol/HuOw7WR2v7hjuTf+/DferYGdQeKQ4C9QoZls+T4Cii4Y9ObANaWgoDK0GDZ3RYwv1DNBO4uEWwfnu6OzA0ej8cBZHfmT53grUpyjtWD1xhYRuXr0Ruzyag/B7Q1D0RBR/Q==
+X-Microsoft-Antispam-Message-Info: Dx+3iLHZ6NHDqrjVgt+hg1zhUFk2tR4laLAuGNlqyApjq/H/dK223xD1U5VyIHtZRrBTlggBvebkGl2Olj2LpeyiElQ3u9QmHtkd73TJ9LpsAwEmMZuCwR6GG9GXCk+RDACfTOzbvTYkWi1lqGIJZd/6Ljm/zKdDeaLXeHQksaoXTDGxt4wE3/8n0NiqJ0CBbrHrQ1EnO3hFpyUDXn9OLpQv4s33+iFkFG05K+Iom1hQrouSBf78YymHsB88LLbRJ8M35nZkRUFOjV7j23dGb5KM9xSEin8W6Lx1YU/NEB3tSh1R/HHZ60u7DSv9FTOW6YQ493/bk3SAGT36aXhK54g3gmxhFYCanILS0f2Pih64EHZKVbY7QjEVv6OzLdtLiSMrFKu7npD8x0/DkMPUcQkc9UG4yYG2Vv+SqCY3NEfFsj1he5QUtSj7xBOoG409yxg0HsS1z4jJOpmoFWdvlH2EYd37QeYDvnGIZYjhCldUxgHwzUPJzuvD1uMuQ52oeciLKKET1tpr9HhPye/v3L6M/Gwb5pwreRj268qbCpj2Qf0grIMa4FGro+qSZ+gTd5SplMNuJzhTD9PzDqyZwha1BrPPhY/wbbdEkah0l3MjNbl96MveVypr++zZG+pPXDYvbWtEDKKnTk+U7F70DgC2WUw6fr0FdFITYItk3+vecsWee4pP1kXFxWsBbLrFsCF7FsR43DIrGoIDRR59jg==
 X-Forefront-Antispam-Report: CIP:165.204.84.17; CTRY:US; LANG:en; SCL:1; SRV:;
  IPV:CAL; SFV:NSPM; H:SATLEXMB04.amd.com; PTR:InfoDomainNonexistent; CAT:NONE;
- SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(356005)(2906002)(16526019)(81166007)(316002)(36756003)(5660300002)(186003)(47076005)(8676002)(36860700001)(44832011)(2616005)(82310400004)(83380400001)(4326008)(1076003)(508600001)(54906003)(70206006)(26005)(86362001)(6666004)(70586007)(8936002)(110136005)(336012)(40460700003)(426003)(36900700001);
+ SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(4326008)(356005)(8676002)(5660300002)(6666004)(110136005)(54906003)(316002)(508600001)(16526019)(83380400001)(70206006)(47076005)(1076003)(426003)(336012)(186003)(26005)(70586007)(36860700001)(36756003)(44832011)(81166007)(40460700003)(2616005)(86362001)(8936002)(2906002)(82310400004)(36900700001);
  DIR:OUT; SFP:1101; 
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 10:09:04.5861 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 38fd08d1-238c-4450-8aab-08da1623263d
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 10:09:20.2371 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9716a9c9-c4ff-4b54-13c9-08da16232f94
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d; Ip=[165.204.84.17];
  Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT067.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT017.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3978
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4928
 Cc: Vasant Hegde <vasant.hegde@amd.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -134,120 +132,173 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
-Upcoming AMD systems can have multiple PCI segments. Hence pass PCI
-segment ID to pci_get_domain_bus_and_slot() instead of '0'.
+By default, PCI segment is zero and can be omitted. To support system
+with non-zero PCI segment ID, modify the parsing functions to allow
+PCI segment ID.
 
-Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- drivers/iommu/amd/init.c  |  6 ++++--
- drivers/iommu/amd/iommu.c | 19 ++++++++++---------
- 2 files changed, 14 insertions(+), 11 deletions(-)
+ .../admin-guide/kernel-parameters.txt         | 34 +++++++++++----
+ drivers/iommu/amd/init.c                      | 41 ++++++++++++-------
+ 2 files changed, 51 insertions(+), 24 deletions(-)
 
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index f5a27f067db9..cc8f0c82ff55 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -2208,23 +2208,39 @@
+ 
+ 	ivrs_ioapic	[HW,X86-64]
+ 			Provide an override to the IOAPIC-ID<->DEVICE-ID
+-			mapping provided in the IVRS ACPI table. For
+-			example, to map IOAPIC-ID decimal 10 to
+-			PCI device 00:14.0 write the parameter as:
++			mapping provided in the IVRS ACPI table.
++			By default, PCI segment is 0, and can be omitted.
++			For example:
++			* To map IOAPIC-ID decimal 10 to PCI device 00:14.0
++			  write the parameter as:
+ 				ivrs_ioapic[10]=00:14.0
++			* To map IOAPIC-ID decimal 10 to PCI segment 0x1 and
++			  PCI device 00:14.0 write the parameter as:
++				ivrs_ioapic[10]=0001:00:14.0
+ 
+ 	ivrs_hpet	[HW,X86-64]
+ 			Provide an override to the HPET-ID<->DEVICE-ID
+-			mapping provided in the IVRS ACPI table. For
+-			example, to map HPET-ID decimal 0 to
+-			PCI device 00:14.0 write the parameter as:
++			mapping provided in the IVRS ACPI table.
++			By default, PCI segment is 0, and can be omitted.
++			For example:
++			* To map HPET-ID decimal 0 to PCI device 00:14.0
++			  write the parameter as:
+ 				ivrs_hpet[0]=00:14.0
++			* To map HPET-ID decimal 10 to PCI segment 0x1 and
++			  PCI device 00:14.0 write the parameter as:
++				ivrs_ioapic[10]=0001:00:14.0
+ 
+ 	ivrs_acpihid	[HW,X86-64]
+ 			Provide an override to the ACPI-HID:UID<->DEVICE-ID
+-			mapping provided in the IVRS ACPI table. For
+-			example, to map UART-HID:UID AMD0020:0 to
+-			PCI device 00:14.5 write the parameter as:
++			mapping provided in the IVRS ACPI table.
++
++			For example, to map UART-HID:UID AMD0020:0 to
++			PCI segment 0x1 and PCI device ID 00:14.5,
++			write the parameter as:
++				ivrs_acpihid[0001:00:14.5]=AMD0020:0
++
++			By default, PCI segment is 0, and can be omitted.
++			For example, PCI device 00:14.5 write the parameter as:
+ 				ivrs_acpihid[00:14.5]=AMD0020:0
+ 
+ 	js=		[HW,JOY] Analog joystick
 diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 4a9f424eb4b4..ccc0208d4b69 100644
+index ccc0208d4b69..ba0ef8192a2f 100644
 --- a/drivers/iommu/amd/init.c
 +++ b/drivers/iommu/amd/init.c
-@@ -1961,7 +1961,8 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
- 	int cap_ptr = iommu->cap_ptr;
- 	int ret;
+@@ -3288,15 +3288,17 @@ static int __init parse_amd_iommu_options(char *str)
  
--	iommu->dev = pci_get_domain_bus_and_slot(0, PCI_BUS_NUM(iommu->devid),
-+	iommu->dev = pci_get_domain_bus_and_slot(iommu->pci_seg->id,
-+						 PCI_BUS_NUM(iommu->devid),
- 						 iommu->devid & 0xff);
- 	if (!iommu->dev)
- 		return -ENODEV;
-@@ -2024,7 +2025,8 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
- 		int i, j;
- 
- 		iommu->root_pdev =
--			pci_get_domain_bus_and_slot(0, iommu->dev->bus->number,
-+			pci_get_domain_bus_and_slot(iommu->pci_seg->id,
-+						    iommu->dev->bus->number,
- 						    PCI_DEVFN(0, 0));
- 
- 		/*
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 4fe77f77dfa1..4dd9d4201ffd 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -472,7 +472,7 @@ static void dump_command(unsigned long phys_addr)
- 		pr_err("CMD[%d]: %08x\n", i, cmd->data[i]);
- }
- 
--static void amd_iommu_report_rmp_hw_error(volatile u32 *event)
-+static void amd_iommu_report_rmp_hw_error(struct amd_iommu *iommu, volatile u32 *event)
+ static int __init parse_ivrs_ioapic(char *str)
  {
- 	struct iommu_dev_data *dev_data = NULL;
- 	int devid, vmg_tag, flags;
-@@ -484,7 +484,7 @@ static void amd_iommu_report_rmp_hw_error(volatile u32 *event)
- 	flags   = (event[1] >> EVENT_FLAGS_SHIFT) & EVENT_FLAGS_MASK;
- 	spa     = ((u64)event[3] << 32) | (event[2] & 0xFFFFFFF8);
+-	unsigned int bus, dev, fn;
++	u32 seg = 0, bus, dev, fn;
+ 	int ret, id, i;
+ 	u16 devid;
  
--	pdev = pci_get_domain_bus_and_slot(0, PCI_BUS_NUM(devid),
-+	pdev = pci_get_domain_bus_and_slot(iommu->pci_seg->id, PCI_BUS_NUM(devid),
- 					   devid & 0xff);
- 	if (pdev)
- 		dev_data = dev_iommu_priv_get(&pdev->dev);
-@@ -504,7 +504,7 @@ static void amd_iommu_report_rmp_hw_error(volatile u32 *event)
- 		pci_dev_put(pdev);
- }
- 
--static void amd_iommu_report_rmp_fault(volatile u32 *event)
-+static void amd_iommu_report_rmp_fault(struct amd_iommu *iommu, volatile u32 *event)
- {
- 	struct iommu_dev_data *dev_data = NULL;
- 	int devid, flags_rmp, vmg_tag, flags;
-@@ -517,7 +517,7 @@ static void amd_iommu_report_rmp_fault(volatile u32 *event)
- 	flags     = (event[1] >> EVENT_FLAGS_SHIFT) & EVENT_FLAGS_MASK;
- 	gpa       = ((u64)event[3] << 32) | event[2];
- 
--	pdev = pci_get_domain_bus_and_slot(0, PCI_BUS_NUM(devid),
-+	pdev = pci_get_domain_bus_and_slot(iommu->pci_seg->id, PCI_BUS_NUM(devid),
- 					   devid & 0xff);
- 	if (pdev)
- 		dev_data = dev_iommu_priv_get(&pdev->dev);
-@@ -543,13 +543,14 @@ static void amd_iommu_report_rmp_fault(volatile u32 *event)
- #define IS_WRITE_REQUEST(flags)			\
- 	((flags) & EVENT_FLAG_RW)
- 
--static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
-+static void amd_iommu_report_page_fault(struct amd_iommu *iommu,
-+					u16 devid, u16 domain_id,
- 					u64 address, int flags)
- {
- 	struct iommu_dev_data *dev_data = NULL;
- 	struct pci_dev *pdev;
- 
--	pdev = pci_get_domain_bus_and_slot(0, PCI_BUS_NUM(devid),
-+	pdev = pci_get_domain_bus_and_slot(iommu->pci_seg->id, PCI_BUS_NUM(devid),
- 					   devid & 0xff);
- 	if (pdev)
- 		dev_data = dev_iommu_priv_get(&pdev->dev);
-@@ -612,7 +613,7 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ 	ret = sscanf(str, "[%d]=%x:%x.%x", &id, &bus, &dev, &fn);
+-
+ 	if (ret != 4) {
+-		pr_err("Invalid command line: ivrs_ioapic%s\n", str);
+-		return 1;
++		ret = sscanf(str, "[%d]=%x:%x:%x.%x", &id, &seg, &bus, &dev, &fn);
++		if (ret != 5) {
++			pr_err("Invalid command line: ivrs_ioapic%s\n", str);
++			return 1;
++		}
  	}
  
- 	if (type == EVENT_TYPE_IO_FAULT) {
--		amd_iommu_report_page_fault(devid, pasid, address, flags);
-+		amd_iommu_report_page_fault(iommu, devid, pasid, address, flags);
- 		return;
+ 	if (early_ioapic_map_size == EARLY_MAP_SIZE) {
+@@ -3305,7 +3307,8 @@ static int __init parse_ivrs_ioapic(char *str)
+ 		return 1;
  	}
  
-@@ -653,10 +654,10 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
- 			pasid, address, flags);
- 		break;
- 	case EVENT_TYPE_RMP_FAULT:
--		amd_iommu_report_rmp_fault(event);
-+		amd_iommu_report_rmp_fault(iommu, event);
- 		break;
- 	case EVENT_TYPE_RMP_HW_ERR:
--		amd_iommu_report_rmp_hw_error(event);
-+		amd_iommu_report_rmp_hw_error(iommu, event);
- 		break;
- 	case EVENT_TYPE_INV_PPR_REQ:
- 		pasid = PPR_PASID(*((u64 *)__evt));
+-	devid = ((bus & 0xff) << 8) | ((dev & 0x1f) << 3) | (fn & 0x7);
++	devid = ((seg & 0xffff) << 16) | ((bus & 0xff) << 8) |
++		((dev & 0x1f) << 3) | (fn & 0x7);
+ 
+ 	cmdline_maps			= true;
+ 	i				= early_ioapic_map_size++;
+@@ -3318,15 +3321,17 @@ static int __init parse_ivrs_ioapic(char *str)
+ 
+ static int __init parse_ivrs_hpet(char *str)
+ {
+-	unsigned int bus, dev, fn;
++	u32 seg = 0, bus, dev, fn;
+ 	int ret, id, i;
+ 	u16 devid;
+ 
+ 	ret = sscanf(str, "[%d]=%x:%x.%x", &id, &bus, &dev, &fn);
+-
+ 	if (ret != 4) {
+-		pr_err("Invalid command line: ivrs_hpet%s\n", str);
+-		return 1;
++		ret = sscanf(str, "[%d]=%x:%x:%x.%x", &id, &seg, &bus, &dev, &fn);
++		if (ret != 5) {
++			pr_err("Invalid command line: ivrs_hpet%s\n", str);
++			return 1;
++		}
+ 	}
+ 
+ 	if (early_hpet_map_size == EARLY_MAP_SIZE) {
+@@ -3335,7 +3340,8 @@ static int __init parse_ivrs_hpet(char *str)
+ 		return 1;
+ 	}
+ 
+-	devid = ((bus & 0xff) << 8) | ((dev & 0x1f) << 3) | (fn & 0x7);
++	devid = ((seg & 0xffff) << 16) | ((bus & 0xff) << 8) |
++		((dev & 0x1f) << 3) | (fn & 0x7);
+ 
+ 	cmdline_maps			= true;
+ 	i				= early_hpet_map_size++;
+@@ -3348,15 +3354,18 @@ static int __init parse_ivrs_hpet(char *str)
+ 
+ static int __init parse_ivrs_acpihid(char *str)
+ {
+-	u32 bus, dev, fn;
++	u32 seg = 0, bus, dev, fn;
+ 	char *hid, *uid, *p;
+ 	char acpiid[ACPIHID_UID_LEN + ACPIHID_HID_LEN] = {0};
+ 	int ret, i;
+ 
+ 	ret = sscanf(str, "[%x:%x.%x]=%s", &bus, &dev, &fn, acpiid);
+ 	if (ret != 4) {
+-		pr_err("Invalid command line: ivrs_acpihid(%s)\n", str);
+-		return 1;
++		ret = sscanf(str, "[%x:%x:%x.%x]=%s", &seg, &bus, &dev, &fn, acpiid);
++		if (ret != 5) {
++			pr_err("Invalid command line: ivrs_acpihid(%s)\n", str);
++			return 1;
++		}
+ 	}
+ 
+ 	p = acpiid;
+@@ -3371,8 +3380,10 @@ static int __init parse_ivrs_acpihid(char *str)
+ 	i = early_acpihid_map_size++;
+ 	memcpy(early_acpihid_map[i].hid, hid, strlen(hid));
+ 	memcpy(early_acpihid_map[i].uid, uid, strlen(uid));
+-	early_acpihid_map[i].devid =
+-		((bus & 0xff) << 8) | ((dev & 0x1f) << 3) | (fn & 0x7);
++	early_acpihid_map[i].devid = ((seg & 0xffff) << 16) |
++				     ((bus & 0xff) << 8) |
++				     ((dev & 0x1f) << 3) |
++				     (fn & 0x7);
+ 	early_acpihid_map[i].cmd_line	= true;
+ 
+ 	return 1;
 -- 
 2.27.0
 
