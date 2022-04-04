@@ -1,155 +1,144 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E7F0CC433EF
-	for <iommu@archiver.kernel.org>; Mon,  4 Apr 2022 17:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2D4CCC433F5
+	for <iommu@archiver.kernel.org>; Mon,  4 Apr 2022 17:24:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 7E74A60FB6;
-	Mon,  4 Apr 2022 17:05:14 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B9A0D408B4;
+	Mon,  4 Apr 2022 17:24:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aczPfrMaHObH; Mon,  4 Apr 2022 17:05:13 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 2823260A81;
-	Mon,  4 Apr 2022 17:05:13 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id VBSLKk4xnMWs; Mon,  4 Apr 2022 17:24:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 66634408A7;
+	Mon,  4 Apr 2022 17:24:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ED865C001D;
-	Mon,  4 Apr 2022 17:05:12 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9A4D3C0012
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 17:05:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2FCFDC002C;
+	Mon,  4 Apr 2022 17:24:30 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CBD26C0012
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 17:24:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 711DE40182
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 17:05:11 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id A403F408A7
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 17:24:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=amd.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id trbJyPvvPxLm for <iommu@lists.linux-foundation.org>;
- Mon,  4 Apr 2022 17:05:07 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 3UHsJjqESWUZ for <iommu@lists.linux-foundation.org>;
+ Mon,  4 Apr 2022 17:24:27 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam11on20624.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7eae::624])
- by smtp2.osuosl.org (Postfix) with ESMTPS id EEDE74011C
- for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 17:05:06 +0000 (UTC)
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam10on20622.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e88::622])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 487E2408A6
+ for <iommu@lists.linux-foundation.org>; Mon,  4 Apr 2022 17:24:27 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VpXPmZ52+lRbRLjBgTHN+SA6l20m/1YBH9rxJHHrM9q4wqkkmkKCKH4kcetCChq8WTH/wyl3nB25eRBKf1k5nLPU5Y0TuGBd4uJztN+P6Z+Jw7Rzv1y19zHRPZq+ks5NNPJlFJjrNBlwqYowKp/cfY4VOcmmuTGU0coiAybZ46D0yccXIOFnmEcT+PrYlCwy+x3ku0GqwJ8BT47jpGoAvATWVndXLLdUKcrDxdkjuxrmptzh2FLPtHmwnt12wNsDlD3IYlpLvMXB94rZneYnMFF4gSsBMzNUwUvqEt55AIAphl98w6DWcv8mcMMFfejvC/AHbbXIkrBZJ4O7pZbhpA==
+ b=kXrJ2Xv4voUTn0SqL8FbHzA2pYs6q8NkhzXR0S6+LWynh/9LGSq1DkTbfktmmYVXZtjHUkTSr0J/9gEETE4Jj1501cAb0QA9jhdzg07LFiXkSHcGX5cghZW7V26i48kQR7CzPKZO+8J66fwTlPFjc6hU3rJgOxtw75g2sf9wuIWwu6+slYDjdMvPA9zd+X35sz1vxJvpialqbS+Dtu5nHOpvD3t5ndhzL4+JVzOcYNG4B3bbwnhmXJ3omlKYUFokXWqwjyLQcPigHLqr3BsBligLJbjB+QBlkqlRl1HDZduk54Pm49Ve/EOiz/z2hV7WnUWOGtzPIybVH36rMr6ZXg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=McJHxPRl+hV1ObQKwUEe7tb6XK1sO6IKjw8qy89dJv4=;
- b=DqonjpXcWLj9nuYoPJAi5Y5sTvFdd0TyEs0kR2Eu++HiC7RJfQNjeQJA9+tZNaZECAotmm3KVnhtSL3s77iD1jSwy7/CTPwEFqDBmXEOJthskmeUfral0p4j2uLleinOjKkebiZCqbkoi3sXsYKOmovpbCTbIVQwTClcZmKK2wk3XDuFEEVtPUoqx3B9tzaEkPlIRDzNaf5KiNpM8Xt4Qem9n6n1wxQHEN6Ykt3i0k/m8hX1nwDHlEP/17LmW1+Q4hySwHz1wRxQ0Te0XeaIxUU7lQbxTCQlairNW1Cof/+Oxc71H+lYzV9/bgI+rIOWhmpNvj6PwVKDoMVrfzJcuA==
+ bh=S6nXZsRpMcIPNBE67HK0hAYnsq8Azr0r83ONj99ZO0s=;
+ b=M4buIQS2cI5Jv6IevJS2M/27EAmOCq5242A8EHs74Og3/zqVWSl5slvgAwRJgZ0y6X56cbvTlthJ/3yZfhuZJ73XVH3EZupvipmquGqDhMXqUjis0WfYRjm/4QX5b8nwRRX2pfmHC/ia1DtOHzcrr8mQiIdIZ+u72/tCMrD6VNR2EAmPFXl5ecRDf1ClMVoWoxXp2Q19GE/reYbCHwoilhNsJOfbHMmLvJ8q9ZTbyUx5Tl5JNUte7ZPxOU0mMkhynfWv+5VnKX2yv6CPU6LQ/opHngi+BAAWC4Umq0Rci7yvJe8KtMVB45DqxE3+99QyVILUxKz50rFbgi2JWVtj+A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=McJHxPRl+hV1ObQKwUEe7tb6XK1sO6IKjw8qy89dJv4=;
- b=lnfv2stIG4QyWOWSDbgkWPOTkb70asgsW8PB3VwQ/ilY4o+ingtGFKIS//AsHQgkfVqlLutgxjejWVpggn+ERZe5bgXfHd6mvKzVAIHdhkC7m90V1UoqyV+prSNLmEHOHd2Czb98jkYzD2quA5ZadzI13UwzwOwizuMVgTPk8mo=
-Received: from BL1PR12MB5157.namprd12.prod.outlook.com (2603:10b6:208:308::15)
- by DM6PR12MB2938.namprd12.prod.outlook.com (2603:10b6:5:18a::31) with
- Microsoft SMTP Server (version=TLS1_2,
+ bh=S6nXZsRpMcIPNBE67HK0hAYnsq8Azr0r83ONj99ZO0s=;
+ b=tewdc6cs6aswG4oQuuJmxjo3TSTBVF4tcrnN9FZtnNt8/9FA8iRo37nFmVqjklhoeYPq3N9/xjYV+WPobt/u8wFafoXtt8YH7CmDDnYeqnfxjAkqCc0bGT0atGTgyHgGhKMxUBUaP+DNlfGoCUc2kgbqEpoDHn46YecABeFCkAAC0jb81pP887Kr4CO82Yy87XD1+IKupYTQtdKPuWPeqHhhSDTIl8U34ry/5Coi4DcBklZjd5jSF4c8d0Rrum1QLjYH/cYigbOjspTXP03yNCLJ0K3P7p9Fb16ORH7X4fEfWMSIDSDpcniPn4MU0ASAv5yEfkUbqm2xy5gAp4Vh7w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BN6PR1201MB0066.namprd12.prod.outlook.com (2603:10b6:405:54::16)
+ with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
- 2022 17:05:01 +0000
-Received: from BL1PR12MB5157.namprd12.prod.outlook.com
- ([fe80::70d6:f6dd:3e14:3c2d]) by BL1PR12MB5157.namprd12.prod.outlook.com
- ([fe80::70d6:f6dd:3e14:3c2d%5]) with mapi id 15.20.5123.031; Mon, 4 Apr 2022
- 17:05:01 +0000
-To: Christoph Hellwig <hch@infradead.org>
-Subject: RE: [PATCH 0/2] Fix issues with untrusted devices and AMD IOMMU
-Thread-Topic: [PATCH 0/2] Fix issues with untrusted devices and AMD IOMMU
-Thread-Index: AQHYSEOt7+/LxPSUwkmrLofc9S+M1Kzf+M6AgAABfwA=
-Date: Mon, 4 Apr 2022 17:05:00 +0000
-Message-ID: <BL1PR12MB51573B811E1F7321E25EF785E2E59@BL1PR12MB5157.namprd12.prod.outlook.com>
-References: <20220404164707.1128-1-mario.limonciello@amd.com>
- <YksizUJzRgEEdHLJ@infradead.org>
-In-Reply-To: <YksizUJzRgEEdHLJ@infradead.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_Enabled=true;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_SetDate=2022-04-04T17:04:59Z; 
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_Method=Standard;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_Name=AMD Official Use
- Only-AIP 2.0;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_ActionId=0f11fbff-551d-4fe5-8ce3-3b81779eb115;
- MSIP_Label_88914ebd-7e6c-4e12-a031-a9906be2db14_ContentBits=1
-msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_enabled: true
-msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_setdate: 2022-04-04T17:04:59Z
-msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_method: Standard
-msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_name: AMD Official Use
- Only-AIP 2.0
-msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
-msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_actionid: d7d44dc8-83e0-4d5a-ad06-0640c7806498
-msip_label_88914ebd-7e6c-4e12-a031-a9906be2db14_contentbits: 0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2f3dd9fa-d9b3-4809-1637-08da165d4167
-x-ms-traffictypediagnostic: DM6PR12MB2938:EE_
-x-microsoft-antispam-prvs: <DM6PR12MB29383F5ABF81B960D78B5AB0E2E59@DM6PR12MB2938.namprd12.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: bX+QbpplrT4PeafEJMYIOwV9JSgr0GAcOEt2Ly5QWPSdj52JOpmkXjlpFuaBM0Z3YVuTfZ31dcQq6u1EG4uJeffxvwL3l7mC2pJryJgwRMucliIPE/C615AS8BcaT/YuL1y5iQkMZ/NhmJbI34IVvxg3kgZqepdRzKn1/ipjy98e9nvaK1qkUVcphf/1vPk8zPaCKnM+1xGgpXPkqMyfS2piQecCJCQNElyQUlU3b8byGjuKkcWFzJwAjYOvfYG9PslQIye5uq8EP9jvNwkWFpfZS9sK4fy4DsgkNStcAghLLWRSFAAkzgH98j25HZaq51clKC2TFtb++unx+BGzRmXjrX8oa89td+nYw0b9PPf2dz0b4FUz0mG1THpSOmQmc+IT6+n0OQeePIr2bAVuapPUDgHyra6fL4LM145ChDZZ1gPwTGQiLgYiNtNXb/sUj1FO21cNYiFNx70KP6a4SmzrsL+NP2C6bxeXvLPiOCOSogX0XDY1rOA6Xqvx1NfqCy9j31Svoz+MCWfsy/PQXfxvcdP9T0hFvipuUlN7hGV/Sl99mHFfgbsCwpLS8Yng9IswkdA4zSLAFilElVvVRM7Etv6x/TFR1nlC5xNN95IZAbSrBHrSgCK9pq7B7MwLykSZoavzfM9HSMVH2qn4IyX+vyzCAxM1ATqQleECxJli5lXAQ74OSeqQDtsgpqw5gMd/pHXY+1xFX7L+KeAkBQ==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL1PR12MB5157.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(316002)(122000001)(54906003)(6916009)(38100700002)(52536014)(55016003)(6506007)(5660300002)(9686003)(508600001)(7696005)(33656002)(83380400001)(38070700005)(8936002)(186003)(2906002)(8676002)(4326008)(76116006)(66556008)(66476007)(66446008)(64756008)(66946007)(71200400001)(86362001);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?CbEYVpHKpasxbVNALomnXcpaH3cfnmcuYEqjzK/w7zJhBA/bqM31P/2Bb5OM?=
- =?us-ascii?Q?VLhFialP372u+oxOZL8kvr0B5XLGjYHzA2d9ICaXKaYeY9EfS2AQeZgPcF8J?=
- =?us-ascii?Q?pzfb/3C6dwtePhGJeZhVt9qMl0fOid2DRcPdoyJp+XFxsnNHiNpbwUvqrOAm?=
- =?us-ascii?Q?Ed3kqgyrdRsRB2n73cPFXVczZNeC24jdNUDdFJ3yVYelbGwl2lE46dxPF9Nu?=
- =?us-ascii?Q?1ObBZLj/ijH/dveCYvl30Aaa0T5PQRG9OUD/YPKpX2FClGlBk+n1oBWhLRhE?=
- =?us-ascii?Q?j1j3d/wMDNvV/WsBs4qRJqnvRznZsdbnPOZ7qKcSFl+dkAglbFwQGJ8QHCBb?=
- =?us-ascii?Q?gzb+5eag6UsED7WOBpoK82XHop/6yQU8NNp+rIaoAf5tUomocJneoC1Hq0CW?=
- =?us-ascii?Q?RBizWKAtf+Jaxod85kKWeLQ9xceXZEF1n/B8qTVvIzOOIfnO+Ot2b/jb4GuT?=
- =?us-ascii?Q?rzHmCEHtdBUf+4OKN0cVazwz1rhWdP1rFJNos26Bi0FhtoZvpCcmQ1as0IQK?=
- =?us-ascii?Q?6x+fAkEEevxKTVwD0dCSbI9iUoQHlN6nnOK0BBWt4YLeFdfcH55fNrem60j5?=
- =?us-ascii?Q?HBXyrHg9hdIvm5/rBIS74kcPAszQNooAr0A2KU0vSZY2z/qWhDH6Ro4n2nMk?=
- =?us-ascii?Q?zl3GRQlgghaGPjYToOSepbE3NHZt4efFpoX3p1hsywwF0XyBTc/PYIFf14Gv?=
- =?us-ascii?Q?8B5dRSW8NZnBYEeeQnf4Ov8fq3Y8pYuqK+XBk3Y24Hz0DOCGJQE0yczdIgmO?=
- =?us-ascii?Q?W9+koI3LpUFa5hLVeF4OTA1Hxmxh9XEe+Z89c+gh1aykoZhhUlrPH+OYwWtp?=
- =?us-ascii?Q?AdsL/IHB+HMj6k+EfG327k9I15ezTIeCxmcPl1DgZ3GBR0fNMXrCxwWx31yI?=
- =?us-ascii?Q?wrzSVvWYmOeueoQE0BpqJjEnd74IMHj/25NW40GCiEDRySHLd+L/WwtMaPto?=
- =?us-ascii?Q?548ZDX04JrpWRQEy8iKu40gzGA3mUmVUuXox9fanFI/1b9BPBSaK0q6SOMpD?=
- =?us-ascii?Q?Ds22D25x+lLgzQs+XRA4GuTgQytrkZrlLVBW7PRIZLJg8kzWURzdZVFYuoa9?=
- =?us-ascii?Q?wtmXs69x0ASckqRr3pIjG6f25CoUPJBUpn7HiVxnQ0bwe050DjsCEqZS4Nst?=
- =?us-ascii?Q?oL01AM1Vwi4PG8/kmlWWACyCB4/sgNR4gEPTWxRLtNcQ/Lvmgd25G0WOH2IX?=
- =?us-ascii?Q?9AiItrppgJfFY/ZlH4HRKVz/fK/dAEsp+KKn/JelRBTW0nRdDEc+PA/ZpnCr?=
- =?us-ascii?Q?dxT4HI8UrUcmewK7iFTBoGdBtqCKRGcYm3Zq400jTsE9QA53MQe2hhGjzLap?=
- =?us-ascii?Q?UKDmRsmZTox+14YQ8eRN7fbsxIirxIlcVlc27KlrYgFtpSpIz1rSI8Ifv5/l?=
- =?us-ascii?Q?6erPwwrREyGja8Du2gEISrlW4nLccUD9iEoHPDIPuvduc8hJ80VqtmcLhPtp?=
- =?us-ascii?Q?+Jgm6OkLGBP7KJau+XzErimb+9euUpEXH3NfnDKhWndEbqrNXxTyTkCZsmc3?=
- =?us-ascii?Q?qsdEyZP7ixHoi2Pq1uSA2ea1M9IM/AJk16f2FNazby2f87W5X6R6pOj21qnZ?=
- =?us-ascii?Q?BdMrpt2k4EhmnKRU8KSqpo3EK0iaz8abX7NZR1Xe+dtUOQ+OLYNFo3mmQbNV?=
- =?us-ascii?Q?NQ1KaJNtv87/I2PW7rf3fnljBNB5qzYGbK8nr6HioayPWZ1EQ8PdtEbcRwcL?=
- =?us-ascii?Q?Au+ggHTcvb+2pyqhpPuKjE2qf7QX7xgLWL6MKEWJ8PLz0ih2PIWZdXmXcRxT?=
- =?us-ascii?Q?CC5VKtWvS86tim6hY8FFJHqtWKnnOq/iPFi983r3tCcbMg90lvzw?=
+ 2022 17:24:05 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374%5]) with mapi id 15.20.5123.031; Mon, 4 Apr 2022
+ 17:24:05 +0000
+Date: Mon, 4 Apr 2022 14:24:03 -0300
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH RFC v2 02/11] iommu: Add iommu_group_singleton_lockdown()
+Message-ID: <20220404172403.GO2120790@nvidia.com>
+References: <20220329053800.3049561-1-baolu.lu@linux.intel.com>
+ <20220329053800.3049561-3-baolu.lu@linux.intel.com>
+ <BN9PR11MB52760F455B3319789BAB1E0E8C1E9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220329114259.GB1716663@nvidia.com>
+ <BN9PR11MB5276239993592FF808726EF68C1F9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220330115820.GE1716663@nvidia.com>
+ <6ebd4f9b-5824-9489-43c3-7810963ec918@linux.intel.com>
+Content-Disposition: inline
+In-Reply-To: <6ebd4f9b-5824-9489-43c3-7810963ec918@linux.intel.com>
+X-ClientProxiedBy: BL0PR02CA0025.namprd02.prod.outlook.com
+ (2603:10b6:207:3c::38) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0ee14c9e-1125-4801-ba5c-08da165feb21
+X-MS-TrafficTypeDiagnostic: BN6PR1201MB0066:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR1201MB0066558048C87A9A5389A163C2E59@BN6PR1201MB0066.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: owqaQwvM92KRAwf1JlgmltE5KxXJikG0WbtzLjhu2r0Kz/j3/Mg3Rvsuk4pYDTpQ/tHnWtew++iH0tJi2s9TjbCW7qxUct8i0+3P45SgFs88duGmUjI4Rd7cWzxKm+jsjaVnxGnKMvBi+T0/2wligypMufS9vSqF0VPxMWD3MMFXn4WQ00AXRKRW96U+ZS9zHL0U4/MVWwG96wA/mdc37uVw8SM845q3t7PiJp/5buNBId1iXAJF5cwblYP7CTOxBgXiGh6r2FkD9cn+veMs+gqLL+XS87eyYogsoX462N6iAKYI+wf0ip7460y1/uD/R7wRqrKdgTe8Bf79N3F/zw7xs5/atnWhgjQSreMpWiZTd8KwpsMPFd5cBWWFAz286+hEgbY7ujBYfTCBWPbPKIsvbssyM9iBM9G+hJHkDUfyK84k4j0c2zHqpJdG2N3r/rMkDR/nuUSRipZ0cFEZKyH2KTcmETx4NHRVNRN+p5Tc4A665DmZjhAqqUIV8gv4c0v5yA0mJq32j3FoUtdNWwc1I6Ce2zQq/5O4pROGtnDEzIHyN2+XJkJqsM5Yq+aeY5NYvkhfb8VjNSNoK1yRnQtxT9lNuA6p7/pn0wh5ATOrlzmfGJYO7MN2RrKv9bJrBJabKyU1MyZoSG8tSdW1EA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(54906003)(6916009)(1076003)(6512007)(33656002)(186003)(8676002)(6486002)(36756003)(2616005)(508600001)(66946007)(66556008)(66476007)(4326008)(7416002)(26005)(4744005)(83380400001)(8936002)(5660300002)(316002)(38100700002)(6506007)(53546011)(2906002)(86362001);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?53l09IMDJNrKYCOMRVJcPBsKv7cstjrPgsv1bgJqfrsVXc1ukfsYWmhbIDLo?=
+ =?us-ascii?Q?UsePtRgcysPMKZYVCdgWmTDfctgvdUMtpHKX6wlAc12+qn3uriXHWZpJsLDI?=
+ =?us-ascii?Q?uXw0NnEhNAK6/iHUWOrZg4z1HGJ+0r2demT0qCBxDSLvarDkzTKoOeyQzlXh?=
+ =?us-ascii?Q?1Oge9cL6uRB/tN6LkszVMSiybUmHezGWsnQiKsRFT3VotvBH3I76U9kjMfp5?=
+ =?us-ascii?Q?p8V3Kp/Pp6P4MCn4k3YImRSYi4BO0iK7PQQTC2jp1iG6Cl/dgPxkMYuYKYGu?=
+ =?us-ascii?Q?tF6rgiSFy42k3BM1as+bhXpQM4WSJpqg7I6adpdCAEkcCfyCuJH4nZ8jjjxM?=
+ =?us-ascii?Q?NHu2pLlHxWAfpDF6LwJLBy4O0Dbf5+9NMdgjs1vls0eKhfzuHOKNhmnnme80?=
+ =?us-ascii?Q?gnSOUQK+I5AUnseU86KXciPytpw25KlqLu4pNgKubCEfZ7/GkLkgRqKYqiku?=
+ =?us-ascii?Q?2yuRnvTGonnZJDZGMCiEyhhOkrd0WB4flKmYOHGVZYkIbortidXCcfSzyLKC?=
+ =?us-ascii?Q?Akz5ezn+eivIPqdmvgHrbTPGg7Fxi9JTEvVcoDgfBnGXXHEEk31yrVSs9B2T?=
+ =?us-ascii?Q?xMKc9bT/FsCbcWz9pBW8e9ljUwrTusouusAydTNBqsRcjym1XwoLW3E+u9q0?=
+ =?us-ascii?Q?oPkwbayJw8Z9EyNZvlQSyIQJyCIEYBbec63BJl3TabAoKgxzJTMH6c8z2fI8?=
+ =?us-ascii?Q?nde8E+n3cwN87ucbXMqQy48yMLiNKBUJ3qeD+RwsbZLsFypPux9BjRgl5UWw?=
+ =?us-ascii?Q?B4C/Pscuk45gF4Ve0q8MjmyscnOuLll6i7ZTUZxfKd5TC7Cmt4/LCcJe/98x?=
+ =?us-ascii?Q?/yQ4nZUnqauAXCefFQS2gxOhdeLqrdzYP3enIpCiK+xIv50lcJRaNXBVpCr9?=
+ =?us-ascii?Q?8IsDeT/xlNwK9eMrilqWcZKwiga1V4oQnTGKvZ5RFBzKg7dBSoD/NEvbC7vI?=
+ =?us-ascii?Q?5zvGkfQrEJGmtlHdtyAVJOtBmfUDvyjF10v2vWTbrlZ9YzINYnSyo1TKLWIo?=
+ =?us-ascii?Q?T1NHuGeOemJ7/zR7XaEhhi4IYu4+Kp0xzyFzP/S4DJ6Ji6iYx9W1kBYJKXSd?=
+ =?us-ascii?Q?An7Ju3Bju+vKfmfP9pBYVmQ/QsCG4+dn4EbMzvkN5PRuUuyOCG7JxokzxFKR?=
+ =?us-ascii?Q?dk/VSZxCQbIo3iVTfW0U3hZdBBbwe93IzWv0/54BJEBPQtDZccmCAoCBedt0?=
+ =?us-ascii?Q?54keLwAdD3LdlwONj4bH4kRBkOX9DjYI3lLMWNh+YuqoqhmnFX1tyW2BTk1L?=
+ =?us-ascii?Q?61nuuoJJIdVfwzoZiOhGG8peKLJGxeOktublDUwe+lhOxo/Vf7rzlvAutFmM?=
+ =?us-ascii?Q?dINOZ9WTvfcS3e9Z+tn9yZvUNRHJDcSw/IAlRgshkKt0CuKhceiagh0WsCtP?=
+ =?us-ascii?Q?iaBCAO+Ug49G6mfTtuSULccp4KaGcECs7jRXR/R06cf9b5MRfgh0ip0CLvH9?=
+ =?us-ascii?Q?Y/IiecR4GBQcEtFwSMKiEGfj2k+L8FgmmmIN7NYdbtfb1M6omSUu3+Ge8FW8?=
+ =?us-ascii?Q?YuDT7D9XEzdsRT9DPuTMmVF4YzOW4+tzKH+QBDLoBwI8Z2OMDitTbmon6+5r?=
+ =?us-ascii?Q?QuyGc7UBsT7jv9s7Mm3TcugzF7/Zi9glK+rbp6mjGZigTSn0AqbXJ1debWG0?=
+ =?us-ascii?Q?if9ydsfOjCJ5etFVlWHWaX6h9zWXhM4rhMpI/sUPktEshrE7iLgIlxk8s7ZO?=
+ =?us-ascii?Q?im0EtAyY9IADPGbSrrQsxeu5tZ0BeFQeDS1K+y5TGgrx3Qm6szNqXaK9GD0c?=
+ =?us-ascii?Q?dr2g7eo0eQ=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ee14c9e-1125-4801-ba5c-08da165feb21
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BL1PR12MB5157.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2f3dd9fa-d9b3-4809-1637-08da165d4167
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Apr 2022 17:05:00.9659 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3Rh8u/hM0j1lj7/cH356JrVINMWjPK+VKIMeoLnFWi54PeVs+OvxPksIBBWuh6oLAaVJBEqw535B3UfzQge9Aw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2938
-Cc: Will Deacon <will@kernel.org>, "Hegde, Vasant" <Vasant.Hegde@amd.com>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Robin Murphy <robin.murphy@arm.com>
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Apr 2022 17:24:05.1887 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: j92MkwaDdg+lmpjb+K2vBVYtoPL2xFApK++y9uGcMyZQbgk09+n7lFdGNbgZ7Aza
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB0066
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Will Deacon <will@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -162,59 +151,35 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: "Limonciello, Mario via iommu" <iommu@lists.linux-foundation.org>
-Reply-To: "Limonciello, Mario" <Mario.Limonciello@amd.com>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-[AMD Official Use Only]
+On Mon, Apr 04, 2022 at 01:43:49PM +0800, Lu Baolu wrote:
+> On 2022/3/30 19:58, Jason Gunthorpe wrote:
+> > > > Testing the group size is inherently the wrong test to make.
+> > > What is your suggestion then?
+> > Add a flag to the group that positively indicates the group can never
+> > have more than one member, even after hot plug. eg because it is
+> > impossible due to ACS, or lack of bridges, and so on.
+> 
+> The check method seems to be bus specific. For platform devices, perhaps
+> this kind of information should be retrieved from firmware interfaces
+> like APCI or DT.
+> 
+> From this point of view, would it be simpler and more reasonable for the
+> device driver to do such check? After all, it is the device driver that
+> decides whether to provide SVA services to the application via uacce.
 
-> On Mon, Apr 04, 2022 at 11:47:05AM -0500, Mario Limonciello wrote:
-> > The bounce buffers were originally set up, but torn down during
-> > the boot process.
-> > * This happens because as part of IOMMU initialization
-> >   `amd_iommu_init_dma_ops` gets called and resets the global swiotlb to 0.
-> > * When late_init gets called `pci_swiotlb_late_init` `swiotlb_exit` is
-> >   called and the buffers are torn down.
-> 
-> I think the proper thing is to do this:
-> 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index a1ada7bff44e6..079694f894b85 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -1838,17 +1838,10 @@ void amd_iommu_domain_update(struct
-> protection_domain *domain)
->  	amd_iommu_domain_flush_complete(domain);
->  }
-> 
-> -static void __init amd_iommu_init_dma_ops(void)
-> -{
-> -	swiotlb = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
-> -}
-> -
->  int __init amd_iommu_init_api(void)
->  {
->  	int err;
-> 
-> -	amd_iommu_init_dma_ops();
-> -
->  	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
->  	if (err)
->  		return err;
+The check has to do with the interconnect, not the device - I don't
+see how a device driver would know any better.
 
-I do expect that solves it as well.  The reason I submitted the way I did is
-that there seemed to be a strong affinity for having swiotlb disabled when IOMMU
-is enabled on AMD IOMMU.  The original code that disabled SWIOTLB in AMD IOMMU
-dates all the way back to 2.6.33 (commit 75f1cdf1dda92cae037ec848ae63690d91913eac)
-and it has ping ponged around since then to add more criteria that it would be or wouldn't
-be disabled, but was never actually dropped until your suggestion.
+Why do you bring up uacce? Nothing should need uacce to access SVA.
 
-If the consensus is that it should be dropped, I'll validate it does help and then send that out
-as a v2.  I do think that my messaging patch (1/2) may still be useful for debugging in the
-future if for another reason SWIOTLB is disabled.
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
