@@ -1,69 +1,57 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B6FFDC433F5
-	for <iommu@archiver.kernel.org>; Tue,  5 Apr 2022 10:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 55F40C433EF
+	for <iommu@archiver.kernel.org>; Tue,  5 Apr 2022 10:41:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 5090681BA8;
-	Tue,  5 Apr 2022 10:19:02 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id DB37560F58;
+	Tue,  5 Apr 2022 10:41:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wePlVq0yaONJ; Tue,  5 Apr 2022 10:19:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 4B07C81B60;
-	Tue,  5 Apr 2022 10:19:01 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 6BBhswGShaMd; Tue,  5 Apr 2022 10:41:13 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id C0E9460EA5;
+	Tue,  5 Apr 2022 10:41:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1EDB4C001D;
-	Tue,  5 Apr 2022 10:19:01 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9A47BC0012
- for <iommu@lists.linux-foundation.org>; Tue,  5 Apr 2022 10:18:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A898EC001D;
+	Tue,  5 Apr 2022 10:41:12 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 21FB5C0012
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Apr 2022 10:41:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7AF2981501
- for <iommu@lists.linux-foundation.org>; Tue,  5 Apr 2022 10:18:59 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 0FAE260EA5
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Apr 2022 10:41:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VPgVt6lcJe70 for <iommu@lists.linux-foundation.org>;
- Tue,  5 Apr 2022 10:18:58 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org
- [IPv6:2604:1380:4601:e00::1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id B9C2081497
- for <iommu@lists.linux-foundation.org>; Tue,  5 Apr 2022 10:18:58 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id F0375B81C98;
- Tue,  5 Apr 2022 10:18:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DF1CC385A0;
- Tue,  5 Apr 2022 10:18:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
- s=korg; t=1649153934;
- bh=r88hWIB6vNyoCMJJysi09WXaUEqZwlMCiIF3eh30XLA=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=s+MOrU2jXB4nhkf8jfKzzfx/Vz8dzFNGEXigg4XHuqHXX9cTAZSRMsLT53+4jHPyR
- RHLdV2y1Jbu+flutO0lefhnfGAqkN8gZ4qQS/U1u2bEm71PFbrikHp7nv5WaVgcEAF
- rgV0LcWT2Y0MxSitlEzWhCL5o0x0wJ7OHJtjCtzg=
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: linux-kernel@vger.kernel.org
-Subject: [PATCH 5.10 399/599] dma-debug: fix return value of __setup handlers
-Date: Tue,  5 Apr 2022 09:31:33 +0200
-Message-Id: <20220405070310.704342906@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070258.802373272@linuxfoundation.org>
-References: <20220405070258.802373272@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 3Ld7kA8ho3Ie for <iommu@lists.linux-foundation.org>;
+ Tue,  5 Apr 2022 10:41:10 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 1624260EAD
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Apr 2022 10:41:09 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 193ACD6E;
+ Tue,  5 Apr 2022 03:41:09 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
+ [10.1.196.40])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A35C13F5A1;
+ Tue,  5 Apr 2022 03:41:07 -0700 (PDT)
+From: Robin Murphy <robin.murphy@arm.com>
+To: joro@8bytes.org, baolu.lu@linux.intel.com, andreas.noever@gmail.com,
+ michael.jamet@intel.com, mika.westerberg@linux.intel.com,
+ YehezkelShB@gmail.com
+Subject: [PATCH v3 0/4] thunderbolt: Make iommu_dma_protection more accurate
+Date: Tue,  5 Apr 2022 11:41:00 +0100
+Message-Id: <cover.1649089693.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.28.0.dirty
 MIME-Version: 1.0
-Cc: Sasha Levin <sashal@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>, Igor Zhbanov <i.zhbanov@omprussia.ru>,
- stable@vger.kernel.org, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org, hch@lst.de,
+ linux-kernel@vger.kernel.org, mario.limonciello@amd.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,74 +69,47 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Randy Dunlap <rdunlap@infradead.org>
+Hi all,
 
-[ Upstream commit 80e4390981618e290616dbd06ea190d4576f219d ]
+Here's the third and hopefully final outing for this series, addressing
+Mika's review comments from last time and taking advantage of 5.18-rc1
+goodies to be even cleaner and more complete. I've also picked up
+Mario's AMD IOMMU patch to keep the whole topic together.
 
-When valid kernel command line parameters
-  dma_debug=off dma_debug_entries=100
-are used, they are reported as Unknown parameters and added to init's
-environment strings, polluting it.
+Unless there's other pending Thunderbolt development which might
+conflict, I suspect it would be simplest for the whole lot to go through
+the IOMMU tree.
 
-  Unknown kernel command line parameters "BOOT_IMAGE=/boot/bzImage-517rc5
-    dma_debug=off dma_debug_entries=100", will be passed to user space.
+Thanks,
+Robin.
 
-and
 
- Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc5
-     dma_debug=off
-     dma_debug_entries=100
+Mario Limonciello (1):
+  iommu/amd: Indicate whether DMA remap support is enabled
 
-Return 1 from these __setup handlers to indicate that the command line
-option has been handled.
+Robin Murphy (3):
+  iommu: Introduce device_iommu_capable()
+  iommu: Add capability for pre-boot DMA protection
+  thunderbolt: Make iommu_dma_protection more accurate
 
-Fixes: 59d3daafa1726 ("dma-debug: add kernel command line parameters")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux-foundation.org
-Cc: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/dma/debug.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/amd/amd_iommu_types.h         |  4 ++
+ drivers/iommu/amd/init.c                    |  3 ++
+ drivers/iommu/amd/iommu.c                   |  4 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  2 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       |  2 +-
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  2 +-
+ drivers/iommu/fsl_pamu_domain.c             |  2 +-
+ drivers/iommu/intel/iommu.c                 |  4 +-
+ drivers/iommu/iommu.c                       | 25 +++++++++++-
+ drivers/iommu/s390-iommu.c                  |  2 +-
+ drivers/thunderbolt/domain.c                | 12 ++----
+ drivers/thunderbolt/nhi.c                   | 44 +++++++++++++++++++++
+ include/linux/iommu.h                       | 10 ++++-
+ include/linux/thunderbolt.h                 |  2 +
+ 14 files changed, 100 insertions(+), 18 deletions(-)
 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 10d07ace46c1..f8ae54679865 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -928,7 +928,7 @@ static __init int dma_debug_cmdline(char *str)
- 		global_disable = true;
- 	}
- 
--	return 0;
-+	return 1;
- }
- 
- static __init int dma_debug_entries_cmdline(char *str)
-@@ -937,7 +937,7 @@ static __init int dma_debug_entries_cmdline(char *str)
- 		return -EINVAL;
- 	if (!get_option(&str, &nr_prealloc_entries))
- 		nr_prealloc_entries = PREALLOC_DMA_DEBUG_ENTRIES;
--	return 0;
-+	return 1;
- }
- 
- __setup("dma_debug=", dma_debug_cmdline);
 -- 
-2.34.1
-
-
+2.28.0.dirty
 
 _______________________________________________
 iommu mailing list
