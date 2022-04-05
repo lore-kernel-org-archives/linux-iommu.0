@@ -4,61 +4,60 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 24578C433EF
-	for <iommu@archiver.kernel.org>; Tue,  5 Apr 2022 09:03:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 004BCC433EF
+	for <iommu@archiver.kernel.org>; Tue,  5 Apr 2022 09:46:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id A0AEC409DC;
-	Tue,  5 Apr 2022 09:03:29 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 93170409E3;
+	Tue,  5 Apr 2022 09:46:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ByiLPoT73zCU; Tue,  5 Apr 2022 09:03:28 +0000 (UTC)
+	with ESMTP id 3wVlDS0AwlK1; Tue,  5 Apr 2022 09:46:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 8BA2F405A2;
-	Tue,  5 Apr 2022 09:03:28 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 0FE5E400D1;
+	Tue,  5 Apr 2022 09:46:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4B2E7C001D;
-	Tue,  5 Apr 2022 09:03:28 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A39BDC0012
- for <iommu@lists.linux-foundation.org>; Tue,  5 Apr 2022 09:03:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BA2BAC002C;
+	Tue,  5 Apr 2022 09:46:22 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DD5A4C0012
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Apr 2022 09:46:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 780DC8271D
- for <iommu@lists.linux-foundation.org>; Tue,  5 Apr 2022 09:03:26 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id D07C060AFF
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Apr 2022 09:46:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=linuxfoundation.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qkeehu3jIhe6 for <iommu@lists.linux-foundation.org>;
- Tue,  5 Apr 2022 09:03:25 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id mE1V8R2miwJf for <iommu@lists.linux-foundation.org>;
+ Tue,  5 Apr 2022 09:46:17 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from sin.source.kernel.org (sin.source.kernel.org
- [IPv6:2604:1380:40e1:4800::1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id B841982718
- for <iommu@lists.linux-foundation.org>; Tue,  5 Apr 2022 09:03:25 +0000 (UTC)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 1C2A860AB5
+ for <iommu@lists.linux-foundation.org>; Tue,  5 Apr 2022 09:46:17 +0000 (UTC)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by sin.source.kernel.org (Postfix) with ESMTPS id 159BACE1C6F;
- Tue,  5 Apr 2022 09:03:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AC74C385A1;
- Tue,  5 Apr 2022 09:03:17 +0000 (UTC)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id 01D886164D;
+ Tue,  5 Apr 2022 09:46:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 100DEC385A1;
+ Tue,  5 Apr 2022 09:46:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
- s=korg; t=1649149398;
+ s=korg; t=1649151975;
  bh=qQXWyRu4TEliDafq6CKePkOIo5nPfDxb/EyW2btOqvo=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=UAjVP0C7VF+vaOL+kuiGDrueRHUpT7B9Q3XcfVDr1Bl4dlS0fXePCjWcK4hpl2aF0
- b2C7JNJYN/pzLnwvZf2NFHWBljc12WxlT6jY9mpZIyjqtsSwPchP73ETkOgiDGCOzl
- MU2Pms/zkl/FAPUbLr9GS+lZ9du+Q355dXDW8hKY=
+ b=1BqDliUpjF72e2kMuLANLuuA3EpVE+gIozSsHHSdKv6q1PEGBbyIccfRCNcWxrR/j
+ Up3DeMyo+htBoy4kfMmKdMVBO7tN1vU/imd8JDE6z3eAl7651tWeagXYS+n2dAABhY
+ Z3rOqF0bmz0enEo4eXZBGXAhCL4LlseIKEhlfraQ=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: linux-kernel@vger.kernel.org
-Subject: [PATCH 5.16 0673/1017] dma-debug: fix return value of __setup handlers
-Date: Tue,  5 Apr 2022 09:26:26 +0200
-Message-Id: <20220405070414.257099109@linuxfoundation.org>
+Subject: [PATCH 5.15 608/913] dma-debug: fix return value of __setup handlers
+Date: Tue,  5 Apr 2022 09:27:50 +0200
+Message-Id: <20220405070358.065784435@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405070354.155796697@linuxfoundation.org>
-References: <20220405070354.155796697@linuxfoundation.org>
+In-Reply-To: <20220405070339.801210740@linuxfoundation.org>
+References: <20220405070339.801210740@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Cc: Sasha Levin <sashal@kernel.org>,
