@@ -4,146 +4,59 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 77A53C433F5
-	for <iommu@archiver.kernel.org>; Wed,  6 Apr 2022 15:18:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C2D15C433F5
+	for <iommu@archiver.kernel.org>; Wed,  6 Apr 2022 15:47:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 10FD0403A8;
-	Wed,  6 Apr 2022 15:18:34 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 2E06C418E0;
+	Wed,  6 Apr 2022 15:47:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id f0NnpjJzzM0D; Wed,  6 Apr 2022 15:18:33 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 95F5B40917;
-	Wed,  6 Apr 2022 15:18:32 +0000 (UTC)
+	with ESMTP id 41R_ZtDCVItu; Wed,  6 Apr 2022 15:47:09 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 51C1F4186F;
+	Wed,  6 Apr 2022 15:47:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5D535C001D;
-	Wed,  6 Apr 2022 15:18:32 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E95F6C0012;
- Wed,  6 Apr 2022 15:18:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 05872C001D;
+	Wed,  6 Apr 2022 15:47:09 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3AEEAC0012
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Apr 2022 15:47:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id E55AB403A8;
- Wed,  6 Apr 2022 15:18:30 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 1327160ECB
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Apr 2022 15:47:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZUXrOBSwevaq; Wed,  6 Apr 2022 15:18:29 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam11on20618.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7eaa::618])
- by smtp4.osuosl.org (Postfix) with ESMTPS id A9C5740917;
- Wed,  6 Apr 2022 15:18:29 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YYcvb9TpAc76znz33SjakILmvL9A4ke3mzwUeA6StGRAvsHVsJqpj4kazq5OliQeXghoBSjBGsQYn1+mkSIY/mDHuwwyy+gMtgmI2GMKBcXlWK9e9FWSpIa13cjqx34kjeYZaOOjpElR7yKRYh1drLZnm5YTHwUx+IP0/V9n+d9d4ncsvJiM2n+bBOfTt8zbJrQ4kNItikXOqN7G5dvUM8LzFThD6UWzE6ex/BVeg5563S9JpN8VZf7tj3VeAJurXdMUxcpnyWCkhOxEC/3iVd4xEYGPpfFVLvIpJi8EWLFbMaAwe84YFEXsjAF+oVggaPu4JRMzbxNASew2bFh05Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=izr1e7RybFAhSwCNQz+TUFcb75nd0zkcZRCsjicNIgw=;
- b=DU9uuWpK7SyWeNOAnWG7Y3PHJngqgbuvAWkujAIRmyN15Y0tXpVHEezJPlXHJxw1jZZeq9yh1kVQvT3fTzpSTNRYhc6gsfmmpK3b3X8N91zMv89Ri1S+WieyPqgTWanJNuvNFX/NveqH/lPJqnJqdkKFi3Av5TyFZMth0np36rmeEK7fL8XYsjBJVkVx2rMTz/GtzHzF+ogxeK/lt+1riKUbQwGh5QOoWdviLgbxKfGILydPxQYHWXQ2/z6Youqo01YPT6yPPnHSBTMqR0xU626BdVWWXWfV327nuvjhxjFMDfBZu14QVhgM6hWky4+PgRtH3ICcmyT85LzeWy/oXw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=izr1e7RybFAhSwCNQz+TUFcb75nd0zkcZRCsjicNIgw=;
- b=o51/Y+cTXQS/LrSvHUbZa0Lc12L+aZcCHrQ/NCOTXiad99H5a/bZK4thUVVGePWuWRm1S83ZuAohOh4PrGPyqUrw9wLUztRm1e/3PiBgM/8N3SuJoitGVW8o8qTFXrVpoR7hR79JJd+qPOSqcei7ziqv8ThjwOnBFRZALEBAvWoWF+GenTUp6CbhoojFVQ3uDs670GPv1L+a6WuA8co92fBtM41FZY170S8mNH4KrrzlO7oBG8OpJ70J9BF9lmsZ7c7bN9w/r18xLF9OFisP4BUYj5C+dE3KM6J9gjZiRknzhjEX96L6dY01+UONVZVUebULzTwfRmMJRszAMQ/UJA==
-Received: from DM5PR12MB1130.namprd12.prod.outlook.com (2603:10b6:3:75::19) by
- CH2PR12MB4840.namprd12.prod.outlook.com (2603:10b6:610:c::33) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5123.25; Wed, 6 Apr 2022 15:18:27 +0000
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by DM5PR12MB1130.namprd12.prod.outlook.com (2603:10b6:3:75::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Wed, 6 Apr
- 2022 15:18:27 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374%6]) with mapi id 15.20.5144.021; Wed, 6 Apr 2022
- 15:18:27 +0000
-Date: Wed, 6 Apr 2022 12:18:23 -0300
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 1/5] iommu: Replace uses of IOMMU_CAP_CACHE_COHERENCY
- with dev_is_dma_coherent()
-Message-ID: <20220406151823.GG2120790@nvidia.com>
-References: <1-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com>
- <db5a6daa-bfe9-744f-7fc5-d5167858bc3e@arm.com>
- <20220406142432.GF2120790@nvidia.com>
-Content-Disposition: inline
-In-Reply-To: <20220406142432.GF2120790@nvidia.com>
-X-ClientProxiedBy: BYAPR11CA0039.namprd11.prod.outlook.com
- (2603:10b6:a03:80::16) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id FLw1MZT-fRDl for <iommu@lists.linux-foundation.org>;
+ Wed,  6 Apr 2022 15:47:07 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id E6E6160ED4
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Apr 2022 15:47:06 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1B3E912FC;
+ Wed,  6 Apr 2022 08:47:06 -0700 (PDT)
+Received: from lpieralisi (unknown [10.57.21.160])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E91963F73B;
+ Wed,  6 Apr 2022 08:47:03 -0700 (PDT)
+Date: Wed, 6 Apr 2022 16:47:01 +0100
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v9 06/11] ACPI/IORT: Add support to retrieve IORT RMR
+ reserved regions
+Message-ID: <20220406154513.GB27518@lpieralisi>
+References: <20220404124209.1086-1-shameerali.kolothum.thodi@huawei.com>
+ <20220404124209.1086-7-shameerali.kolothum.thodi@huawei.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 76c989d6-1d35-46de-9a64-08da17e0b293
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1130:EE_|CH2PR12MB4840:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR12MB11307CE78E936F1B45C731A9C2E79@DM5PR12MB1130.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RXfWFBGUFm7FZ98mExNlgaYp/7jKqHZIN++P9DojmAiyM6shoEsye0W3VDaz/nvcJQyaMUD+TeELJ3Mg+9W5dbjEo24F39p2iMN9WBAXs2I99K2RsFcaeb3YOm08+EbLdhGx5QCax+Kw2fXjlR9anttwImw37ffUiIh6cfL/0eUFkFPwsmg5clYsIp+BuscRQnXPvY61DbtMas++5sTqKgFTMYL6wxDiIjh+g40KsdjYNUBn4c9xnKbO+P07WmElRQYrXVb4PpLboBkS7aRFfosoyPTetDdC8uIBYtnmPnpPlC4d4akilTgt2QYz8EgXf8QIBpkTDSpMzAtxlm1em54/KiTpTX19w/7x7piKgyAdUxNq6X4Fe3+J/zonTzegncizSv4D5nQpk9FTmd4alL8KVrGmBmBhSUdvrLXkB1xEqafEZp0Irr8L5fhiajiMLHDZ2v7NGtbZF5F3BI58Hx6SSrQeo1CSY0h0Au+ek5d0FhKmu6RLF+mo4oOe4jmTIAzW7k3G2v8927onWg/OD8o4GuZPiB4atA7mzT8MjIyg5C/UmQpQI3ai+t0+goDltenZN7nqt0QsnsQXTWmDw/uBaNdJoIvQV1QnC4TLO+GT25j1QGtFKpWBntYH0GxUffvFLQCzRnG5wPeQDm2oTQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM5PR12MB1130.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(36756003)(6916009)(1076003)(186003)(66946007)(66556008)(26005)(316002)(38100700002)(33656002)(8936002)(2616005)(66476007)(54906003)(5660300002)(8676002)(6486002)(4326008)(6512007)(508600001)(53546011)(6666004)(86362001)(7416002)(6506007)(2906002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8OQHGTt2kw6m5Q0TztmYVjuYD2JEIZc/L/U0JCwYO3qpx+dtYRRFlrddnRtk?=
- =?us-ascii?Q?6AN3LKRb/T3M0/u/KU8o4b+lCIcwauJnkKHUFnhUKDGs0mHccOxPVyKXEU3G?=
- =?us-ascii?Q?QTfCu3agxKMtg5Q7X5T8k18HVaYzvcbJROfwQlmWQ8HXCWJRHxdnlD1msJtR?=
- =?us-ascii?Q?TfOvXzC4103a7yO4atVxibTpizs5VlY/nxGyq+wcSByPjUwN2Bsz2tEetK52?=
- =?us-ascii?Q?yMTJnutfjNVOG5PJ1jf9tROUgJX5Gmen47ivxRUorTuXK/tcbbgKCDh+AYBB?=
- =?us-ascii?Q?a62O3aW3AsENGxJCqOfaobOdZTw/N6cGR9ACDPnIMq/amJLX+GN98nKpGOAl?=
- =?us-ascii?Q?ypv6vEwzmg0nouCdS5KV3M8QrJskuUAs+AlYafVCoze7aL2f6I4ACE31dUeu?=
- =?us-ascii?Q?LjkKL/oxmEKN9WY0ORy0fwpBp2/gGSPqZTY7vQCbJv3FJKqCpvG4N+4iYRge?=
- =?us-ascii?Q?PUdXufIwEz13L2cYCsIuSzfkNmJG+B+FYP4NA3vHlD5359jmMtGjhGSj16hO?=
- =?us-ascii?Q?rfQKsFKD7u+Z1F1maM5XybO13lyyufTwE4ssi2lDe00SxxHCesmuNQjXSB1l?=
- =?us-ascii?Q?6Y/pJ5y7u1tf00rDzj3oZqwopPO3R4yjlYCT0OSvOyy3MgKuaGgM8sZ+hesX?=
- =?us-ascii?Q?pzlm0in2/2raW1NqkWJkZAHd+HdeF6Qm/SCzHI46aRURjcSbf7pgivjNv4/g?=
- =?us-ascii?Q?SgZKvhIwbELipflA6/wpP2QkISYo2gelXuBegSaBj0bn5rEQ5xufAQlIGGor?=
- =?us-ascii?Q?Co+IY9tfabaLXMlPzm3KFxRv71r3ZOoHqwApObG41a+Clus+LMaVOX+RJ8Fw?=
- =?us-ascii?Q?AKNsPh1PuTHAlyHVjWSjrlL66S3M8bQF0eNQV/iyMhGDvhjLfbvuTbBxdspQ?=
- =?us-ascii?Q?qBARMYPFOTHQePFNseOhZH4eJLKtSDyKGokcWkkHfed/WCmpu0rcwgnNa2sH?=
- =?us-ascii?Q?qqrkylDx8Ph8wBcxdhg0+oBhqNADb7TzlzsSCUCv6FUY7JynMDwXqhGQ2/nz?=
- =?us-ascii?Q?PLlFIq5sEPZCQyDArKQ7qepwrbxUfZtS2A8IHg+9cuN9kJW1phIgx7GNuGkN?=
- =?us-ascii?Q?c8XP3Yy8K+pvcvv9Eu9v/P75b8lTaHsFLYWoAfr8c+Ia24h1s8euZTj83h1A?=
- =?us-ascii?Q?zKZ6k44S2MnldXxLR/Z7Pi0Ob9cRCBX5kwAq9UW3emhCb/hKDQgQwkS5D2X6?=
- =?us-ascii?Q?RlYVBNKP/nHqhQAIFk+w313bmTfWxo0SQNQqTUu2J+NkiVHBbXjXSRfugu8K?=
- =?us-ascii?Q?k9C5CzEsfxVXEatStZuHf2f8sgJm/JO2aJRwoLGuZwvQxJuWdjMOVSOj6NB2?=
- =?us-ascii?Q?Rh8jWuqPsLhNySWAHSa4j+LGCtsJ0JyWaf/BUx4AvToLgh75c7/kmcXQSW3S?=
- =?us-ascii?Q?8xELz7ev9SCesSSzVOPQBm/pk8Yn095FPLIxxZuElVfrcN+tiU+WlZQvljWi?=
- =?us-ascii?Q?yQKpy/quYSxamhN5fkb9gGcIObrCvX92kGMUK5TWEtFM4DGjRF7BeUvhOy3v?=
- =?us-ascii?Q?6ii90IflpkigjQOu2Vice5axRGeG0weAp81/7CgNZ/OH9L9a3TUBqkZAFbUb?=
- =?us-ascii?Q?kONL95PXeKInrTmH5A0ZVNES/8qFOZr2f+cOWXPwdGkz2IGzeicokZvBWv1c?=
- =?us-ascii?Q?bJ7AjEUuofvSLT+K/NngazeSodEcQPdpCHERDV5uoNc1ogWfwgtBewALuwhB?=
- =?us-ascii?Q?eO3tTBgwWXrZ/5zMtdHDbc7qXWaEL8Gjz3cjrnwrbAd8BrQN5jeQ53a+AK/k?=
- =?us-ascii?Q?0bgaXyXTxQ=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 76c989d6-1d35-46de-9a64-08da17e0b293
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 15:18:26.9819 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sfI33ZNkKwTIySO2OejdY3xTdJF5KxltkhFd+rz3FlzPz3nIzr1r759XNCs6/SMf
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4840
-Cc: Nelson Escobar <neescoba@cisco.com>, "Michael S. Tsirkin" <mst@redhat.com>,
- Jason Wang <jasowang@redhat.com>, virtualization@lists.linux-foundation.org,
- Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
- linux-s390@vger.kernel.org, kvm@vger.kernel.org, linux-rdma@vger.kernel.org,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>, "Tian,
- Kevin" <kevin.tian@intel.com>, linux-arm-msm@vger.kernel.org,
- Alex Williamson <alex.williamson@redhat.com>,
- linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
- Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux-foundation.org,
- Christian Benvenuti <benve@cisco.com>, David Woodhouse <dwmw2@infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20220404124209.1086-7-shameerali.kolothum.thodi@huawei.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: will@kernel.org, jon@solid-run.com, linuxarm@huawei.com,
+ steven.price@arm.com, linux-acpi@vger.kernel.org,
+ iommu@lists.linux-foundation.org, wanghuiqiang@huawei.com,
+ guohanjun@huawei.com, yangyicong@huawei.com, Sami.Mujawar@arm.com,
+ robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -156,74 +69,380 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Apr 06, 2022 at 11:24:32AM -0300, Jason Gunthorpe wrote:
-> On Wed, Apr 06, 2022 at 02:56:56PM +0100, Robin Murphy wrote:
-> > On 2022-04-05 17:16, Jason Gunthorpe wrote:
-> > > vdpa and usnic are trying to test if IOMMU_CACHE is supported. The correct
-> > > way to do this is via dev_is_dma_coherent()
-> > 
-> > Not necessarily...
-> > 
-> > Disregarding the complete disaster of PCIe No Snoop on Arm-Based systems,
-> > there's the more interesting effectively-opposite scenario where an SMMU
-> > bridges non-coherent devices to a coherent interconnect. It's not something
-> > we take advantage of yet in Linux, and it can only be properly described in
-> > ACPI, but there do exist situations where IOMMU_CACHE is capable of making
-> > the device's traffic snoop, but dev_is_dma_coherent() - and
-> > device_get_dma_attr() for external users - would still say non-coherent
-> > because they can't assume that the SMMU is enabled and programmed in just
-> > the right way.
+On Mon, Apr 04, 2022 at 01:42:04PM +0100, Shameer Kolothum wrote:
+> Parse through the IORT RMR nodes and populate the reserve region list
+> corresponding to a given IOMMU and device(optional). Also, go through
+> the ID mappings of the RMR node and retrieve all the SIDs associated
+> with it.
 > 
-> Oh, I didn't know about device_get_dma_attr()..
+> Now that we have this support, update iommu_dma_get/_put_resv_regions()
+> paths to include the RMR reserve regions.
 > 
-> Considering your future issue, maybe this:
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> ---
+>  drivers/acpi/arm64/iort.c | 275 ++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/dma-iommu.c |   3 +
+>  include/linux/acpi_iort.h |   4 +
+>  3 files changed, 282 insertions(+)
+
+Very minor style comment below, regardless:
+
+Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com> # for ACPI
+IORT
+
 > 
-> /*
->  * true if the given domain supports IOMMU_CACHE and when dev is attached to
->  * that domain it will have coherent DMA and require no cache
->  * maintenance when IOMMU_CACHE is used.
->  */
-> bool iommu_domain_supports_coherent_dma(struct iommu_domain *domain, struct device *dev)
-> {
-> 	return device_get_dma_attr(dev) == DEV_DMA_COHERENT;
-> }
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index 63acc3c5b275..1147387cfddb 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -812,6 +812,259 @@ void acpi_configure_pmsi_domain(struct device *dev)
+>  }
+>  
+>  #ifdef CONFIG_IOMMU_API
+> +static void iort_rmr_desc_check_overlap(struct acpi_iort_rmr_desc *desc, u32 count)
+> +{
+> +	int i, j;
+> +
+> +	for (i = 0; i < count; i++) {
+> +		u64 end, start = desc[i].base_address, length = desc[i].length;
+> +
+> +		if (!length) {
+> +			pr_err(FW_BUG "RMR descriptor[0x%llx] with zero length, continue anyway\n",
+> +			       start);
+> +			continue;
+> +		}
+> +
+> +		end = start + length - 1;
+> +
+> +		/* Check for address overlap */
+> +		for (j = i + 1; j < count; j++) {
+> +			u64 e_start = desc[j].base_address;
+> +			u64 e_end = e_start + desc[j].length - 1;
+> +
+> +			if (start <= e_end && end >= e_start)
+> +				pr_err(FW_BUG "RMR descriptor[0x%llx - 0x%llx] overlaps, continue anyway\n",
+> +				       start, end);
+> +		}
+> +	}
+> +}
+> +
+> +/*
+> + * Please note, we will keep the already allocated RMR reserve
+> + * regions in case of a memory allocation failure.
+> + */
+> +static void iort_get_rmrs(struct acpi_iort_node *node,
+> +			  struct acpi_iort_node *smmu,
+> +			  u32 *sids, u32 num_sids,
+> +			  struct list_head *head)
+> +{
+> +	struct acpi_iort_rmr *rmr = (struct acpi_iort_rmr *)node->node_data;
+> +	struct acpi_iort_rmr_desc *rmr_desc;
+> +	int i;
+> +
+> +	rmr_desc = ACPI_ADD_PTR(struct acpi_iort_rmr_desc, node,
+> +				rmr->rmr_offset);
+> +
+> +	iort_rmr_desc_check_overlap(rmr_desc, rmr->rmr_count);
+> +
+> +	for (i = 0; i < rmr->rmr_count; i++, rmr_desc++) {
+> +		struct iommu_resv_region *region;
+> +		enum iommu_resv_type type;
+> +		u32  *sids_copy;
+> +		int prot = IOMMU_READ | IOMMU_WRITE;
+> +		u64 addr = rmr_desc->base_address, size = rmr_desc->length;
+> +
+> +		if (!IS_ALIGNED(addr, SZ_64K) || !IS_ALIGNED(size, SZ_64K)) {
+> +			/* PAGE align base addr and size */
+> +			addr &= PAGE_MASK;
+> +			size = PAGE_ALIGN(size + offset_in_page(rmr_desc->base_address));
+> +
+> +			pr_err(FW_BUG "RMR descriptor[0x%llx - 0x%llx] not aligned to 64K, continue with [0x%llx - 0x%llx]\n",
+> +			       rmr_desc->base_address,
+> +			       rmr_desc->base_address + rmr_desc->length - 1,
+> +			       addr, addr + size - 1);
+> +		}
+> +
+> +		if (rmr->flags & ACPI_IORT_RMR_REMAP_PERMITTED)
+> +			type = IOMMU_RESV_DIRECT_RELAXABLE;
+> +		else
+> +			type = IOMMU_RESV_DIRECT;
+> +
+> +		if (rmr->flags & ACPI_IORT_RMR_ACCESS_PRIVILEGE)
+> +			prot |= IOMMU_PRIV;
+> +
+> +		/* Attributes 0x00 - 0x03 represents device memory */
+> +		if (ACPI_IORT_RMR_ACCESS_ATTRIBUTES(rmr->flags) <=
+> +				ACPI_IORT_RMR_ATTR_DEVICE_GRE)
+> +			prot |= IOMMU_MMIO;
+> +		else if (ACPI_IORT_RMR_ACCESS_ATTRIBUTES(rmr->flags) ==
+> +				ACPI_IORT_RMR_ATTR_NORMAL_IWB_OWB)
+> +			prot |= IOMMU_CACHE;
+> +
+> +		/* Create a copy of SIDs array to associate with this resv region */
+> +		sids_copy = kmemdup(sids, num_sids * sizeof(*sids), GFP_KERNEL);
+> +		if (!sids_copy)
+> +			return;
+> +
+> +		region = iommu_alloc_resv_region(addr, size, prot, type);
+> +		if (!region) {
+> +			kfree(sids_copy);
+> +			return;
+> +		}
+> +
+> +		region->fw_data.rmr.sids = sids_copy;
+> +		region->fw_data.rmr.num_sids = num_sids;
+> +		list_add_tail(&region->list, head);
+> +	}
+> +}
+> +
+> +static u32 *iort_rmr_alloc_sids(u32 *sids, u32 count, u32 id_start,
+> +				u32 new_count)
+> +{
+> +	u32 *new_sids;
+> +	u32 total_count = count + new_count;
+> +	int i;
+> +
+> +	new_sids = krealloc_array(sids, count + new_count,
+> +				  sizeof(*new_sids), GFP_KERNEL);
+> +	if (!new_sids)
+> +		return NULL;
+> +
+> +	for (i = count; i < total_count; i++)
+> +		new_sids[i] = id_start++;
+> +
+> +	return new_sids;
+> +}
+> +
+> +static bool iort_rmr_has_dev(struct device *dev, u32 id_start,
+> +			     u32 id_count)
+> +{
+> +	int i;
+> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +
+> +	/*
+> +	 * Make sure the kernel has preserved the boot firmware PCIe
+> +	 * configuration. This is required to ensure that the RMR PCIe
+> +	 * StreamIDs are still valid (Refer: ARM DEN 0049E.d Section 3.1.1.5).
+> +	 */
+> +	if (dev_is_pci(dev)) {
+> +		struct pci_dev *pdev = to_pci_dev(dev);
+> +		struct pci_host_bridge *host = pci_find_host_bridge(pdev->bus);
+> +
+> +		if (!host->preserve_config)
+> +			return false;
+> +	}
+> +
+> +	for (i = 0; i < fwspec->num_ids; i++) {
+> +		if (fwspec->ids[i] >= id_start &&
+> +		    fwspec->ids[i] <= id_start + id_count)
+> +			return true;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +static void iort_node_get_rmr_info(struct acpi_iort_node *node,
+> +				   struct acpi_iort_node *iommu,
+> +				   struct device *dev, struct list_head *head)
+> +{
+> +	struct acpi_iort_node *smmu = NULL;
+> +	struct acpi_iort_rmr *rmr;
+> +	struct acpi_iort_id_mapping *map;
+> +	u32 *sids = NULL;
+> +	u32 num_sids = 0;
+> +	int i;
+> +
+> +	if (!node->mapping_offset || !node->mapping_count) {
+> +		pr_err(FW_BUG "Invalid ID mapping, skipping RMR node %p\n",
+> +		       node);
+> +		return;
+> +	}
+> +
+> +	rmr = (struct acpi_iort_rmr *)node->node_data;
+> +	if (!rmr->rmr_offset || !rmr->rmr_count)
+> +		return;
+> +
+> +	map = ACPI_ADD_PTR(struct acpi_iort_id_mapping, node,
+> +			   node->mapping_offset);
+> +
+> +	/*
+> +	 * Go through the ID mappings and see if we have a match for SMMU
+> +	 * and dev(if !NULL). If found, get the sids for the Node.
+> +	 * Please note, id_count is equal to the number of IDs  in the
+> +	 * range minus one.
+> +	 */
+> +	for (i = 0; i < node->mapping_count; i++, map++) {
+> +		struct acpi_iort_node *parent;
+> +
+> +		if (!map->id_count)
+> +			continue;
+> +
+> +		parent = ACPI_ADD_PTR(struct acpi_iort_node, iort_table,
+> +				      map->output_reference);
+> +		if (parent != iommu)
+> +			continue;
+> +
+> +		/* If dev is valid, check RMR node corresponds to the dev SID */
+> +		if (dev && !iort_rmr_has_dev(dev, map->output_base,
+> +					     map->id_count))
+> +			continue;
+> +
+> +		/* Retrieve SIDs associated with the Node. */
+> +		sids = iort_rmr_alloc_sids(sids, num_sids, map->output_base,
+> +					   map->id_count + 1);
+> +		if (!sids)
+> +			return;
+> +
+> +		num_sids += map->id_count + 1;
+> +	}
+> +
+> +	if (!sids)
+> +		return;
+> +
+> +	iort_get_rmrs(node, smmu, sids, num_sids, head);
+> +	kfree(sids);
+> +}
+> +
+> +static void iort_find_rmrs(struct acpi_iort_node *iommu, struct device *dev,
+> +			   struct list_head *head)
+> +{
+> +	struct acpi_table_iort *iort;
+> +	struct acpi_iort_node *iort_node, *iort_end;
+> +	int i;
+> +
+> +	/* Only supports ARM DEN 0049E.d onwards */
+> +	if (iort_table->revision < 5)
+> +		return;
+> +
+> +	iort = (struct acpi_table_iort *)iort_table;
+> +
+> +	iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort,
+> +				 iort->node_offset);
+> +	iort_end = ACPI_ADD_PTR(struct acpi_iort_node, iort,
+> +				iort_table->length);
+> +
+> +	for (i = 0; i < iort->node_count; i++) {
+> +		if (WARN_TAINT(iort_node >= iort_end, TAINT_FIRMWARE_WORKAROUND,
+> +			       "IORT node pointer overflows, bad table!\n"))
+> +			return;
+> +
+> +		if (iort_node->type == ACPI_IORT_NODE_RMR)
+> +			iort_node_get_rmr_info(iort_node, iommu, dev, head);
+> +
+> +		iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort_node,
+> +					 iort_node->length);
+> +	}
+> +}
+> +
+> +/*
+> + * Populate the RMR list associated with a given IOMMU and dev(if provided).
+> + * If dev is NULL, the function populates all the RMRs associated with the
+> + * given IOMMU.
+> + */
+> +static void
+> +iort_iommu_rmr_get_resv_regions(struct fwnode_handle *iommu_fwnode,
+> +				struct device *dev, struct list_head *head)
+
+Function return value in a single line, for consistency with the file:
+
+static void iort_iommu_rmr_get_resv_regions(
+				struct fwnode_handle *iommu_fwnode,
+				struct device *dev, struct list_head *head)
+
+> +{
+> +	struct acpi_iort_node *iommu;
+> +
+> +	iommu = iort_get_iort_node(iommu_fwnode);
+> +	if (!iommu)
+> +		return;
+> +
+> +	iort_find_rmrs(iommu, dev, head);
+> +}
+> +
+>  static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
+>  {
+>  	struct acpi_iort_node *iommu;
+> @@ -892,7 +1145,27 @@ iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+>   */
+>  void iort_iommu_get_resv_regions(struct device *dev, struct list_head *head)
+>  {
+> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +
+>  	iort_iommu_msi_get_resv_regions(dev, head);
+> +	iort_iommu_rmr_get_resv_regions(fwspec->iommu_fwnode, dev, head);
+> +}
+> +
+> +/**
+> + * iort_iommu_put_resv_regions - Free any IORT specific memory allocations
+> + *                               associated with reserve regions.
+> + * @dev: Associated device(Optional)
+> + * @head: Resereved region list
+> + */
+> +void iort_iommu_put_resv_regions(struct device *dev, struct list_head *head)
+> +{
+> +	struct iommu_resv_region *e, *tmp;
+> +
+> +	/* RMR entries will have mem allocated for fw_data.rmr.sids. */
+> +	list_for_each_entry_safe(e, tmp, head, list) {
+> +		if (e->fw_data.rmr.sids)
+> +			kfree(e->fw_data.rmr.sids);
+> +	}
+>  }
+>  
+>  static inline bool iort_iommu_driver_enabled(u8 type)
+> @@ -1061,6 +1334,8 @@ int iort_iommu_configure_id(struct device *dev, const u32 *id_in)
+>  #else
+>  void iort_iommu_get_resv_regions(struct device *dev, struct list_head *head)
+>  { }
+> +void iort_iommu_put_resv_regions(struct device *dev, struct list_head *head)
+> +{ }
+>  int iort_iommu_configure_id(struct device *dev, const u32 *input_id)
+>  { return -ENODEV; }
+>  #endif
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 44e3f3feaab6..5811233dc9fb 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -391,6 +391,9 @@ EXPORT_SYMBOL(iommu_dma_get_resv_regions);
+>  
+>  void iommu_dma_put_resv_regions(struct device *dev, struct list_head *list)
+>  {
+> +	if (!is_of_node(dev_iommu_fwspec_get(dev)->iommu_fwnode))
+> +		iort_iommu_put_resv_regions(dev, list);
+> +
+>  	generic_iommu_put_resv_regions(dev, list);
+>  }
+>  EXPORT_SYMBOL(iommu_dma_put_resv_regions);
+> diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+> index e5d2de9caf7f..eb3c28853110 100644
+> --- a/include/linux/acpi_iort.h
+> +++ b/include/linux/acpi_iort.h
+> @@ -37,6 +37,7 @@ int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id);
+>  int iort_dma_get_ranges(struct device *dev, u64 *size);
+>  int iort_iommu_configure_id(struct device *dev, const u32 *id_in);
+>  void iort_iommu_get_resv_regions(struct device *dev, struct list_head *head);
+> +void iort_iommu_put_resv_regions(struct device *dev, struct list_head *head);
+>  phys_addr_t acpi_iort_dma_get_max_cpu_address(void);
+>  #else
+>  static inline void acpi_iort_init(void) { }
+> @@ -54,6 +55,9 @@ static inline int iort_iommu_configure_id(struct device *dev, const u32 *id_in)
+>  static inline
+>  void iort_iommu_get_resv_regions(struct device *dev, struct list_head *head)
+>  { }
+> +static inline
+> +void iort_iommu_put_resv_regions(struct device *dev, struct list_head *head)
+> +{ }
+>  
+>  static inline phys_addr_t acpi_iort_dma_get_max_cpu_address(void)
+>  { return PHYS_ADDR_MAX; }
+> -- 
+> 2.25.1
 > 
-> ? In future it could become a domain op and the SMMU driver could
-> figure out the situation you described?
-
-I also spent some time looking at something like this:
-
-struct iommu_domain *iommu_domain_alloc_coherent(struct device *device)
-{
-	if (device_get_dma_attr(device) == DEV_DMA_COHERENT)
-		return NULL;
-	return __iommu_domain_alloc(device->bus, IOMMU_DOMAIN_UNMANAGED);
-}
-EXPORT_SYMBOL_GPL(iommu_domain_alloc_coherent);
-
-Which could evolve into to passing the flag down to the iommu driver
-and then it could ensure SMMU is "programmed in just the right way"
-or fail?
-
-Could also go like this:
-
-#define IOMMU_DOMAIN_FLAG_COHERENT 1
-struct iommu_domain *iommu_device_alloc_domain(struct device *device,
-                                               unsigned int flags)
-
-A new alloc option is not so easy to fit VFIO into right now though.
-
-Advices?
-
-Thanks,
-Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
