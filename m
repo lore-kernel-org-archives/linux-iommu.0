@@ -4,58 +4,55 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D2B9DC433EF
-	for <iommu@archiver.kernel.org>; Wed,  6 Apr 2022 14:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 17F5EC433F5
+	for <iommu@archiver.kernel.org>; Wed,  6 Apr 2022 14:03:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 79FE88336D;
-	Wed,  6 Apr 2022 14:03:28 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id C90C783337;
+	Wed,  6 Apr 2022 14:03:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1llpcMNzrvwV; Wed,  6 Apr 2022 14:03:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 0804F832C2;
-	Wed,  6 Apr 2022 14:03:27 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B03F8C0083;
+	with ESMTP id RR_j_sLvkPd6; Wed,  6 Apr 2022 14:03:26 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 8FACD831F8;
 	Wed,  6 Apr 2022 14:03:26 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 097D0C0012
- for <iommu@lists.linux-foundation.org>; Wed,  6 Apr 2022 08:42:47 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6E743C001D;
+	Wed,  6 Apr 2022 14:03:26 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D19D7C0012
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Apr 2022 08:42:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id DB7E240384
+ by smtp2.osuosl.org (Postfix) with ESMTP id B07F44019F
  for <iommu@lists.linux-foundation.org>; Wed,  6 Apr 2022 08:42:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jEJTVEiCzpGH for <iommu@lists.linux-foundation.org>;
- Wed,  6 Apr 2022 08:42:46 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id QrR6Aoo4AVvg for <iommu@lists.linux-foundation.org>;
+ Wed,  6 Apr 2022 08:42:45 +0000 (UTC)
+X-Greylist: delayed 00:05:37 by SQLgrey-1.8.0
 Received: from mail.codelabs.ch (mail.codelabs.ch [109.202.192.35])
- by smtp4.osuosl.org (Postfix) with ESMTPS id CFEEF4035A
+ by smtp2.osuosl.org (Postfix) with ESMTPS id BE27040025
  for <iommu@lists.linux-foundation.org>; Wed,  6 Apr 2022 08:42:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by mail.codelabs.ch (Postfix) with ESMTP id E096F220002;
- Wed,  6 Apr 2022 10:37:03 +0200 (CEST)
+ by mail.codelabs.ch (Postfix) with ESMTP id E956B220003;
+ Wed,  6 Apr 2022 10:37:05 +0200 (CEST)
 Received: from mail.codelabs.ch ([127.0.0.1])
  by localhost (fenrir.codelabs.ch [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Wm3KiR0YfLUt; Wed,  6 Apr 2022 10:37:02 +0200 (CEST)
+ with ESMTP id USzK58Cg8Xho; Wed,  6 Apr 2022 10:37:04 +0200 (CEST)
 Received: from skyhawk.codelabs.local (unknown
  [IPv6:2a02:169:803:0:f7fb:8040:b3e4:bffe])
- by mail.codelabs.ch (Postfix) with ESMTPSA id A7A93220001;
- Wed,  6 Apr 2022 10:37:02 +0200 (CEST)
+ by mail.codelabs.ch (Postfix) with ESMTPSA id ACB1A220001;
+ Wed,  6 Apr 2022 10:37:04 +0200 (CEST)
 From: Reto Buerki <reet@codelabs.ch>
 To: dwmw2@infradead.org
-Subject: Re: [PATCH v3 12/35] x86/msi: Provide msi message shadow structs
-Date: Wed,  6 Apr 2022 10:36:23 +0200
-Message-Id: <20220406083624.38739-1-reet@codelabs.ch>
-In-Reply-To: 20201024213535.443185-13-dwmw2@infradead.org
+Subject: [PATCH] x86/msi: Fix msi message data shadow struct
+Date: Wed,  6 Apr 2022 10:36:24 +0200
+Message-Id: <20220406083624.38739-2-reet@codelabs.ch>
+In-Reply-To: <20220406083624.38739-1-reet@codelabs.ch>
 References: <20201024213535.443185-13-dwmw2@infradead.org>
+ <20220406083624.38739-1-reet@codelabs.ch>
 MIME-Version: 1.0
-GIT: Lines beginning in "GIT:" will be removed.
-GIT: Consider including an overall diffstat or table of contents
-GIT: for the patch you are writing.
-GIT: Clear the body content if you don't wish to send a summary.
 X-Mailman-Approved-At: Wed, 06 Apr 2022 14:03:25 +0000
 Cc: linux-hyperv@vger.kernel.org, kvm@vger.kernel.org, x86@kernel.org,
  decui@microsoft.com, linux-kernel@vger.kernel.org,
@@ -78,30 +75,50 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-While working on some out-of-tree patches, we noticed that assignment to
-dmar_subhandle of struct x86_msi_data lead to a QEMU warning about
-reserved bits in MSI data being set:
+The x86 MSI message data is 32 bits in total and is either in
+compatibility or remappable format, see Intel Virtualization Technology
+for Directed I/O, section 5.1.2.
 
-qemu-system-x86_64: vtd_interrupt_remap_msi: invalid IR MSI (sid=256, address=0xfee003d8, data=0x10000)
+Fixes: 6285aa50736 ("x86/msi: Provide msi message shadow structs")
+Signed-off-by: Reto Buerki <reet@codelabs.ch>
+Signed-off-by: Adrian-Ken Rueegsegger <ken@codelabs.ch>
+---
+ arch/x86/include/asm/msi.h | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
-This message originates from hw/i386/intel_iommu.c in QEMU:
+diff --git a/arch/x86/include/asm/msi.h b/arch/x86/include/asm/msi.h
+index b85147d75626..d71c7e8b738d 100644
+--- a/arch/x86/include/asm/msi.h
++++ b/arch/x86/include/asm/msi.h
+@@ -12,14 +12,17 @@ int pci_msi_prepare(struct irq_domain *domain, struct device *dev, int nvec,
+ /* Structs and defines for the X86 specific MSI message format */
+ 
+ typedef struct x86_msi_data {
+-	u32	vector			:  8,
+-		delivery_mode		:  3,
+-		dest_mode_logical	:  1,
+-		reserved		:  2,
+-		active_low		:  1,
+-		is_level		:  1;
+-
+-	u32	dmar_subhandle;
++	union {
++		struct {
++			u32	vector			:  8,
++				delivery_mode		:  3,
++				dest_mode_logical	:  1,
++				reserved		:  2,
++				active_low		:  1,
++				is_level		:  1;
++		};
++		u32	dmar_subhandle;
++	};
+ } __attribute__ ((packed)) arch_msi_msg_data_t;
+ #define arch_msi_msg_data	x86_msi_data
+ 
+-- 
+2.30.2
 
-#define VTD_IR_MSI_DATA_RESERVED (0xffff0000)
-if (origin->data & VTD_IR_MSI_DATA_RESERVED) { ... }
-
-Looking at struct x86_msi_data, it appears that it is actually 48-bits in size
-since the bitfield containing the vector, delivery_mode etc is 2 bytes wide
-followed by dmar_subhandle which is 32 bits. Thus assignment to dmar_subhandle
-leads to bits > 16 being set.
-
-If I am not mistaken, the MSI data field should be 32-bits wide for all
-platforms (struct msi_msg, include/linux/msi.h). Is this analysis
-correct or did I miss something wrt. handling of dmar_subhandle?
-
-The attached patch fixes the issue for us.
-
-Regards,
-- reto
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
