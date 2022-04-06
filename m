@@ -1,71 +1,146 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 76695C433EF
-	for <iommu@archiver.kernel.org>; Wed,  6 Apr 2022 13:57:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1EA30C433F5
+	for <iommu@archiver.kernel.org>; Wed,  6 Apr 2022 14:01:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 29EFF610DB;
-	Wed,  6 Apr 2022 13:57:12 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id AAA0D40332;
+	Wed,  6 Apr 2022 14:01:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nRd-ZMfV19qb; Wed,  6 Apr 2022 13:57:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id EE8AE60B17;
-	Wed,  6 Apr 2022 13:57:10 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id f2V6aaLTTMfN; Wed,  6 Apr 2022 14:01:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 3389B402BE;
+	Wed,  6 Apr 2022 14:01:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B81DAC001D;
-	Wed,  6 Apr 2022 13:57:10 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DE386C0012;
- Wed,  6 Apr 2022 13:57:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 09138C001D;
+	Wed,  6 Apr 2022 14:01:53 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EDB5AC0012
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Apr 2022 14:01:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 32FAE8308A;
- Wed,  6 Apr 2022 13:57:08 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id DAA7A402F8
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Apr 2022 14:01:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id E18i8qy98cW3; Wed,  6 Apr 2022 13:57:07 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 64E0682F92;
- Wed,  6 Apr 2022 13:57:07 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7E2F912FC;
- Wed,  6 Apr 2022 06:57:06 -0700 (PDT)
-Received: from [10.57.41.19] (unknown [10.57.41.19])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E682C3F73B;
- Wed,  6 Apr 2022 06:57:01 -0700 (PDT)
-Message-ID: <db5a6daa-bfe9-744f-7fc5-d5167858bc3e@arm.com>
-Date: Wed, 6 Apr 2022 14:56:56 +0100
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id dJDWmBlFfK_w for <iommu@lists.linux-foundation.org>;
+ Wed,  6 Apr 2022 14:01:49 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com
+ (mail-bn1nam07on2060a.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7eb2::60a])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 4B4C6402BE
+ for <iommu@lists.linux-foundation.org>; Wed,  6 Apr 2022 14:01:49 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TUJGi8jCO1ud5bZQp2EBg04Q3+uWbAlOFU7G5a0aGeqCCws0/vRHGMcc753od+hsUYNTgsKejHgfkgR5duRKPWL2kvvnXfBmHrniMctYL6kmDVjfqfeOc2JnkO7PvD95aSp/ZkcgWSp7Yge/BrOTBBnIUx7sEFmZmmbyUGkyBbhX0aK6Nr+OYUPv74YfQyzHffFfjcmP7yztz6gs2YJmYzD5I3oKmtLBJlmnEDkyPHRxH22kiNP1ZQFJdF7X3xLXnrjicJVrpB1l4E4LljBL8L8ypoCCZzEnub8j65k9wkUf6NAIxA123DKWsox9yQ0m2CcfyZtGAQsFg45SDJFz2w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KDhN0FPhMeObVac6cPS2p1KESO1mI0eIHt4wWyIJP9M=;
+ b=XS77G+nAmA1j20syJxgmUdaAQnYng2FZnHrbK0agGLCtKU/PS2WXKHMPpKe3AOTRaIudhoFPZ6poKbJ8PXIZ9rnnqATrFU/SRrFOdmnegSu+7ecQ8OtVZu532lDgtinwb6B6+bahX4izb/+cF4VhVkmeu0JG4N7V7womaP2qEUTbWy7ZgljH79bBBuCADU1zQBjkpApjsJaXR6HOmrsWdoCVhN843mNbAVBY3bmsawkrdLZLj8WxmhteF8hHA2dtwLMAvZzJfdkyKKPCL+fHcCExqt+iGCMNU22MRZ81tpSIjpxCmRe7trYf1ChkjEt7IcW+q/4tDzKePsQR+6sMSw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KDhN0FPhMeObVac6cPS2p1KESO1mI0eIHt4wWyIJP9M=;
+ b=rZCaC62iJB6E2oZjhsIEwjhrWjtvqpTZtEITLwZ3YDs+if1+pcZvm14SzkWz81tUCqE8D1ciDJdR0+0U0Uw/SWrLi6BUhoQ22hPfJCu2NiIS8ET2sHHbhYONFRl0gTUAvMWS/u0dPg1UkcQ/kCUXQ/7Um90QmRhCzXBGtQ/a5d7kdYwtctOpEhwnX9ZQypclJaVdePPYzWS9hEazqUj0Ta9ENbejcNUmm9+er1aYGEOIyJJFJLPcn7KBuimfRhdBmJYhREonkWRVRs9/B/LjSHcZeqEvFyhnnx7Yra2iKKNkLiw4eAgOpbPhuqGlY1GCf2kk1fg5/r1UG/xXdiglKA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BY5PR12MB4967.namprd12.prod.outlook.com (2603:10b6:a03:1de::7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.21; Wed, 6 Apr
+ 2022 14:01:45 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374%6]) with mapi id 15.20.5144.021; Wed, 6 Apr 2022
+ 14:01:45 +0000
+Date: Wed, 6 Apr 2022 11:01:44 -0300
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH RFC v2 03/11] iommu/sva: Add iommu_domain type for SVA
+Message-ID: <20220406140144.GD2120790@nvidia.com>
+References: <20220329053800.3049561-4-baolu.lu@linux.intel.com>
+ <20220330190201.GB2120790@nvidia.com>
+ <BN9PR11MB5276A39F481E2E31B0FCFEAE8CE39@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220402233210.GM2120790@nvidia.com>
+ <BN9PR11MB527660D99D154F922B0A628B8CE79@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220406012334.GZ2120790@nvidia.com>
+ <BN9PR11MB52764E3DE16E19D1F1515D008CE79@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <d0f6caea-0cd9-d839-c9fb-0fe49c2bad16@arm.com>
+ <20220406130614.GC2120790@nvidia.com>
+ <b7639218-2d10-fd71-0f4b-3af3f8fa224b@arm.com>
+Content-Disposition: inline
+In-Reply-To: <b7639218-2d10-fd71-0f4b-3af3f8fa224b@arm.com>
+X-ClientProxiedBy: YT1PR01CA0037.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:2e::6) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/5] iommu: Replace uses of IOMMU_CAP_CACHE_COHERENCY with
- dev_is_dma_coherent()
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Lu Baolu <baolu.lu@linux.intel.com>, Christian Benvenuti <benve@cisco.com>,
- Cornelia Huck <cohuck@redhat.com>, David Woodhouse <dwmw2@infradead.org>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- iommu@lists.linux-foundation.org, Jason Wang <jasowang@redhat.com>,
- Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-rdma@vger.kernel.org, linux-s390@vger.kernel.org,
- Matthew Rosato <mjrosato@linux.ibm.com>, "Michael S. Tsirkin"
- <mst@redhat.com>, Nelson Escobar <neescoba@cisco.com>,
- netdev@vger.kernel.org, Rob Clark <robdclark@gmail.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- virtualization@lists.linux-foundation.org, Will Deacon <will@kernel.org>
-References: <1-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <1-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Christoph Hellwig <hch@lst.de>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 41368b38-ffca-4814-a3cd-08da17d5fc4c
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4967:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR12MB4967736DC246A24A2E10675AC2E79@BY5PR12MB4967.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bneYUgc1o8GQNIvmQ3wtyUcGFPLgNm0pcws/bDkfdvJaC2hv/lxgWyK5XeOhjiD6/fZkfBVj3CDFrSRcxRrWt5rZMe9N/ighl4UdeLoiV+rNmcTvj/4S8OhqVh+R3cApdboG4RqBwEGLdnhBTkJcFf3/bjoKw0E8Rik/XeQZkt1WTm+4Jh11k8KbEG+JVDeO1VQm/RyMKZxB5/zHBrZKhZc5kK4KwfMjKR+kr5H7P2OAJJOs1sWZ5KTbIBzxMzbBDWEgHUHfEgZHLBc1Gowk4JC1PvTgCGwL+axVkVdLvfTVV9kdqs5v3cJB4Wdi8pfqG9ajjjg5s4kuRhPpvWzEnrdbLXevlD0W1Uvj8LCqdGvjZJlk/250jDAdf3Nlip1b6gWyAEq7cGLNfS0hSUiubWNilYhhIoGd5EMfImGh55o/g3zvj6ElQsEYxLUDFe6JWpSrf3VbhBfv09+EMOQ2WafkCLGz33FpQCq/vz7ygvrSEJeei6qKCHrMh7YUrN2MN4LfjfBqgM8qR5pTZBfDgWR2deecJJMwpnMNcBkQEezypl+P5iH8Eszz08KyvnxlINsbnvasLaMi9JR3jfqLaJywoPf3K9Cb70Pqtx+86NGA51n1Na4/uUXfnUQNtNZshObHzn75+WRp306TdzyQJg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(33656002)(6506007)(53546011)(6512007)(2616005)(186003)(1076003)(26005)(8936002)(7416002)(38100700002)(36756003)(4326008)(8676002)(5660300002)(2906002)(316002)(6916009)(508600001)(54906003)(6486002)(86362001)(66946007)(66556008)(66476007);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/pm3d3X8D87CVeRh3HS9rvOtZ2GmS0aczeYSOarKE+VQgTqna2jk5LN9aK53?=
+ =?us-ascii?Q?+4xRvxcjgU9QdftvL/41Ghv1HnYnfo8CLB5UGRzBnb2oLDU92GWgOjGw1472?=
+ =?us-ascii?Q?HLj1M40r3skDeY8R8D4qOqxyv1pmJWj6g+hEPQrusS07VwdflzY3YfMSfq37?=
+ =?us-ascii?Q?DFSxuZ87ufiBAdJlXk2OyZ22OsEtQyFIvQ6nBAjHQ9BQVIBYXu1YhuYbyZo6?=
+ =?us-ascii?Q?LI+5e21SPBRaTLSfoiWdvh1PhDy6mVRDXoit3Y50K1GhJA97af4r15HLBmsM?=
+ =?us-ascii?Q?sFtQ++YDcw27u1xWNUC9Evsk20PeF6fO4Etg7UDLrJ3EOItmSnYc8NWJT9nG?=
+ =?us-ascii?Q?lV4+LMinVMowknu/zSHO6omNBPtcKLA4wYCXVHeZBfqOEYNkNOAf5sCTFPi2?=
+ =?us-ascii?Q?4X6zl39lP7wD44bg8fZ4q4Ht9J1kgC+/IGKKupWEHOL5IeCKi61B/HWcuehW?=
+ =?us-ascii?Q?6ZZZTZlMQMFwMVpS4fydzMVSmEGrpZEpuWM3fE5GLwL4GczwQJxoX5JpvLQI?=
+ =?us-ascii?Q?vnklbWk8Jh/0PXrqa1RxE/RAa46gfaM5rLsckQgE+z7Q1xdFigkvR3s3Q3Uq?=
+ =?us-ascii?Q?jBNJbggVZ26QX37CjNe9RpOimm5eXLXfvNiDQ+1LhSb3BVvNQdtpK+QBUmF+?=
+ =?us-ascii?Q?CELiw/Cdv2MlSXkc4Im0Gjhcboj6YBhKEk0WkS0RupVDs4e+bufysNKmtEa/?=
+ =?us-ascii?Q?jFvkWSXi2vdJTj3hA1M3dvQJUDQ40HwGb9qOilOO+HhVTUx9p08s5YtK8T44?=
+ =?us-ascii?Q?rJCqBj7T0L2kG+SrONuUoDWeNiyrhA9LFHYTh45xWRfkGDHd1dsWUNKsA8vy?=
+ =?us-ascii?Q?e4LwaQEo8MVOr/92VpaSml64eO9zcZ6TRW7oZOit40gH6KXPxSqj0MeoFUJG?=
+ =?us-ascii?Q?4Ytot/sX5a0q/eg5rpHiUvzUY2wlV3IUdN2wVKI94W7ISg3xZA9y2JbksyF5?=
+ =?us-ascii?Q?ner3y3UsGEKiFl2YQjJMQ0/lv7VGo3oyI/OeEPH30VCtQ6o4pMOtRa71fkxh?=
+ =?us-ascii?Q?cbq4m5AMJi6JyO5h2ZWTbz3gqUyo4hSt/Btawr+87nidnZnrRkBBwhxJRSnJ?=
+ =?us-ascii?Q?x478tNqd6NVAjvXjcygqrrHRCLa8E67TAdJfHUg0twUac6cPhqHiuCUNl+QR?=
+ =?us-ascii?Q?aFJlCs2hVIYedkMPqhi18tDl5oXZsZHDZpPqzCzF1MQgdzdCztbLrYFhAzrE?=
+ =?us-ascii?Q?mikoZa2RWkYJHIaQokCiyvUCx6dznZPUXdqFRC+3dCIZ9LBQFp4R3Wc3N5ui?=
+ =?us-ascii?Q?B/CvwcBmjTQ+sZTj4JULstJN1+zMbW2eWcz7m1L3Cx8uJ2sxGuZY6xRPGHFW?=
+ =?us-ascii?Q?TlGD0EBCEhkk3+0TqXY4wHdjtoaFfufMqB71WbU30JAIth4TcXZO4Zg/mtPO?=
+ =?us-ascii?Q?28mfd0cxuskGiRes14qztuoW+Putl2K5fdtMfRBq4nUwvr5NP7+MB0FTPmxj?=
+ =?us-ascii?Q?ykY1qFm5pU/eeLo8FLbMCAO60aaY20ypGtNCkniGMAWQvsTt1gtPP97XvhrC?=
+ =?us-ascii?Q?Ah1A/jpDU5iyduKuG3xXH3eovFb7CqgvsvFkUtmq3Usvzt5P4jOEEZhy7yf9?=
+ =?us-ascii?Q?mKzBkOgMN2RXwxRdlxrm2Hdi9L8YsWveb6HaeP23njyboDDvizr4QtXoY1fx?=
+ =?us-ascii?Q?rMiFiHgZGjHymVmhiOz/46Nwb2JZQfuXAl50O3huQs7TOrFFn9gJj4bu/+qy?=
+ =?us-ascii?Q?7Zg4tJ+yYW/nHLa5gAGEhDp3VrlPFuTxR6+mrJ6T9q9GgLr2Uzk4GP80o6sr?=
+ =?us-ascii?Q?AKyfBsh6Pg=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 41368b38-ffca-4814-a3cd-08da17d5fc4c
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 14:01:45.5481 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1yPXeYD5nGVqu3vIlVZNNPrSa+fTzlrV9fUkbIUIRCj8wWcPgQpw804nI1jo3mrv
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4967
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,111 +153,85 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-04-05 17:16, Jason Gunthorpe wrote:
-> vdpa and usnic are trying to test if IOMMU_CACHE is supported. The correct
-> way to do this is via dev_is_dma_coherent()
-
-Not necessarily...
-
-Disregarding the complete disaster of PCIe No Snoop on Arm-Based 
-systems, there's the more interesting effectively-opposite scenario 
-where an SMMU bridges non-coherent devices to a coherent interconnect. 
-It's not something we take advantage of yet in Linux, and it can only be 
-properly described in ACPI, but there do exist situations where 
-IOMMU_CACHE is capable of making the device's traffic snoop, but 
-dev_is_dma_coherent() - and device_get_dma_attr() for external users - 
-would still say non-coherent because they can't assume that the SMMU is 
-enabled and programmed in just the right way.
-
-I've also not thought too much about how things might look with S2FWB 
-thrown into the mix in future...
-
-Robin.
-
-> like the DMA API does. If
-> IOMMU_CACHE is not supported then these drivers won't work as they don't
-> call any coherency-restoring routines around their DMAs.
+On Wed, Apr 06, 2022 at 02:37:40PM +0100, Robin Murphy wrote:
+> On 2022-04-06 14:06, Jason Gunthorpe wrote:
+> > On Wed, Apr 06, 2022 at 01:32:07PM +0100, Robin Murphy wrote:
+> > > a particular IOMMU instance, and potentially allocate separate domains for
+> > > separate devices to represent the same address space, much like
+> > > vfio_iommu_type1_attach_group() does.
+> > 
+> > I think this VFIO code also needs some more work, it currently assumes
+> > that if the domain ops are the same then the domains are compatible,
+> > and that is not true for ARM SMMU drivers.
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/infiniband/hw/usnic/usnic_uiom.c | 16 +++++++---------
->   drivers/vhost/vdpa.c                     |  3 ++-
->   2 files changed, 9 insertions(+), 10 deletions(-)
+> Well, strictly it uses the ops as a "negative" heuristic that the domains
+> are not definitely incompatible, and only then consolidates domains if
+> cross-attaching actually succeeds. So I don't think it's really so bad.
+
+Oh that is sneaky, I didn't appreciate that bit of logic..
+
+> > I've been thinking of adding a domain callback 'can device attach' and
+> > replacing the ops compare with that instead.
 > 
-> diff --git a/drivers/infiniband/hw/usnic/usnic_uiom.c b/drivers/infiniband/hw/usnic/usnic_uiom.c
-> index 760b254ba42d6b..24d118198ac756 100644
-> --- a/drivers/infiniband/hw/usnic/usnic_uiom.c
-> +++ b/drivers/infiniband/hw/usnic/usnic_uiom.c
-> @@ -42,6 +42,7 @@
->   #include <linux/list.h>
->   #include <linux/pci.h>
->   #include <rdma/ib_verbs.h>
-> +#include <linux/dma-map-ops.h>
->   
->   #include "usnic_log.h"
->   #include "usnic_uiom.h"
-> @@ -474,6 +475,12 @@ int usnic_uiom_attach_dev_to_pd(struct usnic_uiom_pd *pd, struct device *dev)
->   	struct usnic_uiom_dev *uiom_dev;
->   	int err;
->   
-> +	if (!dev_is_dma_coherent(dev)) {
-> +		usnic_err("IOMMU of %s does not support cache coherency\n",
-> +				dev_name(dev));
-> +		return -EINVAL;
-> +	}
-> +
->   	uiom_dev = kzalloc(sizeof(*uiom_dev), GFP_ATOMIC);
->   	if (!uiom_dev)
->   		return -ENOMEM;
-> @@ -483,13 +490,6 @@ int usnic_uiom_attach_dev_to_pd(struct usnic_uiom_pd *pd, struct device *dev)
->   	if (err)
->   		goto out_free_dev;
->   
-> -	if (!iommu_capable(dev->bus, IOMMU_CAP_CACHE_COHERENCY)) {
-> -		usnic_err("IOMMU of %s does not support cache coherency\n",
-> -				dev_name(dev));
-> -		err = -EINVAL;
-> -		goto out_detach_device;
-> -	}
-> -
->   	spin_lock(&pd->lock);
->   	list_add_tail(&uiom_dev->link, &pd->devs);
->   	pd->dev_cnt++;
-> @@ -497,8 +497,6 @@ int usnic_uiom_attach_dev_to_pd(struct usnic_uiom_pd *pd, struct device *dev)
->   
->   	return 0;
->   
-> -out_detach_device:
-> -	iommu_detach_device(pd->domain, dev);
->   out_free_dev:
->   	kfree(uiom_dev);
->   	return err;
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 4c2f0bd062856a..05ea5800febc37 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -22,6 +22,7 @@
->   #include <linux/vdpa.h>
->   #include <linux/nospec.h>
->   #include <linux/vhost.h>
-> +#include <linux/dma-map-ops.h>
->   
->   #include "vhost.h"
->   
-> @@ -929,7 +930,7 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
->   	if (!bus)
->   		return -EFAULT;
->   
-> -	if (!iommu_capable(bus, IOMMU_CAP_CACHE_COHERENCY))
-> +	if (!dev_is_dma_coherent(dma_dev))
->   		return -ENOTSUPP;
->   
->   	v->domain = iommu_domain_alloc(bus);
+> Previous comment notwithstanding, much as I do tend to prefer "just try the
+> operation and see what happens" APIs, that might be more reliable in the
+> long run than trying to encode specific "sorry, you'll need to allocate a
+> separate domain for this device" vs. "this should have worked but something
+> went wrong" semantics in the return value from attach.
+
+Overall the way vfio is doing this has alot of overhead. Not only does
+it create a domain it may not use it also does this:
+
+			iommu_detach_group(domain->domain, group->iommu_group);
+			if (!iommu_attach_group(d->domain,
+						group->iommu_group)) {
+				list_add(&group->next, &d->group_list);
+				iommu_domain_free(domain->domain);
+				kfree(domain);
+				goto done;
+			}
+
+			ret = iommu_attach_group(domain->domain,
+						 group->iommu_group);
+
+So, if we already have a compatible domain VFIO does an extra domain
+alloc/dealloc and 3 extra attach/detatches per domain it tests.
+
+It is not very elegant at least..
+
+> > > It's not really worth IOMMU drivers trying to support a domain spanning
+> > > potentially-heterogeneous instances internally, since they can't reasonably
+> > > know what matters in any particular situation.
+> > 
+> > In the long run I think it will be worth optimizing. If the SMMU
+> > instances can share IOPTE memory then we get two wins - memory
+> > reduction and reduced work to read dirty bits.
+> > 
+> > The dirty read in particular is very performance sensitive so if real
+> > work loads have many SMMUs per VM it will become a pain point.
+> 
+> In the ideal case though, the SVA domains are only there to logically bridge
+> between an existing process pagetable and IOMMU instances at the API level,
+> right? Surely if we're shadowing physical pagetables for SVA we've basically
+> already lost the performance game?
+
+Sorry, I was not talking about SVA with that remark, speaking
+generally about normal iommu_domains and sharing between SMMU
+instances.
+
+For SVA I see no issue with duplicating it per instance since it is
+very small/etc - the only drawback is that the common code has to do
+the 'can device attach' dance and keep a domain list per
+mm-struct. Which seems OK to me.
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
