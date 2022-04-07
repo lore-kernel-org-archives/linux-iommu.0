@@ -1,78 +1,56 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9EDF4C433F5
-	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 13:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B395EC433EF
+	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 13:24:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 344CB41A1D;
-	Thu,  7 Apr 2022 13:22:10 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5F970405D0;
+	Thu,  7 Apr 2022 13:24:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nerVIAT5mGf9; Thu,  7 Apr 2022 13:22:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id E07C541A1F;
-	Thu,  7 Apr 2022 13:22:08 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A8907C002C;
-	Thu,  7 Apr 2022 13:22:08 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B8F76C0012
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 06:55:58 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9F760404AF
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 06:55:58 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=goldelico.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xQuHXfkwEdrh for <iommu@lists.linux-foundation.org>;
- Thu,  7 Apr 2022 06:55:58 +0000 (UTC)
-X-Greylist: delayed 00:09:24 by SQLgrey-1.8.0
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de
- [85.215.255.52])
- by smtp2.osuosl.org (Postfix) with ESMTPS id A6E7A40133
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 06:55:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649313836;
- s=strato-dkim-0002; d=goldelico.com;
- h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
- From:Subject:Sender;
- bh=H7+9xv89JRCjOioZu+oNk24ZKTOcaRFzOuoirztpIDI=;
- b=VH6VEmwzugb8k2cwHtpWrQIq5pSGRR88jWGOtMu10YOPF4ZgwCH/VYvsXCr5jt21qF
- au9sRD9ReVr1s2wmH9MJTXbW5GSxdmm2abE946vxsFhfXP7R0fHrFN8Wa5huEXFkD/7z
- Tj96+h8yu/WDqH1aU5mJRTjA1Ka/JvpoSq+HG5uXInQSwoMRGbY8bQ+vd/fILHSCFiJC
- WVpE/BiiPxZUYalpfay/LAovg/5QVsqiwzKS0SrL4vjt2tTQJUfbJXT4fuM/PyzU/FTv
- bs2pxCf77FOHlZEy9TJiTZoto1J5ASRxcqDN69QNYAnqE4q0jynW2skx1XAW+jw462Tf
- UJ2g==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7gpw91N5y2S3i8MRqg=="
-X-RZG-CLASS-ID: mo00
-Received: from imac.fritz.box by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
- with ESMTPSA id k708cfy376htiMC
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1
- with 256 ECDH bits, eq. 3072 bits RSA))
- (Client did not present a certificate);
- Thu, 7 Apr 2022 08:43:55 +0200 (CEST)
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
-Subject: Re: [PATCH] iommu/omap: Fix regression in probe for NULL pointer
- dereference
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <Yk54+S0iaMueWN63@atomide.com>
-Date: Thu, 7 Apr 2022 08:43:54 +0200
-Message-Id: <F4D607DA-EA0E-4044-B700-546CF764CD4D@goldelico.com>
-References: <20220331062301.24269-1-tony@atomide.com>
- <Yk54+S0iaMueWN63@atomide.com>
-To: Tony Lindgren <tony@atomide.com>
-X-Mailer: Apple Mail (2.3445.104.21)
-X-Mailman-Approved-At: Thu, 07 Apr 2022 13:22:06 +0000
-Cc: linux-omap@vger.kernel.org, Drew Fustini <dfustini@baylibre.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux-foundation.org,
- Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 34qxQFEoFj12; Thu,  7 Apr 2022 13:24:58 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 658A3402A8;
+	Thu,  7 Apr 2022 13:24:58 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 299C7C002C;
+	Thu,  7 Apr 2022 13:24:58 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A6F82C0012
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 13:24:56 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 8ED1E81B60
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 13:24:56 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id OpRzjPLXj1cu for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Apr 2022 13:24:55 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 7A3B481B17
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 13:24:55 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id 0CF6D68AFE; Thu,  7 Apr 2022 15:24:50 +0200 (CEST)
+Date: Thu, 7 Apr 2022 15:24:49 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 3/4] iommu: remove the put_resv_regions method
+Message-ID: <20220407132449.GB6383@lst.de>
+References: <20220407062608.711392-1-hch@lst.de>
+ <20220407062608.711392-4-hch@lst.de>
+ <53c7ef1d-1835-2994-c2d2-6382f53599fa@arm.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <53c7ef1d-1835-2994-c2d2-6382f53599fa@arm.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,42 +68,23 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
+On Thu, Apr 07, 2022 at 11:18:20AM +0100, Robin Murphy wrote:
+> On 2022-04-07 07:26, Christoph Hellwig wrote:
+>> All drivers that implement get_resv_regions just use
+>> generic_put_resv_regions to implement the put side.  Remove the
+>> indirections and document the allocations constraints.
+>
+> Unfortunately we need to keep this one for now, as the belated IORT RMR 
+> support will finally be the first real user[1][2].
+>
+> Robin.
+>
+> [1] 
+> https://lore.kernel.org/linux-iommu/20220404124209.1086-6-shameerali.kolothum.thodi@huawei.com/
+> [2] 
+> https://lore.kernel.org/linux-iommu/20220404124209.1086-7-shameerali.kolothum.thodi@huawei.com/
 
-> Am 07.04.2022 um 07:39 schrieb Tony Lindgren <tony@atomide.com>:
-> 
-> Hi,
-> 
-> * Tony Lindgren <tony@atomide.com> [220331 09:21]:
->> Commit 3f6634d997db ("iommu: Use right way to retrieve iommu_ops") started
->> triggering a NULL pointer dereference for some omap variants:
->> 
->> __iommu_probe_device from probe_iommu_group+0x2c/0x38
->> probe_iommu_group from bus_for_each_dev+0x74/0xbc
->> bus_for_each_dev from bus_iommu_probe+0x34/0x2e8
->> bus_iommu_probe from bus_set_iommu+0x80/0xc8
->> bus_set_iommu from omap_iommu_init+0x88/0xcc
->> omap_iommu_init from do_one_initcall+0x44/0x24
->> 
->> This is caused by omap iommu probe returning 0 instead of ERR_PTR(-ENODEV)
->> as noted by Jason Gunthorpe <jgg@ziepe.ca>.
->> 
->> Looks like the regression already happened with an earlier commit
->> 6785eb9105e3 ("iommu/omap: Convert to probe/release_device() call-backs")
->> that changed the function return type and missed converting one place.
-> 
-> Can you guys please get this fix into the -rc series? Or ack it so
-> I can pick it up into my fixes branch?
-> 
-> Without this fix booting is failing for a bunch of devices.
-
-Yes, I can confirm that v5.18-rc1 does not even boot the GTA04 (omap3)
-and OMAP5UEVM to any activity without this patch.
-
-Seems to be an urgent fix.
-
-BR and thanks,
-Nikolaus
+What these patches to looks wrong to me.  I'll comment there.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
