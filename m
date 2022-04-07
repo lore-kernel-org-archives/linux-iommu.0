@@ -1,61 +1,93 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D3EDAC433EF
-	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 15:43:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0CCE6C433F5
+	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 16:21:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 7113A813E4;
-	Thu,  7 Apr 2022 15:43:48 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 061DE612A6;
+	Thu,  7 Apr 2022 16:21:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id c4z2I8Is59F1; Thu,  7 Apr 2022 15:43:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 3313B81367;
-	Thu,  7 Apr 2022 15:43:47 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id sZg_v9L7iCeC; Thu,  7 Apr 2022 16:21:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 4CDA26129F;
+	Thu,  7 Apr 2022 16:21:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 14C01C002C;
-	Thu,  7 Apr 2022 15:43:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 02BFCC001D;
+	Thu,  7 Apr 2022 16:21:51 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5E1FCC0012
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 15:43:45 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8DEEDC0012
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 16:05:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 4C82B81367
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 15:43:45 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 7B47281970
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 16:05:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YO8S_YWtQEhy for <iommu@lists.linux-foundation.org>;
- Thu,  7 Apr 2022 15:43:44 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 391EB81311
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 15:43:44 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5BB5A12FC;
- Thu,  7 Apr 2022 08:43:43 -0700 (PDT)
-Received: from [10.1.39.18] (e122027.cambridge.arm.com [10.1.39.18])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 112223F73B;
- Thu,  7 Apr 2022 08:43:39 -0700 (PDT)
-Message-ID: <83313d86-5ee4-4c61-f5a2-48aff4a5f091@arm.com>
-Date: Thu, 7 Apr 2022 16:43:38 +0100
+ with ESMTP id IbXljUTJoDhS for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Apr 2022 16:05:22 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com
+ [IPv6:2a00:1450:4864:20::42b])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id ACB1181948
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 16:05:21 +0000 (UTC)
+Received: by mail-wr1-x42b.google.com with SMTP id d29so8512897wra.10
+ for <iommu@lists.linux-foundation.org>; Thu, 07 Apr 2022 09:05:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=RwGnOv9tuCS4Glh/q7Oki8zffnkUd/Q0fjECuAqwO7c=;
+ b=gmV3yEoVNk48jcao6xPblrNPo2DepjB/cLhPBrWrEehQVu9A8va2bBHzlDCfzHi5sm
+ GMGDkHH6ugea546NIYx/mw+RooJuDb2MQNzC9pBuoFhkqem4NjIjUbsVCRPkqusvtGA6
+ dVISATNeHRq6Pd2MEN/MqxDOQ+nJCDF/HOzwyZpbPbahgsWgkXaSfp10+g3BndlncXnp
+ fKf+wkkD+pzzWTAoJGgzOPdI17YByZWb3bC6+tDxp2qzjzgqJuZgDwnr20OdJZb5HX4M
+ +n0afAhNsqjK7zxZ6pc3seudiFD8Q2CqvlqKS4dEKu1H8GAlzeI5qwrvzeAFIYfCyJHt
+ WdPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=RwGnOv9tuCS4Glh/q7Oki8zffnkUd/Q0fjECuAqwO7c=;
+ b=TAScbCjGQX/Zm5dus2Ewy8KgVahP4fo1YSas2jh0aPBPsJA+NK32oDnI6GU7KuOu+S
+ LbUFH+S4/V/0+/L2TsDhFHtbvHuK7dEwvntSb4pT6FHdIYwuT5ugaecXVWnPiYchtsTw
+ nO5v7pmQx/KjlaDlCWwGcg7qf1o/J6s8q5IssKDP6FFj5s0tf297wo0pomP6WvkWIktm
+ XN9bRr97scbUY5DkabY9IGelHdjXrCHtREQ6AfsBa1fZNP2AxQwoH1wnZgBVV4ldCv7s
+ /ZSaCXQNBG78olVLAui+zB0uMMOzAvQLTfhGnQb7wXEx1vQo2F8rSv6U9+AQ/a35mBc+
+ c1kw==
+X-Gm-Message-State: AOAM533VhaieFgUTp2FP2EwDY3aR7WAKCiK3Ur75Yfactd5Wf5HDZnJ7
+ HoNweEpyPFem3VNSEe2fUn8=
+X-Google-Smtp-Source: ABdhPJw5LXgWJ0+mFqcCsIxYkYvOGUsbpwr0rk1MnX3hYB9nf98fHqjiWFS+OJN2YQaf4rPa8l7aAQ==
+X-Received: by 2002:adf:b745:0:b0:205:b8e2:f470 with SMTP id
+ n5-20020adfb745000000b00205b8e2f470mr11089350wre.91.1649347519726; 
+ Thu, 07 Apr 2022 09:05:19 -0700 (PDT)
+Received: from [192.168.1.122]
+ (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+ by smtp.gmail.com with ESMTPSA id
+ t6-20020a05600c198600b0038cafe3d47dsm8725698wmq.42.2022.04.07.09.05.19
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Thu, 07 Apr 2022 09:05:19 -0700 (PDT)
+Subject: Re: [PATCH net-next] sfc: Stop using iommu_present()
+To: Robin Murphy <robin.murphy@arm.com>, habetsm.xilinx@gmail.com,
+ davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
+References: <7350f957944ecfce6cce90f422e3992a1f428775.1649166055.git.robin.murphy@arm.com>
+From: Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <296fa369-723f-f9b7-773f-7695b12c9971@gmail.com>
+Date: Thu, 7 Apr 2022 17:05:18 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v9 00/11] ACPI/IORT: Support for IORT RMR node
+In-Reply-To: <7350f957944ecfce6cce90f422e3992a1f428775.1649166055.git.robin.murphy@arm.com>
 Content-Language: en-GB
-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
- linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org
-References: <20220404124209.1086-1-shameerali.kolothum.thodi@huawei.com>
-From: Steven Price <steven.price@arm.com>
-In-Reply-To: <20220404124209.1086-1-shameerali.kolothum.thodi@huawei.com>
-Cc: robin.murphy@arm.com, jon@solid-run.com, linuxarm@huawei.com,
- guohanjun@huawei.com, yangyicong@huawei.com, Sami.Mujawar@arm.com,
- will@kernel.org, wanghuiqiang@huawei.com
+X-Mailman-Approved-At: Thu, 07 Apr 2022 16:21:49 +0000
+Cc: netdev@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -68,106 +100,21 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgU2hhbWVlciwKCkkndmUgZ2l2ZW4gaXQgYSBzcGluIG9uIG15IEp1bm8gYm9hcmQgYW5kIHRo
-ZSBFRklGQiB3b3JrcyBmaW5lIHdpdGggaXQuCkhvd2V2ZXIgSSBhbSBnZXR0aW5nIGEgd2Fybmlu
-ZzoKCkFDUEk6IElPUlQ6IFtGaXJtd2FyZSBCdWddOiBSTVIgZGVzY3JpcHRvclsweGY4MGQwMDAw
-XSB3aXRoIHplcm8gbGVuZ3RoLApjb250aW51ZSBhbnl3YXkKCldoaWNoIG9uIGV4YW1pbmF0aW9u
-IG9mIHRoZSBJT1JUIHRhYmxlIGlzIGNvcnJlY3QgLSB0aGUgZmlybXdhcmUgZG9lcwppbmRlZWQg
-c2VlbSB0byBoYXZlIGEgYnVnIGFuZCB0aGUgbGVuZ3RoIGluIHRoZSBJT1JUIHRhYmxlIGlzIDAs
-CmhvcGVmdWxseSBJIGNhbiBnZXQgdGhhdCBmaXhlZC4gSG93ZXZlciBzaW5jZSBpdCAiYWxsIHdv
-cmtzIiB0aGF0IHBvaW50cwpvdXQgdGhhdCB0aGUgcmVzZXJ2ZWQgbWVtb3J5IHJlZ2lvbiBpc24n
-dCBhY3R1YWxseSB1c2VkLiBJbnN0ZWFkIHRoZQpleGlzdGluZyBlbnRyaWVzIGZyb20gdGhlIFNN
-TVUgYXJlIHJldXNlZCAoZXZlbiB0aG91Z2ggdGhleSBkb24ndCBtYXRjaAp0aGUgYWRkcmVzcy9z
-aXplIHJlZ2lvbiBpbiB0aGUgUk1SKS4KCkknbSBub3Qgc3VyZSBpZiB0aGF0IG1hdHRlcnMgYnV0
-IEkgdGhvdWdodCBpdCB3b3J0aCBwb2ludGluZyBvdXQgYXMgaXQncwpub3QgY3VycmVudGx5IHNw
-ZWx0IG91dCB0aGF0IHRoZSBSTVIgZGVzY3JpcHRvcidzIGNvbnRlbnQgaXMgY3VycmVudGx5CmFj
-dHVhbGx5IGlnbm9yZWQuCgpBbnl3YXksIEZXSVc6CgpUZXN0ZWQtYnk6IFN0ZXZlbiBQcmljZSA8
-c3RldmVuLnByaWNlQGFybS5jb20+CgpTdGV2ZQoKT24gMDQvMDQvMjAyMiAxMzo0MSwgU2hhbWVl
-ciBLb2xvdGh1bSB3cm90ZToKPiBIaQo+IAo+IHY4IC0tPiB2OQo+IMKgLSBBZHJlc3NlZCBjb21t
-ZW50cyBmcm9tIFJvYmluIG9uIGludGVyZmFjZXMgYXMgZGlzY3Vzc2VkIGhlcmVbMF0uCj4gwqAt
-IEFkZHJlc3NlZCBjb21tZW50cyBmcm9tIExvcmVuem8uCj4gwqAKPiBUaG91Z2ggZnVuY3Rpb25h
-bGx5IHRoZXJlIGFyZW4ndCBhbnkgbWFqb3IgY2hhbmdlcywgdGhlIGludGVyZmFjZXMgaGF2ZQo+
-IGNoYW5nZWQgZnJvbSB2OCBhbmQgZm9yIHRoYXQgcmVhc29uIG5vdCBpbmNsdWRlZCB0aGUgVC1i
-eSB0YWdzIGZyb20KPiBTdGV2ZSBhbmQgRXJpYyB5ZXQoTWFueSB0aGFua3MgZm9yIHRoYXQpLiBB
-cHByZWNpYXRlIGl0IGlmIHlvdSBjb3VsZAo+IGdpdmUgdGhpcyBhIHNwaW4gYW5kIGxldMKgbWUg
-a25vdy4KPiAKPiAoVGhlIHJldmlzZWQgQUNQSUNBIHB1bGwgcmVxdWVzdCBmb3IgSU9SVCBFLmQg
-cmVsYXRlZCBjaGFuZ2VzIGlzCj4gaGVyZVsxXSBhbmQgdGhpcyBpcyBub3cgbWVyZ2VkIHRvIGFj
-cGljYTptYXN0ZXIuKQo+IAo+IFBsZWFzZSB0YWtlIGEgbG9vayBhbmQgbGV0IG1lIGtub3cgeW91
-ciB0aG91Z2h0cy4KPiAKPiBUaGFua3MsCj4gU2hhbWVlcgo+IFswXSBodHRwczovL2xvcmUua2Vy
-bmVsLm9yZy9saW51eC1hcm0ta2VybmVsL2M5ODJmMWQ3LWM1NjUtNzY5YS1hYmFlLTc5Yzk2Mjk2
-OWQ4OEBhcm0uY29tLwo+IFsxXSBodHRwczovL2dpdGh1Yi5jb20vYWNwaWNhL2FjcGljYS9wdWxs
-Lzc2NQo+IAo+IEZyb20gb2xkOgo+IFdlIGhhdmUgZmFjZWQgaXNzdWVzIHdpdGggMzQwOGlNUiBS
-QUlEIGNvbnRyb2xsZXIgY2FyZHMgd2hpY2gKPiBmYWlsIHRvIGJvb3Qgd2hlbiBTTU1VIGlzIGVu
-YWJsZWQuIFRoaXMgaXMgYmVjYXVzZSB0aGVzZQo+IGNvbnRyb2xsZXJzIG1ha2UgdXNlIG9mIGhv
-c3QgbWVtb3J5IGZvciB2YXJpb3VzIGNhY2hpbmcgcmVsYXRlZAo+IHB1cnBvc2VzIGFuZCB3aGVu
-IFNNTVUgaXMgZW5hYmxlZCB0aGUgaU1SIGZpcm13YXJlIGZhaWxzIHRvCj4gYWNjZXNzIHRoZXNl
-IG1lbW9yeSByZWdpb25zIGFzIHRoZXJlIGlzIG5vIG1hcHBpbmcgZm9yIHRoZW0uCj4gSU9SVCBS
-TVIgcHJvdmlkZXMgYSB3YXkgZm9yIFVFRkkgdG8gZGVzY3JpYmUgYW5kIHJlcG9ydCB0aGVzZQo+
-IG1lbW9yeSByZWdpb25zIHNvIHRoYXQgdGhlIGtlcm5lbCBjYW4gbWFrZSBhIHVuaXR5IG1hcHBp
-bmcgZm9yCj4gdGhlc2UgaW4gU01NVS4KPiAKPiBDaGFuZ2UgSGlzdG9yeToKPiAKPiB2NyAtLT4g
-djgKPiAgIC0gUGF0Y2ggIzEgaGFzIHRlbXAgZGVmaW5pdGlvbnMgZm9yIFJNUiByZWxhdGVkIGNo
-YW5nZXMgdGlsbAo+ICAgICB0aGUgQUNQSUNBIGhlYWRlciBjaGFuZ2VzIGFyZSBwYXJ0IG9mIGtl
-cm5lbC4KPiAgIC0gTm8gZWFybHkgcGFyc2luZyBvZiBSTVIgbm9kZSBpbmZvIGFuZCBpcyBvbmx5
-IHBhcnNlZCBhdCB0aGUKPiAgICAgdGltZSBvZiB1c2UuCj4gICAtIENoYW5nZXMgdG8gdGhlIFJN
-UiBnZXQvcHV0IEFQSSBmb3JtYXQgY29tcGFyZWQgdG8gdGhlCj4gICAgIHByZXZpb3VzIHZlcnNp
-b24uCj4gICAtIFN1cHBvcnQgZm9yIFJNUiBkZXNjcmlwdG9yIHNoYXJlZCBieSBtdWx0aXBsZSBz
-dHJlYW0gSURzLgo+IAo+IHY2IC0tPiB2Nwo+ICAtZml4IHBvaW50ZWQgb3V0IGJ5IFN0ZXZlIHRv
-IHRoZSBTTU1VdjIgU01SIGJ5cGFzcyBpbnN0YWxsIGluIHBhdGNoICM4Lgo+IAo+IHY1IC0tPiB2
-Ngo+IC0gQWRkcmVzc2VkIGNvbW1lbnRzIGZyb20gUm9iaW4gJiBMb3JlbnpvLgo+ICAgOiBNb3Zl
-ZCBpb3J0X3BhcnNlX3JtcigpIHRvIGFjcGlfaW9ydF9pbml0KCkgZnJvbQo+ICAgICBpb3J0X2lu
-aXRfcGxhdGZvcm1fZGV2aWNlcygpLgo+ICAgOiBSZW1vdmVkIHVzZSBvZiBzdHJ1Y3QgaW9ydF9y
-bXJfZW50cnkgZHVyaW5nIHRoZSBpbml0aWFsCj4gICAgIHBhcnNlLiBVc2luZyBzdHJ1Y3QgaW9t
-bXVfcmVzdl9yZWdpb24gaW5zdGVhZC4KPiAgIDogUmVwb3J0IFJNUiBhZGRyZXNzIGFsaWdubWVu
-dCBhbmQgb3ZlcmxhcCBlcnJvcnMsIGJ1dCBjb250aW51ZS4KPiAgIDogUmV3b3JrZWQgYXJtX3Nt
-bXVfaW5pdF9ieXBhc3Nfc3RlcygpIChwYXRjaCAjIDYpLgo+IC0gVXBkYXRlZCBTTU1VdjIgYnlw
-YXNzIFNNUiBjb2RlLiBUaGFua3MgdG8gSm9uIE4gKHBhdGNoICM4KS4KPiAtIFNldCBJT01NVSBw
-cm90ZWN0aW9uIGZsYWdzKElPTU1VX0NBQ0hFLCBJT01NVV9NTUlPKSBiYXNlZAo+ICAgb24gVHlw
-ZSBvZiBSTVIgcmVnaW9uLiBTdWdnZXN0ZWQgYnkgSm9uIE4uCj4gCj4gdjQgLS0+IHY1Cj4gIC1B
-ZGRlZCBhIGZ3X2RhdGEgdW5pb24gdG8gc3RydWN0IGlvbW11X3Jlc3ZfcmVnaW9uIGFuZCByZW1v
-dmVkCj4gICBzdHJ1Y3QgaW9tbXVfcm1yIChCYXNlZCBvbiBjb21tZW50cyBmcm9tIEpvZXJnL1Jv
-YmluKS4KPiAgLUFkZGVkIGlvbW11X3B1dF9ybXJzKCkgdG8gcmVsZWFzZSBtZW0uCj4gIC1UaGFu
-a3MgdG8gU3RldmUgZm9yIHZlcmlmeWluZyBvbiBTTU1VdjIsIGJ1dCBub3QgYWRkZWQgdGhlIFRl
-c3RlZC1ieQo+ICAgeWV0IGJlY2F1c2Ugb2YgdGhlIGFib3ZlIGNoYW5nZXMuCj4gCj4gdjMgLS0+
-djQKPiAtSW5jbHVkZWQgdGhlIFNNTVV2MiBTTVIgYnlwYXNzIGluc3RhbGwgY2hhbmdlcyBzdWdn
-ZXN0ZWQgYnkKPiAgU3RldmUocGF0Y2ggIzcpCj4gLUFzIHBlciBSb2JpbidzIGNvbW1lbnRzLCBS
-TVIgcmVzZXJ2ZSBpbXBsZW1lbnRhdGlvbiBpcyBub3cKPiAgbW9yZSBnZW5lcmljICAocGF0Y2gg
-IzgpIGFuZCBkcm9wcGVkIHYzIHBhdGNoZXMgOCBhbmQgMTAuCj4gLVJlYmFzZSB0byA1LjEzLXJj
-MQo+IAo+IFJGQyB2MiAtLT4gdjMKPiAgLURyb3BwZWQgUkZDIHRhZyBhcyB0aGUgQUNQSUNBIGhl
-YWRlciBjaGFuZ2VzIGFyZSBub3cgcmVhZHkgdG8gYmUKPiAgIHBhcnQgb2YgNS4xM1swXS4gQnV0
-IHRoaXMgc2VyaWVzIHN0aWxsIGhhcyBhIGRlcGVuZGVuY3kgb24gdGhhdCBwYXRjaC4KPiAgLUFk
-ZGVkIElPUlQgRS5iIHJlbGF0ZWQgY2hhbmdlcyhub2RlIGZsYWdzLCBfRFNNIGZ1bmN0aW9uIDUg
-Y2hlY2tzIGZvcgo+ICAgUENJZSkuCj4gIC1DaGFuZ2VkIFJNUiB0byBzdHJlYW0gaWQgbWFwcGlu
-ZyBmcm9tIE06TiB0byBNOjEgYXMgcGVyIHRoZSBzcGVjIGFuZAo+ICAgZGlzY3Vzc2lvbiBoZXJl
-WzFdLgo+ICAtTGFzdCB0d28gcGF0Y2hlcyBhZGQgc3VwcG9ydCBmb3IgU01NVXYyKFRoYW5rcyB0
-byBKb24gTmV0dGxldG9uISkKPiAKPiBKb24gTmV0dGxldG9uICgxKToKPiAgIGlvbW11L2FybS1z
-bW11OiBHZXQgYXNzb2NpYXRlZCBSTVIgaW5mbyBhbmQgaW5zdGFsbCBieXBhc3MgU01SCj4gCj4g
-U2hhbWVlciBLb2xvdGh1bSAoMTApOgo+ICAgQUNQSS9JT1JUOiBBZGQgdGVtcG9yYXJ5IFJNUiBu
-b2RlIGZsYWcgZGVmaW5pdGlvbnMKPiAgIGlvbW11OiBJbnRyb2R1Y2UgYSB1bmlvbiB0byBzdHJ1
-Y3QgaW9tbXVfcmVzdl9yZWdpb24KPiAgIEFDUEkvSU9SVDogTWFrZSBpb3J0X2lvbW11X21zaV9n
-ZXRfcmVzdl9yZWdpb25zKCkgcmV0dXJuIHZvaWQKPiAgIEFDUEkvSU9SVDogUHJvdmlkZSBhIGdl
-bmVyaWMgaGVscGVyIHRvIHJldHJpZXZlIHJlc2VydmUgcmVnaW9ucwo+ICAgaW9tbXUvZG1hOiBJ
-bnRyb2R1Y2UgYSBoZWxwZXIgdG8gcmVtb3ZlIHJlc2VydmVkIHJlZ2lvbnMKPiAgIEFDUEkvSU9S
-VDogQWRkIHN1cHBvcnQgdG8gcmV0cmlldmUgSU9SVCBSTVIgcmVzZXJ2ZWQgcmVnaW9ucwo+ICAg
-QUNQSS9JT1JUOiBBZGQgYSBoZWxwZXIgdG8gcmV0cmlldmUgUk1SIGluZm8gZGlyZWN0bHkKPiAg
-IGlvbW11L2FybS1zbW11LXYzOiBJbnRyb2R1Y2Ugc3RydGFiIGluaXQgaGVscGVyCj4gICBpb21t
-dS9hcm0tc21tdS12MzogUmVmYWN0b3IgYXJtX3NtbXVfaW5pdF9ieXBhc3Nfc3RlcygpIHRvIGZv
-cmNlCj4gICAgIGJ5cGFzcwo+ICAgaW9tbXUvYXJtLXNtbXUtdjM6IEdldCBhc3NvY2lhdGVkIFJN
-UiBpbmZvIGFuZCBpbnN0YWxsIGJ5cGFzcyBTVEUKPiAKPiAgZHJpdmVycy9hY3BpL2FybTY0L2lv
-cnQuYyAgICAgICAgICAgICAgICAgICB8IDM2OSArKysrKysrKysrKysrKysrKystLQo+ICBkcml2
-ZXJzL2lvbW11L2FwcGxlLWRhcnQuYyAgICAgICAgICAgICAgICAgIHwgICAyICstCj4gIGRyaXZl
-cnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmMgfCAgODAgKysrKy0KPiAgZHJp
-dmVycy9pb21tdS9hcm0vYXJtLXNtbXUvYXJtLXNtbXUuYyAgICAgICB8ICA1NCArKy0KPiAgZHJp
-dmVycy9pb21tdS9kbWEtaW9tbXUuYyAgICAgICAgICAgICAgICAgICB8ICAxMSArLQo+ICBkcml2
-ZXJzL2lvbW11L3ZpcnRpby1pb21tdS5jICAgICAgICAgICAgICAgIHwgICAyICstCj4gIGluY2x1
-ZGUvbGludXgvYWNwaV9pb3J0LmggICAgICAgICAgICAgICAgICAgfCAgMTggKy0KPiAgaW5jbHVk
-ZS9saW51eC9kbWEtaW9tbXUuaCAgICAgICAgICAgICAgICAgICB8ICAgNSArCj4gIGluY2x1ZGUv
-bGludXgvaW9tbXUuaCAgICAgICAgICAgICAgICAgICAgICAgfCAgIDkgKwo+ICA5IGZpbGVzIGNo
-YW5nZWQsIDUwNSBpbnNlcnRpb25zKCspLCA0NSBkZWxldGlvbnMoLSkKPiAKCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
-b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
-dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On 05/04/2022 14:40, Robin Murphy wrote:
+> Even if an IOMMU might be present for some PCI segment in the system,
+> that doesn't necessarily mean it provides translation for the device
+> we care about. It appears that what we care about here is specifically
+> whether DMA mapping ops involve any IOMMU overhead or not, so check for
+> translation actually being active for our device.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
