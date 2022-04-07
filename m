@@ -1,73 +1,71 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8907EC433EF
-	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 07:59:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6026EC433F5
+	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 07:59:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 3A8AE41694;
-	Thu,  7 Apr 2022 07:59:00 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 10B0660F45;
+	Thu,  7 Apr 2022 07:59:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 73eHz4Us2-rA; Thu,  7 Apr 2022 07:58:59 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id C4B31401FA;
-	Thu,  7 Apr 2022 07:58:58 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id oOleRx2w_YvC; Thu,  7 Apr 2022 07:59:05 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id DE115611C0;
+	Thu,  7 Apr 2022 07:59:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 99197C001D;
-	Thu,  7 Apr 2022 07:58:58 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0A24BC0012
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 07:58:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C7640C001D;
+	Thu,  7 Apr 2022 07:59:04 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EDA85C0012
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 07:59:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id DE2448144C
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 07:58:56 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id EAA5A611C0
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 07:59:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xgWRQsQVgpSR for <iommu@lists.linux-foundation.org>;
- Thu,  7 Apr 2022 07:58:56 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 1B33D81431
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 07:58:55 +0000 (UTC)
-X-UUID: 0281ebb5c8da46a6bc7b9b39bda2fb53-20220407
-X-UUID: 0281ebb5c8da46a6bc7b9b39bda2fb53-20220407
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
- (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 961990845; Thu, 07 Apr 2022 15:58:50 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
- Thu, 7 Apr 2022 15:58:48 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 7 Apr 2022 15:58:47 +0800
-To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
- "Matthias Brugger" <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>
-Subject: [PATCH v6 06/34] iommu/mediatek: Add mutex for m4u_group and m4u_dom
- in data
-Date: Thu, 7 Apr 2022 15:56:58 +0800
-Message-ID: <20220407075726.17771-7-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220407075726.17771-1-yong.wu@mediatek.com>
-References: <20220407075726.17771-1-yong.wu@mediatek.com>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id b_8KHAGCiBAi for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Apr 2022 07:59:02 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [IPv6:2607:7c80:54:e::133])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 4A56F60F45
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 07:59:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+ :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description;
+ bh=fBAouhGMrAo4DR21FYAu/hvO6g8bk7dvXwun6YXeuSE=; b=Smgn4MBYQqPfCENKlpEWrjQHKW
+ gfvj1P3sx4Vmhf2Fzh+x3284suy6km700wOok3jPpwxks7KLHgPB0G98v/T9P2OGObvDNL7yhJSDg
+ K9v7vfqJnGH5VwuprEkGR4tdW7aNbWqOJhrIcnez3erz7etFn31uBEgPl3J3QTcFmSssf68wkzmkE
+ rHLUB17PgGec6f1gzgHv5FMuBkCh+rAT4raH/a97uGj7gWG1YZPPNi0euyxFWOSs2ldCoRebdnqZ2
+ pvr+DLyThl5MHFgE7YW3DwZxb1NqO2dlWQwCnmtng1Tv1eLWc+qz6XK235F7NhVPvdfdAyH47AjTE
+ YjbDYTiQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red
+ Hat Linux)) id 1ncN2d-00AB66-8g; Thu, 07 Apr 2022 07:58:55 +0000
+Date: Thu, 7 Apr 2022 00:58:55 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Subject: Re: [PATCH v2 1/2] iommu/amd: Enable swiotlb in all cases
+Message-ID: <Yk6Zv8ubRmQMPPcX@infradead.org>
+References: <20220404204723.9767-1-mario.limonciello@amd.com>
+ <20220404204723.9767-2-mario.limonciello@amd.com>
+ <YkvGwMlrv8JKjHJQ@infradead.org>
+ <BL1PR12MB5157E55F2F469E66B46157CDE2E79@BL1PR12MB5157.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-X-MTK: N
-Cc: devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- chengci.xu@mediatek.com, xueqi.zhang@mediatek.com,
- linux-kernel@vger.kernel.org, libo.kang@mediatek.com,
- yen-chang.chen@mediatek.com, iommu@lists.linux-foundation.org,
- yf.wang@mediatek.com, linux-mediatek@lists.infradead.org,
- Hsin-Yi Wang <hsinyi@chromium.org>, anan.sun@mediatek.com,
- Robin Murphy <robin.murphy@arm.com>, mingyuan.ma@mediatek.com,
- linux-arm-kernel@lists.infradead.org, AngeloGioacchino
- Del Regno <angelogioacchino.delregno@collabora.com>
+Content-Disposition: inline
+In-Reply-To: <BL1PR12MB5157E55F2F469E66B46157CDE2E79@BL1PR12MB5157.namprd12.prod.outlook.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Will Deacon <will@kernel.org>, "Hegde, Vasant" <Vasant.Hegde@amd.com>,
+ open list <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,105 +78,21 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Yong Wu <yong.wu@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add a mutex to protect the data in the structure mtk_iommu_data,
-like ->"m4u_group" ->"m4u_dom". For the internal data, we should
-protect it in ourselves driver. Add a mutex for this.
-This could be a fix for the multi-groups support.
+On Wed, Apr 06, 2022 at 05:04:52PM +0000, Limonciello, Mario wrote:
+> Considering before this fix effectively swiotlb was turned off on most AMD
+> systems, when this is picked up I think y'all should consider to add a:
+> 
+> Cc: stable@vger.kernel.org # 5.11+
 
-Fixes: c3045f39244e ("iommu/mediatek: Support for multi domains")
-Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/iommu/mtk_iommu.c | 13 +++++++++++--
- drivers/iommu/mtk_iommu.h |  2 ++
- 2 files changed, 13 insertions(+), 2 deletions(-)
+Agreed.  I think this is for Joerg to pick up, and I'd love to see it
+picked up soon as I'll have to rebase my
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 81b8db450eac..3413cc98e57e 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -464,15 +464,16 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 		dom->data = data;
- 	}
- 
-+	mutex_lock(&data->mutex);
- 	if (!data->m4u_dom) { /* Initialize the M4U HW */
- 		ret = pm_runtime_resume_and_get(m4udev);
- 		if (ret < 0)
--			return ret;
-+			goto err_unlock;
- 
- 		ret = mtk_iommu_hw_init(data);
- 		if (ret) {
- 			pm_runtime_put(m4udev);
--			return ret;
-+			goto err_unlock;
- 		}
- 		data->m4u_dom = dom;
- 		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
-@@ -480,9 +481,14 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 
- 		pm_runtime_put(m4udev);
- 	}
-+	mutex_unlock(&data->mutex);
- 
- 	mtk_iommu_config(data, dev, true, domid);
- 	return 0;
-+
-+err_unlock:
-+	mutex_unlock(&data->mutex);
-+	return ret;
- }
- 
- static void mtk_iommu_detach_device(struct iommu_domain *domain,
-@@ -622,6 +628,7 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
- 	if (domid < 0)
- 		return ERR_PTR(domid);
- 
-+	mutex_lock(&data->mutex);
- 	group = data->m4u_group[domid];
- 	if (!group) {
- 		group = iommu_group_alloc();
-@@ -630,6 +637,7 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
- 	} else {
- 		iommu_group_ref_get(group);
- 	}
-+	mutex_unlock(&data->mutex);
- 	return group;
- }
- 
-@@ -910,6 +918,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	}
- 
- 	platform_set_drvdata(pdev, data);
-+	mutex_init(&data->mutex);
- 
- 	ret = iommu_device_sysfs_add(&data->iommu, dev, NULL,
- 				     "mtk-iommu.%pa", &ioaddr);
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index b742432220c5..5e8da947affc 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -80,6 +80,8 @@ struct mtk_iommu_data {
- 
- 	struct dma_iommu_mapping	*mapping; /* For mtk_iommu_v1.c */
- 
-+	struct mutex			mutex; /* Protect m4u_group/m4u_dom above */
-+
- 	struct list_head		list;
- 	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
- };
--- 
-2.18.0
-
+"cleanup swiotlb initialization" series on top of it.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
