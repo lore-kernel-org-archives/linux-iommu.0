@@ -1,70 +1,70 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 05C94C433F5
-	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 07:53:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 00F42C433EF
+	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 07:57:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 89FCD83EDF;
-	Thu,  7 Apr 2022 07:53:03 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id H7WH9OP0lL9K; Thu,  7 Apr 2022 07:53:02 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 49FDF83E2B;
-	Thu,  7 Apr 2022 07:53:02 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B0F0C001D;
-	Thu,  7 Apr 2022 07:53:02 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9AC8EC0012;
- Thu,  7 Apr 2022 07:53:00 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 81CE240570;
- Thu,  7 Apr 2022 07:53:00 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id A854F400CC;
+	Thu,  7 Apr 2022 07:57:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bptGlxN9E_7Q; Thu,  7 Apr 2022 07:52:59 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Dt4qRFbFk7tC; Thu,  7 Apr 2022 07:57:56 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 761BC40B47;
+	Thu,  7 Apr 2022 07:57:56 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A8A0C001D;
+	Thu,  7 Apr 2022 07:57:56 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 78DB3C0012
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 07:57:54 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 74B2360F1B
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 07:57:54 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id M98mZsfW_GtC for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Apr 2022 07:57:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
- by smtp2.osuosl.org (Postfix) with ESMTPS id ACC6F400CC;
- Thu,  7 Apr 2022 07:52:58 +0000 (UTC)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
- by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KYtrp6zp8z13VdT;
- Thu,  7 Apr 2022 15:52:26 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 7 Apr 2022 15:52:47 +0800
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 7 Apr 2022 15:52:54 +0800
-Subject: Re: [PATCH RESEND v5 2/5] iova: Allow rcache range upper limit to be
- flexible
-To: John Garry <john.garry@huawei.com>, <joro@8bytes.org>, <will@kernel.org>, 
- <robin.murphy@arm.com>
-References: <1649071634-188535-1-git-send-email-john.garry@huawei.com>
- <1649071634-188535-3-git-send-email-john.garry@huawei.com>
-Message-ID: <834447a0-675a-5978-8ffe-285ce09f4213@huawei.com>
-Date: Thu, 7 Apr 2022 15:52:53 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 61B9960E2B
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 07:57:49 +0000 (UTC)
+X-UUID: abdb417e55d041e598eb976acc6d18b9-20220407
+X-UUID: abdb417e55d041e598eb976acc6d18b9-20220407
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
+ mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+ with ESMTP id 1256304001; Thu, 07 Apr 2022 15:57:40 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
+ Thu, 7 Apr 2022 15:57:38 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 7 Apr 2022 15:57:35 +0800
+To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
+ "Matthias Brugger" <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>
+Subject: [PATCH v6 00/34] MT8195 IOMMU SUPPORT
+Date: Thu, 7 Apr 2022 15:56:52 +0800
+Message-ID: <20220407075726.17771-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-In-Reply-To: <1649071634-188535-3-git-send-email-john.garry@huawei.com>
-Content-Language: en-US
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
-Cc: jean-philippe@linaro.org, jasowang@redhat.com, mst@redhat.com,
- linuxarm@huawei.com, linux-kernel@vger.kernel.org,
- virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org
+X-MTK: N
+Cc: devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ chengci.xu@mediatek.com, xueqi.zhang@mediatek.com,
+ linux-kernel@vger.kernel.org, libo.kang@mediatek.com,
+ yen-chang.chen@mediatek.com, iommu@lists.linux-foundation.org,
+ yf.wang@mediatek.com, linux-mediatek@lists.infradead.org,
+ Hsin-Yi Wang <hsinyi@chromium.org>, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, mingyuan.ma@mediatek.com,
+ linux-arm-kernel@lists.infradead.org, AngeloGioacchino
+ Del Regno <angelogioacchino.delregno@collabora.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,146 +77,146 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: "Leizhen \(ThunderTown\) via iommu" <iommu@lists.linux-foundation.org>
-Reply-To: "Leizhen \(ThunderTown\)" <thunder.leizhen@huawei.com>
+From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Yong Wu <yong.wu@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+This patchset adds MT8195 iommu support.
 
+MT8195 have 3 IOMMU HWs. 2 IOMMU HW is for multimedia, and 1 IOMMU HW is
+for infra-master, like PCIe/USB.
 
-On 2022/4/4 19:27, John Garry wrote:
-> Some low-level drivers may request DMA mappings whose IOVA length exceeds
-> that of the current rcache upper limit.
-> 
-> This means that allocations for those IOVAs will never be cached, and
-> always must be allocated and freed from the RB tree per DMA mapping cycle.
-> This has a significant effect on performance, more so since commit
-> 4e89dce72521 ("iommu/iova: Retry from last rb tree node if iova search
-> fails"), as discussed at [0].
-> 
-> As a first step towards allowing the rcache range upper limit be
-> configured, hold this value in the IOVA rcache structure, and allocate
-> the rcaches separately.
-> 
-> Delete macro IOVA_RANGE_CACHE_MAX_SIZE in case it's reused by mistake.
-> 
-> [0] https://lore.kernel.org/linux-iommu/20210129092120.1482-1-thunder.leizhen@huawei.com/
-> 
-> Signed-off-by: John Garry <john.garry@huawei.com>
-> ---
->  drivers/iommu/iova.c | 20 ++++++++++----------
->  include/linux/iova.h |  3 +++
->  2 files changed, 13 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index db77aa675145..5c22b9187b79 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -15,8 +15,6 @@
->  /* The anchor node sits above the top of the usable address space */
->  #define IOVA_ANCHOR	~0UL
->  
-> -#define IOVA_RANGE_CACHE_MAX_SIZE 6	/* log of max cached IOVA range size (in pages) */
-> -
->  static bool iova_rcache_insert(struct iova_domain *iovad,
->  			       unsigned long pfn,
->  			       unsigned long size);
-> @@ -443,7 +441,7 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
->  	 * rounding up anything cacheable to make sure that can't happen. The
->  	 * order of the unadjusted size will still match upon freeing.
->  	 */
-> -	if (size < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
-> +	if (size < (1 << (iovad->rcache_max_size - 1)))
->  		size = roundup_pow_of_two(size);
->  
->  	iova_pfn = iova_rcache_get(iovad, size, limit_pfn + 1);
-> @@ -713,13 +711,15 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
->  	unsigned int cpu;
->  	int i, ret;
->  
-> -	iovad->rcaches = kcalloc(IOVA_RANGE_CACHE_MAX_SIZE,
-> +	iovad->rcache_max_size = 6; /* Arbitrarily high default */
+About the 2 MM IOMMU HW, something like this:
 
-It would be better to assign this constant value to iovad->rcache_max_size in init_iova_domain().
+        IOMMU(VDO)          IOMMU(VPP)
+           |                   |
+      SMI_COMMON(VDO)      SMI_COMMON(VPP)
+      ---------------     ----------------
+      |      |   ...      |      |     ...
+    larb0 larb2  ...    larb1 larb3    ...
 
-> +
-> +	iovad->rcaches = kcalloc(iovad->rcache_max_size,
->  				 sizeof(struct iova_rcache),
->  				 GFP_KERNEL);
->  	if (!iovad->rcaches)
->  		return -ENOMEM;
->  
-> -	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
-> +	for (i = 0; i < iovad->rcache_max_size; ++i) {
->  		struct iova_cpu_rcache *cpu_rcache;
->  		struct iova_rcache *rcache;
->  
-> @@ -816,7 +816,7 @@ static bool iova_rcache_insert(struct iova_domain *iovad, unsigned long pfn,
->  {
->  	unsigned int log_size = order_base_2(size);
->  
-> -	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE)
-> +	if (log_size >= iovad->rcache_max_size)
->  		return false;
->  
->  	return __iova_rcache_insert(iovad, &iovad->rcaches[log_size], pfn);
-> @@ -872,7 +872,7 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
->  {
->  	unsigned int log_size = order_base_2(size);
->  
-> -	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE || !iovad->rcaches)
-> +	if (log_size >= iovad->rcache_max_size || !iovad->rcaches)
->  		return 0;
->  
->  	return __iova_rcache_get(&iovad->rcaches[log_size], limit_pfn - size);
-> @@ -888,7 +888,7 @@ static void free_iova_rcaches(struct iova_domain *iovad)
->  	unsigned int cpu;
->  	int i, j;
->  
-> -	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
-> +	for (i = 0; i < iovad->rcache_max_size; ++i) {
->  		rcache = &iovad->rcaches[i];
->  		if (!rcache->cpu_rcaches)
->  			break;
-> @@ -916,7 +916,7 @@ static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad)
->  	unsigned long flags;
->  	int i;
->  
-> -	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
-> +	for (i = 0; i < iovad->rcache_max_size; ++i) {
->  		rcache = &iovad->rcaches[i];
->  		cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
->  		spin_lock_irqsave(&cpu_rcache->lock, flags);
-> @@ -935,7 +935,7 @@ static void free_global_cached_iovas(struct iova_domain *iovad)
->  	unsigned long flags;
->  	int i, j;
->  
-> -	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
-> +	for (i = 0; i < iovad->rcache_max_size; ++i) {
->  		rcache = &iovad->rcaches[i];
->  		spin_lock_irqsave(&rcache->lock, flags);
->  		for (j = 0; j < rcache->depot_size; ++j) {
-> diff --git a/include/linux/iova.h b/include/linux/iova.h
-> index 320a70e40233..02f7222fa85a 100644
-> --- a/include/linux/iova.h
-> +++ b/include/linux/iova.h
-> @@ -38,6 +38,9 @@ struct iova_domain {
->  
->  	struct iova_rcache	*rcaches;
->  	struct hlist_node	cpuhp_dead;
-> +
-> +	/* log of max cached IOVA range size (in pages) */
-> +	unsigned long	rcache_max_size;
->  };
->  
->  static inline unsigned long iova_size(struct iova *iova)
-> 
+these two MM IOMMU HW share a pgtable.
+
+About the INFRA IOMMU, it don't have larbs, the master connects the iommu
+directly. It use a independent pgtable.
+
+Also, mt8195 IOMMU bank supports. Normally the IOMMU register size only
+is 0x1000. In this IOMMU HW, the register size is 5 * 0x1000. each 0x1000
+is a bank. the banks' register look like this:
+     ----------------------------------------
+     |bank0  | bank1 | bank2 | bank3 | bank4|
+     ----------------------------------------
+     |global |
+     |control|         null
+     |regs   |
+     -----------------------------------------
+     |bank   |bank   |bank   |bank   |bank   |
+     |regs   |regs   |regs   |regs   |regs   |
+     |       |       |       |       |       |
+     -----------------------------------------
+All the banks share some global control registers, and each bank have its
+special bank registers, like pgtable base register, tlb operation registers,
+the fault status registers.
+ 
+In mt8195, we enable this bank feature for infra iommu, We put PCIe in bank0
+and USB in bank4. they have independent pgtable.
+
+Change note:
+v6: Rebase on v5.18-rc1.
+
+v5: https://lore.kernel.org/linux-iommu/20220217113453.13658-1-yong.wu@mediatek.com
+   1) Base on next-20220216
+   2) Remove a patch for kmalloc for protect buffer. keep the kzalloc for it.
+   3) minor fix from AngeloGioacchino, like rename the error label name
+   (data_unlock to err_unlock).
+   Note, keep the TODO for component compare_of[26/34].
+
+v4: https://lore.kernel.org/linux-iommu/20220125085634.17972-1-yong.wu@mediatek.com/
+   1) Base on v5.16-rc1
+   2) Base on tlb logic 2 patchset, some patches in v3 has already gone
+   through that patchset.
+   3) Due to the unreadable union for v1/v2(comment in 26/33 of v3), I
+   separate mtk_iommu_data for v1 and v2 totally, then remove mtk_iommu.h.
+   please see patch[26/35][27/35].
+   4) add two mutex for the internal data. patch[6/35][7/35].
+   5) add a new flag PM_CLK_AO.
+
+v3: https://lore.kernel.org/linux-mediatek/20210923115840.17813-1-yong.wu@mediatek.com/
+    1) base on v5.15-rc1
+    2) Adjust devlink with smi-common, not use the property(sub-sommon).
+    3) Adjust tlb_flush_all flow,
+       a) Fix tlb_flush_all only is supported in bank0.
+       b) add tlb-flush-all in the resume callback.
+       c) remove the pm status checking in tlb-flush-all.
+       The reason are showed in the commit message.
+    4) Allow IOMMU_DOMAIN_UNMANAGED since PCIe VFIO use that.
+    5) Fix a clk warning and a null abort when unbind the iommu driver.
+
+v2: https://lore.kernel.org/linux-mediatek/20210813065324.29220-1-yong.wu@mediatek.com/
+    1) Base on v5.14-rc1.
+    2) Fix build fail for arm32.
+    3) Fix dt-binding issue from Rob.
+    4) Fix the bank issue when tlb flush. v1 always use bank->base.
+    5) adjust devlink with smi-common since the node may be smi-sub-common.
+    6) other changes: like reword some commit message(removing many
+       "This patch..."); seperate serveral patches.
+
+v1: https://lore.kernel.org/linux-mediatek/20210630023504.18177-1-yong.wu@mediatek.com/
+    Base on v5.13-rc1
+
+Yong Wu (34):
+  dt-bindings: mediatek: mt8195: Add binding for MM IOMMU
+  dt-bindings: mediatek: mt8195: Add binding for infra IOMMU
+  iommu/mediatek: Fix 2 HW sharing pgtable issue
+  iommu/mediatek: Add list_del in mtk_iommu_remove
+  iommu/mediatek: Remove clk_disable in mtk_iommu_remove
+  iommu/mediatek: Add mutex for m4u_group and m4u_dom in data
+  iommu/mediatek: Add mutex for data in the mtk_iommu_domain
+  iommu/mediatek: Adapt sharing and non-sharing pgtable case
+  iommu/mediatek: Add 12G~16G support for multi domains
+  iommu/mediatek: Add a flag DCM_DISABLE
+  iommu/mediatek: Add a flag NON_STD_AXI
+  iommu/mediatek: Remove the granule in the tlb flush
+  iommu/mediatek: Always enable output PA over 32bits in isr
+  iommu/mediatek: Add SUB_COMMON_3BITS flag
+  iommu/mediatek: Add IOMMU_TYPE flag
+  iommu/mediatek: Contain MM IOMMU flow with the MM TYPE
+  iommu/mediatek: Adjust device link when it is sub-common
+  iommu/mediatek: Allow IOMMU_DOMAIN_UNMANAGED for PCIe VFIO
+  iommu/mediatek: Add a PM_CLK_AO flag for infra iommu
+  iommu/mediatek: Add infra iommu support
+  iommu/mediatek: Add PCIe support
+  iommu/mediatek: Add mt8195 support
+  iommu/mediatek: Only adjust code about register base
+  iommu/mediatek: Just move code position in hw_init
+  iommu/mediatek: Separate mtk_iommu_data for v1 and v2
+  iommu/mediatek: Remove mtk_iommu.h
+  iommu/mediatek-v1: Just rename mtk_iommu to mtk_iommu_v1
+  iommu/mediatek: Add mtk_iommu_bank_data structure
+  iommu/mediatek: Initialise bank HW for each a bank
+  iommu/mediatek: Change the domid to iova_region_id
+  iommu/mediatek: Get the proper bankid for multi banks
+  iommu/mediatek: Initialise/Remove for multi bank dev
+  iommu/mediatek: Backup/restore regsiters for multi banks
+  iommu/mediatek: mt8195: Enable multi banks for infra iommu
+
+ .../bindings/iommu/mediatek,iommu.yaml        |  20 +-
+ drivers/iommu/mtk_iommu.c                     | 955 +++++++++++++-----
+ drivers/iommu/mtk_iommu.h                     | 101 --
+ drivers/iommu/mtk_iommu_v1.c                  | 235 +++--
+ .../dt-bindings/memory/mt8195-memory-port.h   | 408 ++++++++
+ include/dt-bindings/memory/mtk-memory-port.h  |   2 +
+ 6 files changed, 1244 insertions(+), 477 deletions(-)
+ delete mode 100644 drivers/iommu/mtk_iommu.h
+ create mode 100644 include/dt-bindings/memory/mt8195-memory-port.h
 
 -- 
-Regards,
-  Zhen Lei
+2.18.0
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
