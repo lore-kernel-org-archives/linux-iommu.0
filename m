@@ -4,71 +4,161 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0C646C433EF
-	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 13:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 51747C433F5
+	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 14:00:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 97F5D4099A;
-	Thu,  7 Apr 2022 13:59:43 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id EBCCB4033C;
+	Thu,  7 Apr 2022 13:59:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Qc-ljmBPcx6d; Thu,  7 Apr 2022 13:59:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 356164033C;
-	Thu,  7 Apr 2022 13:59:42 +0000 (UTC)
+	with ESMTP id Lp0l-Az6xcIr; Thu,  7 Apr 2022 13:59:58 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 73ACB403B4;
+	Thu,  7 Apr 2022 13:59:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 01787C002C;
-	Thu,  7 Apr 2022 13:59:42 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1B022C0012
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 13:59:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 435E3C002C;
+	Thu,  7 Apr 2022 13:59:58 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3281FC0012;
+ Thu,  7 Apr 2022 13:59:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id EF2AA8404F
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 13:59:39 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 1EF16402A8;
+ Thu,  7 Apr 2022 13:59:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=infradead.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fcn75mNVA28j for <iommu@lists.linux-foundation.org>;
- Thu,  7 Apr 2022 13:59:39 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [IPv6:2607:7c80:54:e::133])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 7A62B83FB2
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 13:59:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Transfer-Encoding
- :Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
- Sender:Reply-To:Content-ID:Content-Description;
- bh=Wz4hNkxsawX4PgHGVpqI7DcWA7D+ygHUR+Jezxq/sok=; b=p8lu6HeON3HuIqNpvtMeUF8UAq
- 8f/e/8K+TvocGaKgfxOWSnIxVRfDL+25cIGEQltU/vpsnWLs2u/cG7YeDVQXUgeJTiZe8j2EoesMO
- Loeu+j1y4VJZO8fvV1AahrwbE4sG/A7yD4tJRVr6AmEOKACG84SlM1jp/JtepWhAi6LmBp+BOUfit
- ZzxkGfAGEayAyrxcI5txuKnCg1fXhQZD6P7u8aBmmg/d1yEN9g1AP9lVPYA9bu9GpcDVKq2+Jd3E5
- hODo+PqENwnnZJ56le4zI75STD1YwMVBU/WUTN5Qub3jEdLXTyVUXKJ7TBMWmS0f4KEG1o3wCfRSO
- NfTZduow==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red
- Hat Linux)) id 1ncSfc-00CGaB-Oy; Thu, 07 Apr 2022 13:59:32 +0000
-Date: Thu, 7 Apr 2022 06:59:32 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v9 06/11] ACPI/IORT: Add support to retrieve IORT RMR
- reserved regions
-Message-ID: <Yk7uRPG1TwGFPbyY@infradead.org>
-References: <20220404124209.1086-1-shameerali.kolothum.thodi@huawei.com>
- <20220404124209.1086-7-shameerali.kolothum.thodi@huawei.com>
- <Yk7m8oDPtusDzReK@infradead.org>
- <b50cded6-6777-c9c7-7030-a57f28771bc3@arm.com>
-MIME-Version: 1.0
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 9BoQAUG0eCK4; Thu,  7 Apr 2022 13:59:55 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam10on2060a.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e88::60a])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id E987B401D2;
+ Thu,  7 Apr 2022 13:59:54 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MXUePVq84lXLB0KcovYjwbbx9VfUca8VqkuEa7MjMsjZSPf2SDtZjwiCs7gMQkuCUB4WkaKlU87dSNbJToKdZxqm1/MJr/FOVCs9EKfRGSoB9BnxouCZn6unSztsLJfCzkNOHHOr7WjLWi0y+d7dcd4XBRnIDUJLFQRykhJIl44mSO61cVWIX9GJjZ0dBonX7X4z3Vo5BMcTNpHYBGWO3wy9ZXrArbKgfv+c4QyZ6X9TYbJlSpZVwiww6HFwIA+MwptOA9ATr0NvQZSoqffwwAbtvbVlIqyMEfr6CGXgXTUUwVS8rY2uy7+yoVUKFQRYslgxk/ZqYV2oG1Ty58HvUw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=in8jV7pVxGfiRTQUuSVx2MRbF1gMLzJzmfRqepe4/Aw=;
+ b=G0jhtSZmI3q6Kq3HCfdbhtmGsbWG+ob6Ict2ehy/yEz1ATZxN+kkxJSl4Zk7LaAP6SI7Mmvc0KqSfgkK7R5WeF1ovRfJP0KY27+/ImLisuOiFir7IGhlaPj0QPZNXG2nGDHlhPCrZ5mu0BcRcP+KVvKOoVswyadWNP7y3td4AA7cBcpQ1WOafFkXxvdroX9mc7BBSZQnRXTHZ7ur39jXfOz8UyzmPRfWK8eQEfs7PlII4TtWLp6gbRbEVKOFbph5B4vuQEyfDRYqMcUzGbVVKyZyJq7f4xOyl2ASrK7nisFnJlfzZvyMFAnR/CdfLROi8MJcdeOB5UXVDwqxGrYXYw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=in8jV7pVxGfiRTQUuSVx2MRbF1gMLzJzmfRqepe4/Aw=;
+ b=LfJ5B5XT3g8y56k4D4u6fUCBPLD+wko4ambX43R0Cmk5/yI+MbUs0fz2YvhKkEpeWionNyZkhZA4NdiEWcOeZWy+tUHMLXs3XaraNPNk7bFR2ukAE0FruWqt/GJAZdnoZYHiV8UhnHe2WFxWyYpyPt6XwF6qFfZJp2lar9uX2KgNFGVTvIR/QTdVCwl+2EcNWl1KnLEHEbvGc9YEtznU8gA61eN6p0JMQfV+rdguVKDmphTWkricxjzlR276f4jXU143EWaEOu3cPFEPT+yjSTzFG7ZYqlZ0M6PmQBnAJ9Vs+bignu3kyqnC3Y2Gwdb+m+7u1BJ1zzODBvDHr5YktQ==
+Received: from MW2PR12MB2490.namprd12.prod.outlook.com (2603:10b6:907:9::17)
+ by MN2PR12MB3726.namprd12.prod.outlook.com (2603:10b6:208:168::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.22; Thu, 7 Apr
+ 2022 13:59:52 +0000
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by MW2PR12MB2490.namprd12.prod.outlook.com (2603:10b6:907:9::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.21; Thu, 7 Apr
+ 2022 13:59:50 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374%6]) with mapi id 15.20.5144.022; Thu, 7 Apr 2022
+ 13:59:49 +0000
+Date: Thu, 7 Apr 2022 10:59:46 -0300
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH 1/5] iommu: Replace uses of IOMMU_CAP_CACHE_COHERENCY
+ with dev_is_dma_coherent()
+Message-ID: <20220407135946.GM2120790@nvidia.com>
+References: <1-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com>
+ <db5a6daa-bfe9-744f-7fc5-d5167858bc3e@arm.com>
+ <20220406142432.GF2120790@nvidia.com>
+ <20220406151823.GG2120790@nvidia.com>
+ <20220406155056.GA30433@lst.de>
+ <20220406160623.GI2120790@nvidia.com>
+ <20220406161031.GA31790@lst.de>
+ <20220406171729.GJ2120790@nvidia.com>
+ <BN9PR11MB5276F9CEA2B01B3E75094B6D8CE69@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Disposition: inline
-In-Reply-To: <b50cded6-6777-c9c7-7030-a57f28771bc3@arm.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: jon@solid-run.com, linuxarm@huawei.com, steven.price@arm.com,
- Christoph Hellwig <hch@infradead.org>, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
- guohanjun@huawei.com, yangyicong@huawei.com, Sami.Mujawar@arm.com,
- will@kernel.org, wanghuiqiang@huawei.com
+In-Reply-To: <BN9PR11MB5276F9CEA2B01B3E75094B6D8CE69@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: YT3PR01CA0130.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:83::13) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 46f52386-948e-46ac-4d6e-08da189ee16c
+X-MS-TrafficTypeDiagnostic: MW2PR12MB2490:EE_|MN2PR12MB3726:EE_
+X-Microsoft-Antispam-PRVS: <MW2PR12MB24903E4DB54039B6C016B0FBC2E69@MW2PR12MB2490.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: AcGgbpPPb4VQdY9+X56ucgZRT3qlhz1RXDC9g+OT7jT9NvfafpiUwUxke2bV0J1h/WNqE2vALW6zXm4fd2m25hOCyCUarmirKhsm9+twhmCNwny4FTSvwZlj2/L5800gY4BClRvc/I4CuZ81BowtlsEGlg7vhBnxzWPnPgZWNcPF0+WWxohfExqGmRU49FsWL+1UtEZXFeR3Ly6Sn53WdS24PZaAeOs3szfENKz8Dfgr2eiDQgTg5UFUnMQMCdhXGl1SEpKjda6+7IZj0sBdrS5eUVz59T4KEQVJVBR+F0RJQP7e1rH3zJstKH9SR6RAMphErS1rrF+5Fz85ynGp2GScPT62Hb3agow9qYw8Ty6Oo9ZkXLjioIpcP6nClNgAAJEFhCN0Hq/X6pFsni5zF7r+HFdi4sSz/+vtGXleDc8jjflVSqwouWZ1YtJIhNKsneDtUaUhJwHHAWM6IM4OIF0mkgJNwb51AQ9DXqWABPn5P1JADmQHp53XS21lF+gyy0U2cITwGv/aEvq4M0Y1mKxJe2DTt1IvR0PgsJ/rdHt7a2KZzIOauwtVlMSHjaRbVg85BvlnteCRZavOMpbC6dxKBd7ityBgfwCRb2rAbVkwojBxio7NnbykXIUHKp8zEN199Uwk2DsP5eZR9wOrTg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MW2PR12MB2490.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(4326008)(66556008)(66476007)(66946007)(8676002)(316002)(2616005)(1076003)(33656002)(86362001)(6916009)(54906003)(6486002)(508600001)(6512007)(6666004)(8936002)(38100700002)(7416002)(83380400001)(6506007)(186003)(5660300002)(36756003)(2906002)(26005);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tIqCb+zd4BhlIAuqloY2PSR/knYZKVD6yvtACEl+PtLV7/iMfmjgAK6aLr3m?=
+ =?us-ascii?Q?Y+cfbPaxXsXmd+aNLAT08B4l0lddX+OI6ArcSVNRzZMJzJcAaVf3Diz3svCZ?=
+ =?us-ascii?Q?qyMIyDiYrERULdm+9ZiPgO4GsDGx4pzlVzTPvZeKXATpGBruYgwkwK9NNNJd?=
+ =?us-ascii?Q?25/QfAlpaojhP2fgvmD468e66TF4gu/OBA88F/n21hQ3fBZwt2SniqWgeUBm?=
+ =?us-ascii?Q?I7oUhvljPdbfZjalPem0OgIwaPaZqmhsWZ99HNK5lszkXN8GjRZz90on5gzZ?=
+ =?us-ascii?Q?4I3KTL7oFec3PI0Y0bL8vDVPVKPNTmSN4vBj05OsScoiSFs3yC49IdGlNJ49?=
+ =?us-ascii?Q?CigBkvqrbrr6xQzD/8JtICs92RhIl2SpMWyso/H+xxbRYBuw5i5yfo8q4zp3?=
+ =?us-ascii?Q?aueSPDAk6Xt+D51Pf1yx4ByX7pNU0D7l5k1vbga0lJyAN2QzwHry/oAr6l5Q?=
+ =?us-ascii?Q?ggzWtbPjTLET2sawf7QrEqDCwa8jh64bWT00whfV8E/9x7LaRWevo4y2Ea7C?=
+ =?us-ascii?Q?Pe8GLfE+/oD71gno/lGCahybnpXTDcqw9eRmHc+1FQ7tBH2S9wwZxWM8TE/c?=
+ =?us-ascii?Q?7H9dPa7Du/KeWGsmGNYRzYjt/PBvr9zL0k+dk9MgGyWMVnfa/HxSzYjPO8d0?=
+ =?us-ascii?Q?Uu1WvvcDLp3TyA698+dpjM2VIpcWSYhzW9noxJ0gcY0DJAphL7zg+RUmRBqW?=
+ =?us-ascii?Q?qjdsMFn/o3Qxibveb5shTs5icwDfQmLI9aytVssuI5DDNHKj0oSkCyItZ+0P?=
+ =?us-ascii?Q?iVSGsJ7rnFnkExBiJHLtA6HvV87s/QmTmLOhkDMjFtLw+DplprHaHZGRC8ug?=
+ =?us-ascii?Q?ZHmwH6GFERNRoYXBZdQtSXLBT0CxCYo2sPK3XE0Vo53sUzQiPJ0EG8hmykyR?=
+ =?us-ascii?Q?Sg1ETu2H8auhWoOGmLMJ44UUs1yMtdl+eltWbtp7Jqm/2ibHAogrpq/sEEyF?=
+ =?us-ascii?Q?4UNI8sJ90/xUduHH1w3CStmlPLi4Fd0RpX6Wq7XZLkegh3h+Y2zo/4V9my89?=
+ =?us-ascii?Q?HIgyhiRVGsaqftysEETfAp00+D9jdKqY5+chcy0SHLtaSOYF7bINWxlR2SXl?=
+ =?us-ascii?Q?Ufy1AigwdZ/EuJqvuv6r5cJp2EMhbP6OqGzuX2HI0HWPtSlDraGWmKP/4Whp?=
+ =?us-ascii?Q?BNPO6Gh5P7GGBvLz/Kgr/vC4MH+X2uFHJvhsaVgueu+oEVdGLCeHhRTteheh?=
+ =?us-ascii?Q?isT1qgvth24NnA166KNCW+NnZGXcCSK+FFOGzi2WlhCkpHWFQ8gsVen17vYc?=
+ =?us-ascii?Q?APVnOdvXB1vP9D4JKMHg99LYB7exoPWSb+rs8fzvKLBwkJlOrNZgh0MlCrl4?=
+ =?us-ascii?Q?w9RxCaEEL36luoLJQ8CPtdgYLYFqMz+4M6mo+M6xLmVQro/I561Nr7AIX0g4?=
+ =?us-ascii?Q?iAwmCm7itx+ciHmusFUm8RpevaZXr/PiRCMEc0q+Qn0hJY3X5BStLP9udDy1?=
+ =?us-ascii?Q?enOhwMR6zH4ZPtzVERZmY+n59fHrxIWNCrKVL1Knpu+vqPZxXA6UGWSoVUhn?=
+ =?us-ascii?Q?uVffi8MkRUTRvGHeqOnXNzXbZSNGyky1pENZdpwUXQ1W5qfmsYzw/k7mWYr4?=
+ =?us-ascii?Q?yYW5JeMbH8C3s4IyeZ0x2BAG9VPeZU9M0kyrCu0ZtDtryA7uBl2+Pwru3Mq/?=
+ =?us-ascii?Q?mnav5mBeAlZphmFUdiHDonyStYM9d6VCLltAi+mtxxTu2ced8lY5qCmOfzA6?=
+ =?us-ascii?Q?gMk/l7T09yMMnStCAt731xZou3jZzykQtt/3ylNww4oK344O0X5i62K6Zx8n?=
+ =?us-ascii?Q?kFRHpWSR8g=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 46f52386-948e-46ac-4d6e-08da189ee16c
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2022 13:59:49.4404 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EazJpqGqZDT6pBFzSXo8FVJficwJxgCAKvYB5b5ShR7Trjcw2DSljMgiMCOKwRe9
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3726
+Cc: Nelson Escobar <neescoba@cisco.com>, "Michael S. Tsirkin" <mst@redhat.com>,
+ Jason Wang <jasowang@redhat.com>,
+ "virtualization@lists.linux-foundation.org"
+ <virtualization@lists.linux-foundation.org>, Will Deacon <will@kernel.org>,
+ Christoph Hellwig <hch@lst.de>,
+ "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ Cornelia Huck <cohuck@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Christian Benvenuti <benve@cisco.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,30 +171,86 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gVGh1LCBBcHIgMDcsIDIwMjIgYXQgMDI6NTM6MzhQTSArMDEwMCwgUm9iaW4gTXVycGh5IHdy
-b3RlOgo+ID4gV2h5IGNhbid0IHRoaXMganVzdCBnbyBpbnRvIGdlbmVyaWNfaW9tbXVfcHV0X3Jl
-c3ZfcmVnaW9ucz8gIFRoZSBpZGVhCj4gPiB0aGF0IHRoZSBpb21tdSBsb3ctbGV2ZWwgZHJpdmVy
-cyBuZWVkIHRvIGNhbGwgaW50byBkbWEtaW9tbXUgd2hpY2ggaXMKPiA+IGEgY29uc3VtZXIgb2Yg
-dGhlIElPTU1VIEFQSSBpcyBvZGQuICBFc3BlY2lhbGx5IGlmIHRoYXQganVzdCBjYWxscyBvdXQK
-PiA+IHRvIEFDUEkgY29kZSBhbmQgZ2VuZXJpYyBJT01NVSBjb2RlIG9ubHkgYW55d2F5Lgo+IAo+
-IEJlY2F1c2UgYXNzdW1pbmcgQUNQSSBtZWFucyBJT1JUIGlzIG5vdCBnZW5lcmljLiBQYXJ0IG9m
-IHRoZSBhaW0gaW4gYWRkaW5nCj4gdGhlIHVuaW9uIHRvIGlvbW11X3Jlc3ZfcmVnaW9uIGlzIHRo
-YXQgc3R1ZmYgbGlrZSBBTUQncyB1bml0eV9tYXBfZW50cnkgYW5kCj4gSW50ZWwncyBkbWFyX3Jt
-cnJfdW5pdCBjYW4gYmUgZm9sZGVkIGludG8gaXQgYXMgd2VsbCwgYW5kIHRoZWlyIHJlc2VydmVk
-Cj4gcmVnaW9uIGhhbmRsaW5nIGNvcnJlc3BvbmRpbmdseSBzaW1wbGlmaWVkIHRvby4KPiAKPiBU
-aGUgaW9tbXVfZG1hX3tnZXQscHV0fV9yZXN2X3JlZ2lvbigpIGhlbHBlcnMgYXJlIGtpbmQgb2Yg
-aW50ZW5kZWQgdG8gYmUKPiBzcGVjaWZpYyB0byB0aGUgZndub2RlIG1lY2hhbmlzbSB3aGljaCBk
-ZWFscyB3aXRoIElPUlQgYW5kIGRldmljZXRyZWUgKG9uY2UKPiB0aGUgcmVzZXJ2ZWQgcmVnaW9u
-IGJpbmRpbmdzIGFyZSBmdWxseSB3b3JrZWQgb3V0KS4KCkJ1dCBJT1JUIGlzIG5vdCBkcml2ZXLi
-gotzcGVjaWZpYyBjb2RlLiAgU28gd2UnbGwgbmVlZCBhIFVTRV9JT1JUIGZsYWcKc29tZXdoZXJl
-IGluIGNvcmUgSU9NTVUgY29kZSBpbnN0ZWFkIG9mIHRyeWluZyB0byBzdHVmZiB0aGlzIGludG8K
-ZHJpdmVyIG9wZXJhdGlvbnMuICBhbmQgZG1hLWlvbW11IG1vc3RseSBjZXJ0YWlubHkgaW1wbGll
-cyBJT1JUIGV2ZW4KbGVzcyB0aGFuIEFDUEkuCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1m
-b3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9s
-aXN0aW5mby9pb21tdQ==
+On Thu, Apr 07, 2022 at 07:18:48AM +0000, Tian, Kevin wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Thursday, April 7, 2022 1:17 AM
+> > 
+> > On Wed, Apr 06, 2022 at 06:10:31PM +0200, Christoph Hellwig wrote:
+> > > On Wed, Apr 06, 2022 at 01:06:23PM -0300, Jason Gunthorpe wrote:
+> > > > On Wed, Apr 06, 2022 at 05:50:56PM +0200, Christoph Hellwig wrote:
+> > > > > On Wed, Apr 06, 2022 at 12:18:23PM -0300, Jason Gunthorpe wrote:
+> > > > > > > Oh, I didn't know about device_get_dma_attr()..
+> > > > >
+> > > > > Which is completely broken for any non-OF, non-ACPI plaform.
+> > > >
+> > > > I saw that, but I spent some time searching and could not find an
+> > > > iommu driver that would load independently of OF or ACPI. ie no IOMMU
+> > > > platform drivers are created by board files. Things like Intel/AMD
+> > > > discover only from ACPI, etc.
+> 
+> Intel discovers IOMMUs (and optionally ACPI namespace devices) from
+> ACPI, but there is no ACPI description for PCI devices i.e. the current
+> logic of device_get_dma_attr() cannot be used on PCI devices. 
+
+Oh? So on x86 acpi_get_dma_attr() returns DEV_DMA_NON_COHERENT or
+DEV_DMA_NOT_SUPPORTED?
+
+I think I should give up on this and just redefine the existing iommu
+cap flag to IOMMU_CAP_CACHE_SUPPORTED or something.
+
+> > We could alternatively use existing device_get_dma_attr() as a default
+> > with an iommu wrapper and push the exception down through the iommu
+> > driver and s390 can override it.
+> > 
+> 
+> if going this way probably device_get_dma_attr() should be renamed to
+> device_fwnode_get_dma_attr() instead to make it clearer?
+
+I'm looking at the few users:
+
+drivers/ata/ahci_ceva.c
+drivers/ata/ahci_qoriq.c
+ - These are ARM only drivers. They are trying to copy the dma-coherent
+   property from its DT/ACPI definition to internal register settings
+   which look like they tune how the AXI bus transactions are created.
+
+   I'm guessing the SATA IP block's AXI interface can be configured to
+   generate coherent or non-coherent requests and it has to be set
+   in a way that is consistent with the SOC architecture and match
+   what the DMA API expects the device will do.
+
+drivers/crypto/ccp/sp-platform.c
+ - Only used on ARM64 and also programs a HW register similar to the
+   sata drivers. Refuses to work if the FW property is not present.
+
+drivers/net/ethernet/amd/xgbe/xgbe-platform.c
+ - Seems to be configuring another ARM AXI block
+
+drivers/gpu/drm/panfrost/panfrost_drv.c
+ - Robin's commit comment here is good, and one of the things this
+   controls is if the coherent_walk is set for the io-pgtable-arm.c
+   code which avoids DMA API calls
+
+drivers/gpu/drm/tegra/uapi.c
+ - Returns DRM_TEGRA_CHANNEL_CAP_CACHE_COHERENT to userspace. No idea.
+
+My take is that the drivers using this API are doing it to make sure
+their HW blocks are setup in a way that is consistent with the DMA API
+they are also using, and run in constrained embedded-style
+environments that know the firmware support is present.
+
+So in the end it does not seem suitable right now for linking to
+IOMMU_CACHE..
+
+Jason
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
