@@ -4,58 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 11685C433F5
-	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 13:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 32182C433F5
+	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 13:41:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id BA05261216;
-	Thu,  7 Apr 2022 13:31:55 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id CEBFB61208;
+	Thu,  7 Apr 2022 13:41:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MVMTTnTB6dv9; Thu,  7 Apr 2022 13:31:55 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 94E9C60E9B;
-	Thu,  7 Apr 2022 13:31:54 +0000 (UTC)
+	with ESMTP id NtgW7bYhJgB4; Thu,  7 Apr 2022 13:41:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id C3A5260F16;
+	Thu,  7 Apr 2022 13:41:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 61B76C002C;
-	Thu,  7 Apr 2022 13:31:54 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 58028C0012
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 13:31:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 96229C002C;
+	Thu,  7 Apr 2022 13:41:18 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 93273C0012
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 13:41:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 451AD402A8
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 13:31:53 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 73DAA83FA9
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 13:41:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id H1epl5M13WTk for <iommu@lists.linux-foundation.org>;
- Thu,  7 Apr 2022 13:31:52 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 7646440C67
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 13:31:52 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E1C9A12FC;
- Thu,  7 Apr 2022 06:31:51 -0700 (PDT)
-Received: from [10.57.41.19] (unknown [10.57.41.19])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 23C3D3F73B;
- Thu,  7 Apr 2022 06:31:50 -0700 (PDT)
-Message-ID: <f7039f1f-81ef-2fab-4ade-728316b54942@arm.com>
-Date: Thu, 7 Apr 2022 14:31:44 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Hfi4sjl-RWU9 for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Apr 2022 13:41:15 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [IPv6:2607:7c80:54:e::133])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id CD4E583FA4
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 13:41:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+ :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description;
+ bh=74PS8gP8R7QSv7wDPjxMrGmI/chpbWr92QAHIh9FKHQ=; b=IkEHrck5evsyXCvHJjhJFDqRe7
+ MKO4XbmW1buUih3ZFgYRb+doKN2RDmupP3AtpfjaSAvRxJBSJ6Kq5eILoGdRBkllRwMckLuLlTdw1
+ IejvFTj3E4nxW3OrdBOkSAj7dDTJMbj9aPKzR+J9hcwy1kczQeCsXFCXLDJ8jscKrXFJ1HqFeJTyG
+ XK3GnMYtx24bwuLTwd474UEXgIeZcMP9cviBdDt5xGgUM+eh4B3AMyFgtYbUCPvUx2/DH+3Y1jWgq
+ BPfSAVO0NuwqPxVNWiE1pr7sqv9/ieP+7IvvDpUuCMxG2ovM4PPzGnh/2LVFcu5P9p9e4s5804xqt
+ gHJwozxA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red
+ Hat Linux)) id 1ncSNp-00CCNM-SL; Thu, 07 Apr 2022 13:41:09 +0000
+Date: Thu, 7 Apr 2022 06:41:09 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: Robin Murphy <robin.murphy@arm.com>
 Subject: Re: [PATCH v2 1/2] iommu/amd: Enable swiotlb in all cases
-Content-Language: en-GB
-To: Mario Limonciello <mario.limonciello@amd.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Message-ID: <Yk7p9fhIhvaHw9dF@infradead.org>
 References: <20220404204723.9767-1-mario.limonciello@amd.com>
  <20220404204723.9767-2-mario.limonciello@amd.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220404204723.9767-2-mario.limonciello@amd.com>
-Cc: open list <linux-kernel@vger.kernel.org>,
- Hegde Vasant <Vasant.Hegde@amd.com>, Christoph Hellwig <hch@infradead.org>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>
+ <f7039f1f-81ef-2fab-4ade-728316b54942@arm.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <f7039f1f-81ef-2fab-4ade-728316b54942@arm.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Hegde Vasant <Vasant.Hegde@amd.com>,
+ open list <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Mario Limonciello <mario.limonciello@amd.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -68,71 +79,23 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-04-04 21:47, Mario Limonciello wrote:
-> Previously the AMD IOMMU would only enable SWIOTLB in certain
-> circumstances:
->   * IOMMU in passthrough mode
->   * SME enabled
-> 
-> This logic however doesn't work when an untrusted device is plugged in
-> that doesn't do page aligned DMA transactions.  The expectation is
-> that a bounce buffer is used for those transactions.
-> 
-> This fails like this:
-> 
-> swiotlb buffer is full (sz: 4096 bytes), total 0 (slots), used 0 (slots)
-> 
-> That happens because the bounce buffers have been allocated, followed by
-> freed during startup but the bounce buffering code expects that all IOMMUs
-> have left it enabled.
-> 
-> Remove the criteria to set up bounce buffers on AMD systems to ensure
-> they're always available for supporting untrusted devices.
+On Thu, Apr 07, 2022 at 02:31:44PM +0100, Robin Murphy wrote:
+> FWIW it's also broken for another niche case where
+> iommu_default_passthrough() == false at init, but the user later changes a
+> 32-bit device's default domain type to passthrough via sysfs, such that it
+> starts needing regular dma-direct bouncing.
 
-FWIW it's also broken for another niche case where 
-iommu_default_passthrough() == false at init, but the user later changes 
-a 32-bit device's default domain type to passthrough via sysfs, such 
-that it starts needing regular dma-direct bouncing.
+Yeah.
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-> Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
-> Suggested-by: Christoph Hellwig <hch@infradead.org>
-> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-> ---
-> v1->v2:
->   * Enable swiotlb for AMD instead of ignoring it for inactive
-> 
->   drivers/iommu/amd/iommu.c | 7 -------
->   1 file changed, 7 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index a1ada7bff44e..079694f894b8 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -1838,17 +1838,10 @@ void amd_iommu_domain_update(struct protection_domain *domain)
->   	amd_iommu_domain_flush_complete(domain);
->   }
->   
-> -static void __init amd_iommu_init_dma_ops(void)
-> -{
-> -	swiotlb = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
-> -}
-> -
->   int __init amd_iommu_init_api(void)
->   {
->   	int err;
->   
-> -	amd_iommu_init_dma_ops();
-> -
->   	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
->   	if (err)
->   		return err;
+We also have yet another issue:  swiotlb is not allocate if there is
+no memory outside the 4GB physical address space.  I think I can fix
+that easily after my swiotlb init series goes in, before that it
+would be a bit of a mess spread over all the architectures.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
