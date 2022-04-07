@@ -1,74 +1,63 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E8C92C433EF
-	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 17:51:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 17372C433F5
+	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 18:02:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 8830740CE8;
-	Thu,  7 Apr 2022 17:51:18 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id BDEBF8413B;
+	Thu,  7 Apr 2022 18:02:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tDKLk3Qz-AV7; Thu,  7 Apr 2022 17:51:17 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 483D640CCD;
-	Thu,  7 Apr 2022 17:51:17 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 79twkSTDBT1N; Thu,  7 Apr 2022 18:02:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id AF3FD84137;
+	Thu,  7 Apr 2022 18:02:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 14430C002C;
-	Thu,  7 Apr 2022 17:51:17 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 40710C0012
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 17:51:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 76046C002C;
+	Thu,  7 Apr 2022 18:02:14 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D3711C0012
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 18:02:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 2833C41A62
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 17:51:15 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id B282B41B60
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 18:02:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=collabora.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id m7lgHgpiB741 for <iommu@lists.linux-foundation.org>;
- Thu,  7 Apr 2022 17:51:14 +0000 (UTC)
+ with ESMTP id zP0XMo22LR4n for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Apr 2022 18:02:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk
- [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 1232241A5C
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 17:51:13 +0000 (UTC)
-Received: from [IPV6:2a00:5f00:102:0:10b3:10ff:fe5d:4ec1] (unknown
- [IPv6:2a00:5f00:102:0:10b3:10ff:fe5d:4ec1])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- (Authenticated sender: dmitry.osipenko)
- by bhuna.collabora.co.uk (Postfix) with ESMTPSA id A72D61F45BED;
- Thu,  7 Apr 2022 18:51:10 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
- s=mail; t=1649353871;
- bh=BM8w1p30B0kfQHenmrawFgD3CQMDeil5XCYiCXhxmj0=;
- h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
- b=ZkLc9cMqzHTOxOGUTmrKf6vegatQR09XbK2itRSvnEyM2PLisAHaf91EjRvUxfpw5
- RyBMCJC2kH/xgVJpC2EHUvIq9O9gx4evaixair/ggQ1t++qR4qQuMOUnJbNoI5YQIl
- fFtvGdFAp5mOV4poUmnwETAVMu6dvqZCmShRL2dJsFXDrqUBpxxgWUDPpm0b5PuXnd
- NUCGXX/k9v5vd81tQtBm3H7DkoPC8+CHjO15t2AA2UdCDa2FcSsEl7NQQnndZFqpfd
- TtueGYKsUCrWPzc2f5scziU0i70NjH5/UceR57b6BQeoXRit6sbkKwGJ65rxegJ/67
- HSYeEPtuvp3dg==
-Message-ID: <4cbc5418-b92b-1eed-44cc-82030616cb02@collabora.com>
-Date: Thu, 7 Apr 2022 20:51:07 +0300
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp4.osuosl.org (Postfix) with ESMTP id C400A419B8
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 18:02:11 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1A06812FC;
+ Thu,  7 Apr 2022 11:02:11 -0700 (PDT)
+Received: from [10.57.41.19] (unknown [10.57.41.19])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0F5B93F718;
+ Thu,  7 Apr 2022 11:02:08 -0700 (PDT)
+Message-ID: <77482321-2e39-fc7c-09b6-e929a851a80f@arm.com>
+Date: Thu, 7 Apr 2022 19:02:03 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH] drm/tegra: Stop using iommu_present()
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, thierry.reding@gmail.com
-References: <25247f43672df0aa58c1952bf3df2bf948e9f8ae.1649168393.git.robin.murphy@arm.com>
- <49165024-5f33-b6e6-7ec9-1ede6f562748@collabora.com>
- <0f7bf1c2-7a21-13a0-8734-c53f624e1edd@arm.com>
-From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <0f7bf1c2-7a21-13a0-8734-c53f624e1edd@arm.com>
-Cc: linux-tegra@vger.kernel.org, iommu@lists.linux-foundation.org,
- dri-devel@lists.freedesktop.org, jonathanh@nvidia.com
+Subject: Re: [PATCH v2 0/4] Make the iommu driver no-snoop block feature
+ consistent
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <0-v2-f090ae795824+6ad-intel_no_snoop_jgg@nvidia.com>
+ <f5acf507-b4ef-b393-159c-05ca04feb43d@arm.com>
+ <20220407174326.GR2120790@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220407174326.GR2120790@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, kvm@vger.kernel.org,
+ Will Deacon <will@kernel.org>, Cornelia Huck <cohuck@redhat.com>,
+ iommu@lists.linux-foundation.org, Alex Williamson <alex.williamson@redhat.com>,
+ David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,61 +70,32 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gNC82LzIyIDIxOjA2LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24gMjAyMi0wNC0wNiAxNToz
-MiwgRG1pdHJ5IE9zaXBlbmtvIHdyb3RlOgo+PiBPbiA0LzUvMjIgMTc6MTksIFJvYmluIE11cnBo
-eSB3cm90ZToKPj4+IFJlbW92ZSB0aGUgcG9pbnRsZXNzIGNoZWNrLiBob3N0MXhfZHJtX3dhbnRz
-X2lvbW11KCkgY2Fubm90IHJldHVybiB0cnVlCj4+PiB1bmxlc3MgYW4gSU9NTVUgZXhpc3RzIGZv
-ciB0aGUgaG9zdDF4IHBsYXRmb3JtIGRldmljZSwgd2hpY2ggYXQgdGhlCj4+PiBtb21lbnQKPj4+
-IG1lYW5zIHRoZSBpb21tdV9wcmVzZW50KCkgdGVzdCBjb3VsZCBuZXZlciBmYWlsLgo+Pj4KPj4+
-IFNpZ25lZC1vZmYtYnk6IFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+Cj4+PiAt
-LS0KPj4+IMKgIGRyaXZlcnMvZ3B1L2RybS90ZWdyYS9kcm0uYyB8IDIgKy0KPj4+IMKgIDEgZmls
-ZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQo+Pj4KPj4+IGRpZmYgLS1n
-aXQgYS9kcml2ZXJzL2dwdS9kcm0vdGVncmEvZHJtLmMgYi9kcml2ZXJzL2dwdS9kcm0vdGVncmEv
-ZHJtLmMKPj4+IGluZGV4IDk0NjRmNTIyZTI1Ny4uYmM0MzIxNTYxNDAwIDEwMDY0NAo+Pj4gLS0t
-IGEvZHJpdmVycy9ncHUvZHJtL3RlZ3JhL2RybS5jCj4+PiArKysgYi9kcml2ZXJzL2dwdS9kcm0v
-dGVncmEvZHJtLmMKPj4+IEBAIC0xMTQ5LDcgKzExNDksNyBAQCBzdGF0aWMgaW50IGhvc3QxeF9k
-cm1fcHJvYmUoc3RydWN0Cj4+PiBob3N0MXhfZGV2aWNlICpkZXYpCj4+PiDCoMKgwqDCoMKgwqDC
-oMKgwqAgZ290byBwdXQ7Cj4+PiDCoMKgwqDCoMKgIH0KPj4+IMKgIC3CoMKgwqAgaWYgKGhvc3Qx
-eF9kcm1fd2FudHNfaW9tbXUoZGV2KSAmJgo+Pj4gaW9tbXVfcHJlc2VudCgmcGxhdGZvcm1fYnVz
-X3R5cGUpKSB7Cj4+PiArwqDCoMKgIGlmIChob3N0MXhfZHJtX3dhbnRzX2lvbW11KGRldikpIHsK
-Pj4+IMKgwqDCoMKgwqDCoMKgwqDCoCB0ZWdyYS0+ZG9tYWluID0gaW9tbXVfZG9tYWluX2FsbG9j
-KCZwbGF0Zm9ybV9idXNfdHlwZSk7Cj4+PiDCoMKgwqDCoMKgwqDCoMKgwqAgaWYgKCF0ZWdyYS0+
-ZG9tYWluKSB7Cj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBlcnIgPSAtRU5PTUVNOwo+
-Pgo+PiBob3N0MXhfZHJtX3dhbnRzX2lvbW11KCkgcmV0dXJucyB0cnVlIGlmIHRoZXJlIGlzIG5v
-IElPTU1VIGZvciB0aGUKPj4gaG9zdDF4IHBsYXRmb3JtIGRldmljZSBvZiBUZWdyYTIwLzMwIFNv
-Q3MuCj4gCj4gQWgsIGFwcGFyZW50bHkgdGhpcyBpcyBhbm90aGVyIGV4YW1wbGUgb2Ygd2hhdCBo
-YXBwZW5zIHdoZW4gSSB3cml0ZQo+IHBhdGNoZXMgbGF0ZSBvbiBhIEZyaWRheSBuaWdodC4uLgo+
-IAo+IFNvIG9uIHNlY29uZCBsb29rLCB3aGF0IHdlIHdhbnQgdG8gYXNjZXJ0YWluIGhlcmUgaXMg
-d2hldGhlciBkZXYgaGFzIGFuCj4gSU9NTVUsIGJ1dCBvbmx5IGlmIHRoZSBob3N0MXggcGFyZW50
-IGlzIG5vdCBhZGRyZXNzaW5nLWxpbWl0ZWQsIGVpdGhlcgo+IGJlY2F1c2UgaXQgY2FuIGFsc28g
-dXNlIHRoZSBJT01NVSwgb3IgYmVjYXVzZSBhbGwgcG9zc2libGUgYWRkcmVzc2VzIGFyZQo+IHNt
-YWxsIGVub3VnaCBhbnl3YXksIHJpZ2h0PyAKClllcwoKPiBBcmUgd2Ugc3BlY2lmaWNhbGx5IGxv
-b2tpbmcgZm9yIHRoZSBob3N0MXgKPiBoYXZpbmcgYSBETUEtQVBJLW1hbmFnZWQgZG9tYWluLCBv
-ciBjYW4gdGhhdCBhbHNvIGVuZCB1cCB1c2luZyB0aGUKPiB0ZWdyYS0+ZG9tYWluIG9yIGFub3Ro
-ZXIgdW5tYW5hZ2VkIGRvbWFpbiB0b28/CgpXZSBoYXZlIGhvc3QxeCBETUEgdGhhdCBjb3VsZCBo
-YXZlOgoKMS4gTm8gSU9NTVUgZG9tYWluLCBkZXBlbmRpbmcgb24ga2VybmVsL0RUIGNvbmZpZwoy
-LiBNYW5hZ2VkIGRvbWFpbiwgb24gbmV3ZXIgU29DcwozLiBVbm1hbmFnZWQgZG9tYWluLCBvbiBv
-bGRlciBTb0NzCgpXZSBoYXZlIFRlZ3JhIERSTSBkZXZpY2VzIHdoaWNoIGNhbjoKCjEuIEJlIGF0
-dGFjaGVkIHRvIGEgc2hhcmVkIHVubWFuYWdlZCB0ZWdyYS0+ZG9tYWluLCBvbiBvbGRlciBTb0Nz
-CjIuIEhhdmUgb3duIG1hbmFnZWQgZG9tYWlucywgb24gbmV3ZXIgU29DcwoKPiBJIGNhbid0IHF1
-aXRlIGZpZ3VyZSBvdXQKPiBmcm9tIHRoZSBjb21tZW50cyB3aGV0aGVyIGl0J3MgcGh5c2ljYWwg
-YWRkcmVzc2VzLCBJT1ZBcywgb3IgYm90aCB0aGF0Cj4gd2UncmUgY29uY2VybmVkIHdpdGggaGVy
-ZS4KClRlZ3JhIERSTSBhbGxvY2F0ZXMgYnVmZmVycyBhbmQgc3VibWl0cyBqb2JzIHRvIGgvdyB1
-c2luZyBob3N0MXgncwpjaGFubmVsIERNQS4gRFJNIGZyYW1lYnVmZmVycycgYWRkcmVzc2VzIGFy
-ZSBpbnNlcnRlZCBpbnRvIGhvc3QxeApjb21tYW5kIGJ1ZmZlcnMgYnkga2VybmVsIGRyaXZlciBh
-bmQgYWRkcmVzc2VzIGJleW9uZCAzMmJpdCBzcGFjZSBuZWVkCnRvIGJlIHRyZWF0ZWQgc3BlY2lh
-bGx5LCB3ZSBkb24ndCBzdXBwb3J0IHN1Y2ggYWRkcmVzc2VzIGluIHVwc3RyZWFtLgoKSU9NTVUg
-QVMgaXMgbGltaXRlZCB0byAzMmJpdHMgb24gVGVncmEgaW4gdXBzdHJlYW0ga2VybmVsIGZvciBw
-cmUtVDE4NgpTb0NzLCBpdCBoaWRlcyA2NGJpdCBhZGRyZXNzZXMgZnJvbSBob3N0MXguIFBvc3Qt
-VDE4NiBTb0NzIGhhdmUgZXh0cmEKZmVhdHVyZXMgdGhhdCBhbGxvdyBrZXJuZWwgZHJpdmVyIG5v
-dCB0byBib3RoZXIgYWJvdXQgYWRkcmVzc2VzLgoKRm9yIG5ld2VyIEFSTTY0IFNvQ3MgdGhlcmUg
-aXMgYXNzdW1wdGlvbiBpbiB0aGUgVGVncmEgZHJpdmVycyB0aGF0IElPTU1VCmFsd2F5cyBwcmVz
-ZW50cywgdG8gc2ltcGxpZnkgdGhpbmdzLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91
-bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlz
-dGluZm8vaW9tbXU=
+On 2022-04-07 18:43, Jason Gunthorpe wrote:
+> On Thu, Apr 07, 2022 at 06:03:37PM +0100, Robin Murphy wrote:
+>> At a glance, this all looks about the right shape to me now, thanks!
+> 
+> Thanks!
+> 
+>> Ideally I'd hope patch #4 could go straight to device_iommu_capable() from
+>> my Thunderbolt series, but we can figure that out in a couple of weeks once
+> 
+> Yes, this does helps that because now the only iommu_capable call is
+> in a context where a device is available :)
+
+Derp, of course I have *two* VFIO patches waiting, the other one 
+touching the iommu_capable() calls (there's still IOMMU_CAP_INTR_REMAP, 
+which, much as I hate it and would love to boot all that stuff over to 
+drivers/irqchip, it's not in my way so I'm leaving it be for now). I'll 
+have to rebase that anyway, so merging this as-is is absolutely fine!
+
+Cheers,
+Robin.
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
