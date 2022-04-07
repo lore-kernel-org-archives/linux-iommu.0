@@ -4,161 +4,68 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 51747C433F5
-	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 14:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EB715C433F5
+	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 14:00:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id EBCCB4033C;
-	Thu,  7 Apr 2022 13:59:59 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 995FA40925;
+	Thu,  7 Apr 2022 14:00:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Lp0l-Az6xcIr; Thu,  7 Apr 2022 13:59:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 73ACB403B4;
-	Thu,  7 Apr 2022 13:59:58 +0000 (UTC)
+	with ESMTP id PPEKKH_BMgXc; Thu,  7 Apr 2022 14:00:55 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id C22424033C;
+	Thu,  7 Apr 2022 14:00:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 435E3C002C;
-	Thu,  7 Apr 2022 13:59:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A527AC002C;
+	Thu,  7 Apr 2022 14:00:54 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3281FC0012;
- Thu,  7 Apr 2022 13:59:56 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 57283C0012;
+ Thu,  7 Apr 2022 14:00:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 1EF16402A8;
- Thu,  7 Apr 2022 13:59:56 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 34F4140C60;
+ Thu,  7 Apr 2022 14:00:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9BoQAUG0eCK4; Thu,  7 Apr 2022 13:59:55 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on2060a.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e88::60a])
- by smtp2.osuosl.org (Postfix) with ESMTPS id E987B401D2;
- Thu,  7 Apr 2022 13:59:54 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MXUePVq84lXLB0KcovYjwbbx9VfUca8VqkuEa7MjMsjZSPf2SDtZjwiCs7gMQkuCUB4WkaKlU87dSNbJToKdZxqm1/MJr/FOVCs9EKfRGSoB9BnxouCZn6unSztsLJfCzkNOHHOr7WjLWi0y+d7dcd4XBRnIDUJLFQRykhJIl44mSO61cVWIX9GJjZ0dBonX7X4z3Vo5BMcTNpHYBGWO3wy9ZXrArbKgfv+c4QyZ6X9TYbJlSpZVwiww6HFwIA+MwptOA9ATr0NvQZSoqffwwAbtvbVlIqyMEfr6CGXgXTUUwVS8rY2uy7+yoVUKFQRYslgxk/ZqYV2oG1Ty58HvUw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=in8jV7pVxGfiRTQUuSVx2MRbF1gMLzJzmfRqepe4/Aw=;
- b=G0jhtSZmI3q6Kq3HCfdbhtmGsbWG+ob6Ict2ehy/yEz1ATZxN+kkxJSl4Zk7LaAP6SI7Mmvc0KqSfgkK7R5WeF1ovRfJP0KY27+/ImLisuOiFir7IGhlaPj0QPZNXG2nGDHlhPCrZ5mu0BcRcP+KVvKOoVswyadWNP7y3td4AA7cBcpQ1WOafFkXxvdroX9mc7BBSZQnRXTHZ7ur39jXfOz8UyzmPRfWK8eQEfs7PlII4TtWLp6gbRbEVKOFbph5B4vuQEyfDRYqMcUzGbVVKyZyJq7f4xOyl2ASrK7nisFnJlfzZvyMFAnR/CdfLROi8MJcdeOB5UXVDwqxGrYXYw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=in8jV7pVxGfiRTQUuSVx2MRbF1gMLzJzmfRqepe4/Aw=;
- b=LfJ5B5XT3g8y56k4D4u6fUCBPLD+wko4ambX43R0Cmk5/yI+MbUs0fz2YvhKkEpeWionNyZkhZA4NdiEWcOeZWy+tUHMLXs3XaraNPNk7bFR2ukAE0FruWqt/GJAZdnoZYHiV8UhnHe2WFxWyYpyPt6XwF6qFfZJp2lar9uX2KgNFGVTvIR/QTdVCwl+2EcNWl1KnLEHEbvGc9YEtznU8gA61eN6p0JMQfV+rdguVKDmphTWkricxjzlR276f4jXU143EWaEOu3cPFEPT+yjSTzFG7ZYqlZ0M6PmQBnAJ9Vs+bignu3kyqnC3Y2Gwdb+m+7u1BJ1zzODBvDHr5YktQ==
-Received: from MW2PR12MB2490.namprd12.prod.outlook.com (2603:10b6:907:9::17)
- by MN2PR12MB3726.namprd12.prod.outlook.com (2603:10b6:208:168::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.22; Thu, 7 Apr
- 2022 13:59:52 +0000
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by MW2PR12MB2490.namprd12.prod.outlook.com (2603:10b6:907:9::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.21; Thu, 7 Apr
- 2022 13:59:50 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374%6]) with mapi id 15.20.5144.022; Thu, 7 Apr 2022
- 13:59:49 +0000
-Date: Thu, 7 Apr 2022 10:59:46 -0300
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [PATCH 1/5] iommu: Replace uses of IOMMU_CAP_CACHE_COHERENCY
- with dev_is_dma_coherent()
-Message-ID: <20220407135946.GM2120790@nvidia.com>
-References: <1-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com>
- <db5a6daa-bfe9-744f-7fc5-d5167858bc3e@arm.com>
- <20220406142432.GF2120790@nvidia.com>
- <20220406151823.GG2120790@nvidia.com>
- <20220406155056.GA30433@lst.de>
- <20220406160623.GI2120790@nvidia.com>
- <20220406161031.GA31790@lst.de>
- <20220406171729.GJ2120790@nvidia.com>
- <BN9PR11MB5276F9CEA2B01B3E75094B6D8CE69@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276F9CEA2B01B3E75094B6D8CE69@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: YT3PR01CA0130.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:83::13) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+ with ESMTP id yZJP2ZrrNrOC; Thu,  7 Apr 2022 14:00:52 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 25C9C402A8;
+ Thu,  7 Apr 2022 14:00:52 +0000 (UTC)
+Received: from fraeml734-chm.china.huawei.com (unknown [172.18.147.207])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KZ2yN3mYDz688jJ;
+ Thu,  7 Apr 2022 21:57:48 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml734-chm.china.huawei.com (10.206.15.215) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Apr 2022 16:00:49 +0200
+Received: from [10.47.80.129] (10.47.80.129) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 7 Apr
+ 2022 15:00:48 +0100
+Message-ID: <2311c58d-9310-373a-d0e2-277950634bf2@huawei.com>
+Date: Thu, 7 Apr 2022 15:00:46 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 46f52386-948e-46ac-4d6e-08da189ee16c
-X-MS-TrafficTypeDiagnostic: MW2PR12MB2490:EE_|MN2PR12MB3726:EE_
-X-Microsoft-Antispam-PRVS: <MW2PR12MB24903E4DB54039B6C016B0FBC2E69@MW2PR12MB2490.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AcGgbpPPb4VQdY9+X56ucgZRT3qlhz1RXDC9g+OT7jT9NvfafpiUwUxke2bV0J1h/WNqE2vALW6zXm4fd2m25hOCyCUarmirKhsm9+twhmCNwny4FTSvwZlj2/L5800gY4BClRvc/I4CuZ81BowtlsEGlg7vhBnxzWPnPgZWNcPF0+WWxohfExqGmRU49FsWL+1UtEZXFeR3Ly6Sn53WdS24PZaAeOs3szfENKz8Dfgr2eiDQgTg5UFUnMQMCdhXGl1SEpKjda6+7IZj0sBdrS5eUVz59T4KEQVJVBR+F0RJQP7e1rH3zJstKH9SR6RAMphErS1rrF+5Fz85ynGp2GScPT62Hb3agow9qYw8Ty6Oo9ZkXLjioIpcP6nClNgAAJEFhCN0Hq/X6pFsni5zF7r+HFdi4sSz/+vtGXleDc8jjflVSqwouWZ1YtJIhNKsneDtUaUhJwHHAWM6IM4OIF0mkgJNwb51AQ9DXqWABPn5P1JADmQHp53XS21lF+gyy0U2cITwGv/aEvq4M0Y1mKxJe2DTt1IvR0PgsJ/rdHt7a2KZzIOauwtVlMSHjaRbVg85BvlnteCRZavOMpbC6dxKBd7ityBgfwCRb2rAbVkwojBxio7NnbykXIUHKp8zEN199Uwk2DsP5eZR9wOrTg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MW2PR12MB2490.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(4326008)(66556008)(66476007)(66946007)(8676002)(316002)(2616005)(1076003)(33656002)(86362001)(6916009)(54906003)(6486002)(508600001)(6512007)(6666004)(8936002)(38100700002)(7416002)(83380400001)(6506007)(186003)(5660300002)(36756003)(2906002)(26005);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tIqCb+zd4BhlIAuqloY2PSR/knYZKVD6yvtACEl+PtLV7/iMfmjgAK6aLr3m?=
- =?us-ascii?Q?Y+cfbPaxXsXmd+aNLAT08B4l0lddX+OI6ArcSVNRzZMJzJcAaVf3Diz3svCZ?=
- =?us-ascii?Q?qyMIyDiYrERULdm+9ZiPgO4GsDGx4pzlVzTPvZeKXATpGBruYgwkwK9NNNJd?=
- =?us-ascii?Q?25/QfAlpaojhP2fgvmD468e66TF4gu/OBA88F/n21hQ3fBZwt2SniqWgeUBm?=
- =?us-ascii?Q?I7oUhvljPdbfZjalPem0OgIwaPaZqmhsWZ99HNK5lszkXN8GjRZz90on5gzZ?=
- =?us-ascii?Q?4I3KTL7oFec3PI0Y0bL8vDVPVKPNTmSN4vBj05OsScoiSFs3yC49IdGlNJ49?=
- =?us-ascii?Q?CigBkvqrbrr6xQzD/8JtICs92RhIl2SpMWyso/H+xxbRYBuw5i5yfo8q4zp3?=
- =?us-ascii?Q?aueSPDAk6Xt+D51Pf1yx4ByX7pNU0D7l5k1vbga0lJyAN2QzwHry/oAr6l5Q?=
- =?us-ascii?Q?ggzWtbPjTLET2sawf7QrEqDCwa8jh64bWT00whfV8E/9x7LaRWevo4y2Ea7C?=
- =?us-ascii?Q?Pe8GLfE+/oD71gno/lGCahybnpXTDcqw9eRmHc+1FQ7tBH2S9wwZxWM8TE/c?=
- =?us-ascii?Q?7H9dPa7Du/KeWGsmGNYRzYjt/PBvr9zL0k+dk9MgGyWMVnfa/HxSzYjPO8d0?=
- =?us-ascii?Q?Uu1WvvcDLp3TyA698+dpjM2VIpcWSYhzW9noxJ0gcY0DJAphL7zg+RUmRBqW?=
- =?us-ascii?Q?qjdsMFn/o3Qxibveb5shTs5icwDfQmLI9aytVssuI5DDNHKj0oSkCyItZ+0P?=
- =?us-ascii?Q?iVSGsJ7rnFnkExBiJHLtA6HvV87s/QmTmLOhkDMjFtLw+DplprHaHZGRC8ug?=
- =?us-ascii?Q?ZHmwH6GFERNRoYXBZdQtSXLBT0CxCYo2sPK3XE0Vo53sUzQiPJ0EG8hmykyR?=
- =?us-ascii?Q?Sg1ETu2H8auhWoOGmLMJ44UUs1yMtdl+eltWbtp7Jqm/2ibHAogrpq/sEEyF?=
- =?us-ascii?Q?4UNI8sJ90/xUduHH1w3CStmlPLi4Fd0RpX6Wq7XZLkegh3h+Y2zo/4V9my89?=
- =?us-ascii?Q?HIgyhiRVGsaqftysEETfAp00+D9jdKqY5+chcy0SHLtaSOYF7bINWxlR2SXl?=
- =?us-ascii?Q?Ufy1AigwdZ/EuJqvuv6r5cJp2EMhbP6OqGzuX2HI0HWPtSlDraGWmKP/4Whp?=
- =?us-ascii?Q?BNPO6Gh5P7GGBvLz/Kgr/vC4MH+X2uFHJvhsaVgueu+oEVdGLCeHhRTteheh?=
- =?us-ascii?Q?isT1qgvth24NnA166KNCW+NnZGXcCSK+FFOGzi2WlhCkpHWFQ8gsVen17vYc?=
- =?us-ascii?Q?APVnOdvXB1vP9D4JKMHg99LYB7exoPWSb+rs8fzvKLBwkJlOrNZgh0MlCrl4?=
- =?us-ascii?Q?w9RxCaEEL36luoLJQ8CPtdgYLYFqMz+4M6mo+M6xLmVQro/I561Nr7AIX0g4?=
- =?us-ascii?Q?iAwmCm7itx+ciHmusFUm8RpevaZXr/PiRCMEc0q+Qn0hJY3X5BStLP9udDy1?=
- =?us-ascii?Q?enOhwMR6zH4ZPtzVERZmY+n59fHrxIWNCrKVL1Knpu+vqPZxXA6UGWSoVUhn?=
- =?us-ascii?Q?uVffi8MkRUTRvGHeqOnXNzXbZSNGyky1pENZdpwUXQ1W5qfmsYzw/k7mWYr4?=
- =?us-ascii?Q?yYW5JeMbH8C3s4IyeZ0x2BAG9VPeZU9M0kyrCu0ZtDtryA7uBl2+Pwru3Mq/?=
- =?us-ascii?Q?mnav5mBeAlZphmFUdiHDonyStYM9d6VCLltAi+mtxxTu2ced8lY5qCmOfzA6?=
- =?us-ascii?Q?gMk/l7T09yMMnStCAt731xZou3jZzykQtt/3ylNww4oK344O0X5i62K6Zx8n?=
- =?us-ascii?Q?kFRHpWSR8g=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 46f52386-948e-46ac-4d6e-08da189ee16c
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2022 13:59:49.4404 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EazJpqGqZDT6pBFzSXo8FVJficwJxgCAKvYB5b5ShR7Trjcw2DSljMgiMCOKwRe9
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3726
-Cc: Nelson Escobar <neescoba@cisco.com>, "Michael S. Tsirkin" <mst@redhat.com>,
- Jason Wang <jasowang@redhat.com>,
- "virtualization@lists.linux-foundation.org"
- <virtualization@lists.linux-foundation.org>, Will Deacon <will@kernel.org>,
- Christoph Hellwig <hch@lst.de>,
- "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- Cornelia Huck <cohuck@redhat.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Christian Benvenuti <benve@cisco.com>, David Woodhouse <dwmw2@infradead.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH RESEND v5 4/5] iommu: Allow max opt DMA len be set for a
+ group via sysfs
+To: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>, <joro@8bytes.org>,
+ <will@kernel.org>, <robin.murphy@arm.com>
+References: <1649071634-188535-1-git-send-email-john.garry@huawei.com>
+ <1649071634-188535-5-git-send-email-john.garry@huawei.com>
+ <19d075d7-fa4b-1ee5-2045-73cdaadc5929@huawei.com>
+In-Reply-To: <19d075d7-fa4b-1ee5-2045-73cdaadc5929@huawei.com>
+X-Originating-IP: [10.47.80.129]
+X-ClientProxiedBy: lhreml728-chm.china.huawei.com (10.201.108.79) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: jean-philippe@linaro.org, jasowang@redhat.com, mst@redhat.com,
+ linuxarm@huawei.com, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -171,85 +78,248 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
+From: John Garry via iommu <iommu@lists.linux-foundation.org>
+Reply-To: John Garry <john.garry@huawei.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Apr 07, 2022 at 07:18:48AM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Thursday, April 7, 2022 1:17 AM
-> > 
-> > On Wed, Apr 06, 2022 at 06:10:31PM +0200, Christoph Hellwig wrote:
-> > > On Wed, Apr 06, 2022 at 01:06:23PM -0300, Jason Gunthorpe wrote:
-> > > > On Wed, Apr 06, 2022 at 05:50:56PM +0200, Christoph Hellwig wrote:
-> > > > > On Wed, Apr 06, 2022 at 12:18:23PM -0300, Jason Gunthorpe wrote:
-> > > > > > > Oh, I didn't know about device_get_dma_attr()..
-> > > > >
-> > > > > Which is completely broken for any non-OF, non-ACPI plaform.
-> > > >
-> > > > I saw that, but I spent some time searching and could not find an
-> > > > iommu driver that would load independently of OF or ACPI. ie no IOMMU
-> > > > platform drivers are created by board files. Things like Intel/AMD
-> > > > discover only from ACPI, etc.
+On 07/04/2022 09:21, Leizhen (ThunderTown) wrote:
 > 
-> Intel discovers IOMMUs (and optionally ACPI namespace devices) from
-> ACPI, but there is no ACPI description for PCI devices i.e. the current
-> logic of device_get_dma_attr() cannot be used on PCI devices. 
-
-Oh? So on x86 acpi_get_dma_attr() returns DEV_DMA_NON_COHERENT or
-DEV_DMA_NOT_SUPPORTED?
-
-I think I should give up on this and just redefine the existing iommu
-cap flag to IOMMU_CAP_CACHE_SUPPORTED or something.
-
-> > We could alternatively use existing device_get_dma_attr() as a default
-> > with an iommu wrapper and push the exception down through the iommu
-> > driver and s390 can override it.
-> > 
 > 
-> if going this way probably device_get_dma_attr() should be renamed to
-> device_fwnode_get_dma_attr() instead to make it clearer?
+> On 2022/4/4 19:27, John Garry wrote:
+>> Add support to allow the maximum optimised DMA len be set for an IOMMU
+>> group via sysfs.
+>>
+>> This is much the same with the method to change the default domain type
+>> for a group.
+>>
+>> Signed-off-by: John Garry <john.garry@huawei.com>
+>> ---
+>>   .../ABI/testing/sysfs-kernel-iommu_groups     | 16 +++++
+>>   drivers/iommu/iommu.c                         | 59 ++++++++++++++++++-
+>>   include/linux/iommu.h                         |  6 ++
+>>   3 files changed, 79 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/Documentation/ABI/testing/sysfs-kernel-iommu_groups b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
+>> index b15af6a5bc08..ed6f72794f6c 100644
+>> --- a/Documentation/ABI/testing/sysfs-kernel-iommu_groups
+>> +++ b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
+>> @@ -63,3 +63,19 @@ Description:	/sys/kernel/iommu_groups/<grp_id>/type shows the type of default
+>>   		system could lead to catastrophic effects (the users might
+>>   		need to reboot the machine to get it to normal state). So, it's
+>>   		expected that the users understand what they're doing.
+>> +
+>> +What:		/sys/kernel/iommu_groups/<grp_id>/max_opt_dma_size
+>> +Date:		Feb 2022
+>> +KernelVersion:	v5.18
+>> +Contact:	iommu@lists.linux-foundation.org
+>> +Description:	/sys/kernel/iommu_groups/<grp_id>/max_opt_dma_size shows the
+>> +		max optimised DMA size for the default IOMMU domain associated
+>> +		with the group.
+>> +		Each IOMMU domain has an IOVA domain. The IOVA domain caches
+>> +		IOVAs upto a certain size as a performance optimisation.
+>> +		This sysfs file allows the range of the IOVA domain caching be
+>> +		set, such that larger than default IOVAs may be cached.
+>> +		A value of 0 means that the default caching range is chosen.
+>> +		A privileged user could request the kernel the change the range
+>> +		by writing to this file. For this to happen, the same rules
+>> +		and procedure applies as in changing the default domain type.
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 10bb10c2a210..7c7258f19bed 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -48,6 +48,7 @@ struct iommu_group {
+>>   	struct iommu_domain *default_domain;
+>>   	struct iommu_domain *domain;
+>>   	struct list_head entry;
+>> +	size_t max_opt_dma_size;
+>>   };
+>>   
+>>   struct group_device {
+>> @@ -89,6 +90,9 @@ static int iommu_create_device_direct_mappings(struct iommu_group *group,
+>>   static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+>>   static ssize_t iommu_group_store_type(struct iommu_group *group,
+>>   				      const char *buf, size_t count);
+>> +static ssize_t iommu_group_store_max_opt_dma_size(struct iommu_group *group,
+>> +						  const char *buf,
+>> +						  size_t count);
+>>   
+>>   #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
+>>   struct iommu_group_attribute iommu_group_attr_##_name =		\
+>> @@ -571,6 +575,12 @@ static ssize_t iommu_group_show_type(struct iommu_group *group,
+>>   	return strlen(type);
+>>   }
+>>   
+>> +static ssize_t iommu_group_show_max_opt_dma_size(struct iommu_group *group,
+>> +				     char *buf)
+>> +{
+>> +	return sprintf(buf, "%zu\n", group->max_opt_dma_size);
+>> +}
+>> +
+>>   static IOMMU_GROUP_ATTR(name, S_IRUGO, iommu_group_show_name, NULL);
+>>   
+>>   static IOMMU_GROUP_ATTR(reserved_regions, 0444,
+>> @@ -579,6 +589,9 @@ static IOMMU_GROUP_ATTR(reserved_regions, 0444,
+>>   static IOMMU_GROUP_ATTR(type, 0644, iommu_group_show_type,
+>>   			iommu_group_store_type);
+>>   
+>> +static IOMMU_GROUP_ATTR(max_opt_dma_size, 0644, iommu_group_show_max_opt_dma_size,
+>> +			iommu_group_store_max_opt_dma_size);
+>> +
+>>   static void iommu_group_release(struct kobject *kobj)
+>>   {
+>>   	struct iommu_group *group = to_iommu_group(kobj);
+>> @@ -665,6 +678,10 @@ struct iommu_group *iommu_group_alloc(void)
+>>   	if (ret)
+>>   		return ERR_PTR(ret);
+>>   
+>> +	ret = iommu_group_create_file(group, &iommu_group_attr_max_opt_dma_size);
+>> +	if (ret)
+>> +		return ERR_PTR(ret);
+>> +
+>>   	pr_debug("Allocated group %d\n", group->id);
+>>   
+>>   	return group;
+>> @@ -2087,6 +2104,11 @@ struct iommu_domain *iommu_get_dma_domain(struct device *dev)
+>>   	return dev->iommu_group->default_domain;
+>>   }
+>>   
+>> +size_t iommu_group_get_max_opt_dma_size(struct iommu_group *group)
+>> +{
+>> +	return group->max_opt_dma_size;
+>> +}
+>> +
+>>   /*
+>>    * IOMMU groups are really the natural working unit of the IOMMU, but
+>>    * the IOMMU API works on domains and devices.  Bridge that gap by
+>> @@ -2871,12 +2893,14 @@ EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
+>>    * @prev_dev: The device in the group (this is used to make sure that the device
+>>    *	 hasn't changed after the caller has called this function)
+>>    * @type: The type of the new default domain that gets associated with the group
+>> + * @max_opt_dma_size: Set the IOMMU group max_opt_dma_size if non-zero
+>>    *
+>>    * Returns 0 on success and error code on failure
+>>    *
+>>    */
+>>   static int iommu_change_dev_def_domain(struct iommu_group *group,
+>> -				       struct device *prev_dev, int type)
+>> +				       struct device *prev_dev, int type,
+>> +				       unsigned long max_opt_dma_size)
+>>   {
+>>   	struct iommu_domain *prev_dom;
+>>   	struct group_device *grp_dev;
+>> @@ -2977,6 +3001,9 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
+>>   
+>>   	group->domain = group->default_domain;
+>>   
+>> +	if (max_opt_dma_size)
+>> +		group->max_opt_dma_size = max_opt_dma_size;
+> 
 
-I'm looking at the few users:
+Hi Leizhen,
 
-drivers/ata/ahci_ceva.c
-drivers/ata/ahci_qoriq.c
- - These are ARM only drivers. They are trying to copy the dma-coherent
-   property from its DT/ACPI definition to internal register settings
-   which look like they tune how the AXI bus transactions are created.
+> Why not add a new function just do this?
 
-   I'm guessing the SATA IP block's AXI interface can be configured to
-   generate coherent or non-coherent requests and it has to be set
-   in a way that is consistent with the SOC architecture and match
-   what the DMA API expects the device will do.
+But how would the function look?
 
-drivers/crypto/ccp/sp-platform.c
- - Only used on ARM64 and also programs a HW register similar to the
-   sata drivers. Refuses to work if the FW property is not present.
+> In this way, we do not need to modify
+> iommu_change_dev_def_domain() and patch 3/5 can be dropped.
 
-drivers/net/ethernet/amd/xgbe/xgbe-platform.c
- - Seems to be configuring another ARM AXI block
+A change in the group max_opt_dma_size will only be applied when realloc 
+the def domain, i.e. in this function, and we need 3/5 to support that
 
-drivers/gpu/drm/panfrost/panfrost_drv.c
- - Robin's commit comment here is good, and one of the things this
-   controls is if the coherent_walk is set for the io-pgtable-arm.c
-   code which avoids DMA API calls
+thanks,
+John
 
-drivers/gpu/drm/tegra/uapi.c
- - Returns DRM_TEGRA_CHANNEL_CAP_CACHE_COHERENT to userspace. No idea.
+> 
+>> +
+>>   	/*
+>>   	 * Release the mutex here because ops->probe_finalize() call-back of
+>>   	 * some vendor IOMMU drivers calls arm_iommu_attach_device() which
+>> @@ -3003,6 +3030,7 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
+>>   
+>>   enum iommu_group_op {
+>>   	CHANGE_GROUP_TYPE,
+>> +	CHANGE_DMA_OPT_SIZE,
+>>   };
+>>   
+>>   static int __iommu_group_store_type(const char *buf, struct iommu_group *group,
+>> @@ -3031,7 +3059,24 @@ static int __iommu_group_store_type(const char *buf, struct iommu_group *group,
+>>   		return -EINVAL;
+>>   	}
+>>   
+>> -	return iommu_change_dev_def_domain(group, dev, type);
+>> +	return iommu_change_dev_def_domain(group, dev, type, 0);
+>> +}
+>> +
+>> +static int __iommu_group_store_max_opt_dma_size(const char *buf,
+>> +						struct iommu_group *group,
+>> +						struct device *dev)
+>> +{
+>> +	unsigned long val;
+>> +
+>> +	if (kstrtoul(buf, 0, &val) || !val)
+>> +		return -EINVAL;
+>> +
+>> +	if (device_is_bound(dev)) {
+>> +		pr_err_ratelimited("Device is still bound to driver\n");
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	return iommu_change_dev_def_domain(group, dev, __IOMMU_DOMAIN_SAME, val);
+>>   }
+>>   
+>>   /*
+>> @@ -3108,6 +3153,9 @@ static ssize_t iommu_group_store_common(struct iommu_group *group,
+>>   	case CHANGE_GROUP_TYPE:
+>>   		ret = __iommu_group_store_type(buf, group, dev);
+>>   		break;
+>> +	case CHANGE_DMA_OPT_SIZE:
+>> +		ret = __iommu_group_store_max_opt_dma_size(buf, group, dev);
+>> +		break;
+>>   	default:
+>>   		ret = -EINVAL;
+>>   	}
+>> @@ -3124,3 +3172,10 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
+>>   {
+>>   	return iommu_group_store_common(group, CHANGE_GROUP_TYPE, buf, count);
+>>   }
+>> +
+>> +static ssize_t iommu_group_store_max_opt_dma_size(struct iommu_group *group,
+>> +						  const char *buf,
+>> +						  size_t count)
+>> +{
+>> +	return iommu_group_store_common(group, CHANGE_DMA_OPT_SIZE, buf, count);
+>> +}
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index b141cf71c7af..6915e68c40b7 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -430,6 +430,7 @@ extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
+>>   				   struct device *dev, ioasid_t pasid);
+>>   extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
+>>   extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
+>> +extern size_t iommu_group_get_max_opt_dma_size(struct iommu_group *group);
+>>   extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+>>   		     phys_addr_t paddr, size_t size, int prot);
+>>   extern int iommu_map_atomic(struct iommu_domain *domain, unsigned long iova,
+>> @@ -725,6 +726,11 @@ static inline struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
+>>   	return NULL;
+>>   }
+>>   
+>> +static inline size_t iommu_group_get_max_opt_dma_size(struct iommu_group *group)
+>> +{
+>> +	return 0;
+>> +}
+>> +
+>>   static inline int iommu_map(struct iommu_domain *domain, unsigned long iova,
+>>   			    phys_addr_t paddr, size_t size, int prot)
+>>   {
+>>
+> 
 
-My take is that the drivers using this API are doing it to make sure
-their HW blocks are setup in a way that is consistent with the DMA API
-they are also using, and run in constrained embedded-style
-environments that know the firmware support is present.
-
-So in the end it does not seem suitable right now for linking to
-IOMMU_CACHE..
-
-Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
