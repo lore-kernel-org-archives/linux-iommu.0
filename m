@@ -1,190 +1,183 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7B3FCC433EF
-	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 00:11:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BD081C433F5
+	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 00:21:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1D38C61172;
-	Thu,  7 Apr 2022 00:11:30 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 5071F83EFE;
+	Thu,  7 Apr 2022 00:21:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aRIGga1SbWA7; Thu,  7 Apr 2022 00:11:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 9895D60E4B;
-	Thu,  7 Apr 2022 00:11:28 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id y6fYW-F_qrHQ; Thu,  7 Apr 2022 00:21:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 2C1BD83EF7;
+	Thu,  7 Apr 2022 00:21:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 68E18C002C;
-	Thu,  7 Apr 2022 00:11:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 035CBC002C;
+	Thu,  7 Apr 2022 00:21:11 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 99D28C0012
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 00:11:27 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 771A3C0012
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 00:21:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 7071C4023D
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 00:11:27 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 63B2D408E6
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 00:21:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
+ dkim=pass (2048-bit key) header.d=oracle.com header.b="XBXAd+sp";
+ dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
+ header.b="q9TTJqyd"
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8_MvrEf0zGcV for <iommu@lists.linux-foundation.org>;
- Thu,  7 Apr 2022 00:11:26 +0000 (UTC)
+ with ESMTP id pc8DSUOxSmFC for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Apr 2022 00:21:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 759F940198
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 00:11:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1649290286; x=1680826286;
- h=from:to:cc:subject:date:message-id:references:
- in-reply-to:content-transfer-encoding:mime-version;
- bh=lNPk4W17MOc5Cf8E7h2KTB6+9QqaUK5Nc55KFl+CKMc=;
- b=JGDhcgT/+NIDswdJWqjVMPyTZx6PmQn7+EOJLlMYtM/ExlXDeH2pClrQ
- z2GtRlP04MYpTlDBut3zAYlCzvpukTC8OdCa+bkkyMmOwBjiwYE1A7kff
- 4/JN54hntrQ4E+v32dIt7+lKQngKhOxTlb5MTAyxaGhyNLWEK88sGF2t2
- hnv8+w4K6ZNWT5BKiY8MTUueurdgLJamf63HPXxwHJ9B+x5asctCC+Rtw
- x/7wbPT+f8NKUAormFAFloVDVKcZmYdQaOXALSj7EMzRvAWFrz/hOvWyG
- 6QDsm9Ve9dLILgxFfbSZUWQLmhw6B3syTPS2jmbfQy2futKu9sfDb+2xj w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="258780212"
-X-IronPort-AV: E=Sophos;i="5.90,240,1643702400"; d="scan'208";a="258780212"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 06 Apr 2022 17:11:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,240,1643702400"; d="scan'208";a="524151968"
-Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
- by orsmga002.jf.intel.com with ESMTP; 06 Apr 2022 17:11:25 -0700
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Wed, 6 Apr 2022 17:11:24 -0700
-Received: from fmsmsx606.amr.corp.intel.com (10.18.126.86) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Wed, 6 Apr 2022 17:11:24 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Wed, 6 Apr 2022 17:11:24 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.177)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Wed, 6 Apr 2022 17:11:24 -0700
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com
+ [205.220.165.32])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 5F50A40386
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 00:21:03 +0000 (UTC)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+ by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 236JxCjd014737; 
+ Thu, 7 Apr 2022 00:20:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=mk3bST2LdEJgJrwU5hj0qhsWCMln+w9W1TSOlBEcxF8=;
+ b=XBXAd+spGjebDMqS5XyPYAgXMLKiMfggoodVjjQTn+71Z732/t/9tbgz9VVzsT/a7uGL
+ kwIxlCESf5BUy+bVM5eBP9ffuwDr8EJWldp0dmlwOnBOYbexzYf1Vbu6Gjb6prNkYIcO
+ teczSIzg/lbSEXLLYATOgM2Q+BZWKp3ZeVesHT738sZw8nOaG2NPdwnclYBgYVu0uzoB
+ 5fWVDa028g+VLpQsvB2cEoUMgY6dXuekL5hzixy3l/cM18UcSUyL8C+dhTijlP3uJr62
+ nl+kVsma4bjhgyb1fVxQqqlonAXaMZhdd0BZ3wEEofI98Agj1B8dWrM57eOgLLqz/o8o +Q== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com
+ (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+ by mx0b-00069f02.pphosted.com with ESMTP id 3f6ec9t711-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Thu, 07 Apr 2022 00:20:24 +0000
+Received: from pps.filterd
+ (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+ by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2)
+ with SMTP id 2370Gvp6035271; Thu, 7 Apr 2022 00:20:23 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com
+ (mail-mw2nam12lp2042.outbound.protection.outlook.com [104.47.66.42])
+ by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id
+ 3f974dghn8-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Thu, 07 Apr 2022 00:20:23 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ToF419wIKrM/Akyqmh7Wbrg2pDIHZeQAHnct3Axs0PH3CplR6tv9N3124/5jPtb9rqo5uzx+DLj+T7OLrbD9mYEMSW1D7CyHBoOFeLhpp98YaLiHuBTopLhWfXntjEJf7wo0BjrC5+hqFqKiHzVS5S9Z0QAy/d1yZm6Ue3AEX5ETyjLsrOxeNbFwLfg5xBe/Qeirku/RxO6bl7mwXYo/lHoCY0ZIs+tCzO7FEWlKkR4ZPzybnlRLvfJ3OSt+9nTmtKseoDEpXMMiScGVVAJCZBtWjlBQDWPEQhwTyz9PPUXHgARKoy0cntmZlIVY6i+dABDXq9baYlNy7ZIgMAaG9g==
+ b=WdXsHIK+9dNPHCZ9ukamixyte5t+lvXscpq1mkD7UGAgTZJzFi4lkj/Rkk3qeXU20QjqeVcPoLmdQawnA6M+LReZmn81S3rQatGbRRfUxVcU9kksytl0tACwMY0LVZYCQuPk9gOac5M0qS/E+qzwPzdh15zYXdkQog5B1OozlSOWSN74OmTspj5Ria1a5YWbzP2ZSLafz7w6SVAQf45rgykEeQwekIJF0NmmsCf2KmDeFa1OQHIDxmNbBO9rP4cHOXkNDuLED+gvnyt7ukIxiJcGpXHeOmiT6bZKbybsra/Xh1k4RGzSAxAQchhKQcjYsrx2z0Pmo/obAEQglgDMRQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lNPk4W17MOc5Cf8E7h2KTB6+9QqaUK5Nc55KFl+CKMc=;
- b=JvYqNMAydZztVO4w9Lvd4HdmWPAMbuCd2YkgVNayiCJjA24y3+UyiC+eRiXlB+bG5jrbnlLGV/bmnXqI5TcneD1yREgWVLOBq5yUABZ8FNiYjnMCVgeKCYfVO7a2W8Pv1511Mzq6LNA7NGNvRSetdwNQ4G2vtMh6uQmxni08LzZvQLSgYB7+zX+xwFBc/69qEdkpBbfiTsjuy1IbmPgiU3nMni3qjVDGCipUxyIBctklr4Mb79WyGLAXi5QRk+9+S56pDcVDWy90HUAfGuCalCXRWcXNxqnZy4AWDp1UxAsVaIbX0f8cb4T1bESdE/Cr0KA8XJ1D934HY8gaWd6dqQ==
+ bh=mk3bST2LdEJgJrwU5hj0qhsWCMln+w9W1TSOlBEcxF8=;
+ b=c/JjNXvVu5w3nrms15vOpSOPWfBmRIF14aXo0dQZwGoolbnmwthm3vVUKEfEJcIjghcxe2qUmSz+Drii0ZYyWnSQZHbi1/WZ73vWy4iKXe3sr0H3O9yo5KR3N08TsbT2OXRxom4ye8idJCC+hMPf3Nxu4xZK8NGQtMuB/YBfv4vAD3J8XD8z+vPfACvpxV8OLXSegvGogWzjhcNjBXWr9N8K0444PjbCwOx1Pt5Oz0zB1uLu0O466f3/cVXeu7TDGL6z7J+JTymk24y5XXrJT9glQCMVUOp7AMrZDOzUttqh3xUsygM/WoFXztMlw1FgLqUzmLbS3ioR29eIuMDa1Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by MN2PR11MB4157.namprd11.prod.outlook.com (2603:10b6:208:156::21)
- with Microsoft SMTP Server (version=TLS1_2,
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mk3bST2LdEJgJrwU5hj0qhsWCMln+w9W1TSOlBEcxF8=;
+ b=q9TTJqydGvKnUbnxO5da9v1U4OGoUF7Cey3boFSvrnYXpAdl9MRBz+hVWw+MOVSpSOc/PnDkdwVJeoby0NhTlP4hm+GroPjofbmquFctTRpHgoAgW92Rg7zBdzA8lZzm0ybqA6yhY96hVk8cOFjTz4IPPAiob4mqvwu9r5Q2JQI=
+Received: from BYAPR10MB2999.namprd10.prod.outlook.com (2603:10b6:a03:85::27)
+ by DM6PR10MB2956.namprd10.prod.outlook.com (2603:10b6:5:69::26) with
+ Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Thu, 7 Apr
- 2022 00:11:16 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::c4ea:a404:b70b:e54e]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::c4ea:a404:b70b:e54e%9]) with mapi id 15.20.5144.022; Thu, 7 Apr 2022
- 00:11:16 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>
-Subject: RE: [PATCH RFC v2 03/11] iommu/sva: Add iommu_domain type for SVA
-Thread-Topic: [PATCH RFC v2 03/11] iommu/sva: Add iommu_domain type for SVA
-Thread-Index: AQHYQy+FIia0eWaSv0yH5HJtvKyQTazYSueAgAQE+8CAAP1+AIAEzMlAgAAJVQCAAErBwIAAcAmAgAC/wwA=
-Date: Thu, 7 Apr 2022 00:11:16 +0000
-Message-ID: <BN9PR11MB5276AB17E09E609A0556CF658CE69@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220329053800.3049561-1-baolu.lu@linux.intel.com>
- <20220329053800.3049561-4-baolu.lu@linux.intel.com>
- <20220330190201.GB2120790@nvidia.com>
- <BN9PR11MB5276A39F481E2E31B0FCFEAE8CE39@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220402233210.GM2120790@nvidia.com>
- <BN9PR11MB527660D99D154F922B0A628B8CE79@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220406012334.GZ2120790@nvidia.com>
- <BN9PR11MB52764E3DE16E19D1F1515D008CE79@BN9PR11MB5276.namprd11.prod.outlook.com>
- <d0f6caea-0cd9-d839-c9fb-0fe49c2bad16@arm.com>
-In-Reply-To: <d0f6caea-0cd9-d839-c9fb-0fe49c2bad16@arm.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ef7e1d5d-49e2-41a8-af33-08da182b2269
-x-ms-traffictypediagnostic: MN2PR11MB4157:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <MN2PR11MB415792783AF967075B1388E18CE69@MN2PR11MB4157.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 6r1DX/xUoRh7wJEDEdmGxZZc5+zeYeTbNZhGI3yq1hm45LvdsGsTN1Ey2YSmM1HwszMIy63Wi433o+1Oe2+YuDYEuID+hFm/wvQ2gX0TZ4t5gFtCeqWjT+7wQmlk4CBVukhVdShOSqa03GlR7rDHra3XEQcKnT8Qt0f1NbiEC1C0mGLyuTzYK/IFcnpOQLGsy8oVnqdNd4tg/qAm9NSheHVcHYl7I4ySaGOdtZy0lV83wBtDUopoyspJajhgeei3jaktob456bp7gOwT3Qu5Y3R+fCWDsoXKfg5wV/RKmcbbwLdQQKPRsdQkMXg8M8pigQ2Ikf+ByO8Bx0p3n8f5KfpIcTonGA7APvTJfAS+/IiTktoRRXaPjKW5dFoieJxKAVm4NtdtOgrbJv8tUGGPMBis0EYY4+VixWKjc3ThVHHtOit+IGNZ6iPVh/qkZ3UYHE/aqeWDmmImtSjI5s4WSK8zhJcneOlNw/VMgIvBaQ10vNEReuZQtfdXCn4kg3vNAEOToteanhnqVC78dDlSfTNe/50nSVLi8ULr2kDazZiXtLZDyc77eQG7hBcEBMIKhoahdSwhb9G+umBgX0OOcbuTuACMwvejDHZTca0Xb+l/o++/0k5BTmiTN6FLFuhUuiOamGU29IwZ/vtmKc7oy8rjMsvtvNKgMku+4FluNUwjxDycHkz15k1qc6Nq9gIegarQosSi+fUMDNL/ZNKOMQ==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(366004)(84040400005)(66446008)(508600001)(66946007)(66476007)(66556008)(71200400001)(64756008)(86362001)(82960400001)(122000001)(33656002)(7696005)(6506007)(53546011)(186003)(316002)(110136005)(76116006)(54906003)(9686003)(26005)(55016003)(2906002)(7416002)(5660300002)(8936002)(52536014)(4326008)(83380400001)(8676002)(38070700005)(38100700002);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?cjhRWkNpN3NUdEZBcmEzNUdtV0tTTlY5dFdaQ0xnL3pQT1lCVUFrRC9mT2FC?=
- =?utf-8?B?bW5RMCt0WXMrei9UazlxM1FxYXZSeG9TR0tLWUc0bWtWaVI4M085a0ErZXY5?=
- =?utf-8?B?dzd4VXMzcVE3MmNGaWtHS3RIbGFVeWhTQmFLRmNNWjJETHVHSFZpd2lVM3hF?=
- =?utf-8?B?aGVnWHgwWWxwQ3M3V0VKaEVaRTYvTGJ2b1V0a2U4NFRoUnNmRVc1VTN5UWVX?=
- =?utf-8?B?RG5NQ1RxaHdRdVlGbEcwT1NiTHdrVWlmQngzSjlzcHNZQktsNnJnRzJUUWxs?=
- =?utf-8?B?ek1tSnNhaWFtTzBnYkMwTjJLVFRLUE5IYmFXeUhtclZZVUFTRCtCUm5HU284?=
- =?utf-8?B?ak14RWFKVzJ1RzNYU3FEZVVrcFM2QU81N1h4OEJzakZGTUlJRjM2SExKSVpE?=
- =?utf-8?B?N3NEWGFBS004UVM0am04KzFyTGlqcGF4R01GMVlXU0V6aW4xTmFTYlN2V3pr?=
- =?utf-8?B?TldUU2JhV1RUMUUycTdqc3p5TlMrVG9GV0RxbWdNTzd3UUx3MTFadFVGVm9r?=
- =?utf-8?B?NGNtYlFkZVErZ2NVcUZIRFJKVHFLdndlcFpXTVV2V2lzem9KSHJvK2U3ODhW?=
- =?utf-8?B?ellYb3d1WVFHUjVhMSthb0VtR1VFZlp0Y0Y2V0E0L3hkNmVjeHptREZnVDNa?=
- =?utf-8?B?RDdVL244TlIwcmdaZHlVeHJWb2FEeWVLYlJUTVJ5WlBqVFBnckNTT21FWXYy?=
- =?utf-8?B?WlhRWFI1QUhJS1luOXJDdWFnVHprVW90R3lSVjN2NDVpc0tKdWlkRm90K0Iw?=
- =?utf-8?B?OWZndVUxRXBaNURFTFVZeU5yK2VXMXJYVzdHcm8wa0ZxMUFFOC9kSkpYN1M1?=
- =?utf-8?B?RlN4d2ZkSXlLMnVHZVhzWXFtbkhGck9lSGJheWRkS3hjQ0ZoRGVNZk90NWFP?=
- =?utf-8?B?U3VVUVh0eFpvaDY0YWFTb1hsNEg1V2p4bUtiU1ovcDdiQStBZGt3VVhpaEdE?=
- =?utf-8?B?anlJOHg2WHFmSWlJdk1OOG9hZC8zQnlVWDRwVWhRdWJoNkREVHpncG44UFAy?=
- =?utf-8?B?R1VGRDg4R0NGMkV6L1ZUY3czbllsNnNDc2x2V3dHY3BqZ1lDZ2N3VkdZL3lB?=
- =?utf-8?B?enRjUHg3SXh2MnE0eDJ5SVZ0elJtQ3pZNVZERkMvbXVzT1pSaDNZR3VGTGl4?=
- =?utf-8?B?SzNPSS96Lzlpc0lKSlAxa2lYRzlhMXpOR2VOV2pKeVlxSXpQVGhqblFlZ2lZ?=
- =?utf-8?B?VXdCZGxTZ1BvN0NlVVBZa1VITmhuU2c2R1ZDZy9mNXVBUWpjQ0NWVVFJYTVI?=
- =?utf-8?B?akNJcm40VmdHekYyek45SG9WY0p3bEtKdmJHbUlFVUlHT2pTcXNZWXBwdG95?=
- =?utf-8?B?N3llcWVUSzFPTlBLQ0NiR050Vjk0Z3lzL2wrbmY1dElsSGtYbDVTdHVLeE5F?=
- =?utf-8?B?WkFXcTl4amRGY0dPYk81Nk0xNkQ2Vy8xUkVXK0ppVXM4cnFqMWN2MmlVWlZq?=
- =?utf-8?B?UEtGdEUvckF3bm8ydms3SGZ1VnpXT0tSYmNaQ0JIRFpPZUJaZUFqbFU5TzI4?=
- =?utf-8?B?b0FWK0dKMXlRS2xqeUh4YTZ1ZEZNKzBYclNoWUF1L0tTMFJHVkVoRW5JNVpB?=
- =?utf-8?B?UXdpN0FNcVdEbFZWMjA1OUZmQjZ5VUpxVjcxNHQ3OFpXN3Blb3JKSGNWMW1S?=
- =?utf-8?B?cjQwUWFnYVhiRzJSZGJreXM5K2ZjcmJacUxTdUZsM1V0bUNHaG1TUWRmT0FX?=
- =?utf-8?B?THBlQ0c3UzU1L2JnVmdlcTg5R3ozL0dRU0lLZ1NUU3V6RlQ2UTVKOWIxeC9C?=
- =?utf-8?B?QTZsTXBXQjJldXhocXdnZmFsN3laU281cWhJb2syWXNQMTF4cFBJbm1DTnhP?=
- =?utf-8?B?elFGQ1JaY2lEN0UxV1cvMjB4dTNQU0VBYUhRSnBSWUJYU3Vjd0syc094Vysw?=
- =?utf-8?B?WEkyZVd4MHhBRnE4N2xBdnlDb2tJV3c1MXR1Vml0MGVKdG1DazJ4eDRlSHd3?=
- =?utf-8?B?OS95cHVqSjZLcEVYZENuWm9SSi81a1UwS3hXSGZTVnBkcHJiRWJ3cnNhaUd6?=
- =?utf-8?B?V1EvalUzcDJrSzRCWHd5MlFFTm1JSEFCc0dGbE16eUNhSkFEcW1UcW1uSU84?=
- =?utf-8?B?dG9GT1hQblBJeWRhd1MrTGZ6UFRzcGVCSFhOMHBsN0tTZm01VUp6d2F4VStZ?=
- =?utf-8?B?ZUFZRHd4bnhDM0l4ZXcwWktpa2NaVW9KVmlwN001MXRvT0g2UmtCeEI1YjIw?=
- =?utf-8?B?czUwQWhtUG96VnpSV09SMnpPLzk1ZnVGK2pyODZlTHRSYTJqalRhSzNmNWx4?=
- =?utf-8?B?dVF3UVpRTVVPODRBbStDT2VWcVRJdTdqZUV4dGRaam5kbXoxdjJUeE81NVdQ?=
- =?utf-8?B?ZGhrQkEzUmYyU2RkQVk5M3VsNGlFcFRBRE1jWm4wdkFhamtzS2tyUT09?=
+ 2022 00:20:20 +0000
+Received: from BYAPR10MB2999.namprd10.prod.outlook.com
+ ([fe80::b180:d8da:faa9:f897]) by BYAPR10MB2999.namprd10.prod.outlook.com
+ ([fe80::b180:d8da:faa9:f897%7]) with mapi id 15.20.5123.031; Thu, 7 Apr 2022
+ 00:20:19 +0000
+Date: Wed, 6 Apr 2022 20:20:14 -0400
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 07/15] x86: remove the IOMMU table infrastructure
+Message-ID: <Yk4uPrrtCxwl3hPX@char.us.oracle.com>
+References: <20220404050559.132378-1-hch@lst.de>
+ <20220404050559.132378-8-hch@lst.de>
+Content-Disposition: inline
+In-Reply-To: <20220404050559.132378-8-hch@lst.de>
+X-ClientProxiedBy: MN2PR10CA0011.namprd10.prod.outlook.com
+ (2603:10b6:208:120::24) To BYAPR10MB2999.namprd10.prod.outlook.com
+ (2603:10b6:a03:85::27)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 16e19221-5996-4e90-6829-08da182c65e9
+X-MS-TrafficTypeDiagnostic: DM6PR10MB2956:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR10MB29566279EE03FA489A2606AE89E69@DM6PR10MB2956.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HxxlzuPrRhbu0pN1jQy4U+yleqQxwuezNafnkZSqyB9Uvt6+a9JiUutoBnqH7wWyR0NqLXAL/NfuqnIGxrELdf4VVS3fO8C/SlhI2x1wgm+0IPJno2D6aSH/DqGXvf5my/y7crRWshVbbIykmdn27jkSCQS52OSE8xnhJvvlNq1p7lJzHO7dlwrNJlotd/9Yh/7rBxk7e365iaiLMwuUi2z3kuqDaC/9Jvq+zIgnZXOSnwdVcg6t5mwKwer2feb2CE3cJ06r7T9HbWyjeY8VS/YnVaYcLTucTQepuFIXbwBi2XohzzfxDLP0kk3WUzmwgea1Nig35MYUMevjWE1fKPSKipHCDIwLxCXBemGEr8I6P+k6AD2rbiRa/uTulwzIsYtyg/xEJY8BzN/C+AYAsn3zQ0NlyYXYk7K5INICt65qmaGP42T98EjYeye80+GoSH0z2/VKQpwIot4eJerfDlHu/DSELMn5qVhKaN9+Zzde/eowh+t1R0IS4/KPUxIKxXjONNFjNvISpl2cgCNH2hJH9n8HWm7Yag4HlUXupkHLycCrT/HvFfy5BpGkZjrQRwTHI3l3jtlJd/QmSoIbvtUNsE3PALQGO4lM0/DQIP394Rsvfwta3kXkrx2ZSdQcaW4K/4muQwJjDrCns0MmayxLFxvpVWfYL/TAX3fuMGzs+qLWiPcpoFzvTh/rbWe0AjRfx0LxWwMG92hMFeI9jgjp0Acu1pUzDIx54f/R28c=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BYAPR10MB2999.namprd10.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(38100700002)(38350700002)(54906003)(6486002)(508600001)(6916009)(6666004)(7416002)(52116002)(30864003)(316002)(5660300002)(6506007)(6512007)(2906002)(83380400001)(8936002)(186003)(86362001)(4326008)(26005)(66946007)(66476007)(66556008)(8676002)(21314003);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QPDHV93eg3AbCwOHVDnv01iCH1wgK0tQUZ9lCSO6xiMJ63+8EO8NqBGc+WMc?=
+ =?us-ascii?Q?musMoEpd8Nux+iMUNqkSZwA4voJcz9FkY6x3oSsIlDLF44XE7nQ2OlPPyhNv?=
+ =?us-ascii?Q?7/LhdLv0focGt7W9v5QXAECOiuQwpH7jM7R6Azzp/KW8rdNX6ZN7fDcMsaVr?=
+ =?us-ascii?Q?Uw1f8thndQvHjthLwD9FeEgKCbbVf2ogHnr2zzdauTPM9+B405aqU5exWUnE?=
+ =?us-ascii?Q?FBF202IiSrrBb+ICnkvbXzRCPG52r+UzU/AVPNNosAXh+ZUgFUaUK3qdTyaT?=
+ =?us-ascii?Q?AVThwAuqw8o7ko6qa84NY0+YIVhiWrK/h1Plv12AxXocc7kA3iZBtmrTImvK?=
+ =?us-ascii?Q?kn663siaJJb4KhSTHv/SvuTP6QQ25Zk3uVG1KUCAvQHev75nR6Wwvjp19TNI?=
+ =?us-ascii?Q?+riI5gaJqvlhSG+7xm4O2wSWbpx3hdicVbGjtl1f5+i4nBDvxus5EfjGpurw?=
+ =?us-ascii?Q?gKvLrEJ2X5JZuOyraW0y62Qtpqe8NB4K+Etbex+VrCPTNXwK2ylhFbLwKL5O?=
+ =?us-ascii?Q?wg+PUkIdJ0/oxrdAnlQoKtyurus0bvlhio0nhVmgBQrDqmyLEqNd1n5rFeDz?=
+ =?us-ascii?Q?XQcI/e80BXPTTXrZ4UYp5dif+NAjn31aPDXvyk4d01WETLB+9uXLV3N7rGoN?=
+ =?us-ascii?Q?Y2QBUia8kOUes+G2sztGOSfE6iV7gJmJounNvYLrvo1Yv8fu4NJQZDTAfZc1?=
+ =?us-ascii?Q?zA0VR7HaTqor7v7BCmX6TfG5iFhDlbK3ULKhurrCwdWuY+NVCn/BefmZWJDz?=
+ =?us-ascii?Q?bAlcCIXYSn8vxvFRX+UbStNJ+QoUzlIf51R1c2Jd5CfB2A+s1AcbZOkCFsvz?=
+ =?us-ascii?Q?M2OCFa+y/GvzNZNU32p5uRq4h9uqCSfpwy2OkseoXvWzmcu0GTsljqF+K/1G?=
+ =?us-ascii?Q?m4998MWZSzZluA5B2wVNewN/4WC6hlY4RFmPXZsA4Y6PgWJ9UM9bBMi1uho9?=
+ =?us-ascii?Q?Qc3BszX2m5vxHw9UJ1kYkPh+WVDVnrjBYLiJd3Uwm2xE8nXC1sytul04jxwq?=
+ =?us-ascii?Q?umqYlWUgvn6EUHGhpnXPQSga5q/j5DuBVUbdnHmMQjgAauLCQ/mObk3zd3es?=
+ =?us-ascii?Q?H/sBXnBTyaiOQ5rpqGp5YXOO8pR/NW6bgpSNQ7ACLarnR/L+LDyu5eQxOU68?=
+ =?us-ascii?Q?HJp7xYTjop6GcSzwvu2P7OWGYaDGTa9CU+0tQUOZT6hU6BEkxh5wW48W1Rt5?=
+ =?us-ascii?Q?Pj5nB+UfCbyjNBKAUV94YorrsA4UORIlHHhWHSkZvy80j0EP2EMh+0FdE/FM?=
+ =?us-ascii?Q?T2lUbSHVZPXjBhhVokGAQpU6jTlFxFtYdxGcTqH4It21kXj/KqcB3enuG1qC?=
+ =?us-ascii?Q?B4MoDaX6UJhTRiewvPdn46FvRuTHoMo//P4g8HbIe2vJq1dgH/CZLnJ4HnsD?=
+ =?us-ascii?Q?98AMtIc5MTBLMCXyl7eEKf89zoRt9FgP8prJE3AdseXBEx7oqajwidbquA+u?=
+ =?us-ascii?Q?IZ+Cxp3aRvG42oSTR9IPzxe1JlIuESAvzmMu3XHf/yrRtf2qtMXok/7COL5k?=
+ =?us-ascii?Q?WbrwKoJwEQ2y4RuqgBF07J6ERRmadzn6Z+LsWbV9I2joXBtf+JMZuOgEIhjH?=
+ =?us-ascii?Q?EMJgp+1w0M/zbntufN+ZO9ecmabyCazIn5CYkPygJQIzVTJhrUnUI1SsGSsn?=
+ =?us-ascii?Q?0eUumQfxicX2svTQm/9E63K41TuPk7jH29uIpktO8rQM74Q320VEUOLcQA4W?=
+ =?us-ascii?Q?qcMhBTQz6IY+NO25DwM2EoAb+UOB3B7JrJT0moheiH5EE5PWzDGjMbYCnWB5?=
+ =?us-ascii?Q?d/Bd/feo49hZVVcxTRCyh2Go7r7P4DE=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 16e19221-5996-4e90-6829-08da182c65e9
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB2999.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef7e1d5d-49e2-41a8-af33-08da182b2269
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Apr 2022 00:11:16.5264 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: DWh59woc3YKDwHc93PaSFvZPsku9ZERpo3PEy/UaHzPnprv7EL+1zKHEom6dQ/H8mrPslcHTfHWIr0gYQBzuCA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4157
-X-OriginatorOrg: intel.com
-Cc: "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@infradead.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2022 00:20:19.6425 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Zj9PJLDf/UBSfpVnelsQIZAiIsS3Ecw0CDgVWH/Ibvwm9VkvK3xOO+/vorLEIfj2zZ82wLoiuJ1UaeefEBc7Ew==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB2956
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425, 18.0.850
+ definitions=2022-04-06_13:2022-04-06,
+ 2022-04-06 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
+ phishscore=0 malwarescore=0
+ mlxlogscore=999 suspectscore=0 adultscore=0 bulkscore=0 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204070000
+X-Proofpoint-GUID: ytAdH73P7jBCZtsat6az2JD-IJ9dJFDh
+X-Proofpoint-ORIG-GUID: ytAdH73P7jBCZtsat6az2JD-IJ9dJFDh
+Cc: Juergen Gross <jgross@suse.com>, Tom Lendacky <thomas.lendacky@amd.com>,
+ linux-s390@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>,
+ linux-ia64@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ Anshuman Khandual <anshuman.khandual@arm.com>,
+ Robin Murphy <robin.murphy@arm.com>, x86@kernel.org,
+ linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ iommu@lists.linux-foundation.org, tboot-devel@lists.sourceforge.net,
+ linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ David Woodhouse <dwmw2@infradead.org>, linux-riscv@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -197,73 +190,968 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-PiBGcm9tOiBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29tPg0KPiBTZW50OiBXZWRu
-ZXNkYXksIEFwcmlsIDYsIDIwMjIgODozMiBQTQ0KPiANCj4gT24gMjAyMi0wNC0wNiAwNjo1OCwg
-VGlhbiwgS2V2aW4gd3JvdGU6DQo+ID4+IEZyb206IEphc29uIEd1bnRob3JwZSA8amdnQG52aWRp
-YS5jb20+DQo+ID4+IFNlbnQ6IFdlZG5lc2RheSwgQXByaWwgNiwgMjAyMiA5OjI0IEFNDQo+ID4+
-DQo+ID4+IE9uIFdlZCwgQXByIDA2LCAyMDIyIGF0IDAxOjAwOjEzQU0gKzAwMDAsIFRpYW4sIEtl
-dmluIHdyb3RlOg0KPiA+Pg0KPiA+Pj4+IEJlY2F1c2UgZG9tYWlucyB3cmFwIG1vcmUgdGhhbiBq
-dXN0IHRoZSBJT1BURSBmb3JtYXQsIHRoZXkgaGF2ZQ0KPiA+Pj4+IGFkZGl0aW9uYWwgZGF0YSBy
-ZWxhdGVkIHRvIHRoZSBJT01NVSBIVyBibG9jayBpdHNlbGYuIEltYWdpbmUgYSBTT0MNCj4gPj4+
-PiB3aXRoIHR3byBJT01NVSBIVyBibG9ja3MgdGhhdCBjYW4gYm90aCBwcm9jZXNzIHRoZSBDUFUg
-SU9QVEUNCj4gZm9ybWF0LA0KPiA+Pj4+IGJ1dCBoYXZlIGRpZmZlcmVudCBjb25maWd1cmF0aW9u
-Lg0KPiA+Pj4NCj4gPj4+IEN1cmlvdXMuIElzIGl0IGh5cG90aGVzaXMgb3IgcmVhbD8gSWYgcmVh
-bCBjYW4geW91IGhlbHAgZ2l2ZSBhIGNvbmNyZXRlDQo+ID4+PiBleGFtcGxlPw0KPiA+Pg0KPiA+
-PiBMb29rIGF0IGFybV9zbW11X2F0dGFjaF9kZXYoKSAtIHRoZSBkb21haW4gaGFzIGV4YWN0bHkg
-b25lIHNtbXUNCj4gPj4gcG9pbnRlciB3aGljaCBjb250YWlucyB0aGUgYmFzZSBhZGRyZXNzIGZv
-ciB0aGUgU01NVSBJUCBibG9jay4gSWYgdGhlDQo+ID4+IGRvbWFpbiBkb2Vzbid0IG1hdGNoIHRo
-ZSBzbW11IHBvaW50ZXIgZnJvbSB0aGUgc3RydWN0IGRldmljZSBpdCB3b24ndA0KPiA+PiBhbGxv
-dyBhdHRhY2hpbmcuDQo+ID4+DQo+ID4+IEkga25vdyBvZiBBUk0gU09DcyB3aXRoIG1hbnkgY29w
-aWVzIG9mIHRoZSBTTU1VIElQIGJsb2NrLg0KPiA+Pg0KPiA+PiBTbyBhdCBsZWFzdCB3aXRoIGN1
-cnJlbnQgZHJpdmVycyBBUk0gc2VlbXMgdG8gaGF2ZSB0aGlzIGxpbWl0YXRpb24uDQo+ID4+DQo+
-ID4NCj4gPiBJIHNhdyB0aGF0IGNvZGUsIGJ1dCBiZWZvcmUgdGhpcyBzZXJpZXMgaXQgaXMgdXNl
-ZCBvbmx5IGZvciBzdGFnZS0yIGluc3RlYWQNCj4gPiBvZiBTVkEuIGFuZCBJIGRpZG4ndCBzZWUg
-c2ltaWxhciBjaGVjayBpbiB0aGUgb2xkIHN2YSByZWxhdGVkIHBhdGhzICh0aG91Z2gNCj4gPiBp
-dCBkb2Vzbid0IHVzZSBkb21haW4pOg0KPiA+DQo+ID4gYXJtX3NtbXVfbWFzdGVyX3N2YV9lbmFi
-bGVfaW9wZigpDQo+ID4gYXJtX3NtbXVfbWFzdGVyX2VuYWJsZV9zdmF7fQ0KPiA+IF9fYXJtX3Nt
-bXVfc3ZhX2JpbmQoKQ0KPiA+DQo+ID4gSWYgSSBkaWRuJ3Qgb3Zlcmxvb2sgc29tZSB0cmljayBo
-aWRpbmcgaW4gdGhlIGNhbGwgY2hhaW4gb2YgdGhvc2UgZnVuY3Rpb25zLA0KPiA+IGlzIHRoZXJl
-IGEgYnVnIGluIHRoZSBleGlzdGluZyBTTU1VIHN2YSBsb2dpYyBvciBpcyBpdCBjb25jZXB0dWFs
-bHkgY29ycmVjdA0KPiA+IHRvIG5vdCBoYXZlIHN1Y2ggY2hlY2sgZm9yIFNWQT8NCj4gDQo+IFRo
-ZSBjdXJyZW50IFNWQSBBUElzIGFyZSBhbGwgZGV2aWNlLWJhc2VkLCBzbyBpbXBsaWNpdGx5IHJl
-ZmxlY3QNCj4gd2hpY2hldmVyIFNNTVUgaW5zdGFuY2Ugc2VydmVzIHRoZSBnaXZlbiBkZXZpY2Uu
-IE9uY2UgZG9tYWlucyBjb21lIGludG8NCj4gdGhlIHBpY3R1cmUsIGNhbGxlcnMgYXJlIGdvaW5n
-IHRvIGhhdmUgdG8gYmUgbW9yZSBhd2FyZSB0aGF0IGEgZG9tYWluDQo+IG1heSBiZSBzcGVjaWZp
-YyB0byBhIHBhcnRpY3VsYXIgSU9NTVUgaW5zdGFuY2UsIGFuZCBwb3RlbnRpYWxseSBhbGxvY2F0
-ZQ0KPiBzZXBhcmF0ZSBkb21haW5zIGZvciBzZXBhcmF0ZSBkZXZpY2VzIHRvIHJlcHJlc2VudCB0
-aGUgc2FtZSBhZGRyZXNzDQo+IHNwYWNlLCBtdWNoIGxpa2UgdmZpb19pb21tdV90eXBlMV9hdHRh
-Y2hfZ3JvdXAoKSBkb2VzLg0KDQpUaGUgY3VycmVudCBkZWZpbml0aW9uIG9mIGRvbWFpbiBpcyBz
-cGVjaWZpYyB0byBzdGFnZS0yLiBJdCBpcyBpbnRlcmVzdGluZyANCndoZXRoZXIgd2Ugd2FudCB0
-byBrZWVwIHRoZSBzYW1lIHN0YWdlLTIgY29uc3RyYWludHMgdG8gc3RhZ2UtMSB3aGVuDQpleHRl
-bmRpbmcgdGhlIGRvbWFpbiBjb25jZXB0IHRvIGNvdmVyIGJvdGguIEZyb20gd2hhdCB5b3UgZXhw
-bGFpbmVkDQpTVkEgY29uY2VwdHVhbGx5IGlzIGRldmljZS1iYXNlZCB0aHVzIFNNTVUgaW5zdGFu
-Y2UgZG9lc24ndCBtYXR0ZXIuDQpUaGVuIGFsbG93aW5nIG9uZSBkb21haW4gdG8gd3JhcCBDUFUg
-cGFnZSB0YWJsZSBjcm9zcyBkZXZpY2VzIHVuZGVyDQpkaWZmZXJlbnQgU01NVSBpbnN0YW5jZXMg
-aXMgYWxzbyBvbmUgY2hvaWNlLCBhcyBsb25nIGFzIHRoaXMgZG9tYWluIGlzDQpkaWZmZXJlbnRp
-YXRlZCBmcm9tIHN0YWdlLTIgZG9tYWluIGluIHByb3BlciB3YXkuIEkgZ2V0IHlvdSBtYXkgbm90
-DQp3YW50IHRvIGdvIHRoaXMgcm91dGUgZm9yIHNtbXUgZHJpdmVyIGFzIGV4cGxhaW5lZCBiZWxv
-dywgYnV0IGxldCdzDQphbGlnbiBvbiB0aGF0IGl0J3MganVzdCBhbiBpbXBsZW1lbnRhdGlvbiBj
-aG9pY2UgaW5zdGVhZCBvZiBhIGNvbmNlcHR1YWwNCnJlcXVpcmVtZW50IChJIGRpZG4ndCBzZWUg
-aG93IElPTU1VIGluc3RhbmNlcyBjYW4gaGF2ZSBoZXRlcm9nZW5vdXMNCmNvbmZpZ3VyYXRpb25z
-IHdoZW4gd2Fsa2luZyB0aGUgc2FtZSBDUFUgcGFnZSB0YWJsZSkuIPCfmIoNCg0KPiANCj4gSXQn
-cyBub3QgcmVhbGx5IHdvcnRoIElPTU1VIGRyaXZlcnMgdHJ5aW5nIHRvIHN1cHBvcnQgYSBkb21h
-aW4gc3Bhbm5pbmcNCj4gcG90ZW50aWFsbHktaGV0ZXJvZ2VuZW91cyBpbnN0YW5jZXMgaW50ZXJu
-YWxseSwgc2luY2UgdGhleSBjYW4ndA0KPiByZWFzb25hYmx5IGtub3cgd2hhdCBtYXR0ZXJzIGlu
-IGFueSBwYXJ0aWN1bGFyIHNpdHVhdGlvbi4gVGhhdCdzDQo+IHByaW1hcmlseSB3aHkgd2UndmUg
-bmV2ZXIgdHJpZWQgdG8gZG8gaXQgaW4gdGhlIFNNTVUgZHJpdmVycy4gSXQncyBhIGxvdA0KPiBl
-YXNpZXIgZm9yIHJlbGV2YW50IGNhbGxlcnMgdG8gbG9vayBhdCB3aGF0IHRoZXkgZ2V0IGFuZCBm
-aWd1cmUgb3V0DQo+IHdoZXRoZXIgYW55IG1pc21hdGNoIGluIGNhcGFiaWxpdGllcyBpcyB0b2xl
-cmFibGUgb3Igbm90Lg0KPiANCj4gUm9iaW4uDQo+IA0KPiA+IElmIHRoZSBmb3JtZXIgdGhlbiB5
-ZXMgd2UgaGF2ZSB0byB0YWtlIFNNTVUgSVAgYmxvY2sgaW50byBjb25zaWRlcmF0aW9uDQo+ID4g
-dGh1cyBjb3VsZCBoYXZlIG11bHRpcGxlIGRvbWFpbnMgcGVyIENQVSBwYWdlIHRhYmxlLiBJZiB0
-aGUgbGF0dGVyIHRoZW4NCj4gPiB0aGlzIGlzIG5vdCBhIHZhbGlkIGV4YW1wbGUgZm9yIHRoYXQg
-Y29uZmlndXJhdGlvbi4NCj4gPg0KPiA+IFdoaWNoIG9uZSBpcyBjb3JyZWN0Pw0KPiA+DQo+ID4g
-VGhhbmtzDQo+ID4gS2V2aW4NCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
-Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
-b21tdQ==
+On Mon, Apr 04, 2022 at 07:05:51AM +0200, Christoph Hellwig wrote:
+> The IOMMU table tries to separate the different IOMMUs into different
+> backends, but actually requires various cross calls.
+> 
+> Rewrite the code to do the generic swiotlb/swiotlb-xen setup directly
+> in pci-dma.c and then just call into the IOMMU drivers.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+
+Hey Christoph,
+
+There is a bit of background behind this - this whole IOMMU table
+dynamic was done as at that point of time the pci_iommu_alloc was getting
+way to unwieldy - and there needed to be a more 'structured' way with
+dependencies.
+
+Hence this creation... But as Christoph points out - it has gotten out
+of hand. So smashing it back to a more simplistic mechanism is good.
+
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+
+Thank you!
+
+> ---
+>  arch/ia64/include/asm/iommu_table.h    |   7 --
+>  arch/x86/include/asm/dma-mapping.h     |   1 -
+>  arch/x86/include/asm/gart.h            |   5 +-
+>  arch/x86/include/asm/iommu.h           |   6 ++
+>  arch/x86/include/asm/iommu_table.h     | 102 -----------------------
+>  arch/x86/include/asm/swiotlb.h         |  30 -------
+>  arch/x86/include/asm/xen/swiotlb-xen.h |   2 -
+>  arch/x86/kernel/Makefile               |   2 -
+>  arch/x86/kernel/amd_gart_64.c          |   5 +-
+>  arch/x86/kernel/aperture_64.c          |  14 ++--
+>  arch/x86/kernel/pci-dma.c              | 107 ++++++++++++++++++++-----
+>  arch/x86/kernel/pci-iommu_table.c      |  77 ------------------
+>  arch/x86/kernel/pci-swiotlb.c          |  77 ------------------
+>  arch/x86/kernel/tboot.c                |   1 -
+>  arch/x86/kernel/vmlinux.lds.S          |  12 ---
+>  arch/x86/xen/Makefile                  |   2 -
+>  arch/x86/xen/pci-swiotlb-xen.c         |  96 ----------------------
+>  drivers/iommu/amd/init.c               |   6 --
+>  drivers/iommu/amd/iommu.c              |   5 +-
+>  drivers/iommu/intel/dmar.c             |   6 +-
+>  include/linux/dmar.h                   |   6 +-
+>  21 files changed, 110 insertions(+), 459 deletions(-)
+>  delete mode 100644 arch/ia64/include/asm/iommu_table.h
+>  delete mode 100644 arch/x86/include/asm/iommu_table.h
+>  delete mode 100644 arch/x86/include/asm/swiotlb.h
+>  delete mode 100644 arch/x86/kernel/pci-iommu_table.c
+>  delete mode 100644 arch/x86/kernel/pci-swiotlb.c
+>  delete mode 100644 arch/x86/xen/pci-swiotlb-xen.c
+> 
+> diff --git a/arch/ia64/include/asm/iommu_table.h b/arch/ia64/include/asm/iommu_table.h
+> deleted file mode 100644
+> index cc96116ac276a..0000000000000
+> --- a/arch/ia64/include/asm/iommu_table.h
+> +++ /dev/null
+> @@ -1,7 +0,0 @@
+> -/* SPDX-License-Identifier: GPL-2.0 */
+> -#ifndef _ASM_IA64_IOMMU_TABLE_H
+> -#define _ASM_IA64_IOMMU_TABLE_H
+> -
+> -#define IOMMU_INIT_POST(_detect)
+> -
+> -#endif /* _ASM_IA64_IOMMU_TABLE_H */
+> diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
+> index bb1654fe0ce74..256fd8115223d 100644
+> --- a/arch/x86/include/asm/dma-mapping.h
+> +++ b/arch/x86/include/asm/dma-mapping.h
+> @@ -9,7 +9,6 @@
+>  
+>  #include <linux/scatterlist.h>
+>  #include <asm/io.h>
+> -#include <asm/swiotlb.h>
+>  
+>  extern int iommu_merge;
+>  extern int panic_on_overflow;
+> diff --git a/arch/x86/include/asm/gart.h b/arch/x86/include/asm/gart.h
+> index 3185565743459..5af8088a10df6 100644
+> --- a/arch/x86/include/asm/gart.h
+> +++ b/arch/x86/include/asm/gart.h
+> @@ -38,7 +38,7 @@ extern int gart_iommu_aperture_disabled;
+>  extern void early_gart_iommu_check(void);
+>  extern int gart_iommu_init(void);
+>  extern void __init gart_parse_options(char *);
+> -extern int gart_iommu_hole_init(void);
+> +void gart_iommu_hole_init(void);
+>  
+>  #else
+>  #define gart_iommu_aperture            0
+> @@ -51,9 +51,8 @@ static inline void early_gart_iommu_check(void)
+>  static inline void gart_parse_options(char *options)
+>  {
+>  }
+> -static inline int gart_iommu_hole_init(void)
+> +static inline void gart_iommu_hole_init(void)
+>  {
+> -	return -ENODEV;
+>  }
+>  #endif
+>  
+> diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
+> index bf1ed2ddc74bd..dba89ed40d38d 100644
+> --- a/arch/x86/include/asm/iommu.h
+> +++ b/arch/x86/include/asm/iommu.h
+> @@ -9,6 +9,12 @@
+>  extern int force_iommu, no_iommu;
+>  extern int iommu_detected;
+>  
+> +#ifdef CONFIG_SWIOTLB
+> +extern bool x86_swiotlb_enable;
+> +#else
+> +#define x86_swiotlb_enable false
+> +#endif
+> +
+>  /* 10 seconds */
+>  #define DMAR_OPERATION_TIMEOUT ((cycles_t) tsc_khz*10*1000)
+>  
+> diff --git a/arch/x86/include/asm/iommu_table.h b/arch/x86/include/asm/iommu_table.h
+> deleted file mode 100644
+> index 1fb3fd1a83c25..0000000000000
+> --- a/arch/x86/include/asm/iommu_table.h
+> +++ /dev/null
+> @@ -1,102 +0,0 @@
+> -/* SPDX-License-Identifier: GPL-2.0 */
+> -#ifndef _ASM_X86_IOMMU_TABLE_H
+> -#define _ASM_X86_IOMMU_TABLE_H
+> -
+> -#include <asm/swiotlb.h>
+> -
+> -/*
+> - * History lesson:
+> - * The execution chain of IOMMUs in 2.6.36 looks as so:
+> - *
+> - *            [xen-swiotlb]
+> - *                 |
+> - *         +----[swiotlb *]--+
+> - *        /         |         \
+> - *       /          |          \
+> - *    [GART]     [Calgary]  [Intel VT-d]
+> - *     /
+> - *    /
+> - * [AMD-Vi]
+> - *
+> - * *: if SWIOTLB detected 'iommu=soft'/'swiotlb=force' it would skip
+> - * over the rest of IOMMUs and unconditionally initialize the SWIOTLB.
+> - * Also it would surreptitiously initialize set the swiotlb=1 if there were
+> - * more than 4GB and if the user did not pass in 'iommu=off'. The swiotlb
+> - * flag would be turned off by all IOMMUs except the Calgary one.
+> - *
+> - * The IOMMU_INIT* macros allow a similar tree (or more complex if desired)
+> - * to be built by defining who we depend on.
+> - *
+> - * And all that needs to be done is to use one of the macros in the IOMMU
+> - * and the pci-dma.c will take care of the rest.
+> - */
+> -
+> -struct iommu_table_entry {
+> -	initcall_t	detect;
+> -	initcall_t	depend;
+> -	void		(*early_init)(void); /* No memory allocate available. */
+> -	void		(*late_init)(void); /* Yes, can allocate memory. */
+> -#define IOMMU_FINISH_IF_DETECTED (1<<0)
+> -#define IOMMU_DETECTED		 (1<<1)
+> -	int		flags;
+> -};
+> -/*
+> - * Macro fills out an entry in the .iommu_table that is equivalent
+> - * to the fields that 'struct iommu_table_entry' has. The entries
+> - * that are put in the .iommu_table section are not put in any order
+> - * hence during boot-time we will have to resort them based on
+> - * dependency. */
+> -
+> -
+> -#define __IOMMU_INIT(_detect, _depend, _early_init, _late_init, _finish)\
+> -	static const struct iommu_table_entry				\
+> -		__iommu_entry_##_detect __used				\
+> -	__attribute__ ((unused, __section__(".iommu_table"),		\
+> -			aligned((sizeof(void *)))))	\
+> -	= {_detect, _depend, _early_init, _late_init,			\
+> -	   _finish ? IOMMU_FINISH_IF_DETECTED : 0}
+> -/*
+> - * The simplest IOMMU definition. Provide the detection routine
+> - * and it will be run after the SWIOTLB and the other IOMMUs
+> - * that utilize this macro. If the IOMMU is detected (ie, the
+> - * detect routine returns a positive value), the other IOMMUs
+> - * are also checked. You can use IOMMU_INIT_POST_FINISH if you prefer
+> - * to stop detecting the other IOMMUs after yours has been detected.
+> - */
+> -#define IOMMU_INIT_POST(_detect)					\
+> -	__IOMMU_INIT(_detect, pci_swiotlb_detect_4gb,  NULL, NULL, 0)
+> -
+> -#define IOMMU_INIT_POST_FINISH(detect)					\
+> -	__IOMMU_INIT(_detect, pci_swiotlb_detect_4gb,  NULL, NULL, 1)
+> -
+> -/*
+> - * A more sophisticated version of IOMMU_INIT. This variant requires:
+> - *  a). A detection routine function.
+> - *  b). The name of the detection routine we depend on to get called
+> - *      before us.
+> - *  c). The init routine which gets called if the detection routine
+> - *      returns a positive value from the pci_iommu_alloc. This means
+> - *      no presence of a memory allocator.
+> - *  d). Similar to the 'init', except that this gets called from pci_iommu_init
+> - *      where we do have a memory allocator.
+> - *
+> - * The standard IOMMU_INIT differs from the IOMMU_INIT_FINISH variant
+> - * in that the former will continue detecting other IOMMUs in the call
+> - * list after the detection routine returns a positive number, while the
+> - * latter will stop the execution chain upon first successful detection.
+> - * Both variants will still call the 'init' and 'late_init' functions if
+> - * they are set.
+> - */
+> -#define IOMMU_INIT_FINISH(_detect, _depend, _init, _late_init)		\
+> -	__IOMMU_INIT(_detect, _depend, _init, _late_init, 1)
+> -
+> -#define IOMMU_INIT(_detect, _depend, _init, _late_init)			\
+> -	__IOMMU_INIT(_detect, _depend, _init, _late_init, 0)
+> -
+> -void sort_iommu_table(struct iommu_table_entry *start,
+> -		      struct iommu_table_entry *finish);
+> -
+> -void check_iommu_entries(struct iommu_table_entry *start,
+> -			 struct iommu_table_entry *finish);
+> -
+> -#endif /* _ASM_X86_IOMMU_TABLE_H */
+> diff --git a/arch/x86/include/asm/swiotlb.h b/arch/x86/include/asm/swiotlb.h
+> deleted file mode 100644
+> index ff6c92eff035a..0000000000000
+> --- a/arch/x86/include/asm/swiotlb.h
+> +++ /dev/null
+> @@ -1,30 +0,0 @@
+> -/* SPDX-License-Identifier: GPL-2.0 */
+> -#ifndef _ASM_X86_SWIOTLB_H
+> -#define _ASM_X86_SWIOTLB_H
+> -
+> -#include <linux/swiotlb.h>
+> -
+> -#ifdef CONFIG_SWIOTLB
+> -extern int swiotlb;
+> -extern int __init pci_swiotlb_detect_override(void);
+> -extern int __init pci_swiotlb_detect_4gb(void);
+> -extern void __init pci_swiotlb_init(void);
+> -extern void __init pci_swiotlb_late_init(void);
+> -#else
+> -#define swiotlb 0
+> -static inline int pci_swiotlb_detect_override(void)
+> -{
+> -	return 0;
+> -}
+> -static inline int pci_swiotlb_detect_4gb(void)
+> -{
+> -	return 0;
+> -}
+> -static inline void pci_swiotlb_init(void)
+> -{
+> -}
+> -static inline void pci_swiotlb_late_init(void)
+> -{
+> -}
+> -#endif
+> -#endif /* _ASM_X86_SWIOTLB_H */
+> diff --git a/arch/x86/include/asm/xen/swiotlb-xen.h b/arch/x86/include/asm/xen/swiotlb-xen.h
+> index 66b4ddde77430..e5a90b42e4dde 100644
+> --- a/arch/x86/include/asm/xen/swiotlb-xen.h
+> +++ b/arch/x86/include/asm/xen/swiotlb-xen.h
+> @@ -3,10 +3,8 @@
+>  #define _ASM_X86_SWIOTLB_XEN_H
+>  
+>  #ifdef CONFIG_SWIOTLB_XEN
+> -extern int __init pci_xen_swiotlb_detect(void);
+>  extern int pci_xen_swiotlb_init_late(void);
+>  #else
+> -#define pci_xen_swiotlb_detect NULL
+>  static inline int pci_xen_swiotlb_init_late(void) { return -ENXIO; }
+>  #endif
+>  
+> diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+> index c41ef42adbe8a..e17b7e92a3fa3 100644
+> --- a/arch/x86/kernel/Makefile
+> +++ b/arch/x86/kernel/Makefile
+> @@ -68,7 +68,6 @@ obj-y			+= bootflag.o e820.o
+>  obj-y			+= pci-dma.o quirks.o topology.o kdebugfs.o
+>  obj-y			+= alternative.o i8253.o hw_breakpoint.o
+>  obj-y			+= tsc.o tsc_msr.o io_delay.o rtc.o
+> -obj-y			+= pci-iommu_table.o
+>  obj-y			+= resource.o
+>  obj-y			+= irqflags.o
+>  obj-y			+= static_call.o
+> @@ -134,7 +133,6 @@ obj-$(CONFIG_PCSPKR_PLATFORM)	+= pcspeaker.o
+>  
+>  obj-$(CONFIG_X86_CHECK_BIOS_CORRUPTION) += check.o
+>  
+> -obj-$(CONFIG_SWIOTLB)			+= pci-swiotlb.o
+>  obj-$(CONFIG_OF)			+= devicetree.o
+>  obj-$(CONFIG_UPROBES)			+= uprobes.o
+>  
+> diff --git a/arch/x86/kernel/amd_gart_64.c b/arch/x86/kernel/amd_gart_64.c
+> index ed837383de5c8..194d54eed5376 100644
+> --- a/arch/x86/kernel/amd_gart_64.c
+> +++ b/arch/x86/kernel/amd_gart_64.c
+> @@ -38,11 +38,9 @@
+>  #include <asm/iommu.h>
+>  #include <asm/gart.h>
+>  #include <asm/set_memory.h>
+> -#include <asm/swiotlb.h>
+>  #include <asm/dma.h>
+>  #include <asm/amd_nb.h>
+>  #include <asm/x86_init.h>
+> -#include <asm/iommu_table.h>
+>  
+>  static unsigned long iommu_bus_base;	/* GART remapping area (physical) */
+>  static unsigned long iommu_size;	/* size of remapping area bytes */
+> @@ -808,7 +806,7 @@ int __init gart_iommu_init(void)
+>  	flush_gart();
+>  	dma_ops = &gart_dma_ops;
+>  	x86_platform.iommu_shutdown = gart_iommu_shutdown;
+> -	swiotlb = 0;
+> +	x86_swiotlb_enable = false;
+>  
+>  	return 0;
+>  }
+> @@ -842,4 +840,3 @@ void __init gart_parse_options(char *p)
+>  		}
+>  	}
+>  }
+> -IOMMU_INIT_POST(gart_iommu_hole_init);
+> diff --git a/arch/x86/kernel/aperture_64.c b/arch/x86/kernel/aperture_64.c
+> index af3ba08b684b5..7a5630d904b23 100644
+> --- a/arch/x86/kernel/aperture_64.c
+> +++ b/arch/x86/kernel/aperture_64.c
+> @@ -392,7 +392,7 @@ void __init early_gart_iommu_check(void)
+>  
+>  static int __initdata printed_gart_size_msg;
+>  
+> -int __init gart_iommu_hole_init(void)
+> +void __init gart_iommu_hole_init(void)
+>  {
+>  	u32 agp_aper_base = 0, agp_aper_order = 0;
+>  	u32 aper_size, aper_alloc = 0, aper_order = 0, last_aper_order = 0;
+> @@ -401,11 +401,11 @@ int __init gart_iommu_hole_init(void)
+>  	int i, node;
+>  
+>  	if (!amd_gart_present())
+> -		return -ENODEV;
+> +		return;
+>  
+>  	if (gart_iommu_aperture_disabled || !fix_aperture ||
+>  	    !early_pci_allowed())
+> -		return -ENODEV;
+> +		return;
+>  
+>  	pr_info("Checking aperture...\n");
+>  
+> @@ -491,10 +491,8 @@ int __init gart_iommu_hole_init(void)
+>  			 * and fixed up the northbridge
+>  			 */
+>  			exclude_from_core(last_aper_base, last_aper_order);
+> -
+> -			return 1;
+>  		}
+> -		return 0;
+> +		return;
+>  	}
+>  
+>  	if (!fallback_aper_force) {
+> @@ -527,7 +525,7 @@ int __init gart_iommu_hole_init(void)
+>  			panic("Not enough memory for aperture");
+>  		}
+>  	} else {
+> -		return 0;
+> +		return;
+>  	}
+>  
+>  	/*
+> @@ -561,6 +559,4 @@ int __init gart_iommu_hole_init(void)
+>  	}
+>  
+>  	set_up_gart_resume(aper_order, aper_alloc);
+> -
+> -	return 1;
+>  }
+> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
+> index de234e7a8962e..df96926421be0 100644
+> --- a/arch/x86/kernel/pci-dma.c
+> +++ b/arch/x86/kernel/pci-dma.c
+> @@ -7,13 +7,16 @@
+>  #include <linux/memblock.h>
+>  #include <linux/gfp.h>
+>  #include <linux/pci.h>
+> +#include <linux/amd-iommu.h>
+>  
+>  #include <asm/proto.h>
+>  #include <asm/dma.h>
+>  #include <asm/iommu.h>
+>  #include <asm/gart.h>
+>  #include <asm/x86_init.h>
+> -#include <asm/iommu_table.h>
+> +
+> +#include <xen/xen.h>
+> +#include <xen/swiotlb-xen.h>
+>  
+>  static bool disable_dac_quirk __read_mostly;
+>  
+> @@ -34,24 +37,83 @@ int no_iommu __read_mostly;
+>  /* Set this to 1 if there is a HW IOMMU in the system */
+>  int iommu_detected __read_mostly = 0;
+>  
+> -extern struct iommu_table_entry __iommu_table[], __iommu_table_end[];
+> +#ifdef CONFIG_SWIOTLB
+> +bool x86_swiotlb_enable;
+> +
+> +static void __init pci_swiotlb_detect(void)
+> +{
+> +	/* don't initialize swiotlb if iommu=off (no_iommu=1) */
+> +	if (!no_iommu && max_possible_pfn > MAX_DMA32_PFN)
+> +		x86_swiotlb_enable = true;
+> +
+> +	/*
+> +	 * Set swiotlb to 1 so that bounce buffers are allocated and used for
+> +	 * devices that can't support DMA to encrypted memory.
+> +	 */
+> +	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT))
+> +		x86_swiotlb_enable = true;
+> +
+> +	if (swiotlb_force == SWIOTLB_FORCE)
+> +		x86_swiotlb_enable = true;
+> +}
+> +#else
+> +static inline void __init pci_swiotlb_detect(void)
+> +{
+> +}
+> +#endif /* CONFIG_SWIOTLB */
+> +
+> +#ifdef CONFIG_SWIOTLB_XEN
+> +static bool xen_swiotlb;
+> +
+> +static void __init pci_xen_swiotlb_init(void)
+> +{
+> +	if (!xen_initial_domain() && !x86_swiotlb_enable &&
+> +	    swiotlb_force != SWIOTLB_FORCE)
+> +		return;
+> +	x86_swiotlb_enable = true;
+> +	xen_swiotlb = true;
+> +	xen_swiotlb_init_early();
+> +	dma_ops = &xen_swiotlb_dma_ops;
+> +	if (IS_ENABLED(CONFIG_PCI))
+> +		pci_request_acs();
+> +}
+> +
+> +int pci_xen_swiotlb_init_late(void)
+> +{
+> +	int rc;
+> +
+> +	if (xen_swiotlb)
+> +		return 0;
+> +
+> +	rc = xen_swiotlb_init();
+> +	if (rc)
+> +		return rc;
+> +
+> +	/* XXX: this switches the dma ops under live devices! */
+> +	dma_ops = &xen_swiotlb_dma_ops;
+> +	if (IS_ENABLED(CONFIG_PCI))
+> +		pci_request_acs();
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(pci_xen_swiotlb_init_late);
+> +#else
+> +static inline void __init pci_xen_swiotlb_init(void)
+> +{
+> +}
+> +#endif /* CONFIG_SWIOTLB_XEN */
+>  
+>  void __init pci_iommu_alloc(void)
+>  {
+> -	struct iommu_table_entry *p;
+> -
+> -	sort_iommu_table(__iommu_table, __iommu_table_end);
+> -	check_iommu_entries(__iommu_table, __iommu_table_end);
+> -
+> -	for (p = __iommu_table; p < __iommu_table_end; p++) {
+> -		if (p && p->detect && p->detect() > 0) {
+> -			p->flags |= IOMMU_DETECTED;
+> -			if (p->early_init)
+> -				p->early_init();
+> -			if (p->flags & IOMMU_FINISH_IF_DETECTED)
+> -				break;
+> -		}
+> +	if (xen_pv_domain()) {
+> +		pci_xen_swiotlb_init();
+> +		return;
+>  	}
+> +	pci_swiotlb_detect();
+> +	gart_iommu_hole_init();
+> +	amd_iommu_detect();
+> +	detect_intel_iommu();
+> +	if (x86_swiotlb_enable)
+> +		swiotlb_init(0);
+>  }
+>  
+>  /*
+> @@ -102,7 +164,7 @@ static __init int iommu_setup(char *p)
+>  		}
+>  #ifdef CONFIG_SWIOTLB
+>  		if (!strncmp(p, "soft", 4))
+> -			swiotlb = 1;
+> +			x86_swiotlb_enable = true;
+>  #endif
+>  		if (!strncmp(p, "pt", 2))
+>  			iommu_set_default_passthrough(true);
+> @@ -121,14 +183,17 @@ early_param("iommu", iommu_setup);
+>  
+>  static int __init pci_iommu_init(void)
+>  {
+> -	struct iommu_table_entry *p;
+> -
+>  	x86_init.iommu.iommu_init();
+>  
+> -	for (p = __iommu_table; p < __iommu_table_end; p++) {
+> -		if (p && (p->flags & IOMMU_DETECTED) && p->late_init)
+> -			p->late_init();
+> +#ifdef CONFIG_SWIOTLB
+> +	/* An IOMMU turned us off. */
+> +	if (x86_swiotlb_enable) {
+> +		pr_info("PCI-DMA: Using software bounce buffering for IO (SWIOTLB)\n");
+> +		swiotlb_print_info();
+> +	} else {
+> +		swiotlb_exit();
+>  	}
+> +#endif
+>  
+>  	return 0;
+>  }
+> diff --git a/arch/x86/kernel/pci-iommu_table.c b/arch/x86/kernel/pci-iommu_table.c
+> deleted file mode 100644
+> index 42e92ec62973b..0000000000000
+> --- a/arch/x86/kernel/pci-iommu_table.c
+> +++ /dev/null
+> @@ -1,77 +0,0 @@
+> -// SPDX-License-Identifier: GPL-2.0
+> -#include <linux/dma-mapping.h>
+> -#include <asm/iommu_table.h>
+> -#include <linux/string.h>
+> -#include <linux/kallsyms.h>
+> -
+> -static struct iommu_table_entry * __init
+> -find_dependents_of(struct iommu_table_entry *start,
+> -		   struct iommu_table_entry *finish,
+> -		   struct iommu_table_entry *q)
+> -{
+> -	struct iommu_table_entry *p;
+> -
+> -	if (!q)
+> -		return NULL;
+> -
+> -	for (p = start; p < finish; p++)
+> -		if (p->detect == q->depend)
+> -			return p;
+> -
+> -	return NULL;
+> -}
+> -
+> -
+> -void __init sort_iommu_table(struct iommu_table_entry *start,
+> -			     struct iommu_table_entry *finish) {
+> -
+> -	struct iommu_table_entry *p, *q, tmp;
+> -
+> -	for (p = start; p < finish; p++) {
+> -again:
+> -		q = find_dependents_of(start, finish, p);
+> -		/* We are bit sneaky here. We use the memory address to figure
+> -		 * out if the node we depend on is past our point, if so, swap.
+> -		 */
+> -		if (q > p) {
+> -			tmp = *p;
+> -			memmove(p, q, sizeof(*p));
+> -			*q = tmp;
+> -			goto again;
+> -		}
+> -	}
+> -
+> -}
+> -
+> -#ifdef DEBUG
+> -void __init check_iommu_entries(struct iommu_table_entry *start,
+> -				struct iommu_table_entry *finish)
+> -{
+> -	struct iommu_table_entry *p, *q, *x;
+> -
+> -	/* Simple cyclic dependency checker. */
+> -	for (p = start; p < finish; p++) {
+> -		q = find_dependents_of(start, finish, p);
+> -		x = find_dependents_of(start, finish, q);
+> -		if (p == x) {
+> -			printk(KERN_ERR "CYCLIC DEPENDENCY FOUND! %pS depends on %pS and vice-versa. BREAKING IT.\n",
+> -			       p->detect, q->detect);
+> -			/* Heavy handed way..*/
+> -			x->depend = NULL;
+> -		}
+> -	}
+> -
+> -	for (p = start; p < finish; p++) {
+> -		q = find_dependents_of(p, finish, p);
+> -		if (q && q > p) {
+> -			printk(KERN_ERR "EXECUTION ORDER INVALID! %pS should be called before %pS!\n",
+> -			       p->detect, q->detect);
+> -		}
+> -	}
+> -}
+> -#else
+> -void __init check_iommu_entries(struct iommu_table_entry *start,
+> -				       struct iommu_table_entry *finish)
+> -{
+> -}
+> -#endif
+> diff --git a/arch/x86/kernel/pci-swiotlb.c b/arch/x86/kernel/pci-swiotlb.c
+> deleted file mode 100644
+> index 814ab46a0dada..0000000000000
+> --- a/arch/x86/kernel/pci-swiotlb.c
+> +++ /dev/null
+> @@ -1,77 +0,0 @@
+> -// SPDX-License-Identifier: GPL-2.0
+> -
+> -#include <linux/pci.h>
+> -#include <linux/cache.h>
+> -#include <linux/init.h>
+> -#include <linux/swiotlb.h>
+> -#include <linux/memblock.h>
+> -#include <linux/dma-direct.h>
+> -#include <linux/cc_platform.h>
+> -
+> -#include <asm/iommu.h>
+> -#include <asm/swiotlb.h>
+> -#include <asm/dma.h>
+> -#include <asm/xen/swiotlb-xen.h>
+> -#include <asm/iommu_table.h>
+> -
+> -int swiotlb __read_mostly;
+> -
+> -/*
+> - * pci_swiotlb_detect_override - set swiotlb to 1 if necessary
+> - *
+> - * This returns non-zero if we are forced to use swiotlb (by the boot
+> - * option).
+> - */
+> -int __init pci_swiotlb_detect_override(void)
+> -{
+> -	if (swiotlb_force == SWIOTLB_FORCE)
+> -		swiotlb = 1;
+> -
+> -	return swiotlb;
+> -}
+> -IOMMU_INIT_FINISH(pci_swiotlb_detect_override,
+> -		  pci_xen_swiotlb_detect,
+> -		  pci_swiotlb_init,
+> -		  pci_swiotlb_late_init);
+> -
+> -/*
+> - * If 4GB or more detected (and iommu=off not set) or if SME is active
+> - * then set swiotlb to 1 and return 1.
+> - */
+> -int __init pci_swiotlb_detect_4gb(void)
+> -{
+> -	/* don't initialize swiotlb if iommu=off (no_iommu=1) */
+> -	if (!no_iommu && max_possible_pfn > MAX_DMA32_PFN)
+> -		swiotlb = 1;
+> -
+> -	/*
+> -	 * Set swiotlb to 1 so that bounce buffers are allocated and used for
+> -	 * devices that can't support DMA to encrypted memory.
+> -	 */
+> -	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT))
+> -		swiotlb = 1;
+> -
+> -	return swiotlb;
+> -}
+> -IOMMU_INIT(pci_swiotlb_detect_4gb,
+> -	   pci_swiotlb_detect_override,
+> -	   pci_swiotlb_init,
+> -	   pci_swiotlb_late_init);
+> -
+> -void __init pci_swiotlb_init(void)
+> -{
+> -	if (swiotlb)
+> -		swiotlb_init(0);
+> -}
+> -
+> -void __init pci_swiotlb_late_init(void)
+> -{
+> -	/* An IOMMU turned us off. */
+> -	if (!swiotlb)
+> -		swiotlb_exit();
+> -	else {
+> -		printk(KERN_INFO "PCI-DMA: "
+> -		       "Using software bounce buffering for IO (SWIOTLB)\n");
+> -		swiotlb_print_info();
+> -	}
+> -}
+> diff --git a/arch/x86/kernel/tboot.c b/arch/x86/kernel/tboot.c
+> index f9af561c3cd4f..0c1154a1c4032 100644
+> --- a/arch/x86/kernel/tboot.c
+> +++ b/arch/x86/kernel/tboot.c
+> @@ -24,7 +24,6 @@
+>  #include <asm/processor.h>
+>  #include <asm/bootparam.h>
+>  #include <asm/pgalloc.h>
+> -#include <asm/swiotlb.h>
+>  #include <asm/fixmap.h>
+>  #include <asm/proto.h>
+>  #include <asm/setup.h>
+> diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
+> index 7fda7f27e7620..f5f6dc2e80072 100644
+> --- a/arch/x86/kernel/vmlinux.lds.S
+> +++ b/arch/x86/kernel/vmlinux.lds.S
+> @@ -315,18 +315,6 @@ SECTIONS
+>  		*(.altinstr_replacement)
+>  	}
+>  
+> -	/*
+> -	 * struct iommu_table_entry entries are injected in this section.
+> -	 * It is an array of IOMMUs which during run time gets sorted depending
+> -	 * on its dependency order. After rootfs_initcall is complete
+> -	 * this section can be safely removed.
+> -	 */
+> -	.iommu_table : AT(ADDR(.iommu_table) - LOAD_OFFSET) {
+> -		__iommu_table = .;
+> -		*(.iommu_table)
+> -		__iommu_table_end = .;
+> -	}
+> -
+>  	. = ALIGN(8);
+>  	.apicdrivers : AT(ADDR(.apicdrivers) - LOAD_OFFSET) {
+>  		__apicdrivers = .;
+> diff --git a/arch/x86/xen/Makefile b/arch/x86/xen/Makefile
+> index 4953260e281c3..3c5b52fbe4a7f 100644
+> --- a/arch/x86/xen/Makefile
+> +++ b/arch/x86/xen/Makefile
+> @@ -47,6 +47,4 @@ obj-$(CONFIG_XEN_DEBUG_FS)	+= debugfs.o
+>  
+>  obj-$(CONFIG_XEN_PV_DOM0)	+= vga.o
+>  
+> -obj-$(CONFIG_SWIOTLB_XEN)	+= pci-swiotlb-xen.o
+> -
+>  obj-$(CONFIG_XEN_EFI)		+= efi.o
+> diff --git a/arch/x86/xen/pci-swiotlb-xen.c b/arch/x86/xen/pci-swiotlb-xen.c
+> deleted file mode 100644
+> index 46df59aeaa06a..0000000000000
+> --- a/arch/x86/xen/pci-swiotlb-xen.c
+> +++ /dev/null
+> @@ -1,96 +0,0 @@
+> -// SPDX-License-Identifier: GPL-2.0
+> -
+> -/* Glue code to lib/swiotlb-xen.c */
+> -
+> -#include <linux/dma-map-ops.h>
+> -#include <linux/pci.h>
+> -#include <xen/swiotlb-xen.h>
+> -
+> -#include <asm/xen/hypervisor.h>
+> -#include <xen/xen.h>
+> -#include <asm/iommu_table.h>
+> -
+> -
+> -#include <asm/xen/swiotlb-xen.h>
+> -#ifdef CONFIG_X86_64
+> -#include <asm/iommu.h>
+> -#include <asm/dma.h>
+> -#endif
+> -#include <linux/export.h>
+> -
+> -static int xen_swiotlb __read_mostly;
+> -
+> -/*
+> - * pci_xen_swiotlb_detect - set xen_swiotlb to 1 if necessary
+> - *
+> - * This returns non-zero if we are forced to use xen_swiotlb (by the boot
+> - * option).
+> - */
+> -int __init pci_xen_swiotlb_detect(void)
+> -{
+> -
+> -	if (!xen_pv_domain())
+> -		return 0;
+> -
+> -	/* If running as PV guest, either iommu=soft, or swiotlb=force will
+> -	 * activate this IOMMU. If running as PV privileged, activate it
+> -	 * irregardless.
+> -	 */
+> -	if (xen_initial_domain() || swiotlb || swiotlb_force == SWIOTLB_FORCE)
+> -		xen_swiotlb = 1;
+> -
+> -	/* If we are running under Xen, we MUST disable the native SWIOTLB.
+> -	 * Don't worry about swiotlb_force flag activating the native, as
+> -	 * the 'swiotlb' flag is the only one turning it on. */
+> -	swiotlb = 0;
+> -
+> -#ifdef CONFIG_X86_64
+> -	/* pci_swiotlb_detect_4gb turns on native SWIOTLB if no_iommu == 0
+> -	 * (so no iommu=X command line over-writes).
+> -	 * Considering that PV guests do not want the *native SWIOTLB* but
+> -	 * only Xen SWIOTLB it is not useful to us so set no_iommu=1 here.
+> -	 */
+> -	if (max_pfn > MAX_DMA32_PFN)
+> -		no_iommu = 1;
+> -#endif
+> -	return xen_swiotlb;
+> -}
+> -
+> -static void __init pci_xen_swiotlb_init(void)
+> -{
+> -	if (xen_swiotlb) {
+> -		xen_swiotlb_init_early();
+> -		dma_ops = &xen_swiotlb_dma_ops;
+> -
+> -#ifdef CONFIG_PCI
+> -		/* Make sure ACS will be enabled */
+> -		pci_request_acs();
+> -#endif
+> -	}
+> -}
+> -
+> -int pci_xen_swiotlb_init_late(void)
+> -{
+> -	int rc;
+> -
+> -	if (xen_swiotlb)
+> -		return 0;
+> -
+> -	rc = xen_swiotlb_init();
+> -	if (rc)
+> -		return rc;
+> -
+> -	dma_ops = &xen_swiotlb_dma_ops;
+> -#ifdef CONFIG_PCI
+> -	/* Make sure ACS will be enabled */
+> -	pci_request_acs();
+> -#endif
+> -
+> -	return 0;
+> -}
+> -EXPORT_SYMBOL_GPL(pci_xen_swiotlb_init_late);
+> -
+> -IOMMU_INIT_FINISH(pci_xen_swiotlb_detect,
+> -		  NULL,
+> -		  pci_xen_swiotlb_init,
+> -		  NULL);
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> index b4a798c7b347f..1a3ad58ba8465 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -27,7 +27,6 @@
+>  #include <asm/apic.h>
+>  #include <asm/gart.h>
+>  #include <asm/x86_init.h>
+> -#include <asm/iommu_table.h>
+>  #include <asm/io_apic.h>
+>  #include <asm/irq_remapping.h>
+>  #include <asm/set_memory.h>
+> @@ -3257,11 +3256,6 @@ __setup("ivrs_ioapic",		parse_ivrs_ioapic);
+>  __setup("ivrs_hpet",		parse_ivrs_hpet);
+>  __setup("ivrs_acpihid",		parse_ivrs_acpihid);
+>  
+> -IOMMU_INIT_FINISH(amd_iommu_detect,
+> -		  gart_iommu_hole_init,
+> -		  NULL,
+> -		  NULL);
+> -
+>  bool amd_iommu_v2_supported(void)
+>  {
+>  	return amd_iommu_v2_present;
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index a1ada7bff44e6..b47220ac09eaa 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -1840,7 +1840,10 @@ void amd_iommu_domain_update(struct protection_domain *domain)
+>  
+>  static void __init amd_iommu_init_dma_ops(void)
+>  {
+> -	swiotlb = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
+> +	if (iommu_default_passthrough() || sme_me_mask)
+> +		x86_swiotlb_enable = true;
+> +	else
+> +		x86_swiotlb_enable = false;
+>  }
+>  
+>  int __init amd_iommu_init_api(void)
+> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+> index 4de960834a1b2..592c1e1a5d4b9 100644
+> --- a/drivers/iommu/intel/dmar.c
+> +++ b/drivers/iommu/intel/dmar.c
+> @@ -30,7 +30,6 @@
+>  #include <linux/numa.h>
+>  #include <linux/limits.h>
+>  #include <asm/irq_remapping.h>
+> -#include <asm/iommu_table.h>
+>  #include <trace/events/intel_iommu.h>
+>  
+>  #include "../irq_remapping.h"
+> @@ -912,7 +911,7 @@ dmar_validate_one_drhd(struct acpi_dmar_header *entry, void *arg)
+>  	return 0;
+>  }
+>  
+> -int __init detect_intel_iommu(void)
+> +void __init detect_intel_iommu(void)
+>  {
+>  	int ret;
+>  	struct dmar_res_callback validate_drhd_cb = {
+> @@ -945,8 +944,6 @@ int __init detect_intel_iommu(void)
+>  		dmar_tbl = NULL;
+>  	}
+>  	up_write(&dmar_global_lock);
+> -
+> -	return ret ? ret : 1;
+>  }
+>  
+>  static void unmap_iommu(struct intel_iommu *iommu)
+> @@ -2164,7 +2161,6 @@ static int __init dmar_free_unused_resources(void)
+>  }
+>  
+>  late_initcall(dmar_free_unused_resources);
+> -IOMMU_INIT_POST(detect_intel_iommu);
+>  
+>  /*
+>   * DMAR Hotplug Support
+> diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+> index 45e903d847335..cbd714a198a0a 100644
+> --- a/include/linux/dmar.h
+> +++ b/include/linux/dmar.h
+> @@ -121,7 +121,7 @@ extern int dmar_remove_dev_scope(struct dmar_pci_notify_info *info,
+>  				 u16 segment, struct dmar_dev_scope *devices,
+>  				 int count);
+>  /* Intel IOMMU detection */
+> -extern int detect_intel_iommu(void);
+> +void detect_intel_iommu(void);
+>  extern int enable_drhd_fault_handling(void);
+>  extern int dmar_device_add(acpi_handle handle);
+>  extern int dmar_device_remove(acpi_handle handle);
+> @@ -197,6 +197,10 @@ static inline bool dmar_platform_optin(void)
+>  	return false;
+>  }
+>  
+> +static inline void detect_intel_iommu(void)
+> +{
+> +}
+> +
+>  #endif /* CONFIG_DMAR_TABLE */
+>  
+>  struct irte {
+> -- 
+> 2.30.2
+> 
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
