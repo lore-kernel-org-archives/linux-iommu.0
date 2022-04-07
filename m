@@ -4,59 +4,75 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 42DB1C433F5
-	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 13:07:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9EDF4C433F5
+	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 13:22:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C785041989;
-	Thu,  7 Apr 2022 13:07:33 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 344CB41A1D;
+	Thu,  7 Apr 2022 13:22:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0mf_Vpob_XyE; Thu,  7 Apr 2022 13:07:31 +0000 (UTC)
+	with ESMTP id nerVIAT5mGf9; Thu,  7 Apr 2022 13:22:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id A935641988;
-	Thu,  7 Apr 2022 13:07:30 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id E07C541A1F;
+	Thu,  7 Apr 2022 13:22:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C7EDC002C;
-	Thu,  7 Apr 2022 13:07:30 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C76FDC0012
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 13:07:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A8907C002C;
+	Thu,  7 Apr 2022 13:22:08 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B8F76C0012
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 06:55:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id A726483FF0
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 13:07:29 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 9F760404AF
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 06:55:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ndS-CYVBCnEG for <iommu@lists.linux-foundation.org>;
- Thu,  7 Apr 2022 13:07:28 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 91DC283FEF
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 13:07:28 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C4E6712FC;
- Thu,  7 Apr 2022 06:07:27 -0700 (PDT)
-Received: from [10.57.41.19] (unknown [10.57.41.19])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 68ACE3F73B;
- Thu,  7 Apr 2022 06:07:26 -0700 (PDT)
-Message-ID: <06570238-04a9-47ca-e6e2-c69606635446@arm.com>
-Date: Thu, 7 Apr 2022 14:07:21 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 2/2] dma-iommu: Check that swiotlb is active before
- trying to use it
-Content-Language: en-GB
-To: Mario Limonciello <mario.limonciello@amd.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-References: <20220404204723.9767-1-mario.limonciello@amd.com>
- <20220404204723.9767-3-mario.limonciello@amd.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220404204723.9767-3-mario.limonciello@amd.com>
-Cc: Christoph Hellwig <hch@infradead.org>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Hegde Vasant <Vasant.Hegde@amd.com>, open list <linux-kernel@vger.kernel.org>
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=goldelico.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xQuHXfkwEdrh for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Apr 2022 06:55:58 +0000 (UTC)
+X-Greylist: delayed 00:09:24 by SQLgrey-1.8.0
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de
+ [85.215.255.52])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A6E7A40133
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 06:55:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1649313836;
+ s=strato-dkim-0002; d=goldelico.com;
+ h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+ From:Subject:Sender;
+ bh=H7+9xv89JRCjOioZu+oNk24ZKTOcaRFzOuoirztpIDI=;
+ b=VH6VEmwzugb8k2cwHtpWrQIq5pSGRR88jWGOtMu10YOPF4ZgwCH/VYvsXCr5jt21qF
+ au9sRD9ReVr1s2wmH9MJTXbW5GSxdmm2abE946vxsFhfXP7R0fHrFN8Wa5huEXFkD/7z
+ Tj96+h8yu/WDqH1aU5mJRTjA1Ka/JvpoSq+HG5uXInQSwoMRGbY8bQ+vd/fILHSCFiJC
+ WVpE/BiiPxZUYalpfay/LAovg/5QVsqiwzKS0SrL4vjt2tTQJUfbJXT4fuM/PyzU/FTv
+ bs2pxCf77FOHlZEy9TJiTZoto1J5ASRxcqDN69QNYAnqE4q0jynW2skx1XAW+jw462Tf
+ UJ2g==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7gpw91N5y2S3i8MRqg=="
+X-RZG-CLASS-ID: mo00
+Received: from imac.fritz.box by smtp.strato.de (RZmta 47.42.2 DYNA|AUTH)
+ with ESMTPSA id k708cfy376htiMC
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1
+ with 256 ECDH bits, eq. 3072 bits RSA))
+ (Client did not present a certificate);
+ Thu, 7 Apr 2022 08:43:55 +0200 (CEST)
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
+Subject: Re: [PATCH] iommu/omap: Fix regression in probe for NULL pointer
+ dereference
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <Yk54+S0iaMueWN63@atomide.com>
+Date: Thu, 7 Apr 2022 08:43:54 +0200
+Message-Id: <F4D607DA-EA0E-4044-B700-546CF764CD4D@goldelico.com>
+References: <20220331062301.24269-1-tony@atomide.com>
+ <Yk54+S0iaMueWN63@atomide.com>
+To: Tony Lindgren <tony@atomide.com>
+X-Mailer: Apple Mail (2.3445.104.21)
+X-Mailman-Approved-At: Thu, 07 Apr 2022 13:22:06 +0000
+Cc: linux-omap@vger.kernel.org, Drew Fustini <dfustini@baylibre.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -69,45 +85,47 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-04-04 21:47, Mario Limonciello via iommu wrote:
-> If the IOMMU is in use and an untrusted device is connected to an external
-> facing port but the address requested isn't page aligned will cause the
-> kernel to attempt to use bounce buffers.
-> 
-> If for some reason the bounce buffers have not been allocated this is a
-> problem that should be made apparent to the user.
+Hi,
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> Am 07.04.2022 um 07:39 schrieb Tony Lindgren <tony@atomide.com>:
+> 
+> Hi,
+> 
+> * Tony Lindgren <tony@atomide.com> [220331 09:21]:
+>> Commit 3f6634d997db ("iommu: Use right way to retrieve iommu_ops") started
+>> triggering a NULL pointer dereference for some omap variants:
+>> 
+>> __iommu_probe_device from probe_iommu_group+0x2c/0x38
+>> probe_iommu_group from bus_for_each_dev+0x74/0xbc
+>> bus_for_each_dev from bus_iommu_probe+0x34/0x2e8
+>> bus_iommu_probe from bus_set_iommu+0x80/0xc8
+>> bus_set_iommu from omap_iommu_init+0x88/0xcc
+>> omap_iommu_init from do_one_initcall+0x44/0x24
+>> 
+>> This is caused by omap iommu probe returning 0 instead of ERR_PTR(-ENODEV)
+>> as noted by Jason Gunthorpe <jgg@ziepe.ca>.
+>> 
+>> Looks like the regression already happened with an earlier commit
+>> 6785eb9105e3 ("iommu/omap: Convert to probe/release_device() call-backs")
+>> that changed the function return type and missed converting one place.
+> 
+> Can you guys please get this fix into the -rc series? Or ack it so
+> I can pick it up into my fixes branch?
+> 
+> Without this fix booting is failing for a bunch of devices.
 
-> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-> ---
-> v1->v2:
->   * Move error message into the caller
-> 
->   drivers/iommu/dma-iommu.c | 5 +++++
->   1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 09f6e1c0f9c0..1ca85d37eeab 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -971,6 +971,11 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
->   		void *padding_start;
->   		size_t padding_size, aligned_size;
->   
-> +		if (!is_swiotlb_active(dev)) {
-> +			dev_warn_once(dev, "DMA bounce buffers are inactive, unable to map unaligned transaction.\n");
-> +			return DMA_MAPPING_ERROR;
-> +		}
-> +
->   		aligned_size = iova_align(iovad, size);
->   		phys = swiotlb_tbl_map_single(dev, phys, size, aligned_size,
->   					      iova_mask(iovad), dir, attrs);
+Yes, I can confirm that v5.18-rc1 does not even boot the GTA04 (omap3)
+and OMAP5UEVM to any activity without this patch.
+
+Seems to be an urgent fix.
+
+BR and thanks,
+Nikolaus
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
