@@ -4,59 +4,61 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 84DCDC433F5
-	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 16:22:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7EE90C4332F
+	for <iommu@archiver.kernel.org>; Thu,  7 Apr 2022 16:22:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9280D612C2;
-	Thu,  7 Apr 2022 16:22:09 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id E7B85612C6;
+	Thu,  7 Apr 2022 16:22:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Ia3TqBEBtoTm; Thu,  7 Apr 2022 16:22:08 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id ABBE2612D6;
-	Thu,  7 Apr 2022 16:22:07 +0000 (UTC)
+	with ESMTP id abJcQLhorP8w; Thu,  7 Apr 2022 16:22:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id D3BD3612A9;
+	Thu,  7 Apr 2022 16:22:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 92089C001D;
-	Thu,  7 Apr 2022 16:22:07 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 03625C0082
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 16:22:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 686CAC0012;
+	Thu,  7 Apr 2022 16:22:10 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 82C16C0012
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 16:22:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 49777612AC
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 16:21:59 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 6188A40CDA
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 16:22:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LpYPq0Xgv_8M for <iommu@lists.linux-foundation.org>;
- Thu,  7 Apr 2022 16:21:58 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=deltatee.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 9GgNxYSE-UkJ for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Apr 2022 16:22:07 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp3.osuosl.org (Postfix) with ESMTPS id BA4F36129E
- for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 16:21:58 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id BEB7F40CE4
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Apr 2022 16:22:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
  Message-Id:Date:Cc:To:From:content-disposition;
- bh=ynMPFyjctQYmZSaKetGEvfKIotM82q1ISZ1qanr0c8w=; b=VhIgXvEcyj1A/PLDTYzw5XYQWL
- ARiEaGxvCCJA41jvsk7kg1wMTfovuD3ntVBJrsbf7t9ycUGNGm7MDPZbBT7F9zkLVF4jJ+tCoBUgZ
- iJM3DNSwzM+51c1dhlXZwuoDAriAeMBz6LcYhb3ZVPfLyLT1Lzvn1U2XjqTc0chjvQ6U11sVpwxJb
- GFs1/94eKn4QIkXnneT2M5jTgxO641YGfynE71dcLnYU8kg1M25Vqf5EFKpHCbkrOV/LvqJekr91g
- nFUL1EHBIw637mpoAVVaFgpg7YDOjcKgEnegFXScxw5o2DA9uYrqdAYljF42urPSdfa40ecBAS/TU
- NL3bwiJA==;
+ bh=NhYwwPYUOPNVkjQIdyegnu/TVIl/nr3VeJZ7F4Q1rQY=; b=kW115vO/lD5rTsxYR5wDs4inqe
+ b62XLPVR1SKPBKhjIMGvH8/MnKPRwidsE+zcAlS8tHsYa6gYUO/lWQKAiq0fskHTB4DfCzP9KwEt2
+ awuANPVzBGDxwiLlGKvFZcVBO0iijF1vKPmrj95MhayJpJlrS46NDTFfC+t7KI8DNk4ry1m5/8d1J
+ +7oK34SQ8cIiJnBx3+JJHIyr3dMLRP4mSXQh6eF23EX5U4e3yvWW2GUbw6AGAk7S7lbdREAiI4Faf
+ /F4ASkipN0tLk9wxIMmSs5rh/01GZKqdFrmMo+fMt2J66f3X0zQZYZqeS8UlYt9kYOkl7xUEiidL6
+ 7kOVCESQ==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
  by ale.deltatee.com with esmtps (TLS1.3) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94.2)
  (envelope-from <gunthorp@deltatee.com>)
- id 1ncUMJ-002BBg-7F; Thu, 07 Apr 2022 09:47:43 -0600
+ id 1ncUMJ-002BBi-Mr; Thu, 07 Apr 2022 09:47:44 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim
  4.94.2) (envelope-from <gunthorp@deltatee.com>)
- id 1ncUMF-00022M-6K; Thu, 07 Apr 2022 09:47:39 -0600
+ id 1ncUME-00022A-Fc; Thu, 07 Apr 2022 09:47:38 -0600
 From: Logan Gunthorpe <logang@deltatee.com>
 To: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
  linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
  iommu@lists.linux-foundation.org
-Date: Thu,  7 Apr 2022 09:47:15 -0600
-Message-Id: <20220407154717.7695-20-logang@deltatee.com>
+Date: Thu,  7 Apr 2022 09:47:12 -0600
+Message-Id: <20220407154717.7695-17-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220407154717.7695-1-logang@deltatee.com>
 References: <20220407154717.7695-1-logang@deltatee.com>
@@ -73,7 +75,7 @@ X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
  ckulkarnilinux@gmail.com, jhubbard@nvidia.com, rcampbell@nvidia.com,
  logang@deltatee.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v6 19/21] block: set FOLL_PCI_P2PDMA in bio_map_user_iov()
+Subject: [PATCH v6 16/21] block: add check when merging zone device pages
 X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Cc: Minturn Dave B <dave.b.minturn@intel.com>,
@@ -106,47 +108,76 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When a bio's queue supports PCI P2PDMA, set FOLL_PCI_P2PDMA for
-iov_iter_get_pages_flags(). This allows PCI P2PDMA pages to be
-passed from userspace and enables the NVMe passthru requests to
-use P2PDMA pages.
+Consecutive zone device pages should not be merged into the same sgl
+or bvec segment with other types of pages or if they belong to different
+pgmaps. Otherwise getting the pgmap of a given segment is not possible
+without scanning the entire segment. This helper returns true either if
+both pages are not zone device pages or both pages are zone device
+pages with the same pgmap.
+
+Add a helper to determine if zone device pages are mergeable and use
+this helper in page_is_mergeable().
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 ---
- block/blk-map.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ block/bio.c        |  2 ++
+ include/linux/mm.h | 23 +++++++++++++++++++++++
+ 2 files changed, 25 insertions(+)
 
-diff --git a/block/blk-map.c b/block/blk-map.c
-index c7f71d83eff1..85baf922a0e8 100644
---- a/block/blk-map.c
-+++ b/block/blk-map.c
-@@ -234,6 +234,7 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
- 		gfp_t gfp_mask)
+diff --git a/block/bio.c b/block/bio.c
+index cdd7b2915c53..3406c0450db3 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -834,6 +834,8 @@ static inline bool page_is_mergeable(const struct bio_vec *bv,
+ 		return false;
+ 	if (xen_domain() && !xen_biovec_phys_mergeable(bv, page))
+ 		return false;
++	if (!zone_device_pages_have_same_pgmap(bv->bv_page, page))
++		return false;
+ 
+ 	*same_page = ((vec_end_addr & PAGE_MASK) == page_addr);
+ 	if (*same_page)
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 14ef41af8b77..fb2264a17e4a 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1108,6 +1108,24 @@ static inline bool is_zone_device_page(const struct page *page)
  {
- 	unsigned int max_sectors = queue_max_hw_sectors(rq->q);
-+	unsigned int flags = 0;
- 	struct bio *bio;
- 	int ret;
- 	int j;
-@@ -246,13 +247,17 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
- 		return -ENOMEM;
- 	bio->bi_opf |= req_op(rq);
- 
-+	if (blk_queue_pci_p2pdma(rq->q))
-+		flags |= FOLL_PCI_P2PDMA;
+ 	return page_zonenum(page) == ZONE_DEVICE;
+ }
 +
- 	while (iov_iter_count(iter)) {
- 		struct page **pages;
- 		ssize_t bytes;
- 		size_t offs, added = 0;
- 		int npages;
++/*
++ * Consecutive zone device pages should not be merged into the same sgl
++ * or bvec segment with other types of pages or if they belong to different
++ * pgmaps. Otherwise getting the pgmap of a given segment is not possible
++ * without scanning the entire segment. This helper returns true either if
++ * both pages are not zone device pages or both pages are zone device pages
++ * with the same pgmap.
++ */
++static inline bool zone_device_pages_have_same_pgmap(const struct page *a,
++						     const struct page *b)
++{
++	if (is_zone_device_page(a) != is_zone_device_page(b))
++		return false;
++	if (!is_zone_device_page(a))
++		return true;
++	return a->pgmap == b->pgmap;
++}
+ extern void memmap_init_zone_device(struct zone *, unsigned long,
+ 				    unsigned long, struct dev_pagemap *);
+ #else
+@@ -1115,6 +1133,11 @@ static inline bool is_zone_device_page(const struct page *page)
+ {
+ 	return false;
+ }
++static inline bool zone_device_pages_have_same_pgmap(const struct page *a,
++						     const struct page *b)
++{
++	return true;
++}
+ #endif
  
--		bytes = iov_iter_get_pages_alloc(iter, &pages, LONG_MAX, &offs);
-+		bytes = iov_iter_get_pages_alloc_flags(iter, &pages, LONG_MAX,
-+						       &offs, flags);
- 		if (unlikely(bytes <= 0)) {
- 			ret = bytes ? bytes : -EFAULT;
- 			goto out_unmap;
+ static inline bool folio_is_zone_device(const struct folio *folio)
 -- 
 2.30.2
 
