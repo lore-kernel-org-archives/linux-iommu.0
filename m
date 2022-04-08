@@ -1,61 +1,146 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2EE5FC4332F
-	for <iommu@archiver.kernel.org>; Fri,  8 Apr 2022 17:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id ABEE6C433FE
+	for <iommu@archiver.kernel.org>; Fri,  8 Apr 2022 20:24:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C04A7403D6;
-	Fri,  8 Apr 2022 17:53:09 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 43E8241C87;
+	Fri,  8 Apr 2022 20:24:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id z-0dyQzjClaW; Fri,  8 Apr 2022 17:53:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 91808404BB;
-	Fri,  8 Apr 2022 17:53:08 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1kZdp-AVjCl2; Fri,  8 Apr 2022 20:24:43 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id AEAE341C7A;
+	Fri,  8 Apr 2022 20:24:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 73B2CC0084;
-	Fri,  8 Apr 2022 17:53:08 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AADAAC002C
- for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 17:53:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8029EC0033;
+	Fri,  8 Apr 2022 20:24:42 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AD2E7C002C
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 20:24:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 811E141163
- for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 17:53:07 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 8A46541C7B
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 20:24:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AUkv923AEE1C for <iommu@lists.linux-foundation.org>;
- Fri,  8 Apr 2022 17:53:06 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id A836341166
- for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 17:53:06 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C10F31042;
- Fri,  8 Apr 2022 10:53:05 -0700 (PDT)
-Received: from [10.57.41.19] (unknown [10.57.41.19])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AB9593F5A1;
- Fri,  8 Apr 2022 10:53:04 -0700 (PDT)
-Message-ID: <b15c5e05-aac5-6fbc-de28-d1590c081c4b@arm.com>
-Date: Fri, 8 Apr 2022 18:53:00 +0100
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id zVRgg4aMrlzg for <iommu@lists.linux-foundation.org>;
+ Fri,  8 Apr 2022 20:24:39 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com
+ (mail-bn8nam08on20618.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e8d::618])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9A57E41C7A
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 20:24:39 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EFHKkvdgpFn4JhbdiNP4YjknSUfGc7ZlgwHHW1Ni6fhPCKsbVqz2tiwRQodu+riZl0eRaQQ2hLUwomrmqfTU6e8hkAFZd5Md91ltTF/XCloYiJLE4wl03ajVVgOt7HMNFBM8eBZIxM683TVfZC9j50zLUs8dikYWMlmCkjLBlEYn0OQKYvx/xGtdn7w4KUg04iG7KFQAltL6IxG7vEfGvBHXS9tulA7WAzJBgiHHZBiy49e7Js+/GNmySGhsysbfc2lfJkGElqvP0v7ScU1VXTvJqy1MYnDHjWkeUgOMs9LCuEARNxd0Ia4GNEho7GxbVKaoATfKSbLfJAyvmqqy+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kfKobq+otFMpGrYKWCo157EVROdoUL3+Gb/T8G872NE=;
+ b=bhnwXplUaXpZx7IwG6cxDjgBaWGoosUE5DlY0heshx5Vr7e2idXKs6D7uBBE6+cYmlGvOiwVcwplGlLSXW6nYw3Hjr4Or3zac3v+q6ppy0kpOEbN/zt14ZxIaikR3FmAh4K5SPyoxvmZE/hE9QHLd3mje5C8YXdPUcZ53L+751xAv2pis2pPhCsTclhbWujdmW6USH6Jk2e3Ie/gUAXA8ITT/TT4nhPLX4hdBn4WzkMi80Wls/U/3YUgK1ldAc9fkjsPRrsU/Wt1fSoHD+Jch9uRwX2by2lDrfExRdRCcy39v4R2LV1LF8a5zsIggfcSPBHWK5sX/LyXB/91XNe3sQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kfKobq+otFMpGrYKWCo157EVROdoUL3+Gb/T8G872NE=;
+ b=VJ0+u2B+atMxiSSvdi5/Q6c62zOZwm1gnV0zGbM/s7DXLCdTha+BfKJPJyrMUe/W+M9RZplgXkfQgaZoHgmY/f2Xk1c/HHkICYBInxGw6eIptO69Sq6draL2pGs2eBR9bZuhQ3H8GuxVHCvjN7jZjpF35h2TLqfo6kE6YLhKeDewJC+zBm9dY30JuB7xze2aTwP35SigJ8+pPksFrtfAWL4L18rW7oI3LVTPy3i4G+gTlKN/L0LU2PebUaisJ3u7lhq53nhuDyw3EcAFFtfV2tR8anB2J0Sgs0vvNPwBceD3oscI48vbF4EAVM8kQ/twQ2ZQgq5esXBSA6+ypI4ODw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BL0PR12MB4849.namprd12.prod.outlook.com (2603:10b6:208:1c2::17)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.23; Fri, 8 Apr
+ 2022 20:24:35 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374%6]) with mapi id 15.20.5144.026; Fri, 8 Apr 2022
+ 20:24:35 +0000
+Date: Fri, 8 Apr 2022 17:24:34 -0300
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
+Message-ID: <20220408202434.GB2120790@nvidia.com>
+References: <YlBWrE7kxX9vraOD@8bytes.org> <20220408155922.GA317094@bhelgaas>
+ <20220408100750.77fd9ffc.alex.williamson@redhat.com>
+Content-Disposition: inline
+In-Reply-To: <20220408100750.77fd9ffc.alex.williamson@redhat.com>
+X-ClientProxiedBy: BL1PR13CA0104.namprd13.prod.outlook.com
+ (2603:10b6:208:2b9::19) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] drm/tegra: Stop using iommu_present()
-Content-Language: en-GB
-To: Dmitry Osipenko <dmitry.osipenko@collabora.com>, thierry.reding@gmail.com
-References: <25247f43672df0aa58c1952bf3df2bf948e9f8ae.1649168393.git.robin.murphy@arm.com>
- <49165024-5f33-b6e6-7ec9-1ede6f562748@collabora.com>
- <0f7bf1c2-7a21-13a0-8734-c53f624e1edd@arm.com>
- <4cbc5418-b92b-1eed-44cc-82030616cb02@collabora.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <4cbc5418-b92b-1eed-44cc-82030616cb02@collabora.com>
-Cc: linux-tegra@vger.kernel.org, iommu@lists.linux-foundation.org,
- dri-devel@lists.freedesktop.org, jonathanh@nvidia.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3df9cc82-4865-47e8-6a18-08da199dcbfd
+X-MS-TrafficTypeDiagnostic: BL0PR12MB4849:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB48491740215DC27030E61ADCC2E99@BL0PR12MB4849.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 9mSB8P5MN5zKjC85Md1PkD4cwxLpP/Uzoj8ckUToh+kzN/V3SAIUvk+ZM32yoAGZgYtgXtIkYL3+GseJh7x70ZPGN34925Z/I8ixl9pJf2bIgszkzDbNddLez0QfkU9TOq8yKz+T384/brf/3nErMmaZqkk4FKteYXhprNktC5AUlVp7ncBcIAVPKO/xv1aBlKu8vr959ilw6Eid+WFIeJI0UcNpqkAaRqOY2k18Jc6S9ryz5bXED8emHirS2Nyfzti2vqbjVpw+f4Owp0iw7H6GDnmbX4WcCg1iW68xS5XqfWeB7lQKTrwgjTSEvvpmnXDjAJAcc1GF1FAd01Aw5iSwcdRc+HgKqLI99UvW6dF1r88xq+Lb4MG4okuqv2H1kxO6uyvAtbVzghPHHoKsRYr/WwEIjaziFWyHl9NSAy13Li+X9Ielal1qPXHIpZasEeuWpQP/k7tnFSmeMLS001T8jXiE05AZ7xUgOwZraV2UQyFlXuKClUAmFyZK6YU8pvU4wwOn4EX+dO2EmC/62TV9dmV8fc89iRDrEZRIYSiXpoQtDzLSWL9CIA/DVDdyIEZA/Ux/I7tik2LKZnc0drsFMg6BQWnsrgV4B+BAECRoQx0/j/Ivu9tkoEl2vHuqKdJnD2gaH6VHUF+kUC73Lw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(6916009)(8936002)(6512007)(5660300002)(33656002)(6486002)(4326008)(508600001)(8676002)(2616005)(66946007)(186003)(66476007)(26005)(2906002)(7416002)(316002)(1076003)(54906003)(86362001)(38100700002)(36756003)(6506007)(66556008);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?M+mJcwhLVf5A237/ULK2HEHv1RGCk6Dse9ulVvcmij2RoJVUQDRqN0LAeQ8o?=
+ =?us-ascii?Q?35bLRTg8zuorA98wv6xiSX4fT1LmxNYYiTf5yYOBNcXqJDPY5BioYgrelf2x?=
+ =?us-ascii?Q?4TeSanAj1VkKIFyvt6i4E/zLeIDG0KegZtwFepdHXmy+1iipUsiH44hX6EAo?=
+ =?us-ascii?Q?iKI3QV9WrOJxOAXly4w2MdScW0tFee3YfUhIYq6v7/dVICx7O3DRChH1N2/C?=
+ =?us-ascii?Q?9784oUVwPApT6zDbqDCjEgRMWts1OAUsENq0b6XMh3kMPtzZ4xPh2kS3Mfkv?=
+ =?us-ascii?Q?33Sb5fdooBfjG/CDSqXk4CWQAUg4WBqxxUBTKpbX2XMs2dBJ5QYUs3vlIKab?=
+ =?us-ascii?Q?OdNwnKWh+WDtsVc9RCuXwByzqD31IdJrxEaeqVXqSPk6Khr0/Y74uzWRAnfD?=
+ =?us-ascii?Q?dZiHF+itorhhK87vnC8NKsXOXDRtA+agWrygTCYRYe3xxZuAxGhDxCFmxYdx?=
+ =?us-ascii?Q?rfHw34EKaGq8svXOac2rpxe4FFnOjxjbnaKbeLzWn/RL7kXjuGbmERYn4cMp?=
+ =?us-ascii?Q?Qz39NNOb+lL+BQcDrLBxurGT/KFqIuPrOtQ7MuvnOut2ylERiMN6UMaR3cN3?=
+ =?us-ascii?Q?vsgHIjuozfb0dG/oARnZ8Fe+W2f4zj/e28baSqJDL7hwfsWrHiGG581wRh+o?=
+ =?us-ascii?Q?TcerQxpF8rj+DomBLb7XQapTcmjjoQ8+r2rLC9wpn47cHErQMGkK3LawKYrp?=
+ =?us-ascii?Q?LIfdDKCnxbbn4/szzR9nac/XQ8+CjF9Z3DXKKFfF8Tv1HtciLmWS/0adXiJx?=
+ =?us-ascii?Q?gV4ZY9PP6OqT4F8hgXV+TsbowznYc0m3VmRYMPDYCp6c+sunKr26o2fmnybO?=
+ =?us-ascii?Q?kzUvLbk6cbbVHlDsHe/gUpi1sWK8UP6NRWPm0E0laRSkZhlisIrYxs4/RZ88?=
+ =?us-ascii?Q?OJONhhG0gEdKlUlUCsOUFpygbbZzk4MaIST278wFEYWNGH2E7v4t4ZsuN8m8?=
+ =?us-ascii?Q?RiiT7FRCPJAJM4BP9KBXRYBY0HErRJSnWNSI4LQKoJm2MGn2GcaiKIfOSzpG?=
+ =?us-ascii?Q?0e+2Hp71vl68H1n9Xibx9g/Pp15//b78cA9hHAsAzuBSELRdd82qyI62ekoE?=
+ =?us-ascii?Q?1YPcapC32B7QNN/g//s20WG3zgeHYNHPIt3vKs4dWCHut2oE1JztxXeWtLWg?=
+ =?us-ascii?Q?eHeU9iSWETufP0xn4bwhXGln7oLsUA17twdNp5MEj8R3XU2VFsY6r3KVo+ON?=
+ =?us-ascii?Q?ey39vCRMwV/dEEPupA6EArxKoEW2y5v1bbAhM3UTxPw8EXpmOVESaEYDO72d?=
+ =?us-ascii?Q?KU/+YsQQQriaTWIxcMvhaCSSI8PhARPZK7NuSTwx+YBvseFeETx0wdoW7Sbn?=
+ =?us-ascii?Q?OWsSuxad8mVUKIQ4ecV7te4GckZs2ErHLRBhMSKoLcLY2phvPDtgtzIf4q8n?=
+ =?us-ascii?Q?qph0NpKY8WAFjNR8cqasvgdlEdnMY6w8VAzn6mOCXvRDtyVqHYvI1POxUWaF?=
+ =?us-ascii?Q?dOMwj3bmXOHs04gufCpoGJOjthYutuWE6/Q+c8/HcIH9rEHFu6tNSBaQaFN0?=
+ =?us-ascii?Q?q9aMSB4D0LHE6807vJkm+EGMvUXV72BzWbYkIjpGR7xgk8OvQT/QvGON4sQB?=
+ =?us-ascii?Q?/oPaOdGKcYoI+uLTW7StVb6u/EjW4gTNzzwu5Y9UYsbIVjmK87FjwOgd28pY?=
+ =?us-ascii?Q?PZQ3Q3F7eI2tFoarzcoqwf5QDWROn/5qhGZ8PpxPXPIc+vGadATR9UAQS2HE?=
+ =?us-ascii?Q?626KONK4xCNh7FsQ+m4xKOJkFh2cNmxUi3VW7s6Xn8uraatFV8dCVE+SpzeN?=
+ =?us-ascii?Q?4SorTrdYKQ=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3df9cc82-4865-47e8-6a18-08da199dcbfd
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2022 20:24:35.2089 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EWaf7WGcFimP9KGAJcltgh5RanH07JsD5juCmLzCtWxqv7o2yf1auMkwv7gMYzFZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4849
+Cc: Stuart Yoder <stuyoder@gmail.com>, rafael@kernel.org,
+ David Airlie <airlied@linux.ie>, linux-pci@vger.kernel.org,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Dmitry Osipenko <digetx@gmail.com>,
+ Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Bjorn Helgaas <helgaas@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
+ Chaitanya Kulkarni <kch@nvidia.com>, kvm@vger.kernel.org,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -68,72 +153,79 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMi0wNC0wNyAxODo1MSwgRG1pdHJ5IE9zaXBlbmtvIHdyb3RlOgo+IE9uIDQvNi8yMiAy
-MTowNiwgUm9iaW4gTXVycGh5IHdyb3RlOgo+PiBPbiAyMDIyLTA0LTA2IDE1OjMyLCBEbWl0cnkg
-T3NpcGVua28gd3JvdGU6Cj4+PiBPbiA0LzUvMjIgMTc6MTksIFJvYmluIE11cnBoeSB3cm90ZToK
-Pj4+PiBSZW1vdmUgdGhlIHBvaW50bGVzcyBjaGVjay4gaG9zdDF4X2RybV93YW50c19pb21tdSgp
-IGNhbm5vdCByZXR1cm4gdHJ1ZQo+Pj4+IHVubGVzcyBhbiBJT01NVSBleGlzdHMgZm9yIHRoZSBo
-b3N0MXggcGxhdGZvcm0gZGV2aWNlLCB3aGljaCBhdCB0aGUKPj4+PiBtb21lbnQKPj4+PiBtZWFu
-cyB0aGUgaW9tbXVfcHJlc2VudCgpIHRlc3QgY291bGQgbmV2ZXIgZmFpbC4KPj4+Pgo+Pj4+IFNp
-Z25lZC1vZmYtYnk6IFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+Cj4+Pj4gLS0t
-Cj4+Pj4gIMKgIGRyaXZlcnMvZ3B1L2RybS90ZWdyYS9kcm0uYyB8IDIgKy0KPj4+PiAgwqAgMSBm
-aWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pCj4+Pj4KPj4+PiBkaWZm
-IC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL3RlZ3JhL2RybS5jIGIvZHJpdmVycy9ncHUvZHJtL3Rl
-Z3JhL2RybS5jCj4+Pj4gaW5kZXggOTQ2NGY1MjJlMjU3Li5iYzQzMjE1NjE0MDAgMTAwNjQ0Cj4+
-Pj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL3RlZ3JhL2RybS5jCj4+Pj4gKysrIGIvZHJpdmVycy9n
-cHUvZHJtL3RlZ3JhL2RybS5jCj4+Pj4gQEAgLTExNDksNyArMTE0OSw3IEBAIHN0YXRpYyBpbnQg
-aG9zdDF4X2RybV9wcm9iZShzdHJ1Y3QKPj4+PiBob3N0MXhfZGV2aWNlICpkZXYpCj4+Pj4gIMKg
-wqDCoMKgwqDCoMKgwqDCoCBnb3RvIHB1dDsKPj4+PiAgwqDCoMKgwqDCoCB9Cj4+Pj4gIMKgIC3C
-oMKgwqAgaWYgKGhvc3QxeF9kcm1fd2FudHNfaW9tbXUoZGV2KSAmJgo+Pj4+IGlvbW11X3ByZXNl
-bnQoJnBsYXRmb3JtX2J1c190eXBlKSkgewo+Pj4+ICvCoMKgwqAgaWYgKGhvc3QxeF9kcm1fd2Fu
-dHNfaW9tbXUoZGV2KSkgewo+Pj4+ICDCoMKgwqDCoMKgwqDCoMKgwqAgdGVncmEtPmRvbWFpbiA9
-IGlvbW11X2RvbWFpbl9hbGxvYygmcGxhdGZvcm1fYnVzX3R5cGUpOwo+Pj4+ICDCoMKgwqDCoMKg
-wqDCoMKgwqAgaWYgKCF0ZWdyYS0+ZG9tYWluKSB7Cj4+Pj4gIMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgIGVyciA9IC1FTk9NRU07Cj4+Pgo+Pj4gaG9zdDF4X2RybV93YW50c19pb21tdSgpIHJl
-dHVybnMgdHJ1ZSBpZiB0aGVyZSBpcyBubyBJT01NVSBmb3IgdGhlCj4+PiBob3N0MXggcGxhdGZv
-cm0gZGV2aWNlIG9mIFRlZ3JhMjAvMzAgU29Dcy4KPj4KPj4gQWgsIGFwcGFyZW50bHkgdGhpcyBp
-cyBhbm90aGVyIGV4YW1wbGUgb2Ygd2hhdCBoYXBwZW5zIHdoZW4gSSB3cml0ZQo+PiBwYXRjaGVz
-IGxhdGUgb24gYSBGcmlkYXkgbmlnaHQuLi4KPj4KPj4gU28gb24gc2Vjb25kIGxvb2ssIHdoYXQg
-d2Ugd2FudCB0byBhc2NlcnRhaW4gaGVyZSBpcyB3aGV0aGVyIGRldiBoYXMgYW4KPj4gSU9NTVUs
-IGJ1dCBvbmx5IGlmIHRoZSBob3N0MXggcGFyZW50IGlzIG5vdCBhZGRyZXNzaW5nLWxpbWl0ZWQs
-IGVpdGhlcgo+PiBiZWNhdXNlIGl0IGNhbiBhbHNvIHVzZSB0aGUgSU9NTVUsIG9yIGJlY2F1c2Ug
-YWxsIHBvc3NpYmxlIGFkZHJlc3NlcyBhcmUKPj4gc21hbGwgZW5vdWdoIGFueXdheSwgcmlnaHQ/
-Cj4gCj4gWWVzCj4gCj4+IEFyZSB3ZSBzcGVjaWZpY2FsbHkgbG9va2luZyBmb3IgdGhlIGhvc3Qx
-eAo+PiBoYXZpbmcgYSBETUEtQVBJLW1hbmFnZWQgZG9tYWluLCBvciBjYW4gdGhhdCBhbHNvIGVu
-ZCB1cCB1c2luZyB0aGUKPj4gdGVncmEtPmRvbWFpbiBvciBhbm90aGVyIHVubWFuYWdlZCBkb21h
-aW4gdG9vPwo+IAo+IFdlIGhhdmUgaG9zdDF4IERNQSB0aGF0IGNvdWxkIGhhdmU6Cj4gCj4gMS4g
-Tm8gSU9NTVUgZG9tYWluLCBkZXBlbmRpbmcgb24ga2VybmVsL0RUIGNvbmZpZwo+IDIuIE1hbmFn
-ZWQgZG9tYWluLCBvbiBuZXdlciBTb0NzCj4gMy4gVW5tYW5hZ2VkIGRvbWFpbiwgb24gb2xkZXIg
-U29Dcwo+IAo+IFdlIGhhdmUgVGVncmEgRFJNIGRldmljZXMgd2hpY2ggY2FuOgo+IAo+IDEuIEJl
-IGF0dGFjaGVkIHRvIGEgc2hhcmVkIHVubWFuYWdlZCB0ZWdyYS0+ZG9tYWluLCBvbiBvbGRlciBT
-b0NzCj4gMi4gSGF2ZSBvd24gbWFuYWdlZCBkb21haW5zLCBvbiBuZXdlciBTb0NzCj4gCj4+IEkg
-Y2FuJ3QgcXVpdGUgZmlndXJlIG91dAo+PiBmcm9tIHRoZSBjb21tZW50cyB3aGV0aGVyIGl0J3Mg
-cGh5c2ljYWwgYWRkcmVzc2VzLCBJT1ZBcywgb3IgYm90aCB0aGF0Cj4+IHdlJ3JlIGNvbmNlcm5l
-ZCB3aXRoIGhlcmUuCj4gCj4gVGVncmEgRFJNIGFsbG9jYXRlcyBidWZmZXJzIGFuZCBzdWJtaXRz
-IGpvYnMgdG8gaC93IHVzaW5nIGhvc3QxeCdzCj4gY2hhbm5lbCBETUEuIERSTSBmcmFtZWJ1ZmZl
-cnMnIGFkZHJlc3NlcyBhcmUgaW5zZXJ0ZWQgaW50byBob3N0MXgKPiBjb21tYW5kIGJ1ZmZlcnMg
-Ynkga2VybmVsIGRyaXZlciBhbmQgYWRkcmVzc2VzIGJleW9uZCAzMmJpdCBzcGFjZSBuZWVkCj4g
-dG8gYmUgdHJlYXRlZCBzcGVjaWFsbHksIHdlIGRvbid0IHN1cHBvcnQgc3VjaCBhZGRyZXNzZXMg
-aW4gdXBzdHJlYW0uCj4gCj4gSU9NTVUgQVMgaXMgbGltaXRlZCB0byAzMmJpdHMgb24gVGVncmEg
-aW4gdXBzdHJlYW0ga2VybmVsIGZvciBwcmUtVDE4Ngo+IFNvQ3MsIGl0IGhpZGVzIDY0Yml0IGFk
-ZHJlc3NlcyBmcm9tIGhvc3QxeC4gUG9zdC1UMTg2IFNvQ3MgaGF2ZSBleHRyYQo+IGZlYXR1cmVz
-IHRoYXQgYWxsb3cga2VybmVsIGRyaXZlciBub3QgdG8gYm90aGVyIGFib3V0IGFkZHJlc3Nlcy4K
-PiAKPiBGb3IgbmV3ZXIgQVJNNjQgU29DcyB0aGVyZSBpcyBhc3N1bXB0aW9uIGluIHRoZSBUZWdy
-YSBkcml2ZXJzIHRoYXQgSU9NTVUKPiBhbHdheXMgcHJlc2VudHMsIHRvIHNpbXBsaWZ5IHRoaW5n
-cy4KClRoYXQgc3VtbWFyeSBoZWxwcyBhIGxvdCwgdGhhbmsgeW91IQoKSSB3YXMgcGFydGljdWxh
-cmx5IHdvcnJpZWQgYWJvdXQgdGhlIGNhc2Ugd2hlcmUgdGhlIGhvc3QxeCBoYXMgYSAKcGFzc3Ro
-cm91Z2ggZG9tYWluLCB3aGljaCB3ZSdsbCBhc3N1bWUgaXMgYSBETUEgZG9tYWluIGFuZCBsZWF2
-ZSBpbiAKcGxhY2UsIGJ1dCBpZiBhbGwgdGhlIFNvQ3Mgd2l0aCB0aGUgMzItYml0IGdhdGhlciBs
-aW1pdGF0aW9uIGFyZSBhbHNvIAp0aGUgb25lcyB3aXRoIHRlZ3JhLXNtbXUsIHdoaWNoIGRvZXNu
-J3Qgc3VwcG9ydCBkZWZhdWx0IGRvbWFpbnMgYW55d2F5LCAKdGhlbiBpdCBzb3VuZHMgbGlrZSB0
-aGF0J3MgYSBub24taXNzdWUuCgpJJ2xsIGdpdmUgdGhpcyBhIGJpdCBtb3JlIHRob3VnaHQgdG8g
-bWFrZSBzdXJlIEkgcmVhbGx5IGdldCBpdCByaWdodCwgCmFuZCBzZW5kIGEgdjIgbmV4dCB3ZWVr
-LgoKVGhhbmtzLApSb2Jpbi4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
-b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
-bW11
+On Fri, Apr 08, 2022 at 10:07:50AM -0600, Alex Williamson wrote:
+> On Fri, 8 Apr 2022 10:59:22 -0500
+> Bjorn Helgaas <helgaas@kernel.org> wrote:
+> 
+> > On Fri, Apr 08, 2022 at 05:37:16PM +0200, Joerg Roedel wrote:
+> > > On Fri, Apr 08, 2022 at 11:17:47AM -0300, Jason Gunthorpe wrote:  
+> > > > You might consider using a linear tree instead of the topic branches,
+> > > > topics are tricky and I'm not sure it helps a small subsystem so much.
+> > > > Conflicts between topics are a PITA for everyone, and it makes
+> > > > handling conflicts with rc much harder than it needs to be.  
+> > > 
+> > > I like the concept of a branch per driver, because with that I can just
+> > > exclude that branch from my next-merge when there are issues with it.
+> > > Conflicts between branches happen too, but they are quite manageable
+> > > when the branches have the same base.  
+> > 
+> > FWIW, I use the same topic branch approach for PCI.  I like the
+> > ability to squash in fixes or drop things without having to clutter
+> > the history with trivial commits and reverts.  I haven't found
+> > conflicts to be a problem.
+> 
+> Same.  I think I've generally modeled my branch handling after Bjorn
+> and Joerg, I don't always use topic branches, but will for larger
+> contributions and I don't generally find conflicts to be a problem.
+> I'm always open to adopting best practices though.  Thanks,
+
+I don't know about best practices, but I see most maintainers fall
+somewhere on a continuum between how Andrew Morton works and how David
+Miller/Linus work.
+
+Andrew's model is to try and send patches that are perfect and he
+manipulates his queue continually. It is never quite clear what will
+get merged until Linus actually merges it.
+
+The David/Linus model is that git is immutable and they only move
+forward. Never rebase, never manipulate an applied patch.
+
+Andrew has significantly reigned in how much he manipulates his queue
+- mostly due to pressure from Linus. Some of the remarks on this topic
+over the last year are pretty informative. So I would say changing
+patches once applied, or any rebasing, is now being seen as not best
+practice. (Indeed if Linus catches it and a mistake was made you are
+likely to get a sharp email)
+
+Why I made the note, is that at least in my flow, I would not trade
+two weeks of accepting patches for topics. I'll probably have 20-30
+patches merged already before rc3 comes out. I never have problems
+merging rc's because when a rc conflicts with the next I have only one
+branch and can just merge the rc and resolve the conflict, or merge
+the rc before applying a patch that would create a conflict in the
+first place. Linus has given some guidance on when/how he prefers to
+see those merges done.
+
+Though I tend to advocate for a philosophy more like DaveM that the
+maintainer role is to hurry up and accept good patches - to emphasize
+flow as a way to build involvement and community.
+
+That is not necessarily an entirely appropriate approach in some of
+the more critical subsystems like mm/pci - if they are broken in a way
+that impacts a large number of people at rc1 then it can cause a lot
+of impact. For instance our QA team is always paniced if rc1 doesn't
+work on our test environments.
+
+Cheers,
+Jason
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
