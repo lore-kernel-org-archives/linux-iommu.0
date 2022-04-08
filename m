@@ -4,66 +4,58 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4D7BAC433EF
-	for <iommu@archiver.kernel.org>; Fri,  8 Apr 2022 17:44:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2EE5FC4332F
+	for <iommu@archiver.kernel.org>; Fri,  8 Apr 2022 17:53:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E79044019B;
-	Fri,  8 Apr 2022 17:44:48 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id C04A7403D6;
+	Fri,  8 Apr 2022 17:53:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qE65iNHVpq4i; Fri,  8 Apr 2022 17:44:48 +0000 (UTC)
+	with ESMTP id z-0dyQzjClaW; Fri,  8 Apr 2022 17:53:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id BB4BA40169;
-	Fri,  8 Apr 2022 17:44:47 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 91808404BB;
+	Fri,  8 Apr 2022 17:53:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8CB7FC0084;
-	Fri,  8 Apr 2022 17:44:47 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E0F3EC002C
- for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 17:44:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 73B2CC0084;
+	Fri,  8 Apr 2022 17:53:08 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AADAAC002C
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 17:53:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id D9DC940425
- for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 17:44:46 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 811E141163
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 17:53:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id z8HSctnWCEaZ for <iommu@lists.linux-foundation.org>;
- Fri,  8 Apr 2022 17:44:45 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id AUkv923AEE1C for <iommu@lists.linux-foundation.org>;
+ Fri,  8 Apr 2022 17:53:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id 70B3F4031B
- for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 17:44:45 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id A836341166
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 17:53:06 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 78DD71042;
- Fri,  8 Apr 2022 10:44:44 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C10F31042;
+ Fri,  8 Apr 2022 10:53:05 -0700 (PDT)
 Received: from [10.57.41.19] (unknown [10.57.41.19])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8FBDF3F5A1;
- Fri,  8 Apr 2022 10:44:42 -0700 (PDT)
-Message-ID: <a8371724-2864-a316-439d-5aa7a8bb5739@arm.com>
-Date: Fri, 8 Apr 2022 18:44:37 +0100
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AB9593F5A1;
+ Fri,  8 Apr 2022 10:53:04 -0700 (PDT)
+Message-ID: <b15c5e05-aac5-6fbc-de28-d1590c081c4b@arm.com>
+Date: Fri, 8 Apr 2022 18:53:00 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v2 0/4] Make the iommu driver no-snoop block feature
- consistent
+Subject: Re: [PATCH] drm/tegra: Stop using iommu_present()
 Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <0-v2-f090ae795824+6ad-intel_no_snoop_jgg@nvidia.com>
- <f5acf507-b4ef-b393-159c-05ca04feb43d@arm.com>
- <20220407174326.GR2120790@nvidia.com>
- <77482321-2e39-fc7c-09b6-e929a851a80f@arm.com>
- <20220407190824.GS2120790@nvidia.com>
- <4cc084a5-7d25-8e81-bdc1-1501c3346a0c@arm.com>
- <20220408121845.GT2120790@nvidia.com>
- <4f93d16d-9606-bd1c-a82b-e4b00ae2364f@arm.com>
- <20220408133523.GX2120790@nvidia.com>
+To: Dmitry Osipenko <dmitry.osipenko@collabora.com>, thierry.reding@gmail.com
+References: <25247f43672df0aa58c1952bf3df2bf948e9f8ae.1649168393.git.robin.murphy@arm.com>
+ <49165024-5f33-b6e6-7ec9-1ede6f562748@collabora.com>
+ <0f7bf1c2-7a21-13a0-8734-c53f624e1edd@arm.com>
+ <4cbc5418-b92b-1eed-44cc-82030616cb02@collabora.com>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220408133523.GX2120790@nvidia.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, kvm@vger.kernel.org,
- Will Deacon <will@kernel.org>, Cornelia Huck <cohuck@redhat.com>,
- iommu@lists.linux-foundation.org, Alex Williamson <alex.williamson@redhat.com>,
- David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>
+In-Reply-To: <4cbc5418-b92b-1eed-44cc-82030616cb02@collabora.com>
+Cc: linux-tegra@vger.kernel.org, iommu@lists.linux-foundation.org,
+ dri-devel@lists.freedesktop.org, jonathanh@nvidia.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,102 +68,72 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-04-08 14:35, Jason Gunthorpe wrote:
-> On Fri, Apr 08, 2022 at 02:11:10PM +0100, Robin Murphy wrote:
-> 
->>> However, this creates an oddball situation where the vfio_device and
->>> it's struct device could become unplugged from the system while the
->>> domain that the struct device spawned continues to exist and remains
->>> attached to other devices in the same group. ie the iommu driver has
->>> to be careful not to retain the struct device input..
->>
->> Oh, I rather assumed that VFIO might automatically tear down the
->> container/domain when the last real user disappears.
-> 
-> It does, that isn't quite what I mean..
-> 
-> Lets say a simple case with two groups and two devices.
-> 
-> Open a VFIO container FD
-> 
-> We open group A and SET_CONTAINER it. This results in an
->     domain_A = iommu_domain_alloc(device_A)
->     iommu_attach_group(domain_A, device_A->group)
-> 
-> We open group B and SET_CONTAINER it. Using the sharing logic we end
-> up doing
->     iommu_attach_group(domain_A, device_B->group)
-> 
-> Now we close group A FD, detatch device_A->group from domain_A and the
-> driver core hot-unplugs device A completely from the system.
-> 
-> However, domain_A remains in the system used by group B's open FD.
-> 
-> It is a bit funny at least.. I think it is just something to document
-> and be aware of for iommu driver writers that they probably shouldn't
-> try to store the allocation device in their domain struct.
-> 
-> IHMO the only purpose of the allocation device is to crystalize the
-> configuration of the iommu_domain at allocation time.
-
-Oh, for sure. When I implement the API switch, I can certainly try to 
-document it as clearly as possible that the device argument is only for 
-resolving the correct IOMMU ops and target instance, and the resulting 
-domain is still not in any way tied to that specific device.
-
-I hadn't thought about how it might look to future developers who aren't 
-already familiar with all the history here, so thanks for the nudge!
-
->> as long as we take care not to release DMA ownership until that point also.
->> As you say, it just looks a bit funny.
-> 
-> The DMA ownership should be OK as we take ownership on each group FD
-> open
->   
->>> I suppose that is inevitable to have sharing of domains across
->>> devices, so the iommu drivers will have to accommodate this.
->>
->> I think domain lifecycle management is already entirely up to the users and
->> not something that IOMMU drivers need to worry about. Drivers should only
->> need to look at per-device data in attach/detach (and, once I've finished,
->> alloc) from the device argument which can be assumed to be valid at that
->> point. Otherwise, all the relevant internal data for domain ops should
->> belong to the domain already.
-> 
-> Making attach/detach take a struct device would be nice - but I would
-> expect the attach/detatch to use a strictly paired struct device and I
-> don't think this trick of selecting an arbitary vfio_device will
-> achieve that.
-> 
-> So, I suppose VFIO would want to attach/detatch on every vfio_device
-> individually and it would iterate over the group instead of doing a
-> list_first_entry() like above. This would not be hard to do in VFIO.
-
-It feels like we've already beaten that discussion to death in other 
-threads; regardless of what exact argument the iommu_attach/detach 
-operations end up taking, they have to operate on the whole (explicit or 
-implicit) iommu_group at once, because doing anything else would defeat 
-the point of isolation groups, and be impossible for alias groups.
-
-> Not sure what the iommu layer would have to do to accommodate this..
-
-If it's significantly easier for VFIO to just run through a whole list 
-of devices and attach each one without having to keep track of whether 
-they might share an iommu_group which has already been attached, then we 
-can probably relax the API a little such that attaching to a domain 
-which is already the current domain becomes a no-op instead of returning 
--EBUSY, but I'd rather not create an expectation that anyone *has* to do 
-that. For any other callers that would be forcing *more* iommu_group 
-implementation details onto them, when we all want less.
-
-Cheers,
-Robin.
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMi0wNC0wNyAxODo1MSwgRG1pdHJ5IE9zaXBlbmtvIHdyb3RlOgo+IE9uIDQvNi8yMiAy
+MTowNiwgUm9iaW4gTXVycGh5IHdyb3RlOgo+PiBPbiAyMDIyLTA0LTA2IDE1OjMyLCBEbWl0cnkg
+T3NpcGVua28gd3JvdGU6Cj4+PiBPbiA0LzUvMjIgMTc6MTksIFJvYmluIE11cnBoeSB3cm90ZToK
+Pj4+PiBSZW1vdmUgdGhlIHBvaW50bGVzcyBjaGVjay4gaG9zdDF4X2RybV93YW50c19pb21tdSgp
+IGNhbm5vdCByZXR1cm4gdHJ1ZQo+Pj4+IHVubGVzcyBhbiBJT01NVSBleGlzdHMgZm9yIHRoZSBo
+b3N0MXggcGxhdGZvcm0gZGV2aWNlLCB3aGljaCBhdCB0aGUKPj4+PiBtb21lbnQKPj4+PiBtZWFu
+cyB0aGUgaW9tbXVfcHJlc2VudCgpIHRlc3QgY291bGQgbmV2ZXIgZmFpbC4KPj4+Pgo+Pj4+IFNp
+Z25lZC1vZmYtYnk6IFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+Cj4+Pj4gLS0t
+Cj4+Pj4gIMKgIGRyaXZlcnMvZ3B1L2RybS90ZWdyYS9kcm0uYyB8IDIgKy0KPj4+PiAgwqAgMSBm
+aWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pCj4+Pj4KPj4+PiBkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL3RlZ3JhL2RybS5jIGIvZHJpdmVycy9ncHUvZHJtL3Rl
+Z3JhL2RybS5jCj4+Pj4gaW5kZXggOTQ2NGY1MjJlMjU3Li5iYzQzMjE1NjE0MDAgMTAwNjQ0Cj4+
+Pj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL3RlZ3JhL2RybS5jCj4+Pj4gKysrIGIvZHJpdmVycy9n
+cHUvZHJtL3RlZ3JhL2RybS5jCj4+Pj4gQEAgLTExNDksNyArMTE0OSw3IEBAIHN0YXRpYyBpbnQg
+aG9zdDF4X2RybV9wcm9iZShzdHJ1Y3QKPj4+PiBob3N0MXhfZGV2aWNlICpkZXYpCj4+Pj4gIMKg
+wqDCoMKgwqDCoMKgwqDCoCBnb3RvIHB1dDsKPj4+PiAgwqDCoMKgwqDCoCB9Cj4+Pj4gIMKgIC3C
+oMKgwqAgaWYgKGhvc3QxeF9kcm1fd2FudHNfaW9tbXUoZGV2KSAmJgo+Pj4+IGlvbW11X3ByZXNl
+bnQoJnBsYXRmb3JtX2J1c190eXBlKSkgewo+Pj4+ICvCoMKgwqAgaWYgKGhvc3QxeF9kcm1fd2Fu
+dHNfaW9tbXUoZGV2KSkgewo+Pj4+ICDCoMKgwqDCoMKgwqDCoMKgwqAgdGVncmEtPmRvbWFpbiA9
+IGlvbW11X2RvbWFpbl9hbGxvYygmcGxhdGZvcm1fYnVzX3R5cGUpOwo+Pj4+ICDCoMKgwqDCoMKg
+wqDCoMKgwqAgaWYgKCF0ZWdyYS0+ZG9tYWluKSB7Cj4+Pj4gIMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIGVyciA9IC1FTk9NRU07Cj4+Pgo+Pj4gaG9zdDF4X2RybV93YW50c19pb21tdSgpIHJl
+dHVybnMgdHJ1ZSBpZiB0aGVyZSBpcyBubyBJT01NVSBmb3IgdGhlCj4+PiBob3N0MXggcGxhdGZv
+cm0gZGV2aWNlIG9mIFRlZ3JhMjAvMzAgU29Dcy4KPj4KPj4gQWgsIGFwcGFyZW50bHkgdGhpcyBp
+cyBhbm90aGVyIGV4YW1wbGUgb2Ygd2hhdCBoYXBwZW5zIHdoZW4gSSB3cml0ZQo+PiBwYXRjaGVz
+IGxhdGUgb24gYSBGcmlkYXkgbmlnaHQuLi4KPj4KPj4gU28gb24gc2Vjb25kIGxvb2ssIHdoYXQg
+d2Ugd2FudCB0byBhc2NlcnRhaW4gaGVyZSBpcyB3aGV0aGVyIGRldiBoYXMgYW4KPj4gSU9NTVUs
+IGJ1dCBvbmx5IGlmIHRoZSBob3N0MXggcGFyZW50IGlzIG5vdCBhZGRyZXNzaW5nLWxpbWl0ZWQs
+IGVpdGhlcgo+PiBiZWNhdXNlIGl0IGNhbiBhbHNvIHVzZSB0aGUgSU9NTVUsIG9yIGJlY2F1c2Ug
+YWxsIHBvc3NpYmxlIGFkZHJlc3NlcyBhcmUKPj4gc21hbGwgZW5vdWdoIGFueXdheSwgcmlnaHQ/
+Cj4gCj4gWWVzCj4gCj4+IEFyZSB3ZSBzcGVjaWZpY2FsbHkgbG9va2luZyBmb3IgdGhlIGhvc3Qx
+eAo+PiBoYXZpbmcgYSBETUEtQVBJLW1hbmFnZWQgZG9tYWluLCBvciBjYW4gdGhhdCBhbHNvIGVu
+ZCB1cCB1c2luZyB0aGUKPj4gdGVncmEtPmRvbWFpbiBvciBhbm90aGVyIHVubWFuYWdlZCBkb21h
+aW4gdG9vPwo+IAo+IFdlIGhhdmUgaG9zdDF4IERNQSB0aGF0IGNvdWxkIGhhdmU6Cj4gCj4gMS4g
+Tm8gSU9NTVUgZG9tYWluLCBkZXBlbmRpbmcgb24ga2VybmVsL0RUIGNvbmZpZwo+IDIuIE1hbmFn
+ZWQgZG9tYWluLCBvbiBuZXdlciBTb0NzCj4gMy4gVW5tYW5hZ2VkIGRvbWFpbiwgb24gb2xkZXIg
+U29Dcwo+IAo+IFdlIGhhdmUgVGVncmEgRFJNIGRldmljZXMgd2hpY2ggY2FuOgo+IAo+IDEuIEJl
+IGF0dGFjaGVkIHRvIGEgc2hhcmVkIHVubWFuYWdlZCB0ZWdyYS0+ZG9tYWluLCBvbiBvbGRlciBT
+b0NzCj4gMi4gSGF2ZSBvd24gbWFuYWdlZCBkb21haW5zLCBvbiBuZXdlciBTb0NzCj4gCj4+IEkg
+Y2FuJ3QgcXVpdGUgZmlndXJlIG91dAo+PiBmcm9tIHRoZSBjb21tZW50cyB3aGV0aGVyIGl0J3Mg
+cGh5c2ljYWwgYWRkcmVzc2VzLCBJT1ZBcywgb3IgYm90aCB0aGF0Cj4+IHdlJ3JlIGNvbmNlcm5l
+ZCB3aXRoIGhlcmUuCj4gCj4gVGVncmEgRFJNIGFsbG9jYXRlcyBidWZmZXJzIGFuZCBzdWJtaXRz
+IGpvYnMgdG8gaC93IHVzaW5nIGhvc3QxeCdzCj4gY2hhbm5lbCBETUEuIERSTSBmcmFtZWJ1ZmZl
+cnMnIGFkZHJlc3NlcyBhcmUgaW5zZXJ0ZWQgaW50byBob3N0MXgKPiBjb21tYW5kIGJ1ZmZlcnMg
+Ynkga2VybmVsIGRyaXZlciBhbmQgYWRkcmVzc2VzIGJleW9uZCAzMmJpdCBzcGFjZSBuZWVkCj4g
+dG8gYmUgdHJlYXRlZCBzcGVjaWFsbHksIHdlIGRvbid0IHN1cHBvcnQgc3VjaCBhZGRyZXNzZXMg
+aW4gdXBzdHJlYW0uCj4gCj4gSU9NTVUgQVMgaXMgbGltaXRlZCB0byAzMmJpdHMgb24gVGVncmEg
+aW4gdXBzdHJlYW0ga2VybmVsIGZvciBwcmUtVDE4Ngo+IFNvQ3MsIGl0IGhpZGVzIDY0Yml0IGFk
+ZHJlc3NlcyBmcm9tIGhvc3QxeC4gUG9zdC1UMTg2IFNvQ3MgaGF2ZSBleHRyYQo+IGZlYXR1cmVz
+IHRoYXQgYWxsb3cga2VybmVsIGRyaXZlciBub3QgdG8gYm90aGVyIGFib3V0IGFkZHJlc3Nlcy4K
+PiAKPiBGb3IgbmV3ZXIgQVJNNjQgU29DcyB0aGVyZSBpcyBhc3N1bXB0aW9uIGluIHRoZSBUZWdy
+YSBkcml2ZXJzIHRoYXQgSU9NTVUKPiBhbHdheXMgcHJlc2VudHMsIHRvIHNpbXBsaWZ5IHRoaW5n
+cy4KClRoYXQgc3VtbWFyeSBoZWxwcyBhIGxvdCwgdGhhbmsgeW91IQoKSSB3YXMgcGFydGljdWxh
+cmx5IHdvcnJpZWQgYWJvdXQgdGhlIGNhc2Ugd2hlcmUgdGhlIGhvc3QxeCBoYXMgYSAKcGFzc3Ro
+cm91Z2ggZG9tYWluLCB3aGljaCB3ZSdsbCBhc3N1bWUgaXMgYSBETUEgZG9tYWluIGFuZCBsZWF2
+ZSBpbiAKcGxhY2UsIGJ1dCBpZiBhbGwgdGhlIFNvQ3Mgd2l0aCB0aGUgMzItYml0IGdhdGhlciBs
+aW1pdGF0aW9uIGFyZSBhbHNvIAp0aGUgb25lcyB3aXRoIHRlZ3JhLXNtbXUsIHdoaWNoIGRvZXNu
+J3Qgc3VwcG9ydCBkZWZhdWx0IGRvbWFpbnMgYW55d2F5LCAKdGhlbiBpdCBzb3VuZHMgbGlrZSB0
+aGF0J3MgYSBub24taXNzdWUuCgpJJ2xsIGdpdmUgdGhpcyBhIGJpdCBtb3JlIHRob3VnaHQgdG8g
+bWFrZSBzdXJlIEkgcmVhbGx5IGdldCBpdCByaWdodCwgCmFuZCBzZW5kIGEgdjIgbmV4dCB3ZWVr
+LgoKVGhhbmtzLApSb2Jpbi4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
+b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
+bW11
