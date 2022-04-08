@@ -4,64 +4,46 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8B2DEC433F5
-	for <iommu@archiver.kernel.org>; Fri,  8 Apr 2022 10:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0F571C433F5
+	for <iommu@archiver.kernel.org>; Fri,  8 Apr 2022 11:52:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 2EB7C6130D;
-	Fri,  8 Apr 2022 10:11:53 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 9DE786130C;
+	Fri,  8 Apr 2022 11:52:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QrMybcIn4zQd; Fri,  8 Apr 2022 10:11:52 +0000 (UTC)
+	with ESMTP id YqY2c7oVANPH; Fri,  8 Apr 2022 11:52:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id EFEC860B78;
-	Fri,  8 Apr 2022 10:11:51 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 8CB8960C28;
+	Fri,  8 Apr 2022 11:52:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AA30EC0084;
-	Fri,  8 Apr 2022 10:11:51 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 19E56C002C
- for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 10:11:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 73829C0084;
+	Fri,  8 Apr 2022 11:52:13 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 84C86C002C
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 11:52:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 05C10410F2
- for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 10:11:50 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 72AB883279
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 11:52:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Yv2Ir8a37uFj for <iommu@lists.linux-foundation.org>;
- Fri,  8 Apr 2022 10:11:49 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 35BDA404A0
- for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 10:11:48 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4A7DB11FB;
- Fri,  8 Apr 2022 03:11:48 -0700 (PDT)
-Received: from [10.57.41.19] (unknown [10.57.41.19])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6C6F53F73B;
- Fri,  8 Apr 2022 03:11:46 -0700 (PDT)
-Message-ID: <f904979d-35ee-e2b8-5fd3-325d956be0d7@arm.com>
-Date: Fri, 8 Apr 2022 11:11:41 +0100
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4i47CY9hGyBC for <iommu@lists.linux-foundation.org>;
+ Fri,  8 Apr 2022 11:52:12 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id CD7CA82C5E
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 11:52:11 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id 331051E9; Fri,  8 Apr 2022 13:52:08 +0200 (CEST)
+Date: Fri, 8 Apr 2022 13:52:06 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [git pull] IOMMU Fixes for Linux v5.18-rc1
+Message-ID: <YlAh5jHAEl/wvb0g@8bytes.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 0/4] Make the iommu driver no-snoop block feature
- consistent
-Content-Language: en-GB
-To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-References: <0-v2-f090ae795824+6ad-intel_no_snoop_jgg@nvidia.com>
- <f5acf507-b4ef-b393-159c-05ca04feb43d@arm.com>
- <20220407174326.GR2120790@nvidia.com>
- <77482321-2e39-fc7c-09b6-e929a851a80f@arm.com>
- <20220407190824.GS2120790@nvidia.com>
- <BN9PR11MB527648540AA714E988AE92608CE99@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <BN9PR11MB527648540AA714E988AE92608CE99@BN9PR11MB5276.namprd11.prod.outlook.com>
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Will Deacon <will@kernel.org>,
- Cornelia Huck <cohuck@redhat.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -74,68 +56,85 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: multipart/mixed; boundary="===============6465281741187954288=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-04-08 10:08, Tian, Kevin wrote:
->> From: Jason Gunthorpe <jgg@nvidia.com>
->> Sent: Friday, April 8, 2022 3:08 AM
->> On Thu, Apr 07, 2022 at 07:02:03PM +0100, Robin Murphy wrote:
->>> On 2022-04-07 18:43, Jason Gunthorpe wrote:
->>>> On Thu, Apr 07, 2022 at 06:03:37PM +0100, Robin Murphy wrote:
->>>>> At a glance, this all looks about the right shape to me now, thanks!
->>>>
->>>> Thanks!
->>>>
->>>>> Ideally I'd hope patch #4 could go straight to device_iommu_capable()
->> from
->>>>> my Thunderbolt series, but we can figure that out in a couple of weeks
->> once
->>>>
->>>> Yes, this does helps that because now the only iommu_capable call is
->>>> in a context where a device is available :)
->>>
->>> Derp, of course I have *two* VFIO patches waiting, the other one touching
->>> the iommu_capable() calls (there's still IOMMU_CAP_INTR_REMAP, which,
->> much
->>> as I hate it and would love to boot all that stuff over to
->>> drivers/irqchip,
->>
->> Oh me too...
->>
->>> it's not in my way so I'm leaving it be for now). I'll have to rebase that
->>> anyway, so merging this as-is is absolutely fine!
->>
->> This might help your effort - after this series and this below there
->> are no 'bus' users of iommu_capable left at all.
->>
-> 
-> Out of curiosity, while iommu_capable is being moved to a per-device
-> interface what about irq_domain_check_msi_remap() below (which
-> is also a global check)?
 
-I suppose it could if anyone cared enough to make the effort - probably 
-a case of resolving specific MSI domains for every device in the group, 
-and potentially having to deal with hotplug later as well. 
-Realistically, though, I wouldn't expect systems to have mixed 
-capabilities in that regard (i.e. where the check would return false 
-even though *some* domains support remapping), so there doesn't seem to 
-be any pressing need to relax it.
+--===============6465281741187954288==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="S78vV3zdgm7+tFOJ"
+Content-Disposition: inline
 
-Cheers,
-Robin.
 
->> +static int vfio_iommu_device_ok(void *iommu_data, struct device *device)
->> +{
->> +	bool msi_remap;
->> +
->> +	msi_remap = irq_domain_check_msi_remap() ||
->> +		    iommu_capable(device->bus, IOMMU_CAP_INTR_REMAP);
->> +
-> 
+--S78vV3zdgm7+tFOJ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+
+  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fix-v5.18-rc1
+
+for you to fetch changes up to 71ff461c3f41f6465434b9e980c01782763e7ad8:
+
+  iommu/omap: Fix regression in probe for NULL pointer dereference (2022-04-08 11:16:29 +0200)
+
+----------------------------------------------------------------
+IOMMU Fix for Linux v5.18-rc1:
+
+	- Fix boot regression due to a NULL-ptr dereference on OMAP
+	  machines
+
+----------------------------------------------------------------
+Tony Lindgren (1):
+      iommu/omap: Fix regression in probe for NULL pointer dereference
+
+ drivers/iommu/omap-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--S78vV3zdgm7+tFOJ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmJQIeMACgkQK/BELZcB
+GuPy1hAAnC8kn6odu36pzkZF/R7Wj51iCXRfHpDqggxFb0Una1PjSlCdIkfUURVU
+x0DdLw+qWVbMkwhIvxG+1rNrhGoDqJdoxXLdJoHdm87ATLXj2XOmCd4h4UMGjK5k
+jtx2f2n0H9KXa14FtMj4asJ+565ALRiJEswKv4DGji05WtABuUagxX7BG2/cVELW
+MQUASwHwCNYXphkBLS0ki2CLNBnA55OkF4vvqRefNGsjwvHyUaYWiFmUfpU4veb2
+m02kUxSjJbdevwXwRnQ/YXHZAjXttX1Lc61DJFCgCHhMh2W7NjggqaQ8OySpxmoC
+6j3TDp16afUcERdYoQFB0uzeMb6Z5/vBXI71eoFJQse7MTOxsbyvqjDNPj0OMBmU
+TRNzS1r4fBC8NcOPqJ+BifdVmcgWz0r+qnGkHYuU2/YaaSmlkFOzM6Y0F3fQcG7c
+Drs0hqAABRaLuXVDpFNBVsl+OEaFfsg2hE5nsRFld3gc+fXC3TGtfttljBJuUsxa
+ZtID2u53lebjpsODpEZbsY2klTozuIr6oKQNFLWez6KMHJIg4f9UBJGJgD6P/x+4
++Sm/wtRsOQjvJogsal2HEg05Bq+L+44bKdSoCLaMR3Gpu2LeCMjHWhSJAvVh19dm
+HayU26ex0tjtkwmppEA58QGvCI1OVycuPvXXn93Y/WRiuRCMFp8=
+=5IF9
+-----END PGP SIGNATURE-----
+
+--S78vV3zdgm7+tFOJ--
+
+--===============6465281741187954288==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============6465281741187954288==--
