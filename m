@@ -1,56 +1,67 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 40E95C433F5
-	for <iommu@archiver.kernel.org>; Fri,  8 Apr 2022 09:40:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8B2DEC433F5
+	for <iommu@archiver.kernel.org>; Fri,  8 Apr 2022 10:11:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id D265B83F66;
-	Fri,  8 Apr 2022 09:40:29 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 2EB7C6130D;
+	Fri,  8 Apr 2022 10:11:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id i3e0SGDggIOp; Fri,  8 Apr 2022 09:40:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id C5B9483F3E;
-	Fri,  8 Apr 2022 09:40:28 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QrMybcIn4zQd; Fri,  8 Apr 2022 10:11:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id EFEC860B78;
+	Fri,  8 Apr 2022 10:11:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 99360C0089;
-	Fri,  8 Apr 2022 09:40:28 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7A28CC002C
- for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 09:40:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AA30EC0084;
+	Fri,  8 Apr 2022 10:11:51 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 19E56C002C
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 10:11:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 68BAE83F4A
- for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 09:40:27 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 05C10410F2
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 10:11:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FdTpJnhnOhIv for <iommu@lists.linux-foundation.org>;
- Fri,  8 Apr 2022 09:40:26 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from muru.com (muru.com [72.249.23.125])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8E1F183F3E
- for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 09:40:26 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by muru.com (Postfix) with ESMTPS id 6319C807E;
- Fri,  8 Apr 2022 09:38:00 +0000 (UTC)
-Date: Fri, 8 Apr 2022 12:40:23 +0300
-From: Tony Lindgren <tony@atomide.com>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/omap: Fix regression in probe for NULL pointer
- dereference
-Message-ID: <YlADB4zeG+kwt7Oj@atomide.com>
-References: <20220331062301.24269-1-tony@atomide.com>
- <Yk54+S0iaMueWN63@atomide.com> <Yk/xe3Wq34V/0AJf@8bytes.org>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Yv2Ir8a37uFj for <iommu@lists.linux-foundation.org>;
+ Fri,  8 Apr 2022 10:11:49 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 35BDA404A0
+ for <iommu@lists.linux-foundation.org>; Fri,  8 Apr 2022 10:11:48 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4A7DB11FB;
+ Fri,  8 Apr 2022 03:11:48 -0700 (PDT)
+Received: from [10.57.41.19] (unknown [10.57.41.19])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6C6F53F73B;
+ Fri,  8 Apr 2022 03:11:46 -0700 (PDT)
+Message-ID: <f904979d-35ee-e2b8-5fd3-325d956be0d7@arm.com>
+Date: Fri, 8 Apr 2022 11:11:41 +0100
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <Yk/xe3Wq34V/0AJf@8bytes.org>
-Cc: linux-omap@vger.kernel.org, Drew Fustini <dfustini@baylibre.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux-foundation.org,
- Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 0/4] Make the iommu driver no-snoop block feature
+ consistent
+Content-Language: en-GB
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+References: <0-v2-f090ae795824+6ad-intel_no_snoop_jgg@nvidia.com>
+ <f5acf507-b4ef-b393-159c-05ca04feb43d@arm.com>
+ <20220407174326.GR2120790@nvidia.com>
+ <77482321-2e39-fc7c-09b6-e929a851a80f@arm.com>
+ <20220407190824.GS2120790@nvidia.com>
+ <BN9PR11MB527648540AA714E988AE92608CE99@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <BN9PR11MB527648540AA714E988AE92608CE99@BN9PR11MB5276.namprd11.prod.outlook.com>
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Will Deacon <will@kernel.org>,
+ Cornelia Huck <cohuck@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -63,28 +74,67 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
-
-* Joerg Roedel <joro@8bytes.org> [220408 08:23]:
-> On Thu, Apr 07, 2022 at 08:39:05AM +0300, Tony Lindgren wrote:
-> > Can you guys please get this fix into the -rc series? Or ack it so
-> > I can pick it up into my fixes branch?
+On 2022-04-08 10:08, Tian, Kevin wrote:
+>> From: Jason Gunthorpe <jgg@nvidia.com>
+>> Sent: Friday, April 8, 2022 3:08 AM
+>> On Thu, Apr 07, 2022 at 07:02:03PM +0100, Robin Murphy wrote:
+>>> On 2022-04-07 18:43, Jason Gunthorpe wrote:
+>>>> On Thu, Apr 07, 2022 at 06:03:37PM +0100, Robin Murphy wrote:
+>>>>> At a glance, this all looks about the right shape to me now, thanks!
+>>>>
+>>>> Thanks!
+>>>>
+>>>>> Ideally I'd hope patch #4 could go straight to device_iommu_capable()
+>> from
+>>>>> my Thunderbolt series, but we can figure that out in a couple of weeks
+>> once
+>>>>
+>>>> Yes, this does helps that because now the only iommu_capable call is
+>>>> in a context where a device is available :)
+>>>
+>>> Derp, of course I have *two* VFIO patches waiting, the other one touching
+>>> the iommu_capable() calls (there's still IOMMU_CAP_INTR_REMAP, which,
+>> much
+>>> as I hate it and would love to boot all that stuff over to
+>>> drivers/irqchip,
+>>
+>> Oh me too...
+>>
+>>> it's not in my way so I'm leaving it be for now). I'll have to rebase that
+>>> anyway, so merging this as-is is absolutely fine!
+>>
+>> This might help your effort - after this series and this below there
+>> are no 'bus' users of iommu_capable left at all.
+>>
 > 
-> Sorry for the delay, Covid catched me so I was away from email for
-> almost 2 week. This patch is picked-up now and I will send it upstream
-> for -rc2.
+> Out of curiosity, while iommu_capable is being moved to a per-device
+> interface what about irq_domain_check_msi_remap() below (which
+> is also a global check)?
 
-OK welcome back then, and hopefully no serious symptoms. Thanks for
-picking up the patch.
+I suppose it could if anyone cared enough to make the effort - probably 
+a case of resolving specific MSI domains for every device in the group, 
+and potentially having to deal with hotplug later as well. 
+Realistically, though, I wouldn't expect systems to have mixed 
+capabilities in that regard (i.e. where the check would return false 
+even though *some* domains support remapping), so there doesn't seem to 
+be any pressing need to relax it.
 
-Regards,
+Cheers,
+Robin.
 
-Tony
+>> +static int vfio_iommu_device_ok(void *iommu_data, struct device *device)
+>> +{
+>> +	bool msi_remap;
+>> +
+>> +	msi_remap = irq_domain_check_msi_remap() ||
+>> +		    iommu_capable(device->bus, IOMMU_CAP_INTR_REMAP);
+>> +
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
