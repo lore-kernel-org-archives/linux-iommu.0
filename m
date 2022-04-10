@@ -1,77 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8B662C433F5
-	for <iommu@archiver.kernel.org>; Sun, 10 Apr 2022 10:27:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3ECF4C433F5
+	for <iommu@archiver.kernel.org>; Sun, 10 Apr 2022 14:32:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 3E1B760BD2;
-	Sun, 10 Apr 2022 10:27:57 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id DB2F683F87;
+	Sun, 10 Apr 2022 14:32:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yI_SAp6xhyta; Sun, 10 Apr 2022 10:27:56 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id F21B360B00;
-	Sun, 10 Apr 2022 10:27:55 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id IAsrDA6EUcoj; Sun, 10 Apr 2022 14:32:04 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id AA53883F68;
+	Sun, 10 Apr 2022 14:32:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C9A9CC0084;
-	Sun, 10 Apr 2022 10:27:55 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E1E98C002C
- for <iommu@lists.linux-foundation.org>; Sun, 10 Apr 2022 10:27:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 747FEC0084;
+	Sun, 10 Apr 2022 14:32:03 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D82CBC002C
+ for <iommu@lists.linux-foundation.org>; Sun, 10 Apr 2022 11:00:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id CFEE44175D
- for <iommu@lists.linux-foundation.org>; Sun, 10 Apr 2022 10:27:54 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id D56D283F53
+ for <iommu@lists.linux-foundation.org>; Sun, 10 Apr 2022 11:00:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dqgWCzCAe_n8 for <iommu@lists.linux-foundation.org>;
- Sun, 10 Apr 2022 10:27:54 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id tAVtE79-1kq8 for <iommu@lists.linux-foundation.org>;
+ Sun, 10 Apr 2022 11:00:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp4.osuosl.org (Postfix) with ESMTPS id EF920417C6
- for <iommu@lists.linux-foundation.org>; Sun, 10 Apr 2022 10:27:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1649586473; x=1681122473;
- h=from:to:cc:subject:date:message-id:in-reply-to:
- references:mime-version:content-transfer-encoding;
- bh=Tb9Y3pllgnF1QXdjo3Umh1bVLV9TtsswW2KNLBbok1w=;
- b=V2KG00j4ErnojNpMUBSvJPVtkScTVPH10Qj6/zsrngddaHksc2mHNgzR
- IIEJhaTlFoyXg0m9UVk+KWufgZT4nv8WG78ldA4Ol0s92XyqnfBUNWmOR
- vfr0Djq0yYdenC2kOo9Phoki4taUNsURSLz6Ws1wdi+sa3QXMTL4LBDZ3
- AfP9APrspVH7JOsM7UZbjohzHXHZU/XGmbj5EXTqcihYgZOlEykj2TGR8
- Ilzj/ax3RhHGvNwGpw+h4rfOA7uw9dTLDaV0/YlQ+xNYq1SJ+s9+s/IQ1
- 5/XEZE37uxpxDEXK7lWydpPWKzImTnHVY9jEO7J7CrEWiCUhcgM/m+Lf5 w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10312"; a="249238517"
-X-IronPort-AV: E=Sophos;i="5.90,249,1643702400"; d="scan'208";a="249238517"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 10 Apr 2022 03:27:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,249,1643702400"; d="scan'208";a="699019665"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
- by fmsmga001.fm.intel.com with ESMTP; 10 Apr 2022 03:27:50 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
- Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>
-Subject: [PATCH RFC v3 12/12] iommu: Rename iommu-sva-lib.{c,h}
-Date: Sun, 10 Apr 2022 18:24:43 +0800
-Message-Id: <20220410102443.294128-13-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220410102443.294128-1-baolu.lu@linux.intel.com>
-References: <20220410102443.294128-1-baolu.lu@linux.intel.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org
+ [IPv6:2604:1380:4601:e00::1])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id DA1AF83F46
+ for <iommu@lists.linux-foundation.org>; Sun, 10 Apr 2022 11:00:14 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by ams.source.kernel.org (Postfix) with ESMTPS id 203ADB80AEC
+ for <iommu@lists.linux-foundation.org>; Sun, 10 Apr 2022 11:00:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4873C385A1
+ for <iommu@lists.linux-foundation.org>; Sun, 10 Apr 2022 11:00:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1649588410;
+ bh=HG3EYnk4+K3Kn+2yIOOHTNYQ+C3e3gphCbEHyUI4A8I=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=nHk6K+bBTC7SGUoNcLoDXEzcjhofVL0Ib2CakzlQNMt8menqJY6qEgWMQodIH7svR
+ qzGlUslGLGtJE7psJw9RY4gWushtxo1/oS+0QNBnzRkPhGbcAKAsbFwCHaXusQ35dB
+ G0+BeFLKQdwaQcYbW4iYDPUlO0flA8LhN/3m4nhB7oc3y5+HoyhFw6foKdfrW7PeJI
+ KWjwluWT62exUetgW3V2JIXHCNIec/TUx98NQncqf7oPwba0mlYh0eA3g6nX08hMcp
+ GGNZzMsHslnVDrldLnElEn2a8wjbjJcXwgK/TVSN1fhDLE87s0ut5B3tE0TVo5dvN/
+ 4MF93a2dppkmQ==
+Received: by mail-yw1-f169.google.com with SMTP id
+ 00721157ae682-2eafabbc80aso137202897b3.11
+ for <iommu@lists.linux-foundation.org>; Sun, 10 Apr 2022 04:00:10 -0700 (PDT)
+X-Gm-Message-State: AOAM5328OxfOnKhH0DdNcRkAfRiCa6eISSRqXBFOcOlYvmj6iFRtzMJI
+ fQCKK8Kol35/JP+9sF+tLfMGvXNVNe2BTuLNh2U=
+X-Google-Smtp-Source: ABdhPJxBxfZ0z3pnWvMZWbELdbyMq5gxlXwDGYBc87VCrQWqRYDGvz/w/hx27YUP7/lwCMS8Ng/VQQO7MjnHMKnxe0U=
+X-Received: by 2002:a81:6188:0:b0:2eb:4bd3:9b86 with SMTP id
+ v130-20020a816188000000b002eb4bd39b86mr21098036ywb.46.1649588409982; Sun, 10
+ Apr 2022 04:00:09 -0700 (PDT)
 MIME-Version: 1.0
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>
+References: <8201946a5b8b26dab35738b87da24ff27a9f9270.1649166391.git.robin.murphy@arm.com>
+In-Reply-To: <8201946a5b8b26dab35738b87da24ff27a9f9270.1649166391.git.robin.murphy@arm.com>
+From: Oded Gabbay <ogabbay@kernel.org>
+Date: Sun, 10 Apr 2022 13:59:43 +0300
+X-Gmail-Original-Message-ID: <CAFCwf10bwtpC=syFgcz8Ym5S797x3wmkGx3RFnUNkSsjdeyGgw@mail.gmail.com>
+Message-ID: <CAFCwf10bwtpC=syFgcz8Ym5S797x3wmkGx3RFnUNkSsjdeyGgw@mail.gmail.com>
+Subject: Re: [PATCH] habanalabs: Stop using iommu_present()
+To: Robin Murphy <robin.murphy@arm.com>
+X-Mailman-Approved-At: Sun, 10 Apr 2022 14:32:01 +0000
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,137 +93,108 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Rename iommu-sva-lib.c[h] to iommu-sva.c[h] as it contains all code
-for SVA implementation in iommu core.
+On Tue, Apr 5, 2022 at 4:46 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> Even if an IOMMU might be present for some PCI segment in the system,
+> that doesn't necessarily mean it provides translation for the device
+> we care about. Replace iommu_present() with a more appropriate check.
+>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>  drivers/misc/habanalabs/gaudi/gaudi.c | 8 ++++----
+>  drivers/misc/habanalabs/goya/goya.c   | 8 ++++----
+>  2 files changed, 8 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+> index 21c2b678ff72..5dc66dc7618e 100644
+> --- a/drivers/misc/habanalabs/gaudi/gaudi.c
+> +++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+> @@ -6133,7 +6133,7 @@ static int gaudi_debugfs_read32(struct hl_device *hdev, u64 addr,
+>                         rc = -EIO;
+>
+>         } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+> -                       user_address && !iommu_present(&pci_bus_type)) {
+> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>
+>                 *val = *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE);
+>
+> @@ -6176,7 +6176,7 @@ static int gaudi_debugfs_write32(struct hl_device *hdev, u64 addr,
+>                         rc = -EIO;
+>
+>         } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+> -                       user_address && !iommu_present(&pci_bus_type)) {
+> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>
+>                 *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+>
+> @@ -6223,7 +6223,7 @@ static int gaudi_debugfs_read64(struct hl_device *hdev, u64 addr,
+>                         rc = -EIO;
+>
+>         } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+> -                       user_address && !iommu_present(&pci_bus_type)) {
+> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>
+>                 *val = *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE);
+>
+> @@ -6268,7 +6268,7 @@ static int gaudi_debugfs_write64(struct hl_device *hdev, u64 addr,
+>                         rc = -EIO;
+>
+>         } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+> -                       user_address && !iommu_present(&pci_bus_type)) {
+> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>
+>                 *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+>
+> diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
+> index ec9358bcbf0b..0c455bf460f4 100644
+> --- a/drivers/misc/habanalabs/goya/goya.c
+> +++ b/drivers/misc/habanalabs/goya/goya.c
+> @@ -4309,7 +4309,7 @@ static int goya_debugfs_read32(struct hl_device *hdev, u64 addr,
+>                         rc = -EIO;
+>
+>         } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+> -                       user_address && !iommu_present(&pci_bus_type)) {
+> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>                 *val = *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE);
+>
+>         } else {
+> @@ -4369,7 +4369,7 @@ static int goya_debugfs_write32(struct hl_device *hdev, u64 addr,
+>                         rc = -EIO;
+>
+>         } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+> -                       user_address && !iommu_present(&pci_bus_type)) {
+> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>                 *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+>
+>         } else {
+> @@ -4418,7 +4418,7 @@ static int goya_debugfs_read64(struct hl_device *hdev, u64 addr,
+>                         rc = -EIO;
+>
+>         } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+> -                       user_address && !iommu_present(&pci_bus_type)) {
+> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>                 *val = *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE);
+>
+>         } else {
+> @@ -4465,7 +4465,7 @@ static int goya_debugfs_write64(struct hl_device *hdev, u64 addr,
+>                         rc = -EIO;
+>
+>         } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+> -                       user_address && !iommu_present(&pci_bus_type)) {
+> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>                 *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+>
+>         } else {
+> --
+> 2.28.0.dirty
+>
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/{iommu-sva-lib.h => iommu-sva.h}  | 0
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 2 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 2 +-
- drivers/iommu/intel/iommu.c                     | 2 +-
- drivers/iommu/intel/svm.c                       | 2 +-
- drivers/iommu/io-pgfault.c                      | 2 +-
- drivers/iommu/{iommu-sva-lib.c => iommu-sva.c}  | 2 +-
- drivers/iommu/iommu.c                           | 2 +-
- drivers/iommu/Makefile                          | 2 +-
- 9 files changed, 8 insertions(+), 8 deletions(-)
- rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (100%)
- rename drivers/iommu/{iommu-sva-lib.c => iommu-sva.c} (99%)
-
-diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva.h
-similarity index 100%
-rename from drivers/iommu/iommu-sva-lib.h
-rename to drivers/iommu/iommu-sva.h
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 5591321f9e11..a13543aa9df4 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -9,7 +9,7 @@
- #include <linux/slab.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- #include "../../io-pgtable-arm.h"
- 
- struct arm_smmu_mmu_notifier {
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 543d3ef1c102..ca2bd17eec41 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -31,7 +31,7 @@
- #include <linux/amba/bus.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- 
- static bool disable_bypass = true;
- module_param(disable_bypass, bool, 0444);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 3164bd5a3572..d3dbef5b74a7 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -27,7 +27,7 @@
- #include <linux/tboot.h>
- 
- #include "../irq_remapping.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- #include "pasid.h"
- #include "cap_audit.h"
- 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 61155f1cb985..166d1af2bda4 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -25,7 +25,7 @@
- 
- #include "pasid.h"
- #include "perf.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
- static void intel_svm_drain_prq(struct device *dev, u32 pasid);
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index fc1b2bdeedf8..d337165f3707 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -11,7 +11,7 @@
- #include <linux/slab.h>
- #include <linux/workqueue.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- /**
-  * struct iopf_queue - IO Page Fault queue
-diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva.c
-similarity index 99%
-rename from drivers/iommu/iommu-sva-lib.c
-rename to drivers/iommu/iommu-sva.c
-index 4c9d89f375df..c4e4684edc14 100644
---- a/drivers/iommu/iommu-sva-lib.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -7,7 +7,7 @@
- #include <linux/slab.h>
- #include <linux/sched/mm.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static DEFINE_MUTEX(iommu_sva_lock);
- static DECLARE_IOASID_SET(iommu_sva_pasid);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index ba9a687490c9..ac7af02ee50a 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -27,7 +27,7 @@
- #include <linux/cc_platform.h>
- #include <trace/events/iommu.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 44475a9b3eea..c1763476162b 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -27,6 +27,6 @@ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
- obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
- obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
- obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
--obj-$(CONFIG_IOMMU_SVA) += iommu-sva-lib.o io-pgfault.o
-+obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o io-pgfault.o
- obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
- obj-$(CONFIG_APPLE_DART) += apple-dart.o
--- 
-2.25.1
-
+Hi Robin,
+Can you please rebase this over the latest habanalabs-next ?
+The code was totally changed, but I think your core change is
+definitely relevant.
+Thanks,
+Oded
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
