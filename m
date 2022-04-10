@@ -1,71 +1,71 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C02A7C4332F
-	for <iommu@archiver.kernel.org>; Sat,  9 Apr 2022 13:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EA036C433EF
+	for <iommu@archiver.kernel.org>; Sun, 10 Apr 2022 01:38:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 339B441DF5;
-	Sat,  9 Apr 2022 13:32:40 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 86425605A2;
+	Sun, 10 Apr 2022 01:38:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eZiXBrIQk5AF; Sat,  9 Apr 2022 13:32:39 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 9F66141BA4;
-	Sat,  9 Apr 2022 13:32:38 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Cotu4vD2RlYU; Sun, 10 Apr 2022 01:38:41 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7DDA7606C6;
+	Sun, 10 Apr 2022 01:38:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5B90AC0084;
-	Sat,  9 Apr 2022 13:32:38 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D7F8FC002C
- for <iommu@lists.linux-foundation.org>; Sat,  9 Apr 2022 13:32:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4CCE0C0084;
+	Sun, 10 Apr 2022 01:38:41 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B502EC002C
+ for <iommu@lists.linux-foundation.org>; Sun, 10 Apr 2022 01:38:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id BB52B843AC
- for <iommu@lists.linux-foundation.org>; Sat,  9 Apr 2022 13:32:36 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 9DD3082AF8
+ for <iommu@lists.linux-foundation.org>; Sun, 10 Apr 2022 01:38:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uWZbMB2Y75TX for <iommu@lists.linux-foundation.org>;
- Sat,  9 Apr 2022 13:32:36 +0000 (UTC)
+ with ESMTP id hF9qLgIKKyDL for <iommu@lists.linux-foundation.org>;
+ Sun, 10 Apr 2022 01:38:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 178828439A
- for <iommu@lists.linux-foundation.org>; Sat,  9 Apr 2022 13:32:35 +0000 (UTC)
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 16C3F8291A
+ for <iommu@lists.linux-foundation.org>; Sun, 10 Apr 2022 01:38:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1649511156; x=1681047156;
+ t=1649554719; x=1681090719;
  h=from:to:cc:subject:date:message-id:mime-version:
  content-transfer-encoding;
- bh=60z86IsfKNedOIQbPNYiwb7F+FTL02AF8htmqN73hc0=;
- b=F/EYJMdzkr0XThr3GETuOn6auFi2PBIEqm6NRgZ2A/3STiz+Ia/AxWYD
- wJmRhN6CHGzsA+KFRkKNx8eaZk68OzBNMK2hU7SD4d92M+kqt1juEtuW3
- PLv3UKUDuxFbiMeGFERY2cvLKddbJ7RhknuRL2GQV/20BwCucgmGKuRxX
- SQ7XqwefI8qJtjNy0Hx84+ekxf31QiRakl+suKNjMP6NWNyefWLjvttsF
- aHPFumxk4yLb1e+Fk/7sO3Z1pI9q5laRflPEkGaDZrT+9ajPekYS7yZlo
- jN5Mst0cMsm7Bv9ggiryU29Hdadkpf8TGlT4r9yZ46laq+Ln3z6Mhygtl g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10312"; a="261982412"
-X-IronPort-AV: E=Sophos;i="5.90,247,1643702400"; d="scan'208";a="261982412"
+ bh=6IxqFkFMS6ZG4u+dtN73hUKlEN9IrYrHfMdKIbOkzLA=;
+ b=F6cmYNrBb6X9WhvHAES2KhkYSTTQQZzJ+VY73vvS5Pmh/AgBFJLkt4Dc
+ QRh+W+pNJazHoYgKs23g/IGSSB3r9TXdIQ2A957AbkH9IcmML0JZYxcxT
+ qb7toFfg6DNzPrpLwrV0RSmNmXnvTYVjczSpgwmZjCybqlKZZWb6YtBpI
+ cMWoAvPyJwY3YdTNPcg/dg2uAZKIjEz82dZG1Iv/0TVvS3kv4BGmMakNM
+ urW0q8PckFrQ0AiQIudHqh3vLbm3SGj9vlKajihJ1muSCJHPOqvLBE/iQ
+ /tEI9tkcB1LI8uL4B52SBgSvT5n6H7Px62lYVHW12Y4gre06yWy07ufGr w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10312"; a="259524672"
+X-IronPort-AV: E=Sophos;i="5.90,248,1643702400"; d="scan'208";a="259524672"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 09 Apr 2022 06:32:33 -0700
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 09 Apr 2022 18:38:28 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,247,1643702400"; d="scan'208";a="610239138"
+X-IronPort-AV: E=Sophos;i="5.90,248,1643702400"; d="scan'208";a="610529701"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
- by fmsmga008.fm.intel.com with ESMTP; 09 Apr 2022 06:32:32 -0700
+ by fmsmga008.fm.intel.com with ESMTP; 09 Apr 2022 18:38:27 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH 1/1] iommu/vt-d: Change return type of
- dmar_insert_one_dev_info()
-Date: Sat,  9 Apr 2022 21:30:06 +0800
-Message-Id: <20220409133006.3953129-1-baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 0/1] iommu/vt-d: Fixes for v5.18-rc3
+Date: Sun, 10 Apr 2022 09:35:32 +0800
+Message-Id: <20220410013533.3959168-1-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Cc: linux-kernel@vger.kernel.org
+Cc: Kevin Tian <kevin.tian@intel.com>, David Stevens <stevensd@chromium.org>,
+ iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,92 +83,24 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The dmar_insert_one_dev_info() returns the pass-in domain on success and
-NULL on failure. This doesn't make much sense. Change it to an integer.
+Hi Joerg,
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 24 +++++++++---------------
- 1 file changed, 9 insertions(+), 15 deletions(-)
+One fix is queued for v5.18. It aims to fix:
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index d24e6da33a60..5682f3de205d 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -2474,10 +2474,9 @@ static bool dev_is_real_dma_subdevice(struct device *dev)
- 	       pci_real_dma_dev(to_pci_dev(dev)) != to_pci_dev(dev);
- }
- 
--static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
--						    int bus, int devfn,
--						    struct device *dev,
--						    struct dmar_domain *domain)
-+static int dmar_insert_one_dev_info(struct intel_iommu *iommu, int bus,
-+				    int devfn, struct device *dev,
-+				    struct dmar_domain *domain)
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 	unsigned long flags;
-@@ -2490,7 +2489,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 	spin_unlock(&iommu->lock);
- 	if (ret) {
- 		spin_unlock_irqrestore(&device_domain_lock, flags);
--		return NULL;
-+		return -ENODEV;
- 	}
- 	list_add(&info->link, &domain->devices);
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
-@@ -2501,7 +2500,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 		if (ret) {
- 			dev_err(dev, "PASID table allocation failed\n");
- 			dmar_remove_one_dev_info(dev);
--			return NULL;
-+			return -ENOMEM;
- 		}
- 
- 		/* Setup the PASID entry for requests without PASID: */
-@@ -2519,17 +2518,17 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 		if (ret) {
- 			dev_err(dev, "Setup RID2PASID failed\n");
- 			dmar_remove_one_dev_info(dev);
--			return NULL;
-+			return -ENODEV;
- 		}
- 	}
- 
- 	if (domain_context_mapping(domain, dev)) {
- 		dev_err(dev, "Domain context map failed\n");
- 		dmar_remove_one_dev_info(dev);
--		return NULL;
-+		return -ENODEV;
- 	}
- 
--	return domain;
-+	return 0;
- }
- 
- static int iommu_domain_identity_map(struct dmar_domain *domain,
-@@ -2607,7 +2606,6 @@ static int __init si_domain_init(int hw)
- 
- static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
- {
--	struct dmar_domain *ndomain;
- 	struct intel_iommu *iommu;
- 	u8 bus, devfn;
- 
-@@ -2615,11 +2613,7 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
- 	if (!iommu)
- 		return -ENODEV;
- 
--	ndomain = dmar_insert_one_dev_info(iommu, bus, devfn, dev, domain);
--	if (ndomain != domain)
--		return -EBUSY;
--
--	return 0;
-+	return dmar_insert_one_dev_info(iommu, bus, devfn, dev, domain);
- }
- 
- static bool device_has_rmrr(struct device *dev)
+ - Calculate a feasible mask for non-aligned page-selective
+   IOTLB invalidation.
+
+Please consider it for the iommu/fix branch.
+
+Best regards,
+Lu Baolu
+
+David Stevens (1):
+  iommu/vt-d: Calculate mask for non-aligned flushes
+
+ drivers/iommu/intel/iommu.c | 27 ++++++++++++++++++++++++---
+ 1 file changed, 24 insertions(+), 3 deletions(-)
+
 -- 
 2.25.1
 
