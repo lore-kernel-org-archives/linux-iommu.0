@@ -1,75 +1,61 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EDEF3C4332F
-	for <iommu@archiver.kernel.org>; Mon, 11 Apr 2022 09:50:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C5074C433F5
+	for <iommu@archiver.kernel.org>; Mon, 11 Apr 2022 10:43:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A94454109D;
-	Mon, 11 Apr 2022 09:50:57 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 6380460746;
+	Mon, 11 Apr 2022 10:43:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id C9FrHp6xrE2q; Mon, 11 Apr 2022 09:50:56 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id g_9OfnDI6z2r; Mon, 11 Apr 2022 10:43:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 76D58416D2;
-	Mon, 11 Apr 2022 09:50:56 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 135A360681;
+	Mon, 11 Apr 2022 10:43:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 499E8C0086;
-	Mon, 11 Apr 2022 09:50:56 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 28A0EC0084
- for <iommu@lists.linux-foundation.org>; Mon, 11 Apr 2022 09:50:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D60C6C002F;
+	Mon, 11 Apr 2022 10:43:33 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CA7BEC002C
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Apr 2022 10:43:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 5267182951
- for <iommu@lists.linux-foundation.org>; Mon, 11 Apr 2022 09:50:50 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id A48218138F
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Apr 2022 10:43:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=quicinc.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Rhv8WWiVwCcR for <iommu@lists.linux-foundation.org>;
- Mon, 11 Apr 2022 09:50:49 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
- by smtp1.osuosl.org (Postfix) with ESMTPS id BA86B82AA9
- for <iommu@lists.linux-foundation.org>; Mon, 11 Apr 2022 09:50:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
- t=1649670650; x=1681206650;
- h=from:to:cc:subject:date:message-id:in-reply-to: references;
- bh=4sArmmPqK1fpsAra+ctcw1Mg8/kPFO/JwQ40cELNy00=;
- b=mTUDv+4/SGv1XCI68tZqzL0Mer9DfA0yS+ubK17u3PKwDmikYr+Kf8h7
- Z8z0O9M+pm3cS7hIdJMX7K5Xj8KJg71fAbRD0eTbnn/vsOQ/ULl+H9Kmk
- JlN3JcMfT5LIODwnlG2POjDi97ZwRnsd83bB3jD9gBdljI3+AVz0FTQ4N g=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
- by alexa-out.qualcomm.com with ESMTP; 11 Apr 2022 02:50:49 -0700
-X-QCInternal: smtphost
-Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
- by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA;
- 11 Apr 2022 02:50:48 -0700
-X-QCInternal: smtphost
-Received: from hu-rohiagar-hyd.qualcomm.com (HELO
- hu-sgudaval-hyd.qualcomm.com) ([10.213.106.138])
- by ironmsg02-blr.qualcomm.com with ESMTP; 11 Apr 2022 15:20:25 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3970568)
- id CAC7D3AB8; Mon, 11 Apr 2022 15:20:24 +0530 (+0530)
-From: Rohit Agarwal <quic_rohiagar@quicinc.com>
-To: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, robh+dt@kernel.org,
- krzk+dt@kernel.org, ulf.hansson@linaro.org, agross@kernel.org,
- bjorn.andersson@linaro.org
-Subject: [PATCH v2 4/7] dt-bindings: arm-smmu: Add binding for SDX65 SMMU
-Date: Mon, 11 Apr 2022 15:20:12 +0530
-Message-Id: <1649670615-21268-5-git-send-email-quic_rohiagar@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1649670615-21268-1-git-send-email-quic_rohiagar@quicinc.com>
-References: <1649670615-21268-1-git-send-email-quic_rohiagar@quicinc.com>
-Cc: devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Rohit Agarwal <quic_rohiagar@quicinc.com>,
- manivannan.sadhasivam@linaro.org, linux-arm-kernel@lists.infradead.org
+ with ESMTP id eEtzp1z_UZ6X for <iommu@lists.linux-foundation.org>;
+ Mon, 11 Apr 2022 10:43:31 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp1.osuosl.org (Postfix) with ESMTP id A729880B50
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Apr 2022 10:43:31 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A5B131692;
+ Mon, 11 Apr 2022 03:43:30 -0700 (PDT)
+Received: from [10.57.41.19] (unknown [10.57.41.19])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 888913F5A1;
+ Mon, 11 Apr 2022 03:43:29 -0700 (PDT)
+Message-ID: <97c6b2e1-3d9f-bf03-a14e-df3249d166dd@arm.com>
+Date: Mon, 11 Apr 2022 11:43:24 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] habanalabs: Stop using iommu_present()
+Content-Language: en-GB
+To: Oded Gabbay <ogabbay@kernel.org>
+References: <8201946a5b8b26dab35738b87da24ff27a9f9270.1649166391.git.robin.murphy@arm.com>
+ <CAFCwf10bwtpC=syFgcz8Ym5S797x3wmkGx3RFnUNkSsjdeyGgw@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAFCwf10bwtpC=syFgcz8Ym5S797x3wmkGx3RFnUNkSsjdeyGgw@mail.gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ iommu@lists.linux-foundation.org,
+ "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,34 +68,118 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add devicetree binding for Qualcomm SDX65 SMMU.
+On 2022-04-10 11:59, Oded Gabbay wrote:
+> On Tue, Apr 5, 2022 at 4:46 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> Even if an IOMMU might be present for some PCI segment in the system,
+>> that doesn't necessarily mean it provides translation for the device
+>> we care about. Replace iommu_present() with a more appropriate check.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>   drivers/misc/habanalabs/gaudi/gaudi.c | 8 ++++----
+>>   drivers/misc/habanalabs/goya/goya.c   | 8 ++++----
+>>   2 files changed, 8 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+>> index 21c2b678ff72..5dc66dc7618e 100644
+>> --- a/drivers/misc/habanalabs/gaudi/gaudi.c
+>> +++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+>> @@ -6133,7 +6133,7 @@ static int gaudi_debugfs_read32(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>
+>>                  *val = *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE);
+>>
+>> @@ -6176,7 +6176,7 @@ static int gaudi_debugfs_write32(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>
+>>                  *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+>>
+>> @@ -6223,7 +6223,7 @@ static int gaudi_debugfs_read64(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>
+>>                  *val = *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE);
+>>
+>> @@ -6268,7 +6268,7 @@ static int gaudi_debugfs_write64(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>
+>>                  *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+>>
+>> diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
+>> index ec9358bcbf0b..0c455bf460f4 100644
+>> --- a/drivers/misc/habanalabs/goya/goya.c
+>> +++ b/drivers/misc/habanalabs/goya/goya.c
+>> @@ -4309,7 +4309,7 @@ static int goya_debugfs_read32(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>                  *val = *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE);
+>>
+>>          } else {
+>> @@ -4369,7 +4369,7 @@ static int goya_debugfs_write32(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>                  *(u32 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+>>
+>>          } else {
+>> @@ -4418,7 +4418,7 @@ static int goya_debugfs_read64(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>                  *val = *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE);
+>>
+>>          } else {
+>> @@ -4465,7 +4465,7 @@ static int goya_debugfs_write64(struct hl_device *hdev, u64 addr,
+>>                          rc = -EIO;
+>>
+>>          } else if (addr >= HOST_PHYS_BASE && addr < host_phys_end &&
+>> -                       user_address && !iommu_present(&pci_bus_type)) {
+>> +                       user_address && !device_iommu_mapped(&hdev->pdev->dev)) {
+>>                  *(u64 *) phys_to_virt(addr - HOST_PHYS_BASE) = val;
+>>
+>>          } else {
+>> --
+>> 2.28.0.dirty
+>>
+> 
+> Hi Robin,
+> Can you please rebase this over the latest habanalabs-next ?
+> The code was totally changed, but I think your core change is
+> definitely relevant.
 
-Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
----
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
- 1 file changed, 1 insertion(+)
+Oh, lovely, that makes for a much nicer patch indeed! I'll spin a v2 
+shortly.
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index da5381c..1f99bff 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -39,6 +39,7 @@ properties:
-               - qcom,sc8180x-smmu-500
-               - qcom,sdm845-smmu-500
-               - qcom,sdx55-smmu-500
-+              - qcom,sdx65-smmu-500
-               - qcom,sm6350-smmu-500
-               - qcom,sm8150-smmu-500
-               - qcom,sm8250-smmu-500
--- 
-2.7.4
-
+Thanks,
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
