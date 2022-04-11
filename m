@@ -1,135 +1,132 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E7367C433FE
-	for <iommu@archiver.kernel.org>; Mon, 11 Apr 2022 15:16:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 246B9C433EF
+	for <iommu@archiver.kernel.org>; Mon, 11 Apr 2022 15:16:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 9ED3183437;
-	Mon, 11 Apr 2022 15:16:19 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id CB81660EBB;
+	Mon, 11 Apr 2022 15:16:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BsbKhJjwQe4G; Mon, 11 Apr 2022 15:16:18 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 62YdJ2pXaC-L; Mon, 11 Apr 2022 15:16:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 3F3B080A5F;
-	Mon, 11 Apr 2022 15:16:18 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 75B0960E9A;
+	Mon, 11 Apr 2022 15:16:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 17B78C0033;
-	Mon, 11 Apr 2022 15:16:18 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3155EC002C
- for <iommu@lists.linux-foundation.org>; Mon, 11 Apr 2022 15:16:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 410F8C0033;
+	Mon, 11 Apr 2022 15:16:19 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 37B4EC002C
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Apr 2022 15:16:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 3DC1C4046A
- for <iommu@lists.linux-foundation.org>; Mon, 11 Apr 2022 15:16:14 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 2608982B34
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Apr 2022 15:16:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id judyqG3sNyll for <iommu@lists.linux-foundation.org>;
- Mon, 11 Apr 2022 15:16:13 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id l9Y32L42vXlR for <iommu@lists.linux-foundation.org>;
+ Mon, 11 Apr 2022 15:16:15 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
 Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on2060c.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e88::60c])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 39E7F40519
- for <iommu@lists.linux-foundation.org>; Mon, 11 Apr 2022 15:16:13 +0000 (UTC)
+ (mail-dm6nam10on20603.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e88::603])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 10D2180A5F
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Apr 2022 15:16:14 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=B5cNLDJB9Y2/XkX3qr4gAm8q37aie0aNQLTe4v7h4wec10eDMe+gSH/oGJALdZUuxkZeQDphPF6DlD24EwddPY4r9t5OnBFG9RXHL05U+Ond4l04bCshQAk0qBWbM0kEfklSrY/yBatvAWgX+S5ijjO96WEoCy2SVJ7wTYegCDeDnvf9uTcocA1bd49gkBN4n3IT59bk/eUaAF8L3UvWmvGB34qC8dlQjlCYFCejBFgFjCdyQbpdZHjE8GL0VMvNh6FxOEdeLfTxaCdFD1S+ZLfA9azD4Knd1gkH3yWpQ+P7u4dIeJgaJiH9ZaT/idCpDFb53oRlI034W7+JYxeF8w==
+ b=RaZQ1s4AZwWfHVy6Ao4YwzvacoyTcLGdTLpALasGVXDZRhu79gFGGFcL8nI1GOOsfCfQ27zRkn96Ek7wmnIYbKbm4wbp7+cfnfx4ksr/BFWUw5jvZbFLc2oMeZYVDrGjOTU+3Gi8uuGBWpRrGzjX0i/Qu6n0huZwr9djq7rAGIUnFoUJaM2UJDyDP6AugS4CaRhyCR/sygPR1d57f+J1IxyPawb3wnGl65lrFHjGuy//M3A6KSZV/Ja7vJKD23tp0smvK4jZkMEy6xZTbs5/fYI+JvNoIG3AMZmlETGIRduAmKQIFro22mBN4RMpWVvCi5ViFJwPwITY2SrbsuILXw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8q6brgFYVQBC3PGM/Oo8QVZ2WBlZJpe30DpGshQeNGo=;
- b=ERziZo95ODp/Rz53hwPKIwBcTgdhLyKew6qBEKCoT2duVBZfxSoiQuD2ndPfz0ttmKrXVIzsEgV66ZQBIFC19BK10A0IGhy02XJiZgNE+dkgj9XdmGmUhI13IVA5pEbk4tE8TL4xqg6N7Vc/7GIuN0SQYnf/gYZCGC+OhzD/G97oPp7bjDZzEke4jl+vEuatNTpJ/C1tgMx69/KIHnn7/jGPut3ZHOomq1fJ8f99ctkMXY2dBn+qLT/YjawmdYvXWknl2sDVl0GFlm34IB3WMyLbp9rgd45hKolXxi4VLm3nSDb9Y/J+LheC8utJkea/TYrXMf2akFGZ9AYb2SwzMw==
+ bh=zb+wX33e72s2JWwps1Zk2u3B2IKnmICrG34JnxN3JSI=;
+ b=BAMDc4DUv2nWGOFFUSnQCWOSCU7EPg1XVXg0f87582io5y0ewZ79x7faLK5W4PAyLSJowcACUV6VHzVw1UE/uXUEjhva8W8Dv5gSNk1S4LhITbP+mf+MAkjFEOL0GtYOqHmw6HyxJ0awtH5bYDxypJk66tGLecA5CIiJMIe110WeM8UkMoJ8DCl/+aiA1Ub4Mslkqt8YCquzkNrAHmPaCFJiS0cPCB7BFu7AUYKD2YCLccWSowuORWaXKK7pnw8hJl+xWoVvAtST7OHqtvi76oYOjKUJpafh47apct53rBA48quGb7XT7LXtaVucrF4S/VKa39qJRHZW7ut4IvDHvA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8q6brgFYVQBC3PGM/Oo8QVZ2WBlZJpe30DpGshQeNGo=;
- b=L/O8i714uqc6Zwn9bcBNBfDNW+P5nJtd1wPac9WrD87PCKNViKk3uDcoXXJt8U6TtOdXzvFXGueVYiEpLoN8OGPX5CJsMPfNpohAIXgTlxx/4Cr/VqGrSPWCXmerWfWFYAbUQT3Wtoa11qAqNXWHxZkkjYqQnWpo3zswmv2/UjgZnacXB9+2bc9sJUgqtgXb+GiLOCXgT1avVAeGzTqYwnplr7x+SiZD4Sf5hsGTNcah6fqICPlpaUGXaMEg6wbwBgc07cl8asFxXHlccagZ9tjHRZToGThLHrqcPGGa5ug3cjQzeRbkbl2jUjAvJpjYpHvnYyEKGXkMbuxBzjubKQ==
+ bh=zb+wX33e72s2JWwps1Zk2u3B2IKnmICrG34JnxN3JSI=;
+ b=Q54NSGZHEYEVDHLmVe/f0pG7TJ/qONzFh2cByuPMenFj9VHEp4p8tSiUYLBJJJL1OLyfsqBRuDX6f3bvewTb3TEo3kzSY34pKC9cL1BEaUOponZC22vi1NFnD5k8mncN/Yuh8gReQ5Zfx4NfXlS22dBtfV/rDkAZL3o2ItAHtoVxDJoZPuiLNJRUDmSdcznUaxkb38JirfZahEkRy67tWx96CljSw60VWXmT4R7jPu0nCAUpLTtijDtvikxHG5ZihbbYJdFtrrAgzIzRufZFjvMOn3zt0TnYz2Xe0nqzRsEGRBBEdphBPegnSqFxGP82gqkBIKZ114rpgjaRQsW+eA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
  by PH7PR12MB5927.namprd12.prod.outlook.com (2603:10b6:510:1da::9)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 11 Apr
- 2022 15:16:10 +0000
+ 2022 15:16:13 +0000
 Received: from MN2PR12MB4192.namprd12.prod.outlook.com
  ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
  ([fe80::cdfb:f88e:410b:9374%6]) with mapi id 15.20.5144.029; Mon, 11 Apr 2022
- 15:16:10 +0000
+ 15:16:13 +0000
 To: Cornelia Huck <cohuck@redhat.com>, David Woodhouse <dwmw2@infradead.org>,
  iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>,
  kvm@vger.kernel.org, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
  Will Deacon <will@kernel.org>
-Subject: [PATCH v3 2/4] vfio: Move the Intel no-snoop control off of
- IOMMU_CACHE
-Date: Mon, 11 Apr 2022 12:16:06 -0300
-Message-Id: <2-v3-2cf356649677+a32-intel_no_snoop_jgg@nvidia.com>
-In-Reply-To: <0-v3-2cf356649677+a32-intel_no_snoop_jgg@nvidia.com>
-References: 
-X-ClientProxiedBy: BL0PR02CA0124.namprd02.prod.outlook.com
- (2603:10b6:208:35::29) To MN2PR12MB4192.namprd12.prod.outlook.com
+Subject: [PATCH v3 0/4] Make the iommu driver no-snoop block feature consistent
+Date: Mon, 11 Apr 2022 12:16:04 -0300
+Message-Id: <0-v3-2cf356649677+a32-intel_no_snoop_jgg@nvidia.com>
+X-ClientProxiedBy: BL1PR13CA0177.namprd13.prod.outlook.com
+ (2603:10b6:208:2bd::32) To MN2PR12MB4192.namprd12.prod.outlook.com
  (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: db351221-c540-4037-86e2-08da1bce352a
+X-MS-Office365-Filtering-Correlation-Id: 6680ef55-863f-4bc3-0b2e-08da1bce35c8
 X-MS-TrafficTypeDiagnostic: PH7PR12MB5927:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR12MB59273FD85549CA86180A7042C2EA9@PH7PR12MB5927.namprd12.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <PH7PR12MB5927F79C6FAB0334F03DA397C2EA9@PH7PR12MB5927.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: I7t6Y80Ev8dKWVsYG5EUEBAnjDb7e8b6J4OezXKo7qbNoeKU/ofmJH43kqTTXioLvHk9Y+57mFx9VDrYyj3+AZHHYvmzvlbgoqVj3Je+zdSCwZ8MLxFDa6EPkwcfQ4mcgozveIaX7i5jF95yWv9VWrIUW0N6/SmmuoVoj9F7isrTBMun6va6GaEhUAC/AMu3OFwz9+zYhWO+HdWatmmPBZz6DqT1QM1RupMlb76/ZW5gF767ZetJKSBLAbprMo6KryOYTXk8FLkE7ZZdCCRP6ihhzMBtJE6HKU4hV8bTdZYIvItCXoUQHaGWQHi8EC7VSNyMFF/nq1vREHfJVdm6QeuoP9YxiLvR2pQ7HfnxuoPdR4SWb1oP3/TQKcSBh0dwmpHY56uswy7LdrVIQh0D6WUWhaK4t0BvO+jw5AvfIrKo5lhL5PzPa58lZ19S0fKZ7slgho+obDcPPrWQVFlKKQTJIECpiGfa5w1lAKeBKmd9VO/JOAMlIyPJhnxjjTLVGGNoIkDn4bq+1yx3WfXe7ZfcCAEjb1SDKgtvQ84ifQ5GGiqwd5YtxoUI07vqzqOPMH8keHL/ZcXimu10xaRSjM+Ubod8OvL8P2m25IaN23bOInSEcyDxi0aFFaaewASYEMcz9rMYMpb1PirZihgna48MkTtZwZoLELORX1v84mCuSH1DUAU54VMOwJ5m7UcG
+X-Microsoft-Antispam-Message-Info: eKayUfg96dhSEioBcbkmAbm3JveRrQIzFNm+0dcKfOaIn/QJkMW9vukisZ2YWu8PvYZxpYJ83HbXadhedt8IZ8fuR5oT+6kKYEo9baXjMCHoOdjVeWf8knQwPXXcNjVRxcZuvddZl8mg6wCxBFgFHlcqEz+jQiwlk4QBh7XlkuFn5xqGmRS3aybisJQNisRlOi61sI66AUUuTFWfR04MUltsqOuGC2TVjtGJZUB1C+2jcp3MWIt29rkZUaIoRYm8UKull1IFgFeELKBzVex/a7mUkEy7ZXMnzm/E5tuh0BX3Mm3AkYpHdWDhOAODeBgVqBcLJzVFDrGE9LdzwoXkRTlRIYijYivnxt6UDmrbwqtsSDuusPVD+bdltH8MN2ZrXC9JV7eZFMIxq8Zl3mUpoKptgDvSDxrEVw/NKSgRc8hLgzNCZ9AJ6zGi2cKVlOkhiMjF/vGb3uQ1U68f2C7Fumot5DqTi71Dwzjw8eKrWkEs8EiJn6iGWLF3l7NOnldRcZhjKfj6dJgmxpcI6LfJzjqYNCbP/RHOb0LGmbOlRWLIoCl6mphdVkG4B+nW+ZSB7iKtR87cqFm5nLWbmbstTSiByD+UF3T/0/Gy4xSLTlWqTwdPUdSbEMQhtboPVQT4XTqhnBEHvlmt7+a7Nxx1PUsa8t1yZf7O1hYg5RZta7wpHwBY8r5wjqDeiXZ/Cx8oHM4ZCQwiN/8BLUSErjby9EKMhZsUdzze+tt/w0a6VAwD6d7quFET/k5LehlTpR5joqlRmVOAnS5TjrZkV9Ns/P/dRUl3GP1g5LNvAKx6gp7lpAwT5BT/bjkCFu16VBXi
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(6486002)(54906003)(6512007)(38100700002)(8676002)(508600001)(6666004)(6506007)(8936002)(5660300002)(2616005)(4326008)(110136005)(316002)(83380400001)(86362001)(66946007)(66556008)(36756003)(66476007)(7416002)(186003)(26005)(2906002)(4216001);
+ SFS:(13230001)(4636009)(366004)(6486002)(54906003)(6512007)(38100700002)(8676002)(508600001)(6666004)(6506007)(8936002)(5660300002)(2616005)(4326008)(110136005)(966005)(316002)(83380400001)(86362001)(66946007)(66556008)(36756003)(66476007)(7416002)(186003)(26005)(2906002)(4216001);
  DIR:OUT; SFP:1101; 
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QTLiJdTjzmaDOunUjOGosr1Xpal9jbwRYZJgp2HqkXHItBJAeRpaZsVwoQ/2?=
- =?us-ascii?Q?K8ExZeGVnby6KYHxFzqjHdhHHQlJMGKUoUKGvVuONNCVNQ+hocid6Q+15ORP?=
- =?us-ascii?Q?bibClFJRdTyrWeVVZVSQgOsDkS6rapIesKd1+LiuwUa58R0Tp952rNoh/cPv?=
- =?us-ascii?Q?kaGeOC2beAQsn0VmZlvqn6JnpNCmg3Ki9vlm4fkpZut9cto2ycchjTCYMRTO?=
- =?us-ascii?Q?BkNgOLsHDtn459YektkLA6epce3D7DdAJCbWl3yTPeC50Fs46LLOPmXyjclA?=
- =?us-ascii?Q?eyd/hcZWHaquHZG6/bC2rQPkOQjV454juX0tx4j7aSNajLxNWctL93+gTTQo?=
- =?us-ascii?Q?3HVZR1/lTkQhgcUg/1oFxI9H/2JYO0c8qDTItNTbPmv6xuPTZSpVwAKl0UMd?=
- =?us-ascii?Q?N253fxh4DD+0V3hPmS2a7BIbzVatOrfU05gPKvUhiCCaPJt58F9eW+nHWX/6?=
- =?us-ascii?Q?iF2+XyofGbI9D2p6gROO/NIkZuV9hm5dbt4yjTQsGCrlFK5C2aYSmFqWFCl5?=
- =?us-ascii?Q?btMcD3XuIFHTqrlku2Kxr+cOnpH5EdB4xS6AEiaJuzttpzZAoIz0CfKD+Wjn?=
- =?us-ascii?Q?CoQXV98dAh7HpZ/ysrC8V/xEHBOqvLBtYv2iTERLHaaC4TD4y6DOAInjcv4u?=
- =?us-ascii?Q?kkZnxAucUilvL7J3nVJ3EY611+ZLPVH0Z9SAhLbysAlQIxPApssvXdYO7tRs?=
- =?us-ascii?Q?B8s7T+zABYqBxbE+AtrdO8xMFWIHTUjEY1wWVTt0Vv5pczHpF5egs+xtDhA9?=
- =?us-ascii?Q?wVaH0A6anCqLWRQn3dd/8OKCfiHmzvQrASj9l+hKLzqZmYEoG+X48XD1x671?=
- =?us-ascii?Q?sEoMt5w8GhUWQmJRXIyCUwLLKUsLvZ2et7yX0Eas7vVUHyQDKa6QT5+cOMts?=
- =?us-ascii?Q?BaaJ3hj3pqiHripxLCAyUNbavcrcYRugr+ht3JQ1I4+IV3Iwl8oGyKwU9eAK?=
- =?us-ascii?Q?P1kazFfxD+K2q4n3e8EEBtlhnk/I7oYGG85Tbwz1jvAEPwHfF/osJ99WeREz?=
- =?us-ascii?Q?cC4x8FyU4rguWLQUx9Ke9fhS2HwGIJVaAb+qGp9/0QJw2giEX35YSOD+S56+?=
- =?us-ascii?Q?MgcgiFKOPsvS/yRyCnNZmZ5X6UPdVGEf09d0MG6fqi9ZSXN8erHqqmT1cJpo?=
- =?us-ascii?Q?R4M5riZngnyzU7Wlj7CohXILHs2HCKRVdT/yH+wIfVKz8EdhRyWyGQXqvltu?=
- =?us-ascii?Q?oxA0llQhUpyT+Z9scobqrE9olGHuge1ZYDm5TD/mhHjpG7eRUa4e6Uha6kwy?=
- =?us-ascii?Q?/LiS4YjOopC+RdXQktnrhoFCwRYQTsykFHiwD4a7Ni+FC8HfbZFrpcM2ca6F?=
- =?us-ascii?Q?q+bciBDTHJU5wqNrPUZfoxJDItRvIikRhVSoxPjAV+Y0v+be1uBve4HGgbXQ?=
- =?us-ascii?Q?9mSdo+ZEtriig3ln2UN3uimzzEYXnkquC4IN5+j4yKr9R1Tpl4f8wWTgOmZO?=
- =?us-ascii?Q?wtniCTLAZz5ysAuYVxThNH+5voHRDXB87ROIrI4I39AcpKy9AFmwctUs3aw9?=
- =?us-ascii?Q?aIsmYbcwEkiK2JvMo806iRRvioWgNu3rDP2nbzxWbQlOmwOtJoS/wyEJFemp?=
- =?us-ascii?Q?k0KTwyK8hXifp29hOTcWGD13a/whA1Y5/oVs2uHvINbcYUtGzm4RY9yLdPvh?=
- =?us-ascii?Q?fXXdL5rXAhfnziLPtaPwn1j+vVr7dg1m8C8+fBR1rDBQMEY0DKMMR2c4KYEC?=
- =?us-ascii?Q?IZoxP5gUtOUIj3jASmwnC9A2fZgsuP6lJO81NftG5I448wy92CSeC1EHB7uR?=
- =?us-ascii?Q?fFwCiCFhKQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Jrqgg0XlLwlTMRNydUrxQbBkMp9uT+dNtXCL2pDphkCzmb+nl6tEfscxNeos?=
+ =?us-ascii?Q?XPPbFS2Cp8wrdqX8jf+vZxAXiyxVIn1XxBXKxVxUrl5VYkrVOlvjevQrzHzD?=
+ =?us-ascii?Q?LrwZ5wffrLPOnEXQ6FzQjeHRgvAjpM1sOGSPFR+/6CNljtG/GvD92jXn772A?=
+ =?us-ascii?Q?XoBJJ4W+Cq3fbrhhvkI8uDFzKy3GyjobN1FluBAx4uQdcQrgUiB4k6/QDXtj?=
+ =?us-ascii?Q?96S9j6dEUNNegddNhfkY3xZQ29xdBGpXB9t78b6MaYkBoyJ8Pj0N8FXnA4gQ?=
+ =?us-ascii?Q?SDYGacZ48Vkmeen4hIbkdHbBGe6pZVNaF3WhQKFH1Z8I9gpYsj3Ui4gKobz8?=
+ =?us-ascii?Q?2z5q1ZjheyYFhUlsICwL2eRScUyR+aabzsWzsyJRUHDo09iODWzhJToOltHg?=
+ =?us-ascii?Q?rtkzQ1GPyKnmvOajmZe44Rg91IOyR93pXnTo4mQQEVkG0wIDu9wTvC4Re8EC?=
+ =?us-ascii?Q?7r7kfYgVsmdkGtJlYHDllJBK5TU5EXWyAoKKmd3uux19NDb6Wj66fwNIEFtI?=
+ =?us-ascii?Q?Z/Q77k+gOV8H1VFdkytGfnbeUESaQxmHZtmBtkxn+P1KErpo/OzPz051vDwG?=
+ =?us-ascii?Q?kZLcR5UUPJZGLQfmUnwJMTX6GyIIvxHOt2skmF9i0AjCqJ7WojIi0+lgB7ND?=
+ =?us-ascii?Q?L5SmXmSdDCvACK3JZQkntZ+Y2aFI4Clulzqu9ztLAXMb3+axIebb3LZdVUcG?=
+ =?us-ascii?Q?4lRes35Wybi3o79ssSNqrqqvJObuusan4M4sK1W0vy4dDSInQfrznXVplEzk?=
+ =?us-ascii?Q?BPjOyfES/h/8pegvNNFBhVAC18AJcTAsRBZGA+p9VA4tESD64GtNmHVMUAZW?=
+ =?us-ascii?Q?pdWA48feTJk9gbZlWe0OqJefah81GzaOYc/mEtPTpLIVu5wMH9xucFNmoYFq?=
+ =?us-ascii?Q?sJGzC8TBEgQe9rqEbnqCLJP302k8Cs16z3eX3DzV9zNvBV51CQibI6eNI4qd?=
+ =?us-ascii?Q?2lQpnbEx2QHAH5Z2ZNB+XTBequd62YatCtCi2ofE3JrTnL4absxUylsU+Mxd?=
+ =?us-ascii?Q?4XkjZtZoBWXjxY0I22M6aMuZZRfNlPXf4psWbpW79OvObfe12oaruM9JSbQ2?=
+ =?us-ascii?Q?sjutjYICeZYVarCs4rv/KA9otzZkAqcQgdl5RbSNWwzGsf2ERpB9gcjjo++u?=
+ =?us-ascii?Q?LTkDeRLZWo1GXBDk9z+8P4O63hUOP5/kp1XkMw0AYdeDHuteGfU/RZfVZLTz?=
+ =?us-ascii?Q?+ENWt9aAbdBmGv8m0+i5xsqy+x8e/I342P1+JZ9s6uuZ7dZ0xAy7YcF/mJUQ?=
+ =?us-ascii?Q?HLdPu3LGla+aFp3dr4QmeJOqttUpNktz3FbkE44ije8VOXk5BRX2JRi5roGM?=
+ =?us-ascii?Q?4f5k5nuwb6L+nMVmysQiAYAXAR7umy6RH00OJ8Cgccw//5uGIEE9cNcdc/Wo?=
+ =?us-ascii?Q?FRkjOVSUfNr415Z17FrS+VNGXQsUh9+zz/1O6dkQX/iechxWa+1K8hIWaiil?=
+ =?us-ascii?Q?z+FLbPbsaNpbrX2NO/2+91Eih2qHZ1BHIOe8hl2dlVJlCq5fAHHeqs6M4kUR?=
+ =?us-ascii?Q?W3KcrGqPqxmgM4HSEiC0G253ytqqSGJiQa3caKfTzM+4Gq0lBK0Y9JsWhkvS?=
+ =?us-ascii?Q?6CcPhAOBpc9y1UfQ2oTF6bmiQzeFC4GUwbmZhkZJuRBPCOyoH1ZN88Qt5l+V?=
+ =?us-ascii?Q?sCyyhWeizo/M6wbNkD9ppT4BR17Tb0fZSok+Frft6WnK+cZtyQgbzNeazlQh?=
+ =?us-ascii?Q?HKHmqusYzBlYJ5Lv0ozunUrXSV11r1TQ4lyOVJfXIBlkaaQY67qSFrLNe4YY?=
+ =?us-ascii?Q?Fl1WT0Q6DA=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: db351221-c540-4037-86e2-08da1bce352a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6680ef55-863f-4bc3-0b2e-08da1bce35c8
 X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 15:16:09.8975 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2022 15:16:10.8830 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LjvVDomLxjWt9Ov6g+XSfS5/BSeupwG5qita3QkhZxjjPQXXUgSCHzVWZzedI419
+X-MS-Exchange-CrossTenant-UserPrincipalName: i4CXLfb0MCKbfq7itXJCzdE3ET7ck0C7OeXSerHa/o3i3GokA4jvkr7MLussfaeb
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5927
 Cc: "Tian, Kevin" <kevin.tian@intel.com>,
  Alex Williamson <alex.williamson@redhat.com>,
@@ -153,194 +150,100 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-IOMMU_CACHE means "normal DMA to this iommu_domain's IOVA should be cache
-coherent" and is used by the DMA API. The definition allows for special
-non-coherent DMA to exist - ie processing of the no-snoop flag in PCIe
-TLPs - so long as this behavior is opt-in by the device driver.
+PCIe defines a 'no-snoop' bit in each the TLP which is usually implemented
+by a platform as bypassing elements in the DMA coherent CPU cache
+hierarchy. A driver can command a device to set this bit on some of its
+transactions as a micro-optimization.
 
-The flag is mainly used by the DMA API to synchronize the IOMMU setting
-with the expected cache behavior of the DMA master. eg based on
-dev_is_dma_coherent() in some case.
+However, the driver is now responsible to synchronize the CPU cache with
+the DMA that bypassed it. On x86 this may be done through the wbinvd
+instruction, and the i915 GPU driver is the only Linux DMA driver that
+calls it.
 
-For Intel IOMMU IOMMU_CACHE was redefined to mean 'force all DMA to be
-cache coherent' which has the practical effect of causing the IOMMU to
-ignore the no-snoop bit in a PCIe TLP.
+The problem comes that KVM on x86 will normally disable the wbinvd
+instruction in the guest and render it a NOP. As the driver running in the
+guest is not aware the wbinvd doesn't work it may still cause the device
+to set the no-snoop bit and the platform will bypass the CPU cache.
+Without a working wbinvd there is no way to re-synchronize the CPU cache
+and the driver in the VM has data corruption.
 
-x86 platforms are always IOMMU_CACHE, so Intel should ignore this flag.
+Thus, we see a general direction on x86 that the IOMMU HW is able to block
+the no-snoop bit in the TLP. This NOP's the optimization and allows KVM to
+to NOP the wbinvd without causing any data corruption.
 
-Instead use the new domain op enforce_cache_coherency() which causes every
-IOPTE created in the domain to have the no-snoop blocking behavior.
+This control for Intel IOMMU was exposed by using IOMMU_CACHE and
+IOMMU_CAP_CACHE_COHERENCY, however these two values now have multiple
+meanings and usages beyond blocking no-snoop and the whole thing has
+become confused. AMD IOMMU has the same feature and same IOPTE bits
+however it unconditionally blocks no-snoop.
 
-Reconfigure VFIO to always use IOMMU_CACHE and call
-enforce_cache_coherency() to operate the special Intel behavior.
+Change it so that:
+ - IOMMU_CACHE is only about the DMA coherence of normal DMAs from a
+   device. It is used by the DMA API/VFIO/etc when the user of the
+   iommu_domain will not be doing manual cache coherency operations.
 
-Remove the IOMMU_CACHE test from Intel IOMMU.
+ - IOMMU_CAP_CACHE_COHERENCY indicates if IOMMU_CACHE can be used with the
+   device.
 
-Ultimately VFIO plumbs the result of enforce_cache_coherency() back into
-the x86 platform code through kvm_arch_register_noncoherent_dma() which
-controls if the WBINVD instruction is available in the guest.  No other
-archs implement kvm_arch_register_noncoherent_dma() nor are there any
-other known consumers of VFIO_DMA_CC_IOMMU that might be affected by the
-user visible result change on non-x86 archs.
+ - The new optional domain op enforce_cache_coherency() will cause the
+   entire domain to block no-snoop requests - ie there is no way for any
+   device attached to the domain to opt out of the IOMMU_CACHE behavior.
+   This is permanent on the domain and must apply to any future devices
+   attached to it.
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Acked-by: Alex Williamson <alex.williamson@redhat.com>
-Acked-by: Robin Murphy <robin.murphy@arm.com>
+Ideally an iommu driver should implement enforce_cache_coherency() so that
+DMA API domains allow the no-snoop optimization. This leaves it available
+to kernel drivers like i915. VFIO will call enforce_cache_coherency()
+before establishing any mappings and the domain should then permanently
+block no-snoop.
+
+If enforce_cache_coherency() fails VFIO will communicate back through to
+KVM into the arch code via kvm_arch_register_noncoherent_dma()
+(only implemented by x86) which triggers a working wbinvd to be made
+available to the VM.
+
+While other iommu drivers are certainly welcome to implement
+enforce_cache_coherency(), it is not clear there is any benefit in doing
+so right now.
+
+This is on github: https://github.com/jgunthorpe/linux/commits/intel_no_snoop
+
+Joerg, I think we are ready with this now - if there are no futher
+comments I won't resend it unless there is some conflict with rc3. Thanks
+everyone!
+
+v3:
+ - Rename dmar_domain->enforce_no_snoop to dmar_domain->force_snooping
+ - Accumulate acks
+ - Rebase to 5.18-rc2
+ - Revise commit language
+v2: https://lore.kernel.org/r/0-v2-f090ae795824+6ad-intel_no_snoop_jgg@nvidia.com
+ - Abandon removing IOMMU_CAP_CACHE_COHERENCY - instead make it the cap
+   flag that indicates IOMMU_CACHE is supported
+ - Put the VFIO tests for IOMMU_CACHE at VFIO device registration
+ - In the Intel driver remove the domain->iommu_snooping value, this is
+   global not per-domain
+v1: https://lore.kernel.org/r/0-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com
+
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/intel/iommu.c     |  7 ++-----
- drivers/vfio/vfio_iommu_type1.c | 30 +++++++++++++++++++-----------
- include/linux/intel-iommu.h     |  1 -
- 3 files changed, 21 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 8e8adecc6a434e..2332060e059c3d 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -641,7 +641,6 @@ static unsigned long domain_super_pgsize_bitmap(struct dmar_domain *domain)
- static void domain_update_iommu_cap(struct dmar_domain *domain)
- {
- 	domain_update_iommu_coherency(domain);
--	domain->iommu_snooping = domain_update_iommu_snooping(NULL);
- 	domain->iommu_superpage = domain_update_iommu_superpage(domain, NULL);
- 
- 	/*
-@@ -4283,7 +4282,6 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
- 	domain->agaw = width_to_agaw(adjust_width);
- 
- 	domain->iommu_coherency = false;
--	domain->iommu_snooping = false;
- 	domain->iommu_superpage = 0;
- 	domain->max_addr = 0;
- 
-@@ -4422,8 +4420,7 @@ static int intel_iommu_map(struct iommu_domain *domain,
- 		prot |= DMA_PTE_READ;
- 	if (iommu_prot & IOMMU_WRITE)
- 		prot |= DMA_PTE_WRITE;
--	if (((iommu_prot & IOMMU_CACHE) && dmar_domain->iommu_snooping) ||
--	    dmar_domain->force_snooping)
-+	if (dmar_domain->force_snooping)
- 		prot |= DMA_PTE_SNP;
- 
- 	max_addr = iova + size;
-@@ -4550,7 +4547,7 @@ static bool intel_iommu_enforce_cache_coherency(struct iommu_domain *domain)
- {
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 
--	if (!dmar_domain->iommu_snooping)
-+	if (!domain_update_iommu_snooping(NULL))
- 		return false;
- 	dmar_domain->force_snooping = true;
- 	return true;
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 9394aa9444c10c..c13b9290e35759 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -84,8 +84,8 @@ struct vfio_domain {
- 	struct iommu_domain	*domain;
- 	struct list_head	next;
- 	struct list_head	group_list;
--	int			prot;		/* IOMMU_CACHE */
--	bool			fgsp;		/* Fine-grained super pages */
-+	bool			fgsp : 1;	/* Fine-grained super pages */
-+	bool			enforce_cache_coherency : 1;
- };
- 
- struct vfio_dma {
-@@ -1461,7 +1461,7 @@ static int vfio_iommu_map(struct vfio_iommu *iommu, dma_addr_t iova,
- 
- 	list_for_each_entry(d, &iommu->domain_list, next) {
- 		ret = iommu_map(d->domain, iova, (phys_addr_t)pfn << PAGE_SHIFT,
--				npage << PAGE_SHIFT, prot | d->prot);
-+				npage << PAGE_SHIFT, prot | IOMMU_CACHE);
- 		if (ret)
- 			goto unwind;
- 
-@@ -1771,7 +1771,7 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
- 			}
- 
- 			ret = iommu_map(domain->domain, iova, phys,
--					size, dma->prot | domain->prot);
-+					size, dma->prot | IOMMU_CACHE);
- 			if (ret) {
- 				if (!dma->iommu_mapped) {
- 					vfio_unpin_pages_remote(dma, iova,
-@@ -1859,7 +1859,7 @@ static void vfio_test_domain_fgsp(struct vfio_domain *domain)
- 		return;
- 
- 	ret = iommu_map(domain->domain, 0, page_to_phys(pages), PAGE_SIZE * 2,
--			IOMMU_READ | IOMMU_WRITE | domain->prot);
-+			IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE);
- 	if (!ret) {
- 		size_t unmapped = iommu_unmap(domain->domain, 0, PAGE_SIZE);
- 
-@@ -2267,8 +2267,15 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 		goto out_detach;
- 	}
- 
--	if (iommu_capable(bus, IOMMU_CAP_CACHE_COHERENCY))
--		domain->prot |= IOMMU_CACHE;
-+	/*
-+	 * If the IOMMU can block non-coherent operations (ie PCIe TLPs with
-+	 * no-snoop set) then VFIO always turns this feature on because on Intel
-+	 * platforms it optimizes KVM to disable wbinvd emulation.
-+	 */
-+	if (domain->domain->ops->enforce_cache_coherency)
-+		domain->enforce_cache_coherency =
-+			domain->domain->ops->enforce_cache_coherency(
-+				domain->domain);
- 
- 	/*
- 	 * Try to match an existing compatible domain.  We don't want to
-@@ -2279,7 +2286,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	 */
- 	list_for_each_entry(d, &iommu->domain_list, next) {
- 		if (d->domain->ops == domain->domain->ops &&
--		    d->prot == domain->prot) {
-+		    d->enforce_cache_coherency ==
-+			    domain->enforce_cache_coherency) {
- 			iommu_detach_group(domain->domain, group->iommu_group);
- 			if (!iommu_attach_group(d->domain,
- 						group->iommu_group)) {
-@@ -2611,14 +2619,14 @@ static void vfio_iommu_type1_release(void *iommu_data)
- 	kfree(iommu);
- }
- 
--static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
-+static int vfio_domains_have_enforce_cache_coherency(struct vfio_iommu *iommu)
- {
- 	struct vfio_domain *domain;
- 	int ret = 1;
- 
- 	mutex_lock(&iommu->lock);
- 	list_for_each_entry(domain, &iommu->domain_list, next) {
--		if (!(domain->prot & IOMMU_CACHE)) {
-+		if (!(domain->enforce_cache_coherency)) {
- 			ret = 0;
- 			break;
- 		}
-@@ -2641,7 +2649,7 @@ static int vfio_iommu_type1_check_extension(struct vfio_iommu *iommu,
- 	case VFIO_DMA_CC_IOMMU:
- 		if (!iommu)
- 			return 0;
--		return vfio_domains_have_iommu_cache(iommu);
-+		return vfio_domains_have_enforce_cache_coherency(iommu);
- 	default:
- 		return 0;
- 	}
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 4c2baf2446c277..72e5d7900e717f 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -539,7 +539,6 @@ struct dmar_domain {
- 
- 	u8 has_iotlb_device: 1;
- 	u8 iommu_coherency: 1;		/* indicate coherency of iommu access */
--	u8 iommu_snooping: 1;		/* indicate snooping control feature */
- 	u8 force_snooping : 1;		/* Create IOPTEs with snoop control */
- 
- 	struct list_head devices;	/* all devices' list */
+Jason Gunthorpe (4):
+  iommu: Introduce the domain op enforce_cache_coherency()
+  vfio: Move the Intel no-snoop control off of IOMMU_CACHE
+  iommu: Redefine IOMMU_CAP_CACHE_COHERENCY as the cap flag for
+    IOMMU_CACHE
+  vfio: Require that devices support DMA cache coherence
+
+ drivers/iommu/amd/iommu.c       |  7 +++++++
+ drivers/iommu/intel/iommu.c     | 17 +++++++++++++----
+ drivers/vfio/vfio.c             |  7 +++++++
+ drivers/vfio/vfio_iommu_type1.c | 30 +++++++++++++++++++-----------
+ include/linux/intel-iommu.h     |  2 +-
+ include/linux/iommu.h           |  7 +++++--
+ 6 files changed, 52 insertions(+), 18 deletions(-)
+
+
+base-commit: ce522ba9ef7e2d9fb22a39eb3371c0c64e2a433e
 -- 
 2.35.1
 
