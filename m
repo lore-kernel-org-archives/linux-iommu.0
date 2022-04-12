@@ -1,117 +1,111 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 77B34C433EF
-	for <iommu@archiver.kernel.org>; Tue, 12 Apr 2022 02:51:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AF158C433F5
+	for <iommu@archiver.kernel.org>; Tue, 12 Apr 2022 03:16:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 15B02405F2;
-	Tue, 12 Apr 2022 02:51:29 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3B79F410B5;
+	Tue, 12 Apr 2022 03:16:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id p3j2pPKbFDBZ; Tue, 12 Apr 2022 02:51:28 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id EB03040122;
-	Tue, 12 Apr 2022 02:51:27 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QW81MIlaGVh7; Tue, 12 Apr 2022 03:16:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 88320410AE;
+	Tue, 12 Apr 2022 03:16:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C4808C0082;
-	Tue, 12 Apr 2022 02:51:27 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 68F3DC002F
- for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 02:51:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 56B45C0033;
+	Tue, 12 Apr 2022 03:16:00 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D9EFEC002C
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 03:15:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4690B60EE0
- for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 02:51:26 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id B7A0C410B5
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 03:15:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8_5y1KDSN34o for <iommu@lists.linux-foundation.org>;
- Tue, 12 Apr 2022 02:51:25 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Yl8fwUSR3v1x for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Apr 2022 03:15:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp3.osuosl.org (Postfix) with ESMTPS id B714960EDA
- for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 02:51:25 +0000 (UTC)
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 4BAB2410AE
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 03:15:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1649731885; x=1681267885;
+ t=1649733358; x=1681269358;
  h=from:to:cc:subject:date:message-id:references:
  in-reply-to:content-transfer-encoding:mime-version;
- bh=JTleEjuPned0N9yF8Af6YgWaFi9vecUC0Ri2sW4K4zk=;
- b=b+p/2hmXTsJsWq7geui/uQKudNwiSGIwE76xlml2AaM8Ykza8P3sRWP8
- PvA7CdKako1vGe5/P3UGkvgQSB8m3WreNdJgQZhabcVn3t3UvNmFzhPWx
- LOij9q8ZSklFnniADQuakgbOg4c2QMahNlNsIjKL7XxeZjfTmLq0oR9mW
- EmjVhSs++MK6CNPETAsXQEWgY1K+hYdtInDfJSWiaSApWw+hozIZUS7n2
- Z36/LVdYtlQsPmSMFVc+2U2JMNFbCB4XmtrVQIJ3cKi8rPkAPKPkrJ84N
- OAbPoTWGWoJwaVfEhsGIFzNHue+KCaTkdVuj6VjzBDDNd3Dc9z7QR2e+o Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="259858895"
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; d="scan'208";a="259858895"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 11 Apr 2022 19:51:25 -0700
+ bh=WF2bogzPqR33LkBggtPXRbS2Pmr015N+JvUhgqu8uyc=;
+ b=ZYr8X8z05pXumzezEhUYOeYUV/OakaEKB5nY6xpRbyTBChNhi/TRCKZm
+ bArwgzcfHqRW2xAg76qpKObkhPEQcGMLDvc7LyOhP+xM+k7wpq7d1jtil
+ 6FL/SemakMq8Ug0QLtJkGnPMQyBoktOP4XFhbiKqG7+KFAJB9IG61wcsU
+ DBKTezO12RJYw/WYtQct3+/gJSqUMdhgfrCp0pcFEuQ2zRBj800sZsxEr
+ eSR82ehIOBUzjSqV7pe4k4kZuxvOlVcuVQIGqRjB/vrH/BVGdAMrlhZl3
+ 9iUtoOIVgnf372AA/QSGgodnV2xF0mipxO/L/ew6Ki0NMl/guyLosaF5X A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="287278925"
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; d="scan'208";a="287278925"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 11 Apr 2022 20:15:56 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; d="scan'208";a="551497799"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
- by orsmga007.jf.intel.com with ESMTP; 11 Apr 2022 19:51:24 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; d="scan'208";a="699640485"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+ by fmsmga001.fm.intel.com with ESMTP; 11 Apr 2022 20:15:56 -0700
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 11 Apr 2022 19:51:24 -0700
-Received: from fmsmsx605.amr.corp.intel.com (10.18.126.85) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ 15.1.2308.27; Mon, 11 Apr 2022 20:15:56 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 11 Apr 2022 19:51:23 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
+ 15.1.2308.27; Mon, 11 Apr 2022 20:15:55 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Mon, 11 Apr 2022 19:51:23 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.49) by
- edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ 15.1.2308.27 via Frontend Transport; Mon, 11 Apr 2022 20:15:55 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Mon, 11 Apr 2022 19:51:23 -0700
+ 15.1.2308.27; Mon, 11 Apr 2022 20:15:55 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jNNLVvYlq4mNcn0KKkXGHnSyFDDWgzDhHhyew7ki/J1hRi6w3GWeuN8QvZaDF74k5syT9nyXRbcmgJ/Xk9+qZAf8vHxYy95PjBB1U4Gn6Yvh6GDo7XtqcA43UsJFPWkIU5nvfpzn90ARxxCT6mCCZ8aW1WnTaA2Y9RmEmsk8sqUByVpZm1gpGPj99SbIk3A8e5oxfIWcUaclK4d9fKDWmzpfjskLfM5Wx/Igu1U/HETmt+NDmnV2761Ut7R4kSue9rhBN6HUdH+qfbIx+macREdzdZFqTls6emSP8Z4sGfyHlsg6n9S0ng87BLO/Obuuru9SrxP8atxIYjRRgNyYYA==
+ b=EXS9rxYXsWbFHChlZUsIeON9Yes17TJn82d2AUQCGTxi4qVBp+WOrK8GFkQ0u+RGUt+kBIXfy8VIM/+ZrrU9DVTS2i0Lnx5Dbq1PNPeuyKPrAPIwgsBspzt3UP50Tj/CvVlzfd1MREG0YARwCsKbrAPFy44da6lMdWm9QytUsBsNYkyghj/UDd1aFSVbqvDdc7Rw10y11CZ5FZ7YlX8ZtxvZAizsNse4Nd1LojF9uUDnvmBX0Ru/0JfZmHIN140QDH7WIq4Mf4YidHKVVqgstmauBibnXsEuyTv/C2Qg2HlnGCtKfJbq8pqmiwUZOXtgoOwhmljXIJzMKVAkY+VBHw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JTleEjuPned0N9yF8Af6YgWaFi9vecUC0Ri2sW4K4zk=;
- b=O5OTo8UbEQYxE1QeiRDijavMihUrFb2E4h+DI7sropOdFruZ6hAKPCvTrkzguxGGRfwGkKRs7qYM4BGFPCnx3p1t6Hg7ilmRQNB2oxm56thPm4pBz0cZ4tGothqOiisvUgr1rNv/ypnIPD/YmLU3mUHDFVtX6pYwsOb498hHeLxQy+W9zzFAZ8fk0uLviYaOlz+5j4tEgRDh5PfhKZ1gs+JCVDcb9zL7Zs9WJuRLBYp8mr7I6iLyLzdsEynmuI5ZZF77dTgUB8aCLpGiO5wokrTbu8Tl4Pe4IeFK38avFfJbBy4JMjZFlrZ5lDbL+KnKVJpK06beWo41m9B61X8hVA==
+ bh=GG9u+HE9a9Gj8siQXc2ciERF8Fj1Q1tF6i1fapozoLU=;
+ b=BlU8KqtyriFYOiVoP07ae0fEL0EoZxldFphXNfT1x4sHAUYfH6Bu7TAc2qZBF18RmkLTvbDraydXOEosO3dVyWm1joDTzWZKlH3BpmVB6DvtKOrUurF6o8eROgf0RJXV3crMMCv3EuiKfQOTY7eqjhy6wDxVqUJPaEx5Jw/en7aU7L0eEXOdGLnvT5djE0peZq/u9gnV5P5iz+Llwdl3A+IVVWOBvjX2bodFogvGMXmDTNOzefLknKxgUaE7vEVZgZMDto8LJ3PvtiWBCImtNRcLvahyKyQbtnzXTLRUSKYefbllZuubGzbkTj2l4ubI6SPlDGW0IdZydYp2gkjrPQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by MW3PR11MB4537.namprd11.prod.outlook.com (2603:10b6:303:5d::23)
+ by BN6PR11MB1713.namprd11.prod.outlook.com (2603:10b6:404:3c::13)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.29; Tue, 12 Apr
- 2022 02:51:22 +0000
+ 2022 03:15:47 +0000
 Received: from BN9PR11MB5276.namprd11.prod.outlook.com
  ([fe80::c4ea:a404:b70b:e54e]) by BN9PR11MB5276.namprd11.prod.outlook.com
  ([fe80::c4ea:a404:b70b:e54e%9]) with mapi id 15.20.5144.030; Tue, 12 Apr 2022
- 02:51:22 +0000
+ 03:15:47 +0000
 From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>
-Subject: RE: [PATCH v2 0/4] Make the iommu driver no-snoop block feature
- consistent
-Thread-Topic: [PATCH v2 0/4] Make the iommu driver no-snoop block feature
- consistent
-Thread-Index: AQHYSpOFxZ/QKUg0ZEGhoQEsmfFbSqzkrbGAgAALHwCAAAU0gIAAEooAgAAFOICAARqogIAADqUAgAAGxICAAEWjgIAFTylw
-Date: Tue, 12 Apr 2022 02:51:22 +0000
-Message-ID: <BN9PR11MB52765C5264BEDC889EAFE1708CED9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <0-v2-f090ae795824+6ad-intel_no_snoop_jgg@nvidia.com>
- <f5acf507-b4ef-b393-159c-05ca04feb43d@arm.com>
- <20220407174326.GR2120790@nvidia.com>
- <77482321-2e39-fc7c-09b6-e929a851a80f@arm.com>
- <20220407190824.GS2120790@nvidia.com>
- <4cc084a5-7d25-8e81-bdc1-1501c3346a0c@arm.com>
- <20220408121845.GT2120790@nvidia.com>
- <4f93d16d-9606-bd1c-a82b-e4b00ae2364f@arm.com>
- <20220408133523.GX2120790@nvidia.com>
- <a8371724-2864-a316-439d-5aa7a8bb5739@arm.com>
-In-Reply-To: <a8371724-2864-a316-439d-5aa7a8bb5739@arm.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ "Jason Gunthorpe" <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>, Robin
+ Murphy <robin.murphy@arm.com>, Jean-Philippe Brucker
+ <jean-philippe@linaro.com>
+Subject: RE: [PATCH RFC v3 02/12] iommu: Add a flag to indicate immutable
+ singleton group
+Thread-Topic: [PATCH RFC v3 02/12] iommu: Add a flag to indicate immutable
+ singleton group
+Thread-Index: AQHYTMWQdMRj1LtW7ESP7xJUKRpqwqzrmnCQ
+Date: Tue, 12 Apr 2022 03:15:47 +0000
+Message-ID: <BN9PR11MB527679E5CE0516B2786F57518CED9@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220410102443.294128-1-baolu.lu@linux.intel.com>
+ <20220410102443.294128-3-baolu.lu@linux.intel.com>
+In-Reply-To: <20220410102443.294128-3-baolu.lu@linux.intel.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -119,73 +113,63 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8d280c7b-3279-4d0a-8b65-08da1c2f53f0
-x-ms-traffictypediagnostic: MW3PR11MB4537:EE_
-x-microsoft-antispam-prvs: <MW3PR11MB4537E21C269A19D1EA17E7BE8CED9@MW3PR11MB4537.namprd11.prod.outlook.com>
+x-ms-office365-filtering-correlation-id: 7393e724-1f26-4ec6-83b4-08da1c32bd33
+x-ms-traffictypediagnostic: BN6PR11MB1713:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <BN6PR11MB17138C9C86A35D79D608F2978CED9@BN6PR11MB1713.namprd11.prod.outlook.com>
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: gafj/Ckdi2ZvpIwBnD7DD4CYMAkdufaS8EXY67NXBem7hGQPM8TCSgX0dZgAAtYTrcGaOWX2TQNBzUDBWXgYSXsFVKAoGEZTfHFZCJG5warcZ1hm71BE/DoNfg175mmqH94437/TYHJJdQl4tUqEnAo2XUwhMucTWbMgYN2hweI4PpQ68VXhxmzeMIKbs3cXd/cWE2hUrIAGH3VISZtjDgJQ56IP62HnarcRTrrwTEqAUPCbtTnwb3uO54vpeHQYtL0plZamFYOLWVNhUqYrDC1b1T0EjQ7+u322YQq9zpFYXpowkpa1W6eGcDWj0ZWVnzIRYvGbfFS16uAao2YibypnIcqQcUil6jqgVq+vWHo8O6c7dIMP3G62JjC+Hh87LSBm15uz5qfGMw32JyJPzMxvtZM2TiFC7p9D03IO3G1Zf4q3qwUowLGwJkTBedPdRWMF392vjGjhu2s6E7uAKwtVLf6K8LIwMjtE29FYcBfwtnr0S/ztZ+pTsNZjWTb8HIOEH61QSjadD12Fnt2iOcBAll4GPSZsLH6Ls+bSNGS0zFbqD79HO+BKwhEDjO4w9E/ucs/7m8NW9d0fIQVJXuHBVm7qF6AUnEKxRDyPQGfkqL3DQJmo90ikxbyg+gsuxfgcxn5ZrKjvmc+WMjXzH/QjBX24I7Giw5tjIu6l4tH/sF7AkgGJAonpFe+iwkP5xl3IeQ8Ujk9+0RNjuzqkmA==
+x-microsoft-antispam-message-info: JUCFPSRmd9bLWIUoUY1je14Z/AeGAwK9DiWLgjj3+YC44fWFid8W9jN5QEPhBhM/xr2t4iXYprZj7xXQKtSkRr505Hp3EoR0Qb9wVTRrRMafWL82+MLvURmbxL4xW5f7/s2DXRWa9TNJ0fVqpgQ3/59xVRwSOeIKKn53JHXz61dC4qjNm7F8zDZDdsgu9oW3qkSSlk5EizkuT55qAMuSkaV112mRNRIdJeRsdmjLB9t+5wqaTBDDBLggeLRNgSUxywQW3qFUlr7NCnruwKFgT2uQk1EtD6Z8mj0FXOVanFZGraW4jNELuT94Iv/7PqLnkVaky4WemqD2MymUE7UHvCq9df7FV421VALf2OzaJ9MLtYqFZejE2ZUssVTyeatCqpXmqJGHMwYkCV0KqO0HHb8FB/3yPlzdUMJACIGEMLpBd92Abhbb2BPDsIKqZ3E5H55fgP0l4PxeToRvVMfKvfbIdSneHnY35DzFbpyGOuXlpdfIS7QzPEZ1YqjAyNnTsU5okdGsyurOqcclOn6FlKzsRytFns3+u0QnMMWJWQe/gkyOZjzth0kZOr6aMAany8BU3qNpYsofE/E4UEhnTB3E9+sSwYG2fSivzcMNZCnl/ZmL17KgqcqiFhBnKQV16N8IY7Pvzy2cNTD9tT3bVJrlMLgYpOinU1CUH/6xxhzx+y8Wc4UUWZDtU4lGCO9xkC2Et5sO6bl9LLNRpftzSw==
 x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(366004)(9686003)(52536014)(38100700002)(38070700005)(8676002)(66556008)(66446008)(64756008)(66946007)(4326008)(66476007)(122000001)(8936002)(7696005)(6506007)(5660300002)(76116006)(7416002)(82960400001)(86362001)(4744005)(54906003)(55016003)(110136005)(316002)(186003)(26005)(33656002)(2906002)(71200400001)(508600001);
+ SFS:(13230001)(366004)(82960400001)(33656002)(316002)(54906003)(2906002)(83380400001)(110136005)(9686003)(55016003)(508600001)(186003)(38100700002)(26005)(122000001)(6506007)(38070700005)(7696005)(52536014)(8936002)(4326008)(8676002)(64756008)(66476007)(66446008)(66556008)(5660300002)(76116006)(7416002)(66946007)(86362001)(71200400001);
  DIR:OUT; SFP:1102; 
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Q252N2xCT0xlRXpMODdDazJDSEwyL1BCZlJYOHBaY2JkMTFOY0c4dU5lckRq?=
- =?utf-8?B?Z1ZiejhFUHhOdEJYY3pzVHkxNDNyQXBwT2t3T0gvL0wxWElxY2VXbTA5U01P?=
- =?utf-8?B?ZTQ1L3F1cEJMdndLQ2pVQm1Da25iemxycllFdURaZWl3R0lidTNhV2FaeXlO?=
- =?utf-8?B?OGFwOVA0WkhicG9wVkY2VzYyWDBYMjJERFliTk03WTRuZnJwaUFzVWNRQXZl?=
- =?utf-8?B?K2F5aHlCWHgvNjZKa252RExzTmM0dHZkcXpTaUVCT1dpbWh1L3VxajRVSVVD?=
- =?utf-8?B?MGIrMUoyV1M0VEdYMkdVVWtXS2c3WG1kVlV0QjJaVVp4MG0wS0VlNW5PclFl?=
- =?utf-8?B?ZWNtMWF1THF2MnMxVEg3SWRMWlZhRUJMNlN2Mk9YRnFLK2NuaHBpN3dmUjR4?=
- =?utf-8?B?a1VZWVJSenBZUEd2bTkxdGFJOGQyY0xZcGFQd1F1bXNpcVF1NXhzMnhDdzhT?=
- =?utf-8?B?cUtuMkM1cnREbUFDa0lMM1V1K01OYXlOU2x5SWJvbnNJMFZWcWF0MjFFZGNI?=
- =?utf-8?B?bnlXWHFHSGVKT1FjaWpGZjlMQWFCNGpjQm1qUmlONHZBbzJPRk9abzVWK3Nu?=
- =?utf-8?B?MWk1cm0vWkduK0k4dE9oVFNFd0YraVRFUWp2WlZjSVdPZjdiTzJSa0VCN1Rv?=
- =?utf-8?B?MmRuOHJhUFFobWVXZVFQTDNyRHFrdHBhUzgzdTZpMG04TStFSSt0dVNYOWRq?=
- =?utf-8?B?emVZQUJyc1BwZ29TK2JISUlRZkQvTTZ4SStsUWtHWHRHTWtacERLdlhrdE5T?=
- =?utf-8?B?enNGdGpHTHlTYkc3ZG1OajRueUxRcmRPVlNhZktiRDlUZXowaEt5SExkV005?=
- =?utf-8?B?YkljcHBuNTVkU0JScDFQMUpVZHFwZ1p5Nis5TzNPdDV6Y2U4L0piQmtKNjc1?=
- =?utf-8?B?RUh3YzJydjVMTmxPa0RQaGFWUHZUWGdHV2pKOXhVQzZ4MG1FODBRMkNrYjdB?=
- =?utf-8?B?NmllM0VRSmVGN2ZkbzFEQXJHVnBRQTJJb1NpYjI0T3Y1OXBLakRiWmhMUmxD?=
- =?utf-8?B?TlZYZTdjU0krbTZHUXBxUFYzd0tHQ0hGZjZkUU91OGFXbFBSakYxR25Manli?=
- =?utf-8?B?cjVNeGR3ZXFkWlZQamhKcllZc2Q3S3NYOG9TaTErQmtEN3plRkVObHVxczZs?=
- =?utf-8?B?bkMyVGVpRVNWT1hKU3M3ZmpQWkVQV01wZC9va0VUcDJUdXVUM1I2bHY4RjJD?=
- =?utf-8?B?VE11NFdhczRPQ0N0dUVPYm5BMmxvelRHc2ZEd2lGOWUxMldXYkJ1SVZSUkx0?=
- =?utf-8?B?TmdIcUtsVGRSY1ZyMElpK2ZxUHIxZDRxMlI2Vms2MTdHQ0hQc2Y2dFQyVTZV?=
- =?utf-8?B?SlhxcE4wSUFhWnFyU1E0T2NPanoxWDJLZjlQY20zZkgvWklrZnJKeHptb2Jm?=
- =?utf-8?B?Y3dCanBKalZvazBlZ0pReFRBRFlrVUVUVWF6OTFFVXdZRVBQR0w4U3pGcFVa?=
- =?utf-8?B?WDU0SzBZc3hsRU0wKytOeENRWlNBcjBhS3BJYWFaVFY1eUlOMFJkWllOQUpC?=
- =?utf-8?B?aTZwbmY5aHJ6NnJSZXFMYUFIYWE0Z2lnbWJCMVBIbmVmbVpKbGtSZkQ4YmhR?=
- =?utf-8?B?ejBZWEg4eXJoclFwd3JGYXh5ek1KY1kvOGdJb0t4WUtrS1ljV20rbnI0b2VU?=
- =?utf-8?B?cFZJU05ra1FxU3FxYmFQSGhzZFhuL0NMenM4RTlxNlVsS01tNjB4VFhEYXdH?=
- =?utf-8?B?WUNISWhkalM5eFZNQllmdW5mVDlCZjhpc1NNWDd2dW1udGJXbEFuVEZlVFh6?=
- =?utf-8?B?K1FkWUFCK2pORE43TW9XeXAzOE5hSnQrZEprbkxMeS9QWVNzOVFqdXdIN2x3?=
- =?utf-8?B?Z2kzUEhqOS85VFRtZzR6ZzlXUlRKMEU3bzUzT05ZR0d0MjJxLzhtNy94VEhT?=
- =?utf-8?B?UGZQYWloMGw3czhPbk41YXRXS1Q4d0t2aUNLeUVkVEMwUHpoVEQyTmhaVlBs?=
- =?utf-8?B?aVNJU213VUR1cm5DM2ZKMEJKcUM2QTIxYmxXSlFORGFtSlhaWVBNdFRYdzYr?=
- =?utf-8?B?U3psQmQrZExFcGtVek9JNno1RUN6TTM3RERFbzc2YVgvdFVsUTJPRjZMeno5?=
- =?utf-8?B?czRDTi9neXRHZjVmTUR4TjlpOWJjRitxck92a3pyd2ZtTW4wY1crM1BtZmlx?=
- =?utf-8?B?NTRvS3cyLzNLWC85K0ZQWFJWdGlhVmdnYmRiUytXaG5DY0h2dGY4eWtrczYw?=
- =?utf-8?B?ZzNxTDgvNVpaYkdqK2FueUVhZU5Hd1o0dXIrUE54b0F0cnF0TDZpT3Q3T3ZY?=
- =?utf-8?B?dUdLd2Q2RXlzVVVzN0V4amVJckhydjg0VWdYRFRhdkhUVjJFV1J3RFFIWmFN?=
- =?utf-8?B?KzdqOThZSmtNQWgrMVc5S0dmYWVjanFkcDJZOGppNG92RDRndkl1Zz09?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?t/rhvv48WA1O9TMLjZ/SX1Lpm7bkC8IWfi2Ga6wRVXlkw0kU6xPFY2KAbMNo?=
+ =?us-ascii?Q?39+3/3KUicvQ7qQtqE3jzNaRDkG4vLez9ZVONBIe5FM1yHaGAGaN5H5kTx+t?=
+ =?us-ascii?Q?BRWao2ckjba+vl57kvMFZoIIjMnczgzvIrcHY6jLL/6/Htbudc/IXoUAFM4B?=
+ =?us-ascii?Q?RJ/tLLnPBvnLQ6mWwPqFmkazJkzmR37VknM8iBo6vGHxVcwOIhmb7mck0lHA?=
+ =?us-ascii?Q?ofonoIvKQxjASLs/pswlY2VGgD1gGqFBeRXTDGz/d0SfPoMpkCNuSoXSQniS?=
+ =?us-ascii?Q?hH7awJaf2GlUT/yRVEzfzWmKlzYRhxtiz8rVUDFNsnr0a3eUTfeN215MLJSW?=
+ =?us-ascii?Q?qngN1KckYi6ZjYBvgt2kFpSb4+aH4b1r2XQ/lNPJ04PJRxlEk8aNlxyXkKNp?=
+ =?us-ascii?Q?Jzv6SooTIvXQP2eylDPehQeFI6cyn8c36F9tf5dUz/0pfoVuwH6Kqu4Xp6iy?=
+ =?us-ascii?Q?uFexbJgF3moCwCmxminyaG4YZf7QA/xSyRpjR6AETlLvGrpIgI0xdRqD9yaY?=
+ =?us-ascii?Q?zw6O/MpioXxNs/RDeJsqU7MVum9cqGhqHYZVrFkrMse88Ujn9ta/8ExwlwCq?=
+ =?us-ascii?Q?LxB91m8QADPtgU06xi2ojJg8avyo0ALsErPtpdkd2Y994slj/IDi2+FsxxBG?=
+ =?us-ascii?Q?mkZyArUFaMRZA0JaaUdyNDJUVNpWzMAxHl2OdqSUOHwnbG3EzIS8xUJ23PXc?=
+ =?us-ascii?Q?2aVXRbd04iEcvzpq9u15A1e0ZWsIurB5hdBYS/hr8v19yZAcQnC4j8/AxRYF?=
+ =?us-ascii?Q?qrxaNuJ0kLPLquaPCYnAW8dS7kt0hXUdI4WcyJ7Ldc/95F6HJfnpo4e13Lqi?=
+ =?us-ascii?Q?ich3wvck/L2pcc9Q1rAtNfeXzq43mmvtH38E44TPKs7fiSwNO1EcMAZlnOd+?=
+ =?us-ascii?Q?AGWBYxkzZaHt1pZ+T2/2lueh/IVIhdsLBa2HIErhUGxoo8y6Ia8C5zRM82GY?=
+ =?us-ascii?Q?ZM031pnKMsDguL9B9D15IrklyhIIZqItcWFRMPdOROftBVDvqD3JzkOyhTJ5?=
+ =?us-ascii?Q?ZF6kGwKTJ/vypn96SR8Z/G5TQTXsuRQe/pXcQBnKVNo57LRL2fLdvS4eborG?=
+ =?us-ascii?Q?00SGS8yx2qT/quE8OppDbN4IbyAOHH596MhYyNeb9svSQSovCoqDuE5j+7Yq?=
+ =?us-ascii?Q?tvE+ehuu6ksHE2He0WVR0O1t8cH+fDxTmEcdxZhuV+my8Fs110/Ebg0LqbGx?=
+ =?us-ascii?Q?RTfAqmhghdPaDZ0fWmkoKehE05u3g2Sbn4sRin0PFlDaDMvO0ELa9ObvQ34z?=
+ =?us-ascii?Q?2S/YJzeItm0AHqbFPhq6hglBFrwI80t7J7UTT04zXvLbruq1iSP/SCUzLLW8?=
+ =?us-ascii?Q?ot+Tu/HQ+YOq4EyEaMcMtq7tOcvEvnU5wAFDiZ5g2ywJaBQHfz+0BdYbZFTg?=
+ =?us-ascii?Q?qr9cDJBPDO+U0ASmhz8sQhdpaYWlQ+E/qIi3Im060vDI+mrLCcPww7Cb5iOD?=
+ =?us-ascii?Q?4a9svkL5sf429S7KPwvCwdo7E8jEfihbxqYqnthmB0L4KoGd2+QbZeMSZHJP?=
+ =?us-ascii?Q?EmyEnAwI6un4XWDMNAI6andaIHnffI5NEdoUqQ1AkuP2iVCsmhPPHBHJ4BQv?=
+ =?us-ascii?Q?mMVnzuaM7JcGztrI5NGEAVrtfkmSEkENAXTjpnEO/MbEjgw2i7DLHKKIW3e7?=
+ =?us-ascii?Q?sGBvTdDAncTHGKMIeKjtQScUxl9bEgoxcHtQcW5wVbAQmkupqzjgAqCCV7r0?=
+ =?us-ascii?Q?ASwmhZyAa/lHCmqlBi8yLU0Yti+8HOsDmlheDScmnApToG2aROMAsz+1bVoB?=
+ =?us-ascii?Q?WsTO7ZUj3g=3D=3D?=
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8d280c7b-3279-4d0a-8b65-08da1c2f53f0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Apr 2022 02:51:22.2566 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7393e724-1f26-4ec6-83b4-08da1c32bd33
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Apr 2022 03:15:47.3152 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: X0QIPX0ocCi9LeIUL0jIskIILb5+iKFfi+nhtxmJfTkeN7Wdt9KyGVaWJhkNeNwLrhB5Auf+bDAPhGwdAroNFQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4537
+X-MS-Exchange-CrossTenant-userprincipalname: F7o2eT9zya2gUDomHmvB0Oo/t+a4Qc0bMjtFWRz1Vyy6SKmqfwt1iYVfrEH8WiuQxWgFdJbdHSCLmrpEsyVOtg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1713
 X-OriginatorOrg: intel.com
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Will Deacon <will@kernel.org>,
- Cornelia Huck <cohuck@redhat.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Alex Williamson <alex.williamson@redhat.com>, David
- Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -203,22 +187,175 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Robin Murphy <robin.murphy@arm.com>
-> Sent: Saturday, April 9, 2022 1:45 AM
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Sent: Sunday, April 10, 2022 6:25 PM
 > 
-> >
-> > So, I suppose VFIO would want to attach/detatch on every vfio_device
-> > individually and it would iterate over the group instead of doing a
-> > list_first_entry() like above. This would not be hard to do in VFIO.
-> 
-> It feels like we've already beaten that discussion to death in other
-> threads; regardless of what exact argument the iommu_attach/detach
-> operations end up taking, they have to operate on the whole (explicit or
-> implicit) iommu_group at once, because doing anything else would defeat
-> the point of isolation groups, and be impossible for alias groups.
-> 
+> Some features require that a single device must be immutably isolated,
+> even when hot plug is supported. 
 
-Could you add a few words about what is 'alias group'?
+This reads confusing, as hotplug cannot be allowed in a singleton group.
+What you actually meant suppose to be:
+
+"Enabling certain device features require the device in a singleton iommu
+group which is immutable in fabric i.e. not affected by hotplug"
+
+> For example, the SVA bind()/unbind()
+> interfaces require that the device exists in a singleton group. If we
+> have a singleton group that doesn't have ACS (or similar technologies)
+> and someone hotplugs in another device on a bridge, then our SVA is
+> completely broken and we get data corruption.
+
+this needs the background that PASID doesn't join PCI packet routing
+thus the dma address (CPU VA) may hit a p2p range.
+
+> 
+> This adds a flag in the iommu_group struct to indicate an immutable
+> singleton group, and uses standard PCI bus topology, isolation features,
+> and DMA alias quirks to set the flag. If the device came from DT, assume
+> it is static and then the singleton attribute can know from the device
+> count in the group.
+
+where does the assumption come from?
+
+> 
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Suggested-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/iommu.c | 67 ++++++++++++++++++++++++++++++++++++----
+> ---
+>  1 file changed, 57 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 0c42ece25854..56ffbf5fdc18 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -48,6 +48,7 @@ struct iommu_group {
+>  	struct list_head entry;
+>  	unsigned int owner_cnt;
+>  	void *owner;
+> +	bool immutable_singleton;
+
+Just call it 'singleton' with a comment to explain it must be immutable?
+
+>  };
+> 
+>  struct group_device {
+> @@ -74,6 +75,16 @@ static const char * const
+> iommu_group_resv_type_string[] = {
+>  #define IOMMU_CMD_LINE_DMA_API		BIT(0)
+>  #define IOMMU_CMD_LINE_STRICT		BIT(1)
+> 
+> +/*
+> + * To consider a PCI device isolated, we require ACS to support Source
+> + * Validation, Request Redirection, Completer Redirection, and Upstream
+> + * Forwarding.  This effectively means that devices cannot spoof their
+> + * requester ID, requests and completions cannot be redirected, and all
+> + * transactions are forwarded upstream, even as it passes through a
+> + * bridge where the target device is downstream.
+> + */
+> +#define REQ_ACS_FLAGS   (PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR |
+> PCI_ACS_UF)
+> +
+>  static int iommu_alloc_default_domain(struct iommu_group *group,
+>  				      struct device *dev);
+>  static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+> @@ -89,6 +100,7 @@ static int
+> iommu_create_device_direct_mappings(struct iommu_group *group,
+>  static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+>  static ssize_t iommu_group_store_type(struct iommu_group *group,
+>  				      const char *buf, size_t count);
+> +static int iommu_group_device_count(struct iommu_group *group);
+> 
+>  #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)
+> 	\
+>  struct iommu_group_attribute iommu_group_attr_##_name =		\
+> @@ -844,6 +856,37 @@ static bool iommu_is_attach_deferred(struct device
+> *dev)
+>  	return false;
+>  }
+> 
+> +static int has_pci_alias(struct pci_dev *pdev, u16 alias, void *opaque)
+> +{
+> +	return -EEXIST;
+> +}
+> +
+> +static bool pci_immutably_isolated(struct pci_dev *pdev)
+> +{
+> +	/* Skip the bridges. */
+> +	if (pci_is_bridge(pdev))
+> +		return false;
+> +
+> +	/*
+> +	 * The device could be considered to be fully isolated if
+> +	 * all devices on the path from the parent to the host-PCI
+> +	 * bridge are protected from peer-to-peer DMA by ACS.
+> +	 */
+> +	if (!pci_is_root_bus(pdev->bus) &&
+> +	    !pci_acs_path_enabled(pdev->bus->self, NULL, REQ_ACS_FLAGS))
+> +		return false;
+> +
+> +	/* Multi-function devices should have ACS enabled. */
+> +	if (pdev->multifunction && !pci_acs_enabled(pdev, REQ_ACS_FLAGS))
+> +		return false;
+
+Looks my earlier comment was lost, i.e. you can just use
+pci_acs_path_enabled(pdev) to cover above two checks.
+
+> +
+> +	/* Filter out devices which has any alias device. */
+> +	if (pci_for_each_dma_alias(pdev, has_pci_alias, NULL))
+> +		return false;
+> +
+> +	return true;
+> +}
+> +
+>  /**
+>   * iommu_group_add_device - add a device to an iommu group
+>   * @group: the group into which to add the device (reference should be held)
+> @@ -898,6 +941,20 @@ int iommu_group_add_device(struct iommu_group
+> *group, struct device *dev)
+>  	list_add_tail(&device->list, &group->devices);
+>  	if (group->domain  && !iommu_is_attach_deferred(dev))
+>  		ret = __iommu_attach_device(group->domain, dev);
+> +
+> +	/*
+> +	 * Use standard PCI bus topology, isolation features, and DMA
+> +	 * alias quirks to set the immutable singleton attribute. If
+> +	 * the device came from DT, assume it is static and then
+> +	 * singleton can know from the device count in the group.
+> +	 */
+> +	if (dev_is_pci(dev))
+> +		group->immutable_singleton =
+> +				pci_immutably_isolated(to_pci_dev(dev));
+> +	else if (is_of_node(dev_fwnode(dev)))
+> +		group->immutable_singleton =
+> +				(iommu_group_device_count(group) == 1);
+> +
+>  	mutex_unlock(&group->mutex);
+>  	if (ret)
+>  		goto err_put_group;
+> @@ -1290,16 +1347,6 @@ EXPORT_SYMBOL_GPL(iommu_group_id);
+>  static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
+>  					       unsigned long *devfns);
+> 
+> -/*
+> - * To consider a PCI device isolated, we require ACS to support Source
+> - * Validation, Request Redirection, Completer Redirection, and Upstream
+> - * Forwarding.  This effectively means that devices cannot spoof their
+> - * requester ID, requests and completions cannot be redirected, and all
+> - * transactions are forwarded upstream, even as it passes through a
+> - * bridge where the target device is downstream.
+> - */
+> -#define REQ_ACS_FLAGS   (PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR |
+> PCI_ACS_UF)
+> -
+>  /*
+>   * For multifunction devices which are not isolated from each other, find
+>   * all the other non-isolated functions and look for existing groups.  For
+> --
+> 2.25.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
