@@ -4,84 +4,87 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 100C2C43217
-	for <iommu@archiver.kernel.org>; Tue, 12 Apr 2022 14:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4A71DC433EF
+	for <iommu@archiver.kernel.org>; Tue, 12 Apr 2022 14:36:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9E0A061017;
-	Tue, 12 Apr 2022 14:26:15 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id D0A9C60DF9;
+	Tue, 12 Apr 2022 14:36:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id azLknwU_XP5e; Tue, 12 Apr 2022 14:26:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 9B93B60F16;
-	Tue, 12 Apr 2022 14:26:14 +0000 (UTC)
+	with ESMTP id YCzydpuRJmJl; Tue, 12 Apr 2022 14:36:20 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id ABED260093;
+	Tue, 12 Apr 2022 14:36:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7088FC0033;
-	Tue, 12 Apr 2022 14:26:14 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C924EC002C
- for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 14:26:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 86600C0033;
+	Tue, 12 Apr 2022 14:36:19 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2F2BCC002C
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 14:36:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id A795C41487
- for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 14:26:12 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 1CD3E60DF9
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 14:36:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IXBFy3149XEX for <iommu@lists.linux-foundation.org>;
- Tue, 12 Apr 2022 14:26:11 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com
- [IPv6:2a00:1450:4864:20::22f])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 3F1A7410B8
- for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 14:26:11 +0000 (UTC)
-Received: by mail-lj1-x22f.google.com with SMTP id b21so4789347ljf.4
- for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 07:26:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=o9Y0Dxo+q6yQbzDxJ/ULmzM1Yxju629VRSmpegysqN8=;
- b=twWeTn+wbEgNDoLKArv4PJZiTp6oZnld1mH8i8kfifUjKs0iQRcaZ+kHoABKm7/Scd
- 3US+3G/CYRtfNcu/VWgVjD/mESRcSvcIiq5CsdjiRaS38+bj+pDt7bnKHFiZZyy820Iy
- aZmrwQNZT0Cu/zCKNZ/XbB/VTX3yMBgV3zXiAj/E2WNiWAicWfSc75KIq+78hwogMpYJ
- ar+m0WvCjAayOJzwqk4Bqj093B/gBIHVlORyh3lXABeP2HsUVwwix5DW5QTogpeQrC+D
- CGX3bGHd2uSBpxWDWvtTv2aV5r8qht5nyXVwZlMD8pbXO7nAPZ1j77itunZ4WducbwKT
- zxPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=o9Y0Dxo+q6yQbzDxJ/ULmzM1Yxju629VRSmpegysqN8=;
- b=y17MZXgo3GWG9YohJV5P3FJaHLeOYxJofmRp1XqBBXui6NLrqORvVpVfDQ2Zx/VZG0
- FdMFQHucJFF/dw3LZZfW+6nB+XkXoSFm+eizSn9VTCrrjMQYnUUfCoF6kOAfUC+ZABwq
- 45y0yfZBTNCF3Fn1HgmRkxOCbCVw1Iw9K8SS69AocZR2eTsxj6EhZeKBlZwfVy2RrVp+
- vta7eAIW4NxEXFXRGeFMM7J2xPuQBTJ7DIGRVvqJvnDq0z3tIeg0HDVBRm4vhiZHQKec
- X4FB+ngxGav2HqRudvVg2DNKOEeLY0khMuX+3PgbJDbuHGXcWumq2dWZzEhy/JTzh/bE
- h0cw==
-X-Gm-Message-State: AOAM530Dsn1z1KFmSQdXBB7ZIZJtZ41VewTUX3RsguupRAQJ/94Bi/Eq
- Qe1Lh9Q5oWsRzMuMmfgGfZU7aRqhmLPAhtWlhH9JzQ==
-X-Google-Smtp-Source: ABdhPJyaj7tFxdrLYCr2zY8LfreX76pb3X9XmGkW2cSHqy2L9vVwR4doSIMzzrLhQfMLm15Cp7vZ1XdvlfGpOmv0uxY=
-X-Received: by 2002:a2e:3e05:0:b0:24b:5df0:6388 with SMTP id
- l5-20020a2e3e05000000b0024b5df06388mr8356865lja.367.1649773569043; Tue, 12
- Apr 2022 07:26:09 -0700 (PDT)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id VzfHSuHo_y9Q for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Apr 2022 14:36:17 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 85E2960093
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 14:36:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1649774177; x=1681310177;
+ h=message-id:date:mime-version:to:cc:references:from:
+ subject:in-reply-to:content-transfer-encoding;
+ bh=JeWnAqK/BV2obmcOSf5I4zELcee40BbhqGtHiITzWPI=;
+ b=Da1QMg4gUMJqKSsYZ8xQhRzAbU4QAlLlF4G+72JLv6sNZQz7ZvVeI+jI
+ 7dA7AcBvfEBv02X/e70bx2pKvI/Yij62pbdMHl2inji3o6ehYIgmUUogW
+ ModD580mUJgCNbLSC5lCzHltV0PxCmGa8lfGVOSXC3Zf3a/3vKmx1CEUP
+ p48KNfsvsVSQCFQM8w7+nE7LQyxaHT9nbk43VlRapmo8++OVQbVedlQ8F
+ i/LFYDr0zulVUMezZ/EIVZWie7Bf/5cFK6jT83hD7wFXPXIo5nx1Rdkqi
+ wrBL5AfcCtJqgoZVs3HRyH4irzY37Ihuqus1Bb12ITjbWnkY+0+v9r/BU w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10315"; a="287406637"
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; d="scan'208";a="287406637"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 12 Apr 2022 07:36:16 -0700
+X-IronPort-AV: E=Sophos;i="5.90,254,1643702400"; d="scan'208";a="551735032"
+Received: from vtelkarx-mobl.amr.corp.intel.com (HELO [10.209.191.73])
+ ([10.209.191.73])
+ by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 12 Apr 2022 07:36:15 -0700
+Message-ID: <41ed3405-66d9-0cde-fc01-b3eacb85a081@intel.com>
+Date: Tue, 12 Apr 2022 07:36:21 -0700
 MIME-Version: 1.0
-References: <1649670615-21268-1-git-send-email-quic_rohiagar@quicinc.com>
- <1649670615-21268-3-git-send-email-quic_rohiagar@quicinc.com>
-In-Reply-To: <1649670615-21268-3-git-send-email-quic_rohiagar@quicinc.com>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Tue, 12 Apr 2022 16:25:32 +0200
-Message-ID: <CAPDyKFrU0hQzs3xL8Jf1E22cS9DWuorLgcVF9+m80+Osw8=odg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/7] dt-bindings: mmc: sdhci-msm: Document the SDX65
- compatible
-To: Rohit Agarwal <quic_rohiagar@quicinc.com>
-Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
- Bhupesh Sharma <bhupesh.sharma@linaro.org>, will@kernel.org,
- linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, robh+dt@kernel.org,
- iommu@lists.linux-foundation.org, agross@kernel.org,
- manivannan.sadhasivam@linaro.org, krzk+dt@kernel.org, robin.murphy@arm.com,
- Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>,
- linux-arm-kernel@lists.infradead.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To: "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>,
+ Joerg Roedel <joro@8bytes.org>, Fenghua Yu <fenghua.yu@intel.com>,
+ jean-philippe <jean-philippe@linaro.org>
+References: <20220207230254.3342514-1-fenghua.yu@intel.com>
+ <20220207230254.3342514-6-fenghua.yu@intel.com> <Ygt4h0PgYzKOiB38@8bytes.org>
+ <tencent_F6830A1196DB4C6A904D7C691F0D961D1108@qq.com>
+ <56ed509d-a7cf-1fde-676c-a28eb204989b@intel.com>
+ <tencent_9920B633D50E9B80D3A41A723BCE06972309@qq.com>
+ <f439dde5-0eaa-52e4-9cf7-2ed1f62ea07f@intel.com>
+ <tencent_F73C11A7DBAC6AF24D3369DF0DCA1D7E8308@qq.com>
+ <a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com>
+ <tencent_B683AC1146DB6A6ABB4D73697C0D6A1D7608@qq.com>
+From: Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+In-Reply-To: <tencent_B683AC1146DB6A6ABB4D73697C0D6A1D7608@qq.com>
+Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
+ x86 <x86@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>,
+ iommu <iommu@lists.linux-foundation.org>, Ingo Molnar <mingo@redhat.com>,
+ Dave Hansen <dave.hansen@linux.intel.com>, Andy Lutomirski <luto@kernel.org>,
+ Josh Poimboeuf <jpoimboe@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Thomas Gleixner <tglx@linutronix.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,54 +97,32 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-+ Shaik, Bhupesh
-
-
-On Mon, 11 Apr 2022 at 11:50, Rohit Agarwal <quic_rohiagar@quicinc.com> wrote:
->
-> The SDHCI controller on SDX65 is based on MSM SDHCI v5 IP. Hence,
-> document the compatible with "qcom,sdhci-msm-v5" as the fallback.
->
-> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
-
-As stated in a couple of other threads for patches extending these
-bindings, I would really like to see the binding being converted to
-the yaml format first.
-
-It seems like Bhupesh is working on the conversion [1]. If not, please
-help him to get this done.
-
-Kind regards
-Uffe
-
-[1]
-https://www.spinics.net/lists/linux-arm-msm/msg107809.html
-
-> ---
->  Documentation/devicetree/bindings/mmc/sdhci-msm.txt | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/Documentation/devicetree/bindings/mmc/sdhci-msm.txt b/Documentation/devicetree/bindings/mmc/sdhci-msm.txt
-> index 6216ed7..e7dec8a 100644
-> --- a/Documentation/devicetree/bindings/mmc/sdhci-msm.txt
-> +++ b/Documentation/devicetree/bindings/mmc/sdhci-msm.txt
-> @@ -25,6 +25,7 @@ Required properties:
->                 "qcom,sc7280-sdhci", "qcom,sdhci-msm-v5";
->                 "qcom,sdm845-sdhci", "qcom,sdhci-msm-v5"
->                 "qcom,sdx55-sdhci", "qcom,sdhci-msm-v5";
-> +               "qcom,sdx65-sdhci", "qcom,sdhci-msm-v5";
->                 "qcom,sm8250-sdhci", "qcom,sdhci-msm-v5"
->         NOTE that some old device tree files may be floating around that only
->         have the string "qcom,sdhci-msm-v4" without the SoC compatible string
-> --
-> 2.7.4
->
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gNC8xMi8yMiAwMDowNCwgemhhbmdmZWkuZ2FvQGZveG1haWwuY29tIHdyb3RlOgo+IG1hc3Rl
+ciBwcm9jZXNzIHF1aXQsIG1tcHV0IC0+wqAgbW1fcGFzaWRfZHJvcC0+aW9hc2lkX2ZyZWUKPiBC
+dXQgdGhpcyBpZ25vcmUgZHJpdmVyJ3MgaW9tbXVfc3ZhX3VuYmluZF9kZXZpY2UgZnVuY3Rpb24s
+Cj4gaW9tbXVfc3ZhX2JpbmRfZGV2aWNlIGFuZCBpb21tdV9zdmFfdW5iaW5kX2RldmljZSBhcmUg
+bm90IHBhaXIswqAgU28KPiBkcml2ZXIgZG9lcyBub3Qga25vdyBpb2FzaWQgaXMgZnJlZWQuCj4g
+Cj4gQW55IHN1Z2dlc3Rpb24/CgpJdCBzb3VuZHMgbGlrZSB5b3UncmUgc2F5aW5nIHRoYXQgdGhl
+IGRldmljZSBpcyBzdGlsbCBhYm91bmQgdG8gdGhlClBBU0lEIGV2ZW4gdGhvdWdoIHRoZSBtbSBo
+YXMgZXhpdGVkIGFuZCBmcmVlZCB0aGUgUEFTSUQuICBUaGlzIGlzCmVzc2VudGlhbGx5IGEgdXNl
+LWFmdGVyLWZyZWUgZm9yIHRoZSBQQVNJRC4gIFJpZ2h0PwoKVGhlIHJpZ2h0IHRoaW5nIHRvIGRv
+IGhlcmUgaXMgdG8gaGF2ZSB0aGUgUEFTSUQgY29kZSBob2xkIGEgcmVmZXJlbmNlIG9uCnRoZSBt
+bS4gIFRoZSBtbSAib3ducyIgdGhlIFBBU0lEIGZvciBpdHMgZW50aXJlIGxpZmV0aW1lIGFuZCBp
+ZiBhbnl0aGluZwpuZWVkcyB0aGUgUEFTSUQgdG8gbGl2ZSBsb25nZXIsIGl0cyBvbmx5IHJlY291
+cnNlIGZvciBkb2luZyB0aGF0IGlzIHZpYQphbiBtbWdldCgpLiAgSSBfdGhpbmtfIG1tZ2V0KCkg
+aXMgdGhlIHJpZ2h0IHRoaW5nIGFzIG9wcG9zZWQgdG8gbW1ncmFiKCkKYmVjYXVzZSB0aGUgUEFT
+SUQgdXNlcnMgYWN0dWFsbHkgbmVlZCB0aGUgcGFnZSB0YWJsZXMgdG8gYmUgYXJvdW5kLgoKVGhp
+cyB3b3VsZCBzdGlsbCBiZSBuaWNlIHRvIGNvbmZpcm0gd2l0aCBzb21lIHRyYWNlcyBvZiBmb3Jr
+KCkvZXhpdCgpCmFuZCB0aGUgaW9tbXVfc3ZhX3tiaW5kLHVuYmluZH0gYW5kIGlvYXNpZF97YWxs
+b2MsZnJlZX0gZnVuY3Rpb25zLgoKSSB3b25kZXIgaWYgdGhlIEludGVsIGFuZCBBUk0gSU9NTVUg
+Y29kZSBkaWZmZXIgaW4gdGhlIHdheSB0aGV5IGtlZXAKcmVmZXJlbmNlcyB0byB0aGUgbW0sIG9y
+IGlmIHRoaXMgYWZmZWN0cyBJbnRlbCBhcyB3ZWxsLCBidXQgd2UganVzdApoYXZlbid0IHRlc3Rl
+ZCB0aGUgY29kZSBlbm91Z2guCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
+Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
+b21tdQ==
