@@ -1,90 +1,93 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B2CF3C433F5
-	for <iommu@archiver.kernel.org>; Tue, 12 Apr 2022 11:56:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3C5A7C433FE
+	for <iommu@archiver.kernel.org>; Tue, 12 Apr 2022 11:56:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 5504561005;
+	by smtp4.osuosl.org (Postfix) with ESMTP id DA476410AA;
 	Tue, 12 Apr 2022 11:56:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qZUPCi4LBCGV; Tue, 12 Apr 2022 11:56:48 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9tFvq0CyLMX3; Tue, 12 Apr 2022 11:56:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 44A3D60E61;
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 91D8240A06;
 	Tue, 12 Apr 2022 11:56:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 17899C002F;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A63CC002C;
 	Tue, 12 Apr 2022 11:56:48 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9AE3FC002C
- for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 11:54:48 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E0713C002C
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 11:54:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 7415560F6B
- for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 11:54:48 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id CEC9360F6B
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 11:54:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id q8ileE3mNDyA for <iommu@lists.linux-foundation.org>;
- Tue, 12 Apr 2022 11:54:47 +0000 (UTC)
+ with ESMTP id vMo6ncfUXe7P for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Apr 2022 11:54:56 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com
- [IPv6:2a00:1450:4864:20::62d])
- by smtp3.osuosl.org (Postfix) with ESMTPS id E916260E61
- for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 11:54:46 +0000 (UTC)
-Received: by mail-ej1-x62d.google.com with SMTP id u15so18167394ejf.11
- for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 04:54:46 -0700 (PDT)
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com
+ [IPv6:2a00:1450:4864:20::62b])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 3445260E61
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 11:54:56 +0000 (UTC)
+Received: by mail-ej1-x62b.google.com with SMTP id s18so14363666ejr.0
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Apr 2022 04:54:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=message-id:date:mime-version:user-agent:subject:content-language:to
  :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=6udN7p84mQQbGIPlPrTSL/PLuG+dh1guReUObCKNXP8=;
- b=DpJ5xce5z1oKLNoQI5H77n+qFkrR2trfG6eiMK3QQPicwsTlh1LbOMYrgQK2Jwkdwj
- LK4vOsQSTqEtifdm6tfTeWzv5O6laFEG0jqXYJI8aqW9qc8WznM4Wh4ljvA2WY057Y2X
- BOGQY5uI3BLeoeBOdfi3C/KNrD9lwiHjVqr88X5WIDgjNizuqzL4SvOf5YrNCrawGh8A
- sXIlPr21fu2tSAT5DJoGwj0mpoVZPaVDZ20xJ6aJQ94w8uMTA94CkuyR12nglFQ5Ks7w
- RaEhnkEIVS+j23IO68YdoptMq+MMdR6wiU1zJDTfHdQgmNoaxVKVcknvT8kKsjeHBk2v
- d0QQ==
+ bh=QHCIwf7uKojCa/2Ev85bnweKYQuMU3PscULOv/3SfH0=;
+ b=DD4J/SiIfk70HC7aXDM4XEePvBUKdzzefIcgqBNThjAReDiodJEUxv0NPXpUdN4Kvw
+ 5GK38QtWhkafFiYN5PdU1rjp9aro7+WtQivpUph3krYiRej9dnybekWAPqZ7OAw9F8xL
+ wNK5tQg9jnGDORnDvGQ8VgkSLX5FYQOqHwx3FAh9Ov0huiJqoLlT2vuI0KfWGVYBqxCW
+ 2IWQ1R+ATurd2bGH5iYdmSLgRVFDArfFNifG/UnU14tH8thrH521ohSzxTH0Mb70XYmd
+ T8f7UVwyAEgO4OGSy7qDzscYWwIkGggVShOv5zJcBZ/+SU6h/uZEvJujeGPcbML/6rfT
+ H1qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
  :content-language:to:cc:references:from:in-reply-to
  :content-transfer-encoding;
- bh=6udN7p84mQQbGIPlPrTSL/PLuG+dh1guReUObCKNXP8=;
- b=a904ODov22rrEBNof3NSjY9BEv+5pplxpGt7SyAH+58ZqnJFZjcbvRotCwC8qBeCmV
- IhWYvHCxBa6sHbyddLS0xI2aVdZRL4KuyFFA0J1xB6Q22RLCtJ0k9UCOpSOIWl/5PJF8
- AYJbBYgXg/wM3LGYe3AyZpgFM9OVZw7Lq1S7rLJkJRxGkEtdHiyENP3ipcJw0Ygv1SUb
- 7LK/SRjZbowtrTaREWsyUaOUQertI3BruRR7sdRdXQ88uF23fN8XtIdadKngd2gIHZuX
- sEkCLTeGdpBZ1+G7LRPa0W3+OEcRlSxK8Aqfa7UsAKRsaISDoLS17lUevEgbtbZpOjW7
- ziSA==
-X-Gm-Message-State: AOAM530ztKWqagxXeBQ+Tdiq9wYwfuwSMdFv2ELSfnXz1CVrCRGsneEx
- SVYQ7N7ONyoxWEzNe2vyO4Ni6Q==
-X-Google-Smtp-Source: ABdhPJyJhJm8ZVPk7tw6VD+la4hCwdTsmQiQ9k85Y+ogd6oPi0J+6g0dtxAMCcJdiZDIn+K32a4jtw==
-X-Received: by 2002:a17:907:1b1b:b0:6e4:7fac:6ce0 with SMTP id
- mp27-20020a1709071b1b00b006e47fac6ce0mr34100414ejc.617.1649764485066; 
- Tue, 12 Apr 2022 04:54:45 -0700 (PDT)
+ bh=QHCIwf7uKojCa/2Ev85bnweKYQuMU3PscULOv/3SfH0=;
+ b=nBEsaAW7CngwQ+rqO4YjRSsMb0sGL5ZVBwLUIRwA/W9U/wJXa5d7tffnwmKqM7jlbL
+ aLG9v8vgksf/bqo0uM5ihXxpWNOHTXotypHONjB/y6vInnCNlOJyjwDyuXHJ2wB1KnIn
+ 0M9n+NNeyAkUaMTWRk0IXYIscm8gW9Nv0dkPOdlybiUDoKO7KATACAyBJmLeGf20kGgK
+ R1f075yFnZQX1A1v9wjXZw+Ffl/WHV1lZYsKceApn02chiE11ZCLXyvgITDO3bIZsJzf
+ QLUaU3Wk94nlEhGInWX1p2I9ZbhjE1yQdbkoIfUYphUGgvGQjTj+c3ClK/gFMeU4J5JC
+ 4jBQ==
+X-Gm-Message-State: AOAM5316vnbSI3ONHYegWwOfTV7WlleWUQUIpn5sX7O/rVHm4vVnTmUY
+ pK3bmf2G6SMaOB7Z1qAx7RDEBQ==
+X-Google-Smtp-Source: ABdhPJx9FE2flpben9B2OZUqjC1Vqv352+dinvZFdVtXqGLSmXzCHwsuwcdIhzcf0QGCra4M1rTYbQ==
+X-Received: by 2002:a17:906:e87:b0:6df:8602:5801 with SMTP id
+ p7-20020a1709060e8700b006df86025801mr34857117ejf.140.1649764494490; 
+ Tue, 12 Apr 2022 04:54:54 -0700 (PDT)
 Received: from [192.168.0.195] (xdsl-188-155-201-27.adslplus.ch.
  [188.155.201.27]) by smtp.gmail.com with ESMTPSA id
- u4-20020aa7db84000000b004136c2c357csm16632865edt.70.2022.04.12.04.54.44
+ g4-20020a17090613c400b006e843330364sm5568236ejc.122.2022.04.12.04.54.53
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 12 Apr 2022 04:54:44 -0700 (PDT)
-Message-ID: <1b0c00bd-de0e-3096-556d-4d944e5d9b00@linaro.org>
-Date: Tue, 12 Apr 2022 13:54:43 +0200
+ Tue, 12 Apr 2022 04:54:54 -0700 (PDT)
+Message-ID: <2f0ecdb6-97f0-213a-7ee7-d1fe0a7406a8@linaro.org>
+Date: Tue, 12 Apr 2022 13:54:53 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v2 4/7] dt-bindings: arm-smmu: Add binding for SDX65 SMMU
+Subject: Re: [PATCH v2 2/7] dt-bindings: mmc: sdhci-msm: Document the SDX65
+ compatible
 Content-Language: en-US
 To: Rohit Agarwal <quic_rohiagar@quicinc.com>, will@kernel.org,
  robin.murphy@arm.com, joro@8bytes.org, robh+dt@kernel.org,
  krzk+dt@kernel.org, ulf.hansson@linaro.org, agross@kernel.org,
  bjorn.andersson@linaro.org
 References: <1649670615-21268-1-git-send-email-quic_rohiagar@quicinc.com>
- <1649670615-21268-5-git-send-email-quic_rohiagar@quicinc.com>
+ <1649670615-21268-3-git-send-email-quic_rohiagar@quicinc.com>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1649670615-21268-5-git-send-email-quic_rohiagar@quicinc.com>
+In-Reply-To: <1649670615-21268-3-git-send-email-quic_rohiagar@quicinc.com>
 X-Mailman-Approved-At: Tue, 12 Apr 2022 11:56:46 +0000
 Cc: devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
  linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -108,11 +111,12 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On 11/04/2022 11:50, Rohit Agarwal wrote:
-> Add devicetree binding for Qualcomm SDX65 SMMU.
+> The SDHCI controller on SDX65 is based on MSM SDHCI v5 IP. Hence,
+> document the compatible with "qcom,sdhci-msm-v5" as the fallback.
 > 
 > Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
 > ---
->  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+>  Documentation/devicetree/bindings/mmc/sdhci-msm.txt | 1 +
 >  1 file changed, 1 insertion(+)
 > 
 
