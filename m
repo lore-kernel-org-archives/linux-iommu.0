@@ -1,55 +1,58 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 26CDFC4332F
-	for <iommu@archiver.kernel.org>; Mon, 11 Apr 2022 19:49:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 455B5C433FE
+	for <iommu@archiver.kernel.org>; Tue, 12 Apr 2022 00:55:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id B91BB60BC3;
-	Mon, 11 Apr 2022 19:49:21 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id DE85F8333E;
+	Tue, 12 Apr 2022 00:55:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id t61eqLwLJ8Aa; Mon, 11 Apr 2022 19:49:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 8B9B760B86;
-	Mon, 11 Apr 2022 19:49:20 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OaRM4qqdFel9; Tue, 12 Apr 2022 00:55:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id A38D8827B5;
+	Tue, 12 Apr 2022 00:55:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 72FC3C0033;
-	Mon, 11 Apr 2022 19:49:20 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2DAE7C002C
- for <iommu@lists.linux-foundation.org>; Mon, 11 Apr 2022 19:49:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 84988C002F;
+	Tue, 12 Apr 2022 00:55:31 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 900B2C002C;
+ Tue, 12 Apr 2022 00:05:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 0DF6E60B8F
- for <iommu@lists.linux-foundation.org>; Mon, 11 Apr 2022 19:49:19 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 6DEE6409DA;
+ Tue, 12 Apr 2022 00:05:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YQsCmrPf7LXh for <iommu@lists.linux-foundation.org>;
- Mon, 11 Apr 2022 19:49:18 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 1C32460B37
- for <iommu@lists.linux-foundation.org>; Mon, 11 Apr 2022 19:49:17 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 33D1D1570;
- Mon, 11 Apr 2022 12:49:17 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
- [10.1.196.40])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6BC0C3F70D;
- Mon, 11 Apr 2022 12:49:16 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: thierry.reding@gmail.com
-Subject: [PATCH v2] drm: tegra: Include DMA API header where used
-Date: Mon, 11 Apr 2022 20:49:10 +0100
-Message-Id: <9043e2c18728f99fc6b025a8f59437fc05a3c2be.1649706479.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.28.0.dirty
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id hPGbblYMKN28; Tue, 12 Apr 2022 00:05:45 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 1E532409BC;
+ Tue, 12 Apr 2022 00:05:45 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6400,9594,10314"; a="244126092"
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; d="scan'208";a="244126092"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 11 Apr 2022 17:05:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,252,1643702400"; d="scan'208";a="526213233"
+Received: from rlcp.bj.intel.com ([10.238.158.160])
+ by orsmga006.jf.intel.com with ESMTP; 11 Apr 2022 17:05:43 -0700
+From: Tina Zhang <"tina.zhang@"@intel.corp-partner.google.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: [RFC] iommu/virtio: Add map/unmap_pages() callbacks implementation
+Date: Tue, 12 Apr 2022 08:03:22 +0800
+Message-Id: <20220412000322.285601-1-user@RLCP>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Cc: linux-tegra@vger.kernel.org, iommu@lists.linux-foundation.org,
- dri-devel@lists.freedesktop.org, jonathanh@nvidia.com
+X-Mailman-Approved-At: Tue, 12 Apr 2022 00:55:30 +0000
+Cc: iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org,
+ David Stevens <stevensd@chromium.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -67,71 +70,69 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Even though the IOVA API never actually needed it, iova.h is still
-carrying an include of dma-mapping.h, now solely for the sake of not
-breaking tegra-drm. Fix that properly.
+From: Tina Zhang <tina.zhang@intel.com>
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Map/unmap_pags() allows map and unmap multiple pages of the same size
+in one call, which can improve performance by reducing the numbers of
+vmexits. With map/unmap_pages() implemented, the prior map/unmap()
+callbacks are deprecated.
+
+Signed-off-by: Tina Zhang <tina.zhang@intel.com>
 ---
+ drivers/iommu/virtio-iommu.c | 31 +++++++++++++++++++++++++++++--
+ 1 file changed, 29 insertions(+), 2 deletions(-)
 
-v2: Apparently nvdec.c needs one now too.
-
- drivers/gpu/drm/tegra/dc.c    | 1 +
- drivers/gpu/drm/tegra/hub.c   | 1 +
- drivers/gpu/drm/tegra/nvdec.c | 1 +
- drivers/gpu/drm/tegra/plane.c | 1 +
- 4 files changed, 4 insertions(+)
-
-diff --git a/drivers/gpu/drm/tegra/dc.c b/drivers/gpu/drm/tegra/dc.c
-index c6951cf5d2ca..bfc79c61bca6 100644
---- a/drivers/gpu/drm/tegra/dc.c
-+++ b/drivers/gpu/drm/tegra/dc.c
-@@ -7,6 +7,7 @@
- #include <linux/clk.h>
- #include <linux/debugfs.h>
- #include <linux/delay.h>
-+#include <linux/dma-mapping.h>
- #include <linux/iommu.h>
- #include <linux/interconnect.h>
- #include <linux/module.h>
-diff --git a/drivers/gpu/drm/tegra/hub.c b/drivers/gpu/drm/tegra/hub.c
-index b8d3174c04c9..5f9b85959fae 100644
---- a/drivers/gpu/drm/tegra/hub.c
-+++ b/drivers/gpu/drm/tegra/hub.c
-@@ -5,6 +5,7 @@
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 25be4b822aa0..f6e672b13bdc 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -1006,6 +1006,33 @@ static int viommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ 	return iommu_fwspec_add_ids(dev, args->args, 1);
+ }
  
- #include <linux/clk.h>
- #include <linux/delay.h>
-+#include <linux/dma-mapping.h>
- #include <linux/host1x.h>
- #include <linux/module.h>
- #include <linux/of.h>
-diff --git a/drivers/gpu/drm/tegra/nvdec.c b/drivers/gpu/drm/tegra/nvdec.c
-index 79e1e88203cf..b412cc5c6db2 100644
---- a/drivers/gpu/drm/tegra/nvdec.c
-+++ b/drivers/gpu/drm/tegra/nvdec.c
-@@ -5,6 +5,7 @@
- 
- #include <linux/clk.h>
- #include <linux/delay.h>
-+#include <linux/dma-mapping.h>
- #include <linux/host1x.h>
- #include <linux/iommu.h>
- #include <linux/module.h>
-diff --git a/drivers/gpu/drm/tegra/plane.c b/drivers/gpu/drm/tegra/plane.c
-index e0e6938c6200..e46adb107f77 100644
---- a/drivers/gpu/drm/tegra/plane.c
-+++ b/drivers/gpu/drm/tegra/plane.c
-@@ -3,6 +3,7 @@
-  * Copyright (C) 2017 NVIDIA CORPORATION.  All rights reserved.
-  */
- 
-+#include <linux/dma-mapping.h>
- #include <linux/iommu.h>
- #include <linux/interconnect.h>
- 
++static int viommu_map_pages(struct iommu_domain *domain,
++				 unsigned long iova, phys_addr_t paddr,
++				 size_t pgsize, size_t pgcount,
++				 int prot, gfp_t gfp, size_t *mapped)
++{
++	unsigned long pgshift = __ffs(pgsize);
++	size_t size = pgcount << pgshift;
++	int ret;
++
++	ret = viommu_map(domain, iova, paddr, size, prot, gfp);
++	if (!ret && mapped)
++		*mapped = size;
++
++	return ret;
++}
++
++static size_t viommu_unmap_pages(struct iommu_domain *domain,
++				      unsigned long iova,
++				      size_t pgsize, size_t pgcount,
++				      struct iommu_iotlb_gather *gather)
++{
++	unsigned long pgshift = __ffs(pgsize);
++	size_t size = pgcount << pgshift;
++
++	return viommu_unmap(domain, iova, size, gather);
++}
++
+ static struct iommu_ops viommu_ops = {
+ 	.domain_alloc		= viommu_domain_alloc,
+ 	.probe_device		= viommu_probe_device,
+@@ -1018,8 +1045,8 @@ static struct iommu_ops viommu_ops = {
+ 	.owner			= THIS_MODULE,
+ 	.default_domain_ops = &(const struct iommu_domain_ops) {
+ 		.attach_dev		= viommu_attach_dev,
+-		.map			= viommu_map,
+-		.unmap			= viommu_unmap,
++		.unmap_pages		= viommu_unmap_pages,
++		.map_pages		= viommu_map_pages,
+ 		.iova_to_phys		= viommu_iova_to_phys,
+ 		.iotlb_sync		= viommu_iotlb_sync,
+ 		.free			= viommu_domain_free,
 -- 
-2.28.0.dirty
+2.25.1
 
 _______________________________________________
 iommu mailing list
