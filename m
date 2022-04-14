@@ -1,52 +1,52 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 123FBC433F5
-	for <iommu@archiver.kernel.org>; Thu, 14 Apr 2022 12:43:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 83A4FC433EF
+	for <iommu@archiver.kernel.org>; Thu, 14 Apr 2022 12:43:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C5A53610C3;
-	Thu, 14 Apr 2022 12:43:16 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3B18441765;
+	Thu, 14 Apr 2022 12:43:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id j3AQUc1mcK0Y; Thu, 14 Apr 2022 12:43:16 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id wIDrlO0zLVeh; Thu, 14 Apr 2022 12:43:17 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id A734360BC1;
-	Thu, 14 Apr 2022 12:43:15 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id DE09A41769;
+	Thu, 14 Apr 2022 12:43:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 913B5C0033;
-	Thu, 14 Apr 2022 12:43:15 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9366FC002C
- for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B5C58C0033;
+	Thu, 14 Apr 2022 12:43:16 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F0CE9C002C
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 71C9A40C88
- for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:13 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id DF08941769
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5I-LVnYW6EwW for <iommu@lists.linux-foundation.org>;
- Thu, 14 Apr 2022 12:43:12 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id VNILQfXG7AaZ for <iommu@lists.linux-foundation.org>;
+ Thu, 14 Apr 2022 12:43:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id E059D40C85
- for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:12 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 177FD41592
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:15 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 593231650;
- Thu, 14 Apr 2022 05:43:12 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 88EA31424;
+ Thu, 14 Apr 2022 05:43:14 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
  [10.1.196.40])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5C9D53F70D;
- Thu, 14 Apr 2022 05:43:10 -0700 (PDT)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8E4143F70D;
+ Thu, 14 Apr 2022 05:43:12 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
-Subject: [PATCH 11/13] iommu/tegra-smmu: Clean up bus_set_iommu()
-Date: Thu, 14 Apr 2022 13:42:40 +0100
-Message-Id: <6f70390dadc0fe0adcfa9caf99d57f1442b48e47.1649935679.git.robin.murphy@arm.com>
+Subject: [PATCH 12/13] iommu/virtio: Clean up bus_set_iommu()
+Date: Thu, 14 Apr 2022 13:42:41 +0100
+Message-Id: <4db34a35e07f3741a658465045b78c96a569c591.1649935679.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.28.0.dirty
 In-Reply-To: <cover.1649935679.git.robin.murphy@arm.com>
 References: <cover.1649935679.git.robin.murphy@arm.com>
@@ -77,61 +77,58 @@ the probe failure path accordingly.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/tegra-smmu.c | 29 ++++++-----------------------
- 1 file changed, 6 insertions(+), 23 deletions(-)
+ drivers/iommu/virtio-iommu.c | 24 ------------------------
+ 1 file changed, 24 deletions(-)
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 1fea68e551f1..2e4d2e4c65bb 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -1086,8 +1086,8 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 25be4b822aa0..371f8657c0ce 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -7,7 +7,6 @@
  
- 	/*
- 	 * This is a bit of a hack. Ideally we'd want to simply return this
--	 * value. However the IOMMU registration process will attempt to add
--	 * all devices to the IOMMU when bus_set_iommu() is called. In order
-+	 * value. However iommu_device_register() will attempt to add
-+	 * all devices to the IOMMU before we get that far. In order
- 	 * not to rely on global variables to track the IOMMU instance, we
- 	 * set it here so that it can be looked up from the .probe_device()
- 	 * callback via the IOMMU device's .drvdata field.
-@@ -1141,32 +1141,15 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
- 		return ERR_PTR(err);
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
  
- 	err = iommu_device_register(&smmu->iommu, &tegra_smmu_ops, dev);
--	if (err)
--		goto remove_sysfs;
--
--	err = bus_set_iommu(&platform_bus_type, &tegra_smmu_ops);
--	if (err < 0)
--		goto unregister;
--
+-#include <linux/amba/bus.h>
+ #include <linux/delay.h>
+ #include <linux/dma-iommu.h>
+ #include <linux/dma-map-ops.h>
+@@ -1146,26 +1145,6 @@ static int viommu_probe(struct virtio_device *vdev)
+ 
+ 	iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
+ 
 -#ifdef CONFIG_PCI
--	err = bus_set_iommu(&pci_bus_type, &tegra_smmu_ops);
--	if (err < 0)
--		goto unset_platform_bus;
+-	if (pci_bus_type.iommu_ops != &viommu_ops) {
+-		ret = bus_set_iommu(&pci_bus_type, &viommu_ops);
+-		if (ret)
+-			goto err_unregister;
+-	}
 -#endif
-+	if (err) {
-+		iommu_device_sysfs_remove(&smmu->iommu);
-+		return ERR_PTR(err);
-+	}
- 
- 	if (IS_ENABLED(CONFIG_DEBUG_FS))
- 		tegra_smmu_debugfs_init(smmu);
- 
- 	return smmu;
+-#ifdef CONFIG_ARM_AMBA
+-	if (amba_bustype.iommu_ops != &viommu_ops) {
+-		ret = bus_set_iommu(&amba_bustype, &viommu_ops);
+-		if (ret)
+-			goto err_unregister;
+-	}
+-#endif
+-	if (platform_bus_type.iommu_ops != &viommu_ops) {
+-		ret = bus_set_iommu(&platform_bus_type, &viommu_ops);
+-		if (ret)
+-			goto err_unregister;
+-	}
 -
--unset_platform_bus: __maybe_unused;
--	bus_set_iommu(&platform_bus_type, NULL);
--unregister:
--	iommu_device_unregister(&smmu->iommu);
--remove_sysfs:
--	iommu_device_sysfs_remove(&smmu->iommu);
--
--	return ERR_PTR(err);
- }
+ 	vdev->priv = viommu;
  
- void tegra_smmu_remove(struct tegra_smmu *smmu)
+ 	dev_info(dev, "input address: %u bits\n",
+@@ -1174,9 +1153,6 @@ static int viommu_probe(struct virtio_device *vdev)
+ 
+ 	return 0;
+ 
+-err_unregister:
+-	iommu_device_sysfs_remove(&viommu->iommu);
+-	iommu_device_unregister(&viommu->iommu);
+ err_free_vqs:
+ 	vdev->config->del_vqs(vdev);
+ 
 -- 
 2.28.0.dirty
 
