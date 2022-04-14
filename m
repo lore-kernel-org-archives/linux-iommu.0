@@ -1,52 +1,52 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DEAF3C4332F
-	for <iommu@archiver.kernel.org>; Thu, 14 Apr 2022 12:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EB8FCC433F5
+	for <iommu@archiver.kernel.org>; Thu, 14 Apr 2022 12:43:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8D77241918;
-	Thu, 14 Apr 2022 12:42:59 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id N9arO1UGsbdV; Thu, 14 Apr 2022 12:42:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 41BC94190B;
-	Thu, 14 Apr 2022 12:42:58 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 28F90C0082;
-	Thu, 14 Apr 2022 12:42:58 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B0DC8C002C
- for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:42:55 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 9F90E84175
- for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:42:55 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id AFA3884173;
+	Thu, 14 Apr 2022 12:43:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rLZXXiAo_c3c for <iommu@lists.linux-foundation.org>;
- Thu, 14 Apr 2022 12:42:55 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SFUyYO3PNafN; Thu, 14 Apr 2022 12:43:02 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 9A9A384175;
+	Thu, 14 Apr 2022 12:43:01 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 73D8DC0033;
+	Thu, 14 Apr 2022 12:43:01 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 34B3FC002C
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:00 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 125A160E13
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:00 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id NTIc6iP9JcNE for <iommu@lists.linux-foundation.org>;
+ Thu, 14 Apr 2022 12:42:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id EEE5984172
- for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:42:54 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 6752260EC7
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:42:59 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 556F31424;
- Thu, 14 Apr 2022 05:42:54 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C262C1424;
+ Thu, 14 Apr 2022 05:42:58 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
  [10.1.196.40])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5A88B3F70D;
- Thu, 14 Apr 2022 05:42:52 -0700 (PDT)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id BFC2E3F70D;
+ Thu, 14 Apr 2022 05:42:56 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
-Subject: [PATCH 03/13] iommu/amd: Clean up bus_set_iommu()
-Date: Thu, 14 Apr 2022 13:42:32 +0100
-Message-Id: <0ca792523ac9ca1a6ca63a7712aa8b9454f17e3d.1649935679.git.robin.murphy@arm.com>
+Subject: [PATCH 05/13] iommu/arm-smmu-v3: Clean up bus_set_iommu()
+Date: Thu, 14 Apr 2022 13:42:34 +0100
+Message-Id: <4c55ff48992ee8c2a81a38c859dc817ecacd8517.1649935679.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.28.0.dirty
 In-Reply-To: <cover.1649935679.git.robin.murphy@arm.com>
 References: <cover.1649935679.git.robin.murphy@arm.com>
@@ -72,93 +72,101 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Stop calling bus_set_iommu() since it's now unnecessary, and
-garbage-collect the last remnants of amd_iommu_init_api().
+Stop calling bus_set_iommu() since it's now unnecessary, and simplify
+the probe failure path accordingly.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/amd/amd_iommu.h |  1 -
- drivers/iommu/amd/init.c      |  9 +--------
- drivers/iommu/amd/iommu.c     | 21 ---------------------
- 3 files changed, 1 insertion(+), 30 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 53 +--------------------
+ 1 file changed, 2 insertions(+), 51 deletions(-)
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 1ab31074f5b3..384393ce57fb 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -18,7 +18,6 @@ extern void amd_iommu_restart_event_logging(struct amd_iommu *iommu);
- extern int amd_iommu_init_devices(void);
- extern void amd_iommu_uninit_devices(void);
- extern void amd_iommu_init_notifier(void);
--extern int amd_iommu_init_api(void);
- 
- #ifdef CONFIG_AMD_IOMMU_DEBUGFS
- void amd_iommu_debugfs_setup(struct amd_iommu *iommu);
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 0467918bf7fd..1cb10d8b0df4 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -1970,20 +1970,13 @@ static int __init amd_iommu_init_pci(void)
- 	/*
- 	 * Order is important here to make sure any unity map requirements are
- 	 * fulfilled. The unity mappings are created and written to the device
--	 * table during the amd_iommu_init_api() call.
-+	 * table during the iommu_init_pci() call.
- 	 *
- 	 * After that we call init_device_table_dma() to make sure any
- 	 * uninitialized DTE will block DMA, and in the end we flush the caches
- 	 * of all IOMMUs to make sure the changes to the device table are
- 	 * active.
- 	 */
--	ret = amd_iommu_init_api();
--	if (ret) {
--		pr_err("IOMMU: Failed to initialize IOMMU-API interface (error=%d)!\n",
--		       ret);
--		goto out;
--	}
--
- 	init_device_table_dma();
- 
- 	for_each_iommu(iommu)
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 6366a473ef0d..c0f8a541a7d6 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -11,8 +11,6 @@
- #include <linux/ratelimit.h>
- #include <linux/pci.h>
- #include <linux/acpi.h>
--#include <linux/amba/bus.h>
--#include <linux/platform_device.h>
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 6699333fd17b..b221525c31b9 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -28,8 +28,6 @@
  #include <linux/pci-ats.h>
- #include <linux/bitmap.h>
- #include <linux/slab.h>
-@@ -1838,25 +1836,6 @@ void amd_iommu_domain_update(struct protection_domain *domain)
- 	amd_iommu_domain_flush_complete(domain);
+ #include <linux/platform_device.h>
+ 
+-#include <linux/amba/bus.h>
+-
+ #include "arm-smmu-v3.h"
+ #include "../../iommu-sva-lib.h"
+ 
+@@ -3698,43 +3696,6 @@ static unsigned long arm_smmu_resource_size(struct arm_smmu_device *smmu)
+ 		return SZ_128K;
  }
  
--int __init amd_iommu_init_api(void)
+-static int arm_smmu_set_bus_ops(struct iommu_ops *ops)
 -{
 -	int err;
 -
--	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
--	if (err)
--		return err;
--#ifdef CONFIG_ARM_AMBA
--	err = bus_set_iommu(&amba_bustype, &amd_iommu_ops);
--	if (err)
--		return err;
+-#ifdef CONFIG_PCI
+-	if (pci_bus_type.iommu_ops != ops) {
+-		err = bus_set_iommu(&pci_bus_type, ops);
+-		if (err)
+-			return err;
+-	}
 -#endif
--	err = bus_set_iommu(&platform_bus_type, &amd_iommu_ops);
--	if (err)
--		return err;
+-#ifdef CONFIG_ARM_AMBA
+-	if (amba_bustype.iommu_ops != ops) {
+-		err = bus_set_iommu(&amba_bustype, ops);
+-		if (err)
+-			goto err_reset_pci_ops;
+-	}
+-#endif
+-	if (platform_bus_type.iommu_ops != ops) {
+-		err = bus_set_iommu(&platform_bus_type, ops);
+-		if (err)
+-			goto err_reset_amba_ops;
+-	}
 -
 -	return 0;
+-
+-err_reset_amba_ops:
+-#ifdef CONFIG_ARM_AMBA
+-	bus_set_iommu(&amba_bustype, NULL);
+-#endif
+-err_reset_pci_ops: __maybe_unused;
+-#ifdef CONFIG_PCI
+-	bus_set_iommu(&pci_bus_type, NULL);
+-#endif
+-	return err;
 -}
 -
- /*****************************************************************************
-  *
-  * The following functions belong to the exported interface of AMD IOMMU
+ static void __iomem *arm_smmu_ioremap(struct device *dev, resource_size_t start,
+ 				      resource_size_t size)
+ {
+@@ -3838,27 +3799,17 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
+ 	if (ret) {
+ 		dev_err(dev, "Failed to register iommu\n");
+-		goto err_sysfs_remove;
++		iommu_device_sysfs_remove(&smmu->iommu);
++		return ret;
+ 	}
+ 
+-	ret = arm_smmu_set_bus_ops(&arm_smmu_ops);
+-	if (ret)
+-		goto err_unregister_device;
+-
+ 	return 0;
+-
+-err_unregister_device:
+-	iommu_device_unregister(&smmu->iommu);
+-err_sysfs_remove:
+-	iommu_device_sysfs_remove(&smmu->iommu);
+-	return ret;
+ }
+ 
+ static int arm_smmu_device_remove(struct platform_device *pdev)
+ {
+ 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+ 
+-	arm_smmu_set_bus_ops(NULL);
+ 	iommu_device_unregister(&smmu->iommu);
+ 	iommu_device_sysfs_remove(&smmu->iommu);
+ 	arm_smmu_device_disable(smmu);
 -- 
 2.28.0.dirty
 
