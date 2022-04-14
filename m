@@ -4,49 +4,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EB8FCC433F5
-	for <iommu@archiver.kernel.org>; Thu, 14 Apr 2022 12:43:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 38C56C4332F
+	for <iommu@archiver.kernel.org>; Thu, 14 Apr 2022 12:43:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id AFA3884173;
-	Thu, 14 Apr 2022 12:43:02 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id E234984177;
+	Thu, 14 Apr 2022 12:43:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SFUyYO3PNafN; Thu, 14 Apr 2022 12:43:02 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 9A9A384175;
-	Thu, 14 Apr 2022 12:43:01 +0000 (UTC)
+	with ESMTP id wzC5gfRGwQvN; Thu, 14 Apr 2022 12:43:04 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id CB41E8417B;
+	Thu, 14 Apr 2022 12:43:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 73D8DC0033;
-	Thu, 14 Apr 2022 12:43:01 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 34B3FC002C
- for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A60F9C0033;
+	Thu, 14 Apr 2022 12:43:03 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7418BC002C
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 125A160E13
- for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:00 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 62737401F4
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NTIc6iP9JcNE for <iommu@lists.linux-foundation.org>;
- Thu, 14 Apr 2022 12:42:59 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id PP_StQ5QA1hI for <iommu@lists.linux-foundation.org>;
+ Thu, 14 Apr 2022 12:43:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 6752260EC7
- for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:42:59 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 854B7400CF
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:01 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C262C1424;
- Thu, 14 Apr 2022 05:42:58 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 09D2A15DB;
+ Thu, 14 Apr 2022 05:43:01 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
  [10.1.196.40])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id BFC2E3F70D;
- Thu, 14 Apr 2022 05:42:56 -0700 (PDT)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 0777C3F70D;
+ Thu, 14 Apr 2022 05:42:58 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
-Subject: [PATCH 05/13] iommu/arm-smmu-v3: Clean up bus_set_iommu()
-Date: Thu, 14 Apr 2022 13:42:34 +0100
-Message-Id: <4c55ff48992ee8c2a81a38c859dc817ecacd8517.1649935679.git.robin.murphy@arm.com>
+Subject: [PATCH 06/13] iommu/dart: Clean up bus_set_iommu()
+Date: Thu, 14 Apr 2022 13:42:35 +0100
+Message-Id: <36df696dacfffd52e79b471572de9893b52ad0d9.1649935679.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.28.0.dirty
 In-Reply-To: <cover.1649935679.git.robin.murphy@arm.com>
 References: <cover.1649935679.git.robin.murphy@arm.com>
@@ -77,96 +77,74 @@ the probe failure path accordingly.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 53 +--------------------
- 1 file changed, 2 insertions(+), 51 deletions(-)
+ drivers/iommu/apple-dart.c | 30 +-----------------------------
+ 1 file changed, 1 insertion(+), 29 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 6699333fd17b..b221525c31b9 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -28,8 +28,6 @@
- #include <linux/pci-ats.h>
- #include <linux/platform_device.h>
- 
--#include <linux/amba/bus.h>
--
- #include "arm-smmu-v3.h"
- #include "../../iommu-sva-lib.h"
- 
-@@ -3698,43 +3696,6 @@ static unsigned long arm_smmu_resource_size(struct arm_smmu_device *smmu)
- 		return SZ_128K;
+diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+index decafb07ad08..a679e4c02291 100644
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -823,27 +823,6 @@ static irqreturn_t apple_dart_irq(int irq, void *dev)
+ 	return IRQ_HANDLED;
  }
  
--static int arm_smmu_set_bus_ops(struct iommu_ops *ops)
+-static int apple_dart_set_bus_ops(const struct iommu_ops *ops)
 -{
--	int err;
+-	int ret;
 -
+-	if (!iommu_present(&platform_bus_type)) {
+-		ret = bus_set_iommu(&platform_bus_type, ops);
+-		if (ret)
+-			return ret;
+-	}
 -#ifdef CONFIG_PCI
--	if (pci_bus_type.iommu_ops != ops) {
--		err = bus_set_iommu(&pci_bus_type, ops);
--		if (err)
--			return err;
+-	if (!iommu_present(&pci_bus_type)) {
+-		ret = bus_set_iommu(&pci_bus_type, ops);
+-		if (ret) {
+-			bus_set_iommu(&platform_bus_type, NULL);
+-			return ret;
+-		}
 -	}
 -#endif
--#ifdef CONFIG_ARM_AMBA
--	if (amba_bustype.iommu_ops != ops) {
--		err = bus_set_iommu(&amba_bustype, ops);
--		if (err)
--			goto err_reset_pci_ops;
--	}
--#endif
--	if (platform_bus_type.iommu_ops != ops) {
--		err = bus_set_iommu(&platform_bus_type, ops);
--		if (err)
--			goto err_reset_amba_ops;
--	}
--
 -	return 0;
--
--err_reset_amba_ops:
--#ifdef CONFIG_ARM_AMBA
--	bus_set_iommu(&amba_bustype, NULL);
--#endif
--err_reset_pci_ops: __maybe_unused;
--#ifdef CONFIG_PCI
--	bus_set_iommu(&pci_bus_type, NULL);
--#endif
--	return err;
 -}
 -
- static void __iomem *arm_smmu_ioremap(struct device *dev, resource_size_t start,
- 				      resource_size_t size)
+ static int apple_dart_probe(struct platform_device *pdev)
  {
-@@ -3838,27 +3799,17 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
- 	if (ret) {
- 		dev_err(dev, "Failed to register iommu\n");
--		goto err_sysfs_remove;
-+		iommu_device_sysfs_remove(&smmu->iommu);
-+		return ret;
- 	}
+ 	int ret;
+@@ -899,14 +878,10 @@ static int apple_dart_probe(struct platform_device *pdev)
  
--	ret = arm_smmu_set_bus_ops(&arm_smmu_ops);
+ 	platform_set_drvdata(pdev, dart);
+ 
+-	ret = apple_dart_set_bus_ops(&apple_dart_iommu_ops);
 -	if (ret)
--		goto err_unregister_device;
+-		goto err_free_irq;
 -
- 	return 0;
--
--err_unregister_device:
--	iommu_device_unregister(&smmu->iommu);
--err_sysfs_remove:
--	iommu_device_sysfs_remove(&smmu->iommu);
--	return ret;
- }
+ 	ret = iommu_device_sysfs_add(&dart->iommu, dev, NULL, "apple-dart.%s",
+ 				     dev_name(&pdev->dev));
+ 	if (ret)
+-		goto err_remove_bus_ops;
++		goto err_free_irq;
  
- static int arm_smmu_device_remove(struct platform_device *pdev)
- {
- 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+ 	ret = iommu_device_register(&dart->iommu, &apple_dart_iommu_ops, dev);
+ 	if (ret)
+@@ -920,8 +895,6 @@ static int apple_dart_probe(struct platform_device *pdev)
  
--	arm_smmu_set_bus_ops(NULL);
- 	iommu_device_unregister(&smmu->iommu);
- 	iommu_device_sysfs_remove(&smmu->iommu);
- 	arm_smmu_device_disable(smmu);
+ err_sysfs_remove:
+ 	iommu_device_sysfs_remove(&dart->iommu);
+-err_remove_bus_ops:
+-	apple_dart_set_bus_ops(NULL);
+ err_free_irq:
+ 	free_irq(dart->irq, dart);
+ err_clk_disable:
+@@ -936,7 +909,6 @@ static int apple_dart_remove(struct platform_device *pdev)
+ 
+ 	apple_dart_hw_reset(dart);
+ 	free_irq(dart->irq, dart);
+-	apple_dart_set_bus_ops(NULL);
+ 
+ 	iommu_device_unregister(&dart->iommu);
+ 	iommu_device_sysfs_remove(&dart->iommu);
 -- 
 2.28.0.dirty
 
