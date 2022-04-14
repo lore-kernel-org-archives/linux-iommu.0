@@ -4,49 +4,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E4D99C433EF
-	for <iommu@archiver.kernel.org>; Thu, 14 Apr 2022 12:43:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 123FBC433F5
+	for <iommu@archiver.kernel.org>; Thu, 14 Apr 2022 12:43:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id AF87160D91;
-	Thu, 14 Apr 2022 12:43:13 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id C5A53610C3;
+	Thu, 14 Apr 2022 12:43:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3_iGnlQvbXPr; Thu, 14 Apr 2022 12:43:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 8FD4660FAF;
-	Thu, 14 Apr 2022 12:43:12 +0000 (UTC)
+	with ESMTP id j3AQUc1mcK0Y; Thu, 14 Apr 2022 12:43:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id A734360BC1;
+	Thu, 14 Apr 2022 12:43:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5E521C0033;
-	Thu, 14 Apr 2022 12:43:12 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 53FE3C002C
- for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 913B5C0033;
+	Thu, 14 Apr 2022 12:43:15 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9366FC002C
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 339C140C89
- for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:11 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 71C9A40C88
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cBWgUVjjCVp1 for <iommu@lists.linux-foundation.org>;
- Thu, 14 Apr 2022 12:43:10 +0000 (UTC)
+ with ESMTP id 5I-LVnYW6EwW for <iommu@lists.linux-foundation.org>;
+ Thu, 14 Apr 2022 12:43:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9D86F40C82
- for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:10 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id E059D40C85
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:12 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 27B36139F;
- Thu, 14 Apr 2022 05:43:10 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 593231650;
+ Thu, 14 Apr 2022 05:43:12 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
  [10.1.196.40])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 201C33F70D;
- Thu, 14 Apr 2022 05:43:08 -0700 (PDT)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5C9D53F70D;
+ Thu, 14 Apr 2022 05:43:10 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
-Subject: [PATCH 10/13] iommu/omap: Clean up bus_set_iommu()
-Date: Thu, 14 Apr 2022 13:42:39 +0100
-Message-Id: <3627bf678a72065bc9c09f0d22db09583702ad87.1649935679.git.robin.murphy@arm.com>
+Subject: [PATCH 11/13] iommu/tegra-smmu: Clean up bus_set_iommu()
+Date: Thu, 14 Apr 2022 13:42:40 +0100
+Message-Id: <6f70390dadc0fe0adcfa9caf99d57f1442b48e47.1649935679.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.28.0.dirty
 In-Reply-To: <cover.1649935679.git.robin.murphy@arm.com>
 References: <cover.1649935679.git.robin.murphy@arm.com>
@@ -73,32 +73,65 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 Stop calling bus_set_iommu() since it's now unnecessary, and simplify
-the init failure path accordingly.
+the probe failure path accordingly.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/omap-iommu.c | 6 ------
- 1 file changed, 6 deletions(-)
+ drivers/iommu/tegra-smmu.c | 29 ++++++-----------------------
+ 1 file changed, 6 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index d9cf2820c02e..07ee2600113c 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1776,14 +1776,8 @@ static int __init omap_iommu_init(void)
- 		goto fail_driver;
- 	}
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 1fea68e551f1..2e4d2e4c65bb 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -1086,8 +1086,8 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
  
--	ret = bus_set_iommu(&platform_bus_type, &omap_iommu_ops);
--	if (ret)
--		goto fail_bus;
+ 	/*
+ 	 * This is a bit of a hack. Ideally we'd want to simply return this
+-	 * value. However the IOMMU registration process will attempt to add
+-	 * all devices to the IOMMU when bus_set_iommu() is called. In order
++	 * value. However iommu_device_register() will attempt to add
++	 * all devices to the IOMMU before we get that far. In order
+ 	 * not to rely on global variables to track the IOMMU instance, we
+ 	 * set it here so that it can be looked up from the .probe_device()
+ 	 * callback via the IOMMU device's .drvdata field.
+@@ -1141,32 +1141,15 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+ 		return ERR_PTR(err);
+ 
+ 	err = iommu_device_register(&smmu->iommu, &tegra_smmu_ops, dev);
+-	if (err)
+-		goto remove_sysfs;
 -
- 	return 0;
+-	err = bus_set_iommu(&platform_bus_type, &tegra_smmu_ops);
+-	if (err < 0)
+-		goto unregister;
+-
+-#ifdef CONFIG_PCI
+-	err = bus_set_iommu(&pci_bus_type, &tegra_smmu_ops);
+-	if (err < 0)
+-		goto unset_platform_bus;
+-#endif
++	if (err) {
++		iommu_device_sysfs_remove(&smmu->iommu);
++		return ERR_PTR(err);
++	}
  
--fail_bus:
--	platform_driver_unregister(&omap_iommu_driver);
- fail_driver:
- 	kmem_cache_destroy(iopte_cachep);
- 	return ret;
+ 	if (IS_ENABLED(CONFIG_DEBUG_FS))
+ 		tegra_smmu_debugfs_init(smmu);
+ 
+ 	return smmu;
+-
+-unset_platform_bus: __maybe_unused;
+-	bus_set_iommu(&platform_bus_type, NULL);
+-unregister:
+-	iommu_device_unregister(&smmu->iommu);
+-remove_sysfs:
+-	iommu_device_sysfs_remove(&smmu->iommu);
+-
+-	return ERR_PTR(err);
+ }
+ 
+ void tegra_smmu_remove(struct tegra_smmu *smmu)
 -- 
 2.28.0.dirty
 
