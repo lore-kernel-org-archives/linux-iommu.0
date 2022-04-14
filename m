@@ -4,57 +4,78 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E1129C433EF
-	for <iommu@archiver.kernel.org>; Thu, 14 Apr 2022 12:43:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id ABFCBC433EF
+	for <iommu@archiver.kernel.org>; Thu, 14 Apr 2022 12:49:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id AB88A41871;
-	Thu, 14 Apr 2022 12:43:20 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 5FA78418D0;
+	Thu, 14 Apr 2022 12:49:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FXIGshRhSbLe; Thu, 14 Apr 2022 12:43:19 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 0BB084181E;
-	Thu, 14 Apr 2022 12:43:18 +0000 (UTC)
+	with ESMTP id JK70X__R2M6m; Thu, 14 Apr 2022 12:49:50 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 19C5F408F8;
+	Thu, 14 Apr 2022 12:49:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D7D92C0033;
-	Thu, 14 Apr 2022 12:43:18 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 233C6C002C
- for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CE88EC0033;
+	Thu, 14 Apr 2022 12:49:49 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3D163C002C
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:49:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 03EC784173
- for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:18 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 2637840C7E
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:49:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Oxbg6_7KrLIU for <iommu@lists.linux-foundation.org>;
- Thu, 14 Apr 2022 12:43:17 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wRwmYcRlbXCV for <iommu@lists.linux-foundation.org>;
+ Thu, 14 Apr 2022 12:49:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 3164E8417E
- for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:43:17 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BAA3C139F;
- Thu, 14 Apr 2022 05:43:16 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
- [10.1.196.40])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id BEA383F70D;
- Thu, 14 Apr 2022 05:43:14 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org,
-	will@kernel.org
-Subject: [PATCH 13/13] iommu: Clean up bus_set_iommu()
-Date: Thu, 14 Apr 2022 13:42:42 +0100
-Message-Id: <d8ea4925c96947158981c14a993db2fbc92495b6.1649935679.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.28.0.dirty
-In-Reply-To: <cover.1649935679.git.robin.murphy@arm.com>
-References: <cover.1649935679.git.robin.murphy@arm.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 76B71400D6
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:49:48 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id 243D66203E
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:49:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D2ECC385AB
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 12:49:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1649940586;
+ bh=C2Kk6JG6xL+z4XI22pXh4XkU/JyALopXrnZXdcSiBcM=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=Xa3C4nEoqfvQL8zuDvgpCLQj0Qk/QJEXWk+3W1puxrfxKl7iWROEdmTsWgFJiAtZP
+ iYjH2NEKwA6beHxy+6CB5Ywbj6NUeKCzVIJkEdmGpifjMBZtzmv9ceNfnbpv66Ss02
+ JOvre9x1D3VpOgEZKeutvcVjO7W2VZ2yoP5Kqxr0gZzxIYyQgaP2HsEyUZewQXBiib
+ PHUMnQjLQ3tarSu/SJPPs7PjvAtf/ikEWTC9uT/6QhF4xo9rNTE4mIb1HyMzag2fF4
+ x9oqU2+69EiT6904G+8XTJ3q1gmUb3MXkpTf3MCRowyt5phT8F6LStrp2hxw0KTCLY
+ ZOZ7AZJwE+54A==
+Received: by mail-yw1-f175.google.com with SMTP id
+ 00721157ae682-2ec04a2ebadso53663187b3.12
+ for <iommu@lists.linux-foundation.org>; Thu, 14 Apr 2022 05:49:46 -0700 (PDT)
+X-Gm-Message-State: AOAM532TXRaNQfVnmNN63yRCt8d0lJhwPJjlXU9RR5HTWLGlTa8kFye4
+ nzcN8V3vzFR8R4IJWZETQ9JaITdWUGywfsBJb8I=
+X-Google-Smtp-Source: ABdhPJwNoPoFyfzZdliodNDCsFHXTluyQSmLzZQoxfspDcuXCQmbBNngdY7NkJvPwUXIL347E5RiBgkrECUaEOYobFE=
+X-Received: by 2002:a81:6188:0:b0:2eb:4bd3:9b86 with SMTP id
+ v130-20020a816188000000b002eb4bd39b86mr1702227ywb.46.1649940585554; Thu, 14
+ Apr 2022 05:49:45 -0700 (PDT)
 MIME-Version: 1.0
-Cc: jean-philippe@linaro.org, zhang.lyra@gmail.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org,
- gerald.schaefer@linux.ibm.com
+References: <bec0fe9659f832715295f9895025ee8fd91847f3.1649680490.git.robin.murphy@arm.com>
+In-Reply-To: <bec0fe9659f832715295f9895025ee8fd91847f3.1649680490.git.robin.murphy@arm.com>
+From: Oded Gabbay <ogabbay@kernel.org>
+Date: Thu, 14 Apr 2022 15:49:18 +0300
+X-Gmail-Original-Message-ID: <CAFCwf12J8FMen1-nRMnp=fjNEFJdKsGB8qnV_NLYbG9COX3BAQ@mail.gmail.com>
+Message-ID: <CAFCwf12J8FMen1-nRMnp=fjNEFJdKsGB8qnV_NLYbG9COX3BAQ@mail.gmail.com>
+Subject: Re: [PATCH v2] habanalabs: Stop using iommu_present()
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -72,200 +93,40 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Clean up the remaining trivial bus_set_iommu() callsites along
-with the implementation. Now drivers only have to know and care
-about iommu_device instances, phew!
-
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/arm/arm-smmu/qcom_iommu.c |  4 ----
- drivers/iommu/fsl_pamu_domain.c         |  4 ----
- drivers/iommu/intel/iommu.c             |  1 -
- drivers/iommu/iommu.c                   | 24 ------------------------
- drivers/iommu/msm_iommu.c               |  2 --
- drivers/iommu/rockchip-iommu.c          |  2 --
- drivers/iommu/s390-iommu.c              |  6 ------
- drivers/iommu/sprd-iommu.c              |  5 -----
- drivers/iommu/sun50i-iommu.c            |  2 --
- include/linux/iommu.h                   |  1 -
- 10 files changed, 51 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 8cd39abade5a..028649203d33 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -845,8 +845,6 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
- 		goto err_pm_disable;
- 	}
- 
--	bus_set_iommu(&platform_bus_type, &qcom_iommu_ops);
--
- 	if (qcom_iommu->local_base) {
- 		pm_runtime_get_sync(dev);
- 		writel_relaxed(0xffffffff, qcom_iommu->local_base + SMMU_INTR_SEL_NS);
-@@ -864,8 +862,6 @@ static int qcom_iommu_device_remove(struct platform_device *pdev)
- {
- 	struct qcom_iommu_dev *qcom_iommu = platform_get_drvdata(pdev);
- 
--	bus_set_iommu(&platform_bus_type, NULL);
--
- 	pm_runtime_force_suspend(&pdev->dev);
- 	platform_set_drvdata(pdev, NULL);
- 	iommu_device_sysfs_remove(&qcom_iommu->iommu);
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index d03a14386f86..ddf5ab28615c 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -480,11 +480,7 @@ int __init pamu_domain_init(void)
- 	if (ret) {
- 		iommu_device_sysfs_remove(&pamu_iommu);
- 		pr_err("Can't register iommu device\n");
--		return ret;
- 	}
- 
--	bus_set_iommu(&platform_bus_type, &fsl_pamu_ops);
--	bus_set_iommu(&pci_bus_type, &fsl_pamu_ops);
--
- 	return ret;
- }
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 0b24c4977dbe..49d552a96098 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4178,7 +4178,6 @@ int __init intel_iommu_init(void)
- 	}
- 	up_read(&dmar_global_lock);
- 
--	bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
- 	if (si_domain && !hw_pass_through)
- 		register_memory_notifier(&intel_iommu_memory_nb);
- 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 51205c33c426..7800e342d285 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1885,30 +1885,6 @@ static int iommu_bus_init(struct bus_type *bus)
- 	return err;
- }
- 
--/**
-- * bus_set_iommu - set iommu-callbacks for the bus
-- * @bus: bus.
-- * @ops: the callbacks provided by the iommu-driver
-- *
-- * This function is called by an iommu driver to set the iommu methods
-- * used for a particular bus. Drivers for devices on that bus can use
-- * the iommu-api after these ops are registered.
-- * This special function is needed because IOMMUs are usually devices on
-- * the bus itself, so the iommu drivers are not initialized when the bus
-- * is set up. With this function the iommu-driver can set the iommu-ops
-- * afterwards.
-- */
--int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
--{
--	if (bus->iommu_ops && ops && bus->iommu_ops != ops)
--		return -EBUSY;
--
--	bus->iommu_ops = ops;
--
--	return 0;
--}
--EXPORT_SYMBOL_GPL(bus_set_iommu);
--
- bool iommu_present(struct bus_type *bus)
- {
- 	return bus->iommu_ops != NULL;
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 50f57624610f..5b89fb16feb8 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -789,8 +789,6 @@ static int msm_iommu_probe(struct platform_device *pdev)
- 		goto fail;
- 	}
- 
--	bus_set_iommu(&platform_bus_type, &msm_iommu_ops);
--
- 	pr_info("device mapped at %p, irq %d with %d ctx banks\n",
- 		iommu->base, iommu->irq, iommu->ncb);
- 
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index ab57c4b8fade..a3fc59b814ab 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1300,8 +1300,6 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	if (!dma_dev)
- 		dma_dev = &pdev->dev;
- 
--	bus_set_iommu(&platform_bus_type, &rk_iommu_ops);
--
- 	pm_runtime_enable(dev);
- 
- 	for (i = 0; i < iommu->num_irq; i++) {
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index bd56e21bf754..ea4ba9de04af 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -376,9 +376,3 @@ static const struct iommu_ops s390_iommu_ops = {
- 		.free		= s390_domain_free,
- 	}
- };
--
--static int __init s390_iommu_init(void)
--{
--	return bus_set_iommu(&pci_bus_type, &s390_iommu_ops);
--}
--subsys_initcall(s390_iommu_init);
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index bd409bab6286..6770e6a72283 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -507,9 +507,6 @@ static int sprd_iommu_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto remove_sysfs;
- 
--	if (!iommu_present(&platform_bus_type))
--		bus_set_iommu(&platform_bus_type, &sprd_iommu_ops);
--
- 	ret = sprd_iommu_clk_enable(sdev);
- 	if (ret)
- 		goto unregister_iommu;
-@@ -545,8 +542,6 @@ static int sprd_iommu_remove(struct platform_device *pdev)
- 	iommu_group_put(sdev->group);
- 	sdev->group = NULL;
- 
--	bus_set_iommu(&platform_bus_type, NULL);
--
- 	platform_set_drvdata(pdev, NULL);
- 	iommu_device_sysfs_remove(&sdev->iommu);
- 	iommu_device_unregister(&sdev->iommu);
-diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index c54ab477b8fd..e104543b78d9 100644
---- a/drivers/iommu/sun50i-iommu.c
-+++ b/drivers/iommu/sun50i-iommu.c
-@@ -968,8 +968,6 @@ static int sun50i_iommu_probe(struct platform_device *pdev)
- 	if (ret < 0)
- 		goto err_unregister;
- 
--	bus_set_iommu(&platform_bus_type, &sun50i_iommu_ops);
--
- 	return 0;
- 
- err_unregister:
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 46d9e27d49fd..e93e4a42e1a0 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -416,7 +416,6 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
- #define IOMMU_GROUP_NOTIFY_UNBIND_DRIVER	5 /* Pre Driver unbind */
- #define IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER	6 /* Post Driver unbind */
- 
--extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
- extern int bus_iommu_probe(struct bus_type *bus);
- extern bool iommu_present(struct bus_type *bus);
- extern bool device_iommu_capable(struct device *dev, enum iommu_cap cap);
--- 
-2.28.0.dirty
-
+On Mon, Apr 11, 2022 at 3:36 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> Even if an IOMMU might be present for some PCI segment in the system,
+> that doesn't necessarily mean it provides translation for the device
+> we care about. Replace iommu_present() with a more appropriate check.
+>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>
+> v2: Rebase on habanalabs-next
+>
+>  drivers/misc/habanalabs/common/debugfs.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/misc/habanalabs/common/debugfs.c b/drivers/misc/habanalabs/common/debugfs.c
+> index 7c4a4d504e4c..a94f01713efd 100644
+> --- a/drivers/misc/habanalabs/common/debugfs.c
+> +++ b/drivers/misc/habanalabs/common/debugfs.c
+> @@ -722,7 +722,7 @@ static int hl_access_mem(struct hl_device *hdev, u64 addr, u64 *val,
+>         if (found)
+>                 return 0;
+>
+> -       if (!user_address || iommu_present(&pci_bus_type)) {
+> +       if (!user_address || device_iommu_mapped(&hdev->pdev->dev)) {
+>                 rc = -EINVAL;
+>                 goto err;
+>         }
+> --
+> 2.28.0.dirty
+>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Applied to -next.
+Thanks,
+Oded
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
