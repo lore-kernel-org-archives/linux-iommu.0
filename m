@@ -1,69 +1,69 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CC52FC433F5
-	for <iommu@archiver.kernel.org>; Mon, 18 Apr 2022 18:08:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 817C8C433F5
+	for <iommu@archiver.kernel.org>; Mon, 18 Apr 2022 18:11:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 44E124177C;
-	Mon, 18 Apr 2022 18:08:08 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 1C31061124;
+	Mon, 18 Apr 2022 18:11:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KG7MdZtikEti; Mon, 18 Apr 2022 18:08:06 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id R64VNIjYVKBu; Mon, 18 Apr 2022 18:11:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 72E2241752;
-	Mon, 18 Apr 2022 18:08:06 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id F07F260FEF;
+	Mon, 18 Apr 2022 18:11:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3FBA4C0033;
-	Mon, 18 Apr 2022 18:08:06 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F3376C002C
- for <iommu@lists.linux-foundation.org>; Mon, 18 Apr 2022 18:08:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C8F9DC0033;
+	Mon, 18 Apr 2022 18:11:26 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AD721C002C
+ for <iommu@lists.linux-foundation.org>; Mon, 18 Apr 2022 18:11:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D177040438
- for <iommu@lists.linux-foundation.org>; Mon, 18 Apr 2022 18:08:04 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 93FBD414C9
+ for <iommu@lists.linux-foundation.org>; Mon, 18 Apr 2022 18:11:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CgzedoqMKm7f for <iommu@lists.linux-foundation.org>;
- Mon, 18 Apr 2022 18:08:02 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rHCFuGnUrIkU for <iommu@lists.linux-foundation.org>;
+ Mon, 18 Apr 2022 18:11:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp2.osuosl.org (Postfix) with ESMTPS id A3E3340111
- for <iommu@lists.linux-foundation.org>; Mon, 18 Apr 2022 18:08:02 +0000 (UTC)
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id B9F6C408D7
+ for <iommu@lists.linux-foundation.org>; Mon, 18 Apr 2022 18:11:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1650305282; x=1681841282;
+ t=1650305484; x=1681841484;
  h=date:from:to:cc:subject:message-id:in-reply-to:
  references:mime-version:content-transfer-encoding;
- bh=dyyMH0xpZtsmvKPKBHxyzRSqFnhpIBPEXWOqpua1DEE=;
- b=YQj2Wk+wvtCBxdy+uZDZsMmnM0HC+CaZ4JM8XrwDBqAtWtSEEEgzaY9o
- VtBn5qPE5K0tuAPDvRvBO0JF7BkCeZy2MgeN94ENWwM9ywGbNRdVGvOwv
- oNZv8rTk8dSt8Y2rFmcWN4sDiBsttCkZGS5IP5UUm/m85RfATpJJhNqb1
- kY4Uf/Y6EzY4BOwgdIZpmIIS9AcoCSuMfJoYxQNiuBvi7rfDCNOlSja5s
- zwjYDHwTBg8b/2XCNwzGGrPG+8s/x/fJfw8/GtU61vztofUqVpnD2wWXQ
- FvORxNpSxfox6zdCiwpNJMST+dFO0PetUx2wdyxdHVHLcJ/+06m1SOV/c A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="261183549"
-X-IronPort-AV: E=Sophos;i="5.90,270,1643702400"; d="scan'208";a="261183549"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 18 Apr 2022 11:08:01 -0700
-X-IronPort-AV: E=Sophos;i="5.90,270,1643702400"; d="scan'208";a="529659339"
+ bh=4FtieXzTSKHMKDV88WzqEoh+kHjDQfwJ0Yydw1piwHk=;
+ b=X1eskVLyDY6NiXcM38yERkGHT9mxXtBX8sLPWxq4WcePUr+AibLfQCJq
+ jUr8nIYpBkp0FgKDVzIBO4g0IJ1TuRuQ+Xq6UttuiWoh5H1611FixgWuU
+ 0lxLgZIN2Cr5FXBYbVSNAsT5VMkAHPP/smN99K9RbGxH3aZalw/l7sjaf
+ cHRngC86Os4SVahRQEtuZhEvrXJ6P6yZXbgGk4a6O2G7T9uLRtcMzUOAU
+ JZ9BhcbK9Jt4/f0pbT9AQymIKAzNLZrYDYSCnIN+7VazymVmfOdhKwrgV
+ N4903fA6qqeGCIGBGrT0q2WCuaKGCbeiQ17/TlIWo1Wj7h82AQLxpErTf g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10321"; a="250883452"
+X-IronPort-AV: E=Sophos;i="5.90,270,1643702400"; d="scan'208";a="250883452"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 18 Apr 2022 11:11:23 -0700
+X-IronPort-AV: E=Sophos;i="5.90,270,1643702400"; d="scan'208";a="646948978"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
- by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 18 Apr 2022 11:08:01 -0700
-Date: Mon, 18 Apr 2022 11:11:35 -0700
+ by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 18 Apr 2022 11:11:22 -0700
+Date: Mon, 18 Apr 2022 11:14:56 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
+To: "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
 Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
  allocation and free it on mm exit
-Message-ID: <20220418111135.6260d450@jacob-builder>
-In-Reply-To: <BN9PR11MB52765490BFC5F08CD4F7A9208CF39@BN9PR11MB5276.namprd11.prod.outlook.com>
+Message-ID: <20220418111456.2f1a1285@jacob-builder>
+In-Reply-To: <tencent_8EC09A26D25C1A263AE207952230B789D409@qq.com>
 References: <tencent_9920B633D50E9B80D3A41A723BCE06972309@qq.com>
  <f439dde5-0eaa-52e4-9cf7-2ed1f62ea07f@intel.com>
  <tencent_F73C11A7DBAC6AF24D3369DF0DCA1D7E8308@qq.com>
@@ -77,19 +77,19 @@ References: <tencent_9920B633D50E9B80D3A41A723BCE06972309@qq.com>
  <YllN/OmjpYdT1tO9@otcwcpicx3.sc.intel.com>
  <tencent_CD35B6A6FBB48186B38EF641F088BAED1407@qq.com>
  <20220415140002.7c12b0d2@jacob-builder>
- <BN9PR11MB52765490BFC5F08CD4F7A9208CF39@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <tencent_8EC09A26D25C1A263AE207952230B789D409@qq.com>
 Organization: OTC
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Cc: "Yu, Fenghua" <fenghua.yu@intel.com>, "Luck, Tony" <tony.luck@intel.com>,
- "Raj, Ashok" <ashok.raj@intel.com>, "Shankar,
- Ravi V" <ravi.v.shankar@intel.com>, jean-philippe <jean-philippe@linaro.org>,
+Cc: Fenghua Yu <fenghua.yu@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>,
+ jean-philippe <jean-philippe@linaro.org>,
  Peter Zijlstra <peterz@infradead.org>,
  Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, "Hansen, 
- Dave" <dave.hansen@intel.com>, iommu <iommu@lists.linux-foundation.org>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "Lutomirski,
- Andy" <luto@kernel.org>, "Poimboe, Josh" <jpoimboe@redhat.com>,
+ linux-kernel <linux-kernel@vger.kernel.org>,
+ Dave Hansen <dave.hansen@intel.com>, iommu <iommu@lists.linux-foundation.org>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
  Thomas Gleixner <tglx@linutronix.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -103,79 +103,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Kevin,
-
-On Mon, 18 Apr 2022 06:34:19 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-wrote:
-
-> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Sent: Saturday, April 16, 2022 5:00 AM
-> > 
-> > Hi zhangfei.gao@foxmail.com,
-> > 
-> > On Fri, 15 Apr 2022 19:52:03 +0800, "zhangfei.gao@foxmail.com"
-> > <zhangfei.gao@foxmail.com> wrote:
-> >   
-> > > >>> A PASID might be still used even though it is freed on mm exit.
-> > > >>>
-> > > >>> process A:
-> > > >>> 	sva_bind();
-> > > >>> 	ioasid_alloc() = N; // Get PASID N for the mm
-> > > >>> 	fork(): // spawn process B
-> > > >>> 	exit();
-> > > >>> 	ioasid_free(N);
-> > > >>>
-> > > >>> process B:
-> > > >>> 	device uses PASID N -> failure
-> > > >>> 	sva_unbind();
-> > > >>>
-> > > >>> Dave Hansen suggests to take a refcount on the mm whenever
-> > > >>> binding  
-> > the  
-> > > >>> PASID to a device and drop the refcount on unbinding. The mm
-> > > >>> won't  
-> > be  
-> > > >>> dropped if the PASID is still bound to it.
-> > > >>>
-> > > >>> Fixes: 701fac40384f ("iommu/sva: Assign a PASID to mm on PASID
-> > > >>> allocation and free it on mm exit")
-> > > >>>  
-> > Is process A's mm intended to be used by process B? Or you really should
-> > use PASID N on process B's mm? If the latter, it may work for a while
-> > until B changes mapping.
-> > 
-> > It seems you are just extending the life of a defunct mm?
-> >   
-> 
-> IMHO the intention is not to allow B to access A's mm.
-> 
-> The problem is that PASID N is released on exit() of A and then
-> reallocated to B before iommu driver gets the chance to quiesce
-> the device and clear the PASID entry. According to the discussion
-> the quiesce operation must be done when driver calls unbind()
-> instead of in mm exit. In this case a failure is reported when
-> B tries to call bind() on PASID N due to an already-present entry.
-> 
-> Dave's patch extending the life of A's mm until unbind() is called.
-> With it B either gets a different PASID before A's unbind() is 
-> completed or same PASID N pointing to B's mm after A's unbind().
-> 
-As long as B gets a different PASID, that is fine. It seems PASID N has no
-use then.
-
-> Thanks
-> Kevin
-
-
-Thanks,
-
-Jacob
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgemhhbmdmZWkuZ2FvQGZveG1haWwuY29tLAoKT24gU2F0LCAxNiBBcHIgMjAyMiAwOTo0Mzow
+NyArMDgwMCwgInpoYW5nZmVpLmdhb0Bmb3htYWlsLmNvbSIKPHpoYW5nZmVpLmdhb0Bmb3htYWls
+LmNvbT4gd3JvdGU6Cgo+IE9uIDIwMjIvNC8xNiDkuIrljYg1OjAwLCBKYWNvYiBQYW4gd3JvdGU6
+Cj4gPiBIaSB6aGFuZ2ZlaS5nYW9AZm94bWFpbC5jb20sCj4gPgo+ID4gT24gRnJpLCAxNSBBcHIg
+MjAyMiAxOTo1MjowMyArMDgwMCwgInpoYW5nZmVpLmdhb0Bmb3htYWlsLmNvbSIKPiA+IDx6aGFu
+Z2ZlaS5nYW9AZm94bWFpbC5jb20+IHdyb3RlOgo+ID4gIAo+ID4+Pj4+IEEgUEFTSUQgbWlnaHQg
+YmUgc3RpbGwgdXNlZCBldmVuIHRob3VnaCBpdCBpcyBmcmVlZCBvbiBtbSBleGl0Lgo+ID4+Pj4+
+Cj4gPj4+Pj4gcHJvY2VzcyBBOgo+ID4+Pj4+IAlzdmFfYmluZCgpOwo+ID4+Pj4+IAlpb2FzaWRf
+YWxsb2MoKSA9IE47IC8vIEdldCBQQVNJRCBOIGZvciB0aGUgbW0KPiA+Pj4+PiAJZm9yaygpOiAv
+LyBzcGF3biBwcm9jZXNzIEIKPiA+Pj4+PiAJZXhpdCgpOwo+ID4+Pj4+IAlpb2FzaWRfZnJlZShO
+KTsKPiA+Pj4+Pgo+ID4+Pj4+IHByb2Nlc3MgQjoKPiA+Pj4+PiAJZGV2aWNlIHVzZXMgUEFTSUQg
+TiAtPiBmYWlsdXJlCj4gPj4+Pj4gCXN2YV91bmJpbmQoKTsKPiA+Pj4+Pgo+ID4+Pj4+IERhdmUg
+SGFuc2VuIHN1Z2dlc3RzIHRvIHRha2UgYSByZWZjb3VudCBvbiB0aGUgbW0gd2hlbmV2ZXIgYmlu
+ZGluZwo+ID4+Pj4+IHRoZSBQQVNJRCB0byBhIGRldmljZSBhbmQgZHJvcCB0aGUgcmVmY291bnQg
+b24gdW5iaW5kaW5nLiBUaGUgbW0KPiA+Pj4+PiB3b24ndCBiZSBkcm9wcGVkIGlmIHRoZSBQQVNJ
+RCBpcyBzdGlsbCBib3VuZCB0byBpdC4KPiA+Pj4+Pgo+ID4+Pj4+IEZpeGVzOiA3MDFmYWM0MDM4
+NGYgKCJpb21tdS9zdmE6IEFzc2lnbiBhIFBBU0lEIHRvIG1tIG9uIFBBU0lECj4gPj4+Pj4gYWxs
+b2NhdGlvbiBhbmQgZnJlZSBpdCBvbiBtbSBleGl0IikKPiA+Pj4+PiAgCj4gPiBJcyBwcm9jZXNz
+IEEncyBtbSBpbnRlbmRlZCB0byBiZSB1c2VkIGJ5IHByb2Nlc3MgQj8gT3IgeW91IHJlYWxseSBz
+aG91bGQKPiA+IHVzZSBQQVNJRCBOIG9uIHByb2Nlc3MgQidzIG1tPyBJZiB0aGUgbGF0dGVyLCBp
+dCBtYXkgd29yayBmb3IgYSB3aGlsZQo+ID4gdW50aWwgQiBjaGFuZ2VzIG1hcHBpbmcuCj4gPgo+
+ID4gSXQgc2VlbXMgeW91IGFyZSBqdXN0IGV4dGVuZGluZyB0aGUgbGlmZSBvZiBhIGRlZnVuY3Qg
+bW0/ICAKPiAKPiAgRnJvbSBuZ2lueCBjb2RlLCB0aGUgbWFzdGVyIHByb2Nlc3MgaW5pdCByZXNv
+dXJjZXMsIHRoZW4gZm9yayBkYWVtb24gCj4gcHJvY2VzcyB0byB0YWtlIG92ZXIsCj4gdGhlbiBt
+YXN0ZXIgcHJvY2VzcyBleGl0IGJ5IGl0c2VsZi4KPiAKPiBzcmMvY29yZS9uZ2lueC5jCj4gbWFp
+bgo+IG5neF9zc2xfaW5pdChsb2cpO8KgwqDCoCAtPiBvcGVuc3NsIGVuZ2luZSAtPiBiaW5kX2Zu
+IC0+IHN2YV9iaW5kKCkKPiBuZ3hfZGFlbW9uKGN5Y2xlLT5sb2cpCj4gCj4gc3JjL29zL3VuaXgv
+bmd4X2RhZW1vbi5jCj4gbmd4X2RhZW1vbihuZ3hfbG9nX3QgKmxvZykKPiB7Cj4gIMKgwqDCoMKg
+IGludMKgIGZkOwo+IAo+ICDCoMKgwqDCoCBzd2l0Y2ggKGZvcmsoKSkgewo+ICDCoMKgwqDCoCBj
+YXNlIC0xOgo+ICDCoMKgwqDCoMKgwqDCoMKgIG5neF9sb2dfZXJyb3IoTkdYX0xPR19FTUVSRywg
+bG9nLCBuZ3hfZXJybm8sICJmb3JrKCkgZmFpbGVkIik7Cj4gIMKgwqDCoMKgwqDCoMKgwqAgcmV0
+dXJuIE5HWF9FUlJPUjsKPiAKPiAgwqDCoMKgwqAgY2FzZSAwOgo+ICDCoMKgwqDCoMKgwqDCoCAv
+LyB0aGUgZm9yayBkYWVtb24gcHJvY2Vzcwo+ICDCoMKgwqDCoMKgwqDCoMKgIGJyZWFrOwo+IApE
+b2VzIHRoaXMgY2hpbGQgcHJvY2VzcyBjYWxsIHN2YV9iaW5kKCkgYWdhaW4gdG8gZ2V0IGFub3Ro
+ZXIgUEFTSUQ/IE9yIGl0CndpbGwga2VlcCB1c2luZyB0aGUgcGFyZW50J3MgUEFTSUQgZm9yIERN
+QT8KCj4gIMKgwqDCoMKgIGRlZmF1bHQ6Cj4gIMKgwqDCoMKgwqDCoCAvLyBtYXN0ZXIgcHJvY2Vz
+cyBkaXJlY3RseSBleGl0LCBhbmQgcmVsZWFzZSBtbSBhcyB3ZWxsIGFzIGlvYXNpZAo+ICDCoMKg
+wqDCoMKgwqDCoMKgIGV4aXQoMCk7Cj4gIMKgwqDCoMKgIH0KPiAKPiAgwqDCoMKgwqDCoCAvLyBv
+bmx5IGRhZW1vbiBwcm9jZXNzCj4gCj4gVGhhbmtzCj4gCj4gPgo+ID4gVGhhbmtzLAo+ID4KPiA+
+IEphY29iICAKPiAKCgpUaGFua3MsCgpKYWNvYgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
+Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
+bGlzdGluZm8vaW9tbXU=
