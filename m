@@ -1,57 +1,56 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8CBC4C433F5
-	for <iommu@archiver.kernel.org>; Wed, 20 Apr 2022 16:50:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BF103C433F5
+	for <iommu@archiver.kernel.org>; Wed, 20 Apr 2022 16:50:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 4B5748141B;
-	Wed, 20 Apr 2022 16:50:11 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 84BF3417B0;
+	Wed, 20 Apr 2022 16:50:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 68Giz2guFVyu; Wed, 20 Apr 2022 16:50:09 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id BJ34cp__Nvu5; Wed, 20 Apr 2022 16:50:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id F0E9B829B1;
-	Wed, 20 Apr 2022 16:50:08 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 1707B41766;
+	Wed, 20 Apr 2022 16:50:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A39D2C0033;
-	Wed, 20 Apr 2022 16:50:08 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1A69BC002C
- for <iommu@lists.linux-foundation.org>; Wed, 20 Apr 2022 16:50:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E14B9C0033;
+	Wed, 20 Apr 2022 16:50:14 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AF2A8C002C
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Apr 2022 16:50:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 082DB404FC
- for <iommu@lists.linux-foundation.org>; Wed, 20 Apr 2022 16:50:08 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 8EDAD41794
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Apr 2022 16:50:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gTgXIS_i2q2e for <iommu@lists.linux-foundation.org>;
- Wed, 20 Apr 2022 16:50:07 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 5UsSOoZhUuWg for <iommu@lists.linux-foundation.org>;
+ Wed, 20 Apr 2022 16:50:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
  [185.176.79.56])
- by smtp2.osuosl.org (Postfix) with ESMTPS id E586C40148
- for <iommu@lists.linux-foundation.org>; Wed, 20 Apr 2022 16:50:06 +0000 (UTC)
-Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.226])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Kk64r0FnCz67bPr;
- Thu, 21 Apr 2022 00:46:20 +0800 (CST)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 72FAD41766
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Apr 2022 16:50:12 +0000 (UTC)
+Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.200])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Kk66W2nhfz67tcX;
+ Thu, 21 Apr 2022 00:47:47 +0800 (CST)
 Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 20 Apr 2022 18:50:01 +0200
+ fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Wed, 20 Apr 2022 18:50:10 +0200
 Received: from A2006125610.china.huawei.com (10.47.81.194) by
  lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 20 Apr 2022 17:49:52 +0100
+ 15.1.2375.24; Wed, 20 Apr 2022 17:50:01 +0100
 To: <linux-arm-kernel@lists.infradead.org>, <linux-acpi@vger.kernel.org>,
  <iommu@lists.linux-foundation.org>
-Subject: [PATCH v10 4/9] ACPI/IORT: Add support to retrieve IORT RMR reserved
- regions
-Date: Wed, 20 Apr 2022 17:48:31 +0100
-Message-ID: <20220420164836.1181-5-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v10 5/9] ACPI/IORT: Add a helper to retrieve RMR info directly
+Date: Wed, 20 Apr 2022 17:48:32 +0100
+Message-ID: <20220420164836.1181-6-shameerali.kolothum.thodi@huawei.com>
 X-Mailer: git-send-email 2.12.0.windows.1
 In-Reply-To: <20220420164836.1181-1-shameerali.kolothum.thodi@huawei.com>
 References: <20220420164836.1181-1-shameerali.kolothum.thodi@huawei.com>
@@ -77,187 +76,95 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
 From: Shameer Kolothum via iommu <iommu@lists.linux-foundation.org>
 Reply-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-UGFyc2UgdGhyb3VnaCB0aGUgSU9SVCBSTVIgbm9kZXMgYW5kIHBvcHVsYXRlIHRoZSByZXNlcnZl
-IHJlZ2lvbiBsaXN0CmNvcnJlc3BvbmRpbmcgdG8gYSBnaXZlbiBJT01NVSBhbmQgZGV2aWNlKG9w
-dGlvbmFsKS4gQWxzbywgZ28gdGhyb3VnaAp0aGUgSUQgbWFwcGluZ3Mgb2YgdGhlIFJNUiBub2Rl
-IGFuZCByZXRyaWV2ZSBhbGwgdGhlIFNJRHMgYXNzb2NpYXRlZAp3aXRoIGl0LgoKQWxzbyBtYWtl
-IHN1cmUgd2UgdXBkYXRlIGdlbmVyaWNfaW9tbXVfcHV0X3Jlc3ZfcmVnaW9ucygpIHdpdGgKcmVz
-dl9yZWdpb25fZnJlZV9md19kYXRhKCkgY2FsbGJhY2sgdG8gZnJlZcKgdXAgYW55IFJNUiByZWxh
-dGVkCm1lbW9yeSBhbGxvY2F0aW9uLsKgCgpbTG9yZW56bzogRm9yIEFDUEkgSU9SVF0KUmV2aWV3
-ZWQtYnk6IExvcmVuem8gUGllcmFsaXNpIDxsb3JlbnpvLnBpZXJhbGlzaUBhcm0uY29tPgpUZXN0
-ZWQtYnk6IFN0ZXZlbiBQcmljZSA8c3RldmVuLnByaWNlQGFybS5jb20+ClRlc3RlZC1ieTogTGF1
-cmVudGl1IFR1ZG9yIDxsYXVyZW50aXUudHVkb3JAbnhwLmNvbT4KU2lnbmVkLW9mZi1ieTogU2hh
-bWVlciBLb2xvdGh1bSA8c2hhbWVlcmFsaS5rb2xvdGh1bS50aG9kaUBodWF3ZWkuY29tPgotLS0K
-IGRyaXZlcnMvYWNwaS9hcm02NC9pb3J0LmMgfCAyNjQgKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysKIGRyaXZlcnMvaW9tbXUvaW9tbXUuYyAgICAgfCAgMTIgKy0KIDIgZmls
-ZXMgY2hhbmdlZCwgMjcyIGluc2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9hY3BpL2FybTY0L2lvcnQuYyBiL2RyaXZlcnMvYWNwaS9hcm02NC9pb3J0LmMK
-aW5kZXggY2Q1ZDFkNzgyM2NiLi44YjE4OWU5ZWNhOTUgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvYWNw
-aS9hcm02NC9pb3J0LmMKKysrIGIvZHJpdmVycy9hY3BpL2FybTY0L2lvcnQuYwpAQCAtNzg4LDYg
-Kzc4OCwyNjcgQEAgdm9pZCBhY3BpX2NvbmZpZ3VyZV9wbXNpX2RvbWFpbihzdHJ1Y3QgZGV2aWNl
-ICpkZXYpCiB9CiAKICNpZmRlZiBDT05GSUdfSU9NTVVfQVBJCitzdGF0aWMgdm9pZCBpb3J0X3Jt
-cl9mcmVlX2Z3X2RhdGEoc3RydWN0IGRldmljZSAqZGV2LAorCQkJCSAgc3RydWN0IGlvbW11X3Jl
-c3ZfcmVnaW9uICpyZWdpb24pCit7CisJa2ZyZWUocmVnaW9uLT5md19kYXRhLnJtci5zaWRzKTsK
-K30KKworc3RhdGljIHZvaWQgaW9ydF9ybXJfZGVzY19jaGVja19vdmVybGFwKHN0cnVjdCBhY3Bp
-X2lvcnRfcm1yX2Rlc2MgKmRlc2MsCisJCQkJCXUzMiBjb3VudCkKK3sKKwlpbnQgaSwgajsKKwor
-CWZvciAoaSA9IDA7IGkgPCBjb3VudDsgaSsrKSB7CisJCXU2NCBlbmQsIHN0YXJ0ID0gZGVzY1tp
-XS5iYXNlX2FkZHJlc3MsIGxlbmd0aCA9IGRlc2NbaV0ubGVuZ3RoOworCisJCWlmICghbGVuZ3Ro
-KSB7CisJCQlwcl9lcnIoRldfQlVHICJSTVIgZGVzY3JpcHRvclsweCVsbHhdIHdpdGggemVybyBs
-ZW5ndGgsIGNvbnRpbnVlIGFueXdheVxuIiwKKwkJCSAgICAgICBzdGFydCk7CisJCQljb250aW51
-ZTsKKwkJfQorCisJCWVuZCA9IHN0YXJ0ICsgbGVuZ3RoIC0gMTsKKworCQkvKiBDaGVjayBmb3Ig
-YWRkcmVzcyBvdmVybGFwICovCisJCWZvciAoaiA9IGkgKyAxOyBqIDwgY291bnQ7IGorKykgewor
-CQkJdTY0IGVfc3RhcnQgPSBkZXNjW2pdLmJhc2VfYWRkcmVzczsKKwkJCXU2NCBlX2VuZCA9IGVf
-c3RhcnQgKyBkZXNjW2pdLmxlbmd0aCAtIDE7CisKKwkJCWlmIChzdGFydCA8PSBlX2VuZCAmJiBl
-bmQgPj0gZV9zdGFydCkKKwkJCQlwcl9lcnIoRldfQlVHICJSTVIgZGVzY3JpcHRvclsweCVsbHgg
-LSAweCVsbHhdIG92ZXJsYXBzLCBjb250aW51ZSBhbnl3YXlcbiIsCisJCQkJICAgICAgIHN0YXJ0
-LCBlbmQpOworCQl9CisJfQorfQorCisvKgorICogUGxlYXNlIG5vdGUsIHdlIHdpbGwga2VlcCB0
-aGUgYWxyZWFkeSBhbGxvY2F0ZWQgUk1SIHJlc2VydmUKKyAqIHJlZ2lvbnMgaW4gY2FzZSBvZiBh
-IG1lbW9yeSBhbGxvY2F0aW9uIGZhaWx1cmUuCisgKi8KK3N0YXRpYyB2b2lkIGlvcnRfZ2V0X3Jt
-cnMoc3RydWN0IGFjcGlfaW9ydF9ub2RlICpub2RlLAorCQkJICBzdHJ1Y3QgYWNwaV9pb3J0X25v
-ZGUgKnNtbXUsCisJCQkgIHUzMiAqc2lkcywgdTMyIG51bV9zaWRzLAorCQkJICBzdHJ1Y3QgbGlz
-dF9oZWFkICpoZWFkKQoreworCXN0cnVjdCBhY3BpX2lvcnRfcm1yICpybXIgPSAoc3RydWN0IGFj
-cGlfaW9ydF9ybXIgKilub2RlLT5ub2RlX2RhdGE7CisJc3RydWN0IGFjcGlfaW9ydF9ybXJfZGVz
-YyAqcm1yX2Rlc2M7CisJaW50IGk7CisKKwlybXJfZGVzYyA9IEFDUElfQUREX1BUUihzdHJ1Y3Qg
-YWNwaV9pb3J0X3Jtcl9kZXNjLCBub2RlLAorCQkJCXJtci0+cm1yX29mZnNldCk7CisKKwlpb3J0
-X3Jtcl9kZXNjX2NoZWNrX292ZXJsYXAocm1yX2Rlc2MsIHJtci0+cm1yX2NvdW50KTsKKworCWZv
-ciAoaSA9IDA7IGkgPCBybXItPnJtcl9jb3VudDsgaSsrLCBybXJfZGVzYysrKSB7CisJCXN0cnVj
-dCBpb21tdV9yZXN2X3JlZ2lvbiAqcmVnaW9uOworCQllbnVtIGlvbW11X3Jlc3ZfdHlwZSB0eXBl
-OworCQl1MzIgICpzaWRzX2NvcHk7CisJCWludCBwcm90ID0gSU9NTVVfUkVBRCB8IElPTU1VX1dS
-SVRFOworCQl1NjQgYWRkciA9IHJtcl9kZXNjLT5iYXNlX2FkZHJlc3MsIHNpemUgPSBybXJfZGVz
-Yy0+bGVuZ3RoOworCisJCWlmICghSVNfQUxJR05FRChhZGRyLCBTWl82NEspIHx8ICFJU19BTElH
-TkVEKHNpemUsIFNaXzY0SykpIHsKKwkJCS8qIFBBR0UgYWxpZ24gYmFzZSBhZGRyIGFuZCBzaXpl
-ICovCisJCQlhZGRyICY9IFBBR0VfTUFTSzsKKwkJCXNpemUgPSBQQUdFX0FMSUdOKHNpemUgKyBv
-ZmZzZXRfaW5fcGFnZShybXJfZGVzYy0+YmFzZV9hZGRyZXNzKSk7CisKKwkJCXByX2VycihGV19C
-VUcgIlJNUiBkZXNjcmlwdG9yWzB4JWxseCAtIDB4JWxseF0gbm90IGFsaWduZWQgdG8gNjRLLCBj
-b250aW51ZSB3aXRoIFsweCVsbHggLSAweCVsbHhdXG4iLAorCQkJICAgICAgIHJtcl9kZXNjLT5i
-YXNlX2FkZHJlc3MsCisJCQkgICAgICAgcm1yX2Rlc2MtPmJhc2VfYWRkcmVzcyArIHJtcl9kZXNj
-LT5sZW5ndGggLSAxLAorCQkJICAgICAgIGFkZHIsIGFkZHIgKyBzaXplIC0gMSk7CisJCX0KKwor
-CQlpZiAocm1yLT5mbGFncyAmIEFDUElfSU9SVF9STVJfUkVNQVBfUEVSTUlUVEVEKQorCQkJdHlw
-ZSA9IElPTU1VX1JFU1ZfRElSRUNUX1JFTEFYQUJMRTsKKwkJZWxzZQorCQkJdHlwZSA9IElPTU1V
-X1JFU1ZfRElSRUNUOworCisJCWlmIChybXItPmZsYWdzICYgQUNQSV9JT1JUX1JNUl9BQ0NFU1Nf
-UFJJVklMRUdFKQorCQkJcHJvdCB8PSBJT01NVV9QUklWOworCisJCS8qIEF0dHJpYnV0ZXMgMHgw
-MCAtIDB4MDMgcmVwcmVzZW50cyBkZXZpY2UgbWVtb3J5ICovCisJCWlmIChBQ1BJX0lPUlRfUk1S
-X0FDQ0VTU19BVFRSSUJVVEVTKHJtci0+ZmxhZ3MpIDw9CisJCQkJQUNQSV9JT1JUX1JNUl9BVFRS
-X0RFVklDRV9HUkUpCisJCQlwcm90IHw9IElPTU1VX01NSU87CisJCWVsc2UgaWYgKEFDUElfSU9S
-VF9STVJfQUNDRVNTX0FUVFJJQlVURVMocm1yLT5mbGFncykgPT0KKwkJCQlBQ1BJX0lPUlRfUk1S
-X0FUVFJfTk9STUFMX0lXQl9PV0IpCisJCQlwcm90IHw9IElPTU1VX0NBQ0hFOworCisJCS8qIENy
-ZWF0ZSBhIGNvcHkgb2YgU0lEcyBhcnJheSB0byBhc3NvY2lhdGUgd2l0aCB0aGlzIHJlc3YgcmVn
-aW9uICovCisJCXNpZHNfY29weSA9IGttZW1kdXAoc2lkcywgbnVtX3NpZHMgKiBzaXplb2YoKnNp
-ZHMpLCBHRlBfS0VSTkVMKTsKKwkJaWYgKCFzaWRzX2NvcHkpCisJCQlyZXR1cm47CisKKwkJcmVn
-aW9uID0gaW9tbXVfYWxsb2NfcmVzdl9yZWdpb24oYWRkciwgc2l6ZSwgcHJvdCwgdHlwZSk7CisJ
-CWlmICghcmVnaW9uKSB7CisJCQlrZnJlZShzaWRzX2NvcHkpOworCQkJcmV0dXJuOworCQl9CisK
-KwkJcmVnaW9uLT5md19kYXRhLnJtci5zaWRzID0gc2lkc19jb3B5OworCQlyZWdpb24tPmZ3X2Rh
-dGEucm1yLm51bV9zaWRzID0gbnVtX3NpZHM7CisJCXJlZ2lvbi0+cmVzdl9yZWdpb25fZnJlZV9m
-d19kYXRhID0gaW9ydF9ybXJfZnJlZV9md19kYXRhOworCQlsaXN0X2FkZF90YWlsKCZyZWdpb24t
-Pmxpc3QsIGhlYWQpOworCX0KK30KKworc3RhdGljIHUzMiAqaW9ydF9ybXJfYWxsb2Nfc2lkcyh1
-MzIgKnNpZHMsIHUzMiBjb3VudCwgdTMyIGlkX3N0YXJ0LAorCQkJCXUzMiBuZXdfY291bnQpCit7
-CisJdTMyICpuZXdfc2lkczsKKwl1MzIgdG90YWxfY291bnQgPSBjb3VudCArIG5ld19jb3VudDsK
-KwlpbnQgaTsKKworCW5ld19zaWRzID0ga3JlYWxsb2NfYXJyYXkoc2lkcywgY291bnQgKyBuZXdf
-Y291bnQsCisJCQkJICBzaXplb2YoKm5ld19zaWRzKSwgR0ZQX0tFUk5FTCk7CisJaWYgKCFuZXdf
-c2lkcykKKwkJcmV0dXJuIE5VTEw7CisKKwlmb3IgKGkgPSBjb3VudDsgaSA8IHRvdGFsX2NvdW50
-OyBpKyspCisJCW5ld19zaWRzW2ldID0gaWRfc3RhcnQrKzsKKworCXJldHVybiBuZXdfc2lkczsK
-K30KKworc3RhdGljIGJvb2wgaW9ydF9ybXJfaGFzX2RldihzdHJ1Y3QgZGV2aWNlICpkZXYsIHUz
-MiBpZF9zdGFydCwKKwkJCSAgICAgdTMyIGlkX2NvdW50KQoreworCWludCBpOworCXN0cnVjdCBp
-b21tdV9md3NwZWMgKmZ3c3BlYyA9IGRldl9pb21tdV9md3NwZWNfZ2V0KGRldik7CisKKwkvKgor
-CSAqIE1ha2Ugc3VyZSB0aGUga2VybmVsIGhhcyBwcmVzZXJ2ZWQgdGhlIGJvb3QgZmlybXdhcmUg
-UENJZQorCSAqIGNvbmZpZ3VyYXRpb24uIFRoaXMgaXMgcmVxdWlyZWQgdG8gZW5zdXJlIHRoYXQg
-dGhlIFJNUiBQQ0llCisJICogU3RyZWFtSURzIGFyZSBzdGlsbCB2YWxpZCAoUmVmZXI6IEFSTSBE
-RU4gMDA0OUUuZCBTZWN0aW9uIDMuMS4xLjUpLgorCSAqLworCWlmIChkZXZfaXNfcGNpKGRldikp
-IHsKKwkJc3RydWN0IHBjaV9kZXYgKnBkZXYgPSB0b19wY2lfZGV2KGRldik7CisJCXN0cnVjdCBw
-Y2lfaG9zdF9icmlkZ2UgKmhvc3QgPSBwY2lfZmluZF9ob3N0X2JyaWRnZShwZGV2LT5idXMpOwor
-CisJCWlmICghaG9zdC0+cHJlc2VydmVfY29uZmlnKQorCQkJcmV0dXJuIGZhbHNlOworCX0KKwor
-CWZvciAoaSA9IDA7IGkgPCBmd3NwZWMtPm51bV9pZHM7IGkrKykgeworCQlpZiAoZndzcGVjLT5p
-ZHNbaV0gPj0gaWRfc3RhcnQgJiYKKwkJICAgIGZ3c3BlYy0+aWRzW2ldIDw9IGlkX3N0YXJ0ICsg
-aWRfY291bnQpCisJCQlyZXR1cm4gdHJ1ZTsKKwl9CisKKwlyZXR1cm4gZmFsc2U7Cit9CisKK3N0
-YXRpYyB2b2lkIGlvcnRfbm9kZV9nZXRfcm1yX2luZm8oc3RydWN0IGFjcGlfaW9ydF9ub2RlICpu
-b2RlLAorCQkJCSAgIHN0cnVjdCBhY3BpX2lvcnRfbm9kZSAqaW9tbXUsCisJCQkJICAgc3RydWN0
-IGRldmljZSAqZGV2LCBzdHJ1Y3QgbGlzdF9oZWFkICpoZWFkKQoreworCXN0cnVjdCBhY3BpX2lv
-cnRfbm9kZSAqc21tdSA9IE5VTEw7CisJc3RydWN0IGFjcGlfaW9ydF9ybXIgKnJtcjsKKwlzdHJ1
-Y3QgYWNwaV9pb3J0X2lkX21hcHBpbmcgKm1hcDsKKwl1MzIgKnNpZHMgPSBOVUxMOworCXUzMiBu
-dW1fc2lkcyA9IDA7CisJaW50IGk7CisKKwlpZiAoIW5vZGUtPm1hcHBpbmdfb2Zmc2V0IHx8ICFu
-b2RlLT5tYXBwaW5nX2NvdW50KSB7CisJCXByX2VycihGV19CVUcgIkludmFsaWQgSUQgbWFwcGlu
-Zywgc2tpcHBpbmcgUk1SIG5vZGUgJXBcbiIsCisJCSAgICAgICBub2RlKTsKKwkJcmV0dXJuOwor
-CX0KKworCXJtciA9IChzdHJ1Y3QgYWNwaV9pb3J0X3JtciAqKW5vZGUtPm5vZGVfZGF0YTsKKwlp
-ZiAoIXJtci0+cm1yX29mZnNldCB8fCAhcm1yLT5ybXJfY291bnQpCisJCXJldHVybjsKKworCW1h
-cCA9IEFDUElfQUREX1BUUihzdHJ1Y3QgYWNwaV9pb3J0X2lkX21hcHBpbmcsIG5vZGUsCisJCQkg
-ICBub2RlLT5tYXBwaW5nX29mZnNldCk7CisKKwkvKgorCSAqIEdvIHRocm91Z2ggdGhlIElEIG1h
-cHBpbmdzIGFuZCBzZWUgaWYgd2UgaGF2ZSBhIG1hdGNoIGZvciBTTU1VCisJICogYW5kIGRldihp
-ZiAhTlVMTCkuIElmIGZvdW5kLCBnZXQgdGhlIHNpZHMgZm9yIHRoZSBOb2RlLgorCSAqIFBsZWFz
-ZSBub3RlLCBpZF9jb3VudCBpcyBlcXVhbCB0byB0aGUgbnVtYmVyIG9mIElEcyAgaW4gdGhlCisJ
-ICogcmFuZ2UgbWludXMgb25lLgorCSAqLworCWZvciAoaSA9IDA7IGkgPCBub2RlLT5tYXBwaW5n
-X2NvdW50OyBpKyssIG1hcCsrKSB7CisJCXN0cnVjdCBhY3BpX2lvcnRfbm9kZSAqcGFyZW50Owor
-CisJCWlmICghbWFwLT5pZF9jb3VudCkKKwkJCWNvbnRpbnVlOworCisJCXBhcmVudCA9IEFDUElf
-QUREX1BUUihzdHJ1Y3QgYWNwaV9pb3J0X25vZGUsIGlvcnRfdGFibGUsCisJCQkJICAgICAgbWFw
-LT5vdXRwdXRfcmVmZXJlbmNlKTsKKwkJaWYgKHBhcmVudCAhPSBpb21tdSkKKwkJCWNvbnRpbnVl
-OworCisJCS8qIElmIGRldiBpcyB2YWxpZCwgY2hlY2sgUk1SIG5vZGUgY29ycmVzcG9uZHMgdG8g
-dGhlIGRldiBTSUQgKi8KKwkJaWYgKGRldiAmJiAhaW9ydF9ybXJfaGFzX2RldihkZXYsIG1hcC0+
-b3V0cHV0X2Jhc2UsCisJCQkJCSAgICAgbWFwLT5pZF9jb3VudCkpCisJCQljb250aW51ZTsKKwor
-CQkvKiBSZXRyaWV2ZSBTSURzIGFzc29jaWF0ZWQgd2l0aCB0aGUgTm9kZS4gKi8KKwkJc2lkcyA9
-IGlvcnRfcm1yX2FsbG9jX3NpZHMoc2lkcywgbnVtX3NpZHMsIG1hcC0+b3V0cHV0X2Jhc2UsCisJ
-CQkJCSAgIG1hcC0+aWRfY291bnQgKyAxKTsKKwkJaWYgKCFzaWRzKQorCQkJcmV0dXJuOworCisJ
-CW51bV9zaWRzICs9IG1hcC0+aWRfY291bnQgKyAxOworCX0KKworCWlmICghc2lkcykKKwkJcmV0
-dXJuOworCisJaW9ydF9nZXRfcm1ycyhub2RlLCBzbW11LCBzaWRzLCBudW1fc2lkcywgaGVhZCk7
-CisJa2ZyZWUoc2lkcyk7Cit9CisKK3N0YXRpYyB2b2lkIGlvcnRfZmluZF9ybXJzKHN0cnVjdCBh
-Y3BpX2lvcnRfbm9kZSAqaW9tbXUsIHN0cnVjdCBkZXZpY2UgKmRldiwKKwkJCSAgIHN0cnVjdCBs
-aXN0X2hlYWQgKmhlYWQpCit7CisJc3RydWN0IGFjcGlfdGFibGVfaW9ydCAqaW9ydDsKKwlzdHJ1
-Y3QgYWNwaV9pb3J0X25vZGUgKmlvcnRfbm9kZSwgKmlvcnRfZW5kOworCWludCBpOworCisJLyog
-T25seSBzdXBwb3J0cyBBUk0gREVOIDAwNDlFLmQgb253YXJkcyAqLworCWlmIChpb3J0X3RhYmxl
-LT5yZXZpc2lvbiA8IDUpCisJCXJldHVybjsKKworCWlvcnQgPSAoc3RydWN0IGFjcGlfdGFibGVf
-aW9ydCAqKWlvcnRfdGFibGU7CisKKwlpb3J0X25vZGUgPSBBQ1BJX0FERF9QVFIoc3RydWN0IGFj
-cGlfaW9ydF9ub2RlLCBpb3J0LAorCQkJCSBpb3J0LT5ub2RlX29mZnNldCk7CisJaW9ydF9lbmQg
-PSBBQ1BJX0FERF9QVFIoc3RydWN0IGFjcGlfaW9ydF9ub2RlLCBpb3J0LAorCQkJCWlvcnRfdGFi
-bGUtPmxlbmd0aCk7CisKKwlmb3IgKGkgPSAwOyBpIDwgaW9ydC0+bm9kZV9jb3VudDsgaSsrKSB7
-CisJCWlmIChXQVJOX1RBSU5UKGlvcnRfbm9kZSA+PSBpb3J0X2VuZCwgVEFJTlRfRklSTVdBUkVf
-V09SS0FST1VORCwKKwkJCSAgICAgICAiSU9SVCBub2RlIHBvaW50ZXIgb3ZlcmZsb3dzLCBiYWQg
-dGFibGUhXG4iKSkKKwkJCXJldHVybjsKKworCQlpZiAoaW9ydF9ub2RlLT50eXBlID09IEFDUElf
-SU9SVF9OT0RFX1JNUikKKwkJCWlvcnRfbm9kZV9nZXRfcm1yX2luZm8oaW9ydF9ub2RlLCBpb21t
-dSwgZGV2LCBoZWFkKTsKKworCQlpb3J0X25vZGUgPSBBQ1BJX0FERF9QVFIoc3RydWN0IGFjcGlf
-aW9ydF9ub2RlLCBpb3J0X25vZGUsCisJCQkJCSBpb3J0X25vZGUtPmxlbmd0aCk7CisJfQorfQor
-CisvKgorICogUG9wdWxhdGUgdGhlIFJNUiBsaXN0IGFzc29jaWF0ZWQgd2l0aCBhIGdpdmVuIElP
-TU1VIGFuZCBkZXYoaWYgcHJvdmlkZWQpLgorICogSWYgZGV2IGlzIE5VTEwsIHRoZSBmdW5jdGlv
-biBwb3B1bGF0ZXMgYWxsIHRoZSBSTVJzIGFzc29jaWF0ZWQgd2l0aCB0aGUKKyAqIGdpdmVuIElP
-TU1VLgorICovCitzdGF0aWMgdm9pZCBpb3J0X2lvbW11X3Jtcl9nZXRfcmVzdl9yZWdpb25zKHN0
-cnVjdCBmd25vZGVfaGFuZGxlICppb21tdV9md25vZGUsCisJCQkJCSAgICBzdHJ1Y3QgZGV2aWNl
-ICpkZXYsCisJCQkJCSAgICBzdHJ1Y3QgbGlzdF9oZWFkICpoZWFkKQoreworCXN0cnVjdCBhY3Bp
-X2lvcnRfbm9kZSAqaW9tbXU7CisKKwlpb21tdSA9IGlvcnRfZ2V0X2lvcnRfbm9kZShpb21tdV9m
-d25vZGUpOworCWlmICghaW9tbXUpCisJCXJldHVybjsKKworCWlvcnRfZmluZF9ybXJzKGlvbW11
-LCBkZXYsIGhlYWQpOworfQorCiBzdGF0aWMgc3RydWN0IGFjcGlfaW9ydF9ub2RlICppb3J0X2dl
-dF9tc2lfcmVzdl9pb21tdShzdHJ1Y3QgZGV2aWNlICpkZXYpCiB7CiAJc3RydWN0IGFjcGlfaW9y
-dF9ub2RlICppb21tdTsKQEAgLTg2OCw3ICsxMTI5LDEwIEBAIHN0YXRpYyB2b2lkIGlvcnRfaW9t
-bXVfbXNpX2dldF9yZXN2X3JlZ2lvbnMoc3RydWN0IGRldmljZSAqZGV2LAogICovCiB2b2lkIGlv
-cnRfaW9tbXVfZ2V0X3Jlc3ZfcmVnaW9ucyhzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBsaXN0
-X2hlYWQgKmhlYWQpCiB7CisJc3RydWN0IGlvbW11X2Z3c3BlYyAqZndzcGVjID0gZGV2X2lvbW11
-X2Z3c3BlY19nZXQoZGV2KTsKKwogCWlvcnRfaW9tbXVfbXNpX2dldF9yZXN2X3JlZ2lvbnMoZGV2
-LCBoZWFkKTsKKwlpb3J0X2lvbW11X3Jtcl9nZXRfcmVzdl9yZWdpb25zKGZ3c3BlYy0+aW9tbXVf
-Zndub2RlLCBkZXYsIGhlYWQpOwogfQogCiBzdGF0aWMgaW5saW5lIGJvb2wgaW9ydF9pb21tdV9k
-cml2ZXJfZW5hYmxlZCh1OCB0eXBlKQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pb21tdS5j
-IGIvZHJpdmVycy9pb21tdS9pb21tdS5jCmluZGV4IGYyYzQ1Yjg1YjlmYy4uNDQzMWE3YTVkYTBh
-IDEwMDY0NAotLS0gYS9kcml2ZXJzL2lvbW11L2lvbW11LmMKKysrIGIvZHJpdmVycy9pb21tdS9p
-b21tdS5jCkBAIC0yNTk3LDE2ICsyNTk3LDIwIEBAIHZvaWQgaW9tbXVfcHV0X3Jlc3ZfcmVnaW9u
-cyhzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBsaXN0X2hlYWQgKmxpc3QpCiAgKiBAbGlzdDog
-cmVzZXJ2ZWQgcmVnaW9uIGxpc3QgZm9yIGRldmljZQogICoKICAqIElPTU1VIGRyaXZlcnMgY2Fu
-IHVzZSB0aGlzIHRvIGltcGxlbWVudCB0aGVpciAucHV0X3Jlc3ZfcmVnaW9ucygpIGNhbGxiYWNr
-Ci0gKiBmb3Igc2ltcGxlIHJlc2VydmF0aW9ucy4gTWVtb3J5IGFsbG9jYXRlZCBmb3IgZWFjaCBy
-ZXNlcnZlZCByZWdpb24gd2lsbCBiZQotICogZnJlZWQuIElmIGFuIElPTU1VIGRyaXZlciBhbGxv
-Y2F0ZXMgYWRkaXRpb25hbCByZXNvdXJjZXMgcGVyIHJlZ2lvbiwgaXQgaXMKLSAqIGdvaW5nIHRv
-IGhhdmUgdG8gaW1wbGVtZW50IGEgY3VzdG9tIGNhbGxiYWNrLgorICogZm9yIHNpbXBsZSByZXNl
-cnZhdGlvbnMuIE1lbW9yeSBhbGxvY2F0ZWQgZm9yIGVhY2ggcmVzZXJ2ZWQgcmVnaW9uIGFuZCBh
-bnkKKyAqIGFzc29jaWF0ZWQgZmlybXdhcmUgc3BlY2lmaWMgYWxsb2NhdGlvbnMgd2lsbCBiZSBm
-cmVlZC4gSWYgYW4gSU9NTVUgZHJpdmVyCisgKiBhbGxvY2F0ZXMgYWRkaXRpb25hbCByZXNvdXJj
-ZXMgcGVyIHJlZ2lvbiwgaXQgaXMgZ29pbmcgdG8gaGF2ZSB0bworICogaW1wbGVtZW50IGEgY3Vz
-dG9tIGNhbGxiYWNrLgogICovCiB2b2lkIGdlbmVyaWNfaW9tbXVfcHV0X3Jlc3ZfcmVnaW9ucyhz
-dHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBsaXN0X2hlYWQgKmxpc3QpCiB7CiAJc3RydWN0IGlv
-bW11X3Jlc3ZfcmVnaW9uICplbnRyeSwgKm5leHQ7CiAKLQlsaXN0X2Zvcl9lYWNoX2VudHJ5X3Nh
-ZmUoZW50cnksIG5leHQsIGxpc3QsIGxpc3QpCisJbGlzdF9mb3JfZWFjaF9lbnRyeV9zYWZlKGVu
-dHJ5LCBuZXh0LCBsaXN0LCBsaXN0KSB7CisJCWlmIChlbnRyeS0+cmVzdl9yZWdpb25fZnJlZV9m
-d19kYXRhKQorCQkJZW50cnktPnJlc3ZfcmVnaW9uX2ZyZWVfZndfZGF0YShkZXYsIGVudHJ5KTsK
-IAkJa2ZyZWUoZW50cnkpOworCX0KIH0KIEVYUE9SVF9TWU1CT0woZ2VuZXJpY19pb21tdV9wdXRf
-cmVzdl9yZWdpb25zKTsKIAotLSAKMi4xNy4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
-Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
-bGlzdGluZm8vaW9tbXU=
+This will provide a way for SMMU drivers to retrieve StreamIDs
+associated with IORT RMR nodes and use that to set bypass settings
+for those IDs.
+
+Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Tested-by: Steven Price <steven.price@arm.com>
+Tested-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+---
+ drivers/acpi/arm64/iort.c | 30 ++++++++++++++++++++++++++++++
+ include/linux/acpi_iort.h |  8 ++++++++
+ 2 files changed, 38 insertions(+)
+
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 8b189e9eca95..971904b2205f 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -1367,6 +1367,36 @@ int iort_dma_get_ranges(struct device *dev, u64 *size)
+ 		return nc_dma_get_range(dev, size);
+ }
+ 
++/**
++ * iort_get_rmr_sids - Retrieve IORT RMR node reserved regions with
++ *                     associated StreamIDs information.
++ * @iommu_fwnode: fwnode associated with IOMMU
++ * @head: Resereved region list
++ */
++void iort_get_rmr_sids(struct fwnode_handle *iommu_fwnode,
++		       struct list_head *head)
++{
++	iort_iommu_rmr_get_resv_regions(iommu_fwnode, NULL, head);
++}
++EXPORT_SYMBOL_GPL(iort_get_rmr_sids);
++
++/**
++ * iort_put_rmr_sids - Free all the memory allocated for RMR reserved regions.
++ * @iommu_fwnode: fwnode associated with IOMMU
++ * @head: Resereved region list
++ */
++void iort_put_rmr_sids(struct fwnode_handle *iommu_fwnode,
++		       struct list_head *head)
++{
++	struct iommu_resv_region *entry, *next;
++
++	list_for_each_entry_safe(entry, next, head, list) {
++		kfree(entry->fw_data.rmr.sids);
++		kfree(entry);
++	}
++}
++EXPORT_SYMBOL_GPL(iort_put_rmr_sids);
++
+ static void __init acpi_iort_register_irq(int hwirq, const char *name,
+ 					  int trigger,
+ 					  struct resource *res)
+diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+index e5d2de9caf7f..b43be0987b19 100644
+--- a/include/linux/acpi_iort.h
++++ b/include/linux/acpi_iort.h
+@@ -33,6 +33,10 @@ struct irq_domain *iort_get_device_domain(struct device *dev, u32 id,
+ 					  enum irq_domain_bus_token bus_token);
+ void acpi_configure_pmsi_domain(struct device *dev);
+ int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id);
++void iort_get_rmr_sids(struct fwnode_handle *iommu_fwnode,
++		       struct list_head *head);
++void iort_put_rmr_sids(struct fwnode_handle *iommu_fwnode,
++		       struct list_head *head);
+ /* IOMMU interface */
+ int iort_dma_get_ranges(struct device *dev, u64 *size);
+ int iort_iommu_configure_id(struct device *dev, const u32 *id_in);
+@@ -46,6 +50,10 @@ static inline struct irq_domain *iort_get_device_domain(
+ 	struct device *dev, u32 id, enum irq_domain_bus_token bus_token)
+ { return NULL; }
+ static inline void acpi_configure_pmsi_domain(struct device *dev) { }
++static inline
++void iort_get_rmr_sids(struct fwnode_handle *iommu_fwnode, struct list_head *head) { }
++static inline
++void iort_put_rmr_sids(struct fwnode_handle *iommu_fwnode, struct list_head *head) { }
+ /* IOMMU interface */
+ static inline int iort_dma_get_ranges(struct device *dev, u64 *size)
+ { return -ENODEV; }
+-- 
+2.17.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
