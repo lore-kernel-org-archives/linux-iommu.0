@@ -4,82 +4,122 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7F658C433F5
-	for <iommu@archiver.kernel.org>; Thu, 21 Apr 2022 08:14:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B4F4DC433FE
+	for <iommu@archiver.kernel.org>; Thu, 21 Apr 2022 08:15:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1667560B32;
-	Thu, 21 Apr 2022 08:14:41 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 7037860B5D;
+	Thu, 21 Apr 2022 08:15:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tgFEmBgmK1ZD; Thu, 21 Apr 2022 08:14:40 +0000 (UTC)
+	with ESMTP id yu7fXv94fU2n; Thu, 21 Apr 2022 08:15:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 04E16607F4;
-	Thu, 21 Apr 2022 08:14:39 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 3C920607F4;
+	Thu, 21 Apr 2022 08:15:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CD9A2C002F;
-	Thu, 21 Apr 2022 08:14:39 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7920CC002C
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 08:14:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 17F7CC002F;
+	Thu, 21 Apr 2022 08:15:34 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F0779C002C
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 08:15:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 6339A60B32
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 08:14:39 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id DCBC182ADD
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 08:15:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kaP24Azwk3Sg for <iommu@lists.linux-foundation.org>;
- Thu, 21 Apr 2022 08:14:38 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from sin.source.kernel.org (sin.source.kernel.org
- [IPv6:2604:1380:40e1:4800::1])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A0446607F4
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 08:14:38 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by sin.source.kernel.org (Postfix) with ESMTPS id 5EC97CE0FD5
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 08:14:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF4A5C385AE
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 08:14:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1650528873;
- bh=qvOB0ikvcyf8yw1Oo7pNju5ahvdIUh+2Ix9pkj27y0Y=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=C8/36XvBwLlf/tCkvKdfxh2dlEfTwb3EENcYUs7KzlM9ndwHlgIvwLRtufU1yCfZA
- KYdJoOqqjcf9N6DXfaXdlsuqzcCkvpmJtduGtJ7I8h4CSVYQbm6k17H7d//HzRl1xT
- +iLV4x1sM5NxUm9HVTj4ysVMwzaZfVw/fvd6ju1sh2mrdEOi/o/+H0T6JRE/MDevo2
- R/mw1ENGqiMBVG71qRJyYQ2KhyHdxQyK+pHv+IZH9LJSr426ea/y1UGGoPMWSecBQI
- FIslay2JFfL+IFTCjL3SnfnfcRPlyyTQGhbaubsdobe5Qzj75cwt2eYys8zsmNhZKf
- 2YEu9sdnJHjVg==
-Received: by mail-wr1-f41.google.com with SMTP id bv16so5492399wrb.9
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 01:14:33 -0700 (PDT)
-X-Gm-Message-State: AOAM530kgJVANl0u8FTisMyLR9wX2ofdOxhVML5B/lWeFd7mBybqQ697
- /qbYDfG12DRwXiHZH3ZcGSMsX+2ButkTiMHKd0Y=
-X-Google-Smtp-Source: ABdhPJwmmO+oW480q+9P9XgUMSnyEpeIXZk6a3NVVRJyO7eKIgGvUhnLJsU5orqLkWv0a3+Q7VPZ8SMJsIerFHk4Q8s=
-X-Received: by 2002:a5d:64a3:0:b0:20a:7931:5b84 with SMTP id
- m3-20020a5d64a3000000b0020a79315b84mr19205164wrp.407.1650528872088; Thu, 21
- Apr 2022 01:14:32 -0700 (PDT)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id lG-Ev8c5EsyF for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Apr 2022 08:15:31 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam11on20604.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7eaa::604])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id ABEBF818E6
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 08:15:31 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HEzqmHz120kC0FDJR/ic1P0KDXnc3kL/Qepu/x/nELypoP/zOVAaxjq5MNk1BK5DO/EVOpN5inVisdbMicsPTDlF9HQVgwamA9xud3pWD3Vq0RSP774tRzmjestrRfevC1op87GxGXRdD9XHscYMsOEBI7z/B/764bt8wj6CP+uTslk0va4BXLNF+1Y1MgptOmEHkAzsqohDZ478en0V4reGCJ835K7WL7olYDmKigRmHJnLHsL8uFAoZmN9TD+h8TUpVH+HXyT0I0USu+NfezqRuxrP53wnPR0oSr6YBXaddAIEZJ4EEpSCAd83XBXBu/D5W539PqupnZipmKvOpg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=B43xn0XriVShkZc3gHBGqcwtiLj4diWTnChKvsTKsME=;
+ b=aZJgNEKJcdC3uTuYz0GNahA30dlA9nO+KjI4AhxwLW+uo8weVKoOhi4JKItZrV3ZjQYEsd+u9KB4r4lVvlfF5ajPPdRV5FWl9JuPu8T2DsS+bZCTmL1FU23nAEvbK46ODWQKxGp8chNjeGVg4VUctlpmE1d9Of6CUL4ZqNMAS6jbSyJYuitTaxKznkZCF95gq4A68WMoPcaNq6IBQm6PUEsGh5kdlcILYCAMGuOUZnWMFjWI8qyu2R45RcWASVHh387rcSUBeoBWWADFUmRE5m5V85Ex0zDmCiftjAxTQrGSblPbx+IF10anxO5OU8s5CGJjByS83an2NZQr6e/UnA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=lists.infradead.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B43xn0XriVShkZc3gHBGqcwtiLj4diWTnChKvsTKsME=;
+ b=CAeWxcVltkC9cHbyYP8NdowEUJ7Rf12HR1T5zbpnIBY4CiOLLkDqTH5JJn67yqGJ86dp0PdUpyi3g/tD0xco7K52NA7TSAtCfGZ6rms6Sk+ISKNUIwxI+GeYtDjeCAGpex5zRFjUKdiQihZDdY47bJsnCuph6+uWkyU/C5wU0or4x347egvBxfdUjgu2tw2uDNBimhlAzvF9LsyRNvrUkG3ziXRbx7qbuYk/0VrWWQ6U98d7zEMl9YwE4yENT8gGXa/b3R9KvOq9jyyerIrkpFasYG+jpFqRnPP3goBzYtRyiCNQlc8Vd91j5mpMIxxuQVSu/jVLon7a7wgdtG/bfw==
+Received: from MW4PR04CA0088.namprd04.prod.outlook.com (2603:10b6:303:6b::33)
+ by MN0PR12MB5737.namprd12.prod.outlook.com (2603:10b6:208:370::15)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Thu, 21 Apr
+ 2022 08:15:29 +0000
+Received: from CO1NAM11FT026.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:6b:cafe::62) by MW4PR04CA0088.outlook.office365.com
+ (2603:10b6:303:6b::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14 via Frontend
+ Transport; Thu, 21 Apr 2022 08:15:29 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.238) by
+ CO1NAM11FT026.mail.protection.outlook.com (10.13.175.67) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5186.14 via Frontend Transport; Thu, 21 Apr 2022 08:15:28 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32;
+ Thu, 21 Apr 2022 08:15:28 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 21 Apr
+ 2022 01:15:27 -0700
+Received: from amhetre.nvidia.com (10.127.8.9) by mail.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server id 15.2.986.22 via Frontend
+ Transport; Thu, 21 Apr 2022 01:15:23 -0700
+To: <thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <will@kernel.org>,
+ <robin.murphy@arm.com>, <joro@8bytes.org>, <jonathanh@nvidia.com>,
+ <linux-tegra@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+ <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>
+Subject: [Patch v2] iommu: arm-smmu: disable large page mappings for Nvidia
+ arm-smmu
+Date: Thu, 21 Apr 2022 13:45:04 +0530
+Message-ID: <20220421081504.24678-1-amhetre@nvidia.com>
+X-Mailer: git-send-email 2.17.1
+X-NVConfidentiality: public
 MIME-Version: 1.0
-References: <20220421074204.1284072-1-hch@lst.de>
-In-Reply-To: <20220421074204.1284072-1-hch@lst.de>
-From: Arnd Bergmann <arnd@kernel.org>
-Date: Thu, 21 Apr 2022 10:14:16 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0mrbawriAE28pkFvdmMQKy3BUR72RtKiVwbEUNLxhx=Q@mail.gmail.com>
-Message-ID: <CAK8P3a0mrbawriAE28pkFvdmMQKy3BUR72RtKiVwbEUNLxhx=Q@mail.gmail.com>
-Subject: Re: fully convert arm to use dma-direct
-To: Christoph Hellwig <hch@lst.de>
-Cc: Andrew Lunn <andrew@lunn.ch>, Andre Przywara <andre.przywara@arm.com>,
- Linus Walleij <linus.walleij@linaro.org>, USB list <linux-usb@vger.kernel.org>,
- Russell King <linux@armlinux.org.uk>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Alan Stern <stern@rowland.harvard.edu>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Gregory Clement <gregory.clement@bootlin.com>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>,
- Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f229e9ca-aa37-440e-28d8-08da236f18b2
+X-MS-TrafficTypeDiagnostic: MN0PR12MB5737:EE_
+X-Microsoft-Antispam-PRVS: <MN0PR12MB5737ABBC55BAC50D23983932CAF49@MN0PR12MB5737.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vNNbKsEoceNrD9EzmMl77KYLYgJbrqFuLOMhAUIt6SV4WE8rjStTfwSQbzFg2cG6DKoUktfonkIwj7bdEYmJ8rp64pPUFgkTb3ui/4ictjBYb3liW4kwPQ/c4LQmRP4d3jRRvJG18YgIH/7m2D2TyP9BMeYyf/23x9MKi5bVVkI/KgHnKc0CCDsI4aQ3qMOewB6Qv6AU4kMl0tF6fIpLW8w0+AUZ1NcJJ4tzWqwRhAYbpCEsutdsbFO+A6k7aUIaVDg80ds/1AgwtIC8iARS6HDxTo/ds7Onog7fXwB0xKLrvFK7HxXkA6RUdIdkxy5EPXZ1UubLbQYlsZkBqh+6UDIe66gAcBulew/GKjF9YaZgUj3MLh6WLxhGquBEPonBUuPm7saMKK/8hEESATTYtQDFyi5bWT2UNOe17YfgjM9tCh7iN0kBTNF23EDQQujz35jzKb+pvaorB0Fyto48744sxnBk1rUfVPwLUy2P+0eBI4kAO+o7vMYlAYqNS9XMryrXqfK7sftKo2Mx8FKa1Suz8gI+WcETEDRzl/OzQ5v60XY9Cr/pzrBaWAW77wYd1dM5wnPuUGD2oQdGoM7Q0NTnEyzQ1DNgLuHqk+9IqohuYdR9YHZo5PNwVrPZ/VnkgaWfpebw4t5LzbbZQ8zxENJwgx2xzF7LoQZdSu9RcV7jHAFQstTFhHOcpdM+I56ehSMsCPXWBTYfFrbjBasXl8odLVqeUJzJtwe/fz65IPIOblO1XBJjBX+MMZnYyxoOpHaqANDu25IgjsxI2nfzLg==
+X-Forefront-Antispam-Report: CIP:12.22.5.238; CTRY:US; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:InfoNoRecords; CAT:NONE;
+ SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(70586007)(70206006)(8936002)(110136005)(4326008)(8676002)(508600001)(921005)(356005)(82310400005)(36756003)(40460700003)(83380400001)(81166007)(36860700001)(54906003)(86362001)(5660300002)(107886003)(47076005)(186003)(2616005)(1076003)(426003)(336012)(2906002)(26005)(6666004)(7696005)(316002)(2101003)(83996005)(36900700001);
+ DIR:OUT; SFP:1101; 
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2022 08:15:28.7923 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f229e9ca-aa37-440e-28d8-08da236f18b2
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[12.22.5.238];
+ Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT026.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5737
+Cc: Ashish Mhetre <amhetre@nvidia.com>, Snikam@nvidia.com,
+ Pritesh Raithatha <praithatha@nvidia.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,33 +132,89 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Ashish Mhetre via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Ashish Mhetre <amhetre@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Apr 21, 2022 at 9:41 AM Christoph Hellwig <hch@lst.de> wrote:
->
-> Hi all,
->
-> arm is the last platform not using the dma-direct code for directly
-> mapped DMA.  With the dmaboune removal from Arnd we can easily switch
-> arm to always use dma-direct now (it already does for LPAE configs
-> and nommu).  I'd love to merge this series through the dma-mapping tree
-> as it gives us the opportunity for additional core dma-mapping
-> improvements.
+Tegra194 and Tegra234 SoCs have the erratum that causes walk cache
+entries to not be invalidated correctly. The problem is that the walk
+cache index generated for IOVA is not same across translation and
+invalidation requests. This is leading to page faults when PMD entry is
+released during unmap and populated with new PTE table during subsequent
+map request. Disabling large page mappings avoids the release of PMD
+entry and avoid translations seeing stale PMD entry in walk cache.
+Fix this by limiting the page mappings to PAGE_SIZE for Tegra194 and
+Tegra234 devices. This is recommended fix from Tegra hardware design
+team.
 
-Thanks a lot for completing this, it looks all good to me, and I hope that
-Russell can test my assabet patch to make sure this doesn't break
-anything.
+Co-developed-by: Pritesh Raithatha <praithatha@nvidia.com>
+Signed-off-by: Pritesh Raithatha <praithatha@nvidia.com>
+Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+---
+Changes in v2:
+- Using init_context() to override pgsize_bitmap instead of new function
 
-I saw one opportunity for an additional cleanup patch that I commented
-on, but that does not stop the rest from getting merged.
+ drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c | 30 ++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-I also made sure that this passes the basic kernelci tests across all
-arm machines.
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
+index 01e9b50b10a1..87bf522b9d2e 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
+@@ -258,6 +258,34 @@ static void nvidia_smmu_probe_finalize(struct arm_smmu_device *smmu, struct devi
+ 			dev_name(dev), err);
+ }
+ 
++static int nvidia_smmu_init_context(struct arm_smmu_domain *smmu_domain,
++				    struct io_pgtable_cfg *pgtbl_cfg,
++				    struct device *dev)
++{
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	const struct device_node *np = smmu->dev->of_node;
++
++	/*
++	 * Tegra194 and Tegra234 SoCs have the erratum that causes walk cache
++	 * entries to not be invalidated correctly. The problem is that the walk
++	 * cache index generated for IOVA is not same across translation and
++	 * invalidation requests. This is leading to page faults when PMD entry
++	 * is released during unmap and populated with new PTE table during
++	 * subsequent map request. Disabling large page mappings avoids the
++	 * release of PMD entry and avoid translations seeing stale PMD entry in
++	 * walk cache.
++	 * Fix this by limiting the page mappings to PAGE_SIZE on Tegra194 and
++	 * Tegra234.
++	 */
++	if (of_device_is_compatible(np, "nvidia,tegra234-smmu") ||
++	    of_device_is_compatible(np, "nvidia,tegra194-smmu")) {
++		smmu->pgsize_bitmap = PAGE_SIZE;
++		pgtbl_cfg->pgsize_bitmap = smmu->pgsize_bitmap;
++	}
++
++	return 0;
++}
++
+ static const struct arm_smmu_impl nvidia_smmu_impl = {
+ 	.read_reg = nvidia_smmu_read_reg,
+ 	.write_reg = nvidia_smmu_write_reg,
+@@ -268,10 +296,12 @@ static const struct arm_smmu_impl nvidia_smmu_impl = {
+ 	.global_fault = nvidia_smmu_global_fault,
+ 	.context_fault = nvidia_smmu_context_fault,
+ 	.probe_finalize = nvidia_smmu_probe_finalize,
++	.init_context = nvidia_smmu_init_context,
+ };
+ 
+ static const struct arm_smmu_impl nvidia_smmu_single_impl = {
+ 	.probe_finalize = nvidia_smmu_probe_finalize,
++	.init_context = nvidia_smmu_init_context,
+ };
+ 
+ struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
+-- 
+2.17.1
 
-     Arnd
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
