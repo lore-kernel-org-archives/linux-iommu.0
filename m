@@ -1,71 +1,71 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9502CC433F5
-	for <iommu@archiver.kernel.org>; Thu, 21 Apr 2022 05:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A5DABC433F5
+	for <iommu@archiver.kernel.org>; Thu, 21 Apr 2022 05:24:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 4CA86405CB;
-	Thu, 21 Apr 2022 05:24:49 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 696E060EDE;
+	Thu, 21 Apr 2022 05:24:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hd3Nfh07ClII; Thu, 21 Apr 2022 05:24:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1EF4740497;
-	Thu, 21 Apr 2022 05:24:48 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ckAMmoA7gSUP; Thu, 21 Apr 2022 05:24:51 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 5223C60BAA;
+	Thu, 21 Apr 2022 05:24:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 06172C002F;
-	Thu, 21 Apr 2022 05:24:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3D00BC002F;
+	Thu, 21 Apr 2022 05:24:51 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1CFF6C002C
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 05:24:47 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7F566C002C
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 05:24:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 0AF7441998
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 05:24:47 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 5CE5E418C7
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 05:24:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Li9xZJiivORU for <iommu@lists.linux-foundation.org>;
- Thu, 21 Apr 2022 05:24:46 +0000 (UTC)
+ with ESMTP id f9JVOM2dA9Ei for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Apr 2022 05:24:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 1D69941B46
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 05:24:46 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 6A09241B46
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 05:24:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1650518686; x=1682054686;
+ t=1650518689; x=1682054689;
  h=from:to:cc:subject:date:message-id:in-reply-to:
  references:mime-version:content-transfer-encoding;
- bh=Ie9hUcU3U434de5/sN8Ft/NK7xY4WVe8K4mAecxVaZ0=;
- b=LHjLJ5Z3QCi2ct0f+cbcQIW+DNI1Xx5DWCvptRcfYm4BtwvhmdHsVSsC
- uOtQgTVEFbWe9yMJsc5NqS15rdAhcRrpQepDXI9VRKrnFyXAGDteGFV76
- UQ8bmwJGzDNc4QzBNuhra9lsn/idnfomosgLfY9SwxhDXY+p3tHAH3J83
- 4kal+jb9hkqkzoCnptqmi4Iwzqil4Ib2179ylCeVzm/gB8Dpnr/WjqHgc
- DZixpB5iobwlPNoEr77VG7KnQjEGPnU/5tCtblX76j1i6yoeeM34YaklA
- W3H9naKfoST0ABtHZWdTKMlVxvUcy8LwcwuLY6vD++A367wmPPDqlpgAY w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="244176788"
-X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; d="scan'208";a="244176788"
+ bh=KzYNLOftpBQI81OOyLaT7vwQio1J95BXGn88P1Ye63Y=;
+ b=MK7mOB0IZOvQQNrSz1XqXpPZ7t7gSUxSGRbBoLKRxTIrGCSWPQ9/mL4a
+ f4Jm+WPSwGv/Z9H2z+B5d7xEEcPBdquJSp42Qivu/6R3wMrTy04yRmnEC
+ SUOGrT/9yar4trwbkCbIuNVhXkMkiTh7u/nrA0fSPPLtNtsP2NLAg2ic/
+ p3J5XL5smfVyyzZZ3B2eCWF9+30Da6zi3Fd3v2+/HvSNN0rIv+RqQg1d9
+ pJd8TNe1WKmoZX2tYrdOQX5TkED/VXcbe5JPebc+L0kTnyqsNxc+uq6KS
+ Xo/KHQkFSv5G7FY2NUGcOSSHG4wT+/wXIXd4wPtmnTUTo8YFVTarBzavX g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="244176799"
+X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; d="scan'208";a="244176799"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 20 Apr 2022 22:24:45 -0700
+ 20 Apr 2022 22:24:49 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; d="scan'208";a="702944191"
+X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; d="scan'208";a="702944210"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
- by fmsmga001.fm.intel.com with ESMTP; 20 Apr 2022 22:24:42 -0700
+ by fmsmga001.fm.intel.com with ESMTP; 20 Apr 2022 22:24:46 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
  Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
  Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>
-Subject: [PATCH v4 11/12] iommu: Per-domain I/O page fault handling
-Date: Thu, 21 Apr 2022 13:21:20 +0800
-Message-Id: <20220421052121.3464100-12-baolu.lu@linux.intel.com>
+Subject: [PATCH v4 12/12] iommu: Rename iommu-sva-lib.{c,h}
+Date: Thu, 21 Apr 2022 13:21:21 +0800
+Message-Id: <20220421052121.3464100-13-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220421052121.3464100-1-baolu.lu@linux.intel.com>
 References: <20220421052121.3464100-1-baolu.lu@linux.intel.com>
@@ -89,155 +89,134 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Tweak the I/O page fault handling framework to route the page faults to
-the domain and call the page fault handler retrieved from the domain.
-This makes the I/O page fault handling framework possible to serve more
-usage scenarios as long as they have an IOMMU domain and install a page
-fault handler in it. Some unused functions are also removed to avoid
-dead code.
+Rename iommu-sva-lib.c[h] to iommu-sva.c[h] as it contains all code
+for SVA implementation in iommu core.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/iommu-sva-lib.h |  1 -
- drivers/iommu/io-pgfault.c    | 69 ++++++-----------------------------
- drivers/iommu/iommu-sva-lib.c | 20 ----------
- 3 files changed, 12 insertions(+), 78 deletions(-)
+ drivers/iommu/{iommu-sva-lib.h => iommu-sva.h}  | 0
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 2 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 2 +-
+ drivers/iommu/intel/iommu.c                     | 2 +-
+ drivers/iommu/intel/svm.c                       | 2 +-
+ drivers/iommu/io-pgfault.c                      | 2 +-
+ drivers/iommu/{iommu-sva-lib.c => iommu-sva.c}  | 2 +-
+ drivers/iommu/iommu.c                           | 2 +-
+ drivers/iommu/Makefile                          | 2 +-
+ 9 files changed, 8 insertions(+), 8 deletions(-)
+ rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (100%)
+ rename drivers/iommu/{iommu-sva-lib.c => iommu-sva.c} (99%)
 
-diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva-lib.h
-index 0f33472e5212..90d4bd3a61b1 100644
---- a/drivers/iommu/iommu-sva-lib.h
-+++ b/drivers/iommu/iommu-sva-lib.h
-@@ -8,7 +8,6 @@
- #include <linux/ioasid.h>
- #include <linux/mm_types.h>
+diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva.h
+similarity index 100%
+rename from drivers/iommu/iommu-sva-lib.h
+rename to drivers/iommu/iommu-sva.h
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+index 5591321f9e11..a13543aa9df4 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+@@ -9,7 +9,7 @@
+ #include <linux/slab.h>
  
--struct mm_struct *iommu_sva_find(ioasid_t pasid);
- struct mm_struct *iommu_sva_domain_mm(struct iommu_domain *domain);
+ #include "arm-smmu-v3.h"
+-#include "../../iommu-sva-lib.h"
++#include "../../iommu-sva.h"
+ #include "../../io-pgtable-arm.h"
  
- /* I/O Page fault */
+ struct arm_smmu_mmu_notifier {
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 543d3ef1c102..ca2bd17eec41 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -31,7 +31,7 @@
+ #include <linux/amba/bus.h>
+ 
+ #include "arm-smmu-v3.h"
+-#include "../../iommu-sva-lib.h"
++#include "../../iommu-sva.h"
+ 
+ static bool disable_bypass = true;
+ module_param(disable_bypass, bool, 0444);
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 3164bd5a3572..d3dbef5b74a7 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -27,7 +27,7 @@
+ #include <linux/tboot.h>
+ 
+ #include "../irq_remapping.h"
+-#include "../iommu-sva-lib.h"
++#include "../iommu-sva.h"
+ #include "pasid.h"
+ #include "cap_audit.h"
+ 
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 61155f1cb985..166d1af2bda4 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -25,7 +25,7 @@
+ 
+ #include "pasid.h"
+ #include "perf.h"
+-#include "../iommu-sva-lib.h"
++#include "../iommu-sva.h"
+ 
+ static irqreturn_t prq_event_thread(int irq, void *d);
+ static void intel_svm_drain_prq(struct device *dev, u32 pasid);
 diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index 1df8c1dcae77..fc1b2bdeedf8 100644
+index fc1b2bdeedf8..d337165f3707 100644
 --- a/drivers/iommu/io-pgfault.c
 +++ b/drivers/iommu/io-pgfault.c
-@@ -69,62 +69,6 @@ static int iopf_complete_group(struct device *dev, struct iopf_fault *iopf,
- 	return iommu_page_response(dev, &resp);
- }
+@@ -11,7 +11,7 @@
+ #include <linux/slab.h>
+ #include <linux/workqueue.h>
  
--static enum iommu_page_response_code
--iopf_handle_single(struct iopf_fault *iopf)
--{
--	vm_fault_t ret;
--	struct mm_struct *mm;
--	struct vm_area_struct *vma;
--	unsigned int access_flags = 0;
--	unsigned int fault_flags = FAULT_FLAG_REMOTE;
--	struct iommu_fault_page_request *prm = &iopf->fault.prm;
--	enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
--
--	if (!(prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID))
--		return status;
--
--	mm = iommu_sva_find(prm->pasid);
--	if (IS_ERR_OR_NULL(mm))
--		return status;
--
--	mmap_read_lock(mm);
--
--	vma = find_extend_vma(mm, prm->addr);
--	if (!vma)
--		/* Unmapped area */
--		goto out_put_mm;
--
--	if (prm->perm & IOMMU_FAULT_PERM_READ)
--		access_flags |= VM_READ;
--
--	if (prm->perm & IOMMU_FAULT_PERM_WRITE) {
--		access_flags |= VM_WRITE;
--		fault_flags |= FAULT_FLAG_WRITE;
--	}
--
--	if (prm->perm & IOMMU_FAULT_PERM_EXEC) {
--		access_flags |= VM_EXEC;
--		fault_flags |= FAULT_FLAG_INSTRUCTION;
--	}
--
--	if (!(prm->perm & IOMMU_FAULT_PERM_PRIV))
--		fault_flags |= FAULT_FLAG_USER;
--
--	if (access_flags & ~vma->vm_flags)
--		/* Access fault */
--		goto out_put_mm;
--
--	ret = handle_mm_fault(vma, prm->addr, fault_flags, NULL);
--	status = ret & VM_FAULT_ERROR ? IOMMU_PAGE_RESP_INVALID :
--		IOMMU_PAGE_RESP_SUCCESS;
--
--out_put_mm:
--	mmap_read_unlock(mm);
--	mmput(mm);
--
--	return status;
--}
--
- static void iopf_handle_group(struct work_struct *work)
- {
- 	struct iopf_group *group;
-@@ -134,12 +78,23 @@ static void iopf_handle_group(struct work_struct *work)
- 	group = container_of(work, struct iopf_group, work);
+-#include "iommu-sva-lib.h"
++#include "iommu-sva.h"
  
- 	list_for_each_entry_safe(iopf, next, &group->faults, list) {
-+		struct iommu_domain *domain;
-+
-+		domain = iommu_get_domain_for_dev_pasid_async(group->dev,
-+				iopf->fault.prm.pasid);
-+		if (!domain || !domain->iopf_handler)
-+			status = IOMMU_PAGE_RESP_INVALID;
-+
- 		/*
- 		 * For the moment, errors are sticky: don't handle subsequent
- 		 * faults in the group if there is an error.
- 		 */
- 		if (status == IOMMU_PAGE_RESP_SUCCESS)
--			status = iopf_handle_single(iopf);
-+			status = domain->iopf_handler(&iopf->fault,
-+						      domain->fault_data);
-+
-+		if (domain)
-+			iommu_domain_put_async(domain);
- 
- 		if (!(iopf->fault.prm.flags &
- 		      IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE))
-diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
-index 1024c61519dc..d84cffaeb331 100644
+ /**
+  * struct iopf_queue - IO Page Fault queue
+diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva.c
+similarity index 99%
+rename from drivers/iommu/iommu-sva-lib.c
+rename to drivers/iommu/iommu-sva.c
+index d84cffaeb331..7647b4938c99 100644
 --- a/drivers/iommu/iommu-sva-lib.c
-+++ b/drivers/iommu/iommu-sva-lib.c
-@@ -69,26 +69,6 @@ static int iommu_sva_alloc_pasid(struct mm_struct *mm,
- 	return ret;
- }
++++ b/drivers/iommu/iommu-sva.c
+@@ -7,7 +7,7 @@
+ #include <linux/slab.h>
+ #include <linux/sched/mm.h>
  
--/* ioasid_find getter() requires a void * argument */
--static bool __mmget_not_zero(void *mm)
--{
--	return mmget_not_zero(mm);
--}
--
--/**
-- * iommu_sva_find() - Find mm associated to the given PASID
-- * @pasid: Process Address Space ID assigned to the mm
-- *
-- * On success a reference to the mm is taken, and must be released with mmput().
-- *
-- * Returns the mm corresponding to this PASID, or an error if not found.
-- */
--struct mm_struct *iommu_sva_find(ioasid_t pasid)
--{
--	return ioasid_find(&iommu_sva_pasid, pasid, __mmget_not_zero);
--}
--EXPORT_SYMBOL_GPL(iommu_sva_find);
--
- /*
-  * Get or put an ioas for a shared memory.
-  */
+-#include "iommu-sva-lib.h"
++#include "iommu-sva.h"
+ 
+ static DEFINE_MUTEX(iommu_sva_lock);
+ static DECLARE_IOASID_SET(iommu_sva_pasid);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f12c7851d16d..18758cbf1e4a 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -27,7 +27,7 @@
+ #include <linux/cc_platform.h>
+ #include <trace/events/iommu.h>
+ 
+-#include "iommu-sva-lib.h"
++#include "iommu-sva.h"
+ 
+ static struct kset *iommu_group_kset;
+ static DEFINE_IDA(iommu_group_ida);
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 44475a9b3eea..c1763476162b 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -27,6 +27,6 @@ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
+ obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+ obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+ obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+-obj-$(CONFIG_IOMMU_SVA) += iommu-sva-lib.o io-pgfault.o
++obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o io-pgfault.o
+ obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
+ obj-$(CONFIG_APPLE_DART) += apple-dart.o
 -- 
 2.25.1
 
