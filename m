@@ -4,79 +4,64 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AD5C3C433F5
-	for <iommu@archiver.kernel.org>; Thu, 21 Apr 2022 14:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 59178C433EF
+	for <iommu@archiver.kernel.org>; Thu, 21 Apr 2022 15:45:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 5499460BBF;
-	Thu, 21 Apr 2022 14:50:16 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 061BF61351;
+	Thu, 21 Apr 2022 15:45:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id agGM2ugWTpkS; Thu, 21 Apr 2022 14:50:15 +0000 (UTC)
+	with ESMTP id sDOSyJjjciKS; Thu, 21 Apr 2022 15:45:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 3E3D560D6D;
-	Thu, 21 Apr 2022 14:50:15 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id CE9A56135C;
+	Thu, 21 Apr 2022 15:45:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 12F4AC0033;
-	Thu, 21 Apr 2022 14:50:15 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 78027C002C
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 14:50:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9E2DFC0033;
+	Thu, 21 Apr 2022 15:45:46 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E25E9C002C
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 15:45:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 6335460D6D
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 14:50:13 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id BF5106135C
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 15:45:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id twSPnb_NFWHK for <iommu@lists.linux-foundation.org>;
- Thu, 21 Apr 2022 14:50:12 +0000 (UTC)
+ with ESMTP id CCSRr3c6hRby for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Apr 2022 15:45:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
- by smtp3.osuosl.org (Postfix) with ESMTPS id D8BF260B9C
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 14:50:11 +0000 (UTC)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
- by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KkgRP36DQz1J9qw;
- Thu, 21 Apr 2022 22:49:21 +0800 (CST)
-Received: from dggpemm100005.china.huawei.com (7.185.36.231) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 21 Apr 2022 22:50:07 +0800
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- dggpemm100005.china.huawei.com (7.185.36.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 21 Apr 2022 22:50:06 +0800
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2375.024; Thu, 21 Apr 2022 15:50:04 +0100
-To: Christoph Hellwig <hch@infradead.org>
-Subject: RE: [PATCH v10 4/9] ACPI/IORT: Add support to retrieve IORT RMR
- reserved regions
-Thread-Topic: [PATCH v10 4/9] ACPI/IORT: Add support to retrieve IORT RMR
- reserved regions
-Thread-Index: AQHYVNbBiFMGcGX7Dk+uLBP0wkUUHKz53S4AgACVfEA=
-Date: Thu, 21 Apr 2022 14:50:03 +0000
-Message-ID: <54f289c1cfc5401a978a29dc6ff2cea7@huawei.com>
-References: <20220420164836.1181-1-shameerali.kolothum.thodi@huawei.com>
- <20220420164836.1181-5-shameerali.kolothum.thodi@huawei.com>
- <YmD+Puk4xfPpwED9@infradead.org>
-In-Reply-To: <YmD+Puk4xfPpwED9@infradead.org>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.202.227.178]
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id E0BE861351
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 15:45:43 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D754B1516;
+ Thu, 21 Apr 2022 08:45:42 -0700 (PDT)
+Received: from [10.57.41.251] (unknown [10.57.41.251])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A455D3F73B;
+ Thu, 21 Apr 2022 08:45:39 -0700 (PDT)
+Message-ID: <4c3cce25-cd40-092f-5316-e5c5d3adbcc6@arm.com>
+Date: Thu, 21 Apr 2022 16:45:34 +0100
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "will@kernel.org" <will@kernel.org>,
- "jon@solid-run.com" <jon@solid-run.com>, Linuxarm <linuxarm@huawei.com>,
- "steven.price@arm.com" <steven.price@arm.com>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v10 0/9] ACPI/IORT: Support for IORT RMR node
+Content-Language: en-GB
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Steven Price <steven.price@arm.com>, "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
  "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- wanghuiqiang <wanghuiqiang@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+References: <20220420164836.1181-1-shameerali.kolothum.thodi@huawei.com>
+ <b75dd20c-24b9-7944-bfb7-9f102623e725@arm.com>
+ <78cd48d112b144b69bcc498748c584e3@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <78cd48d112b144b69bcc498748c584e3@huawei.com>
+Cc: "jon@solid-run.com" <jon@solid-run.com>, Linuxarm <linuxarm@huawei.com>,
+ "hch@infradead.org" <hch@infradead.org>,
  "Guohanjun \(Hanjun Guo\)" <guohanjun@huawei.com>,
  "Sami.Mujawar@arm.com" <Sami.Mujawar@arm.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+ "will@kernel.org" <will@kernel.org>, wanghuiqiang <wanghuiqiang@huawei.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,58 +74,88 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Shameerali Kolothum Thodi via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-> -----Original Message-----
-> From: Christoph Hellwig [mailto:hch@infradead.org]
-> Sent: 21 April 2022 07:49
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> Cc: linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
-> iommu@lists.linux-foundation.org; Linuxarm <linuxarm@huawei.com>;
-> lorenzo.pieralisi@arm.com; joro@8bytes.org; robin.murphy@arm.com;
-> will@kernel.org; wanghuiqiang <wanghuiqiang@huawei.com>; Guohanjun
-> (Hanjun Guo) <guohanjun@huawei.com>; steven.price@arm.com;
-> Sami.Mujawar@arm.com; jon@solid-run.com; eric.auger@redhat.com;
-> laurentiu.tudor@nxp.com; hch@infradead.org
-> Subject: Re: [PATCH v10 4/9] ACPI/IORT: Add support to retrieve IORT RMR
-> reserved regions
+On 2022-04-21 15:43, Shameerali Kolothum Thodi wrote:
 > 
-[...]
-
-> >  void generic_iommu_put_resv_regions(struct device *dev, struct list_head
-> *list)
-> >  {
-> >  	struct iommu_resv_region *entry, *next;
-> >
-> > -	list_for_each_entry_safe(entry, next, list, list)
-> > +	list_for_each_entry_safe(entry, next, list, list) {
-> > +		if (entry->resv_region_free_fw_data)
-> > +			entry->resv_region_free_fw_data(dev, entry);
-> >  		kfree(entry);
 > 
-> I'd move the kfree to the free callback if present.  This would also
-> allow to hide the union from the common code entirely and use a
-> container structure like:
+>> -----Original Message-----
+>> From: Steven Price [mailto:steven.price@arm.com]
+>> Sent: 21 April 2022 13:59
+>> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
+>> linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
+>> iommu@lists.linux-foundation.org
+>> Cc: Linuxarm <linuxarm@huawei.com>; lorenzo.pieralisi@arm.com;
+>> joro@8bytes.org; robin.murphy@arm.com; will@kernel.org; wanghuiqiang
+>> <wanghuiqiang@huawei.com>; Guohanjun (Hanjun Guo)
+>> <guohanjun@huawei.com>; Sami.Mujawar@arm.com; jon@solid-run.com;
+>> eric.auger@redhat.com; laurentiu.tudor@nxp.com; hch@infradead.org
+>> Subject: Re: [PATCH v10 0/9] ACPI/IORT: Support for IORT RMR node
+>>
+>> On 20/04/2022 17:48, Shameer Kolothum wrote:
+>>> Hi
+>>>
+>>> v9 --> v10
+>>>   - Dropped patch #1 ("Add temporary RMR node flag definitions") since
+>>>     the ACPICA header updates patch is now in the mailing list[1]
+>>>   - Based on the suggestion from Christoph, introduced a
+>>>     resv_region_free_fw_data() callback in struct iommu_resv_region and
+>>>     used that to free RMR specific memory allocations.
+>>>
+>>> Though there is a small change from v9 with respect to how we free up
+>>> the FW specific data, I have taken the liberty to pick up the R-by and
+>>> T-by tags from Lorenzo, Steve and Laurentiu. But please do take a look
+>>> again and let me know.
+>>
+>> I've given this a go and it works fine on my Juno setup. So do keep my
+>> T-by tag.
 > 
-> struct iommu_iort_rmr_data {
-> 	struct iommu_resv_region rr;
+> Many thanks for that.
 > 
-> 	/* Stream IDs associated with IORT RMR entry */
-> 	const u32 *sids;
-> 	u32 num_sids;
-> };
+>> Sami has been kind enough to give me an updated firmware which also
+>> fixes the RMR node in the IORT. Although as mentioned before the details
+>> of the RMR node are currently being ignored so this doesn't change the
+>> functionality but silences the warning.
 
-Ok. I will respin soon with the above changes.
+Strictly they're not ignored, you just won't be getting past the point 
+where they're not entirely not ignored. It'll appear to work because 
+arm_smmu_rmr_install_bypass_smr() just bypasses the whole stream until 
+the actual device turns up to join up to the StreamID and the "real" 
+processing of RMRs happens via iommu_create_device_direct_mappings() - 
+if there's no actual HDLCD device described in the DSDT, that will never 
+happen, and even if there is, chances are that things will currently 
+happen in the wrong order such we'd end up waiting to replay 
+iommu_probe_device() from acpi_iommu_configure_id() once a driver binds, 
+and *that* definitely can't happen without teaching the HDLCD driver 
+about ACPI.
 
-Thanks,
-Shameer 
+>> My concern is that with the RMR region effectively ignored we may see
+>> more broken firmware, and while a length of zero produces a warning, an
+>> otherwise incorrect length will currently "silently work" but mean that
+>> any future tightening would cause problems. For example if the SMMU
+>> driver were to recreate the mappings to only cover the region specified
+>> in the RMR it may not be large enough if the RMR base/length are not
+>> correct.
+> 
+> Not sure how we can further validate the RMR if the firmware provides an
+> incorrect one. I see your point of future tightening causing problems
+> with broken firmware. But then it is indeed a "broken firmware"...
+> 
+>   It's up to the maintainers as to whether they see this as a
+>> problem or not.
+> 
+> Hi Robin,
+> 
+> Any thoughts on this?
+
+In general we can't second-guess firmware. Even a zero-length RMR should 
+have ample opportunity to blow up outside this one corner case where 
+Linux never gets to associate the StreamID with a corresponding device.
+
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
