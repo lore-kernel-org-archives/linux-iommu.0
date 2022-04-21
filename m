@@ -1,65 +1,56 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BA040C433EF
-	for <iommu@archiver.kernel.org>; Thu, 21 Apr 2022 10:41:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 71371C433FE
+	for <iommu@archiver.kernel.org>; Thu, 21 Apr 2022 11:37:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3D312400BA;
-	Thu, 21 Apr 2022 10:41:16 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0B9096117F;
+	Thu, 21 Apr 2022 11:37:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MCAbSgzs0nxN; Thu, 21 Apr 2022 10:41:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 2EC37408C3;
-	Thu, 21 Apr 2022 10:41:15 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id cNSrtbhoO6zV; Thu, 21 Apr 2022 11:37:07 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 0514F61106;
+	Thu, 21 Apr 2022 11:37:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 09EEEC0033;
-	Thu, 21 Apr 2022 10:41:15 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 65E06C002C
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 10:41:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C927CC0033;
+	Thu, 21 Apr 2022 11:37:06 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E2272C002C
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 11:37:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 452868402E
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 10:41:14 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id BA09B6117E
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 11:37:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Key3Kc9FthBO for <iommu@lists.linux-foundation.org>;
- Thu, 21 Apr 2022 10:41:13 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id L_iLngjwadqU for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Apr 2022 11:37:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 31C918401F
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 10:41:13 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id E97D761106
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 11:37:04 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3B4941FB;
- Thu, 21 Apr 2022 03:41:12 -0700 (PDT)
-Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com
- [10.121.207.14])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 54ABA3F5A1;
- Thu, 21 Apr 2022 03:41:10 -0700 (PDT)
-Date: Thu, 21 Apr 2022 11:41:05 +0100
-From: Andre Przywara <andre.przywara@arm.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: fully convert arm to use dma-direct
-Message-ID: <20220421114105.4bb06db7@donnerap.cambridge.arm.com>
-In-Reply-To: <20220421074204.1284072-1-hch@lst.de>
-References: <20220421074204.1284072-1-hch@lst.de>
-Organization: ARM
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E42741FB;
+ Thu, 21 Apr 2022 04:37:03 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
+ [10.1.196.40])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id DB60A3F5A1;
+ Thu, 21 Apr 2022 04:37:02 -0700 (PDT)
+From: Robin Murphy <robin.murphy@arm.com>
+To: hch@lst.de,
+	linux@armlinux.org.uk
+Subject: [PATCH 0/3] More ARM DMA ops cleanup
+Date: Thu, 21 Apr 2022 12:36:56 +0100
+Message-Id: <cover.1650539846.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.35.3.dirty
 MIME-Version: 1.0
-Cc: Arnd Bergmann <arnd@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Linus Walleij <linus.walleij@linaro.org>, linux-usb@vger.kernel.org,
- Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Alan Stern <stern@rowland.harvard.edu>,
- Robin Murphy <robin.murphy@arm.com>,
- Gregory Clement <gregory.clement@bootlin.com>,
- linux-arm-kernel@lists.infradead.org,
- Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+Cc: arnd@kernel.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,50 +68,30 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 21 Apr 2022 09:41:57 +0200
-Christoph Hellwig <hch@lst.de> wrote:
+Hi all,
 
-Hi,
-
-> arm is the last platform not using the dma-direct code for directly
-> mapped DMA.  With the dmaboune removal from Arnd we can easily switch
-> arm to always use dma-direct now (it already does for LPAE configs
-> and nommu).  I'd love to merge this series through the dma-mapping tree
-> as it gives us the opportunity for additional core dma-mapping
-> improvements.
-> 
-> Diffstat:
->  arch/arm/common/dmabounce.c                          |  582 -------------------
->  arch/arm/include/asm/dma-mapping.h                   |  128 ----
->  b/arch/arm/Kconfig                                   |    5 
->  b/arch/arm/common/Kconfig                            |    6 
->  b/arch/arm/common/Makefile                           |    1 
->  b/arch/arm/common/sa1111.c                           |   64 --
->  b/arch/arm/include/asm/device.h                      |    3 
->  b/arch/arm/include/asm/dma-direct.h                  |   49 -
->  b/arch/arm/include/asm/memory.h                      |    2 
->  b/arch/arm/mach-footbridge/Kconfig                   |    1 
->  b/arch/arm/mach-footbridge/common.c                  |   19 
->  b/arch/arm/mach-footbridge/include/mach/dma-direct.h |    8 
->  b/arch/arm/mach-footbridge/include/mach/memory.h     |    4 
->  b/arch/arm/mach-highbank/highbank.c                  |    2 
-
-FWIW, I applied this on top of 5.18-rc3 and pushed my Midway (the Highbank
-successor) a bit with it (scp-ing GBs forth and back to a SATA SSD). Not a
-really conclusive test, but so far it looks all fine.
-
-So for the Highbank part:
-Acked-by: Andre Przywara <andre.przywara@arm.com>
+Thanks to Christoph's latest series, I'm reminded that, if we're going
+to give the ARM DMA ops some cleanup this cycle, it's as good a time as
+any to dust off these old patches and add them on top as well. I've
+based these on the arm-dma-direct branch which I assume matches the
+patches posted at [1].
 
 Cheers,
-Andre
+Robin.
+
+[1] https://lore.kernel.org/linux-arm-kernel/20220421074204.1284072-1-hch@lst.de/
 
 
->  b/arch/arm/mach-mvebu/coherency.c                    |    2 
->  b/arch/arm/mm/dma-mapping.c                          |  381 ------------
->  b/drivers/usb/core/hcd.c                             |   17 
->  b/drivers/usb/host/ohci-sa1111.c                     |   25 
->  18 files changed, 84 insertions(+), 1215 deletions(-)
+Robin Murphy (3):
+  ARM/dma-mapping: Drop .dma_supported for IOMMU ops
+  ARM/dma-mapping: Consolidate IOMMU ops callbacks
+  ARM/dma-mapping: Merge IOMMU ops
+
+ arch/arm/mm/dma-mapping.c | 286 +++++++++-----------------------------
+ 1 file changed, 62 insertions(+), 224 deletions(-)
+
+-- 
+2.35.3.dirty
 
 _______________________________________________
 iommu mailing list
