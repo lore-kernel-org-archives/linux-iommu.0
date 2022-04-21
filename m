@@ -4,55 +4,68 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0B160C433EF
-	for <iommu@archiver.kernel.org>; Thu, 21 Apr 2022 11:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C929BC433F5
+	for <iommu@archiver.kernel.org>; Thu, 21 Apr 2022 11:38:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 9DBD341B75;
-	Thu, 21 Apr 2022 11:37:12 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 716B141B8C;
+	Thu, 21 Apr 2022 11:38:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 09OrbT1Tkdji; Thu, 21 Apr 2022 11:37:11 +0000 (UTC)
+	with ESMTP id 9qjylLiGUd5f; Thu, 21 Apr 2022 11:38:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id BB6F141B87;
-	Thu, 21 Apr 2022 11:37:10 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id E655E41B3C;
+	Thu, 21 Apr 2022 11:38:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3B0DAC0086;
-	Thu, 21 Apr 2022 11:37:10 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4FD6BC002C
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 11:37:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C8C29C0033;
+	Thu, 21 Apr 2022 11:38:45 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 888FFC002C
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 11:38:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 3E7CF83E9B
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 11:37:08 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 6730340592
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 11:38:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2oxYWbj_0A2u for <iommu@lists.linux-foundation.org>;
- Thu, 21 Apr 2022 11:37:07 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id PSN3E1fwKzvx for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Apr 2022 11:38:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 1B5B183DF5
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 11:37:06 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 557D21515;
- Thu, 21 Apr 2022 04:37:06 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
- [10.1.196.40])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 56B4F3F5A1;
- Thu, 21 Apr 2022 04:37:05 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: hch@lst.de,
-	linux@armlinux.org.uk
-Subject: [PATCH 2/3] ARM/dma-mapping: Consolidate IOMMU ops callbacks
-Date: Thu, 21 Apr 2022 12:36:58 +0100
-Message-Id: <d8e8cbc1173611dc475e4e03d6d718efbea83e5b.1650539846.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.35.3.dirty
-In-Reply-To: <cover.1650539846.git.robin.murphy@arm.com>
-References: <cover.1650539846.git.robin.murphy@arm.com>
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 438CF40272
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 11:38:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1650541124; x=1682077124;
+ h=from:to:cc:subject:date:message-id:mime-version:
+ content-transfer-encoding;
+ bh=MVIx/sHIEgO1dkAuJU+YX9nK4jl1uGAeDl15aPmqOWY=;
+ b=k5t7lchb5IpDgdX4mpaOfVK1emWMf8/8YVdtJadKkDHZMCdUk2UsdZ5B
+ cvtpVrZWbBqqJeYpIE1zcVXQobm8bIVURsvUVs+UdpgzzGEsrr2V0wHNC
+ M9dbjZY/uKnAYdo94Mj0DTadtePWxMsFXV31K/tosHVnJJrPmTVJWvYJt
+ rEYG3XpOZcyUs6qmFOWQph02+AMWq45f5b5z6P0vxtLWYOalE84+NnnFM
+ hZy8mbX/xUEPRdF/cwO7xwGo43qmLVNaJbKvgmUf4fwvLv2/IM/JcuNcK
+ KxZCRBy6YZRGvfi43b1I4VUoZPMj1AtOwMRCuOmp+Nu7ATmmuHaLmiWb8 Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="263790086"
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; d="scan'208";a="263790086"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 21 Apr 2022 04:38:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,278,1643702400"; d="scan'208";a="703047905"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+ by fmsmga001.fm.intel.com with ESMTP; 21 Apr 2022 04:38:41 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Jacob jun Pan <jacob.jun.pan@intel.com>, Kevin Tian <kevin.tian@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>
+Subject: [PATCH v2 0/4] iommu/vt-d: Some fine tuning of SVA
+Date: Thu, 21 Apr 2022 19:35:54 +0800
+Message-Id: <20220421113558.3504874-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Cc: arnd@kernel.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -70,407 +83,38 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Merge the coherent and non-coherent callbacks down to a single
-implementation each, relying on the generic dev->dma_coherent
-flag at the points where the difference matters.
+Hi folks,
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- arch/arm/mm/dma-mapping.c | 240 +++++++++-----------------------------
- 1 file changed, 56 insertions(+), 184 deletions(-)
+This includes several tunings of Intel SVA implementation. I plan to
+target them for v5.19. Please help to review.
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index 6b0095b84a58..10e5e5800d78 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -1079,13 +1079,13 @@ static void __iommu_free_atomic(struct device *dev, void *cpu_addr,
- 		__free_from_pool(cpu_addr, size);
- }
- 
--static void *__arm_iommu_alloc_attrs(struct device *dev, size_t size,
--	    dma_addr_t *handle, gfp_t gfp, unsigned long attrs,
--	    int coherent_flag)
-+static void *arm_iommu_alloc_attrs(struct device *dev, size_t size,
-+	    dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
- {
- 	pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL);
- 	struct page **pages;
- 	void *addr = NULL;
-+	int coherent_flag = dev->dma_coherent ? COHERENT : NORMAL;
- 
- 	*handle = DMA_MAPPING_ERROR;
- 	size = PAGE_ALIGN(size);
-@@ -1128,19 +1128,7 @@ static void *__arm_iommu_alloc_attrs(struct device *dev, size_t size,
- 	return NULL;
- }
- 
--static void *arm_iommu_alloc_attrs(struct device *dev, size_t size,
--	    dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
--{
--	return __arm_iommu_alloc_attrs(dev, size, handle, gfp, attrs, NORMAL);
--}
--
--static void *arm_coherent_iommu_alloc_attrs(struct device *dev, size_t size,
--		    dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
--{
--	return __arm_iommu_alloc_attrs(dev, size, handle, gfp, attrs, COHERENT);
--}
--
--static int __arm_iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
-+static int arm_iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
- 		    void *cpu_addr, dma_addr_t dma_addr, size_t size,
- 		    unsigned long attrs)
- {
-@@ -1154,35 +1142,24 @@ static int __arm_iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma
- 	if (vma->vm_pgoff >= nr_pages)
- 		return -ENXIO;
- 
-+	if (!dev->dma_coherent)
-+		vma->vm_page_prot = __get_dma_pgprot(attrs, vma->vm_page_prot);
-+
- 	err = vm_map_pages(vma, pages, nr_pages);
- 	if (err)
- 		pr_err("Remapping memory failed: %d\n", err);
- 
- 	return err;
- }
--static int arm_iommu_mmap_attrs(struct device *dev,
--		struct vm_area_struct *vma, void *cpu_addr,
--		dma_addr_t dma_addr, size_t size, unsigned long attrs)
--{
--	vma->vm_page_prot = __get_dma_pgprot(attrs, vma->vm_page_prot);
--
--	return __arm_iommu_mmap_attrs(dev, vma, cpu_addr, dma_addr, size, attrs);
--}
--
--static int arm_coherent_iommu_mmap_attrs(struct device *dev,
--		struct vm_area_struct *vma, void *cpu_addr,
--		dma_addr_t dma_addr, size_t size, unsigned long attrs)
--{
--	return __arm_iommu_mmap_attrs(dev, vma, cpu_addr, dma_addr, size, attrs);
--}
- 
- /*
-  * free a page as defined by the above mapping.
-  * Must not be called with IRQs disabled.
-  */
--static void __arm_iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
--	dma_addr_t handle, unsigned long attrs, int coherent_flag)
-+static void arm_iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
-+	dma_addr_t handle, unsigned long attrs)
- {
-+	int coherent_flag = dev->dma_coherent ? COHERENT : NORMAL;
- 	struct page **pages;
- 	size = PAGE_ALIGN(size);
- 
-@@ -1204,19 +1181,6 @@ static void __arm_iommu_free_attrs(struct device *dev, size_t size, void *cpu_ad
- 	__iommu_free_buffer(dev, pages, size, attrs);
- }
- 
--static void arm_iommu_free_attrs(struct device *dev, size_t size,
--				 void *cpu_addr, dma_addr_t handle,
--				 unsigned long attrs)
--{
--	__arm_iommu_free_attrs(dev, size, cpu_addr, handle, attrs, NORMAL);
--}
--
--static void arm_coherent_iommu_free_attrs(struct device *dev, size_t size,
--		    void *cpu_addr, dma_addr_t handle, unsigned long attrs)
--{
--	__arm_iommu_free_attrs(dev, size, cpu_addr, handle, attrs, COHERENT);
--}
--
- static int arm_iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
- 				 void *cpu_addr, dma_addr_t dma_addr,
- 				 size_t size, unsigned long attrs)
-@@ -1236,8 +1200,7 @@ static int arm_iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
-  */
- static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
- 			  size_t size, dma_addr_t *handle,
--			  enum dma_data_direction dir, unsigned long attrs,
--			  bool is_coherent)
-+			  enum dma_data_direction dir, unsigned long attrs)
- {
- 	struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
- 	dma_addr_t iova, iova_base;
-@@ -1257,7 +1220,7 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
- 		phys_addr_t phys = page_to_phys(sg_page(s));
- 		unsigned int len = PAGE_ALIGN(s->offset + s->length);
- 
--		if (!is_coherent && (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
-+		if (!dev->dma_coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
- 			__dma_page_cpu_to_dev(sg_page(s), s->offset, s->length, dir);
- 
- 		prot = __dma_info_to_prot(dir, attrs);
-@@ -1277,9 +1240,20 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
- 	return ret;
- }
- 
--static int __iommu_map_sg(struct device *dev, struct scatterlist *sg, int nents,
--		     enum dma_data_direction dir, unsigned long attrs,
--		     bool is_coherent)
-+/**
-+ * arm_iommu_map_sg - map a set of SG buffers for streaming mode DMA
-+ * @dev: valid struct device pointer
-+ * @sg: list of buffers
-+ * @nents: number of buffers to map
-+ * @dir: DMA transfer direction
-+ *
-+ * Map a set of buffers described by scatterlist in streaming mode for DMA.
-+ * The scatter gather list elements are merged together (if possible) and
-+ * tagged with the appropriate dma address and length. They are obtained via
-+ * sg_dma_{address,length}.
-+ */
-+static int arm_iommu_map_sg(struct device *dev, struct scatterlist *sg,
-+		int nents, enum dma_data_direction dir, unsigned long attrs)
- {
- 	struct scatterlist *s = sg, *dma = sg, *start = sg;
- 	int i, count = 0, ret;
-@@ -1294,8 +1268,7 @@ static int __iommu_map_sg(struct device *dev, struct scatterlist *sg, int nents,
- 
- 		if (s->offset || (size & ~PAGE_MASK) || size + s->length > max) {
- 			ret = __map_sg_chunk(dev, start, size,
--					     &dma->dma_address, dir, attrs,
--					     is_coherent);
-+					     &dma->dma_address, dir, attrs);
- 			if (ret < 0)
- 				goto bad_mapping;
- 
-@@ -1309,8 +1282,7 @@ static int __iommu_map_sg(struct device *dev, struct scatterlist *sg, int nents,
- 		}
- 		size += s->length;
- 	}
--	ret = __map_sg_chunk(dev, start, size, &dma->dma_address, dir, attrs,
--			     is_coherent);
-+	ret = __map_sg_chunk(dev, start, size, &dma->dma_address, dir, attrs);
- 	if (ret < 0)
- 		goto bad_mapping;
- 
-@@ -1327,76 +1299,6 @@ static int __iommu_map_sg(struct device *dev, struct scatterlist *sg, int nents,
- 	return -EINVAL;
- }
- 
--/**
-- * arm_coherent_iommu_map_sg - map a set of SG buffers for streaming mode DMA
-- * @dev: valid struct device pointer
-- * @sg: list of buffers
-- * @nents: number of buffers to map
-- * @dir: DMA transfer direction
-- *
-- * Map a set of i/o coherent buffers described by scatterlist in streaming
-- * mode for DMA. The scatter gather list elements are merged together (if
-- * possible) and tagged with the appropriate dma address and length. They are
-- * obtained via sg_dma_{address,length}.
-- */
--static int arm_coherent_iommu_map_sg(struct device *dev, struct scatterlist *sg,
--		int nents, enum dma_data_direction dir, unsigned long attrs)
--{
--	return __iommu_map_sg(dev, sg, nents, dir, attrs, true);
--}
--
--/**
-- * arm_iommu_map_sg - map a set of SG buffers for streaming mode DMA
-- * @dev: valid struct device pointer
-- * @sg: list of buffers
-- * @nents: number of buffers to map
-- * @dir: DMA transfer direction
-- *
-- * Map a set of buffers described by scatterlist in streaming mode for DMA.
-- * The scatter gather list elements are merged together (if possible) and
-- * tagged with the appropriate dma address and length. They are obtained via
-- * sg_dma_{address,length}.
-- */
--static int arm_iommu_map_sg(struct device *dev, struct scatterlist *sg,
--		int nents, enum dma_data_direction dir, unsigned long attrs)
--{
--	return __iommu_map_sg(dev, sg, nents, dir, attrs, false);
--}
--
--static void __iommu_unmap_sg(struct device *dev, struct scatterlist *sg,
--		int nents, enum dma_data_direction dir,
--		unsigned long attrs, bool is_coherent)
--{
--	struct scatterlist *s;
--	int i;
--
--	for_each_sg(sg, s, nents, i) {
--		if (sg_dma_len(s))
--			__iommu_remove_mapping(dev, sg_dma_address(s),
--					       sg_dma_len(s));
--		if (!is_coherent && (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
--			__dma_page_dev_to_cpu(sg_page(s), s->offset,
--					      s->length, dir);
--	}
--}
--
--/**
-- * arm_coherent_iommu_unmap_sg - unmap a set of SG buffers mapped by dma_map_sg
-- * @dev: valid struct device pointer
-- * @sg: list of buffers
-- * @nents: number of buffers to unmap (same as was passed to dma_map_sg)
-- * @dir: DMA transfer direction (same as was passed to dma_map_sg)
-- *
-- * Unmap a set of streaming mode DMA translations.  Again, CPU access
-- * rules concerning calls here are the same as for dma_unmap_single().
-- */
--static void arm_coherent_iommu_unmap_sg(struct device *dev,
--		struct scatterlist *sg, int nents, enum dma_data_direction dir,
--		unsigned long attrs)
--{
--	__iommu_unmap_sg(dev, sg, nents, dir, attrs, true);
--}
--
- /**
-  * arm_iommu_unmap_sg - unmap a set of SG buffers mapped by dma_map_sg
-  * @dev: valid struct device pointer
-@@ -1412,7 +1314,17 @@ static void arm_iommu_unmap_sg(struct device *dev,
- 			       enum dma_data_direction dir,
- 			       unsigned long attrs)
- {
--	__iommu_unmap_sg(dev, sg, nents, dir, attrs, false);
-+	struct scatterlist *s;
-+	int i;
-+
-+	for_each_sg(sg, s, nents, i) {
-+		if (sg_dma_len(s))
-+			__iommu_remove_mapping(dev, sg_dma_address(s),
-+					       sg_dma_len(s));
-+		if (!dev->dma_coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-+			__dma_page_dev_to_cpu(sg_page(s), s->offset,
-+					      s->length, dir);
-+	}
- }
- 
- /**
-@@ -1452,18 +1364,17 @@ static void arm_iommu_sync_sg_for_device(struct device *dev,
- 		__dma_page_cpu_to_dev(sg_page(s), s->offset, s->length, dir);
- }
- 
--
- /**
-- * arm_coherent_iommu_map_page
-+ * arm_iommu_map_page
-  * @dev: valid struct device pointer
-  * @page: page that buffer resides in
-  * @offset: offset into page for start of buffer
-  * @size: size of buffer to map
-  * @dir: DMA transfer direction
-  *
-- * Coherent IOMMU aware version of arm_dma_map_page()
-+ * IOMMU aware version of arm_dma_map_page()
-  */
--static dma_addr_t arm_coherent_iommu_map_page(struct device *dev, struct page *page,
-+static dma_addr_t arm_iommu_map_page(struct device *dev, struct page *page,
- 	     unsigned long offset, size_t size, enum dma_data_direction dir,
- 	     unsigned long attrs)
- {
-@@ -1471,6 +1382,9 @@ static dma_addr_t arm_coherent_iommu_map_page(struct device *dev, struct page *p
- 	dma_addr_t dma_addr;
- 	int ret, prot, len = PAGE_ALIGN(size + offset);
- 
-+	if (!dev->dma_coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-+		__dma_page_cpu_to_dev(page, offset, size, dir);
-+
- 	dma_addr = __alloc_iova(mapping, len);
- 	if (dma_addr == DMA_MAPPING_ERROR)
- 		return dma_addr;
-@@ -1487,50 +1401,6 @@ static dma_addr_t arm_coherent_iommu_map_page(struct device *dev, struct page *p
- 	return DMA_MAPPING_ERROR;
- }
- 
--/**
-- * arm_iommu_map_page
-- * @dev: valid struct device pointer
-- * @page: page that buffer resides in
-- * @offset: offset into page for start of buffer
-- * @size: size of buffer to map
-- * @dir: DMA transfer direction
-- *
-- * IOMMU aware version of arm_dma_map_page()
-- */
--static dma_addr_t arm_iommu_map_page(struct device *dev, struct page *page,
--	     unsigned long offset, size_t size, enum dma_data_direction dir,
--	     unsigned long attrs)
--{
--	if ((attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
--		__dma_page_cpu_to_dev(page, offset, size, dir);
--
--	return arm_coherent_iommu_map_page(dev, page, offset, size, dir, attrs);
--}
--
--/**
-- * arm_coherent_iommu_unmap_page
-- * @dev: valid struct device pointer
-- * @handle: DMA address of buffer
-- * @size: size of buffer (same as passed to dma_map_page)
-- * @dir: DMA transfer direction (same as passed to dma_map_page)
-- *
-- * Coherent IOMMU aware version of arm_dma_unmap_page()
-- */
--static void arm_coherent_iommu_unmap_page(struct device *dev, dma_addr_t handle,
--		size_t size, enum dma_data_direction dir, unsigned long attrs)
--{
--	struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
--	dma_addr_t iova = handle & PAGE_MASK;
--	int offset = handle & ~PAGE_MASK;
--	int len = PAGE_ALIGN(size + offset);
--
--	if (!iova)
--		return;
--
--	iommu_unmap(mapping->domain, iova, len);
--	__free_iova(mapping, iova, len);
--}
--
- /**
-  * arm_iommu_unmap_page
-  * @dev: valid struct device pointer
-@@ -1545,15 +1415,17 @@ static void arm_iommu_unmap_page(struct device *dev, dma_addr_t handle,
- {
- 	struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
- 	dma_addr_t iova = handle & PAGE_MASK;
--	struct page *page = phys_to_page(iommu_iova_to_phys(mapping->domain, iova));
-+	struct page *page;
- 	int offset = handle & ~PAGE_MASK;
- 	int len = PAGE_ALIGN(size + offset);
- 
- 	if (!iova)
- 		return;
- 
--	if ((attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
-+	if (!dev->dma_coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
-+		page = phys_to_page(iommu_iova_to_phys(mapping->domain, iova));
- 		__dma_page_dev_to_cpu(page, offset, size, dir);
-+	}
- 
- 	iommu_unmap(mapping->domain, iova, len);
- 	__free_iova(mapping, iova, len);
-@@ -1665,16 +1537,16 @@ static const struct dma_map_ops iommu_ops = {
- };
- 
- static const struct dma_map_ops iommu_coherent_ops = {
--	.alloc		= arm_coherent_iommu_alloc_attrs,
--	.free		= arm_coherent_iommu_free_attrs,
--	.mmap		= arm_coherent_iommu_mmap_attrs,
-+	.alloc		= arm_iommu_alloc_attrs,
-+	.free		= arm_iommu_free_attrs,
-+	.mmap		= arm_iommu_mmap_attrs,
- 	.get_sgtable	= arm_iommu_get_sgtable,
- 
--	.map_page	= arm_coherent_iommu_map_page,
--	.unmap_page	= arm_coherent_iommu_unmap_page,
-+	.map_page	= arm_iommu_map_page,
-+	.unmap_page	= arm_iommu_unmap_page,
- 
--	.map_sg		= arm_coherent_iommu_map_sg,
--	.unmap_sg	= arm_coherent_iommu_unmap_sg,
-+	.map_sg		= arm_iommu_map_sg,
-+	.unmap_sg	= arm_iommu_unmap_sg,
- 
- 	.map_resource	= arm_iommu_map_resource,
- 	.unmap_resource	= arm_iommu_unmap_resource,
+Best regards,
+baolu
+
+Change log:
+
+v2:
+ - Move snoop control capability check into a separated patch.
+ - Return false if the caller opt-in setting PGSNP with a flag.
+ - Add a Fixes tag for "iommu/vt-d: Drop stop marker messages" as it is
+   required by the iopf framework.
+
+v1: initial post
+ - https://lore.kernel.org/linux-iommu/20220416123049.879969-1-baolu.lu@linux.intel.com/ 
+
+Lu Baolu (4):
+  iommu/vt-d: Check before setting PGSNP bit in pasid table entry
+  iommu/vt-d: Set PGSNP bit in pasid table entry for SVA binding
+  iommu/vt-d: Drop stop marker messages
+  iommu/vt-d: Size Page Request Queue to avoid overflow condition
+
+ include/linux/intel-svm.h   |  2 +-
+ drivers/iommu/intel/pasid.c | 13 ++++++++++---
+ drivers/iommu/intel/svm.c   | 13 ++++++++++---
+ 3 files changed, 21 insertions(+), 7 deletions(-)
+
 -- 
-2.35.3.dirty
+2.25.1
 
 _______________________________________________
 iommu mailing list
