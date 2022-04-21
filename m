@@ -4,96 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D88DAC433EF
-	for <iommu@archiver.kernel.org>; Thu, 21 Apr 2022 06:47:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 33CF8C433F5
+	for <iommu@archiver.kernel.org>; Thu, 21 Apr 2022 06:48:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 888BD41B51;
-	Thu, 21 Apr 2022 06:47:41 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id DA522418CD;
+	Thu, 21 Apr 2022 06:48:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KoCki34KzQx8; Thu, 21 Apr 2022 06:47:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id A75E0418CD;
-	Thu, 21 Apr 2022 06:47:39 +0000 (UTC)
+	with ESMTP id I6akf5vy2ysZ; Thu, 21 Apr 2022 06:48:36 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id D1384418A5;
+	Thu, 21 Apr 2022 06:48:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6C069C002F;
-	Thu, 21 Apr 2022 06:47:39 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 898D2C002C
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 06:47:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B45AAC002F;
+	Thu, 21 Apr 2022 06:48:35 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6F78CC002C
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 06:48:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 76B02402B1
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 06:47:35 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 5C91D83F4D
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 06:48:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=foxmail.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bHzoFr60y7fQ for <iommu@lists.linux-foundation.org>;
- Thu, 21 Apr 2022 06:47:33 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from out203-205-221-205.mail.qq.com (out203-205-221-205.mail.qq.com
- [203.205.221.205])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 44C5040241
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 06:47:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
- s=s201512; t=1650523649;
- bh=UCAgP/sZs/C6j2bxf30J77uiXRtYuq1jRK0KgNfK59E=;
- h=Subject:To:Cc:References:From:Date:In-Reply-To;
- b=G5zUiA2D+OCQecjUCUTlPmsrYdLnYuit3HNuMclLTkCMba0xsF6Bql5h6cPGpvjMQ
- 4f3PfThd8KF1wPrf70Py3Hl1sAsguUgK2iTYLo23Dg7vZBbE4sxiptxLZp0CP9kYyj
- Xlf4kV+F6lCIyukalC++mUrRk3B/njkdg1Twb3sU=
-Received: from [IPv6:240e:362:431:df00:4c4b:c9ad:7c98:c56e]
- ([240e:362:431:df00:4c4b:c9ad:7c98:c56e])
- by newxmesmtplogicsvrszc6.qq.com (NewEsmtp) with SMTP
- id BD801CAE; Thu, 21 Apr 2022 14:47:24 +0800
-X-QQ-mid: xmsmtpt1650523644tcdazw0uv
-Message-ID: <tencent_76E043C4D1B6A21A5253579A61034107EB06@qq.com>
-X-QQ-XMAILINFO: OZZSS56D9fAj7I0kuNy93BRXcT9WEUGATwHKfBaw0xOuVEqDfP3LayA0ouGdGF
- /4H8mX73reyQrAo6p6HB8IoYEWR/SmddMLsbz7tU5gxmX19LmTzPXP9z4y/TmS/AyAFglCtVhFK5
- ZlTjz+G2ZEySnL5cXkgb4KvdIMBfz2yulpB00Zfv/9uIYnEZKCT4igawk9KF8eo+aZHCEty1ZuGG
- hpPEA4BJ+hQnHVz9iSSkUCxfpbNJMehdiY55FzTAxIJHt6ioTfKjpmumKans6H7OHxKnN8DUDV0l
- Q0CaudGokCm03Kf9r20ccXSJ7z8vlXxC89ganeUxYSM9gVdnOYDfkT2UIzTo5pRhxag7HH1/IzmZ
- +uN1dzWzUu7YMhnp38Bwy9VcJRu5r1DHjYyNUIDm9ih66cfYHmncPA9UccU+wGd3YLzZv+i4nzEn
- btGz0C/E6yvTrraPNH2bONi5g6AAJQj9Zyy5BEe/XabkSfYTjY6m1Qcb2NG/KZoBKgOXsaGeC0DM
- LjaWOLQ2anfskq3Wfa/xWWMFtAyH2hKO12GS81/9hz/zkgxXKTsNtR0RX4eLlZ/7j4DIToMUebTS
- fwRNqZvK8bvcnwipVb13d/PUQzvkPyKWwUxECt7KdiWQZjvMt0ZK1DhaqLYyyA0NRGMmGhOwNkNU
- eHYkBLZeOXDLuOP0y0JthzMfot65jt1UZeypM3iPDZ6LzR+CaTbc4/yEilQy3HF2RRKUHBSQNVPR
- buFMK4nHw+QpvIU7uBdz1NgpIny8pR6ko5CJN6zz4RKIMDsxMwEuAfxwdHs8FK3P1NDZHmNQxH53
- 2z5PIROo/EU3ydXH9PY6p2RwTRtVUy6kaRCLM5wZktdHrzUKj5j8R1PSyppY+q0yQEDor27iFUbo
- lXzrXVlhc2GSrttpcNmSlb0MsqrDR9lM+UVscGjy7+WVA8/89Mxj+WN+B31kuEKf8ANd2Uci16vD
- kUetcFqmCafT4PrKihsqSMCZomAz5L
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Fenghua Yu <fenghua.yu@intel.com>
-References: <56ed509d-a7cf-1fde-676c-a28eb204989b@intel.com>
- <tencent_9920B633D50E9B80D3A41A723BCE06972309@qq.com>
- <f439dde5-0eaa-52e4-9cf7-2ed1f62ea07f@intel.com>
- <tencent_F73C11A7DBAC6AF24D3369DF0DCA1D7E8308@qq.com>
- <a139dbad-2f42-913b-677c-ef35f1eebfed@intel.com>
- <tencent_B683AC1146DB6A6ABB4D73697C0D6A1D7608@qq.com>
- <YlWBkyGeb2ZOGLKl@fyu1.sc.intel.com>
- <tencent_A9458C6CEBAADD361DA765356477B00E920A@qq.com>
- <tencent_8B6D7835F62688B4CD069C0EFC41B308B407@qq.com>
- <YllADL6uMoLllzQo@fyu1.sc.intel.com> <YmA4pbgevqln/jSO@myrica>
-From: "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
-X-OQ-MSGID: <ccf6e9c3-99b2-cd60-40e0-44827145933c@foxmail.com>
-Date: Thu, 21 Apr 2022 14:47:23 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id QszNjUqAxS0m for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Apr 2022 06:48:33 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [IPv6:2607:7c80:54:e::133])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 5DE3583EFB
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 06:48:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Transfer-Encoding
+ :Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+ Sender:Reply-To:Content-ID:Content-Description;
+ bh=M/ARur4eua8o6EQjAdFfBizbORl1mZ973Gc8El3Xu7Q=; b=3Mnsa1TpxoJA1Bwarb3A0PMDOI
+ ka3ZM/TwhCTShnt0djqnLRL2i7MLW7AjXjynjbxB0vDi4/aymA5aldwBqb1KG14alcuMrGbOic6xs
+ B1IlnSognZkfMvMvspDp1c/bBUomu1oCuIfBp+3ZMIpfV0E37IbAw5/CdzTELt2XGc/Zkk7mimnT+
+ 2LJd7QSDR6IkY/ZKtfL2Fw4d82VRkrHbbnJhoaUHDVAluOLqVoWzShTMYCe+RrBx8qfsx2wT2pZxX
+ ZVt/AdCEksr0mv6ouBEYsXDGHvKwn+P4KudV/9Pvxp/W/QV4H4AlUmmScv0HN0yE4TSGzMbr5VEme
+ wVEsLx5w==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red
+ Hat Linux)) id 1nhQcA-00BqpX-5A; Thu, 21 Apr 2022 06:48:30 +0000
+Date: Wed, 20 Apr 2022 23:48:30 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v10 4/9] ACPI/IORT: Add support to retrieve IORT RMR
+ reserved regions
+Message-ID: <YmD+Puk4xfPpwED9@infradead.org>
+References: <20220420164836.1181-1-shameerali.kolothum.thodi@huawei.com>
+ <20220420164836.1181-5-shameerali.kolothum.thodi@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <YmA4pbgevqln/jSO@myrica>
-Content-Language: en-US
-Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Tony Luck <tony.luck@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
- robin.murphy@arm.com, Dave Hansen <dave.hansen@linux.intel.com>,
- x86 <x86@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>,
- Dave Hansen <dave.hansen@intel.com>, iommu <iommu@lists.linux-foundation.org>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
- Thomas Gleixner <tglx@linutronix.de>, will@kernel.org
+Content-Disposition: inline
+In-Reply-To: <20220420164836.1181-5-shameerali.kolothum.thodi@huawei.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: will@kernel.org, jon@solid-run.com, linuxarm@huawei.com,
+ steven.price@arm.com, hch@infradead.org, linux-acpi@vger.kernel.org,
+ iommu@lists.linux-foundation.org, wanghuiqiang@huawei.com,
+ guohanjun@huawei.com, Sami.Mujawar@arm.com, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,210 +79,374 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CgpPbiAyMDIyLzQvMjEg5LiK5Y2IMTI6NDUsIEplYW4tUGhpbGlwcGUgQnJ1Y2tlciB3cm90ZToK
-PiBIaSwKPgo+IE9uIEZyaSwgQXByIDE1LCAyMDIyIGF0IDAyOjUxOjA4QU0gLTA3MDAsIEZlbmdo
-dWEgWXUgd3JvdGU6Cj4+ICBGcm9tIGE2NDQ0ZTFlNWJkODA3NmY1ZTVjNWU5NTBkMzE5MmRlMzI3
-ZjBjOWMgTW9uIFNlcCAxNyAwMDowMDowMCAyMDAxCj4+IEZyb206IEZlbmdodWEgWXUgPGZlbmdo
-dWEueXVAaW50ZWwuY29tPgo+PiBEYXRlOiBGcmksIDE1IEFwciAyMDIyIDAwOjUxOjMzIC0wNzAw
-Cj4+IFN1YmplY3Q6IFtSRkMgUEFUQ0hdIGlvbW11L3N2YTogRml4IFBBU0lEIHVzZS1hZnRlci1m
-cmVlIGlzc3VlCj4+Cj4+IEEgUEFTSUQgbWlnaHQgYmUgc3RpbGwgdXNlZCBldmVuIHRob3VnaCBp
-dCBpcyBmcmVlZCBvbiBtbSBleGl0Lgo+Pgo+PiBwcm9jZXNzIEE6Cj4+IAlzdmFfYmluZCgpOwo+
-PiAJaW9hc2lkX2FsbG9jKCkgPSBOOyAvLyBHZXQgUEFTSUQgTiBmb3IgdGhlIG1tCj4+IAlmb3Jr
-KCk6IC8vIHNwYXduIHByb2Nlc3MgQgo+PiAJZXhpdCgpOwo+PiAJaW9hc2lkX2ZyZWUoTik7Cj4+
-Cj4+IHByb2Nlc3MgQjoKPj4gCWRldmljZSB1c2VzIFBBU0lEIE4gLT4gZmFpbHVyZQo+PiAJc3Zh
-X3VuYmluZCgpOwo+Pgo+PiBEYXZlIEhhbnNlbiBzdWdnZXN0cyB0byB0YWtlIGEgcmVmY291bnQg
-b24gdGhlIG1tIHdoZW5ldmVyIGJpbmRpbmcgdGhlCj4+IFBBU0lEIHRvIGEgZGV2aWNlIGFuZCBk
-cm9wIHRoZSByZWZjb3VudCBvbiB1bmJpbmRpbmcuIFRoZSBtbSB3b24ndCBiZQo+PiBkcm9wcGVk
-IGlmIHRoZSBQQVNJRCBpcyBzdGlsbCBib3VuZCB0byBpdC4KPj4KPj4gRml4ZXM6IDcwMWZhYzQw
-Mzg0ZiAoImlvbW11L3N2YTogQXNzaWduIGEgUEFTSUQgdG8gbW0gb24gUEFTSUQgYWxsb2NhdGlv
-biBhbmQgZnJlZSBpdCBvbiBtbSBleGl0IikKPj4KPj4gUmVwb3J0ZWQtYnk6IFpoYW5nZmVpIEdh
-byA8emhhbmdmZWkuZ2FvQGZveG1haWwuY29tPgo+PiBTdWdnZXN0ZWQtYnk6IERhdmUgSGFuc2Vu
-IiA8ZGF2ZS5oYW5zZW5AbGludXguaW50ZWwuY29tPgo+PiBTaWduZWQtb2ZmLWJ5OiBGZW5naHVh
-IFl1IDxmZW5naHVhLnl1QGludGVsLmNvbT4KPj4gLS0tCj4+ICAgZHJpdmVycy9pb21tdS9hcm0v
-YXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMtc3ZhLmMgfCA2ICsrKysrKwo+PiAgIGRyaXZlcnMvaW9t
-bXUvaW50ZWwvc3ZtLmMgICAgICAgICAgICAgICAgICAgICAgIHwgNCArKysrCj4+ICAgMiBmaWxl
-cyBjaGFuZ2VkLCAxMCBpbnNlcnRpb25zKCspCj4+Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lv
-bW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My1zdmEuYyBiL2RyaXZlcnMvaW9tbXUvYXJt
-L2FybS1zbW11LXYzL2FybS1zbW11LXYzLXN2YS5jCj4+IGluZGV4IDIyZGRkMDViYmRjZC4uM2Zj
-Yjg0MmEwZGYwIDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9h
-cm0tc21tdS12My1zdmEuYwo+PiArKysgYi9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9h
-cm0tc21tdS12My1zdmEuYwo+PiBAQCAtNyw2ICs3LDcgQEAKPj4gICAjaW5jbHVkZSA8bGludXgv
-bW11X2NvbnRleHQuaD4KPj4gICAjaW5jbHVkZSA8bGludXgvbW11X25vdGlmaWVyLmg+Cj4+ICAg
-I2luY2x1ZGUgPGxpbnV4L3NsYWIuaD4KPj4gKyNpbmNsdWRlIDxsaW51eC9zY2hlZC9tbS5oPgo+
-PiAgIAo+PiAgICNpbmNsdWRlICJhcm0tc21tdS12My5oIgo+PiAgICNpbmNsdWRlICIuLi8uLi9p
-b21tdS1zdmEtbGliLmgiCj4+IEBAIC0zNjMsNiArMzY0LDkgQEAgYXJtX3NtbXVfc3ZhX2JpbmQo
-c3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgbW1fc3RydWN0ICptbSwgdm9pZCAqZHJ2ZGF0YSkK
-Pj4gICAKPj4gICAJbXV0ZXhfbG9jaygmc3ZhX2xvY2spOwo+PiAgIAloYW5kbGUgPSBfX2FybV9z
-bW11X3N2YV9iaW5kKGRldiwgbW0pOwo+PiArCS8qIFRha2UgYW4gbW0gcmVmY291bnQgb24gYSBz
-dWNjZXNzZnVsIGJpbmQuICovCj4+ICsJaWYgKCFJU19FUlIoaGFuZGxlKSkKPj4gKwkJbW1nZXQo
-bW0pOwo+PiAgIAltdXRleF91bmxvY2soJnN2YV9sb2NrKTsKPj4gICAJcmV0dXJuIGhhbmRsZTsK
-Pj4gICB9Cj4+IEBAIC0zNzIsNiArMzc2LDggQEAgdm9pZCBhcm1fc21tdV9zdmFfdW5iaW5kKHN0
-cnVjdCBpb21tdV9zdmEgKmhhbmRsZSkKPj4gICAJc3RydWN0IGFybV9zbW11X2JvbmQgKmJvbmQg
-PSBzdmFfdG9fYm9uZChoYW5kbGUpOwo+PiAgIAo+PiAgIAltdXRleF9sb2NrKCZzdmFfbG9jayk7
-Cj4+ICsJLyogRHJvcCBhbiBtbSByZWZjb3VudC4gKi8KPj4gKwltbXB1dChib25kLT5tbSk7Cj4g
-SSBkbyBsaWtlIHRoZSBpZGVhIGJlY2F1c2UgaXQgd2lsbCBzaW1wbGlmeSB0aGUgZHJpdmVyLiBX
-ZSBjYW4ndCBjYWxsCj4gbW1wdXQoKSBoZXJlLCB0aG91Z2gsIGJlY2F1c2UgaXQgbWF5IGNhbGwg
-dGhlIHJlbGVhc2UoKSBNTVUgbm90aWZpZXIgd2hpY2gKPiB3aWxsIHRyeSB0byBncmFiIHN2YV9s
-b2NrLCBhbHJlYWR5IGhlbGQuCj4KPiBJIGFsc28gZm91bmQgYW5vdGhlciB1c2UtYWZ0ZXItZnJl
-ZSBpbiBhcm1fc21tdV9mcmVlX3NoYXJlZF9jZCgpLCB3aGVyZSB3ZQo+IGNhbGwgYXJtNjRfbW1f
-Y29udGV4dF9wdXQoKSB3aGVuIHRoZSBtbSBjb3VsZCBhbHJlYWR5IGJlIGZyZWVkLiBUaGVyZSB1
-c2VkCj4gdG8gYmUgYW4gbW1ncmFiKCkgcHJldmVudGluZyB0aGlzIGJ1dCBpdCB3ZW50IGF3YXkg
-ZHVyaW5nIGEgcmV3cml0ZS4KPgo+IFRvIGZpeCBib3RoIHdlIGNvdWxkIGp1c3QgbW92ZSBtbXB1
-dCgpIGF0IHRoZSBlbmQgb2YgdW5iaW5kKCkgYnV0IEknZAo+IHJhdGhlciBkbyBhIHByb3BlciBj
-bGVhbnVwIHJlbW92aW5nIHRoZSByZWxlYXNlKCkgbm90aWZpZXIgcmlnaHQgYXdheS4KPiBaaGFu
-Z2ZlaSwgY291bGQgeW91IHRyeSB0aGUgcGF0Y2ggYmVsb3c/Cj4KPiBUaGFua3MsCj4gSmVhbgo+
-Cj4gLS0tIDg8IC0tLQo+Cj4gIEZyb20gNGUwOWMwZDcxZGZiMzVmYzkwOTE1YmQxZTM2NTQ1MDI3
-ZmJmOGEwMyBNb24gU2VwIDE3IDAwOjAwOjAwIDIwMDEKPiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJy
-dWNrZXIgPGplYW4tcGhpbGlwcGVAbGluYXJvLm9yZz4KPiBEYXRlOiBXZWQsIDIwIEFwciAyMDIy
-IDEwOjE5OjI0ICswMTAwCj4gU3ViamVjdDogW1BBVENIXSBpb21tdS9hcm0tc21tdS12My1zdmE6
-IEZpeCBQQVNJRCBhbmQgbW0gdXNlLWFmdGVyLWZyZWUgaXNzdWVzCj4KPiBDb21taXQgNzAxZmFj
-NDAzODRmICgiaW9tbXUvc3ZhOiBBc3NpZ24gYSBQQVNJRCB0byBtbSBvbiBQQVNJRAo+IGFsbG9j
-YXRpb24gYW5kIGZyZWUgaXQgb24gbW0gZXhpdCIpIGZyZWVzIHRoZSBQQVNJRCBlYXJsaWVyIHRo
-YW4gd2hhdAo+IHRoZSBTTU1VdjMgZHJpdmVyIGV4cGVjdHMuIEF0IHRoZSBtb21lbnQgdGhlIFNN
-TVUgZHJpdmVyIGhhbmRsZXMgbW0gZXhpdAo+IGluIHRoZSByZWxlYXNlKCkgTU1VIG5vdGlmaWVy
-IGJ5IHF1aWVzY2luZyB0aGUgY29udGV4dCBkZXNjcmlwdG9yLiBUaGUKPiBjb250ZXh0IGRlc2Ny
-aXB0b3IgaXMgb25seSBtYWRlIGludmFsaWQgaW4gdW5iaW5kKCksIGFmdGVyIHRoZSBkZXZpY2UK
-PiBkcml2ZXIgZW5zdXJlZCB0aGUgUEFTSUQgaXMgbm90IHVzZWQgYW55bW9yZS4gUmVsZWFzaW5n
-IHRoZSBQQVNJRCBvbiBtbQo+IGV4aXQgbWF5IGNhdXNlIGl0IHRvIGJlIHJlYWxsb2NhdGVkIHdo
-aWxlIGl0IGlzIHN0aWxsIHVzZWQgYnkgdGhlCj4gY29udGV4dCBkZXNjcmlwdG9yLgo+Cj4gVGhl
-cmUgaXMgYW5vdGhlciB1c2UtYWZ0ZXItZnJlZSwgcHJlc2VudCBzaW5jZSB0aGUgYmVnaW5uaW5n
-LCB3aGVyZSB3ZQo+IGNhbGwgYXJtNjRfbW1fY29udGV4dF9wdXQoKSB3aXRob3V0IGEgZ3VhcmFu
-dGVlIHRoYXQgbW1fY291bnQgaXMgaGVsZC4KPgo+IERhdmUgSGFuc2VuIHN1Z2dlc3RzIHRvIGdy
-YWIgbW1fdXNlcnMgd2hlbmV2ZXIgYmluZGluZyB0aGUgbW0gdG8gYQo+IGRldmljZSBhbmQgZHJv
-cCBpdCBvbiB1bmJpbmRpbmcuIFdpdGggdGhhdCB3ZSBjYW4gZml4IGJvdGggaXNzdWVzIGFuZAo+
-IHNpbXBsaWZ5IHRoZSBkcml2ZXIgYnkgcmVtb3ZpbmcgdGhlIHJlbGVhc2UoKSBub3RpZmllci4K
-Pgo+IEZpeGVzOiAzMjc4NGE5NTYyZmIgKCJpb21tdS9hcm0tc21tdS12MzogSW1wbGVtZW50IGlv
-bW11X3N2YV9iaW5kL3VuYmluZCgpIikKPiBSZXBvcnRlZC1ieTogWmhhbmdmZWkgR2FvIDx6aGFu
-Z2ZlaS5nYW9AZm94bWFpbC5jb20+Cj4gU3VnZ2VzdGVkLWJ5OiBEYXZlIEhhbnNlbiA8ZGF2ZS5o
-YW5zZW5AbGludXguaW50ZWwuY29tPgo+IFNpZ25lZC1vZmYtYnk6IEZlbmdodWEgWXUgPGZlbmdo
-dWEueXVAaW50ZWwuY29tPgo+IFNpZ25lZC1vZmYtYnk6IEplYW4tUGhpbGlwcGUgQnJ1Y2tlciA8
-amVhbi1waGlsaXBwZUBsaW5hcm8ub3JnPgo+IC0tLQo+ICAgZHJpdmVycy9pb21tdS9hcm0vYXJt
-LXNtbXUtdjMvYXJtLXNtbXUtdjMuaCAgIHwgIDEgLQo+ICAgLi4uL2lvbW11L2FybS9hcm0tc21t
-dS12My9hcm0tc21tdS12My1zdmEuYyAgIHwgNDkgKysrKystLS0tLS0tLS0tLS0tLQo+ICAgZHJp
-dmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYyAgIHwgMTQgKy0tLS0tCj4g
-ICAzIGZpbGVzIGNoYW5nZWQsIDE1IGluc2VydGlvbnMoKyksIDQ5IGRlbGV0aW9ucygtKQo+Cj4g
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmgg
-Yi9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5oCj4gaW5kZXggY2Q0
-ODU5MGFkYTMwLi5kNTBkMjE1ZDk0NmMgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9pb21tdS9hcm0v
-YXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuaAo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1z
-bW11LXYzL2FybS1zbW11LXYzLmgKPiBAQCAtNzM1LDcgKzczNSw2IEBAIHN0YXRpYyBpbmxpbmUg
-c3RydWN0IGFybV9zbW11X2RvbWFpbiAqdG9fc21tdV9kb21haW4oc3RydWN0IGlvbW11X2RvbWFp
-biAqZG9tKQo+ICAgCj4gICBleHRlcm4gc3RydWN0IHhhcnJheSBhcm1fc21tdV9hc2lkX3hhOwo+
-ICAgZXh0ZXJuIHN0cnVjdCBtdXRleCBhcm1fc21tdV9hc2lkX2xvY2s7Cj4gLWV4dGVybiBzdHJ1
-Y3QgYXJtX3NtbXVfY3R4X2Rlc2MgcXVpZXRfY2Q7Cj4gICAKPiAgIGludCBhcm1fc21tdV93cml0
-ZV9jdHhfZGVzYyhzdHJ1Y3QgYXJtX3NtbXVfZG9tYWluICpzbW11X2RvbWFpbiwgaW50IHNzaWQs
-Cj4gICAJCQkgICAgc3RydWN0IGFybV9zbW11X2N0eF9kZXNjICpjZCk7Cj4gZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLXN2YS5jIGIvZHJpdmVy
-cy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMtc3ZhLmMKPiBpbmRleCAyMmRkZDA1
-YmJkY2QuLmY5ZGZmMGY2Y2RkNCAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2lvbW11L2FybS9hcm0t
-c21tdS12My9hcm0tc21tdS12My1zdmEuYwo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1z
-bW11LXYzL2FybS1zbW11LXYzLXN2YS5jCj4gQEAgLTYsNiArNiw3IEBACj4gICAjaW5jbHVkZSA8
-bGludXgvbW0uaD4KPiAgICNpbmNsdWRlIDxsaW51eC9tbXVfY29udGV4dC5oPgo+ICAgI2luY2x1
-ZGUgPGxpbnV4L21tdV9ub3RpZmllci5oPgo+ICsjaW5jbHVkZSA8bGludXgvc2NoZWQvbW0uaD4K
-PiAgICNpbmNsdWRlIDxsaW51eC9zbGFiLmg+Cj4gICAKPiAgICNpbmNsdWRlICJhcm0tc21tdS12
-My5oIgo+IEBAIC0xNSw3ICsxNiw2IEBACj4gICBzdHJ1Y3QgYXJtX3NtbXVfbW11X25vdGlmaWVy
-IHsKPiAgIAlzdHJ1Y3QgbW11X25vdGlmaWVyCQltbjsKPiAgIAlzdHJ1Y3QgYXJtX3NtbXVfY3R4
-X2Rlc2MJKmNkOwo+IC0JYm9vbAkJCQljbGVhcmVkOwo+ICAgCXJlZmNvdW50X3QJCQlyZWZzOwo+
-ICAgCXN0cnVjdCBsaXN0X2hlYWQJCWxpc3Q7Cj4gICAJc3RydWN0IGFybV9zbW11X2RvbWFpbgkJ
-KmRvbWFpbjsKPiBAQCAtOTYsOSArOTYsMTQgQEAgc3RhdGljIHN0cnVjdCBhcm1fc21tdV9jdHhf
-ZGVzYyAqYXJtX3NtbXVfYWxsb2Nfc2hhcmVkX2NkKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQo+ICAg
-CXN0cnVjdCBhcm1fc21tdV9jdHhfZGVzYyAqY2Q7Cj4gICAJc3RydWN0IGFybV9zbW11X2N0eF9k
-ZXNjICpyZXQgPSBOVUxMOwo+ICAgCj4gKwkvKiBQcmV2ZW50IG1tIGV4aXQgYXMgbG9uZyBhcyBp
-dCBpcyB1c2VkIGJ5IHRoZSBjb250ZXh0IGRlc2NyaXB0b3IgKi8KPiArCW1tZ2V0KG1tKTsKPiAr
-Cj4gICAJYXNpZCA9IGFybTY0X21tX2NvbnRleHRfZ2V0KG1tKTsKPiAtCWlmICghYXNpZCkKPiAt
-CQlyZXR1cm4gRVJSX1BUUigtRVNSQ0gpOwo+ICsJaWYgKCFhc2lkKSB7Cj4gKwkJZXJyID0gLUVT
-UkNIOwo+ICsJCWdvdG8gb3V0X3B1dF9tbTsKPiArCX0KPiAgIAo+ICAgCWNkID0ga3phbGxvYyhz
-aXplb2YoKmNkKSwgR0ZQX0tFUk5FTCk7Cj4gICAJaWYgKCFjZCkgewo+IEBAIC0xNjUsNiArMTcw
-LDggQEAgc3RhdGljIHN0cnVjdCBhcm1fc21tdV9jdHhfZGVzYyAqYXJtX3NtbXVfYWxsb2Nfc2hh
-cmVkX2NkKHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQo+ICAgCWtmcmVlKGNkKTsKPiAgIG91dF9wdXRf
-Y29udGV4dDoKPiAgIAlhcm02NF9tbV9jb250ZXh0X3B1dChtbSk7Cj4gK291dF9wdXRfbW06Cj4g
-KwltbXB1dChtbSk7Cj4gICAJcmV0dXJuIGVyciA8IDAgPyBFUlJfUFRSKGVycikgOiByZXQ7Cj4g
-ICB9Cj4gICAKPiBAQCAtMTczLDYgKzE4MCw3IEBAIHN0YXRpYyB2b2lkIGFybV9zbW11X2ZyZWVf
-c2hhcmVkX2NkKHN0cnVjdCBhcm1fc21tdV9jdHhfZGVzYyAqY2QpCj4gICAJaWYgKGFybV9zbW11
-X2ZyZWVfYXNpZChjZCkpIHsKPiAgIAkJLyogVW5waW4gQVNJRCAqLwo+ICAgCQlhcm02NF9tbV9j
-b250ZXh0X3B1dChjZC0+bW0pOwo+ICsJCW1tcHV0KGNkLT5tbSk7Cj4gICAJCWtmcmVlKGNkKTsK
-PiAgIAl9Cj4gICB9Cj4gQEAgLTE5MSwzMCArMTk5LDYgQEAgc3RhdGljIHZvaWQgYXJtX3NtbXVf
-bW1faW52YWxpZGF0ZV9yYW5nZShzdHJ1Y3QgbW11X25vdGlmaWVyICptbiwKPiAgIAlhcm1fc21t
-dV9hdGNfaW52X2RvbWFpbihzbW11X2RvbWFpbiwgbW0tPnBhc2lkLCBzdGFydCwgc2l6ZSk7Cj4g
-ICB9Cj4gICAKPiAtc3RhdGljIHZvaWQgYXJtX3NtbXVfbW1fcmVsZWFzZShzdHJ1Y3QgbW11X25v
-dGlmaWVyICptbiwgc3RydWN0IG1tX3N0cnVjdCAqbW0pCj4gLXsKPiAtCXN0cnVjdCBhcm1fc21t
-dV9tbXVfbm90aWZpZXIgKnNtbXVfbW4gPSBtbl90b19zbW11KG1uKTsKPiAtCXN0cnVjdCBhcm1f
-c21tdV9kb21haW4gKnNtbXVfZG9tYWluID0gc21tdV9tbi0+ZG9tYWluOwo+IC0KPiAtCW11dGV4
-X2xvY2soJnN2YV9sb2NrKTsKPiAtCWlmIChzbW11X21uLT5jbGVhcmVkKSB7Cj4gLQkJbXV0ZXhf
-dW5sb2NrKCZzdmFfbG9jayk7Cj4gLQkJcmV0dXJuOwo+IC0JfQo+IC0KPiAtCS8qCj4gLQkgKiBE
-TUEgbWF5IHN0aWxsIGJlIHJ1bm5pbmcuIEtlZXAgdGhlIGNkIHZhbGlkIHRvIGF2b2lkIENfQkFE
-X0NEIGV2ZW50cywKPiAtCSAqIGJ1dCBkaXNhYmxlIHRyYW5zbGF0aW9uLgo+IC0JICovCj4gLQlh
-cm1fc21tdV93cml0ZV9jdHhfZGVzYyhzbW11X2RvbWFpbiwgbW0tPnBhc2lkLCAmcXVpZXRfY2Qp
-Owo+IC0KPiAtCWFybV9zbW11X3RsYl9pbnZfYXNpZChzbW11X2RvbWFpbi0+c21tdSwgc21tdV9t
-bi0+Y2QtPmFzaWQpOwo+IC0JYXJtX3NtbXVfYXRjX2ludl9kb21haW4oc21tdV9kb21haW4sIG1t
-LT5wYXNpZCwgMCwgMCk7Cj4gLQo+IC0Jc21tdV9tbi0+Y2xlYXJlZCA9IHRydWU7Cj4gLQltdXRl
-eF91bmxvY2soJnN2YV9sb2NrKTsKPiAtfQo+IC0KPiAgIHN0YXRpYyB2b2lkIGFybV9zbW11X21t
-dV9ub3RpZmllcl9mcmVlKHN0cnVjdCBtbXVfbm90aWZpZXIgKm1uKQo+ICAgewo+ICAgCWtmcmVl
-KG1uX3RvX3NtbXUobW4pKTsKPiBAQCAtMjIyLDcgKzIwNiw2IEBAIHN0YXRpYyB2b2lkIGFybV9z
-bW11X21tdV9ub3RpZmllcl9mcmVlKHN0cnVjdCBtbXVfbm90aWZpZXIgKm1uKQo+ICAgCj4gICBz
-dGF0aWMgY29uc3Qgc3RydWN0IG1tdV9ub3RpZmllcl9vcHMgYXJtX3NtbXVfbW11X25vdGlmaWVy
-X29wcyA9IHsKPiAgIAkuaW52YWxpZGF0ZV9yYW5nZQk9IGFybV9zbW11X21tX2ludmFsaWRhdGVf
-cmFuZ2UsCj4gLQkucmVsZWFzZQkJPSBhcm1fc21tdV9tbV9yZWxlYXNlLAo+ICAgCS5mcmVlX25v
-dGlmaWVyCQk9IGFybV9zbW11X21tdV9ub3RpZmllcl9mcmVlLAo+ICAgfTsKPiAgIAo+IEBAIC0y
-OTAsMTQgKzI3Myw4IEBAIHN0YXRpYyB2b2lkIGFybV9zbW11X21tdV9ub3RpZmllcl9wdXQoc3Ry
-dWN0IGFybV9zbW11X21tdV9ub3RpZmllciAqc21tdV9tbikKPiAgIAlsaXN0X2RlbCgmc21tdV9t
-bi0+bGlzdCk7Cj4gICAJYXJtX3NtbXVfd3JpdGVfY3R4X2Rlc2Moc21tdV9kb21haW4sIG1tLT5w
-YXNpZCwgTlVMTCk7Cj4gICAKPiAtCS8qCj4gLQkgKiBJZiB3ZSB3ZW50IHRocm91Z2ggY2xlYXIo
-KSwgd2UndmUgYWxyZWFkeSBpbnZhbGlkYXRlZCwgYW5kIG5vCj4gLQkgKiBuZXcgVExCIGVudHJ5
-IGNhbiBoYXZlIGJlZW4gZm9ybWVkLgo+IC0JICovCj4gLQlpZiAoIXNtbXVfbW4tPmNsZWFyZWQp
-IHsKPiAtCQlhcm1fc21tdV90bGJfaW52X2FzaWQoc21tdV9kb21haW4tPnNtbXUsIGNkLT5hc2lk
-KTsKPiAtCQlhcm1fc21tdV9hdGNfaW52X2RvbWFpbihzbW11X2RvbWFpbiwgbW0tPnBhc2lkLCAw
-LCAwKTsKPiAtCX0KPiArCWFybV9zbW11X3RsYl9pbnZfYXNpZChzbW11X2RvbWFpbi0+c21tdSwg
-Y2QtPmFzaWQpOwo+ICsJYXJtX3NtbXVfYXRjX2ludl9kb21haW4oc21tdV9kb21haW4sIG1tLT5w
-YXNpZCwgMCwgMCk7Cj4gICAKPiAgIAkvKiBGcmVlcyBzbW11X21uICovCj4gICAJbW11X25vdGlm
-aWVyX3B1dCgmc21tdV9tbi0+bW4pOwo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FybS9h
-cm0tc21tdS12My9hcm0tc21tdS12My5jIGIvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMv
-YXJtLXNtbXUtdjMuYwo+IGluZGV4IDYyN2EzZWQ1ZWU4Zi4uMjQ2NjcwMzE4ZWRhIDEwMDY0NAo+
-IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmMKPiArKysg
-Yi9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5jCj4gQEAgLTc2LDEy
-ICs3Niw2IEBAIHN0cnVjdCBhcm1fc21tdV9vcHRpb25fcHJvcCB7Cj4gICBERUZJTkVfWEFSUkFZ
-X0FMTE9DMShhcm1fc21tdV9hc2lkX3hhKTsKPiAgIERFRklORV9NVVRFWChhcm1fc21tdV9hc2lk
-X2xvY2spOwo+ICAgCj4gLS8qCj4gLSAqIFNwZWNpYWwgdmFsdWUgdXNlZCBieSBTVkEgd2hlbiBh
-IHByb2Nlc3MgZGllcywgdG8gcXVpZXNjZSBhIENEIHdpdGhvdXQKPiAtICogZGlzYWJsaW5nIGl0
-Lgo+IC0gKi8KPiAtc3RydWN0IGFybV9zbW11X2N0eF9kZXNjIHF1aWV0X2NkID0geyAwIH07Cj4g
-LQo+ICAgc3RhdGljIHN0cnVjdCBhcm1fc21tdV9vcHRpb25fcHJvcCBhcm1fc21tdV9vcHRpb25z
-W10gPSB7Cj4gICAJeyBBUk1fU01NVV9PUFRfU0tJUF9QUkVGRVRDSCwgImhpc2lsaWNvbixicm9r
-ZW4tcHJlZmV0Y2gtY21kIiB9LAo+ICAgCXsgQVJNX1NNTVVfT1BUX1BBR0UwX1JFR1NfT05MWSwg
-ImNhdml1bSxjbjk5MDAtYnJva2VuLXBhZ2UxLXJlZ3NwYWNlIn0sCj4gQEAgLTEwNDcsOSArMTA0
-MSw3IEBAIGludCBhcm1fc21tdV93cml0ZV9jdHhfZGVzYyhzdHJ1Y3QgYXJtX3NtbXVfZG9tYWlu
-ICpzbW11X2RvbWFpbiwgaW50IHNzaWQsCj4gICAJICogKDIpIEluc3RhbGwgYSBzZWNvbmRhcnkg
-Q0QsIGZvciBTSUQrU1NJRCB0cmFmZmljLgo+ICAgCSAqICgzKSBVcGRhdGUgQVNJRCBvZiBhIENE
-LiBBdG9taWNhbGx5IHdyaXRlIHRoZSBmaXJzdCA2NCBiaXRzIG9mIHRoZQo+ICAgCSAqICAgICBD
-RCwgdGhlbiBpbnZhbGlkYXRlIHRoZSBvbGQgZW50cnkgYW5kIG1hcHBpbmdzLgo+IC0JICogKDQp
-IFF1aWVzY2UgdGhlIGNvbnRleHQgd2l0aG91dCBjbGVhcmluZyB0aGUgdmFsaWQgYml0LiBEaXNh
-YmxlCj4gLQkgKiAgICAgdHJhbnNsYXRpb24sIGFuZCBpZ25vcmUgYW55IHRyYW5zbGF0aW9uIGZh
-dWx0Lgo+IC0JICogKDUpIFJlbW92ZSBhIHNlY29uZGFyeSBDRC4KPiArCSAqICg0KSBSZW1vdmUg
-YSBzZWNvbmRhcnkgQ0QuCj4gICAJICovCj4gICAJdTY0IHZhbDsKPiAgIAlib29sIGNkX2xpdmU7
-Cj4gQEAgLTEwNjUsMTAgKzEwNTcsOCBAQCBpbnQgYXJtX3NtbXVfd3JpdGVfY3R4X2Rlc2Moc3Ry
-dWN0IGFybV9zbW11X2RvbWFpbiAqc21tdV9kb21haW4sIGludCBzc2lkLAo+ICAgCXZhbCA9IGxl
-NjRfdG9fY3B1KGNkcHRyWzBdKTsKPiAgIAljZF9saXZlID0gISEodmFsICYgQ1RYREVTQ19DRF8w
-X1YpOwo+ICAgCj4gLQlpZiAoIWNkKSB7IC8qICg1KSAqLwo+ICsJaWYgKCFjZCkgeyAvKiAoNCkg
-Ki8KPiAgIAkJdmFsID0gMDsKPiAtCX0gZWxzZSBpZiAoY2QgPT0gJnF1aWV0X2NkKSB7IC8qICg0
-KSAqLwo+IC0JCXZhbCB8PSBDVFhERVNDX0NEXzBfVENSX0VQRDA7Cj4gICAJfSBlbHNlIGlmIChj
-ZF9saXZlKSB7IC8qICgzKSAqLwo+ICAgCQl2YWwgJj0gfkNUWERFU0NfQ0RfMF9BU0lEOwo+ICAg
-CQl2YWwgfD0gRklFTERfUFJFUChDVFhERVNDX0NEXzBfQVNJRCwgY2QtPmFzaWQpOwpUaGFua3Mg
-SmVhbgoKSGF2ZSB0ZXN0ZWQsIHN0aWxsIGdvdCBzb21lIGlzc3VlIHdpdGggb3VyIG9wZW5zc2wt
-ZW5naW5lLgoKMS4gSWYgb3BlbnNzbC1lbmdpbmUgZG9lcyBub3QgcmVnaXN0ZXIgcnNhLCBuZ2lu
-eCB3b3JrcyB3ZWxsLgoKMi4gSWYgb3BlbnNzbC1lbmdpbmUgcmVnaXN0ZXIgcnNhLCBuZ2lueCBh
-bHNvIHdvcmtzLCBidXQgaW9hc2lkIGlzIG5vdCAKZnJlZWQgd2hlbiBuZ2lueCBzdG9wLgoKSU1Q
-TEVNRU5UX0RZTkFNSUNfQklORF9GTihiaW5kX2ZuKQpiaW5kX2ZuCkVOR0lORV9zZXRfUlNBKGUs
-IHJzYV9tZXRob2RzKCkpCgpkZXN0cm95X2ZuCgpJZiBFTkdJTkVfc2V0X1JTQSBpcyBzZXQsIG5n
-aW54IHN0YXJ0IGFuZCBzdG9wIHdpbGwgTk9UIGNhbGwgZGVzdHJveV9mbi4KRXZlbiByc2FfbWV0
-aG9kcyBpcyBhbG1vc3QgbmV3IHZpYSBSU0FfbWV0aF9uZXcuCgpJbiA1LjE4LXJjeCwgdGhpcyBj
-YXVzZWQgaW9hc2lkwqAgbm90IGZyZWVkIGluIG5naW54IHN0YXJ0IGFuZCBzdG9wLgpJbiA1LjE3
-LCB0aG91Z2ggZGVzdHJveV9mbiBpcyBub3QgY2FsbGVkLCBidXQgaW9hc2lkIGlzIGZyZWVkIHdo
-ZW4gbmdpbnggCnN0b3AsIHNvIG5vdCBub3RpY2VkIHRoaXMgaXNzdWUgYmVmb3JlLgoKU3RpbGwg
-aW4gY2hlY2tpbmcgd2h5IEVOR0lORV9zZXRfUlNBIGJsb2NrcyBkZXN0cm95X2ZuLgoKVGhhbmtz
-CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBt
-YWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0
-cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Wed, Apr 20, 2022 at 05:48:31PM +0100, Shameer Kolothum wrote:
+> Parse through the IORT RMR nodes and populate the reserve region list
+> corresponding to a given IOMMU and device(optional). Also, go through
+> the ID mappings of the RMR node and retrieve all the SIDs associated
+> with it.
+> =
+
+> Also make sure we update generic_iommu_put_resv_regions() with
+> resv_region_free_fw_data() callback to free=A0up any RMR related
+> memory allocation.=A0
+> =
+
+> [Lorenzo: For ACPI IORT]
+> Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> Tested-by: Steven Price <steven.price@arm.com>
+> Tested-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> ---
+>  drivers/acpi/arm64/iort.c | 264 ++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/iommu.c     |  12 +-
+>  2 files changed, 272 insertions(+), 4 deletions(-)
+> =
+
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index cd5d1d7823cb..8b189e9eca95 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -788,6 +788,267 @@ void acpi_configure_pmsi_domain(struct device *dev)
+>  }
+>  =
+
+>  #ifdef CONFIG_IOMMU_API
+> +static void iort_rmr_free_fw_data(struct device *dev,
+> +				  struct iommu_resv_region *region)
+> +{
+> +	kfree(region->fw_data.rmr.sids);
+> +}
+> +
+> +static void iort_rmr_desc_check_overlap(struct acpi_iort_rmr_desc *desc,
+> +					u32 count)
+> +{
+> +	int i, j;
+> +
+> +	for (i =3D 0; i < count; i++) {
+> +		u64 end, start =3D desc[i].base_address, length =3D desc[i].length;
+> +
+> +		if (!length) {
+> +			pr_err(FW_BUG "RMR descriptor[0x%llx] with zero length, continue anyw=
+ay\n",
+> +			       start);
+> +			continue;
+> +		}
+> +
+> +		end =3D start + length - 1;
+> +
+> +		/* Check for address overlap */
+> +		for (j =3D i + 1; j < count; j++) {
+> +			u64 e_start =3D desc[j].base_address;
+> +			u64 e_end =3D e_start + desc[j].length - 1;
+> +
+> +			if (start <=3D e_end && end >=3D e_start)
+> +				pr_err(FW_BUG "RMR descriptor[0x%llx - 0x%llx] overlaps, continue an=
+yway\n",
+> +				       start, end);
+> +		}
+> +	}
+> +}
+> +
+> +/*
+> + * Please note, we will keep the already allocated RMR reserve
+> + * regions in case of a memory allocation failure.
+> + */
+> +static void iort_get_rmrs(struct acpi_iort_node *node,
+> +			  struct acpi_iort_node *smmu,
+> +			  u32 *sids, u32 num_sids,
+> +			  struct list_head *head)
+> +{
+> +	struct acpi_iort_rmr *rmr =3D (struct acpi_iort_rmr *)node->node_data;
+> +	struct acpi_iort_rmr_desc *rmr_desc;
+> +	int i;
+> +
+> +	rmr_desc =3D ACPI_ADD_PTR(struct acpi_iort_rmr_desc, node,
+> +				rmr->rmr_offset);
+> +
+> +	iort_rmr_desc_check_overlap(rmr_desc, rmr->rmr_count);
+> +
+> +	for (i =3D 0; i < rmr->rmr_count; i++, rmr_desc++) {
+> +		struct iommu_resv_region *region;
+> +		enum iommu_resv_type type;
+> +		u32  *sids_copy;
+> +		int prot =3D IOMMU_READ | IOMMU_WRITE;
+> +		u64 addr =3D rmr_desc->base_address, size =3D rmr_desc->length;
+> +
+> +		if (!IS_ALIGNED(addr, SZ_64K) || !IS_ALIGNED(size, SZ_64K)) {
+> +			/* PAGE align base addr and size */
+> +			addr &=3D PAGE_MASK;
+> +			size =3D PAGE_ALIGN(size + offset_in_page(rmr_desc->base_address));
+> +
+> +			pr_err(FW_BUG "RMR descriptor[0x%llx - 0x%llx] not aligned to 64K, co=
+ntinue with [0x%llx - 0x%llx]\n",
+> +			       rmr_desc->base_address,
+> +			       rmr_desc->base_address + rmr_desc->length - 1,
+> +			       addr, addr + size - 1);
+> +		}
+> +
+> +		if (rmr->flags & ACPI_IORT_RMR_REMAP_PERMITTED)
+> +			type =3D IOMMU_RESV_DIRECT_RELAXABLE;
+> +		else
+> +			type =3D IOMMU_RESV_DIRECT;
+> +
+> +		if (rmr->flags & ACPI_IORT_RMR_ACCESS_PRIVILEGE)
+> +			prot |=3D IOMMU_PRIV;
+> +
+> +		/* Attributes 0x00 - 0x03 represents device memory */
+> +		if (ACPI_IORT_RMR_ACCESS_ATTRIBUTES(rmr->flags) <=3D
+> +				ACPI_IORT_RMR_ATTR_DEVICE_GRE)
+> +			prot |=3D IOMMU_MMIO;
+> +		else if (ACPI_IORT_RMR_ACCESS_ATTRIBUTES(rmr->flags) =3D=3D
+> +				ACPI_IORT_RMR_ATTR_NORMAL_IWB_OWB)
+> +			prot |=3D IOMMU_CACHE;
+> +
+> +		/* Create a copy of SIDs array to associate with this resv region */
+> +		sids_copy =3D kmemdup(sids, num_sids * sizeof(*sids), GFP_KERNEL);
+> +		if (!sids_copy)
+> +			return;
+> +
+> +		region =3D iommu_alloc_resv_region(addr, size, prot, type);
+> +		if (!region) {
+> +			kfree(sids_copy);
+> +			return;
+> +		}
+> +
+> +		region->fw_data.rmr.sids =3D sids_copy;
+> +		region->fw_data.rmr.num_sids =3D num_sids;
+> +		region->resv_region_free_fw_data =3D iort_rmr_free_fw_data;
+> +		list_add_tail(&region->list, head);
+> +	}
+> +}
+> +
+> +static u32 *iort_rmr_alloc_sids(u32 *sids, u32 count, u32 id_start,
+> +				u32 new_count)
+> +{
+> +	u32 *new_sids;
+> +	u32 total_count =3D count + new_count;
+> +	int i;
+> +
+> +	new_sids =3D krealloc_array(sids, count + new_count,
+> +				  sizeof(*new_sids), GFP_KERNEL);
+> +	if (!new_sids)
+> +		return NULL;
+> +
+> +	for (i =3D count; i < total_count; i++)
+> +		new_sids[i] =3D id_start++;
+> +
+> +	return new_sids;
+> +}
+> +
+> +static bool iort_rmr_has_dev(struct device *dev, u32 id_start,
+> +			     u32 id_count)
+> +{
+> +	int i;
+> +	struct iommu_fwspec *fwspec =3D dev_iommu_fwspec_get(dev);
+> +
+> +	/*
+> +	 * Make sure the kernel has preserved the boot firmware PCIe
+> +	 * configuration. This is required to ensure that the RMR PCIe
+> +	 * StreamIDs are still valid (Refer: ARM DEN 0049E.d Section 3.1.1.5).
+> +	 */
+> +	if (dev_is_pci(dev)) {
+> +		struct pci_dev *pdev =3D to_pci_dev(dev);
+> +		struct pci_host_bridge *host =3D pci_find_host_bridge(pdev->bus);
+> +
+> +		if (!host->preserve_config)
+> +			return false;
+> +	}
+> +
+> +	for (i =3D 0; i < fwspec->num_ids; i++) {
+> +		if (fwspec->ids[i] >=3D id_start &&
+> +		    fwspec->ids[i] <=3D id_start + id_count)
+> +			return true;
+> +	}
+> +
+> +	return false;
+> +}
+> +
+> +static void iort_node_get_rmr_info(struct acpi_iort_node *node,
+> +				   struct acpi_iort_node *iommu,
+> +				   struct device *dev, struct list_head *head)
+> +{
+> +	struct acpi_iort_node *smmu =3D NULL;
+> +	struct acpi_iort_rmr *rmr;
+> +	struct acpi_iort_id_mapping *map;
+> +	u32 *sids =3D NULL;
+> +	u32 num_sids =3D 0;
+> +	int i;
+> +
+> +	if (!node->mapping_offset || !node->mapping_count) {
+> +		pr_err(FW_BUG "Invalid ID mapping, skipping RMR node %p\n",
+> +		       node);
+> +		return;
+> +	}
+> +
+> +	rmr =3D (struct acpi_iort_rmr *)node->node_data;
+> +	if (!rmr->rmr_offset || !rmr->rmr_count)
+> +		return;
+> +
+> +	map =3D ACPI_ADD_PTR(struct acpi_iort_id_mapping, node,
+> +			   node->mapping_offset);
+> +
+> +	/*
+> +	 * Go through the ID mappings and see if we have a match for SMMU
+> +	 * and dev(if !NULL). If found, get the sids for the Node.
+> +	 * Please note, id_count is equal to the number of IDs  in the
+> +	 * range minus one.
+> +	 */
+> +	for (i =3D 0; i < node->mapping_count; i++, map++) {
+> +		struct acpi_iort_node *parent;
+> +
+> +		if (!map->id_count)
+> +			continue;
+> +
+> +		parent =3D ACPI_ADD_PTR(struct acpi_iort_node, iort_table,
+> +				      map->output_reference);
+> +		if (parent !=3D iommu)
+> +			continue;
+> +
+> +		/* If dev is valid, check RMR node corresponds to the dev SID */
+> +		if (dev && !iort_rmr_has_dev(dev, map->output_base,
+> +					     map->id_count))
+> +			continue;
+> +
+> +		/* Retrieve SIDs associated with the Node. */
+> +		sids =3D iort_rmr_alloc_sids(sids, num_sids, map->output_base,
+> +					   map->id_count + 1);
+> +		if (!sids)
+> +			return;
+> +
+> +		num_sids +=3D map->id_count + 1;
+> +	}
+> +
+> +	if (!sids)
+> +		return;
+> +
+> +	iort_get_rmrs(node, smmu, sids, num_sids, head);
+> +	kfree(sids);
+> +}
+> +
+> +static void iort_find_rmrs(struct acpi_iort_node *iommu, struct device *=
+dev,
+> +			   struct list_head *head)
+> +{
+> +	struct acpi_table_iort *iort;
+> +	struct acpi_iort_node *iort_node, *iort_end;
+> +	int i;
+> +
+> +	/* Only supports ARM DEN 0049E.d onwards */
+> +	if (iort_table->revision < 5)
+> +		return;
+> +
+> +	iort =3D (struct acpi_table_iort *)iort_table;
+> +
+> +	iort_node =3D ACPI_ADD_PTR(struct acpi_iort_node, iort,
+> +				 iort->node_offset);
+> +	iort_end =3D ACPI_ADD_PTR(struct acpi_iort_node, iort,
+> +				iort_table->length);
+> +
+> +	for (i =3D 0; i < iort->node_count; i++) {
+> +		if (WARN_TAINT(iort_node >=3D iort_end, TAINT_FIRMWARE_WORKAROUND,
+> +			       "IORT node pointer overflows, bad table!\n"))
+> +			return;
+> +
+> +		if (iort_node->type =3D=3D ACPI_IORT_NODE_RMR)
+> +			iort_node_get_rmr_info(iort_node, iommu, dev, head);
+> +
+> +		iort_node =3D ACPI_ADD_PTR(struct acpi_iort_node, iort_node,
+> +					 iort_node->length);
+> +	}
+> +}
+> +
+> +/*
+> + * Populate the RMR list associated with a given IOMMU and dev(if provid=
+ed).
+> + * If dev is NULL, the function populates all the RMRs associated with t=
+he
+> + * given IOMMU.
+> + */
+> +static void iort_iommu_rmr_get_resv_regions(struct fwnode_handle *iommu_=
+fwnode,
+> +					    struct device *dev,
+> +					    struct list_head *head)
+> +{
+> +	struct acpi_iort_node *iommu;
+> +
+> +	iommu =3D iort_get_iort_node(iommu_fwnode);
+> +	if (!iommu)
+> +		return;
+> +
+> +	iort_find_rmrs(iommu, dev, head);
+> +}
+> +
+>  static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
+>  {
+>  	struct acpi_iort_node *iommu;
+> @@ -868,7 +1129,10 @@ static void iort_iommu_msi_get_resv_regions(struct =
+device *dev,
+>   */
+>  void iort_iommu_get_resv_regions(struct device *dev, struct list_head *h=
+ead)
+>  {
+> +	struct iommu_fwspec *fwspec =3D dev_iommu_fwspec_get(dev);
+> +
+>  	iort_iommu_msi_get_resv_regions(dev, head);
+> +	iort_iommu_rmr_get_resv_regions(fwspec->iommu_fwnode, dev, head);
+>  }
+>  =
+
+>  static inline bool iort_iommu_driver_enabled(u8 type)
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index f2c45b85b9fc..4431a7a5da0a 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2597,16 +2597,20 @@ void iommu_put_resv_regions(struct device *dev, s=
+truct list_head *list)
+>   * @list: reserved region list for device
+>   *
+>   * IOMMU drivers can use this to implement their .put_resv_regions() cal=
+lback
+> - * for simple reservations. Memory allocated for each reserved region wi=
+ll be
+> - * freed. If an IOMMU driver allocates additional resources per region, =
+it is
+> - * going to have to implement a custom callback.
+> + * for simple reservations. Memory allocated for each reserved region an=
+d any
+> + * associated firmware specific allocations will be freed. If an IOMMU d=
+river
+> + * allocates additional resources per region, it is going to have to
+> + * implement a custom callback.
+>   */
+>  void generic_iommu_put_resv_regions(struct device *dev, struct list_head=
+ *list)
+>  {
+>  	struct iommu_resv_region *entry, *next;
+>  =
+
+> -	list_for_each_entry_safe(entry, next, list, list)
+> +	list_for_each_entry_safe(entry, next, list, list) {
+> +		if (entry->resv_region_free_fw_data)
+> +			entry->resv_region_free_fw_data(dev, entry);
+>  		kfree(entry);
+
+I'd move the kfree to the free callback if present.  This would also
+allow to hide the union from the common code entirely and use a
+container structure like:
+
+struct iommu_iort_rmr_data {
+	struct iommu_resv_region rr;
+
+	/* Stream IDs associated with IORT RMR entry */
+	const u32 *sids;
+	u32 num_sids;
+};
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
