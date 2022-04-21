@@ -1,76 +1,77 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3774CC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9BDE1C433F5
 	for <iommu@archiver.kernel.org>; Thu, 21 Apr 2022 05:24:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A9CC641B74;
+	by smtp2.osuosl.org (Postfix) with ESMTP id 41334405BA;
+	Thu, 21 Apr 2022 05:24:18 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Df8d52Clpd9m; Thu, 21 Apr 2022 05:24:17 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 35ED940497;
 	Thu, 21 Apr 2022 05:24:17 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RfAVSI7KyJIJ; Thu, 21 Apr 2022 05:24:14 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id F3958418BF;
-	Thu, 21 Apr 2022 05:24:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C0E31C002F;
-	Thu, 21 Apr 2022 05:24:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1819FC002F;
+	Thu, 21 Apr 2022 05:24:17 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EFFF2C002C
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 05:24:12 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B2270C002C
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 05:24:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id C64A5418BF
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 05:24:12 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 9ACDD4199F
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 05:24:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Oeu_I7CbC9Uk for <iommu@lists.linux-foundation.org>;
- Thu, 21 Apr 2022 05:24:11 +0000 (UTC)
+ with ESMTP id Q-Qm0KdKru8T for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Apr 2022 05:24:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 8AA7A418C7
- for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 05:24:11 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id B64AD41998
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Apr 2022 05:24:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1650518651; x=1682054651;
+ t=1650518654; x=1682054654;
  h=from:to:cc:subject:date:message-id:in-reply-to:
  references:mime-version:content-transfer-encoding;
- bh=Gbv1wgTF7/2hKtiMqTsHMT10lwhRcYRQDOXzxFeuG/c=;
- b=H1tlAz5DXC9i/H8aLWjvQcUUXcdxuJN//KJ7wOGzWwOlfD+3mgOyoK7K
- BRe32iCnJpkRp3pcjUFTkZUsvQNPA2jAtLg/c7k26RDxq/7Qod77inFwr
- 4ofbUMLGzz7wn0dbGKIoo3Es+TQUJkW2X88ITGqoKC/svN2eNQib51hWr
- 2HIwOk6hpAe/idRmdRo+680cwd3c4Ds69e0hSGG3jWCUyhlezraTij1IL
- U2b5jsdx3pv8lT7jxLMrMmIgBzTPK58BGT7PnJwZex3r1SJltX4o4CNmX
- RZDvxxZW6hcT0gJMLTZ8RdZcs/N/zjwpZlb2q2GmRE2r3TdB5uyeVtjTv A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="244176661"
-X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; d="scan'208";a="244176661"
+ bh=BKIzNNGqmV4foEUQe34V+LL7z7rFtTEgFa1bQg+vi/E=;
+ b=kE+UpfgQ3kT+NUwpnYnHbMGF17PUrFhncHn7gTlUdECfzTNwPMIEhWS2
+ RuBpJY2bJdkRc3Ee+y7HVylzS5FZHMX7+wzdT2twxWIRaaKkQaysDWQOu
+ mNj9jI67yaLxUlyrOqyOdX0nq02fyyd+7yAoZO764Yi8qSFxsU9e1+qAD
+ jFFUNK77Ce5kIYTndrqtCDaYUD58U0u0ButUHgFoi+mWA3Xk4R1lCXsgF
+ CKgAygo8o9TUIpZ6AHV1oK7fiisKL8ruvLCXkWrN6DCqNccdK62DEyDnm
+ ZBiO3tPcXEYd0D3VrvtZxiTIxCjihZlvUuZXrQmVpsMV9Tx3MvVpEnNgq Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10323"; a="244176669"
+X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; d="scan'208";a="244176669"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 20 Apr 2022 22:24:11 -0700
+ 20 Apr 2022 22:24:14 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; d="scan'208";a="702944084"
+X-IronPort-AV: E=Sophos;i="5.90,277,1643702400"; d="scan'208";a="702944092"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
- by fmsmga001.fm.intel.com with ESMTP; 20 Apr 2022 22:24:07 -0700
+ by fmsmga001.fm.intel.com with ESMTP; 20 Apr 2022 22:24:11 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
  Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
  Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>
-Subject: [PATCH v4 01/12] dmaengine: idxd: Separate user and kernel pasid
- enabling
-Date: Thu, 21 Apr 2022 13:21:10 +0800
-Message-Id: <20220421052121.3464100-2-baolu.lu@linux.intel.com>
+Subject: [PATCH v4 02/12] iommu: Add pasid_bits field in struct dev_iommu
+Date: Thu, 21 Apr 2022 13:21:11 +0800
+Message-Id: <20220421052121.3464100-3-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220421052121.3464100-1-baolu.lu@linux.intel.com>
 References: <20220421052121.3464100-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-Cc: Dave Jiang <dave.jiang@intel.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,132 +89,67 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Dave Jiang <dave.jiang@intel.com>
+Use this field to save the pasid/ssid bits that a device is able to
+support with its IOMMU hardware. It is a generic attribute of a device
+and lifting it into the per-device dev_iommu struct makes it possible
+to allocate a PASID for device without calls into the IOMMU drivers.
+Any iommu driver which suports PASID related features should set this
+field before features are enabled on the devices.
 
-The idxd driver always gated the pasid enabling under a single knob and
-this assumption is incorrect. The pasid used for kernel operation can be
-independently toggled and has no dependency on the user pasid (and vice
-versa). Split the two so they are independent "enabled" flags.
+For initialization of this field in the VT-d driver, the
+info->pasid_supported is only set for PCI devices. So the status is
+that non-PCI SVA hasn't been supported yet. Setting this field only for
+PCI devices has no functional change.
 
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Link: https://lore.kernel.org/linux-iommu/20220315050713.2000518-10-jacob.jun.pan@linux.intel.com/
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/dma/idxd/idxd.h |  6 ++++++
- drivers/dma/idxd/cdev.c |  4 ++--
- drivers/dma/idxd/init.c | 30 ++++++++++++++++++------------
- 3 files changed, 26 insertions(+), 14 deletions(-)
+ include/linux/iommu.h                       | 1 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 ++
+ drivers/iommu/intel/iommu.c                 | 5 ++++-
+ 3 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/dma/idxd/idxd.h b/drivers/dma/idxd/idxd.h
-index da72eb15f610..ccbefd0be617 100644
---- a/drivers/dma/idxd/idxd.h
-+++ b/drivers/dma/idxd/idxd.h
-@@ -239,6 +239,7 @@ enum idxd_device_flag {
- 	IDXD_FLAG_CONFIGURABLE = 0,
- 	IDXD_FLAG_CMD_RUNNING,
- 	IDXD_FLAG_PASID_ENABLED,
-+	IDXD_FLAG_USER_PASID_ENABLED,
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 6ef2df258673..36f43af0af53 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -368,6 +368,7 @@ struct dev_iommu {
+ 	struct iommu_fwspec		*fwspec;
+ 	struct iommu_device		*iommu_dev;
+ 	void				*priv;
++	unsigned int			pasid_bits;
  };
  
- struct idxd_dma_dev {
-@@ -469,6 +470,11 @@ static inline bool device_pasid_enabled(struct idxd_device *idxd)
- 	return test_bit(IDXD_FLAG_PASID_ENABLED, &idxd->flags);
- }
+ int iommu_device_register(struct iommu_device *iommu,
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 627a3ed5ee8f..afc63fce6107 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2681,6 +2681,8 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
+ 	    smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
+ 		master->stall_enabled = true;
  
-+static inline bool device_user_pasid_enabled(struct idxd_device *idxd)
-+{
-+	return test_bit(IDXD_FLAG_USER_PASID_ENABLED, &idxd->flags);
-+}
++	dev->iommu->pasid_bits = master->ssid_bits;
 +
- static inline bool device_swq_supported(struct idxd_device *idxd)
- {
- 	return (support_enqcmd && device_pasid_enabled(idxd));
-diff --git a/drivers/dma/idxd/cdev.c b/drivers/dma/idxd/cdev.c
-index b9b2b4a4124e..7df996deffbe 100644
---- a/drivers/dma/idxd/cdev.c
-+++ b/drivers/dma/idxd/cdev.c
-@@ -99,7 +99,7 @@ static int idxd_cdev_open(struct inode *inode, struct file *filp)
- 	ctx->wq = wq;
- 	filp->private_data = ctx;
+ 	return &smmu->iommu;
  
--	if (device_pasid_enabled(idxd)) {
-+	if (device_user_pasid_enabled(idxd)) {
- 		sva = iommu_sva_bind_device(dev, current->mm, NULL);
- 		if (IS_ERR(sva)) {
- 			rc = PTR_ERR(sva);
-@@ -152,7 +152,7 @@ static int idxd_cdev_release(struct inode *node, struct file *filep)
- 	if (wq_shared(wq)) {
- 		idxd_device_drain_pasid(idxd, ctx->pasid);
- 	} else {
--		if (device_pasid_enabled(idxd)) {
-+		if (device_user_pasid_enabled(idxd)) {
- 			/* The wq disable in the disable pasid function will drain the wq */
- 			rc = idxd_wq_disable_pasid(wq);
- 			if (rc < 0)
-diff --git a/drivers/dma/idxd/init.c b/drivers/dma/idxd/init.c
-index 993a5dcca24f..e1b5d1e4a949 100644
---- a/drivers/dma/idxd/init.c
-+++ b/drivers/dma/idxd/init.c
-@@ -513,16 +513,19 @@ static int idxd_probe(struct idxd_device *idxd)
+ err_free_master:
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index df5c62ecf942..ffad7f8f2d73 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4593,8 +4593,11 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ 			if (pasid_supported(iommu)) {
+ 				int features = pci_pasid_features(pdev);
  
- 	if (IS_ENABLED(CONFIG_INTEL_IDXD_SVM) && sva) {
- 		rc = iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA);
--		if (rc == 0) {
--			rc = idxd_enable_system_pasid(idxd);
--			if (rc < 0) {
--				iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
--				dev_warn(dev, "Failed to enable PASID. No SVA support: %d\n", rc);
--			} else {
--				set_bit(IDXD_FLAG_PASID_ENABLED, &idxd->flags);
--			}
--		} else {
-+		if (rc) {
-+			/*
-+			 * Do not bail here since legacy DMA is still
-+			 * supported, both user and in-kernel DMA with
-+			 * PASID rely on SVA feature.
-+			 */
- 			dev_warn(dev, "Unable to turn on SVA feature.\n");
-+		} else {
-+			set_bit(IDXD_FLAG_USER_PASID_ENABLED, &idxd->flags);
-+			if (idxd_enable_system_pasid(idxd))
-+				dev_warn(dev, "No in-kernel DMA with PASID.\n");
-+			else
-+				set_bit(IDXD_FLAG_PASID_ENABLED, &idxd->flags);
- 		}
- 	} else if (!sva) {
- 		dev_warn(dev, "User forced SVA off via module param.\n");
-@@ -561,7 +564,8 @@ static int idxd_probe(struct idxd_device *idxd)
-  err:
- 	if (device_pasid_enabled(idxd))
- 		idxd_disable_system_pasid(idxd);
--	iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
-+	if (device_user_pasid_enabled(idxd) || device_pasid_enabled(idxd))
-+		iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
- 	return rc;
- }
+-				if (features >= 0)
++				if (features >= 0) {
+ 					info->pasid_supported = features | 1;
++					dev->iommu->pasid_bits =
++						fls(pci_max_pasids(pdev)) - 1;
++				}
+ 			}
  
-@@ -574,7 +578,8 @@ static void idxd_cleanup(struct idxd_device *idxd)
- 	idxd_cleanup_internals(idxd);
- 	if (device_pasid_enabled(idxd))
- 		idxd_disable_system_pasid(idxd);
--	iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
-+	if (device_user_pasid_enabled(idxd) || device_pasid_enabled(idxd))
-+		iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_SVA);
- }
- 
- static int idxd_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-@@ -691,7 +696,8 @@ static void idxd_remove(struct pci_dev *pdev)
- 	free_irq(irq_entry->vector, irq_entry);
- 	pci_free_irq_vectors(pdev);
- 	pci_iounmap(pdev, idxd->reg_base);
--	iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
-+	if (device_user_pasid_enabled(idxd) || device_pasid_enabled(idxd))
-+		iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
- 	pci_disable_device(pdev);
- 	destroy_workqueue(idxd->wq);
- 	perfmon_pmu_remove(idxd);
+ 			if (info->ats_supported && ecap_prs(iommu->ecap) &&
 -- 
 2.25.1
 
