@@ -1,74 +1,69 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DDD50C433FE
-	for <iommu@archiver.kernel.org>; Fri, 22 Apr 2022 10:55:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 828BEC433EF
+	for <iommu@archiver.kernel.org>; Fri, 22 Apr 2022 11:22:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 6532641A50;
-	Fri, 22 Apr 2022 10:55:52 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 2514860F71;
+	Fri, 22 Apr 2022 11:22:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MJgwIna8KQ9y; Fri, 22 Apr 2022 10:55:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id DC09D41A2C;
-	Fri, 22 Apr 2022 10:55:50 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id uBhWQYIqplVw; Fri, 22 Apr 2022 11:22:45 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 174D160DCB;
+	Fri, 22 Apr 2022 11:22:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A9AA0C0039;
-	Fri, 22 Apr 2022 10:55:50 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CD238C002D
- for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 10:55:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B27F0C0032;
+	Fri, 22 Apr 2022 11:22:44 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 55BE9C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 11:22:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id B473D41A50
- for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 10:55:48 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2CD3041BD6
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 11:22:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IhXkmkRrXTtP for <iommu@lists.linux-foundation.org>;
- Fri, 22 Apr 2022 10:55:47 +0000 (UTC)
+ with ESMTP id WFJob0-f0p3L for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Apr 2022 11:22:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org
- [IPv6:2604:1380:4601:e00::1])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 6F95941A2C
- for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 10:55:47 +0000 (UTC)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id CD02241BAD
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 11:22:41 +0000 (UTC)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id 5AE1CB82C28;
- Fri, 22 Apr 2022 10:55:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F6CFC385A4;
- Fri, 22 Apr 2022 10:55:39 +0000 (UTC)
+ by ams.source.kernel.org (Postfix) with ESMTPS id 1862CB82C15;
+ Fri, 22 Apr 2022 11:22:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A31B1C385AA;
+ Fri, 22 Apr 2022 11:22:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1650624943;
- bh=+cKfxQ5Un069trX//5/HF8F2JDcrdgw8jHpxYnApt5g=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=Rm7Gq5OECvDvxwFdR7Xj8FjXlfDMY+5Eap+7ELRHNLNNM0V2gx6J8mIgeUyeRUBKF
- fSUqQOo+pWcBKISqrhoO8AkTvzpVynxmnve+BabpE20CoNhLVbYOdvbslVAD88N0bV
- e8AvYHfLwGG8FT6uVh1sh+XR2VApgPYU2sYLYPq7DZHF35+UxKz3bL/BuNpxPwP3oS
- Qqq/9sOp6BndsruFRqVN3PLts74vc0jR876+QwMk/gfLbl05TjX2heREryextp5AMj
- Gi6iHFIdtyzJomG5r1lV4ATpdixmakngvrpyiJYXk0DMQFbsDB+NVGFZz6VMFavWOg
- t41/kd86r+FYg==
+ s=k20201202; t=1650626558;
+ bh=tNf+5h5T3qHAOYjpS84V/nz/K0uUb9xr3AXDzXd1SVI=;
+ h=Date:From:To:Cc:Subject:From;
+ b=XTO1jMQX7j4vfTBeb9FIw1ko71H9TOx62On1ZoFva/AXm+eOBvgynQS7HoqhxBhMI
+ t6snACFLEJ4J68S0O+R4TzdZyFKCowXAosmIxojZV8QOaS7BQrKH6C1kljEqJDJjzu
+ VzUDR+IiSRNIzE/I210JtwcxH/yQtJIpKDiSABL1Ab1Nh0T+RLv6xP94kUPZHZ3sOS
+ JGC0fjfVP3iDGZdug+hJv2Le69fo0yRqU6BAvyI0Q5YHCzueevqoabyLAnFycpxXr0
+ 4z64Z2/pKy674216U6ONMwWB+UJJa3PZKgQ537KLqqnRmRsTssfBdq2mfWDhXEGdw0
+ KTyrRFRxS0vlQ==
+Date: Fri, 22 Apr 2022 12:22:34 +0100
 From: Will Deacon <will@kernel.org>
-To: jonathanh@nvidia.com, linux-arm-kernel@lists.infradead.org,
- linux-tegra@vger.kernel.org, iommu@lists.linux-foundation.org,
- thierry.reding@gmail.com, vdumpa@nvidia.com,
- Ashish Mhetre <amhetre@nvidia.com>, joro@8bytes.org, robin.murphy@arm.com,
- linux-kernel@vger.kernel.org
-Subject: Re: [Patch v2] iommu: arm-smmu: disable large page mappings for
- Nvidia arm-smmu
-Date: Fri, 22 Apr 2022 11:55:35 +0100
-Message-Id: <165053012237.502660.4418683392126519698.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220421081504.24678-1-amhetre@nvidia.com>
-References: <20220421081504.24678-1-amhetre@nvidia.com>
+To: joro@8bytes.org
+Subject: [GIT PULL] iommu/arm-smmu: Fixes for 5.18
+Message-ID: <20220422112233.GB9901@willie-the-truck>
 MIME-Version: 1.0
-Cc: Will Deacon <will@kernel.org>, catalin.marinas@arm.com,
- Pritesh Raithatha <praithatha@nvidia.com>, Snikam@nvidia.com,
- kernel-team@android.com
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: kernel-team@android.com, iommu@lists.linux-foundation.org,
+ robin.murphy@arm.com, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,32 +81,46 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 21 Apr 2022 13:45:04 +0530, Ashish Mhetre wrote:
-> Tegra194 and Tegra234 SoCs have the erratum that causes walk cache
-> entries to not be invalidated correctly. The problem is that the walk
-> cache index generated for IOVA is not same across translation and
-> invalidation requests. This is leading to page faults when PMD entry is
-> released during unmap and populated with new PTE table during subsequent
-> map request. Disabling large page mappings avoids the release of PMD
-> entry and avoid translations seeing stale PMD entry in walk cache.
-> Fix this by limiting the page mappings to PAGE_SIZE for Tegra194 and
-> Tegra234 devices. This is recommended fix from Tegra hardware design
-> team.
-> 
-> [...]
+Hi Joerg,
 
-Applied to will (for-joerg/arm-smmu/fixes), thanks!
-
-[1/1] iommu: arm-smmu: disable large page mappings for Nvidia arm-smmu
-      https://git.kernel.org/will/c/4a25f2ea0e03
+Unusually, we've got some SMMU driver fixes this time around. Summary in
+the tag -- please can you pull these for 5.18?
 
 Cheers,
--- 
+
 Will
 
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
+--->8
+
+The following changes since commit 3123109284176b1532874591f7c81f3837bbdc17:
+
+  Linux 5.18-rc1 (2022-04-03 14:08:21 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git tags/arm-smmu-fixes
+
+for you to fetch changes up to 4a25f2ea0e030b2fc852c4059a50181bfc5b2f57:
+
+  iommu: arm-smmu: disable large page mappings for Nvidia arm-smmu (2022-04-22 11:21:30 +0100)
+
+----------------------------------------------------------------
+Arm SMMU fixes for 5.18
+
+- Fix off-by-one in SMMUv3 SVA TLB invalidation
+
+- Disable large mappings to workaround nvidia erratum
+
+----------------------------------------------------------------
+Ashish Mhetre (1):
+      iommu: arm-smmu: disable large page mappings for Nvidia arm-smmu
+
+Nicolin Chen (1):
+      iommu/arm-smmu-v3: Fix size calculation in arm_smmu_mm_invalidate_range()
+
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c |  9 +++++++-
+ drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c    | 30 +++++++++++++++++++++++++
+ 2 files changed, 38 insertions(+), 1 deletion(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
