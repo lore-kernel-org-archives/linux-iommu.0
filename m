@@ -1,57 +1,57 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 445EFC433FE
-	for <iommu@archiver.kernel.org>; Fri, 22 Apr 2022 16:29:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9B857C433EF
+	for <iommu@archiver.kernel.org>; Fri, 22 Apr 2022 16:29:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id EA6C740AD6;
-	Fri, 22 Apr 2022 16:29:46 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 442EE610DC;
+	Fri, 22 Apr 2022 16:29:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PnQreOsv0N8c; Fri, 22 Apr 2022 16:29:46 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id CD6F740AD8;
-	Fri, 22 Apr 2022 16:29:45 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZaIQHagQADEu; Fri, 22 Apr 2022 16:29:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 0587B60A97;
+	Fri, 22 Apr 2022 16:29:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A2C4DC0039;
-	Fri, 22 Apr 2022 16:29:45 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3B57CC002D
- for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 16:29:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D303DC0039;
+	Fri, 22 Apr 2022 16:29:53 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D1C6DC002D
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 16:29:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 2973B4036A
- for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 16:29:44 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id C009760BA6
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 16:29:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gmzw4FjBn-2X for <iommu@lists.linux-foundation.org>;
- Fri, 22 Apr 2022 16:29:43 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id oSxes1Adt4QH for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Apr 2022 16:29:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
  [185.176.79.56])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 4B03A408DC
- for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 16:29:43 +0000 (UTC)
-Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.207])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KlKYl3pGzz6892X;
- Sat, 23 Apr 2022 00:27:07 +0800 (CST)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id D9E1360A97
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 16:29:51 +0000 (UTC)
+Received: from fraeml734-chm.china.huawei.com (unknown [172.18.147.206])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KlKXT52RPz6H6gm;
+ Sat, 23 Apr 2022 00:26:01 +0800 (CST)
 Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
+ fraeml734-chm.china.huawei.com (10.206.15.215) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 22 Apr 2022 18:29:40 +0200
+ 15.1.2375.24; Fri, 22 Apr 2022 18:29:49 +0200
 Received: from A2006125610.china.huawei.com (10.202.227.178) by
  lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 22 Apr 2022 17:29:32 +0100
+ 15.1.2375.24; Fri, 22 Apr 2022 17:29:41 +0100
 To: <linux-arm-kernel@lists.infradead.org>, <linux-acpi@vger.kernel.org>,
  <iommu@lists.linux-foundation.org>
-Subject: [PATCH v11 1/9] iommu: Introduce a callback to struct
- iommu_resv_region
-Date: Fri, 22 Apr 2022 17:28:59 +0100
-Message-ID: <20220422162907.1276-2-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v11 2/9] ACPI/IORT: Make iort_iommu_msi_get_resv_regions()
+ return void
+Date: Fri, 22 Apr 2022 17:29:00 +0100
+Message-ID: <20220422162907.1276-3-shameerali.kolothum.thodi@huawei.com>
 X-Mailer: git-send-email 2.12.0.windows.1
 In-Reply-To: <20220422162907.1276-1-shameerali.kolothum.thodi@huawei.com>
 References: <20220422162907.1276-1-shameerali.kolothum.thodi@huawei.com>
@@ -77,53 +77,120 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
 From: Shameer Kolothum via iommu <iommu@lists.linux-foundation.org>
 Reply-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-QSBjYWxsYmFjayBpcyBpbnRyb2R1Y2VkIHRvIHN0cnVjdCBpb21tdV9yZXN2X3JlZ2lvbiB0byBm
-cmVlIG1lbW9yeQphbGxvY2F0aW9ucyBhc3NvY2lhdGVkwqB3aXRoIHRoZcKgcmVzZXJ2ZWQgcmVn
-aW9uLiBUaGlzIHdpbGwgYmUgdXNlZnVsCndoZW4gd2UgaW50cm9kdWNlIHN1cHBvcnQgZm9yIElP
-UlQgUk1SIGJhc2VkIHJlc2VydmVkIHJlZ2lvbnMuCgpTaWduZWQtb2ZmLWJ5OiBTaGFtZWVyIEtv
-bG90aHVtIDxzaGFtZWVyYWxpLmtvbG90aHVtLnRob2RpQGh1YXdlaS5jb20+Ci0tLQogZHJpdmVy
-cy9pb21tdS9pb21tdS5jIHwgMTYgKysrKysrKysrKystLS0tLQogaW5jbHVkZS9saW51eC9pb21t
-dS5oIHwgIDIgKysKIDIgZmlsZXMgY2hhbmdlZCwgMTMgaW5zZXJ0aW9ucygrKSwgNSBkZWxldGlv
-bnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2lvbW11LmMgYi9kcml2ZXJzL2lvbW11
-L2lvbW11LmMKaW5kZXggZjJjNDViODViOWZjLi5mZmNmYTY4NGU4MGMgMTAwNjQ0Ci0tLSBhL2Ry
-aXZlcnMvaW9tbXUvaW9tbXUuYworKysgYi9kcml2ZXJzL2lvbW11L2lvbW11LmMKQEAgLTI1OTcs
-MTYgKzI1OTcsMjIgQEAgdm9pZCBpb21tdV9wdXRfcmVzdl9yZWdpb25zKHN0cnVjdCBkZXZpY2Ug
-KmRldiwgc3RydWN0IGxpc3RfaGVhZCAqbGlzdCkKICAqIEBsaXN0OiByZXNlcnZlZCByZWdpb24g
-bGlzdCBmb3IgZGV2aWNlCiAgKgogICogSU9NTVUgZHJpdmVycyBjYW4gdXNlIHRoaXMgdG8gaW1w
-bGVtZW50IHRoZWlyIC5wdXRfcmVzdl9yZWdpb25zKCkgY2FsbGJhY2sKLSAqIGZvciBzaW1wbGUg
-cmVzZXJ2YXRpb25zLiBNZW1vcnkgYWxsb2NhdGVkIGZvciBlYWNoIHJlc2VydmVkIHJlZ2lvbiB3
-aWxsIGJlCi0gKiBmcmVlZC4gSWYgYW4gSU9NTVUgZHJpdmVyIGFsbG9jYXRlcyBhZGRpdGlvbmFs
-IHJlc291cmNlcyBwZXIgcmVnaW9uLCBpdCBpcwotICogZ29pbmcgdG8gaGF2ZSB0byBpbXBsZW1l
-bnQgYSBjdXN0b20gY2FsbGJhY2suCisgKiBmb3Igc2ltcGxlIHJlc2VydmF0aW9ucy4gSWYgYSBw
-ZXIgcmVnaW9uIGNhbGxiYWNrIGlzIHByb3ZpZGVkIHRoYXQgd2lsbCBiZQorICogdXNlZCB0byBm
-cmVlIGFsbCBtZW1vcnkgYWxsb2NhdGlvbnMgYXNzb2NpYXRlZCB3aXRoIHRoZSByZXNlcnZlZCBy
-ZWdpb24gb3IKKyAqIGVsc2UganVzdCBmcmVlIHVwIHRoZSBtZW1vcnkgZm9yIHRoZSByZWdpb25z
-LiBJZiBhbiBJT01NVSBkcml2ZXIgYWxsb2NhdGVzCisgKiBhZGRpdGlvbmFsIHJlc291cmNlcyBw
-ZXIgcmVnaW9uLCBpdCBpcyBnb2luZyB0byBoYXZlIHRvIGltcGxlbWVudCBhIGN1c3RvbQorICog
-Y2FsbGJhY2suCiAgKi8KIHZvaWQgZ2VuZXJpY19pb21tdV9wdXRfcmVzdl9yZWdpb25zKHN0cnVj
-dCBkZXZpY2UgKmRldiwgc3RydWN0IGxpc3RfaGVhZCAqbGlzdCkKIHsKIAlzdHJ1Y3QgaW9tbXVf
-cmVzdl9yZWdpb24gKmVudHJ5LCAqbmV4dDsKIAotCWxpc3RfZm9yX2VhY2hfZW50cnlfc2FmZShl
-bnRyeSwgbmV4dCwgbGlzdCwgbGlzdCkKLQkJa2ZyZWUoZW50cnkpOworCWxpc3RfZm9yX2VhY2hf
-ZW50cnlfc2FmZShlbnRyeSwgbmV4dCwgbGlzdCwgbGlzdCkgeworCQlpZiAoZW50cnktPmZyZWUp
-CisJCQllbnRyeS0+ZnJlZShkZXYsIGVudHJ5KTsKKwkJZWxzZQorCQkJa2ZyZWUoZW50cnkpOwor
-CX0KIH0KIEVYUE9SVF9TWU1CT0woZ2VuZXJpY19pb21tdV9wdXRfcmVzdl9yZWdpb25zKTsKIApk
-aWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9pb21tdS5oIGIvaW5jbHVkZS9saW51eC9pb21tdS5o
-CmluZGV4IDkyMDhlY2E0YjBkMS4uNjhiY2ZiM2EwNmQ3IDEwMDY0NAotLS0gYS9pbmNsdWRlL2xp
-bnV4L2lvbW11LmgKKysrIGIvaW5jbHVkZS9saW51eC9pb21tdS5oCkBAIC0xMzQsNiArMTM0LDcg
-QEAgZW51bSBpb21tdV9yZXN2X3R5cGUgewogICogQGxlbmd0aDogTGVuZ3RoIG9mIHRoZSByZWdp
-b24gaW4gYnl0ZXMKICAqIEBwcm90OiBJT01NVSBQcm90ZWN0aW9uIGZsYWdzIChSRUFEL1dSSVRF
-Ly4uLikKICAqIEB0eXBlOiBUeXBlIG9mIHRoZSByZXNlcnZlZCByZWdpb24KKyAqIEBmcmVlOiBD
-YWxsYmFjayB0byBmcmVlIGFzc29jaWF0ZWQgbWVtb3J5IGFsbG9jYXRpb25zCiAgKi8KIHN0cnVj
-dCBpb21tdV9yZXN2X3JlZ2lvbiB7CiAJc3RydWN0IGxpc3RfaGVhZAlsaXN0OwpAQCAtMTQxLDYg
-KzE0Miw3IEBAIHN0cnVjdCBpb21tdV9yZXN2X3JlZ2lvbiB7CiAJc2l6ZV90CQkJbGVuZ3RoOwog
-CWludAkJCXByb3Q7CiAJZW51bSBpb21tdV9yZXN2X3R5cGUJdHlwZTsKKwl2b2lkICgqZnJlZSko
-c3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgaW9tbXVfcmVzdl9yZWdpb24gKnJlZ2lvbik7CiB9
-OwogCiAvKioKLS0gCjIuMTcuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
-b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2lvbW11
+At present iort_iommu_msi_get_resv_regions() returns the number of
+MSI reserved regions on success and there are no users for this.
+The reserved region list will get populated anyway for platforms
+that require the HW MSI region reservation. Hence, change the
+function to return void instead.
+
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+---
+ drivers/acpi/arm64/iort.c | 25 +++++++++----------------
+ include/linux/acpi_iort.h |  6 +++---
+ 2 files changed, 12 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index f2f8f05662de..213f61cae176 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -811,22 +811,19 @@ static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
+  * @dev: Device from iommu_get_resv_regions()
+  * @head: Reserved region list from iommu_get_resv_regions()
+  *
+- * Returns: Number of msi reserved regions on success (0 if platform
+- *          doesn't require the reservation or no associated msi regions),
+- *          appropriate error value otherwise. The ITS interrupt translation
+- *          spaces (ITS_base + SZ_64K, SZ_64K) associated with the device
+- *          are the msi reserved regions.
++ * The ITS interrupt translation spaces (ITS_base + SZ_64K, SZ_64K)
++ * associated with the device are the HW MSI reserved regions.
+  */
+-int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
++void iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+ {
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct acpi_iort_its_group *its;
+ 	struct acpi_iort_node *iommu_node, *its_node = NULL;
+-	int i, resv = 0;
++	int i;
+ 
+ 	iommu_node = iort_get_msi_resv_iommu(dev);
+ 	if (!iommu_node)
+-		return 0;
++		return;
+ 
+ 	/*
+ 	 * Current logic to reserve ITS regions relies on HW topologies
+@@ -846,7 +843,7 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+ 	}
+ 
+ 	if (!its_node)
+-		return 0;
++		return;
+ 
+ 	/* Move to ITS specific data */
+ 	its = (struct acpi_iort_its_group *)its_node->node_data;
+@@ -860,14 +857,10 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+ 
+ 			region = iommu_alloc_resv_region(base + SZ_64K, SZ_64K,
+ 							 prot, IOMMU_RESV_MSI);
+-			if (region) {
++			if (region)
+ 				list_add_tail(&region->list, head);
+-				resv++;
+-			}
+ 		}
+ 	}
+-
+-	return (resv == its->its_count) ? resv : -ENODEV;
+ }
+ 
+ static inline bool iort_iommu_driver_enabled(u8 type)
+@@ -1034,8 +1027,8 @@ int iort_iommu_configure_id(struct device *dev, const u32 *id_in)
+ }
+ 
+ #else
+-int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+-{ return 0; }
++void iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
++{ }
+ int iort_iommu_configure_id(struct device *dev, const u32 *input_id)
+ { return -ENODEV; }
+ #endif
+diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+index f1f0842a2cb2..a8198b83753d 100644
+--- a/include/linux/acpi_iort.h
++++ b/include/linux/acpi_iort.h
+@@ -36,7 +36,7 @@ int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id);
+ /* IOMMU interface */
+ int iort_dma_get_ranges(struct device *dev, u64 *size);
+ int iort_iommu_configure_id(struct device *dev, const u32 *id_in);
+-int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
++void iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
+ phys_addr_t acpi_iort_dma_get_max_cpu_address(void);
+ #else
+ static inline void acpi_iort_init(void) { }
+@@ -52,8 +52,8 @@ static inline int iort_dma_get_ranges(struct device *dev, u64 *size)
+ static inline int iort_iommu_configure_id(struct device *dev, const u32 *id_in)
+ { return -ENODEV; }
+ static inline
+-int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+-{ return 0; }
++void iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
++{ }
+ 
+ static inline phys_addr_t acpi_iort_dma_get_max_cpu_address(void)
+ { return PHYS_ADDR_MAX; }
+-- 
+2.17.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
