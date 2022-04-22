@@ -4,76 +4,76 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 37EBBC433F5
-	for <iommu@archiver.kernel.org>; Fri, 22 Apr 2022 13:04:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 64A65C433FE
+	for <iommu@archiver.kernel.org>; Fri, 22 Apr 2022 13:13:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id D5833818C0;
-	Fri, 22 Apr 2022 13:04:19 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 064D183F4A;
+	Fri, 22 Apr 2022 13:13:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CcstVszkbwkO; Fri, 22 Apr 2022 13:04:19 +0000 (UTC)
+	with ESMTP id 3zIP3DRz-pvC; Fri, 22 Apr 2022 13:13:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 7713E8188A;
-	Fri, 22 Apr 2022 13:04:18 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 9ECD183F8F;
+	Fri, 22 Apr 2022 13:13:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4BDEDC0039;
-	Fri, 22 Apr 2022 13:04:18 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1DA6DC002D
- for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 13:04:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5D2E0C0032;
+	Fri, 22 Apr 2022 13:13:43 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 064FDC002D
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 13:13:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 03C4141BE3
- for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 13:04:17 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id E17B060F79
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 13:13:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UAtjl89LayVS for <iommu@lists.linux-foundation.org>;
- Fri, 22 Apr 2022 13:04:16 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id RHOp_6BxyCex for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Apr 2022 13:13:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 2757541BB2
- for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 13:04:15 +0000 (UTC)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id AA71060F64
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Apr 2022 13:13:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1650632656; x=1682168656;
+ t=1650633220; x=1682169220;
  h=message-id:date:mime-version:cc:subject:to:references:
  from:in-reply-to:content-transfer-encoding;
- bh=uZG28orVAPmM/zfkdj07fKo/DkgWIcqu1t8OhIjSFOI=;
- b=j9PVWMpWiyBFFfOOBmYovk70I6sl4ILAoiNue8jRO2Z7XYy2IefOH1z4
- 5yzth0YlaUUgMydpJj/5kKe0sR4nCjDZAWZ8ZDmPrVAg8DEiPIca6aGOP
- 2E+WpnUy8WLxNU2DsgU0mTEt8RCE1Le46R+ebjzZlmcrznIq/KgIfmeC3
- HVQE4h1gtoE4SPOwbvDGwK2jkvPIfnk1FsjUFQEkb/rD13WKu886/pKTW
- lc9LhSQxPV9Alsif8ANBom9on6j4kSVSaMY5FO6Cz6h+JF07ebi+fcdDA
- 2WDFPYYxJ3Y9bv377CIUcwPU8hdND9Bj5Vjorb581z/AwKG8/mAZ0gnxo g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="327584879"
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; d="scan'208";a="327584879"
+ bh=tC39CcHCCAkxRGoLupvWWCwop7YOMFc9XUJ+TwGQPfg=;
+ b=DRS8dm3s5lCUGTfjsvIVHN0LLnFrFrDnWhnO5RJFDhl9ZFa0i6elxZGv
+ Dsw1XyykM49RhKv30EZ9G+N2cq90Y9EFU3xZBjvCnftN6vK+T+49sVQCD
+ i3p773RGIlRKQdOgVU0cojh/BtCIFCij/rKLSg+67+uE/Ds9oOU9FoIJ0
+ 6iEraarXqoTgNnPUlMHxMh8NXHqf2GBbR1JMWHRUgkrCROoaEER7wXnrR
+ LZ4+eYMMZ/VrVsN5zBaBYlrJLhZCPosm/iif4SxNHhhqLug0aBybbQpri
+ tMS/EjDyZuIGPB+aG3NHV6IeKOF+rxjE4GGApRSyV/eXaZlkqynSlguup g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10324"; a="244599765"
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; d="scan'208";a="244599765"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Apr 2022 06:04:15 -0700
-X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; d="scan'208";a="556366441"
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 22 Apr 2022 06:13:40 -0700
+X-IronPort-AV: E=Sophos;i="5.90,281,1643702400"; d="scan'208";a="556374272"
 Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.215.236])
  ([10.254.215.236])
  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Apr 2022 06:04:13 -0700
-Message-ID: <503795b0-282c-2a8a-b669-5e7a0fc4a696@linux.intel.com>
-Date: Fri, 22 Apr 2022 21:04:11 +0800
+ 22 Apr 2022 06:13:37 -0700
+Message-ID: <8440e43b-aa1f-2648-6b64-afc34aa97bc2@linux.intel.com>
+Date: Fri, 22 Apr 2022 21:13:35 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH v2 1/4] iommu/vt-d: Check before setting PGSNP bit in
- pasid table entry
+Subject: Re: [PATCH v2 2/4] iommu/vt-d: Set PGSNP bit in pasid table entry for
+ SVA binding
 Content-Language: en-US
 To: "Tian, Kevin" <kevin.tian@intel.com>,
  "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "Raj, Ashok"
  <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>
 References: <20220421113558.3504874-1-baolu.lu@linux.intel.com>
- <20220421113558.3504874-2-baolu.lu@linux.intel.com>
- <BN9PR11MB52767A16DC6BB80838C876068CF79@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220421113558.3504874-3-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276EDDABE40B6A6A67A0F4E8CF79@BN9PR11MB5276.namprd11.prod.outlook.com>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52767A16DC6BB80838C876068CF79@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB5276EDDABE40B6A6A67A0F4E8CF79@BN9PR11MB5276.namprd11.prod.outlook.com>
 Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -93,67 +93,72 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/4/22 10:47, Tian, Kevin wrote:
->> From: Lu Baolu
+On 2022/4/22 11:05, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
 >> Sent: Thursday, April 21, 2022 7:36 PM
 >>
->> The latest VT-d specification states that the PGSNP field in the pasid
->> table entry should be treated as Reserved(0) for implementations not
->> supporting Snoop Control (SC=0 in the Extended Capability Register).
->> This adds a check before setting the field.
->>
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->> ---
->>   drivers/iommu/intel/pasid.c | 13 ++++++++++---
->>   1 file changed, 10 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
->> index f8d215d85695..5cb2daa2b8cb 100644
->> --- a/drivers/iommu/intel/pasid.c
->> +++ b/drivers/iommu/intel/pasid.c
->> @@ -625,8 +625,14 @@ int intel_pasid_setup_first_level(struct intel_iommu
->> *iommu,
->>   		}
->>   	}
->>
->> -	if (flags & PASID_FLAG_PAGE_SNOOP)
->> -		pasid_set_pgsnp(pte);
->> +	if (flags & PASID_FLAG_PAGE_SNOOP) {
->> +		if (ecap_sc_support(iommu->ecap)) {
->> +			pasid_set_pgsnp(pte);
->> +		} else {
->> +			pasid_clear_entry(pte);
->> +			return -EINVAL;
->> +		}
->> +	}
->>
->>   	pasid_set_domain_id(pte, did);
->>   	pasid_set_address_width(pte, iommu->agaw);
->> @@ -710,7 +716,8 @@ int intel_pasid_setup_second_level(struct
->> intel_iommu *iommu,
->>   	pasid_set_fault_enable(pte);
->>   	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
->>
->> -	if (domain->domain.type == IOMMU_DOMAIN_UNMANAGED)
->> +	if (ecap_sc_support(iommu->ecap) &&
->> +	    domain->domain.type == IOMMU_DOMAIN_UNMANAGED)
->>   		pasid_set_pgsnp(pte);
->>
-> This should be rebased on top of Jason's enforce coherency series
-> instead of blindly setting it. No matter whether it's legacy mode
-> where we set SNP in PTE or scalable mode where we set PGSNP
-> in PASID entry for entire page table, the trigger point should be
-> same i.e. when someone calls enforce_cache_coherency().
+>> This field make the requests snoop processor caches irrespective of
+>> other attributes in the request or other fields in paging structure
+>> entries used to translate the request.
+> 
+> I think you want to first point out the fact that SVA wants snoop
+> cache instead of just talking about the effect of PGSNP.
+> 
+> But thinking more I wonder why PGSNP is ever required. This is
+> similar to DMA API case. x86 is already cache coherent for normal
+> DMA (if not setting PCI no-snoop) and if the driver knows no-snoop
+> is incompatible to SVA API then it should avoid triggering no-snoop
+> traffic for SVA usage. In this case it is pointless for IOMMU driver
+> to enable force-snooping. Even in the future certain platform allows
+> no-snoop usage w/ SVA (I'm not sure how it works) this again should
+> be reflected by additional SVA APIs for driver to explicitly manage.
+> 
+> force-snoop should be enabled only in device assignment case IMHO,
+> orthogonal to whether vSVA is actually used.
+> 
+> Did I misunderstand the motivation here?
 
-With Jason's enforce coherency series merged, we even don't need to set
-PGSNP bit of a pasid entry for second level translation. 2nd level
-always supports SNP in PTEs, so set PGSNP in pasid table entry is
-unnecessary.
+No, you didn't.
 
-Any thoughts?
+Let's talk with the arch guys for more details before move this patch
+ahead. Thanks for pointing this out.
 
 Best regards,
 baolu
+
+> 
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/svm.c | 9 ++++++---
+>>   1 file changed, 6 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+>> index 23a38763c1d1..c720d1be992d 100644
+>> --- a/drivers/iommu/intel/svm.c
+>> +++ b/drivers/iommu/intel/svm.c
+>> @@ -391,9 +391,12 @@ static struct iommu_sva
+>> *intel_svm_bind_mm(struct intel_iommu *iommu,
+>>   	}
+>>
+>>   	/* Setup the pasid table: */
+>> -	sflags = (flags & SVM_FLAG_SUPERVISOR_MODE) ?
+>> -			PASID_FLAG_SUPERVISOR_MODE : 0;
+>> -	sflags |= cpu_feature_enabled(X86_FEATURE_LA57) ?
+>> PASID_FLAG_FL5LP : 0;
+>> +	sflags = PASID_FLAG_PAGE_SNOOP;
+>> +	if (flags & SVM_FLAG_SUPERVISOR_MODE)
+>> +		sflags |= PASID_FLAG_SUPERVISOR_MODE;
+>> +	if (cpu_feature_enabled(X86_FEATURE_LA57))
+>> +		sflags |= PASID_FLAG_FL5LP;
+>> +
+>>   	spin_lock_irqsave(&iommu->lock, iflags);
+>>   	ret = intel_pasid_setup_first_level(iommu, dev, mm->pgd, mm-
+>>> pasid,
+>>   					    FLPT_DEFAULT_DID, sflags);
+>> --
+>> 2.25.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
