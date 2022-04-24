@@ -1,108 +1,107 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5EEDBC433F5
-	for <iommu@archiver.kernel.org>; Sun, 24 Apr 2022 09:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3E34AC433EF
+	for <iommu@archiver.kernel.org>; Sun, 24 Apr 2022 21:47:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id E534D4168F;
-	Sun, 24 Apr 2022 09:52:24 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id C9B1260ABD;
+	Sun, 24 Apr 2022 21:47:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IDSHFh_Z2zLc; Sun, 24 Apr 2022 09:52:23 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id DB8F841680;
-	Sun, 24 Apr 2022 09:52:22 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 0LIUQ-g3Iq0k; Sun, 24 Apr 2022 21:47:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 706EE60A94;
+	Sun, 24 Apr 2022 21:47:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B8EE4C0032;
-	Sun, 24 Apr 2022 09:52:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2D894C0032;
+	Sun, 24 Apr 2022 21:47:03 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A97B8C002D
- for <iommu@lists.linux-foundation.org>; Sun, 24 Apr 2022 09:52:21 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E1C48C002D
+ for <iommu@lists.linux-foundation.org>; Sun, 24 Apr 2022 21:47:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 8F39941688
- for <iommu@lists.linux-foundation.org>; Sun, 24 Apr 2022 09:52:21 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id C7D74408F7
+ for <iommu@lists.linux-foundation.org>; Sun, 24 Apr 2022 21:47:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zYOHc7ZGGd9m for <iommu@lists.linux-foundation.org>;
- Sun, 24 Apr 2022 09:52:20 +0000 (UTC)
+ with ESMTP id nrHUiPbm69ps for <iommu@lists.linux-foundation.org>;
+ Sun, 24 Apr 2022 21:47:00 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com
- [IPv6:2607:f8b0:4864:20::635])
- by smtp4.osuosl.org (Postfix) with ESMTPS id ED82A41680
- for <iommu@lists.linux-foundation.org>; Sun, 24 Apr 2022 09:52:19 +0000 (UTC)
-Received: by mail-pl1-x635.google.com with SMTP id c12so20640152plr.6
- for <iommu@lists.linux-foundation.org>; Sun, 24 Apr 2022 02:52:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-transfer-encoding:content-language;
- bh=StCrJTegHmOv0psmLd6dnd441ryrL2i9pR+a6rFpSy4=;
- b=FFCndrfL0JSmVQ5+PqXBaLSzweEk/+pPQvMIbHxQPlDbxZUxtxx3szRtJIqlCof8ks
- xmz1FU7crDpZyzb/64dkxb52Uan/VqpdnniL+FCGGf9lcsvfBqQSw4taTOmpKcGqdoux
- vu+59ASZ7Dh26ufDLr5hAXayZu/O8dEwJrw4tp/srXM1AM9VHNuAk3xiL4HhrZla5aR+
- VCTI+YkEAwi3CZJ/HDlGlN3vruSq1tXYWfNBfuYkX6VdUPjCBLYXhS+1ysGTSAs5meFq
- fCfqO/tfRNRcgQr1Dx4DjOmeLibOZrpsSE+i0aXHTBZTIE+uN+XbXLrLbPhkC2YAaobv
- vGSw==
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com
+ [IPv6:2a00:1450:4864:20::131])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 3A67F408F3
+ for <iommu@lists.linux-foundation.org>; Sun, 24 Apr 2022 21:47:00 +0000 (UTC)
+Received: by mail-lf1-x131.google.com with SMTP id p12so17582562lfs.5
+ for <iommu@lists.linux-foundation.org>; Sun, 24 Apr 2022 14:46:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=O4TlWAQTGna1HLPkbwNGfYip8R7dhlaXVZwPwiVBy7I=;
+ b=UlSSti4Gm4qX+QRhOj+j+pgM3p+/451e5FFrO24ItSZzGf09wrm+Q7aExA773zXOex
+ tJVHSLYUKeagNc5STZSmtACkjhwgUK2vd4Pkv5YtEsnPfyRDMnUDHOwx5eY6VfkwQ9Dj
+ aqDdPK3ys/rf3e7FbqpWvSrlBqB+2WfT+i3xAZ+LD3W1Ke2jDCWt185vFyVMtGDhbtsd
+ tEQsrEnUusJI1p1MW5sg/DFInDAPJXTeZNMK7RGEJA/8FPo8EcMlIzfR5i1YRz1MztDz
+ Xy1owQqn/r5E+JLMNOQo2DAChV9RWNo/H7Suagq+YDxfBRgbbVvt9wFkpRHOE070RDW0
+ URsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-transfer-encoding
- :content-language;
- bh=StCrJTegHmOv0psmLd6dnd441ryrL2i9pR+a6rFpSy4=;
- b=AdAmdMWYDwevl5veEGpDhrZGrS78v2DrUdmbsvTfb+VXCY/vwA33kswi7YiWs+t8NH
- 7TH3wP4f/iwDX5xQgjG52U1qR34yGoTHH6ECcWZt4d94BQZOndR+i7/yqxdPCR2gO4Q8
- OzMkM78J0Vks2NaK1AiR9QsJtr6+CUQK2h5bUfg8aow6Ri0hwJtTFJxDfctwz4QkpUEg
- HHWEYRa8Vp7pgSnkI8y6MdRUF6PaYWRVQ7W5GInprkfUOQaH/ww0N/PCrLYdrCcbqvHH
- oPHii7M+LSDUzyuSdKAkW/T22tP8fcX9jTomJJGBg3kFUROsI9Bd86XHUGbLYbJTi1b/
- WFFQ==
-X-Gm-Message-State: AOAM533zudcy7p+MnAfaJmBGpSyoZGilqjOX2z/KDV9ZdhAtMQ00iJhi
- PDrIj8oYtSiDHtBRJjujp3NlOA==
-X-Google-Smtp-Source: ABdhPJyq7jjqAyq3opQ4ZXTjyxmgbAJz1w1hJUxpSnHTQWENqHqGu/EUJ+di010rrVG3QS1tC5FZ2A==
-X-Received: by 2002:a17:902:b48d:b0:15c:df43:ac0d with SMTP id
- y13-20020a170902b48d00b0015cdf43ac0dmr7790030plr.118.1650793939000; 
- Sun, 24 Apr 2022 02:52:19 -0700 (PDT)
-Received: from [10.152.0.6] ([94.177.118.104])
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=O4TlWAQTGna1HLPkbwNGfYip8R7dhlaXVZwPwiVBy7I=;
+ b=JZxw2Hli6Il4KCnOxkHYTaSgOKXBKB9scqHj2cqMf+RFnjMs1rocIytOQZD9tmQFmr
+ xtsSEm2MewvojaQEhd0dk1ssCVwBOVHDBotEey2TZwOa7Gbqh/hq2+A/rvXt59EsL7AA
+ huVWK5YzrzTGEP5sxQ8w7tisdxhvYGz1UNFMOFFvTIrfoDjE/yklHB8RVstPHdZEbEsN
+ Og3PXQzCkqBXYBUokwkGaJAqcUs6U8bKZ6T9l/tuJkcfI6sGdyIRFFwlFPwKh8/toG+e
+ zIXUXQfEUzjTeNiqxZze6dqs05ieql0qHT4NYpky8m2X9nmOLv48VKTYNiEH5KZMmj0Q
+ BQlg==
+X-Gm-Message-State: AOAM531DdUR9IHaCN6rMUghQtndZs0JMIR545+Eg1E1OlLVAuc+C9pZk
+ xVNVpbFusxSh2DQJMvNO+no=
+X-Google-Smtp-Source: ABdhPJzXdDxrhX4Vc85ccNr29jeZJ973N9zfir+519pEyy1H/jYBWoVgnoUIbo6sVuzS8PxTClQuEQ==
+X-Received: by 2002:ac2:5581:0:b0:471:6c00:ba6e with SMTP id
+ v1-20020ac25581000000b004716c00ba6emr11353806lfg.482.1650836817827; 
+ Sun, 24 Apr 2022 14:46:57 -0700 (PDT)
+Received: from mobilestation ([95.79.183.147])
  by smtp.gmail.com with ESMTPSA id
- u12-20020a62d44c000000b0050d17e069f2sm4782141pfl.10.2022.04.24.02.52.08
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Sun, 24 Apr 2022 02:52:18 -0700 (PDT)
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-To: "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
-References: <tencent_B683AC1146DB6A6ABB4D73697C0D6A1D7608@qq.com>
- <YlWBkyGeb2ZOGLKl@fyu1.sc.intel.com>
- <tencent_A9458C6CEBAADD361DA765356477B00E920A@qq.com>
- <tencent_8B6D7835F62688B4CD069C0EFC41B308B407@qq.com>
- <YllADL6uMoLllzQo@fyu1.sc.intel.com> <YmA4pbgevqln/jSO@myrica>
- <tencent_76E043C4D1B6A21A5253579A61034107EB06@qq.com>
- <tencent_7477100F8A445C6CAFA8F13601A55134480A@qq.com>
- <YmJ/WA6KAQU/xJjA@myrica>
- <tencent_A4E83BA6071B2204B6F5D4E69A50D21C1A09@qq.com>
- <YmLOznyBF0f7COYT@myrica>
- <tencent_2922DAB6F3D5789A1CD3A21A843B4007ED09@qq.com>
- <CABQgh9GzuQqsuPVyur+QurN8p+1BciMfOw0TccwiZSvvtrcowg@mail.gmail.com>
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Message-ID: <7fd31518-83b8-5c0f-e817-49c3f77e91d8@linaro.org>
-Date: Sun, 24 Apr 2022 17:52:03 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ t27-20020a192d5b000000b00470880c1abcsm1150711lft.217.2022.04.24.14.46.56
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sun, 24 Apr 2022 14:46:57 -0700 (PDT)
+Date: Mon, 25 Apr 2022 00:46:54 +0300
+From: Serge Semin <fancer.lancer@gmail.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 03/25] dma-direct: take dma-ranges/offsets into account
+ in resource mapping
+Message-ID: <20220424214654.d53jbthts53g755p@mobilestation>
+References: <20220324014836.19149-4-Sergey.Semin@baikalelectronics.ru>
+ <0baff803-b0ea-529f-095a-897398b4f63f@arm.com>
+ <20220417224427.drwy3rchwplthelh@mobilestation>
+ <20220420071217.GA5152@lst.de>
+ <20220420083207.pd3hxbwezrm2ud6x@mobilestation>
+ <20220420084746.GA11606@lst.de>
+ <20220420085538.imgibqcyupvvjpaj@mobilestation>
+ <20220421144536.GA23289@lst.de>
+ <20220421173523.ig62jtvj7qbno6q7@mobilestation>
+ <f238af77-be5e-43cc-6a8c-338408c1667e@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <CABQgh9GzuQqsuPVyur+QurN8p+1BciMfOw0TccwiZSvvtrcowg@mail.gmail.com>
-Content-Language: en-US
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Tony Luck <tony.luck@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Ravi V Shankar <ravi.v.shankar@intel.com>,
- Peter Zijlstra <peterz@infradead.org>, robin.murphy@arm.com,
- Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
- Fenghua Yu <fenghua.yu@intel.com>, linux-kernel <linux-kernel@vger.kernel.org>,
- Dave Hansen <dave.hansen@intel.com>, iommu <iommu@lists.linux-foundation.org>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
- Thomas Gleixner <tglx@linutronix.de>, will@kernel.org
+Content-Disposition: inline
+In-Reply-To: <f238af77-be5e-43cc-6a8c-338408c1667e@arm.com>
+Cc: Rob Herring <robh@kernel.org>, Vladimir Murzin <vladimir.murzin@arm.com>,
+ Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+ Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+ Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+ Frank Li <Frank.Li@nxp.com>, linux-kernel@vger.kernel.org,
+ Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+ Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+ Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux-foundation.org,
+ Vinod Koul <vkoul@kernel.org>,
+ Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+ linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+ Christoph Hellwig <hch@lst.de>, Jingoo Han <jingoohan1@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,155 +114,142 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGksIEplYW4gJiBGZW5naHVhCgpUaGUgaXNzdWUgb2YgImlvbW11L3N2YTogQXNzaWduIGEgUEFT
-SUQgdG8gbW0gb24gUEFTSUQgYWxsb2NhdGlvbiBhbmQgCmZyZWUgaXQgb24gbW0gZXhpdCIKaXMg
-bW1fcGFzaWRfZHJvcCBpbiBfX21tcHV0IG9ubHkgaW9hc2lkX2ZyZWUobW0tPnBhc2lkKSwgYnV0
-IGtlZXAgYWxsIApyZWxhdGVkIHJlc291cmNlcywKbGlrZSBjZCB0YWJsZXMgZXRjLgoKVGhpcyBp
-bnRyb2R1Y2VzIG1hbnkgc3RyYW5nZSBpc3N1ZXMuCkZvciBleGFtcGxlLCBpZiBhcHBsaWNhdGlv
-biBkb2VzIG5vdCB1c2UgY2xvc2UgZmQgYnV0IGV4aXQgZGlyZWN0bHksIAptbV9wYXNpZF9kcm9w
-IGlzIGNhbGxlZCBmaXJzdCwKdGhlbiBmb3BzX3JlbGVhc2UtPnVuYmluZCBpcyBjYWxsZWQsIHdo
-ZW4gbW0tPnBhc2lkPS0xLCAKYXJtX3NtbXVfd3JpdGVfY3R4X2Rlc2Mgd2lsbCBnZXQgZXJyb3Iu
-CgpBbmQgaW4gbmdpbnggY2FzZSwgcGFzaWQgaXMgZnJlZWQgd2hlbiBmb3JrIGRhZW1vbiwgYnV0
-IGNkIHRhYmxlIGlzIApzdGlsbCB0aGVyZSwKdGhlbiBuZXh0IHRpbWUsIHNhbWUgcGFzaWQgaXMg
-YWxsb2NhdGVkLgoKU28gZWl0aGVyIF9fbW1wdXQgZnJlZSBwYXNpZCBhcyB3ZWxsIGFzIGFsbCBy
-ZWxhdGVkIHJlc291cmNlcyBsaWtlIGNkIAp0YWJsZSwKb3IgY29udmVydCBiYWNrIHRvIHJlbHkg
-b24gdGhlIG9yaWdpbmFsIHVuYmluZCBtZXRob2QgdG8gZnJlZSBwYXNpZCBhbmQgCnJlc291cmNl
-cyB0b2dldGhlci4KClNpbmNlIFNWQSBpcyBtYWluIGZlYXR1cmUgb24gQVJNLCB3aGljaCBoYXMg
-YmVlbiBkZXZlbG9wZWQgZm9yIHllYXJzLApJdCBpcyBhbHJlYWR5IHVzZWQgaW4gdGhlIHByb2R1
-Y3QuCkl0IHdpbGwgYmUgaG9ycmlibGUgaWYgU1ZBIGlzIGJyb2tlIG9uIDUuMTguCgpBbnkgc3Vn
-Z2VzdGlvbj8KClRoYW5rcwoKCgoKT24gMjAyMi80LzI0IOS4iuWNiDEwOjU4LCBaaGFuZ2ZlaSBH
-YW8gd3JvdGU6Cj4gT24gU2F0LCAyMyBBcHIgMjAyMiBhdCAxOToxMywgemhhbmdmZWkuZ2FvQGZv
-eG1haWwuY29tCj4gPHpoYW5nZmVpLmdhb0Bmb3htYWlsLmNvbT4gd3JvdGU6Cj4+IEhpLCBKZWFu
-Cj4+Cj4+IE9uIDIwMjIvNC8yMiDkuIvljYgxMTo1MCwgSmVhbi1QaGlsaXBwZSBCcnVja2VyIHdy
-b3RlOgo+Pj4gT24gRnJpLCBBcHIgMjIsIDIwMjIgYXQgMDk6MTU6MDFQTSArMDgwMCwgemhhbmdm
-ZWkuZ2FvQGZveG1haWwuY29tIHdyb3RlOgo+Pj4+PiBJJ20gdHJ5aW5nIHRvIHBpZWNlIHRvZ2V0
-aGVyIHdoYXQgaGFwcGVucyBmcm9tIHRoZSBrZXJuZWwgcG9pbnQgb2Ygdmlldy4KPj4+Pj4KPj4+
-Pj4gKiBtYXN0ZXIgcHJvY2VzcyB3aXRoIG1tIEEgb3BlbnMgYSBxdWV1ZSBmZCB0aHJvdWdoIHVh
-Y2NlLCB3aGljaCBjYWxscwo+Pj4+PiAgICAgIGlvbW11X3N2YV9iaW5kX2RldmljZShkZXYsIEEp
-IC0+IFBBU0lEIDEKPj4+Pj4KPj4+Pj4gKiBtYXN0ZXIgZm9ya3MgYW5kIGV4aXRzLiBDaGlsZCAo
-ZGFlbW9uKSBnZXRzIG1tIEIsIGluaGVyaXRzIHRoZSBxdWV1ZSBmZC4KPj4+Pj4gICAgICBUaGUg
-ZGV2aWNlIGlzIHN0aWxsIGJvdW5kIHRvIG1tIEEgd2l0aCBQQVNJRCAxLCBzaW5jZSB0aGUgcXVl
-dWUgZmQgaXMKPj4+Pj4gICAgICBzdGlsbCBvcGVuLgo+Pj4+PiBXZSBkaXNjdXNzZWQgdGhpcyBi
-ZWZvcmUsIGJ1dCBJIGRvbid0IHJlbWVtYmVyIHdoZXJlIHdlIGxlZnQgb2ZmLiBUaGUKPj4+Pj4g
-Y2hpbGQgY2FuJ3QgdXNlIHRoZSBxdWV1ZSBiZWNhdXNlIGl0cyBtYXBwaW5ncyBhcmUgbm90IGNv
-cGllZCBvbiBmb3JrKCksCj4+Pj4+IGFuZCB0aGUgcXVldWUgaXMgc3RpbGwgYm91bmQgdG8gdGhl
-IHBhcmVudCBtbSBBLiBUaGUgY2hpbGQgZWl0aGVyIG5lZWRzIHRvCj4+Pj4+IG9wZW4gYSBuZXcg
-cXVldWUgb3IgdGFrZSBvd25lcnNoaXAgb2YgdGhlIG9sZCBvbmUgd2l0aCBhIG5ldyB1YWNjZSBp
-b2N0bC4KPj4+PiBZZXMsIGN1cnJlbnRseSBuZ2lueCBhbGlnbmVkIHdpdGggdGhlIGNhc2UuCj4+
-Pj4gQ2hpbGQgcHJvY2VzcyAod29ya2VyIHByb2Nlc3MpIHJlb3BlbiB1YWNjZSwKPj4+Pgo+Pj4+
-IE1hc3RlciBwcm9jZXNzIChkbyBpbml0KSBvcGVuIHVhY2NlLCBpb21tdV9zdmFfYmluZF9kZXZp
-Y2UoZGV2LCBBKSAtPiBQQVNJRAo+Pj4+IDEKPj4+PiBNYXN0ZXIgcHJvY2VzcyBmb3JrIENoaWxk
-IChkYWVtb24pIGFuZCBleGl0Lgo+Pj4+Cj4+Pj4gQ2hpbGQgKGRhZW1vbikgIGRvZXMgbm90IHVz
-ZSBQQVNJRCAxIGFueSBtb3JlLCBvbmx5IGZvcmsgYW5kIG1hbmFnZSB3b3JrZXIKPj4+PiBwcm9j
-ZXNzLgo+Pj4+IFdvcmtlciBwcm9jZXNzIHJlb3BlbiB1YWNjZSwgaW9tbXVfc3ZhX2JpbmRfZGV2
-aWNlKGRldiwgQikgUEFTSUQgMgo+Pj4+Cj4+Pj4gU28gaXQgaXMgZXhwZWN0ZWQuCj4+PiBZZXMs
-IHRoYXQncyBmaW5lCj4+Pgo+Pj4+PiBJcyB0aGF0IHRoZSAiSU1QTEVNRU5UX0RZTkFNSUNfQklO
-RF9GTigpIiB5b3UgbWVudGlvbiwgc29tZXRoaW5nIG91dCBvZgo+Pj4+PiB0cmVlPyAgVGhpcyBv
-cGVyYXRpb24gc2hvdWxkIHVuYmluZCBmcm9tIEEgYmVmb3JlIGJpbmRpbmcgdG8gQiwgbm8/Cj4+
-Pj4+IE90aGVyd2lzZSB3ZSBsZWFrIFBBU0lEIDEuCj4+Pj4gSW4gNS4xNiBQQVNJRCAxIGZyb20g
-bWFzdGVyIGlzIGhvbGQgdW50aWwgbmdpbnggc2VydmljZSBzdG9wLgo+Pj4+IG5naW54IHN0YXJ0
-Cj4+Pj4gbWFzdGVyOgo+Pj4+IGlvbW11X3N2YV9hbGxvY19wYXNpZCBtbS0+cGFzaWQ9MSAgICAg
-IC8vIG1hc3RlciBwcm9jZXNzCj4+Pj4KPj4+PiBseW54IGh0dHBzIHN0YXJ0Ogo+Pj4+IGlvbW11
-X3N2YV9hbGxvY19wYXNpZCBtbS0+cGFzaWQ9MiAgICAvL3dvcmtlciBwcm9jZXNzCj4+Pj4KPj4+
-PiBuZ2lueCBzdG9wOiAgZnJvbSBmb3BzX3JlbGVhc2UKPj4+PiBpb21tdV9zdmFfZnJlZV9wYXNp
-ZCBtbS0+cGFzaWQ9MiAgIC8vIHdvcmtlciBwcm9jZXNzCj4+Pj4gaW9tbXVfc3ZhX2ZyZWVfcGFz
-aWQgbW0tPnBhc2lkPTEgIC8vIG1hc3RlciBwcm9jZXNzCj4+PiBUaGF0J3MgdGhlIGV4cGVjdGVk
-IGJlaGF2aW9yIChtYXN0ZXIgY291bGQgY2xvc2UgaXRzIGZkIGJlZm9yZSBmb3JraW5nLCBpbgo+
-Pj4gb3JkZXIgdG8gZnJlZSB0aGluZ3MgdXAgZWFybGllciwgYnV0IGl0J3Mgbm90IG1hbmRhdG9y
-eSkKPj4gQ3VycmVudGx5IHdlIHVuYmluZCBpbiBmb3BzX3JlbGVhc2UsIHNvIHRoZSBpb2FzaWQg
-YWxsb2NhdGVkIGluIG1hc3Rlcgo+PiBjYW4gb25seSBiZSBmcmVlZCB3aGVuIG5naW54IHN0b3As
-Cj4+IHdoZW4gYWxsIGZvcmtlZCBmZCBhcmUgY2xvc2VkLgo+Pgo+Pj4+IEhhdmUgb25lIHNpbGx5
-IHF1ZXN0aW9uLgo+Pj4+Cj4+Pj4ga2VybmUgZHJpdmVyCj4+Pj4gZm9wc19vcGVuCj4+Pj4gaW9t
-bXVfc3ZhX2JpbmRfZGV2aWNlCj4+Pj4KPj4+PiBmb3BzX3JlbGVhc2UKPj4+PiBpb21tdV9zdmFf
-dW5iaW5kX2RldmljZQo+Pj4+Cj4+Pj4gYXBwbGljYXRpb24KPj4+PiBtYWluKCkKPj4+PiBmZCA9
-IG9wZW4KPj4+PiByZXR1cm47Cj4+Pj4KPj4+PiBBcHBsaWNhdGlvbiBleGl0IGJ1dCBub3QgY2xv
-c2UoZmQpLCBpcyBpdCBleHBlY3RlZCBmb3BzX3JlbGVhc2Ugd2lsbCBiZQo+Pj4+IGNhbGxlZCBh
-dXRvbWF0aWNhbGx5IGJ5IHN5c3RlbT8KPj4+IFllcywgdGhlIGFwcGxpY2F0aW9uIGRvZXNuJ3Qg
-aGF2ZSB0byBjYWxsIGNsb3NlKCkgZXhwbGljaXRseSwgdGhlIGZpbGUKPj4+IGRlc2NyaXB0b3Ig
-aXMgY2xvc2VkIGF1dG9tYXRpY2FsbHkgb24gZXhpdC4gTm90ZSB0aGF0IHRoZSBmZCBpcyBjb3Bp
-ZWQgb24KPj4+IGZvcmsoKSwgc28gaXQgaXMgb25seSByZWxlYXNlZCBvbmNlIHBhcmVudCBhbmQg
-YWxsIGNoaWxkIHByb2Nlc3NlcyBleGl0Lgo+PiBZZXMsIGluIGNhc2UgdGhlIGFwcGxpY2F0aW9u
-IGVuZGVkIHVuZXhwZWN0ZWQsIGxpa2UgY3RybCtjCj4+Pj4gT24gNS4xNwo+Pj4+IGZvcHNfcmVs
-ZWFzZSBpcyBjYWxsZWQgYXV0b21hdGljYWxseSwgYXMgd2VsbCBhcyBpb21tdV9zdmFfdW5iaW5k
-X2RldmljZS4KPj4+PiBPbiA1LjE4LXJjMS4KPj4+PiBmb3BzX3JlbGVhc2UgaXMgbm90IGNhbGxl
-ZCwgaGF2ZSB0byBtYW51YWxseSBjYWxsIGNsb3NlKGZkKQo+Pj4gUmlnaHQgdGhhdCdzIHdlaXJk
-Cj4+IExvb2tzIGl0IGlzIGNhdXNlZCBieSB0aGUgZml4IHBhdGNoLCB2aWEgbW1nZXQsIHdoaWNo
-IG1heSBhZGQgcmVmY291bnQKPj4gb2YgZmQuCj4+Cj4+IFNvbWUgZXhwZXJpbWVudHMKPj4gMS4g
-NS4xNywgZXZlcnl0aGluZyB3b3JrcyB3ZWxsLgo+Pgo+PiAyLiA1LjE3ICsgcGF0Y2hzZXQgb2Yg
-ImlvbW11L3N2YTogQXNzaWduIGEgUEFTSUQgdG8gbW0gb24gUEFTSUQKPj4gYWxsb2NhdGlvbiBh
-bmQgZnJlZSBpdCBvbiBtbSBleGl0Igo+Pgo+PiBUZXN0IGFwcGxpY2F0aW9uLCBleGl0IHdpdGhv
-dXQgY2xvc2UgdWFjY2UgZmQKPj4gRmlyc3QgdGltZTogIGZvcHNfcmVsZWFzZSBjYW4gYmUgY2Fs
-bGVkIGF1dG9tYXRpY2FsbHkuCj4+Cj4+IGxvZzoKPj4gaW9hc2lkX2FsbG9jIGlvYXNpZD0xCj4+
-IGlvbW11X3N2YV9hbGxvY19wYXNpZCBwYXNpZD0xCj4+IGlvbW11X3N2YV9iaW5kX2RldmljZSBo
-YW5kbGU9MDAwMDAwMDAyNjNhMmVlOAo+PiBpb2FzaWRfZnJlZSBpb2FzaWQ9MQo+PiB1YWNjZV9m
-b3BzX3JlbGVhc2UgcT0wMDAwMDAwMDU1Y2EzY2RmCj4+IGlvbW11X3N2YV91bmJpbmRfZGV2aWNl
-IGhhbmRsZT0wMDAwMDAwMDI2M2EyZWU4Cj4+Cj4+IFNlY29uZCB0aW1lOiBoYXJkd2FyZSByZXBv
-cnRzIGVycm9yCj4+Cj4+IHVhY2NlX2ZvcHNfb3BlbiBxPTAwMDAwMDAwOGU0ZDZmNzgKPj4gaW9h
-c2lkX2FsbG9jIGlvYXNpZD0xCj4+IGlvbW11X3N2YV9hbGxvY19wYXNpZCBwYXNpZD0xCj4+IGlv
-bW11X3N2YV9iaW5kX2RldmljZSBoYW5kbGU9MDAwMDAwMDBjZmQxMTc4OAo+PiAvLyBIYXJlZHdh
-cmUgcmVwb3J0cyBlcnJvcgo+PiBoaXNpX3NlYzIgMDAwMDpiNjowMC4wOiBxbV9hY2NfZG9fdGFz
-a190aW1lb3V0IFtlcnJvciBzdGF0dXM9MHgyMF0gZm91bmQKPj4gaGlzaV9zZWMyIDAwMDA6YjY6
-MDAuMDogcW1fYWNjX3diX25vdF9yZWFkeV90aW1lb3V0IFtlcnJvciBzdGF0dXM9MHg0MF0KPj4g
-Zm91bmQKPj4gaGlzaV9zZWMyIDAwMDA6YjY6MDAuMDogc2VjX2ZzbV9oYmVhdF9yaW50IFtlcnJv
-ciBzdGF0dXM9MHgyMF0gZm91bmQKPj4gaGlzaV9zZWMyIDAwMDA6YjY6MDAuMDogQ29udHJvbGxl
-ciByZXNldHRpbmcuLi4KPj4gaGlzaV9zZWMyIDAwMDA6YjY6MDAuMDogUU0gbWFpbGJveCBvcGVy
-YXRpb24gdGltZW91dCEKPj4gaGlzaV9zZWMyIDAwMDA6YjY6MDAuMDogRmFpbGVkIHRvIGR1bXAg
-c3FjIQo+PiBoaXNpX3NlYzIgMDAwMDpiNjowMC4wOiBGYWlsZWQgdG8gZHJhaW4gb3V0IGRhdGEg
-Zm9yIHN0b3BwaW5nIQo+PiBoaXNpX3NlYzIgMDAwMDpiNjowMC4wOiBCdXMgbG9jayEgUGxlYXNl
-IHJlc2V0IHN5c3RlbS4KPj4gaGlzaV9zZWMyIDAwMDA6YjY6MDAuMDogQ29udHJvbGxlciByZXNl
-dCBmYWlsZWQgKC0xMTApCj4+IGhpc2lfc2VjMiAwMDAwOmI2OjAwLjA6IGNvbnRyb2xsZXIgcmVz
-ZXQgZmFpbGVkICgtMTEwKQo+Pgo+PiAzLiBBZGQgdGhlIGZpeCBwYXRjaCBvZiB1c2luZyBtbWdl
-dCBpbiBiaW5kLgo+PiBUZXN0IGFwcGxpY2F0aW9uLCBleGl0IHdpdGhvdXQgY2xvc2UgdWFjY2Ug
-ZmQKPj4KPj4gZm9wc19yZWxlYXNlIGNhbiBOT1QgYmUgY2FsbGVkIGF1dG9tYXRpY2FsbHksIGxv
-b2tzIG1tZ2V0IGFkZHMgcmVmY291bnQKPj4gb2YgZmQuCj4gVGVzdCBhcHBsaWNhdGlvbiwgZXhp
-dCB3aXRob3V0IGNsb3NpbmcgZmQuCj4+Pj4ga2VybmVsIGRyaXZlcgo+Pj4+IGZvcHNfb3Blbgo+
-Pj4+IGlvbW11X3N2YV9iaW5kX2RldmljZQo+Pj4+Cj4+Pj4gZm9wc19yZWxlYXNlCj4+Pj4gaW9t
-bXVfc3ZhX3VuYmluZF9kZXZpY2UKPiAxLgo+IDUuMTcga2VybmVsLCBubyBtbWdldCAmIG1tcHV0
-Cj4KPiB3ZF9yZWxlYXNlX3F1ZXVlIG5vIGNsb3NlCj4gQ29tcHJlc3MgYno9NTEyMDAwIG5iPTHD
-lzEwLCBzcGVlZD0xMzkuNSBNQi9zICjCsTAuMCUgTj0xKSBvdmVyYWxsPTEyMi45Cj4gTUIvcyAo
-wrEwLjAlKQo+IFsgICAxNi4wNTI5ODldIGRvX2V4aXQgY3VycmVudD1kMzgwMDAwCj4gWyAgIDE2
-LjA1MzgyOF0gbW1wdXQgYXRvbWljPTEKPiBbICAgMTYuMDU0NTExXSAgX19tbXB1dCBhdG9taWM9
-MAo+IFsgICAxNi4wNzAzODJdIGV4aXRfdGFza193b3JrCj4gWyAgIDE2LjA3MDk4MV0gdWFjY2Vf
-Zm9wc19yZWxlYXNlIGN1cnJlbnQ9ZDM4MDAwMAo+IFsgICAxNi4wNzE5OTldIENQVTogMCBQSUQ6
-IDE3NiBDb21tOiB0ZXN0X3N2YV9wZXJmIE5vdCB0YWludGVkCj4gNS4xNi4wLXJjMS0yNzM0Mi1n
-ZTVmOWYzZjk5YTg4LWRpcnR5ICMyNDAKPiBbICAgMTYuMDc0MDA3XSBIYXJkd2FyZSBuYW1lOiBR
-RU1VIEtWTSBWaXJ0dWFsIE1hY2hpbmUsIEJJT1MgMC4wLjAgMDIvMDYvMjAxNQo+IFsgICAxNi4w
-NzU1MzBdIENhbGwgdHJhY2U6Cj4gWyAgIDE2LjA3NjA2OV0gIGR1bXBfYmFja3RyYWNlKzB4MC8w
-eDFhMAo+IFsgICAxNi4wNzY4ODddICBzaG93X3N0YWNrKzB4MjAvMHgzMAo+IFsgICAxNi4wNzc2
-MjldICBkdW1wX3N0YWNrX2x2bCsweDhjLzB4YjgKPiBbICAgMTYuMDc4NDQxXSAgZHVtcF9zdGFj
-aysweDE4LzB4MzQKPiBbICAgMTYuMDc5MTc2XSAgdWFjY2VfZm9wc19yZWxlYXNlKzB4NDQvMHhk
-Ywo+IFsgICAxNi4wODAwNjBdICBfX2ZwdXQrMHg3OC8weDI0MAo+IFsgICAxNi4wODA3NDNdICBf
-X19fZnB1dCsweDE4LzB4MjgKPiBbICAgMTYuMDgxNDQ3XSAgdGFza193b3JrX3J1bisweDg4LzB4
-MTYwCj4gWyAgIDE2LjA4MjI1OV0gIGRvX2V4aXQrMHg1MmMvMHhhNTAKPiBbICAgMTYuMDgyOTc0
-XSAgZG9fZ3JvdXBfZXhpdCsweDg0LzB4YTgKPiBbICAgMTYuMDgzNzY4XSAgX193YWtlX3VwX3Bh
-cmVudCsweDAvMHgzOAo+IFsgICAxNi4wODQ1OTddICBpbnZva2Vfc3lzY2FsbCsweDRjLzB4MTEw
-Cj4gWyAgIDE2LjA4NTQzNV0gIGVsMF9zdmNfY29tbW9uLmNvbnN0cHJvcC4wKzB4NjgvMHgxMjgK
-PiBbICAgMTYuMDg2NTAxXSAgZG9fZWwwX3N2YysweDJjLzB4OTAKPiBbICAgMTYuMDg3MjQzXSAg
-ZWwwX3N2YysweDI0LzB4NzAKPiBbICAgMTYuMDg3OTI4XSAgZWwwdF82NF9zeW5jX2hhbmRsZXIr
-MHhiMC8weGI4Cj4gWyAgIDE2LjA4ODg1NF0gIGVsMHRfNjRfc3luYysweDFhMC8weDFhNAo+IFsg
-ICAxNi4wODk3NzVdICBhcm1fc21tdV9zdmFfdW5iaW5kCj4gWyAgIDE2LjA5MDU3N10gIGlvbW11
-X3N2YV9mcmVlX3Bhc2lkIG1tLT5wYXNpZD0xCj4gWyAgIDE2LjA5MTc2M10gZXhpdF90YXNrX3dv
-cmsgZG9uZQo+Cj4gMi4gQWRkIG1tZ2V0IGluIGJpbmQgYW5kIG1tcHV0IGluIHVuYmluZCwKPiBT
-aW5jZSBhcHBsaWNhdGlvbiBkbyBub3QgY2xvc2UgZmQsIHNvIG5vIHVuYmluZCwmIG1tcHV0Cj4g
-QW5kIGZvcHNfcmVsZWFzZSBpcyBub3QgY2FsbGVkIHNpbmNlIG1tX3VzZXJzIGFjY291bnQuCj4K
-PiBsb2c6Cj4gWyAgMTAxLjY0MjY5MF0gbW1wdXQgYXRvbWljPTMKPiB3ZF9yZWxlYXNlX3F1ZXVl
-IG5vIGNsb3NlCj4gQ29tcHJlc3MgYno9NTEyMDAwIG5iPTHDlzEwLCBzcGVlZD00MC4zIE1CL3Mg
-KMKxMC4wJSBOPTEpIG92ZXJhbGw9MzguNwo+IE1CL3MgKMKxMC4wJSkKPiBbICAxMDEuNjcxMTY3
-XSBkb19leGl0IGN1cnJlbnQ9ZDlkYWY0MAo+IFsgIDEwMS42NzIwMDNdIG1tcHV0IGF0b21pYz0y
-Cj4gWyAgMTAxLjY3MjcxMl0gZXhpdF90YXNrX3dvcmsKPiBbICAxMDEuNjczMjkyXSBleGl0X3Rh
-c2tfd29yayBkb25lCj4KPiBUaGFua3MKPgo+Cj4KPj4gU28gdGhlIGZpeCBtZXRob2Qgb2YgdXNp
-bmcgbW1nZXQgYmxvY2tzIGZvcHNfcmVsZWFzZSB0byBiZSBjYWxsZWQgb25jZQo+PiBmZCBpcyBj
-bG9zZWQgd2l0aG91dCB1bmJpbmQuCj4+Cj4+Pj4gU2luY2UgbmdpbnggbWF5IGhhdmUgYSBpc3N1
-ZSwgaXQgZG9lcyBub3QgY2FsbCBjbG9zZShmZCkgd2hlbiBuZ2lueCAtcyBxdWl0Lgo+Pj4gQW5k
-IHlvdSdyZSBzdXJlIHRoYXQgbm9uZSBvZiB0aGUgcHJvY2Vzc2VzIGFyZSBzdGlsbCBhbGl2ZSBv
-ciBpbiB6b21iaWUKPj4+IHN0YXRlPyAgSnVzdCB0byBjb3ZlciBldmVyeSBwb3NzaWJpbGl0eS4K
-Pj4gSXQgY2FuIGFsc28gcmVwcm9kdWNlZCBieSBhIHNpbXBsZSBhcHBsaWNhdGlvbiBleGl0IHdp
-dGhvdXQgY2xvc2UodWFjY2VfZmQpCj4+Cj4+IFRoYW5rcwo+PgoKX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxp
-c3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Thu, Apr 21, 2022 at 09:51:31PM +0100, Robin Murphy wrote:
+> On 2022-04-21 18:35, Serge Semin wrote:
+> > On Thu, Apr 21, 2022 at 04:45:36PM +0200, Christoph Hellwig wrote:
+> > > On Wed, Apr 20, 2022 at 11:55:38AM +0300, Serge Semin wrote:
+> > > > On Wed, Apr 20, 2022 at 10:47:46AM +0200, Christoph Hellwig wrote:
+> > > > > I can't really comment on the dma-ranges exlcusion for P2P mappings,
+> > > > > as that predates my involvedment, however:
+> > > > 
+> > > > My example wasn't specific to the PCIe P2P transfers, but about PCIe
+> > > > devices reaching some platform devices over the system interconnect
+> > > > bus.
+> > > 
+> > > So strike PCIe, but this our definition of Peer to Peer accesses.
+> > > 
+> > > > What if I get to have a physical address of a platform device and want
+> > > > have that device being accessed by a PCIe peripheral device? The
+> > > > dma_map_resource() seemed very much suitable for that. But considering
+> > > > what you say it isn't.
+> > > 
+> > 
+> > > dma_map_resource is the right thing for that.  But the physical address
+> > > of MMIO ranges in the platform device should not have struct pages
+> > > allocated for it, and thus the other dma_map_* APIs should not work on
+> > > it to start with.
+> > 
+> > The problem is that the dma_map_resource() won't work for that, but
+> > presumably the dma_map_sg()-like methods will (after some hacking with
+> > the phys address, but anyway). Consider the system diagram in my
+> > previous email. Here is what I would do to initialize a DMA
+> > transaction between a platform device and a PCIe peripheral device:
+> > 
+> > 1) struct resource *rsc = platform_get_resource(plat_dev, IORESOURCE_MEM, 0);
+> > 
+> > 2) dma_addr_t dar = dma_map_resource(&pci_dev->dev, rsc->start, rsc->end - rsc->start + 1,
+> >                                        DMA_FROM_DEVICE, 0);
+> > 
+> > 3) dma_addr_t sar;
+> >     void *tmp = dma_alloc_coherent(&pci_dev->dev, PAGE_SIZE, &sar, GFP_KERNEL);
+> >     memset(tmp, 0xaa, PAGE_SIZE);
+> > 
+> > 4) PCIe device: DMA.DAR=dar, DMA.SAR=sar. RUN.
+> > 
+> > If there is no dma-ranges specified in the PCIe Host controller
+> > DT-node, the PCIe peripheral devices will see the rest of the system
+> > memory as is (no offsets and remappings). But if there is dma-ranges
+> > with some specific system settings it may affect the PCIe MRd/MWr TLPs
+> > address translation including the addresses targeted to the MMIO
+> > space. In that case the mapping performed on step 2) will return a
+> > wrong DMA-address since the corresponding dma_direct_map_resource()
+> > just returns the passed physical address missing the
+> > 'pci_dev->dma_range_map'-based mapping performed in
+> > translate_phys_to_dma().
+> > 
+> > Note the mapping on step 3) works correctly because it calls the
+> > translate_phys_to_dma() of the direct DMA interface thus taking the
+> > PCie dma-ranges into account.
+> > 
+> > To sum up as I see it either restricting dma_map_resource() to map
+> > just the intra-bus addresses was wrong or there must be some
+> > additional mapping infrastructure for the denoted systems. Though I
+> > don't see a way the dma_map_resource() could be fixed to be suitable
+> > for each considered cases.
+> 
+
+> FWIW the current semantics of dma_map_resource() are basically just to
+> insert IOMMU awareness where dmaengine drivers were previously just casting
+> phys_addr_t to dma_addr_t (or u32, or whatever else they put into their
+> descriptor/register/etc.) IIRC there was a bit of a question whether it
+> really belonged in the DMA API at all, since it's not really a "DMA"
+> operation in the conventional sense, and convenience was the only real
+> deciding argument. The relevant drivers at the time were not taking
+> dma_pfn_offset into account when consuming physical addresses directly, so
+> the new API didn't either.
+> 
+> That's just how things got to where they are today. 
+
+I see. Thanks for the clarification. Right, IOMMU is the only reason
+to have the current dma_map_resource() implementation.
+
+> Once again, I'm not
+> saying that what we have now is necessarily right, or that your change is
+> necessarily wrong, I just really want to understand specifically *why* you
+> need to make it, so we can evaluate the risk of possible breakage either
+> way. Theoretical "if"s aren't really enough.
+
+As I already said our SoC has the next structure (obviously the
+diagram is very simplified, but the gist is the same):
+              +-----+
+              | DDR |
+              +--+--+
+                 |
+  +-----+ +------+-------+ +---------+
+  | CPU +-+ Interconnect +-+ DEVs... |
+  +-----+ +-----^-+------+ +---------+
+     dma-ranges-| |-ranges
+              +-+-v-+
+              | PCI |
+              +-----+
+The PCIe peripheral devices are connected to the rest of the system
+via the DW PCIe Host controller. If the controller has the inbound
+iATU configured to re-map the system memory (RAM, IOMEM) in a
+non-one-to-one way (using the dma-ranges DT property of the PCIe host
+controller), then all the PCIe bus MRd/MWr TLP addresses will be
+accordingly translated on a way to all the connected to the
+interconnect slave devices including the MMIO devices. The kernel DMA
+API at this moment provides the only methods to get the PCIe-bus
+visible RAM addresses, while the physical addresses (for instance of
+the MMIO devices) can't be correctly translated for such case. I
+thought that dma_map_resource() could do the trick, but it turned out
+it didn't get the dma-ranges mapping into account.
+
+To be fully honest currently we don't really have any platform which
+would have had the strong requirement of doing DMA from the PCIe
+peripheral devices to the platform devices. But since the PCIe bus is
+the extendable bus (cold and hot pluggable) then such requirement may
+arise in the practice for instance on a platform with the PCIe NTB
+device attached to the PCIe bus and configured to access the system
+MMIO devices via the bridge. That part I find potentially problematic
+seeing the practical usecase is unsupported just due to the incomplete
+API. Moreover the dma_direct_map_resource() method semantic being
+different from the rest of the direct DMA mapping methods doesn't seem
+right from the usability point of view. Finally as you can see having
+the dma_direct_map_resource() defined as MMIO-specific doesn't
+mean that the dma_pfn_offset-based mapping isn't supposed to be taken
+into account.
+
+-Sergey
+
+> 
+> Robin.
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
