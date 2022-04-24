@@ -1,107 +1,80 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3E34AC433EF
-	for <iommu@archiver.kernel.org>; Sun, 24 Apr 2022 21:47:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9C12EC433F5
+	for <iommu@archiver.kernel.org>; Sun, 24 Apr 2022 23:29:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C9B1260ABD;
-	Sun, 24 Apr 2022 21:47:04 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 2A7E440292;
+	Sun, 24 Apr 2022 23:29:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0LIUQ-g3Iq0k; Sun, 24 Apr 2022 21:47:03 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 706EE60A94;
-	Sun, 24 Apr 2022 21:47:03 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Yl_aU_TRzNlp; Sun, 24 Apr 2022 23:28:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id E2DD440223;
+	Sun, 24 Apr 2022 23:28:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2D894C0032;
-	Sun, 24 Apr 2022 21:47:03 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E1C48C002D
- for <iommu@lists.linux-foundation.org>; Sun, 24 Apr 2022 21:47:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 95BC7C0032;
+	Sun, 24 Apr 2022 23:28:58 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9BDE6C002D
+ for <iommu@lists.linux-foundation.org>; Sun, 24 Apr 2022 23:28:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id C7D74408F7
- for <iommu@lists.linux-foundation.org>; Sun, 24 Apr 2022 21:47:01 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 8440B81A12
+ for <iommu@lists.linux-foundation.org>; Sun, 24 Apr 2022 23:28:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nrHUiPbm69ps for <iommu@lists.linux-foundation.org>;
- Sun, 24 Apr 2022 21:47:00 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com
- [IPv6:2a00:1450:4864:20::131])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 3A67F408F3
- for <iommu@lists.linux-foundation.org>; Sun, 24 Apr 2022 21:47:00 +0000 (UTC)
-Received: by mail-lf1-x131.google.com with SMTP id p12so17582562lfs.5
- for <iommu@lists.linux-foundation.org>; Sun, 24 Apr 2022 14:46:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=O4TlWAQTGna1HLPkbwNGfYip8R7dhlaXVZwPwiVBy7I=;
- b=UlSSti4Gm4qX+QRhOj+j+pgM3p+/451e5FFrO24ItSZzGf09wrm+Q7aExA773zXOex
- tJVHSLYUKeagNc5STZSmtACkjhwgUK2vd4Pkv5YtEsnPfyRDMnUDHOwx5eY6VfkwQ9Dj
- aqDdPK3ys/rf3e7FbqpWvSrlBqB+2WfT+i3xAZ+LD3W1Ke2jDCWt185vFyVMtGDhbtsd
- tEQsrEnUusJI1p1MW5sg/DFInDAPJXTeZNMK7RGEJA/8FPo8EcMlIzfR5i1YRz1MztDz
- Xy1owQqn/r5E+JLMNOQo2DAChV9RWNo/H7Suagq+YDxfBRgbbVvt9wFkpRHOE070RDW0
- URsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=O4TlWAQTGna1HLPkbwNGfYip8R7dhlaXVZwPwiVBy7I=;
- b=JZxw2Hli6Il4KCnOxkHYTaSgOKXBKB9scqHj2cqMf+RFnjMs1rocIytOQZD9tmQFmr
- xtsSEm2MewvojaQEhd0dk1ssCVwBOVHDBotEey2TZwOa7Gbqh/hq2+A/rvXt59EsL7AA
- huVWK5YzrzTGEP5sxQ8w7tisdxhvYGz1UNFMOFFvTIrfoDjE/yklHB8RVstPHdZEbEsN
- Og3PXQzCkqBXYBUokwkGaJAqcUs6U8bKZ6T9l/tuJkcfI6sGdyIRFFwlFPwKh8/toG+e
- zIXUXQfEUzjTeNiqxZze6dqs05ieql0qHT4NYpky8m2X9nmOLv48VKTYNiEH5KZMmj0Q
- BQlg==
-X-Gm-Message-State: AOAM531DdUR9IHaCN6rMUghQtndZs0JMIR545+Eg1E1OlLVAuc+C9pZk
- xVNVpbFusxSh2DQJMvNO+no=
-X-Google-Smtp-Source: ABdhPJzXdDxrhX4Vc85ccNr29jeZJ973N9zfir+519pEyy1H/jYBWoVgnoUIbo6sVuzS8PxTClQuEQ==
-X-Received: by 2002:ac2:5581:0:b0:471:6c00:ba6e with SMTP id
- v1-20020ac25581000000b004716c00ba6emr11353806lfg.482.1650836817827; 
- Sun, 24 Apr 2022 14:46:57 -0700 (PDT)
-Received: from mobilestation ([95.79.183.147])
- by smtp.gmail.com with ESMTPSA id
- t27-20020a192d5b000000b00470880c1abcsm1150711lft.217.2022.04.24.14.46.56
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 24 Apr 2022 14:46:57 -0700 (PDT)
-Date: Mon, 25 Apr 2022 00:46:54 +0300
-From: Serge Semin <fancer.lancer@gmail.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 03/25] dma-direct: take dma-ranges/offsets into account
- in resource mapping
-Message-ID: <20220424214654.d53jbthts53g755p@mobilestation>
-References: <20220324014836.19149-4-Sergey.Semin@baikalelectronics.ru>
- <0baff803-b0ea-529f-095a-897398b4f63f@arm.com>
- <20220417224427.drwy3rchwplthelh@mobilestation>
- <20220420071217.GA5152@lst.de>
- <20220420083207.pd3hxbwezrm2ud6x@mobilestation>
- <20220420084746.GA11606@lst.de>
- <20220420085538.imgibqcyupvvjpaj@mobilestation>
- <20220421144536.GA23289@lst.de>
- <20220421173523.ig62jtvj7qbno6q7@mobilestation>
- <f238af77-be5e-43cc-6a8c-338408c1667e@arm.com>
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id XV6DRdu2sfnd for <iommu@lists.linux-foundation.org>;
+ Sun, 24 Apr 2022 23:28:52 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 92C0C8145E
+ for <iommu@lists.linux-foundation.org>; Sun, 24 Apr 2022 23:28:52 +0000 (UTC)
+X-UUID: 00ee9c86a97c4fefb6413aecf8b0bc94-20220425
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4, REQID:70be6383-2c7f-43e8-bd62-9674791f3e6c, OB:0,
+ LO
+ B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+ ION:release,TS:45
+X-CID-INFO: VERSION:1.1.4, REQID:70be6383-2c7f-43e8-bd62-9674791f3e6c, OB:0,
+ LOB:
+ 0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
+ N:release,TS:45
+X-CID-META: VersionHash:faefae9, CLOUDID:e410efef-06b0-4305-bfbf-554bfc9d151a,
+ C
+ OID:IGNORED,Recheck:0,SF:13|15|28|17|19|48,TC:nil,Content:-5,EDM:-3,File:n
+ il,QS:0,BEC:nil
+X-UUID: 00ee9c86a97c4fefb6413aecf8b0bc94-20220425
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+ (envelope-from <miles.chen@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 2081701411; Mon, 25 Apr 2022 07:28:47 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 25 Apr 2022 07:28:45 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via
+ Frontend Transport; Mon, 25 Apr 2022 07:28:45 +0800
+To: <lkp@intel.com>
+Subject: Re: [PATCH] iommu/mediatek: fix NULL pointer dereference when
+ printing dev_name
+Date: Mon, 25 Apr 2022 07:28:45 +0800
+Message-ID: <20220424232845.25277-1-miles.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <202204231446.IYKdZ674-lkp@intel.com>
+References: <202204231446.IYKdZ674-lkp@intel.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <f238af77-be5e-43cc-6a8c-338408c1667e@arm.com>
-Cc: Rob Herring <robh@kernel.org>, Vladimir Murzin <vladimir.murzin@arm.com>,
- Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
- Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
- Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
- Frank Li <Frank.Li@nxp.com>, linux-kernel@vger.kernel.org,
- Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
- Serge Semin <Sergey.Semin@baikalelectronics.ru>,
- Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux-foundation.org,
- Vinod Koul <vkoul@kernel.org>,
- Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
- linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
- Christoph Hellwig <hch@lst.de>, Jingoo Han <jingoohan1@gmail.com>
+X-MTK: N
+Cc: miles.chen@mediatek.com, mchehab@kernel.org, kbuild-all@lists.01.org,
+ llvm@lists.linux.dev, linux-kernel@vger.kernel.org, hverkuil@xs4all.nl,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ matthias.bgg@gmail.com, linux-media@vger.kernel.org, will@kernel.org,
+ linux-arm-kernel@lists.infradead.org, angelogioacchino.delregno@collabora.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,141 +87,56 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Miles Chen via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Miles Chen <miles.chen@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Apr 21, 2022 at 09:51:31PM +0100, Robin Murphy wrote:
-> On 2022-04-21 18:35, Serge Semin wrote:
-> > On Thu, Apr 21, 2022 at 04:45:36PM +0200, Christoph Hellwig wrote:
-> > > On Wed, Apr 20, 2022 at 11:55:38AM +0300, Serge Semin wrote:
-> > > > On Wed, Apr 20, 2022 at 10:47:46AM +0200, Christoph Hellwig wrote:
-> > > > > I can't really comment on the dma-ranges exlcusion for P2P mappings,
-> > > > > as that predates my involvedment, however:
-> > > > 
-> > > > My example wasn't specific to the PCIe P2P transfers, but about PCIe
-> > > > devices reaching some platform devices over the system interconnect
-> > > > bus.
-> > > 
-> > > So strike PCIe, but this our definition of Peer to Peer accesses.
-> > > 
-> > > > What if I get to have a physical address of a platform device and want
-> > > > have that device being accessed by a PCIe peripheral device? The
-> > > > dma_map_resource() seemed very much suitable for that. But considering
-> > > > what you say it isn't.
-> > > 
-> > 
-> > > dma_map_resource is the right thing for that.  But the physical address
-> > > of MMIO ranges in the platform device should not have struct pages
-> > > allocated for it, and thus the other dma_map_* APIs should not work on
-> > > it to start with.
-> > 
-> > The problem is that the dma_map_resource() won't work for that, but
-> > presumably the dma_map_sg()-like methods will (after some hacking with
-> > the phys address, but anyway). Consider the system diagram in my
-> > previous email. Here is what I would do to initialize a DMA
-> > transaction between a platform device and a PCIe peripheral device:
-> > 
-> > 1) struct resource *rsc = platform_get_resource(plat_dev, IORESOURCE_MEM, 0);
-> > 
-> > 2) dma_addr_t dar = dma_map_resource(&pci_dev->dev, rsc->start, rsc->end - rsc->start + 1,
-> >                                        DMA_FROM_DEVICE, 0);
-> > 
-> > 3) dma_addr_t sar;
-> >     void *tmp = dma_alloc_coherent(&pci_dev->dev, PAGE_SIZE, &sar, GFP_KERNEL);
-> >     memset(tmp, 0xaa, PAGE_SIZE);
-> > 
-> > 4) PCIe device: DMA.DAR=dar, DMA.SAR=sar. RUN.
-> > 
-> > If there is no dma-ranges specified in the PCIe Host controller
-> > DT-node, the PCIe peripheral devices will see the rest of the system
-> > memory as is (no offsets and remappings). But if there is dma-ranges
-> > with some specific system settings it may affect the PCIe MRd/MWr TLPs
-> > address translation including the addresses targeted to the MMIO
-> > space. In that case the mapping performed on step 2) will return a
-> > wrong DMA-address since the corresponding dma_direct_map_resource()
-> > just returns the passed physical address missing the
-> > 'pci_dev->dma_range_map'-based mapping performed in
-> > translate_phys_to_dma().
-> > 
-> > Note the mapping on step 3) works correctly because it calls the
-> > translate_phys_to_dma() of the direct DMA interface thus taking the
-> > PCie dma-ranges into account.
-> > 
-> > To sum up as I see it either restricting dma_map_resource() to map
-> > just the intra-bus addresses was wrong or there must be some
-> > additional mapping infrastructure for the denoted systems. Though I
-> > don't see a way the dma_map_resource() could be fixed to be suitable
-> > for each considered cases.
-> 
+>Hi Miles,
+>
+>Thank you for the patch! Perhaps something to improve:
+>
+>[auto build test WARNING on joro-iommu/next]
+>[also build test WARNING on v5.18-rc3 next-20220422]
+>[If your patch is applied to the wrong git tree, kindly drop us a note.
+>And when submitting patch, we suggest to use '--base' as documented in
+>https://git-scm.com/docs/git-format-patch]
+>
+>url:    https://github.com/intel-lab-lkp/linux/commits/Miles-Chen/iommu-mediatek-fix-NULL-pointer-dereference-when-printing-dev_name/20220423-070605
+>base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
+>config: hexagon-randconfig-r041-20220422 (https://download.01.org/0day-ci/archive/20220423/202204231446.IYKdZ674-lkp@intel.com/config)
+>compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5bd87350a5ae429baf8f373cb226a57b62f87280)
+>reproduce (this is a W=1 build):
+>        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>        chmod +x ~/bin/make.cross
+>        # https://github.com/intel-lab-lkp/linux/commit/85771767e503ca60069fe4e6ec2ddb80c7f9bafa
+>        git remote add linux-review https://github.com/intel-lab-lkp/linux
+>        git fetch --no-tags linux-review Miles-Chen/iommu-mediatek-fix-NULL-pointer-dereference-when-printing-dev_name/20220423-070605
+>        git checkout 85771767e503ca60069fe4e6ec2ddb80c7f9bafa
+>        # save the config file
+>        mkdir build_dir && cp config build_dir/.config
+>        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/iommu/
+>
+>If you fix the issue, kindly add following tag as appropriate
+>Reported-by: kernel test robot <lkp@intel.com>
+>
+>All warnings (new ones prefixed by >>):
+>
+>>> drivers/iommu/mtk_iommu.c:605:6: warning: variable 'larbdev' is uninitialized when used here [-Wuninitialized]
+>           if (larbdev) {
+>               ^~~~~~~
+>   drivers/iommu/mtk_iommu.c:597:24: note: initialize the variable 'larbdev' to silence this warning
+>           struct device *larbdev;
+>                                 ^
+>                                  = NULL
+>   1 warning generated.
 
-> FWIW the current semantics of dma_map_resource() are basically just to
-> insert IOMMU awareness where dmaengine drivers were previously just casting
-> phys_addr_t to dma_addr_t (or u32, or whatever else they put into their
-> descriptor/register/etc.) IIRC there was a bit of a question whether it
-> really belonged in the DMA API at all, since it's not really a "DMA"
-> operation in the conventional sense, and convenience was the only real
-> deciding argument. The relevant drivers at the time were not taking
-> dma_pfn_offset into account when consuming physical addresses directly, so
-> the new API didn't either.
-> 
-> That's just how things got to where they are today. 
+Thanks for catching this, I will fix this in next version.
 
-I see. Thanks for the clarification. Right, IOMMU is the only reason
-to have the current dma_map_resource() implementation.
-
-> Once again, I'm not
-> saying that what we have now is necessarily right, or that your change is
-> necessarily wrong, I just really want to understand specifically *why* you
-> need to make it, so we can evaluate the risk of possible breakage either
-> way. Theoretical "if"s aren't really enough.
-
-As I already said our SoC has the next structure (obviously the
-diagram is very simplified, but the gist is the same):
-              +-----+
-              | DDR |
-              +--+--+
-                 |
-  +-----+ +------+-------+ +---------+
-  | CPU +-+ Interconnect +-+ DEVs... |
-  +-----+ +-----^-+------+ +---------+
-     dma-ranges-| |-ranges
-              +-+-v-+
-              | PCI |
-              +-----+
-The PCIe peripheral devices are connected to the rest of the system
-via the DW PCIe Host controller. If the controller has the inbound
-iATU configured to re-map the system memory (RAM, IOMEM) in a
-non-one-to-one way (using the dma-ranges DT property of the PCIe host
-controller), then all the PCIe bus MRd/MWr TLP addresses will be
-accordingly translated on a way to all the connected to the
-interconnect slave devices including the MMIO devices. The kernel DMA
-API at this moment provides the only methods to get the PCIe-bus
-visible RAM addresses, while the physical addresses (for instance of
-the MMIO devices) can't be correctly translated for such case. I
-thought that dma_map_resource() could do the trick, but it turned out
-it didn't get the dma-ranges mapping into account.
-
-To be fully honest currently we don't really have any platform which
-would have had the strong requirement of doing DMA from the PCIe
-peripheral devices to the platform devices. But since the PCIe bus is
-the extendable bus (cold and hot pluggable) then such requirement may
-arise in the practice for instance on a platform with the PCIe NTB
-device attached to the PCIe bus and configured to access the system
-MMIO devices via the bridge. That part I find potentially problematic
-seeing the practical usecase is unsupported just due to the incomplete
-API. Moreover the dma_direct_map_resource() method semantic being
-different from the rest of the direct DMA mapping methods doesn't seem
-right from the usability point of view. Finally as you can see having
-the dma_direct_map_resource() defined as MMIO-specific doesn't
-mean that the dma_pfn_offset-based mapping isn't supposed to be taken
-into account.
-
--Sergey
-
-> 
-> Robin.
+thanks,
+Miles
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
