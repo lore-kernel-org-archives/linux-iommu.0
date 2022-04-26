@@ -4,81 +4,75 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BD032C433FE
-	for <iommu@archiver.kernel.org>; Tue, 26 Apr 2022 11:43:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DEF63C433F5
+	for <iommu@archiver.kernel.org>; Tue, 26 Apr 2022 12:21:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 5E68A610A9;
-	Tue, 26 Apr 2022 11:43:42 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 8C42060ADC;
+	Tue, 26 Apr 2022 12:21:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OD_B90V7TM-9; Tue, 26 Apr 2022 11:43:41 +0000 (UTC)
+	with ESMTP id VrN5t5eVudOn; Tue, 26 Apr 2022 12:21:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 04664605DB;
-	Tue, 26 Apr 2022 11:43:41 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 5FFB060A4F;
+	Tue, 26 Apr 2022 12:21:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CE701C0039;
-	Tue, 26 Apr 2022 11:43:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 239DBC0032;
+	Tue, 26 Apr 2022 12:21:09 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 05F14C002D
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 11:43:40 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4D81DC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 12:21:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id F3EF3610BC
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 11:43:39 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 2C78F607FE
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 12:21:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pYcdBn_ws8ii for <iommu@lists.linux-foundation.org>;
- Tue, 26 Apr 2022 11:43:38 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 4E1A6610A9
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 11:43:38 +0000 (UTC)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
- by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Kng4Q1L81zgYqW;
- Tue, 26 Apr 2022 19:43:18 +0800 (CST)
-Received: from dggpemm100002.china.huawei.com (7.185.36.179) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 19:43:35 +0800
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- dggpemm100002.china.huawei.com (7.185.36.179) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Apr 2022 19:43:33 +0800
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2375.024; Tue, 26 Apr 2022 12:43:32 +0100
-To: kernel test robot <lkp@intel.com>, "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org"
- <linux-acpi@vger.kernel.org>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>
-Subject: RE: [PATCH v11 4/9] ACPI/IORT: Add support to retrieve IORT RMR
- reserved regions
-Thread-Topic: [PATCH v11 4/9] ACPI/IORT: Add support to retrieve IORT RMR
- reserved regions
-Thread-Index: AQHYVmZKfsv4Ue0JXEuZq1FbubftY6z9MaGAgATjIbA=
-Date: Tue, 26 Apr 2022 11:43:31 +0000
-Message-ID: <ada9f0011e544fc5be9b61b7700f44d5@huawei.com>
-References: <20220422162907.1276-5-shameerali.kolothum.thodi@huawei.com>
- <202204231737.0jkKpxZk-lkp@intel.com>
-In-Reply-To: <202204231737.0jkKpxZk-lkp@intel.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.202.227.178]
+ with ESMTP id ADSG3nYsP2wS for <iommu@lists.linux-foundation.org>;
+ Tue, 26 Apr 2022 12:21:06 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from out162-62-58-211.mail.qq.com (out162-62-58-211.mail.qq.com
+ [162.62.58.211])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id BA1C2605A7
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 12:21:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+ s=s201512; t=1650975656;
+ bh=xlHfVV/WpfjpyQEaevLyX8+2tF55t8eXuS19NIZzbls=;
+ h=Subject:To:Cc:References:From:Date:In-Reply-To;
+ b=I+ywxQwPCzT0dPfpJJ0iCv90dT0zZrs+5LKmblYowGqYMGwMeMSSPb6ulNIucHG0x
+ sSP3jf9nby7pK2lv3tWa+vhBkEfLsqPgkc+q6jYUA072L5GGRtUpHTiP2vI+j5il8d
+ iPqvsENSe++olZLVrVLMNsPD3Ie2fi1wt0JX4m/4=
+Received: from [192.168.0.110] ([36.57.135.33])
+ by newxmesmtplogicsvrsza5.qq.com (NewEsmtp) with SMTP
+ id 535B90EB; Tue, 26 Apr 2022 20:20:53 +0800
+X-QQ-mid: xmsmtpt1650975653tqcwcd372
+Message-ID: <tencent_FAED72B58E26A4B4D706CE8EF4C1B408ED07@qq.com>
+X-QQ-XMAILINFO: NwU0tZNR0OQKIh9JsIaxc2Tp5qBSWIN8rGsi4T3dG7y+R5Nl7NBp8/+iigJVUR
+ QmKCVBJWydn8tm6wtu9N0vXaFT5bSucWn45GSn4g9UcwQo2z/5U0qQB56PX9ASgA0a/eYJul2jsC
+ CDlwHDDkB+mn79qpTrDQCHF2XAf+0CT8Ma23xpoM/63cPO+0XG6na90VJhsA5h/59HeCzf8jj6IS
+ bb29woWRF2CRPaq2Vq2i+Bgz6EHDPT8LoKCd2oAVM8VicD7+wH67N3YhmWPVPwJ5KwSmn0ZVQe2H
+ 7Xu/LQx5XnrR1Pvv/Kd55+gmDOUKJAvIDE2iiDA6N29DxVJwYRExC3YbFcPsbQd7xZwLwetE3Ajz
+ mAyAPUb6Efqp9Z09KSXhOq1k1H+4YAb+VrAGQm20IZT8/zBVz3+KYVLy7PSw1ykxuZ6xSNoVo3Ys
+ XuqcA3AAUwx5PTfTNeh5jX1hMo9V3h+TvBrvazoaA+lqNn7EQBQt22RQiHo/ZeQOz7jwNjtuNjtl
+ r8FBrFXMrk1ldKioDwYlfQSAdl78hh61CUIvpZvY8SAxMHOA+gMH8hUSHkUqm1hYOw/RjKYU34G6
+ YHsXhm7KGCO/IqHciCxEcvfS8GpLEQA39e2npPDfvTzSI6pH6THxRuAmBU2G5Fuys+PUG5GYYKkg
+ kF+p5sut4GJ+qLI5olhtc9FQ3MWfDsv97260eO4Tw6nvIXLW4bwDWSBLQxhBH/cSEA/zGjSExr8c
+ Dimxlek2uUVffDwC5PSq5e4J0LRfGOzzWaCnnUkN0nxPUzgjR8b1Q2A/9+UNfCV0mqMRtflbV0t4
+ 31sNLq48yhUsCCz9yaFNI02MVnClw0Etva9tTk0q+AY7IGVJfcHyYU8hPdGrAPxrFjpfjeVQsw1V
+ /7jHjLzaqeHpnycd1m3GVSbZGQcFRlKgnceRjDT/iwVEkiHbrbQnylNEVtqKIfLg==
+Subject: Re: [PATCH] iommu/arm-smmu-v3-sva: Fix mm use-after-free
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>, will@kernel.org,
+ robin.murphy@arm.com, joro@8bytes.org
+References: <20220426100400.147482-1-jean-philippe@linaro.org>
+From: "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>
+X-OQ-MSGID: <c8463ed8-888e-4a7a-8db0-e71e5b79c009@foxmail.com>
+Date: Tue, 26 Apr 2022 20:20:52 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
- "will@kernel.org" <will@kernel.org>,
- "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
- "jon@solid-run.com" <jon@solid-run.com>, Linuxarm <linuxarm@huawei.com>,
- "steven.price@arm.com" <steven.price@arm.com>,
- "hch@infradead.org" <hch@infradead.org>,
- "Guohanjun \(Hanjun Guo\)" <guohanjun@huawei.com>,
- "Sami.Mujawar@arm.com" <Sami.Mujawar@arm.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- wanghuiqiang <wanghuiqiang@huawei.com>
+In-Reply-To: <20220426100400.147482-1-jean-philippe@linaro.org>
+Content-Language: en-US
+Cc: zhangfei.gao@linaro.org, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,142 +85,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Shameerali Kolothum Thodi via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-> -----Original Message-----
-> From: kernel test robot [mailto:lkp@intel.com]
-> Sent: 23 April 2022 10:51
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
-> linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
-> iommu@lists.linux-foundation.org
-> Cc: llvm@lists.linux.dev; kbuild-all@lists.01.org; Linuxarm
-> <linuxarm@huawei.com>; lorenzo.pieralisi@arm.com; joro@8bytes.org;
-> robin.murphy@arm.com; will@kernel.org; wanghuiqiang
-> <wanghuiqiang@huawei.com>; Guohanjun (Hanjun Guo)
-> <guohanjun@huawei.com>; steven.price@arm.com; Sami.Mujawar@arm.com;
-> jon@solid-run.com; eric.auger@redhat.com; laurentiu.tudor@nxp.com;
-> hch@infradead.org
-> Subject: Re: [PATCH v11 4/9] ACPI/IORT: Add support to retrieve IORT RMR
-> reserved regions
-> 
-
-[...]
- 
-> >> drivers/acpi/arm64/iort.c:801:29: warning: no previous prototype for
-> function 'iort_rmr_alloc' [-Wmissing-prototypes]
->    struct iommu_iort_rmr_data *iort_rmr_alloc(struct acpi_iort_rmr_desc
-> *rmr_desc,
->                                ^
->    drivers/acpi/arm64/iort.c:801:1: note: declare 'static' if the function is not
-> intended to be used outside of this translation unit
->    struct iommu_iort_rmr_data *iort_rmr_alloc(struct acpi_iort_rmr_desc
-> *rmr_desc,
-
-Oops..missed the 'static' here. The rest of the warnings are because of the dependency
-with ACPICA header patch here[1].
-
-Hi Robin/Lorenzo,
-
-I am planning to send out an updated series soon with that 'static' added and the R-by
-tag received for patch #1 from Christoph. Appreciate if you can take a look and let me 
-know if you have any further comments on this series.
-
-Thanks,
-Shameer
-
-[1] https://lore.kernel.org/all/44610361.fMDQidcC6G@kreacher/
-
-
->    ^
->    static
->    drivers/acpi/arm64/iort.c:896:20: error: use of undeclared identifier
-> 'ACPI_IORT_RMR_REMAP_PERMITTED'
->                    if (rmr->flags & ACPI_IORT_RMR_REMAP_PERMITTED)
->                                     ^
->    drivers/acpi/arm64/iort.c:901:20: error: use of undeclared identifier
-> 'ACPI_IORT_RMR_ACCESS_PRIVILEGE'
->                    if (rmr->flags & ACPI_IORT_RMR_ACCESS_PRIVILEGE)
->                                     ^
->    drivers/acpi/arm64/iort.c:905:7: error: call to undeclared function
-> 'ACPI_IORT_RMR_ACCESS_ATTRIBUTES'; ISO C99 and later do not support
-> implicit function declarations [-Wimplicit-function-declaration]
->                    if (ACPI_IORT_RMR_ACCESS_ATTRIBUTES(rmr->flags) <=
->                        ^
->    drivers/acpi/arm64/iort.c:906:5: error: use of undeclared identifier
-> 'ACPI_IORT_RMR_ATTR_DEVICE_GRE'
->                                    ACPI_IORT_RMR_ATTR_DEVICE_GRE)
->                                    ^
->    drivers/acpi/arm64/iort.c:909:5: error: use of undeclared identifier
-> 'ACPI_IORT_RMR_ATTR_NORMAL_IWB_OWB'
-> 
-> ACPI_IORT_RMR_ATTR_NORMAL_IWB_OWB)
->                                    ^
->    1 warning and 5 errors generated.
-> 
-> 
-> vim +/iort_rmr_alloc +801 drivers/acpi/arm64/iort.c
-> 
->    800
->  > 801	struct iommu_iort_rmr_data *iort_rmr_alloc(struct
-> acpi_iort_rmr_desc *rmr_desc,
->    802						   int prot, enum iommu_resv_type type,
->    803						   u32 *sids, u32 num_sids)
->    804	{
->    805		struct iommu_iort_rmr_data *rmr_data;
->    806		struct iommu_resv_region *region;
->    807		u32 *sids_copy;
->    808		u64 addr = rmr_desc->base_address, size = rmr_desc->length;
->    809
->    810		rmr_data = kmalloc(sizeof(*rmr_data), GFP_KERNEL);
->    811		if (!rmr_data)
->    812			return NULL;
->    813
->    814		/* Create a copy of SIDs array to associate with this rmr_data */
->    815		sids_copy = kmemdup(sids, num_sids * sizeof(*sids),
-> GFP_KERNEL);
->    816		if (!sids_copy) {
->    817			kfree(rmr_data);
->    818			return NULL;
->    819		}
->    820		rmr_data->sids = sids_copy;
->    821		rmr_data->num_sids = num_sids;
->    822
->    823		if (!IS_ALIGNED(addr, SZ_64K) || !IS_ALIGNED(size, SZ_64K)) {
->    824			/* PAGE align base addr and size */
->    825			addr &= PAGE_MASK;
->    826			size = PAGE_ALIGN(size +
-> offset_in_page(rmr_desc->base_address));
->    827
->    828			pr_err(FW_BUG "RMR descriptor[0x%llx - 0x%llx] not
-> aligned to 64K, continue with [0x%llx - 0x%llx]\n",
->    829			       rmr_desc->base_address,
->    830			       rmr_desc->base_address + rmr_desc->length - 1,
->    831			       addr, addr + size - 1);
->    832		}
->    833
->    834		region = &rmr_data->rr;
->    835		INIT_LIST_HEAD(&region->list);
->    836		region->start = addr;
->    837		region->length = size;
->    838		region->prot = prot;
->    839		region->type = type;
->    840		region->free = iort_rmr_free;
->    841
->    842		return rmr_data;
->    843	}
->    844
-> 
-> --
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGksIEplYW4KCk9uIDIwMjIvNC8yNiDkuIvljYg2OjA0LCBKZWFuLVBoaWxpcHBlIEJydWNrZXIg
+d3JvdGU6Cj4gV2UgY3VycmVudGx5IGNhbGwgYXJtNjRfbW1fY29udGV4dF9wdXQoKSB3aXRob3V0
+IGhvbGRpbmcgYSByZWZlcmVuY2UgdG8KPiB0aGUgbW0sIHdoaWNoIGNhbiByZXN1bHQgaW4gdXNl
+LWFmdGVyLWZyZWUuIENhbGwgbW1ncmFiKCkvbW1kcm9wKCkgdG8KPiBlbnN1cmUgdGhlIG1tIG9u
+bHkgZ2V0cyBmcmVlZCBhZnRlciB3ZSB1bnBpbm5lZCB0aGUgQVNJRC4KPgo+IEZpeGVzOiAzMjc4
+NGE5NTYyZmIgKCJpb21tdS9hcm0tc21tdS12MzogSW1wbGVtZW50IGlvbW11X3N2YV9iaW5kL3Vu
+YmluZCgpIikKPiBTaWduZWQtb2ZmLWJ5OiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgPGplYW4tcGhp
+bGlwcGVAbGluYXJvLm9yZz4KPiAtLS0KPiAgIGRyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYz
+L2FybS1zbW11LXYzLXN2YS5jIHwgMTIgKysrKysrKysrKy0tCj4gICAxIGZpbGUgY2hhbmdlZCwg
+MTAgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKTWlzc2luZyArI2luY2x1ZGUgPGxpbnV4
+L3NjaGVkL21tLmg+IGZvciBjb21waWxlLgoKV2Ugc3RpbGwgbmVlZCB0aGUgZml4IG1vdmUgbW1f
+cGFzaWRfZHJvcCBmcm9tIF9fbW1wdXQgdG8gX19tbWRyb3AsIHJpZ2h0PwoKMS4gVGVzdCBPSyB3
+aXRoIHRoZSBtbV9wYXNpZF9kcm9wIHBhdGNoLgoKMi4gVGVzdCBmYWlsIGlmIHJldmVydCB0aGUg
+bW1fcGFzaWRfZHJvcCBwYXRjaCwKdWFjY2VfZm9wc19yZWxlYXNlClVuYWJsZSB0byBoYW5kbGUg
+a2VybmVsIHBhZ2luZyByZXF1ZXN0IGF0IHZpcnR1YWwgYWRkcmVzcyBmZmZmMDAwODNjYzZmZmMw
+CgpCeSB0aGUgd2F5LCB3ZSB1c2UgbW1ncmFiIGluIGJpbmQgYW5kIG1tcHV0IGluIHVuYmluZCBi
+ZWZvcmUsCnRoZW4gdGhlIGZvcHNfcmVsZWFzZSBpcyBub3QgYmUgY2FsbGVkIGlmIGV4aXQgd2l0
+aG91dCBjbG9zZShmZCkuCgpUaGlzIHBhdGNoIGRvZXMgbm90IGhhdmUgdGhpcyBpc3N1ZSwgc3Rp
+bGwgbm90IHVuZGVyc3RhbmQgd2h5LgoKVGhhbmtzCgo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lv
+bW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My1zdmEuYyBiL2RyaXZlcnMvaW9tbXUvYXJt
+L2FybS1zbW11LXYzL2FybS1zbW11LXYzLXN2YS5jCj4gaW5kZXggNTgyMTE0Zjk0ZGEwLi5jOTM0
+NzdhMmQ3ZjEgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJt
+LXNtbXUtdjMtc3ZhLmMKPiArKysgYi9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0t
+c21tdS12My1zdmEuYwo+IEBAIC05OCw5ICs5OCwxNCBAQCBzdGF0aWMgc3RydWN0IGFybV9zbW11
+X2N0eF9kZXNjICphcm1fc21tdV9hbGxvY19zaGFyZWRfY2Qoc3RydWN0IG1tX3N0cnVjdCAqbW0p
+Cj4gICAJc3RydWN0IGFybV9zbW11X2N0eF9kZXNjICpjZDsKPiAgIAlzdHJ1Y3QgYXJtX3NtbXVf
+Y3R4X2Rlc2MgKnJldCA9IE5VTEw7Cj4gICAKPiArCS8qIERvbid0IGZyZWUgdGhlIG1tIHVudGls
+IHdlIHJlbGVhc2UgdGhlIEFTSUQgKi8KPiArCW1tZ3JhYihtbSk7Cj4gKwo+ICAgCWFzaWQgPSBh
+cm02NF9tbV9jb250ZXh0X2dldChtbSk7Cj4gLQlpZiAoIWFzaWQpCj4gLQkJcmV0dXJuIEVSUl9Q
+VFIoLUVTUkNIKTsKPiArCWlmICghYXNpZCkgewo+ICsJCWVyciA9IC1FU1JDSDsKPiArCQlnb3Rv
+IG91dF9kcm9wX21tOwo+ICsJfQo+ICAgCj4gICAJY2QgPSBremFsbG9jKHNpemVvZigqY2QpLCBH
+RlBfS0VSTkVMKTsKPiAgIAlpZiAoIWNkKSB7Cj4gQEAgLTE2Nyw2ICsxNzIsOCBAQCBzdGF0aWMg
+c3RydWN0IGFybV9zbW11X2N0eF9kZXNjICphcm1fc21tdV9hbGxvY19zaGFyZWRfY2Qoc3RydWN0
+IG1tX3N0cnVjdCAqbW0pCj4gICAJa2ZyZWUoY2QpOwo+ICAgb3V0X3B1dF9jb250ZXh0Ogo+ICAg
+CWFybTY0X21tX2NvbnRleHRfcHV0KG1tKTsKPiArb3V0X2Ryb3BfbW06Cj4gKwltbWRyb3AobW0p
+Owo+ICAgCXJldHVybiBlcnIgPCAwID8gRVJSX1BUUihlcnIpIDogcmV0Owo+ICAgfQo+ICAgCj4g
+QEAgLTE3NSw2ICsxODIsNyBAQCBzdGF0aWMgdm9pZCBhcm1fc21tdV9mcmVlX3NoYXJlZF9jZChz
+dHJ1Y3QgYXJtX3NtbXVfY3R4X2Rlc2MgKmNkKQo+ICAgCWlmIChhcm1fc21tdV9mcmVlX2FzaWQo
+Y2QpKSB7Cj4gICAJCS8qIFVucGluIEFTSUQgKi8KPiAgIAkJYXJtNjRfbW1fY29udGV4dF9wdXQo
+Y2QtPm1tKTsKPiArCQltbWRyb3AoY2QtPm1tKTsKPiAgIAkJa2ZyZWUoY2QpOwo+ICAgCX0KPiAg
+IH0KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11
+IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xp
+c3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
