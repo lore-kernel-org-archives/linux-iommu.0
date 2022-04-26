@@ -1,82 +1,153 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B4419C433EF
-	for <iommu@archiver.kernel.org>; Tue, 26 Apr 2022 05:53:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 41C24C433EF
+	for <iommu@archiver.kernel.org>; Tue, 26 Apr 2022 07:30:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 5E676828AA;
-	Tue, 26 Apr 2022 05:53:00 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id C2DC940129;
+	Tue, 26 Apr 2022 07:30:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2h8klNUONbld; Tue, 26 Apr 2022 05:52:59 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id E8044823F6;
-	Tue, 26 Apr 2022 05:52:58 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vs0gMLFGyrhI; Tue, 26 Apr 2022 07:30:41 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A9E8A40531;
+	Tue, 26 Apr 2022 07:30:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B41EFC0032;
-	Tue, 26 Apr 2022 05:52:58 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A61F3C002D
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 05:52:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6EACBC0032;
+	Tue, 26 Apr 2022 07:30:40 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7605BC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 07:30:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 756E7828AA
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 05:52:56 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 5CB7C41724
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 07:30:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VoU-jyChebjH for <iommu@lists.linux-foundation.org>;
- Tue, 26 Apr 2022 05:52:51 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 077EA823F6
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 05:52:50 +0000 (UTC)
-X-UUID: 047268f25c58482995f0fcdeb044c5ba-20220426
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4, REQID:fa25fc3e-2187-4765-9b07-2a424b45dabf, OB:0,
- LO
- B:0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:52,FILE:0,RULE:Release_Ham,AC
- TION:release,TS:77
-X-CID-INFO: VERSION:1.1.4, REQID:fa25fc3e-2187-4765-9b07-2a424b45dabf, OB:0,
- LOB:
- 0,IP:0,URL:25,TC:0,Content:0,EDM:0,RT:0,SF:52,FILE:0,RULE:Spam_GS981B3D,AC
- TION:quarantine,TS:77
-X-CID-META: VersionHash:faefae9, CLOUDID:2f61f5f0-da02-41b4-b6df-58f4ccd36682,
- C
- OID:40cad22ed529,Recheck:0,SF:13|15|28|16|19|48,TC:nil,Content:0,EDM:-3,Fi
- le:nil,QS:0,BEC:nil
-X-UUID: 047268f25c58482995f0fcdeb044c5ba-20220426
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by
- mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 58083115; Tue, 26 Apr 2022 13:52:42 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 26 Apr 2022 13:52:41 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 26 Apr 2022 13:52:39 +0800
-Message-ID: <4ff4246cd5d567a3fa8124800f5d75be0034621c.camel@mediatek.com>
-Subject: Re: [PATCH v2] iommu/mediatek: fix NULL pointer dereference when
- printing dev_name
-To: Robin Murphy <robin.murphy@arm.com>, Miles Chen <miles.chen@mediatek.com>
-Date: Tue, 26 Apr 2022 13:52:38 +0800
-In-Reply-To: <9debe3ab-603d-0d30-a6aa-8963b48e83d4@arm.com>
-References: <20220425082449.1821-1-miles.chen@mediatek.com>
- <9debe3ab-603d-0d30-a6aa-8963b48e83d4@arm.com>
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id bGIsJp00LwLN for <iommu@lists.linux-foundation.org>;
+ Tue, 26 Apr 2022 07:30:36 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam10on20613.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e89::613])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id BA5D8408CF
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 07:30:36 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=T2N4ds3xrMiKYGRHf1f1xhNta1S+mqhtBIuVe65dXWtkG1x6qFvtCz/ZDi95FjspvY31rz81LF8RH350XR6H4+6w8NSy6eOZnKUg4yTMhDP1vArFFcIHIr6TxhqT765/5VmFOJFNRPcNKvtLuQRauf8c7IXvELO8YBiaM+ChUJayLctMzK72n2aMdwP8ZLw6ZCYpWG8jM2y/G5XUmAtsg9TNOnnUE0SEpX3V2kv91spT5dks/nWzvzCGuV6Hudhujukk4+2+5R4m1mSYMVfJ7jC0B6lPpsf/ZPxM9Rk10P4BFZVjaE98hnNLiTvIR9UVm45FVXMMmsS2JwaKaeyTTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Gd1sE0AHTrgZ/w6KiHsEZvG+2EYLn/xGlSDFWkkrxqg=;
+ b=aU6QFk0JjBgjAaQSo3MwUnMiBVyFcymBS64pBm/1wyDyHWU9e0lzs7sXSGtzEXez/G//TGQaSvZxmvXUl2IFrxwd04yHQwyIkeSvMUS03QQwtJaqgSir6V1MJV1EB7bpHdZLLAFScUXwSnvQ7BVtL2weP8A9t87iBc5M6LYa+EZaDBhP8XC1kJZ6e82VO/4AYWeij1hu67plT26b9W3HPqBi7VhzbYpshE919ev6EomtGHyC7EvN+HRQyV0EEYeJ8TjRKMWAgMCsTKAx3vcJ/A9QU5I8osan9PQExrZ8DnT/nBKSFP2ymg5i4XZ/EDl1im2vaCkTT74HiN49vmPeog==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Gd1sE0AHTrgZ/w6KiHsEZvG+2EYLn/xGlSDFWkkrxqg=;
+ b=V1IN/B0LSPAwwrGpgrNotCaUGrKiLQbvUp+KFr1iV4VqiSfZ4GTU7Kga0zwdglLMnCfZtl4XAA0JYmEN7VaK6LSQGUEUy3ZNor/IhZ8mXjpqtyyQ1Z+TmoNRg+sSTAHllqXUITWG9JxO6T8htBIdD9ei3Ik4p68vnuuVgTqSY/2NllQ9zKKqzo5RzlyVVuIOj4dRjhkrtd4fIn3cqrzXeae0s/R3X7MH6jmqFgcPnVG+qQ4XgVhB5o6+Tp8pPbCXAnpBn2/leCridFz6q9dcc9w/C6JLsRN98JSzYc6Q2MmGcgl3HBVoadrU3MXMROOPk1PH7+BI+GvVMuaMU8uyRg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CO6PR12MB5444.namprd12.prod.outlook.com (2603:10b6:5:35e::8) by
+ MN2PR12MB3629.namprd12.prod.outlook.com (2603:10b6:208:cb::29) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5186.14; Tue, 26 Apr 2022 07:30:33 +0000
+Received: from CO6PR12MB5444.namprd12.prod.outlook.com
+ ([fe80::a4b2:cd18:51b1:57e0]) by CO6PR12MB5444.namprd12.prod.outlook.com
+ ([fe80::a4b2:cd18:51b1:57e0%4]) with mapi id 15.20.5186.021; Tue, 26 Apr 2022
+ 07:30:33 +0000
+Message-ID: <0a33c287-3394-c3df-9bee-ef13fe3417e4@nvidia.com>
+Date: Tue, 26 Apr 2022 08:30:25 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [Patch v2] iommu: arm-smmu: disable large page mappings for
+ Nvidia arm-smmu
+Content-Language: en-US
+To: Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ linux-tegra@vger.kernel.org, iommu@lists.linux-foundation.org,
+ thierry.reding@gmail.com, vdumpa@nvidia.com,
+ Ashish Mhetre <amhetre@nvidia.com>, joro@8bytes.org, robin.murphy@arm.com,
+ linux-kernel@vger.kernel.org
+References: <20220421081504.24678-1-amhetre@nvidia.com>
+ <165053012237.502660.4418683392126519698.b4-ty@kernel.org>
+In-Reply-To: <165053012237.502660.4418683392126519698.b4-ty@kernel.org>
+X-ClientProxiedBy: AM5PR0301CA0017.eurprd03.prod.outlook.com
+ (2603:10a6:206:14::30) To CO6PR12MB5444.namprd12.prod.outlook.com
+ (2603:10b6:5:35e::8)
 MIME-Version: 1.0
-X-MTK: N
-Cc: Joerg Roedel <jroedel@suse.de>, linux-kernel@vger.kernel.org,
- Hans Verkuil <hverkuil-cisco@xs4all.nl>, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, Matthias
- Brugger <matthias.bgg@gmail.com>, Mauro
- Carvalho Chehab <mchehab@kernel.org>, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: bfb1ef70-2ee5-4ac0-4c66-08da2756a5bf
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3629:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB36292C43DC2B4A5423BD357ED9FB9@MN2PR12MB3629.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QN3G/5GDnT5DoR+48kUBp9eIANv6GJBTaLrEkaRmHkHQbljcnXRx857sS3XgT9QUCXGQJ9eeqhr04xO6Q/ApCdo6kQ7fMgYxZhjQ4oGDiReBecFOjIAakDCnHH3J1rr5lO8BL2W6yQXyoQeD8uT2l11O1CkWWKQYSevbLqTkgeg9Bdt4Zxp2y41oR+xDv7LF/4f323EwTYsKQfHFjkte0hWXEjnCQdUWsgUNJ9FYmvCbZ2uNPaVJbO1G2+70CuqYSsVrnr7iKtUi0WqGVH1nXQAOGXskNfT14UnHg1zHbGsdmyyCInr6GvNA1zYGXFELB3DdQUJ6sKKHQqFJpDbk31VQL256q6o4A9luTHDKDXAqN4pRhJLN0r4DJnX4doY3iyuX5+HPW8R3VpSWrggnc/ZTQwjIs1DdW+kaPfgiTN5FYLARKzGXzHRM3L33y7Z8dbf43ebaOgRkw4cMtsX9j9UMUTO7HYPr9KEPBvzYrRQL1hLwdqS0LGUT9TLRyZ9ApFNSTGUwr0tC/HRhT/wpoTLSdqPvQkAvl4na9XSyaq/vrh/JkTII7mA/J69ZXJptKp7myaP9oBTsCWuG2yk5b7DUzzIMCzOz7Kz7h6VQJ2sze8NO32LGqch/TxwQqShFAQflfVkPLXxBdclOoA2eOT9w3qTc8YQuyXXSR+26JiIZh1FlPfOnRR8f1uyToOmiFMW5h3pDFkrWsuttmLCCXs3J2p8EeCa/btViofTRZGtj1BVpqgA/1JA60Z/8q9IUX+1Cm2bloHTAINdpXdxn4+6W6ZbQveIOsgQSKCUrg61CgCwRPacihBLh7ErPgtR1LcQMXB/LuFqd3YNYIt0+eg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:CO6PR12MB5444.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(110136005)(6506007)(508600001)(53546011)(8676002)(921005)(55236004)(2906002)(66946007)(107886003)(66476007)(2616005)(66556008)(26005)(6512007)(31686004)(4326008)(36756003)(6666004)(316002)(38100700002)(7416002)(5660300002)(966005)(83380400001)(6486002)(31696002)(186003)(8936002)(86362001)(45980500001)(43740500002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Mm9BVmcwSDhmaG5PSzZVOGU1cXkybjVmdUFyaGtsRVRQbWlNQm1wMCtkNXJZ?=
+ =?utf-8?B?U29FL3hydFl1TVd2anZVcGJiTTBMblF1MU1Qd3J4VTgxUG85WkF0K2kvblRS?=
+ =?utf-8?B?Q09UN1dhRCtGMVR1c3FVeC9HWmVldFcxRkU4aUpYOEZ3YVFlL0UxbVJhYU1K?=
+ =?utf-8?B?bzY1eWRydVBTcmhoTG14d3VIK3ovTFE5ajFkWE9rL1RET3J2V0VNTmVoOVY0?=
+ =?utf-8?B?eW5nUWQ0Y1R1eE9jQ1Y5RCtpditKUWYvdlIzZDl4V1dTNWFlUjA4cXZWTzRI?=
+ =?utf-8?B?NVNKdm13NmFxSlNmR01BWG1SK0lrcmRxcXdGbldrUHU2Mmxua2pqQzAyVlNQ?=
+ =?utf-8?B?L0RSOXRGN2kyT21VK0ZQZWNuTWtZSGVNVkhrZFRjUVpEZEY3cjlzd3BzdmVI?=
+ =?utf-8?B?LzJpWWJ0QURSNGZxZjZ1MktyYndHdEpjS012c2JVZ2hIN2FJOXl6OERONjJF?=
+ =?utf-8?B?UXE3YnhGRFFGc01UaDUvdHJuanV2OHo2L0NxYnZxSlp2R0N5VmpvSUpVeU9y?=
+ =?utf-8?B?N3Y1ZEhuV011MkFMSkxFcUhmWlRCTVZ2U1pQQXZ3eURxZitLbnJFbW43M0FO?=
+ =?utf-8?B?bEhKWm9LNFlnNzMva1ZBRE0raFhvTGVpRWl3NURna25ZOHE4YVBoY1cxTjlo?=
+ =?utf-8?B?Y01JZ0hyb2tKUy9WRXA0cnFIdDZKRHFxWEcxUWVSaWcxOU4wcWdZblZhYVpx?=
+ =?utf-8?B?RmtxbURaWVZSY3VzWDhRdlJVZlNxYU16bElUZ2YxL3ZiZkVuQ2hlRzhKMGpv?=
+ =?utf-8?B?YTluRHJsR1k2eFNrZEZ4Z2x3R2lXd1RqSnlMZUU5V2FVckJIQnlXTGJMYjh2?=
+ =?utf-8?B?YjhMZVRhWTJ1Uys5eE1nMC9JVnV5Z2c2S2xDS2V1Nmx1Uys1aGo1T2dTbnQz?=
+ =?utf-8?B?UEorMmlxMDF4QTFTM2hBcWphWDgyZlowZEVaUDJLd0s1bVk3NlRBSSsyeGdE?=
+ =?utf-8?B?ZzRXemFJVCtQVmdkMDAybkdxdUVKWCt2c0dJellwTit4QUpsK24vckpaeS85?=
+ =?utf-8?B?c2N4ZDV6OWlmSDJGSkZZdkJOazMycXIvemlLT1lCa2tsWFRxcTRQS2JnU0o3?=
+ =?utf-8?B?QkkxWlczaHNrREJ2VWpEUmJzWFllY0ZCcVRHSVBBRDQ3UFZlRU5nS3IwMGFa?=
+ =?utf-8?B?Zmp0UkhkWGo0OVl4Qjc3OTdNeEJ0MHZiZ2FhTXRhbmlVYW95VjZ3dWpQazVN?=
+ =?utf-8?B?emIyanNrVmhyWWVQVDFGTXduVTVoSHIxekYvZUVZenpsUEYreXFobnkyWWZR?=
+ =?utf-8?B?dWZta3RXeW1oY0FGbW01V3MzOTN2Q3lmeGd0ZEFXc0JWYUNjMFl2NUd5a2dj?=
+ =?utf-8?B?YTlWOElHdVp3elloYVFXS1FlVVVjVEZaSENMcGNJNlg0ODFwUjE1UFM0YjdC?=
+ =?utf-8?B?R3FORlNlZnpzNUpZWlVTZGpjVzBXREZLanc1WnpjK3BpeWZpU2t5TUJtczc5?=
+ =?utf-8?B?L0l6aEkzL3NlR1BpR2FDRGlwVGhxeGlkRm9FR1JGSU1vL2x6cXQvd0Y2aDZB?=
+ =?utf-8?B?eFNZa2YvSkpZK1pUb25GMmJWdnZKRVNIN2FhcjVqaSsvaUFWdEIxSUMrSEFG?=
+ =?utf-8?B?a3FVanB5QnJCQTdTbDhkRHowYzR4TDJYUUcwUk5xeEcyLzZuN2VKb21YZnNC?=
+ =?utf-8?B?dWZnWStNeFZhM1paaDRhUVZ5Z1k4YnJmNHhCVGxYUUVscVQ1RXpsc1BaTk1D?=
+ =?utf-8?B?bzdEM09ROWpoSzFwTExRMG4zY1E2M3c3QVovYjFXTHpMVlNLTWwzdlgwOXFZ?=
+ =?utf-8?B?bldtL2NwSFBaNWJISUkwNmgyT1c3VnczV2JxU1pUeWZtVC9qcUw0VmNvRGNz?=
+ =?utf-8?B?MitXc3BDU24zSEVyNndZWGQvTDI1ZElhOUFvYURMajF5SHNmTmcvek9ZUXJG?=
+ =?utf-8?B?dkVjVmRNT2pNZFh0dXdHN3J2dlN5T2JZdlpyL3loL3J4clZvS0QxRERiZG5k?=
+ =?utf-8?B?VDV2bkJqMUpCbDJyS1JIbHAyQm1aZ0ppZVFCRU8xU1h4aktnQmowd3hpemt0?=
+ =?utf-8?B?cW5RVktLaFdWQjdma3lHa3czODdyb2dFSVY4enV3eGVTeUxTL3lUbVVEeTI0?=
+ =?utf-8?B?eUdGVjlGemgrY1Y5Q2xSckV4OUZkbHZITzQ2TDBuRzRIaVhJbERRamlJa3hq?=
+ =?utf-8?B?UjYwcTBmbzJ4LzNPUytkU1kyelAwZ3VtMUZqZ1hzL09QdlptbHBtNDY3WFpS?=
+ =?utf-8?B?Z3RrZE9EUVhESlNLM3ZHa2hRSElUN2lORWw0aGZKQXRNUndhT1d3M2ZBRWJB?=
+ =?utf-8?B?Y2lkWU1xWklsYkxjaHNhUXJGU2NHdDc2ajlTYis1MjJzcG85ckl0QytXUytH?=
+ =?utf-8?B?dEMxUmJ1UFcwOEdNeXdVM3NmMjBhcFI5SXBiT1l3RVNnYUcwYVdXblNLTEJv?=
+ =?utf-8?Q?90ERtWiY2PKCzBng=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bfb1ef70-2ee5-4ac0-4c66-08da2756a5bf
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5444.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 07:30:33.0619 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: M+8Lhez1yRFzCgAshkgAnslegGwIsv1bdrayvZ8zWSl2uZ6QHTx0Q5jZpsEqg/UhTRHgxLSbuoQNhglSYtNJbg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3629
+Cc: catalin.marinas@arm.com, Snikam@nvidia.com, kernel-team@android.com,
+ Pritesh Raithatha <praithatha@nvidia.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,238 +160,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Yong Wu <yong.wu@mediatek.com>
-Content-Type: text/plain; charset="us-ascii"
+From: Jon Hunter via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jon Hunter <jonathanh@nvidia.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 2022-04-25 at 11:03 +0100, Robin Murphy wrote:
-> On 2022-04-25 09:24, Miles Chen via iommu wrote:
-> > When larbdev is NULL (in the case I hit, the node is incorrectly
-> > set
-> > iommus = <&iommu NUM>), it will cause device_link_add() fail and
-> > kernel crashes when we try to print dev_name(larbdev).
-> > 
-> > Fix it by adding a NULL pointer check before
-> > device_link_add/device_link_remove.
-> > 
-> > It should work for normal correct setting and avoid the crash
-> > caused
-> > by my incorrect setting.
-> > 
-> > Error log:
-> > [   18.189042][  T301] Unable to handle kernel NULL pointer
-> > dereference at virtual address 0000000000000050
-> > [   18.190247][  T301] Mem abort info:
-> > [   18.190255][  T301]   ESR = 0x96000005
-> > [   18.190263][  T301]   EC = 0x25: DABT (current EL), IL = 32 bits
-> > [   18.192142][  T301]   SET = 0, FnV = 0
-> > [   18.192151][  T301]   EA = 0, S1PTW = 0
-> > [   18.194710][  T301]   FSC = 0x05: level 1 translation fault
-> > [   18.195424][  T301] Data abort info:
-> > [   18.195888][  T301]   ISV = 0, ISS = 0x00000005
-> > [   18.196500][  T301]   CM = 0, WnR = 0
-> > [   18.196977][  T301] user pgtable: 4k pages, 39-bit VAs,
-> > pgdp=0000000104f9e000
-> > [   18.197889][  T301] [0000000000000050] pgd=0000000000000000,
-> > p4d=0000000000000000, pud=0000000000000000
-> > [   18.199220][  T301] Internal error: Oops: 96000005 [#1] PREEMPT
-> > SMP
-> > [   18.343152][  T301] Kernel Offset: 0x1444080000 from
-> > 0xffffffc008000000
-> > [   18.343988][  T301] PHYS_OFFSET: 0x40000000
-> > [   18.344519][  T301] pstate: a0400005 (NzCv daif +PAN -UAO)
-> > [   18.345213][  T301] pc : mtk_iommu_probe_device+0xf8/0x118
-> > [mtk_iommu]
-> > [   18.346050][  T301] lr : mtk_iommu_probe_device+0xd0/0x118
-> > [mtk_iommu]
-> > [   18.346884][  T301] sp : ffffffc00a5635e0
-> > [   18.347392][  T301] x29: ffffffc00a5635e0 x28: ffffffd44a46c1d8
-> > [   18.348156][  T301] x27: ffffff80c39a8000 x26: ffffffd44a80cc38
-> > [   18.348917][  T301] x25: 0000000000000000 x24: ffffffd44a80cc38
-> > [   18.349677][  T301] x23: ffffffd44e4da4c6 x22: ffffffd44a80cc38
-> > [   18.350438][  T301] x21: ffffff80cecd1880 x20: 0000000000000000
-> > [   18.351198][  T301] x19: ffffff80c439f010 x18: ffffffc00a50d0c0
-> > [   18.351959][  T301] x17: ffffffffffffffff x16: 0000000000000004
-> > [   18.352719][  T301] x15: 0000000000000004 x14: ffffffd44eb5d420
-> > [   18.353480][  T301] x13: 0000000000000ad2 x12: 0000000000000003
-> > [   18.354241][  T301] x11: 00000000fffffad2 x10: c0000000fffffad2
-> > [   18.355003][  T301] x9 : a0d288d8d7142d00 x8 : a0d288d8d7142d00
-> > [   18.355763][  T301] x7 : ffffffd44c2bc640 x6 : 0000000000000000
-> > [   18.356524][  T301] x5 : 0000000000000080 x4 : 0000000000000001
-> > [   18.357284][  T301] x3 : 0000000000000000 x2 : 0000000000000005
-> > [   18.358045][  T301] x1 : 0000000000000000 x0 : 0000000000000000
-> > [   18.360208][  T301] Hardware name: MT6873 (DT)
-> > [   18.360771][  T301] Call trace:
-> > [   18.361168][  T301]  dump_backtrace+0xf8/0x1f0
-> > [   18.361737][  T301]  dump_stack_lvl+0xa8/0x11c
-> > [   18.362305][  T301]  dump_stack+0x1c/0x2c
-> > [   18.362816][  T301]  mrdump_common_die+0x184/0x40c [mrdump]
-> > [   18.363575][  T301]  ipanic_die+0x24/0x38 [mrdump]
-> > [   18.364230][  T301]  atomic_notifier_call_chain+0x128/0x2b8
-> > [   18.364937][  T301]  die+0x16c/0x568
-> > [   18.365394][  T301]  __do_kernel_fault+0x1e8/0x214
-> > [   18.365402][  T301]  do_page_fault+0xb8/0x678
-> > [   18.366934][  T301]  do_translation_fault+0x48/0x64
-> > [   18.368645][  T301]  do_mem_abort+0x68/0x148
-> > [   18.368652][  T301]  el1_abort+0x40/0x64
-> > [   18.368660][  T301]  el1h_64_sync_handler+0x54/0x88
-> > [   18.368668][  T301]  el1h_64_sync+0x68/0x6c
-> > [   18.368673][  T301]  mtk_iommu_probe_device+0xf8/0x118
-> > [mtk_iommu]
-> > [   18.369840][  T301]  __iommu_probe_device+0x12c/0x358
-> > [   18.370880][  T301]  iommu_probe_device+0x3c/0x31c
-> > [   18.372026][  T301]  of_iommu_configure+0x200/0x274
-> > [   18.373587][  T301]  of_dma_configure_id+0x1b8/0x230
-> > [   18.375200][  T301]  platform_dma_configure+0x24/0x3c
-> > [   18.376456][  T301]  really_probe+0x110/0x504
-> > [   18.376464][  T301]  __driver_probe_device+0xb4/0x188
-> > [   18.376472][  T301]  driver_probe_device+0x5c/0x2b8
-> > [   18.376481][  T301]  __driver_attach+0x338/0x42c
-> > [   18.377992][  T301]  bus_add_driver+0x218/0x4c8
-> > [   18.379389][  T301]  driver_register+0x84/0x17c
-> > [   18.380580][  T301]  __platform_driver_register+0x28/0x38
-> > ...
-> > 
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Fixes: 635319a4a744 ("media: iommu/mediatek: Add device_link
-> > between the consumer and the larb devices")
-> > Signed-off-by: Miles Chen <miles.chen@mediatek.com>
-> > 
-> > ---
-> > 
-> > Change since v1
-> > fix a build warning reported by kernel test robot
-> > https://lore.kernel.org/lkml/202204231446.IYKdZ674-lkp@intel.com/
-> > 
-> > ---
-> >   drivers/iommu/mtk_iommu.c    | 13 ++++++++-----
-> >   drivers/iommu/mtk_iommu_v1.c | 13 ++++++++-----
-> >   2 files changed, 16 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index 6fd75a60abd6..03e0133f346a 100644
-> > --- a/drivers/iommu/mtk_iommu.c
-> > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -581,10 +581,12 @@ static struct iommu_device
-> > *mtk_iommu_probe_device(struct device *dev)
-> >   		}
-> >   	}
-> >   	larbdev = data->larb_imu[larbid].dev;
-> > -	link = device_link_add(dev, larbdev,
-> > -			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
-> > -	if (!link)
-> > -		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
-> > +	if (larbdev) {
+Hi Will,
+
+On 22/04/2022 11:55, Will Deacon wrote:
+> On Thu, 21 Apr 2022 13:45:04 +0530, Ashish Mhetre wrote:
+>> Tegra194 and Tegra234 SoCs have the erratum that causes walk cache
+>> entries to not be invalidated correctly. The problem is that the walk
+>> cache index generated for IOVA is not same across translation and
+>> invalidation requests. This is leading to page faults when PMD entry is
+>> released during unmap and populated with new PTE table during subsequent
+>> map request. Disabling large page mappings avoids the release of PMD
+>> entry and avoid translations seeing stale PMD entry in walk cache.
+>> Fix this by limiting the page mappings to PAGE_SIZE for Tegra194 and
+>> Tegra234 devices. This is recommended fix from Tegra hardware design
+>> team.
+>>
+>> [...]
 > 
-> Until the MT8195 infra MMU support lands, is there ever a case where 
-> it's actually valid for larbdev to be NULL? If not, I think it would
-> be 
-> a lot clearer to explicitly fail the probe here, rather than
-> silently 
-> continue and risk fatal errors, hangs, or other weird behaviour if 
-> there's no guarantee that the correct LARB is powered up (plus then
-> the 
-> release callbacks wouldn't need to worry about it either).
-
-Yes. It should return fail for this case. This issue only happens when
-the dts parameters doesn't respect the definition from the binding[1].
-
-Locally Miles tested with a internal definition that have not send
-upstream to get this KE. In this case, I'm not sure if we should
-request the user use the right ID in dts. Anyway I have no objection to
-modifying this, then something like this: (Avoid invalid input from
-dtb)
-
-@@ -790,6 +790,8 @@ static struct iommu_device
-*mtk_iommu_probe_device(struct device *dev)
- 	 * All the ports in each a device should be in the same larbs.
- 	 */
- 	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
-+	if (larbid >= MTK_LARB_NR_MAX)
-+		return ERR_PTR(-EINVAL);
- 	for (i = 1; i < fwspec->num_ids; i++) {
- 		larbidx = MTK_M4U_TO_LARB(fwspec->ids[i]);
- 		if (larbid != larbidx) {
-@@ -799,6 +801,8 @@ static struct iommu_device
-*mtk_iommu_probe_device(struct device *dev)
- 		}
- 	}
- 	larbdev = data->larb_imu[larbid].dev;
-+	if (!larbdev)
-+		return ERR_PTR(-EINVAL);
- 	link = device_link_add(dev, larbdev,
- 			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
- 	if (!link)
-
-
-[1] 
-https://elixir.bootlin.com/linux/v5.18-rc1/source/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml#L116
-
-
+> Applied to will (for-joerg/arm-smmu/fixes), thanks!
 > 
-> Robin.
+> [1/1] iommu: arm-smmu: disable large page mappings for Nvidia arm-smmu
+>        https://git.kernel.org/will/c/4a25f2ea0e03
 > 
-> > +		link = device_link_add(dev, larbdev,
-> > +				       DL_FLAG_PM_RUNTIME |
-> > DL_FLAG_STATELESS);
-> > +		if (!link)
-> > +			dev_err(dev, "Unable to link %s\n",
-> > dev_name(larbdev));
-> > +	}
-> >   	return &data->iommu;
-> >   }
-> >   
-> > @@ -601,7 +603,8 @@ static void mtk_iommu_release_device(struct
-> > device *dev)
-> >   	data = dev_iommu_priv_get(dev);
-> >   	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
-> >   	larbdev = data->larb_imu[larbid].dev;
-> > -	device_link_remove(dev, larbdev);
-> > +	if (larbdev)
-> > +		device_link_remove(dev, larbdev);
-> >   
-> >   	iommu_fwspec_free(dev);
-> >   }
-> > diff --git a/drivers/iommu/mtk_iommu_v1.c
-> > b/drivers/iommu/mtk_iommu_v1.c
-> > index ecff800656e6..18365c73eeb2 100644
-> > --- a/drivers/iommu/mtk_iommu_v1.c
-> > +++ b/drivers/iommu/mtk_iommu_v1.c
-> > @@ -467,10 +467,12 @@ static struct iommu_device
-> > *mtk_iommu_probe_device(struct device *dev)
-> >   	}
-> >   
-> >   	larbdev = data->larb_imu[larbid].dev;
-> > -	link = device_link_add(dev, larbdev,
-> > -			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
-> > -	if (!link)
-> > -		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
-> > +	if (larbdev) {
-> > +		link = device_link_add(dev, larbdev,
-> > +				       DL_FLAG_PM_RUNTIME |
-> > DL_FLAG_STATELESS);
-> > +		if (!link)
-> > +			dev_err(dev, "Unable to link %s\n",
-> > dev_name(larbdev));
-> > +	}
-> >   
-> >   	return &data->iommu;
-> >   }
-> > @@ -502,7 +504,8 @@ static void mtk_iommu_release_device(struct
-> > device *dev)
-> >   	data = dev_iommu_priv_get(dev);
-> >   	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
-> >   	larbdev = data->larb_imu[larbid].dev;
-> > -	device_link_remove(dev, larbdev);
-> > +	if (larbdev)
-> > +		device_link_remove(dev, larbdev);
-> >   
-> >   	iommu_fwspec_free(dev);
-> >   }
 
+Thanks for applying. Sorry to be late to the party, but feel free
+to add my ...
+
+Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
+
+Also any chance we could tag for stable? Probably the most
+appropriate fixes-tag would be ...
+
+Fixes: aab5a1c88276 ("iommu/arm-smmu: add NVIDIA implementation for ARM MMU-500 usage")
+
+Thanks!
+Jon
+
+-- 
+nvpublic
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
