@@ -4,58 +4,74 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B4818C433F5
-	for <iommu@archiver.kernel.org>; Tue, 26 Apr 2022 15:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BB315C433EF
+	for <iommu@archiver.kernel.org>; Tue, 26 Apr 2022 16:43:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 41A66408AE;
-	Tue, 26 Apr 2022 15:30:05 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6CFF940538;
+	Tue, 26 Apr 2022 16:43:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kHvL2bL7OjDM; Tue, 26 Apr 2022 15:30:02 +0000 (UTC)
+	with ESMTP id xGFgVBjLV22w; Tue, 26 Apr 2022 16:43:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id BCC064015F;
-	Tue, 26 Apr 2022 15:30:01 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A7E4640B48;
+	Tue, 26 Apr 2022 16:43:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8EF0EC0039;
-	Tue, 26 Apr 2022 15:30:01 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AB184C002D
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 15:30:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7475DC0032;
+	Tue, 26 Apr 2022 16:43:07 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 37A9EC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 16:43:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 97B1B82F6F
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 15:30:00 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 155984188D
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 16:43:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JKmD3ZG-G8dy for <iommu@lists.linux-foundation.org>;
- Tue, 26 Apr 2022 15:29:58 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id E5pJLAQ3WviP for <iommu@lists.linux-foundation.org>;
+ Tue, 26 Apr 2022 16:43:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 97B1182BC4
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 15:29:58 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CC3B323A;
- Tue, 26 Apr 2022 08:29:57 -0700 (PDT)
-Received: from lpieralisi (unknown [10.57.13.189])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id ACB443F73B;
- Tue, 26 Apr 2022 08:29:54 -0700 (PDT)
-Date: Tue, 26 Apr 2022 16:29:48 +0100
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v11 4/9] ACPI/IORT: Add support to retrieve IORT RMR
- reserved regions
-Message-ID: <YmgP7KFe/tNYXKd2@lpieralisi>
-References: <20220422162907.1276-1-shameerali.kolothum.thodi@huawei.com>
- <20220422162907.1276-5-shameerali.kolothum.thodi@huawei.com>
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id F26DB4182E
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 16:43:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1650991383; x=1682527383;
+ h=date:from:to:cc:subject:message-id:in-reply-to:
+ references:mime-version:content-transfer-encoding;
+ bh=74prdzNGj3JnjJUS0sO17DGbGa0TVADKS42cC0+9fsE=;
+ b=GcRmGAfMiMVgTEnF0GT6e4HWFnl03babUSDGe2VMDEhjjzCLn74fWwuF
+ xolO4XeThy4fEugr0n3oyRdqEBiZYZdRmgHRPQe6Pds9gCKDD7QqRt8KI
+ Lg/3xBKyJBuHbe1rsZu4BqKpN6A8zfxTsmj2nhou9p0FsMAath0pr0sha
+ JkB6EpLfZ0WwpVmA7g7iORANjVJqq2TtnTWFTF2WMr7bxpiDStqEXPBW/
+ GcPQg5YJDVR2qcATEIbnLS60elI3tfeFfqpaE9PMGF8gxlSttyGkpwZYA
+ 9didJ5ikYTKtL2/EGj+p4RA4xnKDUNZ83Q5LduAxvGp5vKU4DWTGWuqgB w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="328588981"
+X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; d="scan'208";a="328588981"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Apr 2022 09:40:54 -0700
+X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; d="scan'208";a="513243859"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+ by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Apr 2022 09:40:54 -0700
+Date: Tue, 26 Apr 2022 09:44:32 -0700
+From: Jacob Pan <jacob.jun.pan@intel.com>
+To: Alex Deucher <alexander.deucher@amd.com>
+Subject: Re: [PATCH] Documentation: x86: rework IOMMU documentation
+Message-ID: <20220426094432.2970966f@jacob-builder>
+In-Reply-To: <20220422200607.627754-1-alexander.deucher@amd.com>
+References: <20220422200607.627754-1-alexander.deucher@amd.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220422162907.1276-5-shameerali.kolothum.thodi@huawei.com>
-Cc: will@kernel.org, jon@solid-run.com, linuxarm@huawei.com,
- steven.price@arm.com, hch@infradead.org, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org, wanghuiqiang@huawei.com,
- guohanjun@huawei.com, Sami.Mujawar@arm.com, robin.murphy@arm.com,
- linux-arm-kernel@lists.infradead.org
+Cc: dave.hansen@linux.intel.com, "Lu, Baolu" <baolu.lu@intel.com>,
+ corbet@lwn.net, robin.murphy@arm.com, x86@kernel.org,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, Vasant.Hegde@amd.com,
+ iommu@lists.linux-foundation.org, mingo@redhat.com, bp@alien8.de,
+ jacob.jun.pan@intel.com, hpa@zytor.com, tglx@linutronix.de, will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -73,351 +89,341 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Apr 22, 2022 at 05:29:02PM +0100, Shameer Kolothum wrote:
-> Parse through the IORT RMR nodes and populate the reserve region list
-> corresponding to a given IOMMU and device(optional). Also, go through
-> the ID mappings of the RMR node and retrieve all the SIDs associated
-> with it.
+Hi Alex,
+
+Thanks for doing this, really helps to catch up the current state. Please
+see my comments inline.
+
+On Fri, 22 Apr 2022 16:06:07 -0400, Alex Deucher
+<alexander.deucher@amd.com> wrote:
+
+> Add preliminary documentation for AMD IOMMU and combine
+> with the existing Intel IOMMU documentation and clean
+> up and modernize some of the existing documentation to
+> align with the current state of the kernel.
 > 
-> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 > ---
->  drivers/acpi/arm64/iort.c | 290 ++++++++++++++++++++++++++++++++++++++
->  include/linux/iommu.h     |   8 ++
->  2 files changed, 298 insertions(+)
-
-Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index cd5d1d7823cb..5be6e8ecca38 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -788,6 +788,293 @@ void acpi_configure_pmsi_domain(struct device *dev)
->  }
->  
->  #ifdef CONFIG_IOMMU_API
-> +static void iort_rmr_free(struct device *dev,
-> +			  struct iommu_resv_region *region)
-> +{
-> +	struct iommu_iort_rmr_data *rmr_data;
-> +
-> +	rmr_data = container_of(region, struct iommu_iort_rmr_data, rr);
-> +	kfree(rmr_data->sids);
-> +	kfree(rmr_data);
-> +}
-> +
-> +struct iommu_iort_rmr_data *iort_rmr_alloc(struct acpi_iort_rmr_desc *rmr_desc,
-> +					   int prot, enum iommu_resv_type type,
-> +					   u32 *sids, u32 num_sids)
-> +{
-> +	struct iommu_iort_rmr_data *rmr_data;
-> +	struct iommu_resv_region *region;
-> +	u32 *sids_copy;
-> +	u64 addr = rmr_desc->base_address, size = rmr_desc->length;
-> +
-> +	rmr_data = kmalloc(sizeof(*rmr_data), GFP_KERNEL);
-> +	if (!rmr_data)
-> +		return NULL;
-> +
-> +	/* Create a copy of SIDs array to associate with this rmr_data */
-> +	sids_copy = kmemdup(sids, num_sids * sizeof(*sids), GFP_KERNEL);
-> +	if (!sids_copy) {
-> +		kfree(rmr_data);
-> +		return NULL;
-> +	}
-> +	rmr_data->sids = sids_copy;
-> +	rmr_data->num_sids = num_sids;
-> +
-> +	if (!IS_ALIGNED(addr, SZ_64K) || !IS_ALIGNED(size, SZ_64K)) {
-> +		/* PAGE align base addr and size */
-> +		addr &= PAGE_MASK;
-> +		size = PAGE_ALIGN(size + offset_in_page(rmr_desc->base_address));
-> +
-> +		pr_err(FW_BUG "RMR descriptor[0x%llx - 0x%llx] not aligned to 64K, continue with [0x%llx - 0x%llx]\n",
-> +		       rmr_desc->base_address,
-> +		       rmr_desc->base_address + rmr_desc->length - 1,
-> +		       addr, addr + size - 1);
-> +	}
-> +
-> +	region = &rmr_data->rr;
-> +	INIT_LIST_HEAD(&region->list);
-> +	region->start = addr;
-> +	region->length = size;
-> +	region->prot = prot;
-> +	region->type = type;
-> +	region->free = iort_rmr_free;
-> +
-> +	return rmr_data;
-> +}
-> +
-> +static void iort_rmr_desc_check_overlap(struct acpi_iort_rmr_desc *desc,
-> +					u32 count)
-> +{
-> +	int i, j;
-> +
-> +	for (i = 0; i < count; i++) {
-> +		u64 end, start = desc[i].base_address, length = desc[i].length;
-> +
-> +		if (!length) {
-> +			pr_err(FW_BUG "RMR descriptor[0x%llx] with zero length, continue anyway\n",
-> +			       start);
-> +			continue;
-> +		}
-> +
-> +		end = start + length - 1;
-> +
-> +		/* Check for address overlap */
-> +		for (j = i + 1; j < count; j++) {
-> +			u64 e_start = desc[j].base_address;
-> +			u64 e_end = e_start + desc[j].length - 1;
-> +
-> +			if (start <= e_end && end >= e_start)
-> +				pr_err(FW_BUG "RMR descriptor[0x%llx - 0x%llx] overlaps, continue anyway\n",
-> +				       start, end);
-> +		}
-> +	}
-> +}
-> +
-> +/*
-> + * Please note, we will keep the already allocated RMR reserve
-> + * regions in case of a memory allocation failure.
-> + */
-> +static void iort_get_rmrs(struct acpi_iort_node *node,
-> +			  struct acpi_iort_node *smmu,
-> +			  u32 *sids, u32 num_sids,
-> +			  struct list_head *head)
-> +{
-> +	struct acpi_iort_rmr *rmr = (struct acpi_iort_rmr *)node->node_data;
-> +	struct acpi_iort_rmr_desc *rmr_desc;
-> +	int i;
-> +
-> +	rmr_desc = ACPI_ADD_PTR(struct acpi_iort_rmr_desc, node,
-> +				rmr->rmr_offset);
-> +
-> +	iort_rmr_desc_check_overlap(rmr_desc, rmr->rmr_count);
-> +
-> +	for (i = 0; i < rmr->rmr_count; i++, rmr_desc++) {
-> +		struct iommu_iort_rmr_data *rmr_data;
-> +		enum iommu_resv_type type;
-> +		int prot = IOMMU_READ | IOMMU_WRITE;
-> +
-> +		if (rmr->flags & ACPI_IORT_RMR_REMAP_PERMITTED)
-> +			type = IOMMU_RESV_DIRECT_RELAXABLE;
-> +		else
-> +			type = IOMMU_RESV_DIRECT;
-> +
-> +		if (rmr->flags & ACPI_IORT_RMR_ACCESS_PRIVILEGE)
-> +			prot |= IOMMU_PRIV;
-> +
-> +		/* Attributes 0x00 - 0x03 represents device memory */
-> +		if (ACPI_IORT_RMR_ACCESS_ATTRIBUTES(rmr->flags) <=
-> +				ACPI_IORT_RMR_ATTR_DEVICE_GRE)
-> +			prot |= IOMMU_MMIO;
-> +		else if (ACPI_IORT_RMR_ACCESS_ATTRIBUTES(rmr->flags) ==
-> +				ACPI_IORT_RMR_ATTR_NORMAL_IWB_OWB)
-> +			prot |= IOMMU_CACHE;
-> +
-> +		rmr_data = iort_rmr_alloc(rmr_desc, prot, type,
-> +					  sids, num_sids);
-> +		if (!rmr_data)
-> +			return;
-> +
-> +		list_add_tail(&rmr_data->rr.list, head);
-> +	}
-> +}
-> +
-> +static u32 *iort_rmr_alloc_sids(u32 *sids, u32 count, u32 id_start,
-> +				u32 new_count)
-> +{
-> +	u32 *new_sids;
-> +	u32 total_count = count + new_count;
-> +	int i;
-> +
-> +	new_sids = krealloc_array(sids, count + new_count,
-> +				  sizeof(*new_sids), GFP_KERNEL);
-> +	if (!new_sids)
-> +		return NULL;
-> +
-> +	for (i = count; i < total_count; i++)
-> +		new_sids[i] = id_start++;
-> +
-> +	return new_sids;
-> +}
-> +
-> +static bool iort_rmr_has_dev(struct device *dev, u32 id_start,
-> +			     u32 id_count)
-> +{
-> +	int i;
-> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> +
-> +	/*
-> +	 * Make sure the kernel has preserved the boot firmware PCIe
-> +	 * configuration. This is required to ensure that the RMR PCIe
-> +	 * StreamIDs are still valid (Refer: ARM DEN 0049E.d Section 3.1.1.5).
-> +	 */
-> +	if (dev_is_pci(dev)) {
-> +		struct pci_dev *pdev = to_pci_dev(dev);
-> +		struct pci_host_bridge *host = pci_find_host_bridge(pdev->bus);
-> +
-> +		if (!host->preserve_config)
-> +			return false;
-> +	}
-> +
-> +	for (i = 0; i < fwspec->num_ids; i++) {
-> +		if (fwspec->ids[i] >= id_start &&
-> +		    fwspec->ids[i] <= id_start + id_count)
-> +			return true;
-> +	}
-> +
-> +	return false;
-> +}
-> +
-> +static void iort_node_get_rmr_info(struct acpi_iort_node *node,
-> +				   struct acpi_iort_node *iommu,
-> +				   struct device *dev, struct list_head *head)
-> +{
-> +	struct acpi_iort_node *smmu = NULL;
-> +	struct acpi_iort_rmr *rmr;
-> +	struct acpi_iort_id_mapping *map;
-> +	u32 *sids = NULL;
-> +	u32 num_sids = 0;
-> +	int i;
-> +
-> +	if (!node->mapping_offset || !node->mapping_count) {
-> +		pr_err(FW_BUG "Invalid ID mapping, skipping RMR node %p\n",
-> +		       node);
-> +		return;
-> +	}
-> +
-> +	rmr = (struct acpi_iort_rmr *)node->node_data;
-> +	if (!rmr->rmr_offset || !rmr->rmr_count)
-> +		return;
-> +
-> +	map = ACPI_ADD_PTR(struct acpi_iort_id_mapping, node,
-> +			   node->mapping_offset);
-> +
-> +	/*
-> +	 * Go through the ID mappings and see if we have a match for SMMU
-> +	 * and dev(if !NULL). If found, get the sids for the Node.
-> +	 * Please note, id_count is equal to the number of IDs  in the
-> +	 * range minus one.
-> +	 */
-> +	for (i = 0; i < node->mapping_count; i++, map++) {
-> +		struct acpi_iort_node *parent;
-> +
-> +		if (!map->id_count)
-> +			continue;
-> +
-> +		parent = ACPI_ADD_PTR(struct acpi_iort_node, iort_table,
-> +				      map->output_reference);
-> +		if (parent != iommu)
-> +			continue;
-> +
-> +		/* If dev is valid, check RMR node corresponds to the dev SID */
-> +		if (dev && !iort_rmr_has_dev(dev, map->output_base,
-> +					     map->id_count))
-> +			continue;
-> +
-> +		/* Retrieve SIDs associated with the Node. */
-> +		sids = iort_rmr_alloc_sids(sids, num_sids, map->output_base,
-> +					   map->id_count + 1);
-> +		if (!sids)
-> +			return;
-> +
-> +		num_sids += map->id_count + 1;
-> +	}
-> +
-> +	if (!sids)
-> +		return;
-> +
-> +	iort_get_rmrs(node, smmu, sids, num_sids, head);
-> +	kfree(sids);
-> +}
-> +
-> +static void iort_find_rmrs(struct acpi_iort_node *iommu, struct device *dev,
-> +			   struct list_head *head)
-> +{
-> +	struct acpi_table_iort *iort;
-> +	struct acpi_iort_node *iort_node, *iort_end;
-> +	int i;
-> +
-> +	/* Only supports ARM DEN 0049E.d onwards */
-> +	if (iort_table->revision < 5)
-> +		return;
-> +
-> +	iort = (struct acpi_table_iort *)iort_table;
-> +
-> +	iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort,
-> +				 iort->node_offset);
-> +	iort_end = ACPI_ADD_PTR(struct acpi_iort_node, iort,
-> +				iort_table->length);
-> +
-> +	for (i = 0; i < iort->node_count; i++) {
-> +		if (WARN_TAINT(iort_node >= iort_end, TAINT_FIRMWARE_WORKAROUND,
-> +			       "IORT node pointer overflows, bad table!\n"))
-> +			return;
-> +
-> +		if (iort_node->type == ACPI_IORT_NODE_RMR)
-> +			iort_node_get_rmr_info(iort_node, iommu, dev, head);
-> +
-> +		iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort_node,
-> +					 iort_node->length);
-> +	}
-> +}
-> +
-> +/*
-> + * Populate the RMR list associated with a given IOMMU and dev(if provided).
-> + * If dev is NULL, the function populates all the RMRs associated with the
-> + * given IOMMU.
-> + */
-> +static void iort_iommu_rmr_get_resv_regions(struct fwnode_handle *iommu_fwnode,
-> +					    struct device *dev,
-> +					    struct list_head *head)
-> +{
-> +	struct acpi_iort_node *iommu;
-> +
-> +	iommu = iort_get_iort_node(iommu_fwnode);
-> +	if (!iommu)
-> +		return;
-> +
-> +	iort_find_rmrs(iommu, dev, head);
-> +}
-> +
->  static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
->  {
->  	struct acpi_iort_node *iommu;
-> @@ -868,7 +1155,10 @@ static void iort_iommu_msi_get_resv_regions(struct device *dev,
->   */
->  void iort_iommu_get_resv_regions(struct device *dev, struct list_head *head)
->  {
-> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> +
->  	iort_iommu_msi_get_resv_regions(dev, head);
-> +	iort_iommu_rmr_get_resv_regions(fwspec->iommu_fwnode, dev, head);
->  }
->  
->  static inline bool iort_iommu_driver_enabled(u8 type)
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 68bcfb3a06d7..0936d7980ce2 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -145,6 +145,14 @@ struct iommu_resv_region {
->  	void (*free)(struct device *dev, struct iommu_resv_region *region);
->  };
->  
-> +struct iommu_iort_rmr_data {
-> +	struct iommu_resv_region rr;
-> +
-> +	/* Stream IDs associated with IORT RMR entry */
-> +	const u32 *sids;
-> +	u32 num_sids;
-> +};
-> +
->  /**
->   * enum iommu_dev_features - Per device IOMMU features
->   * @IOMMU_DEV_FEAT_SVA: Shared Virtual Addresses
-> -- 
-> 2.17.1
 > 
+> V2: Incorporate feedback from Robin to clarify IOMMU vs DMA engine (e.g.,
+>     a device) and document proper DMA API.  Also correct the fact that
+>     the AMD IOMMU is not limited to managing PCI devices.
+> v3: Fix spelling and rework text as suggested by Vasant
+> v4: Combine Intel and AMD documents into a single document as suggested
+>     by Dave Hansen
+> v5: Clarify that keywords are related to ACPI, grammatical fixes
+> v6: Make more stuff common based on feedback from Robin
+> 
+>  Documentation/x86/index.rst       |   2 +-
+>  Documentation/x86/intel-iommu.rst | 115 ------------------------
+>  Documentation/x86/iommu.rst       | 143 ++++++++++++++++++++++++++++++
+>  3 files changed, 144 insertions(+), 116 deletions(-)
+>  delete mode 100644 Documentation/x86/intel-iommu.rst
+>  create mode 100644 Documentation/x86/iommu.rst
+> 
+> diff --git a/Documentation/x86/index.rst b/Documentation/x86/index.rst
+> index f498f1d36cd3..6f8409fe0674 100644
+> --- a/Documentation/x86/index.rst
+> +++ b/Documentation/x86/index.rst
+> @@ -21,7 +21,7 @@ x86-specific Documentation
+>     tlb
+>     mtrr
+>     pat
+> -   intel-iommu
+> +   iommu
+>     intel_txt
+>     amd-memory-encryption
+>     pti
+> diff --git a/Documentation/x86/intel-iommu.rst
+> b/Documentation/x86/intel-iommu.rst deleted file mode 100644
+> index 099f13d51d5f..000000000000
+> --- a/Documentation/x86/intel-iommu.rst
+> +++ /dev/null
+> @@ -1,115 +0,0 @@
+> -===================
+> -Linux IOMMU Support
+> -===================
+> -
+> -The architecture spec can be obtained from the below location.
+> -
+> -http://www.intel.com/content/dam/www/public/us/en/documents/product-specifications/vt-directed-io-spec.pdf
+> -
+> -This guide gives a quick cheat sheet for some basic understanding.
+> -
+> -Some Keywords
+> -
+> -- DMAR - DMA remapping
+> -- DRHD - DMA Remapping Hardware Unit Definition
+> -- RMRR - Reserved memory Region Reporting Structure
+> -- ZLR  - Zero length reads from PCI devices
+> -- IOVA - IO Virtual address.
+> -
+I feel this combined document only focus on IOVA and DMA APIs, it is
+considered as legacy DMA after scalable mode is introduced by Intel to
+support DMA with PASID, shared virtual addressing (SVA).
+Perhaps, we can also combine ./Documentation/x86/sva.rst
+
+With scalable mode, it affects boot messages, fault reporting, etc. I am
+not saying no to this document, just suggesting. I don't know where AMD is
+at in terms of PASID support but there are lots of things in common between
+VT-d and ARM's SMMU in terms of PASID/SVA. Should we broaden the purpose of
+this document even further?
+
+> -Basic stuff
+> ------------
+> -
+> -ACPI enumerates and lists the different DMA engines in the platform, and
+> -device scope relationships between PCI devices and which DMA engine
+> controls -them.
+> -
+> -What is RMRR?
+> --------------
+> -
+> -There are some devices the BIOS controls, for e.g USB devices to perform
+> -PS2 emulation. The regions of memory used for these devices are marked
+> -reserved in the e820 map. When we turn on DMA translation, DMA to those
+> -regions will fail. Hence BIOS uses RMRR to specify these regions along
+> with -devices that need to access these regions. OS is expected to setup
+> -unity mappings for these regions for these devices to access these
+> regions. -
+> -How is IOVA generated?
+> -----------------------
+> -
+> -Well behaved drivers call pci_map_*() calls before sending command to
+> device -that needs to perform DMA. Once DMA is completed and mapping is
+> no longer -required, device performs a pci_unmap_*() calls to unmap the
+> region. -
+> -The Intel IOMMU driver allocates a virtual address per domain. Each PCIE
+> -device has its own domain (hence protection). Devices under p2p bridges
+> -share the virtual address with all devices under the p2p bridge due to
+> -transaction id aliasing for p2p bridges.
+> -
+> -IOVA generation is pretty generic. We used the same technique as
+> vmalloc() -but these are not global address spaces, but separate for each
+> domain. -Different DMA engines may support different number of domains.
+> -
+> -We also allocate guard pages with each mapping, so we can attempt to
+> catch -any overflow that might happen.
+> -
+> -
+> -Graphics Problems?
+> -------------------
+> -If you encounter issues with graphics devices, you can try adding
+> -option intel_iommu=igfx_off to turn off the integrated graphics engine.
+> -If this fixes anything, please ensure you file a bug reporting the
+> problem. -
+> -Some exceptions to IOVA
+> ------------------------
+> -Interrupt ranges are not address translated, (0xfee00000 - 0xfeefffff).
+> -The same is true for peer to peer transactions. Hence we reserve the
+> -address from PCI MMIO ranges so they are not allocated for IOVA
+> addresses. -
+> -
+> -Fault reporting
+> ----------------
+> -When errors are reported, the DMA engine signals via an interrupt. The
+> fault -reason and device that caused it with fault reason is printed on
+> console. -
+> -See below for sample.
+> -
+> -
+> -Boot Message Sample
+> --------------------
+> -
+> -Something like this gets printed indicating presence of DMAR tables
+> -in ACPI.
+> -
+> -ACPI: DMAR (v001 A M I  OEMDMAR  0x00000001 MSFT 0x00000097) @
+> 0x000000007f5b5ef0 -
+> -When DMAR is being processed and initialized by ACPI, prints DMAR
+> locations -and any RMRR's processed::
+> -
+> -	ACPI DMAR:Host address width 36
+> -	ACPI DMAR:DRHD (flags: 0x00000000)base: 0x00000000fed90000
+> -	ACPI DMAR:DRHD (flags: 0x00000000)base: 0x00000000fed91000
+> -	ACPI DMAR:DRHD (flags: 0x00000001)base: 0x00000000fed93000
+> -	ACPI DMAR:RMRR base: 0x00000000000ed000 end: 0x00000000000effff
+> -	ACPI DMAR:RMRR base: 0x000000007f600000 end: 0x000000007fffffff
+> -
+> -When DMAR is enabled for use, you will notice..
+> -
+> -PCI-DMA: Using DMAR IOMMU
+> --------------------------
+> -
+> -Fault reporting
+> -^^^^^^^^^^^^^^^
+> -
+> -::
+> -
+> -	DMAR:[DMA Write] Request device [00:02.0] fault addr 6df084000
+> -	DMAR:[fault reason 05] PTE Write access is not set
+> -	DMAR:[DMA Write] Request device [00:02.0] fault addr 6df084000
+> -	DMAR:[fault reason 05] PTE Write access is not set
+> -
+> -TBD
+> -----
+> -
+> -- For compatibility testing, could use unity map domain for all devices,
+> just
+> -  provide a 1-1 for all useful memory under a single domain for all
+> devices. -- API for paravirt ops for abstracting functionality for VMM
+> folks. diff --git a/Documentation/x86/iommu.rst
+> b/Documentation/x86/iommu.rst new file mode 100644
+> index 000000000000..ed87d76a38d5
+> --- /dev/null
+> +++ b/Documentation/x86/iommu.rst
+> @@ -0,0 +1,143 @@
+> +=================
+> +x86 IOMMU Support
+> +=================
+> +
+> +The architecture specs can be obtained from the below locations.
+> +
+> +- Intel:
+> http://www.intel.com/content/dam/www/public/us/en/documents/product-specifications/vt-directed-io-spec.pdf
+> +- AMD: https://www.amd.com/system/files/TechDocs/48882_IOMMU.pdf +
+> +This guide gives a quick cheat sheet for some basic understanding.
+> +
+> +Basic stuff
+> +-----------
+> +
+> +ACPI enumerates and lists the different IOMMUs on the platform, and
+> +device scope relationships between devices and which IOMMU controls
+> +them.
+> +
+> +Some ACPI Keywords:
+> +
+> +- DMAR - Intel DMA Remapping table
+> +- DRHD - Intel DMA Remapping Hardware Unit Definition
+> +- RMRR - Intel Reserved Memory Region Reporting Structure
+> +- IVRS - AMD I/O Virtualization Reporting Structure
+> +- IVDB - AMD I/O Virtualization Definition Block
+> +- IVHD - AMD I/O Virtualization Hardware Definition
+> +
+> +What is Intel RMRR?
+> +^^^^^^^^^^^^^^^^^^^
+> +
+> +There are some devices the BIOS controls, for e.g USB devices to perform
+> +PS2 emulation. The regions of memory used for these devices are marked
+> +reserved in the e820 map. When we turn on DMA translation, DMA to those
+> +regions will fail. Hence BIOS uses RMRR to specify these regions along
+> with +devices that need to access these regions. OS is expected to setup
+> +unity mappings for these regions for these devices to access these
+> regions. +
+> +What is AMD IVRS?
+> +^^^^^^^^^^^^^^^^^
+> +
+> +The architecture defines an ACPI-compatible data structure called an I/O
+> +Virtualization Reporting Structure (IVRS) that is used to convey
+> information +related to I/O virtualization to system software.  The IVRS
+> describes the +configuration and capabilities of the IOMMUs contained in
+> the platform as +well as information about the devices that each IOMMU
+> virtualizes. +
+> +The IVRS provides information about the following:
+> +
+> +- IOMMUs present in the platform including their capabilities and proper
+> configuration +- System I/O topology relevant to each IOMMU
+> +- Peripheral devices that cannot be otherwise enumerated
+> +- Memory regions used by SMI/SMM, platform firmware, and platform
+> hardware. These are generally exclusion ranges to be configured by system
+> software. + +How is an I/O Virtual Address (IOVA) generated?
+> +-----------------------------------------------
+> +
+> +Well behaved drivers call dma_map_*() calls before sending command to
+> device +that needs to perform DMA. Once DMA is completed and mapping is
+> no longer +required, driver performs dma_unmap_*() calls to unmap the
+> region. +
+> +Some exceptions to IOVAs
+> +------------------------
+> +
+> +Interrupt ranges are not address translated, (0xfee00000 - 0xfeefffff).
+> +The same is true for peer to peer transactions. Hence we reserve the
+> +address from PCI MMIO ranges so they are not allocated for IOVA
+> addresses. +
+> +Graphics Problems?
+> +------------------
+> +
+> +If you encounter issues with integrated graphics devices, you can try
+> +adding the option "iommu.passthrough=1", or the equivalent "iommu=pt",
+> +to the kernel command line to use a 1:1 mapping for the IOMMU in
+> +general.  On Intel you can also try "intel_iommu=igfx_off" to turn off
+> +translation specifically for the integrated graphics engine only.  If
+> +this fixes anything, please ensure you file a bug reporting the problem.
+> +
+> +Fault reporting
+> +---------------
+> +When errors are reported, the IOMMU signals via an interrupt. The fault
+> +reason and device that caused it is printed on the console.
+> +
+> +
+> +Kernel Log Samples
+> +------------------
+> +
+> +Intel Boot Messages
+> +^^^^^^^^^^^^^^^^^^^
+> +
+> +Something like this gets printed indicating presence of DMAR tables
+> +in ACPI:
+> +
+> +::
+> +
+> +	ACPI: DMAR (v001 A M I  OEMDMAR  0x00000001 MSFT 0x00000097) @
+> 0x000000007f5b5ef0 +
+> +When DMAR is being processed and initialized by ACPI, prints DMAR
+> locations +and any RMRR's processed:
+> +
+> +::
+> +
+> +	ACPI DMAR:Host address width 36
+> +	ACPI DMAR:DRHD (flags: 0x00000000)base: 0x00000000fed90000
+> +	ACPI DMAR:DRHD (flags: 0x00000000)base: 0x00000000fed91000
+> +	ACPI DMAR:DRHD (flags: 0x00000001)base: 0x00000000fed93000
+> +	ACPI DMAR:RMRR base: 0x00000000000ed000 end: 0x00000000000effff
+> +	ACPI DMAR:RMRR base: 0x000000007f600000 end: 0x000000007fffffff
+> +
+> +When DMAR is enabled for use, you will notice:
+> +
+> +::
+> +
+> +	PCI-DMA: Using DMAR IOMMU
+> +
+> +Intel Fault reporting
+> +^^^^^^^^^^^^^^^^^^^^^
+> +
+> +::
+> +
+> +	DMAR:[DMA Write] Request device [00:02.0] fault addr 6df084000
+> +	DMAR:[fault reason 05] PTE Write access is not set
+> +	DMAR:[DMA Write] Request device [00:02.0] fault addr 6df084000
+> +	DMAR:[fault reason 05] PTE Write access is not set
+> +
+> +AMD Boot Messages
+> +^^^^^^^^^^^^^^^^^
+> +
+> +Something like this gets printed indicating presence of the IOMMU:
+> +
+> +::
+> +
+> +	AMD-Vi: Found IOMMU cap 0x40
+> +	AMD-Vi: Extended features (0x4f77ef22294ada): PPR NX GT IA GA PC
+> GA_vAPIC
+> +	AMD-Vi: Interrupt remapping enabled
+> +	AMD-Vi: Virtual APIC enabled
+> +
+> +AMD Fault reporting
+> +^^^^^^^^^^^^^^^^^^^
+> +
+> +::
+> +
+> +	AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0007
+> address=0xffffc02000 flags=0x0000]
+> +	AMD-Vi: Event logged [IO_PAGE_FAULT device=07:00.0 domain=0x0007
+> address=0xffffc02000 flags=0x0000]
+
+
+Thanks,
+
+Jacob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
