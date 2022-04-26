@@ -1,153 +1,89 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 41C24C433EF
-	for <iommu@archiver.kernel.org>; Tue, 26 Apr 2022 07:30:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C5CC5C433F5
+	for <iommu@archiver.kernel.org>; Tue, 26 Apr 2022 09:01:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C2DC940129;
-	Tue, 26 Apr 2022 07:30:41 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 50E6640095;
+	Tue, 26 Apr 2022 09:01:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vs0gMLFGyrhI; Tue, 26 Apr 2022 07:30:41 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id A9E8A40531;
-	Tue, 26 Apr 2022 07:30:40 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6EACBC0032;
-	Tue, 26 Apr 2022 07:30:40 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7605BC002D
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 07:30:38 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5CB7C41724
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 07:30:38 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bGIsJp00LwLN for <iommu@lists.linux-foundation.org>;
- Tue, 26 Apr 2022 07:30:36 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam10on20613.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e89::613])
- by smtp4.osuosl.org (Postfix) with ESMTPS id BA5D8408CF
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 07:30:36 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T2N4ds3xrMiKYGRHf1f1xhNta1S+mqhtBIuVe65dXWtkG1x6qFvtCz/ZDi95FjspvY31rz81LF8RH350XR6H4+6w8NSy6eOZnKUg4yTMhDP1vArFFcIHIr6TxhqT765/5VmFOJFNRPcNKvtLuQRauf8c7IXvELO8YBiaM+ChUJayLctMzK72n2aMdwP8ZLw6ZCYpWG8jM2y/G5XUmAtsg9TNOnnUE0SEpX3V2kv91spT5dks/nWzvzCGuV6Hudhujukk4+2+5R4m1mSYMVfJ7jC0B6lPpsf/ZPxM9Rk10P4BFZVjaE98hnNLiTvIR9UVm45FVXMMmsS2JwaKaeyTTA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Gd1sE0AHTrgZ/w6KiHsEZvG+2EYLn/xGlSDFWkkrxqg=;
- b=aU6QFk0JjBgjAaQSo3MwUnMiBVyFcymBS64pBm/1wyDyHWU9e0lzs7sXSGtzEXez/G//TGQaSvZxmvXUl2IFrxwd04yHQwyIkeSvMUS03QQwtJaqgSir6V1MJV1EB7bpHdZLLAFScUXwSnvQ7BVtL2weP8A9t87iBc5M6LYa+EZaDBhP8XC1kJZ6e82VO/4AYWeij1hu67plT26b9W3HPqBi7VhzbYpshE919ev6EomtGHyC7EvN+HRQyV0EEYeJ8TjRKMWAgMCsTKAx3vcJ/A9QU5I8osan9PQExrZ8DnT/nBKSFP2ymg5i4XZ/EDl1im2vaCkTT74HiN49vmPeog==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Gd1sE0AHTrgZ/w6KiHsEZvG+2EYLn/xGlSDFWkkrxqg=;
- b=V1IN/B0LSPAwwrGpgrNotCaUGrKiLQbvUp+KFr1iV4VqiSfZ4GTU7Kga0zwdglLMnCfZtl4XAA0JYmEN7VaK6LSQGUEUy3ZNor/IhZ8mXjpqtyyQ1Z+TmoNRg+sSTAHllqXUITWG9JxO6T8htBIdD9ei3Ik4p68vnuuVgTqSY/2NllQ9zKKqzo5RzlyVVuIOj4dRjhkrtd4fIn3cqrzXeae0s/R3X7MH6jmqFgcPnVG+qQ4XgVhB5o6+Tp8pPbCXAnpBn2/leCridFz6q9dcc9w/C6JLsRN98JSzYc6Q2MmGcgl3HBVoadrU3MXMROOPk1PH7+BI+GvVMuaMU8uyRg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com (2603:10b6:5:35e::8) by
- MN2PR12MB3629.namprd12.prod.outlook.com (2603:10b6:208:cb::29) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5186.14; Tue, 26 Apr 2022 07:30:33 +0000
-Received: from CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::a4b2:cd18:51b1:57e0]) by CO6PR12MB5444.namprd12.prod.outlook.com
- ([fe80::a4b2:cd18:51b1:57e0%4]) with mapi id 15.20.5186.021; Tue, 26 Apr 2022
- 07:30:33 +0000
-Message-ID: <0a33c287-3394-c3df-9bee-ef13fe3417e4@nvidia.com>
-Date: Tue, 26 Apr 2022 08:30:25 +0100
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id guwK-qvF538k; Tue, 26 Apr 2022 09:01:58 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 8D8FB40072;
+	Tue, 26 Apr 2022 09:01:57 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A7F3C0039;
+	Tue, 26 Apr 2022 09:01:57 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 80FCDC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 09:01:55 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 6F9E781AF3
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 09:01:55 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id qyDRyt2i_kou for <iommu@lists.linux-foundation.org>;
+ Tue, 26 Apr 2022 09:01:52 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 8E16A81A92
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 09:01:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1650963712; x=1682499712;
+ h=message-id:date:mime-version:subject:to:cc:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=QL2x8lXrIb4jKPEsCIaM87Qxn+mUBNER/gBwSqZgzag=;
+ b=kcuq2Nrw7TCYrmvP3cGeb/HdEGBtsYyIeve56WNVT64vpZgGLAxLh6iP
+ 2xxLRWq1+mOxFmVQsuRfymxwIGr+9qST5pq2/y3+B0fwlQv9bcBZfFW0P
+ 9cha7z3iKlyAhwLVQLaHJ80A603Ccjdb87ECLjICuRd0/xc8+IgK/prgU
+ iAdJA/MnZ8fXmL4KEbxF/HA8s+r+hb7gPVcVEV+hJ/riA5Bhv8hGgtXJL
+ xCFO4ERZ7/GfPv10CpJPqWH+JZVCgKWi6FDu5e4oyqNwXz/JLW2yzKOEK
+ WI72dsIp5JUWW3p8zYQT1JswfK4VCoOwhD01P6KvVscphD/hRs1moOP1z w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="290649729"
+X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; d="scan'208";a="290649729"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Apr 2022 02:01:41 -0700
+X-IronPort-AV: E=Sophos;i="5.90,290,1643702400"; d="scan'208";a="558202655"
+Received: from sning-mobl2.ccr.corp.intel.com (HELO [10.249.171.83])
+ ([10.249.171.83])
+ by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Apr 2022 02:01:36 -0700
+Message-ID: <38f74aea-ac9a-a7db-2dc4-013671241add@linux.intel.com>
+Date: Tue, 26 Apr 2022 17:01:34 +0800
+MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [Patch v2] iommu: arm-smmu: disable large page mappings for
- Nvidia arm-smmu
+Subject: Re: [PATCH v6 2/2] PCI: Rename pci_dev->untrusted to
+ pci_dev->untrusted_dma
 Content-Language: en-US
-To: Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org,
- linux-tegra@vger.kernel.org, iommu@lists.linux-foundation.org,
- thierry.reding@gmail.com, vdumpa@nvidia.com,
- Ashish Mhetre <amhetre@nvidia.com>, joro@8bytes.org, robin.murphy@arm.com,
- linux-kernel@vger.kernel.org
-References: <20220421081504.24678-1-amhetre@nvidia.com>
- <165053012237.502660.4418683392126519698.b4-ty@kernel.org>
-In-Reply-To: <165053012237.502660.4418683392126519698.b4-ty@kernel.org>
-X-ClientProxiedBy: AM5PR0301CA0017.eurprd03.prod.outlook.com
- (2603:10a6:206:14::30) To CO6PR12MB5444.namprd12.prod.outlook.com
- (2603:10b6:5:35e::8)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bfb1ef70-2ee5-4ac0-4c66-08da2756a5bf
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3629:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB36292C43DC2B4A5423BD357ED9FB9@MN2PR12MB3629.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QN3G/5GDnT5DoR+48kUBp9eIANv6GJBTaLrEkaRmHkHQbljcnXRx857sS3XgT9QUCXGQJ9eeqhr04xO6Q/ApCdo6kQ7fMgYxZhjQ4oGDiReBecFOjIAakDCnHH3J1rr5lO8BL2W6yQXyoQeD8uT2l11O1CkWWKQYSevbLqTkgeg9Bdt4Zxp2y41oR+xDv7LF/4f323EwTYsKQfHFjkte0hWXEjnCQdUWsgUNJ9FYmvCbZ2uNPaVJbO1G2+70CuqYSsVrnr7iKtUi0WqGVH1nXQAOGXskNfT14UnHg1zHbGsdmyyCInr6GvNA1zYGXFELB3DdQUJ6sKKHQqFJpDbk31VQL256q6o4A9luTHDKDXAqN4pRhJLN0r4DJnX4doY3iyuX5+HPW8R3VpSWrggnc/ZTQwjIs1DdW+kaPfgiTN5FYLARKzGXzHRM3L33y7Z8dbf43ebaOgRkw4cMtsX9j9UMUTO7HYPr9KEPBvzYrRQL1hLwdqS0LGUT9TLRyZ9ApFNSTGUwr0tC/HRhT/wpoTLSdqPvQkAvl4na9XSyaq/vrh/JkTII7mA/J69ZXJptKp7myaP9oBTsCWuG2yk5b7DUzzIMCzOz7Kz7h6VQJ2sze8NO32LGqch/TxwQqShFAQflfVkPLXxBdclOoA2eOT9w3qTc8YQuyXXSR+26JiIZh1FlPfOnRR8f1uyToOmiFMW5h3pDFkrWsuttmLCCXs3J2p8EeCa/btViofTRZGtj1BVpqgA/1JA60Z/8q9IUX+1Cm2bloHTAINdpXdxn4+6W6ZbQveIOsgQSKCUrg61CgCwRPacihBLh7ErPgtR1LcQMXB/LuFqd3YNYIt0+eg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:CO6PR12MB5444.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(110136005)(6506007)(508600001)(53546011)(8676002)(921005)(55236004)(2906002)(66946007)(107886003)(66476007)(2616005)(66556008)(26005)(6512007)(31686004)(4326008)(36756003)(6666004)(316002)(38100700002)(7416002)(5660300002)(966005)(83380400001)(6486002)(31696002)(186003)(8936002)(86362001)(45980500001)(43740500002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Mm9BVmcwSDhmaG5PSzZVOGU1cXkybjVmdUFyaGtsRVRQbWlNQm1wMCtkNXJZ?=
- =?utf-8?B?U29FL3hydFl1TVd2anZVcGJiTTBMblF1MU1Qd3J4VTgxUG85WkF0K2kvblRS?=
- =?utf-8?B?Q09UN1dhRCtGMVR1c3FVeC9HWmVldFcxRkU4aUpYOEZ3YVFlL0UxbVJhYU1K?=
- =?utf-8?B?bzY1eWRydVBTcmhoTG14d3VIK3ovTFE5ajFkWE9rL1RET3J2V0VNTmVoOVY0?=
- =?utf-8?B?eW5nUWQ0Y1R1eE9jQ1Y5RCtpditKUWYvdlIzZDl4V1dTNWFlUjA4cXZWTzRI?=
- =?utf-8?B?NVNKdm13NmFxSlNmR01BWG1SK0lrcmRxcXdGbldrUHU2Mmxua2pqQzAyVlNQ?=
- =?utf-8?B?L0RSOXRGN2kyT21VK0ZQZWNuTWtZSGVNVkhrZFRjUVpEZEY3cjlzd3BzdmVI?=
- =?utf-8?B?LzJpWWJ0QURSNGZxZjZ1MktyYndHdEpjS012c2JVZ2hIN2FJOXl6OERONjJF?=
- =?utf-8?B?UXE3YnhGRFFGc01UaDUvdHJuanV2OHo2L0NxYnZxSlp2R0N5VmpvSUpVeU9y?=
- =?utf-8?B?N3Y1ZEhuV011MkFMSkxFcUhmWlRCTVZ2U1pQQXZ3eURxZitLbnJFbW43M0FO?=
- =?utf-8?B?bEhKWm9LNFlnNzMva1ZBRE0raFhvTGVpRWl3NURna25ZOHE4YVBoY1cxTjlo?=
- =?utf-8?B?Y01JZ0hyb2tKUy9WRXA0cnFIdDZKRHFxWEcxUWVSaWcxOU4wcWdZblZhYVpx?=
- =?utf-8?B?RmtxbURaWVZSY3VzWDhRdlJVZlNxYU16bElUZ2YxL3ZiZkVuQ2hlRzhKMGpv?=
- =?utf-8?B?YTluRHJsR1k2eFNrZEZ4Z2x3R2lXd1RqSnlMZUU5V2FVckJIQnlXTGJMYjh2?=
- =?utf-8?B?YjhMZVRhWTJ1Uys5eE1nMC9JVnV5Z2c2S2xDS2V1Nmx1Uys1aGo1T2dTbnQz?=
- =?utf-8?B?UEorMmlxMDF4QTFTM2hBcWphWDgyZlowZEVaUDJLd0s1bVk3NlRBSSsyeGdE?=
- =?utf-8?B?ZzRXemFJVCtQVmdkMDAybkdxdUVKWCt2c0dJellwTit4QUpsK24vckpaeS85?=
- =?utf-8?B?c2N4ZDV6OWlmSDJGSkZZdkJOazMycXIvemlLT1lCa2tsWFRxcTRQS2JnU0o3?=
- =?utf-8?B?QkkxWlczaHNrREJ2VWpEUmJzWFllY0ZCcVRHSVBBRDQ3UFZlRU5nS3IwMGFa?=
- =?utf-8?B?Zmp0UkhkWGo0OVl4Qjc3OTdNeEJ0MHZiZ2FhTXRhbmlVYW95VjZ3dWpQazVN?=
- =?utf-8?B?emIyanNrVmhyWWVQVDFGTXduVTVoSHIxekYvZUVZenpsUEYreXFobnkyWWZR?=
- =?utf-8?B?dWZta3RXeW1oY0FGbW01V3MzOTN2Q3lmeGd0ZEFXc0JWYUNjMFl2NUd5a2dj?=
- =?utf-8?B?YTlWOElHdVp3elloYVFXS1FlVVVjVEZaSENMcGNJNlg0ODFwUjE1UFM0YjdC?=
- =?utf-8?B?R3FORlNlZnpzNUpZWlVTZGpjVzBXREZLanc1WnpjK3BpeWZpU2t5TUJtczc5?=
- =?utf-8?B?L0l6aEkzL3NlR1BpR2FDRGlwVGhxeGlkRm9FR1JGSU1vL2x6cXQvd0Y2aDZB?=
- =?utf-8?B?eFNZa2YvSkpZK1pUb25GMmJWdnZKRVNIN2FhcjVqaSsvaUFWdEIxSUMrSEFG?=
- =?utf-8?B?a3FVanB5QnJCQTdTbDhkRHowYzR4TDJYUUcwUk5xeEcyLzZuN2VKb21YZnNC?=
- =?utf-8?B?dWZnWStNeFZhM1paaDRhUVZ5Z1k4YnJmNHhCVGxYUUVscVQ1RXpsc1BaTk1D?=
- =?utf-8?B?bzdEM09ROWpoSzFwTExRMG4zY1E2M3c3QVovYjFXTHpMVlNLTWwzdlgwOXFZ?=
- =?utf-8?B?bldtL2NwSFBaNWJISUkwNmgyT1c3VnczV2JxU1pUeWZtVC9qcUw0VmNvRGNz?=
- =?utf-8?B?MitXc3BDU24zSEVyNndZWGQvTDI1ZElhOUFvYURMajF5SHNmTmcvek9ZUXJG?=
- =?utf-8?B?dkVjVmRNT2pNZFh0dXdHN3J2dlN5T2JZdlpyL3loL3J4clZvS0QxRERiZG5k?=
- =?utf-8?B?VDV2bkJqMUpCbDJyS1JIbHAyQm1aZ0ppZVFCRU8xU1h4aktnQmowd3hpemt0?=
- =?utf-8?B?cW5RVktLaFdWQjdma3lHa3czODdyb2dFSVY4enV3eGVTeUxTL3lUbVVEeTI0?=
- =?utf-8?B?eUdGVjlGemgrY1Y5Q2xSckV4OUZkbHZITzQ2TDBuRzRIaVhJbERRamlJa3hq?=
- =?utf-8?B?UjYwcTBmbzJ4LzNPUytkU1kyelAwZ3VtMUZqZ1hzL09QdlptbHBtNDY3WFpS?=
- =?utf-8?B?Z3RrZE9EUVhESlNLM3ZHa2hRSElUN2lORWw0aGZKQXRNUndhT1d3M2ZBRWJB?=
- =?utf-8?B?Y2lkWU1xWklsYkxjaHNhUXJGU2NHdDc2ajlTYis1MjJzcG85ckl0QytXUytH?=
- =?utf-8?B?dEMxUmJ1UFcwOEdNeXdVM3NmMjBhcFI5SXBiT1l3RVNnYUcwYVdXblNLTEJv?=
- =?utf-8?Q?90ERtWiY2PKCzBng=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bfb1ef70-2ee5-4ac0-4c66-08da2756a5bf
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR12MB5444.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2022 07:30:33.0619 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: M+8Lhez1yRFzCgAshkgAnslegGwIsv1bdrayvZ8zWSl2uZ6QHTx0Q5jZpsEqg/UhTRHgxLSbuoQNhglSYtNJbg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3629
-Cc: catalin.marinas@arm.com, Snikam@nvidia.com, kernel-team@android.com,
- Pritesh Raithatha <praithatha@nvidia.com>
+To: Rajat Jain <rajatja@google.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Len Brown <lenb@kernel.org>, linux-pci@vger.kernel.org,
+ Mika Westerberg <mika.westerberg@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Bjorn Helgaas <helgaas@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Rajat Jain <rajatxjain@gmail.com>, Dmitry Torokhov <dtor@google.com>,
+ Jesse Barnes <jsbarnes@google.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Pavel Machek <pavel@denx.de>, Oliver O'Halloran <oohall@gmail.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
+References: <20220426000640.3581446-1-rajatja@google.com>
+ <20220426000640.3581446-2-rajatja@google.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220426000640.3581446-2-rajatja@google.com>
+Cc: "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -160,51 +96,197 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jon Hunter via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jon Hunter <jonathanh@nvidia.com>
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Will,
-
-On 22/04/2022 11:55, Will Deacon wrote:
-> On Thu, 21 Apr 2022 13:45:04 +0530, Ashish Mhetre wrote:
->> Tegra194 and Tegra234 SoCs have the erratum that causes walk cache
->> entries to not be invalidated correctly. The problem is that the walk
->> cache index generated for IOVA is not same across translation and
->> invalidation requests. This is leading to page faults when PMD entry is
->> released during unmap and populated with new PTE table during subsequent
->> map request. Disabling large page mappings avoids the release of PMD
->> entry and avoid translations seeing stale PMD entry in walk cache.
->> Fix this by limiting the page mappings to PAGE_SIZE for Tegra194 and
->> Tegra234 devices. This is recommended fix from Tegra hardware design
->> team.
->>
->> [...]
+On 2022/4/26 08:06, Rajat Jain wrote:
+> Rename the field to make it more clear, that the device can execute DMA
+> attacks on the system, and thus the system may need protection from
+> such attacks from this device.
 > 
-> Applied to will (for-joerg/arm-smmu/fixes), thanks!
+> No functional change intended.
 > 
-> [1/1] iommu: arm-smmu: disable large page mappings for Nvidia arm-smmu
->        https://git.kernel.org/will/c/4a25f2ea0e03
+> Signed-off-by: Rajat Jain <rajatja@google.com>
+> Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> ---
+> v6: No change in this patch, rebased on top of changes in other patch.
+> v5: Use "untrusted_dma" as property name, based on feedback.
+>      Reorder the patches in the series.
+> v4: Initial version, created based on comments on other patch
 > 
+>   drivers/iommu/dma-iommu.c   | 6 +++---
+>   drivers/iommu/intel/iommu.c | 2 +-
+>   drivers/iommu/iommu.c       | 2 +-
+>   drivers/pci/ats.c           | 2 +-
+>   drivers/pci/pci-acpi.c      | 2 +-
+>   drivers/pci/pci.c           | 2 +-
+>   drivers/pci/probe.c         | 8 ++++----
+>   drivers/pci/quirks.c        | 2 +-
+>   include/linux/pci.h         | 5 +++--
+>   9 files changed, 16 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 09f6e1c0f9c0..aeee4be7614d 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -497,14 +497,14 @@ static int iova_reserve_iommu_regions(struct device *dev,
+>   	return ret;
+>   }
+>   
+> -static bool dev_is_untrusted(struct device *dev)
+> +static bool dev_has_untrusted_dma(struct device *dev)
+>   {
+> -	return dev_is_pci(dev) && to_pci_dev(dev)->untrusted;
+> +	return dev_is_pci(dev) && to_pci_dev(dev)->untrusted_dma;
+>   }
+>   
+>   static bool dev_use_swiotlb(struct device *dev)
+>   {
+> -	return IS_ENABLED(CONFIG_SWIOTLB) && dev_is_untrusted(dev);
+> +	return IS_ENABLED(CONFIG_SWIOTLB) && dev_has_untrusted_dma(dev);
+>   }
+>   
+>   /**
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index df5c62ecf942..b88f47391140 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4843,7 +4843,7 @@ static bool intel_iommu_is_attach_deferred(struct device *dev)
+>    */
+>   static bool risky_device(struct pci_dev *pdev)
+>   {
+> -	if (pdev->untrusted) {
+> +	if (pdev->untrusted_dma) {
+>   		pci_info(pdev,
+>   			 "Skipping IOMMU quirk for dev [%04X:%04X] on untrusted PCI link\n",
+>   			 pdev->vendor, pdev->device);
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index f2c45b85b9fc..d8d3133e2947 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1525,7 +1525,7 @@ static int iommu_get_def_domain_type(struct device *dev)
+>   {
+>   	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>   
+> -	if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted)
+> +	if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted_dma)
+>   		return IOMMU_DOMAIN_DMA;
+>   
+>   	if (ops->def_domain_type)
+> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> index c967ad6e2626..477c16ba9341 100644
+> --- a/drivers/pci/ats.c
+> +++ b/drivers/pci/ats.c
+> @@ -42,7 +42,7 @@ bool pci_ats_supported(struct pci_dev *dev)
+>   	if (!dev->ats_cap)
+>   		return false;
+>   
+> -	return (dev->untrusted == 0);
+> +	return (dev->untrusted_dma == 0);
+>   }
+>   EXPORT_SYMBOL_GPL(pci_ats_supported);
+>   
+> diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
+> index d7c6ba48486f..7c2784e7e954 100644
+> --- a/drivers/pci/pci-acpi.c
+> +++ b/drivers/pci/pci-acpi.c
+> @@ -1395,7 +1395,7 @@ void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
+>   
+>   	pci_acpi_optimize_delay(pci_dev, adev->handle);
+>   	pci_acpi_set_external_facing(pci_dev);
+> -	pci_dev->untrusted |= pci_dev_has_dma_property(pci_dev);
+> +	pci_dev->untrusted_dma |= pci_dev_has_dma_property(pci_dev);
+>   	pci_acpi_add_edr_notifier(pci_dev);
+>   
+>   	pci_acpi_add_pm_notifier(adev, pci_dev);
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index 9ecce435fb3f..1fb0eb8646c8 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -958,7 +958,7 @@ static void pci_std_enable_acs(struct pci_dev *dev)
+>   	ctrl |= (cap & PCI_ACS_UF);
+>   
+>   	/* Enable Translation Blocking for external devices and noats */
+> -	if (pci_ats_disabled() || dev->external_facing || dev->untrusted)
+> +	if (pci_ats_disabled() || dev->external_facing || dev->untrusted_dma)
+>   		ctrl |= (cap & PCI_ACS_TB);
+>   
+>   	pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index 17a969942d37..d2a9b26fcede 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -1587,7 +1587,7 @@ static void set_pcie_thunderbolt(struct pci_dev *dev)
+>   		dev->is_thunderbolt = 1;
+>   }
+>   
+> -static void set_pcie_untrusted(struct pci_dev *dev)
+> +static void pci_set_untrusted_dma(struct pci_dev *dev)
+>   {
+>   	struct pci_dev *parent;
+>   
+> @@ -1596,8 +1596,8 @@ static void set_pcie_untrusted(struct pci_dev *dev)
+>   	 * untrusted as well.
+>   	 */
+>   	parent = pci_upstream_bridge(dev);
+> -	if (parent && (parent->untrusted || parent->external_facing))
+> -		dev->untrusted = true;
+> +	if (parent && (parent->untrusted_dma || parent->external_facing))
+> +		dev->untrusted_dma = true;
+>   }
+>   
+>   static void pci_set_removable(struct pci_dev *dev)
+> @@ -1862,7 +1862,7 @@ int pci_setup_device(struct pci_dev *dev)
+>   	/* Need to have dev->cfg_size ready */
+>   	set_pcie_thunderbolt(dev);
+>   
+> -	set_pcie_untrusted(dev);
+> +	pci_set_untrusted_dma(dev);
+>   
+>   	/* "Unknown power state" */
+>   	dev->current_state = PCI_UNKNOWN;
+> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> index 41aeaa235132..583d35968413 100644
+> --- a/drivers/pci/quirks.c
+> +++ b/drivers/pci/quirks.c
+> @@ -5135,7 +5135,7 @@ static int pci_quirk_enable_intel_spt_pch_acs(struct pci_dev *dev)
+>   	ctrl |= (cap & PCI_ACS_CR);
+>   	ctrl |= (cap & PCI_ACS_UF);
+>   
+> -	if (pci_ats_disabled() || dev->external_facing || dev->untrusted)
+> +	if (pci_ats_disabled() || dev->external_facing || dev->untrusted_dma)
+>   		ctrl |= (cap & PCI_ACS_TB);
+>   
+>   	pci_write_config_dword(dev, pos + INTEL_SPT_ACS_CTRL, ctrl);
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 60adf42460ab..2453a794bdb2 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -444,13 +444,14 @@ struct pci_dev {
+>   	unsigned int	shpc_managed:1;		/* SHPC owned by shpchp */
+>   	unsigned int	is_thunderbolt:1;	/* Thunderbolt controller */
+>   	/*
+> -	 * Devices marked being untrusted are the ones that can potentially
+> +	 * Devices marked with untrusted_dma are the ones that can potentially
+>   	 * execute DMA attacks and similar. They are typically connected
+>   	 * through external ports such as Thunderbolt but not limited to
+>   	 * that. When an IOMMU is enabled they should be getting full
+>   	 * mappings to make sure they cannot access arbitrary memory.
+>   	 */
+> -	unsigned int	untrusted:1;
+> +	unsigned int	untrusted_dma:1;
+> +
+>   	/*
+>   	 * Info from the platform, e.g., ACPI or device tree, may mark a
+>   	 * device as "external-facing".  An external-facing device is
 
-Thanks for applying. Sorry to be late to the party, but feel free
-to add my ...
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
-
-Also any chance we could tag for stable? Probably the most
-appropriate fixes-tag would be ...
-
-Fixes: aab5a1c88276 ("iommu/arm-smmu: add NVIDIA implementation for ARM MMU-500 usage")
-
-Thanks!
-Jon
-
--- 
-nvpublic
+Thanks,
+-baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
