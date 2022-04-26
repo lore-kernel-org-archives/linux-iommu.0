@@ -1,104 +1,92 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5202FC433F5
-	for <iommu@archiver.kernel.org>; Tue, 26 Apr 2022 16:48:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 055B2C433EF
+	for <iommu@archiver.kernel.org>; Tue, 26 Apr 2022 17:13:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id F068D83E30;
-	Tue, 26 Apr 2022 16:48:34 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 8715740B59;
+	Tue, 26 Apr 2022 17:13:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qOF3_pnj8Or9; Tue, 26 Apr 2022 16:48:34 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id uS-fCnARy35s; Tue, 26 Apr 2022 17:13:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id B477283E2F;
-	Tue, 26 Apr 2022 16:48:33 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 2E29A40499;
+	Tue, 26 Apr 2022 17:13:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8873DC0032;
-	Tue, 26 Apr 2022 16:48:33 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E88C3C002D
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 16:48:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EB4F3C0039;
+	Tue, 26 Apr 2022 17:13:56 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CD90DC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 17:13:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id CFDE441880
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 16:48:31 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id B377660B52
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 17:13:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cxOrUPyw490L for <iommu@lists.linux-foundation.org>;
- Tue, 26 Apr 2022 16:48:30 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=google.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id qgK0LNa8m5L7 for <iommu@lists.linux-foundation.org>;
+ Tue, 26 Apr 2022 17:13:54 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com
- [IPv6:2a00:1450:4864:20::62b])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 8AA244185B
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 16:48:30 +0000 (UTC)
-Received: by mail-ej1-x62b.google.com with SMTP id j6so3434342ejc.13
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 09:48:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=D5d/UcR8WWtwm14ZrH9Ny0PXpXXCcP8eFt6zg75qTSg=;
- b=yMnq6FHdIFP459zaK7zNPCwuRcpBpup0Y1hoR3dAu5PPSw7HQd07CTlTZ9YCPonIId
- ZQAGvu+x/52Q9qIGRZmn19hqTyWABcsgcKEFHr0tOLHNk1zKpB/zVNVwnUr6cfv8iGoM
- 4eUW78aeT6k0GqobuS7hJJxguXWLDkQCn2gZakfxyOQYb6z8z1t51xjefG3z7RCOVXRN
- ll2reAII6TC0sdef0SoidM2Fp2/WFZp+kA4p09I3WY8dyGRV1vfNz4aInSOfOlO/7eM6
- 8cWAp66JfasHp/hw7TWyXOglVjWCSUPvzyOs6OaeoBWH6Ez0psTrqiAs4XVQ9AL79CgC
- PzjQ==
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com
+ [IPv6:2607:f8b0:4864:20::42c])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id C11E960AEB
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 17:13:54 +0000 (UTC)
+Received: by mail-pf1-x42c.google.com with SMTP id j6so16219804pfe.13
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 10:13:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=COISYBtLemURzEtVRJTSOaoU1kvxhQruqFG2UXo9XUw=;
+ b=ICQKMM5VJ8dZCmZ5IDftKBD0tk2p/btzOGUR1kYXd/zFRS/EkvTLCpPCF1BWQ1lKzH
+ Bqh4vxvd9/HnKEhvMjZIYnNj2yFTyCqWnJW+u9sWIKXgfunEJOyiAGcoiGom0Fjw4+ka
+ PLtm7GIGMzzUN3ttrb56TQfPJKwV2PasGCyTFseghYcMYWl+0iS+YumxymWwxECcFY1g
+ JRdSZQT+i9TCp8T5DDInsYfDjIyKVFo702VauqiPnw8KYNWqo4U3LUZim+g67CUif1E7
+ I2M4VxY3Hs8iCvYzmtDEU4yfuI4Q/MIIivgirMZZUMt0ThznOwHSbGUBfWZwJDUpmo8/
+ B/oA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=D5d/UcR8WWtwm14ZrH9Ny0PXpXXCcP8eFt6zg75qTSg=;
- b=e3umS4S5tJq6nJuNQOcFv+55gNyNtKOTeevEltTw4zmiRP+n72ZvgpzTN2ji6xqGeq
- wXHrmT1Lq20MImMlnGqx7D/utAQ2SdGs0X2IlJ1Ho4M6sM0isaEmnambhSQ1le65fdbA
- 5wfSXhRK/fAmD8hbzHhkrANK5SZJTksP08+RVo27TL2NyxWlMOkByeOi7Nu6DfUuOrmh
- 8w13Fev1HHcBxVyt90Iw2MG8j8i6cfO+QZKChrNeZdLUVH0KhhrpuHdW1CiQMnziBNEM
- A+MsKP4ZCQOB9gCY36mpQZrUjL5Kra1fM/LnW5XDs77+WqBthHxMMpbVITg5aJjd+HbO
- F8xg==
-X-Gm-Message-State: AOAM533z7oIz8OUEvfsaSlY363rMwPLagEOv6EZnKxB+wvXsHmskPieT
- VNZ9smp+mXeuktzQd2aQrAkLtA==
-X-Google-Smtp-Source: ABdhPJzrAtI4rer1zqBksVvk+bjUCWF1lDnl3p29wyqsYQRedTzX6mxZ5ycXF9qp5uSxW7pEKXAXew==
-X-Received: by 2002:a17:907:868c:b0:6f2:d939:630c with SMTP id
- qa12-20020a170907868c00b006f2d939630cmr19937985ejc.211.1650991708641; 
- Tue, 26 Apr 2022 09:48:28 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
- [82.27.106.168]) by smtp.gmail.com with ESMTPSA id
- u15-20020a17090617cf00b006f3bf8e69absm133895eje.5.2022.04.26.09.48.26
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 26 Apr 2022 09:48:27 -0700 (PDT)
-Date: Tue, 26 Apr 2022 17:48:01 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-Message-ID: <YmgiQZZyFxsJ+9um@myrica>
-References: <YmJ/WA6KAQU/xJjA@myrica>
- <tencent_A4E83BA6071B2204B6F5D4E69A50D21C1A09@qq.com>
- <YmLOznyBF0f7COYT@myrica>
- <tencent_2922DAB6F3D5789A1CD3A21A843B4007ED09@qq.com>
- <Yman5hLomw9/c+bi@myrica>
- <76ec6342-0d7c-7c7b-c132-2892e4048fa1@intel.com>
- <YmavoKkVu+hd+x0M@myrica>
- <22b659c7-e972-7a56-2bd7-8df3b4820d4e@intel.com>
- <YmbO/l5IwfBCHrl8@myrica>
- <8c044e49-74bb-df56-8a60-663013c0910e@intel.com>
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=COISYBtLemURzEtVRJTSOaoU1kvxhQruqFG2UXo9XUw=;
+ b=34B8F2CKl9JTpFVE6wYKQCqf20nP8cVKtL4dn7hHrslgdPyKrAKreHNVrKkqqJ+bUx
+ TtlksTOaatEqwubh6Ymze+WFHl04daD0K0la/rHTLeiD1u2k2wYs8GSklLJ9gSuRYN7F
+ +NwZnJOualfdsOBUX8ftpb+BcWCBl9kOWszrSI2xzPx4SQlhYiC6mYqGyZcMEgjLpMZ8
+ dm1P2sv7zrZVKGJlYtPqK9FrJadIBgPsFc9bYGJmlWfSq6t2PQxQXPlJEOP3Ifjzj3s6
+ 8lwHxiKnRdWP8pi8BCbv2tYHQCKE96RZFh153io6+2ItywK7yDawR/JMpgUQpYbIwjHu
+ +YDQ==
+X-Gm-Message-State: AOAM530ylS9OfS3dQNgBy8oxXRz1AkbISi80Rg/fNQZwU9Un2o7Aa3O0
+ qm4sSKgkboom80s0eomK/gFf8Pix+l68neImaUr5Ww==
+X-Google-Smtp-Source: ABdhPJw0Ra1dMBKYFZkjWanWW4cefxv2B97eXQvw3FrcmpDznbuhiQB1ig3w2zhaYU9CkF8BOrp7P30WHnRXgF9Udfk=
+X-Received: by 2002:a62:fb0e:0:b0:505:fd9e:9218 with SMTP id
+ x14-20020a62fb0e000000b00505fd9e9218mr26023121pfm.78.1650993233860; Tue, 26
+ Apr 2022 10:13:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <8c044e49-74bb-df56-8a60-663013c0910e@intel.com>
-Cc: Fenghua Yu <fenghua.yu@intel.com>, Tony Luck <tony.luck@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>,
- Peter Zijlstra <peterz@infradead.org>, robin.murphy@arm.com,
- Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
- linux-kernel <linux-kernel@vger.kernel.org>,
- iommu <iommu@lists.linux-foundation.org>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
- Josh Poimboeuf <jpoimboe@redhat.com>, zhangfei.gao@linaro.org,
- Thomas Gleixner <tglx@linutronix.de>, will@kernel.org
+References: <20220426000640.3581446-1-rajatja@google.com>
+ <030f48f4-44d7-c04c-a194-5f4999873ebe@arm.com>
+In-Reply-To: <030f48f4-44d7-c04c-a194-5f4999873ebe@arm.com>
+Date: Tue, 26 Apr 2022 10:13:17 -0700
+Message-ID: <CACK8Z6GEPTaQKbxeBqQuKbNmVkL1DoHDrKwDeosCeRXfHbD_=w@mail.gmail.com>
+Subject: Re: [PATCH v6 1/2] PCI/ACPI: Support Microsoft's "DmaProperty"
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Rajat Jain <rajatxjain@gmail.com>, Will Deacon <will@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, linux-pci@vger.kernel.org,
+ "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Pavel Machek <pavel@denx.de>,
+ ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Bjorn Helgaas <helgaas@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Oliver O'Halloran <oohall@gmail.com>,
+ David Woodhouse <dwmw2@infradead.org>,
+ Mika Westerberg <mika.westerberg@linux.intel.com>,
+ Jesse Barnes <jsbarnes@google.com>, Dmitry Torokhov <dtor@google.com>,
+ Len Brown <lenb@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,29 +99,131 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Rajat Jain via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Rajat Jain <rajatja@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Apr 26, 2022 at 08:27:00AM -0700, Dave Hansen wrote:
-> On 4/25/22 09:40, Jean-Philippe Brucker wrote:
-> > The problem is that we'd have to request the device driver to stop DMA
-> > before we can destroy the context and free the PASID. We did consider
-> > doing this in the release() MMU notifier, but there were concerns about
-> > blocking mmput() for too long (for example
-> > https://lore.kernel.org/linux-iommu/4d68da96-0ad5-b412-5987-2f7a6aa796c3@amd.com/
-> > though I think there was a more recent discussion). We also need to drain
-> > the PRI and fault queues to get rid of all references to that PASID.
-> 
-> Is the concern truly about blocking mmput() itself?  Or, is it about
-> releasing the resources associated with the mm?
+On Tue, Apr 26, 2022 at 4:15 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 2022-04-26 01:06, Rajat Jain via iommu wrote:
+> > The "DmaProperty" is supported and currently documented and used by
+> > Microsoft [link 1 below], to flag internal PCIe root ports that need
+> > DMA protection [link 2 below]. We have discussed with them and reached
+> > a common understanding that they shall change their MSDN documentation
+> > to say that the same property can be used to protect any PCI device,
+> > and not just internal PCIe root ports (since there is no point
+> > introducing yet another property for arbitrary PCI devices). This helps
+> > with security from internal devices that offer an attack surface for
+> > DMA attacks (e.g. internal network devices).
+> >
+> > Support DmaProperty to mark DMA from a PCI device as untrusted.
+> >
+> > Link: [1] https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-internal-pcie-ports-accessible-to-users-and-requiring-dma-protection
+> > Link: [2] https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
+> > Signed-off-by: Rajat Jain <rajatja@google.com>
+> > Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> > Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > ---
+> > v6: * Take care of Bjorn's comments:
+> >         - Update the commit log
+> >         - Rename to pci_dev_has_dma_property()
+> >         - Use acpi_dev_get_property()
+> > v5: * Reorder the patches in the series
+> > v4: * Add the GUID.
+> >      * Update the comment and commitlog.
+> > v3: * Use Microsoft's documented property "DmaProperty"
+> >      * Resctrict to ACPI only
+> >
+> >   drivers/acpi/property.c |  3 +++
+> >   drivers/pci/pci-acpi.c  | 21 +++++++++++++++++++++
+> >   2 files changed, 24 insertions(+)
+> >
+> > diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
+> > index 12bbfe833609..bafe35c301ac 100644
+> > --- a/drivers/acpi/property.c
+> > +++ b/drivers/acpi/property.c
+> > @@ -48,6 +48,9 @@ static const guid_t prp_guids[] = {
+> >       /* Storage device needs D3 GUID: 5025030f-842f-4ab4-a561-99a5189762d0 */
+> >       GUID_INIT(0x5025030f, 0x842f, 0x4ab4,
+> >                 0xa5, 0x61, 0x99, 0xa5, 0x18, 0x97, 0x62, 0xd0),
+> > +     /* DmaProperty for PCI devices GUID: 70d24161-6dd5-4c9e-8070-705531292865 */
+> > +     GUID_INIT(0x70d24161, 0x6dd5, 0x4c9e,
+> > +               0x80, 0x70, 0x70, 0x55, 0x31, 0x29, 0x28, 0x65),
+> >   };
+> >
+> >   /* ACPI _DSD data subnodes GUID: dbb8e3e6-5886-4ba6-8795-1319f52a966b */
+> > diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
+> > index 3ae435beaf0a..d7c6ba48486f 100644
+> > --- a/drivers/pci/pci-acpi.c
+> > +++ b/drivers/pci/pci-acpi.c
+> > @@ -1369,12 +1369,33 @@ static void pci_acpi_set_external_facing(struct pci_dev *dev)
+> >               dev->external_facing = 1;
+> >   }
+> >
+> > +static int pci_dev_has_dma_property(struct pci_dev *dev)
+> > +{
+> > +     struct acpi_device *adev;
+> > +     const union acpi_object *obj;
+> > +
+> > +     adev = ACPI_COMPANION(&dev->dev);
+> > +     if (!adev)
+> > +             return 0;
+> > +
+> > +     /*
+> > +      * Property also used by Microsoft Windows for same purpose,
+> > +      * (to implement DMA protection from a device, using the IOMMU).
+>
+> Nit: there is no context for "same purpose" here, so this comment is
+> more confusing than helpful. Might I suggest a rewording like:
+>
+>         /*
+>          * Property used by Microsoft Windows to enforce IOMMU DMA
+>          * protection for any device that the system might not fully
+>          * trust; we'll honour it the same way.
+>          */
+>
+> ?
 
-The latter I think, this one was about releasing pages as fast as possible
-if the process is picked by the OOM killer. 
+Sure, will do.
 
-Thanks,
-Jean
+>
+> Personally I think it would have been more logical to handle this in
+> pci_set_dma_untrusted(), but I see some of those implementation aspects
+> have already been discussed, and Bjorn's preference definitely wins over
+> mine here :)
+
+Yes, this was discussed. The primary reason is that ACPI properties
+for PCI devices are not available at the time pci_set_untrusted_dma()
+is called.
+
+Thanks & Best Regards,
+
+Rajat
+
+>
+> Thanks,
+> Robin.
+>
+> > +      */
+> > +     if (!acpi_dev_get_property(adev, "DmaProperty", ACPI_TYPE_INTEGER,
+> > +                                &obj) && obj->integer.value == 1)
+> > +             return 1;
+> > +
+> > +     return 0;
+> > +}
+> > +
+> >   void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
+> >   {
+> >       struct pci_dev *pci_dev = to_pci_dev(dev);
+> >
+> >       pci_acpi_optimize_delay(pci_dev, adev->handle);
+> >       pci_acpi_set_external_facing(pci_dev);
+> > +     pci_dev->untrusted |= pci_dev_has_dma_property(pci_dev); >      pci_acpi_add_edr_notifier(pci_dev);
+> >
+> >       pci_acpi_add_pm_notifier(adev, pci_dev);
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
