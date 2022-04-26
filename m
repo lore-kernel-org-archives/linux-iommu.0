@@ -1,89 +1,92 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 532D9C433F5
-	for <iommu@archiver.kernel.org>; Tue, 26 Apr 2022 13:53:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 766F0C433EF
+	for <iommu@archiver.kernel.org>; Tue, 26 Apr 2022 15:24:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id EF6D760EA9;
-	Tue, 26 Apr 2022 13:52:59 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 1019283260;
+	Tue, 26 Apr 2022 15:24:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id evx0LZRxZT_D; Tue, 26 Apr 2022 13:52:59 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pF55k9moYAzr; Tue, 26 Apr 2022 15:24:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id C4A4160F9B;
-	Tue, 26 Apr 2022 13:52:58 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id F197F831C1;
+	Tue, 26 Apr 2022 15:24:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 98B06C0039;
-	Tue, 26 Apr 2022 13:52:58 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E81B7C002D
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 13:52:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AEACBC0039;
+	Tue, 26 Apr 2022 15:24:41 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1F64BC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 15:24:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id CD54260F9B
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 13:52:56 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id F18C0416A5
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 15:24:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id z0uNCz7G-Xe7 for <iommu@lists.linux-foundation.org>;
- Tue, 26 Apr 2022 13:52:56 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com
- [IPv6:2607:f8b0:4864:20::102c])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 07B5F60EA9
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 13:52:55 +0000 (UTC)
-Received: by mail-pj1-x102c.google.com with SMTP id
- bd19-20020a17090b0b9300b001d98af6dcd1so2240640pjb.4
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 06:52:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-transfer-encoding:content-language;
- bh=uqaZpBljzoZzdXCykxWiGP7rAFt7o+OxvSikZ6TWlp0=;
- b=QRo5+aMEceoawAqu5WfjfVrACZsEACmr6ImwChCeF1PdQM5x0ZECcVseK61UOnqXWi
- g1QsxgK7znpLpJTi8lwzXUymH2PE1nSBpzwBlHQ4hEqbsjlSg6iBktMzvTHb61HSQ1Ex
- yEHdDYxykdw6FSe97RB1xgKrnfOOtitH0zRwjRuOyzWUksq07ABg2KVNaiEeHBDxhRhV
- SzSXm9X6Wb2A6Bm68Q+RQivNFo0TuqMYKoXgURwGx7KUgY1iobt2+mEvpbZaqywAxUQ3
- hmqx4596HDYiVxCsYkOq/fzw3cxc6kjXYwy/0rOlP2Mc9tjYctjupGjX718vWlM6AwZt
- fT7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-transfer-encoding
- :content-language;
- bh=uqaZpBljzoZzdXCykxWiGP7rAFt7o+OxvSikZ6TWlp0=;
- b=0omTlR/Ep28lcobYHSwwB7ay39tbnKHUj8PNt+Kgf0qORZ+2lh1v+VQdKsmHa5igyb
- LVXgSceV76w4RVVj4ZhuwIJqilxoXj7rTiNPa237smJ8CcSgrnCiCoGQ3dAs98PcvxCN
- n3wxv22NRoiYRI4irl607MJ1I6/Ceu6f7lWOhKfFdgIxY2E4mDDRMRVsaP4N/lhObbVK
- JPpjyj5K4BaSn1JgqCrlV26hMwGLbJXtv1uPOd/U3MfGSKspvHeHlFPuXo/vfgB34aNH
- EiyNiBgoAP6tS+1rOwf9xw/HweG/GWxB+/czkhqGu0gketMbvfwZp6PGe8bKqlT10uzH
- JDtg==
-X-Gm-Message-State: AOAM531AGHOKh2Ofn3asebsf/eG3fr2PQag4XXCvdLOEqCoAThK26Tpn
- n/Iji3rJAreeoPmO8l+pdZCH2vyOwIJykwrWhF8=
-X-Google-Smtp-Source: ABdhPJxFVynlZ1NgQmJwexRkstCJnMMkaENUYHM695DHlT54hcr0HlyNDYSqjN8iGZCoSFpySdsXXg==
-X-Received: by 2002:a17:902:eb91:b0:15d:1f88:d993 with SMTP id
- q17-20020a170902eb9100b0015d1f88d993mr7965305plg.17.1650981175127; 
- Tue, 26 Apr 2022 06:52:55 -0700 (PDT)
-Received: from [10.28.0.90] ([94.177.118.117])
- by smtp.gmail.com with ESMTPSA id
- p1-20020a056a000a0100b0050ac9c31b7esm16840391pfh.180.2022.04.26.06.52.52
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 26 Apr 2022 06:52:54 -0700 (PDT)
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3-sva: Fix mm use-after-free
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>, will@kernel.org,
- robin.murphy@arm.com, joro@8bytes.org
-References: <20220426130444.300556-1-jean-philippe@linaro.org>
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Message-ID: <198ae560-dbea-2c92-ec27-ca26b36b250e@linaro.org>
-Date: Tue, 26 Apr 2022 21:52:50 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id NUssItywQOCq for <iommu@lists.linux-foundation.org>;
+ Tue, 26 Apr 2022 15:24:38 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id C286E415E1
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 15:24:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1650986678; x=1682522678;
+ h=message-id:date:mime-version:subject:to:cc:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=uHUL5BJ27oyqSRllLdSrhqSu1/tdYAnraNE1Llkso44=;
+ b=lh2XEj7GAAh6H4mhxjxtExmptT9vwqIh8KHNLoU+3hLYYEwKeSjBMxcU
+ pEmVxODHgt7qXhOUcNxFvXrmdxzt1uXw0BxGUHYzk1KywjlWToS8jv25M
+ 9/P+SZXjQxN8XUNzAqv4EuHxD857xTTZOjuR8Ekhqh46OD3POJ1h+13o7
+ Gux+kbclEzAaVuDj6Zq0vXYVDF6VjQtZO7YsM0Db6OJ0yQcMx/hIZuBm0
+ WpgRMe9EquAeO/hRF8xrV6hzkNoR0nbmesL623phMdY0omRGy5t3mB5uX
+ b70whSbSjiaVUzgvB6vRB4SjPFylyLWSW6Vzzq84x33nCDHnFqFnR8vqk g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10328"; a="328552550"
+X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; d="scan'208";a="328552550"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Apr 2022 08:24:23 -0700
+X-IronPort-AV: E=Sophos;i="5.90,291,1643702400"; d="scan'208";a="595808700"
+Received: from dsocek-mobl2.amr.corp.intel.com (HELO [10.212.69.119])
+ ([10.212.69.119])
+ by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Apr 2022 08:24:22 -0700
+Message-ID: <8c044e49-74bb-df56-8a60-663013c0910e@intel.com>
+Date: Tue, 26 Apr 2022 08:27:00 -0700
 MIME-Version: 1.0
-In-Reply-To: <20220426130444.300556-1-jean-philippe@linaro.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
 Content-Language: en-US
-Cc: iommu@lists.linux-foundation.org
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <tencent_76E043C4D1B6A21A5253579A61034107EB06@qq.com>
+ <tencent_7477100F8A445C6CAFA8F13601A55134480A@qq.com>
+ <YmJ/WA6KAQU/xJjA@myrica>
+ <tencent_A4E83BA6071B2204B6F5D4E69A50D21C1A09@qq.com>
+ <YmLOznyBF0f7COYT@myrica>
+ <tencent_2922DAB6F3D5789A1CD3A21A843B4007ED09@qq.com>
+ <Yman5hLomw9/c+bi@myrica> <76ec6342-0d7c-7c7b-c132-2892e4048fa1@intel.com>
+ <YmavoKkVu+hd+x0M@myrica> <22b659c7-e972-7a56-2bd7-8df3b4820d4e@intel.com>
+ <YmbO/l5IwfBCHrl8@myrica>
+From: Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <YmbO/l5IwfBCHrl8@myrica>
+Cc: Fenghua Yu <fenghua.yu@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>,
+ Peter Zijlstra <peterz@infradead.org>, robin.murphy@arm.com,
+ Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>,
+ iommu <iommu@lists.linux-foundation.org>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
+ Josh Poimboeuf <jpoimboe@redhat.com>, zhangfei.gao@linaro.org,
+ Thomas Gleixner <tglx@linutronix.de>, will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,48 +99,23 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CgpPbiAyMDIyLzQvMjYg5LiL5Y2IOTowNCwgSmVhbi1QaGlsaXBwZSBCcnVja2VyIHdyb3RlOgo+
-IFdlIGN1cnJlbnRseSBjYWxsIGFybTY0X21tX2NvbnRleHRfcHV0KCkgd2l0aG91dCBob2xkaW5n
-IGEgcmVmZXJlbmNlIHRvCj4gdGhlIG1tLCB3aGljaCBjYW4gcmVzdWx0IGluIHVzZS1hZnRlci1m
-cmVlLiBDYWxsIG1tZ3JhYigpL21tZHJvcCgpIHRvCj4gZW5zdXJlIHRoZSBtbSBvbmx5IGdldHMg
-ZnJlZWQgYWZ0ZXIgd2UgdW5waW5uZWQgdGhlIEFTSUQuCj4KPiBGaXhlczogMzI3ODRhOTU2MmZi
-ICgiaW9tbXUvYXJtLXNtbXUtdjM6IEltcGxlbWVudCBpb21tdV9zdmFfYmluZC91bmJpbmQoKSIp
-Cj4gU2lnbmVkLW9mZi1ieTogSmVhbi1QaGlsaXBwZSBCcnVja2VyIDxqZWFuLXBoaWxpcHBlQGxp
-bmFyby5vcmc+CgpUaGFua3MgSmVhbgoKVGVzdGVkLWJ5OiBaaGFuZ2ZlaSBHYW8gPHpoYW5nZmVp
-Lmdhb0BsaW5hcm8ub3JnPgoKCj4gLS0tCj4gdjI6IEFkZCBtaXNzaW5nIGluY2x1ZGUKPiAtLS0K
-PiAgIGRyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLXN2YS5jIHwgMTMg
-KysrKysrKysrKystLQo+ICAgMSBmaWxlIGNoYW5nZWQsIDExIGluc2VydGlvbnMoKyksIDIgZGVs
-ZXRpb25zKC0pCj4KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMv
-YXJtLXNtbXUtdjMtc3ZhLmMgYi9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21t
-dS12My1zdmEuYwo+IGluZGV4IDIyZGRkMDViYmRjZC4uNWQwMjllODdjOGFmIDEwMDY0NAo+IC0t
-LSBhL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLXN2YS5jCj4gKysr
-IGIvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMtc3ZhLmMKPiBAQCAt
-Niw2ICs2LDcgQEAKPiAgICNpbmNsdWRlIDxsaW51eC9tbS5oPgo+ICAgI2luY2x1ZGUgPGxpbnV4
-L21tdV9jb250ZXh0Lmg+Cj4gICAjaW5jbHVkZSA8bGludXgvbW11X25vdGlmaWVyLmg+Cj4gKyNp
-bmNsdWRlIDxsaW51eC9zY2hlZC9tbS5oPgo+ICAgI2luY2x1ZGUgPGxpbnV4L3NsYWIuaD4KPiAg
-IAo+ICAgI2luY2x1ZGUgImFybS1zbW11LXYzLmgiCj4gQEAgLTk2LDkgKzk3LDE0IEBAIHN0YXRp
-YyBzdHJ1Y3QgYXJtX3NtbXVfY3R4X2Rlc2MgKmFybV9zbW11X2FsbG9jX3NoYXJlZF9jZChzdHJ1
-Y3QgbW1fc3RydWN0ICptbSkKPiAgIAlzdHJ1Y3QgYXJtX3NtbXVfY3R4X2Rlc2MgKmNkOwo+ICAg
-CXN0cnVjdCBhcm1fc21tdV9jdHhfZGVzYyAqcmV0ID0gTlVMTDsKPiAgIAo+ICsJLyogRG9uJ3Qg
-ZnJlZSB0aGUgbW0gdW50aWwgd2UgcmVsZWFzZSB0aGUgQVNJRCAqLwo+ICsJbW1ncmFiKG1tKTsK
-PiArCj4gICAJYXNpZCA9IGFybTY0X21tX2NvbnRleHRfZ2V0KG1tKTsKPiAtCWlmICghYXNpZCkK
-PiAtCQlyZXR1cm4gRVJSX1BUUigtRVNSQ0gpOwo+ICsJaWYgKCFhc2lkKSB7Cj4gKwkJZXJyID0g
-LUVTUkNIOwo+ICsJCWdvdG8gb3V0X2Ryb3BfbW07Cj4gKwl9Cj4gICAKPiAgIAljZCA9IGt6YWxs
-b2Moc2l6ZW9mKCpjZCksIEdGUF9LRVJORUwpOwo+ICAgCWlmICghY2QpIHsKPiBAQCAtMTY1LDYg
-KzE3MSw4IEBAIHN0YXRpYyBzdHJ1Y3QgYXJtX3NtbXVfY3R4X2Rlc2MgKmFybV9zbW11X2FsbG9j
-X3NoYXJlZF9jZChzdHJ1Y3QgbW1fc3RydWN0ICptbSkKPiAgIAlrZnJlZShjZCk7Cj4gICBvdXRf
-cHV0X2NvbnRleHQ6Cj4gICAJYXJtNjRfbW1fY29udGV4dF9wdXQobW0pOwo+ICtvdXRfZHJvcF9t
-bToKPiArCW1tZHJvcChtbSk7Cj4gICAJcmV0dXJuIGVyciA8IDAgPyBFUlJfUFRSKGVycikgOiBy
-ZXQ7Cj4gICB9Cj4gICAKPiBAQCAtMTczLDYgKzE4MSw3IEBAIHN0YXRpYyB2b2lkIGFybV9zbW11
-X2ZyZWVfc2hhcmVkX2NkKHN0cnVjdCBhcm1fc21tdV9jdHhfZGVzYyAqY2QpCj4gICAJaWYgKGFy
-bV9zbW11X2ZyZWVfYXNpZChjZCkpIHsKPiAgIAkJLyogVW5waW4gQVNJRCAqLwo+ICAgCQlhcm02
-NF9tbV9jb250ZXh0X3B1dChjZC0+bW0pOwo+ICsJCW1tZHJvcChjZC0+bW0pOwo+ICAgCQlrZnJl
-ZShjZCk7Cj4gICAJfQo+ICAgfQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
-b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2lvbW11
+On 4/25/22 09:40, Jean-Philippe Brucker wrote:
+> The problem is that we'd have to request the device driver to stop DMA
+> before we can destroy the context and free the PASID. We did consider
+> doing this in the release() MMU notifier, but there were concerns about
+> blocking mmput() for too long (for example
+> https://lore.kernel.org/linux-iommu/4d68da96-0ad5-b412-5987-2f7a6aa796c3@amd.com/
+> though I think there was a more recent discussion). We also need to drain
+> the PRI and fault queues to get rid of all references to that PASID.
+
+Is the concern truly about blocking mmput() itself?  Or, is it about
+releasing the resources associated with the mm?
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
