@@ -4,88 +4,76 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B55D9C433F5
-	for <iommu@archiver.kernel.org>; Tue, 26 Apr 2022 23:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 462D4C433EF
+	for <iommu@archiver.kernel.org>; Wed, 27 Apr 2022 02:13:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 554E060C14;
-	Tue, 26 Apr 2022 23:29:12 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id D53C760F9C;
+	Wed, 27 Apr 2022 02:13:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2yEM-v6cRhXl; Tue, 26 Apr 2022 23:29:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id C06E66113A;
-	Tue, 26 Apr 2022 23:29:10 +0000 (UTC)
+	with ESMTP id BMvrtyXPxd-g; Wed, 27 Apr 2022 02:13:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id C20D360F16;
+	Wed, 27 Apr 2022 02:13:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8B4ECC0039;
-	Tue, 26 Apr 2022 23:29:10 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A6E17C002D
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 23:29:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 85A26C0032;
+	Wed, 27 Apr 2022 02:13:22 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D1E82C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Apr 2022 02:13:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 32FBB802CF
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 23:29:09 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id BFF8881B01
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Apr 2022 02:13:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4ZQ2wl_tV4w3 for <iommu@lists.linux-foundation.org>;
- Tue, 26 Apr 2022 23:29:07 +0000 (UTC)
+ with ESMTP id dNn7fTqwVfdm for <iommu@lists.linux-foundation.org>;
+ Wed, 27 Apr 2022 02:13:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 3519480BC8
- for <iommu@lists.linux-foundation.org>; Tue, 26 Apr 2022 23:29:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1651015747; x=1682551747;
- h=message-id:date:mime-version:subject:to:cc:references:
- from:in-reply-to:content-transfer-encoding;
- bh=J8JmQdIC2PvJ9tfgakqcAYqNpk0tOSg7F3URbm6mlRk=;
- b=G84w+tHWTCavhPHu909H0l75Qu38MhVTVl2j7I8PJ0fp8EOJZP112+4H
- Cip2LRqbMN5FxUJ/XsQEHCegKVEpQvd7PK1Omb4K1DyO+d3N3ZyGDGw10
- rHrbSEVUPyet6pHEQ3n3vPsRo1e1rGugOMZK2Z7HfldzZg4ysTOM0SCjD
- OnevaLanknB/oSI70sUgrYRuG998AxlE9wJJ4xLCb4blTMvPDNZQ+VtFC
- Q8HkCvaDD7FU9smgdcGv1ZJBzm2NiVUVr8EmQkMR4pWYx56IB8PJhu7h0
- tIqFvng72PoSTtpGlZQ0FXcr2qReYiyd/OdB74GhAyJUzxcZJ/JuTwa2j w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10329"; a="264601391"
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; d="scan'208";a="264601391"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 26 Apr 2022 16:29:06 -0700
-X-IronPort-AV: E=Sophos;i="5.90,292,1643702400"; d="scan'208";a="580226562"
-Received: from dsocek-mobl2.amr.corp.intel.com (HELO [10.212.69.119])
- ([10.212.69.119])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 26 Apr 2022 16:29:04 -0700
-Message-ID: <63582490-a794-fd11-0380-44b27cc660b7@intel.com>
-Date: Tue, 26 Apr 2022 16:31:57 -0700
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 74E1B81A6A
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Apr 2022 02:13:16 +0000 (UTC)
+X-UUID: 4d52bf4950e9408cb2f74b0ba4b4e415-20220427
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4, REQID:cbcf598e-b9c4-4d07-b602-6eb723e8c0d7, OB:0,
+ LO
+ B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:22,FILE:0,RULE:Release_Ham,ACT
+ ION:release,TS:22
+X-CID-INFO: VERSION:1.1.4, REQID:cbcf598e-b9c4-4d07-b602-6eb723e8c0d7, OB:0,
+ LOB:
+ 0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:22,FILE:0,RULE:Release_Ham,ACTIO
+ N:release,TS:22
+X-CID-META: VersionHash:faefae9, CLOUDID:ed2999c6-85ee-4ac1-ac05-bd3f1e72e732,
+ C
+ OID:IGNORED,Recheck:0,SF:28|100|17|19|48|101,TC:nil,Content:0,EDM:-3,File:
+ nil,QS:0,BEC:nil
+X-UUID: 4d52bf4950e9408cb2f74b0ba4b4e415-20220427
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+ (envelope-from <miles.chen@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 642688658; Wed, 27 Apr 2022 10:13:09 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 27 Apr 2022 10:13:08 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via
+ Frontend Transport; Wed, 27 Apr 2022 10:13:07 +0800
+To: <robin.murphy@arm.com>
+Subject: Re: [PATCH v2] iommu/mediatek: fix NULL pointer dereference when
+ printing dev_name
+Date: Wed, 27 Apr 2022 10:13:08 +0800
+Message-ID: <20220427021308.22855-1-miles.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <9debe3ab-603d-0d30-a6aa-8963b48e83d4@arm.com>
+References: <9debe3ab-603d-0d30-a6aa-8963b48e83d4@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-Content-Language: en-US
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <YmJ/WA6KAQU/xJjA@myrica>
- <tencent_A4E83BA6071B2204B6F5D4E69A50D21C1A09@qq.com>
- <YmLOznyBF0f7COYT@myrica>
- <tencent_2922DAB6F3D5789A1CD3A21A843B4007ED09@qq.com>
- <Yman5hLomw9/c+bi@myrica> <76ec6342-0d7c-7c7b-c132-2892e4048fa1@intel.com>
- <YmavoKkVu+hd+x0M@myrica> <22b659c7-e972-7a56-2bd7-8df3b4820d4e@intel.com>
- <YmbO/l5IwfBCHrl8@myrica> <8c044e49-74bb-df56-8a60-663013c0910e@intel.com>
- <YmgiQZZyFxsJ+9um@myrica>
-From: Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <YmgiQZZyFxsJ+9um@myrica>
-Cc: Fenghua Yu <fenghua.yu@intel.com>, Tony Luck <tony.luck@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>,
- Peter Zijlstra <peterz@infradead.org>, robin.murphy@arm.com,
- Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
- linux-kernel <linux-kernel@vger.kernel.org>,
- iommu <iommu@lists.linux-foundation.org>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
- Josh Poimboeuf <jpoimboe@redhat.com>, zhangfei.gao@linaro.org,
- Thomas Gleixner <tglx@linutronix.de>, will@kernel.org
+X-MTK: N
+Cc: miles.chen@mediatek.com, jroedel@suse.de, linux-kernel@vger.kernel.org,
+ matthias.bgg@gmail.com, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, hverkuil-cisco@xs4all.nl,
+ mchehab@kernel.org, will@kernel.org, linux-arm-kernel@lists.infradead.org,
+ angelogioacchino.delregno@collabora.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,37 +86,36 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Miles Chen via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Miles Chen <miles.chen@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 4/26/22 09:48, Jean-Philippe Brucker wrote:
-> On Tue, Apr 26, 2022 at 08:27:00AM -0700, Dave Hansen wrote:
->> On 4/25/22 09:40, Jean-Philippe Brucker wrote:
->>> The problem is that we'd have to request the device driver to stop DMA
->>> before we can destroy the context and free the PASID. We did consider
->>> doing this in the release() MMU notifier, but there were concerns about
->>> blocking mmput() for too long (for example
->>> https://lore.kernel.org/linux-iommu/4d68da96-0ad5-b412-5987-2f7a6aa796c3@amd.com/
->>> though I think there was a more recent discussion). We also need to drain
->>> the PRI and fault queues to get rid of all references to that PASID.
->> Is the concern truly about blocking mmput() itself?  Or, is it about
->> releasing the resources associated with the mm?
-> The latter I think, this one was about releasing pages as fast as possible
-> if the process is picked by the OOM killer. 
+hi Robin,
 
-We're tying the PASID to the life of the mm itself, not the mm's address
-space.  That means the PASID should be tied to
-mmgrab()/mmdrop()/mm->mm_count.
+>> -	link = device_link_add(dev, larbdev,
+>> -			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
+>> -	if (!link)
+>> -		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
+>> +	if (larbdev) {
+>
+>Until the MT8195 infra MMU support lands, is there ever a case where 
+>it's actually valid for larbdev to be NULL? If not, I think it would be 
+>a lot clearer to explicitly fail the probe here, rather than silently 
+>continue and risk fatal errors, hangs, or other weird behaviour if 
+>there's no guarantee that the correct LARB is powered up (plus then the 
+>release callbacks wouldn't need to worry about it either).
 
-The address space is what the OOM killer is after.  That gets refcounted
-with mmget()/mmput()/mm->mm_users.  The OOM killer is satiated by the
-page freeing done in __mmput()->exit_mmap().
+Thanks, I will do probe fail in patch v3 and remove the release modification.
 
-Also, all the VMAs should be gone after exit_mmap().  So, even if
-vma->vm_file was holding a reference to a device driver, that reference
-should be gone by the time __mmdrop() is actually freeing the PASID.
+thanks,
+Miles
+
+>
+>Robin.
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
