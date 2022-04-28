@@ -1,102 +1,101 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 60385C433EF
-	for <iommu@archiver.kernel.org>; Thu, 28 Apr 2022 21:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7E327C433F5
+	for <iommu@archiver.kernel.org>; Thu, 28 Apr 2022 21:11:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 0D43D61198;
-	Thu, 28 Apr 2022 21:11:29 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 2CC0D40C68;
+	Thu, 28 Apr 2022 21:11:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id K47NioXR5q3O; Thu, 28 Apr 2022 21:11:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 7EA23605BE;
-	Thu, 28 Apr 2022 21:11:27 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5374DC007B;
-	Thu, 28 Apr 2022 21:11:27 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D6ED9C002D
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:25 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D35CA400E3
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:25 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=oracle.com header.b="nh244DpC";
- dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
- header.b="TPSthJI3"
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IhkbgUSePHyM for <iommu@lists.linux-foundation.org>;
- Thu, 28 Apr 2022 21:11:24 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fm80nF0wfIVE; Thu, 28 Apr 2022 21:11:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id B893C40420;
+	Thu, 28 Apr 2022 21:11:28 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8F226C007B;
+	Thu, 28 Apr 2022 21:11:28 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 92240C002D
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:26 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 804C761198
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:26 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=oracle.com header.b="XwZOvEmA";
+ dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
+ header.b="x53ZbfH8"
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id mZOYT0ZhMNQz for <iommu@lists.linux-foundation.org>;
+ Thu, 28 Apr 2022 21:11:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com
- [205.220.177.32])
- by smtp2.osuosl.org (Postfix) with ESMTPS id B717E40420
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:24 +0000 (UTC)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
- by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23SIcuMd003700;
- Thu, 28 Apr 2022 21:10:58 GMT
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com
+ [205.220.165.32])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 748B861172
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:25 +0000 (UTC)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+ by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23SJjjJX015405;
+ Thu, 28 Apr 2022 21:11:08 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
  h=from : to : cc :
  subject : date : message-id : in-reply-to : references : content-type :
  mime-version; s=corp-2021-07-09;
- bh=dTlD5HAbZ2TEiqONOYEsS3rToPUnCG/NQdVEeSmXTKg=;
- b=nh244DpC9XOhhVSef+Fgt5PrOpo9+oiqfI6zool5YBjKkODnSbQyPjjwROpjSgP13+Ua
- +jHzUmN6cBGlkskcVmb/AARwKHPIYz1bK9xAAkUSTEaOPCMjgh37jmfdy/GJAh8DC2BM
- n+RIcbohSjkDI+isjFPDgaBVZ0CCP7kjg25BBeZ7z/ziH2tNAjxB3YNLdML/I4chvwUB
- Ui5YE+Bg0aHNXlkYnMKsNLljdv1VkaglwUMMUsDkNxZWQG77U/CTyhyyK/LXYG9vEpr8
- pmAPWy4SmLB3fpVvJMv/9RzHqwKEKtpjUK6Rjwg5nFRydWob/rMaewZxVSC9hTP38uo6 AQ== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com
- (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
- by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fmbb4vsj4-1
+ bh=kVqfD5XfKXR4Ni3378Ku4OfK92vLu8R0ghDPVk/lH+c=;
+ b=XwZOvEmAaKPOKKGQLn8ZYLkprUZRgyPn0xU7lpcZxnq+7GAmLMUcqmCZmWCX7ocGeSME
+ 05g8uPMPWGKfmSna5zHqijfyTJVNpZz8kkRi+uiYoGNYHhrjHUgOd1I/MsWnzamUjMjF
+ 60Z00eA+Cyaj7XJHmtKlaoV2KTFbIq/aeqc+fwKDMUOarjSFmoY/iu0qtTDKWDzvXoZG
+ lZrOPuLZiWlcI6CKfGql28Jr0uprB0xlGiaCUDl6N9cghuAHDxHo3lqk1IpJWygXVtDX
+ mSTf4g0/m/XCoL2wzuKAF4Co5Pxg5ANVVIoYcIplmQBwz0PH6MgasaarrmAL8ExnajYz Dg== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com
+ (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+ by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fmb9aw5w8-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Thu, 28 Apr 2022 21:10:58 +0000
+ Thu, 28 Apr 2022 21:11:08 +0000
 Received: from pps.filterd
- (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
- by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2)
- with SMTP id 23SL6BSB024977; Thu, 28 Apr 2022 21:10:57 GMT
+ (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+ by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2)
+ with SMTP id 23SL6cIl028689; Thu, 28 Apr 2022 21:11:06 GMT
 Received: from nam10-mw2-obe.outbound.protection.outlook.com
- (mail-mw2nam10lp2105.outbound.protection.outlook.com [104.47.55.105])
- by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id
- 3fm7w78a7u-1
+ (mail-mw2nam10lp2103.outbound.protection.outlook.com [104.47.55.103])
+ by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id
+ 3fp5ype92m-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Thu, 28 Apr 2022 21:10:57 +0000
+ Thu, 28 Apr 2022 21:11:06 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j6X66psG4DxwN3z0l8DYKgkVx2/XyEtyPoUO4VMW3zRp6KMDJxE0pPnZ+jAHr0jD8vBnDNxsl5cbu3ENBH1V6ZVZbk/E8ZyLeBeUKyYzRl/NR1e3M8WAypQDDaMGJ+5/d1/f4AuSJaGMz7PbF91Qa4F+YxuBEQ9yqy0Qtm88I/iO8Or9q8LGn49hpfT43rrEy5+/tzb/KUCRt+1ePEzFAuXmq1ZjOljlBozLDrXrtTG591Cb2HFX8Njmd2uRrXot3l2G+yMK0iS4wAJOiVtbg467/dVmkg01fuynpoKcx4sAgTSF8AkMyHhxwT4jMDU0H8Z+IbymPrn/1Nja016AuQ==
+ b=HxKsX8CfhDJ962/r1b8mhnVO8jeWaE1/EFK+ivNGBbokYPKzUbcLdUfBklOmq3BH8IL5jpJnMlGu9pyjGzSszP6Oah2KskyohbC3ad/8rqwmt7767SyCFYoS4mJRmuMH4h/fpJynmFeNEtWd4y4S0FW9aDk+KqhnmFWdOwgM35pxtZ5TgAuKJlqN1gnWBnBuszcm0OKFRHov4B+DVEWKROwDpjFa8ocpENaNwsPsbDGFeokCjvohIqFPgXs1oV22KOWOPGbmVZJH2zs8iHX4QCcgdiMdYZWGDN7MdN4HhiRZHjFzZRjl6jCE8eAmN3oSs+yomqThGsf+djqiYK9c7g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dTlD5HAbZ2TEiqONOYEsS3rToPUnCG/NQdVEeSmXTKg=;
- b=b8GVupd76z48713aYAYaX4oWjU/hq480F5unK4cZOj1UOyqD6TO4nKED6odU38bR4JIpO18kzcHYoFMZoubc9rvOjKRdnwOaVRJ+Z/q5bASMRsbVDR8QUgkI5wqyyNMhw6h+1AHQIvmd48ASz74mDwOVtiYBVwPs4ldY9eYvvPEvnIwwq5cTF+IxH30r6PryJkCxl9hVqIar/Ktgpl8AjtdZZPDCS5fk6aj2Sehz+LLz8cThOpb8GfjzOQd+z16HJCTUqaVYSVFvCAMFV/3lVB9090WryOSar+Drl98blOD6kZEU+bIjZNN/oZBx9UBTZ/rjEJwFUv7E7/9ZAi//ww==
+ bh=kVqfD5XfKXR4Ni3378Ku4OfK92vLu8R0ghDPVk/lH+c=;
+ b=bCxrd/OdRuwXsjwZyAlAFzrXkeJeyNOFSutfMZD1ensl920BCxj9IGakFuaDU//Z3zS8N+zYVlRQ20oaT6a+9Z/u+eVOUPOGj7Q2w6tgtJ0M0IpHQeH036sJMW4YUjKygVaVPQAxrPPaxin7S7MBeA6tVTG/VAQWSSYzIRppX0zO3NAp9ucpbmwycMIL350b/E6r0A1WI5wrd2TAQ8HUJwPoGe0l5Ftgit4VwGCkRnvV/MXz3hic9ca/36EHWbTqT6ySi5/QUfEqaWGRajuaK7SBn6hKvMVKujowWcJMfYXHnNUIZr8kjgR+J3aUdlQkyRHk3LoOewWxSvVMek2bdQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dTlD5HAbZ2TEiqONOYEsS3rToPUnCG/NQdVEeSmXTKg=;
- b=TPSthJI3xpbb5UyzdKkaA9EMWax00lWhbIEqazCVlFKQWM9JdjGbNXtMyryLWv7B8WMLR5uudfREQe7Lb/yNFoofrQmm/ajZKLni6sY4xYD10IMb4c3+IQPDl39aEK+/FWIoczBenbEjl7PZcXfq9TBbabp/L2/3A4h5buGmfYs=
+ bh=kVqfD5XfKXR4Ni3378Ku4OfK92vLu8R0ghDPVk/lH+c=;
+ b=x53ZbfH8IGPdqfET5vuc+5Hz0DSCmKkdvtWjzJcH8WttsUuDfpF3dWsxtksEQZDv80sOU+xDhEBTTXiYWIflYMVbmiYBu8Y6DrgwSSVLseUbw1lDfeauLHlUJGQBx41Q28+WusT1B60YxJYBtIOs6RQD57A5BXegeAN6plHXKGQ=
 Received: from BLAPR10MB4835.namprd10.prod.outlook.com (2603:10b6:208:331::11)
  by DM5PR10MB1564.namprd10.prod.outlook.com (2603:10b6:3:9::17) with
  Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5186.15; Thu, 28 Apr 2022 21:10:55 +0000
+ 15.20.5186.15; Thu, 28 Apr 2022 21:11:03 +0000
 Received: from BLAPR10MB4835.namprd10.prod.outlook.com
  ([fe80::b9e5:d1b6:b4be:f9d]) by BLAPR10MB4835.namprd10.prod.outlook.com
  ([fe80::b9e5:d1b6:b4be:f9d%5]) with mapi id 15.20.5206.013; Thu, 28 Apr 2022
- 21:10:55 +0000
+ 21:11:03 +0000
 From: Joao Martins <joao.m.martins@oracle.com>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH RFC 07/19] iommufd/vfio-compat: Dirty tracking IOCTLs
- compatibility
-Date: Thu, 28 Apr 2022 22:09:21 +0100
-Message-Id: <20220428210933.3583-8-joao.m.martins@oracle.com>
+Subject: [PATCH RFC 09/19] iommu/amd: Access/Dirty bit support in IOPTEs
+Date: Thu, 28 Apr 2022 22:09:23 +0100
+Message-Id: <20220428210933.3583-10-joao.m.martins@oracle.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20220428210933.3583-1-joao.m.martins@oracle.com>
 References: <20220428210933.3583-1-joao.m.martins@oracle.com>
@@ -105,68 +104,68 @@ X-ClientProxiedBy: LO2P265CA0111.GBRP265.PROD.OUTLOOK.COM
  (2603:10b6:208:331::11)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 56514688-04c6-497a-345d-08da295b952f
+X-MS-Office365-Filtering-Correlation-Id: 423e5b2a-296d-45b9-1991-08da295b9a29
 X-MS-TrafficTypeDiagnostic: DM5PR10MB1564:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR10MB15642AFAB4D9A71CA32CC24ABBFD9@DM5PR10MB1564.namprd10.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DM5PR10MB156463D6558F9F1AC34BB182BBFD9@DM5PR10MB1564.namprd10.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MEE+6apYez7FzU5Z/fS4a/I9GwKDKfkrZ8e/6IjNXpbBHcoPsJ/VGU1HVBTxs7i0JEWqzkFW/5gnWsLYWFrc4a7WjJDclcVApn0KB33C1n+VrfgtZBR0nrDq9sJ8z8HzK9upRk3SXtdhiVnxlXabiV1/puJM+QvIaHPQlpDTW6rdkdi+y6sortdT2LdsrI+vdzNWycnQwThh8gdZWoqzD7fO9D7gpyQKTQoG8A3BzqXbf/YaFMO2SmhAHl/bSrahldkhDDRujFm50rYASksay3m8HLh9L+7aU0KkwqkcpW7w1ZENmOwRr0pG0PrUBMDAimOTAwWeCHW9jBdI1d00q0bgu7T/ixOlP0z4Rk3BVOKv8XfSvt/zYuUyacs73je+nCDpZvl+ufVfMHpRFbmtprwGDC/J4hTnaah0FbVjH87+jIJlJodudQVQi+mZoqwToopRice6i5AIMNzpGVBMVEpWqjpFqYdorhAIW7aaFtRjno5jwak6atj3M7L20Vaz3KBtCx9JyUcO/Vt7Y1vuGJ7FtJ1Up4acuwQpACGWTBip/UaSAmmrzxwSvut9A7nOijbJCD4fLKCMSeWSPejtcOWR9L3oYG7PIDbmF53WxuZJe0pNBPe+VUv+FXhzgUqEMsfGZJo9Ft760zWQXPB96L5jD+uAt/PHhSplv0Hu6RPbuinqolu34AiqDRuA4L47cnlAj5rVS4n66pZFZz2yhEGww831ZyqXUuk/GBtURG4=
+X-Microsoft-Antispam-Message-Info: 9VKEuT3q5Jmiw/ANt00JxEJmAqsnibhK2gXXM/pzZ59uc0FGZkJrY/KPvl87Z97q1CHvx2RygRplomxTOpyEpU2YMQd1xGUF0JLvkmg6qO63jHUnjvCzWFHWbm7KPE/3gl5F1sS283p9nC749KXYqrppZHvBOE2G37MiW6GTDhn38cCJVAkFjX8Qyj6oKPz9EBQzq1/L6gG1XK6P/DPGR+BWLEz+L8bcGClNZJxjzumc5Pbha+CcOSLUzZ43DJghjjY0A5yGgoZ01IV0T1PrPMy15o51tUEKIXWMv4ZvtpbuXse4O2p6n6mOnwtiqCgKiEYQB845ofCAVbM8Ghi+rSXuQvBDUrEen13me+sdje/O4UWNmXbkR9dlxikjm5ZPhvHzcKNQFlW+QQLWIatYa4G3iOBFxz9sws/mHAJfj23j3iy8mP2a1fRhMShm+ZP6V8OOw64Y+aUQkZtBn8n5jKLnN/mQJ9PZG/La5tT3wygjb6m3eqsstr6XG5y+UotRS7py9zh0IW0OtotFZ0AqyAsHdCPNllJs2bY8ltt9uo6xX9aM/xrFq2AZBPOIqGJzI0Xh6dGqjxZ1yCafv09GCtQ7qN1rYzHsUzBul44Sf0bqavgEamE0bnp7iXeznKhBD5G4uU/vhclmXD2zhRxZfENVnpIYWI7thFW/uzoel66+PYmZe/IH8Vh5Oun+NN6XdDu644ie7Glo9+ZW7R6Zx0ZRDjXJgsxQzX6DQvWTq54=
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:BLAPR10MB4835.namprd10.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(366004)(316002)(186003)(86362001)(66946007)(66556008)(4326008)(66476007)(8676002)(2616005)(36756003)(1076003)(103116003)(8936002)(5660300002)(7416002)(26005)(6512007)(6486002)(6916009)(83380400001)(54906003)(508600001)(6506007)(38350700002)(38100700002)(6666004)(2906002)(52116002)(14143004);
+ SFS:(13230001)(366004)(316002)(186003)(86362001)(66946007)(66556008)(4326008)(66476007)(8676002)(2616005)(36756003)(1076003)(103116003)(8936002)(5660300002)(7416002)(30864003)(26005)(6512007)(6486002)(6916009)(83380400001)(54906003)(508600001)(6506007)(38350700002)(38100700002)(6666004)(2906002)(52116002)(14143004);
  DIR:OUT; SFP:1101; 
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9w8zFD6jyNyq0SKZePEAt7Y3wWFXqIDNZ6Mr96Fk5Q9vkEGvGAUHxYWbx9rZ?=
- =?us-ascii?Q?8a3XQc4YQ9R9q7lwDlR12jUPaiIOVfSRk97pZsux2IMrNlumBaUREBIJ+Az5?=
- =?us-ascii?Q?0KWRDBzukNBtRyIBFYr18j3DSdWT6pKyxorL2vzGGWmR6a70EIOWu6AeLhI0?=
- =?us-ascii?Q?7Hwx8eXErEo/uCi3LpdgceSlBvDAE+3neNN1B0H/Xjk8u9SpqrRtwQSDQFL9?=
- =?us-ascii?Q?QPcimau4KiPYHOu8FboJo3HpFqrLZlnIV6IW1AlND6C26XhDU6cuHnK0ZrJq?=
- =?us-ascii?Q?9xqFOMLHHAqA/mBQ4TkRRFe6mBN6BjHurMXGku4xfhhpYdRySEEK0LJwgWyN?=
- =?us-ascii?Q?9BknjDChYOsyciYM/1F85U27X86Fy1LvjMbPAcKouQAn5y5iGNMXSrE5EtZ3?=
- =?us-ascii?Q?3bwv+M/VHjjIblg2rT1He+rGcY9IWWRBVo/6NUYrluaznVPuARf5l3nD7IRv?=
- =?us-ascii?Q?0kCEbMjQMDL9+mYSH+vzEeSGCN6KH75qIfb7CG0nb4u9fT2r+6/PHQBbcerk?=
- =?us-ascii?Q?WPmE7CTQMDx6UkMf/8+x3lHz6sCV3N8ZNDjWsGXRXCbPDFsTZ0PTCCKxJ8AJ?=
- =?us-ascii?Q?KOlUXouW4xL3X2gUGuXXFFQ4IXUryDe+nI8G+almcPan3BeLy/08T24ZS7D8?=
- =?us-ascii?Q?dDXHoARftHXjsgvQ04I9OmdmoEcRxUiHh5kxXU3Nij5VaVd/PwfrSSVm7zWt?=
- =?us-ascii?Q?Q6G6mr0Cm7s1QOkgrr5Cz6n0nhiDR8rWvKTSggpwf9O0WMAMQEQ4CQre52Zx?=
- =?us-ascii?Q?n9mJJyr5AhKBeebZ5pPT0RjL/NE6bivAVpoUOTMJqVaPj5pZjXiLz4YpmCnH?=
- =?us-ascii?Q?UkHt1qDBw/6wxkKuU0IKptGU0Q9urw1keUjqN17RSaM6Ok+FjhKWQq4NRsAo?=
- =?us-ascii?Q?ir+qL03LDSjV8aq9MUZqSsN+TC9R5gu7+y9YSfn8GoCPrBME2Nwgdlf4+aNU?=
- =?us-ascii?Q?lnBOQvauO5qjkH5vbYV6EDzs22GyUT6HZPXQ2slUnrNmleovfCMDJQlirpes?=
- =?us-ascii?Q?j3OZf9uTYan5F/dKKglENOce7MtONi20hx0r8tITJAiTlaZOe4XmoJdWsL7s?=
- =?us-ascii?Q?X/Ddgr1XwwP6LVwuKAk/CnC94ZZLGmB4cdNIJtTyA/ctEpn5JeUmdkEtlIXT?=
- =?us-ascii?Q?S2Eb8bx8YUC2IkTqj3aPqEbUliEUsC8ivs4O1v9wEhXl30HYBNRz4oX1TeSC?=
- =?us-ascii?Q?egcnHLsadkv8gfq2MZ07E7mCnVyU+rYoz1VQdl35SusDW8nclx/iLhYOp//1?=
- =?us-ascii?Q?qsmWqcEfxNgYrXAmFtsoTRfc6ObyVVRc1ylbjNcVlkn7LTcqXyAW930mJVAy?=
- =?us-ascii?Q?5MxfMprxwsuyVQwYjRxzqQw91RJHwcx15A0jck0wbciqfJlIdR5E3IB/oQYJ?=
- =?us-ascii?Q?pL0GWwRfm2gQsafImPFGJMJnAdkb0wcYHeVOCK5ubLvejFyvyJBsut1rmrEl?=
- =?us-ascii?Q?DR0PaOLFS3l0xMUgMqIgG60SGZfDNK4cP0s0mhslSWYwjn1S23XiFId0fNp+?=
- =?us-ascii?Q?Z2oEGEPTGj+0KvojX280BwSONz+3F/JcNPRG0+yNKyj3iqVFQHT6UWufrCSc?=
- =?us-ascii?Q?Zcusu/1F731K7UYfIeGh7H1wB92TqdRe0sU2srlaHF0ilQd/+htnSwzqxs8A?=
- =?us-ascii?Q?H5LRvncS9Ra33vGGmZVAEvrfDkV3xNtoFdJzCUv8q7zV2BB1t6dBRaGmp+VC?=
- =?us-ascii?Q?Uc84JTHKXh+mRfL03YZ0VzV1HvndfxEsnZYs8UVHeZtSPc9GikykJ9lKPjZH?=
- =?us-ascii?Q?HRLb2pFB0Z27ndQb9xsv4y7PUYym5AE=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jFthM69qx/k4QUOH8JnJPNp5UYUwJhy1mliTmCGRvyOuLJP9O9hv+7hiNU5k?=
+ =?us-ascii?Q?FSatBEzknC38BbiTyypEEx0aauvN6gfw2R04pebKTBDK48ay70TtWxkBwjYo?=
+ =?us-ascii?Q?2Q29lKTcMBLnkloAdvX5ZKN2PLujjlfiUJelBZIkaBugMwVFiZcCTKZxw6Gl?=
+ =?us-ascii?Q?SJdg11yzDsOSq3PSfFKwyn3ZUMnkBCUsW13S9TfBJ6d95TtBYVFTvz2bDSL5?=
+ =?us-ascii?Q?+pSJemBY+DIrlqwHzxCz+uTiCJIzvYaMEOPbdPEXDf03/H2uzZ1AGiyQZODs?=
+ =?us-ascii?Q?eevkRPXbkuowFuy8XulHH8u+HP3HbTF/jYTfGG+O2v27i2hz4dZDJcjDm08/?=
+ =?us-ascii?Q?rxw6WoT5GpRbeHtz18+MMWR52f7Ypki6lIoaPwtQb7EHgAiGmo/Xj/7YMU9Z?=
+ =?us-ascii?Q?qU+/hCG+Jb92Lbc1vU8gTl9cMx3uLJGCu1xg1ePfgnr9a9sQrc+fwg3BoDnr?=
+ =?us-ascii?Q?WMOndwCS4mdv0tiGC94l3a8FEXgbu5DET7kG+lonDij5tE8maUAUbQvqu2NM?=
+ =?us-ascii?Q?aVJVyCpUTCYyYZH+IBrsf/rwZvJ/mrf1jyzVo5pVkybGc4AbNlIZgpUmzos4?=
+ =?us-ascii?Q?+woBLUCHPZ0H//A30T6Dxwg8qvhhm09ghjRUycM3uULd2QSrcjTmiKmz4EXt?=
+ =?us-ascii?Q?W3n9uQJmWcwA0IXot4y5uLFzkwTDknjn4F/1MzaTfXuFJKZmsM5Pn5rSWqJ8?=
+ =?us-ascii?Q?AB7yCwXhxfeWmDQkWleO2gabQQODv3ibi20MTRdDH7MeyQcnCErAJO3HN+nT?=
+ =?us-ascii?Q?gOhpOFu4JoAlzVPY2hEymyaxdpwpts4MwLIEtebn2tT8WzuCoh3eOX6vxsoN?=
+ =?us-ascii?Q?A3LT/aFYttOUtBIWkmUlKCRXH3cS00D5CGvgFa+HUb0R1Gt5+4/3d6bmGkZb?=
+ =?us-ascii?Q?bhsXR0ckSJcf/CxzQAVIFfe6KkGcf+q6hlUKFTt8DnMxGqMZKjT2DFSqZHe6?=
+ =?us-ascii?Q?bIJi4ThQxA8WNBnf4TCPl0JqNirZ8vxTPIVSK5Y4uB4c2Wm9Ds3cWOwbIoaa?=
+ =?us-ascii?Q?32pp6cLBVUOB2XeQCniCHfm8zXRim8OxxRc08oRCDf4FKc/ElRr6ozw1KW0j?=
+ =?us-ascii?Q?f+gY+BcAi+6GqbwcKIjY0yEc1Slmjpff3H8NTY3O9uDluM2CXCz/POX7stxM?=
+ =?us-ascii?Q?hDRlr3bGh/mLfwlSsJNncHRjhEdqEFFWwNXO8C4Qz+9m6DLRACLMxDQWsOXP?=
+ =?us-ascii?Q?RDxe3pNlYHFgka2kd3KBFU4eeNfMcZHBVMNXEvltZaL8SgtmHWY6xuIs/F4b?=
+ =?us-ascii?Q?F/jvh4fbYczcf6a2Rjv8vkqZmcpAC1oQqu1z8+kZYz8DSNyLyp/vlhHS69AW?=
+ =?us-ascii?Q?RXRtO+/9QeazPzVK7s1hSKP9fpQXYGVnwaXg9OB7hkv+XJ7dbxP9MFjCB8zA?=
+ =?us-ascii?Q?3/ybA8sFxfi+3hlrUBAadZL/1K3G4397Xr7xhtSsxbENMUiR65xHx7LLc/pq?=
+ =?us-ascii?Q?mD/+lVTP6MwgVU814DrI5qM4wJ58tNWvzHyXfaTBnMDY7lS9rcL6hv1m+w0h?=
+ =?us-ascii?Q?IpPt42TSgYCnMEp29SNxEKdG6URFzMyRi4mne2i+4AtClYuh+500xJzOW3gi?=
+ =?us-ascii?Q?J5Sey+4Ahr5WVaalJMZx66tAtyG0zl8S7e9wLcM2Ch8PhlxM8L7veupT7z63?=
+ =?us-ascii?Q?btoLnw99SzwcfBIIjXxWcsL3DQcXbRdqsIOY6zqFgXB6s+AXf8zMNBlHQEzE?=
+ =?us-ascii?Q?++F0dzTy2S4MfAt62QHnwPTSCqWi3dlfPATT4mLxNsZSaC5Kt+ZkY45FRC8/?=
+ =?us-ascii?Q?pfi1pt/5aAQHE7v+OBcuIwj33mm2QSc=3D?=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 56514688-04c6-497a-345d-08da295b952f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 423e5b2a-296d-45b9-1991-08da295b9a29
 X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB4835.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2022 21:10:55.0521 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2022 21:11:03.3524 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6ofQ54Xys+9SCe42t53yZkdEl4uG74/8kchjoAycyRd6zVaPDpHpFwfOTMPzYrbrPrfdf6HwsYidTuMsjU+12nczCOkFdEeaIY6ct1nXTJg=
+X-MS-Exchange-CrossTenant-UserPrincipalName: +4Avq9wNX2IfauVOTRPvPFsrLy2OvnJcpLW3Ai1vtY9HYa67AfUbFSoKPoJZMlz7kS3OU2ZCx6/bDdUwXmFGUool+/AWZMKRuk19eC4g1kk=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB1564
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486, 18.0.858
  definitions=2022-04-28_04:2022-04-28,
  2022-04-28 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
- mlxlogscore=999
- malwarescore=0 mlxscore=0 phishscore=0 bulkscore=0 adultscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204280125
-X-Proofpoint-ORIG-GUID: EJNJsQLJDsPS_-LSFBeLWfdUT5JuVi0k
-X-Proofpoint-GUID: EJNJsQLJDsPS_-LSFBeLWfdUT5JuVi0k
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0
+ mlxlogscore=999 mlxscore=0
+ suspectscore=0 malwarescore=0 spamscore=0 adultscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204280125
+X-Proofpoint-ORIG-GUID: 84C8cqd0B2FxFBnAkWn7dMEsjbzbFMGp
+X-Proofpoint-GUID: 84C8cqd0B2FxFBnAkWn7dMEsjbzbFMGp
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Kevin Tian <kevin.tian@intel.com>, Yishai Hadas <yishaih@nvidia.com>,
  Jason Gunthorpe <jgg@nvidia.com>, kvm@vger.kernel.org,
@@ -191,321 +190,342 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add the correspondent APIs for performing VFIO dirty tracking,
-particularly VFIO_IOMMU_DIRTY_PAGES ioctl subcmds:
-* VFIO_IOMMU_DIRTY_PAGES_FLAG_START: Start dirty tracking and allocates
-				     the area @dirty_bitmap
-* VFIO_IOMMU_DIRTY_PAGES_FLAG_STOP: Stop dirty tracking and frees
-				    the area @dirty_bitmap
-* VFIO_IOMMU_DIRTY_PAGES_FLAG_GET_BITMAP: Fetch dirty bitmap while dirty
-tracking is active.
+IOMMU advertises Access/Dirty bits if the extended feature register
+reports it. Relevant AMD IOMMU SDM ref[0]
+"1.3.8 Enhanced Support for Access and Dirty Bits"
 
-Advertise the VFIO_IOMMU_TYPE1_INFO_CAP_MIGRATION
-whereas it gets set the domain configured page size the same as
-iopt::iova_alignment and maximum dirty bitmap size same
-as VFIO. Compared to VFIO type1 iommu, the perpectual dirtying is
-not implemented and userspace gets -EOPNOTSUPP which is handled by
-today's userspace.
+To enable it set the DTE flag in bits 7 and 8 to enable access, or
+access+dirty. With that, the IOMMU starts marking the D and A flags on
+every Memory Request or ATS translation request. It is on the VMM side
+to steer whether to enable dirty tracking or not, rather than wrongly
+doing in IOMMU. Relevant AMD IOMMU SDM ref [0], "Table 7. Device Table
+Entry (DTE) Field Definitions" particularly the entry "HAD".
 
-Move iommufd_get_pagesizes() definition prior to unmap for
-iommufd_vfio_unmap_dma() dirty support to validate the user bitmap page
-size against IOPT pagesize.
+To actually toggle on and off it's relatively simple as it's setting
+2 bits on DTE and flush the device DTE cache.
+
+To get what's dirtied use existing AMD io-pgtable support, by walking
+the pagetables over each IOVA, with fetch_pte().  The IOTLB flushing is
+left to the caller (much like unmap), and iommu_dirty_bitmap_record() is
+the one adding page-ranges to invalidate. This allows caller to batch
+the flush over a big span of IOVA space, without the iommu wondering
+about when to flush.
+
+Worthwhile sections from AMD IOMMU SDM:
+
+"2.2.3.1 Host Access Support"
+"2.2.3.2 Host Dirty Support"
+
+For details on how IOMMU hardware updates the dirty bit see,
+and expects from its consequent clearing by CPU:
+
+"2.2.7.4 Updating Accessed and Dirty Bits in the Guest Address Tables"
+"2.2.7.5 Clearing Accessed and Dirty Bits"
+
+Quoting the SDM:
+
+"The setting of accessed and dirty status bits in the page tables is
+visible to both the CPU and the peripheral when sharing guest page
+tables. The IOMMU interlocked operations to update A and D bits must be
+64-bit operations and naturally aligned on a 64-bit boundary"
+
+.. and for the IOMMU update sequence to Dirty bit, essentially is states:
+
+1. Decodes the read and write intent from the memory access.
+2. If P=0 in the page descriptor, fail the access.
+3. Compare the A & D bits in the descriptor with the read and write
+intent in the request.
+4. If the A or D bits need to be updated in the descriptor:
+* Start atomic operation.
+* Read the descriptor as a 64-bit access.
+* If the descriptor no longer appears to require an update, release the
+atomic lock with
+no further action and continue to step 5.
+* Calculate the new A & D bits.
+* Write the descriptor as a 64-bit access.
+* End atomic operation.
+5. Continue to the next stage of translation or to the memory access.
+
+Access/Dirty bits readout also need to consider the default
+non-page-size (aka replicated PTEs as mentined by manual), as AMD
+supports all powers of two page sizes (except 512G) even though the
+underlying IOTLB mappings are restricted to the same ones as supported
+by the CPU (4K, 2M, 1G). It makes one wonder whether AMD_IOMMU_PGSIZES
+ought to avoid advertising non-default page sizes at all, when creating
+an UNMANAGED DOMAIN, or when dirty tracking is toggling in.
 
 Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 ---
- drivers/iommu/iommufd/vfio_compat.c | 221 ++++++++++++++++++++++++++--
- 1 file changed, 209 insertions(+), 12 deletions(-)
+ drivers/iommu/amd/amd_iommu.h       |  1 +
+ drivers/iommu/amd/amd_iommu_types.h | 11 +++++
+ drivers/iommu/amd/init.c            |  8 ++-
+ drivers/iommu/amd/io_pgtable.c      | 56 +++++++++++++++++++++
+ drivers/iommu/amd/iommu.c           | 77 +++++++++++++++++++++++++++++
+ 5 files changed, 152 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommufd/vfio_compat.c b/drivers/iommu/iommufd/vfio_compat.c
-index dbe39404a105..2802f49cc10d 100644
---- a/drivers/iommu/iommufd/vfio_compat.c
-+++ b/drivers/iommu/iommufd/vfio_compat.c
-@@ -56,6 +56,16 @@ create_compat_ioas(struct iommufd_ctx *ictx)
- 	return ioas;
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index 1ab31074f5b3..2f16ad8f7514 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -34,6 +34,7 @@ extern int amd_iommu_reenable(int);
+ extern int amd_iommu_enable_faulting(void);
+ extern int amd_iommu_guest_ir;
+ extern enum io_pgtable_fmt amd_iommu_pgtable;
++extern bool amd_iommu_had_support;
+ 
+ /* IOMMUv2 specific functions */
+ struct iommu_domain;
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index 47108ed44fbb..c1eba8fce4bb 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -93,7 +93,9 @@
+ #define FEATURE_HE		(1ULL<<8)
+ #define FEATURE_PC		(1ULL<<9)
+ #define FEATURE_GAM_VAPIC	(1ULL<<21)
++#define FEATURE_HASUP		(1ULL<<49)
+ #define FEATURE_EPHSUP		(1ULL<<50)
++#define FEATURE_HDSUP		(1ULL<<52)
+ #define FEATURE_SNP		(1ULL<<63)
+ 
+ #define FEATURE_PASID_SHIFT	32
+@@ -197,6 +199,7 @@
+ /* macros and definitions for device table entries */
+ #define DEV_ENTRY_VALID         0x00
+ #define DEV_ENTRY_TRANSLATION   0x01
++#define DEV_ENTRY_HAD           0x07
+ #define DEV_ENTRY_PPR           0x34
+ #define DEV_ENTRY_IR            0x3d
+ #define DEV_ENTRY_IW            0x3e
+@@ -350,10 +353,16 @@
+ #define PTE_LEVEL_PAGE_SIZE(level)			\
+ 	(1ULL << (12 + (9 * (level))))
+ 
++/*
++ * The IOPTE dirty bit
++ */
++#define IOMMU_PTE_HD_BIT (6)
++
+ /*
+  * Bit value definition for I/O PTE fields
+  */
+ #define IOMMU_PTE_PR (1ULL << 0)
++#define IOMMU_PTE_HD (1ULL << IOMMU_PTE_HD_BIT)
+ #define IOMMU_PTE_U  (1ULL << 59)
+ #define IOMMU_PTE_FC (1ULL << 60)
+ #define IOMMU_PTE_IR (1ULL << 61)
+@@ -364,6 +373,7 @@
+  */
+ #define DTE_FLAG_V  (1ULL << 0)
+ #define DTE_FLAG_TV (1ULL << 1)
++#define DTE_FLAG_HAD (3ULL << 7)
+ #define DTE_FLAG_IR (1ULL << 61)
+ #define DTE_FLAG_IW (1ULL << 62)
+ 
+@@ -390,6 +400,7 @@
+ 
+ #define IOMMU_PAGE_MASK (((1ULL << 52) - 1) & ~0xfffULL)
+ #define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_PR)
++#define IOMMU_PTE_DIRTY(pte) ((pte) & IOMMU_PTE_HD)
+ #define IOMMU_PTE_PAGE(pte) (iommu_phys_to_virt((pte) & IOMMU_PAGE_MASK))
+ #define IOMMU_PTE_MODE(pte) (((pte) >> 9) & 0x07)
+ 
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index b4a798c7b347..27f2cf61d0c6 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -149,6 +149,7 @@ struct ivmd_header {
+ 
+ bool amd_iommu_dump;
+ bool amd_iommu_irq_remap __read_mostly;
++bool amd_iommu_had_support __read_mostly;
+ 
+ enum io_pgtable_fmt amd_iommu_pgtable = AMD_IOMMU_V1;
+ 
+@@ -1986,8 +1987,13 @@ static int __init amd_iommu_init_pci(void)
+ 	for_each_iommu(iommu)
+ 		iommu_flush_all_caches(iommu);
+ 
+-	if (!ret)
++	if (!ret) {
++		if (check_feature_on_all_iommus(FEATURE_HASUP) &&
++		    check_feature_on_all_iommus(FEATURE_HDSUP))
++			amd_iommu_had_support = true;
++
+ 		print_iommu_info();
++	}
+ 
+ out:
+ 	return ret;
+diff --git a/drivers/iommu/amd/io_pgtable.c b/drivers/iommu/amd/io_pgtable.c
+index 6608d1717574..8325ef193093 100644
+--- a/drivers/iommu/amd/io_pgtable.c
++++ b/drivers/iommu/amd/io_pgtable.c
+@@ -478,6 +478,61 @@ static phys_addr_t iommu_v1_iova_to_phys(struct io_pgtable_ops *ops, unsigned lo
+ 	return (__pte & ~offset_mask) | (iova & offset_mask);
  }
  
-+static u64 iommufd_get_pagesizes(struct iommufd_ioas *ioas)
++static bool pte_test_and_clear_dirty(u64 *ptep, unsigned long size)
 +{
-+	/* FIXME: See vfio_update_pgsize_bitmap(), for compat this should return
-+	 * the high bits too, and we need to decide if we should report that
-+	 * iommufd supports less than PAGE_SIZE alignment or stick to strict
-+	 * compatibility. qemu only cares about the first set bit.
++	bool dirty = false;
++	int i, count;
++
++	/*
++	 * 2.2.3.2 Host Dirty Support
++	 * When a non-default page size is used , software must OR the
++	 * Dirty bits in all of the replicated host PTEs used to map
++	 * the page. The IOMMU does not guarantee the Dirty bits are
++	 * set in all of the replicated PTEs. Any portion of the page
++	 * may have been written even if the Dirty bit is set in only
++	 * one of the replicated PTEs.
 +	 */
-+	return ioas->iopt.iova_alignment;
++	count = PAGE_SIZE_PTE_COUNT(size);
++	for (i = 0; i < count; i++)
++		if (test_and_clear_bit(IOMMU_PTE_HD_BIT,
++					(unsigned long *) &ptep[i]))
++			dirty = true;
++
++	return dirty;
 +}
 +
- int iommufd_vfio_ioas(struct iommufd_ucmd *ucmd)
- {
- 	struct iommu_vfio_ioas *cmd = ucmd->cmd;
-@@ -130,9 +140,14 @@ static int iommufd_vfio_unmap_dma(struct iommufd_ctx *ictx, unsigned int cmd,
- 				  void __user *arg)
- {
- 	size_t minsz = offsetofend(struct vfio_iommu_type1_dma_unmap, size);
--	u32 supported_flags = VFIO_DMA_UNMAP_FLAG_ALL;
-+	u32 supported_flags = VFIO_DMA_UNMAP_FLAG_ALL |
-+		VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP;
-+	struct iommufd_dirty_data dirty, *dirtyp = NULL;
- 	struct vfio_iommu_type1_dma_unmap unmap;
-+	struct vfio_bitmap bitmap;
- 	struct iommufd_ioas *ioas;
-+	unsigned long pgshift;
-+	size_t pgsize;
- 	int rc;
++static int iommu_v1_read_and_clear_dirty(struct io_pgtable_ops *ops,
++					 unsigned long iova, size_t size,
++					 struct iommu_dirty_bitmap *dirty)
++{
++	struct amd_io_pgtable *pgtable = io_pgtable_ops_to_data(ops);
++	unsigned long end = iova + size - 1;
++
++	do {
++		unsigned long pgsize = 0;
++		u64 *ptep, pte;
++
++		ptep = fetch_pte(pgtable, iova, &pgsize);
++		if (ptep)
++			pte = READ_ONCE(*ptep);
++		if (!ptep || !IOMMU_PTE_PRESENT(pte)) {
++			pgsize = pgsize ?: PTE_LEVEL_PAGE_SIZE(0);
++			iova += pgsize;
++			continue;
++		}
++
++		/*
++		 * Mark the whole IOVA range as dirty even if only one of
++		 * the replicated PTEs were marked dirty.
++		 */
++		if (pte_test_and_clear_dirty(ptep, pgsize))
++			iommu_dirty_bitmap_record(dirty, iova, pgsize);
++		iova += pgsize;
++	} while (iova < end);
++
++	return 0;
++}
++
+ /*
+  * ----------------------------------------------------
+  */
+@@ -519,6 +574,7 @@ static struct io_pgtable *v1_alloc_pgtable(struct io_pgtable_cfg *cfg, void *coo
+ 	pgtable->iop.ops.map          = iommu_v1_map_page;
+ 	pgtable->iop.ops.unmap        = iommu_v1_unmap_page;
+ 	pgtable->iop.ops.iova_to_phys = iommu_v1_iova_to_phys;
++	pgtable->iop.ops.read_and_clear_dirty = iommu_v1_read_and_clear_dirty;
  
- 	if (copy_from_user(&unmap, arg, minsz))
-@@ -141,14 +156,53 @@ static int iommufd_vfio_unmap_dma(struct iommufd_ctx *ictx, unsigned int cmd,
- 	if (unmap.argsz < minsz || unmap.flags & ~supported_flags)
- 		return -EINVAL;
+ 	return &pgtable->iop;
+ }
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index a1ada7bff44e..0a86392b2367 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2169,6 +2169,81 @@ static bool amd_iommu_capable(enum iommu_cap cap)
+ 	return false;
+ }
  
-+	if (unmap.flags & VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP) {
-+		unsigned long npages;
++static int amd_iommu_set_dirty_tracking(struct iommu_domain *domain,
++					bool enable)
++{
++	struct protection_domain *pdomain = to_pdomain(domain);
++	struct iommu_dev_data *dev_data;
++	bool dom_flush = false;
 +
-+		if (copy_from_user(&bitmap,
-+				   (void __user *)(arg + minsz),
-+				   sizeof(bitmap)))
-+			return -EFAULT;
++	if (!amd_iommu_had_support)
++		return -EOPNOTSUPP;
 +
-+		if (!access_ok((void __user *)bitmap.data, bitmap.size))
-+			return -EINVAL;
++	list_for_each_entry(dev_data, &pdomain->dev_list, list) {
++		struct amd_iommu *iommu;
++		u64 pte_root;
 +
-+		pgshift = __ffs(bitmap.pgsize);
-+		npages = unmap.size >> pgshift;
++		iommu = amd_iommu_rlookup_table[dev_data->devid];
++		pte_root = amd_iommu_dev_table[dev_data->devid].data[0];
 +
-+		if (!npages || !bitmap.size ||
-+		    (bitmap.size > DIRTY_BITMAP_SIZE_MAX) ||
-+		    (bitmap.size < dirty_bitmap_bytes(npages)))
-+			return -EINVAL;
++		/* No change? */
++		if (!(enable ^ !!(pte_root & DTE_FLAG_HAD)))
++			continue;
 +
-+		dirty.iova = unmap.iova;
-+		dirty.length = unmap.size;
-+		dirty.data = bitmap.data;
-+		dirty.page_size = 1 << pgshift;
-+		dirtyp = &dirty;
++		pte_root = (enable ?
++			pte_root | DTE_FLAG_HAD : pte_root & ~DTE_FLAG_HAD);
++
++		/* Flush device DTE */
++		amd_iommu_dev_table[dev_data->devid].data[0] = pte_root;
++		device_flush_dte(dev_data);
++		dom_flush = true;
 +	}
 +
- 	ioas = get_compat_ioas(ictx);
- 	if (IS_ERR(ioas))
- 		return PTR_ERR(ioas);
- 
-+	pgshift = __ffs(iommufd_get_pagesizes(ioas)),
-+	pgsize = (size_t)1 << pgshift;
++	/* Flush IOTLB to mark IOPTE dirty on the next translation(s) */
++	if (dom_flush) {
++		unsigned long flags;
 +
-+	/* When dirty tracking is enabled, allow only min supported pgsize */
-+	if ((unmap.flags & VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP) &&
-+	    (bitmap.pgsize != pgsize)) {
-+		rc = -EINVAL;
-+		goto out_put;
++		spin_lock_irqsave(&pdomain->lock, flags);
++		amd_iommu_domain_flush_tlb_pde(pdomain);
++		amd_iommu_domain_flush_complete(pdomain);
++		spin_unlock_irqrestore(&pdomain->lock, flags);
 +	}
 +
- 	if (unmap.flags & VFIO_DMA_UNMAP_FLAG_ALL)
- 		rc = iopt_unmap_all(&ioas->iopt);
- 	else
--		rc = iopt_unmap_iova(&ioas->iopt, unmap.iova, unmap.size, NULL);
-+		rc = iopt_unmap_iova(&ioas->iopt, unmap.iova, unmap.size,
-+				     dirtyp);
-+
-+out_put:
- 	iommufd_put_object(&ioas->obj);
- 	return rc;
- }
-@@ -222,16 +276,6 @@ static int iommufd_vfio_set_iommu(struct iommufd_ctx *ictx, unsigned long type)
- 	return 0;
- }
- 
--static u64 iommufd_get_pagesizes(struct iommufd_ioas *ioas)
--{
--	/* FIXME: See vfio_update_pgsize_bitmap(), for compat this should return
--	 * the high bits too, and we need to decide if we should report that
--	 * iommufd supports less than PAGE_SIZE alignment or stick to strict
--	 * compatibility. qemu only cares about the first set bit.
--	 */
--	return ioas->iopt.iova_alignment;
--}
--
- static int iommufd_fill_cap_iova(struct iommufd_ioas *ioas,
- 				 struct vfio_info_cap_header __user *cur,
- 				 size_t avail)
-@@ -289,6 +333,26 @@ static int iommufd_fill_cap_dma_avail(struct iommufd_ioas *ioas,
- 	return sizeof(cap_dma);
- }
- 
-+static int iommufd_fill_cap_migration(struct iommufd_ioas *ioas,
-+				      struct vfio_info_cap_header __user *cur,
-+				      size_t avail)
-+{
-+	struct vfio_iommu_type1_info_cap_migration cap_mig = {
-+		.header = {
-+			.id = VFIO_IOMMU_TYPE1_INFO_CAP_MIGRATION,
-+			.version = 1,
-+		},
-+		.flags = 0,
-+		.pgsize_bitmap = (size_t) 1 << __ffs(iommufd_get_pagesizes(ioas)),
-+		.max_dirty_bitmap_size = DIRTY_BITMAP_SIZE_MAX,
-+	};
-+
-+	if (avail >= sizeof(cap_mig) &&
-+	    copy_to_user(cur, &cap_mig, sizeof(cap_mig)))
-+		return -EFAULT;
-+	return sizeof(cap_mig);
++	return 0;
 +}
 +
- static int iommufd_vfio_iommu_get_info(struct iommufd_ctx *ictx,
- 				       void __user *arg)
++static bool amd_iommu_get_dirty_tracking(struct iommu_domain *domain)
++{
++	struct protection_domain *pdomain = to_pdomain(domain);
++	struct iommu_dev_data *dev_data;
++	u64 dte;
++
++	list_for_each_entry(dev_data, &pdomain->dev_list, list) {
++		dte = amd_iommu_dev_table[dev_data->devid].data[0];
++		if (!(dte & DTE_FLAG_HAD))
++			return false;
++	}
++
++	return true;
++}
++
++static int amd_iommu_read_and_clear_dirty(struct iommu_domain *domain,
++					  unsigned long iova, size_t size,
++					  struct iommu_dirty_bitmap *dirty)
++{
++	struct protection_domain *pdomain = to_pdomain(domain);
++	struct io_pgtable_ops *ops = &pdomain->iop.iop.ops;
++
++	if (!amd_iommu_get_dirty_tracking(domain))
++		return -EOPNOTSUPP;
++
++	if (!ops || !ops->read_and_clear_dirty)
++		return -ENODEV;
++
++	return ops->read_and_clear_dirty(ops, iova, size, dirty);
++}
++
++
+ static void amd_iommu_get_resv_regions(struct device *dev,
+ 				       struct list_head *head)
  {
-@@ -298,6 +362,7 @@ static int iommufd_vfio_iommu_get_info(struct iommufd_ctx *ictx,
- 	static const fill_cap_fn fill_fns[] = {
- 		iommufd_fill_cap_iova,
- 		iommufd_fill_cap_dma_avail,
-+		iommufd_fill_cap_migration,
- 	};
- 	size_t minsz = offsetofend(struct vfio_iommu_type1_info, iova_pgsizes);
- 	struct vfio_info_cap_header __user *last_cap = NULL;
-@@ -364,6 +429,137 @@ static int iommufd_vfio_iommu_get_info(struct iommufd_ctx *ictx,
- 	return rc;
- }
- 
-+static int iommufd_vfio_dirty_pages_start(struct iommufd_ctx *ictx,
-+				struct vfio_iommu_type1_dirty_bitmap *dirty)
-+{
-+	struct iommufd_ioas *ioas;
-+	int ret = -EINVAL;
-+
-+	ioas = get_compat_ioas(ictx);
-+	if (IS_ERR(ioas))
-+		return PTR_ERR(ioas);
-+
-+	ret = iopt_set_dirty_tracking(&ioas->iopt, NULL, true);
-+
-+	iommufd_put_object(&ioas->obj);
-+
-+	return ret;
-+}
-+
-+static int iommufd_vfio_dirty_pages_stop(struct iommufd_ctx *ictx,
-+				struct vfio_iommu_type1_dirty_bitmap *dirty)
-+{
-+	struct iommufd_ioas *ioas;
-+	int ret;
-+
-+	ioas = get_compat_ioas(ictx);
-+	if (IS_ERR(ioas))
-+		return PTR_ERR(ioas);
-+
-+	ret = iopt_set_dirty_tracking(&ioas->iopt, NULL, false);
-+
-+	iommufd_put_object(&ioas->obj);
-+
-+	return ret;
-+}
-+
-+static int iommufd_vfio_dirty_pages_get_bitmap(struct iommufd_ctx *ictx,
-+				struct vfio_iommu_type1_dirty_bitmap_get *range)
-+{
-+	struct iommufd_dirty_data bitmap;
-+	uint64_t npages, bitmap_size;
-+	struct iommufd_ioas *ioas;
-+	unsigned long pgshift;
-+	size_t iommu_pgsize;
-+	int ret = -EINVAL;
-+
-+	ioas = get_compat_ioas(ictx);
-+	if (IS_ERR(ioas))
-+		return PTR_ERR(ioas);
-+
-+	down_read(&ioas->iopt.iova_rwsem);
-+	pgshift = __ffs(range->bitmap.pgsize);
-+	npages = range->size >> pgshift;
-+	bitmap_size = range->bitmap.size;
-+
-+	if (!npages || !bitmap_size || (bitmap_size > DIRTY_BITMAP_SIZE_MAX) ||
-+	    (bitmap_size < dirty_bitmap_bytes(npages)))
-+		goto out_put;
-+
-+	iommu_pgsize = 1 << __ffs(iommufd_get_pagesizes(ioas));
-+
-+	/* allow only smallest supported pgsize */
-+	if (range->bitmap.pgsize != iommu_pgsize)
-+		goto out_put;
-+
-+	if (range->iova & (iommu_pgsize - 1))
-+		goto out_put;
-+
-+	if (!range->size || range->size & (iommu_pgsize - 1))
-+		goto out_put;
-+
-+	bitmap.iova = range->iova;
-+	bitmap.length = range->size;
-+	bitmap.data = range->bitmap.data;
-+	bitmap.page_size = 1 << pgshift;
-+
-+	ret = iopt_read_and_clear_dirty_data(&ioas->iopt, NULL, &bitmap);
-+
-+out_put:
-+	up_read(&ioas->iopt.iova_rwsem);
-+	iommufd_put_object(&ioas->obj);
-+	return ret;
-+}
-+
-+static int iommufd_vfio_dirty_pages(struct iommufd_ctx *ictx, unsigned int cmd,
-+				    void __user *arg)
-+{
-+	size_t minsz = offsetofend(struct vfio_iommu_type1_dirty_bitmap, flags);
-+	struct vfio_iommu_type1_dirty_bitmap dirty;
-+	u32 supported_flags = VFIO_IOMMU_DIRTY_PAGES_FLAG_START |
-+			VFIO_IOMMU_DIRTY_PAGES_FLAG_STOP |
-+			VFIO_IOMMU_DIRTY_PAGES_FLAG_GET_BITMAP;
-+	int ret = 0;
-+
-+	if (copy_from_user(&dirty, (void __user *)arg, minsz))
-+		return -EFAULT;
-+
-+	if (dirty.argsz < minsz || dirty.flags & ~supported_flags)
-+		return -EINVAL;
-+
-+	/* only one flag should be set at a time */
-+	if (__ffs(dirty.flags) != __fls(dirty.flags))
-+		return -EINVAL;
-+
-+	if (dirty.flags & VFIO_IOMMU_DIRTY_PAGES_FLAG_START) {
-+		ret = iommufd_vfio_dirty_pages_start(ictx, &dirty);
-+	} else if (dirty.flags & VFIO_IOMMU_DIRTY_PAGES_FLAG_STOP) {
-+		ret = iommufd_vfio_dirty_pages_stop(ictx, &dirty);
-+	} else if (dirty.flags & VFIO_IOMMU_DIRTY_PAGES_FLAG_GET_BITMAP) {
-+		struct vfio_iommu_type1_dirty_bitmap_get range;
-+		size_t data_size = dirty.argsz - minsz;
-+
-+		if (!data_size || data_size < sizeof(range))
-+			return -EINVAL;
-+
-+		if (copy_from_user(&range, (void __user *)(arg + minsz),
-+				   sizeof(range)))
-+			return -EFAULT;
-+
-+		if (range.iova + range.size < range.iova)
-+			return -EINVAL;
-+
-+		if (!access_ok((void __user *)range.bitmap.data,
-+			       range.bitmap.size))
-+			return -EINVAL;
-+
-+		ret = iommufd_vfio_dirty_pages_get_bitmap(ictx, &range);
-+	}
-+
-+	return ret;
-+}
-+
-+
- /* FIXME TODO:
- PowerPC SPAPR only:
- #define VFIO_IOMMU_ENABLE	_IO(VFIO_TYPE, VFIO_BASE + 15)
-@@ -394,6 +590,7 @@ int iommufd_vfio_ioctl(struct iommufd_ctx *ictx, unsigned int cmd,
- 	case VFIO_IOMMU_UNMAP_DMA:
- 		return iommufd_vfio_unmap_dma(ictx, cmd, uarg);
- 	case VFIO_IOMMU_DIRTY_PAGES:
-+		return iommufd_vfio_dirty_pages(ictx, cmd, uarg);
- 	default:
- 		return -ENOIOCTLCMD;
+@@ -2293,6 +2368,8 @@ const struct iommu_ops amd_iommu_ops = {
+ 		.flush_iotlb_all = amd_iommu_flush_iotlb_all,
+ 		.iotlb_sync	= amd_iommu_iotlb_sync,
+ 		.free		= amd_iommu_domain_free,
++		.set_dirty_tracking = amd_iommu_set_dirty_tracking,
++		.read_and_clear_dirty = amd_iommu_read_and_clear_dirty,
  	}
+ };
+ 
 -- 
 2.17.2
 
