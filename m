@@ -1,101 +1,101 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id ED2D5C433EF
-	for <iommu@archiver.kernel.org>; Thu, 28 Apr 2022 21:11:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 30D17C433F5
+	for <iommu@archiver.kernel.org>; Thu, 28 Apr 2022 21:11:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id B6AE5611A9;
-	Thu, 28 Apr 2022 21:11:15 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id F168A408F8;
+	Thu, 28 Apr 2022 21:11:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id joJnG0R7qA3h; Thu, 28 Apr 2022 21:11:14 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 248556119D;
-	Thu, 28 Apr 2022 21:11:14 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 09512C0039;
-	Thu, 28 Apr 2022 21:11:14 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4FDB7C002D
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:10 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 4C1AA400E3
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:10 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=oracle.com header.b="fOikvEKg";
- dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
- header.b="L4Ntj16R"
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id N8iVrUw6kZje for <iommu@lists.linux-foundation.org>;
- Thu, 28 Apr 2022 21:11:08 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id WX4Zp1V0pV_I; Thu, 28 Apr 2022 21:11:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A64B84074E;
+	Thu, 28 Apr 2022 21:11:15 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BA1CEC0088;
+	Thu, 28 Apr 2022 21:11:14 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 23F71C002D
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:13 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id D7DB341C0A
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:12 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=oracle.com header.b="v1uWdCA6";
+ dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
+ header.b="qe6qPMIU"
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id E0zIRUpHPive for <iommu@lists.linux-foundation.org>;
+ Thu, 28 Apr 2022 21:11:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com
  [205.220.165.32])
- by smtp2.osuosl.org (Postfix) with ESMTPS id AEBD340420
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:08 +0000 (UTC)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
- by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23SIa795032133;
- Thu, 28 Apr 2022 21:10:41 GMT
+ by smtp4.osuosl.org (Postfix) with ESMTPS id A678941C07
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:11 +0000 (UTC)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+ by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23SJX01T015475;
+ Thu, 28 Apr 2022 21:10:49 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
  h=from : to : cc :
  subject : date : message-id : in-reply-to : references : content-type :
  mime-version; s=corp-2021-07-09;
- bh=cFM7XtEkFLs8EgVppozaHsq3EO6f+xsO2BF7x6xS/jM=;
- b=fOikvEKgxf9BHzxt5G3MReIcHwIGixMXe9v6ZLMHcHptdxlY+vtrH34/N8kWByIYt/2j
- Tm85D2pca984ASY68plngAYLEfg2JEQP1fgbnsMnpoR001DZxb5n7mGxf0nYxJTYrbtS
- PuvWFInYyfemjRbe9JCcBXT9E9ddSajkeNekBxDsMrUeQXYhH4jumxQtdvr+3q4yXJtR
- 2tE4uniWjPDX7kE7UPWabVJkMwVJ5SctTL6GlsSjwBHZQYu4XyGyIIXL/bsOM/KUq8q7
- +vB7cvybEdBh1PVFfNNEgXuwFAZ0sDgBemX/9WHAcGMcmTRn2G0rYOS2UzcVJFeCg8Mu GA== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com
- (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
- by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fmb104nc6-1
+ bh=5lNwwdX4GajidCZHNuRT2UnSSdskz8qp0GtSZRhRAXE=;
+ b=v1uWdCA6chbvFILfvSxhWWlRRYJp68AeQTdG722hFybt+w0xiR9jiz3PK3S/TWI8OT3G
+ hA+lhWocDOiX7XgFmRdZm0sfRqIZ+Em9f0uzsbOh7G17bHs3bAYjQIjWaquSvhqR4Gwx
+ ssyzVfucDsn/Xr4zzYFRttY/9+PzQ/3qHXH8vrWUlWDbg1Q+b6WocGj7/80jN3UvTsft
+ 4znBqgrqiTdCKlPzfpTYWpWrd68FCcC4wes65rGkZLESpMuTVI+ubASkJKCY4swpVl7Y
+ opF6X48yPNMcsl5eSJHMTSgPdiKw679iZEC4idHmxt6OBl1k41Gr6Oep6azN+w6xqFWg wg== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com
+ (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+ by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fmb9aw5vm-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Thu, 28 Apr 2022 21:10:40 +0000
+ Thu, 28 Apr 2022 21:10:47 +0000
 Received: from pps.filterd
- (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
- by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2)
- with SMTP id 23SL6cxn028681; Thu, 28 Apr 2022 21:10:35 GMT
+ (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+ by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2)
+ with SMTP id 23SL5Ca8028531; Thu, 28 Apr 2022 21:10:45 GMT
 Received: from nam12-dm6-obe.outbound.protection.outlook.com
- (mail-dm6nam12lp2170.outbound.protection.outlook.com [104.47.59.170])
- by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id
- 3fp5ype8q6-1
+ (mail-dm6nam12lp2174.outbound.protection.outlook.com [104.47.59.174])
+ by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id
+ 3fm7w79nt9-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Thu, 28 Apr 2022 21:10:35 +0000
+ Thu, 28 Apr 2022 21:10:45 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bt59uoaEQarxTCLjFCdsKuOldo5VR4q4BZGXn/LLd7DG50T+SuLtyeD5U12ia5/gNs46JJE8XkMnVaM8eR6JGMJpKU4bxxHRieyvLmJt1Fy0Mm7BMjTN0XNpxOO4x/1Cg1dB7qofv/2ftTgswjquP8ZkdrKtaD+Z3khaAtK4fK6yaoKg0afk5jPrkIcfDHdJ/91ZAJzcLIfeSKeAhg1VIU8GIrDbDF2zeonZHQSQ/uAmU1edMy5vZtnlK7ZKfaGxKBOsNolDkNGoTw2RXJmhzbLnB3RefRDXQBkEQ2kUeZhFl8J6zshIndoKd/cIuDOa064tYnfgUMlymSirRCgqEA==
+ b=iozS2UmLe+AAmGcTVWA/hXXe2lPbX4Js5ZmFuzTHf5SiweCFflma+Tf/bg/Aqa8McNiGYu1PShuQx19ZPjfLV9MEL2nkOyg9SotGUWN9tJ+r803jclBIsCNu7WLJsxOBtDCX/Lg1e6khzMa3WsiINIoidBy2Za84MXm6ngkir24woa2zgSwvnIABrYAUEpKKM+zjijN3JmziHHmv8VKVdlrBsV8WPQCGU2jEVwkvAOtwL5tqsYt6SkhC/xFQSc5f2aQkEAMDFb/Hrz5Pbpi19Ifn4k+m3PNHUrmQzhJVP/gdmyqw0l/2AtOGOVxT30OLHp43kCLA3zeLrVFRRxbUTA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cFM7XtEkFLs8EgVppozaHsq3EO6f+xsO2BF7x6xS/jM=;
- b=StRgOsjXbxkj4y0gLHMeXJmqiO9/R03z102/flz7VL/sg/VB1nwZCYPhMEgmkvIyl4JRD/SUR7ns1u/upTvd0GJqLswNHC0XKeCvDxkkssLSf2EtbtsadpVDgjDXIZ8OkiGIipQkvIiOLco5fJJXhnLBCfpIcahWf4DSAE0D/U1Jyw2ZXRJ9b0WH+oergnzBlw/6ifCM07Bt2Qatvbn0WGmXpvCuFO9JdtphTUlaSQuq3C0IHea4zJh4CUmLMhltCNCyZfjYFaiSY6hOZWWGaajxTkh7hPOk2FpmlPnTWPFn9VO2T6GfBeiBQiAr6ygiUqQExLHAPfC6ILnlEdeb1w==
+ bh=5lNwwdX4GajidCZHNuRT2UnSSdskz8qp0GtSZRhRAXE=;
+ b=IET5dpZyooBCnNJHfT8UsyhVdf4JVRvnagNspL8QrZUFthT/UZRKCcycr/ZXE3vrWXt/8bzHhhiMmQRF0PkvWv0/3GWQYG9tilF48iRcEH3Rb9YTAiwKrt2ZblzGt2VfR7hqLuykC9JwzCYqrmgva99V+JlEKguGtUohwkgav3Ll8zxGaveSmTq3fHJuJW/Lmn354WbQxA/8o7dW1DWAK2XXWCk98LA3N7O4w/GoEDRaJjtg/Pk5wWjXxVwTJFQ+mJohMmz0pOgYn7/AMLFTus9BZgyf8ntaE3ECVwg2kkAm+0iGUG92NHgZNQCkqS4n5p22mo+tnTeJUjGJeyjm3Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cFM7XtEkFLs8EgVppozaHsq3EO6f+xsO2BF7x6xS/jM=;
- b=L4Ntj16RvTPWf4c1Tvy6De4S4ocg+YxzXEcafH9OxejlngQSUF7VUlDv9QXgXLoNUBkEt6G4hHTtDh6a7r261mcAVUI209EL7Ybhp8x9g/XpgSHETWReaTYelVs4I4UYh3/wsVC4D8GjXDaPkeHbQX/wYGSQHBimfBc2SDoU1eo=
+ bh=5lNwwdX4GajidCZHNuRT2UnSSdskz8qp0GtSZRhRAXE=;
+ b=qe6qPMIUAZAu02c2eF310DgReFpy7NrPYR4UcPabmuVATjKg2Re5z+l1emD8Q8Poc0raB3KSgf8t8DGx3i365Kt33DKox5ISKWmKaYeBvwaikvL2ok3JX+/MYsQ1CMYdjv50T8+nRSng1DKCNZmKywi8IWlGQq+AnuT3FO1dbME=
 Received: from BLAPR10MB4835.namprd10.prod.outlook.com (2603:10b6:208:331::11)
- by DM5PR10MB1564.namprd10.prod.outlook.com (2603:10b6:3:9::17) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5186.15; Thu, 28 Apr 2022 21:10:33 +0000
+ by MWHPR10MB1630.namprd10.prod.outlook.com (2603:10b6:301:a::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Thu, 28 Apr
+ 2022 21:10:43 +0000
 Received: from BLAPR10MB4835.namprd10.prod.outlook.com
  ([fe80::b9e5:d1b6:b4be:f9d]) by BLAPR10MB4835.namprd10.prod.outlook.com
  ([fe80::b9e5:d1b6:b4be:f9d%5]) with mapi id 15.20.5206.013; Thu, 28 Apr 2022
- 21:10:33 +0000
+ 21:10:43 +0000
 From: Joao Martins <joao.m.martins@oracle.com>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH RFC 01/19] iommu: Add iommu_domain ops for dirty tracking
-Date: Thu, 28 Apr 2022 22:09:15 +0100
-Message-Id: <20220428210933.3583-2-joao.m.martins@oracle.com>
+Subject: [PATCH RFC 04/19] iommu: Add an unmap API that returns dirtied IOPTEs
+Date: Thu, 28 Apr 2022 22:09:18 +0100
+Message-Id: <20220428210933.3583-5-joao.m.martins@oracle.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20220428210933.3583-1-joao.m.martins@oracle.com>
 References: <20220428210933.3583-1-joao.m.martins@oracle.com>
@@ -104,68 +104,68 @@ X-ClientProxiedBy: LO2P265CA0111.GBRP265.PROD.OUTLOOK.COM
  (2603:10b6:208:331::11)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 36719e01-f16a-45ce-fde7-08da295b880b
-X-MS-TrafficTypeDiagnostic: DM5PR10MB1564:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR10MB1564F13903A409CAF0344121BBFD9@DM5PR10MB1564.namprd10.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 422f200f-ef4f-4419-e4b7-08da295b8e2f
+X-MS-TrafficTypeDiagnostic: MWHPR10MB1630:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR10MB163041EC802A3B33E8A8314FBBFD9@MWHPR10MB1630.namprd10.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3QTpOb0DnslDAH3ChRPttQE+DnIHCyux29aCjTkC15KpMEBug6N1prnoR0WEb2BU4rFLUpBqin0SfK4LWncC7/1eojYo16pO83F18FUqCYtl89pP/kZ93084BCgxVIYgltozcbWbh4PX50jAp5eGHNUMGdOSSKUnbUCUPkv0sATDLG8eRIusdPQSt/rSzpwlUhITYy8ITrjRWV8jmXEHOLNgNlaHtyHJc6DHySwn+SYxUF5MyR5HQI4o4F6ce/OhzV35v9p8lnJsdoL+P5CHzJS5iLzi/rMkM7OnaY0N/x9m1XFbMAjYrQ59gIU+0zVT06+0hzvNJMB48vxHhyyw38aPG8tXkPCu8EjpmuF9nH/50rt8xAe0ijwY28stWj6NBpq/N2IbaI72AQK/aAYKDqiqK0UXR7cVXRiUrFESHbi07v+VhO/C4nqC4oPB2WaZ8e+00JNwxBLeeNu1H+Y4qPfb/3/JmGzmHHAIuZQIcbbJ/rSoCdtL7M7DxCQVXBA9HWzoT3r75EZ48qUISPOKleUqU2eDaMi1jYl+tTSn+x37JEKkr/Z0CRRKpPqcsoZO2i3YVuuPLJ8F/tHSgUvyXsplAPDL6CLhEFHH8y2q63SNfOc96PkuNv67vIKblE2MvXaaLQimJxMDyCC/5Ek6muzqsRgqlzHWGyQqNXDZ6kWEESiafT7j/wb84akPm7YDhIM+d5FqBuG0tn+GENHCrxDX93aNTanYAGpJyuINq3/ABBQIIIchdpqBg0fiZi1+X1IHmth2E6n4/8ctRGenhpI4ky0umtDWQ+PnbEKeo1KLQFM2v89txQ8zSjU52tljATKUad0axgB51tiZWOSUGWWrhLMqJoZmGhjD6W/OBR4=
+X-Microsoft-Antispam-Message-Info: q4tz2p4JDmMmypi3X8lI/4DiRlbG6wvBSGM71rzo6FhlUG2ncUPavvMhKuvG4kqMR2BEeCTRYRKsTp/sexB3Q0cj4sPIWiHXMuz3bSZ+xhkJPXTDPxANoe1JCDqqyYOxFkG4v1ZS0HdVis9tR2KGAE6Itp1OBTqI0p1JEEsC0fO8BBNBry7n3AwVw1/OS7s5diC8ZmUEq7ehHUcsZlO7zBJZU4OJ0CVCR4vaYQip593KHzEG12JFgc0fQOFi6T5ih468r4oP84QXgUhr2JV0Ek00EiSFQ+A7rgKIYG/KskW1Man+wzxWrdGhNffjPV//oMD7I6Mx/ZdxajbCpQxpZRAr3XytThtynCRETq4QXgNnJHWncGOUXDzzreBLvGH2awO7Lyf5KGfdVtoPOBQylvKXiNUhx563DP6eaAFnyeIDhoHFElC3AZHP1vmu8GTK2PqakcykAmQq6BkZzaQlCcBe7rVj6RrWa6lv+BcwGeDYjty3CAF0xuAbj9iEoHieHpvOLphc0nFYSjHJEAB0UCpGqqXMtGBR7Z1sZz4Q2Vkcrso5xEQRXNwtLBsCtRWKm1gR8M34lc2Kzk4Jlz5Um1SnmqsM6bibf6GN/5twJLrCnWlRd1bqv73g/KYf3MiJbVwQS70hqaUmaNRwrdU43HZZQ42s0HDOaMiRybyFCqrL1c3IV3N1f5yMU+R6wqPQSL0cN7mtbvC2qC28DPbpJA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:BLAPR10MB4835.namprd10.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(366004)(316002)(186003)(86362001)(66946007)(66556008)(4326008)(66476007)(8676002)(2616005)(36756003)(1076003)(103116003)(8936002)(5660300002)(7416002)(26005)(6512007)(6486002)(6916009)(966005)(83380400001)(54906003)(508600001)(6506007)(38350700002)(38100700002)(6666004)(2906002)(52116002)(14143004);
+ SFS:(13230001)(366004)(8676002)(6486002)(6512007)(2906002)(66946007)(66476007)(66556008)(38100700002)(4326008)(38350700002)(7416002)(103116003)(8936002)(6666004)(6506007)(5660300002)(26005)(52116002)(508600001)(2616005)(6916009)(54906003)(1076003)(36756003)(83380400001)(316002)(186003)(86362001);
  DIR:OUT; SFP:1101; 
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?skufP5NhbeiOIAdekpa2K4tuhWeeURw6A4FK7PWcSsG3iYIRhfY5JeUGTAz2?=
- =?us-ascii?Q?KDeSwubv32EC0PLmJN2WJp7GWr0jr638Wwmd5S5rmJrzFerGm5BfvVbuCtZH?=
- =?us-ascii?Q?sVYFDcVTQQHf5DvJeLIiUCzztKNoc6XaK9ILNALpkBctjyoHgBbt0kmFmybP?=
- =?us-ascii?Q?gz6WaDS/vCuaxLsq5J64jOSOIaeyxk4KUIwUMBZ2YkAhpOvL17zY4wUwsNIc?=
- =?us-ascii?Q?5JzUG56UV/8BVC2BlI3CJzMsgfzXmppDDKtNXOFc+eZU1bC291gKfA6ls8ZL?=
- =?us-ascii?Q?/9HD+UawzlfpskvRMr3D7bhR6eAFa7Raewg+6lXSoVzQeKcSHQUMW8KpTnoX?=
- =?us-ascii?Q?AY+UGp+Smb/nhXUs+SxFaeuvEEwTWbh38PPTYfwx1o1ATLqnFTu7Bs/djiWT?=
- =?us-ascii?Q?OHM48pZOfXMqZY3JxN7dLP1oys7K0S2IpL3k7Z81KolcxswO3JFAJB+q1rSw?=
- =?us-ascii?Q?NjsvdUJm9ibk8h2gsIa/sY30oEsvv3z8JoKM/E+80OMpDHlaFHZm2pGl0VKX?=
- =?us-ascii?Q?LqArm5HrzyYy8oaodMcqsxlkGSsFFWW8ftfatISdj5dqwZaHxkYgZdzqp33z?=
- =?us-ascii?Q?lEdIunROcsBVzXzyGmOotf5i5L95oQSpeQr6BcR7uxn1s0BHDDNEtoRwW7iI?=
- =?us-ascii?Q?ffaKPhBFgsVqrWntLktQv/wc1JjvpB7ZpKOQG8uuM3sSczqpX7GZC983az/J?=
- =?us-ascii?Q?+6owC1hSnVZSUO1lFchUfbs6ybt3GslHmJtQd+Anpn/gvHgUe8fbRH+fPwq9?=
- =?us-ascii?Q?A1HALTDzYBWEkgZ559+OBaJ44C0FZtzwLv4/P0fVkB2+fvHBNj1LHJH403rg?=
- =?us-ascii?Q?CdfbH0tXsrl1b5uU6YT+x26QQCJUwUp0cVP5g3R3QV5ZIcpXjsNxxHXcMux3?=
- =?us-ascii?Q?dShSxuzIRwb6Wk3H70x4qLFGfG+oa3KSZV5595H421r4YHJkO6TZiGS3Sztr?=
- =?us-ascii?Q?6ym69290dFGxlMOZ4rsUENdc4qycNP3yTVu6IIcine3Sb6HDy63QHZetEJT5?=
- =?us-ascii?Q?EBDk+5Q+8VuSH6B/ef0ZzjHPEKCebqA+kc/JsWSh3483bWIdB/MFZDXghL/+?=
- =?us-ascii?Q?vG/+6Z6ew2+kP0bnhX7SH60CzL5qJ1J/LqrRda7bt6aSil1t630vym5gvvE9?=
- =?us-ascii?Q?THggHiKEwDabT3JyCOo9YBu0z+PeP4aij1rTIHUbJnYOzM7f6fH7nLMstPRp?=
- =?us-ascii?Q?s4GHciwW0jLbpFONz9tNPqgOuOP98fOHz4iLhTuu/wlRkak0d1d9Q4vEZrxq?=
- =?us-ascii?Q?xUEzX5OHDFB4VvvQltQpd5VuRj5D92gkNzH+JkaRhRdR5vm/WVMyq3IVzgaQ?=
- =?us-ascii?Q?2KkMW4yyivzk1gCnUixqWfgJPwWfI4sLq6lrD5IhTjA4gUhyt1V7WBiWznTc?=
- =?us-ascii?Q?iVIrhgFH7Nj79EUZLNyqwE4N1jOTcVDO7A4qWLEwviwea12qtBw1SYQhORQx?=
- =?us-ascii?Q?3siZZA/pV1V0Kzrb+VUbzrg6itJFAzoPoReCmhJrDFZu0IcwxBKjBPUkpVz3?=
- =?us-ascii?Q?cHzQ73+98nGV0YvIYfRuP8ykBoZpdqGpwCfNo1VkDr6EHEoJm5u7HcJBt0kr?=
- =?us-ascii?Q?RjIAvQvWlDyCNrtR5LHd4C43RJ//bNI/oYJM/qwmsGBd/Gyxq0+PnBk3tnfp?=
- =?us-ascii?Q?TthuO6U9lOcWz/3tGHpRoYqXQKIM/T2IzNItBQyoaeo2e1SUWjdKUlQRIJQ0?=
- =?us-ascii?Q?HUksyDALL7UaM3Utqm07A5N3/tzoLjGvoSUy1XDPWAE8veU+EcfSP9ohOpto?=
- =?us-ascii?Q?BdvsVhJ5q9vsIa952YpulqkkdRXPGwI=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8Ywsf9zDGm7gPNl9ZCuOtYfmDERK2ef/8slN53FBLBLnlAzBESlh0YBTTDhb?=
+ =?us-ascii?Q?yRjpg7gf7FD3h38dTY9llbaW28XOw9DenWSxx/gx8RX9I4rfQfmTbSvEG9ll?=
+ =?us-ascii?Q?Rl2/UsjnIAfHPaMmpcdRMZHbaC+RMhUii7JsEoC2nWWA7gLk/gNOwYXRRG1C?=
+ =?us-ascii?Q?dCAJ1vXiynB5H/lKOQowqISTpKJ7cNnLXtASE5/x50z2xtSeRpns9wpEubc9?=
+ =?us-ascii?Q?F5/09OBnoCESZ1t8sTKjuSHAdbkM2GE4nHFLTil+xpjZcf2B75o/aRUmGvnT?=
+ =?us-ascii?Q?kzXjJ/OMGxTtatFBfozu0fowbUckuDY9AugvCU8J1fIyh7taPl8Zc7O5o4f/?=
+ =?us-ascii?Q?z5msgrIZs0TNl2C+sUzukOk6Ig6+OsOUNSXIW6mf52NZHRdaCjFSw7d+cjfh?=
+ =?us-ascii?Q?CGL462ZMDEOTpudX+w/ome0u7SjZlfLJJVABerQ7uEST2N+q6VV+GFeco9bg?=
+ =?us-ascii?Q?n1fxPCRQAKouHrgsO3Iap0GcfbBy8vmjtnAWUwjzpm9fILne+WQUdqGqQBED?=
+ =?us-ascii?Q?JH/CEjBd/R1QKX1CayVjyaSfZ+6vG5ToZE7ZaqGdWBiQfxxmzCc9ySzPvFjB?=
+ =?us-ascii?Q?NgTduyJm+uVUWH4VA4GsrYRyOigkf2C/PkUJ5vh9ulgJIdeb8FSYeXnp28Dn?=
+ =?us-ascii?Q?mPtP0cSSZOwQcCPZkH6AkSrJ0eDP0Si7otdQ3kNgK3RpalKz8lM8BOClW+SF?=
+ =?us-ascii?Q?LNl66b9Ku9dtYhHxodLZP0x5KEWvw0nJGRhGNHx4pmdGE88o3sNTNcacR911?=
+ =?us-ascii?Q?GF9mY0D68VXCjyYQ332RrvHJTW+dATBTTOs7EzzUqpmlJa8nFmdxGIggMLTY?=
+ =?us-ascii?Q?tvyYlRP83aZ/jHBbxmdWHnXrhkXgP3b90gtFVAKguk+GS2jH7e+of3lowbfK?=
+ =?us-ascii?Q?IKvpbUA5N1BvcRpSJgX8KqKjyFm5Mj2M0FwWOhP+3ti/S1TXpFZ+p5t7OPkw?=
+ =?us-ascii?Q?zdwuQyxGFBRJp+ENoWsOOnNSxT7RscMBLMMrNZSPUIwh1I5nw1N3wWh6SobM?=
+ =?us-ascii?Q?JMlaHiuDXsAs4LekUDVDyUJhFpXftJiKfJV887GzBoEewq/vHm95Eik5TgO1?=
+ =?us-ascii?Q?/0Z4cApOmdlW8L0Ezt+fKZikPyIFPkJ1VTRtyP8dQVT66F1/YRQJAy3AaSQq?=
+ =?us-ascii?Q?zQBGuKstRn96LkYKcKJ8iEeFXCS0Pti9y6twbkfc2d3VfqoLfVzM9N752CLR?=
+ =?us-ascii?Q?ltGINkFo/EWnFB9+7y1rYZ3l5OuJ4e0sPFj7BR4XNnNS6vEqUizyhzBDalVk?=
+ =?us-ascii?Q?hizQdv6hoFHyCc4w3m/9oFRcnDuAjBX80NkybKvYHhb7BkVqPKDsm16/XZsp?=
+ =?us-ascii?Q?gCnBvdcA6Ctm1ApjGB7l6l9exh0N11uu75+OYQJxy9eDcwV3Tn5M99d3AK9c?=
+ =?us-ascii?Q?jYB03RPBkhXm3v6Th0rvN4agIjSbJe5HiH7iKCGYVYvh9gq34gcgB6nQ2aDc?=
+ =?us-ascii?Q?331j0FSEYp+GAeq2/GbLoVRrlK64+PwyDPjK2xnbD2HlO+yj3Qj20aGCOvNW?=
+ =?us-ascii?Q?3R21SfStyhu9lRaiACasWI7yxiXQGsVCByU9jgAesjCMMTzjJ3FrCW+QCSeo?=
+ =?us-ascii?Q?9yMMUql070xfo+iSCNMJlffCREOlyE2JcsZXD/T3fe+LDF161rDzhqHVsitm?=
+ =?us-ascii?Q?WCsJQYiQba/Gollxsrx/waC4amIzx82WHTPpUMbXJxU96c+CEiMjP/O3wJ5E?=
+ =?us-ascii?Q?9FcetCGejX32VewuKcgsc7LeY+FSzPvgeh0k8R85dRP4tSaS4kgiFaKjXgD9?=
+ =?us-ascii?Q?SMLC4hBIqkf94qh6REexnEhMn8ZAxWs=3D?=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 36719e01-f16a-45ce-fde7-08da295b880b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 422f200f-ef4f-4419-e4b7-08da295b8e2f
 X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB4835.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2022 21:10:32.9953 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2022 21:10:43.2656 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lMb7m1ycZSgAMcGMMkHewS84kAk5+dVkYqVx42Lp609p09cPUGH2MR/yvQKTXbwoC9pfrdbpjtxgxWjLqz3PFxrCEtWUXim8Ak7AvmlCDDE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB1564
+X-MS-Exchange-CrossTenant-UserPrincipalName: aHIlRSjkMqFS4aOebgibHW24+ltFkRRb6MB1sjjN3UE2pYs8B4Qhq1ljIJ+UMC8uNgxNCP9LDS3hJaEm8qQZRELKWalrU5FtFYkPAfBaLSk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1630
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486, 18.0.858
  definitions=2022-04-28_04:2022-04-28,
  2022-04-28 signatures=0
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0
- mlxlogscore=999 mlxscore=0
- suspectscore=0 malwarescore=0 spamscore=0 adultscore=0 bulkscore=0
+ spamscore=0 adultscore=0
+ mlxscore=0 bulkscore=0 suspectscore=0 malwarescore=0 mlxlogscore=813
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
  definitions=main-2204280125
-X-Proofpoint-ORIG-GUID: sev5B-IqS0m9CF3RtlcEKGJ9OoKxo-YF
-X-Proofpoint-GUID: sev5B-IqS0m9CF3RtlcEKGJ9OoKxo-YF
+X-Proofpoint-ORIG-GUID: wn74GMa1FLo1tu5_tYZy1cO7_Gr4sWrz
+X-Proofpoint-GUID: wn74GMa1FLo1tu5_tYZy1cO7_Gr4sWrz
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Kevin Tian <kevin.tian@intel.com>, Yishai Hadas <yishaih@nvidia.com>,
  Jason Gunthorpe <jgg@nvidia.com>, kvm@vger.kernel.org,
@@ -190,266 +190,170 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add to iommu domain operations a set of callbacks to
-perform dirty tracking, particulary to start and stop
-tracking and finally to test and clear the dirty data.
+Today, the dirty state is lost and the page wouldn't be migrated to
+destination potentially leading the guest into error.
 
-Drivers are expected to dynamically change its hw protection
-domain bits to toggle the tracking and flush some form of
-control state structure that stands in the IOVA translation
-path.
+Add an unmap API that reads the dirty bit and sets it in the
+user passed bitmap. This unmap iommu API tackles a potentially
+racy update to the dirty bit *when* doing DMA on a iova that is
+being unmapped at the same time.
 
-For reading and clearing dirty data, in all IOMMUs a transition
-from any of the PTE access bits (Access, Dirty) implies flushing
-the IOTLB to invalidate any stale data in the IOTLB as to whether
-or not the IOMMU should update the said PTEs. The iommu core APIs
-introduce a new structure for storing the dirties, albeit vendor
-IOMMUs implementing .read_and_clear_dirty() just use
-iommu_dirty_bitmap_record() to set the memory storing dirties.
-The underlying tracking/iteration of user bitmap memory is instead
-done by iommufd which takes care of initializing the dirty bitmap
-*prior* to passing to the IOMMU domain op.
+The new unmap_read_dirty/unmap_pages_read_dirty does not replace
+the unmap pages, but rather only when explicit called with an dirty
+bitmap data passed in.
 
-So far for currently/to-be-supported IOMMUs with dirty tracking
-support this particularly because the tracking is part of
-first stage tables and part of address translation. Below
-it is mentioned how hardware deal with the hardware protection
-domain control bits, to justify the added iommu core APIs.
-vendor IOMMU implementation will also explain in more detail on
-the dirty bit usage/clearing in the IOPTEs.
-
-* x86 AMD:
-
-The same thing for AMD particularly the Device Table
-respectivally, followed by flushing the Device IOTLB. On AMD[1],
-section "2.2.1 Updating Shared Tables", e.g.
-
-> Each table can also have its contents cached by the IOMMU or
-peripheral IOTLBs. Therefore, after
-updating a table entry that can be cached, system software must
-send the IOMMU an appropriate
-invalidate command. Information in the peripheral IOTLBs must
-also be invalidated.
-
-There's no mention of particular bits that are cached or
-not but fetching a dev entry is part of address translation
-as also depicted, so invalidate the device table to make
-sure the next translations fetch a DTE entry with the HD bits set.
-
-* x86 Intel (rev3.0+):
-
-Likewise[2] set the SSADE bit in the scalable-entry second stage table
-to enable Access/Dirty bits in the second stage page table. See manual,
-particularly on "6.2.3.1 Scalable-Mode PASID-Table Entry Programming
-Considerations"
-
-> When modifying root-entries, scalable-mode root-entries,
-context-entries, or scalable-mode context
-entries:
-> Software must serially invalidate the context-cache,
-PASID-cache (if applicable), and the IOTLB.  The serialization is
-required since hardware may utilize information from the
-context-caches (e.g., Domain-ID) to tag new entries inserted to
-the PASID-cache and IOTLB for processing in-flight requests.
-Section 6.5 describe the invalidation operations.
-
-And also the whole chapter "" Table "Table 23.  Guidance to
-Software for Invalidations" in "6.5.3.3 Guidance to Software for
-Invalidations" explicitly mentions
-
-> SSADE transition from 0 to 1 in a scalable-mode PASID-table
-entry with PGTT value of Second-stage or Nested
-
-* ARM SMMUV3.2:
-
-SMMUv3.2 needs to toggle the dirty bit descriptor
-over the CD (or S2CD) for toggling and flush/invalidate
-the IOMMU dev IOTLB.
-
-Reference[0]: SMMU spec, "5.4.1 CD notes",
-
-> The following CD fields are permitted to be cached as part of a
-translation or TLB entry, and alteration requires
-invalidation of any TLB entry that might have cached these
-fields, in addition to CD structure cache invalidation:
-
-...
-HA, HD
-...
-
-Although, The ARM SMMUv3 case is a tad different that its x86
-counterparts. Rather than changing *only* the IOMMU domain device entry to
-enable dirty tracking (and having a dedicated bit for dirtyness in IOPTE)
-ARM instead uses a dirty-bit modifier which is separately enabled, and
-changes the *existing* meaning of access bits (for ro/rw), to the point
-that marking access bit read-only but with dirty-bit-modifier enabled
-doesn't trigger an perm io page fault.
-
-In pratice this means that changing iommu context isn't enough
-and in fact mostly useless IIUC (and can be always enabled). Dirtying
-is only really enabled when the DBM pte bit is enabled (with the
-CD.HD bit as a prereq).
-
-To capture this h/w construct an iommu core API is added which enables
-dirty tracking on an IOVA range rather than a device/context entry.
-iommufd picks one or the other, and IOMMUFD core will favour
-device-context op followed by IOVA-range alternative.
-
-[0] https://developer.arm.com/documentation/ihi0070/latest
-[1] https://www.amd.com/system/files/TechDocs/48882_IOMMU.pdf
-[2] https://cdrdv2.intel.com/v1/dl/getContent/671081
+It could be said that the guest is buggy and rather than a special unmap
+path tackling the theoretical race ... it would suffice fetching the
+dirty bits (with GET_DIRTY_IOVA), and then unmap the IOVA.
 
 Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 ---
- drivers/iommu/iommu.c      | 28 ++++++++++++++++++++
- include/linux/io-pgtable.h |  6 +++++
- include/linux/iommu.h      | 52 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 86 insertions(+)
+ drivers/iommu/iommu.c      | 43 +++++++++++++++++++++++++++++++-------
+ include/linux/io-pgtable.h | 10 +++++++++
+ include/linux/iommu.h      | 12 +++++++++++
+ 3 files changed, 58 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 0c42ece25854..d18b9ddbcce4 100644
+index d18b9ddbcce4..cc04263709ee 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -15,6 +15,7 @@
- #include <linux/init.h>
- #include <linux/export.h>
- #include <linux/slab.h>
-+#include <linux/highmem.h>
- #include <linux/errno.h>
- #include <linux/iommu.h>
- #include <linux/idr.h>
-@@ -3167,3 +3168,30 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
- 	return user;
- }
- EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
+@@ -2289,12 +2289,25 @@ EXPORT_SYMBOL_GPL(iommu_map_atomic);
+ 
+ static size_t __iommu_unmap_pages(struct iommu_domain *domain,
+ 				  unsigned long iova, size_t size,
+-				  struct iommu_iotlb_gather *iotlb_gather)
++				  struct iommu_iotlb_gather *iotlb_gather,
++				  struct iommu_dirty_bitmap *dirty)
+ {
+ 	const struct iommu_domain_ops *ops = domain->ops;
+ 	size_t pgsize, count;
+ 
+ 	pgsize = iommu_pgsize(domain, iova, iova, size, &count);
 +
-+unsigned int iommu_dirty_bitmap_record(struct iommu_dirty_bitmap *dirty,
-+				       unsigned long iova, unsigned long length)
-+{
-+	unsigned long nbits, offset, start_offset, idx, size, *kaddr;
++	if (dirty) {
++		if (!ops->unmap_read_dirty && !ops->unmap_pages_read_dirty)
++			return 0;
 +
-+	nbits = max(1UL, length >> dirty->pgshift);
-+	offset = (iova - dirty->iova) >> dirty->pgshift;
-+	idx = offset / (PAGE_SIZE * BITS_PER_BYTE);
-+	offset = offset % (PAGE_SIZE * BITS_PER_BYTE);
-+	start_offset = dirty->start_offset;
-+
-+	while (nbits > 0) {
-+		kaddr = kmap(dirty->pages[idx]) + start_offset;
-+		size = min(PAGE_SIZE * BITS_PER_BYTE - offset, nbits);
-+		bitmap_set(kaddr, offset, size);
-+		kunmap(dirty->pages[idx]);
-+		start_offset = offset = 0;
-+		nbits -= size;
-+		idx++;
++		return ops->unmap_pages_read_dirty ?
++		       ops->unmap_pages_read_dirty(domain, iova, pgsize,
++						   count, iotlb_gather, dirty) :
++		       ops->unmap_read_dirty(domain, iova, pgsize,
++					     iotlb_gather, dirty);
 +	}
 +
-+	if (dirty->gather)
-+		iommu_iotlb_gather_add_range(dirty->gather, iova, length);
+ 	return ops->unmap_pages ?
+ 	       ops->unmap_pages(domain, iova, pgsize, count, iotlb_gather) :
+ 	       ops->unmap(domain, iova, pgsize, iotlb_gather);
+@@ -2302,7 +2315,8 @@ static size_t __iommu_unmap_pages(struct iommu_domain *domain,
+ 
+ static size_t __iommu_unmap(struct iommu_domain *domain,
+ 			    unsigned long iova, size_t size,
+-			    struct iommu_iotlb_gather *iotlb_gather)
++			    struct iommu_iotlb_gather *iotlb_gather,
++			    struct iommu_dirty_bitmap *dirty)
+ {
+ 	const struct iommu_domain_ops *ops = domain->ops;
+ 	size_t unmapped_page, unmapped = 0;
+@@ -2337,9 +2351,8 @@ static size_t __iommu_unmap(struct iommu_domain *domain,
+ 	 * or we hit an area that isn't mapped.
+ 	 */
+ 	while (unmapped < size) {
+-		unmapped_page = __iommu_unmap_pages(domain, iova,
+-						    size - unmapped,
+-						    iotlb_gather);
++		unmapped_page = __iommu_unmap_pages(domain, iova, size - unmapped,
++						    iotlb_gather, dirty);
+ 		if (!unmapped_page)
+ 			break;
+ 
+@@ -2361,18 +2374,34 @@ size_t iommu_unmap(struct iommu_domain *domain,
+ 	size_t ret;
+ 
+ 	iommu_iotlb_gather_init(&iotlb_gather);
+-	ret = __iommu_unmap(domain, iova, size, &iotlb_gather);
++	ret = __iommu_unmap(domain, iova, size, &iotlb_gather, NULL);
+ 	iommu_iotlb_sync(domain, &iotlb_gather);
+ 
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(iommu_unmap);
+ 
++size_t iommu_unmap_read_dirty(struct iommu_domain *domain,
++			      unsigned long iova, size_t size,
++			      struct iommu_dirty_bitmap *dirty)
++{
++	struct iommu_iotlb_gather iotlb_gather;
++	size_t ret;
 +
-+	return nbits;
++	iommu_iotlb_gather_init(&iotlb_gather);
++	ret = __iommu_unmap(domain, iova, size, &iotlb_gather, dirty);
++	iommu_iotlb_sync(domain, &iotlb_gather);
++
++	return ret;
++
 +}
++EXPORT_SYMBOL_GPL(iommu_unmap_read_dirty);
++
+ size_t iommu_unmap_fast(struct iommu_domain *domain,
+ 			unsigned long iova, size_t size,
+ 			struct iommu_iotlb_gather *iotlb_gather)
+ {
+-	return __iommu_unmap(domain, iova, size, iotlb_gather);
++	return __iommu_unmap(domain, iova, size, iotlb_gather, NULL);
+ }
+ EXPORT_SYMBOL_GPL(iommu_unmap_fast);
+ 
 diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index 86af6f0a00a2..82b39925c21f 100644
+index 82b39925c21f..c2ebfe037f5d 100644
 --- a/include/linux/io-pgtable.h
 +++ b/include/linux/io-pgtable.h
-@@ -165,6 +165,12 @@ struct io_pgtable_ops {
- 			      struct iommu_iotlb_gather *gather);
- 	phys_addr_t (*iova_to_phys)(struct io_pgtable_ops *ops,
- 				    unsigned long iova);
-+	int (*set_dirty_tracking)(struct io_pgtable_ops *ops,
-+				  unsigned long iova, size_t size,
-+				  bool enabled);
-+	int (*read_and_clear_dirty)(struct io_pgtable_ops *ops,
-+				    unsigned long iova, size_t size,
-+				    struct iommu_dirty_bitmap *dirty);
+@@ -171,6 +171,16 @@ struct io_pgtable_ops {
+ 	int (*read_and_clear_dirty)(struct io_pgtable_ops *ops,
+ 				    unsigned long iova, size_t size,
+ 				    struct iommu_dirty_bitmap *dirty);
++	size_t (*unmap_read_dirty)(struct io_pgtable_ops *ops,
++				   unsigned long iova,
++				   size_t size,
++				   struct iommu_iotlb_gather *gather,
++				   struct iommu_dirty_bitmap *dirty);
++	size_t (*unmap_pages_read_dirty)(struct io_pgtable_ops *ops,
++					 unsigned long iova,
++					 size_t pgsize, size_t pgcount,
++					 struct iommu_iotlb_gather *gather,
++					 struct iommu_dirty_bitmap *dirty);
  };
  
  /**
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 6ef2df258673..ca076365d77b 100644
+index ca076365d77b..7c66b4e00556 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -189,6 +189,25 @@ struct iommu_iotlb_gather {
- 	bool			queued;
- };
- 
-+/**
-+ * struct iommu_dirty_bitmap - Dirty IOVA bitmap state
-+ *
-+ * @iova: IOVA representing the start of the bitmap, the first bit of the bitmap
-+ * @pgshift: Page granularity of the bitmap
-+ * @gather: Range information for a pending IOTLB flush
-+ * @start_offset: Offset of the first user page
-+ * @pages: User pages representing the bitmap region
-+ * @npages: Number of user pages pinned
-+ */
-+struct iommu_dirty_bitmap {
-+	unsigned long iova;
-+	unsigned long pgshift;
-+	struct iommu_iotlb_gather *gather;
-+	unsigned long start_offset;
-+	unsigned long npages;
-+	struct page **pages;
-+};
-+
- /**
-  * struct iommu_ops - iommu ops and capabilities
-  * @capable: check capability
-@@ -275,6 +294,13 @@ struct iommu_ops {
-  * @enable_nesting: Enable nesting
-  * @set_pgtable_quirks: Set io page table quirks (IO_PGTABLE_QUIRK_*)
-  * @free: Release the domain after use.
-+ * @set_dirty_tracking: Enable or Disable dirty tracking on the iommu domain
-+ * @set_dirty_tracking_range: Enable or Disable dirty tracking on a range of
-+ *                            an iommu domain
-+ * @read_and_clear_dirty: Walk IOMMU page tables for dirtied PTEs marshalled
-+ *                        into a bitmap, with a bit represented as a page.
-+ *                        Reads the dirty PTE bits and clears it from IO
-+ *                        pagetables.
-  */
- struct iommu_domain_ops {
- 	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
-@@ -305,6 +331,15 @@ struct iommu_domain_ops {
- 				  unsigned long quirks);
- 
- 	void (*free)(struct iommu_domain *domain);
-+
-+	int (*set_dirty_tracking)(struct iommu_domain *domain, bool enabled);
-+	int (*set_dirty_tracking_range)(struct iommu_domain *domain,
-+					unsigned long iova, size_t size,
-+					struct iommu_iotlb_gather *iotlb_gather,
-+					bool enabled);
-+	int (*read_and_clear_dirty)(struct iommu_domain *domain,
-+				    unsigned long iova, size_t size,
-+				    struct iommu_dirty_bitmap *dirty);
+@@ -340,6 +340,15 @@ struct iommu_domain_ops {
+ 	int (*read_and_clear_dirty)(struct iommu_domain *domain,
+ 				    unsigned long iova, size_t size,
+ 				    struct iommu_dirty_bitmap *dirty);
++	size_t (*unmap_read_dirty)(struct iommu_domain *domain,
++				   unsigned long iova, size_t size,
++				   struct iommu_iotlb_gather *iotlb_gather,
++				   struct iommu_dirty_bitmap *dirty);
++	size_t (*unmap_pages_read_dirty)(struct iommu_domain *domain,
++					 unsigned long iova,
++					 size_t pgsize, size_t pgcount,
++					 struct iommu_iotlb_gather *iotlb_gather,
++					 struct iommu_dirty_bitmap *dirty);
  };
  
  /**
-@@ -494,6 +529,23 @@ void iommu_set_dma_strict(void);
- extern int report_iommu_fault(struct iommu_domain *domain, struct device *dev,
- 			      unsigned long iova, int flags);
- 
-+unsigned int iommu_dirty_bitmap_record(struct iommu_dirty_bitmap *dirty,
-+				       unsigned long iova, unsigned long length);
-+
-+static inline void iommu_dirty_bitmap_init(struct iommu_dirty_bitmap *dirty,
-+					   unsigned long base,
-+					   unsigned long pgshift,
-+					   struct iommu_iotlb_gather *gather)
-+{
-+	memset(dirty, 0, sizeof(*dirty));
-+	dirty->iova = base;
-+	dirty->pgshift = pgshift;
-+	dirty->gather = gather;
-+
-+	if (gather)
-+		iommu_iotlb_gather_init(dirty->gather);
-+}
-+
- static inline void iommu_flush_iotlb_all(struct iommu_domain *domain)
- {
- 	if (domain->ops->flush_iotlb_all)
+@@ -463,6 +472,9 @@ extern int iommu_map_atomic(struct iommu_domain *domain, unsigned long iova,
+ 			    phys_addr_t paddr, size_t size, int prot);
+ extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 			  size_t size);
++extern size_t iommu_unmap_read_dirty(struct iommu_domain *domain,
++				     unsigned long iova, size_t size,
++				     struct iommu_dirty_bitmap *dirty);
+ extern size_t iommu_unmap_fast(struct iommu_domain *domain,
+ 			       unsigned long iova, size_t size,
+ 			       struct iommu_iotlb_gather *iotlb_gather);
 -- 
 2.17.2
 
