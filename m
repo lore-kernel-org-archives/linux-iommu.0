@@ -1,92 +1,102 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DCA20C433EF
-	for <iommu@archiver.kernel.org>; Thu, 28 Apr 2022 14:14:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 77CAAC43217
+	for <iommu@archiver.kernel.org>; Thu, 28 Apr 2022 14:14:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 9BCC283E2D;
-	Thu, 28 Apr 2022 14:14:42 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1428841B57;
+	Thu, 28 Apr 2022 14:14:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 295IOYvboOVy; Thu, 28 Apr 2022 14:14:41 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 2f6-1oRWUKTb; Thu, 28 Apr 2022 14:14:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 128A083E30;
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 9E15E41B4C;
 	Thu, 28 Apr 2022 14:14:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DF9D0C0032;
-	Thu, 28 Apr 2022 14:14:40 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 11EDCC002D
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 14:14:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2C305C0082;
+	Thu, 28 Apr 2022 14:14:41 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4BD8FC002D
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 14:14:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id E569040155
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 14:14:37 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 2AC3660F56
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 14:14:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dYTV58h6xM4e for <iommu@lists.linux-foundation.org>;
- Thu, 28 Apr 2022 14:14:37 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0-oQlHvq4dws for <iommu@lists.linux-foundation.org>;
+ Thu, 28 Apr 2022 14:14:38 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com
- [IPv6:2607:f8b0:4864:20::62f])
- by smtp2.osuosl.org (Postfix) with ESMTPS id EC8FB40C3D
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 14:14:36 +0000 (UTC)
-Received: by mail-pl1-x62f.google.com with SMTP id j8so4448521pll.11
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 07:14:36 -0700 (PDT)
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com
+ [IPv6:2a00:1450:4864:20::32a])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 279D060AFF
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 14:14:37 +0000 (UTC)
+Received: by mail-wm1-x32a.google.com with SMTP id
+ v64-20020a1cac43000000b0038cfd1b3a6dso5362277wme.5
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 07:14:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=the4yA34RGUD48q304/xQ5DG1rsnoGDHZu5Bqshv4b4=;
- b=IoFEsTlkhJ1tegef+ipqlLKrrmXBKiFGc4RMdw1/tIy22ZjfsCrWFEJ7f8vRZPt/RS
- 7PoxvHGu9WKZoSi651rEMlRQoyb/Hm92oQwQdB53JulJEtjQkZZxS74e+VuosNXKMebV
- vmaGjn3BTmPJh1RZj0LsSPeA9SOKu+kvrTnnsioao/RGCjsLyNmk5lnGGQ72y3cEn2/T
- n6AChK9VYkXgGPbcO4PHPavZe/INFNTuoOzFppg1MLT5vBLZj130X+pZK+BG5mKpPN2W
- 2wjGWtqMLvbX8AkF2goPSABn8g5m2CFGgZRm0uoDXon1jFovjDeWlzodvcFaUo0HiwMu
- kyWg==
+ h=message-id:date:mime-version:user-agent:subject:content-language:to
+ :cc:references:from:in-reply-to:content-transfer-encoding;
+ bh=S0n4vT9BhMHU2WQlHRXLpp/KRrHRQlF2a1BLW87KTmk=;
+ b=gAo2hOkVIKXQN2B46GdYlRrzaZTgfNHy4B0UwKMLWDwYy2hqdunAn+f4J1YAWxsIkI
+ f/NTIomFneugwkvTqguhSHUAGUWJYzufBW+YNSTDGQ8CVjSXpvcRptzF3ErfhV+eF50K
+ RDmPIYaFrwTxpnF5W66kw9Bcl51jKC9OE+kX3jJi5GnpnBg2EG/tXzi7CSngM83SWpzy
+ lOt5/qMLQkGXXCzNURX9+mfmuFM9fieJWVR3yX10BwivUYDaIeab7/nNE5PSylJDnUUh
+ 8Jm/YJcbi4GrShGruqoOvtAqyRFa7BdZtg37hxbiQUEgKlmg6oyXt3IQFbUJyr2zFTfY
+ gfbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=the4yA34RGUD48q304/xQ5DG1rsnoGDHZu5Bqshv4b4=;
- b=XKV1fZ9IxD9T2zIxPhCAv4zUhk/UUODFiPmjjMTPaHQM4FozhsbiHkEBbW7Nhejywa
- wFIA5NqEUTadLtre1MqvFT5a+mspT0xnxpyWFghMkT74/kINiN1zno86BhOddctN0xBh
- juyuo3ZFDCDxl5f679Ooavc7nJ2P86K1Uui3lGJM5Qr8leKuTwiH5nXN+aG6kSjXCJ76
- qKeUIjM1ggKiZZvENJPGZdAlQCOkb/a6G0IGDaxXKseWdMbBsgrhSB6ZU+t1ruAluXQB
- W0tuMoYOvtcaRZcOCjx679eJHguwRHN4aoSnfickbXmfuC7Gjvp3GH/exRBpx6wcv0Gm
- e1BQ==
-X-Gm-Message-State: AOAM532c1QOCtMmZtUXJMPpIVkvCCz4b6ewFlSguaxCzLlXhLLG60Rtg
- nCoMd8mq7eR69FbpWHTSaVU=
-X-Google-Smtp-Source: ABdhPJw2ZFQgBay15hbXejlLvhqBSwLf48hvRHEOIhvxG1Dbz8YoaUTn3A4AZ4aPlClceUBb9dNLLg==
-X-Received: by 2002:a17:902:9005:b0:158:e46e:688c with SMTP id
- a5-20020a170902900500b00158e46e688cmr33664927plp.173.1651155275954; 
+ h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+ :content-language:to:cc:references:from:in-reply-to
+ :content-transfer-encoding;
+ bh=S0n4vT9BhMHU2WQlHRXLpp/KRrHRQlF2a1BLW87KTmk=;
+ b=oE1LlSDIp0d08u3a0F0jglNTRpCvB3lgVqkcVe9iTgiJaAJuYlxu8VqGKTJvrsdPDG
+ rVAPTe5Y7ezhVVWGt/cC7J+LpwRpJHQPfvlz8Emng7QsXTwerocby4wh40e9AprptbS5
+ 7B0+PnZl44hNgy8F2mVEVXU2rjyIKXzRpHSnh8XL8Zasddb77UqhHB5sQD4ChHVnYOND
+ OYtfwrlcgnoh0I7oXYc8NiTTL/22p17vJ+d2xUbwC4exk7x28vmWwdYJRRWjvOdNbUuK
+ TLd5TalWsA5njFDIpJdoRjJXRp9KgHBcg047zVDQg44/U7vHdcUSgDRCVbAadT7Da2Gj
+ ZHpg==
+X-Gm-Message-State: AOAM532FXdxA/4fwgXtL7SH7p8G9luSyJk4WiB6ncejrFuua6ErtCSsL
+ rQSVFspkGT65ISiD/9k/8wc=
+X-Google-Smtp-Source: ABdhPJwUdgNeXIVbLSeg3t/l9hijtw5yJRrMD2iH8BHIePXx5Ru7c5WskYH6AKHZcKUO2GzrZkH9SQ==
+X-Received: by 2002:a05:600c:1548:b0:392:8e1a:18c3 with SMTP id
+ f8-20020a05600c154800b003928e1a18c3mr31451311wmg.102.1651155276124; 
+ Thu, 28 Apr 2022 07:14:36 -0700 (PDT)
+Received: from [192.168.0.43] (static-35-180-85-188.ipcom.comunitel.net.
+ [188.85.180.35]) by smtp.gmail.com with ESMTPSA id
+ f66-20020a1c3845000000b00393e84ea043sm54451wma.44.2022.04.28.07.14.34
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
  Thu, 28 Apr 2022 07:14:35 -0700 (PDT)
-Received: from ubuntu-Virtual-Machine.corp.microsoft.com
- ([2001:4898:80e8:f:de19:84:6ee0:6f2e])
- by smtp.gmail.com with ESMTPSA id
- d8-20020a056a00198800b004fab740dbe6sm65331pfl.15.2022.04.28.07.14.34
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 28 Apr 2022 07:14:34 -0700 (PDT)
-From: Tianyu Lan <ltykernel@gmail.com>
-To: hch@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
- michael.h.kelley@microsoft.com, kys@microsoft.com
-Subject: [RFC PATCH 2/2] Swiotlb: Add device bounce buffer allocation interface
-Date: Thu, 28 Apr 2022 10:14:29 -0400
-Message-Id: <20220428141429.1637028-3-ltykernel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220428141429.1637028-1-ltykernel@gmail.com>
-References: <20220428141429.1637028-1-ltykernel@gmail.com>
+Message-ID: <cc7cc7a8-c7a2-56a1-47bf-6c553c200b33@gmail.com>
+Date: Thu, 28 Apr 2022 16:14:33 +0200
 MIME-Version: 1.0
-Cc: parri.andrea@gmail.com, thomas.lendacky@amd.com, wei.liu@kernel.org,
- Tianyu Lan <Tianyu.Lan@microsoft.com>, linux-hyperv@vger.kernel.org,
- konrad.wilk@oracle.com, linux-kernel@vger.kernel.org,
- kirill.shutemov@intel.com, iommu@lists.linux-foundation.org,
- andi.kleen@intel.com, brijesh.singh@amd.com, vkuznets@redhat.com, hch@lst.de
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v6 31/34] iommu/mediatek: Get the proper bankid for multi
+ banks
+Content-Language: en-US
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>, Will Deacon <will@kernel.org>
+References: <20220407075726.17771-1-yong.wu@mediatek.com>
+ <20220407075726.17771-32-yong.wu@mediatek.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220407075726.17771-32-yong.wu@mediatek.com>
+Cc: devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ chengci.xu@mediatek.com, xueqi.zhang@mediatek.com,
+ linux-kernel@vger.kernel.org, libo.kang@mediatek.com,
+ yen-chang.chen@mediatek.com, iommu@lists.linux-foundation.org,
+ yf.wang@mediatek.com, linux-mediatek@lists.infradead.org,
+ Hsin-Yi Wang <hsinyi@chromium.org>, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, mingyuan.ma@mediatek.com,
+ linux-arm-kernel@lists.infradead.org,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,369 +109,133 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-In SEV/TDX Confidential VM, device DMA transaction needs use swiotlb
-bounce buffer to share data with host/hypervisor. The swiotlb spinlock
-introduces overhead among devices if they share io tlb mem. Avoid such
-issue, introduce swiotlb_device_allocate() to allocate device bounce
-buffer from default io tlb pool and set up areas according input queue
-number. Device may have multi io queues and setting up the same number
-of io tlb area may help to resolve spinlock overhead among queues.
 
-Introduce IO TLB Block unit(2MB) concepts to allocate big bounce buffer
-from default pool for devices. IO TLB segment(256k) is too small.
+On 07/04/2022 09:57, Yong Wu wrote:
+> We preassign some ports in a special bank via the new defined
+> banks_portmsk. Put it in the plat_data means it is not expected to be
+> adjusted dynamically.
+> 
+> If the iommu id in the iommu consumer's dtsi node is inside this
+> banks_portmsk, then we switch it to this special iommu bank, and
+> initialise the IOMMU bank HW.
+> 
+> Each a bank has the independent pgtable(4GB iova range). Each a bank
+> is a independent iommu domain/group. Currently we don't separate different
+> iova ranges inside a bank.
+> 
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>   drivers/iommu/mtk_iommu.c | 39 ++++++++++++++++++++++++++++++++++++---
+>   1 file changed, 36 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 0828cff97625..d42b3d35a36e 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -191,6 +191,7 @@ struct mtk_iommu_plat_data {
+>   
+>   	u8                  banks_num;
+>   	bool                banks_enable[MTK_IOMMU_BANK_MAX];
+> +	unsigned int        banks_portmsk[MTK_IOMMU_BANK_MAX];
+>   	unsigned char       larbid_remap[MTK_LARB_COM_MAX][MTK_LARB_SUBCOM_MAX];
+>   };
+>   
+> @@ -467,6 +468,30 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+>   	return IRQ_HANDLED;
+>   }
+>   
+> +static unsigned int mtk_iommu_get_bank_id(struct device *dev,
+> +					  const struct mtk_iommu_plat_data *plat_data)
+> +{
+> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +	unsigned int i, portmsk = 0, bankid = 0;
+> +
+> +	if (plat_data->banks_num == 1)
+> +		return bankid;
+> +
+> +	for (i = 0; i < fwspec->num_ids; i++)
+> +		portmsk |= BIT(MTK_M4U_TO_PORT(fwspec->ids[i]));
+> +
+> +	for (i = 0; i < plat_data->banks_num && i < MTK_IOMMU_BANK_MAX; i++) {
+> +		if (!plat_data->banks_enable[i])
+> +			continue;
+> +
+> +		if (portmsk & plat_data->banks_portmsk[i]) {
+> +			bankid = i;
+> +			break;
+> +		}
+> +	}
+> +	return bankid; /* default is 0 */
+> +}
+> +
+>   static int mtk_iommu_get_iova_region_id(struct device *dev,
+>   					const struct mtk_iommu_plat_data *plat_data)
+>   {
+> @@ -619,13 +644,14 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+>   	struct list_head *hw_list = data->hw_list;
+>   	struct device *m4udev = data->dev;
+>   	struct mtk_iommu_bank_data *bank;
+> -	unsigned int bankid = 0;
+> +	unsigned int bankid;
+>   	int ret, region_id;
+>   
+>   	region_id = mtk_iommu_get_iova_region_id(dev, data->plat_data);
+>   	if (region_id < 0)
+>   		return region_id;
+>   
+> +	bankid = mtk_iommu_get_bank_id(dev, data->plat_data);
+>   	mutex_lock(&dom->mutex);
+>   	if (!dom->bank) {
+>   		/* Data is in the frstdata in sharing pgtable case. */
+> @@ -802,6 +828,7 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
+>   	struct mtk_iommu_data *c_data = dev_iommu_priv_get(dev), *data;
+>   	struct list_head *hw_list = c_data->hw_list;
+>   	struct iommu_group *group;
+> +	unsigned int bankid, groupid;
+>   	int regionid;
+>   
+>   	data = mtk_iommu_get_frst_data(hw_list);
+> @@ -812,12 +839,18 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
+>   	if (regionid < 0)
+>   		return ERR_PTR(regionid);
+>   
+> +	bankid = mtk_iommu_get_bank_id(dev, data->plat_data);
 
-Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
----
- include/linux/swiotlb.h |  33 ++++++++
- kernel/dma/swiotlb.c    | 173 +++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 203 insertions(+), 3 deletions(-)
+I think code readability would be improved if we add a new function like 
+mtk_iommu_get_id which call mtk_iommu_get_bankid and if necessary 
+mtk_iommu_get_regionid.
 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 489c249da434..380bd1ce3d0f 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -31,6 +31,14 @@ struct scatterlist;
- #define IO_TLB_SHIFT 11
- #define IO_TLB_SIZE (1 << IO_TLB_SHIFT)
- 
-+/*
-+ * IO TLB BLOCK UNIT as device bounce buffer allocation unit.
-+ * This allows device allocates bounce buffer from default io
-+ * tlb pool.
-+ */
-+#define IO_TLB_BLOCKSIZE   (8 * IO_TLB_SEGSIZE)
-+#define IO_TLB_BLOCK_UNIT  (IO_TLB_BLOCKSIZE << IO_TLB_SHIFT)
-+
- /* default to 64MB */
- #define IO_TLB_DEFAULT_SIZE (64UL<<20)
- 
-@@ -72,11 +80,13 @@ extern enum swiotlb_force swiotlb_force;
-  * @index:	The slot index to start searching in this area for next round.
-  * @lock:	The lock to protect the above data structures in the map and
-  *		unmap calls.
-+ * @block_index: The block index to start earching in this area for next round.
-  */
- struct io_tlb_area {
- 	unsigned long used;
- 	unsigned int area_index;
- 	unsigned int index;
-+	unsigned int block_index;
- 	spinlock_t lock;
- };
- 
-@@ -110,6 +120,7 @@ struct io_tlb_area {
-  * @num_areas:  The area number in the pool.
-  * @area_start: The area index to start searching in the next round.
-  * @area_nslabs: The slot number in the area.
-+ * @areas_block_number: The block number in the area.
-  */
- struct io_tlb_mem {
- 	phys_addr_t start;
-@@ -126,7 +137,14 @@ struct io_tlb_mem {
- 	unsigned int num_areas;
- 	unsigned int area_start;
- 	unsigned int area_nslabs;
-+	unsigned int area_block_number;
-+	struct io_tlb_mem *parent;
- 	struct io_tlb_area *areas;
-+	struct io_tlb_block {
-+		size_t alloc_size;
-+		unsigned long start_slot;
-+		unsigned int list;
-+	} *block;
- 	struct io_tlb_slot {
- 		phys_addr_t orig_addr;
- 		size_t alloc_size;
-@@ -155,6 +173,10 @@ unsigned int swiotlb_max_segment(void);
- size_t swiotlb_max_mapping_size(struct device *dev);
- bool is_swiotlb_active(struct device *dev);
- void __init swiotlb_adjust_size(unsigned long size);
-+int swiotlb_device_allocate(struct device *dev,
-+			    unsigned int area_num,
-+			    unsigned long size);
-+void swiotlb_device_free(struct device *dev);
- #else
- static inline void swiotlb_init(bool addressing_limited, unsigned int flags)
- {
-@@ -187,6 +209,17 @@ static inline bool is_swiotlb_active(struct device *dev)
- static inline void swiotlb_adjust_size(unsigned long size)
- {
- }
-+
-+void swiotlb_device_free(struct device *dev)
-+{
-+}
-+
-+int swiotlb_device_allocate(struct device *dev,
-+			    unsigned int area_num,
-+			    unsigned long size)
-+{
-+	return -ENOMEM;
-+}
- #endif /* CONFIG_SWIOTLB */
- 
- extern void swiotlb_print_info(void);
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 00a16f540f20..7b95a140694a 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -218,7 +218,7 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
- 				    unsigned long nslabs, bool late_alloc)
- {
- 	void *vaddr = phys_to_virt(start);
--	unsigned long bytes = nslabs << IO_TLB_SHIFT, i, j;
-+	unsigned long bytes = nslabs << IO_TLB_SHIFT, i, j, k;
- 	unsigned int block_list;
- 
- 	mem->nslabs = nslabs;
-@@ -226,6 +226,7 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
- 	mem->end = mem->start + bytes;
- 	mem->index = 0;
- 	mem->late_alloc = late_alloc;
-+	mem->area_block_number = nslabs / (IO_TLB_BLOCKSIZE * mem->num_areas);
- 
- 	if (swiotlb_force_bounce)
- 		mem->force_bounce = true;
-@@ -233,10 +234,18 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
- 	for (i = 0, j = 0, k = 0; i < mem->nslabs; i++) {
- 		if (!(i % mem->area_nslabs)) {
- 			mem->areas[j].index = 0;
-+			mem->areas[j].block_index = 0;
- 			spin_lock_init(&mem->areas[j].lock);
-+			block_list = mem->area_block_number;
- 			j++;
- 		}
- 
-+		if (!(i % IO_TLB_BLOCKSIZE)) {
-+			mem->block[k].alloc_size = 0;
-+			mem->block[k].list = block_list--;
-+			k++;
-+		}
-+
- 		mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
- 		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
- 		mem->slots[i].alloc_size = 0;
-@@ -308,6 +317,12 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
- 	if (!mem->areas)
- 		panic("%s: Failed to allocate mem->areas.\n", __func__);
- 
-+	mem->block = memblock_alloc(sizeof(struct io_tlb_block) *
-+				    (default_nslabs / IO_TLB_BLOCKSIZE),
-+				     SMP_CACHE_BYTES);
-+	if (!mem->block)
-+		panic("%s: Failed to allocate mem->block.\n", __func__);
-+
- 	swiotlb_init_io_tlb_mem(mem, __pa(tlb), default_nslabs, false);
- 	mem->force_bounce = flags & SWIOTLB_FORCE;
- 
-@@ -332,7 +347,7 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- 	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
- 	unsigned long bytes;
- 	unsigned char *vstart = NULL;
--	unsigned int order, area_order;
-+	unsigned int order, area_order, block_order;
- 	int rc = 0;
- 
- 	if (swiotlb_force_disable)
-@@ -380,6 +395,13 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- 	if (!mem->areas)
- 		goto error_area;
- 
-+	block_order = get_order(array_size(sizeof(*mem->block),
-+		nslabs / IO_TLB_BLOCKSIZE));
-+	mem->block = (struct io_tlb_block *)
-+		__get_free_pages(GFP_KERNEL | __GFP_ZERO, block_order);
-+	if (!mem->block)
-+		goto error_block;
-+
- 	mem->slots = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
- 		get_order(array_size(sizeof(*mem->slots), nslabs)));
- 	if (!mem->slots)
-@@ -392,6 +414,8 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- 	return 0;
- 
- error_slots:
-+	free_pages((unsigned long)mem->block, block_order);
-+error_block:
- 	free_pages((unsigned long)mem->areas, area_order);
- error_area:
- 	free_pages((unsigned long)vstart, order);
-@@ -403,7 +427,7 @@ void __init swiotlb_exit(void)
- 	struct io_tlb_mem *mem = &io_tlb_default_mem;
- 	unsigned long tbl_vaddr;
- 	size_t tbl_size, slots_size;
--	unsigned int area_order;
-+	unsigned int area_order, block_order;
- 
- 	if (swiotlb_force_bounce)
- 		return;
-@@ -421,6 +445,9 @@ void __init swiotlb_exit(void)
- 		area_order = get_order(array_size(sizeof(*mem->areas),
- 			mem->num_areas));
- 		free_pages((unsigned long)mem->areas, area_order);
-+		block_order = get_order(array_size(sizeof(*mem->block),
-+			mem->nslabs / IO_TLB_BLOCKSIZE));
-+		free_pages((unsigned long)mem->block, block_order);
- 		free_pages(tbl_vaddr, get_order(tbl_size));
- 		free_pages((unsigned long)mem->slots, get_order(slots_size));
- 	} else {
-@@ -863,6 +890,146 @@ static int __init __maybe_unused swiotlb_create_default_debugfs(void)
- late_initcall(swiotlb_create_default_debugfs);
- #endif
- 
-+static void swiotlb_free_block(struct io_tlb_mem *mem,
-+			       phys_addr_t start, unsigned int block_num)
-+{
-+	unsigned int start_slot = (start - mem->start) >> IO_TLB_SHIFT;
-+	unsigned int area_index = start_slot / mem->num_areas;
-+	unsigned int block_index = start_slot / IO_TLB_BLOCKSIZE;
-+	unsigned int area_block_index = start_slot % mem->area_block_number;
-+	struct io_tlb_area *area = &mem->areas[area_index];
-+	unsigned long flags;
-+	int count, i, num;
-+
-+	spin_lock_irqsave(&area->lock, flags);
-+	if (area_block_index + block_num < mem->area_block_number)
-+		count = mem->block[block_index + block_num].list;
-+	else
-+		count = 0;
-+
-+
-+	for (i = block_index + block_num; i >= block_index; i--) {
-+		mem->block[i].list = ++count;
-+		/* Todo: recover slot->list and alloc_size here. */
-+	}
-+
-+	for (i = block_index - 1, num = block_index % mem->area_block_number;
-+	    i < num && mem->block[i].list; i--)
-+		mem->block[i].list = ++count;
-+
-+	spin_unlock_irqrestore(&area->lock, flags);
-+}
-+
-+void swiotlb_device_free(struct device *dev)
-+{
-+	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-+	struct io_tlb_mem *parent_mem = dev->dma_io_tlb_mem->parent;
-+
-+	swiotlb_free_block(parent_mem, mem->start, mem->nslabs / IO_TLB_BLOCKSIZE);
-+}
-+
-+static struct page *swiotlb_alloc_block(struct io_tlb_mem *mem, unsigned int block_num)
-+{
-+	unsigned int area_index, block_index, nslot;
-+	phys_addr_t tlb_addr;
-+	struct io_tlb_area *area;
-+	unsigned long flags;
-+	int i, j;
-+
-+	if (!mem || !mem->block)
-+		return NULL;
-+
-+	area_index = mem->area_start;
-+	mem->area_start = (mem->area_start + 1) % mem->num_areas;
-+	area = &mem->areas[area_index];
-+
-+	spin_lock_irqsave(&area->lock, flags);
-+	block_index = area_index * mem->area_block_number + area->block_index;
-+
-+	/* Todo: Search more blocks. */
-+	if (mem->block[block_index].list < block_num) {
-+		spin_unlock_irqrestore(&area->lock, flags);
-+		return NULL;
-+	}
-+
-+	/* Update block and slot list. */
-+	for (i = block_index; i < block_index + block_num; i++) {
-+		mem->block[i].list = 0;
-+		for (j = 0; j < IO_TLB_BLOCKSIZE; j++) {
-+			nslot = i * IO_TLB_BLOCKSIZE + j;
-+			mem->slots[nslot].list = 0;
-+			mem->slots[nslot].alloc_size = IO_TLB_SIZE;
-+		}
-+	}
-+	spin_unlock_irqrestore(&area->lock, flags);
-+
-+	area->block_index += block_num;
-+	area->used += block_num * IO_TLB_BLOCKSIZE;
-+	tlb_addr = slot_addr(mem->start, block_index * IO_TLB_BLOCKSIZE);
-+	return pfn_to_page(PFN_DOWN(tlb_addr));
-+}
-+
-+/*
-+ * swiotlb_device_allocate - Allocate bounce buffer fo device from
-+ * default io tlb pool. The allocation size should be aligned with
-+ * IO_TLB_BLOCK_UNIT.
-+ */
-+int swiotlb_device_allocate(struct device *dev,
-+			    unsigned int area_num,
-+			    unsigned long size)
-+{
-+	struct io_tlb_mem *mem, *parent_mem = dev->dma_io_tlb_mem;
-+	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_BLOCKSIZE);
-+	struct page *page;
-+	int ret = -ENOMEM;
-+
-+	page = swiotlb_alloc_block(parent_mem, nslabs / IO_TLB_BLOCKSIZE);
-+	if (!page)
-+		return -ENOMEM;
-+
-+	mem = kzalloc(sizeof(*mem), GFP_KERNEL);
-+	if (!mem)
-+		goto error_mem;
-+
-+	mem->slots = kzalloc(array_size(sizeof(*mem->slots), nslabs),
-+			     GFP_KERNEL);
-+	if (!mem->slots)
-+		goto error_slots;
-+
-+	swiotlb_setup_areas(mem, area_num, nslabs);
-+	mem->areas = (struct io_tlb_area *)kcalloc(area_num,
-+				   sizeof(struct io_tlb_area),
-+				   GFP_KERNEL);
-+	if (!mem->areas)
-+		goto error_areas;
-+
-+	mem->block = (struct io_tlb_block *)kcalloc(nslabs / IO_TLB_BLOCKSIZE,
-+				sizeof(struct io_tlb_block),
-+				GFP_KERNEL);
-+	if (!mem->block)
-+		goto error_block;
-+
-+	swiotlb_init_io_tlb_mem(mem, page_to_phys(page), nslabs, true);
-+	mem->force_bounce = true;
-+	mem->for_alloc = true;
-+
-+	mem->vaddr = parent_mem->vaddr + page_to_phys(page) -  parent_mem->start;
-+	dev->dma_io_tlb_mem->parent = parent_mem;
-+	dev->dma_io_tlb_mem = mem;
-+	return 0;
-+
-+error_block:
-+	kfree(mem->areas);
-+error_areas:
-+	kfree(mem->slots);
-+error_slots:
-+	kfree(mem);
-+error_mem:
-+	swiotlb_device_free(dev);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(swiotlb_device_allocate);
-+
- #ifdef CONFIG_DMA_RESTRICTED_POOL
- 
- struct page *swiotlb_alloc(struct device *dev, size_t size)
--- 
-2.25.1
+>   	mutex_lock(&data->mutex);
+> -	group = data->m4u_group[regionid];
+> +	/*
+> +	 * If the bank function is enabled, each a bank is a iommu group/domain.
+> +	 * otherwise, each a iova region is a iommu group/domain.
 
+While at it:
+"If the bank function is enabled, each bank is a iommu group/domain. Otherwise, 
+each iova region is a iommu group/domain."
+
+Regards,
+Matthias
+
+> +	 */
+> +	groupid = bankid ? bankid : regionid;
+> +	group = data->m4u_group[groupid];
+>   	if (!group) {
+>   		group = iommu_group_alloc();
+>   		if (!IS_ERR(group))
+> -			data->m4u_group[regionid] = group;
+> +			data->m4u_group[groupid] = group;
+>   	} else {
+>   		iommu_group_ref_get(group);
+>   	}
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
