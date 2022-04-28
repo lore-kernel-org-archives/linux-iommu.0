@@ -1,92 +1,69 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CFFDDC433EF
-	for <iommu@archiver.kernel.org>; Thu, 28 Apr 2022 05:45:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 14056C433F5
+	for <iommu@archiver.kernel.org>; Thu, 28 Apr 2022 06:28:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 7DD7F4171F;
-	Thu, 28 Apr 2022 05:45:40 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id AE57A60A9F;
+	Thu, 28 Apr 2022 06:28:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yq9HSAIxzUgW; Thu, 28 Apr 2022 05:45:39 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 09E204175D;
-	Thu, 28 Apr 2022 05:45:39 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CDFD5C0032;
-	Thu, 28 Apr 2022 05:45:38 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B5F9CC002D
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 05:45:37 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 915FA60AA3
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 05:45:37 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PwPZbkbaiBSt for <iommu@lists.linux-foundation.org>;
- Thu, 28 Apr 2022 05:45:36 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com
- [IPv6:2a00:1450:4864:20::535])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A2D2E607FF
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 05:45:36 +0000 (UTC)
-Received: by mail-ed1-x535.google.com with SMTP id k27so4254669edk.4
- for <iommu@lists.linux-foundation.org>; Wed, 27 Apr 2022 22:45:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=bu1Am+mfc3RBLLJSWrxdM96hFXnw6XnAcu5xdCKTnQI=;
- b=U8hjzI4Jj09EF12s/5KD7XD/HAE5Z7zNZb7gWS9RHKNUrA2CWF+gTT/vZIv/5/mhc8
- 4CJxJzlpSuKkDLHXEFMJRhg5iJCgsDrfAdB73ODHYREydYyubRYogza60y9tDwkqlHBy
- SAktsXiJBe+UBiaDkVc07s13Q/ReWDb0YAepyD0q6JPZc/mM+DuZhxVMk6wAXXFpXeIU
- GHGAyDXMSXzV/NlvvE/4Lk43zpBEXxm/LGkQVW16movp2IxXsMjwLSHD5rRbgP640tbP
- f0jsF/V5y+V4YOhKhPSv2HTyEacDMCqakP2v9tx9Obee8bSz44ZVXJf/94aed8paCPST
- 5pxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=bu1Am+mfc3RBLLJSWrxdM96hFXnw6XnAcu5xdCKTnQI=;
- b=E0ar7TYXknZpSTC0JgtJWmmGe7IeO501eh3kw2d5ZQWrw47T/o3cW3Q3fYnZZ3naqc
- O5XqSsOyGGuI5bGXRNxlkzbzuNiIXxkxfKukb40zaE9wJ0ZUs0DSt+PTfijAc8TmPLqy
- IBSpHkU5xoTgsjru7O1cHf55oJQPBv6m9WyT8u3IiRGgpJN8kqNi+aybGH76EFEEX5X+
- v44yksQiCqKwhilUSV5vbD19LaMhY4GFqE7YX9vLtqzl8vMH9BKYMiw75qiuVmow+jcs
- n9Di1WYImHqIpGXTuCsBE0S55IihGZ4kYpxVEyK6SzIDLwPO9oUzKEuPDTpxBRkb3pHA
- H74A==
-X-Gm-Message-State: AOAM5321bFCyjzf3H4j5VPH70N6vum6N2R4iH8ehtbC/IFng56qXmFTa
- Viz0HPHBPySqDDSiD1vT+q4=
-X-Google-Smtp-Source: ABdhPJxIesueP7mEJQ7cfZ1GF83jwnUH9gcTViGICL1YvhcSy1woJt6erlqveaurraCCU9ukUVTVCw==
-X-Received: by 2002:a50:d79a:0:b0:425:e577:c71a with SMTP id
- w26-20020a50d79a000000b00425e577c71amr20815339edi.188.1651124734847; 
- Wed, 27 Apr 2022 22:45:34 -0700 (PDT)
-Received: from jernej-laptop.localnet (89-212-118-115.static.t-2.net.
- [89.212.118.115]) by smtp.gmail.com with ESMTPSA id
- z14-20020a170906944e00b006f38c33b6e3sm5970246ejx.68.2022.04.27.22.45.33
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 27 Apr 2022 22:45:34 -0700 (PDT)
-From: Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- iommu@lists.linux-foundation.org, Samuel Holland <samuel@sholland.org>
-Subject: Re: [PATCH 0/5] iommu/sun50i: Allwinner D1 support
-Date: Thu, 28 Apr 2022 07:45:33 +0200
-Message-ID: <1849776.IobQ9Gjlxr@jernej-laptop>
-In-Reply-To: <20220428010401.11323-1-samuel@sholland.org>
-References: <20220428010401.11323-1-samuel@sholland.org>
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5isRkhwKTK2S; Thu, 28 Apr 2022 06:28:17 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7BE8560A88;
+	Thu, 28 Apr 2022 06:28:17 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 172A6C0039;
+	Thu, 28 Apr 2022 06:28:17 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 13F8AC002D
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 06:28:16 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 018B0405B5
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 06:28:16 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id BfCRjeaZSmHf for <iommu@lists.linux-foundation.org>;
+ Thu, 28 Apr 2022 06:28:15 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from gandalf.ozlabs.org (mail.ozlabs.org
+ [IPv6:2404:9400:2221:ea00::3])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id D2DE44027F
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 06:28:14 +0000 (UTC)
+Received: by gandalf.ozlabs.org (Postfix, from userid 1007)
+ id 4Kplzp22Nrz4ySX; Thu, 28 Apr 2022 16:28:06 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=gibson.dropbear.id.au; s=201602; t=1651127286;
+ bh=0B814dxJaRNgHX0ymjMRCIz8UmihQ/9vE3ArZl89JR0=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=F5Eijx8JxkipF5SM1J8vW/ZfFNU/gTPsGs4qkl0tPl6dhJy/+aQByH4C4TzEW+AYl
+ jWOjyJkf70DA0sMIlS2X5jtVCTdJCoujW1FXtPcHkCwokuQECRvVUoscQyJj2pvi57
+ cTiJLrWcQAAXM0zbY3WGdH3wvQFJxFNzaBs8jjOM=
+Date: Thu, 28 Apr 2022 15:58:30 +1000
+From: David Gibson <david@gibson.dropbear.id.au>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH RFC 08/12] iommufd: IOCTLs for the io_pagetable
+Message-ID: <YmotBkM103HqanoZ@yekko>
+References: <0-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <8-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <YkUvzfHM00FEAemt@yekko> <20220331125841.GG2120790@nvidia.com>
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>,
- Samuel Holland <samuel@sholland.org>, linux-kernel@vger.kernel.org,
- Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
- Rob Herring <robh+dt@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Philipp Zabel <p.zabel@pengutronix.de>, linux-riscv@lists.infradead.org,
- linux-sunxi@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20220331125841.GG2120790@nvidia.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
+ iommu@lists.linux-foundation.org, Daniel Jordan <daniel.m.jordan@oracle.com>,
+ Kevin Tian <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Joao Martins <joao.m.martins@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,47 +76,150 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: multipart/mixed; boundary="===============5028378758328105891=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgU2FtdWVsIQoKRG5lIMSNZXRydGVrLCAyOC4gYXByaWwgMjAyMiBvYiAwMzowMzo1NSBDRVNU
-IGplIFNhbXVlbCBIb2xsYW5kIG5hcGlzYWwoYSk6Cj4gRDEgaXMgYSBSSVNDLVYgU29DIGZyb20g
-QWxsd2lubmVyJ3Mgc3VueGkgZmFtaWx5LiBUaGlzIHNlcmllcyBhZGRzIElPTU1VCj4gYmluZGlu
-ZyBhbmQgZHJpdmVyIHN1cHBvcnQuCj4gCj4gT25lIHBpZWNlIGlzIHN0aWxsIG1pc3NpbmcgdG8g
-dXNlIHRoZSBJT01NVSBmb3IgRE1BIGFsbG9jYXRpb25zOiBhIGNhbGwKPiB0byBpb21tdV9zZXR1
-cF9kbWFfb3BzKCkuIE9uIEFSTTY0IHRoaXMgaXMgaGFuZGxlZCBieSB0aGUgYXJjaGl0ZWN0dXJl
-J3MKPiBjb2RlLiBSSVNDLVYgZG9lcyBub3QgY3VycmVudGx5IHNlbGVjdCBBUkNIX0hBU19TRVRV
-UF9ETUFfT1BTLCBidXQgaXQKPiB3aWxsIG9uY2UgWmljYm9tIHN1cHBvcnRbMV0gaXMgbWVyZ2Vk
-Lgo+IAo+IFsxXTogaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGttbC8yMDIyMDMwNzIyNDYyMC4x
-OTMzMDYxLTItaGVpa29Ac250ZWNoLmRlLwo+IAo+IFNvIEkgY2Fubm90IGZvbGxvdyB2aXJ0aW8t
-aW9tbXUuYyBhbmQgY2FsbCBpb21tdV9zZXR1cF9kbWFfb3BzKCkgd2hlbgo+IEFSQ0hfSEFTX1NF
-VFVQX0RNQV9PUFM9bi4gSG93ZXZlciwgaWYgSSBhcHBseSB0aGUgZm9sbG93aW5nIHBhdGNoIG9u
-IHRvcAo+IG9mIEhlaWtvJ3Mgbm9uLWNvaGVyZW50IERNQSBzZXJpZXMsIHRoZSBkaXNwbGF5IGVu
-Z2luZSBzdWNjZXNzZnVsbHkgdXNlcwo+IHRoZSBJT01NVSB0byBhbGxvY2F0ZSBpdHMgZnJhbWVi
-dWZmZXI6CgpEaWQgeW91IHRlc3QgdGhpcyBvbiBhbnkgb3RoZXIgZGV2aWNlIHRoYW4gZGlzcGxh
-eSBwaXBlbGluZT8gSXQgc2hvdWxkIGJlIApzdXBwb3J0ZWQgYnkgQ2VkcnVzIHRvbywgcmlnaHQ/
-IEkgdGhpbmsgdGhlcmUgYXJlIHN0aWxsIHNvbWUgY29ybmVyIGNhc2VzIHRvIApmaXggb24gQ2Vk
-cnVzIGJlZm9yZSBJT01NVSBmdWxseSB3b3Jrcy4KCkJlc3QgcmVnYXJkcywKSmVybmVqCgo+IAo+
-IC0tLSBhL2FyY2gvcmlzY3YvbW0vZG1hLW5vbmNvaGVyZW50LmMKPiArKysgYi9hcmNoL3Jpc2N2
-L21tL2RtYS1ub25jb2hlcmVudC5jCj4gQEAgLTYsNiArNiw3IEBACj4gICAqLwo+IAo+ICAjaW5j
-bHVkZSA8bGludXgvZG1hLWRpcmVjdC5oPgo+ICsjaW5jbHVkZSA8bGludXgvZG1hLWlvbW11Lmg+
-Cj4gICNpbmNsdWRlIDxsaW51eC9kbWEtbWFwLW9wcy5oPgo+ICAjaW5jbHVkZSA8bGludXgvbW0u
-aD4KPiAKPiBAQCAtNTMsNCArNTQsNyBAQAo+ICB7Cj4gIAkvKiBJZiBhIHNwZWNpZmljIGRldmlj
-ZSBpcyBkbWEtY29oZXJlbnQsIHNldCBpdCBoZXJlICovCj4gIAlkZXYtPmRtYV9jb2hlcmVudCA9
-IGNvaGVyZW50Owo+ICsKPiArCWlmIChpb21tdSkKPiArCQlpb21tdV9zZXR1cF9kbWFfb3BzKGRl
-diwgZG1hX2Jhc2UsIGRtYV9iYXNlICsgc2l6ZSAtIDEpOwo+ICB9Cj4gCj4gCj4gU2FtdWVsIEhv
-bGxhbmQgKDUpOgo+ICAgZHQtYmluZGluZ3M6IGlvbW11OiBzdW41MGk6IEFkZCBjb21wYXRpYmxl
-IGZvciBBbGx3aW5uZXIgRDEKPiAgIGlvbW11L3N1bjUwaTogU3VwcG9ydCB2YXJpYW50cyB3aXRo
-b3V0IGFuIGV4dGVybmFsIHJlc2V0Cj4gICBpb21tdS9zdW41MGk6IEVuc3VyZSBieXBhc3MgaXMg
-ZGlzYWJsZWQKPiAgIGlvbW11L3N1bjUwaTogQWRkIHN1cHBvcnQgZm9yIHRoZSBEMSB2YXJpYW50
-Cj4gICBpb21tdS9zdW41MGk6IEVuc3VyZSB0aGUgSU9NTVUgY2FuIGJlIHVzZWQgZm9yIERNQQo+
-IAo+ICAuLi4vaW9tbXUvYWxsd2lubmVyLHN1bjUwaS1oNi1pb21tdS55YW1sICAgICAgfCAxNiAr
-KysrKysrKysrKy0tCj4gIGRyaXZlcnMvaW9tbXUvS2NvbmZpZyAgICAgICAgICAgICAgICAgICAg
-ICAgICB8ICAxICsKPiAgZHJpdmVycy9pb21tdS9zdW41MGktaW9tbXUuYyAgICAgICAgICAgICAg
-ICAgIHwgMjQgKysrKysrKysrKysrKysrKystLQo+ICAzIGZpbGVzIGNoYW5nZWQsIDM3IGluc2Vy
-dGlvbnMoKyksIDQgZGVsZXRpb25zKC0pCgoKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
-Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
-bGlzdGluZm8vaW9tbXU=
+
+--===============5028378758328105891==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="332gL9uvgMOgNnaU"
+Content-Disposition: inline
+
+
+--332gL9uvgMOgNnaU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Mar 31, 2022 at 09:58:41AM -0300, Jason Gunthorpe wrote:
+> On Thu, Mar 31, 2022 at 03:36:29PM +1100, David Gibson wrote:
+>=20
+> > > +/**
+> > > + * struct iommu_ioas_iova_ranges - ioctl(IOMMU_IOAS_IOVA_RANGES)
+> > > + * @size: sizeof(struct iommu_ioas_iova_ranges)
+> > > + * @ioas_id: IOAS ID to read ranges from
+> > > + * @out_num_iovas: Output total number of ranges in the IOAS
+> > > + * @__reserved: Must be 0
+> > > + * @out_valid_iovas: Array of valid IOVA ranges. The array length is=
+ the smaller
+> > > + *                   of out_num_iovas or the length implied by size.
+> > > + * @out_valid_iovas.start: First IOVA in the allowed range
+> > > + * @out_valid_iovas.last: Inclusive last IOVA in the allowed range
+> > > + *
+> > > + * Query an IOAS for ranges of allowed IOVAs. Operation outside thes=
+e ranges is
+> > > + * not allowed. out_num_iovas will be set to the total number of iov=
+as
+> > > + * and the out_valid_iovas[] will be filled in as space permits.
+> > > + * size should include the allocated flex array.
+> > > + */
+> > > +struct iommu_ioas_iova_ranges {
+> > > +	__u32 size;
+> > > +	__u32 ioas_id;
+> > > +	__u32 out_num_iovas;
+> > > +	__u32 __reserved;
+> > > +	struct iommu_valid_iovas {
+> > > +		__aligned_u64 start;
+> > > +		__aligned_u64 last;
+> > > +	} out_valid_iovas[];
+> > > +};
+> > > +#define IOMMU_IOAS_IOVA_RANGES _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_IO=
+VA_RANGES)
+> >=20
+> > Is the information returned by this valid for the lifeime of the IOAS,
+> > or can it change?  If it can change, what events can change it?
+> >
+> > If it *can't* change, then how do we have enough information to
+> > determine this at ALLOC time, since we don't necessarily know which
+> > (if any) hardware IOMMU will be attached to it.
+>=20
+> It is a good point worth documenting. It can change. Particularly
+> after any device attachment.
+
+Right.. this is vital and needs to be front and centre in the
+comments/docs here.  Really, I think an interface that *doesn't* have
+magically changing status would be better (which is why I was
+advocating that the user set the constraints, and the kernel supplied
+or failed outright).  Still I recognize that has its own problems.
+
+> I added this:
+>=20
+>  * Query an IOAS for ranges of allowed IOVAs. Mapping IOVA outside these =
+ranges
+>  * is not allowed. out_num_iovas will be set to the total number of iovas=
+ and
+>  * the out_valid_iovas[] will be filled in as space permits. size should =
+include
+>  * the allocated flex array.
+>  *
+>  * The allowed ranges are dependent on the HW path the DMA operation take=
+s, and
+>  * can change during the lifetime of the IOAS. A fresh empty IOAS will ha=
+ve a
+>  * full range, and each attached device will narrow the ranges based on t=
+hat
+>  * devices HW restrictions.
+
+I think you need to be even more explicit about this: which exact
+operations on the fd can invalidate exactly which items in the
+information from this call?  Can it only ever be narrowed, or can it
+be broadened with any operations?
+
+> > > +#define IOMMU_IOAS_COPY _IO(IOMMUFD_TYPE, IOMMUFD_CMD_IOAS_COPY)
+> >=20
+> > Since it can only copy a single mapping, what's the benefit of this
+> > over just repeating an IOAS_MAP in the new IOAS?
+>=20
+> It causes the underlying pin accounting to be shared and can avoid
+> calling GUP entirely.
+
+If that's the only purpose, then that needs to be right here in the
+comments too.  So is expected best practice to IOAS_MAP everything you
+might want to map into a sort of "scratch" IOAS, then IOAS_COPY the
+mappings you actually end up wanting into the "real" IOASes for use?
+
+Seems like it would be nicer for the interface to just figure it out
+for you: I can see there being sufficient complications with that to
+have this slightly awkward interface, but I think it needs a rationale
+to accompany it.
+
+--=20
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
+
+--332gL9uvgMOgNnaU
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEoULxWu4/Ws0dB+XtgypY4gEwYSIFAmJqLP8ACgkQgypY4gEw
+YSJQhBAA0vbPYQkWajyUkrm7VrSShNBVj1XxBrzWLMKazGvweToud0V0W4HfBQo5
+ju0BEq6McEvCbqpCgJz8K4lrVoaVCZrsXaanrocgvuqJ5REhlMT7asmJtQFT5bkk
+j2poJPC7ByZEtBFtA0toLrvVo9J4JqTJ0sMzLGqYPmYmps3MOBCUa2K6j0VIRwXd
+1+pMjmrCg16aZcabN2yOPnVjB/LosjUw2fv9vQvFjoT0SW7jmmOSjRSIB7i75NtN
+TK4akZ3kS6fnS/3suoWuQ2ivvQPyJwQjhbXZ1EtVcegVtZjypBeEufw9TfQ7w/Wu
+xNXOoZaTCmH+1/vTGgxFe4mwd3wR2a7UwIxRdkgh0l4HAaGkdaFv7VLrcXfZyJfi
+RALENQJWnL/h44WXonbzy0V8EGB1exL9aMXSHlIcXpjg0VpRtHHnUg6B7euBSesQ
+akTUBBU4yJynrwng9wm/XLxa+r58T5HYMXhAoLjpGAZg6+ZIxBmXsT3z2hAB5X1g
+r/CCIDKzQQGIeR/Hruq0xt3TimCWz9jgOCstqi3EX0MXMenkOC3Ydp6mGH17Yx3l
+QGcjYiAmdWcayN3dxsL/IfZyfEq2vGh+m+fCRAyicuf6f7eUh+vV0yWrxBHRdCsw
+1vGjnrk64oDnaKX9lXOCPFoGFB/Q+GzWNaDexZW7AI2bhSsoaYY=
+=zSej
+-----END PGP SIGNATURE-----
+
+--332gL9uvgMOgNnaU--
+
+--===============5028378758328105891==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============5028378758328105891==--
