@@ -1,101 +1,101 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 496E6C4332F
-	for <iommu@archiver.kernel.org>; Thu, 28 Apr 2022 21:11:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 00B88C433F5
+	for <iommu@archiver.kernel.org>; Thu, 28 Apr 2022 21:11:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 0DE1380C0B;
-	Thu, 28 Apr 2022 21:11:31 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id B3BE961198;
+	Thu, 28 Apr 2022 21:11:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id H_NYYbdlBsuD; Thu, 28 Apr 2022 21:11:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 6CA1A80C81;
-	Thu, 28 Apr 2022 21:11:29 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0EF81C0085;
-	Thu, 28 Apr 2022 21:11:29 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 34E72C0039
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:27 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 0B9A360009
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:27 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=oracle.com header.b="PmB8e0QI";
- dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
- header.b="R6iTZdt4"
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id E37TbUhRjB-W for <iommu@lists.linux-foundation.org>;
- Thu, 28 Apr 2022 21:11:25 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9DFTZfCPADbu; Thu, 28 Apr 2022 21:11:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 8066D61172;
+	Thu, 28 Apr 2022 21:11:33 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5BFECC007E;
+	Thu, 28 Apr 2022 21:11:33 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 798E8C002D
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:32 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 5825941BF1
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:32 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=oracle.com header.b="o8Z4N8O9";
+ dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
+ header.b="hPDZE8F/"
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 5PjnlpplJjzn for <iommu@lists.linux-foundation.org>;
+ Thu, 28 Apr 2022 21:11:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com
  [205.220.177.32])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C7FA161188
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:25 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 8422241BFE
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 21:11:31 +0000 (UTC)
 Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
- by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23SJOLeP011286;
- Thu, 28 Apr 2022 21:11:04 GMT
+ by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23SJeCXe011361;
+ Thu, 28 Apr 2022 21:11:13 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
  h=from : to : cc :
  subject : date : message-id : in-reply-to : references : content-type :
  mime-version; s=corp-2021-07-09;
- bh=nWNzeEqOr5U03MiU2g2XtdGYO86CNtCzbczSeHNIRHo=;
- b=PmB8e0QIARb4mUw91wVv0Q6Mvdq+6JxbSNfuaZzmb/LyIxD5L5vbIIesKNbf5qOSrF+H
- pZKaObeeN58/XBFmGrfhfuSKx4XWljfKU2PY98lnA7FdqUgjaiXNMjiy9Ub5f2xhx2ux
- cfmXoNApFD3hlvPVRXHdYclpJXcWl06G4mdWfVLReKJbw0Ge52Co8RSRU1xICGRPa+rt
- CdVYBYZHWdUUmZui3rMViZno051GnMaJWTYcdFM9sMEgVM6MXPCmojng5s2TqeAZDf0o
- aO3N9ZrJkUCzMzIY/at7L70iX/3Ek0dUxjRQrwLyDyJyBMNm/0JN+KZP5XqZoJwLHUf2 5A== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com
- (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
- by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fmaw4nb4t-1
+ bh=kcT7k0memJPhbVUCWjNmkKpmVTUDndr3S3Cm0TWzEWc=;
+ b=o8Z4N8O9CEKhu5cXCFu7nP8hN3FbCTGaEVECwnt8LBwygGzbxPz3gvUGV9R2OKvt5Kb7
+ 1zL9v2UopgCZ3mYT0cpQiE/crA8JW/JQwt5zpnvNGDgz31L43B5wvbBNV2ou/DddpcBd
+ k9iEnVg3dRbuRWpCnzkirPPeVlvTOW6FZwD2y9ccCIYQOvcpIrRKxFNqw/V4QBYMh12T
+ 1Yvdxv6AbPJryuiBcEXUbwGpkk4LYuJ94OHWPuKBFXoIZ8PXBBRuFZGYkOggO9dCjfvv
+ afDUziY25MTbd6cTv67YOwxzOtrp5BGiHIVrQQr6LYIOPCWdVY+ZyLNwMGwFFPR30BfQ HQ== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com
+ (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+ by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fmaw4nb53-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Thu, 28 Apr 2022 21:11:03 +0000
+ Thu, 28 Apr 2022 21:11:13 +0000
 Received: from pps.filterd
- (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
- by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2)
- with SMTP id 23SL6Cas025136; Thu, 28 Apr 2022 21:11:03 GMT
-Received: from nam10-mw2-obe.outbound.protection.outlook.com
- (mail-mw2nam10lp2105.outbound.protection.outlook.com [104.47.55.105])
- by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id
- 3fm7w78a9w-1
+ (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+ by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2)
+ with SMTP id 23SL5C0c028563; Thu, 28 Apr 2022 21:11:12 GMT
+Received: from nam11-dm6-obe.outbound.protection.outlook.com
+ (mail-dm6nam11lp2172.outbound.protection.outlook.com [104.47.57.172])
+ by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id
+ 3fm7w79p31-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Thu, 28 Apr 2022 21:11:02 +0000
+ Thu, 28 Apr 2022 21:11:12 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KyNM62YrFNTSs4oJ3mQY40Bg1OYK6H6FVi0IqIsfjFDqTdb596kaPm80R7Ika6RaPmWXFjqraGFhHGwXkxkYiZaB6PpJ9LTNABxQ6LFjemU+UjASq1GXlClqILoo5uViA+Sa+dUz27nfJSIqMA7gGEaONgpgJ2q07hidz64KuWmpOwHtj7+8bZxh8pL2cMoJR2PlhLqnLfMYpE1MLFfUoseYIX+2CxBvUyc3AoO5i2KiFip/73lRonYE1R9YjUnSncEuo9cKh78/PN14AMfQTivXqFXgy7dz5AvktZB/lmS5OH0+1zFkLvGx30pa51RNQZNCfDCFkRUs90RO45Ev7Q==
+ b=neC9sPwWo1QF819facx3Rbm9FBHxkjDFD0bc2X6DDELjQ2THeradI0sxiDBjchQrEJIh8t+GJmiSw8Uk/+MYy2W43J4eTLW93oNLUr98r96cKa2DSswyqlEBk5HFwoWplyq8edw9+r3wACaebMtcJIPGthudFRWMT1B0WrAnx4JmyocYcl6Qeg6w/ASDtrSDhxY8iJAxlRiMcWkN5EdtzjbHd2VIZ7NZYuIiMSMqN/uDvsnfZiZVJd2UKuZPk0DE/Uor6xgBCNJHDkSnvsWRXG3L8NlpJI5CBZwT3PYx4/8UQv04PKm3vwENdD2z8EanXCjwUKKJqALpXsGYthXXCg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nWNzeEqOr5U03MiU2g2XtdGYO86CNtCzbczSeHNIRHo=;
- b=jb/vNdJhJY7RsdvXzoMUbjox6KvxyCUCZ3YbFivE7xAAIIiUyUDS/RMJsU8xUGI66CqOnCYhYESC42xLNi1uPrQtL1iQAkiWnHxP0kiRs0ODW7tV4yqM8wZ38hKbTo9PLWBYd/H7gzKoAT95mxsH5tpZNn7ZdO2qT4PFFRFDiD4OrzcHdEvrAOoS/or88x0aCk6nOviYiv2P6xbpaOW3owcVS8vWqHjWcSzKCZXbyLGJzPKSxv01GAsOpsnI8zneZva9qme8z9aCMLtdriERcPqKDltoZkRniDiZfhIFUMWCQijFxdE0tNxvnJsRZpQuTLee+ycLqFxzWkKNyh6ZmA==
+ bh=kcT7k0memJPhbVUCWjNmkKpmVTUDndr3S3Cm0TWzEWc=;
+ b=MCySvXAJRJ69501lLKU+WghixT/9t85Z44ZzgNmycR1PeHB9EqRJuTcMDKGGvG7qo0ngwJQoPxSLo2Jm4ItL3QlpESejEUskNvIolYUVFKwhNt4H8Dt+X7Ne40inHKLWtgHR0ZUeHGzJRtE8VC3HyNPyrZyW+lffNag7pbfzvpqx5Q933Nn4XlkLMDIHoHegDSDQXvXy5M+j/N42egMr8OdoGVPyNJpcG3Aw0DMDhO7e6SzmKEoz9FQ3/iskGtpe3NkQaQA8onqSoZx27xtBlQGBZmVaXBM8RZEf/FujAalx5pa7CXE9FcjP4NkcbcbajtnK/UYHkRV4ljG1g6gFlA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nWNzeEqOr5U03MiU2g2XtdGYO86CNtCzbczSeHNIRHo=;
- b=R6iTZdt4qTxfzyLY3/2SOBx1uhHa65tgck/XlqR5d4CISzas3Jguf7EiCo8jPdWFOHYXEhJcfn1+B1Da8CfrOWDZemVdn+J+1KPBHJHxBPHSmO/+OX8gMRIl0RInpkbz0+VifOgQUIRCfUqozGY1DVYiqX3xdzwV5wNSLIgVd+Y=
+ bh=kcT7k0memJPhbVUCWjNmkKpmVTUDndr3S3Cm0TWzEWc=;
+ b=hPDZE8F/0+iKCNcjsia1wloNG5l42KKtcJBvB6Y4S/zL/nOlynNEPobfbtaLl1WZprdeqJedQOnVuz9G1/C7fAUN3p78cDakuV1Y8CR7avcHYiTdIhwxwBcT682Vjh28DKMMTzM2TG5uuj6eFyZuIInp6o+Tgn36wPzoWrXTtLM=
 Received: from BLAPR10MB4835.namprd10.prod.outlook.com (2603:10b6:208:331::11)
  by DM5PR10MB1564.namprd10.prod.outlook.com (2603:10b6:3:9::17) with
  Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5186.15; Thu, 28 Apr 2022 21:11:00 +0000
+ 15.20.5186.15; Thu, 28 Apr 2022 21:11:10 +0000
 Received: from BLAPR10MB4835.namprd10.prod.outlook.com
  ([fe80::b9e5:d1b6:b4be:f9d]) by BLAPR10MB4835.namprd10.prod.outlook.com
  ([fe80::b9e5:d1b6:b4be:f9d%5]) with mapi id 15.20.5206.013; Thu, 28 Apr 2022
- 21:11:00 +0000
+ 21:11:10 +0000
 From: Joao Martins <joao.m.martins@oracle.com>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH RFC 08/19] iommufd: Add a test for dirty tracking ioctls
-Date: Thu, 28 Apr 2022 22:09:22 +0100
-Message-Id: <20220428210933.3583-9-joao.m.martins@oracle.com>
+Subject: [PATCH RFC 11/19] iommu/amd: Print access/dirty bits if supported
+Date: Thu, 28 Apr 2022 22:09:25 +0100
+Message-Id: <20220428210933.3583-12-joao.m.martins@oracle.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20220428210933.3583-1-joao.m.martins@oracle.com>
 References: <20220428210933.3583-1-joao.m.martins@oracle.com>
@@ -104,68 +104,68 @@ X-ClientProxiedBy: LO2P265CA0111.GBRP265.PROD.OUTLOOK.COM
  (2603:10b6:208:331::11)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5bbf4679-2548-444d-e01a-08da295b982c
+X-MS-Office365-Filtering-Correlation-Id: 3554a2b8-f17c-40f1-756b-08da295b9e9a
 X-MS-TrafficTypeDiagnostic: DM5PR10MB1564:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR10MB15641D49BB11AEE97F316BC5BBFD9@DM5PR10MB1564.namprd10.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DM5PR10MB1564497F9143D9ACCC21C06EBBFD9@DM5PR10MB1564.namprd10.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AStTLR626tJ989mW5NWmZ/YX7uSI5aqu37klRiFo0lzZKJaDfsViv1zt0E86q5eMsoyYAjaCdNRx5KHI66kPNi4yVsGQTgfR+K9Hq+PLu6Bli3kyoXbrC0W7BiSFtCGX81/IQjmulx5DU3vuiKqzIkUTQFalqsWWpZ27r6vhYH/2MXfxs7a1SsI/NLO38i5fZ2iHIC2v5NGkbO1wt9Ca4828HJzpMnqvSfHFJ89jnuQ43zGdDT2v8Ze6rfZUi5z89WQ0CnGKl0jUZx1DlHmUd6uQT20836v8fQKuzJYKIyUBl9jh8ud7f4m+JwcE2MxXj4Ed4ldXHdc6KDMKuXF0/Z1wm6KCGHFCAOJJv9y/AezVgWcte+RX+Sn/dYtiW8plf/X+7Q556IZP6PqEa+qWwYpMKcKhqkQj2ZN7LcBMliybVPTm1ncTBI3pcYGBjLu9kJ0Mz5TkFeCwlZJjhDGd4EqtTaqznd38b01UNEZFpP4KO9Ftk4TtjzMXyoqefBQkmBGdh6iWe77qLux2/yG443nfeGwKL3lh1C2dkfiYz7DrITbaixCiDaDbhoPquyGe/Aec3IWDmjzKS9mzRWWXuN8JAqCds75nQe6Tna9iX94qiSJIdugoYnIRFry0gmcHLe5yfXI3H1crZBxdRQmeapFqASH7ebechgoUxY0ALxAR6WFbsnA1qe0VoHeXmPP0Gw+nm1L+rF5IOeeLeBpmXR9zOhdrVHHzkQ6/WwbJQtQ=
+X-Microsoft-Antispam-Message-Info: +34ylqbzpwnFe0TYjd/xvDd7AMsURidq+KLqH4/i5+OrGfT5jXgeC84jhedSXEt2hjh4dEyRpKid5EN+aIyCQTKm8efj1ozS7Ko2qrzp1z/9N+NCkgyb6I/dGnNP2O6C9BfiL1AMk1H+3vuEYzxdtuo0uaUoCXmNIpxe4PiZmvBpcvY0ZvO8aI1ZPGjmvYz0lF26wzvida2dg0B9KCIH6iXBk9rV8exuUoflGdjkAE6SPM0cUkruRrBLsNW+AnQJlWckG/+/6yrV7Avf49p8GwtmBS61iONZDREVSJv//vuzd0D2NXVLIOdbJKBzDmoJk59ytPMMnlc7oF/NJFjahgljF03elrn9QoCVEUjeG5ScS/8/2llRL5HtRTmtC0hfkDOgZqfsrB9r67b8+7BiYJngsYY0ArYOVRZ5tz1JQHukMi7E1g11F48rU/muVYoZIhHe0cnUFz4XaiD5rcSYcbbhkCMT/TJ+NPzsyW5i9jjamOSWIyhRm3SRGU2tX2NPPSWz6Sxw9g8G+QXc/06xELfCxSBFi9RsfQV1r18wHCpH/55TRxsfw4U3feaRafdI8ulPzcJJRd8JCR8Ok2jmFr7keqG3ZoNWWNNq14MZm8m3W5JDz55upxGW14j+NOzKuhLePH6l0qWZPYm/g678eZzVaJA3nl7pGUrOuZsztogquCXB8QeoH+Xa/zas6UofF0pogpyQpgJFfpj8QVw9aOqoYhXFrFLA3rutMCM/tgg=
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:BLAPR10MB4835.namprd10.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(366004)(316002)(186003)(86362001)(66946007)(66556008)(4326008)(66476007)(8676002)(2616005)(36756003)(1076003)(103116003)(8936002)(5660300002)(7416002)(30864003)(26005)(6512007)(6486002)(6916009)(83380400001)(54906003)(508600001)(6506007)(38350700002)(38100700002)(6666004)(2906002)(52116002)(14143004);
+ SFS:(13230001)(366004)(316002)(186003)(86362001)(66946007)(66556008)(4326008)(66476007)(8676002)(2616005)(36756003)(1076003)(103116003)(8936002)(5660300002)(7416002)(4744005)(26005)(6512007)(6486002)(6916009)(54906003)(508600001)(6506007)(38350700002)(38100700002)(6666004)(2906002)(52116002)(14143004);
  DIR:OUT; SFP:1101; 
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6HDLaAIjMCV2Uo2tIz7D7B+aZBkKiWLYTnp8ddsN3ol93dcE8pm8r50AeD7F?=
- =?us-ascii?Q?6qanEPJEEIPeOq1UYFePG72DzQzrwo18KHuAw7jC65X0e0C9etwiRhosD4e8?=
- =?us-ascii?Q?r+T2wbkPErPMyplz0NMJHOPUe/MgolqhRjD1L9hEMOrKqg/6lK1AK6aEdrKd?=
- =?us-ascii?Q?sVCOs3yKhK7f3tjCi/NxYwNUMcwbRr8o5lw7rDfFclF6EyUnmMycNiMn5vsg?=
- =?us-ascii?Q?2E/hyLCmyLKSxpVamhxqwHb78J91uqMOhg+upxS3DWf8R+QiGVPovBsYPcqH?=
- =?us-ascii?Q?enSfxv91E3F6wmQr1BjAHALaMd6SafqWFdW0ztpKU91XZ1hhoMrxI7A0Cpgp?=
- =?us-ascii?Q?CwJiCqLUxekp/Zx6XZb8XogSn/7V4vobN5Mqu7UfsHXeQRNY/1x1yCWiz4ec?=
- =?us-ascii?Q?XzpZgLnMEN3esOiOHfJicCxoYLGWzEHhJ2PSOLpCd3IZh8Qa++INUjzIteKn?=
- =?us-ascii?Q?pJwx8UdyTiFC1iYN4DWYGjaf4At9OYegJkL4uYEGmBgnFUcE8LAKeiXHm669?=
- =?us-ascii?Q?hgtZjHibnJ8zqVia7x5CoLyigpgwSuiOwQTVU0Bhw/1XBy13tw5JI6+oCYLp?=
- =?us-ascii?Q?oXUe3i23ZdeJBgM1M2HQIol9veJqagt89RlzR4yV+z+WxhMGIIvfq94KyvNy?=
- =?us-ascii?Q?0B0it2LcPH1eAvSE4q9ZKQAArlfdWQU4FpgXKAZ1CUG1rugDSkfoWkFmIReh?=
- =?us-ascii?Q?D0kHIvjEOQCHteb1kYsk8d/RBFJTWKkC8Gdoein+hMir1yaJ/QbGZNpAgCE9?=
- =?us-ascii?Q?kXIorIC6wftNpvvgGIFxbeb20Fv31taTa4IaWhsM6vMq8JHInxyb86QZYvtx?=
- =?us-ascii?Q?ibjd/xak/M265ObdaI6W3taz5elCABd7mC3fs3QN+spEisgxFUrw1zwcxemS?=
- =?us-ascii?Q?QeQGwFWtJodWxuEGgxHRENLyd4WSJ0ZTax8wziSsUThAXRfZqk5wL3ghZAB3?=
- =?us-ascii?Q?JrUo8jneCMEfusX2T+LAj2Beq6E0CFNZKzXz04Qp0XsH02usU5RkL0Iy2i6D?=
- =?us-ascii?Q?KDFI2/RHTRgJtYl61GT1bCwnn3TwfnY3HTP6+qD1qefGxOLOx/6mwV1hoa8x?=
- =?us-ascii?Q?4XszdumQ7u6jZZ4miasszFhhInfsNqm1A1cr0Rwpm43ZhGiGE4v3AWVm3KgI?=
- =?us-ascii?Q?PkI4Ns8Rfn/VwO5t4ILr+yL/AIjhYO3InE0ZhmZ0uxFrdOV075emyeKIOIXY?=
- =?us-ascii?Q?gd+LFDwvGeqXMTfN8zNFLczTQSztUNftc1emsQRfIbCk1Gt6/GdmFf/dHF+w?=
- =?us-ascii?Q?eBH3Jm6ybEnlThQ4c9D9mgm7ugyt4f1A1yIMqE1wtvwCFM/JQyeHG9aPYvy7?=
- =?us-ascii?Q?5t7b15nYKlBewwINHiX3J12ngPlVqgsZ4oaf6WcJN3pnU1bZGQFcSPBrXbnL?=
- =?us-ascii?Q?1+5XVsUH1lKO20We55oKBrY8JGTgjTiaBURUrOaC6Wy/D/owtCl/UAqjlCz8?=
- =?us-ascii?Q?B3m3V/4MBw61TXIu6bLNhVWjifVhYvlivUC757yWMyLM2qAKE30N3Y2Xe0jf?=
- =?us-ascii?Q?HRV4fPeqROYzHQ005pKMf9avpWnygvw8WHm1penOd1gS+6ZiMdtjrIxRIpgN?=
- =?us-ascii?Q?4DvpHH/j/SlWjHUzN3aK/JLnlU73A6edcDCIC0P256xavKsECn6TKqpkmm3E?=
- =?us-ascii?Q?lHNC5/EtZwhQTjYQBBSmZkpA7zWtE27BRytMcbwnfCuow5whPXbAevXc45lO?=
- =?us-ascii?Q?WyPa07NAIR5aKVe8CUMBoJnKgWLUHLchsdyD63/qZQRdPcseaBJtfpwM+ckA?=
- =?us-ascii?Q?LQCNMdKDGsXteQuHatjhNSrKBNbtaE4=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8a9mP/e5p3JzTceCn4II5DmJYO1dgwbyWGVsB0OxdqwiTAAzqktGIRpAQWXu?=
+ =?us-ascii?Q?TB4EgVHzVue+0g88w7CasaouGqUnI+kfXaSK+FP5eKAxURp3SBMRxVvLYoI6?=
+ =?us-ascii?Q?2+VbiP8kRYanJT86D3HClf7H6lPIxjNfjRn5XqCfP5yrGyH/lVn/VfUo+3lE?=
+ =?us-ascii?Q?aSRc2HfBY5KBcsahjKZa2BT6ZH4SYmD75P/JNVrB01D0nvzZS1DL4000O1VJ?=
+ =?us-ascii?Q?7iceepiDpspg4KCkhxMy7dKNCHoa95qzhqNTGBipTcPRERtIidFipex+zbzM?=
+ =?us-ascii?Q?BC3MWn3wPs1fP6nsnZ2sKpAJ41KMfYutdvd5Epy2MKnOdWujzVe8m7SfcQcn?=
+ =?us-ascii?Q?V8mDQtWy7383AFkmoAkM+ziafGOirVpGM0P2/3DEZbQBrZmm8GjAwZPdfF/F?=
+ =?us-ascii?Q?DPPnkWN87S3oCR5R5g1EUz1bJdGOo7FlCMo2wtAL+TQMavenfxrsaOs7uvTk?=
+ =?us-ascii?Q?K5ZgTVTgX/NFDjAMwpRaN4kWiR5k9qa0wyvv4gsfXLUznVSwCBeQatZajQTK?=
+ =?us-ascii?Q?Hv2OMle4ggkTeu8Ht+fGaGVcnFopM4HJm5MVVlqRPdstfqrej86HKIG/3X8s?=
+ =?us-ascii?Q?pVAEgxe1QremEmsIxcdJPJq4cR6vzOSgDZ+hwvhvThHicEd6kYsT1+2Kl3tr?=
+ =?us-ascii?Q?MLuLZ+BB04+VRwZhA8Ia67kjDCFuMb07sYFl8Ex0w2CbA2PNnzXB24r92VRB?=
+ =?us-ascii?Q?1VFWwjRIWQGnoAfAGf0iIht2iVKYy9NVxCDKUtO4lbPo9SDoHNx+zr4JQBjY?=
+ =?us-ascii?Q?mAIU8AJjUyHUyHOZSV/DIoR6tMZY/6PmOSqrXOFKa9BWhOPW5Kp8gY8jHpvb?=
+ =?us-ascii?Q?IYsnX7QRkNt6sc4Dr8A5qlKVvzIwktNcAjEZhxqmHBAOmnIsHxlO0iwJFfcJ?=
+ =?us-ascii?Q?P/Mspys3zMYzq+YV6rnVy3zUaDFvUZlPmfg8FdBEHrVMX/5kLIZhv027+IuV?=
+ =?us-ascii?Q?cxE/HH3BT9zzlH031Mf0AXuc9jwLCx2TGC0K+aGO8zaHGmzpXn4npUCl68LG?=
+ =?us-ascii?Q?IMUyMOrO4COejCCQfzbqILsMrSE+ifgs+RlWzW/LnUNBGy/LvVD8WtLcxSav?=
+ =?us-ascii?Q?FE/qwuOyoUz12LWLL304/4ffU2UHoP5WDl2IKh2L7IpEVuF8Zt4E7eU+thfF?=
+ =?us-ascii?Q?M/sgcYxAEg86NMHUsYN1xacXwdmt62dcZC+Y7NKNjloGb8JBqq+uldz/cgr3?=
+ =?us-ascii?Q?dYOdQDyLrfWqbRk5x4yK9mTeX/IVdbbTp7/k6gM93CoS1U5rhKkziRp7HCA0?=
+ =?us-ascii?Q?XzvxegXy00Smc1Ay7qAv1kK7QlE0/MlvWQGgz1FyMa9k9pSw65mw3D6JyJT9?=
+ =?us-ascii?Q?HzcLysf74V6jVpIFD/Cbhk5gt6uxJBfglNqRco/C0kijQaIoY/01l/7dMjDk?=
+ =?us-ascii?Q?cxZsNhz1WmX8sCGDFov6Ztx8oZyqsiiBs4thlnP72MGUXVoym05blofb5+Lp?=
+ =?us-ascii?Q?tM7OErZ4OCkb5XGr8fup10Pz11Ct5YKj9V1A/xuezLmhWmWsS8R9788K5G5r?=
+ =?us-ascii?Q?kYPD7tEHx8PGG1nOXcX2RVpW7IqlqCs4Ozc+jMhUOsr2jQpg+WU93kLhOEbd?=
+ =?us-ascii?Q?91/KD4iyRo8T8rx0Z5OrPw5R67NHfZd//zhHy4NCYm+S4JoeXqyjLXYNOa2z?=
+ =?us-ascii?Q?nDBGK8jMY2DiEOna78C7kHJJZvObeIwhrao64m/MI9G0XZ6IYsGCCL5B9x/3?=
+ =?us-ascii?Q?Tk8w2jjoZ9BS4Efkhy0QGvZbXIGpIRTn6MKDuz7KESUJ+5UEVb7pnyZvtMcD?=
+ =?us-ascii?Q?n8GJRQyGKdkC+BEH3+68QUlxIlDxHJg=3D?=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5bbf4679-2548-444d-e01a-08da295b982c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3554a2b8-f17c-40f1-756b-08da295b9e9a
 X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB4835.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2022 21:11:00.0999 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Apr 2022 21:11:10.8858 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Gz1+FX0HG57RMf159bXlLY0UhbRBpKOQljZPIjg7AHbtkKLkUiO/ilRfsiVFavutu5iFHu4gsi/KVx8CdNPRmR5UMbdqJFLO2V84hsmmXfI=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6czl5SH3QTjuJNpHU81TDHHVfSya4SGJ2Y9XBheE5W9mr9xFi7hzSTiPVNkuSChD0BLL+uxNcsgvG9XIyOA1dNB2vRB9bYrzhqnQMmCrqdU=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB1564
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486, 18.0.858
  definitions=2022-04-28_04:2022-04-28,
  2022-04-28 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
- mlxlogscore=999
- malwarescore=0 mlxscore=0 phishscore=0 bulkscore=0 adultscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2204280125
-X-Proofpoint-GUID: iMg0MBxcmswVNYTDZsV6d3PfcrvweZaa
-X-Proofpoint-ORIG-GUID: iMg0MBxcmswVNYTDZsV6d3PfcrvweZaa
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0
+ spamscore=0 adultscore=0
+ mlxscore=0 bulkscore=0 suspectscore=0 malwarescore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2204280125
+X-Proofpoint-GUID: gmEDQzyccE2mhqC5eHfc8M8QGixSHMaN
+X-Proofpoint-ORIG-GUID: gmEDQzyccE2mhqC5eHfc8M8QGixSHMaN
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Kevin Tian <kevin.tian@intel.com>, Yishai Hadas <yishaih@nvidia.com>,
  Jason Gunthorpe <jgg@nvidia.com>, kvm@vger.kernel.org,
@@ -190,433 +190,31 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add a new test ioctl for simulating the dirty IOVAs
-in the mock domain, and implement the mock iommu domain ops
-that get the dirty tracking supported.
+Print the feature, much like other kernel-supported features.
 
-The selftest exercises the usual main workflow of:
-
-1) Setting/Clearing dirty tracking from the iommu domain
-2) Read and clear dirty IOPTEs
-3) Unmap and read dirty back
+One can still probe its actual hw support via sysfs, regardless
+of what the kernel does.
 
 Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 ---
- drivers/iommu/iommufd/iommufd_test.h    |   9 ++
- drivers/iommu/iommufd/selftest.c        | 137 +++++++++++++++++++++++-
- tools/testing/selftests/iommu/Makefile  |   1 +
- tools/testing/selftests/iommu/iommufd.c | 135 +++++++++++++++++++++++
- 4 files changed, 279 insertions(+), 3 deletions(-)
+ drivers/iommu/amd/init.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/iommu/iommufd/iommufd_test.h b/drivers/iommu/iommufd/iommufd_test.h
-index d22ef484af1a..90dafa513078 100644
---- a/drivers/iommu/iommufd/iommufd_test.h
-+++ b/drivers/iommu/iommufd/iommufd_test.h
-@@ -14,6 +14,7 @@ enum {
- 	IOMMU_TEST_OP_MD_CHECK_REFS,
- 	IOMMU_TEST_OP_ACCESS_PAGES,
- 	IOMMU_TEST_OP_SET_TEMP_MEMORY_LIMIT,
-+	IOMMU_TEST_OP_DIRTY,
- };
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 27f2cf61d0c6..c410d127eb58 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -1936,6 +1936,10 @@ static void print_iommu_info(void)
  
- enum {
-@@ -57,6 +58,14 @@ struct iommu_test_cmd {
- 		struct {
- 			__u32 limit;
- 		} memory_limit;
-+		struct {
-+			__u32 flags;
-+			__aligned_u64 iova;
-+			__aligned_u64 length;
-+			__aligned_u64 page_size;
-+			__aligned_u64 uptr;
-+			__aligned_u64 out_nr_dirty;
-+		} dirty;
- 	};
- 	__u32 last;
- };
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index a665719b493e..b02309722436 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -13,6 +13,7 @@
- size_t iommufd_test_memory_limit = 65536;
+ 			if (iommu->features & FEATURE_GAM_VAPIC)
+ 				pr_cont(" GA_vAPIC");
++			if (iommu->features & FEATURE_HASUP)
++				pr_cont(" HASup");
++			if (iommu->features & FEATURE_HDSUP)
++				pr_cont(" HDSup");
  
- enum {
-+	MOCK_DIRTY_TRACK = 1,
- 	MOCK_IO_PAGE_SIZE = PAGE_SIZE / 2,
- 
- 	/*
-@@ -25,9 +26,11 @@ enum {
- 	_MOCK_PFN_START = MOCK_PFN_MASK + 1,
- 	MOCK_PFN_START_IOVA = _MOCK_PFN_START,
- 	MOCK_PFN_LAST_IOVA = _MOCK_PFN_START,
-+	MOCK_PFN_DIRTY_IOVA = _MOCK_PFN_START << 1,
- };
- 
- struct mock_iommu_domain {
-+	unsigned long flags;
- 	struct iommu_domain domain;
- 	struct xarray pfns;
- };
-@@ -133,7 +136,7 @@ static size_t mock_domain_unmap_pages(struct iommu_domain *domain,
- 
- 		for (cur = 0; cur != pgsize; cur += MOCK_IO_PAGE_SIZE) {
- 			ent = xa_erase(&mock->pfns, iova / MOCK_IO_PAGE_SIZE);
--			WARN_ON(!ent);
-+
- 			/*
- 			 * iommufd generates unmaps that must be a strict
- 			 * superset of the map's performend So every starting
-@@ -143,12 +146,12 @@ static size_t mock_domain_unmap_pages(struct iommu_domain *domain,
- 			 * passed to map_pages
- 			 */
- 			if (first) {
--				WARN_ON(!(xa_to_value(ent) &
-+				WARN_ON(ent && !(xa_to_value(ent) &
- 					  MOCK_PFN_START_IOVA));
- 				first = false;
- 			}
- 			if (pgcount == 1 && cur + MOCK_IO_PAGE_SIZE == pgsize)
--				WARN_ON(!(xa_to_value(ent) &
-+				WARN_ON(ent && !(xa_to_value(ent) &
- 					  MOCK_PFN_LAST_IOVA));
- 
- 			iova += MOCK_IO_PAGE_SIZE;
-@@ -171,6 +174,75 @@ static phys_addr_t mock_domain_iova_to_phys(struct iommu_domain *domain,
- 	return (xa_to_value(ent) & MOCK_PFN_MASK) * MOCK_IO_PAGE_SIZE;
- }
- 
-+static int mock_domain_set_dirty_tracking(struct iommu_domain *domain,
-+					  bool enable)
-+{
-+	struct mock_iommu_domain *mock =
-+		container_of(domain, struct mock_iommu_domain, domain);
-+	unsigned long flags = mock->flags;
-+
-+	/* No change? */
-+	if (!(enable ^ !!(flags & MOCK_DIRTY_TRACK)))
-+		return -EINVAL;
-+
-+	flags = (enable ?
-+		 flags | MOCK_DIRTY_TRACK : flags & ~MOCK_DIRTY_TRACK);
-+
-+	mock->flags = flags;
-+	return 0;
-+}
-+
-+static int mock_domain_read_and_clear_dirty(struct iommu_domain *domain,
-+					    unsigned long iova, size_t size,
-+					    struct iommu_dirty_bitmap *dirty)
-+{
-+	struct mock_iommu_domain *mock =
-+		container_of(domain, struct mock_iommu_domain, domain);
-+	unsigned long i, max = size / MOCK_IO_PAGE_SIZE;
-+	void *ent, *old;
-+
-+	if (!(mock->flags & MOCK_DIRTY_TRACK))
-+		return -EINVAL;
-+
-+	for (i = 0; i < max; i++) {
-+		unsigned long cur = iova + i * MOCK_IO_PAGE_SIZE;
-+
-+		ent = xa_load(&mock->pfns, cur / MOCK_IO_PAGE_SIZE);
-+		if (ent &&
-+		    (xa_to_value(ent) & MOCK_PFN_DIRTY_IOVA)) {
-+			unsigned long val;
-+
-+			/* Clear dirty */
-+			val = xa_to_value(ent) & ~MOCK_PFN_DIRTY_IOVA;
-+			old = xa_store(&mock->pfns, cur / MOCK_IO_PAGE_SIZE,
-+				       xa_mk_value(val), GFP_KERNEL);
-+			WARN_ON_ONCE(ent != old);
-+			iommu_dirty_bitmap_record(dirty, cur, MOCK_IO_PAGE_SIZE);
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static size_t mock_domain_unmap_read_dirty(struct iommu_domain *domain,
-+					   unsigned long iova, size_t page_size,
-+					   struct iommu_iotlb_gather *gather,
-+					   struct iommu_dirty_bitmap *dirty)
-+{
-+	struct mock_iommu_domain *mock =
-+		container_of(domain, struct mock_iommu_domain, domain);
-+	void *ent;
-+
-+	WARN_ON(page_size != MOCK_IO_PAGE_SIZE);
-+
-+	ent = xa_erase(&mock->pfns, iova / MOCK_IO_PAGE_SIZE);
-+	if (ent && (xa_to_value(ent) & MOCK_PFN_DIRTY_IOVA) &&
-+	    (mock->flags & MOCK_DIRTY_TRACK))
-+		iommu_dirty_bitmap_record(dirty, iova, page_size);
-+
-+	return ent ? page_size : 0;
-+}
-+
- static const struct iommu_ops mock_ops = {
- 	.owner = THIS_MODULE,
- 	.pgsize_bitmap = MOCK_IO_PAGE_SIZE,
-@@ -181,6 +253,9 @@ static const struct iommu_ops mock_ops = {
- 			.map_pages = mock_domain_map_pages,
- 			.unmap_pages = mock_domain_unmap_pages,
- 			.iova_to_phys = mock_domain_iova_to_phys,
-+			.set_dirty_tracking = mock_domain_set_dirty_tracking,
-+			.read_and_clear_dirty = mock_domain_read_and_clear_dirty,
-+			.unmap_read_dirty = mock_domain_unmap_read_dirty,
- 		},
- };
- 
-@@ -442,6 +517,56 @@ static int iommufd_test_access_pages(struct iommufd_ucmd *ucmd,
- 	return rc;
- }
- 
-+static int iommufd_test_dirty(struct iommufd_ucmd *ucmd,
-+			      unsigned int mockpt_id, unsigned long iova,
-+			      size_t length, unsigned long page_size,
-+			      void __user *uptr, u32 flags)
-+{
-+	unsigned long i, max = length / page_size;
-+	struct iommu_test_cmd *cmd = ucmd->cmd;
-+	struct iommufd_hw_pagetable *hwpt;
-+	struct mock_iommu_domain *mock;
-+	int rc, count = 0;
-+
-+	if (iova % page_size || length % page_size ||
-+	    (uintptr_t)uptr % page_size)
-+		return -EINVAL;
-+
-+	hwpt = get_md_pagetable(ucmd, mockpt_id, &mock);
-+	if (IS_ERR(hwpt))
-+		return PTR_ERR(hwpt);
-+
-+	if (!(mock->flags & MOCK_DIRTY_TRACK)) {
-+		rc = -EINVAL;
-+		goto out_put;
-+	}
-+
-+	for (i = 0; i < max; i++) {
-+		unsigned long cur = iova + i * page_size;
-+		void *ent, *old;
-+
-+		if (!test_bit(i, (unsigned long *) uptr))
-+			continue;
-+
-+		ent = xa_load(&mock->pfns, cur / page_size);
-+		if (ent) {
-+			unsigned long val;
-+
-+			val = xa_to_value(ent) | MOCK_PFN_DIRTY_IOVA;
-+			old = xa_store(&mock->pfns, cur / page_size,
-+				       xa_mk_value(val), GFP_KERNEL);
-+			WARN_ON_ONCE(ent != old);
-+			count++;
-+		}
-+	}
-+
-+	cmd->dirty.out_nr_dirty = count;
-+	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-+out_put:
-+	iommufd_put_object(&hwpt->obj);
-+	return rc;
-+}
-+
- void iommufd_selftest_destroy(struct iommufd_object *obj)
- {
- 	struct selftest_obj *sobj = container_of(obj, struct selftest_obj, obj);
-@@ -486,6 +611,12 @@ int iommufd_test(struct iommufd_ucmd *ucmd)
- 			cmd->access_pages.length,
- 			u64_to_user_ptr(cmd->access_pages.uptr),
- 			cmd->access_pages.flags);
-+	case IOMMU_TEST_OP_DIRTY:
-+		return iommufd_test_dirty(
-+			ucmd, cmd->id, cmd->dirty.iova,
-+			cmd->dirty.length, cmd->dirty.page_size,
-+			u64_to_user_ptr(cmd->dirty.uptr),
-+			cmd->dirty.flags);
- 	case IOMMU_TEST_OP_SET_TEMP_MEMORY_LIMIT:
- 		iommufd_test_memory_limit = cmd->memory_limit.limit;
- 		return 0;
-diff --git a/tools/testing/selftests/iommu/Makefile b/tools/testing/selftests/iommu/Makefile
-index 7bc38b3beaeb..48d4dcf11506 100644
---- a/tools/testing/selftests/iommu/Makefile
-+++ b/tools/testing/selftests/iommu/Makefile
-@@ -1,5 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0-only
- CFLAGS += -Wall -O2 -Wno-unused-function
-+CFLAGS += -I../../../../tools/include/
- CFLAGS += -I../../../../include/uapi/
- CFLAGS += -I../../../../include/
- 
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 5c47d706ed94..3a494f7958f4 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -13,13 +13,18 @@
- #define __EXPORTED_HEADERS__
- #include <linux/iommufd.h>
- #include <linux/vfio.h>
-+#include <linux/bitmap.h>
-+#include <linux/bitops.h>
- #include "../../../../drivers/iommu/iommufd/iommufd_test.h"
-+#define BITS_PER_BYTE 8
- 
- static void *buffer;
-+static void *bitmap;
- 
- static unsigned long PAGE_SIZE;
- static unsigned long HUGEPAGE_SIZE;
- static unsigned long BUFFER_SIZE;
-+static unsigned long BITMAP_SIZE;
- 
- #define MOCK_PAGE_SIZE (PAGE_SIZE / 2)
- 
-@@ -52,6 +57,10 @@ static __attribute__((constructor)) void setup_sizes(void)
- 	BUFFER_SIZE = PAGE_SIZE * 16;
- 	rc = posix_memalign(&buffer, HUGEPAGE_SIZE, BUFFER_SIZE);
- 	assert(rc || buffer || (uintptr_t)buffer % HUGEPAGE_SIZE == 0);
-+
-+	BITMAP_SIZE = BUFFER_SIZE / MOCK_PAGE_SIZE / BITS_PER_BYTE;
-+	rc = posix_memalign(&bitmap, PAGE_SIZE, BUFFER_SIZE);
-+	assert(rc || buffer || (uintptr_t)buffer % PAGE_SIZE == 0);
- }
- 
- /*
-@@ -546,6 +555,132 @@ TEST_F(iommufd_ioas, iova_ranges)
- 	EXPECT_EQ(0, cmd->out_valid_iovas[1].last);
- }
- 
-+TEST_F(iommufd_ioas, dirty)
-+{
-+	struct iommu_ioas_map map_cmd = {
-+		.size = sizeof(map_cmd),
-+		.flags = IOMMU_IOAS_MAP_FIXED_IOVA,
-+		.ioas_id = self->ioas_id,
-+		.user_va = (uintptr_t)buffer,
-+		.length = BUFFER_SIZE,
-+		.iova = MOCK_APERTURE_START,
-+	};
-+	struct iommu_test_cmd mock_cmd = {
-+		.size = sizeof(mock_cmd),
-+		.op = IOMMU_TEST_OP_MOCK_DOMAIN,
-+		.id = self->ioas_id,
-+	};
-+	struct iommu_hwpt_set_dirty set_dirty_cmd = {
-+		.size = sizeof(set_dirty_cmd),
-+		.flags = IOMMU_DIRTY_TRACKING_ENABLED,
-+		.hwpt_id = self->ioas_id,
-+	};
-+	struct iommu_test_cmd dirty_cmd = {
-+		.size = sizeof(dirty_cmd),
-+		.op = IOMMU_TEST_OP_DIRTY,
-+		.id = self->ioas_id,
-+		.dirty = { .iova = MOCK_APERTURE_START,
-+			   .length = BUFFER_SIZE,
-+			   .page_size = MOCK_PAGE_SIZE,
-+			   .uptr = (uintptr_t)bitmap },
-+	};
-+	struct iommu_hwpt_get_dirty_iova get_dirty_cmd = {
-+		.size = sizeof(get_dirty_cmd),
-+		.hwpt_id = self->ioas_id,
-+		.bitmap = {
-+			.iova = MOCK_APERTURE_START,
-+			.length = BUFFER_SIZE,
-+			.page_size = MOCK_PAGE_SIZE,
-+			.data = (__u64 *)bitmap,
-+		}
-+	};
-+	struct iommu_ioas_unmap_dirty unmap_dirty_cmd = {
-+		.size = sizeof(unmap_dirty_cmd),
-+		.ioas_id = self->ioas_id,
-+		.bitmap = {
-+			.iova = MOCK_APERTURE_START,
-+			.length = BUFFER_SIZE,
-+			.page_size = MOCK_PAGE_SIZE,
-+			.data = (__u64 *)bitmap,
-+		},
-+	};
-+	struct iommu_destroy destroy_cmd = { .size = sizeof(destroy_cmd) };
-+	unsigned long i, count, nbits = BITMAP_SIZE * BITS_PER_BYTE;
-+
-+	/* Toggle dirty with a domain and a single map */
-+	ASSERT_EQ(0, ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_MOCK_DOMAIN),
-+			   &mock_cmd));
-+	ASSERT_EQ(0, ioctl(self->fd, IOMMU_IOAS_MAP, &map_cmd));
-+
-+	set_dirty_cmd.hwpt_id = mock_cmd.id;
-+	ASSERT_EQ(0,
-+		  ioctl(self->fd, IOMMU_HWPT_SET_DIRTY, &set_dirty_cmd));
-+	EXPECT_ERRNO(EINVAL,
-+		  ioctl(self->fd, IOMMU_HWPT_SET_DIRTY, &set_dirty_cmd));
-+
-+	/* Mark all even bits as dirty in the mock domain */
-+	for (count = 0, i = 0; i < nbits; count += !(i%2), i++)
-+		if (!(i % 2))
-+			set_bit(i, (unsigned long *) bitmap);
-+	ASSERT_EQ(count, BITMAP_SIZE * BITS_PER_BYTE / 2);
-+
-+	dirty_cmd.id = mock_cmd.id;
-+	ASSERT_EQ(0,
-+		  ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_DIRTY),
-+			&dirty_cmd));
-+	ASSERT_EQ(BITMAP_SIZE * BITS_PER_BYTE / 2,
-+		  dirty_cmd.dirty.out_nr_dirty);
-+
-+	get_dirty_cmd.hwpt_id = mock_cmd.id;
-+	memset(bitmap, 0, BITMAP_SIZE);
-+	ASSERT_EQ(0,
-+		  ioctl(self->fd, IOMMU_HWPT_GET_DIRTY_IOVA, &get_dirty_cmd));
-+
-+	/* All even bits should be dirty */
-+	for (count = 0, i = 0; i < nbits; count += !(i%2), i++)
-+		ASSERT_EQ(!(i % 2), test_bit(i, (unsigned long *) bitmap));
-+	ASSERT_EQ(count, dirty_cmd.dirty.out_nr_dirty);
-+
-+	memset(bitmap, 0, BITMAP_SIZE);
-+	ASSERT_EQ(0,
-+		  ioctl(self->fd, IOMMU_HWPT_GET_DIRTY_IOVA, &get_dirty_cmd));
-+
-+	/* Should be all zeroes */
-+	for (i = 0; i < nbits; i++)
-+		ASSERT_EQ(0, test_bit(i, (unsigned long *) bitmap));
-+
-+	/* Mark all even bits as dirty in the mock domain */
-+	for (count = 0, i = 0; i < nbits; count += !(i%2), i++)
-+		if (!(i % 2))
-+			set_bit(i, (unsigned long *) bitmap);
-+	ASSERT_EQ(count, BITMAP_SIZE * BITS_PER_BYTE / 2);
-+	ASSERT_EQ(0,
-+		  ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_DIRTY),
-+			&dirty_cmd));
-+	ASSERT_EQ(BITMAP_SIZE * BITS_PER_BYTE / 2,
-+		  dirty_cmd.dirty.out_nr_dirty);
-+
-+	memset(bitmap, 0, BITMAP_SIZE);
-+	ASSERT_EQ(0,
-+		  ioctl(self->fd, IOMMU_IOAS_UNMAP_DIRTY, &unmap_dirty_cmd));
-+
-+	/* All even bits should be dirty */
-+	for (count = 0, i = 0; i < nbits; count += !(i%2), i++)
-+		ASSERT_EQ(!(i % 2), test_bit(i, (unsigned long *) bitmap));
-+	ASSERT_EQ(count, dirty_cmd.dirty.out_nr_dirty);
-+
-+	set_dirty_cmd.flags = IOMMU_DIRTY_TRACKING_DISABLED;
-+	ASSERT_EQ(0,
-+		     ioctl(self->fd, IOMMU_HWPT_SET_DIRTY, &set_dirty_cmd));
-+	EXPECT_ERRNO(EINVAL,
-+		     ioctl(self->fd, IOMMU_HWPT_SET_DIRTY, &set_dirty_cmd));
-+
-+	destroy_cmd.id = mock_cmd.mock_domain.device_id;
-+	ASSERT_EQ(0, ioctl(self->fd, IOMMU_DESTROY, &destroy_cmd));
-+	destroy_cmd.id = mock_cmd.id;
-+	ASSERT_EQ(0, ioctl(self->fd, IOMMU_DESTROY, &destroy_cmd));
-+}
-+
- TEST_F(iommufd_ioas, access)
- {
- 	struct iommu_ioas_map map_cmd = {
+ 			pr_cont("\n");
+ 		}
 -- 
 2.17.2
 
