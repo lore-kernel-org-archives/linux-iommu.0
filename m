@@ -1,53 +1,52 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B93A2C433F5
-	for <iommu@archiver.kernel.org>; Thu, 28 Apr 2022 07:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0AAF9C433FE
+	for <iommu@archiver.kernel.org>; Thu, 28 Apr 2022 07:58:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 5442C827D2;
-	Thu, 28 Apr 2022 07:56:20 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id B4FAC4056E;
+	Thu, 28 Apr 2022 07:58:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id l1Wv35u7J5QP; Thu, 28 Apr 2022 07:56:19 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 31FE9817FF;
-	Thu, 28 Apr 2022 07:56:19 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PXkf6HDNDkCz; Thu, 28 Apr 2022 07:58:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A0727400FB;
+	Thu, 28 Apr 2022 07:58:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D2ABDC0032;
-	Thu, 28 Apr 2022 07:56:18 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C8C13C002D
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 07:56:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4CC31C0032;
+	Thu, 28 Apr 2022 07:58:30 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0D46AC002D
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 07:58:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id A6F8241956
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 07:56:16 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id F02E760B14
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 07:58:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5Ou67IgYaU2t for <iommu@lists.linux-foundation.org>;
- Thu, 28 Apr 2022 07:56:15 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 1M9BVxpruP-2 for <iommu@lists.linux-foundation.org>;
+ Thu, 28 Apr 2022 07:58:28 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from theia.8bytes.org (8bytes.org
  [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 5BC2041918
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 07:56:15 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 68C8960AEB
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 07:58:28 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id C5365452; Thu, 28 Apr 2022 09:56:11 +0200 (CEST)
-Date: Thu, 28 Apr 2022 09:56:10 +0200
+ id 713A0452; Thu, 28 Apr 2022 09:58:25 +0200 (CEST)
+Date: Thu, 28 Apr 2022 09:58:24 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH] iommu/amd: Do not call sleep while holding spinlock
-Message-ID: <YmpImoyEN5f6pvnl@8bytes.org>
-References: <20220314024321.37411-1-suravee.suthikulpanit@amd.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Subject: Re: [PATCH] iommu/amd: Remove redundant check
+Message-ID: <YmpJICbIVGKA4Jna@8bytes.org>
+References: <20220314070226.40641-1-vasant.hegde@amd.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20220314024321.37411-1-suravee.suthikulpanit@amd.com>
-Cc: iommu@lists.linux-foundation.org, jon.grimm@amd.com,
- linux-kernel@vger.kernel.org, wei.huang2@amd.com, terry.bowman@amd.com
+In-Reply-To: <20220314070226.40641-1-vasant.hegde@amd.com>
+Cc: iommu@lists.linux-foundation.org, Dan Carpenter <dan.carpenter@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -65,23 +64,16 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, Mar 13, 2022 at 09:43:21PM -0500, Suravee Suthikulpanit wrote:
-> Smatch static checker warns:
-> 	drivers/iommu/amd/iommu_v2.c:133 free_device_state()
-> 	warn: sleeping in atomic context
-> 
-> Fixes by storing the list of struct device_state in a temporary
-> list, and then free the memory after releasing the spinlock.
+On Mon, Mar 14, 2022 at 12:32:26PM +0530, Vasant Hegde wrote:
+> smatch static checker warning:
+>   drivers/iommu/amd/init.c:1989 amd_iommu_init_pci()
+>   warn: duplicate check 'ret' (previous on line 1978)
 > 
 > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Fixes: dc6a709e5123 ("iommu/amd: Improve amd_iommu_v2_exit()")
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  drivers/iommu/amd/iommu_v2.c | 12 +++++++++++-
->  1 file changed, 11 insertions(+), 1 deletion(-)
+> Fixes: 06687a03805e ("iommu/amd: Improve error handling for amd_iommu_init_pci")
+> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 
-Applied, thanks Suravee.
-
+Applied, thanks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
