@@ -1,78 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BEBB8C433EF
-	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 23:15:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 57B82C433EF
+	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 23:52:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 6FE276120D;
-	Fri, 29 Apr 2022 23:15:45 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 060CA40CD8;
+	Fri, 29 Apr 2022 23:52:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id T5_6R8zxfpe1; Fri, 29 Apr 2022 23:15:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 26C5460AA0;
-	Fri, 29 Apr 2022 23:15:44 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C5201C0032;
-	Fri, 29 Apr 2022 23:15:43 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0F184C002D
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 23:15:42 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 056B040CD9
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 23:15:42 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id T0H472lxXaSE for <iommu@lists.linux-foundation.org>;
- Fri, 29 Apr 2022 23:15:41 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id rs89xtqZJpJT; Fri, 29 Apr 2022 23:52:07 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id C03D640142;
+	Fri, 29 Apr 2022 23:52:06 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8EB26C0032;
+	Fri, 29 Apr 2022 23:52:06 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 73ADAC002D
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 23:52:04 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 6CA7760ABE
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 23:52:04 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id cRCokGSw7BEj for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Apr 2022 23:52:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 5626140142
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 23:15:41 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id 15EE1623B1;
- Fri, 29 Apr 2022 23:15:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2CB2C385A4;
- Fri, 29 Apr 2022 23:15:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1651274139;
- bh=elqH2Ff8eBloOqEP96qiH80wO36PP21s6y+XTLp+enQ=;
- h=Date:From:To:cc:Subject:In-Reply-To:References:From;
- b=ZHx10dC2uYiU9hpRuYyFhaRjHDl2mx8JQrxkHwwfcxcU8kIjVZwHY6oPAx5ruUqMm
- 9LGLGarvn440A377DUk+FLghxuZLqScNQXrYOuaoR4yZaGTm8Yo2+VoJ0l6a/tR7hf
- E6QYw0PtTF7Yty5mlkrLvfnn7GtN9kC4B1fKJHohrefvOVZLMXe+jzQjTvokzWTeOi
- 4Wq5k3+9NZa+6ZFkkUF/URXKfmbgkR6qBM1ASjZa6eH/kxjqkV94qR+ywfCQI+PRug
- yPfaiPT49IYBy3Z9hqelOY/kPqi7s6b3fNKLXQh6AfbHOOSuRZ9g3uoLlb7ALxyyql
- 3cUqFyTUpUMNA==
-Date: Fri, 29 Apr 2022 16:15:38 -0700 (PDT)
-From: Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
-To: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Subject: Re: [PATCH] swiotlb-xen: fix DMA_ATTR_NO_KERNEL_MAPPING on arm
-In-Reply-To: <41c2483c-ab54-41be-7815-9d4a98e0249e@oracle.com>
-Message-ID: <alpine.DEB.2.22.394.2204291615130.1947187@ubuntu-linux-20-04-desktop>
-References: <20220423171422.1831676-1-hch@lst.de>
- <alpine.DEB.2.22.394.2204261605420.915916@ubuntu-linux-20-04-desktop>
- <20220428132737.GA13999@lst.de>
- <alpine.DEB.2.22.394.2204281449060.915916@ubuntu-linux-20-04-desktop>
- <27d39d5a-3b79-bdda-b7e4-f4477667919f@oracle.com>
- <alpine.DEB.2.22.394.2204281548320.915916@ubuntu-linux-20-04-desktop>
- <41c2483c-ab54-41be-7815-9d4a98e0249e@oracle.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id CAF8260A8A
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 23:52:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1651276323; x=1682812323;
+ h=message-id:date:mime-version:subject:to:cc:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=9sesrm2gYifuyn6d/cuWZ/1m6KGJBn/VDXU17Jgc6ws=;
+ b=GuZ6zgoR3RQE7sfspYX/zcJ+W/o9jxR+PQbr423Q6KcFfB2f0hgP+BDE
+ wF0D1tEFX07saV+navsgCDPXdVrAf+THjp1UIjJ9wQkrO5m5X3WpKvRX1
+ mUWrJ+xnXtqD5V5G5A4VygBJRVixdc34SJ+jlkkWB/mTm0WA5e5xLEevA
+ kCo3Lm2AvR1khVETkXm41Q24KbSWxtCMgwweLdBo0V4uZilk2yeOInPsX
+ bZaSGax82O5E0cgJgPsGbyQlKHMvwCdgpw040jkeHxXfMbkSjZGF0VY3R
+ g1qXQZhMOU5Xnz6PKIPpF3leVaQfi+kE44XOEsCi1eUEraa6DwcmMd9Sa g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10332"; a="266630996"
+X-IronPort-AV: E=Sophos;i="5.91,186,1647327600"; d="scan'208";a="266630996"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 29 Apr 2022 16:51:47 -0700
+X-IronPort-AV: E=Sophos;i="5.91,186,1647327600"; d="scan'208";a="582480232"
+Received: from aliu1-mobl.ccr.corp.intel.com (HELO [10.255.30.71])
+ ([10.255.30.71])
+ by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 29 Apr 2022 16:51:43 -0700
+Message-ID: <0e2b2a3f-1fbd-ff81-d846-eb7091de53e8@linux.intel.com>
+Date: Sat, 30 Apr 2022 07:51:41 +0800
 MIME-Version: 1.0
-Cc: jgross@suse.com, Stefano Stabellini <sstabellini@kernel.org>,
- iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org,
- Rahul Singh <Rahul.Singh@arm.com>, Christoph Hellwig <hch@lst.de>,
- linux-arm-kernel@lists.infradead.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH RFC 02/19] iommufd: Dirty tracking for io_pagetable
+Content-Language: en-US
+To: Joao Martins <joao.m.martins@oracle.com>, iommu@lists.linux-foundation.org
+References: <20220428210933.3583-1-joao.m.martins@oracle.com>
+ <20220428210933.3583-3-joao.m.martins@oracle.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220428210933.3583-3-joao.m.martins@oracle.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Kevin Tian <kevin.tian@intel.com>, Yishai Hadas <yishaih@nvidia.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, kvm@vger.kernel.org,
+ Will Deacon <will@kernel.org>, Cornelia Huck <cohuck@redhat.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ David Woodhouse <dwmw2@infradead.org>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,49 +88,42 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 29 Apr 2022, Boris Ostrovsky wrote:
-> On 4/28/22 6:49 PM, Stefano Stabellini wrote:
-> > On Thu, 28 Apr 2022, Boris Ostrovsky wrote:
-> > > On 4/28/22 5:49 PM, Stefano Stabellini wrote:
-> > > > On Thu, 28 Apr 2022, Christoph Hellwig wrote:
-> > > > > On Tue, Apr 26, 2022 at 04:07:45PM -0700, Stefano Stabellini wrote:
-> > > > > > > Reported-by: Rahul Singh <Rahul.Singh@arm.com>
-> > > > > > > Signed-off-by: Christoph Hellwig <hch@lst.de>
-> > > > > > Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
-> > > > > Do you want to take this through the Xen tree or should I pick it up?
-> > > > > Either way I'd love to see some testing on x86 as well.
-> > > > I agree on the x86 testing. Juergen, Boris?
-> > > > 
-> > > > I'd say to take this patch via the Xen tree but Juergen has just sent a
-> > > > Xen pull request to Linux last Saturday. Juergen do you plan to send
-> > > > another one? Do you have something else lined up? If not, it might be
-> > > > better to let Christoph pick it up.
-> > > 
-> > > We don't have anything pending.
-> > > 
-> > > 
-> > > I can test it but at best tomorrow so not sure we can get this into rc5.
-> > > Do
-> > > you consider this an urgent fix or can we wait until 5.19? Because it's a
-> > > bit
-> > > too much IMO for rc6.
-> > On one hand, Linux doesn't boot on a platform without this fix. On the
-> > other hand, I totally see that this patch could introduce regressions on
-> > x86 so I think it is fair that we are careful with it.
-> > 
-> >  From my point of view, it might be better to wait for 5.19 and mark it
-> > as backport.
-> 
-> 
-> No problems uncovered during testing.
+On 2022/4/29 05:09, Joao Martins wrote:
+> +int iopt_set_dirty_tracking(struct io_pagetable *iopt,
+> +			    struct iommu_domain *domain, bool enable)
+> +{
+> +	struct iommu_domain *dom;
+> +	unsigned long index;
+> +	int ret = -EOPNOTSUPP;
+> +
+> +	down_write(&iopt->iova_rwsem);
+> +	if (!domain) {
+> +		down_write(&iopt->domains_rwsem);
+> +		xa_for_each(&iopt->domains, index, dom) {
+> +			ret = iommu_set_dirty_tracking(dom, iopt, enable);
+> +			if (ret < 0)
+> +				break;
 
-Great! Christoph you can go ahead and pick it up in your tree if you are
-up for it.
+Do you need to roll back to the original state before return failure?
+Partial domains have already had dirty bit tracking enabled.
+
+> +		}
+> +		up_write(&iopt->domains_rwsem);
+> +	} else {
+> +		ret = iommu_set_dirty_tracking(domain, iopt, enable);
+> +	}
+> +
+> +	up_write(&iopt->iova_rwsem);
+> +	return ret;
+> +}
+
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
