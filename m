@@ -4,79 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1A002C433EF
-	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 06:35:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7434FC433F5
+	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 06:44:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C9B1983F1E;
-	Fri, 29 Apr 2022 06:35:52 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 0597183FA1;
+	Fri, 29 Apr 2022 06:44:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id T2emeF2V-KOP; Fri, 29 Apr 2022 06:35:52 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id B942E83F22;
-	Fri, 29 Apr 2022 06:35:51 +0000 (UTC)
+	with ESMTP id CVjJurtLCYgC; Fri, 29 Apr 2022 06:44:22 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id A56A483F5E;
+	Fri, 29 Apr 2022 06:44:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 66C1CC0039;
-	Fri, 29 Apr 2022 06:35:51 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0B111C002D
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 06:35:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6DC56C0039;
+	Fri, 29 Apr 2022 06:44:21 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 189EAC002D
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 06:44:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id EA572408D4
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 06:35:49 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 001B783F6C
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 06:44:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nCNygldiUIBY for <iommu@lists.linux-foundation.org>;
- Fri, 29 Apr 2022 06:35:48 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id TszHLjj97-Ue for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Apr 2022 06:44:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp2.osuosl.org (Postfix) with ESMTPS id A922C40734
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 06:35:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1651214148; x=1682750148;
- h=message-id:date:mime-version:subject:to:cc:references:
- from:in-reply-to:content-transfer-encoding;
- bh=73uaYpqAPQn+8U/LuREycvqXt3Sws/vKsehS795EZBw=;
- b=FoAgl1It2cGoyoVmYtAGJAN1ycW81YwWDhb9FlRozcwbl+v8vDRJz6l8
- OE1ChB4qGyHkY7EKL/9ppEnjil1DCNM21HwzTx2el94EmMOvT8DwymiEQ
- v3W6qKsXQJb2t/wv1eOYiDuqc7B+K04Or0vZCkLnW2JtVLdlGP6cYy4pR
- yE0/eXZJ6ZcQLj5fSix8/zdljbOKnzxa6MRa69iqDLzUS0WjzwAKNHZlk
- 4dsst+8hpB5B3VetlUu9I9ASpGlsloLPkJ9o+/kL+ry1CpQHr2iPL3kYG
- IiwTzLg/qRmFU8VMaYgOZkK0ambzPT3pKg1WW+O0dvk5ylI81KpWzH6C5 w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="253933033"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; d="scan'208";a="253933033"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Apr 2022 23:35:42 -0700
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; d="scan'208";a="581924572"
-Received: from lye4-mobl.ccr.corp.intel.com (HELO [10.249.170.95])
- ([10.249.170.95])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Apr 2022 23:35:39 -0700
-Message-ID: <d8682159-508b-501b-3642-54c8155a356d@linux.intel.com>
-Date: Fri, 29 Apr 2022 14:35:36 +0800
+Received: from gandalf.ozlabs.org (mail.ozlabs.org
+ [IPv6:2404:9400:2221:ea00::3])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 0EF6C83F5E
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 06:44:18 +0000 (UTC)
+Received: by gandalf.ozlabs.org (Postfix, from userid 1007)
+ id 4KqNHt04N5z4ySt; Fri, 29 Apr 2022 16:44:09 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=gibson.dropbear.id.au; s=201602; t=1651214650;
+ bh=KLL/swhJOnqznMFffQpsuCbHhT8ZtLpQASoU/DYSWm0=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=J9SioNqjWCz67rFVY48Sp4fS7JMwE0ZhFy2GIfBaNWxOFTTInYknmN71d6q2jhlmO
+ AodYMksHBdRg8OcJM25Vb4nec9fsl9GlU7s9b5zH3VTcHXgOr7yZjaHWfA2Rlo93YH
+ asGTYV3nFC5OfmWFjOaOfvGEfE0kb+2moQJEr9C4=
+Date: Fri, 29 Apr 2022 16:22:56 +1000
+From: David Gibson <david@gibson.dropbear.id.au>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH RFC 11/12] iommufd: vfio container FD ioctl compatibility
+Message-ID: <YmuEQCRqyzSsH270@yekko>
+References: <0-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <11-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <20220323165125.5efd5976.alex.williamson@redhat.com>
+ <20220324003342.GV11336@nvidia.com>
+ <20220324160403.42131028.alex.williamson@redhat.com>
+ <YmqqXHsCTxVb2/Oa@yekko> <20220428151037.GK8364@nvidia.com>
+ <BN9PR11MB5276C4C51B3EB6AD77DEFFCD8CFC9@BN9PR11MB5276.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v4 11/12] iommu: Per-domain I/O page fault handling
-Content-Language: en-US
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <20220421052121.3464100-1-baolu.lu@linux.intel.com>
- <20220421052121.3464100-12-baolu.lu@linux.intel.com>
- <YmqrTGcHotvhhaT2@myrica>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <YmqrTGcHotvhhaT2@myrica>
-Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- Christoph Hellwig <hch@infradead.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Will Deacon <will@kernel.org>
+In-Reply-To: <BN9PR11MB5276C4C51B3EB6AD77DEFFCD8CFC9@BN9PR11MB5276.namprd11.prod.outlook.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Daniel Jordan <daniel.m.jordan@oracle.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ "Martins, Joao" <joao.m.martins@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,36 +79,95 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: multipart/mixed; boundary="===============8366963686469521601=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/4/28 22:57, Jean-Philippe Brucker wrote:
-> On Thu, Apr 21, 2022 at 01:21:20PM +0800, Lu Baolu wrote:
->>   static void iopf_handle_group(struct work_struct *work)
->>   {
->>   	struct iopf_group *group;
->> @@ -134,12 +78,23 @@ static void iopf_handle_group(struct work_struct *work)
->>   	group = container_of(work, struct iopf_group, work);
->>   
->>   	list_for_each_entry_safe(iopf, next, &group->faults, list) {
->> +		struct iommu_domain *domain;
->> +
->> +		domain = iommu_get_domain_for_dev_pasid_async(group->dev,
->> +				iopf->fault.prm.pasid);
-> Reading the PCIe spec again (v6.0 10.4.1.1 PASID Usage), all faults within
-> the group have the same PASID so we could move the domain fetch out of the
-> loop. It does deviate from the old behavior, though, so we could change
-> it later.
 
-Perhaps we can add a pasid member in the struct iopf_group and do a
-sanity check when a new iopf is added to the group? Here, we just fetch
-the domain with group->pasid.
+--===============8366963686469521601==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="4KY3Wn/sOLHsVQnF"
+Content-Disposition: inline
 
-Best regards,
-baolu
+
+--4KY3Wn/sOLHsVQnF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Apr 29, 2022 at 01:21:30AM +0000, Tian, Kevin wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Thursday, April 28, 2022 11:11 PM
+> >=20
+> >=20
+> > > 3) "dynamic DMA windows" (DDW).  The IBM IOMMU hardware allows for
+> > 2 IOVA
+> > > windows, which aren't contiguous with each other.  The base addresses
+> > > of each of these are fixed, but the size of each window, the pagesize
+> > > (i.e. granularity) of each window and the number of levels in the
+> > > IOMMU pagetable are runtime configurable.  Because it's true in the
+> > > hardware, it's also true of the vIOMMU interface defined by the IBM
+> > > hypervisor (and adpoted by KVM as well).  So, guests can request
+> > > changes in how these windows are handled.  Typical Linux guests will
+> > > use the "low" window (IOVA 0..2GiB) dynamically, and the high window
+> > > (IOVA 1<<60..???) to map all of RAM.  However, as a hypervisor we
+> > > can't count on that; the guest can use them however it wants.
+> >=20
+> > As part of nesting iommufd will have a 'create iommu_domain using
+> > iommu driver specific data' primitive.
+> >=20
+> > The driver specific data for PPC can include a description of these
+> > windows so the PPC specific qemu driver can issue this new ioctl
+> > using the information provided by the guest.
+> >=20
+> > The main issue is that internally to the iommu subsystem the
+> > iommu_domain aperture is assumed to be a single window. This kAPI will
+> > have to be improved to model the PPC multi-window iommu_domain.
+> >=20
+>=20
+> From the point of nesting probably each window can be a separate
+> domain then the existing aperture should still work?
+
+Maybe.  There might be several different ways to represent it, but the
+vital piece is that any individual device (well, group, technically)
+must atomically join/leave both windows at once.
+
+--=20
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
+
+--4KY3Wn/sOLHsVQnF
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEoULxWu4/Ws0dB+XtgypY4gEwYSIFAmJrhDkACgkQgypY4gEw
+YSK42w/9Hq0y2D5y+zf9WXYECB3hwB2FjainWxP5fgEL18DgNzoQrJYn6XvZxjhg
+OgURotSMbpVnAmgu4KcpMEKFOk+KaASyEu/TYAynjlNrOj1h2s+mTgpMPQe17cYo
+9XXJrDnbXKTuxthSUkugyg8JIBkKqh7rdGb1L66xXzDTN6YbK19KtreSWxi9DJfB
+tdDKafhQ8Xg79wcXgQ9Q6iqAA9EIeIyiEflpLt4WvI+TV5hu6E6+xKVS4SnWdsSd
+KC5Dy8BtZryemK5cHCV2NDP2alkm7ieUT/BmLNfOsLxqFzQhAVHlUOYnwpkljgvs
+Q4ufD+0IF6bLJA00b32u7OMZLBmwkq7ta9YxSNOtBzoOxnAwcmCzyy3KIKM3bWrw
+pFwx3jQmzhkp6UiwNavDuY33nhuM+2uz9jK7sfjhuxhbev6pkE1CsIiPzKX+fGXH
+00bqQr14CSiNFH0Ba6OqPCwXtkLUB1Z2JxKgg5l9EuDMXk3VHisC6GkazTV4hDfA
+lv3Da1iFy8xPl8fbuylOj5SmZDPdlGOlqyaQdilupqBShrhxDgHzI/KRx1CP+l7R
+0j6+CDTUieYFKLgdgGt4DjWeY6Kb7LJiK8brK3WcUX4Q9aqYIU+LWsVwNNW62wK4
+pBrFHSXkhc033Wv5OzrGD6cTAmqhReB+FRLfQEN3pIiMqt3wnZ0=
+=6Jjv
+-----END PGP SIGNATURE-----
+
+--4KY3Wn/sOLHsVQnF--
+
+--===============8366963686469521601==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============8366963686469521601==--
