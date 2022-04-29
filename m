@@ -1,74 +1,75 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 497CAC433F5
-	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 06:17:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 83F5FC433FE
+	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 06:27:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id DE16983F3C;
-	Fri, 29 Apr 2022 06:17:34 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 06F9241C18;
+	Fri, 29 Apr 2022 06:27:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HX-8FiLWGFvs; Fri, 29 Apr 2022 06:17:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id C172F83F4F;
-	Fri, 29 Apr 2022 06:17:33 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id RJXepvZzwsZJ; Fri, 29 Apr 2022 06:27:44 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 5000441C11;
+	Fri, 29 Apr 2022 06:27:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 53D2DC007B;
-	Fri, 29 Apr 2022 06:17:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 298A8C0039;
+	Fri, 29 Apr 2022 06:27:44 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 038B8C002D
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 06:17:32 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D6F1FC002D
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 06:27:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id CEFE283F4F
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 06:17:31 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id B0A6083459
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 06:27:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id E4M4IeYRma6M for <iommu@lists.linux-foundation.org>;
- Fri, 29 Apr 2022 06:17:30 +0000 (UTC)
+ with ESMTP id ugn3bn5sObeP for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Apr 2022 06:27:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 761A083F3C
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 06:17:30 +0000 (UTC)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id EC5D482ED1
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 06:27:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1651213050; x=1682749050;
+ t=1651213661; x=1682749661;
  h=message-id:date:mime-version:subject:to:cc:references:
  from:in-reply-to:content-transfer-encoding;
- bh=Ti68k/z1JomTVPNNM6IUrCDfU5XGG1j6rnK5v6KWG4c=;
- b=PsQnDwGL8QFooOwFV7rca8s9unjOjiPr2vrgoZvk5J8aUE7x3S9+1Eaf
- mFRztCljRgWShZOx2Q2GSjs9RGdtIiB6a3TWjdksmN/rQ/7D5tPi+iouZ
- HLvzM/AKxValdaprNEE6qFFwmlPlRRBZLh4mj9k0+sCraibWote8pymR2
- bw0Bd+CX3h8jmod32kRlkVFx1N3REX8g90f/q3A7j+xkmVeMtCCiyJjLn
- c9xXsabpEmxI7Rr63kHyasdnMaI+uHJrL5kxZeNSk4v40jazvkZpz0hCv
- 7OSiPYXjIN1RwN3jqnnAdLf3A3Bz3ufvZVJKYK290oWL0L9bwRJGcinxL w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="329487854"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; d="scan'208";a="329487854"
+ bh=SuKUMbuCFeOAQ3RN6lPTsfmXavMFIzZF1jAdEMe+Jcw=;
+ b=D0rpZx68KQUnfxFbjFo1z2Gk+ZimrlW2tPnDB0cvJ4r+Sh1nA7q/SDMB
+ pcUoZXLlHVQSahZrAHcG2fYXe1CGnXcWGLZzZUlrw52xmTrVKHPOkPoY4
+ PuyaDYAjdVVqUCGfvZd3n3PvGSgvBx83qa5oO3UMdKWJQ0OpWgjC0/+fo
+ TrMoyvB7LnBoNpK+SKecgDilyZj+lxbCPLzvFVcgT1dZlkuYGh5uWSHSx
+ 50Ww/HFZVrdTUzYaTkZml3jtNjLi300zzb9pDn7J+BeLQEjA1Ize7HCV6
+ uom2HJ/hgqQIbdmH9JWD36Ll6HVzlzwf47RjSg65JzE7whkioxaNqlV+q Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="246464359"
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; d="scan'208";a="246464359"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Apr 2022 23:17:28 -0700
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; d="scan'208";a="581917186"
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Apr 2022 23:27:41 -0700
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; d="scan'208";a="581921103"
 Received: from lye4-mobl.ccr.corp.intel.com (HELO [10.249.170.95])
  ([10.249.170.95])
  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Apr 2022 23:17:25 -0700
-Message-ID: <dfe247b5-10d9-75d7-b742-28be910b5fb2@linux.intel.com>
-Date: Fri, 29 Apr 2022 14:17:23 +0800
+ 28 Apr 2022 23:27:36 -0700
+Message-ID: <47d16a5f-23de-fb84-6958-5329ef08fb25@linux.intel.com>
+Date: Fri, 29 Apr 2022 14:27:33 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v4 10/12] iommu: Prepare IOMMU domain for IOPF
+Subject: Re: [PATCH v4 03/12] iommu: Add attach/detach_dev_pasid domain ops
 Content-Language: en-US
 To: Jean-Philippe Brucker <jean-philippe@linaro.org>
 References: <20220421052121.3464100-1-baolu.lu@linux.intel.com>
- <20220421052121.3464100-11-baolu.lu@linux.intel.com>
- <YmqpGFzMZn7ZMzsQ@myrica>
+ <20220421052121.3464100-4-baolu.lu@linux.intel.com> <YmqqaXtqev9FUJo7@myrica>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <YmqpGFzMZn7ZMzsQ@myrica>
+In-Reply-To: <YmqqaXtqev9FUJo7@myrica>
 Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
  Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
  Christoph Hellwig <hch@infradead.org>,
@@ -92,56 +93,92 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jean,
-
-On 2022/4/28 22:47, Jean-Philippe Brucker wrote:
-> Hi Baolu,
-> 
-> On Thu, Apr 21, 2022 at 01:21:19PM +0800, Lu Baolu wrote:
+On 2022/4/28 22:53, Jean-Philippe Brucker wrote:
+> On Thu, Apr 21, 2022 at 01:21:12PM +0800, Lu Baolu wrote:
+>> Attaching an IOMMU domain to a PASID of a device is a generic operation
+>> for modern IOMMU drivers which support PASID-granular DMA address
+>> translation. Currently visible usage scenarios include (but not limited):
+>>
+>>   - SVA (Shared Virtual Address)
+>>   - kernel DMA with PASID
+>>   - hardware-assist mediated device
+>>
+>> This adds a pair of common domain ops for this purpose and adds helpers
+>> to attach/detach a domain to/from a {device, PASID}. Some buses, like
+>> PCI, route packets without considering the PASID value. Thus a DMA target
+>> address with PASID might be treated as P2P if the address falls into the
+>> MMIO BAR of other devices in the group. To make things simple, these
+>> interfaces only apply to devices belonging to the singleton groups, and
+>> the singleton is immutable in fabric i.e. not affected by hotplug.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> [...]
 >> +/*
->> + * Get the attached domain for asynchronous usage, for example the I/O
->> + * page fault handling framework. The caller get a reference counter
->> + * of the domain automatically on a successful return and should put
->> + * it with iommu_domain_put() after usage.
+>> + * Use standard PCI bus topology, isolation features, and DMA
+>> + * alias quirks to check the immutable singleton attribute. If
+>> + * the device came from DT, assume it is static and then
+>> + * singleton can know from the device count in the group.
 >> + */
->> +struct iommu_domain *
->> +iommu_get_domain_for_dev_pasid_async(struct device *dev, ioasid_t pasid)
+>> +static bool device_group_immutable_singleton(struct device *dev)
 >> +{
->> +	struct iommu_domain *domain;
->> +	struct iommu_group *group;
+>> +	struct iommu_group *group = iommu_group_get(dev);
+>> +	int count;
 >> +
->> +	if (!pasid_valid(pasid))
->> +		return NULL;
->> +
->> +	group = iommu_group_get(dev);
 >> +	if (!group)
->> +		return NULL;
+>> +		return false;
 >> +
 >> +	mutex_lock(&group->mutex);
+>> +	count = iommu_group_device_count(group);
+>> +	mutex_unlock(&group->mutex);
+>> +	iommu_group_put(group);
+>> +
+>> +	if (count != 1)
+>> +		return false;
+>> +
+>> +	if (dev_is_pci(dev)) {
+>> +		struct pci_dev *pdev = to_pci_dev(dev);
+>> +
+>> +		/*
+>> +		 * The device could be considered to be fully isolated if
+>> +		 * all devices on the path from the device to the host-PCI
+>> +		 * bridge are protected from peer-to-peer DMA by ACS.
+>> +		 */
+>> +		if (!pci_acs_path_enabled(pdev, NULL, REQ_ACS_FLAGS))
+>> +			return false;
+>> +
+>> +		/* Filter out devices which has any alias device. */
+>> +		if (pci_for_each_dma_alias(pdev, has_pci_alias, pdev))
+>> +			return false;
 > 
-> There is a possible deadlock between unbind() and the fault handler:
+> Aren't aliases already added to the group by pci_device_group()?  If so
+> it's part of the count check above
+
+You are right. pci_device_group() has already covered pci aliases.
+
 > 
->   unbind()                            iopf_handle_group()
->    mutex_lock(&group->mutex)
->    iommu_detach_device_pasid()
->     iopf_queue_flush_dev()             iommu_get_domain_for_dev_pasid_async()
->      ... waits for IOPF work            mutex_lock(&group->mutex)
+>> +
+>> +		return true;
+>> +	}
+>> +
+>> +	/*
+>> +	 * If the device came from DT, assume it is static and then
+>> +	 * singleton can know from the device count in the group.
+>> +	 */
+>> +	return is_of_node(dev_fwnode(dev));
 > 
+> I don't think DT is relevant here because a platform device enumerated
+> through ACPI will also have its own group. It should be safe to stick to
+> what the IOMMU drivers declare with their device_group() callback. Except
+> for PCI those groups should be immutable so we can return true here.
 
-Yes, really.
+Fair enough. My code is too restrict. The group singleton is immutable
+as long as the fabric is static or ACS (or similar) technology is
+implemented. Currently we only need to care about PCI as far as I can
+see.
 
-> I was wrong in my previous review: we do have a guarantee that the SVA
-> domain does not go away during IOPF handling, because unbind() waits for
-> pending faults with iopf_queue_flush_dev() before freeing the domain (or
-> for Arm stall, knows that there are no pending faults). So we can just get
-> rid of domain->async_users and the group->mutex in IOPF, I think?
-
-Agreed with you. The Intel code does the same thing in its unbind().
-
-Thus, the sva domain's life cycle has already synchronized with IOPF
-handling, there's no need for domain->async.
-
-I will drop it in the next version. Thanks you!
+> Thanks,
+> Jean
+> 
 
 Best regards,
 baolu
