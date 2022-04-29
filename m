@@ -1,87 +1,87 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 463EEC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 999FCC433EF
 	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 08:23:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 097F660D73;
+	by smtp1.osuosl.org (Postfix) with ESMTP id 5C00484021;
 	Fri, 29 Apr 2022 08:23:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1z460vxykanS; Fri, 29 Apr 2022 08:22:59 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id CCA4C60EE4;
-	Fri, 29 Apr 2022 08:22:58 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A42C4C0039;
-	Fri, 29 Apr 2022 08:22:58 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F1114C002D
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 08:22:55 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id DEC9B8291A
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 08:22:55 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iWQep4TH0yQX for <iommu@lists.linux-foundation.org>;
- Fri, 29 Apr 2022 08:22:55 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id HIRy0KlaaHMS; Fri, 29 Apr 2022 08:22:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 41A4583FF8;
+	Fri, 29 Apr 2022 08:22:59 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C940BC007F;
+	Fri, 29 Apr 2022 08:22:58 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3F39BC002D
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 08:22:58 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 1C0D241C89
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 08:22:58 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xgkNy8HTMjMi for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Apr 2022 08:22:57 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com
- [IPv6:2a00:1450:4864:20::133])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 2E07483300
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 08:22:55 +0000 (UTC)
-Received: by mail-lf1-x133.google.com with SMTP id t25so12721507lfg.7
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 01:22:54 -0700 (PDT)
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com
+ [IPv6:2a00:1450:4864:20::235])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 3795F419B2
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 08:22:57 +0000 (UTC)
+Received: by mail-lj1-x235.google.com with SMTP id 4so9591331ljw.11
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 01:22:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=oMI7QqZGI0vddFgsm9lt9vX32EVJjnSzVDzCY5m9AWw=;
- b=A+MZEIPz8f8ZVktBwhejBMEn6pzxhtXTC4xQVz8q12o9QJLmNmtexynvWUrVfIa+Ae
- 6maTnwa27kI+xhAXIBGtAXjVHK7OGM1kx3PkAyO1LHyQpy7V4Zbr4LBWK2DnNg5xfU31
- o/YCThPeqJSDMynOYaIVENS+YcOQV9KrhfGlA2t/h0nwecrVjINLXEHjSqLLDCi3YgGi
- dHNbsLaDuEnWQYS3Hjn99lwnOfDdmAXQQo88TH0DPRgx1FPIO/rhzW9EnivfjyxWeWTe
- uEfb1tML0BB76+flF+4+aDM9lTjTNlwoTuDlfW5skzC2KfUcYHWvHsrF7HsOUW99vdOq
- qkSw==
+ bh=PAlN+PTUyqks6hqGrW+qckqB/lH9aZjKYWgmrQYYHa4=;
+ b=fUqJrWvtrx8Af1i1dIKCvDN65PW96rX20FLwt+ie7pGKrJuRIq5FJhHpdmjo8bNp2a
+ hjNQjVLxsxnZ7pQMF4RKdt1pcwonGXo2nE2ewIIj/yvzYz/MYLAlN3bPZFD1jKGlinaq
+ IGk+NWifc1meAHo1k0pEZT3pdD/EneCDx4HJ46ltwQSZuGycNQT2r6H4awyAuYWys/Nt
+ 76Odh6+ZOWivq3i++ViCecadNgQiH642RERe4sQWEga5G8yYfCjN1mdNywPsoPAIQC4F
+ LAAy7+r8mJGOHpI8G7LidTTD/kZDEqvrv+ZpoAz1Syv140gdhf65HqzMpe2tSvM3y5Cm
+ NGfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=oMI7QqZGI0vddFgsm9lt9vX32EVJjnSzVDzCY5m9AWw=;
- b=ANKatSeEbdFH8VkxQBNrny3lVJStIDzbv39tZtzFd/B/aAkGg+Hy8jmtGWsYf/Q9IA
- kpdK4sOXUixD2JNxkUq19jTq1pT25xZrMw1Oy2O4LiS7AbpBHmRImBs9J/1DrsZ2PqUn
- v8cEhkgBcaEheaOzpIeaGfub2J93ZdWFxmMOhNJaPDldkRJGDi7jUrvDgsdYBTYZLDMC
- wx2lZVZkEJyIK493ZkZ7OUlB/yD7yApfRS2niOVSgv1mNtsJ1HCNigHF4zaIDC3UEeKI
- Y+T2shBMD3WlsTxNqoT9twajVyP1/2aMV+jegjpg5MZfD2mgKhSwPXeQfMrirfINvHOt
- MUOg==
-X-Gm-Message-State: AOAM5328FaR1rRInfgmHQ9K/UOc3RWc/hP2hyQC4KyFmMktojfAgf37r
- iLgB8Low1LUU6nW6LH3321M=
-X-Google-Smtp-Source: ABdhPJznRjWCO7GO08thPSho9osAYFp9jDBFLMKt6fOX5IuiDEYe27Bgr+pjGNRAHJ3ZKvw5r/QthA==
-X-Received: by 2002:a05:6512:3d1c:b0:472:3444:df98 with SMTP id
- d28-20020a0565123d1c00b004723444df98mr6310755lfv.366.1651220573131; 
- Fri, 29 Apr 2022 01:22:53 -0700 (PDT)
+ bh=PAlN+PTUyqks6hqGrW+qckqB/lH9aZjKYWgmrQYYHa4=;
+ b=0HWhwYgUl6UPG4xXZ9H5wH5mTy7Xbj7zxyMxzlFfEVTZQza7eDoa6yQw4B9WBUni3w
+ Eyjeq2to44wslXxaxX+snEpWjHM33yUBrweB4m7Y7bodVbY14YkwpZuXK76ZQyG3+U6Y
+ mI3y20lCZulvORePIfsS7MdnSpFJJxeIG9QsSaw4ATffaw+aheeMJo57Ct/bZXxwLFyR
+ M6cZGYiQVUlz5ZqeXokMmBvII+C8rUk17MT9Dpi86oGsL+ms/L+f/H3wYML7auFBSsOQ
+ MoQO69D6eVshZdbEj0QqMZM1KTbJDLPYQn7axslfAP/myHKvCFFxQ1EozCdw7Mf5xzu3
+ /oYA==
+X-Gm-Message-State: AOAM530Zkscu963HOWxbhGL3B825DUgaaBbvuhBOtwT9bKOqxtvuakh4
+ QzHp6R2ZUYx2RjM22RMy/oI=
+X-Google-Smtp-Source: ABdhPJxQNk6WVaoL+9t7XN7z10p4srU1Oi91euacYwvlEX3pKTPyIRh42d6HgZfmjfH3BSEQY0XflQ==
+X-Received: by 2002:a05:651c:893:b0:249:4023:3818 with SMTP id
+ d19-20020a05651c089300b0024940233818mr24408230ljq.44.1651220575123; 
+ Fri, 29 Apr 2022 01:22:55 -0700 (PDT)
 Received: from localhost ([62.96.65.119]) by smtp.gmail.com with ESMTPSA id
- t19-20020a19dc13000000b0044b022fd9f1sm179229lfg.160.2022.04.29.01.22.51
+ d11-20020a19f24b000000b0047224d546adsm178803lfk.132.2022.04.29.01.22.54
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 29 Apr 2022 01:22:52 -0700 (PDT)
+ Fri, 29 Apr 2022 01:22:54 -0700 (PDT)
 From: Thierry Reding <thierry.reding@gmail.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v3 2/3] dt-bindings: arm-smmu: Add compatible for Tegra234 SOC
-Date: Fri, 29 Apr 2022 10:22:42 +0200
-Message-Id: <20220429082243.496000-3-thierry.reding@gmail.com>
+Subject: [PATCH v3 3/3] iommu/arm-smmu: Support Tegra234 SMMU
+Date: Fri, 29 Apr 2022 10:22:43 +0200
+Message-Id: <20220429082243.496000-4-thierry.reding@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220429082243.496000-1-thierry.reding@gmail.com>
 References: <20220429082243.496000-1-thierry.reding@gmail.com>
 MIME-Version: 1.0
-Cc: Rob Herring <robh@kernel.org>, Will Deacon <will@kernel.org>,
- iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+Cc: linux-tegra@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,43 +101,30 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Thierry Reding <treding@nvidia.com>
 
-The NVIDIA Tegra234 SoC comes with one single-instance ARM SMMU used by
-isochronous memory clients and two dual-instance ARM SMMUs used by non-
-isochronous memory clients.
+Allow the NVIDIA-specific ARM SMMU implementation to bind to the SMMU
+instances found on Tegra234.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Robin Murphy <robin.murphy@arm.com>
 Acked-by: Will Deacon <will@kernel.org>
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-impl.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index 44606ad5aa39..590cc8dc8323 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -62,8 +62,9 @@ properties:
-           for improved performance.
-         items:
-           - enum:
--              - nvidia,tegra194-smmu
-               - nvidia,tegra186-smmu
-+              - nvidia,tegra194-smmu
-+              - nvidia,tegra234-smmu
-           - const: nvidia,smmu-500
-       - items:
-           - const: arm,mmu-500
-@@ -183,8 +184,9 @@ allOf:
-         compatible:
-           contains:
-             enum:
--              - nvidia,tegra194-smmu
-               - nvidia,tegra186-smmu
-+              - nvidia,tegra194-smmu
-+              - nvidia,tegra234-smmu
-     then:
-       properties:
-         reg:
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+index 2c25cce38060..658f3cc83278 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+@@ -211,7 +211,8 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
+ 	if (of_property_read_bool(np, "calxeda,smmu-secure-config-access"))
+ 		smmu->impl = &calxeda_impl;
+ 
+-	if (of_device_is_compatible(np, "nvidia,tegra194-smmu") ||
++	if (of_device_is_compatible(np, "nvidia,tegra234-smmu") ||
++	    of_device_is_compatible(np, "nvidia,tegra194-smmu") ||
+ 	    of_device_is_compatible(np, "nvidia,tegra186-smmu"))
+ 		return nvidia_smmu_impl_init(smmu);
+ 
 -- 
 2.35.1
 
