@@ -1,132 +1,64 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 28D0CC433FE
-	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 16:55:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 24DC8C433F5
+	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 18:06:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A0AC241CDF;
-	Fri, 29 Apr 2022 16:55:55 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id A32FC83FB0;
+	Fri, 29 Apr 2022 18:06:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id k1AAHEVmjwae; Fri, 29 Apr 2022 16:55:54 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id AD35941CE1;
-	Fri, 29 Apr 2022 16:55:53 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3F9D1C0039;
-	Fri, 29 Apr 2022 16:55:53 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 62373C002D
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 16:55:52 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 5844D83F27
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 16:55:52 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BaQ_05dbsOKi for <iommu@lists.linux-foundation.org>;
- Fri, 29 Apr 2022 16:55:51 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam11on2062e.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7eaa::62e])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 1D07F83E57
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 16:55:51 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LIuV27fvO9Y54Hbh2OMb7Zr8SndWh1STm1IK7VfBfILVnAQdftRVipy3drCDh48Hq367JDc8Uv8cWtQ35mhqWKp3/Nsu5c0YpIkiPyUOJ+ACce1C9wndvD2gOcrYB/YAg1DchsR/mC/CRE0blnxiKoBOrnfz4AY64vowfX88TfOKIKvttM0Yvwsck3hUZILvGxY79kScC0xzHhF59TUclI8dsSaiv0QCSO7ERhOi1sXIHPEHblNpG/ZM+uNYKdiMabLhsyrUMz7zGA6qIDyyI/pOm+RGyPmWlNXDv1tUlzTOVhwHXUDw3/PZgtAB9QW+1EoZVamQVU8y3E6WRUEs1Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rGRjP2dU6gNABHmS/u6LU/2fNDY04EL2DiM8u/px7K8=;
- b=VnAj0ZRLTJsb0fZacvg8T1XulkIE2e+Tw0M/x6vg+Td51GBJz6yo3B1QF58Ok4QmkURPPnKcsel7rOFp8amX5+b58CRcBz7yIV6mvZPjcEKeqJNEbw1giuPb129K1YKMdGAa64ArEKL6rpNYPdAXLTfoOek5Tg4rB7p5j5ZK5qOp5lhxPXNs/dcIsQf7TYtvB6OJDcCv+MszhWnDQ5jxWTTN9jsgOAwpxKDt9gUUFvritD18n3NhIaPJbrxJsvrsGsRIGRWohsCKRK610EK55HJXnyuQBi0EDkW5xwMXhU7EN14Y4Ehbz8QSyfKpLbhOdMdbOkB8tS4IS1xAVx2YaA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rGRjP2dU6gNABHmS/u6LU/2fNDY04EL2DiM8u/px7K8=;
- b=T+0AmUYXGnPhvxZJ7zgVtHFqifTFUqxwL2lUutH/PXy7tbbAsUyh7dFnzNXhQhrvdM+/CrgTPxMtSwi3acgHAuxKqb0blfNLnmKYz3sY73n5mNlR/PyuG+7M891tVtBR5NyCNWTYukkGK85ZUgj3JBz3AA3l8DsGw1yDtom3rNbGmwxO6LRZxzGAmp8YpTfcdxhAbd7hfeNWDAoQ+au+zrIZRPcIochFK8ysMHc+oxK2O1Zmr5bRvIiq4bU8cd1CXduQWwUmaUg7mHJsJ+egUcxFe54JZw+78ijfDrRT9Q344eO+A8VIuaptsXu3+QfZLXKGz6VwYVguZjFG8hybvQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by MW2PR12MB2489.namprd12.prod.outlook.com (2603:10b6:907:d::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Fri, 29 Apr
- 2022 16:55:48 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2%6]) with mapi id 15.20.5186.026; Fri, 29 Apr 2022
- 16:55:48 +0000
-Date: Fri, 29 Apr 2022 13:55:46 -0300
-To: Alex Williamson <alex.williamson@redhat.com>
-Subject: [GIT PULL] Please pull VFIO changes
-Message-ID: <20220429165546.GD8364@nvidia.com>
-X-ClientProxiedBy: BL1PR13CA0216.namprd13.prod.outlook.com
- (2603:10b6:208:2bf::11) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id wqkX3OqOVJAA; Fri, 29 Apr 2022 18:06:56 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 488CD83FAD;
+	Fri, 29 Apr 2022 18:06:56 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 02D4BC0039;
+	Fri, 29 Apr 2022 18:06:56 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E6C20C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 18:06:53 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id C4DB340ABC
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 18:06:53 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id YgIKMw_WCEBJ for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Apr 2022 18:06:52 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id C89C4400BB
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 18:06:52 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E18121063;
+ Fri, 29 Apr 2022 11:06:50 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 872E03F73B;
+ Fri, 29 Apr 2022 11:06:49 -0700 (PDT)
+Message-ID: <1322706e-5905-433b-5bc5-ed44f881b510@arm.com>
+Date: Fri, 29 Apr 2022 19:06:43 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b12c5845-6fae-4531-189b-08da2a011be5
-X-MS-TrafficTypeDiagnostic: MW2PR12MB2489:EE_
-X-Microsoft-Antispam-PRVS: <MW2PR12MB24893E49AD05BA8427611DEDC2FC9@MW2PR12MB2489.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UAc1wtP5ankpe6JEwmH4KvBXfqKf/WDv03Odl7IS+SvGXQ0v63h0jPF4T7nkLqnSOvLLu/Y7aAVnhOPCZvo5o6l/08mMbQwXmlE/RLwfwPGYWBnOFFJSq72efzlVud5DhJ3LlGEJZL4bCP9Yg+4ZEF0Z+Q2LAU3x0tHvZs6E/QbxnQCvby3b+6P6A7RhVgHErnhNB9NVwcxl6txTMr6BNe+Pl8DxBBDiJyjyT1MmRXsELSba6NLyoKpcdK1l9Y0rukCrz96P/9J+vW5SVxPZ/VjJ681FTyPtQS8vgkpm1yEpn8GvaxhOVtD2xXU1epbdroPx2B5JDYuLQNyi0SZa44OZ+BGb+gdNw52EgCJDCjbUoAN211hdtkm6I5eNS8Y6DhYQtXOz+H8EWCoMroDPr855vuLcbu1bFkF+ZFN48acV9fV87MAkuoQqdzD9rctDQ3wiR7n0NnHL6O0N8r3EcRgqbGYGQL6yqnNNXtJwewcJjy694alIw5s2xTs1Suk13AR5OYHWxl/a1E6zmzUKsrlJGvVWitDRCooTYbvwJaH3RiAIgx+DL+KpQ0gIX4577SmHSwRBAX8Y6QCPwjNqmh9G6mGXrRvMVqbTaJVKzJ6u5g700pBlU4FeDDRw6t+F3OXUKO2q7iqEQU2YAoW9DL/vud2Cyajeh/6TEp4BqGjO41N4nJ49RMkqyEtMxU7plReDT3Hav16ehqlmdxdz64NIvH5UoxNbPmtgjK5Ps8yeKfnt8nMkzJyDYzq0CD0j7EApm/WJh2GTQC+yN12S9p+4aSuCvtolWjOSuesWx2otlDYpGazUnNG9GcNsHLfhlKPAz3lONKd6G7VjdBxrCQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(186003)(36756003)(1076003)(44144004)(8676002)(66556008)(66476007)(4326008)(8936002)(5660300002)(966005)(6486002)(508600001)(2906002)(6916009)(33656002)(38100700002)(83380400001)(2616005)(86362001)(316002)(21480400003)(6512007)(26005)(54906003)(6506007)(66946007)(2700100001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bZyoKY1cyQdN8hWcGCAHqBLiyP5/DoKNzuaC6y4sr9d1Ugc/6goH8u92LOuB?=
- =?us-ascii?Q?DT2+UrIcFM5fnX11XDS1AEC0AbHvLScxLdH7y88MmmRlv/Lg0xnnrAnXCXju?=
- =?us-ascii?Q?ZfBX1K58UMsvp+u+IWTuIgG5UXTK5D6gHip6hcM9p1x4y7bkqtNfb/djymnm?=
- =?us-ascii?Q?pD6JIPIoXi0Rq/qTjQSwjWddoA2aIVaYZoD1ETOvXTpB4MqlLK4+GFlh6vgu?=
- =?us-ascii?Q?P459g/nj3Lh0xZV/I8eHgP2nQf9h+AFULQsXKUrtrmog/SQ6C5CzPN93POJN?=
- =?us-ascii?Q?qWsbrESWhmwgnEm8hhzjFD+7Do3QEtRnQH9Ud2SLuYB2agfupB1VxzqEKHCc?=
- =?us-ascii?Q?YJXyyIgkbrNHOV23Dn16tWFGsBB6XnGZv4+DdR3H9ouMAcFS0tp0o5rfYn1S?=
- =?us-ascii?Q?keJSyJIpRuWHNi9dkdTQxRIlYBDgda2aHk8HBl27S7V3czt1MndT29LnSdEv?=
- =?us-ascii?Q?sn/9+PuQi9rNs4/N2s/m5hHI4Hvod58j9rS9H3sRmVpfY71JiK1tsERdT5tH?=
- =?us-ascii?Q?lyT/29s4bQ1LlJWzZkzn162gNAXAzTbFlzw8z9kQljXhaluB9a8JBK3ObHVi?=
- =?us-ascii?Q?jz020ouZz3oOJM6+d27kHIly9YHJ4vsDc06c7sJeoCmMrVEjt+oYjdc9fwHk?=
- =?us-ascii?Q?bws8HfiHnQ0AHcxO9k2xrAPFvsvZEwRR8vRZ97sLk4JvMnnD/EePC0AmqgDo?=
- =?us-ascii?Q?x/LisehPLcOp8yiM7z8wgHwv+JXUFoR0yDJsrIv4U1nU+9AfEeRqUH/Pgmr4?=
- =?us-ascii?Q?9h+GCEyUPyU2BCnfV/y8VGwO7+5gqhuStIZszjKpuFNdgjoUVu/GkCG2B9BV?=
- =?us-ascii?Q?cZwfNKTjd9Ge0Z8sG2GggU1X/0RxHeuCO9iFxEuqeQk4vXSUTiKIGP08Oe6i?=
- =?us-ascii?Q?oc1jBj7wRtA6Lmymrjv/Wzc4Dj/JH6+at6SxA/U4/ra+v6zacSurQ0j2Ph+E?=
- =?us-ascii?Q?AxFgtk3pVwd95qsCu9+70n6JmW+sJwr+9du8obog7ym4GmvHTe54YFtqkOEy?=
- =?us-ascii?Q?RartmOJsP94ElPMDonycK8nbmlP6HlZF5fwvulY9Khk7fEPwxV3x9zWUVzuh?=
- =?us-ascii?Q?k/QsMRdOHQ0Z60bwIzXjCui5W+JfoKrXPTgrBxHvFfRML9X0a4oqIivNRchi?=
- =?us-ascii?Q?XKFPNYuI1Q5ndBZX13HgHQQPKQRXY6Z9fzg3hn6D33p8H+pgBmW6DgaeO0JN?=
- =?us-ascii?Q?r6br/oc1kxOWbJu2RSBZH4Wt8s/4PJs+gLHzr/7qddCGjeXV5X8fzUlZTT4v?=
- =?us-ascii?Q?YqxnSFMuj5E1OTH/VMvK/8CTzgKy7OOMMqEmwnVMkpSbQBu/W/6gDMIUpx7H?=
- =?us-ascii?Q?0JSmodZchKi+zdt6n319Ag1Pdu3UUpK7jvswy30gUbY9G+EIyNpUzHOVvJ7/?=
- =?us-ascii?Q?OMKAATsrfigr9ITi71fzeN5z99fIbdXXi+7YXKOJwUNY+WrBmr6qpmWDOUAw?=
- =?us-ascii?Q?DMufxkNi3JjjBHM00DvaVx1tG0QsgAh2brZnh4hSyeOZ9YocoKABfHW0LTRr?=
- =?us-ascii?Q?8CSqHyQkmFG84ZVes3Qaymo/zYNX2byihujlBQs1wE6nlsXwsq1sNZNAyOLY?=
- =?us-ascii?Q?sgyAZnPmI0fq1L9kiIEjoQJiknWSe+NufWkcQEw6T4pTd35IrbY2tHyum+0S?=
- =?us-ascii?Q?UnuQauCIqvGCIi1H1uQ0bAEqDfF5izEc6NX8T3zvo4U6Vvh9Tcj5cdlOAxog?=
- =?us-ascii?Q?LOhFz8RjiZcdWN5L/AxsciX+TSujTsimHXCjy83L2Noh908rSjL6DgwP/VGO?=
- =?us-ascii?Q?aVry4wASQw=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b12c5845-6fae-4531-189b-08da2a011be5
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2022 16:55:47.9397 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OZ4Ncw/hi2ooxk5ntQVCeO1PrmUyJ/aXkXYSpfm43NHYHRpMLGTCFARJO0wSASRs
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2489
-Cc: Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 03/14] iommu: Move bus setup to IOMMU device
+ registration
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org
+References: <cover.1650890638.git.robin.murphy@arm.com>
+ <1faba5b5c094379df3d99b8fec924ab50ad75482.1650890638.git.robin.murphy@arm.com>
+ <0e459e6e-f236-7a58-970a-a47677a23b44@linux.intel.com>
+ <fa0d0663-5393-c533-105a-85bd2e9e0649@arm.com>
+In-Reply-To: <fa0d0663-5393-c533-105a-85bd2e9e0649@arm.com>
+Cc: jean-philippe@linaro.org, zhang.lyra@gmail.com,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ thierry.reding@gmail.com, gerald.schaefer@linux.ibm.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -139,109 +71,47 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: multipart/mixed; boundary="===============4161223091652280005=="
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
---===============4161223091652280005==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="EVF5PPMfhYS0aIcm"
-Content-Disposition: inline
+On 29/04/2022 9:50 am, Robin Murphy wrote:
+> On 2022-04-29 07:57, Baolu Lu wrote:
+>> Hi Robin,
+>>
+>> On 2022/4/28 21:18, Robin Murphy wrote:
+>>> Move the bus setup to iommu_device_register(). This should allow
+>>> bus_iommu_probe() to be correctly replayed for multiple IOMMU instances,
+>>> and leaves bus_set_iommu() as a glorified no-op to be cleaned up next.
+>>
+>> I re-fetched the latest patches on
+>>
+>> https://gitlab.arm.com/linux-arm/linux-rm/-/commits/iommu/bus
+>>
+>> and rolled back the head to "iommu: Cleanup bus_set_iommu".
+>>
+>> The test machine still hangs during boot.
+>>
+>> I went through the code. It seems that the .probe_device for Intel IOMMU
+>> driver can't handle the probe replay well. It always assumes that the
+>> device has never been probed.
+> 
+> Hmm, but probe_iommu_group() is supposed to prevent the 
+> __iommu_probe_device() call even happening if the device *has* already 
+> been probed before :/
+> 
+> I've still got an old Intel box spare in the office so I'll rig that up 
+> and see if I can see what might be going on here...
 
---EVF5PPMfhYS0aIcm
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+OK, on a Xeon with two DMAR units, this seems to boot OK with or without 
+patch #1, so it doesn't seem to be a general problem with replaying in 
+iommu_device_register(), or with platform devices. Not sure where to go 
+from here... :/
 
-Hi Alex,
-
-Here is the PR for Joerg's shared topic branch for VFIO. It was merged
-to iommu here:
-
-https://lore.kernel.org/all/YmpfFA1iIQyGBipX@8bytes.org/
-
-The cover letter for making the merge commit is here:
-
-https://lore.kernel.org/all/20220418005000.897664-1-baolu.lu@linux.intel.com/
-
-It is based on rc4, some of the VFIO series I posted have conflicts
-with this, I will repost them rebased on top of this PR and the latest
-GVT PR.
-
-Thanks,
-Jason
-
-The following changes since commit af2d861d4cd2a4da5137f795ee3509e6f944a25b:
-
-  Linux 5.18-rc4 (2022-04-24 14:51:22 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git vfio-notifier-fix
-
-for you to fetch changes up to a5f1bd1afacd7b1e088f93f66af5453df0d8be9a:
-
-  iommu: Remove iommu group changes notifier (2022-04-28 15:32:20 +0200)
-
-----------------------------------------------------------------
-Jason Gunthorpe (1):
-      vfio: Delete the unbound_list
-
-Lu Baolu (10):
-      iommu: Add DMA ownership management interfaces
-      driver core: Add dma_cleanup callback in bus_type
-      amba: Stop sharing platform_dma_configure()
-      bus: platform,amba,fsl-mc,PCI: Add device DMA ownership management
-      PCI: pci_stub: Set driver_managed_dma
-      PCI: portdrv: Set driver_managed_dma
-      vfio: Set DMA ownership for VFIO devices
-      vfio: Remove use of vfio_group_viable()
-      vfio: Remove iommu group notifier
-      iommu: Remove iommu group changes notifier
-
- drivers/amba/bus.c                    |  37 ++++-
- drivers/base/dd.c                     |   5 +
- drivers/base/platform.c               |  21 ++-
- drivers/bus/fsl-mc/fsl-mc-bus.c       |  24 +++-
- drivers/iommu/iommu.c                 | 228 ++++++++++++++++++++-----------
- drivers/pci/pci-driver.c              |  18 +++
- drivers/pci/pci-stub.c                |   1 +
- drivers/pci/pcie/portdrv_pci.c        |   2 +
- drivers/vfio/fsl-mc/vfio_fsl_mc.c     |   1 +
- drivers/vfio/pci/vfio_pci.c           |   1 +
- drivers/vfio/platform/vfio_amba.c     |   1 +
- drivers/vfio/platform/vfio_platform.c |   1 +
- drivers/vfio/vfio.c                   | 245 +++-------------------------------
- include/linux/amba/bus.h              |   8 ++
- include/linux/device/bus.h            |   3 +
- include/linux/fsl/mc.h                |   8 ++
- include/linux/iommu.h                 |  54 ++++----
- include/linux/pci.h                   |   8 ++
- include/linux/platform_device.h       |  10 +-
- 19 files changed, 338 insertions(+), 338 deletions(-)
-
---EVF5PPMfhYS0aIcm
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRRRCHOFoQz/8F5bUaFwuHvBreFYQUCYmwYjQAKCRCFwuHvBreF
-YQMrAQCobJk/ryBnUQtfGwuk5CMb0Jqbg5IfvUNDJiD+DZNB9QEAvnigKvT6C3Ij
-J8wnoIabDznotbgEukRPRKjeLb8NbAk=
-=QJyd
------END PGP SIGNATURE-----
-
---EVF5PPMfhYS0aIcm--
-
---===============4161223091652280005==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Cheers,
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============4161223091652280005==--
