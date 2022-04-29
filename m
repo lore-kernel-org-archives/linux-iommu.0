@@ -1,96 +1,189 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C052DC433FE
-	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 14:26:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 23A1BC433F5
+	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 14:27:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 749F060E90;
-	Fri, 29 Apr 2022 14:26:05 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id B57BE409B0;
+	Fri, 29 Apr 2022 14:27:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id s285FHc6aV3T; Fri, 29 Apr 2022 14:26:04 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jfv6R7NCMiH1; Fri, 29 Apr 2022 14:27:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 0257260AEC;
-	Fri, 29 Apr 2022 14:26:03 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 422F84000B;
+	Fri, 29 Apr 2022 14:27:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AD345C0039;
-	Fri, 29 Apr 2022 14:26:03 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F0A69C002D
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 14:26:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1B2DCC0039;
+	Fri, 29 Apr 2022 14:27:32 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B1112C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 14:27:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D719F60DF0
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 14:26:01 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 8E13B419F8
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 14:27:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bkCqsZH369fj for <iommu@lists.linux-foundation.org>;
- Fri, 29 Apr 2022 14:26:01 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com
- [IPv6:2607:f8b0:4864:20::102b])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 11A0E60AEC
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 14:26:00 +0000 (UTC)
-Received: by mail-pj1-x102b.google.com with SMTP id
- j8-20020a17090a060800b001cd4fb60dccso7439922pjj.2
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 07:26:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=message-id:date:mime-version:user-agent:subject:content-language
- :from:to:cc:references:organization:in-reply-to
- :content-transfer-encoding;
- bh=XJdlUsUfqr6vxkPKuGRk9hrtLAlMOAFa8tdCT2FkzTU=;
- b=eszp6sR0PjzzLhwJT5W3nCqjKctaT8ylnNZcxmuYI0hKQmfI3WXSZbl62ALdaR76np
- oIOTXMjy8cf3rJpDXryOD119ShbM42uhbM9eLALBsIkWyCCoXW8TPOmrKue6j/0xQLPR
- oa+R5AomZGGINa9FISFtIVAUePioIE+YmvyJxygRuAXhGs+YbGXwQ2mbT2YDL9wEpkoh
- ImXmZf9WK+iVpobBcSMDaEk9xW8f1wMi4X7mVeMc3CM9b4qPt/XUjbR2kYTjnuGNt3gT
- FWWLQ6EfQKXRJ9oLNurPJIciH9FrhvNPl+MzrQELCgsmLW8Ad7D3HpsmkuXNsWXy8ioh
- cDBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:from:to:cc:references:organization:in-reply-to
- :content-transfer-encoding;
- bh=XJdlUsUfqr6vxkPKuGRk9hrtLAlMOAFa8tdCT2FkzTU=;
- b=77gEUOub/ixq1oPnXMRYoxtG8pEH/NEUwBzxUvqt3Y3Pp90XlUWX4g9BR/iXHhdMGA
- 1cL8ZaR3yuVG4WVo3S0J0/RCS/SOY7gIYp/58axC8o4euDDBKO21+soK23C4FuaWS5PL
- T9joSApCMB+kxGrOuJZFpj11+GgUJq1NMMrTCn0IO+ti0TJOmzYNXWx44SJWhpbZk9ir
- RWueZhMyn63huuG8ZFryGH8dSr9vxFHa91IRsKw5c0/E+yYWPhDk+H0vGwj7LKfmqr9A
- Vw7BG6VTJ2GunhCsa/PCIG4bFiUlkjZJx604obDYA4KMM0Ru7rjS+L7oA2IZPCg/j3GW
- +B6g==
-X-Gm-Message-State: AOAM531yrsXb0IEo3oPaoPRfSxohhytxMwmFZUqX/GiF0yTKarYAwrRE
- 7x1ILURQ20EH+5mYE9UqJvc=
-X-Google-Smtp-Source: ABdhPJxWn/FK4fFSMV41dEGN/94EH8xCM2oBufHBUGl4zEaQ5ZNq36ReAdYyVyZDmSOJlfacrgyP2Q==
-X-Received: by 2002:a17:90b:4a4c:b0:1d9:4c8e:8d3d with SMTP id
- lb12-20020a17090b4a4c00b001d94c8e8d3dmr4137374pjb.215.1651242360250; 
- Fri, 29 Apr 2022 07:26:00 -0700 (PDT)
-Received: from ?IPV6:2404:f801:0:5:8000::597? ([2404:f801:9000:18:efec::597])
- by smtp.gmail.com with ESMTPSA id
- l14-20020a17090aec0e00b001d8ace370cbsm14422673pjy.54.2022.04.29.07.25.54
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 29 Apr 2022 07:25:59 -0700 (PDT)
-Message-ID: <c0e70b17-cdf1-4fd8-f807-e4b9ccad44fd@gmail.com>
-Date: Fri, 29 Apr 2022 22:25:53 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [RFC PATCH] swiotlb: Add Child IO TLB mem support
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=oracle.com header.b="GxR5lH3l";
+ dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
+ header.b="OJDlzXav"
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id iaFqPFAxKVJh for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Apr 2022 14:27:27 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com
+ [205.220.165.32])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id B5F38419F2
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 14:27:27 +0000 (UTC)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+ by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23TEMneP015535;
+ Fri, 29 Apr 2022 14:26:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=hxVNWiJy3qO1DRCtxmUHMetlfEny6vPfeX2V5WHmPMs=;
+ b=GxR5lH3lnDtTAVV6tGAIsXYrmvZWlVxgyX89c3tZaLXPvZoLUWcYhsQNT0MOSMQdARhp
+ mtnrP8i/yGApKKtGjTdOHgC+09fjrYCBSMKMysMUbfYu2qB/SRRgJ7REJ0Mu+yG4cN6V
+ XBC9A+x0/Nujlnm/3d5cFJfB8nNDz4q+KZ+ddjlIqNpf+0i2qUfwPpZnSdBp1dB8LTUQ
+ D+mwOanDp9qkTQSaIeMmmugtzk1L2LwWhlag8/y6nTBcgW8rVVyI+TKG3wJdgU96qV1z
+ J67NOhO2agbkGPTVpLqzHv8ieZpRVstO4P1C6oR3vVCjKWiXpJcTxiP06paB/t/BX9IB hA== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com
+ (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+ by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fmb9axv0a-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Fri, 29 Apr 2022 14:26:54 +0000
+Received: from pps.filterd
+ (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+ by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2)
+ with SMTP id 23TEGGjb008676; Fri, 29 Apr 2022 14:26:52 GMT
+Received: from nam11-bn8-obe.outbound.protection.outlook.com
+ (mail-bn8nam11lp2172.outbound.protection.outlook.com [104.47.58.172])
+ by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id
+ 3fm7w82tcs-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Fri, 29 Apr 2022 14:26:52 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XyhvjBy3BPhwCn3Q2VQW0paOrYedlF8lopH0oWY+PBLnwo5hCmy9kL8/Uz8ANkd+Q4AiN56qTV1RhJ3NeOAZan9rzs7LzkE/t1pq7tCROO8iXr/8npsEhbv8NfyUe/RvFWiCZOoUJ/XMT8KcpkHQc/pdjtIwj1B2IeAgBD4vmD5GgrxswLifEjGscCoIWlqKH6AGDigYovJo7AlLLVBISqiqS6eSY5TiIZKodX//F9amWZPOWau+id8VkygLK/E3nCuMl8dRZqxggLjSRZfHpvZqeBEymyKoWZ9efJfARk9rD9wKJmGLhIPwUrTaO89dqtxoBmLcRMX2xvoDHzF6SQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hxVNWiJy3qO1DRCtxmUHMetlfEny6vPfeX2V5WHmPMs=;
+ b=hevln6rU5rwGO5i9KmYHatiBo5iB9Az3hMw1SKm4P/p7HDHip+JUsyGKvDRyWjae2XETxakq9k93bcyfnEc+VqWy3KUnQsrdt3mPKIxsYt0/3LJvo6uS2Rxpa7Vwueu8erqy5tJnfWhenNhLtNd+DT064Gxdwnmo0XfguG6aQdYOdIS3Z2OpuhrEZ9b+DToC3GCKJLLA746DNXRS7udHEfxAMutNGm7qKlXwpA1jAK1Qj6J8rK/Glka+B4W7GQsy23NPP7u4X9rlJu73pRWqHYO6QP1S1AgxniEV1iuRP/yllgMj1oh15csGs3lPAsj79/w6YGy8y1cesYJbYzfrQw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hxVNWiJy3qO1DRCtxmUHMetlfEny6vPfeX2V5WHmPMs=;
+ b=OJDlzXavpmsu6fGQs/pWR3uiRvSjBkxhe23r3dW7pVDuOzBEh2JHVZJ9CrCgoGVTIb5sA1jQPshisEY7Y3POCb9EFv+klbtHYLn3x0hhYuEqHkMmS3wOutukKBwWp4X2WpHMNfHo4GQBxiyD54uwfHXbklv3CHdTFHImVsG4oKY=
+Received: from BLAPR10MB4835.namprd10.prod.outlook.com (2603:10b6:208:331::11)
+ by DM6PR10MB2507.namprd10.prod.outlook.com (2603:10b6:5:b6::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.18; Fri, 29 Apr
+ 2022 14:26:51 +0000
+Received: from BLAPR10MB4835.namprd10.prod.outlook.com
+ ([fe80::b9e5:d1b6:b4be:f9d]) by BLAPR10MB4835.namprd10.prod.outlook.com
+ ([fe80::b9e5:d1b6:b4be:f9d%5]) with mapi id 15.20.5206.013; Fri, 29 Apr 2022
+ 14:26:51 +0000
+Message-ID: <eee58121-1224-cc56-f5a8-b7b8387b9e61@oracle.com>
+Date: Fri, 29 Apr 2022 15:26:41 +0100
+Subject: Re: [PATCH RFC 01/19] iommu: Add iommu_domain ops for dirty tracking
 Content-Language: en-US
-From: Tianyu Lan <ltykernel@gmail.com>
-To: hch@infradead.org, robin.murphy@arm.com
-References: <e7b644f0-6c90-fe99-792d-75c38505dc54@arm.com>
- <20220429142147.1725184-1-ltykernel@gmail.com>
-Organization: Microsft
-In-Reply-To: <20220429142147.1725184-1-ltykernel@gmail.com>
-Cc: parri.andrea@gmail.com, thomas.lendacky@amd.com, wei.liu@kernel.org,
- Tianyu Lan <Tianyu.Lan@microsoft.com>, linux-hyperv@vger.kernel.org,
- konrad.wilk@oracle.com, linux-kernel@vger.kernel.org,
- kirill.shutemov@intel.com, iommu@lists.linux-foundation.org,
- michael.h.kelley@microsoft.com, andi.kleen@intel.com, brijesh.singh@amd.com,
- vkuznets@redhat.com, kys@microsoft.com, hch@lst.de
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220428210933.3583-1-joao.m.martins@oracle.com>
+ <20220428210933.3583-2-joao.m.martins@oracle.com>
+ <20220429120820.GQ8364@nvidia.com>
+From: Joao Martins <joao.m.martins@oracle.com>
+In-Reply-To: <20220429120820.GQ8364@nvidia.com>
+X-ClientProxiedBy: LO2P265CA0107.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:c::23) To BLAPR10MB4835.namprd10.prod.outlook.com
+ (2603:10b6:208:331::11)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5ae38cea-b499-488f-9023-08da29ec4cc9
+X-MS-TrafficTypeDiagnostic: DM6PR10MB2507:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR10MB2507D657A8D37CB4E3B4798DBBFC9@DM6PR10MB2507.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fuRRVyZe8ThfcU0LXv6Zxmjnd/WV7mQCl4diXzOwVE5gGyYDB3E7BjGyqD86fZXL76t7IiwAzNxUhuz4xW864x2oe6FsGQZBfqXupqu/mqPeseZdC/rNz0gfU1d2EynaJQmjpRLWvyugLlbXWbAjPJaUOZkW1ceQ3MQgOiKjA0oSHbJWmDgQbR6toaDJ2WsfUsUA6em0Us7JApYDLIsrUNV+E5NLBRKkfbNHRnyFvdGNlNd6kIyrSCmaL7DQeJiFokOK7TmdAYlARfAHgg+vrPlCh77/Ch2Y8I8J8oUoGZ3xNLqJfcRCzQ5G+MdRiDAtACbe3y1lavjdIm9ruubTJHQMadT3m1nwi+MHEF4Ab3lqXCpzZTGWGSLX6WOe56Uu9UZNALeIIEZ/cRqiD7+moqVWW0JgCT17Y+ZJN22wLpZIfDIRXtWBXXBIIOCUOAs9PGpgHesYQfFcke4Mg498sJxI7oL9yGNKad+5rz+51KsfY4dRZ/tBzLgqVqoc1q/1lsIbI13eHxLuNjpI5byAVo81QHZPG5L+jtZp5vdC+vkUSGhshHQsTKOCDVKsOwC1MdhxrkEoHwznALzp8+KSnLa/61Yw9KrTc+OTHcN1JlGR3XzvM+Z3iCaFu8R61yJ8x7EXXafSCDvEdmqEqsbgNAltXSiXkHa2tZbVvYFgslO8JK1VX3SuOJM9efN32FXHxWWYAVM86KrPIWXUIvwe3cHJ7zX7cu7XdcB4v4u20GQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BLAPR10MB4835.namprd10.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(31696002)(186003)(8936002)(7416002)(508600001)(2616005)(53546011)(86362001)(2906002)(26005)(6506007)(6512007)(6666004)(38100700002)(83380400001)(5660300002)(316002)(6916009)(4326008)(8676002)(6486002)(31686004)(36756003)(66476007)(66556008)(54906003)(66946007)(14143004)(45980500001);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?d1E2dFY2T3dOYlhaRkV1SU85dVhQRG5LWGNsamN6VEJGc0ZGaUQ1blpYeTYw?=
+ =?utf-8?B?UXFEUVZXMXByYXozQ3Bia2hidXV1S2kvUkkzREdlM0VGdjQ0c3V1bnBZdkIw?=
+ =?utf-8?B?NTJjOFp3bStOWjB1enN4bDdZdllQMnFFUHhxUHhBSjlkdkw3alQ3eWpYZUlx?=
+ =?utf-8?B?ZjdSUkhJTE1VQThHR3NqY3YzWkd4UWxYZzg1dDJoNEpaekdzZVcya096cFgw?=
+ =?utf-8?B?RXpFUUxZbkV5TG02Zk92UW5LNFlaOFBJbjRrai9CMWl0UzAwYk9wNjZqM2Ro?=
+ =?utf-8?B?c0JFcE9aRW1Cak5iZ1lGdnkzeVJDWG15cGQwZ3RhWk9NT21YOG1jT0VFU2RD?=
+ =?utf-8?B?cWNyNTREQU9HbWZlSnF3ZEpUU0VqOGVPVzJRVnJpSGVoa05JT0xHU3J4UWRV?=
+ =?utf-8?B?MW9URjhaVTUyWUd4ZkZIaGtvTThQaEptQTE1ckJYNnVDK3VxaHRBQ1NFWkFr?=
+ =?utf-8?B?U2dibEdaZ1FYWVdaU2FyRDVkL0toOVhHYjdHN04yUUpWQXRROG04K3RCUUxW?=
+ =?utf-8?B?M2lCNDJlOWFaek9nWlNJanJSeE00WTdHaHdZQVM1NmR5cG1xckkwTWgyQ0d4?=
+ =?utf-8?B?eXE5TUtKYSsyOHNQU3hsS05JT00xZGVRZThDWWNYTkZyOWZuZ3puMG5sOUpI?=
+ =?utf-8?B?d1VNUGlPYWlYeXc0TVlzVWx0Wmg5MHFWSnJqU05JdmlHakZJK2NIL2JyYmdh?=
+ =?utf-8?B?cHg3aWt2Qk5nOXUwTmRRTUNseUV5Z2tBOTA3bm1jd1V1S1I2dDJnek5jdHg4?=
+ =?utf-8?B?Vm9PUS8wUFJvUGVZZktJUEVwdU50MWxMN1lQUDllU0hmZEZSMlRadTA0eEx3?=
+ =?utf-8?B?c21nRDVJZy9MVUcydnNucCtaOElzcDRDNjVtSWpkQUF0VEFIb3NvSjRKVEZQ?=
+ =?utf-8?B?TmJ1L2cyT3huWUxNbDV4SVFmVDd4S1dGZlpQTGVHMjNiZzJMb2dNZWhUTFdU?=
+ =?utf-8?B?a1lXczJMS21UL3UwNkMySGdjWEhCSVUvRW0rbTNLUlloYmV2ZVhXdHAvYVJi?=
+ =?utf-8?B?TGlmR2dMS1FDNmRMNG5nOE5wcGNyclArOTc5SEFWeGpyeVdId0dRVnpiTFdU?=
+ =?utf-8?B?NUFFY1dHQVlOcVoxOFRzSTh4NGZOcEMycU51d0NpWUFVKy9RTllxQzNnazBJ?=
+ =?utf-8?B?NWFmQ2E3bjlhYjVIUnRraU50YzRRYXozZ0lVSUNXRldvM2VQaG1CeCs3MDNY?=
+ =?utf-8?B?cGc0UUpkTzJJZ25wOUJqRE1hcmoyb2lWb1RjWFg2MXlIbk9VaDBkU1h0Snpn?=
+ =?utf-8?B?S0FjVExld0VmMk1oeTdjVTk3MFFLNklnSFN1aWI5Nml5UGpQQlhremNHUUhZ?=
+ =?utf-8?B?MitpaHVZdGk1Uysvdk1ZSHhZQTBRdkMzcnlRZXpYVU41cHh6bDFPaXVYd1pJ?=
+ =?utf-8?B?d2VhUFlwN09OTFBUTXd3TlZtUk9BL1VFc1N6czBIb3pSejFuRVJwNkNRS0tk?=
+ =?utf-8?B?eGpBcHVDbzNvWmhCU0RzRlUyUDd1MVBqRGI1SVA2TngyR1NWTkJIbjBocHBX?=
+ =?utf-8?B?MnR4d2FaVktqd3JVNitGWjZYMUhFVEZmbjVQaWZldWtnRFdpVGlCWUZqSDRT?=
+ =?utf-8?B?dDlVSDFFVVlOODNqdFA4RDVXWXJOeC94QjhpMG9oSDU4ZVEwQ1lQb2VWVWM1?=
+ =?utf-8?B?THZEMk1rRXc0U0hySitPTkhVV04wZ05hUlo3NTBFRkJROG1YS081VVEwa1RC?=
+ =?utf-8?B?QnEwdTFoK05NVkVLTDJhZUs4YzNWdTNzMmNjUmRENU9LekVZMHJuMlhmMG16?=
+ =?utf-8?B?NXhYYm9OYUFpT2lUNEhyM3FmT253WGYvcHg3VW5FaE5pbHBXY0pra1kvUHcr?=
+ =?utf-8?B?cEVVcFoyK1RzYVNQbUJ0QnlGc2JXSEtQOE9oZGZlTkllMHZXTnFGbGQ2NVls?=
+ =?utf-8?B?aWxMME9zcEphR1MwdEtvQ090bExpMzZ2YTZ1Qm94a1NPNnI3RzFJSWw1TS9T?=
+ =?utf-8?B?RzVxRDVMQmM5TEFIU3dLNFhKajN4MUNoVGRPbkI2Zy9UcWROZnFVdzhOekUw?=
+ =?utf-8?B?cnpZQTY1YXRmd3ZGb0ZHQkFVaTZ2WCs2SFZlT3U0RFVMcGRvOC9INHVoTXo5?=
+ =?utf-8?B?aEc5aFRRWms0MGhHek5GV282eFhiNzZNblBhcnJ6eXlVcmdmWFlXcGs4dVlL?=
+ =?utf-8?B?WmR4Q1BWWEM5YVJDck8yaUJFVFZhUDNlVGU1MTVRdkwrWWh3VmhTSmdpOW9D?=
+ =?utf-8?B?THJwUURTTjZWaHBhUFltemdMWlN2cVJ4Uy91WnhiUEFGWWVqbUNxeGE3RDdH?=
+ =?utf-8?B?UURMcjJoRmVCaURuNEc4S2EzV0dXZW42bHNYc3RrclRiV05BemN3TXZvT28x?=
+ =?utf-8?B?cCtwek9jR3pxMm9vRkpSUjB3UWhNTXYwRy9JVVRxRWh4cVVya0JoeWFJOHMz?=
+ =?utf-8?Q?jImXlUPsth2i9QfM=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ae38cea-b499-488f-9023-08da29ec4cc9
+X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB4835.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2022 14:26:50.9128 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /BAB1RQm5piD5IWuU5BbVSq6eWmr15xiOtfK+IS2zd7wNYzHjxAMT+PpXBwQBTUzfA2ieSqX3lcnIKVmU01KvAALaCfnHorqQ4c4WG3ZPVc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB2507
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486, 18.0.858
+ definitions=2022-04-29_05:2022-04-28,
+ 2022-04-29 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
+ mlxlogscore=999
+ malwarescore=0 mlxscore=0 phishscore=0 bulkscore=0 adultscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204290080
+X-Proofpoint-ORIG-GUID: g_3d3vMhy-dzmSmMdBcRoatnTcbbVJ97
+X-Proofpoint-GUID: g_3d3vMhy-dzmSmMdBcRoatnTcbbVJ97
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Kevin Tian <kevin.tian@intel.com>, Yishai Hadas <yishaih@nvidia.com>,
+ kvm@vger.kernel.org, Will Deacon <will@kernel.org>,
+ Cornelia Huck <cohuck@redhat.com>,
+ Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org,
+ David Woodhouse <dwmw2@infradead.org>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,220 +196,89 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 4/29/2022 10:21 PM, Tianyu Lan wrote:
-> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+On 4/29/22 13:08, Jason Gunthorpe wrote:
+> On Thu, Apr 28, 2022 at 10:09:15PM +0100, Joao Martins wrote:
+>> +
+>> +unsigned int iommu_dirty_bitmap_record(struct iommu_dirty_bitmap *dirty,
+>> +				       unsigned long iova, unsigned long length)
+>> +{
 > 
-> Traditionally swiotlb was not performance critical because it was only
-> used for slow devices. But in some setups, like TDX/SEV confidential
-> guests, all IO has to go through swiotlb. Currently swiotlb only has a
-> single lock. Under high IO load with multiple CPUs this can lead to
-> significant lock contention on the swiotlb lock.
+> Lets put iommu_dirty_bitmap in its own patch, the VFIO driver side
+> will want to use this same data structure.
 > 
-> This patch adds child IO TLB mem support to resolve spinlock overhead
-> among device's queues. Each device may allocate IO tlb mem and setup
-> child IO TLB mem according to queue number. Swiotlb code allocates
-> bounce buffer among child IO tlb mem iterately.
-> 
+OK.
 
-Hi Robin and Christoph:
-       According to Robin idea. I draft this patch. Please have a look 
-and check whether it's right diection.
-
-Thanks.
-
-> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> ---
->   include/linux/swiotlb.h |  7 +++
->   kernel/dma/swiotlb.c    | 96 ++++++++++++++++++++++++++++++++++++-----
->   2 files changed, 93 insertions(+), 10 deletions(-)
+>> +	while (nbits > 0) {
+>> +		kaddr = kmap(dirty->pages[idx]) + start_offset;
 > 
-> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> index 7ed35dd3de6e..4a3f6a7b4b7e 100644
-> --- a/include/linux/swiotlb.h
-> +++ b/include/linux/swiotlb.h
-> @@ -89,6 +89,9 @@ extern enum swiotlb_force swiotlb_force;
->    * @late_alloc:	%true if allocated using the page allocator
->    * @force_bounce: %true if swiotlb bouncing is forced
->    * @for_alloc:  %true if the pool is used for memory allocation
-> + * @child_nslot:The number of IO TLB slot in the child IO TLB mem.
-> + * @num_child:  The child io tlb mem number in the pool.
-> + * @child_start:The child index to start searching in the next round.
->    */
->   struct io_tlb_mem {
->   	phys_addr_t start;
-> @@ -102,6 +105,10 @@ struct io_tlb_mem {
->   	bool late_alloc;
->   	bool force_bounce;
->   	bool for_alloc;
-> +	unsigned int num_child;
-> +	unsigned int child_nslot;
-> +	unsigned int child_start;
-> +	struct io_tlb_mem *child;
->   	struct io_tlb_slot {
->   		phys_addr_t orig_addr;
->   		size_t alloc_size;
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index e2ef0864eb1e..382fa2288645 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -207,6 +207,25 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
->   		mem->force_bounce = true;
->   
->   	spin_lock_init(&mem->lock);
-> +
-> +	if (mem->num_child) {
-> +		mem->child_nslot = nslabs / mem->num_child;
-> +		mem->child_start = 0;
-> +
-> +		/*
-> +		 * Initialize child IO TLB mem, divide IO TLB pool
-> +		 * into child number. Reuse parent mem->slot in the
-> +		 * child mem->slot.
-> +		 */
-> +		for (i = 0; i < mem->num_child; i++) {
-> +			mem->num_child = 0;
-> +			mem->child[i].slots = mem->slots + i * mem->child_nslot;
-> +			swiotlb_init_io_tlb_mem(&mem->child[i],
-> +				start + ((i * mem->child_nslot) << IO_TLB_SHIFT),
-> +				mem->child_nslot, late_alloc);
-> +		}
-> +	}
-> +
->   	for (i = 0; i < mem->nslabs; i++) {
->   		mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
->   		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
-> @@ -336,16 +355,18 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
->   
->   	mem->slots = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
->   		get_order(array_size(sizeof(*mem->slots), nslabs)));
-> -	if (!mem->slots) {
-> -		free_pages((unsigned long)vstart, order);
-> -		return -ENOMEM;
-> -	}
-> +	if (!mem->slots)
-> +		goto error_slots;
->   
->   	set_memory_decrypted((unsigned long)vstart, bytes >> PAGE_SHIFT);
->   	swiotlb_init_io_tlb_mem(mem, virt_to_phys(vstart), nslabs, true);
->   
->   	swiotlb_print_info();
->   	return 0;
-> +
-> +error_slots:
-> +	free_pages((unsigned long)vstart, order);
-> +	return -ENOMEM;
->   }
->   
->   void __init swiotlb_exit(void)
-> @@ -483,10 +504,11 @@ static unsigned int wrap_index(struct io_tlb_mem *mem, unsigned int index)
->    * Find a suitable number of IO TLB entries size that will fit this request and
->    * allocate a buffer from that IO TLB pool.
->    */
-> -static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
-> -			      size_t alloc_size, unsigned int alloc_align_mask)
-> +static int swiotlb_do_find_slots(struct io_tlb_mem *mem,
-> +				 struct device *dev, phys_addr_t orig_addr,
-> +				 size_t alloc_size,
-> +				 unsigned int alloc_align_mask)
->   {
-> -	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
->   	unsigned long boundary_mask = dma_get_seg_boundary(dev);
->   	dma_addr_t tbl_dma_addr =
->   		phys_to_dma_unencrypted(dev, mem->start) & boundary_mask;
-> @@ -565,6 +587,46 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
->   	return index;
->   }
->   
-> +static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
-> +			      size_t alloc_size, unsigned int alloc_align_mask)
-> +{
-> +	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-> +	struct io_tlb_mem *child_mem = mem;
-> +	int start = 0, i = 0, index;
-> +
-> +	if (mem->num_child) {
-> +		i = start = mem->child_start;
-> +		mem->child_start = (mem->child_start + 1) % mem->num_child;
-> +		child_mem = mem->child;
-> +	}
-> +
-> +	do {
-> +		index = swiotlb_do_find_slots(child_mem + i, dev, orig_addr,
-> +					      alloc_size, alloc_align_mask);
-> +		if (index >= 0)
-> +			return i * mem->child_nslot + index;
-> +		if (++i >= mem->num_child)
-> +			i = 0;
-> +	} while (i != start);
-> +
-> +	return -1;
-> +}
-> +
-> +static unsigned long mem_used(struct io_tlb_mem *mem)
-> +{
-> +	int i;
-> +	unsigned long used = 0;
-> +
-> +	if (mem->num_child) {
-> +		for (i = 0; i < mem->num_child; i++)
-> +			used += mem->child[i].used;
-> +	} else {
-> +		used = mem->used;
-> +	}
-> +
-> +	return used;
-> +}
-> +
->   phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
->   		size_t mapping_size, size_t alloc_size,
->   		unsigned int alloc_align_mask, enum dma_data_direction dir,
-> @@ -594,7 +656,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
->   		if (!(attrs & DMA_ATTR_NO_WARN))
->   			dev_warn_ratelimited(dev,
->   	"swiotlb buffer is full (sz: %zd bytes), total %lu (slots), used %lu (slots)\n",
-> -				 alloc_size, mem->nslabs, mem->used);
-> +				     alloc_size, mem->nslabs, mem_used(mem));
->   		return (phys_addr_t)DMA_MAPPING_ERROR;
->   	}
->   
-> @@ -617,9 +679,9 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
->   	return tlb_addr;
->   }
->   
-> -static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
-> +static void swiotlb_do_release_slots(struct io_tlb_mem *mem,
-> +				     struct device *dev, phys_addr_t tlb_addr)
->   {
-> -	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
->   	unsigned long flags;
->   	unsigned int offset = swiotlb_align_offset(dev, tlb_addr);
->   	int index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
-> @@ -660,6 +722,20 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
->   	spin_unlock_irqrestore(&mem->lock, flags);
->   }
->   
-> +static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
-> +{
-> +	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-> +	int index, offset;
-> +
-> +	if (mem->num_child) {
-> +		offset = swiotlb_align_offset(dev, tlb_addr);	
-> +		index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
-> +		mem = &mem->child[index / mem->child_nslot];
-> +	}
-> +
-> +	swiotlb_do_release_slots(mem, dev, tlb_addr);
-> +}
-> +
->   /*
->    * tlb_addr is the physical address of the bounce buffer to unmap.
->    */
+> kmap_local?
+> 
+/me nods
+
+>> +/**
+>> + * struct iommu_dirty_bitmap - Dirty IOVA bitmap state
+>> + *
+>> + * @iova: IOVA representing the start of the bitmap, the first bit of the bitmap
+>> + * @pgshift: Page granularity of the bitmap
+>> + * @gather: Range information for a pending IOTLB flush
+>> + * @start_offset: Offset of the first user page
+>> + * @pages: User pages representing the bitmap region
+>> + * @npages: Number of user pages pinned
+>> + */
+>> +struct iommu_dirty_bitmap {
+>> +	unsigned long iova;
+>> +	unsigned long pgshift;
+>> +	struct iommu_iotlb_gather *gather;
+>> +	unsigned long start_offset;
+>> +	unsigned long npages;
+>> +	struct page **pages;
+> 
+> In many (all?) cases I would expect this to be called from a process
+> context, can we just store the __user pointer here, or is the idea
+> that with modern kernels poking a u64 to userspace is slower than a
+> kmap?
+> 
+I have both options implemented, I'll need to measure it. Code-wise it would be
+a lot simpler to just poke at the userspace addresses (that was my first
+prototype of this) but felt that poking at kernel addresses was safer and
+avoid assumptions over the context (from the iommu driver). I can bring back
+the former alternative if this was the wrong thing to do.
+
+> I'm particularly concerend that this starts to require high
+> order allocations with more than 2M of bitmap.. Maybe one direction is
+> to GUP 2M chunks at a time and walk the __user pointer.
+> 
+That's what I am doing here. We GUP 2M of *bitmap* at a time.
+Which is about 1 page for the struct page pointers. That is enough
+for 64G of IOVA dirties read worst-case scenario (i.e. with base pages).
+
+>> +static inline void iommu_dirty_bitmap_init(struct iommu_dirty_bitmap *dirty,
+>> +					   unsigned long base,
+>> +					   unsigned long pgshift,
+>> +					   struct iommu_iotlb_gather *gather)
+>> +{
+>> +	memset(dirty, 0, sizeof(*dirty));
+>> +	dirty->iova = base;
+>> +	dirty->pgshift = pgshift;
+>> +	dirty->gather = gather;
+>> +
+>> +	if (gather)
+>> +		iommu_iotlb_gather_init(dirty->gather);
+>> +}
+> 
+> I would expect all the GUPing logic to be here too?
+
+I had this in the iommufd_dirty_iter logic given that the iommu iteration
+logic is in the parent structure that stores iommu_dirty_data.
+
+My thinking with this patch was just to have what the IOMMU driver needs.
+
+Which actually if anything this helper above ought to be in a later patch.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
