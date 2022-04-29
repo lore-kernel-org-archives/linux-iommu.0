@@ -1,162 +1,171 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 635BDC433F5
-	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 07:54:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E0D0DC433EF
+	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 08:07:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 085174098F;
-	Fri, 29 Apr 2022 07:54:24 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 598DB83F87;
+	Fri, 29 Apr 2022 08:07:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id znwSq30MWtIV; Fri, 29 Apr 2022 07:54:23 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id cv0SYcfViOp3; Fri, 29 Apr 2022 08:07:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id D7D6540004;
-	Fri, 29 Apr 2022 07:54:22 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id D0EEB83F7D;
+	Fri, 29 Apr 2022 08:07:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BC4CFC0032;
-	Fri, 29 Apr 2022 07:54:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D520C0032;
+	Fri, 29 Apr 2022 08:07:28 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 53A97C002D
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 07:54:21 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1D435C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 08:07:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 502C64091E
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 07:54:21 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id DDFA340917
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 08:07:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vPfbcq0xpVD0 for <iommu@lists.linux-foundation.org>;
- Fri, 29 Apr 2022 07:54:20 +0000 (UTC)
+ with ESMTP id dZhxqb5yYdIj for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Apr 2022 08:07:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 60F6F40004
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 07:54:20 +0000 (UTC)
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 29D0340004
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 08:07:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1651218860; x=1682754860;
+ t=1651219646; x=1682755646;
  h=from:to:cc:subject:date:message-id:references:
  in-reply-to:content-transfer-encoding:mime-version;
- bh=ze6d5zqeil6eGdqRdcP7G15akCWKlDQncaOLeBZV4VQ=;
- b=mCzZUpf8UNMjPoehltAQJlUBrKx1RXcTrb1HaeRX0A0bHPuPaa387anP
- E0x6iIEfRC8H24oG9zWmq3K8b6aIqWAVzCuBTZ5cnJIHqQvdiMmC2Nt7D
- 5dISNCxod51bFGcKJFR0LwfVSTGt+DC3uU16QUpVmfrVZlW561TYYkVT+
- OteiERtJgcMii1C3G7BY+OHVZkT/PvvFJXBt+LztyviiSYV1xER08OLDa
- p9yrHgPvGPIIcTbf/0/tr2ZbVpf73UzXnD0FXEHJaPNDU9U+Fh95a2uT2
- k7v2u7tVRC3NmwKQHFiC1OlDc2u1K5iu0bdVyiIk4UIC+qa59uc4LdA78 w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="352998564"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; d="scan'208";a="352998564"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 29 Apr 2022 00:54:19 -0700
+ bh=QBsjW1trXXPGr/ERUYz/qNNMBouCP2bs5iqFJvcUjBU=;
+ b=gRiMGbaCQ64ak+uTnLK/gZHEUZ0uOBjdswcsbx+h05GSFC3vyMx3YdOQ
+ JJBjrCJnEaVIr1G+ZS386plJkyPnEYbat9JjuGaYrwj1QIqxz1oyvVogj
+ BlsoQh9aIjF1pekoUK3nJojHQpz77Ylb7ysLMw9OqLxJo73xhrC3wHc7G
+ bWTKv1hVC2h0TCr6k8122/m53hb2BnjJ8Ur9mstSg309f+9QPfSpFHyx2
+ wEiCiU3aO7IiLBOw+7cIwVLtttdNT7VyYGBORbz2kk1H60PPKaR8KfSOZ
+ /I2zErcnE2UlssnaeHxpxbPKt95JWoTiio3J8fFlq+zTYYTk1JI1H1FMw g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="291739855"
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; d="scan'208";a="291739855"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 29 Apr 2022 01:07:25 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; d="scan'208";a="534364168"
-Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
- by orsmga006.jf.intel.com with ESMTP; 29 Apr 2022 00:54:18 -0700
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; d="scan'208";a="809014086"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+ by fmsmga006.fm.intel.com with ESMTP; 29 Apr 2022 01:07:24 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 29 Apr 2022 00:54:18 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ 15.1.2308.27; Fri, 29 Apr 2022 01:07:24 -0700
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Fri, 29 Apr 2022 00:54:18 -0700
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.48) by
- edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ 15.1.2308.27; Fri, 29 Apr 2022 01:07:22 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Fri, 29 Apr 2022 01:07:22 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.174)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Fri, 29 Apr 2022 00:54:17 -0700
+ 15.1.2308.27; Fri, 29 Apr 2022 01:07:21 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Rv6724NKsUW2rzBpK7wk31LIp4kicRVCdep0AEJbKmyuOJdBzPU2f8/vbUjHSYf4xVrqv89Ru541PK8lUlBOrBSDdjiU9UJXgYGf7BQqHT/oi+74UJfXablenTO4SoORKFvbEzlX8u4pVkuRR0A2eyRaYfohjhQBTysoiu8L323TlUxF5me9gR5I6KsYlYH3Ywrste4ipgmwDjwy/NyZvPJpyHFYVYyZiHrGvoiO2ORSp/9+jPujqaEIxQJbLeW69vC+k96NRR4Yl3pSiT34wVSqggDkWUGJrYRRkuH5EAxWOh0MznQKVPhzu2qnRa85tMAdaJWFjd0pvl0Jo083SA==
+ b=Nmm72NmZHyp4i4JaYY3CAuTyeGqgEzLggzpFfAszldJKmE4QqDbPuY0O/AvzN26h78ejK7fBZNHnxWRIOJOZkwdO981feC+jb0QJigneSKtAfZoVBPIGceDwUHVj0hgMqtzverEFbpi8AUOg5gwD/rsAyYQ7LyWOwQhQLVuzJa6eWnLFu3sdh9d5vcdW3HMjckOhf1d2a04RX0YaHEN5H+bEkwD4Xyn/BzB+7APSp4v3dvVPUyGSw9WC9BQs/dbGJvXGtHbT152mQJmB0H3OhTqwwA6zByQ9DxL5f6IzxepU1iyFVdWRHeb9P6uKbgKCkp0US/GaAt2GfeM6bHR+zg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=467jZdvi+39uQEk2JZIeeTsalPOEJB8oaqE+5hIi/VU=;
- b=fIgsEg5DbE9FouE5YhkMbaDEXlc3lE8439LQYo6t0+yfIYbfyY6ahI66w8eKX4lHuN1Af/S+/TQuRXIhLdmbnnOIU0qqntMuLrqsPpcxLVhwGA4ut+Ol4rRSy4NkOWl7GRWZbBE1c6I7eYCMBO1XYAAbI65CpK7GPlwhZrg2BNaSwKGSGCYPivVggC9KtyItUX9bjInKaR+bi7aub2cvd8fGT6FoH+IhfusljiFGZLCuLRjchorDl6qElTp2e2azzXei6d93A2TfEVGzGP3Qzx3Eu9mvCipBicuFLwqICK64DaBlzbv/GMjcwwqpUOLCnkterjyJZaQfiAnl5bzw+Q==
+ bh=0xyqt8T5+GZocVURJKLKV+yDSkvKWYZk2eq4OX7Z5YM=;
+ b=SZhnVCWA0ZKgIUMsxGg14zTxk/nUT2ho3NuqLaC8A73qOudZ5+e6utPawxTN7DfTGaSPfX9/uKk9vXEs+iRaDfAnBPAp0TJgFv4M+U8mBWFhbqs+qSfN18wRJx12M3hjHSLrQzak1i921YYjuJUjAsECEu20VCXwrm2LwSb4Mq822ej01bFWCFHKeur2iOgRcLQIft02MggWnjgXXCWKeN7gtbe9SrQE3gNAuDHyKpmQfacTNqcyj+yHf9tQZlf2HWmwyM3dklqHHD/6RAwsKpxnTCy9ZO7Z8lKQR1tZXNTl9kEaL5LpyhVprnXYRACOP7P3uMD/4SMid55NTuojdQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DM6PR11MB4721.namprd11.prod.outlook.com (2603:10b6:5:2a3::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Fri, 29 Apr
- 2022 07:54:14 +0000
+ by BYAPR11MB2998.namprd11.prod.outlook.com (2603:10b6:a03:84::31)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.20; Fri, 29 Apr
+ 2022 08:07:14 +0000
 Received: from BN9PR11MB5276.namprd11.prod.outlook.com
  ([fe80::24dd:37c2:3778:1adb]) by BN9PR11MB5276.namprd11.prod.outlook.com
  ([fe80::24dd:37c2:3778:1adb%2]) with mapi id 15.20.5206.013; Fri, 29 Apr 2022
- 07:54:09 +0000
+ 08:07:14 +0000
 From: "Tian, Kevin" <kevin.tian@intel.com>
 To: "Martins, Joao" <joao.m.martins@oracle.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Subject: RE: [PATCH RFC 01/19] iommu: Add iommu_domain ops for dirty tracking
-Thread-Topic: [PATCH RFC 01/19] iommu: Add iommu_domain ops for dirty tracking
-Thread-Index: AQHYW0SBddBMaWdJy0ea6VnH/ggNiK0GeQsQ
-Date: Fri, 29 Apr 2022 07:54:09 +0000
-Message-ID: <BN9PR11MB527684203C6344FF46B4163A8CFC9@BN9PR11MB5276.namprd11.prod.outlook.com>
+Subject: RE: [PATCH RFC 02/19] iommufd: Dirty tracking for io_pagetable
+Thread-Topic: [PATCH RFC 02/19] iommufd: Dirty tracking for io_pagetable
+Thread-Index: AQHYW0R/9NKTv/Vcr0O7a9+AyfJdLq0GhjGA
+Date: Fri, 29 Apr 2022 08:07:14 +0000
+Message-ID: <BN9PR11MB5276338CA4ABF4934BF851358CFC9@BN9PR11MB5276.namprd11.prod.outlook.com>
 References: <20220428210933.3583-1-joao.m.martins@oracle.com>
- <20220428210933.3583-2-joao.m.martins@oracle.com>
-In-Reply-To: <20220428210933.3583-2-joao.m.martins@oracle.com>
+ <20220428210933.3583-3-joao.m.martins@oracle.com>
+In-Reply-To: <20220428210933.3583-3-joao.m.martins@oracle.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
+dlp-version: 11.6.401.20
+dlp-product: dlpe-windows
+dlp-reaction: no-action
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: cecc7c9d-ed6c-44e4-5b54-08da29b5712c
-x-ms-traffictypediagnostic: DM6PR11MB4721:EE_
+x-ms-office365-filtering-correlation-id: 4e1038a5-1262-4b5c-5901-08da29b7457b
+x-ms-traffictypediagnostic: BYAPR11MB2998:EE_
 x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <DM6PR11MB4721459F30F6CC32991E5EBB8CFC9@DM6PR11MB4721.namprd11.prod.outlook.com>
+x-microsoft-antispam-prvs: <BYAPR11MB299847C3BDCC8C25FEEE8E9C8CFC9@BYAPR11MB2998.namprd11.prod.outlook.com>
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: N+Pc6V5J43CF87jNy+PeiPhwhwsrGN05CAEcgSfRr8RXOWy/yb9GPuKoU1JEaAB0n8qXhCmmoRYO9pXLPktRyIKiAonHyaiJMUjLyaj4DkWQ02DSJHaazFWvGt8r8g41zPRaRG+US5f4mLR69uLg8dx4Ji50zH6AVmNaUjZnCBFpyTcmeuN/+CQwdHeStJ+hZdoAXAJ32bibHqJfSIWeg1HNIHPyqWZ2HcWpNMsS8W5e2XJbZC2KUvi5TsA4jd9UcH9ljqaxTDm/3PdRkfafNFWANdBvEgKJjf1TFmSQJ6nJ0cf8k/4E6LtYGP+iwG4SLAhOyvCr9BjM3Bq8XH1/auY7j9/TPpHWwx8+UAZ3RY2Nw0skJw6LsZgiJXmsVs6X6zuj5zY7BuXvIrGpcZ/8cjzdacbnOV4Hbu07CDEbzbGFfC44Z4VghAeIL+TYHYOX27vbV5WJKSw6qTgZXqKzUWPFQVoqA6qGDbyVWXKRxM3fAQTpetXs4489xWLo3BouKQoJsHfGdeU5rrzVNSzz1IHRAnKGAZZH+HrFpUFUa526p4fC9cm5jHsnABpm0DDZcERSOznJW8oyICO6bXHPShvg9Ivt8cDYXbsYuqZ5SYxMTLfVtLBquu8fJKo4/MgJ5wlbqujLjRNu8VaZXABgyZJ9/ykjwNXESOBAaYbC8+K8QHDE4+6JgIveHudqXq5UCg3EO8iGkhpZUXOf2Nw436nqwJ8X2DVLzLys2CBCokY=
+x-microsoft-antispam-message-info: i5nDENrhJsr7qvCi3CslKCrn2vxEvYa8f7G1JCsdPUC2Bm3Mj+cKBRgUIigVu34XHw1wuWICFimObRgErQ16Sxy4Pr7cfbKELGEWpI1RAmhwtcjc0j2qZ1biWih/olH7JkYlH1qc6DPDASM9Svdom+KuQb0gPpOeIa8DYeCzaztSKk6MKgsg8nMpePUAfnW81+sHt0rO1KQ0CTkXx+xCq1k6ehFS1ziRW0MTIaUwtPkkm51h5oga4CT2XCiUAI42dFGFDX1qu4C1DeYIB2zHYLjvgCwO2BSHfMWuQIt63nWJBn8nhCRpov7Gn+WuWXEj0XLz5Qy2zbTbAn9xLsXZc+tw5jFmJ3z5EeUOMnYsN8c8Vy9j3TEVTFE6Na5BTHcz2+SHVpqwBOTCFCTUlLeDuLYMkNDAlJjDSj1Ei/R2Ppfu0EEe9O756sMoDyI/HdzpNZnyvddQmJQK5YApQGt6hI+6TVHoPCba2pqcjiCibkFdSd9qXeFJFdv+fH7DbmiFTXEvhbpWXEbSTo8Uy59qBOnfDXIPGZrlALhTaQ66/1FKWNVEIlV6HyzncZxoxu7EkLiWrIKaDIw+zrFetucergm8VY9d2GvuxS5rmq+lUqBQoxdlwQ54VmgxbEbLmVs3o32GQ6LpIC301f5vsIBmnslnsFv5w3XCko1jECyj7NOOcqxkgSfZy0cgZSlhAS7wXC+BVzL3/fXH8KL8YualV/Ku8IjAH6mcMWRFtLG7ELs=
 x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(366004)(38070700005)(186003)(2906002)(9686003)(38100700002)(122000001)(6506007)(26005)(33656002)(7696005)(82960400001)(7416002)(8936002)(52536014)(83380400001)(110136005)(55016003)(8676002)(508600001)(71200400001)(4326008)(5660300002)(64756008)(66446008)(66476007)(66556008)(66946007)(76116006)(316002)(86362001)(54906003)(14143004);
+ SFS:(13230001)(366004)(7696005)(86362001)(26005)(66446008)(76116006)(83380400001)(66946007)(8676002)(508600001)(66556008)(6506007)(66476007)(64756008)(4326008)(71200400001)(55016003)(38070700005)(38100700002)(316002)(9686003)(110136005)(122000001)(54906003)(82960400001)(2906002)(7416002)(8936002)(5660300002)(52536014)(33656002)(186003)(14143004);
  DIR:OUT; SFP:1102; 
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?P4zSUTuR4323WcPy4G02EFUlZh47sMD+dhHjKM631I2prUu8Iksu+HtvFA1a?=
- =?us-ascii?Q?UmMt5U6xSj9+RvdYBSEWc6x8ihKEOUWo+FWeX1iFLPEqWZ6wVO9hxBrUEiLE?=
- =?us-ascii?Q?PL+X8/UWv1PXR7HaPSmaOpEgis9XjY2zgtkHIXHc97oa1xrpWu9oGEpK7rbZ?=
- =?us-ascii?Q?0nGnJ4mXnYvPxvYqaVXD5ZLYKpRPjG2ON7Zej/oM1b/03dFPSyfMk3dF+jkw?=
- =?us-ascii?Q?XEgCiIs5UnDFjlqFSWcHiB4HBhJ1tFyc2MAjVU2SMu1fUTc6K73Xt3kI5Jgr?=
- =?us-ascii?Q?7xdOH4ZcQfNqonqNxPxk7eVOqO8s/RXD/TY3WY7N1SOnspZheMXHXS4hRlTY?=
- =?us-ascii?Q?M/VZ0QyRMnxmD3zgaZsyUXTFe27Yos8vnW9Y0tevqgmGQAiVmtFBeXYLhT3F?=
- =?us-ascii?Q?Jcz9cROg9m13WNWfzgC+CrlzeXUJ9XDRrU7RKwbIzJaOFtSxPdDgq3ZMsTXo?=
- =?us-ascii?Q?GB/3LvjpaXLaNe2Vmqc5kpacip9m2C9OFyU8CWAr+Ya2bYNbmS8a8oXOhFFf?=
- =?us-ascii?Q?E93U3L5YXAEBktArGNloOr6eoQV8ww9O1nlGS6k/s4fLpRPXzMzVLx5TXCEC?=
- =?us-ascii?Q?eq4WBI9ooyWATzrvvGotAdWQ6IuewF5PIDQDXTDtXFlRjUoaXA9hKh0DflXq?=
- =?us-ascii?Q?oHGz6ly/RZyQIR2hnn3synsDuDzYvKJgiszbYwd7xFovRLgDPgsfvJk26FEf?=
- =?us-ascii?Q?Hgp7+C0jjXfHFEhWQRpjkRcSnOgUMPW9+6cFqRtD/gVL6WWUDP6JyUJSiQ7p?=
- =?us-ascii?Q?5r98caOUo+5vqTSIHlSIjhcP1Z4ZEJ1uANvqKO7Y1dKjKU/yhHJlkFaFPtZi?=
- =?us-ascii?Q?GhmMQJz3i+2oVsWA9/VYpfsiwsk2RDtpEjZHl1yFYjfm3K3n5RKn2NpEskxQ?=
- =?us-ascii?Q?8LaOu6ua5HNR+Qs0ZkHmrXAVQFQHvYhyeScxoFmFhkO9vXU0xxHblQE23UMT?=
- =?us-ascii?Q?MyDafo6jgDTM8WdB0XJ1OnhbFQY6KOpQZsbfa2P1COP9S9kt3koOvxL1vYwc?=
- =?us-ascii?Q?3rdqYoYWtm5ZOIrQowtjEoUTCHUj4vi+mhoxrcDIJV++pBipm6Vtw+G90xdy?=
- =?us-ascii?Q?cfh2QEu0+yRAOdMFy36saEj41wqieBZjxSkd9TUvcAn8OBrBA1XZ+Tn85QE9?=
- =?us-ascii?Q?uLR71uBAS/5C39J8gpsQUvsgn1mAJ+uHY16HfOUa87JcGaoyI2HrxLD1x/pX?=
- =?us-ascii?Q?3veLMx6KCi6pUD7fpBJJXjzBOypJdcHFZ9Y0MA8cWLDhgu7UqC1fNHxjEWK8?=
- =?us-ascii?Q?9rYElfkKnbNic/xoVGB2ks7JeTbvED240acqnzYPQ3xMCWZIIWs2cs1Sm+e2?=
- =?us-ascii?Q?WDBTD+0xMREzpSQW2e6fefDcXIl/1X8kN7fWGt+DV4SlViUryL8oSgP5wAzo?=
- =?us-ascii?Q?9wrR6HG304YW8v+M4tzce94pCxH8DT0Nr7u0IAAhBHWj2a6p3edbsQbvrctd?=
- =?us-ascii?Q?s8inevSMTax97Yo/NwuRUQkCLl1wMd/K1OGspM3gpANQD+WWHAoBUPP8y64C?=
- =?us-ascii?Q?wrOCJl8y01LowR9ZeO/roY+k9fwTz5p0VYZk2sps6Sv96odG21teEjJAfg7a?=
- =?us-ascii?Q?b22OgJgtdlzdFovw6qbKwOCv4KAiYJ5kHaIkFtx3XlFm7PNoyFqM9h+WbQXi?=
- =?us-ascii?Q?xsvVnDNKGu3DAnItZ76wlJHdlsFzk+tp1LprRx1GpKxlt/F2r8YVco1sGFxx?=
- =?us-ascii?Q?ATAfEmnokbWdd5Hca/Ww5QoX963m0lyye4tDPrKh1XcG/M4JYpN2iV1em//o?=
- =?us-ascii?Q?4RkkoIXIRA=3D=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?4eOvT3iXjg7Uf9+7LZE2x47/LerAGl5i4Z5DHF/FxHpp7TU8uszeoMvXM7KU?=
+ =?us-ascii?Q?MS3BIPUBY5whVic9KWlCwTeVgkySW0UY2elNmGuGArdqly6nESKP0bs3iB5F?=
+ =?us-ascii?Q?NcKDc3TQea6DMNFDzP0aN954MqbroisVBXQptUeq21zpsScXTmEH57UF/QM8?=
+ =?us-ascii?Q?HIJPFhW50NMY6moggQLrbZy9j59KqJlmutuiF3ThLgf1r8JVVgoj9x7UrqT1?=
+ =?us-ascii?Q?X1jUaj0XgzJ1IFN4k28U5xIAJTrIe1gtbxVGKx3Bc14ay2J8ZSUQQMTWMQP3?=
+ =?us-ascii?Q?hkZoEdKo23E/Fv1Bgr+nIZUbeVXR5ozuZVIzbgYnElM6qAEpcHCNDhnev/JF?=
+ =?us-ascii?Q?ceeLOlJbUdbspIKoX2byUgKmTF6sBjXaxzurFmXQuMivr+qCMk4v5hCrBVs5?=
+ =?us-ascii?Q?DuN3TXJ+udK9GspMfbiwwDYycKe8F6UkmVIaxNhxYkHlE1kQlXi4vtTLSHiG?=
+ =?us-ascii?Q?z1WwVZTi2mgdNbH6kPLx6c0qjsHTr57E5evRKiwfeuXy2FjXmPce5+EU9YDl?=
+ =?us-ascii?Q?MR2WzPeAaORyqZo6qWwoULKZTsmuwNH/m+hY+lN8LkrxmSMlBRhJMCini+sT?=
+ =?us-ascii?Q?edYk0oziiJ0sJt6C4LCI2qp0Rdx+SEqUyBlgLptADlNPVEVaTTKsPTDxgFTh?=
+ =?us-ascii?Q?FKY4WzqXJl6OVuELe3OM+YfnqBdjXCfA7/jzVBRDMA7oA9x5BVVQ2mtg4bBK?=
+ =?us-ascii?Q?G2H2vr02653qk9NdTU/K5rpUUllPFi6XUqUjqFEIbbpshhLfzaTMBVK571Aq?=
+ =?us-ascii?Q?lFuJkJlxrE5iW3Txczdm0fDzQuUvxOJom57gOUBjxsvrYvMo1TBKnTciQZMU?=
+ =?us-ascii?Q?87g2PniOD181uAcbmj/Fl4mzRVvc1BM0b2ELIx+I7OosnxLZOQi2zLMv5Hwf?=
+ =?us-ascii?Q?hCX9zK/6WvcZqJp3kT0aOT0So2pPs5Ppy2yftqUW8GaVqQVKb/K0S7m4llPX?=
+ =?us-ascii?Q?/kqAwIXQFiP3TjBKuNPb/hjJmTxSTXlbvTa0LqxRUg8TrvuqESOESCvQiuy9?=
+ =?us-ascii?Q?Y1SXpaHoQ4EyJNMP/C/LkPHyNzrWis8NgHZJU+KZCotBdOWn977A8YO9rMEm?=
+ =?us-ascii?Q?dKfTFfdbJ2T2SGYs7+w492s2cE3Yulyf4AMfJEm6NnXnNH/9+gHpcyx1ud4b?=
+ =?us-ascii?Q?jmMnGXfujZK8vgHXmyVf1LmOjQFbb9TMakb6+5dsSe8n5//PZsQeAO9TH3oQ?=
+ =?us-ascii?Q?T6lsCdC3PgF2fgBVhxV/pHNHj7J9++Rty8P5pYQQqTv5oBAeKxfTTvt6Qglr?=
+ =?us-ascii?Q?49qW38PAF+WJtQzCEkJ+shDnOnqDkOmlxXMQZGZVxSmlpoQmJVmpe4BXRVXv?=
+ =?us-ascii?Q?RrC/CQOKNaimWxcaiBi6JZbk7Kl6whcw2jOkL2ymZNcFaUEykThphA9Veo+H?=
+ =?us-ascii?Q?YLzOQrny3uod2bafgvKcshwMzrdO5X7vRiCRXWr4v4JjpjXGlncE4dOIeUkQ?=
+ =?us-ascii?Q?xjjAMtAGcUkfiAcNsxU9UZoaUBXxZ5QLLUn4YRz9EQp9UWuyh2vs9xWsMqL9?=
+ =?us-ascii?Q?VyhDuYBvsKFvP8xRYdKYHu/jUi2w+MEQwAsTxiblj+l1Qz3WSG/VH9cGemSa?=
+ =?us-ascii?Q?dch4jIogxRJGCmMwXB6ouK/vpdF2AY1yFfPDsAV3lqA4sc0VVzKRUVv9+f1d?=
+ =?us-ascii?Q?DJRuCFwrpkwVB71jHk3h1S8A/M3Echb9BJbwrdeHz945PfdQgXYkvcBqIsSG?=
+ =?us-ascii?Q?gQ2/rV6Rzf8HssOsiUCPbLKCFDGiDcjrlhYCQ+5AmWV6GA0pMITy0fpyJWPX?=
+ =?us-ascii?Q?6ottSVQ7oA=3D=3D?=
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cecc7c9d-ed6c-44e4-5b54-08da29b5712c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Apr 2022 07:54:09.0741 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4e1038a5-1262-4b5c-5901-08da29b7457b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Apr 2022 08:07:14.7499 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: AzX3Yb437a03WL0PKeUYYrvgokX5pAa9lJI7vdcfHpBzKqWJDeHmhByjEWz1KxdIG9jvr84q0a53zZ3WqMnozA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4721
+X-MS-Exchange-CrossTenant-userprincipalname: EfVeiA4WxI02WUka21Xh9zGxAiSW2aPj/Sk+c9TRC2UWKW+MWQPFOpeWYhFnqrYLyXmIQIH0rXLOhSPeP62VUQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2998
 X-OriginatorOrg: intel.com
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Yishai Hadas <yishaih@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
@@ -185,93 +194,116 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 > From: Joao Martins <joao.m.martins@oracle.com>
 > Sent: Friday, April 29, 2022 5:09 AM
 > 
-> Add to iommu domain operations a set of callbacks to
-> perform dirty tracking, particulary to start and stop
-> tracking and finally to test and clear the dirty data.
+> +static int __set_dirty_tracking_range_locked(struct iommu_domain
+> *domain,
 
-to be consistent with other context, s/test/read/
+suppose anything using iommu_domain as the first argument should
+be put in the iommu layer. Here it's more reasonable to use iopt
+as the first argument or simply merge with the next function.
 
-> 
-> Drivers are expected to dynamically change its hw protection
-> domain bits to toggle the tracking and flush some form of
-
-'hw protection domain bits' sounds a bit weird. what about
-just using 'translation structures'?
-
-> control state structure that stands in the IOVA translation
-> path.
-> 
-> For reading and clearing dirty data, in all IOMMUs a transition
-> from any of the PTE access bits (Access, Dirty) implies flushing
-> the IOTLB to invalidate any stale data in the IOTLB as to whether
-> or not the IOMMU should update the said PTEs. The iommu core APIs
-> introduce a new structure for storing the dirties, albeit vendor
-> IOMMUs implementing .read_and_clear_dirty() just use
-
-s/vendor IOMMUs/iommu drivers/
-
-btw according to past history in iommu mailing list sounds like
-'vendor' is not a term welcomed in the kernel, while there are
-many occurrences in this series.
-
-[...]
-> Although, The ARM SMMUv3 case is a tad different that its x86
-> counterparts. Rather than changing *only* the IOMMU domain device entry
-> to
-> enable dirty tracking (and having a dedicated bit for dirtyness in IOPTE)
-> ARM instead uses a dirty-bit modifier which is separately enabled, and
-> changes the *existing* meaning of access bits (for ro/rw), to the point
-> that marking access bit read-only but with dirty-bit-modifier enabled
-> doesn't trigger an perm io page fault.
-> 
-> In pratice this means that changing iommu context isn't enough
-> and in fact mostly useless IIUC (and can be always enabled). Dirtying
-> is only really enabled when the DBM pte bit is enabled (with the
-> CD.HD bit as a prereq).
-> 
-> To capture this h/w construct an iommu core API is added which enables
-> dirty tracking on an IOVA range rather than a device/context entry.
-> iommufd picks one or the other, and IOMMUFD core will favour
-> device-context op followed by IOVA-range alternative.
-
-Above doesn't convince me on the necessity of introducing two ops
-here. Even for ARM it can accept a per-domain op and then walk the
-page table to manipulate any modifier for existing mappings. It
-doesn't matter whether it sets one bit in the context entry or multiple
-bits in the page table.
-
-[...]
-> +
-
-Miss comment for this function.
-
-> +unsigned int iommu_dirty_bitmap_record(struct iommu_dirty_bitmap
-> *dirty,
-> +				       unsigned long iova, unsigned long length)
+> +					     struct io_pagetable *iopt,
+> +					     bool enable)
 > +{
-> +	unsigned long nbits, offset, start_offset, idx, size, *kaddr;
+> +	const struct iommu_domain_ops *ops = domain->ops;
+> +	struct iommu_iotlb_gather gather;
+> +	struct iopt_area *area;
+> +	int ret = -EOPNOTSUPP;
+> +	unsigned long iova;
+> +	size_t size;
 > +
-> +	nbits = max(1UL, length >> dirty->pgshift);
-> +	offset = (iova - dirty->iova) >> dirty->pgshift;
-> +	idx = offset / (PAGE_SIZE * BITS_PER_BYTE);
-> +	offset = offset % (PAGE_SIZE * BITS_PER_BYTE);
-> +	start_offset = dirty->start_offset;
-
-could you elaborate the purpose of dirty->start_offset? Why dirty->iova
-doesn't start at offset 0 of the bitmap?
-
+> +	iommu_iotlb_gather_init(&gather);
 > +
-> +	while (nbits > 0) {
-> +		kaddr = kmap(dirty->pages[idx]) + start_offset;
-> +		size = min(PAGE_SIZE * BITS_PER_BYTE - offset, nbits);
-> +		bitmap_set(kaddr, offset, size);
-> +		kunmap(dirty->pages[idx]);
+> +	for (area = iopt_area_iter_first(iopt, 0, ULONG_MAX); area;
+> +	     area = iopt_area_iter_next(area, 0, ULONG_MAX)) {
 
-what about the overhead of kmap/kunmap when it's done for every
-dirtied page (as done in patch 18)?
+how is this different from leaving iommu driver to walk the page table
+and the poke the modifier bit for all present PTEs? As commented in last
+patch this may allow removing the range op completely.
 
-Thanks
-Kevin
+> +		iova = iopt_area_iova(area);
+> +		size = iopt_area_last_iova(area) - iova;
+> +
+> +		if (ops->set_dirty_tracking_range) {
+> +			ret = ops->set_dirty_tracking_range(domain, iova,
+> +							    size, &gather,
+> +							    enable);
+> +			if (ret < 0)
+> +				break;
+> +		}
+> +	}
+> +
+> +	iommu_iotlb_sync(domain, &gather);
+> +
+> +	return ret;
+> +}
+> +
+> +static int iommu_set_dirty_tracking(struct iommu_domain *domain,
+> +				    struct io_pagetable *iopt, bool enable)
+
+similarly rename to __iopt_set_dirty_tracking() and use iopt as the
+leading argument.
+
+> +{
+> +	const struct iommu_domain_ops *ops = domain->ops;
+> +	int ret = -EOPNOTSUPP;
+> +
+> +	if (ops->set_dirty_tracking)
+> +		ret = ops->set_dirty_tracking(domain, enable);
+> +	else if (ops->set_dirty_tracking_range)
+> +		ret = __set_dirty_tracking_range_locked(domain, iopt,
+> +							enable);
+> +
+> +	return ret;
+> +}
+> +
+> +int iopt_set_dirty_tracking(struct io_pagetable *iopt,
+> +			    struct iommu_domain *domain, bool enable)
+> +{
+> +	struct iommu_domain *dom;
+> +	unsigned long index;
+> +	int ret = -EOPNOTSUPP;
+> +
+> +	down_write(&iopt->iova_rwsem);
+> +	if (!domain) {
+> +		down_write(&iopt->domains_rwsem);
+> +		xa_for_each(&iopt->domains, index, dom) {
+> +			ret = iommu_set_dirty_tracking(dom, iopt, enable);
+> +			if (ret < 0)
+> +				break;
+> +		}
+> +		up_write(&iopt->domains_rwsem);
+> +	} else {
+> +		ret = iommu_set_dirty_tracking(domain, iopt, enable);
+> +	}
+> +
+> +	up_write(&iopt->iova_rwsem);
+> +	return ret;
+> +}
+> +
+>  struct iopt_pages *iopt_get_pages(struct io_pagetable *iopt, unsigned long
+> iova,
+>  				  unsigned long *start_byte,
+>  				  unsigned long length)
+> diff --git a/drivers/iommu/iommufd/iommufd_private.h
+> b/drivers/iommu/iommufd/iommufd_private.h
+> index f55654278ac4..d00ef3b785c5 100644
+> --- a/drivers/iommu/iommufd/iommufd_private.h
+> +++ b/drivers/iommu/iommufd/iommufd_private.h
+> @@ -49,6 +49,9 @@ int iopt_unmap_iova(struct io_pagetable *iopt,
+> unsigned long iova,
+>  		    unsigned long length);
+>  int iopt_unmap_all(struct io_pagetable *iopt);
+> 
+> +int iopt_set_dirty_tracking(struct io_pagetable *iopt,
+> +			    struct iommu_domain *domain, bool enable);
+> +
+>  int iopt_access_pages(struct io_pagetable *iopt, unsigned long iova,
+>  		      unsigned long npages, struct page **out_pages, bool
+> write);
+>  void iopt_unaccess_pages(struct io_pagetable *iopt, unsigned long iova,
+> --
+> 2.17.2
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
