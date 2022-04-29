@@ -4,74 +4,174 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5D1AFC433F5
-	for <iommu@archiver.kernel.org>; Thu, 28 Apr 2022 22:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 62220C433F5
+	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 01:21:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id DF84341BCE;
-	Thu, 28 Apr 2022 22:50:02 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id F332041C64;
+	Fri, 29 Apr 2022 01:21:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id E_zrFL86v3p9; Thu, 28 Apr 2022 22:50:02 +0000 (UTC)
+	with ESMTP id Jm6mWA5GBXp5; Fri, 29 Apr 2022 01:21:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id AB22641BBF;
-	Thu, 28 Apr 2022 22:50:01 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 3BF1541C61;
+	Fri, 29 Apr 2022 01:21:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8085EC0032;
-	Thu, 28 Apr 2022 22:50:01 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 42D81C002D
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 22:50:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 06524C0039;
+	Fri, 29 Apr 2022 01:21:44 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 328F8C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 01:21:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 29F8340AC2
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 22:50:00 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0C04241C61
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 01:21:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ip_bXLsSvP9A for <iommu@lists.linux-foundation.org>;
- Thu, 28 Apr 2022 22:49:59 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id YoQUdc31hHS7 for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Apr 2022 01:21:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org
- [IPv6:2604:1380:4601:e00::1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 6A25240004
- for <iommu@lists.linux-foundation.org>; Thu, 28 Apr 2022 22:49:59 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id 64532B82FE1;
- Thu, 28 Apr 2022 22:49:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5850C385AE;
- Thu, 28 Apr 2022 22:49:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1651186195;
- bh=HtpdNELwTjJdkzcKexRq3PpFYibX+KiI+5Mg9QQTkoc=;
- h=Date:From:To:cc:Subject:In-Reply-To:References:From;
- b=qpnUhybQuZLy2kl5npv3kFgzmULOTQo3x+KWc+vYnSGDZb4qA1fs7ljiiaDFHcXkl
- W8Iue9Wbe6NSFlErp2AUlL+GjaOm1JH/2oxNMJk7GDr4vf4CAIw/1uuz7UaHFtQKSB
- Jkxfi5FmAvSNglLS7NuBynzEeNADzROAmozt9AO0TIw5hmRxxowE88n/TkZSf1zgei
- 4fEC1O9iMPBHWxQSH58CH0G5sW/E1HBTsCvhGSXEeYgSvWalYsCRyQ5aTZOKPDs70I
- 1JuLqQORKpSQWfXIzCaNitKkYJ/zsX/eVaeQ9lKdq2D4PmQhrq/WQxg2RN/6plnx9y
- rItdeGgUSRaHw==
-Date: Thu, 28 Apr 2022 15:49:53 -0700 (PDT)
-From: Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
-To: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Subject: Re: [PATCH] swiotlb-xen: fix DMA_ATTR_NO_KERNEL_MAPPING on arm
-In-Reply-To: <27d39d5a-3b79-bdda-b7e4-f4477667919f@oracle.com>
-Message-ID: <alpine.DEB.2.22.394.2204281548320.915916@ubuntu-linux-20-04-desktop>
-References: <20220423171422.1831676-1-hch@lst.de>
- <alpine.DEB.2.22.394.2204261605420.915916@ubuntu-linux-20-04-desktop>
- <20220428132737.GA13999@lst.de>
- <alpine.DEB.2.22.394.2204281449060.915916@ubuntu-linux-20-04-desktop>
- <27d39d5a-3b79-bdda-b7e4-f4477667919f@oracle.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9E70841C5E
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 01:21:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1651195301; x=1682731301;
+ h=from:to:cc:subject:date:message-id:references:
+ in-reply-to:content-transfer-encoding:mime-version;
+ bh=FVDa22NkUznuk977ChlKY16nVqfLmZCk1FQayHQ8PyE=;
+ b=CJ/giGPnbj7C6x/bbbC98b2hWwzVaJMY/wZymqqyXEkogBah0+Cskbg2
+ Ppy9ahm0PmLoBN9Gq/vbQhChzs9E8eF7GfT8ohyFQwMobtnSEOOoIzVTj
+ oj7s/tKvdZVjsqW89g+N1bkdL0kNSuoJlC15ZfovFdWzxDBIWI41FPP7y
+ KtRmrJSrTVzORme/PAV9pqsxbXHQ8M4zAfQtvwEy+kaoryLhqLRevAtFw
+ k++pH12qX8s2slmPW3XKW8aAmrbPqKVP3F8p2Hj3SzEcpWGt8LNY3RpaB
+ bKEv2xj+S7GxAQGSC1vUTCejPekvluOLh6ziKHw4tCyIz+pqWV1Z4n1Jm g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="264074265"
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; d="scan'208";a="264074265"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Apr 2022 18:21:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; d="scan'208";a="581767337"
+Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
+ by orsmga008.jf.intel.com with ESMTP; 28 Apr 2022 18:21:40 -0700
+Received: from fmsmsx606.amr.corp.intel.com (10.18.126.86) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Thu, 28 Apr 2022 18:21:39 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Thu, 28 Apr 2022 18:21:39 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.104)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Thu, 28 Apr 2022 18:21:39 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bVDhNpLmlVAMlA1bPWXUxMZMTn+1ogPjVnRS9qgZf6OISvJvB8wSx9rpBvZjaJ2GDgnJH29m3HrOxdk8rUeZ96mgaoaxOoP13gj+hD+wXxESyuhHRozb9IZQiDys7BCmG1HSrCNn+RvePhjnktdsPbxrybKuXZ7ttsOB56ViOjkyVoJtmhAoiSDqb6ELIIF03rIxG6kBahsyFQUmRvxJNTmNh6vh//lTufCsOcsQL8LlHU8CZM1v0NQs/t22im5bv0M07RZ9djMF/IkgaQXUqia8a0DaRvXyfpvZiG6cMfWtgn4rYp0Vd2s859MxUrk6o+slzlaM8lBjmilJtHGvkg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XO1d1IanOj00M2kMl9INK10CudalvO7Gr0+AqzeK33Q=;
+ b=W+1w7RaAU0Eop74BD2vZWr2VMLirAfkL209+2sRuoIn7mWwK/aOJjxcqcYkB7RpLMHq/E7RXMmv/EIDKiVjKiWnjTp99fY/4SSaRH7svZ8/WrXbFSAFbKHHlswwVlItb3p6boxzgPHP8RrWC+n9hOukVEaE1yQHSDd7yexLo1fcCfbJT0t+Qtyek7U/cL+hk2YBT0WZTGoB+mr0ax/owydV9ujfQNLysqvc/vw93Lb6p4KFsySuUplNfqJh7ewMxzYY1cKB0VHmimElFgBZ9Nm9LIAsmMppZkLZJbA3Rww5iHGYkllf4zUGbWVycLzr8jDEp3sirEw8wDCLcRG7BQw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by BN6PR11MB3890.namprd11.prod.outlook.com (2603:10b6:405:7a::20)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.23; Fri, 29 Apr
+ 2022 01:21:30 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::24dd:37c2:3778:1adb]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::24dd:37c2:3778:1adb%2]) with mapi id 15.20.5206.013; Fri, 29 Apr 2022
+ 01:21:30 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, David Gibson
+ <david@gibson.dropbear.id.au>
+Subject: RE: [PATCH RFC 11/12] iommufd: vfio container FD ioctl compatibility
+Thread-Topic: [PATCH RFC 11/12] iommufd: vfio container FD ioctl compatibility
+Thread-Index: AQHYOu2EhhTTZTsn5EqajxaIjlC6M6zNmzGAgAAclACAAWiFgIA2iT0AgAAE2ICAAKo2cA==
+Date: Fri, 29 Apr 2022 01:21:30 +0000
+Message-ID: <BN9PR11MB5276C4C51B3EB6AD77DEFFCD8CFC9@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <0-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <11-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <20220323165125.5efd5976.alex.williamson@redhat.com>
+ <20220324003342.GV11336@nvidia.com>
+ <20220324160403.42131028.alex.williamson@redhat.com> <YmqqXHsCTxVb2/Oa@yekko>
+ <20220428151037.GK8364@nvidia.com>
+In-Reply-To: <20220428151037.GK8364@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f655b7c6-1d60-4272-c243-08da297e971e
+x-ms-traffictypediagnostic: BN6PR11MB3890:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <BN6PR11MB3890A33D65399B669A027DA48CFC9@BN6PR11MB3890.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: wCQ4zoc8hRRl944T60Xl1RvuAVpsw11H5nfAPtJAmrA92ymTBEHt7o+kdBxeZvf+7HqnqgYoFfnahs+mhPGu40i8gExlJackrt17xOf/r9GbAxjVtZ+XJ1qURU+haCJdT5FZ6PzwAvoIk83wKjLe8WGL1qFmlpcxFXxsOV2N+HitH3GcejWTW/+tLX0omBxXQl9kbJofpvz3Ie+a9M2OK8wU+arF0i0pUDPEGjwLLzV5gyEH6z8OQSntUfxsze8zI+fc7lyjgLIQpoeXcz6WxY4H+7vT5dWrfP0QFx9WZwURwkfB+/3Z1Dxzm/iqg6T7rOZqeiK8/SljA6nrkkT5HuVfadyxcXq0z1SU4ke7sP5dJ84ybphS2Eb75uxqrs1HTx772xSfC7VvP5Nd0vertFDg+fx8K8iYUgMYxCLpcLrmSt7zWfScr8IT7ukdsbQfrlqjoK7UIttiGqJsZpYIsL49vXy7KJjxYaqEKCNZ6905s+J5JX9+ybiWvbRnJlx7oCJHsVYu9N9uSZ7U63zTZZ9xXTWk8ZDKI868KqwjLSm7p62dggy8hajYJdkCyHf0J8K0X7xuE5GGyvPSjns/zt1u7o8xaz8/Bd2BfcUK9gBkEZxsv0/vBFAQYxPW80F58WyeQaJDsqQ9t/8NUWNsdjsyan80gP+Qw/QX1awlpntfbrRNq+DpHOcRW0PI/OeI8UcBiIM+rXEE5yUUFyL+qg==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(26005)(55016003)(9686003)(5660300002)(86362001)(316002)(7416002)(110136005)(508600001)(38070700005)(38100700002)(8936002)(54906003)(7696005)(52536014)(4326008)(6506007)(82960400001)(122000001)(186003)(33656002)(66946007)(66556008)(64756008)(76116006)(66446008)(66476007)(83380400001)(8676002)(2906002)(71200400001);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?OaoP9Z9EY1imLeufvX3WBcxTs4azEecSjUgwCzXBwn7nuxbjto26G2RFxGFt?=
+ =?us-ascii?Q?cGJTpXj/peDoR7DMLK2l1Jr/EGHf23gubAgPragOR8QQjXkJd7Na/sdtn1nb?=
+ =?us-ascii?Q?5vInRcctvmJvqHm/hF6OMd0nboTa+fW01mSXn0w/KEkEeDFEizMrXQ9cNZ8L?=
+ =?us-ascii?Q?vdIftIC04efmbY0EDwav4RNINjpHqqP92SbOFqaCcnzYyE8KaFKqjgpj8AcX?=
+ =?us-ascii?Q?Et58jAaV8yD753dt7EmEkMGfVOac22CjM00/qMPIBrL0thytWT2XqiOsfTxO?=
+ =?us-ascii?Q?FA4KpZicEJvTNhgA+3+LoHdR8FBwH2LFFJ2jzCL5D1Xts1k9zCc9LN9RTmIY?=
+ =?us-ascii?Q?uk4In5/xR9hp0arAUZGttfRL3OtVF+VsfT6eFTIGe7kdpmhFkR/5qxBjWlW0?=
+ =?us-ascii?Q?iYCWIIqQClnuo5P3KkBtOCO04h/WEcSaoQ/EDysbZMVTgGVDaqIMafiYe8Ag?=
+ =?us-ascii?Q?8vAko8uTEi6YKyvBJEcplOUEkbksL8PItD9/2Fm/CDH0fmDlGy6uzBNX1eLh?=
+ =?us-ascii?Q?FhLvZzr2pYK49U8BB7H8dFDYp93lndbJcJ/3kkOA1hTxFeKqjzmlHZoOE7+n?=
+ =?us-ascii?Q?A0MbcvZByKuKvEOrmXa1gq+59L2znXjeJxwOrMPRv/pxSUeJwKmRtyPrYq2D?=
+ =?us-ascii?Q?oul6tL3zRUuCqVZQE+/E/Zv13w0/DpV7A0j/BoXfmdtoGOjvANEQL5i+bcvK?=
+ =?us-ascii?Q?Z1IWBeKvytMJFDDVUh+nQToP/kOBE51I61Z/RUxCKUM+9aYkJJP2xGoEG/DZ?=
+ =?us-ascii?Q?J9Ss9ovsP8HBQC2zHtm+Ur4Da6r//ftjRHF51Xp+NP3oDRu9nzi/Wh88pQZL?=
+ =?us-ascii?Q?U6ckoRe9VoAWZXfdeFwO/ToYG0eDaYMHUpDS1zUvHBPytjc+QKf10mCCCaG0?=
+ =?us-ascii?Q?nJT0m6q9VK6pnG31wixscIekwHPVYiI/B3ng5k4XYZKnxIrHBBOcC4y+n5Uf?=
+ =?us-ascii?Q?xbedSPoQ8mCE5c38aUUdKjy4fdDDj7U+oERed9CnlrIvEqNoFoFTZ8GvCwNL?=
+ =?us-ascii?Q?NhS0qASI07rXFjB509eSc+37iRC0uk4qasbNKRtXnX9dtQPhU4vRcQ0p+Bnd?=
+ =?us-ascii?Q?f6Ym4lxziUcq0qwRH45fAFp6bwbj1SyNYKEgIgnrT1s1GShkY+8eY+PZOqyi?=
+ =?us-ascii?Q?PodyzUlY8pUZVhy8JwY03F4AFS4to0kkFC5qD6pXSuzwnFLP/31/U5/L0pzm?=
+ =?us-ascii?Q?+pBgtxMwE6S9cAplomABYK4CA1+LCDRDlNj2Crk6Gt/mQJTPUeOSAOk9Enzk?=
+ =?us-ascii?Q?RKlxhe/6V3t0Xf/fq3jVyHEV8YQa/xmnctZNkKhyNL6zUJdVM1pS4GcInXbQ?=
+ =?us-ascii?Q?GzhoNeV+bkBlwFeQC8ht6pY4R2N2iLVBHMTpLucaYxVUARiClnnAuyE0xkwZ?=
+ =?us-ascii?Q?8pWRm+6C9HF2pisPDdS35dgGKsxM+W+y7YJ8HsqqDRK1Zvq1pv+p974Mz1Bn?=
+ =?us-ascii?Q?TpJaoGNI8xkGBjDQZO88ovBjxCdi5d2b+FCTR/3KPu7pdeT+zYNLJNh8a7GX?=
+ =?us-ascii?Q?eucSLvd39AcZqSatxvCSn7UiOrhi1VSN7xLq8xJK1ma1FKMfX86wmpUBuFY5?=
+ =?us-ascii?Q?+55RcEFzRKYcXOXRCKc6kp30H6ZXM7fBIOJbaLvLK+IReAKIrcrLAom28uMJ?=
+ =?us-ascii?Q?2bzjtQ55sgq3Xyndu9E48l1U1Br6fs4Q9W3P6d9G0J52j1ZlKjorF7eyX2np?=
+ =?us-ascii?Q?W2BtX2pgquoJMyh4vaGEB1IsajuXy3HZBhkWmZLy+QHlfOQhLeXG9koFqJnx?=
+ =?us-ascii?Q?C+57pQ1dtA=3D=3D?=
 MIME-Version: 1.0
-Cc: jgross@suse.com, Stefano Stabellini <sstabellini@kernel.org>,
- iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org,
- Rahul Singh <Rahul.Singh@arm.com>, Christoph Hellwig <hch@lst.de>,
- linux-arm-kernel@lists.infradead.org
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f655b7c6-1d60-4272-c243-08da297e971e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Apr 2022 01:21:30.4027 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: VMJdtX466EJmOEicCK6T+w+MOqQjQINdPA1VNJX7/wyS+ZquiS1jCa7GsVPZCpH8MkcDIr3PN5Bg/lKi1xmj/w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB3890
+X-OriginatorOrg: intel.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason
+ Wang <jasowang@redhat.com>, Cornelia Huck <cohuck@redhat.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Daniel Jordan <daniel.m.jordan@oracle.com>,
+ Alex Williamson <alex.williamson@redhat.com>, "Martins,
+ Joao" <joao.m.martins@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,36 +189,37 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 28 Apr 2022, Boris Ostrovsky wrote:
-> On 4/28/22 5:49 PM, Stefano Stabellini wrote:
-> > On Thu, 28 Apr 2022, Christoph Hellwig wrote:
-> > > On Tue, Apr 26, 2022 at 04:07:45PM -0700, Stefano Stabellini wrote:
-> > > > > Reported-by: Rahul Singh <Rahul.Singh@arm.com>
-> > > > > Signed-off-by: Christoph Hellwig <hch@lst.de>
-> > > > Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
-> > > Do you want to take this through the Xen tree or should I pick it up?
-> > > Either way I'd love to see some testing on x86 as well.
-> > I agree on the x86 testing. Juergen, Boris?
-> > 
-> > I'd say to take this patch via the Xen tree but Juergen has just sent a
-> > Xen pull request to Linux last Saturday. Juergen do you plan to send
-> > another one? Do you have something else lined up? If not, it might be
-> > better to let Christoph pick it up.
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Thursday, April 28, 2022 11:11 PM
 > 
 > 
-> We don't have anything pending.
+> > 3) "dynamic DMA windows" (DDW).  The IBM IOMMU hardware allows for
+> 2 IOVA
+> > windows, which aren't contiguous with each other.  The base addresses
+> > of each of these are fixed, but the size of each window, the pagesize
+> > (i.e. granularity) of each window and the number of levels in the
+> > IOMMU pagetable are runtime configurable.  Because it's true in the
+> > hardware, it's also true of the vIOMMU interface defined by the IBM
+> > hypervisor (and adpoted by KVM as well).  So, guests can request
+> > changes in how these windows are handled.  Typical Linux guests will
+> > use the "low" window (IOVA 0..2GiB) dynamically, and the high window
+> > (IOVA 1<<60..???) to map all of RAM.  However, as a hypervisor we
+> > can't count on that; the guest can use them however it wants.
 > 
+> As part of nesting iommufd will have a 'create iommu_domain using
+> iommu driver specific data' primitive.
 > 
-> I can test it but at best tomorrow so not sure we can get this into rc5. Do
-> you consider this an urgent fix or can we wait until 5.19? Because it's a bit
-> too much IMO for rc6.
+> The driver specific data for PPC can include a description of these
+> windows so the PPC specific qemu driver can issue this new ioctl
+> using the information provided by the guest.
+> 
+> The main issue is that internally to the iommu subsystem the
+> iommu_domain aperture is assumed to be a single window. This kAPI will
+> have to be improved to model the PPC multi-window iommu_domain.
+> 
 
-On one hand, Linux doesn't boot on a platform without this fix. On the
-other hand, I totally see that this patch could introduce regressions on
-x86 so I think it is fair that we are careful with it.
-
-From my point of view, it might be better to wait for 5.19 and mark it
-as backport.
+From the point of nesting probably each window can be a separate
+domain then the existing aperture should still work?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
