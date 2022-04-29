@@ -4,77 +4,88 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CD5A4C433F5
-	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 06:57:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0A29EC433FE
+	for <iommu@archiver.kernel.org>; Fri, 29 Apr 2022 07:54:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 6E5B241C69;
-	Fri, 29 Apr 2022 06:57:57 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 7132B41C4D;
+	Fri, 29 Apr 2022 07:54:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gAKkQN-DHiGi; Fri, 29 Apr 2022 06:57:56 +0000 (UTC)
+	with ESMTP id lFq2mgOSzE4s; Fri, 29 Apr 2022 07:54:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id BDFEB41974;
-	Fri, 29 Apr 2022 06:57:55 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id BF10841C84;
+	Fri, 29 Apr 2022 07:54:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8BE1DC0039;
-	Fri, 29 Apr 2022 06:57:55 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 905BEC002D
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 06:57:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 81980C0032;
+	Fri, 29 Apr 2022 07:54:07 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B6B8FC002D
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 07:54:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 65A68405CD
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 06:57:54 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id A328884002
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 07:54:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LcyZhgp_FC0W for <iommu@lists.linux-foundation.org>;
- Fri, 29 Apr 2022 06:57:53 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id kBloCuh5Bs7M for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Apr 2022 07:54:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 5F85240004
- for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 06:57:53 +0000 (UTC)
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id AC7C383FE4
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Apr 2022 07:54:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1651215473; x=1682751473;
+ t=1651218845; x=1682754845;
  h=message-id:date:mime-version:subject:to:cc:references:
  from:in-reply-to:content-transfer-encoding;
- bh=7IYIalnzyIdxUGK/p8/irKiOiXWCGEyooF3P66WCsLY=;
- b=E1EaBuSJQjaglLjfptmA3rAdYsHg0Mqf02rYYgA4uoM5xJ1O7JN9KkYB
- jCI11NtcupgxDj621J/UwsHPjlUAqjX42gHHptkQ1Q47BmV+cQ0ZRMqtR
- XpG3qdbxINSAHYxMR5hqjsLDDQB93c6449oedd0Qq4dA7d2uPws+oyjfQ
- J1LPTiDSJGc5Qi0UhN6m+ckQTNgVaOPMwquSOt5fQGzhPlaA7NXaxsXv8
- +7G5/FodCelDpTKQpxQ7NCd+Tvp0OyZzvw7MebyIuR5jbHSSTEUWLm083
- YnmFYh3h3oXm7b2na0d2/mFKctf6h3s/PZBG0Sip8EHGZZjTfyqcHOHFA A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="253938137"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; d="scan'208";a="253938137"
+ bh=sZOMqFBA+sb3zh0RoDJhE1INTls5iHdZxwMbS5aX+wk=;
+ b=mKFqM85G5rXS6U2dWlj7hsCI7U/uoFYCxcrJsK8hbpQ8xzZYGQnpHe97
+ wo07Q26xJ6GCQYbcJ7v/AwNoXklGwlKk4vsNItvclT3D99M6wIdSCEvzt
+ tIsFqUw2Bq5yXSIBRpohL4IDYBqm3/9oebam6yzwSs/W7P4E9GovRkuN2
+ jOGE1NdIxZeGZK78ohjIjY/joPArb24zIKAOPJydhips6167I6TzI549l
+ SytK6RevJogCjIm1nbNM1pv6Ps+208j+Ef/ApTNz+DmFbx3Nf1HGYNiBA
+ BXwcxHujSQ+LECC/ETxmyaRnmWVT7p3bURgoMbL9GuEtOxmvYQeGSfx6g w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10331"; a="248498312"
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; d="scan'208";a="248498312"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Apr 2022 23:57:52 -0700
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; d="scan'208";a="581937812"
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 29 Apr 2022 00:54:04 -0700
+X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; d="scan'208";a="581971987"
 Received: from lye4-mobl.ccr.corp.intel.com (HELO [10.249.170.95])
  ([10.249.170.95])
  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Apr 2022 23:57:48 -0700
-Message-ID: <0e459e6e-f236-7a58-970a-a47677a23b44@linux.intel.com>
-Date: Fri, 29 Apr 2022 14:57:46 +0800
+ 29 Apr 2022 00:53:59 -0700
+Message-ID: <044595e6-e5d0-26c2-af8e-fc9d06906179@linux.intel.com>
+Date: Fri, 29 Apr 2022 15:53:57 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v2 03/14] iommu: Move bus setup to IOMMU device
- registration
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
 Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
-References: <cover.1650890638.git.robin.murphy@arm.com>
- <1faba5b5c094379df3d99b8fec924ab50ad75482.1650890638.git.robin.murphy@arm.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Dave Hansen <dave.hansen@intel.com>
+References: <YmLOznyBF0f7COYT@myrica>
+ <tencent_2922DAB6F3D5789A1CD3A21A843B4007ED09@qq.com>
+ <Yman5hLomw9/c+bi@myrica> <76ec6342-0d7c-7c7b-c132-2892e4048fa1@intel.com>
+ <YmavoKkVu+hd+x0M@myrica> <22b659c7-e972-7a56-2bd7-8df3b4820d4e@intel.com>
+ <YmbO/l5IwfBCHrl8@myrica> <8c044e49-74bb-df56-8a60-663013c0910e@intel.com>
+ <YmgiQZZyFxsJ+9um@myrica> <63582490-a794-fd11-0380-44b27cc660b7@intel.com>
+ <YmpSv48aPIbVXqGi@myrica>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <1faba5b5c094379df3d99b8fec924ab50ad75482.1650890638.git.robin.murphy@arm.com>
-Cc: jean-philippe@linaro.org, zhang.lyra@gmail.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- thierry.reding@gmail.com, linux-arm-kernel@lists.infradead.org,
- gerald.schaefer@linux.ibm.com
+In-Reply-To: <YmpSv48aPIbVXqGi@myrica>
+Cc: Fenghua Yu <fenghua.yu@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>,
+ Peter Zijlstra <peterz@infradead.org>, will@kernel.org,
+ Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>,
+ iommu <iommu@lists.linux-foundation.org>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
+ Josh Poimboeuf <jpoimboe@redhat.com>, zhangfei.gao@linaro.org,
+ Thomas Gleixner <tglx@linutronix.de>, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,135 +103,52 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin,
+On 2022/4/28 16:39, Jean-Philippe Brucker wrote:
+> On Tue, Apr 26, 2022 at 04:31:57PM -0700, Dave Hansen wrote:
+>> On 4/26/22 09:48, Jean-Philippe Brucker wrote:
+>>> On Tue, Apr 26, 2022 at 08:27:00AM -0700, Dave Hansen wrote:
+>>>> On 4/25/22 09:40, Jean-Philippe Brucker wrote:
+>>>>> The problem is that we'd have to request the device driver to stop DMA
+>>>>> before we can destroy the context and free the PASID. We did consider
+>>>>> doing this in the release() MMU notifier, but there were concerns about
+>>>>> blocking mmput() for too long (for example
+>>>>> https://lore.kernel.org/linux-iommu/4d68da96-0ad5-b412-5987-2f7a6aa796c3@amd.com/
+>>>>> though I think there was a more recent discussion). We also need to drain
+>>>>> the PRI and fault queues to get rid of all references to that PASID.
+>>>> Is the concern truly about blocking mmput() itself?  Or, is it about
+>>>> releasing the resources associated with the mm?
+>>> The latter I think, this one was about releasing pages as fast as possible
+>>> if the process is picked by the OOM killer.
+>>
+>> We're tying the PASID to the life of the mm itself, not the mm's address
+>> space.  That means the PASID should be tied to
+>> mmgrab()/mmdrop()/mm->mm_count.
+>>
+>> The address space is what the OOM killer is after.  That gets refcounted
+>> with mmget()/mmput()/mm->mm_users.  The OOM killer is satiated by the
+>> page freeing done in __mmput()->exit_mmap().
+>>
+>> Also, all the VMAs should be gone after exit_mmap().  So, even if
+>> vma->vm_file was holding a reference to a device driver, that reference
+>> should be gone by the time __mmdrop() is actually freeing the PASID.
+> 
+> I agree with all that. The concern was about tearing down the PASID in the
+> IOMMU and device from the release() MMU notifier, which would happen in
+> exit_mmap(). But doing the teardown at or before __mmdrop() is fine. And
+> since the IOMMU drivers need to hold mm->mm_count anyway between bind()
+> and unbind(), I think Fenghua's fix works.
 
-On 2022/4/28 21:18, Robin Murphy wrote:
-> Move the bus setup to iommu_device_register(). This should allow
-> bus_iommu_probe() to be correctly replayed for multiple IOMMU instances,
-> and leaves bus_set_iommu() as a glorified no-op to be cleaned up next.
+But I didn't find mmgrab()/mmdrop() get called in both arm and intel
+IOMMU drivers.
 
-I re-fetched the latest patches on
+$ git grep mmgrab drivers/iommu/
+[no output]
 
-https://gitlab.arm.com/linux-arm/linux-rm/-/commits/iommu/bus
-
-and rolled back the head to "iommu: Cleanup bus_set_iommu".
-
-The test machine still hangs during boot.
-
-I went through the code. It seems that the .probe_device for Intel IOMMU
-driver can't handle the probe replay well. It always assumes that the
-device has never been probed.
+Do we need to add these in a separated fix patch, or I missed anything
+here?
 
 Best regards,
 baolu
-
-> 
-> At this point we can also handle cleanup better than just rolling back
-> the most-recently-touched bus upon failure - which may release devices
-> owned by other already-registered instances, and still leave devices on
-> other buses with dangling pointers to the failed instance. Now it's easy
-> to clean up the exact footprint of a given instance, no more, no less.
-> 
-> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->   drivers/iommu/iommu.c | 51 +++++++++++++++++++++++--------------------
->   1 file changed, 27 insertions(+), 24 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 6c4621afc8cf..c89af4dc54c2 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -175,6 +175,14 @@ static int __init iommu_subsys_init(void)
->   }
->   subsys_initcall(iommu_subsys_init);
->   
-> +static int remove_iommu_group(struct device *dev, void *data)
-> +{
-> +	if (dev->iommu && dev->iommu->iommu_dev == data)
-> +		iommu_release_device(dev);
-> +
-> +	return 0;
-> +}
-> +
->   /**
->    * iommu_device_register() - Register an IOMMU hardware instance
->    * @iommu: IOMMU handle for the instance
-> @@ -197,12 +205,29 @@ int iommu_device_register(struct iommu_device *iommu,
->   	spin_lock(&iommu_device_lock);
->   	list_add_tail(&iommu->list, &iommu_device_list);
->   	spin_unlock(&iommu_device_lock);
-> +
-> +	for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++) {
-> +		struct bus_type *bus = iommu_buses[i];
-> +		int err;
-> +
-> +		WARN_ON(bus->iommu_ops && bus->iommu_ops != ops);
-> +		bus->iommu_ops = ops;
-> +		err = bus_iommu_probe(bus);
-> +		if (err) {
-> +			iommu_device_unregister(iommu);
-> +			return err;
-> +		}
-> +	}
-> +
->   	return 0;
->   }
->   EXPORT_SYMBOL_GPL(iommu_device_register);
->   
->   void iommu_device_unregister(struct iommu_device *iommu)
->   {
-> +	for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++)
-> +		bus_for_each_dev(iommu_buses[i], NULL, iommu, remove_iommu_group);
-> +
->   	spin_lock(&iommu_device_lock);
->   	list_del(&iommu->list);
->   	spin_unlock(&iommu_device_lock);
-> @@ -1655,13 +1680,6 @@ static int probe_iommu_group(struct device *dev, void *data)
->   	return ret;
->   }
->   
-> -static int remove_iommu_group(struct device *dev, void *data)
-> -{
-> -	iommu_release_device(dev);
-> -
-> -	return 0;
-> -}
-> -
->   static int iommu_bus_notifier(struct notifier_block *nb,
->   			      unsigned long action, void *data)
->   {
-> @@ -1884,27 +1902,12 @@ static int iommu_bus_init(struct bus_type *bus)
->    */
->   int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
->   {
-> -	int err;
-> -
-> -	if (ops == NULL) {
-> -		bus->iommu_ops = NULL;
-> -		return 0;
-> -	}
-> -
-> -	if (bus->iommu_ops != NULL)
-> +	if (bus->iommu_ops && ops && bus->iommu_ops != ops)
->   		return -EBUSY;
->   
->   	bus->iommu_ops = ops;
->   
-> -	/* Do IOMMU specific setup for this bus-type */
-> -	err = bus_iommu_probe(bus);
-> -	if (err) {
-> -		/* Clean up */
-> -		bus_for_each_dev(bus, NULL, NULL, remove_iommu_group);
-> -		bus->iommu_ops = NULL;
-> -	}
-> -
-> -	return err;
-> +	return 0;
->   }
->   EXPORT_SYMBOL_GPL(bus_set_iommu);
->   
-
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
