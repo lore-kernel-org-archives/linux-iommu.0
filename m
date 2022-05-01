@@ -1,71 +1,88 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6799AC433EF
-	for <iommu@archiver.kernel.org>; Sat, 30 Apr 2022 14:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8AD48C433F5
+	for <iommu@archiver.kernel.org>; Sun,  1 May 2022 02:33:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id F1C3560A72;
-	Sat, 30 Apr 2022 14:48:51 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id EC34840866;
+	Sun,  1 May 2022 02:33:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uKSUhRkpBmM8; Sat, 30 Apr 2022 14:48:50 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id T4Ua06tGwYoU; Sun,  1 May 2022 02:33:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 8170D60595;
-	Sat, 30 Apr 2022 14:48:50 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 607684056A;
+	Sun,  1 May 2022 02:33:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3FC60C0032;
-	Sat, 30 Apr 2022 14:48:50 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 92A97C002D
- for <iommu@lists.linux-foundation.org>; Sat, 30 Apr 2022 14:48:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 06353C0032;
+	Sun,  1 May 2022 02:33:47 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4598AC002D
+ for <iommu@lists.linux-foundation.org>; Sun,  1 May 2022 02:33:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 7F9E74044D
- for <iommu@lists.linux-foundation.org>; Sat, 30 Apr 2022 14:48:49 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 38ECC827C5
+ for <iommu@lists.linux-foundation.org>; Sun,  1 May 2022 02:33:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9U5hABl1Tryc for <iommu@lists.linux-foundation.org>;
- Sat, 30 Apr 2022 14:48:48 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id znb0WgVug3Gu for <iommu@lists.linux-foundation.org>;
+ Sun,  1 May 2022 02:33:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from gandalf.ozlabs.org (mail.ozlabs.org
- [IPv6:2404:9400:2221:ea00::3])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 5195840393
- for <iommu@lists.linux-foundation.org>; Sat, 30 Apr 2022 14:48:48 +0000 (UTC)
-Received: by gandalf.ozlabs.org (Postfix, from userid 1007)
- id 4KrC0T18yZz4ySv; Sun,  1 May 2022 00:48:41 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=gibson.dropbear.id.au; s=201602; t=1651330121;
- bh=lFNUWZ5oNAu/cSHE4jubOud019F50qbx1bbzg1GEQVM=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=Bs+knwTDhAp9B05vcJz9xxoEf7tty6yO/H1AuxOgwsC4jOrFnqRNGlZtg6fqjDSyh
- c4Ps0RDl+jsHlIJ5RwYpLyHl8Z4p9Zvh118cH7YDMXhc0JEg+BOdRsNQhBjQVxe9VU
- T33mPspV4GRkiHNZBcJzifvjNGiMGZ4ixyqX809M=
-Date: Sun, 1 May 2022 00:44:04 +1000
-From: David Gibson <david@gibson.dropbear.id.au>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH RFC 08/12] iommufd: IOCTLs for the io_pagetable
-Message-ID: <Ym1LNDLVTr0yEwij@yekko>
-References: <0-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
- <8-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
- <YkUvzfHM00FEAemt@yekko> <20220331125841.GG2120790@nvidia.com>
- <YmotBkM103HqanoZ@yekko> <20220428142258.GH8364@nvidia.com>
- <Ymt+7gOSlXyy4v5e@yekko> <20220429125442.GY8364@nvidia.com>
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 202EE827BB
+ for <iommu@lists.linux-foundation.org>; Sun,  1 May 2022 02:33:39 +0000 (UTC)
+X-UUID: 2e9c20c5999a4152b8eeaa71899e396d-20220501
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4, REQID:050d0d68-fa53-43fd-864b-3c9a7c6b227d, OB:0,
+ LO
+ B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACT
+ ION:release,TS:51
+X-CID-INFO: VERSION:1.1.4, REQID:050d0d68-fa53-43fd-864b-3c9a7c6b227d, OB:0,
+ LOB:
+ 0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACTIO
+ N:release,TS:51
+X-CID-META: VersionHash:faefae9, CLOUDID:01dc4c2f-6199-437e-8ab4-9920b4bc5b76,
+ C
+ OID:a2a59d27761f,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,File:nil
+ ,QS:0,BEC:nil
+X-UUID: 2e9c20c5999a4152b8eeaa71899e396d-20220501
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by
+ mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+ with ESMTP id 369075166; Sun, 01 May 2022 10:33:32 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
+ Sun, 1 May 2022 10:33:31 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 1 May 2022 10:33:30 +0800
+Message-ID: <7a1dd83d191a843b0e4276bcf1790b697d2deebd.camel@mediatek.com>
+Subject: Re: [PATCH v6 31/34] iommu/mediatek: Get the proper bankid for
+ multi banks
+To: Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
+ Rob Herring <robh+dt@kernel.org>, Will Deacon <will@kernel.org>
+Date: Sun, 1 May 2022 10:33:30 +0800
+In-Reply-To: <cc7cc7a8-c7a2-56a1-47bf-6c553c200b33@gmail.com>
+References: <20220407075726.17771-1-yong.wu@mediatek.com>
+ <20220407075726.17771-32-yong.wu@mediatek.com>
+ <cc7cc7a8-c7a2-56a1-47bf-6c553c200b33@gmail.com>
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-In-Reply-To: <20220429125442.GY8364@nvidia.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
- "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
- iommu@lists.linux-foundation.org, Daniel Jordan <daniel.m.jordan@oracle.com>,
- Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Joao Martins <joao.m.martins@oracle.com>
+X-MTK: N
+Cc: devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ chengci.xu@mediatek.com, xueqi.zhang@mediatek.com,
+ linux-kernel@vger.kernel.org, libo.kang@mediatek.com,
+ yen-chang.chen@mediatek.com, iommu@lists.linux-foundation.org,
+ yf.wang@mediatek.com, linux-mediatek@lists.infradead.org,
+ Hsin-Yi Wang <hsinyi@chromium.org>, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, mingyuan.ma@mediatek.com,
+ linux-arm-kernel@lists.infradead.org,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,130 +95,110 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============6267577843071100099=="
+From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Yong Wu <yong.wu@mediatek.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Matthias,
 
---===============6267577843071100099==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="OgLztxA0/ORkw/qB"
-Content-Disposition: inline
+Thanks very much for reviewing.
 
+On Thu, 2022-04-28 at 16:14 +0200, Matthias Brugger wrote:
+> 
+> On 07/04/2022 09:57, Yong Wu wrote:
+> > We preassign some ports in a special bank via the new defined
+> > banks_portmsk. Put it in the plat_data means it is not expected to
+> > be
+> > adjusted dynamically.
+> > 
+> > If the iommu id in the iommu consumer's dtsi node is inside this
+> > banks_portmsk, then we switch it to this special iommu bank, and
+> > initialise the IOMMU bank HW.
+> > 
+> > Each a bank has the independent pgtable(4GB iova range). Each a
+> > bank
+> > is a independent iommu domain/group. Currently we don't separate
+> > different
+> > iova ranges inside a bank.
+> > 
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > Reviewed-by: AngeloGioacchino Del Regno <
+> > angelogioacchino.delregno@collabora.com>
+> > ---
+> >   drivers/iommu/mtk_iommu.c | 39
+> > ++++++++++++++++++++++++++++++++++++---
+> >   1 file changed, 36 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > index 0828cff97625..d42b3d35a36e 100644
+> > --- a/drivers/iommu/mtk_iommu.c
+> > +++ b/drivers/iommu/mtk_iommu.c
 
---OgLztxA0/ORkw/qB
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+[snip]
 
-On Fri, Apr 29, 2022 at 09:54:42AM -0300, Jason Gunthorpe wrote:
-> On Fri, Apr 29, 2022 at 04:00:14PM +1000, David Gibson wrote:
-> > > But I don't have a use case in mind? The simplified things I know
-> > > about want to attach their devices then allocate valid IOVA, they
-> > > don't really have a notion about what IOVA regions they are willing to
-> > > accept, or necessarily do hotplug.
-> >=20
-> > The obvious use case is qemu (or whatever) emulating a vIOMMU.  The
-> > emulation code knows the IOVA windows that are expected of the vIOMMU
-> > (because that's a property of the emulated platform), and requests
-> > them of the host IOMMU.  If the host can supply that, you're good
-> > (this doesn't necessarily mean the host windows match exactly, just
-> > that the requested windows fit within the host windows).  If not,
-> > you report an error.  This can be done at any point when the host
-> > windows might change - so try to attach a device that can't support
-> > the requested windows, and it will fail.  Attaching a device which
-> > shrinks the windows, but still fits the requested windows within, and
-> > you're still good to go.
->=20
-> We were just talking about this in another area - Alex said that qemu
-> doesn't know the IOVA ranges? Is there some vIOMMU cases where it does?
+> > @@ -802,6 +828,7 @@ static struct iommu_group
+> > *mtk_iommu_device_group(struct device *dev)
+> >   	struct mtk_iommu_data *c_data = dev_iommu_priv_get(dev), *data;
+> >   	struct list_head *hw_list = c_data->hw_list;
+> >   	struct iommu_group *group;
+> > +	unsigned int bankid, groupid;
+> >   	int regionid;
+> >   
+> >   	data = mtk_iommu_get_frst_data(hw_list);
+> > @@ -812,12 +839,18 @@ static struct iommu_group
+> > *mtk_iommu_device_group(struct device *dev)
+> >   	if (regionid < 0)
+> >   		return ERR_PTR(regionid);
+> >   
+> > +	bankid = mtk_iommu_get_bank_id(dev, data->plat_data);
+> 
+> I think code readability would be improved if we add a new function
+> like 
+> mtk_iommu_get_id which call mtk_iommu_get_bankid and if necessary 
+> mtk_iommu_get_regionid.
 
-Uh.. what?  We certainly know (or, rather, choose) the IOVA ranges for
-ppc.  That is to say we set up the default IOVA ranges at machine
-construction (those defaults have changed with machine version a
-couple of times).  If the guest uses dynamic DMA windows we then
-update those ranges based on the hypercalls, but at any point we know
-what the IOVA windows are supposed to be.  I don't really see how x86
-or anything else could not know the IOVA ranges.  Who else *could* set
-the ranges when implementing a vIOMMU in TCG mode?
+OK, I will define a new function, like mtk_iommu_get_group_id for the
+readability.
 
-For the non-vIOMMU case then IOVA=3D=3DGPA, so everything qemu knows about
-the GPA space it also knows about the IOVA space.  Which, come to
-think of it, means memory hotplug also complicates things.
+> 
+> >   	mutex_lock(&data->mutex);
+> > -	group = data->m4u_group[regionid];
+> > +	/*
+> > +	 * If the bank function is enabled, each a bank is a iommu
+> > group/domain.
+> > +	 * otherwise, each a iova region is a iommu group/domain.
+> 
+> While at it:
+> "If the bank function is enabled, each bank is a iommu group/domain.
+> Otherwise, 
+> each iova region is a iommu group/domain."
 
-> Even if yes, qemu is able to manage this on its own - it doesn't use
-> the kernel IOVA allocator, so there is not a strong reason to tell the
-> kernel what the narrowed ranges are.
+And move this comment into the new funtion.
 
-I don't follow.  The problem for the qemu case here is if you hotplug
-a device which narrows down the range to something smaller than the
-guest expects.  If qemu has told the kernel the ranges it needs, that
-can just fail (which is the best you can do).  If the kernel adds the
-device but narrows the ranges, then you may have just put the guest
-into a situation where the vIOMMU cannot do what the guest expects it
-to.  If qemu can only query the windows, not specify them then it
-won't know that adding a particular device will conflict with its
-guest side requirements until after it's already added.  That could
-mess up concurrent guest initiated map operations for existing devices
-in the same guest side domain, so I don't think reversing the hotplug
-after the problem is detected is enough.
+Also of course, I will fix the other two comments and send v7.
 
-> > > That is one possibility, yes. qemu seems to be using this to establish
-> > > a clone ioas of an existing operational one which is another usage
-> > > model.
-> >=20
-> > Right, for qemu (or other hypervisors) the obvious choice would be to
-> > create a "staging" IOAS where IOVA =3D=3D GPA, then COPY that into the =
-various
-> > emulated bus IOASes.  For a userspace driver situation, I'm guessing
-> > you'd map your relevant memory pool into an IOAS, then COPY to the
-> > IOAS you need for whatever specific devices you're using.
->=20
-> qemu seems simpler, it juggled multiple containers so it literally
-> just copies when it instantiates a new container and does a map in
-> multi-container.
+Thanks.
 
-I don't follow you.  Are you talking about the vIOMMU or non vIOMMU
-case?  In the vIOMMU case the different containers can be for
-different guest side iommu domains with different guest-IOVA spaces,
-so you can't just copy from one to another.
-
---=20
-David Gibson			| I'll have my music baroque, and my code
-david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
-				| _way_ _around_!
-http://www.ozlabs.org/~dgibson
-
---OgLztxA0/ORkw/qB
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEoULxWu4/Ws0dB+XtgypY4gEwYSIFAmJtSxMACgkQgypY4gEw
-YSI5ARAAmxonWRK51/tM83pyMm6wR0Zk9Xs9qUyEvN+G1LPX2ogGeylr1XuhVqKJ
-WchNr43loLqv1tD0RgHopwLYj9XinE9SUL+5EtaWqU+MBZkHZNFMiai45MaFIEwN
-54JGbuCll5Rixhl+cLcI5XfzmRMvk9JXuoegi/kEKy2Dr//+yWaKgBhccSA/hSSh
-FkaaOV9N5JIlYYQX98kcFDcY8lubu5bEJn/taWvPGyp3NM9TT5cj3vuyzGXx62dl
-JsDgGO9DRFUMH0iW14+o1nsaoIvFwpgGgNdlLy/h7uMqDBpBw3IQp2aYW8aNB7CM
-g2TAeVbY3Jc4c4MuBhG0Sg6KcDK939A5nuFYBdtWx4C4O9NuoP3cFiXEJLNp+9wE
-4xbp/UOWNKQV+aR1QnVvFGx5rl/s62hB85A5CMaobolmot+rUHlSudl4AFuRWqJ7
-mSXG1Xf/R4ZFchNFSpmL7JAoJXg/ympcr5GG1VfFTxFGncaN6vSL0jaGtorC5PRF
-jucyvQI5YeHViD8n/QHq7rjllKEL6Ufs7S4mXAqCwiUGcDkFuz5T2m3JD1JEEv2l
-TqexyG+/AiPh9SzbLSqqGh2F7NcQp1oPdaDjEC9OJnRTl8/+6HVBJvl4r8aESeF6
-iPnX4CHc/BGo5b0dFJrCQ65rBXeJGUhb3gfJartaVB1bSUs8gHI=
-=zpUj
------END PGP SIGNATURE-----
-
---OgLztxA0/ORkw/qB--
-
---===============6267577843071100099==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+> 
+> Regards,
+> Matthias
+> 
+> > +	 */
+> > +	groupid = bankid ? bankid : regionid;
+> > +	group = data->m4u_group[groupid];
+> >   	if (!group) {
+> >   		group = iommu_group_alloc();
+> >   		if (!IS_ERR(group))
+> > -			data->m4u_group[regionid] = group;
+> > +			data->m4u_group[groupid] = group;
+> >   	} else {
+> >   		iommu_group_ref_get(group);
+> >   	}
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============6267577843071100099==--
