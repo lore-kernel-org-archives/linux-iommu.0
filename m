@@ -4,132 +4,132 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0B9FDC4332F
-	for <iommu@archiver.kernel.org>; Mon,  2 May 2022 13:05:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6D508C433FE
+	for <iommu@archiver.kernel.org>; Mon,  2 May 2022 13:17:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 9A18283118;
-	Mon,  2 May 2022 13:05:55 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 1FB3982521;
+	Mon,  2 May 2022 13:17:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ub4EF1jFwlXf; Mon,  2 May 2022 13:05:54 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 6145480CBB;
-	Mon,  2 May 2022 13:05:54 +0000 (UTC)
+	with ESMTP id yssH7Hz7Ye_J; Mon,  2 May 2022 13:17:55 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 389E48242D;
+	Mon,  2 May 2022 13:17:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 46899C0039;
-	Mon,  2 May 2022 13:05:54 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 56407C002D
- for <iommu@lists.linux-foundation.org>; Mon,  2 May 2022 13:05:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0C4AAC0032;
+	Mon,  2 May 2022 13:17:55 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DD3ACC002D
+ for <iommu@lists.linux-foundation.org>; Mon,  2 May 2022 13:17:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 35526408BC
- for <iommu@lists.linux-foundation.org>; Mon,  2 May 2022 13:05:52 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id C8D9F60EB0
+ for <iommu@lists.linux-foundation.org>; Mon,  2 May 2022 13:17:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BF-pn5uN_i6t for <iommu@lists.linux-foundation.org>;
- Mon,  2 May 2022 13:05:51 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id lOMw2_MKGAyD for <iommu@lists.linux-foundation.org>;
+ Mon,  2 May 2022 13:17:51 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam10on20614.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e89::614])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 9870E40116
- for <iommu@lists.linux-foundation.org>; Mon,  2 May 2022 13:05:51 +0000 (UTC)
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com
+ (mail-bn8nam12on20610.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:fe5b::610])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id D194060E54
+ for <iommu@lists.linux-foundation.org>; Mon,  2 May 2022 13:17:51 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ye0DIp67rxs/FL21ldASwNb8MneffTo4ChzkQ9jr4I3tuJYwDaCZjSMLB/m1/Km1AuNAP/hOaUlJLwFEl2P0WjAcnSC6hlXMMuO4BtQtHTE2d9fxjoWQq/Ugrl289MrmiGppZpdkeygeheAsYxlZIEXFaQ2C+g2heZ8xAfnYr2VsDwng30mMPwJ/edg6hA0peuXen53mtQGtRL9BWs+RWJtcT5eaW9+IWkejpLAmn+kj+3BAQMlGl4Yz0J/3Yin0PCCNzZ34838+k61vQIF/4dTy5DkmcYN/zpGTSur3WA5grsmvrDgH4pZ5zTfcDmRqruE/GwQlvKxs7yIC/ZZs8w==
+ b=BmJ0b7Yb7F86+vK00bFoqqZjUofmchKFARv9xLznSHXqkxHoqfNAZWnaNGA81TX7w86aSTWlB3WMCk429FsHHBMrghTFB5K7FNdo2Xn9TRqB1y+xUsgSex+axdMPpZ7X9P/2CMaaLQiVCrCVNwYpBY9yEOcUXv0xhq8K+JCcLnXv08cPUq2cBxULmNseaM0rtpDGFYdo5ZniAY6ZDTgA7rotvtnE8fJWv65BS8walglmuTm+WHGW0zJb9dWT2UjKIZEWupETA6gEtFxy4WBXiu+10oiOiPXWlK5Y/RnxhJfYEtqmYRFFz/Nnb0ijLY0nBka/ZzlcmYgxGulGrx3E4g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SP70ppLd0cWGnz5b4fmTjjMalFNv8Z51PvIKOjdQN4c=;
- b=QyUBCzmsXfAmFNrxcg/ptY6aVO76Frw2h3zZcBhf5zFAn7myj7/iJVKloGJcIgTHjZsGEqrOCq6Beo28lKpaCaBL3ARjjmxC2pEPyMp7uyrBKWs2eq/8S3iul/H8Xj9blVVkqnZtRWZtx6FOAveqnqpqt1wlB4jwrLiIZ/4CjGb5LETwQxxTSHCSB69L0rjviz5cqTQ7gyVwVr9VR+WH5fStANkouzgR/kAMqA/fXwJPrIpjpghrrVehRajfoa2K3N4XyhP0LEFMM+zJTNg64YneQNOWqB1wbWwJhcr+/6xg/lLscyV6DBgyTGPKgjPZHiu9D3ZR2uYQovg/1GWsAA==
+ bh=arye5+VMbcqJ0y+iYaCcf/471wTNKXplpmjEaQMs45U=;
+ b=USwHtGrS5bRL7aiZKOVSBenYj4ykQs2bX8gJKCMmr0vcfeuGz69HZYfdBKVZTlH53W9B0b8ux4wsqhDWmn6Yk2onS1GJ6z/2eQY2yRjuf7U9xukKIM74Mnm4uUwVuV2ks1boRqnFZr1UrPqohl5oG1rdzky3U3xpZQ+pTdph1zsp4zxECpJTp57F/iaTcbQem/9uIcoMxd/EEdPpc25nZWz0nwbGlm1cAJWpLEkvMfL66Iz4WLWal+L8zsetgMk9FHBGAyR354eRXesEjhKw0XutuzGt+a3Tr+VC7ILc/aW+yGrWn72qwnTzp1Xqk07V/mHfUqmLeUEZ0ZpiM/Mquw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SP70ppLd0cWGnz5b4fmTjjMalFNv8Z51PvIKOjdQN4c=;
- b=bRPeR0mwealb1NmboztUiPl6gabXim78Lm5g5cz/CiS09c3ys8m4E31rA1ikY/q7NGPhutRjnQIyId/sAuIzxUR4ijS7AKkZwRCwICPo/Yd9iGNnxS2UJJlAyPz1l9Df4mNTiXJ+Epg/1+Tlq4NU5P1d8aLSM6uEpAt+dtKzTswAvAPBX2mQ8hMfcpt5JNjLM7h0zgtyT/G97kcZqlYdjOxKwpbGLem3V/aTHwTY9A6GqucRG4de+sNThEAoQ77UAE5nTEwlI7Q52YNfghXQKekRtN05iJsG3AuvJvMCc7+DZ4dbTkhLbP/o0KTNliA+8vkvqZ/Erbwa5PjA+hlelQ==
+ bh=arye5+VMbcqJ0y+iYaCcf/471wTNKXplpmjEaQMs45U=;
+ b=NZK+jQREMtLXAIUWWaEb5PMqBc5FcK+zYd3w0YziAjLAANo9gqoFthntdZiNuOfAsMg7G8Gj1lVJwheEytqiF6xe1pdPBLWZsWvVZXFjPkCkRty8Ez5/uMqf1aOjmp1Z/uwm4nJ0CG2ZPGGghMcEFVKxNkV4BNwksGgfi6hJ9SD9vTXxWcUUw0mPDKxjp8SIy8RadItglrM/4FLgRvGri0J3DbGRLvFwN8QIiVq9wJuEwIMeuG/nMUm35i+Z7nwxWb+Yp/5TdfWQAig5bNym01UQUomVATsF7eLRjPemZMik6EJrOGNOX0OVJqcxSJ1kbtHoeECehMXDVriVTdH3dg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by MWHPR12MB1469.namprd12.prod.outlook.com (2603:10b6:301:10::13)
+ by CH2PR12MB3798.namprd12.prod.outlook.com (2603:10b6:610:23::17)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Mon, 2 May
- 2022 13:05:48 +0000
+ 2022 13:17:48 +0000
 Received: from MN2PR12MB4192.namprd12.prod.outlook.com
  ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
  ([fe80::ec2d:9167:1b47:2db2%6]) with mapi id 15.20.5206.024; Mon, 2 May 2022
- 13:05:48 +0000
-Date: Mon, 2 May 2022 10:05:46 -0300
+ 13:17:48 +0000
+Date: Mon, 2 May 2022 10:17:47 -0300
 To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 2/5] iommu/vt-d: Set SNP bit only in second-level page
- table entries
-Message-ID: <20220502130546.GI8364@nvidia.com>
+Subject: Re: [PATCH 3/5] iommu/vt-d: Check domain force_snooping against
+ attached devices
+Message-ID: <20220502131747.GJ8364@nvidia.com>
 References: <20220501112434.874236-1-baolu.lu@linux.intel.com>
- <20220501112434.874236-3-baolu.lu@linux.intel.com>
+ <20220501112434.874236-4-baolu.lu@linux.intel.com>
 Content-Disposition: inline
-In-Reply-To: <20220501112434.874236-3-baolu.lu@linux.intel.com>
-X-ClientProxiedBy: BL1P221CA0021.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:208:2c5::17) To MN2PR12MB4192.namprd12.prod.outlook.com
+In-Reply-To: <20220501112434.874236-4-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: MN2PR01CA0005.prod.exchangelabs.com (2603:10b6:208:10c::18)
+ To MN2PR12MB4192.namprd12.prod.outlook.com
  (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6af8e9ba-b09b-4f3a-e249-08da2c3c79d5
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1469:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR12MB1469C5D33334EB526A9458E7C2C19@MWHPR12MB1469.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 1e1ffe83-f0e5-4c7d-4d7a-08da2c3e274c
+X-MS-TrafficTypeDiagnostic: CH2PR12MB3798:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR12MB3798F85A586A4048D959A095C2C19@CH2PR12MB3798.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KldXNTj2bTFV16XRVkACNfFf1MWZa/W4CCSQlYfcct0vU6bB18MYqEAmd0ionLRlTcU+VneDeCdkA4RGRg2Fy4M6WNBo3/AuR3s7jp3r/n9YX6I+S5FpNJuXFWSXEpgKNb+yZGPScNDyOP+m0RsefRNM/Ww3xb/uvlpBcOhK6Jni+GRrsds+VkO2GvcBPgkAri2nkkE1+hSkvZC/Q2+3iif1Ut2cyj7mnXE0GpKfLesKBEV6B6hNFtmedpuo06gkUyxxl0GhFz3OvwYwSo66IWKt7uJ51qe9TPrGDhyS9CHGlYI/OdMcpWAdh422YEMe615Eo2QeHX1mEhuloe9Qlb6yoI9KUNEdTmIJMR6LhfEQ6APJextdqe65J5J2MerDiP34XD3b1JNAt9iacRgD7CZ4UHfLM4VdRpvHsD4b6UHwlptmxhDn5RhbfrZoFr2igtkIiVO52BClMWclJLrI0jOImGp1gDs5RG+X06Ywd06Gb5ZKgLWnj6go8bC0E/Su7sOe6Ovc18GT+12NgfAzl+mMlGNweXLKWX2x+Olu5XUhOv2Bh4y3LwH7IFDtwOC+VaMwav/RFMOn8+NFROOEjOeYlNDJpq6tRXFK2nZ0qQFuCu9vlVMLQbJvGfsQmGMVmOZH2zhPhpglcF2iEjtdgg==
+X-Microsoft-Antispam-Message-Info: /FOtB7CuQTDHyyls5u7Cp96Ojts5F2G9qCikw9eSQuz2aAcZ+9k40JertCtUAT2t64JY8i1dP9Ew2luzFcdPRPs8Tz83m9srgAQkTP1e/P7hBQ/yN0dP/zvMrjeMC/IQqTs8xARbWsSGLQOO3o34viOyAAFC8cuB9jDBOrPK1N6T/G37BiuxnPQtxtj0MlTxLWj5jdpCKpTJzpUE2KiadR7QEOOPBIoKj+y/XoGjK0fnVRCnw4JnSAtFxfjToYp+bjabDPW6PaDsHhHBZvMCJqqh2ohOgBEv3U2WBxbq9GIKR8mbjJcN6cMxd5uDHv49SRrYcb1QXnJms0sz6fl7pA4is3SIuES62FTiX1vVM9SC4qFxl4HoWdmXwnsUhudSgwVB1nQLklPIkzuTMVMRNt7Tu1BVS1+Epmvdsd+hPe59iF5ivyRGGGU1b4BaeOfDvFibLvdoNrPrIoj4Pnt3bSRjUq6P9EJjXI6uQILhKcSfBaBiPgKjEuFkfAhzPAo/I18ODQb/Rm2Bc+ouK+s5SFisMkxsjn6INw36u8q3/kE7iOQbydMjLYX0fuaonK8EVFY0ZO122bXztKKPnTqZ4NNnKyx2y21eRPjWSbxs5YaWWT8jaDcbwkVPUt+aMUbHzQ7BxViH3GCgz+GA8H21Xw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(26005)(6506007)(6512007)(38100700002)(5660300002)(316002)(86362001)(186003)(4744005)(2616005)(8936002)(1076003)(36756003)(4326008)(33656002)(8676002)(6916009)(66556008)(54906003)(2906002)(508600001)(66946007)(66476007)(6486002);
+ SFS:(13230001)(4636009)(366004)(26005)(6506007)(83380400001)(5660300002)(6512007)(38100700002)(316002)(86362001)(186003)(2616005)(8936002)(1076003)(36756003)(4326008)(33656002)(6916009)(8676002)(66556008)(54906003)(2906002)(508600001)(66946007)(66476007)(6486002);
  DIR:OUT; SFP:1101; 
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rbKCvoGR7W597EJcL6O0YPuXJd/fxHVnZKjMXJmazjOgsYfNpanD/t3zfcmD?=
- =?us-ascii?Q?x8veDuSYvJzL/AucQa5nHamix2OFe5Hi/0TUNwWrG7EBzzVTnFRmD9GwOVxg?=
- =?us-ascii?Q?QdwSkWKGBHkfQg2bfooxv6iqh/Uzw9ZLIM8FobkYXEgdGLvFDeQNgbH0VoL4?=
- =?us-ascii?Q?1KLxK9jpLipVVjyTfDTQj5vJqY4HNxT1N9Ynw3dEXVFjKqbIfdNiQziDP2zU?=
- =?us-ascii?Q?ueG+ufP4u3/cRXy24RG7m0379Q4es98LQoYu1UKGuvcRfF8iqTT7wLTNJENk?=
- =?us-ascii?Q?1fMDzUnuRmscaBl0PKVX5Cl98Q9vOkwbMQ3IX9ACOMw8yuvoazEISFIda44Q?=
- =?us-ascii?Q?AA0JuehB+epeLnId9TWXJi+CAZYA2BEiGIZfC/pq+iCnnpUdyZl0kUE3fZEr?=
- =?us-ascii?Q?jt1PAwTmnyvRTuZY/TKEAj7C0HY2tIa8GOwoSzlpOxQAQu9Tfv6niK31yaOv?=
- =?us-ascii?Q?sGHOh0WH+wlzQIXImdPgEWD6G8FoJrk9fr9QCEsRGkYT/YOrjI3XGbnxySvM?=
- =?us-ascii?Q?Q6ezWWH9NCQoAasTFSuJM1+RnWZc68W6Nf8w7xMicp6TSSkjIJklqvBJQDMa?=
- =?us-ascii?Q?MlbBe79GqbbazeMRVgvSI9QyUHM+Oi9tkZc4Qhe0ajv4Qf1rdV5SKwj+yE6g?=
- =?us-ascii?Q?N6FG/8JJrCujGVNuSKHMqZp5PFHah9kfJq27Awde+HkHBzo0P8JI6NMG/enV?=
- =?us-ascii?Q?mAVivSuAyvMhTU/qcn5obhPZLybkMdX71tM8/42yHSwsZa2lYY5CcaLzv4gw?=
- =?us-ascii?Q?4UhVsuVsECwmA4Je1TPI4lexX6KTR2bJI97rKM14W1Rvs3tOYBpt78UfIgDq?=
- =?us-ascii?Q?bfze0HmswdGoFaiCqKOKDf0COCNU9ZxjAkUvxSqt9DlFORiv6US7+dwqf5dQ?=
- =?us-ascii?Q?fofKFgXTLP97N/kkgjBfFdZ+UQcv30qso3hJZj0Z6V/3QaySeVM6ex8dvZwj?=
- =?us-ascii?Q?whS0tL+3dcIfmlb6xorlIz4Xq9uandNvwEHWFmbrtdr1nNom9wpMIT7goZpD?=
- =?us-ascii?Q?vAexHHtmUyKKeFf+h1gbLzGHPDU1FKwfgFGbYt2kAE1hPVLgZv6g1KTEGa9m?=
- =?us-ascii?Q?MF4jJHOQH57OzZ/b0i1cWbvvo5sEEkJmTdHVMlt3Q6oQ1AQh2UIa65pP+pLw?=
- =?us-ascii?Q?stX1tLA1Q+ydqX4a1wbifQOL57Ke7uwZB2ypA6qePufW1gYmsizOqT4l14fz?=
- =?us-ascii?Q?G0eTRQmW5HSHTgxY1vBZDxqW3XBKYvXERGiEOzwGiuA0xpnqBvVmpg2s2NWq?=
- =?us-ascii?Q?Td4+p8mm/E6T8uuD20TSk68t/pFRwAUQU6WTlZwn2YaH+l2REi1vEyfjWHvm?=
- =?us-ascii?Q?WawE+MGz1cEUe9WdHJBRC8G9WpabAhFcd5R13WBpdcs/jbbJN+d62+LpPTDM?=
- =?us-ascii?Q?4tD3TeqAEaotLqDWeUkZC6XTFxlDLDDAUdXXE3vlGYzWAFnnUz/Gn9OwOvzi?=
- =?us-ascii?Q?s4ZmjAfAtI5gRrI9kVzy3SpIQB67KQjmlhT37idge78I4JASXtk6kWQKriFd?=
- =?us-ascii?Q?Goc08bifQDOAMPsHbvcyVOyomDCK+4fNoHTNa/exCmVvBL768lnNKtIOOd50?=
- =?us-ascii?Q?sBa80WILV8MQiMseTDfKpYgKV12Ho/Ev9kSeeVMUFzbo7ipNyqtbu6Qa2TAR?=
- =?us-ascii?Q?WQc+EFcdS5vYbXNwhpmuEBClF7HlM6GUt+q2YeOddnUp7dJU04YIOQ5QZjmK?=
- =?us-ascii?Q?yrcYBhJwNPN6WDTfY0eXEbwhDhyIo7WONxdhWI93u/tUYX/5oJLt/CGiGG+t?=
- =?us-ascii?Q?bGQVfOrrTg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?p8CHKvlnBeU09sijha3BOZHDUoi98kwXruqEGxLUXAfVyIGbKLRrI3MHjwiv?=
+ =?us-ascii?Q?O2fmjd+8Aig5vkoW02AeDS7wPNVFHjo+/PudVmStDa0elPdTJlErc+Y9Z/FO?=
+ =?us-ascii?Q?1j6dA9tFKtlnADaUCu8TVr36qYmZzk0NZiIaKZ4nz01pyvg07ZfALBKqV1R3?=
+ =?us-ascii?Q?G3AGvWLt/pZm60K9wZiDi5yrSXXeCLt03bMVz0cEUoOygg19H/bmQqBVCCzH?=
+ =?us-ascii?Q?yctiRkdpLTZG2PCwe6+wELZfM4cZN/O47jBhEH1FsSNNtUlNswWxh2sVNM6i?=
+ =?us-ascii?Q?d7cfm10Pfo5Wy3otjvlnSQlUbHx+Bpf2OOVV+PuH5zff5IdP+hI02vXG0TaS?=
+ =?us-ascii?Q?W/hvxe2rxECYwscxj8dujlh1S2aOoj91wgcePG4qxMAGHfBfNVcLceWmkvkF?=
+ =?us-ascii?Q?1n5LTlRUxcAbQNk682cB4XfNlBljyVdtOsvfHAncyNmeiZfrpsLl++w33KHa?=
+ =?us-ascii?Q?HjyPh9zkfgA6x7Bk21efubQKpqps2O3KOgT4Wr45EpWrDPXm9q98rEXigCv+?=
+ =?us-ascii?Q?Z8/0hvwyJxokCQtVwFzVMpHoEyfnTzLJiTkUfVrAh4nJ5uU6kTFqlwJzVGM7?=
+ =?us-ascii?Q?8OAqk9omIRaUlZng7DadMZnP8I9jBzekXMYkAnGf4J6Hp/tEUAomt59nO16m?=
+ =?us-ascii?Q?TQzFhfUw0RcLSqoBhR99Cu5K5NSTHwLPkBEyQRzat1m3fe04nZsnoSh24HY/?=
+ =?us-ascii?Q?qqbjMb6fAsBR91N8MeSu2iEuhf80Dk8tV+dUp18TEmlvTbnHPB0TmNtYSzBn?=
+ =?us-ascii?Q?TgweXdB8oJ0XJsc2a55UKN1wswpHR1k0MmxVxsszSTnU1cDTs7C/dDyZnfMN?=
+ =?us-ascii?Q?sypxuW0rjDFJxnZs1wIeD8OBoqPfOeR6lBiqHWu76gDDH+CPacbBxILi4YbB?=
+ =?us-ascii?Q?Za8pNrhnO4fcB2xfij0gDScG90axCO3e4gxyoTxta+ksy3aKkONehXU5ai4F?=
+ =?us-ascii?Q?sKzMLOBhdGpEp1K8VMqFeFNHb0Je3S1f8dO79NkE0Jny9QuW2jfIXRt5RYgS?=
+ =?us-ascii?Q?S3ISHvQYkMRRSozOj9767qwm6U1qK7eMHbznXLzrvuyR4cKqrV3zocVN0gqQ?=
+ =?us-ascii?Q?tLtMAOqQVX5MO8q+Ig98hrldcBGbS9pWxwXk2uNOvwku6UqOn/MbjkBzA34r?=
+ =?us-ascii?Q?6Y3pHAE3W31kZ46CkBvTT/4CWVyIDlvdJruezqSWqU4qsCW1qjpRdcKmd6sp?=
+ =?us-ascii?Q?ibHWa9kWOmNPK23YfMzyI+RltalW1JxcsH1BK1X5oSoReHxlr8F0YElnjAe5?=
+ =?us-ascii?Q?zaljLc0GOVo6ZwBL9ybov8/4PKnDw6JVx5ecSSVStTt7KQYe0l88FDlejgaO?=
+ =?us-ascii?Q?4OckfHEagnipgkgvzv4FsEvOOybo091rNr4y/UsuLET3eCEOGQ4VqSmPLEBc?=
+ =?us-ascii?Q?Abob7taF24WaKGHvl6OnpYB6fzW4raw+8qetO1lGLjYqi81zfA3z78umK5Zk?=
+ =?us-ascii?Q?JYVOq8ErskJmSfg6Ht449+Uuffs8FMlnBX/gQUPWsR6fRyBxJbByaTtiOqEG?=
+ =?us-ascii?Q?rY6N87kVAyiGo0CW8w40ObBbEh9Rxp1090TJaQHCvkT1gsCmFmKXzgFmMS82?=
+ =?us-ascii?Q?kVlv5KDu8kz/fuhscNWvF5nYVWdXZQIqg3B+KPGCRn3CGsrTTaOGfRJDYt0b?=
+ =?us-ascii?Q?tbsjygzJvyJYArWETlUefLLeMRNiHbFadzoYKe+pDuCDT9UtyYYERRZGjBT0?=
+ =?us-ascii?Q?KuBKzv29xDJ4p401TGqQUzdFV0JZWN0WsdTJbLj7z+/xGZQ6FkY/AAoEC7EG?=
+ =?us-ascii?Q?Knzas90YSg=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6af8e9ba-b09b-4f3a-e249-08da2c3c79d5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e1ffe83-f0e5-4c7d-4d7a-08da2c3e274c
 X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2022 13:05:48.1101 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2022 13:17:48.6502 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VxqLuN/74RQIWYBPkIPOan7ISJD3bLDR3ET/1OCgpD+KsU72jmEZkxQdqhwF6L1I
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1469
+X-MS-Exchange-CrossTenant-UserPrincipalName: eDlMqMVKaw3OFQTuqVQBCCkXCmDh6uus4mNyq9YiAUffIIiPhc9KjBnYiDpB0ufY
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB3798
 Cc: Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux-foundation.org,
  linux-kernel@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>,
  Jacob jun Pan <jacob.jun.pan@intel.com>
@@ -152,14 +152,99 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, May 01, 2022 at 07:24:31PM +0800, Lu Baolu wrote:
-> The SNP bit is only valid for second-level PTEs. Setting this bit in the
-> first-level PTEs has no functional impact because the Intel IOMMU always
-> ignores the same bit in first-level PTEs. Anyway, let's check the page
-> table type before setting SNP bit in PTEs to make the code more readable.
+On Sun, May 01, 2022 at 07:24:32PM +0800, Lu Baolu wrote:
+> +static bool domain_support_force_snooping(struct dmar_domain *domain)
+> +{
+> +	struct device_domain_info *info;
+> +	unsigned long flags;
+> +	bool support = true;
+> +
+> +	spin_lock_irqsave(&device_domain_lock, flags);
+> +	if (list_empty(&domain->devices))
+> +		goto out;
 
-Shouldn't this be tested before setting force_snooping and not during
-every map?
+Why? list_for_each_entry will just do nothing..
+
+> +	list_for_each_entry(info, &domain->devices, link) {
+> +		if (!ecap_sc_support(info->iommu->ecap)) {
+> +			support = false;
+> +			break;
+> +		}
+> +	}
+> +out:
+> +	spin_unlock_irqrestore(&device_domain_lock, flags);
+> +	return support;
+> +}
+> +
+> +static void domain_set_force_snooping(struct dmar_domain *domain)
+> +{
+> +	struct device_domain_info *info;
+> +	unsigned long flags;
+> +
+> +	/*
+> +	 * Second level page table supports per-PTE snoop control. The
+> +	 * iommu_map() interface will handle this by setting SNP bit.
+> +	 */
+> +	if (!domain_use_first_level(domain))
+> +		return;
+> +
+> +	spin_lock_irqsave(&device_domain_lock, flags);
+> +	if (list_empty(&domain->devices))
+> +		goto out_unlock;
+> +
+> +	list_for_each_entry(info, &domain->devices, link)
+> +		intel_pasid_setup_page_snoop_control(info->iommu, info->dev,
+> +						     PASID_RID2PASID);
+> +
+> +out_unlock:
+> +	spin_unlock_irqrestore(&device_domain_lock, flags);
+> +}
+> +
+>  static bool intel_iommu_enforce_cache_coherency(struct iommu_domain *domain)
+>  {
+>  	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+>  
+> -	if (!domain_update_iommu_snooping(NULL))
+> +	if (!domain_support_force_snooping(dmar_domain))
+>  		return false;
+
+Maybe exit early if force_snooping = true?
+
+> +	domain_set_force_snooping(dmar_domain);
+>  	dmar_domain->force_snooping = true;
+> +
+>  	return true;
+>  }
+>  
+> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+> index f8d215d85695..815c744e6a34 100644
+> +++ b/drivers/iommu/intel/pasid.c
+> @@ -762,3 +762,21 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
+>  
+>  	return 0;
+>  }
+> +
+> +/*
+> + * Set the page snoop control for a pasid entry which has been set up.
+> + */
+
+So the 'first level' is only used with pasid?
+
+> +void intel_pasid_setup_page_snoop_control(struct intel_iommu *iommu,
+> +					  struct device *dev, u32 pasid)
+> +{
+> +	struct pasid_entry *pte;
+> +	u16 did;
+> +
+> +	pte = intel_pasid_get_entry(dev, pasid);
+> +	if (WARN_ON(!pte || !pasid_pte_is_present(pte)))
+> +		return;
+> +
+> +	pasid_set_pgsnp(pte);
+
+Doesn't this need to be done in other places too, like when a new attach
+is made? Patch 5 removed it, but should that be made if
+domain->force_snooping?
 
 Jason
 _______________________________________________
