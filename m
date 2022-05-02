@@ -1,51 +1,51 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 51DC9C433EF
-	for <iommu@archiver.kernel.org>; Mon,  2 May 2022 13:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 31C50C433FE
+	for <iommu@archiver.kernel.org>; Mon,  2 May 2022 13:40:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6BBCD81756;
+	by smtp4.osuosl.org (Postfix) with ESMTP id DE7D5414C1;
+	Mon,  2 May 2022 13:40:33 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 28Go3GJiUkfc; Mon,  2 May 2022 13:40:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id A15234151E;
 	Mon,  2 May 2022 13:40:32 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zxax6hf5rFsy; Mon,  2 May 2022 13:40:30 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 4EF3D831FB;
-	Mon,  2 May 2022 13:40:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 25203C0032;
-	Mon,  2 May 2022 13:40:30 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EB3B9C008D
- for <iommu@lists.linux-foundation.org>; Mon,  2 May 2022 13:40:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 78E0EC0032;
+	Mon,  2 May 2022 13:40:32 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 66F80C002D
+ for <iommu@lists.linux-foundation.org>; Mon,  2 May 2022 13:40:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 115A282F14
- for <iommu@lists.linux-foundation.org>; Mon,  2 May 2022 13:40:25 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 63805408EA
+ for <iommu@lists.linux-foundation.org>; Mon,  2 May 2022 13:40:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id v5aFHXTJh_Si for <iommu@lists.linux-foundation.org>;
- Mon,  2 May 2022 13:40:23 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id NXf862olpMkT for <iommu@lists.linux-foundation.org>;
+ Mon,  2 May 2022 13:40:30 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from laurent.telenet-ops.be (laurent.telenet-ops.be
- [IPv6:2a02:1800:110:4::f00:19])
- by smtp1.osuosl.org (Postfix) with ESMTPS id EF5D083143
- for <iommu@lists.linux-foundation.org>; Mon,  2 May 2022 13:40:22 +0000 (UTC)
+Received: from michel.telenet-ops.be (michel.telenet-ops.be
+ [IPv6:2a02:1800:110:4::f00:18])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 9CB8940919
+ for <iommu@lists.linux-foundation.org>; Mon,  2 May 2022 13:40:30 +0000 (UTC)
 Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:194e:5782:c420:7f87])
- by laurent.telenet-ops.be with bizsmtp
- id Rpb52700B28fWK501pb5ZH; Mon, 02 May 2022 15:35:18 +0200
+ by michel.telenet-ops.be with bizsmtp
+ id Rpb52700728fWK506pb5Uc; Mon, 02 May 2022 15:35:27 +0200
 Received: from rox.of.borg ([192.168.97.57])
  by ramsan.of.borg with esmtps (TLS1.3) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.93)
  (envelope-from <geert@linux-m68k.org>)
- id 1nlWCe-002mrj-MR; Mon, 02 May 2022 15:35:04 +0200
+ id 1nlWCe-002mrg-FA; Mon, 02 May 2022 15:35:04 +0200
 Received: from geert by rox.of.borg with local (Exim 4.93)
  (envelope-from <geert@linux-m68k.org>)
- id 1nlWCe-002vAf-3z; Mon, 02 May 2022 15:35:04 +0200
+ id 1nlWCd-002vAH-W8; Mon, 02 May 2022 15:35:04 +0200
 From: Geert Uytterhoeven <geert+renesas@glider.be>
 To: Rob Herring <robh+dt@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -58,10 +58,10 @@ To: Rob Herring <robh+dt@kernel.org>,
  Guenter Roeck <linux@roeck-us.net>,
  Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
  Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Subject: [PATCH 6/7] dt-bindings: serial: renesas,
- scif: R-Car V3U is R-Car Gen4
-Date: Mon,  2 May 2022 15:34:58 +0200
-Message-Id: <c57ed00e85778380776330be6183c6861d843c22.1651497024.git.geert+renesas@glider.be>
+Subject: [PATCH 3/7] dt-bindings: iommu: renesas,
+ ipmmu-vmsa: R-Car V3U is R-Car Gen4
+Date: Mon,  2 May 2022 15:34:55 +0200
+Message-Id: <d351ca12724d5b306119bd8dcd9bfac09ba2a925.1651497024.git.geert+renesas@glider.be>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1651497024.git.geert+renesas@glider.be>
 References: <cover.1651497024.git.geert+renesas@glider.be>
@@ -93,27 +93,26 @@ family.  Hence move its compatible value to the R-Car Gen4 section.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- Documentation/devicetree/bindings/serial/renesas,scif.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml         | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-index 5d37f8f189fbe1d1..90fe45265fbc64cc 100644
---- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
-@@ -60,12 +60,12 @@ properties:
-               - renesas,scif-r8a77980     # R-Car V3H
-               - renesas,scif-r8a77990     # R-Car E3
-               - renesas,scif-r8a77995     # R-Car D3
--              - renesas,scif-r8a779a0     # R-Car V3U
-           - const: renesas,rcar-gen3-scif # R-Car Gen3 and RZ/G2
-           - const: renesas,scif           # generic SCIF compatible UART
- 
+diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
+index 8854569ca3a6c949..786f85a97077d79c 100644
+--- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
++++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
+@@ -43,10 +43,10 @@ properties:
+               - renesas,ipmmu-r8a77980 # R-Car V3H
+               - renesas,ipmmu-r8a77990 # R-Car E3
+               - renesas,ipmmu-r8a77995 # R-Car D3
+-              - renesas,ipmmu-r8a779a0 # R-Car V3U
        - items:
            - enum:
-+              - renesas,scif-r8a779a0     # R-Car V3U
-               - renesas,scif-r8a779f0     # R-Car S4-8
-           - const: renesas,rcar-gen4-scif # R-Car Gen4
-           - const: renesas,scif           # generic SCIF compatible UART
+-              - renesas,ipmmu-r8a779f0 # R-Car S4-8
++              - renesas,ipmmu-r8a779a0           # R-Car V3U
++              - renesas,ipmmu-r8a779f0           # R-Car S4-8
+           - const: renesas,rcar-gen4-ipmmu-vmsa  # R-Car Gen4
+ 
+   reg:
 -- 
 2.25.1
 
