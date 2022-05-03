@@ -1,138 +1,98 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CC677C433EF
-	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 15:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9BD7FC433F5
+	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 15:42:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 5311840AF0;
-	Tue,  3 May 2022 15:23:50 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 4807741761;
+	Tue,  3 May 2022 15:42:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id rADKSJTC69uI; Tue,  3 May 2022 15:23:49 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id NXakZ6y6zFK6; Tue,  3 May 2022 15:42:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 17CB440ADE;
-	Tue,  3 May 2022 15:23:48 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 704DE41751;
+	Tue,  3 May 2022 15:42:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A4301C0039;
-	Tue,  3 May 2022 15:23:48 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B4E4FC002D
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 15:23:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E4DDC0039;
+	Tue,  3 May 2022 15:42:55 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 487D9C002D
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 15:42:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id B1FBF82C7C
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 15:23:46 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 35BAE401C9
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 15:42:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id E7m08RPwax_e for <iommu@lists.linux-foundation.org>;
- Tue,  3 May 2022 15:23:45 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id jMOI5tkxZ9_I for <iommu@lists.linux-foundation.org>;
+ Tue,  3 May 2022 15:42:51 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on2060d.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e88::60d])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 900CF82BFD
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 15:23:45 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ctw2YqGJK83wErW1q6R59ZqYa0mpVR+kCbStKTjmIbi942xsvfT5FAt1sRZOWfljlyr5fNXHnEV4z3B5LhTmqO0HyKnGAllEtrvEC38oCyYYk7kkPNp61MTVbRC1O1Q+0vdmca1uZWR1cqlM23ndA+lO9dKpvTIZJneM/tOId53awcLJUY0qCV1klG4p6x5x/bTeQP6xY/ikuh72cQltB2dRKjGwrqnsJUH3pfRwB92LYjktskn0JQTPCF0E3LKwGKI4qKzB911lWcaBfpjHk9HQ1ZeS4YBfJKqE4DgNpMistILx0AYSRdR8LXJ5PPibefOXZb8QjxNLNVmkmdaRTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hVAG/dRMevZf3+AqrtKZpsHhjOmY69wWJqRZ32vFYbI=;
- b=YHr//f4pZhbkYaz54NWdiw/8CGC33fkFSqIQTUSZ3vi6aPyiHLL0gfhdMF0yQWjOHZxUoDW9EL/JGngc+fK6vTz6yvRucIY83symGUkObTJ0bgRdbs9z8anBHHXS3/QbDabtbSBi0281RB0oH4CKxwVxXw4GJm1mqaxGjJeLPcG9rMil4NwV2Q76XYzX1aYkc6RC9VLfK5nhh57GwIuOYptbIcojJhlNcSz9b6GzyltUkZOC3KZUdcH5nyRDNvhbU6S/T4ruyWSP2/k8rEKS3Glvxatd72dn8rWytrxH7MXNUMOi9VxYeNMycU5192R38qvB0cPxnDY0AYisIsT7aA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hVAG/dRMevZf3+AqrtKZpsHhjOmY69wWJqRZ32vFYbI=;
- b=VkCOYNpGLCdagJk9gLMQBx2gqJDFWt1batgai/QjoNOgyiRCuBiwmI4YUrGhaHX6gAUaoDcS6u+WoRfKyGTR5QweK9CsAx784yGH9sCeTeaYaP1XutlUtP1lNtEQgdf5Rjl3c3JjY/z5uvwid7vEJtgCIotB5ZTXXif65wxNl+eqBAnWahRk1E8vvtEl5oNhL1IRXmfcxpekBrYSAgZpuZ61RML8HG/9DAOtboHPRhS6xlQpsWD05ECPDRh7DF4yMEbAB9ORA6Yx4dmHFdQwSxlaohb2f2/Yg7SzJmkL3+9hEBzpiJaGc5pKjelyfGKaxuHx59sBmNGzXNQHdHOG7w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by DM6PR12MB2618.namprd12.prod.outlook.com (2603:10b6:5:49::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.14; Tue, 3 May
- 2022 15:23:43 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2%6]) with mapi id 15.20.5206.024; Tue, 3 May 2022
- 15:23:43 +0000
-Date: Tue, 3 May 2022 12:23:36 -0300
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RESEND PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
-Message-ID: <20220503152336.GA3939@nvidia.com>
-References: <20220418005000.897664-1-baolu.lu@linux.intel.com>
- <20220502161204.GA22@qian> <20220502164216.GP8364@nvidia.com>
- <8b3d31ef-caf7-da92-fa95-0df378d5b091@arm.com>
-Content-Disposition: inline
-In-Reply-To: <8b3d31ef-caf7-da92-fa95-0df378d5b091@arm.com>
-X-ClientProxiedBy: BLAPR03CA0079.namprd03.prod.outlook.com
- (2603:10b6:208:329::24) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com
+ [IPv6:2a00:1450:4864:20::432])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 2C3C540155
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 15:42:51 +0000 (UTC)
+Received: by mail-wr1-x432.google.com with SMTP id q23so23952424wra.1
+ for <iommu@lists.linux-foundation.org>; Tue, 03 May 2022 08:42:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=message-id:date:mime-version:user-agent:subject:content-language:to
+ :cc:references:from:in-reply-to:content-transfer-encoding;
+ bh=XDylvy7QE0kYD97hsx4drglUv8+IINBzIZbB9OPqGXE=;
+ b=ZJYwAxzSGuKry0eJEW053CQ3oAluqeMsuTU14GRLW87JrLEj87UUdoPmmw7tk1XGoD
+ pCRoW39Vy/AfTPYvcxFrpvSgEn782zg/+C35/mvCs4EueKcWcnFj/gVwUswX5R0UHd6L
+ xCmZN/3n2B993Zbm/EaaIMAhGm9S6L7Itjb5q0SonKluuQDklES1idhgBYDpKFNoC/KI
+ xWqYCeH7QOXogOLeRs31Mz+PvUW534/PjZDSEJRGGz1IvikdIN+VL0C1+M9ZOczUxbkT
+ +lhBMwARAq+YifD+YhSd2ltvLkLpeleVyA71PwXhhrzEAy9Dn6m2YicXWoFGDp4qdbR9
+ uOtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+ :content-language:to:cc:references:from:in-reply-to
+ :content-transfer-encoding;
+ bh=XDylvy7QE0kYD97hsx4drglUv8+IINBzIZbB9OPqGXE=;
+ b=1V6XlJeOeV4Z3dPLMfg7OG7JnOzj9l4gbrBKZqZy/kGZO0GigufPS/8aKxSwb58rBx
+ jNWQxfTG0iF/D3ekBqZ0Fhmw6WAkV1zWjUYmxttlRoOBwG0H9ewxKVTvXNzRlx4nmkBS
+ zsH+eSnoe9DsNS5sPwwSz6rpECUfsqI+z1jcILrsv/3t3XU2e+g6Iwc6SUZSHjVDQTRH
+ xlgOuqASNEAAkgAZbtoZkhP5tfuOgbE6y5i7roNxjIheZmXI+HtXxr/iNrwl9J1rYsRS
+ kugy/mQf3IKNXcs0Ukuhvarj5wsSLWmAihxR8WqWlB+UYTVEsgsPexdblaMGkFNKBqCT
+ DD9A==
+X-Gm-Message-State: AOAM531LPtKc00deZOdA7Kvvo3TsYEGjA11EjNUTeTkZF7UR6lNkZYp/
+ Uqr47Qzv7KYxq2JoHUcc/pc=
+X-Google-Smtp-Source: ABdhPJwLLvLMdvhxJHphyb/0OfT7WhR6rKov3KwUfnfYP9M4/JSvhMG6BrphlKUfnuLfVwFUtofWKQ==
+X-Received: by 2002:a05:6000:381:b0:20c:5e07:f75f with SMTP id
+ u1-20020a056000038100b0020c5e07f75fmr5977802wrf.678.1651592569137; 
+ Tue, 03 May 2022 08:42:49 -0700 (PDT)
+Received: from [192.168.1.145] ([207.188.167.132])
+ by smtp.gmail.com with ESMTPSA id
+ s8-20020adfa288000000b0020c6b78eb5asm3971282wra.68.2022.05.03.08.42.46
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 03 May 2022 08:42:48 -0700 (PDT)
+Message-ID: <b82985d5-984b-4de7-35f2-57b2085d9dc7@gmail.com>
+Date: Tue, 3 May 2022 17:42:44 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1ca92f86-2cd1-4828-bd67-08da2d18e8a1
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2618:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB26184321C03FCBC4B87A85DFC2C09@DM6PR12MB2618.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XD1vbqLFIp9fF2TXXnCu8AqXaCTBn7RS58o4+fiPLLofKqZiET5SQ1muDFJc214gp14OwhCVpMCXUkGVHB+1TbFZJ8GB9xqtW2px2lNftdCXZW3iitbEUjPJVFgt7M3YYnhm3DGcRO/V7aTRRrYw9Y3Y8cBrh6bUaI8bZmHs6p3VDVoW2FFBIKCp/cYQaDRgpCoW/Yf3d8nKSxk+uJrJkT//UYwlFLgn4o9Bi1HOTrCNQw65Xj2raXi8xS1FzK1+y3uUCwguo/BQzMvsOY9aOa4CEmNQYYESQT1QIf1KQwjcU/HBkqYLvLaMXtj5XROUQuI1cUX++WLdXtg+FijVikN9syWH/II9axls7gDRPK/bsjtD+U0EqDdD+DXtsf/8WSWh7cM+tbVrImbmCy2NKqZ2Y16yoCkvcS6KLetIpfeSq0pdYQm37MrE5dTW1LpYr/LIY5Ml+CfUjIGHbv5D7R2f4nmo2sCq6JoUoOFNYzgY87Cth4meD7amzd4eiaFyaB374hYeypOEoZTSv80wd91NRR6o+4HQv9Kh1IqOhljt3FyyUetl/GaArescjMRL5RA3kzsmptlRjz7nh03zlCrbO0lwsxeX4etOnvJTV1jeAUHe3wqEHFynj6USKYIqX5mh7+uO0P53ezWLuG0M2g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(6486002)(5660300002)(8936002)(508600001)(86362001)(2616005)(6512007)(26005)(6666004)(2906002)(186003)(1076003)(33656002)(4326008)(38100700002)(8676002)(6506007)(66556008)(66946007)(66476007)(54906003)(6916009)(316002)(36756003)(83380400001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Xkm5AxQyMmPh4uy85yXXaHLwUhDo+QztFEw8vvrHZIaTfp0K4rm6NT4EEDEs?=
- =?us-ascii?Q?VbJi0oMhNZjQ/ZZAbaWQkSsbwhYif1xRyn8quRWUWJxoMiudg90n29AnlArP?=
- =?us-ascii?Q?4+RbTcbyAwBsbKkb5dVngWz1jolPStU58FOrs/ixz2HPSZNU+EOnH4HRCm5E?=
- =?us-ascii?Q?M/BS3rtxRNYKDlpIi4BilULjFBQyFhr9XF1/PHABgiJ9dIjDF2VJLlLALgVO?=
- =?us-ascii?Q?m/l27hqWFuEUKZHn9XxePPwSe4amPmG7h/G5qqBKHCt6HuNpYhhVwFKEatwX?=
- =?us-ascii?Q?Xgal/D0L1SRj1xACjSEnoWyLOHSUpuub4sya9V5JjEIp+4SFbh2ZFtve+9HQ?=
- =?us-ascii?Q?qLl/2uY/QMfIPdb6QkxfQFJIcwO9E+CPCoPY002p05yNVL59FFW7790OodpK?=
- =?us-ascii?Q?SjAUCtFo+xjTkeoYAYk4TiYFVt1VtZ9pJW2nIC1EYYdVKn35JjeNNkazPtTo?=
- =?us-ascii?Q?GX6FnIyWQR7x6Xd4Fq/akaNgJxmkgpnSZPvZC6RsHeSqt00CuV5duXpq4KQs?=
- =?us-ascii?Q?ET+b1PTwLDZYXKS42rUwFv8Vu89MW7CfR7DbdQ3i+t1IW7TF96yzfryIPoEF?=
- =?us-ascii?Q?Kl2PuYlvV1izGSJyTJp06YGHMZMQWMlFFsC9sNzgArlxb5F+GPZ1e9NeBDt7?=
- =?us-ascii?Q?M5XiSdAjoMTHm91FMcn0EVlrsYfsYc0QX/iId7lWmnrbRBC/iozbTqETVaGa?=
- =?us-ascii?Q?zFrH5wvlSwH+a3QSLg2lW1leltMrsiJO9Z0L9vvtQ/Yy9qqj4wDNN5AI+Xv0?=
- =?us-ascii?Q?HaaB0KzrbvyhTzW5M+vzeufDkArradspvhgm83F4s7pnX4CqBSTRwKeDjj59?=
- =?us-ascii?Q?j+ACRrKp9IJNHPYqRxmbkpZx7Jkd4uIGvNPtXISFm/zlSZ7ovnnJD/hLkpGI?=
- =?us-ascii?Q?FYZnQVZ+CA5VdTTE7LzkQC7qfyinCUR1m5B6zEZC/P9BuN5GPxwtRY7KSPPR?=
- =?us-ascii?Q?c01WrscAGkmw+kVuGbLz14v2jmlDaqlWkWO2icRy/7oNZXEmwWLZJ6RMC2S3?=
- =?us-ascii?Q?eijz5+S77OykGldIoPW8m+auqwYPK/X8QaZt25v+iu+AG5mxnLtaLJFftVrz?=
- =?us-ascii?Q?v9ZOsqxCMCAOnVnE3crKkN1x60zKikvqf8xHsg0kw8D7YeHidDwQh2L017Fu?=
- =?us-ascii?Q?RZZO0Qabt6HcBzTvLZUL6bcAGOcrgPUUFuxlN/uAD9gOKhJyU67byt5QeeAO?=
- =?us-ascii?Q?RfD5tI1JKtcc765oU/RiBV13RbPwvCG33LGfgYecSUhkyCoRkuYShlWlJz8y?=
- =?us-ascii?Q?1taerPnFM2HuyxF4trDvKB7dInDGoc10edDFJYrAhE/nlni8DuvC5x0nKD8P?=
- =?us-ascii?Q?Sa/7f/qACzCxQHJmMhDiY0ZC0GwUHpg/f+747jwFhHVcFNBisNfnw7EVDt22?=
- =?us-ascii?Q?Xxyf64y/GieXc1ovgB0L2whYnxicw2Y3Ek95sn0qIPWonwk24AQFrSNYEWid?=
- =?us-ascii?Q?Y4dNF32eHvjQtG2K19i3Wm9nZV8vZsA3GTHWVYuMvTQm8QxCMpU+a+VsTNiN?=
- =?us-ascii?Q?Dbe5ppIQkCQCi/XaAHMAnuRJ6AF18kCowI2CfL3iPnjL60lm6sywrRIpz6Y5?=
- =?us-ascii?Q?gcBpyTFeG5/pnjty72Hm4ctS6qMPrNoedvtbF98WW42HkzC/YB8qH5lN9ksZ?=
- =?us-ascii?Q?1kTrknB2lPRBpKp7Vo01DBUMkXSvO55ImrS/X20SVu4Txl9fBlbr9UlclcG+?=
- =?us-ascii?Q?F/nETt4xopzcO5rhtVDhw9NDzegVtv4YZ3YJ/R2RXE7/ooYOkuqzl4DJ5uvV?=
- =?us-ascii?Q?VL1Sk5t9MA=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ca92f86-2cd1-4828-bd67-08da2d18e8a1
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2022 15:23:43.2975 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: twom0PjHl0PpfSc55Ghn2NEzA3m0BEjuBp6yvsofUZrpJOduwv4QWd0ixuywi6j1
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2618
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Kevin Tian <kevin.tian@intel.com>, Qian Cai <quic_qiancai@quicinc.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v7 00/36] MT8195 and MT8186 IOMMU SUPPORT
+Content-Language: en-US
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>, Will Deacon <will@kernel.org>
+References: <20220503071427.2285-1-yong.wu@mediatek.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220503071427.2285-1-yong.wu@mediatek.com>
+Cc: devicetree@vger.kernel.org, chengci.xu@mediatek.com,
+ xueqi.zhang@mediatek.com, linux-kernel@vger.kernel.org,
+ Krzysztof Kozlowski <krzk@kernel.org>, yen-chang.chen@mediatek.com,
+ iommu@lists.linux-foundation.org, yf.wang@mediatek.com,
+ linux-mediatek@lists.infradead.org, libo.kang@mediatek.com,
+ Hsin-Yi Wang <hsinyi@chromium.org>, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, mingyuan.ma@mediatek.com,
+ linux-arm-kernel@lists.infradead.org,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -145,69 +105,158 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, May 03, 2022 at 02:04:37PM +0100, Robin Murphy wrote:
 
-> > I'm guessing SMMU3 needs to call it's arm_smmu_detach_dev(master) from
-> > the detach_dev op and null it's cached copy of the domain, but I don't
-> > know this driver.. Robin?
+
+On 03/05/2022 09:13, Yong Wu wrote:
+> This patchset adds MT8195 and MT8186 iommu support.
 > 
-> The original intent was that .detach_dev is deprecated in favour of default
-> domains, and when the latter are in use, a device is always attached
-> *somewhere* once probed (i.e. group->domain is never NULL). At face value,
-> the neatest fix IMO would probably be for SMMUv3's .domain_free to handle
-> smmu_domain->devices being non-empty and detach them at that point. However
-> that wouldn't be viable for virtio-iommu or anyone else keeping an internal
-> one-way association of devices to their current domains.
+> MT8195 have 3 IOMMU HWs. 2 IOMMU HW is for multimedia, and 1 IOMMU HW is
+> for infra-master, like PCIe/USB.
+> 
+> About the 2 MM IOMMU HW, something like this:
+> 
+>          IOMMU(VDO)          IOMMU(VPP)
+>             |                   |
+>        SMI_COMMON(VDO)      SMI_COMMON(VPP)
+>        ---------------     ----------------
+>        |      |   ...      |      |     ...
+>      larb0 larb2  ...    larb1 larb3    ...
+> 
+> these two MM IOMMU HW share a pgtable.
+> 
+> About the INFRA IOMMU, it don't have larbs, the master connects the iommu
+> directly. It use a independent pgtable.
+> 
+> Also, mt8195 IOMMU bank supports. Normally the IOMMU register size only
+> is 0x1000. In this IOMMU HW, the register size is 5 * 0x1000. each 0x1000
+> is a bank. the banks' register look like this:
+>       ----------------------------------------
+>       |bank0  | bank1 | bank2 | bank3 | bank4|
+>       ----------------------------------------
+>       |global |
+>       |control|         null
+>       |regs   |
+>       -----------------------------------------
+>       |bank   |bank   |bank   |bank   |bank   |
+>       |regs   |regs   |regs   |regs   |regs   |
+>       |       |       |       |       |       |
+>       -----------------------------------------
+> All the banks share some global control registers, and each bank have its
+> special bank registers, like pgtable base register, tlb operation registers,
+> the fault status registers.
+>   
+> In mt8195, we enable this bank feature for infra iommu, We put PCIe in bank0
+> and USB in bank4. they have independent pgtable.
+> 
+> MT8186 is based on MT8195, it just has two patches.
+> 
+> Change note:
+> v7: 1) Update the changes from Matthias. like add a new function for readability.
+>      2) Add mt8186 into this patchset, It may be helpful for maintainer to apply.
 
-Oh wow that is not obvious
+For the whole series:
 
-Actually, I think it is much worse than this because
-iommu_group_claim_dma_owner() does a __iommu_detach_group() with the
-expecation that this would actually result in DMA being blocked,
-immediately. The idea that __iomuu_detatch_group() is a NOP is kind of
-scary.
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
-Leaving the group attached to the kernel DMA domain will allow
-userspace to DMA to all kernel memory :\
-
-So one approach could be to block use of iommu_group_claim_dma_owner()
-if no detatch_dev op is present and then go through and put them back
-or do something else. This could be short-term OK if we add an op to
-SMMUv3, but long term everything would have to be fixed
-
-Or we can allocate a dummy empty/blocked domain during
-iommu_group_claim_dma_owner() and attach it whenever.
-
-The really ugly trick is that detatch cannot fail, so attach to this
-blocking domain must also not fail - IMHO this is a very complicated
-API to expect for the driver to implement correctly... I see there is
-already a WARN_ON that attaching to the default domain cannot
-fail. Maybe this warrants an actual no-fail attach op so the driver
-can be more aware of this..
-
-And some of these internal APIs could stand some adjusting if we
-really never want a true "detatch" it is always some kind of
-replace/swap type operation, either to the default domain or to the
-blocking domain.
-
-> We *could* stay true to the original paradigm by introducing some real usage
-> of IOMMU_DOMAIN_BLOCKED, such that we could keep one or more of those around
-> to actively attach to instead of having groups in this unattached limbo
-> state, but that's a bigger job involving adding support to drivers as well;
-> too much for a quick fix now...
-
-I suspect for the short term we can get by with an empty mapping
-domain - using DOMAIN_BLOCKED is a bit of a refinement.
-
-Thanks,
-Jason
+> 
+> v6: https://lore.kernel.org/linux-iommu/20220407075726.17771-1-yong.wu@mediatek.com/
+>      Rebase on v5.18-rc1.
+> 
+> v5: https://lore.kernel.org/linux-iommu/20220217113453.13658-1-yong.wu@mediatek.com
+>     1) Base on next-20220216
+>     2) Remove a patch for kmalloc for protect buffer. keep the kzalloc for it.
+>     3) minor fix from AngeloGioacchino, like rename the error label name
+>     (data_unlock to err_unlock).
+>     Note, keep the TODO for component compare_of[26/34].
+> 
+> v4: https://lore.kernel.org/linux-iommu/20220125085634.17972-1-yong.wu@mediatek.com/
+>     1) Base on v5.16-rc1
+>     2) Base on tlb logic 2 patchset, some patches in v3 has already gone
+>     through that patchset.
+>     3) Due to the unreadable union for v1/v2(comment in 26/33 of v3), I
+>     separate mtk_iommu_data for v1 and v2 totally, then remove mtk_iommu.h.
+>     please see patch[26/35][27/35].
+>     4) add two mutex for the internal data. patch[6/35][7/35].
+>     5) add a new flag PM_CLK_AO.
+> 
+> v3: https://lore.kernel.org/linux-mediatek/20210923115840.17813-1-yong.wu@mediatek.com/
+>      1) base on v5.15-rc1
+>      2) Adjust devlink with smi-common, not use the property(sub-sommon).
+>      3) Adjust tlb_flush_all flow,
+>         a) Fix tlb_flush_all only is supported in bank0.
+>         b) add tlb-flush-all in the resume callback.
+>         c) remove the pm status checking in tlb-flush-all.
+>         The reason are showed in the commit message.
+>      4) Allow IOMMU_DOMAIN_UNMANAGED since PCIe VFIO use that.
+>      5) Fix a clk warning and a null abort when unbind the iommu driver.
+> 
+> v2: https://lore.kernel.org/linux-mediatek/20210813065324.29220-1-yong.wu@mediatek.com/
+>      1) Base on v5.14-rc1.
+>      2) Fix build fail for arm32.
+>      3) Fix dt-binding issue from Rob.
+>      4) Fix the bank issue when tlb flush. v1 always use bank->base.
+>      5) adjust devlink with smi-common since the node may be smi-sub-common.
+>      6) other changes: like reword some commit message(removing many
+>         "This patch..."); seperate serveral patches.
+> 
+> v1: https://lore.kernel.org/linux-mediatek/20210630023504.18177-1-yong.wu@mediatek.com/
+>      Base on v5.13-rc1
+> 
+> Yong Wu (36):
+>    dt-bindings: mediatek: mt8195: Add binding for MM IOMMU
+>    dt-bindings: mediatek: mt8195: Add binding for infra IOMMU
+>    dt-bindings: mediatek: mt8186: Add binding for MM iommu
+>    iommu/mediatek: Fix 2 HW sharing pgtable issue
+>    iommu/mediatek: Add list_del in mtk_iommu_remove
+>    iommu/mediatek: Remove clk_disable in mtk_iommu_remove
+>    iommu/mediatek: Add mutex for m4u_group and m4u_dom in data
+>    iommu/mediatek: Add mutex for data in the mtk_iommu_domain
+>    iommu/mediatek: Adapt sharing and non-sharing pgtable case
+>    iommu/mediatek: Add 12G~16G support for multi domains
+>    iommu/mediatek: Add a flag DCM_DISABLE
+>    iommu/mediatek: Add a flag STD_AXI_MODE
+>    iommu/mediatek: Remove the granule in the tlb flush
+>    iommu/mediatek: Always enable output PA over 32bits in isr
+>    iommu/mediatek: Add SUB_COMMON_3BITS flag
+>    iommu/mediatek: Add IOMMU_TYPE flag
+>    iommu/mediatek: Contain MM IOMMU flow with the MM TYPE
+>    iommu/mediatek: Adjust device link when it is sub-common
+>    iommu/mediatek: Allow IOMMU_DOMAIN_UNMANAGED for PCIe VFIO
+>    iommu/mediatek: Add a PM_CLK_AO flag for infra iommu
+>    iommu/mediatek: Add infra iommu support
+>    iommu/mediatek: Add PCIe support
+>    iommu/mediatek: Add mt8195 support
+>    iommu/mediatek: Only adjust code about register base
+>    iommu/mediatek: Just move code position in hw_init
+>    iommu/mediatek: Separate mtk_iommu_data for v1 and v2
+>    iommu/mediatek: Remove mtk_iommu.h
+>    iommu/mediatek-v1: Just rename mtk_iommu to mtk_iommu_v1
+>    iommu/mediatek: Add mtk_iommu_bank_data structure
+>    iommu/mediatek: Initialise bank HW for each a bank
+>    iommu/mediatek: Change the domid to iova_region_id
+>    iommu/mediatek: Get the proper bankid for multi banks
+>    iommu/mediatek: Initialise/Remove for multi bank dev
+>    iommu/mediatek: Backup/restore regsiters for multi banks
+>    iommu/mediatek: mt8195: Enable multi banks for infra iommu
+>    iommu/mediatek: Add mt8186 iommu support
+> 
+>   .../bindings/iommu/mediatek,iommu.yaml        |  24 +-
+>   drivers/iommu/mtk_iommu.c                     | 974 +++++++++++++-----
+>   drivers/iommu/mtk_iommu.h                     | 101 --
+>   drivers/iommu/mtk_iommu_v1.c                  | 235 +++--
+>   .../dt-bindings/memory/mt8186-memory-port.h   | 217 ++++
+>   .../dt-bindings/memory/mt8195-memory-port.h   | 408 ++++++++
+>   include/dt-bindings/memory/mtk-memory-port.h  |   2 +
+>   7 files changed, 1485 insertions(+), 476 deletions(-)
+>   delete mode 100644 drivers/iommu/mtk_iommu.h
+>   create mode 100644 include/dt-bindings/memory/mt8186-memory-port.h
+>   create mode 100644 include/dt-bindings/memory/mt8195-memory-port.h
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
