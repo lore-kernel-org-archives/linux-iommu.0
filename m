@@ -4,81 +4,81 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 869B8C433F5
-	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 18:09:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 26090C433F5
+	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 18:12:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 2222383486;
-	Tue,  3 May 2022 18:09:53 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id CF98D825CA;
+	Tue,  3 May 2022 18:12:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IGHtoKiZQwd2; Tue,  3 May 2022 18:09:52 +0000 (UTC)
+	with ESMTP id uqnZp5IZhq08; Tue,  3 May 2022 18:12:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id E7433825CA;
-	Tue,  3 May 2022 18:09:51 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 8A80C81490;
+	Tue,  3 May 2022 18:12:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BA0EEC0039;
-	Tue,  3 May 2022 18:09:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5B7AAC0032;
+	Tue,  3 May 2022 18:12:53 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 646E0C002D
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 18:09:50 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 29B5EC002D
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 18:12:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 4C11183417
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 18:09:50 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 1EF528149C
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 18:12:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hgclSYZ2Bwru for <iommu@lists.linux-foundation.org>;
- Tue,  3 May 2022 18:09:49 +0000 (UTC)
+ with ESMTP id pkTWmo39UjZI for <iommu@lists.linux-foundation.org>;
+ Tue,  3 May 2022 18:12:51 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com
- [IPv6:2a00:1450:4864:20::632])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 52C7D825CA
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 18:09:49 +0000 (UTC)
-Received: by mail-ej1-x632.google.com with SMTP id dk23so34955407ejb.8
- for <iommu@lists.linux-foundation.org>; Tue, 03 May 2022 11:09:49 -0700 (PDT)
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com
+ [IPv6:2a00:1450:4864:20::42e])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 433B581490
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 18:12:51 +0000 (UTC)
+Received: by mail-wr1-x42e.google.com with SMTP id t6so24470615wra.4
+ for <iommu@lists.linux-foundation.org>; Tue, 03 May 2022 11:12:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=date:from:to:cc:subject:message-id:references:mime-version
  :content-disposition:in-reply-to;
- bh=9gjEyY8o65rJfUi2R/5q726th223KCfR89ZxIyy7Kvw=;
- b=ZNqaq/uE1FvHcpZ723NGH4mJuGNVsmIWAFT1HzkYo+YbUPOssbd8ZiZtdVi99Hsm+D
- ftZ0CpOSqPqAmBbDjy5WSC8rKUrwO/pDLOzEPkMG9MBpWKlCDLE+9eiBnOswGbhRYPO7
- k4Ec6IWtjWfqKNpTKPBJ+bgZkFotwJSXkFohEHaZdGkeKCbRuFmG1RDCtEtOPzdqO7Tz
- 2z8wJ3hQgSS6Hna69kwpTbOTtAd1dOXSkBI9ApHUuummyXmXKYoiZ+EiHj6TTfe7G0y/
- b86duNQGCx1bfFEPhDi+0RqyNIm+SdQ9dpA/VzRzj7pnDVf4/ddErdeYhQrO0h8WQoxe
- 0R+A==
+ bh=sYczTiism3AvB5i2HPPMCukvA88W4uV6GroVBqCVwd8=;
+ b=l1P52yFfIlCoJeVp9x7e3toeQStCoXmBw8qmitK1qkEHjDq/GideoOhtsl7XjHWqox
+ p/LXp78fFQ5ap6IfIz0F8+1StxUF1fGrGZpwFKLVhK2W+KtD3JO7vOw+t19qtxpN2JYr
+ CY17h1JvKUie53gJ4URsGi3S5SNVchx0ncmR5aROBk/F1FZuaIXmGlhoMV6jyaRFJajy
+ LPUMDsknIqrd1Fh7ZZY16nTQGF+Zk40EwyZoZU0iwYNTqkDePBL2OgmFA+A6RCwe+M7w
+ gnzSjS285qeixa7sJPezOz8QEwSRdasVdV4DY50bpkdVfs7cxuJN0HR1iMoFIMa+a/LC
+ B9mQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=9gjEyY8o65rJfUi2R/5q726th223KCfR89ZxIyy7Kvw=;
- b=NLESlxD86EDZR8rAMlRScpHL9IIcTGWgIuMp1OBNGX72I5ZGo87RxmiJM6Txu39b0U
- 88nW0kZ4jDlLnYV8vtxuFETDJ+k3na56pKIFielTtOYvOzpkkLaTHHLkQ+woVgsZajyZ
- 5CPLrYnNaC2ABCNuHXkzPOFOPzaVQo9XrMtFVDqjPq9/3HLXHBTrZ4pVw7k9bu9Kz6rq
- S3hdGUIhg3TLkRy93bmLdD4a//R5C/htvuxFkFw2aBeismO2p7+3cfF83filqssl56aD
- SPudRMeDTpF7zJ9OzTdGtD3zVLUv0xF7nDMAo1ItjwgFY6Vuc1wjdjdxsVqTSJDGuV1s
- NxMA==
-X-Gm-Message-State: AOAM533YPG++UdgPcDvbseQ90Dj+dmbM861yrIVvIpb2qUSp2p2XduKn
- O4rIZ810Txutl8D6uO/0dBFJgw==
-X-Google-Smtp-Source: ABdhPJzYXKl6dp62p9Rbi2ZyThioE95HacheutFqLriaESUvTzwQS+VWO2cmCUDs03Vv6PniXk/ZdA==
-X-Received: by 2002:a17:906:a08b:b0:6b9:2e20:f139 with SMTP id
- q11-20020a170906a08b00b006b92e20f139mr17550173ejy.463.1651601387539; 
- Tue, 03 May 2022 11:09:47 -0700 (PDT)
+ bh=sYczTiism3AvB5i2HPPMCukvA88W4uV6GroVBqCVwd8=;
+ b=JEDkp3G6S8vRo7hE7gDAC1vYy0c5p5q/OOXcR4qbp4n+DZgvj38w1qaq1rBvFXiqjk
+ g3YmeUKDzT6UvIZg+3rZo/sx/JKfZ0F+HTx5jFSo8Vqkv2wSdiDKc+TnR/a2vs+Bo/AX
+ Buo+ySwuWangnrMIM1/qJ6yMY7kS/pck/ahJ7bSXP3DxXuWWHPeu7dAOv/pg5FTI4TaI
+ o81pDAT+7REidqrjlUyJ+jN3A7QXgcrggatzpgmxvmsrbJoyYs5XqKu00LQYg5YRZlOE
+ 2TAAEaxSLhcRo1zGRqvcKbWnVgkabOGQtwTkKupQtkBa4yrrK8mANOykkZLM92KLn0m6
+ yxvw==
+X-Gm-Message-State: AOAM5333BSzklEYm4BmS/SOeBiGPENtowYNznVa9l7pmE2VjYCOr6Pdw
+ MyL6ipTxaAfXCmApJ9fcQeYcNA==
+X-Google-Smtp-Source: ABdhPJzZrRo9lI/2sW0emG53DTRhp5HvrUFRkNLyUitvmuN4N7njcGivXM25nQUesOJYzJbyXRxOnQ==
+X-Received: by 2002:a05:6000:1a87:b0:20c:687f:6d10 with SMTP id
+ f7-20020a0560001a8700b0020c687f6d10mr6421133wry.574.1651601569296; 
+ Tue, 03 May 2022 11:12:49 -0700 (PDT)
 Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
  [82.27.106.168]) by smtp.gmail.com with ESMTPSA id
- s8-20020aa7cb08000000b0042617ba638csm8058733edt.22.2022.05.03.11.09.46
+ i128-20020a1c3b86000000b003942a244ebfsm2217051wma.4.2022.05.03.11.12.48
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 03 May 2022 11:09:46 -0700 (PDT)
-Date: Tue, 3 May 2022 19:09:22 +0100
+ Tue, 03 May 2022 11:12:48 -0700 (PDT)
+Date: Tue, 3 May 2022 19:12:24 +0100
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v5 04/12] iommu/sva: Basic data structures for SVA
-Message-ID: <YnFv0ps0Ad8v+7uH@myrica>
+Subject: Re: [PATCH v5 07/12] arm-smmu-v3/sva: Add SVA domain support
+Message-ID: <YnFwiLkvYtLn43Qv@myrica>
 References: <20220502014842.991097-1-baolu.lu@linux.intel.com>
- <20220502014842.991097-5-baolu.lu@linux.intel.com>
+ <20220502014842.991097-8-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20220502014842.991097-5-baolu.lu@linux.intel.com>
+In-Reply-To: <20220502014842.991097-8-baolu.lu@linux.intel.com>
 Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
  Ashok Raj <ashok.raj@intel.com>, Robin Murphy <robin.murphy@arm.com>,
  iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
@@ -103,140 +103,151 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, May 02, 2022 at 09:48:34AM +0800, Lu Baolu wrote:
-> Use below data structures for SVA implementation in the IOMMU core:
+On Mon, May 02, 2022 at 09:48:37AM +0800, Lu Baolu wrote:
+> Add support for SVA domain allocation and provide an SVA-specific
+> iommu_domain_ops.
 > 
-> - struct iommu_sva_ioas
->   Represent the I/O address space shared with an application CPU address
->   space. This structure has a 1:1 relationship with an mm_struct. It
->   grabs a "mm->mm_count" refcount during creation and drop it on release.
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 14 +++++++
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 42 +++++++++++++++++++
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 21 ++++++++++
+>  3 files changed, 77 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index cd48590ada30..7631c00fdcbd 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -759,6 +759,10 @@ struct iommu_sva *arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm,
+>  void arm_smmu_sva_unbind(struct iommu_sva *handle);
+>  u32 arm_smmu_sva_get_pasid(struct iommu_sva *handle);
+>  void arm_smmu_sva_notifier_synchronize(void);
+> +int arm_smmu_sva_attach_dev_pasid(struct iommu_domain *domain,
+> +				  struct device *dev, ioasid_t id);
+> +void arm_smmu_sva_detach_dev_pasid(struct iommu_domain *domain,
+> +				   struct device *dev, ioasid_t id);
+>  #else /* CONFIG_ARM_SMMU_V3_SVA */
+>  static inline bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+>  {
+> @@ -804,5 +808,15 @@ static inline u32 arm_smmu_sva_get_pasid(struct iommu_sva *handle)
+>  }
+>  
+>  static inline void arm_smmu_sva_notifier_synchronize(void) {}
+> +
+> +static inline int arm_smmu_sva_attach_dev_pasid(struct iommu_domain *domain,
+> +						struct device *dev, ioasid_t id)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +static inline void arm_smmu_sva_detach_dev_pasid(struct iommu_domain *domain,
+> +						 struct device *dev,
+> +						 ioasid_t id) {}
+>  #endif /* CONFIG_ARM_SMMU_V3_SVA */
+>  #endif /* _ARM_SMMU_V3_H */
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> index c623dae1e115..3b843cd3ed67 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> @@ -541,3 +541,45 @@ void arm_smmu_sva_notifier_synchronize(void)
+>  	 */
+>  	mmu_notifier_synchronize();
+>  }
+> +
+> +int arm_smmu_sva_attach_dev_pasid(struct iommu_domain *domain,
+> +				  struct device *dev, ioasid_t id)
+> +{
+> +	int ret = 0;
+> +	struct iommu_sva *handle;
+> +	struct mm_struct *mm = iommu_sva_domain_mm(domain);
+> +
+> +	if (domain->type != IOMMU_DOMAIN_SVA || !mm)
 
-Do we actually need this structure?  At the moment it only keeps track of
-bonds, which we can move to struct dev_iommu. Replacing it by a mm pointer
-in struct iommu_domain simplifies the driver and seems to work
+We wouldn't get that far with a non-SVA domain since iommu_sva_domain_mm()
+would dereference a NULL pointer. Could you move it after the domain->type
+check, and maybe add a WARN_ON()?  It could help catch issues in future
+API changes.
+
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&sva_lock);
+> +	handle = __arm_smmu_sva_bind(dev, mm);
+> +	if (IS_ERR(handle))
+> +		ret = PTR_ERR(handle);
+> +	mutex_unlock(&sva_lock);
+> +
+> +	return ret;
+> +}
+> +
+> +void arm_smmu_sva_detach_dev_pasid(struct iommu_domain *domain,
+> +				   struct device *dev, ioasid_t id)
+> +{
+> +	struct arm_smmu_bond *bond = NULL, *t;
+> +	struct mm_struct *mm = iommu_sva_domain_mm(domain);
+> +	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+> +
+> +	mutex_lock(&sva_lock);
+> +	list_for_each_entry(t, &master->bonds, list) {
+> +		if (t->mm == mm) {
+> +			bond = t;
+> +			break;
+> +		}
+> +	}
+> +
+> +	if (!WARN_ON(!bond) && refcount_dec_and_test(&bond->refs)) {
+> +		list_del(&bond->list);
+> +		arm_smmu_mmu_notifier_put(bond->smmu_mn);
+> +		kfree(bond);
+> +	}
+> +	mutex_unlock(&sva_lock);
+> +}
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index afc63fce6107..bd80de0bad98 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1995,10 +1995,31 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+>  	}
+>  }
+>  
+> +static void arm_smmu_sva_domain_free(struct iommu_domain *domain)
+> +{
+> +	kfree(domain);
+> +}
+> +
+> +static const struct iommu_domain_ops arm_smmu_sva_domain_ops = {
+> +	.attach_dev_pasid	= arm_smmu_sva_attach_dev_pasid,
+> +	.detach_dev_pasid	= arm_smmu_sva_detach_dev_pasid,
+> +	.free			= arm_smmu_sva_domain_free,
+> +};
+> +
+>  static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+>  {
+>  	struct arm_smmu_domain *smmu_domain;
+>  
+> +	if (type == IOMMU_DOMAIN_SVA) {
+> +		struct iommu_domain *domain;
+> +
+> +		domain = kzalloc(sizeof(*domain), GFP_KERNEL);
+> +		if (domain)
+> +			domain->ops = &arm_smmu_sva_domain_ops;
+> +
+> +		return domain;
+> +	}
+> +
+
+I'd prefer moving all of this to arm-smmu-v3-sva.c and just call
+arm_smmu_sva_domain_alloc() here
+
+Otherwise the patch looks fine. I'll rework the driver when I find some
+time, because we can now remove arm_smmu_bond and move smmu_mn to the SVA
+domain, maybe also remove sva_lock but I haven't thought it through.
 
 Thanks,
 Jean
 
-> 
-> - struct iommu_domain (IOMMU_DOMAIN_SVA type)
->   Represent a hardware pagetable that the IOMMU hardware could use for
->   SVA translation. Multiple iommu domains could be bound with an SVA ioas
->   and each grabs a refcount from ioas in order to make sure ioas could
->   only be freed after all domains have been unbound.
-> 
-> - struct iommu_sva
->   Represent a bond relationship between an SVA ioas and an iommu domain.
->   If a bond already exists, it's reused and a reference is taken.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  include/linux/iommu.h         | 14 +++++++++++++-
->  drivers/iommu/iommu-sva-lib.h |  1 +
->  drivers/iommu/iommu-sva-lib.c | 18 ++++++++++++++++++
->  3 files changed, 32 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index ab36244d4e94..f582f434c513 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -42,6 +42,7 @@ struct notifier_block;
->  struct iommu_sva;
->  struct iommu_fault_event;
->  struct iommu_dma_cookie;
-> +struct iommu_sva_ioas;
->  
->  /* iommu fault flags */
->  #define IOMMU_FAULT_READ	0x0
-> @@ -64,6 +65,9 @@ struct iommu_domain_geometry {
->  #define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
->  #define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
->  
-> +#define __IOMMU_DOMAIN_SHARED	(1U << 4)  /* Page table shared from CPU  */
-> +#define __IOMMU_DOMAIN_HOST_VA	(1U << 5)  /* Host CPU virtual address */
-> +
->  /*
->   * This are the possible domain-types
->   *
-> @@ -86,6 +90,8 @@ struct iommu_domain_geometry {
->  #define IOMMU_DOMAIN_DMA_FQ	(__IOMMU_DOMAIN_PAGING |	\
->  				 __IOMMU_DOMAIN_DMA_API |	\
->  				 __IOMMU_DOMAIN_DMA_FQ)
-> +#define IOMMU_DOMAIN_SVA	(__IOMMU_DOMAIN_SHARED |	\
-> +				 __IOMMU_DOMAIN_HOST_VA)
->  
->  struct iommu_domain {
->  	unsigned type;
-> @@ -95,6 +101,7 @@ struct iommu_domain {
->  	void *handler_token;
->  	struct iommu_domain_geometry geometry;
->  	struct iommu_dma_cookie *iova_cookie;
-> +	struct iommu_sva_ioas *sva_ioas;
->  };
->  
->  static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
-> @@ -628,7 +635,12 @@ struct iommu_fwspec {
->   * struct iommu_sva - handle to a device-mm bond
->   */
->  struct iommu_sva {
-> -	struct device			*dev;
-> +	struct device		*dev;
-> +	struct iommu_sva_ioas	*sva_ioas;
-> +	struct iommu_domain	*domain;
-> +	/* Link to sva ioas's bonds list */
-> +	struct list_head	node;
-> +	refcount_t		users;
->  };
->  
->  int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
-> diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva-lib.h
-> index 8909ea1094e3..9c5e108e2c8a 100644
-> --- a/drivers/iommu/iommu-sva-lib.h
-> +++ b/drivers/iommu/iommu-sva-lib.h
-> @@ -10,6 +10,7 @@
->  
->  int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max);
->  struct mm_struct *iommu_sva_find(ioasid_t pasid);
-> +struct mm_struct *iommu_sva_domain_mm(struct iommu_domain *domain);
->  
->  /* I/O Page fault */
->  struct device;
-> diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
-> index 106506143896..d524a402be3b 100644
-> --- a/drivers/iommu/iommu-sva-lib.c
-> +++ b/drivers/iommu/iommu-sva-lib.c
-> @@ -3,6 +3,8 @@
->   * Helpers for IOMMU drivers implementing SVA
->   */
->  #include <linux/mutex.h>
-> +#include <linux/iommu.h>
-> +#include <linux/slab.h>
->  #include <linux/sched/mm.h>
->  
->  #include "iommu-sva-lib.h"
-> @@ -10,6 +12,22 @@
->  static DEFINE_MUTEX(iommu_sva_lock);
->  static DECLARE_IOASID_SET(iommu_sva_pasid);
->  
-> +struct iommu_sva_ioas {
-> +	struct mm_struct *mm;
-> +	ioasid_t pasid;
-> +
-> +	/* Counter of domains attached to this ioas. */
-> +	refcount_t users;
-> +
-> +	/* All bindings are linked here. */
-> +	struct list_head bonds;
-> +};
-> +
-> +struct mm_struct *iommu_sva_domain_mm(struct iommu_domain *domain)
-> +{
-> +	return domain->sva_ioas->mm;
-> +}
-> +
->  /**
->   * iommu_sva_alloc_pasid - Allocate a PASID for the mm
->   * @mm: the mm
+>  	if (type != IOMMU_DOMAIN_UNMANAGED &&
+>  	    type != IOMMU_DOMAIN_DMA &&
+>  	    type != IOMMU_DOMAIN_DMA_FQ &&
 > -- 
 > 2.25.1
 > 
