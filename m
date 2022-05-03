@@ -1,75 +1,62 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6A7EFC433F5
-	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 17:19:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D3725C433F5
+	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 17:22:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 01C986102F;
-	Tue,  3 May 2022 17:19:07 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 7B231403F7;
+	Tue,  3 May 2022 17:22:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hva8Od6k_dne; Tue,  3 May 2022 17:19:06 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qb1IFQPlXhl0; Tue,  3 May 2022 17:22:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id A6B0860E03;
-	Tue,  3 May 2022 17:19:05 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 333B4405D8;
+	Tue,  3 May 2022 17:22:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C096C0039;
-	Tue,  3 May 2022 17:19:05 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D7027C002D
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 17:19:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 05CDCC0039;
+	Tue,  3 May 2022 17:22:57 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DBDA2C002D
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 17:22:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id B752B832E6
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 17:19:02 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id D1A62403F7
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 17:22:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0XuU4TFlLQkK for <iommu@lists.linux-foundation.org>;
- Tue,  3 May 2022 17:18:58 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id NCgf0LWpjLyp for <iommu@lists.linux-foundation.org>;
+ Tue,  3 May 2022 17:22:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp1.osuosl.org (Postfix) with ESMTPS id A03B4832D1
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 17:18:57 +0000 (UTC)
-X-UUID: ce9a7978bb5e4c5490f9d6ec351fac8e-20220504
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4, REQID:6ad70994-0b93-4c29-b97c-0c2157893154, OB:0,
- LO
- B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
- ON:release,TS:0
-X-CID-META: VersionHash:faefae9, CLOUDID:ff1c912f-6199-437e-8ab4-9920b4bc5b76,
- C
- OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: ce9a7978bb5e4c5490f9d6ec351fac8e-20220504
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by
- mailgw01.mediatek.com (envelope-from <miles.chen@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 16904984; Wed, 04 May 2022 01:18:50 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3; 
- Wed, 4 May 2022 01:18:48 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 4 May 2022 01:18:48 +0800
-To: <yf.wang@mediatek.com>
-Subject: Re: [PATCH 1/2] iommu/io-pgtable-arm-v7s: Add a quirk to support TTBR
- up to 35bit for MediaTek
-Date: Wed, 4 May 2022 01:18:48 +0800
-Message-ID: <20220503171848.24992-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220429143411.7640-2-yf.wang@mediatek.com>
-References: <20220429143411.7640-2-yf.wang@mediatek.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id C7D1D400BF
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 17:22:54 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1B76212FC;
+ Tue,  3 May 2022 10:22:54 -0700 (PDT)
+Received: from [10.57.80.111] (unknown [10.57.80.111])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 546413F5A1;
+ Tue,  3 May 2022 10:22:52 -0700 (PDT)
+Message-ID: <18831161-473f-e04f-4a81-1c7062ad192d@arm.com>
+Date: Tue, 3 May 2022 18:22:45 +0100
 MIME-Version: 1.0
-X-MTK: N
-Cc: isaacm@codeaurora.org, wsd_upstream@mediatek.com, will@kernel.org,
- linux-kernel@vger.kernel.org, Libo.Kang@mediatek.com,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- ning.li@mediatek.com, matthias.bgg@gmail.com, stable@vger.kernel.org,
- robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [RESEND PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220418005000.897664-1-baolu.lu@linux.intel.com>
+ <20220502161204.GA22@qian> <20220502164216.GP8364@nvidia.com>
+ <8b3d31ef-caf7-da92-fa95-0df378d5b091@arm.com>
+ <20220503152336.GA3939@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220503152336.GA3939@nvidia.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Kevin Tian <kevin.tian@intel.com>, Qian Cai <quic_qiancai@quicinc.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,139 +69,180 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Miles Chen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Miles Chen <miles.chen@mediatek.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi YF,
-
-> The calling to kmem_cache_alloc for level 2 page table allocation may
-> run in atomic context, and it fails sometimes when DMA32 zone runs out
-> of memory.
+On 2022-05-03 16:23, Jason Gunthorpe wrote:
+> On Tue, May 03, 2022 at 02:04:37PM +0100, Robin Murphy wrote:
 > 
-> Since Mediatek IOMMU hardware support at most 35bit PA in page table,
-
-s/Mediatek/MediaTek/
-s/support/supports/
-
-> so add a quirk to allow the PA of level 2 pgtable support bit35.
-
-35bits PA, right?
-
->
+>>> I'm guessing SMMU3 needs to call it's arm_smmu_detach_dev(master) from
+>>> the detach_dev op and null it's cached copy of the domain, but I don't
+>>> know this driver.. Robin?
+>>
+>> The original intent was that .detach_dev is deprecated in favour of default
+>> domains, and when the latter are in use, a device is always attached
+>> *somewhere* once probed (i.e. group->domain is never NULL). At face value,
+>> the neatest fix IMO would probably be for SMMUv3's .domain_free to handle
+>> smmu_domain->devices being non-empty and detach them at that point. However
+>> that wouldn't be viable for virtio-iommu or anyone else keeping an internal
+>> one-way association of devices to their current domains.
 > 
-
-...snip...
-
->  
->  	phys = virt_to_phys(table);
-> -	if (phys != (arm_v7s_iopte)phys) {
-> +	if (phys != (arm_v7s_iopte)phys &&
-> +	    !(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)) {
-
-I have one question while reading this.
-
-If IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT is set, it means that the phys can be up to 35 bits.
-In aarch64, kmalloc() could return up to 52 bits PA (e.g., ARM64_PA_BITS_52=y)
-
-How do we guarantee that phys is safe (<= 35 bits) in this case?
-For example:
-When IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT is set, the platform guarantees its PAs are at most
-35 bits?
-
-
-Thanks,
-Miles
->  		/* Doesn't fit in PTE */
->  		dev_err(dev, "Page table does not fit in PTE: %pa", &phys);
->  		goto out_free;
-> @@ -457,9 +464,14 @@ static arm_v7s_iopte arm_v7s_install_table(arm_v7s_iopte *table,
->  					   arm_v7s_iopte curr,
->  					   struct io_pgtable_cfg *cfg)
->  {
-> +	phys_addr_t phys = virt_to_phys(table);
->  	arm_v7s_iopte old, new;
->  
-> -	new = virt_to_phys(table) | ARM_V7S_PTE_TYPE_TABLE;
-> +	new = phys | ARM_V7S_PTE_TYPE_TABLE;
-> +
-> +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
-> +		new = to_iopte_mtk(phys, new, cfg);
-> +
->  	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
->  		new |= ARM_V7S_ATTR_NS_TABLE;
->  
-> @@ -778,6 +790,7 @@ static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
->  static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
->  						void *cookie)
->  {
-> +	slab_flags_t slab_flag = ARM_V7S_TABLE_SLAB_FLAGS;
->  	struct arm_v7s_io_pgtable *data;
->  
->  	if (cfg->ias > (arm_v7s_is_mtk_enabled(cfg) ? 34 : ARM_V7S_ADDR_BITS))
-> @@ -788,7 +801,8 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
->  
->  	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
->  			    IO_PGTABLE_QUIRK_NO_PERMS |
-> -			    IO_PGTABLE_QUIRK_ARM_MTK_EXT))
-> +			    IO_PGTABLE_QUIRK_ARM_MTK_EXT |
-> +			    IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT))
->  		return NULL;
->  
->  	/* If ARM_MTK_4GB is enabled, the NO_PERMS is also expected. */
-> @@ -801,10 +815,12 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
->  		return NULL;
->  
->  	spin_lock_init(&data->split_lock);
-> +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
-> +		slab_flag = 0;
->  	data->l2_tables = kmem_cache_create("io-pgtable_armv7s_l2",
->  					    ARM_V7S_TABLE_SIZE(2, cfg),
->  					    ARM_V7S_TABLE_SIZE(2, cfg),
-> -					    ARM_V7S_TABLE_SLAB_FLAGS, NULL);
-> +					    slab_flag, NULL);
->  	if (!data->l2_tables)
->  		goto out_free_data;
->  
-> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> index 86af6f0a00a2..7ed15ad4710c 100644
-> --- a/include/linux/io-pgtable.h
-> +++ b/include/linux/io-pgtable.h
-> @@ -74,17 +74,22 @@ struct io_pgtable_cfg {
->  	 *	to support up to 35 bits PA where the bit32, bit33 and bit34 are
->  	 *	encoded in the bit9, bit4 and bit5 of the PTE respectively.
->  	 *
-> +	 * IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT: (ARM v7s format) MediaTek IOMMUs
-> +	 *	extend the translation table support up to 35 bits PA, the
-> +	 *	encoding format is same with IO_PGTABLE_QUIRK_ARM_MTK_EXT.
-> +	 *
->  	 * IO_PGTABLE_QUIRK_ARM_TTBR1: (ARM LPAE format) Configure the table
->  	 *	for use in the upper half of a split address space.
->  	 *
->  	 * IO_PGTABLE_QUIRK_ARM_OUTER_WBWA: Override the outer-cacheability
->  	 *	attributes set in the TCR for a non-coherent page-table walker.
->  	 */
-> -	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
-> -	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
-> -	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT	BIT(3)
-> -	#define IO_PGTABLE_QUIRK_ARM_TTBR1	BIT(5)
-> -	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA	BIT(6)
-> +	#define IO_PGTABLE_QUIRK_ARM_NS			BIT(0)
-> +	#define IO_PGTABLE_QUIRK_NO_PERMS		BIT(1)
-> +	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT		BIT(3)
-> +	#define IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT	BIT(4)
-> +	#define IO_PGTABLE_QUIRK_ARM_TTBR1		BIT(5)
-> +	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA		BIT(6)
->  	unsigned long			quirks;
->  	unsigned long			pgsize_bitmap;
->  	unsigned int			ias;
-> -- 
-> 2.18.0
+> Oh wow that is not obvious
 > 
+> Actually, I think it is much worse than this because
+> iommu_group_claim_dma_owner() does a __iommu_detach_group() with the
+> expecation that this would actually result in DMA being blocked,
+> immediately. The idea that __iomuu_detatch_group() is a NOP is kind of
+> scary.
+
+Scarier than the fact that even where it *is* implemented, .detach_dev
+has never had a well-defined behaviour either, and plenty of drivers
+treat it as a "remove the IOMMU from the picture altogether" operation
+which ends up with the device in bypass rather than blocked?
+
+> Leaving the group attached to the kernel DMA domain will allow
+> userspace to DMA to all kernel memory :\
+
+Note that a fair amount of IOMMU hardware only has two states, thus
+could only actually achieve a blocking behaviour by enabling translation
+with an empty pagetable anyway. (Trivia: and technically some of them
+aren't even capable of blocking invalid accesses *when* translating -
+they can only apply a "default" translation targeting some scratch page)
+
+> So one approach could be to block use of iommu_group_claim_dma_owner()
+> if no detatch_dev op is present and then go through and put them back
+> or do something else. This could be short-term OK if we add an op to
+> SMMUv3, but long term everything would have to be fixed
 > 
+> Or we can allocate a dummy empty/blocked domain during
+> iommu_group_claim_dma_owner() and attach it whenever.
+
+How does the compile-tested diff below seem? There's a fair chance it's
+still broken, but I don't have the bandwidth to give it much more
+thought right now.
+
+Cheers,
+Robin.
+
+----->8-----
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 29906bc16371..597d70ed7007 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -45,6 +45,7 @@ struct iommu_group {
+  	int id;
+  	struct iommu_domain *default_domain;
+  	struct iommu_domain *domain;
++	struct iommu_domain *purgatory;
+  	struct list_head entry;
+  	unsigned int owner_cnt;
+  	void *owner;
+@@ -596,6 +597,8 @@ static void iommu_group_release(struct kobject *kobj)
+  
+  	if (group->default_domain)
+  		iommu_domain_free(group->default_domain);
++	if (group->purgatory)
++		iommu_domain_free(group->purgatory);
+  
+  	kfree(group->name);
+  	kfree(group);
+@@ -2041,6 +2044,12 @@ struct iommu_domain *iommu_get_dma_domain(struct device *dev)
+  	return dev->iommu_group->default_domain;
+  }
+  
++static bool iommu_group_user_attached(struct iommu_group *group)
++{
++	return group->domain && group->domain != group->default_domain &&
++	       group->domain != group->purgatory;
++}
++
+  /*
+   * IOMMU groups are really the natural working unit of the IOMMU, but
+   * the IOMMU API works on domains and devices.  Bridge that gap by
+@@ -2063,7 +2072,7 @@ static int __iommu_attach_group(struct iommu_domain *domain,
+  {
+  	int ret;
+  
+-	if (group->domain && group->domain != group->default_domain)
++	if (iommu_group_user_attached(group))
+  		return -EBUSY;
+  
+  	ret = __iommu_group_for_each_dev(group, domain,
+@@ -2104,7 +2113,12 @@ static void __iommu_detach_group(struct iommu_domain *domain,
+  	 * If the group has been claimed already, do not re-attach the default
+  	 * domain.
+  	 */
+-	if (!group->default_domain || group->owner) {
++	if (group->owner) {
++		WARN_ON(__iommu_attach_group(group->purgatory, group));
++		return;
++	}
++
++	if (!group->default_domain) {
+  		__iommu_group_for_each_dev(group, domain,
+  					   iommu_group_do_detach_device);
+  		group->domain = NULL;
+@@ -3111,6 +3125,25 @@ void iommu_device_unuse_default_domain(struct device *dev)
+  	iommu_group_put(group);
+  }
+  
++static struct iommu_domain *iommu_group_get_purgatory(struct iommu_group *group)
++{
++	struct group_device *dev;
++
++	mutex_lock(&group->mutex);
++	if (group->purgatory)
++		goto out;
++
++	dev = list_first_entry(&group->devices, struct group_device, list);
++	group->purgatory = __iommu_domain_alloc(dev->dev->bus,
++						IOMMU_DOMAIN_BLOCKED);
++	if (!group->purgatory)
++		group->purgatory = __iommu_domain_alloc(dev->dev->bus,
++							IOMMU_DOMAIN_UNMANAGED);
++out:
++	mutex_unlock(&group->mutex);
++	return group->purgatory;
++}
++
+  /**
+   * iommu_group_claim_dma_owner() - Set DMA ownership of a group
+   * @group: The group.
+@@ -3122,6 +3155,7 @@ void iommu_device_unuse_default_domain(struct device *dev)
+   */
+  int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner)
+  {
++	struct iommu_domain *pd;
+  	int ret = 0;
+  
+  	mutex_lock(&group->mutex);
+@@ -3133,10 +3167,13 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner)
+  			ret = -EBUSY;
+  			goto unlock_out;
+  		}
++		pd = iommu_group_get_purgatory(group);
++		if (!pd)
++			return -ENOMEM;
+  
+  		group->owner = owner;
+-		if (group->domain)
+-			__iommu_detach_group(group->domain, group);
++		if (group->domain && group->domain != pd)
++			__iommu_attach_group(pd, group);
+  	}
+  
+  	group->owner_cnt++;
+@@ -3164,7 +3201,7 @@ void iommu_group_release_dma_owner(struct iommu_group *group)
+  	 * The UNMANAGED domain should be detached before all USER
+  	 * owners have been released.
+  	 */
+-	if (!WARN_ON(group->domain) && group->default_domain)
++	if (!WARN_ON(iommu_group_user_attached(group) && group->default_domain))
+  		__iommu_attach_group(group->default_domain, group);
+  	group->owner = NULL;
+  unlock_out:
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
