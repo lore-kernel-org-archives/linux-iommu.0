@@ -4,59 +4,90 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D3725C433F5
-	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 17:22:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 541B2C433EF
+	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 18:02:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 7B231403F7;
-	Tue,  3 May 2022 17:22:58 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id C33BD40B2D;
+	Tue,  3 May 2022 18:02:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qb1IFQPlXhl0; Tue,  3 May 2022 17:22:57 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 333B4405D8;
-	Tue,  3 May 2022 17:22:57 +0000 (UTC)
+	with ESMTP id egMkWObuTgaP; Tue,  3 May 2022 18:02:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 967B5400BF;
+	Tue,  3 May 2022 18:02:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 05CDCC0039;
-	Tue,  3 May 2022 17:22:57 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DBDA2C002D
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 17:22:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6079CC0039;
+	Tue,  3 May 2022 18:02:53 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1CEBBC002D
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 18:02:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D1A62403F7
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 17:22:55 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id F2EC96103D
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 18:02:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NCgf0LWpjLyp for <iommu@lists.linux-foundation.org>;
- Tue,  3 May 2022 17:22:54 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id C7D1D400BF
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 17:22:54 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1B76212FC;
- Tue,  3 May 2022 10:22:54 -0700 (PDT)
-Received: from [10.57.80.111] (unknown [10.57.80.111])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 546413F5A1;
- Tue,  3 May 2022 10:22:52 -0700 (PDT)
-Message-ID: <18831161-473f-e04f-4a81-1c7062ad192d@arm.com>
-Date: Tue, 3 May 2022 18:22:45 +0100
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 2KrovpVfJ7ie for <iommu@lists.linux-foundation.org>;
+ Tue,  3 May 2022 18:02:51 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com
+ [IPv6:2607:f8b0:4864:20::736])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 107DA6103C
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 18:02:50 +0000 (UTC)
+Received: by mail-qk1-x736.google.com with SMTP id b20so11776347qkc.6
+ for <iommu@lists.linux-foundation.org>; Tue, 03 May 2022 11:02:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=Uyl9FgqCpk0Nf843k4+zgAZBrShtUTws+zDSvi2LfUM=;
+ b=HASzNM8N5KvGdhci2AiFzKOaJQwN9mxfIDe/lkZJ5ShoUtwlUdYMfOFqvjDXyIJbF4
+ yaCwBO/1X43osNrP+A0r7dVcuxLftUPcVym8xAbVVku9NRSgvrtT3UelMCZeHJLzuNfL
+ /5clZPtUWO33c4TklN3NmqsrqPCjOhgAcTCkIEOzaMYJ+wD9Tt0duo4/8BLzMAiOuNdH
+ Th8ElVEgO5wkiBNqADw6YU6YJxaC9PMmi42uZc7tbY4rLb7pZRcZVhFjQU2SahZBEiCr
+ HiDdRYiv2HnjeJQfP+uXqwRIbMnNmiSSP232+3Utj39UgC6S/OvJYFIF+2Ox/UbleRkj
+ /E0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=Uyl9FgqCpk0Nf843k4+zgAZBrShtUTws+zDSvi2LfUM=;
+ b=RAW9Gn2KhLK0qJEV5Be7ALs7tx53lVdzqwtAsTHjOpZsRK/+IsiN8L/YLQThe0BdOt
+ qF6XL+JCkdEp9Dx2yPuF+06YdjuADcXD7DEgvGUE6oF9DZEhotRaGSjP3QoObba+XY7p
+ UX7fESHZ4CpM7ZFURK/2gOH/cL0p5xbCLxSEsSDVJtek89m6DJS1boJduASqYWlvBwr3
+ 0riuNS4eQ3Embu+Lyhjo/RkQXZTujodUY2OniqwJfLJWZnqi/+ygPXOZF8Po7DIhjCPw
+ 7Rq7vfVSzD1rJtskb2WncN5ZAeMAsdwPgQ3/hNlJ6mRoTX+yif+9rJmvenDfoUd7z01n
+ Zjzg==
+X-Gm-Message-State: AOAM531gWKooSl9gqJfJ30564vmNtUpzG9b5Neatd7r1frlDCg99aloT
+ N5rTTJefT+1GnqBRtVMes4aW4g==
+X-Google-Smtp-Source: ABdhPJy6ETxhDfU1H18vwQw8SjcmvvfRmmnBdOiKVkVcmW4w4SWSAwiUMPGahiMaZ41Ml+rD4xkWVw==
+X-Received: by 2002:a05:620a:414a:b0:69f:d123:6011 with SMTP id
+ k10-20020a05620a414a00b0069fd1236011mr9378899qko.89.1651600969861; 
+ Tue, 03 May 2022 11:02:49 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
+ [82.27.106.168]) by smtp.gmail.com with ESMTPSA id
+ b24-20020ac86bd8000000b002f39b99f67esm6180531qtt.24.2022.05.03.11.02.46
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 03 May 2022 11:02:49 -0700 (PDT)
+Date: Tue, 3 May 2022 19:02:22 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v5 02/12] iommu: Add pasid_bits field in struct dev_iommu
+Message-ID: <YnFuLsvWcjjKBWNy@myrica>
+References: <20220502014842.991097-1-baolu.lu@linux.intel.com>
+ <20220502014842.991097-3-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [RESEND PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20220418005000.897664-1-baolu.lu@linux.intel.com>
- <20220502161204.GA22@qian> <20220502164216.GP8364@nvidia.com>
- <8b3d31ef-caf7-da92-fa95-0df378d5b091@arm.com>
- <20220503152336.GA3939@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220503152336.GA3939@nvidia.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Kevin Tian <kevin.tian@intel.com>, Qian Cai <quic_qiancai@quicinc.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Content-Disposition: inline
+In-Reply-To: <20220502014842.991097-3-baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Christoph Hellwig <hch@infradead.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Vinod Koul <vkoul@kernel.org>, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -69,180 +100,79 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-05-03 16:23, Jason Gunthorpe wrote:
-> On Tue, May 03, 2022 at 02:04:37PM +0100, Robin Murphy wrote:
+On Mon, May 02, 2022 at 09:48:32AM +0800, Lu Baolu wrote:
+> Use this field to save the pasid/ssid bits that a device is able to
+> support with its IOMMU hardware. It is a generic attribute of a device
+> and lifting it into the per-device dev_iommu struct makes it possible
+> to allocate a PASID for device without calls into the IOMMU drivers.
+> Any iommu driver which suports PASID related features should set this
+> field before features are enabled on the devices.
 > 
->>> I'm guessing SMMU3 needs to call it's arm_smmu_detach_dev(master) from
->>> the detach_dev op and null it's cached copy of the domain, but I don't
->>> know this driver.. Robin?
->>
->> The original intent was that .detach_dev is deprecated in favour of default
->> domains, and when the latter are in use, a device is always attached
->> *somewhere* once probed (i.e. group->domain is never NULL). At face value,
->> the neatest fix IMO would probably be for SMMUv3's .domain_free to handle
->> smmu_domain->devices being non-empty and detach them at that point. However
->> that wouldn't be viable for virtio-iommu or anyone else keeping an internal
->> one-way association of devices to their current domains.
+> For initialization of this field in the VT-d driver, the
+> info->pasid_supported is only set for PCI devices. So the status is
+> that non-PCI SVA hasn't been supported yet. Setting this field only for
+> PCI devices has no functional change.
 > 
-> Oh wow that is not obvious
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+
+Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+
+> ---
+>  include/linux/iommu.h                       | 1 +
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 ++
+>  drivers/iommu/intel/iommu.c                 | 5 ++++-
+>  3 files changed, 7 insertions(+), 1 deletion(-)
 > 
-> Actually, I think it is much worse than this because
-> iommu_group_claim_dma_owner() does a __iommu_detach_group() with the
-> expecation that this would actually result in DMA being blocked,
-> immediately. The idea that __iomuu_detatch_group() is a NOP is kind of
-> scary.
-
-Scarier than the fact that even where it *is* implemented, .detach_dev
-has never had a well-defined behaviour either, and plenty of drivers
-treat it as a "remove the IOMMU from the picture altogether" operation
-which ends up with the device in bypass rather than blocked?
-
-> Leaving the group attached to the kernel DMA domain will allow
-> userspace to DMA to all kernel memory :\
-
-Note that a fair amount of IOMMU hardware only has two states, thus
-could only actually achieve a blocking behaviour by enabling translation
-with an empty pagetable anyway. (Trivia: and technically some of them
-aren't even capable of blocking invalid accesses *when* translating -
-they can only apply a "default" translation targeting some scratch page)
-
-> So one approach could be to block use of iommu_group_claim_dma_owner()
-> if no detatch_dev op is present and then go through and put them back
-> or do something else. This could be short-term OK if we add an op to
-> SMMUv3, but long term everything would have to be fixed
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 5e1afe169549..b8ffaf2cb1d0 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -373,6 +373,7 @@ struct dev_iommu {
+>  	struct iommu_fwspec		*fwspec;
+>  	struct iommu_device		*iommu_dev;
+>  	void				*priv;
+> +	unsigned int			pasid_bits;
+>  };
+>  
+>  int iommu_device_register(struct iommu_device *iommu,
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 627a3ed5ee8f..afc63fce6107 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2681,6 +2681,8 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
+>  	    smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
+>  		master->stall_enabled = true;
+>  
+> +	dev->iommu->pasid_bits = master->ssid_bits;
+> +
+>  	return &smmu->iommu;
+>  
+>  err_free_master:
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index cf43e8f9091b..170eb777d57b 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4611,8 +4611,11 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+>  			if (pasid_supported(iommu)) {
+>  				int features = pci_pasid_features(pdev);
+>  
+> -				if (features >= 0)
+> +				if (features >= 0) {
+>  					info->pasid_supported = features | 1;
+> +					dev->iommu->pasid_bits =
+> +						fls(pci_max_pasids(pdev)) - 1;
+> +				}
+>  			}
+>  
+>  			if (info->ats_supported && ecap_prs(iommu->ecap) &&
+> -- 
+> 2.25.1
 > 
-> Or we can allocate a dummy empty/blocked domain during
-> iommu_group_claim_dma_owner() and attach it whenever.
-
-How does the compile-tested diff below seem? There's a fair chance it's
-still broken, but I don't have the bandwidth to give it much more
-thought right now.
-
-Cheers,
-Robin.
-
------>8-----
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 29906bc16371..597d70ed7007 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -45,6 +45,7 @@ struct iommu_group {
-  	int id;
-  	struct iommu_domain *default_domain;
-  	struct iommu_domain *domain;
-+	struct iommu_domain *purgatory;
-  	struct list_head entry;
-  	unsigned int owner_cnt;
-  	void *owner;
-@@ -596,6 +597,8 @@ static void iommu_group_release(struct kobject *kobj)
-  
-  	if (group->default_domain)
-  		iommu_domain_free(group->default_domain);
-+	if (group->purgatory)
-+		iommu_domain_free(group->purgatory);
-  
-  	kfree(group->name);
-  	kfree(group);
-@@ -2041,6 +2044,12 @@ struct iommu_domain *iommu_get_dma_domain(struct device *dev)
-  	return dev->iommu_group->default_domain;
-  }
-  
-+static bool iommu_group_user_attached(struct iommu_group *group)
-+{
-+	return group->domain && group->domain != group->default_domain &&
-+	       group->domain != group->purgatory;
-+}
-+
-  /*
-   * IOMMU groups are really the natural working unit of the IOMMU, but
-   * the IOMMU API works on domains and devices.  Bridge that gap by
-@@ -2063,7 +2072,7 @@ static int __iommu_attach_group(struct iommu_domain *domain,
-  {
-  	int ret;
-  
--	if (group->domain && group->domain != group->default_domain)
-+	if (iommu_group_user_attached(group))
-  		return -EBUSY;
-  
-  	ret = __iommu_group_for_each_dev(group, domain,
-@@ -2104,7 +2113,12 @@ static void __iommu_detach_group(struct iommu_domain *domain,
-  	 * If the group has been claimed already, do not re-attach the default
-  	 * domain.
-  	 */
--	if (!group->default_domain || group->owner) {
-+	if (group->owner) {
-+		WARN_ON(__iommu_attach_group(group->purgatory, group));
-+		return;
-+	}
-+
-+	if (!group->default_domain) {
-  		__iommu_group_for_each_dev(group, domain,
-  					   iommu_group_do_detach_device);
-  		group->domain = NULL;
-@@ -3111,6 +3125,25 @@ void iommu_device_unuse_default_domain(struct device *dev)
-  	iommu_group_put(group);
-  }
-  
-+static struct iommu_domain *iommu_group_get_purgatory(struct iommu_group *group)
-+{
-+	struct group_device *dev;
-+
-+	mutex_lock(&group->mutex);
-+	if (group->purgatory)
-+		goto out;
-+
-+	dev = list_first_entry(&group->devices, struct group_device, list);
-+	group->purgatory = __iommu_domain_alloc(dev->dev->bus,
-+						IOMMU_DOMAIN_BLOCKED);
-+	if (!group->purgatory)
-+		group->purgatory = __iommu_domain_alloc(dev->dev->bus,
-+							IOMMU_DOMAIN_UNMANAGED);
-+out:
-+	mutex_unlock(&group->mutex);
-+	return group->purgatory;
-+}
-+
-  /**
-   * iommu_group_claim_dma_owner() - Set DMA ownership of a group
-   * @group: The group.
-@@ -3122,6 +3155,7 @@ void iommu_device_unuse_default_domain(struct device *dev)
-   */
-  int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner)
-  {
-+	struct iommu_domain *pd;
-  	int ret = 0;
-  
-  	mutex_lock(&group->mutex);
-@@ -3133,10 +3167,13 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner)
-  			ret = -EBUSY;
-  			goto unlock_out;
-  		}
-+		pd = iommu_group_get_purgatory(group);
-+		if (!pd)
-+			return -ENOMEM;
-  
-  		group->owner = owner;
--		if (group->domain)
--			__iommu_detach_group(group->domain, group);
-+		if (group->domain && group->domain != pd)
-+			__iommu_attach_group(pd, group);
-  	}
-  
-  	group->owner_cnt++;
-@@ -3164,7 +3201,7 @@ void iommu_group_release_dma_owner(struct iommu_group *group)
-  	 * The UNMANAGED domain should be detached before all USER
-  	 * owners have been released.
-  	 */
--	if (!WARN_ON(group->domain) && group->default_domain)
-+	if (!WARN_ON(iommu_group_user_attached(group) && group->default_domain))
-  		__iommu_attach_group(group->default_domain, group);
-  	group->owner = NULL;
-  unlock_out:
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
