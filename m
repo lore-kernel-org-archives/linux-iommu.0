@@ -1,104 +1,60 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B1272C433EF
-	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 13:02:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0628CC433EF
+	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 13:04:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6A26281AF4;
-	Tue,  3 May 2022 13:02:56 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 76B894013A;
+	Tue,  3 May 2022 13:04:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id adIbaZgQAOSQ; Tue,  3 May 2022 13:02:55 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5WDz0nbgORLL; Tue,  3 May 2022 13:04:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 5FC9D81A6F;
-	Tue,  3 May 2022 13:02:55 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 11115408DC;
+	Tue,  3 May 2022 13:04:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 27AABC0032;
-	Tue,  3 May 2022 13:02:55 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 66896C002D
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 13:02:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BB320C0032;
+	Tue,  3 May 2022 13:04:48 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3D755C002D
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 13:04:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 4ADFB40202
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 13:02:54 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2865A416C2
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 13:04:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lwD2xrEtSb8M for <iommu@lists.linux-foundation.org>;
- Tue,  3 May 2022 13:02:53 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com
- [IPv6:2a00:1450:4864:20::62d])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 571B4414E5
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 13:02:53 +0000 (UTC)
-Received: by mail-ej1-x62d.google.com with SMTP id kq17so33311447ejb.4
- for <iommu@lists.linux-foundation.org>; Tue, 03 May 2022 06:02:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=message-id:date:mime-version:user-agent:subject:content-language:to
- :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=qbnGzeiR9n+jtdORIFMoIldw5poAE5Ic2SlWDsgrYLI=;
- b=D6ODiYiIAOq4680jRE0r6sz7NBgVaflE38879YIgVcTq+BgzTIur3abMKZRHdw4Pc0
- AHy3ffkeh2yYA6wAyommfVjIplN9+s1tgWJ5yCVxBB/ANFRBIToGgh0enXTPLE/lCKFH
- DRt23I3yJRpZatTL62UWKmBJ6izyAV6D6qDwQtlhanCwo8qXs6S3pj5nZvl+aCDQf41x
- RHFiQsHUog0on2w5ATGEsU9tIUqDSTg0vfpVyr7csPbAASD116vtblzcOOhgYevR7xBf
- yllAmtumhEcMX/P4+BGW/zxR4S8aDzH9CXu9BVobIghNMvhEa8hfva1Bf9bMDhCZQ0ib
- 3ZHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:in-reply-to
- :content-transfer-encoding;
- bh=qbnGzeiR9n+jtdORIFMoIldw5poAE5Ic2SlWDsgrYLI=;
- b=uHMVDgG9F2A64A9sk0WLz+sLjA4yidc3iD6/Y+TuApGkZq6nmWKA2Fdb049Iqztz0M
- tW7xwGJMn9oWadc+vl2Rn8PYy7oNRRZwqbwKYWOxjChe2lK2vikQX3nuD4GXwzrH+Jpe
- DDrQPDM1gYbVFSq4oeOPXUQDfVS1ijh/YHp3bKb6q+oKYBYxT/pcgi6dwttC8yC3RwgC
- mf8pVaqlCr87qKRUo5Be4a3IOGBIkkrVBJh3yAD3m9l66KTSwZjdYQF8IsGT4oKPXIdZ
- 4/cufF0gx51W5AZUR+b/8JswSi9y9v6DZwV0TtSj0rDtMRRsXt0rdb2/Y6CXcPQj1V5R
- Vjig==
-X-Gm-Message-State: AOAM530xV4OBDhxByqVm+sfSJAAev5Mfk++S5xVJBrl+c4LvkKq6wMNG
- ubm0nVN6lGJ1qBCkMa9JDFZbyg==
-X-Google-Smtp-Source: ABdhPJzx5OTqy0DzCPuoSuaGWR/+9NH7Kk5UphcTdkN6WB1lmvnQYczzFaoz4B92b11pSHYTnAvakg==
-X-Received: by 2002:a17:907:161f:b0:6f4:378a:c2d8 with SMTP id
- hb31-20020a170907161f00b006f4378ac2d8mr11365067ejc.289.1651582971502; 
- Tue, 03 May 2022 06:02:51 -0700 (PDT)
-Received: from [192.168.0.203] (xdsl-188-155-176-92.adslplus.ch.
- [188.155.176.92]) by smtp.gmail.com with ESMTPSA id
- qs24-20020a170906459800b006f3ef214e19sm4598147ejc.127.2022.05.03.06.02.50
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 03 May 2022 06:02:51 -0700 (PDT)
-Message-ID: <8d375385-3114-d372-4aa1-a5da9b740d53@linaro.org>
-Date: Tue, 3 May 2022 15:02:49 +0200
+ with ESMTP id xH2YV-tXr2IT for <iommu@lists.linux-foundation.org>;
+ Tue,  3 May 2022 13:04:45 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 9A34B414CA
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 13:04:45 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 95D8C1042;
+ Tue,  3 May 2022 06:04:44 -0700 (PDT)
+Received: from [10.57.80.111] (unknown [10.57.80.111])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CCE073F774;
+ Tue,  3 May 2022 06:04:42 -0700 (PDT)
+Message-ID: <8b3d31ef-caf7-da92-fa95-0df378d5b091@arm.com>
+Date: Tue, 3 May 2022 14:04:37 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 6/7] dt-bindings: serial: renesas, scif: R-Car V3U is R-Car
- Gen4
-Content-Language: en-US
-To: Geert Uytterhoeven <geert+renesas@glider.be>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Vinod Koul <vkoul@kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
- Bartosz Golaszewski <brgl@bgdev.pl>,
- Wolfram Sang <wsa+renesas@sang-engineering.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck
- <linux@roeck-us.net>, Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
- Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-References: <cover.1651497024.git.geert+renesas@glider.be>
- <c57ed00e85778380776330be6183c6861d843c22.1651497024.git.geert+renesas@glider.be>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <c57ed00e85778380776330be6183c6861d843c22.1651497024.git.geert+renesas@glider.be>
-Cc: devicetree@vger.kernel.org, linux-watchdog@vger.kernel.org,
- linux-renesas-soc@vger.kernel.org, linux-gpio@vger.kernel.org,
- iommu@lists.linux-foundation.org, linux-i2c@vger.kernel.org,
- linux-serial@vger.kernel.org, dmaengine@vger.kernel.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [RESEND PATCH v8 00/11] Fix BUG_ON in vfio_iommu_group_notifier()
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>, Qian Cai <quic_qiancai@quicinc.com>
+References: <20220418005000.897664-1-baolu.lu@linux.intel.com>
+ <20220502161204.GA22@qian> <20220502164216.GP8364@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220502164216.GP8364@nvidia.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,22 +67,123 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 02/05/2022 15:34, Geert Uytterhoeven wrote:
-> Despite the name, R-Car V3U is the first member of the R-Car Gen4
-> family.  Hence move its compatible value to the R-Car Gen4 section.
+On 2022-05-02 17:42, Jason Gunthorpe wrote:
+> On Mon, May 02, 2022 at 12:12:04PM -0400, Qian Cai wrote:
+>> On Mon, Apr 18, 2022 at 08:49:49AM +0800, Lu Baolu wrote:
+>>> Hi Joerg,
+>>>
+>>> This is a resend version of v8 posted here:
+>>> https://lore.kernel.org/linux-iommu/20220308054421.847385-1-baolu.lu@linux.intel.com/
+>>> as we discussed in this thread:
+>>> https://lore.kernel.org/linux-iommu/Yk%2Fq1BGN8pC5HVZp@8bytes.org/
+>>>
+>>> All patches can be applied perfectly except this one:
+>>>   - [PATCH v8 02/11] driver core: Add dma_cleanup callback in bus_type
+>>> It conflicts with below refactoring commit:
+>>>   - 4b775aaf1ea99 "driver core: Refactor sysfs and drv/bus remove hooks"
+>>> The conflict has been fixed in this post.
+>>>
+>>> No functional changes in this series. I suppress cc-ing this series to
+>>> all v8 reviewers in order to avoid spam.
+>>>
+>>> Please consider it for your iommu tree.
+>>
+>> Reverting this series fixed an user-after-free while doing SR-IOV.
+>>
+>>   BUG: KASAN: use-after-free in __lock_acquire
+>>   Read of size 8 at addr ffff080279825d78 by task qemu-system-aar/22429
+>>   CPU: 24 PID: 22429 Comm: qemu-system-aar Not tainted 5.18.0-rc5-next-20220502 #69
+>>   Call trace:
+>>    dump_backtrace
+>>    show_stack
+>>    dump_stack_lvl
+>>    print_address_description.constprop.0
+>>    print_report
+>>    kasan_report
+>>    __asan_report_load8_noabort
+>>    __lock_acquire
+>>    lock_acquire.part.0
+>>    lock_acquire
+>>    _raw_spin_lock_irqsave
+>>    arm_smmu_detach_dev
+>>    arm_smmu_detach_dev at drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:2377
+>>    arm_smmu_attach_dev
 > 
+> Hum.
+> 
+> So what has happened is that VFIO does this sequence:
+> 
+>   iommu_detach_group()
+>   iommu_domain_free()
+>   iommu_group_release_dma_owner()
+> 
+> Which, I think should be valid, API wise.
+> 
+>  From what I can see reading the code SMMUv3 blows up above because it
+> doesn't have a detach_dev op:
+> 
+> 	.default_domain_ops = &(const struct iommu_domain_ops) {
+> 		.attach_dev		= arm_smmu_attach_dev,
+> 		.map_pages		= arm_smmu_map_pages,
+> 		.unmap_pages		= arm_smmu_unmap_pages,
+> 		.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
+> 		.iotlb_sync		= arm_smmu_iotlb_sync,
+> 		.iova_to_phys		= arm_smmu_iova_to_phys,
+> 		.enable_nesting		= arm_smmu_enable_nesting,
+> 		.free			= arm_smmu_domain_free,
+> 	}
+> 
+> But it is internally tracking the domain inside the master - so when
+> the next domain is attached it does this:
+> 
+> static void arm_smmu_detach_dev(struct arm_smmu_master *master)
+> {
+> 	struct arm_smmu_domain *smmu_domain = master->domain;
+> 
+> 	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> 
+> And explodes as the domain has been freed but master->domain was not
+> NULL'd.
+> 
+> It worked before because iommu_detach_group() used to attach the
+> default group and that was before the domain was freed in the above
+> sequence.
 
+Oof, I totally overlooked the significance of that little subtlety in 
+review :(
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> I'm guessing SMMU3 needs to call it's arm_smmu_detach_dev(master) from
+> the detach_dev op and null it's cached copy of the domain, but I don't
+> know this driver.. Robin?
 
+The original intent was that .detach_dev is deprecated in favour of 
+default domains, and when the latter are in use, a device is always 
+attached *somewhere* once probed (i.e. group->domain is never NULL). At 
+face value, the neatest fix IMO would probably be for SMMUv3's 
+.domain_free to handle smmu_domain->devices being non-empty and detach 
+them at that point. However that wouldn't be viable for virtio-iommu or 
+anyone else keeping an internal one-way association of devices to their 
+current domains.
 
-Best regards,
-Krzysztof
+If we're giving up entirely on that notion of .detach_dev going away 
+then all default-domain-supporting drivers probably want checking to 
+make sure that path hasn't bitrotted; both Arm SMMU drivers had it 
+proactively removed 6 years ago; virtio-iommu never had it at all; newer 
+drivers like apple-dart have some code there, but it won't have ever run 
+until now.
+
+We *could* stay true to the original paradigm by introducing some real 
+usage of IOMMU_DOMAIN_BLOCKED, such that we could keep one or more of 
+those around to actively attach to instead of having groups in this 
+unattached limbo state, but that's a bigger job involving adding support 
+to drivers as well; too much for a quick fix now...
+
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
