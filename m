@@ -1,104 +1,78 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8D98AC433F5
-	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 07:50:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 170F7C433FE
+	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 08:54:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 0F1F9414C1;
-	Tue,  3 May 2022 07:50:26 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id A9C8C81BC6;
+	Tue,  3 May 2022 08:54:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id C5e84BLLX_RF; Tue,  3 May 2022 07:50:24 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id n2X588iLgMqb; Tue,  3 May 2022 08:54:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id A030C41497;
-	Tue,  3 May 2022 07:50:23 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 982268275A;
+	Tue,  3 May 2022 08:54:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6622DC0039;
-	Tue,  3 May 2022 07:50:23 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 47498C002D
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 07:50:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 390F5C0032;
+	Tue,  3 May 2022 08:54:02 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6D221C002D
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 08:54:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 348454012E
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 07:50:22 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 5505581BC6
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 08:54:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WYOcWQsA1Sdo for <iommu@lists.linux-foundation.org>;
- Tue,  3 May 2022 07:50:21 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com
- [IPv6:2a00:1450:4864:20::52d])
- by smtp2.osuosl.org (Postfix) with ESMTPS id CECF2400FE
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 07:50:20 +0000 (UTC)
-Received: by mail-ed1-x52d.google.com with SMTP id a1so18968865edt.3
- for <iommu@lists.linux-foundation.org>; Tue, 03 May 2022 00:50:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=wp+HuhCzVQcbpzvT/sQrzmDjeIdh00lZI9oDxB6WyTs=;
- b=MaRFzGoMD1a278grMU14/yYlEhePHu15Lav8QNQrQHkccVbXPqgmvM1VFUtuC9Fjf4
- uJ3Rgbif7K6L8Ar8zRmKbftuhHKSa1UQ3SwebB9FJsDSmAGIbAM/w9B4Pma+MsXx73Av
- tBlw/wqeYyPZWnubeZzUsmbpdMPm/M0Fs/b6h3BmrufAJfacj89ELyGunz7ZfLR4dbcQ
- 8fzP9L7Ut+fKZrCPOpNjXsoKndESVxRp91TmVHnheF4t6Z5QCcAfvoUrYdJaBATgzHK4
- L7wiHAO+Kbyg/3nyOqSVZr5kgTn+lepmUGIj3npYWsgp9O3lwfGl0Qx957ysvk/ZK+xQ
- ksgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=wp+HuhCzVQcbpzvT/sQrzmDjeIdh00lZI9oDxB6WyTs=;
- b=zOWnkR46XpvmffTqDJe5L4q/rZe8CPmsoQ81DHJ71Wv51tfrzxfU/bf/9TGGrCfb6/
- G2zEWWuJW1kTwGhxyqPk0dzH63EVFccctpqPh8qjIYJWeaVFPPj5FRCGl7MdoMsMr14c
- ova15jADynwhWOkKQyPiFJRlGQbs1yLpzNjUxUD0kB569vGWEJElfWIA2yArwsnyLB7k
- BfHEf+XGtoxS3NUYmjqQqqpfEoUQfN1RZSRLr5zCQEyxoUCeHO4HWKN4W7+X7heeWk+9
- mOMxwKybuN8UsTO8P2Jd7Zqoh5Ccb4NpzaHjjffPs7huO679EHtdnxl7LfEJUhEVN4Nz
- cBQg==
-X-Gm-Message-State: AOAM530T+jSl3q6w+P8qSDn7kgkdZAyA3DP6xtmDXGTZZLpdl4v2mwwB
- SHdaxbSrt8fOhZAWcUCAtj+SJQ==
-X-Google-Smtp-Source: ABdhPJyVyq4b/kVlB63u3UarpBNZnJKtF6IDLyaW7pS64uWqHVVg2cH/YhsdXpfIKhYgli0kY9qkQw==
-X-Received: by 2002:a50:f1c5:0:b0:425:dd04:b7a9 with SMTP id
- y5-20020a50f1c5000000b00425dd04b7a9mr16790672edl.388.1651564218903; 
- Tue, 03 May 2022 00:50:18 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
- [82.27.106.168]) by smtp.gmail.com with ESMTPSA id
- cw27-20020a056402229b00b0042617ba6387sm7464883edb.17.2022.05.03.00.50.16
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 03 May 2022 00:50:18 -0700 (PDT)
-Date: Tue, 3 May 2022 08:49:52 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-Message-ID: <YnDeoGjv/dZnu+YQ@myrica>
-References: <YmbO/l5IwfBCHrl8@myrica>
- <8c044e49-74bb-df56-8a60-663013c0910e@intel.com>
- <YmgiQZZyFxsJ+9um@myrica>
- <63582490-a794-fd11-0380-44b27cc660b7@intel.com>
- <YmpSv48aPIbVXqGi@myrica>
- <044595e6-e5d0-26c2-af8e-fc9d06906179@linux.intel.com>
- <YmvtVRlwVJjStXc0@fyu1.sc.intel.com> <Ymv3fC4xXqe+oMRK@myrica>
- <Ymxke+ihgwNy3BCE@fyu1.sc.intel.com>
- <3ea91623-97ea-f318-70db-55f08922d7ce@linux.intel.com>
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id e4xAjCk8er0d for <iommu@lists.linux-foundation.org>;
+ Tue,  3 May 2022 08:53:56 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 6961B8266D
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 08:53:55 +0000 (UTC)
+X-UUID: 3c2efbe4fa264e4b9cfaf02165c9a960-20220503
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4, REQID:3ac4fcfd-5f2d-4bad-aa59-9ee3058359d0, OB:0,
+ LO
+ B:0,IP:0,URL:8,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+ TION:release,TS:-12
+X-CID-META: VersionHash:faefae9, CLOUDID:f3664ec7-85ee-4ac1-ac05-bd3f1e72e732,
+ C
+ OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 3c2efbe4fa264e4b9cfaf02165c9a960-20220503
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by
+ mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 874287507; Tue, 03 May 2022 16:53:47 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3; 
+ Tue, 3 May 2022 16:53:45 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Tue, 3 May 2022 16:53:44 +0800
+Message-ID: <015b314d693ec66429d1b5516cf9c5621665eea2.camel@mediatek.com>
+Subject: Re: [PATCH 2/2] iommu/mediatek: Enable allocating page table in
+ normal memory
+To: <yf.wang@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+ <will@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, "open
+ list:MEDIATEK IOMMU DRIVER" <iommu@lists.linux-foundation.org>, "moderated
+ list:MEDIATEK IOMMU DRIVER" <linux-mediatek@lists.infradead.org>, "moderated
+ list:ARM/Mediatek SoC support" <linux-arm-kernel@lists.infradead.org>, "open
+ list" <linux-kernel@vger.kernel.org>
+Date: Tue, 3 May 2022 16:53:44 +0800
+In-Reply-To: <20220429143411.7640-3-yf.wang@mediatek.com>
+References: <20220429143411.7640-1-yf.wang@mediatek.com>
+ <20220429143411.7640-3-yf.wang@mediatek.com>
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <3ea91623-97ea-f318-70db-55f08922d7ce@linux.intel.com>
-Cc: Fenghua Yu <fenghua.yu@intel.com>, Tony Luck <tony.luck@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>,
- Peter Zijlstra <peterz@infradead.org>, will@kernel.org,
- Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
- linux-kernel <linux-kernel@vger.kernel.org>,
- Dave Hansen <dave.hansen@intel.com>, iommu <iommu@lists.linux-foundation.org>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
- zhangfei.gao@linaro.org, Thomas Gleixner <tglx@linutronix.de>,
- robin.murphy@arm.com
+X-MTK: N
+Cc: Ning Li <ning.li@mediatek.com>, stable@vger.kernel.org,
+ Libo Kang <Libo.Kang@mediatek.com>, wsd_upstream@mediatek.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,28 +85,81 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Yong Wu <yong.wu@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, Apr 30, 2022 at 03:33:17PM +0800, Baolu Lu wrote:
-> Jean, another quick question about the iommu_sva_bind_device()
-> 
-> /**
->  * iommu_sva_bind_device() - Bind a process address space to a device
->  * @dev: the device
->  * @mm: the mm to bind, caller must hold a reference to it
->  * @drvdata: opaque data pointer to pass to bind callback
-> 
-> This interface requires the caller to take a reference to mm. Which
-> reference should it take, mm->mm_count or mm->mm_users? It's better to
-> make it explicit in this comment.
+Hi YF,
 
-Agreed, it's mm_users as required by mmu_notifier_register()
+Thanks very much for this patch. Nearly all the lastest SoC like
+mt8192/mt8195 support this.
 
-Thanks,
-Jean
+On Fri, 2022-04-29 at 22:34 +0800, yf.wang@mediatek.com wrote:
+> From: Yunfei Wang <yf.wang@mediatek.com>
+> 
+> Add the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT support, so that
+> level 2 page table can allocate in normal memory.
+
+Could you help comment more detailedly here and in the title?, this
+patch just allows the level 2 pgtable PA up to 35bits, not only in
+ZONE_DMA32(GFP_DMA32).
+
+> 
+> Signed-off-by: Ning Li <ning.li@mediatek.com>
+> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+> Cc: <stable@vger.kernel.org> # 5.10.*
+
+If you add this for stable, Which commit do you need for "Fixes:" tag?
+
+It looks you add a new feature, rather than fixing a bug of the current
+kernel. I didn't get a issue report for this. If this is a bug, we need
+more information like under which condition/SoC the error will occur.
+
+The code is ok for me.
+
+Thanks.
+
+> ---
+>  drivers/iommu/mtk_iommu.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 6fd75a60abd6..27481f562df7 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -118,6 +118,7 @@
+>  #define WR_THROT_EN			BIT(6)
+>  #define HAS_LEGACY_IVRP_PADDR		BIT(7)
+>  #define IOVA_34_EN			BIT(8)
+> +#define PGTABLE_L2_PA_35_EN		BIT(9)
+>  
+>  #define MTK_IOMMU_HAS_FLAG(pdata, _x) \
+>  		((((pdata)->flags) & (_x)) == (_x))
+> @@ -401,6 +402,9 @@ static int mtk_iommu_domain_finalise(struct
+> mtk_iommu_domain *dom,
+>  		.iommu_dev = data->dev,
+>  	};
+>  
+> +	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_L2_PA_35_EN))
+> +		dom->cfg.quirks |= IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT;
+> +
+>  	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
+>  		dom->cfg.oas = data->enable_4GB ? 33 : 32;
+>  	else
+> @@ -1038,7 +1042,8 @@ static const struct mtk_iommu_plat_data
+> mt2712_data = {
+>  
+>  static const struct mtk_iommu_plat_data mt6779_data = {
+>  	.m4u_plat      = M4U_MT6779,
+> -	.flags         = HAS_SUB_COMM | OUT_ORDER_WR_EN | WR_THROT_EN,
+> +	.flags         = HAS_SUB_COMM | OUT_ORDER_WR_EN | WR_THROT_EN |
+> +			 PGTABLE_L2_PA_35_EN,
+>  	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
+>  	.iova_region   = single_domain,
+>  	.iova_region_nr = ARRAY_SIZE(single_domain),
 
 _______________________________________________
 iommu mailing list
