@@ -4,54 +4,54 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3AB0AC433EF
-	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 16:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 92C6DC433F5
+	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 16:34:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id F026A61029;
-	Tue,  3 May 2022 16:34:37 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 43F8F6102A;
+	Tue,  3 May 2022 16:34:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id B_b8W6WUuiC8; Tue,  3 May 2022 16:34:37 +0000 (UTC)
+	with ESMTP id ZU2VG7sakcqG; Tue,  3 May 2022 16:34:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id C03D860AFF;
-	Tue,  3 May 2022 16:34:36 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 00ADE60B09;
+	Tue,  3 May 2022 16:34:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AA82EC0032;
-	Tue,  3 May 2022 16:34:36 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D8FE3C002D
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 16:34:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D4239C0032;
+	Tue,  3 May 2022 16:34:45 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 27AC8C002D
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 16:34:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id C73C6417B9
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 16:34:35 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 07A37404C4
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 16:34:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id D0-phQLq2-NP for <iommu@lists.linux-foundation.org>;
- Tue,  3 May 2022 16:34:35 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id tQBt3MXm4oxe for <iommu@lists.linux-foundation.org>;
+ Tue,  3 May 2022 16:34:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
  [185.176.79.56])
- by smtp4.osuosl.org (Postfix) with ESMTPS id A434D417B5
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 16:34:34 +0000 (UTC)
-Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.201])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Kt5693ylWz67bpd;
- Wed,  4 May 2022 00:30:09 +0800 (CST)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 17C95400BF
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 16:34:43 +0000 (UTC)
+Received: from fraeml702-chm.china.huawei.com (unknown [172.18.147.207])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Kt57s0mKgz67vBH;
+ Wed,  4 May 2022 00:31:37 +0800 (CST)
 Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
+ fraeml702-chm.china.huawei.com (10.206.15.51) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Tue, 3 May 2022 18:34:31 +0200
+ 15.1.2375.24; Tue, 3 May 2022 18:34:40 +0200
 Received: from A2006125610.china.huawei.com (10.202.227.178) by
  lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 3 May 2022 17:34:24 +0100
+ 15.1.2375.24; Tue, 3 May 2022 17:34:33 +0100
 To: <linux-arm-kernel@lists.infradead.org>, <linux-acpi@vger.kernel.org>,
  <iommu@lists.linux-foundation.org>
-Subject: [PATCH v12 2/9] ACPI/IORT: Make iort_iommu_msi_get_resv_regions()
- return void
-Date: Tue, 3 May 2022 17:33:23 +0100
-Message-ID: <20220503163330.509-3-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v12 3/9] ACPI/IORT: Provide a generic helper to retrieve
+ reserve regions
+Date: Tue, 3 May 2022 17:33:24 +0100
+Message-ID: <20220503163330.509-4-shameerali.kolothum.thodi@huawei.com>
 X-Mailer: git-send-email 2.12.0.windows.1
 In-Reply-To: <20220503163330.509-1-shameerali.kolothum.thodi@huawei.com>
 References: <20220503163330.509-1-shameerali.kolothum.thodi@huawei.com>
@@ -77,121 +77,83 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
 From: Shameer Kolothum via iommu <iommu@lists.linux-foundation.org>
 Reply-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-At present iort_iommu_msi_get_resv_regions() returns the number of
-MSI reserved regions on success and there are no users for this.
-The reserved region list will get populated anyway for platforms
-that require the HW MSI region reservation. Hence, change the
-function to return void instead.
-
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Tested-by: Steven Price <steven.price@arm.com>
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
----
- drivers/acpi/arm64/iort.c | 25 +++++++++----------------
- include/linux/acpi_iort.h |  6 +++---
- 2 files changed, 12 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index f2f8f05662de..213f61cae176 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -811,22 +811,19 @@ static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
-  * @dev: Device from iommu_get_resv_regions()
-  * @head: Reserved region list from iommu_get_resv_regions()
-  *
-- * Returns: Number of msi reserved regions on success (0 if platform
-- *          doesn't require the reservation or no associated msi regions),
-- *          appropriate error value otherwise. The ITS interrupt translation
-- *          spaces (ITS_base + SZ_64K, SZ_64K) associated with the device
-- *          are the msi reserved regions.
-+ * The ITS interrupt translation spaces (ITS_base + SZ_64K, SZ_64K)
-+ * associated with the device are the HW MSI reserved regions.
-  */
--int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
-+void iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
- {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct acpi_iort_its_group *its;
- 	struct acpi_iort_node *iommu_node, *its_node = NULL;
--	int i, resv = 0;
-+	int i;
- 
- 	iommu_node = iort_get_msi_resv_iommu(dev);
- 	if (!iommu_node)
--		return 0;
-+		return;
- 
- 	/*
- 	 * Current logic to reserve ITS regions relies on HW topologies
-@@ -846,7 +843,7 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
- 	}
- 
- 	if (!its_node)
--		return 0;
-+		return;
- 
- 	/* Move to ITS specific data */
- 	its = (struct acpi_iort_its_group *)its_node->node_data;
-@@ -860,14 +857,10 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
- 
- 			region = iommu_alloc_resv_region(base + SZ_64K, SZ_64K,
- 							 prot, IOMMU_RESV_MSI);
--			if (region) {
-+			if (region)
- 				list_add_tail(&region->list, head);
--				resv++;
--			}
- 		}
- 	}
--
--	return (resv == its->its_count) ? resv : -ENODEV;
- }
- 
- static inline bool iort_iommu_driver_enabled(u8 type)
-@@ -1034,8 +1027,8 @@ int iort_iommu_configure_id(struct device *dev, const u32 *id_in)
- }
- 
- #else
--int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
--{ return 0; }
-+void iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
-+{ }
- int iort_iommu_configure_id(struct device *dev, const u32 *input_id)
- { return -ENODEV; }
- #endif
-diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-index f1f0842a2cb2..a8198b83753d 100644
---- a/include/linux/acpi_iort.h
-+++ b/include/linux/acpi_iort.h
-@@ -36,7 +36,7 @@ int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id);
- /* IOMMU interface */
- int iort_dma_get_ranges(struct device *dev, u64 *size);
- int iort_iommu_configure_id(struct device *dev, const u32 *id_in);
--int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
-+void iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
- phys_addr_t acpi_iort_dma_get_max_cpu_address(void);
- #else
- static inline void acpi_iort_init(void) { }
-@@ -52,8 +52,8 @@ static inline int iort_dma_get_ranges(struct device *dev, u64 *size)
- static inline int iort_iommu_configure_id(struct device *dev, const u32 *id_in)
- { return -ENODEV; }
- static inline
--int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
--{ return 0; }
-+void iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
-+{ }
- 
- static inline phys_addr_t acpi_iort_dma_get_max_cpu_address(void)
- { return PHYS_ADDR_MAX; }
--- 
-2.17.1
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Q3VycmVudGx5IElPUlQgcHJvdmlkZXMgYSBoZWxwZXIgdG8gcmV0cmlldmUgSFcgTVNJIHJlc2Vy
+dmUgcmVnaW9ucy4KQ2hhbmdlIHRoaXMgdG8gYSBnZW5lcmljIGhlbHBlciB0byByZXRyaWV2ZcKg
+YW55IElPUlQgcmVsYXRlZCByZXNlcnZlCnJlZ2lvbnMuIFRoaXMgd2lsbCBiZSB1c2VmdWwgd2hl
+biB3ZcKgYWRkIHN1cHBvcnQgZm9yIFJNUiBub2RlcyBpbgpzdWJzZXF1ZW50IHBhdGNoZXMuCgpb
+TG9yZW56bzogRm9yIEFDUEkgSU9SVF0KUmV2aWV3ZWQtYnk6IExvcmVuem8gUGllcmFsaXNpIDxs
+b3JlbnpvLnBpZXJhbGlzaUBhcm0uY29tPgpSZXZpZXdlZC1ieTogQ2hyaXN0b3BoIEhlbGx3aWcg
+PGhjaEBsc3QuZGU+ClRlc3RlZC1ieTogU3RldmVuIFByaWNlIDxzdGV2ZW4ucHJpY2VAYXJtLmNv
+bT4KU2lnbmVkLW9mZi1ieTogU2hhbWVlciBLb2xvdGh1bSA8c2hhbWVlcmFsaS5rb2xvdGh1bS50
+aG9kaUBodWF3ZWkuY29tPgotLS0KIGRyaXZlcnMvYWNwaS9hcm02NC9pb3J0LmMgfCAyMiArKysr
+KysrKysrKysrKystLS0tLS0tCiBkcml2ZXJzL2lvbW11L2RtYS1pb21tdS5jIHwgIDIgKy0KIGlu
+Y2x1ZGUvbGludXgvYWNwaV9pb3J0LmggfCAgNCArKy0tCiAzIGZpbGVzIGNoYW5nZWQsIDE4IGlu
+c2VydGlvbnMoKyksIDEwIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvYWNwaS9h
+cm02NC9pb3J0LmMgYi9kcml2ZXJzL2FjcGkvYXJtNjQvaW9ydC5jCmluZGV4IDIxM2Y2MWNhZTE3
+Ni4uY2Q1ZDFkNzgyM2NiIDEwMDY0NAotLS0gYS9kcml2ZXJzL2FjcGkvYXJtNjQvaW9ydC5jCisr
+KyBiL2RyaXZlcnMvYWNwaS9hcm02NC9pb3J0LmMKQEAgLTgwNiwxNSArODA2LDEzIEBAIHN0YXRp
+YyBzdHJ1Y3QgYWNwaV9pb3J0X25vZGUgKmlvcnRfZ2V0X21zaV9yZXN2X2lvbW11KHN0cnVjdCBk
+ZXZpY2UgKmRldikKIAlyZXR1cm4gTlVMTDsKIH0KIAotLyoqCi0gKiBpb3J0X2lvbW11X21zaV9n
+ZXRfcmVzdl9yZWdpb25zIC0gUmVzZXJ2ZWQgcmVnaW9uIGRyaXZlciBoZWxwZXIKLSAqIEBkZXY6
+IERldmljZSBmcm9tIGlvbW11X2dldF9yZXN2X3JlZ2lvbnMoKQotICogQGhlYWQ6IFJlc2VydmVk
+IHJlZ2lvbiBsaXN0IGZyb20gaW9tbXVfZ2V0X3Jlc3ZfcmVnaW9ucygpCi0gKgorLyoKKyAqIFJl
+dHJpZXZlIHBsYXRmb3JtIHNwZWNpZmljIEhXIE1TSSByZXNlcnZlIHJlZ2lvbnMuCiAgKiBUaGUg
+SVRTIGludGVycnVwdCB0cmFuc2xhdGlvbiBzcGFjZXMgKElUU19iYXNlICsgU1pfNjRLLCBTWl82
+NEspCiAgKiBhc3NvY2lhdGVkIHdpdGggdGhlIGRldmljZSBhcmUgdGhlIEhXIE1TSSByZXNlcnZl
+ZCByZWdpb25zLgogICovCi12b2lkIGlvcnRfaW9tbXVfbXNpX2dldF9yZXN2X3JlZ2lvbnMoc3Ry
+dWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgbGlzdF9oZWFkICpoZWFkKQorc3RhdGljIHZvaWQgaW9y
+dF9pb21tdV9tc2lfZ2V0X3Jlc3ZfcmVnaW9ucyhzdHJ1Y3QgZGV2aWNlICpkZXYsCisJCQkJCSAg
+ICBzdHJ1Y3QgbGlzdF9oZWFkICpoZWFkKQogewogCXN0cnVjdCBpb21tdV9md3NwZWMgKmZ3c3Bl
+YyA9IGRldl9pb21tdV9md3NwZWNfZ2V0KGRldik7CiAJc3RydWN0IGFjcGlfaW9ydF9pdHNfZ3Jv
+dXAgKml0czsKQEAgLTg2Myw2ICs4NjEsMTYgQEAgdm9pZCBpb3J0X2lvbW11X21zaV9nZXRfcmVz
+dl9yZWdpb25zKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGxpc3RfaGVhZCAqaGVhZCkKIAl9
+CiB9CiAKKy8qKgorICogaW9ydF9pb21tdV9nZXRfcmVzdl9yZWdpb25zIC0gR2VuZXJpYyBoZWxw
+ZXIgdG8gcmV0cmlldmUgcmVzZXJ2ZWQgcmVnaW9ucy4KKyAqIEBkZXY6IERldmljZSBmcm9tIGlv
+bW11X2dldF9yZXN2X3JlZ2lvbnMoKQorICogQGhlYWQ6IFJlc2VydmVkIHJlZ2lvbiBsaXN0IGZy
+b20gaW9tbXVfZ2V0X3Jlc3ZfcmVnaW9ucygpCisgKi8KK3ZvaWQgaW9ydF9pb21tdV9nZXRfcmVz
+dl9yZWdpb25zKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGxpc3RfaGVhZCAqaGVhZCkKK3sK
+Kwlpb3J0X2lvbW11X21zaV9nZXRfcmVzdl9yZWdpb25zKGRldiwgaGVhZCk7Cit9CisKIHN0YXRp
+YyBpbmxpbmUgYm9vbCBpb3J0X2lvbW11X2RyaXZlcl9lbmFibGVkKHU4IHR5cGUpCiB7CiAJc3dp
+dGNoICh0eXBlKSB7CkBAIC0xMDI3LDcgKzEwMzUsNyBAQCBpbnQgaW9ydF9pb21tdV9jb25maWd1
+cmVfaWQoc3RydWN0IGRldmljZSAqZGV2LCBjb25zdCB1MzIgKmlkX2luKQogfQogCiAjZWxzZQot
+dm9pZCBpb3J0X2lvbW11X21zaV9nZXRfcmVzdl9yZWdpb25zKHN0cnVjdCBkZXZpY2UgKmRldiwg
+c3RydWN0IGxpc3RfaGVhZCAqaGVhZCkKK3ZvaWQgaW9ydF9pb21tdV9nZXRfcmVzdl9yZWdpb25z
+KHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGxpc3RfaGVhZCAqaGVhZCkKIHsgfQogaW50IGlv
+cnRfaW9tbXVfY29uZmlndXJlX2lkKHN0cnVjdCBkZXZpY2UgKmRldiwgY29uc3QgdTMyICppbnB1
+dF9pZCkKIHsgcmV0dXJuIC1FTk9ERVY7IH0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvZG1h
+LWlvbW11LmMgYi9kcml2ZXJzL2lvbW11L2RtYS1pb21tdS5jCmluZGV4IDA5ZjZlMWMwZjljMC4u
+OTNkNzZiNjY2ODg4IDEwMDY0NAotLS0gYS9kcml2ZXJzL2lvbW11L2RtYS1pb21tdS5jCisrKyBi
+L2RyaXZlcnMvaW9tbXUvZG1hLWlvbW11LmMKQEAgLTM4NCw3ICszODQsNyBAQCB2b2lkIGlvbW11
+X2RtYV9nZXRfcmVzdl9yZWdpb25zKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGxpc3RfaGVh
+ZCAqbGlzdCkKIHsKIAogCWlmICghaXNfb2Zfbm9kZShkZXZfaW9tbXVfZndzcGVjX2dldChkZXYp
+LT5pb21tdV9md25vZGUpKQotCQlpb3J0X2lvbW11X21zaV9nZXRfcmVzdl9yZWdpb25zKGRldiwg
+bGlzdCk7CisJCWlvcnRfaW9tbXVfZ2V0X3Jlc3ZfcmVnaW9ucyhkZXYsIGxpc3QpOwogCiB9CiBF
+WFBPUlRfU1lNQk9MKGlvbW11X2RtYV9nZXRfcmVzdl9yZWdpb25zKTsKZGlmZiAtLWdpdCBhL2lu
+Y2x1ZGUvbGludXgvYWNwaV9pb3J0LmggYi9pbmNsdWRlL2xpbnV4L2FjcGlfaW9ydC5oCmluZGV4
+IGE4MTk4YjgzNzUzZC4uZTVkMmRlOWNhZjdmIDEwMDY0NAotLS0gYS9pbmNsdWRlL2xpbnV4L2Fj
+cGlfaW9ydC5oCisrKyBiL2luY2x1ZGUvbGludXgvYWNwaV9pb3J0LmgKQEAgLTM2LDcgKzM2LDcg
+QEAgaW50IGlvcnRfcG1zaV9nZXRfZGV2X2lkKHN0cnVjdCBkZXZpY2UgKmRldiwgdTMyICpkZXZf
+aWQpOwogLyogSU9NTVUgaW50ZXJmYWNlICovCiBpbnQgaW9ydF9kbWFfZ2V0X3JhbmdlcyhzdHJ1
+Y3QgZGV2aWNlICpkZXYsIHU2NCAqc2l6ZSk7CiBpbnQgaW9ydF9pb21tdV9jb25maWd1cmVfaWQo
+c3RydWN0IGRldmljZSAqZGV2LCBjb25zdCB1MzIgKmlkX2luKTsKLXZvaWQgaW9ydF9pb21tdV9t
+c2lfZ2V0X3Jlc3ZfcmVnaW9ucyhzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBsaXN0X2hlYWQg
+KmhlYWQpOwordm9pZCBpb3J0X2lvbW11X2dldF9yZXN2X3JlZ2lvbnMoc3RydWN0IGRldmljZSAq
+ZGV2LCBzdHJ1Y3QgbGlzdF9oZWFkICpoZWFkKTsKIHBoeXNfYWRkcl90IGFjcGlfaW9ydF9kbWFf
+Z2V0X21heF9jcHVfYWRkcmVzcyh2b2lkKTsKICNlbHNlCiBzdGF0aWMgaW5saW5lIHZvaWQgYWNw
+aV9pb3J0X2luaXQodm9pZCkgeyB9CkBAIC01Miw3ICs1Miw3IEBAIHN0YXRpYyBpbmxpbmUgaW50
+IGlvcnRfZG1hX2dldF9yYW5nZXMoc3RydWN0IGRldmljZSAqZGV2LCB1NjQgKnNpemUpCiBzdGF0
+aWMgaW5saW5lIGludCBpb3J0X2lvbW11X2NvbmZpZ3VyZV9pZChzdHJ1Y3QgZGV2aWNlICpkZXYs
+IGNvbnN0IHUzMiAqaWRfaW4pCiB7IHJldHVybiAtRU5PREVWOyB9CiBzdGF0aWMgaW5saW5lCi12
+b2lkIGlvcnRfaW9tbXVfbXNpX2dldF9yZXN2X3JlZ2lvbnMoc3RydWN0IGRldmljZSAqZGV2LCBz
+dHJ1Y3QgbGlzdF9oZWFkICpoZWFkKQordm9pZCBpb3J0X2lvbW11X2dldF9yZXN2X3JlZ2lvbnMo
+c3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgbGlzdF9oZWFkICpoZWFkKQogeyB9CiAKIHN0YXRp
+YyBpbmxpbmUgcGh5c19hZGRyX3QgYWNwaV9pb3J0X2RtYV9nZXRfbWF4X2NwdV9hZGRyZXNzKHZv
+aWQpCi0tIAoyLjE3LjEKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9y
+ZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21t
+dQ==
