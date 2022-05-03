@@ -1,49 +1,51 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 834BAC433EF
-	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 06:30:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4BBD1C4321E
+	for <iommu@archiver.kernel.org>; Tue,  3 May 2022 06:30:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 10BB381DA3;
+	by smtp2.osuosl.org (Postfix) with ESMTP id CAF2B40123;
 	Tue,  3 May 2022 06:30:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hYpfSZ_XAN4n; Tue,  3 May 2022 06:30:41 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id sA89_CYa1sBw; Tue,  3 May 2022 06:30:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id F299681DAB;
-	Tue,  3 May 2022 06:30:40 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 9A02340528;
+	Tue,  3 May 2022 06:30:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0058FC0086;
-	Tue,  3 May 2022 06:30:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6AB6CC007A;
+	Tue,  3 May 2022 06:30:41 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CC761C007A
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 06:30:37 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 324F5C008B
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 06:30:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id A31F260FD7
- for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 06:30:37 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 2EF4660C1A
+ for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 06:30:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dXh3rTxjyB9N for <iommu@lists.linux-foundation.org>;
- Tue,  3 May 2022 06:30:36 +0000 (UTC)
+ with ESMTP id 6RfCidbzqvoY for <iommu@lists.linux-foundation.org>;
+ Tue,  3 May 2022 06:30:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from soltyk.jannau.net (soltyk.jannau.net [144.76.91.90])
- by smtp3.osuosl.org (Postfix) with ESMTPS id DF7A860FCC
+ by smtp3.osuosl.org (Postfix) with ESMTPS id B865F60FCB
  for <iommu@lists.linux-foundation.org>; Tue,  3 May 2022 06:30:35 +0000 (UTC)
 Received: from coburn.home.jannau.net (p579ad988.dip0.t-ipconnect.de
  [87.154.217.136])
- by soltyk.jannau.net (Postfix) with ESMTPSA id 0605826E9B2;
- Tue,  3 May 2022 08:23:01 +0200 (CEST)
+ by soltyk.jannau.net (Postfix) with ESMTPSA id 30E1126E9B7;
+ Tue,  3 May 2022 08:23:04 +0200 (CEST)
 From: Janne Grunau <j@jannau.net>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH v2 0/4] iommu: M1 Pro/Max DART support
-Date: Tue,  3 May 2022 08:22:57 +0200
-Message-Id: <20220503062301.20872-1-j@jannau.net>
+Subject: [PATCH v2 4/4] iommu: dart: Support t6000 variant
+Date: Tue,  3 May 2022 08:23:01 +0200
+Message-Id: <20220503062301.20872-5-j@jannau.net>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220503062301.20872-1-j@jannau.net>
+References: <20220503062301.20872-1-j@jannau.net>
 MIME-Version: 1.0
 Cc: devicetree@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
  Hector Martin <marcan@marcan.st>, linux-kernel@vger.kernel.org,
@@ -67,48 +69,97 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hej,
+From: Sven Peter <sven@svenpeter.dev>
 
-I've taken over this series to add support for DART on M1 Pro/Max from
-Sven.
+The M1 Pro/Max/Ultra SoCs come with a new variant of DART which
+supports a larger physical address space with a different PTE format.
+Pass through the correct paddr address space size and the PTE format
+to the io-pgtable code which will take care of the rest.
 
-Since v1 we have discovered further differences in the PTE format. It
-has four differences which makes it incompatible with the one in the
-M1:
+Signed-off-by: Sven Peter <sven@svenpeter.dev>
+Co-developed-by: Janne Grunau <j@jannau.net>
+Signed-off-by: Janne Grunau <j@jannau.net>
 
-  - the physical addresses are shifted left by 4 bits and and have 2 more
-    bits inside the PTE entries
-  - the read/write protection flags are at a different position
-  - the subpage protection feature is now mandatory. For Linux we can
-    just configure it to always allow access to the entire page.
-  - BIT(1) tags "uncached" mappings (used for the display controller)
+---
+Changes since v1:
+ - use APPLE_DART PTE format for dart-t6000
+---
+ drivers/iommu/apple-dart.c | 24 +++++++++++++++++++++---
+ 1 file changed, 21 insertions(+), 3 deletions(-)
 
-The last difference is the most troublesome since it makes the PTE format
-incomaptible with iopte_type(). Handling this inside io-pgtable-arm.c
-seems manageable since DART supports just a single block size. It opens
-the question at which point we decide that DART uses its own
-io_pgtable_ops.
-
-There is second type of DART (t8110) present on M1 Pro/Max SoCs which
-uses the same PTE format as t6000.
-
-Janne
-
-Sven Peter (4):
-  dt-bindings: iommu: dart: add t6000 compatible
-  iommu/io-pgtable: Add DART subpage protection support
-  iommu/io-pgtable: Add DART PTE support for t6000
-  iommu: dart: Support t6000 variant
-
- .../devicetree/bindings/iommu/apple,dart.yaml |  4 +-
- drivers/iommu/apple-dart.c                    | 24 +++++-
- drivers/iommu/io-pgtable-arm.c                | 76 ++++++++++++++++++-
- drivers/iommu/io-pgtable.c                    |  1 +
- include/linux/io-pgtable.h                    |  3 +
- 5 files changed, 101 insertions(+), 7 deletions(-)
-
-
-base-commit: 3123109284176b1532874591f7c81f3837bbdc17
+diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+index decafb07ad08..fe0dedd67fd8 100644
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -81,10 +81,16 @@
+ #define DART_TTBR_VALID BIT(31)
+ #define DART_TTBR_SHIFT 12
+ 
++struct apple_dart_hw {
++	u32 oas;
++	enum io_pgtable_fmt fmt;
++};
++
+ /*
+  * Private structure associated with each DART device.
+  *
+  * @dev: device struct
++ * @hw: SoC-specific hardware data
+  * @regs: mapped MMIO region
+  * @irq: interrupt number, can be shared with other DARTs
+  * @clks: clocks associated with this DART
+@@ -98,6 +104,7 @@
+  */
+ struct apple_dart {
+ 	struct device *dev;
++	const struct apple_dart_hw *hw;
+ 
+ 	void __iomem *regs;
+ 
+@@ -421,13 +428,13 @@ static int apple_dart_finalize_domain(struct iommu_domain *domain,
+ 	pgtbl_cfg = (struct io_pgtable_cfg){
+ 		.pgsize_bitmap = dart->pgsize,
+ 		.ias = 32,
+-		.oas = 36,
++		.oas = dart->hw->oas,
+ 		.coherent_walk = 1,
+ 		.iommu_dev = dart->dev,
+ 	};
+ 
+ 	dart_domain->pgtbl_ops =
+-		alloc_io_pgtable_ops(APPLE_DART, &pgtbl_cfg, domain);
++		alloc_io_pgtable_ops(dart->hw->fmt, &pgtbl_cfg, domain);
+ 	if (!dart_domain->pgtbl_ops) {
+ 		ret = -ENOMEM;
+ 		goto done;
+@@ -857,6 +864,7 @@ static int apple_dart_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	dart->dev = dev;
++	dart->hw = of_device_get_match_data(dev);
+ 	spin_lock_init(&dart->lock);
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+@@ -946,8 +954,18 @@ static int apple_dart_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++static const struct apple_dart_hw apple_dart_hw_t8103 = {
++	.oas = 36,
++	.fmt = APPLE_DART,
++};
++static const struct apple_dart_hw apple_dart_hw_t6000 = {
++	.oas = 42,
++	.fmt = APPLE_DART2,
++};
++
+ static const struct of_device_id apple_dart_of_match[] = {
+-	{ .compatible = "apple,t8103-dart", .data = NULL },
++	{ .compatible = "apple,t8103-dart", .data = &apple_dart_hw_t8103 },
++	{ .compatible = "apple,t6000-dart", .data = &apple_dart_hw_t6000 },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, apple_dart_of_match);
 -- 
 2.35.1
 
