@@ -1,61 +1,50 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7EEFCC433EF
-	for <iommu@archiver.kernel.org>; Wed,  4 May 2022 15:29:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BC773C433F5
+	for <iommu@archiver.kernel.org>; Wed,  4 May 2022 15:57:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 1CDB24040D;
-	Wed,  4 May 2022 15:29:37 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aLkkLhHLjqTn; Wed,  4 May 2022 15:29:36 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 022BD400D8;
-	Wed,  4 May 2022 15:29:35 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C18C1C0039;
-	Wed,  4 May 2022 15:29:35 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AD908C002D
- for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 15:29:34 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 95A2C417B6
- for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 15:29:34 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 7AEC440961;
+	Wed,  4 May 2022 15:57:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pJln9rn606zC for <iommu@lists.linux-foundation.org>;
- Wed,  4 May 2022 15:29:33 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id A89224176C
- for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 15:29:33 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BA01D1042;
- Wed,  4 May 2022 08:29:32 -0700 (PDT)
-Received: from [10.57.80.111] (unknown [10.57.80.111])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D4F803FA27;
- Wed,  4 May 2022 08:29:30 -0700 (PDT)
-Message-ID: <b3e79abf-646b-fa98-5a4d-26fdf5e550a9@arm.com>
-Date: Wed, 4 May 2022 16:29:24 +0100
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id CvO1tClQDpDT; Wed,  4 May 2022 15:57:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 1DE59408F6;
+	Wed,  4 May 2022 15:57:54 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E991AC0039;
+	Wed,  4 May 2022 15:57:53 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0D01DC002D
+ for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 15:57:53 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id EFA8E81CE9
+ for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 15:57:52 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 1HW-NmykFavv for <iommu@lists.linux-foundation.org>;
+ Wed,  4 May 2022 15:57:52 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from theia.8bytes.org (8bytes.org
+ [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 105CB81C58
+ for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 15:57:51 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id A091F3FA; Wed,  4 May 2022 17:57:48 +0200 (CEST)
+Date: Wed, 4 May 2022 17:57:47 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [git pull] IOMMU Fixes for Linux v5.18-rc5
+Message-ID: <YnKie9R0RhJsGMz9@8bytes.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] iommu: iommu_group_claim_dma_owner() must always assign a
- domain
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <0-v1-6e9d2d0a759d+11b-iommu_dma_block_jgg@nvidia.com>
- <0a8cdb2a-91a3-9953-b7a1-8517ffcadb75@arm.com>
- <20220504145454.GI49344@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220504145454.GI49344@nvidia.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Qian Cai <quic_qiancai@quicinc.com>,
- iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -68,59 +57,127 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: multipart/mixed; boundary="===============5848448297248965336=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-05-04 15:54, Jason Gunthorpe wrote:
-> On Wed, May 04, 2022 at 03:42:09PM +0100, Robin Murphy wrote:
-> 
->>> This fixes an oops with VFIO and SMMUv3 because VFIO will call
->>> iommu_detach_group() and then immediately iommu_domain_free(), but
->>> SMMUv3 has no way to know that the domain it is holding a pointer to
->>> has been freed. Now the iommu_detach_group() will assign the blocking
->>> domain and SMMUv3 will no longer hold a stale domain reference.
->>
->> Thanks for taking this on! I do like the overall structure and naming much
->> more than my initial sketch :)
-> 
-> Thanks, no problem!
->   
->>>    	/*
->>> -	 * If the group has been claimed already, do not re-attach the default
->>> -	 * domain.
->>> +	 * A NULL domain means to call the detach_dev() op. New drivers should
->>> +	 * use a IOMMU_DOMAIN_IDENTITY domain instead of a NULL default_domain
->>
->> Nit: IOMMU_DOMAIN_DMA is the baseline of default domain support, passthrough
->> is more of an optional extra.
-> 
-> Can you elaborate on this a bit more for the comment, I'm not sure I
-> understand all the historical stuff here.
 
-Well, the comment could effectively just be "New drivers should support 
-default domains."
+--===============5848448297248965336==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="dv9q/IqokSHqWzfx"
+Content-Disposition: inline
 
-What supporting default domains means in practice is two things: that 
-.attach_dev handles moving directly between domains without .detach_dev 
-being called, and that .domain_alloc supports at least IOMMU_DOMAIN_DMA 
-- other unsupported default domain types can fall back to that, but not 
-vice versa, see iommu_group_alloc_default_domain().
 
-> Here we are looking at a case where group->domain becomes NULL - what
-> does this mean in the historical world? ie what should the iommu
-> driver do when detach_dev is called?
-> 
-> I had guessed it was remove all translation - ie IOMMU_DOMAIN_IDENTITY?
+--dv9q/IqokSHqWzfx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Historically, whatever a NULL domain means is mostly between the IOMMU 
-driver and the platform DMA ops - I honestly have no idea what the likes 
-of s390 and fsl-pamu do, for example. For SMMUv3 it was always configurable.
+Hi Linus,
 
-Cheers,
-Robin.
+The following changes since commit af2d861d4cd2a4da5137f795ee3509e6f944a25b:
+
+  Linux 5.18-rc4 (2022-04-24 14:51:22 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iomm-fixes-v5.18-rc5
+
+for you to fetch changes up to 392bf51946c2463436a1ba237c1ec5865b234825:
+
+  iommu: Make sysfs robust for non-API groups (2022-05-04 15:13:39 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v5.18-rc5
+
+Including:
+
+	- Fix for a regression in IOMMU core code which could cause NULL-ptr
+	  dereferences
+
+	- Arm SMMU fixes for 5.18
+	  - Fix off-by-one in SMMUv3 SVA TLB invalidation
+	  - Disable large mappings to workaround nvidia erratum
+
+	- Intel VT-d fixes
+	  - Handle PCI stop marker messages in IOMMU driver to meet the
+	    requirement of I/O page fault handling framework.
+	  - Calculate a feasible mask for non-aligned page-selective IOTLB
+	    invalidation.
+
+	- Two fixes for Apple DART IOMMU driver
+	  - Fix potential NULL-ptr dereference
+	  - Set module owner
+
+----------------------------------------------------------------
+Ashish Mhetre (1):
+      iommu: arm-smmu: disable large page mappings for Nvidia arm-smmu
+
+David Stevens (1):
+      iommu/vt-d: Calculate mask for non-aligned flushes
+
+Hector Martin (1):
+      iommu/dart: Add missing module owner to ops structure
+
+Joerg Roedel (1):
+      Merge tag 'arm-smmu-fixes' of git://git.kernel.org/pub/scm/linux/kernel/git/will/linux into iommu/fixes
+
+Lu Baolu (1):
+      iommu/vt-d: Drop stop marker messages
+
+Nicolin Chen (1):
+      iommu/arm-smmu-v3: Fix size calculation in arm_smmu_mm_invalidate_range()
+
+Robin Murphy (1):
+      iommu: Make sysfs robust for non-API groups
+
+Yang Yingliang (1):
+      iommu/dart: check return value after calling platform_get_resource()
+
+ drivers/iommu/apple-dart.c                      | 10 ++++-----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c |  9 +++++++-
+ drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c    | 30 +++++++++++++++++++++++++
+ drivers/iommu/intel/iommu.c                     | 27 +++++++++++++++++++---
+ drivers/iommu/intel/svm.c                       |  4 ++++
+ drivers/iommu/iommu.c                           |  9 +++++++-
+ 6 files changed, 79 insertions(+), 10 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--dv9q/IqokSHqWzfx
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmJyonsACgkQK/BELZcB
+GuN9mhAA3Ew/O0xkKnZ3nyHVoSXaTifytAc3kotV/KKKKjXrPUVoVQH2ggWZARvj
+o2ntI+C8Wf5KkTdVV9KLzWRcPa39ycvgK5Yi1emaFvQuYfxJNVV4nBR3D4bv55AM
+f3XdkpJgaRmbw0y/drxraLrennlGDd+aLtiAcJZeejfVkAW5CkOwJPVeOAI/5RqH
+wuNgrGtoItdIsbxgW4Vx5vNbXApRS2iKzDwQt7vBTnvnVbxzogjU3WM+1kPjUMSb
+ADM1/29Ujg4o2hX4CCeUdvyLhUX8NUXW3v9mhvVNNNf+XnW4rHwyTstMj/lC3DNy
+yunf5XMA+o8WlZDcYRh29da9tTH7YRJmOVqwn5V8bOKa2OJSCH38Dm1n5XnDWNLl
+yjlM6j2iPnz7fZf9lXzMxCAyxuoZ3YEmSQGILMZUYifvIpdumZ4ymcB5YtwJlYjn
+7hffrNz0Bt/VptE/w2pU5boDveEpwFL03t5y5LdDhOf6cIW68ZP8Ut8wBlkbu+0K
+YXxpdPn4FcieO2dW/IbXGr6IQ7cecMjAwJVOYX2Hmd1/725sSgCnFP2hwZPn21x6
+1EDDiL107HC3y2p+K9R/6vKQuog1mp+ABFs4hXjRkpCJ3mFQI5GsfPgPeEhoirSk
+638vDCX6tSvVxbi39DdfMtblbA/67y079JMJi5yH8FetsJ1vyng=
+=GbgG
+-----END PGP SIGNATURE-----
+
+--dv9q/IqokSHqWzfx--
+
+--===============5848448297248965336==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============5848448297248965336==--
