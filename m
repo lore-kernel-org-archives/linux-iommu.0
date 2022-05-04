@@ -1,93 +1,61 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3987AC433F5
-	for <iommu@archiver.kernel.org>; Wed,  4 May 2022 15:08:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7EEFCC433EF
+	for <iommu@archiver.kernel.org>; Wed,  4 May 2022 15:29:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id E2B7C60D76;
-	Wed,  4 May 2022 15:08:44 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 1CDB24040D;
+	Wed,  4 May 2022 15:29:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jF1Y8HgMynsF; Wed,  4 May 2022 15:08:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id DC57560D74;
-	Wed,  4 May 2022 15:08:43 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id aLkkLhHLjqTn; Wed,  4 May 2022 15:29:36 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 022BD400D8;
+	Wed,  4 May 2022 15:29:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 92BB5C0039;
-	Wed,  4 May 2022 15:08:43 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 016D3C0032
- for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 15:08:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C18C1C0039;
+	Wed,  4 May 2022 15:29:35 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AD908C002D
+ for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 15:29:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D469661083
- for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 15:08:42 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 95A2C417B6
+ for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 15:29:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jQf3UeMUPnMk for <iommu@lists.linux-foundation.org>;
- Wed,  4 May 2022 15:08:42 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com
- [IPv6:2a00:1450:4864:20::635])
- by smtp3.osuosl.org (Postfix) with ESMTPS id E764D60D74
- for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 15:08:41 +0000 (UTC)
-Received: by mail-ej1-x635.google.com with SMTP id l18so3461432ejc.7
- for <iommu@lists.linux-foundation.org>; Wed, 04 May 2022 08:08:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=message-id:date:mime-version:user-agent:subject:content-language:to
- :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=OvVWFDJHVBQ2gAFb6YOBhaG9PIC2m/VMXu8QQADNdLc=;
- b=ZsTJAqdm18tvarOdlZrUplyaMpMT48eO1YW7m3yfZgW/UzuBzQ/EYGlto1CYFX3vFy
- t9amHZIt1/kbASG/QbevQmMPhD1h+kcKS1Wwlga9uXmY/FmReaG4/qDZemD2p2m9oS8O
- moXPoMXcscuD5b/POKA/BkOKlc9GY2/c9MN4Q7ld2yRoqrGpK15M48iv2SPKGpzJQRZy
- 5FJpb+eDExfJRJbSCGZMAapmNhojdD+N5FIhzshM4OL7iu/IxlAO5B92tddt6g0ng0+G
- Cjzcxhpx9iU/EvG7ChlbYQ+OQGQdiYdHilgo+cAL5QO88Y5DPOs/RByJdT/6zLteAvse
- jL/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:in-reply-to
- :content-transfer-encoding;
- bh=OvVWFDJHVBQ2gAFb6YOBhaG9PIC2m/VMXu8QQADNdLc=;
- b=rjcYYtOLhHD8NI5jCNfw3LZdYPxqmzN+1CIXOgIn11HEoEquqTyo9QzUif9tYzdzyA
- RSuH6fnO2jm6N2i9avkg8GOgQg+3gwP3sAc8uaZrMUNjQFXEWV4YVdIRlqfiAAvue60f
- AgMw0I4hnMPiVKe6w49SS8kTNwaCvcsx6skEvAnsYcUZLxE7LCh/ORtctdDYC+5n/EoF
- /X0ny+RUcUVY/ukj2+i5dkLCOTcfaaveraX98kOJ2j+g2qLeR0KpESb4nAXOB9KIT7sw
- e44ouFGaI1pv9Kb+qVPf9PwlwkPv1v7Ci/xS62XIuqz4ZPj+VVT/fExfXCmeDMR6QrRE
- JNfw==
-X-Gm-Message-State: AOAM530/QgrN0R4nvk28IGfjLj85KBlwPtwxY1J2i9xHylYosJQcwJlC
- rynUqz23pMbChuhjS/bcT1NjZQ==
-X-Google-Smtp-Source: ABdhPJxmVQA4qV7ej58brqZ2gGQycy2rr2zls5Bx7lvSEtC5wJ7j+/HiJkxyVO+vbZE/6lEnkT3GVA==
-X-Received: by 2002:a17:906:c114:b0:6f3:ad4c:c886 with SMTP id
- do20-20020a170906c11400b006f3ad4cc886mr21460881ejc.124.1651676920086; 
- Wed, 04 May 2022 08:08:40 -0700 (PDT)
-Received: from [192.168.0.215] (xdsl-188-155-176-92.adslplus.ch.
- [188.155.176.92]) by smtp.gmail.com with ESMTPSA id
- l21-20020a056402345500b0042617ba6393sm9202157edc.29.2022.05.04.08.08.39
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 04 May 2022 08:08:39 -0700 (PDT)
-Message-ID: <02b65b74-c37d-0bf6-5cfa-883b20c716ae@linaro.org>
-Date: Wed, 4 May 2022 17:08:38 +0200
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id pJln9rn606zC for <iommu@lists.linux-foundation.org>;
+ Wed,  4 May 2022 15:29:33 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp4.osuosl.org (Postfix) with ESMTP id A89224176C
+ for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 15:29:33 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BA01D1042;
+ Wed,  4 May 2022 08:29:32 -0700 (PDT)
+Received: from [10.57.80.111] (unknown [10.57.80.111])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D4F803FA27;
+ Wed,  4 May 2022 08:29:30 -0700 (PDT)
+Message-ID: <b3e79abf-646b-fa98-5a4d-26fdf5e550a9@arm.com>
+Date: Wed, 4 May 2022 16:29:24 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH 1/2] dt-bindings: arm-smmu: Add compatible for Qualcomm
- SC8280XP
-Content-Language: en-US
-To: Bjorn Andersson <bjorn.andersson@linaro.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-References: <20220503163429.960998-1-bjorn.andersson@linaro.org>
- <20220503163429.960998-2-bjorn.andersson@linaro.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220503163429.960998-2-bjorn.andersson@linaro.org>
-Cc: devicetree@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] iommu: iommu_group_claim_dma_owner() must always assign a
+ domain
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <0-v1-6e9d2d0a759d+11b-iommu_dma_block_jgg@nvidia.com>
+ <0a8cdb2a-91a3-9953-b7a1-8517ffcadb75@arm.com>
+ <20220504145454.GI49344@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220504145454.GI49344@nvidia.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Qian Cai <quic_qiancai@quicinc.com>,
+ iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,22 +68,58 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 03/05/2022 18:34, Bjorn Andersson wrote:
-> Add compatible for the Qualcomm SC8280XP platform to the ARM SMMU
-> DeviceTree binding.
+On 2022-05-04 15:54, Jason Gunthorpe wrote:
+> On Wed, May 04, 2022 at 03:42:09PM +0100, Robin Murphy wrote:
 > 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+>>> This fixes an oops with VFIO and SMMUv3 because VFIO will call
+>>> iommu_detach_group() and then immediately iommu_domain_free(), but
+>>> SMMUv3 has no way to know that the domain it is holding a pointer to
+>>> has been freed. Now the iommu_detach_group() will assign the blocking
+>>> domain and SMMUv3 will no longer hold a stale domain reference.
+>>
+>> Thanks for taking this on! I do like the overall structure and naming much
+>> more than my initial sketch :)
+> 
+> Thanks, no problem!
+>   
+>>>    	/*
+>>> -	 * If the group has been claimed already, do not re-attach the default
+>>> -	 * domain.
+>>> +	 * A NULL domain means to call the detach_dev() op. New drivers should
+>>> +	 * use a IOMMU_DOMAIN_IDENTITY domain instead of a NULL default_domain
+>>
+>> Nit: IOMMU_DOMAIN_DMA is the baseline of default domain support, passthrough
+>> is more of an optional extra.
+> 
+> Can you elaborate on this a bit more for the comment, I'm not sure I
+> understand all the historical stuff here.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Well, the comment could effectively just be "New drivers should support 
+default domains."
 
+What supporting default domains means in practice is two things: that 
+.attach_dev handles moving directly between domains without .detach_dev 
+being called, and that .domain_alloc supports at least IOMMU_DOMAIN_DMA 
+- other unsupported default domain types can fall back to that, but not 
+vice versa, see iommu_group_alloc_default_domain().
 
-Best regards,
-Krzysztof
+> Here we are looking at a case where group->domain becomes NULL - what
+> does this mean in the historical world? ie what should the iommu
+> driver do when detach_dev is called?
+> 
+> I had guessed it was remove all translation - ie IOMMU_DOMAIN_IDENTITY?
+
+Historically, whatever a NULL domain means is mostly between the IOMMU 
+driver and the platform DMA ops - I honestly have no idea what the likes 
+of s390 and fsl-pamu do, for example. For SMMUv3 it was always configurable.
+
+Cheers,
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
