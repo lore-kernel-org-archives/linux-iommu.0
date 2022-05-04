@@ -4,109 +4,120 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2C631C433F5
-	for <iommu@archiver.kernel.org>; Wed,  4 May 2022 08:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AF003C433F5
+	for <iommu@archiver.kernel.org>; Wed,  4 May 2022 08:22:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id CA0B560AE5;
-	Wed,  4 May 2022 08:09:35 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 72C5460E09;
+	Wed,  4 May 2022 08:22:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 82So1sW76A8I; Wed,  4 May 2022 08:09:34 +0000 (UTC)
+	with ESMTP id 0kdayjTQYPZz; Wed,  4 May 2022 08:22:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 3025F60E09;
-	Wed,  4 May 2022 08:09:34 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 4E87E60E83;
+	Wed,  4 May 2022 08:22:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 036DDC0039;
-	Wed,  4 May 2022 08:09:34 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8E9AFC002D
- for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 07:54:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 28D7CC0039;
+	Wed,  4 May 2022 08:22:10 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 77EF9C0032
+ for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 08:22:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 6E875408A2
- for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 07:54:12 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 66C7E60E35
+ for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 08:22:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xTLlI9kZ8dmx for <iommu@lists.linux-foundation.org>;
- Wed,  4 May 2022 07:54:10 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.129.124])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 0534F400DC
- for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 07:54:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1651650848;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=e0qApkhnRbO98lM1fh2UaoTYi6JZnkn4syzaIV9qt/o=;
- b=TvnN3F60vn+04nsGfAFe+jrSCSCARkaRqfn5rUei1gjJrz0TGgjcP1vY2X/xBgWwbhLJnW
- tG6MTXOInK9b6yRnwA9/iw5G8LDEWRtZ0AAQjc1xByDTC4Ah/EtON+AYZS6ha1BwTBpYOi
- JfkdaYtoJiG9pruBRHa3P+rsp0aCfR8=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-79-aRns_kD0O2GOivC3y2aCDg-1; Wed, 04 May 2022 03:54:05 -0400
-X-MC-Unique: aRns_kD0O2GOivC3y2aCDg-1
-Received: by mail-wr1-f72.google.com with SMTP id
- p10-20020adfaa0a000000b0020c4829af5fso105561wrd.16
- for <iommu@lists.linux-foundation.org>; Wed, 04 May 2022 00:54:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=e0qApkhnRbO98lM1fh2UaoTYi6JZnkn4syzaIV9qt/o=;
- b=uYHbejblj8Nr9kPxrzKHLSmMsqLF2/Ytq0mabTwak47JCxqDOUDFOCgV7BkOh6RSaG
- oGttmh6Z8Pg5tqBK1MdBXpyBrjSRDNqwPNXDwxb9C11H/v7K1OS2uxr/W7a1sM6vP+Mn
- 1KJ1leeT25msRyOKUrmB68ukHkOOow5qINiAaq4NTVubmbHx57oZi5ohRRV65+U6bYBa
- 2p89gLkRdVl2QxRe2V8ULtBcEnvi7VQpK14M4is963uu42TcPQ/PMeCWMbRLuqa1SdwK
- obQkJy2w4pdHEC1H5odJCwXBte/xqtZVIyd9JvZ0I7V0gFUs8Na26iVc+2oQnYtRmfjL
- NidA==
-X-Gm-Message-State: AOAM5339Pi3/1QaWumuqF5qGxT4iHjkRz6w41BuTs4mRWElDRtgiS1zr
- MUjzIgW5FNOoskjpjDzJ+a7kkeA8rPtQbdCEK84p7y9VvqIImU2V6IXPgXqkLRxr5icwWdV6GM8
- ZYdgqzEbzlh47lCLqw9AQ3bPxZeFt1Q==
-X-Received: by 2002:a05:6000:18a1:b0:20c:4d65:393c with SMTP id
- b1-20020a05600018a100b0020c4d65393cmr15329271wri.639.1651650844425; 
- Wed, 04 May 2022 00:54:04 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx0ok0ilOJrNeMVmPQ9HsaUZxSfk7nkSTkJHkNutxZ9n+YLfRt3QiSwF2lgbRwiRAkGLJCm7A==
-X-Received: by 2002:a05:6000:18a1:b0:20c:4d65:393c with SMTP id
- b1-20020a05600018a100b0020c4d65393cmr15329236wri.639.1651650844064; 
- Wed, 04 May 2022 00:54:04 -0700 (PDT)
-Received: from janakin.usersys.redhat.com ([83.148.38.137])
- by smtp.gmail.com with ESMTPSA id
- q23-20020a1ce917000000b0039454a85a9asm1779338wmc.30.2022.05.04.00.54.02
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 04 May 2022 00:54:03 -0700 (PDT)
-Date: Wed, 4 May 2022 09:53:59 +0200
-From: Jan Stancek <jstancek@redhat.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [bug] NULL pointer deref after 3f6634d997db ("iommu: Use right way
- to retrieve iommu_ops")
-Message-ID: <20220504075356.GA2361844@janakin.usersys.redhat.com>
-References: <20220216025249.3459465-1-baolu.lu@linux.intel.com>
- <20220216025249.3459465-8-baolu.lu@linux.intel.com>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ED1hpxrXYWpv for <iommu@lists.linux-foundation.org>;
+ Wed,  4 May 2022 08:22:07 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com
+ (mail-sn1anam02on20615.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7ea9::615])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id F2E82607B0
+ for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 08:22:06 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=S4etekn2Nx0SddZpfd5IbYPnmgqO1GrTrNTpLm4BRINaeX2XSRqUnRcxGKWbiYgufNqu0QcDBpnu0Ohwh9p35cJNNf5N41Ft0/Ks1h8io/CxdmYr98BOwPLcD0bu90RgXSowqp42TND5m1um5W5D/IMn788yV6h4JPbB+0t2qkqk8Tg8osZ0Bty/u3HcAjzwS66wxbs3kHgwFUzSatuNQgYfF39D/j+TVijBhy0qctTTEbL4O4AQ2BF9wqc4gTs4Vzq5H8HLVEwlkK1c9cRKO/ziyz1HlwlNWh4d7Q6iAdII1QHTuIJ5FDLLgH8tsNn/M76CDBvjG+qaS9m1L1T4fg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NycvyAX4DvoIdpqub0zXHIGNCF+K36sFdebb9ipHALA=;
+ b=FkUhpc1wVpM5EL2oOZz/v71Z4Kh7AQIMvlHExY6j1DgSzbo1l+iEBCRGwhOtOF8KiwJbyCofW+112I6K10c+zMA6ku46F1szBezi90zYac6v7+LT92I4ug1jkujjDXSKuS90qXmSkqPUtJ3B1/4+4PvZbZQljMiGDNwafn+bf8O1LTafvRWECd6Uj761nwduws5k/RkcImNWKHEb6h7dyvUWrI2CNn+3sWmlBptG0eU8AObg58uMbPTsrI7vBXvUwhFCSgrfO25jzN6QjHbicUrKtgBqI/k/68f/ys3li2gL9r9eXxabRviZ8bHO6GsAnkITVUtAgixM+P5Am+AipA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NycvyAX4DvoIdpqub0zXHIGNCF+K36sFdebb9ipHALA=;
+ b=pj8fHOGz813CFEvzn8LwdsMAbSA0M11jTSsY2PpHUwVuGJOSdWYYjkysLd5Q1+01e0CzNS01MnkpfssbH/Z9caCAkOnxncfw/FXr6aQ3ouoKP+jU5zhfiQ0Jj143ZceecRdUNme+gLq3RBg/i8xhjauaqjaXPCawRCfaTjjsLrkO7z/FcrXb4MnAXKCbwl7y7k5+IgsS4f3WDNPHVarkSOjsf0hFTetkf7Lb2IkUKAXlT1CgeN49zCLWoMAOfXltPGwWUHa5gKtxgojvv6LDJit1lOHEupa4OCpmPpm6f7K6ppYeM2XBgmIl+XjgGYr/T5wwrlxXtL+cMJ9pFQ2uLQ==
+Received: from DM6PR10CA0030.namprd10.prod.outlook.com (2603:10b6:5:60::43) by
+ DM6PR12MB4530.namprd12.prod.outlook.com (2603:10b6:5:2aa::19) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5206.13; Wed, 4 May 2022 08:22:03 +0000
+Received: from DM6NAM11FT058.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:60:cafe::26) by DM6PR10CA0030.outlook.office365.com
+ (2603:10b6:5:60::43) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.12 via Frontend
+ Transport; Wed, 4 May 2022 08:22:03 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT058.mail.protection.outlook.com (10.13.172.216) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5227.15 via Frontend Transport; Wed, 4 May 2022 08:22:03 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32;
+ Wed, 4 May 2022 08:22:02 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 4 May 2022
+ 01:22:01 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22 via Frontend
+ Transport; Wed, 4 May 2022 01:22:01 -0700
+Date: Wed, 4 May 2022 01:22:00 -0700
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH] iommu: iommu_group_claim_dma_owner() must always assign
+ a domain
+Message-ID: <YnI3qKBIBR1RlN1A@Asurada-Nvidia>
+References: <0-v1-6e9d2d0a759d+11b-iommu_dma_block_jgg@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20220216025249.3459465-8-baolu.lu@linux.intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jstancek@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
 Content-Disposition: inline
-X-Mailman-Approved-At: Wed, 04 May 2022 08:09:33 +0000
-Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- bgoncalv@redhat.com, David Airlie <airlied@linux.ie>,
- Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org,
- Jonathan Hunter <jonathanh@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Thierry Reding <thierry.reding@gmail.com>, Ben Skeggs <bskeggs@redhat.com>,
- Jason Gunthorpe <jgg@nvidia.com>, jstancek@redhat.com,
- Daniel Vetter <daniel@ffwll.ch>, Will Deacon <will@kernel.org>,
- Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>
+In-Reply-To: <0-v1-6e9d2d0a759d+11b-iommu_dma_block_jgg@nvidia.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 993ec104-a77c-49fb-7048-08da2da72b53
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4530:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB4530E37F69C8AC4D9849677DABC39@DM6PR12MB4530.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uNS/+9SfVkgu/lSLPXzZ51BUjwrXVXX5uIidwpZ/jZzm1SXU1sqpOeViWvJ3HPAxLrxUFDO15KtazDcTt986Q8VDl/0HnQD1VsUoozTnVGs52CWQ1Fq014MKw7G9mtqvshgBntIZFuZzBM2Y1SOjHvB5EEtXClUJL7wj50YHxsyVFswE+o/1PbvR2CWgX4vIOAJWFd3gSVL4Wp+SHHoV40lm3bNZNASX0NZTYn5xxXw/KT9B1CH16HoddGSgnAbvF/zH0qZnqFq3mvzgwmIguJGFAvpOheEUyJcQyFoST+KUBW65JlgzLVaKUSJMlN8Oth21kDB/EoIZ7OnHMzv2SYqAxBMsKP0bZDrgzBCVyuKhRprKjOfvkNKSq8RPM1HymJQsVFvjK33Dc/t0ZEhISDvcvG0FsCbzQfSiAn/6i2u5/Df6HW9WsQpeUtRLQrrqQPbqaB0epOTHsx3zjfaf8BlYHty8clNvZJD3j02CTuJoiG461rWmt1THp1ubsylTVnuEgcR2GS2YK67NsM225jGmX93cNkrgyyV8JCKgDHeNHvxUR7F68liwbEFWmL7shSXsq9kWa1n0VMtQO4YDjc0XiVl6WBYeRgu9O4jLc16dQosCfj3zVaGz9t/e7lLHh7Q5kEShBNYSUFgY7oyhZZAG6O2btdsLF7hQeSHSWRzZHeDeQwFv3AqqEJJrCCATGEtLMd/jprYP23Y7q1mvx5l7KkoSUPdC02BDn2lreGE5HPoOmsb72OIUtqIR4PF+jCXOPVXT9iBgFUyj2/HFzUYqhH38ForAx4XNEGpsDmA=
+X-Forefront-Antispam-Report: CIP:12.22.5.234; CTRY:US; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:InfoNoRecords; CAT:NONE;
+ SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(70206006)(70586007)(316002)(26005)(508600001)(966005)(83380400001)(6636002)(54906003)(86362001)(2906002)(81166007)(36860700001)(356005)(4326008)(8676002)(6862004)(8936002)(5660300002)(40460700003)(336012)(9686003)(426003)(186003)(47076005)(55016003)(82310400005)(33716001)(36900700001);
+ DIR:OUT; SFP:1101; 
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 08:22:03.4929 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 993ec104-a77c-49fb-7048-08da2da72b53
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[12.22.5.234];
+ Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT058.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4530
+Cc: Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
+ Qian Cai <quic_qiancai@quicinc.com>, iommu@lists.linux-foundation.org, Robin
+ Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,272 +130,71 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Nicolin Chen via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Nicolin Chen <nicolinc@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Feb 16, 2022 at 10:52:47AM +0800, Lu Baolu wrote:
->The common iommu_ops is hooked to both device and domain. When a helper
->has both device and domain pointer, the way to get the iommu_ops looks
->messy in iommu core. This sorts out the way to get iommu_ops. The device
->related helpers go through device pointer, while the domain related ones
->go through domain pointer.
->
->Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->Reviewed-by: Christoph Hellwig <hch@lst.de>
->Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
->---
-> include/linux/iommu.h | 11 ++++++++++
-> drivers/iommu/iommu.c | 50 +++++++++++++++++++++----------------------
-> 2 files changed, 36 insertions(+), 25 deletions(-)
->
->diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->index 9ffa2e88f3d0..90f1b5e3809d 100644
->--- a/include/linux/iommu.h
->+++ b/include/linux/iommu.h
->@@ -381,6 +381,17 @@ static inline void iommu_iotlb_gather_init(struct iommu_iotlb_gather *gather)
-> 	};
-> }
->
->+static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
->+{
->+	/*
->+	 * Assume that valid ops must be installed if iommu_probe_device()
->+	 * has succeeded. The device ops are essentially for internal use
->+	 * within the IOMMU subsystem itself, so we should be able to trust
->+	 * ourselves not to misuse the helper.
->+	 */
->+	return dev->iommu->iommu_dev->ops;
->+}
->+
-> #define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
-> #define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device removed */
-> #define IOMMU_GROUP_NOTIFY_BIND_DRIVER		3 /* Pre Driver bind */
->diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->index 7cf073c56036..7af0ee670deb 100644
->--- a/drivers/iommu/iommu.c
->+++ b/drivers/iommu/iommu.c
->@@ -323,13 +323,14 @@ int iommu_probe_device(struct device *dev)
->
-> void iommu_release_device(struct device *dev)
-> {
->-	const struct iommu_ops *ops = dev->bus->iommu_ops;
->+	const struct iommu_ops *ops;
->
-> 	if (!dev->iommu)
-> 		return;
->
-> 	iommu_device_unlink(dev->iommu->iommu_dev, dev);
->
->+	ops = dev_iommu_ops(dev);
-> 	ops->release_device(dev);
->
-> 	iommu_group_remove_device(dev);
->@@ -833,8 +834,10 @@ static int iommu_create_device_direct_mappings(struct iommu_group *group,
-> static bool iommu_is_attach_deferred(struct iommu_domain *domain,
-> 				     struct device *dev)
-> {
->-	if (domain->ops->is_attach_deferred)
->-		return domain->ops->is_attach_deferred(domain, dev);
->+	const struct iommu_ops *ops = dev_iommu_ops(dev);
->+
->+	if (ops->is_attach_deferred)
->+		return ops->is_attach_deferred(domain, dev);
->
-> 	return false;
-> }
->@@ -1252,10 +1255,10 @@ int iommu_page_response(struct device *dev,
-> 	struct iommu_fault_event *evt;
-> 	struct iommu_fault_page_request *prm;
-> 	struct dev_iommu *param = dev->iommu;
->+	const struct iommu_ops *ops = dev_iommu_ops(dev);
-> 	bool has_pasid = msg->flags & IOMMU_PAGE_RESP_PASID_VALID;
->-	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
->
->-	if (!domain || !domain->ops->page_response)
->+	if (!ops->page_response)
-> 		return -ENODEV;
->
-> 	if (!param || !param->fault_param)
->@@ -1296,7 +1299,7 @@ int iommu_page_response(struct device *dev,
-> 			msg->pasid = 0;
-> 		}
->
->-		ret = domain->ops->page_response(dev, evt, msg);
->+		ret = ops->page_response(dev, evt, msg);
-> 		list_del(&evt->list);
-> 		kfree(evt);
-> 		break;
->@@ -1521,7 +1524,7 @@ EXPORT_SYMBOL_GPL(fsl_mc_device_group);
->
-> static int iommu_get_def_domain_type(struct device *dev)
-> {
->-	const struct iommu_ops *ops = dev->bus->iommu_ops;
->+	const struct iommu_ops *ops = dev_iommu_ops(dev);
->
-> 	if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted)
-> 		return IOMMU_DOMAIN_DMA;
->@@ -1580,7 +1583,7 @@ static int iommu_alloc_default_domain(struct iommu_group *group,
->  */
-> static struct iommu_group *iommu_group_get_for_dev(struct device *dev)
-> {
->-	const struct iommu_ops *ops = dev->bus->iommu_ops;
->+	const struct iommu_ops *ops = dev_iommu_ops(dev);
-> 	struct iommu_group *group;
-> 	int ret;
->
->@@ -1588,9 +1591,6 @@ static struct iommu_group *iommu_group_get_for_dev(struct device *dev)
-> 	if (group)
-> 		return group;
->
->-	if (!ops)
->-		return ERR_PTR(-EINVAL);
->-
-> 	group = ops->device_group(dev);
-> 	if (WARN_ON_ONCE(group == NULL))
-> 		return ERR_PTR(-EINVAL);
->@@ -1759,10 +1759,10 @@ static int __iommu_group_dma_attach(struct iommu_group *group)
->
-> static int iommu_group_do_probe_finalize(struct device *dev, void *data)
-> {
->-	struct iommu_domain *domain = data;
->+	const struct iommu_ops *ops = dev_iommu_ops(dev);
->
->-	if (domain->ops->probe_finalize)
->-		domain->ops->probe_finalize(dev);
->+	if (ops->probe_finalize)
->+		ops->probe_finalize(dev);
->
-> 	return 0;
-> }
->@@ -2020,7 +2020,7 @@ EXPORT_SYMBOL_GPL(iommu_attach_device);
->
-> int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
-> {
->-	const struct iommu_ops *ops = domain->ops;
->+	const struct iommu_ops *ops = dev_iommu_ops(dev);
->
-> 	if (ops->is_attach_deferred && ops->is_attach_deferred(domain, dev))
-> 		return __iommu_attach_device(domain, dev);
->@@ -2579,17 +2579,17 @@ EXPORT_SYMBOL_GPL(iommu_set_pgtable_quirks);
->
-> void iommu_get_resv_regions(struct device *dev, struct list_head *list)
-> {
->-	const struct iommu_ops *ops = dev->bus->iommu_ops;
->+	const struct iommu_ops *ops = dev_iommu_ops(dev);
+On Tue, May 03, 2022 at 09:11:02PM -0300, Jason Gunthorpe wrote:
 
-Hi,
+> This is based on Robins draft here:
+> 
+> https://lore.kernel.org/linux-iommu/18831161-473f-e04f-4a81-1c7062ad192d@arm.com/
+> 
+> With some rework. I re-organized the call chains instead of introducing
+> iommu_group_user_attached(), fixed a recursive locking for
+> iommu_group_get_purgatory(), and made a proper commit message.
+> 
+> Still only compile tested, so RFCish.
+> 
+> Nicolin/Lu? What do you think, can you check it?
 
-I'm getting panics after hunk above was applied in this patch
-on ppc64le KVM guest, dev->iommu is NULL.
+I am able to repro the issue on ARM64 and give this a quick try.
+But the patch seems to need to include the following change too.
 
-Can be reproduced with LTP read_all_sys test or just cat on following file:
-# cat /sys/kernel/iommu_groups/0/reserved_regions
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 94d99768023c..9bb108d01baa 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2040,7 +2040,8 @@ static int __iommu_attach_group(struct iommu_domain *domain,
+ {
+ 	int ret;
+ 
+-	if (group->domain && group->domain != group->default_domain)
++	if (group->domain && group->domain != group->default_domain &&
++	    group->domain != group->blocking_domain)
+ 		return -EBUSY;
+ 
+ 	ret = __iommu_group_for_each_dev(group, domain,
 
-[20065.322087] BUG: Kernel NULL pointer dereference on read at 0x000000b8 
-[20065.323563] Faulting instruction address: 0xc000000000cb7c1c 
-[20065.323625] Oops: Kernel access of bad area, sig: 11 [#1] 
-[20065.323671] LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=2048 NUMA pSeries 
-[20065.323729] Modules linked in: kvm_pr kvm vfio_iommu_spapr_tce vfio_spapr_eeh vfio vhost_net tap vhost_vsock vhost vhost_iotlb snd_seq_dummy dummy msdos minix binfmt_misc vcan can_raw nfsv3 nfs_acl nfs lockd grace fscache netfs tun brd overlay exfat vfat fat vsock_loopback vmw_vsock_virtio_transport_common vsock can_bcm can veth n_gsm pps_ldisc ppp_synctty mkiss ax25 ppp_async ppp_generic serport slcan slip slhc loop snd_hrtimer snd_seq snd_seq_device snd_timer snd soundcore pcrypt crypto_user n_hdlc tls rfkill sunrpc joydev virtio_net net_failover failover virtio_console virtio_balloon crct10dif_vpmsum fuse zram xfs virtio_blk vmx_crypto crc32c_vpmsum ipmi_devintf ipmi_msghandler [last unloaded: vcan] 
-[20065.324308] CPU: 3 PID: 119528 Comm: read_all Not tainted 5.18.0-0.rc5.9050ba3a61a4b5b.41.test.fc37.ppc64le #1 
-[20065.324402] NIP:  c000000000cb7c1c LR: c000000000cb7ba0 CTR: 0000000000000000 
-[20065.324468] REGS: c00000012a3e3660 TRAP: 0300   Not tainted  (5.18.0-0.rc5.9050ba3a61a4b5b.41.test.fc37.ppc64le) 
-[20065.324560] MSR:  8000000000009033 <SF,EE,ME,IR,DR,RI,LE>  CR: 44008804  XER: 00000000 
-[20065.324638] CFAR: 0000000000002674 DAR: 00000000000000b8 DSISR: 40000000 IRQMASK: 0  
-[20065.324638] GPR00: c000000000cb7ba0 c00000012a3e3900 c000000002b5a500 c00000000cd610b0  
-[20065.324638] GPR04: c00000000c3bb0c8 0000000000000004 c00000012a3e37ac 000000023c480000  
-[20065.324638] GPR08: 000000023c480000 0000000000000000 0000000000000000 a0f18a8800000000  
-[20065.324638] GPR12: 0000000084008800 c00000003fffae80 0000000000000000 0000000000000000  
-[20065.324638] GPR16: 0000000010060878 0000000000000008 00000000100607b8 c00000000c3bb058  
-[20065.324638] GPR20: c00000000c3bb048 c00000000a034fe0 5deadbeef0000100 5deadbeef0000122  
-[20065.324638] GPR24: fffffffffffff000 c00000012a3e3920 0000000000000000 c00000012a3e3930  
-[20065.324638] GPR28: c00000012a3e3a20 c00000000cf74c00 c0000000014ab060 c00000001a765ef0  
-[20065.325248] NIP [c000000000cb7c1c] iommu_get_group_resv_regions+0xcc/0x490 
-[20065.325310] LR [c000000000cb7ba0] iommu_get_group_resv_regions+0x50/0x490 
-[20065.325368] Call Trace: 
-[20065.325391] [c00000012a3e3900] [c000000000cb7ba0] iommu_get_group_resv_regions+0x50/0x490 (unreliable) 
-[20065.325474] [c00000012a3e39c0] [c000000000cb8024] iommu_group_show_resv_regions+0x44/0x140 
-[20065.325544] [c00000012a3e3a70] [c000000000cb5478] iommu_group_attr_show+0x38/0x60 
-[20065.325616] [c00000012a3e3a90] [c00000000070536c] sysfs_kf_seq_show+0xbc/0x1d0 
-[20065.325686] [c00000012a3e3b20] [c000000000702124] kernfs_seq_show+0x44/0x60 
-[20065.325746] [c00000012a3e3b40] [c00000000061bd2c] seq_read_iter+0x26c/0x6e0 
-[20065.325805] [c00000012a3e3c20] [c000000000702fd4] kernfs_fop_read_iter+0x254/0x2e0 
-[20065.325877] [c00000012a3e3c70] [c0000000005cf3d0] new_sync_read+0x110/0x170 
-[20065.325938] [c00000012a3e3d10] [c0000000005d2770] vfs_read+0x1d0/0x240 
-[20065.326002] [c00000012a3e3d60] [c0000000005d2ee8] ksys_read+0x78/0x130 
-[20065.326063] [c00000012a3e3db0] [c0000000000303f8] system_call_exception+0x198/0x3a0 
-[20065.326133] [c00000012a3e3e10] [c00000000000c64c] system_call_common+0xec/0x250 
-[20065.326205] --- interrupt: c00 at 0x7fff849dda64 
-[20065.326253] NIP:  00007fff849dda64 LR: 00000000100124a4 CTR: 0000000000000000 
-[20065.326319] REGS: c00000012a3e3e80 TRAP: 0c00   Not tainted  (5.18.0-0.rc5.9050ba3a61a4b5b.41.test.fc37.ppc64le) 
-[20065.326408] MSR:  800000000280f033 <SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 28002802  XER: 00000000 
-[20065.326501] IRQMASK: 0  
-[20065.326501] GPR00: 0000000000000003 00007ffff1cb8fd0 00007fff84af6e00 0000000000000003  
-[20065.326501] GPR04: 00007ffff1cb9070 00000000000003ff 0000000000000000 0000000000000000  
-[20065.326501] GPR08: 0000000000000000 0000000000000000 0000000000000000 0000000000000000  
-[20065.326501] GPR12: 0000000000000000 00007fff84bca640 0000000000000000 0000000000000000  
-[20065.326501] GPR16: 0000000010060878 0000000000000008 00000000100607b8 0000000010044cc0  
-[20065.326501] GPR20: 0000000000000000 0000000010044640 00007ffff1cb949a 00000000100404c8  
-[20065.326501] GPR24: 0000000010040140 0000000010060660 0000000010040110 0000000010040020  
-[20065.326501] GPR28: 0000000010060698 00007fff84880000 00007ffff1cb909b 0000000000000003  
-[20065.327053] NIP [00007fff849dda64] 0x7fff849dda64 
-[20065.327099] LR [00000000100124a4] 0x100124a4 
-[20065.327144] --- interrupt: c00 
-[20065.327179] Instruction dump: 
-[20065.327214] 66f7f000 fbc100b0 fb210088 62d60100 3b210020 fb610098 62f70122 3b610030  
-[20065.327289] e8750010 fb210020 fb210028 e9230560 <e92900b8> e9290010 e9890030 2c2c0000  
-[20065.327367] ---[ end trace 0000000000000000 ]--- 
+> @@ -2072,38 +2072,66 @@ static int iommu_group_do_detach_device(struct device *dev, void *data)
+>  	return 0;
+>  }
+>  
+> -static void __iommu_detach_group(struct iommu_domain *domain,
+> -				 struct iommu_group *group)
+> +static int __iommu_group_attach_domain(struct iommu_group *group,
+> +				       struct iommu_domain *new_domain)
+>  {
+>  	int ret;
+>  
+> +	if (group->domain == new_domain)
+> +		return 0;
+> +
+>  	/*
+> -	 * If the group has been claimed already, do not re-attach the default
+> -	 * domain.
+> +	 * A NULL domain means to call the detach_dev() op. New drivers should
+> +	 * use a IOMMU_DOMAIN_IDENTITY domain instead of a NULL default_domain
 
-# ll /sys/kernel/iommu_groups/0/devices/
-total 0
-lrwxrwxrwx. 1 root root 0 May  4 03:08 0000:00:01.0 -> ../../../../devices/pci0000:00/0000:00:01.0
-lrwxrwxrwx. 1 root root 0 May  4 03:08 0000:00:02.0 -> ../../../../devices/pci0000:00/0000:00:02.0
-lrwxrwxrwx. 1 root root 0 May  4 03:08 0000:00:03.0 -> ../../../../devices/pci0000:00/0000:00:03.0
-lrwxrwxrwx. 1 root root 0 May  4 03:08 0000:00:04.0 -> ../../../../devices/pci0000:00/0000:00:04.0
+an IOMMU_DOMAIN_IDENTITY?
 
-# lspci -v
-00:01.0 Ethernet controller: Red Hat, Inc. Virtio network device
-        Subsystem: Red Hat, Inc. Device 0001
-        Device tree node: /sys/firmware/devicetree/base/pci@800000020000000/ethernet@1
-        Flags: bus master, fast devsel, latency 0, IRQ 20, IOMMU group 0
-        I/O ports at 0080 [size=32]
-        Memory at 100b0002000 (32-bit, non-prefetchable) [size=4K]
-        Expansion ROM at 100b0040000 [disabled] [size=256K]
-        Capabilities: [40] MSI-X: Enable+ Count=3 Masked-
-        Kernel driver in use: virtio-pci
+Just a nit here. I will take a closer look at the change tomorrow.
 
-00:02.0 USB controller: Apple Inc. KeyLargo/Intrepid USB (prog-if 10 [OHCI])
-        Subsystem: Red Hat, Inc. QEMU Virtual Machine
-        Device tree node: /sys/firmware/devicetree/base/pci@800000020000000/usb@2
-        Flags: bus master, fast devsel, latency 0, IRQ 19, IOMMU group 0
-        Memory at 100b0001000 (32-bit, non-prefetchable) [size=256]
-        Kernel driver in use: ohci-pci
-
-00:03.0 SCSI storage controller: Red Hat, Inc. Virtio block device
-        Subsystem: Red Hat, Inc. Device 0002
-        Device tree node: /sys/firmware/devicetree/base/pci@800000020000000/scsi@3
-        Flags: bus master, fast devsel, latency 0, IRQ 18, IOMMU group 0
-        I/O ports at 0040 [size=64]
-        Memory at 100b0000000 (32-bit, non-prefetchable) [size=4K]
-        Capabilities: [40] MSI-X: Enable+ Count=2 Masked-
-        Kernel driver in use: virtio-pci
-
-00:04.0 Unclassified device [00ff]: Red Hat, Inc. Virtio memory balloon
-        Subsystem: Red Hat, Inc. Device 0005
-        Device tree node: /sys/firmware/devicetree/base/pci@800000020000000/unknown-legacy-device@4
-        Flags: bus master, fast devsel, latency 0, IRQ 17, IOMMU group 0
-        I/O ports at 0020 [size=32]
-        Kernel driver in use: virtio-pci
-
-full console log from CKI test run:
-  https://s3.amazonaws.com/arr-cki-prod-trusted-artifacts/trusted-artifacts/530073525/test%20ppc64le/2407075056/artifacts/test_tasks/recipes/11913490/logs/console.log
-kernel config:
-  https://s3.amazonaws.com/arr-cki-prod-trusted-artifacts/trusted-artifacts/530073525/publish%20ppc64le/2407075021/artifacts/kernel-ppc64le.config
-
-Regards,
-Jan
-
+Thanks
+Nic
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
