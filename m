@@ -1,178 +1,188 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 786AEC433EF
-	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 11:03:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BDF3FC433EF
+	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 11:51:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 272EB40BFC;
-	Thu,  5 May 2022 11:03:30 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 6BACB60A8B;
+	Thu,  5 May 2022 11:51:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ywUpfxBcznu3; Thu,  5 May 2022 11:03:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id CDB0B4014A;
-	Thu,  5 May 2022 11:03:28 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id KB-qU7AiF9D4; Thu,  5 May 2022 11:51:43 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id EFF70607F2;
+	Thu,  5 May 2022 11:51:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A8716C0039;
-	Thu,  5 May 2022 11:03:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CF0EDC0032;
+	Thu,  5 May 2022 11:51:42 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 141D6C002D
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 11:03:27 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EDB7CC002D
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 11:51:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E83B883FC2
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 11:03:26 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id C8D6681299
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 11:51:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
+ dkim=pass (2048-bit key) header.d=oracle.com header.b="cW6+SGph";
+ dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
+ header.b="bgCqHp+7"
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 90lsykbdzm46 for <iommu@lists.linux-foundation.org>;
- Thu,  5 May 2022 11:03:25 +0000 (UTC)
+ with ESMTP id 9Q990hGDHOTB for <iommu@lists.linux-foundation.org>;
+ Thu,  5 May 2022 11:51:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp1.osuosl.org (Postfix) with ESMTPS id A99DE83FA4
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 11:03:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1651748605; x=1683284605;
- h=from:to:cc:subject:date:message-id:references:
- in-reply-to:content-transfer-encoding:mime-version;
- bh=imZP5E107Sb2qfiHkkU7dGC7YDCBJBD7OmK+mbOipXI=;
- b=J2GWSkRQToCK3gCquaEDy/qC6gID66F83pJYKtkviqTv5nyMFVUPGuSe
- vfuJ0S/TY+SKJCPGlHJvSKsQ1TGIOXwS0uZ6fjcQrMUpTlEdxqgIqvRM6
- mDetkxux92/TTWrwdu+Gh+OcnSnd0sfyVlhuTT5YPUodVzYArFp+GPwNx
- wxNiDCN2IjWHYllt31bDqsJ6d2iHewt1GkkuSR+J0S4cJzR8z2CxQyQt8
- Yi1uQaenb9ju0vAlb+U/8JdTjeyRpWc93rdTpdSpz4Il22TB/GeY5EilI
- uF0v4P7+NFMrCmB3j1L17Gn0/CPmcYLDB7v98giN+zSIF+9YHR0t+4Anj w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="354509138"
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; d="scan'208";a="354509138"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 05 May 2022 04:03:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; d="scan'208";a="734848552"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
- by orsmga005.jf.intel.com with ESMTP; 05 May 2022 04:03:22 -0700
-Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 5 May 2022 04:03:21 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Thu, 5 May 2022 04:03:21 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.104)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Thu, 5 May 2022 04:03:21 -0700
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com
+ [205.220.165.32])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 49D2581066
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 11:51:38 +0000 (UTC)
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+ by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24590Oip003197;
+ Thu, 5 May 2022 11:51:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=eoAf6xSHD2xgVJtkNW/EeXZyXZvCc5FiP1WWBMNksVw=;
+ b=cW6+SGphGqL8w6qd7HDhtNw2hehMUUQAyQZN7S7HCJwiOlQVk5Qx9ez5XE3Op1hBEpZh
+ 3hGPiuRiNnFnoCi7hXIziyA6rdjPrd4O+INfk9PZm9tNsxG6JJvaLXYuaYEcUY1ZUZHr
+ nfKmErBFnmKlIohM8vcsiP0TMrLtmgSs5LO5GOeWl5W6SUOGZ0luimpbKFbHB5gYGHVr
+ JSYHHwM5e2Jp1y0941IMQ8gBmjniIvtihMTLuJD0cNxnlGS6ElH6nj3Bb2x91y5oTzMC
+ /oeF7m1IETnFyc00a9j11aHfUID8ZxTBTvDIfqK9VrNsOHVL1Mk/PnRtHeY6oKuVum2D Vg== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com
+ (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+ by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3frw0attt1-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Thu, 05 May 2022 11:51:17 +0000
+Received: from pps.filterd
+ (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+ by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2)
+ with SMTP id 245BpAPS002518; Thu, 5 May 2022 11:51:14 GMT
+Received: from nam02-bn1-obe.outbound.protection.outlook.com
+ (mail-bn1nam07lp2042.outbound.protection.outlook.com [104.47.51.42])
+ by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id
+ 3frujakvet-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Thu, 05 May 2022 11:51:14 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C0brs1E9MKCH369BSDi/LospYimfS6RfgYPq5DHe8muLBR0i4EMr4Qm67QPyJAN4kZJ0jPrcG1cl6HlAjEyuC1Bmux8PwoWFsM+hFSB+6203cry13OheIeyDO6vpghGBE/VaC/mocYz3eUAelbAt54f+hROYRAfUnGwY7U3k8e82+4iuWZ1C33jGXpjHLZf6vrLn2lCPEDZUO+Pr2M6V8MrirEp4DRYWfkaTCuQafFc6EAsY35YevzVkTAQ38yL9IdskcEHG9q4wHNOI8ggrmkkS8zt7LFwITOMIOWbvxmyBeFT/2/x0+NY1uZvggNIuu9cuvm/kzEUcaGIOIFoJVg==
+ b=kg2f4j8yVJPufuZUBQP6dJjQOQmMfrCczOP4HNGYadQfevYOu46IrXhOWtFP/hQGLrrUAAl0V9gEg71swEXfFzE00lKt7d/NtfJU9Kzetl+tV7i4B3dRipSBBUOEwzeFUZrdaa5TgvKlSHmWwWyBhHxPfw1XMcqoXISQE2wLDKJccvn/g7dGbPAan/3MuTul54KtwnVOX1FuWf0PQqJtByN90t3Guxm3iVonJg2VezWUgil7Z7ORzGj48CwMWN5E3a9pUzMEVi2uN5PSdSYbOUreTS6U8atKa9LelFVKpXWfx2g2mocJ3eeeN3muz23eIkRC+v3aVLC93RKuCyQ0PQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=imZP5E107Sb2qfiHkkU7dGC7YDCBJBD7OmK+mbOipXI=;
- b=CyJdkvy9XNETa8GJEmZ0OArwFtHc2t0HW4oVN00D7ALZ371F5nQW5MTUMMrl3qGXaLklcAKyRuhKDK+7oQQCbgWkLIwTEmbn7T3sdUX/Emt9mPZhy3z8dJnZRhzXToXf2UeAoLJEO2/NrzLPPhdHZPSQVNM/NbeB/Gd/h2UEXDWtbeaROyfCLvpMIiIvI4DKP9U7npqyNJYHphn27SIpL9aqYD7ydVH9f3PlgYSlCcgYIz6a9VQ9y96Yq3cxEXj+IET3Q8BhGVDSCTgFNWzXbuRWI68zMsSDs3tSqPumJztGSfS8eo7R0gEceIfvNRC3qdETZRttUR6PFBH9GEo7dA==
+ bh=eoAf6xSHD2xgVJtkNW/EeXZyXZvCc5FiP1WWBMNksVw=;
+ b=couvmjTZTqjYiOvCXVLATgyuWEug9Cgt5QkIdP5Wv6clPXWggebkoB/j7CKsPtuV4xK5TGthoUTUUBw/qO+mIZsG7iHOMLWRQx9Owshb4aA8avh5VCLDCzJZegHRME6bXkRMeCc+b8b5JFO/2RyLBX75H8o3ZIWouegU4VhGB+9c9vGWuu+bTN6PHlOHfzrcec8dvZCcqBY750AG97KzQQWZ2Xz2VZPlOFvICkrx5tKuKSPvBiY4MOVMeeo0men9nVcktrhN0eYXNnvI/cz0WtXHvW6zDZyie1mjdWr3JT5uepRQnQrPcOhL+zC4TaLdVKBYUjWWvfdiFuhmgqiJOQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by MN2PR11MB3933.namprd11.prod.outlook.com (2603:10b6:208:13d::14)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Thu, 5 May
- 2022 11:03:18 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::24dd:37c2:3778:1adb]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::24dd:37c2:3778:1adb%2]) with mapi id 15.20.5206.027; Thu, 5 May 2022
- 11:03:18 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: "Martins, Joao" <joao.m.martins@oracle.com>, Jason Gunthorpe
- <jgg@nvidia.com>, Alex Williamson <alex.williamson@redhat.com>
-Subject: RE: [PATCH RFC 00/19] IOMMUFD Dirty Tracking
-Thread-Topic: [PATCH RFC 00/19] IOMMUFD Dirty Tracking
-Thread-Index: AQHYW0R/S6mfDid5yEe6M+QKFrUDn60GOWsggAWwCICAAAubgIAD+0BQgAAo1oCAAA4PYA==
-Date: Thu, 5 May 2022 11:03:18 +0000
-Message-ID: <BN9PR11MB527662B72E8BD1EDE204C5538CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eoAf6xSHD2xgVJtkNW/EeXZyXZvCc5FiP1WWBMNksVw=;
+ b=bgCqHp+7x/vrxjb+wU/p+DkBTYiaxmOzrx5me+QU4wau2AJLyA0W/jWj5gKCm8OXqvHm3rkq8OF3sM1RX64KqLysKKTpLb6dW/+oMr5+8EU3RXipOvO/Lp2Wp8TFuxbrpnPsaEgvsUC0kB3LF7ghPrq/Vx14PxReM+Q2DA/IjBM=
+Received: from BLAPR10MB4835.namprd10.prod.outlook.com (2603:10b6:208:331::11)
+ by DM5PR10MB2028.namprd10.prod.outlook.com (2603:10b6:3:111::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Thu, 5 May
+ 2022 11:51:03 +0000
+Received: from BLAPR10MB4835.namprd10.prod.outlook.com
+ ([fe80::b9e5:d1b6:b4be:f9d]) by BLAPR10MB4835.namprd10.prod.outlook.com
+ ([fe80::b9e5:d1b6:b4be:f9d%5]) with mapi id 15.20.5206.027; Thu, 5 May 2022
+ 11:51:03 +0000
+Message-ID: <82366a45-937c-eea9-259d-ac718249bab1@oracle.com>
+Date: Thu, 5 May 2022 12:50:55 +0100
+Subject: Re: [PATCH RFC 00/19] IOMMUFD Dirty Tracking
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>
 References: <20220428210933.3583-1-joao.m.martins@oracle.com>
  <BN9PR11MB5276F104A27ACD5F20BABC7F8CFC9@BN9PR11MB5276.namprd11.prod.outlook.com>
  <20220502121107.653ac0c5.alex.williamson@redhat.com>
  <20220502185239.GR8364@nvidia.com>
  <BN9PR11MB527609043E7323A032F024AC8CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
  <7b480b96-780b-92f3-1c8c-f2a7e6c6dc53@oracle.com>
-In-Reply-To: <7b480b96-780b-92f3-1c8c-f2a7e6c6dc53@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 27193284-7123-4db4-96d7-08da2e86dc99
-x-ms-traffictypediagnostic: MN2PR11MB3933:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <MN2PR11MB393323ACA1E5769DF7FD4EF28CC29@MN2PR11MB3933.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: x6kxOK1TtgRrOBuVZkXs5L7sNLh5kiqn2Hu+ldfZfaly3wdqRbRXbFlsedWpA3+IG+jT2BVjlPyImhEJR0Hcpf3VpOtz2rqLGHtF6QQGJdNaThGon7Hq+jnlHtc+7AfzBB/xMr+/3TmnPVFzeWpn4HrFDLTMw3ht5C3zV67ZrGB7k482Aqfot34ot5bH1NTTCJ0gqsaFD1fHPFLKptyhQq3ER/o1q0S7tlcQhTh+1TAcd144fIzFrg4LLCfPtq8xljc8Io8f7wNhhBhgg8VDtStNWyFGeLigoAd7irjacnNb7h74y/koPjhZmxtgQzQRkGyUGNYc6MGa706I5ihe6E+7gN/AW4swDkJzZMqtSveWLl+JQuVY+uh+BAof9fosZJZT+05BRS2fhQuN+tweWMxCOs5QqiAWwqwSznb5ZZc9i/Cwz0gf/IO4QbS+CrXUo82juB+RFR/Y1q6Zgl8lKZbNT1sMoNGint2YjJBtc2GMQFwmY+pKUaw0lsG4SSE60UtI78VWXmK7oXGCaDi1EaWgn6FNX514OApKz8DYzB0wsaRrLhykpgQmhXz3g1M8rdJvRSIDtjPxg2GzpiSgbG2ZsxcrCtHPy5PM3fz2Ht/AcFg32+gsT1SJOcZvAOHeIOQ4yiznkksbY+NWMUf9ZYi7exSmcPpFX7t8JvkzWAF5t3P/jdzhX3XK+7hNzIdREOVVLWObWWmpizcDYUh76WcATyQaYhun56onloW6oO8=
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(366004)(76116006)(83380400001)(66556008)(66476007)(66446008)(64756008)(66946007)(33656002)(4326008)(8676002)(7416002)(110136005)(186003)(316002)(54906003)(2906002)(86362001)(26005)(9686003)(55016003)(53546011)(6506007)(71200400001)(5660300002)(82960400001)(7696005)(8936002)(122000001)(508600001)(38100700002)(38070700005)(52536014)(14143004);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?eTVFUG45YWY0aTdzME55dzFqWEZQOXV6Kzl6bWMwK1NIUmxlaU41bldhL3NO?=
- =?utf-8?B?S0hUUWJ0OGtsN2kyNXdNQXVqZ1FIZU0rTXlqWWRtQ2xia0hNcm8xYm9ycXVV?=
- =?utf-8?B?NDl4ZVFIaXdMRGJMM2pvdm9oTENCMm5leEh1ZXp0UHd4TEIzbVkzWnUrK2d4?=
- =?utf-8?B?dHI1S2FTVVpKN012bmZFcWoreGk0b3VQR3pOcTVuRmlxS2NBVXJibW5xZTVm?=
- =?utf-8?B?ZDh0b2FqQU4vT3lFcjFoY25kd05uNVI0ZU1RWDRFcU5qc2hYN2d0UzZOTUhL?=
- =?utf-8?B?NmpTRlk5MGgyZVBmRXhJSS8vR3paQVZKMWJ2QlQ5SzBSN0pCZnRvaHY1TExw?=
- =?utf-8?B?OEFzN2RaSEIzVkR3cTF6ZXVNQllnRWJJZG9IclpqUjY4OWZwMm5oc0RrK2o2?=
- =?utf-8?B?d2ZNZVJ4cFlvSWZlWUZvRzVwWE80Syt4NzhrV0pZM1FDSllYdi9LajJlS2NX?=
- =?utf-8?B?MkxCUVF1bGVlZG5GVElxbmtZNXNBbVg4QWQxMTlTTk5GUWZwdWVXdHFwSTJ2?=
- =?utf-8?B?Z0ZnQXBGMDlYekVhSi9mUDd0bldtSVpPRzJCYmVnRzMzTExiSU5SYUFJNVNK?=
- =?utf-8?B?b1JhaVFNR0dJSFNKbFJVeW9aMXlBeENHTnh6UTNkUjNzQ0MxM2hqYnBCNDVM?=
- =?utf-8?B?NG1IaFJuMFdFNThLT1VTUVR2Y1pweTFCYmtNSjhMK1BLd0s1QjFRandtdkE4?=
- =?utf-8?B?dGZtT3hveGJRNVZQYmVZNmFzOHRlVlJLN2ZPb1pQRGtSTHpiMXlRNmFZS3hG?=
- =?utf-8?B?Q2IyN0R0RlBzQzUrZm5lTnB3VVdoUVMwdUZkek1tKzUyU2lUcVVqckFOSHE3?=
- =?utf-8?B?SnVHdCtxc0pGOGl0NnFLK0RHeDhOOWhvOXVMTktEQlc4MW5nL0M5S0VwMXRW?=
- =?utf-8?B?dExxS2hXWDJqVmxqdk5LbzQ2NWU3cG1vR3c4ZkJTeVN3K05pd1B5NWdzWEhm?=
- =?utf-8?B?d29DQ0E2ZUVxcWt4Rk55cGZYWjVZTVczUGlIMExqSWxEUkw1eFczWVRCTGpM?=
- =?utf-8?B?SUhDMS9ZcHRPK1Awd2g1MUJIb2tOWDF0djVsaEpuWEFXOHkrWFVkUHVta0dW?=
- =?utf-8?B?R3RNUnVNNXNHMVRRUGU1cStRWXNQQlZ4aVJkLzVZeTU0WmJTcGlIR29tSUhl?=
- =?utf-8?B?b0NZUjNnbHNIbU9SeFoxeHlyTHNhNHE3QzQyQzJKTHpoWklsZVowYWc4UndF?=
- =?utf-8?B?MC92cHpjeTAwd0hjbThXdkpDVFBYbkk0Q1dTNDAwWVBmdWxRTytRVmtJM2Q0?=
- =?utf-8?B?Q1VBc2NHVzY5UXdBMTlGWk9MaENJRXYyWE5zVWxuNVdxczVNeCtxZkUyM1Q5?=
- =?utf-8?B?UVpJOXhVYko4amlsZk1US0J6RW5ZblRWTUo4cVVXbVRUSUZQdXNDM2RUWEZ2?=
- =?utf-8?B?RDljQWx6WWF1dDRpQlVJS3puZ3k2SXl4aTNueDNBcEVhNUw2V284dDlzSFVG?=
- =?utf-8?B?Qi9Gd3BXcnArbTZoVGhBT2dzcEltcGFiZzVBNUFTMFA0U2xiN0VxcjZBTGlz?=
- =?utf-8?B?V3g5N2RMWGhYdis4U3J1RDNnWXpOQ3l1WFI0aEJxcW9DbEd1bGt0dHpWbXVt?=
- =?utf-8?B?endFOTgyRFJKcEQxWXM0ZTZmUGJyV1h0Q3Q5Y3RQVU1JMzNMN0RIeFhQQmo4?=
- =?utf-8?B?N05xN1dDbHZHTlZXS3RVMW12QVpBSGlCa2N2aGUwMHlFS21zUUpiMHgxYW9K?=
- =?utf-8?B?QzMwcDhFakVJVzVYeXVNdXo0a1NmcmZSZG1ITzA0VHhRYjBGRXZvck5PUnJy?=
- =?utf-8?B?WGZFaHczdnBNWDZpZUIxNTNYWXJ6RnhJM0JnUWV0bXJHOWdzaGQrWXMwYzEw?=
- =?utf-8?B?M1NlRk9QdVFyZmRySWM0QUJDREtKY1F4Wnh0WlkvT1ZydzNPLzZXVEM4RjBh?=
- =?utf-8?B?OEE1SlBYNDdTc01EeUFrbTlKUUJXejAxdDkzQ0VMY0o1bW1XMXdoUHZ6KzNZ?=
- =?utf-8?B?UThkSUphSlhsNUpGbEFNWVRTZ2hFWWdraEkxaU1FZXpHZ2FMNlhVdHVTNGpP?=
- =?utf-8?B?N1RmUnlHNHJvR1dzbDVjR01RL1k5MlE0TExJSWZUdTBrSEgxNGw0T0JiUnp4?=
- =?utf-8?B?cmF0SllVTUJxWUhmc0dibGlteEI2YUE5OWVMYnNPZllzN0J6K1FXS0hWK1RB?=
- =?utf-8?B?ZjNqRmF0TG5ndE9EOEMrd21MUnpnSlJ5YVN0Vnh6SnZKM1VyWXQvWFVEOWpx?=
- =?utf-8?B?N29IK2psR1hNNmpnWWUzRkpuY3dpUkVzZzBiUDZHQmt6WDZUYUJSREVIdUhT?=
- =?utf-8?B?eGtqL0JNQWN6NzcvdDFXcytKRk02TjlrRE5CR0g3UTlqeTFKeFRWVFk4RUpy?=
- =?utf-8?B?WStFSkRsaVphQUNJWThhcUZIeEdJR3NWT1o5N0U3WUN5V0tMank2dz09?=
+ <BN9PR11MB527662B72E8BD1EDE204C5538CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Joao Martins <joao.m.martins@oracle.com>
+In-Reply-To: <BN9PR11MB527662B72E8BD1EDE204C5538CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: LNXP265CA0038.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:5c::26) To BLAPR10MB4835.namprd10.prod.outlook.com
+ (2603:10b6:208:331::11)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: be18212b-432e-4408-0e73-08da2e8d87ea
+X-MS-TrafficTypeDiagnostic: DM5PR10MB2028:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR10MB2028CF74D8BF6046A9C73D52BBC29@DM5PR10MB2028.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fB8aKVez6TJ/KBXFByH3CpYUZZ6v55CZ5LCEbUS/WYXDyW7FT1N5NIdRbGtlaAZZAw2G/TSN8av3zfvcexlR+3x7oQ0NxBOUvjVLoAyZKWWPkk7XRelKgVHK8MCaiX6xUqyVKU2X1wQ+mD2AMjqRgmNgtj0nZDcajXvBvN8/5acuv8pxVb4ViA/cyC8kpLacEpvdcP5/kLNI7vrd06++kzy03QmfGVl3/Md4FcK5G/nE39sS0gF4pMXzP9kOLa0/ayq+a5qAL8go8pAH8Th295bwjEOWbe3ZG7NAR3RrXoOKUhIVIA0dHpJF9NWtIvofzcUlnETasDgV97K5jHPRtyFKuWzjIYv3o3AK5ZJ+38bBm/xhZ7hLeyd3bdJtDPfbCvnEEpLok0Tmyg9kI3w8nsmWWHIccCr5pKWUJQmNFKJ2Egx9dkqIoD0Vy71kRGq9Ufa3xxxpRPBmzcnj3YLymmiQomcEtbCjrijiE6BgHeX/XOjJJvo3r277Ro/JktH7F0Ct/uAlOJKZ2NAPQr/X3gP7gCDu5sfT8c6BQ1HjlDlF3d5c7lfiaSvB/VLyuyqwuknXIJL5kcaSsjJ2+ZKgTVO0sYlF3Y+teGl8LDt8czq2/v15cU1ESzDXH739cyIVGeTJqdivpqSu3KkganbcLAS/AlMgDrCMAAXgjKW6ZZxoJrOtzh/2WTyZzhBe4bMRNVOEAWNZChZx921RWR44VuRQhP4oUt90cQRnMEfSECQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BLAPR10MB4835.namprd10.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(110136005)(31696002)(8676002)(86362001)(66556008)(4326008)(66476007)(508600001)(66946007)(6486002)(54906003)(316002)(38100700002)(36756003)(2906002)(83380400001)(186003)(2616005)(31686004)(7416002)(8936002)(6512007)(6666004)(5660300002)(6506007)(26005)(53546011)(14143004)(45980500001);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SDEwTDNYWEJtNUgxZTh2U2RYY2xVSXNZdnVkYnMreW1OUlk3QnZ3eWcrT0RX?=
+ =?utf-8?B?OVM3c2d3ZEdIVmRDV1JvQ0ZkczRuVmJGb0Zjc3VyMlpwQXpaLzlheEpXWGNr?=
+ =?utf-8?B?ZVdlQmVkN2FTd1pjVzlsaVlSZXIzbUs5N2dJdFhHcXZWWkU3SXdtQlBqZkt3?=
+ =?utf-8?B?MUFIeURhbHdTcnFMYS9mc3RlMkUxQjI4QmZoNGpnUjBlcnJTT3VTdHZxeE5Y?=
+ =?utf-8?B?TXhoSHhpSGw5S3huZSs4SnRFeUVXTStndkpmLzBwTjZJL2hXMi8vcjF3bUF6?=
+ =?utf-8?B?L0FlSUxBUjNRTFZxWXBTRDlKQ2VuYXYrakhNMHNlVnBuT25IU1ZNdkx1RHZU?=
+ =?utf-8?B?c0pIOXRrNnZlVkRMSTdaaUlMeHdXWVl1OUVKRWhBR3ZBWkE5L2dhTFYzZTJu?=
+ =?utf-8?B?Q3c4TEowMDRaWTRUeDJDbFVyUVNYMEtoWXFUZkdzOFFlR2ZxYjRrR05PYTBV?=
+ =?utf-8?B?MmRqWGdUQW1PUXJ3SG9XN2w1b0prdnJTMStqWng3VGNadjdjV2JMVkFLdU5h?=
+ =?utf-8?B?eUhWSzQ1LzFteEJoRTNJVmRuWG1mYkdPZ1BPRllFYmFzZzRsMkxRN1RGRXIx?=
+ =?utf-8?B?UDNGK3VlMGtTZ0E3ZXRRdzNYUGRBUzVvVFRvanNROXNBUVREMkxCcm1ISGNi?=
+ =?utf-8?B?Z1l2OW94bVppRmdtY3hQRVlXVDcxblVGMHpORVIxWmdQbHZRTndJR1l1a21m?=
+ =?utf-8?B?UXk1UUJ3akROemJkSnVKdnc1Tms0dG9OanZTV01sUjh5ZFhma0xkcmNKTUtX?=
+ =?utf-8?B?WnV3QklLb3ppY2IzVGJkVlhKSWpZNnN1UWZCandxVGwvbFNpa2ZKZ1oxc2tZ?=
+ =?utf-8?B?N3JESWVITUNteXhUNjFTek9NRFNaV3pZRzhVL2FwdUlKTlhJczVuT1BablpY?=
+ =?utf-8?B?OWVUOW5jWGlCYnc1MGxDUTEwTXNBbU84YjZDNnhlYUJZNW03dzBqb1Z4M3p6?=
+ =?utf-8?B?SHFGTE54UmpHZ0NYaUcwczFmZWxDMkw2cjY2dDI4Q1Npc1FkYTRLbDI4bm9W?=
+ =?utf-8?B?UVJaQnBBaEp1bEY5NjNWVDBiMXZYOFovTm9KSTk4eUtUY2xkZkpBYzFtMk03?=
+ =?utf-8?B?RkY5VTEybDhwOWFocXhTT0JvdVdxL3lZTWdPR2FFMXh0RjhzRW81WGZTNTZl?=
+ =?utf-8?B?dTBaL2lLWnN6Yk13YjhrNnIxTmNPRjE4d0dhWHd6d3VialZ1d0xkaDEzRkx5?=
+ =?utf-8?B?ejJsYllrdDkvR0ZhSUpGMnovTjdlT1JXVXYvODFTcVNGaHo0blhvdmVheERl?=
+ =?utf-8?B?OW9KMUtVd0xDOXplT1lMemtpcG9VUGpGTGhjTzAzY3VpMEdoejBUZDVSSnVV?=
+ =?utf-8?B?dW5MY1pRbllLaGlOek1MeWxvV3pPeXZXY3Qvd0lheHdkdmk3dXA4bU40LzlO?=
+ =?utf-8?B?V0hoZ3N6dTVCTzFyOW84WDd0YXJXNUIzQWlmZkRVRk9XNTlmT3FFd0N0VG9p?=
+ =?utf-8?B?S0V1V0NUbWkrYUViWnZVbUpBWDFabEtEcU1NWUZTR1ZZanVmcmluWTh4Mjdm?=
+ =?utf-8?B?c2tnWXZwbTY4RjN4YWJSeG5CYmliUElGS2d4L1gvWXNXdGdQZEVTb1dtNHky?=
+ =?utf-8?B?Tm54aEFRbG1CZ1JHR0IwV21qK3pzY1FtaWdncDcwbUd2RVFSclpEdisya2o5?=
+ =?utf-8?B?SmtSMUtGTUpBRHZnK0l0UjBEM3RobmY5N1EyeXdNbDhaNGhvSjVhYVF3TGNz?=
+ =?utf-8?B?VW9wRnlwNGlWd0VQVFM2MkN4Y004dUlUU1ZOWS9yWlZNOVBHN1pMM1VHQmdU?=
+ =?utf-8?B?OGNnVzJpOGxiSnlNVkd1Q1ExSG44c1JLRUJTazNyZHRHR3FjL0VsZUdJeHBC?=
+ =?utf-8?B?Sm5BWTJtcGJpWGRVRDFuYXhPY1J0V0lYT1d4VFhKK1MxNDk1UkFrVW4wR1RS?=
+ =?utf-8?B?alZ6S2lIdHFLd2dyQk9RSHMxdGVkUmlqLzd6bHEwR04zdGt3aWpMdzVZTG9L?=
+ =?utf-8?B?ek9zdSt4WThJMkp3aytYWHU5OWJBK1hvVyswd3R5M29MaEFUdUJCcVJkZUlz?=
+ =?utf-8?B?WWhCdGNxRTV3c3gxdUFNUEhKSWxTSEhXb0FHbUhoTGtIMzhBUjZuKzJRejF5?=
+ =?utf-8?B?blFUSnhpSHZKNjBpQUFGZXNWTjNsUTBZcGpsQkVpL25EVjU4VVVaRTdISDgw?=
+ =?utf-8?B?Sm8yQnlUendLbDBacjRCenBQeDN1VDVVUTBBVk4yVHVrOFltenUrOEk1dnlL?=
+ =?utf-8?B?N3dKZjdwUEx0NWdrNEg5dmg2SlBBeWFxRGhPRU5ENXROUzZSbG5EMnB3L09q?=
+ =?utf-8?B?TkNodzRBbUtUMWZoa1Nra2luLzlyeGphZjVRVFpXeHpVNSt3MC9abEhsMnBE?=
+ =?utf-8?B?VXFPOWNtS3dFZFFFVGRzNGx3Z1plYUlNbG05Wm03TVdMbmFsaUlOaW5HYkJv?=
+ =?utf-8?Q?Xdm9utPGRZ6+ehxM=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: be18212b-432e-4408-0e73-08da2e8d87ea
+X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB4835.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 27193284-7123-4db4-96d7-08da2e86dc99
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 May 2022 11:03:18.7426 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: rWzbiicw9nQ5VbOCG/lND6IXLO1AE3LHLavg5rglogqJnqJAJuoDOoSuxInv1cDOqxFQ8DU3SG7wGl2C3XY8OQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3933
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2022 11:51:03.4844 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IhEHMHgZ/qyPJNwVuXWrVoZDHprjtkrsqXHcyZqBO4tr8OW7SPhCR30za7ha0ozz/41wEneiigh0BoIl2dyf7TdehA9NwJa4rxtABlss4Og=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB2028
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486, 18.0.858
+ definitions=2022-05-05_05:2022-05-05,
+ 2022-05-05 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
+ mlxscore=0 adultscore=0
+ bulkscore=0 suspectscore=0 mlxlogscore=999 malwarescore=0 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2205050085
+X-Proofpoint-GUID: hP6iqNw_XP7o-Bn0bYq-Ya8GT8AsMGxI
+X-Proofpoint-ORIG-GUID: hP6iqNw_XP7o-Bn0bYq-Ya8GT8AsMGxI
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Yishai Hadas <yishaih@nvidia.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
  Will Deacon <will@kernel.org>, Cornelia Huck <cohuck@redhat.com>,
@@ -195,94 +205,114 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Joao Martins <joao.m.martins@oracle.com>
-> Sent: Thursday, May 5, 2022 6:07 PM
+On 5/5/22 12:03, Tian, Kevin wrote:
+>> From: Joao Martins <joao.m.martins@oracle.com>
+>> Sent: Thursday, May 5, 2022 6:07 PM
+>>
+>> On 5/5/22 08:42, Tian, Kevin wrote:
+>>>> From: Jason Gunthorpe <jgg@nvidia.com>
+>>>> Sent: Tuesday, May 3, 2022 2:53 AM
+>>>>
+>>>> On Mon, May 02, 2022 at 12:11:07PM -0600, Alex Williamson wrote:
+>>>>> On Fri, 29 Apr 2022 05:45:20 +0000
+>>>>> "Tian, Kevin" <kevin.tian@intel.com> wrote:
+>>>>>>> From: Joao Martins <joao.m.martins@oracle.com>
+>>>>>>>  3) Unmapping an IOVA range while returning its dirty bit prior to
+>>>>>>> unmap. This case is specific for non-nested vIOMMU case where an
+>>>>>>> erronous guest (or device) DMAing to an address being unmapped at
+>>>> the
+>>>>>>> same time.
+>>>>>>
+>>>>>> an erroneous attempt like above cannot anticipate which DMAs can
+>>>>>> succeed in that window thus the end behavior is undefined. For an
+>>>>>> undefined behavior nothing will be broken by losing some bits dirtied
+>>>>>> in the window between reading back dirty bits of the range and
+>>>>>> actually calling unmap. From guest p.o.v. all those are black-box
+>>>>>> hardware logic to serve a virtual iotlb invalidation request which just
+>>>>>> cannot be completed in one cycle.
+>>>>>>
+>>>>>> Hence in reality probably this is not required except to meet vfio
+>>>>>> compat requirement. Just in concept returning dirty bits at unmap
+>>>>>> is more accurate.
+>>>>>>
+>>>>>> I'm slightly inclined to abandon it in iommufd uAPI.
+>>>>>
+>>>>> Sorry, I'm not following why an unmap with returned dirty bitmap
+>>>>> operation is specific to a vIOMMU case, or in fact indicative of some
+>>>>> sort of erroneous, racy behavior of guest or device.
+>>>>
+>>>> It is being compared against the alternative which is to explicitly
+>>>> query dirty then do a normal unmap as two system calls and permit a
+>>>> race.
+>>>>
+>>>> The only case with any difference is if the guest is racing DMA with
+>>>> the unmap - in which case it is already indeterminate for the guest if
+>>>> the DMA will be completed or not.
+>>>>
+>>>> eg on the vIOMMU case if the guest races DMA with unmap then we are
+>>>> already fine with throwing away that DMA because that is how the race
+>>>> resolves during non-migration situations, so resovling it as throwing
+>>>> away the DMA during migration is OK too.
+>>>>
+>>>>> We need the flexibility to support memory hot-unplug operations
+>>>>> during migration,
+>>>>
+>>>> I would have thought that hotplug during migration would simply
+>>>> discard all the data - how does it use the dirty bitmap?
+>>>>
+>>>>> This was implemented as a single operation specifically to avoid
+>>>>> races where ongoing access may be available after retrieving a
+>>>>> snapshot of the bitmap.  Thanks,
+>>>>
+>>>> The issue is the cost.
+>>>>
+>>>> On a real iommu elminating the race is expensive as we have to write
+>>>> protect the pages before query dirty, which seems to be an extra IOTLB
+>>>> flush.
+>>>>
+>>>> It is not clear if paying this cost to become atomic is actually
+>>>> something any use case needs.
+>>>>
+>>>> So, I suggest we think about a 3rd op 'write protect and clear
+>>>> dirties' that will be followed by a normal unmap - the extra op will
+>>>> have the extra oveheard and userspace can decide if it wants to pay or
+>>>> not vs the non-atomic read dirties operation. And lets have a use case
+>>>> where this must be atomic before we implement it..
+>>>
+>>> and write-protection also relies on the support of I/O page fault...
+>>>
+>> /I think/ all IOMMUs in this series already support permission/unrecoverable
+>> I/O page faults for a long time IIUC.
+>>
+>> The earlier suggestion was just to discard the I/O page fault after
+>> write-protection happens. fwiw, some IOMMUs also support suppressing
+>> the event notification (like AMD).
 > 
-> On 5/5/22 08:42, Tian, Kevin wrote:
-> >> From: Jason Gunthorpe <jgg@nvidia.com>
-> >> Sent: Tuesday, May 3, 2022 2:53 AM
-> >>
-> >> On Mon, May 02, 2022 at 12:11:07PM -0600, Alex Williamson wrote:
-> >>> On Fri, 29 Apr 2022 05:45:20 +0000
-> >>> "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> >>>>> From: Joao Martins <joao.m.martins@oracle.com>
-> >>>>>  3) Unmapping an IOVA range while returning its dirty bit prior to
-> >>>>> unmap. This case is specific for non-nested vIOMMU case where an
-> >>>>> erronous guest (or device) DMAing to an address being unmapped at
-> >> the
-> >>>>> same time.
-> >>>>
-> >>>> an erroneous attempt like above cannot anticipate which DMAs can
-> >>>> succeed in that window thus the end behavior is undefined. For an
-> >>>> undefined behavior nothing will be broken by losing some bits dirtied
-> >>>> in the window between reading back dirty bits of the range and
-> >>>> actually calling unmap. From guest p.o.v. all those are black-box
-> >>>> hardware logic to serve a virtual iotlb invalidation request which just
-> >>>> cannot be completed in one cycle.
-> >>>>
-> >>>> Hence in reality probably this is not required except to meet vfio
-> >>>> compat requirement. Just in concept returning dirty bits at unmap
-> >>>> is more accurate.
-> >>>>
-> >>>> I'm slightly inclined to abandon it in iommufd uAPI.
-> >>>
-> >>> Sorry, I'm not following why an unmap with returned dirty bitmap
-> >>> operation is specific to a vIOMMU case, or in fact indicative of some
-> >>> sort of erroneous, racy behavior of guest or device.
-> >>
-> >> It is being compared against the alternative which is to explicitly
-> >> query dirty then do a normal unmap as two system calls and permit a
-> >> race.
-> >>
-> >> The only case with any difference is if the guest is racing DMA with
-> >> the unmap - in which case it is already indeterminate for the guest if
-> >> the DMA will be completed or not.
-> >>
-> >> eg on the vIOMMU case if the guest races DMA with unmap then we are
-> >> already fine with throwing away that DMA because that is how the race
-> >> resolves during non-migration situations, so resovling it as throwing
-> >> away the DMA during migration is OK too.
-> >>
-> >>> We need the flexibility to support memory hot-unplug operations
-> >>> during migration,
-> >>
-> >> I would have thought that hotplug during migration would simply
-> >> discard all the data - how does it use the dirty bitmap?
-> >>
-> >>> This was implemented as a single operation specifically to avoid
-> >>> races where ongoing access may be available after retrieving a
-> >>> snapshot of the bitmap.  Thanks,
-> >>
-> >> The issue is the cost.
-> >>
-> >> On a real iommu elminating the race is expensive as we have to write
-> >> protect the pages before query dirty, which seems to be an extra IOTLB
-> >> flush.
-> >>
-> >> It is not clear if paying this cost to become atomic is actually
-> >> something any use case needs.
-> >>
-> >> So, I suggest we think about a 3rd op 'write protect and clear
-> >> dirties' that will be followed by a normal unmap - the extra op will
-> >> have the extra oveheard and userspace can decide if it wants to pay or
-> >> not vs the non-atomic read dirties operation. And lets have a use case
-> >> where this must be atomic before we implement it..
-> >
-> > and write-protection also relies on the support of I/O page fault...
-> >
-> /I think/ all IOMMUs in this series already support permission/unrecoverable
-> I/O page faults for a long time IIUC.
+> iiuc the purpose of 'write-protection' here is to capture in-fly dirty pages
+> in the said race window until unmap and iotlb is invalidated is completed.
 > 
-> The earlier suggestion was just to discard the I/O page fault after
-> write-protection happens. fwiw, some IOMMUs also support suppressing
-> the event notification (like AMD).
+But then we depend on PRS being there on the device, because without it, DMA is
+aborted on the target on a read-only IOVA prior to the page fault, thus the page
+is not going to be dirty anyways.
 
-iiuc the purpose of 'write-protection' here is to capture in-fly dirty pages
-in the said race window until unmap and iotlb is invalidated is completed.
+> *unrecoverable* faults are not expected to be used in a feature path
+> as occurrence of such faults may lead to severe reaction in iommu
+> drivers e.g. completely block DMA from the device causing such faults.
 
-*unrecoverable* faults are not expected to be used in a feature path
-as occurrence of such faults may lead to severe reaction in iommu
-drivers e.g. completely block DMA from the device causing such faults.
+Unless I totally misunderstood ... the later is actually what we were suggesting
+here /in the context of unmaping an GIOVA/(*).
+
+The wrprotect() was there to ensure we get an atomic dirty state of the IOVA range
+afterwards, by blocking DMA (as opposed to sort of mediating DMA). The I/O page fault is
+not supposed to happen unless there's rogue DMA AIUI.
+
+TBH, the same could be said for normal DMA unmap as that does not make any sort of
+guarantees of stopping DMA until the IOTLB flush happens.
+
+(*) Although I am not saying the use-case of wrprotect() and mediating dirty pages you say
+isn't useful. I guess it is in a world where we want support post-copy migration with VFs,
+which would require some form of PRI (via the PF?) of the migratable VF. I was just trying
+to differentiate that this in the context of unmapping an IOVA.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
