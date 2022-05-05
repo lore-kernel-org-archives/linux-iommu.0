@@ -1,132 +1,78 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B6D9AC433F5
-	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 16:15:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E7FC6C433FE
+	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 17:11:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3D3548400D;
-	Thu,  5 May 2022 16:15:51 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 892B7605A0;
+	Thu,  5 May 2022 17:11:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ggCjn6-lhHk2; Thu,  5 May 2022 16:15:50 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id WCmbW06X4JeO; Thu,  5 May 2022 17:11:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 0E22883FAE;
-	Thu,  5 May 2022 16:15:49 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 01CB0605AF;
+	Thu,  5 May 2022 17:11:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D65E5C0039;
-	Thu,  5 May 2022 16:15:49 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1F1BBC002D
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 16:15:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CB9B3C0032;
+	Thu,  5 May 2022 17:11:56 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E8622C002D
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 11:30:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id F33C040412
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 16:15:47 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id CFDAE4014A
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 11:30:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id yfSR7gv_IN05 for <iommu@lists.linux-foundation.org>;
- Thu,  5 May 2022 16:15:47 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam12on20602.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:fe59::602])
- by smtp2.osuosl.org (Postfix) with ESMTPS id EED964026A
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 16:15:46 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TBGyMRnUWmDwCC3MR3ydM0hfNeFVAyhUGDY7C17pudoaQXDZR5ew7ermSYFz9oPv7qCuI26/mK77nuyZuQod5khXwr5gI450PI1CQg9Ch077V8Kx7BC6nkIGzejp8Q/Oc7jeHVqUlzjekbynMM4xYoZmkTINGODjlAxEtPOtgb2GcPF/a5B+65Us5OWZH+4j9ScdlAykHmkxAYXXEzMiSJMC8R0ZLJjMlN80NW1rdfjV/Zc1ekesG1Mcdak2wBFpVAwjb+opMUndNFdMJYBnL6eBiMl4GGo9a6A5riGu+pS9TVloeQavOxXLt67a8r+LhahYA/DowUkFFLj/bMK95g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bRjB7/QihmwXfVs2xdIffjD+I1ze9A2du08ikKwXFN8=;
- b=VuP2JipILGMScchliGqalDbSt4zP2QhmSGnV9R3ylNftEn0FSpr4nn/s1pe2m1m1AdUi4pEgAlNAMgfTiXhajdDAeXJlq0WSPmWA6HcCsls1ofzKxPP2b/ZOjB7i3utcwXx9w8fhcjrka7mims9VNiaP+PhOiM2Z7xmlnU7SRkIUbWbNpYzCGuPCPDikHnUDQ3AXROeeRU+AdGjqySs1T/ziAddLokP0O5FnH0c3i5Yxuyo/g2m1USIIN9HGu/jNBie5sf4BxCBHAi4kDNxdhce+t9+oIp/jrEasSNyI3mZPcOtkovWcKrWEsrH2bQnZzQYHgpZkTHNIyTpm24jRVQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bRjB7/QihmwXfVs2xdIffjD+I1ze9A2du08ikKwXFN8=;
- b=hICbPXM4/dPelzie33OgoOaChzzxcLnHd24yLavCJL+6WmjGrIeMxPKYTGbpd8cTKLUVx2kU68uNy7arxSbGUhSU77yHVfgGfiv2US/gOX3nSlIg9iAPn9xBxFhECvPcqrr/Vs3QZC0RyJg9M8lYEqkY5U5TYNKvpRExDREF8a4GYKxFb+zpO5aAezuXjT64euc/Xeh1Un9aG7Ex3l2HgbHfhQEukNfzeUeoRceZWDc3cs06t+KwH7Xso93xwgO1y+/R0sH8Cg2m1+RTOC0Z936fL45yhGgU7QfS0ROxDcv++y+esKJZ5xH5TVyyOvThfWDRnCk144DlgHCHnqhT+Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by CY4PR1201MB0053.namprd12.prod.outlook.com (2603:10b6:910:23::22)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.15; Thu, 5 May
- 2022 16:15:42 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ec2d:9167:1b47:2db2%6]) with mapi id 15.20.5206.027; Thu, 5 May 2022
- 16:15:42 +0000
-To: Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux-foundation.org,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Subject: [PATCH] iommu: Reorganize __iommu_attach_group()
-Date: Thu,  5 May 2022 13:15:40 -0300
-Message-Id: <0-v1-9bdc3d71e81c+494-iommu_attach_group_jgg@nvidia.com>
-X-ClientProxiedBy: BL0PR0102CA0070.prod.exchangelabs.com
- (2603:10b6:208:25::47) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+ with ESMTP id ckHTo6G13qz5 for <iommu@lists.linux-foundation.org>;
+ Thu,  5 May 2022 11:30:55 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id BFB0A40144
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 11:30:54 +0000 (UTC)
+Received: from kwepemi100016.china.huawei.com (unknown [172.30.72.53])
+ by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KvBLd0lrpzfbGq;
+ Thu,  5 May 2022 19:29:45 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ kwepemi100016.china.huawei.com (7.221.188.123) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 5 May 2022 19:30:49 +0800
+Received: from [10.67.101.67] (10.67.101.67) by kwepemm600003.china.huawei.com
+ (7.193.23.202) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 5 May
+ 2022 19:30:48 +0800
+Subject: Re: [PATCH v7 5/7] perf tool: Add support for HiSilicon PCIe Tune and
+ Trace device driver
+To: Leo Yan <leo.yan@linaro.org>, Yicong Yang <yangyicong@hisilicon.com>
+References: <20220407125841.3678-1-yangyicong@hisilicon.com>
+ <20220407125841.3678-6-yangyicong@hisilicon.com>
+ <20220430073411.GA657977@leoy-ThinkPad-X240s>
+Message-ID: <602845da-ba50-fe28-7341-76f1066ab725@huawei.com>
+Date: Thu, 5 May 2022 19:30:48 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: db2a005b-3cbe-4991-6236-08da2eb2802d
-X-MS-TrafficTypeDiagnostic: CY4PR1201MB0053:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR1201MB00538ED4A2EAA64DDBAEAB86C2C29@CY4PR1201MB0053.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hk5FlTCFHWj5FkCIweu51EgzgCwF+6NeEKsWKnbqF2fEeIZuT7RQv4JOYvKsVDKZo/6hToMDIQeJsCPcYJHUvQS2aCoInZoeNx4ozf8/AYvEjVFrxByipvAHTe8+rwQWEDk5HPZRQpwX2YHObYmPlugML7d2MAmiYBcW3Vs6Ebbwfb+uPcjvMsUkmA/IofnjEithhF1KXtX7VYnE/2LH45hD1LZe3mWMjtW26AigEhbzC29y+yLnps/9UiBWUQzlsdEA2QQIC94fY2R+C/lJFNEEvwM6/9phLX2kJrIsrWRdH+MnvjbmKmcGfdraR8Y13BveWiO0BEoZ9mK9p8vPV/G5tG3wF3sfk6RdQOK/CnvggT1/LyxH8xMbNbdpo+dhizCchBAMu2AsHY+bF4kBw1c5PbN5SdY8kpFDJd488DN3tJ6IKE74eCKXKKL/YmwP+iyDVX9Kapcpaeb103JS3zIH/gjGQcQpEawKDkHO17x/nqfhleGvOCHTq1cOVe55n4PVB+TrZ86p2YUTMeBlN3bLj/6CIU//hBXKyJXrF8bT3O8xvFyGZQ5mVjUQqPoMUXNeCSSShpWlUIu71KPecQKmjb7TKhJSbwcKOXSUqIpvaxcKVX0NsgHl8i/uZvQtvXBrM67f01nA+l2dgzDTOLzOG6RyrEuqF5phML0Q7+HM3Po+UAYv+FyCz429e+G/
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(5660300002)(8936002)(186003)(508600001)(2616005)(36756003)(6486002)(316002)(83380400001)(66476007)(38100700002)(66946007)(66556008)(2906002)(86362001)(26005)(110136005)(6506007)(8676002)(6512007)(4326008)(4216001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?N2Lsi+sWkhpNdFydG89yZZET06mdPG9PxTJ3kal2vUIYmoGH9qF01shndHZA?=
- =?us-ascii?Q?WWJEXs3SYF5TyPUaTg5kUAyeiLJHBOE4y6i3kCNANJDhKdPWQbQxj1KvqxKi?=
- =?us-ascii?Q?5aOFAilUJrjk0dIdCihCVrzNRbMgVOsibg3puQZpRQZeDMWo2AcNXkgDmNru?=
- =?us-ascii?Q?wiHWvjqlYTBeC4mnNja/l9nxmu/YXAAMtQG0wN4uG6clMJnOEY8hEqZ3J6rO?=
- =?us-ascii?Q?dxlsoi6xSBg76704OImyTYPEMEnaY66DeugTaojr31iupAms21h3uZWnXIka?=
- =?us-ascii?Q?T+LQgRC2bChahnfIPVjsMYwAX03mcV6F8pvvbDV6QVER08B1sXkG3J5+WdwA?=
- =?us-ascii?Q?7CpOl2XqduPrg/XG12Sra1O9XPMO9W5BifNHceTxgnOxILYnBVfox+9VoxU1?=
- =?us-ascii?Q?EU8/ruprBoEYWgWExN5Id64UomX6WM7JzLPnNlmJ5v1i4Eu5ezNyZaUIshY7?=
- =?us-ascii?Q?Ib1jXri/QL7KhcwKPLQjPwUSiI+agbgCKWUdye2iIvD+ls0fyX7UqodG00nv?=
- =?us-ascii?Q?MRDEOb9F8/F9u6pxYhd/t+Jh7sK21ODqLg7JrIDnil3zYnbloZjIWwr9KeCT?=
- =?us-ascii?Q?BM9MWwtu6sRLdCxdlfrgLQ29sBgO3u0DXw0TqJosYxMfuOncYqtnKhJ/U4ti?=
- =?us-ascii?Q?OrBsIahvjKYkar9a5RCZ1FkXiYmGnyg2fbnRzxCPYGfYHU4jG1N8u55QvTjG?=
- =?us-ascii?Q?RGLg6CRBb/sgIeGhXQxj2H90+DYEhBqLlBp1PAAwWq0b98AB9LEtr5AgGc6B?=
- =?us-ascii?Q?JSPAZswa2bLyX2MfnXaN2fcY+ukzSyPoB2VflwsDp8forKgNfwB9u03/WagD?=
- =?us-ascii?Q?gW4z91NL+8yJ4NH1+rcUB1rSs+55VaaayPho34MQQp0Sfx9xvsxnSCNDEobz?=
- =?us-ascii?Q?PoMmOTP0VxUaDQzMqifUwK2e6c+VvE1Pcikmj0vWlJppFtlARe4lNx3KXmsS?=
- =?us-ascii?Q?BzVxGiAFOS1HqEHsR+DXsG0OppVI8kmcaa0vEq3ywd648QdZKFhYvnVJtxHp?=
- =?us-ascii?Q?V2yDzdWhDS4+FP4upX0XVDhhZsmyGFehqP0id7oR0oPDSvzSh24lj5FmD8CQ?=
- =?us-ascii?Q?0PsZ0bTf32EazS54Hd6mw4Mi3zvE6pSJCl2xEWH7ymQwwjmDed6sfmL7pUIB?=
- =?us-ascii?Q?1KmpWuKvjlDNrBu/FZ2LAHNJVZBMsfFfquM9K4lkgYZAka2wabqrwnmBnZ7A?=
- =?us-ascii?Q?ZkUPbooPECKDufOHr7d+tXXbOci+b3dRejcJUjbYBafWh1CQF+A9rlr5GeRc?=
- =?us-ascii?Q?ciWoWyt3SCz5tMKpq6t+varuxWnSrcPJKi5E+z127Bl1XxFf+EPLENK8M0y6?=
- =?us-ascii?Q?3azYQrxiqgl/U1f17VYMgfRRxnzG5LwKK0RhFqRYvadm2xstvNeXIOt/b8G8?=
- =?us-ascii?Q?9ZrWYHVnwSYtvIA1Tqog4xYcqz15Y304QyAJYTlXSwtfY/qGwBeSJ3VHM8tf?=
- =?us-ascii?Q?zPj2FwvnN1CQAJtgnYq1Ow/aWCh8icnTg3VScqSyEf2fL0RUPV6/903ToG7a?=
- =?us-ascii?Q?sqCdjB/V9Fs2VGYPK8RRNCSumpcMzELQnqg3Tp3sDmf7N8KftF2sbx2wpcZN?=
- =?us-ascii?Q?MVLe1NsYo4TNIONSZNH7Rahs0wBsG9CFyq+mIpg+3fa7ZAhmv9iptdueRsWN?=
- =?us-ascii?Q?YTx3AlN9l1aLQTEMmksFk7vg0j6hNacU87qWkLDLwWliP40Gopg7LuQetNqw?=
- =?us-ascii?Q?5Jkpcgp4bK3PUrB/wKh87WvdmS8jHzirLnyOuCd4OST8ufxslyhpdEhgwsPf?=
- =?us-ascii?Q?FWQjX0TCbQ=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: db2a005b-3cbe-4991-6236-08da2eb2802d
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2022 16:15:41.9297 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mkI23MMjKv80eHeGHZRkvVcf/r1ZUa/Fia2UhT55Jx/oQY5Ebjd2v+/pCvl2zMf5
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB0053
-Cc: "Tian, Kevin" <kevin.tian@intel.com>
+In-Reply-To: <20220430073411.GA657977@leoy-ThinkPad-X240s>
+Content-Language: en-GB
+X-Originating-IP: [10.67.101.67]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
+X-Mailman-Approved-At: Thu, 05 May 2022 17:11:56 +0000
+Cc: mark.rutland@arm.com, prime.zeng@huawei.com,
+ alexander.shishkin@linux.intel.com, linux-pci@vger.kernel.org,
+ linuxarm@huawei.com, will@kernel.org, daniel.thompson@linaro.org,
+ peterz@infradead.org, mingo@redhat.com, helgaas@kernel.org,
+ mike.leach@linaro.org, suzuki.poulose@arm.com, coresight@lists.linaro.org,
+ acme@kernel.org, zhangshaokun@hisilicon.com,
+ linux-arm-kernel@lists.infradead.org, mathieu.poirier@linaro.org,
+ gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+ linux-perf-users@vger.kernel.org, iommu@lists.linux-foundation.org,
+ robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -139,125 +85,534 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
+From: "liuqi \(BA\) via iommu" <iommu@lists.linux-foundation.org>
+Reply-To: "liuqi \(BA\)" <liuqi115@huawei.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Call iommu_group_do_attach_device() only from
-__iommu_group_attach_domain() which should be used to attach any domain to
-the group.
 
-The only unique thing __iommu_attach_group() does is to check if the group
-is already attached to some caller specified group. Put this test into
-__iommu_group_is_core_domain(), matching the
-__iommu_group_attach_core_domain() nomenclature.
+Hi Leo,
 
-Change the two callers to directly call __iommu_group_attach_domain() and
-test __iommu_group_is_core_domain().
+Thanks for your review, some replies below.
 
-iommu_attach_device() should trigger a WARN_ON if the group is attached as
-the caller is using the function wrong.
+On 2022/4/30 15:35, Leo Yan wrote:
+> On Thu, Apr 07, 2022 at 08:58:39PM +0800, Yicong Yang via iommu wrote:
+>> From: Qi Liu <liuqi115@huawei.com>
+>>
+>> 'perf record' and 'perf report --dump-raw-trace' supported in this
+>> patch.
+>>
+>> Example usage:
+>>
+>> Output will contain raw PTT data and its textual representation, such
+>> as:
+>>
+>> 0 0 0x5810 [0x30]: PERF_RECORD_AUXTRACE size: 0x400000  offset: 0
+>> ref: 0xa5d50c725  idx: 0  tid: -1  cpu: 0
+>> .
+>> . ... HISI PTT data: size 4194304 bytes
+>> .  00000000: 00 00 00 00                                 Prefix
+>> .  00000004: 08 20 00 60                                 Header DW0
+>> .  00000008: ff 02 00 01                                 Header DW1
+>> .  0000000c: 20 08 00 00                                 Header DW2
+>> .  00000010: 10 e7 44 ab                                 Header DW3
+>> .  00000014: 2a a8 1e 01                                 Time
+>> .  00000020: 00 00 00 00                                 Prefix
+>> .  00000024: 01 00 00 60                                 Header DW0
+>> .  00000028: 0f 1e 00 01                                 Header DW1
+>> .  0000002c: 04 00 00 00                                 Header DW2
+>> .  00000030: 40 00 81 02                                 Header DW3
+>> .  00000034: ee 02 00 00                                 Time
+>> ....
+>>
+>> Signed-off-by: Qi Liu <liuqi115@huawei.com>
+>> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+>> ---
+>>   tools/perf/arch/arm/util/auxtrace.c           |  76 +++++-
+>>   tools/perf/arch/arm/util/pmu.c                |   3 +
+>>   tools/perf/arch/arm64/util/Build              |   2 +-
+>>   tools/perf/arch/arm64/util/hisi_ptt.c         | 195 ++++++++++++++++
+>>   tools/perf/util/Build                         |   2 +
+>>   tools/perf/util/auxtrace.c                    |   4 +
+>>   tools/perf/util/auxtrace.h                    |   1 +
+>>   tools/perf/util/hisi-ptt-decoder/Build        |   1 +
+>>   .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.c   | 170 ++++++++++++++
+>>   .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.h   |  28 +++
+>>   tools/perf/util/hisi_ptt.c                    | 218 ++++++++++++++++++
+>>   tools/perf/util/hisi_ptt.h                    |  28 +++
+> 
+> It's good to divide the big patch into smaller patches, e.g. one patch
+> is to add PTT auxtrace (so mainly for perf record), and the second
+> patch is to add PTT decoder for perf decoding.
+> 
+got it, I'll do this, thanks.
 
-Suggested-by: "Tian, Kevin" <kevin.tian@intel.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/iommu.c | 42 +++++++++++++++++++-----------------------
- 1 file changed, 19 insertions(+), 23 deletions(-)
+>>   12 files changed, 724 insertions(+), 4 deletions(-)
+>>   create mode 100644 tools/perf/arch/arm64/util/hisi_ptt.c
+>>   create mode 100644 tools/perf/util/hisi-ptt-decoder/Build
+>>   create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.c
+>>   create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.h
+>>   create mode 100644 tools/perf/util/hisi_ptt.c
+>>   create mode 100644 tools/perf/util/hisi_ptt.h
+>>
+>> diff --git a/tools/perf/arch/arm/util/auxtrace.c b/tools/perf/arch/arm/util/auxtrace.c
+>> index 5fc6a2a3dbc5..393f5757c039 100644
+>> --- a/tools/perf/arch/arm/util/auxtrace.c
+>> +++ b/tools/perf/arch/arm/util/auxtrace.c
+>> @@ -4,9 +4,11 @@
+>>    * Author: Mathieu Poirier <mathieu.poirier@linaro.org>
+>>    */
+[...]
+>> +
+>> +	rewinddir(dir);
+>> +	while ((dent = readdir(dir))) {
+>> +		if (strstr(dent->d_name, HISI_PTT_PMU_NAME) && idx < (*nr_ptts)) {
+>> +			hisi_ptt_pmus[idx] = perf_pmu__find(dent->d_name);
+>> +			if (hisi_ptt_pmus[idx]) {
+>> +				pr_debug2("%s %d: hisi_ptt_pmu %d type %d name %s\n",
+>> +					__func__, __LINE__, idx,
+>> +					hisi_ptt_pmus[idx]->type,
+>> +					hisi_ptt_pmus[idx]->name);
+>> +					idx++;
+> 
+> Indentation for "idx++" is not right.
+will fix this, thanks.
 
-This goes after "iommu: iommu_group_claim_dma_owner() must always assign a
-domain" and simplifies some of the remaining duplication.
+> 
+>> +			}
+>> +
+> 
+> Redundant new line.
+will fix this, thanks.
+> 
+>> +		}
+>> +	}
+>> +
+>> +out:
+>> +	closedir(dir);
+>> +	return hisi_ptt_pmus;
+>> +}
+>> +
+>>   struct auxtrace_record
+>>   *auxtrace_record__init(struct evlist *evlist, int *err)
+>>   {
+>> @@ -57,8 +112,12 @@ struct auxtrace_record
+>>   	struct evsel *evsel;
+>>   	bool found_etm = false;
+>>   	struct perf_pmu *found_spe = NULL;
+>> +	struct perf_pmu *found_ptt = NULL;
+>>   	struct perf_pmu **arm_spe_pmus = NULL;
+>> +	struct perf_pmu **hisi_ptt_pmus = NULL;
+>> +
+>>   	int nr_spes = 0;
+>> +	int nr_ptts = 0;
+>>   	int i = 0;
+>>   
+>>   	if (!evlist)
+>> @@ -66,13 +125,14 @@ struct auxtrace_record
+>>   
+>>   	cs_etm_pmu = perf_pmu__find(CORESIGHT_ETM_PMU_NAME);
+>>   	arm_spe_pmus = find_all_arm_spe_pmus(&nr_spes, err);
+>> +	hisi_ptt_pmus = find_all_hisi_ptt_pmus(&nr_ptts, err);
+>>   
+>>   	evlist__for_each_entry(evlist, evsel) {
+>>   		if (cs_etm_pmu &&
+>>   		    evsel->core.attr.type == cs_etm_pmu->type)
+>>   			found_etm = true;
+>>   
+>> -		if (!nr_spes || found_spe)
+>> +		if ((!nr_spes || found_spe) && (!nr_ptts || found_ptt))
+>>   			continue;
+>>   
+>>   		for (i = 0; i < nr_spes; i++) {
+>> @@ -81,11 +141,18 @@ struct auxtrace_record
+>>   				break;
+>>   			}
+>>   		}
+>> +
+>> +		for (i = 0; i < nr_ptts; i++) {
+>> +			if (evsel->core.attr.type == hisi_ptt_pmus[i]->type) {
+>> +				found_ptt = hisi_ptt_pmus[i];
+>> +				break;
+>> +			}
+>> +		}
+>>   	}
+> 
+> For the loop of evlist__for_each_entry, it's good to refactor the
+> event list iteration, we can refine code like below:
+> 
+> static struct perf_pmu *find_pmu_for_event(struct perf_pmu **pmus,
+>                                             int pmu_nr, struct evsel *evsel)
+> {
+>          int i;
+>          struct perf_pmu *found = NULL;
+> 
+>          if (!pmus)
+>                  return NULL;
+> 
+>          for (i = 0; i < pmu_nr; i++) {
+>                  if (evsel->core.attr.type == pmus[i]->type) {
+>                          found = pmus[i];
+>                          break;
+>                  }
+>          }
+> 
+>          return found;
+> }
+> 
+> struct auxtrace_record
+> *auxtrace_record__init(struct evlist *evlist, int *err)
+> {
+>      ...
+> 
+>      evlist__for_each_entry(evlist, evsel) {
+>              if (cs_etm_pmu && !found_etm)
+> 		    found_etm = find_pmu_for_event(&cs_etm_pmu, 1, evsel);
+> 
+>              if (arm_spe_pmus && !found_spe)
+> 		    found_etm = find_pmu_for_event(arm_spe_pmus, nr_spe, evsel);
+> 
+>              if (hisi_ptt_pmus && !found_ptt)
+> 		    found_ptt = find_pmu_for_event(hisi_ptt_pmus, nr_ptt, evsel);
+>      }
+> 
+>      ...
+> 
+> Please use a separate patch for the refactoring, and then based on it
+> you could add PTT PMU related finding code.
+> 
+> }
+> 
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index c1bdec807ea381..09d00be887f924 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -81,9 +81,10 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
- 						 unsigned type);
- static int __iommu_attach_device(struct iommu_domain *domain,
- 				 struct device *dev);
--static int __iommu_attach_group(struct iommu_domain *domain,
--				struct iommu_group *group);
-+static int __iommu_group_attach_domain(struct iommu_group *group,
-+				       struct iommu_domain *new_domain);
- static void __iommu_group_attach_core_domain(struct iommu_group *group);
-+static bool __iommu_group_is_core_domain(struct iommu_group *group);
- static int iommu_create_device_direct_mappings(struct iommu_group *group,
- 					       struct device *dev);
- static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
-@@ -1938,10 +1939,11 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
- 	 */
- 	mutex_lock(&group->mutex);
- 	ret = -EINVAL;
--	if (iommu_group_device_count(group) != 1)
-+	if (iommu_group_device_count(group) != 1 ||
-+	    WARN_ON(!__iommu_group_is_core_domain(group)))
- 		goto out_unlock;
- 
--	ret = __iommu_attach_group(domain, group);
-+	ret = __iommu_group_attach_domain(group, domain);
- 
- out_unlock:
- 	mutex_unlock(&group->mutex);
-@@ -2032,31 +2034,19 @@ static int iommu_group_do_attach_device(struct device *dev, void *data)
- 	return __iommu_attach_device(domain, dev);
- }
- 
--static int __iommu_attach_group(struct iommu_domain *domain,
--				struct iommu_group *group)
--{
--	int ret;
--
--	if (group->domain && group->domain != group->default_domain &&
--	    group->domain != group->blocking_domain)
--		return -EBUSY;
--
--	ret = __iommu_group_for_each_dev(group, domain,
--					 iommu_group_do_attach_device);
--	if (ret == 0)
--		group->domain = domain;
--
--	return ret;
--}
--
- int iommu_attach_group(struct iommu_domain *domain, struct iommu_group *group)
- {
- 	int ret;
- 
- 	mutex_lock(&group->mutex);
--	ret = __iommu_attach_group(domain, group);
--	mutex_unlock(&group->mutex);
-+	if (!__iommu_group_is_core_domain(group)) {
-+		ret = -EBUSY;
-+		goto out_unlock;
-+	}
- 
-+	ret = __iommu_group_attach_domain(group, domain);
-+out_unlock:
-+	mutex_unlock(&group->mutex);
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(iommu_attach_group);
-@@ -2110,6 +2100,12 @@ static int __iommu_group_attach_domain(struct iommu_group *group,
- 	return 0;
- }
- 
-+static bool __iommu_group_is_core_domain(struct iommu_group *group)
-+{
-+	return !group->domain || group->domain == group->default_domain ||
-+	       group->domain == group->blocking_domain;
-+}
-+
- /*
-  * Put the group's domain back to the appropriate core-owned domain - either the
-  * standard kernel-mode DMA configuration or an all-DMA-blocked domain.
+got it, will do this refactoring in next version, thanks.
+> 
+>>   	free(arm_spe_pmus);
+> 
+> Add:
+> 
+>       free(hisi_ptt_pmus);
+> 
+> to avoid memory leaking.
+> 
 
-base-commit: f9169ee95787fe691287eeed1a1c269ea72c8fb4
--- 
-2.36.0
+will fix it, thanks.
 
+>>   
+>> -	if (found_etm && found_spe) {
+>> -		pr_err("Concurrent ARM Coresight ETM and SPE operation not currently supported\n");
+>> +	if (found_etm && found_spe && found_ptt) {
+> 
+> This logic is not right; actually we want the logic is:
+> 
+>          int auxtrace_event_cnt = 0;
+>          if (found_etm)
+>                  auxtrace_event_cnt++;
+>          if (found_spe)
+>                  auxtrace_event_cnt++;
+>          if (found_ptt)
+>                  auxtrace_event_cnt++;
+> 
+>          if (auxtrace_event_cnt > 1) {
+>                  pr_err("Concurrent AUX trace operation isn't supported: found etm %d spe %d ptt %d\n",
+>                         found_etm, found_spe, found_ptt);
+>                  *err = -EOPNOTSUPP;
+>                  return NULL;
+>          }
+> 
+got it, will fix it, thanks.
+>> +		pr_err("Concurrent ARM Coresight ETM ,SPE and HiSilicon PCIe Trace operation not currently supported\n");
+>>   		*err = -EOPNOTSUPP;
+>>   		return NULL;
+>>   	}
+>> @@ -96,6 +163,9 @@ struct auxtrace_record
+>>   #if defined(__aarch64__)
+>>   	if (found_spe)
+>>   		return arm_spe_recording_init(err, found_spe);
+>> +
+>> +	if (found_ptt)
+>> +		return hisi_ptt_recording_init(err, found_ptt);
+>>   #endif
+>>   
+>>   	/*
+>> diff --git a/tools/perf/arch/arm/util/pmu.c b/tools/perf/arch/arm/util/pmu.c
+>> index b8b23b9dc598..89a3cedb4557 100644
+>> --- a/tools/perf/arch/arm/util/pmu.c
+>> +++ b/tools/perf/arch/arm/util/pmu.c
+>> @@ -10,6 +10,7 @@
+>>   #include <linux/string.h>
+>>   
+>>   #include "arm-spe.h"
+>> +#include "hisi_ptt.h"
+>>   #include "../../../util/pmu.h"
+>>   
+>>   struct perf_event_attr
+>> @@ -22,6 +23,8 @@ struct perf_event_attr
+>>   #if defined(__aarch64__)
+>>   	} else if (strstarts(pmu->name, ARM_SPE_PMU_NAME)) {
+>>   		return arm_spe_pmu_default_config(pmu);
+>> +	} else if (strstarts(pmu->name, HISI_PTT_PMU_NAME)) {
+>> +		pmu->selectable = true;
+>>   #endif
+>>   	}
+>>   
+>> diff --git a/tools/perf/arch/arm64/util/Build b/tools/perf/arch/arm64/util/Build
+>> index 9fcb4e68add9..8b7fd1dc9f37 100644
+>> --- a/tools/perf/arch/arm64/util/Build
+>> +++ b/tools/perf/arch/arm64/util/Build
+>> @@ -11,4 +11,4 @@ perf-$(CONFIG_LIBDW_DWARF_UNWIND) += unwind-libdw.o
+[...]
+>> +
+>> +#define DEFAULT_PAGE_SIZE 1024
+> 
+> It's a bit confusion to define PAGE_SIZE as 1024.  Here can simply
+> define:
+> 
+> #define KiB(x) ((x) * 1024)
+> 
+>> +#define KiB(x) ((x) * DEFAULT_PAGE_SIZE)
+>> +#define MiB(x) ((x) * DEFAULT_PAGE_SIZE * DEFAULT_PAGE_SIZE)
+> 
+> 
+ok, I'll change it, thanks.
+>> +
+>> +struct hisi_ptt_recording {
+>> +	struct auxtrace_record	itr;
+>> +	struct perf_pmu *hisi_ptt_pmu;
+>> +	struct evlist *evlist;
+>> +};
+>> +
+[...]
+>> +}
+>> +
+>> +static int hisi_ptt_recording_options(struct auxtrace_record *itr,
+>> +				      struct evlist *evlist,
+>> +				      struct record_opts *opts)
+>> +{
+>> +	struct hisi_ptt_recording *pttr =
+>> +			container_of(itr, struct hisi_ptt_recording, itr);
+>> +	struct perf_pmu *hisi_ptt_pmu = pttr->hisi_ptt_pmu;
+>> +	struct perf_cpu_map *cpus = evlist->core.cpus;
+>> +	struct evsel *evsel, *hisi_ptt_evsel = NULL;
+>> +	struct evsel *tracking_evsel;
+>> +	int err;
+>> +
+>> +	pttr->evlist = evlist;
+>> +	evlist__for_each_entry(evlist, evsel) {
+>> +		if (evsel->core.attr.type == hisi_ptt_pmu->type) {
+>> +			if (hisi_ptt_evsel) {
+>> +				pr_err("There may be only one " HISI_PTT_PMU_NAME "x event\n");
+>> +				return -EINVAL;
+>> +			}
+>> +			evsel->core.attr.freq = 0;
+>> +			evsel->core.attr.sample_period = 1;
+>> +			hisi_ptt_evsel = evsel;
+>> +			opts->full_auxtrace = true;
+>> +		}
+>> +	}
+>> +
+>> +	err = hisi_ptt_set_auxtrace_mmap_page(opts);
+>> +	if (err)
+>> +		return err;
+>> +	/*
+>> +	 * To obtain the auxtrace buffer file descriptor, the auxtrace event
+>> +	 * must come first.
+>> +	 */
+>> +	evlist__to_front(evlist, hisi_ptt_evsel);
+>> +
+>> +	if (!perf_cpu_map__empty(cpus)) {
+>> +		evsel__set_sample_bit(hisi_ptt_evsel, TIME);
+>> +		evsel__set_sample_bit(hisi_ptt_evsel, CPU);
+> 
+> It needs to set CPU bit in sample type for per-cpu mmaps.  IIUC, PTT
+> is only used for system wide tracing?  If so, you don't need set CPU
+> bit.
+>
+ok, I'll delete set CPU bit.
+
+> To be honest, I am also confused set the sample bits.  Actually, there
+> have two different sample types for AUX trace, one is here set the
+> sample type for AUX event, and in PTT decoding code it needs to set
+> sample type for synthesized samples.
+
+does "synthesized samples" mean something like spe pmu in perf report? 
+such as consolidate multiple pieces of information into one event named 
+"llc-miss" "remote-access"?
+
+PTT doesn't need to do this, we just parse message in perf.data and show it.
+
+> 
+>> +	}
+>> +
+>> +	/* Add dummy event to keep tracking */
+>> +	err = parse_events(evlist, "dummy:u", NULL);
+>> +	if (err)
+>> +		return err;
+>> +
+>> +	tracking_evsel = evlist__last(evlist);
+>> +	evlist__set_tracking_event(evlist, tracking_evsel);
+>> +
+>> +	tracking_evsel->core.attr.freq = 0;
+>> +	tracking_evsel->core.attr.sample_period = 1;
+>> +
+>> +	if (!perf_cpu_map__empty(cpus))
+>> +		evsel__set_sample_bit(tracking_evsel, TIME);
+>> +
+>> +	return 0;
+
+[...]
+>> +
+>> +enum hisi_ptt_8dw_pkt_field_type {
+>> +	HISI_PTT_8DW_PREFIX,
+>> +	HISI_PTT_8DW_HEAD0,
+>> +	HISI_PTT_8DW_HEAD1,
+>> +	HISI_PTT_8DW_HEAD2,
+>> +	HISI_PTT_8DW_HEAD3,
+>> +	HISI_PTT_8DW_TIME,
+>> +	HISI_PTT_8DW_TYPE_MAX
+>> +};
+>> +
+>> +enum hisi_ptt_4dw_pkt_field_type {
+>> +	HISI_PTT_4DW_HEAD1,
+>> +	HISI_PTT_4DW_HEAD2,
+>> +	HISI_PTT_4DW_HEAD3,
+>> +	HISI_PTT_4DW_TYPE_MAX
+>> +};
+>> +
+>> +static const char * const hisi_ptt_8dw_pkt_field_name[] = {
+>> +	[HISI_PTT_8DW_PREFIX]	= "Prefix",
+>> +	[HISI_PTT_8DW_HEAD0]	= "Header DW0",
+>> +	[HISI_PTT_8DW_HEAD1]	= "Header DW1",
+>> +	[HISI_PTT_8DW_HEAD2]	= "Header DW2",
+>> +	[HISI_PTT_8DW_HEAD3]	= "Header DW3",
+>> +	[HISI_PTT_8DW_TIME]	= "Time",
+>> +};
+>> +
+>> +static const char * const hisi_ptt_4dw_pkt_field_name[] = {
+>> +	[HISI_PTT_4DW_HEAD1]	= "Header DW1",
+>> +	[HISI_PTT_4DW_HEAD2]	= "Header DW2",
+>> +	[HISI_PTT_4DW_HEAD3]	= "Header DW3",
+>> +};
+>> +
+>> +/* offset of each member is determined by format of 8dw packet. */
+>> +static uint32_t hisi_ptt_8dw_pkt_field_offset[] = {
+>> +	[HISI_PTT_8DW_PREFIX]	= 4,
+>> +	[HISI_PTT_8DW_HEAD0]	= 4,
+>> +	[HISI_PTT_8DW_HEAD1]	= 4,
+>> +	[HISI_PTT_8DW_HEAD2]	= 4,
+>> +	[HISI_PTT_8DW_HEAD3]	= 4,
+>> +	[HISI_PTT_8DW_TIME]	= 8,
+>> +};
+> 
+> You could define a structure hisi_ptt_8dw (just like hisi_ptt_4dw) so
+> that can avoid to define this field offset structure.
+> 
+> It's unusal to define data structure for offset, another way is to
+> define macros for offset values.
+> 
+got it, I'll do this.
+>> +
+>> +union hisi_ptt_4dw {
+>> +	struct {
+>> +		uint32_t format : 2;
+>> +		uint32_t type : 5;
+>> +		uint32_t t9 : 1;
+>> +		uint32_t t8 : 1;
+>> +		uint32_t th : 1;
+>> +		uint32_t so : 1;
+>> +		uint32_t len : 10;
+>> +		uint32_t time : 11;
+>> +	};
+>> +	uint32_t value;
+>> +};
+>> +
+[...]
+
+>> +
+>> +static void hisi_ptt_dump(struct hisi_ptt *ptt __maybe_unused,
+>> +			  unsigned char *buf, size_t len)
+>> +{
+>> +	const char *color = PERF_COLOR_BLUE;
+>> +	enum hisi_ptt_pkt_type type;
+>> +	size_t pos = 0;
+>> +	int pkt_len;
+>> +
+>> +	color_fprintf(stdout, color, ". ... HISI PTT data: size %zu bytes\n",
+>> +		      len);
+>> +
+>> +	type = hisi_ptt_check_packet_type(buf);
+>> +	while (len) {
+> 
+> It's good to use condition "while (len > 0)".
+ok, will change this.
+
+> 
+>> +		pkt_len = hisi_ptt_pkt_desc(buf, pos, type);
+>> +		if (!pkt_len)
+>> +			color_fprintf(stdout, color, " Bad packet!\n");
+>> +
+>> +		pos += pkt_len;
+>> +		buf += pkt_len;
+>> +		len -= pkt_len;
+>> +	}
+>> +}
+>> +
+[...]
+
+>> diff --git a/tools/perf/util/hisi_ptt.h b/tools/perf/util/hisi_ptt.h
+>> new file mode 100644
+>> index 000000000000..c0b6cbde1221
+>> --- /dev/null
+>> +++ b/tools/perf/util/hisi_ptt.h
+>> @@ -0,0 +1,28 @@
+>> +/* SPDX-License-Identifier: GPL-2.0 */
+>> +/*
+>> + * HiSilicon PCIe Trace and Tuning (PTT) support
+>> + * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
+>> + */
+>> +
+>> +#ifndef INCLUDE__PERF_HISI_PTT_H__
+>> +#define INCLUDE__PERF_HISI_PTT_H__
+>> +
+>> +#define HISI_PTT_PMU_NAME "hisi_ptt"
+>> +enum {
+>> +	HISI_PTT_PMU_TYPE,
+>> +	HISI_PTT_PER_CPU_MMAPS,
+> 
+> HISI_PTT_PER_CPU_MMAPS is not used, so can remove it.
+> 
+will move this.
+
+Thanks,
+Qi
+> Thanks,
+> Leo
+> 
+>> +	HISI_PTT_AUXTRACE_PRIV_MAX,
+>> +};
+>> +
+>> +#define HISI_PTT_AUXTRACE_PRIV_SIZE (HISI_PTT_AUXTRACE_PRIV_MAX * sizeof(u64))
+>> +union perf_event;
+>> +struct perf_session;
+>> +struct perf_pmu;
+>> +
+>> +struct auxtrace_record *hisi_ptt_recording_init(int *err,
+>> +						struct perf_pmu *hisi_ptt_pmu);
+>> +
+>> +int hisi_ptt_process_auxtrace_info(union perf_event *event,
+>> +				   struct perf_session *session);
+>> +
+>> +#endif
+>> -- 
+>> 2.24.0
+>>
+>> _______________________________________________
+>> iommu mailing list
+>> iommu@lists.linux-foundation.org
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> .
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
