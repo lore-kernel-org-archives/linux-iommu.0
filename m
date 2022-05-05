@@ -1,67 +1,65 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A127CC4332F
-	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 23:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4F29AC43217
+	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 23:58:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6D50183EC8;
-	Thu,  5 May 2022 23:58:00 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 12A59610BF;
+	Thu,  5 May 2022 23:58:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Tqeuw4s1wKoB; Thu,  5 May 2022 23:57:59 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id evFQMNXMpYx3; Thu,  5 May 2022 23:58:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 6BA1D83F2F;
+	by smtp3.osuosl.org (Postfix) with ESMTPS id D800A60C07;
 	Thu,  5 May 2022 23:57:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4F888C007B;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 83372C0083;
 	Thu,  5 May 2022 23:57:59 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 282CFC0088
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 23:57:56 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 117D6C002D
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 23:57:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 5F3F160BCA
+ by smtp3.osuosl.org (Postfix) with ESMTP id AEE5660C07
  for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 23:57:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id v8BYQZzEyuiv for <iommu@lists.linux-foundation.org>;
+ with ESMTP id tqkCwDa7vOHS for <iommu@lists.linux-foundation.org>;
  Thu,  5 May 2022 23:57:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by smtp3.osuosl.org (Postfix) with ESMTPS id B967C60BE7
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 23:57:50 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id C53F660B6A
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 23:57:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1651795070; x=1683331070;
+ t=1651795069; x=1683331069;
  h=from:to:cc:subject:date:message-id:in-reply-to: references;
- bh=xjphrR/fdJYxZybC1OeOpVaKdDVRMW9p0gc6LYNcZJo=;
- b=nRGATs4S2O2Buecklc1gHv07YIR56RgxOVuDS0o5qWQJkBXuKcrOQqjb
- UrZ5o2CzSxrGFDqrWNNeaMO+WNmpJo8iMVq1waTOEzgPpJaT1u7grlJat
- ZmYkD9A67SA0vipPgeBkJAVGdAj1aPoXeyw8mY/HH7MDzndZEmZXWyawk
- WtaVDuwZ8eOF7/a2GolbqAqSvg/UVkFUq7hOLD3KA0Cea77TW0ElHz/Hi
- LP9382IcjaShajroYP1wuz669uWU5ac047XRe6hEMV/fH7MIb0ywqrlHY
- rSGeT4hUUa0KDykY46HCPKQ3SSPn4JZ2ZNV8aw8D41B0U/iwcGCHjYQS0 g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="293496332"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; d="scan'208";a="293496332"
+ bh=3xUpwlx5TiZjojK61Skg6W12+8Hy6giKnPG/YThYLqA=;
+ b=SzxrFZ4cLiiZSa2YBvH08MIiMgL7bgUpuevRSGTspfiS7BXkeKhEvSXD
+ jAChdKkXsEbK28qgPNLpRNYFKypT+60fXllrElSttfQRzj31YHOw80R7u
+ wMQtidspo2R3Oso9c65uESa5Ty8LqarAe2UvxGqzIKwINFXsNhDqUzw6t
+ 5x+iLnZpJmuCPKISJiIRCRqlZyRbV2xljqO97j65ZkP4FCYzknYIqNhr4
+ NW2wgSL/tim/xBy4z7sTBlTFPfXM9y5Jk6ucaCkYzR+thelaetXlp6pod
+ W/z1i0iGVpo+2JiXs+wTPcSLEncetDG1mg+YLk8b/IzPkfRsqiE7IqYI/ A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="293496326"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; d="scan'208";a="293496326"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 05 May 2022 16:57:50 -0700
+ 05 May 2022 16:57:49 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; d="scan'208";a="694914376"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; d="scan'208";a="694914367"
 Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
- by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:50 -0700
+ by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:49 -0700
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 To: Thomas Gleixner <tglx@linutronix.de>,
 	x86@kernel.org
-Subject: [PATCH v6 14/29] x86/hpet: Expose hpet_writel() in header
-Date: Thu,  5 May 2022 16:59:53 -0700
-Message-Id: <20220506000008.30892-15-ricardo.neri-calderon@linux.intel.com>
+Subject: [PATCH v6 12/29] iommu/amd: Enable NMIPass when allocating an NMI irq
+Date: Thu,  5 May 2022 16:59:51 -0700
+Message-Id: <20220506000008.30892-13-ricardo.neri-calderon@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
 References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
@@ -91,62 +89,82 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-In order to allow hpet_writel() to be used by other components (e.g.,
-the HPET-based hardlockup detector), expose it in the HPET header file.
+As per the AMD I/O Virtualization Technology (IOMMU) Specification, the
+AMD IOMMU only remaps fixed and arbitrated MSIs. NMIs are controlled
+by the NMIPass bit of a Device Table Entry. When set, the IOMMU passes
+through NMI interrupt messages unmapped. Otherwise, they are aborted.
+
+Furthermore, Section 2.2.5 Table 19 states that the IOMMU will also
+abort NMIs when the destination mode is logical.
+
+Update the NMIPass setting of a device's DTE when an NMI irq is being
+allocated. Only do so when the destination mode of the APIC is not
+logical.
 
 Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Stephane Eranian <eranian@google.com>
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: Stephane Eranian <eranian@google.com>
 Cc: iommu@lists.linux-foundation.org
 Cc: linuxppc-dev@lists.ozlabs.org
 Cc: x86@kernel.org
-Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
 Changes since v5:
- * None
+ * Introduced this patch
 
 Changes since v4:
- * Dropped exposing hpet_readq() as it is not needed.
+ * N/A
 
 Changes since v3:
- * None
+ * N/A
 
 Changes since v2:
- * None
+ * N/A
 
 Changes since v1:
- * None
+ * N/A
 ---
- arch/x86/include/asm/hpet.h | 1 +
- arch/x86/kernel/hpet.c      | 2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ drivers/iommu/amd/iommu.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/arch/x86/include/asm/hpet.h b/arch/x86/include/asm/hpet.h
-index ab9f3dd87c80..be9848f0883f 100644
---- a/arch/x86/include/asm/hpet.h
-+++ b/arch/x86/include/asm/hpet.h
-@@ -72,6 +72,7 @@ extern int is_hpet_enabled(void);
- extern int hpet_enable(void);
- extern void hpet_disable(void);
- extern unsigned int hpet_readl(unsigned int a);
-+extern void hpet_writel(unsigned int d, unsigned int a);
- extern void force_hpet_resume(void);
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index a1ada7bff44e..4d7421b6858d 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3156,6 +3156,15 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
+ 	    info->type != X86_IRQ_ALLOC_TYPE_PCI_MSIX)
+ 		return -EINVAL;
  
- #ifdef CONFIG_HPET_EMULATE_RTC
-diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
-index 71f336425e58..47678e7927ff 100644
---- a/arch/x86/kernel/hpet.c
-+++ b/arch/x86/kernel/hpet.c
-@@ -79,7 +79,7 @@ inline unsigned int hpet_readl(unsigned int a)
- 	return readl(hpet_virt_address + a);
- }
++	if (info->flags & X86_IRQ_ALLOC_AS_NMI) {
++		/* Only one IRQ per NMI */
++		if (nr_irqs != 1)
++			return -EINVAL;
++
++		/* NMIs are aborted when the destination mode is logical. */
++		if (apic->dest_mode_logical)
++			return -EPERM;
++	}
+ 	/*
+ 	 * With IRQ remapping enabled, don't need contiguous CPU vectors
+ 	 * to support multiple MSI interrupts.
+@@ -3208,6 +3217,15 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
+ 		goto out_free_parent;
+ 	}
  
--static inline void hpet_writel(unsigned int d, unsigned int a)
-+inline void hpet_writel(unsigned int d, unsigned int a)
- {
- 	writel(d, hpet_virt_address + a);
- }
++	if (info->flags & X86_IRQ_ALLOC_AS_NMI) {
++		struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
++
++		if (!get_dev_entry_bit(devid, DEV_ENTRY_NMI_PASS)) {
++			set_dev_entry_bit(devid, DEV_ENTRY_NMI_PASS);
++			iommu_flush_dte(iommu, devid);
++		}
++	}
++
+ 	for (i = 0; i < nr_irqs; i++) {
+ 		irq_data = irq_domain_get_irq_data(domain, virq + i);
+ 		cfg = irq_data ? irqd_cfg(irq_data) : NULL;
 -- 
 2.17.1
 
