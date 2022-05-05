@@ -4,143 +4,136 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7DC62C433F5
-	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 19:07:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 85BBEC433EF
+	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 19:27:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 13D4360FE9;
-	Thu,  5 May 2022 19:07:37 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 3622E60B9F;
+	Thu,  5 May 2022 19:27:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id k6JLZH8ZlQyS; Thu,  5 May 2022 19:07:36 +0000 (UTC)
+	with ESMTP id WzfCZrBcPeMV; Thu,  5 May 2022 19:27:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id B53B060E61;
-	Thu,  5 May 2022 19:07:35 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 1C09760AB7;
+	Thu,  5 May 2022 19:27:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6F75DC0032;
-	Thu,  5 May 2022 19:07:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EB5EBC0032;
+	Thu,  5 May 2022 19:27:26 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 05F12C002D
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 19:07:34 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7EF15C002D
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 19:27:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D43E560F6C
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 19:07:33 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 590D460B8A
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 19:27:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3BU1XFKhhCrm for <iommu@lists.linux-foundation.org>;
- Thu,  5 May 2022 19:07:32 +0000 (UTC)
+ with ESMTP id GLoP-PEVLsf9 for <iommu@lists.linux-foundation.org>;
+ Thu,  5 May 2022 19:27:24 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com
- (mail-bn1nam07on20616.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7eb2::616])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 60F8060E61
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 19:07:32 +0000 (UTC)
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam08on20615.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e8c::615])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 8C12160AB7
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 19:27:24 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bRJ0GV6NbtefUs++Ir1/RCW/KU59hQ6lydOVZr7ckuSWgmC4rR96U4zM+yf2h+Bpg4WkE42pv/xm47IFsvsHMhwQ/aMVTd3Q8KFyFn3XEpnyRwCQ81uB5rVWckdcX3hIWJKpXhPR8s3QygFylk6ZlttRSDfDfJptO4OoKDSeleV9MtiSLJGuG2Ax84s/ilBnPO0osxvsHSTIgyRYQTVAHNwp/cBJ8f8Ha8QTCJgSRpjUvCewe2HxGyIuJ7kpuRdBlQH4n2BhlocxzCenkyomtdNFUlLI36nknjfUDpQ5SvSlD0dTx1NZ6XKb0L3x46vgveDLsNw2nPC3Zj7tlH0KyQ==
+ b=gMNf0Ox0qmXERgOGc1L+bFMgsY3b7Gyf/6IG50VMB6a84RLZvtxGZXraVjjtfKowjVwwAYbFSiCUuFUHwEi0TdiVljn3cXKqZsfU0B+AzFqns+TNLJ69o+D6gOkp05a/hBQ4REjbeEuV1WWm7aFzhsGWfWJMqx8bOZk9lgTFjNWDBoFmkZI/hE4hMOUWY7Cu+TjBnEG1hqikJV8Jpj1YlzSs+rCk61EtBVkNK5zIlH1QAIQfSdsc90jy+VBBXhsiomdEkQC+Rh1Tv5bPdgovhPxXJboBSyQM+iXjwcMoUuDbkm3FVkTinhYkx7F9BVAp+AGIY4UiHfgzEQPaWIAoEg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sboAo7rwWBIqJK8bKI22y/BPUmSI/LO/ISv7RLQa++s=;
- b=c9SLrir6hqRR67hnpV6Owaa3QMqm9Y+z07esUcfsEFmY9xQCuXxMI+4xQX+c7UQwabEO2TTFlEAL2Sf6xlAgt90dp5S77NrXE2zUwSZHsoaPSfFqSG/sG22+884yTg595VaMaBMBTZa0YWbi/pIPMorByJfJuHzyzqXrpWiP1PjFXjtZajEUk2kAX7oUbN5OL9ain63FfpDCfA5p1JOLqGQAJbH3a8WHDx/ijqRjVZAbjZnVGg3+Fz3n4Kwuudy26/rcLGbacrgamLt9x7OLhmUKRe87yR9H550z9HhhMUT60RK2X6koB1xjh2peY5x5G9SU6QycXpPb5s/JHPTtWw==
+ bh=br4oDPLRk2IE5PW4/5aBhi0n2zydEGCrVpd13ziib+0=;
+ b=bMX5iY7TSzbqpSE9vM7iW+UPi0brXAtdsVr9/ccoQqoe6GS9UIYPWXnRhF52nIJtd3lREvupUjki0ShrCFaesld0pTbaX6DxCCyLMl8tEJRv4mVe7CjcMSns1KWkPE/ZuVnftgFhoJsGb9CuW0bukBAY6I5XAb6eLfLwTcFRM6ttZwEZ1XI2V8BPHwfBonT/zmgjrr9hodXbYTzwRPcaw4e2vuTbrqYPOKuwcHlh8kf/qfrHsbo6Xr8/LTkI/18GmbRXA1+hj1LK+DWUtGnp+qxpR2lXdt0bUHRf3Nq9i2GTa3hxXgC3gCEpANzoj/6LEtijXTcn0fupVaQuRq+d7w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sboAo7rwWBIqJK8bKI22y/BPUmSI/LO/ISv7RLQa++s=;
- b=c/t/YA6mg/u/pTZEI8p99oUWBXI3iVgSJ/BRJTW+zyLGPIOczWYhxMn5EBZg9N1tk6EgzeA5o0sOLhNmkuz6FIjyncX1haOVsoj8Lp9GGeR7rZn2NOQYIDg+VRxOWcg22A7sK6vvz3lGsnfcFOJs4lhf2AuTgx7HRXDMVSBIO62fCgomyhY5Jjr33v/yNHydNCZ4S9fYL8zivJhEKACdDf/n3/FiHMGGTMwoZonTpjyrKtbnK7JbDNkJIdJ+idgFn5A4/KkNJUqohZzywQyc+bfA+r3IVV39y6uDmRJN0WmeLxsTJCSTcS0hQhFTo0Bwnr9kvc5vzAmRSx3TquKWHg==
+ bh=br4oDPLRk2IE5PW4/5aBhi0n2zydEGCrVpd13ziib+0=;
+ b=Mo1/5hRmwoJts3eHnxy4dxdpApKhqOCIwr+lVJmVnGDUYqgt23kR4TIichdaTbRVUFrR3sQ6ZQRdyNwl30kmIn87pVmsaJ4CpAToIhQD2yHPqCvn+4DTe7b8DQ+SyCj9MFikmix1kdHqGNkr+1m5Cw45oBCzo4EwgYiQy4ZGOSqo2EhIELdkmESGwymIDcZcTx9ffzFPfTJ63/r3JKMyWXBjxFNB3vQkCeeGr1WXTzaZQL5+Pq1OQillf5U0hmIYp2c1YvvANcCqCx04/IlnwNoGXZTchAG2k1nzOpGmJBG9tnRPuthG+HNpOelwwzWQ8grAxr3srCopq7AphQWl1Q==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by DS7PR12MB6334.namprd12.prod.outlook.com (2603:10b6:8:95::19) with
+ by DM6PR12MB4076.namprd12.prod.outlook.com (2603:10b6:5:213::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Thu, 5 May
- 2022 19:07:29 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.14; Thu, 5 May
+ 2022 19:27:22 +0000
 Received: from MN2PR12MB4192.namprd12.prod.outlook.com
  ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
  ([fe80::ec2d:9167:1b47:2db2%6]) with mapi id 15.20.5206.027; Thu, 5 May 2022
- 19:07:29 +0000
-Date: Thu, 5 May 2022 16:07:28 -0300
-To: David Gibson <david@gibson.dropbear.id.au>
-Subject: Re: [PATCH RFC 11/12] iommufd: vfio container FD ioctl compatibility
-Message-ID: <20220505190728.GV49344@nvidia.com>
-References: <0-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
- <11-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
- <20220323165125.5efd5976.alex.williamson@redhat.com>
- <20220324003342.GV11336@nvidia.com>
- <20220324160403.42131028.alex.williamson@redhat.com>
- <YmqqXHsCTxVb2/Oa@yekko> <20220428151037.GK8364@nvidia.com>
- <YmuDtPMksOj7NOEh@yekko> <20220429124838.GW8364@nvidia.com>
- <Ym+IfTvdD2zS6j4G@yekko>
+ 19:27:22 +0000
+Date: Thu, 5 May 2022 16:27:20 -0300
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2] iommu: iommu_group_claim_dma_owner() must always
+ assign a domain
+Message-ID: <20220505192720.GW49344@nvidia.com>
+References: <0-v2-f62259511ac0+6-iommu_dma_block_jgg@nvidia.com>
+ <BN9PR11MB5276504B448C715527AD5F3F8CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220505153320.GS49344@nvidia.com>
+ <1b8bf74a-cafa-822f-8843-0d1caf3f56ac@arm.com>
 Content-Disposition: inline
-In-Reply-To: <Ym+IfTvdD2zS6j4G@yekko>
-X-ClientProxiedBy: MN2PR04CA0003.namprd04.prod.outlook.com
- (2603:10b6:208:d4::16) To MN2PR12MB4192.namprd12.prod.outlook.com
+In-Reply-To: <1b8bf74a-cafa-822f-8843-0d1caf3f56ac@arm.com>
+X-ClientProxiedBy: BL0PR02CA0032.namprd02.prod.outlook.com
+ (2603:10b6:207:3c::45) To MN2PR12MB4192.namprd12.prod.outlook.com
  (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a5d19276-914b-43df-7e42-08da2eca8013
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6334:EE_
-X-Microsoft-Antispam-PRVS: <DS7PR12MB63343EC16E86DDEA817B2D75C2C29@DS7PR12MB6334.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 9e4e9622-ba81-4fd2-d43d-08da2ecd46d5
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4076:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB40767F7C4C069383FF6F771BC2C29@DM6PR12MB4076.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /8sAZ8BFVA4U8DsOuFhpTkGxg4cgg38q8opZC0BEqJXjJGkOl60eqVUKKQzDTQ/eWlOA8iBWw62tHVEMAS9W0vk0IKs1hP39SPPYtSq5gxiLZLToCwKbD1TO/LFmiVPf+FoejC6quQ5zTVhJLGFDBRXU6JapwHC0iWL3jwM2wTbYMBn5zccuAinv7xWJ/bB2OPMGJmC0OrsRHcbQO0XvPYaN9PPoGNPfvLqo69rJKyTqJfqSVU/6/4Q6bXntjY2uHwkIaVV1ltJvyjG2R1dVKj8vthS7sK+M2HFD/chc3373CTuka6BvDJjVLHe/K0NGWHaBpARdmpHZOzxzhm/oQ9mnKCj7BVGPL8ggKaOOn8Y4A7/8kV7H/vHnmChOqt1mKVrIEE4KN4+CG2W23IPvP0MguXPMhijHki6dhccusoP0ko8v5uwoOT0Opr+6hh3P45NapkbO3fl4LZJMAssFsDc8NfSP9MAm52GVSJl0CD1FrJs6L4outD8IYtqm3DKP07282h51hxSfmYfXUKFc2tzXyz+VXWYwAcpNEMqCgm3QbEc6X8SGG4p60kWl/c5vQbkzdg/WT4bGkgHFZAx7FPwftzoostG6arPxVj0rJ0DzXGPYlsrt7vLBwdeACel9+U7FOXd7ZA999jBqnFLbqw==
+X-Microsoft-Antispam-Message-Info: FknQyuHrxeP4+ZkoarI3F3xNJAbeaMdtMnH/WqxJ4NaMH5I6ReyzpYM/hsqkr43nBeKlt2VuWZdZ68KSIHzmugXeUXUmHu/dNqw4eP1vJ/zHLM+vRZ7MGzCuqOy7z1nxjrtgaHKi6hT1z7ZQfYi6dpuOcwUGsB9Zb9AjCOr7UEHeGqwEkzoSCiRUAOm5vAWHlHGzFecmFUiQrwronmWuiSpiPcSgyQAK8n/GfYOtVPYbfOz/wBKafuA3Wln3dIkClGCCzvbLkjAcL3e9LAsdxB0jXwqz7pVaxEU0msoW6YZ1s/ulnjDMmJJZjPy53LmWM/UxWYmSO+CyaLNKH7qxwTrguzXpMZ/d7S77f+T6g08nQY1i0YuEQACAZwHj4/G9X2w7Gi2PQBf5bHxejx1YNHupRFpCzRhWWS26e0RCBkTXd/u5cbt5yrftt5Q7RiV1Yovmi23fRlPsayhRimxrF+Q/r0BRFxVIiGNo/7BgOt6Q4UtVYpFv8p/7g7soxWPuzPtMsUqU1cnBil6gK9QxWrdynRjrz71qb62oDUdCA9LLbSqBDIAv6nzrYJiH4jL6fIzR3Q/4c1/aWMkSAqRnTxlmE/RrgxOwnoh2O8cbyCEuWpFL6puhb9bp7c76ztOJEJHvkZtWwdVcAJnYJWMmug==
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(6512007)(6506007)(2906002)(86362001)(26005)(36756003)(8936002)(508600001)(6486002)(38100700002)(5660300002)(8676002)(7416002)(4326008)(66946007)(66556008)(66476007)(83380400001)(33656002)(1076003)(186003)(316002)(54906003)(6916009)(2616005);
+ SFS:(13230001)(4636009)(366004)(36756003)(66556008)(66476007)(6916009)(38100700002)(66946007)(8676002)(186003)(2616005)(4326008)(54906003)(1076003)(316002)(26005)(86362001)(6506007)(8936002)(2906002)(6486002)(5660300002)(33656002)(508600001)(83380400001)(6512007);
  DIR:OUT; SFP:1101; 
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Kw/8L4hc6UHC5zUnkuOv7VKNRh6aKeJ1wGU7VuvQYDqnPbTUFsjcb6v7rueZ?=
- =?us-ascii?Q?vdJIqsG8ATyTB7U6ZHMfhWZYrX4f5Ne+k+hKX33+7Mqg4tquy2Z157NAZtZY?=
- =?us-ascii?Q?n9bW5Yi0JW1F6eRjiJbY6bjPZQJYTM5kkYy4RTbvwQ9mfqbHW7bVcNC2XsmW?=
- =?us-ascii?Q?mRZjKlhFe93IgZJFToCpy5mhemLMknR4lcoOSKtwOVtKJUtccGxc0wmoCi/v?=
- =?us-ascii?Q?sJpLJ+Ji+y6Gnw6tizBfDvyn6TJCXgRgohBmV48IaaOb3XrazSfMu/Av/nDi?=
- =?us-ascii?Q?Sj2GsfW/oYJePPQKiQvGu4lZjUSDvZLt3yKiyQNBjocvIgpt7AHqHWAg9axl?=
- =?us-ascii?Q?A6+oCX9K0GPMz8n9MNHh3P1CagV1dg6dhEXOZC3nHE7ds7sMfVjMo2ZrNc9i?=
- =?us-ascii?Q?zqdThL49s5oTdOBUD1ssNB8Qnyh9JGKTSjadNZZVBqQyaWQs8d5eZGcgmch3?=
- =?us-ascii?Q?NgpydLsTC98QGYA/6fXdghuBWS3oD643xrl5HUa7LUlj6AHiJzVvS1M9z2Nb?=
- =?us-ascii?Q?ewEqWDk6P0/f75/tLWMUQ5MhvJgcidvRY8nj1Mk3BuQbvbuzhEfdvx831poq?=
- =?us-ascii?Q?tHqQUHcRbWBnb3I7jlFUzKZ88gI4omVy3O/AD3pJ3sSYX0pO3LHh4r9X3DTZ?=
- =?us-ascii?Q?RHDhpT4uVQnaH3M4S/noLYw3nUeN3X7RSFqr56FINKhbGKZWMuzKjB2N35sl?=
- =?us-ascii?Q?Ffh+oTiL25joZWY9Hp2WtteZLyBWoUdSwR2Dx/br0bqbxbjfNsiaijtzEA/f?=
- =?us-ascii?Q?Qmg1TR03GaBp4FvsyG8WVeLj18QQp0YP0onty/wp6VQaO0Ce9mqbN6BEzkOi?=
- =?us-ascii?Q?WuLqb6f/ZDxtO+8C0iIgRtuHHbA8qMWYQdkFdpJnmFO9CWmTQSlJ9k70dCTx?=
- =?us-ascii?Q?g9Pwj7PJbOVQWxAq8Mm2EZEQrogAQhh4KQhXqGy4x/cO8N6LSCcozhMXMLh2?=
- =?us-ascii?Q?247Dc7q0H+gS+CuFN/UQ1/KyvENknGnjlxT6KAvSUJDJshU+G+H3HXnVM8xG?=
- =?us-ascii?Q?yKCE4+bts0QbzWsXrZEv8Z8FM2GKXmSV3gm3E1NbFpSAcvY04zT7C2GmuQJz?=
- =?us-ascii?Q?ZpXr3VLHyXri6EK8qIuopf0hxq/qAwK2YMIKnpa2BbGgzL6cf8EX+ISkeyn2?=
- =?us-ascii?Q?OQPeud6iDXXSSt/KrvYvWcXYKShRwpwcilf18QogS54R26l8Z3W7oIYaE3go?=
- =?us-ascii?Q?NA1IBrbPkdPdkBchoq4soAEUhoby/o/upxIOedYPOY0eX0+lJNS9GfesOWWK?=
- =?us-ascii?Q?8jigqqdTj6/KxYYnEYLXtk64rcaDEjtAFiuUkmAYz+Cki/CpHO5q5hwZpHoX?=
- =?us-ascii?Q?g7QDwH0Es8aFvumPBLZDQPf/Tb3RQD2k9/e7ub9FfGHSaXnSsc1X7xjnKfz+?=
- =?us-ascii?Q?la4In877kXPmozRjhmx1VH020kHaZzCdCfIS43hZ16xMGHujE39EjeFLqvbo?=
- =?us-ascii?Q?RA+Ic9aESKb/deauAfYYu1G7wjr23383QKohZlezzcoMsmaB3fItwGyBH+lt?=
- =?us-ascii?Q?rnTFmN/fezCgkQAi0n34iIPKiELMjTcnLCl/Bs3gTSfI/z5ywdpjXSGLUIuh?=
- =?us-ascii?Q?oXDa36kGDr5jTPRfGnIEjK9pQr1MP8qE0v3bRopC2Z2+Mb4E/YQtQobxtGsM?=
- =?us-ascii?Q?/5aj8hNCe+BdljMHSog9peuD1W1FP5md8tkxqLiPgeDiHjmWE0C3dUQi+Iw9?=
- =?us-ascii?Q?5D9SeTQar6B0HcCpmlHYdnJ9KHv3iMY2hD09ZY1Y6VhVzU7P0MQkXTcg1/n0?=
- =?us-ascii?Q?TQuRSw+Buw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+qqna8vLxzR0cT4m0n71NuYMZUrq/F7U9Phgx3uLO+q7+UHJ5YolGoxUAxrN?=
+ =?us-ascii?Q?OXf95xrbP2K5lLcttbP+hs2HsvsKe/vmrmcwnmEWoQxLz5bU1+qcZ3QVuCgJ?=
+ =?us-ascii?Q?Egh9SuKCXaOLrTkCS+bZnIkrclMHy7MvZL5n8UisHJ/JgpCwvzHMzUUWO5KI?=
+ =?us-ascii?Q?hsORtVCrfuB5gHBo07eYtni1QDQ36xDdse6R8OAmHDgwK8PafF0MWVHDF7fj?=
+ =?us-ascii?Q?Xah3InuKUbonth3WLjDh5wNST11k4xKrR99YzN1OJBlmncUbzhyLkHk0KQK0?=
+ =?us-ascii?Q?JVu6wkaxyjKz8CRlmIQdEGgRfkLsUtVdfMw+Cksrc/EDVBgoD5tYFGY+xoXu?=
+ =?us-ascii?Q?tnCHokmvIms9fj+4TKzg9Nekm5V/4y8HhTWdqpOPRtHnz2lPDYIerjRmh3NB?=
+ =?us-ascii?Q?uOFiSB7YJY5EWpYxo5roWUHHJaT89IEp/SfumP2JLiro+Cuo3qgT5Sc/QYxB?=
+ =?us-ascii?Q?CSxDqEQAKSOv4XWDsir9zMrutOayytSDxKGG4Mb37aN41qGKtuIEFx1FjEre?=
+ =?us-ascii?Q?YyIx7aP51BRYSUZxy5CsR4WAaJkizyOFC7zATOnV8tuzMe6GyHQlec0wE5xO?=
+ =?us-ascii?Q?io/n4QdgRptLQ/pGGF8fyuHp8Vjo5Qhz7DJsPuTfg2HMx5+R6s08ZEpLe7zy?=
+ =?us-ascii?Q?DxlJuck+qydyYcQvg4Avve67FFjIB7F57M0pUlUTN3xVd3Avg++jfd414g8A?=
+ =?us-ascii?Q?jwgMyXsrBrnavSgRF01dDhw+f2BEI+qWog1MwICsNMCyeXSImvdtdmOAaw6Q?=
+ =?us-ascii?Q?sNAvDMVB89QqgcyGrfRTbV0fYVz3/b2q40QPHQYLK00v+g6ShZpii15UZzTC?=
+ =?us-ascii?Q?hMWCw72HKaHWd3pt14ir+r4kzmTCbIM5fbNzeiUnuxy5Gb0t3pR8CZcdKJSZ?=
+ =?us-ascii?Q?ah73WB1pcRMbHcPZTX077itrb0x1yyVww7wDredjw/NFJ7D4iLYOyM6yUgUK?=
+ =?us-ascii?Q?uedKSZzh7ScEfFdXkTijpaJ8gV4ocO2Z8pGHM08sk9uJ0LxCyh3rbZ/HkYQv?=
+ =?us-ascii?Q?2QnS56bLJUuFeHSMB20aB+/GjSO9pB5rVq/LbksbhHQkzNx5ewMhppVOYOWb?=
+ =?us-ascii?Q?Tw47BmAdc94TML8Y6ZjZD9NBqHEFkBUwHDBG+G5nKFHxsb/Xhx6LO1mACmxE?=
+ =?us-ascii?Q?aflGjxoP/mrYdxeI7/Y/fUOvwoCPy54CAfIb/GYarI8muLXqR/oAnJ+Ah81a?=
+ =?us-ascii?Q?y9RgB42CXW/C+zh19qo5o3tW74KdUykRF4IK3YdIW6AmHfEqranIEBjnC2m8?=
+ =?us-ascii?Q?LCFNGZRJMjxs0019So544fIeI6yymPwkgnZmK7F3MdV3x8isz2g9hyQZIGR0?=
+ =?us-ascii?Q?YoL5AsjsqkDiQhfJw0pFnVbgz6N0Y6sf4FSeHoKzcecu8sAC91EuzYX7869u?=
+ =?us-ascii?Q?uqb50X2SIo/IZcGuEP/C/8rT7IS4112m3chhCl+zTVfEmbzG+JwWMjQiBmEh?=
+ =?us-ascii?Q?7NTBV1etULaCBgsmsGWwrMpmaMxXqxXY4l2daTmPwiga4QjnG+YdufDUDqwb?=
+ =?us-ascii?Q?pJ3oOK7hZMQWCRD020XdO9lpHJp1TDxIlvb4ckgPSHsJiujKWtmMpaVQOk4s?=
+ =?us-ascii?Q?cNsnJE/94M3B6pjVIYgAHDeKk8zcqLavZQrGWp9k2TVu+nVbAYbyAY1xwh/0?=
+ =?us-ascii?Q?9rRKzIrBu6z+7yaylzIPO3C3/Ia2o31au2lPtP9K1xwWZDY11tjPa44T6fFc?=
+ =?us-ascii?Q?guWkwiTzwTGeIFRzxsnMyrMDQE1VfJQACyIf1Mlbu0uaF07uDHjlNvHjNmTs?=
+ =?us-ascii?Q?EXP8AQ6mGQ=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a5d19276-914b-43df-7e42-08da2eca8013
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e4e9622-ba81-4fd2-d43d-08da2ecd46d5
 X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2022 19:07:29.5566 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2022 19:27:21.9500 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: I/ddyA1r80pQT0G9GCcJSTvqVkDmgNxk1jLU5XwqLQmq10qYDZ2wDtC9+bvt3rty
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6334
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
- "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
- iommu@lists.linux-foundation.org, Daniel Jordan <daniel.m.jordan@oracle.com>,
- Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Joao Martins <joao.m.martins@oracle.com>
+X-MS-Exchange-CrossTenant-UserPrincipalName: 83ONWB07+x0ia6dyzQiRb5XHGUXexaR6zbNwDKCiZpwx4XBiJcK9ldDm44DqrzAL
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4076
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Rodel, Jorg" <jroedel@suse.de>,
+ Qian Cai <quic_qiancai@quicinc.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -160,147 +153,82 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, May 02, 2022 at 05:30:05PM +1000, David Gibson wrote:
+On Thu, May 05, 2022 at 07:56:59PM +0100, Robin Murphy wrote:
 
-> > It is a bit more CPU work since maps in the lower range would have to
-> > be copied over, but conceptually the model matches the HW nesting.
-> 
-> Ah.. ok.  IIUC what you're saying is that the kernel-side IOASes have
-> fixed windows, but we fake dynamic windows in the userspace
-> implementation by flipping the devices over to a new IOAS with the new
-> windows.  Is that right?
+> Ack to that, there are certainly further improvements to consider once we've
+> got known-working code into a released kernel, but let's not get ahead of
+> ourselves just now.
 
-Yes
+Yes please
+ 
+> (I'm pretty sure we could get away with a single blocking domain per IOMMU
+> instance, rather than per group, but I deliberately saved that one for later
+> - right now one per group to match default domains is simpler to reason
+> about and less churny in the context of the current ownership patches)
 
-> Where exactly would the windows be specified?  My understanding was
-> that when creating a back-end specific IOAS, that would typically be
-> for the case where you're using a user / guest managed IO pagetable,
-> with the backend specifying the format for that.  In the ppc case we'd
-> need to specify the windows, but we'd still need the IOAS_MAP/UNMAP
-> operations to manage the mappings.  The PAPR vIOMMU is
-> paravirtualized, so all updates come via hypercalls, so there's no
-> user/guest managed data structure.
+I noticed this too.. 
 
-When the iommu_domain is created I want to have a
-iommu-driver-specific struct, so PPC can customize its iommu_domain
-however it likes.
+But I thought the driver can do a better job of this. There is no
+reason it has to allocate memory to return a IOMMU_DOMAIN_BLOCKED
+domain - this struct could be a globally allocated singleton for the
+entire driver and that would be even better memory savings.
 
-> That should work from the point of view of the userspace and guest
-> side interfaces.  It might be fiddly from the point of view of the
-> back end.  The ppc iommu doesn't really have the notion of
-> configurable domains - instead the address spaces are the hardware or
-> firmware fixed PEs, so they have a fixed set of devices.  At the bare
-> metal level it's possible to sort of do domains by making the actual
-> pagetable pointers for several PEs point to a common place.
+For instance, here is a sketch for the Intel driver based on Baolu's
+remark that intel_iommu_detach_device() establishes a blocking
+behavior already on detach_dev (Baolu if you like it can you make a
+proper patch?):
 
-I'm not sure I understand this - a domain is just a storage container
-for an IO page table, if the HW has IOPTEs then it should be able to
-have a domain?
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index df5c62ecf942b8..317945f6134d42 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4324,6 +4324,8 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
+ 		return domain;
+ 	case IOMMU_DOMAIN_IDENTITY:
+ 		return &si_domain->domain;
++	case IOMMU_DOMAIN_BLOCKED;
++		return &intel_blocking_domain;
+ 	default:
+ 		return NULL;
+ 	}
+@@ -4404,12 +4406,25 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 	return domain_add_dev_info(to_dmar_domain(domain), dev);
+ }
+ 
+-static void intel_iommu_detach_device(struct iommu_domain *domain,
+-				      struct device *dev)
++static int intel_iommu_block_dev(struct iommu_domain *domain,
++				 struct device *dev)
+ {
++	if (!device_to_iommu(dev, NULL, NULL))
++		return -EINVAL;
++
+ 	dmar_remove_one_dev_info(dev);
++	return 0;
+ }
+ 
++static struct iommu_domain intel_blocking_domain {
++	.type = IOMMU_DOMAIN_BLOCKED,
++	.ops = &(const struct iommu_domain_ops){
++		.attach_dev = intel_iommu_detach_device,
++		// Fix core code so this works
++		.free = NULL,
++	},
++};
++
+ static int intel_iommu_map(struct iommu_domain *domain,
+ 			   unsigned long iova, phys_addr_t hpa,
+ 			   size_t size, int iommu_prot, gfp_t gfp)
+@@ -4890,7 +4905,6 @@ const struct iommu_ops intel_iommu_ops = {
+ #endif
+ 	.default_domain_ops = &(const struct iommu_domain_ops) {
+ 		.attach_dev		= intel_iommu_attach_device,
+-		.detach_dev		= intel_iommu_detach_device,
+ 		.map_pages		= intel_iommu_map_pages,
+ 		.unmap_pages		= intel_iommu_unmap_pages,
+ 		.iotlb_sync_map		= intel_iommu_iotlb_sync_map,
 
-Making page table pointers point to a common IOPTE tree is exactly
-what iommu_domains are for - why is that "sort of" for ppc?
-
-> However, in the future, nested KVM under PowerVM is likely to be the
-> norm.  In that situation the L1 as well as the L2 only has the
-> paravirtualized interfaces, which don't have any notion of domains,
-> only PEs.  All updates take place via hypercalls which explicitly
-> specify a PE (strictly speaking they take a "Logical IO Bus Number"
-> (LIOBN), but those generally map one to one with PEs), so it can't use
-> shared pointer tricks either.
-
-How does the paravirtualized interfaces deal with the page table? Does
-it call a map/unmap hypercall instead of providing guest IOPTEs?
-
-Assuming yes, I'd expect that:
-
-The iommu_domain for nested PPC is just a log of map/unmap hypervsior
-calls to make. Whenever a new PE is attached to that domain it gets
-the logged map's replayed to set it up, and when a PE is detached the
-log is used to unmap everything.
-
-It is not perfectly memory efficient - and we could perhaps talk about
-a API modification to allow re-use of the iommufd datastructure
-somehow, but I think this is a good logical starting point.
-
-The PE would have to be modeled as an iommu_group.
-
-> So, here's an alternative set of interfaces that should work for ppc,
-> maybe you can tell me whether they also work for x86 and others:
-
-Fundamentally PPC has to fit into the iommu standard framework of
-group and domains, we can talk about modifications, but drifting too
-far away is a big problem.
-
->   * Each domain/IOAS has a concept of one or more IOVA windows, which
->     each have a base address, size, pagesize (granularity) and optionally
->     other flags/attributes.
->       * This has some bearing on hardware capabilities, but is
->         primarily a software notion
-
-iommu_domain has the aperture, PPC will require extending this to a
-list of apertures since it is currently only one window.
-
-Once a domain is created and attached to a group the aperture should
-be immutable.
-
->   * MAP/UNMAP operations are only permitted within an existing IOVA
->     window (and with addresses aligned to the window's pagesize)
->       * This is enforced by software whether or not it is required by
->         the underlying hardware
->   * Likewise IOAS_COPY operations are only permitted if the source and
->     destination windows have compatible attributes
-
-Already done, domain's aperture restricts all the iommufd operations
-
->   * A newly created kernel-managed IOAS has *no* IOVA windows
-
-Already done, the iommufd IOAS has no iommu_domains inside it at
-creation time.
-
->   * A CREATE_WINDOW operation is added
->       * This takes a size, pagesize/granularity, optional base address
->         and optional additional attributes 
->       * If any of the specified attributes are incompatible with the
->         underlying hardware, the operation fails
-
-iommu layer has nothing called a window. The closest thing is a
-domain.
-
-I really don't want to try to make a new iommu layer object that is so
-unique and special to PPC - we have to figure out how to fit PPC into
-the iommu_domain model with reasonable extensions.
-
-> > > > Maybe every device gets a copy of the error notification?
-> > > 
-> > > Alas, it's harder than that.  One of the things that can happen on an
-> > > EEH fault is that the entire PE gets suspended (blocking both DMA and
-> > > MMIO, IIRC) until the proper recovery steps are taken.  
-> > 
-> > I think qemu would have to de-duplicate the duplicated device
-> > notifications and then it can go from a device notifiation to the
-> > device's iommu_group to the IOAS to the vPE?
-> 
-> It's not about the notifications. 
-
-The only thing the kernel can do is rely a notification that something
-happened to a PE. The kernel gets an event on the PE basis, I would
-like it to replicate it to all the devices and push it through the
-VFIO device FD.
-
-qemu will de-duplicate the replicates and recover exactly the same
-event the kernel saw, delivered at exactly the same time.
-
-If instead you want to have one event per-PE then all that changes in
-the kernel is one event is generated instead of N, and qemu doesn't
-have to throw away the duplicates.
-
-With either method qemu still gets the same PE centric event,
-delivered at the same time, with the same races.
-
-This is not a general mechanism, it is some PPC specific thing to
-communicate a PPC specific PE centric event to userspace. I just
-prefer it in VFIO instead of iommufd.
-
+Thanks,
 Jason
 _______________________________________________
 iommu mailing list
