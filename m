@@ -1,79 +1,94 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 721D6C433F5
-	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 13:28:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D6362C433EF
+	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 13:39:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 038C740C1F;
-	Thu,  5 May 2022 13:28:06 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 5DAB0840A9;
+	Thu,  5 May 2022 13:39:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2ZHpsg1yEx4h; Thu,  5 May 2022 13:28:05 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id AB9DE40C18;
-	Thu,  5 May 2022 13:28:04 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qP2lPUPiduSz; Thu,  5 May 2022 13:39:56 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 35C92840A1;
+	Thu,  5 May 2022 13:39:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7968CC0032;
-	Thu,  5 May 2022 13:28:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E5508C007B;
+	Thu,  5 May 2022 13:39:55 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3BE1DC002D
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 13:28:03 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9C700C002D
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 13:39:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id DD1598407E
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 13:27:50 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id DD2F4840F5
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 13:39:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id w0TxfzWbZ-OF for <iommu@lists.linux-foundation.org>;
- Thu,  5 May 2022 13:27:48 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 9DE1884046
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 13:27:47 +0000 (UTC)
-X-UUID: 8f401d8812624500b6e2ab25dd9203ab-20220505
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4, REQID:a8d80591-ae10-4df5-a2b0-0dfe6c76701c, OB:0,
- LO
- B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
- TION:release,TS:-20
-X-CID-META: VersionHash:faefae9, CLOUDID:da8f5316-2e53-443e-b81a-655c13977218,
- C
- OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: 8f401d8812624500b6e2ab25dd9203ab-20220505
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
- mailgw02.mediatek.com (envelope-from <miles.chen@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 172141199; Thu, 05 May 2022 21:27:34 +0800
-Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
- Thu, 5 May 2022 21:27:33 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 5 May 2022 21:27:32 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Thu, 5 May 2022 21:27:32 +0800
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, "Mauro
- Carvalho Chehab" <mchehab@kernel.org>, Hans Verkuil
- <hverkuil-cisco@xs4all.nl>
-Subject: [PATCH v3] iommu/mediatek: Fix NULL pointer dereference when printing
- dev_name
-Date: Thu, 5 May 2022 21:27:30 +0800
-Message-ID: <20220505132731.21628-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+ with ESMTP id MWzhZy7fmvo5 for <iommu@lists.linux-foundation.org>;
+ Thu,  5 May 2022 13:39:09 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com
+ [IPv6:2001:4860:4864:20::2e])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 5E39E840DA
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 13:39:08 +0000 (UTC)
+Received: by mail-oa1-x2e.google.com with SMTP id
+ 586e51a60fabf-d39f741ba0so4202298fac.13
+ for <iommu@lists.linux-foundation.org>; Thu, 05 May 2022 06:39:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=Kb8f4M/l5z6uxpDp6qlCrIRzZnhYZpwv4r1elaJ2Id0=;
+ b=bxZRCmDQan2xGXp3qqVXNGx862ETbFFt31nV6CLZpdPipaMEq/oLSslZtPA08TKTgM
+ QQLXHg6zP65ezFnRj2snvB65jWMXnqQR0oxAxiZiJVr5ucUPgtCpVnA5B1U1ydXnNV4O
+ aW6bYQFeLUMU6/nPEXiWn7k1KcvHW+CLGoXfBQ/RB4Rho/9oF1VvJoPL7XoEQumg+g1H
+ X1k5ys3IoDR0ZxusVW9AVeheT6/Cb7mECpjzufoOQqIcOUqnr4CrKvC+xb3LYoHgSMcl
+ Wz6oGBXdFkHgYShZC1cPEJYkl4+qK8Fwy/BAfMi9dQyj8mhyXrwMLTmlrRmpMlkAa9/E
+ Ha4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=Kb8f4M/l5z6uxpDp6qlCrIRzZnhYZpwv4r1elaJ2Id0=;
+ b=FGhjDX70mnK/N6ItoRIXHQt4WmosDDZ3MlbnBcLs4FWdLe/BWC7L8fzx8YvaJm5PUw
+ 4Jpz2N+TtqLf+MfYOL7jtFozarAaG5QTRlGJ0KkNaOOTNkCn1N0eKJNjhRBkBB6v+Xkz
+ M/mZSskwOUJ9YDywu3BknfihOWgBpvWGCOwGFL5HVpDXvDcU7fgcjWz+OLYA7y5Q2AiU
+ TpFSOGBVtrXmgcoBybpP6Pi97ra5YTehcy7F3Y4FqU8+0QcKZ8oxETzMhzdRXY9Uzm7Y
+ kE2oQDDSK7XHClYzos5ip8GKHcjItdjb8jTnE3/ZQ036HQNNjF64V23D3wc3oBxwqFlS
+ BQaw==
+X-Gm-Message-State: AOAM531spSVhQnJrwImWE93zp0we3AeT4SoyrvWkNqx5AqKwTZrEV6cH
+ 5WQVHWoL13SSCwW6BLW2rEjYdA==
+X-Google-Smtp-Source: ABdhPJxKxShZt5CyviRanuZSq/psWkLAX+SqxyYKbLeRsW4giB0nlJOn6dDxwjLecNkjKg8yKQLqUg==
+X-Received: by 2002:a05:6870:d78d:b0:d4:4b29:7ccc with SMTP id
+ bd13-20020a056870d78d00b000d44b297cccmr2253927oab.69.1651757947172; 
+ Thu, 05 May 2022 06:39:07 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
+ [82.27.106.168]) by smtp.gmail.com with ESMTPSA id
+ x6-20020a4a8d46000000b0035eb4e5a6c3sm774557ook.25.2022.05.05.06.39.03
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 05 May 2022 06:39:06 -0700 (PDT)
+Date: Thu, 5 May 2022 14:38:39 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v5 10/12] iommu: Prepare IOMMU domain for IOPF
+Message-ID: <YnPTXwjpHnnGp4j2@myrica>
+References: <20220502014842.991097-1-baolu.lu@linux.intel.com>
+ <20220502014842.991097-11-baolu.lu@linux.intel.com>
+ <YnFydE8j8l7Q4m+b@myrica>
+ <9144a782-04d2-a09d-4ac1-7133e5986619@linux.intel.com>
 MIME-Version: 1.0
-X-MTK: N
-Cc: Joerg Roedel <jroedel@suse.de>, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, Miles Chen <miles.chen@mediatek.com>,
- linux-mediatek@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>,
- linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <9144a782-04d2-a09d-4ac1-7133e5986619@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Christoph Hellwig <hch@infradead.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Vinod Koul <vkoul@kernel.org>, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,142 +101,103 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Miles Chen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Miles Chen <miles.chen@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When larbdev is NULL (in the case I hit, the node is incorrectly set
-iommus = <&iommu NUM>), it will cause device_link_add() fail and
-kernel crashes when we try to print dev_name(larbdev).
+Hi Baolu,
 
-Let's fail the probe if a larbdev is NULL to avoid invalid inputs from
-dts.
+On Thu, May 05, 2022 at 04:31:38PM +0800, Baolu Lu wrote:
+> On 2022/5/4 02:20, Jean-Philippe Brucker wrote:
+> > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > > index 7cae631c1baa..33449523afbe 100644
+> > > --- a/drivers/iommu/iommu.c
+> > > +++ b/drivers/iommu/iommu.c
+> > > @@ -3174,3 +3174,24 @@ void iommu_detach_device_pasid(struct iommu_domain *domain,
+> > >   	iommu_group_put(group);
+> > >   }
+> > > +
+> > > +struct iommu_domain *iommu_get_domain_for_dev_pasid(struct device *dev,
+> > > +						    ioasid_t pasid)
+> > > +{
+> > > +	struct iommu_domain *domain;
+> > > +	struct iommu_group *group;
+> > > +
+> > > +	if (!pasid_valid(pasid))
+> > > +		return NULL;
+> > > +
+> > > +	group = iommu_group_get(dev);
+> > > +	if (!group)
+> > > +		return NULL;
+> > > +
+> > > +	mutex_lock(&group->mutex);
+> > Unfortunately this still causes the deadlock when unbind() flushes the
+> > IOPF queue while holding the group mutex.
+> 
+> Sorry, I didn't get your point here.
+> 
+> Do you mean unbind() could hold group mutex before calling this helper?
+> The group mutex is only available in iommu.c. The unbind() has no means
+> to hold this lock. Or, I missed anything?
 
-It should work for normal correct setting and avoid the crash caused
-by my incorrect setting.
+I wasn't clear, it's iommu_detach_device_pasid() that holds the
+group->mutex:
 
-Error log:
-[   18.189042][  T301] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000050
-...
-[   18.344519][  T301] pstate: a0400005 (NzCv daif +PAN -UAO)
-[   18.345213][  T301] pc : mtk_iommu_probe_device+0xf8/0x118 [mtk_iommu]
-[   18.346050][  T301] lr : mtk_iommu_probe_device+0xd0/0x118 [mtk_iommu]
-[   18.346884][  T301] sp : ffffffc00a5635e0
-[   18.347392][  T301] x29: ffffffc00a5635e0 x28: ffffffd44a46c1d8
-[   18.348156][  T301] x27: ffffff80c39a8000 x26: ffffffd44a80cc38
-[   18.348917][  T301] x25: 0000000000000000 x24: ffffffd44a80cc38
-[   18.349677][  T301] x23: ffffffd44e4da4c6 x22: ffffffd44a80cc38
-[   18.350438][  T301] x21: ffffff80cecd1880 x20: 0000000000000000
-[   18.351198][  T301] x19: ffffff80c439f010 x18: ffffffc00a50d0c0
-[   18.351959][  T301] x17: ffffffffffffffff x16: 0000000000000004
-[   18.352719][  T301] x15: 0000000000000004 x14: ffffffd44eb5d420
-[   18.353480][  T301] x13: 0000000000000ad2 x12: 0000000000000003
-[   18.354241][  T301] x11: 00000000fffffad2 x10: c0000000fffffad2
-[   18.355003][  T301] x9 : a0d288d8d7142d00 x8 : a0d288d8d7142d00
-[   18.355763][  T301] x7 : ffffffd44c2bc640 x6 : 0000000000000000
-[   18.356524][  T301] x5 : 0000000000000080 x4 : 0000000000000001
-[   18.357284][  T301] x3 : 0000000000000000 x2 : 0000000000000005
-[   18.358045][  T301] x1 : 0000000000000000 x0 : 0000000000000000
-[   18.360208][  T301] Hardware name: MT6873 (DT)
-[   18.360771][  T301] Call trace:
-[   18.361168][  T301]  dump_backtrace+0xf8/0x1f0
-[   18.361737][  T301]  dump_stack_lvl+0xa8/0x11c
-[   18.362305][  T301]  dump_stack+0x1c/0x2c
-[   18.362816][  T301]  mrdump_common_die+0x184/0x40c [mrdump]
-[   18.363575][  T301]  ipanic_die+0x24/0x38 [mrdump]
-[   18.364230][  T301]  atomic_notifier_call_chain+0x128/0x2b8
-[   18.364937][  T301]  die+0x16c/0x568
-[   18.365394][  T301]  __do_kernel_fault+0x1e8/0x214
-[   18.365402][  T301]  do_page_fault+0xb8/0x678
-[   18.366934][  T301]  do_translation_fault+0x48/0x64
-[   18.368645][  T301]  do_mem_abort+0x68/0x148
-[   18.368652][  T301]  el1_abort+0x40/0x64
-[   18.368660][  T301]  el1h_64_sync_handler+0x54/0x88
-[   18.368668][  T301]  el1h_64_sync+0x68/0x6c
-[   18.368673][  T301]  mtk_iommu_probe_device+0xf8/0x118 [mtk_iommu]
-...
+ iommu_sva_unbind_device()          |
+  iommu_detach_device_pasid()       |
+   mutex_lock(&group->mutex)        |
+   domain->ops->detach_dev_pasid()  | iopf_handle_group()
+    iopf_queue_flush_dev()          |  iommu_get_domain_for_dev_pasid()
+     ... wait for IOPF work         |   mutex_lock(&group->mutex)
+                                    |    ... deadlock
 
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Yong Wu <yong.wu@mediatek.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 635319a4a744 ("media: iommu/mediatek: Add device_link between the consumer and the larb devices")
-Signed-off-by: Miles Chen <miles.chen@mediatek.com>
+Thanks,
+Jean
 
----
-
-Change since v2
-probe fail if larbdev is NULL so we do not have to worry about release logic
-
-Change since v1
-fix a build warning reported by kernel test robot https://lore.kernel.org/lkml/202204231446.IYKdZ674-lkp@intel.com/
-
----
- drivers/iommu/mtk_iommu.c    | 6 ++++++
- drivers/iommu/mtk_iommu_v1.c | 7 +++++++
- 2 files changed, 13 insertions(+)
-
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 6fd75a60abd6..155acfbce44f 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -572,6 +572,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
- 	 * All the ports in each a device should be in the same larbs.
- 	 */
- 	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
-+	if (larbid >= MTK_LARB_NR_MAX)
-+		return ERR_PTR(-EINVAL);
-+
- 	for (i = 1; i < fwspec->num_ids; i++) {
- 		larbidx = MTK_M4U_TO_LARB(fwspec->ids[i]);
- 		if (larbid != larbidx) {
-@@ -581,6 +584,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
- 		}
- 	}
- 	larbdev = data->larb_imu[larbid].dev;
-+	if (!larbdev)
-+		return ERR_PTR(-EINVAL);
-+
- 	link = device_link_add(dev, larbdev,
- 			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
- 	if (!link)
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index ecff800656e6..74563f689fbd 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -80,6 +80,7 @@
- /* MTK generation one iommu HW only support 4K size mapping */
- #define MT2701_IOMMU_PAGE_SHIFT			12
- #define MT2701_IOMMU_PAGE_SIZE			(1UL << MT2701_IOMMU_PAGE_SHIFT)
-+#define MT2701_LARB_NR_MAX			3
- 
- /*
-  * MTK m4u support 4GB iova address space, and only support 4K page
-@@ -457,6 +458,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
- 
- 	/* Link the consumer device with the smi-larb device(supplier) */
- 	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
-+	if (larbid >= MT2701_LARB_NR_MAX)
-+		return ERR_PTR(-EINVAL);
-+
- 	for (idx = 1; idx < fwspec->num_ids; idx++) {
- 		larbidx = mt2701_m4u_to_larb(fwspec->ids[idx]);
- 		if (larbid != larbidx) {
-@@ -467,6 +471,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
- 	}
- 
- 	larbdev = data->larb_imu[larbid].dev;
-+	if (!larbdev)
-+		return ERR_PTR(-EINVAL);
-+
- 	link = device_link_add(dev, larbdev,
- 			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
- 	if (!link)
--- 
-2.18.0
-
+> 
+> Best regards,
+> baolu
+> 
+> > 
+> > If we make this function private to IOPF, then we can get rid of this
+> > mutex_lock(). It's OK because:
+> > 
+> > * xarray protects its internal state with RCU, so we can call
+> >    xa_load() outside the lock.
+> > 
+> > * The domain obtained from xa_load is finalized. Its content is valid
+> >    because xarray stores the domain using rcu_assign_pointer(), which has a
+> >    release memory barrier, which pairs with data dependencies in IOPF
+> >    (domain->sva_ioas etc).
+> > 
+> >    We'll need to be careful about this when allowing other users to install
+> >    a fault handler. Should be fine as long as the handler and data are
+> >    installed before the domain is added to pasid_array.
+> > 
+> > * We know the domain is valid the whole time IOPF is using it, because
+> >    unbind() waits for pending faults.
+> > 
+> > We just need a comment explaining the last point, something like:
+> > 
+> >         /*
+> > 	* Safe to fetch outside the group mutex because:
+> >          * - xarray protects its internal state with RCU
+> >          * - the domain obtained is either NULL or fully formed
+> > 	* - the IOPF work is the only caller and is flushed before the
+> > 	*   domain is freed.
+> >          */
+> > 
+> > Thanks,
+> > Jean
+> > 
+> > > +	domain = xa_load(&group->pasid_array, pasid);
+> > > +	mutex_unlock(&group->mutex);
+> > > +	iommu_group_put(group);
+> > > +
+> > > +	return domain;
+> > > +}
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
