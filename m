@@ -1,82 +1,93 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3C0D8C433EF
-	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 12:14:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4C21DC433EF
+	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 13:05:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D382D416E3;
-	Thu,  5 May 2022 12:14:24 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id E16C384020;
+	Thu,  5 May 2022 13:05:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AKZFlCbdNaLo; Thu,  5 May 2022 12:14:23 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JzdUL3_NcxyF; Thu,  5 May 2022 13:05:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 765E041612;
-	Thu,  5 May 2022 12:14:23 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id BFBAC8400D;
+	Thu,  5 May 2022 13:05:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4C381C0039;
-	Thu,  5 May 2022 12:14:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 947B2C0032;
+	Thu,  5 May 2022 13:05:11 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3A4B9C002D
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 12:14:22 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3B2FFC002D
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 13:05:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 2759361101
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 12:14:22 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 15EEC6111B
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 13:05:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
+ dkim=pass (2048-bit key) header.d=bgdev-pl.20210112.gappssmtp.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EAa4nm4Xt5TG for <iommu@lists.linux-foundation.org>;
- Thu,  5 May 2022 12:14:21 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 6C0B6610FF
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 12:14:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1651752861; x=1683288861;
- h=message-id:date:mime-version:subject:to:cc:references:
- from:in-reply-to:content-transfer-encoding;
- bh=5u315Q6xTtileslXK7Z/heN6yy8xKxXd07kS59rW7+g=;
- b=SECPu9/4aKKfx+IK3FLUFi5Jus3uEtYUx0wD+f/geje3779RNx9hfk+p
- vW1QNmq6YKEWGA8Z33fxiQqHy2+D/rSi3vlwc2EfEomFftSAKI6XZySSy
- DAb6eVURS8f2rLZRhWVi+/4xkhw+KmiPYsz/7Lkvg4dc/bJPf3jOX6CxT
- 1oHcv+Z1aPduR5ybv8OtlEscwGscaXS+P+TD2NTYmtqDimb84bawb3Y1D
- F7wpDpM+rb7TQbp9fhSzkX7cmdDvN2znmSK1ycuYZtmKn7eSpfuESFPSH
- fvt+WTiRVKRNnv+vqiGnnN8PzOSalOwVL6aCXaoKwLCGzf89sn5GcyVXm A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="267685754"
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; d="scan'208";a="267685754"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 05 May 2022 05:14:20 -0700
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; d="scan'208";a="563216207"
-Received: from minhaowa-mobl.ccr.corp.intel.com (HELO [10.255.30.75])
- ([10.255.30.75])
- by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 05 May 2022 05:14:18 -0700
-Message-ID: <d93853b5-cc5a-facb-e739-080483e87b4d@linux.intel.com>
-Date: Thu, 5 May 2022 20:14:17 +0800
+ with ESMTP id bY212Vkz_Ard for <iommu@lists.linux-foundation.org>;
+ Thu,  5 May 2022 13:05:08 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com
+ [IPv6:2a00:1450:4864:20::62a])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id ACA9461113
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 13:05:07 +0000 (UTC)
+Received: by mail-ej1-x62a.google.com with SMTP id i19so8587888eja.11
+ for <iommu@lists.linux-foundation.org>; Thu, 05 May 2022 06:05:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=sxVJoGvxoT/BfORhwUe0lF83tKeGUQ56jY7vzgfAHU4=;
+ b=Y0K2T7eDDIErEPqMy8O6G47SIMuNV/FV2iBabtCwdZYCRksLJj+E+c7fbrSt9ZBBXD
+ DaXJNvwCp8O95B7G3qBBBXd/ZY5LglYP8OcOlRsRkLkFbnOz5YGjf1+Kq+Cej6sf1PKz
+ 8jox3zcMMsB69mnVMtXKZEg+/RyB0rS4FojXfONdqL7k9Dw/I4yA/G/3RFFnSgWC8agR
+ bsZsTNdQJo4ur+mN0mOVzXqc/pW10pVTqbvQpkdO4R2oawKCjQrPZ/LhQquGSb8INoG5
+ zUIcx6Usp3yJ11Kt8LC8bG4AgtPbYUl5xx+MqNZTXX94AuUxIh18hRHgvcWzdek9DC0O
+ 2i3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=sxVJoGvxoT/BfORhwUe0lF83tKeGUQ56jY7vzgfAHU4=;
+ b=2eKUf5KjOdUI/if5oBcABy5DEceXw2Wo7di8RjXFP2+2Ez4bJkJ30iw+R+5iwiLtMj
+ KxA/4mlfA8FrFY2yuwQKLr5JZD+JFhu8GB9pWUPzI6tdEWNcMy9UnZx+om0OCBu1ZdaM
+ V07YoXwGEHahOZdvw1z/EjynUV5/874kigxadziXkfWZRjxoqtgKtZmX0m2bosO0uJyb
+ wsfO7UXGxPHNAhnSeN2hFtt2IZiXKA/fugM/pEDcfOGLiJ1eRRb6wtAyh0th1IealJem
+ WSdn5ELhD1wnLI330OIGRrBOX5UTUEWZCAwQC0GISiUN+sBBMnIKHr0n3vz5/JxwK3PK
+ zIug==
+X-Gm-Message-State: AOAM533DK3Al4Zj2k6wbse68MG0j97qPK4QmiblT6+HJ2VqNT5z7P8Vo
+ srCBq6DJ/sQLqTNNk68ZCTLrJzSkHysOQIi/58lH8A==
+X-Google-Smtp-Source: ABdhPJxyNkSLwouP3OR63NyFLRxUlmDS+dFIZZqJlV9mcUABNttg9TsG8+o4n8l4yoY3YgwsQa8BiV83N6jWTpdMxkc=
+X-Received: by 2002:a17:907:3e28:b0:6f4:3900:78f8 with SMTP id
+ hp40-20020a1709073e2800b006f4390078f8mr21714935ejc.736.1651755905797; Thu, 05
+ May 2022 06:05:05 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 4/4] iommu/vt-d: Remove hard coding PGSNP bit in PASID
- entries
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Jason Gunthorpe <jgg@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>
-References: <20220505010710.1477739-1-baolu.lu@linux.intel.com>
- <20220505010710.1477739-5-baolu.lu@linux.intel.com>
- <BN9PR11MB52764D45B7CBC333D19A6F448CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52764D45B7CBC333D19A6F448CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <cover.1651497024.git.geert+renesas@glider.be>
+ <5628a862688bd9d3b4f6c66cb338671211058641.1651497024.git.geert+renesas@glider.be>
+In-Reply-To: <5628a862688bd9d3b4f6c66cb338671211058641.1651497024.git.geert+renesas@glider.be>
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+Date: Thu, 5 May 2022 15:04:55 +0200
+Message-ID: <CAMRc=MeQZ_T_AoHUO3qx7oW68UMC6HH9CaC041vYr7wQisqjHA@mail.gmail.com>
+Subject: Re: [PATCH 1/7] dt-bindings: gpio: renesas,rcar-gpio: R-Car V3U is
+ R-Car Gen4
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: devicetree <devicetree@vger.kernel.org>,
+ Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Linus Walleij <linus.walleij@linaro.org>, iommu@lists.linux-foundation.org,
+ Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+ Wolfram Sang <wsa+renesas@sang-engineering.com>, Vinod Koul <vkoul@kernel.org>,
+ Rob Herring <robh+dt@kernel.org>, linux-i2c <linux-i2c@vger.kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ linux-serial@vger.kernel.org, dmaengine@vger.kernel.org,
+ Wim Van Sebroeck <wim@linux-watchdog.org>, Will Deacon <will@kernel.org>,
+ Guenter Roeck <linux@roeck-us.net>, linux-watchdog@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,57 +100,44 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/5/5 16:46, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Thursday, May 5, 2022 9:07 AM
->>
->> As enforce_cache_coherency has been introduced into the
->> iommu_domain_ops,
->> the kernel component which owns the iommu domain is able to opt-in its
->> requirement for force snooping support. The iommu driver has no need to
->> hard code the page snoop control bit in the PASID table entries anymore.
->>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>, with one nit:
-> 
->> ---
->>   drivers/iommu/intel/pasid.c | 3 ---
->>   1 file changed, 3 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
->> index 41a0e3b02c79..0abfa7fc7fb0 100644
->> --- a/drivers/iommu/intel/pasid.c
->> +++ b/drivers/iommu/intel/pasid.c
->> @@ -710,9 +710,6 @@ int intel_pasid_setup_second_level(struct
->> intel_iommu *iommu,
->>   	pasid_set_fault_enable(pte);
->>   	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
-> 
-> Probably in a separate patch but above should really be renamed
-> to pasid_set_page_walk_snoop().
+On Mon, May 2, 2022 at 3:35 PM Geert Uytterhoeven
+<geert+renesas@glider.be> wrote:
+>
+> Despite the name, R-Car V3U is the first member of the R-Car Gen4
+> family.  Hence move its compatible value to the R-Car Gen4 section.
+>
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml b/Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml
+> index 0681a4790cd62e23..75e5da6a7cc04bbd 100644
+> --- a/Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml
+> +++ b/Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml
+> @@ -48,11 +48,9 @@ properties:
+>                - renesas,gpio-r8a77995     # R-Car D3
+>            - const: renesas,rcar-gen3-gpio # R-Car Gen3 or RZ/G2
+>
+> -      - items:
+> -          - const: renesas,gpio-r8a779a0  # R-Car V3U
+> -
+>        - items:
+>            - enum:
+> +              - renesas,gpio-r8a779a0     # R-Car V3U
+>                - renesas,gpio-r8a779f0     # R-Car S4-8
+>            - const: renesas,rcar-gen4-gpio # R-Car Gen4
+>
+> --
+> 2.25.1
+>
 
-Yeah! Need a cleanup here. Above name is confusing.
-
-> 
->>
->> -	if (domain->domain.type == IOMMU_DOMAIN_UNMANAGED)
->> -		pasid_set_pgsnp(pte);
->> -
->>   	/*
->>   	 * Since it is a second level only translation setup, we should
->>   	 * set SRE bit as well (addresses are expected to be GPAs).
->> --
->> 2.25.1
-> 
-
-Best regards,
-baolu
+Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
