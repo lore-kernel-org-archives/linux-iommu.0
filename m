@@ -1,75 +1,75 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AB44FC4332F
-	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 06:26:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3C063C433EF
+	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 06:30:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 344F541730;
-	Thu,  5 May 2022 06:26:21 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id E0AED83F7F;
+	Thu,  5 May 2022 06:30:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bGrwxRUkCOQO; Thu,  5 May 2022 06:26:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id D738641701;
-	Thu,  5 May 2022 06:26:19 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A29F9C0039;
-	Thu,  5 May 2022 06:26:19 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C37DEC0032
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 06:26:17 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id ACD5883F86
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 06:26:17 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MDWbncOnmgPs for <iommu@lists.linux-foundation.org>;
- Thu,  5 May 2022 06:26:15 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qvFSEdEpoEzp; Thu,  5 May 2022 06:30:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 91B5D83F85;
+	Thu,  5 May 2022 06:30:46 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A241C0039;
+	Thu,  5 May 2022 06:30:46 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6E76CC0032
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 06:30:45 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 3EEC0418BA
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 06:30:45 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id P2xdwuOrQEcl for <iommu@lists.linux-foundation.org>;
+ Thu,  5 May 2022 06:30:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 6518883F85
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 06:26:15 +0000 (UTC)
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 5B40E418B3
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 06:30:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1651731975; x=1683267975;
+ t=1651732243; x=1683268243;
  h=message-id:date:mime-version:subject:to:cc:references:
  from:in-reply-to:content-transfer-encoding;
- bh=XCojLW+9ezVCq192dbkCy99WssFI1eBwqcSpomU98EU=;
- b=kH0LLO0/1Rh4HnoIYo5qc2hLUyqXVtT3YN2IW+ZTl8qNeFGU3VkUbw6u
- riGDZMEQ+ich+JRcrrVb/Mn3PFf1gn/016AHR5o2zjnoGWravH3ildvx7
- sMUZHml/OdlNQqwQQxpyxB3v+7zygEUXLv1IM6vfMUYwTc8yLOYUf8sDK
- GABnydhOn+9fvkWbfj9JEL6/1ZX2bvOoBGr7XV7qD/vLE08LMvvmtsalZ
- Wt8nG5MN7r/xrItiw2m9EBg647SwMgKOvrOne6QQy6EAbd/MbW60ws8tw
- riSrYjBRz0rHxseCFbuzy2vmNY/Nqie4yCUFA9AXjrd8sATe67r1wTW0Z A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="293207415"
-X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; d="scan'208";a="293207415"
+ bh=FWdkTJQPgfah88qi8uE8TAWSXAdTDOOpVO7WtKyi8WI=;
+ b=P2nzKX3Amhp56FNZN/bMhoPsU+xAhqrnp/B25pz08IIa+D3iZctF/+J2
+ AA8TLs2M6M2Dt3fjQWyT2l4mEHo5Wf6sr+dte+DHRevybmuVwospV4m6r
+ vomWCJzla3LLRfRQ47BneejzCTyViyjqRctIYSOehgNNBjsJUVdn3mIU9
+ nXzruyeqqXIEm4MuKIEvUfcDV8tIACTnvTCE29E3qaFUa/wW54mOYLv/C
+ ptIV/rU9Ei0nr1TeLYouz02HUCF/QGbZc/MWfuxdLZMtTZ5AEEXemX1P0
+ nj6RIeBRYKS1fTaJBW6u6TFjv/hwD4b6qv9DQ9Vxkk9FraOxzf4uTptGa w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="249996924"
+X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; d="scan'208";a="249996924"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 04 May 2022 23:25:49 -0700
-X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; d="scan'208";a="563092452"
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 04 May 2022 23:28:18 -0700
+X-IronPort-AV: E=Sophos;i="5.91,200,1647327600"; d="scan'208";a="563093444"
 Received: from minhaowa-mobl.ccr.corp.intel.com (HELO [10.255.30.75])
  ([10.255.30.75])
  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 04 May 2022 23:25:45 -0700
-Message-ID: <ab40853f-3a44-6bb8-21d4-c1f5464b030e@linux.intel.com>
-Date: Thu, 5 May 2022 14:25:43 +0800
+ 04 May 2022 23:28:12 -0700
+Message-ID: <d0e78ba5-9698-1dbf-4834-553fbcef6aad@linux.intel.com>
+Date: Thu, 5 May 2022 14:28:09 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH v5 02/12] iommu: Add pasid_bits field in struct dev_iommu
+Subject: Re: [PATCH v5 03/12] iommu: Add attach/detach_dev_pasid domain ops
 Content-Language: en-US
 To: Jean-Philippe Brucker <jean-philippe@linaro.org>
 References: <20220502014842.991097-1-baolu.lu@linux.intel.com>
- <20220502014842.991097-3-baolu.lu@linux.intel.com> <YnFuLsvWcjjKBWNy@myrica>
+ <20220502014842.991097-4-baolu.lu@linux.intel.com> <YnFvX8IUwP2drNoj@myrica>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <YnFuLsvWcjjKBWNy@myrica>
+In-Reply-To: <YnFvX8IUwP2drNoj@myrica>
 Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
  Ashok Raj <ashok.raj@intel.com>, Robin Murphy <robin.murphy@arm.com>,
  iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
@@ -94,28 +94,126 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/5/4 02:02, Jean-Philippe Brucker wrote:
-> On Mon, May 02, 2022 at 09:48:32AM +0800, Lu Baolu wrote:
->> Use this field to save the pasid/ssid bits that a device is able to
->> support with its IOMMU hardware. It is a generic attribute of a device
->> and lifting it into the per-device dev_iommu struct makes it possible
->> to allocate a PASID for device without calls into the IOMMU drivers.
->> Any iommu driver which suports PASID related features should set this
->> field before features are enabled on the devices.
+On 2022/5/4 02:07, Jean-Philippe Brucker wrote:
+> On Mon, May 02, 2022 at 09:48:33AM +0800, Lu Baolu wrote:
+>> Attaching an IOMMU domain to a PASID of a device is a generic operation
+>> for modern IOMMU drivers which support PASID-granular DMA address
+>> translation. Currently visible usage scenarios include (but not limited):
 >>
->> For initialization of this field in the VT-d driver, the
->> info->pasid_supported is only set for PCI devices. So the status is
->> that non-PCI SVA hasn't been supported yet. Setting this field only for
->> PCI devices has no functional change.
+>>   - SVA (Shared Virtual Address)
+>>   - kernel DMA with PASID
+>>   - hardware-assist mediated device
 >>
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> Reviewed-by: Jean-Philippe Brucker<jean-philippe@linaro.org>
+>> This adds a pair of common domain ops for this purpose and adds helpers
+>> to attach/detach a domain to/from a {device, PASID}. Some buses, like
+>> PCI, route packets without considering the PASID value. Thus a DMA target
+>> address with PASID might be treated as P2P if the address falls into the
+>> MMIO BAR of other devices in the group. To make things simple, these
+>> interfaces only apply to devices belonging to the singleton groups, and
+>> the singleton is immutable in fabric i.e. not affected by hotplug.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> 
+> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> 
+> just a nit below
+> 
+>> ---
+>>   include/linux/iommu.h | 21 ++++++++++++
+>>   drivers/iommu/iommu.c | 76 +++++++++++++++++++++++++++++++++++++++++++
+>>   2 files changed, 97 insertions(+)
+>>
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index b8ffaf2cb1d0..ab36244d4e94 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -263,6 +263,8 @@ struct iommu_ops {
+>>    * struct iommu_domain_ops - domain specific operations
+>>    * @attach_dev: attach an iommu domain to a device
+>>    * @detach_dev: detach an iommu domain from a device
+>> + * @attach_dev_pasid: attach an iommu domain to a pasid of device
+>> + * @detach_dev_pasid: detach an iommu domain from a pasid of device
+>>    * @map: map a physically contiguous memory region to an iommu domain
+>>    * @map_pages: map a physically contiguous set of pages of the same size to
+>>    *             an iommu domain.
+>> @@ -283,6 +285,10 @@ struct iommu_ops {
+>>   struct iommu_domain_ops {
+>>   	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
+>>   	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
+>> +	int (*attach_dev_pasid)(struct iommu_domain *domain,
+>> +				struct device *dev, ioasid_t pasid);
+>> +	void (*detach_dev_pasid)(struct iommu_domain *domain,
+>> +				 struct device *dev, ioasid_t pasid);
+>>   
+>>   	int (*map)(struct iommu_domain *domain, unsigned long iova,
+>>   		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
+>> @@ -678,6 +684,10 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner);
+>>   void iommu_group_release_dma_owner(struct iommu_group *group);
+>>   bool iommu_group_dma_owner_claimed(struct iommu_group *group);
+>>   
+>> +int iommu_attach_device_pasid(struct iommu_domain *domain,
+>> +			      struct device *dev, ioasid_t pasid);
+>> +void iommu_detach_device_pasid(struct iommu_domain *domain,
+>> +			       struct device *dev, ioasid_t pasid);
+>>   #else /* CONFIG_IOMMU_API */
+>>   
+>>   struct iommu_ops {};
+>> @@ -1051,6 +1061,17 @@ static inline bool iommu_group_dma_owner_claimed(struct iommu_group *group)
+>>   {
+>>   	return false;
+>>   }
+>> +
+>> +static inline int iommu_attach_device_pasid(struct iommu_domain *domain,
+>> +					    struct device *dev, ioasid_t pasid)
+>> +{
+>> +	return -ENODEV;
+>> +}
+>> +
+>> +static inline void iommu_detach_device_pasid(struct iommu_domain *domain,
+>> +					     struct device *dev, ioasid_t pasid)
+>> +{
+>> +}
+>>   #endif /* CONFIG_IOMMU_API */
+>>   
+>>   /**
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 29906bc16371..89c9d19ddb28 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -38,6 +38,7 @@ struct iommu_group {
+>>   	struct kobject kobj;
+>>   	struct kobject *devices_kobj;
+>>   	struct list_head devices;
+>> +	struct xarray pasid_array;
+>>   	struct mutex mutex;
+>>   	void *iommu_data;
+>>   	void (*iommu_data_release)(void *iommu_data);
+>> @@ -630,6 +631,7 @@ struct iommu_group *iommu_group_alloc(void)
+>>   	mutex_init(&group->mutex);
+>>   	INIT_LIST_HEAD(&group->devices);
+>>   	INIT_LIST_HEAD(&group->entry);
+>> +	xa_init(&group->pasid_array);
+>>   
+>>   	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
+>>   	if (ret < 0) {
+>> @@ -3190,3 +3192,77 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
+>>   	return user;
+>>   }
+>>   EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
+>> +
+>> +/*
+>> + * Use standard PCI bus topology and isolation features to check immutable
+>> + * singleton. Otherwise, assume the bus is static and then singleton can
+>> + * know from the device count in the group.
+>> + */
+> 
+> The comment doesn't really add anything that can't be directly understood
+> from the code.
 
-Thank you! Very appreciated for reviewing my patches.
+Yes. It's fine to remove it.
 
 Best regards,
 baolu
-
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
