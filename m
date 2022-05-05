@@ -1,89 +1,71 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AFD93C433EF
-	for <iommu@archiver.kernel.org>; Wed,  4 May 2022 19:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8F50EC433EF
+	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 01:02:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 04C2841944;
-	Wed,  4 May 2022 19:51:47 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 25A2C4019E;
+	Thu,  5 May 2022 01:02:30 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id IE3D0OvufWYQ; Thu,  5 May 2022 01:02:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 188DD40146;
+	Thu,  5 May 2022 01:02:29 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D44FFC0039;
+	Thu,  5 May 2022 01:02:28 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 15644C0032
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 01:02:27 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id F0D5C41924
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 01:02:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Y42w1l6VMLBU; Wed,  4 May 2022 19:51:46 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id A6A3D41726;
-	Wed,  4 May 2022 19:51:45 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 78869C0039;
-	Wed,  4 May 2022 19:51:45 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 86AD7C002D
- for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 19:51:44 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 66DFE60AFA
- for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 19:51:44 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=sang-engineering.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3h1Rghs9-AXv for <iommu@lists.linux-foundation.org>;
- Wed,  4 May 2022 19:51:44 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 8089660ABB
- for <iommu@lists.linux-foundation.org>; Wed,  4 May 2022 19:51:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
- date:from:to:cc:subject:message-id:references:mime-version
- :content-type:in-reply-to; s=k1; bh=roOe+AeBY7DP+Q6uo/3NlHB6bacD
- iF8cZtCOKwDNtfY=; b=AVvmqY7D3UH/BWMnn7wIorUCqnrJ/+VLUtw394q8E+Om
- FcZj38Meag68aRXJMZqBMV/ykDiAbYkJb7JobePTVSDwsJScwk5GU/y4NLU/d2X/
- TtjYV05OBt+x37dH92tXFElqcjQbmeUxdL9XANm472CsC+dHuhk7AahZPz9ANQE=
-Received: (qmail 1533983 invoked from network); 4 May 2022 21:51:39 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted,
- authenticated); 4 May 2022 21:51:39 +0200
-X-UD-Smtp-Session: l3s3148p1@aBgC9DTeXJwgAwDtxwyXAP9dq+3qRUcy
-Date: Wed, 4 May 2022 21:51:36 +0200
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH 2/7] dt-bindings: i2c: renesas,rcar-i2c: R-Car V3U is
- R-Car Gen4
-Message-ID: <YnLZSNJh7rdH77Lp@kunai>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
- Geert Uytterhoeven <geert+renesas@glider.be>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Vinod Koul <vkoul@kernel.org>,
- Linus Walleij <linus.walleij@linaro.org>,
- Bartosz Golaszewski <brgl@bgdev.pl>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Wim Van Sebroeck <wim@linux-watchdog.org>,
- Guenter Roeck <linux@roeck-us.net>,
- Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
- Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
- devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
- linux-gpio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
- linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org
-References: <cover.1651497024.git.geert+renesas@glider.be>
- <a0402ff46027196953fe9c13f60576d40c5aea4c.1651497024.git.geert+renesas@glider.be>
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id vUP31WeS8pWh for <iommu@lists.linux-foundation.org>;
+ Thu,  5 May 2022 01:02:24 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 91C3B402E0
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 01:02:24 +0000 (UTC)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
+ by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KtwKH5ctgzCsWg;
+ Thu,  5 May 2022 08:57:39 +0800 (CST)
+Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 5 May 2022 09:02:20 +0800
+Received: from [10.174.178.247] (10.174.178.247) by
+ dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 5 May 2022 09:02:19 +0800
+Subject: Re: [PATCH v12 2/9] ACPI/IORT: Make iort_iommu_msi_get_resv_regions()
+ return void
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+ <linux-arm-kernel@lists.infradead.org>, <linux-acpi@vger.kernel.org>,
+ <iommu@lists.linux-foundation.org>
+References: <20220503163330.509-1-shameerali.kolothum.thodi@huawei.com>
+ <20220503163330.509-3-shameerali.kolothum.thodi@huawei.com>
+Message-ID: <2471e99d-9bef-97b2-56f4-ac7ce9ba63e0@huawei.com>
+Date: Thu, 5 May 2022 09:02:19 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <a0402ff46027196953fe9c13f60576d40c5aea4c.1651497024.git.geert+renesas@glider.be>
-Cc: devicetree@vger.kernel.org,
- Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
- linux-serial@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org,
- linux-gpio@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
- Rob Herring <robh+dt@kernel.org>, linux-i2c@vger.kernel.org,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Bartosz Golaszewski <brgl@bgdev.pl>, dmaengine@vger.kernel.org,
- Wim Van Sebroeck <wim@linux-watchdog.org>, Will Deacon <will@kernel.org>,
- Linus Walleij <linus.walleij@linaro.org>, Guenter Roeck <linux@roeck-us.net>,
- linux-watchdog@vger.kernel.org
+In-Reply-To: <20220503163330.509-3-shameerali.kolothum.thodi@huawei.com>
+Content-Language: en-GB
+X-Originating-IP: [10.174.178.247]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500002.china.huawei.com (7.185.36.229)
+X-CFilter-Loop: Reflected
+Cc: robin.murphy@arm.com, jon@solid-run.com, linuxarm@huawei.com,
+ steven.price@arm.com, hch@infradead.org, Sami.Mujawar@arm.com, will@kernel.org,
+ wanghuiqiang@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,65 +78,29 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============2792857607090400401=="
+From: Hanjun Guo via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Hanjun Guo <guohanjun@huawei.com>
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On 2022/5/4 0:33, Shameer Kolothum wrote:
+> At present iort_iommu_msi_get_resv_regions() returns the number of
+> MSI reserved regions on success and there are no users for this.
+> The reserved region list will get populated anyway for platforms
+> that require the HW MSI region reservation. Hence, change the
+> function to return void instead.
+> 
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> Tested-by: Steven Price <steven.price@arm.com>
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 
---===============2792857607090400401==
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="j/bfMYaLl7xWqyb8"
-Content-Disposition: inline
+Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
 
-
---j/bfMYaLl7xWqyb8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, May 02, 2022 at 03:34:54PM +0200, Geert Uytterhoeven wrote:
-> Despite the name, R-Car V3U is the first member of the R-Car Gen4
-> family.  I2C on R-Car V3U also supports some extra features (e.g. Slave
-> Clock Stretch Select), which are supported by other R-Car Gen4 SoCs, but
-> not by any other R-Car Gen3 SoC.
->=20
-> Hence move its compatible value to the R-Car Gen4 section.
->=20
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Applied to for-next, thanks!
-
-
---j/bfMYaLl7xWqyb8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmJy2UgACgkQFA3kzBSg
-KbbbBQ//bHWIRu7MnsRqfYi9eFC5lxec3M3uiwvykedIMxXDdWQCC2qXlAn6efuH
-qv9GS22D0TLykN9cUMh/mwkF8j4CpK1hxncdTz7//FyzfDcEhuABgks83Z1Z1Vib
-X8oYEjRjx5kRJD+TC6OXer3OVwKfFX8V+6FpRruFVW/LWVEZa/LTKFqlSLw1sO3A
-fy4Mw5pcBbKlDiXWmyTiAjk+Rv+apo2VXaO9nV7UxAJSICixTe0GmOPZzXHCem/z
-GvqpFKcaXWXtQ1FHt1zwxuscEhTf8YD4XDB3S1iCvkh1BXwN7xK0BW5vLQYtwxKJ
-c/F9Zwwg7dz5VHAy8Sf+AFIi3Q5Iv9gBJ7kjt6G4hpYG4itHOpCopBjmfxQu0YcD
-J5bOb/F1jKOVjPHfnE2IFzyH4Alsy+z7hAMk3R90WM/AumDfVB1d1msG/1V3rnFe
-IRRaP3yu9mmcPkG7rRWs3oi/HH3SWzeDCywaqJgIMwJWE0oFHuw5LA8KzKvk5rbD
-lVm+yJTMx0GyyhqV/dl+fyPdLTHj+5O1grgopDg6xjKDiN+2EmbstKJdGKtocA6N
-tHNzcp80bFOHV6eO3j89GhutyTdL0ma8z892LN/+Lk7dQDpyoTKLmC51fvE7BHBK
-+yqozekqkqbqe/qUVYEV0UCB/VkIEgSIoJJP39lRITx/rY2F404=
-=hJCI
------END PGP SIGNATURE-----
-
---j/bfMYaLl7xWqyb8--
-
---===============2792857607090400401==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Thanks
+Hanjun
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============2792857607090400401==--
