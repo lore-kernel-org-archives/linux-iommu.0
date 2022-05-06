@@ -4,68 +4,68 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 249E8C433F5
-	for <iommu@archiver.kernel.org>; Fri,  6 May 2022 19:48:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E1EC3C433EF
+	for <iommu@archiver.kernel.org>; Fri,  6 May 2022 19:54:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id ADC5160D70;
-	Fri,  6 May 2022 19:48:40 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 84DB160D6E;
+	Fri,  6 May 2022 19:54:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id sRTHRpwF3u2U; Fri,  6 May 2022 19:48:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 923F360D57;
-	Fri,  6 May 2022 19:48:39 +0000 (UTC)
+	with ESMTP id EhOCK6W8NWZZ; Fri,  6 May 2022 19:53:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 3C3F560D57;
+	Fri,  6 May 2022 19:53:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 66535C0039;
-	Fri,  6 May 2022 19:48:39 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 48ADCC002D
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 19:48:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 12665C0039;
+	Fri,  6 May 2022 19:53:59 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 488ADC002D
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 19:53:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 2FE8141507
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 19:48:37 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 2108340577
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 19:53:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="HioOdTso";
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="Xc8Vtd93";
  dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="PhVvmh62"
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4yAZAnffYJZF for <iommu@lists.linux-foundation.org>;
- Fri,  6 May 2022 19:48:32 +0000 (UTC)
+ header.d=linutronix.de header.b="/4l7akva"
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id hA4DXeJcKHq7 for <iommu@lists.linux-foundation.org>;
+ Fri,  6 May 2022 19:53:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by smtp4.osuosl.org (Postfix) with ESMTPS id C5C0041496
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 19:48:32 +0000 (UTC)
+Received: from galois.linutronix.de (Galois.linutronix.de
+ [IPv6:2a0a:51c0:0:12e:550::1])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 6EFC740558
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 19:53:56 +0000 (UTC)
 From: Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1651866508;
+ s=2020; t=1651866834;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  in-reply-to:in-reply-to:references:references;
- bh=obKDPm1us147PjbB0DX4AOLNMPgBymj9mmgDJjujsNQ=;
- b=HioOdTsoFc6QL4Q5ukxv+Ntea8dHeHBk4X2FT+oa3bbwVlhaaalijyMz3Ud42vI0Xz+Pm5
- 5uNcxKXmjg9OVSDh0Dt4tYZQOtxWfVFjjhHrSpCQezPQxTgdp4FY13dtV9rXwDevFIpXv6
- muaKmsTE1yrW4JvMj8a2VNOKwIw/8hiF4TH9d66KAra9PGXIcwgS+d6jJ9pIjFAO9TVsmJ
- 7WIXTpeAKzbt2/hokUTls/YOcFf5INx190TqnegdhNw+Iz7enysvt7LGD9aYjh0IdLT2O1
- F9KOHoFhYxx5YN++nCtmpnJKTcTtL7nhOGwRsnjxvDLfRK1XRQCtPb9oaZBu4Q==
+ bh=hPigNHr8wXW4Jsp9L+zcdiLLC2xp5wKYQoiAjHdLkb0=;
+ b=Xc8Vtd935tKSHJ4TItbPhom70GX4iR+XaOHyoZEbq2TCP4h9WjKpN0MVzmsUbMnujiBgnV
+ WXGzehvrucSX1BoXOdNpoMb3s0YNBoPdGbKtAB3wDRyptT25vNwG7QcC7LwRl3B15XR6VM
+ FhGG5jK12XCNGha0igmSaWXXc2p4A3H1NRfSABcL1Z3IwAXCO4O3qpx16YQ/THdTjg92ya
+ In409B3HY2BR55Mv7J/T3Np4Rdy7VMWpG58IDPN5+hY6NlLD7uyzePgQU6EvXGIFGFCODZ
+ 3pB/pK2v3RdJoDZ1aaYSIcYs0qALgfVW7BGlvJCXH5N/7ExJVtGCxVmBC9jnxw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1651866508;
+ s=2020e; t=1651866834;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  in-reply-to:in-reply-to:references:references;
- bh=obKDPm1us147PjbB0DX4AOLNMPgBymj9mmgDJjujsNQ=;
- b=PhVvmh62AnNYLXZZs9XTvL0zSLIZOMjOmiHCiiYPPKnVJ9DouHuXu7vrlN828CvNAlUl2q
- /dCD5SBWUsoH+LDA==
+ bh=hPigNHr8wXW4Jsp9L+zcdiLLC2xp5wKYQoiAjHdLkb0=;
+ b=/4l7akvaVCpYSimscxE6emXgo2DDhYqJsbAjKJILCBQFs5NLOHNmvvAauEvq153gAwkORH
+ f5cYHMQqOtGE5zCA==
 To: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>, x86@kernel.org
-Subject: Re: [PATCH v6 01/29] irq/matrix: Expose functions to allocate the
- best CPU for new vectors
-In-Reply-To: <20220506000008.30892-2-ricardo.neri-calderon@linux.intel.com>
+Subject: Re: [PATCH v6 02/29] x86/apic: Add irq_cfg::delivery_mode
+In-Reply-To: <20220506000008.30892-3-ricardo.neri-calderon@linux.intel.com>
 References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-2-ricardo.neri-calderon@linux.intel.com>
-Date: Fri, 06 May 2022 21:48:28 +0200
-Message-ID: <878rreh27n.ffs@tglx>
+ <20220506000008.30892-3-ricardo.neri-calderon@linux.intel.com>
+Date: Fri, 06 May 2022 21:53:54 +0200
+Message-ID: <875ymih1yl.ffs@tglx>
 MIME-Version: 1.0
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
  Andi Kleen <ak@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
@@ -92,34 +92,58 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Ricardo,
-
 On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
-> Certain types of interrupts, such as NMI, do not have an associated vector.
-> They, however, target specific CPUs. Thus, when assigning the destination
-> CPU, it is beneficial to select the one with the lowest number of
-> vectors.
+> Currently, the delivery mode of all interrupts is set to the mode of the
+> APIC driver in use. There are no restrictions in hardware to configure the
+> delivery mode of each interrupt individually. Also, certain IRQs need
+> to be
 
-Why is that beneficial especially in the context of a NMI watchdog which
-then broadcasts the NMI to all other CPUs?
+s/IRQ/interrupt/ Changelogs can do without acronyms.
 
-That's wishful thinking perhaps, but I don't see any benefit at all.
+> configured with a specific delivery mode (e.g., NMI).
+>
+> Add a new member, delivery_mode, to struct irq_cfg. Subsequent changesets
+> will update every irq_domain to set the delivery mode of each IRQ to that
+> specified in its irq_cfg data.
+>
+> To keep the current behavior, when allocating an IRQ in the root
+> domain
 
-> Prepend the functions matrix_find_best_cpu_managed() and
-> matrix_find_best_cpu_managed()
+The root domain does not allocate an interrupt. The root domain
+allocates a vector for an interrupt. There is a very clear and technical
+destinction. Can you please be more careful about the wording?
 
-The same function prepended twice becomes two functions :)
+> --- a/arch/x86/kernel/apic/vector.c
+> +++ b/arch/x86/kernel/apic/vector.c
+> @@ -567,6 +567,7 @@ static int x86_vector_alloc_irqs(struct irq_domain *domain, unsigned int virq,
+>  		irqd->chip_data = apicd;
+>  		irqd->hwirq = virq + i;
+>  		irqd_set_single_target(irqd);
+> +
 
-> with the irq_ prefix and expose them for
-> IRQ controllers to use when allocating and activating vector-less IRQs.
+Stray newline.
 
-There is no such thing like a vectorless IRQ. NMIs have a vector. Can we
-please describe facts and not pulled out of thin air concepts which do
-not exist?
+>  		/*
+>  		 * Prevent that any of these interrupts is invoked in
+>  		 * non interrupt context via e.g. generic_handle_irq()
+> @@ -577,6 +578,14 @@ static int x86_vector_alloc_irqs(struct irq_domain *domain, unsigned int virq,
+>  		/* Don't invoke affinity setter on deactivated interrupts */
+>  		irqd_set_affinity_on_activate(irqd);
+>  
+> +		/*
+> +		 * Initialize the delivery mode of this irq to match the
 
-Thanks,
+s/irq/interrupt/
 
-        tglx
+> +		 * default delivery mode of the APIC. Children irq domains
+> +		 * may take the delivery mode from the individual irq
+> +		 * configuration rather than from the APIC driver.
+> +		 */
+> +		apicd->hw_irq_cfg.delivery_mode = apic->delivery_mode;
+> +
+>  		/*
+>  		 * Legacy vectors are already assigned when the IOAPIC
+>  		 * takes them over. They stay on the same vector. This is
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
