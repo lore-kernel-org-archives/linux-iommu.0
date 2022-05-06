@@ -1,76 +1,92 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 35AA0C433F5
-	for <iommu@archiver.kernel.org>; Fri,  6 May 2022 05:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 786EDC433F5
+	for <iommu@archiver.kernel.org>; Fri,  6 May 2022 05:36:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D3E7360BC0;
-	Fri,  6 May 2022 05:30:40 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 06D824154E;
+	Fri,  6 May 2022 05:36:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tf2FaT7jbo6l; Fri,  6 May 2022 05:30:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id C197660BAE;
-	Fri,  6 May 2022 05:30:39 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9913DC0032;
-	Fri,  6 May 2022 05:30:39 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4189CC002D
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 05:30:38 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 20961416F9
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 05:30:38 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7tE4thRovNNP for <iommu@lists.linux-foundation.org>;
- Fri,  6 May 2022 05:30:37 +0000 (UTC)
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 2pvgk9z6PSVo; Fri,  6 May 2022 05:36:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id A82B041516;
+	Fri,  6 May 2022 05:36:47 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6166DC0032;
+	Fri,  6 May 2022 05:36:47 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9FB0BC002D
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 05:36:46 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 8D87060B9A
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 05:36:46 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id IYSHAdt2RK3Y for <iommu@lists.linux-foundation.org>;
+ Fri,  6 May 2022 05:36:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 6B28041849
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 05:30:37 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id EDBF5605EE
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 05:36:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1651815037; x=1683351037;
- h=from:to:cc:subject:date:message-id:in-reply-to:
- references:mime-version:content-transfer-encoding;
- bh=xo3GNZdRcwK9ipt9zUqLqMqh1EBzTdvgrneTIVh8+9g=;
- b=PrM6A1c2jiE+AYVopFm9GV2hQjk2eEb0IIx8IMboBdix8UkRueYBUSgQ
- 9aCbvfxSo8DO65sRLrao1klUu1eruqxo1VYzYPeC++ChOvYABfnrp+Pxc
- 1+JG13Xkb3g7thTZgddLabZfQdU/dJYmi4tX0T2aqJdXj1ik9b9v4umVc
- 5eqiZ6KoyblFM6qP7zyz8oF9jvnglQjsqAfw3b2WRkqVbKA9mgi1Rb2r5
- 3t8Lpj0IxuHZW5L+wSuIVnG8s+n9ZiIEfe7eDLDY+gu+8ZvadX/bfJBX8
- JH5aZFWwx3WL4ElwaaX0b4JLjPZlq0U0Ea2za72AL2LvHK9+jkHdIdB3h Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="354790976"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; d="scan'208";a="354790976"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ t=1651815405; x=1683351405;
+ h=message-id:date:mime-version:subject:to:cc:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=7WUabhyWEk0L7SRCIeRBJvTnaBGJT01I1lM5YJHnXF8=;
+ b=kcNPw+IZLtFXuJzF/NmxShcqyqP+fPJfTfEFd16QWwNdPFrB+fmxARDK
+ PH52U1FROdyN7pcXKTtLMpShO/4pncRmcM5OdiJwSo924/K0cNYZfNynn
+ rRDi+F47YRWnTObqmG7EazRmKExoyebGw8Gs1QT1X+Fwd0l2sH77SK/+b
+ C6rpPSOrf1Cxp6jrAtHzXryk7SGG9ALAAmiaVXdOGQxKcoheghiu+5nk7
+ fJ5eBs9AdPwhbSP+boQTWCTCPBN17W3xMfANkpzPaSXKRbFbprFCbuAiN
+ TxxFazBPcuZoLWj85Lh4rFk4GLH87OneoByRNzHOj0rrIidFGElXeKUzD Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="354792616"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; d="scan'208";a="354792616"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 05 May 2022 22:30:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; d="scan'208";a="695011097"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
- by orsmga004.jf.intel.com with ESMTP; 05 May 2022 22:30:34 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Kevin Tian <kevin.tian@intel.com>
-Subject: [PATCH v3 4/4] iommu/vt-d: Remove hard coding PGSNP bit in PASID
- entries
-Date: Fri,  6 May 2022 13:27:27 +0800
-Message-Id: <20220506052727.1689687-5-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220506052727.1689687-1-baolu.lu@linux.intel.com>
-References: <20220506052727.1689687-1-baolu.lu@linux.intel.com>
+ 05 May 2022 22:36:44 -0700
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; d="scan'208";a="735407780"
+Received: from sunyanwa-mobl1.ccr.corp.intel.com (HELO [10.255.31.183])
+ ([10.255.31.183])
+ by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 05 May 2022 22:36:39 -0700
+Message-ID: <a7778e67-bcc7-03b0-0b58-fc311d542baa@linux.intel.com>
+Date: Fri, 6 May 2022 13:36:37 +0800
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
- linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+Content-Language: en-US
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <YmbO/l5IwfBCHrl8@myrica>
+ <8c044e49-74bb-df56-8a60-663013c0910e@intel.com> <YmgiQZZyFxsJ+9um@myrica>
+ <63582490-a794-fd11-0380-44b27cc660b7@intel.com> <YmpSv48aPIbVXqGi@myrica>
+ <044595e6-e5d0-26c2-af8e-fc9d06906179@linux.intel.com>
+ <YmvtVRlwVJjStXc0@fyu1.sc.intel.com> <Ymv3fC4xXqe+oMRK@myrica>
+ <Ymxke+ihgwNy3BCE@fyu1.sc.intel.com>
+ <3ea91623-97ea-f318-70db-55f08922d7ce@linux.intel.com>
+ <YnDeoGjv/dZnu+YQ@myrica>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <YnDeoGjv/dZnu+YQ@myrica>
+Cc: Fenghua Yu <fenghua.yu@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>,
+ Peter Zijlstra <peterz@infradead.org>, will@kernel.org,
+ Dave Hansen <dave.hansen@linux.intel.com>, x86 <x86@kernel.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>,
+ Dave Hansen <dave.hansen@intel.com>, iommu <iommu@lists.linux-foundation.org>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
+ zhangfei.gao@linaro.org, Thomas Gleixner <tglx@linutronix.de>,
+ robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,38 +99,31 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-As enforce_cache_coherency has been introduced into the iommu_domain_ops,
-the kernel component which owns the iommu domain is able to opt-in its
-requirement for force snooping support. The iommu driver has no need to
-hard code the page snoop control bit in the PASID table entries anymore.
+On 2022/5/3 15:49, Jean-Philippe Brucker wrote:
+> On Sat, Apr 30, 2022 at 03:33:17PM +0800, Baolu Lu wrote:
+>> Jean, another quick question about the iommu_sva_bind_device()
+>>
+>> /**
+>>   * iommu_sva_bind_device() - Bind a process address space to a device
+>>   * @dev: the device
+>>   * @mm: the mm to bind, caller must hold a reference to it
+>>   * @drvdata: opaque data pointer to pass to bind callback
+>>
+>> This interface requires the caller to take a reference to mm. Which
+>> reference should it take, mm->mm_count or mm->mm_users? It's better to
+>> make it explicit in this comment.
+> 
+> Agreed, it's mm_users as required by mmu_notifier_register()
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
----
- drivers/iommu/intel/pasid.c | 3 ---
- 1 file changed, 3 deletions(-)
+Thanks! I will add this in my refactoring patch.
 
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 41a0e3b02c79..0abfa7fc7fb0 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -710,9 +710,6 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- 	pasid_set_fault_enable(pte);
- 	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
- 
--	if (domain->domain.type == IOMMU_DOMAIN_UNMANAGED)
--		pasid_set_pgsnp(pte);
--
- 	/*
- 	 * Since it is a second level only translation setup, we should
- 	 * set SRE bit as well (addresses are expected to be GPAs).
--- 
-2.25.1
+Best regards,
+baolu
 
 _______________________________________________
 iommu mailing list
