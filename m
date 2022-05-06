@@ -4,69 +4,67 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3262EC433EF
-	for <iommu@archiver.kernel.org>; Fri,  6 May 2022 20:05:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 59731C433EF
+	for <iommu@archiver.kernel.org>; Fri,  6 May 2022 21:12:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id DF7694058C;
-	Fri,  6 May 2022 20:05:40 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id F00DD402DC;
+	Fri,  6 May 2022 21:12:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LNwCUSUvJRPw; Fri,  6 May 2022 20:05:40 +0000 (UTC)
+	with ESMTP id yZ8K_gw8l4sl; Fri,  6 May 2022 21:12:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id C81B440558;
-	Fri,  6 May 2022 20:05:39 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 1A1AB4015F;
+	Fri,  6 May 2022 21:12:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9BCB3C0039;
-	Fri,  6 May 2022 20:05:39 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A7B22C002D
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 20:05:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F05EBC0039;
+	Fri,  6 May 2022 21:12:29 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6176DC002D
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 21:12:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 8F92660D6E
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 20:05:38 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 4A32360B71
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 21:12:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="zS7mT4GO";
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="oyF7PEmP";
  dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="5wkuYkNH"
+ header.d=linutronix.de header.b="9ITl2ylm"
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7u2rGWIwQCDe for <iommu@lists.linux-foundation.org>;
- Fri,  6 May 2022 20:05:37 +0000 (UTC)
+ with ESMTP id jGOBQAkZeI-w for <iommu@lists.linux-foundation.org>;
+ Fri,  6 May 2022 21:12:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de
- [IPv6:2a0a:51c0:0:12e:550::1])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 5837D60D66
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 20:05:37 +0000 (UTC)
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 1AD8860B08
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 21:12:24 +0000 (UTC)
 From: Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1651867535;
+ s=2020; t=1651871541;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  in-reply-to:in-reply-to:references:references;
- bh=MVppxWloPHGJWVXPfoL2Mp1gCDmCbq5jYvkOUctTPwE=;
- b=zS7mT4GOFbktfGjTiNzsOezexuL61fgcFzjZlZAaPH7GPyJ2Q7bJAFEDsyscoPuCfFVQXy
- MQv9fxTolSCsKtYLSyZInAmifCbsge2rcmwRurq4fs6letvqkFnJbaTyhjCsRTPV60X6uE
- rinuSxovZT2eQZmTTINCqVtTXoHEFIdOgI1zfPR/KL1VUfVwn2fIFHM766ozhigodnfH5s
- jReDujbvbA2//EkDSTXQNLuOihMxNNQNvdzlCmWip8r6V8GGcekFaYq43MM8Slzjs9F8uF
- PGtWQGOFlmpNWcrTP2AzpuqH8ZoMSNTnNEko3cwpIKeOk6ve9AbhRkGjDS/MIg==
+ bh=OR1pmM4x5cpd2mA4k9e/aWIlSPAQ7vdjsY8tgTejLzI=;
+ b=oyF7PEmPteS/Ij/pjSpG2vUJ+F9MWnjT60Q7Em5LJxgEcgdV2Keo97S3wPx7/J5E+txgUk
+ JCojiqTYydfRy2QOfNub+Z6GCtf5iqJ95IrYyVrXU94wRA891K8qGTKu4kMrONDEj3t2xI
+ wCxkleNZMeXe1/LgpV4XvplOoKFaZn2h2Dl1FzoVtMKW2jBHJlfhIWbjQPIGNfO2Pi7uAj
+ DKSr6s0Xz47aEJt6wfPtWXi8IsfQLaSxpHv37/gGewZf4jpFxR8Ho2GkHDTqeBU4A8ImgG
+ SYlksuHxEF3mZZSNUbvq7CwBHaeStS+M10UHzWT6KuBuUylRXxV8qYgVGLXNuQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1651867535;
+ s=2020e; t=1651871541;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  in-reply-to:in-reply-to:references:references;
- bh=MVppxWloPHGJWVXPfoL2Mp1gCDmCbq5jYvkOUctTPwE=;
- b=5wkuYkNHIkwqACUXoQDb2h1xfBOD4wVbdnhxKNW06YuXNMEFHsj/QnO9X2mOg3FHRYYiy1
- G0NPRPNdhl+hS1AA==
+ bh=OR1pmM4x5cpd2mA4k9e/aWIlSPAQ7vdjsY8tgTejLzI=;
+ b=9ITl2ylmsUv+bZnup01fSsbtCNbIJHb2Vl+xV5ebZckGAGMVOE04FOZX36z7AudwqlokLy
+ CoePs/joVdcnuxDw==
 To: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>, x86@kernel.org
-Subject: Re: [PATCH v6 03/29] x86/apic/msi: Set the delivery mode
- individually for each IRQ
-In-Reply-To: <20220506000008.30892-4-ricardo.neri-calderon@linux.intel.com>
+Subject: Re: [PATCH v6 05/29] x86/apic/vector: Do not allocate vectors for NMIs
+In-Reply-To: <20220506000008.30892-6-ricardo.neri-calderon@linux.intel.com>
 References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-4-ricardo.neri-calderon@linux.intel.com>
-Date: Fri, 06 May 2022 22:05:34 +0200
-Message-ID: <8735hmh1f5.ffs@tglx>
+ <20220506000008.30892-6-ricardo.neri-calderon@linux.intel.com>
+Date: Fri, 06 May 2022 23:12:20 +0200
+Message-ID: <87zgjufjrf.ffs@tglx>
 MIME-Version: 1.0
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
  Andi Kleen <ak@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
@@ -94,52 +92,160 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
-> There are no restrictions in hardware to set  MSI messages with its
-> own delivery mode.
+> Vectors are meaningless when allocating IRQs with NMI as the delivery
+> mode.
 
-"messages with its own" ? Plural/singular confusion.
+Vectors are not meaningless. NMI has a fixed vector.
 
-> Use the mode specified in the provided IRQ hardware
-> configuration data. Since most of the IRQs are configured to use the
-> delivery mode of the APIC driver in use (set in all of them to
-> APIC_DELIVERY_MODE_FIXED), the only functional changes are where
-> IRQs are configured to use a specific delivery mode.
+The point is that for a fixed vector there is no vector management
+required.
 
-This does not parse. There are no functional changes due to this patch
-and there is no point talking about functional changes in subsequent
-patches here.
+Can you spot the difference?
 
-> Changing the utility function __irq_msi_compose_msg() takes care of
-> implementing the change in the in the local APIC, PCI-MSI, and DMAR-MSI
-
-in the in the
-
-> irq_chips.
+> In such case, skip the reservation of IRQ vectors. Do it in the lowest-
+> level functions where the actual IRQ reservation takes place.
 >
-> The IO-APIC irq_chip configures the entries in the interrupt redirection
-> table using the delivery mode specified in the corresponding MSI message.
-> Since the MSI message is composed by a higher irq_chip in the hierarchy,
-> it does not need to be updated.
+> Since NMIs target specific CPUs, keep the functionality to find the best
+> CPU.
 
-The point is that updating __irq_msi_compose_msg() covers _all_ MSI
-consumers including IO-APIC.
+Again. What for?
+  
+> +	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI) {
+> +		cpu = irq_matrix_find_best_cpu(vector_matrix, dest);
+> +		apicd->cpu = cpu;
+> +		vector = 0;
+> +		goto no_vector;
+> +	}
 
-I had to read that changelog 3 times to make sense of it. Something like
-this perhaps:
+Why would a NMI ever end up in this code? There is no vector management
+required and this find cpu exercise is pointless.
 
-  "x86/apic/msi: Use the delivery mode from irq_cfg for message composition
+>  	vector = irq_matrix_alloc(vector_matrix, dest, resvd, &cpu);
+>  	trace_vector_alloc(irqd->irq, vector, resvd, vector);
+>  	if (vector < 0)
+>  		return vector;
+>  	apic_update_vector(irqd, vector, cpu);
+> +
+> +no_vector:
+>  	apic_update_irq_cfg(irqd, vector, cpu);
+>  
+>  	return 0;
+> @@ -321,12 +330,22 @@ assign_managed_vector(struct irq_data *irqd, const struct cpumask *dest)
+>  	/* set_affinity might call here for nothing */
+>  	if (apicd->vector && cpumask_test_cpu(apicd->cpu, vector_searchmask))
+>  		return 0;
+> +
+> +	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI) {
+> +		cpu = irq_matrix_find_best_cpu_managed(vector_matrix, dest);
+> +		apicd->cpu = cpu;
+> +		vector = 0;
+> +		goto no_vector;
+> +	}
 
-   irq_cfg provides a delivery mode for each interrupt. Use it instead
-   of the hardcoded APIC_DELIVERY_MODE_FIXED. This allows to compose
-   messages for NMI delivery mode which is required to implement a HPET
-   based NMI watchdog.
+This code can never be reached for a NMI delivery. If so, then it's a
+bug.
 
-   No functional change as the default delivery mode is set to
-   APIC_DELIVERY_MODE_FIXED."
+This all is special purpose for that particular HPET NMI watchdog use
+case and we are not exposing this to anything else at all.
+
+So why are you sprinkling this NMI nonsense all over the place? Just
+because? There are well defined entry points to all of this where this
+can be fenced off.
+
+If at some day the hardware people get their act together and provide a
+proper vector space for NMIs then we have to revisit that, but then
+there will be a separate NMI vector management too.
+
+What you want is the below which also covers the next patch. Please keep
+an eye on the comments I added/modified.
 
 Thanks,
 
         tglx
+---
+--- a/arch/x86/kernel/apic/vector.c
++++ b/arch/x86/kernel/apic/vector.c
+@@ -42,6 +42,7 @@ EXPORT_SYMBOL_GPL(x86_vector_domain);
+ static DEFINE_RAW_SPINLOCK(vector_lock);
+ static cpumask_var_t vector_searchmask;
+ static struct irq_chip lapic_controller;
++static struct irq_chip lapic_nmi_controller;
+ static struct irq_matrix *vector_matrix;
+ #ifdef CONFIG_SMP
+ static DEFINE_PER_CPU(struct hlist_head, cleanup_list);
+@@ -451,6 +452,10 @@ static int x86_vector_activate(struct ir
+ 	trace_vector_activate(irqd->irq, apicd->is_managed,
+ 			      apicd->can_reserve, reserve);
+ 
++	/* NMI has a fixed vector. No vector management required */
++	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI)
++		return 0;
++
+ 	raw_spin_lock_irqsave(&vector_lock, flags);
+ 	if (!apicd->can_reserve && !apicd->is_managed)
+ 		assign_irq_vector_any_locked(irqd);
+@@ -472,6 +477,10 @@ static void vector_free_reserved_and_man
+ 	trace_vector_teardown(irqd->irq, apicd->is_managed,
+ 			      apicd->has_reserved);
+ 
++	/* NMI has a fixed vector. No vector management required */
++	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI)
++		return;
++
+ 	if (apicd->has_reserved)
+ 		irq_matrix_remove_reserved(vector_matrix);
+ 	if (apicd->is_managed)
+@@ -568,6 +577,24 @@ static int x86_vector_alloc_irqs(struct
+ 		irqd->hwirq = virq + i;
+ 		irqd_set_single_target(irqd);
+ 
++		if (info->flags & X86_IRQ_ALLOC_AS_NMI) {
++			/*
++			 * NMIs have a fixed vector and need their own
++			 * interrupt chip so nothing can end up in the
++			 * regular local APIC management code except the
++			 * MSI message composing callback.
++			 */
++			irqd->chip = &lapic_nmi_controller;
++			/*
++			 * Don't allow affinity setting attempts for NMIs.
++			 * This cannot work with the regular affinity
++			 * mechanisms and for the intended HPET NMI
++			 * watchdog use case it's not required.
++			 */
++			irqd_set_no_balance(irqd);
++			continue;
++		}
++
+ 		/*
+ 		 * Prevent that any of these interrupts is invoked in
+ 		 * non interrupt context via e.g. generic_handle_irq()
+@@ -921,6 +948,11 @@ static struct irq_chip lapic_controller
+ 	.irq_retrigger		= apic_retrigger_irq,
+ };
+ 
++static struct irq_chip lapic_nmi_controller = {
++	.name			= "APIC-NMI",
++	.irq_compose_msi_msg	= x86_vector_msi_compose_msg,
++};
++
+ #ifdef CONFIG_SMP
+ 
+ static void free_moved_vector(struct apic_chip_data *apicd)
+--- a/include/linux/irq.h
++++ b/include/linux/irq.h
+@@ -261,6 +261,11 @@ static inline bool irqd_is_per_cpu(struc
+ 	return __irqd_to_state(d) & IRQD_PER_CPU;
+ }
+ 
++static inline void irqd_set_no_balance(struct irq_data *d)
++{
++	__irqd_to_state(d) |= IRQD_NO_BALANCING;
++}
++
+ static inline bool irqd_can_balance(struct irq_data *d)
+ {
+ 	return !(__irqd_to_state(d) & (IRQD_PER_CPU | IRQD_NO_BALANCING));
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
