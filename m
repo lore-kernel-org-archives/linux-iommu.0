@@ -1,66 +1,68 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1C061C433EF
-	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 23:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id BAA03C433EF
+	for <iommu@archiver.kernel.org>; Thu,  5 May 2022 23:58:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D079F60BE7;
-	Thu,  5 May 2022 23:58:11 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 8676640C1F;
+	Thu,  5 May 2022 23:58:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Skh8n-qmcnna; Thu,  5 May 2022 23:58:10 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id EB0D960AD7;
-	Thu,  5 May 2022 23:58:09 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id f6WSKYLfo67g; Thu,  5 May 2022 23:58:13 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 75A4440BE5;
+	Thu,  5 May 2022 23:58:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D556BC0032;
-	Thu,  5 May 2022 23:58:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5EB9AC0032;
+	Thu,  5 May 2022 23:58:13 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 10708C002D
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 23:58:07 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1ECC5C0084
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 23:58:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 38E2F60BE7
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 23:57:54 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 5426960BCA
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 23:57:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YK2yXGVO-6RY for <iommu@lists.linux-foundation.org>;
- Thu,  5 May 2022 23:57:53 +0000 (UTC)
+ with ESMTP id nEPH66qWpO_c for <iommu@lists.linux-foundation.org>;
+ Thu,  5 May 2022 23:57:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 9CEA5610A7
- for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 23:57:53 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A830860BFE
+ for <iommu@lists.linux-foundation.org>; Thu,  5 May 2022 23:57:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1651795073; x=1683331073;
+ t=1651795075; x=1683331075;
  h=from:to:cc:subject:date:message-id:in-reply-to: references;
- bh=Nult8sm5xsB/xmikf6OohjRwLwTEdiOtEi3jvHsqyXk=;
- b=eRzjj2VYdg+sQNRXu1QyUAA++G5NW9mg6JeC+2MdzKlXDLp5KqYAeV/S
- FfDWr+xUcp/ZVAN6qIS88vN9rXxQrd/nTFEo/sI2WXVzXk7+CONzIv7SR
- 5zKTwKq5uhqGUmy0NPRQg6lurEUqJNSyTD8uQc9ifXvQ/A2z8Fq6y23LW
- ZVuuK97y/vZ7BH8MjCPZdw+kAWl4ITNF7apadoQebAWDIIJbMcL18cbT6
- o9LnutIVVhYhI7RD6CbqBfH2bpc1+9ybEcV9BTjAqP0p9Caev5vmx6ohe
- i6lbZsBqOWCWzmwipj7auIcvBYp/171s3mV0W2jHfJVxiibGvNlgFzZV3 Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="293496347"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; d="scan'208";a="293496347"
+ bh=FvfOUL9RmgV913TUdo/h6z7c9UJ7bF06B9BxDFF6nMg=;
+ b=AIGlhy1fAEZ0RguiMn14SUxgOV3dN5gByfFUUlPTIZxnZvYixOijwiTV
+ tNIwMpBzOo/qg2aP28j3m2jK0xQux2yetLtVAljcqHKJcDCEZJ7NRyZYS
+ 56JsKF5IEnw+RyRlEQi7DNzb7lc1CH9KXjrOSLwtrSmfbsaHZZPASw+Mj
+ QdfBcrOtuDbdvJt7Q0/sERZonm4tE5HD94p03cTUFqOuRujgbrO0TPQMH
+ By2ED/AQ43U78FPkccKz0ILaWl+67jXURLyJIV8S4X7VODu9F9mRdcaNK
+ IlcAoDk5/ovllJmtP9nmUjFMGiyEpTpsuQHAfMimstmR0SEq/ATs71F/n w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="293496365"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; d="scan'208";a="293496365"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 05 May 2022 16:57:53 -0700
+ 05 May 2022 16:57:55 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; d="scan'208";a="694914415"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; d="scan'208";a="694914437"
 Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
- by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:52 -0700
+ by orsmga004.jf.intel.com with ESMTP; 05 May 2022 16:57:55 -0700
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 To: Thomas Gleixner <tglx@linutronix.de>,
 	x86@kernel.org
-Subject: [PATCH v6 20/29] init/main: Delay initialization of the lockup
- detector after smp_init()
-Date: Thu,  5 May 2022 16:59:59 -0700
-Message-Id: <20220506000008.30892-21-ricardo.neri-calderon@linux.intel.com>
+Subject: [PATCH v6 24/29] watchdog/hardlockup: Use parse_option_str() to
+ handle "nmi_watchdog"
+Date: Thu,  5 May 2022 17:00:03 -0700
+Message-Id: <20220506000008.30892-25-ricardo.neri-calderon@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
 References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
@@ -90,18 +92,14 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Certain implementations of the hardlockup detector require support for
-Inter-Processor Interrupt shorthands. On x86, support for these can only
-be determined after all the possible CPUs have booted once (in
-smp_init()). Other architectures may not need such check.
-
-lockup_detector_init() only performs the initializations of data
-structures of the lockup detector. Hence, there are no dependencies on
-smp_init().
+Prepare hardlockup_panic_setup() to handle a comma-separated list of
+options. Thus, it can continue parsing its own command-line options while
+ignoring parameters that are relevant only to specific implementations of
+the hardlockup detector. Such implementations may use an early_param to
+parse their own options.
 
 Cc: Andi Kleen <ak@linux.intel.com>
 Cc: Nicholas Piggin <npiggin@gmail.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
 Cc: Stephane Eranian <eranian@google.com>
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
 Cc: iommu@lists.linux-foundation.org
@@ -111,40 +109,45 @@ Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
 Changes since v5:
- * Introduced this patch
+ * Corrected typo in commit message. (Tony)
 
 Changes since v4:
- * N/A
+ * None
 
 Changes since v3:
- * N/A
+ * None
 
 Changes since v2:
- * N/A
+ * Introduced this patch.
 
 Changes since v1:
- * N/A
+ * None
 ---
- init/main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/watchdog.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/init/main.c b/init/main.c
-index 98182c3c2c4b..62c52c9e4c2b 100644
---- a/init/main.c
-+++ b/init/main.c
-@@ -1600,9 +1600,11 @@ static noinline void __init kernel_init_freeable(void)
+diff --git a/kernel/watchdog.c b/kernel/watchdog.c
+index 9166220457bc..6443841a755f 100644
+--- a/kernel/watchdog.c
++++ b/kernel/watchdog.c
+@@ -73,13 +73,13 @@ void __init hardlockup_detector_disable(void)
  
- 	rcu_init_tasks_generic();
- 	do_pre_smp_initcalls();
--	lockup_detector_init();
- 
- 	smp_init();
-+
-+	lockup_detector_init();
-+
- 	sched_init_smp();
- 
- 	padata_init();
+ static int __init hardlockup_panic_setup(char *str)
+ {
+-	if (!strncmp(str, "panic", 5))
++	if (parse_option_str(str, "panic"))
+ 		hardlockup_panic = 1;
+-	else if (!strncmp(str, "nopanic", 7))
++	else if (parse_option_str(str, "nopanic"))
+ 		hardlockup_panic = 0;
+-	else if (!strncmp(str, "0", 1))
++	else if (parse_option_str(str, "0"))
+ 		nmi_watchdog_user_enabled = 0;
+-	else if (!strncmp(str, "1", 1))
++	else if (parse_option_str(str, "1"))
+ 		nmi_watchdog_user_enabled = 1;
+ 	return 1;
+ }
 -- 
 2.17.1
 
