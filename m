@@ -1,70 +1,71 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 59731C433EF
-	for <iommu@archiver.kernel.org>; Fri,  6 May 2022 21:12:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 74B44C433EF
+	for <iommu@archiver.kernel.org>; Fri,  6 May 2022 21:23:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id F00DD402DC;
-	Fri,  6 May 2022 21:12:31 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 063EF409FB;
+	Fri,  6 May 2022 21:23:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yZ8K_gw8l4sl; Fri,  6 May 2022 21:12:30 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QhBoQ_xwRar7; Fri,  6 May 2022 21:23:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1A1AB4015F;
-	Fri,  6 May 2022 21:12:30 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 8F57F409FE;
+	Fri,  6 May 2022 21:23:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F05EBC0039;
-	Fri,  6 May 2022 21:12:29 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6176DC002D
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 21:12:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 604EDC0039;
+	Fri,  6 May 2022 21:23:29 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A0DB5C002D
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 21:23:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4A32360B71
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 21:12:28 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 890C682423
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 21:23:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="oyF7PEmP";
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="1gitIq8F";
  dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="9ITl2ylm"
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jGOBQAkZeI-w for <iommu@lists.linux-foundation.org>;
- Fri,  6 May 2022 21:12:25 +0000 (UTC)
+ header.d=linutronix.de header.b="kbgZs5Io"
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Oc32tbAQ6t6q for <iommu@lists.linux-foundation.org>;
+ Fri,  6 May 2022 21:23:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 1AD8860B08
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 21:12:24 +0000 (UTC)
+Received: from galois.linutronix.de (Galois.linutronix.de
+ [IPv6:2a0a:51c0:0:12e:550::1])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id DCFAB823E3
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 21:23:26 +0000 (UTC)
 From: Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1651871541;
+ s=2020; t=1651872204;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  in-reply-to:in-reply-to:references:references;
- bh=OR1pmM4x5cpd2mA4k9e/aWIlSPAQ7vdjsY8tgTejLzI=;
- b=oyF7PEmPteS/Ij/pjSpG2vUJ+F9MWnjT60Q7Em5LJxgEcgdV2Keo97S3wPx7/J5E+txgUk
- JCojiqTYydfRy2QOfNub+Z6GCtf5iqJ95IrYyVrXU94wRA891K8qGTKu4kMrONDEj3t2xI
- wCxkleNZMeXe1/LgpV4XvplOoKFaZn2h2Dl1FzoVtMKW2jBHJlfhIWbjQPIGNfO2Pi7uAj
- DKSr6s0Xz47aEJt6wfPtWXi8IsfQLaSxpHv37/gGewZf4jpFxR8Ho2GkHDTqeBU4A8ImgG
- SYlksuHxEF3mZZSNUbvq7CwBHaeStS+M10UHzWT6KuBuUylRXxV8qYgVGLXNuQ==
+ bh=0Qt7CUp/pjOXetxeeCEQTHQJVA1rcx9ZBnwtcdpqF+0=;
+ b=1gitIq8FJN+a0xsKA2F9S/IkXhuehmIu/V1V6fDWUg4SgYJ6GNR70nqfi6IKrkT0vv4Yae
+ ZCuqm/hYF1OxK74tQBPRc0TS/NELz45bgd73c1EXtOB7GCDM8SKQ7JiVY/gGbu0/kBholF
+ JCPN0OvDqROnL3mfI+OVoJn1DJwxkm1w/Y3xe4jMDPcQgffkYct2evhH90bBtQYroQhHVQ
+ 9i8FfLmF9G8vaSrdByk6xcyydCReNyG8txnHNUi2JYzjXsYbUvxSIRC6g/Zy35cqfeWuEr
+ XMxMC6wWl98ijxGTdbdsJG7bZbtwAoS6+gKor1KCGSBIS1sDipmE+IsdzaWeTw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1651871541;
+ s=2020e; t=1651872204;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  in-reply-to:in-reply-to:references:references;
- bh=OR1pmM4x5cpd2mA4k9e/aWIlSPAQ7vdjsY8tgTejLzI=;
- b=9ITl2ylmsUv+bZnup01fSsbtCNbIJHb2Vl+xV5ebZckGAGMVOE04FOZX36z7AudwqlokLy
- CoePs/joVdcnuxDw==
+ bh=0Qt7CUp/pjOXetxeeCEQTHQJVA1rcx9ZBnwtcdpqF+0=;
+ b=kbgZs5IojxdNYid2PCX/up8UYQ0YquDeCHiNJom3jcEaJQf4cp68zTUaibdsa1SEQ7jM4L
+ U3OxdSYz2NZABvDA==
 To: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>, x86@kernel.org
-Subject: Re: [PATCH v6 05/29] x86/apic/vector: Do not allocate vectors for NMIs
-In-Reply-To: <20220506000008.30892-6-ricardo.neri-calderon@linux.intel.com>
+Subject: Re: [PATCH v6 10/29] iommu/vt-d: Implement minor tweaks for NMI irqs
+In-Reply-To: <20220506000008.30892-11-ricardo.neri-calderon@linux.intel.com>
 References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-6-ricardo.neri-calderon@linux.intel.com>
-Date: Fri, 06 May 2022 23:12:20 +0200
-Message-ID: <87zgjufjrf.ffs@tglx>
+ <20220506000008.30892-11-ricardo.neri-calderon@linux.intel.com>
+Date: Fri, 06 May 2022 23:23:23 +0200
+Message-ID: <87wneyfj90.ffs@tglx>
 MIME-Version: 1.0
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
  Andi Kleen <ak@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
@@ -92,160 +93,58 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
-> Vectors are meaningless when allocating IRQs with NMI as the delivery
-> mode.
+> The Intel IOMMU interrupt remapping driver already programs correctly the
+> delivery mode of individual irqs as per their irq_data. Improve handling
+> of NMIs. Allow only one irq per NMI. Also, it is not necessary to cleanup
+> irq vectors after updating affinity.
 
-Vectors are not meaningless. NMI has a fixed vector.
+Structuring a changelog in paragraphs might make it readable. New lines
+exist for a reason.
 
-The point is that for a fixed vector there is no vector management
-required.
+> NMIs do not have associated vectors.
 
-Can you spot the difference?
+Again. NMI has an vector associated, but it is not subject to dynamic
+vector management.
 
-> In such case, skip the reservation of IRQ vectors. Do it in the lowest-
-> level functions where the actual IRQ reservation takes place.
->
-> Since NMIs target specific CPUs, keep the functionality to find the best
-> CPU.
+> diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+> index fb2d71bea98d..791a9331e257 100644
+> --- a/drivers/iommu/intel/irq_remapping.c
+> +++ b/drivers/iommu/intel/irq_remapping.c
+> @@ -1198,8 +1198,12 @@ intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
+>  	 * After this point, all the interrupts will start arriving
+>  	 * at the new destination. So, time to cleanup the previous
+>  	 * vector allocation.
+> +	 *
+> +	 * Do it only for non-NMI irqs. NMIs don't have associated
+> +	 * vectors.
 
-Again. What for?
+See above.
+
+>  	 */
+> -	send_cleanup_vector(cfg);
+> +	if (cfg->delivery_mode != APIC_DELIVERY_MODE_NMI)
+> +		send_cleanup_vector(cfg);
+
+So this needs to be replicated for all invocations of
+send_cleanup_vector(), right? Why can't you put it into that function?
   
-> +	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI) {
-> +		cpu = irq_matrix_find_best_cpu(vector_matrix, dest);
-> +		apicd->cpu = cpu;
-> +		vector = 0;
-> +		goto no_vector;
-> +	}
-
-Why would a NMI ever end up in this code? There is no vector management
-required and this find cpu exercise is pointless.
-
->  	vector = irq_matrix_alloc(vector_matrix, dest, resvd, &cpu);
->  	trace_vector_alloc(irqd->irq, vector, resvd, vector);
->  	if (vector < 0)
->  		return vector;
->  	apic_update_vector(irqd, vector, cpu);
-> +
-> +no_vector:
->  	apic_update_irq_cfg(irqd, vector, cpu);
+>  	return IRQ_SET_MASK_OK_DONE;
+>  }
+> @@ -1352,6 +1356,9 @@ static int intel_irq_remapping_alloc(struct irq_domain *domain,
+>  	if (info->type == X86_IRQ_ALLOC_TYPE_PCI_MSI)
+>  		info->flags &= ~X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
 >  
->  	return 0;
-> @@ -321,12 +330,22 @@ assign_managed_vector(struct irq_data *irqd, const struct cpumask *dest)
->  	/* set_affinity might call here for nothing */
->  	if (apicd->vector && cpumask_test_cpu(apicd->cpu, vector_searchmask))
->  		return 0;
-> +
-> +	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI) {
-> +		cpu = irq_matrix_find_best_cpu_managed(vector_matrix, dest);
-> +		apicd->cpu = cpu;
-> +		vector = 0;
-> +		goto no_vector;
-> +	}
+> +	if ((info->flags & X86_IRQ_ALLOC_AS_NMI) && nr_irqs != 1)
+> +		return -EINVAL;
 
-This code can never be reached for a NMI delivery. If so, then it's a
-bug.
-
-This all is special purpose for that particular HPET NMI watchdog use
-case and we are not exposing this to anything else at all.
-
-So why are you sprinkling this NMI nonsense all over the place? Just
-because? There are well defined entry points to all of this where this
-can be fenced off.
-
-If at some day the hardware people get their act together and provide a
-proper vector space for NMIs then we have to revisit that, but then
-there will be a separate NMI vector management too.
-
-What you want is the below which also covers the next patch. Please keep
-an eye on the comments I added/modified.
+This cannot be reached when the vector allocation domain already
+rejected it, but copy & pasta is wonderful and increases the line count.
 
 Thanks,
 
         tglx
----
---- a/arch/x86/kernel/apic/vector.c
-+++ b/arch/x86/kernel/apic/vector.c
-@@ -42,6 +42,7 @@ EXPORT_SYMBOL_GPL(x86_vector_domain);
- static DEFINE_RAW_SPINLOCK(vector_lock);
- static cpumask_var_t vector_searchmask;
- static struct irq_chip lapic_controller;
-+static struct irq_chip lapic_nmi_controller;
- static struct irq_matrix *vector_matrix;
- #ifdef CONFIG_SMP
- static DEFINE_PER_CPU(struct hlist_head, cleanup_list);
-@@ -451,6 +452,10 @@ static int x86_vector_activate(struct ir
- 	trace_vector_activate(irqd->irq, apicd->is_managed,
- 			      apicd->can_reserve, reserve);
- 
-+	/* NMI has a fixed vector. No vector management required */
-+	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI)
-+		return 0;
-+
- 	raw_spin_lock_irqsave(&vector_lock, flags);
- 	if (!apicd->can_reserve && !apicd->is_managed)
- 		assign_irq_vector_any_locked(irqd);
-@@ -472,6 +477,10 @@ static void vector_free_reserved_and_man
- 	trace_vector_teardown(irqd->irq, apicd->is_managed,
- 			      apicd->has_reserved);
- 
-+	/* NMI has a fixed vector. No vector management required */
-+	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI)
-+		return;
-+
- 	if (apicd->has_reserved)
- 		irq_matrix_remove_reserved(vector_matrix);
- 	if (apicd->is_managed)
-@@ -568,6 +577,24 @@ static int x86_vector_alloc_irqs(struct
- 		irqd->hwirq = virq + i;
- 		irqd_set_single_target(irqd);
- 
-+		if (info->flags & X86_IRQ_ALLOC_AS_NMI) {
-+			/*
-+			 * NMIs have a fixed vector and need their own
-+			 * interrupt chip so nothing can end up in the
-+			 * regular local APIC management code except the
-+			 * MSI message composing callback.
-+			 */
-+			irqd->chip = &lapic_nmi_controller;
-+			/*
-+			 * Don't allow affinity setting attempts for NMIs.
-+			 * This cannot work with the regular affinity
-+			 * mechanisms and for the intended HPET NMI
-+			 * watchdog use case it's not required.
-+			 */
-+			irqd_set_no_balance(irqd);
-+			continue;
-+		}
-+
- 		/*
- 		 * Prevent that any of these interrupts is invoked in
- 		 * non interrupt context via e.g. generic_handle_irq()
-@@ -921,6 +948,11 @@ static struct irq_chip lapic_controller
- 	.irq_retrigger		= apic_retrigger_irq,
- };
- 
-+static struct irq_chip lapic_nmi_controller = {
-+	.name			= "APIC-NMI",
-+	.irq_compose_msi_msg	= x86_vector_msi_compose_msg,
-+};
-+
- #ifdef CONFIG_SMP
- 
- static void free_moved_vector(struct apic_chip_data *apicd)
---- a/include/linux/irq.h
-+++ b/include/linux/irq.h
-@@ -261,6 +261,11 @@ static inline bool irqd_is_per_cpu(struc
- 	return __irqd_to_state(d) & IRQD_PER_CPU;
- }
- 
-+static inline void irqd_set_no_balance(struct irq_data *d)
-+{
-+	__irqd_to_state(d) |= IRQD_NO_BALANCING;
-+}
-+
- static inline bool irqd_can_balance(struct irq_data *d)
- {
- 	return !(__irqd_to_state(d) & (IRQD_PER_CPU | IRQD_NO_BALANCING));
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
