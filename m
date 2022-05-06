@@ -1,64 +1,98 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E6CC3C433EF
-	for <iommu@archiver.kernel.org>; Fri,  6 May 2022 15:19:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D0A0FC433EF
+	for <iommu@archiver.kernel.org>; Fri,  6 May 2022 15:58:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 8324883E57;
-	Fri,  6 May 2022 15:19:38 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id m7AJSDNSKw0W; Fri,  6 May 2022 15:19:37 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 562F283E75;
-	Fri,  6 May 2022 15:19:37 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2A8D2C0039;
-	Fri,  6 May 2022 15:19:37 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8564FC002D
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 15:19:36 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 7168E403B3
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 15:19:36 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 7CE1740502;
+	Fri,  6 May 2022 15:58:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id w0TLbcrMlnDM for <iommu@lists.linux-foundation.org>;
- Fri,  6 May 2022 15:19:35 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 8340A40002
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 15:19:35 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 837F614BF;
- Fri,  6 May 2022 08:19:34 -0700 (PDT)
-Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com
- [10.121.207.14])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 41BC33F885;
- Fri,  6 May 2022 08:19:33 -0700 (PDT)
-Date: Fri, 6 May 2022 16:19:30 +0100
-From: Andre Przywara <andre.przywara@arm.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH 01/11] dt-bindings: iommu: arm,smmu-v3: make PRI IRQ
- optional
-Message-ID: <20220506161930.787435ca@donnerap.cambridge.arm.com>
-In-Reply-To: <4d37f41c-4463-73e4-7271-8d191e9953af@linaro.org>
-References: <20220427112528.4097815-1-andre.przywara@arm.com>
- <20220427112528.4097815-2-andre.przywara@arm.com>
- <4d37f41c-4463-73e4-7271-8d191e9953af@linaro.org>
-Organization: ARM
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OTV82h9Zo3un; Fri,  6 May 2022 15:58:07 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 43E7E40002;
+	Fri,  6 May 2022 15:58:07 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 08439C0039;
+	Fri,  6 May 2022 15:58:07 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 94254C002D
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 15:58:05 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 89B6F60C12
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 15:58:05 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=hpe.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 3SotK84k-4uN for <iommu@lists.linux-foundation.org>;
+ Fri,  6 May 2022 15:58:04 +0000 (UTC)
+X-Greylist: delayed 00:31:22 by SQLgrey-1.8.0
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com
+ [148.163.147.86])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 8C876607F2
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 15:58:04 +0000 (UTC)
+Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
+ by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2467xT2w002715;
+ Fri, 6 May 2022 15:26:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com;
+ h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ content-transfer-encoding : in-reply-to; s=pps0720;
+ bh=j3HGD5V4kWpzXaMKyVHDsHe8vDopec8EpWmrCUlBo/Q=;
+ b=kmdrLURnIfYdzD07W4rfqh2pra/lPUr13nK2uzEixModpgW1IAh4u0wQR+xm1DR1ZGLz
+ L6jNQzXqIAW0AlcMcrDU3uzbLbTCXtXgeN9tJm9wTjj8yRCyQddU80u7ElJ13VaYIgYY
+ E73xFZRaWJfIVdVUMOoblvjoWArs7UhEAd162IdbxjytRuuzPql1Z5MmL1LWKEJbwAhi
+ +CjCQVr0WZubJOSweZHAa5krJBfJIt0qoVyPT6zoFFFrv7guSUhyUoaRixVTShcV+Ttj
+ jiW3AcRO2GQCRjAE0ku3SltxIdMosnOFrPDLU/cUq3q77AdLxYwmaK8Go5hL9nWtFMMD vQ== 
+Received: from g9t5009.houston.hpe.com (g9t5009.houston.hpe.com [15.241.48.73])
+ by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3fvyrykfpb-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Fri, 06 May 2022 15:26:21 +0000
+Received: from g4t3433.houston.hpecorp.net (g4t3433.houston.hpecorp.net
+ [16.208.49.245])
+ by g9t5009.houston.hpe.com (Postfix) with ESMTP id 444F851;
+ Fri,  6 May 2022 15:26:20 +0000 (UTC)
+Received: from swahl-home.5wahls.com (unknown [10.207.210.170])
+ by g4t3433.houston.hpecorp.net (Postfix) with ESMTP id D7F8A49;
+ Fri,  6 May 2022 15:26:18 +0000 (UTC)
+Date: Fri, 6 May 2022 10:26:18 -0500
+From: Steve Wahl <steve.wahl@hpe.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH] iommu/vt-d: Increase DMAR_UNITS_SUPPORTED
+Message-ID: <YnU+GuPGiFcBXQJg@swahl-home.5wahls.com>
+References: <20220505194658.246121-1-steve.wahl@hpe.com>
+ <e2afd89c-b1cf-9fde-4ce2-4be3c1fdaf07@linux.intel.com>
+ <BN9PR11MB5276F4D5F8AD33293233B9AB8CC59@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <636a680eb85aded76dd765ba297347ceadc3d1a4.camel@infradead.org>
+ <BL1PR11MB5271099D98542F8A3F877D4E8CC59@BL1PR11MB5271.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, Will Deacon <will@kernel.org>,
- Liviu Dudau <liviu.dudau@arm.com>, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <BL1PR11MB5271099D98542F8A3F877D4E8CC59@BL1PR11MB5271.namprd11.prod.outlook.com>
+X-Proofpoint-GUID: c-yCiTy8aQYYTm_dey9dRCQuik5rAPEI
+X-Proofpoint-ORIG-GUID: c-yCiTy8aQYYTm_dey9dRCQuik5rAPEI
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-06_04,2022-05-06_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1011
+ priorityscore=1501 malwarescore=0 impostorscore=0 spamscore=0
+ suspectscore=0 lowpriorityscore=0 adultscore=0 bulkscore=0 phishscore=0
+ mlxscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205060082
+Cc: Dimitri Sivanich <sivanich@hpe.com>, "Rodel, Jorg" <jroedel@suse.de>,
+ "Anderson, Russ" <russ.anderson@hpe.com>, Steve Wahl <steve.wahl@hpe.com>,
+ Mike Travis <mike.travis@hpe.com>, David Woodhouse <dwmw2@infradead.org>,
+ Kyung Min Park <kyung.min.park@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -71,95 +105,112 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 28 Apr 2022 08:56:38 +0200
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+On Fri, May 06, 2022 at 08:12:11AM +0000, Tian, Kevin wrote:
+> > From: David Woodhouse <dwmw2@infradead.org>
+> > Sent: Friday, May 6, 2022 3:17 PM
+> > =
 
-Hi,
+> > On Fri, 2022-05-06 at 06:49 +0000, Tian, Kevin wrote:
+> > > > From: Baolu Lu <baolu.lu@linux.intel.com>
+> > > >
+> > > > > --- a/include/linux/dmar.h
+> > > > > +++ b/include/linux/dmar.h
+> > > > > @@ -19,7 +19,7 @@
+> > > > >   struct acpi_dmar_header;
+> > > > >
+> > > > >   #ifdef	CONFIG_X86
+> > > > > -# define	DMAR_UNITS_SUPPORTED	MAX_IO_APICS
+> > > > > +# define	DMAR_UNITS_SUPPORTED	640
+> > > > >   #else
+> > > > >   # define	DMAR_UNITS_SUPPORTED	64
+> > > > >   #endif
+> > >
+> > > ... is it necessary to permanently do 10x increase which wastes memory
+> > > on most platforms which won't have such need.
+> > =
 
-> On 27/04/2022 13:25, Andre Przywara wrote:
-> > The Page Request Interface (PRI) is an optional PCIe feature. As such, a
-> > SMMU would not need to handle it if the PCIe host bridge or the SMMU
-> > itself do not implement it. Also an SMMU could be connected to a platform
-> > device, without any PRI functionality whatsoever.
-> > In all cases there would be no SMMU PRI queue interrupt to be wired up
-> > to an interrupt controller.
-> > 
-> > Relax the binding to allow specifying three interrupts, omitting the PRI
-> > IRQ. At the moment, with the "eventq,gerror,priq,cmdq-sync" order, we
-> > would need to sacrifice the command queue sync interrupt as well, which
-> > might not be desired.
-> > The Linux driver does not care about any order at all, just picks IRQs
-> > based on their names, and treats all (wired) IRQs as optional.  
-> 
-> The last sentence is not a good explanation for the bindings. They are
-> not about Linux and are used in other projects as well.
+> > I was just looking at that. It mostly adds about 3=BD KiB to each struct
+> > dmar_domain.
+> > =
 
-It was not meant as an explanation, but just as an assurance that we can
-*change* the binding. At the moment the order is strict, so binding
-compliant DT consumers could just read the first, second, third, and fourth
-interrupt, without caring about the names. If we now allow a different
-order, this would break those users.
-I couldn't find any user of arm,smmu-v3 in FreeBSD, OpenBSD, U-Boot,
-or Zephyr, hence my mentioning of Linux being fine, so it's safe to relax
-the strict ordering requirement.
-If someone knows about other DT consumers that need attention, I am
-all ears.
+> > I think the only actual static array is the dmar_seq_ids bitmap which
+> > grows to 640 *bits* which is fairly negligible, and the main growth is
+> > that it adds about 3=BD KiB to each struct dmar_domain for the
+> > iommu_refcnt[] and iommu_did[] arrays.
+> =
 
-Cheers,
-Andre
+> Thanks for the quick experiment! though the added material is
+> negligible it's cleaner to me if having a way to configure it as
+> discussed below.
+> =
 
-> > Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-> > ---
-> >  .../bindings/iommu/arm,smmu-v3.yaml           | 21 ++++++++++++++-----
-> >  1 file changed, 16 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-> > index e87bfbcc69135..6b3111f1f06ce 100644
-> > --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-> > +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-> > @@ -37,12 +37,23 @@ properties:
-> >            hardware supports just a single, combined interrupt line.
-> >            If provided, then the combined interrupt will be used in preference to
-> >            any others.
-> > -      - minItems: 2
-> > +      - minItems: 1
-> >          items:
-> > -          - const: eventq     # Event Queue not empty
-> > -          - const: gerror     # Global Error activated
-> > -          - const: priq       # PRI Queue not empty
-> > -          - const: cmdq-sync  # CMD_SYNC complete
-> > +          - enum:
-> > +              - eventq     # Event Queue not empty
-> > +              - gerror     # Global Error activated
-> > +              - cmdq-sync  # CMD_SYNC complete
-> > +              - priq       # PRI Queue not empty
-> > +          - enum:
-> > +              - gerror
-> > +              - cmdq-sync
-> > +              - priq
-> > +          - enum:
-> > +              - cmdq-sync
-> > +              - priq
-> > +          - enum:
-> > +              - cmdq-sync
-> > +              - priq  
-> 
-> The order should be strict, so if you want the first interrupt optional,
-> then:
-> oneOf:
->  - items:
->     ... 4 items list
->  - items
->     ... 3 items list
-> 
-> Best regards,
-> Krzysztof
+> > =
 
+> > > Does it make more sense to have a configurable approach similar to
+> > > CONFIG_NR_CPUS? or even better can we just replace those static
+> > > arrays with dynamic allocation so removing this restriction
+> > > completely?
+> > =
+
+> > Hotplug makes that fun, but I suppose you only need to grow the array
+> > in a given struct dmar_domain if you actually add a device to it that's
+> > behind a newly added IOMMU. I don't know if the complexity of making it
+> > fully dynamic is worth it though. We could make it a config option,
+> > and/or a command line option (perhaps automatically derived from
+> > CONFIG_NR_CPUS).
+> =
+
+> either config option or command line option is OK to me. Probably
+> the former is simpler given no need to dynamically expand the
+> static array. btw though deriving from CONFIG_NR_CPUS could work =
+
+> in this case it is unclear why tying the two together is necessary in
+> concept, e.g. is there guarantee that the number of IOMMUs must
+> be smaller than the number of CPUs in a platform?
+> =
+
+> > =
+
+> > If it wasn't for hotplug, I think we'd know the right number by the
+> > time we actually need it anyway, wouldn't we? Can we have a heuristic
+> > for how many DMAR units are likely to be hotplugged? Is it as simple as
+> > the ratio of present to not-yet-present CPUs in MADT?
+> =
+
+> Probably. But I don't have enough knowledge on DMAR hotplug to
+> judge (e.g. whether it's strictly tied to CPU hotplug and if yes whether
+> there could be multiple IOMMUs hotplugged together with a CPU
+> socket)...
+> =
+
+> Thanks
+> Kevin
+
+Would anyone be more comfortable if we only increase the limit where
+MAXSMP is set?
+
+i.e.
+
+#if defined(CONFIG_X86) && defined(CONFIG_MAXSMP)
+# define	DMAR_UNITS_SUPPORTED	640
+#elif defined(CONFIG_X86)
+# define	DMAR_UNITS_SUPPORTED	MAX_IO_APICS
+#else
+# define	DMAR_UNITS_SUPPORTED	64
+#endif
+
+Thank you all for your time looking at this.
+
+--> Steve Wahl
+
+-- =
+
+Steve Wahl, Hewlett Packard Enterprise
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
