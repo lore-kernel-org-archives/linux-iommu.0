@@ -1,63 +1,83 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 524CDC433EF
-	for <iommu@archiver.kernel.org>; Fri,  6 May 2022 09:33:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8CBEFC433F5
+	for <iommu@archiver.kernel.org>; Fri,  6 May 2022 09:42:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 05E0A83F15;
-	Fri,  6 May 2022 09:33:02 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 3389160A7D;
+	Fri,  6 May 2022 09:42:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KQyvVevMGaDT; Fri,  6 May 2022 09:33:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id BCED983EEF;
-	Fri,  6 May 2022 09:33:00 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id p9OX8vCYE_pb; Fri,  6 May 2022 09:41:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 0D0B5606FF;
+	Fri,  6 May 2022 09:41:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8F44DC0039;
-	Fri,  6 May 2022 09:33:00 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 69761C002D
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 09:32:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D76B1C0039;
+	Fri,  6 May 2022 09:41:58 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C6575C002D
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 09:41:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 565FF41910
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 09:32:59 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id A184483C28
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 09:41:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qIESwXz8HuzL for <iommu@lists.linux-foundation.org>;
- Fri,  6 May 2022 09:32:58 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wNW-hWPNs7OL for <iommu@lists.linux-foundation.org>;
+ Fri,  6 May 2022 09:41:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id 1DB524190C
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 09:32:57 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1D638152B;
- Fri,  6 May 2022 02:32:57 -0700 (PDT)
-Received: from [10.57.80.111] (unknown [10.57.80.111])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E52483FA31;
- Fri,  6 May 2022 02:32:55 -0700 (PDT)
-Message-ID: <9f6680ed-77b6-8440-078c-623406c823aa@arm.com>
-Date: Fri, 6 May 2022 10:32:50 +0100
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 0E69D832FF
+ for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 09:41:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1651830116; x=1683366116;
+ h=message-id:date:mime-version:subject:to:cc:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=9HpIY2d8dSccfuftpwYO1dFMBtQicI/mHMa5Q/2TB3g=;
+ b=Mw1SUeOYbu3YiFKo5g3SmfAAGdTPRYhpDsuHkQcso+GU1gksnAoDQriG
+ beRC9a77LQmGK8OAvT7MqI7bG7e2Y0u9LalLRTmFi2d1My2RBKMsA6Qwk
+ UnP247jgqHjgdwEv2kfWEP/cyazBFbr48KDR0vPFxNilLf4D5La/fjS8+
+ QjBOiEyA5rFz47xOcVaFrvxehugXwDK2e1YpWNpZ38xeB0DLLGfkttJDw
+ KU8qDYC7jqXeWk655WMFsAlwtWnOLxtL/zZdvVe+8aUQ0E7AWTKPhPiel
+ y3AbJY5aYE5z2h+HRRsLy9evyDqUPcBKvINx0y2eJEHkAWERcvR5V77e1 A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="267257139"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; d="scan'208";a="267257139"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 06 May 2022 02:41:55 -0700
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; d="scan'208";a="735545837"
+Received: from sunyanwa-mobl1.ccr.corp.intel.com (HELO [10.255.31.183])
+ ([10.255.31.183])
+ by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 06 May 2022 02:41:52 -0700
+Message-ID: <2e312943-61de-d4f3-d85d-c1b9e1a62e69@linux.intel.com>
+Date: Fri, 6 May 2022 17:41:50 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
 Subject: Re: [PATCH v2] iommu: iommu_group_claim_dma_owner() must always
  assign a domain
-Content-Language: en-GB
-To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
 References: <0-v2-f62259511ac0+6-iommu_dma_block_jgg@nvidia.com>
  <BN9PR11MB5276504B448C715527AD5F3F8CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
  <20220505153320.GS49344@nvidia.com>
- <BN9PR11MB5276476BB203D8D61CA8849C8CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <BN9PR11MB5276476BB203D8D61CA8849C8CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
-Cc: Will Deacon <will@kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Rodel,
- Jorg" <jroedel@suse.de>, Qian Cai <quic_qiancai@quicinc.com>
+ <1b8bf74a-cafa-822f-8843-0d1caf3f56ac@arm.com>
+ <20220505192720.GW49344@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220505192720.GW49344@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Rodel, Jorg" <jroedel@suse.de>,
+ Qian Cai <quic_qiancai@quicinc.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,86 +95,37 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-05-06 00:28, Tian, Kevin wrote:
->> From: Jason Gunthorpe
->> Sent: Thursday, May 5, 2022 11:33 PM
->>>>   	/*
->>>> -	 * If the group has been claimed already, do not re-attach the default
->>>> -	 * domain.
->>>> +	 * New drivers should support default domains and so the
->>>> detach_dev() op
->>>> +	 * will never be called. Otherwise the NULL domain indicates the
->>>> +	 * translation for the group should be set so it will work with the
->>>
->>> translation should be 'blocked'?
->>
->> No, not blocked.
->>
->>>> +	 * platform DMA ops.
->>>
->>> I didn't get the meaning of the last sentence.
->>
->> It is as discussed with Robin, NULL means to return the group back to
->> some platform defined translation, and in some cases this means
->> returning back to work with the platform's DMA ops - presumably if it
->> isn't using the dma api.
+On 2022/5/6 03:27, Jason Gunthorpe wrote:
+> On Thu, May 05, 2022 at 07:56:59PM +0100, Robin Murphy wrote:
 > 
-> This is clearer than the original text.
+>> Ack to that, there are certainly further improvements to consider once we've
+>> got known-working code into a released kernel, but let's not get ahead of
+>> ourselves just now.
+> Yes please
+>   
+>> (I'm pretty sure we could get away with a single blocking domain per IOMMU
+>> instance, rather than per group, but I deliberately saved that one for later
+>> - right now one per group to match default domains is simpler to reason
+>> about and less churny in the context of the current ownership patches)
+> I noticed this too..
+> 
+> But I thought the driver can do a better job of this. There is no
+> reason it has to allocate memory to return a IOMMU_DOMAIN_BLOCKED
+> domain - this struct could be a globally allocated singleton for the
+> entire driver and that would be even better memory savings.
+> 
+> For instance, here is a sketch for the Intel driver based on Baolu's
+> remark that intel_iommu_detach_device() establishes a blocking
+> behavior already on detach_dev (Baolu if you like it can you make a
+> proper patch?):
 
-Perhaps we could just leave that sentence as "Otherwise the NULL domain 
-represents platform-specific behaviour."
+Yes, I will.
 
->>
->>>> +	/*
->>>> +	 * Changing the domain is done by calling attach on the new domain.
->>>> +	 * Drivers should implement this so that DMA is always translated by
->>>
->>> what does 'this' mean?
->>
->> The code below - attach_dev called in a loop for each dev in the group.
-> 
-> Yes.
-> 
->>
->>>> +	 * either the new, old, or a blocking domain. DMA should never
->>>
->>> isn't the blocking domain passed in as the new domain?
->>
->> Soemtimes. This is a statement about the required
->> atomicity. New/old/block are all valid translations during the
->> operation. Identity is not.
-> 
-> but new/old/block are not the same type of classifications. A group
-> has an old domain and a new domain at this transition point, and
-> both old/new domains have a domain type (dma, unmanged, block,
-> identity, etc.). Mixing them together only increases confusion here.
+The same scheme could also be applied to identity/sva/block domains.
+Perhaps make it after v5.19.
 
-Good point - in particular I think the "DMA is always translated" part 
-would be more accurately said as "DMA is always managed". When we're 
-reattaching back to the default domain here, and it happens to be an 
-identity domain, then DMA *may* be untranslated, but in a manner that 
-we've knowingly chosen. The key point is that if the driver supports 
-core domains, then it should never have any in-between state that allows 
-access to anything *other* than the current domain or the new domain.
-
-Thanks,
-Robin.
-
-> 
->>
->> So, I'm going to leave this patch as-is since it has been tested now
->> and we need to get the series back into iommu-next ASAP.
->>
-> 
-> Agree. Just hope some improvements on the code comment.
-> 
-> But either way given no more code change:
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
