@@ -1,77 +1,83 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A58E1C433FE
-	for <iommu@archiver.kernel.org>; Fri,  6 May 2022 21:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9B874C433F5
+	for <iommu@archiver.kernel.org>; Sat,  7 May 2022 08:33:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 4777F81396;
-	Fri,  6 May 2022 21:51:59 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 27B1760E17;
+	Sat,  7 May 2022 08:33:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OExpbAoeqzJp; Fri,  6 May 2022 21:51:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 3000D81389;
-	Fri,  6 May 2022 21:51:58 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id hT3iLyfWyP53; Sat,  7 May 2022 08:33:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 4DACC60E15;
+	Sat,  7 May 2022 08:33:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 09FB6C0039;
-	Fri,  6 May 2022 21:51:58 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7A409C002D
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 21:51:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DF656C0039;
+	Sat,  7 May 2022 08:33:08 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DD674C002D
+ for <iommu@lists.linux-foundation.org>; Sat,  7 May 2022 08:33:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 5B33481377
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 21:51:56 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id B447640915
+ for <iommu@lists.linux-foundation.org>; Sat,  7 May 2022 08:33:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qkSy6TunmXhA for <iommu@lists.linux-foundation.org>;
- Fri,  6 May 2022 21:51:55 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id EqHrxx_bAYpN for <iommu@lists.linux-foundation.org>;
+ Sat,  7 May 2022 08:33:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by smtp1.osuosl.org (Postfix) with ESMTPS id AC08881373
- for <iommu@lists.linux-foundation.org>; Fri,  6 May 2022 21:51:55 +0000 (UTC)
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1651873913;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=kJ3McpVzRFsgMBX23wgT/+qwHu2rZPiW0v6oIUJCIkI=;
- b=igj0qkwuwc7TJty88qJFZzgeFNtRFh7UFPJIoYtA35jxy2m3y6o5O4BdduJ2eTQP9yoEOj
- Y/Pma7uZ5nWvIQhbGPHLJmY6SG3i1CJVChRqzHb1xg1wCqo9z7wxEHAXtt5f9+bWp12aKl
- yxCDDHDVcTytIFMWLuivfqlaAY9rBazDQQyIjF1A+y1F0wqODasPHnEJyRNpLJt15J6YsH
- E5X1+fUKoagpdADMaiiKzhZbUA2CMwr6sDFvgkwLGqIpuqPfaj+XgnRcnoX0GKhhe7+t9y
- p/OQVpvdQapJpV5hYP5MRwR5/f2imVDr8Suxn6wvt2CDlZBIK6rpU9RNXp1y6w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1651873913;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=kJ3McpVzRFsgMBX23wgT/+qwHu2rZPiW0v6oIUJCIkI=;
- b=JhebiFX5xqgDI1pfgNQ3AdRq6c3Eu2eESoBA4srTY5Ncp8q55tWwCzdaaNdIoRN0NdxHUo
- pfYq18JFAjczX9Dg==
-To: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>, x86@kernel.org
-Subject: Re: [PATCH v6 15/29] x86/hpet: Add helper function
- hpet_set_comparator_periodic()
-In-Reply-To: <87mtfufifa.ffs@tglx>
-References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-16-ricardo.neri-calderon@linux.intel.com>
- <87mtfufifa.ffs@tglx>
-Date: Fri, 06 May 2022 23:51:52 +0200
-Message-ID: <87ilqifhxj.ffs@tglx>
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 8879B4090C
+ for <iommu@lists.linux-foundation.org>; Sat,  7 May 2022 08:33:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1651912385; x=1683448385;
+ h=message-id:date:mime-version:subject:from:to:cc:
+ references:in-reply-to:content-transfer-encoding;
+ bh=RBU8lfPbnJq0/IUDWjwcu17pUEjRs6Stfy9C+m2jzMs=;
+ b=REQLKspCi7KiyR2n0dFZHx4vIfFY3T+q0vB5ccpa7Dvn6WzoAwHa5Ape
+ jjTEkQz/GbG8rAFwiT4q0Nivp0Anwd+Wfp/jzdcxRtzLawnjX8Gkvdg+B
+ k1BFUVNhZ527GFlxhvPQRWddm7YnxkgFfiSRqkH1heXlUloohJRQFNWYn
+ 2eJE9zm+0FITJvJU7VhJv61e+UqGNJ6hvxpVLYUU1hPfdziyq89Hc6WzY
+ 8K0s3vwqaIgaMyQDEPm4Q0NSODjuJvInKOypD7pVFPdKVu3GNrZ1Iu3D1
+ ImSJXDLk7oei9GnV2+D2mh0EjZVgd0wPXMaTMV0n/n976JKUmi8F1yzoE g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="293893103"
+X-IronPort-AV: E=Sophos;i="5.91,206,1647327600"; d="scan'208";a="293893103"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 07 May 2022 01:33:04 -0700
+X-IronPort-AV: E=Sophos;i="5.91,206,1647327600"; d="scan'208";a="586422113"
+Received: from zhuangxi-mobl.ccr.corp.intel.com (HELO [10.255.30.94])
+ ([10.255.30.94])
+ by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 07 May 2022 01:33:00 -0700
+Message-ID: <669fb111-9821-aadc-acbf-de42bc551fc4@linux.intel.com>
+Date: Sat, 7 May 2022 16:32:58 +0800
 MIME-Version: 1.0
-Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
- Andi Kleen <ak@linux.intel.com>, linuxppc-dev@lists.ozlabs.org,
- Ricardo Neri <ricardo.neri@intel.com>, Stephane Eranian <eranian@google.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Tony Luck <tony.luck@intel.com>, Nicholas Piggin <npiggin@gmail.com>,
- Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- David Woodhouse <dwmw2@infradead.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v5 04/12] iommu/sva: Basic data structures for SVA
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <20220502014842.991097-1-baolu.lu@linux.intel.com>
+ <20220502014842.991097-5-baolu.lu@linux.intel.com> <YnFv0ps0Ad8v+7uH@myrica>
+ <d490e542-140c-58c3-bb11-9990795272b1@linux.intel.com>
+In-Reply-To: <d490e542-140c-58c3-bb11-9990795272b1@linux.intel.com>
+Cc: Vinod Koul <vkoul@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
+ Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Will Deacon <will@kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>, linux-kernel@vger.kernel.org,
+ Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,48 +90,38 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, May 06 2022 at 23:41, Thomas Gleixner wrote:
-> On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
->> Programming an HPET channel as periodic requires setting the
->> HPET_TN_SETVAL bit in the channel configuration. Plus, the comparator
->> register must be written twice (once for the comparator value and once for
->> the periodic value). Since this programming might be needed in several
->> places (e.g., the HPET clocksource and the HPET-based hardlockup detector),
->> add a helper function for this purpose.
->>
->> A helper function hpet_set_comparator_oneshot() could also be implemented.
->> However, such function would only program the comparator register and the
->> function would be quite small. Hence, it is better to not bloat the code
->> with such an obvious function.
->
-> This word salad above does not provide a single reason why the periodic
-> programming function is required and better suited for the NMI watchdog
-> case and then goes on and blurbs about why a function which is not
-> required is not implemented. The argument about not bloating the code
-> with an "obvious???" function which is quite small is slightly beyond my
-> comprehension level.
-
-What's even more uncomprehensible is that the patch which actually sets
-up that NMI watchdog cruft has:
-
-> +       if (hc->boot_cfg & HPET_TN_PERIODIC_CAP)
-> +               hld_data->has_periodic = true;
-
-So how the heck does that work with a HPET which does not support
-periodic mode?
-
-That watchdog muck will still happily invoke that set periodic function
-in the hope that it works by chance?
-
-Thanks,
-
-        tglx
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgSmVhbiwKCk9uIDIwMjIvNS81IDE0OjQyLCBCYW9sdSBMdSB3cm90ZToKPiBPbiAyMDIyLzUv
+NCAwMjowOSwgSmVhbi1QaGlsaXBwZSBCcnVja2VyIHdyb3RlOgo+PiBPbiBNb24sIE1heSAwMiwg
+MjAyMiBhdCAwOTo0ODozNEFNICswODAwLCBMdSBCYW9sdSB3cm90ZToKPj4+IFVzZSBiZWxvdyBk
+YXRhIHN0cnVjdHVyZXMgZm9yIFNWQSBpbXBsZW1lbnRhdGlvbiBpbiB0aGUgSU9NTVUgY29yZToK
+Pj4+Cj4+PiAtIHN0cnVjdCBpb21tdV9zdmFfaW9hcwo+Pj4gwqDCoCBSZXByZXNlbnQgdGhlIEkv
+TyBhZGRyZXNzIHNwYWNlIHNoYXJlZCB3aXRoIGFuIGFwcGxpY2F0aW9uIENQVSAKPj4+IGFkZHJl
+c3MKPj4+IMKgwqAgc3BhY2UuIFRoaXMgc3RydWN0dXJlIGhhcyBhIDE6MSByZWxhdGlvbnNoaXAg
+d2l0aCBhbiBtbV9zdHJ1Y3QuIEl0Cj4+PiDCoMKgIGdyYWJzIGEgIm1tLT5tbV9jb3VudCIgcmVm
+Y291bnQgZHVyaW5nIGNyZWF0aW9uIGFuZCBkcm9wIGl0IG9uIAo+Pj4gcmVsZWFzZS4KPj4KPj4g
+RG8gd2UgYWN0dWFsbHkgbmVlZCB0aGlzIHN0cnVjdHVyZT/CoCBBdCB0aGUgbW9tZW50IGl0IG9u
+bHkga2VlcHMgdHJhY2sgb2YKPj4gYm9uZHMsIHdoaWNoIHdlIGNhbiBtb3ZlIHRvIHN0cnVjdCBk
+ZXZfaW9tbXUuIFJlcGxhY2luZyBpdCBieSBhIG1tIAo+PiBwb2ludGVyCj4+IGluIHN0cnVjdCBp
+b21tdV9kb21haW4gc2ltcGxpZmllcyB0aGUgZHJpdmVyIGFuZCBzZWVtcyB0byB3b3JrCj4gCj4g
+RmFpciBlbm91Z2guCj4gCj4gK3N0cnVjdCBpb21tdV9zdmFfaW9hcyB7Cj4gK8KgwqDCoCBzdHJ1
+Y3QgbW1fc3RydWN0ICptbTsKPiArwqDCoMKgIGlvYXNpZF90IHBhc2lkOwo+ICsKPiArwqDCoMKg
+IC8qIENvdW50ZXIgb2YgZG9tYWlucyBhdHRhY2hlZCB0byB0aGlzIGlvYXMuICovCj4gK8KgwqDC
+oCByZWZjb3VudF90IHVzZXJzOwo+ICsKPiArwqDCoMKgIC8qIEFsbCBiaW5kaW5ncyBhcmUgbGlu
+a2VkIGhlcmUuICovCj4gK8KgwqDCoCBzdHJ1Y3QgbGlzdF9oZWFkIGJvbmRzOwo+ICt9Owo+IAo+
+IEJ5IG1vdmluZyBAbW0gdG8gc3RydWN0IGlvbW11X2RvbWFpbiBhbmQgQGJvbmRzIHRvIHN0cnVj
+dCBkZXZfaW9tbXUsIHRoZQo+IGNvZGUgbG9va3Mgc2ltcGxlci4gVGhlIG1tLCBzdmEgZG9tYWlu
+IGFuZCBwZXItZGV2aWNlIGRldl9pb21tdSBhcmUKPiBndWFyYW50ZWVkIHRvIGJlIHZhbGlkIGR1
+cmluZyBiaW5kKCkgYW5kIHVuYmluZCgpLgo+IAo+IFdpbGwgaGVhZCB0aGlzIGRpcmVjdGlvbiBp
+biB0aGUgbmV4dCB2ZXJzaW9uLgoKSSdtIHRyeWluZyB0byBpbXBsZW1lbnQgdGhpcyBpZGVhIGlu
+IHJlYWwgY29kZS4gSXQgc2VlbXMgdGhhdCB3ZSBuZWVkCmFkZGl0aW9uYWwgZmllbGRzIGluIHN0
+cnVjdCBpb21tdV9kb21haW4gdG8gdHJhY2sgd2hpY2ggZGV2aWNlcyB0aGUgbW0Kd2FzIGJvdW5k
+IHRvLiBJdCBkb2Vzbid0IHNpbXBsaWZ5IHRoZSBjb2RlIG11Y2guIEFueSB0aG91Z2h0cz8KCkJl
+c3QgcmVnYXJkcywKYmFvbHUKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
+b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
+bW11
