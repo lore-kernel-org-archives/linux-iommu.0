@@ -1,67 +1,70 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B5E7BC433EF
-	for <iommu@archiver.kernel.org>; Sun,  8 May 2022 12:38:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3C147C433F5
+	for <iommu@archiver.kernel.org>; Sun,  8 May 2022 12:38:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 691D160EEC;
-	Sun,  8 May 2022 12:38:44 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id EC0F34090B;
+	Sun,  8 May 2022 12:38:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Ltcq-DeR6o5w; Sun,  8 May 2022 12:38:43 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 4A3B960EE8;
-	Sun,  8 May 2022 12:38:43 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PF8aJX5iozpd; Sun,  8 May 2022 12:38:45 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 7E5514090D;
+	Sun,  8 May 2022 12:38:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 32ABBC0032;
-	Sun,  8 May 2022 12:38:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6160DC0032;
+	Sun,  8 May 2022 12:38:45 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D6E40C002D
- for <iommu@lists.linux-foundation.org>; Sun,  8 May 2022 12:38:41 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2165BC002D
+ for <iommu@lists.linux-foundation.org>; Sun,  8 May 2022 12:38:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id B5A9A60EE8
- for <iommu@lists.linux-foundation.org>; Sun,  8 May 2022 12:38:41 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 0042560EF1
+ for <iommu@lists.linux-foundation.org>; Sun,  8 May 2022 12:38:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lAV1oZWUGdaJ for <iommu@lists.linux-foundation.org>;
- Sun,  8 May 2022 12:38:41 +0000 (UTC)
+ with ESMTP id zhlt0qQQxziY for <iommu@lists.linux-foundation.org>;
+ Sun,  8 May 2022 12:38:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 144BF60EE3
- for <iommu@lists.linux-foundation.org>; Sun,  8 May 2022 12:38:41 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 6169E60EEC
+ for <iommu@lists.linux-foundation.org>; Sun,  8 May 2022 12:38:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1652013521; x=1683549521;
+ t=1652013523; x=1683549523;
  h=from:to:cc:subject:date:message-id:in-reply-to:
  references:mime-version:content-transfer-encoding;
- bh=dhHzVPtGCmtqjw7nHlmUc46+bVg8lesIZ0/A9YXT9us=;
- b=e+OJFwPAI6qqKWICwfDQwWdFuoEWrL/i02aGEs6FJrB912s7B5+eGmbQ
- mZ12L6L/Nc3wRF5ZmohqOSat5/tibOb9ZYtYOWQG/Bz8EVCmqLUybxZNX
- uyWD3k53aiNz9++wa+kdXU+RYl1Km3IoDCxBcevAzvuj62PU+MY4KcK8y
- ORJ2/a1bzYxHSRLc2C3QPkCRpx1X7m1V8fn0c/FYUxEN+/Xf/VWmbt6SJ
- ivceEiTNwHXXHBq+lvngcw5SavIJTiD7Ja5Tf9ht/8b9fHAHjTRNz9JIn
- P0lqk+kBLDCBr4+MfkOuGMfrQeenTvtxRnr19As+FnmcFRehoNjV0Wj0W g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10340"; a="331845783"
-X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; d="scan'208";a="331845783"
+ bh=eGei70TdCcyqJEmDRek1hExpZpSxGelpQ6HhzQKlC2s=;
+ b=J1Pvi03ZKwxsNHhzpH8+QM+rLJI4cBWpk67/IFBy7DvVE075GxGCqUGv
+ A1KsSU2/+D7tSkffzw917taJGh7B3BBEzVYFSLV9RzRDV60uZde/+3dGj
+ Dj7E9rTBvN9RBRB2slZx+u61MXApOWN8BwYLes2ZdoF9KkC9NA/fq3UEu
+ Lah976zfY+pNZ0RRTPqLcKnYwhqMjk2iu/EHJcPhRtFdNI+nAlcbmul9s
+ 5/ukSZvMBJ7CFoABw8XlUMmGbKfMx7PWNqW04JpL1TYm5jmcp9J7DayaL
+ zn3xowMwDz7ftPklXn9jGq0O7JwwgNhuUQQLYOOY4HSG4dreXK85seaeO w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10340"; a="331845796"
+X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; d="scan'208";a="331845796"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 08 May 2022 05:38:40 -0700
+ 08 May 2022 05:38:43 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; d="scan'208";a="710143749"
+X-IronPort-AV: E=Sophos;i="5.91,208,1647327600"; d="scan'208";a="710143757"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
- by fmsmga001.fm.intel.com with ESMTP; 08 May 2022 05:38:38 -0700
+ by fmsmga001.fm.intel.com with ESMTP; 08 May 2022 05:38:41 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
  Alex Williamson <alex.williamson@redhat.com>,
  Kevin Tian <kevin.tian@intel.com>
-Subject: [PATCH v4 3/4] iommu/vt-d: Remove domain_update_iommu_snooping()
-Date: Sun,  8 May 2022 20:35:24 +0800
-Message-Id: <20220508123525.1973626-4-baolu.lu@linux.intel.com>
+Subject: [PATCH v4 4/4] iommu/vt-d: Remove hard coding PGSNP bit in PASID
+ entries
+Date: Sun,  8 May 2022 20:35:25 +0800
+Message-Id: <20220508123525.1973626-5-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220508123525.1973626-1-baolu.lu@linux.intel.com>
 References: <20220508123525.1973626-1-baolu.lu@linux.intel.com>
@@ -85,70 +88,31 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The IOMMU force snooping capability is not required to be consistent
-among all the IOMMUs anymore. Remove force snooping capability check
-in the IOMMU hot-add path and domain_update_iommu_snooping() becomes
-a dead code now.
+As enforce_cache_coherency has been introduced into the iommu_domain_ops,
+the kernel component which owns the iommu domain is able to opt-in its
+requirement for force snooping support. The iommu driver has no need to
+hard code the page snoop control bit in the PASID table entries anymore.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 ---
- drivers/iommu/intel/iommu.c | 34 +---------------------------------
- 1 file changed, 1 insertion(+), 33 deletions(-)
+ drivers/iommu/intel/pasid.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 048ebfbd5fcb..444d51a18c93 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -533,33 +533,6 @@ static void domain_update_iommu_coherency(struct dmar_domain *domain)
- 	rcu_read_unlock();
- }
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index d19dd66a670c..cb4c1d0cf25c 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -710,9 +710,6 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+ 	pasid_set_fault_enable(pte);
+ 	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
  
--static bool domain_update_iommu_snooping(struct intel_iommu *skip)
--{
--	struct dmar_drhd_unit *drhd;
--	struct intel_iommu *iommu;
--	bool ret = true;
+-	if (domain->domain.type == IOMMU_DOMAIN_UNMANAGED)
+-		pasid_set_pgsnp(pte);
 -
--	rcu_read_lock();
--	for_each_active_iommu(iommu, drhd) {
--		if (iommu != skip) {
--			/*
--			 * If the hardware is operating in the scalable mode,
--			 * the snooping control is always supported since we
--			 * always set PASID-table-entry.PGSNP bit if the domain
--			 * is managed outside (UNMANAGED).
--			 */
--			if (!sm_supported(iommu) &&
--			    !ecap_sc_support(iommu->ecap)) {
--				ret = false;
--				break;
--			}
--		}
--	}
--	rcu_read_unlock();
--
--	return ret;
--}
--
- static int domain_update_iommu_superpage(struct dmar_domain *domain,
- 					 struct intel_iommu *skip)
- {
-@@ -3606,12 +3579,7 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
- 			iommu->name);
- 		return -ENXIO;
- 	}
--	if (!ecap_sc_support(iommu->ecap) &&
--	    domain_update_iommu_snooping(iommu)) {
--		pr_warn("%s: Doesn't support snooping.\n",
--			iommu->name);
--		return -ENXIO;
--	}
-+
- 	sp = domain_update_iommu_superpage(NULL, iommu) - 1;
- 	if (sp >= 0 && !(cap_super_page_val(iommu->cap) & (1 << sp))) {
- 		pr_warn("%s: Doesn't support large page.\n",
+ 	/*
+ 	 * Since it is a second level only translation setup, we should
+ 	 * set SRE bit as well (addresses are expected to be GPAs).
 -- 
 2.25.1
 
