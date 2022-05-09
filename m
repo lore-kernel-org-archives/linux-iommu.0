@@ -1,80 +1,87 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AC842C433F5
-	for <iommu@archiver.kernel.org>; Mon,  9 May 2022 19:27:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7027BC433F5
+	for <iommu@archiver.kernel.org>; Mon,  9 May 2022 21:51:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 53D6A60E57;
-	Mon,  9 May 2022 19:27:35 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id D096C40868;
+	Mon,  9 May 2022 21:51:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0KVOdkG4gBdb; Mon,  9 May 2022 19:27:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 4D0F860E60;
-	Mon,  9 May 2022 19:27:34 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id elozHj9IOHY5; Mon,  9 May 2022 21:51:46 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 5E40C40873;
+	Mon,  9 May 2022 21:51:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 20C1CC0032;
-	Mon,  9 May 2022 19:27:34 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B10E0C002D
- for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 19:27:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1C00CC0032;
+	Mon,  9 May 2022 21:51:46 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4A88EC002D
+ for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 21:51:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 90FF84000B
- for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 19:27:33 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2FD1940873
+ for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 21:51:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ea6rdj3ApTcs for <iommu@lists.linux-foundation.org>;
- Mon,  9 May 2022 19:27:33 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from dfw.source.kernel.org (dfw.source.kernel.org
- [IPv6:2604:1380:4641:c500::1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id F13CA40004
- for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 19:27:32 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id C6FED61694
- for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 19:27:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37E3CC385BD
- for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 19:27:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1652124451;
- bh=LHhMugA56ra1E/f4M4s+HXIm7ikQL8aa6G58KTVtBz4=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=h2xt4MIT0hq1byYBVWoaJFVZH1PqfmapTHYVbY4QF1GfBw0gWYpkJvffxYVJROp/w
- o5e5XlseTtAbyczalx8WZma7nau3776eEMiPnAb+aH7DGy0paSceaMMK2NgH7mDaq7
- V6qTzsl90AZuCQCvlnnxzD8SWTPrbuwvdWXVVtFaMT3bvb+XpjRevOipjIyd5LJ+QM
- 5lmV1PyqZUkQhLRASuo/BMjBfrdnF6ogjqVZ5ErYdH/2BTdCsGCeE1sWNtQT8ooI2a
- 1MGt9OfEic40lzbwntnx56i0TY8f3A/Y94vuuNcULimj4Higp6KJ9f0rpfeGaAwk44
- BUgdRk+a2pzvw==
-Received: by mail-pl1-f175.google.com with SMTP id n18so14803630plg.5
- for <iommu@lists.linux-foundation.org>; Mon, 09 May 2022 12:27:31 -0700 (PDT)
-X-Gm-Message-State: AOAM533bDKAfK6uWtQ92cNzoNK0vMw/JExOTI7iB32CTTgvQmOCEH/lk
- i+vKusUDMRIz8DfMlGewRQM8vLhacutY1CRYvQ==
-X-Google-Smtp-Source: ABdhPJxsHGmg1x9eSAFKq3936wK9SVxFgpdBQ4tMi6tmOw4dHd/EQlYww4Lzlp1GP6qEzY5zGXKq8YCcknR/kaYKZuM=
-X-Received: by 2002:a17:902:9345:b0:15f:186b:e478 with SMTP id
- g5-20020a170902934500b0015f186be478mr4219682plp.117.1652124450742; Mon, 09
- May 2022 12:27:30 -0700 (PDT)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xs7GJbku7apu for <iommu@lists.linux-foundation.org>;
+ Mon,  9 May 2022 21:51:44 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com
+ [IPv6:2607:f8b0:4864:20::1134])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 2429C40868
+ for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 21:51:44 +0000 (UTC)
+Received: by mail-yw1-x1134.google.com with SMTP id
+ 00721157ae682-2ebf4b91212so159901977b3.8
+ for <iommu@lists.linux-foundation.org>; Mon, 09 May 2022 14:51:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=AvO3ygd/UqQBdhP/KL3f8qnTPDYPqb0azYvzR8YOfT8=;
+ b=R3Bl52ygNd7YCtVGI1Dw5zkcyKwpLE8CGq7E2JVCvhEmmiwnJ4wmVpVM4hlSvlECuc
+ OQDjh4PbkC9KiRGsYt0AXq17RBizWsfzpjBDi44Q8JKJVglwWIHC0BYVTNq/nQC/gYia
+ I4x5J+hUljknRIc8rVa8KUkLegjNrIQsTA4RjmG7enjhjU7pf9lmdlt0hY4Xx2xd7Eud
+ CbDnUZubySlms7d+G+FN3irKBt4FdgSC6BgxnsVCA3QRtieNX4s3giofwSk9qxOPcB/H
+ bqwRhSvS+2yebAoixhhQ2quEtBR3/WErNLr/69uUN0Bm818iDpAErl2YPNBfXBbMM2zy
+ eOIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=AvO3ygd/UqQBdhP/KL3f8qnTPDYPqb0azYvzR8YOfT8=;
+ b=0j7WKxN6yC5DTpFCr1fnCIlaQePyIw2C7QOXTJA4uktjsvy/kgyuUpTDBE4ocLebDC
+ e+OpBIWw8c5hoFbbriVjt04030V3ErNHOhcl7W+HDKDe4dPBJhYszq5ND6LvgXTCWRqG
+ F3UuplD2e2vTdJOVgLJ/GoRKnn3O48VCjmElWGHPx0xicQN0vFnLu9S+chXx2mMPirRF
+ DvIDpphBxun7orn5NJNbYXZAI+DH8u5TO5R7U/bwiiTTnDXYzZIvZEwLBo5ReG+fgb4f
+ ESnEzMISEwHU8shmFR+im/+ve1LWT17A8YZCEJBp3uViZ7uIaL83lHkMXjWyACD0PZiu
+ zVAg==
+X-Gm-Message-State: AOAM533q7+29lvWSZHvDPwRro6kjJHzWVYD6QvJVnoKXMZc1E4tTkO4u
+ pi1apyd7nOo0sBzFWnOv/tX1H8+GPFdjHae1UxYXrQ==
+X-Google-Smtp-Source: ABdhPJz66qKQ182cMfzUcfRuUB+ezFafeLeHufnODn96xLMf/SFpFj0VGuEdSlO2r018rYSvQhdo92Derlajd83ax3s=
+X-Received: by 2002:a0d:e5c6:0:b0:2f8:c866:7af9 with SMTP id
+ o189-20020a0de5c6000000b002f8c8667af9mr16673482ywe.268.1652133101967; Mon, 09
+ May 2022 14:51:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <35661036a7e4160850895f9b37f35408b6a29f2f.1652091160.git.robin.murphy@arm.com>
-In-Reply-To: <35661036a7e4160850895f9b37f35408b6a29f2f.1652091160.git.robin.murphy@arm.com>
-From: Rob Herring <robh@kernel.org>
-Date: Mon, 9 May 2022 14:27:19 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqLSt4n2LMC_Rcz01jYdzeAVM0aodBibSNxOcqt1m0vJfw@mail.gmail.com>
-Message-ID: <CAL_JsqLSt4n2LMC_Rcz01jYdzeAVM0aodBibSNxOcqt1m0vJfw@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu/dma: Explicitly sort PCI DMA windows
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: PCI <linux-pci@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Will Deacon <will@kernel.org>
+References: <20220421074204.1284072-1-hch@lst.de>
+ <CACRpkdbdKBfmXGdyTm3T-MFAK30N-z4KH0k8eD8F7xaYUbDDhA@mail.gmail.com>
+ <Ynk2wjRyH05uEJiO@shell.armlinux.org.uk>
+In-Reply-To: <Ynk2wjRyH05uEJiO@shell.armlinux.org.uk>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Mon, 9 May 2022 23:51:29 +0200
+Message-ID: <CACRpkdYVrPt_GHt19pT2BQZJ08QrS87XfvU-aWVibzP2qBSV2g@mail.gmail.com>
+Subject: Re: fully convert arm to use dma-direct
+To: "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc: Andrew Lunn <andrew@lunn.ch>, Arnd Bergmann <arnd@kernel.org>,
+ Marc Zyngier <maz@kernel.org>, Gregory Clement <gregory.clement@bootlin.com>,
+ linux-usb@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Alan Stern <stern@rowland.harvard.edu>,
+ Andre Przywara <andre.przywara@arm.com>, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org,
+ Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,27 +99,20 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, May 9, 2022 at 5:16 AM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> Originally, creating the dma_ranges resource list in pre-sorted fashion
-> was the simplest and most efficient way to enforce the order required by
-> iova_reserve_pci_windows(). However since then at least one PCI host
-> driver is now re-sorting the list for its own probe-time processing,
-> which doesn't seem entirely unreasonable, so that basic assumption no
-> longer holds. Make iommu-dma robust and get the sort order it needs by
-> explicitly sorting, which means we can also save the effort at creation
-> time and just build the list in whatever natural order the DT had.
->
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->
-> v2: Clean up now-unused local variable
->
->  drivers/iommu/dma-iommu.c | 13 ++++++++++++-
->  drivers/pci/of.c          |  8 +-------
->  2 files changed, 13 insertions(+), 8 deletions(-)
+On Mon, May 9, 2022 at 5:44 PM Russell King (Oracle)
+<linux@armlinux.org.uk> wrote:
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+> Assabet is what needs testing for that, or one of the SA1110 machines.
+> I'm away from home on my boat (and have been for the last two and a bit
+> weeks) so can't test. Sorry.
+
+Hm I actually have an Assabet, but I never even powered it up. I'm
+on parental leave for another week but after that I could actually
+try to get that machine up, but it'd be a bit late for this merge window
+indeed.
+
+BR
+Linus Walleij
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
