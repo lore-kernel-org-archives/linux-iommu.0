@@ -1,67 +1,58 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CC562C433F5
-	for <iommu@archiver.kernel.org>; Mon,  9 May 2022 09:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B439BC433F5
+	for <iommu@archiver.kernel.org>; Mon,  9 May 2022 10:16:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 5C77E408B2;
-	Mon,  9 May 2022 09:59:24 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 61505405D7;
+	Mon,  9 May 2022 10:16:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3guSAjSmhdMe; Mon,  9 May 2022 09:59:23 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id IEbFroA_Qg82; Mon,  9 May 2022 10:16:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id E6F1F40898;
-	Mon,  9 May 2022 09:59:22 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 2DE8640499;
+	Mon,  9 May 2022 10:16:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CA909C0032;
-	Mon,  9 May 2022 09:59:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 17A3CC0039;
+	Mon,  9 May 2022 10:16:16 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9EDDAC002D
- for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 09:59:21 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3A6A3C002D
+ for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 10:16:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8D32C81CA7
- for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 09:59:21 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 1AF6F81B10
+ for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 10:16:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QAeFWlERD31a for <iommu@lists.linux-foundation.org>;
- Mon,  9 May 2022 09:59:20 +0000 (UTC)
+ with ESMTP id 2rFuAB0neX0P for <iommu@lists.linux-foundation.org>;
+ Mon,  9 May 2022 10:16:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id AD06A81CA3
- for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 09:59:20 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 2B21D81A58
+ for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 10:16:14 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D20441480;
- Mon,  9 May 2022 02:59:19 -0700 (PDT)
-Received: from [10.57.80.111] (unknown [10.57.80.111])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 10EF23F66F;
- Mon,  9 May 2022 02:59:17 -0700 (PDT)
-Message-ID: <0f838b34-460c-ed83-7b98-6cda444b10c2@arm.com>
-Date: Mon, 9 May 2022 10:59:11 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2] iommu: iommu_group_claim_dma_owner() must always
- assign a domain
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <0-v2-f62259511ac0+6-iommu_dma_block_jgg@nvidia.com>
- <BN9PR11MB5276504B448C715527AD5F3F8CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220505153320.GS49344@nvidia.com>
- <BN9PR11MB5276476BB203D8D61CA8849C8CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
- <9f6680ed-77b6-8440-078c-623406c823aa@arm.com>
- <20220506131053.GA522325@nvidia.com>
- <27088ae5-05d6-122a-d9de-80e10eecac38@arm.com>
- <20220506135431.GC49344@nvidia.com>
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4C0E61063;
+ Mon,  9 May 2022 03:16:13 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
+ [10.1.196.40])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 3D4073F66F;
+ Mon,  9 May 2022 03:16:12 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220506135431.GC49344@nvidia.com>
-Cc: Will Deacon <will@kernel.org>, "Tian, Kevin" <kevin.tian@intel.com>, "Rodel,
- Jorg" <jroedel@suse.de>, Qian Cai <quic_qiancai@quicinc.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+To: joro@8bytes.org,
+	will@kernel.org,
+	bhelgaas@google.com,
+	robh@kernel.org
+Subject: [PATCH v2] iommu/dma: Explicitly sort PCI DMA windows
+Date: Mon,  9 May 2022 11:16:08 +0100
+Message-Id: <35661036a7e4160850895f9b37f35408b6a29f2f.1652091160.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.35.3.dirty
+MIME-Version: 1.0
+Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -74,44 +65,104 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMi0wNS0wNiAxNDo1NCwgSmFzb24gR3VudGhvcnBlIHdyb3RlOgo+IE9uIEZyaSwgTWF5
-IDA2LCAyMDIyIGF0IDAyOjM1OjUwUE0gKzAxMDAsIFJvYmluIE11cnBoeSB3cm90ZToKPiAKPj4+
-IFNvIHlvdSB3YW50IHRvIHNheSAiRE1BIGlzIGFsd2F5cyBtYW5hZ2VkIiB3aGVuIGF0dGFjaGlu
-ZyBhIGRvbWFpbiBvZgo+Pj4gdHlwZSBJT01NVV9ET01BSU5fVU5NQU5BR0VEPyA6KQo+Pgo+PiBU
-b3VjaMOpIDspIEp1c3QgZ29lcyB0byBjb25maXJtIHRoZSBwb2ludCBhYm92ZSB0aGF0IGNvbmZ1
-c2lvbiBiZXR3ZWVuCj4+IGdlbmVyYWwgY29uY2VwdHMgYW5kIHNwZWNpZmljIEFQSSB0ZXJtcyBp
-cyBhbGwgdG9vIGVhc3kuIEFuICJ1bm1hbmFnZWQiCj4+IGRvbWFpbiBmcm9tIHRoZSBQb1Ygb2Yg
-dGhlIEFQSSBqdXN0IG1lYW5zIGl0J3MgbWFuYWdlZCBieSB0aGUgZXh0ZXJuYWwKPj4gY2FsbGVy
-LCBidXQgeW91J3JlIHJpZ2h0IHRoYXQgdGhhdCdzIG5vdCBuZWNlc3NhcmlseSBzbyBvYnZpb3Vz
-IGVpdGhlci4KPiAKPiBZZWFoLCBJJ20gbm90IHNvIGtlZW4gb24gdGhlIG5hbWluZyB1c2VkIGZv
-ciBJT01NVV9ET01BSU5fKgo+IAo+IEkgbG9va2VkIGZvciBhIGJpdCBhbmQgY291bGQgbm90IGZp
-Z3VyZSBvdXQgd2h5IHdlIG5lZWQgdG8gaGF2ZQo+IElPTU1VX0RPTUFJTl9ETUEgZWl0aGVyLi4g
-SSBkaWRuJ3QgZmluZCBhbnRoaW5nIG9idmlvdXMgaW4gdGhlIGlvbW11Cj4gZHJpdmVycyB0aGF0
-IGxvb2tlZCBsaWtlIGEgc3BlY2lhbCBjYXNlIGZvciB0aGlzPyBNb3N0IGRyaXZlcnMgdHJlYXQK
-PiBpdCBpZGVudGljYWxseSB0byBVTk1BTkFHRUQgaW4gdGhlaXIgYWxsb2MgZnVuY3Rpb25zCj4g
-Cj4gT25seSBtdGssIGFybS1zbW11IGFuZCBzb21lIG9kZCBzdHVmZiBpbiBJbnRlbCBzZWVtZWQg
-dG8gYmUgc2Vuc2l0aXZlPwoKWWVzLCB0aGF0J3MgYSByZWxhdGl2ZWx5IHJlY2VudCBjaGFuZ2Vb
-MV0gLSBwcmlvciB0byB0aGF0LCBkcml2ZXJzIGRpZCAKc3RpbGwgaGF2ZSB0byB0YWtlIChtaW5p
-bWFsKSBhY3Rpb24gdG8gb3B0IGludG8gaW9tbXUtZG1hIHN1cHBvcnQuIApJT01NVV9ET01BSU5f
-RE1BIHN0aWxsIG5lZWRzIHRvIGV4aXN0IGFzIGEgdHlwZSBmb3IgdGhlIGNvcmUgY29kZSB0byAK
-ZGlmZmVyZW50aWF0ZSBpbnRlcm5hbGx5LCBzbyBkcml2ZXIgaW52b2x2ZW1lbnQgaXMgbW9zdGx5
-IG5vdyBqdXN0IGEgCmNhc2Ugb2Ygc2F5aW5nICJ5ZWFoIE9LIGZpbmUiIGlmIHRoZXkgc2VlIGl0
-LiBJT01NVV9ET01BSU5fRE1BX0ZRIG5vdyAKZWZmZWN0aXZlbHkgdGFrZXMgb3ZlciB0aGUgb3Jp
-Z2luYWwgc2VtYW50aWNzIG9mIElPTU1VX0RPTUFJTl9ETUEgYXMgdGhlIApvbmUgdGhhdCBkZXBl
-bmRzIG9uIGRyaXZlci1zcGVjaWZpYyBmdW5jdGlvbmFsaXR5LgoKRldJVywgbXRrLWlvbW11IGRv
-ZXNuJ3QgcmVhbGx5IGhhdmUgYW55IG5lZWQgdG8gcmVqZWN0IApJT01NVV9ET01BSU5fVU5NQU5B
-R0VELCB0aGV5IGp1c3QgZG9uJ3QgaGF2ZSBhbnkgcmVsZXZhbnQgY2xpZW50IGRyaXZlcnMgCnRo
-YXQgd2FudCBpdDsgaG93ZXZlciBhcm0tc21tdSBkZWZpbml0ZWx5IGRvZXMgbmVlZCB0byBjb250
-aW51ZSAKcmVqZWN0aW5nIElPTU1VX0RPTUFJTl9ETUEgd2hlbiBpdCBjYW4ndCByZWx5IG9uIHRo
-ZSBEVCBjb2RlIGVuc3VyaW5nIAp0aGUgY29ycmVjdCBwcm9iZSBvcmRlcmluZyB3aXRoIHRoZSBv
-bGQgRFQgYmluZGluZyAob3RoZXJ3aXNlIGNsaWVudCAKZHJpdmVycyBhcmUgbGlhYmxlIHRvIGdl
-dCBicm9rZW4gRE1BIG9wcykuCgpUaGFua3MsClJvYmluLgoKWzFdIApodHRwczovL2xvcmUua2Vy
-bmVsLm9yZy9saW51eC1pb21tdS9jb3Zlci4xNjI4NjgyMDQ4LmdpdC5yb2Jpbi5tdXJwaHlAYXJt
-LmNvbS8KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
-bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
-bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Originally, creating the dma_ranges resource list in pre-sorted fashion
+was the simplest and most efficient way to enforce the order required by
+iova_reserve_pci_windows(). However since then at least one PCI host
+driver is now re-sorting the list for its own probe-time processing,
+which doesn't seem entirely unreasonable, so that basic assumption no
+longer holds. Make iommu-dma robust and get the sort order it needs by
+explicitly sorting, which means we can also save the effort at creation
+time and just build the list in whatever natural order the DT had.
+
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+
+v2: Clean up now-unused local variable
+
+ drivers/iommu/dma-iommu.c | 13 ++++++++++++-
+ drivers/pci/of.c          |  8 +-------
+ 2 files changed, 13 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 09f6e1c0f9c0..d05538af4fe9 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -20,6 +20,7 @@
+ #include <linux/iommu.h>
+ #include <linux/iova.h>
+ #include <linux/irq.h>
++#include <linux/list_sort.h>
+ #include <linux/mm.h>
+ #include <linux/mutex.h>
+ #include <linux/pci.h>
+@@ -414,6 +415,15 @@ static int cookie_init_hw_msi_region(struct iommu_dma_cookie *cookie,
+ 	return 0;
+ }
+ 
++static int iommu_dma_ranges_sort(void *priv, const struct list_head *a,
++		const struct list_head *b)
++{
++	struct resource_entry *res_a = list_entry(a, typeof(*res_a), node);
++	struct resource_entry *res_b = list_entry(b, typeof(*res_b), node);
++
++	return res_a->res->start > res_b->res->start;
++}
++
+ static int iova_reserve_pci_windows(struct pci_dev *dev,
+ 		struct iova_domain *iovad)
+ {
+@@ -432,6 +442,7 @@ static int iova_reserve_pci_windows(struct pci_dev *dev,
+ 	}
+ 
+ 	/* Get reserved DMA windows from host bridge */
++	list_sort(NULL, &bridge->dma_ranges, iommu_dma_ranges_sort);
+ 	resource_list_for_each_entry(window, &bridge->dma_ranges) {
+ 		end = window->res->start - window->offset;
+ resv_iova:
+@@ -440,7 +451,7 @@ static int iova_reserve_pci_windows(struct pci_dev *dev,
+ 			hi = iova_pfn(iovad, end);
+ 			reserve_iova(iovad, lo, hi);
+ 		} else if (end < start) {
+-			/* dma_ranges list should be sorted */
++			/* DMA ranges should be non-overlapping */
+ 			dev_err(&dev->dev,
+ 				"Failed to reserve IOVA [%pa-%pa]\n",
+ 				&start, &end);
+diff --git a/drivers/pci/of.c b/drivers/pci/of.c
+index cb2e8351c2cc..8f0ebaf9ae85 100644
+--- a/drivers/pci/of.c
++++ b/drivers/pci/of.c
+@@ -369,7 +369,6 @@ static int devm_of_pci_get_host_bridge_resources(struct device *dev,
+ 
+ 	dev_dbg(dev, "Parsing dma-ranges property...\n");
+ 	for_each_of_pci_range(&parser, &range) {
+-		struct resource_entry *entry;
+ 		/*
+ 		 * If we failed translation or got a zero-sized region
+ 		 * then skip this range
+@@ -393,12 +392,7 @@ static int devm_of_pci_get_host_bridge_resources(struct device *dev,
+ 			goto failed;
+ 		}
+ 
+-		/* Keep the resource list sorted */
+-		resource_list_for_each_entry(entry, ib_resources)
+-			if (entry->res->start > res->start)
+-				break;
+-
+-		pci_add_resource_offset(&entry->node, res,
++		pci_add_resource_offset(ib_resources, res,
+ 					res->start - range.pci_addr);
+ 	}
+ 
+-- 
+2.35.3.dirty
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
