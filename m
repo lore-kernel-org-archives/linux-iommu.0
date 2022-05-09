@@ -1,87 +1,69 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7027BC433F5
-	for <iommu@archiver.kernel.org>; Mon,  9 May 2022 21:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8057FC433EF
+	for <iommu@archiver.kernel.org>; Mon,  9 May 2022 22:06:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D096C40868;
-	Mon,  9 May 2022 21:51:47 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 14AF56072A;
+	Mon,  9 May 2022 22:06:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id elozHj9IOHY5; Mon,  9 May 2022 21:51:46 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id r9pdzLapR31D; Mon,  9 May 2022 22:06:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 5E40C40873;
-	Mon,  9 May 2022 21:51:46 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id C7A5760596;
+	Mon,  9 May 2022 22:06:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1C00CC0032;
-	Mon,  9 May 2022 21:51:46 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4A88EC002D
- for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 21:51:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A8A0BC0039;
+	Mon,  9 May 2022 22:06:47 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2F8D1C002D
+ for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 22:06:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 2FD1940873
- for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 21:51:45 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 086A240484
+ for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 22:06:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xs7GJbku7apu for <iommu@lists.linux-foundation.org>;
- Mon,  9 May 2022 21:51:44 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com
- [IPv6:2607:f8b0:4864:20::1134])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 2429C40868
- for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 21:51:44 +0000 (UTC)
-Received: by mail-yw1-x1134.google.com with SMTP id
- 00721157ae682-2ebf4b91212so159901977b3.8
- for <iommu@lists.linux-foundation.org>; Mon, 09 May 2022 14:51:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=AvO3ygd/UqQBdhP/KL3f8qnTPDYPqb0azYvzR8YOfT8=;
- b=R3Bl52ygNd7YCtVGI1Dw5zkcyKwpLE8CGq7E2JVCvhEmmiwnJ4wmVpVM4hlSvlECuc
- OQDjh4PbkC9KiRGsYt0AXq17RBizWsfzpjBDi44Q8JKJVglwWIHC0BYVTNq/nQC/gYia
- I4x5J+hUljknRIc8rVa8KUkLegjNrIQsTA4RjmG7enjhjU7pf9lmdlt0hY4Xx2xd7Eud
- CbDnUZubySlms7d+G+FN3irKBt4FdgSC6BgxnsVCA3QRtieNX4s3giofwSk9qxOPcB/H
- bqwRhSvS+2yebAoixhhQ2quEtBR3/WErNLr/69uUN0Bm818iDpAErl2YPNBfXBbMM2zy
- eOIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=AvO3ygd/UqQBdhP/KL3f8qnTPDYPqb0azYvzR8YOfT8=;
- b=0j7WKxN6yC5DTpFCr1fnCIlaQePyIw2C7QOXTJA4uktjsvy/kgyuUpTDBE4ocLebDC
- e+OpBIWw8c5hoFbbriVjt04030V3ErNHOhcl7W+HDKDe4dPBJhYszq5ND6LvgXTCWRqG
- F3UuplD2e2vTdJOVgLJ/GoRKnn3O48VCjmElWGHPx0xicQN0vFnLu9S+chXx2mMPirRF
- DvIDpphBxun7orn5NJNbYXZAI+DH8u5TO5R7U/bwiiTTnDXYzZIvZEwLBo5ReG+fgb4f
- ESnEzMISEwHU8shmFR+im/+ve1LWT17A8YZCEJBp3uViZ7uIaL83lHkMXjWyACD0PZiu
- zVAg==
-X-Gm-Message-State: AOAM533q7+29lvWSZHvDPwRro6kjJHzWVYD6QvJVnoKXMZc1E4tTkO4u
- pi1apyd7nOo0sBzFWnOv/tX1H8+GPFdjHae1UxYXrQ==
-X-Google-Smtp-Source: ABdhPJz66qKQ182cMfzUcfRuUB+ezFafeLeHufnODn96xLMf/SFpFj0VGuEdSlO2r018rYSvQhdo92Derlajd83ax3s=
-X-Received: by 2002:a0d:e5c6:0:b0:2f8:c866:7af9 with SMTP id
- o189-20020a0de5c6000000b002f8c8667af9mr16673482ywe.268.1652133101967; Mon, 09
- May 2022 14:51:41 -0700 (PDT)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id vFCxaO-Z_ZfX for <iommu@lists.linux-foundation.org>;
+ Mon,  9 May 2022 22:06:45 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 0E72C4000B
+ for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 22:06:44 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 293B21FB;
+ Mon,  9 May 2022 15:06:44 -0700 (PDT)
+Received: from [10.57.80.111] (unknown [10.57.80.111])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 369C03F5A1;
+ Mon,  9 May 2022 15:06:42 -0700 (PDT)
+Message-ID: <eff13777-bb3f-f1f5-d5e7-e2461c6e9238@arm.com>
+Date: Mon, 9 May 2022 23:06:35 +0100
 MIME-Version: 1.0
-References: <20220421074204.1284072-1-hch@lst.de>
- <CACRpkdbdKBfmXGdyTm3T-MFAK30N-z4KH0k8eD8F7xaYUbDDhA@mail.gmail.com>
- <Ynk2wjRyH05uEJiO@shell.armlinux.org.uk>
-In-Reply-To: <Ynk2wjRyH05uEJiO@shell.armlinux.org.uk>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Mon, 9 May 2022 23:51:29 +0200
-Message-ID: <CACRpkdYVrPt_GHt19pT2BQZJ08QrS87XfvU-aWVibzP2qBSV2g@mail.gmail.com>
-Subject: Re: fully convert arm to use dma-direct
-To: "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc: Andrew Lunn <andrew@lunn.ch>, Arnd Bergmann <arnd@kernel.org>,
- Marc Zyngier <maz@kernel.org>, Gregory Clement <gregory.clement@bootlin.com>,
- linux-usb@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Alan Stern <stern@rowland.harvard.edu>,
- Andre Przywara <andre.przywara@arm.com>, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org,
- Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2] iommu: iommu_group_claim_dma_owner() must always
+ assign a domain
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <0-v2-f62259511ac0+6-iommu_dma_block_jgg@nvidia.com>
+ <BN9PR11MB5276504B448C715527AD5F3F8CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220505153320.GS49344@nvidia.com>
+ <BN9PR11MB5276476BB203D8D61CA8849C8CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <9f6680ed-77b6-8440-078c-623406c823aa@arm.com>
+ <20220506131053.GA522325@nvidia.com>
+ <27088ae5-05d6-122a-d9de-80e10eecac38@arm.com>
+ <20220506135431.GC49344@nvidia.com>
+ <0f838b34-460c-ed83-7b98-6cda444b10c2@arm.com>
+ <20220509172654.GP49344@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220509172654.GP49344@nvidia.com>
+Cc: Will Deacon <will@kernel.org>, "Tian, Kevin" <kevin.tian@intel.com>, "Rodel,
+ Jorg" <jroedel@suse.de>, Qian Cai <quic_qiancai@quicinc.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,25 +76,103 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, May 9, 2022 at 5:44 PM Russell King (Oracle)
-<linux@armlinux.org.uk> wrote:
+On 2022-05-09 18:26, Jason Gunthorpe wrote:
+> On Mon, May 09, 2022 at 10:59:11AM +0100, Robin Murphy wrote:
+> 
+>> IOMMU_DOMAIN_DMA_FQ now effectively takes over the original
+>> semantics of IOMMU_DOMAIN_DMA as the one that depends on
+>> driver-specific functionality.
+> 
+> If I grasp the FQ stuff right, it seems that this only requires the
+> driver to implement ops->flush_iotlb_all()? I don't see anything
+> obvious in any driver that is specifically _FQ related?
+> 
+> If yes, it makes me wonder why I see drivers implementing
+> ops->flush_iotlb_all() but not supporting the _FQ domain during alloc?
+> 
+> Further, if yes, wouldn't it make sense to just trigger FQ based on
+> domain->op->flush_iotlb_all being set?
 
-> Assabet is what needs testing for that, or one of the SA1110 machines.
-> I'm away from home on my boat (and have been for the last two and a bit
-> weeks) so can't test. Sorry.
+The main thing drivers need to do for flush queue support is to actually 
+implement the optimisations which make it worthwhile. It's up to 
+individual drivers how much use they want to make of the 
+iommu_iotlb_gather mechanism, and they're free to issue invalidations or 
+even enforce their completion directly within their unmap callback if 
+they so wish. In such cases, enabling a flush queue would do nothing but 
+hurt performance and waste memory.
 
-Hm I actually have an Assabet, but I never even powered it up. I'm
-on parental leave for another week but after that I could actually
-try to get that machine up, but it'd be a bit late for this merge window
-indeed.
+> It seems like there is some confusion here, because I see the sysfs
+> default domain store path just does this:
+> 
+> 	/* We can bring up a flush queue without tearing down the domain */
+> 	if (type == IOMMU_DOMAIN_DMA_FQ && prev_dom->type == IOMMU_DOMAIN_DMA) {
+> 		ret = iommu_dma_init_fq(prev_dom);
+> 		if (!ret)
+> 			prev_dom->type = IOMMU_DOMAIN_DMA_FQ;
+> 		goto out;
+> 	}
+> 
+> Which will allow a driver that rejected creating DMA_FQ during alloc
+> to end up with DMA_FQ anyhow???
 
-BR
-Linus Walleij
+Yes, I can't remember if I ever mentioned it anywhere, but that is not 
+an oversight. The sysfs interface is a bit of a specialist sport, and if 
+a user really wants to go out of their way to bring up a flush queue 
+which won't help performance, they can, and they can observe the 
+zero-to-negative performance gain, and maybe learn not to bother again 
+on that system. It's just not worth the additional complexity to try to 
+save users from themselves.
+
+>> FWIW, mtk-iommu doesn't really have any need to reject
+>> IOMMU_DOMAIN_UNMANAGED, they just don't have any relevant client drivers
+>> that want it;
+> 
+> Ok..
+> 
+>> however arm-smmu definitely does need to continue rejecting
+>> IOMMU_DOMAIN_DMA when it can't rely on the DT code ensuring the
+>> correct probe ordering with the old DT binding (otherwise client
+>> drivers are liable to get broken DMA ops).
+> 
+> I saw this code and wondered what it does?
+> 
+> smmu alloc_domain returns NULL, which if I read everything right
+> causes NULL to become the default_domain.
+> 
+> But then what happens? This driver has no detach_dev so after, say
+> VFIO does stuff, how do we get back into whatever boot-time state NULL
+> represents?
+
+Shhh... the main point of the arm-smmu legacy binding support is to do 
+whatever the handful of people still using ancient AMD Seattle boards 
+with original firmware need to do. Clearly they haven't been reassigning 
+devices straight back from VFIO to a kernel driver for the last 
+6-and-a-bit years since that's been broken, so I'm now discounting it as 
+a supported legacy-binding-use-case. Don't give them ideas! ;)
+
+> Is it OK because dev_iommu_priv_get() in arm_smmu_attach_dev() will
+> always fail if legacy? If that is the case then why allow allocating
+> any domain at all?
+> 
+> It feels like this really wants a 'IOMMU_DOMAIN_PLATFORM_DMA_OPS' set
+> as the default_domain meaning that when that domain is assigned, the
+> platform's DMA ops are handling the iommu? If I get it right..
+
+Nah, we just need to actually finish introducing default domains. I'm OK 
+to tackle the remaining SoC IOMMU drivers once my bus ops work meanders 
+into the arch/arm iommu-dma conversion revival; it just needs people who 
+understand s390 and fsl-pamu well enough to at least (presumably) bodge 
+up enough IOMMU_DOMAIN_IDENTITY support to replicate their current 
+"detached" behaviours and force CONFIG_IOMMU_DEFAULT_PASSTHROUGH on 
+those architectures.
+
+Cheers,
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
