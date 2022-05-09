@@ -1,60 +1,146 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 171F4C433F5
-	for <iommu@archiver.kernel.org>; Mon,  9 May 2022 22:15:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B5CE0C433F5
+	for <iommu@archiver.kernel.org>; Mon,  9 May 2022 23:35:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A9209408C6;
-	Mon,  9 May 2022 22:15:49 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 30D8760D88;
+	Mon,  9 May 2022 23:35:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dhnNjZztr4YN; Mon,  9 May 2022 22:15:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id D7914408B6;
-	Mon,  9 May 2022 22:15:47 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Uy48oKuGa53c; Mon,  9 May 2022 23:35:57 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id F22D760DC6;
+	Mon,  9 May 2022 23:35:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B739EC0039;
-	Mon,  9 May 2022 22:15:47 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ABAD8C002D
- for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 22:15:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A9728C0032;
+	Mon,  9 May 2022 23:35:56 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8C9AFC002D
+ for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 23:35:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 946C8408BB
- for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 22:15:46 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 6B8DF40190
+ for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 23:35:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xSLdAF3MlYtd for <iommu@lists.linux-foundation.org>;
- Mon,  9 May 2022 22:15:45 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id DE8A5408B6
- for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 22:15:44 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1F15012FC;
- Mon,  9 May 2022 15:15:44 -0700 (PDT)
-Received: from [10.57.80.111] (unknown [10.57.80.111])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 437A03F5A1;
- Mon,  9 May 2022 15:15:42 -0700 (PDT)
-Message-ID: <1dd3a5fb-b2a7-1134-7b78-7d5c501cf0a0@arm.com>
-Date: Mon, 9 May 2022 23:15:36 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v3] iommu: iommu_group_claim_dma_owner() must always
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0Os1NBfnJ94P for <iommu@lists.linux-foundation.org>;
+ Mon,  9 May 2022 23:35:54 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com
+ (mail-bn1nam07on20606.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7eb2::606])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 5AA77400A8
+ for <iommu@lists.linux-foundation.org>; Mon,  9 May 2022 23:35:54 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DZKOgRJkqlVzvf5q7nG00lbQr+vroI/b9LromXqX1WhdYFViK44Ogr6nhE85F9hROtyNuKF5sB2B3Y4AD3Gs5+TSzNhpLz/A6VlQauxxyIWvqJSq9NqOq5qflGVw8dP/yOyqSyJn1hiGB4hs6KKE+VnKqXapqiiJWjhad36co8i64wlnAqYBQz3Lx6+7GyGWmrI9LvAglDuN46cbSl2goYq6EURQ6+2vMH+V1kREqDTq0Guopld1yJrEVyNUGThgqVedUFYsPKfPEg6IYP7Ggx+EyTjkHesUHRGkG7bfSPUNflHz0YVFJcuh/SgCdIsiPWNNMwk9zNbwNVTuTb6Oow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=F/m9loEa+OE0CO/6UOT6feLPAD6VB9dHnajCC0Sh4Ig=;
+ b=Yuz+7JYaLwaUQa1yTxkttrE0DltkXN1BMfONUFtaGX+zuYFkcwoPFLxAczuyOsA8GEWujzSoJsDaAzngje5NAMutloI6sVlS2h6WKVWih9XlcySMKJXU1oUl4aJjAdqB1mPvc/iV2l529EZqsV7/ClJeF4UOJSi2Ai3lFCXKNEIssE2aXkT9osR840psrXkOvgsxPxu4WHwwxqX2jaw+6Cz/jkRku5C5jYDMLOqbkCdmr9tFhLVm150jrnOfQOxHl03iWLBWGY0scj8ossH0ab7utlkWGwIMZMxt9aqpYBw/zkoPP+8yaDi7qZe8BuTP8mY8oSCHfkYsxlTtd1nhBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F/m9loEa+OE0CO/6UOT6feLPAD6VB9dHnajCC0Sh4Ig=;
+ b=CTu7PY/XwQho2B0YKpKT6IWIHKvedhIj9PyJWsEQ7MIxkKXNvxMuM7W2EDE5qOz7N5BBmPFfEUl624Mm3gMdFK0mtKpcNsqLS4eLlVqjd5Eq0YQi3x4KFJ9Hb8Z6vi3SST519WrUsr3PWA68QzSTskfQ5n3h/RBWO1rssy904af9bfV9MjPLlK1q+V14edtfHeVI72J+rP3ZXk4g50sB8HoC8KPFIthgrUtcfYrsjUeRTFwsJHaUllmw38/oW6jXsyWNoZzJn1fAtnKPO5V7vpDoiTobljdh9cs1bk5FkncjZR8MrD2VLD0rw4UZwzvLykcer4UqU1u+hA32Bf2bog==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by DM5PR12MB2488.namprd12.prod.outlook.com (2603:10b6:4:b5::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Mon, 9 May
+ 2022 23:35:51 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ec2d:9167:1b47:2db2%5]) with mapi id 15.20.5227.023; Mon, 9 May 2022
+ 23:35:51 +0000
+Date: Mon, 9 May 2022 20:35:50 -0300
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2] iommu: iommu_group_claim_dma_owner() must always
  assign a domain
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux-foundation.org,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-References: <0-v3-db7f0785022b+149-iommu_dma_block_jgg@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <0-v3-db7f0785022b+149-iommu_dma_block_jgg@nvidia.com>
-Cc: Qian Cai <quic_qiancai@quicinc.com>, Kevin Tian <kevin.tian@intel.com>,
- Joerg Roedel <jroedel@suse.de>
+Message-ID: <20220509233550.GA1040383@nvidia.com>
+References: <BN9PR11MB5276504B448C715527AD5F3F8CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220505153320.GS49344@nvidia.com>
+ <BN9PR11MB5276476BB203D8D61CA8849C8CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <9f6680ed-77b6-8440-078c-623406c823aa@arm.com>
+ <20220506131053.GA522325@nvidia.com>
+ <27088ae5-05d6-122a-d9de-80e10eecac38@arm.com>
+ <20220506135431.GC49344@nvidia.com>
+ <0f838b34-460c-ed83-7b98-6cda444b10c2@arm.com>
+ <20220509172654.GP49344@nvidia.com>
+ <eff13777-bb3f-f1f5-d5e7-e2461c6e9238@arm.com>
+Content-Disposition: inline
+In-Reply-To: <eff13777-bb3f-f1f5-d5e7-e2461c6e9238@arm.com>
+X-ClientProxiedBy: BL1PR13CA0193.namprd13.prod.outlook.com
+ (2603:10b6:208:2be::18) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f6382225-d16f-4d93-fc0c-08da3214a70b
+X-MS-TrafficTypeDiagnostic: DM5PR12MB2488:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB248881066EFECBBBEE54399AC2C69@DM5PR12MB2488.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SIDJLeOSryJJYTDN47K8kZ2ZQgSRrp7c7K6S7nPUoYd5srrOQf2HcmpJc+QWpbJm4kdu+/4rORywnfvi6ykKZmEdHu+CfpuxEg2bZXEq9ffgRUxR+CfEiBFe+3gclftoMCjtGamjzmijJ8CG4IszmPpEW7uzpCNN709/d5o0O45PlzArJUAdeqAzdUMMyvZSvvcq8uPeqaocXFFArgk9esyA043hnysdmpEd/+DF0lyWgSthNUpxK56QFpgbgvEKdZny1BENqihEDYnwyl06u9AYYIXvsJNpJoPyKlrBmDIMBiOuR0S3ka+AWKMibUPtJ35czN/xyE923Q6sDxAP5X591/bTnTh7bbIkzCWGfioRA9dOaPcAlq9bQ1jTyKuyTSkUeYfrBSjk5Rbvh2jCAjB3SzrO5DZ9szpdrwvkDxix9HLi2STdXcAqf36i2juosqdxjwGsitv3YGvffEXlBvOhrPY1xv6PJ49zjYH1Ac9e7u2CY//TZQGq5F4eXDQG8aLhIbUaxtBCTYM2/bP//bcXHabDsx4uUbqLks1g0lMtS5OOSwdgUzYiG4P1LKA7GsiYTnqwWsuzPfVfcHysrHQUZLewjDU2hEAHDjQAOKVW1WQSEy4FZtsglx4iFjm/KAeQVvPjRHMPN8YMw5Yb6w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(86362001)(6512007)(26005)(83380400001)(2616005)(1076003)(186003)(33656002)(316002)(8676002)(66476007)(8936002)(66946007)(66556008)(4326008)(36756003)(5660300002)(2906002)(508600001)(6916009)(54906003)(6486002)(6506007)(38100700002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9cxr6Xvuu2wj74npPGH7PDhMQxqsHwexTrGfVKQ30rhPuMhY/f8Z/nJPTMiG?=
+ =?us-ascii?Q?evynHFb+5SXlPRZsYCLY3YOPo9Yea8d8hMK2LYfv9F5D/66JIfONVpsnVswD?=
+ =?us-ascii?Q?AwEcwo6TXmKxYaB89R1V2glYIRr8Ri/M7G8wj8rv9+27KBijt134qa3atbMH?=
+ =?us-ascii?Q?4uTgNhjJRj5aSzbc4deS/SpqNo8zI/Qz4dhw7Pfa8a+MaS0MukFFGingPADb?=
+ =?us-ascii?Q?qvPvDLe1FAXQLdykpE8pZxJzQPoNgQdPH6c2FjuOwPSxyT2p8Evo1modBELq?=
+ =?us-ascii?Q?ofKrgV4d8VezDtrorGVZrkv0YjbzNRrXzuxN5Kbw7GuteTfvU/a0sS53IrpX?=
+ =?us-ascii?Q?YHUxMzMneLY5K2I5mnkU3Q2NYmi6Nmp3aGahzFcJsF0WhzKGJjor8dW1Czq6?=
+ =?us-ascii?Q?YYOApC+2NDFYarJoW7M4ggayC18MgIZ6Ejlawc34IoCCFuqxAMhwxMgp+EtG?=
+ =?us-ascii?Q?Flv27WRpLAluN7/aIor8j+q2agJxbxccXS73Gwbd8q0WvOf4T2qmGjhmJce5?=
+ =?us-ascii?Q?Pq3YUBTHxlKZatIvTNXffU6fUhQWHvDA3rJaZJs8UzaPZ8eRAat6AYetKkq7?=
+ =?us-ascii?Q?IYwt2HY6RAAPfGmULhPZC8SalpPUzLbiFF3ZKwgNXk+C5pEBeiO65X7tYj3q?=
+ =?us-ascii?Q?CdJXE4uOkvqC8Mb98hl/MHa/3mwkg32dnOI4/j+4rv21eUmtBQSwUENggp8J?=
+ =?us-ascii?Q?22J9MIt7bJiBMTHX5xmoblfOpf26dqto7KLDNAWr+5RWqR2E1yBe83RKzdKi?=
+ =?us-ascii?Q?WiExCXTpMwXJCV78aqTK9C5zU13SI5a5/djn7lXRGfQMvWacru7wvZwKgWAE?=
+ =?us-ascii?Q?BMz1AGrbzFD1XSXxVLPGbcLrkRCJsfwlwx+WxHYemCtAy2IVEH/ViOBmy88K?=
+ =?us-ascii?Q?ObB9xDMlhRQf641WaAUN19lcFM/inxFqnq0s63RkkV17mMtyZKLx712b1zW6?=
+ =?us-ascii?Q?OBulNPjQ1nPDg4h4Tf5iSGPalzfbKbM9H7gpWZQj9RgU7uLiN1dFmzW7uAkG?=
+ =?us-ascii?Q?8MoVBzZ3J5ussZhvjIuGTNCnBqAd4FgKvJqxovz6mv8OSI9Kgsp23IJG5KLO?=
+ =?us-ascii?Q?97K2QYCm128fFzgsJOGPkva7Y7opLyl9Xvwe1QcTf+iPS26tOkMPDNMiCGp/?=
+ =?us-ascii?Q?JlmvB4dUmf3PupclgfLfYGsKq167yWSn4o8l9sUXzGb5d3AphQjcr7hHWg0i?=
+ =?us-ascii?Q?8tyFwq6CdW4zkty9Bb6hih5B11dyGvOrLoXUqYHAGRaER9PDb2dGlf3S71ZT?=
+ =?us-ascii?Q?SaecTtTsyl7bG1oNFm5dNGZc8/YlKCM98MUM7eJxCwTz3wmes6D4lUh87Wcy?=
+ =?us-ascii?Q?RcnPy917QLDA+oi/60pJCtQ7ttCWKQ34OGZQLIt+YkunYcGdfIXBbVrYjcwJ?=
+ =?us-ascii?Q?d9SQmPysuPAOMR04PiSgMAmNFbZblvycb9NB9smC8echGZ1dwC4M1u8D8sui?=
+ =?us-ascii?Q?/tWpyUSzl2mky/Nf00OYlHZ24hvxDFEanbktpE+FXbwXnEkcvVVbA9pgZPD4?=
+ =?us-ascii?Q?S6qtaKE8SDlde7YfQtDijm78fmd6lrEXy2FkwrAZTuwShAI3+0zeTyxZmuaH?=
+ =?us-ascii?Q?Z7s5W2Rocb/KWbNdG+a7r/1a2J5eXECQyK4QXbOvWsqvwbIiqVSEL4fiQAeR?=
+ =?us-ascii?Q?nSIF2ZB/c1cOLY+2ieeOC58mxuhpg5DKsA9U6sVrcQ/fs+UzgmZnkKW3BsNz?=
+ =?us-ascii?Q?9kicy05zggMAt2dtszH9f6lZJR8OR/KMo/nyJKtftPhMTXSs3I5jzMlmVL0Z?=
+ =?us-ascii?Q?8M/Wn9E8Aw=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f6382225-d16f-4d93-fc0c-08da3214a70b
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 23:35:51.1067 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Z45owuB6160ucoYRcd+iRiY7NoHlv3oazOcgaK/LwwBe3j9Mf9KDHBBHHkj2xUJU
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB2488
+Cc: Will Deacon <will@kernel.org>, "Tian, Kevin" <kevin.tian@intel.com>, "Rodel,
+ Jorg" <jroedel@suse.de>, Qian Cai <quic_qiancai@quicinc.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -67,314 +153,75 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-05-09 17:19, Jason Gunthorpe wrote:
-> Once the group enters 'owned' mode it can never be assigned back to the
-> default_domain or to a NULL domain. It must always be actively assigned to
-> a current domain. If the caller hasn't provided a domain then the core
-> must provide an explicit DMA blocking domain that has no DMA map.
-> 
-> Lazily create a group-global blocking DMA domain when
-> iommu_group_claim_dma_owner is first called and immediately assign the
-> group to it. This ensures that DMA is immediately fully isolated on all
-> IOMMU drivers.
-> 
-> If the user attaches/detaches while owned then detach will set the group
-> back to the blocking domain.
-> 
-> Slightly reorganize the call chains so that
-> __iommu_group_set_core_domain() is the function that removes any caller
-> configured domain and sets the domains back a core owned domain with an
-> appropriate lifetime.
-> 
-> __iommu_group_set_domain() is the worker function that can change the
-> domain assigned to a group to any target domain, including NULL.
-> 
-> Add comments clarifying how the NULL vs detach_dev vs default_domain works
-> based on Robin's remarks.
-> 
-> This fixes an oops with VFIO and SMMUv3 because VFIO will call
-> iommu_detach_group() and then immediately iommu_domain_free(), but
-> SMMUv3 has no way to know that the domain it is holding a pointer to
-> has been freed. Now the iommu_detach_group() will assign the blocking
-> domain and SMMUv3 will no longer hold a stale domain reference.
+On Mon, May 09, 2022 at 11:06:35PM +0100, Robin Murphy wrote:
+> The main thing drivers need to do for flush queue support is to actually
+> implement the optimisations which make it worthwhile. It's up to individual
+> drivers how much use they want to make of the iommu_iotlb_gather mechanism,
+> and they're free to issue invalidations or even enforce their completion
+> directly within their unmap callback if they so wish. In such cases,
+> enabling a flush queue would do nothing but hurt performance and waste
+> memory.
 
-Thanks Jason, from my PoV this looks great now - I still think it feels 
-too silly to give a formal review tag for a patch with my own sign-off, 
-so this is just my ephemeral "let's get this branch back in -next ASAP 
-and hope nothing else shakes loose" :)
+It makes sense, but I think at this point it would be clearer to have
+a domain->ops flag saying if the domain benefits from deferred flush or
+not rather than overloading the type
 
-Cheers,
-Robin.
+> > But then what happens? This driver has no detach_dev so after, say
+> > VFIO does stuff, how do we get back into whatever boot-time state NULL
+> > represents?
+> 
+> Shhh... the main point of the arm-smmu legacy binding support is to do
+> whatever the handful of people still using ancient AMD Seattle boards with
+> original firmware need to do. Clearly they haven't been reassigning devices
+> straight back from VFIO to a kernel driver for the last 6-and-a-bit years
+> since that's been broken, so I'm now discounting it as a supported
+> legacy-binding-use-case. Don't give them ideas! ;)
 
-> Fixes: 1ea2a07a532b ("iommu: Add DMA ownership management interfaces")
-> Reported-by: Qian Cai <quic_qiancai@quicinc.com>
-> Tested-by: Baolu Lu <baolu.lu@linux.intel.com>
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Co-developed-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> --
+If everything is converted to use default domain what will this
+return? NULL can't be a valid default domain..
+ 
+> > It feels like this really wants a 'IOMMU_DOMAIN_PLATFORM_DMA_OPS' set
+> > as the default_domain meaning that when that domain is assigned, the
+> > platform's DMA ops are handling the iommu? If I get it right..
 > 
-> Just minor polishing as discussed
-> 
-> v3:
->   - Change names to __iommu_group_set_domain() /
->     __iommu_group_set_core_domain()
->   - Clarify comments
->   - Call __iommu_group_set_domain() directly in
->     iommu_group_release_dma_owner() since we know it is always selecting
->     the default_domain
-> v2: https://lore.kernel.org/r/0-v2-f62259511ac0+6-iommu_dma_block_jgg@nvidia.com
->   - Remove redundant detach_dev ops check in __iommu_detach_device and
->     make the added WARN_ON fail instead
->   - Check for blocking_domain in __iommu_attach_group() so VFIO can
->     actually attach a new group
->   - Update comments and spelling
->   - Fix missed change to new_domain in iommu_group_do_detach_device()
-> v1: https://lore.kernel.org/r/0-v1-6e9d2d0a759d+11b-iommu_dma_block_jgg@nvidia.com
-> 
-> ---
->   drivers/iommu/iommu.c | 127 ++++++++++++++++++++++++++++++------------
->   1 file changed, 91 insertions(+), 36 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 0c42ece2585406..0b22e51e90f416 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -44,6 +44,7 @@ struct iommu_group {
->   	char *name;
->   	int id;
->   	struct iommu_domain *default_domain;
-> +	struct iommu_domain *blocking_domain;
->   	struct iommu_domain *domain;
->   	struct list_head entry;
->   	unsigned int owner_cnt;
-> @@ -82,8 +83,8 @@ static int __iommu_attach_device(struct iommu_domain *domain,
->   				 struct device *dev);
->   static int __iommu_attach_group(struct iommu_domain *domain,
->   				struct iommu_group *group);
-> -static void __iommu_detach_group(struct iommu_domain *domain,
-> -				 struct iommu_group *group);
-> +static int __iommu_group_set_domain(struct iommu_group *group,
-> +				    struct iommu_domain *new_domain);
->   static int iommu_create_device_direct_mappings(struct iommu_group *group,
->   					       struct device *dev);
->   static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
-> @@ -596,6 +597,8 @@ static void iommu_group_release(struct kobject *kobj)
->   
->   	if (group->default_domain)
->   		iommu_domain_free(group->default_domain);
-> +	if (group->blocking_domain)
-> +		iommu_domain_free(group->blocking_domain);
->   
->   	kfree(group->name);
->   	kfree(group);
-> @@ -1907,6 +1910,24 @@ void iommu_domain_free(struct iommu_domain *domain)
->   }
->   EXPORT_SYMBOL_GPL(iommu_domain_free);
->   
-> +/*
-> + * Put the group's domain back to the appropriate core-owned domain - either the
-> + * standard kernel-mode DMA configuration or an all-DMA-blocked domain.
-> + */
-> +static void __iommu_group_set_core_domain(struct iommu_group *group)
-> +{
-> +	struct iommu_domain *new_domain;
-> +	int ret;
-> +
-> +	if (group->owner)
-> +		new_domain = group->blocking_domain;
-> +	else
-> +		new_domain = group->default_domain;
-> +
-> +	ret = __iommu_group_set_domain(group, new_domain);
-> +	WARN(ret, "iommu driver failed to attach the default/blocking domain");
-> +}
-> +
->   static int __iommu_attach_device(struct iommu_domain *domain,
->   				 struct device *dev)
->   {
-> @@ -1963,9 +1984,6 @@ static void __iommu_detach_device(struct iommu_domain *domain,
->   	if (iommu_is_attach_deferred(dev))
->   		return;
->   
-> -	if (unlikely(domain->ops->detach_dev == NULL))
-> -		return;
-> -
->   	domain->ops->detach_dev(domain, dev);
->   	trace_detach_device_from_domain(dev);
->   }
-> @@ -1979,12 +1997,10 @@ void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
->   		return;
->   
->   	mutex_lock(&group->mutex);
-> -	if (iommu_group_device_count(group) != 1) {
-> -		WARN_ON(1);
-> +	if (WARN_ON(domain != group->domain) ||
-> +	    WARN_ON(iommu_group_device_count(group) != 1))
->   		goto out_unlock;
-> -	}
-> -
-> -	__iommu_detach_group(domain, group);
-> +	__iommu_group_set_core_domain(group);
->   
->   out_unlock:
->   	mutex_unlock(&group->mutex);
-> @@ -2040,7 +2056,8 @@ static int __iommu_attach_group(struct iommu_domain *domain,
->   {
->   	int ret;
->   
-> -	if (group->domain && group->domain != group->default_domain)
-> +	if (group->domain && group->domain != group->default_domain &&
-> +	    group->domain != group->blocking_domain)
->   		return -EBUSY;
->   
->   	ret = __iommu_group_for_each_dev(group, domain,
-> @@ -2072,38 +2089,49 @@ static int iommu_group_do_detach_device(struct device *dev, void *data)
->   	return 0;
->   }
->   
-> -static void __iommu_detach_group(struct iommu_domain *domain,
-> -				 struct iommu_group *group)
-> +static int __iommu_group_set_domain(struct iommu_group *group,
-> +				    struct iommu_domain *new_domain)
->   {
->   	int ret;
->   
-> +	if (group->domain == new_domain)
-> +		return 0;
-> +
->   	/*
-> -	 * If the group has been claimed already, do not re-attach the default
-> -	 * domain.
-> +	 * New drivers should support default domains and so the detach_dev() op
-> +	 * will never be called. Otherwise the NULL domain represents some
-> +	 * platform specific behavior.
->   	 */
-> -	if (!group->default_domain || group->owner) {
-> -		__iommu_group_for_each_dev(group, domain,
-> +	if (!new_domain) {
-> +		if (WARN_ON(!group->domain->ops->detach_dev))
-> +			return -EINVAL;
-> +		__iommu_group_for_each_dev(group, group->domain,
->   					   iommu_group_do_detach_device);
->   		group->domain = NULL;
-> -		return;
-> +		return 0;
->   	}
->   
-> -	if (group->domain == group->default_domain)
-> -		return;
-> -
-> -	/* Detach by re-attaching to the default domain */
-> -	ret = __iommu_group_for_each_dev(group, group->default_domain,
-> +	/*
-> +	 * Changing the domain is done by calling attach_dev() on the new
-> +	 * domain. This switch does not have to be atomic and DMA can be
-> +	 * discarded during the transition. DMA must only be able to access
-> +	 * either new_domain or group->domain, never something else.
-> +	 *
-> +	 * Note that this is called in error unwind paths, attaching to a
-> +	 * domain that has already been attached cannot fail.
-> +	 */
-> +	ret = __iommu_group_for_each_dev(group, new_domain,
->   					 iommu_group_do_attach_device);
-> -	if (ret != 0)
-> -		WARN_ON(1);
-> -	else
-> -		group->domain = group->default_domain;
-> +	if (ret)
-> +		return ret;
-> +	group->domain = new_domain;
-> +	return 0;
->   }
->   
->   void iommu_detach_group(struct iommu_domain *domain, struct iommu_group *group)
->   {
->   	mutex_lock(&group->mutex);
-> -	__iommu_detach_group(domain, group);
-> +	__iommu_group_set_core_domain(group);
->   	mutex_unlock(&group->mutex);
->   }
->   EXPORT_SYMBOL_GPL(iommu_detach_group);
-> @@ -3088,6 +3116,29 @@ void iommu_device_unuse_default_domain(struct device *dev)
->   	iommu_group_put(group);
->   }
->   
-> +static int __iommu_group_alloc_blocking_domain(struct iommu_group *group)
-> +{
-> +	struct group_device *dev =
-> +		list_first_entry(&group->devices, struct group_device, list);
-> +
-> +	if (group->blocking_domain)
-> +		return 0;
-> +
-> +	group->blocking_domain =
-> +		__iommu_domain_alloc(dev->dev->bus, IOMMU_DOMAIN_BLOCKED);
-> +	if (!group->blocking_domain) {
-> +		/*
-> +		 * For drivers that do not yet understand IOMMU_DOMAIN_BLOCKED
-> +		 * create an empty domain instead.
-> +		 */
-> +		group->blocking_domain = __iommu_domain_alloc(
-> +			dev->dev->bus, IOMMU_DOMAIN_UNMANAGED);
-> +		if (!group->blocking_domain)
-> +			return -EINVAL;
-> +	}
-> +	return 0;
-> +}
-> +
->   /**
->    * iommu_group_claim_dma_owner() - Set DMA ownership of a group
->    * @group: The group.
-> @@ -3111,9 +3162,14 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner)
->   			goto unlock_out;
->   		}
->   
-> +		ret = __iommu_group_alloc_blocking_domain(group);
-> +		if (ret)
-> +			goto unlock_out;
-> +
-> +		ret = __iommu_group_set_domain(group, group->blocking_domain);
-> +		if (ret)
-> +			goto unlock_out;
->   		group->owner = owner;
-> -		if (group->domain)
-> -			__iommu_detach_group(group->domain, group);
->   	}
->   
->   	group->owner_cnt++;
-> @@ -3132,18 +3188,17 @@ EXPORT_SYMBOL_GPL(iommu_group_claim_dma_owner);
->    */
->   void iommu_group_release_dma_owner(struct iommu_group *group)
->   {
-> +	int ret;
-> +
->   	mutex_lock(&group->mutex);
->   	if (WARN_ON(!group->owner_cnt || !group->owner))
->   		goto unlock_out;
->   
->   	group->owner_cnt = 0;
-> -	/*
-> -	 * The UNMANAGED domain should be detached before all USER
-> -	 * owners have been released.
-> -	 */
-> -	if (!WARN_ON(group->domain) && group->default_domain)
-> -		__iommu_attach_group(group->default_domain, group);
->   	group->owner = NULL;
-> +	ret = __iommu_group_set_domain(group, group->default_domain);
-> +	WARN(ret, "iommu driver failed to attach the default domain");
-> +
->   unlock_out:
->   	mutex_unlock(&group->mutex);
->   }
-> 
-> base-commit: da844db4722bdd333142b40f0e414e2aedc2a4c0
+> Nah, we just need to actually finish introducing default domains. I'm OK to
+> tackle the remaining SoC IOMMU drivers once my bus ops work meanders into
+> the arch/arm iommu-dma conversion revival; it just needs people who
+> understand s390 and fsl-pamu well enough to at least (presumably) bodge up
+> enough IOMMU_DOMAIN_IDENTITY support to replicate their current "detached"
+
+Hum. Looking at s390 it is similar I think to smmu - when NULL they
+expect their platform dma_ops to work in arch/s390/pci/pci_dma.c which
+looks to me like a version of the normal iommu support through
+IOMMU_DOMAIN_DMA. The good conversion is probably to move s390 to use
+the normal dma API, the lame one is to use a
+'IOMMU_DOMAIN_PLATFORM_DMA_OPS' and save it for another day.
+
+fsl took some looking at, but it looks very much like IDENTITY. The
+defconfig does not set CONFIG_DMA_OPS and there is no dma_ops code
+aroudn it's arch support - so it follow the direct path. It seems like
+there might be an offset though.
+
+The two tegras look OK, they both look like blocking domains. Theirry
+has been helpful at tegra stuff in pthe past.
+
+Someone who cared about fsl tested a VFIO patch of mine last year, and
+the s390 team is actively looking at nested domains right now.
+
+> behaviours and force CONFIG_IOMMU_DEFAULT_PASSTHROUGH on those
+> architectures.
+
+Or should the iommu driver return IDENTITY from its ops
+def_domain_type() ?
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
