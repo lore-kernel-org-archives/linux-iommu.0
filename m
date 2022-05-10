@@ -1,81 +1,70 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 23D1BC4332F
-	for <iommu@archiver.kernel.org>; Tue, 10 May 2022 11:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2FA19C433EF
+	for <iommu@archiver.kernel.org>; Tue, 10 May 2022 11:33:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id B6BF78239A;
-	Tue, 10 May 2022 11:23:42 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id E11DC60D90;
+	Tue, 10 May 2022 11:33:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QnPr-ZgpVBSx; Tue, 10 May 2022 11:23:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id AF10B81D9F;
-	Tue, 10 May 2022 11:23:41 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ola6BE2Vl8-A; Tue, 10 May 2022 11:33:28 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id BD8D760B48;
+	Tue, 10 May 2022 11:33:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 892CAC0039;
-	Tue, 10 May 2022 11:23:41 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 69C0AC002D
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 11:23:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 98B45C0039;
+	Tue, 10 May 2022 11:33:27 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A2EF4C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 11:33:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 563AF4163E
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 11:23:40 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 9003560F57
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 11:33:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wtb9uCSzWrUO for <iommu@lists.linux-foundation.org>;
- Tue, 10 May 2022 11:23:39 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 7KKuhjuZ8QB5 for <iommu@lists.linux-foundation.org>;
+ Tue, 10 May 2022 11:33:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ams.source.kernel.org (ams.source.kernel.org
  [IPv6:2604:1380:4601:e00::1])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 6D8604161F
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 11:23:39 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 95EC560B48
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 11:33:25 +0000 (UTC)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id 2B03CB81CDA;
- Tue, 10 May 2022 11:23:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01FE9C385C2;
- Tue, 10 May 2022 11:23:30 +0000 (UTC)
+ by ams.source.kernel.org (Postfix) with ESMTPS id DAFEBB81CFB;
+ Tue, 10 May 2022 11:33:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F18ACC385C6;
+ Tue, 10 May 2022 11:33:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1652181816;
- bh=5ZJgn0Zghtzaiu2qbpmdNbr1rwDe/IiPV/mYtoG6HA4=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=OW/Ke/sgpzuHPUyRzpms1qOc2XLOIcXoZcZbY2dWEX8ECxIpYNcCh6v/5omvQpb97
- sTdKM2jeHUVartD2XdpvYbOW29XN4joTf1kTBYQIwsr3upSynALi/l82MXrk2Yalgb
- pIu4qYrAobipn8F2FA8Rsshm9vtlEbFtJ/ul6SeMd9GlWlaKJcgLK5hDR96vVtm2Bs
- ivKOZ8fI7xV55CEsvMJ4uymfOqK4k3+G17XSVvfVSNyxzVJFvzxs1jEdNgWQDS+OBg
- SWx3hHs7uf6wtz9fPqHZL6oZ9L9FI7ooPrULOYtT4DLftRW1+/zeAvWR/xCrfmDEa+
- e5n5OMiBvmIIg==
-Date: Tue, 10 May 2022 12:23:27 +0100
+ s=k20201202; t=1652182402;
+ bh=Al4HaPN8KLVAWTTn5oD+jKewg9gXqt8HYust9TpV1kw=;
+ h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+ b=fbRyOLdqFG/tceW3K2IL6FfLwOnSmqojn93X+3zmnqBlHrXV3gxpkRIgmBE2xV9X0
+ HIVvOoIz6dmoOQrxX8AnLBmrV+u/afpQfzlxh+4eoI2mwh/3z8EOa9n5qTRrAZxh6H
+ adNuN3B0BSuAdR7Y7SUqNL277KxsO/7MDwVGBnKJ+QA56dfoq6nKiI0MoD0nc3u9yZ
+ LxFCnBRsfO/ugMBKxnvj/aeA44aHpkJQ0D6pncCI1ALGxSLhClj0MdO8WyR9WXDFiE
+ wb2MZs9p02sVxjJrWjNUoB4sFyQKO22IE678a7PKabTVq00zk41VTJwGuvYphL9j1w
+ 6vJkhSHE16A1Q==
 From: Will Deacon <will@kernel.org>
-To: Yicong Yang <yangyicong@hisilicon.com>
-Subject: Re: [PATCH v7 1/7] iommu/arm-smmu-v3: Make default domain type of
- HiSilicon PTT device to identity
-Message-ID: <20220510112326.GA27790@willie-the-truck>
-References: <20220407125841.3678-1-yangyicong@hisilicon.com>
- <20220407125841.3678-2-yangyicong@hisilicon.com>
+To: joro@8bytes.org,
+	Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/arm-smmu: Force identity domains for legacy binding
+Date: Tue, 10 May 2022 12:33:13 +0100
+Message-Id: <165218049230.3350360.14414230028321512162.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <9805e4c492cb972bdcdd57999d2d001a2d8b5aab.1652171938.git.robin.murphy@arm.com>
+References: <9805e4c492cb972bdcdd57999d2d001a2d8b5aab.1652171938.git.robin.murphy@arm.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220407125841.3678-2-yangyicong@hisilicon.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: mark.rutland@arm.com, prime.zeng@huawei.com,
- alexander.shishkin@linux.intel.com, linux-pci@vger.kernel.org,
- linuxarm@huawei.com, daniel.thompson@linaro.org, peterz@infradead.org,
- mingo@redhat.com, helgaas@kernel.org, liuqi115@huawei.com,
- mike.leach@linaro.org, suzuki.poulose@arm.com, coresight@lists.linaro.org,
- acme@kernel.org, zhangshaokun@hisilicon.com,
- linux-arm-kernel@lists.infradead.org, mathieu.poirier@linaro.org,
- gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
- linux-perf-users@vger.kernel.org, iommu@lists.linux-foundation.org,
- leo.yan@linaro.org, robin.murphy@arm.com
+Cc: Will Deacon <will@kernel.org>, catalin.marinas@arm.com,
+ iommu@lists.linux-foundation.org, Jason Gunthorpe <jgg@nvidia.com>,
+ kernel-team@android.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,39 +82,30 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Apr 07, 2022 at 08:58:35PM +0800, Yicong Yang wrote:
-> The DMA operations of HiSilicon PTT device can only work properly with
-> identical mappings. So add a quirk for the device to force the domain
-> as passthrough.
+On Tue, 10 May 2022 09:38:58 +0100, Robin Murphy wrote:
+> When using the legacy "mmu-masters" DT binding, we reject DMA domains
+> since we have no guarantee of driver probe order and thus can't rely on
+> client drivers getting the correct DMA ops. However, we can do better
+> than fall back to the old no-default-domain behaviour now, by forcing an
+> identity default domain instead. This also means that detaching from a
+> VFIO domain can actually work - that looks to have been broken for over
+> 6 years, so clearly isn't something that legacy binding users care
+> about, but we may as well make the driver code make sense anyway.
 > 
-> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
+> [...]
 
-I still don't like this being part of the SMMU driver, but given that
-(a) Robin doesn't seem to agree with the objection and (b) you've been
-refreshing the patch series:
+Applied to will (for-joerg/arm-smmu/updates), thanks!
 
-Acked-by: Will Deacon <will@kernel.org>
+[1/1] iommu/arm-smmu: Force identity domains for legacy binding
+      https://git.kernel.org/will/c/628bf55b6204
 
-If you do respin, then:
-
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 627a3ed5ee8f..5ec15ae2a9b1 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2839,6 +2839,21 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
->  	}
->  }
-
-It might be worth adding a brief comment here to explain what this device is
-and why it needs an identity mapping.
-
-> +#define IS_HISI_PTT_DEVICE(pdev)	((pdev)->vendor == PCI_VENDOR_ID_HUAWEI && \
-> +					 (pdev)->device == 0xa12e)
-
+Cheers,
+-- 
 Will
+
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
