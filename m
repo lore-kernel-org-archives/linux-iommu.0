@@ -1,67 +1,69 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 52D13C43217
-	for <iommu@archiver.kernel.org>; Tue, 10 May 2022 15:43:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A8208C433EF
+	for <iommu@archiver.kernel.org>; Tue, 10 May 2022 15:44:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 1412440103;
-	Tue, 10 May 2022 15:43:56 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4DD5D60F38;
+	Tue, 10 May 2022 15:44:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CyheHBTTZvta; Tue, 10 May 2022 15:43:55 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QAosNX_Ahuw8; Tue, 10 May 2022 15:44:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id DA9E040022;
-	Tue, 10 May 2022 15:43:54 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 3503960AE2;
+	Tue, 10 May 2022 15:44:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A6046C0039;
-	Tue, 10 May 2022 15:43:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 07112C0039;
+	Tue, 10 May 2022 15:44:42 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DEBF9C002D
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 15:43:52 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6313BC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 15:44:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id CBAA8400DB
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 15:43:52 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 4FFB0400DB
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 15:44:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bgXAcRZHN4iN for <iommu@lists.linux-foundation.org>;
- Tue, 10 May 2022 15:43:50 +0000 (UTC)
+ with ESMTP id FVWEValLsW_s for <iommu@lists.linux-foundation.org>;
+ Tue, 10 May 2022 15:44:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from dfw.source.kernel.org (dfw.source.kernel.org
- [IPv6:2604:1380:4641:c500::1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id ED2E640022
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 15:43:49 +0000 (UTC)
+Received: from ams.source.kernel.org (ams.source.kernel.org
+ [IPv6:2604:1380:4601:e00::1])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 456F640022
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 15:44:39 +0000 (UTC)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id AAC2261456;
- Tue, 10 May 2022 15:43:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1C27C385C2;
- Tue, 10 May 2022 15:43:46 +0000 (UTC)
+ by ams.source.kernel.org (Postfix) with ESMTPS id 5C964B81DFA;
+ Tue, 10 May 2022 15:44:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D421BC385C9;
+ Tue, 10 May 2022 15:44:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1652197428;
+ s=k20201202; t=1652197475;
  bh=EdXBI+t7Z+CJBmYfgvbfu0giiu3XH2CkqB+Azf5RDVQ=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=KVcRv+FL9wW265Vw51lIR2fjD3+rsRgj7RrmIjHeUYaT0KJb5rRyDnsi/Y3+VRiCE
- bu5zirEw5Oss/qfIlr/J5Y3qUO/pbeCZHBM0k3+sfsws7xTekRnuezkjrS820+BfLI
- Lui71NVLu+fDNAn5hlP0CTyrYo0pw+r/gnv5ydRUSYka1MvdBr1Hhav61jtjyFaG3i
- Q+z7zKBdA8hUjmzsk1TXNj70RyUT+QX9UYpkudlTRWH/7YOVpWMdCINPH0bI0KiQ4k
- NI+pel3ebimtdJbHyrIdH3ZJ1sdg9XEzcdt/ZtTY8pdOUl1OuuyMdpZ+DkCjzdUPZ5
- UevIcrBvzm7tA==
+ b=FhgVLwiWX3Zw+Cz/naVTbyrGDbD9nH7rBAEtt+UDu7w1JJ0kP+wDsXLIN7zVDOcEQ
+ fZFJlsskN7pAxtRBHqfhjPQQRzNyzx2DZmy0ErHbvBUOLsyg6TPbl3m/di2EV5SMUR
+ 7429xNfoY6vd+OnSIkWJ+ULDCOYSOnj5xg+HQque5eDiTWLFWhDFkbuhlBCnPgDOao
+ atBN6B+4nBxq9or5BJlbqCm5nWiP2lUyeYb37PwHWAg/3oOpdYy2zEjIw0vriIqOhN
+ YDKNr/rlJ9kxY4+82LdfxwXpRIr+EX6CLXxqqnE1bnck4ZugpqRw4/W0ZxwSTiHOFC
+ 2B+WDMFB1vpdg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 04/21] iommu: arm-smmu: disable large page
+Subject: [PATCH AUTOSEL 5.15 03/19] iommu: arm-smmu: disable large page
  mappings for Nvidia arm-smmu
-Date: Tue, 10 May 2022 11:43:23 -0400
-Message-Id: <20220510154340.153400-4-sashal@kernel.org>
+Date: Tue, 10 May 2022 11:44:13 -0400
+Message-Id: <20220510154429.153677-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220510154340.153400-1-sashal@kernel.org>
-References: <20220510154340.153400-1-sashal@kernel.org>
+In-Reply-To: <20220510154429.153677-1-sashal@kernel.org>
+References: <20220510154429.153677-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
