@@ -4,73 +4,64 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A8208C433EF
-	for <iommu@archiver.kernel.org>; Tue, 10 May 2022 15:44:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 51C84C433F5
+	for <iommu@archiver.kernel.org>; Tue, 10 May 2022 16:01:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 4DD5D60F38;
-	Tue, 10 May 2022 15:44:43 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id E25DC60B1F;
+	Tue, 10 May 2022 16:01:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QAosNX_Ahuw8; Tue, 10 May 2022 15:44:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 3503960AE2;
-	Tue, 10 May 2022 15:44:42 +0000 (UTC)
+	with ESMTP id NJxEQ5d5EIuP; Tue, 10 May 2022 16:01:17 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id D22D6605D6;
+	Tue, 10 May 2022 16:01:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 07112C0039;
-	Tue, 10 May 2022 15:44:42 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6313BC002D
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 15:44:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AC3DFC0039;
+	Tue, 10 May 2022 16:01:16 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7A8ABC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 16:01:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 4FFB0400DB
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 15:44:40 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 5B82D60B1F
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 16:01:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FVWEValLsW_s for <iommu@lists.linux-foundation.org>;
- Tue, 10 May 2022 15:44:39 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id SfjaJb9jnd4q for <iommu@lists.linux-foundation.org>;
+ Tue, 10 May 2022 16:01:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ams.source.kernel.org (ams.source.kernel.org
  [IPv6:2604:1380:4601:e00::1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 456F640022
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 15:44:39 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 93CC5605D6
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 16:01:14 +0000 (UTC)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id 5C964B81DFA;
- Tue, 10 May 2022 15:44:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D421BC385C9;
- Tue, 10 May 2022 15:44:33 +0000 (UTC)
+ by ams.source.kernel.org (Postfix) with ESMTPS id F0834B81DB5;
+ Tue, 10 May 2022 16:01:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EC2AC385A6;
+ Tue, 10 May 2022 16:01:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1652197475;
- bh=EdXBI+t7Z+CJBmYfgvbfu0giiu3XH2CkqB+Azf5RDVQ=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=FhgVLwiWX3Zw+Cz/naVTbyrGDbD9nH7rBAEtt+UDu7w1JJ0kP+wDsXLIN7zVDOcEQ
- fZFJlsskN7pAxtRBHqfhjPQQRzNyzx2DZmy0ErHbvBUOLsyg6TPbl3m/di2EV5SMUR
- 7429xNfoY6vd+OnSIkWJ+ULDCOYSOnj5xg+HQque5eDiTWLFWhDFkbuhlBCnPgDOao
- atBN6B+4nBxq9or5BJlbqCm5nWiP2lUyeYb37PwHWAg/3oOpdYy2zEjIw0vriIqOhN
- YDKNr/rlJ9kxY4+82LdfxwXpRIr+EX6CLXxqqnE1bnck4ZugpqRw4/W0ZxwSTiHOFC
- 2B+WDMFB1vpdg==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 03/19] iommu: arm-smmu: disable large page
- mappings for Nvidia arm-smmu
-Date: Tue, 10 May 2022 11:44:13 -0400
-Message-Id: <20220510154429.153677-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220510154429.153677-1-sashal@kernel.org>
-References: <20220510154429.153677-1-sashal@kernel.org>
+ s=k20201202; t=1652198471;
+ bh=8R7QdAS1HkPD/ObWmH1HXiPVeYzqdGBRiK33o/ZU5GQ=;
+ h=Date:From:To:Cc:Subject:From;
+ b=W7y4X9dw1SUbI/nc2u7Y9qeXUtoC/3Nid+dZQ2mRtGYVCq9EGtR9LrpPq/8Kigs+f
+ W2qIOf9HwGBKJhpsHxyh57wHT4jWXpHOza9yy78a9p5d+gKATS/5s4NuhJkpmT6HeF
+ mdJnStqeNYGrGrhw+GxbHG4ExkvTxZ6bxX+HwNO7r+emR1iCVhO8PYoPtU47RZTSZu
+ ELPbwdJ8rW3bzCc9/Ieni0nKZ9hZtDr2raFTrrKYDJBmx6GJQT984s1Jz9kSv5LETH
+ MuMw9Wv8CQokRnzPmY4WE5jo316Y1Kg8kGkUr+RYIZ0LM50bjRPHNaGq+f3AirZT5x
+ v51+dhoEhe+8A==
+Date: Tue, 10 May 2022 17:01:06 +0100
+From: Will Deacon <will@kernel.org>
+To: joro@8bytes.org
+Subject: [GIT PULL] iommu/arm-smmu: Updates for 5.19
+Message-ID: <20220510160106.GA28351@willie-the-truck>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, Will Deacon <will@kernel.org>,
- Ashish Mhetre <amhetre@nvidia.com>, iommu@lists.linux-foundation.org,
- Pritesh Raithatha <praithatha@nvidia.com>, thierry.reding@gmail.com,
- linux-tegra@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: kernel-team@android.com, iommu@lists.linux-foundation.org,
+ robin.murphy@arm.com, linux-kernel@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -89,88 +80,77 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Ashish Mhetre <amhetre@nvidia.com>
+Hi Joerg,
 
-[ Upstream commit 4a25f2ea0e030b2fc852c4059a50181bfc5b2f57 ]
+Please pull these Arm SMMU updates for 5.19. The bulk of it is just adding
+new device-tree compatible strings for the existing drivers, but there
+are some non-critical fixes in here as well. Please see the tag for more
+details.
 
-Tegra194 and Tegra234 SoCs have the erratum that causes walk cache
-entries to not be invalidated correctly. The problem is that the walk
-cache index generated for IOVA is not same across translation and
-invalidation requests. This is leading to page faults when PMD entry is
-released during unmap and populated with new PTE table during subsequent
-map request. Disabling large page mappings avoids the release of PMD
-entry and avoid translations seeing stale PMD entry in walk cache.
-Fix this by limiting the page mappings to PAGE_SIZE for Tegra194 and
-Tegra234 devices. This is recommended fix from Tegra hardware design
-team.
+I used the previous fixes pull as a base for this so that you shouldn't
+run into any conflicts with upstream.
 
-Acked-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Krishna Reddy <vdumpa@nvidia.com>
-Co-developed-by: Pritesh Raithatha <praithatha@nvidia.com>
-Signed-off-by: Pritesh Raithatha <praithatha@nvidia.com>
-Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
-Link: https://lore.kernel.org/r/20220421081504.24678-1-amhetre@nvidia.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c | 30 ++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+Cheers,
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
-index 01e9b50b10a1..87bf522b9d2e 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
-@@ -258,6 +258,34 @@ static void nvidia_smmu_probe_finalize(struct arm_smmu_device *smmu, struct devi
- 			dev_name(dev), err);
- }
- 
-+static int nvidia_smmu_init_context(struct arm_smmu_domain *smmu_domain,
-+				    struct io_pgtable_cfg *pgtbl_cfg,
-+				    struct device *dev)
-+{
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	const struct device_node *np = smmu->dev->of_node;
-+
-+	/*
-+	 * Tegra194 and Tegra234 SoCs have the erratum that causes walk cache
-+	 * entries to not be invalidated correctly. The problem is that the walk
-+	 * cache index generated for IOVA is not same across translation and
-+	 * invalidation requests. This is leading to page faults when PMD entry
-+	 * is released during unmap and populated with new PTE table during
-+	 * subsequent map request. Disabling large page mappings avoids the
-+	 * release of PMD entry and avoid translations seeing stale PMD entry in
-+	 * walk cache.
-+	 * Fix this by limiting the page mappings to PAGE_SIZE on Tegra194 and
-+	 * Tegra234.
-+	 */
-+	if (of_device_is_compatible(np, "nvidia,tegra234-smmu") ||
-+	    of_device_is_compatible(np, "nvidia,tegra194-smmu")) {
-+		smmu->pgsize_bitmap = PAGE_SIZE;
-+		pgtbl_cfg->pgsize_bitmap = smmu->pgsize_bitmap;
-+	}
-+
-+	return 0;
-+}
-+
- static const struct arm_smmu_impl nvidia_smmu_impl = {
- 	.read_reg = nvidia_smmu_read_reg,
- 	.write_reg = nvidia_smmu_write_reg,
-@@ -268,10 +296,12 @@ static const struct arm_smmu_impl nvidia_smmu_impl = {
- 	.global_fault = nvidia_smmu_global_fault,
- 	.context_fault = nvidia_smmu_context_fault,
- 	.probe_finalize = nvidia_smmu_probe_finalize,
-+	.init_context = nvidia_smmu_init_context,
- };
- 
- static const struct arm_smmu_impl nvidia_smmu_single_impl = {
- 	.probe_finalize = nvidia_smmu_probe_finalize,
-+	.init_context = nvidia_smmu_init_context,
- };
- 
- struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
--- 
-2.35.1
+Will
 
+--->8
+
+The following changes since commit 4a25f2ea0e030b2fc852c4059a50181bfc5b2f57:
+
+  iommu: arm-smmu: disable large page mappings for Nvidia arm-smmu (2022-04-22 11:21:30 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git tags/arm-smmu-updates
+
+for you to fetch changes up to 628bf55b620497a105f4963ee8fb84769f7e6bb4:
+
+  iommu/arm-smmu: Force identity domains for legacy binding (2022-05-10 12:01:31 +0100)
+
+----------------------------------------------------------------
+Arm SMMU updates for 5.19
+
+- Add new Qualcomm device-tree compatible strings
+
+- Add new Nvidia device-tree compatible string for Tegra234
+
+- Fix UAF in SMMUv3 shared virtual addressing code
+
+- Force identity-mapped domains for users of ye olde SMMU legacy binding
+
+- Minor cleanups
+
+----------------------------------------------------------------
+Bjorn Andersson (2):
+      dt-bindings: arm-smmu: Add compatible for Qualcomm SC8280XP
+      iommu/arm-smmu-qcom: Add SC8280XP support
+
+Jean-Philippe Brucker (1):
+      iommu/arm-smmu-v3-sva: Fix mm use-after-free
+
+Robin Murphy (1):
+      iommu/arm-smmu: Force identity domains for legacy binding
+
+Rohit Agarwal (1):
+      dt-bindings: arm-smmu: Add binding for SDX65 SMMU
+
+Thierry Reding (3):
+      dt-bindings: arm-smmu: Document nvidia,memory-controller property
+      dt-bindings: arm-smmu: Add compatible for Tegra234 SOC
+      iommu/arm-smmu: Support Tegra234 SMMU
+
+Yang Yingliang (2):
+      iommu/arm-smmu: fix possible null-ptr-deref in arm_smmu_device_probe()
+      iommu/arm-smmu-v3: check return value after calling platform_get_resource()
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml        | 25 ++++++++++++++++++++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    | 13 +++++++++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        |  2 ++
+ drivers/iommu/arm/arm-smmu/arm-smmu-impl.c         |  3 ++-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |  1 +
+ drivers/iommu/arm/arm-smmu/arm-smmu.c              |  8 ++++---
+ 6 files changed, 44 insertions(+), 8 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
