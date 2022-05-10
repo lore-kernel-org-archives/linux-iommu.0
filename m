@@ -4,66 +4,139 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4A9DDC433FE
-	for <iommu@archiver.kernel.org>; Tue, 10 May 2022 13:53:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0F6BBC433F5
+	for <iommu@archiver.kernel.org>; Tue, 10 May 2022 14:02:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 69B2A60FB0;
-	Tue, 10 May 2022 13:53:27 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id DC1F260FD8;
+	Tue, 10 May 2022 14:02:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wJQAvcS0xygX; Tue, 10 May 2022 13:53:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id AD99560FAF;
-	Tue, 10 May 2022 13:53:24 +0000 (UTC)
+	with ESMTP id ZMddnixoZ9WU; Tue, 10 May 2022 14:02:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 3E5A460FD9;
+	Tue, 10 May 2022 14:02:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2C9E0C0082;
-	Tue, 10 May 2022 13:53:24 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3F33DC002D
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 10:14:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 37552C0084;
+	Tue, 10 May 2022 14:02:46 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 513EDC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 14:02:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 270868126E
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 10:14:25 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2D1D3416ED
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 14:02:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SDu7ZoR_bup8 for <iommu@lists.linux-foundation.org>;
- Tue, 10 May 2022 10:14:23 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 2F9D481258
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 10:14:23 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5F34D11FB;
- Tue, 10 May 2022 03:14:22 -0700 (PDT)
-Received: from [10.57.2.65] (unknown [10.57.2.65])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F0C7F3F66F;
- Tue, 10 May 2022 03:14:17 -0700 (PDT)
-Message-ID: <ace5aa71-a7f9-cb3a-ee80-b56c71df343b@arm.com>
-Date: Tue, 10 May 2022 11:14:16 +0100
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 7Ak8l7vDfRS3 for <iommu@lists.linux-foundation.org>;
+ Tue, 10 May 2022 14:02:42 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam12on2062f.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:fe59::62f])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 451C2416EB
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 14:02:42 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O8wmbtbpGgw1lY8vcYI3aUg0TgpS2Uvw9qo7b6LmYMgzDcHjwMU07v9a2r562F9fodBHGn2WmsGRtXOtTwVBCjHwYvZ3j+zktP011rtxWY4YfZtFiKbWktow6VrosIyPP4K1yPf+P7QGhz7N3RosVAW5g0tGJV9KeoTqZ/hx6CIMROZOiyZEskKpxQWgTeMy00wrFaTjfp0L4fwEuFLqRDveAgQVRSU9soyoXLW5750Bl8f6N8AcZHozRoT2uBxqyHYMAttzSFHaBdRXa1pMwCvW4iZEdLf931dAxbOh6OtIODabsZafIOJUznsP1UfTdPKFQQk12Lr6MbBqOlDDMA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=93D+rs7ckxAhs5L8wZ67Pp5wUGFsfy4il2IhOR0zGTU=;
+ b=S3CePXXuJdncAIiBhQ8w5haV2IxI6Gyr9p1/5Y5XF6nf8qE/Qj1cQ1JxESyAZjrit8caUNZeAqCdCppi8+kAAvPRSdH2LaFvbGASk0AuljE2dIEDNrr3zxhcWN0Ih/9KUiiXoAxsVG54s9ZEmImr23kj5Oetht5mADY7YVmyFoQWYPgzuttfsK8R+akCu7Kd0t3aHkHOf6QXxNQz6KbpgwDSKYArpuhOLohctehhm3XBj7w3GdA3FN/nebC78Yjh4kt9wm8lEQXt7Nlrp8ufkK5p9xYZm2f8CIU1U8ORKMmWZv67UPNTrbLrk45hF1OWwVYsUr1QNxtvdV1v2KJKtw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=93D+rs7ckxAhs5L8wZ67Pp5wUGFsfy4il2IhOR0zGTU=;
+ b=ObMr2GvGeBGWBRoKwrrMqO8+CxHNqLrCtLQNWf7AwYFdpzQiY2ETu4X6Jz1qkKMMM8ifeXxfOOTM4Y8TQXIYqiKhKwOXxWkrh37LbXlO/M8AlNTkT1Lajzeqs44bcDjreQDP0yp5aQPMoQmMSzrjZMvpQPUn98ef7xHRIDUu5roNVO2CaodICwwahkl7c48qXoaoTzI4BD1zlwwsGyHAIIpvM2G3iWT8UIn1tlwfbQJ1crXf17ziTITTJBCMTx170OIxeLRAyd62whLqOjGoZ5LBxFNrF2vb9gF2aQeU4s0OdHHsUYdxQ8GxFRkYLi1NorA+ILhCnt4lflWX1WndDg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by DM4PR12MB6352.namprd12.prod.outlook.com (2603:10b6:8:a0::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Tue, 10 May
+ 2022 14:02:40 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ec2d:9167:1b47:2db2%5]) with mapi id 15.20.5227.023; Tue, 10 May 2022
+ 14:02:40 +0000
+Date: Tue, 10 May 2022 11:02:38 -0300
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v6 03/12] iommu: Add attach/detach_dev_pasid domain ops
+Message-ID: <20220510140238.GD49344@nvidia.com>
+References: <20220510061738.2761430-1-baolu.lu@linux.intel.com>
+ <20220510061738.2761430-4-baolu.lu@linux.intel.com>
+Content-Disposition: inline
+In-Reply-To: <20220510061738.2761430-4-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: MN2PR16CA0026.namprd16.prod.outlook.com
+ (2603:10b6:208:134::39) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v7 5/7] perf tool: Add support for HiSilicon PCIe Tune and
- Trace device driver
-Content-Language: en-US
-To: Yicong Yang <yangyicong@hisilicon.com>, Leo Yan <leo.yan@linaro.org>
-References: <20220407125841.3678-1-yangyicong@hisilicon.com>
- <20220407125841.3678-6-yangyicong@hisilicon.com>
-From: James Clark <james.clark@arm.com>
-In-Reply-To: <20220407125841.3678-6-yangyicong@hisilicon.com>
-X-Mailman-Approved-At: Tue, 10 May 2022 13:53:23 +0000
-Cc: mark.rutland@arm.com, prime.zeng@huawei.com,
- alexander.shishkin@linux.intel.com, linux-pci@vger.kernel.org,
- linuxarm@huawei.com, will@kernel.org, daniel.thompson@linaro.org,
- peterz@infradead.org, mingo@redhat.com, helgaas@kernel.org,
- liuqi115@huawei.com, mike.leach@linaro.org, suzuki.poulose@arm.com,
- coresight@lists.linaro.org, acme@kernel.org, zhangshaokun@hisilicon.com,
- linux-arm-kernel@lists.infradead.org, mathieu.poirier@linaro.org,
- gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
- linux-perf-users@vger.kernel.org, iommu@lists.linux-foundation.org,
- leo.yan@linaro.org, robin.murphy@arm.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 62765dc3-be9c-4453-794d-08da328dbed4
+X-MS-TrafficTypeDiagnostic: DM4PR12MB6352:EE_
+X-Microsoft-Antispam-PRVS: <DM4PR12MB63526429270661AF0B33297EC2C99@DM4PR12MB6352.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: o4F5QIyKt1k1y7MoPDgsFKlwyB9mw3Jg3jdgpsra5OZynpZy58oSzk/TJKsZHWzah7GvtE8MUdYpEKBxEh30pivnmmEZHuS5dEXDH5z+xEj1Qc8k2Of02TurO8pG77KYEeGidFgMeyQ2mJkJgmQuGkLlVDZaBzAKFJzKZQmO783LGknOO54dGV/io7ntPJkhIfEWC6cPbUlg4tGeM4Zo6wTebhLIcV8CNzFL1zfztIdoJd6rwPrTGO5m67XRuRKejlkrM0XpDCoP7eJeQzXk2CvSAQSI7tinRnlvV6ZehYdeYWkZIBjAmccsg1ehih9CvduxgrZZyM6UBG4CZ4I+ILFziwKSqEltc+QPh35EQJenKh57u1wCdhJx/xyxFwFdRqRMYw/eMljYRIkqayo+fbmjEdsHQCuRxIJv/AP+l+yB9tI1SkKMCGxuKFVOqoLArhVfPiEXbe1d5qTeRR2IYSetNZ+z2msNvHHSDxN8zKU0pPsQfRD8huxsNfIv6CaN5yF/wJ8SSHHdEf3AWghEBJ2xw4oIhmkZIi3wLcQDfTE2YYcL4p9MOVHcEj04zxIeuT9KM5H4iNtwdUcmiw55e3B7goIeD/yWwkq+Xb8gft4f7+b5wA7UKBE1QUWwEo4+wD2Q41noHMpYOjjl+mCs6A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(66476007)(66556008)(66946007)(186003)(54906003)(6486002)(36756003)(8676002)(4326008)(33656002)(508600001)(6916009)(316002)(86362001)(38100700002)(2906002)(26005)(1076003)(6512007)(83380400001)(4744005)(8936002)(6506007)(2616005)(5660300002)(7416002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nPqHi9M100gXCaoF6dv2KcDDxSs6/t/5Gr6xK0b/PFSZK8PHuwkv+J0c7xd9?=
+ =?us-ascii?Q?FakM1xjalBTWE1sFyBCAQdp8aT/bhkI3K3S3v5ar84CNifujAex8J+QARgWN?=
+ =?us-ascii?Q?UH2yKSEYsgJsnpuWOT4P6D23F2X9AJkjeAwTnClnJHzpOwcx2DpbZvyGYDnB?=
+ =?us-ascii?Q?lFy2XO1I2RvyFWAX1Fawn3bQKw3amS1V9BQQ5oShckIj0tXK9lFueuN2tBzo?=
+ =?us-ascii?Q?AHLE5ZNHD14c0TJ/Ao9XyJ75LevygqIf0Mi+DChyOsUrPhCfpK6Q0yj6DBMW?=
+ =?us-ascii?Q?xoP1KsrVH2l2oK7lqTTNVGhhMmZk/l012jRECu0hmWWDOn722Jr0ETGwTLKX?=
+ =?us-ascii?Q?jp9m2gzjlwlpDbyp5COC+Xc/1B04uDQuIwJu3gBPi81+KAgEDG/JsXWgfKmH?=
+ =?us-ascii?Q?p0SyUXBsFGKEeat70GsDQTnJ0Faa2vCBkqR+MVW3ls6sjaVy2b5VlFNdMNs7?=
+ =?us-ascii?Q?Q0EZCQqZQ1CZgHA57rEcoz5dJ6ITqiSKVWr36WCoEzAcs+gT1ut5QJVQM3Bz?=
+ =?us-ascii?Q?xf/LoO1JocVuAzZ3f1Pd8LIHmpM9yyPRLljJGvga1OqYnS+YeLW+37szEomy?=
+ =?us-ascii?Q?PfAREoOfOTiMPV7rIjmuFL5bdLvID8T+/O940lhehiGsmd0xmSIUqmEmDHjf?=
+ =?us-ascii?Q?meHwUQe3nGiirALjRgUlpytIUs54ffETarApxtUwo1C/OxyVi2gqUSjAyttk?=
+ =?us-ascii?Q?4qvNPODcWqcG2QnNPYsU21Lvrg+YDcWYt0LZLNMibiv8LfjS9zQlzPgWICpP?=
+ =?us-ascii?Q?vKeWwMt+26IHt2K4O5tddUi80DJGf6kZ+cQAuIPvtZuPPpMWFCRkNhfJFW7Q?=
+ =?us-ascii?Q?PVya3lHT6JjFT9f3PRWMk7SL+mnCKvGgsmybJxyGn/yb7+n+f155oNYc0VzL?=
+ =?us-ascii?Q?lyiGJeql+XF/3Xe4txVMZVMHllfbgBPqbKHkk2/HTqg0Gmfe9tPS1Tp3cPkx?=
+ =?us-ascii?Q?L4VDivSr1XqBTE+Y32fzWvSI41FGWm5s4xHwmMuuRRBE+t5scnJ9nRzNw9Oq?=
+ =?us-ascii?Q?IzOaPeEjI3polNSz0BRaUt2anI2CdCnrNvaL6dRATx9ligpQLTci/xUDPi/7?=
+ =?us-ascii?Q?ATJFnMamFqXPX1ueRiK/mHQBo7wWrLbOTiLMXlKeNn83zS7kpxwqNQsoQL1n?=
+ =?us-ascii?Q?muC7K4IXYPDmH5+59K4R1B6GD2MnRrCuzATMZoinxS9fycmcDQH936uZYd1r?=
+ =?us-ascii?Q?H6T8LzYGYoqb+EWHQ+OBbPrJ1CKiHsFkJjfwo0qo6x+YQ1FVtSGoN0WQ87Uf?=
+ =?us-ascii?Q?5WmczLNVLeTxDiM21ZkNR6qCG2PNy+fmjWb7q8aHLsaMavSlg8GLoU8rp5ur?=
+ =?us-ascii?Q?vTF1+68whoBdl2Hvi1EUZpp1gzubF5kRXgYRBSuxrdWNQqt4/kPSuJApZJN2?=
+ =?us-ascii?Q?R20HIdnTUCWIunsU6BsQ7yhTkVwwoGi2SO02fFe5q7+0dBluwult8FDBDZXM?=
+ =?us-ascii?Q?nng3zovs6JkXXiZxKoNwc+zXwAOAfkk1UR8NboDzh5SyyEPuF4vIn4k+emO2?=
+ =?us-ascii?Q?IgzBoIR2nTgFbrX+4RfhWZ6uatpz+Bu8Z3OsHyNPg3i1/KL2TfTmihnhNIAA?=
+ =?us-ascii?Q?1F3W8TEbCBioCEs2aQuhQHPBBuJ9wvgaClBZ0m4RTvWWjb5GcgxdMoHg4Mki?=
+ =?us-ascii?Q?nqHJDLcc7hyZzBYvbtrJ/tSdXzse+jwzB1hQElZgcO8/6ed+8ndptNOEPcOf?=
+ =?us-ascii?Q?aUjSb8TgluJyT4aGV3ONF2HfB3BKastQVFZ0k2i5Yn8Qn6xScnZFNfMdux3i?=
+ =?us-ascii?Q?FtqI+OvtJw=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 62765dc3-be9c-4453-794d-08da328dbed4
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 14:02:40.1125 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SqqstA+MnV1EItHcoOz//U0yP2bQPb0vSfj5J+6V0pz2Gcfm0mRB57GgS+DGhE+4
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6352
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Christoph Hellwig <hch@infradead.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Vinod Koul <vkoul@kernel.org>, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,987 +149,38 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Tue, May 10, 2022 at 02:17:29PM +0800, Lu Baolu wrote:
 
+> This adds a pair of common domain ops for this purpose and adds helpers
+> to attach/detach a domain to/from a {device, PASID}. 
 
-On 07/04/2022 13:58, Yicong Yang wrote:
-> From: Qi Liu <liuqi115@huawei.com>
-> 
-> 'perf record' and 'perf report --dump-raw-trace' supported in this
-> patch.
-> 
-> Example usage:
-> 
-> Output will contain raw PTT data and its textual representation, such
-> as:
-> 
-> 0 0 0x5810 [0x30]: PERF_RECORD_AUXTRACE size: 0x400000  offset: 0
-> ref: 0xa5d50c725  idx: 0  tid: -1  cpu: 0
-> .
-> . ... HISI PTT data: size 4194304 bytes
-> .  00000000: 00 00 00 00                                 Prefix
-> .  00000004: 08 20 00 60                                 Header DW0
-> .  00000008: ff 02 00 01                                 Header DW1
-> .  0000000c: 20 08 00 00                                 Header DW2
-> .  00000010: 10 e7 44 ab                                 Header DW3
-> .  00000014: 2a a8 1e 01                                 Time
-> .  00000020: 00 00 00 00                                 Prefix
-> .  00000024: 01 00 00 60                                 Header DW0
-> .  00000028: 0f 1e 00 01                                 Header DW1
-> .  0000002c: 04 00 00 00                                 Header DW2
-> .  00000030: 40 00 81 02                                 Header DW3
-> .  00000034: ee 02 00 00                                 Time
-> ....
-> 
-> Signed-off-by: Qi Liu <liuqi115@huawei.com>
-> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-> ---
->  tools/perf/arch/arm/util/auxtrace.c           |  76 +++++-
->  tools/perf/arch/arm/util/pmu.c                |   3 +
->  tools/perf/arch/arm64/util/Build              |   2 +-
->  tools/perf/arch/arm64/util/hisi_ptt.c         | 195 ++++++++++++++++
->  tools/perf/util/Build                         |   2 +
->  tools/perf/util/auxtrace.c                    |   4 +
->  tools/perf/util/auxtrace.h                    |   1 +
->  tools/perf/util/hisi-ptt-decoder/Build        |   1 +
->  .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.c   | 170 ++++++++++++++
->  .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.h   |  28 +++
->  tools/perf/util/hisi_ptt.c                    | 218 ++++++++++++++++++
->  tools/perf/util/hisi_ptt.h                    |  28 +++
->  12 files changed, 724 insertions(+), 4 deletions(-)
->  create mode 100644 tools/perf/arch/arm64/util/hisi_ptt.c
->  create mode 100644 tools/perf/util/hisi-ptt-decoder/Build
->  create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.c
->  create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.h
->  create mode 100644 tools/perf/util/hisi_ptt.c
->  create mode 100644 tools/perf/util/hisi_ptt.h
-> 
-> diff --git a/tools/perf/arch/arm/util/auxtrace.c b/tools/perf/arch/arm/util/auxtrace.c
-> index 5fc6a2a3dbc5..393f5757c039 100644
-> --- a/tools/perf/arch/arm/util/auxtrace.c
-> +++ b/tools/perf/arch/arm/util/auxtrace.c
-> @@ -4,9 +4,11 @@
->   * Author: Mathieu Poirier <mathieu.poirier@linaro.org>
->   */
->  
-> +#include <dirent.h>
->  #include <stdbool.h>
->  #include <linux/coresight-pmu.h>
->  #include <linux/zalloc.h>
-> +#include <api/fs/fs.h>
->  
->  #include "../../../util/auxtrace.h"
->  #include "../../../util/debug.h"
-> @@ -14,6 +16,7 @@
->  #include "../../../util/pmu.h"
->  #include "cs-etm.h"
->  #include "arm-spe.h"
-> +#include "hisi_ptt.h"
->  
->  static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
->  {
-> @@ -50,6 +53,58 @@ static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
->  	return arm_spe_pmus;
->  }
->  
-> +static struct perf_pmu **find_all_hisi_ptt_pmus(int *nr_ptts, int *err)
-> +{
-> +	const char *sysfs = sysfs__mountpoint();
-> +	struct perf_pmu **hisi_ptt_pmus = NULL;
-> +	struct dirent *dent;
-> +	char path[PATH_MAX];
-> +	DIR *dir = NULL;
-> +	int idx = 0;
-> +
-> +	snprintf(path, PATH_MAX, "%s" EVENT_SOURCE_DEVICE_PATH, sysfs);
-> +	dir = opendir(path);
-> +	if (!dir) {
-> +		pr_err("can't read directory '%s'\n", EVENT_SOURCE_DEVICE_PATH);
-> +		*err = -EINVAL;
-> +		goto out;
-> +	}
-> +
-> +	while ((dent = readdir(dir))) {
-> +		if (strstr(dent->d_name, HISI_PTT_PMU_NAME))
-> +			(*nr_ptts)++;
-> +	}
-> +
-> +	if (!(*nr_ptts))
-> +		goto out;
-> +
-> +	hisi_ptt_pmus = zalloc(sizeof(struct perf_pmu *) * (*nr_ptts));
-> +	if (!hisi_ptt_pmus) {
-> +		pr_err("hisi_ptt alloc failed\n");
-> +		*err = -ENOMEM;
-> +		goto out;
-> +	}
-> +
-> +	rewinddir(dir);
-> +	while ((dent = readdir(dir))) {
-> +		if (strstr(dent->d_name, HISI_PTT_PMU_NAME) && idx < (*nr_ptts)) {
-> +			hisi_ptt_pmus[idx] = perf_pmu__find(dent->d_name);
-> +			if (hisi_ptt_pmus[idx]) {
-> +				pr_debug2("%s %d: hisi_ptt_pmu %d type %d name %s\n",
-> +					__func__, __LINE__, idx,
-> +					hisi_ptt_pmus[idx]->type,
-> +					hisi_ptt_pmus[idx]->name);
-> +					idx++;
-> +			}
-> +
-> +		}
-> +	}
-> +
-> +out:
-> +	closedir(dir);
-> +	return hisi_ptt_pmus;
-> +}
-> +
->  struct auxtrace_record
->  *auxtrace_record__init(struct evlist *evlist, int *err)
->  {
-> @@ -57,8 +112,12 @@ struct auxtrace_record
->  	struct evsel *evsel;
->  	bool found_etm = false;
->  	struct perf_pmu *found_spe = NULL;
-> +	struct perf_pmu *found_ptt = NULL;
->  	struct perf_pmu **arm_spe_pmus = NULL;
-> +	struct perf_pmu **hisi_ptt_pmus = NULL;
-> +
->  	int nr_spes = 0;
-> +	int nr_ptts = 0;
->  	int i = 0;
->  
->  	if (!evlist)
-> @@ -66,13 +125,14 @@ struct auxtrace_record
->  
->  	cs_etm_pmu = perf_pmu__find(CORESIGHT_ETM_PMU_NAME);
->  	arm_spe_pmus = find_all_arm_spe_pmus(&nr_spes, err);
-> +	hisi_ptt_pmus = find_all_hisi_ptt_pmus(&nr_ptts, err);
->  
->  	evlist__for_each_entry(evlist, evsel) {
->  		if (cs_etm_pmu &&
->  		    evsel->core.attr.type == cs_etm_pmu->type)
->  			found_etm = true;
->  
-> -		if (!nr_spes || found_spe)
-> +		if ((!nr_spes || found_spe) && (!nr_ptts || found_ptt))
->  			continue;
->  
->  		for (i = 0; i < nr_spes; i++) {
-> @@ -81,11 +141,18 @@ struct auxtrace_record
->  				break;
->  			}
->  		}
-> +
-> +		for (i = 0; i < nr_ptts; i++) {
-> +			if (evsel->core.attr.type == hisi_ptt_pmus[i]->type) {
-> +				found_ptt = hisi_ptt_pmus[i];
-> +				break;
-> +			}
-> +		}
->  	}
->  	free(arm_spe_pmus);
->  
-> -	if (found_etm && found_spe) {
-> -		pr_err("Concurrent ARM Coresight ETM and SPE operation not currently supported\n");
-> +	if (found_etm && found_spe && found_ptt) {
-> +		pr_err("Concurrent ARM Coresight ETM ,SPE and HiSilicon PCIe Trace operation not currently supported\n");
+I wonder if this should not have a detach op - after discussing with
+Robin we can see that detach_dev is not used in updated
+drivers. Instead attach_dev acts as 'set_domain'
 
-Hi Yicong,
+So, it would be more symmetrical if attaching a blocking_domain to the
+PASID was the way to 'detach'.
 
-Is that actually a limitation? I don't see why they couldn't work concurrently.
+This could be made straightforward by following the sketch I showed to
+have a static, global blocing_domain and providing a pointer to it in
+struct iommu_ops
 
+Then 'detach pasid' is:
 
->  		*err = -EOPNOTSUPP;
->  		return NULL;
->  	}
-> @@ -96,6 +163,9 @@ struct auxtrace_record
->  #if defined(__aarch64__)
->  	if (found_spe)
->  		return arm_spe_recording_init(err, found_spe);
-> +
-> +	if (found_ptt)
-> +		return hisi_ptt_recording_init(err, found_ptt);
->  #endif
->  
->  	/*
-> diff --git a/tools/perf/arch/arm/util/pmu.c b/tools/perf/arch/arm/util/pmu.c
-> index b8b23b9dc598..89a3cedb4557 100644
-> --- a/tools/perf/arch/arm/util/pmu.c
-> +++ b/tools/perf/arch/arm/util/pmu.c
-> @@ -10,6 +10,7 @@
->  #include <linux/string.h>
->  
->  #include "arm-spe.h"
-> +#include "hisi_ptt.h"
->  #include "../../../util/pmu.h"
->  
->  struct perf_event_attr
-> @@ -22,6 +23,8 @@ struct perf_event_attr
->  #if defined(__aarch64__)
->  	} else if (strstarts(pmu->name, ARM_SPE_PMU_NAME)) {
->  		return arm_spe_pmu_default_config(pmu);
-> +	} else if (strstarts(pmu->name, HISI_PTT_PMU_NAME)) {
-> +		pmu->selectable = true;
->  #endif
->  	}
->  
-> diff --git a/tools/perf/arch/arm64/util/Build b/tools/perf/arch/arm64/util/Build
-> index 9fcb4e68add9..8b7fd1dc9f37 100644
-> --- a/tools/perf/arch/arm64/util/Build
-> +++ b/tools/perf/arch/arm64/util/Build
-> @@ -11,4 +11,4 @@ perf-$(CONFIG_LIBDW_DWARF_UNWIND) += unwind-libdw.o
->  perf-$(CONFIG_AUXTRACE) += ../../arm/util/pmu.o \
->  			      ../../arm/util/auxtrace.o \
->  			      ../../arm/util/cs-etm.o \
-> -			      arm-spe.o mem-events.o
-> +			      arm-spe.o mem-events.o hisi_ptt.o
-> diff --git a/tools/perf/arch/arm64/util/hisi_ptt.c b/tools/perf/arch/arm64/util/hisi_ptt.c
-> new file mode 100644
-> index 000000000000..de3a3523ffd5
-> --- /dev/null
-> +++ b/tools/perf/arch/arm64/util/hisi_ptt.c
-> @@ -0,0 +1,195 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * HiSilicon PCIe Trace and Tuning (PTT) support
-> + * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/types.h>
-> +#include <linux/bitops.h>
-> +#include <linux/log2.h>
-> +#include <linux/zalloc.h>
-> +#include <time.h>
-> +
-> +#include <internal/lib.h> // page_size
-> +#include "../../../util/auxtrace.h"
-> +#include "../../../util/cpumap.h"
-> +#include "../../../util/debug.h"
-> +#include "../../../util/event.h"
-> +#include "../../../util/evlist.h"
-> +#include "../../../util/evsel.h"
-> +#include "../../../util/hisi_ptt.h"
-> +#include "../../../util/pmu.h"
-> +#include "../../../util/record.h"
-> +#include "../../../util/session.h"
-> +#include "../../../util/tsc.h"
-> +
-> +#define DEFAULT_PAGE_SIZE 1024
-> +#define KiB(x) ((x) * DEFAULT_PAGE_SIZE)
-> +#define MiB(x) ((x) * DEFAULT_PAGE_SIZE * DEFAULT_PAGE_SIZE)
-> +
-> +struct hisi_ptt_recording {
-> +	struct auxtrace_record	itr;
-> +	struct perf_pmu *hisi_ptt_pmu;
-> +	struct evlist *evlist;
-> +};
-> +
-> +static size_t
-> +hisi_ptt_info_priv_size(struct auxtrace_record *itr __maybe_unused,
-> +			struct evlist *evlist __maybe_unused)
-> +{
-> +	return HISI_PTT_AUXTRACE_PRIV_SIZE;
-> +}
-> +
-> +static int hisi_ptt_info_fill(struct auxtrace_record *itr,
-> +			      struct perf_session *session,
-> +			      struct perf_record_auxtrace_info *auxtrace_info,
-> +			      size_t priv_size)
-> +{
-> +	struct hisi_ptt_recording *pttr =
-> +			container_of(itr, struct hisi_ptt_recording, itr);
-> +	struct perf_pmu *hisi_ptt_pmu = pttr->hisi_ptt_pmu;
-> +
-> +	if (priv_size != HISI_PTT_AUXTRACE_PRIV_SIZE)
-> +		return -EINVAL;
-> +
-> +	if (!session->evlist->core.nr_mmaps)
-> +		return -EINVAL;
-> +
-> +	auxtrace_info->type = PERF_AUXTRACE_HISI_PTT;
-> +	auxtrace_info->priv[HISI_PTT_PMU_TYPE] = hisi_ptt_pmu->type;
-> +
-> +	return 0;
-> +}
-> +
-> +static int hisi_ptt_set_auxtrace_mmap_page(struct record_opts *opts)
-> +{
-> +	bool privileged = perf_event_paranoid_check(-1);
-> +
-> +	if (!opts->full_auxtrace)
-> +		return 0;
-> +
-> +	if (opts->full_auxtrace && !opts->auxtrace_mmap_pages) {
-> +		if (privileged) {
-> +			opts->auxtrace_mmap_pages = MiB(16) / page_size;
-> +		} else {
-> +			opts->auxtrace_mmap_pages = KiB(128) / page_size;
-> +			if (opts->mmap_pages == UINT_MAX)
-> +				opts->mmap_pages = KiB(256) / page_size;
-> +		}
-> +	}
-> +
-> +	/* Validate auxtrace_mmap_pages */
-> +	if (opts->auxtrace_mmap_pages) {
-> +		size_t sz = opts->auxtrace_mmap_pages * (size_t)page_size;
-> +		size_t min_sz = KiB(8);
-> +
-> +		if (sz < min_sz || !is_power_of_2(sz)) {
-> +			pr_err("Invalid mmap size for HISI PTT: must be at least %zuKiB and a power of 2\n",
-> +			       min_sz / DEFAULT_PAGE_SIZE);
-> +			return -EINVAL;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int hisi_ptt_recording_options(struct auxtrace_record *itr,
-> +				      struct evlist *evlist,
-> +				      struct record_opts *opts)
-> +{
-> +	struct hisi_ptt_recording *pttr =
-> +			container_of(itr, struct hisi_ptt_recording, itr);
-> +	struct perf_pmu *hisi_ptt_pmu = pttr->hisi_ptt_pmu;
-> +	struct perf_cpu_map *cpus = evlist->core.cpus;
-> +	struct evsel *evsel, *hisi_ptt_evsel = NULL;
-> +	struct evsel *tracking_evsel;
-> +	int err;
-> +
-> +	pttr->evlist = evlist;
-> +	evlist__for_each_entry(evlist, evsel) {
-> +		if (evsel->core.attr.type == hisi_ptt_pmu->type) {
-> +			if (hisi_ptt_evsel) {
-> +				pr_err("There may be only one " HISI_PTT_PMU_NAME "x event\n");
-> +				return -EINVAL;
-> +			}
-> +			evsel->core.attr.freq = 0;
-> +			evsel->core.attr.sample_period = 1;
-> +			hisi_ptt_evsel = evsel;
-> +			opts->full_auxtrace = true;
-> +		}
-> +	}
-> +
-> +	err = hisi_ptt_set_auxtrace_mmap_page(opts);
-> +	if (err)
-> +		return err;
-> +	/*
-> +	 * To obtain the auxtrace buffer file descriptor, the auxtrace event
-> +	 * must come first.
-> +	 */
-> +	evlist__to_front(evlist, hisi_ptt_evsel);
-> +
-> +	if (!perf_cpu_map__empty(cpus)) {
-> +		evsel__set_sample_bit(hisi_ptt_evsel, TIME);
-> +		evsel__set_sample_bit(hisi_ptt_evsel, CPU);
-> +	}
+iommu_ops->blocking_domain->ops->attach_dev_pasid(domain, dev, pasid);
 
-Similar to Leo's comment: CPU isn't required if it's uncore,
-and if TIME is useful then add it regardless of whether the
-event is opened per-cpu or on a task.
+And we move away from the notion of 'detach' and in the direction that
+everything continuously has a domain set. PASID would logically
+default to blocking_domain, though we wouldn't track this anywhere.
 
-> +
-> +	/* Add dummy event to keep tracking */
-> +	err = parse_events(evlist, "dummy:u", NULL);
-> +	if (err)
-> +		return err;
-> +
-> +	tracking_evsel = evlist__last(evlist);
-> +	evlist__set_tracking_event(evlist, tracking_evsel);
-> +
-> +	tracking_evsel->core.attr.freq = 0;
-> +	tracking_evsel->core.attr.sample_period = 1;
-> +
-> +	if (!perf_cpu_map__empty(cpus))
-> +		evsel__set_sample_bit(tracking_evsel, TIME);
-
-Same comment as above.
-
-> +
-> +	return 0;
-> +}
-> +
-> +static u64 hisi_ptt_reference(struct auxtrace_record *itr __maybe_unused)
-> +{
-> +	return rdtsc();
-> +}
-> +
-> +static void hisi_ptt_recording_free(struct auxtrace_record *itr)
-> +{
-> +	struct hisi_ptt_recording *pttr =
-> +			container_of(itr, struct hisi_ptt_recording, itr);
-> +
-> +	free(pttr);
-> +}
-> +
-> +struct auxtrace_record *hisi_ptt_recording_init(int *err,
-> +						struct perf_pmu *hisi_ptt_pmu)
-> +{
-> +	struct hisi_ptt_recording *pttr;
-> +
-> +	if (!hisi_ptt_pmu) {
-> +		*err = -ENODEV;
-> +		return NULL;
-> +	}
-> +
-> +	pttr = zalloc(sizeof(struct hisi_ptt_recording));
-> +	if (!pttr) {
-> +		*err = -ENOMEM;
-> +		return NULL;
-> +	}
-> +
-> +	pttr->hisi_ptt_pmu = hisi_ptt_pmu;
-> +	pttr->itr.pmu = hisi_ptt_pmu;
-> +	pttr->itr.recording_options = hisi_ptt_recording_options;
-> +	pttr->itr.info_priv_size = hisi_ptt_info_priv_size;
-> +	pttr->itr.info_fill = hisi_ptt_info_fill;
-> +	pttr->itr.free = hisi_ptt_recording_free;
-> +	pttr->itr.reference = hisi_ptt_reference;
-> +	pttr->itr.read_finish = auxtrace_record__read_finish;
-> +	pttr->itr.alignment = 0;
-> +
-> +	*err = 0;
-> +	return &pttr->itr;
-> +}
-> diff --git a/tools/perf/util/Build b/tools/perf/util/Build
-> index 9a7209a99e16..95d2d76c52da 100644
-> --- a/tools/perf/util/Build
-> +++ b/tools/perf/util/Build
-> @@ -116,6 +116,8 @@ perf-$(CONFIG_AUXTRACE) += intel-pt.o
->  perf-$(CONFIG_AUXTRACE) += intel-bts.o
->  perf-$(CONFIG_AUXTRACE) += arm-spe.o
->  perf-$(CONFIG_AUXTRACE) += arm-spe-decoder/
-> +perf-$(CONFIG_AUXTRACE) += hisi_ptt.o
-> +perf-$(CONFIG_AUXTRACE) += hisi-ptt-decoder/
->  perf-$(CONFIG_AUXTRACE) += s390-cpumsf.o
->  
->  ifdef CONFIG_LIBOPENCSD
-> diff --git a/tools/perf/util/auxtrace.c b/tools/perf/util/auxtrace.c
-> index df1c5bbbaa0d..f4841ebaf314 100644
-> --- a/tools/perf/util/auxtrace.c
-> +++ b/tools/perf/util/auxtrace.c
-> @@ -51,6 +51,7 @@
->  #include "intel-pt.h"
->  #include "intel-bts.h"
->  #include "arm-spe.h"
-> +#include "hisi_ptt.h"
->  #include "s390-cpumsf.h"
->  #include "util/mmap.h"
->  
-> @@ -1281,6 +1282,9 @@ int perf_event__process_auxtrace_info(struct perf_session *session,
->  	case PERF_AUXTRACE_S390_CPUMSF:
->  		err = s390_cpumsf_process_auxtrace_info(event, session);
->  		break;
-> +	case PERF_AUXTRACE_HISI_PTT:
-> +		err = hisi_ptt_process_auxtrace_info(event, session);
-> +		break;
->  	case PERF_AUXTRACE_UNKNOWN:
->  	default:
->  		return -EINVAL;
-> diff --git a/tools/perf/util/auxtrace.h b/tools/perf/util/auxtrace.h
-> index dc38b6f57232..3858c5752ead 100644
-> --- a/tools/perf/util/auxtrace.h
-> +++ b/tools/perf/util/auxtrace.h
-> @@ -48,6 +48,7 @@ enum auxtrace_type {
->  	PERF_AUXTRACE_CS_ETM,
->  	PERF_AUXTRACE_ARM_SPE,
->  	PERF_AUXTRACE_S390_CPUMSF,
-> +	PERF_AUXTRACE_HISI_PTT,
->  };
->  
->  enum itrace_period_type {
-> diff --git a/tools/perf/util/hisi-ptt-decoder/Build b/tools/perf/util/hisi-ptt-decoder/Build
-> new file mode 100644
-> index 000000000000..db3db8b75033
-> --- /dev/null
-> +++ b/tools/perf/util/hisi-ptt-decoder/Build
-> @@ -0,0 +1 @@
-> +perf-$(CONFIG_AUXTRACE) += hisi-ptt-pkt-decoder.o
-> diff --git a/tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.c b/tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.c
-> new file mode 100644
-> index 000000000000..3fb7a6949209
-> --- /dev/null
-> +++ b/tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.c
-> @@ -0,0 +1,170 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * HiSilicon PCIe Trace and Tuning (PTT) support
-> + * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
-> + */
-> +
-> +#include <stdlib.h>
-> +#include <stdio.h>
-> +#include <string.h>
-> +#include <endian.h>
-> +#include <byteswap.h>
-> +#include <linux/bitops.h>
-> +#include <stdarg.h>
-> +
-> +#include "../color.h"
-> +#include "hisi-ptt-pkt-decoder.h"
-> +
-> +/*
-> + * For 8DW format, the bit[31:11] of DW0 is always 0x1fffff, which can be
-> + * used to distinguish the data format.
-> + * 8DW format is like:
-> + *   bits [                 31:11                 ][       10:0       ]
-> + *        |---------------------------------------|-------------------|
-> + *    DW0 [                0x1fffff               ][ Reserved (0x7ff) ]
-> + *    DW1 [                       Prefix                              ]
-> + *    DW2 [                     Header DW0                            ]
-> + *    DW3 [                     Header DW1                            ]
-> + *    DW4 [                     Header DW2                            ]
-> + *    DW5 [                     Header DW3                            ]
-> + *    DW6 [                   Reserved (0x0)                          ]
-> + *    DW7 [                        Time                               ]
-> + *
-> + * 4DW format is like:
-> + *   bits [31:30] [ 29:25 ][24][23][22][21][    20:11   ][    10:0    ]
-> + *        |-----|---------|---|---|---|---|-------------|-------------|
-> + *    DW0 [ Fmt ][  Type  ][T9][T8][TH][SO][   Length   ][    Time    ]
-> + *    DW1 [                     Header DW1                            ]
-> + *    DW2 [                     Header DW2                            ]
-> + *    DW3 [                     Header DW3                            ]
-> + */
-> +
-> +enum hisi_ptt_8dw_pkt_field_type {
-> +	HISI_PTT_8DW_PREFIX,
-> +	HISI_PTT_8DW_HEAD0,
-> +	HISI_PTT_8DW_HEAD1,
-> +	HISI_PTT_8DW_HEAD2,
-> +	HISI_PTT_8DW_HEAD3,
-> +	HISI_PTT_8DW_TIME,
-> +	HISI_PTT_8DW_TYPE_MAX
-> +};
-> +
-> +enum hisi_ptt_4dw_pkt_field_type {
-> +	HISI_PTT_4DW_HEAD1,
-> +	HISI_PTT_4DW_HEAD2,
-> +	HISI_PTT_4DW_HEAD3,
-> +	HISI_PTT_4DW_TYPE_MAX
-> +};
-> +
-> +static const char * const hisi_ptt_8dw_pkt_field_name[] = {
-> +	[HISI_PTT_8DW_PREFIX]	= "Prefix",
-> +	[HISI_PTT_8DW_HEAD0]	= "Header DW0",
-> +	[HISI_PTT_8DW_HEAD1]	= "Header DW1",
-> +	[HISI_PTT_8DW_HEAD2]	= "Header DW2",
-> +	[HISI_PTT_8DW_HEAD3]	= "Header DW3",
-> +	[HISI_PTT_8DW_TIME]	= "Time",
-> +};
-> +
-> +static const char * const hisi_ptt_4dw_pkt_field_name[] = {
-> +	[HISI_PTT_4DW_HEAD1]	= "Header DW1",
-> +	[HISI_PTT_4DW_HEAD2]	= "Header DW2",
-> +	[HISI_PTT_4DW_HEAD3]	= "Header DW3",
-> +};
-> +
-> +/* offset of each member is determined by format of 8dw packet. */
-> +static uint32_t hisi_ptt_8dw_pkt_field_offset[] = {
-> +	[HISI_PTT_8DW_PREFIX]	= 4,
-> +	[HISI_PTT_8DW_HEAD0]	= 4,
-> +	[HISI_PTT_8DW_HEAD1]	= 4,
-> +	[HISI_PTT_8DW_HEAD2]	= 4,
-> +	[HISI_PTT_8DW_HEAD3]	= 4,
-> +	[HISI_PTT_8DW_TIME]	= 8,
-> +};
-> +
-> +union hisi_ptt_4dw {
-> +	struct {
-> +		uint32_t format : 2;
-> +		uint32_t type : 5;
-> +		uint32_t t9 : 1;
-> +		uint32_t t8 : 1;
-> +		uint32_t th : 1;
-> +		uint32_t so : 1;
-> +		uint32_t len : 10;
-> +		uint32_t time : 11;
-> +	};
-> +	uint32_t value;
-> +};
-> +
-> +static void hisi_ptt_print_pkt(const unsigned char *buf, int *pos, const char *desc)
-> +{
-> +	const char *color = PERF_COLOR_BLUE;
-> +	int field_len = sizeof(uint32_t);
-> +	int i;
-> +
-> +	printf(".");
-> +	color_fprintf(stdout, color, "  %08x: ", *pos);
-> +	for (i = 0; i < field_len; i++)
-> +		color_fprintf(stdout, color, "%02x ", buf[i]);
-> +	for (i = 0; i < HISI_PTT_MAX_SPACE_LEN; i++)
-> +		color_fprintf(stdout, color, "   ");
-> +	color_fprintf(stdout, color, "  %s\n", desc);
-> +	*pos += field_len;
-> +}
-> +
-> +static int hisi_ptt_8dw_kpt_desc(const unsigned char *buf, int pos)
-> +{
-> +	int i;
-> +
-> +	for (i = HISI_PTT_8DW_PREFIX; i < HISI_PTT_8DW_TYPE_MAX; i++) {
-> +		buf += hisi_ptt_8dw_pkt_field_offset[i];
-> +		hisi_ptt_print_pkt(buf, &pos, hisi_ptt_8dw_pkt_field_name[i]);
-> +	}
-> +
-> +	return HISI_PTT_8DW_PKT_SIZE;
-> +}
-> +
-> +static void hisi_ptt_4dw_print_dw0(const unsigned char *buf, int *pos)
-> +{
-> +	const char *color = PERF_COLOR_BLUE;
-> +	int field_len = sizeof(uint32_t);
-> +	union hisi_ptt_4dw dw0;
-> +	int i;
-> +
-> +	dw0.value = *(uint32_t *)buf;
-> +	printf(".");
-> +	color_fprintf(stdout, color, "  %08x: ", *pos);
-> +	for (i = 0; i < field_len; i++)
-> +		color_fprintf(stdout, color, "%02x ", buf[i]);
-> +	for (i = 0; i < HISI_PTT_MAX_SPACE_LEN; i++)
-> +		color_fprintf(stdout, color, "   ");
-> +
-> +	color_fprintf(stdout, color,
-> +		      "  %s %x %s %x %s %x %s %x %s %x %s %x %s %x %s %x\n",
-> +		      "Format", dw0.format, "Type", dw0.type, "T9", dw0.t9,
-> +		      "T8", dw0.t8, "TH", dw0.th, "SO", dw0.so, "Length",
-> +		      dw0.len, "Time", dw0.time);
-> +
-> +	*pos += field_len;
-> +}
-> +
-> +static int hisi_ptt_4dw_kpt_desc(const unsigned char *buf, int pos)
-> +{
-> +	int i;
-> +
-> +	hisi_ptt_4dw_print_dw0(buf, &pos);
-> +
-> +	for (i = HISI_PTT_4DW_HEAD1; i < HISI_PTT_4DW_TYPE_MAX; i++) {
-> +		buf += sizeof(uint32_t);
-> +		hisi_ptt_print_pkt(buf, &pos, hisi_ptt_4dw_pkt_field_name[i]);
-> +	}
-> +
-> +	return HISI_PTT_4DW_PKT_SIZE;
-> +}
-> +
-> +int hisi_ptt_pkt_desc(const unsigned char *buf, int pos, enum hisi_ptt_pkt_type type)
-> +{
-> +	if (type == HISI_PTT_8DW_PKT)
-> +		return hisi_ptt_8dw_kpt_desc(buf, pos);
-> +
-> +	return hisi_ptt_4dw_kpt_desc(buf, pos);
-> +}
-> diff --git a/tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.h b/tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.h
-> new file mode 100644
-> index 000000000000..20c51f230cac
-> --- /dev/null
-> +++ b/tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.h
-> @@ -0,0 +1,28 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/*
-> + * HiSilicon PCIe Trace and Tuning (PTT) support
-> + * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
-> + */
-> +
-> +#ifndef INCLUDE__HISI_PTT_PKT_DECODER_H__
-> +#define INCLUDE__HISI_PTT_PKT_DECODER_H__
-> +
-> +#include <stddef.h>
-> +#include <stdint.h>
-> +
-> +#define HISI_PTT_PKT_DESC_MAX		256
-> +#define HISI_PTT_NEED_MORE_BYTES	-1
-> +#define HISI_PTT_8DW_CHECK_MASK		GENMASK(31, 11)
-> +#define HISI_PTT_IS_8DW_PKT		GENMASK(31, 11)
-> +#define HISI_PTT_8DW_PKT_SIZE		32
-> +#define HISI_PTT_4DW_PKT_SIZE		16
-> +#define HISI_PTT_MAX_SPACE_LEN		10
-> +
-> +enum hisi_ptt_pkt_type {
-> +	HISI_PTT_4DW_PKT,
-> +	HISI_PTT_8DW_PKT,
-> +};
-> +
-> +int hisi_ptt_pkt_desc(const unsigned char *buf, int pos, enum hisi_ptt_pkt_type type);
-> +
-> +#endif
-> diff --git a/tools/perf/util/hisi_ptt.c b/tools/perf/util/hisi_ptt.c
-> new file mode 100644
-> index 000000000000..e2934214763c
-> --- /dev/null
-> +++ b/tools/perf/util/hisi_ptt.c
-> @@ -0,0 +1,218 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * HiSilicon PCIe Trace and Tuning (PTT) support
-> + * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
-> + */
-> +
-> +#include <byteswap.h>
-> +#include <endian.h>
-> +#include <errno.h>
-> +#include <inttypes.h>
-> +#include <linux/bitops.h>
-> +#include <linux/kernel.h>
-> +#include <linux/log2.h>
-> +#include <linux/types.h>
-> +#include <linux/zalloc.h>
-> +#include <stdlib.h>
-> +#include <unistd.h>
-> +
-> +#include "auxtrace.h"
-> +#include "color.h"
-> +#include "debug.h"
-> +#include "evlist.h"
-> +#include "evsel.h"
-> +#include "hisi_ptt.h"
-> +#include "hisi-ptt-decoder/hisi-ptt-pkt-decoder.h"
-> +#include "machine.h"
-> +#include "session.h"
-> +#include "symbol.h"
-> +#include "tool.h"
-> +#include "util/synthetic-events.h"
-> +
-> +struct hisi_ptt {
-> +	struct auxtrace auxtrace;
-> +	struct auxtrace_queues queues;
-> +	u32 auxtrace_type;
-> +	struct perf_session *session;
-> +	struct machine *machine;
-> +	u32 pmu_type;
-> +};
-> +
-> +struct hisi_ptt_queue {
-> +	struct hisi_ptt *ptt;
-> +	struct auxtrace_buffer *buffer;
-> +};
-> +
-> +static enum hisi_ptt_pkt_type hisi_ptt_check_packet_type(unsigned char *buf)
-> +{
-> +	uint32_t head = *(uint32_t *)buf;
-> +
-> +	if ((HISI_PTT_8DW_CHECK_MASK & head) == HISI_PTT_IS_8DW_PKT)
-> +		return HISI_PTT_8DW_PKT;
-> +
-> +	return HISI_PTT_4DW_PKT;
-> +}
-> +
-> +static void hisi_ptt_dump(struct hisi_ptt *ptt __maybe_unused,
-> +			  unsigned char *buf, size_t len)
-> +{
-> +	const char *color = PERF_COLOR_BLUE;
-> +	enum hisi_ptt_pkt_type type;
-> +	size_t pos = 0;
-> +	int pkt_len;
-> +
-> +	color_fprintf(stdout, color, ". ... HISI PTT data: size %zu bytes\n",
-> +		      len);
-> +
-> +	type = hisi_ptt_check_packet_type(buf);
-> +	while (len) {
-> +		pkt_len = hisi_ptt_pkt_desc(buf, pos, type);
-> +		if (!pkt_len)
-> +			color_fprintf(stdout, color, " Bad packet!\n");
-> +
-> +		pos += pkt_len;
-> +		buf += pkt_len;
-> +		len -= pkt_len;
-> +	}
-> +}
-> +
-> +static void hisi_ptt_dump_event(struct hisi_ptt *ptt, unsigned char *buf,
-> +				size_t len)
-> +{
-> +	printf(".\n");
-> +
-> +	hisi_ptt_dump(ptt, buf, len);
-> +}
-> +
-> +static int hisi_ptt_process_event(struct perf_session *session __maybe_unused,
-> +				  union perf_event *event __maybe_unused,
-> +				  struct perf_sample *sample __maybe_unused,
-> +				  struct perf_tool *tool __maybe_unused)
-> +{
-> +	return 0;
-> +}
-> +
-> +static int hisi_ptt_process_auxtrace_event(struct perf_session *session,
-> +					   union perf_event *event,
-> +					   struct perf_tool *tool __maybe_unused)
-> +{
-> +	struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt,
-> +					    auxtrace);
-> +	struct auxtrace_buffer *buffer;
-> +	off_t data_offset;
-> +	int fd = perf_data__fd(session->data);
-> +	int err;
-> +
-> +	if (perf_data__is_pipe(session->data)) {
-> +		data_offset = 0;
-> +	} else {
-> +		data_offset = lseek(fd, 0, SEEK_CUR);
-> +		if (data_offset == -1)
-> +			return -errno;
-> +	}
-> +
-> +	err = auxtrace_queues__add_event(&ptt->queues, session, event,
-> +					 data_offset, &buffer);
-> +	if (err)
-> +		return err;
-> +
-> +	if (dump_trace) {
-> +		if (auxtrace_buffer__get_data(buffer, fd)) {
-> +			hisi_ptt_dump_event(ptt, buffer->data, buffer->size);
-> +			auxtrace_buffer__put_data(buffer);
-> +		}
-
-Technically auxtrace_queues aren't required here because they are more for
-supporting trace from multiple CPUs and sorting and re-ordering between them.
-
-If this is new device is uncore and always from a single source you could
-just go straight to  hisi_ptt_dump_event() with data_offset and size of the
-auxtrace event.
-
-But I suppose it also doesn't hurt to use some of the existing framework
-like you have done.
-
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int hisi_ptt_flush(struct perf_session *session __maybe_unused,
-> +			  struct perf_tool *tool __maybe_unused)
-> +{
-> +	return 0;
-> +}
-> +
-> +static void hisi_ptt_free_events(struct perf_session *session)
-> +{
-> +	struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt,
-> +					    auxtrace);
-> +	struct auxtrace_queues *queues = &ptt->queues;
-> +	unsigned int i;
-> +
-> +	for (i = 0; i < queues->nr_queues; i++) {
-> +		free(queues->queue_array[i].priv);
-> +		queues->queue_array[i].priv = NULL;
-> +	}
-> +	auxtrace_queues__free(queues);
-> +}
-> +
-> +static void hisi_ptt_free(struct perf_session *session)
-> +{
-> +	struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt,
-> +					    auxtrace);
-> +
-> +	hisi_ptt_free_events(session);
-> +	session->auxtrace = NULL;
-> +	free(ptt);
-> +}
-> +
-> +static bool hisi_ptt_evsel_is_auxtrace(struct perf_session *session,
-> +				       struct evsel *evsel)
-> +{
-> +	struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt, auxtrace);
-> +
-> +	return evsel->core.attr.type == ptt->pmu_type;
-> +}
-> +
-> +static const char * const hisi_ptt_info_fmts[] = {
-> +	[HISI_PTT_PMU_TYPE]		= "  PMU Type           %" PRId64 "\n",
-> +};
-> +
-> +static void hisi_ptt_print_info(__u64 *arr)
-> +{
-> +	if (!dump_trace)
-> +		return;
-> +
-> +	fprintf(stdout, hisi_ptt_info_fmts[HISI_PTT_PMU_TYPE], arr[HISI_PTT_PMU_TYPE]);
-> +}
-> +
-> +int hisi_ptt_process_auxtrace_info(union perf_event *event,
-> +				   struct perf_session *session)
-> +{
-> +	struct perf_record_auxtrace_info *auxtrace_info = &event->auxtrace_info;
-> +	struct hisi_ptt *ptt;
-> +	int err;
-> +
-> +	if (auxtrace_info->header.size < HISI_PTT_AUXTRACE_PRIV_SIZE +
-> +				sizeof(struct perf_record_auxtrace_info))
-> +		return -EINVAL;
-> +
-> +	ptt = zalloc(sizeof(struct hisi_ptt));
-> +	if (!ptt)
-> +		return -ENOMEM;
-> +
-> +	err = auxtrace_queues__init(&ptt->queues);
-> +	if (err)
-> +		goto err_free;
-> +
-> +	ptt->session = session;
-> +	ptt->machine = &session->machines.host; /* No kvm support */
-> +	ptt->auxtrace_type = auxtrace_info->type;
-> +	ptt->pmu_type = auxtrace_info->priv[HISI_PTT_PMU_TYPE];
-> +
-> +	ptt->auxtrace.process_event = hisi_ptt_process_event;
-> +	ptt->auxtrace.process_auxtrace_event = hisi_ptt_process_auxtrace_event;
-> +	ptt->auxtrace.flush_events = hisi_ptt_flush;
-> +	ptt->auxtrace.free_events = hisi_ptt_free_events;
-> +	ptt->auxtrace.free = hisi_ptt_free;
-> +	ptt->auxtrace.evsel_is_auxtrace = hisi_ptt_evsel_is_auxtrace;
-> +	session->auxtrace = &ptt->auxtrace;
-> +
-> +	hisi_ptt_print_info(&auxtrace_info->priv[0]);
-> +
-> +	return 0;
-> +
-> +err_free:
-> +	free(ptt);
-> +	return err;
-> +}
-> diff --git a/tools/perf/util/hisi_ptt.h b/tools/perf/util/hisi_ptt.h
-> new file mode 100644
-> index 000000000000..c0b6cbde1221
-> --- /dev/null
-> +++ b/tools/perf/util/hisi_ptt.h
-> @@ -0,0 +1,28 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/*
-> + * HiSilicon PCIe Trace and Tuning (PTT) support
-> + * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
-> + */
-> +
-> +#ifndef INCLUDE__PERF_HISI_PTT_H__
-> +#define INCLUDE__PERF_HISI_PTT_H__
-> +
-> +#define HISI_PTT_PMU_NAME "hisi_ptt"
-> +enum {
-> +	HISI_PTT_PMU_TYPE,
-> +	HISI_PTT_PER_CPU_MMAPS,
-> +	HISI_PTT_AUXTRACE_PRIV_MAX,
-> +};
-> +
-> +#define HISI_PTT_AUXTRACE_PRIV_SIZE (HISI_PTT_AUXTRACE_PRIV_MAX * sizeof(u64))
-> +union perf_event;
-> +struct perf_session;
-> +struct perf_pmu;
-> +
-> +struct auxtrace_record *hisi_ptt_recording_init(int *err,
-> +						struct perf_pmu *hisi_ptt_pmu);
-> +
-> +int hisi_ptt_process_auxtrace_info(union perf_event *event,
-> +				   struct perf_session *session);
-> +
-> +#endif
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
