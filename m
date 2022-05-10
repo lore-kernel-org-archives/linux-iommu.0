@@ -1,74 +1,64 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 19D9EC433EF
-	for <iommu@archiver.kernel.org>; Tue, 10 May 2022 07:24:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2F4F1C433F5
+	for <iommu@archiver.kernel.org>; Tue, 10 May 2022 08:07:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A455B8133F;
-	Tue, 10 May 2022 07:24:02 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id B867540A92;
+	Tue, 10 May 2022 08:07:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id L6YqTtv9sOjk; Tue, 10 May 2022 07:24:01 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id HuDt49nZCG55; Tue, 10 May 2022 08:07:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 71D0881330;
-	Tue, 10 May 2022 07:24:01 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 7D8D440A9B;
+	Tue, 10 May 2022 08:07:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3DC0EC0032;
-	Tue, 10 May 2022 07:24:01 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 434BBC0032
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 07:24:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3C1B3C0032;
+	Tue, 10 May 2022 08:07:12 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9A622C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 08:07:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 2FC1260F6F
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 07:24:00 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 846E5402C5
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 08:07:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ugdyzxhRdVIe for <iommu@lists.linux-foundation.org>;
- Tue, 10 May 2022 07:23:59 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Z016NHGNq-sv for <iommu@lists.linux-foundation.org>;
+ Tue, 10 May 2022 08:07:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
- by smtp3.osuosl.org (Postfix) with ESMTPS id E9BA160F71
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 07:23:58 +0000 (UTC)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
- by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Ky8dJ6FNCz1JC5f;
- Tue, 10 May 2022 15:22:44 +0800 (CST)
-Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 15:23:55 +0800
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 15:23:54 +0800
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2375.024; Tue, 10 May 2022 08:23:52 +0100
-To: "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>,
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 3791B4025E
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 08:07:08 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 60D6B12FC;
+ Tue, 10 May 2022 01:07:08 -0700 (PDT)
+Received: from [10.57.80.111] (unknown [10.57.80.111])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 039643F73D;
+ Tue, 10 May 2022 01:07:05 -0700 (PDT)
+Message-ID: <5c8ae673-f8e3-0ed3-e62d-d445913b012c@arm.com>
+Date: Tue, 10 May 2022 09:07:00 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v12 0/9] ACPI/IORT: Support for IORT RMR node
+Content-Language: en-GB
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>,
  "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org"
- <linux-acpi@vger.kernel.org>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>, "joro@8bytes.org" <joro@8bytes.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
-Subject: RE: [PATCH v12 0/9] ACPI/IORT: Support for IORT RMR node
-Thread-Topic: [PATCH v12 0/9] ACPI/IORT: Support for IORT RMR node
-Thread-Index: AQHYXwu3gTgIMyz0zUiu6Dja1BmGsa0PbqaAgAhOLiA=
-Date: Tue, 10 May 2022 07:23:52 +0000
-Message-ID: <8e4f012717e34195a53cb73f8ce28627@huawei.com>
+ <linux-arm-kernel@lists.infradead.org>,
+ "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "joro@8bytes.org" <joro@8bytes.org>
 References: <20220503163330.509-1-shameerali.kolothum.thodi@huawei.com>
  <2234ad60-c49f-8c72-616c-dfa5300354ef@huawei.com>
-In-Reply-To: <2234ad60-c49f-8c72-616c-dfa5300354ef@huawei.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.202.227.178]
-MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+ <8e4f012717e34195a53cb73f8ce28627@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <8e4f012717e34195a53cb73f8ce28627@huawei.com>
 Cc: "jon@solid-run.com" <jon@solid-run.com>, Linuxarm <linuxarm@huawei.com>,
  "steven.price@arm.com" <steven.price@arm.com>,
  "hch@infradead.org" <hch@infradead.org>,
@@ -86,53 +76,60 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Shameerali Kolothum Thodi via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Joerg/Robin,
+On 2022-05-10 08:23, Shameerali Kolothum Thodi wrote:
+> Hi Joerg/Robin,
+> 
+> I think this series is now ready to be merged. Could you please let
+> me know if there is anything missing.
 
-I think this series is now ready to be merged. Could you please let
-me know if there is anything missing.
+Fine by me - these patches have had enough review and testing now that 
+even if anything else did come up, I think it would be better done as 
+follow-up work on the merged code.
 
-Thanks,
-Shameer
+Cheers,
+Robin.
 
-> -----Original Message-----
-> From: Guohanjun (Hanjun Guo)
-> Sent: 05 May 2022 02:24
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
-> linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
-> iommu@lists.linux-foundation.org
-> Cc: Linuxarm <linuxarm@huawei.com>; lorenzo.pieralisi@arm.com;
-> joro@8bytes.org; robin.murphy@arm.com; will@kernel.org; wanghuiqiang
-> <wanghuiqiang@huawei.com>; steven.price@arm.com;
-> Sami.Mujawar@arm.com; jon@solid-run.com; eric.auger@redhat.com;
-> laurentiu.tudor@nxp.com; hch@infradead.org
-> Subject: Re: [PATCH v12 0/9] ACPI/IORT: Support for IORT RMR node
 > 
-> On 2022/5/4 0:33, Shameer Kolothum wrote:
-> > Hi
-> >
-> > v11 --> v12
-> >    -Minor fix in patch #4 to address the issue reported by the kernel test
-> robot.
-> >    -Added R-by tags by Christoph(patch #1) and Lorenzo(patch #4).
-> >    -Added T-by from Steve to all relevant patches. Many thanks!.
-> >
-> > Please note, this series has a dependency on the ACPICA header patch
-> > here[1].
+> Thanks,
+> Shameer
 > 
-> Tested on a Kunpeng920 server machine with SMMUv3, the 3408iMR RAID
-> controller card works as expected,
-> 
-> Tested-by: Hanjun Guo <guohanjun@huawei.com>
-> 
-> Thanks
-> Hanjun
+>> -----Original Message-----
+>> From: Guohanjun (Hanjun Guo)
+>> Sent: 05 May 2022 02:24
+>> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
+>> linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
+>> iommu@lists.linux-foundation.org
+>> Cc: Linuxarm <linuxarm@huawei.com>; lorenzo.pieralisi@arm.com;
+>> joro@8bytes.org; robin.murphy@arm.com; will@kernel.org; wanghuiqiang
+>> <wanghuiqiang@huawei.com>; steven.price@arm.com;
+>> Sami.Mujawar@arm.com; jon@solid-run.com; eric.auger@redhat.com;
+>> laurentiu.tudor@nxp.com; hch@infradead.org
+>> Subject: Re: [PATCH v12 0/9] ACPI/IORT: Support for IORT RMR node
+>>
+>> On 2022/5/4 0:33, Shameer Kolothum wrote:
+>>> Hi
+>>>
+>>> v11 --> v12
+>>>     -Minor fix in patch #4 to address the issue reported by the kernel test
+>> robot.
+>>>     -Added R-by tags by Christoph(patch #1) and Lorenzo(patch #4).
+>>>     -Added T-by from Steve to all relevant patches. Many thanks!.
+>>>
+>>> Please note, this series has a dependency on the ACPICA header patch
+>>> here[1].
+>>
+>> Tested on a Kunpeng920 server machine with SMMUv3, the 3408iMR RAID
+>> controller card works as expected,
+>>
+>> Tested-by: Hanjun Guo <guohanjun@huawei.com>
+>>
+>> Thanks
+>> Hanjun
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
