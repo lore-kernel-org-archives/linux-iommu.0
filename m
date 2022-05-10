@@ -1,81 +1,191 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 75383C433F5
-	for <iommu@archiver.kernel.org>; Tue, 10 May 2022 11:44:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E3D2EC433EF
+	for <iommu@archiver.kernel.org>; Tue, 10 May 2022 11:51:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3908440364;
-	Tue, 10 May 2022 11:44:13 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 7EB1D41687;
+	Tue, 10 May 2022 11:51:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SoaJCG-ZPAZr; Tue, 10 May 2022 11:44:12 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Y0VQ_nKMNubg; Tue, 10 May 2022 11:51:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 0F0EC400FB;
-	Tue, 10 May 2022 11:44:12 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 0340341682;
+	Tue, 10 May 2022 11:51:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CF9AFC0039;
-	Tue, 10 May 2022 11:44:11 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2D790C002D
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 11:44:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C71A7C0039;
+	Tue, 10 May 2022 11:51:25 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 22602C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 11:51:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 1C87181460
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 11:44:11 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 09C6541682
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 11:51:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="iiIyquw+";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="wrd2WsMh"
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EFTO0LSa9vhn for <iommu@lists.linux-foundation.org>;
- Tue, 10 May 2022 11:44:09 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id XtIgKihsJq58 for <iommu@lists.linux-foundation.org>;
+ Tue, 10 May 2022 11:51:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 226358143B
- for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 11:44:09 +0000 (UTC)
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1652183045;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=Js8RDp7iMnj24JVY5ETKpHQgMOnO+QR2UvUOw/t3NVI=;
- b=iiIyquw+8QYZcovxorjqRFjfwhtMfLsHJEqe7bb762UGT/v/l/uDU2MlyH5t4U6gak6twB
- cCyHPEaUDEHU0enPu0J4DBw0J15rjARHL269aYiMpCupYu3BwyjP2tKIEcoTzzuFT76fSs
- Z0yC68PLfuFj70wdQZ68UUH/P13qMaOf9EUpMqUg6EgaWEupFN2HWfhg6OWSZyr0hg/ZGt
- Qzi4v4cd/H7wytmGiF+HHWJ9XcNU3cDxrdhX3LKr8Dq8hqBErcTwz/b/6JL8w7xTiMyZdu
- TWiYR1JW/491ynSImOymZIIK8iEtjvf2oz1jdx2qz/HmDYNZXQ9LjnzhjQSgpg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1652183045;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=Js8RDp7iMnj24JVY5ETKpHQgMOnO+QR2UvUOw/t3NVI=;
- b=wrd2WsMhhsrFIarhn4h+pO3O6mNNt4p+QTgQfzqOJMhou7WWpPXvvVvQJWm3tmm+PLi6JN
- 3qRFd4zzo70zIfDQ==
-To: Nicholas Piggin <npiggin@gmail.com>, Ricardo Neri
- <ricardo.neri-calderon@linux.intel.com>, x86@kernel.org
-Subject: Re: [PATCH v6 28/29] x86/tsc: Restart NMI watchdog after refining
- tsc_khz
-In-Reply-To: <1652180070.1r874kr0tg.astroid@bobo.none>
-References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-29-ricardo.neri-calderon@linux.intel.com>
- <1652180070.1r874kr0tg.astroid@bobo.none>
-Date: Tue, 10 May 2022 13:44:05 +0200
-Message-ID: <87ilqdpq7u.ffs@tglx>
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com
+ [205.220.177.32])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 7FD7141687
+ for <iommu@lists.linux-foundation.org>; Tue, 10 May 2022 11:51:21 +0000 (UTC)
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+ by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24A9MpbF024483;
+ Tue, 10 May 2022 11:50:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=f0D3cLaUv/0CfFDoHJlD5YWi4xWYSX4u9D18PazGWGU=;
+ b=emBMbv806t8aTlreAOXySr/OyYGSQ/qgt+t4zTtVMs5jx0IDolB6TavgprWTBIaj4n46
+ OB83AL/Q8aDLrrW/UgVcNsFF+zquZFBepb3tKI5Q8iMP6Cxj9EqzCDgZF1PEiVSTHL1s
+ zvl9UF/kEgT9T8TmhEEk3huwmFvftJmp7xCRtTfwrRhr0ruytqyaL3CjCNItz3kZ7TCl
+ Z+z7QuMvhLi7tw3jWOpCpiFkzQsYGO8nKLmhGq9+HzgS+O2JdibO7qhs6lYTdn4YFRi2
+ RbnRMDRkh/Nocyduno15wTkbtEhvlMUKfa54oyDlcOrmuEFVANArLxR0K0ay7Rv2E7DP vQ== 
+Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com
+ (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
+ by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3fwfj2ef3r-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 10 May 2022 11:50:43 +0000
+Received: from pps.filterd
+ (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+ by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2)
+ with SMTP id 24ABjkq8031130; Tue, 10 May 2022 11:50:42 GMT
+Received: from nam02-bn1-obe.outbound.protection.outlook.com
+ (mail-bn1nam07lp2041.outbound.protection.outlook.com [104.47.51.41])
+ by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id
+ 3fwf72wmnj-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 10 May 2022 11:50:42 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=g4CJLtMqd6jQt/nHSI3F5+gZmChsGGXTR6qCUEd0Yx0Pr9PadVBTAP5/668YqhF+9gdg1mM8QtmJHOG9IlrC0bhK9d/qrH4diIA/LM78PvOJsmTbolbeFhlwXFxRJoIoQX7ZtV0ezs2dB0+MU00tNStWUqnoz3/14JAMx/KzaZtNUHka8zUT103BxjsTY0jMC+qBHFHfusyS8lUe+PlPIVCQQLuUS47tl4fWM6x9hk99Ugn943dO9BuGuOdh07Pm0QUKioRg30Bd2T+UkjiIpcLeErzONwB6kNT6yU3l2LxBKTDed/k/zsbhQsvLQXoCMcMCICAExbzw2BDM/RNrAg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=f0D3cLaUv/0CfFDoHJlD5YWi4xWYSX4u9D18PazGWGU=;
+ b=aDG+fV3HPKLVZuXm3OIXiYNNmQJNnD6Mqsw9iH2vuga0M5yuQF/zn33XPEJOpRe+Cz+LrIXhA6r5UgkPtAVqvRTkAF8/zij8DtfXjXeQcqQbopG7z37HymED2mulLMYLrCJ99dXC5vuoEDzDtibOCRWDdRIpwa0I+8RcQqPNVMvkC5NdyblsITX5LXsn9pwdiyvp8uZwxS0N+8V+3YuacZZ/C3XHiUqKniob3YEdDRLI3yDMOZ8rt9+B+0x56GP0YdJE8vy0xTgN6GydvJLs6SSJa3mzTArAEN1V52VEWQRZQ5BePbbP2SMrvvzHHLrt5VFkuZNI9ri5kBa/uggnsg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=f0D3cLaUv/0CfFDoHJlD5YWi4xWYSX4u9D18PazGWGU=;
+ b=P3biNXMWESpVUp8MiS0/hvbdFOFKMsnBpmiA5CtttIuDf42bike391ezTpFHsp74q99kRrSdaVRbjtm+bCFIZCgWoHWmog0Z59oeR01LtwGrO2W98qdF37qlSCS+WzJwxPHlwP2ZT35VeCPohdxrBshrr4qzaQ8O28yamHqcbaU=
+Received: from BLAPR10MB4835.namprd10.prod.outlook.com (2603:10b6:208:331::11)
+ by MN2PR10MB4064.namprd10.prod.outlook.com (2603:10b6:208:1ba::32)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Tue, 10 May
+ 2022 11:50:40 +0000
+Received: from BLAPR10MB4835.namprd10.prod.outlook.com
+ ([fe80::b9e5:d1b6:b4be:f9d]) by BLAPR10MB4835.namprd10.prod.outlook.com
+ ([fe80::b9e5:d1b6:b4be:f9d%5]) with mapi id 15.20.5227.023; Tue, 10 May 2022
+ 11:50:40 +0000
+Message-ID: <c08528c7-a20a-0c38-0e7f-f51b8fade84f@oracle.com>
+Date: Tue, 10 May 2022 12:50:32 +0100
+Subject: Re: [PATCH RFC 00/19] IOMMUFD Dirty Tracking
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+References: <20220428210933.3583-1-joao.m.martins@oracle.com>
+ <BN9PR11MB5276F104A27ACD5F20BABC7F8CFC9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <f5d1a20c-df6e-36b9-c336-dc0d06af67f3@oracle.com>
+ <20220429123841.GV8364@nvidia.com>
+ <BN9PR11MB5276DFBF612789265199200C8CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220505140736.GQ49344@nvidia.com>
+ <BN9PR11MB5276EACB65E108ECD4E206A38CC59@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220506114608.GZ49344@nvidia.com>
+ <BN9PR11MB5276AE3C44453F889B100D448CC99@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Joao Martins <joao.m.martins@oracle.com>
+In-Reply-To: <BN9PR11MB5276AE3C44453F889B100D448CC99@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: LO2P265CA0198.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:9e::18) To BLAPR10MB4835.namprd10.prod.outlook.com
+ (2603:10b6:208:331::11)
 MIME-Version: 1.0
-Cc: "Ravi V.
- Shankar" <ravi.v.shankar@intel.com>, Andi Kleen <ak@linux.intel.com>,
- linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
- Stephane Eranian <eranian@google.com>, Ricardo Neri <ricardo.neri@intel.com>,
- iommu@lists.linux-foundation.org, Tony Luck <tony.luck@intel.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- David Woodhouse <dwmw2@infradead.org>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d837526b-3f8b-4843-b6d2-08da327b4e19
+X-MS-TrafficTypeDiagnostic: MN2PR10MB4064:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR10MB4064A18B07D7B1EEB1095C9FBBC99@MN2PR10MB4064.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hrggtq2vipSdy3/x4xtIXZukoTG9n2RIA63YkJ6G/Zamg+7RHiRdjydaRVa3EpWqsUsmarxnMaywzM5PY6Mz3WwJTc9s8/zQD6e9uc6l1a9+GQ+cPrNL20/WFVmfq1Qb+lkeqjY7lgMkdhEIO3dl8+OnwHjeENDg+mh8GthADTqajP+o3CUCdZpXu0jZZaHKSfXNYOFb7cXKCJJpS43SC6KDj0PGIGSDk7pZDwl5SvTXVLWDoa61jdNJ209fCDo4Su09jqGJPArtGXYCiq/y2S+ZBH+9DoH4mc2NlxGkoEiMNBRkj13VSZqXdcmE043yp261ST2Huz7+9t62pfIrtLm/MbEssim8jVfnH6epRk8w+NMnjYUgfBExoHycre1Aj8ftZUtgRXncHcH4v/RKCVkk9cu5taC55+bBEuOYdoKFIumDsRXxfndUciRPeGgCws6imA87syqYgD2W41M2FeYH8OcYBZsu8Niwop5++/7tdjpLJEeRs8lM5j3+NfloHBc5i643ka/NVKYGnZhFsxFbvBDpCeDmOZxg6Zie9O6a4JSD0iP7BkTowi1+75dSHrnEbzJ6FyVI+T67Klj0crDUEaEoOWtaDXj9HXzlHhGJb8wM8dPDBFSm1xthoqb7zx4Cc/HqY7eKB8S09vJCCCpeMCsrmnjKekxodPTFOQ8OYLXSi1TGJFaWFGEE+MnYjzwtlT6Awxy2oPSbju805n2gp2F+6246r40U+m1EW+M=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BLAPR10MB4835.namprd10.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(31686004)(83380400001)(2906002)(508600001)(6486002)(6512007)(26005)(7416002)(31696002)(5660300002)(53546011)(36756003)(186003)(2616005)(86362001)(8936002)(6506007)(6666004)(8676002)(4326008)(110136005)(54906003)(38100700002)(66476007)(66556008)(66946007)(316002)(14143004)(45980500001);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TTg1MGVObTVvaTdjRWpQblR6anROVWl1U0NFblZPWlZXS3M0SjNwQVoxcGpE?=
+ =?utf-8?B?K2k1TklzcXBXWEJVYm84d2NOcVBhZjJKTnpGeHRDM1FkVjhDNU1tRVFBRXFY?=
+ =?utf-8?B?VUtTSnc4NjhuVFA3cW15NU5iZ0xzVFNQandPRGFHUHZnVVE2QWhmdXJxcmZL?=
+ =?utf-8?B?bFUyNWlPR1c4SFNOL1FQOTJneEVNU2o4NmlmZ0t1bWc1UVhBWFZxWllMYVhK?=
+ =?utf-8?B?WDdHdVk2MENqMzhwb1M3aVh1SmxvMEUvZG01SjlZWGNsZUhvNUpoRThwdytC?=
+ =?utf-8?B?dFMvbldVQ012QURVN0pqc054RkJzcnNVRmN1WDVDS2ZiSXk1c2d5aFJuNWZp?=
+ =?utf-8?B?SU1OWHNsbDVWRWhtL2ZJaVlIVHErMlpxdzdxMCtQVWxRV3g2RDkrbUF1RjUz?=
+ =?utf-8?B?Z1hYZVFZT2UxdklzdGMyTmRKUGNpR2xjdC9ycmFhNGhhc3lPQ3E5VmkrdnNs?=
+ =?utf-8?B?U3JITUVvRXQrbkNqOWtEeXRPWldKaW5icFdEN3kzemRkTnIxTm5SNlNCZEhw?=
+ =?utf-8?B?MEl4QjRhVmpXZXVQZW5RZzVpUVFlRFFRSnQyK2NtbXFYY09HVE9RcXFZWXhN?=
+ =?utf-8?B?S2RONzF1WEloNllZbFRzUm5oYW9qQTlLOTYzRnRDdGEwNnRFRjF6Vks0cWdi?=
+ =?utf-8?B?d1hQOTcvM3lXeUwrQ0pMdW4rbDhycTRaV3F6VmpmUS9KUTVJdG5ITFcxMU41?=
+ =?utf-8?B?Sm9XaHJKR01wT0FsZERCZzNXOWpXeS81ZDZNK2FsWHQrOU9hSk9mcXVkTzkw?=
+ =?utf-8?B?Y0kzNXRMNzcyeVNFVFBheWpvT0l1TGtUcTdsNy9pTmc5TEc1NDE0RnF5TWN5?=
+ =?utf-8?B?YU5rM1ZTdHB6dXE5bEtnMzdoeTdJcXFWTDl2TVNhc0QrcjR1ZkVVQ2NscWh5?=
+ =?utf-8?B?U1Z4VGhMRWlEOUlJc2ttOW1FNzdUUTVKbGJzWXJLdWlqQXBKSWQxSXNjdDBG?=
+ =?utf-8?B?TWtmeStkYXZkZDlydWUxcnNVdzNmVVVMYjN0bDJZQURqUmVNcGZJV0ZITUZW?=
+ =?utf-8?B?OXJyMzI3U3p1KytzUmxsOFNzdzN4V29TQXFjL1p4dmdweGNISWp4MjVnemg4?=
+ =?utf-8?B?Y2cvM1oyK3RSTDViYisxdUswL29PWGJac1dTMmlsTmM4YWkrdDNrMU0xblVN?=
+ =?utf-8?B?dzIxdEx4SHdsb2hycWFRRHExRUdlUmFLNVpvRkFKOGlvNUFUTFlyYXk3NVow?=
+ =?utf-8?B?Q1FGeFZtOTRJUlZZUDBPcWk5eTY1cFcxWFl0NjRmSGY2cDJJSlVZWkorYStU?=
+ =?utf-8?B?aUFUUXV0Tm5QZjN0UWUvaktkODNjVXNVOGhUMWRYNGdFWitpQlRtSGhLQU1K?=
+ =?utf-8?B?QTc5UGVyMGZnQVdMNmZDL1ZiYTlPcnZLT2RDamFUS0JPZUxIMkN5N2U1OEpv?=
+ =?utf-8?B?V1R1THY0WE1HRys2elBZTllxZ21HZ2IxZEJWKzZQb1JEZUkwd2luQ1RUbiti?=
+ =?utf-8?B?SXczUm5yRGtPRjdtN0pSNWdmeVJxYUx3Z1NMK1h0UUJISzU3TkZnNWd1VXJP?=
+ =?utf-8?B?elBDQTh1aUFCdk9VYWxkdGxkckxHMTVQRTZ0OXp2VFZEcHpMdFIrTHBvT2xE?=
+ =?utf-8?B?TS9KbGpkb0tnbGpLQUplbWVUd0psRjZLdDlQaWFkNXEvQm1SeTErZENLL0Vs?=
+ =?utf-8?B?UmFsOHpiQTNTbzUxVHUxK0JLN3hHTEFXQUVSREJnY2JoT3NpSGF0R3pRWGcr?=
+ =?utf-8?B?LzNKS0o4V2JtdDJBR1FhRHFJd0FMMFc1QzJEQkJCU3NUSktGYWdYZTRJdlYw?=
+ =?utf-8?B?S0JTNW03WXRRNDhkUFhCbXJGYkUyK0ZXaXdrOUpWVmZ1ZUp1OU5ZVWxpaVcx?=
+ =?utf-8?B?aW1KczBOdk1GUlJzc3AyS3h0aVhPem5WOTVQQlVnTVk2eEJuVHpEWFcyUXFw?=
+ =?utf-8?B?WVRrbVhBbWUwSWlzVTVrajcxUGFMdHFsUnFOZlQyL3kxbVpqQWVCOUhYRSsw?=
+ =?utf-8?B?QXBzT2kyUWhmcWNwMEJwaTBxalo1RGRmemJ1NDZBYVdBVjhhVEFsZEJJbk9s?=
+ =?utf-8?B?SzJPSGlKRWQ1bjVsTGs2dHl1MU12MnE2VjRJeVh4dnJYNUpBd1BLNzQwaGtV?=
+ =?utf-8?B?NU9SbVcvMEtZL0l5a1hrcGNnQU1kY1FnZzdkcURPVEZpenFRMGhMME84OEZo?=
+ =?utf-8?B?MkxUZytxeGtRQXBTMWdwUTZwY2x5V3lCMDc4UHZjM2c4K2RZZmZyU0kxTWsy?=
+ =?utf-8?B?ZG4zY0wwbmJzL3d0UXVBN1dCTGV3K0hDNXB1YTBpWnhYbEwzQXdzYnU0cUhI?=
+ =?utf-8?B?T1hSWldtcnhkVVJXNFF6Zk5qY1BHVTA1VjVYRGxIS1kxOEJSYlAvNlRZYjhF?=
+ =?utf-8?B?L3lSMng1Qks4aVBtb3F6dy9RSDM0N1lkUDkvRDZzYVpudlpNUVNQenR5MXUw?=
+ =?utf-8?Q?TvgUbIqL1C7VumfQ=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d837526b-3f8b-4843-b6d2-08da327b4e19
+X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB4835.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 11:50:40.1364 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PGwpGz1yHC/oFFeEE2oqEf1cSzfWM9wKvAcREy18iitie09wGGSM8caTC7ufdR7/aC1B42UoH6qJqtml3W10aBcKdONO3uvBQ+kI4MQ7CRY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB4064
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486, 18.0.858
+ definitions=2022-05-10_01:2022-05-09,
+ 2022-05-10 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999
+ malwarescore=0
+ suspectscore=0 phishscore=0 spamscore=0 bulkscore=0 mlxscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205100053
+X-Proofpoint-ORIG-GUID: ZQ5L3DHlF4pZRqF7pepcfTfewOPoYcPb
+X-Proofpoint-GUID: ZQ5L3DHlF4pZRqF7pepcfTfewOPoYcPb
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Yishai Hadas <yishaih@nvidia.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Will Deacon <will@kernel.org>, Cornelia Huck <cohuck@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ David Woodhouse <dwmw2@infradead.org>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,44 +203,88 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, May 10 2022 at 21:16, Nicholas Piggin wrote:
-> Excerpts from Ricardo Neri's message of May 6, 2022 10:00 am:
->> +	/*
->> +	 * If in use, the HPET hardlockup detector relies on tsc_khz.
->> +	 * Reconfigure it to make use of the refined tsc_khz.
->> +	 */
->> +	lockup_detector_reconfigure();
->
-> I don't know if the API is conceptually good.
->
-> You change something that the lockup detector is currently using, 
-> *while* the detector is running asynchronously, and then reconfigure
-> it. What happens in the window? If this code is only used for small
-> adjustments maybe it does not really matter but in principle it's
-> a bad API to export.
->
-> lockup_detector_reconfigure as an internal API is okay because it
-> reconfigures things while the watchdog is stopped [actually that
-> looks untrue for soft dog which uses watchdog_thresh in
-> is_softlockup(), but that should be fixed].
->
-> You're the arch so you're allowed to stop the watchdog and configure
-> it, e.g., hardlockup_detector_perf_stop() is called in arch/.
->
-> So you want to disable HPET watchdog if it was enabled, then update
-> wherever you're using tsc_khz, then re-enable.
+On 5/10/22 02:38, Tian, Kevin wrote:
+>> From: Jason Gunthorpe <jgg@nvidia.com>
+>> Sent: Friday, May 6, 2022 7:46 PM
+>>
+>> On Fri, May 06, 2022 at 03:51:40AM +0000, Tian, Kevin wrote:
+>>>> From: Jason Gunthorpe <jgg@nvidia.com>
+>>>> Sent: Thursday, May 5, 2022 10:08 PM
+>>>>
+>>>> On Thu, May 05, 2022 at 07:40:37AM +0000, Tian, Kevin wrote:
+>>>>
+>>>>> In concept this is an iommu property instead of a domain property.
+>>>>
+>>>> Not really, domains shouldn't be changing behaviors once they are
+>>>> created. If a domain supports dirty tracking and I attach a new device
+>>>> then it still must support dirty tracking.
+>>>
+>>> That sort of suggests that userspace should specify whether a domain
+>>> supports dirty tracking when it's created. But how does userspace
+>>> know that it should create the domain in this way in the first place?
+>>> live migration is triggered on demand and it may not happen in the
+>>> lifetime of a VM.
+>>
+>> The best you could do is to look at the devices being plugged in at VM
+>> startup, and if they all support live migration then request dirty
+>> tracking, otherwise don't.
+> 
+> Yes, this is how a device capability can help.
+> 
+>>
+>> However, tt costs nothing to have dirty tracking as long as all iommus
+>> support it in the system - which seems to be the normal case today.
+>>
+>> We should just always turn it on at this point.
+> 
+> Then still need a way to report " all iommus support it in the system"
+> to userspace since many old systems don't support it at all. If we all
+> agree that a device capability flag would be helpful on this front (like
+> you also said below), probably can start building the initial skeleton
+> with that in mind?
+> 
 
-The real question is whether making this refined tsc_khz value
-immediately effective matters at all. IMO, it does not because up to
-that point the watchdog was happily using the coarse calibrated value
-and the whole use TSC to assess whether the HPET fired mechanism is just
-a guestimate anyway. So what's the point of trying to guess 'more
-correct'.
+This would capture device-specific and maybe iommu-instance features, but
+there's some tiny bit odd semantic here. There's nothing that
+depends on the device to support any of this, but rather the IOMMU instance that sits
+below the device which is independent of device-own capabilities e.g. PRI on the other
+hand would be a perfect fit for a device capability (?), but dirty tracking
+conveying over a device capability would be a convenience rather than an exact
+hw representation.
 
-Thanks,
+Thinking out loud if we are going as a device/iommu capability [to see if this matches
+what people have or not in mind]: we would add dirty-tracking feature bit via the existent
+kAPI for iommu device features (e.g. IOMMU_DEV_FEAT_AD) and on iommufd we would maybe add
+an IOMMUFD_CMD_DEV_GET_IOMMU_FEATURES ioctl which would have an u64 dev_id as input (from
+the returned vfio-pci BIND_IOMMUFD @out_dev_id) and u64 features as an output bitmap of
+synthetic feature bits, having IOMMUFD_FEATURE_AD the only one we query (and
+IOMMUFD_FEATURE_{SVA,IOPF} as potentially future candidates). Qemu would then at start of
+day would check if /all devices/ support it and it would then still do the blind set
+tracking, but bail out preemptively if any of device-iommu don't support dirty-tracking. I
+don't think we have any case today for having to deal with different IOMMU instances that
+have different features.
 
-        tglx
+Either that or as discussed in the beginning perhaps add an iommufd (or iommufd hwpt one)
+ioctl  call (e.g.IOMMUFD_CMD_CAP) via a input value (e.g. subop IOMMU_FEATURES) which
+would gives us a structure of things (e.g. for the IOMMU_FEATURES subop the common
+featureset bitmap in all iommu instances). This would give the 'all iommus support it in
+the system'. Albeit the device one might have more concrete longevity if there's further
+plans aside from dirty tracking.
 
+>>
+>>> and if the user always creates domain to allow dirty tracking by default,
+>>> how does it know a failed attach is due to missing dirty tracking support
+>>> by the IOMMU and then creates another domain which disables dirty
+>>> tracking and retry-attach again?
+>>
+>> The automatic logic is complicated for sure, if you had a device flag
+>> it would have to figure it out that way
+>>
+> 
+> Yes. That is the model in my mind.
+> 
+> Thanks
+> Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
