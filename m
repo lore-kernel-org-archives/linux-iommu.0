@@ -4,67 +4,71 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 67E86C433EF
-	for <iommu@archiver.kernel.org>; Wed, 11 May 2022 06:02:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2E044C4332F
+	for <iommu@archiver.kernel.org>; Wed, 11 May 2022 06:49:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id EB86441621;
-	Wed, 11 May 2022 06:02:25 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id C46FA417CA;
+	Wed, 11 May 2022 06:49:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GB2tbdDqlARo; Wed, 11 May 2022 06:02:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 8F7254160A;
-	Wed, 11 May 2022 06:02:24 +0000 (UTC)
+	with ESMTP id IOxJqobHRmLG; Wed, 11 May 2022 06:49:46 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 7858E41725;
+	Wed, 11 May 2022 06:49:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5B6B9C0039;
-	Wed, 11 May 2022 06:02:24 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 25FE1C002D
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 06:02:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 330AAC0032;
+	Wed, 11 May 2022 06:49:46 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AACD4C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 06:49:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 1315740178
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 06:02:23 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id A024F82422
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 06:49:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mHTJHCmZi4xF for <iommu@lists.linux-foundation.org>;
- Wed, 11 May 2022 06:02:22 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 273C34011F
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 06:02:21 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 08AF268BFE; Wed, 11 May 2022 08:02:14 +0200 (CEST)
-Date: Wed, 11 May 2022 08:02:12 +0200
-From: "hch@lst.de" <hch@lst.de>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Subject: Re: [PATCH] swiotlb: Max mapping size takes min align mask into
- account
-Message-ID: <20220511060212.GA32192@lst.de>
-References: <20220510142109.777738-1-ltykernel@gmail.com>
- <cd64adcd-26fc-0452-754d-7ab0f5536142@arm.com>
- <PH0PR21MB302530B081D6CE6470D5F9A4D7C99@PH0PR21MB3025.namprd21.prod.outlook.com>
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id LWIWETq2mPmg for <iommu@lists.linux-foundation.org>;
+ Wed, 11 May 2022 06:49:40 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id B768882419
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 06:49:39 +0000 (UTC)
+X-UUID: 79573bfb5a70440692823d77ced38a24-20220511
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4, REQID:49595733-6d94-4492-a465-17de7ee345b7, OB:0,
+ LO
+ B:0,IP:0,URL:0,TC:0,Content:-20,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,AC
+ TION:release,TS:-20
+X-CID-META: VersionHash:faefae9, CLOUDID:3fe663b3-56b5-4c9e-8d83-0070b288eb6a,
+ C
+ OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
+X-UUID: 79573bfb5a70440692823d77ced38a24-20220511
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
+ mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 322758267; Wed, 11 May 2022 14:49:31 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
+ Wed, 11 May 2022 14:49:30 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 11 May 2022 14:49:28 +0800
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Matthias
+ Brugger <matthias.bgg@gmail.com>
+Subject: [PATCH 0/4] iommu/mediatek: Improve safety from dts
+Date: Wed, 11 May 2022 14:49:16 +0800
+Message-ID: <20220511064920.18455-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <PH0PR21MB302530B081D6CE6470D5F9A4D7C99@PH0PR21MB3025.namprd21.prod.outlook.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
- "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
- "wei.liu@kernel.org" <wei.liu@kernel.org>,
- Stephen Hemminger <sthemmin@microsoft.com>,
- "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
- "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
- "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
- Haiyang Zhang <haiyangz@microsoft.com>, Dexuan Cui <decui@microsoft.com>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- Tianyu Lan <ltykernel@gmail.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "hch@infradead.org" <hch@infradead.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "hch@lst.de" <hch@lst.de>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
- vkuznets <vkuznets@redhat.com>, KY Srinivasan <kys@microsoft.com>,
- Robin Murphy <robin.murphy@arm.com>, "jejb@linux.ibm.com" <jejb@linux.ibm.com>
+X-MTK: N
+Cc: anan.sun@mediatek.com, chengci.xu@mediatek.com, xueqi.zhang@mediatek.com,
+ linux-kernel@vger.kernel.org, libo.kang@mediatek.com, yf.wang@mediatek.com,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, Guenter Roeck <groeck@chromium.org>,
+ Dan Carpenter <dan.carpenter@oracle.com>, mingyuan.ma@mediatek.com,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,31 +81,39 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Yong Wu <yong.wu@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, May 10, 2022 at 06:26:55PM +0000, Michael Kelley (LINUX) wrote:
-> > Hmm, this seems a bit pessimistic - the offset can vary per mapping, so
-> > it feels to me like it should really be the caller's responsibility to
-> > account for it if they're already involved enough to care about both
-> > constraints. But I'm not sure how practical that would be.
-> 
-> Tianyu and I discussed this prior to his submitting the patch.
-> Presumably dma_max_mapping_size() exists so that the higher
-> level blk-mq code can limit the size of I/O requests to something
-> that will "fit" in the swiotlb when bounce buffering is enabled.
+This patchset contains several improved patches:
+[1/4] When mt8195 v7, I added a error log for dts parse fail, but it
+doesn't ignore probe_defer case.(v6 doesn't have this err log.)
+[2/4] Add a error path for MM dts parse.
 
-Yes, the idea that upper level code doesn't need to care was very
-much the idea behind dma_max_mapping_size().
+[3/4][4/4] To improve safety from dts. Base on this:
+https://lore.kernel.org/linux-mediatek/20211210205704.1664928-1-linux@roeck-us.net/
 
-> As you mentioned, how else would a caller handle this situation?
+Base on linux-next-20220510.
 
-Well, we could look at dma_get_min_align_mask in the caller and do
-the calculation there, but I really don't think that is a good idea.
+Guenter Roeck (1):
+  iommu/mediatek: Validate number of phandles associated with
+    "mediatek,larbs"
 
-So this patch looks sensible to me.
+Yong Wu (3):
+  iommu/mediatek: Use dev_err_probe to mute probe_defer err log
+  iommu/mediatek: Add error path for loop of mm_dts_parse
+  iommu/mediatek: Improve safety for mediatek,smi property in larb nodes
+
+ drivers/iommu/mtk_iommu.c | 83 ++++++++++++++++++++++++++++-----------
+ 1 file changed, 61 insertions(+), 22 deletions(-)
+
+-- 
+2.18.0
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
