@@ -4,63 +4,63 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 501E1C433F5
-	for <iommu@archiver.kernel.org>; Wed, 11 May 2022 07:27:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B2840C433EF
+	for <iommu@archiver.kernel.org>; Wed, 11 May 2022 07:28:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 1348640B4D;
-	Wed, 11 May 2022 07:27:55 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 8068A40B42;
+	Wed, 11 May 2022 07:28:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AEGvQbJ5Xt9Z; Wed, 11 May 2022 07:27:54 +0000 (UTC)
+	with ESMTP id QxHaFo4p85UZ; Wed, 11 May 2022 07:28:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id EDD924060C;
-	Wed, 11 May 2022 07:27:53 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 492734060C;
+	Wed, 11 May 2022 07:28:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C8B67C0039;
-	Wed, 11 May 2022 07:27:53 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3501EC002D
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 07:27:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 04AE0C0039;
+	Wed, 11 May 2022 07:28:10 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A46B3C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 07:28:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 154F940B42
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 07:27:53 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 92BFF40B42
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 07:28:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5QerHEp-XSM9 for <iommu@lists.linux-foundation.org>;
- Wed, 11 May 2022 07:27:51 +0000 (UTC)
+ with ESMTP id TVnnpO9MypGA for <iommu@lists.linux-foundation.org>;
+ Wed, 11 May 2022 07:28:07 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com
- (mail-bn7nam10on20602.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e8a::602])
- by smtp2.osuosl.org (Postfix) with ESMTPS id C19954060C
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 07:27:51 +0000 (UTC)
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam10on2061f.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e89::61f])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 652FA4060C
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 07:28:07 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jvZxjw14QJ9hB6+BmKF07iIIewTZSVWnwEfFpHlA+Jt+6CuEKzLPz/dvwyagKqYVfE++mTJlAqMfqj8ahu5QHq0MmiA14urx5CFZXZH/tiVHdJvrQwTj10JGlf1hucGTz7bX5/RkpFMdtug+q5AXMYuxuB5F+fsp2yuk6q8XDh4dvvewRVzQqvCbP7O0GSLN0Zhnaa+9/ZfxEZ6HT25wAzJmTBRbZM+Ni3zX9eF9xj4bwCoRkcTp2rMI2nBW7MKEfONMl6D5RfDjxEayRylh9AfaNvpNTI8RsJUEt9C4voo9X9DVpdFoXlYr0aoA+rymyn0bYRa447i1UVfj03nfKg==
+ b=kIeBgGBcEbpAJeFuqtE5r4YXt6sCXE+JIUh8MPxQjbvlMYsfbzB4yv5vw00Y+KdmAkAVQuye2EYkJhkgZ/EQDMdDOQiugoxysbqSj1eYypWpU5PTCaCWQAdoKe+IW1Q4cBbY3nWIH15eIrzpkE2lrTY0z36p5BzjF93gRwrHlhva9WSh2aVNdX4BlY+Htl7QSKUB6LX9iglVEQMk6fp0ROF70C1eY3VoGIcQiYgYctYWYHgxzywf82ztyl7/j8gwApZ3e3IWefUyKKEfduara0SEwOM8/UlYob4jDpbSA9p3UdyTvlqYJAt2eJuUEV7Av/Ebz2rI6c7FkL4+dTlXiA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0xAHT6EiiqyRSsTRxSB0w6c+uW3A5USwLO4JE2vSWoE=;
- b=ekmTkmA10ReVJMpiSY4toiFBUuf75IYUsJDkTcBQs0bgynJSRCMpVepv+XdE7WRDgJBb1U4PMJADnmpXI2Vdc3C1oLKJDlSdy7XzjNxB9hHvk8rb1j2IHVrQBAKQgrCfWmRT93c0K/B/VBBBafYEUmFoS3+ZNiet6xtDly/ytspxt6yAH5Y5/0nVm7zrWpTrjInXBwdqmr/mRS0M+z5pe0sDWYwUBVYLMftipuoYGY1q3NwOf385mMAfNXFCDB9WYAiDkjLnmOptYS7B+Sp7R1xHon92I/pIU0bhNMq4eRH8bSfO1pZ7C1VDyzu0ocz0scNPKPmTXJfEqhwLNlx6ww==
+ bh=2bFmE81uXZid9kxupCScv4sBbzvpw5KIa/mU/joJRQs=;
+ b=me+DR5s9APowyqyIZ4WsIwq0amqEjitX58gO3m8hf9G3cVextAaVL9/sNatmaIQeSKzhkcyAKynwBn2J4aPWTag8V6UaasUV/H/FzmDmOKSFdOIhckBq3xntWkAX03KnOGp38L4fE05hr3ZJ5ox+QmRZUoC7ENNNOYeQRgohTqN3XidXlN/rMBlW56BQmcwtqRA88J07wFiTCG+SgO23MdMtZXMkWpAywSt2/be1zcDUEQbove3yDVJylPETKBrjOOw9AXGqR5jRgedBXoymXw2OBJrQ7Dj7mxus73SVqalWWEql/C5uKJTCw8MIytHFjhUshYdHZIJgFQUItupV0A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux-foundation.org
  smtp.mailfrom=amd.com; dmarc=pass (p=quarantine sp=quarantine pct=100)
  action=none header.from=amd.com; dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0xAHT6EiiqyRSsTRxSB0w6c+uW3A5USwLO4JE2vSWoE=;
- b=OhP41JcYL8opEQY1qq9Ed5jBU1yUL302mDzeX38OFLEajrKNZcXpKLG3aA65ZTBN3WHRri5mXWAsdYYzhVLtpo/Qe8e5z5p5eln97JreaWqpzdeM8cnhoecTingcFZzAiz/FG5F1MM8RPFC2V6fCEBb1dlUsSxJb1MoQLbWnIiw=
-Received: from DM6PR02CA0120.namprd02.prod.outlook.com (2603:10b6:5:1b4::22)
- by DM5PR12MB1931.namprd12.prod.outlook.com (2603:10b6:3:109::21) with
+ bh=2bFmE81uXZid9kxupCScv4sBbzvpw5KIa/mU/joJRQs=;
+ b=PljyBQTo6XRpmdWTQVPnWODno79L3LQg6B9CQP+HaVBnRAQQdYJePKlbmZz0q2Ki5fNO+z3lZ9CiU1EYm3dOtXqsr2JfxJoMCZ5qAiTGXXNR+jGtkfjN/cyKtKNLmr5h2ni9JwnaOwoxgb9jNFg8C5XNrfQFwKKsHxYMYtHX1jY=
+Received: from DS7PR03CA0232.namprd03.prod.outlook.com (2603:10b6:5:3ba::27)
+ by SN6PR12MB2750.namprd12.prod.outlook.com (2603:10b6:805:77::29) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.20; Wed, 11 May
- 2022 07:27:47 +0000
-Received: from DM6NAM11FT052.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:1b4:cafe::6d) by DM6PR02CA0120.outlook.office365.com
- (2603:10b6:5:1b4::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23 via Frontend
- Transport; Wed, 11 May 2022 07:27:47 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.22; Wed, 11 May
+ 2022 07:28:03 +0000
+Received: from DM6NAM11FT003.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3ba:cafe::ba) by DS7PR03CA0232.outlook.office365.com
+ (2603:10b6:5:3ba::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.22 via Frontend
+ Transport; Wed, 11 May 2022 07:28:03 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -68,17 +68,17 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT052.mail.protection.outlook.com (10.13.172.111) with Microsoft SMTP
+ DM6NAM11FT003.mail.protection.outlook.com (10.13.173.162) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5250.13 via Frontend Transport; Wed, 11 May 2022 07:27:47 +0000
+ 15.20.5250.13 via Frontend Transport; Wed, 11 May 2022 07:28:03 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 11 May
- 2022 02:27:45 -0500
+ 2022 02:28:00 -0500
 To: <iommu@lists.linux-foundation.org>
-Subject: [PATCH v3 22/35] iommu/amd: Update iommu_ignore_device
-Date: Wed, 11 May 2022 12:51:28 +0530
-Message-ID: <20220511072141.15485-23-vasant.hegde@amd.com>
+Subject: [PATCH v3 23/35] iommu/amd: Update dump_dte_entry
+Date: Wed, 11 May 2022 12:51:29 +0530
+Message-ID: <20220511072141.15485-24-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220511072141.15485-1-vasant.hegde@amd.com>
 References: <20220511072141.15485-1-vasant.hegde@amd.com>
@@ -88,27 +88,27 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ed3bcef9-727b-4f9d-6c0e-08da331fbf98
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1931:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR12MB1931EE2519D8AF61ED3C2F8987C89@DM5PR12MB1931.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 739edf53-19bd-41b4-5df9-08da331fc8fd
+X-MS-TrafficTypeDiagnostic: SN6PR12MB2750:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR12MB2750A48409FF5B37BA13D00187C89@SN6PR12MB2750.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eg7ehwQ3KLxZ9lJ5Nwh0e16LI86EqF2DSqyOa9cTxKwrj8APa44hqJBPve2adnYYeZeLTA6c7dfXiedCCZQlagg+uEZw7I26KitV98z0/zvEJCpp5UYzSCE6oRqNFe0xoRcWB+uZfEjmcXLafx2mP/cjS2zSDhS2boZzXtTVrUx7iOl9mhFnTuudMC9C0n6AjOUoaVpolVLfSvVpEXCfuBQFHXvW81oGip/3t2KTMCmjt/uY8hNFbUrrm8xPwfGFxC9DA30ZIm80y6qS9ZbDAKZnBGRzBH5xxQRU2N3r9V8+eeQXvFBgO434M56A7e81AHeRy/HfEDn6CjvyX5xBMpsums6U/jy0H/YMYZ52AlKp4MBzx1paA9wYBeLAEfrM3nzXefdSpBIZjuRlqAWuRWuaJ+GaIJkk//4B6LlkQ/cDvORuveA5Ny1L7YWALhYVSJQvvX3jJZqF7oWNtotJEgkJi92+fGwc4kBuz8Yh/8wOznQJUdUeU2TQdfQciSKxZmnpBGKqSvt0Y+Mq2jjeHZHWtKXZ3ooJDQlnlGBa8rD5M8atX7zLkEGmsJikpdvMFG1Z41CsVrLIlcFSRMp4PkRhUfn0Ed84Q+ZabMeAMXIhrZQnxA17XweLVio+Sn+kjBKxCqiSlipWP0hL0cEWS+smgq8NNvFikVbQ8fnZCIrieos5hlP0hkd/4zLr/WtAl1IKAHfVZykcsHn0mrCVEw==
+X-Microsoft-Antispam-Message-Info: bX+ZdbAkZHISDR0203wo7ndWvJBcmY3HeZGIsKzgGxUl1CedhVKo7HgAwlyHOvsij4gS4yH0XohO2EOMzCtnEWmGNWPoe1uD5mZPPFAV7uqTz2QzRCj3gstumQ0GtrDFQRiiwNtzZ2m9i/9Bus0rIiIn6pvD8UTJsODujRKuYAWxP36za1ysLttGdMxwCRgPL8eItB15tP0NYQ5A0KI6FkfZxAVr+AQUfmVGwZpdmFeQOwiZVYdQ6yIz+wX+wCFjlWMigOg9BJfdkDp7J/LNt91Y9huy9v6HVoSzf2Zc6POyWdGCcH3QXf753shgS9s02350HzIvMl7xHiyzXlBmvg4y0mg2lvzPV0bjp8yWDQiRq+YPPjY7OV5h5Rz9s+eZS1FReFj+J3MyAjCUONoZqps6cNuGUrUHskgX2ew0lX4Ul/e/R5nqrCcKgqiqEs2Q7JuVOm1kjYENsTUnXRPI6UiScRq2vC9IeJdJWRgANWb8QX5t6OygtIAxBCLpK8FeAqLkT6jzrxjiXiNjj3Nsyj0KdnGLG1Q6tuSxSk7nyBWGR/stFvAQG+4i6SYhSn5LxWzKSQgUy4hvSOh+9rmDXmDQV/hAjlponA+l6rzkYm+WL11TmSaIwyoDycBqaGYo5Szfcct1oVgua3UuneDRWNEJ10xfnfoPM2OIniER5KwUBoJRJZof8BbXC/isTng4eKDd0AiLc7wntaqmNFPClA==
 X-Forefront-Antispam-Report: CIP:165.204.84.17; CTRY:US; LANG:en; SCL:1; SRV:;
  IPV:CAL; SFV:NSPM; H:SATLEXMB04.amd.com; PTR:InfoDomainNonexistent; CAT:NONE;
- SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(186003)(70206006)(426003)(47076005)(36756003)(82310400005)(16526019)(336012)(8936002)(44832011)(36860700001)(83380400001)(26005)(5660300002)(2616005)(40460700003)(4326008)(8676002)(1076003)(86362001)(508600001)(6916009)(54906003)(7696005)(81166007)(2906002)(6666004)(316002)(356005)(70586007)(36900700001);
+ SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(70586007)(44832011)(36756003)(6666004)(4326008)(81166007)(8676002)(8936002)(82310400005)(316002)(70206006)(6916009)(336012)(7696005)(54906003)(5660300002)(508600001)(2906002)(40460700003)(356005)(426003)(86362001)(36860700001)(1076003)(16526019)(2616005)(186003)(83380400001)(47076005)(26005)(36900700001);
  DIR:OUT; SFP:1101; 
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2022 07:27:47.6849 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ed3bcef9-727b-4f9d-6c0e-08da331fbf98
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2022 07:28:03.4460 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 739edf53-19bd-41b4-5df9-08da331fc8fd
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d; Ip=[165.204.84.17];
  Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT052.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT003.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1931
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB2750
 Cc: Vasant Hegde <vasant.hegde@amd.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -137,32 +137,39 @@ device table.
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- drivers/iommu/amd/iommu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iommu/amd/iommu.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 678eceb808e9..6223af4ccc22 100644
+index 6223af4ccc22..8c99e2e161aa 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -413,15 +413,15 @@ static int iommu_init_device(struct amd_iommu *iommu, struct device *dev)
- static void iommu_ignore_device(struct amd_iommu *iommu, struct device *dev)
+@@ -451,13 +451,13 @@ static void amd_iommu_uninit_device(struct device *dev)
+  *
+  ****************************************************************************/
+ 
+-static void dump_dte_entry(u16 devid)
++static void dump_dte_entry(struct amd_iommu *iommu, u16 devid)
  {
- 	struct amd_iommu_pci_seg *pci_seg = iommu->pci_seg;
+ 	int i;
 +	struct dev_table_entry *dev_table = get_dev_table(iommu);
- 	int devid;
  
--	devid = get_device_id(dev);
-+	devid = (get_device_id(dev)) & 0xffff;
- 	if (devid < 0)
- 		return;
- 
--
- 	pci_seg->rlookup_table[devid] = NULL;
--	memset(&amd_iommu_dev_table[devid], 0, sizeof(struct dev_table_entry));
-+	memset(&dev_table[devid], 0, sizeof(struct dev_table_entry));
- 
- 	setup_aliases(iommu, dev);
+ 	for (i = 0; i < 4; ++i)
+-		pr_err("DTE[%d]: %016llx\n", i,
+-			amd_iommu_dev_table[devid].data[i]);
++		pr_err("DTE[%d]: %016llx\n", i, dev_table[devid].data[i]);
  }
+ 
+ static void dump_command(unsigned long phys_addr)
+@@ -618,7 +618,7 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ 		dev_err(dev, "Event logged [ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x pasid=0x%05x address=0x%llx flags=0x%04x]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			pasid, address, flags);
+-		dump_dte_entry(devid);
++		dump_dte_entry(iommu, devid);
+ 		break;
+ 	case EVENT_TYPE_DEV_TAB_ERR:
+ 		dev_err(dev, "Event logged [DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
 -- 
 2.27.0
 
