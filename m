@@ -4,65 +4,75 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3BCC2C433F5
-	for <iommu@archiver.kernel.org>; Wed, 11 May 2022 11:09:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6635FC433EF
+	for <iommu@archiver.kernel.org>; Wed, 11 May 2022 11:42:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C76E683118;
-	Wed, 11 May 2022 11:09:08 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 118A9828BA;
+	Wed, 11 May 2022 11:42:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PZ8vB00EeE19; Wed, 11 May 2022 11:09:08 +0000 (UTC)
+	with ESMTP id nRbHHFk_YEuU; Wed, 11 May 2022 11:41:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 99FC6832C9;
-	Wed, 11 May 2022 11:09:07 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 7D1C8828AA;
+	Wed, 11 May 2022 11:41:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5D11CC0032;
-	Wed, 11 May 2022 11:09:07 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3FA10C002D
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 11:09:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5B163C0032;
+	Wed, 11 May 2022 11:41:59 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1B788C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 11:41:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 1E77E40201
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 11:09:06 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id E7C876109C
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 11:41:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=collabora.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lkteEdilD1EJ for <iommu@lists.linux-foundation.org>;
- Wed, 11 May 2022 11:09:05 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id W0uBrsJHssT1 for <iommu@lists.linux-foundation.org>;
+ Wed, 11 May 2022 11:41:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
- by smtp4.osuosl.org (Postfix) with ESMTPS id E5F7D401B3
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 11:09:04 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
- (Authenticated sender: dmitry.osipenko) with ESMTPSA id A7E7B1F44DCB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
- s=mail; t=1652267343;
- bh=F9aAPWfKvLN/c3HoUZUVVOQ9jz//gwR/ofGKu2nHses=;
- h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
- b=W12X3oJhsrpQE2DhSrbaWvWpfAdag8EHWZTe0B4BjVG5fVofba5zM6AwqURgE2xit
- G9sJQhKpL5Lyo4YWhOxwOG8SRrENRfkKeEihosn8zGLLwzAInYCBTg24pri6K5Wkzm
- ROAc6s6qMvVe35i0rWFGctTEGVUhwszS5KdKNRtZWe7E9AaDTDa/gaiIbsp2T604vi
- lQtYbkGWo0zS/4XtbXV/VbB7Ud2LSjWRexmYPIToQz+WYbzOkE/vFnAUFWc0AHLsUW
- NAPHxYUaNdksd30zWcFIl6/+Xto1CdT5o8GmtPsk9k2BN0C2KpYvYXG1TSVRc+KZj6
- n8r2YQnQOZf1w==
-Message-ID: <a0c7e954-ee3f-74fd-cfea-9b6dbce924dc@collabora.com>
-Date: Wed, 11 May 2022 14:08:59 +0300
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id DAB7661096
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 11:41:54 +0000 (UTC)
+Received: from fraeml711-chm.china.huawei.com (unknown [172.18.147.206])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KytDK07y5z67Wgc;
+ Wed, 11 May 2022 19:37:05 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml711-chm.china.huawei.com (10.206.15.60) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 11 May 2022 13:41:51 +0200
+Received: from [10.47.91.186] (10.47.91.186) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.24; Wed, 11 May
+ 2022 12:41:49 +0100
+Message-ID: <cee3177d-458f-e61c-d38f-08965eb79eb6@huawei.com>
+Date: Wed, 11 May 2022 12:42:02 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2] drm/tegra: Stop using iommu_present()
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, thierry.reding@gmail.com
-References: <1f7c304a79b8b8dd5d4716786cae7502a0cc31f5.1649684782.git.robin.murphy@arm.com>
- <add31812-50d5-6cb0-3908-143c523abd37@collabora.com>
- <63c021c4-57de-38fe-e48f-a308088d235b@arm.com>
-From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-In-Reply-To: <63c021c4-57de-38fe-e48f-a308088d235b@arm.com>
-Cc: linux-tegra@vger.kernel.org, iommu@lists.linux-foundation.org,
- dri-devel@lists.freedesktop.org, jonathanh@nvidia.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v7 1/7] iommu/arm-smmu-v3: Make default domain type of
+ HiSilicon PTT device to identity
+To: Yicong Yang <yangyicong@hisilicon.com>, <gregkh@linuxfoundation.org>,
+ <helgaas@kernel.org>, <alexander.shishkin@linux.intel.com>,
+ <lorenzo.pieralisi@arm.com>, <will@kernel.org>, <mark.rutland@arm.com>,
+ <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+ <mike.leach@linaro.org>, <leo.yan@linaro.org>, <jonathan.cameron@huawei.com>, 
+ <daniel.thompson@linaro.org>, <joro@8bytes.org>,
+ <shameerali.kolothum.thodi@huawei.com>, <robin.murphy@arm.com>,
+ <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+ <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+ <linux-perf-users@vger.kernel.org>, <iommu@lists.linux-foundation.org>
+References: <20220407125841.3678-1-yangyicong@hisilicon.com>
+ <20220407125841.3678-2-yangyicong@hisilicon.com>
+In-Reply-To: <20220407125841.3678-2-yangyicong@hisilicon.com>
+X-Originating-IP: [10.47.91.186]
+X-ClientProxiedBy: lhreml705-chm.china.huawei.com (10.201.108.54) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: zhangshaokun@hisilicon.com, liuqi115@huawei.com, linuxarm@huawei.com,
+ prime.zeng@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,39 +85,67 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: John Garry via iommu <iommu@lists.linux-foundation.org>
+Reply-To: John Garry <john.garry@huawei.com>
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gNS80LzIyIDE0OjUyLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24gMjAyMi0wNS0wNCAwMTo1
-MiwgRG1pdHJ5IE9zaXBlbmtvIHdyb3RlOgo+PiBPbiA0LzExLzIyIDE2OjQ2LCBSb2JpbiBNdXJw
-aHkgd3JvdGU6Cj4+PiBAQCAtMTA5Miw2ICsxMDkyLDE5IEBAIHN0YXRpYyBib29sIGhvc3QxeF9k
-cm1fd2FudHNfaW9tbXUoc3RydWN0Cj4+PiBob3N0MXhfZGV2aWNlICpkZXYpCj4+PiDCoMKgwqDC
-oMKgIHN0cnVjdCBob3N0MXggKmhvc3QxeCA9IGRldl9nZXRfZHJ2ZGF0YShkZXYtPmRldi5wYXJl
-bnQpOwo+Pj4gwqDCoMKgwqDCoCBzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW47Cj4+PiDCoCAr
-wqDCoMKgIC8qIEZvciBzdGFydGVycywgdGhpcyBpcyBtb290IGlmIG5vIElPTU1VIGlzIGF2YWls
-YWJsZSAqLwo+Pj4gK8KgwqDCoCBpZiAoIWRldmljZV9pb21tdV9tYXBwZWQoJmRldi0+ZGV2KSkK
-Pj4+ICvCoMKgwqDCoMKgwqDCoCByZXR1cm4gZmFsc2U7Cj4+Cj4+IFVuZm9ydHVuYXRlbHkgdGhp
-cyByZXR1cm5zIGZhbHNlIG9uIFQzMCB3aXRoIGVuYWJsZWQgSU9NTVUgYmVjYXVzZSB3ZQo+PiBk
-b24ndCB1c2UgSU9NTVUgZm9yIEhvc3QxeCBvbiBUMzAgWzFdIHRvIG9wdGltaXplIHBlcmZvcm1h
-bmNlLiBXZSBjYW4ndAo+PiBjaGFuZ2UgaXQgdW50aWwgd2Ugd2lsbCB1cGRhdGUgZHJpdmVycyB0
-byBzdXBwb3J0IEhvc3QxeC1kZWRpY2F0ZWQKPj4gYnVmZmVycy4KPiAKPiBIdWgsIHNvIGlzIGRl
-di0+ZGV2IGhlcmUgbm90IHRoZSBEUk0gZGV2aWNlPyBJZiBpdCBpcywgYW5kCj4gZGV2aWNlX2lv
-bW11X21hcHBlZCgpIHJldHVybnMgZmFsc2UsIHRoZW4gdGhlIGxhdGVyIGlvbW11X2F0dGFjaF9n
-cm91cCgpCj4gY2FsbCBpcyBnb2luZyB0byBmYWlsIGFueXdheSwgc28gdGhlcmUncyBub3QgbXVj
-aCBwb2ludCBhbGxvY2F0aW5nIGEKPiBkb21haW4uIElmIGl0J3Mgbm90LCB0aGVuIHdoYXQgdGhl
-IGhlY2sgaXMgaG9zdDF4X2RybV93YW50c19pb21tdSgpCj4gYWN0dWFsbHkgdGVzdGluZyBmb3I/
-CgpUaGUgZGV2LT5kZXYgaXMgdGhlIGhvc3QxeCBkZXZpY2UgYW5kIGl0J3MgdGhlIERSTSBkZXZp
-Y2UuCgpUaGUgaW9tbXVfYXR0YWNoX2dyb3VwKCkgaXMgY2FsbGVkIGZvciB0aGUgRFJNIHN1Yi1k
-ZXZpY2VzIChjbGllbnRzIGluCnRoZSBUZWdyYSBkcml2ZXIpLCB3aGljaCBhcmUgdGhlIGRldmlj
-ZXMgc2l0dGluZyBvbiB0aGUgaG9zdDF4IGJ1cy4KClRoZXJlIGlzIG5vIHNpbmdsZSBHUFUgZGV2
-aWNlIG9uIFRlZ3JhLCBpbnN0ZWFkIGl0J3MgY29tcG9zZWQgb2YKaW5kZXBlbmRlbnQgR1BVIGVu
-Z2luZXMgYW5kIGRpc3BsYXkgY29udHJvbGxlcnMgdGhhdCBhcmUgY29ubmVjdGVkIHRvCnRoZSBo
-b3N0MXggYnVzLgoKSG9zdDF4IGFsc28gaGFzIGNoYW5uZWwgRE1BIGVuZ2luZXMgdGhhdCBhcmUg
-dXNlZCBieSBEUk0gZHJpdmVyLiBXZQpkb24ndCBoYXZlIGRlZGljYXRlZCBkZXZpY2VzIGZvciB0
-aGUgaG9zdDF4IERNQSwgdGhlcmUgaXMgc2luZ2xlIGhvc3QxeApkcml2ZXIgdGhhdCBtYW5hZ2Vz
-IGhvc3QxeCBidXMgYW5kIERNQS4KCi0tIApCZXN0IHJlZ2FyZHMsCkRtaXRyeQpfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QK
-aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5k
-YXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On 07/04/2022 13:58, Yicong Yang wrote:
+> The DMA operations of HiSilicon PTT device can only work properly with
+> identical mappings. So add a quirk for the device to force the domain
+
+I'm not sure if you meant to write "identity mappings".
+
+> as passthrough.
+> 
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+
+FWIW,
+
+Reviewed-by: John Garry <john.garry@huawei.com>
+
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 ++++++++++++++++
+>   1 file changed, 16 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 627a3ed5ee8f..5ec15ae2a9b1 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2839,6 +2839,21 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
+>   	}
+>   }
+>   
+> +#define IS_HISI_PTT_DEVICE(pdev)	((pdev)->vendor == PCI_VENDOR_ID_HUAWEI && \
+> +					 (pdev)->device == 0xa12e)
+> +
+> +static int arm_smmu_def_domain_type(struct device *dev)
+> +{
+> +	if (dev_is_pci(dev)) {
+> +		struct pci_dev *pdev = to_pci_dev(dev);
+> +
+> +		if (IS_HISI_PTT_DEVICE(pdev))
+> +			return IOMMU_DOMAIN_IDENTITY;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>   static struct iommu_ops arm_smmu_ops = {
+>   	.capable		= arm_smmu_capable,
+>   	.domain_alloc		= arm_smmu_domain_alloc,
+> @@ -2856,6 +2871,7 @@ static struct iommu_ops arm_smmu_ops = {
+>   	.sva_unbind		= arm_smmu_sva_unbind,
+>   	.sva_get_pasid		= arm_smmu_sva_get_pasid,
+>   	.page_response		= arm_smmu_page_response,
+> +	.def_domain_type	= arm_smmu_def_domain_type,
+>   	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+>   	.owner			= THIS_MODULE,
+>   	.default_domain_ops = &(const struct iommu_domain_ops) {
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
