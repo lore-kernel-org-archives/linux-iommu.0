@@ -1,70 +1,62 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8BC83C433EF
-	for <iommu@archiver.kernel.org>; Wed, 11 May 2022 12:58:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A029DC433EF
+	for <iommu@archiver.kernel.org>; Wed, 11 May 2022 14:13:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 4430383268;
-	Wed, 11 May 2022 12:58:21 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 29CDF417DE;
+	Wed, 11 May 2022 14:13:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1z6ONj5MpiQu; Wed, 11 May 2022 12:58:20 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Z9F9LBAdo-6b; Wed, 11 May 2022 14:13:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 1B3AE83183;
-	Wed, 11 May 2022 12:58:20 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id DF838417CA;
+	Wed, 11 May 2022 14:13:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F2468C0039;
-	Wed, 11 May 2022 12:58:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 95E91C0039;
+	Wed, 11 May 2022 14:13:40 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D5AECC002D
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 12:58:18 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 58DA6C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 14:13:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id C4C9841615
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 12:58:18 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 3887C417CA
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 14:13:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=infradead.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QPuMurF0zals for <iommu@lists.linux-foundation.org>;
- Wed, 11 May 2022 12:58:18 +0000 (UTC)
+ with ESMTP id 3y4JkxHEUkwX for <iommu@lists.linux-foundation.org>;
+ Wed, 11 May 2022 14:13:35 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [IPv6:2607:7c80:54:e::133])
- by smtp4.osuosl.org (Postfix) with ESMTPS id ED0A8418FE
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 12:58:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
- MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
- :Reply-To:Content-Type:Content-ID:Content-Description;
- bh=toUCmk68b0VIqulfilEOK3I3y91LJ0y0OH/f7d0EES0=; b=GGIU1i8lkayqDGAplfrTSrhaor
- BLksm6LWRMLoDZZbshdWfl1zTZJw7+5EApQCx/OIN5M0EU1RtOm2OP3lgcCxN0zEnNoGvF+GODe3G
- ofQic3DC0LKOfP7Fkx2AeGIxyEVZb/kbjHRCDleY4wfI1k9Lp2EjpIw2epikU2kUn3o/FWk+ND78J
- W6sXXNB9s8fIRSBTPGBi4SnVmC8afXImzQtCfps0xo0YrB6WG5ivAudedbhd+z0axlhNGkH7zCTqI
- iY5Bf3S8J4EU/B25UhLHUqveOZLR1f11oopGMGBSmVNXdElnUxTs231jO3i0K+ajnFFfdiXi2/Hf5
- siB5FhhA==;
-Received: from [2001:4bb8:184:7881:740a:25f7:2c13:ef7a] (helo=localhost)
- by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
- id 1noluy-006red-V1; Wed, 11 May 2022 12:58:17 +0000
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 15DDD41793
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 14:13:34 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id 260F668CFE; Wed, 11 May 2022 16:13:29 +0200 (CEST)
+Date: Wed, 11 May 2022 16:13:28 +0200
 From: Christoph Hellwig <hch@lst.de>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH 3/3] swiotlb: use the right nslabs-derived sizes in
- swiotlb_init_late
-Date: Wed, 11 May 2022 14:58:05 +0200
-Message-Id: <20220511125805.1377025-4-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220511125805.1377025-1-hch@lst.de>
-References: <20220511125805.1377025-1-hch@lst.de>
+To: Stefano Stabellini <sstabellini@kernel.org>
+Subject: Re: [PATCH] swiotlb-xen: fix DMA_ATTR_NO_KERNEL_MAPPING on arm
+Message-ID: <20220511141328.GA31939@lst.de>
+References: <20220423171422.1831676-1-hch@lst.de>
+ <alpine.DEB.2.22.394.2204261605420.915916@ubuntu-linux-20-04-desktop>
+ <20220428132737.GA13999@lst.de>
+ <alpine.DEB.2.22.394.2204281449060.915916@ubuntu-linux-20-04-desktop>
+ <27d39d5a-3b79-bdda-b7e4-f4477667919f@oracle.com>
+ <alpine.DEB.2.22.394.2204281548320.915916@ubuntu-linux-20-04-desktop>
+ <41c2483c-ab54-41be-7815-9d4a98e0249e@oracle.com>
+ <alpine.DEB.2.22.394.2204291615130.1947187@ubuntu-linux-20-04-desktop>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: xen-devel@lists.xenproject.org,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- Stefano Stabellini <sstabellini@kernel.org>, Conor.Dooley@microchip.com
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.22.394.2204291615130.1947187@ubuntu-linux-20-04-desktop>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: jgross@suse.com, iommu@lists.linux-foundation.org,
+ xen-devel@lists.xenproject.org, Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ Rahul Singh <Rahul.Singh@arm.com>, Christoph Hellwig <hch@lst.de>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,88 +74,16 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-nslabs can shrink when allocations or the remap don't succeed, so make
-sure to use it for all sizing.  For that remove the bytes value that
-can get stale and replace it with local calculations and a boolean to
-indicate if the originally requested size could not be allocated.
+On Fri, Apr 29, 2022 at 04:15:38PM -0700, Stefano Stabellini wrote:
+> Great! Christoph you can go ahead and pick it up in your tree if you are
+> up for it.
 
-Fixes: 6424e31b1c05 ("swiotlb: remove swiotlb_init_with_tbl and swiotlb_init_late_with_tbl")
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- kernel/dma/swiotlb.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+The patch is in the dma-mapping for-next brancch now:
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 113e1e8aaca37..d6e62a6a42ceb 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -297,9 +297,9 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- {
- 	struct io_tlb_mem *mem = &io_tlb_default_mem;
- 	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
--	unsigned long bytes;
- 	unsigned char *vstart = NULL;
- 	unsigned int order;
-+	bool retried = false;
- 	int rc = 0;
- 
- 	if (swiotlb_force_disable)
-@@ -308,7 +308,6 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- retry:
- 	order = get_order(nslabs << IO_TLB_SHIFT);
- 	nslabs = SLABS_PER_PAGE << order;
--	bytes = nslabs << IO_TLB_SHIFT;
- 
- 	while ((SLABS_PER_PAGE << order) > IO_TLB_MIN_SLABS) {
- 		vstart = (void *)__get_free_pages(gfp_mask | __GFP_NOWARN,
-@@ -316,16 +315,13 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- 		if (vstart)
- 			break;
- 		order--;
-+		nslabs = SLABS_PER_PAGE << order;
-+		retried = true;
- 	}
- 
- 	if (!vstart)
- 		return -ENOMEM;
- 
--	if (order != get_order(bytes)) {
--		pr_warn("only able to allocate %ld MB\n",
--			(PAGE_SIZE << order) >> 20);
--		nslabs = SLABS_PER_PAGE << order;
--	}
- 	if (remap)
- 		rc = remap(vstart, nslabs);
- 	if (rc) {
-@@ -334,9 +330,15 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- 		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
- 		if (nslabs < IO_TLB_MIN_SLABS)
- 			return rc;
-+		retried = true;
- 		goto retry;
- 	}
- 
-+	if (retried) {
-+		pr_warn("only able to allocate %ld MB\n",
-+			(PAGE_SIZE << order) >> 20);
-+	}
-+
- 	mem->slots = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
- 		get_order(array_size(sizeof(*mem->slots), nslabs)));
- 	if (!mem->slots) {
-@@ -344,7 +346,8 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- 		return -ENOMEM;
- 	}
- 
--	set_memory_decrypted((unsigned long)vstart, bytes >> PAGE_SHIFT);
-+	set_memory_decrypted((unsigned long)vstart,
-+			     (nslabs << IO_TLB_SHIFT) >> PAGE_SHIFT);
- 	swiotlb_init_io_tlb_mem(mem, virt_to_phys(vstart), nslabs, true);
- 
- 	swiotlb_print_info();
--- 
-2.30.2
+http://git.infradead.org/users/hch/dma-mapping.git/commitdiff/62cb1ca1654b57589c582efae2748159c74ee356
 
+There were a few smaller merge conflicts with the swiotlb refactoring.
+I think everything is fine, but please take another look if possible.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
