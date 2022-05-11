@@ -1,77 +1,84 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AB681C433EF
-	for <iommu@archiver.kernel.org>; Wed, 11 May 2022 06:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B6837C433F5
+	for <iommu@archiver.kernel.org>; Wed, 11 May 2022 07:21:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6571C82D45;
-	Wed, 11 May 2022 06:50:25 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 65B2D4187A;
+	Wed, 11 May 2022 07:21:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lWklcmL72NSI; Wed, 11 May 2022 06:50:24 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id D8PeYi7zpXqb; Wed, 11 May 2022 07:21:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 3FB5F82422;
-	Wed, 11 May 2022 06:50:24 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id F26EC41883;
+	Wed, 11 May 2022 07:21:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 28601C0032;
-	Wed, 11 May 2022 06:50:24 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BBBAAC002D
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 06:50:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AE1C6C0039;
+	Wed, 11 May 2022 07:21:42 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9C12FC002D
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 07:21:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 9C08082433
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 06:50:22 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 74FD981336
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 07:21:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WoyJ5YAnn3gb for <iommu@lists.linux-foundation.org>;
- Wed, 11 May 2022 06:50:22 +0000 (UTC)
+ with ESMTP id wJhAUt5Pq7aW for <iommu@lists.linux-foundation.org>;
+ Wed, 11 May 2022 07:21:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp1.osuosl.org (Postfix) with ESMTPS id A8A5282422
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 06:50:21 +0000 (UTC)
-X-UUID: eaa8c6051d684a3c9af820dbd46d9813-20220511
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.4, REQID:e6b004a1-2358-496b-a84f-2d1f9671fbdb, OB:0,
- LO
- B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
- ON:release,TS:0
-X-CID-META: VersionHash:faefae9, CLOUDID:74920fe6-38f2-431d-8de7-bf8fac490b0a,
- C
- OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,File:nil,QS:0,BEC:nil
-X-UUID: eaa8c6051d684a3c9af820dbd46d9813-20220511
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
- mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 245592724; Wed, 11 May 2022 14:50:15 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Wed, 11 May 2022 14:50:12 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 11 May 2022 14:50:11 +0800
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Matthias
- Brugger" <matthias.bgg@gmail.com>
-Subject: [PATCH 4/4] iommu/mediatek: Improve safety for mediatek,
- smi property in larb nodes
-Date: Wed, 11 May 2022 14:49:20 +0800
-Message-ID: <20220511064920.18455-5-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220511064920.18455-1-yong.wu@mediatek.com>
-References: <20220511064920.18455-1-yong.wu@mediatek.com>
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 9EE4B81242
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 07:21:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1652253699; x=1683789699;
+ h=message-id:date:mime-version:subject:to:cc:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=WRk+Mj38yZ5XuDxKKjAT+LROx+EdfwdtEsjJvOuTgP4=;
+ b=YGO4RNhm4sx7C/hCtxO39BL7+e15xV99wbWNRTj2sfptOxpkNP5wQ2U7
+ j22A44u3MWGhAPXvgFVe5jLCDZZHc4kW4IdeINfbDMPSlEbfAat19XX2K
+ f1nyHQoJ/FCdYe4J6Ez4AeiAzRLdKiDLrI+6FctXzl7OCsEKmVOX6DN3t
+ NqifMeSZNnHC7VWQE9a3athlKzMSULV/5MckJHaaGfoN7OqkqexZofElR
+ TaR2vsi2kYcaYa5hD39SmgmJE45AffEsIhiPmNxwfUkUZ+md6ci4mbKmz
+ 1ou3qhWhET8nIgLBuUkhKE+dgdd+DTHDK8AQ+OfGziZEDfS+8EWx900wa A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="269283801"
+X-IronPort-AV: E=Sophos;i="5.91,216,1647327600"; d="scan'208";a="269283801"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 11 May 2022 00:21:38 -0700
+X-IronPort-AV: E=Sophos;i="5.91,216,1647327600"; d="scan'208";a="542180435"
+Received: from chenji3x-mobl1.ccr.corp.intel.com (HELO [10.255.30.10])
+ ([10.255.30.10])
+ by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 11 May 2022 00:21:35 -0700
+Message-ID: <749a7d62-3e6c-ef5c-beaf-6b7add495740@linux.intel.com>
+Date: Wed, 11 May 2022 15:21:31 +0800
 MIME-Version: 1.0
-X-MTK: N
-Cc: anan.sun@mediatek.com, chengci.xu@mediatek.com, xueqi.zhang@mediatek.com,
- linux-kernel@vger.kernel.org, libo.kang@mediatek.com, yf.wang@mediatek.com,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org, Guenter Roeck <groeck@chromium.org>, Dan
- Carpenter <dan.carpenter@oracle.com>, mingyuan.ma@mediatek.com,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v6 08/12] iommu/sva: Use attach/detach_pasid_dev in SVA
+ interfaces
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220510061738.2761430-1-baolu.lu@linux.intel.com>
+ <20220510061738.2761430-9-baolu.lu@linux.intel.com>
+ <20220510152330.GG49344@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220510152330.GG49344@nvidia.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Christoph Hellwig <hch@infradead.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Vinod Koul <vkoul@kernel.org>, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,109 +91,138 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Yong Wu <yong.wu@mediatek.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-No functional change. Just improve safety from dts.
+On 2022/5/10 23:23, Jason Gunthorpe wrote:
+> On Tue, May 10, 2022 at 02:17:34PM +0800, Lu Baolu wrote:
+> 
+>> +/**
+>> + * iommu_sva_bind_device() - Bind a process address space to a device
+>> + * @dev: the device
+>> + * @mm: the mm to bind, caller must hold a reference to mm_users
+>> + * @drvdata: opaque data pointer to pass to bind callback
+>> + *
+>> + * Create a bond between device and address space, allowing the device to access
+>> + * the mm using the returned PASID. If a bond already exists between @device and
+>> + * @mm, it is returned and an additional reference is taken. Caller must call
+>> + * iommu_sva_unbind_device() to release each reference.
+>> + *
+>> + * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first, to
+>> + * initialize the required SVA features.
+>> + *
+>> + * On error, returns an ERR_PTR value.
+>> + */
+>> +struct iommu_sva *
+>> +iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
+>> +{
+>> +	int ret = -EINVAL;
+>> +	struct iommu_sva *handle;
+>> +	struct iommu_domain *domain;
+>> +
+>> +	/*
+>> +	 * TODO: Remove the drvdata parameter after kernel PASID support is
+>> +	 * enabled for the idxd driver.
+>> +	 */
+>> +	if (drvdata)
+>> +		return ERR_PTR(-EOPNOTSUPP);
+> 
+> Why is this being left behind? Clean up the callers too please.
 
-All the larbs that connect to one IOMMU must connect with the same
-smi-common. This patch checks all the mediatek,smi property for each
-larb, If their mediatek,smi are different, it will return fails.
-Also avoid there is no available smi-larb nodes.
+Okay, let me try to.
 
-Suggested-by: Guenter Roeck <groeck@chromium.org>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 49 ++++++++++++++++++++++++++-------------
- 1 file changed, 33 insertions(+), 16 deletions(-)
+> 
+>> +	/* Allocate mm->pasid if necessary. */
+>> +	ret = iommu_sva_alloc_pasid(mm, 1, (1U << dev->iommu->pasid_bits) - 1);
+>> +	if (ret)
+>> +		return ERR_PTR(ret);
+>> +
+>> +	mutex_lock(&iommu_sva_lock);
+>> +	/* Search for an existing bond. */
+>> +	handle = xa_load(&dev->iommu->sva_bonds, mm->pasid);
+>> +	if (handle) {
+>> +		refcount_inc(&handle->users);
+>> +		goto out_success;
+>> +	}
+> 
+> How can there be an existing bond?
+> 
+> dev->iommu is per-device
+> 
+> The device_group_immutable_singleton() insists on a single device
+> group
+> 
+> Basically 'sva_bonds' is the same thing as the group->pasid_array.
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 1ba92751e9df..75b9ede45a1a 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1038,7 +1038,7 @@ static const struct component_master_ops mtk_iommu_com_ops = {
- static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **match,
- 				  struct mtk_iommu_data *data)
- {
--	struct device_node *larbnode, *smicomm_node, *smi_subcomm_node;
-+	struct device_node *larbnode, *frst_avail_smicomm_node = NULL;
- 	struct platform_device *plarbdev;
- 	struct device_link *link;
- 	int i, larb_nr, ret;
-@@ -1050,6 +1050,7 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
- 		return -EINVAL;
- 
- 	for (i = 0; i < larb_nr; i++) {
-+		struct device_node *smicomm_node, *smi_subcomm_node;
- 		u32 id;
- 
- 		larbnode = of_parse_phandle(dev->of_node, "mediatek,larbs", i);
-@@ -1085,27 +1086,43 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
- 		}
- 		data->larb_imu[id].dev = &plarbdev->dev;
- 
-+		/* Get smi-(sub)-common dev from the last larb. */
-+		smi_subcomm_node = of_parse_phandle(larbnode, "mediatek,smi", 0);
-+		if (!smi_subcomm_node) {
-+			ret = -EINVAL;
-+			goto err_larbnode_put;
-+		}
+Yes, really.
+
+> 
+> Assuming we leave room for multi-device groups this logic should just
+> be
+> 
+> 	group = iommu_group_get(dev);
+> 	if (!group)
+> 		return -ENODEV;
+> 
+> 	mutex_lock(&group->mutex);
+> 	domain = xa_load(&group->pasid_array, mm->pasid);
+> 	if (!domain || domain->type != IOMMU_DOMAIN_SVA || domain->mm != mm)
+> 		domain = iommu_sva_alloc_domain(dev, mm);
+> 
+> ?
+
+Agreed. As a helper in iommu core, how about making it more generic like
+below?
+
++struct iommu_domain *iommu_get_domain_for_dev_pasid(struct device *dev,
++                                                   iosid_t pasid,
++                                                   unsigned int type)
++{
++       struct iommu_domain *domain;
++       struct iommu_group *group;
 +
-+		/*
-+		 * It may have two level smi-common. the node is smi-sub-common if it
-+		 * has a new mediatek,smi property. otherwise it is smi-commmon.
-+		 */
-+		smicomm_node = of_parse_phandle(smi_subcomm_node, "mediatek,smi", 0);
-+		if (smicomm_node)
-+			of_node_put(smi_subcomm_node);
-+		else
-+			smicomm_node = smi_subcomm_node;
++       if (!pasid_valid(pasid))
++               return NULL;
 +
-+		if (!frst_avail_smicomm_node) {
-+			frst_avail_smicomm_node = smicomm_node;
-+		} else if (frst_avail_smicomm_node != smicomm_node) {
-+			dev_err(dev, "mediatek,smi is not right @larb%d.", id);
-+			of_node_put(smicomm_node);
-+			ret = -EINVAL;
-+			goto err_larbnode_put;
-+		} else {
-+			of_node_put(smicomm_node);
-+		}
++       group = iommu_group_get(dev);
++       if (!group)
++               return NULL;
 +
- 		component_match_add_release(dev, match, component_release_of,
- 					    component_compare_of, larbnode);
- 	}
- 
--	/* Get smi-(sub)-common dev from the last larb. */
--	smi_subcomm_node = of_parse_phandle(larbnode, "mediatek,smi", 0);
--	if (!smi_subcomm_node)
-+	if (!frst_avail_smicomm_node)
- 		return -EINVAL;
- 
--	/*
--	 * It may have two level smi-common. the node is smi-sub-common if it
--	 * has a new mediatek,smi property. otherwise it is smi-commmon.
--	 */
--	smicomm_node = of_parse_phandle(smi_subcomm_node, "mediatek,smi", 0);
--	if (smicomm_node)
--		of_node_put(smi_subcomm_node);
--	else
--		smicomm_node = smi_subcomm_node;
--
--	plarbdev = of_find_device_by_node(smicomm_node);
--	of_node_put(smicomm_node);
-+	plarbdev = of_find_device_by_node(frst_avail_smicomm_node);
-+	of_node_put(frst_avail_smicomm_node);
- 	data->smicomm_dev = &plarbdev->dev;
- 
- 	link = device_link_add(data->smicomm_dev, dev,
--- 
-2.18.0
++       mutex_lock(&group->mutex);
++       domain = xa_load(&group->pasid_array, pasid);
++       if (domain && domain->type != type)
++               domain = NULL;
++       mutex_unlock(&group->mutex);
++       iommu_group_put(group);
++
++       return domain;
++}
 
+> 
+> And stick the refcount in the sva_domain
+> 
+> Also, given the current arrangement it might make sense to have a
+> struct iommu_domain_sva given that no driver is wrappering this in
+> something else.
+
+Fair enough. How about below wrapper?
+
++struct iommu_sva_domain {
++       /*
++        * Common iommu domain header, *must* be put at the top
++        * of the structure.
++        */
++       struct iommu_domain domain;
++       struct mm_struct *mm;
++       struct iommu_sva bond;
++}
+
+The refcount is wrapped in bond.
+
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
