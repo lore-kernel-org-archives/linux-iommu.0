@@ -1,129 +1,129 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AA10CC433EF
-	for <iommu@archiver.kernel.org>; Thu, 12 May 2022 03:39:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 36A5BC433F5
+	for <iommu@archiver.kernel.org>; Thu, 12 May 2022 03:39:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 66A2140B6E;
-	Thu, 12 May 2022 03:39:39 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id DE872418DD;
+	Thu, 12 May 2022 03:39:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WuvoZv9O2mQj; Thu, 12 May 2022 03:39:38 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1B5B3400B8;
-	Thu, 12 May 2022 03:39:38 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id TJu08dmJ26a5; Thu, 12 May 2022 03:39:42 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 465BC41894;
+	Thu, 12 May 2022 03:39:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DFE12C0032;
-	Thu, 12 May 2022 03:39:37 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A4F26C002D
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 03:39:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1FF1BC0032;
+	Thu, 12 May 2022 03:39:42 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 23EABC002D
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 03:39:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 8056160BCA
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 03:39:36 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 2029E83E2E
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 03:39:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=samsung.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PP7sN-7EorSF for <iommu@lists.linux-foundation.org>;
- Thu, 12 May 2022 03:39:35 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4l2zuHgwpSgw for <iommu@lists.linux-foundation.org>;
+ Thu, 12 May 2022 03:39:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 8F15460C0B
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 03:39:35 +0000 (UTC)
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 06D8E83E35
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 03:39:38 +0000 (UTC)
 Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
- by mailout2.samsung.com (KnoxPortal) with ESMTP id
- 20220512033932epoutp02d447b52fbbfdae9314452c6ee54ec1b0~uPnIMhMKL0304003040epoutp02X
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 03:39:32 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com
- 20220512033932epoutp02d447b52fbbfdae9314452c6ee54ec1b0~uPnIMhMKL0304003040epoutp02X
+ by mailout4.samsung.com (KnoxPortal) with ESMTP id
+ 20220512033936epoutp042adaedd2a1aab328f49a2b719ed418bc~uPnLzNPIh0339303393epoutp04e
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 03:39:36 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com
+ 20220512033936epoutp042adaedd2a1aab328f49a2b719ed418bc~uPnLzNPIh0339303393epoutp04e
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
- s=mail20170921; t=1652326772;
- bh=h69GhjZ5aQZdvqmbJl+5HwMeprWIkkzTRr4CCQEkMTI=;
+ s=mail20170921; t=1652326776;
+ bh=WjTsAdrWY0dkWNLPOOO99vSBJV7TfrewI9JGJplTWM4=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=oKTRHIEluYU9doT34m43BIwStkKE1BaRVK3wBktBn/65iQbfubylcpH9UOsztVg79
- /KsxNzYCiXs/BAjwRbh9qBFXQ9vFScL7JFSAOt8MPBDQVevV9V3AdlfZMo6b7a5TOO
- ice86Pbm4sZIpqHmpF656S2ZV39yzRkmqMcYcVVM=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
- epcas5p4.samsung.com (KnoxPortal) with ESMTP id
- 20220512033932epcas5p4ede7a161facac8a73dcee0ae0a2962bd~uPnHzgtbp1491014910epcas5p4i;
- Thu, 12 May 2022 03:39:32 +0000 (GMT)
-Received: from epsmges5p3new.samsung.com (unknown [182.195.38.175]) by
- epsnrtp1.localdomain (Postfix) with ESMTP id 4KzHZk2jWWz4x9Pv; Thu, 12 May
- 2022 03:39:26 +0000 (GMT)
+ b=MSB0hfbwdDDkJNT4NyP+Anc3OSZNztr65dmlwqM1njYmeUFUKDMR07MEZRCgamT/r
+ rvwEwrQAEWutH98CBwwhyfgI2ZFlZEnYbw5cZfrSZ2/rxaVfJ/jhayrDZKCgEnq3l4
+ 6xINGO25FPFaWnplJ96keo0G9yk190zfr5OZ9LbA=
+Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
+ epcas5p1.samsung.com (KnoxPortal) with ESMTP id
+ 20220512033936epcas5p105cccb9f2038d669a9a6b500bc4d051a~uPnLU3npb0859208592epcas5p1n;
+ Thu, 12 May 2022 03:39:36 +0000 (GMT)
+Received: from epsmges5p3new.samsung.com (unknown [182.195.38.181]) by
+ epsnrtp3.localdomain (Postfix) with ESMTP id 4KzHZr1mLvz4x9Pp; Thu, 12 May
+ 2022 03:39:32 +0000 (GMT)
 Received: from epcas5p3.samsung.com ( [182.195.41.41]) by
  epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
- FF.A6.09762.C618C726; Thu, 12 May 2022 12:39:25 +0900 (KST)
+ B3.B6.09762.2718C726; Thu, 12 May 2022 12:39:30 +0900 (KST)
 Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
- epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
- 20220511121439epcas5p493bf4b94c89c8a63fdc0586c89cea8df~uC-malgwA0360503605epcas5p4H;
- Wed, 11 May 2022 12:14:39 +0000 (GMT)
+ epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
+ 20220511121442epcas5p26a997a19e8cc1de8eb23123500fb24fb~uC-pOfXzZ2113521135epcas5p2W;
+ Wed, 11 May 2022 12:14:42 +0000 (GMT)
 Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
  epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
- 20220511121439epsmtrp232ded29eef6efdabdb915cd61665d55c~uC-mZvp9w1138811388epsmtrp2L;
- Wed, 11 May 2022 12:14:39 +0000 (GMT)
-X-AuditID: b6c32a4b-1fdff70000002622-4b-627c816cc608
+ 20220511121442epsmtrp26c0f0b618540a4848d536252f9dfa2c0~uC-pMwltY1138811388epsmtrp2N;
+ Wed, 11 May 2022 12:14:42 +0000 (GMT)
+X-AuditID: b6c32a4b-1fdff70000002622-59-627c81728975
 Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
  epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
- 7D.09.08924.FA8AB726; Wed, 11 May 2022 21:14:39 +0900 (KST)
+ 5E.09.08924.2B8AB726; Wed, 11 May 2022 21:14:42 +0900 (KST)
 Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
  [107.108.73.139]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
- 20220511121438epsmtip29e536aedf6377692454be9516421f599~uC-k4pH6S0609306093epsmtip2r;
- Wed, 11 May 2022 12:14:38 +0000 (GMT)
+ 20220511121441epsmtip2107e93ffb66f1250543c55022b8874ac~uC-npuxsZ0495604956epsmtip2x;
+ Wed, 11 May 2022 12:14:41 +0000 (GMT)
 From: Ajay Kumar <ajaykumar.rs@samsung.com>
 To: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org,
  joro@8bytes.org, will@kernel.org, robin.murphy@arm.com
-Subject: [PATCH V2 4/6] iommu: dma-iommu: refactor iommu_dma_alloc_iova()
-Date: Wed, 11 May 2022 17:45:42 +0530
-Message-Id: <20220511121544.5998-5-ajaykumar.rs@samsung.com>
+Subject: [PATCH V2 5/6] iommu: dma-iommu: add support for DMA_ATTR_LOW_ADDRESS
+Date: Wed, 11 May 2022 17:45:43 +0530
+Message-Id: <20220511121544.5998-6-ajaykumar.rs@samsung.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220511121544.5998-1-ajaykumar.rs@samsung.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrJKsWRmVeSWpSXmKPExsWy7bCmpm5uY02Swe1DTBZfT/xmszjw/iCL
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrOKsWRmVeSWpSXmKPExsWy7bCmpm5RY02SwddL/BZfT/xmszjw/iCL
  xYN529gsFuy3tuicvYHdYtPja6wWa4/cZbdYtPULu8XBD09YLVrumDpweTw5OI/JY828NYwe
  O2fdZffYtKqTzWPzknqPyTeWM3r0bVnFGMAelW2TkZqYklqkkJqXnJ+SmZduq+QdHO8cb2pm
  YKhraGlhrqSQl5ibaqvk4hOg65aZA3SdkkJZYk4pUCggsbhYSd/Opii/tCRVISO/uMRWKbUg
- JafApECvODG3uDQvXS8vtcTK0MDAyBSoMCE741XvJqaCM2oVvdM+sDYwdit0MXJySAiYSJzd
- s4Oli5GLQ0hgN6PE4ke/2CCcT4wSzxadZodwPjNKTN7fyAjTsql1CStEYhejxJQNW5ggnBYm
- iRsHrjOBVLEJaEtsm36TBcQWEWhhlJg7zR6kiFlgJaPEklsd7CAJYQFPiXsN38CKWARUJZp2
- fWQDsXkFbCT2bXjHDrFOXmL1hgPMIDangK3EpB1/GUEGSQh8ZJdY2/qdBaLIRaJ/+z4oW1ji
- 1fEtUM1SEp/f7WWDsKslzt3azwbR3MEo0fFwHVSRvcSBK3OAmjmAztOUWL9LHyIsKzH11Dqw
- b5gF+CR6fz9hgojzSuyYB2JzANlqEltX+EGEZSTOHLwCVeIhcWnlPGioTGCUmNhzk3kCo9ws
- hA0LGBlXMUqmFhTnpqcWmxYY56WWw+MtOT93EyM4DWp572B89OCD3iFGJg7GQ4wSHMxKIrz7
- +yqShHhTEiurUovy44tKc1KLDzGaAgNwIrOUaHI+MBHnlcQbmlgamJiZmZlYGpsZKonznkrf
- kCgkkJ5YkpqdmlqQWgTTx8TBKdXA1P8gNaa+705km4x9dr97wD21w5VxxltW6Hb1zHZsu9sr
- VXTYbodcU0zEop71e941PGH8vvj79DP/3BoLpATy5n9+5PP8wXHTWzUv1l3i2nxt/2kdkaav
- aR+37ZQt6tijWjJJ6v0MK411dfUhucVpE14ejFV+daJloXYWh8sinZCtZ1uiZPk+fEyduu1V
- qXDFuSNqhbY/uo2nzMhr/f394vOjZc5h12dfCo8zPu4st2XNsp9bHhn1Oq405p22NeXZUpMZ
- Bn+fuQgt6n90n+9TGONfy7Ja/YQ/v7afn8BhIcL2SlXttN/TBs0L/xiv79KU7PYyfvbCx+pP
- uSJfhLPISzdukWcz5/iufPFrzTGBmUosxRmJhlrMRcWJAFLlqqkMBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrPLMWRmVeSWpSXmKPExsWy7bCSvO76FdVJBj/PGFt8PfGbzeLA+4Ms
- Fg/mbWOzWLDf2qJz9gZ2i02Pr7FarD1yl91i0dYv7BYHPzxhtWi5Y+rA5fHk4DwmjzXz1jB6
- 7Jx1l91j06pONo/NS+o9Jt9YzujRt2UVYwB7FJdNSmpOZllqkb5dAlfGq95NTAVn1Cp6p31g
- bWDsVuhi5OSQEDCR2NS6hBXEFhLYwSjRu0UMIi4j8XzHUxYIW1hi5b/n7F2MXEA1TUwSHU3/
- GUESbALaEtum32QBSYgIdDFKXL26lxXEYRZYyyjxqnEJWJWwgKfEvYZvYKNYBFQlmnZ9ZAOx
- eQVsJPZteMcOsUJeYvWGA8wgNqeArcSkHX8ZIU6ykZjz+SjzBEa+BYwMqxglUwuKc9Nziw0L
- jPJSy/WKE3OLS/PS9ZLzczcxgsNUS2sH455VH/QOMTJxMB5ilOBgVhLh3d9XkSTEm5JYWZVa
- lB9fVJqTWnyIUZqDRUmc90LXyXghgfTEktTs1NSC1CKYLBMHp1QDU75Ema9ZR8HUPeJWt8z+
- zSh/tnvyJQtX2S6HF9buPjw+8zuW//L186+OWzzhxuVXHt7GSX0p/9k0lvBOD06oudvZtGN1
- s9s+1fm3YuLE2d9fX5WhvujWQhejPwUdx9rWtVRx2K2+9dHeuDE2zmtVskXrLRGfmTtL8uqe
- bA+ZOf9U+0xrOSeTe6vvbrz70uqW++cnjzbWrNlcM1Fhk8e2lw13iqaYfT1+xilJ1M+zfWHY
- hCVTPR/fvTY52HmVVeP3PeynI6Y/2CzXrTKnb2rpyoLzXYdbTjY/+f517STXlsKpjJlixlbz
- k39rxE35K6H98dF51zsPZu291vmT87rtUeuLvZLpKx/aF57pDC7rm6DEUpyRaKjFXFScCAA6
- g3LUwgIAAA==
-X-CMS-MailID: 20220511121439epcas5p493bf4b94c89c8a63fdc0586c89cea8df
+ JafApECvODG3uDQvXS8vtcTK0MDAyBSoMCE749a6eYwFa/Urep+/YWlgnKfexcjJISFgIrFw
+ 1wXGLkYuDiGB3YwS0z/8ZoFwPjFKzJ92lxnC+QyUedvJAtOy78wTVhBbSGAXo8Sl1XoQRS1M
+ Etfm32QCSbAJaEtsm34TrEFEoIVRYu40e5AiZoGVjBJLbnWwgySEBQIk7vQ8BrNZBFQl9n65
+ AjaVV8BG4v3Ty8wQ2+QlVm84AGZzCthKTNrxF+xYCYGP7BILp79m62LkAHJcJFomB0DUC0u8
+ Or6FHcKWkvj8bi8bhF0tce7WfjaI3g5GiY6H66CK7CUOXJnDAjKHWUBTYv0ufYiwrMTUU+vA
+ nmEW4JPo/f2ECSLOK7FjHogNslZNYusKP4iwjMSZg1egSjwkVu45wQoJlAmMEts/TGGcwCg3
+ C2HDAkbGVYySqQXFuempxaYFxnmp5fBYS87P3cQIToFa3jsYHz34oHeIkYmD8RCjBAezkgjv
+ /r6KJCHelMTKqtSi/Pii0pzU4kOMpsDwm8gsJZqcD0zCeSXxhiaWBiZmZmYmlsZmhkrivKfS
+ NyQKCaQnlqRmp6YWpBbB9DFxcEo1MAn1qSQu3Jj85IaXdViC36JL09Jvz/ru8SHZ+Geb1rrn
+ lVNU1nr/uHYuSXDpkUtNfhcqzwsUbFySd3Rdyizb6lOL5HdU9lkcqswW1fJQuFhSnbswOOVY
+ g4k085OaFwu3F/OuY8jtTk3e9Pme8YaZrH1rOvU1/tWuaHq37NFFg4vnNeIzPsu3zjt35FoZ
+ 37aDQje9LGbF9ynpnvjvzcLM8cAz8Yq8m22hVjuHfOvkzc01pqWB01ee0c6QaJldfS6978u5
+ B8/uO3LFfQixqk4JbJn7tc0xV8O65syJxqunPNor8hKm2z/bsP3Egz4Bdr24tpis4BkftE+v
+ /rI+x5DhBN/dnmd39vCXls41qD73WYmlOCPRUIu5qDgRAFH+GiYKBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrALMWRmVeSWpSXmKPExsWy7bCSvO6mFdVJBlc7DC2+nvjNZnHg/UEW
+ iwfztrFZLNhvbdE5ewO7xabH11gt1h65y26xaOsXdouDH56wWrTcMXXg8nhycB6Tx5p5axg9
+ ds66y+6xaVUnm8fmJfUek28sZ/To27KKMYA9issmJTUnsyy1SN8ugSvj1rp5jAVr9St6n79h
+ aWCcp97FyMkhIWAise/ME9YuRi4OIYEdjBKtL68wQSRkJJ7veMoCYQtLrPz3nB2iqIlJYnHv
+ R3aQBJuAtsS26TdZQBIiAl2MElev7gUbxSywllHiVeMSRpAqYQE/icOn+8A6WARUJfZ+ucIK
+ YvMK2Ei8f3qZGWKFvMTqDQfAbE4BW4lJO/6C9QoB1cz5fJR5AiPfAkaGVYySqQXFuem5xYYF
+ Rnmp5XrFibnFpXnpesn5uZsYwYGqpbWDcc+qD3qHGJk4GA8xSnAwK4nw7u+rSBLiTUmsrEot
+ yo8vKs1JLT7EKM3BoiTOe6HrZLyQQHpiSWp2ampBahFMlomDU6qBSSqavV9/am3J5V0y6sFc
+ d6I8eOd5b9p47M/sF9+0FRyqbq6UteORk70nfX7p9z8eB2stYh7F3VDwN1x3Jqfer37FfOGr
+ oRHR7BOucr7q5frP4/BlX8z+VY57Hj37G1emuHXO+90S/TcOBUx12R8TJXrnoNq/2anXN+/m
+ ktpvueWz9ZIVRg9vlteYyWcJahUGmxXemyAhv6bdcsnE7v0/+k/P/pq9xvzLhZD+S0nXilKv
+ n3M3uvLM+9qJT3+1Ml9fsOGzOJyhl//hteCGj+FPW+YFLF5wZavM2vBJG6Ye7z8n7Ft1+1f/
+ rtoethdmv0Q8SwpCiwOnPVCo+uTw0O+Wa9RX8craqAshee9+yCQvylViKc5INNRiLipOBACM
+ ISiVwwIAAA==
+X-CMS-MailID: 20220511121442epcas5p26a997a19e8cc1de8eb23123500fb24fb
 X-Msg-Generator: CA
 X-Sendblock-Type: REQ_APPROVE
 CMS-TYPE: 105P
 DLP-Filter: Pass
 X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220511121439epcas5p493bf4b94c89c8a63fdc0586c89cea8df
+X-CMS-RootMailID: 20220511121442epcas5p26a997a19e8cc1de8eb23123500fb24fb
 References: <20220511121544.5998-1-ajaykumar.rs@samsung.com>
- <CGME20220511121439epcas5p493bf4b94c89c8a63fdc0586c89cea8df@epcas5p4.samsung.com>
+ <CGME20220511121442epcas5p26a997a19e8cc1de8eb23123500fb24fb@epcas5p2.samsung.com>
 Cc: pankaj.dubey@samsung.com, alim.akhtar@samsung.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -145,123 +145,148 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Marek Szyprowski <m.szyprowski@samsung.com>
 
-Change the parameters passed to iommu_dma_alloc_iova(): the dma_limit can
-be easily extracted from the parameters of the passed struct device, so
-replace it with a flags parameter, which can later hold more information
-about the way the IOVA allocator should do it job. While touching the
-parameter list, move struct device to the second position to better match
-the convention of the DMA-mapping related functions.
+Implement support for the DMA_ATTR_LOW_ADDRESS DMA attribute. If it has
+been set, call alloc_iova_first_fit() instead of the alloc_iova_fast() to
+allocate the new IOVA from the beginning of the address space.
 
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 Signed-off-by: Ajay Kumar <ajaykumar.rs@samsung.com>
 ---
- drivers/iommu/dma-iommu.c | 25 ++++++++++++++-----------
- 1 file changed, 14 insertions(+), 11 deletions(-)
+ drivers/iommu/dma-iommu.c | 50 +++++++++++++++++++++++++++++----------
+ 1 file changed, 38 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 16218d6a0703..cb235b40303c 100644
+index cb235b40303c..553c5b863e19 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -600,12 +600,16 @@ static int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
- 	}
+@@ -601,6 +601,18 @@ static int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
  }
  
-+#define DMA_ALLOC_IOVA_COHERENT		BIT(0)
+ #define DMA_ALLOC_IOVA_COHERENT		BIT(0)
++#define DMA_ALLOC_IOVA_FIRST_FIT	BIT(1)
 +
++static unsigned int dma_attrs_to_alloc_flags(unsigned long attrs, bool coherent)
++{
++	unsigned int flags = 0;
++
++	if (coherent)
++		flags |= DMA_ALLOC_IOVA_COHERENT;
++	if (attrs & DMA_ATTR_LOW_ADDRESS)
++		flags |= DMA_ALLOC_IOVA_FIRST_FIT;
++	return flags;
++}
+ 
  static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
--		size_t size, u64 dma_limit, struct device *dev)
-+		struct device *dev, size_t size, unsigned int flags)
- {
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+ 		struct device *dev, size_t size, unsigned int flags)
+@@ -625,13 +637,23 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+ 		dma_limit = min(dma_limit, (u64)domain->geometry.aperture_end);
+ 
+ 	/* Try to get PCI devices a SAC address */
+-	if (dma_limit > DMA_BIT_MASK(32) && !iommu_dma_forcedac && dev_is_pci(dev))
+-		iova = alloc_iova_fast(iovad, iova_len,
+-				       DMA_BIT_MASK(32) >> shift, false);
++	if (dma_limit > DMA_BIT_MASK(32) && !iommu_dma_forcedac && dev_is_pci(dev)) {
++		if (unlikely(flags & DMA_ALLOC_IOVA_FIRST_FIT))
++			iova = alloc_iova_first_fit(iovad, iova_len,
++						    DMA_BIT_MASK(32) >> shift);
++		else
++			iova = alloc_iova_fast(iovad, iova_len,
++					      DMA_BIT_MASK(32) >> shift, false);
++	}
+ 
+-	if (iova == IOVA_BAD_ADDR)
+-		iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift,
+-				       true);
++	if (iova == IOVA_BAD_ADDR) {
++		if (unlikely(flags & DMA_ALLOC_IOVA_FIRST_FIT))
++			iova = alloc_iova_first_fit(iovad, iova_len,
++						    dma_limit >> shift);
++		else
++			iova = alloc_iova_fast(iovad, iova_len,
++						dma_limit >> shift, true);
++	}
+ 
+ 	if (iova != IOVA_BAD_ADDR)
+ 		return (dma_addr_t)iova << shift;
+@@ -779,6 +801,7 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
  	struct iova_domain *iovad = &cookie->iovad;
- 	unsigned long shift, iova_len, iova = IOVA_BAD_ADDR;
-+	u64 dma_limit = (flags & DMA_ALLOC_IOVA_COHERENT) ?
-+			dev->coherent_dma_mask : dma_get_mask(dev);
- 
- 	if (cookie->type == IOMMU_DMA_MSI_COOKIE) {
- 		cookie->msi_iova += size;
-@@ -675,7 +679,7 @@ static void __iommu_dma_unmap(struct device *dev, dma_addr_t dma_addr,
- }
- 
- static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
--		size_t size, int prot, u64 dma_mask)
-+		size_t size, int prot, unsigned int flags)
- {
- 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-@@ -689,7 +693,7 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
- 
- 	size = iova_align(iovad, size + iova_off);
- 
--	iova = iommu_dma_alloc_iova(domain, size, dma_mask, dev);
-+	iova = iommu_dma_alloc_iova(domain, dev, size, flags);
- 	if (iova == DMA_MAPPING_ERROR)
- 		return DMA_MAPPING_ERROR;
- 
-@@ -800,7 +804,7 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
+ 	bool coherent = dev_is_dma_coherent(dev);
+ 	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
++	unsigned int flags = dma_attrs_to_alloc_flags(attrs, true);
+ 	unsigned int count, min_size, alloc_sizes = domain->pgsize_bitmap;
+ 	struct page **pages;
+ 	dma_addr_t iova;
+@@ -804,7 +827,7 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
  		return NULL;
  
  	size = iova_align(iovad, size);
--	iova = iommu_dma_alloc_iova(domain, size, dev->coherent_dma_mask, dev);
-+	iova = iommu_dma_alloc_iova(domain, dev, size, DMA_ALLOC_IOVA_COHERENT);
+-	iova = iommu_dma_alloc_iova(domain, dev, size, DMA_ALLOC_IOVA_COHERENT);
++	iova = iommu_dma_alloc_iova(domain, dev, size, flags);
  	if (iova == DMA_MAPPING_ERROR)
  		goto out_free_pages;
  
-@@ -963,7 +967,7 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+@@ -964,6 +987,7 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+ 	phys_addr_t phys = page_to_phys(page) + offset;
+ 	bool coherent = dev_is_dma_coherent(dev);
+ 	int prot = dma_info_to_prot(dir, coherent, attrs);
++	unsigned int flags = dma_attrs_to_alloc_flags(attrs, false);
  	struct iommu_domain *domain = iommu_get_dma_domain(dev);
  	struct iommu_dma_cookie *cookie = domain->iova_cookie;
  	struct iova_domain *iovad = &cookie->iovad;
--	dma_addr_t iova, dma_mask = dma_get_mask(dev);
-+	dma_addr_t iova;
- 
- 	/*
- 	 * If both the physical buffer start address and size are
-@@ -1001,7 +1005,7 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+@@ -1005,7 +1029,7 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
  	if (!coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
  		arch_sync_dma_for_device(phys, size, dir);
  
--	iova = __iommu_dma_map(dev, phys, size, prot, dma_mask);
-+	iova = __iommu_dma_map(dev, phys, size, prot, 0);
+-	iova = __iommu_dma_map(dev, phys, size, prot, 0);
++	iova = __iommu_dma_map(dev, phys, size, prot, flags);
  	if (iova == DMA_MAPPING_ERROR && is_swiotlb_buffer(dev, phys))
  		swiotlb_tbl_unmap_single(dev, phys, size, dir, attrs);
  	return iova;
-@@ -1205,7 +1209,7 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+@@ -1152,6 +1176,7 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 	struct iova_domain *iovad = &cookie->iovad;
+ 	struct scatterlist *s, *prev = NULL;
+ 	int prot = dma_info_to_prot(dir, dev_is_dma_coherent(dev), attrs);
++	unsigned int flags = dma_attrs_to_alloc_flags(attrs, false);
+ 	dma_addr_t iova;
+ 	size_t iova_len = 0;
+ 	unsigned long mask = dma_get_seg_boundary(dev);
+@@ -1209,7 +1234,7 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
  		prev = s;
  	}
  
--	iova = iommu_dma_alloc_iova(domain, iova_len, dma_get_mask(dev), dev);
-+	iova = iommu_dma_alloc_iova(domain, dev, iova_len, 0);
+-	iova = iommu_dma_alloc_iova(domain, dev, iova_len, 0);
++	iova = iommu_dma_alloc_iova(domain, dev, iova_len, flags);
  	if (iova == DMA_MAPPING_ERROR) {
  		ret = -ENOMEM;
  		goto out_restore_sg;
-@@ -1264,8 +1268,7 @@ static dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
+@@ -1268,7 +1293,8 @@ static dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
  		size_t size, enum dma_data_direction dir, unsigned long attrs)
  {
  	return __iommu_dma_map(dev, phys, size,
--			dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO,
--			dma_get_mask(dev));
-+			dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO, 0);
+-			dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO, 0);
++			dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO,
++			dma_attrs_to_alloc_flags(attrs, false));
  }
  
  static void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
-@@ -1375,7 +1378,7 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+@@ -1357,6 +1383,7 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+ {
+ 	bool coherent = dev_is_dma_coherent(dev);
+ 	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
++	unsigned int flags = dma_attrs_to_alloc_flags(attrs, true);
+ 	struct page *page = NULL;
+ 	void *cpu_addr;
+ 
+@@ -1377,8 +1404,7 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+ 	if (!cpu_addr)
  		return NULL;
  
- 	*handle = __iommu_dma_map(dev, page_to_phys(page), size, ioprot,
--			dev->coherent_dma_mask);
-+			DMA_ALLOC_IOVA_COHERENT);
+-	*handle = __iommu_dma_map(dev, page_to_phys(page), size, ioprot,
+-			DMA_ALLOC_IOVA_COHERENT);
++	*handle = __iommu_dma_map(dev, page_to_phys(page), size, ioprot, flags);
  	if (*handle == DMA_MAPPING_ERROR) {
  		__iommu_dma_free(dev, size, cpu_addr);
  		return NULL;
-@@ -1517,7 +1520,7 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
- 	if (!msi_page)
- 		return NULL;
- 
--	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
-+	iova = iommu_dma_alloc_iova(domain, dev, size, 0);
- 	if (iova == DMA_MAPPING_ERROR)
- 		goto out_free_page;
- 
 -- 
 2.17.1
 
