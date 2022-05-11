@@ -1,80 +1,183 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5108CC433EF
-	for <iommu@archiver.kernel.org>; Wed, 11 May 2022 00:40:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3357CC433F5
+	for <iommu@archiver.kernel.org>; Wed, 11 May 2022 01:10:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C7065417C2;
-	Wed, 11 May 2022 00:40:05 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id CC81860B01;
+	Wed, 11 May 2022 01:10:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id h6WVKMqH7eGt; Wed, 11 May 2022 00:40:04 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 0AFEB416C3;
-	Wed, 11 May 2022 00:40:03 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9rgkqrnwShUH; Wed, 11 May 2022 01:10:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 8114060ADE;
+	Wed, 11 May 2022 01:10:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D505DC0032;
-	Wed, 11 May 2022 00:40:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 54CEBC0039;
+	Wed, 11 May 2022 01:10:33 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A99C1C002D
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 00:40:01 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7DF74C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 01:10:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9083D4023B
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 00:40:01 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 57DDE4056F
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 01:10:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hXSNjcktVOGO for <iommu@lists.linux-foundation.org>;
- Wed, 11 May 2022 00:40:00 +0000 (UTC)
+ with ESMTP id rRvSbASMnb2T for <iommu@lists.linux-foundation.org>;
+ Wed, 11 May 2022 01:10:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp2.osuosl.org (Postfix) with ESMTPS id A48FE400CB
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 00:40:00 +0000 (UTC)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 8ABCE4023B
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 01:10:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1652229600; x=1683765600;
- h=date:from:to:cc:subject:message-id:in-reply-to:
- references:mime-version:content-transfer-encoding;
- bh=DE2oBIK7BGDbN+fpmpl0HxZv5AkQDJetPoSGfAJhg4s=;
- b=mmOOCFd16u1UwD+YTZi4sQ18PaOVkrxNGA0OvnMBZ8yB012IT7kq7PW+
- eCEFl/yQPueOowiWLtHocl2TrxoBcEvxawanRhSNWr2jrKjAfv+kwnoZq
- eZhQKXQhyzah+Zh0V2Tn4vtcl7auywCw0sWsLZqYeA7Fh9YBLT2U1hMwM
- aWikW2X9xCu2m0c8XJ+FrA/vVWwh2jsS623o5WWxVjhArwGg3IG7o7WUD
- U/q1JiSwD1mLjHfy2jlWwUZnPYAnPHITMEDjcfVB3JDJC0mgsODAx7RXb
- fc0SvEQOXEiaCEhjRWrmiqi20NpuRcL9FJNIRafzpFcAgKFOq8AbkmA5B Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="257081639"
-X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; d="scan'208";a="257081639"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 10 May 2022 17:39:59 -0700
-X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; d="scan'208";a="542056357"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
- by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 10 May 2022 17:39:59 -0700
-Date: Tue, 10 May 2022 17:43:45 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+ t=1652231430; x=1683767430;
+ h=from:to:cc:subject:date:message-id:references:
+ in-reply-to:content-transfer-encoding:mime-version;
+ bh=vfqeC+Pyaad7s0gECVHGMGnG4Wu9E/8f6EbRyxynj+E=;
+ b=ceKoFDZAzyzNz5fHym6/sHY31+aZkB130tAWMXtwPtHzmDRl6g2fAgte
+ FL4aiYtxWPro99KhvM5nFEbzpSDf3U97ycF3Y6uOxSxdKc151Uef2httP
+ jUXjUPJCCtnhuOL8wvztddTvLLRau1XNNcQzhKRUDRo4/34n4ipctkbb7
+ PRtp9+nRbp3ZWR8l3Wb8xmzqI+0adzRm1pREI3NV2FXuSbjUK4ci3w7Wv
+ aiGWrPiw+hu9qXCkxCj0rEP9bhvi8kv7GHp9qQozm1xdlhf64+53xiglT
+ OvWNQVVkwFj0zM0Zbqy5GWXQSKbym1Fbovv0LkrqTfztZYr3wX0EF6XUi A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="250080470"
+X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; d="scan'208";a="250080470"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 10 May 2022 18:10:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; d="scan'208";a="571856532"
+Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
+ by fmsmga007.fm.intel.com with ESMTP; 10 May 2022 18:10:29 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 10 May 2022 18:10:29 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 10 May 2022 18:10:29 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Tue, 10 May 2022 18:10:29 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.176)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Tue, 10 May 2022 18:10:28 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TFloAoLnMD4FkmyJLsIp2T7ZMbDICwgjLpoQ0n0JiBYN78pMZHdoQHp1e3L8pcUfOS/sMP8nyummmlutgeNBlNXAKSO1qpN20n2jPOhZDqDM74Ss5yR4XIvkWZOVXJrklwNFWogvQ0QiGNnSSJV/ppFiAvChRnPP80XPCRLNADF6I/IJ4xgkRWHgP9g/EZ4smJTy0pjt7aEW2OX9SHNgrWabEVFy8A6UGnwUIjFW5/PLayXtEiBayrFU1yDSI8PI1QWIVpe2jMTUdLilEm2/FHkr2F7kd0/yXQf/pmFWc8t3xaGF/nqXORnGWaQsLnXNMD2dEAZ6BZhH73Yj+vQ8Uw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vfqeC+Pyaad7s0gECVHGMGnG4Wu9E/8f6EbRyxynj+E=;
+ b=MDunntAmFsE07ravdjNic0FZ9BKpQ8pFHeIAd96DOFZcsvty5R43iG0l2hLLXMdeBN7sPCz4onivUr4k/ttRU9d6zuYSX/FcG1dc1lwOUWNlXtXwzicFmAwhvXDHV/HFdObSAs8TKakIYH7DPdCTPGTjcUf+ONOlAVzs91Gg1bL9UVcsOjIheQEGNndQsoIFrv/UTaydeZNpaWfO/tiJebUowIjwZyFSGhUXaxkq8cA/FoOoFW0yfqtnUJue0sPhAm9SMnzs13yYlDaa9kIq7rdDrj2qQmiNyVrkOkQijcP/veuWB5EoNKuxuqstjeiI2APw+LWPoTuaiJAhsDeUBA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by MWHPR1101MB2285.namprd11.prod.outlook.com (2603:10b6:301:57::13)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Wed, 11 May
+ 2022 01:10:26 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::24dd:37c2:3778:1adb]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::24dd:37c2:3778:1adb%2]) with mapi id 15.20.5227.023; Wed, 11 May 2022
+ 01:10:26 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v3 2/4] iommu: Add PASID support for DMA mapping API users
-Message-ID: <20220510174345.27fdaeb8@jacob-builder>
-In-Reply-To: <20220510232804.GQ49344@nvidia.com>
-References: <20220510210704.3539577-1-jacob.jun.pan@linux.intel.com>
- <20220510210704.3539577-3-jacob.jun.pan@linux.intel.com>
- <20220510232804.GQ49344@nvidia.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Subject: RE: [PATCH RFC 00/19] IOMMUFD Dirty Tracking
+Thread-Topic: [PATCH RFC 00/19] IOMMUFD Dirty Tracking
+Thread-Index: AQHYW0R/S6mfDid5yEe6M+QKFrUDn60GOWsggAB3owCAACSFgIAI+m3AgACMaACAANzWEIAAjfgAgAWZrqCAANFfAIAAsyWQ
+Date: Wed, 11 May 2022 01:10:26 +0000
+Message-ID: <BN9PR11MB527693A1F23B46FA9A26692A8CC89@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220428210933.3583-1-joao.m.martins@oracle.com>
+ <BN9PR11MB5276F104A27ACD5F20BABC7F8CFC9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <f5d1a20c-df6e-36b9-c336-dc0d06af67f3@oracle.com>
+ <20220429123841.GV8364@nvidia.com>
+ <BN9PR11MB5276DFBF612789265199200C8CC29@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220505140736.GQ49344@nvidia.com>
+ <BN9PR11MB5276EACB65E108ECD4E206A38CC59@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220506114608.GZ49344@nvidia.com>
+ <BN9PR11MB5276AE3C44453F889B100D448CC99@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220510134650.GB49344@nvidia.com>
+In-Reply-To: <20220510134650.GB49344@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 39bdb9e0-0dfa-4f98-922c-08da32eb0815
+x-ms-traffictypediagnostic: MWHPR1101MB2285:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <MWHPR1101MB228534C50BF976887035E3888CC89@MWHPR1101MB2285.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KGaCxU2KQ8s7I6/mI6+laNvrRbc+PPiv+uN5s29z7vKowbS+WmiXPY+ULrfIVtBvwc0mnAOAqeDX31clPH6dwWVNIEE8kwaFDELsTlX6skU4BRyiUWHXA6og7Z9g+v8ONPIPFKJa44F5JRB7MgSJVaCGjUx+X59W1hTFaDpYg6Ml8w3zImJ0LbDzSKgvqDX/cp8Fe4J2RZ46MIU5lji6LP8inMMCD6q5J/AfQDYcCKJ/iiVnDsCHElSXCza5zi1UU7ZI58vVQpXPoN6JVnrASR+l7/ZXgbetpwRSUW3JYlcdQwMoC489V6fmVa0NQWhsx4qtUOzp8XpZ7CupGN+H8HvHlAnsdISz9PYSj7xGIZSp4xSOXXE3xkqcmwCMBdaVoN3AXbOk4qedNZAWj4QWb3LKgDBpucJvpyFRWhCumVcE8qfkd87ylGSK99f4wHxufYcLruvAMb3Fp2wSXtmIWQqt4otftnXgTolTPaeM+/AhlUAbI4t6pF4XE0Ib4yySrJU7QihcHK7GvP5URG9vl3wl4We8asqTM+MopX3yZ2zW5EeVL6GwDzYxL4p7iFJS4X+cDGhq3n0veF71OwN+LhDj+hj8wkN+tqVXW6imd0pflV6jR4W149kJ6Xk2oA3zEocF0JWlUM7Wna+O2AQ4sIiePpVZ4+bIXafqc8f/FKKkxkHlaIAtsQ2I90+rPIFUGblurjsBuyePiG5dKTGaZQF0kDr9kpOiNufR8S0EnXo=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(33656002)(66556008)(76116006)(64756008)(8676002)(66476007)(66446008)(66946007)(508600001)(83380400001)(4326008)(71200400001)(26005)(86362001)(9686003)(316002)(54906003)(6506007)(6916009)(7696005)(55016003)(52536014)(8936002)(2906002)(82960400001)(122000001)(7416002)(5660300002)(38070700005)(38100700002)(186003)(14143004);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ZABPx5Eh//T+4bE3MW4D8Xi+J/DVXboJwvfZBFT5COxyYnsM7AzKshgvVjVy?=
+ =?us-ascii?Q?meUltDgIaacQMOsFUnAJxOjCVKo5U2HFpXp+F4OXWE5+XdtYuosOsnvb7VUH?=
+ =?us-ascii?Q?pC+HibOtsvxTrBAtxMonqrSMGYQUZRHFZZBe5tiVDZ8SiVU+7el/0ZsPHb1O?=
+ =?us-ascii?Q?cpwD1ehBUTMNU/5/OU9m/DFXmdGY4oPD3glQNFR+QH00Rhvv7yGCyh7UvXdG?=
+ =?us-ascii?Q?H9T5L4UheYMN2f26RdekAvTUSBp+CRYZxb0gme9EZhlNTiIYbc4QzNXNigoT?=
+ =?us-ascii?Q?/ZiC/8fKGUHeBWH64Fv09X0hbQ71uf/n/a6lWIXDTlMwgvP4wbKfaSo54qVl?=
+ =?us-ascii?Q?uTmtxR9euM0nIbDbUUHSd7SZWzvDAy7zFa0mHKHvwyeE8f1AnJxhksfhHs4g?=
+ =?us-ascii?Q?1BTEWeoM65LOsYKvBucpljGTiKB5meF+lbrz6SYNotEOI6Dj1zUC3FXepuO7?=
+ =?us-ascii?Q?hYmU8TDMKhftLIPS/JzuhQ5aJ4vP1kPK8AUCwANSHRvWxYLDqBXYjTHpVoDy?=
+ =?us-ascii?Q?xRPuZ44oLLfGpOTlTeLUgx/NDDI54NHzay04jFPkHlIp86R18Pgo62KUp6IG?=
+ =?us-ascii?Q?k0I+0rfwuQ2bag+7JY+l7VIbqHc8sMk5slQZ/hpuYPSYC3iEPz03M39fByws?=
+ =?us-ascii?Q?f78gSBuufD7avfNsLms3RdvgagBW7x58BrZPwTsa8uKqUKyT04IC08IiSHAw?=
+ =?us-ascii?Q?Ko21ZHRI4STOrCG7n6lyL1HDopO/T+UkH8LSY/lx/beLCcYn7IDar1FneIhv?=
+ =?us-ascii?Q?V88+mDg/hGf2SxExjZ1JwJzWM3bQB0TevhIVnKxvpDkGdWrWKmVAX9Kol8uJ?=
+ =?us-ascii?Q?rRYZhHsO/BtQe8KKnyi5Ycif7It5ZW/S3xOITOri2WqZ0bV7VIQSl6dU3Hgx?=
+ =?us-ascii?Q?LACRGEHJLrFI7V0z5dybpo29k14caf+fCPcKupeuq2ngoPZWu2kjPr5S6iwt?=
+ =?us-ascii?Q?vrO+oGkc/pqtsjppO835QbjNvz96tHpzZSURFe/jCnURYhTkEgI6EdazGhyL?=
+ =?us-ascii?Q?b7Et5DW797AEEHL9gFSINu2lvf1mQGwlWXJ7QT/QixOYccCYfXuYyvpmimjj?=
+ =?us-ascii?Q?rpauK4TDUgpbJXpSigEXNGjKH39/ILr6B6hkq2tkFC1oXwIbLSSyTarfcQry?=
+ =?us-ascii?Q?2AKz7qRwtReCttqqE7AnFhU+BamNZNNeaplKNhemD4rKf4JkSIG4M6SIReKM?=
+ =?us-ascii?Q?n4AvesQN7ve4gXwgFCz9z2Em+X4wfFbSgNPlbQsWRIelT4pCCG86enA9Nxtn?=
+ =?us-ascii?Q?SJKjI13gQrBR77+cFK+/yuCxNc8NmmfXAVRPO36la7J8Cs1Mnxb5STZ3LMEg?=
+ =?us-ascii?Q?wo7xPxzG10XuzXjyA8DNheKCNOXUs01XWOCpnIv7jYlZ2BcGf8aat6vwybSW?=
+ =?us-ascii?Q?CjGCqYEg6FLkxyrp+F/2m3lESI618lafFyU7SW5UpSGZuOCmlBmaX8Lx+iLm?=
+ =?us-ascii?Q?MYhTCXVqLHMwfSbQRRwnUPdGr2NDgbt5uchu50g6JuyhAj13GjJlXahFTrzS?=
+ =?us-ascii?Q?c0TWSoNFcVRKzPgY+MS8uEBNVKSr/XUQCMi6afSHoSO6st+qu5P3sryoxauo?=
+ =?us-ascii?Q?1JQhkQpuGAynxIzJ6QUAXGFKJCmYkmTusss5hacGBUxcBVEjjAiZCs9gOShC?=
+ =?us-ascii?Q?dnXLEbAygHFZO9FM5eIQQwH7wOdn1E+8C7GxhWCR16jymQd6n7AYDNrTfV0e?=
+ =?us-ascii?Q?dGjfS6aw9EdU6yQ/inV0Bd/qv74Jvu75rWWrclobPurEXoWH3H4GILJ3/BDh?=
+ =?us-ascii?Q?LyTyhfVbIQ=3D=3D?=
 MIME-Version: 1.0
-Cc: vkoul@kernel.org, "Tian, Kevin" <kevin.tian@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- will@kernel.org, David Woodhouse <dwmw2@infradead.org>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- dmaengine@vger.kernel.org, robin.murphy@arm.com,
- Jean-Philippe Brucker <jean-philippe@linaro.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 39bdb9e0-0dfa-4f98-922c-08da32eb0815
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 May 2022 01:10:26.0212 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: iy989ap1jvJSMRIJJtDXkJWmT4LDjIAb708TXi1zuu9gfT1ZwhfVzmsHgVTmKHOdDISnb2V+n5P3Hf2fBTcN0A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1101MB2285
+X-OriginatorOrg: intel.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Yishai Hadas <yishaih@nvidia.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Will Deacon <will@kernel.org>, Cornelia Huck <cohuck@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Alex Williamson <alex.williamson@redhat.com>, "Martins,
+ Joao" <joao.m.martins@oracle.com>, David Woodhouse <dwmw2@infradead.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,220 +195,59 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jason,
-
-On Tue, 10 May 2022 20:28:04 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Tue, May 10, 2022 at 02:07:02PM -0700, Jacob Pan wrote:
-> > DMA mapping API is the de facto standard for in-kernel DMA. It operates
-> > on a per device/RID basis which is not PASID-aware.
-> > 
-> > Some modern devices such as Intel Data Streaming Accelerator, PASID is
-> > required for certain work submissions. To allow such devices use DMA
-> > mapping API, we need the following functionalities:
-> > 1. Provide device a way to retrieve a PASID for work submission within
-> > the kernel
-> > 2. Enable the kernel PASID on the IOMMU for the device
-> > 3. Attach the kernel PASID to the device's default DMA domain, let it
-> > be IOVA or physical address in case of pass-through.
-> > 
-> > This patch introduces a driver facing API that enables DMA API
-> > PASID usage. Once enabled, device drivers can continue to use DMA APIs
-> > as is. There is no difference in dma_handle between without PASID and
-> > with PASID.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> >  drivers/iommu/dma-iommu.c | 107 ++++++++++++++++++++++++++++++++++++++
-> >  include/linux/dma-iommu.h |   3 ++
-> >  include/linux/iommu.h     |   2 +
-> >  3 files changed, 112 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> > index 1ca85d37eeab..5984f3129fa2 100644
-> > +++ b/drivers/iommu/dma-iommu.c
-> > @@ -34,6 +34,8 @@ struct iommu_dma_msi_page {
-> >  	phys_addr_t		phys;
-> >  };
-> >  
-> > +static DECLARE_IOASID_SET(iommu_dma_pasid);
-> > +
-> >  enum iommu_dma_cookie_type {
-> >  	IOMMU_DMA_IOVA_COOKIE,
-> >  	IOMMU_DMA_MSI_COOKIE,
-> > @@ -370,6 +372,111 @@ void iommu_put_dma_cookie(struct iommu_domain
-> > *domain) domain->iova_cookie = NULL;
-> >  }
-> >  
-> > +/**
-> > + * iommu_attach_dma_pasid --Attach a PASID for in-kernel DMA. Use the
-> > device's
-> > + * DMA domain.
-> > + * @dev: Device to be enabled
-> > + * @pasid: The returned kernel PASID to be used for DMA
-> > + *
-> > + * DMA request with PASID will be mapped the same way as the legacy
-> > DMA.
-> > + * If the device is in pass-through, PASID will also pass-through. If
-> > the
-> > + * device is in IOVA, the PASID will point to the same IOVA page table.
-> > + *
-> > + * @return err code or 0 on success
-> > + */
-> > +int iommu_attach_dma_pasid(struct device *dev, ioasid_t *pasid)
-> > +{
-> > +	struct iommu_domain *dom;
-> > +	ioasid_t id, max;
-> > +	int ret = 0;
-> > +
-> > +	dom = iommu_get_domain_for_dev(dev);
-> > +	if (!dom || !dom->ops || !dom->ops->attach_dev_pasid)
-> > +		return -ENODEV;
-> > +
-> > +	/* Only support domain types that DMA API can be used */
-> > +	if (dom->type == IOMMU_DOMAIN_UNMANAGED ||
-> > +	    dom->type == IOMMU_DOMAIN_BLOCKED) {
-> > +		dev_warn(dev, "Invalid domain type %d", dom->type);  
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Tuesday, May 10, 2022 9:47 PM
 > 
-> This should be a WARN_ON
+> On Tue, May 10, 2022 at 01:38:26AM +0000, Tian, Kevin wrote:
 > 
-will do, thanks
-
-> > +		return -EPERM;
-> > +	}
-> > +
-> > +	id = dom->pasid;
-> > +	if (!id) {
-> > +		/*
-> > +		 * First device to use PASID in its DMA domain,
-> > allocate
-> > +		 * a single PASID per DMA domain is all we need, it is
-> > also
-> > +		 * good for performance when it comes down to IOTLB
-> > flush.
-> > +		 */
-> > +		max = 1U << dev->iommu->pasid_bits;
-> > +		if (!max)
-> > +			return -EINVAL;
-> > +
-> > +		id = ioasid_alloc(&iommu_dma_pasid, 1, max, dev);
-> > +		if (id == INVALID_IOASID)
-> > +			return -ENOMEM;
-> > +
-> > +		dom->pasid = id;
-> > +		atomic_set(&dom->pasid_users, 1);  
+> > > However, tt costs nothing to have dirty tracking as long as all iommus
+> > > support it in the system - which seems to be the normal case today.
+> > >
+> > > We should just always turn it on at this point.
+> >
+> > Then still need a way to report " all iommus support it in the system"
+> > to userspace since many old systems don't support it at all.
 > 
-> All of this needs proper locking.
+> Userspace can query the iommu_domain directly, or 'try and fail' to
+> turn on tracking.
 > 
-good catch, will add a mutex for domain updates, detach as well.
-
-> > +	}
-> > +
-> > +	ret = dom->ops->attach_dev_pasid(dom, dev, id);
-> > +	if (!ret) {
-> > +		*pasid = id;
-> > +		atomic_inc(&dom->pasid_users);
-> > +		return 0;
-> > +	}
-> > +
-> > +	if (atomic_dec_and_test(&dom->pasid_users)) {
-> > +		ioasid_free(id);
-> > +		dom->pasid = 0;
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL(iommu_attach_dma_pasid);
-> > +
-> > +/**
-> > + * iommu_detach_dma_pasid --Disable in-kernel DMA request with PASID
-> > + * @dev:	Device's PASID DMA to be disabled
-> > + *
-> > + * It is the device driver's responsibility to ensure no more incoming
-> > DMA
-> > + * requests with the kernel PASID before calling this function. IOMMU
-> > driver
-> > + * ensures PASID cache, IOTLBs related to the kernel PASID are cleared
-> > and
-> > + * drained.
-> > + *
-> > + */
-> > +void iommu_detach_dma_pasid(struct device *dev)
-> > +{
-> > +	struct iommu_domain *dom;
-> > +	ioasid_t pasid;
-> > +
-> > +	dom = iommu_get_domain_for_dev(dev);
-> > +	if (!dom || !dom->ops || !dom->ops->detach_dev_pasid) {
-> > +		dev_warn(dev, "No ops for detaching PASID %u", pasid);
-> > +		return;
-> > +	}
-> > +	/* Only support DMA API managed domain type */
-> > +	if (dom->type == IOMMU_DOMAIN_UNMANAGED ||
-> > +	    dom->type == IOMMU_DOMAIN_BLOCKED) {
-> > +		dev_err(dev, "Invalid domain type %d to detach DMA
-> > PASID %u\n",
-> > +			 dom->type, pasid);
-> > +		return;
-> > +	}
-> > +	pasid = dom->pasid;
-> > +	if (!pasid) {
-> > +		dev_err(dev, "No DMA PASID attached\n");
-> > +		return;
-> > +	}  
+> A device capability flag is useless without a control knob to request
+> a domain is created with tracking, and we don't have that, or a reason
+> to add that.
 > 
-> All WARN_ON's too
-> 
-will do.
 
-> > +	dom->ops->detach_dev_pasid(dom, dev, pasid);
-> > +	if (atomic_dec_and_test(&dom->pasid_users)) {
-> > +		ioasid_free(pasid);
-> > +		dom->pasid = 0;
-> > +	}
-> > +}
-> > +EXPORT_SYMBOL(iommu_detach_dma_pasid);
-> > +
-> >  /**
-> >   * iommu_dma_get_resv_regions - Reserved region driver helper
-> >   * @dev: Device from iommu_get_resv_regions()
-> > diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-> > index 24607dc3c2ac..538650b9cb75 100644
-> > +++ b/include/linux/dma-iommu.h
-> > @@ -18,6 +18,9 @@ int iommu_get_dma_cookie(struct iommu_domain *domain);
-> >  int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base);
-> >  void iommu_put_dma_cookie(struct iommu_domain *domain);
-> >  
-> > +int iommu_attach_dma_pasid(struct device *dev, ioasid_t *pasid);
-> > +void iommu_detach_dma_pasid(struct device *dev);
-> > +
-> >  /* Setup call for arch DMA mapping code */
-> >  void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64
-> > dma_limit); int iommu_dma_init_fq(struct iommu_domain *domain);
-> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> > index 1164524814cb..281a87fdce77 100644
-> > +++ b/include/linux/iommu.h
-> > @@ -105,6 +105,8 @@ struct iommu_domain {
-> >  	enum iommu_page_response_code (*iopf_handler)(struct
-> > iommu_fault *fault, void *data);
-> >  	void *fault_data;
-> > +	ioasid_t pasid;		/* Used for DMA requests with
-> > PASID */
-> > +	atomic_t pasid_users;  
-> 
-> These are poorly named, this is really the DMA API global PASID and
-> shouldn't be used for other things.
-> 
-I was hoping it can be generic since sva_cookie also has a pasid field but
-it looks like sva uses mm->pasid now.
+I'm getting confused on your last comment. A capability flag has to
+accompany with a control knob which iiuc is what you advocated
+in earlier discussion i.e. specifying the tracking property when creating
+the domain. In this case the flag assists the userspace in deciding
+whether to set the property.
 
-Shall we call it dma_api_pasid, dma_pasid, or something else?
+Not sure whether we argued pass each other but here is another
+attempt.
 
-> Jason
+In general I saw three options here:
 
+a) 'try and fail' when creating the domain. It succeeds only when
+all iommus support tracking;
 
-Thanks,
+b) capability reported on iommu domain. The capability is reported true
+only when all iommus support tracking. This allows domain property
+to be set after domain is created. But there is no much gain of doing
+so when comparing to a).
 
-Jacob
+c) capability reported on device. future compatible for heterogenous
+platform. domain property is specified at domain creation and domains
+can have different properties based on tracking capability of attached
+devices.
+
+I'm inclined to c) as it is more aligned to Robin's cleanup effort on
+iommu_capable() and iommu_present() in the iommu layer which
+moves away from global manner to per-device style. Along with 
+that direction I guess we want to discourage adding more APIs
+assuming 'all iommus supporting certain capability' thing?
+
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
