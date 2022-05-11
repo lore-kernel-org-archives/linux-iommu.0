@@ -1,58 +1,61 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B1E74C433F5
-	for <iommu@archiver.kernel.org>; Wed, 11 May 2022 12:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8BC83C433EF
+	for <iommu@archiver.kernel.org>; Wed, 11 May 2022 12:58:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 65F0441900;
-	Wed, 11 May 2022 12:58:18 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 4430383268;
+	Wed, 11 May 2022 12:58:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4nxGzsqU9Jr9; Wed, 11 May 2022 12:58:17 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id EAF0041615;
-	Wed, 11 May 2022 12:58:16 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1z6ONj5MpiQu; Wed, 11 May 2022 12:58:20 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 1B3AE83183;
+	Wed, 11 May 2022 12:58:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C35AFC0039;
-	Wed, 11 May 2022 12:58:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F2468C0039;
+	Wed, 11 May 2022 12:58:19 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 576F3C002D
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 12:58:16 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D5AECC002D
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 12:58:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5581A418F3
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 12:58:16 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id C4C9841615
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 12:58:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rzoXPaq-S_fp for <iommu@lists.linux-foundation.org>;
- Wed, 11 May 2022 12:58:15 +0000 (UTC)
+ with ESMTP id QPuMurF0zals for <iommu@lists.linux-foundation.org>;
+ Wed, 11 May 2022 12:58:18 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [IPv6:2607:7c80:54:e::133])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 704EB418FB
- for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 12:58:15 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id ED0A8418FE
+ for <iommu@lists.linux-foundation.org>; Wed, 11 May 2022 12:58:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
  :Reply-To:Content-Type:Content-ID:Content-Description;
- bh=PuV44d9nkyau+qsF4HjXIzIFX/Iz+fNa7YzgjXIuJ3M=; b=KQeqn6zw5+tBwQhIwYbD033l7U
- Bmwb6MGWYXuK/LkzlngzGC5Qubu/BMK8ESaRHloaJRhzEWk2cFZ1/V/l4O8B2vq2MzumWvrZwnZyr
- 43YpFbXIsyoZJQy96aaO4hEVBhMn/WC+lJu9Jachezx9QLwtVxUwduoKFfDF9UeSfgMQ0fx1hRZPt
- 0LdWe9KjdTrTGyLfYx27s5kfHuPEf7J0GvFg765OJZ9W+F+cSaDYoHAsubZYbwp7D1ACiauoX1v40
- kA0XO3cMZuMkKnKm1x7RM+oVv6dCiF4gS3wqNXal5uhZKXl0X7LATlX/cCqQQx1QPxg0OGZS0cmVF
- GL+aA81w==;
+ bh=toUCmk68b0VIqulfilEOK3I3y91LJ0y0OH/f7d0EES0=; b=GGIU1i8lkayqDGAplfrTSrhaor
+ BLksm6LWRMLoDZZbshdWfl1zTZJw7+5EApQCx/OIN5M0EU1RtOm2OP3lgcCxN0zEnNoGvF+GODe3G
+ ofQic3DC0LKOfP7Fkx2AeGIxyEVZb/kbjHRCDleY4wfI1k9Lp2EjpIw2epikU2kUn3o/FWk+ND78J
+ W6sXXNB9s8fIRSBTPGBi4SnVmC8afXImzQtCfps0xo0YrB6WG5ivAudedbhd+z0axlhNGkH7zCTqI
+ iY5Bf3S8J4EU/B25UhLHUqveOZLR1f11oopGMGBSmVNXdElnUxTs231jO3i0K+ajnFFfdiXi2/Hf5
+ siB5FhhA==;
 Received: from [2001:4bb8:184:7881:740a:25f7:2c13:ef7a] (helo=localhost)
  by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
- id 1noluw-006reJ-8R; Wed, 11 May 2022 12:58:14 +0000
+ id 1noluy-006red-V1; Wed, 11 May 2022 12:58:17 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 2/3] swiotlb: use the right nslabs value in swiotlb_init_remap
-Date: Wed, 11 May 2022 14:58:04 +0200
-Message-Id: <20220511125805.1377025-3-hch@lst.de>
+Subject: [PATCH 3/3] swiotlb: use the right nslabs-derived sizes in
+ swiotlb_init_late
+Date: Wed, 11 May 2022 14:58:05 +0200
+Message-Id: <20220511125805.1377025-4-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220511125805.1377025-1-hch@lst.de>
 References: <20220511125805.1377025-1-hch@lst.de>
@@ -79,53 +82,85 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-default_nslabs should only be used to initialize nslabs, after that we
-need to use the local variable that can shrink when allocations or the
-remap don't succeed.
+nslabs can shrink when allocations or the remap don't succeed, so make
+sure to use it for all sizing.  For that remove the bytes value that
+can get stale and replace it with local calculations and a boolean to
+indicate if the originally requested size could not be allocated.
 
 Fixes: 6424e31b1c05 ("swiotlb: remove swiotlb_init_with_tbl and swiotlb_init_late_with_tbl")
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- kernel/dma/swiotlb.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ kernel/dma/swiotlb.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
 diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 3e992a308c8a1..113e1e8aaca37 100644
+index 113e1e8aaca37..d6e62a6a42ceb 100644
 --- a/kernel/dma/swiotlb.c
 +++ b/kernel/dma/swiotlb.c
-@@ -234,7 +234,7 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+@@ -297,9 +297,9 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
  {
  	struct io_tlb_mem *mem = &io_tlb_default_mem;
- 	unsigned long nslabs = default_nslabs;
--	size_t alloc_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), nslabs));
-+	size_t alloc_size;
- 	size_t bytes;
- 	void *tlb;
+ 	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
+-	unsigned long bytes;
+ 	unsigned char *vstart = NULL;
+ 	unsigned int order;
++	bool retried = false;
+ 	int rc = 0;
  
-@@ -249,7 +249,7 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
- 	 * memory encryption.
- 	 */
+ 	if (swiotlb_force_disable)
+@@ -308,7 +308,6 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
  retry:
--	bytes = PAGE_ALIGN(default_nslabs << IO_TLB_SHIFT);
-+	bytes = PAGE_ALIGN(nslabs << IO_TLB_SHIFT);
- 	if (flags & SWIOTLB_ANY)
- 		tlb = memblock_alloc(bytes, PAGE_SIZE);
- 	else
-@@ -269,12 +269,13 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+ 	order = get_order(nslabs << IO_TLB_SHIFT);
+ 	nslabs = SLABS_PER_PAGE << order;
+-	bytes = nslabs << IO_TLB_SHIFT;
+ 
+ 	while ((SLABS_PER_PAGE << order) > IO_TLB_MIN_SLABS) {
+ 		vstart = (void *)__get_free_pages(gfp_mask | __GFP_NOWARN,
+@@ -316,16 +315,13 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+ 		if (vstart)
+ 			break;
+ 		order--;
++		nslabs = SLABS_PER_PAGE << order;
++		retried = true;
+ 	}
+ 
+ 	if (!vstart)
+ 		return -ENOMEM;
+ 
+-	if (order != get_order(bytes)) {
+-		pr_warn("only able to allocate %ld MB\n",
+-			(PAGE_SIZE << order) >> 20);
+-		nslabs = SLABS_PER_PAGE << order;
+-	}
+ 	if (remap)
+ 		rc = remap(vstart, nslabs);
+ 	if (rc) {
+@@ -334,9 +330,15 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+ 		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
+ 		if (nslabs < IO_TLB_MIN_SLABS)
+ 			return rc;
++		retried = true;
  		goto retry;
  	}
  
-+	alloc_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), nslabs));
- 	mem->slots = memblock_alloc(alloc_size, PAGE_SIZE);
- 	if (!mem->slots)
- 		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
- 		      __func__, alloc_size, PAGE_SIZE);
++	if (retried) {
++		pr_warn("only able to allocate %ld MB\n",
++			(PAGE_SIZE << order) >> 20);
++	}
++
+ 	mem->slots = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
+ 		get_order(array_size(sizeof(*mem->slots), nslabs)));
+ 	if (!mem->slots) {
+@@ -344,7 +346,8 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+ 		return -ENOMEM;
+ 	}
  
--	swiotlb_init_io_tlb_mem(mem, __pa(tlb), default_nslabs, false);
-+	swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, false);
- 	mem->force_bounce = flags & SWIOTLB_FORCE;
+-	set_memory_decrypted((unsigned long)vstart, bytes >> PAGE_SHIFT);
++	set_memory_decrypted((unsigned long)vstart,
++			     (nslabs << IO_TLB_SHIFT) >> PAGE_SHIFT);
+ 	swiotlb_init_io_tlb_mem(mem, virt_to_phys(vstart), nslabs, true);
  
- 	if (flags & SWIOTLB_VERBOSE)
+ 	swiotlb_print_info();
 -- 
 2.30.2
 
