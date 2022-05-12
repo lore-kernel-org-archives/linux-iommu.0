@@ -1,111 +1,100 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 14628C433FE
-	for <iommu@archiver.kernel.org>; Thu, 12 May 2022 17:28:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 95898C433FE
+	for <iommu@archiver.kernel.org>; Thu, 12 May 2022 18:21:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 9F82F82718;
-	Thu, 12 May 2022 17:28:03 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id F37B960AC1;
+	Thu, 12 May 2022 18:21:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6fHjQdLOD-kg; Thu, 12 May 2022 17:28:02 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1hHeIrBollw3; Thu, 12 May 2022 18:21:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 6ED4182503;
-	Thu, 12 May 2022 17:28:02 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id DE0156068A;
+	Thu, 12 May 2022 18:21:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 43D31C0039;
-	Thu, 12 May 2022 17:28:02 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 881D8C002D
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 17:28:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B0BC0C0032;
+	Thu, 12 May 2022 18:21:28 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 94F9FC002D
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 18:21:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 763E1402C6
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 17:28:01 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 760D481020
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 18:21:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gLDOXnBTSfUa for <iommu@lists.linux-foundation.org>;
- Thu, 12 May 2022 17:28:00 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id tt0qs6ASLPc9 for <iommu@lists.linux-foundation.org>;
+ Thu, 12 May 2022 18:21:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.129.124])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 64A22409F5
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 17:28:00 +0000 (UTC)
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 462C180CF2
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 18:21:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1652376479;
- h=from:from:reply-to:reply-to:subject:subject:date:date:
- message-id:message-id:to:to:cc:cc:mime-version:mime-version:
- content-type:content-type:
+ s=mimecast20190719; t=1652379684;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=tCD+8lP+xu7DSPBX9O/+vBKxjmnHI/OPG8q73tAYrnQ=;
- b=Q61b+iQ7rLu3HIFJqAStXbCCQ+k0zQbSRRgIiuGw6VxlmlKCKCzn56XCRnPVEBUW9TIrRn
- M1kwFHbycl39m8OXihISmes4BXeeCtHU1DfUio1uXiK2CSno6Scruc7AEc1Jnz7dQJt2o7
- Xhza4eALAnIYsgyCL1byR390JThdS3c=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ bh=liwTgUxqAqwFiu3hiQYmfoukAO/Bb2SxBCCUw8+D2Eo=;
+ b=bhlL5R1isy2UX9C6M0W4CsCZX5oDOx2H5y4elZ87gOk++WW1cenuWqRrHzHumLKA7bdlcD
+ gvCmxQPhl/JUFdXsBDISsaKunVJiOykA/i9pIewBQYXDbPPz0HlgzDUWxSAFKLKjnK9jSK
+ esOXLBz/oq1ZudaXyS9wywGEMCWVrZc=
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-657-6vmS73jNMHCiW5yOenaJ1g-1; Thu, 12 May 2022 13:27:51 -0400
-X-MC-Unique: 6vmS73jNMHCiW5yOenaJ1g-1
-Received: by mail-wm1-f72.google.com with SMTP id
- p24-20020a1c5458000000b003945d2ffc6eso1887921wmi.5
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 10:27:51 -0700 (PDT)
+ us-mta-668-DlyRgRW1MnOnxHHQAMetzg-1; Thu, 12 May 2022 14:21:23 -0400
+X-MC-Unique: DlyRgRW1MnOnxHHQAMetzg-1
+Received: by mail-il1-f197.google.com with SMTP id
+ j4-20020a92c204000000b002caad37af3fso3732496ilo.22
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 11:21:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
- :subject:content-language:to:cc:references:from:in-reply-to
- :content-transfer-encoding;
- bh=tCD+8lP+xu7DSPBX9O/+vBKxjmnHI/OPG8q73tAYrnQ=;
- b=yhULKAzpM9V0jRTgEl6SX7C6zbjHIhouugAcVJAVySgb/nSPBxCoaC9VujDjBT8j9Q
- tRcV3CEpyliBbByjl+ZYSmciZeubB2ljcaTeW+tM2ozoZXhZ1iJFOEUdheJBQznP2rdN
- a2MFb4ADgyYAJnP5G0qAem0yWAr/yCGKMozgRr/9XunoXCBJlk29zSnB2FlFzsWQyliY
- basrXm8brJcPhu28yq1x+ZRd/WxFc7PB7MQhwBiBpfQq8jOoDa6S3eVzVGha6NpJME39
- ggL6TR0bk8WlvdFJSDbyfiDEaRKH0WgjFiE+nVgC4tDr7/gwVVgC1Haw8ntansKNgoZX
- 7y8A==
-X-Gm-Message-State: AOAM530vNeJwm+gjmKCm8R555tMc6IHDi56G/1BUCTDV3nEfThsUJemf
- 0mjyma61PWp5pKhzIAN7Ut/kM8CupaajmWBiNtUGkgzehQ/C1xD+IDWAfn38LZDFiR2gjaKOX58
- OEAHVvAfnQ7FlhbX6/EZvVS2VQReljw==
-X-Received: by 2002:a5d:47a7:0:b0:20c:5b3e:ff7 with SMTP id
- 7-20020a5d47a7000000b0020c5b3e0ff7mr683059wrb.362.1652376470552; 
- Thu, 12 May 2022 10:27:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz3srJE4qB6x11g/cGuO/5n+uGKjdPkkRDRS6CiXRIBa/uR33ZYaYztU6Mw7Uixet5KfvEsQQ==
-X-Received: by 2002:a5d:47a7:0:b0:20c:5b3e:ff7 with SMTP id
- 7-20020a5d47a7000000b0020c5b3e0ff7mr683049wrb.362.1652376470345; 
- Thu, 12 May 2022 10:27:50 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874?
- ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
- by smtp.gmail.com with ESMTPSA id
- l7-20020a1ced07000000b0038eba413181sm3361695wmh.1.2022.05.12.10.27.48
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 12 May 2022 10:27:49 -0700 (PDT)
-Message-ID: <5cdb2ddb-eef1-e522-d41d-7ba0facf6dd7@redhat.com>
-Date: Thu, 12 May 2022 19:27:48 +0200
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+ :references:organization:mime-version:content-transfer-encoding;
+ bh=liwTgUxqAqwFiu3hiQYmfoukAO/Bb2SxBCCUw8+D2Eo=;
+ b=qa/MAO9ZenOR1ZOI2Hm4cubEvNjTnTLM/kXGTiCm8DbAuSpoGYfUJNQ2+balX0y20j
+ 54Q9LBFjPlZLFDh+NPRVpnBq2ehoxcvUMXImjYrnEm9mV8kf1ybyPTbQLawC2/1ZcCNl
+ B06/s3SVIarJxjHsjC5Z+GDwkoXdy/9maRgbpYWX2abXXhtdeaHODQoKj/nKHh6a741Z
+ IaPgC5hDvYsJ6vOLJ7kpoc6avlfyqVEZMG2uZdk6Q2UEdI5y8fN42DNRkA2Gm0uM/rx+
+ p7GBNE5TO2y1VG+6ziEBB49slepEtyn2qw5BY/t1vNLD6xV2PPzoYONaJLG2dDD37G+j
+ kz+Q==
+X-Gm-Message-State: AOAM533R7VGq3O8BFbetPMeyat3EgQBZ4dUuiuIxxE66ITFQDe+NQRAw
+ uNFq0C18tLgBCaRA0Sn52rEAhI+NVmKVSsBo0+NvOj8ITHxF/2zLYT2t9HSTTw+JbJGUckB6Lxk
+ PMamDfmXl43cz2zOy9uGaFEa2UDj37g==
+X-Received: by 2002:a05:6e02:2146:b0:2cf:87ae:ddb0 with SMTP id
+ d6-20020a056e02214600b002cf87aeddb0mr689793ilv.188.1652379683041; 
+ Thu, 12 May 2022 11:21:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxeQb/MQ5kg9HqtwVpVAaSTmnED1ANBhiXTkVXgRWmq7UXDkHZcOFHlURBKM69GaMWdymo+kw==
+X-Received: by 2002:a05:6e02:2146:b0:2cf:87ae:ddb0 with SMTP id
+ d6-20020a056e02214600b002cf87aeddb0mr689788ilv.188.1652379682840; 
+ Thu, 12 May 2022 11:21:22 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239]) by smtp.gmail.com with ESMTPSA id
+ g18-20020a0566380c5200b0032b3a7817b8sm57930jal.124.2022.05.12.11.21.22
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 12 May 2022 11:21:22 -0700 (PDT)
+Date: Thu, 12 May 2022 12:21:21 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] vfio: Stop using iommu_present()
+Message-ID: <20220512122121.348e5f82.alex.williamson@redhat.com>
+In-Reply-To: <537103bbd7246574f37f2c88704d7824a3a889f2.1649160714.git.robin.murphy@arm.com>
+References: <537103bbd7246574f37f2c88704d7824a3a889f2.1649160714.git.robin.murphy@arm.com>
+Organization: Red Hat
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] vfio: Remove VFIO_TYPE1_NESTING_IOMMU
-To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
-References: <0-v1-0093c9b0e345+19-vfio_no_nesting_jgg@nvidia.com>
- <0e2f7cb8-f0d9-8209-6bc2-ca87fff57f1f@arm.com>
- <20220510181327.GM49344@nvidia.com>
-From: Eric Auger <eric.auger@redhat.com>
-In-Reply-To: <20220510181327.GM49344@nvidia.com>
 Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=eric.auger@redhat.com
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, kvm@vger.kernel.org,
- Cornelia Huck <cohuck@redhat.com>, iommu@lists.linux-foundation.org,
- Vivek Kumar Gautam <Vivek.Gautam@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org
+Cc: iommu@lists.linux-foundation.org, cohuck@redhat.com,
+ linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,75 +107,46 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: eric.auger@redhat.com
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
+On Tue,  5 Apr 2022 13:11:54 +0100
+Robin Murphy <robin.murphy@arm.com> wrote:
 
-On 5/10/22 20:13, Jason Gunthorpe wrote:
-> On Tue, May 10, 2022 at 06:52:06PM +0100, Robin Murphy wrote:
->> On 2022-05-10 17:55, Jason Gunthorpe via iommu wrote:
->>> This control causes the ARM SMMU drivers to choose a stage 2
->>> implementation for the IO pagetable (vs the stage 1 usual default),
->>> however this choice has no visible impact to the VFIO user. Further qemu
->>> never implemented this and no other userspace user is known.
->>>
->>> The original description in commit f5c9ecebaf2a ("vfio/iommu_type1: add
->>> new VFIO_TYPE1_NESTING_IOMMU IOMMU type") suggested this was to "provide
->>> SMMU translation services to the guest operating system" however the rest
->>> of the API to set the guest table pointer for the stage 1 was never
->>> completed, or at least never upstreamed, rendering this part useless dead
->>> code.
->>>
->>> Since the current patches to enable nested translation, aka userspace page
->>> tables, rely on iommufd and will not use the enable_nesting()
->>> iommu_domain_op, remove this infrastructure. However, don't cut too deep
->>> into the SMMU drivers for now expecting the iommufd work to pick it up -
->>> we still need to create S2 IO page tables.
->>>
->>> Remove VFIO_TYPE1_NESTING_IOMMU and everything under it including the
->>> enable_nesting iommu_domain_op.
->>>
->>> Just in-case there is some userspace using this continue to treat
->>> requesting it as a NOP, but do not advertise support any more.
->> I assume the nested translation/guest SVA patches that Eric and Vivek were
->> working on pre-IOMMUFD made use of this, and given that they got quite far
->> along, I wouldn't be too surprised if some eager cloud vendors might have
->> even deployed something based on the patches off the list. 
+> IOMMU groups have been mandatory for some time now, so a device without
+> one is necessarily a device without any usable IOMMU, therefore the
+> iommu_present() check is redundant (or at best unhelpful).
+> 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>  drivers/vfio/vfio.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+> index a4555014bd1e..7b0a7b85e77e 100644
+> --- a/drivers/vfio/vfio.c
+> +++ b/drivers/vfio/vfio.c
+> @@ -745,11 +745,11 @@ static struct vfio_group *vfio_group_find_or_alloc(struct device *dev)
+>  
+>  	iommu_group = iommu_group_get(dev);
+>  #ifdef CONFIG_VFIO_NOIOMMU
+> -	if (!iommu_group && noiommu && !iommu_present(dev->bus)) {
+> +	if (!iommu_group && noiommu) {
+>  		/*
+>  		 * With noiommu enabled, create an IOMMU group for devices that
+> -		 * don't already have one and don't have an iommu_ops on their
+> -		 * bus.  Taint the kernel because we're about to give a DMA
+> +		 * don't already have one, implying no IOMMU hardware/driver
+> +		 * exists.  Taint the kernel because we're about to give a DMA
+>  		 * capable device to a user without IOMMU protection.
+>  		 */
+>  		group = vfio_noiommu_group_alloc(dev, VFIO_NO_IOMMU);
 
-thank you Robin for the heads up.
-> With upstream there is no way to make use of this flag, if someone is
-> using it they have other out of tree kernel, vfio, kvm and qemu
-> patches to make it all work.
->
-> You can see how much is still needed in Eric's tree:
->
-> https://github.com/eauger/linux/commits/v5.15-rc7-nested-v16
->
->> I can't help feeling a little wary about removing this until IOMMUFD
->> can actually offer a functional replacement - is it in the way of
->> anything upcoming?
-> From an upstream perspective if someone has a patched kernel to
-> complete the feature, then they can patch this part in as well, we
-> should not carry dead code like this in the kernel and in the uapi.
+Applied to vfio next branch for v5.19.  Thanks,
 
-On the other end the code is in the kernel for 8 years now, I think we
-could wait for some additional weeks/months until the iommufd nested
-integration arises and gets tested.
-
-Thanks
-
-Eric
->
-> It is not directly in the way, but this needs to get done at some
-> point, I'd rather just get it out of the way.
->
-> Thanks,
-> Jason
->
+Alex
 
 _______________________________________________
 iommu mailing list
