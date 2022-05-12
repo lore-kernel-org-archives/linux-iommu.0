@@ -4,90 +4,82 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E56FFC433F5
-	for <iommu@archiver.kernel.org>; Thu, 12 May 2022 12:47:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 20789C433EF
+	for <iommu@archiver.kernel.org>; Thu, 12 May 2022 14:10:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 6EBA540524;
-	Thu, 12 May 2022 12:47:36 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id AA55540C05;
+	Thu, 12 May 2022 14:10:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QZmJVdHx30Tc; Thu, 12 May 2022 12:47:35 +0000 (UTC)
+	with ESMTP id L0E3WCSB81JA; Thu, 12 May 2022 14:10:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 391084016A;
-	Thu, 12 May 2022 12:47:35 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 5C6D94016A;
+	Thu, 12 May 2022 14:10:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E841AC0032;
-	Thu, 12 May 2022 12:47:34 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 040C7C002D
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 12:47:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3CCC2C0032;
+	Thu, 12 May 2022 14:10:24 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 88C54C002D
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 14:10:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id EE76941958
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 12:47:33 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 6900283EC2
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 14:10:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wVpDRF7LXn_X for <iommu@lists.linux-foundation.org>;
- Thu, 12 May 2022 12:47:33 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id a-_JYY-u5JUZ for <iommu@lists.linux-foundation.org>;
+ Thu, 12 May 2022 14:10:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 0161B401BD
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 12:47:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1652359653; x=1683895653;
- h=message-id:date:mime-version:cc:subject:to:references:
- from:in-reply-to:content-transfer-encoding;
- bh=TZMqMvMmQoQX5FpgkY8+5sOYtRKyNEg9CK8KlsRcL5o=;
- b=cnXB6ffOFFBlVOLlpGLAHzwzHZWvYeF1ounsBEx1Ik3nUGwROy5auwi/
- xCkcpzTs3ObWmdQbWBmIsAzHtapEB3wdCRc0GIlPzAFdce3ar2Y3rOKrV
- QSOzduH8aTMgkUlSIw0q67CSx040xmBtwQUCTrSrLDgxw3NyIhc91SYds
- mBmty0fus2Crbus8J8TCD/LgKa5pIDXMuWv7L2/SLfDPFmsT5QE5urAPK
- +HlV0cVI9c+aWFj8DrvVC3yhGMABYRd8vcxY0WT75bZVt60/2sv7TNFAp
- +q1B3sRe3KRJ8BHpVnKYE7m6pLg5xZUhVnexkSECGcGo8YFN6rKeY+ymE w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="330592074"
-X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; d="scan'208";a="330592074"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 12 May 2022 05:47:32 -0700
-X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; d="scan'208";a="594650645"
-Received: from hezhu1-mobl1.ccr.corp.intel.com (HELO [10.255.29.168])
- ([10.255.29.168])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 12 May 2022 05:47:28 -0700
-Message-ID: <f463fb9d-8edc-7b7d-b109-d3f5d0dcabd9@linux.intel.com>
-Date: Thu, 12 May 2022 20:47:26 +0800
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 6366783E9B
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 14:10:18 +0000 (UTC)
+X-UUID: f595af010fcc4d0a91d94c30a9241735-20220512
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.4, REQID:cef01ffe-6d42-4013-8885-e3748ca81404, OB:0,
+ LO
+ B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,AC
+ TION:release,TS:105
+X-CID-INFO: VERSION:1.1.4, REQID:cef01ffe-6d42-4013-8885-e3748ca81404, OB:0,
+ LOB:
+ 0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,AC
+ TION:quarantine,TS:105
+X-CID-META: VersionHash:faefae9, CLOUDID:5de413a7-eab7-4b74-a74d-5359964535a9,
+ C
+ OID:683cbb8274c2,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,File:nil
+ ,QS:0,BEC:nil
+X-UUID: f595af010fcc4d0a91d94c30a9241735-20220512
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+ (envelope-from <yf.wang@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 2137183272; Thu, 12 May 2022 22:10:13 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 12 May 2022 22:10:13 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via
+ Frontend Transport; Thu, 12 May 2022 22:10:12 +0800
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
+ Roedel" <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ "Georgi Djakov" <quic_c_gdjako@quicinc.com>, "Isaac J. Manjarres"
+ <isaacm@codeaurora.org>, Yunfei Wang <yf.wang@mediatek.com>, Sven Peter
+ <sven@svenpeter.dev>, "moderated list:ARM SMMU DRIVERS"
+ <linux-arm-kernel@lists.infradead.org>, "open list:IOMMU DRIVERS"
+ <iommu@lists.linux-foundation.org>, open list <linux-kernel@vger.kernel.org>, 
+ "moderated list:ARM/Mediatek SoC support"
+ <linux-mediatek@lists.infradead.org>
+Subject: [PATCH v2 1/2] iommu/io-pgtable-arm-v7s: Add a quirk to allow pgtable
+ PA up to 35bit
+Date: Thu, 12 May 2022 22:03:29 +0800
+Message-ID: <20220512140331.17778-2-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220512140331.17778-1-yf.wang@mediatek.com>
+References: <20220512140331.17778-1-yf.wang@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v6 08/12] iommu/sva: Use attach/detach_pasid_dev in SVA
- interfaces
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20220510061738.2761430-1-baolu.lu@linux.intel.com>
- <20220510061738.2761430-9-baolu.lu@linux.intel.com>
- <20220510152330.GG49344@nvidia.com>
- <749a7d62-3e6c-ef5c-beaf-6b7add495740@linux.intel.com>
- <20220511145319.GZ49344@nvidia.com>
- <05a68e1e-8e18-5914-ebe7-d7b1a4aaa2ec@linux.intel.com>
- <BN9PR11MB5276C03134A898CA9EFEE9258CCB9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <64954f2d-2274-410e-269c-84efc0635633@linux.intel.com>
- <20220512114844.GT49344@nvidia.com>
- <1a78418a-8637-e8dd-d1de-5529f20058fd@linux.intel.com>
- <20220512120303.GY49344@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220512120303.GY49344@nvidia.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
- "Raj, Ashok" <ashok.raj@intel.com>, Robin Murphy <robin.murphy@arm.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@infradead.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Vinod Koul <vkoul@kernel.org>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
- Will Deacon <will@kernel.org>
+X-MTK: N
+Cc: Ning Li <ning.li@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
+ wsd_upstream@mediatek.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,93 +92,214 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: "yf.wang--- via iommu" <iommu@lists.linux-foundation.org>
+Reply-To: yf.wang@mediatek.com
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/5/12 20:03, Jason Gunthorpe wrote:
-> On Thu, May 12, 2022 at 07:59:41PM +0800, Baolu Lu wrote:
->> On 2022/5/12 19:48, Jason Gunthorpe wrote:
->>> On Thu, May 12, 2022 at 01:17:08PM +0800, Baolu Lu wrote:
->>>> On 2022/5/12 13:01, Tian, Kevin wrote:
->>>>>> From: Baolu Lu <baolu.lu@linux.intel.com>
->>>>>> Sent: Thursday, May 12, 2022 11:03 AM
->>>>>>
->>>>>> On 2022/5/11 22:53, Jason Gunthorpe wrote:
->>>>>>>>> Also, given the current arrangement it might make sense to have a
->>>>>>>>> struct iommu_domain_sva given that no driver is wrappering this in
->>>>>>>>> something else.
->>>>>>>> Fair enough. How about below wrapper?
->>>>>>>>
->>>>>>>> +struct iommu_sva_domain {
->>>>>>>> +       /*
->>>>>>>> +        * Common iommu domain header,*must*  be put at the top
->>>>>>>> +        * of the structure.
->>>>>>>> +        */
->>>>>>>> +       struct iommu_domain domain;
->>>>>>>> +       struct mm_struct *mm;
->>>>>>>> +       struct iommu_sva bond;
->>>>>>>> +}
->>>>>>>>
->>>>>>>> The refcount is wrapped in bond.
->>>>>>> I'm still not sure that bond is necessary
->>>>>>
->>>>>> "bond" is the sva handle that the device drivers get through calling
->>>>>> iommu_sva_bind().
->>>>>>
->>>>>
->>>>> 'bond' was required before because we didn't have a domain to wrap
->>>>> the page table at that time.
->>>>>
->>>>> Now we have a domain and it is 1:1 associated to bond. Probably
->>>>> make sense now by just returning the domain as the sva handle
->>>>> instead?
->>>>
->>>> It also includes the device information that the domain has been
->>>> attached. So the sva_unbind() looks like this:
->>>>
->>>> /**
->>>>    * iommu_sva_unbind_device() - Remove a bond created with
->>>> iommu_sva_bind_device
->>>>    * @handle: the handle returned by iommu_sva_bind_device()
->>>>    *
->>>>    * Put reference to a bond between device and address space. The device
->>>> should
->>>>    * not be issuing any more transaction for this PASID. All outstanding page
->>>>    * requests for this PASID must have been flushed to the IOMMU.
->>>>    */
->>>> void iommu_sva_unbind_device(struct iommu_sva *handle)
->>>>
->>>> It's fine to replace the iommu_sva with iommu_sva_domain for sva handle,
->>>> if we can include the device in the unbind() interface.
->>>
->>> Why would we have a special unbind for SVA?
->>
->> It's about SVA kAPI for device drivers. The existing kAPIs include:
->>
->> struct iommu_sva *iommu_sva_bind_device(struct device *dev,
->>                                          struct mm_struct *mm,
->>                                          void *drvdata);
->> void iommu_sva_unbind_device(struct iommu_sva *handle);
->> u32 iommu_sva_get_pasid(struct iommu_sva *handle);
-> 
-> This is not what we agreed the API should be. We agreed:
-> 
->   iommu_sva_domain_alloc()
->   iommu_attach_device_pasid()
->   iommu_detach_device_pasid()
-> 
-> Again, SVA should not be different from normal domain stuff.
+From: Yunfei Wang <yf.wang@mediatek.com>
 
-Yes, agreed.
+The calling to kmem_cache_alloc for level 2 pgtable allocation may run
+in atomic context, and it fails sometimes when DMA32 zone runs out of
+memory.
 
-I am trying to achieve this in two steps. This first step focuses on
-internal iommu implementation and keep the driver kAPI untouched. Then,
-the second step focus on the driver APIs.
+Since Mediatek IOMMU hardware support at most 35bit PA in pgtable,
+so add a quirk to allow the PA of pgtables support up to bit35.
 
-Best regards,
-baolu
+Signed-off-by: Ning Li <ning.li@mediatek.com>
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+---
+ drivers/iommu/io-pgtable-arm-v7s.c | 56 ++++++++++++++++++++++--------
+ include/linux/io-pgtable.h         | 15 +++++---
+ 2 files changed, 52 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index be066c1503d3..57455ae052ac 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -149,6 +149,10 @@
+ #define ARM_V7S_TTBR_IRGN_ATTR(attr)					\
+ 	((((attr) & 0x1) << 6) | (((attr) & 0x2) >> 1))
+ 
++/* Mediatek extend ttbr bits[2:0] for PA bits[34:32] */
++#define ARM_V7S_TTBR_35BIT_PA(ttbr, pa)					\
++	((ttbr & ((u32)(~0U << 3))) | ((pa & GENMASK(34, 32)) >> 32))
++
+ #ifdef CONFIG_ZONE_DMA32
+ #define ARM_V7S_TABLE_GFP_DMA GFP_DMA32
+ #define ARM_V7S_TABLE_SLAB_FLAGS SLAB_CACHE_DMA32
+@@ -182,14 +186,8 @@ static bool arm_v7s_is_mtk_enabled(struct io_pgtable_cfg *cfg)
+ 		(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT);
+ }
+ 
+-static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+-				    struct io_pgtable_cfg *cfg)
++static arm_v7s_iopte to_iopte_mtk(phys_addr_t paddr, arm_v7s_iopte pte)
+ {
+-	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
+-
+-	if (!arm_v7s_is_mtk_enabled(cfg))
+-		return pte;
+-
+ 	if (paddr & BIT_ULL(32))
+ 		pte |= ARM_V7S_ATTR_MTK_PA_BIT32;
+ 	if (paddr & BIT_ULL(33))
+@@ -199,6 +197,17 @@ static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+ 	return pte;
+ }
+ 
++static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
++				    struct io_pgtable_cfg *cfg)
++{
++	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
++
++	if (!arm_v7s_is_mtk_enabled(cfg))
++		return pte;
++
++	return to_iopte_mtk(paddr, pte);
++}
++
+ static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte, int lvl,
+ 				  struct io_pgtable_cfg *cfg)
+ {
+@@ -234,6 +243,7 @@ static arm_v7s_iopte *iopte_deref(arm_v7s_iopte pte, int lvl,
+ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 				   struct arm_v7s_io_pgtable *data)
+ {
++	gfp_t gfp_l1 = __GFP_ZERO | ARM_V7S_TABLE_GFP_DMA;
+ 	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+ 	struct device *dev = cfg->iommu_dev;
+ 	phys_addr_t phys;
+@@ -241,9 +251,11 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 	size_t size = ARM_V7S_TABLE_SIZE(lvl, cfg);
+ 	void *table = NULL;
+ 
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
++		gfp_l1 = __GFP_ZERO;
++
+ 	if (lvl == 1)
+-		table = (void *)__get_free_pages(
+-			__GFP_ZERO | ARM_V7S_TABLE_GFP_DMA, get_order(size));
++		table = (void *)__get_free_pages(gfp_l1, get_order(size));
+ 	else if (lvl == 2)
+ 		table = kmem_cache_zalloc(data->l2_tables, gfp);
+ 
+@@ -251,7 +263,8 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 		return NULL;
+ 
+ 	phys = virt_to_phys(table);
+-	if (phys != (arm_v7s_iopte)phys) {
++	if (phys != (arm_v7s_iopte)phys &&
++	    !(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)) {
+ 		/* Doesn't fit in PTE */
+ 		dev_err(dev, "Page table does not fit in PTE: %pa", &phys);
+ 		goto out_free;
+@@ -457,9 +470,14 @@ static arm_v7s_iopte arm_v7s_install_table(arm_v7s_iopte *table,
+ 					   arm_v7s_iopte curr,
+ 					   struct io_pgtable_cfg *cfg)
+ {
++	phys_addr_t phys = virt_to_phys(table);
+ 	arm_v7s_iopte old, new;
+ 
+-	new = virt_to_phys(table) | ARM_V7S_PTE_TYPE_TABLE;
++	new = phys | ARM_V7S_PTE_TYPE_TABLE;
++
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
++		new = to_iopte_mtk(phys, new);
++
+ 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
+ 		new |= ARM_V7S_ATTR_NS_TABLE;
+ 
+@@ -778,7 +796,9 @@ static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
+ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 						void *cookie)
+ {
++	slab_flags_t slab_flag = ARM_V7S_TABLE_SLAB_FLAGS;
+ 	struct arm_v7s_io_pgtable *data;
++	phys_addr_t paddr;
+ 
+ 	if (cfg->ias > (arm_v7s_is_mtk_enabled(cfg) ? 34 : ARM_V7S_ADDR_BITS))
+ 		return NULL;
+@@ -788,7 +808,8 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 
+ 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+ 			    IO_PGTABLE_QUIRK_NO_PERMS |
+-			    IO_PGTABLE_QUIRK_ARM_MTK_EXT))
++			    IO_PGTABLE_QUIRK_ARM_MTK_EXT |
++			    IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT))
+ 		return NULL;
+ 
+ 	/* If ARM_MTK_4GB is enabled, the NO_PERMS is also expected. */
+@@ -801,10 +822,12 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 		return NULL;
+ 
+ 	spin_lock_init(&data->split_lock);
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
++		slab_flag = 0;
+ 	data->l2_tables = kmem_cache_create("io-pgtable_armv7s_l2",
+ 					    ARM_V7S_TABLE_SIZE(2, cfg),
+ 					    ARM_V7S_TABLE_SIZE(2, cfg),
+-					    ARM_V7S_TABLE_SLAB_FLAGS, NULL);
++					    slab_flag, NULL);
+ 	if (!data->l2_tables)
+ 		goto out_free_data;
+ 
+@@ -850,12 +873,17 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 	wmb();
+ 
+ 	/* TTBR */
+-	cfg->arm_v7s_cfg.ttbr = virt_to_phys(data->pgd) | ARM_V7S_TTBR_S |
++	paddr = virt_to_phys(data->pgd);
++	cfg->arm_v7s_cfg.ttbr = paddr | ARM_V7S_TTBR_S |
+ 				(cfg->coherent_walk ? (ARM_V7S_TTBR_NOS |
+ 				 ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_WBWA) |
+ 				 ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_WBWA)) :
+ 				(ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_NC) |
+ 				 ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_NC)));
++
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
++		cfg->arm_v7s_cfg.ttbr =
++			ARM_V7S_TTBR_35BIT_PA(cfg->arm_v7s_cfg.ttbr, paddr);
+ 	return &data->iop;
+ 
+ out_free_data:
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index 86af6f0a00a2..7ed15ad4710c 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -74,17 +74,22 @@ struct io_pgtable_cfg {
+ 	 *	to support up to 35 bits PA where the bit32, bit33 and bit34 are
+ 	 *	encoded in the bit9, bit4 and bit5 of the PTE respectively.
+ 	 *
++	 * IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT: (ARM v7s format) MediaTek IOMMUs
++	 *	extend the translation table support up to 35 bits PA, the
++	 *	encoding format is same with IO_PGTABLE_QUIRK_ARM_MTK_EXT.
++	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_TTBR1: (ARM LPAE format) Configure the table
+ 	 *	for use in the upper half of a split address space.
+ 	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_OUTER_WBWA: Override the outer-cacheability
+ 	 *	attributes set in the TCR for a non-coherent page-table walker.
+ 	 */
+-	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
+-	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
+-	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT	BIT(3)
+-	#define IO_PGTABLE_QUIRK_ARM_TTBR1	BIT(5)
+-	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA	BIT(6)
++	#define IO_PGTABLE_QUIRK_ARM_NS			BIT(0)
++	#define IO_PGTABLE_QUIRK_NO_PERMS		BIT(1)
++	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT		BIT(3)
++	#define IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT	BIT(4)
++	#define IO_PGTABLE_QUIRK_ARM_TTBR1		BIT(5)
++	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA		BIT(6)
+ 	unsigned long			quirks;
+ 	unsigned long			pgsize_bitmap;
+ 	unsigned int			ias;
+-- 
+2.18.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
