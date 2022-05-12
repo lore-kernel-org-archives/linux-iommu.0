@@ -4,85 +4,91 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6979AC433EF
-	for <iommu@archiver.kernel.org>; Thu, 12 May 2022 19:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E1731C433F5
+	for <iommu@archiver.kernel.org>; Thu, 12 May 2022 23:12:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 33C17409C3;
-	Thu, 12 May 2022 19:01:24 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 75AF241680;
+	Thu, 12 May 2022 23:12:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4TOULX0Mq_sg; Thu, 12 May 2022 19:01:23 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id C7EB1401C3;
-	Thu, 12 May 2022 19:01:22 +0000 (UTC)
+	with ESMTP id enIYlzr_G38v; Thu, 12 May 2022 23:12:49 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id F1DE54167A;
+	Thu, 12 May 2022 23:12:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AFCDAC0032;
-	Thu, 12 May 2022 19:01:22 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 40FFFC002D
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 19:01:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BF092C0032;
+	Thu, 12 May 2022 23:12:48 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5C00FC002D
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 23:12:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 2FD40401B9
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 19:01:21 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 435B9825C6
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 23:12:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XtIGRiLC4y_z for <iommu@lists.linux-foundation.org>;
- Thu, 12 May 2022 19:01:20 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com
- [IPv6:2a00:1450:4864:20::12c])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 2D62A409ED
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 19:01:20 +0000 (UTC)
-Received: by mail-lf1-x12c.google.com with SMTP id d15so10735152lfk.5
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 12:01:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=mt2U9a7tnFLCX9wgkrM1HMmN66TcXqkkVi2NC46P4ZM=;
- b=Gv0Vwl9woZEQrxqNpxwQhwdxKoqNldJwYczn072anBC7urXp/rB7lJUw6WcauN+MH0
- p0bGBg6cgf/AwYfhwuXjP/0AwzfHfXn5c/gqLlmrOXq/LJ6ptnvHyK2Ska48lxoMZp0U
- 2jozZ2fY5+EujB+GJYzyJc2cSDF6h04MQuZNiVxU5IEkW6adR5PUFhbehHxf2awcpHSD
- Wkn+2Ylm8od7qxSYbpPul0v5HXuR4cjvALioAQZwc3L9qylXi9ppAAcKByOOap/hpwZF
- ngLLxHSOJWGez4lyaD6WllzMLlMzt9T/jy1iVgDrSuhBQjjXqQlDxlqoA9h1/xRiY0Vr
- fa9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=mt2U9a7tnFLCX9wgkrM1HMmN66TcXqkkVi2NC46P4ZM=;
- b=hBn2pyNktVI9MI4zP+RWIDj3Qrys1gOheCj4OTkeal3vxKCwvlP5oxz3cNAHB9PeUW
- PaMWlbO10MBGPXU5I6ORMRNzG4RmgF+6VPAUVXuBU8/QZ099R3EGXWqSMugJarE579Ny
- pmPzC7+zKnXR0Utu8i5KDpaFp+F9UJMCsej7tQnFmrYwYoNUftFEgu6pd6ttG3YUY9ef
- 8qFjLUkgg31fLLHnIRz3mpcaOp9wTtEYTF6hTXXG8St6U9eR3dBjPP4yzQgwoP8u1YjU
- Sd0qKU1Rva4TWRmR8COB9EhjgvJhC4NijzQwYeEqVUzUUtLe+1h1xJM2syphz8AxplMw
- SyVw==
-X-Gm-Message-State: AOAM530L3e3WXpeddX9Xxm7qTs6Efdtew49+f+QOJ6m0Nr5BWFP7cMHp
- exBpxyJkjQRecs81/diTM2M=
-X-Google-Smtp-Source: ABdhPJywkioOthRkNJKuhIGBnwy5wL2iI/mmTX+U90oMWFMfZ8hE+LZm8XsnwkIgxjq19/qLP4Hvow==
-X-Received: by 2002:a05:6512:33c8:b0:473:9d8f:a01b with SMTP id
- d8-20020a05651233c800b004739d8fa01bmr805048lfg.619.1652382077969; 
- Thu, 12 May 2022 12:01:17 -0700 (PDT)
-Received: from localhost ([62.96.65.119]) by smtp.gmail.com with ESMTPSA id
- z25-20020a2e9b99000000b0024f3d1daef2sm39660lji.122.2022.05.12.12.01.16
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 12 May 2022 12:01:16 -0700 (PDT)
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Rob Herring <robh+dt@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v5 5/5] iommu/tegra-smmu: Support managed domains
-Date: Thu, 12 May 2022 21:00:52 +0200
-Message-Id: <20220512190052.1152377-6-thierry.reding@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220512190052.1152377-1-thierry.reding@gmail.com>
-References: <20220512190052.1152377-1-thierry.reding@gmail.com>
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=hpe.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id B8a2lLYBDXSc for <iommu@lists.linux-foundation.org>;
+ Thu, 12 May 2022 23:12:45 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com
+ [148.163.147.86])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id DBEBB82572
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 23:12:45 +0000 (UTC)
+Received: from pps.filterd (m0148663.ppops.net [127.0.0.1])
+ by mx0a-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24CGAvuE005052;
+ Thu, 12 May 2022 23:12:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com;
+ h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pps0720; bh=LZVNUAIDSEu9/DVKOuoRKSe4j+omN8ZwfLvyP3Uyqtk=;
+ b=Qb+tNSdQT7hymKCR9HlYUSIkuDzcjrIbWaz3Q6NpRIhiioIA9m7caMHIdR85nqJVQwA7
+ dNuWVTGB/WF+BUO9SicLTOY8oQLmSpqiHKnDe1YdrU2mmFn7MtKwCRyWjQ56JFJ19/Pq
+ 6E10TGFND7eNEqmoac9Vr/tdArfn1wYxJzyU71zlqBqm+wnEKuQX7vX7mHXgwtX3bQx4
+ ljjdKQyamhLTwT9m5wbr1HsbqdF69/Tvt/aK8TEoNNaXxyAMPu0CEPbWAZ1SgSvz4Z51
+ 8D58dgXkphcLs/uDlEKFhcPu4sm0xj0aPWbgqoBgN5Xbo7tjX2hJ3o9dJvE1z/S8hKKO 7Q== 
+Received: from g4t3427.houston.hpe.com (g4t3427.houston.hpe.com
+ [15.241.140.73])
+ by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3g0h2s4dr1-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Thu, 12 May 2022 23:12:37 +0000
+Received: from g4t3433.houston.hpecorp.net (g4t3433.houston.hpecorp.net
+ [16.208.49.245])
+ by g4t3427.houston.hpe.com (Postfix) with ESMTP id 6BD3257;
+ Thu, 12 May 2022 23:12:36 +0000 (UTC)
+Received: from swahl-home.5wahls.com (unknown [10.207.206.199])
+ by g4t3433.houston.hpecorp.net (Postfix) with ESMTP id EC24445;
+ Thu, 12 May 2022 23:12:34 +0000 (UTC)
+Date: Thu, 12 May 2022 18:12:34 -0500
+From: Steve Wahl <steve.wahl@hpe.com>
+To: Joerg Roedel <jroedel@suse.de>, Kyung Min Park <kyung.min.park@intel.com>, 
+ Lu Baolu <baolu.lu@linux.intel.com>,
+ David Woodhouse <dwmw2@infradead.org>, Will Deacon <will@kernel.org>,
+ iommu@lists.linux-foundation.org
+Subject: Re: [PATCH v2] iommu/vt-d: Make DMAR_UNITS_SUPPORTED a config setting
+Message-ID: <Yn2UYst0ETp42uzq@swahl-home.5wahls.com>
+References: <20220505194658.246121-1-steve.wahl@hpe.com>
+ <20220512151309.330068-1-steve.wahl@hpe.com>
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, Will Deacon <will@kernel.org>,
- Sameer Pujar <spujar@nvidia.com>, iommu@lists.linux-foundation.org,
- Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
- Dmitry Osipenko <dmitry.osipenko@collabora.com>, linux-tegra@vger.kernel.org,
- Janne Grunau <j@jannau.net>, Robin Murphy <robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <20220512151309.330068-1-steve.wahl@hpe.com>
+X-Proofpoint-GUID: Bn27EBR5OzO3pAHxn15TKeA1h62Kv1Uq
+X-Proofpoint-ORIG-GUID: Bn27EBR5OzO3pAHxn15TKeA1h62Kv1Uq
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-12_19,2022-05-12_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 bulkscore=0
+ phishscore=0 clxscore=1015 mlxscore=0 mlxlogscore=755 spamscore=0
+ priorityscore=1501 adultscore=0 impostorscore=0 lowpriorityscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205120098
+Cc: Mike Travis <mike.travis@hpe.com>, Dimitri Sivanich <sivanich@hpe.com>,
+ linux-kernel@vger.kernel.org, Russ Anderson <russ.anderson@hpe.com>,
+ Steve Wahl <steve.wahl@hpe.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,104 +106,86 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Navneet Kumar <navneetk@nvidia.com>
+On Thu, May 12, 2022 at 10:13:09AM -0500, Steve Wahl wrote:
+> To support up to 64 sockets with 10 DMAR units each (640), make the
+> value of DMAR_UNITS_SUPPORTED adjustable by a config variable,
+> CONFIG_DMAR_UNITS_SUPPORTED, and make it's default 1024 when MAXSMP is
+> set.
+> 
+> If the available hardware exceeds DMAR_UNITS_SUPPORTED (previously set
+> to MAX_IO_APICS, or 128), it causes these messages: "DMAR: Failed to
+> allocate seq_id", "DMAR: Parse DMAR table failure.", and "x2apic: IRQ
+> remapping doesn't support X2APIC mode x2apic disabled"; and the system
+> fails to boot properly.
+> 
+> Signed-off-by: Steve Wahl <steve.wahl@hpe.com>
 
-Allow creating identity and DMA API compatible IOMMU domains. When
-creating a DMA API compatible domain, make sure to also create the
-required cookie.
+I've received a report from the kernel test robot <lkp@intel.com>,
+that this patch causes an error (shown below) when
+CONFIG_IOMMU_SUPPORT is not set.
 
-Signed-off-by: Navneet Kumar <navneetk@nvidia.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
----
-Changes in v5:
-- remove DMA cookie initialization that's now no longer needed
+In my opinion, this is because include/linux/dmar.h and
+include/linux/intel-iommu are being #included when they are not really
+being used.
 
- drivers/iommu/tegra-smmu.c | 37 ++++++++++++++++++++-----------------
- 1 file changed, 20 insertions(+), 17 deletions(-)
+I've tried placing the contents of intel-iommu.h within an #ifdef
+CONFIG_INTEL_IOMMU, and that fixes the problem.
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 93879c40056c..f8b2b863c111 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -16,6 +16,7 @@
- #include <linux/slab.h>
- #include <linux/spinlock.h>
- #include <linux/dma-mapping.h>
-+#include <linux/dma-iommu.h>
+Two questions:
+
+A) Is this the desired approach to to the fix?
+
+B) Should it be a separate patch, or added onto this patch as a v3?
+
+Error message:  ------------------------------
+
+   In file included from include/linux/intel-iommu.h:21,
+                    from arch/x86/kvm/x86.c:44:
+>> include/linux/dmar.h:21:33: error: 'CONFIG_DMAR_UNITS_SUPPORTED' undeclared here (not in a function); did you mean 'DMAR_UNITS_SUPPORTED'?
+      21 | #define DMAR_UNITS_SUPPORTED    CONFIG_DMAR_UNITS_SUPPORTED
+         |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/intel-iommu.h:531:35: note: in expansion of macro 'DMAR_UNITS_SUPPORTED'
+     531 |         unsigned int iommu_refcnt[DMAR_UNITS_SUPPORTED];
+         |                                   ^~~~~~~~~~~~~~~~~~~~
+
+
+vim +21 include/linux/dmar.h
+
+    20
+  > 21  #define DMAR_UNITS_SUPPORTED    CONFIG_DMAR_UNITS_SUPPORTED
+    22
+
+Initial stab at fixing it: ------------------------------
+
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 2f9891cb3d00..916fd7b5bcb5 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -10,6 +10,8 @@
+ #ifndef _INTEL_IOMMU_H_
+ #define _INTEL_IOMMU_H_
  
- #include <soc/tegra/ahb.h>
- #include <soc/tegra/mc.h>
-@@ -277,7 +278,9 @@ static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
- {
- 	struct tegra_smmu_as *as;
- 
--	if (type != IOMMU_DOMAIN_UNMANAGED)
-+	if (type != IOMMU_DOMAIN_UNMANAGED &&
-+	    type != IOMMU_DOMAIN_DMA &&
-+	    type != IOMMU_DOMAIN_IDENTITY)
- 		return NULL;
- 
- 	as = kzalloc(sizeof(*as), GFP_KERNEL);
-@@ -287,25 +290,16 @@ static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
- 	as->attr = SMMU_PD_READABLE | SMMU_PD_WRITABLE | SMMU_PD_NONSECURE;
- 
- 	as->pd = alloc_page(GFP_KERNEL | __GFP_DMA | __GFP_ZERO);
--	if (!as->pd) {
--		kfree(as);
--		return NULL;
--	}
-+	if (!as->pd)
-+		goto free_as;
- 
- 	as->count = kcalloc(SMMU_NUM_PDE, sizeof(u32), GFP_KERNEL);
--	if (!as->count) {
--		__free_page(as->pd);
--		kfree(as);
--		return NULL;
--	}
-+	if (!as->count)
-+		goto free_pd_range;
- 
- 	as->pts = kcalloc(SMMU_NUM_PDE, sizeof(*as->pts), GFP_KERNEL);
--	if (!as->pts) {
--		kfree(as->count);
--		__free_page(as->pd);
--		kfree(as);
--		return NULL;
--	}
-+	if (!as->pts)
-+		goto free_pts;
- 
- 	spin_lock_init(&as->lock);
- 
-@@ -315,6 +309,15 @@ static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
- 	as->domain.geometry.force_aperture = true;
- 
- 	return &as->domain;
++#ifdef CONFIG_INTEL_IOMMU
 +
-+free_pts:
-+	kfree(as->pts);
-+free_pd_range:
-+	__free_page(as->pd);
-+free_as:
-+	kfree(as);
-+
-+	return NULL;
+ #include <linux/types.h>
+ #include <linux/iova.h>
+ #include <linux/io.h>
+@@ -831,4 +833,6 @@ static inline const char *decode_prq_descriptor(char *str, size_t size,
+ 	return str;
  }
  
- static void tegra_smmu_domain_free(struct iommu_domain *domain)
-@@ -1009,7 +1012,7 @@ static const struct iommu_ops tegra_smmu_ops = {
- 	.probe_device = tegra_smmu_probe_device,
- 	.release_device = tegra_smmu_release_device,
- 	.device_group = tegra_smmu_device_group,
--	.get_resv_regions = of_iommu_get_resv_regions,
-+	.get_resv_regions = iommu_dma_get_resv_regions,
- 	.put_resv_regions = generic_iommu_put_resv_regions,
- 	.of_xlate = tegra_smmu_of_xlate,
- 	.pgsize_bitmap = SZ_4K,
--- 
-2.36.1
++#endif /* CONFIG_IOMMU_SUPPORT */
++
+ #endif
 
+
+Thanks.
+
+--> Steve Wahl
+
+
+-- 
+Steve Wahl, Hewlett Packard Enterprise
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
