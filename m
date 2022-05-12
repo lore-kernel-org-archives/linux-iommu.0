@@ -1,79 +1,79 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 27827C433FE
-	for <iommu@archiver.kernel.org>; Thu, 12 May 2022 19:01:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6979AC433EF
+	for <iommu@archiver.kernel.org>; Thu, 12 May 2022 19:01:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C891540132;
-	Thu, 12 May 2022 19:01:20 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 33C17409C3;
+	Thu, 12 May 2022 19:01:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Q1UqfXawye5x; Thu, 12 May 2022 19:01:19 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 9F8BC400D0;
-	Thu, 12 May 2022 19:01:19 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 4TOULX0Mq_sg; Thu, 12 May 2022 19:01:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id C7EB1401C3;
+	Thu, 12 May 2022 19:01:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7AF39C0032;
-	Thu, 12 May 2022 19:01:19 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 91C10C002D
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 19:01:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AFCDAC0032;
+	Thu, 12 May 2022 19:01:22 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 40FFFC002D
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 19:01:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 716F7400D0
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 19:01:18 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2FD40401B9
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 19:01:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id en82KiLruGFv for <iommu@lists.linux-foundation.org>;
- Thu, 12 May 2022 19:01:17 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id XtIGRiLC4y_z for <iommu@lists.linux-foundation.org>;
+ Thu, 12 May 2022 19:01:20 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com
- [IPv6:2a00:1450:4864:20::12f])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 7709540144
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 19:01:17 +0000 (UTC)
-Received: by mail-lf1-x12f.google.com with SMTP id d19so10729275lfj.4
- for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 12:01:17 -0700 (PDT)
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com
+ [IPv6:2a00:1450:4864:20::12c])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 2D62A409ED
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 19:01:20 +0000 (UTC)
+Received: by mail-lf1-x12c.google.com with SMTP id d15so10735152lfk.5
+ for <iommu@lists.linux-foundation.org>; Thu, 12 May 2022 12:01:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=in4n6yNdl0/TA88lWGR+mLZXfmd4yDMsoLU1LfHbMpA=;
- b=VldBZhrmCg/tqslxw2qNSHOqRW9/XVWxX3SMuQXvT7R+PIiQfjuTAp1cW1wqNZd5WH
- KmrMn0t33uWqimbKlmm5uNlGBF9AhGf457xuLPkE4DNwHG+VveKArz6m4yAkoNpl/ypg
- rmYoIVu9skcUKMsKz7i/e5ixfPIPrzv0ik6uNuXBkUEhfBLWcqGmo+a0cx0qR5pHuHyz
- 8r/2UHvHkOTfsslYrrrgnfSbpWp1YDK0WNJXiXoD0W6AZKheX4k7LoetbFZY7lQlaTpk
- X9J09AGTDL3dWAI9eKYJChMD1IktbXQrEy0GjgAM4vt0pnISFdfZ2vZb5VmlzJP/0iyH
- tF8Q==
+ bh=mt2U9a7tnFLCX9wgkrM1HMmN66TcXqkkVi2NC46P4ZM=;
+ b=Gv0Vwl9woZEQrxqNpxwQhwdxKoqNldJwYczn072anBC7urXp/rB7lJUw6WcauN+MH0
+ p0bGBg6cgf/AwYfhwuXjP/0AwzfHfXn5c/gqLlmrOXq/LJ6ptnvHyK2Ska48lxoMZp0U
+ 2jozZ2fY5+EujB+GJYzyJc2cSDF6h04MQuZNiVxU5IEkW6adR5PUFhbehHxf2awcpHSD
+ Wkn+2Ylm8od7qxSYbpPul0v5HXuR4cjvALioAQZwc3L9qylXi9ppAAcKByOOap/hpwZF
+ ngLLxHSOJWGez4lyaD6WllzMLlMzt9T/jy1iVgDrSuhBQjjXqQlDxlqoA9h1/xRiY0Vr
+ fa9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=in4n6yNdl0/TA88lWGR+mLZXfmd4yDMsoLU1LfHbMpA=;
- b=rEzlfzS/3pDeF1dQojr+00QlZuPNwehPWv/zDb+U5PI7jqv/ozL8aE2UmiF2K4SofY
- sdus3GsOLtQFCK73wDpcVuIBjw2wqPn5SerUf24B0vLsu4ilu9/8U+Gd0MZ1A9NneltS
- DWeByUOSxj/pR8ChabpFKDec99EebZMhWUtghlUNKWEt06uZ6Es1ryR3tZ04hm/NzlkJ
- eJjZ3bHa20vbT05MFl9WBUI/eK9cNAqnBpw8ZoI6iuathT7HVMp0Z1OOzS8ZSxCjnwpq
- uTM1ab9CHlsRhlvYBuWlWqw/e1x8Z6Hqp7b8f7pr4KkQL+cirB3BD4AqIz8Qjsmh/7ew
- lUOg==
-X-Gm-Message-State: AOAM530+EOFzcsNzHdT9EHQPQp5WUjZiqBSwYfnNVXiu5rqzPN78biN3
- HnNgoEk3CrtcWoOQX7mRS5A=
-X-Google-Smtp-Source: ABdhPJzQu3cY5QwC6URs68TB/8wTiIXioaNqbY6gHps5ySKJxE/6MeaS2+aNOL1FRP2DOFxNnqoPxA==
-X-Received: by 2002:a05:6512:479:b0:471:feb0:104a with SMTP id
- x25-20020a056512047900b00471feb0104amr819648lfd.272.1652382075281; 
- Thu, 12 May 2022 12:01:15 -0700 (PDT)
+ bh=mt2U9a7tnFLCX9wgkrM1HMmN66TcXqkkVi2NC46P4ZM=;
+ b=hBn2pyNktVI9MI4zP+RWIDj3Qrys1gOheCj4OTkeal3vxKCwvlP5oxz3cNAHB9PeUW
+ PaMWlbO10MBGPXU5I6ORMRNzG4RmgF+6VPAUVXuBU8/QZ099R3EGXWqSMugJarE579Ny
+ pmPzC7+zKnXR0Utu8i5KDpaFp+F9UJMCsej7tQnFmrYwYoNUftFEgu6pd6ttG3YUY9ef
+ 8qFjLUkgg31fLLHnIRz3mpcaOp9wTtEYTF6hTXXG8St6U9eR3dBjPP4yzQgwoP8u1YjU
+ Sd0qKU1Rva4TWRmR8COB9EhjgvJhC4NijzQwYeEqVUzUUtLe+1h1xJM2syphz8AxplMw
+ SyVw==
+X-Gm-Message-State: AOAM530L3e3WXpeddX9Xxm7qTs6Efdtew49+f+QOJ6m0Nr5BWFP7cMHp
+ exBpxyJkjQRecs81/diTM2M=
+X-Google-Smtp-Source: ABdhPJywkioOthRkNJKuhIGBnwy5wL2iI/mmTX+U90oMWFMfZ8hE+LZm8XsnwkIgxjq19/qLP4Hvow==
+X-Received: by 2002:a05:6512:33c8:b0:473:9d8f:a01b with SMTP id
+ d8-20020a05651233c800b004739d8fa01bmr805048lfg.619.1652382077969; 
+ Thu, 12 May 2022 12:01:17 -0700 (PDT)
 Received: from localhost ([62.96.65.119]) by smtp.gmail.com with ESMTPSA id
- l5-20020ac25545000000b0047255d2111esm57312lfk.77.2022.05.12.12.01.12
+ z25-20020a2e9b99000000b0024f3d1daef2sm39660lji.122.2022.05.12.12.01.16
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 12 May 2022 12:01:12 -0700 (PDT)
+ Thu, 12 May 2022 12:01:16 -0700 (PDT)
 From: Thierry Reding <thierry.reding@gmail.com>
 To: Rob Herring <robh+dt@kernel.org>,
 	Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v5 4/5] iommu/tegra-smmu: Add support for reserved regions
-Date: Thu, 12 May 2022 21:00:51 +0200
-Message-Id: <20220512190052.1152377-5-thierry.reding@gmail.com>
+Subject: [PATCH v5 5/5] iommu/tegra-smmu: Support managed domains
+Date: Thu, 12 May 2022 21:00:52 +0200
+Message-Id: <20220512190052.1152377-6-thierry.reding@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220512190052.1152377-1-thierry.reding@gmail.com>
 References: <20220512190052.1152377-1-thierry.reding@gmail.com>
@@ -100,140 +100,101 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Thierry Reding <treding@nvidia.com>
+From: Navneet Kumar <navneetk@nvidia.com>
 
-The Tegra DRM driver currently uses the IOMMU API explicitly. This means
-that it has fine-grained control over when exactly the translation
-through the IOMMU is enabled. This currently happens after the driver
-probes, so the driver is in a DMA quiesced state when the IOMMU
-translation is enabled.
+Allow creating identity and DMA API compatible IOMMU domains. When
+creating a DMA API compatible domain, make sure to also create the
+required cookie.
 
-During the transition of the Tegra DRM driver to use the DMA API instead
-of the IOMMU API explicitly, it was observed that on certain platforms
-the display controllers were still actively fetching from memory. When a
-DMA IOMMU domain is created as part of the DMA/IOMMU API setup during
-boot, the IOMMU translation for the display controllers can be enabled a
-significant amount of time before the driver has had a chance to reset
-the hardware into a sane state. This causes the SMMU to detect faults on
-the addresses that the display controller is trying to fetch.
-
-To avoid this, and as a byproduct paving the way for seamless transition
-of display from the bootloader to the kernel, add support for reserved
-regions in the Tegra SMMU driver. This is implemented using the standard
-reserved memory device tree bindings, which let us describe regions of
-memory which the kernel is forbidden from using for regular allocations.
-The Tegra SMMU driver will parse the nodes associated with each device
-via the "memory-region" property and return reserved regions that the
-IOMMU core will then create direct mappings for prior to attaching the
-IOMMU domains to the devices. This ensures that a 1:1 mapping is in
-place when IOMMU translation starts and prevents the SMMU from detecting
-any faults.
-
+Signed-off-by: Navneet Kumar <navneetk@nvidia.com>
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/iommu/tegra-smmu.c | 47 ++++++++++++++++++++++++++++++++++++--
- 1 file changed, 45 insertions(+), 2 deletions(-)
+Changes in v5:
+- remove DMA cookie initialization that's now no longer needed
+
+ drivers/iommu/tegra-smmu.c | 37 ++++++++++++++++++++-----------------
+ 1 file changed, 20 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 2f2b12033618..93879c40056c 100644
+index 93879c40056c..f8b2b863c111 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -10,6 +10,7 @@
- #include <linux/kernel.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/of_iommu.h>
- #include <linux/pci.h>
- #include <linux/platform_device.h>
+@@ -16,6 +16,7 @@
  #include <linux/slab.h>
-@@ -471,6 +472,7 @@ static void tegra_smmu_as_unprepare(struct tegra_smmu *smmu,
- 	tegra_smmu_free_asid(smmu, as->id);
+ #include <linux/spinlock.h>
+ #include <linux/dma-mapping.h>
++#include <linux/dma-iommu.h>
  
- 	dma_unmap_page(smmu->dev, as->pd_dma, SMMU_SIZE_PD, DMA_TO_DEVICE);
-+	as->pd_dma = 0;
+ #include <soc/tegra/ahb.h>
+ #include <soc/tegra/mc.h>
+@@ -277,7 +278,9 @@ static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
+ {
+ 	struct tegra_smmu_as *as;
  
- 	as->smmu = NULL;
+-	if (type != IOMMU_DOMAIN_UNMANAGED)
++	if (type != IOMMU_DOMAIN_UNMANAGED &&
++	    type != IOMMU_DOMAIN_DMA &&
++	    type != IOMMU_DOMAIN_IDENTITY)
+ 		return NULL;
  
-@@ -534,6 +536,38 @@ static void tegra_smmu_set_pde(struct tegra_smmu_as *as, unsigned long iova,
- 	struct tegra_smmu *smmu = as->smmu;
- 	u32 *pd = page_address(as->pd);
- 	unsigned long offset = pd_index * sizeof(*pd);
-+	bool unmap = false;
-+
-+	/*
-+	 * XXX Move this outside of this function. Perhaps add a struct
-+	 * iommu_domain parameter to ->{get,put}_resv_regions() so that
-+	 * the mapping can be done there.
-+	 *
-+	 * The problem here is that as->smmu is only known once we attach
-+	 * the domain to a device (because then we look up the right SMMU
-+	 * instance via the dev->archdata.iommu pointer). When the direct
-+	 * mappings are created for reserved regions, the domain has not
-+	 * been attached to a device yet, so we don't know. We currently
-+	 * fix that up in ->apply_resv_regions() because that is the first
-+	 * time where we have access to a struct device that will be used
-+	 * with the IOMMU domain. However, that's asymmetric and doesn't
-+	 * take care of the page directory mapping either, so we need to
-+	 * come up with something better.
-+	 */
-+	if (WARN_ON_ONCE(as->pd_dma == 0)) {
-+		as->pd_dma = dma_map_page(smmu->dev, as->pd, 0, SMMU_SIZE_PD,
-+					  DMA_TO_DEVICE);
-+		if (dma_mapping_error(smmu->dev, as->pd_dma))
-+			return;
-+
-+		if (!smmu_dma_addr_valid(smmu, as->pd_dma)) {
-+			dma_unmap_page(smmu->dev, as->pd_dma, SMMU_SIZE_PD,
-+				       DMA_TO_DEVICE);
-+			return;
-+		}
-+
-+		unmap = true;
-+	}
+ 	as = kzalloc(sizeof(*as), GFP_KERNEL);
+@@ -287,25 +290,16 @@ static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
+ 	as->attr = SMMU_PD_READABLE | SMMU_PD_WRITABLE | SMMU_PD_NONSECURE;
  
- 	/* Set the page directory entry first */
- 	pd[pd_index] = value;
-@@ -546,6 +580,12 @@ static void tegra_smmu_set_pde(struct tegra_smmu_as *as, unsigned long iova,
- 	smmu_flush_ptc(smmu, as->pd_dma, offset);
- 	smmu_flush_tlb_section(smmu, as->id, iova);
- 	smmu_flush(smmu);
+ 	as->pd = alloc_page(GFP_KERNEL | __GFP_DMA | __GFP_ZERO);
+-	if (!as->pd) {
+-		kfree(as);
+-		return NULL;
+-	}
++	if (!as->pd)
++		goto free_as;
+ 
+ 	as->count = kcalloc(SMMU_NUM_PDE, sizeof(u32), GFP_KERNEL);
+-	if (!as->count) {
+-		__free_page(as->pd);
+-		kfree(as);
+-		return NULL;
+-	}
++	if (!as->count)
++		goto free_pd_range;
+ 
+ 	as->pts = kcalloc(SMMU_NUM_PDE, sizeof(*as->pts), GFP_KERNEL);
+-	if (!as->pts) {
+-		kfree(as->count);
+-		__free_page(as->pd);
+-		kfree(as);
+-		return NULL;
+-	}
++	if (!as->pts)
++		goto free_pts;
+ 
+ 	spin_lock_init(&as->lock);
+ 
+@@ -315,6 +309,15 @@ static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
+ 	as->domain.geometry.force_aperture = true;
+ 
+ 	return &as->domain;
 +
-+	if (unmap) {
-+		dma_unmap_page(smmu->dev, as->pd_dma, SMMU_SIZE_PD,
-+			       DMA_TO_DEVICE);
-+		as->pd_dma = 0;
-+	}
++free_pts:
++	kfree(as->pts);
++free_pd_range:
++	__free_page(as->pd);
++free_as:
++	kfree(as);
++
++	return NULL;
  }
  
- static u32 *tegra_smmu_pte_offset(struct page *pt_page, unsigned long iova)
-@@ -846,7 +886,6 @@ static struct iommu_device *tegra_smmu_probe_device(struct device *dev)
- 		smmu = tegra_smmu_find(args.np);
- 		if (smmu) {
- 			err = tegra_smmu_configure(smmu, dev, &args);
--
- 			if (err < 0) {
- 				of_node_put(args.np);
- 				return ERR_PTR(err);
-@@ -864,7 +903,9 @@ static struct iommu_device *tegra_smmu_probe_device(struct device *dev)
- 	return &smmu->iommu;
- }
- 
--static void tegra_smmu_release_device(struct device *dev) {}
-+static void tegra_smmu_release_device(struct device *dev)
-+{
-+}
- 
- static const struct tegra_smmu_group_soc *
- tegra_smmu_find_group(struct tegra_smmu *smmu, unsigned int swgroup)
-@@ -968,6 +1009,8 @@ static const struct iommu_ops tegra_smmu_ops = {
+ static void tegra_smmu_domain_free(struct iommu_domain *domain)
+@@ -1009,7 +1012,7 @@ static const struct iommu_ops tegra_smmu_ops = {
  	.probe_device = tegra_smmu_probe_device,
  	.release_device = tegra_smmu_release_device,
  	.device_group = tegra_smmu_device_group,
-+	.get_resv_regions = of_iommu_get_resv_regions,
-+	.put_resv_regions = generic_iommu_put_resv_regions,
+-	.get_resv_regions = of_iommu_get_resv_regions,
++	.get_resv_regions = iommu_dma_get_resv_regions,
+ 	.put_resv_regions = generic_iommu_put_resv_regions,
  	.of_xlate = tegra_smmu_of_xlate,
  	.pgsize_bitmap = SZ_4K,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
 -- 
 2.36.1
 
