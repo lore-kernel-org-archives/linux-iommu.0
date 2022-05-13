@@ -1,82 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 926CCC433EF
-	for <iommu@archiver.kernel.org>; Fri, 13 May 2022 23:14:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EA774C433F5
+	for <iommu@archiver.kernel.org>; Fri, 13 May 2022 23:42:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 1705540420;
-	Fri, 13 May 2022 23:14:28 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 70CA760BDB;
+	Fri, 13 May 2022 23:42:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7KLaYWUwte1Z; Fri, 13 May 2022 23:14:26 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vS6liUnlK7td; Fri, 13 May 2022 23:42:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id E1E5F40235;
-	Fri, 13 May 2022 23:14:25 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 31A7360BB2;
+	Fri, 13 May 2022 23:42:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B9CCAC0032;
-	Fri, 13 May 2022 23:14:25 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 497B8C002D
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 23:14:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0746BC0032;
+	Fri, 13 May 2022 23:42:09 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5C204C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 23:42:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 2886283E96
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 23:14:24 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 35A1C60BCD
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 23:42:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gzK9Kz4kAnq4 for <iommu@lists.linux-foundation.org>;
- Fri, 13 May 2022 23:14:23 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id fcLjarXqPBtl for <iommu@lists.linux-foundation.org>;
+ Fri, 13 May 2022 23:42:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by smtp1.osuosl.org (Postfix) with ESMTPS id EA5A482849
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 23:14:22 +0000 (UTC)
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 4922860BB2
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 23:42:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1652483662; x=1684019662;
+ t=1652485327; x=1684021327;
  h=date:from:to:cc:subject:message-id:references:
  mime-version:in-reply-to;
- bh=+wjfqOqIYe6TZTMHFU68r4+WktU+l0Y6oPd5aHItbaM=;
- b=LmpkmlaRZMlYWmEKReMaZJBxJrFOmFxq46JAXeiHl5prp6A/b/QwTFYA
- 9V/GKuc9thnUCvH5FIrr6NeBgAycESwwebjv7FhYzhUzUudrrc1XHEorn
- YI/s7qwa0DYFA3IBsvGWou6q9xA0KqvP2Ba+GplOlsmAczdn883ISV28r
- +v1znY8NWWKwpp3zkT9zzEmO8KM3K+YR1CPWTh7S+3wLIVCigDru2oRF8
- pzdUh7vIKsvGa/SyG6d5mq4Sl3Jr2V+23BTkXQAhs2t+QX3t5OjB8cIup
- OriFbMALHjg0eTkHYtihi3ObpsGSm196Ys3HXuM3ZynA4ZAyrzAKXPGuF g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="333465800"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="333465800"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
- by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 13 May 2022 16:14:19 -0700
+ bh=l9BUQ0IAZJ5rrqEJ/wlo5FNsSwI6FBi8qNsQPZI+Uzg=;
+ b=WtpuFRxkUJzwL4OynZnDn8HtOPiQ+6Cfl4/O8VGXAfpBbS1FY8HzF+q5
+ u82RvuXlllre3ZugldLT6/+1ddVdlElelm131i1QmzOm0CyUbwFR/S0yv
+ nxlO1PjmN1TwJt0yvLW6OhNzse/bOBkVdc974xrGecz6MQICLYx7M9hD9
+ vXWfEHh1OOdp0XMS/0fPrnYsbLl1ziRSAU41lDnPrk33GCLhmRc2JrUam
+ qFypY+5ATI1TYxJDkkaHVtV+Zc+cfZQlCcRf9zJIEh6UtZdmlEo+cZdNk
+ sQTESxtVeaAQOwmWfsQzFipjS1fahkbiwhvr3QXe3WpYdr2rKCA2gBs7M Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="356859679"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="356859679"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 13 May 2022 16:42:06 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="815594245"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="625093273"
 Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
- by fmsmga006.fm.intel.com with ESMTP; 13 May 2022 16:14:19 -0700
-Date: Fri, 13 May 2022 16:17:54 -0700
+ by fmsmga008.fm.intel.com with ESMTP; 13 May 2022 16:42:06 -0700
+Date: Fri, 13 May 2022 16:45:42 -0700
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To: Nicholas Piggin <npiggin@gmail.com>
-Subject: Re: [PATCH v6 24/29] watchdog/hardlockup: Use parse_option_str() to
- handle "nmi_watchdog"
-Message-ID: <20220513231754.GB9074@ranerica-svr.sc.intel.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v6 05/29] x86/apic/vector: Do not allocate vectors for NMIs
+Message-ID: <20220513234542.GC9074@ranerica-svr.sc.intel.com>
 References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-25-ricardo.neri-calderon@linux.intel.com>
- <1652179333.fnu2fjiffn.astroid@bobo.none>
+ <20220506000008.30892-6-ricardo.neri-calderon@linux.intel.com>
+ <87zgjufjrf.ffs@tglx>
+ <20220513180320.GA22683@ranerica-svr.sc.intel.com>
+ <87v8u9rwce.ffs@tglx>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1652179333.fnu2fjiffn.astroid@bobo.none>
+In-Reply-To: <87v8u9rwce.ffs@tglx>
 User-Agent: Mutt/1.9.4 (2018-02-28)
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
  Andi Kleen <ak@linux.intel.com>, linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
- linux-kernel@vger.kernel.org, Stephane Eranian <eranian@google.com>,
- Ricardo Neri <ricardo.neri@intel.com>, iommu@lists.linux-foundation.org,
- Tony Luck <tony.luck@intel.com>, Thomas Gleixner <tglx@linutronix.de>,
- David Woodhouse <dwmw2@infradead.org>,
- Andrew Morton <akpm@linux-foundation.org>
+ Ricardo Neri <ricardo.neri@intel.com>, Stephane Eranian <eranian@google.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Tony Luck <tony.luck@intel.com>, Nicholas Piggin <npiggin@gmail.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,29 +93,131 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, May 10, 2022 at 08:46:41PM +1000, Nicholas Piggin wrote:
-> Excerpts from Ricardo Neri's message of May 6, 2022 10:00 am:
-> > Prepare hardlockup_panic_setup() to handle a comma-separated list of
-> > options. Thus, it can continue parsing its own command-line options while
-> > ignoring parameters that are relevant only to specific implementations of
-> > the hardlockup detector. Such implementations may use an early_param to
-> > parse their own options.
+On Fri, May 13, 2022 at 10:50:09PM +0200, Thomas Gleixner wrote:
+> On Fri, May 13 2022 at 11:03, Ricardo Neri wrote:
+> > On Fri, May 06, 2022 at 11:12:20PM +0200, Thomas Gleixner wrote:
+> >> Why would a NMI ever end up in this code? There is no vector management
+> >> required and this find cpu exercise is pointless.
+> >
+> > But even if the NMI has a fixed vector, it is still necessary to determine
+> > which CPU will get the NMI. It is still necessary to determine what to
+> > write in the Destination ID field of the MSI message.
+> >
+> > irq_matrix_find_best_cpu() would find the CPU with the lowest number of
+> > managed vectors so that the NMI is directed to that CPU. 
 > 
-> It can't really handle comma separated list though, until the next
-> patch. nmi_watchdog=panic,0 does not make sense, so you lost error
-> handling of that.
+> What's the point to send it to the CPU with the lowest number of
+> interrupts. It's not that this NMI happens every 50 microseconds.
+> We pick one online CPU and are done.
 
-Yes that is true. All possible combinations need to be checked.
+Indeed, that is sensible.
 
 > 
-> And is it kosher to double handle options like this? I'm sure it
-> happens but it's ugly.
+> > In today's code, an NMI would end up here because we rely on the existing
+> > interrupt management infrastructure... Unless, the check is done the entry
+> > points as you propose.
 > 
-> Would you consider just add a new option for x86 and avoid changing
-> this? Less code and patches.
+> Correct. We don't want to call into functions which are not designed for
+> NMIs.
 
-Sure, I can not modify this code and add a x86-specific command-line
-option.
+Agreed.
+
+>  
+> >> > +
+> >> > +	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI) {
+> >> > +		cpu = irq_matrix_find_best_cpu_managed(vector_matrix, dest);
+> >> > +		apicd->cpu = cpu;
+> >> > +		vector = 0;
+> >> > +		goto no_vector;
+> >> > +	}
+> >> 
+> >> This code can never be reached for a NMI delivery. If so, then it's a
+> >> bug.
+> >> 
+> >> This all is special purpose for that particular HPET NMI watchdog use
+> >> case and we are not exposing this to anything else at all.
+> >> 
+> >> So why are you sprinkling this NMI nonsense all over the place? Just
+> >> because? There are well defined entry points to all of this where this
+> >> can be fenced off.
+> >
+> > I put the NMI checks in these points because assign_vector_locked() and
+> > assign_managed_vector() are reached through multiple paths and these are
+> > the two places where the allocation of the vector is requested and the
+> > destination CPU is determined.
+> >
+> > I do observe this code being reached for an NMI, but that is because this
+> > code still does not know about NMIs... Unless the checks for NMI are put
+> > in the entry points as you pointed out.
+> >
+> > The intent was to refactor the code in a generic manner and not to focus
+> > only in the NMI watchdog. That would have looked hacky IMO.
+> 
+> We don't want to have more of this really. Supporting NMIs on x86 in a
+> broader way is simply not reasonable because there is only one NMI
+> vector and we have no sensible way to get to the cause of the NMI
+> without a massive overhead.
+> 
+> Even if we get multiple NMI vectors some shiny day, this will be
+> fundamentally different than regular interrupts and certainly not
+> exposed broadly. There will be 99.99% fixed vectors for simplicity sake.
+
+Understood.
+
+> 
+> >> +		if (info->flags & X86_IRQ_ALLOC_AS_NMI) {
+> >> +			/*
+> >> +			 * NMIs have a fixed vector and need their own
+> >> +			 * interrupt chip so nothing can end up in the
+> >> +			 * regular local APIC management code except the
+> >> +			 * MSI message composing callback.
+> >> +			 */
+> >> +			irqd->chip = &lapic_nmi_controller;
+> >> +			/*
+> >> +			 * Don't allow affinity setting attempts for NMIs.
+> >> +			 * This cannot work with the regular affinity
+> >> +			 * mechanisms and for the intended HPET NMI
+> >> +			 * watchdog use case it's not required.
+> >
+> > But we do need the ability to set affinity, right? As stated above, we need
+> > to know what Destination ID to write in the MSI message or in the interrupt
+> > remapping table entry.
+> >
+> > It cannot be any CPU because only one specific CPU is supposed to handle the
+> > NMI from the HPET channel.
+> >
+> > We cannot hard-code a CPU for that because it may go offline (and ignore NMIs)
+> > or not be part of the monitored CPUs.
+> >
+> > Also, if lapic_nmi_controller.irq_set_affinity() is NULL, then irq_chips
+> > INTEL-IR, AMD-IR, those using msi_domain_set_affinity() need to check for NULL.
+> > They currently unconditionally call the parent irq_chip's irq_set_affinity().
+> > I see that there is a irq_chip_set_affinity_parent() function. Perhaps it can
+> > be used for this check?
+> 
+> Yes, this lacks obviously a NMI specific set_affinity callback and this
+> can be very trivial and does not have any of the complexity of interrupt
+> affinity assignment. First online CPU in the mask with a fallback to any
+> online CPU.
+
+Why would we need a fallback to any online CPU? Shouldn't it fail if it cannot
+find an online CPU in the mask?
+
+> 
+> I did not claim that this is complete. This was for illustration.
+
+In the reworked patch, may I add a Co-developed-by with your name and your SOB?
+
+> 
+> >> +			 */
+> >> +			irqd_set_no_balance(irqd);
+> >
+> > This code does not set apicd->hw_irq_cfg.delivery_mode as NMI, right?
+> > I had to add that to make it work.
+> 
+> I assumed you can figure that out on your own :)
+
+:)
 
 Thanks and BR,
 Ricardo
