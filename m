@@ -1,122 +1,72 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 77F98C433F5
-	for <iommu@archiver.kernel.org>; Fri, 13 May 2022 03:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6A641C433EF
+	for <iommu@archiver.kernel.org>; Fri, 13 May 2022 04:38:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 21743405B2;
-	Fri, 13 May 2022 03:59:40 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0E4A2605B3;
+	Fri, 13 May 2022 04:38:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2AwnGCJC4yaF; Fri, 13 May 2022 03:59:39 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id CA20D40141;
-	Fri, 13 May 2022 03:59:38 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id sM_mTbBOCUhP; Fri, 13 May 2022 04:38:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id A194A60BB1;
+	Fri, 13 May 2022 04:38:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 92470C0039;
-	Fri, 13 May 2022 03:59:38 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9801AC002D
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 03:59:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 72597C0032;
+	Fri, 13 May 2022 04:38:09 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6EF42C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 04:38:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 856A7405AA
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 03:59:37 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 48089405B2
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 04:38:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JjMpW8RauTad for <iommu@lists.linux-foundation.org>;
- Fri, 13 May 2022 03:59:36 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam12on20600.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:fe5b::600])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 4DB0E40141
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 03:59:36 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LIjsiR/MrdPeyWg6VkRaQT8ruEt3C6RGxHccxNRSuL8dZto9ATyIUcmp8G85NBod/DaWHNe9f75A03unHGlef0B6kzifkcZJlmyWxJc7L7NiXZeMXpXifacNSmm+SAluNY+dQFpHbsBNY/rg42X1gQI7VuQP3ftzW27WqpML1XsQ0cBT0T4CBzKan54cMJpogmC6Kbif5NvlWUXptNzWmNhh4SUO/FIGCdgdCACrUPhQbZY7etOvPCmVCbu25UXWfb3wGT9Dhn2jyKRlg/yRZh7LBnJQt/69HMhWgvC2RHBhZJLexm13oH8WtGL36ygs3FXPWI4HstxhznnsKC+cVw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3TzbrdRij8brRYiVqlrFh+4FgBMF+cKMYJexVYxCrUQ=;
- b=I4ktWSemdAgBNiGFkn+KrzJ5biFpM7/hxThhBbBr/8ckCvG/OoRbA0Ds3ipkEr3i8WMvwK9hb8Z2wreY7B3ZjzhpzKF/FGg5crx070CLbuLc+r6oDD8S23Ct85NzBEsmGeyGoU6dulUtIWKeyS3l9iVmkCPuIefo+K6IfFgZp+b/AMTM/mIIAuiYYZPIToWwt/ITKk4YWf+N+sxRMgmhlkx+pKfw5EY/ndcMMkWTT/NsbI3eF6sOZ7KFJg9IX7aW9Kfag9FN9dtI1EvTS2Y8/JNDpDgSVPOpR3s15uHEKqabd/YAL/R3JmmONAvHEc9jeCXchH3r4nkqKM8vhWYFJw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3TzbrdRij8brRYiVqlrFh+4FgBMF+cKMYJexVYxCrUQ=;
- b=QiJKPw6aNO9OU+IPi0QRaRM6kOefA2nJYLBXaO9lIQrN59chFGpdHKwQcZ3wUCHvfxgSx65sqG50n6TrIzWgWiqJli/JHVOiLlzeAPkYjBBOj0neIeH46KaQuxPr3ls2xZakuYFPYnSoyN4sAJtzGBbLfLoF4LhfVlJU6IyFt/dWgiYB+HNRypFDt1b5lq/YcI4FKjRJD7k6Bgpp4wLe7nivf6DEzA/pXWLiWMefsW8XIZ3y9oXpExlpBPOGauT3G+lDb3ea/OgQkiyBnnEXRbcl5l/5mBblFqJUVuUP8nhxjGqJdZaeuwFiBh2eY9ezPvdAbjNixNSu2zfcusK1oQ==
-Received: from MW2PR16CA0071.namprd16.prod.outlook.com (2603:10b6:907:1::48)
- by BY5PR12MB4033.namprd12.prod.outlook.com (2603:10b6:a03:213::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Fri, 13 May
- 2022 03:59:32 +0000
-Received: from CO1NAM11FT023.eop-nam11.prod.protection.outlook.com
- (2603:10b6:907:1:cafe::9e) by MW2PR16CA0071.outlook.office365.com
- (2603:10b6:907:1::48) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.14 via Frontend
- Transport; Fri, 13 May 2022 03:59:32 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- CO1NAM11FT023.mail.protection.outlook.com (10.13.175.35) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5250.13 via Frontend Transport; Fri, 13 May 2022 03:59:31 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32;
- Fri, 13 May 2022 03:59:31 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 12 May
- 2022 20:59:30 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22 via Frontend
- Transport; Thu, 12 May 2022 20:59:29 -0700
-Date: Thu, 12 May 2022 20:59:28 -0700
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH] iommu/vt-d: Try info->iommu in device_to_iommu()
-Message-ID: <Yn3XoLa0h/IbQMMM@Asurada-Nvidia>
-References: <20220513003233.4442-1-nicolinc@nvidia.com>
- <6da2adf4-6717-b562-5ee3-7e28447aa65b@linux.intel.com>
+ with ESMTP id PJMjd8FhYwLL for <iommu@lists.linux-foundation.org>;
+ Fri, 13 May 2022 04:38:07 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A983540141
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 04:38:06 +0000 (UTC)
+Received: by gandalf.ozlabs.org (Postfix, from userid 1007)
+ id 4Kzwqv0TPlz4xXS; Fri, 13 May 2022 14:38:03 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=gibson.dropbear.id.au; s=201602; t=1652416683;
+ bh=Dide6YGka/WEbbI7qkCikEDumjdcUQqTdjc8o2b9uDE=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=H1kI0XQLM/Sb4ihByK8TZMXnmimBQ+jx+hgehQpnCus1Tf3RvX5bfOEL1Z1dYIFiU
+ 2NoeFTEdMFEmKSP5ns3mFibv3WWXV9rYmsfqwMCOTCs8cXfaGlFpr+H/mktDYpK5Du
+ oSU/FRiPAZAdDOUyOWzSATiaZM6OIiHRx+fVs8I0=
+Date: Fri, 13 May 2022 14:35:46 +1000
+From: David Gibson <david@gibson.dropbear.id.au>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH RFC 11/12] iommufd: vfio container FD ioctl compatibility
+Message-ID: <Yn3gIiGLyHB/5kN4@yekko>
+References: <20220429124838.GW8364@nvidia.com> <Ym+IfTvdD2zS6j4G@yekko>
+ <20220505190728.GV49344@nvidia.com> <YnSxL5KxwJvQzd2Q@yekko>
+ <20220506124837.GB49344@nvidia.com> <YniuUMCBjy0BaJC6@yekko>
+ <20220509140041.GK49344@nvidia.com> <YnoQREfceIoLATDA@yekko>
+ <20220510190009.GO49344@nvidia.com>
+ <BN9PR11MB52765D95C6172ABE43E236A38CC89@BN9PR11MB5276.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <6da2adf4-6717-b562-5ee3-7e28447aa65b@linux.intel.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d155da44-7aeb-45ad-ce7d-08da3494fc51
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4033:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB40338F4C6169DF8E62564CB3ABCA9@BY5PR12MB4033.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8sfNpbBUqNEllMjNCxnMxgVGsnzaKY0ZV8YAyDpMOyKGSadCJWgb+F1ELb3sNfw3W5KjIIe6YMe9x0ecTYbr2apZM7IaDBFYY76j6X32JoLjwWwFOgXdDDyZFnauSvNDW3uPMpuVc2PF8icMUGgLR/RRHnGn6hw6nBiq6swKuOmBw43e4Fsyp8YGHI1aAmmPtV4kSb65O+aLerTJrMk5YpBc33tXY/UiA0M0oRqIiftdMOFxSNARehMBOgRCMGSGs6ZX0eQy/JAiFKn1SmjHbrcNonfd22PpdFbfGdBNpDPhFs8KLMp6QWzRus8PCHrAq6BzXAYPcW2nf41pfBIDYY5vP+48PhIaJf7NkZkTFn3fD9/w9TiA4lCUWtCPWAukRVSag38i1bqgereXmfL1GNAqwj+ZOXslOrPF7FMLceSAW2/SNiXyOKHRp5T2AHQTeK+wwkzZJ9a+TnC06BL1RPSUJE51XHS/YuvCu7wizSoDbfBDofUTUR+jg0MmfxEP7UlJsgrkdCVseSM2ba3hDlIoHmD11/32Qz05efx5OluQIkJ1grhAMFBujrGKVyqb1u+H8oS9MVj9pqxjOkBejqygP2bigVchry9M0F+bQbt277lxTvsS07dHhGLytzc0ZVq9IUMavX6hRP8gVV5NYJVh+6seH8j0cZITDa1+wto3Xanb5TK/xQRGZD9gkqjxxs3YBlLc3oDQKGbQ+3wncw==
-X-Forefront-Antispam-Report: CIP:12.22.5.238; CTRY:US; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:InfoNoRecords; CAT:NONE;
- SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(186003)(5660300002)(6916009)(26005)(86362001)(81166007)(4326008)(82310400005)(70206006)(70586007)(53546011)(356005)(316002)(9686003)(47076005)(336012)(426003)(54906003)(83380400001)(55016003)(33716001)(8936002)(8676002)(508600001)(40460700003)(2906002)(36860700001)(36900700001);
- DIR:OUT; SFP:1101; 
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2022 03:59:31.8120 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d155da44-7aeb-45ad-ce7d-08da3494fc51
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[12.22.5.238];
- Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT023.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4033
-Cc: dwmw2@infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, jgg@nvidia.com, will@kernel.org
+In-Reply-To: <BN9PR11MB52765D95C6172ABE43E236A38CC89@BN9PR11MB5276.namprd11.prod.outlook.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Daniel Jordan <daniel.m.jordan@oracle.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ "Martins, Joao" <joao.m.martins@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -129,59 +79,243 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Nicolin Chen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Nicolin Chen <nicolinc@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============6556809058806159849=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, May 13, 2022 at 11:32:11AM +0800, Baolu Lu wrote:
-> External email: Use caution opening links or attachments
-> 
-> 
-> On 2022/5/13 08:32, Nicolin Chen wrote:
-> > Local boot test and VFIO sanity test show that info->iommu can be
-> > used in device_to_iommu() as a fast path. So this patch adds it.
-> > 
-> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> > ---
-> >   drivers/iommu/intel/iommu.c | 5 +++++
-> >   1 file changed, 5 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> > index 2990f80c5e08..412fca5ab9cd 100644
-> > --- a/drivers/iommu/intel/iommu.c
-> > +++ b/drivers/iommu/intel/iommu.c
-> > @@ -777,6 +777,7 @@ static bool iommu_is_dummy(struct intel_iommu *iommu, struct device *dev)
-> >   struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn)
-> >   {
-> >       struct dmar_drhd_unit *drhd = NULL;
-> > +     struct device_domain_info *info;
-> >       struct pci_dev *pdev = NULL;
-> >       struct intel_iommu *iommu;
-> >       struct device *tmp;
-> > @@ -786,6 +787,10 @@ struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn)
-> >       if (!dev)
-> >               return NULL;
-> > 
-> > +     info = dev_iommu_priv_get(dev);
-> > +     if (info)
-> > +             return info->iommu;
-> 
-> device_to_iommu() also returns device source id (@bus, @devfn).
-> 
-> Perhaps, we can make device_to_iommu() only for probe_device() where the
-> per-device info data is not initialized yet. After probe_device(), iommu
-> and sid are retrieved through other helpers by looking up the device
-> info directly?
 
-That should work I think. I was just not sure when the priv
-could be unset. But it seems that you have cleaned up those
-places other than probe/release_device() in recent version :)
+--===============6556809058806159849==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="idTOIBXnjRvzu8WC"
+Content-Disposition: inline
 
-Nic
+
+--idTOIBXnjRvzu8WC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, May 11, 2022 at 03:15:22AM +0000, Tian, Kevin wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Wednesday, May 11, 2022 3:00 AM
+> >=20
+> > On Tue, May 10, 2022 at 05:12:04PM +1000, David Gibson wrote:
+> > > Ok... here's a revised version of my proposal which I think addresses
+> > > your concerns and simplfies things.
+> > >
+> > > - No new operations, but IOAS_MAP gets some new flags (and IOAS_COPY
+> > >   will probably need matching changes)
+> > >
+> > > - By default the IOVA given to IOAS_MAP is a hint only, and the IOVA
+> > >   is chosen by the kernel within the aperture(s).  This is closer to
+> > >   how mmap() operates, and DPDK and similar shouldn't care about
+> > >   having specific IOVAs, even at the individual mapping level.
+> > >
+> > > - IOAS_MAP gets an IOMAP_FIXED flag, analagous to mmap()'s MAP_FIXED,
+> > >   for when you really do want to control the IOVA (qemu, maybe some
+> > >   special userspace driver cases)
+> >=20
+> > We already did both of these, the flag is called
+> > IOMMU_IOAS_MAP_FIXED_IOVA - if it is not specified then kernel will
+> > select the IOVA internally.
+> >=20
+> > > - ATTACH will fail if the new device would shrink the aperture to
+> > >   exclude any already established mappings (I assume this is already
+> > >   the case)
+> >=20
+> > Yes
+> >=20
+> > > - IOAS_MAP gets an IOMAP_RESERVE flag, which operates a bit like a
+> > >   PROT_NONE mmap().  It reserves that IOVA space, so other (non-FIXED)
+> > >   MAPs won't use it, but doesn't actually put anything into the IO
+> > >   pagetables.
+> > >     - Like a regular mapping, ATTACHes that are incompatible with an
+> > >       IOMAP_RESERVEed region will fail
+> > >     - An IOMAP_RESERVEed area can be overmapped with an IOMAP_FIXED
+> > >       mapping
+> >=20
+> > Yeah, this seems OK, I'm thinking a new API might make sense because
+> > you don't really want mmap replacement semantics but a permanent
+> > record of what IOVA must always be valid.
+> >=20
+> > IOMMU_IOA_REQUIRE_IOVA perhaps, similar signature to
+> > IOMMUFD_CMD_IOAS_IOVA_RANGES:
+> >=20
+> > struct iommu_ioas_require_iova {
+> >         __u32 size;
+> >         __u32 ioas_id;
+> >         __u32 num_iovas;
+> >         __u32 __reserved;
+> >         struct iommu_required_iovas {
+> >                 __aligned_u64 start;
+> >                 __aligned_u64 last;
+> >         } required_iovas[];
+> > };
+>=20
+> As a permanent record do we want to enforce that once the required
+> range list is set all FIXED and non-FIXED allocations must be within the
+> list of ranges?
+
+No, I don't think so.  In fact the way I was envisaging this,
+non-FIXED mappings will *never* go into the reserved ranges.  This is
+for the benefit of any use cases that need both mappings where they
+don't care about the IOVA and those which do.
+
+Essentially, reserving a region here is saying to the kernel "I want
+to manage this IOVA space; make sure nothing else touches it".  That
+means both that the kernel must disallow any hw associated changes
+(like ATTACH) which would impinge on the reserved region, and also any
+IOVA allocations that would take parts away from that space.
+
+Whether we want to restrict FIXED mappings to the reserved regions is
+an interesting question.  I wasn't thinking that would be necessary
+(just as you can use mmap() MAP_FIXED anywhere).  However.. much as
+MAP_FIXED is very dangerous to use if you don't previously reserve
+address space, I think IOMAP_FIXED is dangerous if you haven't
+previously reserved space.  So maybe it would make sense to only allow
+FIXED mappings within reserved regions.
+
+Strictly dividing the IOVA space into kernel managed and user managed
+regions does make a certain amount of sense.
+
+> If yes we can take the end of the last range as the max size of the iova
+> address space to optimize the page table layout.
+>=20
+> otherwise we may need another dedicated hint for that optimization.
+
+Right.  With the revised model where reserving windows is optional,
+not required, I don't think we can quite re-use this for optimization
+hints.  Which is a bit unfortunate.
+
+I can't immediately see a way to tweak this which handles both more
+neatly, but I like the idea if we can figure out a way.
+
+> > > So, for DPDK the sequence would be:
+> > >
+> > > 1. Create IOAS
+> > > 2. ATTACH devices
+> > > 3. IOAS_MAP some stuff
+> > > 4. Do DMA with the IOVAs that IOAS_MAP returned
+> > >
+> > > (Note, not even any need for QUERY in simple cases)
+> >=20
+> > Yes, this is done already
+> >=20
+> > > For (unoptimized) qemu it would be:
+> > >
+> > > 1. Create IOAS
+> > > 2. IOAS_MAP(IOMAP_FIXED|IOMAP_RESERVE) the valid IOVA regions of
+> > the
+> > >    guest platform
+> > > 3. ATTACH devices (this will fail if they're not compatible with the
+> > >    reserved IOVA regions)
+> > > 4. Boot the guest
+>=20
+> I suppose above is only the sample flow for PPC vIOMMU. For non-PPC
+> vIOMMUs regular mappings are required before booting the guest and
+> reservation might be done but not mandatory (at least not what current
+> Qemu vfio can afford as it simply replays valid ranges in the CPU address
+> space).
+
+That was a somewhat simplified description.  When we look in more
+detail, I think the ppc and x86 models become more similar.  So, in
+more detail, I think it would look like this:
+
+1. Create base IOAS
+2. Map guest memory into base IOAS so that IOVA=3D=3DGPA
+3. Create IOASes for each vIOMMU domain
+4. Reserve windows in domain IOASes where the vIOMMU will allow
+   mappings by default
+5. ATTACH devices to appropriate IOASes (***)
+6. Boot the guest
+
+  On guest map/invalidate:
+        Use IOAS_COPY to take mappings from base IOAS and put them
+	into the domain IOAS
+  On memory hotplug:
+        IOAS_MAP new memory block into base IOAS
+  On dev hotplug: (***)
+        ATTACH devices to appropriate IOAS
+  On guest reconfiguration of vIOMMU domains (x86 only):
+        DETACH device from base IOAS, attach to vIOMMU domain IOAS
+  On guest reconfiguration of vIOMMU apertures (ppc only):
+        Alter reserved regions to match vIOMMU
+
+The difference between ppc and x86 is at the places marked (***):
+which IOAS each device gets attached to and when. For x86 all devices
+live in the base IOAS by default, and only get moved to domain IOASes
+when those domains are set up in the vIOMMU.  For POWER each device
+starts in a domain IOAS based on its guest PE, and never moves.
+
+[This is still a bit simplified.  In practice, I imagine you'd
+ optimize to only create the domain IOASes at the point
+ they're needed - on boot for ppc, but only when the vIOMMU is
+ configured for x86.  I don't think that really changes the model,
+ though.]
+
+A few aspects of the model interact quite nicely here.  Mapping a
+large memory guest with IOVA=3D=3DGPA would probably fail on a ppc host
+IOMMU.  But if both guest and host are ppc, then no devices get
+attached to that base IOAS, so its apertures don't get restricted by
+the host hardware.  That way we get a common model, and the benefits
+of GUP sharing via IOAS_COPY, without it failing in the ppc-on-ppc
+case.
+
+x86-on-ppc and ppc-on-x86 will probably only work in limited cases
+where the various sizes and windows line up, but the possibility isn't
+precluded by the model or interfaces.
+
+> > >   (on guest map/invalidate) -> IOAS_MAP(IOMAP_FIXED) to overmap part
+> > of
+> > >                                the reserved regions
+> > >   (on dev hotplug) -> ATTACH (which might fail, if it conflicts with =
+the
+> > >                       reserved regions)
+> > >   (on vIOMMU reconfiguration) -> UNMAP/MAP reserved regions as
+> > >                                  necessary (which might fail)
+> >=20
+> > OK, I will take care of it
+> >=20
+> > Thanks,
+> > Jason
+>=20
+
+--=20
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
+
+--idTOIBXnjRvzu8WC
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEoULxWu4/Ws0dB+XtgypY4gEwYSIFAmJ94BsACgkQgypY4gEw
+YSLK1hAAuRtE44lGB/3a85CJaQgS6UYt1HgVR941flEFi3XvsVP4yrxTYgy6gKrC
+/BHwoAptrle09axXsaLGlaUOA4C/MaI5c6SdDV86NMGQYAdi2UtZieewDrDAHv8F
+lxU8OtI6AMvuBFclkupUsYYJZSb7MXZoCLHsdc9FbWMWHQqXNCrcE1AF69+vOaNB
+rBWmYtZ05+VGp8Qv0MgcHPY3JVToPUxyy53pbJ39jn9nLuDRzRmeP1fkbXhxB7Xr
++KdT08+TR/xN83fjUOSQcGejTAoCNH9oRdfrax42Y56VibiUkwjcaTpI4ViVv6nc
+W3Mt16MwGKI6rq8a3f1M3RywofSowvgpSTgCDeD6gcNhns09Sr178aj6Rx2U7QYF
+MITCzU0gSDI4zqAXrmAblmXmWy8GXg9Cng7NKczklafMwnTlS7eCJso4E983HNwT
+FTtMFOJXiG/b09MuFeqrz3mtfNXBGAdMSktzZhTRWaJxdoPRaRdtl9bCImvIWrHm
+7rkP7eB16UF+M4YjZdS827tSQmrOES0dn2h6IaJGdBPLTNOYruhTEEJt9jPd79j9
+myRbQQUUloTnp0AGb7gcOunZZM/cxSqSPt+Jf1WoBMQvSC6rLtdXYGjcY4bUXLxs
+TVTurHRMI7EmTWWCC0AwA9j+bbOP35Xu/TMfUZH3GSXZLrqsp+0=
+=/Uho
+-----END PGP SIGNATURE-----
+
+--idTOIBXnjRvzu8WC--
+
+--===============6556809058806159849==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============6556809058806159849==--
