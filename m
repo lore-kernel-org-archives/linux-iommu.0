@@ -4,122 +4,90 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C5DFDC433EF
-	for <iommu@archiver.kernel.org>; Fri, 13 May 2022 16:48:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1C783C433EF
+	for <iommu@archiver.kernel.org>; Fri, 13 May 2022 17:26:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 54C0C81C93;
-	Fri, 13 May 2022 16:48:51 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id B10958126C;
+	Fri, 13 May 2022 17:26:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CCcXbhhg7kgz; Fri, 13 May 2022 16:48:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 2AF2881D19;
-	Fri, 13 May 2022 16:48:50 +0000 (UTC)
+	with ESMTP id cupX9pAaAdc3; Fri, 13 May 2022 17:26:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 8476C8126A;
+	Fri, 13 May 2022 17:26:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 10794C0039;
-	Fri, 13 May 2022 16:48:50 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6A369C002D
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 16:48:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 43B33C0032;
+	Fri, 13 May 2022 17:26:31 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AB2F5C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 17:26:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5F9E0418D7
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 16:48:48 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 840B28124F
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 17:26:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7XRf4CpvbZS9 for <iommu@lists.linux-foundation.org>;
- Fri, 13 May 2022 16:48:46 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id j17ABqu0uIKJ for <iommu@lists.linux-foundation.org>;
+ Fri, 13 May 2022 17:26:29 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com
- (mail-sn1anam02on20619.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7ea9::619])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 1E3C4415D5
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 16:48:46 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=deEHGyOFtaUrqhWqCAW/DDY1CWPhMVw8+bFOdJCt/ld+fNhjg+56VGzgjtqJZu2RIoelKHjnYtvtq7rkKUU2egK/v9Yxsi4cw/9K4YS0mpoB9oaOMR8kZtN3QUNRJqRs6PCYZs08njWiacXVZUhUksy3jrD0Ldtat4cTqCh7rq3fFxL0W5PqCs9aYgUcU1Mp1km3BSPyxYKRGrQ9hyntoD2IjCB54rUVRkALJnvRgJPJn0IPWcoSEJYYCeoaAf160lb1o+uElOt6EyoXyQg6RSHgNc4K95C3lIjXeRT7RMXKmROV2xPezIppbw7U8azIKJdgmOnNpW/LUp9QvSzilQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2sq7w3JNFciEvOMVqx87G1jrT/ZprR1sauFomKPzJRs=;
- b=XgRQY2AhnOY5I4gJ/8U9AP85xyEWOQlZu21hX9rr2T6oZfeO2nIF3ZyUcgH3RlMS9zJh4Stu6jJZ0wjBsakemAaLZ15+lhlQ3Qp/9WEbn3vTg2IyvylWbeHHRSWipTMziRk8B3Aw5wLCvrCCtpp/x6zPvXgK/qACwCPhdca5SoRq/SRg/49al39IxasYEVIppEas/KjD0dVgKLb2LMjCNbMM1pySGKreHCAmULTZYNAz+ne6cfeCNE1Kze1gZ3E9c60yt0AC2+ini/3F2WSWv81gdxJeGKW3TBJy+zJB+PfPYbeFm6isEHPlUeyCqm1oZ9KC0CwtJvs8tDaTiD3McA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2sq7w3JNFciEvOMVqx87G1jrT/ZprR1sauFomKPzJRs=;
- b=OjecGIeCzcBdQz6mHsHvt5bckN6QlrfW9DfVi4qcbU74X0AkNyUAzmivO4kdGicrTEMDRv3nnRtDgja1k+0vJq+zba/WrGWiN0rSqb9rY+UYPG0eLZZTwj1UeJNqbVFlx/W3xq89vF5Wez+gEtKpYhvtw3BdrKyD0/oZ3O8DcLF7a8lNHwu3k82i8zRLZeTUJWkxZlWoFbhAvd+zxYsLZjBgy5MW4O+0u57VQ3LoNBaGH9/0ZhhUmyDK3I6eT078Ei00ERpBgwSF60ORdUgmGSqi62p+xB4ldUotQjKNhAJKCnmO8ry5d5EMHEttTt9OoTB+xB7COzmDziWjD9uUQg==
-Received: from MW4PR04CA0356.namprd04.prod.outlook.com (2603:10b6:303:8a::31)
- by DM6PR12MB4404.namprd12.prod.outlook.com (2603:10b6:5:2a7::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Fri, 13 May
- 2022 16:48:43 +0000
-Received: from CO1NAM11FT058.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8a:cafe::e) by MW4PR04CA0356.outlook.office365.com
- (2603:10b6:303:8a::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23 via Frontend
- Transport; Fri, 13 May 2022 16:48:43 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.234) by
- CO1NAM11FT058.mail.protection.outlook.com (10.13.174.164) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5250.13 via Frontend Transport; Fri, 13 May 2022 16:48:43 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Fri, 13 May 2022 16:48:43 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 13 May 2022 09:48:42 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22 via Frontend
- Transport; Fri, 13 May 2022 09:48:42 -0700
-Date: Fri, 13 May 2022 09:48:40 -0700
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH] iommu/vt-d: Try info->iommu in device_to_iommu()
-Message-ID: <Yn6L6FFf6icax1Cv@Asurada-Nvidia>
-References: <20220513003233.4442-1-nicolinc@nvidia.com>
- <6da2adf4-6717-b562-5ee3-7e28447aa65b@linux.intel.com>
- <20220513115032.GM1343366@nvidia.com>
+Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com
+ [IPv6:2607:f8b0:4864:20::1131])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id A0EA381242
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 17:26:29 +0000 (UTC)
+Received: by mail-yw1-x1131.google.com with SMTP id
+ 00721157ae682-2f7bb893309so97086627b3.12
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 10:26:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=yncJ85+SIlrUyfibchlOo3nGcBtZSYvrpkr6At33oFM=;
+ b=tELgWSqPJ2XeK5KWJc0j3Izxo5P0JYNJpS1LDlgAuPlebbh9e6WMDgeVVLegGeIaAG
+ VVkPFzkgs9492PO60P9XWePlc06wmWZFRlwvZJOZcx5xgrMhBpFW0sOXiKbdsVgYAIRK
+ zjP+gEQNqrUKj69da/qFLQkvCuZ4GjCjn29S2q5SXBtTpeqs0++CM4HRgIxA5FD6F1rD
+ PV/soEr2Mv4iexAm30OrWfc/UQepJQ0ZaQQ+CqJ76d1FTyEX4rQxfaOahQA70NByLksO
+ DRAsanWwPBz8CdNJ7IaHIeXq66XPKKcVg1BFmGAU10mdurV7Lixpw2rYJxRhb1PbLjk0
+ QcmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=yncJ85+SIlrUyfibchlOo3nGcBtZSYvrpkr6At33oFM=;
+ b=JqklXwBTH2eZq3MHCi2WVOP7BakWJ26q1DyDyBJU3yOSkILh/KyZch0/5x3Fwyd/dN
+ P5wl8SVAAltw3naX6auii9kx9SlzPZGptITohd16yv/64KRaI1R5JWt2yCTbbwTt5mXB
+ uUFApRtTnlUE2PTcGzGDFvVZ1DbPviVCHujjtuyiCZDj0HrLwiLVUUZNNqhaS3CxdR7R
+ Pyl+7vL6/R9moS5MDg9G/OcdFh0fFpgZkVryc1jomYhDEItGERJuL59fUBQ0/EwGG1QG
+ ie+AR/567z8Rv5L/bgluWpihaz+RT2xvj6DVv6JwpDfJGlbwWy6tLu2wq2BzNJKqbQY9
+ i16w==
+X-Gm-Message-State: AOAM5305xNkGTazsElHmXHl5hicBphYSS4hTdUmNY9u1bZa2ytVZHms2
+ aJyx/MydvdtHXQBqvw9nTJseVvMDDH/rR8XXTSUggA==
+X-Google-Smtp-Source: ABdhPJwDc39YV2aEhsT7aNk3yasAQxRbPZaXjabeYzrpzhFybpEVGwlpZU8+hsRWlLkM/kxsOCa4BRf6isC84kd7cTg=
+X-Received: by 2002:a81:1e09:0:b0:2fe:c53c:a0aa with SMTP id
+ e9-20020a811e09000000b002fec53ca0aamr2051320ywe.455.1652462788378; Fri, 13
+ May 2022 10:26:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220513115032.GM1343366@nvidia.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f8ac789d-d9c5-4919-efe2-08da350070bf
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4404:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4404522175B3A99ECECAAE43ABCA9@DM6PR12MB4404.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: n/7dds2XXQVF9geKckOx5fAt8VZbGZ8rr10ulk978QZbRnONK34rzo+lvo7R88rDNCD+af8c8cXliJuDFaZoLnpCyRJ5Iktv0QEIZoGr0NmZhItq9jgv4Qh4KgQY0NypnVHOGqN4/+x3Rd2hSeTG2CIZCqbdwPE45WPjb1wAr3FZ/tYORJ/iJDrO1rLwTl/pF7R1lOpX6+gCVCof3ZSvVOAg5Gh8fV1F/xrJ8pfEeGGp4Dj2uGA0+aTQQWN84t4+XxPch06k4/1zXOKnwOlZmSVY2RUOkykvkkn1Ygj4urKc7DcMA+G7FUbzv8Gi/a4CzPSXQc9szhqfcrAa6Wtdll6pNJsaFqA5U3wrSUYsv3aSQh+1U/cTWFSgplhiB0/U67J1kBvk0dUHOBrU4u16PbBtyAKjX8XMt9rl0X3JL6O+0xiEQCZZIKWzdotfVxKCOQz7Lz6s69k93+1vOZnKSenjY112IZqMas+A2I2Np45FA5knLVi//mJvvzXlUIm1OVtooP5r2qw88Dnqhuxbdc+p2rkc6yKNZEJiO3hZdrUyNZhNsmmqOtlgSYXEPgbrTy1y25i3JLhrTvOh66sXabv4yVCjmZzBssMV6WsAn4wG2QbUTw88Ej8jnQoP104kLSkp6MsyGv+KhXJqWucGuiF/YWdgfVSgSaECCXHwslz6a0mJ4FaX0CFZ9SRrsvTEsiJ5OLpP+e0jsfTwI2Ba8g==
-X-Forefront-Antispam-Report: CIP:12.22.5.234; CTRY:US; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:InfoNoRecords; CAT:NONE;
- SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(8936002)(2906002)(4744005)(82310400005)(5660300002)(40460700003)(55016003)(33716001)(86362001)(6862004)(336012)(186003)(36860700001)(47076005)(426003)(81166007)(356005)(6636002)(316002)(54906003)(70206006)(4326008)(70586007)(8676002)(26005)(9686003)(508600001)(36900700001);
- DIR:OUT; SFP:1101; 
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2022 16:48:43.3308 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f8ac789d-d9c5-4919-efe2-08da350070bf
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[12.22.5.234];
- Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT058.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4404
-Cc: dwmw2@infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, will@kernel.org
+References: <20220429220933.1350374-1-saravanak@google.com>
+ <CAL_Jsq+2A7mRVV24XW0YcP8GkFCK_Ri4KDcqvW4e0p3TkQMWVg@mail.gmail.com>
+In-Reply-To: <CAL_Jsq+2A7mRVV24XW0YcP8GkFCK_Ri4KDcqvW4e0p3TkQMWVg@mail.gmail.com>
+Date: Fri, 13 May 2022 10:25:52 -0700
+Message-ID: <CAGETcx8=ZX+Pb4ioMVb7LfuF9c3HNP8g1+WMqZR=Pq7-9=DUCA@mail.gmail.com>
+Subject: Re: [PATCH v1] driver core: Extend deferred probe timeout on driver
+ registration
+To: Rob Herring <robh@kernel.org>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>,
+ Android Kernel Team <kernel-team@android.com>,
+ Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Linus Walleij <linus.walleij@linaro.org>, Jonathan Corbet <corbet@lwn.net>,
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org,
+ Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+ Kevin Hilman <khilman@kernel.org>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ Mark Brown <broonie@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>,
+ Pavel Machek <pavel@ucw.cz>,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ "open list:THERMAL" <linux-pm@vger.kernel.org>,
+ Thierry Reding <treding@nvidia.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -132,34 +100,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Nicolin Chen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Nicolin Chen <nicolinc@nvidia.com>
+From: Saravana Kannan via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Saravana Kannan <saravanak@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, May 13, 2022 at 08:50:32AM -0300, Jason Gunthorpe wrote:
+On Fri, May 13, 2022 at 6:58 AM Rob Herring <robh@kernel.org> wrote:
+>
+> On Fri, Apr 29, 2022 at 5:09 PM Saravana Kannan <saravanak@google.com> wrote:
+> >
+> > The deferred probe timer that's used for this currently starts at
+> > late_initcall and runs for driver_deferred_probe_timeout seconds. The
+> > assumption being that all available drivers would be loaded and
+> > registered before the timer expires. This means, the
+> > driver_deferred_probe_timeout has to be pretty large for it to cover the
+> > worst case. But if we set the default value for it to cover the worst
+> > case, it would significantly slow down the average case. For this
+> > reason, the default value is set to 0.
+> >
+> > Also, with CONFIG_MODULES=y and the current default values of
+> > driver_deferred_probe_timeout=0 and fw_devlink=on, devices with missing
+> > drivers will cause their consumer devices to always defer their probes.
+> > This is because device links created by fw_devlink defer the probe even
+> > before the consumer driver's probe() is called.
+> >
+> > Instead of a fixed timeout, if we extend an unexpired deferred probe
+> > timer on every successful driver registration, with the expectation more
+> > modules would be loaded in the near future, then the default value of
+> > driver_deferred_probe_timeout only needs to be as long as the worst case
+> > time difference between two consecutive module loads.
+> >
+> > So let's implement that and set the default value to 10 seconds when
+> > CONFIG_MODULES=y.
+>
+> We had to revert a non-zero timeout before (issue with NFS root IIRC).
+> Does fw_devlink=on somehow fix that?
 
-> > Perhaps, we can make device_to_iommu() only for probe_device() where the
-> > per-device info data is not initialized yet. After probe_device(), iommu
-> > and sid are retrieved through other helpers by looking up the device
-> > info directly?
-> 
-> This design makes the most sense to me... Nicolin you said there was a
-> case where attach was happening before probe though??
+If it's the one where ip autoconfig was timing out, then John Stultz
+fixed it by fixing wait_for_device_probe().
+https://lore.kernel.org/all/20200422203245.83244-4-john.stultz@linaro.org/
 
-I was testing on top of our IOMMUFD dev branch actually, which
-is still on 5.17 where priv/info seems to be set at the end of
-first ->attach_dev() call. In 5.18, Baolu has already cleaned
-away some code. So now, just eyeballing here, it should be set
-at driver's ->probe_device() call, so it'd be safe to get info
-in attach_dev (and in the new op that we are adding).
+If you are referring to some other issue, then I'd need more details.
 
-I am also rebasing our dev branch to more recent version btw.
-
-Thanks
-Nic
+-Saravana
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
