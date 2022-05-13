@@ -1,121 +1,74 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DBD3EC433EF
-	for <iommu@archiver.kernel.org>; Fri, 13 May 2022 00:33:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 30B64C433EF
+	for <iommu@archiver.kernel.org>; Fri, 13 May 2022 01:32:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 7FE5D60B6C;
-	Fri, 13 May 2022 00:33:27 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id CA78981499;
+	Fri, 13 May 2022 01:32:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hI_g3Zkz5L6H; Fri, 13 May 2022 00:33:26 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 61DB460BC9;
-	Fri, 13 May 2022 00:33:26 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bE0obX266Cp3; Fri, 13 May 2022 01:32:04 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id BAB1E82419;
+	Fri, 13 May 2022 01:32:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 38097C0032;
-	Fri, 13 May 2022 00:33:26 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AEF19C002D
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 00:33:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 92A2BC0039;
+	Fri, 13 May 2022 01:32:03 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 218B0C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 01:32:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 95E68404D7
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 00:33:24 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 10DF560BD0
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 01:32:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EQ4yfa0Rim2p for <iommu@lists.linux-foundation.org>;
- Fri, 13 May 2022 00:33:23 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com
- (mail-bn7nam10on20614.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e8a::614])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 6DD1F404B3
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 00:33:23 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fVD154dP8Xuc/tis+m/JSuIkQrRXTRs74ksKGQKrWa3rVLOANydV8L/jrQ49RlUwnv4jGZ+PpMKtBSaZVUy2H+esTy4Rq7opEJuOzqiW6E6JFvoxuPpPLioPSewLfRTXOqzGWZl1Z3iWtXhY4CyKoqkNFe27z8q8GWll+AhCvIZx1itAtLxB6/IflpgIsMGHECZQjoYQ5xRzWN5478wqM9xWYcQF5j1ldxLG5wtllxLkoiS+Z+Y4N34MYuHW87ouR3k+Eghhdv+s8VRMwiMEsikrd/DBIc/nitazaxnVAJUC7aCk59r1PRdAPn7I0B2oKz3sxtUzn4DHkWtU24qndA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=c8FfIsi4doYVeNmGUewz4JncLlGe1LY5xPjdXDdBwJY=;
- b=HjUOcZ+yAidaWaeaQQk/TdToFyfBrehdZWNZGXtDcoCHvtO+XRnKMLv7zx6wJFkj9KxtAUIYjbAJH3Ud2H54WSkfMCVgtewWOeWezAvnmAr3qa6YaYaVHBN2QbWsUno4kE+P0q85s7fhZHbqYx0kJ2MzUXF2tXlWHQ2FPYH9BQ5OAB7wZJVwej/NMXDUSfxyanAZHXpArlLyT3A9FjYAEqENy1kNM/Ub9kJ+vYVfVuhKCKeq8VM/KPYkKvEE5cgoPuyAhe+TvhIG//LDeTa2bBCkK00GdSJ5eXjyAdG1uGLMl7mUccqDPZcj5wiWlLe/vUnIZrSNey4ofqfPqUbIrw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c8FfIsi4doYVeNmGUewz4JncLlGe1LY5xPjdXDdBwJY=;
- b=KuYg3p1K0KvFOSeAo7u11TWhkRwVsALTcuJAIB5eXdKb6SoeiIWr+7YRTcUFxSOkJsbYxhvLLAReugWPWgyH2ON8j8k4HbuWAvxvJjMNyf92c7dqKgczr5XW7oZCwSd0RldXLsAqvQIhKFwVkqv1lBl+MDcslclndwRieaWNPDR5qLRyeW30YwZIU2udJCbGnBF94MjVwy8mfgJsZySAG/SLfujrbZwgAfbtT4Zoqgs/HsWk8RFAq9FBqrQgiV/KIjkfkWyokPqlFaXHBNoAx1c0lahl9N892Sb00GXBZ087KxXUTlp49lNu/Q8vqpN64prfkzdWTEL1hknOkZedeA==
-Received: from DM6PR02CA0119.namprd02.prod.outlook.com (2603:10b6:5:1b4::21)
- by BN9PR12MB5291.namprd12.prod.outlook.com (2603:10b6:408:104::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.14; Fri, 13 May
- 2022 00:33:20 +0000
-Received: from DM6NAM11FT059.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:1b4:cafe::91) by DM6PR02CA0119.outlook.office365.com
- (2603:10b6:5:1b4::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.14 via Frontend
- Transport; Fri, 13 May 2022 00:33:20 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- DM6NAM11FT059.mail.protection.outlook.com (10.13.172.92) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5250.13 via Frontend Transport; Fri, 13 May 2022 00:33:20 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32;
- Fri, 13 May 2022 00:33:19 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 12 May
- 2022 17:33:18 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.10) by mail.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Thu, 12 May 2022 17:33:18 -0700
-To: <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <joro@8bytes.org>,
- <will@kernel.org>
-Subject: [PATCH] iommu/vt-d: Try info->iommu in device_to_iommu()
-Date: Thu, 12 May 2022 17:32:33 -0700
-Message-ID: <20220513003233.4442-1-nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.17.1
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0cl7AeZfF7s2 for <iommu@lists.linux-foundation.org>;
+ Fri, 13 May 2022 01:32:01 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from dfw.source.kernel.org (dfw.source.kernel.org
+ [IPv6:2604:1380:4641:c500::1])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id E3E7E607FE
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 01:32:00 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id B4BB962111;
+ Fri, 13 May 2022 01:31:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD566C385B8;
+ Fri, 13 May 2022 01:31:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1652405519;
+ bh=qjctFxJKv3PzS7uzlW76cYZ2Kpe6i9eksyNQBmQzjxI=;
+ h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+ b=CltnUnZO6wz0jn//IYGNbjRZOzX7g3zIXYcWvlZqHxtthBJUAr+banq/01hYoijjp
+ 7Ez0+AWThXRb3t92m7BfwU5Ow+FBw6wWo0Mw6gFP3Be0LvMc7l/EUY4uDWpkdO1Izp
+ Fs7O6+3nf+NCvq1fFwc1MRjpViq2gA1wJRwid26sZguxblQQNWQbsOI0ZpEaKJ6Pet
+ cFL03OxYL7kjcZwb3qDFHQG4D+nuu6Py4uNbHIZDK4ZqO31aPLmWylKY3/Aq6QBRID
+ tkHYYjdRcLOXUuCe1eB4qBnluUWtfT+Cks87VyjJbnrJrlp899sYhntxr93v3aGNA6
+ Fa7do414QlbIg==
+Date: Thu, 12 May 2022 18:31:57 -0700 (PDT)
+From: Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 1/3] swiotlb: don't panic when the swiotlb buffer can't
+ be allocated
+In-Reply-To: <20220511125805.1377025-2-hch@lst.de>
+Message-ID: <alpine.DEB.2.22.394.2205121831340.3842@ubuntu-linux-20-04-desktop>
+References: <20220511125805.1377025-1-hch@lst.de>
+ <20220511125805.1377025-2-hch@lst.de>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0d5b000b-5aa5-4006-5efb-08da34782e3e
-X-MS-TrafficTypeDiagnostic: BN9PR12MB5291:EE_
-X-Microsoft-Antispam-PRVS: <BN9PR12MB5291464D3D482C125ED44208ABCA9@BN9PR12MB5291.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Qy3jf0/+vCn/JFklvTwoZofB97GpgZhdS2BOB8P0VfiDF00kLKLCb7RYyneY0rS7JY1/gXHoASeEQ6osmjrsOajMkjBgD/a3G7aVzkFUL+Z5SQzDTnOUK0uixGUOy/qK6yOhWui5lCR0oJlL1B5GnR9b30MsUoOxKlCyeuw+Y0zPupvjGWy0KcI8TGAs3LI4l+bGRi1ZWF9lLq2zZHXa+4VFEQzR3aqrLY1dRdLm5xKRQorOciWJPfp/F6V/T09N2XaCf+J2FLWpKticydgObkTLkeLNmG0moDdoAOTdAedtP3IK726Tfke9h1s8jRtp3Y5NuqinTzdRqFNoVtVc9vxu9urB+p397cvJwla3OUk21K12NdJlpvboLn6CAK8Cs/82/mlOw1atrCeaKi3hOzf3uhthGt6txn048hqQv5l60oV1DS+ZZ0nd4wWITCZY96CbHqGbJsk72nqT0x9IFjD/zAp/8r0jula4X+IlFNfGvurDdyOfKzb/rlVoP9PT1z34YXpyNCV1T0oRcuZaK0M1/z/MlaCVbFLdHTNXDv2zsBA5WZb+PFQuLkCn6ecYkUjE9JKPa91/xqtaMcAKz/B3cF5XciHy/l5TohW9CDS86/H59nIefG1dLuYMnM86VYYrzDrKveRYUQQIRmb1PtJcnrkVasml7sayM48yfKpr/VeV6ybYZlR3Wylh85WkzIUdXJe4jo+XZzZIisHreA==
-X-Forefront-Antispam-Report: CIP:12.22.5.235; CTRY:US; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:InfoNoRecords; CAT:NONE;
- SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(5660300002)(86362001)(426003)(316002)(110136005)(6666004)(40460700003)(186003)(36756003)(47076005)(336012)(70586007)(4326008)(70206006)(8676002)(356005)(1076003)(2616005)(54906003)(81166007)(4744005)(8936002)(36860700001)(26005)(508600001)(7696005)(82310400005)(2906002)(36900700001);
- DIR:OUT; SFP:1101; 
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2022 00:33:20.1655 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0d5b000b-5aa5-4006-5efb-08da34782e3e
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[12.22.5.235];
- Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT059.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5291
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- jgg@nvidia.com
+Cc: xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>, Conor.Dooley@microchip.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -128,47 +81,50 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Nicolin Chen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Nicolin Chen <nicolinc@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Local boot test and VFIO sanity test show that info->iommu can be
-used in device_to_iommu() as a fast path. So this patch adds it.
+On Wed, 11 May 2022, Christoph Hellwig wrote:
+> For historical reasons the switlb code paniced when the metadata could
+> not be allocated, but just printed a warning when the actual main
+> swiotlb buffer could not be allocated.  Restore this somewhat unexpected
+> behavior as changing it caused a boot failure on the Microchip RISC-V
+> PolarFire SoC Icicle kit.
+> 
+> Fixes: 6424e31b1c05 ("swiotlb: remove swiotlb_init_with_tbl and swiotlb_init_late_with_tbl")
+> Reported-by: Conor Dooley <Conor.Dooley@microchip.com>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Tested-by: Conor Dooley <Conor.Dooley@microchip.com>
 
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- drivers/iommu/intel/iommu.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 2990f80c5e08..412fca5ab9cd 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -777,6 +777,7 @@ static bool iommu_is_dummy(struct intel_iommu *iommu, struct device *dev)
- struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn)
- {
- 	struct dmar_drhd_unit *drhd = NULL;
-+	struct device_domain_info *info;
- 	struct pci_dev *pdev = NULL;
- 	struct intel_iommu *iommu;
- 	struct device *tmp;
-@@ -786,6 +787,10 @@ struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn)
- 	if (!dev)
- 		return NULL;
- 
-+	info = dev_iommu_priv_get(dev);
-+	if (info)
-+		return info->iommu;
-+
- 	if (dev_is_pci(dev)) {
- 		struct pci_dev *pf_pdev;
- 
--- 
-2.17.1
 
+> ---
+>  kernel/dma/swiotlb.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index e2ef0864eb1e5..3e992a308c8a1 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -254,8 +254,10 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+>  		tlb = memblock_alloc(bytes, PAGE_SIZE);
+>  	else
+>  		tlb = memblock_alloc_low(bytes, PAGE_SIZE);
+> -	if (!tlb)
+> -		panic("%s: failed to allocate tlb structure\n", __func__);
+> +	if (!tlb) {
+> +		pr_warn("%s: failed to allocate tlb structure\n", __func__);
+> +		return;
+> +	}
+>  
+>  	if (remap && remap(tlb, nslabs) < 0) {
+>  		memblock_free(tlb, PAGE_ALIGN(bytes));
+> -- 
+> 2.30.2
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
