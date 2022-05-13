@@ -1,72 +1,73 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4E8D5C433EF
-	for <iommu@archiver.kernel.org>; Fri, 13 May 2022 20:50:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 82274C433F5
+	for <iommu@archiver.kernel.org>; Fri, 13 May 2022 21:16:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id DDB6860ADB;
-	Fri, 13 May 2022 20:50:17 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 302F041942;
+	Fri, 13 May 2022 21:16:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KIe7R08irp0s; Fri, 13 May 2022 20:50:17 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 96E3460AD0;
-	Fri, 13 May 2022 20:50:16 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id KhudZyeZy3cK; Fri, 13 May 2022 21:16:14 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id CDD4341929;
+	Fri, 13 May 2022 21:16:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 673B4C0039;
-	Fri, 13 May 2022 20:50:16 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A7974C002D
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 20:50:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1E24EC0032;
+	Fri, 13 May 2022 21:16:13 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8D68DC002D
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 21:16:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 9EC3E83F80
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 20:50:15 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 7551841942
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 21:16:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="IL5ps9Pi";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="RyMi/A5P"
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fnM-9wHCJw1I for <iommu@lists.linux-foundation.org>;
- Fri, 13 May 2022 20:50:15 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id KE7onN21A0V3 for <iommu@lists.linux-foundation.org>;
+ Fri, 13 May 2022 21:16:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by smtp1.osuosl.org (Postfix) with ESMTPS id A191583F7C
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 20:50:14 +0000 (UTC)
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1652475010;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=zEdz3PBK+OaYEz88/8/oMxcc8qsP3Ut2QqnQHlJZHqE=;
- b=IL5ps9Pi2NFB4qTc/+l9Q6Ywr61TAXtYWQaoSp7/YbaTcIvSE9C5eLi+t7xEHqEeYjETXy
- JmzdwkR1BjpqSKaC0i1aIRbhjFDiQDzAY0BCHdHh/4VpIInaO6SaQP3tcK+xed/cxdQc98
- EeugDl7hMWE7H4HfUhMdKa0BDk7UiwLoggjpg6a0mH4MB8CPpd8kuWCvK2t0KbLmFzAf58
- alHc5j1TQhITDFdCadertqBxYuofkeeTGIqgwJFHxxMd3hIwPbd+zCucmhhovYvvi35KA7
- wXRs36ZyRr73nbP/djYS0b302aslX8nO8TU0pWKtw2DfpZnQdl6w3lc/Jb2z7A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1652475010;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=zEdz3PBK+OaYEz88/8/oMxcc8qsP3Ut2QqnQHlJZHqE=;
- b=RyMi/A5Po6vaHS9i40z6IeKIq7BgJOWcZ6bfF5+HAQR7bK6hdxFiTaWa09d2O8EN+o2gLw
- QsH3uYNZXchYGcCw==
-To: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Subject: Re: [PATCH v6 05/29] x86/apic/vector: Do not allocate vectors for NMIs
-In-Reply-To: <20220513180320.GA22683@ranerica-svr.sc.intel.com>
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 83EE541929
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 21:16:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1652476570; x=1684012570;
+ h=date:from:to:cc:subject:message-id:references:
+ mime-version:in-reply-to;
+ bh=9Gskyxl5a38unKZlQosOqjGR7Ihzv9T1bkSU8Qq82ZE=;
+ b=Z4e0QweYuX5H3ldZ/nqKu/gbH8lZPaqo6v/LdeSXgMpsHchvj7BLXUq1
+ 4dpLaF4MAuER0yp9FIilcPWca6QZf72V0zdw9IHvwvFtpS1y5QrYbeTRK
+ 1OvefIlVatBOkRd6yNrRK8BsTisXo6zRxgx6zncE5gvVT6CWDibJCEnWV
+ a8pBydRo/F7DXkxmJCbro54IQaqiUQh9oZGcRyUtU/BmcmvnqCV25BNkj
+ oGVAgsJyKBEyMBtyiuyXWZ+ISkyj4qkqh0ZgCSTadX2Tl5UFU3k6Ql9qQ
+ 4CMQTP1MPCA03GowwrOWYRXXdw94fUVVpYtkPf3BGUqcEb+95O9DapN/6 Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="331018649"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="331018649"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 13 May 2022 14:16:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="595421000"
+Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
+ by orsmga008.jf.intel.com with ESMTP; 13 May 2022 14:16:09 -0700
+Date: Fri, 13 May 2022 14:19:44 -0700
+From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v6 15/29] x86/hpet: Add helper function
+ hpet_set_comparator_periodic()
+Message-ID: <20220513211944.GE22683@ranerica-svr.sc.intel.com>
 References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-6-ricardo.neri-calderon@linux.intel.com>
- <87zgjufjrf.ffs@tglx> <20220513180320.GA22683@ranerica-svr.sc.intel.com>
-Date: Fri, 13 May 2022 22:50:09 +0200
-Message-ID: <87v8u9rwce.ffs@tglx>
+ <20220506000008.30892-16-ricardo.neri-calderon@linux.intel.com>
+ <87mtfufifa.ffs@tglx>
 MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <87mtfufifa.ffs@tglx>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
  Andi Kleen <ak@linux.intel.com>, linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
  Ricardo Neri <ricardo.neri@intel.com>, Stephane Eranian <eranian@google.com>,
@@ -91,116 +92,59 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, May 13 2022 at 11:03, Ricardo Neri wrote:
-> On Fri, May 06, 2022 at 11:12:20PM +0200, Thomas Gleixner wrote:
->> Why would a NMI ever end up in this code? There is no vector management
->> required and this find cpu exercise is pointless.
->
-> But even if the NMI has a fixed vector, it is still necessary to determine
-> which CPU will get the NMI. It is still necessary to determine what to
-> write in the Destination ID field of the MSI message.
->
-> irq_matrix_find_best_cpu() would find the CPU with the lowest number of
-> managed vectors so that the NMI is directed to that CPU. 
+On Fri, May 06, 2022 at 11:41:13PM +0200, Thomas Gleixner wrote:
+> On Thu, May 05 2022 at 16:59, Ricardo Neri wrote:
+> > Programming an HPET channel as periodic requires setting the
+> > HPET_TN_SETVAL bit in the channel configuration. Plus, the comparator
+> > register must be written twice (once for the comparator value and once for
+> > the periodic value). Since this programming might be needed in several
+> > places (e.g., the HPET clocksource and the HPET-based hardlockup detector),
+> > add a helper function for this purpose.
+> >
+> > A helper function hpet_set_comparator_oneshot() could also be implemented.
+> > However, such function would only program the comparator register and the
+> > function would be quite small. Hence, it is better to not bloat the code
+> > with such an obvious function.
+> 
+> This word salad above does not provide a single reason why the periodic
+> programming function is required and better suited for the NMI watchdog
+> case
 
-What's the point to send it to the CPU with the lowest number of
-interrupts. It's not that this NMI happens every 50 microseconds.
-We pick one online CPU and are done.
+The goal of hpet_set_comparator_periodic() is to avoid code duplication. The
+functions hpet_clkevt_set_state_periodic() and kick_timer() in the HPET NMI
+watchdog need to program a periodic HPET channel when supported.
 
-> In today's code, an NMI would end up here because we rely on the existing
-> interrupt management infrastructure... Unless, the check is done the entry
-> points as you propose.
 
-Correct. We don't want to call into functions which are not designed for
-NMIs.
- 
->> > +
->> > +	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI) {
->> > +		cpu = irq_matrix_find_best_cpu_managed(vector_matrix, dest);
->> > +		apicd->cpu = cpu;
->> > +		vector = 0;
->> > +		goto no_vector;
->> > +	}
->> 
->> This code can never be reached for a NMI delivery. If so, then it's a
->> bug.
->> 
->> This all is special purpose for that particular HPET NMI watchdog use
->> case and we are not exposing this to anything else at all.
->> 
->> So why are you sprinkling this NMI nonsense all over the place? Just
->> because? There are well defined entry points to all of this where this
->> can be fenced off.
->
-> I put the NMI checks in these points because assign_vector_locked() and
-> assign_managed_vector() are reached through multiple paths and these are
-> the two places where the allocation of the vector is requested and the
-> destination CPU is determined.
->
-> I do observe this code being reached for an NMI, but that is because this
-> code still does not know about NMIs... Unless the checks for NMI are put
-> in the entry points as you pointed out.
->
-> The intent was to refactor the code in a generic manner and not to focus
-> only in the NMI watchdog. That would have looked hacky IMO.
+> and then goes on and blurbs about why a function which is not
+> required is not implemented.
 
-We don't want to have more of this really. Supporting NMIs on x86 in a
-broader way is simply not reasonable because there is only one NMI
-vector and we have no sensible way to get to the cause of the NMI
-without a massive overhead.
+I can remove this.
 
-Even if we get multiple NMI vectors some shiny day, this will be
-fundamentally different than regular interrupts and certainly not
-exposed broadly. There will be 99.99% fixed vectors for simplicity sake.
+> The argument about not bloating the code
+> with an "obvious???" function which is quite small is slightly beyond my
+> comprehension level.
 
->> +		if (info->flags & X86_IRQ_ALLOC_AS_NMI) {
->> +			/*
->> +			 * NMIs have a fixed vector and need their own
->> +			 * interrupt chip so nothing can end up in the
->> +			 * regular local APIC management code except the
->> +			 * MSI message composing callback.
->> +			 */
->> +			irqd->chip = &lapic_nmi_controller;
->> +			/*
->> +			 * Don't allow affinity setting attempts for NMIs.
->> +			 * This cannot work with the regular affinity
->> +			 * mechanisms and for the intended HPET NMI
->> +			 * watchdog use case it's not required.
->
-> But we do need the ability to set affinity, right? As stated above, we need
-> to know what Destination ID to write in the MSI message or in the interrupt
-> remapping table entry.
->
-> It cannot be any CPU because only one specific CPU is supposed to handle the
-> NMI from the HPET channel.
->
-> We cannot hard-code a CPU for that because it may go offline (and ignore NMIs)
-> or not be part of the monitored CPUs.
->
-> Also, if lapic_nmi_controller.irq_set_affinity() is NULL, then irq_chips
-> INTEL-IR, AMD-IR, those using msi_domain_set_affinity() need to check for NULL.
-> They currently unconditionally call the parent irq_chip's irq_set_affinity().
-> I see that there is a irq_chip_set_affinity_parent() function. Perhaps it can
-> be used for this check?
+That obvious function would look like this:
 
-Yes, this lacks obviously a NMI specific set_affinity callback and this
-can be very trivial and does not have any of the complexity of interrupt
-affinity assignment. First online CPU in the mask with a fallback to any
-online CPU.
+void hpet_set_comparator_one_shot(int channel, u32 delta)
+{
+	u32 count;
 
-I did not claim that this is complete. This was for illustration.
+	count = hpet_readl(HPET_COUNTER);
+	count += delta;
+	hpet_writel(count, HPET_Tn_CMP(channel));
+}
 
->> +			 */
->> +			irqd_set_no_balance(irqd);
->
-> This code does not set apicd->hw_irq_cfg.delivery_mode as NMI, right?
-> I had to add that to make it work.
+It involves one register read, one addition and one register write. IMO, this
+code is sufficiently simple and small to allow duplication.
 
-I assumed you can figure that out on your own :)
+Programming a periodic HPET channel is not as straightforward, IMO. It involves
+handling two different values (period and comparator) written in a specific
+sequence, one configuration bit, and one delay. It also involves three register
+writes and one register read.
 
-Thanks,
-
-        tglx
+Thanks and BR,
+Ricardo
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
