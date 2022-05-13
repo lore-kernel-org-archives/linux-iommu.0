@@ -4,68 +4,102 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3981BC433F5
-	for <iommu@archiver.kernel.org>; Fri, 13 May 2022 15:14:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 30D5AC433EF
+	for <iommu@archiver.kernel.org>; Fri, 13 May 2022 15:40:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C12E2418B8;
-	Fri, 13 May 2022 15:14:25 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id D1761416F6;
+	Fri, 13 May 2022 15:40:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Snhu8tGYnEgS; Fri, 13 May 2022 15:14:24 +0000 (UTC)
+	with ESMTP id 45QalVfvaWsb; Fri, 13 May 2022 15:40:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 6AC0C418A9;
-	Fri, 13 May 2022 15:14:24 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 812944174B;
+	Fri, 13 May 2022 15:40:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 449AFC0032;
-	Fri, 13 May 2022 15:14:24 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AC5C8C002D
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 15:14:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A44AC0032;
+	Fri, 13 May 2022 15:40:04 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 533A0C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 15:40:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 8D48F60EE2
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 15:14:21 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 2F87183F19
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 15:40:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=collabora.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gmdr0q00vQws for <iommu@lists.linux-foundation.org>;
- Fri, 13 May 2022 15:14:21 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=ibm.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id s5daL0LZLgk0 for <iommu@lists.linux-foundation.org>;
+ Fri, 13 May 2022 15:40:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
- by smtp3.osuosl.org (Postfix) with ESMTPS id DA75D60EA5
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 15:14:20 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
- (Authenticated sender: kholk11) with ESMTPSA id 39B7F1F46205
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
- s=mail; t=1652454859;
- bh=nxAZ4GtxbFEjud7NDfM7hOcPUdu3jrX/KbIZLte12Eo=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=Dk0L64n/oDAmmmABBjDm8zIEEYOloNdsSIZFRWxtiYDo5kTspUDL7SXJQojMuR9v5
- IWPusrv7UF4XxYQGOlPjzhIqx+VdW03e07CbZSWskpAmVmE75ngW3S3VDlHqmeRIws
- 8i69m6/Ivuk97mWPnssxZHIPBd0Aj94ZieoOPjOOShkNI+C/3FwGOWy8IKH7veZhWb
- FjFF6HgPoaUtwu2SvUBKRFU+92G16W5PXzF51DckgtnLtGBSqJ1c0Ip9GABA8EQlcR
- 5YkaK3U+yQSq1TlbjcU93xqeEBGGA3AWByefvYkXZtC6jXvSQ4WKI2d89+vQXbWdwU
- 0uIDV4ptSVQhw==
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-To: yong.wu@mediatek.com
-Subject: [PATCH 2/2] iommu: mtk_iommu: Add support for MT6795 Helio X10 M4Us
-Date: Fri, 13 May 2022 17:14:11 +0200
-Message-Id: <20220513151411.395744-3-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220513151411.395744-1-angelogioacchino.delregno@collabora.com>
-References: <20220513151411.395744-1-angelogioacchino.delregno@collabora.com>
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
+ [148.163.156.1])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 9323783EF4
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 15:40:01 +0000 (UTC)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+ by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24DEqLoJ038771;
+ Fri, 13 May 2022 15:39:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
+ h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=VJkNPzPQr/xDpbrda18CXpYkCA7d/rit6Nn2CeVPxyo=;
+ b=PZ86+6+1tOfLwrSK//+kikGRtsfqr1bESKzcMyYD0i1scY4ErzNZPdWMw7SXk0ppvapd
+ pfNAvrY5023dKKNJVw2Eeoqf7lFDKcBXxxzJOoHp0ZuC5xGgyRih4FwngeqxX7IHA/WX
+ CV1ArVNQpnPg5ip9l7TVlg5D/eUHQpsMSIH7nXj5DjuOJNXTrW0N2TRBEpQwXXlakPxd
+ ss6imUz0mnV3s8HpBDRXLb5lVzs776TbkBsmaWEmy1v6df97qOa8lhfbpoUWqM2PNpWn
+ OhzUKlQWwbxqNnRd9i3+jT4+SV73ZJH8Gqi/Z+nYwrYAerSiSDOUdZFH5wB453sAS5dR eA== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com
+ [169.51.49.99])
+ by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g1sfh1365-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Fri, 13 May 2022 15:39:53 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+ by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24DFPhuf024078;
+ Fri, 13 May 2022 15:39:51 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com
+ (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+ by ppma04ams.nl.ibm.com with ESMTP id 3fwgd90v8k-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Fri, 13 May 2022 15:39:50 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com
+ [9.149.105.61])
+ by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP
+ id 24DFQ7c143647434
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Fri, 13 May 2022 15:26:07 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id B221611C04C;
+ Fri, 13 May 2022 15:39:48 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 6A63111C04A;
+ Fri, 13 May 2022 15:39:48 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+ by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+ Fri, 13 May 2022 15:39:48 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Subject: [PATCH] iommu/dma: Fix check for error return from
+ iommu_map_sg_atomic()
+Date: Fri, 13 May 2022 17:39:48 +0200
+Message-Id: <20220513153948.310119-1-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, martin.botka@somainline.org,
- paul.bouchara@somainline.org, konrad.dybcio@somainline.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- robh+dt@kernel.org, linux-mediatek@lists.infradead.org,
- ~postmarketos/upstreaming@lists.sr.ht, krzysztof.kozlowski+dt@linaro.org,
- matthias.bgg@gmail.com, marijn.suijten@somainline.org,
- phone-devel@vger.kernel.org, will@kernel.org,
- linux-arm-kernel@lists.infradead.org,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: wu5F4ZrMpZS-T-ZZMSg_cagycVwFvEs6
+X-Proofpoint-ORIG-GUID: wu5F4ZrMpZS-T-ZZMSg_cagycVwFvEs6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-13_04,2022-05-13_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ mlxlogscore=895
+ priorityscore=1501 mlxscore=0 phishscore=0 clxscore=1011 malwarescore=0
+ spamscore=0 bulkscore=0 adultscore=0 impostorscore=0 suspectscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205130069
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,74 +117,52 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add support for the M4Us found in the MT6795 Helio X10 SoC.
+In __iommu_dma_alloc_noncontiguous() the value returned by
+iommu_map_sg_atomic() is checked for being smaller than size. Before
+commit ad8f36e4b6b1 ("iommu: return full error code from
+iommu_map_sg[_atomic]()") this simply checked if the requested size was
+successfully mapped.
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+After that commit iommu_map_sg_atomic() may also return a negative
+error value. In principle this too would be covered by the existing
+check. There is one problem however, as size is of type size_t while the
+return type of iommu_map_sg_atomic() is now of type ssize_t the latter gets
+converted to size_t and negative error values end up as very large
+positive values making the check succeed. Fix this by making the return
+type visible with a local variable and add an explicit cast to ssize_t.
+
+Fixes: ad8f36e4b6b1 ("iommu: return full error code from iommu_map_sg[_atomic]()")
+Cc: stable@vger.kernel.org
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 ---
- drivers/iommu/mtk_iommu.c | 20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
+ drivers/iommu/dma-iommu.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 71b2ace74cd6..3d802dd3f377 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -157,6 +157,7 @@
- enum mtk_iommu_plat {
- 	M4U_MT2712,
- 	M4U_MT6779,
-+	M4U_MT6795,
- 	M4U_MT8167,
- 	M4U_MT8173,
- 	M4U_MT8183,
-@@ -953,7 +954,8 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data, unsigned int ban
- 	 * Global control settings are in bank0. May re-init these global registers
- 	 * since no sure if there is bank0 consumers.
- 	 */
--	if (data->plat_data->m4u_plat == M4U_MT8173) {
-+	if (data->plat_data->m4u_plat == M4U_MT6795 ||
-+	    data->plat_data->m4u_plat == M4U_MT8173) {
- 		regval = F_MMU_PREFETCH_RT_REPLACE_MOD |
- 			 F_MMU_TF_PROT_TO_PROGRAM_ADDR_MT8173;
- 	} else {
-@@ -1138,6 +1140,9 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 		case M4U_MT2712:
- 			p = "mediatek,mt2712-infracfg";
- 			break;
-+		case M4U_MT6795:
-+			p = "mediatek,mt6795-infracfg";
-+			break;
- 		case M4U_MT8173:
- 			p = "mediatek,mt8173-infracfg";
- 			break;
-@@ -1404,6 +1409,18 @@ static const struct mtk_iommu_plat_data mt6779_data = {
- 	.larbid_remap  = {{0}, {1}, {2}, {3}, {5}, {7, 8}, {10}, {9}},
- };
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 09f6e1c0f9c0..b4fcf1d92994 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -776,6 +776,7 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
+ 	unsigned int count, min_size, alloc_sizes = domain->pgsize_bitmap;
+ 	struct page **pages;
+ 	dma_addr_t iova;
++	ssize_t mapped;
  
-+static const struct mtk_iommu_plat_data mt6795_data = {
-+	.m4u_plat     = M4U_MT6795,
-+	.flags	      = HAS_4GB_MODE | HAS_BCLK | RESET_AXI |
-+			HAS_LEGACY_IVRP_PADDR | MTK_IOMMU_TYPE_MM,
-+	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
-+	.banks_num    = 1,
-+	.banks_enable = {true},
-+	.iova_region  = single_domain,
-+	.iova_region_nr = ARRAY_SIZE(single_domain),
-+	.larbid_remap = {{0}, {1}, {2}, {3}, {4}}, /* Linear mapping. */
-+};
-+
- static const struct mtk_iommu_plat_data mt8167_data = {
- 	.m4u_plat     = M4U_MT8167,
- 	.flags        = RESET_AXI | HAS_LEGACY_IVRP_PADDR | MTK_IOMMU_TYPE_MM,
-@@ -1515,6 +1532,7 @@ static const struct mtk_iommu_plat_data mt8195_data_vpp = {
- static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt2712-m4u", .data = &mt2712_data},
- 	{ .compatible = "mediatek,mt6779-m4u", .data = &mt6779_data},
-+	{ .compatible = "mediatek,mt6795-m4u", .data = &mt6795_data},
- 	{ .compatible = "mediatek,mt8167-m4u", .data = &mt8167_data},
- 	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
- 	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
+ 	if (static_branch_unlikely(&iommu_deferred_attach_enabled) &&
+ 	    iommu_deferred_attach(dev, domain))
+@@ -813,8 +814,8 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
+ 			arch_dma_prep_coherent(sg_page(sg), sg->length);
+ 	}
+ 
+-	if (iommu_map_sg_atomic(domain, iova, sgt->sgl, sgt->orig_nents, ioprot)
+-			< size)
++	mapped = iommu_map_sg_atomic(domain, iova, sgt->sgl, sgt->orig_nents, ioprot);
++	if (mapped < (ssize_t)size)
+ 		goto out_free_sg;
+ 
+ 	sgt->sgl->dma_address = iova;
 -- 
-2.35.1
+2.32.0
 
 _______________________________________________
 iommu mailing list
