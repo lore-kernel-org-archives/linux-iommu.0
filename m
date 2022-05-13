@@ -1,73 +1,80 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9FBD1C433EF
-	for <iommu@archiver.kernel.org>; Fri, 13 May 2022 01:44:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id F3D10C433EF
+	for <iommu@archiver.kernel.org>; Fri, 13 May 2022 02:09:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id E5C4F41691;
-	Fri, 13 May 2022 01:44:36 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 598254055E;
+	Fri, 13 May 2022 02:09:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PAqRE-ZzST0F; Fri, 13 May 2022 01:44:35 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id tne9UdTmnOVd; Fri, 13 May 2022 02:09:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 712A540A04;
-	Fri, 13 May 2022 01:44:35 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 15D21404FF;
+	Fri, 13 May 2022 02:09:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4383BC0039;
-	Fri, 13 May 2022 01:44:35 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0B736C002D
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 01:44:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D38A2C007B;
+	Fri, 13 May 2022 02:09:56 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8113CC002D
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 02:09:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E8A4D81765
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 01:44:33 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 6975583054
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 02:09:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
+ dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 50T18H8kh5xN for <iommu@lists.linux-foundation.org>;
- Fri, 13 May 2022 01:44:33 +0000 (UTC)
+ with ESMTP id oaWw7Ytsuhb3 for <iommu@lists.linux-foundation.org>;
+ Fri, 13 May 2022 02:09:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 342F7814AB
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 01:44:33 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id 7E50B620EA;
- Fri, 13 May 2022 01:44:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 910EBC385B8;
- Fri, 13 May 2022 01:44:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1652406271;
- bh=ZS0DQzDVQRw+WyZX8h4DFNWCJCmiIgGiFZJt0lgwi0Q=;
- h=Date:From:To:cc:Subject:In-Reply-To:References:From;
- b=HfYksHVbntV+wgGN0VNX9EmrK8S41HUKC7cNTFH1O/07u0e3kTAlwTatr1+Gyv6M8
- /GmqcFTbKgB07jBYxiSlJcnHbgLjdNgTTk1GZVrIxxt3SNHehw+QVRKVTdfRZP8J2F
- HEOm8R5uwSQI1EqLv1bT+NaX++rQJEIN3UrC8b3wpwMe29SUluH6LjfKTJzVMsQqUm
- awkKp/NwkHraiUJ5vPWk898WNy2Jiujt3gOJXnKBJSth9leZJdqiBgBX3nwQRmFerO
- nIGWazHqK0GsyQCdVwbhSGJgfRdK4ATT/erXQGSQDcKrJ1ZBKMAOCZ0YKGNe2Hv1z8
- jsvo4HlZWqVDA==
-Date: Thu, 12 May 2022 18:44:30 -0700 (PDT)
-From: Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 3/3] swiotlb: use the right nslabs-derived sizes in
- swiotlb_init_late
-In-Reply-To: <20220511125805.1377025-4-hch@lst.de>
-Message-ID: <alpine.DEB.2.22.394.2205121844221.3842@ubuntu-linux-20-04-desktop>
-References: <20220511125805.1377025-1-hch@lst.de>
- <20220511125805.1377025-4-hch@lst.de>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 08D218302F
+ for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 02:09:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1652407793; x=1683943793;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=z65torRcig/enwY4e/08U9dWxV9t8BfziP29ghWb42o=;
+ b=eTifv0R8TZVkCdm3pzuixp2kZU2MeAkgfAyK5QSA4oF19Sy+fTPdMWh7
+ rJUPqRDCuSY6QmjEl28r+gRGLxsLL+88Sv+YKegi3tBIdpxMRz+PYq975
+ l6wJ+DE37J86dFY2GmunvdDQ7vV0i1wAly9bAqGsU8F4Mk6KkdrFDVhD4
+ RMc++uXyFo6Y3RCIaGozCtrX0v3rJ/Cb+qhFwwU7G8b5f13lyhQKu2a0i
+ UKDtuz2QCKbbt/MIdzhb+S+HnmVrCtqXvvaH3jyaNDQqzpX/KHpzy9ooF
+ UQBn5mBo9pOlurfv+FF18HQ9H6zdK6WhbluOGoercIMwh67pUCXQhRSlo g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="269861277"
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; d="scan'208";a="269861277"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 12 May 2022 19:09:51 -0700
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; d="scan'208";a="739965747"
+Received: from liujing-mobl.ccr.corp.intel.com (HELO [10.249.175.174])
+ ([10.249.175.174])
+ by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 12 May 2022 19:09:48 -0700
+Message-ID: <2c65b8cf-3813-3ddf-3f5b-c374cc842678@linux.intel.com>
+Date: Fri, 13 May 2022 10:09:46 +0800
 MIME-Version: 1.0
-Cc: xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
- Stefano Stabellini <sstabellini@kernel.org>,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>, Conor.Dooley@microchip.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2] iommu/vt-d: Make DMAR_UNITS_SUPPORTED a config setting
+Content-Language: en-US
+To: Steve Wahl <steve.wahl@hpe.com>, Joerg Roedel <jroedel@suse.de>,
+ David Woodhouse <dwmw2@infradead.org>, Will Deacon <will@kernel.org>,
+ iommu@lists.linux-foundation.org
+References: <20220505194658.246121-1-steve.wahl@hpe.com>
+ <20220512151309.330068-1-steve.wahl@hpe.com>
+ <Yn2UYst0ETp42uzq@swahl-home.5wahls.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <Yn2UYst0ETp42uzq@swahl-home.5wahls.com>
+Cc: Mike Travis <mike.travis@hpe.com>, Dimitri Sivanich <sivanich@hpe.com>,
+ linux-kernel@vger.kernel.org, Russ Anderson <russ.anderson@hpe.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,98 +87,101 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 11 May 2022, Christoph Hellwig wrote:
-> nslabs can shrink when allocations or the remap don't succeed, so make
-> sure to use it for all sizing.  For that remove the bytes value that
-> can get stale and replace it with local calculations and a boolean to
-> indicate if the originally requested size could not be allocated.
+On 2022/5/13 07:12, Steve Wahl wrote:
+> On Thu, May 12, 2022 at 10:13:09AM -0500, Steve Wahl wrote:
+>> To support up to 64 sockets with 10 DMAR units each (640), make the
+>> value of DMAR_UNITS_SUPPORTED adjustable by a config variable,
+>> CONFIG_DMAR_UNITS_SUPPORTED, and make it's default 1024 when MAXSMP is
+>> set.
+>>
+>> If the available hardware exceeds DMAR_UNITS_SUPPORTED (previously set
+>> to MAX_IO_APICS, or 128), it causes these messages: "DMAR: Failed to
+>> allocate seq_id", "DMAR: Parse DMAR table failure.", and "x2apic: IRQ
+>> remapping doesn't support X2APIC mode x2apic disabled"; and the system
+>> fails to boot properly.
+>>
+>> Signed-off-by: Steve Wahl <steve.wahl@hpe.com>
 > 
-> Fixes: 6424e31b1c05 ("swiotlb: remove swiotlb_init_with_tbl and swiotlb_init_late_with_tbl")
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-
-Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
-
-
-> ---
->  kernel/dma/swiotlb.c | 19 +++++++++++--------
->  1 file changed, 11 insertions(+), 8 deletions(-)
+> I've received a report from the kernel test robot <lkp@intel.com>,
+> that this patch causes an error (shown below) when
+> CONFIG_IOMMU_SUPPORT is not set.
 > 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 113e1e8aaca37..d6e62a6a42ceb 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -297,9 +297,9 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
->  {
->  	struct io_tlb_mem *mem = &io_tlb_default_mem;
->  	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
-> -	unsigned long bytes;
->  	unsigned char *vstart = NULL;
->  	unsigned int order;
-> +	bool retried = false;
->  	int rc = 0;
->  
->  	if (swiotlb_force_disable)
-> @@ -308,7 +308,6 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
->  retry:
->  	order = get_order(nslabs << IO_TLB_SHIFT);
->  	nslabs = SLABS_PER_PAGE << order;
-> -	bytes = nslabs << IO_TLB_SHIFT;
->  
->  	while ((SLABS_PER_PAGE << order) > IO_TLB_MIN_SLABS) {
->  		vstart = (void *)__get_free_pages(gfp_mask | __GFP_NOWARN,
-> @@ -316,16 +315,13 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
->  		if (vstart)
->  			break;
->  		order--;
-> +		nslabs = SLABS_PER_PAGE << order;
-> +		retried = true;
->  	}
->  
->  	if (!vstart)
->  		return -ENOMEM;
->  
-> -	if (order != get_order(bytes)) {
-> -		pr_warn("only able to allocate %ld MB\n",
-> -			(PAGE_SIZE << order) >> 20);
-> -		nslabs = SLABS_PER_PAGE << order;
-> -	}
->  	if (remap)
->  		rc = remap(vstart, nslabs);
->  	if (rc) {
-> @@ -334,9 +330,15 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
->  		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
->  		if (nslabs < IO_TLB_MIN_SLABS)
->  			return rc;
-> +		retried = true;
->  		goto retry;
->  	}
->  
-> +	if (retried) {
-> +		pr_warn("only able to allocate %ld MB\n",
-> +			(PAGE_SIZE << order) >> 20);
-> +	}
+> In my opinion, this is because include/linux/dmar.h and
+> include/linux/intel-iommu are being #included when they are not really
+> being used.
+> 
+> I've tried placing the contents of intel-iommu.h within an #ifdef
+> CONFIG_INTEL_IOMMU, and that fixes the problem.
+> 
+> Two questions:
+> 
+> A) Is this the desired approach to to the fix?
+
+Most part of include/linux/intel-iommu.h is private to Intel IOMMU
+driver. They should be put in a header like drivers/iommu/intel
+/iommu.h. Eventually, we should remove include/linux/intel-iommu.h
+and device drivers interact with iommu subsystem through the IOMMU
+kAPIs.
+
+Best regards,
+baolu
+
+> 
+> B) Should it be a separate patch, or added onto this patch as a v3?
+> 
+> Error message:  ------------------------------
+> 
+>     In file included from include/linux/intel-iommu.h:21,
+>                      from arch/x86/kvm/x86.c:44:
+>>> include/linux/dmar.h:21:33: error: 'CONFIG_DMAR_UNITS_SUPPORTED' undeclared here (not in a function); did you mean 'DMAR_UNITS_SUPPORTED'?
+>        21 | #define DMAR_UNITS_SUPPORTED    CONFIG_DMAR_UNITS_SUPPORTED
+>           |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>     include/linux/intel-iommu.h:531:35: note: in expansion of macro 'DMAR_UNITS_SUPPORTED'
+>       531 |         unsigned int iommu_refcnt[DMAR_UNITS_SUPPORTED];
+>           |                                   ^~~~~~~~~~~~~~~~~~~~
+> 
+> 
+> vim +21 include/linux/dmar.h
+> 
+>      20
+>    > 21  #define DMAR_UNITS_SUPPORTED    CONFIG_DMAR_UNITS_SUPPORTED
+>      22
+> 
+> Initial stab at fixing it: ------------------------------
+> 
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index 2f9891cb3d00..916fd7b5bcb5 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -10,6 +10,8 @@
+>   #ifndef _INTEL_IOMMU_H_
+>   #define _INTEL_IOMMU_H_
+>   
+> +#ifdef CONFIG_INTEL_IOMMU
 > +
->  	mem->slots = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
->  		get_order(array_size(sizeof(*mem->slots), nslabs)));
->  	if (!mem->slots) {
-> @@ -344,7 +346,8 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
->  		return -ENOMEM;
->  	}
->  
-> -	set_memory_decrypted((unsigned long)vstart, bytes >> PAGE_SHIFT);
-> +	set_memory_decrypted((unsigned long)vstart,
-> +			     (nslabs << IO_TLB_SHIFT) >> PAGE_SHIFT);
->  	swiotlb_init_io_tlb_mem(mem, virt_to_phys(vstart), nslabs, true);
->  
->  	swiotlb_print_info();
-> -- 
-> 2.30.2
+>   #include <linux/types.h>
+>   #include <linux/iova.h>
+>   #include <linux/io.h>
+> @@ -831,4 +833,6 @@ static inline const char *decode_prq_descriptor(char *str, size_t size,
+>   	return str;
+>   }
+>   
+> +#endif /* CONFIG_IOMMU_SUPPORT */
+> +
+>   #endif
 > 
+> 
+> Thanks.
+> 
+> --> Steve Wahl
+> 
+> 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
