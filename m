@@ -1,73 +1,68 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1A037C433EF
-	for <iommu@archiver.kernel.org>; Sat, 14 May 2022 08:15:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4FF4BC433F5
+	for <iommu@archiver.kernel.org>; Sat, 14 May 2022 08:17:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id AADAA83F2F;
-	Sat, 14 May 2022 08:15:33 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0078B60DB7;
+	Sat, 14 May 2022 08:17:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UbDdRMDZv71s; Sat, 14 May 2022 08:15:32 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id s_Y3aYVo0gKA; Sat, 14 May 2022 08:17:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 6E59783F24;
-	Sat, 14 May 2022 08:15:32 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id D706A60B42;
+	Sat, 14 May 2022 08:17:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3E77DC0032;
-	Sat, 14 May 2022 08:15:32 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1BC3AC002D
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 08:15:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A24E2C0032;
+	Sat, 14 May 2022 08:17:42 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D1100C002D
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 08:17:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 0346940983
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 08:15:30 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id C650460DB7
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 08:17:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="Tm0Wc2Hr";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="DQ1ba3l4"
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KT2goVJVN2hl for <iommu@lists.linux-foundation.org>;
- Sat, 14 May 2022 08:15:29 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 09AP2vzoX2ov for <iommu@lists.linux-foundation.org>;
+ Sat, 14 May 2022 08:17:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de
- [IPv6:2a0a:51c0:0:12e:550::1])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 2940240982
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 08:15:28 +0000 (UTC)
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 3471460B42
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 08:17:41 +0000 (UTC)
 From: Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1652516125;
+ s=2020; t=1652516259;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  in-reply-to:in-reply-to:references:references;
- bh=UHF9WVJF89fHPJq0+8oiweP3wjgNVxTMSM/vRu60nYc=;
- b=Tm0Wc2HrL4EoLv6k4cC472VP8Biprl05MvetpUZPEzW0ctnc4AfNAc9GzrCaDwbUR7asay
- k9meZSHbxU07Wx7caJes3ehRYibTz13rBlObuMSuFk7ZgN3LUGwEFHSwzQDAbs76ml91Iv
- TfrRfjYmgQ6VlChzQQtCqbE57X4yHCjEY/nFJ+u//Q0QW7b86PnnHZ0bks5Z5KNxstDgFB
- 8ieqdzZXwb8nQd54BAROxS5Y0qPLEeda5doQcCE+EFzABk7gxmFkNcD+FzEZp8aT5/YOg/
- zBTpa9/aRp4PQD0V/GvzjQhFx5s/3qzmVoPUo4/nyL1Yd+fdRZVYofcuJu1UWQ==
+ bh=ptxkYIfclqy5O/gMkPytM7FecBAPXApyhBHx/s6t5+k=;
+ b=cHjQpeFhBi4mMqPWUFdjjdKbCNxSUbeCTq7e9TuG54QoSwZllWwAyWn/VA2bxfbp8FS79W
+ lpKpONGN1xhSlu8/eUzJRYbZ8z2/7An4yFUXSfE69IHtfw3wF6lHivRNX1/x1EP43Mxg+m
+ 2YzOH1KhXwKXiNv80jZNKNSgxmxnjKjeDjsWmZo7PZev0MONnAMymFNV4PW0L08JGwT5Dg
+ XeCV5Hvab1ALlurGE9Sq5nyeVvDP0baDIxSjf5ud747JWKgjVTe0VrA/BAmffaTatkL5Fl
+ PsToyX+G9Z4WITvp+Bj9egqL+hjA9Kgbm3/OPtSDBuAAsUQm8y4Dgg3PUukvnA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1652516125;
+ s=2020e; t=1652516259;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  in-reply-to:in-reply-to:references:references;
- bh=UHF9WVJF89fHPJq0+8oiweP3wjgNVxTMSM/vRu60nYc=;
- b=DQ1ba3l4HOXe/g0FH1Hxfxmq/Jov5eLSl+952ajCcfZuyexUDsvo3a6HGCEtaOgGvBGZVv
- W7XCCMG7O6GU1PCg==
+ bh=ptxkYIfclqy5O/gMkPytM7FecBAPXApyhBHx/s6t5+k=;
+ b=4QyQkuDjHvg4QNWDVHeMxsVLfTUC/+wKMBTajewFUyM/io2iH9gFUIPw+ugISd8SAFk2b1
+ J7VmY4C7MwqIN+Bg==
 To: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Subject: Re: [PATCH v6 05/29] x86/apic/vector: Do not allocate vectors for NMIs
-In-Reply-To: <20220513234542.GC9074@ranerica-svr.sc.intel.com>
+Subject: Re: [PATCH v6 15/29] x86/hpet: Add helper function
+ hpet_set_comparator_periodic()
+In-Reply-To: <20220513211944.GE22683@ranerica-svr.sc.intel.com>
 References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-6-ricardo.neri-calderon@linux.intel.com>
- <87zgjufjrf.ffs@tglx> <20220513180320.GA22683@ranerica-svr.sc.intel.com>
- <87v8u9rwce.ffs@tglx> <20220513234542.GC9074@ranerica-svr.sc.intel.com>
-Date: Sat, 14 May 2022 10:15:24 +0200
-Message-ID: <87sfpcsf6r.ffs@tglx>
+ <20220506000008.30892-16-ricardo.neri-calderon@linux.intel.com>
+ <87mtfufifa.ffs@tglx> <20220513211944.GE22683@ranerica-svr.sc.intel.com>
+Date: Sat, 14 May 2022 10:17:38 +0200
+Message-ID: <87pmkgsf31.ffs@tglx>
 MIME-Version: 1.0
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
  Andi Kleen <ak@linux.intel.com>, linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
@@ -93,29 +88,25 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, May 13 2022 at 16:45, Ricardo Neri wrote:
-> On Fri, May 13, 2022 at 10:50:09PM +0200, Thomas Gleixner wrote:
->> > Also, if lapic_nmi_controller.irq_set_affinity() is NULL, then irq_chips
->> > INTEL-IR, AMD-IR, those using msi_domain_set_affinity() need to check for NULL.
->> > They currently unconditionally call the parent irq_chip's irq_set_affinity().
->> > I see that there is a irq_chip_set_affinity_parent() function. Perhaps it can
->> > be used for this check?
->> 
->> Yes, this lacks obviously a NMI specific set_affinity callback and this
->> can be very trivial and does not have any of the complexity of interrupt
->> affinity assignment. First online CPU in the mask with a fallback to any
->> online CPU.
+On Fri, May 13 2022 at 14:19, Ricardo Neri wrote:
+> On Fri, May 06, 2022 at 11:41:13PM +0200, Thomas Gleixner wrote:
+>> The argument about not bloating the code
+>> with an "obvious???" function which is quite small is slightly beyond my
+>> comprehension level.
 >
-> Why would we need a fallback to any online CPU? Shouldn't it fail if it cannot
-> find an online CPU in the mask?
-
-Might as well fail. Let me think about it.
-
->> I did not claim that this is complete. This was for illustration.
+> That obvious function would look like this:
 >
-> In the reworked patch, may I add a Co-developed-by with your name and your SOB?
+> void hpet_set_comparator_one_shot(int channel, u32 delta)
+> {
+> 	u32 count;
+>
+> 	count = hpet_readl(HPET_COUNTER);
+> 	count += delta;
+> 	hpet_writel(count, HPET_Tn_CMP(channel));
+> }
 
-Suggested-by is good enough.
+This function only works reliably when the delta is large. See
+hpet_clkevt_set_next_event().
 
 Thanks,
 
