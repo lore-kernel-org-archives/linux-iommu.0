@@ -1,60 +1,62 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BD6E2C433EF
-	for <iommu@archiver.kernel.org>; Sat, 14 May 2022 01:47:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2566AC433F5
+	for <iommu@archiver.kernel.org>; Sat, 14 May 2022 01:47:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 81D4D82F03;
-	Sat, 14 May 2022 01:47:01 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id BCAC340133;
+	Sat, 14 May 2022 01:47:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HtwtSyUE-esG; Sat, 14 May 2022 01:47:00 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id oiPxZmunKUPx; Sat, 14 May 2022 01:47:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 6CAB0828B5;
-	Sat, 14 May 2022 01:47:00 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 8ACDC4015D;
+	Sat, 14 May 2022 01:47:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 48079C0032;
-	Sat, 14 May 2022 01:47:00 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9E953C002D
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 01:46:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 71587C0032;
+	Sat, 14 May 2022 01:47:06 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 28225C002D
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 01:47:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8E0E1828DA
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 01:46:59 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 08AD8404A9
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 01:47:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EiguF57jmzx0 for <iommu@lists.linux-foundation.org>;
- Sat, 14 May 2022 01:46:59 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 92P4i_lEJH3i for <iommu@lists.linux-foundation.org>;
+ Sat, 14 May 2022 01:47:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by smtp1.osuosl.org (Postfix) with ESMTPS id F27D2828B5
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 01:46:58 +0000 (UTC)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 7550B4049A
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 01:47:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1652492818; x=1684028818;
+ t=1652492824; x=1684028824;
  h=from:to:cc:subject:date:message-id:in-reply-to:
  references:mime-version:content-transfer-encoding;
- bh=KozZnrzYJ+0UFKmzjAu1U8Z4jZPTgTst8scozy/7ge4=;
- b=mLZKmH1WEWsJdgCUhgqhYAxEFrehXGPHU9kK7pIXqBM0ifshOL/vLrap
- QXiFEB1auBi1MDEjeNNIztlzFU89hVjujp2YnrR2x+5qiqrxjKpEWr2n9
- 9cXls4+4EI43OnSsaLiSd9abLyXAeadpLz+t8oFB7mgx61HL655zmx74u
- lSKTXK3a6UQclbgDviqDplJqBXRZefiQu1GlgkOszl6k8g0qmup0TWCVJ
- Vo2Cps0rfhLr3UJlIkLLny62gZB67PzHdOIyVCSCd3XIqc6jd7nXBWd7T
- eKqCgBvORAvXi1xaxhxnNeTw1GgXaJHageDwkfjTYhetsRlqA26rb4IM/ w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="333487685"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="333487685"
+ bh=XbwqW8vSlHbl+VRBpjcHQ0sS7eNwoXn7JqpMKEUCRQ8=;
+ b=Lyd3KiEc30gC9qTFaah9sF9FJjZ8NKm7CpwKtqrj928E3ujAVpG5BcsV
+ C+nNqQ6z1whMa0JCGg0I/EO2eUj1cj5sMB1obNeWwUpNqCPBtvEbfn0n+
+ 6WPG5joEKBjkQlJ1BKXwTdqifk0DJKaEdIpplX3s1hr/Qr3RVTU9g2aLa
+ KW9eNThy7lOwc830hXxxa47F1TEC2JrcUWpsf/jW29kjxSZc7T0CLzZEO
+ yKH2Pk3T5qdhLPkKmxrTjYAfHyFZ03pjvWX4ev7+eALhws690lWglvgSh
+ zpvdNmhV+JTqdtEM7htC6pqyHTh0PLKUUbR3fPPwv8fw2oyoqbB3JMGSz Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="250358182"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="250358182"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 13 May 2022 18:46:58 -0700
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 13 May 2022 18:47:03 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="712630801"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="712630812"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
- by fmsmga001.fm.intel.com with ESMTP; 13 May 2022 18:46:53 -0700
+ by fmsmga001.fm.intel.com with ESMTP; 13 May 2022 18:46:58 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>, Thomas Gleixner <tglx@linutronix.de>,
  Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
@@ -67,9 +69,9 @@ To: Joerg Roedel <joro@8bytes.org>, Thomas Gleixner <tglx@linutronix.de>,
  Daniel Vetter <daniel@ffwll.ch>, Kevin Tian <kevin.tian@intel.com>,
  Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
  Jacob Pan <jacob.jun.pan@linux.intel.com>, Ning Sun <ning.sun@intel.com>
-Subject: [PATCH 4/7] drm/i915: Remove unnecessary include
-Date: Sat, 14 May 2022 09:43:19 +0800
-Message-Id: <20220514014322.2927339-5-baolu.lu@linux.intel.com>
+Subject: [PATCH 5/7] KVM: x86: Remove unnecessary include
+Date: Sat, 14 May 2022 09:43:20 +0800
+Message-Id: <20220514014322.2927339-6-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
 References: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
@@ -90,39 +92,34 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-aW50ZWwtaW9tbXUuaCBpcyBub3QgbmVlZGVkIGluIGRybS9pOTE1IGFueW1vcmUuIFJlbW92ZSBp
-dHMgaW5jbHVkZS4KClNpZ25lZC1vZmYtYnk6IEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRl
-bC5jb20+Ci0tLQogZHJpdmVycy9ncHUvZHJtL2k5MTUvaTkxNV9kcnYuaCAgICAgICAgICAgICAg
-ICB8IDEgLQogZHJpdmVycy9ncHUvZHJtL2k5MTUvZGlzcGxheS9pbnRlbF9kaXNwbGF5LmMgICB8
-IDEgLQogZHJpdmVycy9ncHUvZHJtL2k5MTUvZ2VtL2k5MTVfZ2VtX2V4ZWNidWZmZXIuYyB8IDEg
-LQogMyBmaWxlcyBjaGFuZ2VkLCAzIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-Z3B1L2RybS9pOTE1L2k5MTVfZHJ2LmggYi9kcml2ZXJzL2dwdS9kcm0vaTkxNS9pOTE1X2Rydi5o
-CmluZGV4IGZhMTRkYTg0MzYyZS4uZjJhNjk4MmMzYmVmIDEwMDY0NAotLS0gYS9kcml2ZXJzL2dw
-dS9kcm0vaTkxNS9pOTE1X2Rydi5oCisrKyBiL2RyaXZlcnMvZ3B1L2RybS9pOTE1L2k5MTVfZHJ2
-LmgKQEAgLTM2LDcgKzM2LDYgQEAKIAogI2luY2x1ZGUgPGxpbnV4L2kyYy5oPgogI2luY2x1ZGUg
-PGxpbnV4L2kyYy1hbGdvLWJpdC5oPgotI2luY2x1ZGUgPGxpbnV4L2ludGVsLWlvbW11Lmg+CiAj
-aW5jbHVkZSA8bGludXgvcG1fcW9zLmg+CiAKICNpbmNsdWRlIDxkcm0vZHJtX2Nvbm5lY3Rvci5o
-PgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2k5MTUvZGlzcGxheS9pbnRlbF9kaXNwbGF5
-LmMgYi9kcml2ZXJzL2dwdS9kcm0vaTkxNS9kaXNwbGF5L2ludGVsX2Rpc3BsYXkuYwppbmRleCA3
-ZGZlYjQ1OGFhNjUuLjY4NmRkYmVlYmFkYyAxMDA2NDQKLS0tIGEvZHJpdmVycy9ncHUvZHJtL2k5
-MTUvZGlzcGxheS9pbnRlbF9kaXNwbGF5LmMKKysrIGIvZHJpdmVycy9ncHUvZHJtL2k5MTUvZGlz
-cGxheS9pbnRlbF9kaXNwbGF5LmMKQEAgLTI3LDcgKzI3LDYgQEAKICNpbmNsdWRlIDxhY3BpL3Zp
-ZGVvLmg+CiAjaW5jbHVkZSA8bGludXgvaTJjLmg+CiAjaW5jbHVkZSA8bGludXgvaW5wdXQuaD4K
-LSNpbmNsdWRlIDxsaW51eC9pbnRlbC1pb21tdS5oPgogI2luY2x1ZGUgPGxpbnV4L2tlcm5lbC5o
-PgogI2luY2x1ZGUgPGxpbnV4L21vZHVsZS5oPgogI2luY2x1ZGUgPGxpbnV4L2RtYS1yZXN2Lmg+
-CmRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vaTkxNS9nZW0vaTkxNV9nZW1fZXhlY2J1ZmZl
-ci5jIGIvZHJpdmVycy9ncHUvZHJtL2k5MTUvZ2VtL2k5MTVfZ2VtX2V4ZWNidWZmZXIuYwppbmRl
-eCBkNDJmNDM3MTQ5YzkuLmM5ODIzNTI4ZWE5NCAxMDA2NDQKLS0tIGEvZHJpdmVycy9ncHUvZHJt
-L2k5MTUvZ2VtL2k5MTVfZ2VtX2V4ZWNidWZmZXIuYworKysgYi9kcml2ZXJzL2dwdS9kcm0vaTkx
-NS9nZW0vaTkxNV9nZW1fZXhlY2J1ZmZlci5jCkBAIC00LDcgKzQsNiBAQAogICogQ29weXJpZ2h0
-IMKpIDIwMDgsMjAxMCBJbnRlbCBDb3Jwb3JhdGlvbgogICovCiAKLSNpbmNsdWRlIDxsaW51eC9p
-bnRlbC1pb21tdS5oPgogI2luY2x1ZGUgPGxpbnV4L2RtYS1yZXN2Lmg+CiAjaW5jbHVkZSA8bGlu
-dXgvc3luY19maWxlLmg+CiAjaW5jbHVkZSA8bGludXgvdWFjY2Vzcy5oPgotLSAKMi4yNS4xCgpf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWls
-aW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5s
-aW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+intel-iommu.h is not needed in kvm/x86 anymore. Remove its include.
+
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ arch/x86/kvm/x86.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 4790f0d7d40b..fdf6ce5855d9 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -41,7 +41,6 @@
+ #include <linux/mman.h>
+ #include <linux/highmem.h>
+ #include <linux/iommu.h>
+-#include <linux/intel-iommu.h>
+ #include <linux/cpufreq.h>
+ #include <linux/user-return-notifier.h>
+ #include <linux/srcu.h>
+-- 
+2.25.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
