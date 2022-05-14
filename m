@@ -1,81 +1,83 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EA774C433F5
-	for <iommu@archiver.kernel.org>; Fri, 13 May 2022 23:42:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4133FC433EF
+	for <iommu@archiver.kernel.org>; Sat, 14 May 2022 01:46:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 70CA760BDB;
-	Fri, 13 May 2022 23:42:10 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D4405813C8;
+	Sat, 14 May 2022 01:46:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vS6liUnlK7td; Fri, 13 May 2022 23:42:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 31A7360BB2;
-	Fri, 13 May 2022 23:42:09 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 902oSWkGqxIX; Sat, 14 May 2022 01:46:43 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id B466881391;
+	Sat, 14 May 2022 01:46:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0746BC0032;
-	Fri, 13 May 2022 23:42:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A6DCC0032;
+	Sat, 14 May 2022 01:46:42 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5C204C002D
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 23:42:08 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A0C2FC002D
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 01:46:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 35A1C60BCD
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 23:42:08 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 8883C600B5
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 01:46:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fcLjarXqPBtl for <iommu@lists.linux-foundation.org>;
- Fri, 13 May 2022 23:42:07 +0000 (UTC)
+ with ESMTP id bNpxnWy3pFt6 for <iommu@lists.linux-foundation.org>;
+ Sat, 14 May 2022 01:46:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 4922860BB2
- for <iommu@lists.linux-foundation.org>; Fri, 13 May 2022 23:42:07 +0000 (UTC)
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id C2A9F6005E
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 01:46:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1652485327; x=1684021327;
- h=date:from:to:cc:subject:message-id:references:
- mime-version:in-reply-to;
- bh=l9BUQ0IAZJ5rrqEJ/wlo5FNsSwI6FBi8qNsQPZI+Uzg=;
- b=WtpuFRxkUJzwL4OynZnDn8HtOPiQ+6Cfl4/O8VGXAfpBbS1FY8HzF+q5
- u82RvuXlllre3ZugldLT6/+1ddVdlElelm131i1QmzOm0CyUbwFR/S0yv
- nxlO1PjmN1TwJt0yvLW6OhNzse/bOBkVdc974xrGecz6MQICLYx7M9hD9
- vXWfEHh1OOdp0XMS/0fPrnYsbLl1ziRSAU41lDnPrk33GCLhmRc2JrUam
- qFypY+5ATI1TYxJDkkaHVtV+Zc+cfZQlCcRf9zJIEh6UtZdmlEo+cZdNk
- sQTESxtVeaAQOwmWfsQzFipjS1fahkbiwhvr3QXe3WpYdr2rKCA2gBs7M Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="356859679"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="356859679"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 13 May 2022 16:42:06 -0700
+ t=1652492798; x=1684028798;
+ h=from:to:cc:subject:date:message-id:mime-version:
+ content-transfer-encoding;
+ bh=Q4OHxOkBcZ+3CvVCvY0m+wxDlD8i3ZcBOa66oWnNSzg=;
+ b=gopnPECJWp1t8wKNPoFaTVRmzT77myS1lzwADn9kZICa7ioMpVUVdbEg
+ JtSAmj6BRHslfGYHd5P60pea7jvAc9HLoXu0DNWOTXcjS3YROuxx5eUaA
+ BuYUvO1IJ0Rlx2SShAW/dpVNpWcrZkkuAoTKXsiL5PqOy4BSuwiGnvtQH
+ 5qvxPU1YFspfk6wYmw9mI8D10VfTZJVmC5n+rdpTXUGAZIlnE7ca5cP9g
+ BWwfYcjuV4fsT/ebEVZMEfuSY5IvMsVhP4dZxHFegAw93uMeecRwRIst9
+ AqU9Hqm9T8gewMZluqdU+r9+qPl3WNq+JGl0jNspcPVu45LAQwyd/Rn2q w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="333487663"
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="333487663"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 13 May 2022 18:46:36 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="625093273"
-Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
- by fmsmga008.fm.intel.com with ESMTP; 13 May 2022 16:42:06 -0700
-Date: Fri, 13 May 2022 16:45:42 -0700
-From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v6 05/29] x86/apic/vector: Do not allocate vectors for NMIs
-Message-ID: <20220513234542.GC9074@ranerica-svr.sc.intel.com>
-References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-6-ricardo.neri-calderon@linux.intel.com>
- <87zgjufjrf.ffs@tglx>
- <20220513180320.GA22683@ranerica-svr.sc.intel.com>
- <87v8u9rwce.ffs@tglx>
+X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="712630756"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+ by fmsmga001.fm.intel.com with ESMTP; 13 May 2022 18:46:31 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>, Thomas Gleixner <tglx@linutronix.de>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Dave Hansen <dave.hansen@linux.intel.com>,
+ Paolo Bonzini <pbonzini@redhat.com>, David Airlie <airlied@linux.ie>,
+ Jani Nikula <jani.nikula@linux.intel.com>,
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>,
+ Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Kevin Tian <kevin.tian@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>, Ning Sun <ning.sun@intel.com>
+Subject: [PATCH 0/7] iommu/vt-d: Make intel-iommu.h private
+Date: Sat, 14 May 2022 09:43:15 +0800
+Message-Id: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <87v8u9rwce.ffs@tglx>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
- Andi Kleen <ak@linux.intel.com>, linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
- Ricardo Neri <ricardo.neri@intel.com>, Stephane Eranian <eranian@google.com>,
+Cc: Steve Wahl <steve.wahl@hpe.com>, Will Deacon <will@kernel.org>,
  linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Tony Luck <tony.luck@intel.com>, Nicholas Piggin <npiggin@gmail.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- David Woodhouse <dwmw2@infradead.org>
+ Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,134 +95,56 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, May 13, 2022 at 10:50:09PM +0200, Thomas Gleixner wrote:
-> On Fri, May 13 2022 at 11:03, Ricardo Neri wrote:
-> > On Fri, May 06, 2022 at 11:12:20PM +0200, Thomas Gleixner wrote:
-> >> Why would a NMI ever end up in this code? There is no vector management
-> >> required and this find cpu exercise is pointless.
-> >
-> > But even if the NMI has a fixed vector, it is still necessary to determine
-> > which CPU will get the NMI. It is still necessary to determine what to
-> > write in the Destination ID field of the MSI message.
-> >
-> > irq_matrix_find_best_cpu() would find the CPU with the lowest number of
-> > managed vectors so that the NMI is directed to that CPU. 
-> 
-> What's the point to send it to the CPU with the lowest number of
-> interrupts. It's not that this NMI happens every 50 microseconds.
-> We pick one online CPU and are done.
+Hi folks,
 
-Indeed, that is sensible.
+The include/linux/intel-iommu.h should be private to the Intel IOMMU
+driver. Other drivers or components should interact with the IOMMU
+drivers through the kAPIs provided by the iommu core.
 
-> 
-> > In today's code, an NMI would end up here because we rely on the existing
-> > interrupt management infrastructure... Unless, the check is done the entry
-> > points as you propose.
-> 
-> Correct. We don't want to call into functions which are not designed for
-> NMIs.
+This series cleanups all includes of intel-iommu.h outside of the Intel
+IOMMU driver and move this header from include/linux to
+drivers/iommu/intel/.
 
-Agreed.
+No functional changes intended. Please help to review and suggest.
 
->  
-> >> > +
-> >> > +	if (apicd->hw_irq_cfg.delivery_mode == APIC_DELIVERY_MODE_NMI) {
-> >> > +		cpu = irq_matrix_find_best_cpu_managed(vector_matrix, dest);
-> >> > +		apicd->cpu = cpu;
-> >> > +		vector = 0;
-> >> > +		goto no_vector;
-> >> > +	}
-> >> 
-> >> This code can never be reached for a NMI delivery. If so, then it's a
-> >> bug.
-> >> 
-> >> This all is special purpose for that particular HPET NMI watchdog use
-> >> case and we are not exposing this to anything else at all.
-> >> 
-> >> So why are you sprinkling this NMI nonsense all over the place? Just
-> >> because? There are well defined entry points to all of this where this
-> >> can be fenced off.
-> >
-> > I put the NMI checks in these points because assign_vector_locked() and
-> > assign_managed_vector() are reached through multiple paths and these are
-> > the two places where the allocation of the vector is requested and the
-> > destination CPU is determined.
-> >
-> > I do observe this code being reached for an NMI, but that is because this
-> > code still does not know about NMIs... Unless the checks for NMI are put
-> > in the entry points as you pointed out.
-> >
-> > The intent was to refactor the code in a generic manner and not to focus
-> > only in the NMI watchdog. That would have looked hacky IMO.
-> 
-> We don't want to have more of this really. Supporting NMIs on x86 in a
-> broader way is simply not reasonable because there is only one NMI
-> vector and we have no sensible way to get to the cause of the NMI
-> without a massive overhead.
-> 
-> Even if we get multiple NMI vectors some shiny day, this will be
-> fundamentally different than regular interrupts and certainly not
-> exposed broadly. There will be 99.99% fixed vectors for simplicity sake.
+Best regards,
+baolu
 
-Understood.
+Lu Baolu (7):
+  iommu/vt-d: Move trace/events/intel_iommu.h under iommu
+  agp/intel: Use per device iommu check
+  iommu/vt-d: Remove unnecessary exported symbol
+  drm/i915: Remove unnecessary include
+  KVM: x86: Remove unnecessary include
+  x86/boot/tboot: Move tboot_force_iommu() to Intel IOMMU
+  iommu/vt-d: Move include/linux/intel_iommu.h under iommu
 
-> 
-> >> +		if (info->flags & X86_IRQ_ALLOC_AS_NMI) {
-> >> +			/*
-> >> +			 * NMIs have a fixed vector and need their own
-> >> +			 * interrupt chip so nothing can end up in the
-> >> +			 * regular local APIC management code except the
-> >> +			 * MSI message composing callback.
-> >> +			 */
-> >> +			irqd->chip = &lapic_nmi_controller;
-> >> +			/*
-> >> +			 * Don't allow affinity setting attempts for NMIs.
-> >> +			 * This cannot work with the regular affinity
-> >> +			 * mechanisms and for the intended HPET NMI
-> >> +			 * watchdog use case it's not required.
-> >
-> > But we do need the ability to set affinity, right? As stated above, we need
-> > to know what Destination ID to write in the MSI message or in the interrupt
-> > remapping table entry.
-> >
-> > It cannot be any CPU because only one specific CPU is supposed to handle the
-> > NMI from the HPET channel.
-> >
-> > We cannot hard-code a CPU for that because it may go offline (and ignore NMIs)
-> > or not be part of the monitored CPUs.
-> >
-> > Also, if lapic_nmi_controller.irq_set_affinity() is NULL, then irq_chips
-> > INTEL-IR, AMD-IR, those using msi_domain_set_affinity() need to check for NULL.
-> > They currently unconditionally call the parent irq_chip's irq_set_affinity().
-> > I see that there is a irq_chip_set_affinity_parent() function. Perhaps it can
-> > be used for this check?
-> 
-> Yes, this lacks obviously a NMI specific set_affinity callback and this
-> can be very trivial and does not have any of the complexity of interrupt
-> affinity assignment. First online CPU in the mask with a fallback to any
-> online CPU.
+ include/linux/tboot.h                         |  2 --
+ drivers/gpu/drm/i915/i915_drv.h               |  1 -
+ .../iommu/intel/iommu.h                       |  1 -
+ .../iommu/intel/trace.h                       |  7 +++++-
+ arch/x86/kernel/tboot.c                       | 15 -------------
+ arch/x86/kvm/x86.c                            |  1 -
+ drivers/char/agp/intel-gtt.c                  | 17 ++++++--------
+ drivers/gpu/drm/i915/display/intel_display.c  |  1 -
+ .../gpu/drm/i915/gem/i915_gem_execbuffer.c    |  1 -
+ drivers/iommu/intel/cap_audit.c               |  2 +-
+ drivers/iommu/intel/debugfs.c                 |  2 +-
+ drivers/iommu/intel/dmar.c                    |  4 ++--
+ drivers/iommu/intel/iommu.c                   | 22 +++++++++++++------
+ drivers/iommu/intel/irq_remapping.c           |  2 +-
+ drivers/iommu/intel/pasid.c                   |  2 +-
+ drivers/iommu/intel/perf.c                    |  2 +-
+ drivers/iommu/intel/svm.c                     |  4 ++--
+ drivers/iommu/intel/trace.c                   |  2 +-
+ MAINTAINERS                                   |  1 -
+ 19 files changed, 38 insertions(+), 51 deletions(-)
+ rename include/linux/intel-iommu.h => drivers/iommu/intel/iommu.h (99%)
+ rename include/trace/events/intel_iommu.h => drivers/iommu/intel/trace.h (93%)
 
-Why would we need a fallback to any online CPU? Shouldn't it fail if it cannot
-find an online CPU in the mask?
+-- 
+2.25.1
 
-> 
-> I did not claim that this is complete. This was for illustration.
-
-In the reworked patch, may I add a Co-developed-by with your name and your SOB?
-
-> 
-> >> +			 */
-> >> +			irqd_set_no_balance(irqd);
-> >
-> > This code does not set apicd->hw_irq_cfg.delivery_mode as NMI, right?
-> > I had to add that to make it work.
-> 
-> I assumed you can figure that out on your own :)
-
-:)
-
-Thanks and BR,
-Ricardo
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
