@@ -4,82 +4,78 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AF600C433F5
-	for <iommu@archiver.kernel.org>; Sat, 14 May 2022 01:47:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1A037C433EF
+	for <iommu@archiver.kernel.org>; Sat, 14 May 2022 08:15:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 5FEB182E14;
-	Sat, 14 May 2022 01:47:20 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id AADAA83F2F;
+	Sat, 14 May 2022 08:15:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id reTFXqdm38PH; Sat, 14 May 2022 01:47:19 +0000 (UTC)
+	with ESMTP id UbDdRMDZv71s; Sat, 14 May 2022 08:15:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 045F982726;
-	Sat, 14 May 2022 01:47:19 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 6E59783F24;
+	Sat, 14 May 2022 08:15:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D3CEEC0032;
-	Sat, 14 May 2022 01:47:18 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 403B6C002D
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 01:47:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3E77DC0032;
+	Sat, 14 May 2022 08:15:32 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1BC3AC002D
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 08:15:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 2F1FB40516
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 01:47:17 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0346940983
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 08:15:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cEufyTJ-r-t6 for <iommu@lists.linux-foundation.org>;
- Sat, 14 May 2022 01:47:16 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="Tm0Wc2Hr";
+ dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
+ header.d=linutronix.de header.b="DQ1ba3l4"
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id KT2goVJVN2hl for <iommu@lists.linux-foundation.org>;
+ Sat, 14 May 2022 08:15:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 52E7D400AF
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 01:47:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1652492836; x=1684028836;
- h=from:to:cc:subject:date:message-id:in-reply-to:
- references:mime-version:content-transfer-encoding;
- bh=h9H5Br/N5inR8hBGkTrWQLfQT0kDOku9gguSP1OEsxA=;
- b=IhVnR980ayc/Cr3b86axBshi7VWW/0hqvbekTAC4ICQRhwKg7U8cU147
- 27iViuIGAAjj7zeg+ZJsjaiwXgD1CtcQKrNUC208V8pTp6oJks8HqdWfU
- 4/8siVttweixv+lwpTwKWSrIHXo+b+hWLfMu1bg0RKx+P5Y0XVOVxvDgx
- 9Abw7QmFAeSdMTdNb1bKRmZ4JWifNegRU9oo/uR3u6gHkXyzkVgnuDq/7
- 4oZB3+9EJBTP0Ud46hnhh3Z+KhUyEbmPG1tYjVjYCwYhunTyw6BApQ7RL
- Ols79Ak6rFzOY8QmTHPaXvU0SLKWl7Zzjx/wqhxfFfnYq8THCLOjcmp9Z g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10346"; a="258005814"
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="258005814"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 13 May 2022 18:47:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,223,1647327600"; d="scan'208";a="712630839"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
- by fmsmga001.fm.intel.com with ESMTP; 13 May 2022 18:47:09 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>, Thomas Gleixner <tglx@linutronix.de>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Dave Hansen <dave.hansen@linux.intel.com>,
- Paolo Bonzini <pbonzini@redhat.com>, David Airlie <airlied@linux.ie>,
- Jani Nikula <jani.nikula@linux.intel.com>,
- Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
- Rodrigo Vivi <rodrigo.vivi@intel.com>,
- Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
- Daniel Vetter <daniel@ffwll.ch>, Kevin Tian <kevin.tian@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>, Ning Sun <ning.sun@intel.com>
-Subject: [PATCH 7/7] iommu/vt-d: Move include/linux/intel_iommu.h under iommu
-Date: Sat, 14 May 2022 09:43:22 +0800
-Message-Id: <20220514014322.2927339-8-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
-References: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
+Received: from galois.linutronix.de (Galois.linutronix.de
+ [IPv6:2a0a:51c0:0:12e:550::1])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 2940240982
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 08:15:28 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020; t=1652516125;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=UHF9WVJF89fHPJq0+8oiweP3wjgNVxTMSM/vRu60nYc=;
+ b=Tm0Wc2HrL4EoLv6k4cC472VP8Biprl05MvetpUZPEzW0ctnc4AfNAc9GzrCaDwbUR7asay
+ k9meZSHbxU07Wx7caJes3ehRYibTz13rBlObuMSuFk7ZgN3LUGwEFHSwzQDAbs76ml91Iv
+ TfrRfjYmgQ6VlChzQQtCqbE57X4yHCjEY/nFJ+u//Q0QW7b86PnnHZ0bks5Z5KNxstDgFB
+ 8ieqdzZXwb8nQd54BAROxS5Y0qPLEeda5doQcCE+EFzABk7gxmFkNcD+FzEZp8aT5/YOg/
+ zBTpa9/aRp4PQD0V/GvzjQhFx5s/3qzmVoPUo4/nyL1Yd+fdRZVYofcuJu1UWQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020e; t=1652516125;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=UHF9WVJF89fHPJq0+8oiweP3wjgNVxTMSM/vRu60nYc=;
+ b=DQ1ba3l4HOXe/g0FH1Hxfxmq/Jov5eLSl+952ajCcfZuyexUDsvo3a6HGCEtaOgGvBGZVv
+ W7XCCMG7O6GU1PCg==
+To: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+Subject: Re: [PATCH v6 05/29] x86/apic/vector: Do not allocate vectors for NMIs
+In-Reply-To: <20220513234542.GC9074@ranerica-svr.sc.intel.com>
+References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
+ <20220506000008.30892-6-ricardo.neri-calderon@linux.intel.com>
+ <87zgjufjrf.ffs@tglx> <20220513180320.GA22683@ranerica-svr.sc.intel.com>
+ <87v8u9rwce.ffs@tglx> <20220513234542.GC9074@ranerica-svr.sc.intel.com>
+Date: Sat, 14 May 2022 10:15:24 +0200
+Message-ID: <87sfpcsf6r.ffs@tglx>
 MIME-Version: 1.0
-Cc: Steve Wahl <steve.wahl@hpe.com>, Will Deacon <will@kernel.org>,
+Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
+ Andi Kleen <ak@linux.intel.com>, linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
+ Ricardo Neri <ricardo.neri@intel.com>, Stephane Eranian <eranian@google.com>,
  linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>
+ Tony Luck <tony.luck@intel.com>, Nicholas Piggin <npiggin@gmail.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,201 +93,33 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This header file is private to the Intel IOMMU driver. Move it to the
-driver folder.
+On Fri, May 13 2022 at 16:45, Ricardo Neri wrote:
+> On Fri, May 13, 2022 at 10:50:09PM +0200, Thomas Gleixner wrote:
+>> > Also, if lapic_nmi_controller.irq_set_affinity() is NULL, then irq_chips
+>> > INTEL-IR, AMD-IR, those using msi_domain_set_affinity() need to check for NULL.
+>> > They currently unconditionally call the parent irq_chip's irq_set_affinity().
+>> > I see that there is a irq_chip_set_affinity_parent() function. Perhaps it can
+>> > be used for this check?
+>> 
+>> Yes, this lacks obviously a NMI specific set_affinity callback and this
+>> can be very trivial and does not have any of the complexity of interrupt
+>> affinity assignment. First online CPU in the mask with a fallback to any
+>> online CPU.
+>
+> Why would we need a fallback to any online CPU? Shouldn't it fail if it cannot
+> find an online CPU in the mask?
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/intel-iommu.h => drivers/iommu/intel/iommu.h | 0
- drivers/iommu/intel/trace.h                                | 3 ++-
- drivers/iommu/intel/cap_audit.c                            | 2 +-
- drivers/iommu/intel/debugfs.c                              | 2 +-
- drivers/iommu/intel/dmar.c                                 | 2 +-
- drivers/iommu/intel/iommu.c                                | 2 +-
- drivers/iommu/intel/irq_remapping.c                        | 2 +-
- drivers/iommu/intel/pasid.c                                | 2 +-
- drivers/iommu/intel/perf.c                                 | 2 +-
- drivers/iommu/intel/svm.c                                  | 2 +-
- MAINTAINERS                                                | 1 -
- 11 files changed, 10 insertions(+), 10 deletions(-)
- rename include/linux/intel-iommu.h => drivers/iommu/intel/iommu.h (100%)
+Might as well fail. Let me think about it.
 
-diff --git a/include/linux/intel-iommu.h b/drivers/iommu/intel/iommu.h
-similarity index 100%
-rename from include/linux/intel-iommu.h
-rename to drivers/iommu/intel/iommu.h
-diff --git a/drivers/iommu/intel/trace.h b/drivers/iommu/intel/trace.h
-index 25cb7f88e1a2..93d96f93a89b 100644
---- a/drivers/iommu/intel/trace.h
-+++ b/drivers/iommu/intel/trace.h
-@@ -13,7 +13,8 @@
- #define _TRACE_INTEL_IOMMU_H
- 
- #include <linux/tracepoint.h>
--#include <linux/intel-iommu.h>
-+
-+#include "iommu.h"
- 
- #define MSG_MAX		256
- 
-diff --git a/drivers/iommu/intel/cap_audit.c b/drivers/iommu/intel/cap_audit.c
-index 71596fc62822..3ee68393122f 100644
---- a/drivers/iommu/intel/cap_audit.c
-+++ b/drivers/iommu/intel/cap_audit.c
-@@ -10,7 +10,7 @@
- 
- #define pr_fmt(fmt)	"DMAR: " fmt
- 
--#include <linux/intel-iommu.h>
-+#include "iommu.h"
- #include "cap_audit.h"
- 
- static u64 intel_iommu_cap_sanity;
-diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
-index ed796eea4581..d927ef10641b 100644
---- a/drivers/iommu/intel/debugfs.c
-+++ b/drivers/iommu/intel/debugfs.c
-@@ -10,11 +10,11 @@
- 
- #include <linux/debugfs.h>
- #include <linux/dmar.h>
--#include <linux/intel-iommu.h>
- #include <linux/pci.h>
- 
- #include <asm/irq_remapping.h>
- 
-+#include "iommu.h"
- #include "pasid.h"
- #include "perf.h"
- 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index b02d72097a8c..059af0ef2a9d 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -19,7 +19,6 @@
- #include <linux/pci.h>
- #include <linux/dmar.h>
- #include <linux/iova.h>
--#include <linux/intel-iommu.h>
- #include <linux/timer.h>
- #include <linux/irq.h>
- #include <linux/interrupt.h>
-@@ -32,6 +31,7 @@
- #include <asm/irq_remapping.h>
- #include <asm/iommu_table.h>
- 
-+#include "iommu.h"
- #include "../irq_remapping.h"
- #include "perf.h"
- #include "trace.h"
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index ea1c3bcd38d5..1af4b6562266 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -17,7 +17,6 @@
- #include <linux/dma-direct.h>
- #include <linux/dma-iommu.h>
- #include <linux/dmi.h>
--#include <linux/intel-iommu.h>
- #include <linux/intel-svm.h>
- #include <linux/memory.h>
- #include <linux/pci.h>
-@@ -26,6 +25,7 @@
- #include <linux/syscore_ops.h>
- #include <linux/tboot.h>
- 
-+#include "iommu.h"
- #include "../irq_remapping.h"
- #include "../iommu-sva-lib.h"
- #include "pasid.h"
-diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
-index a67319597884..2e9683e970f8 100644
---- a/drivers/iommu/intel/irq_remapping.c
-+++ b/drivers/iommu/intel/irq_remapping.c
-@@ -10,7 +10,6 @@
- #include <linux/hpet.h>
- #include <linux/pci.h>
- #include <linux/irq.h>
--#include <linux/intel-iommu.h>
- #include <linux/acpi.h>
- #include <linux/irqdomain.h>
- #include <linux/crash_dump.h>
-@@ -21,6 +20,7 @@
- #include <asm/irq_remapping.h>
- #include <asm/pci-direct.h>
- 
-+#include "iommu.h"
- #include "../irq_remapping.h"
- #include "cap_audit.h"
- 
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index cb4c1d0cf25c..b2ac5869286f 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -12,13 +12,13 @@
- #include <linux/bitops.h>
- #include <linux/cpufeature.h>
- #include <linux/dmar.h>
--#include <linux/intel-iommu.h>
- #include <linux/iommu.h>
- #include <linux/memory.h>
- #include <linux/pci.h>
- #include <linux/pci-ats.h>
- #include <linux/spinlock.h>
- 
-+#include "iommu.h"
- #include "pasid.h"
- 
- /*
-diff --git a/drivers/iommu/intel/perf.c b/drivers/iommu/intel/perf.c
-index 0e8e03252d92..94ee70ac38e3 100644
---- a/drivers/iommu/intel/perf.c
-+++ b/drivers/iommu/intel/perf.c
-@@ -9,8 +9,8 @@
-  */
- 
- #include <linux/spinlock.h>
--#include <linux/intel-iommu.h>
- 
-+#include "iommu.h"
- #include "perf.h"
- 
- static DEFINE_SPINLOCK(latency_lock);
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 70b40d007a52..580713aa9e07 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -5,7 +5,6 @@
-  * Authors: David Woodhouse <dwmw2@infradead.org>
-  */
- 
--#include <linux/intel-iommu.h>
- #include <linux/mmu_notifier.h>
- #include <linux/sched.h>
- #include <linux/sched/mm.h>
-@@ -22,6 +21,7 @@
- #include <asm/page.h>
- #include <asm/fpu/api.h>
- 
-+#include "iommu.h"
- #include "pasid.h"
- #include "perf.h"
- #include "../iommu-sva-lib.h"
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a2095c832d84..81458c7f9a32 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -9870,7 +9870,6 @@ L:	iommu@lists.linux-foundation.org
- S:	Supported
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
- F:	drivers/iommu/intel/
--F:	include/linux/intel-iommu.h
- F:	include/linux/intel-svm.h
- 
- INTEL IOP-ADMA DMA DRIVER
--- 
-2.25.1
+>> I did not claim that this is complete. This was for illustration.
+>
+> In the reworked patch, may I add a Co-developed-by with your name and your SOB?
 
+Suggested-by is good enough.
+
+Thanks,
+
+        tglx
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
