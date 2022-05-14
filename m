@@ -4,78 +4,96 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 73469C433EF
-	for <iommu@archiver.kernel.org>; Sat, 14 May 2022 14:04:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 487CCC43219
+	for <iommu@archiver.kernel.org>; Sat, 14 May 2022 14:15:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 19A9260806;
-	Sat, 14 May 2022 14:04:26 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id D9BD260E22;
+	Sat, 14 May 2022 14:15:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2LK1wwy8iefI; Sat, 14 May 2022 14:04:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 3080860D66;
-	Sat, 14 May 2022 14:04:24 +0000 (UTC)
+	with ESMTP id GuUZcAK1nBMM; Sat, 14 May 2022 14:15:42 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id B47E660BB3;
+	Sat, 14 May 2022 14:15:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 04A37C0039;
-	Sat, 14 May 2022 14:04:24 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AEFBCC002D
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 14:04:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 786C6C0032;
+	Sat, 14 May 2022 14:15:41 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E631DC002D
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 14:15:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 9855A83E38
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 14:04:22 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id C6A6740C72
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 14:15:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="LHg9QKXY";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="Wccmxkq4"
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8MMtS60_2mdG for <iommu@lists.linux-foundation.org>;
- Sat, 14 May 2022 14:04:22 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de
- [IPv6:2a0a:51c0:0:12e:550::1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id F3D3D83E17
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 14:04:21 +0000 (UTC)
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1652537058;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=KHOIys2lUf5zRjBsSOUOWEZGDpRLn7fWHLTsPdw7f4U=;
- b=LHg9QKXYPrV5G6DpjGAQUj+qfPDVnxCZetHDBfVfH+LeqCXHlJAbKb8WllnreP7S3bNkfN
- 4KeQuJ7ASL57SIcHW5e0/ESjXmm27lFLndKPfS7ueia9+AnyVBizDI/I8cVvjyBodAV73C
- KuR6VX1IdjUZkcx7JJgKy1PXR652V3bzFUHb8gWx45QdbM32XdC1pSbLSU5kSVZNHK9CnN
- sYrvtcF6hGd4esjm7UwZp0Jjc3XOn+pTPW63vJAVYDRvjZI2qtcicolrLDuGi3y01KBsGF
- OHVzd6Qv0y0sYGOnTDmWoNHy2dKwZHGvbkDMdo4G48fllgMyGiB+2V0HQQZJAA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1652537058;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=KHOIys2lUf5zRjBsSOUOWEZGDpRLn7fWHLTsPdw7f4U=;
- b=Wccmxkq4ead+q0uv0ac7dDXkCM4gzRqejs0vLHNPNyx0+CzSuVgKfK7pCPPycJh8YJUxj4
- LicVDTm3UgM/NtDA==
-To: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Subject: Re: [PATCH v6 22/29] x86/watchdog/hardlockup: Add an HPET-based
- hardlockup detector
-In-Reply-To: <20220513221650.GA8691@ranerica-svr.sc.intel.com>
-References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
- <20220506000008.30892-23-ricardo.neri-calderon@linux.intel.com>
- <877d6uref8.ffs@tglx> <20220513221650.GA8691@ranerica-svr.sc.intel.com>
-Date: Sat, 14 May 2022 16:04:17 +0200
-Message-ID: <875ym8rz1a.ffs@tglx>
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id SK3U_I3K1Opb for <iommu@lists.linux-foundation.org>;
+ Sat, 14 May 2022 14:15:39 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com
+ [IPv6:2001:4860:4864:20::32])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 054B5400A6
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 14:15:38 +0000 (UTC)
+Received: by mail-oa1-x32.google.com with SMTP id
+ 586e51a60fabf-e93bbb54f9so13942271fac.12
+ for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 07:15:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=sender:date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=V0UWMw+8IC5/blrDj2MNiuz1nnIEdolub0ud2xnX3wc=;
+ b=dkxvJMEFx6NNgw1tH/UOFEVkB83/cvgCoN2PlMfOTAvFF3YrqCpWz24cv5z8xQwuP7
+ BcwvEsuFTuyE8yjru1Pi9Q9cgXnx/x9R5X1crekVv9DRnAcrnELwo3xV1+gyUaEzYXqH
+ 2VUhW79PlCNlREYwLWgPacsLZpLg/SR1rbTxCrHKruvIDmJ15NRQ1aWlUpvb1oblcA6c
+ U16dqcZxJxDVmmhhEtOaqJlvLnZm618xa4XDWfp31YWmyoDpO6YqqvqeDNcXATzvnLdr
+ AjTjqn6W2vguXwB/Unl/2mEHV4UkX8F6g+4VT6wc7OouhdHE7n3go4ycJIu1c2LG90Js
+ AvrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+ :references:mime-version:content-disposition:in-reply-to;
+ bh=V0UWMw+8IC5/blrDj2MNiuz1nnIEdolub0ud2xnX3wc=;
+ b=ZD9YImu5RZ1xzo6PIsO4kxyE0xvbGIGSpdB02q+98XRCLTMlEvLpqv/VJ4ioSyiTt8
+ 6vOyIfuuIisK2AGyGK0b04b4bq3Qevq3SKDHU0FOtRXeRLCE4nWr0dDkvNTwyWEY1GGG
+ kfJqDgvIesc2hBc+D0b63f+PR2Uhk5hpDk3k7/cCA3kW5LhhjfTopwDvWVzvTt18kDXg
+ xEvdXwTapiVMTxS7wqbXm4/DniaJiD4JxtkNf2fyKZbo+zSTVZ1wpVUNCkTvdiIJZs5Y
+ zYk1NoMAr9d1+qjHCLMEZ0L3Fc5hScznkwrj3FVZLglT4RZePhnIOCdn3XoBsu9AikMF
+ g1rg==
+X-Gm-Message-State: AOAM533FodHf7oRxVYc82LQR3NNxj78QZ22ehm0x5YiMrJbdgkADeZR1
+ IPdLrxdxmtxoDASAlrLBtvg=
+X-Google-Smtp-Source: ABdhPJxIh4A6RDGJLkqD3wI+SAa3lP6jsUbrzhaqHnQbP/kqqs6hM/AP18eGNJmYYJxAgVXlsnJ15A==
+X-Received: by 2002:a05:6871:70c:b0:ed:e6c2:e599 with SMTP id
+ f12-20020a056871070c00b000ede6c2e599mr5088966oap.70.1652537737907; 
+ Sat, 14 May 2022 07:15:37 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+ by smtp.gmail.com with ESMTPSA id
+ n39-20020a05687055a700b000e686d1389dsm2401199oao.55.2022.05.14.07.15.36
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sat, 14 May 2022 07:15:37 -0700 (PDT)
+Date: Sat, 14 May 2022 07:15:36 -0700
+From: Guenter Roeck <linux@roeck-us.net>
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH 7/7] dt-bindings: watchdog: renesas,wdt: R-Car V3U is
+ R-Car Gen4
+Message-ID: <20220514141536.GA1319284@roeck-us.net>
+References: <cover.1651497024.git.geert+renesas@glider.be>
+ <2882a6de3905a57ae62d91060d27521af43c4068.1651497024.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
- Andi Kleen <ak@linux.intel.com>, linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
- Ricardo Neri <ricardo.neri@intel.com>, Stephane Eranian <eranian@google.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Tony Luck <tony.luck@intel.com>, Nicholas Piggin <npiggin@gmail.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- David Woodhouse <dwmw2@infradead.org>
+Content-Disposition: inline
+In-Reply-To: <2882a6de3905a57ae62d91060d27521af43c4068.1651497024.git.geert+renesas@glider.be>
+Cc: devicetree@vger.kernel.org, linux-watchdog@vger.kernel.org,
+ Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+ linux-gpio@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Linus Walleij <linus.walleij@linaro.org>, iommu@lists.linux-foundation.org,
+ linux-renesas-soc@vger.kernel.org,
+ Wolfram Sang <wsa+renesas@sang-engineering.com>, Vinod Koul <vkoul@kernel.org>,
+ Rob Herring <robh+dt@kernel.org>, linux-i2c@vger.kernel.org,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ linux-serial@vger.kernel.org, dmaengine@vger.kernel.org,
+ Wim Van Sebroeck <wim@linux-watchdog.org>, Will Deacon <will@kernel.org>,
+ Bartosz Golaszewski <brgl@bgdev.pl>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,25 +111,37 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, May 13 2022 at 15:16, Ricardo Neri wrote:
-> On Mon, May 09, 2022 at 04:03:39PM +0200, Thomas Gleixner wrote:
->> > +			/* If we are here, IPI shorthands are enabled. */
->> > +			apic->send_IPI_allbutself(NMI_VECTOR);
->> 
->> So if the monitored cpumask is a subset of online CPUs, which is the
->> case when isolation features are enabled, then you still send NMIs to
->> those isolated CPUs. I'm sure the isolation folks will be enthused.
->
-> Yes, I acknowledged this limitation in the cover letter. I should also update
-> Documentation/admin-guide/lockup-watchdogs.rst.
->
-> This patchset proposes the HPET NMI watchdog as an opt-in feature.
->
-> Perhaps the limitation might be mitigated by adding a check for non-housekeeping
-> and non-monitored CPUs in exc_nmi(). However, that will not eliminate the
-> problem of isolated CPUs also getting the NMI.
+On Mon, May 02, 2022 at 03:34:59PM +0200, Geert Uytterhoeven wrote:
+> Despite the name, R-Car V3U is the first member of the R-Car Gen4
+> family.  Hence move its compatible value to the R-Car Gen4 section.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-Right. It's a mess...
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+
+> ---
+>  Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml b/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
+> index 77ee7c4b8067f506..1fa243052327bffe 100644
+> --- a/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
+> +++ b/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
+> @@ -59,11 +59,11 @@ properties:
+>                - renesas,r8a77980-wdt     # R-Car V3H
+>                - renesas,r8a77990-wdt     # R-Car E3
+>                - renesas,r8a77995-wdt     # R-Car D3
+> -              - renesas,r8a779a0-wdt     # R-Car V3U
+>            - const: renesas,rcar-gen3-wdt # R-Car Gen3 and RZ/G2
+>  
+>        - items:
+>            - enum:
+> +              - renesas,r8a779a0-wdt     # R-Car V3U
+>                - renesas,r8a779f0-wdt     # R-Car S4-8
+>            - const: renesas,rcar-gen4-wdt # R-Car Gen4
+>  
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
