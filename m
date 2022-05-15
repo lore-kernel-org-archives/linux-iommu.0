@@ -1,99 +1,58 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 487CCC43219
-	for <iommu@archiver.kernel.org>; Sat, 14 May 2022 14:15:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 04AA5C433F5
+	for <iommu@archiver.kernel.org>; Sun, 15 May 2022 10:35:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D9BD260E22;
-	Sat, 14 May 2022 14:15:42 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 8DACA81970;
+	Sun, 15 May 2022 10:35:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GuUZcAK1nBMM; Sat, 14 May 2022 14:15:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id B47E660BB3;
-	Sat, 14 May 2022 14:15:41 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PxSupWIHXd4R; Sun, 15 May 2022 10:35:50 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 5781D81934;
+	Sun, 15 May 2022 10:35:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 786C6C0032;
-	Sat, 14 May 2022 14:15:41 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E631DC002D
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 14:15:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 20AADC0039;
+	Sun, 15 May 2022 10:35:50 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CDDC0C002D
+ for <iommu@lists.linux-foundation.org>; Sun, 15 May 2022 10:35:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id C6A6740C72
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 14:15:39 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id B5B724087C
+ for <iommu@lists.linux-foundation.org>; Sun, 15 May 2022 10:35:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SK3U_I3K1Opb for <iommu@lists.linux-foundation.org>;
- Sat, 14 May 2022 14:15:39 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com
- [IPv6:2001:4860:4864:20::32])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 054B5400A6
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 14:15:38 +0000 (UTC)
-Received: by mail-oa1-x32.google.com with SMTP id
- 586e51a60fabf-e93bbb54f9so13942271fac.12
- for <iommu@lists.linux-foundation.org>; Sat, 14 May 2022 07:15:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=sender:date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=V0UWMw+8IC5/blrDj2MNiuz1nnIEdolub0ud2xnX3wc=;
- b=dkxvJMEFx6NNgw1tH/UOFEVkB83/cvgCoN2PlMfOTAvFF3YrqCpWz24cv5z8xQwuP7
- BcwvEsuFTuyE8yjru1Pi9Q9cgXnx/x9R5X1crekVv9DRnAcrnELwo3xV1+gyUaEzYXqH
- 2VUhW79PlCNlREYwLWgPacsLZpLg/SR1rbTxCrHKruvIDmJ15NRQ1aWlUpvb1oblcA6c
- U16dqcZxJxDVmmhhEtOaqJlvLnZm618xa4XDWfp31YWmyoDpO6YqqvqeDNcXATzvnLdr
- AjTjqn6W2vguXwB/Unl/2mEHV4UkX8F6g+4VT6wc7OouhdHE7n3go4ycJIu1c2LG90Js
- AvrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
- :references:mime-version:content-disposition:in-reply-to;
- bh=V0UWMw+8IC5/blrDj2MNiuz1nnIEdolub0ud2xnX3wc=;
- b=ZD9YImu5RZ1xzo6PIsO4kxyE0xvbGIGSpdB02q+98XRCLTMlEvLpqv/VJ4ioSyiTt8
- 6vOyIfuuIisK2AGyGK0b04b4bq3Qevq3SKDHU0FOtRXeRLCE4nWr0dDkvNTwyWEY1GGG
- kfJqDgvIesc2hBc+D0b63f+PR2Uhk5hpDk3k7/cCA3kW5LhhjfTopwDvWVzvTt18kDXg
- xEvdXwTapiVMTxS7wqbXm4/DniaJiD4JxtkNf2fyKZbo+zSTVZ1wpVUNCkTvdiIJZs5Y
- zYk1NoMAr9d1+qjHCLMEZ0L3Fc5hScznkwrj3FVZLglT4RZePhnIOCdn3XoBsu9AikMF
- g1rg==
-X-Gm-Message-State: AOAM533FodHf7oRxVYc82LQR3NNxj78QZ22ehm0x5YiMrJbdgkADeZR1
- IPdLrxdxmtxoDASAlrLBtvg=
-X-Google-Smtp-Source: ABdhPJxIh4A6RDGJLkqD3wI+SAa3lP6jsUbrzhaqHnQbP/kqqs6hM/AP18eGNJmYYJxAgVXlsnJ15A==
-X-Received: by 2002:a05:6871:70c:b0:ed:e6c2:e599 with SMTP id
- f12-20020a056871070c00b000ede6c2e599mr5088966oap.70.1652537737907; 
- Sat, 14 May 2022 07:15:37 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
- by smtp.gmail.com with ESMTPSA id
- n39-20020a05687055a700b000e686d1389dsm2401199oao.55.2022.05.14.07.15.36
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 14 May 2022 07:15:37 -0700 (PDT)
-Date: Sat, 14 May 2022 07:15:36 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH 7/7] dt-bindings: watchdog: renesas,wdt: R-Car V3U is
- R-Car Gen4
-Message-ID: <20220514141536.GA1319284@roeck-us.net>
-References: <cover.1651497024.git.geert+renesas@glider.be>
- <2882a6de3905a57ae62d91060d27521af43c4068.1651497024.git.geert+renesas@glider.be>
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xn9tnhShNIfH for <iommu@lists.linux-foundation.org>;
+ Sun, 15 May 2022 10:35:47 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from soltyk.jannau.net (soltyk.jannau.net [144.76.91.90])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 2F6D44087A
+ for <iommu@lists.linux-foundation.org>; Sun, 15 May 2022 10:35:46 +0000 (UTC)
+Received: by soltyk.jannau.net (Postfix, from userid 1000)
+ id CDF9C26EA99; Sun, 15 May 2022 12:35:44 +0200 (CEST)
+Date: Sun, 15 May 2022 12:35:44 +0200
+From: Janne Grunau <j@jannau.net>
+To: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v5 0/5] iommu: Support mappings/reservations in
+ reserved-memory regions
+Message-ID: <20220515103544.GC26732@jannau.net>
+References: <20220512190052.1152377-1-thierry.reding@gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <2882a6de3905a57ae62d91060d27521af43c4068.1651497024.git.geert+renesas@glider.be>
-Cc: devicetree@vger.kernel.org, linux-watchdog@vger.kernel.org,
- Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
- linux-gpio@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Linus Walleij <linus.walleij@linaro.org>, iommu@lists.linux-foundation.org,
- linux-renesas-soc@vger.kernel.org,
- Wolfram Sang <wsa+renesas@sang-engineering.com>, Vinod Koul <vkoul@kernel.org>,
- Rob Herring <robh+dt@kernel.org>, linux-i2c@vger.kernel.org,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- linux-serial@vger.kernel.org, dmaengine@vger.kernel.org,
- Wim Van Sebroeck <wim@linux-watchdog.org>, Will Deacon <will@kernel.org>,
- Bartosz Golaszewski <brgl@bgdev.pl>
+In-Reply-To: <20220512190052.1152377-1-thierry.reding@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: devicetree@vger.kernel.org, Will Deacon <will@kernel.org>,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+ Dmitry Osipenko <dmitry.osipenko@collabora.com>, linux-tegra@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, Sameer Pujar <spujar@nvidia.com>,
+ asahi@lists.linux.dev
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,37 +70,104 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, May 02, 2022 at 03:34:59PM +0200, Geert Uytterhoeven wrote:
-> Despite the name, R-Car V3U is the first member of the R-Car Gen4
-> family.  Hence move its compatible value to the R-Car Gen4 section.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Hej,
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+I'm working on the display controller for Apple silicon SoCs and will 
+add some comments with support for it in mind.
 
-> ---
->  Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+added asahi@lists.linux.dev to CC for the Apple silicon related aspects
+
+On 2022-05-12 21:00:47 +0200, Thierry Reding wrote:
 > 
-> diff --git a/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml b/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
-> index 77ee7c4b8067f506..1fa243052327bffe 100644
-> --- a/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
-> +++ b/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
-> @@ -59,11 +59,11 @@ properties:
->                - renesas,r8a77980-wdt     # R-Car V3H
->                - renesas,r8a77990-wdt     # R-Car E3
->                - renesas,r8a77995-wdt     # R-Car D3
-> -              - renesas,r8a779a0-wdt     # R-Car V3U
->            - const: renesas,rcar-gen3-wdt # R-Car Gen3 and RZ/G2
->  
->        - items:
->            - enum:
-> +              - renesas,r8a779a0-wdt     # R-Car V3U
->                - renesas,r8a779f0-wdt     # R-Car S4-8
->            - const: renesas,rcar-gen4-wdt # R-Car Gen4
->  
+> this is another attempt at solving the problem of passing IOMMU
+> configuration via device tree. It has significantly evolved since the
+> last attempt, based on the discussion that followed. The discussion can
+> be found here:
+> 
+>   https://lore.kernel.org/all/20210423163234.3651547-1-thierry.reding@gmail.com/
+> 
+> Rather than using a memory-region specifier, this new version introduces
+> a new "iommu-addresses" property for the reserved-memory regions
+> themselves.
+
+If experimented with both proposed bindings for dcp and I think this 
+binding is easer to understand and to work with.
+
+> These are used to describe either a static mapping or
+> reservation that should be created for a given device. If both "reg" and
+> "iommu-addresses" properties are given, a mapping will be created
+> (typically this would be an identity mapping)
+
+dcp on Apple silicon will not use identity mappings. The IOMMU supports 
+identity mapping but the pre-configured mappings setup by Apple's system 
+firmware will not work with identity mapping. It maps multiple regions 
+which are incompatible with a linear identity mapping. In addition the 
+embbeded aarch64 micro controllers used in the display subsystem appears 
+to use a heap mapped at low IOVA space starting at 0.
+
+> whereas if only an "iommu-addresses" property is specified, a 
+> reservation for the specified range will be installed.
+> 
+> An example is included in the DT bindings, but here is an extract of
+> what I've used to test this:
+> 
+> 	reserved-memory {
+> 		#address-cells = <2>;
+> 		#size-cells = <2>;
+> 		ranges;
+> 
+> 		/*
+> 		 * Creates an identity mapping for the framebuffer that
+> 		 * the firmware has setup to scan out a bootsplash from.
+> 		 */
+> 		fb: framebuffer@92cb2000 {
+> 			reg = <0x0 0x92cb2000 0x0 0x00800000>;
+> 			iommu-addresses = <&dc0 0x0 0x92cb2000 0x0 0x00800000>;
+> 		};
+
+The binding supports mapping the same region to multiple devices. The 
+code supports that and it will be used on Apple silicon. Not necessary 
+to extend and complicate the example for I wanted to mention it 
+explicitly.
+
+> 
+> 		/*
+> 		 * Creates a reservation in the IOVA space to prevent
+> 		 * any buffers from being mapped to that region. Note
+> 		 * that on Tegra the range is actually quite different
+> 		 * from this, but it would conflict with the display
+> 		 * driver that I tested this against, so this is just
+> 		 * a dummy region for testing.
+> 		 */
+> 		adsp: reservation-adsp {
+> 			iommu-addresses = <&dc0 0x0 0x90000000 0x0 0x00010000>;
+> 		};
+> 	};
+> 
+> 	host1x@50000000 {
+> 		dc@54200000 {
+> 			memory-region = <&fb>, <&adsp>;
+> 		};
+> 	};
+> 
+> This is abbreviated a little to focus on the essentials. Note also that
+> the ADSP reservation is not actually used on this device and the driver
+> for this doesn't exist yet, but I wanted to include this variant for
+> testing, because we'll want to use these bindings for the reservation
+> use-case as well at some point.
+> 
+> Adding Alyssa and Janne who have in the past tried to make these
+> bindings work on Apple M1. Also adding Sameer from the Tegra audio team
+> to look at the ADSP reservation and double-check that this is suitable
+> for our needs.
+
+The binding itself is sufficient for the needs of the display subsystem 
+on Apple silicon. The device tree parsing code for reserved regions is 
+of limited use in it's current form. We will have either to extend or 
+duplicate it to retrieve the non-identity mappings. That's our problem 
+to solve.
+
+Janne
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
