@@ -1,51 +1,52 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 04AA5C433F5
-	for <iommu@archiver.kernel.org>; Sun, 15 May 2022 10:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A58BEC433F5
+	for <iommu@archiver.kernel.org>; Sun, 15 May 2022 10:46:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 8DACA81970;
-	Sun, 15 May 2022 10:35:51 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 2ABD7415E1;
+	Sun, 15 May 2022 10:46:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PxSupWIHXd4R; Sun, 15 May 2022 10:35:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 5781D81934;
-	Sun, 15 May 2022 10:35:50 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 4D1dbMxOjtkl; Sun, 15 May 2022 10:46:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 897B34157B;
+	Sun, 15 May 2022 10:45:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 20AADC0039;
-	Sun, 15 May 2022 10:35:50 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CDDC0C002D
- for <iommu@lists.linux-foundation.org>; Sun, 15 May 2022 10:35:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3C7E3C0039;
+	Sun, 15 May 2022 10:45:59 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CD19AC002D
+ for <iommu@lists.linux-foundation.org>; Sun, 15 May 2022 10:45:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id B5B724087C
- for <iommu@lists.linux-foundation.org>; Sun, 15 May 2022 10:35:48 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id C35D6415E1
+ for <iommu@lists.linux-foundation.org>; Sun, 15 May 2022 10:45:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xn9tnhShNIfH for <iommu@lists.linux-foundation.org>;
- Sun, 15 May 2022 10:35:47 +0000 (UTC)
+ with ESMTP id S5iO5CPQEHN3 for <iommu@lists.linux-foundation.org>;
+ Sun, 15 May 2022 10:45:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from soltyk.jannau.net (soltyk.jannau.net [144.76.91.90])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 2F6D44087A
- for <iommu@lists.linux-foundation.org>; Sun, 15 May 2022 10:35:46 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 88E7F4157B
+ for <iommu@lists.linux-foundation.org>; Sun, 15 May 2022 10:45:56 +0000 (UTC)
 Received: by soltyk.jannau.net (Postfix, from userid 1000)
- id CDF9C26EA99; Sun, 15 May 2022 12:35:44 +0200 (CEST)
-Date: Sun, 15 May 2022 12:35:44 +0200
+ id 27B9A26EA99; Sun, 15 May 2022 12:45:54 +0200 (CEST)
+Date: Sun, 15 May 2022 12:45:54 +0200
 From: Janne Grunau <j@jannau.net>
 To: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v5 0/5] iommu: Support mappings/reservations in
- reserved-memory regions
-Message-ID: <20220515103544.GC26732@jannau.net>
+Subject: Re: [PATCH v5 1/5] dt-bindings: reserved-memory: Document
+ iommu-addresses
+Message-ID: <20220515104554.GD26732@jannau.net>
 References: <20220512190052.1152377-1-thierry.reding@gmail.com>
+ <20220512190052.1152377-2-thierry.reding@gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20220512190052.1152377-1-thierry.reding@gmail.com>
+In-Reply-To: <20220512190052.1152377-2-thierry.reding@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: devicetree@vger.kernel.org, Will Deacon <will@kernel.org>,
  iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
@@ -70,102 +71,146 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hej,
-
-I'm working on the display controller for Apple silicon SoCs and will 
-add some comments with support for it in mind.
-
-added asahi@lists.linux.dev to CC for the Apple silicon related aspects
-
-On 2022-05-12 21:00:47 +0200, Thierry Reding wrote:
+On 2022-05-12 21:00:48 +0200, Thierry Reding wrote:
+> From: Thierry Reding <treding@nvidia.com>
 > 
-> this is another attempt at solving the problem of passing IOMMU
-> configuration via device tree. It has significantly evolved since the
-> last attempt, based on the discussion that followed. The discussion can
-> be found here:
+> This adds the "iommu-addresses" property to reserved-memory nodes, which
+> allow describing the interaction of memory regions with IOMMUs. Two use-
+> cases are supported:
 > 
->   https://lore.kernel.org/all/20210423163234.3651547-1-thierry.reding@gmail.com/
+>   1. Static mappings can be described by pairing the "iommu-addresses"
+>      property with a "reg" property. This is mostly useful for adopting
+>      firmware-allocated buffers via identity mappings. One common use-
+>      case where this is required is if early firmware or bootloaders
+>      have set up a bootsplash framebuffer that a display controller is
+>      actively scanning out from during the operating system boot
+>      process.
 > 
-> Rather than using a memory-region specifier, this new version introduces
-> a new "iommu-addresses" property for the reserved-memory regions
-> themselves.
+>   2. If an "iommu-addresses" property exists without a "reg" property,
+>      the reserved-memory node describes an IOVA reservation. Such memory
+>      regions are excluded from the IOVA space available to operating
+>      system drivers and can be used for regions that must not be used to
+>      map arbitrary buffers.
+> 
+> Each mapping or reservation is tied to a specific device via a phandle
+> to the device's device tree node. This allows a reserved-memory region
+> to be reused across multiple devices.
+> 
+> Signed-off-by: Thierry Reding <treding@nvidia.com>
+> ---
+>  .../reserved-memory/reserved-memory.txt       |  1 -
+>  .../reserved-memory/reserved-memory.yaml      | 62 +++++++++++++++++++
+>  include/dt-bindings/reserved-memory.h         |  8 +++
+>  3 files changed, 70 insertions(+), 1 deletion(-)
+>  delete mode 100644 Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+>  create mode 100644 include/dt-bindings/reserved-memory.h
+> 
+> diff --git a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+> deleted file mode 100644
+> index 1810701a8509..000000000000
+> --- a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+> +++ /dev/null
+> @@ -1 +0,0 @@
+> -This file has been moved to reserved-memory.yaml.
+> diff --git a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.yaml b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.yaml
+> index 7a0744052ff6..3a769aa66e1c 100644
+> --- a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.yaml
+> +++ b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.yaml
+> @@ -52,6 +52,30 @@ properties:
+>        Address and Length pairs. Specifies regions of memory that are
+>        acceptable to allocate from.
+>  
+> +  iommu-addresses:
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +    description: >
+> +      A list of phandle and specifier pairs that describe static IO virtual
+> +      address space mappings and carveouts associated with a given reserved
+> +      memory region. The phandle in the first cell refers to the device for
+> +      which the mapping or carveout is to be created.
+> +
+> +      The specifier consists of an address/size pair and denotes the IO
+> +      virtual address range of the region for the given device. The exact
+> +      format depends on the values of the "#address-cells" and "#size-cells"
+> +      properties of the device referenced via the phandle.
+> +
+> +      When used in combination with a "reg" property, an IOVA mapping is to
+> +      be established for this memory region. One example where this can be
+> +      useful is to create an identity mapping for physical memory that the
+> +      firmware has configured some hardware to access (such as a bootsplash
+> +      framebuffer).
+> +
+> +      If no "reg" property is specified, the "iommu-addresses" property
+> +      defines carveout regions in the IOVA space for the given device. This
+> +      can be useful if a certain memory region should not be mapped through
+> +      the IOMMU.
+> +
+>    no-map:
+>      type: boolean
+>      description: >
+> @@ -97,4 +121,42 @@ oneOf:
+>  
+>  additionalProperties: true
+>  
+> +examples:
+> +  - |
+> +    reserved-memory {
+> +      #address-cells = <2>;
+> +      #size-cells = <2>;
+> +      ranges;
+> +
+> +      adsp: reservation-adsp {
+> +        /*
+> +         * Restrict IOVA mappings for ADSP buffers to the 512 MiB region
+> +         * from 0x40000000 - 0x5fffffff. Anything outside is reserved by
+> +         * the ADSP for I/O memory and private memory allocations.
+> +         */
+> +        iommu-addresses = <0x0 0x00000000 0x00 0x40000000>,
+> +                          <0x0 0x60000000 0xff 0xa0000000>;
 
-If experimented with both proposed bindings for dcp and I think this 
-binding is easer to understand and to work with.
+This misses the device's phandle. One could argue it's not necessary for 
+reservations but it will complicate the parsing code and the current 
+parsing code is not prepared for it.
 
-> These are used to describe either a static mapping or
-> reservation that should be created for a given device. If both "reg" and
-> "iommu-addresses" properties are given, a mapping will be created
-> (typically this would be an identity mapping)
+> +      };
+> +
+> +      fb: framebuffer@90000000 {
+> +        reg = <0x0 0x90000000 0x0 0x00800000>;
+> +        iommu-addresses = <&dc0 0x0 0x90000000 0x0 0x00800000>;
+> +      };
+> +    };
+> +
+> +    bus@0 {
+> +      #address-cells = <2>;
+> +      #size-cells = <2>;
+> +
+> +      adsp@2990000 {
+> +        reg = <0x0 0x2990000 0x0 0x2000>;
+> +        memory-region = <&adsp>;
+> +      };
+> +
+> +      display@15200000 {
+> +        reg = <0x0 0x15200000 0x0 0x10000>;
+> +        memory-region = <&fb>;
+> +      };
+> +    };
+> +
+>  ...
+> diff --git a/include/dt-bindings/reserved-memory.h b/include/dt-bindings/reserved-memory.h
+> new file mode 100644
+> index 000000000000..174ca3448342
+> --- /dev/null
+> +++ b/include/dt-bindings/reserved-memory.h
+> @@ -0,0 +1,8 @@
+> +/* SPDX-License-Identifier: (GPL-2.0+ or MIT) */
+> +
+> +#ifndef _DT_BINDINGS_RESERVED_MEMORY_H
+> +#define _DT_BINDINGS_RESERVED_MEMORY_H
+> +
+> +#define MEMORY_REGION_IDENTITY_MAPPING 0x1
+> +
+> +#endif
 
-dcp on Apple silicon will not use identity mappings. The IOMMU supports 
-identity mapping but the pre-configured mappings setup by Apple's system 
-firmware will not work with identity mapping. It maps multiple regions 
-which are incompatible with a linear identity mapping. In addition the 
-embbeded aarch64 micro controllers used in the display subsystem appears 
-to use a heap mapped at low IOVA space starting at 0.
-
-> whereas if only an "iommu-addresses" property is specified, a 
-> reservation for the specified range will be installed.
-> 
-> An example is included in the DT bindings, but here is an extract of
-> what I've used to test this:
-> 
-> 	reserved-memory {
-> 		#address-cells = <2>;
-> 		#size-cells = <2>;
-> 		ranges;
-> 
-> 		/*
-> 		 * Creates an identity mapping for the framebuffer that
-> 		 * the firmware has setup to scan out a bootsplash from.
-> 		 */
-> 		fb: framebuffer@92cb2000 {
-> 			reg = <0x0 0x92cb2000 0x0 0x00800000>;
-> 			iommu-addresses = <&dc0 0x0 0x92cb2000 0x0 0x00800000>;
-> 		};
-
-The binding supports mapping the same region to multiple devices. The 
-code supports that and it will be used on Apple silicon. Not necessary 
-to extend and complicate the example for I wanted to mention it 
-explicitly.
-
-> 
-> 		/*
-> 		 * Creates a reservation in the IOVA space to prevent
-> 		 * any buffers from being mapped to that region. Note
-> 		 * that on Tegra the range is actually quite different
-> 		 * from this, but it would conflict with the display
-> 		 * driver that I tested this against, so this is just
-> 		 * a dummy region for testing.
-> 		 */
-> 		adsp: reservation-adsp {
-> 			iommu-addresses = <&dc0 0x0 0x90000000 0x0 0x00010000>;
-> 		};
-> 	};
-> 
-> 	host1x@50000000 {
-> 		dc@54200000 {
-> 			memory-region = <&fb>, <&adsp>;
-> 		};
-> 	};
-> 
-> This is abbreviated a little to focus on the essentials. Note also that
-> the ADSP reservation is not actually used on this device and the driver
-> for this doesn't exist yet, but I wanted to include this variant for
-> testing, because we'll want to use these bindings for the reservation
-> use-case as well at some point.
-> 
-> Adding Alyssa and Janne who have in the past tried to make these
-> bindings work on Apple M1. Also adding Sameer from the Tegra audio team
-> to look at the ADSP reservation and double-check that this is suitable
-> for our needs.
-
-The binding itself is sufficient for the needs of the display subsystem 
-on Apple silicon. The device tree parsing code for reserved regions is 
-of limited use in it's current form. We will have either to extend or 
-duplicate it to retrieve the non-identity mappings. That's our problem 
-to solve.
+This appears to be an unused leftover from a previous version.
 
 Janne
 _______________________________________________
