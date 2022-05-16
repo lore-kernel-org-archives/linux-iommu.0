@@ -1,82 +1,74 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7525AC433EF
-	for <iommu@archiver.kernel.org>; Mon, 16 May 2022 16:27:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DBC34C4332F
+	for <iommu@archiver.kernel.org>; Mon, 16 May 2022 16:29:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 2F82240B7E;
-	Mon, 16 May 2022 16:27:53 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 8216782FDE;
+	Mon, 16 May 2022 16:29:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id S0LUbYkdeSye; Mon, 16 May 2022 16:27:52 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 10CF3404F8;
-	Mon, 16 May 2022 16:27:52 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id l_j4tsQnrTPn; Mon, 16 May 2022 16:29:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 65E7582FAE;
+	Mon, 16 May 2022 16:29:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DDCBBC0032;
-	Mon, 16 May 2022 16:27:51 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 19F00C002D
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 16:27:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 39AA4C0032;
+	Mon, 16 May 2022 16:29:11 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 092C5C002D
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 16:29:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id EA84C610CA
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 16:27:50 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id DD176610D5
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 16:29:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7wVf56uLNXqX for <iommu@lists.linux-foundation.org>;
- Mon, 16 May 2022 16:27:50 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com
- [209.85.160.53])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 67982610A5
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 16:27:50 +0000 (UTC)
-Received: by mail-oa1-f53.google.com with SMTP id
- 586e51a60fabf-f165bc447fso10919104fac.6
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 09:27:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=osVfxhsQi2p2dlDrhzZDuOBV7X+Ps662PG/MDdJu9W0=;
- b=aLgydF9DvOLJ1l+AqaDmAwjrHJ8/Uj/87n6OZ+BhwTKiWq2+bTriB7IM5LaS5wGGso
- ml6saWtqeq/A8dfp5lyHLj18KbNOMURBc5IUx28DP+d2sRZbM7edpuLZKcYE0tWc+JSd
- kjgc+dQ6jfK686KT09PboZg3OelHP1eB4nGDwj3px/ou37RRP22CrakqwCu3OCgUOTl7
- KWceo4o6jxpkwLivK3JNyHRPGNFlozN39in6+Oz3rVn+/SiPEkMcOv7lDk7VKONfKpEz
- 1YfjQo4j3ItELcb2r3/gmbblw/VN8OwvPHo7XCiLEtV0eeLEBRwEDYFzTGfJPhv6SxGb
- epgQ==
-X-Gm-Message-State: AOAM5307tvoLtJ7PPH4v4dyh5oRoKRUjwfi+OMjEWJgfMA0aW/ytk9pC
- sLlWxPFhh334JZpOybRYtA==
-X-Google-Smtp-Source: ABdhPJxaunhi1VLlqHvgFaK+EgjKjq0gVMM8ayHjAQzaIw/eUPKQEHsbfeLNaMcAuwFJet/LLjQYYg==
-X-Received: by 2002:a05:6870:890f:b0:e1:c92d:d84 with SMTP id
- i15-20020a056870890f00b000e1c92d0d84mr9757652oao.49.1652718469152; 
- Mon, 16 May 2022 09:27:49 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net.
- [66.90.144.107]) by smtp.gmail.com with ESMTPSA id
- b18-20020a9d6b92000000b00606b1f72fcbsm4071686otq.31.2022.05.16.09.27.47
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 16 May 2022 09:27:48 -0700 (PDT)
-Received: (nullmailer pid 2793161 invoked by uid 1000);
- Mon, 16 May 2022 16:27:47 -0000
-Date: Mon, 16 May 2022 11:27:47 -0500
-From: Rob Herring <robh@kernel.org>
-To: cyndis@kapsi.fi
-Subject: Re: [PATCH v5 1/9] dt-bindings: host1x: Add iommu-map property
-Message-ID: <20220516162747.GA2793126-robh@kernel.org>
-References: <20220516085258.1227691-1-cyndis@kapsi.fi>
- <20220516085258.1227691-2-cyndis@kapsi.fi>
+ with ESMTP id ewXoq5nJsNQ9 for <iommu@lists.linux-foundation.org>;
+ Mon, 16 May 2022 16:29:09 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 0E1F0610A5
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 16:29:08 +0000 (UTC)
+Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.206])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L24PV63Xzz67h1V;
+ Tue, 17 May 2022 00:26:06 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 16 May 2022 18:29:06 +0200
+Received: from [10.47.25.151] (10.47.25.151) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 16 May
+ 2022 17:29:05 +0100
+Message-ID: <d874dd82-30fd-f8e0-b7ab-0c9d14e47324@huawei.com>
+Date: Mon, 16 May 2022 17:29:04 +0100
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220516085258.1227691-2-cyndis@kapsi.fi>
-Cc: devicetree@vger.kernel.org, krzysztof.kozlowski@canonical.com,
- will@kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- jonathanh@nvidia.com, robh+dt@kernel.org, iommu@lists.linux-foundation.org,
- thierry.reding@gmail.com, linux-tegra@vger.kernel.org,
- Mikko Perttunen <mperttunen@nvidia.com>, robin.murphy@arm.com,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v8 4/8] perf arm: Refactor event list iteration in
+ auxtrace_record__init()
+To: Yicong Yang <yangyicong@hisilicon.com>, <gregkh@linuxfoundation.org>,
+ <alexander.shishkin@linux.intel.com>, <leo.yan@linaro.org>,
+ <james.clark@arm.com>, <will@kernel.org>, <robin.murphy@arm.com>,
+ <acme@kernel.org>, <jonathan.cameron@huawei.com>
+References: <20220516125223.32012-1-yangyicong@hisilicon.com>
+ <20220516125223.32012-5-yangyicong@hisilicon.com>
+In-Reply-To: <20220516125223.32012-5-yangyicong@hisilicon.com>
+X-Originating-IP: [10.47.25.151]
+X-ClientProxiedBy: lhreml714-chm.china.huawei.com (10.201.108.65) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: mark.rutland@arm.com, zhangshaokun@hisilicon.com, prime.zeng@huawei.com,
+ mathieu.poirier@linaro.org, suzuki.poulose@arm.com, peterz@infradead.org,
+ linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com,
+ linux-perf-users@vger.kernel.org, iommu@lists.linux-foundation.org,
+ mingo@redhat.com, helgaas@kernel.org, liuqi115@huawei.com,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -90,30 +82,108 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+From: John Garry via iommu <iommu@lists.linux-foundation.org>
+Reply-To: John Garry <john.garry@huawei.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 16 May 2022 11:52:50 +0300, cyndis@kapsi.fi wrote:
-> From: Mikko Perttunen <mperttunen@nvidia.com>
-> 
-> Add schema information for specifying context stream IDs. This uses
-> the standard iommu-map property.
-> 
-> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> ---
-> v3:
-> * New patch
-> v4:
-> * Remove memory-contexts subnode.
-> ---
->  .../bindings/display/tegra/nvidia,tegra20-host1x.yaml        | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
+On 16/05/2022 13:52, Yicong Yang wrote:
 
-Acked-by: Rob Herring <robh@kernel.org>
+As requested before, please mention "perf tool" in the commit subject
+
+> From: Qi Liu <liuqi115@huawei.com>
+> 
+> Use find_pmu_for_event() to simplify logic in auxtrace_record__init().
+> 
+> Signed-off-by: Qi Liu <liuqi115@huawei.com>
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> ---
+>   tools/perf/arch/arm/util/auxtrace.c | 53 ++++++++++++++++++-----------
+>   1 file changed, 34 insertions(+), 19 deletions(-)
+> 
+> diff --git a/tools/perf/arch/arm/util/auxtrace.c b/tools/perf/arch/arm/util/auxtrace.c
+> index 5fc6a2a3dbc5..384c7cfda0fd 100644
+> --- a/tools/perf/arch/arm/util/auxtrace.c
+> +++ b/tools/perf/arch/arm/util/auxtrace.c
+> @@ -50,16 +50,32 @@ static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
+>   	return arm_spe_pmus;
+>   }
+>   
+> +static struct perf_pmu *find_pmu_for_event(struct perf_pmu **pmus,
+> +					   int pmu_nr, struct evsel *evsel)
+> +{
+> +	int i;
+> +
+> +	if (!pmus)
+> +		return NULL;
+> +
+> +	for (i = 0; i < pmu_nr; i++) {
+> +		if (evsel->core.attr.type == pmus[i]->type)
+> +			return pmus[i];
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+>   struct auxtrace_record
+>   *auxtrace_record__init(struct evlist *evlist, int *err)
+>   {
+> -	struct perf_pmu	*cs_etm_pmu;
+> +	struct perf_pmu	*cs_etm_pmu = NULL;
+> +	struct perf_pmu **arm_spe_pmus = NULL;
+>   	struct evsel *evsel;
+> -	bool found_etm = false;
+> +	struct perf_pmu *found_etm = NULL;
+>   	struct perf_pmu *found_spe = NULL;
+> -	struct perf_pmu **arm_spe_pmus = NULL;
+> +	int auxtrace_event_cnt = 0;
+>   	int nr_spes = 0;
+> -	int i = 0;
+>   
+>   	if (!evlist)
+>   		return NULL;
+> @@ -68,24 +84,23 @@ struct auxtrace_record
+>   	arm_spe_pmus = find_all_arm_spe_pmus(&nr_spes, err);
+>   
+>   	evlist__for_each_entry(evlist, evsel) {
+> -		if (cs_etm_pmu &&
+> -		    evsel->core.attr.type == cs_etm_pmu->type)
+> -			found_etm = true;
+> -
+> -		if (!nr_spes || found_spe)
+> -			continue;
+> -
+> -		for (i = 0; i < nr_spes; i++) {
+> -			if (evsel->core.attr.type == arm_spe_pmus[i]->type) {
+> -				found_spe = arm_spe_pmus[i];
+> -				break;
+> -			}
+> -		}
+> +		if (cs_etm_pmu && !found_etm)
+> +			found_etm = find_pmu_for_event(&cs_etm_pmu, 1, evsel);
+> +
+> +		if (arm_spe_pmus && !found_spe)
+> +			found_spe = find_pmu_for_event(arm_spe_pmus, nr_spes, evsel);
+>   	}
+> +
+>   	free(arm_spe_pmus);
+>   
+> -	if (found_etm && found_spe) {
+> -		pr_err("Concurrent ARM Coresight ETM and SPE operation not currently supported\n");
+> +	if (found_etm)
+> +		auxtrace_event_cnt++;
+> +
+> +	if (found_spe)
+> +		auxtrace_event_cnt++;
+> +
+> +	if (auxtrace_event_cnt > 1) {
+> +		pr_err("Concurrent AUX trace operation not currently supported\n");
+>   		*err = -EOPNOTSUPP;
+>   		return NULL;
+>   	}
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
