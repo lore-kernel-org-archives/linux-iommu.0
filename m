@@ -1,65 +1,65 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5A5C4C433F5
-	for <iommu@archiver.kernel.org>; Mon, 16 May 2022 09:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AE3F6C433EF
+	for <iommu@archiver.kernel.org>; Mon, 16 May 2022 09:19:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 11D1F6100E;
-	Mon, 16 May 2022 09:17:58 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 4BA6081AD1;
+	Mon, 16 May 2022 09:19:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lst6R0kB7up6; Mon, 16 May 2022 09:17:57 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id U31iZQhfN7HY; Mon, 16 May 2022 09:19:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id B0B1F60BD7;
-	Mon, 16 May 2022 09:17:56 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 1FCDF819B8;
+	Mon, 16 May 2022 09:19:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9A3F5C0039;
-	Mon, 16 May 2022 09:17:56 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EB590C002D
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 09:17:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EA8C3C0039;
+	Mon, 16 May 2022 09:19:23 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EC2A6C002D
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 09:19:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id CB6A640AF1
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 09:17:54 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id DA2B14154A
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 09:19:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=kapsi.fi
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id X-8dDsvIJ9Cu for <iommu@lists.linux-foundation.org>;
- Mon, 16 May 2022 09:17:54 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id qPdJyGsjVpDR for <iommu@lists.linux-foundation.org>;
+ Mon, 16 May 2022 09:19:22 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
- by smtp2.osuosl.org (Postfix) with ESMTPS id D8CB140396
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 09:17:53 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id DC499408B9
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 09:19:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
  s=20161220; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
  Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
  Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
  :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
  List-Post:List-Owner:List-Archive;
- bh=yb5ZRXXvSv1MiO+QoygFiVs/3UGGooAnjV7C1vURjL4=; b=UKXpwkOuKqbQb8WJqvURvTqu0u
- i+yTevqMpk+rG+8zWYO6PaRaLPApk0JpP0yY1eIuX3SaQ/2wnQTjd+Y3SBkxhtyN0v1uAdU6Rq6qZ
- GXuxh3Rm8TLvcQ3XEIyOyshs56HXPzHjzlW0M4Cl4rTJEOxc7z59j6vx/OSwu9/+s+4TM2A5E9HdC
- 34Loqt6G4Ob/ACX22DaZEDn0qaSX4Ht7G5IjyO4BBG9G2Zo9kug+keGPhVzdBvKmXQZ0j0Bf4cxVb
- PBf+KhUcbWHp2AjuNRGlNpoYrHlhtmuXi+sVCPb8PcK/0ceIOtbR78Chac0p6tykiKvm6uAYMQ87C
- f2pkBx3A==;
+ bh=QhmFm5x8eXWshJW5s2KSpUl/2VnAiPuQLb7xfj61KYo=; b=pTr671ML7JqfGzqWay29nNNcTI
+ 5pHHnwtL8rEqweyAYjfvsdmJbEv0rk0a8vzp7/0KkfLxn+NTGfhyhFl4814Mja5jh/0VAedMT/zEJ
+ iBI52cy5ftLg7QVjPPuYMHPItj8w/C78ZrV7kWnX1Bu8s6y41kGPFnNAKzDIBDpq2UxpyNdDVZEv6
+ T/wQQ4+85g6bekebGUlxB0XJrlRFEGtPQoJ0fMO91rp5vDA8lPgZf3baB9pivOyTEUqhqCA0mZX3N
+ gZiWnpFvDlhiYPlYShMZJkoYBgMBYwW+WPB1xR6IeSvwZNGvteaNOnNzUhDtlIzCXyF0cNz66ytUF
+ 0C9NfWTQ==;
 Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70]
  helo=toshino.localdomain)
  by mail.kapsi.fi with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
  (Exim 4.92) (envelope-from <cyndis@kapsi.fi>)
- id 1nqWTf-0005fd-8s; Mon, 16 May 2022 11:53:19 +0300
+ id 1nqWTe-0005fd-K6; Mon, 16 May 2022 11:53:18 +0300
 From: cyndis@kapsi.fi
 To: thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
  will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
  krzysztof.kozlowski@canonical.com
-Subject: [PATCH v5 8/9] drm/tegra: Support context isolation
-Date: Mon, 16 May 2022 11:52:57 +0300
-Message-Id: <20220516085258.1227691-9-cyndis@kapsi.fi>
+Subject: [PATCH v5 2/9] gpu: host1x: Add context bus
+Date: Mon, 16 May 2022 11:52:51 +0300
+Message-Id: <20220516085258.1227691-3-cyndis@kapsi.fi>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516085258.1227691-1-cyndis@kapsi.fi>
 References: <20220516085258.1227691-1-cyndis@kapsi.fi>
@@ -90,228 +90,125 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Mikko Perttunen <mperttunen@nvidia.com>
 
-For engines that support context isolation, allocate a context when
-opening a channel, and set up stream ID offset and context fields
-when submitting a job.
+The context bus is a "dummy" bus that contains struct devices that
+correspond to IOMMU contexts assigned through Host1x to processes.
 
-As of this commit, the stream ID offset and fallback stream ID
-are not used when context isolation is disabled. However, with
-upcoming patches that enable a full featured job opcode sequence,
-these will be necessary.
+Even when host1x itself is built as a module, the bus is registered
+in built-in code so that the built-in ARM SMMU driver is able to
+reference it.
 
 Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
 ---
-v5:
-* On supporting engines, always program stream ID offset and
-  new fallback stream ID.
-* Rename host1x_context to host1x_memory_context
 v4:
-* Separate error and output values in get_streamid_offset API
-* Improve error handling
-* Rename job->context to job->memory_context for clarity
+* Export bus as GPL
 ---
- drivers/gpu/drm/tegra/drm.h    |  3 +++
- drivers/gpu/drm/tegra/submit.c | 48 +++++++++++++++++++++++++++++++++-
- drivers/gpu/drm/tegra/uapi.c   | 43 ++++++++++++++++++++++++++++--
- 3 files changed, 91 insertions(+), 3 deletions(-)
+ drivers/gpu/Makefile               |  3 +--
+ drivers/gpu/host1x/Kconfig         |  5 +++++
+ drivers/gpu/host1x/Makefile        |  1 +
+ drivers/gpu/host1x/context_bus.c   | 31 ++++++++++++++++++++++++++++++
+ include/linux/host1x_context_bus.h | 15 +++++++++++++++
+ 5 files changed, 53 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/gpu/host1x/context_bus.c
+ create mode 100644 include/linux/host1x_context_bus.h
 
-diff --git a/drivers/gpu/drm/tegra/drm.h b/drivers/gpu/drm/tegra/drm.h
-index fc0a19554eac..2acc8f2948ad 100644
---- a/drivers/gpu/drm/tegra/drm.h
-+++ b/drivers/gpu/drm/tegra/drm.h
-@@ -80,6 +80,7 @@ struct tegra_drm_context {
- 
- 	/* Only used by new UAPI. */
- 	struct xarray mappings;
-+	struct host1x_memory_context *memory_context;
- };
- 
- struct tegra_drm_client_ops {
-@@ -91,6 +92,8 @@ struct tegra_drm_client_ops {
- 	int (*submit)(struct tegra_drm_context *context,
- 		      struct drm_tegra_submit *args, struct drm_device *drm,
- 		      struct drm_file *file);
-+	int (*get_streamid_offset)(struct tegra_drm_client *client, u32 *offset);
-+	int (*can_use_memory_ctx)(struct tegra_drm_client *client, bool *supported);
- };
- 
- int tegra_drm_submit(struct tegra_drm_context *context,
-diff --git a/drivers/gpu/drm/tegra/submit.c b/drivers/gpu/drm/tegra/submit.c
-index 6d6dd8c35475..b24738bdf3df 100644
---- a/drivers/gpu/drm/tegra/submit.c
-+++ b/drivers/gpu/drm/tegra/submit.c
-@@ -498,6 +498,9 @@ static void release_job(struct host1x_job *job)
- 	struct tegra_drm_submit_data *job_data = job->user_data;
- 	u32 i;
- 
-+	if (job->memory_context)
-+		host1x_memory_context_put(job->memory_context);
+diff --git a/drivers/gpu/Makefile b/drivers/gpu/Makefile
+index 835c88318cec..8997f0096545 100644
+--- a/drivers/gpu/Makefile
++++ b/drivers/gpu/Makefile
+@@ -2,7 +2,6 @@
+ # drm/tegra depends on host1x, so if both drivers are built-in care must be
+ # taken to initialize them in the correct order. Link order is the only way
+ # to ensure this currently.
+-obj-$(CONFIG_TEGRA_HOST1X)	+= host1x/
+-obj-y			+= drm/ vga/
++obj-y			+= host1x/ drm/ vga/
+ obj-$(CONFIG_IMX_IPUV3_CORE)	+= ipu-v3/
+ obj-$(CONFIG_TRACE_GPU_MEM)		+= trace/
+diff --git a/drivers/gpu/host1x/Kconfig b/drivers/gpu/host1x/Kconfig
+index 6815b4db17c1..1861a8180d3f 100644
+--- a/drivers/gpu/host1x/Kconfig
++++ b/drivers/gpu/host1x/Kconfig
+@@ -1,8 +1,13 @@
+ # SPDX-License-Identifier: GPL-2.0-only
 +
- 	for (i = 0; i < job_data->num_used_mappings; i++)
- 		tegra_drm_mapping_put(job_data->used_mappings[i].mapping);
++config TEGRA_HOST1X_CONTEXT_BUS
++	bool
++
+ config TEGRA_HOST1X
+ 	tristate "NVIDIA Tegra host1x driver"
+ 	depends on ARCH_TEGRA || (ARM && COMPILE_TEST)
+ 	select DMA_SHARED_BUFFER
++	select TEGRA_HOST1X_CONTEXT_BUS
+ 	select IOMMU_IOVA
+ 	help
+ 	  Driver for the NVIDIA Tegra host1x hardware.
+diff --git a/drivers/gpu/host1x/Makefile b/drivers/gpu/host1x/Makefile
+index d2b6f7de0498..c891a3e33844 100644
+--- a/drivers/gpu/host1x/Makefile
++++ b/drivers/gpu/host1x/Makefile
+@@ -18,3 +18,4 @@ host1x-y = \
+ 	hw/host1x07.o
  
-@@ -588,11 +591,51 @@ int tegra_drm_ioctl_channel_submit(struct drm_device *drm, void *data,
- 		goto put_job;
- 	}
- 
-+	if (context->client->ops->get_streamid_offset) {
-+		err = context->client->ops->get_streamid_offset(
-+			context->client, &job->engine_streamid_offset);
-+		if (err) {
-+			SUBMIT_ERR(context, "failed to get streamid offset: %d", err);
-+			goto unpin_job;
-+		}
+ obj-$(CONFIG_TEGRA_HOST1X) += host1x.o
++obj-$(CONFIG_TEGRA_HOST1X_CONTEXT_BUS) += context_bus.o
+diff --git a/drivers/gpu/host1x/context_bus.c b/drivers/gpu/host1x/context_bus.c
+new file mode 100644
+index 000000000000..b0d35b2bbe89
+--- /dev/null
++++ b/drivers/gpu/host1x/context_bus.c
+@@ -0,0 +1,31 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (c) 2021, NVIDIA Corporation.
++ */
++
++#include <linux/device.h>
++#include <linux/of.h>
++
++struct bus_type host1x_context_device_bus_type = {
++	.name = "host1x-context",
++};
++EXPORT_SYMBOL_GPL(host1x_context_device_bus_type);
++
++static int __init host1x_context_device_bus_init(void)
++{
++	int err;
++
++	if (!of_machine_is_compatible("nvidia,tegra186") &&
++	    !of_machine_is_compatible("nvidia,tegra194") &&
++	    !of_machine_is_compatible("nvidia,tegra234"))
++		return 0;
++
++	err = bus_register(&host1x_context_device_bus_type);
++	if (err < 0) {
++		pr_err("bus type registration failed: %d\n", err);
++		return err;
 +	}
 +
-+	if (context->memory_context && context->client->ops->can_use_memory_ctx) {
-+		bool supported;
++	return 0;
++}
++postcore_initcall(host1x_context_device_bus_init);
+diff --git a/include/linux/host1x_context_bus.h b/include/linux/host1x_context_bus.h
+new file mode 100644
+index 000000000000..72462737a6db
+--- /dev/null
++++ b/include/linux/host1x_context_bus.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright (c) 2021, NVIDIA Corporation. All rights reserved.
++ */
 +
-+		err = context->client->ops->can_use_memory_ctx(context->client, &supported);
-+		if (err) {
-+			SUBMIT_ERR(context, "failed to detect if engine can use memory context: %d", err);
-+			goto unpin_job;
-+		}
++#ifndef __LINUX_HOST1X_CONTEXT_BUS_H
++#define __LINUX_HOST1X_CONTEXT_BUS_H
 +
-+		if (supported) {
-+			job->memory_context = context->memory_context;
-+			host1x_memory_context_get(job->memory_context);
-+		}
-+	} else if (context->client->ops->get_streamid_offset) {
-+#ifdef CONFIG_IOMMU_API
-+		struct iommu_fwspec *spec;
++#include <linux/device.h>
 +
-+		/*
-+		 * Job submission will need to temporarily change stream ID,
-+		 * so need to tell it what to change it back to.
-+		 */
-+		spec = dev_iommu_fwspec_get(context->client->base.dev);
-+		if (spec && spec->num_ids > 0)
-+			job->engine_fallback_streamid = spec->ids[0] & 0xffff;
-+		else
-+			job->engine_fallback_streamid = 0x7f;
-+#else
-+		job->engine_fallback_streamid = 0x7f;
++#ifdef CONFIG_TEGRA_HOST1X_CONTEXT_BUS
++extern struct bus_type host1x_context_device_bus_type;
 +#endif
-+	}
 +
- 	/* Boot engine. */
- 	err = pm_runtime_resume_and_get(context->client->base.dev);
- 	if (err < 0) {
- 		SUBMIT_ERR(context, "could not power up engine: %d", err);
--		goto unpin_job;
-+		goto put_memory_context;
- 	}
- 
- 	job->user_data = job_data;
-@@ -627,6 +670,9 @@ int tegra_drm_ioctl_channel_submit(struct drm_device *drm, void *data,
- 
- 	goto put_job;
- 
-+put_memory_context:
-+	if (job->memory_context)
-+		host1x_memory_context_put(job->memory_context);
- unpin_job:
- 	host1x_job_unpin(job);
- put_job:
-diff --git a/drivers/gpu/drm/tegra/uapi.c b/drivers/gpu/drm/tegra/uapi.c
-index 9ab9179d2026..a98239cb0e29 100644
---- a/drivers/gpu/drm/tegra/uapi.c
-+++ b/drivers/gpu/drm/tegra/uapi.c
-@@ -33,6 +33,9 @@ static void tegra_drm_channel_context_close(struct tegra_drm_context *context)
- 	struct tegra_drm_mapping *mapping;
- 	unsigned long id;
- 
-+	if (context->memory_context)
-+		host1x_memory_context_put(context->memory_context);
-+
- 	xa_for_each(&context->mappings, id, mapping)
- 		tegra_drm_mapping_put(mapping);
- 
-@@ -72,6 +75,7 @@ static struct tegra_drm_client *tegra_drm_find_client(struct tegra_drm *tegra, u
- 
- int tegra_drm_ioctl_channel_open(struct drm_device *drm, void *data, struct drm_file *file)
- {
-+	struct host1x *host = tegra_drm_to_host1x(drm->dev_private);
- 	struct tegra_drm_file *fpriv = file->driver_priv;
- 	struct tegra_drm *tegra = drm->dev_private;
- 	struct drm_tegra_channel_open *args = data;
-@@ -102,10 +106,36 @@ int tegra_drm_ioctl_channel_open(struct drm_device *drm, void *data, struct drm_
- 		}
- 	}
- 
-+	/* Only allocate context if the engine supports context isolation. */
-+	if (device_iommu_mapped(client->base.dev) && client->ops->can_use_memory_ctx) {
-+		bool supported;
-+
-+		err = client->ops->can_use_memory_ctx(client, &supported);
-+		if (err)
-+			goto put_channel;
-+
-+		if (supported)
-+			context->memory_context = host1x_memory_context_alloc(
-+				host, get_task_pid(current, PIDTYPE_TGID));
-+
-+		if (IS_ERR(context->memory_context)) {
-+			if (PTR_ERR(context->memory_context) != -EOPNOTSUPP) {
-+				err = PTR_ERR(context->memory_context);
-+				goto put_channel;
-+			} else {
-+				/*
-+				 * OK, HW does not support contexts or contexts
-+				 * are disabled.
-+				 */
-+				context->memory_context = NULL;
-+			}
-+		}
-+	}
-+
- 	err = xa_alloc(&fpriv->contexts, &args->context, context, XA_LIMIT(1, U32_MAX),
- 		       GFP_KERNEL);
- 	if (err < 0)
--		goto put_channel;
-+		goto put_memctx;
- 
- 	context->client = client;
- 	xa_init_flags(&context->mappings, XA_FLAGS_ALLOC1);
-@@ -118,6 +148,9 @@ int tegra_drm_ioctl_channel_open(struct drm_device *drm, void *data, struct drm_
- 
- 	return 0;
- 
-+put_memctx:
-+	if (context->memory_context)
-+		host1x_memory_context_put(context->memory_context);
- put_channel:
- 	host1x_channel_put(context->channel);
- free:
-@@ -156,6 +189,7 @@ int tegra_drm_ioctl_channel_map(struct drm_device *drm, void *data, struct drm_f
- 	struct tegra_drm_mapping *mapping;
- 	struct tegra_drm_context *context;
- 	enum dma_data_direction direction;
-+	struct device *mapping_dev;
- 	int err = 0;
- 
- 	if (args->flags & ~DRM_TEGRA_CHANNEL_MAP_READ_WRITE)
-@@ -177,6 +211,11 @@ int tegra_drm_ioctl_channel_map(struct drm_device *drm, void *data, struct drm_f
- 
- 	kref_init(&mapping->ref);
- 
-+	if (context->memory_context)
-+		mapping_dev = &context->memory_context->dev;
-+	else
-+		mapping_dev = context->client->base.dev;
-+
- 	mapping->bo = tegra_gem_lookup(file, args->handle);
- 	if (!mapping->bo) {
- 		err = -EINVAL;
-@@ -201,7 +240,7 @@ int tegra_drm_ioctl_channel_map(struct drm_device *drm, void *data, struct drm_f
- 		goto put_gem;
- 	}
- 
--	mapping->map = host1x_bo_pin(context->client->base.dev, mapping->bo, direction, NULL);
-+	mapping->map = host1x_bo_pin(mapping_dev, mapping->bo, direction, NULL);
- 	if (IS_ERR(mapping->map)) {
- 		err = PTR_ERR(mapping->map);
- 		goto put_gem;
++#endif
 -- 
 2.36.1
 
