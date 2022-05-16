@@ -4,76 +4,78 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E5238C433F5
-	for <iommu@archiver.kernel.org>; Mon, 16 May 2022 11:31:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CF079C433F5
+	for <iommu@archiver.kernel.org>; Mon, 16 May 2022 12:26:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9455540A0F;
-	Mon, 16 May 2022 11:31:12 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 69E7E40B52;
+	Mon, 16 May 2022 12:26:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5Zl2NbaoNl1A; Mon, 16 May 2022 11:31:11 +0000 (UTC)
+	with ESMTP id IGuFgY3pgEXK; Mon, 16 May 2022 12:26:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 7AF0440B07;
-	Mon, 16 May 2022 11:31:11 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 1529B40A0F;
+	Mon, 16 May 2022 12:26:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E209C0039;
-	Mon, 16 May 2022 11:31:11 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 029E7C002D
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 11:31:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DD771C0032;
+	Mon, 16 May 2022 12:26:10 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4BDC5C002D
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 12:26:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D644D40B07
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 11:31:10 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 40D1982C21
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 12:26:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3ykSD3NuoSKM for <iommu@lists.linux-foundation.org>;
- Mon, 16 May 2022 11:31:09 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id vDqCzeKtNZZU for <iommu@lists.linux-foundation.org>;
+ Mon, 16 May 2022 12:26:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from dfw.source.kernel.org (dfw.source.kernel.org
- [IPv6:2604:1380:4641:c500::1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id BAFEA40A0F
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 11:31:09 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id 8FBC560FDA;
- Mon, 16 May 2022 11:31:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FD1DC385B8;
- Mon, 16 May 2022 11:31:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1652700668;
- bh=ZUEmliErSd51RiMCP41XFunKKxEzgbyR6TU1VDmqeFg=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=OwHwwzsfSzLP0Uce40JHWVOXb60biukmdN90zMYRkS5G9tzrnmYjYUW7T9kRkPIAI
- vE2lIUrrlFNJBG4JrjnEs55gi5D5ycBEEl7YRix30Qqlkn23RtPftT0VwGey/IeNfm
- 6eF2mgsVxQNwdNmLgkUGQiqhOVJHKmuLiX5pOE39dh3A6GVdOluffWB8cQ4ouVoRvu
- AEOtc5EOeJMvYJRv1hts3L6KpcRf8bvFSkhQSMRN2Qyb12RUUmQyB1YXEd1UpULbe6
- XV4wn3zHRRFRRhw4WaNrUhlB5Z4NhDLcL4mQe4tCWp2TCLvbS8IXNVfOsws8kkTZis
- L66BD/UsAC+jw==
-Date: Mon, 16 May 2022 17:01:04 +0530
-From: Vinod Koul <vkoul@kernel.org>
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH 4/7] dt-bindings: renesas,rcar-dmac: R-Car V3U is R-Car
- Gen4
-Message-ID: <YoI1+HDb9Sr4mWmB@matsya>
-References: <cover.1651497024.git.geert+renesas@glider.be>
- <e6e4cf701f3a43b061b9c3f7f0adc4d6addd4722.1651497024.git.geert+renesas@glider.be>
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 3CAC080BB4
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 12:26:04 +0000 (UTC)
+X-UUID: c8022a1d21d84e7d84561b4b9988985e-20220516
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5, REQID:2795974c-7b80-4f7e-99bd-39013b65a545, OB:0,
+ LO
+ B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+ ON:release,TS:5
+X-CID-META: VersionHash:2a19b09, CLOUDID:f9cdc1b9-9f46-4d76-a271-164488ed79f1,
+ C
+ OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+ ,QS:0,BEC:nil
+X-UUID: c8022a1d21d84e7d84561b4b9988985e-20220516
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
+ mailgw02.mediatek.com (envelope-from <yf.wang@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 549747244; Mon, 16 May 2022 20:25:57 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3; 
+ Mon, 16 May 2022 20:25:56 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Mon, 16 May 2022 20:25:55 +0800
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
+ Roedel" <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ "Georgi Djakov" <quic_c_gdjako@quicinc.com>, "Isaac J. Manjarres"
+ <isaacm@codeaurora.org>, Sven Peter <sven@svenpeter.dev>, Yunfei Wang
+ <yf.wang@mediatek.com>, "moderated list:ARM SMMU DRIVERS"
+ <linux-arm-kernel@lists.infradead.org>, "open list:IOMMU DRIVERS"
+ <iommu@lists.linux-foundation.org>, open list <linux-kernel@vger.kernel.org>, 
+ "moderated list:ARM/Mediatek SoC support"
+ <linux-mediatek@lists.infradead.org>
+Subject: [PATCH v4 1/2] iommu/io-pgtable-arm-v7s: Add a quirk to allow pgtable
+ PA up to 35bit
+Date: Mon, 16 May 2022 20:18:49 +0800
+Message-ID: <20220516121852.8775-2-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220516121852.8775-1-yf.wang@mediatek.com>
+References: <20220516121852.8775-1-yf.wang@mediatek.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <e6e4cf701f3a43b061b9c3f7f0adc4d6addd4722.1651497024.git.geert+renesas@glider.be>
-Cc: devicetree@vger.kernel.org, linux-watchdog@vger.kernel.org,
- Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
- linux-gpio@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Linus Walleij <linus.walleij@linaro.org>, linux-renesas-soc@vger.kernel.org,
- Wolfram Sang <wsa+renesas@sang-engineering.com>,
- iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- linux-i2c@vger.kernel.org,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- linux-serial@vger.kernel.org, dmaengine@vger.kernel.org,
- Wim Van Sebroeck <wim@linux-watchdog.org>, Will Deacon <will@kernel.org>,
- Bartosz Golaszewski <brgl@bgdev.pl>, Guenter Roeck <linux@roeck-us.net>
+X-MTK: N
+Cc: Ning Li <ning.li@mediatek.com>, Libo Kang <Libo.Kang@mediatek.com>,
+ wsd_upstream@mediatek.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,19 +88,214 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: "yf.wang--- via iommu" <iommu@lists.linux-foundation.org>
+Reply-To: yf.wang@mediatek.com
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 02-05-22, 15:34, Geert Uytterhoeven wrote:
-> Despite the name, R-Car V3U is the first member of the R-Car Gen4
-> family.  Hence move its compatible value to the R-Car Gen4 section.
+From: Yunfei Wang <yf.wang@mediatek.com>
 
-Applied, thanks
+The calling to kmem_cache_alloc for level 2 pgtable allocation may run
+in atomic context, and it fails sometimes when DMA32 zone runs out of
+memory.
 
+Since Mediatek IOMMU hardware support at most 35bit PA in pgtable,
+so add a quirk to allow the PA of pgtables support up to bit35.
+
+Signed-off-by: Ning Li <ning.li@mediatek.com>
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+---
+ drivers/iommu/io-pgtable-arm-v7s.c | 56 ++++++++++++++++++++++--------
+ include/linux/io-pgtable.h         | 15 +++++---
+ 2 files changed, 52 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index be066c1503d3..57455ae052ac 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -149,6 +149,10 @@
+ #define ARM_V7S_TTBR_IRGN_ATTR(attr)					\
+ 	((((attr) & 0x1) << 6) | (((attr) & 0x2) >> 1))
+ 
++/* Mediatek extend ttbr bits[2:0] for PA bits[34:32] */
++#define ARM_V7S_TTBR_35BIT_PA(ttbr, pa)					\
++	((ttbr & ((u32)(~0U << 3))) | ((pa & GENMASK_ULL(34, 32)) >> 32))
++
+ #ifdef CONFIG_ZONE_DMA32
+ #define ARM_V7S_TABLE_GFP_DMA GFP_DMA32
+ #define ARM_V7S_TABLE_SLAB_FLAGS SLAB_CACHE_DMA32
+@@ -182,14 +186,8 @@ static bool arm_v7s_is_mtk_enabled(struct io_pgtable_cfg *cfg)
+ 		(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT);
+ }
+ 
+-static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+-				    struct io_pgtable_cfg *cfg)
++static arm_v7s_iopte to_iopte_mtk(phys_addr_t paddr, arm_v7s_iopte pte)
+ {
+-	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
+-
+-	if (!arm_v7s_is_mtk_enabled(cfg))
+-		return pte;
+-
+ 	if (paddr & BIT_ULL(32))
+ 		pte |= ARM_V7S_ATTR_MTK_PA_BIT32;
+ 	if (paddr & BIT_ULL(33))
+@@ -199,6 +197,17 @@ static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+ 	return pte;
+ }
+ 
++static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
++				    struct io_pgtable_cfg *cfg)
++{
++	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
++
++	if (!arm_v7s_is_mtk_enabled(cfg))
++		return pte;
++
++	return to_iopte_mtk(paddr, pte);
++}
++
+ static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte, int lvl,
+ 				  struct io_pgtable_cfg *cfg)
+ {
+@@ -234,6 +243,7 @@ static arm_v7s_iopte *iopte_deref(arm_v7s_iopte pte, int lvl,
+ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 				   struct arm_v7s_io_pgtable *data)
+ {
++	gfp_t gfp_l1 = __GFP_ZERO | ARM_V7S_TABLE_GFP_DMA;
+ 	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+ 	struct device *dev = cfg->iommu_dev;
+ 	phys_addr_t phys;
+@@ -241,9 +251,11 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 	size_t size = ARM_V7S_TABLE_SIZE(lvl, cfg);
+ 	void *table = NULL;
+ 
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
++		gfp_l1 = __GFP_ZERO;
++
+ 	if (lvl == 1)
+-		table = (void *)__get_free_pages(
+-			__GFP_ZERO | ARM_V7S_TABLE_GFP_DMA, get_order(size));
++		table = (void *)__get_free_pages(gfp_l1, get_order(size));
+ 	else if (lvl == 2)
+ 		table = kmem_cache_zalloc(data->l2_tables, gfp);
+ 
+@@ -251,7 +263,8 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 		return NULL;
+ 
+ 	phys = virt_to_phys(table);
+-	if (phys != (arm_v7s_iopte)phys) {
++	if (phys != (arm_v7s_iopte)phys &&
++	    !(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)) {
+ 		/* Doesn't fit in PTE */
+ 		dev_err(dev, "Page table does not fit in PTE: %pa", &phys);
+ 		goto out_free;
+@@ -457,9 +470,14 @@ static arm_v7s_iopte arm_v7s_install_table(arm_v7s_iopte *table,
+ 					   arm_v7s_iopte curr,
+ 					   struct io_pgtable_cfg *cfg)
+ {
++	phys_addr_t phys = virt_to_phys(table);
+ 	arm_v7s_iopte old, new;
+ 
+-	new = virt_to_phys(table) | ARM_V7S_PTE_TYPE_TABLE;
++	new = phys | ARM_V7S_PTE_TYPE_TABLE;
++
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
++		new = to_iopte_mtk(phys, new);
++
+ 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
+ 		new |= ARM_V7S_ATTR_NS_TABLE;
+ 
+@@ -778,7 +796,9 @@ static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
+ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 						void *cookie)
+ {
++	slab_flags_t slab_flag = ARM_V7S_TABLE_SLAB_FLAGS;
+ 	struct arm_v7s_io_pgtable *data;
++	phys_addr_t paddr;
+ 
+ 	if (cfg->ias > (arm_v7s_is_mtk_enabled(cfg) ? 34 : ARM_V7S_ADDR_BITS))
+ 		return NULL;
+@@ -788,7 +808,8 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 
+ 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+ 			    IO_PGTABLE_QUIRK_NO_PERMS |
+-			    IO_PGTABLE_QUIRK_ARM_MTK_EXT))
++			    IO_PGTABLE_QUIRK_ARM_MTK_EXT |
++			    IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT))
+ 		return NULL;
+ 
+ 	/* If ARM_MTK_4GB is enabled, the NO_PERMS is also expected. */
+@@ -801,10 +822,12 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 		return NULL;
+ 
+ 	spin_lock_init(&data->split_lock);
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
++		slab_flag = 0;
+ 	data->l2_tables = kmem_cache_create("io-pgtable_armv7s_l2",
+ 					    ARM_V7S_TABLE_SIZE(2, cfg),
+ 					    ARM_V7S_TABLE_SIZE(2, cfg),
+-					    ARM_V7S_TABLE_SLAB_FLAGS, NULL);
++					    slab_flag, NULL);
+ 	if (!data->l2_tables)
+ 		goto out_free_data;
+ 
+@@ -850,12 +873,17 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 	wmb();
+ 
+ 	/* TTBR */
+-	cfg->arm_v7s_cfg.ttbr = virt_to_phys(data->pgd) | ARM_V7S_TTBR_S |
++	paddr = virt_to_phys(data->pgd);
++	cfg->arm_v7s_cfg.ttbr = paddr | ARM_V7S_TTBR_S |
+ 				(cfg->coherent_walk ? (ARM_V7S_TTBR_NOS |
+ 				 ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_WBWA) |
+ 				 ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_WBWA)) :
+ 				(ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_NC) |
+ 				 ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_NC)));
++
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
++		cfg->arm_v7s_cfg.ttbr =
++			ARM_V7S_TTBR_35BIT_PA(cfg->arm_v7s_cfg.ttbr, paddr);
+ 	return &data->iop;
+ 
+ out_free_data:
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index 86af6f0a00a2..7ed15ad4710c 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -74,17 +74,22 @@ struct io_pgtable_cfg {
+ 	 *	to support up to 35 bits PA where the bit32, bit33 and bit34 are
+ 	 *	encoded in the bit9, bit4 and bit5 of the PTE respectively.
+ 	 *
++	 * IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT: (ARM v7s format) MediaTek IOMMUs
++	 *	extend the translation table support up to 35 bits PA, the
++	 *	encoding format is same with IO_PGTABLE_QUIRK_ARM_MTK_EXT.
++	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_TTBR1: (ARM LPAE format) Configure the table
+ 	 *	for use in the upper half of a split address space.
+ 	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_OUTER_WBWA: Override the outer-cacheability
+ 	 *	attributes set in the TCR for a non-coherent page-table walker.
+ 	 */
+-	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
+-	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
+-	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT	BIT(3)
+-	#define IO_PGTABLE_QUIRK_ARM_TTBR1	BIT(5)
+-	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA	BIT(6)
++	#define IO_PGTABLE_QUIRK_ARM_NS			BIT(0)
++	#define IO_PGTABLE_QUIRK_NO_PERMS		BIT(1)
++	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT		BIT(3)
++	#define IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT	BIT(4)
++	#define IO_PGTABLE_QUIRK_ARM_TTBR1		BIT(5)
++	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA		BIT(6)
+ 	unsigned long			quirks;
+ 	unsigned long			pgsize_bitmap;
+ 	unsigned int			ias;
 -- 
-~Vinod
+2.18.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
