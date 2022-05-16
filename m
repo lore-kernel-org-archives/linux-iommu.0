@@ -1,82 +1,95 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9AF2DC433EF
-	for <iommu@archiver.kernel.org>; Mon, 16 May 2022 13:43:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 70967C433EF
+	for <iommu@archiver.kernel.org>; Mon, 16 May 2022 13:49:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 3C74361078;
-	Mon, 16 May 2022 13:43:55 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 1743540B5E;
+	Mon, 16 May 2022 13:49:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Jw34_S2z9e9l; Mon, 16 May 2022 13:43:54 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 1DC0F60AA5;
-	Mon, 16 May 2022 13:43:54 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E048EC0039;
-	Mon, 16 May 2022 13:43:53 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 56C4DC002D
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 13:43:52 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 43E05404D5
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 13:43:52 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MvsZCphbKNbz for <iommu@lists.linux-foundation.org>;
- Mon, 16 May 2022 13:43:50 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id v2zrbbMjHAJV; Mon, 16 May 2022 13:49:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id ED56D40283;
+	Mon, 16 May 2022 13:49:22 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C34B6C0039;
+	Mon, 16 May 2022 13:49:22 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5E96EC002D
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 13:49:21 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 59D4F402C9
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 13:49:21 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id X68YyR_NnJ6T for <iommu@lists.linux-foundation.org>;
+ Mon, 16 May 2022 13:49:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp2.osuosl.org (Postfix) with ESMTPS id D11DF40180
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 13:43:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1652708630; x=1684244630;
- h=message-id:date:mime-version:cc:subject:to:references:
- from:in-reply-to:content-transfer-encoding;
- bh=t+/pLuhuUkhIgbEA+oiikj8Gc7z+OKs/HfsGEDeb13g=;
- b=RZeqL5nWzwLX/FavyEB+aBQWaPLi0xV0p11x6oyhpY8/WQBRIO6jX4J9
- aR1eypOXXLlz7j+EMUZ+mLhphQWfE6noZ1lGShJrZaghj0a76tEKueIo4
- A1lCeuoBtJKL9a7yT2mMHjna7dEuDemTHlbuTr2r3Sux14+UAMx1LoF8L
- pIXcAw2SiXDJwxeYYSjGVA0T+YZMvoW0sKhXjdEINfeAAT/mTh4KwX/AQ
- HyZD86XorFM0fEezwq5SV2NE7g+kQGB/6+9vLHbxZ2p+2dagDbtYVMJNJ
- /HWiBPH/FpQ9W2inyPzwtCkz7HnGM1hzjcMuE3b3BxtQCOt7p/rNfSdpR w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10348"; a="268412613"
-X-IronPort-AV: E=Sophos;i="5.91,229,1647327600"; d="scan'208";a="268412613"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 16 May 2022 06:43:49 -0700
-X-IronPort-AV: E=Sophos;i="5.91,229,1647327600"; d="scan'208";a="522451951"
-Received: from yanjiepa-mobl.ccr.corp.intel.com (HELO [10.249.192.19])
- ([10.249.192.19])
- by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 16 May 2022 06:43:45 -0700
-Message-ID: <64f49746-1ae7-7516-8e92-06ffb4d5f8e5@linux.intel.com>
-Date: Mon, 16 May 2022 21:43:43 +0800
+Received: from dfw.source.kernel.org (dfw.source.kernel.org
+ [IPv6:2604:1380:4641:c500::1])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 11E6C408DA
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 13:49:19 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by dfw.source.kernel.org (Postfix) with ESMTPS id 9D96361403
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 13:49:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 838D0C3411E
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 13:49:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1652708957;
+ bh=Z1XATC9uFabr/cJUUJjAm1EmvJAVsCV0ZzQGqjrP+zA=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=Z+GBZ3HlMnS5S30k9vIXcOgsZZ9s2NTFIiE1HhvkWvPHy1bjZ00LgZTijr0M8KGmr
+ STXCnHM85F+TIeIvpPTpG9lJp1vA2Dm/Llye5llcupfFc3DrhRP+8bTa1WAu66TGeA
+ j/DsK4XK2TUXXSmd4/EUmmfxHNWV6eBhb+iN8YrybsUGbavpI8spHpzmskqUGIvWti
+ bNesjElLh27daCKCjj83GRo5P9odygoLEUSbXWLeoVpn5VGXa0/BMtY5u5Z+8Zq3Yz
+ Dxa7iXnhmdyqASNVfz96SqOorM96PaPLHL4R1RBqW+eHT3/L6di0va0g0SOjYdn1qn
+ w4pbcCKlq/PAQ==
+Received: by mail-ed1-f42.google.com with SMTP id j28so4370553eda.13
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 06:49:17 -0700 (PDT)
+X-Gm-Message-State: AOAM5312Fb0FFdDoPdSFKjuXcquIuvYYGCmvvPtxmzzmiJhuonMoEwlX
+ Y60nx3caVRKRmzuDOBPAkZcuZjqFLtCizMI/QA==
+X-Google-Smtp-Source: ABdhPJzHJM/87Poo6lwZbFjNTMwh5WnjP4kK2zZNYqsvkYOJYJ8e9tfRTKjYaXJU+LODgXXZ2NtySTJTP3q9QRcur+c=
+X-Received: by 2002:a05:6402:35c7:b0:427:d231:3740 with SMTP id
+ z7-20020a05640235c700b00427d2313740mr13373747edc.40.1652708955614; Mon, 16
+ May 2022 06:49:15 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 2/5] iommu: Add blocking_domain_ops field in iommu_ops
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Will Deacon <will@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>
-References: <20220516015759.2952771-1-baolu.lu@linux.intel.com>
- <20220516015759.2952771-3-baolu.lu@linux.intel.com>
- <8a0fc6cf-f46e-f17e-2b76-099ada1683c3@arm.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <8a0fc6cf-f46e-f17e-2b76-099ada1683c3@arm.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>
+References: <20220429220933.1350374-1-saravanak@google.com>
+ <CAL_Jsq+2A7mRVV24XW0YcP8GkFCK_Ri4KDcqvW4e0p3TkQMWVg@mail.gmail.com>
+ <CAGETcx8=ZX+Pb4ioMVb7LfuF9c3HNP8g1+WMqZR=Pq7-9=DUCA@mail.gmail.com>
+In-Reply-To: <CAGETcx8=ZX+Pb4ioMVb7LfuF9c3HNP8g1+WMqZR=Pq7-9=DUCA@mail.gmail.com>
+From: Rob Herring <robh@kernel.org>
+Date: Mon, 16 May 2022 08:49:03 -0500
+X-Gmail-Original-Message-ID: <CAL_Jsq+Y9p2UEgQ=ctFjcsHG9M6iXuGFY-N6uMAqhPM5KLwDjA@mail.gmail.com>
+Message-ID: <CAL_Jsq+Y9p2UEgQ=ctFjcsHG9M6iXuGFY-N6uMAqhPM5KLwDjA@mail.gmail.com>
+Subject: Re: [PATCH v1] driver core: Extend deferred probe timeout on driver
+ registration
+To: Saravana Kannan <saravanak@google.com>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>,
+ Android Kernel Team <kernel-team@android.com>,
+ Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Linus Walleij <linus.walleij@linaro.org>, Jonathan Corbet <corbet@lwn.net>,
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+ Kevin Hilman <khilman@kernel.org>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ Mark Brown <broonie@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>,
+ Pavel Machek <pavel@ucw.cz>,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ "open list:THERMAL" <linux-pm@vger.kernel.org>,
+ Thierry Reding <treding@nvidia.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,36 +102,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin,
+On Fri, May 13, 2022 at 12:26 PM Saravana Kannan <saravanak@google.com> wrote:
+>
+> On Fri, May 13, 2022 at 6:58 AM Rob Herring <robh@kernel.org> wrote:
+> >
+> > On Fri, Apr 29, 2022 at 5:09 PM Saravana Kannan <saravanak@google.com> wrote:
+> > >
+> > > The deferred probe timer that's used for this currently starts at
+> > > late_initcall and runs for driver_deferred_probe_timeout seconds. The
+> > > assumption being that all available drivers would be loaded and
+> > > registered before the timer expires. This means, the
+> > > driver_deferred_probe_timeout has to be pretty large for it to cover the
+> > > worst case. But if we set the default value for it to cover the worst
+> > > case, it would significantly slow down the average case. For this
+> > > reason, the default value is set to 0.
+> > >
+> > > Also, with CONFIG_MODULES=y and the current default values of
+> > > driver_deferred_probe_timeout=0 and fw_devlink=on, devices with missing
+> > > drivers will cause their consumer devices to always defer their probes.
+> > > This is because device links created by fw_devlink defer the probe even
+> > > before the consumer driver's probe() is called.
+> > >
+> > > Instead of a fixed timeout, if we extend an unexpired deferred probe
+> > > timer on every successful driver registration, with the expectation more
+> > > modules would be loaded in the near future, then the default value of
+> > > driver_deferred_probe_timeout only needs to be as long as the worst case
+> > > time difference between two consecutive module loads.
+> > >
+> > > So let's implement that and set the default value to 10 seconds when
+> > > CONFIG_MODULES=y.
+> >
+> > We had to revert a non-zero timeout before (issue with NFS root IIRC).
+> > Does fw_devlink=on somehow fix that?
+>
+> If it's the one where ip autoconfig was timing out, then John Stultz
+> fixed it by fixing wait_for_device_probe().
+> https://lore.kernel.org/all/20200422203245.83244-4-john.stultz@linaro.org/
 
-On 2022/5/16 19:22, Robin Murphy wrote:
-> On 2022-05-16 02:57, Lu Baolu wrote:
->> Each IOMMU driver must provide a blocking domain ops. If the hardware
->> supports detaching domain from device, setting blocking domain equals
->> detaching the existing domain from the deivce. Otherwise, an UNMANAGED
->> domain without any mapping will be used instead.
-> 
-> Unfortunately that's backwards - most of the implementations of 
-> .detach_dev are disabling translation entirely, meaning the device ends 
-> up effectively in passthrough rather than blocked. Conversely, at least 
-> arm-smmu and arm-smmu-v3 could implement IOMMU_DOMAIN_BLOCKED properly 
-> with fault-type S2CRs and STEs respectively, it just needs a bit of 
-> wiring up.
+Yeah, that was it.
 
-Thank you for letting me know this.
-
-This means that we need to add an additional UNMANAGED domain for each
-iommu group, although it is not used most of the time. If most IOMMU
-drivers could implement real dumb blocking domains, this burden may be
-reduced.
-
-Best regards,
-baolu
+Acked-by: Rob Herring <robh@kernel.org>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
