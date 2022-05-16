@@ -4,72 +4,81 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id F311EC433EF
-	for <iommu@archiver.kernel.org>; Mon, 16 May 2022 14:23:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4788BC433FE
+	for <iommu@archiver.kernel.org>; Mon, 16 May 2022 16:03:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A5886417D4;
-	Mon, 16 May 2022 14:23:25 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id D61A4418DA;
+	Mon, 16 May 2022 16:03:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EiHI_gJR52tk; Mon, 16 May 2022 14:23:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 4DE8441803;
-	Mon, 16 May 2022 14:23:24 +0000 (UTC)
+	with ESMTP id Ko7LQY7HKUTa; Mon, 16 May 2022 16:03:12 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id B4AFC416F1;
+	Mon, 16 May 2022 16:03:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 226D1C0032;
-	Mon, 16 May 2022 14:23:24 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B7864C002D
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 14:23:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 900BEC0039;
+	Mon, 16 May 2022 16:03:11 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CA249C002D
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 16:03:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 96FAE61088
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 14:23:23 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id B605F418D1
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 16:03:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ztXvgLL6tfif for <iommu@lists.linux-foundation.org>;
- Mon, 16 May 2022 14:23:23 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp3.osuosl.org (Postfix) with ESMTPS id B354A61085
- for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 14:23:22 +0000 (UTC)
-Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.200])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L21cN4Q2Zz67NY6;
- Mon, 16 May 2022 22:20:20 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 16 May 2022 16:23:20 +0200
-Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 16 May
- 2022 15:23:18 +0100
-Date: Mon, 16 May 2022 15:23:17 +0100
-To: Yicong Yang <yangyicong@hisilicon.com>
-Subject: Re: [PATCH v8 6/8] perf tool: Add support for parsing HiSilicon
- PCIe Trace packet
-Message-ID: <20220516152317.000029d8@Huawei.com>
-In-Reply-To: <20220516125223.32012-7-yangyicong@hisilicon.com>
-References: <20220516125223.32012-1-yangyicong@hisilicon.com>
- <20220516125223.32012-7-yangyicong@hisilicon.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Efb7jhJhLL36 for <iommu@lists.linux-foundation.org>;
+ Mon, 16 May 2022 16:03:10 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com
+ [209.85.210.42])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 1622D416F1
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 16:03:09 +0000 (UTC)
+Received: by mail-ot1-f42.google.com with SMTP id
+ s12-20020a0568301e0c00b00605f30530c2so10353585otr.9
+ for <iommu@lists.linux-foundation.org>; Mon, 16 May 2022 09:03:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=yo1mI8/R7Wy9riO53UED6LxgLrSXbz5A0ENaW2C9bpU=;
+ b=Eixh5es+kc2ZHmlOtdJ7zNuEcU2wllLZw7+XfH41MNRPPTR7HJvPeGRp2JtMp4uzq6
+ measj3ZSnj0sOJuRAbWvTlhaBAGa3+19VJr8xmJOWRwkUbDecCWj6ht/Qq/fnoheY/yW
+ 0cxXaKFha3IfVOTUkv+8kjyGECj8oTNCyDKHt9PklPFk5NFEXPwAsFXGBIllZm7PQ0YD
+ ygqXLzwM5L2yBwkRp9T12EzrropkN94xdLtb6GsPZNGTLVI1d32CZi3Z6TMkEz5iDXSS
+ 9mR+0P2+Ckog7qvw5Vqa8IvFqbalJGH4VAvqNBIxa52XjBYFT6SLrV0jE+bI+vFYa989
+ rwgw==
+X-Gm-Message-State: AOAM5326cf9R0N8+Liy28xDgeOdGqleMvhXYlfqjZfF+82yNsfMtU8Gp
+ XTL8rVJhKQnmU7nwTi5eYQ==
+X-Google-Smtp-Source: ABdhPJyZnvv3MvtJ0BpFTLVD4WxJ+CJ0091/m0FsrkT5PDbPjdHQaNeoSy79FCWg/C3J1d8uUv1Vyg==
+X-Received: by 2002:a05:6830:12c9:b0:606:4482:74a0 with SMTP id
+ a9-20020a05683012c900b00606448274a0mr6234159otq.17.1652716989012; 
+ Mon, 16 May 2022 09:03:09 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net.
+ [66.90.144.107]) by smtp.gmail.com with ESMTPSA id
+ q5-20020a4aa885000000b0035eb4e5a6b6sm4288330oom.12.2022.05.16.09.03.07
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 16 May 2022 09:03:08 -0700 (PDT)
+Received: (nullmailer pid 2732699 invoked by uid 1000);
+ Mon, 16 May 2022 16:03:07 -0000
+Date: Mon, 16 May 2022 11:03:07 -0500
+From: Rob Herring <robh@kernel.org>
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Subject: Re: [PATCH 1/2] dt-bindings: mediatek: Add bindings for MT6795 M4U
+Message-ID: <20220516160307.GA2732645-robh@kernel.org>
+References: <20220513151411.395744-1-angelogioacchino.delregno@collabora.com>
+ <20220513151411.395744-2-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhreml736-chm.china.huawei.com (10.201.108.87) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
-Cc: mark.rutland@arm.com, prime.zeng@huawei.com,
- alexander.shishkin@linux.intel.com, linux-pci@vger.kernel.org,
- linuxarm@huawei.com, james.clark@arm.com, will@kernel.org,
- peterz@infradead.org, mingo@redhat.com, helgaas@kernel.org,
- liuqi115@huawei.com, suzuki.poulose@arm.com, acme@kernel.org,
- zhangshaokun@hisilicon.com, linux-arm-kernel@lists.infradead.org,
- mathieu.poirier@linaro.org, gregkh@linuxfoundation.org,
- linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
- iommu@lists.linux-foundation.org, leo.yan@linaro.org, robin.murphy@arm.com
+Content-Disposition: inline
+In-Reply-To: <20220513151411.395744-2-angelogioacchino.delregno@collabora.com>
+Cc: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+ konrad.dybcio@somainline.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, paul.bouchara@somainline.org,
+ robh+dt@kernel.org, linux-mediatek@lists.infradead.org,
+ ~postmarketos/upstreaming@lists.sr.ht, krzysztof.kozlowski+dt@linaro.org,
+ marijn.suijten@somainline.org, matthias.bgg@gmail.com,
+ martin.botka@somainline.org, phone-devel@vger.kernel.org, will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,76 +91,23 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jonathan Cameron via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 16 May 2022 20:52:21 +0800
-Yicong Yang <yangyicong@hisilicon.com> wrote:
-
-> From: Qi Liu <liuqi115@huawei.com>
+On Fri, 13 May 2022 17:14:10 +0200, AngeloGioacchino Del Regno wrote:
+> Add bindings for the MediaTek Helio X10 (MT6795) IOMMU/M4U.
 > 
-> Add support for using 'perf report --dump-raw-trace' to parse PTT packet.
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>  .../bindings/iommu/mediatek,iommu.yaml        |  3 +
+>  include/dt-bindings/memory/mt6795-larb-port.h | 96 +++++++++++++++++++
+>  2 files changed, 99 insertions(+)
+>  create mode 100644 include/dt-bindings/memory/mt6795-larb-port.h
 > 
-> Example usage:
-> 
-> Output will contain raw PTT data and its textual representation, such
-> as:
-> 
-> 0 0 0x5810 [0x30]: PERF_RECORD_AUXTRACE size: 0x400000  offset: 0
-> ref: 0xa5d50c725  idx: 0  tid: -1  cpu: 0
-> .
-> . ... HISI PTT data: size 4194304 bytes
-> .  00000000: 00 00 00 00                                 Prefix
-> .  00000004: 08 20 00 60                                 Header DW0
-> .  00000008: ff 02 00 01                                 Header DW1
-> .  0000000c: 20 08 00 00                                 Header DW2
-> .  00000010: 10 e7 44 ab                                 Header DW3
-> .  00000014: 2a a8 1e 01                                 Time
-> .  00000020: 00 00 00 00                                 Prefix
-> .  00000024: 01 00 00 60                                 Header DW0
-> .  00000028: 0f 1e 00 01                                 Header DW1
-> .  0000002c: 04 00 00 00                                 Header DW2
-> .  00000030: 40 00 81 02                                 Header DW3
-> .  00000034: ee 02 00 00                                 Time
-> ....
-> 
-> Signed-off-by: Qi Liu <liuqi115@huawei.com>
-> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
 
-From point of view of a reviewer who doesn't know this code well, this
-all looks sensible.  One trivial comment inline.
-
-Thanks,
-
-Jonathan
-
-> diff --git a/tools/perf/util/hisi-ptt.c b/tools/perf/util/hisi-ptt.c
-> new file mode 100644
-> index 000000000000..2afc1a663c2a
-> --- /dev/null
-> +
-> +static void hisi_ptt_free(struct perf_session *session)
-> +{
-> +	struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt,
-> +					    auxtrace);
-> +
-> +	session->auxtrace = NULL;
-> +	free(ptt);
-> +}
-> +
-> +static bool hisi_ptt_evsel_is_auxtrace(struct perf_session *session,
-> +				       struct evsel *evsel)
-> +{
-> +	struct hisi_ptt *ptt = container_of(session->auxtrace, struct hisi_ptt, auxtrace);
-
-Check for consistent wrapping of lines like this. This doesn't match the one just above.
-
-
-
+Acked-by: Rob Herring <robh@kernel.org>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
