@@ -1,82 +1,82 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E8425C433EF
-	for <iommu@archiver.kernel.org>; Tue, 17 May 2022 22:04:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id F3561C433FE
+	for <iommu@archiver.kernel.org>; Tue, 17 May 2022 22:49:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 92B7340377;
-	Tue, 17 May 2022 22:04:32 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 5695341956;
+	Tue, 17 May 2022 22:49:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yUuruXi8iCSe; Tue, 17 May 2022 22:04:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 68D3E400FB;
-	Tue, 17 May 2022 22:04:31 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id iJMcdIT6Kng3; Tue, 17 May 2022 22:49:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 6CF2B4182B;
+	Tue, 17 May 2022 22:49:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 34199C0032;
-	Tue, 17 May 2022 22:04:31 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3BD49C002D
- for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 22:04:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 32B4AC0039;
+	Tue, 17 May 2022 22:49:30 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5E1ABC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 22:49:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 09E9960E07
- for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 22:04:30 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 38337830A8
+ for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 22:49:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HHrBltm6EejL for <iommu@lists.linux-foundation.org>;
- Tue, 17 May 2022 22:04:29 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id G2HJuQe4GF6u for <iommu@lists.linux-foundation.org>;
+ Tue, 17 May 2022 22:49:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 31F7E60B7D
- for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 22:04:29 +0000 (UTC)
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 0D45A83004
+ for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 22:49:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1652825069; x=1684361069;
+ t=1652827767; x=1684363767;
  h=date:from:to:cc:subject:message-id:references:
  mime-version:in-reply-to;
- bh=DYnEdSppO39yh6uNPMT5k/kcPnrUIqJqd4/BSKdNERc=;
- b=e/pz44afZ6dfqdRgjFlUY5BG1zioYDm8TmV9psyaS3K2N6HDpCehOXoS
- NtqfjhEZ2KLEMdEuhD8/G9ei8g0TJw3WM07GUqkRmZU46aHkXigl7Xir9
- 2zcEjIsjYbPZs4Eznuc6pOpacJX9FW3Xm3VQLFIiMtQ1b1dnbHa5EC9KU
- hoKwOogNN+qPgO9yd53wGlBnLTf1+FzSzNYEvYd/K6IuENgI8qy9IAroW
- OzsxjNf1ltra3HC3KQDiME5sg2ogdRvrSU2gLo7oLk98GF7kPZ41Tjz8K
- LIaRW2rvvYvKesjttLz1osUMylFRsty7FD9YxtSAMXsrLotDVeuoGexuC w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="258915642"
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; d="scan'208";a="258915642"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 17 May 2022 15:04:28 -0700
+ bh=eW9eeCQ/ZnkVlQzYhrGw1tL7ydi/5swHvLwwK3+msYw=;
+ b=Jw7hZwxAwdHLKbRYWIIS0eCGAJEQKbbdPmLD7/YbId+GIoPScP0Rujr3
+ jZaZK3COFb8ERX9oS486L0ptycsubVnpM25JHXxLnoBi7sxea9ZIh4TwE
+ Fe3kvlVHoZ6GZOvkL1vfqKpF8kTUyYsdZIqwRlGQPBCHZ/SGRHE9YMu1m
+ o5DPl+rHWlvneCCT/dH7hSz7iODgjEnf6pteB1LHHPBam+gvzFOY/rfNv
+ vywOUYhCtma4nrNy4FXHJeL+80jk/UpygncDAkZVtGpAg0jVbt75pfKcV
+ NKhWX1Lh+s0TOlQ8ZHyuDUqIhfsqwBecd55Jmu3VvYE1A75S3cB5XHw7f A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="331980534"
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; d="scan'208";a="331980534"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 17 May 2022 15:49:26 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; d="scan'208";a="673075036"
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; d="scan'208";a="626709312"
 Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
- by fmsmga002.fm.intel.com with ESMTP; 17 May 2022 15:04:27 -0700
-Date: Tue, 17 May 2022 15:08:10 -0700
+ by fmsmga008.fm.intel.com with ESMTP; 17 May 2022 15:49:25 -0700
+Date: Tue, 17 May 2022 15:53:08 -0700
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To: Nicholas Piggin <npiggin@gmail.com>
+To: Thomas Gleixner <tglx@linutronix.de>
 Subject: Re: [PATCH v6 28/29] x86/tsc: Restart NMI watchdog after refining
  tsc_khz
-Message-ID: <20220517220810.GB6711@ranerica-svr.sc.intel.com>
+Message-ID: <20220517225308.GC6711@ranerica-svr.sc.intel.com>
 References: <20220506000008.30892-1-ricardo.neri-calderon@linux.intel.com>
  <20220506000008.30892-29-ricardo.neri-calderon@linux.intel.com>
- <1652180070.1r874kr0tg.astroid@bobo.none>
+ <1652180070.1r874kr0tg.astroid@bobo.none> <87ilqdpq7u.ffs@tglx>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1652180070.1r874kr0tg.astroid@bobo.none>
+In-Reply-To: <87ilqdpq7u.ffs@tglx>
 User-Agent: Mutt/1.9.4 (2018-02-28)
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
  Andi Kleen <ak@linux.intel.com>, linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
- linux-kernel@vger.kernel.org, Stephane Eranian <eranian@google.com>,
+ linux-kernel@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
  Ricardo Neri <ricardo.neri@intel.com>, iommu@lists.linux-foundation.org,
- Tony Luck <tony.luck@intel.com>, Thomas Gleixner <tglx@linutronix.de>,
- David Woodhouse <dwmw2@infradead.org>,
- Andrew Morton <akpm@linux-foundation.org>
+ Tony Luck <tony.luck@intel.com>, Stephane Eranian <eranian@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,92 +94,54 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, May 10, 2022 at 09:16:21PM +1000, Nicholas Piggin wrote:
-> Excerpts from Ricardo Neri's message of May 6, 2022 10:00 am:
-> > The HPET hardlockup detector relies on tsc_khz to estimate the value of
-> > that the TSC will have when its HPET channel fires. A refined tsc_khz
-> > helps to estimate better the expected TSC value.
-> > 
-> > Using the early value of tsc_khz may lead to a large error in the expected
-> > TSC value. Restarting the NMI watchdog detector has the effect of kicking
-> > its HPET channel and make use of the refined tsc_khz.
-> > 
-> > When the HPET hardlockup is not in use, restarting the NMI watchdog is
-> > a noop.
-> > 
-> > Cc: Andi Kleen <ak@linux.intel.com>
-> > Cc: Stephane Eranian <eranian@google.com>
-> > Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
-> > Cc: iommu@lists.linux-foundation.org
-> > Cc: linuxppc-dev@lists.ozlabs.org
-> > Cc: x86@kernel.org
-> > Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-> > ---
-> > Changes since v5:
-> >  * Introduced this patch
-> > 
-> > Changes since v4
-> >  * N/A
-> > 
-> > Changes since v3
-> >  * N/A
-> > 
-> > Changes since v2:
-> >  * N/A
-> > 
-> > Changes since v1:
-> >  * N/A
-> > ---
-> >  arch/x86/kernel/tsc.c | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> > 
-> > diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
-> > index cafacb2e58cc..cc1843044d88 100644
-> > --- a/arch/x86/kernel/tsc.c
-> > +++ b/arch/x86/kernel/tsc.c
-> > @@ -1386,6 +1386,12 @@ static void tsc_refine_calibration_work(struct work_struct *work)
-> >  	/* Inform the TSC deadline clockevent devices about the recalibration */
-> >  	lapic_update_tsc_freq();
-> >  
-> > +	/*
-> > +	 * If in use, the HPET hardlockup detector relies on tsc_khz.
-> > +	 * Reconfigure it to make use of the refined tsc_khz.
-> > +	 */
-> > +	lockup_detector_reconfigure();
+On Tue, May 10, 2022 at 01:44:05PM +0200, Thomas Gleixner wrote:
+> On Tue, May 10 2022 at 21:16, Nicholas Piggin wrote:
+> > Excerpts from Ricardo Neri's message of May 6, 2022 10:00 am:
+> >> +	/*
+> >> +	 * If in use, the HPET hardlockup detector relies on tsc_khz.
+> >> +	 * Reconfigure it to make use of the refined tsc_khz.
+> >> +	 */
+> >> +	lockup_detector_reconfigure();
+> >
+> > I don't know if the API is conceptually good.
+> >
+> > You change something that the lockup detector is currently using, 
+> > *while* the detector is running asynchronously, and then reconfigure
+> > it. What happens in the window? If this code is only used for small
+> > adjustments maybe it does not really matter but in principle it's
+> > a bad API to export.
+> >
+> > lockup_detector_reconfigure as an internal API is okay because it
+> > reconfigures things while the watchdog is stopped [actually that
+> > looks untrue for soft dog which uses watchdog_thresh in
+> > is_softlockup(), but that should be fixed].
+> >
+> > You're the arch so you're allowed to stop the watchdog and configure
+> > it, e.g., hardlockup_detector_perf_stop() is called in arch/.
+> >
+> > So you want to disable HPET watchdog if it was enabled, then update
+> > wherever you're using tsc_khz, then re-enable.
 > 
-> I don't know if the API is conceptually good.
-> 
-> You change something that the lockup detector is currently using, 
-> *while* the detector is running asynchronously, and then reconfigure
-> it. 
+> The real question is whether making this refined tsc_khz value
+> immediately effective matters at all. IMO, it does not because up to
+> that point the watchdog was happily using the coarse calibrated value
+> and the whole use TSC to assess whether the HPET fired mechanism is just
+> a guestimate anyway. So what's the point of trying to guess 'more
+> correct'.
 
-Yes, this is what happens.
+In some of my test systems I observed that, the TSC value does not fall
+within the expected error window the first time the HPET channel expires.
 
-> What happens in the window? If this code is only used for small
-> adjustments maybe it does not really matter
+I inferred that the error computed using the coarser tsc_khz was wrong.
+Recalculating the error window with refined tsc_khz would correct it.
 
-Please see my comment
+However, restarting the timer has the side-effect of kicking the timer and,
+therefore pushing the first HPET NMI further in the future.
 
-> but in principle it's a bad API to export.
-> 
-> lockup_detector_reconfigure as an internal API is okay because it
-> reconfigures things while the watchdog is stopped
+Perhaps kicking HPET channel, not recomputing the error window, corrected
+(masked?) the problem.
 
-I see.
-
-> [actually that  looks untrue for soft dog which uses watchdog_thresh in
-> is_softlockup(), but that should be fixed].
-
-Perhaps there should be a watchdog_thresh_user. When the user updates it,
-the detector is stopped, watchdog_thresh is updated, and then the detector
-is resumed.
-
-> 
-> You're the arch so you're allowed to stop the watchdog and configure
-> it, e.g., hardlockup_detector_perf_stop() is called in arch/.
-
-I had it like this but it did not look right to me. You are right, however,
-I can stop/restart the watchdog when needed.
+I will investigate further and rework or drop this patch as needed.
 
 Thanks and BR,
 Ricardo
