@@ -1,68 +1,70 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 59087C433FE
-	for <iommu@archiver.kernel.org>; Tue, 17 May 2022 13:21:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 22134C433EF
+	for <iommu@archiver.kernel.org>; Tue, 17 May 2022 13:50:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 137E841A35;
-	Tue, 17 May 2022 13:21:34 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id BB41D4051F;
+	Tue, 17 May 2022 13:50:34 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id X4M5tN16D2n5; Tue, 17 May 2022 13:50:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 7418040C72;
+	Tue, 17 May 2022 13:50:33 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4D34CC0032;
+	Tue, 17 May 2022 13:50:33 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5C855C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 13:50:31 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 44189408CD
+ for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 13:50:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DC4zW2pInA9r; Tue, 17 May 2022 13:21:33 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id C6A5C41A30;
-	Tue, 17 May 2022 13:21:32 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 74D58C0082;
-	Tue, 17 May 2022 13:21:32 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 287D5C0081
- for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 13:21:27 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 255ED61190
- for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 13:21:24 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=collabora.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uvo2MAi_YoFp for <iommu@lists.linux-foundation.org>;
- Tue, 17 May 2022 13:21:23 +0000 (UTC)
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id T2oalnd1SvMQ for <iommu@lists.linux-foundation.org>;
+ Tue, 17 May 2022 13:50:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 7C31B61124
- for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 13:21:23 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
- (Authenticated sender: kholk11) with ESMTPSA id 124DE1F43486
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
- s=mail; t=1652793677;
- bh=CgNYAOaieQLCVcum8jYWv0FFa/H0G4zrGj0sGsj1tXw=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=fSBaRyI6hnMhzOnk7Qp0Ysns7gPUpTUzRMIMj694El0CyT8qbgolMVkEpkBpzrtIk
- yNZIE7eq0Nbgo0c0an2FgIb2c0ciV4pEbQF8ZOSNq+nNZKN6Aql2OHLkz88WGk9pfB
- Md4Z9YLSK/U8pIAcrlPauRO9xLO+nayomT4d+bbyi1hM7/NLovW3MjWLwPMPYigFpu
- MugKE11JhgWjrruYhJoZuumEQKclpr7xzzyBQtsZQ1XQIELAistppfKN89g3PI5ukz
- fRZlj1xfXf6Oua1iryHxkyASM0L9G57c5BosNNF/fJK9yXkVEC6JkMM6xA8EYMPrNs
- ySLA+v4OILXkQ==
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-To: yong.wu@mediatek.com
-Subject: [PATCH 6/8] arm64: dts: mediatek: mt2712e: Add mediatek,
- infracfg phandle for IOMMU
-Date: Tue, 17 May 2022 15:21:05 +0200
-Message-Id: <20220517132107.195932-7-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220517132107.195932-1-angelogioacchino.delregno@collabora.com>
-References: <20220517132107.195932-1-angelogioacchino.delregno@collabora.com>
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 4A20B408FA
+ for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 13:50:28 +0000 (UTC)
+Received: from fraeml738-chm.china.huawei.com (unknown [172.18.147.226])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L2cqw2BnSz67xWY;
+ Tue, 17 May 2022 21:47:24 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml738-chm.china.huawei.com (10.206.15.219) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 17 May 2022 15:50:25 +0200
+Received: from [10.47.88.19] (10.47.88.19) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 17 May
+ 2022 14:50:24 +0100
+Message-ID: <1043830a-02af-bf8a-6089-0eb7a84a8e85@huawei.com>
+Date: Tue, 17 May 2022 14:50:24 +0100
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, robh+dt@kernel.org,
- linux-mediatek@lists.infradead.org, krzysztof.kozlowski+dt@linaro.org,
- matthias.bgg@gmail.com, will@kernel.org, linux-arm-kernel@lists.infradead.org,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [RFC PATCH] dma-iommu: Add iommu_dma_max_mapping_size()
+To: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>, 
+ <hch@lst.de>, <m.szyprowski@samsung.com>
+References: <1652706361-92557-1-git-send-email-john.garry@huawei.com>
+ <f5b78c9c-312e-70ab-ecbb-f14623a4b6e3@arm.com>
+ <9160031b-50be-6993-5a8e-f238391962c5@huawei.com>
+ <8f193bdd-3a0a-f9ed-0726-e6081f374320@arm.com>
+In-Reply-To: <8f193bdd-3a0a-f9ed-0726-e6081f374320@arm.com>
+X-Originating-IP: [10.47.88.19]
+X-ClientProxiedBy: lhreml743-chm.china.huawei.com (10.201.108.193) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: liyihang6@hisilicon.com, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,48 +77,98 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+From: John Garry via iommu <iommu@lists.linux-foundation.org>
+Reply-To: John Garry <john.garry@huawei.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The IOMMU driver now looks for the "mediatek,infracfg" phandle as a
-new way to retrieve a syscon to that:
-even though the old way is retained, it has been deprecated and the
-driver will write a message in kmsg advertising to use the phandle
-way instead.
+On 17/05/2022 13:02, Robin Murphy wrote:
+>>>
+>>> Indeed, sorry but NAK for this being nonsense. As I've said at least 
+>>> once before, if the unnecessary SAC address allocation attempt slows 
+>>> down your workload, make it not do that in the first place. If you 
+>>> don't like the existing command-line parameter then fine, > there are 
+>>> plenty of
+>>> other options, it just needs to be done in a way that doesn't break 
+>>> x86 systems with dodgy firmware, as my first attempt turned out to.
+>>
+>> Sorry, but I am not interested in this. It was discussed in Jan last 
+>> year without any viable solution.
+> 
+> Er, OK, if you're not interested in solving that problem I don't see why 
+> you'd bring it up, but hey ho. *I* still think it's important, so I 
+> guess I'll revive my old patch with a CONFIG_X86 bodge and have another 
+> go at some point.
 
-For this reason, assign the right phandle to mediatek,infracfg in
-the iommu node.
+Let me rephrase, I would be happy to help fix that problem if we really 
+can get it fixed, however for my problem it's better to try to get the 
+SCSI driver to stop requesting uncached IOVAs foremost.
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- arch/arm64/boot/dts/mediatek/mt2712e.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+> 
+>> Anyway we still have the long-term IOVA aging issue, and requesting 
+>> non-cached IOVAs is involved in that. So I would rather keep the SCSI 
+>> driver to requesting cached IOVAs all the time.
+>>
+>> I did try to do it the other way around - configuring the IOVA caching 
+>> range according to the drivers requirement but that got nowhere.
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-index 623eb3beabf2..4797537cb368 100644
---- a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-@@ -329,6 +329,7 @@ iommu0: iommu@10205000 {
- 		interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_LOW>;
- 		clocks = <&infracfg CLK_INFRA_M4U>;
- 		clock-names = "bclk";
-+		mediatek,infracfg = <&infracfg>;
- 		mediatek,larbs = <&larb0>, <&larb1>, <&larb2>,
- 				 <&larb3>, <&larb6>;
- 		#iommu-cells = <1>;
-@@ -346,6 +347,7 @@ iommu1: iommu@1020a000 {
- 		interrupts = <GIC_SPI 145 IRQ_TYPE_LEVEL_LOW>;
- 		clocks = <&infracfg CLK_INFRA_M4U>;
- 		clock-names = "bclk";
-+		mediatek,infracfg = <&infracfg>;
- 		mediatek,larbs = <&larb4>, <&larb5>, <&larb7>;
- 		#iommu-cells = <1>;
- 	};
--- 
-2.35.1
+Note that this is still not a final solution as it's not always viable 
+to ask a user to unbind + bind the driver.
 
+> 
+> FWIW I thought that all looked OK, it just kept getting drowned out by 
+> more critical things in my inbox so I hoped someone else might comment. 
+> If it turns out that I've become the de-facto IOVA maintainer in 
+> everyone else's minds now and they're all waiting for my word then fair 
+> enough, I just need to know and reset my expectations accordingly. Joerg?
+
+It would be great to see an improvement here...
+
+> 
+>>> Furthermore, if a particular SCSI driver doesn't benefit from 
+>>> mappings larger than 256KB, then that driver is also free to limit 
+>>> its own mapping size. There are other folks out there with use-cases 
+>>> for mapping *gigabytes* at once; you don't get to cripple the API and 
+>>> say that that's suddenly not allowed just because it happens to make 
+>>> your thing go faster, that's absurd.
+>>
+>> I'd say less catastrophically slow, not faster.
+>>
+>> So how to inform the SCSI driver of this caching limit then so that it 
+>> may limit the SGL length?
+> 
+> Driver-specific mechanism; block-layer-specific mechanism; redefine this 
+> whole API to something like dma_opt_mapping_size(), as a limit above 
+> which mappings might become less efficient or start to fail (callback to 
+> my thoughts on [1] as well, I suppose); many options.
+
+ok, fine.
+
+> Just not imposing 
+> a ridiculously low *maximum* on everyone wherein mapping calls "should 
+> not be larger than the returned value" when that's clearly bollocks.
+
+I agree that this change is in violation as the documentation clearly 
+implies a hard limit.
+
+However, FWIW, from looking at users of dma_max_mapping_size(), they 
+seem to use in a similar way to SCSI/block layer core, i.e. use this 
+value to limit the max SGL total len per IO command. And not as a method 
+to learn max DMA consistent mappings size for ring buffers, etc.
+
+Anyway I'll look at dma_opt_mapping_size() but I am not sure how keen 
+Christoph will be on this... it is strange to introduce that API due to 
+peculiarity of the IOVA allocator.
+
+> 
+> 
+> [1] 
+> https://lore.kernel.org/linux-iommu/20220510142109.777738-1-ltykernel@gmail.com/
+
+Thanks,
+John
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
