@@ -4,68 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 40C7FC433F5
-	for <iommu@archiver.kernel.org>; Tue, 17 May 2022 08:05:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4C18EC433EF
+	for <iommu@archiver.kernel.org>; Tue, 17 May 2022 08:09:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id E3C0183336;
-	Tue, 17 May 2022 08:05:42 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D366D83E13;
+	Tue, 17 May 2022 08:09:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id O8TdAWIhqyPu; Tue, 17 May 2022 08:05:41 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 689D283337;
-	Tue, 17 May 2022 08:05:41 +0000 (UTC)
+	with ESMTP id KGg_c_uMU1bm; Tue, 17 May 2022 08:09:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 3869E83E02;
+	Tue, 17 May 2022 08:09:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 27516C0039;
-	Tue, 17 May 2022 08:05:41 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D42CCC002D
- for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 08:05:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F22E5C0039;
+	Tue, 17 May 2022 08:09:51 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8857CC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 08:09:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id AB72C400F1
- for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 08:05:39 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 622B741927
+ for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 08:09:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ymlxQUSHT9pO for <iommu@lists.linux-foundation.org>;
- Tue, 17 May 2022 08:05:37 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id I9zFCPLjx_c5 for <iommu@lists.linux-foundation.org>;
+ Tue, 17 May 2022 08:09:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 75F7D400B8
- for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 08:05:36 +0000 (UTC)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.55])
- by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L2T9l1n5fzGnxs;
- Tue, 17 May 2022 16:02:19 +0800 (CST)
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9E4CD41923
+ for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 08:09:48 +0000 (UTC)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
+ by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L2TDh1X49zCsjb;
+ Tue, 17 May 2022 16:04:52 +0800 (CST)
 Received: from [10.67.102.169] (10.67.102.169) by
  canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 17 May 2022 16:05:12 +0800
+ 15.1.2375.24; Tue, 17 May 2022 16:09:45 +0800
 Subject: Re: [PATCH v8 2/8] hwtracing: hisi_ptt: Add trace function support
  for HiSilicon PCIe Tune and Trace device
-To: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To: John Garry <john.garry@huawei.com>, Yicong Yang
+ <yangyicong@hisilicon.com>, <gregkh@linuxfoundation.org>,
+ <alexander.shishkin@linux.intel.com>, <leo.yan@linaro.org>,
+ <james.clark@arm.com>, <will@kernel.org>, <robin.murphy@arm.com>,
+ <acme@kernel.org>, <jonathan.cameron@huawei.com>
 References: <20220516125223.32012-1-yangyicong@hisilicon.com>
  <20220516125223.32012-3-yangyicong@hisilicon.com>
- <20220516150333.000031d7@Huawei.com>
-Message-ID: <a233704a-5b73-4286-cae5-dba0d8454c93@huawei.com>
-Date: Tue, 17 May 2022 16:05:12 +0800
+ <90aafbc1-b7f6-1cc9-8f94-c72f05150f70@huawei.com>
+Message-ID: <31113797-29c5-1400-f7ac-bff79853b3fe@huawei.com>
+Date: Tue, 17 May 2022 16:09:45 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.5.1
 MIME-Version: 1.0
-In-Reply-To: <20220516150333.000031d7@Huawei.com>
+In-Reply-To: <90aafbc1-b7f6-1cc9-8f94-c72f05150f70@huawei.com>
 X-Originating-IP: [10.67.102.169]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
  canpemm500009.china.huawei.com (7.192.105.203)
 X-CFilter-Loop: Reflected
-Cc: mark.rutland@arm.com, prime.zeng@huawei.com,
- alexander.shishkin@linux.intel.com, linux-pci@vger.kernel.org,
- linuxarm@huawei.com, james.clark@arm.com, will@kernel.org,
- peterz@infradead.org, mingo@redhat.com, helgaas@kernel.org,
- liuqi115@huawei.com, suzuki.poulose@arm.com, acme@kernel.org,
- zhangshaokun@hisilicon.com, linux-arm-kernel@lists.infradead.org,
- mathieu.poirier@linaro.org, gregkh@linuxfoundation.org,
- linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
- iommu@lists.linux-foundation.org, leo.yan@linaro.org, robin.murphy@arm.com
+Cc: mark.rutland@arm.com, zhangshaokun@hisilicon.com, prime.zeng@huawei.com,
+ mathieu.poirier@linaro.org, suzuki.poulose@arm.com, peterz@infradead.org,
+ linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com,
+ linux-perf-users@vger.kernel.org, iommu@lists.linux-foundation.org,
+ mingo@redhat.com, helgaas@kernel.org, liuqi115@huawei.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,458 +81,211 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
 From: Yicong Yang via iommu <iommu@lists.linux-foundation.org>
 Reply-To: Yicong Yang <yangyicong@huawei.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/5/16 22:03, Jonathan Cameron wrote:
-> On Mon, 16 May 2022 20:52:17 +0800
-> Yicong Yang <yangyicong@hisilicon.com> wrote:
-> 
->> HiSilicon PCIe tune and trace device(PTT) is a PCIe Root Complex integrated
->> Endpoint(RCiEP) device, providing the capability to dynamically monitor and
->> tune the PCIe traffic and trace the TLP headers.
->>
->> Add the driver for the device to enable the trace function. Register PMU
->> device of PTT trace, then users can use trace through perf command. The
->> driver makes use of perf AUX trace function and support the following
->> events to configure the trace:
->>
->> - filter: select Root port or Endpoint to trace
->> - type: select the type of traced TLP headers
->> - direction: select the direction of traced TLP headers
->> - format: select the data format of the traced TLP headers
->>
->> This patch initially add a basic driver of PTT trace.
->>
->> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-> 
-> Hi Yicong,
-> 
-> It's been a while since I looked at this driver, so I'll admit
-> I can't remember if any of the things I've raised below were
-> previously discussed. 
-> 
-> All minor stuff (biggest is question of failing cleanly in unlikely
-> case of failing the allocation in the filter addition vs carrying
-> on anyway), so feel free to add
-> 
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
->> diff --git a/drivers/hwtracing/ptt/Makefile b/drivers/hwtracing/ptt/Makefile
->> new file mode 100644
->> index 000000000000..908c09a98161
->> --- /dev/null
->> +++ b/drivers/hwtracing/ptt/Makefile
->> @@ -0,0 +1,2 @@
->> +# SPDX-License-Identifier: GPL-2.0
->> +obj-$(CONFIG_HISI_PTT) += hisi_ptt.o
->> diff --git a/drivers/hwtracing/ptt/hisi_ptt.c b/drivers/hwtracing/ptt/hisi_ptt.c
->> new file mode 100644
->> index 000000000000..ef25ce98f664
->> --- /dev/null
->> +++ b/drivers/hwtracing/ptt/hisi_ptt.c
-> 
-> 
-> ...
-> 
-> 
->> +
->> +static int hisi_ptt_init_filters(struct pci_dev *pdev, void *data)
->> +{
->> +	struct hisi_ptt_filter_desc *filter;
->> +	struct hisi_ptt *hisi_ptt = data;
->> +
->> +	filter = kzalloc(sizeof(*filter), GFP_KERNEL);
->> +	if (!filter) {
->> +		pci_err(hisi_ptt->pdev, "failed to add filter %s\n", pci_name(pdev));
-> 
-> If this fails we carry on anyway (no error checking on the bus_walk).
-> I think we should error out in that case (would need to use a flag placed
-> somewhere in hisi_ptt to tell we had an error).
-> 
-> That would complicate the unwind though.
-> Easiest way to do that unwind is probably to register a separate
-> devm_add_action_or_reset() callback for each filter.
-> 
-> If you prefer to carry on even with this allocation error, then maybe add a comment
-> here somewhere to make it clear that will happen.
-> 
-
-I'd prefer to carry on with this memory allocation error because this may not be fatal
-as: 1) the filter maybe partial initialized but the trace is available with resident
-filters and 2) the driver log here provides enough information that which filter has
-problem to add. 3) furthermore the tune function doesn't rely on this so we give a
-chance for the tune to be available if the filter allocation failed.
-
-The log message provide information about what happened here, will add a comment here
-why we decide to carry on:
-
-	/*
-	 * We won't fail the probe if filter allocation failed here. The filters
-	 * should be partial initialized and users would know which filter fails
-	 * through the log. Other functions of PTT device are still available.
-	 */
-	filter = kzalloc(sizeof(*filter), GFP_KERNEL);
-	if (!filter) {
-		pci_err(hisi_ptt->pdev, "failed to add filter %s\n", pci_name(pdev));
-		return -ENOMEM;
-	}
-
-It's better to manually manage the filters as we're going to add support of dynamically
-updating the filters, which means the filter can be added/removed after probe. With
-devres it'll be complex to keep the order (the new added one will be released before
-the PMU unregistration, which is not expected).
-
-Will address the rest comments.
-
-Thanks,
-Yicong
-
->> +		return -ENOMEM;
->> +	}
->> +
->> +	filter->devid = PCI_DEVID(pdev->bus->number, pdev->devfn);
->> +
->> +	if (pci_pcie_type(pdev) == PCI_EXP_TYPE_ROOT_PORT) {
->> +		filter->is_port = true;
->> +		list_add_tail(&filter->list, &hisi_ptt->port_filters);
->> +
->> +		/* Update the available port mask */
->> +		hisi_ptt->port_mask |= hisi_ptt_get_filter_val(filter->devid, true);
->> +	} else {
->> +		list_add_tail(&filter->list, &hisi_ptt->req_filters);
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +static void hisi_ptt_release_filters(void *data)
->> +{
->> +	struct hisi_ptt_filter_desc *filter, *tmp;
->> +	struct hisi_ptt *hisi_ptt = data;
->> +
->> +	list_for_each_entry_safe(filter, tmp, &hisi_ptt->req_filters, list) {
->> +		list_del(&filter->list);
->> +		kfree(filter);
-> 
-> I think with separate release per entry above, this bit become simpler as
-> we walk all the elements in the devm_ callback list rather than two lists here.
-> 
->> +	}
->> +
->> +	list_for_each_entry_safe(filter, tmp, &hisi_ptt->port_filters, list) {
->> +		list_del(&filter->list);
->> +		kfree(filter);
->> +	}
->> +}
->> +
-> 
-> ...
-> 
->> +
->> +static int hisi_ptt_init_ctrls(struct hisi_ptt *hisi_ptt)
->> +{
->> +	struct pci_dev *pdev = hisi_ptt->pdev;
->> +	struct pci_bus *bus;
->> +	int ret;
->> +	u32 reg;
->> +
->> +	INIT_LIST_HEAD(&hisi_ptt->port_filters);
->> +	INIT_LIST_HEAD(&hisi_ptt->req_filters);
->> +
->> +	ret = hisi_ptt_config_trace_buf(hisi_ptt);
->> +	if (ret)
->> +		return ret;
->> +
->> +	/*
->> +	 * The device range register provides the information about the
->> +	 * root ports which the RCiEP can control and trace. The RCiEP
->> +	 * and the root ports it support are on the same PCIe core, with
->> +	 * same domain number but maybe different bus number. The device
->> +	 * range register will tell us which root ports we can support,
->> +	 * Bit[31:16] indicates the upper BDF numbers of the root port,
->> +	 * while Bit[15:0] indicates the lower.
->> +	 */
->> +	reg = readl(hisi_ptt->iobase + HISI_PTT_DEVICE_RANGE);
->> +	hisi_ptt->upper_bdf = FIELD_GET(HISI_PTT_DEVICE_RANGE_UPPER, reg);
->> +	hisi_ptt->lower_bdf = FIELD_GET(HISI_PTT_DEVICE_RANGE_LOWER, reg);
->> +
->> +	bus = pci_find_bus(pci_domain_nr(pdev->bus), PCI_BUS_NUM(hisi_ptt->upper_bdf));
->> +	if (bus)
->> +		pci_walk_bus(bus, hisi_ptt_init_filters, hisi_ptt);
->> +
->> +	ret = devm_add_action_or_reset(&pdev->dev, hisi_ptt_release_filters, hisi_ptt);
->> +	if (ret)
->> +		return ret;
->> +
->> +	hisi_ptt->trace_ctrl.on_cpu = -1;
->> +	return 0;
->> +}
->> +
->> +static ssize_t available_root_port_filters_show(struct device *dev,
->> +						struct device_attribute *attr,
->> +						char *buf)
->> +{
->> +	struct hisi_ptt *hisi_ptt = to_hisi_ptt(dev_get_drvdata(dev));
->> +	struct hisi_ptt_filter_desc *filter;
->> +	int pos = 0;
->> +
->> +	if (list_empty(&hisi_ptt->port_filters)) {
->> +		pos = sysfs_emit(buf, "\n");
->> +		goto out;
->> +	}
->> +
->> +	list_for_each_entry(filter, &hisi_ptt->port_filters, list) {
->> +		u16 devid = filter->devid;
->> +		pos += sysfs_emit_at(buf, pos, "%04x:%02x:%02x.%d\t0x%05lx\n",
->> +				     pci_domain_nr(hisi_ptt->pdev->bus),
->> +				     PCI_BUS_NUM(devid),
->> +				     PCI_SLOT(devid & 0xff),
->> +				     PCI_FUNC(devid & 0xff),
->> +				     hisi_ptt_get_filter_val(devid, true) |
->> +				     HISI_PTT_PMU_FILTER_IS_PORT);
->> +	}
->> +
->> +out:
-> 
-> As below. I'd directly return in the empty case and drop the label.
-> 
->> +	return pos;
->> +}
->> +static DEVICE_ATTR_ADMIN_RO(available_root_port_filters);
->> +
->> +static ssize_t available_requester_filters_show(struct device *dev,
->> +						struct device_attribute *attr,
->> +						char *buf)
->> +{
->> +	struct hisi_ptt *hisi_ptt = to_hisi_ptt(dev_get_drvdata(dev));
->> +	struct hisi_ptt_filter_desc *filter;
->> +	int pos = 0;
->> +
->> +	if (list_empty(&hisi_ptt->req_filters)) {
->> +		pos = sysfs_emit(buf, "\n");
->> +		goto out;
->> +	}
->> +
->> +	list_for_each_entry(filter, &hisi_ptt->req_filters, list) {
->> +		u16 devid = filter->devid;
->> +		pos += sysfs_emit_at(buf, pos, "%04x:%02x:%02x.%d\t0x%05x\n",
->> +				     pci_domain_nr(hisi_ptt->pdev->bus),
->> +				     PCI_BUS_NUM(devid),
->> +				     PCI_SLOT(devid & 0xff),
->> +				     PCI_FUNC(devid & 0xff),
->> +				     hisi_ptt_get_filter_val(devid, false));
->> +	}
->> +
->> +out:
-> 
-> Why bother with the label?  Given empty is a special case, you can
-> just do
-> 	return sysfs_emit(buf, "\n");
-> 
-> above.
-> 
->> +	return pos;
->> +}
->> +static DEVICE_ATTR_ADMIN_RO(available_requester_filters);
-> 
-> 
->> +static int hisi_ptt_trace_valid_filter(struct hisi_ptt *hisi_ptt, u64 config)
->> +{
->> +	unsigned long val, port_mask = hisi_ptt->port_mask;
->> +	struct hisi_ptt_filter_desc *filter;
->> +	int ret = -EINVAL;
->> +
->> +	hisi_ptt->trace_ctrl.is_port = FIELD_GET(HISI_PTT_PMU_FILTER_IS_PORT, config);
->> +	val = FIELD_GET(HISI_PTT_PMU_FILTER_VAL_MASK, config);
->> +
->> +	/*
->> +	 * Port filters are defined as bit mask. For port filters, check
->> +	 * the bits in the @val are within the range of hisi_ptt->port_mask
->> +	 * and whether it's empty or not, otherwise user has specified
->> +	 * some unsupported root ports.
->> +	 *
->> +	 * For Requester ID filters, walk the available filter list to see
->> +	 * whether we have one matched.
->> +	 */
->> +	if (!hisi_ptt->trace_ctrl.is_port) {
->> +		list_for_each_entry(filter, &hisi_ptt->req_filters, list) {
->> +			if (val == hisi_ptt_get_filter_val(filter->devid, filter->is_port)) {
->> +				ret = 0;
-> 				return 0; ?
-> 
-> Unless someone has previously requested this particular form...
-> 
-> 
->> +				break;
->> +			}
->> +		}
->> +	} else if (bitmap_subset(&val, &port_mask, BITS_PER_LONG)) {
->> +		ret = 0;
-> 
-> 		return 0;
-> 
->> +	}
->> +
->> +	if (ret)
->> +		return ret;
-> 
-> If you get here, return -EINVAL;
-> 
->> +
->> +	return 0;
->> +}
->> +
->> +static void hisi_ptt_pmu_init_configs(struct hisi_ptt *hisi_ptt, struct perf_event *event)
-> 
->> +static int hisi_ptt_pmu_event_init(struct perf_event *event)
->> +{
->> +	struct hisi_ptt *hisi_ptt = to_hisi_ptt(event->pmu);
->> +	int ret;
->> +	u32 val;
->> +
->> +	if (event->cpu < 0) {
->> +		dev_dbg(event->pmu->dev, "Per-task mode not supported\n");
->> +		return -EOPNOTSUPP;
->> +	}
->> +
->> +	if (event->attr.type != hisi_ptt->hisi_ptt_pmu.type)
->> +		return -ENOENT;
->> +
->> +	ret = hisi_ptt_trace_valid_filter(hisi_ptt, event->attr.config);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	val = FIELD_GET(HISI_PTT_PMU_DIRECTION_MASK, event->attr.config);
->> +	ret = hisi_ptt_trace_valid_direction(val);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	val = FIELD_GET(HISI_PTT_PMU_TYPE_MASK, event->attr.config);
->> +	ret = hisi_ptt_trace_valid_type(val);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	val = FIELD_GET(HISI_PTT_PMU_FORMAT_MASK, event->attr.config);
->> +	ret = hisi_ptt_trace_valid_format(val);
-> You could do
-> 
-> 	return hisi_ptt_trace_valid_format(val);
-> 
-> Up to you on this one.
-> 
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	return 0;
->> +}
->> +
-> 
-> 
-> 
-> 
->> +/*
->> + * The DMA of PTT trace can only use direct mapping, due to some
->> + * hardware restriction. Check whether there is an IOMMU or the
-> 
-> "Check whether there is no IOMMU or the policy of the IOMMU domain
-> is passthrough, otherwise the trace cannot work."
-> 
-> (need the "no" for the IOMMU presence)
-> 
->> + * policy of the IOMMU domain is passthrough, otherwise the trace
->> + * cannot work.
->> + *
->> + * The PTT device is supposed to behind an ARM SMMUv3, which
->> + * should have passthrough the device by a quirk.
->> + */
->> +static int hisi_ptt_check_iommu_mapping(struct pci_dev *pdev)
->> +{
->> +	struct iommu_domain *iommu_domain;
->> +
->> +	iommu_domain = iommu_get_domain_for_dev(&pdev->dev);
->> +	if (!iommu_domain || iommu_domain->type == IOMMU_DOMAIN_IDENTITY)
->> +		return 0;
->> +
->> +	return -EOPNOTSUPP;
->> +}
->> +
-> 
-> ...
-> 
->> +
->> +static int hisi_ptt_cpu_teardown(unsigned int cpu, struct hlist_node *node)
->> +{
->> +	struct hisi_ptt *hisi_ptt;
->> +	int target, src;
->> +
->> +	hisi_ptt = hlist_entry_safe(node, struct hisi_ptt, hotplug_node);
->> +	src = hisi_ptt->trace_ctrl.on_cpu;
->> +
->> +	if (!hisi_ptt->trace_ctrl.started || src != cpu)
->> +		return 0;
->> +
->> +	target = cpumask_any(cpumask_of_node(dev_to_node(&hisi_ptt->pdev->dev)));
->> +	if (target < nr_cpumask_bits) {
->> +		dev_err(hisi_ptt->hisi_ptt_pmu.dev, "no available cpu for perf context migration\n");
-> 
-> Very long line, and not obvious disadvantage in splitting it before the string.
-> 
->> +		return 0;
->> +	}
->> +
->> +	perf_pmu_migrate_context(&hisi_ptt->hisi_ptt_pmu, src, target);
->> +	WARN_ON(irq_set_affinity(pci_irq_vector(hisi_ptt->pdev, HISI_PTT_TRACE_DMA_IRQ),
->> +				 cpumask_of(cpu)));
->> +	hisi_ptt->trace_ctrl.on_cpu = target;
->> +
->> +	return 0;
->> +}
->> +
-> 
->> diff --git a/drivers/hwtracing/ptt/hisi_ptt.h b/drivers/hwtracing/ptt/hisi_ptt.h
->> new file mode 100644
->> index 000000000000..2344e4195648
->> --- /dev/null
->> +++ b/drivers/hwtracing/ptt/hisi_ptt.h
-> 
-> 
->> +/**
->> + * struct hisi_ptt_filter_desc - Descriptor of the PTT trace filter
->> + * @list:    entry of this descriptor in the filter list
->> + * @is_port: the PCI device of the filter is a Root Port or not
->> + * @devid:   the PCI device's devid of the filter
->> + */
->> +struct hisi_ptt_filter_desc {
->> +	struct list_head list;
->> +	bool is_port;
->> +	u16 devid;
->> +};
->> +
->> +
-> 
-> Trivial if you are doing a v9: one blank line only.
-> 
->> +/**
->> + * struct hisi_ptt_pmu_buf - Descriptor of the AUX buffer of PTT trace
->> + * @length:   size of the AUX buffer
->> + * @nr_pages: number of pages of the AUX buffer
->> + * @base:     start address of AUX buffer
->> + * @pos:      position in the AUX buffer to commit traced data
->> + */
->> +struct hisi_ptt_pmu_buf {
->> +	size_t length;
->> +	int nr_pages;
->> +	void *base;
->> +	long pos;
->> +};
->> +
-> 
-> .
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMi81LzE3IDA6MjMsIEpvaG4gR2Fycnkgd3JvdGU6Cj4gT24gMTYvMDUvMjAyMiAxMzo1
+MiwgWWljb25nIFlhbmcgd3JvdGU6Cj4+IEhpU2lsaWNvbiBQQ0llIHR1bmUgYW5kIHRyYWNlIGRl
+dmljZShQVFQpIGlzIGEgUENJZSBSb290IENvbXBsZXggaW50ZWdyYXRlZAo+PiBFbmRwb2ludChS
+Q2lFUCkgZGV2aWNlLCBwcm92aWRpbmcgdGhlIGNhcGFiaWxpdHkgdG8gZHluYW1pY2FsbHkgbW9u
+aXRvciBhbmQKPj4gdHVuZSB0aGUgUENJZSB0cmFmZmljIGFuZCB0cmFjZSB0aGUgVExQIGhlYWRl
+cnMuCj4+Cj4+IEFkZCB0aGUgZHJpdmVyIGZvciB0aGUgZGV2aWNlIHRvIGVuYWJsZSB0aGUgdHJh
+Y2UgZnVuY3Rpb24uIFJlZ2lzdGVyIFBNVQo+PiBkZXZpY2Ugb2YgUFRUIHRyYWNlLCB0aGVuIHVz
+ZXJzIGNhbiB1c2UgdHJhY2UgdGhyb3VnaCBwZXJmIGNvbW1hbmQuIFRoZQo+PiBkcml2ZXIgbWFr
+ZXMgdXNlIG9mIHBlcmYgQVVYIHRyYWNlIGZ1bmN0aW9uIGFuZCBzdXBwb3J0IHRoZSBmb2xsb3dp
+bmcKPj4gZXZlbnRzIHRvIGNvbmZpZ3VyZSB0aGUgdHJhY2U6Cj4+Cj4+IC0gZmlsdGVyOiBzZWxl
+Y3QgUm9vdCBwb3J0IG9yIEVuZHBvaW50IHRvIHRyYWNlCj4+IC0gdHlwZTogc2VsZWN0IHRoZSB0
+eXBlIG9mIHRyYWNlZCBUTFAgaGVhZGVycwo+PiAtIGRpcmVjdGlvbjogc2VsZWN0IHRoZSBkaXJl
+Y3Rpb24gb2YgdHJhY2VkIFRMUCBoZWFkZXJzCj4+IC0gZm9ybWF0OiBzZWxlY3QgdGhlIGRhdGEg
+Zm9ybWF0IG9mIHRoZSB0cmFjZWQgVExQIGhlYWRlcnMKPj4KPj4gVGhpcyBwYXRjaCBpbml0aWFs
+bHkgYWRkIGEgYmFzaWMgZHJpdmVyIG9mIFBUVCB0cmFjZS4KPiAKPiBJbml0aWFsbHkgYWRkIGJh
+c2ljIHRyYWNlIHN1cHBvcnQuCj4gCj4+Cj4+IFNpZ25lZC1vZmYtYnk6IFlpY29uZyBZYW5nIDx5
+YW5neWljb25nQGhpc2lsaWNvbi5jb20+Cj4gCj4gR2VuZXJhbGx5IHRoaXMgbG9va3Mgb2ssIGFw
+YXJ0IGZyb20gbml0cGlja2luZyBiZWxvdywgc28sIEZXSVc6Cj4gUmV2aWV3ZWQtYnk6IEpvaG4g
+R2FycnkgPGpvaG4uZ2FycnlAaHVhd2VpLmNvbT4KPiA+PiAtLS0KPj4gwqAgZHJpdmVycy9NYWtl
+ZmlsZcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHzCoMKgIDEgKwo+PiDCoCBkcml2
+ZXJzL2h3dHJhY2luZy9LY29uZmlnwqDCoMKgwqDCoMKgwqAgfMKgwqAgMiArCj4+IMKgIGRyaXZl
+cnMvaHd0cmFjaW5nL3B0dC9LY29uZmlnwqDCoMKgIHzCoCAxMiArCj4+IMKgIGRyaXZlcnMvaHd0
+cmFjaW5nL3B0dC9NYWtlZmlsZcKgwqAgfMKgwqAgMiArCj4+IMKgIGRyaXZlcnMvaHd0cmFjaW5n
+L3B0dC9oaXNpX3B0dC5jIHwgOTY0ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysKPj4g
+wqAgZHJpdmVycy9od3RyYWNpbmcvcHR0L2hpc2lfcHR0LmggfCAxNzggKysrKysrCj4+IMKgIDYg
+ZmlsZXMgY2hhbmdlZCwgMTE1OSBpbnNlcnRpb25zKCspCj4+IMKgIGNyZWF0ZSBtb2RlIDEwMDY0
+NCBkcml2ZXJzL2h3dHJhY2luZy9wdHQvS2NvbmZpZwo+PiDCoCBjcmVhdGUgbW9kZSAxMDA2NDQg
+ZHJpdmVycy9od3RyYWNpbmcvcHR0L01ha2VmaWxlCj4+IMKgIGNyZWF0ZSBtb2RlIDEwMDY0NCBk
+cml2ZXJzL2h3dHJhY2luZy9wdHQvaGlzaV9wdHQuYwo+PiDCoCBjcmVhdGUgbW9kZSAxMDA2NDQg
+ZHJpdmVycy9od3RyYWNpbmcvcHR0L2hpc2lfcHR0LmgKPj4KClsuLi5dCgo+PiArc3RhdGljIGlu
+dCBoaXNpX3B0dF9jcHVfdGVhcmRvd24odW5zaWduZWQgaW50IGNwdSwgc3RydWN0IGhsaXN0X25v
+ZGUgKm5vZGUpCj4+ICt7Cj4+ICvCoMKgwqAgc3RydWN0IGhpc2lfcHR0ICpoaXNpX3B0dDsKPj4g
+K8KgwqDCoCBpbnQgdGFyZ2V0LCBzcmM7Cj4+ICsKPj4gK8KgwqDCoCBoaXNpX3B0dCA9IGhsaXN0
+X2VudHJ5X3NhZmUobm9kZSwgc3RydWN0IGhpc2lfcHR0LCBob3RwbHVnX25vZGUpOwo+PiArwqDC
+oMKgIHNyYyA9IGhpc2lfcHR0LT50cmFjZV9jdHJsLm9uX2NwdTsKPj4gKwo+PiArwqDCoMKgIGlm
+ICghaGlzaV9wdHQtPnRyYWNlX2N0cmwuc3RhcnRlZCB8fCBzcmMgIT0gY3B1KQo+PiArwqDCoMKg
+wqDCoMKgwqAgcmV0dXJuIDA7Cj4+ICsKPj4gK8KgwqDCoCB0YXJnZXQgPSBjcHVtYXNrX2FueShj
+cHVtYXNrX29mX25vZGUoZGV2X3RvX25vZGUoJmhpc2lfcHR0LT5wZGV2LT5kZXYpKSk7Cj4+ICvC
+oMKgwqAgaWYgKHRhcmdldCA8IG5yX2NwdW1hc2tfYml0cykgewo+IAo+IHRoZSBjb21tZW50IGZv
+ciBjcHVtYXNrX2FueSgpIGhpbnRzIHRvIGNoZWNrIGFnYWluc3QgbnJfY3B1X2lkcyAtIGFueSBz
+cGVjaWZpYyByZWFzb24gdG8gY2hlY2sgYWdhaW5zdCBucl9jcHVtYXNrX2JpdHM/Cj4gCgpoZXJl
+IHNob3VsZCBiZToKCWlmICh0YXJnZXQgPj0gbnJfY3B1bWFza19iaXRzKSB7Cgp3aWxsIGZpeCB0
+aGlzIHVwLgoKPj4gK8KgwqDCoMKgwqDCoMKgIGRldl9lcnIoaGlzaV9wdHQtPmhpc2lfcHR0X3Bt
+dS5kZXYsICJubyBhdmFpbGFibGUgY3B1IGZvciBwZXJmIGNvbnRleHQgbWlncmF0aW9uXG4iKTsK
+Pj4gK8KgwqDCoMKgwqDCoMKgIHJldHVybiAwOwo+PiArwqDCoMKgIH0KPj4gKwo+PiArwqDCoMKg
+IHBlcmZfcG11X21pZ3JhdGVfY29udGV4dCgmaGlzaV9wdHQtPmhpc2lfcHR0X3BtdSwgc3JjLCB0
+YXJnZXQpOwo+PiArwqDCoMKgIFdBUk5fT04oaXJxX3NldF9hZmZpbml0eShwY2lfaXJxX3ZlY3Rv
+cihoaXNpX3B0dC0+cGRldiwgSElTSV9QVFRfVFJBQ0VfRE1BX0lSUSksCj4+ICvCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjcHVtYXNrX29mKGNwdSkpKTsKPj4gK8KgwqDCoCBoaXNp
+X3B0dC0+dHJhY2VfY3RybC5vbl9jcHUgPSB0YXJnZXQ7Cj4+ICsKPj4gK8KgwqDCoCByZXR1cm4g
+MDsKPj4gK30KPj4gKwo+PiArc3RhdGljIGludCBfX2luaXQgaGlzaV9wdHRfaW5pdCh2b2lkKQo+
+PiArewo+PiArwqDCoMKgIGludCByZXQ7Cj4+ICsKPj4gK8KgwqDCoCByZXQgPSBjcHVocF9zZXR1
+cF9zdGF0ZV9tdWx0aShDUFVIUF9BUF9PTkxJTkVfRFlOLCBEUlZfTkFNRSwgTlVMTCwKPj4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBoaXNpX3B0dF9jcHVfdGVh
+cmRvd24pOwo+PiArwqDCoMKgIGlmIChyZXQgPCAwKQo+PiArwqDCoMKgwqDCoMKgwqAgcmV0dXJu
+IHJldDsKPj4gK8KgwqDCoCBoaXNpX3B0dF9wbXVfb25saW5lID0gcmV0Owo+PiArCj4+ICvCoMKg
+wqAgcmV0ID0gcGNpX3JlZ2lzdGVyX2RyaXZlcigmaGlzaV9wdHRfZHJpdmVyKTsKPj4gK8KgwqDC
+oCBpZiAocmV0KQo+PiArwqDCoMKgwqDCoMKgwqAgY3B1aHBfcmVtb3ZlX211bHRpX3N0YXRlKGhp
+c2lfcHR0X3BtdV9vbmxpbmUpOwo+PiArCj4+ICvCoMKgwqAgcmV0dXJuIHJldDsKPj4gK30KPj4g
+K21vZHVsZV9pbml0KGhpc2lfcHR0X2luaXQpOwo+PiArCj4+ICtzdGF0aWMgdm9pZCBfX2V4aXQg
+aGlzaV9wdHRfZXhpdCh2b2lkKQo+PiArewo+PiArwqDCoMKgIHBjaV91bnJlZ2lzdGVyX2RyaXZl
+cigmaGlzaV9wdHRfZHJpdmVyKTsKPj4gK8KgwqDCoCBjcHVocF9yZW1vdmVfbXVsdGlfc3RhdGUo
+aGlzaV9wdHRfcG11X29ubGluZSk7Cj4+ICt9Cj4+ICttb2R1bGVfZXhpdChoaXNpX3B0dF9leGl0
+KTsKPj4gKwo+PiArTU9EVUxFX0xJQ0VOU0UoIkdQTCIpOwo+PiArTU9EVUxFX0FVVEhPUigiWWlj
+b25nIFlhbmcgPHlhbmd5aWNvbmdAaGlzaWxpY29uLmNvbT4iKTsKPj4gK01PRFVMRV9ERVNDUklQ
+VElPTigiRHJpdmVyIGZvciBIaVNpbGljb24gUENJZSB0dW5lIGFuZCB0cmFjZSBkZXZpY2UiKTsK
+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaHd0cmFjaW5nL3B0dC9oaXNpX3B0dC5oIGIvZHJpdmVy
+cy9od3RyYWNpbmcvcHR0L2hpc2lfcHR0LmgKPj4gbmV3IGZpbGUgbW9kZSAxMDA2NDQKPj4gaW5k
+ZXggMDAwMDAwMDAwMDAwLi4yMzQ0ZTQxOTU2NDgKPj4gLS0tIC9kZXYvbnVsbAo+PiArKysgYi9k
+cml2ZXJzL2h3dHJhY2luZy9wdHQvaGlzaV9wdHQuaAo+PiBAQCAtMCwwICsxLDE3OCBAQAo+PiAr
+LyogU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IEdQTC0yLjAgKi8KPj4gKy8qCj4+ICsgKiBEcml2
+ZXIgZm9yIEhpU2lsaWNvbiBQQ0llIHR1bmUgYW5kIHRyYWNlIGRldmljZQo+PiArICoKPj4gKyAq
+IENvcHlyaWdodCAoYykgMjAyMiBIaVNpbGljb24gVGVjaG5vbG9naWVzIENvLiwgTHRkLgo+PiAr
+ICogQXV0aG9yOiBZaWNvbmcgWWFuZyA8eWFuZ3lpY29uZ0BoaXNpbGljb24uY29tPgo+PiArICov
+Cj4+ICsKPj4gKyNpZm5kZWYgX0hJU0lfUFRUX0gKPj4gKyNkZWZpbmUgX0hJU0lfUFRUX0gKPj4g
+Kwo+PiArI2luY2x1ZGUgPGxpbnV4L2JpdHMuaD4KPj4gKyNpbmNsdWRlIDxsaW51eC9jcHVtYXNr
+Lmg+Cj4+ICsjaW5jbHVkZSA8bGludXgvbGlzdC5oPgo+PiArI2luY2x1ZGUgPGxpbnV4L3BjaS5o
+Pgo+PiArI2luY2x1ZGUgPGxpbnV4L3BlcmZfZXZlbnQuaD4KPj4gKyNpbmNsdWRlIDxsaW51eC9z
+cGlubG9jay5oPgo+PiArI2luY2x1ZGUgPGxpbnV4L3R5cGVzLmg+Cj4+ICsKPj4gKyNkZWZpbmUg
+RFJWX05BTUUgImhpc2lfcHR0Igo+PiArCj4+ICsvKgo+PiArICogVGhlIGRlZmluaXRpb24gb2Yg
+dGhlIGRldmljZSByZWdpc3RlcnMgYW5kIHJlZ2lzdGVyIGZpZWxkcy4KPj4gKyAqLwo+PiArI2Rl
+ZmluZSBISVNJX1BUVF9UUkFDRV9BRERSX1NJWkXCoMKgwqAgMHgwODAwCj4+ICsjZGVmaW5lIEhJ
+U0lfUFRUX1RSQUNFX0FERFJfQkFTRV9MT18wwqDCoMKgIDB4MDgxMAo+PiArI2RlZmluZSBISVNJ
+X1BUVF9UUkFDRV9BRERSX0JBU0VfSElfMMKgwqDCoCAweDA4MTQKPj4gKyNkZWZpbmUgSElTSV9Q
+VFRfVFJBQ0VfQUREUl9TVFJJREXCoMKgwqAgMHg4Cj4+ICsjZGVmaW5lIEhJU0lfUFRUX1RSQUNF
+X0NUUkzCoMKgwqDCoMKgwqDCoCAweDA4NTAKPj4gKyNkZWZpbmXCoMKgIEhJU0lfUFRUX1RSQUNF
+X0NUUkxfRU7CoMKgwqAgQklUKDApCj4+ICsjZGVmaW5lwqDCoCBISVNJX1BUVF9UUkFDRV9DVFJM
+X1JTVMKgwqDCoCBCSVQoMSkKPj4gKyNkZWZpbmXCoMKgIEhJU0lfUFRUX1RSQUNFX0NUUkxfUlhU
+WF9TRUzCoMKgwqAgR0VOTUFTSygzLCAyKQo+PiArI2RlZmluZcKgwqAgSElTSV9QVFRfVFJBQ0Vf
+Q1RSTF9UWVBFX1NFTMKgwqDCoCBHRU5NQVNLKDcsIDQpCj4+ICsjZGVmaW5lwqDCoCBISVNJX1BU
+VF9UUkFDRV9DVFJMX0RBVEFfRk9STUFUwqDCoMKgIEJJVCgxNCkKPj4gKyNkZWZpbmXCoMKgIEhJ
+U0lfUFRUX1RSQUNFX0NUUkxfRklMVEVSX01PREXCoMKgwqAgQklUKDE1KQo+PiArI2RlZmluZcKg
+wqAgSElTSV9QVFRfVFJBQ0VfQ1RSTF9UQVJHRVRfU0VMwqDCoMKgIEdFTk1BU0soMzEsIDE2KQo+
+PiArI2RlZmluZSBISVNJX1BUVF9UUkFDRV9JTlRfU1RBVMKgwqDCoMKgwqDCoMKgIDB4MDg5MAo+
+PiArI2RlZmluZcKgwqAgSElTSV9QVFRfVFJBQ0VfSU5UX1NUQVRfTUFTS8KgwqDCoCBHRU5NQVNL
+KDMsIDApCj4+ICsjZGVmaW5lIEhJU0lfUFRUX1RSQUNFX0lOVF9NQVNLwqDCoMKgwqDCoMKgwqAg
+MHgwODk0Cj4+ICsjZGVmaW5lIEhJU0lfUFRUX1RSQUNFX1dSX1NUU8KgwqDCoMKgwqDCoMKgIDB4
+MDhhMAo+PiArI2RlZmluZcKgwqAgSElTSV9QVFRfVFJBQ0VfV1JfU1RTX1dSSVRFwqDCoMKgIEdF
+Tk1BU0soMjcsIDApCj4+ICsjZGVmaW5lwqDCoCBISVNJX1BUVF9UUkFDRV9XUl9TVFNfQlVGRkVS
+wqDCoMKgIEdFTk1BU0soMjksIDI4KQo+PiArI2RlZmluZSBISVNJX1BUVF9UUkFDRV9TVFPCoMKg
+wqDCoMKgwqDCoCAweDA4YjAKPj4gKyNkZWZpbmXCoMKgIEhJU0lfUFRUX1RSQUNFX0lETEXCoMKg
+wqDCoMKgwqDCoCBCSVQoMCkKPj4gKyNkZWZpbmUgSElTSV9QVFRfREVWSUNFX1JBTkdFwqDCoMKg
+wqDCoMKgwqAgMHgwZmUwCj4+ICsjZGVmaW5lwqDCoCBISVNJX1BUVF9ERVZJQ0VfUkFOR0VfVVBQ
+RVLCoMKgwqAgR0VOTUFTSygzMSwgMTYpCj4+ICsjZGVmaW5lwqDCoCBISVNJX1BUVF9ERVZJQ0Vf
+UkFOR0VfTE9XRVLCoMKgwqAgR0VOTUFTSygxNSwgMCkKPj4gKyNkZWZpbmUgSElTSV9QVFRfTE9D
+QVRJT07CoMKgwqDCoMKgwqDCoCAweDBmZTgKPj4gKyNkZWZpbmXCoMKgIEhJU0lfUFRUX0NPUkVf
+SUTCoMKgwqDCoMKgwqDCoCBHRU5NQVNLKDE1LCAwKQo+PiArI2RlZmluZcKgwqAgSElTSV9QVFRf
+U0lDTF9JRMKgwqDCoMKgwqDCoMKgIEdFTk1BU0soMzEsIDE2KQo+PiArCj4+ICsvKiBQYXJhbWV0
+ZXJzIG9mIFBUVCB0cmFjZSBETUEgcGFydC4gKi8KPj4gKyNkZWZpbmUgSElTSV9QVFRfVFJBQ0Vf
+RE1BX0lSUcKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMAo+PiArI2RlZmluZSBISVNJX1BUVF9UUkFD
+RV9CVUZfQ05UwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA0Cj4+ICsjZGVmaW5lIEhJU0lfUFRUX1RS
+QUNFX0JVRl9TSVpFwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBTWl80TQo+PiArI2RlZmluZSBISVNJ
+X1BUVF9UUkFDRV9UT1RBTF9CVUZfU0laRcKgwqDCoMKgwqDCoMKgIChISVNJX1BUVF9UUkFDRV9C
+VUZfU0laRSAqIFwKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCBISVNJX1BUVF9UUkFDRV9CVUZfQ05UKQo+PiArLyogV2FpdCB0aW1lIGZvciBoYXJk
+d2FyZSBETUEgdG8gcmVzZXQgKi8KPj4gKyNkZWZpbmUgSElTSV9QVFRfUkVTRVRfVElNRU9VVF9V
+U8KgwqDCoCAxMFVMCj4+ICsjZGVmaW5lIEhJU0lfUFRUX1JFU0VUX1BPTExfSU5URVJWQUxfVVPC
+oMKgwqAgMVVMCj4+ICsvKiBQb2xsIHRpbWVvdXQgYW5kIGludGVydmFsIGZvciB3YWl0aW5nIGhh
+cmR3YXJlIHdvcmsgdG8gZmluaXNoICovCj4+ICsjZGVmaW5lIEhJU0lfUFRUX1dBSVRfVFJBQ0Vf
+VElNRU9VVF9VU8KgwqDCoCAxMDBVTAo+PiArI2RlZmluZSBISVNJX1BUVF9XQUlUX1BPTExfSU5U
+RVJWQUxfVVPCoMKgwqAgMTBVTAo+PiArCj4+ICsjZGVmaW5lIEhJU0lfUENJRV9DT1JFX1BPUlRf
+SUQoZGV2Zm4pwqDCoMKgIChQQ0lfRlVOQyhkZXZmbikgPDwgMSkKPj4gKwo+PiArLyogRGVmaW5p
+dGlvbiBvZiB0aGUgUE1VIGNvbmZpZ3MgKi8KPj4gKyNkZWZpbmUgSElTSV9QVFRfUE1VX0ZJTFRF
+Ul9JU19QT1JUwqDCoMKgIEJJVCgxOSkKPj4gKyNkZWZpbmUgSElTSV9QVFRfUE1VX0ZJTFRFUl9W
+QUxfTUFTS8KgwqDCoCBHRU5NQVNLKDE1LCAwKQo+PiArI2RlZmluZSBISVNJX1BUVF9QTVVfRElS
+RUNUSU9OX01BU0vCoMKgwqAgR0VOTUFTSygyMywgMjApCj4+ICsjZGVmaW5lIEhJU0lfUFRUX1BN
+VV9UWVBFX01BU0vCoMKgwqDCoMKgwqDCoCBHRU5NQVNLKDMxLCAyNCkKPj4gKyNkZWZpbmUgSElT
+SV9QVFRfUE1VX0ZPUk1BVF9NQVNLwqDCoMKgIEdFTk1BU0soMzUsIDMyKQo+PiArCj4+ICsvKioK
+Pj4gKyAqIHN0cnVjdCBoaXNpX3B0dF9kbWFfYnVmZmVyIC0gRGVzY3JpYmUgYSBzaW5nbGUgdHJh
+Y2UgYnVmZmVyIG9mIFBUVCB0cmFjZS4KPj4gKyAqwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBUaGUgZGV0YWlsIG9mIHRoZSBkYXRhIGZv
+cm1hdCBpcyBkZXNjcmliZWQKPj4gKyAqwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpbiB0aGUgZG9jdW1lbnRhdGlvbiBvZiBQVFQgZGV2
+aWNlLgo+PiArICogQGRtYTrCoMKgIERNQSBhZGRyZXNzIG9mIHRoaXMgYnVmZmVyIHZpc2libGUg
+dG8gdGhlIGRldmljZQo+PiArICogQGFkZHI6wqAgdmlydHVhbCBhZGRyZXNzIG9mIHRoaXMgYnVm
+ZmVyIHZpc2libGUgdG8gdGhlIGNwdQo+PiArICovCj4+ICtzdHJ1Y3QgaGlzaV9wdHRfZG1hX2J1
+ZmZlciB7Cj4+ICvCoMKgwqAgZG1hX2FkZHJfdCBkbWE7Cj4+ICvCoMKgwqAgdm9pZCAqYWRkcjsK
+Pj4gK307Cj4+ICsKPj4gKy8qKgo+PiArICogc3RydWN0IGhpc2lfcHR0X3RyYWNlX2N0cmwgLSBD
+b250cm9sIGFuZCBzdGF0dXMgb2YgUFRUIHRyYWNlCj4+ICsgKiBAdHJhY2VfYnVmOiBhcnJheSBv
+ZiB0aGUgdHJhY2UgYnVmZmVycyBmb3IgaG9sZGluZyB0aGUgdHJhY2UgZGF0YS4KPj4gKyAqwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIHRoZSBsZW5ndGggd2lsbCBiZSBISVNJX1BUVF9UUkFDRV9C
+VUZfQ05ULgo+PiArICogQGhhbmRsZTrCoMKgwqAgcGVyZiBvdXRwdXQgaGFuZGxlIG9mIGN1cnJl
+bnQgdHJhY2Ugc2Vzc2lvbgo+PiArICogQGJ1Zl9pbmRleDogdGhlIGluZGV4IG9mIGN1cnJlbnQg
+dXNpbmcgdHJhY2UgYnVmZmVyCj4+ICsgKiBAb25fY3B1OsKgwqDCoCBjdXJyZW50IHRyYWNpbmcg
+Y3B1Cj4+ICsgKiBAc3RhcnRlZDrCoMKgIGN1cnJlbnQgdHJhY2Ugc3RhdHVzLCB0cnVlIGZvciBz
+dGFydGVkCj4+ICsgKiBAaXNfcG9ydDrCoMKgIHdoZXRoZXIgd2UncmUgdHJhY2luZyByb290IHBv
+cnQgb3Igbm90Cj4+ICsgKiBAZGlyZWN0aW9uOiBkaXJlY3Rpb24gb2YgdGhlIFRMUCBoZWFkZXJz
+IHRvIHRyYWNlCj4+ICsgKiBAZmlsdGVyOsKgwqDCoCBmaWx0ZXIgdmFsdWUgZm9yIHRyYWNpbmcg
+dGhlIFRMUCBoZWFkZXJzCj4+ICsgKiBAZm9ybWF0OsKgwqDCoCBmb3JtYXQgb2YgdGhlIFRMUCBo
+ZWFkZXJzIHRvIHRyYWNlCj4+ICsgKiBAdHlwZTrCoMKgwqDCoMKgIHR5cGUgb2YgdGhlIFRMUCBo
+ZWFkZXJzIHRvIHRyYWNlCj4+ICsgKi8KPj4gK3N0cnVjdCBoaXNpX3B0dF90cmFjZV9jdHJsIHsK
+Pj4gK8KgwqDCoCBzdHJ1Y3QgaGlzaV9wdHRfZG1hX2J1ZmZlciAqdHJhY2VfYnVmOwo+PiArwqDC
+oMKgIHN0cnVjdCBwZXJmX291dHB1dF9oYW5kbGUgaGFuZGxlOwo+PiArwqDCoMKgIHUzMiBidWZf
+aW5kZXg7Cj4+ICvCoMKgwqAgaW50IG9uX2NwdTsKPj4gK8KgwqDCoCBib29sIHN0YXJ0ZWQ7Cj4+
+ICvCoMKgwqAgYm9vbCBpc19wb3J0Owo+PiArwqDCoMKgIHUzMiBkaXJlY3Rpb246MjsKPj4gK8Kg
+wqDCoCB1MzIgZmlsdGVyOjE2Owo+PiArwqDCoMKgIHUzMiBmb3JtYXQ6MTsKPj4gK8KgwqDCoCB1
+MzIgdHlwZTo0Owo+PiArfTsKPj4gKwo+PiArLyoqCj4+ICsgKiBzdHJ1Y3QgaGlzaV9wdHRfZmls
+dGVyX2Rlc2MgLSBEZXNjcmlwdG9yIG9mIHRoZSBQVFQgdHJhY2UgZmlsdGVyCj4+ICsgKiBAbGlz
+dDrCoMKgwqAgZW50cnkgb2YgdGhpcyBkZXNjcmlwdG9yIGluIHRoZSBmaWx0ZXIgbGlzdAo+PiAr
+ICogQGlzX3BvcnQ6IHRoZSBQQ0kgZGV2aWNlIG9mIHRoZSBmaWx0ZXIgaXMgYSBSb290IFBvcnQg
+b3Igbm90Cj4+ICsgKiBAZGV2aWQ6wqDCoCB0aGUgUENJIGRldmljZSdzIGRldmlkIG9mIHRoZSBm
+aWx0ZXIKPj4gKyAqLwo+PiArc3RydWN0IGhpc2lfcHR0X2ZpbHRlcl9kZXNjIHsKPj4gK8KgwqDC
+oCBzdHJ1Y3QgbGlzdF9oZWFkIGxpc3Q7Cj4+ICvCoMKgwqAgYm9vbCBpc19wb3J0Owo+PiArwqDC
+oMKgIHUxNiBkZXZpZDsKPj4gK307Cj4+ICsKPj4gKwo+PiArLyoqCj4+ICsgKiBzdHJ1Y3QgaGlz
+aV9wdHRfcG11X2J1ZiAtIERlc2NyaXB0b3Igb2YgdGhlIEFVWCBidWZmZXIgb2YgUFRUIHRyYWNl
+Cj4+ICsgKiBAbGVuZ3RoOsKgwqAgc2l6ZSBvZiB0aGUgQVVYIGJ1ZmZlcgo+PiArICogQG5yX3Bh
+Z2VzOiBudW1iZXIgb2YgcGFnZXMgb2YgdGhlIEFVWCBidWZmZXIKPj4gKyAqIEBiYXNlOsKgwqDC
+oMKgIHN0YXJ0IGFkZHJlc3Mgb2YgQVVYIGJ1ZmZlcgo+PiArICogQHBvczrCoMKgwqDCoMKgIHBv
+c2l0aW9uIGluIHRoZSBBVVggYnVmZmVyIHRvIGNvbW1pdCB0cmFjZWQgZGF0YQo+PiArICovCj4+
+ICtzdHJ1Y3QgaGlzaV9wdHRfcG11X2J1ZiB7Cj4+ICvCoMKgwqAgc2l6ZV90IGxlbmd0aDsKPj4g
+K8KgwqDCoCBpbnQgbnJfcGFnZXM7Cj4+ICvCoMKgwqAgdm9pZCAqYmFzZTsKPj4gK8KgwqDCoCBs
+b25nIHBvczsKPj4gK307Cj4+ICsKPj4gKy8qKgo+PiArICogc3RydWN0IGhpc2lfcHR0IC0gUGVy
+IFBUVCBkZXZpY2UgZGF0YQo+PiArICogQHRyYWNlX2N0cmw6wqDCoCB0aGUgY29udHJvbCBpbmZv
+cm1hdGlvbiBvZiBQVFQgdHJhY2UKPj4gKyAqIEBob3RwbHVnX25vZGU6IG5vZGUgZm9yIHJlZ2lz
+dGVyIGNwdSBob3RwbHVnIGV2ZW50Cj4+ICsgKiBAaGlzaV9wdHRfcG11OiB0aGUgcHVtIGRldmlj
+ZSBvZiB0cmFjZQo+PiArICogQGlvYmFzZTrCoMKgwqDCoMKgwqAgYmFzZSBJTyBhZGRyZXNzIG9m
+IHRoZSBkZXZpY2UKPj4gKyAqIEBwZGV2OsKgwqDCoMKgwqDCoMKgwqAgcGNpX2RldiBvZiB0aGlz
+IFBUVCBkZXZpY2UKPj4gKyAqIEBwbXVfbG9jazrCoMKgwqDCoCBsb2NrIHRvIHNlcmlhbGl6ZSB0
+aGUgcGVyZiBwcm9jZXNzCj4+ICsgKiBAdXBwZXJfYmRmOsKgwqDCoCB0aGUgdXBwZXIgQkRGIHJh
+bmdlIG9mIHRoZSBQQ0kgZGV2aWNlcyBtYW5hZ2VkIGJ5IHRoaXMgUFRUIGRldmljZQo+PiArICog
+QGxvd2VyX2JkZjrCoMKgwqAgdGhlIGxvd2VyIEJERiByYW5nZSBvZiB0aGUgUENJIGRldmljZXMg
+bWFuYWdlZCBieSB0aGlzIFBUVCBkZXZpY2UKPj4gKyAqIEBwb3J0X2ZpbHRlcnM6IHRoZSBmaWx0
+ZXIgbGlzdCBvZiByb290IHBvcnRzCj4+ICsgKiBAcmVxX2ZpbHRlcnM6wqAgdGhlIGZpbHRlciBs
+aXN0IG9mIHJlcXVlc3RlciBJRAo+PiArICogQHBvcnRfbWFzazrCoMKgwqAgcG9ydCBtYXNrIG9m
+IHRoZSBtYW5hZ2VkIHJvb3QgcG9ydHMKPj4gKyAqLwo+PiArc3RydWN0IGhpc2lfcHR0IHsKPj4g
+K8KgwqDCoCBzdHJ1Y3QgaGlzaV9wdHRfdHJhY2VfY3RybCB0cmFjZV9jdHJsOwo+PiArwqDCoMKg
+IHN0cnVjdCBobGlzdF9ub2RlIGhvdHBsdWdfbm9kZTsKPj4gK8KgwqDCoCBzdHJ1Y3QgcG11IGhp
+c2lfcHR0X3BtdTsKPj4gK8KgwqDCoCB2b2lkIF9faW9tZW0gKmlvYmFzZTsKPj4gK8KgwqDCoCBz
+dHJ1Y3QgcGNpX2RldiAqcGRldjsKPj4gK8KgwqDCoCBzcGlubG9ja190IHBtdV9sb2NrOwo+PiAr
+wqDCoMKgIHUzMiB1cHBlcl9iZGY7Cj4+ICvCoMKgwqAgdTMyIGxvd2VyX2JkZjsKPj4gKwo+PiAr
+wqDCoMKgIC8qCj4+ICvCoMKgwqDCoCAqIFRoZSB0cmFjZSBUTFAgaGVhZGVycyBjYW4gZWl0aGVy
+IGJlIGZpbHRlcmVkIGJ5IGNlcnRhaW4KPj4gK8KgwqDCoMKgICogcm9vdCBwb3J0LCBvciBieSB0
+aGUgcmVxdWVzdGVyIElELiBPcmdhbml6ZSB0aGUgZmlsdGVycwo+PiArwqDCoMKgwqAgKiBieSBA
+cG9ydF9maWx0ZXJzIGFuZCBAcmVxX2ZpbHRlcnMgaGVyZS4gVGhlIG1hc2sgb2YgYWxsCj4+ICvC
+oMKgwqDCoCAqIHRoZSB2YWxpZCBwb3J0cyBpcyBhbHNvIGNhY2hlZCBmb3IgZG9pbmcgc2FuaXR5
+IGNoZWNrCj4+ICvCoMKgwqDCoCAqIG9mIHVzZXIgaW5wdXQuCj4+ICvCoMKgwqDCoCAqLwo+PiAr
+wqDCoMKgIHN0cnVjdCBsaXN0X2hlYWQgcG9ydF9maWx0ZXJzOwo+PiArwqDCoMKgIHN0cnVjdCBs
+aXN0X2hlYWQgcmVxX2ZpbHRlcnM7Cj4+ICvCoMKgwqAgdTE2IHBvcnRfbWFzazsKPj4gK307Cj4+
+ICsKPj4gKyNkZWZpbmUgdG9faGlzaV9wdHQocG11KSBjb250YWluZXJfb2YocG11LCBzdHJ1Y3Qg
+aGlzaV9wdHQsIGhpc2lfcHR0X3BtdSkKPj4gKwo+PiArI2VuZGlmIC8qIF9ISVNJX1BUVF9IICov
+Cj4gCj4gLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpp
+b21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6
+Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
