@@ -1,68 +1,80 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 88920C433F5
-	for <iommu@archiver.kernel.org>; Tue, 17 May 2022 09:02:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D1513C433F5
+	for <iommu@archiver.kernel.org>; Tue, 17 May 2022 09:08:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 3566C61180;
-	Tue, 17 May 2022 09:02:14 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 78F12400B8;
+	Tue, 17 May 2022 09:08:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id rswzskPA1tRT; Tue, 17 May 2022 09:02:13 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 0J9IiKep7q-k; Tue, 17 May 2022 09:08:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 0E2CB60BDD;
-	Tue, 17 May 2022 09:02:12 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 624D64023D;
+	Tue, 17 May 2022 09:08:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D3CB1C0039;
-	Tue, 17 May 2022 09:02:12 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 412B0C002D
- for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 09:02:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0CF08C0032;
+	Tue, 17 May 2022 09:08:43 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 65D41C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 09:08:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 2EABC828F2
- for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 09:02:08 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 52A1983E3E
+ for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 09:08:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8XW36sRDs2S1 for <iommu@lists.linux-foundation.org>;
- Tue, 17 May 2022 09:02:07 +0000 (UTC)
+ with ESMTP id SNS0PU7DbHzb for <iommu@lists.linux-foundation.org>;
+ Tue, 17 May 2022 09:08:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp1.osuosl.org (Postfix) with ESMTPS id AD9D0824F4
- for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 09:02:06 +0000 (UTC)
-Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.201])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L2VR854Wrz67L0F;
- Tue, 17 May 2022 16:59:00 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 17 May 2022 11:02:01 +0200
-Received: from [10.47.88.19] (10.47.88.19) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 17 May
- 2022 10:02:00 +0100
-Message-ID: <3e7c4d27-a0cb-2d9e-ca79-248ce26c6787@huawei.com>
-Date: Tue, 17 May 2022 10:02:00 +0100
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 4714F83E32
+ for <iommu@lists.linux-foundation.org>; Tue, 17 May 2022 09:08:36 +0000 (UTC)
+X-UUID: 6c43586b3ad74e128767874098025e85-20220517
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5, REQID:b90e6212-ccee-45e0-aae1-e7356ee88c09, OB:0,
+ LO
+ B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+ ON:release,TS:0
+X-CID-META: VersionHash:2a19b09, CLOUDID:772c7ae2-edbf-4bd4-8a34-dfc5f7bb086d,
+ C
+ OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+ ,QS:0,BEC:nil
+X-UUID: 6c43586b3ad74e128767874098025e85-20220517
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by
+ mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 437650018; Tue, 17 May 2022 17:08:30 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3; 
+ Tue, 17 May 2022 17:08:28 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Tue, 17 May 2022 17:08:27 +0800
+Message-ID: <38e38006662b52631a2145228444b9d70f9eb2c6.camel@mediatek.com>
+Subject: Re: [PATCH 2/2] iommu: mtk_iommu: Add support for MT6795 Helio X10
+ M4Us
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Date: Tue, 17 May 2022 17:08:26 +0800
+In-Reply-To: <20220513151411.395744-3-angelogioacchino.delregno@collabora.com>
+References: <20220513151411.395744-1-angelogioacchino.delregno@collabora.com>
+ <20220513151411.395744-3-angelogioacchino.delregno@collabora.com>
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [RFC PATCH] dma-iommu: Add iommu_dma_max_mapping_size()
-To: Christoph Hellwig <hch@lst.de>
-References: <1652706361-92557-1-git-send-email-john.garry@huawei.com>
- <20220517083834.GA16965@lst.de>
-In-Reply-To: <20220517083834.GA16965@lst.de>
-X-Originating-IP: [10.47.88.19]
-X-ClientProxiedBy: lhreml743-chm.china.huawei.com (10.201.108.193) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: will@kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, robin.murphy@arm.com,
- liyihang6@hisilicon.com
+X-MTK: N
+Cc: devicetree@vger.kernel.org, martin.botka@somainline.org,
+ paul.bouchara@somainline.org, konrad.dybcio@somainline.org,
+ linux-kernel@vger.kernel.org, yf.wang@mediatek.com,
+ iommu@lists.linux-foundation.org, robh+dt@kernel.org,
+ linux-mediatek@lists.infradead.org, ~postmarketos/upstreaming@lists.sr.ht,
+ krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+ marijn.suijten@somainline.org, phone-devel@vger.kernel.org, will@kernel.org,
+ mingyuan.ma@mediatek.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,80 +87,105 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: John Garry via iommu <iommu@lists.linux-foundation.org>
-Reply-To: John Garry <john.garry@huawei.com>
+From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Yong Wu <yong.wu@mediatek.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 17/05/2022 09:38, Christoph Hellwig wrote:
-> On Mon, May 16, 2022 at 09:06:01PM +0800, John Garry wrote:
->> For streaming DMA mappings involving an IOMMU and whose IOVA len regularly
->> exceeds the IOVA rcache upper limit (meaning that they are not cached),
->> performance can be reduced.
->>
->> Add the IOMMU callback for DMA mapping API dma_max_mapping_size(), which
->> allows the drivers to know the mapping limit and thus limit the requested
->> IOVA lengths.
->>
->> This resolves the performance issue originally reported in [0] for a SCSI
->> HBA driver which was regularly mapping SGLs which required IOVAs in
->> excess of the IOVA caching limit. In this case the block layer limits the
->> max sectors per request - as configured in __scsi_init_queue() - which
->> will limit the total SGL length the driver tries to map and in turn limits
->> IOVA lengths requested.
-
-BTW, on a separate topic, I noticed that even with this change my ATA 
-devices have max_hw_sectors_kb of 32767, as opposed to 128 for SAS 
-devices. It seems that libata-scsi - specifically ata_scsi_dev_config() 
-- doesn't honour the shost max_sectors limit. I guess that is not 
-intentional.
-
->>
->> [0] https://lore.kernel.org/linux-iommu/20210129092120.1482-1-thunder.leizhen@huawei.com/
->>
->> Signed-off-by: John Garry <john.garry@huawei.com>
->> ---
->> Sending as an RFC as iommu_dma_max_mapping_size() is a soft limit, and not
->> a hard limit which I expect is the semantics of dma_map_ops.max_mapping_size
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index 09f6e1c0f9c0..e2d5205cde37 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -1442,6 +1442,21 @@ static unsigned long iommu_dma_get_merge_boundary(struct device *dev)
->>   	return (1UL << __ffs(domain->pgsize_bitmap)) - 1;
->>   }
->>   
+On Fri, 2022-05-13 at 17:14 +0200, AngeloGioacchino Del Regno wrote:
+> Add support for the M4Us found in the MT6795 Helio X10 SoC.
 > 
->> +	if (!domain)
->> +		return 0;
->> +
->> +	cookie = domain->iova_cookie;
->> +	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
->> +		return 0;
+> Signed-off-by: AngeloGioacchino Del Regno <
+> angelogioacchino.delregno@collabora.com>
+> ---
+>  drivers/iommu/mtk_iommu.c | 20 +++++++++++++++++++-
+>  1 file changed, 19 insertions(+), 1 deletion(-)
 > 
-> Can these conditions even be true here?
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 71b2ace74cd6..3d802dd3f377 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -157,6 +157,7 @@
+>  enum mtk_iommu_plat {
+>  	M4U_MT2712,
+>  	M4U_MT6779,
+> +	M4U_MT6795,
+>  	M4U_MT8167,
+>  	M4U_MT8173,
+>  	M4U_MT8183,
+> @@ -953,7 +954,8 @@ static int mtk_iommu_hw_init(const struct
+> mtk_iommu_data *data, unsigned int ban
+>  	 * Global control settings are in bank0. May re-init these
+> global registers
+>  	 * since no sure if there is bank0 consumers.
+>  	 */
+> -	if (data->plat_data->m4u_plat == M4U_MT8173) {
+> +	if (data->plat_data->m4u_plat == M4U_MT6795 ||
+> +	    data->plat_data->m4u_plat == M4U_MT8173) {
+>  		regval = F_MMU_PREFETCH_RT_REPLACE_MOD |
+>  			 F_MMU_TF_PROT_TO_PROGRAM_ADDR_MT8173;
+>  	} else {
+> @@ -1138,6 +1140,9 @@ static int mtk_iommu_probe(struct
+> platform_device *pdev)
+>  		case M4U_MT2712:
+>  			p = "mediatek,mt2712-infracfg";
+>  			break;
+> +		case M4U_MT6795:
+> +			p = "mediatek,mt6795-infracfg";
+> +			break;
+>  		case M4U_MT8173:
+>  			p = "mediatek,mt8173-infracfg";
+>  			break;
+> @@ -1404,6 +1409,18 @@ static const struct mtk_iommu_plat_data
+> mt6779_data = {
+>  	.larbid_remap  = {{0}, {1}, {2}, {3}, {5}, {7, 8}, {10}, {9}},
+>  };
+>  
+> +static const struct mtk_iommu_plat_data mt6795_data = {
+> +	.m4u_plat     = M4U_MT6795,
+> +	.flags	      = HAS_4GB_MODE | HAS_BCLK | RESET_AXI |
+> +			HAS_LEGACY_IVRP_PADDR | MTK_IOMMU_TYPE_MM,
+> +	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
+> +	.banks_num    = 1,
+> +	.banks_enable = {true},
+> +	.iova_region  = single_domain,
+> +	.iova_region_nr = ARRAY_SIZE(single_domain),
+> +	.larbid_remap = {{0}, {1}, {2}, {3}, {4}}, /* Linear mapping.
+> */
+> +};
 
-I don't think so. Paranoia on my part.
+This is nearly same with mt8173_data. mt8173 has one more larb than
+mt6795, its larbid_remap is also ok for mt6795.
 
-> 
->> +static inline unsigned long iova_rcache_range(void)
->> +{
->> +	return 0;
->> +}
-> 
-> Given that IOMMU_DMA select IOMMU_IOVA there is no need for this stub.
+thus it looks we could use mt8173 as the backward compatible.
+    compatible = "mediatek,mt6795-m4u",
+                 "mediatek,mt8173-m4u";
 
-hmmm.. ok. Policy was to be stub everything but I think that it has changed.
+After this, the only thing is about "mediatek,mt6795-infracfg". we have
+to try again with mediatek,mt6795-infracfg after mediatek,mt8173-
+infracfg fail. I think we should allow the backward case in 4GB mode
+judgment if we have.
 
-> 
-> Otherwise this looks sensible to me.
-> 
-> .
+What's your opinion? or some other suggestion?
+Thanks.
 
-Great, thanks.
+> +
+>  static const struct mtk_iommu_plat_data mt8167_data = {
+>  	.m4u_plat     = M4U_MT8167,
+>  	.flags        = RESET_AXI | HAS_LEGACY_IVRP_PADDR |
+> MTK_IOMMU_TYPE_MM,
+> @@ -1515,6 +1532,7 @@ static const struct mtk_iommu_plat_data
+> mt8195_data_vpp = {
+>  static const struct of_device_id mtk_iommu_of_ids[] = {
+>  	{ .compatible = "mediatek,mt2712-m4u", .data = &mt2712_data},
+>  	{ .compatible = "mediatek,mt6779-m4u", .data = &mt6779_data},
+> +	{ .compatible = "mediatek,mt6795-m4u", .data = &mt6795_data},
+>  	{ .compatible = "mediatek,mt8167-m4u", .data = &mt8167_data},
+>  	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
+>  	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
