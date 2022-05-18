@@ -1,69 +1,65 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EA51CC43219
-	for <iommu@archiver.kernel.org>; Wed, 18 May 2022 10:19:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A98A3C433F5
+	for <iommu@archiver.kernel.org>; Wed, 18 May 2022 11:08:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 8846340003;
-	Wed, 18 May 2022 10:19:04 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4F62C60E0A;
+	Wed, 18 May 2022 11:08:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DP8T72s-PydR; Wed, 18 May 2022 10:19:03 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 3CC11401B3;
-	Wed, 18 May 2022 10:19:03 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id WHLoCXw7XIOZ; Wed, 18 May 2022 11:08:09 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id F084260C04;
+	Wed, 18 May 2022 11:08:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 18A07C0032;
-	Wed, 18 May 2022 10:19:03 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1DA05C002D
- for <iommu@lists.linux-foundation.org>; Wed, 18 May 2022 10:19:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D13E8C0032;
+	Wed, 18 May 2022 11:08:08 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EE3CEC002D
+ for <iommu@lists.linux-foundation.org>; Wed, 18 May 2022 11:08:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id F30B34012E
- for <iommu@lists.linux-foundation.org>; Wed, 18 May 2022 10:19:01 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id D686983DFC
+ for <iommu@lists.linux-foundation.org>; Wed, 18 May 2022 11:08:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9h4Yxy2yYYkc for <iommu@lists.linux-foundation.org>;
- Wed, 18 May 2022 10:19:01 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id CSTivdBzV-nL for <iommu@lists.linux-foundation.org>;
+ Wed, 18 May 2022 11:08:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 390A340003
- for <iommu@lists.linux-foundation.org>; Wed, 18 May 2022 10:19:01 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
- (Authenticated sender: kholk11) with ESMTPSA id B00CE1F44784
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
- s=mail; t=1652869136;
- bh=ALd+Ex8c5vy9SeM3mRTTqPW6CjY8e4+l7fcCxHrg/jo=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=MZrUvhYGdr4u6aS2GijsHpgrVN6tt6HSocophBnE/rpCDYGqlSuCeTX6ALMiiqroU
- +149JmNkTtBH2K9VUvA0xOpMShwsMALIDY/ftEy0kTpgnl86/StQwRBkcpfLhd7wWo
- 2jnErje6YqK5GmV/n8s+alxjsxcGF68/WdxahayhSrhPcYHuOdtH9+/S5cBXAMWNGP
- By2XxWMGmnT5NKyzBDFFto+tHNKT2h+R0ap/hBET/k6fWfKOWnOfRArByKuhg5S1Ac
- 4MxB5ebr2YxVhFuCgJ6p5pnZsMG2N81Lcr34VqZM4TQRludCMHvY2y9l4VXRPNCFX1
- 3S5x3e4HMFEZg==
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-To: yong.wu@mediatek.com
-Subject: [PATCH v2 1/2] dt-bindings: mediatek: Add bindings for MT6795 M4U
-Date: Wed, 18 May 2022 12:18:48 +0200
-Message-Id: <20220518101849.46804-2-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220518101849.46804-1-angelogioacchino.delregno@collabora.com>
-References: <20220518101849.46804-1-angelogioacchino.delregno@collabora.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp1.osuosl.org (Postfix) with ESMTP id C4A5583689
+ for <iommu@lists.linux-foundation.org>; Wed, 18 May 2022 11:08:06 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A7C1423A;
+ Wed, 18 May 2022 04:08:05 -0700 (PDT)
+Received: from [10.57.82.55] (unknown [10.57.82.55])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A23F23F718;
+ Wed, 18 May 2022 04:08:03 -0700 (PDT)
+Message-ID: <a063199a-72dd-d2ab-10bb-7130697c5611@arm.com>
+Date: Wed, 18 May 2022 12:07:58 +0100
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, martin.botka@somainline.org,
- paul.bouchara@somainline.org, konrad.dybcio@somainline.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- robh+dt@kernel.org, linux-mediatek@lists.infradead.org,
- ~postmarketos/upstreaming@lists.sr.ht, krzysztof.kozlowski+dt@linaro.org,
- matthias.bgg@gmail.com, marijn.suijten@somainline.org,
- phone-devel@vger.kernel.org, will@kernel.org,
- linux-arm-kernel@lists.infradead.org,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 2/8] iommu: mtk_iommu: Lookup phandle to retrieve syscon
+ to infracfg
+Content-Language: en-GB
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ yong.wu@mediatek.com
+References: <20220517132107.195932-1-angelogioacchino.delregno@collabora.com>
+ <20220517132107.195932-3-angelogioacchino.delregno@collabora.com>
+ <16fb07d9-28d8-5c73-1eb5-ec13544d22e5@arm.com>
+ <b003c37c-0f2d-31f6-6a74-4e1f0f4a1ccb@collabora.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <b003c37c-0f2d-31f6-6a74-4e1f0f4a1ccb@collabora.com>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, robh+dt@kernel.org,
+ linux-mediatek@lists.infradead.org, krzysztof.kozlowski+dt@linaro.org,
+ matthias.bgg@gmail.com, will@kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,162 +72,131 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add bindings for the MediaTek Helio X10 (MT6795) IOMMU/M4U.
-
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- .../bindings/iommu/mediatek,iommu.yaml        |  4 +
- include/dt-bindings/memory/mt6795-larb-port.h | 96 +++++++++++++++++++
- 2 files changed, 100 insertions(+)
- create mode 100644 include/dt-bindings/memory/mt6795-larb-port.h
-
-diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-index d5e3272a54e8..20902c387520 100644
---- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-@@ -73,6 +73,7 @@ properties:
-           - mediatek,mt2701-m4u  # generation one
-           - mediatek,mt2712-m4u  # generation two
-           - mediatek,mt6779-m4u  # generation two
-+          - mediatek,mt6795-m4u  # generation two
-           - mediatek,mt8167-m4u  # generation two
-           - mediatek,mt8173-m4u  # generation two
-           - mediatek,mt8183-m4u  # generation two
-@@ -128,6 +129,7 @@ properties:
-       dt-binding/memory/mt2701-larb-port.h for mt2701 and mt7623,
-       dt-binding/memory/mt2712-larb-port.h for mt2712,
-       dt-binding/memory/mt6779-larb-port.h for mt6779,
-+      dt-binding/memory/mt6795-larb-port.h for mt6795,
-       dt-binding/memory/mt8167-larb-port.h for mt8167,
-       dt-binding/memory/mt8173-larb-port.h for mt8173,
-       dt-binding/memory/mt8183-larb-port.h for mt8183,
-@@ -152,6 +154,7 @@ allOf:
-             enum:
-               - mediatek,mt2701-m4u
-               - mediatek,mt2712-m4u
-+              - mediatek,mt6795-m4u
-               - mediatek,mt8173-m4u
-               - mediatek,mt8186-iommu-mm
-               - mediatek,mt8192-m4u
-@@ -181,6 +184,7 @@ allOf:
-           contains:
-             enum:
-               - mediatek,mt2712-m4u
-+              - mediatek,mt6795-m4u
-               - mediatek,mt8173-m4u
- 
-     then:
-diff --git a/include/dt-bindings/memory/mt6795-larb-port.h b/include/dt-bindings/memory/mt6795-larb-port.h
-new file mode 100644
-index 000000000000..2243bb6414f3
---- /dev/null
-+++ b/include/dt-bindings/memory/mt6795-larb-port.h
-@@ -0,0 +1,96 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-+/*
-+ * Copyright (c) 2022 Collabora Ltd.
-+ * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-+ */
-+
-+#ifndef _DT_BINDINGS_MEMORY_MT6795_LARB_PORT_H_
-+#define _DT_BINDINGS_MEMORY_MT6795_LARB_PORT_H_
-+
-+#include <dt-bindings/memory/mtk-memory-port.h>
-+
-+#define M4U_LARB0_ID			0
-+#define M4U_LARB1_ID			1
-+#define M4U_LARB2_ID			2
-+#define M4U_LARB3_ID			3
-+#define M4U_LARB4_ID			4
-+#define M4U_LARB5_ID			5
-+
-+/* larb0 */
-+#define M4U_PORT_DISP_OVL0		MTK_M4U_ID(M4U_LARB0_ID, 0)
-+#define M4U_PORT_DISP_RDMA0		MTK_M4U_ID(M4U_LARB0_ID, 1)
-+#define M4U_PORT_DISP_RDMA1		MTK_M4U_ID(M4U_LARB0_ID, 2)
-+#define M4U_PORT_DISP_WDMA0		MTK_M4U_ID(M4U_LARB0_ID, 3)
-+#define M4U_PORT_DISP_OVL1		MTK_M4U_ID(M4U_LARB0_ID, 4)
-+#define M4U_PORT_DISP_RDMA2		MTK_M4U_ID(M4U_LARB0_ID, 5)
-+#define M4U_PORT_DISP_WDMA1		MTK_M4U_ID(M4U_LARB0_ID, 6)
-+#define M4U_PORT_DISP_OD_R		MTK_M4U_ID(M4U_LARB0_ID, 7)
-+#define M4U_PORT_DISP_OD_W		MTK_M4U_ID(M4U_LARB0_ID, 8)
-+#define M4U_PORT_MDP_RDMA0		MTK_M4U_ID(M4U_LARB0_ID, 9)
-+#define M4U_PORT_MDP_RDMA1		MTK_M4U_ID(M4U_LARB0_ID, 10)
-+#define M4U_PORT_MDP_WDMA		MTK_M4U_ID(M4U_LARB0_ID, 11)
-+#define M4U_PORT_MDP_WROT0		MTK_M4U_ID(M4U_LARB0_ID, 12)
-+#define M4U_PORT_MDP_WROT1		MTK_M4U_ID(M4U_LARB0_ID, 13)
-+
-+/* larb1 */
-+#define M4U_PORT_VDEC_MC		MTK_M4U_ID(M4U_LARB1_ID, 0)
-+#define M4U_PORT_VDEC_PP		MTK_M4U_ID(M4U_LARB1_ID, 1)
-+#define M4U_PORT_VDEC_UFO		MTK_M4U_ID(M4U_LARB1_ID, 2)
-+#define M4U_PORT_VDEC_VLD		MTK_M4U_ID(M4U_LARB1_ID, 3)
-+#define M4U_PORT_VDEC_VLD2		MTK_M4U_ID(M4U_LARB1_ID, 4)
-+#define M4U_PORT_VDEC_AVC_MV		MTK_M4U_ID(M4U_LARB1_ID, 5)
-+#define M4U_PORT_VDEC_PRED_RD		MTK_M4U_ID(M4U_LARB1_ID, 6)
-+#define M4U_PORT_VDEC_PRED_WR		MTK_M4U_ID(M4U_LARB1_ID, 7)
-+#define M4U_PORT_VDEC_PPWRAP		MTK_M4U_ID(M4U_LARB1_ID, 8)
-+
-+/* larb2 */
-+#define M4U_PORT_CAM_IMGO		MTK_M4U_ID(M4U_LARB2_ID, 0)
-+#define M4U_PORT_CAM_RRZO		MTK_M4U_ID(M4U_LARB2_ID, 1)
-+#define M4U_PORT_CAM_AAO		MTK_M4U_ID(M4U_LARB2_ID, 2)
-+#define M4U_PORT_CAM_LCSO		MTK_M4U_ID(M4U_LARB2_ID, 3)
-+#define M4U_PORT_CAM_ESFKO		MTK_M4U_ID(M4U_LARB2_ID, 4)
-+#define M4U_PORT_CAM_IMGO_S		MTK_M4U_ID(M4U_LARB2_ID, 5)
-+#define M4U_PORT_CAM_LSCI		MTK_M4U_ID(M4U_LARB2_ID, 6)
-+#define M4U_PORT_CAM_LSCI_D		MTK_M4U_ID(M4U_LARB2_ID, 7)
-+#define M4U_PORT_CAM_BPCI		MTK_M4U_ID(M4U_LARB2_ID, 8)
-+#define M4U_PORT_CAM_BPCI_D		MTK_M4U_ID(M4U_LARB2_ID, 9)
-+#define M4U_PORT_CAM_UFDI		MTK_M4U_ID(M4U_LARB2_ID, 10)
-+#define M4U_PORT_CAM_IMGI		MTK_M4U_ID(M4U_LARB2_ID, 11)
-+#define M4U_PORT_CAM_IMG2O		MTK_M4U_ID(M4U_LARB2_ID, 12)
-+#define M4U_PORT_CAM_IMG3O		MTK_M4U_ID(M4U_LARB2_ID, 13)
-+#define M4U_PORT_CAM_VIPI		MTK_M4U_ID(M4U_LARB2_ID, 14)
-+#define M4U_PORT_CAM_VIP2I		MTK_M4U_ID(M4U_LARB2_ID, 15)
-+#define M4U_PORT_CAM_VIP3I		MTK_M4U_ID(M4U_LARB2_ID, 16)
-+#define M4U_PORT_CAM_LCEI		MTK_M4U_ID(M4U_LARB2_ID, 17)
-+#define M4U_PORT_CAM_RB			MTK_M4U_ID(M4U_LARB2_ID, 18)
-+#define M4U_PORT_CAM_RP			MTK_M4U_ID(M4U_LARB2_ID, 19)
-+#define M4U_PORT_CAM_WR			MTK_M4U_ID(M4U_LARB2_ID, 20)
-+
-+/* larb3 */
-+#define M4U_PORT_VENC_RCPU		MTK_M4U_ID(M4U_LARB3_ID, 0)
-+#define M4U_PORT_VENC_REC		MTK_M4U_ID(M4U_LARB3_ID, 1)
-+#define M4U_PORT_VENC_BSDMA		MTK_M4U_ID(M4U_LARB3_ID, 2)
-+#define M4U_PORT_VENC_SV_COMV		MTK_M4U_ID(M4U_LARB3_ID, 3)
-+#define M4U_PORT_VENC_RD_COMV		MTK_M4U_ID(M4U_LARB3_ID, 4)
-+#define M4U_PORT_JPGENC_BSDMA		MTK_M4U_ID(M4U_LARB3_ID, 5)
-+#define M4U_PORT_REMDC_SDMA		MTK_M4U_ID(M4U_LARB3_ID, 6)
-+#define M4U_PORT_REMDC_BSDMA		MTK_M4U_ID(M4U_LARB3_ID, 7)
-+#define M4U_PORT_JPGENC_RDMA		MTK_M4U_ID(M4U_LARB3_ID, 8)
-+#define M4U_PORT_JPGENC_SDMA		MTK_M4U_ID(M4U_LARB3_ID, 9)
-+#define M4U_PORT_JPGDEC_WDMA		MTK_M4U_ID(M4U_LARB3_ID, 10)
-+#define M4U_PORT_JPGDEC_BSDMA		MTK_M4U_ID(M4U_LARB3_ID, 11)
-+#define M4U_PORT_VENC_CUR_LUMA		MTK_M4U_ID(M4U_LARB3_ID, 12)
-+#define M4U_PORT_VENC_CUR_CHROMA	MTK_M4U_ID(M4U_LARB3_ID, 13)
-+#define M4U_PORT_VENC_REF_LUMA		MTK_M4U_ID(M4U_LARB3_ID, 14)
-+#define M4U_PORT_VENC_REF_CHROMA	MTK_M4U_ID(M4U_LARB3_ID, 15)
-+#define M4U_PORT_REMDC_WDMA		MTK_M4U_ID(M4U_LARB3_ID, 16)
-+#define M4U_PORT_VENC_NBM_RDMA		MTK_M4U_ID(M4U_LARB3_ID, 17)
-+#define M4U_PORT_VENC_NBM_WDMA		MTK_M4U_ID(M4U_LARB3_ID, 18)
-+
-+/* larb4 */
-+#define M4U_PORT_MJC_MV_RD		MTK_M4U_ID(M4U_LARB4_ID, 0)
-+#define M4U_PORT_MJC_MV_WR		MTK_M4U_ID(M4U_LARB4_ID, 1)
-+#define M4U_PORT_MJC_DMA_RD		MTK_M4U_ID(M4U_LARB4_ID, 2)
-+#define M4U_PORT_MJC_DMA_WR		MTK_M4U_ID(M4U_LARB4_ID, 3)
-+
-+#endif
--- 
-2.35.1
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMi0wNS0xOCAwOToyOSwgQW5nZWxvR2lvYWNjaGlubyBEZWwgUmVnbm8gd3JvdGU6Cj4g
+SWwgMTcvMDUvMjIgMTY6MTIsIFJvYmluIE11cnBoeSBoYSBzY3JpdHRvOgo+PiBPbiAyMDIyLTA1
+LTE3IDE0OjIxLCBBbmdlbG9HaW9hY2NoaW5vIERlbCBSZWdubyB3cm90ZToKPj4+IFRoaXMgZHJp
+dmVyIHdpbGwgZ2V0IHN1cHBvcnQgZm9yIG1vcmUgU29DcyBhbmQgdGhlIGxpc3Qgb2YgaW5mcmFj
+ZmcKPj4+IGNvbXBhdGlibGVzIGlzIGV4cGVjdGVkIHRvIGdyb3c6IGluIG9yZGVyIHRvIHByZXZl
+bnQgZ2V0dGluZyB0aGlzCj4+PiBzaXR1YXRpb24gb3V0IG9mIGNvbnRyb2wgYW5kIHNlZSBhIGxv
+bmcgbGlzdCBvZiBjb21wYXRpYmxlIHN0cmluZ3MsCj4+PiBhZGQgc3VwcG9ydCB0byByZXRyaWV2
+ZSBhIGhhbmRsZSB0byBpbmZyYWNmZydzIHJlZ21hcCB0aHJvdWdoIGEKPj4+IG5ldyAibWVkaWF0
+ZWssaW5mcmFjZmciIHBoYW5kbGUuCj4+Pgo+Pj4gSW4gb3JkZXIgdG8ga2VlcCByZXRyb2NvbXBh
+dGliaWxpdHkgd2l0aCBvbGRlciBkZXZpY2V0cmVlcywgdGhlIG9sZAo+Pj4gd2F5IGlzIGtlcHQg
+aW4gcGxhY2UsIGJ1dCBhbHNvIGEgZGV2X3dhcm4oKSB3YXMgYWRkZWQgdG8gYWR2ZXJ0aXNlCj4+
+PiB0aGlzIGNoYW5nZSBpbiBob3BlIHRoYXQgdGhlIHVzZXIgd2lsbCBzZWUgaXQgYW5kIGV2ZW50
+dWFsbHkgdXBkYXRlCj4+PiB0aGUgZGV2aWNldHJlZSBpZiB0aGlzIGlzIHBvc3NpYmxlLgo+Pj4K
+Pj4+IFNpZ25lZC1vZmYtYnk6IEFuZ2Vsb0dpb2FjY2hpbm8gRGVsIFJlZ25vIAo+Pj4gPGFuZ2Vs
+b2dpb2FjY2hpbm8uZGVscmVnbm9AY29sbGFib3JhLmNvbT4KPj4+IC0tLQo+Pj4gwqAgZHJpdmVy
+cy9pb21tdS9tdGtfaW9tbXUuYyB8IDQwICsrKysrKysrKysrKysrKysrKysrKysrKystLS0tLS0t
+LS0tLS0tLQo+Pj4gwqAgMSBmaWxlIGNoYW5nZWQsIDI2IGluc2VydGlvbnMoKyksIDE0IGRlbGV0
+aW9ucygtKQo+Pj4KPj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L210a19pb21tdS5jIGIv
+ZHJpdmVycy9pb21tdS9tdGtfaW9tbXUuYwo+Pj4gaW5kZXggNzFiMmFjZTc0Y2Q2Li5jZmFhYTk4
+ZDJiNTAgMTAwNjQ0Cj4+PiAtLS0gYS9kcml2ZXJzL2lvbW11L210a19pb21tdS5jCj4+PiArKysg
+Yi9kcml2ZXJzL2lvbW11L210a19pb21tdS5jCj4+PiBAQCAtMTEzNCwyMiArMTEzNCwzNCBAQCBz
+dGF0aWMgaW50IG10a19pb21tdV9wcm9iZShzdHJ1Y3QgCj4+PiBwbGF0Zm9ybV9kZXZpY2UgKnBk
+ZXYpCj4+PiDCoMKgwqDCoMKgIGRhdGEtPnByb3RlY3RfYmFzZSA9IEFMSUdOKHZpcnRfdG9fcGh5
+cyhwcm90ZWN0KSwgCj4+PiBNVEtfUFJPVEVDVF9QQV9BTElHTik7Cj4+PiDCoMKgwqDCoMKgIGlm
+IChNVEtfSU9NTVVfSEFTX0ZMQUcoZGF0YS0+cGxhdF9kYXRhLCBIQVNfNEdCX01PREUpKSB7Cj4+
+PiAtwqDCoMKgwqDCoMKgwqAgc3dpdGNoIChkYXRhLT5wbGF0X2RhdGEtPm00dV9wbGF0KSB7Cj4+
+PiAtwqDCoMKgwqDCoMKgwqAgY2FzZSBNNFVfTVQyNzEyOgo+Pj4gLcKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgcCA9ICJtZWRpYXRlayxtdDI3MTItaW5mcmFjZmciOwo+Pj4gLcKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgYnJlYWs7Cj4+PiAtwqDCoMKgwqDCoMKgwqAgY2FzZSBNNFVfTVQ4MTczOgo+Pj4g
+LcKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcCA9ICJtZWRpYXRlayxtdDgxNzMtaW5mcmFjZmciOwo+
+Pj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgYnJlYWs7Cj4+PiAtwqDCoMKgwqDCoMKgwqAgZGVm
+YXVsdDoKPj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHAgPSBOVUxMOwo+Pj4gK8KgwqDCoMKg
+wqDCoMKgIGluZnJhY2ZnID0gc3lzY29uX3JlZ21hcF9sb29rdXBfYnlfcGhhbmRsZShkZXYtPm9m
+X25vZGUsIAo+Pj4gIm1lZGlhdGVrLGluZnJhY2ZnIik7Cj4+PiArwqDCoMKgwqDCoMKgwqAgaWYg
+KElTX0VSUihpbmZyYWNmZykpIHsKPj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGRldl93YXJu
+KGRldiwgIkNhbm5vdCBmaW5kIHBoYW5kbGUgdG8gbWVkaWF0ZWssaW5mcmFjZmc6Igo+Pj4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAiIFBsZWFzZSB1cGRhdGUg
+eW91ciBkZXZpY2V0cmVlLlxuIik7Cj4+Cj4+IElzIHRoaXMgcmVhbGx5IGEgZGV2X3dhcm4tbGV2
+ZWwgcHJvYmxlbT8gVGhlcmUncyBubyBmdW5jdGlvbmFsIGltcGFjdCwgCj4+IGdpdmVuIHRoYXQg
+d2UgY2FuJ3Qgc3RvcCBzdXBwb3J0aW5nIHRoZSBvcmlnaW5hbCBiaW5kaW5nIGFueSB0aW1lIAo+
+PiBzb29uLCBpZiBldmVyLCBzbyBJIHN1c3BlY3QgdGhpcyBpcyBtb3JlIGxpa2VseSB0byBqdXN0
+IGFubm95IHVzZXJzIAo+PiBhbmQgQ0kgc3lzdGVtcyB0aGFuIGVmZmVjdCBhbnkgc2lnbmlmaWNh
+bnQgY2hhbmdlLgo+Pgo+IAo+IFRoZSB1cHN0cmVhbSBkZXZpY2V0cmVlcyB3ZXJlIHVwZGF0ZWQg
+dG8gdXNlIHRoZSBuZXcgaGFuZGxlIGFuZCB0aGlzIGlzIAo+IGEgd2F5IHRvCj4gd2FybiBhYm91
+dCBoYXZpbmcgb3V0ZGF0ZWQgRFRzLi4uIGJlc2lkZXMsIEkgYmVsaWV2ZSB0aGF0IENJcyB3aWxs
+IAo+IGFsd2F5cyBnZXQgdGhlCj4gZGV2aWNldHJlZSBmcm9tIHRoZSBzYW1lIHRyZWUgdGhhdCB0
+aGUga2VybmVsIHdhcyBjb21waWxlZCBmcm9tIChoZW5jZSAKPiBubyBtZXNzYWdlCj4gd2lsbCBi
+ZSB0aHJvd24pLgo+IAo+IEluIGFueSBjYXNlLCBpZiB5b3UgdGhpbmsgdGhhdCBhIGRldl9pbmZv
+IHdvdWxkIGJlIG1vcmUgYXBwcm9wcmlhdGUsIEkgCj4gY2FuIGNoYW5nZQo+IHRoYXQgbm8gcHJv
+YmxlbS4KCklmIHRoZXJlJ3Mgc29tZSBmdW5jdGlvbmFsIGltcGFjdCBmcm9tIHVzaW5nIHRoZSBv
+bGQgYmluZGluZyB2cy4gdGhlIG5ldyAKb25lIHRoZW4gaXQncyByZWFzb25hYmxlIHRvIGluZm9y
+bSB0aGUgdXNlciBvZiB0aGF0IChhcyB3ZSBkbyBpbiAKYXJtLXNtbXUsIGZvciBleGFtcGxlKS4K
+Ckhvd2V2ZXIgaWYgeW91IGNoYW5nZSBhbiBlc3RhYmxpc2hlZCBiaW5kaW5nIGZvciBub24tZnVu
+Y3Rpb25hbCByZWFzb25zLCAKdGhlbiB5b3UgZ2V0IHRvIHN1cHBvcnQgYm90aCBiaW5kaW5ncywg
+YW5kIGl0J3Mgbm90IHRoZSBlbmQgdXNlcidzIApwcm9ibGVtIGF0IGFsbC4gVGhlcmUgc2VlbXMg
+dG8gYmUgemVybyByZWFzb24gdG8gdXBkYXRlIGFuIGV4aXN0aW5nIERUQiAKZm9yIHRoaXMgZGlm
+ZmVyZW5jZSBhbG9uZSwgc28gVEJIIEkgZG9uJ3QgdGhpbmsgaXQgZGVzZXJ2ZXMgYSBtZXNzYWdl
+IGF0IAphbGwuCgo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLyoKPj4+ICvCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAgKiBMZWdhY3kgZGV2aWNldHJlZXMgd2lsbCBub3Qgc3BlY2lmeSBhIHBo
+YW5kbGUgdG8KPj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKiBtZWRpYXRlayxpbmZyYWNm
+ZzogaW4gdGhhdCBjYXNlLCB3ZSB1c2UgdGhlIG9sZGVyCj4+PiArwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgICogd2F5IHRvIHJldHJpZXZlIGEgc3lzY29uIHRvIGluZnJhLgo+Pj4gK8KgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCAqCj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICogVGhpcyBp
+cyBmb3IgcmV0cm9jb21wYXRpYmlsaXR5IHB1cnBvc2VzIG9ubHksIGhlbmNlCj4+PiArwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgICogbm8gbW9yZSBjb21wYXRpYmxlcyBzaGFsbCBiZSBhZGRlZCB0
+byB0aGlzLgo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAqLwo+Pj4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgc3dpdGNoIChkYXRhLT5wbGF0X2RhdGEtPm00dV9wbGF0KSB7Cj4+PiArwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCBjYXNlIE00VV9NVDI3MTI6Cj4+PiArwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgIHAgPSAibWVkaWF0ZWssbXQyNzEyLWluZnJhY2ZnIjsKPj4+ICvCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgYnJlYWs7Cj4+PiArwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCBjYXNlIE00VV9NVDgxNzM6Cj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IHAgPSAibWVkaWF0ZWssbXQ4MTczLWluZnJhY2ZnIjsKPj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgYnJlYWs7Cj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBkZWZhdWx0Ogo+
+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBwID0gTlVMTDsKPj4+ICvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgIH0KPj4+ICsKPj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGluZnJh
+Y2ZnID0gc3lzY29uX3JlZ21hcF9sb29rdXBfYnlfY29tcGF0aWJsZShwKTsKPj4KPj4gV291bGQg
+aXQgbm90IG1ha2Ugc2Vuc2UgdG8gcHVudCB0aGlzIG92ZXIgdG8gdGhlIHNhbWUgbWVjaGFuaXNt
+IGFzIGZvciAKPj4gcGVyaWNmZywgc3VjaCB0aGF0IGl0IHNpbXBsaWZpZXMgZG93biB0byBzb21l
+dGhpbmcgbGlrZToKPj4KPj4gwqDCoMKgwqDCoGlmIChJU19FUlIoaW5mcmFjZmcpICYmIHBsYXRf
+ZGF0YS0+aW5mcmFjZmcpIHsKPj4gwqDCoMKgwqDCoMKgwqDCoCBpbmZyYWNmZyA9IAo+PiBzeXNj
+b25fcmVnbWFwX2xvb2t1cF9ieV9jb21wYXRpYmxlKHBsYXRfZGF0YS0+aW5mcmFjZmcpOwo+PiDC
+oMKgwqDCoMKgwqDCoMKgIC4uLgo+PiDCoMKgwqDCoMKgfQo+Pgo+PiA/Cj4+Cj4+IFRCSCBpZiB3
+ZSdyZSBzdGlsbCBnb2luZyB0byBoYXZlIGEgbG9hZCBvZiBwZXItU29DIGRhdGEgaW4gdGhlIGRy
+aXZlciAKPj4gYW55d2F5IHRoZW4gSSBkb24ndCBzZWUgdGhhdCB3ZSByZWFsbHkgZ2FpbiBtdWNo
+IGJ5IGRlbGVnYXRpbmcgb25lIAo+PiBhc3BlY3Qgb2YgaXQgdG8gRFQsIGJ1dCBtZWguIEkgd291
+bGQgbm90ZSB0aGF0IHdpdGggdGhlIHBoYW5kbGUgCj4+IGFwcHJvYWNoLCB5b3Ugc3RpbGwgbmVl
+ZCBzb21lICpvdGhlciogZmxhZyBpbiB0aGUgZHJpdmVyIHRvIGtub3cgCj4+IHdoZXRoZXIgYSBw
+aGFuZGxlIGlzIGV4cGVjdGVkIHRvIGJlIHByZXNlbnQgb3Igbm90LCB3aGVyZWFzIGEgTlVMTCB2
+cy4gCj4+IG5vbi1OVUxMIHN0cmluZyBpcyBhdCBsZWFzdCBuZWF0bHkgc2VsZi1kZXNjcmliaW5n
+Lgo+Pgo+IAo+IFRoYXQgd291bGQgYmUgcG9zc2libGUgYnV0LCBhcyBZb25nIGFsc28gcG9pbnRl
+ZCBvdXQsIHdlIHNob3VsZCB0cnkgdG8gCj4gcmVkdWNlIHRoZQo+IHBlci1Tb0MgZGF0YSBpbiB0
+aGUgZHJpdmVyIGJ5IGNvbW1vbml6aW5nIGFzIG11Y2ggYXMgcG9zc2libGUsIGJlY2F1c2UgCj4g
+dGhpcyBkcml2ZXIKPiBzdXBwb3J0cyBhIHZlcnkgbG9uZyBsaXN0IG9mIFNvQ3MgKGV2ZW4gdGhv
+dWdoIHRoZXkncmUgbm90IGFsbCAKPiB1cHN0cmVhbWVkIHlldCksCj4gYW5kIHRoZSBsaXN0IGlz
+IGdvaW5nIHRvIGdyb3cgZXZlbiBtb3JlIHdpdGggdGltZTogdGhpcyBpcyBhbHNvIHdoeSBJIAo+
+IGhhdmUgY2hhbmdlZAo+IHRoZSBNVDgxOTUgcGVyaWNmZyByZWdtYXAgbG9va3VwIHdpdGggYSBw
+aGFuZGxlIGxpa2UgSSd2ZSBkb25lIGZvciBpbmZyYS4KClRoYXQncyBmYWlyIGVub3VnaCwgYnV0
+IGl0J3Mgbm90IHdoYXQgdGhlIGNvbW1pdCBtZXNzYWdlIHNheXMuIFRoZSAibG9uZyAKbGlzdCBv
+ZiBjb21wYXRpYmxlIHN0cmluZ3MiIGNvbXBsYWludCBjb3VsZCBiZSBhZGRyZXNzZWQgYXQgZmFj
+ZSB2YWx1ZSAKYnkgcmVmYWN0b3Jpbmcgd2l0aG91dCBjaGFuZ2luZyB0aGUgRFQgYmluZGluZyBh
+dCBhbGwuCgpIb3dldmVyLCBJIGRpZG4ndCB0aGluayBJJ2QgaGF2ZSB0byBwb2ludCBvdXQgd2h5
+IHRoYXQgYXJndW1lbnQgZG9lc24ndCAKYXBwbHkgdG8gZXhpc3RpbmcgU29DcyB3aGljaCB3ZSBo
+YXZlIHRvIHN1cHBvcnQgd2l0aCB0aGUgb3JpZ2luYWwgCmJpbmRpbmcgdG9vOyB0YWtlIGFub3Ro
+ZXIgbG9vayBhdCB0aGUgc3dpdGNoIHN0YXRlbWVudCBhYm92ZSBhbmQgaGF2ZSBhIAp0aGluay4u
+LgoKSWYgd2UgaGF2ZSB0byBtYWludGFpbiBpbmZyYWNmZyBjb21wYXRpYmxlIGRhdGEgKnNvbWV3
+aGVyZSogaW4gdGhlIApkcml2ZXIsIHdoaWNoIHdlIGRvLCB0aGVuIGl0IHNlZW1zIG1vcmUgbG9n
+aWNhbCB0byBrZWVwIGl0IHdpdGggdGhlIHJlc3QgCm9mIHRoZSBkYXRhIHJhdGhlciB0aGFuIHNj
+YXR0ZXJlZCB0aHJvdWdoIHRoZSBjb2RlLCB0aGF0J3MgdGhlIG1haW4gCnBvaW50IEkgd2FudGVk
+IHRvIG1ha2UgaGVyZS4KCj4gVGhlcmUgd291bGQgYWxzbyBiZSBhbm90aGVyIHdheSwgd2hpY2gg
+d291bGQgaW1wbHkgYWRkaW5nIGEgZ2VuZXJpYyAKPiBjb21wYXRpYmxlCj4gIm1lZGlhdGVrLGlu
+ZnJhY2ZnIiB0byB0aGUgaW5mcmEgc3lzY29uIG5vZGUsIGJ1dCBJIHJlYWxseSBkb24ndCBsaWtl
+IAo+IHRoYXQgZm9yCj4gbW9yZSB0aGFuIG9uZSByZWFzb24sIG9uZSBvZiB3aGljaCBpcyB0aGF0
+IHRoaXMgcG9zZXMgYW4gaXNzdWUsIGZvciAKPiB3aGljaCBpdCdzCj4gbm90IGd1YXJhbnRlZWQg
+dGhhdCB0aGUgcmVnaXN0ZXJzIGFyZSBpbiBpbmZyYWNmZyBhbmQgbm90IGluZnJhY2ZnX2FvIChl
+dmVuCj4gdGhvdWdoIHRoZSBvZmZzZXRzIGFyZSB0aGUgc2FtZSksIHNvIHRoZW4gd2Ugd291bGQg
+YmUgYmFjayB0byBncm91bmQgemVyby4KCk5vLCB3ZSBzdGlsbCBoYXZlIHRvIHN1cHBvcnQgdGhl
+IGV4aXN0aW5nIGJpbmRpbmcgaW4gdGhlIGNvbnRleHQgb2YgdGhlIApleGlzdGluZyBiaW5kaW5n
+LiBUaGVyZSAqYXJlKiBzb21lIHJlYXNvbmFibGUgYXJndW1lbnRzIGZvciBtb3ZpbmcgCmZ1dHVy
+ZSBTb0NzIHRvIHRoZSBwaGFuZGxlIGJpbmRpbmcsIHRoZXkganVzdCBoYXZlbid0IGJlZW4gcHJl
+c2VudGVkIGluIAp0aGVzZSBwYXRjaGVzIDspCgpUaGFua3MsClJvYmluLgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9t
+bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRp
+b24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
