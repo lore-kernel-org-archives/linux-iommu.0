@@ -1,89 +1,98 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9498DC433F5
-	for <iommu@archiver.kernel.org>; Wed, 18 May 2022 18:39:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 90CD7C433EF
+	for <iommu@archiver.kernel.org>; Wed, 18 May 2022 18:42:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3FBC383E9B;
-	Wed, 18 May 2022 18:39:28 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3F1E6409E5;
+	Wed, 18 May 2022 18:42:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zXv9adUSkAcJ; Wed, 18 May 2022 18:39:27 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id YZcJU4URtoML; Wed, 18 May 2022 18:42:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 0F99883EBE;
-	Wed, 18 May 2022 18:39:27 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 005BB41C3D;
+	Wed, 18 May 2022 18:42:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BE82BC0032;
-	Wed, 18 May 2022 18:39:26 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7370EC002D
- for <iommu@lists.linux-foundation.org>; Wed, 18 May 2022 18:39:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9E8DFC0032;
+	Wed, 18 May 2022 18:42:14 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 83527C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 18 May 2022 18:42:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 6802240374
- for <iommu@lists.linux-foundation.org>; Wed, 18 May 2022 18:39:26 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 7192C61255
+ for <iommu@lists.linux-foundation.org>; Wed, 18 May 2022 18:42:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Jpq9SJqTg4c0 for <iommu@lists.linux-foundation.org>;
- Wed, 18 May 2022 18:39:25 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=hpe.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id QZRoVC-P7Idp for <iommu@lists.linux-foundation.org>;
+ Wed, 18 May 2022 18:42:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 967DB404ED
- for <iommu@lists.linux-foundation.org>; Wed, 18 May 2022 18:39:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1652899165; x=1684435165;
- h=date:from:to:cc:subject:message-id:in-reply-to:
- references:mime-version:content-transfer-encoding;
- bh=M/oKhYTcnY4myTpFoegzGHopmAVVEEzgyLwyapl7tQQ=;
- b=CQSOgYvUw1yDpcJEwwu80X6KSW4saCQnUM/lRNCINrNXR86cuSUqbsqw
- 5IyCi4wJ94BK+C0r/Cam1jx12rafFVku9WSDKy6/C/O2nP7zHBnzz/YEK
- YnB5C4lj9KEIM67U3urr6cZN0dNUnO7f9mZiD0oX2zZ9JnThwUZj35Asa
- umJUe/TEbKlWvX9pwoFOBwRIJyscfb2QqA2ElkU//dK96MCZV/Bk7XMVQ
- /bYc3f23jArruiZrZDR8X09+V0rbxa96/KFGAHn2WyiGz+PR+061SbTb1
- 7kMt32zrnYhFy4yGais4hb0wtuRyAXzEptS9HENhcsTY4FILzHPVRAjKs w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="332456934"
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; d="scan'208";a="332456934"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 18 May 2022 11:38:14 -0700
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; d="scan'208";a="569686074"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
- by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 18 May 2022 11:38:14 -0700
-Date: Wed, 18 May 2022 11:42:04 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v3 1/4] iommu/vt-d: Implement domain ops for
- attach_dev_pasid
-Message-ID: <20220518114204.4d251b41@jacob-builder>
-In-Reply-To: <20220511182908.GK49344@nvidia.com>
-References: <20220510210704.3539577-1-jacob.jun.pan@linux.intel.com>
- <20220510210704.3539577-2-jacob.jun.pan@linux.intel.com>
- <20220510232121.GP49344@nvidia.com>
- <20220510172309.3c4e7512@jacob-builder>
- <20220511115427.GU49344@nvidia.com>
- <20220511082958.79d5d8ee@jacob-builder>
- <20220511161237.GB49344@nvidia.com>
- <20220511100216.7615e288@jacob-builder>
- <20220511170025.GF49344@nvidia.com>
- <20220511102521.6b7c578c@jacob-builder>
- <20220511182908.GK49344@nvidia.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com
+ [148.163.147.86])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 87C2C61254
+ for <iommu@lists.linux-foundation.org>; Wed, 18 May 2022 18:42:12 +0000 (UTC)
+Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
+ by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IHeIYV031831;
+ Wed, 18 May 2022 18:41:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com;
+ h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pps0720; bh=JkdAJp6/nFA0fMkh73Q6AHAhW3P+czhEF0OIA1t5HCg=;
+ b=Qg2AhnHrd3KBRi0DM+Bb3C5HbTo+NMkyfHHtmg++jWG9ug+/mnlUut0DeIcgWTWtI//2
+ HI6OjGG/DUrRPlT32fATsiDynZSEP+I3w0v6l2juXvPIUAPpeADtplpUS+ptlXAG3tFI
+ d+t4fePOEIgxlDSGArqM8HgF2nYdi2nUvcC2nqJrCqM0ypC9/4655ZTL2f9YPksE/jl9
+ Pk3xAGjSmX8pnhrRgS8KClB67yDFV7hx7UFCHMQdsGNdGQJ/6nj1PWHFv/lgNkyS2s5D
+ Y/H7skS6+Wn3n5hPvTuDy+i9B1Wm4vBh0lEx/9u2lMfxgj8ZWjloLXNVjOBm7tCsCmxE fQ== 
+Received: from g4t3427.houston.hpe.com (g4t3427.houston.hpe.com
+ [15.241.140.73])
+ by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3g52ynjr3w-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Wed, 18 May 2022 18:41:29 +0000
+Received: from g4t3433.houston.hpecorp.net (g4t3433.houston.hpecorp.net
+ [16.208.49.245])
+ by g4t3427.houston.hpe.com (Postfix) with ESMTP id A42CD57;
+ Wed, 18 May 2022 18:41:28 +0000 (UTC)
+Received: from swahl-home.5wahls.com (unknown [10.207.216.251])
+ by g4t3433.houston.hpecorp.net (Postfix) with ESMTP id CAE565B;
+ Wed, 18 May 2022 18:41:25 +0000 (UTC)
+Date: Wed, 18 May 2022 13:41:25 -0500
+From: Steve Wahl <steve.wahl@hpe.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH 0/7] iommu/vt-d: Make intel-iommu.h private
+Message-ID: <YoU91f2ncSkJP27T@swahl-home.5wahls.com>
+References: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-Cc: vkoul@kernel.org, "Tian, Kevin" <kevin.tian@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- will@kernel.org, David Woodhouse <dwmw2@infradead.org>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- dmaengine@vger.kernel.org, robin.murphy@arm.com,
- Jean-Philippe Brucker <jean-philippe@linaro.com>
+Content-Disposition: inline
+In-Reply-To: <20220514014322.2927339-1-baolu.lu@linux.intel.com>
+X-Proofpoint-GUID: eeDz9k6Fyio9EZLTXEQmcX-SiAr354e5
+X-Proofpoint-ORIG-GUID: eeDz9k6Fyio9EZLTXEQmcX-SiAr354e5
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-18_06,2022-05-17_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 phishscore=0
+ bulkscore=0 mlxlogscore=648 lowpriorityscore=0 spamscore=0 adultscore=0
+ mlxscore=0 impostorscore=0 clxscore=1011 suspectscore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2205180108
+Cc: Steve Wahl <steve.wahl@hpe.com>, David Airlie <airlied@linux.ie>,
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+ Paolo Bonzini <pbonzini@redhat.com>, Will Deacon <will@kernel.org>,
+ Christoph Hellwig <hch@lst.de>, Ashok Raj <ashok.raj@intel.com>,
+ Ingo Molnar <mingo@redhat.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Kevin Tian <kevin.tian@intel.com>, Jani Nikula <jani.nikula@linux.intel.com>,
+ Ning Sun <ning.sun@intel.com>, Dave Hansen <dave.hansen@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>, Thomas Gleixner <tglx@linutronix.de>,
+ Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
+ Borislav Petkov <bp@alien8.de>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,63 +110,26 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jason,
-
-On Wed, 11 May 2022 15:29:08 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Wed, May 11, 2022 at 10:25:21AM -0700, Jacob Pan wrote:
-> > Hi Jason,
-> > 
-> > On Wed, 11 May 2022 14:00:25 -0300, Jason Gunthorpe <jgg@nvidia.com>
-> > wrote: 
-> > > On Wed, May 11, 2022 at 10:02:16AM -0700, Jacob Pan wrote:  
-> > > > > > If not global, perhaps we could have a list of pasids (e.g.
-> > > > > > xarray) attached to the device_domain_info. The TLB flush logic
-> > > > > > would just go through the list w/o caring what the PASIDs are
-> > > > > > for. Does it make sense to you?      
-> > > > > 
-> > > > > Sort of, but we shouldn't duplicate xarrays - the group already
-> > > > > has this xarray - need to find some way to allow access to it
-> > > > > from the driver.
-> > > > >     
-> > > > I am not following,  here are the PASIDs for devTLB flush which is
-> > > > per device. Why group?    
-> > > 
-> > > Because group is where the core code stores it.  
-> > I see, with singleton group. I guess I can let dma-iommu code call
-> > 
-> > iommu_attach_dma_pasid {
-> > 	iommu_attach_device_pasid();
-> > Then the PASID will be stored in the group xa.  
+On Sat, May 14, 2022 at 09:43:15AM +0800, Lu Baolu wrote:
+> Hi folks,
 > 
-> Yes, again, the dma-iommu should not be any different from the normal
-> unmanaged path. At this point there is no longer any difference, we
-> should not invent new ones.
+> The include/linux/intel-iommu.h should be private to the Intel IOMMU
+> driver. Other drivers or components should interact with the IOMMU
+> drivers through the kAPIs provided by the iommu core.
 > 
-> > The flush code can retrieve PASIDs from device_domain_info.device ->
-> > group -> pasid_array.  Thanks for pointing it out, I missed the new
-> > pasid_array.  
+> This series cleanups all includes of intel-iommu.h outside of the Intel
+> IOMMU driver and move this header from include/linux to
+> drivers/iommu/intel/.
 > 
-> Yes.. It seems inefficient to iterate over that xarray multiple times
-> on the flush hot path, but maybe there is little choice. Try to use
-> use the xas iterators under the xa_lock spinlock..
-> 
-xas_for_each takes a max range, here we don't really have one. So I posted
-v4 w/o using the xas advanced API. Please let me know if you have
-suggestions.
-xa_for_each takes RCU read lock, it should be fast for tlb flush, right? The
-worst case maybe over flush when we have stale data but should be very rare.
+> No functional changes intended. Please help to review and suggest.
 
-> The challenge will be accessing the group xa in the first place, but
-> maybe the core code can gain a function call to return a pointer to
-> that XA or something..
-> 
-I added a helper function to find the matching DMA API PASID in v4.
+I went through and examined the changes as well.  These changes make the
+robots complaint against my patch go away, which is great by me!
 
+Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
 
-Thanks,
-
-Jacob
+-- 
+Steve Wahl, Hewlett Packard Enterprise
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
