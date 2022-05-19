@@ -4,178 +4,63 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EB1BCC433F5
-	for <iommu@archiver.kernel.org>; Thu, 19 May 2022 09:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D1F60C433EF
+	for <iommu@archiver.kernel.org>; Thu, 19 May 2022 10:20:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 768D041C21;
-	Thu, 19 May 2022 09:45:38 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 626AB41C2B;
+	Thu, 19 May 2022 10:20:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IeVoBFju9d3D; Thu, 19 May 2022 09:45:37 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 99BD541C1D;
-	Thu, 19 May 2022 09:45:36 +0000 (UTC)
+	with ESMTP id 62EYB54F_8Bd; Thu, 19 May 2022 10:20:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id ED99B41C21;
+	Thu, 19 May 2022 10:20:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5BC87C0032;
-	Thu, 19 May 2022 09:45:36 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 75AFFC002D
- for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 09:45:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B9B13C0039;
+	Thu, 19 May 2022 10:20:51 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3105BC002D
+ for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 10:20:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 6B4B4408A5
- for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 09:45:35 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 08BDD41C2B
+ for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 10:20:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id OQC-qqGr3cOc for <iommu@lists.linux-foundation.org>;
- Thu, 19 May 2022 09:45:32 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id CQ0lRwCvAs7u for <iommu@lists.linux-foundation.org>;
+ Thu, 19 May 2022 10:20:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 8475940600
- for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 09:45:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1652953532; x=1684489532;
- h=message-id:date:subject:to:cc:references:from:
- in-reply-to:content-transfer-encoding:mime-version;
- bh=3dI2f+rpEXuj7y5h2irpetutm2yBwprvAmBlCymcPpE=;
- b=j4RXJpJ8FuHe42GLcCqVZrw+Zkfy0DDrzZhfxWlqfRsP6kOs9bHQd1Bv
- p+3y4ESOjZUe6RovB9ObS+fJF0TBOD6YyaYLQ6JAPIVV273RNkSE4Elyf
- +7499uGgt3oR1qV33YgWmx6q6aGwcnmKnAMKdWPASE+xqNlFoMlyLv1Yo
- MNUnzznLo7tteQsbimJFprQenNotlvUkn/0CakCejVL7/mNOVWGjuInsW
- JxjXIkmoJQsTPH9+TatWJMIMRD9c2Hgch9Q2SThWtLAaZa/7AKApEX0Ct
- QTZH/n3myJFA5oqY4kcuamN/n58PPoQLdpq+nPiuFPIgC08WVf7FPirsU g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="272079953"
-X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; d="scan'208";a="272079953"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 19 May 2022 02:45:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; d="scan'208";a="575524259"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
- by fmsmga007.fm.intel.com with ESMTP; 19 May 2022 02:45:29 -0700
-Received: from orsmsx606.amr.corp.intel.com (10.22.229.19) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id D75BA41C21
+ for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 10:20:46 +0000 (UTC)
+Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.207])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L3m4z1Chfz6H8Vm;
+ Thu, 19 May 2022 18:17:39 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 19 May 2022 02:45:29 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Thu, 19 May 2022 02:45:29 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.106)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Thu, 19 May 2022 02:45:28 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iC5Z5XQRmeMI/uZ9bDCMflCg265Ycore3N1f0J3nMPYKu4yq0Mm62vV2VeWYyrnUngwODqvisR2URHE1n0aZoKsOaM8s+JEpkTXASJpmVJuUxhXcuNuxc1VgoPFlf15LFOuZcvZutIXnEY4w8v9dxahu3m5V7UVDV9+OupZ/sifw13tHgK4tgvP69yucyWPa+ZX9dDGtDB/Wd+gFAVn9A3UVOi8+WCO6ky1fDO7pnj5Qbqu/orYNpJTnmxADuqcRE5TAadX/pcZjKf2PnPL/KLPpoy1tmviDhkyklttYLQikuqJttLlqqO2AkVV04AqtTX6n6hb03HTFmTPpAH9x+g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XiYiHh7Clu6W4m54Qw/yqQoW/SEMU6iTlS86Fswzokg=;
- b=T7FqnGGkzu8jOfEMrVSP8MctmFNiKP5fVZvBVFyYWEAGLTGsxA8NMIcJsdlb6zf6rO4vEkb5U+FL9q2K+OPo1oKBwKtjXatig9HN39/O3GpJqij9cKp5IqZxHpzzhHovLr3m7ADkBZ2NtxfUJkhAO4qyY466XcCCChoifQOsoixkzpFQLQr57qi0EvWBssrqQ+MQvWiFEMUsMmQTgd30Y1g/MRYJwJiLc58ZVcAmPZNiBd+GpJ1NinYFXoRnIfwjx23Jc6Eq8k+3Dzqq9ArTFEKY2J8/6ost9QckVUD8TnHF7kTQdgJnPN9xe/FFdF3rR48eEwFl0TpknWiIfYnTBA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB5658.namprd11.prod.outlook.com (2603:10b6:510:e2::23)
- by SN6PR11MB2541.namprd11.prod.outlook.com (2603:10b6:805:57::28)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.15; Thu, 19 May
- 2022 09:45:21 +0000
-Received: from PH0PR11MB5658.namprd11.prod.outlook.com
- ([fe80::21cf:c26f:8d40:6b5f]) by PH0PR11MB5658.namprd11.prod.outlook.com
- ([fe80::21cf:c26f:8d40:6b5f%4]) with mapi id 15.20.5273.017; Thu, 19 May 2022
- 09:45:21 +0000
-Message-ID: <5aab6dbf-df12-34f1-4135-857174fbe083@intel.com>
-Date: Thu, 19 May 2022 17:45:06 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.7.0
-Subject: Re: [PATCH RFC 10/12] iommufd: Add kAPI toward external drivers
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <10-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <10-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
-X-ClientProxiedBy: HK2PR02CA0151.apcprd02.prod.outlook.com
- (2603:1096:201:1f::11) To PH0PR11MB5658.namprd11.prod.outlook.com
- (2603:10b6:510:e2::23)
+ 15.1.2375.24; Thu, 19 May 2022 12:20:42 +0200
+Received: from [10.47.92.25] (10.47.92.25) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 19 May
+ 2022 11:20:42 +0100
+Message-ID: <7ced25fb-9048-3df8-a62c-bfcb29176579@huawei.com>
+Date: Thu, 19 May 2022 11:20:40 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 324f36f4-592c-4ae4-d930-08da397c4a68
-X-MS-TrafficTypeDiagnostic: SN6PR11MB2541:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-Microsoft-Antispam-PRVS: <SN6PR11MB25416A67D390856F03AE7F82C3D09@SN6PR11MB2541.namprd11.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DcZbouiD6ScUdZrpjFJm93mHqnseZ2KavstOZ2bIwRkb5Mk0bmh6v8S5j7YR68TW5UJbooiO8JY+UZA8Yv2Nb0XGLJwRAW6xFNUeWDvmDUJP83fH+OitLtWm4CqtCRiOU0lkHHgfp0hU55IWvYzWL6KGFWrFiAOrX4R86PcKC+f/V5R8Z5nt1qVBmhpTcBG9r45C7QG6YOavVngnOOhFiRtBveQeWLVcy+v/jMY3vcdZd+x3LupbOcmjQCuc+sWeVjQRaeXmto1jOh3zUblxAcmu1/5X5js8CmUKJURuWqfLhggHmATJZFOpA9zPeHNnhbiq8fEBiqImt+KW+boB2j9o1JLr7CpQPP+GncIUG6eRUtvrKmVIq3KkwV3V/H6N1+UAqhNs+cUxV57ZAhQujEneAT5xM/BAEqbAoKHkwwtVgpV5LGMliNkZl6ZQSbE7iJY28xJGfmD1uLd3TPpbIQorpzv0dgsibNSOxPf3LSv0KSdMQaInoVCve+MYSqBEgsfcP+k/mLObcwYmLZ4yPc+E5z10PpzWlXoHMnRk3OzQQertwnVA9riMc/fNULJby3QtT1ZCd+nuYKfZkPJ5Hd8/wtwsGvtGpxd7Z0wE1m5e2hpRtOQhRiUhMhtiAX4EK2hQm6r9TuJN2HPz+kwa1cMRWAl1LmLMkD8SRYlRv85EL+nr2G1Oudlnir/kQgXYXUVyiCaLA3Q9QZGrHf7PbU2kp2MZsF/WGyn/lT/xupM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:PH0PR11MB5658.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(366004)(6486002)(2906002)(6666004)(508600001)(8676002)(4326008)(31696002)(54906003)(6916009)(316002)(86362001)(66946007)(6506007)(82960400001)(2616005)(31686004)(83380400001)(7416002)(5660300002)(8936002)(66556008)(36756003)(53546011)(66476007)(186003)(26005)(38100700002)(6512007)(43740500002)(45980500001);
- DIR:OUT; SFP:1102; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?R1FURnpScTV4aFZUZmhlaTdFZytOSnU5YnpXTEk4MktXUjJWTWlPa0dIMFlS?=
- =?utf-8?B?TlNuL201a3hwK1lFVzRiOTVESC9HZDd2V2ZHeUtpMUs1dFZLcEJGSGVqeU1C?=
- =?utf-8?B?OU9LemREMlpIQ2dBdkl5a21yb3g0QS81RFVwblhIVTJMZGNPUDc3Y2VkZ0F5?=
- =?utf-8?B?VXJ4djUxbW11cTlCL2h0UThHUlNmbzNIZVUwVno3enJ2SXMySHR5bDh4L2ww?=
- =?utf-8?B?M3hJTTROY2xEeGllcVM4Mldid083dlVXZG5uWEl2dTRjUjRPdksxNXdybU5x?=
- =?utf-8?B?dGlPY3Q3RlF5Znpad09OYU1obzRjN1U3QTlDa3gyZVRMbDUyVzBMcWtsZkJG?=
- =?utf-8?B?YVJoQmZuTGhnVGhWVkhCT2VZVkJRcVJmM2lNdjNDaHNLeW1OWnRKK1d3eURX?=
- =?utf-8?B?bzltQjdLS0crYkY1R1VXQlFXZXNUOVl1aWFVdWNsMWtXZzdsR3ZlSEpmd0Zo?=
- =?utf-8?B?M2ptRmZNQjNOWjlOL3JmZmVBZ0xNNGF6dmwvSjZ6Q2llNnBwcU50Ymh2ZXQw?=
- =?utf-8?B?ZVYwQkJicWMxbFE2dzFGL3M2R2ptWHFaWFNzcVN4NytXNkJkK0tIa3FUa1Zk?=
- =?utf-8?B?NE1LQnlQbThPdE9UUXBTWExuS0tuUkRrVlJvbXVhYTRjck9tdGl2SU1WSjVT?=
- =?utf-8?B?amlqTlhKY2lLanByb3oxNFhmQ2Zrd3RqU1NqcGh3MUI1T1Y1QnNUYmE4RFFX?=
- =?utf-8?B?ZklIc08yYzF6NGRTYjBNQVJQN0s3Z1puYjJEYVE2bG1vWW9aM1dBR2t4ZjJ0?=
- =?utf-8?B?eVFJQ1RjL3JUUXpTeXp0R294cG9IeW1vMVdOdVhMOFNIWUVPVVJ0WXIvOExG?=
- =?utf-8?B?S1JTaDRESGtycXNCUjBYbHJhY3dZbzUwU2ZibFZlbE45YVhDWStTd0FnK2po?=
- =?utf-8?B?RDdRWjlWS1kwdjFHelp5SDNrTFhYbG1hbC9TK095WUJTN3M0RHBzeGh3dXB5?=
- =?utf-8?B?b2gwVVhrOUVqc0xaMjhjNFQvU3o4QTAwVmQ0dTRZTHpnWjE4dENITUJpSDVj?=
- =?utf-8?B?Y0VTKzk5N1A0T0x4NzZGWWg0RkpLNVEwc1lVR3M0VHdQL1FHNGljVUw1Rmo2?=
- =?utf-8?B?SUtmRXBpY2U4MFhaWkQ1aWZuSlkzTmhWTlJtck8rbDM0ajNtVHlZTFZ2dkJv?=
- =?utf-8?B?R2ZJMkwybVc5NTZ6R25kc1F6R0hTRklhR2t4Smhid1V2dzBOSDAzVlhIakRw?=
- =?utf-8?B?L0Q4WFVOZ1RNSlo1VHhETEFqQ1NDQ3RVTFRNK1UzbWcveHgyc0xNcmtMTjcw?=
- =?utf-8?B?bWR2MDdIZ05xdnpINmp1ZStHZytJMy83b21tOUpJUkRmeVNSNFRlVmRvZWR6?=
- =?utf-8?B?cTVYT1h3akdQdFd6dDBWdFZ3QTg3YjJ6M3FVYkpnQXloeC9tOVkzTzhDc21i?=
- =?utf-8?B?OHJLU0NkZmptT3JLVmY3b2QvakJmNE9KQkNVbXJOcUV0OHVxVzZMQXl0ZUZW?=
- =?utf-8?B?Q3FVenRQMUJ2MVdOOVBiMmZPZzQ0dDJFcFl4Zk9ZM0tMMlM4VFRxQ0Rnd0or?=
- =?utf-8?B?RklvVXVLMFhTLzJNYzNvTUhpNTNXbkszZ3VHUEZYVW5SdzF0dzIrMHREOE9s?=
- =?utf-8?B?bkMxRWJBVm1mVFJRK1FGS2FXMHc5M1g1SjZ5SThLUTUrNUJWODhiQ0g5Z3Fy?=
- =?utf-8?B?aG40NzZPYnppd3N2UGVSUUltVENhZitwZ1c0NExMU1pENlcxaTlrOUxpZUNK?=
- =?utf-8?B?c1FtRE9YSkFZYlFVUGxPQnlwS2Zpb2VDcFpLQklJK1E0MGNiaHMxN2wvbHhP?=
- =?utf-8?B?SzhZakpYMU5jWWdJaFpPSmlwWVVtZzBqeEw4WFhIeEdTRExKS3pYUU5adWZn?=
- =?utf-8?B?RERadG9HWFU4SkZIRGx5aUF2eTV3UGZsSnZvUEN3eExJc2F2QjBGWFB4N3ZU?=
- =?utf-8?B?Q25uYUU4N1U0OElDOFJQLzdVQVZ0VHY3T3o0UDc3TzZ0T083amNseThZZ1dU?=
- =?utf-8?B?REw1anlGRjMySlhMOXFhcnU1Vm1tK3MxbWRlQWpmQllxckZOaHR0SUpuT3Z4?=
- =?utf-8?B?bkZrUXl6Si9qWWo5eGJpWkcrVHRzZ0FjeVZpYTQ1YjcxWUJPU1F6dkMyOG9C?=
- =?utf-8?B?THZvTlY3N1BidDJzdWI4QTRVYlk1UUcvODJLMnh3QWJJOVFiZnlOMnZpbkFW?=
- =?utf-8?B?UlZJcEU2cmFTb1BFQXB2ZThMcHd0TzdCWXhTT2lMeFBWZk1oRWM1VnJTV0RN?=
- =?utf-8?B?eXlkSUl1eDkrRWJlZExXa0lkejVuNGRDV0dBelI2N21HRWcrdWZ4ai9OVVpR?=
- =?utf-8?B?Vy9mSDBsd3pXNG9HRXBFMmtsSUJUNy94YnE1OEd2czdNMktROGNldkdvUDZ5?=
- =?utf-8?B?ektlRTR6cjNVQnVMQnZ4VE9FZzgraU45enVrVW1zSVo4OUdpbTdRQT09?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 324f36f4-592c-4ae4-d930-08da397c4a68
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5658.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2022 09:45:21.5022 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NoXctuJJVvJ4p1NTxiYGDeU96siu1ZPK+RMyJVPB1COrL0t2uTtRBzjjL5zKKnMxrcl9xV0eWnnV46qN3MsNaQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2541
-X-OriginatorOrg: intel.com
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
- "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
- iommu@lists.linux-foundation.org, Daniel Jordan <daniel.m.jordan@oracle.com>,
- Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Joao Martins <joao.m.martins@oracle.com>,
- David Gibson <david@gibson.dropbear.id.au>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] iommu/dma: Add config for PCI SAC address trick
+To: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>
+References: <ef8abf1c6b0839e39b272738fc7bc4d9699c8bcb.1652895419.git.robin.murphy@arm.com>
+In-Reply-To: <ef8abf1c6b0839e39b272738fc7bc4d9699c8bcb.1652895419.git.robin.murphy@arm.com>
+X-Originating-IP: [10.47.92.25]
+X-ClientProxiedBy: lhreml728-chm.china.huawei.com (10.201.108.79) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: iommu@lists.linux-foundation.org, hch@lst.de,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -188,220 +73,92 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: John Garry via iommu <iommu@lists.linux-foundation.org>
+Reply-To: John Garry <john.garry@huawei.com>
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jason,
+On 18/05/2022 18:36, Robin Murphy wrote:
+> For devices stuck behind a conventional PCI bus, saving extra cycles at
+> 33MHz is probably fairly significant. However since native PCI Express
+> is now the norm for high-performance devices, the optimisation to always
+> prefer 32-bit addresses for the sake of avoiding DAC is starting to look
+> rather anachronistic. Technically 32-bit addresses do have shorter TLPs
+> on PCIe, but unless the device is saturating its link bandwidth with
+> small transfers it seems unlikely that the difference is appreciable.
+> 
+> What definitely is appreciable, however, is that the IOVA allocator
+> doesn't behave all that well once the 32-bit space starts getting full.
+> As DMA working sets get bigger, this optimisation increasingly backfires
+> and adds considerable overhead to the dma_map path for use-cases like
+> high-bandwidth networking. We've increasingly bandaged the allocator
+> in attempts to mitigate this, but it remains fundamentally at odds with
+> other valid requirements to try as hard as possible to satisfy a request
+> within the given limit; what we really need is to just avoid this odd
+> notion of a speculative allocation when it isn't beneficial anyway.
+> 
+> Unfortunately that's where things get awkward... Having been present on
+> x86 for 15 years or so now, it turns out there are systems which fail to
+> properly define the upper limit of usable IOVA space for certain devices
+> and this trick was the only thing letting them work OK. I had a similar
+> ulterior motive for a couple of early arm64 systems when originally
+> adding it to iommu-dma, but those really should now be fixed with proper
+> firmware bindings, and other arm64 users really need it out of the way,
+> so let's just leave it default-on for x86.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>   drivers/iommu/Kconfig     | 24 ++++++++++++++++++++++++
+>   drivers/iommu/dma-iommu.c |  2 +-
 
-On 2022/3/19 01:27, Jason Gunthorpe wrote:
+It might be worth printing this default value always and not just for 
+when it is set from commandline, like what we do for default domain type 
+and IOTLB invalidation policy
 
-> +/**
-> + * iommufd_device_attach - Connect a device to an iommu_domain
-> + * @idev: device to attach
-> + * @pt_id: Input a IOMMUFD_OBJ_IOAS, or IOMMUFD_OBJ_HW_PAGETABLE
-> + *         Output the IOMMUFD_OBJ_HW_PAGETABLE ID
-> + * @flags: Optional flags
-> + *
-> + * This connects the device to an iommu_domain, either automatically or manually
-> + * selected. Once this completes the device could do DMA.
-> + *
-> + * The caller should return the resulting pt_id back to userspace.
-> + * This function is undone by calling iommufd_device_detach().
-> + */
-> +int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id,
-> +			  unsigned int flags)
-> +{
-> +	struct iommufd_hw_pagetable *hwpt;
-> +	int rc;
-> +
-> +	refcount_inc(&idev->obj.users);
-> +
-> +	hwpt = iommufd_hw_pagetable_from_id(idev->ictx, *pt_id, idev->dev);
-> +	if (IS_ERR(hwpt)) {
-> +		rc = PTR_ERR(hwpt);
-> +		goto out_users;
-> +	}
-> +
-> +	mutex_lock(&hwpt->devices_lock);
-> +	/* FIXME: Use a device-centric iommu api. For now check if the
-> +	 * hw_pagetable already has a device of the same group joined to tell if
-> +	 * we are the first and need to attach the group. */
-> +	if (!iommufd_hw_pagetable_has_group(hwpt, idev->group)) {
-> +		phys_addr_t sw_msi_start = 0;
-> +
-> +		rc = iommu_attach_group(hwpt->domain, idev->group);
-> +		if (rc)
-> +			goto out_unlock;
-> +
-> +		/*
-> +		 * hwpt is now the exclusive owner of the group so this is the
-> +		 * first time enforce is called for this group.
-> +		 */
-> +		rc = iopt_table_enforce_group_resv_regions(
-> +			&hwpt->ioas->iopt, idev->group, &sw_msi_start);
-> +		if (rc)
-> +			goto out_detach;
-> +		rc = iommufd_device_setup_msi(idev, hwpt, sw_msi_start, flags);
-> +		if (rc)
-> +			goto out_iova;
-> +	}
-> +
-> +	idev->hwpt = hwpt;
-> +	if (list_empty(&hwpt->devices)) {
-> +		rc = iopt_table_add_domain(&hwpt->ioas->iopt, hwpt->domain);
-> +		if (rc)
-> +			goto out_iova;
-> +	}
-> +	list_add(&idev->devices_item, &hwpt->devices);
-
-Just double check here.
-This API doesn't prevent caller from calling this API multiple times with
-the same @idev and @pt_id. right? Note that idev has only one device_item
-list head. If caller does do multiple callings, then there should be
-problem. right? If so, this API assumes caller should take care of it and
-not do such bad function call. Is this the design here?
-
-> +	mutex_unlock(&hwpt->devices_lock);
-> +
-> +	*pt_id = idev->hwpt->obj.id;
-> +	return 0;
-> +
-> +out_iova:
-> +	iopt_remove_reserved_iova(&hwpt->ioas->iopt, idev->group);
-> +out_detach:
-> +	iommu_detach_group(hwpt->domain, idev->group);
-> +out_unlock:
-> +	mutex_unlock(&hwpt->devices_lock);
-> +	iommufd_hw_pagetable_put(idev->ictx, hwpt);
-> +out_users:
-> +	refcount_dec(&idev->obj.users);
-> +	return rc;
-> +}
-> +EXPORT_SYMBOL_GPL(iommufd_device_attach);
-> +
-> +void iommufd_device_detach(struct iommufd_device *idev)
-> +{
-> +	struct iommufd_hw_pagetable *hwpt = idev->hwpt;
-> +
-> +	mutex_lock(&hwpt->devices_lock);
-> +	list_del(&idev->devices_item);
-> +	if (!iommufd_hw_pagetable_has_group(hwpt, idev->group)) {
-> +		iopt_remove_reserved_iova(&hwpt->ioas->iopt, idev->group);
-> +		iommu_detach_group(hwpt->domain, idev->group);
-> +	}
-> +	if (list_empty(&hwpt->devices))
-> +		iopt_table_remove_domain(&hwpt->ioas->iopt, hwpt->domain);
-> +	mutex_unlock(&hwpt->devices_lock);
-> +
-> +	iommufd_hw_pagetable_put(idev->ictx, hwpt);
-> +	idev->hwpt = NULL;
-> +
-> +	refcount_dec(&idev->obj.users);
-> +}
-> +EXPORT_SYMBOL_GPL(iommufd_device_detach);
-> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-> index c5c9650cc86818..e5c717231f851e 100644
-> --- a/drivers/iommu/iommufd/iommufd_private.h
-> +++ b/drivers/iommu/iommufd/iommufd_private.h
-> @@ -96,6 +96,7 @@ static inline int iommufd_ucmd_respond(struct iommufd_ucmd *ucmd,
->   enum iommufd_object_type {
->   	IOMMUFD_OBJ_NONE,
->   	IOMMUFD_OBJ_ANY = IOMMUFD_OBJ_NONE,
-> +	IOMMUFD_OBJ_DEVICE,
->   	IOMMUFD_OBJ_HW_PAGETABLE,
->   	IOMMUFD_OBJ_IOAS,
->   	IOMMUFD_OBJ_MAX,
-> @@ -196,6 +197,7 @@ struct iommufd_hw_pagetable {
->   	struct iommufd_object obj;
->   	struct iommufd_ioas *ioas;
->   	struct iommu_domain *domain;
-> +	bool msi_cookie;
->   	/* Head at iommufd_ioas::auto_domains */
->   	struct list_head auto_domains_item;
->   	struct mutex devices_lock;
-> @@ -209,4 +211,6 @@ void iommufd_hw_pagetable_put(struct iommufd_ctx *ictx,
->   			      struct iommufd_hw_pagetable *hwpt);
->   void iommufd_hw_pagetable_destroy(struct iommufd_object *obj);
+>   2 files changed, 25 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index c79a0df090c0..bf9b295f1c89 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -144,6 +144,30 @@ config IOMMU_DMA
+>   	select IRQ_MSI_IOMMU
+>   	select NEED_SG_DMA_LENGTH
 >   
-> +void iommufd_device_destroy(struct iommufd_object *obj);
-> +
->   #endif
-> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-> index 954cde173c86fc..6a895489fb5b82 100644
-> --- a/drivers/iommu/iommufd/main.c
-> +++ b/drivers/iommu/iommufd/main.c
-> @@ -284,6 +284,9 @@ struct iommufd_ctx *iommufd_fget(int fd)
->   }
->   
->   static struct iommufd_object_ops iommufd_object_ops[] = {
-> +	[IOMMUFD_OBJ_DEVICE] = {
-> +		.destroy = iommufd_device_destroy,
-> +	},
->   	[IOMMUFD_OBJ_IOAS] = {
->   		.destroy = iommufd_ioas_destroy,
->   	},
-> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-> new file mode 100644
-> index 00000000000000..6caac05475e39f
-> --- /dev/null
-> +++ b/include/linux/iommufd.h
-> @@ -0,0 +1,50 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (C) 2021 Intel Corporation
-> + * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
-> + */
-> +#ifndef __LINUX_IOMMUFD_H
-> +#define __LINUX_IOMMUFD_H
-> +
-> +#include <linux/types.h>
-> +#include <linux/errno.h>
-> +#include <linux/err.h>
-> +#include <linux/device.h>
-> +
-> +struct pci_dev;
-> +struct iommufd_device;
-> +
-> +#if IS_ENABLED(CONFIG_IOMMUFD)
-> +struct iommufd_device *iommufd_bind_pci_device(int fd, struct pci_dev *pdev,
-> +					       u32 *id);
-> +void iommufd_unbind_device(struct iommufd_device *idev);
-> +
-> +enum {
-> +	IOMMUFD_ATTACH_FLAGS_ALLOW_UNSAFE_INTERRUPT = 1 << 0,
-> +};
-> +int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id,
-> +			  unsigned int flags);
-> +void iommufd_device_detach(struct iommufd_device *idev);
-> +
-> +#else /* !CONFIG_IOMMUFD */
-> +static inline struct iommufd_device *
-> +iommufd_bind_pci_device(int fd, struct pci_dev *pdev, u32 *id)
-> +{
-> +	return ERR_PTR(-EOPNOTSUPP);
-> +}
-> +
-> +static inline void iommufd_unbind_device(struct iommufd_device *idev)
-> +{
-> +}
-> +
-> +static inline int iommufd_device_attach(struct iommufd_device *idev,
-> +					u32 ioas_id)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +
-> +static inline void iommufd_device_detach(struct iommufd_device *idev)
-> +{
-> +}
-> +#endif /* CONFIG_IOMMUFD */
-> +#endif
+> +config IOMMU_DMA_PCI_SAC_OPT
+> +	bool "Enable 64-bit legacy PCI optimisation by default"
+> +	depends on IOMMU_DMA
+> +	default X86
 
--- 
-Regards,
-Yi Liu
+Do we have a strategy for if and when issues start popping up on other 
+architectures? Is it to simply tell them to just turn this flag on (and 
+also fix your platform)?
+
+> +	help
+> +	  Enable by default an IOMMU optimisation for 64-bit legacy PCI devices,
+> +	  wherein the DMA API layer will always first try to allocate a 32-bit
+> +	  DMA address suitable for a single address cycle, before falling back
+> +	  to allocating from the full usable address range. If your system has
+> +	  64-bit legacy PCI devices in 32-bit slots where using dual address
+> +	  cycles reduces DMA throughput significantly, this optimisation may be
+> +	  beneficial to overall performance.
+> +
+> +	  If you have a modern PCI Express based system, it should usually be
+> +	  safe to say "n" here and avoid the potential extra allocation overhead.
+> +	  However, beware that this optimisation has also historically papered
+> +	  over bugs where the IOMMU address range above 32 bits is not fully
+> +	  usable. If device DMA problems and/or IOMMU faults start occurring
+> +	  with IOMMU translation enabled after disabling this option, it is
+> +	  likely a sign of a latent driver or firmware/BIOS bug.
+> +
+> +	  If this option is not set, the optimisation can be enabled at
+> +	  boot time with the "iommu.forcedac=0" command-line argument.
+> +
+
+Thanks,
+John
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
