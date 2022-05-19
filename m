@@ -1,85 +1,143 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6E2E1C433EF
-	for <iommu@archiver.kernel.org>; Thu, 19 May 2022 12:25:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6024CC433EF
+	for <iommu@archiver.kernel.org>; Thu, 19 May 2022 12:35:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id EFD1641CC4;
-	Thu, 19 May 2022 12:25:50 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id ED2C6843FB;
+	Thu, 19 May 2022 12:35:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2Wz5i1pFgQ-V; Thu, 19 May 2022 12:25:49 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 6D83141C18;
-	Thu, 19 May 2022 12:25:49 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2351DC0039;
-	Thu, 19 May 2022 12:25:49 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C2CFDC002D
- for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 12:25:47 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id B15A58440B
- for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 12:25:47 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=google.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id r_gS4oa_Qvml for <iommu@lists.linux-foundation.org>;
- Thu, 19 May 2022 12:25:46 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id VXVs1y3t4TJ9; Thu, 19 May 2022 12:35:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id C7F5B843FD;
+	Thu, 19 May 2022 12:35:47 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 77D4FC0039;
+	Thu, 19 May 2022 12:35:47 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F2499C002D
+ for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 12:35:45 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id CAFC8612DA
+ for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 12:35:45 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wMYrH6x49QsM for <iommu@lists.linux-foundation.org>;
+ Thu, 19 May 2022 12:35:44 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com
- [IPv6:2a00:1450:4864:20::22b])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 7EF538440A
- for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 12:25:46 +0000 (UTC)
-Received: by mail-lj1-x22b.google.com with SMTP id l19so6023595ljb.7
- for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 05:25:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
- bh=+XDjcMQak510AbIZ8jLkJgCvsFB2A35/wbL1HOG/INE=;
- b=lAaJmEzLeV3vj8T8CSED/mJMzic3+74SHUYEpH6rpNmlXcIRQJ7C+b0Zjroo6JCc+p
- sw7SiTRSHqFvu27HOAEoJgN50mU6H6jGIvxIVz1Qqt8HH/9qlWDMWOGArR12oDwWgY9v
- tUkLQUV530OJQO6ckRfmQQo22zxot9pSkAQ0bTH/Lie/ogo4VmqDwOuoPM9L+h4GO5z0
- Rlci8TgIRLcw+UjP/r+RBA3z+fqz+x2oAM0bYelrxvbIts5DkBckYKYzc6CtCJZ8OKhB
- d3SkhkjfQ/zXDIQ+3mEc3PfvvPbDsPc4RqZ0IvxZewlrEeQx+Db4pN5PLMX6OStKVPvA
- hVrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to;
- bh=+XDjcMQak510AbIZ8jLkJgCvsFB2A35/wbL1HOG/INE=;
- b=p4hDwbJVqVsPWyXd3Alhftew9dmmDvmVAZsyD+cmU3pVtlrqqbW/yVL6jCXITG6eF1
- 80sGRCIFBVDjvJOEIkyBwxxd0yinQz6jWWLAyJcaL450Ndls+Ulis0vNQtOPceVpuhpy
- FnqFpPFqkkXeEAkeLMbz3OyU7Svq3YfcQk8+11klra7SWhY0gY64c8PFex5C04uzARKQ
- rL09L7U/+xsLLUPYquCParftYGMhd4nCBwbxw790QCD5bnr9bYioyoM2G3rdEZNfil7n
- 0bmzCy6/2zg0pFIBAHZynN7BKtbL8fRmTMvZ6y0AmHhr6RAJtTy7AVE/HzBG/6W2VAZC
- uriA==
-X-Gm-Message-State: AOAM531hv9VdwdmoEy+BXZeQ8xnA6Ujb9vxcvs9XMrmjfVwAtXYeCFsE
- g5CH0stZyH04Q8c+mePjSPH3w80awWS4SxwuoV4euQ==
-X-Google-Smtp-Source: ABdhPJxGyJtgWwbX8S0lH1j2ZFkcMo+rRVbGhMPhGE4a6v5ghusnKHQReSrKTmWTBYwAlslvk0NjT5bOE5aDGCFRwmA=
-X-Received: by 2002:a05:651c:a11:b0:250:5da4:e7b1 with SMTP id
- k17-20020a05651c0a1100b002505da4e7b1mr2551149ljq.268.1652963144078; Thu, 19
- May 2022 05:25:44 -0700 (PDT)
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com
+ (mail-bn7nam10on2061d.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e8a::61d])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id AB06F60DB7
+ for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 12:35:44 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Y/V3vkvsU05/wnVjBbQrdM78hev88/6aGiKMoNPpj1R+ji/3iUpwficAUJFPgjLZxI8aj6E0r2DsFpv1BdvcB/auzAVx43IPlHKhIw/dPlTs93HdVFcM6VnHgab0G+l7D+EsByL7T+1obdRBZtDh6Fr/hFgG3CJOQ+OPsMHXGionZ3DICYFCnJDOMXSxWolkhlHIOgyrtcp/sKAyeoUSEet2MgohzhXRJjkvUR1yIZR5RbDeGqbOyZ8fIZHEZqi8F/hqH0koSZJi1VSDiQMPn7weAxl0otL3DXV9HG9XvjzjBtG0Rp/UFFpDe6I2LPUqJXU3T02FVgKS7KClB0MDcg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=N7Im2YwymKg1Z320cWQBSyUWTpOcn7mpdmWxhreCgMM=;
+ b=ONctDoBGu4+QYij1IfHQhaFHrTedIzR6iZhAmx/ka1At78ABA8Og9W/WEzmV6iu2B0kJDtm9ccrgKWKFqwq6+8YDJTeFSKdXRPvtQeCLLOPrkV/8l4yVzBilv+CPXPqVb9Bw1xmlfUKf1agp27aAp+oyL3BMcHyTXdlp9E9vESo+/J+ebV5dBBATtwIKZPwnGR9uWLxRafsyQXWbe/bl/iom+ArxucM9UHmhzOVtznbwtuz/T/YXN+JAibAWAyrt5J+w7ylHU/bN04FCcLtFUV0u0EpszAqQTC6XXWmI0DEYr+Ltvjtyppx+VqO9/e9unb6+DnmQqaqNmTnymFt+uw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=N7Im2YwymKg1Z320cWQBSyUWTpOcn7mpdmWxhreCgMM=;
+ b=UHwIwRBnWS0WlohbWE9bH0Cfzze90XS8/uSmJmoZiuZYQz0pg8VYpa0mflGNuQxmamN3fRZj/2pDN/z0242un/sYbI3qpYWY55GZIISRi1cASR+8pd/VwwvW4AxvVLxJx7vUOCpFnkUz9WPJe/FRgf3Fs1h+hmpa6N3kLnC1yXzfCX4EqAZADCuB9BJb5oZ1im6cE6361XHO0DXybXMNyMDYB2MwLkzEe6nx4owvVhAfh+g3ZFQ5sigd0jZAztRfw+4423n7NygwbuqtIUGQrLhB9b0VXWefxj9oQFpST29XSATVh9+WjmVCONAGburmPtzGFI1S9aHqpDcbh9HgEg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BY5PR12MB4194.namprd12.prod.outlook.com (2603:10b6:a03:210::7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.13; Thu, 19 May
+ 2022 12:35:41 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ec2d:9167:1b47:2db2]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ec2d:9167:1b47:2db2%7]) with mapi id 15.20.5273.014; Thu, 19 May 2022
+ 12:35:41 +0000
+Date: Thu, 19 May 2022 09:35:40 -0300
+To: Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH RFC 10/12] iommufd: Add kAPI toward external drivers
+Message-ID: <20220519123540.GY1343366@nvidia.com>
+References: <10-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <5aab6dbf-df12-34f1-4135-857174fbe083@intel.com>
+Content-Disposition: inline
+In-Reply-To: <5aab6dbf-df12-34f1-4135-857174fbe083@intel.com>
+X-ClientProxiedBy: BL1P221CA0006.NAMP221.PROD.OUTLOOK.COM
+ (2603:10b6:208:2c5::22) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-References: <000000000000f0196305d219b2fe@google.com>
- <000000000000b968f305d74b1195@google.com>
- <YgJhjdAbRHdnCZ4T@phenom.ffwll.local>
-In-Reply-To: <YgJhjdAbRHdnCZ4T@phenom.ffwll.local>
-Date: Thu, 19 May 2022 14:25:32 +0200
-Message-ID: <CACT4Y+ZiexzqBxeDQJAeQMR7Ef=JSh-2S8P73LN2BnibXhiC3Q@mail.gmail.com>
-Subject: Re: [syzbot] WARNING in __dma_map_sg_attrs
-To: syzbot <syzbot+10e27961f4da37c443b2@syzkaller.appspotmail.com>, 
- Gerd Hoffmann <kraxel@redhat.com>, christian.koenig@amd.com, 
- dri-devel@lists.freedesktop.org, hch@lst.de, iommu@lists.linux-foundation.org, 
- linaro-mm-sig-owner@lists.linaro.org, linaro-mm-sig@lists.linaro.org, 
- linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
- m.szyprowski@samsung.com, robin.murphy@arm.com, sumit.semwal@linaro.org, 
- syzkaller-bugs@googlegroups.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b80d2074-f158-4c5d-5817-08da399415f7
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4194:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR12MB419458D0E2A734A3BE066576C2D09@BY5PR12MB4194.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 4ghSX7+7rGOV1vPAV3rvvlEQQeRNz5S3lRGN+rqaGUWShIHYdfColvtfD9B8Vzzt1l/+BsOnyUfOowYzbfa/eRiMna65oRiCYBNaLAK2KE4Vm7VASOVO0zSOTGYOx7M0daYTQ1u5sA42u9xrVipiRGzWLqC1r19JSw5JjmTUezzmno10Djk50NqU2V/emQ+EcpXmxixnvpdEOcId9jD8dix2+07FTDP852T5ERso6Wm0oF5TYG9QDNm5rHKU/uOnfal0eea/7T1NaGndKdbM5Bkmnij9kbkP/WvrIa7Q/d2Mr9PBbDJxLI8qtjNtPF+97CM+nkUNjsGsQjTHMjYxylrQJ1liqdSvgLZlOIXWm0DafWU+AWP6xk4TDt/Nqh6M5Ve+WH6O8COPzaEmixjVzCf5j6uzN/2judoZmamDIKqiYu4c3ER7lH2o6PU6kVKaxnhkWtRcXiylz1cRYzo6ss29JIfU/PnvtPKdBobRWSxkXSdIyZj+OY2701tl503WXBCHlhNq3IBBe80w5YSZwWHYGodi/YUUYnK9Ouvv0C/gJov3KqgVwySs2EhYy+w+uHl8wIBTzg/N4k93b4d8hTkVR7BvFLCPU2CARbMVeykXzrzW8lL4sNkEKQdgHOki5q83tpXgOp1u8SHx2zk8EA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(86362001)(4326008)(316002)(8936002)(6916009)(54906003)(66556008)(66946007)(66476007)(5660300002)(8676002)(33656002)(6486002)(36756003)(7416002)(508600001)(6512007)(2906002)(186003)(53546011)(6506007)(2616005)(26005)(38100700002)(1076003);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8+9BUG01eb1FzKu/m5ojC88mO1wiAkSQLSFIisjPSglruc6s3cF+vLkg2pm4?=
+ =?us-ascii?Q?90xZqpytmzIZmbm4wMXggo6AnFl0aeIjBR6VO/cWjWEDtWifQxUYhIrftr0b?=
+ =?us-ascii?Q?uPrbeS9XPykzuxNnQA69bkKrw4Vdr4pO3WeMSR2gGrl4UMf9njJvG67utQ7K?=
+ =?us-ascii?Q?HDdd16F7MNtFV7cOunYJq32W90BE2fSlrRebhz19d8uXyMjQ+PSyllHMGfXd?=
+ =?us-ascii?Q?3jRJAJW/8Hkrk4+qYnSr1upqJERHkJ5j2yrGbVc8gXagNvM/BUMa9NdCC+Is?=
+ =?us-ascii?Q?OINcm1r0DIPwzSz9xCFJTqF07zYFM238JtzRcLsoYJPhZ8WLdmqvzmZrKwJe?=
+ =?us-ascii?Q?u2udDEc5cVwpOMSRGDX9wXdEv4Syx4BPwqdZXByLOiA5IjHXohaGLITErelB?=
+ =?us-ascii?Q?vj43a8cMaMl0tY1vyH2idvWLLzgo6WVtIw/haP27H3jcubYtvglF9ofgHEwQ?=
+ =?us-ascii?Q?vOYTNXLOs3m+kkW+LUMHCDWhRklQnYH6a305hZKRxVOLMNFgwmN4awNt4V/Z?=
+ =?us-ascii?Q?mPOHLUecsM2aJyIpBHdEiDSQzF9upLKsknKzncHeMJkRoFdIxQcvyi0VqkX8?=
+ =?us-ascii?Q?9PT3LAnA7Kfcrd5gpas0dbyN9nK+OF4X7NeSAdSOtnCnAnOilU2jSIBd1srW?=
+ =?us-ascii?Q?PGHosytjjsfXh5CKd060/7AQpILF6nrzYzBKbbSs9Y6QF0t9oCOwnw6Roe0o?=
+ =?us-ascii?Q?yBbGtTrTiZz1k4oqdljhLqmlBtSOQYarEoQujNtIXw/l3I/OBxzLOrTDSZUU?=
+ =?us-ascii?Q?7L5LxiAusOGf0orDFd2vwNqqE4g0DKpJ7VYHad3fmBHo5xVMI9S74fO0NRai?=
+ =?us-ascii?Q?RUqJxqmwR9y4KP5wO6o/F/G7Vo/cXiN552tGHpvcYhrY57j8cnbQwOkhUBzi?=
+ =?us-ascii?Q?4RG4xjNZ+oFFq8ZV8VOtEfIPDX0LfeWsSb708dTsG6SyiAVBP5jpp6yINgTI?=
+ =?us-ascii?Q?bNMg7Ss24gbIJVYmFeYR7cvJaf0W+xoe8PLJs7sVrFuLH9LpHblB5ZxgOkLB?=
+ =?us-ascii?Q?dSIvEqwiSkpVoXAG4HS5Jb1sLeLXSFItr7kEHznsYify4Az0HTi6Obb1LdSK?=
+ =?us-ascii?Q?iP5UMgn0ryeCtwHcuGr6/p6bFN34ftsVM7yD0v9pMQoKEkuagwiQSNKg6+H8?=
+ =?us-ascii?Q?XZLC+E7A7TEllse3eeT3vbUXWctZLo/JJd1BAndPP674VLlB1noB+49Bfzb8?=
+ =?us-ascii?Q?hP9e820PqPWjcSLvqBsh8Ad3iTFLKRNzbH1GuTaIfRBZxvjaOLMva1nJ6bl+?=
+ =?us-ascii?Q?2IcZFQymr4vRwNIFF4o59ErJuxCB6t5P407aojsp9jwN1JeIFIg0pIE8rCs4?=
+ =?us-ascii?Q?6oafHQ7qjmx1NjeQYGFdXcEPkdYlZ1wO/iq+MA66rG/2TojxNXZg1V60pzXY?=
+ =?us-ascii?Q?aElncM0rUhOu4VxSQu4mX7gdr86k3ElnKKksdL5TIa2Fjqv8ZOC1Zcz9dt8t?=
+ =?us-ascii?Q?SXHr24qfhmHXI5KqO4qAgFhHOPh6f0zww9OOekfr9RqVlfqhcSVNDNda0kEj?=
+ =?us-ascii?Q?sE3G8Wj11CcNsokRKjs5KkpQ6XDtGgsX7uRuVN5UM10auZabzxk4dfOeY5+d?=
+ =?us-ascii?Q?9ZLHjEK6PsVIOMxVM7bdYHsbNMfptRT0pjlVOIjTG1jccAHLbYqSCixwxrRO?=
+ =?us-ascii?Q?BxmBzefizIB0bSsMK8TeRtamkil+IOGxIEKuYEPPvqYne1HgVK9f7wXJfz3o?=
+ =?us-ascii?Q?JhtDksfYWimEvCOfjbwoVqJarTe+R5INvx9haD9iAHuk9tqkNlViaARwq5ML?=
+ =?us-ascii?Q?SVZg63S3QQ=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b80d2074-f158-4c5d-5817-08da399415f7
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2022 12:35:41.3758 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: k8ayqFZAIBagaLw/N8P2zxmVCa3BUps+60b3FW7xew5LO2FdJmqusrkRK3j+WUQs
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4194
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
+ iommu@lists.linux-foundation.org, Daniel Jordan <daniel.m.jordan@oracle.com>,
+ Kevin Tian <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Joao Martins <joao.m.martins@oracle.com>,
+ David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,97 +150,46 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Dmitry Vyukov via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Dmitry Vyukov <dvyukov@google.com>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 8 Feb 2022 at 13:26, Daniel Vetter <daniel@ffwll.ch> wrote:
->
-> On Sat, Feb 05, 2022 at 12:18:23PM -0800, syzbot wrote:
-> > syzbot has found a reproducer for the following issue on:
-> >
-> > HEAD commit:    0457e5153e0e Merge tag 'for-linus' of git://git.kernel.org..
-> > git tree:       upstream
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=11b2637c700000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=6f043113811433a5
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=10e27961f4da37c443b2
-> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11c65542700000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1163f480700000
-> >
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+10e27961f4da37c443b2@syzkaller.appspotmail.com
->
-> Adding Gerd, since this seems to blow up in udmabuf.
->
-> I wonder why syzbot didn't figure this out, since it seems to have
-> correctly added both dma-api and dma-buf people. Just not the maintainer
-> for the begin_cpu_udmabuf function in the middle of the backtrace?
+On Thu, May 19, 2022 at 05:45:06PM +0800, Yi Liu wrote:
+> Hi Jason,
+> 
+> On 2022/3/19 01:27, Jason Gunthorpe wrote:
+> 
+> > +/**
+> > + * iommufd_device_attach - Connect a device to an iommu_domain
+> > + * @idev: device to attach
+> > + * @pt_id: Input a IOMMUFD_OBJ_IOAS, or IOMMUFD_OBJ_HW_PAGETABLE
+> > + *         Output the IOMMUFD_OBJ_HW_PAGETABLE ID
+> > + * @flags: Optional flags
+> > + *
+> > + * This connects the device to an iommu_domain, either automatically or manually
+> > + * selected. Once this completes the device could do DMA.
+> > + *
+> > + * The caller should return the resulting pt_id back to userspace.
+> > + * This function is undone by calling iommufd_device_detach().
+> > + */
+> > +int iommufd_device_attach(struct iommufd_device *idev, u32 *pt_id,
+> > +			  unsigned int flags)
+> > +{
 
-Hi Daniel,
+> Just double check here.
+> This API doesn't prevent caller from calling this API multiple times with
+> the same @idev and @pt_id. right? Note that idev has only one device_item
+> list head. If caller does do multiple callings, then there should be
+> problem. right? If so, this API assumes caller should take care of it and
+> not do such bad function call. Is this the design here?
 
-syzbot selects only 1 file to get maintainers.
-Do you suggest using all files in the stack trace? I think it may lead
-to too many developers CCed since there can be something like 20 files
-including something from scheduler, arch, fs, etc.
+Yes, caller must ensure strict pairing, we don't have an assertion to
+check it.
 
-
-
-> > ------------[ cut here ]------------
-> > WARNING: CPU: 1 PID: 3595 at kernel/dma/mapping.c:188 __dma_map_sg_attrs+0x181/0x1f0 kernel/dma/mapping.c:188
-> > Modules linked in:
-> > CPU: 0 PID: 3595 Comm: syz-executor249 Not tainted 5.17.0-rc2-syzkaller-00316-g0457e5153e0e #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > RIP: 0010:__dma_map_sg_attrs+0x181/0x1f0 kernel/dma/mapping.c:188
-> > Code: 00 00 00 00 00 fc ff df 48 c1 e8 03 80 3c 10 00 75 71 4c 8b 3d c0 83 b5 0d e9 db fe ff ff e8 b6 0f 13 00 0f 0b e8 af 0f 13 00 <0f> 0b 45 31 e4 e9 54 ff ff ff e8 a0 0f 13 00 49 8d 7f 50 48 b8 00
-> > RSP: 0018:ffffc90002a07d68 EFLAGS: 00010293
-> > RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> > RDX: ffff88807e25e2c0 RSI: ffffffff81649e91 RDI: ffff88801b848408
-> > RBP: ffff88801b848000 R08: 0000000000000002 R09: ffff88801d86c74f
-> > R10: ffffffff81649d72 R11: 0000000000000001 R12: 0000000000000002
-> > R13: ffff88801d86c680 R14: 0000000000000001 R15: 0000000000000000
-> > FS:  0000555556e30300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 00000000200000cc CR3: 000000001d74a000 CR4: 00000000003506e0
-> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > Call Trace:
-> >  <TASK>
-> >  dma_map_sgtable+0x70/0xf0 kernel/dma/mapping.c:264
-> >  get_sg_table.isra.0+0xe0/0x160 drivers/dma-buf/udmabuf.c:72
-> >  begin_cpu_udmabuf+0x130/0x1d0 drivers/dma-buf/udmabuf.c:126
-> >  dma_buf_begin_cpu_access+0xfd/0x1d0 drivers/dma-buf/dma-buf.c:1164
-> >  dma_buf_ioctl+0x259/0x2b0 drivers/dma-buf/dma-buf.c:363
-> >  vfs_ioctl fs/ioctl.c:51 [inline]
-> >  __do_sys_ioctl fs/ioctl.c:874 [inline]
-> >  __se_sys_ioctl fs/ioctl.c:860 [inline]
-> >  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
-> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-> >  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> > RIP: 0033:0x7f62fcf530f9
-> > Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-> > RSP: 002b:00007ffe3edab9b8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> > RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f62fcf530f9
-> > RDX: 0000000020000200 RSI: 0000000040086200 RDI: 0000000000000006
-> > RBP: 00007f62fcf170e0 R08: 0000000000000000 R09: 0000000000000000
-> > R10: 0000000000000000 R11: 0000000000000246 R12: 00007f62fcf17170
-> > R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-> >  </TASK>
-> >
->
-> --
-> Daniel Vetter
-> Software Engineer, Intel Corporation
-> http://blog.ffwll.ch
->
-> --
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/YgJhjdAbRHdnCZ4T%40phenom.ffwll.local.
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
