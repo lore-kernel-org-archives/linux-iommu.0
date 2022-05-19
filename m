@@ -1,73 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0B244C433F5
-	for <iommu@archiver.kernel.org>; Thu, 19 May 2022 06:48:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 82060C433F5
+	for <iommu@archiver.kernel.org>; Thu, 19 May 2022 06:50:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9849040593;
-	Thu, 19 May 2022 06:48:51 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 317AE8433D;
+	Thu, 19 May 2022 06:50:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4Hey1X2XWxFe; Thu, 19 May 2022 06:48:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 965C240338;
-	Thu, 19 May 2022 06:48:50 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id A89cIw-WBnPF; Thu, 19 May 2022 06:50:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 36FAF8433C;
+	Thu, 19 May 2022 06:50:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5B2D4C0039;
-	Thu, 19 May 2022 06:48:50 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 543DEC002D
- for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 06:48:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DD669C0039;
+	Thu, 19 May 2022 06:50:52 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9B9A3C002D
+ for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 06:50:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 3C6338433C
- for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 06:48:49 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 9920B8433D
+ for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 06:50:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=infradead.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id N8ltd3yhwpnM for <iommu@lists.linux-foundation.org>;
- Thu, 19 May 2022 06:48:47 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [IPv6:2607:7c80:54:e::133])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 90E0B8433B
- for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 06:48:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
- :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=V2TDUFSNHE95kEf4VxP+IT6MaVTQWUHhL5M/CYkJECo=; b=AXzSkkG20XX/E1ROz9jYHQhXup
- Ezfpv2TCmM1qTfdDsoK0j2yB5jAbaElPWO+xfP31SeybLoll9phrqlTDVqUpNL2TupLjLH0RL1YJY
- paZz1X4OygTDhpIto5k1z9Z5uGvtZ2p75xpR0oiutIJmrTp41na8NlJOc1Jn+JRz5D9P2wwqlCSUT
- 6csKBsf2OKBiAzBPHiLKURNAOw7G+/4nzytQ5CwuOf1rMbiYc+zqIVktFq7bkoqYyiEkB/8Qphh9e
- ZBGsMEWzIJZK59/Rr/8ot7GPO2LyF/LMrVeBIccfW6v29C0q9gtPatowomzEmURCDB4tvGgLYNTLN
- E6n0bd6A==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red
- Hat Linux)) id 1nrZxk-005MOr-TC; Thu, 19 May 2022 06:48:44 +0000
-Date: Wed, 18 May 2022 23:48:44 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v4 2/6] iommu: Add a helper to do PASID lookup from domain
-Message-ID: <YoXoTFeSdnBILj/2@infradead.org>
-References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
- <20220518182120.1136715-3-jacob.jun.pan@linux.intel.com>
+ with ESMTP id w46n8ZgL-dAW for <iommu@lists.linux-foundation.org>;
+ Thu, 19 May 2022 06:50:50 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 18E058433C
+ for <iommu@lists.linux-foundation.org>; Thu, 19 May 2022 06:50:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1652943050; x=1684479050;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=rjhxdtU/rJ1XS+TF9ytej5Qm9UaG/+F24zp9IID0CGw=;
+ b=RGTHfzyaMUZdQ+dXhcpq/0s9jpE8iqrmu/wIEpI12WAMVjh3VsS3RgKX
+ PxQBSU2TOt/AccbiZ4fhnxJfdmSisDMN0xW/cDgqKZBXF1W+x/sBbnoeI
+ x2VPcRnlaOqWFH+RcGTlI+FV77ySaahcqGiCmVVf3E9QocH9QzYtL49gE
+ JYxSJkSVEDdnreGzM61A5oZZcM/GYgi0GvZxDGNadkoSNACgq1SQ+RnlH
+ QoLEZenUM+nntx0pGrOUZx7eBjOHXHtzT2xnCauk4uhyKC5vR9GfmR5tF
+ 0exejEzvV2Ei7anzC/f9byirBGBKPnxEwM/5VD92uKwf8CyUvyQx7bLZ6 g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="251949876"
+X-IronPort-AV: E=Sophos;i="5.91,236,1647327600"; d="scan'208";a="251949876"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 18 May 2022 23:50:49 -0700
+X-IronPort-AV: E=Sophos;i="5.91,236,1647327600"; d="scan'208";a="742755243"
+Received: from zhongz9x-mobl.ccr.corp.intel.com (HELO [10.255.28.182])
+ ([10.255.28.182])
+ by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 18 May 2022 23:50:44 -0700
+Message-ID: <6e5079d1-1bdb-1b36-3884-0112f2557271@linux.intel.com>
+Date: Thu, 19 May 2022 14:50:42 +0800
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220518182120.1136715-3-jacob.jun.pan@linux.intel.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: vkoul@kernel.org, "Tian, Kevin" <kevin.tian@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- will@kernel.org, David Woodhouse <dwmw2@infradead.org>,
- LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
- iommu@lists.linux-foundation.org, Jason Gunthorpe <jgg@nvidia.com>,
- dmaengine@vger.kernel.org, robin.murphy@arm.com,
- Jean-Philippe Brucker <jean-philippe@linaro.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v4 1/6] iommu: Add a per domain PASID for DMA API
+Content-Language: en-US
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
+ dmaengine@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+ David Woodhouse <dwmw2@infradead.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ vkoul@kernel.org, robin.murphy@arm.com, will@kernel.org
+References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
+ <20220518182120.1136715-2-jacob.jun.pan@linux.intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220518182120.1136715-2-jacob.jun.pan@linux.intel.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Raj Ashok <ashok.raj@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,15 +88,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, May 18, 2022 at 11:21:16AM -0700, Jacob Pan wrote:
-> +ioasid_t iommu_get_pasid_from_domain(struct device *dev, struct iommu_domain *domain)
+On 2022/5/19 02:21, Jacob Pan wrote:
+> DMA requests tagged with PASID can target individual IOMMU domains.
+> Introduce a domain-wide PASID for DMA API, it will be used on the same
+> mapping as legacy DMA without PASID. Let it be IOVA or PA in case of
+> identity domain.
+> 
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>   include/linux/iommu.h | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 9405034e3013..36ad007084cc 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -106,6 +106,8 @@ struct iommu_domain {
+>   	enum iommu_page_response_code (*iopf_handler)(struct iommu_fault *fault,
+>   						      void *data);
+>   	void *fault_data;
+> +	ioasid_t dma_pasid;		/* Used for DMA requests with PASID */
 
-Overly long line here.
+This looks more suitable for iommu_dma_cookie?
+
+> +	atomic_t dma_pasid_users;
+>   };
+>   
+>   static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
+
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
