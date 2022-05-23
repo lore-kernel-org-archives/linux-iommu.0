@@ -4,76 +4,59 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EDC0DC433F5
-	for <iommu@archiver.kernel.org>; Mon, 23 May 2022 17:27:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C6927C433FE
+	for <iommu@archiver.kernel.org>; Mon, 23 May 2022 17:30:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 85ED140A68;
-	Mon, 23 May 2022 17:27:02 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6A6E640A68;
+	Mon, 23 May 2022 17:30:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gQk5ATuU9Ur0; Mon, 23 May 2022 17:27:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 5DDC24020B;
-	Mon, 23 May 2022 17:27:01 +0000 (UTC)
+	with ESMTP id iOSn9dU8yOVT; Mon, 23 May 2022 17:30:24 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id F0A3C4020B;
+	Mon, 23 May 2022 17:30:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3042CC0032;
-	Mon, 23 May 2022 17:27:01 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F2459C002D
- for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 17:19:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D1DCDC0032;
+	Mon, 23 May 2022 17:30:23 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1C2D5C002D
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 17:30:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D811740A68
- for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 17:19:11 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id EC9474198A
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 17:30:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zrnQgo377l2a for <iommu@lists.linux-foundation.org>;
- Mon, 23 May 2022 17:19:10 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id XDwgvk5fe9yz for <iommu@lists.linux-foundation.org>;
+ Mon, 23 May 2022 17:30:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com
- [199.106.114.39])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 9206240A1D
- for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 17:19:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
- t=1653326350; x=1684862350;
- h=from:to:cc:subject:date:message-id:mime-version:
- content-transfer-encoding;
- bh=dHMAzDZ8V9eE7VWggUzuRgfi+1UxoewsEYqpet3YSy4=;
- b=xh/591GzDJScKjG8EJ2mPfwzqxIyL9XRGCSf4/Lx7ydPuFriRf6v5iV6
- rPr10oHbwt7rLbsRYhlPNsmHtnrZAqGHbOX8tODgYP9h8twviHo0ga/Y8
- RYCe6vh/kMlb0gUaQIsU8lzS7Iyu+BpVHlLoWsOu1RmI6nRDU1kTRToIP Q=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
- by alexa-out-sd-02.qualcomm.com with ESMTP; 23 May 2022 10:19:09 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
- by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 May 2022 10:19:09 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 23 May 2022 10:19:08 -0700
-Received: from blr-ubuntu-253.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 23 May 2022 10:19:04 -0700
-From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel" <joro@8bytes.org>
-Subject: [PATCH] iommu/arm-smmu-qcom: Add debug support for TLB sync timeouts
-Date: Mon, 23 May 2022 22:48:47 +0530
-Message-ID: <20220523171847.21929-1-quic_saipraka@quicinc.com>
-X-Mailer: git-send-email 2.33.1
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 9817841989
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 17:30:20 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 938991FB;
+ Mon, 23 May 2022 10:30:19 -0700 (PDT)
+Received: from [10.57.82.55] (unknown [10.57.82.55])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9AC933F73D;
+ Mon, 23 May 2022 10:30:17 -0700 (PDT)
+Message-ID: <a21f3016-a9f1-dc86-8604-ae651a763fc8@arm.com>
+Date: Mon, 23 May 2022 18:30:10 +0100
 MIME-Version: 1.0
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-Mailman-Approved-At: Mon, 23 May 2022 17:26:59 +0000
-Cc: Rob Clark <robdclark@chromium.org>,
- Sai Prakash Ranjan <quic_saipraka@quicinc.com>, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- quic_guptap@quicinc.com, linux-arm-kernel@lists.infradead.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH V2 2/6] iommu: iova: properly handle 0 as a valid IOVA
+ address
+Content-Language: en-GB
+To: Ajay Kumar <ajaykumar.rs@samsung.com>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org,
+ joro@8bytes.org, will@kernel.org
+References: <20220511121544.5998-1-ajaykumar.rs@samsung.com>
+ <CGME20220511121433epcas5p3de77375a85edf1aa78c0976a7107fdfa@epcas5p3.samsung.com>
+ <20220511121544.5998-3-ajaykumar.rs@samsung.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220511121544.5998-3-ajaykumar.rs@samsung.com>
+Cc: pankaj.dubey@samsung.com, alim.akhtar@samsung.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,151 +69,175 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-TLB sync timeouts can be due to various reasons such as TBU power down
-or pending TCU/TBU invalidation/sync and so on. Debugging these often
-require dumping of some implementation defined registers to know the
-status of TBU/TCU operations and some of these registers are not
-accessible in non-secure world such as from kernel and requires SMC
-calls to read them in the secure world. So, add this debug support
-to dump implementation defined registers for TLB sync timeout issues.
+On 2022-05-11 13:15, Ajay Kumar wrote:
+> From: Marek Szyprowski <m.szyprowski@samsung.com>
+> 
+> Zero is a valid DMA and IOVA address on many architectures, so adjust the
+> IOVA management code to properly handle it. A new value IOVA_BAD_ADDR
+> (~0UL) is introduced as a generic value for the error case. Adjust all
+> callers of the alloc_iova_fast() function for the new return value.
 
-Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 50 ++++++++++++++++++++++
- drivers/iommu/arm/arm-smmu/arm-smmu.c      |  2 +
- drivers/iommu/arm/arm-smmu/arm-smmu.h      |  4 ++
- 3 files changed, 56 insertions(+)
+And when does anything actually need this? In fact if you were to stop 
+iommu-dma from reserving IOVA 0 - which you don't - it would only show 
+how patch #3 is broken.
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 7820711c4560..22e9a0085475 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -5,11 +5,19 @@
- 
- #include <linux/acpi.h>
- #include <linux/adreno-smmu-priv.h>
-+#include <linux/delay.h>
- #include <linux/of_device.h>
- #include <linux/qcom_scm.h>
- 
- #include "arm-smmu.h"
- 
-+#define QCOM_DUMMY_VAL	-1
-+
-+/* Implementation Defined Register Space 0 registers */
-+#define QCOM_SMMU_STATS_SYNC_INV_TBU_ACK	0x5dc
-+#define QCOM_SMMU_TBU_PWR_STATUS		0x2204
-+#define QCOM_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR	0x2670
-+
- struct qcom_smmu {
- 	struct arm_smmu_device smmu;
- 	bool bypass_quirk;
-@@ -22,6 +30,46 @@ static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
- 	return container_of(smmu, struct qcom_smmu, smmu);
- }
- 
-+static void qcom_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
-+				int sync, int status)
-+{
-+	u32 sync_inv_ack, sync_inv_progress, tbu_pwr_status;
-+	unsigned int spin_cnt, delay;
-+	u32 reg;
-+	int ret;
-+
-+	arm_smmu_writel(smmu, page, sync, QCOM_DUMMY_VAL);
-+	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
-+		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
-+			reg = arm_smmu_readl(smmu, page, status);
-+			if (!(reg & ARM_SMMU_sTLBGSTATUS_GSACTIVE))
-+				return;
-+			cpu_relax();
-+		}
-+		udelay(delay);
-+	}
-+
-+	sync_inv_ack = arm_smmu_readl(smmu, ARM_SMMU_IMPL_DEF0,
-+				      QCOM_SMMU_STATS_SYNC_INV_TBU_ACK);
-+
-+	ret = qcom_scm_io_readl(smmu->ioaddr + QCOM_SMMU_TBU_PWR_STATUS,
-+				&tbu_pwr_status);
-+	if (ret)
-+		dev_err_ratelimited(smmu->dev,
-+				    "Failed to read TBU power status: %d\n", ret);
-+
-+	ret = qcom_scm_io_readl(smmu->ioaddr + QCOM_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR,
-+				&sync_inv_progress);
-+	if (ret)
-+		dev_err_ratelimited(smmu->dev,
-+				    "Failed to read SAFE WAIT counter: %d\n", ret);
-+
-+	dev_err_ratelimited(smmu->dev,
-+			    "TLB sync timed out -- SMMU may be deadlocked\n"
-+			    "TBU: sync_inv_ack %#x power_status %#x sync_inv_progress %#x\n",
-+			    sync_inv_ack, tbu_pwr_status, sync_inv_progress);
-+}
-+
- static void qcom_adreno_smmu_write_sctlr(struct arm_smmu_device *smmu, int idx,
- 		u32 reg)
- {
-@@ -374,6 +422,7 @@ static const struct arm_smmu_impl qcom_smmu_impl = {
- 	.def_domain_type = qcom_smmu_def_domain_type,
- 	.reset = qcom_smmu500_reset,
- 	.write_s2cr = qcom_smmu_write_s2cr,
-+	.tlb_sync = qcom_smmu_tlb_sync,
- };
- 
- static const struct arm_smmu_impl qcom_adreno_smmu_impl = {
-@@ -382,6 +431,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_impl = {
- 	.reset = qcom_smmu500_reset,
- 	.alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
- 	.write_sctlr = qcom_adreno_smmu_write_sctlr,
-+	.tlb_sync = qcom_smmu_tlb_sync,
- };
- 
- static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 2ed3594f384e..4c5b51109835 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -2099,6 +2099,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	if (IS_ERR(smmu->base))
- 		return PTR_ERR(smmu->base);
- 	ioaddr = res->start;
-+	smmu->ioaddr = ioaddr;
-+
- 	/*
- 	 * The resource size should effectively match the value of SMMU_TOP;
- 	 * stash that temporarily until we know PAGESIZE to validate it with.
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-index 2b9b42fb6f30..8cf6567d970f 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-@@ -278,6 +278,7 @@ struct arm_smmu_device {
- 	struct device			*dev;
- 
- 	void __iomem			*base;
-+	phys_addr_t			ioaddr;
- 	unsigned int			numpage;
- 	unsigned int			pgshift;
- 
-@@ -502,6 +503,9 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
- 
- #define ARM_SMMU_GR0		0
- #define ARM_SMMU_GR1		1
-+
-+#define ARM_SMMU_IMPL_DEF0	2
-+
- #define ARM_SMMU_CB(s, n)	((s)->numpage + (n))
- 
- #define arm_smmu_gr0_read(s, o)		\
--- 
-2.33.1
+Also note that it's really nothing to do with architectures either way; 
+iommu-dma simply chooses to reserve IOVA 0 for its own convenience, 
+mostly because it can. Much the same way that 0 is typically a valid CPU 
+VA, but mapping something meaningful there is just asking for a world of 
+pain debugging NULL-dereference bugs.
 
+Robin.
+
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Signed-off-by: Ajay Kumar <ajaykumar.rs@samsung.com>
+> ---
+>   drivers/iommu/dma-iommu.c | 16 +++++++++-------
+>   drivers/iommu/iova.c      | 13 +++++++++----
+>   include/linux/iova.h      |  1 +
+>   3 files changed, 19 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 1ca85d37eeab..16218d6a0703 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -605,7 +605,7 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+>   {
+>   	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+>   	struct iova_domain *iovad = &cookie->iovad;
+> -	unsigned long shift, iova_len, iova = 0;
+> +	unsigned long shift, iova_len, iova = IOVA_BAD_ADDR;
+>   
+>   	if (cookie->type == IOMMU_DMA_MSI_COOKIE) {
+>   		cookie->msi_iova += size;
+> @@ -625,11 +625,13 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+>   		iova = alloc_iova_fast(iovad, iova_len,
+>   				       DMA_BIT_MASK(32) >> shift, false);
+>   
+> -	if (!iova)
+> +	if (iova == IOVA_BAD_ADDR)
+>   		iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift,
+>   				       true);
+>   
+> -	return (dma_addr_t)iova << shift;
+> +	if (iova != IOVA_BAD_ADDR)
+> +		return (dma_addr_t)iova << shift;
+> +	return DMA_MAPPING_ERROR;
+>   }
+>   
+>   static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
+> @@ -688,7 +690,7 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+>   	size = iova_align(iovad, size + iova_off);
+>   
+>   	iova = iommu_dma_alloc_iova(domain, size, dma_mask, dev);
+> -	if (!iova)
+> +	if (iova == DMA_MAPPING_ERROR)
+>   		return DMA_MAPPING_ERROR;
+>   
+>   	if (iommu_map_atomic(domain, iova, phys - iova_off, size, prot)) {
+> @@ -799,7 +801,7 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
+>   
+>   	size = iova_align(iovad, size);
+>   	iova = iommu_dma_alloc_iova(domain, size, dev->coherent_dma_mask, dev);
+> -	if (!iova)
+> +	if (iova == DMA_MAPPING_ERROR)
+>   		goto out_free_pages;
+>   
+>   	if (sg_alloc_table_from_pages(sgt, pages, count, 0, size, GFP_KERNEL))
+> @@ -1204,7 +1206,7 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+>   	}
+>   
+>   	iova = iommu_dma_alloc_iova(domain, iova_len, dma_get_mask(dev), dev);
+> -	if (!iova) {
+> +	if (iova == DMA_MAPPING_ERROR) {
+>   		ret = -ENOMEM;
+>   		goto out_restore_sg;
+>   	}
+> @@ -1516,7 +1518,7 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+>   		return NULL;
+>   
+>   	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
+> -	if (!iova)
+> +	if (iova == DMA_MAPPING_ERROR)
+>   		goto out_free_page;
+>   
+>   	if (iommu_map(domain, iova, msi_addr, size, prot))
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index db77aa675145..ae0fe0a6714e 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -429,6 +429,8 @@ EXPORT_SYMBOL_GPL(free_iova);
+>    * This function tries to satisfy an iova allocation from the rcache,
+>    * and falls back to regular allocation on failure. If regular allocation
+>    * fails too and the flush_rcache flag is set then the rcache will be flushed.
+> + * Returns a pfn the allocated iova starts at or IOVA_BAD_ADDR in the case
+> + * of a failure.
+>   */
+>   unsigned long
+>   alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+> @@ -447,7 +449,7 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+>   		size = roundup_pow_of_two(size);
+>   
+>   	iova_pfn = iova_rcache_get(iovad, size, limit_pfn + 1);
+> -	if (iova_pfn)
+> +	if (iova_pfn != IOVA_BAD_ADDR)
+>   		return iova_pfn;
+>   
+>   retry:
+> @@ -456,7 +458,7 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+>   		unsigned int cpu;
+>   
+>   		if (!flush_rcache)
+> -			return 0;
+> +			return IOVA_BAD_ADDR;
+>   
+>   		/* Try replenishing IOVAs by flushing rcache. */
+>   		flush_rcache = false;
+> @@ -831,7 +833,7 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
+>   				       unsigned long limit_pfn)
+>   {
+>   	struct iova_cpu_rcache *cpu_rcache;
+> -	unsigned long iova_pfn = 0;
+> +	unsigned long iova_pfn = IOVA_BAD_ADDR;
+>   	bool has_pfn = false;
+>   	unsigned long flags;
+>   
+> @@ -858,6 +860,9 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
+>   
+>   	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
+>   
+> +	if (!iova_pfn)
+> +		return IOVA_BAD_ADDR;
+> +
+>   	return iova_pfn;
+>   }
+>   
+> @@ -873,7 +878,7 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
+>   	unsigned int log_size = order_base_2(size);
+>   
+>   	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE || !iovad->rcaches)
+> -		return 0;
+> +		return IOVA_BAD_ADDR;
+>   
+>   	return __iova_rcache_get(&iovad->rcaches[log_size], limit_pfn - size);
+>   }
+> diff --git a/include/linux/iova.h b/include/linux/iova.h
+> index 320a70e40233..46b5b10c532b 100644
+> --- a/include/linux/iova.h
+> +++ b/include/linux/iova.h
+> @@ -21,6 +21,7 @@ struct iova {
+>   	unsigned long	pfn_lo; /* Lowest allocated pfn */
+>   };
+>   
+> +#define IOVA_BAD_ADDR	(~0UL)
+>   
+>   struct iova_rcache;
+>   
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
