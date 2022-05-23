@@ -1,76 +1,60 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 83086C433F5
-	for <iommu@archiver.kernel.org>; Mon, 23 May 2022 12:27:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9FB74C433FE
+	for <iommu@archiver.kernel.org>; Mon, 23 May 2022 13:10:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1C3E36107E;
-	Mon, 23 May 2022 12:27:38 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 39F1741704;
+	Mon, 23 May 2022 13:10:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qrqHXcL3B9Oj; Mon, 23 May 2022 12:27:37 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id E7AFB60B66;
-	Mon, 23 May 2022 12:27:36 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QfZimO0En26b; Mon, 23 May 2022 13:10:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 9E47B416BA;
+	Mon, 23 May 2022 13:10:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CBAFAC0039;
-	Mon, 23 May 2022 12:27:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6C0B3C0032;
+	Mon, 23 May 2022 13:10:38 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CDC5AC002D
- for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 12:27:35 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7AF0FC002D
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 13:10:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id BC2E483EAD
- for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 12:27:35 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 6990B832C7
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 13:10:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id N0Yuy3Pj_rNX for <iommu@lists.linux-foundation.org>;
- Mon, 23 May 2022 12:27:30 +0000 (UTC)
+ with ESMTP id 1EQHHUzy4jLA for <iommu@lists.linux-foundation.org>;
+ Mon, 23 May 2022 13:10:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 526BC83EA2
- for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 12:27:30 +0000 (UTC)
-X-UUID: 80521b9d309b45c081ef9ff8d748708d-20220523
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5, REQID:c68145b2-2b3d-40f6-816f-a8913b4ecc56, OB:0,
- LO
- B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
- ON:release,TS:0
-X-CID-META: VersionHash:2a19b09, CLOUDID:9eb83ce3-edbf-4bd4-8a34-dfc5f7bb086d,
- C
- OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:-5,EDM:-3,IP:nil,URL:0,File:ni
- l,QS:0,BEC:nil
-X-UUID: 80521b9d309b45c081ef9ff8d748708d-20220523
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
- mailgw01.mediatek.com (envelope-from <mark-pk.tsai@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 788225916; Mon, 23 May 2022 20:27:24 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3; 
- Mon, 23 May 2022 20:27:23 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Mon, 23 May 2022 20:27:23 +0800
-To: <robin.murphy@arm.com>
-Subject: Re: [PATCH 0/2] dma-mapping,
- remoteproc: Fix dma_mem leak after rproc_shutdown
-Date: Mon, 23 May 2022 20:27:23 +0800
-Message-ID: <20220523122723.32602-1-mark-pk.tsai@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <6f1f48e2-a54d-58d6-8946-853cffeb55df@arm.com>
-References: <6f1f48e2-a54d-58d6-8946-853cffeb55df@arm.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 5400983299
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 13:10:36 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 76FF41063;
+ Mon, 23 May 2022 06:10:35 -0700 (PDT)
+Received: from [10.57.82.55] (unknown [10.57.82.55])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EA1543F70D;
+ Mon, 23 May 2022 06:10:33 -0700 (PDT)
+Message-ID: <1c90b375-e738-95b3-6904-8c373a0b28d6@arm.com>
+Date: Mon, 23 May 2022 14:10:26 +0100
 MIME-Version: 1.0
-X-MTK: N
-Cc: mathieu.poirier@linaro.org, yj.chiang@mediatek.com,
- linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- mark-pk.tsai@mediatek.com, matthias.bgg@gmail.com, hch@lst.de,
- linux-arm-kernel@lists.infradead.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: Avoid leak OF node on error
+Content-Language: en-GB
+To: Johan Hovold <johan@kernel.org>, cgel.zte@gmail.com
+References: <20220523111145.2976-1-chi.minghao@zte.com.cn>
+ <Yot13L7XgvxTkgnE@hovoldconsulting.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <Yot13L7XgvxTkgnE@hovoldconsulting.com>
+Cc: iommu@lists.linux-foundation.org, Zeal Robot <zealci@zte.com.cn>,
+ will@kernel.org, linux-kernel@vger.kernel.org,
+ Minghao Chi <chi.minghao@zte.com.cn>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,39 +67,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Mark-PK Tsai via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> >> Sigh.  In theory drivers should never declare coherent memory like
-> >> this, and there has been some work to fix remoteproc in that regard.
-> >>
-> >> But I guess until that is merged we'll need somthing like this fix.
-> > 
-> > Hi,
-> > 
-> > Thanks for your comment.
-> > As I didn't see other fix of this issue, should we use this patch
-> > before the remoteproc work you mentioned is merged?
+On 2022-05-23 12:54, Johan Hovold wrote:
+> On Mon, May 23, 2022 at 11:11:45AM +0000, cgel.zte@gmail.com wrote:
+>> From: Minghao Chi <chi.minghao@zte.com.cn>
+>>
+>> The OF node should be put before returning error in ipmmu_init(),
+>> otherwise node's refcount will be leaked.
+>>
+>> Reported-by: Zeal Robot <zealci@zte.com.cn>
+>> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+>> ---
+>>   drivers/iommu/ipmmu-vmsa.c | 3 +--
+>>   1 file changed, 1 insertion(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+>> index 8fdb84b3642b..f6440b106f46 100644
+>> --- a/drivers/iommu/ipmmu-vmsa.c
+>> +++ b/drivers/iommu/ipmmu-vmsa.c
+>> @@ -1179,11 +1179,10 @@ static int __init ipmmu_init(void)
+>>   		return 0;
+>>   
+>>   	np = of_find_matching_node(NULL, ipmmu_of_ids);
+>> +	of_node_put(np);
+>>   	if (!np)
+>>   		return 0;
+>>   
+>> -	of_node_put(np);
+>> -
+>>   	ret = platform_driver_register(&ipmmu_driver);
+>>   	if (ret < 0)
+>>   		return ret;
 > 
-> TBH I think it would be better "fixed" with a kmemleak_ignore() and a 
-> big comment, rather than adding API cruft for something that isn't a 
-> real problem. I'm quite sure that no real-world user is unbinding 
-> remoteproc drivers frequently enough that leaking a 48-byte allocation 
-> each time has any practical significance.
-> 
+> NAK
 
-Actually we stop 2 remote processors using the same remoteproc driver
-when system suspend or screen off on our arm64 platform.
-And the 48-byte slab allocation will be aligned up to 128 bytes on arm64.
-So the leak can be significant in our use case especially
-in stress test...
+Indeed. How exactly can we hold a refcount on NULL, let alone leak it?
 
-We really don't want to ignore it. Maybe there're other way to fix
-it without adding APIs?
+Static checkers are great for flagging up code that *might* have issues, 
+but please actually *look* at the code and apply some thought before 
+sending a patch.
+
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
