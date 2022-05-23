@@ -1,83 +1,122 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4E147C433F5
-	for <iommu@archiver.kernel.org>; Mon, 23 May 2022 07:13:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E3B53C4332F
+	for <iommu@archiver.kernel.org>; Mon, 23 May 2022 07:33:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id E4AC641710;
-	Mon, 23 May 2022 07:13:08 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 6ED8260FDE;
+	Mon, 23 May 2022 07:33:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id scS1-HINyjef; Mon, 23 May 2022 07:13:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id DE96C40947;
-	Mon, 23 May 2022 07:13:05 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id GqGxs_mKyytz; Mon, 23 May 2022 07:33:05 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 618396101F;
+	Mon, 23 May 2022 07:33:05 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ACC38C0032;
-	Mon, 23 May 2022 07:13:05 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 60BA6C002D
- for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 07:13:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 26AE1C0032;
+	Mon, 23 May 2022 07:33:05 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2E469C002D
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 07:33:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 40BE283E24
- for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 07:13:04 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 07CAD405B4
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 07:33:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LLYxxRv3OYMd for <iommu@lists.linux-foundation.org>;
- Mon, 23 May 2022 07:13:03 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=wdc.com header.b="QtTez3PU";
+ dkim=pass (2048-bit key) header.d=opensource.wdc.com
+ header.b="KZLz5DNG"
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 7-8h0cLk4kGI for <iommu@lists.linux-foundation.org>;
+ Mon, 23 May 2022 07:33:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 4E33083E1A
- for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 07:13:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1653289983; x=1684825983;
- h=message-id:date:mime-version:cc:subject:to:references:
+Received: from esa2.hgst.iphmx.com (esa2.hgst.iphmx.com [68.232.143.124])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id EE93F405B2
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 07:33:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+ d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+ t=1653291181; x=1684827181;
+ h=message-id:date:mime-version:subject:to:cc:references:
  from:in-reply-to:content-transfer-encoding;
- bh=RkBnlh49x7+Hp8WBycVg2h1xf0cxa9S/tNTkHWNfXo8=;
- b=QLxgNyKp9rKo+Qw3bVQYsN18Pd/aCZGVwD7P+xZZqDOygOklar/ktslK
- SXeJdw/kFnyH+qngKJ9nNH4zVGm0+S61l74KwlN15Kn9ZAvDHJuntueGI
- UpILs2+RFmuibX8NDGsj+P19htMTV4grWZZwsM+JuXT51gQTkPXZ1Yora
- u6wi6EcuDuhSL0onaaXvs/a9mpVll7YlbubH5DKC52tJuJ2FT9rVcLVsu
- 2/sPVhOAUldh+KhY5s45HaWRCbKPpsJv9NniLu2KSsNytLQZ4Rzjf2WuG
- nOjCoNwaKNsIVFszbuughGd+UDyjQNFcXhKpUZnV3ZjX0uRbJqKlQM8a4 w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="273124334"
-X-IronPort-AV: E=Sophos;i="5.91,245,1647327600"; d="scan'208";a="273124334"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 May 2022 00:13:01 -0700
-X-IronPort-AV: E=Sophos;i="5.91,245,1647327600"; d="scan'208";a="571941238"
-Received: from jsun39-mobl.ccr.corp.intel.com (HELO [10.255.28.225])
- ([10.255.28.225])
- by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 May 2022 00:12:57 -0700
-Message-ID: <316981d6-6b40-9e2a-09d3-b0d6f8687247@linux.intel.com>
-Date: Mon, 23 May 2022 15:12:53 +0800
+ bh=OcwGBUpAAJiWZ5v/YJ1Btd+c99uDP5yJACtABgy45zE=;
+ b=QtTez3PUT61jWRYi5Nn1szWNaaMCl3dl42GsBNBo089udSOFeKiEyE1Q
+ bUAv5V/6UZozxlJnZWTXN3p7ac+rX5r1ECIr/OW/d5SjIukZyg4NUVo8n
+ ipan7aRExneez5KEq+dPbG0y+recHQsSBAWiK9VLzqquNRPwFu6S69iBf
+ vGLbXskhVAYx5KuGhd7AjxjJ0Ls54EktMBtTi3+zLDiG2m0xY8PMZepyk
+ jsim6Xmsj1Z6Avl5xhtZfCpVaYUUtBTMqAgSCeyOPQX0cKzmepVAZuIZw
+ QdcrLgTPMYxceUw119ngp9tFJkUPvDiQuM6Bg8hVwVdA0il3Q6kfyU3ak Q==;
+X-IronPort-AV: E=Sophos;i="5.91,245,1647273600"; d="scan'208";a="305350460"
+Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com)
+ ([199.255.45.14])
+ by ob1.hgst.iphmx.com with ESMTP; 23 May 2022 15:33:00 +0800
+IronPort-SDR: kdboF/86e5KhYnu4Bin2exian2RfDgLMyLfZJmjUwV58O7Z6Yv/1IRzZca6Hhkvg9PTaQqzlaZ
+ LdJiduQLU/51FYEH83/VGIbKMptUFv+AY3/FYnnZ4de9INKHN+RBpEwkUKU/RaRMwi3aCcFtEG
+ UL4zF7KyoYjvTraq12s/MdfZAJFBOiS9k2lTv5m31t/HvikzjbcVMNTGzDcSlYPaNcxATc+XU7
+ Nno25s8i5+ZcOcsSaynugPZ9dC2lmyskjhxMq5JZ06jy4+RhUglRVHAnTdVwmoMbViJqZrA8aJ
+ 5DJiMcGxRoerj08v6lWc4mNv
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+ by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256;
+ 22 May 2022 23:56:59 -0700
+IronPort-SDR: 7bR+8J9i84ZWD5XtNAyBnqWwfreCOCTA2cPQQj900qB+u6RH/0ncAFSpp0a5nxlqpLP6sRNckC
+ 1T/R/MM+H3F0AMwMZoym1YFndtW2E6pdr5TulrAhqMI9OnVf46Nivtcpp9bn+nuuVRrp95AhXQ
+ wKeU2KNVOS5mCBJo0Tva11hYerKJViRCBr+ixv/LFK4TN8jioR8aCoLLf0OjMluUeLJR/CbNb8
+ B0kihg8qzJKfiYoDkFX21dsRnMCLMuTn6M71l9N4JwX1DGqFSnsQ/Cy+BCUumG2yLqTMZ9smjo
+ yp8=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+ by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256;
+ 23 May 2022 00:33:00 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+ by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4L68F76gWKz1SHwl
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 00:32:59 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+ reason="pass (just generated, assumed good)"
+ header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+ opensource.wdc.com; h=content-transfer-encoding:content-type
+ :in-reply-to:organization:from:references:to:content-language
+ :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+ 1653291178; x=1655883179; bh=OcwGBUpAAJiWZ5v/YJ1Btd+c99uDP5yJACt
+ ABgy45zE=; b=KZLz5DNGE1EMHNc36tC3TAUZznz7ftzzJaC+XiqPThzU7wLVAYA
+ WLfUP8He0YrJ1gLCARo0/rcSA1aAH7gEGyIPMYkb7xghe04wZPIdJhQ8Es8KrLsc
+ voIAEVbQJRFEc+Kxs6E1ri4+rWS5+xkrOuLAP3jnkhTo70t8Wbl8uj/UZ/YY+Lgw
+ O3NGzPEeIi8+9CqJe58gWphzlDmDbknR9HbRHwAwEsWnKFPHmcJ5tMuefSKLZ6Iq
+ +s/9fC+dLrW26sIuZuoBl/X7bU4mDN/82cAyOB5T5dTmSEapTUa4mN1TpD3nXx76
+ /vX5OQdlr//R6ve+zl4hlPdx4hHENJ++HSg==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+ by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new,
+ port 10026)
+ with ESMTP id PreCn14Tnycm for <iommu@lists.linux-foundation.org>;
+ Mon, 23 May 2022 00:32:58 -0700 (PDT)
+Received: from [10.89.85.73] (c02drav6md6t.dhcp.fujisawa.hgst.com
+ [10.89.85.73])
+ by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4L68F40HYpz1Rvlc;
+ Mon, 23 May 2022 00:32:55 -0700 (PDT)
+Message-ID: <2b4426a6-88ac-1bce-ea80-52902897cd0f@opensource.wdc.com>
+Date: Mon, 23 May 2022 16:32:52 +0900
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v7 03/10] iommu/sva: Add iommu_sva_domain support
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH 2/4] dma-iommu: Add iommu_dma_opt_mapping_size()
 Content-Language: en-US
-To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
- Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
-References: <20220519072047.2996983-1-baolu.lu@linux.intel.com>
- <20220519072047.2996983-4-baolu.lu@linux.intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220519072047.2996983-4-baolu.lu@linux.intel.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>
+To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org,
+ jejb@linux.ibm.com, martin.petersen@oracle.com, hch@lst.de,
+ m.szyprowski@samsung.com, robin.murphy@arm.com
+References: <1653035003-70312-1-git-send-email-john.garry@huawei.com>
+ <1653035003-70312-3-git-send-email-john.garry@huawei.com>
+ <250a10e6-40ae-e4e8-ae01-4f7144b089f8@opensource.wdc.com>
+ <655b915c-e8d2-d65b-676a-a51e788f1695@huawei.com>
+Organization: Western Digital Research
+In-Reply-To: <655b915c-e8d2-d65b-676a-a51e788f1695@huawei.com>
+Cc: linux-scsi@vger.kernel.org, linux-doc@vger.kernel.org,
+ liyihang6@hisilicon.com, linux-kernel@vger.kernel.org,
+ linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,85 +129,40 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Damien Le Moal via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/5/19 15:20, Lu Baolu wrote:
-> The iommu_sva_domain represents a hardware pagetable that the IOMMU
-> hardware could use for SVA translation. This adds some infrastructure
-> to support SVA domain in the iommu common layer. It includes:
+On 2022/05/23 16:01, John Garry wrote:
+> On 21/05/2022 00:33, Damien Le Moal wrote:
 > 
-> - Add a new struct iommu_sva_domain and new IOMMU_DOMAIN_SVA domain
->    type.
-> - Add a new domain ops pointer in iommu_ops. The IOMMU drivers that
->    support SVA should provide the callbacks.
-> - Add helpers to allocate and free an SVA domain.
-> - Add helpers to set an SVA domain to a device and the reverse
->    operation.
+> Hi Damien,
 > 
-> Some buses, like PCI, route packets without considering the PASID value.
-> Thus a DMA target address with PASID might be treated as P2P if the
-> address falls into the MMIO BAR of other devices in the group. To make
-> things simple, the attach/detach interfaces only apply to devices
-> belonging to the singleton groups, and the singleton is immutable in
-> fabric i.e. not affected by hotplug.
+>>> +unsigned long iova_rcache_range(void)
+>> Why not a size_t return type ?
 > 
-> The iommu_set/block_device_pasid() can be used for other purposes,
-> such as kernel DMA with pasid, mediation device, etc. Hence, it is put
-> in the iommu.c.
+> The IOVA code generally uses unsigned long for size/range while 
+> dam-iommu uses size_t as appropiate, so I'm just sticking to that.
+
+OK.
+
 > 
-> Suggested-by: Jean-Philippe Brucker<jean-philippe@linaro.org>
-> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
-> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> ---
->   include/linux/iommu.h         | 51 +++++++++++++++++++++++++
->   drivers/iommu/iommu-sva-lib.h | 15 ++++++++
->   drivers/iommu/iommu-sva-lib.c | 48 +++++++++++++++++++++++
->   drivers/iommu/iommu.c         | 71 +++++++++++++++++++++++++++++++++++
->   4 files changed, 185 insertions(+)
+>>
+>>> +{
+>>> +	return PAGE_SIZE << (IOVA_RANGE_CACHE_MAX_SIZE - 1);
+>>> +}
+>>> +
 > 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 0c358b7c583b..e8cf82d46ce1 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -64,6 +64,9 @@ struct iommu_domain_geometry {
->   #define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
->   #define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
->   
-> +#define __IOMMU_DOMAIN_SHARED	(1U << 4)  /* Page table shared from CPU  */
-> +#define __IOMMU_DOMAIN_HOST_VA	(1U << 5)  /* Host CPU virtual address */
-> +
->   /*
->    * This are the possible domain-types
->    *
-> @@ -86,6 +89,8 @@ struct iommu_domain_geometry {
->   #define IOMMU_DOMAIN_DMA_FQ	(__IOMMU_DOMAIN_PAGING |	\
->   				 __IOMMU_DOMAIN_DMA_API |	\
->   				 __IOMMU_DOMAIN_DMA_FQ)
-> +#define IOMMU_DOMAIN_SVA	(__IOMMU_DOMAIN_SHARED |	\
-> +				 __IOMMU_DOMAIN_HOST_VA)
->   
->   struct iommu_domain {
->   	unsigned type;
-> @@ -254,6 +259,7 @@ struct iommu_ops {
->   	int (*def_domain_type)(struct device *dev);
->   
->   	const struct iommu_domain_ops *default_domain_ops;
-> +	const struct iommu_domain_ops *sva_domain_ops;
+> Thanks,
+> John
 
-Per Joerg's comment in anther thread,
 
-https://lore.kernel.org/linux-iommu/YodVJ7ervpIdWfg+@8bytes.org/
-
-adding a sva_domain_ops here is not the right way to go.
-
-If no objection, I will make the sva domain go through the
-generic domain_alloc/free() callbacks in the next version.
-
-Best regards,
-baolu
+-- 
+Damien Le Moal
+Western Digital Research
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
