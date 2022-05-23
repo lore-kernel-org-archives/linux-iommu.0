@@ -4,112 +4,82 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3BD2DC4332F
-	for <iommu@archiver.kernel.org>; Sun, 22 May 2022 22:22:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 211C6C433EF
+	for <iommu@archiver.kernel.org>; Mon, 23 May 2022 01:04:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id BF63060ACC;
-	Sun, 22 May 2022 22:22:44 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id AC10761058;
+	Mon, 23 May 2022 01:04:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id e3voJPeb6kpK; Sun, 22 May 2022 22:22:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id AB1E661003;
-	Sun, 22 May 2022 22:22:43 +0000 (UTC)
+	with ESMTP id V0Q2uT7N75In; Mon, 23 May 2022 01:04:57 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 9152E6106E;
+	Mon, 23 May 2022 01:04:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6A6A7C0032;
-	Sun, 22 May 2022 22:22:43 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7E6E7C002D
- for <iommu@lists.linux-foundation.org>; Sun, 22 May 2022 22:22:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 659BCC0032;
+	Mon, 23 May 2022 01:04:56 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ED389C002D
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 01:04:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 652F060FFF
- for <iommu@lists.linux-foundation.org>; Sun, 22 May 2022 22:22:42 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id D3883417B4
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 01:04:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fPdNDWKx514L for <iommu@lists.linux-foundation.org>;
- Sun, 22 May 2022 22:22:41 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from esa6.hgst.iphmx.com (esa6.hgst.iphmx.com [216.71.154.45])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 92DF660ACC
- for <iommu@lists.linux-foundation.org>; Sun, 22 May 2022 22:22:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
- d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
- t=1653258161; x=1684794161;
- h=message-id:date:mime-version:subject:to:cc:references:
- from:in-reply-to:content-transfer-encoding;
- bh=g7+JeN4wnrl6dFXGk3nhuKNxU3bxTCBHH+iqteHxNFE=;
- b=aiG7A8mIQ/6LTz1MFnlwjLHAuXEeXKHQtQVPNeAVkmktwPVI4JCFvEY4
- FwC+jBTZ5wNkAl2Vh3ALSggdKJuWW+gY/fO0hqMMCSSEn44isE2UogOY7
- TxUs+aZywUMnJLvYcGTfglyjei7wwZTrHpgdxG7zbIa9Vm43W+cmWPpdo
- jyWzDg3HE/mk6RY8JndtcE/dud+3cRiYKiDv+UVQKaF1sufu1WyO+lksW
- ubyN8hYbilMhYnmNdIm/XgvoMl7V7FVTahHALl7MXZ43GO2xJK2CNFy+5
- tXxj2QtHYxNySxJnAnHkOf33WJ/9+Ly/Xoqelq/6dxfQwcsXbK/zsGS5D Q==;
-X-IronPort-AV: E=Sophos;i="5.91,244,1647273600"; d="scan'208";a="201933445"
-Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com)
- ([199.255.45.15])
- by ob1.hgst.iphmx.com with ESMTP; 23 May 2022 06:22:41 +0800
-IronPort-SDR: nbRvHdQA0rQU9Z3Rnu36RGoLKdIBDtgIxo49lTWb9WvcRUk8L54c3EOk+em2S9Q3X/TiUWboSB
- 2AUwTA4OfXSPMw8b0IdIBGQrOmzj6n5h8HRvOIPDXS43LGYQes6D6RHJy0gCLqvpLxQwRRcK1i
- Uf+tI9hqOy1Xi2dsO5B35kGHGXURlRErRcTcbmNNgQRlQCbvCjIppu0qDAp6YJ4vaby2MpXAtu
- Xm88Q12cpcVUF6aM1aLz2oD6nx/omXu705PRBhuUGnLBUFjbBREJ7PRXd0i2mcSmciBO0pcIVk
- 60Vllk2J2uSRRGpJxMCTIoDS
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
- by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256;
- 22 May 2022 14:42:15 -0700
-IronPort-SDR: c/XOL6PpFwukI2IEQS+EMT1vCMXE/OMrVSWVMWYV6CgMehTQTlneGjwpkenpJHD6yWlnGs5i2i
- a/eafxPm6ZG6x59JrB2Ai51jdUeGBfMkqPCLJIyM5IPY0MtL/lX6xj2fy+W0O2l9pqhiZW+hW9
- SoEngZfhZDA6Cm1nHNaAuelshjaC0fH+YugnVGco4makhLgJeLOBGnipvdl2ulihU5Nmwaffmq
- dg2yCMx4Aejz8pH4fPbnbNdugROPijacs/wA6RbqlbG1FyojxLrC1DL5I9Nm+NZOdd+EC15K/U
- njE=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
- by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256;
- 22 May 2022 15:22:40 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
- by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4L5w2815Ckz1Rvlx
- for <iommu@lists.linux-foundation.org>; Sun, 22 May 2022 15:22:40 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
- reason="pass (just generated, assumed good)"
- header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
- opensource.wdc.com; h=content-transfer-encoding:content-type
- :in-reply-to:organization:from:references:to:content-language
- :subject:user-agent:mime-version:date:message-id; s=dkim; t=
- 1653258159; x=1655850160; bh=g7+JeN4wnrl6dFXGk3nhuKNxU3bxTCBHH+i
- qteHxNFE=; b=cFP8EjCWYzIn0k4ie3WKPohm2MCo0AumuYqBQTKCtVbOnF5ahgC
- 3DMD77wHEBGNIby9QYVO8Kyj8ThYO13/AhkkmwvMo1hw6M+usps0UivIXgCdZseU
- 9A6F5n+Fh6VrhIr7wexiIbbqwP/tasyeStlJ/r5Q78CNt8JpJvfsexJ4TyKQTbY2
- aY7WAwIjYDT4mh9L4oSbx4j06Oa3+BPww0WpgkiA5gn05hxU90tfn4OZw+TdYdiC
- O82vY1I2LjR+sEaV1nVlyE1A1wP+OTnEVYJ/WTGpbJJtbREAsy8XMVCmYRSC0I1S
- oStpPqSyJ5iYY82wZ98GYO9okFFzZCtC3dw==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
- by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new,
- port 10026)
- with ESMTP id iFoughfYD3yB for <iommu@lists.linux-foundation.org>;
- Sun, 22 May 2022 15:22:39 -0700 (PDT)
-Received: from [10.89.85.73] (c02drav6md6t.dhcp.fujisawa.hgst.com
- [10.89.85.73])
- by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4L5w252KbGz1Rvlc;
- Sun, 22 May 2022 15:22:37 -0700 (PDT)
-Message-ID: <15f94ea2-fa97-3122-60dd-a87a3dd8a7db@opensource.wdc.com>
-Date: Mon, 23 May 2022 07:22:35 +0900
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=google.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id IcUlYWBFRNUa for <iommu@lists.linux-foundation.org>;
+ Mon, 23 May 2022 01:04:53 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com
+ [IPv6:2607:f8b0:4864:20::535])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id A08C141755
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 01:04:53 +0000 (UTC)
+Received: by mail-pg1-x535.google.com with SMTP id h186so12366392pgc.3
+ for <iommu@lists.linux-foundation.org>; Sun, 22 May 2022 18:04:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
+ h=date:from:to:cc:subject:in-reply-to:message-id:references
+ :mime-version; bh=yOqshecnhz24HCPFL8R9k+rQYjlgSiMh0TAar9utw7U=;
+ b=c3kHhbCHF1+pOhGqIxGe425To7JHa/Jp//N2OIGPKEew8HwwngyI1IO0ViTFnN7Rz1
+ iyxsHvjvdZXojQ3ZEbK3/6kczlqvoiDe8rhQ1inY1dZziYRUlj/Blo4kHEGakWVdr+KE
+ pBnBANwBI2fE6fPzzTJYB/TPmXV2fKKizOixivB1BtjLOTvSk6Llxa4Cc0MyKZnogNrH
+ ggw0R84eB6CxctpQNPT3n8LMNbPwDi15j5MhKRo3QllD0rOku3AjOYJj9JFbPBgETqdh
+ 2cOzFMuofNy2wXT/fWCC9h60Dia7gfk+1gmb3knzqbs7/CNVaFMr7oOXr9eWBuS5V8vm
+ zbTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+ :references:mime-version;
+ bh=yOqshecnhz24HCPFL8R9k+rQYjlgSiMh0TAar9utw7U=;
+ b=DsNiT7unIb3tyZqIIa1ml3iwOMbNRvaE8d7rKrvWdKEYM+5iD+x/PE7Mfm1qBy/Z9x
+ JFjjdOZseoq/RvDY+RQ7tr803uDnUu4T8xr1TCay9z+e9OhhOE/8Mqbi7Ej9cVhvqQ7u
+ BrzUGVGe/cBH3e2GXTSYQ4rkd00zAW0m+UoLCLMK5+RsuB+856N9r5UxcqTmDP4V0lpB
+ ku6yAV2pCYKrCQvImTI6I2a4cIQt+Ism/M54Y+iXwMMR1JaKp83CAH9ZoFfz7dkP/smp
+ UTBonZM4pCYqeH+kn+0vCF1i1bqLYIfJURwTDPYAbUTiNRWuO9/mUWvupaMId2XKHPa2
+ /V7A==
+X-Gm-Message-State: AOAM530k8SuceeMySVXlK5kHFZ1hUZRW2AcB9zTkZlZedW9bLQyyRwWR
+ xizaQqrlhj+CgoRfm+raVk8EEw==
+X-Google-Smtp-Source: ABdhPJy/Pe9GcQRNtkgNe7XJEsRhFmPKGUbP4E3sj0Z1g4bwfFHnHxEOftK0lWDSkInAUU5Q7dw6oQ==
+X-Received: by 2002:a05:6a00:1348:b0:518:7a03:1682 with SMTP id
+ k8-20020a056a00134800b005187a031682mr11290564pfu.6.1653267892703; 
+ Sun, 22 May 2022 18:04:52 -0700 (PDT)
+Received: from [2620:15c:29:204:fa22:6f61:557f:9cd2]
+ ([2620:15c:29:204:fa22:6f61:557f:9cd2])
+ by smtp.gmail.com with ESMTPSA id
+ w2-20020a170902d70200b0015e8d4eb2aesm3691018ply.248.2022.05.22.18.04.52
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sun, 22 May 2022 18:04:52 -0700 (PDT)
+Date: Sun, 22 May 2022 18:04:51 -0700 (PDT)
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] dma-direct: Don't over-decrypt memory
+In-Reply-To: <796ddc256b8a3054cb0b2f43363613463fcf0d61.1653066613.git.robin.murphy@arm.com>
+Message-ID: <22439fa1-5f9b-1e54-3f39-649b116574e@google.com>
+References: <796ddc256b8a3054cb0b2f43363613463fcf0d61.1653066613.git.robin.murphy@arm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH 0/4] DMA mapping changes for SCSI core
-Content-Language: en-US
-To: Christoph Hellwig <hch@lst.de>, John Garry <john.garry@huawei.com>
-References: <1653035003-70312-1-git-send-email-john.garry@huawei.com>
- <20220522131345.GB25785@lst.de>
-Organization: Western Digital Research
-In-Reply-To: <20220522131345.GB25785@lst.de>
-Cc: linux-scsi@vger.kernel.org, martin.petersen@oracle.com,
- linux-doc@vger.kernel.org, will@kernel.org, linux-kernel@vger.kernel.org,
- linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org,
- liyihang6@hisilicon.com, robin.murphy@arm.com, jejb@linux.ibm.com
+Cc: thomas.lendacky@amd.com, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org, iommu@lists.linux-foundation.org, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -122,23 +92,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Damien Le Moal via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
+Reply-To: David Rientjes <rientjes@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/05/22 22:13, Christoph Hellwig wrote:
-> The whole series looks fine to me.  I'll happily queue it up in the
-> dma-mapping tree if the SCSI and ATA maintainers are ok with that.
+On Fri, 20 May 2022, Robin Murphy wrote:
+
+> The original x86 sev_alloc() only called set_memory_decrypted() on
+> memory returned by alloc_pages_node(), so the page order calculation
+> fell out of that logic. However, the common dma-direct code has several
+> potential allocators, not all of which are guaranteed to round up the
+> underlying allocation to a power-of-two size, so carrying over that
+> calculation for the encryption/decryption size was a mistake. Fix it by
+> rounding to a *number* of pages, rather than an order.
 > 
+> Until recently there was an even worse interaction with DMA_DIRECT_REMAP
+> where we could have ended up decrypting part of the next adjacent
+> vmalloc area, only averted by no architecture actually supporting both
+> configs at once. Don't ask how I found that one out...
+> 
+> CC: stable@vger.kernel.org
+> Fixes: c10f07aa27da ("dma/direct: Handle force decryption for DMA coherent buffers in common code")
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-Fine with me. I sent an acked-by for the libata bit.
-
--- 
-Damien Le Moal
-Western Digital Research
+Acked-by: David Rientjes <rientjes@google.com>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
