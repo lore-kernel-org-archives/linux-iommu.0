@@ -1,86 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 339D6C433EF
-	for <iommu@archiver.kernel.org>; Mon, 23 May 2022 15:17:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AA779C433F5
+	for <iommu@archiver.kernel.org>; Mon, 23 May 2022 15:20:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id B14DF831DE;
-	Mon, 23 May 2022 15:17:26 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5D19140B61;
+	Mon, 23 May 2022 15:20:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RLL-3MmFh1uS; Mon, 23 May 2022 15:17:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 5D58482C61;
-	Mon, 23 May 2022 15:17:25 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id YvPLKkkAJ-xP; Mon, 23 May 2022 15:20:13 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 0BC3740017;
+	Mon, 23 May 2022 15:20:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 22E5DC0032;
-	Mon, 23 May 2022 15:17:25 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0D2C8C002D
- for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 15:17:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DEC31C0032;
+	Mon, 23 May 2022 15:20:12 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 14CA7C002D
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 15:20:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id EDE8B40B4D
- for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 15:17:23 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 031C740B4D
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 15:20:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JnkgJxKbqe0B for <iommu@lists.linux-foundation.org>;
- Mon, 23 May 2022 15:17:22 +0000 (UTC)
+ with ESMTP id tJyVVbD1Xo-y for <iommu@lists.linux-foundation.org>;
+ Mon, 23 May 2022 15:20:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ams.source.kernel.org (ams.source.kernel.org
- [IPv6:2604:1380:4601:e00::1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 6C9F940017
- for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 15:17:22 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id F1543B81171;
- Mon, 23 May 2022 15:17:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 805EDC385AA;
- Mon, 23 May 2022 15:17:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1653319037;
- bh=CkdrHOJbqrYgqtlzU2t1gwW8LyMTW1lRhpgrRcERREY=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=UQ4C2SBU00YISTyG/4Kii6b9dKw5B4OgQjrQIfVb+h/D0JIHrQtmvSZqGSz6RH5cf
- eIRmFAn+a4sMuMRYarKkRLzHiyxIcLNNIpxDpJVIfaCPK0+6Od2vuqpGcci4z+3Gmf
- q8w2ex+5NLwAvVS8C8oslhibKtEUbJWST3P57jAT5DYi9e/ECQgtuQv2e5J9JxYOT2
- 3smHTffI64ixT+yst/sdrc98yApf3DpzTd9tYGqcpdnqm3KS/FrJnsVWxdoe4uxgQh
- Y8+M/YGY+KqbTtSUh3zFrpS7Wu54pKVWW96Fv7ydJJATq2h9XwmvzCakn15AosS6QT
- E7/8VBw1H16Ig==
-Date: Mon, 23 May 2022 08:17:14 -0700
-From: Nathan Chancellor <nathan@kernel.org>
-To: Saravana Kannan <saravanak@google.com>
-Subject: Re: [PATCH v1] driver core: Extend deferred probe timeout on driver
- registration
-Message-ID: <Youleo3Ganxbc1sq@dev-arch.thelio-3990X>
-References: <20220429220933.1350374-1-saravanak@google.com>
- <YogkhvFGVcjNQ21Z@dev-arch.thelio-3990X>
- <CAGETcx9nvBs1b4M=2hBhrLX_2-rzLtAmV9WfTXu0MC7JnsBvwA@mail.gmail.com>
- <YogsiMCDupNUhMgL@dev-fedora.thelio-3990X>
- <CAGETcx-JyWwoGA3o8eep7E29Cm4DcVT6D1JFJh72jLcqm_mjCQ@mail.gmail.com>
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id DFE0040017
+ for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 15:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1653319207; x=1684855207;
+ h=date:from:to:cc:subject:message-id:in-reply-to:
+ references:mime-version:content-transfer-encoding;
+ bh=PbNyLowZXXyeR9OxM1xpX367cO5XzR8kGQzWfh6uwwU=;
+ b=W/YY8/PECOJKL7iU21kDnCHLTzwA63tY8w9AnEEjlvuOlfPksgCzTXkS
+ A9BSyrpx8E5VyYsRhzBNmEyJ90Xd60hb7wMz5RfxTFsGwH4q9AeyGPCLH
+ 7IsGxLK7wSH+vgwhXDhD2chjE2CNiFT7Ht5syXExJetPtdmOfh/eGvwg+
+ RHs4eJN8cxBqBWHOixVXWNHww+lG3EbIuxOLclqAnoSoMf3lj862hI94y
+ FtDhCTA7MvWbs8jbWR3YOUkrSMKUnSe7PqAxVHhk8LP6VkOODiZ7Z916m
+ O0nSZHIWqDbTlGp02xYcP486prLneYcj+KH/E5M4sXUr280miuS5uqH57 w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="270824337"
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; d="scan'208";a="270824337"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 23 May 2022 08:20:07 -0700
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; d="scan'208";a="548021388"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+ by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 23 May 2022 08:20:07 -0700
+Date: Mon, 23 May 2022 08:23:59 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH v4 4/6] iommu: Add PASID support for DMA mapping API users
+Message-ID: <20220523082359.74fb435b@jacob-builder>
+In-Reply-To: <BL1PR11MB5271E995E160E0C6A6C0C89A8CD49@BL1PR11MB5271.namprd11.prod.outlook.com>
+References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
+ <20220518182120.1136715-5-jacob.jun.pan@linux.intel.com>
+ <BL1PR11MB5271E995E160E0C6A6C0C89A8CD49@BL1PR11MB5271.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CAGETcx-JyWwoGA3o8eep7E29Cm4DcVT6D1JFJh72jLcqm_mjCQ@mail.gmail.com>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, linux-doc@vger.kernel.org,
- Linus Walleij <linus.walleij@linaro.org>, Pavel Machek <pavel@ucw.cz>,
- linux-s390@vger.kernel.org, Will Deacon <will@kernel.org>,
- Rob Herring <robh@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Geert Uytterhoeven <geert@linux-m68k.org>, Thierry Reding <treding@nvidia.com>,
- kernel-team@android.com, linux-pm@vger.kernel.org, linux-gpio@vger.kernel.org,
- Mark Brown <broonie@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Kevin Hilman <khilman@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- linux-kernel@vger.kernel.org,
- Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
- iommu@lists.linux-foundation.org
+Cc: "vkoul@kernel.org" <vkoul@kernel.org>, "Jiang, Dave" <dave.jiang@intel.com>,
+ "Raj, Ashok" <ashok.raj@intel.com>, "will@kernel.org" <will@kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>, LKML <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Jason Gunthorpe <jgg@nvidia.com>,
+ "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,117 +93,203 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, May 20, 2022 at 05:15:55PM -0700, Saravana Kannan wrote:
-> On Fri, May 20, 2022 at 5:04 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> >
-> > On Fri, May 20, 2022 at 04:49:48PM -0700, Saravana Kannan wrote:
-> > > On Fri, May 20, 2022 at 4:30 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> > > >
-> > > > Hi Saravana,
-> > > >
-> > > > On Fri, Apr 29, 2022 at 03:09:32PM -0700, Saravana Kannan wrote:
-> > > > > The deferred probe timer that's used for this currently starts at
-> > > > > late_initcall and runs for driver_deferred_probe_timeout seconds. The
-> > > > > assumption being that all available drivers would be loaded and
-> > > > > registered before the timer expires. This means, the
-> > > > > driver_deferred_probe_timeout has to be pretty large for it to cover the
-> > > > > worst case. But if we set the default value for it to cover the worst
-> > > > > case, it would significantly slow down the average case. For this
-> > > > > reason, the default value is set to 0.
-> > > > >
-> > > > > Also, with CONFIG_MODULES=y and the current default values of
-> > > > > driver_deferred_probe_timeout=0 and fw_devlink=on, devices with missing
-> > > > > drivers will cause their consumer devices to always defer their probes.
-> > > > > This is because device links created by fw_devlink defer the probe even
-> > > > > before the consumer driver's probe() is called.
-> > > > >
-> > > > > Instead of a fixed timeout, if we extend an unexpired deferred probe
-> > > > > timer on every successful driver registration, with the expectation more
-> > > > > modules would be loaded in the near future, then the default value of
-> > > > > driver_deferred_probe_timeout only needs to be as long as the worst case
-> > > > > time difference between two consecutive module loads.
-> > > > >
-> > > > > So let's implement that and set the default value to 10 seconds when
-> > > > > CONFIG_MODULES=y.
-> > > > >
-> > > > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > > > Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-> > > > > Cc: Rob Herring <robh@kernel.org>
-> > > > > Cc: Linus Walleij <linus.walleij@linaro.org>
-> > > > > Cc: Will Deacon <will@kernel.org>
-> > > > > Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> > > > > Cc: Kevin Hilman <khilman@kernel.org>
-> > > > > Cc: Thierry Reding <treding@nvidia.com>
-> > > > > Cc: Mark Brown <broonie@kernel.org>
-> > > > > Cc: Pavel Machek <pavel@ucw.cz>
-> > > > > Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> > > > > Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > > > > Cc: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > > > > Cc: linux-gpio@vger.kernel.org
-> > > > > Cc: linux-pm@vger.kernel.org
-> > > > > Cc: iommu@lists.linux-foundation.org
-> > > > > Signed-off-by: Saravana Kannan <saravanak@google.com>
-> > > >
-> > > > I bisected a boot hang with ARCH=s390 defconfig in QEMU down to this
-> > > > change as commit 2b28a1a84a0e ("driver core: Extend deferred probe
-> > > > timeout on driver registration") in next-20220520 (bisect log below).
-> > > >
-> > > > $ make -skj"$(nproc)" ARCH=s390 CROSS_COMPILE=s390x-linux-gnu- defconfig bzImage
-> > > >
-> > > > $ timeout --foreground 15m stdbuf -oL -eL \
-> > > > qemu-system-s390x \
-> > > > -initrd ... \
-> > > > -M s390-ccw-virtio \
-> > > > -display none \
-> > > > -kernel arch/s390/boot/bzImage \
-> > > > -m 512m \
-> > > > -nodefaults \
-> > > > -serial mon:stdio
-> > > > ...
-> > > > [    2.077303] In-situ OAM (IOAM) with IPv6
-> > > > [    2.077639] NET: Registered PF_PACKET protocol family
-> > > > [    2.078063] bridge: filtering via arp/ip/ip6tables is no longer available by default. Update your scripts to load br_netfilter if you need this.
-> > > > [    2.078795] Key type dns_resolver registered
-> > > > [    2.079317] cio: Channel measurement facility initialized using format extended (mode autodetected)
-> > > > [    2.081494] Discipline DIAG cannot be used without z/VM
-> > > > [  260.626363] random: crng init done
-> > > > qemu-system-s390x: terminating on signal 15 from pid 3815762 (timeout)
-> > > >
-> > > > We have a simple rootfs available if necessary:
-> > > >
-> > > > https://github.com/ClangBuiltLinux/boot-utils/raw/bc0d17785eb67f1edd0ee0a134970a807895f741/images/s390/rootfs.cpio.zst
-> > > >
-> > > > If there is any other information I can provide, please let me know!
-> > >
-> > > Hmm... strange. Can you please try the following command line options
-> > > and tell me which of these has the issue and which don't?
-> >
-> > Sure thing!
-> >
-> > > 1) deferred_probe_timeout=0
-> >
-> > No issue.
-> >
-> > > 2) deferred_probe_timeout=1
-> > > 3) deferred_probe_timeout=300
-> >
-> > Both of these appear to hang in the same way, I let each sit for five
-> > minutes.
+Hi Kevin,
+
+On Mon, 23 May 2022 08:25:33 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
+
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Thursday, May 19, 2022 2:21 AM
+> > 
+> > DMA mapping API is the de facto standard for in-kernel DMA. It operates
+> > on a per device/RID basis which is not PASID-aware.
+> > 
+> > Some modern devices such as Intel Data Streaming Accelerator, PASID is
+> > required for certain work submissions. To allow such devices use DMA
+> > mapping API, we need the following functionalities:
+> > 1. Provide device a way to retrieve a PASID for work submission within
+> > the kernel
+> > 2. Enable the kernel PASID on the IOMMU for the device
+> > 3. Attach the kernel PASID to the device's default DMA domain, let it
+> > be IOVA or physical address in case of pass-through.
+> > 
+> > This patch introduces a driver facing API that enables DMA API
+> > PASID usage. Once enabled, device drivers can continue to use DMA APIs
+> > as is. There is no difference in dma_handle between without PASID and
+> > with PASID.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >  drivers/iommu/dma-iommu.c | 114
+> > ++++++++++++++++++++++++++++++++++++++
+> >  include/linux/dma-iommu.h |   3 +
+> >  2 files changed, 117 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> > index 1ca85d37eeab..6ad7ba619ef0 100644
+> > --- a/drivers/iommu/dma-iommu.c
+> > +++ b/drivers/iommu/dma-iommu.c
+> > @@ -34,6 +34,8 @@ struct iommu_dma_msi_page {
+> >  	phys_addr_t		phys;
+> >  };
+> > 
+> > +static DECLARE_IOASID_SET(iommu_dma_pasid);
+> > +
+> >  enum iommu_dma_cookie_type {
+> >  	IOMMU_DMA_IOVA_COOKIE,
+> >  	IOMMU_DMA_MSI_COOKIE,
+> > @@ -370,6 +372,118 @@ void iommu_put_dma_cookie(struct
+> > iommu_domain *domain)
+> >  	domain->iova_cookie = NULL;
+> >  }
+> > 
+> > +/* Protect iommu_domain DMA PASID data */
+> > +static DEFINE_MUTEX(dma_pasid_lock);
+> > +/**
+> > + * iommu_attach_dma_pasid --Attach a PASID for in-kernel DMA. Use the
+> > device's
+> > + * DMA domain.
+> > + * @dev: Device to be enabled
+> > + * @pasid: The returned kernel PASID to be used for DMA
+> > + *
+> > + * DMA request with PASID will be mapped the same way as the legacy
+> > DMA.
+> > + * If the device is in pass-through, PASID will also pass-through. If
+> > the
+> > + * device is in IOVA, the PASID will point to the same IOVA page table.
+> > + *
+> > + * @return err code or 0 on success
+> > + */
+> > +int iommu_attach_dma_pasid(struct device *dev, ioasid_t *pasid)  
 > 
-> Strange that a sufficiently large timeout isn't helping. Is it trying
-> to boot off a network mount? I'll continue looking into this next
-> week.
+> iommu_attach_dma_domain_pasid? 'dma_pasid' is too broad from
+> a API p.o.v.
+> 
+I agree dma_pasid is too broad, technically it is dma_api_pasid but seems
+too long.
+My concern with dma_domain_pasid is that the pasid can also be used for
+identity domain.
 
-I don't think so, it seems like doing that requires some extra flags
-that we do not have:
+> > +{
+> > +	struct iommu_domain *dom;
+> > +	ioasid_t id, max;
+> > +	int ret = 0;
+> > +
+> > +	dom = iommu_get_domain_for_dev(dev);
+> > +	if (!dom || !dom->ops || !dom->ops->attach_dev_pasid)
+> > +		return -ENODEV;
+> > +
+> > +	/* Only support domain types that DMA API can be used */
+> > +	if (dom->type == IOMMU_DOMAIN_UNMANAGED ||
+> > +	    dom->type == IOMMU_DOMAIN_BLOCKED) {
+> > +		dev_warn(dev, "Invalid domain type %d", dom->type);
+> > +		return -EPERM;
+> > +	}  
+> 
+> WARN_ON.
+> 
+> and probably we can just check whether domain is default domain here.
+> 
+good point, I will just use
+struct iommu_domain *def_domain = iommu_get_dma_domain(dev);
 
-https://wiki.qemu.org/Features/S390xNetworkBoot
+> > +
+> > +	mutex_lock(&dma_pasid_lock);
+> > +	id = dom->dma_pasid;
+> > +	if (!id) {
+> > +		/*
+> > +		 * First device to use PASID in its DMA domain,
+> > allocate
+> > +		 * a single PASID per DMA domain is all we need, it is
+> > also
+> > +		 * good for performance when it comes down to IOTLB
+> > flush.
+> > +		 */
+> > +		max = 1U << dev->iommu->pasid_bits;
+> > +		if (!max) {
+> > +			ret = -EINVAL;
+> > +			goto done_unlock;
+> > +		}
+> > +
+> > +		id = ioasid_alloc(&iommu_dma_pasid, 1, max, dev);
+> > +		if (id == INVALID_IOASID) {
+> > +			ret = -ENOMEM;
+> > +			goto done_unlock;
+> > +		}
+> > +
+> > +		dom->dma_pasid = id;
+> > +		atomic_set(&dom->dma_pasid_users, 1);  
+> 
+> this is always accessed with lock held hence no need to be atomic.
+> 
+good catch, will fix
 
-If you need any additional information or want something tested, please
-let me know!
+> > +	}
+> > +
+> > +	ret = iommu_attach_device_pasid(dom, dev, id);
+> > +	if (!ret) {
+> > +		*pasid = id;
+> > +		atomic_inc(&dom->dma_pasid_users);
+> > +		goto done_unlock;
+> > +	}
+> > +
+> > +	if (atomic_dec_and_test(&dom->dma_pasid_users)) {
+> > +		ioasid_free(id);
+> > +		dom->dma_pasid = 0;
+> > +	}
+> > +done_unlock:
+> > +	mutex_unlock(&dma_pasid_lock);
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL(iommu_attach_dma_pasid);
+> > +
+> > +/**
+> > + * iommu_detach_dma_pasid --Disable in-kernel DMA request with PASID
+> > + * @dev:	Device's PASID DMA to be disabled
+> > + *
+> > + * It is the device driver's responsibility to ensure no more incoming
+> > DMA
+> > + * requests with the kernel PASID before calling this function. IOMMU
+> > driver
+> > + * ensures PASID cache, IOTLBs related to the kernel PASID are cleared
+> > and
+> > + * drained.
+> > + *
+> > + */
+> > +void iommu_detach_dma_pasid(struct device *dev)
+> > +{
+> > +	struct iommu_domain *dom;
+> > +	ioasid_t pasid;
+> > +
+> > +	dom = iommu_get_domain_for_dev(dev);
+> > +	if (WARN_ON(!dom || !dom->ops || !dom->ops->detach_dev_pasid))
+> > +		return;
+> > +
+> > +	/* Only support DMA API managed domain type */
+> > +	if (WARN_ON(dom->type == IOMMU_DOMAIN_UNMANAGED ||
+> > +		    dom->type == IOMMU_DOMAIN_BLOCKED))
+> > +		return;
+> > +
+> > +	mutex_lock(&dma_pasid_lock);
+> > +	pasid = iommu_get_pasid_from_domain(dev, dom);
+> > +	if (!pasid || pasid == INVALID_IOASID) {
+> > +		dev_err(dev, "No valid DMA PASID attached\n");
+> > +		mutex_unlock(&dma_pasid_lock);
+> > +		return;
+> > +	}  
+> 
+> here just use dom->dma_pasid and let iommu driver to figure out
+> underlying whether this device has been attached to the domain
+> with the said pasid.
+> 
+Yeah, I am checking the pasid matching in the iommu driver. My thinking is
+that here is a quick sanity check in the common code to rule out invalid value.
 
-Cheers,
-Nathan
+
+Thanks a lot!
+
+
+Jacob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
