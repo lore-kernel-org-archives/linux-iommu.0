@@ -4,136 +4,62 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A4970C433EF
-	for <iommu@archiver.kernel.org>; Tue, 24 May 2022 13:51:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 97622C433F5
+	for <iommu@archiver.kernel.org>; Tue, 24 May 2022 14:36:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 3C7DA41A3D;
-	Tue, 24 May 2022 13:51:43 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id EB67F41B52;
+	Tue, 24 May 2022 14:36:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id coVuCbMNqb1Z; Tue, 24 May 2022 13:51:42 +0000 (UTC)
+	with ESMTP id m4dEfzAp5DDP; Tue, 24 May 2022 14:36:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id C93AA41A2F;
-	Tue, 24 May 2022 13:51:41 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 73F1F41986;
+	Tue, 24 May 2022 14:36:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 94D52C0039;
-	Tue, 24 May 2022 13:51:41 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 08303C002D
- for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 13:51:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 43333C0032;
+	Tue, 24 May 2022 14:36:23 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5E04BC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 14:36:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id E959341A2F
- for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 13:51:39 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 33D93400FE
+ for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 14:36:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3qSSeseqYNS2 for <iommu@lists.linux-foundation.org>;
- Tue, 24 May 2022 13:51:39 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam11on20607.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7eaa::607])
- by smtp4.osuosl.org (Postfix) with ESMTPS id EAA5D41855
- for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 13:51:38 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PemnHfgfGSbE+WhoihWAXmznAdupXYtYl/rCsq0xb0ShvKRTaUercTEtI4EdBFW7LCKoNemF6WEsJxRpUpkhh3I0XZO7jr21KzcmB3dgKWuWE8ANgIYHpZTgEEBMsolvMU/DOQRieLh8ieX4JAcBQBgRoWa2fuOcknod/QIu9jlHAy1f73DmSh9LmSuJeetcTvlyTquaQxRZtbk9u+HPCk3+i9lkyc8PouZ/x7Z11Vfxi1EWyLJWqPO9OR7zEasn4gBUkrf2+tv10iKIntNnprcdLTZrh7kUkJQecWHGjV1/6CCxubhxVJHi6zJI7c+31XmjrPAVdiS5QdZVK5dfNQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PukwRsX+JmHD5N09748MoeymA2Y6G3XhM6DZ5iNnnEM=;
- b=QzK1AheutntMBIJL5s3Y5g3vRvGxEUTLDx2YkJeVv+DneSoxyk7TT0EFi64Ia+v8kz5ysGLOtiQUdFzup75IthtNlU8cS3Y8Fk0KQbwm6vdoJecIKIUftzozqokivhUyqKSgyty7AbCpBy/TyYwUL+tRISLMFXFrHbDwIzsLINOTFmbiFzv7ktti0+R59zPvEHg93uAR4tpJb6jMA5XPO9dwf3G8WNyU2Mn1/9QpHzIowJRAcDR6RzP5/YOTkOMyC2QQohiAhBc5I63Pvo9xlk7q4id2M4vUESUsuzlLuzGDDky3216RilU6EUA8HCRvoA5koZLnSiYjv1pBXp/AMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PukwRsX+JmHD5N09748MoeymA2Y6G3XhM6DZ5iNnnEM=;
- b=V/m7KrEihlMqVLI+NoveTpGDmPBGLpz7xi64GAmpp0TZ2gA3kUYJ9hXTxBnZvuWv7sgrxK9/fX3+eFzzzsEhnRuvO9FwvgEo9QRpuwP4S+EKxBTlmejEFFm4qDHLyTwec9YKU5wSDvu+P+4mFld8PzcM0tkRKjubWIXXXE02I2TR6/ZtQy84VK0ajOCitQV38kPqc0iFLeFOtwEUgy5Xyg+s8/aVr/8WR4DS+dZf7EHw51LYsQD06mU15o6g4FscW93imBPXiJ7xyYQlrqGQ5o1a6wtaMMrs4h8u0trQ2q1Ivz3twe5P4QWnSkmalW5PIH3aB34varTVm/5dJbxkLg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by CY4PR12MB1895.namprd12.prod.outlook.com (2603:10b6:903:11c::12)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Tue, 24 May
- 2022 13:51:36 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::2484:51da:d56f:f1a5]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::2484:51da:d56f:f1a5%7]) with mapi id 15.20.5293.013; Tue, 24 May 2022
- 13:51:36 +0000
-Date: Tue, 24 May 2022 10:51:35 -0300
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v4 3/6] iommu/vt-d: Implement domain ops for
- attach_dev_pasid
-Message-ID: <20220524135135.GV1343366@nvidia.com>
-References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
- <20220518182120.1136715-4-jacob.jun.pan@linux.intel.com>
-Content-Disposition: inline
-In-Reply-To: <20220518182120.1136715-4-jacob.jun.pan@linux.intel.com>
-X-ClientProxiedBy: BL1PR13CA0226.namprd13.prod.outlook.com
- (2603:10b6:208:2bf::21) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id SUZHHJ9nj1Lh for <iommu@lists.linux-foundation.org>;
+ Tue, 24 May 2022 14:36:21 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 4498D400C1
+ for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 14:36:21 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2FD9F1FB;
+ Tue, 24 May 2022 07:36:20 -0700 (PDT)
+Received: from [10.57.82.55] (unknown [10.57.82.55])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1E7193F66F;
+ Tue, 24 May 2022 07:36:17 -0700 (PDT)
+Message-ID: <f3170016-4d7f-e78e-db48-68305f683349@arm.com>
+Date: Tue, 24 May 2022 15:36:11 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c2182ff5-ab2b-4dad-7ec5-08da3d8c84e5
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1895:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR12MB1895E609772DD560160D105EC2D79@CY4PR12MB1895.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VyPC5abRbMSayTdAiWn+WpLfxMcDFVqhWDQ/CaP7H6+b+te89OC0YSHXDInvLDsjtnYPcAFtMCXbRw42+wpw9y8EBmT6IGhhkzjcXSAtxMC1oslSD/SmqVkQij0aR7FBzmA6tu4GO+lsapgvlt/U9381c53jlX1VGhk6cmycCFnUA8XjtMCWnSXq0mslpAgRQ30dclOCV8wYnDlYLni7NNqrQcXpVkQqcYmu9iiMe/ueaJdRGkGmDo8w4hJnrFpuxm3o51HlQ8+xlB6j0EAEMsByhF+ygOE/rBjf2cH7I904ieOgPRrvUzGGdqOxXlOgcRzzFrGMjw6SBo01JS/z22tOpdUQfXHqWSgCUxu3RFbqWmr6pJB3VJRzVTTxWhOVouA+0BwA6KlGgrUUjPIHEfIZyPZIatUdVgV5UcaycoB/LdJQ9VvMqBJI5B2rJ2/pWQ0cRo8BIS7FGXbRWp8NvckkrI5eNMWewgDrPCLJt2+qJo4wL47YyatQ0Azqp+UYJ+ArkT4AGMiiERno5oH4HYAl2vsWsin7huc3Hmxf1H//a8VraCRe8wtWfJT5H5NBdE5mviHU3sP8e+wptGw/q8tnAl3n0551IbEd1wsv4gNXFyGcsUO8yVdmS6MXhk1ILsu9FK+LjBkoHXAXAranog==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(8936002)(5660300002)(7416002)(186003)(2616005)(1076003)(8676002)(66946007)(66476007)(4326008)(316002)(86362001)(54906003)(6916009)(26005)(6506007)(66556008)(508600001)(38100700002)(6512007)(6486002)(2906002)(83380400001)(33656002)(36756003);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?S/JLbNVvpNfQw7mLQags8Fw4hujfISGf/a1rs4PJle13k1d1rtXuUOlg2IPz?=
- =?us-ascii?Q?+XtLkmx/DOhFSE73P19pxH/RzOsSDEbXgzSE/lLNQoEqQsd3mr4U7fcHc/HA?=
- =?us-ascii?Q?b/syUhxHKSdmDeYBdK5cel6e33uAJLHEa21dR8MnrkM1dbScnp8Yrk1u+WYI?=
- =?us-ascii?Q?Sy0K8cIP3vhLpd5dIcOJRVClqBy0fJosRMlQul0nEIKHzCjjnZmbmbx+0g2Q?=
- =?us-ascii?Q?L5ke7RkRwVb0dalb08j3GspLiKn1jyZT/oWYIQcSBYgxtI0CP57VH7Y13Zm9?=
- =?us-ascii?Q?5F77CDhDMcs6Wp15r9jH3fVtDgWu3gDqguj8l0NhkOQT9OKOMJGp2A4uXkT/?=
- =?us-ascii?Q?JpgBGOfBVd3PSsGXCwUcuWGsiGcVSCbDI+cqwz+DuLhoohHKG1pQEac2+kmM?=
- =?us-ascii?Q?QwW5974WJZzQB5AJ6fE9Du21vq2HgWPMcoKubZzZ8HxA16/5BXUTkiBY1YjH?=
- =?us-ascii?Q?TirbLOfPYfxmfMC+Lh+YNPEoTfIBBtfoQsXIHR5QFnwLpZhx0IEyoEdjhtRf?=
- =?us-ascii?Q?PO4sCv2nKo1QelLVAvDzZ+lCnpN6H6SSikUAVXQ9Anj31vCnEDIX36Lm9FpL?=
- =?us-ascii?Q?wkiYT7+A2SNkAWuAozQXisGH5eW6rrhMG2fc4pTa6EnVXCQF9O39b27yhIG7?=
- =?us-ascii?Q?j3XDw67nD0NsGkqYtqwnpv9v/xGIIjCkBmurWnXvvcsSzMNpFBoqD8fpvlgX?=
- =?us-ascii?Q?XY/CYbWEf9QNH6X6/zubpywFyNBV4KNLE7ygwA+WTBxK1ijRiM4e6V2j6N2o?=
- =?us-ascii?Q?w9SfPdTT8yyKBnoGVk00Dv+B6+rItZWzZ6R0Hh4CftmXbYLvsMgWi7H7hb4I?=
- =?us-ascii?Q?V9yZPWUgD5Prv/CrbzTDquoslxgG6vwkxuUWqUzFdPMO8bzxjr+i4xvz8/2w?=
- =?us-ascii?Q?KBNPmMUsk0vMQCT3IJ8KtMxW8Zj5+aJy5bbCh1ufWM2ro3w48RMntfIrXCma?=
- =?us-ascii?Q?TsTbQeLfu0ciNVPVm+mfpXBs7nU9eE8e+8+GqDxwdkJ5KS08PDGCgAH5eVDH?=
- =?us-ascii?Q?U6V4Nfw+LaAJdHzSVKcryF3L8Hu5gvQLcYf1/W3p7Nq8Dq1PfFBjlHvcd0Dg?=
- =?us-ascii?Q?UYhN65vejDGrDAuDfsxIj+3FjFnRXipdWtpZNIPM+MjzDoset7pfWkf4dmUY?=
- =?us-ascii?Q?QW04mPG6aWm/RAJ5wT4tPQeIzXbXVm3y+gfEUZQBj9CVY2BZ6woSvV6Z5YoP?=
- =?us-ascii?Q?+jegd+apZ+dzibk/8zdJEHKscfZytE55SgborcbAUjKX2kCQRsuiEpTuFK/N?=
- =?us-ascii?Q?XYLhtuTsl8R8yzAnRf22ejaKYeKUavbNKQZqDIb3hoK1nckwB6NZJ9AE1FYz?=
- =?us-ascii?Q?czV4gEdx3YBkojQ+rnAJV8rA8yw+gfyzffgC0tujGagodvO8jf7rO/EaLAZE?=
- =?us-ascii?Q?xG/BreYbc+nR8D5CtnXZj/T3eAPs3o0AYtYVmTmjpSjpd8W4/FP7HFiPwd0U?=
- =?us-ascii?Q?nEXwTfpgJywYC8ukYsiwpYkhLWZCC0IBNea5hbnTKFFTX1l5XjOGE6UPyBE9?=
- =?us-ascii?Q?SOPaMTNBK9gq0qHkwvJ2Nqu/X4dzbkeqJZnCtDV6VP3v8G/CF9RXPFAyjlNM?=
- =?us-ascii?Q?Cb4vIqs8/NjPStEtSweEolK4/2dobge0ti/IndmyzT1Bd4VJQuc2poPz5kgE?=
- =?us-ascii?Q?YdOrS7peTjhhDc2UKfpgDsXOIeBQ1Dr704r/lVuGWLuRn06iLwCOp3jZW0db?=
- =?us-ascii?Q?lPiTa5z3oTueo6Makqn2T6iec1zcXD8WQKj+4Jx+htxDYtz3wyQNA0datvz0?=
- =?us-ascii?Q?yREQOwQjGQ=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c2182ff5-ab2b-4dad-7ec5-08da3d8c84e5
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2022 13:51:36.2257 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YW6G9xCXolCFq0qVg4WUZ1uHjpNz38E89SPDqFPnhkkF6UJNjLiuv5v45K7C0wmS
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1895
-Cc: vkoul@kernel.org, "Tian, Kevin" <kevin.tian@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- will@kernel.org, David Woodhouse <dwmw2@infradead.org>,
- LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
- iommu@lists.linux-foundation.org, dmaengine@vger.kernel.org,
- robin.murphy@arm.com, Jean-Philippe Brucker <jean-philippe@linaro.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v7 03/10] iommu/sva: Add iommu_sva_domain support
+Content-Language: en-GB
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Will Deacon <will@kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
+References: <20220519072047.2996983-1-baolu.lu@linux.intel.com>
+ <20220519072047.2996983-4-baolu.lu@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220519072047.2996983-4-baolu.lu@linux.intel.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -146,52 +72,86 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, May 18, 2022 at 11:21:17AM -0700, Jacob Pan wrote:
-> On VT-d platforms with scalable mode enabled, devices issue DMA requests
-> with PASID need to attach PASIDs to given IOMMU domains. The attach
-> operation involves the following:
-> - Programming the PASID into the device's PASID table
-> - Tracking device domain and the PASID relationship
-> - Managing IOTLB and device TLB invalidations
-> 
-> This patch add attach_dev_pasid functions to the default domain ops which
-> is used by DMA and identity domain types. It could be extended to support
-> other domain types whenever necessary.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
->  drivers/iommu/intel/iommu.c | 72 +++++++++++++++++++++++++++++++++++--
->  1 file changed, 70 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 1c2c92b657c7..75615c105fdf 100644
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1556,12 +1556,18 @@ static void __iommu_flush_dev_iotlb(struct device_domain_info *info,
->  				    u64 addr, unsigned int mask)
->  {
->  	u16 sid, qdep;
-> +	ioasid_t pasid;
->  
->  	if (!info || !info->ats_enabled)
->  		return;
->  
->  	sid = info->bus << 8 | info->devfn;
->  	qdep = info->ats_qdep;
-> +	pasid = iommu_get_pasid_from_domain(info->dev, &info->domain->domain);
+On 2022-05-19 08:20, Lu Baolu wrote:
+[...]
+> diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
+> index 106506143896..210c376f6043 100644
+> --- a/drivers/iommu/iommu-sva-lib.c
+> +++ b/drivers/iommu/iommu-sva-lib.c
+> @@ -69,3 +69,51 @@ struct mm_struct *iommu_sva_find(ioasid_t pasid)
+>   	return ioasid_find(&iommu_sva_pasid, pasid, __mmget_not_zero);
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_sva_find);
+> +
+> +/*
+> + * IOMMU SVA driver-oriented interfaces
+> + */
+> +struct iommu_domain *
+> +iommu_sva_alloc_domain(struct bus_type *bus, struct mm_struct *mm)
 
-No, a simgple domain can be attached to multiple pasids, all need to
-be flushed.
+Argh, please no new bus-based external interfaces! Domain allocation 
+needs to resolve to the right IOMMU instance to solve a number of 
+issues, and cleaning up existing users of iommu_domain_alloc() to 
+prepare for that is already hard enough. This is arguably even more 
+relevant here than for other domain types, since SVA support is more 
+likely to depend on specific features that can vary between IOMMU 
+instances even with the same driver. Please make the external interface 
+take a struct device, then resolve the ops through dev->iommu.
 
-This whole API isn't suitable.
+Further nit: the naming inconsistency bugs me a bit - 
+iommu_sva_domain_alloc() seems more natural. Also I'd question the 
+symmetry vs. usability dichotomy of whether we *really* want two 
+different free functions for a struct iommu_domain pointer, where any 
+caller which might mix SVA and non-SVA usage then has to remember how 
+they allocated any particular domain :/
 
-Jason
+> +{
+> +	struct iommu_sva_domain *sva_domain;
+> +	struct iommu_domain *domain;
+> +
+> +	if (!bus->iommu_ops || !bus->iommu_ops->sva_domain_ops)
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	sva_domain = kzalloc(sizeof(*sva_domain), GFP_KERNEL);
+> +	if (!sva_domain)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	mmgrab(mm);
+> +	sva_domain->mm = mm;
+> +
+> +	domain = &sva_domain->domain;
+> +	domain->type = IOMMU_DOMAIN_SVA;
+> +	domain->ops = bus->iommu_ops->sva_domain_ops;
+
+I'd have thought it would be logical to pass IOMMU_DOMAIN_SVA to the 
+normal domain_alloc call, so that driver-internal stuff like context 
+descriptors can be still be hung off the domain as usual (rather than 
+all drivers having to implement some extra internal lookup mechanism to 
+handle all the SVA domain ops), but that's something we're free to come 
+back and change later. FWIW I'd just stick the mm pointer in struct 
+iommu_domain, in a union with the fault handler stuff and/or iova_cookie 
+- those are mutually exclusive with SVA, right?
+
+Cheers,
+Robin.
+
+> +
+> +	return domain;
+> +}
+> +
+> +void iommu_sva_free_domain(struct iommu_domain *domain)
+> +{
+> +	struct iommu_sva_domain *sva_domain = to_sva_domain(domain);
+> +
+> +	mmdrop(sva_domain->mm);
+> +	kfree(sva_domain);
+> +}
+> +
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
