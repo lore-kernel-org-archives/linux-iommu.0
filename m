@@ -1,99 +1,83 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id E30CAC4332F
-	for <iommu@archiver.kernel.org>; Tue, 24 May 2022 03:43:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0BE2CC433EF
+	for <iommu@archiver.kernel.org>; Tue, 24 May 2022 03:55:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 899C860AEE;
-	Tue, 24 May 2022 03:43:48 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id A21E3832D0;
+	Tue, 24 May 2022 03:55:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GMwxQR0917jv; Tue, 24 May 2022 03:43:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id DC96A60E2D;
-	Tue, 24 May 2022 03:43:46 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 95719C0032;
-	Tue, 24 May 2022 03:43:46 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 181A6C002D
- for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 03:43:45 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 067BB828B3
- for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 03:43:45 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=google.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uHs3uU3ng2JZ for <iommu@lists.linux-foundation.org>;
- Tue, 24 May 2022 03:43:43 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com
- [IPv6:2607:f8b0:4864:20::112b])
- by smtp1.osuosl.org (Postfix) with ESMTPS id A600382896
- for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 03:43:43 +0000 (UTC)
-Received: by mail-yw1-x112b.google.com with SMTP id
- 00721157ae682-30026b1124bso11604507b3.1
- for <iommu@lists.linux-foundation.org>; Mon, 23 May 2022 20:43:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=kFcU8MB8D+ohTeCCBEOJ8SRbXprR3YxyruL+Vn+38fo=;
- b=m3kfG3aPU2TePLRky/sZTAPS/O8UFZ1VH2Y7ghtxl8F1dCiFtEvBxxlGLFcI91noK3
- PmdoI1PlTIgN3DS5MdQIdf0zpikiGhPuQplZyw6PtJENoVqaQH7D10bacWQPCDfNIbBv
- iUSldiezerkONOrJN5tFqbJTLgOyCvUP3hEgZJaqr2RGVpPUHHGyQiuIopmsEoaVUJpn
- CYm66AIhx5qlpDlhpV6qEI+ysK4msP/h451PP/d7JzDICJuKEioBY0ZsScCLCzAacdJy
- UQf/QVe6paRIxczQp0VNNq8z3K8j02hTkC49RF/1HhmgRlXEglK9yae/vUDQBZI2sG6+
- cOXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=kFcU8MB8D+ohTeCCBEOJ8SRbXprR3YxyruL+Vn+38fo=;
- b=xGEh6W8HJL+kkgN8QifyB+X9BHwSqJAexIeY1ztsDmpk56BLaFtju2/TP0NjGHAO/Q
- ltVy9+4qG7eoW2gV5Iv7FxBSIRDmPSr5EbxWtGNhigDAy1efxct2YU7qyYkFdsdJhU0g
- 2R0SUG8STK7JJF1ZL1cSPCSabV5U21enVeT/vm7vmYlkdcD6FgY3A+/n63mmAd+7GZ04
- 2ExaFHlX3HU306WOpdCEagVT8QUOBGJyYbqLBkr76F66VUM0MLTT/HwrM1Oacmq6O6Cw
- dSxgDVdXAtmO4y6KXBfVv8N6zRXnn7yDbRkaGN4BLV52OdEglnKnfV3eKC1VSJT0Gy5R
- RBqw==
-X-Gm-Message-State: AOAM530hbKZN42nuKO2farmr8Q1woabRJ8fcHUIW/OaHI58Op3Dk7iRW
- SnzXaiKiSbpuYu9RpCX2x7qgxWuinGhwMo4KUi6ZmA==
-X-Google-Smtp-Source: ABdhPJxxclBWP5tFkbFjNa7SsUrOWwTViOz3TwNZEdS4IBh9mbWmiM1ACFR0gCy5bMxNXKWUSpBB+nSOyrtYgANPI38=
-X-Received: by 2002:a0d:e903:0:b0:2ff:43a3:90c8 with SMTP id
- s3-20020a0de903000000b002ff43a390c8mr26160017ywe.455.1653363822372; Mon, 23
- May 2022 20:43:42 -0700 (PDT)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Hm7UgJemdJop; Tue, 24 May 2022 03:55:56 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 40783831D5;
+	Tue, 24 May 2022 03:55:56 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0C577C0032;
+	Tue, 24 May 2022 03:55:56 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 878A9C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 03:55:54 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 6E50E405D9
+ for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 03:55:54 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=quicinc.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id B6TvMl4B_-bN for <iommu@lists.linux-foundation.org>;
+ Tue, 24 May 2022 03:55:53 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 3ED0D40395
+ for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 03:55:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+ t=1653364553; x=1684900553;
+ h=message-id:date:mime-version:subject:to:cc:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=DGcCckkF61WltcMI0jqjRYtrSETEtm9cvQ4zcqOtcFk=;
+ b=RV9lpIQKg8UArEAMrMQp7wlCVnCPAfezDxkEUBuGB7yt7ZWv6llZjECT
+ lefJ3PMCPgOCxQShIvSkTL1MR2qPTDy40/4MMgzJBOO//eoqy1fxmBsxv
+ dUGbLL6CaDhP7A7G8HJ/CrzOyZB8ILAiGqZ0dE8JkCZnrW9sjJC8EJW7r M=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+ by alexa-out.qualcomm.com with ESMTP; 23 May 2022 20:55:52 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+ by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 23 May 2022 20:55:52 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Mon, 23 May 2022 20:55:51 -0700
+Received: from [10.50.42.127] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 23 May
+ 2022 20:55:48 -0700
+Message-ID: <28d8529c-28bb-a97a-b421-fcf83760788a@quicinc.com>
+Date: Tue, 24 May 2022 09:25:45 +0530
 MIME-Version: 1.0
-References: <20220429220933.1350374-1-saravanak@google.com>
- <YogkhvFGVcjNQ21Z@dev-arch.thelio-3990X>
- <CAGETcx9nvBs1b4M=2hBhrLX_2-rzLtAmV9WfTXu0MC7JnsBvwA@mail.gmail.com>
- <YogsiMCDupNUhMgL@dev-fedora.thelio-3990X>
- <CAGETcx-JyWwoGA3o8eep7E29Cm4DcVT6D1JFJh72jLcqm_mjCQ@mail.gmail.com>
- <Youleo3Ganxbc1sq@dev-arch.thelio-3990X>
- <CAGETcx-sL08h2toEyxY6ztc6xNuJiPok6iDEeuJ1mOA3nvE+vA@mail.gmail.com>
- <YowHNo4sBjr9ijZr@dev-arch.thelio-3990X>
-In-Reply-To: <YowHNo4sBjr9ijZr@dev-arch.thelio-3990X>
-Date: Mon, 23 May 2022 20:43:06 -0700
-Message-ID: <CAGETcx91_WgpmwEA7mBSvUdyJV0a8ymfaNKTmXq=mAJYAjzq1A@mail.gmail.com>
-Subject: Re: [PATCH v1] driver core: Extend deferred probe timeout on driver
- registration
-To: Nathan Chancellor <nathan@kernel.org>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, linux-doc@vger.kernel.org,
- Linus Walleij <linus.walleij@linaro.org>, John Stultz <jstultz@google.com>,
- Pavel Machek <pavel@ucw.cz>, linux-s390@vger.kernel.org,
- Will Deacon <will@kernel.org>, Rob Herring <robh@kernel.org>,
- Jonathan Corbet <corbet@lwn.net>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Geert Uytterhoeven <geert@linux-m68k.org>, Thierry Reding <treding@nvidia.com>,
- kernel-team@android.com, linux-pm@vger.kernel.org, linux-gpio@vger.kernel.org,
- Mark Brown <broonie@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Kevin Hilman <khilman@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- linux-kernel@vger.kernel.org,
- Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
- iommu@lists.linux-foundation.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: Add debug support for TLB sync
+ timeouts
+Content-Language: en-US
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
+ Roedel" <joro@8bytes.org>
+References: <20220523171847.21929-1-quic_saipraka@quicinc.com>
+From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+In-Reply-To: <20220523171847.21929-1-quic_saipraka@quicinc.com>
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+Cc: Rob Clark <robdclark@chromium.org>, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ quic_guptap@quicinc.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,241 +90,156 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Saravana Kannan via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Saravana Kannan <saravanak@google.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, May 23, 2022 at 3:14 PM Nathan Chancellor <nathan@kernel.org> wrote:
+On 5/23/2022 10:48 PM, Sai Prakash Ranjan wrote:
+> TLB sync timeouts can be due to various reasons such as TBU power down
+> or pending TCU/TBU invalidation/sync and so on. Debugging these often
+> require dumping of some implementation defined registers to know the
+> status of TBU/TCU operations and some of these registers are not
+> accessible in non-secure world such as from kernel and requires SMC
+> calls to read them in the secure world. So, add this debug support
+> to dump implementation defined registers for TLB sync timeout issues.
 >
-> On Mon, May 23, 2022 at 01:04:03PM -0700, Saravana Kannan wrote:
-> > On Mon, May 23, 2022 at 8:17 AM Nathan Chancellor <nathan@kernel.org> wrote:
-> > >
-> > > On Fri, May 20, 2022 at 05:15:55PM -0700, Saravana Kannan wrote:
-> > > > On Fri, May 20, 2022 at 5:04 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> > > > >
-> > > > > On Fri, May 20, 2022 at 04:49:48PM -0700, Saravana Kannan wrote:
-> > > > > > On Fri, May 20, 2022 at 4:30 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> > > > > > >
-> > > > > > > Hi Saravana,
-> > > > > > >
-> > > > > > > On Fri, Apr 29, 2022 at 03:09:32PM -0700, Saravana Kannan wrote:
-> > > > > > > > The deferred probe timer that's used for this currently starts at
-> > > > > > > > late_initcall and runs for driver_deferred_probe_timeout seconds. The
-> > > > > > > > assumption being that all available drivers would be loaded and
-> > > > > > > > registered before the timer expires. This means, the
-> > > > > > > > driver_deferred_probe_timeout has to be pretty large for it to cover the
-> > > > > > > > worst case. But if we set the default value for it to cover the worst
-> > > > > > > > case, it would significantly slow down the average case. For this
-> > > > > > > > reason, the default value is set to 0.
-> > > > > > > >
-> > > > > > > > Also, with CONFIG_MODULES=y and the current default values of
-> > > > > > > > driver_deferred_probe_timeout=0 and fw_devlink=on, devices with missing
-> > > > > > > > drivers will cause their consumer devices to always defer their probes.
-> > > > > > > > This is because device links created by fw_devlink defer the probe even
-> > > > > > > > before the consumer driver's probe() is called.
-> > > > > > > >
-> > > > > > > > Instead of a fixed timeout, if we extend an unexpired deferred probe
-> > > > > > > > timer on every successful driver registration, with the expectation more
-> > > > > > > > modules would be loaded in the near future, then the default value of
-> > > > > > > > driver_deferred_probe_timeout only needs to be as long as the worst case
-> > > > > > > > time difference between two consecutive module loads.
-> > > > > > > >
-> > > > > > > > So let's implement that and set the default value to 10 seconds when
-> > > > > > > > CONFIG_MODULES=y.
-> > > > > > > >
-> > > > > > > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > > > > > > Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-> > > > > > > > Cc: Rob Herring <robh@kernel.org>
-> > > > > > > > Cc: Linus Walleij <linus.walleij@linaro.org>
-> > > > > > > > Cc: Will Deacon <will@kernel.org>
-> > > > > > > > Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> > > > > > > > Cc: Kevin Hilman <khilman@kernel.org>
-> > > > > > > > Cc: Thierry Reding <treding@nvidia.com>
-> > > > > > > > Cc: Mark Brown <broonie@kernel.org>
-> > > > > > > > Cc: Pavel Machek <pavel@ucw.cz>
-> > > > > > > > Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> > > > > > > > Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> > > > > > > > Cc: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > > > > > > > Cc: linux-gpio@vger.kernel.org
-> > > > > > > > Cc: linux-pm@vger.kernel.org
-> > > > > > > > Cc: iommu@lists.linux-foundation.org
-> > > > > > > > Signed-off-by: Saravana Kannan <saravanak@google.com>
-> > > > > > >
-> > > > > > > I bisected a boot hang with ARCH=s390 defconfig in QEMU down to this
-> > > > > > > change as commit 2b28a1a84a0e ("driver core: Extend deferred probe
-> > > > > > > timeout on driver registration") in next-20220520 (bisect log below).
-> > > > > > >
-> > > > > > > $ make -skj"$(nproc)" ARCH=s390 CROSS_COMPILE=s390x-linux-gnu- defconfig bzImage
-> > > > > > >
-> > > > > > > $ timeout --foreground 15m stdbuf -oL -eL \
-> > > > > > > qemu-system-s390x \
-> > > > > > > -initrd ... \
-> > > > > > > -M s390-ccw-virtio \
-> > > > > > > -display none \
-> > > > > > > -kernel arch/s390/boot/bzImage \
-> > > > > > > -m 512m \
-> > > > > > > -nodefaults \
-> > > > > > > -serial mon:stdio
-> > > > > > > ...
-> > > > > > > [    2.077303] In-situ OAM (IOAM) with IPv6
-> > > > > > > [    2.077639] NET: Registered PF_PACKET protocol family
-> > > > > > > [    2.078063] bridge: filtering via arp/ip/ip6tables is no longer available by default. Update your scripts to load br_netfilter if you need this.
-> > > > > > > [    2.078795] Key type dns_resolver registered
-> > > > > > > [    2.079317] cio: Channel measurement facility initialized using format extended (mode autodetected)
-> > > > > > > [    2.081494] Discipline DIAG cannot be used without z/VM
-> > > > > > > [  260.626363] random: crng init done
-> > > > > > > qemu-system-s390x: terminating on signal 15 from pid 3815762 (timeout)
-> > > > > > >
-> > > > > > > We have a simple rootfs available if necessary:
-> > > > > > >
-> > > > > > > https://github.com/ClangBuiltLinux/boot-utils/raw/bc0d17785eb67f1edd0ee0a134970a807895f741/images/s390/rootfs.cpio.zst
-> > > > > > >
-> > > > > > > If there is any other information I can provide, please let me know!
-> > > > > >
-> > > > > > Hmm... strange. Can you please try the following command line options
-> > > > > > and tell me which of these has the issue and which don't?
-> > > > >
-> > > > > Sure thing!
-> > > > >
-> > > > > > 1) deferred_probe_timeout=0
-> > > > >
-> > > > > No issue.
-> > > > >
-> > > > > > 2) deferred_probe_timeout=1
-> > > > > > 3) deferred_probe_timeout=300
-> > > > >
-> > > > > Both of these appear to hang in the same way, I let each sit for five
-> > > > > minutes.
-> > > >
-> > > > Strange that a sufficiently large timeout isn't helping. Is it trying
-> > > > to boot off a network mount? I'll continue looking into this next
-> > > > week.
-> > >
-> > > I don't think so, it seems like doing that requires some extra flags
-> > > that we do not have:
-> > >
-> > > https://wiki.qemu.org/Features/S390xNetworkBoot
-> > >
-> > > If you need any additional information or want something tested, please
-> > > let me know!
-> >
-> > I'll try to get qemu going on my end, but I'm not too confident I'll
-> > be able to get to it in a timely fashion. So if you can help figure
-> > out where this boot process is hanging, that'd be very much
-> > appreciated.
+> Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+> ---
+>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 50 ++++++++++++++++++++++
+>   drivers/iommu/arm/arm-smmu/arm-smmu.c      |  2 +
+>   drivers/iommu/arm/arm-smmu/arm-smmu.h      |  4 ++
+>   3 files changed, 56 insertions(+)
 >
-> Sure thing! Information included below, I am more than happy to continue
-> to test and debug as you need.
->
-> > Couple of suggestions for debugging:
-> >
-> > Can you add a log to "wait_for_device_probe()" and see if that's
-> > getting called right before the boot process hangs? If it does, can
-> > you get a stacktrace (I just add a WARN_ON(1) when I need a stack
-> > trace)? It's unlikely this is the case because
-> > deferred_probe_timeout=1 still causes an issue for you, but I'd be
-> > good to rule out.
->
-> If I add a pr_info() call at the top of wait_for_device_probe(), I see
-> it right before the process hangs. Adding WARN_ON(1) right below that
-> reveals dasd_eckd_init() in drivers/s390/block/dasd_eckd.c calls
-> wait_for_device_probe():
->
-> [    4.610397] ------------[ cut here ]------------
-> [    4.610520] WARNING: CPU: 0 PID: 1 at drivers/base/dd.c:742 wait_for_device_probe+0x28/0x110
-> [    4.611134] Modules linked in:
-> [    4.611593] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.18.0-next-20220523-dirty #1
-> [    4.611830] Hardware name: QEMU 8561 QEMU (KVM/Linux)
-> [    4.612017] Krnl PSW : 0704c00180000000 0000000000ce4b3c (wait_for_device_probe+0x2c/0x110)
-> [    4.612258]            R:0 T:1 IO:1 EX:1 Key:0 M:1 W:0 P:0 AS:3 CC:0 PM:0 RI:0 EA:3
-> [    4.612387] Krnl GPRS: 80000000fffff071 0000000000000027 000000000000000c 00000000017f91d8
-> [    4.612457]            00000000fffff071 00000000017f9218 0000000001a655a0 0000000000000006
-> [    4.612521]            0000000000000002 0000000001965810 00000000019d51a0 0000000000000000
-> [    4.612585]            0000000002218000 000000000125bcc8 0000000000ce4b38 000003800000bc80
-> [    4.614814] Krnl Code: 0000000000ce4b2c: e3e0f0980024        stg     %r14,152(%r15)
-> [    4.614814]            0000000000ce4b32: c0e5ffff94cb        brasl   %r14,0000000000cd74c8
-> [    4.614814]           #0000000000ce4b38: af000000            mc      0,0
-> [    4.614814]           >0000000000ce4b3c: c0100054d1fa        larl    %r1,000000000177ef30
-> [    4.614814]            0000000000ce4b42: e31010000012        lt      %r1,0(%r1)
-> [    4.614814]            0000000000ce4b48: a784002d            brc     8,0000000000ce4ba2
-> [    4.614814]            0000000000ce4b4c: d727f0a0f0a0        xc      160(40,%r15),160(%r15)
-> [    4.614814]            0000000000ce4b52: 41b0f0a0            la      %r11,160(%r15)
-> [    4.615698] Call Trace:
-> [    4.616559]  [<0000000000ce4b3c>] wait_for_device_probe+0x2c/0x110
-> [    4.616744] ([<0000000000ce4b38>] wait_for_device_probe+0x28/0x110)
-> [    4.616841]  [<000000000196593e>] dasd_eckd_init+0x12e/0x178
-> [    4.616913]  [<0000000000100936>] do_one_initcall+0x46/0x1e8
-> [    4.616983]  [<0000000001920706>] do_initcalls+0x126/0x150
-> [    4.617046]  [<000000000192095e>] kernel_init_freeable+0x1ae/0x1f0
-> [    4.617110]  [<0000000000ce85a6>] kernel_init+0x2e/0x168
-> [    4.617171]  [<0000000000103320>] __ret_from_fork+0x40/0x58
-> [    4.617233]  [<0000000000cf5eaa>] ret_from_fork+0xa/0x40
-> [    4.617352] Last Breaking-Event-Address:
-> [    4.617393]  [<0000000000e0e098>] __s390_indirect_jump_r14+0x0/0xc
-> [    4.617481] ---[ end trace 0000000000000000 ]---
->
-> > Let's try to rule out if deferred_probe_extend_timeout() is causing
-> > some issues. So, without my patch, what happens if you set:
-> > deferred_probe_timeout=1
-> > deferred_probe_timeout=300
->
-> At commit 6ee60e9c9f2f ("MAINTAINERS: add Russ Weight as a firmware
-> loader maintainer"), both deferred_probe_timeout=1 and
-> deferred_probe_timeout=300 hang the boot.
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index 7820711c4560..22e9a0085475 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -5,11 +5,19 @@
+>   
+>   #include <linux/acpi.h>
+>   #include <linux/adreno-smmu-priv.h>
+> +#include <linux/delay.h>
+>   #include <linux/of_device.h>
+>   #include <linux/qcom_scm.h>
+>   
+>   #include "arm-smmu.h"
+>   
+> +#define QCOM_DUMMY_VAL	-1
+> +
+> +/* Implementation Defined Register Space 0 registers */
+> +#define QCOM_SMMU_STATS_SYNC_INV_TBU_ACK	0x5dc
+> +#define QCOM_SMMU_TBU_PWR_STATUS		0x2204
+> +#define QCOM_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR	0x2670
+> +
+>   struct qcom_smmu {
+>   	struct arm_smmu_device smmu;
+>   	bool bypass_quirk;
+> @@ -22,6 +30,46 @@ static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+>   	return container_of(smmu, struct qcom_smmu, smmu);
+>   }
+>   
+> +static void qcom_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
+> +				int sync, int status)
+> +{
+> +	u32 sync_inv_ack, sync_inv_progress, tbu_pwr_status;
+> +	unsigned int spin_cnt, delay;
+> +	u32 reg;
+> +	int ret;
+> +
+> +	arm_smmu_writel(smmu, page, sync, QCOM_DUMMY_VAL);
+> +	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
+> +		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
+> +			reg = arm_smmu_readl(smmu, page, status);
+> +			if (!(reg & ARM_SMMU_sTLBGSTATUS_GSACTIVE))
+> +				return;
+> +			cpu_relax();
+> +		}
+> +		udelay(delay);
+> +	}
+> +
+> +	sync_inv_ack = arm_smmu_readl(smmu, ARM_SMMU_IMPL_DEF0,
+> +				      QCOM_SMMU_STATS_SYNC_INV_TBU_ACK);
 
-Thanks for all the help. I think I know what's going on.
+Sorry, this doesn't work always, looks like on earlier chipsets this is a secure register and
+reading it from non-secure world would probably blow. Also this register can be in other
+implementation defined space for different chipsets. So I think we can use SCM call here
+and have a device specific data based on already existing compatible for QCOM SoCs to
+identify IMP_DEF space used.
 
-If you revert the following commit, then you'll see that your device
-no longer hangs with my changes.
-35a672363ab3 driver core: Ensure wait_for_device_probe() waits until
-the deferred_probe_timeout fires
+> +	ret = qcom_scm_io_readl(smmu->ioaddr + QCOM_SMMU_TBU_PWR_STATUS,
+> +				&tbu_pwr_status);
+> +	if (ret)
+> +		dev_err_ratelimited(smmu->dev,
+> +				    "Failed to read TBU power status: %d\n", ret);
+> +
+> +	ret = qcom_scm_io_readl(smmu->ioaddr + QCOM_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR,
+> +				&sync_inv_progress);
+> +	if (ret)
+> +		dev_err_ratelimited(smmu->dev,
+> +				    "Failed to read SAFE WAIT counter: %d\n", ret);
+> +
+> +	dev_err_ratelimited(smmu->dev,
+> +			    "TLB sync timed out -- SMMU may be deadlocked\n"
+> +			    "TBU: sync_inv_ack %#x power_status %#x sync_inv_progress %#x\n",
+> +			    sync_inv_ack, tbu_pwr_status, sync_inv_progress);
+> +}
+> +
+>   static void qcom_adreno_smmu_write_sctlr(struct arm_smmu_device *smmu, int idx,
+>   		u32 reg)
+>   {
+> @@ -374,6 +422,7 @@ static const struct arm_smmu_impl qcom_smmu_impl = {
+>   	.def_domain_type = qcom_smmu_def_domain_type,
+>   	.reset = qcom_smmu500_reset,
+>   	.write_s2cr = qcom_smmu_write_s2cr,
+> +	.tlb_sync = qcom_smmu_tlb_sync,
+>   };
+>   
+>   static const struct arm_smmu_impl qcom_adreno_smmu_impl = {
+> @@ -382,6 +431,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_impl = {
+>   	.reset = qcom_smmu500_reset,
+>   	.alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
+>   	.write_sctlr = qcom_adreno_smmu_write_sctlr,
+> +	.tlb_sync = qcom_smmu_tlb_sync,
+>   };
+>   
+>   static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> index 2ed3594f384e..4c5b51109835 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> @@ -2099,6 +2099,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>   	if (IS_ERR(smmu->base))
+>   		return PTR_ERR(smmu->base);
+>   	ioaddr = res->start;
+> +	smmu->ioaddr = ioaddr;
+> +
+>   	/*
+>   	 * The resource size should effectively match the value of SMMU_TOP;
+>   	 * stash that temporarily until we know PAGESIZE to validate it with.
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> index 2b9b42fb6f30..8cf6567d970f 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+> @@ -278,6 +278,7 @@ struct arm_smmu_device {
+>   	struct device			*dev;
+>   
+>   	void __iomem			*base;
+> +	phys_addr_t			ioaddr;
+>   	unsigned int			numpage;
+>   	unsigned int			pgshift;
+>   
+> @@ -502,6 +503,9 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
+>   
+>   #define ARM_SMMU_GR0		0
+>   #define ARM_SMMU_GR1		1
+> +
+> +#define ARM_SMMU_IMPL_DEF0	2
+> +
+>   #define ARM_SMMU_CB(s, n)	((s)->numpage + (n))
+>   
+>   #define arm_smmu_gr0_read(s, o)		\
 
-That commit was made to make sure NFS mounts continue to work even
-when deferred_probe_timeout is set to a value greater than the IP auto
-config timeout (I think that's 12 seconds). While that definitely
-helps the NFS mount case, unfortunately wait_for_device_probe() is
-used in some initcalls that happen before late_initcall(). This causes
-a deadlock -- earlier initcalls wait for
-late_initcall(deferred_probe_initcall) to run but we can't get to
-late_initcall() if earlier initcalls don't finish.
-
-Even if wait_for_device_probe() is used only in late_initcalls(), it
-can still hang the kernel boot based on the link order of the .c
-files as that determined the call order between late_initcalls().
-
-It looks like all the existing users of wait_for_device_probe() seem
-to try and "wait for currently probing devices to finish probing", but
-the commit mentioned above changes the semantics to "wait until every
-device that'll eventually probe finishes probing". I think the
-solution is to revert the commit and then do this additional waiting
-just in ip_auto_config(). I'll need to think about this a bit before
-I'm sure the solution makes sense.
-
-Thanks for all the help so far.
-
--Saravana
-
-
-
-
--Saravana
-
-
-
->
-> > If deferred_probe_timeout=1 causes an issue even without my patch,
-> > then in addition, can you try commenting out the call to
-> > fw_devlink_drivers_done() inside deferred_probe_timeout_work_func()
-> > and try again?
->
-> Sure, that does not appear to make a difference with
-> deferred_probe_timeout=1.
->
-> Cheers,
-> Nathan
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
