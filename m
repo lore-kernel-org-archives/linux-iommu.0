@@ -1,96 +1,104 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D7456C433EF
-	for <iommu@archiver.kernel.org>; Tue, 24 May 2022 10:58:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 43D0FC433F5
+	for <iommu@archiver.kernel.org>; Tue, 24 May 2022 12:27:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 6665B41A38;
-	Tue, 24 May 2022 10:58:31 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id E73C16058C;
+	Tue, 24 May 2022 12:27:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Di_on3zC0C3G; Tue, 24 May 2022 10:58:30 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 06ADD41A3A;
-	Tue, 24 May 2022 10:58:30 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id K3jhzKvYJOPD; Tue, 24 May 2022 12:27:41 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 8EDD560608;
+	Tue, 24 May 2022 12:27:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C9A54C0032;
-	Tue, 24 May 2022 10:58:29 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ED10BC002D
- for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 10:58:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 67292C0032;
+	Tue, 24 May 2022 12:27:40 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D632EC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 12:27:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id DB89160BB2
- for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 10:58:27 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id C4AFC60608
+ for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 12:27:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2Id0AN2lFMvK for <iommu@lists.linux-foundation.org>;
- Tue, 24 May 2022 10:58:26 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com
- [IPv6:2a00:1450:4864:20::329])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 5CCDD60B69
- for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 10:58:26 +0000 (UTC)
-Received: by mail-wm1-x329.google.com with SMTP id p19so1901631wmg.2
- for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 03:58:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=eCjI61TxF/VhR4kH8WebLIwDAZqQH5lWWY5eksn1pk4=;
- b=vv0TNhcIJ4S4bv7c//57PxGJKqkVJwPgBpjuTOpLp+J5+358caS7gCJhwUY2f80H4Z
- Jgrh6OAVm1iAgDWdWVCBmf8NS9N7XjpDJ6LyhL3rzY3YxKDb44cHx8KemQcVBPkmexP6
- 9w5aUBbryD0GbFuSEpJEysh3VHFFpD4S1pKgJ4DkOaPQ5qigvL5UMaT2urRAxdsXUS5e
- FDpv5zmJ64vnO5oSkS9A5eO+xAvBWaSMvk5BwkPSfPrM8dzNi6LkjvMSn8+d2yjSpGlY
- 3XFx9G9TUqrsUeO/Fo1kcCoR108PWVQtJiYIH+d4lw3m7XUPjJxJVOl0qMIgwDtrsI/l
- VQ3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=eCjI61TxF/VhR4kH8WebLIwDAZqQH5lWWY5eksn1pk4=;
- b=IQYHYBAaLsRr/CA7SjeLEXbtW6BfY5uugAKO0RgOMFo6WYM68lD3s5aqIOscgyHNbT
- p+Mgo3tN2DEkh+OoTsWlgBsUKYCTwhPCE5xBlP7+qQU8JLPfQd19Ukz3oHmkByCPhDQv
- KkUOjWkIK/K6Ee6zAycbygqLa5aCiQGey+voaM2pTLay1kIRgpj4cOorcjnk25yKmw8q
- G5FY/wJyWeo6rUrstE8iTS0GXiUyzcy0VAwXiRgWr+lDT6StUss4HTthVQYprkJ+WN4M
- FiUAUZAJ/pj9fVTGuJuyqx22YNTey9YqRXsxWzGkEWJvhG9zQWwh/na1EnJDJwHdSJlC
- OzjQ==
-X-Gm-Message-State: AOAM531u0KFhiTBNr0/1a0Kzvm2YHQ5wJgRDUym2VspBmgr8aCCkH0fe
- aZAIog9UJ8IvQhiAJGytxpnMuQ==
-X-Google-Smtp-Source: ABdhPJxFTJkFYuZB+CyKxNj/VjuwuSt9WMAzvZj8TN9N3ciewWRevYgqK0102jXTQ5oECXV7bU5aGQ==
-X-Received: by 2002:a05:600c:29d3:b0:397:4730:ee75 with SMTP id
- s19-20020a05600c29d300b003974730ee75mr3185384wmd.149.1653389904595; 
- Tue, 24 May 2022 03:58:24 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
- [82.27.106.168]) by smtp.gmail.com with ESMTPSA id
- o16-20020adf8b90000000b0020fc3e24041sm10338214wra.106.2022.05.24.03.58.23
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 24 May 2022 03:58:24 -0700 (PDT)
-Date: Tue, 24 May 2022 11:57:59 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [PATCH v7 06/10] iommu/sva: Refactoring
- iommu_sva_bind/unbind_device()
-Message-ID: <Yoy6NxroLLZup0sE@myrica>
-References: <20220519072047.2996983-1-baolu.lu@linux.intel.com>
- <20220519072047.2996983-7-baolu.lu@linux.intel.com>
- <BN9PR11MB5276E462E3B32DDE54DD66418CD79@BN9PR11MB5276.namprd11.prod.outlook.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276E462E3B32DDE54DD66418CD79@BN9PR11MB5276.namprd11.prod.outlook.com>
-Cc: "Jiang, Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- Robin Murphy <robin.murphy@arm.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@infradead.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Vinod Koul <vkoul@kernel.org>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Will Deacon <will@kernel.org>
+ with ESMTP id zI0478Rii50b for <iommu@lists.linux-foundation.org>;
+ Tue, 24 May 2022 12:27:38 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+ [148.163.158.5])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id B532E6058C
+ for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 12:27:38 +0000 (UTC)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+ by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24OCE9eM011192;
+ Tue, 24 May 2022 12:27:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
+ h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=0c7XUQS946PQ2kXc3IckuYZ+N+7wXvopZNyitHrDJzE=;
+ b=aGBxv9XW7QG/w0VXFQxeHRMLvW0IoX96THaFtZpakgCQVGspiHAsxrWHb6Y42QzVxfnZ
+ 3+uMbLQRXEfujhlZcwIJlVoDZVVva33FeTRGCrj/IZ3TtO4oFE8f1XvQVXsuD3bG9RqL
+ z8pTLdtwj1EoYgguDNcaajcX/F/sTfKseOhZbtn/ts8fBDDt1CR42xNpcnwfU/jOna7S
+ k+2MX+6DtxSPzxCu7jxCbM2zS4qxYVkm/cASXkzW0KQLLdU3LcpUHj+f/FSCu/4Cwgfu
+ LVnQLOGH13wKixmnIYS8fdb0mbrVYUIJZD+yACTz/QxYNV/nj3Otnbujb6njXHcOJbhy Og== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com
+ [169.51.49.98])
+ by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8y6f87vg-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Tue, 24 May 2022 12:27:27 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+ by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24OCEYNQ028345;
+ Tue, 24 May 2022 12:27:25 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com
+ (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+ by ppma03ams.nl.ibm.com with ESMTP id 3g6qq94ebj-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Tue, 24 May 2022 12:27:25 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+ by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP
+ id 24OCQY6625231652
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 24 May 2022 12:26:34 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id DE3B442052;
+ Tue, 24 May 2022 12:27:22 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 9949A4204D;
+ Tue, 24 May 2022 12:27:22 +0000 (GMT)
+Received: from oc-nschnelle.boeblingen.de.ibm.com (unknown [9.155.199.46])
+ by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+ Tue, 24 May 2022 12:27:22 +0000 (GMT)
+Message-ID: <48f72bbddb099b474d7917ff0e7c14a271d31350.camel@linux.ibm.com>
+Subject: Re: [PATCH v2 0/9] Add dynamic iommu backed bounce buffers
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: David Stevens <stevensd@chromium.org>, Robin Murphy <robin.murphy@arm.com>
+Date: Tue, 24 May 2022 14:27:22 +0200
+In-Reply-To: <20210806103423.3341285-1-stevensd@google.com>
+References: <20210806103423.3341285-1-stevensd@google.com>
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 76JA0TUIe9Nw_NVWr1e8z-9vUS8PfPqd
+X-Proofpoint-ORIG-GUID: 76JA0TUIe9Nw_NVWr1e8z-9vUS8PfPqd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-24_06,2022-05-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1011 spamscore=0
+ bulkscore=0 mlxscore=0 adultscore=0 impostorscore=0 malwarescore=0
+ priorityscore=1501 lowpriorityscore=0 suspectscore=0 mlxlogscore=999
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205240063
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>,
+ iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
+ linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,35 +116,121 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, May 24, 2022 at 10:22:28AM +0000, Tian, Kevin wrote:
-> > From: Lu Baolu <baolu.lu@linux.intel.com>
-> > Sent: Thursday, May 19, 2022 3:21 PM
-> > 
-> > The existing iommu SVA interfaces are implemented by calling the SVA
-> > specific iommu ops provided by the IOMMU drivers. There's no need for
-> > any SVA specific ops in iommu_ops vector anymore as we can achieve
-> > this through the generic attach/detach_dev_pasid domain ops.
+On Fri, 2021-08-06 at 19:34 +0900, David Stevens wrote:
+> From: David Stevens <stevensd@chromium.org>
 > 
-> set/block_pasid_dev, to be consistent.
+> This patch series adds support for per-domain dynamic pools of iommu
+> bounce buffers to the dma-iommu API. This allows iommu mappings to be
+> reused while still maintaining strict iommu protection.
 > 
-> > +
-> > +	mutex_lock(&iommu_sva_lock);
-> > +	/* Search for an existing domain. */
-> > +	domain = iommu_get_domain_for_dev_pasid(dev, mm->pasid);
-> > +	if (domain) {
-> > +		sva_domain = to_sva_domain(domain);
-> > +		refcount_inc(&sva_domain->bond.users);
-> > +		goto out_success;
-> > +	}
-> > +
+> This bounce buffer support is used to add a new config option that, when
+> enabled, causes all non-direct streaming mappings below a configurable
+> size to go through the bounce buffers. This serves as an optimization on
+> systems where manipulating iommu mappings is very expensive. For
+> example, virtio-iommu operations in a guest on a linux host require a
+> vmexit, involvement the VMM, and a VFIO syscall. For relatively small
+> DMA operations, memcpy can be significantly faster.
 > 
-> why would one device/pasid be bound to a mm more than once?
+> As a performance comparison, on a device with an i5-10210U, I ran fio
+> with a VFIO passthrough NVMe drive and virtio-iommu with '--direct=1
+> --rw=read --ioengine=libaio --iodepth=64' and block sizes 4k, 16k, 64k,
+> and 128k. Test throughput increased by 2.8x, 4.7x, 3.6x, and 3.6x. Time
+> spent in iommu_dma_unmap_(page|sg) per GB processed decreased by 97%,
+> 94%, 90%, and 87%. Time spent in iommu_dma_map_(page|sg) decreased
+> by >99%, as bounce buffers don't require syncing here in the read case.
+> Running with multiple jobs doesn't serve as a useful performance
+> comparison because virtio-iommu and vfio_iommu_type1 both have big
+> locks that significantly limit mulithreaded DMA performance.
+> 
+> These pooled bounce buffers are also used for subgranule mappings with
+> untrusted devices, replacing the single use bounce buffers used
+> currently. The biggest difference here is that the new implementation
+> maps a whole sglist using a single bounce buffer. The new implementation
+> does not support using bounce buffers for only some segments of the
+> sglist, so it may require more copying. However, the current
+> implementation requires per-segment iommu map/unmap operations for all
+> untrusted sglist mappings (fully aligned sglists included). On a 
+> i5-10210U laptop with the internal NVMe drive made to appear untrusted,
+> fio --direct=1 --rw=read --ioengine=libaio --iodepth=64 --bs=64k showed
+> a statistically significant decrease in CPU load from 2.28% -> 2.17%
+> with the new iommu bounce buffer optimization enabled.
+> 
+> Each domain's buffer pool is split into multiple power-of-2 size
+> classes. Each class allocates a fixed number of buffer slot metadata. A
+> large iova range is allocated, and each slot is assigned an iova from
+> the range. This allows the iova to be easily mapped back to the slot,
+> and allows the critical section of most pool operations to be constant
+> time. The one exception is finding a cached buffer to reuse. These are
+> only separated according to R/W permissions - the use of other
+> permissions such as IOMMU_PRIV may require a linear search through the
+> cache. However, these other permissions are rare and likely exhibit high
+> locality, so the should not be a bottleneck in practice.
+> 
+> Since untrusted devices may require bounce buffers, each domain has a
+> fallback rbtree to manage single use buffers. This may be necessary if a
+> very large number of DMA operations are simultaneously in-flight, or for
+> very large individual DMA operations.
+> 
+> This patch set does not use swiotlb. There are two primary ways in which
+> swiotlb isn't compatible with per-domain buffer pools. First, swiotlb
+> allocates buffers to be compatible with a single device, whereas
+> per-domain buffer pools don't handle that during buffer allocation as a
+> single buffer may end up being used by multiple devices. Second, swiotlb
+> allocation establishes the original to bounce buffer mapping, which
+> again doesn't work if buffers can be reused. Effectively the only code
+> that can be shared between the two use cases is allocating slots from
+> the swiotlb's memory. However, given that we're going to be allocating
+> memory for use with an iommu, allocating memory from a block of memory
+> explicitly set aside to deal with a lack of iommu seems kind of
+> contradictory. At best there might be a small performance improvement if 
+> wiotlb allocation is faster than regular page allocation, but buffer
+> allocation isn't on the hot path anyway.
+> 
+> Not using the swiotlb has the benefit that memory doesn't have to be
+> preallocated. Instead, bounce buffers consume memory only for in-flight
+> dma transactions (ignoring temporarily cached buffers), which is the
+> smallest amount possible. This makes it easier to use bounce buffers as
+> an optimization on systems with large numbers of devices or in
+> situations where devices are unknown, since it is not necessary to try
+> to tune how much memory needs to be set aside to achieve good
+> performance without costing too much memory.
+> 
+> Finally, this series adds a new DMA_ATTR_PERSISTENT_STREAMING flag. This
+> is meant to address devices which create long lived streaming mappings
+> but manage CPU cache coherency without using the dma_sync_* APIs.
+> Currently, these devices don't function properly with swiotlb=force. The
+> new flag is used to bypass bounce buffers so such devices will function
+> when the new bounce buffer optimization is enabled. The flag is added to
+> the i915 driver, which creates such mappings. It can also be added to
+> various dma-buf implementations as an optimization, although that is not
+> done here.
+> 
+> v1 -> v2:
+>  - Replace existing untrusted bounce buffers with new bounce
+>    buffer pools. This includes significant rework to account for
+>    untrusted bounce buffers being required instead of an
+>    optimization.
+>  - Add flag for persistent streaming mappings.
+> 
 
-Device drivers can call bind() multiple times for the same device and mm,
-for example if one process wants to open multiple accelerator queues.
+Hi David,
+
+I'm currently looking into converting s390 from our custom IOMMU based
+DMA API implementation to using dma-iommu.c. We're always using an
+IOMMU for PCI devices even when doing pass-through to guests (under
+both the KVM and z/VM hypervisors). In this case I/O TLB flushes, which
+we use to do the shadowing of the guest I/O translations, are
+relatively expensive I'm thus very interested in your work. I've tried
+rebasing it on v5.18 and got it to compile but didn't get DMA to work
+though it seems to partially work as I don't get probe failures unlike
+with a completely broken DMA API. Since I might have very well screwed
+up the rebase and my DMA API conversion is experimental too I was
+wondering if you're still working on this and might have a current
+version I could experiment with?
 
 Thanks,
-Jean
+Niklas
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
