@@ -1,83 +1,177 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0BE2CC433EF
-	for <iommu@archiver.kernel.org>; Tue, 24 May 2022 03:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4A7F2C433F5
+	for <iommu@archiver.kernel.org>; Tue, 24 May 2022 09:24:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A21E3832D0;
-	Tue, 24 May 2022 03:55:57 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id DB33060E2B;
+	Tue, 24 May 2022 09:24:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Hm7UgJemdJop; Tue, 24 May 2022 03:55:56 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id FmFU4rjnwjlQ; Tue, 24 May 2022 09:24:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 40783831D5;
-	Tue, 24 May 2022 03:55:56 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7470860D4F;
+	Tue, 24 May 2022 09:24:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0C577C0032;
-	Tue, 24 May 2022 03:55:56 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 878A9C002D
- for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 03:55:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 54400C0039;
+	Tue, 24 May 2022 09:24:48 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 71090C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 09:24:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 6E50E405D9
- for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 03:55:54 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 6189C40012
+ for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 09:24:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=quicinc.com
+ dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id B6TvMl4B_-bN for <iommu@lists.linux-foundation.org>;
- Tue, 24 May 2022 03:55:53 +0000 (UTC)
+ with ESMTP id KMIGndS4SDPW for <iommu@lists.linux-foundation.org>;
+ Tue, 24 May 2022 09:24:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 3ED0D40395
- for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 03:55:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
- t=1653364553; x=1684900553;
- h=message-id:date:mime-version:subject:to:cc:references:
- from:in-reply-to:content-transfer-encoding;
- bh=DGcCckkF61WltcMI0jqjRYtrSETEtm9cvQ4zcqOtcFk=;
- b=RV9lpIQKg8UArEAMrMQp7wlCVnCPAfezDxkEUBuGB7yt7ZWv6llZjECT
- lefJ3PMCPgOCxQShIvSkTL1MR2qPTDy40/4MMgzJBOO//eoqy1fxmBsxv
- dUGbLL6CaDhP7A7G8HJ/CrzOyZB8ILAiGqZ0dE8JkCZnrW9sjJC8EJW7r M=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
- by alexa-out.qualcomm.com with ESMTP; 23 May 2022 20:55:52 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
- by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 May 2022 20:55:52 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 72755400C6
+ for <iommu@lists.linux-foundation.org>; Tue, 24 May 2022 09:24:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1653384285; x=1684920285;
+ h=from:to:cc:subject:date:message-id:references:
+ in-reply-to:content-transfer-encoding:mime-version;
+ bh=acZZei5Gqu6JSYeVBajyjClTRZC6XIRiWlx3GFHjXck=;
+ b=H9R2JtLqDoKA7DvaYPIm9AxxQOBD2O0WDZrCCGRnwsBnY5aynrDXiglg
+ uBUz2YIe12xVRMxG/M4J5HLHRcM19eLo0IOaAyAalbf1LQIZVIN9O8SZH
+ +5Y4e2N2dN/KkJPRucrBVGW0o3LW9+NpuALAXnL4c+iIH0tItUDCrsbPe
+ LMYbxNfJ/3PuprUcUkGDfE2znQ7fm4miyJKnW6iDqzd6UCwOb0S2wZKds
+ c2w9ERvRp+PdLneMHs3bhiSjufJBDR2Quox9+Ar29JNdBxFhrTdE4b3c9
+ OQs4uVl2WdH/FlGFfLRYlgB4U2TDM+mLNJBGTaJWu8W6R/mcwRv5LwUm/ w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="336534821"
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; d="scan'208";a="336534821"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 24 May 2022 02:24:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; d="scan'208";a="703394152"
+Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
+ by orsmga004.jf.intel.com with ESMTP; 24 May 2022 02:24:44 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 24 May 2022 02:24:43 -0700
+Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 24 May 2022 02:24:43 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Tue, 24 May 2022 02:24:43 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.103)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 23 May 2022 20:55:51 -0700
-Received: from [10.50.42.127] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 23 May
- 2022 20:55:48 -0700
-Message-ID: <28d8529c-28bb-a97a-b421-fcf83760788a@quicinc.com>
-Date: Tue, 24 May 2022 09:25:45 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] iommu/arm-smmu-qcom: Add debug support for TLB sync
- timeouts
+ 15.1.2308.27; Tue, 24 May 2022 02:24:43 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ha7MtHvgmnD1GjcFm2LZqfzGK4nye97CN1yx9VZstHBIq2BnIHkIW1al7VypGf3iSDOhS6IhWoIhWZ17tKREbfbFZ2ymZ0I4v/44YBd8bttFmgAzs4Y5T1VG50ZuCoDzttoyxDi+xHFV2Bkp/DpUHNrajxwdlCNatbK+Agux178TSKyUXjuZKoIzdDhe5IzT1HZKhoqIe+M3nVCooORsxqtEWoINBtcLpW3hjwMIhC+bXoYiMfKAaRHX5NkdveO5r/l1e1SS9SouIpWFfz3OjI6kKZ/GyXaQbpHAkqRYG59C+iXd91ebb7DeB73f9vNYZTfqMfa9qUvPG1BrenrdGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=P6LdsQsdzZJk31FR4uUC+eK8UD1Nzxeb8/Xp/j6YLkE=;
+ b=HjchoHu9GV5UYcC4JI56ZvVjcQeOjI6HmLU4nBqVAIljPExlNJFnqLLaaQcs7iSKkeSr80CL/cnc0WMLT9M0hE4mAzYBcnitBZrVIv0Q6Tq/4oZ9tbQOE6GCIIjGh/q0hUzbsNM5T+FG0vGuct9eqpR7k3MKTBkfRWw3r5NzeT6IySOaPK5xAJ4n0io2xWHZfBSfY/HXFQHWzcwVbGrsluC40M8Ny8yrR8XlPN2OgtSTaFX3/JKj4BujtnUMY4lr2LDt6uOYzVZ+9+6DKVW3s+3TOJtzaJr6qWPGbQLimFWr7RRF+oNE8VrWiAh+0e37KctrzzjF5+l04xdqa0fjDg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by CY4PR11MB1974.namprd11.prod.outlook.com (2603:10b6:903:126::10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.17; Tue, 24 May
+ 2022 09:24:41 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::24dd:37c2:3778:1adb]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::24dd:37c2:3778:1adb%2]) with mapi id 15.20.5273.023; Tue, 24 May 2022
+ 09:24:41 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ "Jason Gunthorpe" <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>, Robin
+ Murphy <robin.murphy@arm.com>, Jean-Philippe Brucker
+ <jean-philippe@linaro.com>, "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul
+ <vkoul@kernel.org>
+Subject: RE: [PATCH v7 01/10] iommu: Add pasids field in struct iommu_device
+Thread-Topic: [PATCH v7 01/10] iommu: Add pasids field in struct iommu_device
+Thread-Index: AQHYa1F/TZ46yRp1uEKady2Eopw8mK0ttChw
+Date: Tue, 24 May 2022 09:24:41 +0000
+Message-ID: <BN9PR11MB52766D61BBE784A70B4BF06F8CD79@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220519072047.2996983-1-baolu.lu@linux.intel.com>
+ <20220519072047.2996983-2-baolu.lu@linux.intel.com>
+In-Reply-To: <20220519072047.2996983-2-baolu.lu@linux.intel.com>
+Accept-Language: en-US
 Content-Language: en-US
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel" <joro@8bytes.org>
-References: <20220523171847.21929-1-quic_saipraka@quicinc.com>
-From: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-In-Reply-To: <20220523171847.21929-1-quic_saipraka@quicinc.com>
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-Cc: Rob Clark <robdclark@chromium.org>, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- quic_guptap@quicinc.com, linux-arm-kernel@lists.infradead.org
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7187e932-0e47-4bdb-eb73-08da3d673b66
+x-ms-traffictypediagnostic: CY4PR11MB1974:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <CY4PR11MB197406B70D3C8A2FA45300508CD79@CY4PR11MB1974.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: wZEP0ikMyUleJlxQXv7WtCQdUUWWMcSdKO7vXbll6iaOfH7kyUGgpYGWfAnDaVUA82n2dumU5LlgREmMw4B9H601IHmtGYixxpvRHdHDwX8BgfxrJT9VqEA6tQ8wkC9ny5beldycKYOidL2dWhyNHqVVCfQw5usWC5WS6n3Pb16UKzdjsZgKvYhbGwFPPbxt8nJVFet+ybgK3W/vMSUs0SL6e00JQU0EINK6yEccVBSAR9zbXUKYqmfdrnDoZFHpdbwJNEpXmUukW15mEgocXvL5vQjvp0WvIOm+tFtlccPIw/eHkyTweX528JGAOpWYRytnKF7NFRzJEKt/g+7Ip8itgXaFTW8sUpM9pU74nNdGrKU4t+d+K9gVFRxE3OHcIpwf1Kdjr5ol7cNySje39OvDvktoOYKMitZ2c4mnL34/hcok0JfSvwNkjqTUxxntdUDVwM1ysz8xO5/UwKXA6uY9ocb+YunPg8jzqXTMg1H0Vny2UqFIMonp8NXa3jfscoXXfI/z7JpXAkGN19lTG62ZCJY3BdIn9lyOUheYsQ4l4Tv0j2Ttj4aFh6V10y6WQphlSa6CqTSeI4B3S9DJsbZObaQwjUT2A8Oc5ohYxaWCGMGXsoMf0yugv7oigGZF8GluDHb6e66ltgHbVWb6dWhp3r8998+S47VgPUC13kRt5BHLvj069keLP4Rx9kWwE5rOiH9V3Ysa9ziTUIPOS32vn6U7fLNse9N4fzH25ww=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(122000001)(82960400001)(508600001)(2906002)(55016003)(921005)(33656002)(7696005)(7416002)(5660300002)(54906003)(38100700002)(52536014)(38070700005)(110136005)(316002)(26005)(66476007)(66446008)(83380400001)(66556008)(66946007)(64756008)(76116006)(8676002)(8936002)(4326008)(9686003)(86362001)(6506007)(71200400001)(186003);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HHGEftfb3MV++GSgRojowSWD++Nrjw2+UuXdBUjy+FvlLf8hffoyLGTxqsu6?=
+ =?us-ascii?Q?/sdkD7HF5++UO2fmfR3zlbojuUAXOsbOxj9RIc0AvFzcGGG4BpbdjP4LWhbJ?=
+ =?us-ascii?Q?GAarxvWNkEiJxCbe2qwVJEnX6Mh5+K4r3N9XK4PpdTUpdpzYtWiDTJOv6g6a?=
+ =?us-ascii?Q?ojYR07C5VLyKC+H9M/Wt5L24pR8qyCDd6twXdHhvKRi+iWx5J77JqyyWXgSK?=
+ =?us-ascii?Q?whTVbMRrDcfhA8IuaLzxctcHDimZbEb9HJYmM9F0c/fEoanDGuxJXvgBUpJu?=
+ =?us-ascii?Q?GT5aqEJyZIX5LTFpwOfEh6/BpxHNcMiZ9xbbGlu8kvu8zdoAqnjdZ+/k/7PM?=
+ =?us-ascii?Q?Homq7hi50+rwWfkjVYxNvZ5stYF0MVsWTXYoaXJu03MsSJ37Jp4BQyX4m+I8?=
+ =?us-ascii?Q?dgv5nDmznBKnZ6s4FJmnilukptOKKfAcAjhuy1HVxUwo6MYm0J3Z092osExd?=
+ =?us-ascii?Q?teOqWBHGzfTPMl9Tm5PTfkVaO2zcAS42I8ejahy9OJUVZai4V5B/wY12ri3m?=
+ =?us-ascii?Q?FpVDUKWWBOI1qiyIwTkRAL/HizCoRUlkM8F/6VTlBYW+7QSiM5jxWSdkxSJD?=
+ =?us-ascii?Q?vSBt2B3KfdJ0mPtxQNfkEsQMhDsJYdvL7wKQqN4lPy64xZ1vcukzLH61E0Bj?=
+ =?us-ascii?Q?upQNMZn62e3svTdKKO8HSgmPe7GjqcynnVaKnZEfk3KGZRE0K++3dLWit7Dp?=
+ =?us-ascii?Q?sasudi8ZXrc9aNa3Y1EjJL32NtlIblcLZqf/PTHKcaFzEc9fj9lV227HoCmC?=
+ =?us-ascii?Q?ciO8DcOM0taXKpCTk0ogG5Y3UPs3CxDWg/lz0zK2YLnkC4PycrHRpMP19+ev?=
+ =?us-ascii?Q?W2ezcf+fzPm9eSJCMdT5Vmb1Y+bKx2CcYEtcirWKab/9cMjj8+XJxTJAsH1L?=
+ =?us-ascii?Q?NMubcwA4SsSyNmYg0CPiXJLZXeSuCnZdk07J+BJA3lHhO3ai1QMrSQyfX+uX?=
+ =?us-ascii?Q?CJOHulzVNZdvVCJEJ0aKDdp2p9IxNywpjSG1ot/BgjqouI1NQ0XOPSvDxWey?=
+ =?us-ascii?Q?2TQcEk9EN69Cu0zae66w95jACdlBTuJCl23QtwVWAfWl/xP1nhUZJexpowYn?=
+ =?us-ascii?Q?BEroJMgYX/JdOg4/IdxToV2hb/ALF8/jPuo7dBlQFxSTIJgEPekJx/dE+VI7?=
+ =?us-ascii?Q?+hwbdPx1D8+fNGyl5RBB/1o5jsoacBAZ2M+1YsF5dFGtzGGonDJFaH3wFg3J?=
+ =?us-ascii?Q?6/mrsCQFsL7Dfgtnvj9GMYApN5GOnAhDzR+ziPbjAd+hYr61R3TpUH3PMFZP?=
+ =?us-ascii?Q?ZitRbzSbAZ68IPtG/G870EvpaigLQs1L+mtjEh93VgwVR7wUZJ5r1WhAqfAU?=
+ =?us-ascii?Q?yGg9JRJFSRXz9O/Xbd2j0JNAQpNS94/+etJ1ee5LtWYqGFxByaUj/xt8NCrK?=
+ =?us-ascii?Q?4xbqhlzhtmq5kOlye4niIX0lIBu0VYag8ZpCXE3mHjrHvwJfnqEfLE+7Blzd?=
+ =?us-ascii?Q?s3WMbbrLA84ClnYpkWE+4mBXfKRU4PkhgLuOt1Jyl623LWcYSjokEhw2Oxt1?=
+ =?us-ascii?Q?FEf5MA66EuIjIRbvYgrrfFIUkjXWgary9hzX6uVwhsFCFpiv5jKXr8Aae+MX?=
+ =?us-ascii?Q?qiOMHNLhmeVTWdR2RnXCCd3yg47I2k3/eXLBqFjOkKJoz4I7+pZH4sR52PfH?=
+ =?us-ascii?Q?9Xax/gveOtPC5g1UhMQSe7RV2S/egF0vJCizRWTkJ0FhL7pFlB3BYzyr/9SC?=
+ =?us-ascii?Q?IG4u1i84mek5Ivpi6+Ow1YHkhUI0WoBYQvSOjl5qeK5o6ZDyq4YJafigRxYw?=
+ =?us-ascii?Q?uL7PRgVImQ=3D=3D?=
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7187e932-0e47-4bdb-eb73-08da3d673b66
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 May 2022 09:24:41.2154 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xvYvUGjbR9xT9HKaVC7MQruKsnVRzbftZX3bJzQcRurwkwHbu+qP/LbV6BcYOVjj6jMyZoGDYFQi0SEK6afmfw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR11MB1974
+X-OriginatorOrg: intel.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,155 +184,87 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 5/23/2022 10:48 PM, Sai Prakash Ranjan wrote:
-> TLB sync timeouts can be due to various reasons such as TBU power down
-> or pending TCU/TBU invalidation/sync and so on. Debugging these often
-> require dumping of some implementation defined registers to know the
-> status of TBU/TCU operations and some of these registers are not
-> accessible in non-secure world such as from kernel and requires SMC
-> calls to read them in the secure world. So, add this debug support
-> to dump implementation defined registers for TLB sync timeout issues.
->
-> Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Sent: Thursday, May 19, 2022 3:21 PM
+> 
+> Use this field to keep the number of supported PASIDs that an IOMMU
+> hardware is able to support. This is a generic attribute of an IOMMU
+> and lifting it into the per-IOMMU device structure makes it possible
+> to allocate a PASID for device without calls into the IOMMU drivers.
+> Any iommu driver which suports PASID related features should set this
+> field before enabling them on the devices.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 > ---
->   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 50 ++++++++++++++++++++++
->   drivers/iommu/arm/arm-smmu/arm-smmu.c      |  2 +
->   drivers/iommu/arm/arm-smmu/arm-smmu.h      |  4 ++
->   3 files changed, 56 insertions(+)
->
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 7820711c4560..22e9a0085475 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -5,11 +5,19 @@
->   
->   #include <linux/acpi.h>
->   #include <linux/adreno-smmu-priv.h>
-> +#include <linux/delay.h>
->   #include <linux/of_device.h>
->   #include <linux/qcom_scm.h>
->   
->   #include "arm-smmu.h"
->   
-> +#define QCOM_DUMMY_VAL	-1
-> +
-> +/* Implementation Defined Register Space 0 registers */
-> +#define QCOM_SMMU_STATS_SYNC_INV_TBU_ACK	0x5dc
-> +#define QCOM_SMMU_TBU_PWR_STATUS		0x2204
-> +#define QCOM_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR	0x2670
-> +
->   struct qcom_smmu {
->   	struct arm_smmu_device smmu;
->   	bool bypass_quirk;
-> @@ -22,6 +30,46 @@ static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
->   	return container_of(smmu, struct qcom_smmu, smmu);
->   }
->   
-> +static void qcom_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
-> +				int sync, int status)
-> +{
-> +	u32 sync_inv_ack, sync_inv_progress, tbu_pwr_status;
-> +	unsigned int spin_cnt, delay;
-> +	u32 reg;
-> +	int ret;
-> +
-> +	arm_smmu_writel(smmu, page, sync, QCOM_DUMMY_VAL);
-> +	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
-> +		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
-> +			reg = arm_smmu_readl(smmu, page, status);
-> +			if (!(reg & ARM_SMMU_sTLBGSTATUS_GSACTIVE))
-> +				return;
-> +			cpu_relax();
-> +		}
-> +		udelay(delay);
-> +	}
-> +
-> +	sync_inv_ack = arm_smmu_readl(smmu, ARM_SMMU_IMPL_DEF0,
-> +				      QCOM_SMMU_STATS_SYNC_INV_TBU_ACK);
+>  include/linux/iommu.h                       | 2 ++
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
+>  drivers/iommu/intel/dmar.c                  | 4 ++++
+>  3 files changed, 7 insertions(+)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 5e1afe169549..da423e87f248 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -318,12 +318,14 @@ struct iommu_domain_ops {
+>   * @list: Used by the iommu-core to keep a list of registered iommus
+>   * @ops: iommu-ops for talking to this iommu
+>   * @dev: struct device for sysfs handling
+> + * @pasids: number of supported PASIDs
+>   */
+>  struct iommu_device {
+>  	struct list_head list;
+>  	const struct iommu_ops *ops;
+>  	struct fwnode_handle *fwnode;
+>  	struct device *dev;
+> +	u32 pasids;
 
-Sorry, this doesn't work always, looks like on earlier chipsets this is a secure register and
-reading it from non-secure world would probably blow. Also this register can be in other
-implementation defined space for different chipsets. So I think we can use SCM call here
-and have a device specific data based on already existing compatible for QCOM SoCs to
-identify IMP_DEF space used.
+max_pasid or nr_pasids?
 
-> +	ret = qcom_scm_io_readl(smmu->ioaddr + QCOM_SMMU_TBU_PWR_STATUS,
-> +				&tbu_pwr_status);
-> +	if (ret)
-> +		dev_err_ratelimited(smmu->dev,
-> +				    "Failed to read TBU power status: %d\n", ret);
+>  };
+> 
+>  /**
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 88817a3376ef..6e2cd082c670 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -3546,6 +3546,7 @@ static int arm_smmu_device_hw_probe(struct
+> arm_smmu_device *smmu)
+>  	/* SID/SSID sizes */
+>  	smmu->ssid_bits = FIELD_GET(IDR1_SSIDSIZE, reg);
+>  	smmu->sid_bits = FIELD_GET(IDR1_SIDSIZE, reg);
+> +	smmu->iommu.pasids = smmu->ssid_bits;
+> 
+>  	/*
+>  	 * If the SMMU supports fewer bits than would fill a single L2 stream
+> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+> index 4de960834a1b..1c3cf267934d 100644
+> --- a/drivers/iommu/intel/dmar.c
+> +++ b/drivers/iommu/intel/dmar.c
+> @@ -1126,6 +1126,10 @@ static int alloc_iommu(struct dmar_drhd_unit
+> *drhd)
+> 
+>  	raw_spin_lock_init(&iommu->register_lock);
+> 
+> +	/* Supports full 20-bit PASID in scalable mode. */
+> +	if (ecap_pasid(iommu->ecap))
+> +		iommu->iommu.pasids = 1UL << 20;
 > +
-> +	ret = qcom_scm_io_readl(smmu->ioaddr + QCOM_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR,
-> +				&sync_inv_progress);
-> +	if (ret)
-> +		dev_err_ratelimited(smmu->dev,
-> +				    "Failed to read SAFE WAIT counter: %d\n", ret);
-> +
-> +	dev_err_ratelimited(smmu->dev,
-> +			    "TLB sync timed out -- SMMU may be deadlocked\n"
-> +			    "TBU: sync_inv_ack %#x power_status %#x sync_inv_progress %#x\n",
-> +			    sync_inv_ack, tbu_pwr_status, sync_inv_progress);
-> +}
-> +
->   static void qcom_adreno_smmu_write_sctlr(struct arm_smmu_device *smmu, int idx,
->   		u32 reg)
->   {
-> @@ -374,6 +422,7 @@ static const struct arm_smmu_impl qcom_smmu_impl = {
->   	.def_domain_type = qcom_smmu_def_domain_type,
->   	.reset = qcom_smmu500_reset,
->   	.write_s2cr = qcom_smmu_write_s2cr,
-> +	.tlb_sync = qcom_smmu_tlb_sync,
->   };
->   
->   static const struct arm_smmu_impl qcom_adreno_smmu_impl = {
-> @@ -382,6 +431,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_impl = {
->   	.reset = qcom_smmu500_reset,
->   	.alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
->   	.write_sctlr = qcom_adreno_smmu_write_sctlr,
-> +	.tlb_sync = qcom_smmu_tlb_sync,
->   };
->   
->   static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> index 2ed3594f384e..4c5b51109835 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -2099,6 +2099,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->   	if (IS_ERR(smmu->base))
->   		return PTR_ERR(smmu->base);
->   	ioaddr = res->start;
-> +	smmu->ioaddr = ioaddr;
-> +
->   	/*
->   	 * The resource size should effectively match the value of SMMU_TOP;
->   	 * stash that temporarily until we know PAGESIZE to validate it with.
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> index 2b9b42fb6f30..8cf6567d970f 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> @@ -278,6 +278,7 @@ struct arm_smmu_device {
->   	struct device			*dev;
->   
->   	void __iomem			*base;
-> +	phys_addr_t			ioaddr;
->   	unsigned int			numpage;
->   	unsigned int			pgshift;
->   
-> @@ -502,6 +503,9 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
->   
->   #define ARM_SMMU_GR0		0
->   #define ARM_SMMU_GR1		1
-> +
-> +#define ARM_SMMU_IMPL_DEF0	2
-> +
->   #define ARM_SMMU_CB(s, n)	((s)->numpage + (n))
->   
->   #define arm_smmu_gr0_read(s, o)		\
+
+supported pasid bits is reported by ecap_pss(). I don't think we should
+assume 20bits here.
+
+>  	/*
+>  	 * This is only for hotplug; at boot time intel_iommu_enabled won't
+>  	 * be set yet. When intel_iommu_init() runs, it registers the units
+> --
+> 2.25.1
 
 _______________________________________________
 iommu mailing list
