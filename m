@@ -1,80 +1,85 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9189EC433EF
-	for <iommu@archiver.kernel.org>; Wed, 25 May 2022 04:45:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 105AAC433EF
+	for <iommu@archiver.kernel.org>; Wed, 25 May 2022 04:50:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 17DF3415CC;
-	Wed, 25 May 2022 04:45:53 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id A43E460BD5;
+	Wed, 25 May 2022 04:50:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SKuaNwLFPcDR; Wed, 25 May 2022 04:45:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id BDFD541919;
-	Wed, 25 May 2022 04:45:50 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SXsmjA-0htR7; Wed, 25 May 2022 04:50:13 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 60AAE60B02;
+	Wed, 25 May 2022 04:50:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 78F81C0032;
-	Wed, 25 May 2022 04:45:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1DFE5C0032;
+	Wed, 25 May 2022 04:50:13 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AADFEC002D
- for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 04:45:49 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 61487C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 04:50:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id A0C1883F66
- for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 04:45:49 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 57E9583F66
+ for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 04:50:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Lp93ojNhlIug for <iommu@lists.linux-foundation.org>;
- Wed, 25 May 2022 04:45:45 +0000 (UTC)
+ with ESMTP id VthDThb8BK8L for <iommu@lists.linux-foundation.org>;
+ Wed, 25 May 2022 04:50:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 6FB0983F64
- for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 04:45:45 +0000 (UTC)
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 8222583F2E
+ for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 04:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1653453945; x=1684989945;
- h=date:from:to:cc:subject:message-id:references:
- mime-version:in-reply-to;
- bh=rmrfTWyOBpKZ8kLMwjs6qb5smk3ww7YOqwg7KXC8BZc=;
- b=WUABVTq47KeolfcuwYIinzbcFj6E/kR4U41/89vEAZB+/RbE1vhTdI9t
- fziLjnD27lD+eEtu7fOy/nhVJUvtgyOpmMR5ZXnezOCqMUSY0QscypMpH
- Q9r4EZ10EAoXNhmU/k0l5wUdzv7utnInoWimeBvIqQ6NSB+KaW/tE78qT
- xdt5eff8b9iCiyjWKLyzSn59EktWpj9WhgcFbDdlFQctku/tbAxQ/5m/r
- jW2zVRB9HR57LJyE83h0mnhny1sCoLc5U3OwJjUl1LLC51y9eehs4t3vq
- AknYs1UHP7sxL8wc0G/yj4J0TaWvH4r204JznlnezHkW0eftssXablwHF g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="273711817"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; d="scan'208";a="273711817"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 24 May 2022 21:45:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; d="scan'208";a="578182693"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
- by fmsmga007.fm.intel.com with ESMTP; 24 May 2022 21:45:41 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
- (envelope-from <lkp@intel.com>) id 1ntitw-0002j4-Ot;
- Wed, 25 May 2022 04:45:40 +0000
-Date: Wed, 25 May 2022 12:45:34 +0800
-From: kernel test robot <lkp@intel.com>
-To: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH 1/3] iommu: Add Visconti5 IOMMU driver
-Message-ID: <202205251205.PHq3cWj3-lkp@intel.com>
-References: <20220525013147.2215355-2-nobuhiro1.iwamatsu@toshiba.co.jp>
+ t=1653454210; x=1684990210;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=pjZMmEANMCnklIA4vkBd2ENvVE8LwaQZspI3mdFXeHY=;
+ b=Bz07Cdun7geUfgE5rloSint2MN1vCaXC2vhxMSOPIRkM/DudzNfMxO5d
+ G96PK8kHTkR3DNkpoAhOk5B7vMKYLPkzm7Ebndrnb2N3VhbgAcCAamKPh
+ 7mywDkNJq8wqUSAzfMzQZXl5XDqKPFy1BBk4/8BkhtPzYRLlR1Wdeetrg
+ KYYmB7pRKHL+ev2oGBSiZ8WlJrpWy7UOeAWMz5w6NGfWTRBImOQyK2wQT
+ mH9A1G8NZGrlU6pw2kOkDFSjyBabZQpnvOb1TZCXYrdj9Z9ctXahJwap7
+ Z/AS6IAe8PmPu/cIyX5MRNJRCFe+Czh94r3vwAoCfSaQjWu5FYM1hTFL+ g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="255778025"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; d="scan'208";a="255778025"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 24 May 2022 21:50:09 -0700
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; d="scan'208";a="601652421"
+Received: from jwang96-mobl.ccr.corp.intel.com (HELO [10.255.29.139])
+ ([10.255.29.139])
+ by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 24 May 2022 21:50:06 -0700
+Message-ID: <caae0926-b8f8-a64d-5c33-441e33d0c1dc@linux.intel.com>
+Date: Wed, 25 May 2022 12:50:04 +0800
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220525013147.2215355-2-nobuhiro1.iwamatsu@toshiba.co.jp>
-Cc: devicetree@vger.kernel.org, kbuild-all@lists.01.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
- yuji2.ishikawa@toshiba.co.jp, linux-arm-kernel@lists.infradead.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v7 03/10] iommu/sva: Add iommu_sva_domain support
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
+References: <20220519072047.2996983-1-baolu.lu@linux.intel.com>
+ <20220519072047.2996983-4-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276982C37DFF0FEFC45BDD68CD79@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276982C37DFF0FEFC45BDD68CD79@BN9PR11MB5276.namprd11.prod.outlook.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,420 +92,125 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Nobuhiro,
+On 2022/5/24 17:39, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Thursday, May 19, 2022 3:21 PM
+>>
+>> The iommu_sva_domain represents a hardware pagetable that the IOMMU
+>> hardware could use for SVA translation. This adds some infrastructure
+>> to support SVA domain in the iommu common layer. It includes:
+>>
+>> - Add a new struct iommu_sva_domain and new IOMMU_DOMAIN_SVA
+>> domain
+>>    type.
+>> - Add a new domain ops pointer in iommu_ops. The IOMMU drivers that
+>>    support SVA should provide the callbacks.
+>> - Add helpers to allocate and free an SVA domain.
+>> - Add helpers to set an SVA domain to a device and the reverse
+>>    operation.
+>>
+>> Some buses, like PCI, route packets without considering the PASID value.
+>> Thus a DMA target address with PASID might be treated as P2P if the
+>> address falls into the MMIO BAR of other devices in the group. To make
+>> things simple, the attach/detach interfaces only apply to devices
+>> belonging to the singleton groups, and the singleton is immutable in
+>> fabric i.e. not affected by hotplug.
+>>
+>> The iommu_set/block_device_pasid() can be used for other purposes,
+>> such as kernel DMA with pasid, mediation device, etc. Hence, it is put
+>> in the iommu.c.
+> 
+> usually we have 'set/clear' pair or 'allow/block'. Having 'set' paired
+> with 'block' doesn't read very clearly.
 
-I love your patch! Perhaps something to improve:
+Yes. Let's still use the attach/detach semantics.
 
-[auto build test WARNING on joro-iommu/next]
-[also build test WARNING on arm-perf/for-next/perf soc/for-next linus/master v5.18 next-20220524]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> 
+>> +static bool device_group_immutable_singleton(struct device *dev)
+>> +{
+>> +	struct iommu_group *group = iommu_group_get(dev);
+> 
+> what about passing group as the parameter since the caller will
+> get the group again right after calling this function? In that case
+> the function could be renamed as:
+> 
+> 	iommu_group_immutable_singleton()
+> 
+> or be shorter:
+> 
+> 	iommu_group_fixed_singleton()
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Nobuhiro-Iwamatsu/Add-Visconti5-IOMMU-driver/20220525-093326
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
-config: nios2-allyesconfig (https://download.01.org/0day-ci/archive/20220525/202205251205.PHq3cWj3-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/69bb4f3c2ef0bb1f65922bc72bb31109897a6393
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Nobuhiro-Iwamatsu/Add-Visconti5-IOMMU-driver/20220525-093326
-        git checkout 69bb4f3c2ef0bb1f65922bc72bb31109897a6393
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=nios2 SHELL=/bin/bash drivers/iommu/
+Fair enough. I will tune it as below:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/iommu/visconti-atu.c:47:29: error: field 'iommu' has incomplete type
-      47 |         struct iommu_device iommu;
-         |                             ^~~~~
-   drivers/iommu/visconti-atu.c:62:29: error: field 'io_domain' has incomplete type
-      62 |         struct iommu_domain io_domain;
-         |                             ^~~~~~~~~
-   In file included from include/linux/bits.h:22,
-                    from include/linux/ratelimit_types.h:5,
-                    from include/linux/ratelimit.h:5,
-                    from include/linux/dev_printk.h:16,
-                    from include/linux/device.h:15,
-                    from include/linux/dma-mapping.h:7,
-                    from drivers/iommu/visconti-atu.c:12:
-   drivers/iommu/visconti-atu.c: In function 'to_atu_domain':
-   include/linux/compiler_types.h:293:27: error: expression in static assertion is not an integer
-     293 | #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
-         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:78:56: note: in definition of macro '__static_assert'
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                                        ^~~~
-   include/linux/container_of.h:19:9: note: in expansion of macro 'static_assert'
-      19 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |         ^~~~~~~~~~~~~
-   include/linux/container_of.h:19:23: note: in expansion of macro '__same_type'
-      19 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |                       ^~~~~~~~~~~
-   drivers/iommu/visconti-atu.c:70:16: note: in expansion of macro 'container_of'
-      70 |         return container_of(domain, struct visconti_atu_domain, io_domain);
-         |                ^~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c: In function 'visconti_atu_enable_entry':
->> drivers/iommu/visconti-atu.c:102:52: warning: right shift count >= width of type [-Wshift-count-overflow]
-     102 |                                    (atu->iova[num] >> 32) & ATU_BGADDR_MASK);
-         |                                                    ^~
-   drivers/iommu/visconti-atu.c: In function 'visconti_atu_attach_device':
-   drivers/iommu/visconti-atu.c:121:43: error: implicit declaration of function 'dev_iommu_priv_get' [-Werror=implicit-function-declaration]
-     121 |         struct visconti_atu_device *atu = dev_iommu_priv_get(dev);
-         |                                           ^~~~~~~~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c:121:43: warning: initialization of 'struct visconti_atu_device *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-   drivers/iommu/visconti-atu.c: In function 'visconti_atu_detach_device':
-   drivers/iommu/visconti-atu.c:150:43: warning: initialization of 'struct visconti_atu_device *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     150 |         struct visconti_atu_device *atu = dev_iommu_priv_get(dev);
-         |                                           ^~~~~~~~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c: At top level:
-   drivers/iommu/visconti-atu.c:196:41: warning: 'struct iommu_iotlb_gather' declared inside parameter list will not be visible outside of this definition or declaration
-     196 |                                  struct iommu_iotlb_gather *iotlb_gather)
-         |                                         ^~~~~~~~~~~~~~~~~~
-   In file included from include/linux/printk.h:555,
-                    from include/asm-generic/bug.h:22,
-                    from ./arch/nios2/include/generated/asm/bug.h:1,
-                    from include/linux/bug.h:5,
-                    from include/linux/thread_info.h:13,
-                    from include/asm-generic/current.h:5,
-                    from ./arch/nios2/include/generated/asm/current.h:1,
-                    from include/linux/sched.h:12,
-                    from include/linux/ratelimit.h:6,
-                    from include/linux/dev_printk.h:16,
-                    from include/linux/device.h:15,
-                    from include/linux/dma-mapping.h:7,
-                    from drivers/iommu/visconti-atu.c:12:
-   drivers/iommu/visconti-atu.c: In function 'visconti_atu_iova_to_phys':
->> drivers/iommu/visconti-atu.c:251:27: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 4 has type 'dma_addr_t' {aka 'unsigned int'} [-Wformat=]
-     251 |         dev_dbg(atu->dev, "iova_to_phys: %llx -> %llx\n", iova, paddr);
-         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dynamic_debug.h:134:29: note: in definition of macro '__dynamic_func_call'
-     134 |                 func(&id, ##__VA_ARGS__);               \
-         |                             ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:166:9: note: in expansion of macro '_dynamic_func_call'
-     166 |         _dynamic_func_call(fmt,__dynamic_dev_dbg,               \
-         |         ^~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:155:9: note: in expansion of macro 'dynamic_dev_dbg'
-     155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:155:30: note: in expansion of macro 'dev_fmt'
-     155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                              ^~~~~~~
-   drivers/iommu/visconti-atu.c:251:9: note: in expansion of macro 'dev_dbg'
-     251 |         dev_dbg(atu->dev, "iova_to_phys: %llx -> %llx\n", iova, paddr);
-         |         ^~~~~~~
-   drivers/iommu/visconti-atu.c:251:45: note: format string is defined here
-     251 |         dev_dbg(atu->dev, "iova_to_phys: %llx -> %llx\n", iova, paddr);
-         |                                          ~~~^
-         |                                             |
-         |                                             long long unsigned int
-         |                                          %x
-   In file included from include/linux/printk.h:555,
-                    from include/asm-generic/bug.h:22,
-                    from ./arch/nios2/include/generated/asm/bug.h:1,
-                    from include/linux/bug.h:5,
-                    from include/linux/thread_info.h:13,
-                    from include/asm-generic/current.h:5,
-                    from ./arch/nios2/include/generated/asm/current.h:1,
-                    from include/linux/sched.h:12,
-                    from include/linux/ratelimit.h:6,
-                    from include/linux/dev_printk.h:16,
-                    from include/linux/device.h:15,
-                    from include/linux/dma-mapping.h:7,
-                    from drivers/iommu/visconti-atu.c:12:
->> drivers/iommu/visconti-atu.c:251:27: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 5 has type 'phys_addr_t' {aka 'unsigned int'} [-Wformat=]
-     251 |         dev_dbg(atu->dev, "iova_to_phys: %llx -> %llx\n", iova, paddr);
-         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/dynamic_debug.h:134:29: note: in definition of macro '__dynamic_func_call'
-     134 |                 func(&id, ##__VA_ARGS__);               \
-         |                             ^~~~~~~~~~~
-   include/linux/dynamic_debug.h:166:9: note: in expansion of macro '_dynamic_func_call'
-     166 |         _dynamic_func_call(fmt,__dynamic_dev_dbg,               \
-         |         ^~~~~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:155:9: note: in expansion of macro 'dynamic_dev_dbg'
-     155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~~~~~~~~~~
-   include/linux/dev_printk.h:155:30: note: in expansion of macro 'dev_fmt'
-     155 |         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-         |                              ^~~~~~~
-   drivers/iommu/visconti-atu.c:251:9: note: in expansion of macro 'dev_dbg'
-     251 |         dev_dbg(atu->dev, "iova_to_phys: %llx -> %llx\n", iova, paddr);
-         |         ^~~~~~~
-   drivers/iommu/visconti-atu.c:251:53: note: format string is defined here
-     251 |         dev_dbg(atu->dev, "iova_to_phys: %llx -> %llx\n", iova, paddr);
-         |                                                  ~~~^
-         |                                                     |
-         |                                                     long long unsigned int
-         |                                                  %x
-   drivers/iommu/visconti-atu.c: In function 'visconti_atu_of_xlate':
-   drivers/iommu/visconti-atu.c:262:17: error: implicit declaration of function 'dev_iommu_priv_set' [-Werror=implicit-function-declaration]
-     262 |                 dev_iommu_priv_set(dev, platform_get_drvdata(pdev));
-         |                 ^~~~~~~~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c: In function 'visconti_atu_domain_alloc':
-   drivers/iommu/visconti-atu.c:273:21: error: 'IOMMU_DOMAIN_UNMANAGED' undeclared (first use in this function)
-     273 |         if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
-         |                     ^~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c:273:21: note: each undeclared identifier is reported only once for each function it appears in
-   drivers/iommu/visconti-atu.c:273:55: error: 'IOMMU_DOMAIN_DMA' undeclared (first use in this function)
-     273 |         if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
-         |                                                       ^~~~~~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c: In function 'visconti_atu_probe_device':
-   drivers/iommu/visconti-atu.c:298:39: error: implicit declaration of function 'dev_iommu_fwspec_get' [-Werror=implicit-function-declaration]
-     298 |         struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-         |                                       ^~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c:298:39: warning: initialization of 'struct iommu_fwspec *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-   drivers/iommu/visconti-atu.c:301:30: error: invalid use of undefined type 'struct iommu_fwspec'
-     301 |         if (!fwspec || fwspec->ops != &visconti_atu_ops)
-         |                              ^~
-   drivers/iommu/visconti-atu.c:304:13: warning: assignment to 'struct visconti_atu_device *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     304 |         atu = dev_iommu_priv_get(dev);
-         |             ^
-   drivers/iommu/visconti-atu.c: In function 'visconti_atu_release_device':
-   drivers/iommu/visconti-atu.c:310:43: warning: initialization of 'struct visconti_atu_device *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     310 |         struct visconti_atu_device *atu = dev_iommu_priv_get(dev);
-         |                                           ^~~~~~~~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c:315:9: error: implicit declaration of function 'iommu_fwspec_free' [-Werror=implicit-function-declaration]
-     315 |         iommu_fwspec_free(dev);
-         |         ^~~~~~~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c: At top level:
-   drivers/iommu/visconti-atu.c:318:21: error: variable 'visconti_atu_ops' has initializer but incomplete type
-     318 | static const struct iommu_ops visconti_atu_ops = {
-         |                     ^~~~~~~~~
-   drivers/iommu/visconti-atu.c:319:10: error: 'const struct iommu_ops' has no member named 'domain_alloc'
-     319 |         .domain_alloc = visconti_atu_domain_alloc,
-         |          ^~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c:319:25: warning: excess elements in struct initializer
-     319 |         .domain_alloc = visconti_atu_domain_alloc,
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c:319:25: note: (near initialization for 'visconti_atu_ops')
-   drivers/iommu/visconti-atu.c:320:10: error: 'const struct iommu_ops' has no member named 'probe_device'
-     320 |         .probe_device = visconti_atu_probe_device,
-         |          ^~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c:320:25: warning: excess elements in struct initializer
-     320 |         .probe_device = visconti_atu_probe_device,
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c:320:25: note: (near initialization for 'visconti_atu_ops')
-   drivers/iommu/visconti-atu.c:321:10: error: 'const struct iommu_ops' has no member named 'release_device'
-     321 |         .release_device = visconti_atu_release_device,
-         |          ^~~~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c:321:27: warning: excess elements in struct initializer
-     321 |         .release_device = visconti_atu_release_device,
-         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c:321:27: note: (near initialization for 'visconti_atu_ops')
-   drivers/iommu/visconti-atu.c:322:10: error: 'const struct iommu_ops' has no member named 'device_group'
-     322 |         .device_group = generic_device_group,
-         |          ^~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c:322:25: error: 'generic_device_group' undeclared here (not in a function)
-     322 |         .device_group = generic_device_group,
-         |                         ^~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c:322:25: warning: excess elements in struct initializer
-   drivers/iommu/visconti-atu.c:322:25: note: (near initialization for 'visconti_atu_ops')
-   drivers/iommu/visconti-atu.c:323:10: error: 'const struct iommu_ops' has no member named 'of_xlate'
-     323 |         .of_xlate = visconti_atu_of_xlate,
-         |          ^~~~~~~~
-   drivers/iommu/visconti-atu.c:323:21: warning: excess elements in struct initializer
-     323 |         .of_xlate = visconti_atu_of_xlate,
-         |                     ^~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c:323:21: note: (near initialization for 'visconti_atu_ops')
-   drivers/iommu/visconti-atu.c:324:10: error: 'const struct iommu_ops' has no member named 'pgsize_bitmap'
-     324 |         .pgsize_bitmap = ATU_IOMMU_PGSIZE_BITMAP,
-         |          ^~~~~~~~~~~~~
-   drivers/iommu/visconti-atu.c:41:33: warning: excess elements in struct initializer
-      41 | #define ATU_IOMMU_PGSIZE_BITMAP 0x7ffff000 /* SZ_1G - SZ_4K */
-         |                                 ^~~~~~~~~~
-   drivers/iommu/visconti-atu.c:324:26: note: in expansion of macro 'ATU_IOMMU_PGSIZE_BITMAP'
++static bool iommu_group_immutable_singleton(struct iommu_group *group)
++{
++       int count;
++
++       mutex_lock(&group->mutex);
++       count = iommu_group_device_count(group);
++       mutex_unlock(&group->mutex);
++
++       if (count != 1)
++               return false;
++
++       /*
++        * The PCI device could be considered to be fully isolated if all
++        * devices on the path from the device to the host-PCI bridge are
++        * protected from peer-to-peer DMA by ACS.
++        */
++       if (dev_is_pci(dev))
++               return pci_acs_path_enabled(to_pci_dev(dev), NULL,
++                                           REQ_ACS_FLAGS);
++
++       /*
++        * Otherwise, the device came from DT/ACPI, assume it is static and
++        * then singleton can know from the device count in the group.
++        */
++       return true;
++}
 
 
-vim +102 drivers/iommu/visconti-atu.c
+> 
+>> +	int count;
+>> +
+>> +	if (!group)
+>> +		return false;
+>> +
+>> +	mutex_lock(&group->mutex);
+>> +	count = iommu_group_device_count(group);
+>> +	mutex_unlock(&group->mutex);
+>> +	iommu_group_put(group);
+>> +
+>> +	if (count != 1)
+>> +		return false;
+> 
+> For non-pci devices above doesn't check anything against immutable.
+> Please add some comment to explain why doing so is correct.
 
-    83	
-    84	static void visconti_atu_enable_entry(struct visconti_atu_device *atu,
-    85					      int num)
-    86	{
-    87		dev_dbg(atu->dev, "enable ATU: %d\n", atu->enable_entry);
-    88	
-    89		visconti_atu_write(atu, ATU_AT_EN, 0);
-    90		if (atu->enable_entry & BIT(num)) {
-    91			visconti_atu_write(atu,
-    92					   ATU_AT_REG(num, ATU_AT_BLADDR),
-    93					   atu->iova[num]);
-    94			visconti_atu_write(atu,
-    95					   ATU_AT_REG(num, ATU_AT_ELADDR),
-    96					   atu->iova[num] + atu->size[num] - 1);
-    97			visconti_atu_write(atu,
-    98					   ATU_AT_REG(num, ATU_AT_BGADDR0),
-    99					   atu->iova[num] & ATU_BGADDR_MASK);
-   100			visconti_atu_write(atu,
-   101					   ATU_AT_REG(num, ATU_AT_BGADDR1),
- > 102					   (atu->iova[num] >> 32) & ATU_BGADDR_MASK);
-   103		}
-   104		visconti_atu_write(atu, ATU_AT_ENTRY_EN, atu->enable_entry);
-   105		visconti_atu_write(atu, ATU_AT_EN, 1);
-   106	}
-   107	
-   108	static void visconti_atu_disable_entry(struct visconti_atu_device *atu)
-   109	{
-   110		dev_dbg(atu->dev, "disable ATU: %d\n", atu->enable_entry);
-   111	
-   112		visconti_atu_write(atu, ATU_AT_EN, 0);
-   113		visconti_atu_write(atu, ATU_AT_ENTRY_EN, atu->enable_entry);
-   114		visconti_atu_write(atu, ATU_AT_EN, 1);
-   115	}
-   116	
-   117	static int visconti_atu_attach_device(struct iommu_domain *io_domain,
-   118					      struct device *dev)
-   119	{
-   120		struct visconti_atu_domain *domain = to_atu_domain(io_domain);
-   121		struct visconti_atu_device *atu = dev_iommu_priv_get(dev);
-   122		int ret = 0;
-   123	
-   124		if (!atu) {
-   125			dev_err(dev, "Cannot attach to ATU\n");
-   126			return -ENXIO;
-   127		}
-   128	
-   129		mutex_lock(&domain->mutex);
-   130	
-   131		if (!domain->atu) {
-   132			domain->atu = atu;
-   133		} else if (domain->atu != atu) {
-   134			dev_err(dev, "Can't attach ATU %s to domain on ATU %s\n",
-   135				dev_name(atu->dev), dev_name(domain->atu->dev));
-   136			ret = -EINVAL;
-   137		} else {
-   138			dev_warn(dev, "Reusing ATU context\n");
-   139		}
-   140	
-   141		mutex_unlock(&domain->mutex);
-   142	
-   143		return ret;
-   144	}
-   145	
-   146	static void visconti_atu_detach_device(struct iommu_domain *io_domain,
-   147					       struct device *dev)
-   148	{
-   149		struct visconti_atu_domain *domain = to_atu_domain(io_domain);
-   150		struct visconti_atu_device *atu = dev_iommu_priv_get(dev);
-   151	
-   152		if (domain->atu != atu)
-   153			return;
-   154	
-   155		domain->atu = NULL;
-   156	}
-   157	
-   158	static int visconti_atu_map(struct iommu_domain *io_domain,
-   159				    unsigned long iova,
-   160				    phys_addr_t paddr,
-   161				    size_t size, int prot, gfp_t gfp)
-   162	{
-   163		struct visconti_atu_domain *domain = to_atu_domain(io_domain);
-   164		struct visconti_atu_device *atu = domain->atu;
-   165		unsigned long flags;
-   166		unsigned int i;
-   167	
-   168		if (!domain)
-   169			return -ENODEV;
-   170	
-   171		spin_lock_irqsave(&atu->lock, flags);
-   172		for (i = 0; i < atu->num_map_entry; i++) {
-   173			if (!(atu->enable_entry & BIT(i))) {
-   174				atu->enable_entry |= BIT(i);
-   175				atu->iova[i] = iova;
-   176				atu->paddr[i] = paddr;
-   177				atu->size[i] = size;
-   178	
-   179				visconti_atu_enable_entry(atu, i);
-   180				break;
-   181			}
-   182		}
-   183		spin_unlock_irqrestore(&atu->lock, flags);
-   184	
-   185		if (i == atu->num_map_entry) {
-   186			dev_err(atu->dev, "map: not enough entry.\n");
-   187			return -ENOMEM;
-   188		}
-   189	
-   190		return 0;
-   191	}
-   192	
-   193	static size_t visconti_atu_unmap(struct iommu_domain *io_domain,
-   194					 unsigned long iova,
-   195					 size_t size,
-   196					 struct iommu_iotlb_gather *iotlb_gather)
-   197	{
-   198		struct visconti_atu_domain *domain = to_atu_domain(io_domain);
-   199		struct visconti_atu_device *atu = domain->atu;
-   200		size_t tmp_size = size;
-   201		unsigned long flags;
-   202		unsigned int i;
-   203	
-   204		spin_lock_irqsave(&atu->lock, flags);
-   205	
-   206		while (tmp_size != 0) {
-   207			for (i = 0; i < atu->num_map_entry; i++) {
-   208				if (atu->iova[i] != iova)
-   209					continue;
-   210	
-   211				atu->enable_entry &= ~BIT(i);
-   212				iova += atu->size[i];
-   213				tmp_size -= atu->size[i];
-   214	
-   215				visconti_atu_disable_entry(atu);
-   216	
-   217				break;
-   218			}
-   219			if (i == atu->num_map_entry) {
-   220				dev_err(atu->dev, "unmap: not found entry.\n");
-   221				size = 0;
-   222				goto out;
-   223			}
-   224		}
-   225	
-   226		if (!atu->num_map_entry)
-   227			visconti_atu_write(atu, ATU_AT_EN, 0);
-   228	out:
-   229		spin_unlock_irqrestore(&atu->lock, flags);
-   230		return size;
-   231	}
-   232	
-   233	static phys_addr_t visconti_atu_iova_to_phys(struct iommu_domain *io_domain,
-   234						     dma_addr_t iova)
-   235	{
-   236		struct visconti_atu_domain *domain = to_atu_domain(io_domain);
-   237		struct visconti_atu_device *atu = domain->atu;
-   238		phys_addr_t paddr = 0;
-   239		unsigned int i;
-   240	
-   241		for (i = 0; i < atu->num_map_entry; i++) {
-   242			if (!(atu->enable_entry & BIT(i)))
-   243				continue;
-   244			if (atu->iova[i] <= iova && iova < (atu->iova[i] + atu->size[i])) {
-   245				paddr = atu->paddr[i];
-   246				paddr += iova & (atu->size[i] - 1);
-   247				break;
-   248			}
-   249		}
-   250	
- > 251		dev_dbg(atu->dev, "iova_to_phys: %llx -> %llx\n", iova, paddr);
-   252	
-   253		return paddr;
-   254	}
-   255	
+Yes, as above code shows.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> 
+>> +
+>> +	/*
+>> +	 * The PCI device could be considered to be fully isolated if all
+>> +	 * devices on the path from the device to the host-PCI bridge are
+>> +	 * protected from peer-to-peer DMA by ACS.
+>> +	 */
+>> +	if (dev_is_pci(dev))
+>> +		return pci_acs_path_enabled(to_pci_dev(dev), NULL,
+>> +					    REQ_ACS_FLAGS);
+>> +
+>> +	return true;
+>> +}
+>> +
+
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
