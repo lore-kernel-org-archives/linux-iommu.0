@@ -1,75 +1,74 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 47BD0C433F5
-	for <iommu@archiver.kernel.org>; Wed, 25 May 2022 01:40:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D18A6C433F5
+	for <iommu@archiver.kernel.org>; Wed, 25 May 2022 01:48:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C97D841A0E;
-	Wed, 25 May 2022 01:40:38 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6229640562;
+	Wed, 25 May 2022 01:48:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vhZ_zgcM9RNj; Wed, 25 May 2022 01:40:37 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 36B6141825;
-	Wed, 25 May 2022 01:40:37 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id HRTiHP1ucblN; Wed, 25 May 2022 01:48:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 3001A4032E;
+	Wed, 25 May 2022 01:48:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E6B0C0039;
-	Wed, 25 May 2022 01:40:37 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DDFFCC002D
- for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 01:40:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E1D75C0039;
+	Wed, 25 May 2022 01:47:59 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D1C13C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 01:47:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id C78E541891
- for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 01:40:33 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id B97C8612AC
+ for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 01:47:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QPf-d4_nmYxh for <iommu@lists.linux-foundation.org>;
- Wed, 25 May 2022 01:40:32 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id VBWeOnd0q7De for <iommu@lists.linux-foundation.org>;
+ Wed, 25 May 2022 01:47:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 8184C41825
- for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 01:40:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1653442832; x=1684978832;
- h=message-id:date:mime-version:cc:subject:to:references:
- from:in-reply-to:content-transfer-encoding;
- bh=LPMOPnYEgjdhEDNOqttDlYIQit/14dPGn99F51fR4Dk=;
- b=lg1Bik0Tzd42v6t6Q5k19wxvsswkeVPEmbuDLQJrYJ9iWuMhGxNW7pDk
- U7pmvePpeonsMGmcDyXLaBv5pnEQzr7vXKV0Azj8TEs7dyKfRF8Y3yp65
- x76DIVyLzqzt/8EcaKj+Gicw+7IXfVi55c6Upr9QP5aGmu5vOmwg7u8NR
- PELoSmIRmgnbcip7TpzwUbHivpuDs+igYg9uhu5dJVoKLp9KFQvBriGuD
- W8yi72MJudRBDn/R9KjRJmyaVc8Ezdd+kwUWK/aYDQQkvxZNR/tzKFU2L
- 3EM1NXFPHF1BJeF4j+FzdoNDEvIRDIDtXhgyMA5BLcXkSjV1Qa0jxsAlh g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="273687473"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; d="scan'208";a="273687473"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 24 May 2022 18:40:31 -0700
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; d="scan'208";a="601594170"
-Received: from jwang96-mobl.ccr.corp.intel.com (HELO [10.255.29.139])
- ([10.255.29.139])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 24 May 2022 18:40:29 -0700
-Message-ID: <7149e5dd-c72e-538b-b98f-0fbc89580a95@linux.intel.com>
-Date: Wed, 25 May 2022 09:40:26 +0800
+Received: from gandalf.ozlabs.org (mail.ozlabs.org
+ [IPv6:2404:9400:2221:ea00::3])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 7D5FE612AA
+ for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 01:47:56 +0000 (UTC)
+Received: by gandalf.ozlabs.org (Postfix, from userid 1007)
+ id 4L7DTw0FX7z4xYN; Wed, 25 May 2022 11:47:48 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=gibson.dropbear.id.au; s=201602; t=1653443268;
+ bh=EGg/NWkhqgS+TYzveXIrYzjI5grJ8CrjMPa5KXIW82M=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=UWqS+owz8XnLsimncATVeIZPrt+M5FSMuEOwndbyTqNU6V3m9T5RrOiUKdC6M8eJM
+ 96kqlDkNFXOvl8bB75zPZ9bQQnTvg3JmgnjeNIMXE9aPnU5ZigbKTlI2dlqH7NDGdl
+ 4vsah1OhKJGiAQF90Hs01kO2l/gCVEXNy1qBBjtY=
+Date: Wed, 25 May 2022 11:39:39 +1000
+From: David Gibson <david@gibson.dropbear.id.au>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH RFC 11/12] iommufd: vfio container FD ioctl compatibility
+Message-ID: <Yo2I2zfDTEg8+PjE@yekko>
+References: <0-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <11-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
+ <20220323165125.5efd5976.alex.williamson@redhat.com>
+ <20220324003342.GV11336@nvidia.com>
+ <20220324160403.42131028.alex.williamson@redhat.com>
+ <YmqqXHsCTxVb2/Oa@yekko>
+ <67692fa1-6539-3ec5-dcfe-c52dfd1e46b8@ozlabs.ru>
+ <20220524132553.GR1343366@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH] iommu/vt-d: Fix PCI bus rescan device hot add
-Content-Language: en-US
-To: Yian Chen <yian.chen@intel.com>, iommu@lists.linux-foundation.org,
- Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
- Jacob jun Pan <jacob.jun.pan@intel.com>, Sohil Mehta
- <sohil.mehta@intel.com>, Ravi Shankar <ravi.v.shankar@intel.com>
-References: <20220521002115.1624069-1-yian.chen@intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220521002115.1624069-1-yian.chen@intel.com>
+In-Reply-To: <20220524132553.GR1343366@nvidia.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
+ Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux-foundation.org,
+ Daniel Jordan <daniel.m.jordan@oracle.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Joao Martins <joao.m.martins@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,94 +81,79 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: multipart/mixed; boundary="===============5265576288384837840=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Joerg,
 
-On 2022/5/21 08:21, Yian Chen wrote:
-> Notifier calling chain uses priority to determine the execution
-> order of the notifiers or listeners registered to the chain.
-> PCI bus device hot add utilizes the notification mechanism.
-> 
-> The current code sets low priority (INT_MIN) to Intel
-> dmar_pci_bus_notifier and postpones DMAR decoding after adding
-> new device into IOMMU. The result is that struct device pointer
-> cannot be found in DRHD search for the new device's DMAR/IOMMU.
-> Subsequently, the device is put under the "catch-all" IOMMU
-> instead of the correct one. This could cause system hang when
-> device TLB invalidation is sent to the wrong IOMMU. Invalidation
-> timeout error and hard lockup have been observed and data
-> inconsistency/crush may occur as well.
-> 
-> This patch fixes the issue by setting a positive priority(1) for
-> dmar_pci_bus_notifier while the priority of IOMMU bus notifier
-> uses the default value(0), therefore DMAR decoding will be in
-> advance of DRHD search for a new device to find the correct IOMMU.
-> 
-> Following is a 2-step example that triggers the bug by simulating
-> PCI device hot add behavior in Intel Sapphire Rapids server.
-> 
-> echo 1 > /sys/bus/pci/devices/0000:6a:01.0/remove
-> echo 1 > /sys/bus/pci/rescan
-> 
-> Fixes: 59ce0515cdaf ("iommu/vt-d: Update DRHD/RMRR/ATSR device scope")
-> Cc: stable@vger.kernel.org # v3.15+
-> Reported-by: Zhang, Bernice <bernice.zhang@intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Signed-off-by: Yian Chen <yian.chen@intel.com>
-> ---
-> This is a quick fix for the bug reported. Intel internally evaluated
-> another redesigned solution that eliminates dmar pci bus notifier to
-> simplify the workflow of pci hotplug and improve its runtime efficiency.
-> 
-> While considering the fix could apply to downstream and the complexity
-> of pci hotplug workflow change may significantly increase the
-> engineering effort to downstream the patch, the choice is to submit this
-> simple patch to help the deployment of this bug fix.
+--===============5265576288384837840==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="NTotmLiK/VZ5p5fr"
+Content-Disposition: inline
 
-Yian has been worked on using IOMMU bus notifier to solve this problem.
-It turns out that due to the following facts, we need to refactor the 
-IOMMU core and Intel DMAR Code:
 
-- Interrupt remapping also requires Intel DMAR code. Therefore, when
-   IOMMU is not enabled, the PCI bus notifier in DMAR is still required.
-- The IOMMU PCI bus notifier calls .probe_device() which lacks of the
-   information about hot-add or static boot.
+--NTotmLiK/VZ5p5fr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Considering that the problem described here is a serious problem,
-because users can easily damage the system by writing sysfs files on
-some platforms, we need a quick fix for both upstream and stable
-kernels. The refactoring code will be discussed in a separate series.
+On Tue, May 24, 2022 at 10:25:53AM -0300, Jason Gunthorpe wrote:
+> On Mon, May 23, 2022 at 04:02:22PM +1000, Alexey Kardashevskiy wrote:
+>=20
+> > Which means the guest RAM does not need to be all mapped in that base I=
+OAS
+> > suggested down this thread as that would mean all memory is pinned and
+> > powervm won't be able to swap it out (yeah, it can do such thing now!).=
+ Not
+> > sure if we really want to support this or stick to a simpler design.
+>=20
+> Huh? How can it swap? Calling GUP is not optional. Either you call GUP
+> at the start and there is no swap, or you call GUP for each vIOMMU
+> hypercall.
+>=20
+> Since everyone says PPC doesn't call GUP during the hypercall - how is
+> it working?
 
-How do you like it? If you agree, I can queue it in my next pull request
-for fixes.
+The current implementation does GUP during the pre-reserve.  I think
+Alexey's talking about a new PowerVM (IBM hypervisor) feature; I don't
+know how that works.
 
-Best regards,
-baolu
+--=20
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
 
-> ---
-> 
->   drivers/iommu/intel/dmar.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-> index 4de960834a1b..497c5bd95caf 100644
-> --- a/drivers/iommu/intel/dmar.c
-> +++ b/drivers/iommu/intel/dmar.c
-> @@ -383,7 +383,7 @@ static int dmar_pci_bus_notifier(struct notifier_block *nb,
->   
->   static struct notifier_block dmar_pci_bus_nb = {
->   	.notifier_call = dmar_pci_bus_notifier,
-> -	.priority = INT_MIN,
-> +	.priority = 1,
->   };
->   
->   static struct dmar_drhd_unit *
+--NTotmLiK/VZ5p5fr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEoULxWu4/Ws0dB+XtgypY4gEwYSIFAmKNiLQACgkQgypY4gEw
+YSLnFRAAhlmoBMol4J9baUS6tCTxZ0TBL5Vbqt8RKLryhFiIIQOrrB6kTU5uyYSX
+vdyI/V7+cC2vjYmEDwUM8hnFi3cTpW+BMj4TeQSxEgIPHJ4tWs0yGuuhboVKhuJV
+9h2iSi/SLdOc5ZELFwWZ5YTJc88EUzeDY+B+l3gL+PTxOW8WuBQmjQs+xw5Oaqhx
+YY24PAoLnL/nmSOJU9jmb+1opQoah0WmziyMp5H/eX+n09XrI+OieVcgAJSvlCQ8
+MJsuVokzY/cvJKJPtJRB+VKxrcavcivF6WWzcCz6e3tzkdcfOzWrEzKjfoo5pFM0
+bpk5iAs34G3n+m+OGQHEKgKpRa5cGTj92Wzdic1IDAA10PRScGwJVKynImWxozKT
+S1C4zjG87inJyYQ15DEYygNvRCrzNMEsbHm4NGlh4H9rTEwJ2s0DZyPUGmxOnf5E
+qG64BxrmR6HhoLvuAehIok7rfEZL0EWK7xLwP8w6Q/G33W/Tpc9PpZT06SdZoKOm
+tD7TFUqjjtIZwGDpggJLCiDZYF8xwaW4qnWwnpgms//pijFkaL41pxE0y/vS4lOA
+uS5ATgjrMtsvaIqvygQg8eUhhUtbn08sHseYoriwWMbCMzBt8KJEXyvQ3wWvUIYp
+K7DQMs+/yPDTXxFo86ZqBWwEFC8MCnVM4V8rs8Fti1k87TrZT3Y=
+=9VPE
+-----END PGP SIGNATURE-----
+
+--NTotmLiK/VZ5p5fr--
+
+--===============5265576288384837840==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============5265576288384837840==--
