@@ -4,71 +4,80 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D18A6C433F5
-	for <iommu@archiver.kernel.org>; Wed, 25 May 2022 01:48:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7EE02C433EF
+	for <iommu@archiver.kernel.org>; Wed, 25 May 2022 02:03:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 6229640562;
-	Wed, 25 May 2022 01:48:01 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 06F0D40488;
+	Wed, 25 May 2022 02:03:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HRTiHP1ucblN; Wed, 25 May 2022 01:48:00 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 3001A4032E;
-	Wed, 25 May 2022 01:48:00 +0000 (UTC)
+	with ESMTP id P1TKNaDSmfr8; Wed, 25 May 2022 02:03:36 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id C22C54032E;
+	Wed, 25 May 2022 02:03:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E1D75C0039;
-	Wed, 25 May 2022 01:47:59 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D1C13C002D
- for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 01:47:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9C2E1C0032;
+	Wed, 25 May 2022 02:03:35 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9EE27C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 02:03:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id B97C8612AC
- for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 01:47:57 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 5EDFD40488
+ for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 02:03:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VBWeOnd0q7De for <iommu@lists.linux-foundation.org>;
- Wed, 25 May 2022 01:47:56 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id olTNRBmQTaFL for <iommu@lists.linux-foundation.org>;
+ Wed, 25 May 2022 02:03:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from gandalf.ozlabs.org (mail.ozlabs.org
- [IPv6:2404:9400:2221:ea00::3])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 7D5FE612AA
- for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 01:47:56 +0000 (UTC)
-Received: by gandalf.ozlabs.org (Postfix, from userid 1007)
- id 4L7DTw0FX7z4xYN; Wed, 25 May 2022 11:47:48 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=gibson.dropbear.id.au; s=201602; t=1653443268;
- bh=EGg/NWkhqgS+TYzveXIrYzjI5grJ8CrjMPa5KXIW82M=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=UWqS+owz8XnLsimncATVeIZPrt+M5FSMuEOwndbyTqNU6V3m9T5RrOiUKdC6M8eJM
- 96kqlDkNFXOvl8bB75zPZ9bQQnTvg3JmgnjeNIMXE9aPnU5ZigbKTlI2dlqH7NDGdl
- 4vsah1OhKJGiAQF90Hs01kO2l/gCVEXNy1qBBjtY=
-Date: Wed, 25 May 2022 11:39:39 +1000
-From: David Gibson <david@gibson.dropbear.id.au>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH RFC 11/12] iommufd: vfio container FD ioctl compatibility
-Message-ID: <Yo2I2zfDTEg8+PjE@yekko>
-References: <0-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
- <11-v1-e79cd8d168e8+6-iommufd_jgg@nvidia.com>
- <20220323165125.5efd5976.alex.williamson@redhat.com>
- <20220324003342.GV11336@nvidia.com>
- <20220324160403.42131028.alex.williamson@redhat.com>
- <YmqqXHsCTxVb2/Oa@yekko>
- <67692fa1-6539-3ec5-dcfe-c52dfd1e46b8@ozlabs.ru>
- <20220524132553.GR1343366@nvidia.com>
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 8B5B84032E
+ for <iommu@lists.linux-foundation.org>; Wed, 25 May 2022 02:03:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1653444213; x=1684980213;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=biV8YxTRJk34SukN2je6rt+JeuKJLQpZbk8KhgtBapk=;
+ b=Y3S1Qq55ThhDpjO1DgY7mCMSpPd3J4ote2R2onTs9xIGYm8INXECjpEp
+ D7L6zxlsVvZton06f1BSWGcxtNRNyiArQkgjtIavW78EehqmndsXyEOt7
+ jdqrnWzffJ8yUVgy3VHuxlAlbl9/vypt72vPPMKonP+Tmymp23P0GKegw
+ cdhwWmS27bvaGuu2eKI8nJ/l8GOWHzmQIuim2B2Xb9BdYfX12dNoctnFi
+ 4uAYmALNkeC/tR5YbLzrH2yJmDLSF/NraercmL81EyE/Fqz3ALgLaCVOO
+ mWb3Q4i2mnDFtgE6Xs1GkBD97m8vhin1M03XcUDZ8ceTAG6BTnB6/czTz g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="261303193"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; d="scan'208";a="261303193"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 24 May 2022 19:03:32 -0700
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; d="scan'208";a="601601512"
+Received: from jwang96-mobl.ccr.corp.intel.com (HELO [10.255.29.139])
+ ([10.255.29.139])
+ by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 24 May 2022 19:03:28 -0700
+Message-ID: <3c112762-f6e6-0b41-b38f-3bb2995d97cf@linux.intel.com>
+Date: Wed, 25 May 2022 10:03:26 +0800
 MIME-Version: 1.0
-In-Reply-To: <20220524132553.GR1343366@nvidia.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v7 01/10] iommu: Add pasids field in struct iommu_device
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
+References: <20220519072047.2996983-1-baolu.lu@linux.intel.com>
+ <20220519072047.2996983-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB52766D61BBE784A70B4BF06F8CD79@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52766D61BBE784A70B4BF06F8CD79@BN9PR11MB5276.namprd11.prod.outlook.com>
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Chaitanya Kulkarni <chaitanyak@nvidia.com>, kvm@vger.kernel.org,
- "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
- Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux-foundation.org,
- Daniel Jordan <daniel.m.jordan@oracle.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Joao Martins <joao.m.martins@oracle.com>
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,79 +90,106 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============5265576288384837840=="
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Kevin,
 
---===============5265576288384837840==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="NTotmLiK/VZ5p5fr"
-Content-Disposition: inline
+Thank you for reviewing my patches.
 
+On 2022/5/24 17:24, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Thursday, May 19, 2022 3:21 PM
+>>
+>> Use this field to keep the number of supported PASIDs that an IOMMU
+>> hardware is able to support. This is a generic attribute of an IOMMU
+>> and lifting it into the per-IOMMU device structure makes it possible
+>> to allocate a PASID for device without calls into the IOMMU drivers.
+>> Any iommu driver which suports PASID related features should set this
+>> field before enabling them on the devices.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+>> ---
+>>   include/linux/iommu.h                       | 2 ++
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
+>>   drivers/iommu/intel/dmar.c                  | 4 ++++
+>>   3 files changed, 7 insertions(+)
+>>
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index 5e1afe169549..da423e87f248 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -318,12 +318,14 @@ struct iommu_domain_ops {
+>>    * @list: Used by the iommu-core to keep a list of registered iommus
+>>    * @ops: iommu-ops for talking to this iommu
+>>    * @dev: struct device for sysfs handling
+>> + * @pasids: number of supported PASIDs
+>>    */
+>>   struct iommu_device {
+>>   	struct list_head list;
+>>   	const struct iommu_ops *ops;
+>>   	struct fwnode_handle *fwnode;
+>>   	struct device *dev;
+>> +	u32 pasids;
+> 
+> max_pasid or nr_pasids?
 
---NTotmLiK/VZ5p5fr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+max_pasid looks better.
 
-On Tue, May 24, 2022 at 10:25:53AM -0300, Jason Gunthorpe wrote:
-> On Mon, May 23, 2022 at 04:02:22PM +1000, Alexey Kardashevskiy wrote:
->=20
-> > Which means the guest RAM does not need to be all mapped in that base I=
-OAS
-> > suggested down this thread as that would mean all memory is pinned and
-> > powervm won't be able to swap it out (yeah, it can do such thing now!).=
- Not
-> > sure if we really want to support this or stick to a simpler design.
->=20
-> Huh? How can it swap? Calling GUP is not optional. Either you call GUP
-> at the start and there is no swap, or you call GUP for each vIOMMU
-> hypercall.
->=20
-> Since everyone says PPC doesn't call GUP during the hypercall - how is
-> it working?
+> 
+>>   };
+>>
+>>   /**
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> index 88817a3376ef..6e2cd082c670 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> @@ -3546,6 +3546,7 @@ static int arm_smmu_device_hw_probe(struct
+>> arm_smmu_device *smmu)
+>>   	/* SID/SSID sizes */
+>>   	smmu->ssid_bits = FIELD_GET(IDR1_SSIDSIZE, reg);
+>>   	smmu->sid_bits = FIELD_GET(IDR1_SIDSIZE, reg);
+>> +	smmu->iommu.pasids = smmu->ssid_bits;
+>>
+>>   	/*
+>>   	 * If the SMMU supports fewer bits than would fill a single L2 stream
+>> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+>> index 4de960834a1b..1c3cf267934d 100644
+>> --- a/drivers/iommu/intel/dmar.c
+>> +++ b/drivers/iommu/intel/dmar.c
+>> @@ -1126,6 +1126,10 @@ static int alloc_iommu(struct dmar_drhd_unit
+>> *drhd)
+>>
+>>   	raw_spin_lock_init(&iommu->register_lock);
+>>
+>> +	/* Supports full 20-bit PASID in scalable mode. */
+>> +	if (ecap_pasid(iommu->ecap))
+>> +		iommu->iommu.pasids = 1UL << 20;
+>> +
+> 
+> supported pasid bits is reported by ecap_pss(). I don't think we should
+> assume 20bits here.
 
-The current implementation does GUP during the pre-reserve.  I think
-Alexey's talking about a new PowerVM (IBM hypervisor) feature; I don't
-know how that works.
+Yes. I overlooked this. Thanks for reminding.
 
---=20
-David Gibson			| I'll have my music baroque, and my code
-david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
-				| _way_ _around_!
-http://www.ozlabs.org/~dgibson
+Another thing I need to improve is that scalable mode could be disabled.
+This field should be 0 in that case.
 
---NTotmLiK/VZ5p5fr
-Content-Type: application/pgp-signature; name="signature.asc"
+> 
+>>   	/*
+>>   	 * This is only for hotplug; at boot time intel_iommu_enabled won't
+>>   	 * be set yet. When intel_iommu_init() runs, it registers the units
+>> --
+>> 2.25.1
+> 
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEoULxWu4/Ws0dB+XtgypY4gEwYSIFAmKNiLQACgkQgypY4gEw
-YSLnFRAAhlmoBMol4J9baUS6tCTxZ0TBL5Vbqt8RKLryhFiIIQOrrB6kTU5uyYSX
-vdyI/V7+cC2vjYmEDwUM8hnFi3cTpW+BMj4TeQSxEgIPHJ4tWs0yGuuhboVKhuJV
-9h2iSi/SLdOc5ZELFwWZ5YTJc88EUzeDY+B+l3gL+PTxOW8WuBQmjQs+xw5Oaqhx
-YY24PAoLnL/nmSOJU9jmb+1opQoah0WmziyMp5H/eX+n09XrI+OieVcgAJSvlCQ8
-MJsuVokzY/cvJKJPtJRB+VKxrcavcivF6WWzcCz6e3tzkdcfOzWrEzKjfoo5pFM0
-bpk5iAs34G3n+m+OGQHEKgKpRa5cGTj92Wzdic1IDAA10PRScGwJVKynImWxozKT
-S1C4zjG87inJyYQ15DEYygNvRCrzNMEsbHm4NGlh4H9rTEwJ2s0DZyPUGmxOnf5E
-qG64BxrmR6HhoLvuAehIok7rfEZL0EWK7xLwP8w6Q/G33W/Tpc9PpZT06SdZoKOm
-tD7TFUqjjtIZwGDpggJLCiDZYF8xwaW4qnWwnpgms//pijFkaL41pxE0y/vS4lOA
-uS5ATgjrMtsvaIqvygQg8eUhhUtbn08sHseYoriwWMbCMzBt8KJEXyvQ3wWvUIYp
-K7DQMs+/yPDTXxFo86ZqBWwEFC8MCnVM4V8rs8Fti1k87TrZT3Y=
-=9VPE
------END PGP SIGNATURE-----
-
---NTotmLiK/VZ5p5fr--
-
---===============5265576288384837840==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============5265576288384837840==--
