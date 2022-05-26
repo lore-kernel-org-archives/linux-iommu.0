@@ -1,95 +1,162 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 92592C433F5
-	for <iommu@archiver.kernel.org>; Thu, 26 May 2022 12:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 95274C433EF
+	for <iommu@archiver.kernel.org>; Thu, 26 May 2022 18:43:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 36FE4845F8;
-	Thu, 26 May 2022 12:01:25 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 370DC40476;
+	Thu, 26 May 2022 18:43:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MmsaiLVezSS8; Thu, 26 May 2022 12:01:23 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 6D72F845C7;
-	Thu, 26 May 2022 12:01:23 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PtjSiy60VGLr; Thu, 26 May 2022 18:43:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 2314140150;
+	Thu, 26 May 2022 18:43:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 45FDEC0032;
-	Thu, 26 May 2022 12:01:23 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1FA62C002D
- for <iommu@lists.linux-foundation.org>; Thu, 26 May 2022 12:01:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CFDA0C0039;
+	Thu, 26 May 2022 18:43:53 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BF54CC002D
+ for <iommu@lists.linux-foundation.org>; Thu, 26 May 2022 18:43:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 1906D42565
- for <iommu@lists.linux-foundation.org>; Thu, 26 May 2022 12:01:22 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 9389E40476
+ for <iommu@lists.linux-foundation.org>; Thu, 26 May 2022 18:43:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gxXwb714opBi for <iommu@lists.linux-foundation.org>;
- Thu, 26 May 2022 12:01:20 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id y8gIy-i2cvi8 for <iommu@lists.linux-foundation.org>;
+ Thu, 26 May 2022 18:43:51 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com
- [IPv6:2607:f8b0:4864:20::102e])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 8EA7342555
- for <iommu@lists.linux-foundation.org>; Thu, 26 May 2022 12:01:20 +0000 (UTC)
-Received: by mail-pj1-x102e.google.com with SMTP id gk22so1573122pjb.1
- for <iommu@lists.linux-foundation.org>; Thu, 26 May 2022 05:01:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=llU3KuLScL36j/qfF0yMfK2H7onIq45eIkuWwZeaf1M=;
- b=TENe2WjuFNHgLCi7bN1bsNg8qRWszxGGqpwzeL8vDgaK4LdRf3KrWK5a06AS/YipXR
- RTBfPt1K2apJU/J2RlnyW/v6ApcvyemaCcNjp8wFMLTetdrp9NdC2F7esgWmm/gtVODc
- LtSmkrIr1krrvlHknq2OzPOlQpcmpwtKt0zdS30FdClJ4nCVQJQlJvZDgw59gD/1ey0/
- Gg9QpnufvconYfOw27ArRonRicOI9E8AN4EUcqLZfp9cMsGLCrWKx1X/hDeNJpw6wxBK
- 18VObXxHPNZ4XvHT82LfFzie2h1GTzyrXDAT/GB75UW440SNl7tvVio4b54MBvFdgJBb
- G5mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=llU3KuLScL36j/qfF0yMfK2H7onIq45eIkuWwZeaf1M=;
- b=lTy4nvRE/+8w478A7erpY2ETN4pDfv9NPErLT50JvHzByhagsoV9ZL5vgXWV9PtTIG
- TcOJBLEt7J4QseDDE7yzBg3tivJX5tmoLwGeC2BU+yY1T/QaRaskNJUUBy13cJUbL4DR
- HCqMD9mPyG1sqRODHWeg8Mh5PtlcHi2dewzuOsWpIzaQSAHJWq5wRs5HnqrIq4xPir/t
- xLF8vt+OH/EGE/uJYL9kJ9VV1i1C7dRycvmG36beDo7rOL2foq2cc5IQ4S5Thy9s7ZKA
- WQcXn/OlyUkpcBGtlFm8zcU3apEM1cNneM/OFqjTFxAtL+ofT9zBUki9pI8aBQjZzoOO
- 6F2Q==
-X-Gm-Message-State: AOAM532gabgMUKhWsJoQXqSm3bCoePxvhwa7FS2zgc/RORnyHEONy/Mu
- qsYNBptY+H8sNvL99NKb5CE=
-X-Google-Smtp-Source: ABdhPJx2nCbXug27Q54ozesPg5QXJyJ6L4SG9evwPc6UTmRpte/tbGu84UTUTzwl0ekU98B7uYxlRA==
-X-Received: by 2002:a17:90b:1e0e:b0:1e0:17fb:6405 with SMTP id
- pg14-20020a17090b1e0e00b001e017fb6405mr2293220pjb.191.1653566479736; 
- Thu, 26 May 2022 05:01:19 -0700 (PDT)
-Received: from ubuntu-Virtual-Machine.corp.microsoft.com
- ([2001:4898:80e8:1:45c7:d5e2:7b45:3336])
- by smtp.gmail.com with ESMTPSA id
- bi7-20020a170902bf0700b0015e8d4eb282sm1328190plb.204.2022.05.26.05.01.18
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 26 May 2022 05:01:19 -0700 (PDT)
-From: Tianyu Lan <ltykernel@gmail.com>
-To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
- wei.liu@kernel.org, decui@microsoft.com, davem@davemloft.net,
- kuba@kernel.org, pabeni@redhat.com, hch@infradead.org,
- m.szyprowski@samsung.com, robin.murphy@arm.com,
- michael.h.kelley@microsoft.com
-Subject: [RFC PATCH V3 1/2] swiotlb: Add Child IO TLB mem support
-Date: Thu, 26 May 2022 08:01:11 -0400
-Message-Id: <20220526120113.971512-2-ltykernel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220526120113.971512-1-ltykernel@gmail.com>
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com
+ (mail-bn8nam11on2072f.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7eae::72f])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 8EFA840150
+ for <iommu@lists.linux-foundation.org>; Thu, 26 May 2022 18:43:51 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E4mQizjsAl+moeJ88aNKUvH7usitH82Tel8wGoJR7v1Ce2E7dmbdiTuylLhLBjNxVIKt0imaEtk5QEbTSJsKPUmdplT9QtaEnFAFEB6+peoUb+SBlKDkqBnfXPVhh4WFCqICzrCgwuAIzi3oeuLN+czUTtLkH3XY+zGvli+dunVJdSq64PGplI9z/tM6WrBcUOe5ozzPN3WKoWD1VTu0hEMlNiwAkeqXaL9b14x8Kp4VQtU4CdEQb7md7vfozSy4LRtes0YAAbzH89S+cEDX8sjJapBrHAsNHGJcgiKesedhpcb03FWFEA4c8hwNRNYKuq7aLYf0F/Xe9g0rloFQSA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8ZJUbdOzt9vjIbHWJjpWnO/2y32Mi1Lq93ApYcdiufE=;
+ b=I/dcx15h+Yh1b8O8tFLMAP2VluzFo4fbRsibYEun0MVeJl+p2JmcsYV7NIWfjQ+QPbXZjnDDXv8KjrFPUqaA/YJkQMbUqntYGeIxQ00b3vjsdZL2UYOxZE+XxBlwBTNFr0pkdKzbv6A3ZE5qibnBPaXPQfKyordNGityCj7V88SYDPt5tz1jfZrKJQK6O0JSCKr1z8lShuGM9ySJ70MP1AKyxkELYiCdw72wgNu9Md5ZOl4k+rynICrCzWi9+DasSLU91VAkpBdm650gqElMOtKQpOvFkAgwS+3+ZXg9igm5TLBYw6zOna6fAhh8ckxyqE3BKrrCUVDXAkSP7FXSnQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8ZJUbdOzt9vjIbHWJjpWnO/2y32Mi1Lq93ApYcdiufE=;
+ b=YXgcrCnRTsrWqnyPRdmRgujEuIsN8kTLgxuw5Robf2HLXNC2jk0KnEsKrFgA7/c3HEzgz5lArcNqIzudh15DQTDMQKlvLMMIZZjTjlbsu3NQrpitor4Qo8uZoPXLmTcIoBm9ps05XUrSJQul32QuboDvb9BSNJeao8uhaOPX8c4=
+Received: from BYAPR21MB1270.namprd21.prod.outlook.com (2603:10b6:a03:105::15)
+ by BY5PR21MB1459.namprd21.prod.outlook.com (2603:10b6:a03:232::9)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.6; Thu, 26 May
+ 2022 18:43:47 +0000
+Received: from BYAPR21MB1270.namprd21.prod.outlook.com
+ ([fe80::b4e0:efdb:daf9:ba4e]) by BYAPR21MB1270.namprd21.prod.outlook.com
+ ([fe80::b4e0:efdb:daf9:ba4e%5]) with mapi id 15.20.5314.006; Thu, 26 May 2022
+ 18:43:47 +0000
+To: Tianyu Lan <ltykernel@gmail.com>, KY Srinivasan <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Stephen Hemminger
+ <sthemmin@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>,
+ "davem@davemloft.net" <davem@davemloft.net>, "kuba@kernel.org"
+ <kuba@kernel.org>, "pabeni@redhat.com" <pabeni@redhat.com>,
+ "hch@infradead.org" <hch@infradead.org>, "m.szyprowski@samsung.com"
+ <m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Subject: RE: [RFC PATCH V3 2/2] net: netvsc: Allocate per-device swiotlb
+ bounce buffer for netvsc
+Thread-Topic: [RFC PATCH V3 2/2] net: netvsc: Allocate per-device swiotlb
+ bounce buffer for netvsc
+Thread-Index: AQHYcPhTFgvyOX9730i1pET/mIHWX60xfloA
+Date: Thu, 26 May 2022 18:43:47 +0000
+Message-ID: <BYAPR21MB12706372826A3ABAEF42E716BFD99@BYAPR21MB1270.namprd21.prod.outlook.com>
 References: <20220526120113.971512-1-ltykernel@gmail.com>
+ <20220526120113.971512-3-ltykernel@gmail.com>
+In-Reply-To: <20220526120113.971512-3-ltykernel@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=6f7409cc-6851-490c-9045-caf57b4abfcf;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-05-26T18:41:01Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: bafcdd98-e920-455c-2dde-08da3f47ab16
+x-ms-traffictypediagnostic: BY5PR21MB1459:EE_
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <BY5PR21MB1459CDFC98DFFC97ABD49A94BFD99@BY5PR21MB1459.namprd21.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 5lEXgbmKstaVe0zDImGBSnsCE2DNJ8YVVOwK/40dR0k5rkV0y5Hy7l64xftEqQK8LAVe046YR6eq74zuiIGiDF5FG+wVTWkSijWDKtp6cVT22Qfe9lGhe8EMUK8eUBshRJGadrXJ/usLFqHwt22vqzeTWOw+1t0/aCGdO/cmUuVTqoy6JUudzlgrVLbSM1qhzuVejCihqXw7MSf7WJEXcpV/nLHnm+umZMiBDuol5tMqfdBRvCLxd4qLC3icQVtN5rekMhA1nS4KM2wpxG8F7djjVtrU9BXJ7i2haZPks4j6rK6spxF47OBnntlCcagFp1UtN5uXzsDbwBC2VAEQXocMwPamDAC6ewojNaX4mB9h7fyLCoGUbv28c2Z1D/zeLUU0fKsPQl5pnqr1jI+bWhPkefFVU8HBNAGV4fWBipO97gXd+6Kp7azKMRIQ1SK6nrNL9viH186RL9UodhtDKPjkOBPtdDOgb1rkHLnYA67bxp3ZzpeLA1UVHAx9OHlRy4fTrXTEr0IoHeI1eLdWJQjSfreJkWWNDkOVuRO0uuTxZf5gOUy40si/0Px/edhbRZK7dBZWHgfUXHLZKySlO+dZ64J2NFHjU1HQDWHl7b1IMSYsvdXxDfra9RhuJChPRVBykq/0kff1qy3xHb48LXGiA42EZYWS4yEQgunCQO2cxibjzcfKS7EmykFrkTKQ3hmlkt6wtIzrlhJ14sSQhG6Iqu6+jl3p/z7mXJpDsfKgzHiDzbRd7VvLI2oMTgL5nGQJtBWyfCsYTgRWXjTHmA==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BYAPR21MB1270.namprd21.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(451199009)(10290500003)(38100700002)(2906002)(5660300002)(921005)(82960400001)(82950400001)(122000001)(52536014)(8936002)(4744005)(7696005)(6506007)(508600001)(54906003)(7416002)(110136005)(55016003)(6636002)(76116006)(86362001)(8990500004)(316002)(9686003)(4326008)(26005)(66946007)(66476007)(66556008)(66446008)(64756008)(8676002)(33656002)(38070700005)(71200400001)(186003)(83380400001);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ni6cA3TfwxYgEn00f7d+KVVSaskz78zk0vHA6cS6ca6F8WKPsMrUbmSxw7Vd?=
+ =?us-ascii?Q?ww1USAieESqH4iUZzicSW8dobKZECP2+ue+qKhYFJ9M/u1y9bLhOuwoDVq1Q?=
+ =?us-ascii?Q?LH69xEs7N6GLVUPbBN/nTlqG4Ek3aRYfzSdXvc09WRv7UjQMCltBXxW88SwR?=
+ =?us-ascii?Q?iEN4Tr9CqTq31WqGy34IvTVioWnsBmyIZ6LuTgbaYJmLGJlCBlj/LcjxvGzn?=
+ =?us-ascii?Q?gNvBorwATwm7K4UDWAdBjT3W79G/oHYVGq7B25XHFlwrZWvb9llt7KD3ORML?=
+ =?us-ascii?Q?3BY9FeKOeMJ25qvneNLhPkLqeb1PmzEwiwI6UjjV+9KtigDQGYHQiV8YuDf0?=
+ =?us-ascii?Q?hAZRPVxX4X7+6WPDcXY1nek4ckDSxvMTxdhAwFXeoquQEZilu711vT6dgCZR?=
+ =?us-ascii?Q?E7o1Z/euYs32maMIW9KDsWFouyhkHGf/hJdcaJ5gFttjofGn+QNW5f2L6lUt?=
+ =?us-ascii?Q?jINYBEt/zVkqY8FTn0qY1RwSNd3YnEKKfVbiRnv/A8r+ng7btWYGziz4MdiN?=
+ =?us-ascii?Q?UOfHTbaw3APJD2Fzs247EyVlRYgrLi3urR/rtawBH0ICMnZkefzzzixUhFIy?=
+ =?us-ascii?Q?1JJlz3TjQMyefjv47dQXyNJUpI0DRI2i5zceIQwxdZVZMUfjr/4Iq9Au8Yn9?=
+ =?us-ascii?Q?ySsyKmeuoY2muCTa4KtkpyyVoOtevbNYFGH/Jp5CJpM3IHFdHAAF6JNpJm9L?=
+ =?us-ascii?Q?Ch6WuGeZbNavJ/4A7FnZ75jQ2C+nDLwWS9g2SdWRyWTE1ZEiZ9JWwJ1CF6V/?=
+ =?us-ascii?Q?olzN0fdvgOrJhEEacKbKmm8K5Ko9UDLpiEp5/48zFt7i/De+GhAEVJuT9WF6?=
+ =?us-ascii?Q?OsVqUOtN0knqmBgnZpLSUkY0/TSmh9oLUXvNnqJn8W3tcEuMWHkAci+aVvii?=
+ =?us-ascii?Q?ccnTA7Xo2RiYNncQWZFw88w4wTVeHwUM82PINWJ83OfUVYuyoNQC16V7PFby?=
+ =?us-ascii?Q?IVXScuZ9AISnSaC1B9mLZ7Ptb/J0Zfk0FEhQjVx5/6b2PlgdX7GNf6cKQ5wF?=
+ =?us-ascii?Q?k+kbBnvicogCShrC17ZaT1mTvUI8T13hlVFuDZeipk3L6x1u5SgNbj1dCej3?=
+ =?us-ascii?Q?hSfoxFADzRTGiWNAi3HUbcPmTRD1whSO9J3QU6RVCrJZa/Su14uvYc9lsguK?=
+ =?us-ascii?Q?WxP6t4EvsxWfcsqY7ghi14r9ulPmO3nB0vBpSf0xzlIVd2nk8Q9VoKvpOpb+?=
+ =?us-ascii?Q?KN9Ou9EG0o6GSj5e0JvCAT9CK6LSoRQbKKZmLMSLe6f7dCXr2Vg2dDiTtmZI?=
+ =?us-ascii?Q?IzOnn3adCEDLgTdwMsiEjkhf70iSEYNz4IB7l973sm1EW/HESi4wHCbuMfHF?=
+ =?us-ascii?Q?yKssj0D4fx+GsN6pHOVUCrsdQsIlXOxLD0HG1ingb4EN8BZBVkFvphcAzvfA?=
+ =?us-ascii?Q?YKEDZFtPyFa6Ru/v4CJFbwFV+ExxsAl3zSRcrxt7ZWrte3vcW3JXBF1se65W?=
+ =?us-ascii?Q?SDMZhVGMTI2+n9Cz24LfDez9fEDZYd+0G0rtx0kOhdZIOO14hQKOlqBgWIT5?=
+ =?us-ascii?Q?jtIryuU33VBi0SXtgzjW/ZpEsY3l1Iw1TG1V35WtBZdE/PA3hDMhn4THndUL?=
+ =?us-ascii?Q?qdOO+BsffL8d4sBSULt+tbERivVm2mTsg68xA/z4Tt0uJUGr3xl7sN8KzyxR?=
+ =?us-ascii?Q?itBN66Tvxq61eTrXJ4OVzNy71icMSvxhhYaMGazl1lHUTdcmkyOfB6VD5Jvg?=
+ =?us-ascii?Q?xQ/xUjEd+SBti2PglQNfLkWbU82swxv5jGz4hUOE45Oh1mEb97A04v09FQek?=
+ =?us-ascii?Q?GGSzHpPYbA=3D=3D?=
 MIME-Version: 1.0
-Cc: parri.andrea@gmail.com, thomas.lendacky@amd.com,
- linux-hyperv@vger.kernel.org, Tianyu Lan <Tianyu.Lan@microsoft.com>,
- konrad.wilk@oracle.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- kirill.shutemov@intel.com, iommu@lists.linux-foundation.org,
- andi.kleen@intel.com, vkuznets@redhat.com, hch@lst.de
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1270.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bafcdd98-e920-455c-2dde-08da3f47ab16
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 May 2022 18:43:47.1619 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QheGt/E8Sf4MlKLQZLHpkOCMe7Yjcw2MvS4ng+oxKGHNJvaMkANpFACw8ahFDvZEtIX5J4Rw883RFNDblXGkOA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR21MB1459
+Cc: "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+ "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "kirill.shutemov" <kirill.shutemov@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "andi.kleen@intel.com" <andi.kleen@intel.com>, vkuznets <vkuznets@redhat.com>,
+ "hch@lst.de" <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,536 +169,30 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Dexuan Cui via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Dexuan Cui <decui@microsoft.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> From: Tianyu Lan <ltykernel@gmail.com>
+> Sent: Thursday, May 26, 2022 5:01 AM
+> ...
+> @@ -119,6 +124,10 @@ static void netvsc_subchan_work(struct work_struct
+> *w)
+>  			nvdev->max_chn = 1;
+>  			nvdev->num_chn = 1;
+>  		}
+> +
+> +		/* Allocate boucne buffer.*/
+> +		swiotlb_device_allocate(&hdev->device, nvdev->num_chn,
+> +				10 * IO_TLB_BLOCK_UNIT);
+>  	}
 
-Traditionally swiotlb was not performance critical because it was only
-used for slow devices. But in some setups, like TDX/SEV confidential
-guests, all IO has to go through swiotlb. Currently swiotlb only has a
-single lock. Under high IO load with multiple CPUs this can lead to
-significant lock contention on the swiotlb lock.
-
-This patch adds child IO TLB mem support to resolve spinlock overhead
-among device's queues. Each device may allocate IO tlb mem and setup
-child IO TLB mem according to queue number. Swiotlb code allocates
-bounce buffer among child IO tlb mem iterately.
-
-Introduce IO TLB Block unit(2MB) concepts to allocate big bounce buffer
-from default pool for devices. IO TLB segment(256k) is too small for
-device bounce buffer.
-
-Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
----
- include/linux/swiotlb.h |  38 +++++
- kernel/dma/swiotlb.c    | 304 ++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 329 insertions(+), 13 deletions(-)
-
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 7ed35dd3de6e..a48a9d64e3c3 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -31,6 +31,14 @@ struct scatterlist;
- #define IO_TLB_SHIFT 11
- #define IO_TLB_SIZE (1 << IO_TLB_SHIFT)
- 
-+/*
-+ * IO TLB BLOCK UNIT as device bounce buffer allocation unit.
-+ * This allows device allocates bounce buffer from default io
-+ * tlb pool.
-+ */
-+#define IO_TLB_BLOCKSIZE   (8 * IO_TLB_SEGSIZE)
-+#define IO_TLB_BLOCK_UNIT  (IO_TLB_BLOCKSIZE << IO_TLB_SHIFT)
-+
- /* default to 64MB */
- #define IO_TLB_DEFAULT_SIZE (64UL<<20)
- 
-@@ -89,6 +97,11 @@ extern enum swiotlb_force swiotlb_force;
-  * @late_alloc:	%true if allocated using the page allocator
-  * @force_bounce: %true if swiotlb bouncing is forced
-  * @for_alloc:  %true if the pool is used for memory allocation
-+ * @num_child:  The child io tlb mem number in the pool.
-+ * @child_nslot:The number of IO TLB slot in the child IO TLB mem.
-+ * @child_nblock:The number of IO TLB block in the child IO TLB mem.
-+ * @child_start:The child index to start searching in the next round.
-+ * @block_start:The block index to start searching in the next round.
-  */
- struct io_tlb_mem {
- 	phys_addr_t start;
-@@ -102,6 +115,16 @@ struct io_tlb_mem {
- 	bool late_alloc;
- 	bool force_bounce;
- 	bool for_alloc;
-+	unsigned int num_child;
-+	unsigned int child_nslot;
-+	unsigned int child_nblock;
-+	unsigned int child_start;
-+	unsigned int block_index;
-+	struct io_tlb_mem *child;
-+	struct io_tlb_mem *parent;
-+	struct io_tlb_block {
-+		unsigned int list;
-+	} *block;
- 	struct io_tlb_slot {
- 		phys_addr_t orig_addr;
- 		size_t alloc_size;
-@@ -130,6 +153,10 @@ unsigned int swiotlb_max_segment(void);
- size_t swiotlb_max_mapping_size(struct device *dev);
- bool is_swiotlb_active(struct device *dev);
- void __init swiotlb_adjust_size(unsigned long size);
-+int swiotlb_device_allocate(struct device *dev,
-+			    unsigned int area_num,
-+			    unsigned long size);
-+void swiotlb_device_free(struct device *dev);
- #else
- static inline void swiotlb_init(bool addressing_limited, unsigned int flags)
- {
-@@ -162,6 +189,17 @@ static inline bool is_swiotlb_active(struct device *dev)
- static inline void swiotlb_adjust_size(unsigned long size)
- {
- }
-+
-+void swiotlb_device_free(struct device *dev)
-+{
-+}
-+
-+int swiotlb_device_allocate(struct device *dev,
-+			    unsigned int area_num,
-+			    unsigned long size)
-+{
-+	return -ENOMEM;
-+}
- #endif /* CONFIG_SWIOTLB */
- 
- extern void swiotlb_print_info(void);
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index e2ef0864eb1e..7ca22a5a1886 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -195,7 +195,8 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
- 				    unsigned long nslabs, bool late_alloc)
- {
- 	void *vaddr = phys_to_virt(start);
--	unsigned long bytes = nslabs << IO_TLB_SHIFT, i;
-+	unsigned long bytes = nslabs << IO_TLB_SHIFT, i, j;
-+	unsigned int block_num = nslabs / IO_TLB_BLOCKSIZE;
- 
- 	mem->nslabs = nslabs;
- 	mem->start = start;
-@@ -207,7 +208,36 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
- 		mem->force_bounce = true;
- 
- 	spin_lock_init(&mem->lock);
--	for (i = 0; i < mem->nslabs; i++) {
-+
-+	if (mem->num_child) {
-+		mem->child_nslot = nslabs / mem->num_child;
-+		mem->child_nblock = block_num / mem->num_child;
-+		mem->child_start = 0;
-+
-+		/*
-+		 * Initialize child IO TLB mem, divide IO TLB pool
-+		 * into child number. Reuse parent mem->slot in the
-+		 * child mem->slot.
-+		 */
-+		for (i = 0; i < mem->num_child; i++) {
-+			mem->child[i].slots = mem->slots + i * mem->child_nslot;
-+			mem->child[i].block = mem->block + i * mem->child_nblock;
-+			mem->child[i].num_child = 0;
-+
-+			swiotlb_init_io_tlb_mem(&mem->child[i],
-+				start + ((i * mem->child_nslot) << IO_TLB_SHIFT),
-+				mem->child_nslot, late_alloc);
-+		}
-+
-+		return;
-+	}
-+
-+	for (i = 0, j = 0; i < mem->nslabs; i++) {
-+		if (!(i % IO_TLB_BLOCKSIZE)) {
-+			mem->block[j].list = block_num--;
-+			j++;
-+		}
-+
- 		mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
- 		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
- 		mem->slots[i].alloc_size = 0;
-@@ -272,6 +302,13 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
- 		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
- 		      __func__, alloc_size, PAGE_SIZE);
- 
-+	mem->num_child = 0;
-+	mem->block = memblock_alloc(sizeof(struct io_tlb_block) *
-+				    (default_nslabs / IO_TLB_BLOCKSIZE),
-+				     SMP_CACHE_BYTES);
-+	if (!mem->block)
-+		panic("%s: Failed to allocate mem->block.\n", __func__);
-+
- 	swiotlb_init_io_tlb_mem(mem, __pa(tlb), default_nslabs, false);
- 	mem->force_bounce = flags & SWIOTLB_FORCE;
- 
-@@ -296,7 +333,7 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- 	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
- 	unsigned long bytes;
- 	unsigned char *vstart = NULL;
--	unsigned int order;
-+	unsigned int order, block_order;
- 	int rc = 0;
- 
- 	if (swiotlb_force_disable)
-@@ -334,18 +371,29 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- 		goto retry;
- 	}
- 
-+	block_order = get_order(array_size(sizeof(*mem->block),
-+		nslabs / IO_TLB_BLOCKSIZE));
-+	mem->block = (struct io_tlb_block *)
-+		__get_free_pages(GFP_KERNEL | __GFP_ZERO, block_order);
-+	if (!mem->block)
-+		goto error_block;
-+
- 	mem->slots = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
- 		get_order(array_size(sizeof(*mem->slots), nslabs)));
--	if (!mem->slots) {
--		free_pages((unsigned long)vstart, order);
--		return -ENOMEM;
--	}
-+	if (!mem->slots)
-+		goto error_slots;
- 
- 	set_memory_decrypted((unsigned long)vstart, bytes >> PAGE_SHIFT);
- 	swiotlb_init_io_tlb_mem(mem, virt_to_phys(vstart), nslabs, true);
- 
- 	swiotlb_print_info();
- 	return 0;
-+
-+error_slots:
-+	free_pages((unsigned long)mem->block, block_order);
-+error_block:
-+	free_pages((unsigned long)vstart, order);
-+	return -ENOMEM;
- }
- 
- void __init swiotlb_exit(void)
-@@ -353,6 +401,7 @@ void __init swiotlb_exit(void)
- 	struct io_tlb_mem *mem = &io_tlb_default_mem;
- 	unsigned long tbl_vaddr;
- 	size_t tbl_size, slots_size;
-+	unsigned int block_array_size, block_order;
- 
- 	if (swiotlb_force_bounce)
- 		return;
-@@ -364,12 +413,16 @@ void __init swiotlb_exit(void)
- 	tbl_vaddr = (unsigned long)phys_to_virt(mem->start);
- 	tbl_size = PAGE_ALIGN(mem->end - mem->start);
- 	slots_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), mem->nslabs));
-+	block_array_size = array_size(sizeof(*mem->block), mem->nslabs / IO_TLB_BLOCKSIZE);
- 
- 	set_memory_encrypted(tbl_vaddr, tbl_size >> PAGE_SHIFT);
- 	if (mem->late_alloc) {
-+		block_order = get_order(block_array_size);
-+		free_pages((unsigned long)mem->block, block_order);
- 		free_pages(tbl_vaddr, get_order(tbl_size));
- 		free_pages((unsigned long)mem->slots, get_order(slots_size));
- 	} else {
-+		memblock_free_late(__pa(mem->block), block_array_size);
- 		memblock_free_late(mem->start, tbl_size);
- 		memblock_free_late(__pa(mem->slots), slots_size);
- 	}
-@@ -483,10 +536,11 @@ static unsigned int wrap_index(struct io_tlb_mem *mem, unsigned int index)
-  * Find a suitable number of IO TLB entries size that will fit this request and
-  * allocate a buffer from that IO TLB pool.
-  */
--static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
--			      size_t alloc_size, unsigned int alloc_align_mask)
-+static int swiotlb_do_find_slots(struct io_tlb_mem *mem,
-+				 struct device *dev, phys_addr_t orig_addr,
-+				 size_t alloc_size,
-+				 unsigned int alloc_align_mask)
- {
--	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 	unsigned long boundary_mask = dma_get_seg_boundary(dev);
- 	dma_addr_t tbl_dma_addr =
- 		phys_to_dma_unencrypted(dev, mem->start) & boundary_mask;
-@@ -546,6 +600,9 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 		mem->slots[i].list = 0;
- 		mem->slots[i].alloc_size =
- 			alloc_size - (offset + ((i - index) << IO_TLB_SHIFT));
-+
-+		if (!(index % IO_TLB_BLOCKSIZE))
-+			mem->block[index / IO_TLB_BLOCKSIZE].list = 0;
- 	}
- 	for (i = index - 1;
- 	     io_tlb_offset(i) != IO_TLB_SEGSIZE - 1 &&
-@@ -565,6 +622,47 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 	return index;
- }
- 
-+static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
-+			      size_t alloc_size, unsigned int alloc_align_mask)
-+{
-+	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-+	struct io_tlb_mem *target_mem = mem;
-+	int start = 0, i = 0, index;
-+
-+	if (mem->num_child) {
-+		i = start = mem->child_start;
-+		mem->child_start = (mem->child_start + 1) % mem->num_child;
-+
-+		target_mem = mem->child;
-+	}
-+
-+	do {
-+		index = swiotlb_do_find_slots(target_mem + i, dev, orig_addr,
-+					      alloc_size, alloc_align_mask);
-+		if (index >= 0)
-+			return i * mem->child_nslot + index;
-+		if (++i >= mem->num_child)
-+			i = 0;
-+	} while (i != start);
-+
-+	return -1;
-+}
-+
-+static unsigned long mem_used(struct io_tlb_mem *mem)
-+{
-+	int i;
-+	unsigned long used = 0;
-+
-+	if (mem->num_child) {
-+		for (i = 0; i < mem->num_child; i++)
-+			used += mem->child[i].used;
-+	} else {
-+		used = mem->used;
-+	}
-+
-+	return used;
-+}
-+
- phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 		size_t mapping_size, size_t alloc_size,
- 		unsigned int alloc_align_mask, enum dma_data_direction dir,
-@@ -594,7 +692,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 		if (!(attrs & DMA_ATTR_NO_WARN))
- 			dev_warn_ratelimited(dev,
- 	"swiotlb buffer is full (sz: %zd bytes), total %lu (slots), used %lu (slots)\n",
--				 alloc_size, mem->nslabs, mem->used);
-+				     alloc_size, mem->nslabs, mem_used(mem));
- 		return (phys_addr_t)DMA_MAPPING_ERROR;
- 	}
- 
-@@ -617,9 +715,9 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 	return tlb_addr;
- }
- 
--static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
-+static void swiotlb_do_release_slots(struct io_tlb_mem *mem,
-+				     struct device *dev, phys_addr_t tlb_addr)
- {
--	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 	unsigned long flags;
- 	unsigned int offset = swiotlb_align_offset(dev, tlb_addr);
- 	int index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
-@@ -660,6 +758,20 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
- 	spin_unlock_irqrestore(&mem->lock, flags);
- }
- 
-+static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
-+{
-+	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-+	int index, offset;
-+
-+	if (mem->num_child) {
-+		offset = swiotlb_align_offset(dev, tlb_addr);
-+		index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
-+		mem = &mem->child[index / mem->child_nslot];
-+	}
-+
-+	swiotlb_do_release_slots(mem, dev, tlb_addr);
-+}
-+
- /*
-  * tlb_addr is the physical address of the bounce buffer to unmap.
-  */
-@@ -762,6 +874,172 @@ static int __init __maybe_unused swiotlb_create_default_debugfs(void)
- late_initcall(swiotlb_create_default_debugfs);
- #endif
- 
-+static void swiotlb_do_free_block(struct io_tlb_mem *mem,
-+		phys_addr_t start, unsigned int block_num)
-+{
-+
-+	unsigned int start_slot = (start - mem->start) >> IO_TLB_SHIFT;
-+	unsigned int block_index = start_slot / IO_TLB_BLOCKSIZE;
-+	unsigned int mem_block_num = mem->nslabs / IO_TLB_BLOCKSIZE;
-+	unsigned int nslot;
-+	unsigned long flags;
-+	int count, i, num, j;
-+
-+	spin_lock_irqsave(&mem->lock, flags);
-+	if (block_index + block_num < mem_block_num)
-+		count = mem->block[block_index + mem_block_num].list;
-+	else
-+		count = 0;
-+
-+	for (i = block_index + block_num; i >= block_index; i--) {
-+		mem->block[i].list = ++count;
-+
-+		for (j = 0; j < IO_TLB_BLOCKSIZE; j++) {
-+			nslot = i * IO_TLB_BLOCKSIZE + j;
-+			mem->slots[nslot].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
-+			mem->slots[nslot].orig_addr = INVALID_PHYS_ADDR;
-+			mem->slots[nslot].alloc_size = 0;
-+		}
-+	}
-+
-+	for (i = block_index - 1, num = block_index % mem_block_num;
-+	    i < num && mem->block[i].list; i--)
-+		mem->block[i].list = ++count;
-+
-+	spin_unlock_irqrestore(&mem->lock, flags);
-+}
-+
-+static void swiotlb_free_block(struct io_tlb_mem *mem,
-+			       phys_addr_t start, unsigned int block_num)
-+{
-+	unsigned int slot_index, child_index;
-+
-+	if (mem->num_child) {
-+		slot_index = (start - mem->start) >> IO_TLB_SHIFT;
-+		child_index = slot_index / mem->child_nslot;
-+
-+		swiotlb_do_free_block(&mem->child[child_index],
-+				      start, block_num);
-+	} else {
-+		swiotlb_do_free_block(mem, start, block_num);
-+	}
-+}
-+
-+void swiotlb_device_free(struct device *dev)
-+{
-+	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-+	struct io_tlb_mem *parent_mem = dev->dma_io_tlb_mem->parent;
-+
-+	swiotlb_free_block(parent_mem, mem->start, mem->nslabs / IO_TLB_BLOCKSIZE);
-+}
-+
-+
-+static struct page *swiotlb_alloc_block(struct io_tlb_mem *mem, unsigned int block_num)
-+{
-+	unsigned int mem_block_num = mem->nslabs /  IO_TLB_BLOCKSIZE;
-+	unsigned int block_index, nslot;
-+	phys_addr_t tlb_addr;
-+	unsigned long flags;
-+	int i, j;
-+
-+	if (!mem || !mem->block)
-+		return NULL;
-+
-+	spin_lock_irqsave(&mem->lock, flags);
-+
-+	/* Todo: Search more blocks via wrapping block array. */
-+	for (block_index = mem->block_index;
-+	     block_index < mem_block_num; block_index++)
-+		if (mem->block[block_index].list > block_num)
-+			break;
-+
-+	if (block_index == mem_block_num) {
-+		spin_unlock_irqrestore(&mem->lock, flags);
-+		return NULL;
-+	}
-+
-+	/* Update block and slot list. */
-+	for (i = block_index; i < block_index + block_num; i++) {
-+		mem->block[i].list = 0;
-+
-+		for (j = 0; j < IO_TLB_BLOCKSIZE; j++) {
-+			nslot = i * IO_TLB_BLOCKSIZE + j;
-+			mem->slots[nslot].list = 0;
-+			mem->slots[nslot].alloc_size = IO_TLB_SIZE;
-+		}
-+	}
-+
-+	mem->index = nslot + 1;
-+	mem->block_index += block_num;
-+	mem->used += block_num * IO_TLB_BLOCKSIZE;
-+	spin_unlock_irqrestore(&mem->lock, flags);
-+
-+	tlb_addr = slot_addr(mem->start, block_index * IO_TLB_BLOCKSIZE);
-+	return pfn_to_page(PFN_DOWN(tlb_addr));
-+}
-+
-+/*
-+ * swiotlb_device_allocate - Allocate bounce buffer fo device from
-+ * default io tlb pool. The allocation size should be aligned with
-+ * IO_TLB_BLOCK_UNIT.
-+ */
-+int swiotlb_device_allocate(struct device *dev,
-+			    unsigned int queue_num,
-+			    unsigned long size)
-+{
-+	struct io_tlb_mem *mem, *parent_mem = dev->dma_io_tlb_mem;
-+	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_BLOCKSIZE);
-+	struct page *page;
-+	int ret = -ENOMEM;
-+
-+	page = swiotlb_alloc_block(parent_mem, nslabs / IO_TLB_BLOCKSIZE);
-+	if (!page)
-+		return -ENOMEM;
-+
-+	mem = kzalloc(sizeof(*mem), GFP_KERNEL);
-+	if (!mem)
-+		goto error_mem;
-+
-+	mem->slots = kzalloc(array_size(sizeof(*mem->slots), nslabs),
-+			     GFP_KERNEL);
-+	if (!mem->slots)
-+		goto error_slots;
-+
-+	mem->block = kcalloc(nslabs / IO_TLB_BLOCKSIZE,
-+				sizeof(struct io_tlb_block),
-+				GFP_KERNEL);
-+	if (!mem->block)
-+		goto error_block;
-+
-+	mem->num_child = queue_num;
-+	mem->child = kcalloc(queue_num,
-+				sizeof(struct io_tlb_mem),
-+				GFP_KERNEL);
-+	if (!mem->child)
-+		goto error_child;
-+
-+
-+	swiotlb_init_io_tlb_mem(mem, page_to_phys(page), nslabs, true);
-+	mem->force_bounce = true;
-+	mem->for_alloc = true;
-+
-+	mem->vaddr = parent_mem->vaddr + page_to_phys(page) -  parent_mem->start;
-+	dev->dma_io_tlb_mem->parent = parent_mem;
-+	dev->dma_io_tlb_mem = mem;
-+	return 0;
-+
-+error_child:
-+	kfree(mem->block);
-+error_block:
-+	kfree(mem->slots);
-+error_slots:
-+	kfree(mem);
-+error_mem:
-+	swiotlb_free_block(mem, page_to_phys(page), nslabs / IO_TLB_BLOCKSIZE);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(swiotlb_device_allocate);
-+
- #ifdef CONFIG_DMA_RESTRICTED_POOL
- 
- struct page *swiotlb_alloc(struct device *dev, size_t size)
--- 
-2.25.1
-
+Looks like swiotlb_device_allocate() is not called if the netvsc device
+has only 1 primary channel and no sub-schannel, e.g. in the case of
+single-vCPU VM?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
