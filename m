@@ -1,85 +1,80 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C4151C433F5
-	for <iommu@archiver.kernel.org>; Sat, 28 May 2022 02:04:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CDF87C433F5
+	for <iommu@archiver.kernel.org>; Sun, 29 May 2022 05:14:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3C369847AD;
-	Sat, 28 May 2022 02:04:41 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 4AFCD4264D;
+	Sun, 29 May 2022 05:14:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YloWBcVLX5pX; Sat, 28 May 2022 02:04:40 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 52rRgfQ8Si5b; Sun, 29 May 2022 05:14:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id ED8D6847A1;
-	Sat, 28 May 2022 02:04:39 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id A5FD941901;
+	Sun, 29 May 2022 05:14:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D2B02C0039;
-	Sat, 28 May 2022 02:04:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 42485C0039;
+	Sun, 29 May 2022 05:14:55 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D079BC002D
- for <iommu@lists.linux-foundation.org>; Sat, 28 May 2022 02:04:38 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8EDF3C0032
+ for <iommu@lists.linux-foundation.org>; Sun, 29 May 2022 05:14:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id AA3D460F71
- for <iommu@lists.linux-foundation.org>; Sat, 28 May 2022 02:04:38 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 8009E6136F
+ for <iommu@lists.linux-foundation.org>; Sun, 29 May 2022 05:14:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id O2SUQjql_Zqh for <iommu@lists.linux-foundation.org>;
- Sat, 28 May 2022 02:04:37 +0000 (UTC)
+ with ESMTP id 5uDajgdvY21G for <iommu@lists.linux-foundation.org>;
+ Sun, 29 May 2022 05:14:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 70A7560F4A
- for <iommu@lists.linux-foundation.org>; Sat, 28 May 2022 02:04:37 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 8576561153
+ for <iommu@lists.linux-foundation.org>; Sun, 29 May 2022 05:14:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1653703477; x=1685239477;
- h=date:from:to:cc:subject:message-id:references:
- mime-version:in-reply-to;
- bh=zKpOzm/saM2/CRUSIPJrmqPjQqBfbs2x0FE088yI5cU=;
- b=QfU8mcs/G6H5Di02tzgCE65rMmRtU2VCSpFa5UozRDY2P5CX0tP5DmB/
- aD9z68SWRal7I42Av1pVZsdguM2Q6dzQSGQ6YGE681urbJS41zJvoa/Ol
- o+zfx4XoDR3G8WWVMp5JcbFMXfOZaiRTj39X//ejmjhNAv+yuy6rEJ57G
- DtqAT093TlVkSTEbT7Z5kGUIYq3ktIIukf9RCXiL/Qpb7ajjcaoVwMyA8
- OIUtOzx3YDw5skrAwn+L2vgAs5aocvDqIZaCy1xzsi2Ap6tTFoyVvVSd/
- YAF1aKHOfxLR4aY766wmDMsITkLiUTKU46nMcd5vvIF/pN+Z9wkafIZ9F Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10360"; a="254485833"
-X-IronPort-AV: E=Sophos;i="5.91,257,1647327600"; d="scan'208";a="254485833"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ t=1653801292; x=1685337292;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=enAxaDvI5KYRp7pqOsswil/w+G42o1j4MPV69EUb6uk=;
+ b=YjfYnItTT3MpZi+Yuz26WhcMkUm16LeinjMIud8qHU4UsW4JZKQs6Cx+
+ Ad7hGv3TY1n4AQZq8f8Fv17jAR0lL96owy5L+/kNT/K7cS1bOB+5IfQEc
+ ll/MScvmtZsdle/9E6BMUXNA4EARGPwi8f4k9Nw+Dji+mrEKunCa8y4qB
+ 4Rpwv/ibMp8kA1yNlAUBqLZ1BNfjUToKapvpK20JxKbL/UUgtslYsCcV5
+ SCxHfWigPlbgDPCbvRZEiLE6b/UxayawSIpBnIP6iJ0+lEBgIOroVvKXx
+ 4jTIlwuGSbSukR4MWrVR5FES8rMXWkb+7K7n2L6wUXSp/vulcA9MfcUO5 g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10361"; a="254626690"
+X-IronPort-AV: E=Sophos;i="5.91,260,1647327600"; d="scan'208";a="254626690"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 27 May 2022 19:04:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,257,1647327600"; d="scan'208";a="719134865"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
- by fmsmga001.fm.intel.com with ESMTP; 27 May 2022 19:04:33 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
- (envelope-from <lkp@intel.com>) id 1nuloe-0005MT-Bh;
- Sat, 28 May 2022 02:04:32 +0000
-Date: Sat, 28 May 2022 10:03:51 +0800
-From: kernel test robot <lkp@intel.com>
-To: Konrad Dybcio <konrad.dybcio@somainline.org>,
- ~postmarketos/upstreaming@lists.sr.ht,
- linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org
-Subject: Re: [PATCH 4/6] iommu/qcom: Add support for AArch64 IOMMU pagetables
-Message-ID: <202205280904.vsNCfpph-lkp@intel.com>
-References: <20220527212901.29268-5-konrad.dybcio@somainline.org>
+ 28 May 2022 22:14:51 -0700
+X-IronPort-AV: E=Sophos;i="5.91,260,1647327600"; d="scan'208";a="575463620"
+Received: from unknown (HELO [10.255.28.211]) ([10.255.28.211])
+ by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 May 2022 22:14:48 -0700
+Message-ID: <eda4d688-257b-d12a-56c0-0f9d3a10ef8c@linux.intel.com>
+Date: Sun, 29 May 2022 13:14:46 +0800
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220527212901.29268-5-konrad.dybcio@somainline.org>
-Cc: devicetree@vger.kernel.org, kbuild-all@lists.01.org,
- Robin Murphy <robin.murphy@arm.com>,
- Konrad Dybcio <konrad.dybcio@somainline.org>, linux-kernel@vger.kernel.org,
- jamipkettunen@somainline.org, Rob Herring <robh+dt@kernel.org>,
- Andy Gross <agross@kernel.org>, martin.botka@somainline.org,
- Krzysztof Kozlowski <krzk@kernel.org>,
- angelogioacchino.delregno@somainline.org, marijn.suijten@somainline.org,
- Will Deacon <will@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 01/12] iommu/vt-d: Use iommu_get_domain_for_dev() in
+ debugfs
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220527063019.3112905-1-baolu.lu@linux.intel.com>
+ <20220527063019.3112905-2-baolu.lu@linux.intel.com>
+ <20220527145910.GQ1343366@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220527145910.GQ1343366@nvidia.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,82 +87,151 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Konrad,
+On 2022/5/27 22:59, Jason Gunthorpe wrote:
+> On Fri, May 27, 2022 at 02:30:08PM +0800, Lu Baolu wrote:
+>> Retrieve the attached domain for a device through the generic interface
+>> exposed by the iommu core. This also makes device_domain_lock static.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>>   drivers/iommu/intel/iommu.h   |  1 -
+>>   drivers/iommu/intel/debugfs.c | 20 ++++++++------------
+>>   drivers/iommu/intel/iommu.c   |  2 +-
+>>   3 files changed, 9 insertions(+), 14 deletions(-)
+>>
+>> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+>> index a22adfbdf870..8a6d64d726c0 100644
+>> +++ b/drivers/iommu/intel/iommu.h
+>> @@ -480,7 +480,6 @@ enum {
+>>   #define VTD_FLAG_SVM_CAPABLE		(1 << 2)
+>>   
+>>   extern int intel_iommu_sm;
+>> -extern spinlock_t device_domain_lock;
+>>   
+>>   #define sm_supported(iommu)	(intel_iommu_sm && ecap_smts((iommu)->ecap))
+>>   #define pasid_supported(iommu)	(sm_supported(iommu) &&			\
+>> diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
+>> index d927ef10641b..eea8727aa7bc 100644
+>> +++ b/drivers/iommu/intel/debugfs.c
+>> @@ -344,19 +344,21 @@ static void pgtable_walk_level(struct seq_file *m, struct dma_pte *pde,
+>>   
+>>   static int show_device_domain_translation(struct device *dev, void *data)
+>>   {
+>> -	struct device_domain_info *info = dev_iommu_priv_get(dev);
+>> -	struct dmar_domain *domain = info->domain;
+>> +	struct dmar_domain *dmar_domain;
+>> +	struct iommu_domain *domain;
+>>   	struct seq_file *m = data;
+>>   	u64 path[6] = { 0 };
+>>   
+>> +	domain = iommu_get_domain_for_dev(dev);
+>>   	if (!domain)
+>>   		return 0;
+> 
+> The iommu_get_domain_for_dev() API should be called something like
+> 'iommu_get_dma_api_domain()' and clearly documented that it is safe to
+> call only so long as a DMA API using driver is attached to the device,
+> which is most of the current callers.
 
-Thank you for the patch! Perhaps something to improve:
+Yes, agreed.
 
-[auto build test WARNING on joro-iommu/next]
-[also build test WARNING on v5.18 next-20220527]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> This use in random sysfs inside the iommu driver is not OK because it
+> doesn't have any locking protecting domain from concurrent free.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Konrad-Dybcio/iommu-qcom-Use-the-asid-read-from-device-tree-if-specified/20220528-062952
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220528/202205280904.vsNCfpph-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/0744f7d6ebfff8d6854a24d0f95f8e58885b5212
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Konrad-Dybcio/iommu-qcom-Use-the-asid-read-from-device-tree-if-specified/20220528-062952
-        git checkout 0744f7d6ebfff8d6854a24d0f95f8e58885b5212
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/iommu/arm/arm-smmu/
+This is not sysfs, but debugfs. The description of this patch is
+confusing. I should make it specific and straight-forward.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+How about below one?
 
-All warnings (new ones prefixed by >>):
+ From 1e87b5df40c6ce9414cdd03988c3b52bfb17af5f Mon Sep 17 00:00:00 2001
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Date: Sun, 29 May 2022 10:18:56 +0800
+Subject: [PATCH 1/1] iommu/vt-d: debugfs: Remove device_domain_lock usage
 
-   drivers/iommu/arm/arm-smmu/qcom_iommu.c: In function 'qcom_iommu_tlb_inv_range_nosync':
->> drivers/iommu/arm/arm-smmu/qcom_iommu.c:174:58: warning: left shift count >= width of type [-Wshift-count-overflow]
-     174 |                         iova |= (unsigned long)ctx->asid << 48;
-         |                                                          ^~
+The domain_translation_struct debugfs node is used to dump static
+mappings of PCI devices. It potentially races with setting new
+domains to devices and the iommu_map/unmap() interfaces. The existing
+code tries to use the global spinlock device_domain_lock to avoid the
+races, but this is problematical as this lock is only used to protect
+the device tracking lists of the domains.
 
+Instead of using an immature lock to cover up the problem, it's better
+to explicitly restrict the use of this debugfs node. This also makes
+device_domain_lock static.
 
-vim +174 drivers/iommu/arm/arm-smmu/qcom_iommu.c
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+  drivers/iommu/intel/debugfs.c | 17 ++++++++---------
+  drivers/iommu/intel/iommu.c   |  2 +-
+  drivers/iommu/intel/iommu.h   |  1 -
+  3 files changed, 9 insertions(+), 11 deletions(-)
 
-   157	
-   158	static void qcom_iommu_tlb_inv_range_nosync(unsigned long iova, size_t size,
-   159						    size_t granule, bool leaf, void *cookie)
-   160	{
-   161		struct qcom_iommu_domain *qcom_domain = cookie;
-   162		struct iommu_fwspec *fwspec = qcom_domain->fwspec;
-   163		unsigned i, reg;
-   164	
-   165		reg = leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
-   166	
-   167		for (i = 0; i < fwspec->num_ids; i++) {
-   168			struct qcom_iommu_dev *qcom_iommu = qcom_domain->iommu;
-   169			struct qcom_iommu_ctx *ctx = to_ctx(qcom_domain, fwspec->ids[i]);
-   170			size_t s = size;
-   171	
-   172			if (qcom_iommu->use_aarch64_pt) {
-   173				iova >>= 12;
- > 174				iova |= (unsigned long)ctx->asid << 48;
-   175			} else {
-   176				iova &= (1UL << 12) - 1UL;
-   177				iova |= ctx->asid;
-   178			}
-   179			do {
-   180				iommu_writel(ctx, reg, iova);
-   181				iova += granule;
-   182			} while (s -= granule);
-   183		}
-   184	}
-   185	
+diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
+index d927ef10641b..9642e3e9d6b0 100644
+--- a/drivers/iommu/intel/debugfs.c
++++ b/drivers/iommu/intel/debugfs.c
+@@ -362,17 +362,16 @@ static int show_device_domain_translation(struct 
+device *dev, void *data)
+  	return 0;
+  }
 
++/*
++ * Dump the static mappings of PCI devices. This is only for DEBUGFS code,
++ * don't use it for other purposes.  It potentially races with setting new
++ * domains to devices and iommu_map/unmap(). Use the trace events under
++ * /sys/kernel/debug/tracing/events/iommu/ for dynamic debugging.
++ */
+  static int domain_translation_struct_show(struct seq_file *m, void 
+*unused)
+  {
+-	unsigned long flags;
+-	int ret;
+-
+-	spin_lock_irqsave(&device_domain_lock, flags);
+-	ret = bus_for_each_dev(&pci_bus_type, NULL, m,
+-			       show_device_domain_translation);
+-	spin_unlock_irqrestore(&device_domain_lock, flags);
+-
+-	return ret;
++	return bus_for_each_dev(&pci_bus_type, NULL, m,
++				show_device_domain_translation);
+  }
+  DEFINE_SHOW_ATTRIBUTE(domain_translation_struct);
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 1af4b6562266..cacae8bdaa65 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -314,7 +314,7 @@ static int iommu_skip_te_disable;
+  #define IDENTMAP_GFX		2
+  #define IDENTMAP_AZALIA		4
+
+-DEFINE_SPINLOCK(device_domain_lock);
++static DEFINE_SPINLOCK(device_domain_lock);
+  static LIST_HEAD(device_domain_list);
+
+  /*
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index a22adfbdf870..8a6d64d726c0 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -480,7 +480,6 @@ enum {
+  #define VTD_FLAG_SVM_CAPABLE		(1 << 2)
+
+  extern int intel_iommu_sm;
+-extern spinlock_t device_domain_lock;
+
+  #define sm_supported(iommu)	(intel_iommu_sm && ecap_smts((iommu)->ecap))
+  #define pasid_supported(iommu)	(sm_supported(iommu) &&			\
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
