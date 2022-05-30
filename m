@@ -1,80 +1,79 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9EDD8C433EF
-	for <iommu@archiver.kernel.org>; Mon, 30 May 2022 09:22:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 49875C433F5
+	for <iommu@archiver.kernel.org>; Mon, 30 May 2022 09:38:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 432C5409E1;
-	Mon, 30 May 2022 09:22:25 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id EDC6F840E8;
+	Mon, 30 May 2022 09:38:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qe_8TamTqpSs; Mon, 30 May 2022 09:22:24 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id rZ2ZFBBbU761; Mon, 30 May 2022 09:38:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 0C8AD40198;
-	Mon, 30 May 2022 09:22:24 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id C0EBC83E9B;
+	Mon, 30 May 2022 09:38:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B6923C0032;
-	Mon, 30 May 2022 09:22:23 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 55307C002D
- for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 09:22:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8104CC0032;
+	Mon, 30 May 2022 09:38:24 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 19A33C002D
+ for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 09:38:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 2EADF40588
- for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 09:22:22 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id E796F41A09
+ for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 09:38:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id M1gyxFzpxJuX for <iommu@lists.linux-foundation.org>;
- Mon, 30 May 2022 09:22:21 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Ay_9bk36vJMQ for <iommu@lists.linux-foundation.org>;
+ Mon, 30 May 2022 09:38:22 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com
- [209.85.160.180])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 0D4A340198
- for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 09:22:20 +0000 (UTC)
-Received: by mail-qt1-f180.google.com with SMTP id g3so11126219qtb.7
- for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 02:22:20 -0700 (PDT)
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com
+ [209.85.160.175])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id EAFB341959
+ for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 09:38:21 +0000 (UTC)
+Received: by mail-qt1-f175.google.com with SMTP id x20so2823748qtp.8
+ for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 02:38:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=sRRIuRryzgFI8ELIIPROeVlwSt2lbuDu8QoygFjo9dY=;
- b=S6p4k6zHMMsvmp3+m1vlW1l/ypN0wlGOt9ZKP1822LP5CJBN/NVcl9G/Prv8LcBs8D
- 7+NG6FqejvmR2h1/V2gMsgx1ks4F4ZQj0isXhTqJVsztepToCRhkAKGNLLfd/9bQCNTB
- 4hKP8/mQg04Rt3+kT1/rUbh9tbnrT+oxetH4DPcc6SBIY7NEfruA0ar7N5yvBJqpPe7R
- k3P6L1MQ1HYPHGtEZEHrAI+xZZ7QXmUozDEwDIepNkUCq4y5FZgLuf7LMj/3kybg2s+7
- nThow9kzl0hue2FC7w/GmJA9ERUXJigM5G7NSEsLx2x72jWl3C0aXAX5YwY50ATmpRYt
- rsvQ==
-X-Gm-Message-State: AOAM531WpDnLmLtqqXYpA0jqM8FUcqv8X9blsiUeKAuwJGOA1uT8egsY
- uyJhF546/wNnnEq1v7yWUveANwE9R6WPHQ==
-X-Google-Smtp-Source: ABdhPJxx1ptntrCn34So8TWYP1CmeV/RRmInStl10ShzR4WjXVx5OOjkLl24O7INikkfoWjJfDuhxA==
-X-Received: by 2002:ac8:57c9:0:b0:300:658f:c01d with SMTP id
- w9-20020ac857c9000000b00300658fc01dmr7206260qta.512.1653902539745; 
- Mon, 30 May 2022 02:22:19 -0700 (PDT)
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com.
- [209.85.219.171]) by smtp.gmail.com with ESMTPSA id
- m9-20020a05620a214900b006a5bc8e956esm6467947qkm.133.2022.05.30.02.22.14
+ bh=2eXMq1aM/7odJFSrV6FBn6WXqmOgMduOgC14zR4eCz0=;
+ b=xA+uwu3X98Nk6FwbTlJh+JUrN1OLr7gugfaaFVRKhH0Zt+rW/98N9fJthKefB/hHjU
+ h8bAihux6ELLojHqMuyT2vrvj960C91sKDL8UrmPTFUsyYheQUBuxTdO2eeUiYx2MAqQ
+ rkR8X8EaXWm/AOsro9RpIgeuRameARelH0r48xne7XXJvq3N/qiVEl3oJ73OQC3HNDIi
+ 2VAtx7HaMAiO0MDNF1//Y3ZXMeO3MJYhH/AuPrdgCCtCuP8uL46HexJGZZNphZstgIZD
+ LTNGgMU8gy4riYIXyN4Az6b4PmNUCZ/rNNYJZ4cyihWU0SvB3iGVmxhDiQCE+8JncNhy
+ S6XQ==
+X-Gm-Message-State: AOAM530TC2bRT6v8wi8DLr9ssegsAz4qIAFnKCaEPaYuh8Xg9wtN75qs
+ Yl2cVA4SBS8dwKEwxZ09tAAiEG2ixl/ZKg==
+X-Google-Smtp-Source: ABdhPJzWRT0W0Oaa8bRAWQbekKwl8TNmLcI4Ce9JI3Y78Yme0VLMDo3NaQk8eQhSwGYiUfa+IuAV1A==
+X-Received: by 2002:a05:622a:1e12:b0:2f3:d254:45b7 with SMTP id
+ br18-20020a05622a1e1200b002f3d25445b7mr43618311qtb.88.1653903500050; 
+ Mon, 30 May 2022 02:38:20 -0700 (PDT)
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com.
+ [209.85.128.180]) by smtp.gmail.com with ESMTPSA id
+ b26-20020a05620a271a00b0069fe1fc72e7sm7352323qkp.90.2022.05.30.02.38.17
  for <iommu@lists.linux-foundation.org>
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 30 May 2022 02:22:16 -0700 (PDT)
-Received: by mail-yb1-f171.google.com with SMTP id z186so13793561ybz.3
- for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 02:22:14 -0700 (PDT)
-X-Received: by 2002:a05:6902:389:b0:633:31c1:d0f7 with SMTP id
- f9-20020a056902038900b0063331c1d0f7mr50896098ybs.543.1653902534054; Mon, 30
- May 2022 02:22:14 -0700 (PDT)
+ Mon, 30 May 2022 02:38:18 -0700 (PDT)
+Received: by mail-yw1-f180.google.com with SMTP id
+ 00721157ae682-306b5b452b1so71227787b3.1
+ for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 02:38:17 -0700 (PDT)
+X-Received: by 2002:a81:2143:0:b0:2fb:1274:247e with SMTP id
+ h64-20020a812143000000b002fb1274247emr56723516ywh.384.1653903497533; Mon, 30
+ May 2022 02:38:17 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220526081550.1089805-1-saravanak@google.com>
- <20220526081550.1089805-3-saravanak@google.com>
-In-Reply-To: <20220526081550.1089805-3-saravanak@google.com>
+In-Reply-To: <20220526081550.1089805-1-saravanak@google.com>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 30 May 2022 11:22:03 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdV4Uzfg8aBY=tKnRcig=Npebd158J7UK3zg5_DtHwAR5w@mail.gmail.com>
-Message-ID: <CAMuHMdV4Uzfg8aBY=tKnRcig=Npebd158J7UK3zg5_DtHwAR5w@mail.gmail.com>
-Subject: Re: [RFC PATCH v1 2/9] pinctrl: devicetree: Delete usage of
- driver_deferred_probe_check_state()
+Date: Mon, 30 May 2022 11:38:04 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdW+Dmi9g=Cw9g5vOa9iYRA+L_ujU9C1-j0eKE7u3EmcFQ@mail.gmail.com>
+Message-ID: <CAMuHMdW+Dmi9g=Cw9g5vOa9iYRA+L_ujU9C1-j0eKE7u3EmcFQ@mail.gmail.com>
+Subject: Re: [RFC PATCH v1 0/9] deferred_probe_timeout logic clean up
 To: Saravana Kannan <saravanak@google.com>
 Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
  Heikki Krogerus <heikki.krogerus@linux.intel.com>,
@@ -120,43 +119,45 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 Hi Saravana,
 
-Thanks for your patch!
-
-On Thu, May 26, 2022 at 10:16 AM Saravana Kannan <saravanak@google.com> wrote:
-> Now that fw_devlink=on by default and fw_devlink supports
-> "pinctrl-[0-8]" property, the execution will never get to the point
-
-0-9?
-
-oh, it's really 0-8:
-
-    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl0, "pinctrl-0", NULL)
-    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl1, "pinctrl-1", NULL)
-    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl2, "pinctrl-2", NULL)
-    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl3, "pinctrl-3", NULL)
-    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl4, "pinctrl-4", NULL)
-    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl5, "pinctrl-5", NULL)
-    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl6, "pinctrl-6", NULL)
-    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl7, "pinctrl-7", NULL)
-    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl8, "pinctrl-8", NULL)
-
-Looks fragile, especially since we now have:
-
-    arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi:
-pinctrl-9 = <&i2cmux_9>;
-    arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi: pinctrl-10
-= <&i2cmux_10>;
-    arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi: pinctrl-11
-= <&i2cmux_11>;
-    arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi: pinctrl-12
-= <&i2cmux_pins_i>;
-
-> where driver_deferred_probe_check_state() is called before the supplier
-> has probed successfully or before deferred probe timeout has expired.
+On Thu, May 26, 2022 at 10:15 AM Saravana Kannan <saravanak@google.com> wrote:
+> This series is based on linux-next + these 2 small patches applies on top:
+> https://lore.kernel.org/lkml/20220526034609.480766-1-saravanak@google.com/
 >
-> So, delete the call and replace it with -ENODEV.
+> A lot of the deferred_probe_timeout logic is redundant with
+> fw_devlink=on.  Also, enabling deferred_probe_timeout by default breaks
+> a few cases.
 >
-> Signed-off-by: Saravana Kannan <saravanak@google.com>
+> This series tries to delete the redundant logic, simplify the frameworks
+> that use driver_deferred_probe_check_state(), enable
+> deferred_probe_timeout=10 by default, and fixes the nfsroot failure
+> case.
+>
+> Patches 1 to 3 are fairly straightforward and can probably be applied
+> right away.
+>
+> Patches 4 to 9 are related and are the complicated bits of this series.
+>
+> Patch 8 is where someone with more knowledge of the IP auto config code
+> can help rewrite the patch to limit the scope of the workaround by
+> running the work around only if IP auto config fails the first time
+> around. But it's also something that can be optimized in the future
+> because it's already limited to the case where IP auto config is enabled
+> using the kernel commandline.
+
+Thanks for your series!
+
+> Yoshihiro/Geert,
+>
+> If you can test this patch series and confirm that the NFS root case
+> works, I'd really appreciate that.
+
+On Salvator-XS, Micrel KSZ9031 Gigabit PHY probe is no longer delayed
+by 9s after applying the two earlier patches, and the same is true
+after applying this series on top.
+Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+I will do testing on more boards, but that may take a while, as we're
+in the middle of the merge window.
 
 Gr{oetje,eeting}s,
 
