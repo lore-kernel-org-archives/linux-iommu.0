@@ -1,72 +1,90 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BC188C433F5
-	for <iommu@archiver.kernel.org>; Mon, 30 May 2022 15:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E5073C433EF
+	for <iommu@archiver.kernel.org>; Mon, 30 May 2022 18:04:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 4FCAB840F1;
-	Mon, 30 May 2022 15:04:58 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 8A8D740C58;
+	Mon, 30 May 2022 18:04:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ri789eQ4wUby; Mon, 30 May 2022 15:04:57 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pzaCPc7BPpBO; Mon, 30 May 2022 18:04:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 0652B83F99;
-	Mon, 30 May 2022 15:04:56 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 50B7D40C57;
+	Mon, 30 May 2022 18:04:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DD95BC0032;
-	Mon, 30 May 2022 15:04:56 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 58FAFC002D
- for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 12:48:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E4568C0039;
+	Mon, 30 May 2022 18:04:01 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7FB58C002D
+ for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 18:04:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 33E1F82B49
- for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 12:48:21 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 66DCE41B82
+ for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 18:04:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dE1Yfoa3xOj2 for <iommu@lists.linux-foundation.org>;
- Mon, 30 May 2022 12:48:20 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=baylibre-com.20210112.gappssmtp.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 9egX9pozMIu8 for <iommu@lists.linux-foundation.org>;
+ Mon, 30 May 2022 18:03:58 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
- [209.85.166.71])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 540CB82B2F
- for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 12:48:20 +0000 (UTC)
-Received: by mail-io1-f71.google.com with SMTP id
- i189-20020a6bb8c6000000b0065e475f5ca9so5447496iof.15
- for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 05:48:20 -0700 (PDT)
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com
+ [IPv6:2a00:1450:4864:20::430])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9F8B9418BA
+ for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 18:03:58 +0000 (UTC)
+Received: by mail-wr1-x430.google.com with SMTP id p10so15653522wrg.12
+ for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 11:03:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=eEF/THqP4/KMnhR3Jx46Pp2/fGel1OrMSQe1WykeaFE=;
+ b=YjA/47czGUZcB3jHTGA93lpns9MvpQGWDsDLKqd8CFUEsg1VNHhCm2d7nwCGBfQvja
+ E7bGvlwNaBeG/I0zVOqu77Y2ZNhxxc3/1DkrFu6rxz08JUgpYX1cMjrVpm+M9HET6FRa
+ yS5VYOlJEUvUzgwXXhnfX7VhNKQvOninG0lZEJqPss8cwi0GrsZtu0pdyN6SIsiy55+m
+ oW4sbMy84PoQgMFQ1rI0dknEbE8i08PEYhC+NU3e4mv5JCYQYqyOedDXKp5i4CsYMfDB
+ wtXofgV58zwq8U8hgNi42vXMkUF6nmV31OKlRYNzQpZ+7K70ot1UtCVuanhwp9pxzAlz
+ NGqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
- bh=fviMwFuCOHUegEvnIFsjn2njt9ZqkztQPMv6YKuPdAA=;
- b=V3bGPuCOol8kLXXzD7S4A9sJupi/x2zupfwJG5WqWB5zNceKAADmWtk9CPi9dSpim6
- CV/GN0z0McWUoVhDAFfkHbxQuqaRu+SQndmWhwkIEkJxWXgjh/2PYRNRYUHcIQbdbZPn
- kXSzP0mgMRqKlQXNM8sz7v9oDYLupF1TDc6/eqWO4INgGlToiZjYKVRRB51bmtKuJQxk
- OgWtZaehpMV7xi291qG9cibRXKFBuzh3P3WVU9jSHxJhvUzs9h5FYf6se+JX1bC7QOnr
- gG9Nryj69hbUB2liSy3NcfcUO5vvu7TmiCsoF3Ps6s+khlix+xZzvDNQ5r3fe+YsZPwZ
- vdxg==
-X-Gm-Message-State: AOAM5300zHD4H0RCXnuuDYyTWvQxlu5E3eYiuuT5wqtZ3adVhHFMZ4Li
- lqHJ93lBWgK7q3PEsrRp2pLJdOSTtRgGCUX6SFZVqCOmuuLj
-X-Google-Smtp-Source: ABdhPJycnqRf6X1SBHFUkROsgHjQtpBF8Dm7PO+qwNPyD6tzwCY/b/l83ev4fZbc8+AUU6TRX9qmxx5ZaxRAKtUZFRfbJ4Z8oofl
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=eEF/THqP4/KMnhR3Jx46Pp2/fGel1OrMSQe1WykeaFE=;
+ b=aPOmRkV11bNqsQMpsFwz+lM1cRVih70nYvaLkmxnm6dAqL8O/wrSj9wv0GMTM4fDrt
+ Yt2xSpnG+2LQopYzLibCfEetvFFmE9vjHJbgLqD7t5GuduHdmyoHo3NX9lJEW720sSOO
+ 7BDQx358q5mCnk5dxtGKqKght696wbPfpgsfXtJQuxk/l2yWpTzjm62E9PuSYnC1ITuz
+ 5Ooe/3BvfGJKcwpTP/ZypjlW2H7zbSS/PqtzW4Sh4ThouYGHv2a4MVH9rK9d3V7dO1Jx
+ t3aZpXez4co3QqRNAEl0MNre75TkjdIw7hhDH5GXVOkRdHIi4J7p6OnGNApw1elsIXhF
+ pBaA==
+X-Gm-Message-State: AOAM532DYRGIY41ykdVOWzueG5+AQlfnkjyY7FzhVzNyxyIpvYyTqh2k
+ I1mxUfu1kqAkpLMQ0sLitTWUmQ==
+X-Google-Smtp-Source: ABdhPJwy5EGuO92uUYbYm+RoosB6dUYzPz/zHdWaBA9pWwIWvfY+x51eD4gAdsAxVp9Fy19bMTkIcg==
+X-Received: by 2002:a5d:6a92:0:b0:210:3387:23ec with SMTP id
+ s18-20020a5d6a92000000b00210338723ecmr5422504wru.102.1653933836689; 
+ Mon, 30 May 2022 11:03:56 -0700 (PDT)
+Received: from helium.lan ([88.160.162.107]) by smtp.gmail.com with ESMTPSA id
+ 9-20020a1c0209000000b00397550b387bsm1647wmc.23.2022.05.30.11.03.54
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 30 May 2022 11:03:55 -0700 (PDT)
+From: Fabien Parent <fparent@baylibre.com>
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>
+Subject: [PATCH 1/3] dt-bindings: iommu: mediatek: add binding documentation
+ for MT8365 SoC
+Date: Mon, 30 May 2022 20:03:26 +0200
+Message-Id: <20220530180328.845692-1-fparent@baylibre.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:218b:b0:2d1:1d0c:2e28 with SMTP id
- j11-20020a056e02218b00b002d11d0c2e28mr28257557ila.216.1653914899437; Mon, 30
- May 2022 05:48:19 -0700 (PDT)
-Date: Mon, 30 May 2022 05:48:19 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000011e14605e03a125d@google.com>
-Subject: [syzbot] WARNING in dma_map_sgtable (2)
-From: syzbot <syzbot+3ba551855046ba3b3806@syzkaller.appspotmail.com>
-To: christian.koenig@amd.com, dri-devel@lists.freedesktop.org, hch@lst.de, 
- iommu@lists.linux-foundation.org, linaro-mm-sig@lists.linaro.org, 
- linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
- m.szyprowski@samsung.com, robin.murphy@arm.com, sumit.semwal@linaro.org, 
- syzkaller-bugs@googlegroups.com
-X-Mailman-Approved-At: Mon, 30 May 2022 15:04:55 +0000
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Fabien Parent <fparent@baylibre.com>, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,80 +102,140 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hello,
+Add IOMMU binding documentation for the MT8365 SoC.
 
-syzbot found the following issue on:
-
-HEAD commit:    7e062cda7d90 Merge tag 'net-next-5.19' of git://git.kernel..
-git tree:       upstream
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=172151d3f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=e9d71d3c07c36588
-dashboard link: https://syzkaller.appspot.com/bug?extid=3ba551855046ba3b3806
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12918503f00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1386fa39f00000
-
-Bisection is inconclusive: the issue happens on the oldest tested release.
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14107ee5f00000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=16107ee5f00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=12107ee5f00000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+3ba551855046ba3b3806@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 3610 at kernel/dma/mapping.c:188 dma_map_sgtable+0x203/0x260 kernel/dma/mapping.c:264
-Modules linked in:
-CPU: 0 PID: 3610 Comm: syz-executor162 Not tainted 5.18.0-syzkaller-04943-g7e062cda7d90 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__dma_map_sg_attrs kernel/dma/mapping.c:188 [inline]
-RIP: 0010:dma_map_sgtable+0x203/0x260 kernel/dma/mapping.c:264
-Code: 75 15 e8 50 5f 14 00 eb cb e8 49 5f 14 00 eb c4 e8 42 5f 14 00 eb bd e8 3b 5f 14 00 0f 0b bd fb ff ff ff eb af e8 2d 5f 14 00 <0f> 0b 31 ed 48 bb 00 00 00 00 00 fc ff df e9 7b ff ff ff 89 e9 80
-RSP: 0018:ffffc9000305fd40 EFLAGS: 00010293
-RAX: ffffffff81723873 RBX: dffffc0000000000 RCX: ffff88801fbb8000
-RDX: 0000000000000000 RSI: 0000000000000001 RDI: 0000000000000002
-RBP: ffff8881487e5408 R08: ffffffff81723743 R09: ffffed1003592c9e
-R10: ffffed1003592c9e R11: 1ffff11003592c9c R12: ffff8881487e5000
-R13: ffff88801ac964e0 R14: 0000000000000000 R15: 0000000000000001
-FS:  0000555556c2a300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000005d84c8 CR3: 000000001f1ef000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- get_sg_table+0xf9/0x150 drivers/dma-buf/udmabuf.c:72
- begin_cpu_udmabuf+0xf5/0x160 drivers/dma-buf/udmabuf.c:126
- dma_buf_begin_cpu_access+0xd8/0x170 drivers/dma-buf/dma-buf.c:1172
- dma_buf_ioctl+0x2a0/0x2f0 drivers/dma-buf/dma-buf.c:363
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:870 [inline]
- __se_sys_ioctl+0xfb/0x170 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f8bf9c6dc19
-Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffd7cfae1d8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f8bf9c6dc19
-RDX: 0000000020000100 RSI: 0000000040086200 RDI: 0000000000000006
-RBP: 00007f8bf9c31dc0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f8bf9c31e50
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-
-
+Signed-off-by: Fabien Parent <fparent@baylibre.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ .../bindings/iommu/mediatek,iommu.yaml        |  2 +
+ include/dt-bindings/memory/mt8365-larb-port.h | 96 +++++++++++++++++++
+ 2 files changed, 98 insertions(+)
+ create mode 100644 include/dt-bindings/memory/mt8365-larb-port.h
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+index 97e8c471a5e8..5ba688365da5 100644
+--- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
++++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+@@ -77,6 +77,7 @@ properties:
+           - mediatek,mt8173-m4u  # generation two
+           - mediatek,mt8183-m4u  # generation two
+           - mediatek,mt8192-m4u  # generation two
++          - mediatek,mt8365-m4u  # generation two
+ 
+       - description: mt7623 generation one
+         items:
+@@ -120,6 +121,7 @@ properties:
+       dt-binding/memory/mt8173-larb-port.h for mt8173,
+       dt-binding/memory/mt8183-larb-port.h for mt8183,
+       dt-binding/memory/mt8192-larb-port.h for mt8192.
++      dt-binding/memory/mt8365-larb-port.h for mt8365.
+ 
+   power-domains:
+     maxItems: 1
+diff --git a/include/dt-bindings/memory/mt8365-larb-port.h b/include/dt-bindings/memory/mt8365-larb-port.h
+new file mode 100644
+index 000000000000..e7d5637aa38e
+--- /dev/null
++++ b/include/dt-bindings/memory/mt8365-larb-port.h
+@@ -0,0 +1,96 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (c) 2022 MediaTek Inc.
++ * Author: Yong Wu <yong.wu@mediatek.com>
++ */
++#ifndef _DT_BINDINGS_MEMORY_MT8365_LARB_PORT_H_
++#define _DT_BINDINGS_MEMORY_MT8365_LARB_PORT_H_
++
++#include <dt-bindings/memory/mtk-memory-port.h>
++
++#define M4U_LARB0_ID			0
++#define M4U_LARB1_ID			1
++#define M4U_LARB2_ID			2
++#define M4U_LARB3_ID			3
++#define M4U_LARB4_ID			4
++#define M4U_LARB5_ID			5
++#define M4U_LARB6_ID			6
++#define M4U_LARB7_ID			7
++
++/* larb0 */
++#define M4U_PORT_DISP_OVL0		MTK_M4U_ID(0, 0)
++#define M4U_PORT_DISP_OVL0_2L		MTK_M4U_ID(0, 1)
++#define M4U_PORT_DISP_RDMA0		MTK_M4U_ID(0, 2)
++#define M4U_PORT_DISP_WDMA0		MTK_M4U_ID(0, 3)
++#define M4U_PORT_DISP_RDMA1		MTK_M4U_ID(0, 4)
++#define M4U_PORT_MDP_RDMA0		MTK_M4U_ID(0, 5)
++#define M4U_PORT_MDP_WROT1		MTK_M4U_ID(0, 6)
++#define M4U_PORT_MDP_WROT0		MTK_M4U_ID(0, 7)
++#define M4U_PORT_MDP_RDMA1		MTK_M4U_ID(0, 8)
++#define M4U_PORT_DISP_FAKE0		MTK_M4U_ID(0, 9)
++
++/* larb1 */
++#define M4U_PORT_VENC_RCPU		MTK_M4U_ID(1, 0)
++#define M4U_PORT_VENC_REC		MTK_M4U_ID(1, 1)
++#define M4U_PORT_VENC_BSDMA		MTK_M4U_ID(1, 2)
++#define M4U_PORT_VENC_SV_COMV		MTK_M4U_ID(1, 3)
++#define M4U_PORT_VENC_RD_COMV		MTK_M4U_ID(1, 4)
++#define M4U_PORT_VENC_NBM_RDMA		MTK_M4U_ID(1, 5)
++#define M4U_PORT_VENC_NBM_RDMA_LITE	MTK_M4U_ID(1, 6)
++#define M4U_PORT_JPGENC_Y_RDMA		MTK_M4U_ID(1, 7)
++#define M4U_PORT_JPGENC_C_RDMA		MTK_M4U_ID(1, 8)
++#define M4U_PORT_JPGENC_Q_TABLE		MTK_M4U_ID(1, 9)
++#define M4U_PORT_JPGENC_BSDMA		MTK_M4U_ID(1, 10)
++#define M4U_PORT_JPGDEC_WDMA		MTK_M4U_ID(1, 11)
++#define M4U_PORT_JPGDEC_BSDMA		MTK_M4U_ID(1, 12)
++#define M4U_PORT_VENC_NBM_WDMA		MTK_M4U_ID(1, 13)
++#define M4U_PORT_VENC_NBM_WDMA_LITE	MTK_M4U_ID(1, 14)
++#define M4U_PORT_VENC_CUR_LUMA		MTK_M4U_ID(1, 15)
++#define M4U_PORT_VENC_CUR_CHROMA	MTK_M4U_ID(1, 16)
++#define M4U_PORT_VENC_REF_LUMA		MTK_M4U_ID(1, 17)
++#define M4U_PORT_VENC_REF_CHROMA	MTK_M4U_ID(1, 18)
++
++/* larb2 */
++#define M4U_PORT_CAM_IMGO		MTK_M4U_ID(2, 0)
++#define M4U_PORT_CAM_RRZO		MTK_M4U_ID(2, 1)
++#define M4U_PORT_CAM_AAO		MTK_M4U_ID(2, 2)
++#define M4U_PORT_CAM_LCS		MTK_M4U_ID(2, 3)
++#define M4U_PORT_CAM_ESFKO		MTK_M4U_ID(2, 4)
++#define M4U_PORT_CAM_CAM_SV0		MTK_M4U_ID(2, 5)
++#define M4U_PORT_CAM_CAM_SV1		MTK_M4U_ID(2, 6)
++#define M4U_PORT_CAM_LSCI		MTK_M4U_ID(2, 7)
++#define M4U_PORT_CAM_LSCI_D		MTK_M4U_ID(2, 8)
++#define M4U_PORT_CAM_AFO		MTK_M4U_ID(2, 9)
++#define M4U_PORT_CAM_SPARE		MTK_M4U_ID(2, 10)
++#define M4U_PORT_CAM_BPCI		MTK_M4U_ID(2, 11)
++#define M4U_PORT_CAM_BPCI_D		MTK_M4U_ID(2, 12)
++#define M4U_PORT_CAM_UFDI		MTK_M4U_ID(2, 13)
++#define M4U_PORT_CAM_IMGI		MTK_M4U_ID(2, 14)
++#define M4U_PORT_CAM_IMG2O		MTK_M4U_ID(2, 15)
++#define M4U_PORT_CAM_IMG3O		MTK_M4U_ID(2, 16)
++#define M4U_PORT_CAM_WPE0_I		MTK_M4U_ID(2, 17)
++#define M4U_PORT_CAM_WPE1_I		MTK_M4U_ID(2, 18)
++#define M4U_PORT_CAM_WPE_O		MTK_M4U_ID(2, 19)
++#define M4U_PORT_CAM_FD0_I		MTK_M4U_ID(2, 20)
++#define M4U_PORT_CAM_FD1_I		MTK_M4U_ID(2, 21)
++#define M4U_PORT_CAM_FD0_O		MTK_M4U_ID(2, 22)
++#define M4U_PORT_CAM_FD1_O		MTK_M4U_ID(2, 23)
++
++/* larb3 */
++#define M4U_PORT_HW_VDEC_MC_EXT		MTK_M4U_ID(3, 0)
++#define M4U_PORT_HW_VDEC_UFO_EXT	MTK_M4U_ID(3, 1)
++#define M4U_PORT_HW_VDEC_PP_EXT		MTK_M4U_ID(3, 2)
++#define M4U_PORT_HW_VDEC_PRED_RD_EXT	MTK_M4U_ID(3, 3)
++#define M4U_PORT_HW_VDEC_PRED_WR_EXT	MTK_M4U_ID(3, 4)
++#define M4U_PORT_HW_VDEC_PPWRAP_EXT	MTK_M4U_ID(3, 5)
++#define M4U_PORT_HW_VDEC_TILE_EXT	MTK_M4U_ID(3, 6)
++#define M4U_PORT_HW_VDEC_VLD_EXT	MTK_M4U_ID(3, 7)
++#define M4U_PORT_HW_VDEC_VLD2_EXT	MTK_M4U_ID(3, 8)
++#define M4U_PORT_HW_VDEC_AVC_MV_EXT	MTK_M4U_ID(3, 9)
++#define M4U_PORT_HW_VDEC_RG_CTRL_DMA_EXT MTK_M4U_ID(3, 10)
++
++/* larb4 */
++#define M4U_PORT_APU_READ		MTK_M4U_ID(0, 0)
++#define M4U_PORT_APU_WRITE		MTK_M4U_ID(0, 1)
++
++#endif
+-- 
+2.36.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
