@@ -1,71 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 77168C433F5
-	for <iommu@archiver.kernel.org>; Mon, 30 May 2022 08:49:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5B2EAC433FE
+	for <iommu@archiver.kernel.org>; Mon, 30 May 2022 09:13:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 23E9640198;
-	Mon, 30 May 2022 08:49:18 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id F06FD41823;
+	Mon, 30 May 2022 09:13:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id oSyFzgw-sztP; Mon, 30 May 2022 08:49:17 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id av-eoHhnNuma; Mon, 30 May 2022 09:13:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 0AED8400FE;
-	Mon, 30 May 2022 08:49:17 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 8D88441806;
+	Mon, 30 May 2022 09:13:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D4B5CC0039;
-	Mon, 30 May 2022 08:49:16 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 20B75C002D
- for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 08:49:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4ACFAC0032;
+	Mon, 30 May 2022 09:13:06 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3A4AFC002D
+ for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 09:13:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 0063483E9D
- for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 08:49:16 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 30D6260E72
+ for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 09:13:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="oKod/4yD";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="fn7UBgTU"
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ENsStDFucc7M for <iommu@lists.linux-foundation.org>;
- Mon, 30 May 2022 08:49:15 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 5A249832C2
- for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 08:49:15 +0000 (UTC)
-Date: Mon, 30 May 2022 10:49:08 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1653900550;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=Mb32qARmKX/oF5s+kHIv0X9LwS5Vfd7eo5GK1onxbS4=;
- b=oKod/4yDEBaJi9iSKiGnIgGVyCp8e+d2eVwVdzte+6E86zRPZJb6uEjvY9/CW55BhnnY43
- ebGZ+E6AvYiBDeczcq+JHuFv1HT/m6EUhkoQLyx7NvTZQEIvJydHNpHBSZnzpfeZS4/A/7
- WGOHtJFe9NMPJhsqGcfjxAiHHCgjBuhNBBwbV+/kN1yItnFW2+10TbUX85HAvObQVcfwy3
- Z/TJ45JrIoDnh3p6gb7cbvNUxJHf5ULSF687VCmIIUyqaT3WK72dn/WdaL3xTiQEswmrnn
- nOA8I3nPJmVo1oAkxzrvDFAlPJUQE6RQrsz0po9ChI7ybB+ptjNpn/bXqyZHyA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1653900550;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=Mb32qARmKX/oF5s+kHIv0X9LwS5Vfd7eo5GK1onxbS4=;
- b=fn7UBgTUB18eEO+ZPOF0lTcnEkE+cEHthbTzQs24jteMlG7VDojMV7jKwiMO1pIQklIDh2
- MZUM5BfSfn06/zCA==
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Saravana Kannan <saravanak@google.com>
-Subject: Re: [RFC PATCH v1 0/9] deferred_probe_timeout logic clean up
-Message-ID: <YpSFBNfGDpy3rqEV@linutronix.de>
-References: <20220526081550.1089805-1-saravanak@google.com>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ENUB2VSZ9RUN for <iommu@lists.linux-foundation.org>;
+ Mon, 30 May 2022 09:13:02 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com
+ [209.85.219.41])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 72EE46080A
+ for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 09:13:01 +0000 (UTC)
+Received: by mail-qv1-f41.google.com with SMTP id j2so2385738qvp.9
+ for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 02:13:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=CevRGTtrDTs4Z7bTQdrqHWG/lWL6b5bSowmXhMt2lks=;
+ b=24ZxrE97yyRwFFLBgGeqT43vwX9/ERBGkK6Jg1Gopn4ygk5oSaJ5LbSLFdglSrancO
+ 76a28VpMh1oYcJxLcivanmnEes6LIctxMJu4KJbAZNu5S++4jFNBYsvvRu/PvCHILOkT
+ O6yeMcjG7tIm/juZLvi1hnUmfBm+c430WwSHfwzghadD43U3F+qB2xt2DoP3p04gZhzP
+ cqQMbobf/G/WtcVYGOsHbeIwvN0zVBeHSYuzYG8noQHTopdbFTV/YEgeRNR/cSLkvptG
+ UXZc8eKG58xv9A7zD1Onj5I1y21mYgI7sQvQAj+V8Lsr0jlQd4FzAExgkSYBYb3VCMdX
+ jTOQ==
+X-Gm-Message-State: AOAM532wdA4OJ5tGOLBeS+AKakl13co48Ry+JjoG1l96W+6Va/png4kG
+ /dKB8DvORLVw9jDmMX+i8hJAIam6EPgJWw==
+X-Google-Smtp-Source: ABdhPJwX/PqDwsF30FsLKITvuzZ5cLhRbMSB02aEYR2H8jv1D/9yOGh79l9c4xrjcPKIKgwOdVAyNg==
+X-Received: by 2002:a05:6214:29cd:b0:464:4ffa:bfb8 with SMTP id
+ gh13-20020a05621429cd00b004644ffabfb8mr3257984qvb.34.1653901980429; 
+ Mon, 30 May 2022 02:13:00 -0700 (PDT)
+Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com.
+ [209.85.219.178]) by smtp.gmail.com with ESMTPSA id
+ 25-20020a05620a079900b006a39e915252sm7061413qka.97.2022.05.30.02.12.57
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Mon, 30 May 2022 02:12:58 -0700 (PDT)
+Received: by mail-yb1-f178.google.com with SMTP id l204so7316905ybf.10
+ for <iommu@lists.linux-foundation.org>; Mon, 30 May 2022 02:12:57 -0700 (PDT)
+X-Received: by 2002:a05:6902:905:b0:64a:2089:f487 with SMTP id
+ bu5-20020a056902090500b0064a2089f487mr53259449ybb.202.1653901976605; Mon, 30
+ May 2022 02:12:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220526081550.1089805-1-saravanak@google.com>
+References: <20220526081550.1089805-1-saravanak@google.com>
+ <20220526081550.1089805-5-saravanak@google.com>
+In-Reply-To: <20220526081550.1089805-5-saravanak@google.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Mon, 30 May 2022 11:12:43 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXcHcuAn8UVS6RPsfenuCny4BgWNJFod41CFjdOF+w0sg@mail.gmail.com>
+Message-ID: <CAMuHMdXcHcuAn8UVS6RPsfenuCny4BgWNJFod41CFjdOF+w0sg@mail.gmail.com>
+Subject: Re: [RFC PATCH v1 4/9] Revert "driver core: Set default
+ deferred_probe_timeout back to 0."
+To: Saravana Kannan <saravanak@google.com>
 Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
  Heikki Krogerus <heikki.krogerus@linux.intel.com>,
  "Rafael J. Wysocki" <rafael@kernel.org>,
@@ -73,17 +83,22 @@ Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
  John Stultz <jstultz@google.com>, Pavel Machek <pavel@ucw.cz>,
  Will Deacon <will@kernel.org>, Rob Herring <robh@kernel.org>,
  Kevin Hilman <khilman@kernel.org>, Russell King <linux@armlinux.org.uk>,
- linux-acpi@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+ ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
  Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- kernel-team@android.com, Len Brown <len.brown@intel.com>,
- linux-pm@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
- linux-gpio@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+ Android Kernel Team <kernel-team@android.com>,
+ Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+ Len Brown <len.brown@intel.com>, Linux PM list <linux-pm@vger.kernel.org>,
+ Nathan Chancellor <nathan@kernel.org>,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ Mark Brown <broonie@kernel.org>,
  Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
  Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
- Daniel Scally <djrscally@gmail.com>, iommu@lists.linux-foundation.org,
- Sakari Ailus <sakari.ailus@linux.intel.com>, netdev@vger.kernel.org,
+ David Ahern <dsahern@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Daniel Scally <djrscally@gmail.com>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ Sakari Ailus <sakari.ailus@linux.intel.com>, netdev <netdev@vger.kernel.org>,
  "David S. Miller" <davem@davemloft.net>,
  Heiner Kallweit <hkallweit1@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -103,31 +118,30 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-05-26 01:15:39 [-0700], Saravana Kannan wrote:
-> Yoshihiro/Geert,
 Hi Saravana,
 
-> If you can test this patch series and confirm that the NFS root case
-> works, I'd really appreciate that.
+On Thu, May 26, 2022 at 10:16 AM Saravana Kannan <saravanak@google.com> wrote:
+> This reverts commit 11f7e7ef553b6b93ac1aa74a3c2011b9cc8aeb61.
 
-The two patches you sent earlier, plus this series, plus
+scripts/chdeckpatch.pl says:
 
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 7ff7fbb006431..829d9b1f7403f 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -1697,8 +1697,6 @@ static int fw_devlink_may_probe(struct device *dev, void *data)
-  */
- void __init fw_devlink_unblock_may_probe(void)
- {
--	struct device_link *link, *ln;
--
- 	if (!fw_devlink_flags || fw_devlink_is_permissive())
- 		return;
- 
-and it compiles + boots without a delay.
+    WARNING: Unknown commit id
+'11f7e7ef553b6b93ac1aa74a3c2011b9cc8aeb61', maybe rebased or not
+pulled?
 
-Sebastian
+I assume this is your local copy of
+https://lore.kernel.org/r/20220526034609.480766-3-saravanak@google.com?
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
