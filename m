@@ -1,67 +1,174 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 57C5EC4332F
-	for <iommu@archiver.kernel.org>; Tue, 31 May 2022 07:16:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 27F2BC433EF
+	for <iommu@archiver.kernel.org>; Tue, 31 May 2022 10:13:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id E086560FD2;
-	Tue, 31 May 2022 07:16:52 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id BE78F40541;
+	Tue, 31 May 2022 10:13:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id m_GHvbZ6OuKn; Tue, 31 May 2022 07:16:52 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id eEycOmO0NYRD; Tue, 31 May 2022 10:13:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id C1A4060D73;
-	Tue, 31 May 2022 07:16:51 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 8119940169;
+	Tue, 31 May 2022 10:13:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D777C0039;
-	Tue, 31 May 2022 07:16:51 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B3564C002D
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 07:16:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5C414C0039;
+	Tue, 31 May 2022 10:13:09 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 29EAFC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 10:13:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id A1CC681B35
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 07:16:49 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 1859082CD4
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 10:13:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id liPPFGOmG4d3 for <iommu@lists.linux-foundation.org>;
- Tue, 31 May 2022 07:16:48 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp1.osuosl.org (Postfix) with ESMTPS id AB9A081AAC
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 07:16:48 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 42FE068B05; Tue, 31 May 2022 09:16:40 +0200 (CEST)
-Date: Tue, 31 May 2022 09:16:39 +0200
-From: "hch@lst.de" <hch@lst.de>
-To: "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Subject: Re: [RFC PATCH V2 1/2] swiotlb: Add Child IO TLB mem support
-Message-ID: <20220531071639.GA23482@lst.de>
-References: <20220502125436.23607-1-ltykernel@gmail.com>
- <20220502125436.23607-2-ltykernel@gmail.com> <YoH+mbxQAp/2XGyG@infradead.org>
- <PH0PR21MB30258D2B3B727A9BCEE039FCD7DD9@PH0PR21MB3025.namprd21.prod.outlook.com>
+ with ESMTP id EUvnHlms5AJt for <iommu@lists.linux-foundation.org>;
+ Tue, 31 May 2022 10:13:07 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 27BDE82C3E
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 10:13:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1653991987; x=1685527987;
+ h=from:to:cc:subject:date:message-id:references:
+ in-reply-to:content-transfer-encoding:mime-version;
+ bh=SBAdatblOyjB70Mix2NAQdvnh60UBnzBa5vVbtjoH1Y=;
+ b=Kc2olZWQHXmlZV7hn08pgs4b9uyf6IRVu6VLSDnvAqyaG2d6Cus9/1vP
+ NVVqLlsGQ8Hjr9ooF3/su6iYqVKjUU+eDBbjlziyI+QmFQBLopbQrnFM0
+ qH3traTbmX/iNF9udR8NKnOmagBIWKPonuDhfs0vGIom2st2H3ozE1aJU
+ NZCuZ/hYqBzJ2yqvOGlzoqzWCzmTRoCMxVnsUm9qVYA+lxED0C6szPN+d
+ ye/XTF6KRrjeQgK81wAX47CUnOxQjUt40tW74VJbc64JpWA0ra/qGrjDt
+ vIEck5jKFai+w45La1XAOkBY7kmhlhChksbu8Bmnvk6m6fqmq1NWWy2a8 Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="257276665"
+X-IronPort-AV: E=Sophos;i="5.91,264,1647327600"; d="scan'208";a="257276665"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 31 May 2022 03:13:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,264,1647327600"; d="scan'208";a="529519381"
+Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
+ by orsmga003.jf.intel.com with ESMTP; 31 May 2022 03:13:05 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 31 May 2022 03:13:04 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Tue, 31 May 2022 03:13:04 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.177)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Tue, 31 May 2022 03:12:48 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O0s0sY671itnzbwC2177is1COdg5tCsqfKkEiLHdwcxcBtT21gZfEcnvcDoLyyRBx6IqlxZ15XH+Y8jG9fakMFmF22JVagJIqV05HxMILS9WVHnBWe91ND/9DIBtQpvBTdf1lGKIia4fw4DvVXsaVlCQihQPssFUPHaNzfQ5CH5CNu9MG/fkMfcg9cU2l/Bg/p6Rw7UkyfbypkWXxoztok+DQSlh925Jg0395qqkcRT9HRkwsUSmouCa/HeSBhUBeW3MlB0GO6AZhK/S1tAxrr21nd1+u2W7DMDd6wE1v2Nq4UfhzyZ2Cb3XpzuMx0lmCzG6K/X7xINEW/14CQ3kfg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bC7BvAxeM/ttxhH7TpkhujlDaks5UMcK2GfDkmQcwt4=;
+ b=J/MHHsoP+JAn/wrW4dYfujNGIssSuhFCroKdhO/JoISK3JujwdBy/yFdmyULi8QVCOWXBwBp3yF8nUtJcPlotjHkoiL9og0IemLQnJYp1LikcPeFqwfvf6AKSUXJyW4FPx+QVvUqm5/dgE3Dj6F221SLh16/2te6f2ja+6CFANxxzYuXCeVt0CZLWTd7x4i2VjDZR9Zmc42ZkeOIgplN6BKOgH7QaDACGAc62HZwc/1A5tX7BnZjJlqCW83R3XsnDH1VaSrkfxs+mvkQaatQY06dpIBJZe6MDjUcm4vnoh74JImAi8oox1r1YxaMmLFd5X92ySYv+G5AN0Lb2rV/HA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by BN7PR11MB2754.namprd11.prod.outlook.com (2603:10b6:406:b3::30)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.18; Tue, 31 May
+ 2022 10:12:47 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::a1cb:c445:9900:65c8]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::a1cb:c445:9900:65c8%7]) with mapi id 15.20.5314.012; Tue, 31 May 2022
+ 10:12:47 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: RE: [PATCH v4 1/6] iommu: Add a per domain PASID for DMA API
+Thread-Topic: [PATCH v4 1/6] iommu: Add a per domain PASID for DMA API
+Thread-Index: AQHYauOU3vbab87feU2/ab0rn4lTF60uFLMAgAAYR4CACT0vgIABWQJg
+Date: Tue, 31 May 2022 10:12:47 +0000
+Message-ID: <BN9PR11MB52768105FC4FB959298F8A188CDC9@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
+ <20220518182120.1136715-2-jacob.jun.pan@linux.intel.com>
+ <20220524135034.GU1343366@nvidia.com> <20220524081727.19c2dd6d@jacob-builder>
+ <20220530122247.GY1343366@nvidia.com>
+In-Reply-To: <20220530122247.GY1343366@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: dc849b05-fc5c-492b-a9cd-08da42ee1c84
+x-ms-traffictypediagnostic: BN7PR11MB2754:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <BN7PR11MB27545B43174CE30921F1B2968CDC9@BN7PR11MB2754.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: n6Q6MB4b580p67TfKNC2e1HN3OZV2TNd3pDA0AbalWTU7KY8c7Ntrn33QbE6rInfRJQK35SDZea1s6ko2IapabIR4KTdwg5wtek+9MYPgr5iESPsfozhzkwT1gHibE+K6dBcGB6Nd5KId0qUvOClVMNFkW8Ubj7UuFm5ljfLrDAa8dtBbbranx3trbUQo1D/PO7arO+4Lcf9MPKr8MmqD9dCUjpDCfa+CgPGUkjL6El0p+GbuUZK9T7RmZ/eEwv8JPF8FyvCEqwPVH3k8XLIqmU/JOxPNxzHhJfUMNqG7sdrWZzPdvToAEteR0QkZu3cRSIpCwqHvBKM+hAxPv9rqNqP4Ej/p1D/AJvtn6bEVF1E/cuOeUVbbgC3cLSKnL5iYoJrDW4xuY9UyeT9PQL6fdH46ufn+LQKlGieOmiphIsRfREvgshW2DsJRTMzsRr1LB8fXJUU6sKTkr6X5xScyQlrdpH08aKxBS48RzRoimoB9yIdo6CRX/MPm4z+6PBIz074rETARkn/O7Lc4C3+sFJ98eb8KwyvBWbJ14yFv0bbZF88TQfplBjAZAcU1VxPwP+DFpGEMJ8Lukr6WpGJ0pCvAHLsQ8NJDAbgiiUJG4ATu9lMw3WNho1rnyi1LoBQMZCtTw4K8i40ZS0mV6E/AuqF1AtKGh/29M0+ypHWXgBPr0NwnGnyuntcYSDApB80Va3GWLF8kNkgYiQSH1OYIA==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(71200400001)(55016003)(7416002)(122000001)(8936002)(82960400001)(5660300002)(33656002)(508600001)(52536014)(9686003)(83380400001)(186003)(86362001)(26005)(2906002)(38070700005)(7696005)(6506007)(8676002)(64756008)(66446008)(66476007)(76116006)(66556008)(66946007)(38100700002)(4326008)(110136005)(54906003)(316002);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?I4WybO6awlusuilPxte/vDFIqS14x34/218RKvAK1F3jz6isB+WOBsBn4KXO?=
+ =?us-ascii?Q?LgY/eCmwkIiKCpvMwCJnGuMWwhtiaa+d/hwefZCnMKrUnCQnBRRX2k6rH+/R?=
+ =?us-ascii?Q?B3LGJlXOZ7NfEhTsgzvBUL7WD84W/z7HT7y9DbWAIG2zY+JunLiCX6O2bZRJ?=
+ =?us-ascii?Q?pHvBgWd7dzwAyVOf/gahRMBh0lcfSVSIRmSEfvKAV5Xpr54f3OCa1pfGjYRI?=
+ =?us-ascii?Q?LNs3o4m7wIbIC8i00eWUqWHAhWKzIKFs5uvGKJtL3YuO6gdlwaAi0agW0SqV?=
+ =?us-ascii?Q?/Ac1sJvCSpGnmQ8XRaMSrPdq0B6++tImBi08MbSghq7kQXeMNd9ULkc52CY0?=
+ =?us-ascii?Q?9RZcRjunq7+rVi4125o0j+o+3OPgeaEdq9BIjpROJeuEnlAG6i/rqIvQs+nj?=
+ =?us-ascii?Q?/1RPUrUyIvwiWT9jGI3HRWDjQLN5qlXQp1iKITRvor6wse3FYaPzNY6l5zhU?=
+ =?us-ascii?Q?A1HzZ07m0ePw7dgmnJC+/ObtvPaX3L3CVTfxUioNDS1Ai/+Y2RxADEst76Sv?=
+ =?us-ascii?Q?m+p5Gg7hvisY4OzxWYJ8Fa9VtGb0JMgDZF7M6i9kW8SSvHjNoWMZbrfPALJS?=
+ =?us-ascii?Q?8x2P51eyGzubpldbnWV8TXDg1fkoJCe00EdNUfH6D6RNOTEMJFtRD7YCUsHL?=
+ =?us-ascii?Q?QLRIsgemE8Sq7G0KI7pTtkvWqIs6gr/zX9jD6IiPRKaK6399FSXmbCVGaP2j?=
+ =?us-ascii?Q?FY8uIna7+iYlNRiJ8Bi2Ca9SbMiynJBmnm+a0lbB2M2kQI8WopjvcF9xhIdL?=
+ =?us-ascii?Q?UqHnb2YRrFmB+dXVjE4vvlwpozb0/9Zl/B0NDsFPe36Rmy4x3sDMAXdCUEYq?=
+ =?us-ascii?Q?sRSC1rKLNId2z/xWlioU0WZqFvSbS2eEcqreHGcxjL8kNX1PkyZhYPWSBjjC?=
+ =?us-ascii?Q?z1fk7pXQD2i/zyl14fMx/SyPXW8O8CZdGnUEfac4bHvztNLJ13POFuSzlsJK?=
+ =?us-ascii?Q?HyFgva/4cH/atijgFkPiHMHUHbx3Ys3x9TuI7UOopzg8knUN+NrNOxO+HXAz?=
+ =?us-ascii?Q?/efoYoMYW8epbHyOTLfMYp7lVEs/X2dk9OerfORgEOGITGHSjf76gRKkfKVa?=
+ =?us-ascii?Q?sF7m1Twicm20ikwAJowAKjzjSiNyz0KLNP2SiRvkggeYJGKusan3ajeIa+0I?=
+ =?us-ascii?Q?Zo+83mToeBL7v2jYWcLSQKgRPQ9GJA3o0x3fHurE97ptM1XVZftUqwgqt2/N?=
+ =?us-ascii?Q?DA5og8VMoo7GCz0z/0GZnx1G8JYnNE4cmvwXVba/isZeKy37xLQeg4m7rd3P?=
+ =?us-ascii?Q?6RYSFpyYwjAIxEPsdxhSEP6GVWbyVunK9qBpvWFbjKI1vcsCEIpitCR56/xg?=
+ =?us-ascii?Q?m+d2peK6mkJFRRJS9oUE/gJI/IjoVbac67i3hMXFrtVhJyZSier3hpccw82p?=
+ =?us-ascii?Q?Icm0Kn9Zd4cIILZgpraV4AY+DTAAuGaVPBNriw8dhOFO9C2Bh+/Hy2GNQOA3?=
+ =?us-ascii?Q?V0kF+htbGgDf1xKvxBhhXn6qFAPGZgJoh5GEx65m98KKV21LCeAUG2ObuBxO?=
+ =?us-ascii?Q?h3UQDf5IOKrgNInw2bgQ5pbfyNFDkgpgGIH7aTlDWWTj/DF3IBfeTjKv+cTY?=
+ =?us-ascii?Q?ek1ISt9Gd71DGDbRQAeg9xn3yHraK0E3hpzkZde+ie2ccBd1g3s1OyTSFbnw?=
+ =?us-ascii?Q?jbs2M+LRI9QuGJuq8Uw4afbnvZ3FPBnlNuogVd/s11WWoWT/Kmv9ks2x1ZB8?=
+ =?us-ascii?Q?/Uu5y9ZQkoOIIV4lJsduJirh5/r4JAsYtAQGpTCBOLoxMn98lLxMTbXEXiwY?=
+ =?us-ascii?Q?96lnMlmVgQ=3D=3D?=
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <PH0PR21MB30258D2B3B727A9BCEE039FCD7DD9@PH0PR21MB3025.namprd21.prod.outlook.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
- "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
- "wei.liu@kernel.org" <wei.liu@kernel.org>,
- Tianyu Lan <Tianyu.Lan@microsoft.com>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Tianyu Lan <ltykernel@gmail.com>, Christoph Hellwig <hch@infradead.org>,
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dc849b05-fc5c-492b-a9cd-08da42ee1c84
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 May 2022 10:12:47.3827 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7CmPJQUhsa8TIaUUCH09ekhpICYYkFxy3UW80Pu2pziG/9nqeo7F0oHRZRSx5ojBjdvg04s3Kza31/iWtGDyJg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR11MB2754
+X-OriginatorOrg: intel.com
+Cc: "vkoul@kernel.org" <vkoul@kernel.org>, "Jiang, Dave" <dave.jiang@intel.com>,
+ "Raj, Ashok" <ashok.raj@intel.com>, "will@kernel.org" <will@kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>, LKML <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@infradead.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "kirill.shutemov" <kirill.shutemov@intel.com>,
- "andi.kleen@intel.com" <andi.kleen@intel.com>,
- "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
- vkuznets <vkuznets@redhat.com>, KY Srinivasan <kys@microsoft.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>
+ "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,52 +186,94 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, May 30, 2022 at 01:52:37AM +0000, Michael Kelley (LINUX) wrote:
-> B) The contents of the memory buffer must transition between
-> encrypted and not encrypted.  The hardware doesn't provide
-> any mechanism to do such a transition "in place".  The only
-> way to transition is for the CPU to copy the contents between
-> an encrypted area and an unencrypted area of memory.
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Monday, May 30, 2022 8:23 PM
 > 
-> Because of (B), we're stuck needing bounce buffers.  There's no
-> way to avoid them with the current hardware.  Tianyu also pointed
-> out not wanting to expose uninitialized guest memory to the host,
-> so, for example, sharing a read buffer with the host requires that
-> it first be initialized to zero.
+> On Tue, May 24, 2022 at 08:17:27AM -0700, Jacob Pan wrote:
+> > Hi Jason,
+> >
+> > On Tue, 24 May 2022 10:50:34 -0300, Jason Gunthorpe <jgg@nvidia.com>
+> wrote:
+> >
+> > > On Wed, May 18, 2022 at 11:21:15AM -0700, Jacob Pan wrote:
+> > > > DMA requests tagged with PASID can target individual IOMMU domains.
+> > > > Introduce a domain-wide PASID for DMA API, it will be used on the
+> same
+> > > > mapping as legacy DMA without PASID. Let it be IOVA or PA in case of
+> > > > identity domain.
+> > >
+> > > Huh? I can't understand what this is trying to say or why this patch
+> > > makes sense.
+> > >
+> > > We really should not have pasid's like this attached to the domains..
+> > >
+> > This is the same "DMA API global PASID" you reviewed in v3, I just
+> > singled it out as a standalone patch and renamed it. Here is your previous
+> > review comment.
+> >
+> > > +++ b/include/linux/iommu.h
+> > > @@ -105,6 +105,8 @@ struct iommu_domain {
+> > >  	enum iommu_page_response_code (*iopf_handler)(struct
+> iommu_fault *fault,
+> > >  						      void *data);
+> > >  	void *fault_data;
+> > > +	ioasid_t pasid;		/* Used for DMA requests with PASID */
+> > > +	atomic_t pasid_users;
+> >
+> > These are poorly named, this is really the DMA API global PASID and
+> > shouldn't be used for other things.
+> >
+> >
+> >
+> > Perhaps I misunderstood, do you mind explaining more?
+> 
+> You still haven't really explained what this is for in this patch,
+> maybe it just needs a better commit message, or maybe something is
+> wrong.
+> 
+> I keep saying the DMA API usage is not special, so why do we need to
+> create a new global pasid and refcount? Realistically this is only
+> going to be used by IDXD, why can't we just allocate a PASID and
+> return it to the driver every time a driver asks for DMA API on PASI
+> mode? Why does the core need to do anything special?
+> 
 
-Ok, B is a deal breaker.  I just brought this in because I've received
-review comments that state bouncing is just the easiest option for
-now and we could map it into the hypervisor in the future.  But at
-least for SEV that does not seem like an option without hardware
-changes.
+Agree. I guess it was a mistake caused by treating ENQCMD as the
+only user although the actual semantics of the invented interfaces
+have already evolved to be quite general.
 
-> We should reset and make sure we agree on the top-level approach.
-> 1) We want general scalability improvements to swiotlb.  These
->     improvements should scale to high CPUs counts (> 100) and for
->     multiple NUMA nodes.
-> 2) Drivers should not require any special knowledge of swiotlb to
->     benefit from the improvements.  No new swiotlb APIs should be
->     need to be used by drivers -- the swiotlb scalability improvements
->     should be transparent.
-> 3) The scalability improvements should not be based on device
->     boundaries since a single device may have multiple channels
->     doing bounce buffering on multiple CPUs in parallel.
+This is very similar to what we have been discussing for iommufd.
+a PASID is just an additional routing info when attaching a device
+to an I/O address space (DMA API in this context) and by default
+it should be a per-device resource except when ENQCMD is
+explicitly opt in.
 
-Agreed to all counts.
+Hence it's right time for us to develop common facility working
+for both this DMA API usage and iommufd, i.e.:
 
-> The patch from Andi Kleen [3] (not submitted upstream, but referenced
-> by Tianyu as the basis for his patches) seems like a good starting point
-> for meeting the top-level approach.
+for normal PASID attach to a domain, driver:
 
-Yes, I think doing per-cpu and/or per-node scaling sounds like the
-right general approach. Why was this never sent out?
+	allocates a local pasid from device local space;
+	attaches the local pasid to a domain;
 
-> Andi and Robin had some
-> back-and-forth about Andi's patch that I haven't delved into yet, but
-> getting that worked out seems like a better overall approach.  I had
-> an offline chat with Tianyu, and he would agree as well.
+for PASID attach in particular for ENQCMD, driver:
 
-Where was this discussion?
+	allocates a global pasid in system-wide;
+	attaches the global pasid to a domain;
+	set the global pasid in PASID_MSR;
+
+In both cases the pasid is stored in the attach data instead of the
+domain.
+
+DMA API pasid is no special from above except it needs to allow
+one device attached to the same domain twice (one with RID
+and the other with RID+PASID).
+
+for iommufd those operations are initiated by userspace via
+iommufd uAPI.
+
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
