@@ -1,77 +1,145 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CF704C4332F
-	for <iommu@archiver.kernel.org>; Tue, 31 May 2022 18:27:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0ECE6C433EF
+	for <iommu@archiver.kernel.org>; Tue, 31 May 2022 18:51:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 807F9408B5;
-	Tue, 31 May 2022 18:27:04 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 9E49661287;
+	Tue, 31 May 2022 18:51:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9SNKI-aMBva3; Tue, 31 May 2022 18:27:03 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id O6dGW1990rgD; Tue, 31 May 2022 18:51:17 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 06D0640912;
-	Tue, 31 May 2022 18:27:03 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 6544E60B5E;
+	Tue, 31 May 2022 18:51:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 28DC2C0081;
-	Tue, 31 May 2022 18:27:02 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 79CE0C0081
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 18:27:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 31287C0039;
+	Tue, 31 May 2022 18:51:17 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D3D1EC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 18:51:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 56B3360B67
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 18:27:00 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id AD33861287
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 18:51:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=cybernetics.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id yJv6ZvkXBIqU for <iommu@lists.linux-foundation.org>;
- Tue, 31 May 2022 18:26:59 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 5F23460ACF
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 18:26:59 +0000 (UTC)
-X-ASG-Debug-ID: 1654020677-1cf43917f334afa0001-DtgJuY
-Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with
- ESMTP id wbqVFrYsF9UO9ekk; Tue, 31 May 2022 14:11:17 -0400 (EDT)
-X-Barracuda-Envelope-From: tonyb@cybernetics.com
-X-ASG-Whitelist: Client
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=cybernetics.com; s=mail; 
- bh=QvvHI94cjVSZ3vyzLq0aE4IbkuwCS7vLvfKjrgG4UFU=;
- h=Content-Transfer-Encoding:Content-Type:Cc:To:Subject:From:Content-Language:
- MIME-Version:Date:Message-ID; b=cdHo3GAMcWDRJ0VGiCWvXlyIXhHwRhAR44nZK//A1tvRT
- d2BjwWd9JShX2dFtLN6fSvPzVQCXgXil9PAdI8Wj2ZmL6SkzZRUPpYY3OSL3k3Ip8B7njnzSJgaZg
- nIQyJjOiw0pjXEOVFlb1XTpA4pOl5WOwRUtj+NTaT5uO9KtoI=
-Received: from [10.157.2.224] (HELO [192.168.200.1])
- by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
- with ESMTPS id 11829182; Tue, 31 May 2022 14:11:17 -0400
-Message-ID: <9b08ab7c-b80b-527d-9adf-7716b0868fbc@cybernetics.com>
-Date: Tue, 31 May 2022 14:11:16 -0400
+ with ESMTP id qE-iklbMFiaD for <iommu@lists.linux-foundation.org>;
+ Tue, 31 May 2022 18:51:14 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam08on20620.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e8c::620])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 71AA860B5E
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 18:51:14 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CY0++9bwO/k0KqCLHjcCNxhfHvSte48tdUIINN6+PRQ7GPXHGdpnEdWWCd8CGj9X8jIytPnii0uXN6YW1GotnDEe4KOpeSlbBSVL/ZA5RLSGskZAAHFZ1OT3MWJ5huEWnUCS4BOfqYvFq3vFXMWAaY7i5CafalG4AyJ0nI1HZ/dQFg3IDGjhcSTWNvLRuFy4lc21d03B0HOJv62egKAq9Ti6i4FYz9CP3LyLhmp0GCngEwComao7Cmj9yvYRvFFzW6uWEAIZQO0F7nfyZDtsvaEpVrVN7TeL1aXZ1FiM81D20p5LK+VMtITRO/xLRyVokWF947BusUBjIWKJlX14Mg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=EXp66Di8DRresZOsYFQBu6nqG3w3CI0F+RVth1Wcqdo=;
+ b=MMjajOdDPsM1a0VSZBGPe2BUWURHuYBRCIE0qMKq3l4deFSiQsuyMW2+E/sDYDNhq4P3/wTXOiwT7EgsvVt2LYInYRymmlVj2NVjGaJ2OepW6tPMaPoUY+XXL8jtTNNaN1S6cxvhHCfJYXHjFWGkEPsb22i2yhORkPV2ROHjmf+bo3bpmo4ey9b2NWHB5tX+b3gsRM+Zwk2xhHRDYRXPY9bTD4iG6bSBtJcdf9CJ2k4znmVYzg44kzL5MTVf6qWgjEL4nc4uVg+irc1KfpJQZLwJpIfq2qgQ1rXhGbmPk+s1YrvzZYKM0xU0vN0MYwrN/SOHkIRTJzZd1V9F6qLLIw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EXp66Di8DRresZOsYFQBu6nqG3w3CI0F+RVth1Wcqdo=;
+ b=n3tyHYS7Y+M36TrhbMaYyNBHBt8HCPh25OpZabqaGS5yBu4JfRve4cllxJpzJlvUxSjqlp0Dpu88z+Nd0q0xyi+jX0QHWtQNv6VBcpMjYzCMf9Y8pTzo+RFr46PLfHNLzQamsVUTwtRqOqDEi7BjcnScBYZL74/iI2ZeGv2yi5tuQoVoHU5D6YxjfMXyXlKahbXtdHR0MQyKcTr4uLwEupaHsXWarKu19MABloJeFmaFCMGbazFe4e1DZ+7Y2/9WmX25yZIRJpZEFQfpFsuFZZ3msNshDOaKL9qgr1gYx446uoQPuAMyzh5bk0Fn2Cd2mjUgy9LVgSbeLTgujF68lQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BN8PR12MB3443.namprd12.prod.outlook.com (2603:10b6:408:63::19)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Tue, 31 May
+ 2022 18:51:11 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::2484:51da:d56f:f1a5]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::2484:51da:d56f:f1a5%9]) with mapi id 15.20.5314.012; Tue, 31 May 2022
+ 18:51:11 +0000
+Date: Tue, 31 May 2022 15:51:10 -0300
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 01/12] iommu/vt-d: Use iommu_get_domain_for_dev() in
+ debugfs
+Message-ID: <20220531185110.GJ1343366@nvidia.com>
+References: <20220530121412.GX1343366@nvidia.com>
+ <42623a73-c288-1c0d-7021-93caff4ffb6f@linux.intel.com>
+ <20220531131052.GD1343366@nvidia.com>
+ <60318d83-e22f-f922-436f-6c31bce24d59@linux.intel.com>
+ <20220531145301.GE1343366@nvidia.com>
+ <a7d6d830-cb06-e0d7-0688-028f9af900e5@arm.com>
+ <20220531151332.GF1343366@nvidia.com>
+ <b66a2e3b-9adc-5150-fe00-d68b141b1c28@arm.com>
+ <20220531162152.GH1343366@nvidia.com>
+ <10f16c13-c50d-892c-a20d-979b2135c953@arm.com>
+Content-Disposition: inline
+In-Reply-To: <10f16c13-c50d-892c-a20d-979b2135c953@arm.com>
+X-ClientProxiedBy: MN2PR16CA0045.namprd16.prod.outlook.com
+ (2603:10b6:208:234::14) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Content-Language: en-US
-From: Tony Battersby <tonyb@cybernetics.com>
-Subject: [PATCH 00/10] mpt3sas and dmapool scalability
-To: linux-mm@kvack.org, linux-kernel@vger.kernel.org
-X-ASG-Orig-Subj: [PATCH 00/10] mpt3sas and dmapool scalability
-X-Barracuda-Connect: UNKNOWN[10.10.4.126]
-X-Barracuda-Start-Time: 1654020677
-X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at cybernetics.com
-X-Barracuda-Scan-Msg-Size: 3968
-X-Barracuda-BRTS-Status: 1
-Cc: Tony Lindgren <tony@atomide.com>,
- Andy Shevchenko <andy.shevchenko@gmail.com>,
- Matthew Wilcox <willy@infradead.org>, iommu@lists.linux-foundation.org,
- Keith Busch <kbusch@kernel.org>, kernel-team@fb.com,
- Robin Murphy <robin.murphy@arm.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9cce3b50-466a-4b15-61ef-08da4336880b
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3443:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR12MB3443B8E1851A32A69D445AC5C2DC9@BN8PR12MB3443.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hrnVK5mMh3MuxetUjQv0LFSoWfm8P97gQ781EzDeKrtfV/Z2pFLOcEwRYR3QzCJDXFs5IH6kiNysNphlmoxO1UFEDb/xerPyaVTVp/FqQ0flHTU3lDrMjiM+6UgQwnXxCaU0mI5/MfYID8jnu01ApZp+XY0mjakM3gKq9B4YyUvZIQtt35ZHI/q8gGwd9P7Zx1VMpXoCP0YzDZ/KAGUODlwRtElVFfCgBbKRYrSkl2JN1OjuDnzKliY1mTfc8i4a4VE+HirLgP3ikNF3jsURwuju4tKgqJsGhMoFuiYVvXkEYg1zehfGSbsGOwxY/miXa5cBiMSRodcxG5yjQLlwWWp8Kj/aw+RpMKLhCg3EvaM+IRU63o25BmfngFSgaPujQjAgYGTKXNL+CUNIPbmpZGCSFL2dujx/UZtWK6pylK9FkNSWZv6eNgfNNr6qd5MeeCFI8VVivhB3FeRf9r+SLxtvRb7rkF4XhfOPagMKYyTn716rDtKNqJZxHpEDAWx4D0urtGIk3lq80ClN7+Fbp3bbm0VdUb+QoXQWXN8eS2Su45q4QyGY5XJG9ema6bqzbY70MSQRU6rsHQOVQUPskKiver+Yp1oKw3Ubca8bgVKOg2yjMlqvoCnY5K48CMc0OCb6/vJJmOB50v8jN5fsuA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(66946007)(8676002)(66476007)(66556008)(54906003)(6916009)(86362001)(33656002)(4326008)(2616005)(8936002)(26005)(316002)(6506007)(6512007)(83380400001)(36756003)(7416002)(5660300002)(1076003)(6486002)(508600001)(186003)(38100700002)(2906002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yvznQFJqbQEKb0DSn6NNlKIgAq9KIvQ7z2MP6fIbP3NGTg17MU6XKNUTKPUs?=
+ =?us-ascii?Q?DPVfns8+zP8Zkd0+ziMJ6mkeFWyrOW+wGGougIXPgs09A8ZgIweNQLKX2F6e?=
+ =?us-ascii?Q?qfOBvVHrML01IHYM9H4hJLSM3A1bQeHsPHpfUnty4x9YSIj1eBHJZ4bCc/TW?=
+ =?us-ascii?Q?YcVhFFqqop/aa1So5H4Qray32l55HN2tl3fkMUdBpS3IHh6qtzhfhtqyPBv4?=
+ =?us-ascii?Q?P+AWGf8A6u1/6+cjZyJBe5St7rNUAO9CnSYwFDI3MVoiee8723DwL6MRnQ/2?=
+ =?us-ascii?Q?YhITDcgeiJFIUw07gSuRW/pEbtvSOqxZjvKuuQUT9d7VPTMpjsiFwcr2p9NQ?=
+ =?us-ascii?Q?fHQYRq8HX4//XQ9/ouu3djaPBFEyMMGXirooPukPLZP2dMwf7qjndEz40B1C?=
+ =?us-ascii?Q?BR7HYmIrXjWYhbpRMIJWL5XnI6Ph5GhyBbdN6PFava4Th4gdLjzh8c0KEX5V?=
+ =?us-ascii?Q?HLRP32C5Apmw3TrmpJq1hPanyjRRzzMd2dcyF+xHKifOdGl2kAdOt/4FftoW?=
+ =?us-ascii?Q?Ts3fARjl9IJKIV1sJ7Yb2hYRU7SsqEx/VpnrUQuM1DH3xxG81R6Ut+MoULwe?=
+ =?us-ascii?Q?wUR4ZYDzY/w1wxJ4xeXjBeK3sWtruuLP9Uq1XxU8X9VkfGxGGvGQqVVyrPg+?=
+ =?us-ascii?Q?n1Er3s9C1UWxC0D47ngKBI8g0/AA5xMTSvq85FlFka9DGwehVlJTGrVr1lQm?=
+ =?us-ascii?Q?mmVNJl1IKJEUHRvlrXoLkIKubj1GTMsf4DjSWAe5KO4ubKSHuLcS49cq4XoA?=
+ =?us-ascii?Q?BfoTkOmq5z8quLaE0+3cYkETo62iyn2sHoOw61JSS5PC49Rc917Ss8Q6Wm2g?=
+ =?us-ascii?Q?f+dLU04viPwiDZ70pBoMemfNzel+vHyTISeEII1Nx70m6vj85K7bqTU64VSl?=
+ =?us-ascii?Q?EwmHllgrXp3lhaBmlNADDW569AIiLkXoU89N9DbFXb0cetW6yG+QF1pVYfxQ?=
+ =?us-ascii?Q?8UIVE+EnvaWpAvuCo9G3gh2MXtQ1lU7mnZ+eKqfMnN7xSOMRthOLEIwvKUyX?=
+ =?us-ascii?Q?LzFlyV/DGsXIeaC39vkqFUFL3Cdp5SOStMVCn4N3e6WsqU6wUFWigT5i5je0?=
+ =?us-ascii?Q?nIE5CehqvIQSS2YsHRNvpwjX4/mYpWeEGK3mX5Ooz4FxhEDQUWzAwlp2d1i0?=
+ =?us-ascii?Q?qA4F5Hp7BBWVr5CuW10h6gqj5hNRrEU7GUpVpO2EWvrZ0/xqSF/fKmISfksP?=
+ =?us-ascii?Q?EvtgtVHwBsIXJmR2WkBRO/gVr0eWuAa1a2LUeAEktt7oR736xXNMoc0SLRa+?=
+ =?us-ascii?Q?CtzaUlxt4zIGXiOZl/nE6C131mOk85PkiTXrmr0kmnUYtwBX3KqpIOeaPFjX?=
+ =?us-ascii?Q?/xkh8uyIQmbZzGT0J7cNsgWL+Q0Q5AQZF2cz0qCKGtjbrVDyp9/AnIyDvxBG?=
+ =?us-ascii?Q?F8NTkreiUTm/w/4DDvu35/SaAQ8bOHuo/3AlU7j2Z6jha1qqK01v4vSREPL8?=
+ =?us-ascii?Q?2dVxvZbQacX3IFe666/SnRWQwHuzxrfUU2K76Mt5MCoPqj0vhcl0/klM1pmT?=
+ =?us-ascii?Q?qV9pKNJ2Zb5BP2kggckwg7adV0wtPQNI68StpL/FuAexSP+JEHgoREzbES+l?=
+ =?us-ascii?Q?u/AkxZN6DqsdxxJh8d5Sb/PVnlY1MPhDc2sJBbuLp2h1zHbYM7uZLaGttAVw?=
+ =?us-ascii?Q?A2EG2rOTbCbVqg5GJAYaimQJruFJirvnpTrP3e/n+qTGDL7ZMR1Wrcq/OfY5?=
+ =?us-ascii?Q?I3/U8ltq3MR/u+ycBbDV5ceGUzQpNF7miBcClSf/Ve8axgBT1Hlgj+pSpu8P?=
+ =?us-ascii?Q?1/vxKyjotg=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9cce3b50-466a-4b15-61ef-08da4336880b
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2022 18:51:11.7807 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Pc8xGKB7hg4ts5xVuL4ldewSiqBx2gJ6MpDru4RsnyNGymiAh2wtcSiLwmb32pHu
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3443
+Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ linux-kernel@vger.kernel.org, Christoph Hellwig <hch@infradead.org>,
+ iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,111 +152,55 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This patch series improves dmapool scalability by replacing linear scans
-with red-black trees.
+On Tue, May 31, 2022 at 07:07:32PM +0100, Robin Murphy wrote:
 
-History:
+> > And we expect the iommu driver to be unable to free page table levels
+> > that have IOVA boundaries in them?
+> 
+> I'm not entirely sure what you mean there, but in general an unmap request
+> is expected to match some previous map request 
 
-In 2018 this patch series made it through 4 versions.  v1 used red-black
-trees; v2 - v4 put the dma pool info directly into struct page and used
-virt_to_page() to get at it.  v4 made a brief appearance in linux-next,
-but it caused problems on non-x86 archs where virt_to_page() doesn't
-work with dma_alloc_coherent, so it was reverted.  I was too busy at the
-time to repost the red-black tree version, and I forgot about it until
-now.  This version is based on the red-black trees of v1, but addressing
-all the review comments I got at the time and with additional cleanup
-patches.
+atomic cmpxchg is OK for inserting new page table levels but it can't
+protect you against concurrent freeing of page table levels. So
+without locks it means that page tables can't usually be freed. Which
+seems to match what the Intel driver does - at least from a cursory
+look.
 
-Note that Keith Busch is also working on improving dmapool scalability,
-so for now I would recommend not merging my scalability patches until
-Keith's approach can be evaluated.  In the meantime, my patches can
-serve as a benchmark comparison.  I also have a number of cleanup
-patches in my series that could be useful on their own.
+This is one of the reasons the mm has the mmap/etc lock and spinlocks
+because we do expect page table levels to get wiped out when VMA's are
+zap'd - all the different locks provide the protection against page
+tables disappearing under from something manipulating them.
 
-References:
+Basically every "lockless" walk in (process) MM land is actually
+protected by some kind of lock that blocks zap_page_range() from
+removing the page table levels themselves.
 
-v1
-https://lore.kernel.org/linux-mm/73ec1f52-d758-05df-fb6a-41d269e910d0@cybernetics.com/
+> They might either unmap the entire region originally mapped, or just
+> the requested part, or might fail entirely (IIRC there was some
+> nasty code in VFIO for detecting a particular behaviour).
 
-v2
-https://lore.kernel.org/linux-mm/ec701153-fdc9-37f3-c267-f056159b4606@cybernetics.com/
+This is something I did differently in iommufd. It always generates
+unmaps that are strict supersets of the maps it issued. So it would be
+a kernel bug if the driver unmaps more or less than requested.
 
-v3
-https://lore.kernel.org/linux-mm/d48854ff-995d-228e-8356-54c141c32117@cybernetics.com/
+> Oh, I've spent the last couple of weeks hacking up horrible things
+> manipulating entries in init_mm, and never realised that that was actually
+> the special case. Oh well, live and learn.
 
-v4
-https://lore.kernel.org/linux-mm/88395080-efc1-4e7b-f813-bb90c86d0745@cybernetics.com/
+The init_mm is sort of different, it doesn't have zap in quite the
+same way, for example. I was talking about the typical process mm.
 
-problem caused by virt_to_page()
-https://lore.kernel.org/linux-kernel/20181206013054.GI6707@atomide.com/
+Anyhow, the right solution is to use RCU as I described before, Baolu
+do you want to try?
 
-Keith Busch's dmapool performance enhancements
-https://lore.kernel.org/linux-mm/20220428202714.17630-1-kbusch@kernel.org/
-
-Below is my original description of the motivation for these patches.
-
-drivers/scsi/mpt3sas is running into a scalability problem with the
-kernel's DMA pool implementation.  With a LSI/Broadcom SAS 9300-8i
-12Gb/s HBA and max_sgl_entries=256, during modprobe, mpt3sas does the
-equivalent of:
-
-chain_dma_pool = dma_pool_create(size = 128);
-for (i = 0; i < 373959; i++)
-    {
-    dma_addr[i] = dma_pool_alloc(chain_dma_pool);
-    }
-
-And at rmmod, system shutdown, or system reboot, mpt3sas does the
-equivalent of:
-
-for (i = 0; i < 373959; i++)
-    {
-    dma_pool_free(chain_dma_pool, dma_addr[i]);
-    }
-dma_pool_destroy(chain_dma_pool);
-
-With this usage, both dma_pool_alloc() and dma_pool_free() exhibit
-O(n^2) complexity, although dma_pool_free() is much worse due to
-implementation details.  On my system, the dma_pool_free() loop above
-takes about 9 seconds to run.  Note that the problem was even worse
-before commit 74522a92bbf0 ("scsi: mpt3sas: Optimize I/O memory
-consumption in driver."), where the dma_pool_free() loop could take ~30
-seconds.
-
-mpt3sas also has some other DMA pools, but chain_dma_pool is the only
-one with so many allocations:
-
-cat /sys/devices/pci0000:80/0000:80:07.0/0000:85:00.0/pools
-(manually cleaned up column alignment)
-poolinfo - 0.1
-reply_post_free_array pool  1      21     192     1
-reply_free pool             1      1      41728   1
-reply pool                  1      1      1335296 1
-sense pool                  1      1      970272  1
-chain pool                  373959 386048 128     12064
-reply_post_free pool        12     12     166528  12
-
-The patches in this series improve the scalability of the DMA pool
-implementation, which significantly reduces the running time of the
-DMA alloc/free loops.  With the patches applied, "modprobe mpt3sas",
-"rmmod mpt3sas", and system shutdown/reboot with mpt3sas loaded are
-significantly faster.  Here are some benchmarks (of DMA alloc/free
-only, not the entire modprobe/rmmod):
-
-dma_pool_create() + dma_pool_alloc() loop, size = 128, count = 373959
-  original:        350 ms ( 1x)
-  dmapool patches:  18 ms (19x)
-
-dma_pool_free() loop + dma_pool_destroy(), size = 128, count = 373959
-  original:        8901 ms (   1x)
-  dmapool patches:   19 ms ( 477x)
-
-
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
