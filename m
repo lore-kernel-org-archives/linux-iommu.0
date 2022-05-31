@@ -4,96 +4,80 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7D7E0C4332F
-	for <iommu@archiver.kernel.org>; Tue, 31 May 2022 11:52:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E3FF8C433F5
+	for <iommu@archiver.kernel.org>; Tue, 31 May 2022 12:16:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 1EE6141694;
-	Tue, 31 May 2022 11:52:22 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 93A3640348;
+	Tue, 31 May 2022 12:16:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WsAx9MpBwLyM; Tue, 31 May 2022 11:52:21 +0000 (UTC)
+	with ESMTP id tB0SIgBzZA-2; Tue, 31 May 2022 12:16:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 91C4C41610;
-	Tue, 31 May 2022 11:52:20 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 40840402A0;
+	Tue, 31 May 2022 12:16:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6B389C0032;
-	Tue, 31 May 2022 11:52:20 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CC826C002D
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 11:52:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 17F5AC0039;
+	Tue, 31 May 2022 12:16:02 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3FB20C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 12:16:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id BA9A54167F
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 11:52:19 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 2D4D7405F6
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 12:16:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dBW_x4366dCl for <iommu@lists.linux-foundation.org>;
- Tue, 31 May 2022 11:52:18 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com
- [IPv6:2a00:1450:4864:20::530])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 607EC41610
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 11:52:18 +0000 (UTC)
-Received: by mail-ed1-x530.google.com with SMTP id c2so7623869edf.5
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 04:52:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=message-id:date:mime-version:user-agent:subject:content-language:to
- :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=pgwp2VdYx+Vpnhun4TNi+eC2topHBL0Uwk1ptGJfZcE=;
- b=iS5jhowOcF/lfXAMYJ1n2lLpF7hUtwsQikH8pir763iCnTkaHoMbpuD2JWonqpofGu
- qjyArBVFBAgZQ9fQpr/S/sNnTQgp1XR5p/rqsj3MhdJ+R24/EaY9Jbv7/STxX0BhfOae
- vvpJfMMcFbUtqlhICqYrW8DyeWTZfTB31dRM0WNqVaDsLbFsSSYIr3kJMkl8EIu8eyG0
- IjQQuD7laFKec1PktUnxtrsiM3a+rYcN+wihWCwjJw7hyQww5pG4m0uXI4PcjIotDFcu
- f+NP9XC8R9LGUd3NPhygDtKFvwynWln1GjMt/3m1CHmsTLxPB1Nv/M1Gb8i3wsWht7ok
- zmHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:in-reply-to
- :content-transfer-encoding;
- bh=pgwp2VdYx+Vpnhun4TNi+eC2topHBL0Uwk1ptGJfZcE=;
- b=Dx98Zy4KGq8pRJd6KySj7wnXt6pr/ak7K6LthZ2fBvC9kLNYXzOnrpbauHkDkdmR0H
- h6ly60Vb18agLJ6UgLyk6H3eQ2MHLUWGo2+nlf7OQURW8V8yeOZEwHJm5LYh5jTEd4SS
- v1z3e5SrTcK9WrcdhRZN6mxP6MsCUJbIs1Z0G/6fVtqH6/cB4W6OBvLAEbw6CDhjgmA8
- ijhCpewCjOghyDYDFPog+A+X9JSwgq7N74k6gEJ5du1k39wrsnrMYmkfObQe+cjxpGqP
- 40V1IWb9KMNmh0n0/NZeD70tCuMD5IZFgXTPX2YBj51+fDAWIrO1kUexksKkDioY6jlb
- hLCg==
-X-Gm-Message-State: AOAM530Pd80s4/lDO1cmFC9aCyEvn9IvYAbaj2DBhB/pDZIClq19BUdv
- Jv4c8k1H0XY9rPCkm2uOC0RY1Q==
-X-Google-Smtp-Source: ABdhPJzLoz1xLJgBhIhIcXu/CVKt7lUZqurHOJkAtVo1mU8l+2AAQXVVLJ65/yyrjl+Cx6OqWRo0rg==
-X-Received: by 2002:aa7:c852:0:b0:42d:70d8:2864 with SMTP id
- g18-20020aa7c852000000b0042d70d82864mr19815609edt.379.1653997936660; 
- Tue, 31 May 2022 04:52:16 -0700 (PDT)
-Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch.
- [188.155.176.92]) by smtp.gmail.com with ESMTPSA id
- c13-20020a50d64d000000b0042617ba63cfsm8278497edj.89.2022.05.31.04.52.15
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 31 May 2022 04:52:16 -0700 (PDT)
-Message-ID: <15eef004-74c7-0eb5-3f87-86e164ef70ff@linaro.org>
-Date: Tue, 31 May 2022 13:52:14 +0200
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id a0zDbrzt6GSk for <iommu@lists.linux-foundation.org>;
+ Tue, 31 May 2022 12:15:59 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 8B42C40181
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 12:15:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1653999359; x=1685535359;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=hNAiQ7gwO4WzGADus3ttqXuH+fpzFCczEESmD6y6uic=;
+ b=ERV5t2msuyG6jDDmy1t0MkONKb2OiC96N3gZ3fGgK1MQVQhqT+oqvM4T
+ RNJhxcL6E5xmkkHwELDTa9+4xWe3zDb/06AxSDjb1WDON69DfUK1V5fQa
+ 7nRDyoq/SK1Ug8HN7szj+u2gl+hQq+AjikDaQELDSIxWzgbltr7bYuqE6
+ Q4+scTAT1cYAyKFnDILWTiR8+XrH8Mwj2UOO4MjOo9Gbix4tVo1eeb8fG
+ n03b/2iLQW3KuPAi6S98JPxt+SLx1VmYzSZ6G+pmphhEAZEzDxhxqX719
+ H4DL8jHELPepv8NQ6JBjZNDn4hmziC+gsF/VowD1dlX3shZB4zh/zMWgx g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="300584358"
+X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; d="scan'208";a="300584358"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 31 May 2022 05:15:59 -0700
+X-IronPort-AV: E=Sophos;i="5.91,265,1647327600"; d="scan'208";a="706548125"
+Received: from xingzhen-mobl.ccr.corp.intel.com (HELO [10.249.170.74])
+ ([10.249.170.74])
+ by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 31 May 2022 05:15:54 -0700
+Message-ID: <2532cb21-5fc9-57b9-82f6-69a7577ffe4a@linux.intel.com>
+Date: Tue, 31 May 2022 20:15:52 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH V3 5/8] dt-bindings: Add xen,grant-dma IOMMU description
- for xen-grant DMA ops
+Subject: Re: [PATCH RFC 09/19] iommu/amd: Access/Dirty bit support in IOPTEs
 Content-Language: en-US
-To: Oleksandr Tyshchenko <olekstysh@gmail.com>,
- xen-devel@lists.xenproject.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux-foundation.org
-References: <1653944417-17168-1-git-send-email-olekstysh@gmail.com>
- <1653944417-17168-6-git-send-email-olekstysh@gmail.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1653944417-17168-6-git-send-email-olekstysh@gmail.com>
-Cc: Juergen Gross <jgross@suse.com>,
- Stefano Stabellini <sstabellini@kernel.org>, Julien Grall <julien@xen.org>,
- Arnd Bergmann <arnd@arndb.de>, "Michael S. Tsirkin" <mst@redhat.com>,
- Christoph Hellwig <hch@infradead.org>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Will Deacon <will@kernel.org>
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Joao Martins <joao.m.martins@oracle.com>, iommu@lists.linux-foundation.org
+References: <20220428210933.3583-1-joao.m.martins@oracle.com>
+ <20220428210933.3583-10-joao.m.martins@oracle.com>
+ <efd6a8ac-413c-f39e-e566-bb317ed77ac4@amd.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <efd6a8ac-413c-f39e-e566-bb317ed77ac4@amd.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Kevin Tian <kevin.tian@intel.com>, Yishai Hadas <yishaih@nvidia.com>,
+ kvm@vger.kernel.org, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Cornelia Huck <cohuck@redhat.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,85 +90,27 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 30/05/2022 23:00, Oleksandr Tyshchenko wrote:
-> From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-
-Thank you for your patch. There is something to discuss/improve.
-
-> diff --git a/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml b/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
-> new file mode 100644
-> index 00000000..ab5765c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
-> @@ -0,0 +1,49 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only or BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iommu/xen,grant-dma.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Xen specific IOMMU for virtualized devices (e.g. virtio)
-> +
-> +maintainers:
-> +  - Stefano Stabellini <sstabellini@kernel.org>
-> +
-> +description:
-> +  The reference to Xen specific IOMMU node using "iommus" property indicates
-> +  that Xen grant mappings need to be enabled for the device, and it specifies
-> +  the ID of the domain where the corresponding backend resides.
-> +  The binding is required to restrict memory access using Xen grant mappings.
-> +
-> +properties:
-> +  compatible:
-> +    const: xen,grant-dma
-> +
-> +  '#iommu-cells':
-> +    const: 1
-> +    description:
-> +      Xen specific IOMMU is multiple-master IOMMU device.
-> +      The single cell describes the domid (domain ID) of the domain where
-> +      the backend is running.
-> +
-> +required:
-> +  - compatible
-> +  - "#iommu-cells"
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    xen_iommu {
-
-No underscores in node names, generic node names, so this looks like
-"iommu".
-
-> +        compatible = "xen,grant-dma";
-> +        #iommu-cells = <1>;
-> +    };
-> +
-> +    virtio@3000 {
-> +        compatible = "virtio,mmio";
-> +        reg = <0x3000 0x100>;
-> +        interrupts = <41>;
-> +
-> +        /* The backend is located in Xen domain with ID 1 */
-> +        iommus = <&xen_iommu 1>;
-
-There is no need usually to give consumer examples in provider binding.
-If there is nothing specific here (looks exactly like every IOMMU
-consumer in Linux kernel), drop the consumer.
-
-> +    };
-
-
-Best regards,
-Krzysztof
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgU3VyYXZlZSAsCgpPbiAyMDIyLzUvMzEgMTk6MzQsIFN1cmF2ZWUgU3V0aGlrdWxwYW5pdCB3
+cm90ZToKPiBPbiA0LzI5LzIyIDQ6MDkgQU0sIEpvYW8gTWFydGlucyB3cm90ZToKPj4gLi4uLi4K
+Pj4gK3N0YXRpYyBpbnQgYW1kX2lvbW11X3NldF9kaXJ0eV90cmFja2luZyhzdHJ1Y3QgaW9tbXVf
+ZG9tYWluICpkb21haW4sCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCBib29sIGVuYWJsZSkKPj4gK3sKPj4gK8KgwqDCoCBzdHJ1Y3QgcHJvdGVjdGlvbl9kb21haW4g
+KnBkb21haW4gPSB0b19wZG9tYWluKGRvbWFpbik7Cj4+ICvCoMKgwqAgc3RydWN0IGlvbW11X2Rl
+dl9kYXRhICpkZXZfZGF0YTsKPj4gK8KgwqDCoCBib29sIGRvbV9mbHVzaCA9IGZhbHNlOwo+PiAr
+Cj4+ICvCoMKgwqAgaWYgKCFhbWRfaW9tbXVfaGFkX3N1cHBvcnQpCj4+ICvCoMKgwqDCoMKgwqDC
+oCByZXR1cm4gLUVPUE5PVFNVUFA7Cj4+ICsKPj4gK8KgwqDCoCBsaXN0X2Zvcl9lYWNoX2VudHJ5
+KGRldl9kYXRhLCAmcGRvbWFpbi0+ZGV2X2xpc3QsIGxpc3QpIHsKPiAKPiBTaW5jZSB3ZSBpdGVy
+YXRlIHRocm91Z2ggZGV2aWNlIGxpc3QgZm9yIHRoZSBkb21haW4sIHdlIHdvdWxkIG5lZWQgdG8K
+PiBjYWxsIHNwaW5fbG9ja19pcnFzYXZlKCZwZG9tYWluLT5sb2NrLCBmbGFncykgaGVyZS4KCk5v
+dCByZWxhdGVkLCBqdXN0IG91dCBvZiBjdXJpb3NpdHkuIERvZXMgaXQgcmVhbGx5IG5lZWQgdG8g
+ZGlzYWJsZSB0aGUKaW50ZXJydXB0IHdoaWxlIGhvbGRpbmcgdGhpcyBsb2NrPyBBbnkgY2FzZSB0
+aGlzIGxpc3Qgd291bGQgYmUgdHJhdmVyc2VkCmluIGFueSBpbnRlcnJ1cHQgY29udGV4dD8gUGVy
+aGFwcyBJIG1pc3NlZCBhbnl0aGluZz8KCkJlc3QgcmVnYXJkcywKYmFvbHUKX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0Cmlv
+bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0
+aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
