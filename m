@@ -1,62 +1,79 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CE042C433EF
-	for <iommu@archiver.kernel.org>; Tue, 31 May 2022 18:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0AF14C433F5
+	for <iommu@archiver.kernel.org>; Tue, 31 May 2022 18:27:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 66A3D41C3C;
-	Tue, 31 May 2022 18:24:00 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id B63B484090;
+	Tue, 31 May 2022 18:27:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RKiuGTQlXJsf; Tue, 31 May 2022 18:23:59 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id YDqKA4rwDbGi; Tue, 31 May 2022 18:27:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id E70C641936;
-	Tue, 31 May 2022 18:23:58 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 9E68483F47;
+	Tue, 31 May 2022 18:27:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BA6C4C0039;
-	Tue, 31 May 2022 18:23:58 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F4180C002D
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 18:23:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6EFFDC0039;
+	Tue, 31 May 2022 18:27:01 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 339FEC0039
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 18:27:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D4A9061290
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 18:23:57 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 0CAEA60B8A
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 18:27:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=cybernetics.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id oE9NjsCvX11K for <iommu@lists.linux-foundation.org>;
- Tue, 31 May 2022 18:23:57 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id E861C6128D
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 18:23:56 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3012523A;
- Tue, 31 May 2022 11:23:56 -0700 (PDT)
-Received: from [10.57.81.38] (unknown [10.57.81.38])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3D3183F766;
- Tue, 31 May 2022 11:23:54 -0700 (PDT)
-Message-ID: <8a86ff8b-ea16-4004-82e4-d20e46501c75@arm.com>
-Date: Tue, 31 May 2022 19:23:49 +0100
+ with ESMTP id YD3dqwtsqzdU for <iommu@lists.linux-foundation.org>;
+ Tue, 31 May 2022 18:26:59 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 6727860B67
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 18:26:59 +0000 (UTC)
+X-ASG-Debug-ID: 1654020863-1cf43917f334b000001-DtgJuY
+Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with
+ ESMTP id oOy2yfF6AsqWuHgq; Tue, 31 May 2022 14:14:23 -0400 (EDT)
+X-Barracuda-Envelope-From: tonyb@cybernetics.com
+X-ASG-Whitelist: Client
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=cybernetics.com; s=mail; 
+ bh=RasPjcgW3MbjOYmk499B8lRQ6/y64Pgdc8ibAu0hQ94=;
+ h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:Cc:To:From:
+ Content-Language:Subject:MIME-Version:Date:Message-ID; b=Bt5vfluu/fRwhcrHUI+Q
+ RP31wdoXrw1Y6q/RDhu8jjMvd8Xv/prWojQ2sBb93UI9yWCDk8+z3hJRHrqRB9Kyl/P33NDljwTGT
+ 6LP6dpwARPHNZ8W9RmxQn7ynBzURXdzx83Lam9kFm87wr8w+LJVJi4f0pmJ+NCuSFMASSmTsmw=
+Received: from [10.157.2.224] (HELO [192.168.200.1])
+ by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
+ with ESMTPS id 11829197; Tue, 31 May 2022 14:14:23 -0400
+Message-ID: <f418f3c5-32b7-31c1-c91a-1bdb64b44db3@cybernetics.com>
+Date: Tue, 31 May 2022 14:14:23 -0400
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH 01/10] dmapool: remove checks for dev == NULL
-Content-Language: en-GB
-To: Tony Battersby <tonyb@cybernetics.com>, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org
+Subject: [PATCH 03/10] dmapool: fix boundary comparison
+Content-Language: en-US
+X-ASG-Orig-Subj: [PATCH 03/10] dmapool: fix boundary comparison
+From: Tony Battersby <tonyb@cybernetics.com>
+To: linux-mm@kvack.org, linux-kernel@vger.kernel.org
 References: <9b08ab7c-b80b-527d-9adf-7716b0868fbc@cybernetics.com>
- <7f6f9ff5-cdb9-e386-988d-fa013538dee7@cybernetics.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <7f6f9ff5-cdb9-e386-988d-fa013538dee7@cybernetics.com>
+In-Reply-To: <9b08ab7c-b80b-527d-9adf-7716b0868fbc@cybernetics.com>
+X-Barracuda-Connect: UNKNOWN[10.10.4.126]
+X-Barracuda-Start-Time: 1654020863
+X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
+X-Barracuda-BRTS-Status: 1
+X-Virus-Scanned: by bsmtpd at cybernetics.com
+X-Barracuda-Scan-Msg-Size: 1388
 Cc: Tony Lindgren <tony@atomide.com>,
  Andy Shevchenko <andy.shevchenko@gmail.com>,
  Matthew Wilcox <willy@infradead.org>, iommu@lists.linux-foundation.org,
- Keith Busch <kbusch@kernel.org>, kernel-team@fb.com
+ Keith Busch <kbusch@kernel.org>, kernel-team@fb.com,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -69,117 +86,58 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-05-31 19:12, Tony Battersby wrote:
-> dmapool originally tried to support pools without a device because
-> dma_alloc_coherent() supports allocations without a device.  But nobody
-> ended up using dma pools without a device, so the current checks in
-> dmapool.c for pool->dev == NULL are both insufficient and causing bloat.
-> Remove them.
+Fix the boundary comparison when constructing the list of free blocks
+for the case that 'size' is a power of two.  Since 'boundary' is also a
+power of two, that would make 'boundary' a multiple of 'size', in which
+case a single block would never cross the boundary.  This bug would
+cause some of the allocated memory to be wasted (but not leaked).
 
-Furthermore, dma_pool_create() already dereferences the dev argument 
-unconditionally, so there's no way we could possibly get as far as these 
-checks even if a caller did ever pass NULL.
+Example:
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+size       = 512
+boundary   = 2048
+allocation = 4096
 
-> Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
-> ---
->   mm/dmapool.c | 42 +++++++++++-------------------------------
->   1 file changed, 11 insertions(+), 31 deletions(-)
-> 
-> diff --git a/mm/dmapool.c b/mm/dmapool.c
-> index a7eb5d0eb2da..0f89de408cbe 100644
-> --- a/mm/dmapool.c
-> +++ b/mm/dmapool.c
-> @@ -275,7 +275,7 @@ void dma_pool_destroy(struct dma_pool *pool)
->   	mutex_lock(&pools_reg_lock);
->   	mutex_lock(&pools_lock);
->   	list_del(&pool->pools);
-> -	if (pool->dev && list_empty(&pool->dev->dma_pools))
-> +	if (list_empty(&pool->dev->dma_pools))
->   		empty = true;
->   	mutex_unlock(&pools_lock);
->   	if (empty)
-> @@ -284,12 +284,8 @@ void dma_pool_destroy(struct dma_pool *pool)
->   
->   	list_for_each_entry_safe(page, tmp, &pool->page_list, page_list) {
->   		if (is_page_busy(page)) {
-> -			if (pool->dev)
-> -				dev_err(pool->dev, "%s %s, %p busy\n", __func__,
-> -					pool->name, page->vaddr);
-> -			else
-> -				pr_err("%s %s, %p busy\n", __func__,
-> -				       pool->name, page->vaddr);
-> +			dev_err(pool->dev, "%s %s, %p busy\n", __func__,
-> +				pool->name, page->vaddr);
->   			/* leak the still-in-use consistent memory */
->   			list_del(&page->page_list);
->   			kfree(page);
-> @@ -351,12 +347,8 @@ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
->   		for (i = sizeof(page->offset); i < pool->size; i++) {
->   			if (data[i] == POOL_POISON_FREED)
->   				continue;
-> -			if (pool->dev)
-> -				dev_err(pool->dev, "%s %s, %p (corrupted)\n",
-> -					__func__, pool->name, retval);
-> -			else
-> -				pr_err("%s %s, %p (corrupted)\n",
-> -					__func__, pool->name, retval);
-> +			dev_err(pool->dev, "%s %s, %p (corrupted)\n",
-> +				__func__, pool->name, retval);
->   
->   			/*
->   			 * Dump the first 4 bytes even if they are not
-> @@ -411,12 +403,8 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
->   	page = pool_find_page(pool, dma);
->   	if (!page) {
->   		spin_unlock_irqrestore(&pool->lock, flags);
-> -		if (pool->dev)
-> -			dev_err(pool->dev, "%s %s, %p/%pad (bad dma)\n",
-> -				__func__, pool->name, vaddr, &dma);
-> -		else
-> -			pr_err("%s %s, %p/%pad (bad dma)\n",
-> -			       __func__, pool->name, vaddr, &dma);
-> +		dev_err(pool->dev, "%s %s, %p/%pad (bad dma)\n",
-> +			__func__, pool->name, vaddr, &dma);
->   		return;
->   	}
->   
-> @@ -426,12 +414,8 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
->   #ifdef	DMAPOOL_DEBUG
->   	if ((dma - page->dma) != offset) {
->   		spin_unlock_irqrestore(&pool->lock, flags);
-> -		if (pool->dev)
-> -			dev_err(pool->dev, "%s %s, %p (bad vaddr)/%pad\n",
-> -				__func__, pool->name, vaddr, &dma);
-> -		else
-> -			pr_err("%s %s, %p (bad vaddr)/%pad\n",
-> -			       __func__, pool->name, vaddr, &dma);
-> +		dev_err(pool->dev, "%s %s, %p (bad vaddr)/%pad\n",
-> +			__func__, pool->name, vaddr, &dma);
->   		return;
->   	}
->   	{
-> @@ -442,12 +426,8 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
->   				continue;
->   			}
->   			spin_unlock_irqrestore(&pool->lock, flags);
-> -			if (pool->dev)
-> -				dev_err(pool->dev, "%s %s, dma %pad already free\n",
-> -					__func__, pool->name, &dma);
-> -			else
-> -				pr_err("%s %s, dma %pad already free\n",
-> -				       __func__, pool->name, &dma);
-> +			dev_err(pool->dev, "%s %s, dma %pad already free\n",
-> +				__func__, pool->name, &dma);
->   			return;
->   		}
->   	}
+Address range
+   0 -  511
+ 512 - 1023
+1024 - 1535
+1536 - 2047 *
+2048 - 2559
+2560 - 3071
+3072 - 3583
+3584 - 4095 *
+
+Prior to this fix, the address ranges marked with "*" would not have
+been used even though they didn't cross the given boundary.
+
+Fixes: e34f44b3517f ("pool: Improve memory usage for devices which can't cross boundaries")
+Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
+---
+ mm/dmapool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mm/dmapool.c b/mm/dmapool.c
+index d7b372248111..782143144a32 100644
+--- a/mm/dmapool.c
++++ b/mm/dmapool.c
+@@ -210,7 +210,7 @@ static void pool_initialise_page(struct dma_pool *pool, struct dma_page *page)
+ 
+ 	do {
+ 		unsigned int next = offset + pool->size;
+-		if (unlikely((next + pool->size) >= next_boundary)) {
++		if (unlikely((next + pool->size) > next_boundary)) {
+ 			next = next_boundary;
+ 			next_boundary += pool->boundary;
+ 		}
+-- 
+2.25.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
