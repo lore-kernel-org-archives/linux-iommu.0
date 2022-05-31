@@ -1,147 +1,62 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A9779C433FE
-	for <iommu@archiver.kernel.org>; Tue, 31 May 2022 19:05:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EB32DC433F5
+	for <iommu@archiver.kernel.org>; Tue, 31 May 2022 19:33:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 42D876129D;
-	Tue, 31 May 2022 19:05:58 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 9AAD14191A;
+	Tue, 31 May 2022 19:33:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uNrXGlYzKFTr; Tue, 31 May 2022 19:05:57 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xVTPu_WWk4no; Tue, 31 May 2022 19:33:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 1DE5D60BB8;
-	Tue, 31 May 2022 19:05:57 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id D9D8041913;
+	Tue, 31 May 2022 19:33:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C36C1C0032;
-	Tue, 31 May 2022 19:05:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AEE7DC0032;
+	Tue, 31 May 2022 19:33:33 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E85A4C002D
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 19:05:54 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9516CC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 19:33:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id CC21261287
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 19:05:54 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 7D6FD612A2
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 19:33:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uW-o0Yqq8cHn for <iommu@lists.linux-foundation.org>;
- Tue, 31 May 2022 19:05:54 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam10on20610.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e89::610])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 24FE960BB8
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 19:05:53 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R5+lK8Iifkz7m/GnNlQ328SLhBon79k6iybGvMSFX6guK65PenhiGa4N/39V9nbn3UGCIcwCMrxaYoK4TiDsApRmtbLsHh4fEcgv5b+/m0unfHidTWKmiBho/23XtDV2zv4a0Q0JPOg/2h91NdI4SaoSIOzSQ14AXDy+Hny2J9cf8hYSatisDmIvpQVcPAktUx0Yjn1+d39tqVVQyRrNvUGO0HQKntSxz/TdRkRTTv0KtgxYEhOTLnKHTnJdFcp8h6rxfJfM1+cqMnI0XTApKdjaaiSON4UGZCv2HGKtwM1aZ4xWuK+w2vhFQuToTuQ4lwz1lyEKIBV5W086w6k8ww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Cgjj1+Psv56IlxBf1IX8HBDI7NnMz02Pb3TeAtoaFNw=;
- b=P0Ievcf7crlNeyfaqOMvWX8LqZ4WPZm+EFmcxj+5thP9rDg3T+ZM/tMBGZbCphZv4VLWx83BeVsohbBAxZtr8jep9Kegb+25BsFYUnlbrIXClxZKIegYQn0OUny45MqyoPI+wqCsMcyzoSJAHys0CZCodOvi958INUd2E6V9jyTk2GbyXJ4cmUaMRmdY+z9RYJB6tbi8Jmf7Vie0setLuno8Ty3RfkcKl0qqDSmTskEbmPG/4RU8kJIscfvbQTXhhBAlQgkmvyVwuvI6jVxI9T2DQSjVOH9UlPlHdUvHLHjZO0b3LRcHsqdsKT8QdgJItOd79BYEdmVOGOc91Ap2pA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Cgjj1+Psv56IlxBf1IX8HBDI7NnMz02Pb3TeAtoaFNw=;
- b=fB5LoMmVGDS3eHLHcMPZfRI02kcGHPPhumjEHMBVynT/hYdQWdqxael9oxWfs/Ghj0sASmlZHd8+u9ACtN1eDL6Q5RaeAuX7tAYYEg3PtuRD9PUr9XJQiianzW/T0pzpCNHnoiX/PkfQT01zXwqmQkH7DC6PKhOm5Sm014E5zO5/BCjYYAU6EAfQCBvGmcNC/DQ1GXZ3baxiWy+PHaYkjfNiASRNHPCmDIlCqmeWQWYBzzfWxYnAxVjRrJagrFekOhbpthQMF972Gk80GhHGxK0bBCjsHJWtP8pBjK2UL5iGzGQi4A4SIL7Hgth2nTRUb9Ky7OCwp6y9c/bSbUTISA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by MWHPR12MB1582.namprd12.prod.outlook.com (2603:10b6:301:10::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.15; Tue, 31 May
- 2022 19:05:51 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::2484:51da:d56f:f1a5]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::2484:51da:d56f:f1a5%9]) with mapi id 15.20.5314.012; Tue, 31 May 2022
- 19:05:51 +0000
-Date: Tue, 31 May 2022 16:05:50 -0300
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v4 1/6] iommu: Add a per domain PASID for DMA API
-Message-ID: <20220531190550.GK1343366@nvidia.com>
-References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
- <20220518182120.1136715-2-jacob.jun.pan@linux.intel.com>
- <20220524135034.GU1343366@nvidia.com>
- <20220524081727.19c2dd6d@jacob-builder>
- <20220530122247.GY1343366@nvidia.com>
- <BN9PR11MB52768105FC4FB959298F8A188CDC9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <628aa885-dd12-8bcd-bfc6-446345bf69ed@linux.intel.com>
- <20220531102955.6618b540@jacob-builder>
-Content-Disposition: inline
-In-Reply-To: <20220531102955.6618b540@jacob-builder>
-X-ClientProxiedBy: BL1PR13CA0419.namprd13.prod.outlook.com
- (2603:10b6:208:2c2::34) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+ with ESMTP id uoZP9aIkowbq for <iommu@lists.linux-foundation.org>;
+ Tue, 31 May 2022 19:33:30 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 67BF660B38
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 19:33:30 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 72B3723A;
+ Tue, 31 May 2022 12:33:29 -0700 (PDT)
+Received: from [10.57.81.38] (unknown [10.57.81.38])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EDC683F766;
+ Tue, 31 May 2022 12:33:27 -0700 (PDT)
+Message-ID: <e5a97b61-6401-8a00-1088-5465a493a556@arm.com>
+Date: Tue, 31 May 2022 20:33:23 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ef5d9e1d-19dc-42b1-ad9c-08da4338947f
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1582:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR12MB1582102352F9F069221B4D7AC2DC9@MWHPR12MB1582.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YMwSkXqHwcBWZhGwZDmXwQMhp98Hnw0XIAEJOxRdPaeI4SL5akq3xuhAMva/jKxG1gCZnOFx4I9Fs3fFTcfe1JuzSgzTi7dMuvY09Bmi27QlXrxN4A5i2Gb+iDZBdAjYIIkZBCsgAy1D96R/Rn5DZ8zQE+VDF1bPliI9a1gcpBJ+w8eCecuNBY/YW1pazJFx4LG6zR99+/gyjuBm3ZoVN/cYpH/niIf870+7jQZPj0KDcDddxq3lgHvhhFtymCER4twE2zKfWxxEv1QGCqoVdPv3IwqeIh4wN7eY/yREXOkZPWlRyd9UvTCEu/5TIehIYSOMtqBQZh714UaetCUgJxYcXhXZu0IcrDcdCkmK6dOZbV5B4oOar+5gRSozVWdpqs0PNNLFgW4LJge3r3q1yTuAwmuajd9ZstyOt2+tI37XDFgYzaS85MBTuowaCJ/4QFoADuF/zmGeP6naDB7TEL+YOADbpthx0L5PYXfniF6ddvi8rr+Z6/URtuJi33+5gy6z7RvGTpSzSsIQp+WUw2MmAuvx/3b5wec2FxqOVZNFbm40TtEQ/t12DCQBf+vCko4brrGY58Nip7iQZxfEoWd7bCEJzi65XKET0iTfwMegnWp2yD55YH7ybputlhgX6EWpPekdsHEgH/dGJX0H+w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(33656002)(316002)(7416002)(86362001)(6916009)(5660300002)(4744005)(2906002)(54906003)(4326008)(8676002)(66946007)(66556008)(66476007)(38100700002)(1076003)(2616005)(186003)(8936002)(508600001)(6486002)(36756003)(6506007)(6512007)(26005);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?d6LRLyGvc99mcOwnFvYbdvm2AiJCcvwIohk2pTz1QGO59jQMS+wLX4kYISQ+?=
- =?us-ascii?Q?CEByxZzqapyL4eiHlcdJ3Ew+enjhLJGx2p0ETUDDqUv1N7ZNft+LadWdNM2H?=
- =?us-ascii?Q?pez9HftvibFyH3/6hbXWSW9mTcCnINUia3CMNRlUmR3Kz9dQJ7JCv83NjFSL?=
- =?us-ascii?Q?H7B6fL/kKudKP2dzDRG6c4sEDEBVjPu+fhwcEe1PEEfHrwc3PrS/8ww8L+OQ?=
- =?us-ascii?Q?sgf5ocIEDx9v5Txy7DbPtjMHOZC2sIysTZDhDJA9COcQRWgNTkOqJw2PH0wZ?=
- =?us-ascii?Q?/a0m6OzN6DaDY8yXied7EnXElPEH3HK6t9f1ceJ0TeHA7ZdrS51sATF7uR6X?=
- =?us-ascii?Q?pyyStENFdFo7pyGZL2+cqZvnI2R5UgYliolOAd0rfCYOgK1iiTgW/08Xlr1I?=
- =?us-ascii?Q?45lg7kqI97e+iTd87lD2e5JZP1pkdDg1Xg71/RuHjbDvmf4L4QZyikUGBa6F?=
- =?us-ascii?Q?nGL4T2ku0QnVQao4wS29QGsm0iCvM50S1WJhu4w9Gbo04Y9JaTknQ94sURCQ?=
- =?us-ascii?Q?eUF1pxKTK6GISZ7is/aMfnJiNqI180EooCwZaAJFwVr68ENkCNav/blNc9a9?=
- =?us-ascii?Q?GbpwVTbOMmIqDMaTIu0o8wCAKEaOlkZsCf8Ot3NRxLyzOY4a5qh5Dh1MKzlw?=
- =?us-ascii?Q?GeNs3h4rt6ePDvfkDxGFY9YLn9FMHRr+aUnRE73zXnYwcRzt4CJKoF/AabFc?=
- =?us-ascii?Q?ghqaqAoG2CX3ECQgATQcXEFRy8ZhM93gLFZxWw0KzYtnPElkkKyZrZeLHPmV?=
- =?us-ascii?Q?+9iI0dergnsS2kgHsTyxUtui2xgZHmQpkT8J6p6gdVaZMqdo5gVnwSnaRmnl?=
- =?us-ascii?Q?V+Q9DLutb+u4O6hKC5TPhFO+iAVTHPm3HGFXDSfCVl0/ouA3SJz22ivgyChi?=
- =?us-ascii?Q?PHqiUE590dgbVGAMAtY9/75+NjDmxOSVwZkQpC256lfKfmBYTB0nPv0wfw7o?=
- =?us-ascii?Q?iUDlMWLZjRZz47rUC1TsfXheja5Ri7LwMoGs7zOeFanyNGGYRPs1b9LMkgut?=
- =?us-ascii?Q?QVulxHFC6ew9HMZg30SepTFpmQ43VS+V5bCwtTCaAcvuveaJB5XVYkn9jza6?=
- =?us-ascii?Q?7ucTtVpn8lAMBy9z1nSQUvR/zBe00CnSa8Sxw2/ePt7M0li0CBVpoXayYqgx?=
- =?us-ascii?Q?uQkHX/Ps36SaH4xlNdMfHnMd+g1oPgAgV3+gRVes4mcgJJLbZhvQnfBP11B5?=
- =?us-ascii?Q?kRp9TZB4bkXq2GXK8evuMEmit+hFW04qh3qH5GmNSFuYfwd37iEC6hXilaUZ?=
- =?us-ascii?Q?KbhrMDLNL29AJKwe0T3cBqqnEcaOxVtohFq/2nykz9jKk8BaB8yrTS6okumS?=
- =?us-ascii?Q?+mognbHS5yAAUntms8BIxbZoEnDYg9Ir1/ZIieLpabPTC1k6Y0G+2ETXShCG?=
- =?us-ascii?Q?q+Ia4rS60jByzvtSYp8So95c+6J0O6xOEz+4Igwg4/cMHSB7WnXBW7WZPPm9?=
- =?us-ascii?Q?sntRvWT0GsUrkZOoKkel8ZNBrgJztn6d84YdpWkFBrsSzIgh4MT1M5ArcWiN?=
- =?us-ascii?Q?9x6Ql1TXLV3AXxFf21FfXASDuWtc1+EsiGKGD8j4Y6b7PfDu9ThIwnmh3tjx?=
- =?us-ascii?Q?bSVyHhW4BqTqoIWyGoKL7OOjeee2NvsxkGxaxOkjK7vGmXO/QFoxKEiG0M4y?=
- =?us-ascii?Q?tyLIz8f9rnkbNuSFzxREBZhHcdnlodqCcoYqVLOfQZg4RhyUtCmztY8SsrUI?=
- =?us-ascii?Q?2K9eNLEpObK+k38czdIQGKNSM1Pnfrec10acEPRHZbY/svOEWhe01Yjq//5B?=
- =?us-ascii?Q?yW2e5zg4xg=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef5d9e1d-19dc-42b1-ad9c-08da4338947f
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2022 19:05:51.7154 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VbzWCmpUtq6fXTfZjL/NlCPnE2A+LUYdzJ4J9RmXBiLU1K2yKp6UU3VjwkZAm0qq
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1582
-Cc: "vkoul@kernel.org" <vkoul@kernel.org>, "Tian, Kevin" <kevin.tian@intel.com>,
- "Jiang, Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "will@kernel.org" <will@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- David Woodhouse <dwmw2@infradead.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 08/10] dmapool: cleanup dma_pool_destroy
+Content-Language: en-GB
+To: Tony Battersby <tonyb@cybernetics.com>, linux-mm@kvack.org,
+ linux-kernel@vger.kernel.org
+References: <9b08ab7c-b80b-527d-9adf-7716b0868fbc@cybernetics.com>
+ <30fd23ae-7035-5ce3-5643-89a5956f1e79@cybernetics.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <30fd23ae-7035-5ce3-5643-89a5956f1e79@cybernetics.com>
+Cc: Tony Lindgren <tony@atomide.com>,
+ Andy Shevchenko <andy.shevchenko@gmail.com>,
+ Matthew Wilcox <willy@infradead.org>, iommu@lists.linux-foundation.org,
+ Keith Busch <kbusch@kernel.org>, kernel-team@fb.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -154,28 +69,126 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, May 31, 2022 at 10:29:55AM -0700, Jacob Pan wrote:
+On 2022-05-31 19:22, Tony Battersby wrote:
+> Remove a small amount of code duplication between dma_pool_destroy() and
+> pool_free_page() in preparation for adding more code without having to
+> duplicate it.  No functional changes.
+> 
+> Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
+> ---
+>   mm/dmapool.c | 34 ++++++++++++++++++++--------------
+>   1 file changed, 20 insertions(+), 14 deletions(-)
+> 
+> diff --git a/mm/dmapool.c b/mm/dmapool.c
+> index 8749a9d7927e..58c11dcaa4e4 100644
+> --- a/mm/dmapool.c
+> +++ b/mm/dmapool.c
+> @@ -250,14 +250,25 @@ static inline bool is_page_busy(struct dma_page *page)
+>   	return page->in_use != 0;
+>   }
+>   
+> -static void pool_free_page(struct dma_pool *pool, struct dma_page *page)
+> +static void pool_free_page(struct dma_pool *pool,
+> +			   struct dma_page *page,
+> +			   bool destroying_pool)
+>   {
+> +	void *vaddr = page->vaddr;
+>   	dma_addr_t dma = page->dma;
+>   
+> +	if (destroying_pool && is_page_busy(page)) {
+> +		dev_err(pool->dev,
+> +			"dma_pool_destroy %s, %p busy\n",
+> +			pool->name, vaddr);
+> +		/* leak the still-in-use consistent memory */
+> +	} else {
+>   #ifdef	DMAPOOL_DEBUG
+> -	memset(page->vaddr, POOL_POISON_FREED, pool->allocation);
+> +		memset(vaddr, POOL_POISON_FREED, pool->allocation);
+>   #endif
+> -	dma_free_coherent(pool->dev, pool->allocation, page->vaddr, dma);
+> +		dma_free_coherent(pool->dev, pool->allocation, vaddr, dma);
+> +	}
+> +
+>   	list_del(&page->page_list);
 
-> The reason why I store PASID at IOMMU domain is for IOTLB flush within the
-> domain. Device driver is not aware of domain level IOTLB flush. We also
-> have iova_cookie for each domain which essentially is for RIDPASID.
+If we're tearing down the whole pool, surely we can skip this as well? 
+(Same for the second list in patch #9)
 
-You need to make the PASID stuff work generically.
+In fact I think it might make more sense to refactor in the opposite 
+direction and just streamline this directly into dma_pool_destroy(), 
+more like:
 
-The domain needs to hold a list of all the places it needs to flush
-and that list needs to be maintained during attach/detach.
+	list_for_each_entry_safe() {
+		if (is_page_busy()) {
+			dev_err();
+		} else {
+			dma_free_coherent();
+		}
+		kfree(page);
+	}
 
-A single PASID on the domain is obviously never going to work
-generically.
+>   	kfree(page);
+>   }
+> @@ -272,7 +283,7 @@ static void pool_free_page(struct dma_pool *pool, struct dma_page *page)
+>    */
+>   void dma_pool_destroy(struct dma_pool *pool)
+>   {
+> -	struct dma_page *page, *tmp;
+> +	struct dma_page *page;
 
-Jason
+Nit: you bring this back again in patch #10, so we may as well leave the 
+list_for_each_entry_safe() iterator in place until then as well, and 
+save a bit of churn in this patch.
+
+>   	bool empty = false;
+>   
+>   	if (unlikely(!pool))
+> @@ -288,15 +299,10 @@ void dma_pool_destroy(struct dma_pool *pool)
+>   		device_remove_file(pool->dev, &dev_attr_pools);
+>   	mutex_unlock(&pools_reg_lock);
+>   
+> -	list_for_each_entry_safe(page, tmp, &pool->page_list, page_list) {
+> -		if (is_page_busy(page)) {
+> -			dev_err(pool->dev, "%s %s, %p busy\n", __func__,
+> -				pool->name, page->vaddr);
+> -			/* leak the still-in-use consistent memory */
+> -			list_del(&page->page_list);
+> -			kfree(page);
+> -		} else
+> -			pool_free_page(pool, page);
+> +	while ((page = list_first_entry_or_null(&pool->page_list,
+> +						struct dma_page,
+> +						page_list))) {
+> +		pool_free_page(pool, page, true);
+>   	}
+>   
+>   	kfree(pool);
+> @@ -469,7 +475,7 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
+>   	page->offset = offset;
+>   	/*
+>   	 * Resist a temptation to do
+> -	 *    if (!is_page_busy(page)) pool_free_page(pool, page);
+> +	 *    if (!is_page_busy(page)) pool_free_page(pool, page, false);
+
+Further to the above, even if we did retain a separate function, if an 
+argument is hard-coded at the one single callsite, and the only 
+reference to passing any other value is in a comment effectively saying 
+"don't do this", do we really need to pretend it's an argument at all? ;)
+
+FWIW I'd just reword the comment in more general terms, e.g. "Resist the 
+temptation to free unused pages immediately..."
+
+Thanks,
+Robin.
+
+>   	 * Better have a few empty pages hang around.
+>   	 */
+>   	spin_unlock_irqrestore(&pool->lock, flags);
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
