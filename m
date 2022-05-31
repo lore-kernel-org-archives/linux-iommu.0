@@ -1,68 +1,77 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 35929C433EF
-	for <iommu@archiver.kernel.org>; Tue, 31 May 2022 16:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 18366C433F5
+	for <iommu@archiver.kernel.org>; Tue, 31 May 2022 17:05:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C30114058C;
-	Tue, 31 May 2022 16:42:48 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 92C0A40D81;
+	Tue, 31 May 2022 17:05:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HgGaMqp0GjtW; Tue, 31 May 2022 16:42:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 599B141599;
-	Tue, 31 May 2022 16:42:47 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Udobr-uSGWWZ; Tue, 31 May 2022 17:05:50 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 7861640D24;
+	Tue, 31 May 2022 17:05:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 132BDC0039;
-	Tue, 31 May 2022 16:42:47 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B98EEC002D
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 16:42:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 58607C0039;
+	Tue, 31 May 2022 17:05:50 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E04A1C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 17:05:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 9A3A341599
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 16:42:45 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id CB8BE40D7D
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 17:05:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FJbCAXGLKk37 for <iommu@lists.linux-foundation.org>;
- Tue, 31 May 2022 16:42:44 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id LMfbBEqqkNqe for <iommu@lists.linux-foundation.org>;
+ Tue, 31 May 2022 17:05:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id D38DD4058C
- for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 16:42:44 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4E38523A;
- Tue, 31 May 2022 09:42:44 -0700 (PDT)
-Received: from [10.57.81.38] (unknown [10.57.81.38])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5DE733F66F;
- Tue, 31 May 2022 09:42:42 -0700 (PDT)
-Message-ID: <80f362fd-8e69-1dcd-ba7a-abfc55894d61@arm.com>
-Date: Tue, 31 May 2022 17:42:36 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 01/12] iommu/vt-d: Use iommu_get_domain_for_dev() in
- debugfs
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20220527063019.3112905-1-baolu.lu@linux.intel.com>
- <20220527063019.3112905-2-baolu.lu@linux.intel.com>
- <20220527145910.GQ1343366@nvidia.com>
- <eda4d688-257b-d12a-56c0-0f9d3a10ef8c@linux.intel.com>
- <20220530121412.GX1343366@nvidia.com>
- <42623a73-c288-1c0d-7021-93caff4ffb6f@linux.intel.com>
- <0b7bd793-a3c7-e7e7-8ef0-214dd5b98f05@arm.com>
- <20220531155904.GA3726345@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220531155904.GA3726345@nvidia.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- linux-kernel@vger.kernel.org, Christoph Hellwig <hch@infradead.org>,
- iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
- Will Deacon <will@kernel.org>
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id E49DE40D24
+ for <iommu@lists.linux-foundation.org>; Tue, 31 May 2022 17:05:48 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by ams.source.kernel.org (Postfix) with ESMTPS id 2650BB810E8;
+ Tue, 31 May 2022 17:05:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D3B52C3411D;
+ Tue, 31 May 2022 17:05:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1654016742;
+ bh=geYWQQF2NYACb3iPTD3PzJTMEWfwSAAWrcsQxD9KdH8=;
+ h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+ b=lKLxP3glFKdN7vWQ1oIyIDYTTpcIGuVEe810ZWnLUq2GoSUbnqk/l718hHwyR7jZE
+ afCjjLhIgMg1Lvra+M34ogqzfoG8R0Rpn4cS5YNXMp7vS5wxa4KULsRDc8NJJpuMgi
+ kpEDw35QZm9Sz4w0RHNZIxfM0fGK1kma37cdaipAgkltYZIWdq2PnrUOyceEfHNKFK
+ zp72UWpmf1RnypyEe1StVfCyoozLdgcejgIrzufQiUOH2goUYQm/GXgptjYhVZX6c1
+ mFqvzREAgnLoC6RErwDSF2Szbca7ctNby1jUUCgushHxi9Qe183v5wow9cPVwgfdMK
+ On0DnF29OynhQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org
+ (localhost.localdomain [127.0.0.1])
+ by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id
+ C1C27F0383D; Tue, 31 May 2022 17:05:42 +0000 (UTC)
+Subject: Re: [git pull] IOMMU Updates for Linux v5.19
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <YpYMFlGhQQOt914S@8bytes.org>
+References: <YpYMFlGhQQOt914S@8bytes.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YpYMFlGhQQOt914S@8bytes.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+ tags/iommu-updates-v5.19
+X-PR-Tracked-Commit-Id: b0dacee202efbf1a5d9f5cdfd82049e8b5b085d2
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: e1cbc3b96a9974746b2a80c3a6c8a0f7eff7b1b5
+Message-Id: <165401674278.5782.17258985925276129478.pr-tracker-bot@kernel.org>
+Date: Tue, 31 May 2022 17:05:42 +0000
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>, iommu@lists.linux-foundation.org,
+ Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,28 +84,25 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMi0wNS0zMSAxNjo1OSwgSmFzb24gR3VudGhvcnBlIHdyb3RlOgo+IE9uIFR1ZSwgTWF5
-IDMxLCAyMDIyIGF0IDAyOjUyOjI4UE0gKzAxMDAsIFJvYmluIE11cnBoeSB3cm90ZToKPiAKPj4+
-ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgYnJlYWs7Cj4+PiArwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoCBwZ3RhYmxlX3dhbGtfbGV2ZWwobSwgcGh5c190b192aXJ0KHBoeXNfYWRkciks
-Cj4+Cj4+IEFsc28sIG9ibGlnYXRvcnkgcmVtaW5kZXIgdGhhdCBwZm5fdmFsaWQoKSBvbmx5IG1l
-YW5zIHRoYXQgcGZuX3RvX3BhZ2UoKQo+PiBnZXRzIHlvdSBhIHZhbGlkIHN0cnVjdCBwYWdlLiBX
-aGV0aGVyIHRoYXQgcGFnZSBpcyBkaXJlY3QtbWFwcGVkIGtlcm5lbAo+PiBtZW1vcnkgb3Igbm90
-IGlzIGEgZGlmZmVyZW50IG1hdHRlci4KPiAKPiBFdmVuIHRob3VnaCB0aGlzIGlzIGRlYnVnZnMs
-IGlmIHRoZSBvcGVyYXRpb24gaXMgc2tldGNoeSBsaWtlIHRoYXQgYW5kCj4gY2FuIHRoZW9ydGlj
-YWxseSBjcmFzaCB0aGUga2VybmVsIHRoZSBkcml2ZXIgc2hvdWxkIHRlc3QgY2FwYWJpbGl0aWVz
-LAo+IENBUF9TWVNfUkFXSU8gb3Igc29tZXRoaW5nIG1heSBiZSBhcHByb3ByaWF0ZS4gSSBkb24n
-dCB0aGluayB3ZSBoYXZlIGEKPiBiZXR0ZXIgY2FwIGZvciAndXNlcnNwYWNlIG1heSBjcmFzaCB0
-aGUga2VybmVsJwoKSXQgc2hvdWxkbid0IGJlIGluc3VybW91bnRhYmxlIHRvIG1ha2UgdGhpcyBz
-YWZlLCBpdCBqdXN0IG5lZWRzIGEgYml0IAptb3JlIHRoYW4gcGZuX3ZhbGlkKCksIHdoaWNoIGNh
-biBzdGlsbCByZXR1cm4gdHJ1ZSBvZmYgdGhlIGVuZHMgb2YgdGhlIAptZW1vcnkgbWFwIGlmIHRo
-ZXkncmUgbm90IHBlcmZlY3RseSBzZWN0aW9uLWFsaWduZWQsIGFuZCBmb3IgcmFuZG9tIApyZXNl
-cnZlZCBob2xlcyBpbiB0aGUgbWlkZGxlLgoKUm9iaW4uCl9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5s
-aW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFp
-bG1hbi9saXN0aW5mby9pb21tdQ==
+The pull request you sent on Tue, 31 May 2022 14:37:42 +0200:
+
+> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v5.19
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/e1cbc3b96a9974746b2a80c3a6c8a0f7eff7b1b5
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
