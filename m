@@ -1,78 +1,184 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B3E1EC433EF
-	for <iommu@archiver.kernel.org>; Wed,  1 Jun 2022 00:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4FDDEC433F5
+	for <iommu@archiver.kernel.org>; Wed,  1 Jun 2022 01:43:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 4DAF060B42;
-	Wed,  1 Jun 2022 00:35:04 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id E0E0683312;
+	Wed,  1 Jun 2022 01:43:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CQTzatbc0bk0; Wed,  1 Jun 2022 00:35:03 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id EA15260B4C;
-	Wed,  1 Jun 2022 00:35:02 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ef9hH1ZkeG62; Wed,  1 Jun 2022 01:43:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id A338383300;
+	Wed,  1 Jun 2022 01:43:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A401CC0039;
-	Wed,  1 Jun 2022 00:35:02 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7C3E6C002D
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 00:35:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 77CDFC0032;
+	Wed,  1 Jun 2022 01:43:36 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 79BDFC002D
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 01:43:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4BBF960B4C
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 00:35:01 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 66BC14056F
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 01:43:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vdz11ZYlVlvh for <iommu@lists.linux-foundation.org>;
- Wed,  1 Jun 2022 00:34:58 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id FC1nH0bNvJn1 for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Jun 2022 01:43:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from dfw.source.kernel.org (dfw.source.kernel.org
- [IPv6:2604:1380:4641:c500::1])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 78BF460B42
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 00:34:58 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id 3DF01614B3;
- Wed,  1 Jun 2022 00:34:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D44A2C385A9;
- Wed,  1 Jun 2022 00:34:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1654043696;
- bh=AGLxz/xreC1/Xeaa2Sjt8QqZXIylnuwZjPxvPygrygg=;
- h=Date:From:To:cc:Subject:In-Reply-To:References:From;
- b=DfuMHCjbgseVb9ElRvU6+fEgDpIv3ulhOxsoIPOQDdh5GUh8KjIJ28oGLRaKeGvWL
- 0OGOBkYVHKvSBhLuz9k1LfSVAr5J41JWFoFQ4TABVCeTglNoTjSMmz8FJQ49sdckLg
- qsGKa+Yr+MoyMmAdmNIWUZGeNcE1QpV9WDLAqZFgKgw12wg03tSKY2yAzfzVh+OlIr
- IhSeKnYLMf2s3ZC0XoXksZyr4Mb/ha+g8gPhA0eQAKOPF5QkoCt5VR2mG2iYj77PY2
- +OIvjXfirEI3JrU/2GAu0wBIXEs9XmzEmlNrwfNOn0Ao2FA84oEYKiBszft0wz/igv
- pc1IcOOf15l3Q==
-Date: Tue, 31 May 2022 17:34:54 -0700 (PDT)
-From: Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
-To: Oleksandr Tyshchenko <olekstysh@gmail.com>
-Subject: Re: [PATCH V3 5/8] dt-bindings: Add xen,grant-dma IOMMU description
- for xen-grant DMA ops
-In-Reply-To: <1653944417-17168-6-git-send-email-olekstysh@gmail.com>
-Message-ID: <alpine.DEB.2.22.394.2205311726000.1905099@ubuntu-linux-20-04-desktop>
-References: <1653944417-17168-1-git-send-email-olekstysh@gmail.com>
- <1653944417-17168-6-git-send-email-olekstysh@gmail.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 7B0344015F
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 01:43:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1654047811; x=1685583811;
+ h=from:to:cc:subject:date:message-id:references:
+ in-reply-to:content-transfer-encoding:mime-version;
+ bh=vCkVqGmETQwWDNuccHHRsLXCWmXPmFhZ7EUpSzzh9u4=;
+ b=idOFSkOOIWiCln6SWTUNi/BvscNnEs9Dhd5ycc+UHG2lTn/B4/JJGhOm
+ C5qs8J7aK2nCB6LjHR8bGDWneGUJ0zYsRn5IcBRsyUCht+RhQp3gBqQVg
+ paWnkmTNW/BMHThlYXOXTEGFH24LH6FV9M04aBiAzxgkZZCT9Ju/SG5DT
+ dQ004BXL6Zd1Aav2BAnUHi/MZrJz7Ou8rFGd9kCWOpnJ36khX/Y3H25Nz
+ D+zqC2rZ9pXtb1A1BAPkejmkiHXB5x+Sku5PcyBjNN77tWoUh9gelQsyT
+ mIprrpJ61BvwPZz9Atjr0LTl/YUGstElXfuJ6zYuZikImWOVi3XS9UNpx g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="275446479"
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; d="scan'208";a="275446479"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 31 May 2022 18:43:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; d="scan'208";a="823534260"
+Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
+ by fmsmga006.fm.intel.com with ESMTP; 31 May 2022 18:43:30 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 31 May 2022 18:43:29 -0700
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 31 May 2022 18:43:29 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Tue, 31 May 2022 18:43:29 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Tue, 31 May 2022 18:43:27 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gNVFs9QbVP26f4Q1pjn1W8w5MbUpnYnAk6ANg9KPjRdVpMmGmbJ9n+tzDyQiZ3LpIn7YxPa0N5bvmnfPN7jRUR06hzho0q672zrkxJmzVRUKVqlyoGoyiVj7T3C3bp9yWE780qbl8QO0sAa0p9BS1mH6h35/ZHbh/CbxnBMNl4LJP3YzdoyoF9yCFErzgMPgoIEeMdOTUI3hWIlZVovZjH0i5g8/0hcmVXLtfAMLeC53Iy7Sie+xwxfn0CXflnj6EhSjipqDSn8gA7eetfyyAZ0546ovpZ7NQjx5w0KWb/qpFnOGm9Nn2NwNgvxExcsuiWDTWnEYMIFMRUtwB64zYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vCkVqGmETQwWDNuccHHRsLXCWmXPmFhZ7EUpSzzh9u4=;
+ b=c1SVxRPRbb/abr2Qho7lpgnv6yxlB/osEeUAhOJc1P/c7bhYpf0F1YO0JzfVMN/F38D85gXvKnam0kUY2iy6lp1+5IguGtvZ7l3aW43n6fIrUnqw0A3Z5s8ZHtnOcZgzjzvw3sPEZ9/pVb4vHAit38cHgVwafPtSi407qBx43uz57VNTOyH8/C4eVwBpeNwSaaHPHjTzjoX2LFaI0CRQHQQlHae7V+7zAs+251v9vPlZjVwnd+1DZP1Nuw2PqnbuAd5fPoLTLam4ohaTdXTeHltEGoNRVWqowHW9pPR3ChAcEWqTf6x+8jMSAc9w8a70mvmIu+wSRKKLZbhXTt24UQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by CY5PR11MB6090.namprd11.prod.outlook.com (2603:10b6:930:2e::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12; Wed, 1 Jun
+ 2022 01:43:26 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::a1cb:c445:9900:65c8]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::a1cb:c445:9900:65c8%7]) with mapi id 15.20.5314.012; Wed, 1 Jun 2022
+ 01:43:26 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, Baolu Lu
+ <baolu.lu@linux.intel.com>
+Subject: RE: [PATCH v4 1/6] iommu: Add a per domain PASID for DMA API
+Thread-Topic: [PATCH v4 1/6] iommu: Add a per domain PASID for DMA API
+Thread-Index: AQHYauOU3vbab87feU2/ab0rn4lTF60uFLMAgAAYR4CACT0vgIABWQJggAA/qgCAAE95gIAAiHYg
+Date: Wed, 1 Jun 2022 01:43:25 +0000
+Message-ID: <BN9PR11MB5276A2B5E849C2153939934C8CDF9@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220518182120.1136715-1-jacob.jun.pan@linux.intel.com>
+ <20220518182120.1136715-2-jacob.jun.pan@linux.intel.com>
+ <20220524135034.GU1343366@nvidia.com>	<20220524081727.19c2dd6d@jacob-builder>
+ <20220530122247.GY1343366@nvidia.com>
+ <BN9PR11MB52768105FC4FB959298F8A188CDC9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <628aa885-dd12-8bcd-bfc6-446345bf69ed@linux.intel.com>
+ <20220531102955.6618b540@jacob-builder>
+In-Reply-To: <20220531102955.6618b540@jacob-builder>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 020ec7f0-f2a4-435f-fd7e-08da43701ee3
+x-ms-traffictypediagnostic: CY5PR11MB6090:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <CY5PR11MB6090E87B7AB052E315EE0AAE8CDF9@CY5PR11MB6090.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +oob4fPCKFl/AUqwyn7fCt/YBfA32phmpOgasPN6E9f4By1Y9jjH2yZgQ+kMFtjZOzKKwrSYyU7xYtkNzRZkcA10BVZiZDX4oX6yO5b3ba9hgmyTMhtpydCDdiIFq010jiICgqSR7vgQd/VtyhKouH0Mb5kwJWqlPDnbPURFw6A5+gvW6ZLb4y5cVpNqyH4aJlFAyqophscDnyqDMmiU17MXJwbM7bMeldjdUEo09AsEPmtxk0nItjCnI0DMrlmtZu1vCVUOdmomTkzPsSUcKv/129p5YWaz/YhUEbt2WM8GwRRMsdnvjxv2TX+Ea2Nu/eEO1w/ydQ0qXA4du5oe3cFhHr3gaOKLt08rQY1k98hhfA35Xvwr4hRafnt4uQvC448FiVppjDpAdd2RZnfLmyQaRXyUEDUqwcMiU5L3hJGgFkSCfYl0ZkpDb/Ra1t4eS5XaslG25DMA8n75wVdS8y/U/Z8xPdwM970HmemGXi9nf5hTnku6qRyQD3oeQQfApdm7PY2uBFcwlEkm8qPnA4P9MS6fJgSpaDaL0rumVrZKpFd6Rt4MyeYdtz4r1lYDuF5IlXr5lbKGRDBsmWrFacBd0Q653WFLpt3ygVG6yLUbKyJGKrihimrInqzFMpdMUkDxrT/4a4lKwbo+B5MX5N8B0DZSxlZFgmHEn8UHo+W6aSaxPVe0tJ6aiS4w59fIL1uFP6a9Pf/lGnTe+Q/4Ng==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(82960400001)(8936002)(54906003)(55016003)(7416002)(508600001)(122000001)(33656002)(52536014)(5660300002)(71200400001)(9686003)(186003)(38070700005)(2906002)(26005)(7696005)(86362001)(6506007)(4326008)(66476007)(8676002)(66556008)(66446008)(64756008)(66946007)(76116006)(38100700002)(110136005)(316002);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Wp7LRMqDEvlYMFMR/hnEPf2CzSanQuh1uDTRtnzI1wEx78aup1Pgi0LnMyEg?=
+ =?us-ascii?Q?mdUXnBjS9Ha65TTus2bxAjF5s5nI9xygL96lo4zzMEFKBT5o3ddu6mYbIeQm?=
+ =?us-ascii?Q?HTFVI/EOMliXb/BaY4Z1/KJ9WDohHHw40ctrvxXB/GXlgCPEhzf7ceRRHGA4?=
+ =?us-ascii?Q?HrCByKC9teERWtCd7j8DykbUfxm/1AQ+losVK33uMqLse+zxWlKmGJPK90zt?=
+ =?us-ascii?Q?LmW+l2M75+kbecYXtebeRDAXbeQLdZYdLB4takOlf+gJeLsqm/RrZ6sRRi72?=
+ =?us-ascii?Q?6z4AAHNL3ZbKEZiKBbP6ZXfB4dQgnpJ69n7+G47tdrDrqqPGbFa7qgsUoFLo?=
+ =?us-ascii?Q?oUUTncDKgOgUrSFfmjPEhdSkYdRIk5Fzl4TXDoZkoi2+Cobd/DucTyjI9C+E?=
+ =?us-ascii?Q?Mprh4knyLnxPFZywIvElLfAkRALyfVJD1Bce7Ukn4MoKpV4JM07OBtJCBZ8U?=
+ =?us-ascii?Q?b0r/gEzwSC6CbMuVU9mU5CFVLyUq1A4ML6aPwofsW9tQWJDujHn4hz3KPndb?=
+ =?us-ascii?Q?G1vu072DpZElsDsVcNWN+05bU5IdsexPk8dWq/rWHGIx0ZO97BOCDGpBSa9Z?=
+ =?us-ascii?Q?uVAtLHydZGgmB8AGPSeD6I8gZCWidZJqsWXVXkDjuLlTaMfKGpatp+NNuwof?=
+ =?us-ascii?Q?2hSnncMUaJfH1pzmz4TJAz0/h5uC1QrDmz2d9ZKPVqSoIBQPOWgbn/ZWxzwr?=
+ =?us-ascii?Q?b0R1SEXVK1DyFCzZNEPqUnpOeuZHFWDTuact3pEkTuvWnYKgI7PfbG/sFqNH?=
+ =?us-ascii?Q?Gjt+6Hr4K56/2EPe4LgBK2LEuhM0xdI38/zPjIEubADvF0CExM54Amr2e5rr?=
+ =?us-ascii?Q?g3d6+HO09ZTqDdDjDC6H70fR9LU6IlTdbKuv2Q8b6G6YfgBDQxkmq4/NBdGP?=
+ =?us-ascii?Q?ObcTSyJrpngAHtQFhAW3xy6lahf2lfTEe/GgXa/zt+L3xQA8YejH59iZPueY?=
+ =?us-ascii?Q?CmMV0VfWGJ3InyVubohpvo2mgju17qnZYmnAzm+WEu8dp8xBFRetovavvl8r?=
+ =?us-ascii?Q?Pwy8QuVLG1Pps2KZfmaGA19RgAVF38fE7bMll28um3esFkzokz0GlKZc3oXy?=
+ =?us-ascii?Q?XCF2o1vpi7k8NE+nPsJ3k4QWvQDDtbFTmAm6JM6G3hjGgDo2d1cu7/GaPBZf?=
+ =?us-ascii?Q?fLJbSOVA1+0LGLv97Qh+qi38855u4OvVhp2BPaPlWsihAQaOg+g0wvUzJc5I?=
+ =?us-ascii?Q?8mB3qkvognV7NWwvMyVRVPDVQqBFkvGLTzTNAKDMsO9ZCIEx3DhMwv6zXGGs?=
+ =?us-ascii?Q?+39HJi5O4b80vaNMngZV89jIDjbD62ljAJ5zK2jWzVGQ3GbANqvYhwyLkSq0?=
+ =?us-ascii?Q?y7ZNbh2XQhC7quqKJpZypeVdBx4Bk/+4DutZAJLObIRASFP27BsSCjk1nkuq?=
+ =?us-ascii?Q?HuPMBvAtfPfIdKqw1FwNjExd83kqRNXOPkp1915GAG+fgdZ3sK8xPDuxF+8/?=
+ =?us-ascii?Q?R0DatXGJFjoZSu37ottDB8+evCTGgvKsiUvtT+O5PrCib+PrYOwisEL/LOgI?=
+ =?us-ascii?Q?vt3/9a4oVU8VExkghBcQfdodjVIQGBbJBi1x8ttWED0O6DfmLDsJoLaCS0nF?=
+ =?us-ascii?Q?vV6rFSSC1phbPu28e/RgNJNKQzzS0nvisKCGjUGbe9r4JVfFpkyyvTuzKOYS?=
+ =?us-ascii?Q?9ALnuWFGia4ojoRauu5obTFiYOlDpOWToRfUyWwwBPXvrf5qzkcZY+wknwg3?=
+ =?us-ascii?Q?TD/4xcC0FPi3FVUfSLjGwKvH4V2V8PDE5BjiGCEL8ykgcLcjWF+SDgmbbzJv?=
+ =?us-ascii?Q?v9M195ewTw=3D=3D?=
 MIME-Version: 1.0
-Cc: Juergen Gross <jgross@suse.com>, devicetree@vger.kernel.org,
- Stefano Stabellini <sstabellini@kernel.org>, Julien Grall <julien@xen.org>,
- Arnd Bergmann <arnd@arndb.de>, "Michael S. Tsirkin" <mst@redhat.com>,
- linux-kernel@vger.kernel.org, Christoph Hellwig <hch@infradead.org>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- xen-devel@lists.xenproject.org, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 020ec7f0-f2a4-435f-fd7e-08da43701ee3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jun 2022 01:43:25.9690 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: BfpJcU5sjycTtdXBmgn2ky4C+Fkk5Xd2FSmC3Y427XnnwQMuJUM2YL2zYhjew0pZfMGaiRRQxqj5sZoFkOCdTA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR11MB6090
+X-OriginatorOrg: intel.com
+Cc: "vkoul@kernel.org" <vkoul@kernel.org>, "Jiang, Dave" <dave.jiang@intel.com>,
+ "Raj, Ashok" <ashok.raj@intel.com>, "will@kernel.org" <will@kernel.org>,
+ Jean-Philippe
+ Brucker <jean-philippe@linaro.com>, LKML <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Jason Gunthorpe <jgg@nvidia.com>,
+ "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,137 +196,40 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 31 May 2022, Oleksandr Tyshchenko wrote:
-> From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-> 
-> The main purpose of this binding is to communicate Xen specific
-> information using generic IOMMU device tree bindings (which is
-> a good fit here) rather than introducing a custom property.
-> 
-> Introduce Xen specific IOMMU for the virtualized device (e.g. virtio)
-> to be used by Xen grant DMA-mapping layer in the subsequent commit.
-> 
-> The reference to Xen specific IOMMU node using "iommus" property
-> indicates that Xen grant mappings need to be enabled for the device,
-> and it specifies the ID of the domain where the corresponding backend
-> resides. The domid (domain ID) is used as an argument to the Xen grant
-> mapping APIs.
-> 
-> This is needed for the option to restrict memory access using Xen grant
-> mappings to work which primary goal is to enable using virtio devices
-> in Xen guests.
-> 
-> Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-> ---
-> Changes RFC -> V1:
->    - update commit subject/description and text in description
->    - move to devicetree/bindings/arm/
-> 
-> Changes V1 -> V2:
->    - update text in description
->    - change the maintainer of the binding
->    - fix validation issue
->    - reference xen,dev-domid.yaml schema from virtio/mmio.yaml
-> 
-> Change V2 -> V3:
->    - Stefano already gave his Reviewed-by, I dropped it due to the changes (significant)
->    - use generic IOMMU device tree bindings instead of custom property
->      "xen,dev-domid"
->    - change commit subject and description, was
->      "dt-bindings: Add xen,dev-domid property description for xen-grant DMA ops"
-> ---
->  .../devicetree/bindings/iommu/xen,grant-dma.yaml   | 49 ++++++++++++++++++++++
->  1 file changed, 49 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml b/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
-> new file mode 100644
-> index 00000000..ab5765c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
-> @@ -0,0 +1,49 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only or BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iommu/xen,grant-dma.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Xen specific IOMMU for virtualized devices (e.g. virtio)
-> +
-> +maintainers:
-> +  - Stefano Stabellini <sstabellini@kernel.org>
-> +
-> +description:
-> +  The reference to Xen specific IOMMU node using "iommus" property indicates
-> +  that Xen grant mappings need to be enabled for the device, and it specifies
-> +  the ID of the domain where the corresponding backend resides.
-> +  The binding is required to restrict memory access using Xen grant mappings.
+> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Sent: Wednesday, June 1, 2022 1:30 AM
+> > >
+> > > In both cases the pasid is stored in the attach data instead of the
+> > > domain.
+> > >
+> So during IOTLB flush for the domain, do we loop through the attach data?
 
-I think this is OK and in line with the discussion we had on the list. I
-propose the following wording instead:
+Yes and it's required.
 
-"""
-The Xen IOMMU represents the Xen grant table interface. Grant mappings
-are to be used with devices connected to the Xen IOMMU using the
-"iommus" property, which also specifies the ID of the backend domain.
-The binding is required to restrict memory access using Xen grant
-mappings.
-"""
-
-
-> +properties:
-> +  compatible:
-> +    const: xen,grant-dma
-> +
-> +  '#iommu-cells':
-> +    const: 1
-> +    description:
-> +      Xen specific IOMMU is multiple-master IOMMU device.
-> +      The single cell describes the domid (domain ID) of the domain where
-> +      the backend is running.
-
-Here I would say:
-
-"""
-The single cell is the domid (domain ID) of the domain where the backend
-is running.
-"""
-
-With the two wording improvements:
-
-Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
-
-
-> +required:
-> +  - compatible
-> +  - "#iommu-cells"
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    xen_iommu {
-> +        compatible = "xen,grant-dma";
-> +        #iommu-cells = <1>;
-> +    };
-> +
-> +    virtio@3000 {
-> +        compatible = "virtio,mmio";
-> +        reg = <0x3000 0x100>;
-> +        interrupts = <41>;
-> +
-> +        /* The backend is located in Xen domain with ID 1 */
-> +        iommus = <&xen_iommu 1>;
-> +    };
-> -- 
-> 2.7.4
 > 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
+> > > DMA API pasid is no special from above except it needs to allow
+> > > one device attached to the same domain twice (one with RID
+> > > and the other with RID+PASID).
+> > >
+> > > for iommufd those operations are initiated by userspace via
+> > > iommufd uAPI.
+> >
+> > My understanding is that device driver owns its PASID policy. If ENQCMD
+> > is supported on the device, the PASIDs should be allocated through
+> > ioasid_alloc(). Otherwise, the whole PASID pool is managed by the device
+> > driver.
+> >
+> It seems the changes we want for this patchset are:
+> 1. move ioasid_alloc() from the core to device (allocation scope will be
+> based on whether ENQCMD is intended or not)
+
+yes, and the driver can specify whether the allocation is system-wide
+or per-device.
+
+> 2. store pasid in the attach data
+> 3. use the same iommufd api to attach/set pasid on its default domain
+
+s/iommufd/iommu/
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
