@@ -1,80 +1,80 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1871BC433F5
-	for <iommu@archiver.kernel.org>; Wed,  1 Jun 2022 07:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 69C2CC433F5
+	for <iommu@archiver.kernel.org>; Wed,  1 Jun 2022 07:07:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C02EE40127;
-	Wed,  1 Jun 2022 07:07:21 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 30D3040917;
+	Wed,  1 Jun 2022 07:07:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id A0e6etKnyp98; Wed,  1 Jun 2022 07:07:21 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id BD2B040470;
-	Wed,  1 Jun 2022 07:07:20 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 97120C0039;
-	Wed,  1 Jun 2022 07:07:20 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 95014C002D
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:19 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 7542D408DF
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:19 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=google.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QH7bDRo-r5Qb for <iommu@lists.linux-foundation.org>;
- Wed,  1 Jun 2022 07:07:18 +0000 (UTC)
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1P52lrPz8K7H; Wed,  1 Jun 2022 07:07:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id EC15A408DF;
+	Wed,  1 Jun 2022 07:07:22 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C8730C0039;
+	Wed,  1 Jun 2022 07:07:22 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E9667C002D
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:21 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id D799260E95
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:21 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=google.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id dcyNSPoujDxF for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Jun 2022 07:07:21 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com
- [IPv6:2607:f8b0:4864:20::b49])
- by smtp4.osuosl.org (Postfix) with ESMTPS id A1DCE408F8
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:18 +0000 (UTC)
-Received: by mail-yb1-xb49.google.com with SMTP id
- b6-20020a252e46000000b0065d5168f3f0so691132ybn.21
- for <iommu@lists.linux-foundation.org>; Wed, 01 Jun 2022 00:07:18 -0700 (PDT)
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com
+ [IPv6:2607:f8b0:4864:20::114a])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 3BC8960E92
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:21 +0000 (UTC)
+Received: by mail-yw1-x114a.google.com with SMTP id
+ 00721157ae682-30c87716af6so8101027b3.22
+ for <iommu@lists.linux-foundation.org>; Wed, 01 Jun 2022 00:07:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
  h=date:in-reply-to:message-id:mime-version:references:subject:from:to
- :cc; bh=s1gsps1j5Ayup9Swk+EXc2kGgnx5nhOnARnKuAKYXv0=;
- b=ch5YvNSZbFFvNIFbdMWgLJY52Qnpd1NtoLMcbn1rQ4YPVTxYHbxywFyCPzAP3/GdOE
- KdsrLMveolqX+jFl+h4mIER3kCKjzchkhaA5vc1KaGo6eRizAhbS9sDWsqPUMTwf+grp
- U7krsYB7Uq2sN+6D6tVvi/PXDklkCU0WIpKMDNVMY9ZLGTpoYdnVYedYDONJOBI2h8x4
- UIe8XKZmJKhAXeerPesRykxXMFw39fsB+kV+KjPQH/ddcGxWfonhfMLcu+h3NXhKRmfi
- /YqfTTroCVXlQaiebFvlX5bBi+H7w29MdlZQ5F7xCu5rWKB+fxWysM0OGOqJxtn145ed
- E/Mg==
+ :cc; bh=lAKGb0lSp1bNkiKuJEzypZJll/zlqvzNkWZhsUnzLII=;
+ b=MxzMPjivbh8UPmat16hBsiJmsp4xusaF/0CtHPB0ALBaGfGkOMgUpY8zIaxAPzAoDw
+ Zl6+3kczb7YbM1rSrTx4wP/yTeTri3Jfl5+p6nJV1gEDeVI6VWvU3mpHCdD2qdiHVpXm
+ wMjcXLMd29dryni46Yc0Gyx63Fpb+y0iXkhd060EohwmCgYoMEkLyxYIdeK67AN9X+XM
+ l+63h8QaBbKw5BUcgNeyC9N3gk29Mj7R7JjXJI524jDGJ0i4z+1XeFvkV9Hj2umfL3Hv
+ 1c4OYmI4f54F2pIxXJZY02Znx1CwOy45KNza117L8OwoHgiV4UhpRUJ5V4rcFsZP52cT
+ IB6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:date:in-reply-to:message-id:mime-version
  :references:subject:from:to:cc;
- bh=s1gsps1j5Ayup9Swk+EXc2kGgnx5nhOnARnKuAKYXv0=;
- b=2KmlF2X/F/5DMJRsLqlVihJ9lCZkGGTelxY5z2vc+VtNqxmR/yqHFER5O6xFUABt20
- Y7Zz0bXCNfd3Ap1ZBmAkkxaaLZ0pY5yYlgjuHP9zH5PXaKwkKktwb55UnlSMJAsN9i0n
- 9ZqPvps4740OFLTUOAUzteZ+b/0MQq/Vfwt95DINTaX945CWqFHtNJHFvcTereO4dydS
- 7Qnni+cfrrmTpxQCTpfUSih6yRKz1jdW1elVqBlP2hKRHk7sFQiAtq0VaROip8BR8Pxi
- cSGfkPuT1OyE4qdua/NPFl8qOHAIXz9bOen8cleqe8MZ4RcaFmwivJLzSTqxi3bOTft1
- fdNg==
-X-Gm-Message-State: AOAM530QyrP2Jew/Mt9g+yMGC9YMG+9VsrOjxDLOJ5213zaBVIZyqwPr
- eV6BaX3pd2KoPnayQxCKHkk0HUslwNjEPHY=
-X-Google-Smtp-Source: ABdhPJzzpyv5qo/qKlMQeYH+3Z6qXGo9Ac2yEg0ZjA7JAUgPsaNr7W/YlAhXWO4zqrhgdu1gO/8toNkzEz6BwXE=
+ bh=lAKGb0lSp1bNkiKuJEzypZJll/zlqvzNkWZhsUnzLII=;
+ b=5Txg7uSIi1hXZjwCev5QrvZly/ctYDHbvAl6ehza0E9MZJdXBVTJz/3IPTKZcPqiE9
+ S96FgKComf1zl6/XXT6nVeGNQji8UUn4+bHQW7wZTsunZFmglVvIYJJNPJkINFP0Lnnu
+ n5NEMh1orstVAcDV3iqxw4F2i4vwLjtq4WYq6LUoEyg1Sd3xS6iuwojInq7LMsONNqoj
+ hNI/jdss75hRTUyaTeZd3IvzW1XPg4AkIc4mL5pGwMdg9q+uEaKhMxQsS0UzzAtfWgf9
+ EoCG/nj9jpd9JZ6K5Pjm1aOSdeglLuZXyPtPJOavM4VtmXNwu2zpD0kX/KzIdx5NjyIr
+ rfig==
+X-Gm-Message-State: AOAM531Ox0HOCIKo/g2QeaEZqP2HXpeO5CP9DjuDgIWWNfmeMey6oK6F
+ qh/IcY/5ze5eQTg/YpHBYIUCi4F6swsBjlQ=
+X-Google-Smtp-Source: ABdhPJw2d0Ydq+M1EKFVKl90vlnxKPzzmDAPtejNfxeIXjemJ3M++mFT/aYs9/m2glcq1N1UFunbFqMpHF9mXvo=
 X-Received: from saravanak.san.corp.google.com
  ([2620:15c:2d:3:f3aa:cafe:c20a:e136])
- (user=saravanak job=sendgmr) by 2002:a05:6902:2ce:b0:64b:9bbd:34fa with SMTP
- id w14-20020a05690202ce00b0064b9bbd34famr60927760ybh.440.1654067237399; Wed,
- 01 Jun 2022 00:07:17 -0700 (PDT)
-Date: Wed,  1 Jun 2022 00:06:58 -0700
+ (user=saravanak job=sendgmr) by 2002:a0d:d416:0:b0:30c:15f1:64d6 with SMTP id
+ w22-20020a0dd416000000b0030c15f164d6mr23080655ywd.394.1654067240020; Wed, 01
+ Jun 2022 00:07:20 -0700 (PDT)
+Date: Wed,  1 Jun 2022 00:06:59 -0700
 In-Reply-To: <20220601070707.3946847-1-saravanak@google.com>
-Message-Id: <20220601070707.3946847-3-saravanak@google.com>
+Message-Id: <20220601070707.3946847-4-saravanak@google.com>
 Mime-Version: 1.0
 References: <20220601070707.3946847-1-saravanak@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 2/9] pinctrl: devicetree: Delete usage of
+Subject: [PATCH v2 3/9] net: mdio: Delete usage of
  driver_deferred_probe_check_state()
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  "Rafael J. Wysocki" <rafael@kernel.org>, 
@@ -111,31 +111,33 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Now that fw_devlink=on by default and fw_devlink supports
-"pinctrl-[0-8]" property, the execution will never get to the point
-where driver_deferred_probe_check_state() is called before the supplier
-has probed successfully or before deferred probe timeout has expired.
+Now that fw_devlink=on by default and fw_devlink supports interrupt
+properties, the execution will never get to the point where
+driver_deferred_probe_check_state() is called before the supplier has
+probed successfully or before deferred probe timeout has expired.
 
 So, delete the call and replace it with -ENODEV.
 
 Signed-off-by: Saravana Kannan <saravanak@google.com>
 ---
- drivers/pinctrl/devicetree.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/mdio/fwnode_mdio.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/pinctrl/devicetree.c b/drivers/pinctrl/devicetree.c
-index 3fb238714718..ef898ee8ca6b 100644
---- a/drivers/pinctrl/devicetree.c
-+++ b/drivers/pinctrl/devicetree.c
-@@ -129,7 +129,7 @@ static int dt_to_map_one_config(struct pinctrl *p,
- 		np_pctldev = of_get_next_parent(np_pctldev);
- 		if (!np_pctldev || of_node_is_root(np_pctldev)) {
- 			of_node_put(np_pctldev);
--			ret = driver_deferred_probe_check_state(p->dev);
-+			ret = -ENODEV;
- 			/* keep deferring if modules are enabled */
- 			if (IS_ENABLED(CONFIG_MODULES) && !allow_default && ret < 0)
- 				ret = -EPROBE_DEFER;
+diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
+index 1c1584fca632..3e79c2c51929 100644
+--- a/drivers/net/mdio/fwnode_mdio.c
++++ b/drivers/net/mdio/fwnode_mdio.c
+@@ -47,9 +47,7 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
+ 	 * just fall back to poll mode
+ 	 */
+ 	if (rc == -EPROBE_DEFER)
+-		rc = driver_deferred_probe_check_state(&phy->mdio.dev);
+-	if (rc == -EPROBE_DEFER)
+-		return rc;
++		rc = -ENODEV;
+ 
+ 	if (rc > 0) {
+ 		phy->irq = rc;
 -- 
 2.36.1.255.ge46751e96f-goog
 
