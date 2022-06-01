@@ -1,78 +1,179 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A737AC4332F
-	for <iommu@archiver.kernel.org>; Wed,  1 Jun 2022 08:38:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 72396C433F5
+	for <iommu@archiver.kernel.org>; Wed,  1 Jun 2022 08:53:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3E1F94052E;
-	Wed,  1 Jun 2022 08:38:43 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 192B482B2F;
+	Wed,  1 Jun 2022 08:53:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BKVmC--MXtua; Wed,  1 Jun 2022 08:38:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id ED004400DB;
-	Wed,  1 Jun 2022 08:38:41 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bbvHsQ7Gtf4H; Wed,  1 Jun 2022 08:53:24 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id EFB86826D5;
+	Wed,  1 Jun 2022 08:53:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B5E48C0032;
-	Wed,  1 Jun 2022 08:38:41 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0EA02C002D
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 08:38:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CBC56C0032;
+	Wed,  1 Jun 2022 08:53:23 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 52D79C002D
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 08:53:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id E745B408CA
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 08:38:40 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 410CC826D5
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 08:53:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=suse.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RWPe_Py9v9Ac for <iommu@lists.linux-foundation.org>;
- Wed,  1 Jun 2022 08:38:40 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id qPppRDeZtaON for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Jun 2022 08:53:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 04EE9408C8
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 08:38:39 +0000 (UTC)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
- (No client certificate requested)
- by smtp-out1.suse.de (Postfix) with ESMTPS id 59E0A21999;
- Wed,  1 Jun 2022 08:38:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
- t=1654072717; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
- mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=CjnjTUOt6Fu0aO1yNBhxHsZXxRqsep1ZqcFMKllrABY=;
- b=srDillpiMXFP0Ubv2nkG2vV4/2IZftPEVjdCTGkfCmpOxVRPvjYxj6+h90VmhOShs6/zhM
- dDljdZqggDTb+9C5tUFBKCsY0/CoplvHsSpxi7VEe0mwKORr6G9jsLD6O/0+7pfbS+aHA+
- q6IXBcgvBpw7ZLimnhYasXici3m41LA=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
- (No client certificate requested)
- by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 290801330F;
- Wed,  1 Jun 2022 08:38:37 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
- by imap2.suse-dmz.suse.de with ESMTPSA id R053CI0ll2L+VgAAMHmgww
- (envelope-from <jgross@suse.com>); Wed, 01 Jun 2022 08:38:37 +0000
-Message-ID: <4ca4a04b-7064-3643-479a-ea31e584426d@suse.com>
-Date: Wed, 1 Jun 2022 10:38:36 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 0716582512
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 08:53:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1654073599; x=1685609599;
+ h=from:to:cc:subject:date:message-id:references:
+ in-reply-to:content-transfer-encoding:mime-version;
+ bh=LKvBeJ2aflJAlCYYauhBwmhY0lYB7EyVZ/ol+ZWZ8QQ=;
+ b=VEhuf9erhRFS+IB0HFgYGhyUwLs4P4iJLxdutRJkwTAvrFWEnLLtEUlu
+ tH703wDGlY0MZxH7/mmHHPI4XLy8InVSFHUpuapU6Ss6+pBPNQ7WB+2/2
+ 3ypZhDURXg0dDWqHu0xDCn19WfxKO8cnAHXokL0UJpl2Ct+zITFQa7U8P
+ I3UgaaV1VEXN2rpCehXEi1jP5cU1kBIi+zqiccBOLsBljn2naCUHfQDEz
+ Dyp3pG6w1OiwvJbEU74lrLHTvXhapoC58WcLbzf/QbndlUwknPwNGa4Db
+ Ewz3i8B4ra3FU4BHeYXMZ/n5O3c/VB9cKTNwK5QRQFsJwuWpUM7vaeYrC w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="263158920"
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; d="scan'208";a="263158920"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 01 Jun 2022 01:53:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; d="scan'208";a="612235280"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+ by orsmga001.jf.intel.com with ESMTP; 01 Jun 2022 01:53:17 -0700
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 1 Jun 2022 01:53:17 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Wed, 1 Jun 2022 01:53:17 -0700
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.42) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Wed, 1 Jun 2022 01:53:16 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=T4v4rbK60J/qdPlPeMLtXnUw1Dx4CmxxnKgCYN/4MZiRrO41dIzZlFqJQq++OVOnaj6o7JN0uXE9SuQ0fJPO4ew1vpAg09tDiUWt3Rv+KVge31qg+S5CHTFTs7KMN56oQSR261Da08GOaO2uwO+uiczvEo1L+kezAFmIvXHAMryPuqJN9xlSBrFk88BPx3jeDCQlHQ94SP4HGdd4ZplHw03XWaMcFMtLFw/N1056nKBfEN63xBbN2C1DQcW1HjMhcO0ZUAOrINY0utpwRUZzN32P3PkC4f7c6XlP+NNwq+WkMP+0wwoFrxX0Ww9AzBLfHyPKT3MXRdtD7BBli2Lezg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=a2CzD+i8zxqTDqrboHLGlwMfA4JLIFskJqZCHVramxo=;
+ b=T9lpA4gedgO05donq1Nxgf7smddy8a76zrlFJKPSI6PnV1p8alf4fMrWQsj76MHLYLXbVXOf7w5FkW0YZQAlMqXH9lGKoKJuvHlIAD/geFb+T5B3oBcU35MdTKO65i5J09Ys9Pw/XQQhqcJz3+ZgdkPCQ5rw00fPFN0JuVQjnB2+AAY7edrvi9fjXeZgN8eWWSzCzMXAhGDGGZo+LHR3tTgTU+2Wb5rVjBvVaaTg23ESDCBPef1A/J19T8RoY49/IvOQ82zipQhw53URnFRV/KxtJvTemVk8sBnSkaxG+dVT6975WSW/TdKOM+gvU7Ij4unLkVWMGvQZ+0wUy9cpCA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by MWHPR1101MB2368.namprd11.prod.outlook.com (2603:10b6:300:7a::7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Wed, 1 Jun
+ 2022 08:53:14 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::a1cb:c445:9900:65c8]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::a1cb:c445:9900:65c8%7]) with mapi id 15.20.5314.012; Wed, 1 Jun 2022
+ 08:53:14 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
+ "Martins, Joao" <joao.m.martins@oracle.com>
+Subject: RE: [PATCH 01/12] iommu/vt-d: Use iommu_get_domain_for_dev() in
+ debugfs
+Thread-Topic: [PATCH 01/12] iommu/vt-d: Use iommu_get_domain_for_dev() in
+ debugfs
+Thread-Index: AQHYcZPDpuO7U1UHvkyjRowkLEJ3VK0y0XwAgAKBYgCAAgeFAIAA+BQAgACqFgCAABDjAIAAC6eAgAACQACAAAN8AIAADXoAgAAFnQCAAB2GAIAADDEAgAAqSwCAAB41gIAAoRYA
+Date: Wed, 1 Jun 2022 08:53:14 +0000
+Message-ID: <BN9PR11MB5276CCB7D5158C028AD40FF88CDF9@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220531131052.GD1343366@nvidia.com>
+ <60318d83-e22f-f922-436f-6c31bce24d59@linux.intel.com>
+ <20220531145301.GE1343366@nvidia.com>
+ <a7d6d830-cb06-e0d7-0688-028f9af900e5@arm.com>
+ <20220531151332.GF1343366@nvidia.com>
+ <b66a2e3b-9adc-5150-fe00-d68b141b1c28@arm.com>
+ <20220531162152.GH1343366@nvidia.com>
+ <10f16c13-c50d-892c-a20d-979b2135c953@arm.com>
+ <20220531185110.GJ1343366@nvidia.com>
+ <56bbbad7-bcba-a440-692b-64e50b4eddf8@arm.com>
+ <20220531231039.GO1343366@nvidia.com>
+In-Reply-To: <20220531231039.GO1343366@nvidia.com>
+Accept-Language: en-US
 Content-Language: en-US
-To: Lukas Bulwahn <lukas.bulwahn@gmail.com>, Christoph Hellwig <hch@lst.de>,
- iommu@lists.linux-foundation.org
-References: <20220601075613.28245-1-lukas.bulwahn@gmail.com>
-Subject: Re: [PATCH] MAINTAINERS: refurbish SWIOTLB SUBSYSTEM sections after
- refactoring
-In-Reply-To: <20220601075613.28245-1-lukas.bulwahn@gmail.com>
-Cc: Stefano Stabellini <sstabellini@kernel.org>,
- kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2b9e6fc8-4dfc-4902-0272-08da43ac29eb
+x-ms-traffictypediagnostic: MWHPR1101MB2368:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <MWHPR1101MB2368173C36145FF9F2232F468CDF9@MWHPR1101MB2368.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: bB9PC2on31ZXNH8JTS+GLnSdmzdy7AxT/zS68X01qO96C/4v63gGsRC/+fMQWSPre+6sLmZTPpFzIxPybshkt/XaamzlIJsXtL52lhlQneBDx8R6raQl0T6JWDEzOAk/zCAkDYqvkM0NzE/lxjMUbE1btdPW+4tB8aBcKwVAy27jZwVYt8b2+hKqolPTEoPKuAJrH9fajGsayTDoTNTA1hp294HA8nK3VJLUGRpQkQMIZUwLGhpookzl7dyRz1XvGkoDNRGgNMYLv1tEVQUdG6EPKYUyaXaTL5/oHFBRqTbHQe5BIHKEFiatX3hN24Z1dkl8FpmWOay5yR0W/aBWDXJdTAk+TFD5CsAhmTEZswUE2M9XD1+BWzZ8x2za/jf/IRBRoFkCrd10QbGaP1i6qk4C8r1RVAwX9Eb/AEEsokn/i1E4Rs+47620JMvA5OHAVjXBe7AxiyvD5nyp6xW+0f2TNdvlIWlAloizkyq8/6VA6N6JbCoMfjm5PzEsZlFO32NiKF2wnZaV7q0ojpukICjn2iC12FpqUg1jtVo7qSlzVdILqQiy7WAvfhtKFqilb24siltEcBmR87IFxulnOjhsFpLr99ChiTilqSR3nb2edaevfrbPm4zhOVOsDFeSOMapfdLR8lXWmgBMNxDY5XqGOw3VbnKJKPbIgS4xrlJXJFWAXQcMeAceletEdoS72CIPKYR05o31d46F/+ED+Q==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(86362001)(5660300002)(66476007)(8676002)(66446008)(66556008)(76116006)(64756008)(38100700002)(8936002)(4326008)(52536014)(66946007)(186003)(508600001)(71200400001)(33656002)(7696005)(26005)(9686003)(110136005)(54906003)(6506007)(316002)(2906002)(82960400001)(83380400001)(55016003)(122000001)(38070700005);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?L+I/nJtI59JMrNY0FwqnVnhBsvhppeedAvxi7CemtNtAz0yVn0hj/kooxlXX?=
+ =?us-ascii?Q?pIVOtLTX6ltFJPlrzf8wKIOlonG2Fei1g0DNCRGlV9DmqduyoHOvNGFqLkvf?=
+ =?us-ascii?Q?qkmoXr2O8y8x7r5ovVRC6uDD7K/Y9x0rxScXZBwz7kTw2fiui+/Ou/Og4T03?=
+ =?us-ascii?Q?YIwu6Y0jOQfuWYjgxjs7KY4bLIm5LmAZUc9GG3GyBOgwQrlAz1uvH3V77T2w?=
+ =?us-ascii?Q?5fFRtb7IJNOSicAJpetGQNIXs91e7kZvwWOGHikJtg5L3waY2JdaYdb+Pd3h?=
+ =?us-ascii?Q?pORt6P7PG7ApCJZm3oHCo1fYAsJNOAILisvTm5GI/8XI/rHLUq7JGjEv7dR8?=
+ =?us-ascii?Q?ZBMbLFFjW1s3IbX7xBpSJmJ0W9VIi7JQg4GRPxoB8AyHB3HmR/bY1mhKD9x+?=
+ =?us-ascii?Q?bbOZnP6XiTSiu+mkVAMaVhBMIXtwbhDmd331nyuVjWSgtmhZ0Hc9yO2SZO7q?=
+ =?us-ascii?Q?W8zUxxDnys/wamEnzsEL1ojGF8gBRsbK9E0lLsEjoR08qL7Dv5CevK2EgssS?=
+ =?us-ascii?Q?N5N6IgWI1ZOEYLA/BT7YAQLSWpszeUCEhVOJvUtAu/Q9+8JiQQKtRiR+q+Ke?=
+ =?us-ascii?Q?AgviWfwT7n7ewmzxn8sFmxINJU0lzhMskPzpIagIXGnUetRlMYcEomYR0Gt5?=
+ =?us-ascii?Q?Ev4lX+ms7m5NQU6hUvqp1O/pRwq89mukny6nn5RzMm4z1fbeWrbHFiyGula/?=
+ =?us-ascii?Q?9hXRg0g1Mkm6qjUtBzGSUAwuP9o+jor8E8gq0UF9wqdbnOF4lNfmdyoTkg2Y?=
+ =?us-ascii?Q?BqmEl7nM2Lix+VPbFz2qdQBGOhYswrr/u1Z81hYwU22xFZuT9O8bcKmkhZAW?=
+ =?us-ascii?Q?hCYetvTrJ/SO1cKSFBNpOEEa4jAGqTWTR5zB1StaTj+Cw/qAgmtNpM+EHuy9?=
+ =?us-ascii?Q?wjoMtS9Wt7Zreuvlm5SMPACV2Sx0SzabAUbN9QXu1RC4CApFak5prg8ttdXK?=
+ =?us-ascii?Q?SbVYFsZJaiI1JVAKaFSG+CrcPUmapEdilP0D6cb66ay+qvDJlodCDAwxYoe+?=
+ =?us-ascii?Q?3idVTkMDL7GicCiLmBK6rDL0cCH6nbN4sC07cMjE+hTbF6OiNdyfRs6qLcs0?=
+ =?us-ascii?Q?SNPpbX6V8zkjbvMMykup3r/ETbpEJYugrOk1qkEOHoBi/0qJng9CYDrMEMhJ?=
+ =?us-ascii?Q?tvCz6MiWptLmoOT1Qn+rqT7ce/z/BBCXkyaIkc4rsWxMMLNWETiGs6C7XgF+?=
+ =?us-ascii?Q?tq60qZWY7EWcejFuzIZfEBowR7pT5YP91vZZEwqegWM9lhnk/dR18ha6ZY+a?=
+ =?us-ascii?Q?47Y6ieJYIn6pp+9BIdDUcnKQK+5rmi8H3gT8bLDadzCqBUF7URL9i/0Zk1OA?=
+ =?us-ascii?Q?auel3CphAF/c0XAm+/AVTns0CXdzA1oZIkF95eyKFOfsWiKLkHvglHcVZBc6?=
+ =?us-ascii?Q?V3vUVFp5vs9mtyBgV0dRJ/NBZCTI85gV2kfsZzOjH7AL1av6+xSt4DFFJEmW?=
+ =?us-ascii?Q?b69WqJU8lHiUGi9CweDo4h9JZ+dHJMdYkoJ1Raa1LJhwlGRJ1zXWtLzA4R9B?=
+ =?us-ascii?Q?wDLix9tHL0u2HMt2iM7jWH88P4/xSt0UiLe1au1NARabNPQW44ONip7BVgEn?=
+ =?us-ascii?Q?Yr8qdhnAiotyka/LyDgNDKZhPl8u8+8iS5nzSkPxxYXBzBNGiVIWGZNU8gs2?=
+ =?us-ascii?Q?+XQ/H6IZjv6hwADtQjMFCzqljZkPcEhGfiJ6YetLBwwE1WxaNndhPPyhw1F/?=
+ =?us-ascii?Q?Df+RxcZ2lm7iyCLXVO/LpkJJoMFdUyf5d7kXQLW1ugjMXW9jgJPX5J4dQ1Zd?=
+ =?us-ascii?Q?KNwWFNJ2lQ=3D=3D?=
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2b9e6fc8-4dfc-4902-0272-08da43ac29eb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jun 2022 08:53:14.2425 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rvzXQwlM38c20A349oQjk637elIOYGVUHO4Y0orJDLV4StWD+3FpM+Cw72uq2kdOBKdKkpJ9pukFkJqJjebnnw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1101MB2368
+X-OriginatorOrg: intel.com
+Cc: "Raj, Ashok" <ashok.raj@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,144 +186,49 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Juergen Gross via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Juergen Gross <jgross@suse.com>
-Content-Type: multipart/mixed; boundary="===============8798940983516304024=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---===============8798940983516304024==
-Content-Language: en-US
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------CNHvSQllro22hVMkKP0eQ6NP"
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Wednesday, June 1, 2022 7:11 AM
+> 
+> On Tue, May 31, 2022 at 10:22:32PM +0100, Robin Murphy wrote:
+> 
+> > There are only 3 instances where we'll free a table while the domain is
+> > live. The first is the one legitimate race condition, where two map requests
+> > targeting relatively nearby PTEs both go to fill in an intermediate level of
+> > table; whoever loses that race frees the table they allocated, but it was
+> > never visible to anyone else so that's definitely fine. The second is if
+> > we're mapping a block entry, and find that there's already a table entry
+> > there, wherein we assume the table must be empty, clear the entry,
+> > invalidate any walk caches, install the block entry, then free the orphaned
+> > table; since we're mapping the entire IOVA range covered by that table,
+> > there should be no other operations on that IOVA range attempting to walk
+> > the table at the same time, so it's fine.
+> 
+> I saw these two in the Intel driver
+> 
+> > The third is effectively the inverse, if we get a block-sized unmap
+> > but find a table entry rather than a block at that point (on the
+> > assumption that it's de-facto allowed for a single unmap to cover
+> > multiple adjacent mappings as long as it does so exactly); similarly
+> > we assume that the table must be full, and no other operations
+> > should be racing because we're unmapping its whole IOVA range, so we
+> > remove the table entry, invalidate, and free as before.
+> 
+> Not sure I noticed this one though
+> 
+> This all it all makes sense though.
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------CNHvSQllro22hVMkKP0eQ6NP
-Content-Type: multipart/mixed; boundary="------------pOzjEYk631dHLtJDTbkAOhdn";
- protected-headers="v1"
-From: Juergen Gross <jgross@suse.com>
-To: Lukas Bulwahn <lukas.bulwahn@gmail.com>, Christoph Hellwig <hch@lst.de>,
- iommu@lists.linux-foundation.org
-Cc: Stefano Stabellini <sstabellini@kernel.org>,
- kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <4ca4a04b-7064-3643-479a-ea31e584426d@suse.com>
-Subject: Re: [PATCH] MAINTAINERS: refurbish SWIOTLB SUBSYSTEM sections after
- refactoring
-References: <20220601075613.28245-1-lukas.bulwahn@gmail.com>
-In-Reply-To: <20220601075613.28245-1-lukas.bulwahn@gmail.com>
+Intel driver also does this. See dma_pte_clear_level():
 
---------------pOzjEYk631dHLtJDTbkAOhdn
-Content-Type: multipart/mixed; boundary="------------GFgIjmLAKHFy6G7eiTOibFfe"
-
---------------GFgIjmLAKHFy6G7eiTOibFfe
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
-
-T24gMDEuMDYuMjIgMDk6NTYsIEx1a2FzIEJ1bHdhaG4gd3JvdGU6DQo+IENvbW1pdCA3ODAx
-M2VhYWRmNjkgKCJ4ODY6IHJlbW92ZSB0aGUgSU9NTVUgdGFibGUgaW5mcmFzdHJ1Y3R1cmUi
-KQ0KPiByZWZhY3RvcmVkIHRoZSBnZW5lcmljIHN3aW90bGIvc3dpb3RsYi14ZW4gc2V0dXAg
-aW50byBwY2ktZG1hLmMsIGJ1dA0KPiBtaXNzZXMgdG8gYWRqdXN0IE1BSU5UQUlORVJTLg0K
-PiANCj4gSGVuY2UsIC4vc2NyaXB0cy9nZXRfbWFpbnRhaW5lci5wbCAtLXNlbGYtdGVzdD1w
-YXR0ZXJucyBjb21wbGFpbnMgYWJvdXQNCj4gYnJva2VuIHJlZmVyZW5jZXMuDQo+IA0KPiBV
-cGRhdGUgdGhlIFNXSU9UTEIgU1VCU1lTVEVNIHRvIGluY2x1ZGUgYXJjaC94ODYva2VybmVs
-L3BjaS1kbWEuYywgd2hpY2gNCj4gY29udGFpbnMgdGhlIHN3aW90bGIgc2V0dXAgbm93IGFu
-ZCBkcm9wIHRoZSBmaWxlIHBhdHRlcm4gdGhhdCBkb2VzIG5vdA0KPiBtYXRjaCBhbnkgZmls
-ZXMuDQo+IA0KPiBGdXJ0aGVyLCB1cGRhdGUgdGhlIFhFTiBTV0lPVExCIFNVQlNZU1RFTSB0
-byBpbmNsdWRlIGFsbCBzd2lvdGxiLXhlbg0KPiBoZWFkZXJzIGFuZCByZXBsYWNlIHRoZSBw
-YXR0ZXJuIGluIGRyaXZlcnMgd2l0aCB0aGUgc3BlY2lmaWMgb25lIGZpbGUgdGhhdA0KPiBt
-YXRjaGVzIHRoaXMgcGF0dGVybi4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEx1a2FzIEJ1bHdh
-aG4gPGx1a2FzLmJ1bHdhaG5AZ21haWwuY29tPg0KDQpBY2tlZC1ieTogSnVlcmdlbiBHcm9z
-cyA8amdyb3NzQHN1c2UuY29tPg0KDQoNCkp1ZXJnZW4NCg==
---------------GFgIjmLAKHFy6G7eiTOibFfe
-Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
-Content-Description: OpenPGP public key
-Content-Transfer-Encoding: quoted-printable
-
------BEGIN PGP PUBLIC KEY BLOCK-----
-
-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
-jR/i1DG86lem3iBDXzXsZDn8R38=3D
-=3D2wuH
------END PGP PUBLIC KEY BLOCK-----
-
---------------GFgIjmLAKHFy6G7eiTOibFfe--
-
---------------pOzjEYk631dHLtJDTbkAOhdn--
-
---------------CNHvSQllro22hVMkKP0eQ6NP
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmKXJYwFAwAAAAAACgkQsN6d1ii/Ey/q
-1gf6AyHW6leFjmiqq9OZVGfnN3PfDur4Sj7DA6BZoC0l9Ds53a3bRxeWCn/LXrdf2HRdrucFAVVX
-KjYyCfIZPEA9fFRWm9tFhTsPa1A8hpcisOoQGRYLDpJlDSOnZiLce+HzrlyFfOCG01Si/+2aGqb3
-+ZZJ9YmrIQJTlJ+hJ+bOcDXIMYDOo+d06vg1qSuFG2Z+YiPOMuoKNHcKVllz6ovidFaoAqEU+0nx
-vVEGBk/6Wiy2/eq3DaqTqFLaAoF8pOby7DRJ1OTJ7yNOvNx5izsFxo3RPHo+y8/Q7XO367ocFD/K
-KxUn2S2yW8YNTUzwjJIMtvPfFIXD0AvOP3vD4ebtzA==
-=uOd4
------END PGP SIGNATURE-----
-
---------------CNHvSQllro22hVMkKP0eQ6NP--
-
---===============8798940983516304024==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+		/* If range covers entire pagetable, free it */
+		if (start_pfn <= level_pfn &&
+		     last_pfn >= level_pfn + level_size(level) - 1) {
+			...
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============8798940983516304024==--
