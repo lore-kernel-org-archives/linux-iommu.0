@@ -1,81 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BE50CC433F5
-	for <iommu@archiver.kernel.org>; Wed,  1 Jun 2022 07:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 07FC8C433F5
+	for <iommu@archiver.kernel.org>; Wed,  1 Jun 2022 07:07:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 7292381470;
-	Wed,  1 Jun 2022 07:07:30 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id C3C7C40470;
+	Wed,  1 Jun 2022 07:07:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6sNjNmg6jSSp; Wed,  1 Jun 2022 07:07:29 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fGg7_uJu48Hm; Wed,  1 Jun 2022 07:07:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 6B7D5814B8;
-	Wed,  1 Jun 2022 07:07:29 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id B786B4063C;
+	Wed,  1 Jun 2022 07:07:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4437DC0039;
-	Wed,  1 Jun 2022 07:07:29 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 37403C002D
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 777A1C0039;
+	Wed,  1 Jun 2022 07:07:32 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E4F66C002D
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 15BDB40918
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:28 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id D2D3160E07
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=google.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lRfYMPJHYmOT for <iommu@lists.linux-foundation.org>;
- Wed,  1 Jun 2022 07:07:27 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id t-BQ-PNsF1k8 for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Jun 2022 07:07:30 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com
- [IPv6:2607:f8b0:4864:20::b4a])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 43DD640902
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:27 +0000 (UTC)
-Received: by mail-yb1-xb4a.google.com with SMTP id
- k73-20020a25244c000000b0065ca88b381aso742184ybk.2
- for <iommu@lists.linux-foundation.org>; Wed, 01 Jun 2022 00:07:27 -0700 (PDT)
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com
+ [IPv6:2607:f8b0:4864:20::1149])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 3651E60AA3
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:30 +0000 (UTC)
+Received: by mail-yw1-x1149.google.com with SMTP id
+ 00721157ae682-30026cf9af8so8618927b3.3
+ for <iommu@lists.linux-foundation.org>; Wed, 01 Jun 2022 00:07:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
  h=date:in-reply-to:message-id:mime-version:references:subject:from:to
- :cc; bh=dQEtI1CAczIBuvDz3GZ7U2zzA60s6PfFxMj/9gjiRQI=;
- b=dR7RpwH0OGQgdq5IkjUp0wI+kkXSRbNo+z8wKuVYmhF5jBwh9y6txlMuL3p9oOu2kZ
- wPPBUSqq/aYBuqa517o9bAD77BHGWgYWs4stcLD/c5P5I4GNJdZuDvwIt+YBFb31fdLB
- 6zUXWtjdhyChYQDoJ2zR1S2tqwWpzQnMhQv0CP3yR6ExhViYXE39N0bMEhjNOlxU33zZ
- EdAp5EoXLEUNyiLkQ+0mYMQCtOLO1Y/nznitQm8gq3O56AfLSY2rXnJOF6aeB3s/9Rue
- 1UCDaLkk9f2RRDPnMVqUDjfwwIppZ6DCFLXO7D9pTdLF04gvr1TYoFoAEKDgJaikerxa
- Zw+A==
+ :cc; bh=eS/2TM+GfDlfIh94cuHfgXIohxcqeVLl/51vayxOGcM=;
+ b=nEbS5SUQKPV2uEuRcyqOCeYxkIcVm6QtbRuafH1IWgffM/UiSk4n7jieCoUxjX9Oaq
+ WdF2MZAjtTV+A+oRtPcrP2vyYILJP7A+Sg3USDA4WMYh1mFqe4FUjmEsa0guT0E1V4tj
+ CRvpIOw9ggRCgKvj+BCr2MskAML9dPYYf+XO0/d9/Xj9Uc/+LTk7YMR8wiug+nW8uluL
+ vowkrv4PAa7gy873wiXvd7t6in/QuT1Qpd5KLLyCXllUZoQDqvWM1KUKzksMRYWJwumF
+ +1QzKxLzBi0hg9GJrGLwC8SMCfssBQpKzUmvRevuplmTStk4Ali/UF0v2Vw1hH1Gn3Yl
+ JBDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:date:in-reply-to:message-id:mime-version
  :references:subject:from:to:cc;
- bh=dQEtI1CAczIBuvDz3GZ7U2zzA60s6PfFxMj/9gjiRQI=;
- b=Y9nrIr0JhvLQM3rDp459/zKGzingRIR6qKT1tdhL0jb/3LDdyBuEC37SRP1mOl4t8T
- cInVumvpNpiYzRbBfCMek+HUpUfEhh9FDXwGEp9Idkz/J/J+HWjCNb3xeFfkMBgHUDLu
- JRxPl2lVyjX5vnaUXq+QDpzv4XAVLUCvB/8hByQ+sI8xykF8LAxDWOmxEP6RBPfPsLcz
- wtgsuv60Y2Momrbw9tT5NzN5aNDyOTdwFuNxrOuWAcDN3MiIW+MhmCx8VzAGwJeIJQP/
- NKcgI7dc4btB80zg9+KiKk1z3riPoxJwtkhRmXAxeQiPXLNPOqqlqnykedeXlZ/hh+o2
- vqcg==
-X-Gm-Message-State: AOAM533CCdO7xAeqEBvCi6CArRYaJzrcBZR8/paFEOK0QyJsRlc91dN0
- v4bY05CBnANIMisVHwp6fRYr3onhjFgfyds=
-X-Google-Smtp-Source: ABdhPJzjzqJGs64NvAdSlO/KVC/8uBUgQ7KmMn/05KCKbRpPaPfy2ffCOi3FUKYkp1MN38cKmElXlMfsooa1FsE=
+ bh=eS/2TM+GfDlfIh94cuHfgXIohxcqeVLl/51vayxOGcM=;
+ b=LTRGW7Jm64yDnT6VEay+TJ6bbv3/tMfmn4Pp8vc1c1toeS3TZHEiPqs8fL+/xXGezy
+ SVSlOEj2IODF+kGS6g1GFhHOa3rqEapoc440+7PGKO/0OqR2j/OggsukMranrGc5pj1/
+ UWMTLEsy6cxR1fiRTJcQkT2ygk/TRa6tmMMRe1E1Z1wHy2lGPcpFaywZOeBqTacQmz6V
+ v7kDs94qxjrXbJiNy/v2ca3QUwuvnfiU5vVBefitvD8j+tg3yV47mrWElp9DdLKbe39e
+ 9m/D5j9/PfytFlLYxl1Wq27owy9XkKhzvDwizLwLkJaGoH9O7Bca3cEL+uao2djFMufw
+ XV4A==
+X-Gm-Message-State: AOAM53313wzsgKzxvCJEQUgkwRSv129bmHB4gmh4w33HrxF7NXv+zw35
+ VC26bGEvYUrKkAffexOdHZAtRFMmup805As=
+X-Google-Smtp-Source: ABdhPJwtAnnXhJAd8leQI7IsJQYpPEGmerba49yF9GJ2QPuTWzcc40IB9+ccBefvJrVmInskP9rGOF8g1cQWJjY=
 X-Received: from saravanak.san.corp.google.com
  ([2620:15c:2d:3:f3aa:cafe:c20a:e136])
- (user=saravanak job=sendgmr) by 2002:a0d:cc89:0:b0:30b:14ee:6329 with SMTP id
- o131-20020a0dcc89000000b0030b14ee6329mr25787073ywd.38.1654067246121; Wed, 01
- Jun 2022 00:07:26 -0700 (PDT)
-Date: Wed,  1 Jun 2022 00:07:01 -0700
+ (user=saravanak job=sendgmr) by 2002:a81:ac67:0:b0:30c:4692:77fd with SMTP id
+ z39-20020a81ac67000000b0030c469277fdmr16106442ywj.180.1654067249191; Wed, 01
+ Jun 2022 00:07:29 -0700 (PDT)
+Date: Wed,  1 Jun 2022 00:07:02 -0700
 In-Reply-To: <20220601070707.3946847-1-saravanak@google.com>
-Message-Id: <20220601070707.3946847-6-saravanak@google.com>
+Message-Id: <20220601070707.3946847-7-saravanak@google.com>
 Mime-Version: 1.0
 References: <20220601070707.3946847-1-saravanak@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 5/9] net: ipconfig: Relax fw_devlink if we need to mount a
- network rootfs
+Subject: [PATCH v2 6/9] Revert "driver core: Set default deferred_probe_timeout
+ back to 0."
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  "Rafael J. Wysocki" <rafael@kernel.org>, 
  Kevin Hilman <khilman@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, 
@@ -111,45 +111,32 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-If there are network devices that could probe without some of their
-suppliers probing and those network devices are needed to mount a
-network rootfs, then fw_devlink=on might break that usecase by blocking
-the network devices from probing by the time IP auto config starts.
+This reverts commit 11f7e7ef553b6b93ac1aa74a3c2011b9cc8aeb61.
 
-So, if no network devices are available when IP auto config is enabled
-and we have a network rootfs, make sure fw_devlink doesn't block the
-probing of any device that has a driver and then retry finding a network
-device.
+Let's take another shot at getting deferred_probe_timeout=10 to work.
 
 Signed-off-by: Saravana Kannan <saravanak@google.com>
 ---
- net/ipv4/ipconfig.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/base/dd.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/ipv4/ipconfig.c b/net/ipv4/ipconfig.c
-index 9d41d5d5cd1e..2342debd7066 100644
---- a/net/ipv4/ipconfig.c
-+++ b/net/ipv4/ipconfig.c
-@@ -1434,6 +1434,7 @@ __be32 __init root_nfs_parse_addr(char *name)
- static int __init wait_for_devices(void)
- {
- 	int i;
-+	bool try_init_devs = true;
+diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+index 4a55fbb7e0da..335e71d3a618 100644
+--- a/drivers/base/dd.c
++++ b/drivers/base/dd.c
+@@ -256,7 +256,12 @@ static int deferred_devs_show(struct seq_file *s, void *data)
+ }
+ DEFINE_SHOW_ATTRIBUTE(deferred_devs);
  
- 	for (i = 0; i < DEVICE_WAIT_MAX; i++) {
- 		struct net_device *dev;
-@@ -1452,6 +1453,11 @@ static int __init wait_for_devices(void)
- 		rtnl_unlock();
- 		if (found)
- 			return 0;
-+		if (try_init_devs &&
-+		    (ROOT_DEV == Root_NFS || ROOT_DEV == Root_CIFS)) {
-+			try_init_devs = false;
-+			wait_for_init_devices_probe();
-+		}
- 		ssleep(1);
- 	}
- 	return -ENODEV;
++#ifdef CONFIG_MODULES
++int driver_deferred_probe_timeout = 10;
++#else
+ int driver_deferred_probe_timeout;
++#endif
++
+ EXPORT_SYMBOL_GPL(driver_deferred_probe_timeout);
+ 
+ static int __init deferred_probe_timeout_setup(char *str)
 -- 
 2.36.1.255.ge46751e96f-goog
 
