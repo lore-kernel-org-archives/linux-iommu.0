@@ -1,77 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1FDF8C433F5
-	for <iommu@archiver.kernel.org>; Wed,  1 Jun 2022 07:07:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 38BB2C433FE
+	for <iommu@archiver.kernel.org>; Wed,  1 Jun 2022 07:07:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A199281443;
-	Wed,  1 Jun 2022 07:07:16 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id D33F340902;
+	Wed,  1 Jun 2022 07:07:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id itOkS2idDu6j; Wed,  1 Jun 2022 07:07:15 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZV8HYe_U-NmK; Wed,  1 Jun 2022 07:07:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 5F67C81470;
-	Wed,  1 Jun 2022 07:07:15 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 9202840895;
+	Wed,  1 Jun 2022 07:07:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 303CFC0039;
-	Wed,  1 Jun 2022 07:07:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 681B9C0039;
+	Wed,  1 Jun 2022 07:07:17 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4B631C002D
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:13 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 81C49C002D
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 4732040408
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:13 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 60E4D40543
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=google.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6FpBdUk0tIuI for <iommu@lists.linux-foundation.org>;
- Wed,  1 Jun 2022 07:07:12 +0000 (UTC)
+ with ESMTP id g5-c0ChCD6Lw for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Jun 2022 07:07:15 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com
- [IPv6:2607:f8b0:4864:20::649])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 70D3240127
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:12 +0000 (UTC)
-Received: by mail-pl1-x649.google.com with SMTP id
- u7-20020a170902e5c700b001621a781270so659167plf.15
- for <iommu@lists.linux-foundation.org>; Wed, 01 Jun 2022 00:07:12 -0700 (PDT)
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com
+ [IPv6:2607:f8b0:4864:20::1149])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id C2A7A40535
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jun 2022 07:07:15 +0000 (UTC)
+Received: by mail-yw1-x1149.google.com with SMTP id
+ 00721157ae682-30c2aa26ebfso8520887b3.4
+ for <iommu@lists.linux-foundation.org>; Wed, 01 Jun 2022 00:07:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
- h=date:message-id:mime-version:subject:from:to:cc;
- bh=Mk17D+aOzb7UCdNS2oz9IAwDr5MmRg+quCipw6fx4RQ=;
- b=hQa0JnnmV2cX05wxogayF7DAeIwm91UA5DD4Pd0261qK2nG5mlRfb8p0PwXRgLwmcG
- 6gimTBEfRJnzqCBPwGFDLXwY23Jge7qCK5EKBtDVk+4ZHueBZe2ScEh2abiJOXvqClXF
- aItT2KKmdUihJqxg6KlMJQ+n9hDQfaXwUgpDUXId5vW641rUWKofWrnrujEe72Sytvnk
- iXsC3g9D+PkO64XwFNhsJCy/xgMMwq44IzwR510vfqTBnn54+HA0yDiVcTK99umRrrcq
- KawtwQ3E7vKCwmO2izMB9zQh9evWd8zx74HbqExwInwGL34iXnuFQ1QqmbkBW7qSDv5A
- GPbA==
+ h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+ :cc; bh=Eq6nH6aGeuKpMU9nM7ibONmheABIDjQM7t9UjsNcl+w=;
+ b=dvfs6aw0o9enYr6q5JvsoITL1cIodQJtPwQKFVNV/ElWQiITwvlgBGIYVXYubJ0EWb
+ hQZknjUn8hWhfVG63Q26ahXT/ybuECTh3IQ0hlFzpMrRfffJaSxehOVATgqcGdOl5B63
+ UAGusDHfZ1+bZx3UPXTCMA74yfTvat1qBDbQNIwN2gBcEL0s2lgJJxBkvLKW4seHwHfy
+ yy/kVDyKrdiePicpV782RiPioPYMYI6dNrIPSqSRQjnVUQlBHfFoZNPq2vXgAhQA5tJ2
+ qPRfgtRDz89n2glwq1xvIPHXD3I9kan+rQBxaKWDF0fkq11SsjvYI3DlubXtUCtJ5N2t
+ udoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
- bh=Mk17D+aOzb7UCdNS2oz9IAwDr5MmRg+quCipw6fx4RQ=;
- b=fNHTGb1deXXYaqIj1YDS/AiecurNst4ourCP29lmmHaLHxfbwHnI1Gg+V7Ikrw1yQq
- H0jld9m4zTd+se87Oa1epyjz0HD2NdXR8iUZZwqpcSzRMdwCrPwTsYSqOrWRbXBh06m2
- Qmic6WjQeIpjH3+9sx5fLiSGmi4cO6C0IFWF/KUejZ3qq1JKkHhp0l00Zyg7GBn493Nk
- KsptbHA0n23ovy33IO9X/K6GK0XBfvyZ+D0u2k0tlnDNc+RcgQD0bxanc4P+XcWcrd5e
- yr2aNTEIskDNj3UfdcpJufn/J8VqeFuJjYuQHPgZf+lg6eA1RyBwOEfPsvpkdvIOvZHQ
- NsGQ==
-X-Gm-Message-State: AOAM531g1L+pRZazPgTfDONybU1KBYCc+fy4WIyldxIkbuINBLYgpxYG
- Nz7SMXWMBP4oCNy7zR7z5vPBiaRwMIAzkOM=
-X-Google-Smtp-Source: ABdhPJwo0w/Ul81l80Uz+X1lE0Knuok5VeKXEtMoQ0Yzewr/LH6PL8JE3PUvMoXQAWKjDKNKYDX9hXZkKLb6+II=
+ h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+ :references:subject:from:to:cc;
+ bh=Eq6nH6aGeuKpMU9nM7ibONmheABIDjQM7t9UjsNcl+w=;
+ b=XHCGaXp0J6e7YazL9v6cYa0Xze0RmenFZdfX+SGO9FnBaYaydtyqEQCng7o315kOVu
+ hxUuf7LoabHkK9JxuPqZTiKs4kBcG1N3BzZw67LqsqRFTk4oCYfuLts8JqZHVYE1kfcT
+ bXmedbwMV87vn/xfHke02m7TqFv3YzCG3rVd9tJf+rzidSRUuiEqowqhxThPFBTjXBmV
+ 5UXb2EbwilQiv+zAPtL2oUkInBSrufYWQ7QB01GCEFbkrCM5v6qcfdjuA/YGgElgFvkD
+ jIEP1LjVdGley5mkCQdPBbzGj2DIuGwObF+5Mew92pFOn020+MTRPScllamLuImmCX3R
+ ncKg==
+X-Gm-Message-State: AOAM530XM48bCriNC3XIR/JuXbJ3KyaomXYCfD4P6v+ICGco3gm+qQLo
+ Zvu27WwpH+8OcQ32AEo44CmCQkK2S3SZfX4=
+X-Google-Smtp-Source: ABdhPJyEEJmzYE3LJbKEPxep9Txd8IS2Y3Ohb4w4RDlkBWekTGGi+00/Yu83BjSHoAA0YZYV1qdNB+xcoJAZ8NA=
 X-Received: from saravanak.san.corp.google.com
  ([2620:15c:2d:3:f3aa:cafe:c20a:e136])
- (user=saravanak job=sendgmr) by 2002:a17:902:da8e:b0:164:537:d910 with SMTP
- id j14-20020a170902da8e00b001640537d910mr7067516plx.75.1654067231712; Wed, 01
- Jun 2022 00:07:11 -0700 (PDT)
-Date: Wed,  1 Jun 2022 00:06:56 -0700
-Message-Id: <20220601070707.3946847-1-saravanak@google.com>
+ (user=saravanak job=sendgmr) by 2002:a25:2e06:0:b0:65c:ed2e:31bd with SMTP id
+ u6-20020a252e06000000b0065ced2e31bdmr13135711ybu.244.1654067234572; Wed, 01
+ Jun 2022 00:07:14 -0700 (PDT)
+Date: Wed,  1 Jun 2022 00:06:57 -0700
+In-Reply-To: <20220601070707.3946847-1-saravanak@google.com>
+Message-Id: <20220601070707.3946847-2-saravanak@google.com>
 Mime-Version: 1.0
+References: <20220601070707.3946847-1-saravanak@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 0/9] deferred_probe_timeout logic clean up
+Subject: [PATCH v2 1/9] PM: domains: Delete usage of
+ driver_deferred_probe_check_state()
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  "Rafael J. Wysocki" <rafael@kernel.org>, 
  Kevin Hilman <khilman@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, 
@@ -107,89 +111,31 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This series is based on linux-next + these 2 small patches applies on top:
-https://lore.kernel.org/lkml/20220526034609.480766-1-saravanak@google.com/
+Now that fw_devlink=on by default and fw_devlink supports
+"power-domains" property, the execution will never get to the point
+where driver_deferred_probe_check_state() is called before the supplier
+has probed successfully or before deferred probe timeout has expired.
 
-A lot of the deferred_probe_timeout logic is redundant with
-fw_devlink=on.  Also, enabling deferred_probe_timeout by default breaks
-a few cases.
+So, delete the call and replace it with -ENODEV.
 
-This series tries to delete the redundant logic, simplify the frameworks
-that use driver_deferred_probe_check_state(), enable
-deferred_probe_timeout=10 by default, and fixes the nfsroot failure
-case.
+Signed-off-by: Saravana Kannan <saravanak@google.com>
+---
+ drivers/base/power/domain.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The overall idea of this series is to replace the global behavior of
-driver_deferred_probe_check_state() where all devices give up waiting on
-supplier at the same time with a more granular behavior:
-
-1. Devices with all their suppliers successfully probed by late_initcall
-   probe as usual and avoid unnecessary deferred probe attempts.
-
-2. At or after late_initcall, in cases where boot would break because of
-   fw_devlink=on being strict about the ordering, we
-
-   a. Temporarily relax the enforcement to probe any unprobed devices
-      that can probe successfully in the current state of the system.
-      For example, when we boot with a NFS rootfs and no network device
-      has probed.
-   b. Go back to enforcing the ordering for any devices that haven't
-      probed.
-
-3. After deferred probe timeout expires, we permanently give up waiting
-   on supplier devices without drivers. At this point, whatever devices
-   can probe without some of their optional suppliers end up probing.
-
-In the case where module support is disabled, it's fairly
-straightforward and all device probes are completed before the initcalls
-are done.
-
-Patches 1 to 3 are fairly straightforward and can probably be applied
-right away.
-
-Patches 4 to 6 are for fixing the NFS rootfs issue and setting the
-default deferred_probe_timeout back to 10 seconds when modules are
-enabled.
-
-Patches 7 to 9 are further clean up of the deferred_probe_timeout logic
-so that no framework has to know/care about deferred_probe_timeout.
-
-Yoshihiro/Geert,
-
-If you can test this patch series and confirm that the NFS root case
-works, I'd really appreciate that.
-
-Thanks,
-Saravana
-
-v1 -> v2:
-Rewrote the NFS rootfs fix to be a lot less destructive on the
-fw_devlink ordering for devices that don't end up probing during the
-"best effort" attempt at probing all devices needed for a network rootfs
-
-Saravana Kannan (9):
-  PM: domains: Delete usage of driver_deferred_probe_check_state()
-  pinctrl: devicetree: Delete usage of
-    driver_deferred_probe_check_state()
-  net: mdio: Delete usage of driver_deferred_probe_check_state()
-  driver core: Add wait_for_init_devices_probe helper function
-  net: ipconfig: Relax fw_devlink if we need to mount a network rootfs
-  Revert "driver core: Set default deferred_probe_timeout back to 0."
-  driver core: Set fw_devlink.strict=1 by default
-  iommu/of: Delete usage of driver_deferred_probe_check_state()
-  driver core: Delete driver_deferred_probe_check_state()
-
- drivers/base/base.h            |   1 +
- drivers/base/core.c            | 102 ++++++++++++++++++++++++++++++---
- drivers/base/dd.c              |  54 ++++++-----------
- drivers/base/power/domain.c    |   2 +-
- drivers/iommu/of_iommu.c       |   2 +-
- drivers/net/mdio/fwnode_mdio.c |   4 +-
- drivers/pinctrl/devicetree.c   |   2 +-
- include/linux/device/driver.h  |   2 +-
- net/ipv4/ipconfig.c            |   6 ++
- 9 files changed, 126 insertions(+), 49 deletions(-)
-
+diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
+index 739e52cd4aba..3e86772d5fac 100644
+--- a/drivers/base/power/domain.c
++++ b/drivers/base/power/domain.c
+@@ -2730,7 +2730,7 @@ static int __genpd_dev_pm_attach(struct device *dev, struct device *base_dev,
+ 		mutex_unlock(&gpd_list_lock);
+ 		dev_dbg(dev, "%s() failed to find PM domain: %ld\n",
+ 			__func__, PTR_ERR(pd));
+-		return driver_deferred_probe_check_state(base_dev);
++		return -ENODEV;
+ 	}
+ 
+ 	dev_dbg(dev, "adding to PM domain %s\n", pd->name);
 -- 
 2.36.1.255.ge46751e96f-goog
 
