@@ -4,52 +4,54 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 08D0CC43334
-	for <iommu@archiver.kernel.org>; Thu,  2 Jun 2022 16:46:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8BBC5C433EF
+	for <iommu@archiver.kernel.org>; Thu,  2 Jun 2022 16:49:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9E4AD405A3;
-	Thu,  2 Jun 2022 16:46:11 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 447CD40576;
+	Thu,  2 Jun 2022 16:49:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KVvMoo8kaHs5; Thu,  2 Jun 2022 16:46:10 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 743F940576;
-	Thu,  2 Jun 2022 16:46:10 +0000 (UTC)
+	with ESMTP id pqu-lJCPFiaO; Thu,  2 Jun 2022 16:49:25 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 1D432400D8;
+	Thu,  2 Jun 2022 16:49:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 47DE0C0039;
-	Thu,  2 Jun 2022 16:46:10 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7C954C002D
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 16:46:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E894CC0039;
+	Thu,  2 Jun 2022 16:49:24 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 33A69C002D
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 16:49:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 5CAE9405A3
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 16:46:09 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 138C960B66
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 16:49:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fG1X-6H73_Xw for <iommu@lists.linux-foundation.org>;
- Thu,  2 Jun 2022 16:46:07 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=deltatee.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id yc3xcWC800KW for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Jun 2022 16:49:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 3C7C340576
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 16:46:07 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id F3A9360AE7
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 16:49:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
  MIME-Version:Date:Message-ID:content-disposition;
- bh=yHMITh+N130iuSnYvU2I4WotSms4ADBqIIhjmWEL4ZQ=; b=O6Xl4kM8MUO00BCgiQ9hWPp+gB
- 2m7ZVz8sHNAOQKpiy5iEU/brZWoHl9L3YI08j4vZrZwZONQy6WWyOSXW66i+Zcv9QKlOeesm8TgjQ
- pABnUdHP29eKXg17nEZ/MnWYIcmY/29mOmJme4RbBeYYarSUthGM7iOo3qpUFKlkgq37Ue76GJEjA
- MfSw6YBYC+/0IQghP6E8FIRiZlTGbFFCXvUfzWrCRinU718CfdX6Eh08/4ZrDvJWXnPQwmRp+4WdA
- 1qxJEJvrytnpdt9tHqZk0bsYRw6b+C0O39SAOTytYjPcg2eYDgsp57ejuIJbnxeryaQkNoi8uOxrW
- ueUPAsxQ==;
+ bh=G4jNGHaxScm6QRbg+/bUKEbD3ZVb5hKMPQYYoCPSz9U=; b=PTeaYAOF/4ng1MbqblI0wc/ZgX
+ i5VfwwrtyjYWA/pvSZh6UV7JKtQ9wG/KjAY6EFS4AgDOzIxqxJGmEIpWadj3Ho28i4xmqfhYntJAO
+ JrdI3Y++iHNLCQ1JdqlaHPgjmYyrKWmS/Fp7YazQGJ0ieFbhkp+YrrMxy8wv7mKcAjUfRXmV9EQE4
+ a4AFx87aKsvRfY1XjqZMtlTGWurF7mn+aqy5D/6ZF2Eziu4rlwNKpcJYAdKLbRdXleAhhHCDdc7Kq
+ mwkvfJr+Rq28q712EFrfu8CgUPgSO2xy86e4KyfCtbPG5OAFoNzTk/TMHic0abIyw8cAxRgYjyQUl
+ CvFCr70w==;
 Received: from s0106a84e3fe8c3f3.cg.shawcable.net ([24.64.144.200]
  helo=[192.168.0.10]) by ale.deltatee.com with esmtpsa (TLS1.3) tls
  TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Exim 4.94.2)
  (envelope-from <logang@deltatee.com>)
- id 1nwnxQ-00EOAT-Fz; Thu, 02 Jun 2022 10:46:01 -0600
-Message-ID: <28824558-4fd5-e054-6c8d-5e045d52f795@deltatee.com>
-Date: Thu, 2 Jun 2022 10:45:55 -0600
+ id 1nwo0a-00EODR-OS; Thu, 02 Jun 2022 10:49:17 -0600
+Message-ID: <51cc6645-2504-6d01-5626-238ed6ffff04@deltatee.com>
+Date: Thu, 2 Jun 2022 10:49:15 -0600
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.0
@@ -116,7 +118,6 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
 
-
 On 2022-06-02 10:30, Jason Gunthorpe wrote:
 > On Thu, Jun 02, 2022 at 10:16:10AM -0600, Logan Gunthorpe wrote:
 > 
@@ -133,18 +134,15 @@ On 2022-06-02 10:30, Jason Gunthorpe wrote:
 > A couple drivers go out of their way to allow unbinding while a live
 > userspace exists but this can get complicated. Usually there should be
 > a good reason.
+> 
+> The module will already be refcounted anyhow because the mmap points
+> to a char file which holds a module reference - meaning a simple rmmod
+> of the driver shouldn't work already..
 
-This is not my experience. All the drivers I've worked with do not block
-unbind with open file descriptors (at least for char devices). I know,
-for example, that having a file descriptor open of /dev/nvmeX does not
-cause unbinding to block. I figured this was the expectation as the
-userspace process doing the unbind won't be able to be interrupted
-seeing there's no way to fail on that path. Though, it certainly would
-make things a lot easier if the unbind can block indefinitely as it
-usually requires some complicated locking.
-
-Do you have an example of this? What mechanisms are developers using to
-block unbind with open file descriptors?
+Also, I just tried it... If I open a sysfs file for an nvme device (ie.
+/sys/class/nvme/nvme4/cntlid) and unbind the device, it does not block.
+A subsequent read on that file descriptor returns ENODEV. Which is what
+I would have expected.
 
 Logan
 _______________________________________________
