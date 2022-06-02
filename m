@@ -1,81 +1,85 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 45024C433EF
-	for <iommu@archiver.kernel.org>; Thu,  2 Jun 2022 13:44:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1BC02C43334
+	for <iommu@archiver.kernel.org>; Thu,  2 Jun 2022 14:17:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C25BB400D2;
-	Thu,  2 Jun 2022 13:44:00 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id B8FFA82662;
+	Thu,  2 Jun 2022 14:17:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ygUKBhkLj2fE; Thu,  2 Jun 2022 13:43:59 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id e9_urAj6HAT3; Thu,  2 Jun 2022 14:17:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 90F5F40AFA;
-	Thu,  2 Jun 2022 13:43:59 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 7586982423;
+	Thu,  2 Jun 2022 14:17:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 45391C0032;
-	Thu,  2 Jun 2022 13:43:59 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EE80FC002D
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 13:43:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4C965C0039;
+	Thu,  2 Jun 2022 14:17:37 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A8E2EC002D
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 14:17:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id CEEA641797
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 13:43:57 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 9E8C0825FE
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 14:17:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XnOB1nSCVkCN for <iommu@lists.linux-foundation.org>;
- Thu,  2 Jun 2022 13:43:56 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id M-RXCczx1v0C for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Jun 2022 14:17:36 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com
- [209.85.160.44])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 87AA64150F
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 13:43:56 +0000 (UTC)
-Received: by mail-oa1-f44.google.com with SMTP id
- 586e51a60fabf-e5e433d66dso6765059fac.5
- for <iommu@lists.linux-foundation.org>; Thu, 02 Jun 2022 06:43:56 -0700 (PDT)
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com
+ [209.85.210.50])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 04F1782423
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 14:17:35 +0000 (UTC)
+Received: by mail-ot1-f50.google.com with SMTP id
+ 61-20020a9d0bc3000000b0060b9bfcfe76so3476152oth.9
+ for <iommu@lists.linux-foundation.org>; Thu, 02 Jun 2022 07:17:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=hQGK49GF9DeJULgey4jAcL7Oa6D8j/sPMETA1NkIOJc=;
- b=kwtIV+Ljf4Rqkgf0kFRFRm55C65rwvQhMNEMJqrNc3OwWKfUJFUa7NtlwFK/9jhbFj
- 6vCyC8Xy0QgBLuXBqWJKVf/mKmh0mthiM86JxGyySB9qesrhXOJkRvbMtFr7ubu8wLdh
- lXoZOAvRWSsEpd/pkrZ2+tidXAAj30kXFHQmPQAGA3iba9Okf5nBOYgsajpPFnHnMDxV
- QB4XlDxkeJsY1418LUpQvWf+iIr6cSZtGY+SiJ796ynjgD+WGtMuvtBYSC7pVEcxLby2
- dUaWaq3Knr/hc7dW1rYkdQLgUeXRhOEx8vvZoaTPblof39xeGBKzQbNfns6Xp6CUG81p
- U5DQ==
-X-Gm-Message-State: AOAM531PfZXfHPNV7AFtYn4YPi9wHY6ZxieKwiiIvXJbp8uLZ19rV6U9
- Oe5ZY1rPCTB8DbTm2JVaMw==
-X-Google-Smtp-Source: ABdhPJzL70GYPEawMMZyFEupbpoldLQk6350MsIEKUwqginMohKYrSm6Ju3LfMU8fTraG27RUbk8xA==
-X-Received: by 2002:a05:6871:b0f:b0:f3:3687:524b with SMTP id
- fq15-20020a0568710b0f00b000f33687524bmr2642992oab.131.1654177435454; 
- Thu, 02 Jun 2022 06:43:55 -0700 (PDT)
+ bh=TCCwJv6EhxWlaEc1Brd2505WQxC3GVxol8XUS0Q3iIQ=;
+ b=xrOqntUPbTKnorCwHC+9fRhKBmE2AlsyCyE9yckDwrf+1hnnCLVWNL7BaDZpxu3f1a
+ lWVHmpeVLa2OMt3Rd0GL6Z73JvrLg5ji11kmcki4pAkstARUfegue0LdFbF8LXzZwJ3f
+ bLLxL6FN1TixHc5eg7vZ3d0b0WjwmtC+b2qYg/3PD2bt2vRchnSo5mG3THaqRTusi3IF
+ EFmwHFk2sUke5HnSyWdJ63Cj9kDYEHbMIPW5vgV2NXdPW1jJ6MA5szNywuMUzqRdS78L
+ 765uEO0BhSJ/2YcpCGlz5tBuh7rOLwRv26qOaIIYcVKDuTP3nO+uZWlawydJFWX6dJDE
+ mzCw==
+X-Gm-Message-State: AOAM533GhYNr7D81blnFWC0xTPSI3QBZVAkSm8O+/6F9geVsK+eRhSwh
+ X6qIDerhCnAGXC36La2ZNw==
+X-Google-Smtp-Source: ABdhPJxYVbALGE594K0AOIrngTP0BTDjw28b1fwlQJNHJriJPoZ+rLecoT8+hiuf2AyA7nCY83K4nA==
+X-Received: by 2002:a9d:5f16:0:b0:60b:4fbb:ac5a with SMTP id
+ f22-20020a9d5f16000000b0060b4fbbac5amr2120193oti.189.1654179454963; 
+ Thu, 02 Jun 2022 07:17:34 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net.
  [66.90.144.107]) by smtp.gmail.com with ESMTPSA id
- t18-20020a4adbd2000000b0040eb1d3f43dsm2330707oou.2.2022.06.02.06.43.54
+ gu23-20020a056870ab1700b000f5d765bc02sm2098115oab.8.2022.06.02.07.17.33
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 02 Jun 2022 06:43:55 -0700 (PDT)
-Received: (nullmailer pid 2175981 invoked by uid 1000);
- Thu, 02 Jun 2022 13:43:54 -0000
-Date: Thu, 2 Jun 2022 08:43:54 -0500
+ Thu, 02 Jun 2022 07:17:34 -0700 (PDT)
+Received: (nullmailer pid 2234679 invoked by uid 1000);
+ Thu, 02 Jun 2022 14:17:33 -0000
+Date: Thu, 2 Jun 2022 09:17:33 -0500
 From: Rob Herring <robh@kernel.org>
-To: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Subject: Re: [PATCH 2/3] iommu: bindings: Add binding documentation for
- Toshiba Visconti5 IOMMU device
-Message-ID: <20220602134354.GA2170842-robh@kernel.org>
-References: <20220525013147.2215355-1-nobuhiro1.iwamatsu@toshiba.co.jp>
- <20220525013147.2215355-3-nobuhiro1.iwamatsu@toshiba.co.jp>
+To: Konrad Dybcio <konrad.dybcio@somainline.org>
+Subject: Re: [PATCH 4/6] iommu/qcom: Add support for AArch64 IOMMU pagetables
+Message-ID: <20220602141733.GA2227595-robh@kernel.org>
+References: <20220527212901.29268-1-konrad.dybcio@somainline.org>
+ <20220527212901.29268-5-konrad.dybcio@somainline.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20220525013147.2215355-3-nobuhiro1.iwamatsu@toshiba.co.jp>
-Cc: devicetree@vger.kernel.org, Will Deacon <will@kernel.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- yuji2.ishikawa@toshiba.co.jp, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20220527212901.29268-5-konrad.dybcio@somainline.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, jamipkettunen@somainline.org,
+ iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
+ martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ angelogioacchino.delregno@somainline.org, marijn.suijten@somainline.org,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,100 +97,38 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, May 25, 2022 at 10:31:46AM +0900, Nobuhiro Iwamatsu wrote:
-> Add documentation for the binding of Toshiba Visconti5 SoC's IOMMU.
+On Fri, May 27, 2022 at 11:28:59PM +0200, Konrad Dybcio wrote:
+> From: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
 > 
-> Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+> Some IOMMUs associated with some TZ firmwares may support switching
+> to the AArch64 pagetable format by sending a "set pagetable format"
+> scm command indicating the IOMMU secure ID and the context number
+> to switch.
+> 
+> Add a DT property "qcom,use-aarch64-pagetables" for this driver to
+> send this command to the secure world and to switch the pagetable
+> format to benefit of the ARM64 IOMMU pagetables, where possible.
+> 
+> Note that, even though the command should be valid to switch each
+> context, the property is made global because:
+> 1. It doesn't make too much sense to switch only one or two
+>    context(s) to AA64 instead of just the entire thing
+> 2. Some IOMMUs will go crazy and produce spectacular results when
+>    trying to mix up the pagetables on a per-context basis.
+> 
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+> Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 > ---
->  .../bindings/iommu/toshiba,visconti-atu.yaml  | 62 +++++++++++++++++++
->  1 file changed, 62 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/toshiba,visconti-atu.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/toshiba,visconti-atu.yaml b/Documentation/devicetree/bindings/iommu/toshiba,visconti-atu.yaml
-> new file mode 100644
-> index 000000000000..af8d6688fa70
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/toshiba,visconti-atu.yaml
-> @@ -0,0 +1,62 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
+>  .../devicetree/bindings/iommu/qcom,iommu.txt  |  2 +
 
-Dual license: GPL-2.0-only OR BSD-2-Clause
+Bindings should be separate patch.
 
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iommu/toshiba,visconti-atu.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Toshiba ARM SoC Visconti5 IOMMU (ATU)
-> +
-> +maintainers:
-> +  - Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-> +
-> +description: |+
-> +  IOMMU (ATU) driver can bse used for Visconti5's multimedia IPs, such as
+As you are making multiple changes, please convert this to DT schema 
+first.
 
-Bindings are for hardware, not drivers.
-
-> +  DCNN (Deep Convolutional Neural Network), VIIF(Video Input), VOIF(Video
-> +  output), and others.
-> +
-> +properties:
-> +  compatible:
-> +    const: toshiba,visconti-atu
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  "#iommu-cells":
-> +    const: 0
-> +
-> +  toshiba,max-entry:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: The size of entry for address
-> +    enum:
-> +      - 16
-> +      - 32
-> +
-> +  toshiba,reserved-entry:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: The reserve number of entry address.
-> +    default: 0
-> +    minimum: 0
-> +    maximum: 32
-
-These 2 need a better description of what they are for.
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - "#iommu-cells"
-> +  - toshiba,max-entry
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    soc {
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +
-> +        atu_affine0: iommu@1400f000 {
-
-Drop unused labels.
-
-> +            compatible = "toshiba,visconti-atu";
-> +            reg = <0 0x1400F000 0 0x1000>;
-> +            toshiba,max-entry = <16>;
-> +            toshiba,reserved-entry = <1>;
-> +            #iommu-cells = <0>;
-> +        };
-> +    };
-> -- 
-> 2.36.0
-> 
-> 
-> 
+>  drivers/iommu/arm/arm-smmu/qcom_iommu.c       | 54 +++++++++++++++----
+>  2 files changed, 47 insertions(+), 9 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
