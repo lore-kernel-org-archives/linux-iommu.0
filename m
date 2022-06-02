@@ -1,106 +1,92 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 058D7C43334
-	for <iommu@archiver.kernel.org>; Thu,  2 Jun 2022 17:49:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AA341C433EF
+	for <iommu@archiver.kernel.org>; Thu,  2 Jun 2022 19:24:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id AF3A760B51;
-	Thu,  2 Jun 2022 17:49:44 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 2ADFA83E82;
+	Thu,  2 Jun 2022 19:24:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FBdQ540PeERt; Thu,  2 Jun 2022 17:49:43 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id DE4A060B3A;
-	Thu,  2 Jun 2022 17:49:42 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id twyJ4XRFwpIs; Thu,  2 Jun 2022 19:24:27 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id EC92B83E26;
+	Thu,  2 Jun 2022 19:24:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BB5E2C0032;
-	Thu,  2 Jun 2022 17:49:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C987FC0032;
+	Thu,  2 Jun 2022 19:24:26 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CBBBDC002D
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 17:49:41 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4F2D9C002D
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 19:24:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id B52EF81763
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 17:49:41 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 30F6F83E80
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 19:24:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=deltatee.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UFmSencKeP9G for <iommu@lists.linux-foundation.org>;
- Thu,  2 Jun 2022 17:49:41 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 234FF81371
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 17:49:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
- MIME-Version:Date:Message-ID:content-disposition;
- bh=iyck+wOifMpSZlLxRfCrWDgusCm3mWKdpT17Ia+B9wY=; b=rnaKQUhn8m0zyN0RqZEYQDjsXS
- bQq3WwRpeKjVK1qMYZK6mfxOtb/vSCH4EYY+RMt8unUUNIFPAn8qkWOpu0WY8P+7ycxavtU8c1x42
- GL4bMz3u3uliqUKkk/rKHRiF6ip5UbjhpBdiEMfIJ6nrjfPr/5Sq6euvL6HgLOAijk7z3HlBHP7ls
- pcXQ0r9j5pF9NW3clGalNpKN8L7zkm/dgY51Cgy5nTN+GYoKstvVBkAR/a/aEoyXotFUOBWnP/yvp
- eUKOoQvmroULemDQpPRn3ppgTUJ3ZUx9YNJrBF5YBjbqtvmxd7j82k4fvWwyzEA+XJ6DtYonhy2aI
- X2SqWSig==;
-Received: from s0106a84e3fe8c3f3.cg.shawcable.net ([24.64.144.200]
- helo=[192.168.0.10]) by ale.deltatee.com with esmtpsa (TLS1.3) tls
- TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Exim 4.94.2)
- (envelope-from <logang@deltatee.com>)
- id 1nwoww-00EP6z-6D; Thu, 02 Jun 2022 11:49:35 -0600
-Message-ID: <251c6028-c53a-28dd-2bbf-d5c8ec2496b3@deltatee.com>
-Date: Thu, 2 Jun 2022 11:49:24 -0600
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Content-Language: en-CA
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20220407154717.7695-1-logang@deltatee.com>
- <20220407154717.7695-21-logang@deltatee.com>
- <20220527125501.GD2960187@ziepe.ca>
- <a2590e27-41e8-59dc-3576-b5b8d716a198@deltatee.com>
- <20220527190307.GG2960187@ziepe.ca>
- <d336cfe8-2451-04c3-a2ce-0e8e47afd1e3@deltatee.com>
- <20220602000038.GK2960187@ziepe.ca>
- <400baba7-1cd6-09d4-4de9-2a73f08afc79@deltatee.com>
- <20220602163059.GL2960187@ziepe.ca>
- <51cc6645-2504-6d01-5626-238ed6ffff04@deltatee.com>
- <20220602172811.GN2960187@ziepe.ca>
-From: Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <20220602172811.GN2960187@ziepe.ca>
-X-SA-Exim-Connect-IP: 24.64.144.200
-X-SA-Exim-Rcpt-To: jgg@ziepe.ca, linux-kernel@vger.kernel.org,
- linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
- linux-pci@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de,
- dan.j.williams@intel.com, christian.koenig@amd.com, jhubbard@nvidia.com,
- ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch,
- andrzej.jakowski@intel.com, dave.b.minturn@intel.com, jason@jlekstrand.net,
- dave.hansen@linux.intel.com, jianxin.xiong@intel.com, helgaas@kernel.org,
- ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com,
- ckulkarnilinux@gmail.com, rcampbell@nvidia.com, bhelgaas@google.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH v6 20/21] PCI/P2PDMA: Introduce pci_mmap_p2pmem()
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: linux-pci@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
- linux-nvme@lists.infradead.org, Stephen Bates <sbates@raithlin.com>,
- linux-mm@kvack.org, Jason Ekstrand <jason@jlekstrand.net>,
- Ira Weiny <ira.weiny@intel.com>, Christoph Hellwig <hch@lst.de>,
- Minturn Dave B <dave.b.minturn@intel.com>,
- Martin Oliveira <martin.oliveira@eideticom.com>,
- Matthew Wilcox <willy@infradead.org>,
- Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
- Bjorn Helgaas <helgaas@kernel.org>, Daniel Vetter <daniel.vetter@ffwll.ch>,
- Ralph Campbell <rcampbell@nvidia.com>, John Hubbard <jhubbard@nvidia.com>,
- linux-block@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
- Dan Williams <dan.j.williams@intel.com>,
- Jakowski Andrzej <andrzej.jakowski@intel.com>,
- Xiong Jianxin <jianxin.xiong@intel.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
- =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+ with ESMTP id d4O860c146Gl for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Jun 2022 19:24:24 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com
+ [IPv6:2a00:1450:4864:20::634])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 3C19483E26
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 19:24:24 +0000 (UTC)
+Received: by mail-ej1-x634.google.com with SMTP id s6so262735eja.0
+ for <iommu@lists.linux-foundation.org>; Thu, 02 Jun 2022 12:24:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=from:to:cc:subject:date:message-id:in-reply-to:references;
+ bh=JATYvLe48LS2H6IM0secvITvXQRFYJatDO7tIGdxKew=;
+ b=VTT0OBaJLQkU0DXmYjkEMy4pAELAV+jBlguhxMn7A/UqRxOPNmS5CHgPtJ8qEHZ37t
+ dJchUBQgCQYu0sVoQ3XZJeZMu/D3NfZmgNzNcTSM6d3mQgW/gfiuwtDFZ3C/zopEft70
+ 53psImCdfXqfPzsfnsJ0x1WX2TilCTwWqqoFx42M3g540JOK5MIBPNJ4HDu3rtPd0NvR
+ Q9zPUyeZA5Hv2CYInUh8MlFvL4nmj/eO1LHolt3AXfJI734JjCLw7bSnIYS5ZeZ4TIuR
+ W3MaS7EEAi42acDU5NxK7pTxBgmMuOOT0q63i2Wpbh1F/ySWKn407asxBaQC4EJYFYUB
+ ZPxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references;
+ bh=JATYvLe48LS2H6IM0secvITvXQRFYJatDO7tIGdxKew=;
+ b=U9reKELh6gLF8PmUrU7b2sMdTfL/5E9r8NTUhZ+swwa3rGwm5Ha6VZLmq1iHj+G4U9
+ B6I2RYA9DzUBa1BOHYyrN8a9CSMXKydDDtMZG0xA0hXRmqyuDGXUhmxuJh7Vobw+e0Kc
+ Vbg7L82ueGCSvegIaIT91RwvBCoyBA0cBAUDV4PwaGp95rFB5C6hDXU8s32m4kqnWWWF
+ pRY9VWBxvFBrtdom5/5PWy8nAteJ61awt9c/Uh9k61oKPYE+ADZ+4pkO5XZpiC0fW7mX
+ MPgm7H7mgRT4bBZd8ZR+g1Yn6PUn2f26VmLIVDBlWkvVNWUMj4fFHAqTxLZ52Yh/poWw
+ Pcfw==
+X-Gm-Message-State: AOAM531ZbzwA17y1xuGrjgegyWNIrbrXiulPwTjxnlk42SfAtFu+xPWT
+ 0Q8/KqdbrCizvZWw4LZrRH0=
+X-Google-Smtp-Source: ABdhPJwiCOLciOxN6TBYEcpArcIF1bwM/jhBDOJnBMmkSZAOupAwiR+Hr2XzW8lOBJHN2sRoLEmt4Q==
+X-Received: by 2002:a17:906:8146:b0:6ff:119c:881f with SMTP id
+ z6-20020a170906814600b006ff119c881fmr5659395ejw.38.1654197862292; 
+ Thu, 02 Jun 2022 12:24:22 -0700 (PDT)
+Received: from otyshchenko.router ([212.22.223.21])
+ by smtp.gmail.com with ESMTPSA id
+ eg13-20020a056402288d00b0042dce73168csm2938301edb.13.2022.06.02.12.24.20
+ (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+ Thu, 02 Jun 2022 12:24:21 -0700 (PDT)
+From: Oleksandr Tyshchenko <olekstysh@gmail.com>
+To: xen-devel@lists.xenproject.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux-foundation.org
+Subject: [PATCH V4 5/8] dt-bindings: Add xen,
+ grant-dma IOMMU description for xen-grant DMA ops
+Date: Thu,  2 Jun 2022 22:23:50 +0300
+Message-Id: <1654197833-25362-6-git-send-email-olekstysh@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1654197833-25362-1-git-send-email-olekstysh@gmail.com>
+References: <1654197833-25362-1-git-send-email-olekstysh@gmail.com>
+Cc: Juergen Gross <jgross@suse.com>,
+ Stefano Stabellini <sstabellini@kernel.org>, Julien Grall <julien@xen.org>,
+ Arnd Bergmann <arnd@arndb.de>, "Michael S. Tsirkin" <mst@redhat.com>,
+ Christoph Hellwig <hch@infradead.org>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,55 +99,109 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
 
+The main purpose of this binding is to communicate Xen specific
+information using generic IOMMU device tree bindings (which is
+a good fit here) rather than introducing a custom property.
 
-On 2022-06-02 11:28, Jason Gunthorpe wrote:
-> On Thu, Jun 02, 2022 at 10:49:15AM -0600, Logan Gunthorpe wrote:
->>
->>
->> On 2022-06-02 10:30, Jason Gunthorpe wrote:
->>> On Thu, Jun 02, 2022 at 10:16:10AM -0600, Logan Gunthorpe wrote:
->>>
->>>>> Just stuff the pages into the mmap, and your driver unprobe will
->>>>> automatically block until all the mmaps are closed - no different than
->>>>> having an open file descriptor or something.
->>>>
->>>> Oh is that what we want?
->>>
->>> Yes, it is the typical case - eg if you have a sysfs file open unbind
->>> hangs indefinitely. Many drivers can't unbind while they have open file
->>> descriptors/etc.
->>>
->>> A couple drivers go out of their way to allow unbinding while a live
->>> userspace exists but this can get complicated. Usually there should be
->>> a good reason.
->>>
->>> The module will already be refcounted anyhow because the mmap points
->>> to a char file which holds a module reference - meaning a simple rmmod
->>> of the driver shouldn't work already..
->>
->> Also, I just tried it... If I open a sysfs file for an nvme device (ie.
->> /sys/class/nvme/nvme4/cntlid) and unbind the device, it does not block.
->> A subsequent read on that file descriptor returns ENODEV. Which is what
->> I would have expected.
-> 
-> Oh interesting, this has been changed since years ago when I last
-> looked, the kernfs_get_active() is now more narrowed than it once
-> was. So manybe sysfs isn't the same concern it used to be!
+Introduce Xen specific IOMMU for the virtualized device (e.g. virtio)
+to be used by Xen grant DMA-mapping layer in the subsequent commit.
 
-Yeah, so I really think *not* blocking unbind indefinitely is the better
-approach here. It's what has always been done with device dax, etc.
-mmaps in userspace processes get unmapped and will fault with SIGBUS on
-next access and unbind will actually unbind the device relatively
-promptly. Userspace processes can fail or try to handle the device going
-away gracefully.
+The reference to Xen specific IOMMU node using "iommus" property
+indicates that Xen grant mappings need to be enabled for the device,
+and it specifies the ID of the domain where the corresponding backend
+resides. The domid (domain ID) is used as an argument to the Xen grant
+mapping APIs.
 
-Logan
+This is needed for the option to restrict memory access using Xen grant
+mappings to work which primary goal is to enable using virtio devices
+in Xen guests.
+
+Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
+---
+Changes RFC -> V1:
+   - update commit subject/description and text in description
+   - move to devicetree/bindings/arm/
+
+Changes V1 -> V2:
+   - update text in description
+   - change the maintainer of the binding
+   - fix validation issue
+   - reference xen,dev-domid.yaml schema from virtio/mmio.yaml
+
+Change V2 -> V3:
+   - Stefano already gave his Reviewed-by, I dropped it due to the changes (significant)
+   - use generic IOMMU device tree bindings instead of custom property
+     "xen,dev-domid"
+   - change commit subject and description, was
+     "dt-bindings: Add xen,dev-domid property description for xen-grant DMA ops"
+
+Changes V3 -> V4:
+   - add Stefano's R-b
+   - remove underscore in iommu node name
+   - remove consumer example virtio@3000
+   - update text for two descriptions
+---
+ .../devicetree/bindings/iommu/xen,grant-dma.yaml   | 39 ++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
+
+diff --git a/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml b/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
+new file mode 100644
+index 00000000..be1539d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
+@@ -0,0 +1,39 @@
++# SPDX-License-Identifier: (GPL-2.0-only or BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iommu/xen,grant-dma.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Xen specific IOMMU for virtualized devices (e.g. virtio)
++
++maintainers:
++  - Stefano Stabellini <sstabellini@kernel.org>
++
++description:
++  The Xen IOMMU represents the Xen grant table interface. Grant mappings
++  are to be used with devices connected to the Xen IOMMU using the "iommus"
++  property, which also specifies the ID of the backend domain.
++  The binding is required to restrict memory access using Xen grant mappings.
++
++properties:
++  compatible:
++    const: xen,grant-dma
++
++  '#iommu-cells':
++    const: 1
++    description:
++      The single cell is the domid (domain ID) of the domain where the backend
++      is running.
++
++required:
++  - compatible
++  - "#iommu-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    iommu {
++        compatible = "xen,grant-dma";
++        #iommu-cells = <1>;
++    };
+-- 
+2.7.4
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
