@@ -1,76 +1,187 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 08D58C43334
-	for <iommu@archiver.kernel.org>; Thu,  2 Jun 2022 06:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 27C2AC433EF
+	for <iommu@archiver.kernel.org>; Thu,  2 Jun 2022 06:29:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id A79CB60B12;
-	Thu,  2 Jun 2022 06:18:48 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id C0B4040510;
+	Thu,  2 Jun 2022 06:29:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yBSnS7IXxN_s; Thu,  2 Jun 2022 06:18:46 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 08ADC60B73;
-	Thu,  2 Jun 2022 06:18:46 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 4OipqFvbkKlp; Thu,  2 Jun 2022 06:29:51 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 7F1BA40025;
+	Thu,  2 Jun 2022 06:29:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9F55AC0080;
-	Thu,  2 Jun 2022 06:18:45 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1E76AC002D
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 06:18:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 53BC2C0032;
+	Thu,  2 Jun 2022 06:29:51 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A62F1C002D
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 06:29:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id F1E6982BE5
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 06:18:43 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 8EEC5813BE
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 06:29:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bPV-TE9i9cdE for <iommu@lists.linux-foundation.org>;
- Thu,  2 Jun 2022 06:18:39 +0000 (UTC)
+ with ESMTP id YqmV-aIZ4Qnz for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Jun 2022 06:29:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp1.osuosl.org (Postfix) with ESMTPS id DD75982BC0
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 06:18:38 +0000 (UTC)
-X-UUID: 1eed4d444bfe48c5abd146ff8529dfa1-20220602
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5, REQID:ed063c35-6848-45de-8eb4-a1723bfda1ba, OB:0,
- LO
- B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
- ION:release,TS:-5
-X-CID-META: VersionHash:2a19b09, CLOUDID:2050920d-3a0d-4bbe-9d72-0e5d26d57423,
- C
- OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
- ,QS:0,BEC:nil
-X-UUID: 1eed4d444bfe48c5abd146ff8529dfa1-20220602
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by
- mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 428153746; Thu, 02 Jun 2022 14:18:31 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3; 
- Thu, 2 Jun 2022 14:18:29 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Thu, 2 Jun 2022 14:18:29 +0800
-Message-ID: <e970f47d462b0cca9bc6107843721b6b0aabd73a.camel@mediatek.com>
-Subject: Re: [PATCH 2/3] iommu: mtk_iommu: add support for 6-bit encoded
- port IDs
-To: Fabien Parent <fparent@baylibre.com>
-Date: Thu, 2 Jun 2022 14:18:29 +0800
-In-Reply-To: <20220530180328.845692-2-fparent@baylibre.com>
-References: <20220530180328.845692-1-fparent@baylibre.com>
- <20220530180328.845692-2-fparent@baylibre.com>
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id E9A6B813B7
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 06:29:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1654151386; x=1685687386;
+ h=from:to:cc:subject:date:message-id:references:
+ in-reply-to:content-transfer-encoding:mime-version;
+ bh=CACt+NqSvTuS5kcLawOZGr1REKwBP421MpXryJmzQl4=;
+ b=HaVQGTggQcLEK/sBEs1ig3NivBXOl09WaAMoSYsIJu5xJcfDGKP1l6y2
+ meLnAf2poYmKiCq/WvrpKjoAs0mt3HVhsx9CzKeHa0443WeEVORI/dYyz
+ TTUQLPrfwTNamZ9tYwEmswN7jeUzIzrEPy+lYxLBE1zleHMCKe3fqYk2M
+ 3MoIc03UJ3rKaSZqtegKRRPfSCoA8LwCzjw92Ym+HbeBG84Sgyje8hfbG
+ obszGDENwkYWGydGw3nNqleFLqo6Oef2dxo5MHOea9T1G7Xqk2DeDJTGn
+ 7K99YHdZ7hFJ6VnLW4tMQOSzSNZtiLuc/Cz0v/YXMdffMbkhgkCGerqLS g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="275848599"
+X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; d="scan'208";a="275848599"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 01 Jun 2022 23:29:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; d="scan'208";a="581938095"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+ by fmsmga007.fm.intel.com with ESMTP; 01 Jun 2022 23:29:45 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 1 Jun 2022 23:29:44 -0700
+Received: from orsmsx604.amr.corp.intel.com (10.22.229.17) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 1 Jun 2022 23:29:44 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Wed, 1 Jun 2022 23:29:44 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.42) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Wed, 1 Jun 2022 23:29:44 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GbnfGKlAXQZf9rJRs1RcXhDbjOAa/TW2oqy0+S5uiWq0thNVFOH2XXSjfmH0KMtwT2HI5OhmMRvN1aj9Cto8wkiXgnyAtfHnLQStlKPzXJpPFEkqgaTk3govDLEc+A6sg95Y2GulWj2OeIcp7/hv3aEhdGLU+6vJVO2zPjXq+yPwp2u4xmT9m53y+aNwzcwChlI6UfXncgHt80pLvsVbZwTLPRCqB0nyUu5WcAA0BpgghUcbtihyV1HPzyaTRfcOofU5fsNXGdiRnem4VWPmgeq4PCPR7syO+NWxFAONqOMPp8qywoFpXOtiGIJHXdZm/1CVbaW8mpuEgcGGYgC90g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CACt+NqSvTuS5kcLawOZGr1REKwBP421MpXryJmzQl4=;
+ b=b+rMJ+x5+UXwXZW0hs4s5oF1dzct5Jm9GF3wDAG550cT2gBVyQfcpgq/Jk3QZ8pymDzajtxyyjrZWp1zMyTSmfR+MjtbLLGfoo+p6cfEBtaUES80Q+34uHoizysMLpc0OrJHKpKQS+an+h8bpQutN/s5KufvwOE8r3c7Q3UF+4Klaxy2hlYEUphuEKWp2JKr8n4nDEmjxsw+SR0Dkqhyk7LzhiyhXxAizsawwZkqXsQbA378KbrGYlgsYLwlDyx/BjtkpVsecCJhBNchQ15MhVeCyDqQTkoQ1q69zsepl9/9PXFONRzWSXNKOVp8il2QqUcz8mK5qfA/87DOFQR7jw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by MWHPR11MB1341.namprd11.prod.outlook.com (2603:10b6:300:2b::16)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13; Thu, 2 Jun
+ 2022 06:29:42 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::a1cb:c445:9900:65c8]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::a1cb:c445:9900:65c8%7]) with mapi id 15.20.5314.012; Thu, 2 Jun 2022
+ 06:29:42 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Raj, 
+ Ashok" <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, "Jason
+ Gunthorpe" <jgg@nvidia.com>
+Subject: RE: [PATCH 09/12] iommu/vt-d: Check device list of domain in domain
+ free path
+Thread-Topic: [PATCH 09/12] iommu/vt-d: Check device list of domain in domain
+ free path
+Thread-Index: AQHYcZPVYxDxhgtiEEikhmCfUbpnPa06TxHggAAb8QCAAT3ngA==
+Date: Thu, 2 Jun 2022 06:29:42 +0000
+Message-ID: <BN9PR11MB527652AF527A66551934CD4F8CDE9@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220527063019.3112905-1-baolu.lu@linux.intel.com>
+ <20220527063019.3112905-10-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276C3D7134CCE64D88F6F048CDF9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <0b0d9e4e-f3bb-e47d-20e5-bf380c79f7b4@linux.intel.com>
+In-Reply-To: <0b0d9e4e-f3bb-e47d-20e5-bf380c79f7b4@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: cf53e4c4-d937-41f9-aa99-08da44614738
+x-ms-traffictypediagnostic: MWHPR11MB1341:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <MWHPR11MB134155E18CF8E6297ED7D55A8CDE9@MWHPR11MB1341.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 1JAzDvkba6HdRnGDqblKxd/I/Ova29WdJ2+XVKe8Xz7h3xIVo5hBw6VMh9fHqWc2ouaq5BncAsXhXpm3dhmCokHhCS1wOjNxWlcAV1KOXl4Pynzvb1BcHN8yI6cAWKs71Td4O4QeAmRyE/uOtFwP/mVkqPXBj3PwzN4z5QmbSRSeaODFVY5qIzxUJtuhoXbfnGrxyA1J4NY7SSWs86tcIXzAy0cmjlDiyWeU1cto72ZdWI43tbTT8HFaT2c2y34pdgUGdnvosd+0JtMd+bGk/LGBnf6YsRfT7B03d61DcR3lRHLYOwOnRYSXv8gXHgDEaJ45r6+E1b6r+tPhZHyAd0IWOK5qDT++L6RXyOW6/tay7VENUEYXRE7H78eWCpAn5px/rBi3jUacXMbRq85Oazj2r/UPtX6xo7uHu2LAyEdrZ5otrdmBeF3qN/aoXK6OYo+Vtiv3W6JymPrSNK+eBTS7RCQAV5iGrL2yXATUDNRwje9pVjiW+cOy/VS9I3HPc/nl5Y2mqWL6OxpB6LDUVcde90qHR8LPHAogUyjNWfl8jywau1ZomqKf/98ZOxA3i5I3gQ5LWbmzptU+IIaDBeXsDN7UXorgWmNHPNf0ICkRNmHMkakJoc99bJA5E6MNl7pkE9jzeuPc8J22+wpESmU0PfrJuD+Y3VYUXkCFUWgB/DrZMNLa5bPHYw99tbyHOiQqgV7FbhKKwkK7XJgMzA==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(366004)(71200400001)(9686003)(38070700005)(76116006)(53546011)(82960400001)(54906003)(38100700002)(33656002)(66476007)(110136005)(6506007)(186003)(122000001)(316002)(64756008)(66556008)(4326008)(66446008)(8676002)(7696005)(5660300002)(2906002)(86362001)(66946007)(83380400001)(508600001)(52536014)(55016003)(26005)(8936002);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?VlNRWUt3SGI2YW8yeGd6cTZ1bWgraTJVcGFQY0sveXEveURBd3UvcHAwRFdm?=
+ =?utf-8?B?bzRkRkZCVGFqYXROdS9wdzduMkQxU3cyZGU5Ukp6ay91NTlkQVBGS3ZYRm0x?=
+ =?utf-8?B?OFU0ZkMwV3dFd21mZFR1anhNQTNJamEwOE1iL2VtM2N0d1lLZWRha21kK1FW?=
+ =?utf-8?B?bXpXczdOUGFyZGhDTDIwdzEzS25pbmgvSjRCNnVkVGdsT3ZsdUdXVUZFdk1I?=
+ =?utf-8?B?VDNFaG5HdEt2cENuTU5jSjhLM0NlWHo5STRGcFRNalVZSXVwVXhnZm5uM0ZE?=
+ =?utf-8?B?ZjBMR3RONnU2QUR2M3F3L3ZzQ3V1ajRQd3VWSzl5cjFKNXZxYkdZYkFJRDcv?=
+ =?utf-8?B?RS9BSmxTd0twYnNOdVJ6L002MUY2MkhLWTJyM1VINHNudXd4am1NV1h2Vit6?=
+ =?utf-8?B?eHR5S2dDVjJSTUtnWnExcXlPR3RDb2hXMGR2bXZPU1R0RVBBbnppcEs2dW03?=
+ =?utf-8?B?QjE5anBhOFJ0WnRUYW1YYzJHbFFKOEQ5VW5TSjhkVlM3cUhDTWNEdHpSV1JL?=
+ =?utf-8?B?REt1ZzQwaCtoWksyYUpSQ2lSZUxBUk5lTW1IMkZuRHBqZ2ZqSldLWmE4aWNa?=
+ =?utf-8?B?dEdKR014VEVtcFMrL05xZVdnbUJBMmNlUWhTL3J4UkhFTWlhUlZ4U090cFhJ?=
+ =?utf-8?B?UnN6UFFlNCt4VzBjR3BVV1VxSW5KOGo1NEwxVkg4N1dyV1liVnhVZzdIL3hp?=
+ =?utf-8?B?ajU1UlRzN0tQajRHcWJZODlzcjMweWFvWkVaYWtXT0RReVNTVmx2TGRCRXFu?=
+ =?utf-8?B?QzE5UmtILzE0ZDRGMHAzay9CQlQwL2NjWG5jWVkzYVhnZlZ2Qk1rTk92RS9K?=
+ =?utf-8?B?K21uODBpUDdadGM0MmhlbnNIWDNiWDkzWGEvd0N3MjVtOHkzYzlvS0taa2RF?=
+ =?utf-8?B?enYzejNJZks0RjFxeTBDV2xKYXVhbExUMk1IR2pEMisxK1hsY01MYkpWcnNB?=
+ =?utf-8?B?UFhuNDYzSzVrbmZaWC96S0tIdExlSTlUTWdmSGVVNXliaTVHNzdRMmlWR3Ra?=
+ =?utf-8?B?RkZ2Z0FaSWxpcWlISlNnMzRINHhhSkRjbmxwb0JMbmd0bjBKVmNkRHpHUGtO?=
+ =?utf-8?B?aE5kS0tLanYrT1lidjVkWm90bVFpbjNCc0duVG40dXBwLzQwem5ENWhYV0xw?=
+ =?utf-8?B?V0dzVEQ1VkR3NkZNc3pXYURMcUJkN2ZFM3ZTamxCaUlnSUpiMHNmSVVFajZD?=
+ =?utf-8?B?ZkdnKytPY2llMVNFVmhyaDJFNGkyME55NDNBa2tzbVlhU2xTSDh0OTlsNkhh?=
+ =?utf-8?B?akNnUUVnNklyT21ybk8rd3F0QS9kTlNhWHZXQUdpdmowTDByZXExNXBpVTg5?=
+ =?utf-8?B?SjNFbHN2bTVuVXg2RjFyR0tiVjdPK0twcy96aHd0eHErclFsaldTSVN3VHhx?=
+ =?utf-8?B?L0VqVGxGZkx5SHdNTjRUQ0Y4b09XQ2taamF6Uk4ybjJsMUtLcHVObmF4Q2VU?=
+ =?utf-8?B?UHdMaXpNWXVEUzRNS2h2RlMwRk9SQlBkRXRaK3drZFVpdmczS0M3V2h6Tmww?=
+ =?utf-8?B?ck8yZENQaHVKamEwcTZtR3BsUWpyWTJGR1NhMCtZNkx1Rkt5MXB2NjZ6V0JX?=
+ =?utf-8?B?cGo2YnZvMDJoMmZIQUE1YU8zMU1zYTNwVnJpazhNZFdOa255OTdROEJzUk1X?=
+ =?utf-8?B?M2lGL05Yc1BhK2FvN1ZwWFp4WVd1c255a2pJSVBjc2k4OENyWWxPYlFxQUl4?=
+ =?utf-8?B?ZXpQbzVwTGphV01seUxxdWpwNEJxb1NUSW9ycFlvSEN0dU9XTXRlREJobkla?=
+ =?utf-8?B?UTFCRUxFVEZtUVBvSm94WDU0S0tjbGpnNCtyZld3aGMrb0hpYXNZcWNjYXJv?=
+ =?utf-8?B?YklEbmIrS0RxbHUyWlZaK0xuUnFTQ2xPSzZLOG8yaE9JZkY4WEtzN0hUYmtl?=
+ =?utf-8?B?VG5VMjltUGdHNitob3cxVkFRc3dqZDdmV1krVDNXZzJFcW5EVk9ZZG9Ebis4?=
+ =?utf-8?B?UE1lSFJXZmVNWStFVlJ4YldHZ2JCMkV5YlAyeEtJOUF6MzI4STAwUWswQ3dY?=
+ =?utf-8?B?bmhIOXh2M2R6dkZYcW9scXBUYk84Z1p6NjBHVDljY2I4SzdZbVNzamkvTmVS?=
+ =?utf-8?B?VzQreTJFdzQ2VHhnbEsrcHpkZk9oYm5rK0dQVktoUFhvRVRiR2pTRHlkbWFR?=
+ =?utf-8?B?eFR2YkZjSENlTnVJUVpyVFVlQi9BUkRNckpxMG9TejJ6WmdYN0pHY25XbmhM?=
+ =?utf-8?B?SkxiQzZ1dkVJRjNEVnQyTTcybVNzejVhQVBUdnpQaTRuQ1R5VU8rU0tZR1Iy?=
+ =?utf-8?B?L2VVM2JCSmprY3JmTGF3TXlzNldnR3J2cVBKTWZRdmlSQlErcDcySHQwT0t1?=
+ =?utf-8?B?Y2lESDU1WHRMSmNmeVFHN1kybGtXdGVQR21tWTJZVU5EekF2YjFJQT09?=
 MIME-Version: 1.0
-X-MTK: N
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, Matthias
- Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cf53e4c4-d937-41f9-aa99-08da44614738
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jun 2022 06:29:42.3446 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: suGbWwQbIWcJRdNhdFUB1JHz/wZGqJyCJNsjfa/H5HiWm5X6oRPxdJ8TONSWuHR0V7F8DJxR+vAHF8YvIcs3Ow==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1341
+X-OriginatorOrg: intel.com
+Cc: Will Deacon <will@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,150 +194,75 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Yong Wu <yong.wu@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Fabien,
-
-Thanks for very much for this patch.
-
-Retitle to iommu/mediatek: Xxx
-
-On Mon, 2022-05-30 at 20:03 +0200, Fabien Parent wrote:
-> Until now the port ID was always encoded as a 5-bit data. On MT8365,
-> the port ID is encoded as a 6-bit data. This requires to rework the
-> macros F_MMU_INT_ID_LARB_ID, and F_MMU_INT_ID_PORT_ID in order
-> to support 5-bit and 6-bit encoded port IDs.
+> From: Baolu Lu <baolu.lu@linux.intel.com>
+> Sent: Wednesday, June 1, 2022 7:02 PM
 > 
-> Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> ---
->  drivers/iommu/mtk_iommu.c | 17 +++++++++++++----
->  drivers/iommu/mtk_iommu.h |  1 +
->  2 files changed, 14 insertions(+), 4 deletions(-)
+> On 2022/6/1 17:28, Tian, Kevin wrote:
+> >> From: Lu Baolu <baolu.lu@linux.intel.com>
+> >> Sent: Friday, May 27, 2022 2:30 PM
+> >>
+> >> When the IOMMU domain is about to be freed, it should not be set on
+> any
+> >> device. Instead of silently dealing with some bug cases, it's better to
+> >> trigger a warning to report and fix any potential bugs at the first time.
+> >>
+> >
+> >
+> >>   static void domain_exit(struct dmar_domain *domain)
+> >>   {
+> >> -
+> >> -	/* Remove associated devices and clear attached or cached domains
+> >> */
+> >> -	domain_remove_dev_info(domain);
+> >> +	if (WARN_ON(!list_empty(&domain->devices)))
+> >> +		return;
+> >>
+> >
+> > warning is good but it doesn't mean the driver shouldn't deal with
+> > that situation to make it safer e.g. blocking DMA from all attached
+> > device...
 > 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 6fd75a60abd6..b692347d8d56 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -103,8 +103,10 @@
->  #define REG_MMU1_INT_ID				0x154
->  #define F_MMU_INT_ID_COMM_ID(a)			(((a) >> 9) &
-> 0x7)
->  #define F_MMU_INT_ID_SUB_COMM_ID(a)		(((a) >> 7) & 0x3)
-> -#define F_MMU_INT_ID_LARB_ID(a)			(((a) >> 7) &
-> 0x7)
-> -#define F_MMU_INT_ID_PORT_ID(a)			(((a) >> 2) &
-> 0x1f)
-> +#define F_MMU_INT_ID_LARB_ID(a, port_width)	\
-> +				((a) >> ((port_width + 2) & 0x7))
-> +#define F_MMU_INT_ID_PORT_ID(a, port_width)	\
-> +				(((a) >> 2) & GENMASK(port_width - 1,
-> 0))
+> I have ever thought the same thing. :-)
+> 
+> Blocking DMA from attached device should be done when setting blocking
+> domain to the device. It should not be part of freeing a domain.
 
-Add () for port_width.
+yes but here we are talking about some bug scenario.
 
->  
->  #define MTK_PROTECT_PA_ALIGN			256
->  
-> @@ -291,12 +293,13 @@ static irqreturn_t mtk_iommu_isr(int irq, void
-> *dev_id)
->  		fault_pa |= (u64)pa34_32 << 32;
->  	}
->  
-> -	fault_port = F_MMU_INT_ID_PORT_ID(regval);
-> +	fault_port = F_MMU_INT_ID_PORT_ID(regval, data->plat_data-
-> >port_width);
->  	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_SUB_COMM)) {
->  		fault_larb = F_MMU_INT_ID_COMM_ID(regval);
->  		sub_comm = F_MMU_INT_ID_SUB_COMM_ID(regval);
->  	} else {
-> -		fault_larb = F_MMU_INT_ID_LARB_ID(regval);
-> +		fault_larb = F_MMU_INT_ID_LARB_ID(regval,
-> +						  data->plat_data-
-> >port_width);
->  	}
->  	fault_larb = data->plat_data-
-> >larbid_remap[fault_larb][sub_comm];
->  
-> @@ -1034,6 +1037,7 @@ static const struct mtk_iommu_plat_data
-> mt2712_data = {
->  	.iova_region  = single_domain,
->  	.iova_region_nr = ARRAY_SIZE(single_domain),
->  	.larbid_remap = {{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}},
-> +	.port_width   = 5,
->  };
->  
->  static const struct mtk_iommu_plat_data mt6779_data = {
-> @@ -1043,6 +1047,7 @@ static const struct mtk_iommu_plat_data
-> mt6779_data = {
->  	.iova_region   = single_domain,
->  	.iova_region_nr = ARRAY_SIZE(single_domain),
->  	.larbid_remap  = {{0}, {1}, {2}, {3}, {5}, {7, 8}, {10}, {9}},
-> +	.port_width    = 5,
->  };
->  
->  static const struct mtk_iommu_plat_data mt8167_data = {
-> @@ -1052,6 +1057,7 @@ static const struct mtk_iommu_plat_data
-> mt8167_data = {
->  	.iova_region  = single_domain,
->  	.iova_region_nr = ARRAY_SIZE(single_domain),
->  	.larbid_remap = {{0}, {1}, {2}}, /* Linear mapping. */
-> +	.port_width   = 5,
->  };
->  
->  static const struct mtk_iommu_plat_data mt8173_data = {
-> @@ -1062,6 +1068,7 @@ static const struct mtk_iommu_plat_data
-> mt8173_data = {
->  	.iova_region  = single_domain,
->  	.iova_region_nr = ARRAY_SIZE(single_domain),
->  	.larbid_remap = {{0}, {1}, {2}, {3}, {4}, {5}}, /* Linear
-> mapping. */
-> +	.port_width   = 5,
->  };
->  
->  static const struct mtk_iommu_plat_data mt8183_data = {
-> @@ -1071,6 +1078,7 @@ static const struct mtk_iommu_plat_data
-> mt8183_data = {
->  	.iova_region  = single_domain,
->  	.iova_region_nr = ARRAY_SIZE(single_domain),
->  	.larbid_remap = {{0}, {4}, {5}, {6}, {7}, {2}, {3}, {1}},
-> +	.port_width   = 5,
->  };
->  
->  static const struct mtk_iommu_plat_data mt8192_data = {
-> @@ -1082,6 +1090,7 @@ static const struct mtk_iommu_plat_data
-> mt8192_data = {
->  	.iova_region_nr = ARRAY_SIZE(mt8192_multi_dom),
->  	.larbid_remap   = {{0}, {1}, {4, 5}, {7}, {2}, {9, 11, 19, 20},
->  			   {0, 14, 16}, {0, 13, 18, 17}},
-> +	.port_width     = 5,
->  };
->  
->  static const struct of_device_id mtk_iommu_of_ids[] = {
-> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-> index b742432220c5..84cecaf6d61c 100644
-> --- a/drivers/iommu/mtk_iommu.h
-> +++ b/drivers/iommu/mtk_iommu.h
-> @@ -54,6 +54,7 @@ struct mtk_iommu_plat_data {
->  	enum mtk_iommu_plat m4u_plat;
->  	u32                 flags;
->  	u32                 inv_sel_reg;
-> +	u8                  port_width;
-
-Please help rename to int_id_port_width for more detailed from the
-register name (REG_MMU0_INT_ID).
-
->  
->  	unsigned int				iova_region_nr;
->  	const struct mtk_iommu_iova_region	*iova_region;
-> -- 
-> 2.36.1
+> 
+> Here, the caller asks the driver to free the domain, but the driver
+> finds that something is wrong. Therefore, it warns and returns directly.
+> The domain will still be there in use until the next set_domain().
 > 
 
+at least it'd look safer if we always try to unmap the entire domain i.e.:
+
+static void domain_exit(struct dmar_domain *domain)
+{
+-
+-	/* Remove associated devices and clear attached or cached domains */
+-	domain_remove_dev_info(domain);
+
+	if (domain->pgd) {
+		LIST_HEAD(freelist);
+
+		domain_unmap(domain, 0, DOMAIN_MAX_PFN(domain->gaw), &freelist);
+		put_pages_list(&freelist);
+	}
+
++	if (WARN_ON(!list_empty(&domain->devices)))
++		return;
+
+	kfree(domain);
+}
+
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
