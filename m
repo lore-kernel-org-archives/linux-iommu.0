@@ -1,92 +1,114 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AA341C433EF
-	for <iommu@archiver.kernel.org>; Thu,  2 Jun 2022 19:24:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0F47DC433EF
+	for <iommu@archiver.kernel.org>; Fri,  3 Jun 2022 11:21:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 2ADFA83E82;
-	Thu,  2 Jun 2022 19:24:28 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 7BEEA41608;
+	Fri,  3 Jun 2022 11:21:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id twyJ4XRFwpIs; Thu,  2 Jun 2022 19:24:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id EC92B83E26;
-	Thu,  2 Jun 2022 19:24:26 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id yVbkef3vT1hc; Fri,  3 Jun 2022 11:21:40 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id CEC07415F1;
+	Fri,  3 Jun 2022 11:21:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C987FC0032;
-	Thu,  2 Jun 2022 19:24:26 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4F2D9C002D
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 19:24:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A92A9C0039;
+	Fri,  3 Jun 2022 11:21:39 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A48BBC002D
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Jun 2022 11:21:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 30F6F83E80
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 19:24:25 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 8CD50415F1
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Jun 2022 11:21:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id d4O860c146Gl for <iommu@lists.linux-foundation.org>;
- Thu,  2 Jun 2022 19:24:24 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id QXnWQgQRPy8B for <iommu@lists.linux-foundation.org>;
+ Fri,  3 Jun 2022 11:21:37 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com
- [IPv6:2a00:1450:4864:20::634])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 3C19483E26
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jun 2022 19:24:24 +0000 (UTC)
-Received: by mail-ej1-x634.google.com with SMTP id s6so262735eja.0
- for <iommu@lists.linux-foundation.org>; Thu, 02 Jun 2022 12:24:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=JATYvLe48LS2H6IM0secvITvXQRFYJatDO7tIGdxKew=;
- b=VTT0OBaJLQkU0DXmYjkEMy4pAELAV+jBlguhxMn7A/UqRxOPNmS5CHgPtJ8qEHZ37t
- dJchUBQgCQYu0sVoQ3XZJeZMu/D3NfZmgNzNcTSM6d3mQgW/gfiuwtDFZ3C/zopEft70
- 53psImCdfXqfPzsfnsJ0x1WX2TilCTwWqqoFx42M3g540JOK5MIBPNJ4HDu3rtPd0NvR
- Q9zPUyeZA5Hv2CYInUh8MlFvL4nmj/eO1LHolt3AXfJI734JjCLw7bSnIYS5ZeZ4TIuR
- W3MaS7EEAi42acDU5NxK7pTxBgmMuOOT0q63i2Wpbh1F/ySWKn407asxBaQC4EJYFYUB
- ZPxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references;
- bh=JATYvLe48LS2H6IM0secvITvXQRFYJatDO7tIGdxKew=;
- b=U9reKELh6gLF8PmUrU7b2sMdTfL/5E9r8NTUhZ+swwa3rGwm5Ha6VZLmq1iHj+G4U9
- B6I2RYA9DzUBa1BOHYyrN8a9CSMXKydDDtMZG0xA0hXRmqyuDGXUhmxuJh7Vobw+e0Kc
- Vbg7L82ueGCSvegIaIT91RwvBCoyBA0cBAUDV4PwaGp95rFB5C6hDXU8s32m4kqnWWWF
- pRY9VWBxvFBrtdom5/5PWy8nAteJ61awt9c/Uh9k61oKPYE+ADZ+4pkO5XZpiC0fW7mX
- MPgm7H7mgRT4bBZd8ZR+g1Yn6PUn2f26VmLIVDBlWkvVNWUMj4fFHAqTxLZ52Yh/poWw
- Pcfw==
-X-Gm-Message-State: AOAM531ZbzwA17y1xuGrjgegyWNIrbrXiulPwTjxnlk42SfAtFu+xPWT
- 0Q8/KqdbrCizvZWw4LZrRH0=
-X-Google-Smtp-Source: ABdhPJwiCOLciOxN6TBYEcpArcIF1bwM/jhBDOJnBMmkSZAOupAwiR+Hr2XzW8lOBJHN2sRoLEmt4Q==
-X-Received: by 2002:a17:906:8146:b0:6ff:119c:881f with SMTP id
- z6-20020a170906814600b006ff119c881fmr5659395ejw.38.1654197862292; 
- Thu, 02 Jun 2022 12:24:22 -0700 (PDT)
-Received: from otyshchenko.router ([212.22.223.21])
- by smtp.gmail.com with ESMTPSA id
- eg13-20020a056402288d00b0042dce73168csm2938301edb.13.2022.06.02.12.24.20
- (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
- Thu, 02 Jun 2022 12:24:21 -0700 (PDT)
-From: Oleksandr Tyshchenko <olekstysh@gmail.com>
-To: xen-devel@lists.xenproject.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux-foundation.org
-Subject: [PATCH V4 5/8] dt-bindings: Add xen,
- grant-dma IOMMU description for xen-grant DMA ops
-Date: Thu,  2 Jun 2022 22:23:50 +0300
-Message-Id: <1654197833-25362-6-git-send-email-olekstysh@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1654197833-25362-1-git-send-email-olekstysh@gmail.com>
-References: <1654197833-25362-1-git-send-email-olekstysh@gmail.com>
-Cc: Juergen Gross <jgross@suse.com>,
- Stefano Stabellini <sstabellini@kernel.org>, Julien Grall <julien@xen.org>,
- Arnd Bergmann <arnd@arndb.de>, "Michael S. Tsirkin" <mst@redhat.com>,
- Christoph Hellwig <hch@infradead.org>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Will Deacon <will@kernel.org>
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam12on20613.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:fe5a::613])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id F1B71415E2
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Jun 2022 11:21:36 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=k/4MdY8DkI6JM9i1XVyibo7DpuvkdSeCWN9n+7KQ/1yOcU8RbactRZm41lu9oN2FN/8UfK5RpQTsddLqgvvAC/Zd5qt6IUAqGBEJ4xB8qSP0QHB/jJ+jM8gSdDG7l5PtExsZ7eMpOHp81kgOkGQ8F1qyvlIEgh5rOA0OFn97Ng/BSe1NKRkBaXtHX+fGth87w3iWqQ/2Ib6VbKCa8Q88OHYAtbTRguiRXjwQ+BhASnx/FbyVDnbL3GcB6WBqsj78uvGDCGQUUBgq7oeiEsgL3P2yEGNILfztkVNrn2UYQFs2JWKUFdYUZyODiOSAX3qxZnJ++JvsR+9wsExyRnwv8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PHjqZTCKIgXGhcMpsgV6LaGqXDxANumAi1f1TYPDk8k=;
+ b=aB7wYvy23DopeR7ydbC6qChhZ1zBjlQ+q0b303UU9aBD/awLcFFzcyGoRVirrEHQVFhxzzclQ2O7XrkoOxmAT8h0cr7QylFWIAWZn1MYOJHevEoZWnNO9lH+wlp1ryuO4db52mpQiLoZDgeCxtCv8QVqogyzjitY9GHkJ8jmEeHTs4awxv/ESyjK2AGlHrutetyNvrr4fLpAmmAwO2x4ONrg3GvZsV9IEQi/u85ujMTIn/ZkNjNC20JouwQkJn51A92BQBL1IQH21C2y3k/rYmcd7QUm1zH2TgDB6bIWjprKvlU/o9gqPJcolpmubVVupCOaTRU2/3f2vz4WcDSTTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux-foundation.org
+ smtp.mailfrom=amd.com; dmarc=pass (p=quarantine sp=quarantine pct=100)
+ action=none header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PHjqZTCKIgXGhcMpsgV6LaGqXDxANumAi1f1TYPDk8k=;
+ b=ar9WB7k4KyXgZ/OFo7x6DI8GmHRBL/Fa6uj5KuolzEqkQKlq+YMPFkBbyY488EU0y0cMdwjT0PvFIrt+lKE3BamFtk+SuWrV4GC0++kNp4OnqHF6/B8YPqNQsA6MQL9te0qiezAuziSZUUZUOyxo+camxn5LlkBPHgcK9kglq1o=
+Received: from DM5PR20CA0027.namprd20.prod.outlook.com (2603:10b6:3:13d::13)
+ by BYAPR12MB3094.namprd12.prod.outlook.com (2603:10b6:a03:db::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12; Fri, 3 Jun
+ 2022 11:21:33 +0000
+Received: from DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:3:13d:cafe::61) by DM5PR20CA0027.outlook.office365.com
+ (2603:10b6:3:13d::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.15 via Frontend
+ Transport; Fri, 3 Jun 2022 11:21:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT010.mail.protection.outlook.com (10.13.172.222) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5314.12 via Frontend Transport; Fri, 3 Jun 2022 11:21:31 +0000
+Received: from kali.amdval.net (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 3 Jun
+ 2022 06:21:28 -0500
+To: <iommu@lists.linux-foundation.org>
+Subject: [PATCH v1 0/7] iommu/amd: Add Generic IO Page Table Framework Support
+ for v2 Page Table
+Date: Fri, 3 Jun 2022 16:51:00 +0530
+Message-ID: <20220603112107.8603-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9042ae07-cf72-42f5-5d90-08da455335d9
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3094:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB30946FB5E0B0C38A5497442E87A19@BYAPR12MB3094.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yonVYCxwZkbJuL+CVkeIxLJ1WSlK3SgT3GbAgmRh6WnqIRSCm2tkIibfcv5aSoQ28VWor8tIaSc2vWTxUJzJgnxF8xvsPfLBCQ4tJFApeA+tKx3yGseL/e12PBLB5H88a7VxWH10sIXB5LVwzULHYOd4Jq0Ri8Pw4ga40lNB4oKIguNdsxj3apo49V6pzLkDae6lIOSMGxxn3qXVlIp1TYLDdMKVqo4sDSTUHo8id/lAzmkDXtgmhOynj9OzQ6BNXPFMBoc4Z8EdGW4GDVWmqIu8JHUdKh+9X1LV35EcslHczX92Y54BQMskTsCu0R04Mo6Uj2LJprMxK7si7tSYWoAzvAjXK0bSarnAgBqVylVlVN+qfPpVYn/e/Hl7QJGCmXn4+ZuMllcs46CfpOcksAGIAxgbWyPRiSjlZ8efjot4p4uepBZcfCoAZjppv5wXUOc85NR29pbTzw/5NFMcITOkhcj77Fx92W4dK8oyAAqvMZ3OQc3wALzoD2I9sauaEugPj9i+tdiHJ9IvFkfCFhQWq0ib1ExKygTJbUBXrWH+l93Q7stACzwrLvTpIiIDnK+D0brbCBA+S+2omrE37AZXXR2kBX+/UbTzaZ/S+VWBj2/ESQCGRyosUrUVdFGHa2nOUjHKa2bVlwYO6G2ipeyOhO1+y5Et8o5PlGDZBsIsicPuCuLdgweAWHHFjXM5d8oc5Q4Mqp38YKhxocA/XVk8C3bPgafs9RqK1CtWu70znr95xlsl81bKm94VmtNOnT/7hRfOl7WYHv1jPew1Qk7C09qpy1VgnhZDVF7RY0b1IsaIR0EsddxWeWvsRXdfg7JvTjL3nqTxVW6Hr1wp5iV4gtrL7PYepOsvdKDyXzhxJv0jbSK4gGaFvA8FB1bgck6Nsj3AMpW1Lm9ELtdVwQ==
+X-Forefront-Antispam-Report: CIP:165.204.84.17; CTRY:US; LANG:en; SCL:1; SRV:;
+ IPV:CAL; SFV:NSPM; H:SATLEXMB04.amd.com; PTR:InfoDomainNonexistent; CAT:NONE;
+ SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(83380400001)(356005)(40460700003)(8936002)(70586007)(70206006)(8676002)(316002)(44832011)(26005)(5660300002)(4326008)(6666004)(81166007)(54906003)(6916009)(336012)(86362001)(966005)(186003)(426003)(1076003)(16526019)(2616005)(508600001)(36756003)(2906002)(82310400005)(36860700001)(47076005)(71600200004)(41533002)(36900700001);
+ DIR:OUT; SFP:1101; 
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2022 11:21:31.2511 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9042ae07-cf72-42f5-5d90-08da455335d9
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d; Ip=[165.204.84.17];
+ Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT010.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3094
+Cc: Vasant Hegde <vasant.hegde@amd.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,108 +121,83 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
+From: Vasant Hegde via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Vasant Hegde <vasant.hegde@amd.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+This series introduces a new usage model for the v2 page table, where it
+can be used to implement support for DMA-API by adopting the generic
+IO page table framework.
 
-The main purpose of this binding is to communicate Xen specific
-information using generic IOMMU device tree bindings (which is
-a good fit here) rather than introducing a custom property.
+One of the target usecases is to support nested IO page tables
+where the guest uses the guest IO page table (v2) for translating
+GVA to GPA, and the hypervisor uses the host I/O page table (v1) for
+translating GPA to SPA. This is a pre-requisite for supporting the new
+HW-assisted vIOMMU presented at the KVM Forum 2020.
 
-Introduce Xen specific IOMMU for the virtualized device (e.g. virtio)
-to be used by Xen grant DMA-mapping layer in the subsequent commit.
+  https://static.sched.com/hosted_files/kvmforum2020/26/vIOMMU%20KVM%20Forum%202020.pdf
 
-The reference to Xen specific IOMMU node using "iommus" property
-indicates that Xen grant mappings need to be enabled for the device,
-and it specifies the ID of the domain where the corresponding backend
-resides. The domid (domain ID) is used as an argument to the Xen grant
-mapping APIs.
+The following components are introduced in this series:
 
-This is needed for the option to restrict memory access using Xen grant
-mappings to work which primary goal is to enable using virtio devices
-in Xen guests.
+- Part 1 (patch 1-4 and 6)
+  Refactor the current IOMMU page table code to adopt the generic IO page
+  table framework, and add AMD IOMMU Guest (v2) page table management code.
 
-Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
----
-Changes RFC -> V1:
-   - update commit subject/description and text in description
-   - move to devicetree/bindings/arm/
+- Part 2 (patch 5)
+  Add support for the AMD IOMMU Guest IO Protection feature (GIOV)
+  where requests from the I/O device without a PASID are treated as
+  if they have PASID of 0.
 
-Changes V1 -> V2:
-   - update text in description
-   - change the maintainer of the binding
-   - fix validation issue
-   - reference xen,dev-domid.yaml schema from virtio/mmio.yaml
+- Part 3 (patch 7)
+  Introduce new "amd_iommu_pgtable" command-line to allow users
+  to select the mode of operation (v1 or v2).
 
-Change V2 -> V3:
-   - Stefano already gave his Reviewed-by, I dropped it due to the changes (significant)
-   - use generic IOMMU device tree bindings instead of custom property
-     "xen,dev-domid"
-   - change commit subject and description, was
-     "dt-bindings: Add xen,dev-domid property description for xen-grant DMA ops"
+See AMD I/O Virtualization Technology Specification for more detail.
 
-Changes V3 -> V4:
-   - add Stefano's R-b
-   - remove underscore in iommu node name
-   - remove consumer example virtio@3000
-   - update text for two descriptions
----
- .../devicetree/bindings/iommu/xen,grant-dma.yaml   | 39 ++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
+  http://www.amd.com/system/files/TechDocs/48882_IOMMU_3.05_PUB.pdf
 
-diff --git a/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml b/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
-new file mode 100644
-index 00000000..be1539d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/xen,grant-dma.yaml
-@@ -0,0 +1,39 @@
-+# SPDX-License-Identifier: (GPL-2.0-only or BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iommu/xen,grant-dma.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Xen specific IOMMU for virtualized devices (e.g. virtio)
-+
-+maintainers:
-+  - Stefano Stabellini <sstabellini@kernel.org>
-+
-+description:
-+  The Xen IOMMU represents the Xen grant table interface. Grant mappings
-+  are to be used with devices connected to the Xen IOMMU using the "iommus"
-+  property, which also specifies the ID of the backend domain.
-+  The binding is required to restrict memory access using Xen grant mappings.
-+
-+properties:
-+  compatible:
-+    const: xen,grant-dma
-+
-+  '#iommu-cells':
-+    const: 1
-+    description:
-+      The single cell is the domid (domain ID) of the domain where the backend
-+      is running.
-+
-+required:
-+  - compatible
-+  - "#iommu-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    iommu {
-+        compatible = "xen,grant-dma";
-+        #iommu-cells = <1>;
-+    };
+Note:
+  This patchset is based on top of "iommu/amd: Add multiple PCI segments support" patchset [1].
+
+[1] https://lore.kernel.org/linux-iommu/20220511072141.15485-1-vasant.hegde@amd.com/T/#t
+
+Thanks,
+Vasant
+
+
+Changes from RFC -> v1:
+  - Addressed review comments from Joerg
+  - Reimplemented v2 page table
+
+RFC patchset : https://lore.kernel.org/linux-iommu/20210312090411.6030-1-suravee.suthikulpanit@amd.com/T/#t
+
+Suravee Suthikulpanit (5):
+  iommu/amd: Refactor amd_iommu_domain_enable_v2
+  iommu/amd: Update sanity check when enable PRI/ATS
+  iommu/amd: Add support for Guest IO protection
+  iommu/amd: Add support for using AMD IOMMU v2 page table for DMA-API
+  iommu/amd: Introduce amd_iommu_pgtable command-line option
+
+Vasant Hegde (2):
+  iommu/amd: Fix sparse warning
+  iommu/amd: Initial support for AMD IOMMU v2 page table
+
+ .../admin-guide/kernel-parameters.txt         |   6 +
+ drivers/iommu/amd/Makefile                    |   2 +-
+ drivers/iommu/amd/amd_iommu_types.h           |   8 +-
+ drivers/iommu/amd/init.c                      |  27 +-
+ drivers/iommu/amd/io_pgtable_v2.c             | 407 ++++++++++++++++++
+ drivers/iommu/amd/iommu.c                     |  90 ++--
+ drivers/iommu/io-pgtable.c                    |   1 +
+ include/linux/io-pgtable.h                    |   2 +
+ 8 files changed, 516 insertions(+), 27 deletions(-)
+ create mode 100644 drivers/iommu/amd/io_pgtable_v2.c
+
 -- 
-2.7.4
+2.27.0
 
 _______________________________________________
 iommu mailing list
