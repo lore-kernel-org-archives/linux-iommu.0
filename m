@@ -1,62 +1,43 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89D014C76
-	for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 16:56:02 +0000 (UTC)
-Received: by mail-wr1-f48.google.com with SMTP id v14so3371450wra.5
-        for <iommu@lists.linux.dev>; Thu, 14 Jul 2022 09:56:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=nU0WVVbdgEc789G5a6s5LocA0QeCbC2E3DQ5sHk48Y8=;
-        b=IYzHDmH6TgdKlf033EfO1Bg7jNq4Zm8uLryO7o6yzv6Ii23qReYyoXEWZNdJN4wNBz
-         91CunxhQuK2D4gOwqIQIPlvaMskTJn7ZqteC4EL4/6gPBvpJkKZAGc3wGrtaJG9IxL1a
-         CB6noJky+hMahbL7giTw4QO2UCSHzu3CTOHUm7EF2V1L2UClKHK+r40pTMyRCWXgwEcC
-         +5R7j+/v2Xc3nW2EhkvgoQgVYu7cXbbRPBdQJqhy0NF2Ua1NcIxp2VMipbNQTsSp1Lfy
-         2DWAETiTz1VZ9n+vIBEjZlwLH54b4etHBnO4sCojLtvP+erRugR8wUTqVr8wd9Mi967+
-         yWTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=nU0WVVbdgEc789G5a6s5LocA0QeCbC2E3DQ5sHk48Y8=;
-        b=Z/YGMqzZNafCHo2gpHg01H/gN++R0OEeNCdoFYT5a/idrxdizQ7ZR9G33f/TkMzvqU
-         6nMEpwvore+za/Ier6xffuRoZqO1/I8YQr8lpEdchw6vqb+FLryo8zi6T5ZdKHJyd8dS
-         G4Hp2Fc9eNupIZFSixaU/bPPi61cknk1dwf8wYrzg5Eo67D8tyB9gstH5V1q+CLxtjms
-         ZrHT5fhvTAoh2uHtXmi/RgFcrkfschh+AhtdVcgCFfVGkKPwbuKSlQPWK+ioZnzfqrow
-         pLz094dIn0zN3ktrWGljSyXQiZ35u3vE4R98XjSnctMV4IMi5NyNGswS9NnVrwrVA2lb
-         2eJQ==
-X-Gm-Message-State: AJIora+1wgW7IDH+HOUcbyLDfMdpYWYkxWB/eMh3AMOZeo0+2v+yqx4a
-	IF65VVtcM2kdeEBWiz3Y7rphJg==
-X-Google-Smtp-Source: AGRyM1s90qNS8RahfDcyAz6R2NLl80gXy4ylX6MoZ40JpBSVeuXHVLVvAuPqfZ3uGCFbPVq6lPH2Xw==
-X-Received: by 2002:a5d:6da3:0:b0:21d:cde7:cb7 with SMTP id u3-20020a5d6da3000000b0021dcde70cb7mr227704wrs.683.1657817760912;
-        Thu, 14 Jul 2022 09:56:00 -0700 (PDT)
-Received: from localhost ([31.134.121.151])
-        by smtp.gmail.com with ESMTPSA id l29-20020a05600c1d1d00b003a2e27fc275sm2797092wms.12.2022.07.14.09.56.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 09:56:00 -0700 (PDT)
-From: Sam Protsenko <semen.protsenko@linaro.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Janghyuck Kim <janghyuck.kim@samsung.com>,
-	Cho KyongHo <pullip.cho@samsung.com>,
-	Daniel Mentz <danielmentz@google.com>,
-	David Virag <virag.david003@gmail.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 6/6] iommu/exynos: Enable default VM instance on SysMMU v7
-Date: Thu, 14 Jul 2022 19:55:50 +0300
-Message-Id: <20220714165550.8884-7-semen.protsenko@linaro.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220714165550.8884-1-semen.protsenko@linaro.org>
-References: <20220714165550.8884-1-semen.protsenko@linaro.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDFCA17C9
+	for <iommu@lists.linux.dev>; Fri, 15 Jul 2022 01:19:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657847996; x=1689383996;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ah6PND1BxSCx3aUAfM5nAhsQZ1u1LGPIMXCR5CXrLJI=;
+  b=j6KybR4+kF8X21JfloJ/p9QsOPsQmyLL3rELLidav165ELalJsF9baOc
+   s0sNy8InDBABSi+itfkWIUNRry77aLEvUtLzYZwdoJCZEBaQM1nGVlxzw
+   /7TEy2GBapURtHqEVriDrpRUvMh4ZgMKAm8R9BojlTYKymEvx2g7u7B7l
+   sK1XhCu+cvSBluUZycBO7rAsxtlgF+ujhKBhOCxU8lL6pIvEl7racEoBG
+   lMulBdW1KR/RGpLnQZ16FA0w1M6PZ7QU1/UWC+r/y4ZZFz7GThkgRFyue
+   MPHxlAmVvWRP9Pn90sV1tZP54qYBhAd7H7DK/XRBXOYbmQZ7fVKUGHB3P
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="285696727"
+X-IronPort-AV: E=Sophos;i="5.92,272,1650956400"; 
+   d="scan'208";a="285696727"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 18:19:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,272,1650956400"; 
+   d="scan'208";a="571323498"
+Received: from tina-desktop.bj.intel.com ([10.238.154.66])
+  by orsmga006.jf.intel.com with ESMTP; 14 Jul 2022 18:19:54 -0700
+From: Tina Zhang <tina.zhang@intel.com>
+To: iommu@lists.linux.dev
+Cc: joro@8bytes.org,
+	will@kernel.org,
+	kevin.tian@intel.com,
+	jean-philippe@linaro.org,
+	baolu.lu@linux.intel.com,
+	Tina Zhang <tina.zhang@intel.com>
+Subject: [PATCH v2] iommu/virtio: Add map/unmap_pages() callbacks implementation
+Date: Mon,  6 Jun 2022 00:11:52 +0800
+Message-Id: <20220605161152.3171-1-tina.zhang@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,73 +46,71 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In order to enable SysMMU v7 with VM register layout, at least the
-default VM instance (n=0) must be enabled, in addition to enabling the
-SysMMU itself. To do so, add corresponding write to MMU_CTRL_VM[0]
-register, before writing to MMU_CTRL register.
+Map/unmap_pags() allows map and unmap multiple pages of the same size
+in one call, which can improve performance by reducing the numbers of
+vmexits. With map/unmap_pages() implemented, the prior map/unmap()
+callbacks are deprecated.
 
-Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Tina Zhang <tina.zhang@intel.com>
 ---
-Changes in v3:
-  - Reworked for using plain writel()
-  - Added Marek's Acked-by tag
+ drivers/iommu/virtio-iommu.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-Changes in v2:
-  - Extracted VM enabling code to the separate function
-  - Used new SysMMU read/write functions to access the registers
-
- drivers/iommu/exynos-iommu.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
-
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index fc9ef3ff0057..8e18984a0c4f 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -135,6 +135,8 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
- #define CFG_SYSSEL	(1 << 22) /* System MMU 3.2 only */
- #define CFG_FLPDCACHE	(1 << 20) /* System MMU 3.2+ only */
- 
-+#define CTRL_VM_ENABLE			BIT(0)
-+#define CTRL_VM_FAULT_MODE_STALL	BIT(3)
- #define CAPA0_CAPA1_EXIST		BIT(11)
- #define CAPA1_VCR_ENABLED		BIT(14)
- 
-@@ -163,6 +165,7 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
- /* v7.x registers */
- #define REG_V7_CAPA0		0x870
- #define REG_V7_CAPA1		0x874
-+#define REG_V7_CTRL_VM		0x8000
- 
- #define has_sysmmu(dev)		(dev_iommu_priv_get(dev) != NULL)
- 
-@@ -548,6 +551,18 @@ static void __sysmmu_init_config(struct sysmmu_drvdata *data)
- 	writel(cfg, data->sfrbase + REG_MMU_CFG);
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 25be4b822aa0..3c943dbd9fd0 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -788,11 +788,13 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	return 0;
  }
  
-+static void __sysmmu_enable_vid(struct sysmmu_drvdata *data)
-+{
-+	u32 ctrl;
-+
-+	if (MMU_MAJ_VER(data->version) < 7 || !data->has_vcr)
-+		return;
-+
-+	ctrl = readl(data->sfrbase + REG_V7_CTRL_VM);
-+	ctrl |= CTRL_VM_ENABLE | CTRL_VM_FAULT_MODE_STALL;
-+	writel(ctrl, data->sfrbase + REG_V7_CTRL_VM);
-+}
-+
- static void __sysmmu_enable(struct sysmmu_drvdata *data)
+-static int viommu_map(struct iommu_domain *domain, unsigned long iova,
+-		      phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
++static int viommu_map_pages(struct iommu_domain *domain, unsigned long iova,
++			    phys_addr_t paddr, size_t pgsize, size_t pgcount,
++			    int prot, gfp_t gfp, size_t *mapped)
  {
- 	unsigned long flags;
-@@ -558,6 +573,7 @@ static void __sysmmu_enable(struct sysmmu_drvdata *data)
- 	writel(CTRL_BLOCK, data->sfrbase + REG_MMU_CTRL);
- 	__sysmmu_init_config(data);
- 	__sysmmu_set_ptbase(data, data->pgtable);
-+	__sysmmu_enable_vid(data);
- 	writel(CTRL_ENABLE, data->sfrbase + REG_MMU_CTRL);
- 	data->active = true;
- 	spin_unlock_irqrestore(&data->lock, flags);
+ 	int ret;
+ 	u32 flags;
++	size_t size = pgsize * pgcount;
+ 	u64 end = iova + size - 1;
+ 	struct virtio_iommu_req_map map;
+ 	struct viommu_domain *vdomain = to_viommu_domain(domain);
+@@ -823,17 +825,21 @@ static int viommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	ret = viommu_send_req_sync(vdomain->viommu, &map, sizeof(map));
+ 	if (ret)
+ 		viommu_del_mappings(vdomain, iova, end);
++	else if (mapped)
++		*mapped = size;
+ 
+ 	return ret;
+ }
+ 
+-static size_t viommu_unmap(struct iommu_domain *domain, unsigned long iova,
+-			   size_t size, struct iommu_iotlb_gather *gather)
++static size_t viommu_unmap_pages(struct iommu_domain *domain, unsigned long iova,
++				 size_t pgsize, size_t pgcount,
++				 struct iommu_iotlb_gather *gather)
+ {
+ 	int ret = 0;
+ 	size_t unmapped;
+ 	struct virtio_iommu_req_unmap unmap;
+ 	struct viommu_domain *vdomain = to_viommu_domain(domain);
++	size_t size = pgsize * pgcount;
+ 
+ 	unmapped = viommu_del_mappings(vdomain, iova, iova + size - 1);
+ 	if (unmapped < size)
+@@ -1018,8 +1024,8 @@ static struct iommu_ops viommu_ops = {
+ 	.owner			= THIS_MODULE,
+ 	.default_domain_ops = &(const struct iommu_domain_ops) {
+ 		.attach_dev		= viommu_attach_dev,
+-		.map			= viommu_map,
+-		.unmap			= viommu_unmap,
++		.map_pages		= viommu_map_pages,
++		.unmap_pages		= viommu_unmap_pages,
+ 		.iova_to_phys		= viommu_iova_to_phys,
+ 		.iotlb_sync		= viommu_iotlb_sync,
+ 		.free			= viommu_domain_free,
 -- 
-2.30.2
+2.34.1
 
