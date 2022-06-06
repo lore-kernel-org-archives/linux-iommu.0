@@ -4,54 +4,51 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9E242C43334
-	for <iommu@archiver.kernel.org>; Mon,  6 Jun 2022 11:57:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8DEE8CCA47F
+	for <iommu@archiver.kernel.org>; Mon,  6 Jun 2022 11:57:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C9B7B40A07;
-	Mon,  6 Jun 2022 11:57:10 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 2BF5540A90;
+	Mon,  6 Jun 2022 11:57:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id TzwiY_lUFrG3; Mon,  6 Jun 2022 11:57:10 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id A07E140546;
-	Mon,  6 Jun 2022 11:57:09 +0000 (UTC)
+	with ESMTP id FQp5NaAsPuxF; Mon,  6 Jun 2022 11:57:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 805CF400DB;
+	Mon,  6 Jun 2022 11:57:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 11B04C0080;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8310FC008A;
 	Mon,  6 Jun 2022 11:57:09 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D8671C002D
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jun 2022 11:57:06 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 551A1C002D
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jun 2022 11:57:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id B1A8060EF9
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jun 2022 11:57:06 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 362F9840FC
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jun 2022 11:57:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AyPpZduaGVWK for <iommu@lists.linux-foundation.org>;
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id DJrKgvw2K27f for <iommu@lists.linux-foundation.org>;
  Mon,  6 Jun 2022 11:57:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 5CAD960BF3
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 715F883F96
  for <iommu@lists.linux-foundation.org>; Mon,  6 Jun 2022 11:57:05 +0000 (UTC)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
- by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LGsMf4hRtzRhh3;
- Mon,  6 Jun 2022 19:53:50 +0800 (CST)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
+ by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LGsPG3HCVzfZP5;
+ Mon,  6 Jun 2022 19:55:14 +0800 (CST)
 Received: from localhost.localdomain (10.67.164.66) by
  canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 6 Jun 2022 19:57:01 +0800
+ 15.1.2375.24; Mon, 6 Jun 2022 19:57:00 +0800
 To: <gregkh@linuxfoundation.org>, <alexander.shishkin@linux.intel.com>,
  <leo.yan@linaro.org>, <james.clark@arm.com>, <will@kernel.org>,
  <robin.murphy@arm.com>, <acme@kernel.org>, <jonathan.cameron@huawei.com>,
  <john.garry@huawei.com>
-Subject: [PATCH v9 1/8] iommu/arm-smmu-v3: Make default domain type of
- HiSilicon PTT device to identity
-Date: Mon, 6 Jun 2022 19:55:48 +0800
-Message-ID: <20220606115555.41103-2-yangyicong@hisilicon.com>
+Subject: [PATCH v9 0/8] Add support for HiSilicon PCIe Tune and Trace device
+Date: Mon, 6 Jun 2022 19:55:47 +0800
+Message-ID: <20220606115555.41103-1-yangyicong@hisilicon.com>
 X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220606115555.41103-1-yangyicong@hisilicon.com>
-References: <20220606115555.41103-1-yangyicong@hisilicon.com>
 MIME-Version: 1.0
 X-Originating-IP: [10.67.164.66]
 X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
@@ -82,56 +79,155 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The DMA operations of HiSilicon PTT device can only work properly with
-identical mappings. So add a quirk for the device to force the domain
-as passthrough.
+HiSilicon PCIe tune and trace device (PTT) is a PCIe Root Complex
+integrated Endpoint (RCiEP) device, providing the capability
+to dynamically monitor and tune the PCIe traffic (tune),
+and trace the TLP headers (trace).
 
-Acked-by: Will Deacon <will@kernel.org>
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-Reviewed-by: John Garry <john.garry@huawei.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+PTT tune is designed for monitoring and adjusting PCIe link parameters.
+We provide several parameters of the PCIe link. Through the driver,
+user can adjust the value of certain parameter to affect the PCIe link
+for the purpose of enhancing the performance in certian situation.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 88817a3376ef..e119ff8396c9 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2839,6 +2839,26 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
- 	}
- }
- 
-+/*
-+ * HiSilicon PCIe tune and trace device can be used to trace TLP headers on the
-+ * PCIe link and save the data to memory by DMA. The hardware is restricted to
-+ * use identity mapping only.
-+ */
-+#define IS_HISI_PTT_DEVICE(pdev)	((pdev)->vendor == PCI_VENDOR_ID_HUAWEI && \
-+					 (pdev)->device == 0xa12e)
-+
-+static int arm_smmu_def_domain_type(struct device *dev)
-+{
-+	if (dev_is_pci(dev)) {
-+		struct pci_dev *pdev = to_pci_dev(dev);
-+
-+		if (IS_HISI_PTT_DEVICE(pdev))
-+			return IOMMU_DOMAIN_IDENTITY;
-+	}
-+
-+	return 0;
-+}
-+
- static struct iommu_ops arm_smmu_ops = {
- 	.capable		= arm_smmu_capable,
- 	.domain_alloc		= arm_smmu_domain_alloc,
-@@ -2856,6 +2876,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.sva_unbind		= arm_smmu_sva_unbind,
- 	.sva_get_pasid		= arm_smmu_sva_get_pasid,
- 	.page_response		= arm_smmu_page_response,
-+	.def_domain_type	= arm_smmu_def_domain_type,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
- 	.owner			= THIS_MODULE,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
+PTT trace is designed for dumping the TLP headers to the memory, which
+can be used to analyze the transactions and usage condition of the PCIe
+Link. Users can choose filters to trace headers, by either requester
+ID, or those downstream of a set of Root Ports on the same core of the
+PTT device. It's also supported to trace the headers of certain type and
+of certain direction.
+
+The driver registers a PMU device for each PTT device. The trace can
+be used through `perf record` and the traced headers can be decoded
+by `perf report`. The perf command support for the device is also
+added in this patchset. The tune can be used through the sysfs
+attributes of related PMU device. See the documentation for the
+detailed usage.
+
+Change since v8:
+- Cleanups and one minor fix from Jonathan and John, thanks
+Link: https://lore.kernel.org/lkml/20220516125223.32012-1-yangyicong@hisilicon.com/
+
+Change since v7:
+- Configure the DMA in probe rather than in runtime. Also use devres to manage
+  PMU device as we have no order problem now
+- Refactor the config validation function per John and Leo
+- Use a spinlock hisi_ptt::pmu_lock instead of mutex to serialize the perf process
+  in pmu::start as it's in atomic context
+- Only commit the traced data when stop, per Leo and James
+- Drop the filter dynamically updating patch from this series to simply the review
+  of the driver. That patch will be send separately.
+- add a cpumask sysfs attribute and handle the cpu hotplug events, follow the
+  uncore PMU convention
+- Other cleanups and fixes, both in driver and perf tool
+Link: https://lore.kernel.org/lkml/20220407125841.3678-1-yangyicong@hisilicon.com/
+
+Change since v6:
+- Fix W=1 errors reported by lkp test, thanks
+
+Change since v5:
+- Squash the PMU patch into PATCH 2 suggested by John
+- refine the commit message of PATCH 1 and some comments
+Link: https://lore.kernel.org/lkml/20220308084930.5142-1-yangyicong@hisilicon.com/
+
+Change since v4:
+Address the comments from Jonathan, John and Ma Ca, thanks.
+- Use devm* also for allocating the DMA buffers
+- Remove the IRQ handler stub in Patch 2
+- Make functions waiting for hardware state return boolean
+- Manual remove the PMU device as it should be removed first
+- Modifier the orders in probe and removal to make them matched well
+- Make available {directions,type,format} array const and non-global
+- Using the right filter list in filters show and well protect the
+  list with mutex
+- Record the trace status with a boolean @started rather than enum
+- Optimize the process of finding the PTT devices of the perf-tool
+Link: https://lore.kernel.org/linux-pci/20220221084307.33712-1-yangyicong@hisilicon.com/
+
+Change since v3:
+Address the comments from Jonathan and John, thanks.
+- drop members in the common struct which can be get on the fly
+- reduce buffer struct and organize the buffers with array instead of list
+- reduce the DMA reset wait time to avoid long time busy loop
+- split the available_filters sysfs attribute into two files, for root port
+  and requester respectively. Update the documentation accordingly
+- make IOMMU mapping check earlier in probe to avoid race condition. Also
+  make IOMMU quirk patch prior to driver in the series
+- Cleanups and typos fixes from John and Jonathan
+Link: https://lore.kernel.org/linux-pci/20220124131118.17887-1-yangyicong@hisilicon.com/
+
+Change since v2:
+- address the comments from Mathieu, thanks.
+  - rename the directory to ptt to match the function of the device
+  - spinoff the declarations to a separate header
+  - split the trace function to several patches
+  - some other comments.
+- make default smmu domain type of PTT device to identity
+  Drop the RMR as it's not recommended and use an iommu_def_domain_type
+  quirk to passthrough the device DMA as suggested by Robin. 
+Link: https://lore.kernel.org/linux-pci/20211116090625.53702-1-yangyicong@hisilicon.com/
+
+Change since v1:
+- switch the user interface of trace to perf from debugfs
+- switch the user interface of tune to sysfs from debugfs
+- add perf tool support to start trace and decode the trace data
+- address the comments of documentation from Bjorn
+- add RMR[1] support of the device as trace works in RMR mode or
+  direct DMA mode. RMR support is achieved by common APIs rather
+  than the APIs implemented in [1].
+Link: https://lore.kernel.org/lkml/1618654631-42454-1-git-send-email-yangyicong@hisilicon.com/
+[1] https://lore.kernel.org/linux-acpi/20210805080724.480-1-shameerali.kolothum.thodi@huawei.com/
+
+Qi Liu (3):
+  perf tool: arm: Refactor event list iteration in
+    auxtrace_record__init()
+  perf tool: Add support for HiSilicon PCIe Tune and Trace device driver
+  perf tool: Add support for parsing HiSilicon PCIe Trace packet
+
+Yicong Yang (5):
+  iommu/arm-smmu-v3: Make default domain type of HiSilicon PTT device to
+    identity
+  hwtracing: hisi_ptt: Add trace function support for HiSilicon PCIe
+    Tune and Trace device
+  hwtracing: hisi_ptt: Add tune function support for HiSilicon PCIe Tune
+    and Trace device
+  docs: trace: Add HiSilicon PTT device driver documentation
+  MAINTAINERS: Add maintainer for HiSilicon PTT driver
+
+ Documentation/trace/hisi-ptt.rst              |  307 +++++
+ Documentation/trace/index.rst                 |    1 +
+ MAINTAINERS                                   |    7 +
+ drivers/Makefile                              |    1 +
+ drivers/hwtracing/Kconfig                     |    2 +
+ drivers/hwtracing/ptt/Kconfig                 |   12 +
+ drivers/hwtracing/ptt/Makefile                |    2 +
+ drivers/hwtracing/ptt/hisi_ptt.c              | 1092 +++++++++++++++++
+ drivers/hwtracing/ptt/hisi_ptt.h              |  200 +++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   21 +
+ tools/perf/arch/arm/util/auxtrace.c           |  116 +-
+ tools/perf/arch/arm/util/pmu.c                |    3 +
+ tools/perf/arch/arm64/util/Build              |    2 +-
+ tools/perf/arch/arm64/util/hisi-ptt.c         |  187 +++
+ tools/perf/util/Build                         |    2 +
+ tools/perf/util/auxtrace.c                    |    4 +
+ tools/perf/util/auxtrace.h                    |    1 +
+ tools/perf/util/hisi-ptt-decoder/Build        |    1 +
+ .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.c   |  164 +++
+ .../hisi-ptt-decoder/hisi-ptt-pkt-decoder.h   |   31 +
+ tools/perf/util/hisi-ptt.c                    |  192 +++
+ tools/perf/util/hisi-ptt.h                    |   19 +
+ 22 files changed, 2347 insertions(+), 20 deletions(-)
+ create mode 100644 Documentation/trace/hisi-ptt.rst
+ create mode 100644 drivers/hwtracing/ptt/Kconfig
+ create mode 100644 drivers/hwtracing/ptt/Makefile
+ create mode 100644 drivers/hwtracing/ptt/hisi_ptt.c
+ create mode 100644 drivers/hwtracing/ptt/hisi_ptt.h
+ create mode 100644 tools/perf/arch/arm64/util/hisi-ptt.c
+ create mode 100644 tools/perf/util/hisi-ptt-decoder/Build
+ create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.c
+ create mode 100644 tools/perf/util/hisi-ptt-decoder/hisi-ptt-pkt-decoder.h
+ create mode 100644 tools/perf/util/hisi-ptt.c
+ create mode 100644 tools/perf/util/hisi-ptt.h
+
 -- 
 2.24.0
 
