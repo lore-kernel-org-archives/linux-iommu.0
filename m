@@ -4,60 +4,65 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 01B05C43334
-	for <iommu@archiver.kernel.org>; Mon,  6 Jun 2022 10:40:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E2D42C433EF
+	for <iommu@archiver.kernel.org>; Mon,  6 Jun 2022 11:57:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id AF2DA4010C;
-	Mon,  6 Jun 2022 10:40:29 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 64B77408D1;
+	Mon,  6 Jun 2022 11:57:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9C31xpKbu48R; Mon,  6 Jun 2022 10:40:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 9EB10402F7;
-	Mon,  6 Jun 2022 10:40:28 +0000 (UTC)
+	with ESMTP id gEYlNisYbSSz; Mon,  6 Jun 2022 11:57:09 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 3D81D400DB;
+	Mon,  6 Jun 2022 11:57:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 72CBBC0039;
-	Mon,  6 Jun 2022 10:40:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D3C5FC0032;
+	Mon,  6 Jun 2022 11:57:08 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 59BF6C002D
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jun 2022 10:40:27 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DB841C0032
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jun 2022 11:57:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 48E7183F5D
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jun 2022 10:40:27 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id C112684104
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jun 2022 11:57:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id P7iu7WUl9tVy for <iommu@lists.linux-foundation.org>;
- Mon,  6 Jun 2022 10:40:26 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
- by smtp1.osuosl.org (Postfix) with ESMTP id 5F6B083F4D
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jun 2022 10:40:26 +0000 (UTC)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
- id 9DC8C92009C; Mon,  6 Jun 2022 12:40:21 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
- by angie.orcam.me.uk (Postfix) with ESMTP id 9686692009B;
- Mon,  6 Jun 2022 11:40:21 +0100 (BST)
-Date: Mon, 6 Jun 2022 11:40:21 +0100 (BST)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Arnd Bergmann <arnd@kernel.org>
-Subject: Re: [PATCH 5/6] scsi: remove stale BusLogic driver
-In-Reply-To: <20220606084109.4108188-6-arnd@kernel.org>
-Message-ID: <alpine.DEB.2.21.2206061057060.19680@angie.orcam.me.uk>
-References: <20220606084109.4108188-1-arnd@kernel.org>
- <20220606084109.4108188-6-arnd@kernel.org>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+ with ESMTP id GqxrOZWcc7Wj for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Jun 2022 11:57:06 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 9CF10840FC
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jun 2022 11:57:05 +0000 (UTC)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
+ by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LGsPr4XfZzjXX8;
+ Mon,  6 Jun 2022 19:55:44 +0800 (CST)
+Received: from localhost.localdomain (10.67.164.66) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 6 Jun 2022 19:57:01 +0800
+To: <gregkh@linuxfoundation.org>, <alexander.shishkin@linux.intel.com>,
+ <leo.yan@linaro.org>, <james.clark@arm.com>, <will@kernel.org>,
+ <robin.murphy@arm.com>, <acme@kernel.org>, <jonathan.cameron@huawei.com>,
+ <john.garry@huawei.com>
+Subject: [PATCH v9 4/8] perf tool: arm: Refactor event list iteration in
+ auxtrace_record__init()
+Date: Mon, 6 Jun 2022 19:55:51 +0800
+Message-ID: <20220606115555.41103-5-yangyicong@hisilicon.com>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220606115555.41103-1-yangyicong@hisilicon.com>
+References: <20220606115555.41103-1-yangyicong@hisilicon.com>
 MIME-Version: 1.0
-Cc: linux-arch@vger.kernel.org, linux-scsi@vger.kernel.org,
- Arnd Bergmann <arnd@arndb.de>, linux-m68k@lists.linux-m68k.org,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Martyn Welch <martyn@welchs.me.uk>, Manohar Vanga <manohar.vanga@gmail.com>,
- linuxppc-dev@lists.ozlabs.org, Denis Efremov <efremov@linux.com>,
- Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
- Matt Wang <wwentao@vmware.com>, linux-parisc@vger.kernel.org,
- linux-alpha@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
- Khalid Aziz <khalid@gonehiking.org>, Robin Murphy <robin.murphy@arm.com>
+X-Originating-IP: [10.67.164.66]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
+Cc: mark.rutland@arm.com, zhangshaokun@hisilicon.com, prime.zeng@huawei.com,
+ mathieu.poirier@linaro.org, suzuki.poulose@arm.com, peterz@infradead.org,
+ linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com,
+ linux-perf-users@vger.kernel.org, iommu@lists.linux-foundation.org,
+ mingo@redhat.com, helgaas@kernel.org, yangyicong@hisilicon.com,
+ liuqi115@huawei.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -70,38 +75,109 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Yicong Yang via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Yicong Yang <yangyicong@hisilicon.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 6 Jun 2022, Arnd Bergmann wrote:
+From: Qi Liu <liuqi115@huawei.com>
 
-> This was in turn fixed in commit 56f396146af2 ("scsi: BusLogic: Fix
-> 64-bit system enumeration error for Buslogic"), 8 years later.
-> 
-> The fact that this was found at all is an indication that there are
-> users, and it seems that Maciej, Matt and Khalid all have access to
-> this hardware, but if it took eight years to find the problem,
-> it's likely that nobody actually relies on it.
+Add find_pmu_for_event() and use to simplify logic in
+auxtrace_record_init(). find_pmu_for_event() will be
+reused in subsequent patches.
 
- Umm, I use it with a 32-bit system, so it would be quite an issue for me 
-to discover a problem with 64-bit configurations.  And I quite rely on 
-this system for various stuff too!
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Qi Liu <liuqi115@huawei.com>
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+---
+ tools/perf/arch/arm/util/auxtrace.c | 53 ++++++++++++++++++-----------
+ 1 file changed, 34 insertions(+), 19 deletions(-)
 
-> Remove it as part of the global virt_to_bus()/bus_to_virt() removal.
-> If anyone is still interested in keeping this driver, the alternative
-> is to stop it from using bus_to_virt(), possibly along the lines of
-> how dpt_i2o gets around the same issue.
+diff --git a/tools/perf/arch/arm/util/auxtrace.c b/tools/perf/arch/arm/util/auxtrace.c
+index 5fc6a2a3dbc5..384c7cfda0fd 100644
+--- a/tools/perf/arch/arm/util/auxtrace.c
++++ b/tools/perf/arch/arm/util/auxtrace.c
+@@ -50,16 +50,32 @@ static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
+ 	return arm_spe_pmus;
+ }
+ 
++static struct perf_pmu *find_pmu_for_event(struct perf_pmu **pmus,
++					   int pmu_nr, struct evsel *evsel)
++{
++	int i;
++
++	if (!pmus)
++		return NULL;
++
++	for (i = 0; i < pmu_nr; i++) {
++		if (evsel->core.attr.type == pmus[i]->type)
++			return pmus[i];
++	}
++
++	return NULL;
++}
++
+ struct auxtrace_record
+ *auxtrace_record__init(struct evlist *evlist, int *err)
+ {
+-	struct perf_pmu	*cs_etm_pmu;
++	struct perf_pmu	*cs_etm_pmu = NULL;
++	struct perf_pmu **arm_spe_pmus = NULL;
+ 	struct evsel *evsel;
+-	bool found_etm = false;
++	struct perf_pmu *found_etm = NULL;
+ 	struct perf_pmu *found_spe = NULL;
+-	struct perf_pmu **arm_spe_pmus = NULL;
++	int auxtrace_event_cnt = 0;
+ 	int nr_spes = 0;
+-	int i = 0;
+ 
+ 	if (!evlist)
+ 		return NULL;
+@@ -68,24 +84,23 @@ struct auxtrace_record
+ 	arm_spe_pmus = find_all_arm_spe_pmus(&nr_spes, err);
+ 
+ 	evlist__for_each_entry(evlist, evsel) {
+-		if (cs_etm_pmu &&
+-		    evsel->core.attr.type == cs_etm_pmu->type)
+-			found_etm = true;
+-
+-		if (!nr_spes || found_spe)
+-			continue;
+-
+-		for (i = 0; i < nr_spes; i++) {
+-			if (evsel->core.attr.type == arm_spe_pmus[i]->type) {
+-				found_spe = arm_spe_pmus[i];
+-				break;
+-			}
+-		}
++		if (cs_etm_pmu && !found_etm)
++			found_etm = find_pmu_for_event(&cs_etm_pmu, 1, evsel);
++
++		if (arm_spe_pmus && !found_spe)
++			found_spe = find_pmu_for_event(arm_spe_pmus, nr_spes, evsel);
+ 	}
++
+ 	free(arm_spe_pmus);
+ 
+-	if (found_etm && found_spe) {
+-		pr_err("Concurrent ARM Coresight ETM and SPE operation not currently supported\n");
++	if (found_etm)
++		auxtrace_event_cnt++;
++
++	if (found_spe)
++		auxtrace_event_cnt++;
++
++	if (auxtrace_event_cnt > 1) {
++		pr_err("Concurrent AUX trace operation not currently supported\n");
+ 		*err = -EOPNOTSUPP;
+ 		return NULL;
+ 	}
+-- 
+2.24.0
 
- Thanks for the pointer and for cc-ing me.  Please refrain from removing 
-the driver at least for this release cycle and let me fix it.  It should 
-be easy to mimic what I did for the defza driver: all bus addresses in the 
-DMA API come associated with virtual addresses, so it is just a matter of 
-recording those somewhere for later use rather than trying to mess up with 
-bus addresses to figure out a reverse mapping.
-
-  Maciej
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
