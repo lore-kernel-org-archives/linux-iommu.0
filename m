@@ -1,90 +1,57 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 99785C433EF
-	for <iommu@archiver.kernel.org>; Tue,  7 Jun 2022 07:45:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 22CA1C43334
+	for <iommu@archiver.kernel.org>; Tue,  7 Jun 2022 08:00:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 42574613D8;
-	Tue,  7 Jun 2022 07:45:28 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id A748D410B9;
+	Tue,  7 Jun 2022 08:00:50 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id KCz2iTyPLqMl; Tue,  7 Jun 2022 08:00:49 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 6FF7F4051E;
+	Tue,  7 Jun 2022 08:00:49 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 401CCC0032;
+	Tue,  7 Jun 2022 08:00:49 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 90671C002D
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 08:00:47 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 69AC0613E1
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 08:00:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WbKY5gRINWTq; Tue,  7 Jun 2022 07:45:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 21C7F613E0;
-	Tue,  7 Jun 2022 07:45:27 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C1A39C0032;
-	Tue,  7 Jun 2022 07:45:26 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5AEFCC002D;
- Tue,  7 Jun 2022 07:45:25 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 3EEE0404B3;
- Tue,  7 Jun 2022 07:45:25 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3xTo3PLPR3dx; Tue,  7 Jun 2022 07:45:23 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 0658E404B0;
- Tue,  7 Jun 2022 07:45:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1654587923; x=1686123923;
- h=message-id:date:mime-version:cc:subject:to:references:
- from:in-reply-to:content-transfer-encoding;
- bh=OSBO16dRCwR6Wb79tDIGbzqHZ301kVBrdpEBr6LRMRc=;
- b=kJ/SMtDtOrqSdwyfamDrDtOKESjtcJuLn4y/fsdWsbj1UE5ZsgpZr9dN
- TWYl3dMWB+svGopX9JWOVmFWA1ekB+oAsdfSALYSv9SQQgODkS1RTxOmL
- fT4K6SHbZcZULoTHcEewoc603UQGUoEWWRVfZkH8JwgSXrdgjoKlB0pnW
- /RL3dQTO9Zyog+7H8fG275Qr+addzbwSKZHL8Xkw70+f/WEwXE3sEoL/n
- 3F8NiNRYnrz2ynrNVWbgkVhw1UFxPIElki0jM88QW2nZbtFmQBNu3UCxS
- 1EQrtInjrOZ2upKqqzAbGpLMTW5lsbU87dTOzRnHq03iiXheego01SPN2 A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="259381660"
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; d="scan'208";a="259381660"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 07 Jun 2022 00:44:55 -0700
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; d="scan'208";a="584086830"
-Received: from zwang64-mobl1.ccr.corp.intel.com (HELO [10.249.174.202])
- ([10.249.174.202])
- by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 07 Jun 2022 00:44:45 -0700
-Message-ID: <d357966b-7abd-f8f3-3ca7-3c99f5e075b9@linux.intel.com>
-Date: Tue, 7 Jun 2022 15:44:43 +0800
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wY4uYlYV6OeL for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Jun 2022 08:00:46 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id B95B1613E0
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 08:00:46 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id 487BF423; Tue,  7 Jun 2022 10:00:43 +0200 (CEST)
+Date: Tue, 7 Jun 2022 10:00:38 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH v2] iommu/amd: Set translation valid bit only when IO
+ page tables are in used
+Message-ID: <Yp8FpnMrlJcXIHqq@8bytes.org>
+References: <20220509074815.11881-1-suravee.suthikulpanit@amd.com>
+ <Yn5YIfzmerwAM30M@8bytes.org>
+ <1dfaf07e-040e-848b-db7c-86a107fd5cb3@amd.com>
+ <YodMvV/8eii4KCLg@8bytes.org>
+ <dac2c654-cb9c-6554-0afd-9e8db012374a@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 0/5] Simplify vfio_iommu_type1 attach/detach routine
-Content-Language: en-US
-To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, joro@8bytes.org,
- will@kernel.org, marcan@marcan.st, sven@svenpeter.dev, robin.murphy@arm.com,
- robdclark@gmail.com, m.szyprowski@samsung.com,
- krzysztof.kozlowski@linaro.org, agross@kernel.org,
- bjorn.andersson@linaro.org, matthias.bgg@gmail.com, heiko@sntech.de,
- orsonzhai@gmail.com, baolin.wang7@gmail.com, zhang.lyra@gmail.com,
- wens@csie.org, jernej.skrabec@gmail.com, samuel@sholland.org,
- jean-philippe@linaro.org, alex.williamson@redhat.com
-References: <20220606061927.26049-1-nicolinc@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220606061927.26049-1-nicolinc@nvidia.com>
-Cc: virtualization@lists.linux-foundation.org, thierry.reding@gmail.com,
- alim.akhtar@samsung.com, alyssa@rosenzweig.io, linux-s390@vger.kernel.org,
- linux-samsung-soc@vger.kernel.org, kvm@vger.kernel.org, jonathanh@nvidia.com,
- linux-rockchip@lists.infradead.org, gerald.schaefer@linux.ibm.com,
- linux-sunxi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, cohuck@redhat.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- dwmw2@infradead.org
+Content-Disposition: inline
+In-Reply-To: <dac2c654-cb9c-6554-0afd-9e8db012374a@amd.com>
+Cc: iommu@lists.linux-foundation.org, jon.grimm@amd.com,
+ linux-kernel@vger.kernel.org, vasant.hegde@amd.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,22 +64,24 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/6/6 14:19, Nicolin Chen wrote:
-> Worths mentioning the exact match for enforce_cache_coherency is removed
-> with this series, since there's very less value in doing that since KVM
-> won't be able to take advantage of it -- this just wastes domain memory.
-> Instead, we rely on Intel IOMMU driver taking care of that internally.
+On Thu, May 26, 2022 at 10:29:09AM +0700, Suravee Suthikulpanit wrote:
+> Actually, I am referring to when user uses the IOMMU v2 table for shared virtual address
+> in current iommu_v2 driver (e.g. amd_iommu_init_device(), amd_iommu_bind_pasid).
 
-After reading this series, I don't see that Intel IOMMU driver needs any
-further change to support the new scheme. Did I miss anything?
+From what I can see this is not handled yet and needs an additional
+check. I think the best solution is to set iommu->iommu_v2 to false when
+the SNP feature bit is set.
+But that is probably not enough, all functions that are called from the
+IOMMUv2 driver need to fail.
 
-Best regards,
-baolu
+Regards,
+
+	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
