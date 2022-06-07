@@ -1,106 +1,89 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 06DEECCA47C
-	for <iommu@archiver.kernel.org>; Tue,  7 Jun 2022 12:36:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EE0C3C433EF
+	for <iommu@archiver.kernel.org>; Tue,  7 Jun 2022 12:42:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 97E69408D5;
-	Tue,  7 Jun 2022 12:36:48 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 956E66100D;
+	Tue,  7 Jun 2022 12:42:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zlch6i4FQnqX; Tue,  7 Jun 2022 12:36:47 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id kKaFzGWHAfqB; Tue,  7 Jun 2022 12:42:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 55ACF401B7;
-	Tue,  7 Jun 2022 12:36:47 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7AB5560FA5;
+	Tue,  7 Jun 2022 12:42:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0BBCDC0032;
-	Tue,  7 Jun 2022 12:36:47 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B7ADBC002D
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 12:36:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 53F5EC0032;
+	Tue,  7 Jun 2022 12:42:48 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0C358C002D;
+ Tue,  7 Jun 2022 12:42:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9F26C408D5
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 12:36:44 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id EA903843F4;
+ Tue,  7 Jun 2022 12:42:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Tulez5ZmJRRS for <iommu@lists.linux-foundation.org>;
- Tue,  7 Jun 2022 12:36:43 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com
- [209.85.222.182])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 66479401B7
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 12:36:43 +0000 (UTC)
-Received: by mail-qk1-f182.google.com with SMTP id a184so9506639qkg.5
- for <iommu@lists.linux-foundation.org>; Tue, 07 Jun 2022 05:36:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc:content-transfer-encoding;
- bh=jI9Eiy9NqYqthM/bM2aEWTmdS6Ov8FCqsQpj0jvzrm0=;
- b=bVA+a/OAxZiH9K5zw5uiXMvk2kyzjwqvOpVxZjigs5eNmspMu9muq0u8TjHCgNWqZ3
- 2zYMHMZHJy6/uwZWpfZyHD+NdByaFcCrXnZCjZlc+dnU8CVzBoeY7IS+GYr5gsbfKvEN
- suw/n2kVEtrRm3mFisPtc9o9EYgKf31953qXMIZLEQAm0FKJLIQ5AILxQFeHzPDYPJGX
- 1BqIxFwy6ycudH3pxBo13P62AE+G47hFeYpS5oAr9I3r2x8I66cKlpMHwUBj/SuUwJ7t
- TT76Qf1O1VWaCdKoID7XyVnZ/zseITBKoG87sdsbpm187+n01SxWnXADgV4StTvkdmh5
- xppg==
-X-Gm-Message-State: AOAM531jCxUqie+GmRZ13mLdTl8TjtSGu+Ghtpop4a/af/Pj/9J5qd/M
- zhYnkmI4FTiSthw0OD2tQXnuiL9aMeuazA==
-X-Google-Smtp-Source: ABdhPJyD6LTjhUqLUDKoac2BmGzgUyEnbZlsm7UTHIORQBPWvM9sZGOhcrr8MNoNFiNB1ZuwMt2R/A==
-X-Received: by 2002:a05:620a:2889:b0:6a2:fa49:d9d1 with SMTP id
- j9-20020a05620a288900b006a2fa49d9d1mr18991310qkp.547.1654605401850; 
- Tue, 07 Jun 2022 05:36:41 -0700 (PDT)
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com.
- [209.85.219.169]) by smtp.gmail.com with ESMTPSA id
- r12-20020ac8424c000000b00304dec6452csm8525280qtm.78.2022.06.07.05.36.40
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 07 Jun 2022 05:36:40 -0700 (PDT)
-Received: by mail-yb1-f169.google.com with SMTP id v22so30908979ybd.5
- for <iommu@lists.linux-foundation.org>; Tue, 07 Jun 2022 05:36:40 -0700 (PDT)
-X-Received: by 2002:a05:6902:a:b0:65c:b38e:6d9f with SMTP id
- l10-20020a056902000a00b0065cb38e6d9fmr30887112ybh.36.1654605399923; Tue, 07
- Jun 2022 05:36:39 -0700 (PDT)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id UN-SMpSydSlA; Tue,  7 Jun 2022 12:42:46 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 3DCB0843EE;
+ Tue,  7 Jun 2022 12:42:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1654605766; x=1686141766;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=7CnaOaKftZFuU6zS5ejOPSw/a0TRQ7MfLEcH+ST55pI=;
+ b=npA/EwVLm80RPrCVVatUyQvh9x9gm5H6ghJ6dgiol7bnt46yPC4MAeIP
+ hodIq74n82eCvLkbY6D4n1U5g+cmclFLiS1lWHbglspj33Yx0VXhpW1xu
+ XXW9UHZ96K+9IXY9b2Fj6DgEmQ3WeVzrXk0/t33U8iB4Eu56WDtZMlNUm
+ pxMK+4gZexYxZYaxfCiELvhZ9RnU5kjk71ZGLbc98m1622I3PzO/VRn3x
+ XFvHXiaR2OZx8kR0okSiNW3ZGnzZm376te9757QJrrGqkayUVpgzKPh+f
+ 935LMOkD4M2Ww6r8zdK9pommUkbicGZ9Jd72qeSG0NnIawB8Rb10j8+x0 w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="338101933"
+X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; d="scan'208";a="338101933"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 07 Jun 2022 05:42:44 -0700
+X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; d="scan'208";a="584184405"
+Received: from zwang64-mobl1.ccr.corp.intel.com (HELO [10.249.174.202])
+ ([10.249.174.202])
+ by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 07 Jun 2022 05:42:34 -0700
+Message-ID: <3d0b2863-bb4f-31e1-d54e-09ddf4762d43@linux.intel.com>
+Date: Tue, 7 Jun 2022 20:42:32 +0800
 MIME-Version: 1.0
-References: <20220526081550.1089805-1-saravanak@google.com>
- <20220526081550.1089805-9-saravanak@google.com>
-In-Reply-To: <20220526081550.1089805-9-saravanak@google.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 7 Jun 2022 14:36:28 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXrTjjNcqro+FA0BPJ+rK3bCAX+boYdf5=ZvGGocVJPMw@mail.gmail.com>
-Message-ID: <CAMuHMdXrTjjNcqro+FA0BPJ+rK3bCAX+boYdf5=ZvGGocVJPMw@mail.gmail.com>
-Subject: Re: [RFC PATCH v1 8/9] net: ipconfig: Force fw_devlink to unblock any
- devices that might probe
-To: Saravana Kannan <saravanak@google.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
- Heikki Krogerus <heikki.krogerus@linux.intel.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Linus Walleij <linus.walleij@linaro.org>, Eric Dumazet <edumazet@google.com>,
- John Stultz <jstultz@google.com>, Pavel Machek <pavel@ucw.cz>,
- Will Deacon <will@kernel.org>, Rob Herring <robh@kernel.org>,
- Kevin Hilman <khilman@kernel.org>, Russell King <linux@armlinux.org.uk>,
- ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Android Kernel Team <kernel-team@android.com>,
- Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- Len Brown <len.brown@intel.com>, Linux PM list <linux-pm@vger.kernel.org>,
- Nathan Chancellor <nathan@kernel.org>,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- Mark Brown <broonie@kernel.org>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- David Ahern <dsahern@kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Daniel Scally <djrscally@gmail.com>,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- Sakari Ailus <sakari.ailus@linux.intel.com>, netdev <netdev@vger.kernel.org>,
- "David S. Miller" <davem@davemloft.net>,
- Heiner Kallweit <hkallweit1@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 0/5] Simplify vfio_iommu_type1 attach/detach routine
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220606061927.26049-1-nicolinc@nvidia.com>
+ <d357966b-7abd-f8f3-3ca7-3c99f5e075b9@linux.intel.com>
+ <20220607115820.GH1343366@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220607115820.GH1343366@nvidia.com>
+Cc: linux-s390@vger.kernel.org, cohuck@redhat.com, heiko@sntech.de,
+ linux-tegra@vger.kernel.org, thierry.reding@gmail.com, alim.akhtar@samsung.com,
+ will@kernel.org, alyssa@rosenzweig.io, jean-philippe@linaro.org,
+ linux-samsung-soc@vger.kernel.org, kvm@vger.kernel.org, samuel@sholland.org,
+ zhang.lyra@gmail.com, jernej.skrabec@gmail.com, jonathanh@nvidia.com,
+ linux-rockchip@lists.infradead.org, wens@csie.org, agross@kernel.org,
+ linux-arm-kernel@lists.infradead.org, orsonzhai@gmail.com,
+ gerald.schaefer@linux.ibm.com, linux-sunxi@lists.linux.dev,
+ linux-arm-msm@vger.kernel.org, alex.williamson@redhat.com,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ matthias.bgg@gmail.com, virtualization@lists.linux-foundation.org,
+ dwmw2@infradead.org, marcan@marcan.st, linux-kernel@vger.kernel.org,
+ krzysztof.kozlowski@linaro.org, baolin.wang7@gmail.com, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,41 +96,30 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgU2FyYXZhbmEsCgpPbiBUaHUsIE1heSAyNiwgMjAyMiBhdCAxMDoxNiBBTSBTYXJhdmFuYSBL
-YW5uYW4gPHNhcmF2YW5ha0Bnb29nbGUuY29tPiB3cm90ZToKPiBJZiB0aGVyZSBhcmUgbmV0d29y
-ayBkZXZpY2VzIHRoYXQgY291bGQgcHJvYmUgd2l0aG91dCBzb21lIG9mIHRoZWlyCj4gc3VwcGxp
-ZXJzIHByb2JpbmcgYW5kIHRob3NlIG5ldHdvcmsgZGV2aWNlcyBhcmUgbmVlZGVkIGZvciBJUCBh
-dXRvCj4gY29uZmlnIHRvIHdvcmssIHRoZW4gZndfZGV2bGluaz1vbiBtaWdodCBicmVhayB0aGF0
-IHVzZWNhc2UgYnkgYmxvY2tpbmcKPiB0aGUgbmV0d29yayBkZXZpY2VzIGZyb20gcHJvYmluZyBi
-eSB0aGUgdGltZSBJUCBhdXRvIGNvbmZpZyBzdGFydHMuCj4KPiBTbywgd2hlbiBJUCBhdXRvIGNv
-bmZpZyBpcyBlbmFibGVkLCBtYWtlIHN1cmUgZndfZGV2bGluayBkb2Vzbid0IGJsb2NrCj4gdGhl
-IHByb2Jpbmcgb2YgYW55IGRldmljZSB0aGF0IGhhcyBhIGRyaXZlciBieSB0aGUgdGltZSB3ZSBn
-ZXQgdG8gSVAKPiBhdXRvIGNvbmZpZy4KPgo+IFNpZ25lZC1vZmYtYnk6IFNhcmF2YW5hIEthbm5h
-biA8c2FyYXZhbmFrQGdvb2dsZS5jb20+Cj4gLS0tCj4gIG5ldC9pcHY0L2lwY29uZmlnLmMgfCAy
-ICsrCj4gIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKykKPgo+IGRpZmYgLS1naXQgYS9u
-ZXQvaXB2NC9pcGNvbmZpZy5jIGIvbmV0L2lwdjQvaXBjb25maWcuYwo+IGluZGV4IDlkNDFkNWQ1
-Y2QxZS4uYWE3YjhiYTY4Y2E2IDEwMDY0NAo+IC0tLSBhL25ldC9pcHY0L2lwY29uZmlnLmMKPiAr
-KysgYi9uZXQvaXB2NC9pcGNvbmZpZy5jCj4gQEAgLTE0MzUsNiArMTQzNSw4IEBAIHN0YXRpYyBp
-bnQgX19pbml0IHdhaXRfZm9yX2RldmljZXModm9pZCkKPiAgewo+ICAgICAgICAgaW50IGk7Cj4K
-PiArICAgICAgIGZ3X2RldmxpbmtfdW5ibG9ja19tYXlfcHJvYmUoKTsKPiArCj4gICAgICAgICBm
-b3IgKGkgPSAwOyBpIDwgREVWSUNFX1dBSVRfTUFYOyBpKyspIHsKPiAgICAgICAgICAgICAgICAg
-c3RydWN0IG5ldF9kZXZpY2UgKmRldjsKPiAgICAgICAgICAgICAgICAgaW50IGZvdW5kID0gMDsK
-CkZUUiwgdGhpcyBsYWNrcyBhbiBpbmNsdWRlIDxsaW51eC9md25vZGUuaD4sIGFzIG15IG1pcHMg
-cmJ0eDQ5MjcKYnVpbGQgZmFpbHMgd2l0aDoKCm5ldC9pcHY0L2lwY29uZmlnLmM6MTQzODoyOiBl
-cnJvcjogaW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rpb24K4oCYZndfZGV2bGlua191bmJs
-b2NrX21heV9wcm9iZeKAmSBbLVdlcnJvcj1pbXBsaWNpdC1mdW5jdGlvbi1kZWNsYXJhdGlvbl0K
-ClN3aXRjaGluZyB0byB2MiBpbnN0ZWFkLi4uCgpHcntvZXRqZSxlZXRpbmd9cywKCiAgICAgICAg
-ICAgICAgICAgICAgICAgIEdlZXJ0CgotLQpHZWVydCBVeXR0ZXJob2V2ZW4gLS0gVGhlcmUncyBs
-b3RzIG9mIExpbnV4IGJleW9uZCBpYTMyIC0tIGdlZXJ0QGxpbnV4LW02OGsub3JnCgpJbiBwZXJz
-b25hbCBjb252ZXJzYXRpb25zIHdpdGggdGVjaG5pY2FsIHBlb3BsZSwgSSBjYWxsIG15c2VsZiBh
-IGhhY2tlci4gQnV0CndoZW4gSSdtIHRhbGtpbmcgdG8gam91cm5hbGlzdHMgSSBqdXN0IHNheSAi
-cHJvZ3JhbW1lciIgb3Igc29tZXRoaW5nIGxpa2UgdGhhdC4KICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAtLSBMaW51cyBUb3J2YWxkcwpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
-Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
-bGlzdGluZm8vaW9tbXU=
+On 2022/6/7 19:58, Jason Gunthorpe wrote:
+> On Tue, Jun 07, 2022 at 03:44:43PM +0800, Baolu Lu wrote:
+>> On 2022/6/6 14:19, Nicolin Chen wrote:
+>>> Worths mentioning the exact match for enforce_cache_coherency is removed
+>>> with this series, since there's very less value in doing that since KVM
+>>> won't be able to take advantage of it -- this just wastes domain memory.
+>>> Instead, we rely on Intel IOMMU driver taking care of that internally.
+>>
+>> After reading this series, I don't see that Intel IOMMU driver needs any
+>> further change to support the new scheme. Did I miss anything?
+> 
+> You already did it :)
+
+Just as I thought. Thank you!
+
+Best regards,
+baolu
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
