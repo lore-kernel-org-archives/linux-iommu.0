@@ -1,89 +1,73 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EE0C3C433EF
-	for <iommu@archiver.kernel.org>; Tue,  7 Jun 2022 12:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 61802C43334
+	for <iommu@archiver.kernel.org>; Tue,  7 Jun 2022 12:44:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 956E66100D;
-	Tue,  7 Jun 2022 12:42:49 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 12849841D1;
+	Tue,  7 Jun 2022 12:44:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kKaFzGWHAfqB; Tue,  7 Jun 2022 12:42:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 7AB5560FA5;
-	Tue,  7 Jun 2022 12:42:48 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 53F5EC0032;
-	Tue,  7 Jun 2022 12:42:48 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0C358C002D;
- Tue,  7 Jun 2022 12:42:47 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id EA903843F4;
- Tue,  7 Jun 2022 12:42:46 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UN-SMpSydSlA; Tue,  7 Jun 2022 12:42:46 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 3DCB0843EE;
- Tue,  7 Jun 2022 12:42:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1654605766; x=1686141766;
- h=message-id:date:mime-version:cc:subject:to:references:
- from:in-reply-to:content-transfer-encoding;
- bh=7CnaOaKftZFuU6zS5ejOPSw/a0TRQ7MfLEcH+ST55pI=;
- b=npA/EwVLm80RPrCVVatUyQvh9x9gm5H6ghJ6dgiol7bnt46yPC4MAeIP
- hodIq74n82eCvLkbY6D4n1U5g+cmclFLiS1lWHbglspj33Yx0VXhpW1xu
- XXW9UHZ96K+9IXY9b2Fj6DgEmQ3WeVzrXk0/t33U8iB4Eu56WDtZMlNUm
- pxMK+4gZexYxZYaxfCiELvhZ9RnU5kjk71ZGLbc98m1622I3PzO/VRn3x
- XFvHXiaR2OZx8kR0okSiNW3ZGnzZm376te9757QJrrGqkayUVpgzKPh+f
- 935LMOkD4M2Ww6r8zdK9pommUkbicGZ9Jd72qeSG0NnIawB8Rb10j8+x0 w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10370"; a="338101933"
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; d="scan'208";a="338101933"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 07 Jun 2022 05:42:44 -0700
-X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; d="scan'208";a="584184405"
-Received: from zwang64-mobl1.ccr.corp.intel.com (HELO [10.249.174.202])
- ([10.249.174.202])
- by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 07 Jun 2022 05:42:34 -0700
-Message-ID: <3d0b2863-bb4f-31e1-d54e-09ddf4762d43@linux.intel.com>
-Date: Tue, 7 Jun 2022 20:42:32 +0800
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id TkTlUXbxXzFx; Tue,  7 Jun 2022 12:44:22 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id E4078841BC;
+	Tue,  7 Jun 2022 12:44:21 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BA75CC0032;
+	Tue,  7 Jun 2022 12:44:21 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 87A08C002D
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 09:37:19 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 5AC544059E
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 09:37:19 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id qjfJPcS3RT36 for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Jun 2022 09:37:18 +0000 (UTC)
+X-Greylist: delayed 00:27:01 by SQLgrey-1.8.0
+Received: from mx2.mythic-beasts.com (mx2.mythic-beasts.com
+ [IPv6:2a00:1098:0:82:1000:0:2:1])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 3B7114036A
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 09:37:18 +0000 (UTC)
+Received: from [209.85.167.43] (port=44747 helo=mail-lf1-f43.google.com)
+ by balrog.mythic-beasts.com with esmtpsa
+ (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.92.3)
+ (envelope-from <martyn@welchs.me.uk>) id 1nyVE3-0000eE-BL
+ for iommu@lists.linux-foundation.org; Tue, 07 Jun 2022 10:10:15 +0100
+Received: by mail-lf1-f43.google.com with SMTP id w20so5642645lfa.11
+ for <iommu@lists.linux-foundation.org>; Tue, 07 Jun 2022 02:10:00 -0700 (PDT)
+X-Gm-Message-State: AOAM531jiHhA8wbkRvTJpiqFEs52pyh5Hdd/e8Bk1M2xhGpQzbH6BPmr
+ yuZcf4IKsrNRQERMdeaUhmJRhaFSZxD6DpA7imQ=
+X-Google-Smtp-Source: ABdhPJyULPIdIsKuXm4CBLs/lpx9OuZtHR1zOwsK0gfemBq6DPfmp1b12GD3NCSmZN55f3UVzaaZOjEGtnFIMz9tvoo=
+X-Received: by 2002:a05:6512:13a1:b0:448:887e:da38 with SMTP id
+ p33-20020a05651213a100b00448887eda38mr18154426lfa.298.1654593000256; Tue, 07
+ Jun 2022 02:10:00 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 0/5] Simplify vfio_iommu_type1 attach/detach routine
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20220606061927.26049-1-nicolinc@nvidia.com>
- <d357966b-7abd-f8f3-3ca7-3c99f5e075b9@linux.intel.com>
- <20220607115820.GH1343366@nvidia.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220607115820.GH1343366@nvidia.com>
-Cc: linux-s390@vger.kernel.org, cohuck@redhat.com, heiko@sntech.de,
- linux-tegra@vger.kernel.org, thierry.reding@gmail.com, alim.akhtar@samsung.com,
- will@kernel.org, alyssa@rosenzweig.io, jean-philippe@linaro.org,
- linux-samsung-soc@vger.kernel.org, kvm@vger.kernel.org, samuel@sholland.org,
- zhang.lyra@gmail.com, jernej.skrabec@gmail.com, jonathanh@nvidia.com,
- linux-rockchip@lists.infradead.org, wens@csie.org, agross@kernel.org,
- linux-arm-kernel@lists.infradead.org, orsonzhai@gmail.com,
- gerald.schaefer@linux.ibm.com, linux-sunxi@lists.linux.dev,
- linux-arm-msm@vger.kernel.org, alex.williamson@redhat.com,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- matthias.bgg@gmail.com, virtualization@lists.linux-foundation.org,
- dwmw2@infradead.org, marcan@marcan.st, linux-kernel@vger.kernel.org,
- krzysztof.kozlowski@linaro.org, baolin.wang7@gmail.com, robin.murphy@arm.com
+References: <20220606084109.4108188-1-arnd@kernel.org>
+ <Yp3ID86TBFxl7qyL@kroah.com>
+In-Reply-To: <Yp3ID86TBFxl7qyL@kroah.com>
+From: Martyn Welch <martyn@welchs.me.uk>
+Date: Tue, 7 Jun 2022 10:09:49 +0100
+X-Gmail-Original-Message-ID: <CAEccXecB=rkZ1Kejmzcfay6qMMVo7Kb7SovSq+Xs1zWMnJOxnQ@mail.gmail.com>
+Message-ID: <CAEccXecB=rkZ1Kejmzcfay6qMMVo7Kb7SovSq+Xs1zWMnJOxnQ@mail.gmail.com>
+Subject: Re: [PATCH 0/6] phase out CONFIG_VIRT_TO_BUS
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+X-BlackCat-Spam-Score: 14
+X-Mailman-Approved-At: Tue, 07 Jun 2022 12:44:20 +0000
+Cc: linux-arch@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+ linux-scsi@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+ linuxppc-dev@lists.ozlabs.org, Manohar Vanga <manohar.vanga@gmail.com>,
+ linux-m68k@lists.linux-m68k.org, Denis Efremov <efremov@linux.com>,
+ Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
+ linux-parisc@vger.kernel.org, linux-alpha@vger.kernel.org,
+ Jakub Kicinski <kuba@kernel.org>, Khalid Aziz <khalid@gonehiking.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,29 +80,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/6/7 19:58, Jason Gunthorpe wrote:
-> On Tue, Jun 07, 2022 at 03:44:43PM +0800, Baolu Lu wrote:
->> On 2022/6/6 14:19, Nicolin Chen wrote:
->>> Worths mentioning the exact match for enforce_cache_coherency is removed
->>> with this series, since there's very less value in doing that since KVM
->>> won't be able to take advantage of it -- this just wastes domain memory.
->>> Instead, we rely on Intel IOMMU driver taking care of that internally.
->>
->> After reading this series, I don't see that Intel IOMMU driver needs any
->> further change to support the new scheme. Did I miss anything?
-> 
-> You already did it :)
+On Mon, 6 Jun 2022 at 10:25, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Mon, Jun 06, 2022 at 10:41:03AM +0200, Arnd Bergmann wrote:
+> > From: Arnd Bergmann <arnd@arndb.de>
+> >
+> > The virt_to_bus/bus_to_virt interface has been deprecated for
+> > decades. After Jakub Kicinski put a lot of work into cleaning out the
+> > network drivers using them, there are only a couple of other drivers
+> > left, which can all be removed or otherwise cleaned up, to remove the
+> > old interface for good.
+> >
+> > Any out of tree drivers using virt_to_bus() should be converted to
+> > using the dma-mapping interfaces, typically dma_alloc_coherent()
+> > or dma_map_single()).
+> >
+> > There are a few m68k and ppc32 specific drivers that keep using the
+> > interfaces, but these are all guarded with architecture-specific
+> > Kconfig dependencies, and are not actually broken.
+> >
+> > There are still a number of drivers that are using virt_to_phys()
+> > and phys_to_virt() in place of dma-mapping operations, and these
+> > are often broken, but they are out of scope for this series.
+>
+> I'll take patches 1 and 2 right now through my staging tree if that's
+> ok.
+>
 
-Just as I thought. Thank you!
+Hi,
 
-Best regards,
-baolu
+I'd love to say that I could fix this stuff up, however I've lacked access to
+suitable hardware for a long time now and don't foresee that changing any
+time soon...
 
+Martyn
+
+> thanks,
+>
+> greg k-h
+>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
