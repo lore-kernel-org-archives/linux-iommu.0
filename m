@@ -1,74 +1,73 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 287A0C433EF
-	for <iommu@archiver.kernel.org>; Tue,  7 Jun 2022 18:46:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1176CC433EF
+	for <iommu@archiver.kernel.org>; Tue,  7 Jun 2022 18:46:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id CC2A9418D3;
-	Tue,  7 Jun 2022 18:46:20 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id BEECB60D66;
+	Tue,  7 Jun 2022 18:46:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ClnaYRSpbBTh; Tue,  7 Jun 2022 18:46:19 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id NfxhqUsIbxyy; Tue,  7 Jun 2022 18:46:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 684F341634;
-	Tue,  7 Jun 2022 18:46:19 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id A35DA60B73;
+	Tue,  7 Jun 2022 18:46:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 41A8EC0032;
-	Tue,  7 Jun 2022 18:46:19 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5EEF4C002D
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 18:46:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7D40DC0032;
+	Tue,  7 Jun 2022 18:46:26 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 931DDC002D
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 18:46:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 596A560D66
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 18:46:18 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 7399D60D66
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 18:46:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=cybernetics.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XNwInP7kh75n for <iommu@lists.linux-foundation.org>;
- Tue,  7 Jun 2022 18:46:17 +0000 (UTC)
+ with ESMTP id 8HE1251Vob1B for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Jun 2022 18:46:24 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 792E460B73
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 18:46:17 +0000 (UTC)
-X-ASG-Debug-ID: 1654627544-1cf43917f3396710001-DtgJuY
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A1EA860B73
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 18:46:24 +0000 (UTC)
+X-ASG-Debug-ID: 1654627583-1cf43917f3396720001-DtgJuY
 Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with
- ESMTP id u3h3PzNcv3GISwVG; Tue, 07 Jun 2022 14:45:44 -0400 (EDT)
+ ESMTP id OBWPxyFZLrQFHE0J; Tue, 07 Jun 2022 14:46:23 -0400 (EDT)
 X-Barracuda-Envelope-From: tonyb@cybernetics.com
 X-ASG-Whitelist: Client
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=cybernetics.com; s=mail; 
- bh=fJQpcCRHMP3bElV7sUkA+QTTFc8Tk97S5Mqvw1QDnTQ=;
+ bh=vcQ5hy/KPkqucbXNbQAJCyvSrO4lyJAHF32hpadfWSw=;
  h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:Cc:To:From:
- Content-Language:Subject:MIME-Version:Date:Message-ID; b=ghina6onuUS2ov/P3hH9
- L5dEdD+6sGEHGT4vP9jtWoQ5eCxd6dCBxtPoExAZw2K5opBuq2H/Z4oCWx5J1HX8r2nziqL09VDv3
- 7e7fCgDlngbrr1wSqKCea76X8QbWpcNpautqqHUnpKW3+01/yk5/iaywpvmAI7fEdg/W5S6oPo=
+ Content-Language:Subject:MIME-Version:Date:Message-ID; b=FibAY+bNXDPJpThVea4/
+ cKatgfJ/9zkZVzgmJpUaNWz4GlH3d1tP684DpenycawhOTl2oXD9dhnIwNmsEm1uhbqoud6Yi7oNt
+ VP+IFIP5LnFsThvuOOC5tFSnFAO0UGzS6gbIQCs6YkRXa4wDmtwWjguWZhXVGIhkw5eOeUBHVQ=
 Received: from [10.157.2.224] (HELO [192.168.200.1])
  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
- with ESMTPS id 11859468; Tue, 07 Jun 2022 14:45:44 -0400
-Message-ID: <11b7e3cd-c929-654c-1f45-1abe9a6f6a98@cybernetics.com>
-Date: Tue, 7 Jun 2022 14:45:44 -0400
+ with ESMTPS id 11859479; Tue, 07 Jun 2022 14:46:23 -0400
+Message-ID: <6a4fb3c3-e627-6266-7c49-322253abefb9@cybernetics.com>
+Date: Tue, 7 Jun 2022 14:46:23 -0400
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: [PATCH v6 09/11] dmapool: cleanup dma_pool_destroy
+Subject: [PATCH v6 10/11] dmapool: improve scalability of dma_pool_alloc
 Content-Language: en-US
-X-ASG-Orig-Subj: [PATCH v6 09/11] dmapool: cleanup dma_pool_destroy
+X-ASG-Orig-Subj: [PATCH v6 10/11] dmapool: improve scalability of
+ dma_pool_alloc
 From: Tony Battersby <tonyb@cybernetics.com>
 To: linux-mm@kvack.org, linux-kernel@vger.kernel.org
 References: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
 In-Reply-To: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
 X-Barracuda-Connect: UNKNOWN[10.10.4.126]
-X-Barracuda-Start-Time: 1654627544
+X-Barracuda-Start-Time: 1654627583
 X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
 X-Barracuda-BRTS-Status: 1
 X-Virus-Scanned: by bsmtpd at cybernetics.com
-X-Barracuda-Scan-Msg-Size: 2336
+X-Barracuda-Scan-Msg-Size: 3491
 Cc: Tony Lindgren <tony@atomide.com>,
  Andy Shevchenko <andy.shevchenko@gmail.com>,
  Matthew Wilcox <willy@infradead.org>, iommu@lists.linux-foundation.org,
@@ -91,81 +90,105 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-pool_free_page() is called only from dma_pool_destroy(), so inline it
-and make it less generic since we know that the pool is being destroyed.
+dma_pool_alloc() scales poorly when allocating a large number of pages
+because it does a linear scan of all previously-allocated pages before
+allocating a new one.  Improve its scalability by maintaining a separate
+list of pages that have free blocks ready to (re)allocate.  In big O
+notation, this improves the algorithm from O(n) to O(1).
 
 Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
 ---
 
 Changes since v5:
-Take the opposite approach and inline pool_free_page() into
-dma_pool_destroy() instead of moving the is_page_busy() check into
-pool_free_page().
+pool_free_page() no longer exists.
+Updated big O usage in description.
 
- mm/dmapool.c | 33 ++++++++++++++-------------------
- 1 file changed, 14 insertions(+), 19 deletions(-)
+ mm/dmapool.c | 26 ++++++++++++++++++++++----
+ 1 file changed, 22 insertions(+), 4 deletions(-)
 
 diff --git a/mm/dmapool.c b/mm/dmapool.c
-index c7ec38cb4631..4e075feb038f 100644
+index 4e075feb038f..fc9ae0683c20 100644
 --- a/mm/dmapool.c
 +++ b/mm/dmapool.c
-@@ -241,18 +241,6 @@ static inline bool is_page_busy(struct dma_page *page)
- 	return page->in_use != 0;
- }
+@@ -17,6 +17,10 @@
+  * least 'size' bytes.  Free blocks are tracked in an unsorted singly-linked
+  * list of free blocks within the page.  Used blocks aren't tracked, but we
+  * keep a count of how many are currently allocated from each page.
++ *
++ * The avail_page_list keeps track of pages that have one or more free blocks
++ * available to (re)allocate.  Pages are moved in and out of avail_page_list
++ * as their blocks are allocated and freed.
+  */
  
--static void pool_free_page(struct dma_pool *pool, struct dma_page *page)
--{
--	dma_addr_t dma = page->dma;
--
--#ifdef	DMAPOOL_DEBUG
--	memset(page->vaddr, POOL_POISON_FREED, pool->allocation);
--#endif
--	dma_free_coherent(pool->dev, pool->allocation, page->vaddr, dma);
--	list_del(&page->page_list);
--	kfree(page);
--}
--
- /**
-  * dma_pool_destroy - destroys a pool of dma memory blocks.
-  * @pool: dma pool that will be destroyed
-@@ -280,14 +268,22 @@ void dma_pool_destroy(struct dma_pool *pool)
- 	mutex_unlock(&pools_reg_lock);
+ #include <linux/device.h>
+@@ -42,6 +46,7 @@
  
- 	list_for_each_entry_safe(page, tmp, &pool->page_list, page_list) {
-+		void *vaddr = page->vaddr;
+ struct dma_pool {		/* the pool */
+ 	struct list_head page_list;
++	struct list_head avail_page_list;
+ 	spinlock_t lock;
+ 	struct device *dev;
+ 	unsigned int size;
+@@ -54,6 +59,7 @@ struct dma_pool {		/* the pool */
+ 
+ struct dma_page {		/* cacheable header for 'allocation' bytes */
+ 	struct list_head page_list;
++	struct list_head avail_page_link;
+ 	void *vaddr;
+ 	dma_addr_t dma;
+ 	unsigned int in_use;
+@@ -155,6 +161,7 @@ struct dma_pool *dma_pool_create(const char *name, struct device *dev,
+ 	retval->dev = dev;
+ 
+ 	INIT_LIST_HEAD(&retval->page_list);
++	INIT_LIST_HEAD(&retval->avail_page_list);
+ 	spin_lock_init(&retval->lock);
+ 	retval->size = size;
+ 	retval->boundary = boundary;
+@@ -311,10 +318,11 @@ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
+ 	might_alloc(mem_flags);
+ 
+ 	spin_lock_irqsave(&pool->lock, flags);
+-	list_for_each_entry(page, &pool->page_list, page_list) {
+-		if (page->offset < pool->allocation)
+-			goto ready;
+-	}
++	page = list_first_entry_or_null(&pool->avail_page_list,
++					struct dma_page,
++					avail_page_link);
++	if (page)
++		goto ready;
+ 
+ 	/* pool_alloc_page() might sleep, so temporarily drop &pool->lock */
+ 	spin_unlock_irqrestore(&pool->lock, flags);
+@@ -326,10 +334,13 @@ void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,
+ 	spin_lock_irqsave(&pool->lock, flags);
+ 
+ 	list_add(&page->page_list, &pool->page_list);
++	list_add(&page->avail_page_link, &pool->avail_page_list);
+  ready:
+ 	page->in_use++;
+ 	offset = page->offset;
+ 	page->offset = *(int *)(page->vaddr + offset);
++	if (page->offset >= pool->allocation)
++		list_del_init(&page->avail_page_link);
+ 	retval = offset + page->vaddr;
+ 	*handle = offset + page->dma;
+ #ifdef	DMAPOOL_DEBUG
+@@ -451,6 +462,13 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
+ 		memset(vaddr, 0, pool->size);
+ #endif
+ 
++	/*
++	 * list_empty() on the page tests if the page is already linked into
++	 * avail_page_list to avoid adding it more than once.
++	 */
++	if (list_empty(&page->avail_page_link))
++		list_add(&page->avail_page_link, &pool->avail_page_list);
 +
- 		if (is_page_busy(page)) {
- 			dev_err(pool->dev, "%s %s, %p busy\n", __func__,
--				pool->name, page->vaddr);
-+				pool->name, vaddr);
- 			/* leak the still-in-use consistent memory */
--			list_del(&page->page_list);
--			kfree(page);
--		} else
--			pool_free_page(pool, page);
-+		} else {
-+#ifdef	DMAPOOL_DEBUG
-+			memset(vaddr, POOL_POISON_FREED, pool->allocation);
-+#endif
-+			dma_free_coherent(pool->dev,
-+					  pool->allocation,
-+					  vaddr,
-+					  page->dma);
-+		}
-+		kfree(page);
- 	}
- 
- 	kfree(pool);
-@@ -459,8 +455,7 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
+ 	page->in_use--;
  	*(int *)vaddr = page->offset;
  	page->offset = offset;
- 	/*
--	 * Resist a temptation to do
--	 *    if (!is_page_busy(page)) pool_free_page(pool, page);
-+	 * Resist a temptation to free unused pages immediately.
- 	 * Better have a few empty pages hang around.
- 	 */
- 	spin_unlock_irqrestore(&pool->lock, flags);
 -- 
 2.25.1
 
