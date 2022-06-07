@@ -1,76 +1,76 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7E84BC433EF
-	for <iommu@archiver.kernel.org>; Tue,  7 Jun 2022 18:43:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E2A2EC433EF
+	for <iommu@archiver.kernel.org>; Tue,  7 Jun 2022 18:44:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 3721F409D0;
-	Tue,  7 Jun 2022 18:43:45 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 92A7B60E58;
+	Tue,  7 Jun 2022 18:44:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UdkfI3KeHWC5; Tue,  7 Jun 2022 18:43:44 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id tbNyYAOn1CIV; Tue,  7 Jun 2022 18:44:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 762F040940;
-	Tue,  7 Jun 2022 18:43:43 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id B991660D66;
+	Tue,  7 Jun 2022 18:44:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5CDC0C0032;
-	Tue,  7 Jun 2022 18:43:43 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0DFB5C002D
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 18:43:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9098BC0032;
+	Tue,  7 Jun 2022 18:44:22 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0C327C002D
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 18:44:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 0B046833FB
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 18:43:42 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id EE02740570
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 18:44:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=cybernetics.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id s5KkAqGCcr-S for <iommu@lists.linux-foundation.org>;
- Tue,  7 Jun 2022 18:43:41 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 1GzkCW4H4-zH for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Jun 2022 18:44:20 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.cybernetics.com (mail.cybernetics.com [173.71.130.66])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 7B6F2831A2
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 18:43:41 +0000 (UTC)
-X-ASG-Debug-ID: 1654627420-1cf43917f3396640001-DtgJuY
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 55DB24055A
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jun 2022 18:44:20 +0000 (UTC)
+X-ASG-Debug-ID: 1654627459-1cf43917f3396680001-DtgJuY
 Received: from cybernetics.com ([10.10.4.126]) by mail.cybernetics.com with
- ESMTP id 6i000wcOepKFgepC; Tue, 07 Jun 2022 14:43:40 -0400 (EDT)
+ ESMTP id ytKMQdwzzCTN1huP; Tue, 07 Jun 2022 14:44:19 -0400 (EDT)
 X-Barracuda-Envelope-From: tonyb@cybernetics.com
 X-ASG-Whitelist: Client
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=cybernetics.com; s=mail; 
- bh=PTdmYDYQtaJrowq+CO1r9NBKL5iWIOZcs9cyzc3ahus=;
+ bh=ko90FEQrFc3kr/EXmZEbhsh++NujIvq49Z2hdvGupnI=;
  h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:Cc:To:From:
- Content-Language:Subject:MIME-Version:Date:Message-ID; b=eFhH/8oZoQRI6kwNblqq
- GO5bRSb+r01mmH471kRl9m4M/4VIu+CfaebGobYNsjfg2fnazTi3XAKgI8m7tUKWYNLACdWIB6xn1
- VaxxNPgygaNxZbPv24YRGmXC9TWyOMflOFNoBQif05lIe4+grirAT5xh3/y5RRsrnZO8H3xzgs=
+ Content-Language:Subject:MIME-Version:Date:Message-ID; b=WUGhF+zc7hcw6JoFhMVn
+ sGaBwqMKrtT0LAsXqUcUj76iU06x+W8kn/yVArt8p4dHAKYUv4FvRp/bnqdKNITJ8eZ4h4+G4cdWa
+ MiUopTVPkmkKCknVE11Zis2M2WKnboszBLWCavFSHLU31NMgSYjzMIvvxF7fzNbz4pg+2PoWvM=
 Received: from [10.157.2.224] (HELO [192.168.200.1])
  by cybernetics.com (CommuniGate Pro SMTP 7.1.1)
- with ESMTPS id 11859449; Tue, 07 Jun 2022 14:43:40 -0400
-Message-ID: <568967ea-13a7-4a09-6846-0891032e6cfe@cybernetics.com>
-Date: Tue, 7 Jun 2022 14:43:39 -0400
+ with ESMTPS id 11859456; Tue, 07 Jun 2022 14:44:19 -0400
+Message-ID: <06f83492-1eaf-16c4-31b0-1f148995ee59@cybernetics.com>
+Date: Tue, 7 Jun 2022 14:44:18 -0400
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: [PATCH v6 06/11] dmapool: debug: prevent endless loop in case of
- corruption
+Subject: [PATCH v6 07/11] dmapool: ignore init_on_free when DMAPOOL_DEBUG
+ enabled
 Content-Language: en-US
-X-ASG-Orig-Subj: [PATCH v6 06/11] dmapool: debug: prevent endless loop in case
- of corruption
+X-ASG-Orig-Subj: [PATCH v6 07/11] dmapool: ignore init_on_free when
+ DMAPOOL_DEBUG enabled
 From: Tony Battersby <tonyb@cybernetics.com>
 To: linux-mm@kvack.org, linux-kernel@vger.kernel.org
 References: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
 In-Reply-To: <340ff8ef-9ff5-7175-c234-4132bbdfc5f7@cybernetics.com>
 X-Barracuda-Connect: UNKNOWN[10.10.4.126]
-X-Barracuda-Start-Time: 1654627420
+X-Barracuda-Start-Time: 1654627459
 X-Barracuda-URL: https://10.10.4.122:443/cgi-mod/mark.cgi
 X-Barracuda-BRTS-Status: 1
 X-Virus-Scanned: by bsmtpd at cybernetics.com
-X-Barracuda-Scan-Msg-Size: 1849
+X-Barracuda-Scan-Msg-Size: 1450
 Cc: Tony Lindgren <tony@atomide.com>,
  Andy Shevchenko <andy.shevchenko@gmail.com>,
  Matthew Wilcox <willy@infradead.org>, iommu@lists.linux-foundation.org,
@@ -93,65 +93,47 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Prevent a possible endless loop with DMAPOOL_DEBUG enabled if a buggy
-driver corrupts DMA pool memory.
+There are two cases:
+
+1) In the normal case that the memory is being freed correctly, then
+DMAPOOL_DEBUG will memset the memory anyway, so speed thing up by
+avoiding a double-memset of the same memory.
+
+2) In the abnormal case that DMAPOOL_DEBUG detects that a driver passes
+incorrect parameters to dma_pool_free() (e.g. double-free, invalid
+free, mismatched vaddr/dma, etc.), then that is a kernel bug, and we
+don't want to clear the passed-in possibly-invalid memory pointer
+because we can't be sure that the memory is really free.  So don't clear
+it just because init_on_free=1.
 
 Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
 ---
- mm/dmapool.c | 37 ++++++++++++++++++++++++++++++-------
- 1 file changed, 30 insertions(+), 7 deletions(-)
+ mm/dmapool.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/mm/dmapool.c b/mm/dmapool.c
-index d3e5a6151fb4..facdb3571976 100644
+index facdb3571976..44038089a41a 100644
 --- a/mm/dmapool.c
 +++ b/mm/dmapool.c
-@@ -417,16 +417,39 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
+@@ -406,8 +406,6 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
  	}
- 	{
- 		unsigned int chain = page->offset;
-+		unsigned int free_blks = 0;
-+
- 		while (chain < pool->allocation) {
--			if (chain != offset) {
--				chain = *(int *)(page->vaddr + chain);
--				continue;
-+			if (unlikely(chain == offset)) {
-+				spin_unlock_irqrestore(&pool->lock, flags);
-+				dev_err(pool->dev,
-+					"%s %s, dma %pad already free\n",
-+					__func__, pool->name, &dma);
-+				return;
- 			}
--			spin_unlock_irqrestore(&pool->lock, flags);
--			dev_err(pool->dev, "%s %s, dma %pad already free\n",
--				__func__, pool->name, &dma);
--			return;
-+
-+			/*
-+			 * A buggy driver could corrupt the freelist by
-+			 * use-after-free, buffer overflow, etc.  Besides
-+			 * checking for corruption, this also prevents an
-+			 * endless loop in case corruption causes a circular
-+			 * loop in the freelist.
-+			 */
-+			if (unlikely(++free_blks + page->in_use >
-+				     pool->blks_per_alloc)) {
-+ freelist_corrupt:
-+				spin_unlock_irqrestore(&pool->lock, flags);
-+				dev_err(pool->dev,
-+					"%s %s, freelist corrupted\n",
-+					__func__, pool->name);
-+				return;
-+			}
-+
-+			chain = *(int *)(page->vaddr + chain);
- 		}
-+		if (unlikely(free_blks + page->in_use !=
-+			     pool->blks_per_alloc))
-+			goto freelist_corrupt;
+ 
+ 	offset = vaddr - page->vaddr;
+-	if (want_init_on_free())
+-		memset(vaddr, 0, pool->size);
+ #ifdef	DMAPOOL_DEBUG
+ 	if ((dma - page->dma) != offset) {
+ 		spin_unlock_irqrestore(&pool->lock, flags);
+@@ -452,6 +450,9 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
+ 			goto freelist_corrupt;
  	}
  	memset(vaddr, POOL_POISON_FREED, pool->size);
++#else
++	if (want_init_on_free())
++		memset(vaddr, 0, pool->size);
  #endif
+ 
+ 	page->in_use--;
 -- 
 2.25.1
 
