@@ -1,63 +1,96 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5276CCCA482
-	for <iommu@archiver.kernel.org>; Wed,  8 Jun 2022 01:55:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D91B9C43334
+	for <iommu@archiver.kernel.org>; Wed,  8 Jun 2022 04:17:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id CCDAD408E6;
-	Wed,  8 Jun 2022 01:55:46 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 64E8B60F75;
+	Wed,  8 Jun 2022 04:17:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id K7pgeL-rCKZF; Wed,  8 Jun 2022 01:55:46 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id uZ6ZvWJN-J-x; Wed,  8 Jun 2022 04:17:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 9EB74408E5;
-	Wed,  8 Jun 2022 01:55:45 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id B693660EF4;
+	Wed,  8 Jun 2022 04:17:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 74EC7C0039;
-	Wed,  8 Jun 2022 01:55:45 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 90EFEC002D
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jun 2022 01:55:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 91602C0039;
+	Wed,  8 Jun 2022 04:17:50 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3DA49C002D
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jun 2022 04:17:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 6B38E408E6
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jun 2022 01:55:43 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 24959415CC
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jun 2022 04:17:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id t04hNQa2Lt41 for <iommu@lists.linux-foundation.org>;
- Wed,  8 Jun 2022 01:55:41 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
- by smtp2.osuosl.org (Postfix) with ESMTPS id A6ED7408E5
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jun 2022 01:55:41 +0000 (UTC)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
- by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LHr065K4vz16JVb;
- Wed,  8 Jun 2022 09:55:18 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 8 Jun 2022 09:55:36 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 8 Jun 2022 09:55:36 +0800
-To: <joro@8bytes.org>
-Subject: [PATCH v2] iommu: Directly use ida_alloc()/free()
-Date: Wed, 8 Jun 2022 02:16:55 +0000
-Message-ID: <20220608021655.1538087-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=google.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id tY-JGFn8c5rD for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Jun 2022 04:17:47 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com
+ [IPv6:2607:f8b0:4864:20::112a])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 7BB23415C2
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jun 2022 04:17:47 +0000 (UTC)
+Received: by mail-yw1-x112a.google.com with SMTP id
+ 00721157ae682-30fdbe7467cso161318827b3.1
+ for <iommu@lists.linux-foundation.org>; Tue, 07 Jun 2022 21:17:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=iQI3WQn6APR9E2ttOCyAiFe2MGseuqBge76ac78iA7U=;
+ b=Ts5QkPxd7pFyziiJqmtZJLnXRknCmMy1t6sCiB3ckMbt9SkAEBRfARJHf125Q1os/h
+ UmnigRXcOOKTlsOmghW7WR/LUi1utWWgBthiNQdj/bzCwQavUTa3whB/9GKTeebiSoY4
+ ogxkGdSDGga3Hz2paZUed4iAIm33hTbR9clsNcD3ZosLY1XCZEUXvA/JXjtZxnM8vFJZ
+ Me0hksrKRT5BaZAaoc9GP9DLuWksGCmZYpVmkhf06H/ke7WAl9s/F589cKK6tHTfM5HR
+ /GPXrjFA7NKvIVdgMN524CIqsLHgJ2f5AVCwO8h1HEoEVnQ60kchD97JzTHN4aUOdJ3w
+ VfPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=iQI3WQn6APR9E2ttOCyAiFe2MGseuqBge76ac78iA7U=;
+ b=LeCgk+1eJh135lBWCr6NkhgcSbyXIMZqpPYIW95SicaPCAXWufU1jlORlen0OO/Ymk
+ iOsAAmIPV3GEsCGSu3jmeEOJUG3H/2uGZgLI4I2p4gvBeN/ywFDlIkoGQRn2TrKIzSiw
+ H7qYi6NDrK4dpDYynPrpJQ1tlHmj+HpyoCpRiPU5bxBlU2RtxpleOamqCAtFP2JawkSo
+ go0iJMFBAL7tOBZb7YzDrpn9ur/4MEhDVNihxHoEoK1As5acyr0uvxgcwhHMG5DmWr9C
+ Hs4AYJsRxnQta/Z8vdCP1m9VGJNmlmiCyngHkNeyzeRsS2lmkJEbTHVsEYGo6yZ8FHu9
+ 23pQ==
+X-Gm-Message-State: AOAM532VnXxW1sCKVMfNb4SMsd1rE7SLVXvRP/Y3yrbKmIpO3N0Dt2ve
+ Of2vLpX1wo9HJsDZomBusCAh8XGKqB4n6+xQoqdseA==
+X-Google-Smtp-Source: ABdhPJyxYwhnuOY9V3FoOGWgtHzA7Pkc4+EzJlyNNaRvErcSEFHQwuB2QzvG1seCQb6Spnb9ZC5otKVWX6/+WX7BWco=
+X-Received: by 2002:a0d:d510:0:b0:30c:1b40:313 with SMTP id
+ x16-20020a0dd510000000b0030c1b400313mr35396088ywd.80.1654661866108; Tue, 07
+ Jun 2022 21:17:46 -0700 (PDT)
 MIME-Version: 1.0
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
-Cc: "Michael S . Tsirkin" <mst@redhat.com>, Ke Liu <liuke94@huawei.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Jason Gunthorpe <jgg@nvidia.com>, will@kernel.org
+References: <20220601070707.3946847-1-saravanak@google.com>
+ <CAMuHMdXkX-SXtBuTRGJOUnpw9goSP6RFr_PTt_3w_yWgBpWsqg@mail.gmail.com>
+ <CAGETcx9f0UBhpp6dM+KJwtYpLx19wwsq6_ygi3En7FrXobOSpA@mail.gmail.com>
+In-Reply-To: <CAGETcx9f0UBhpp6dM+KJwtYpLx19wwsq6_ygi3En7FrXobOSpA@mail.gmail.com>
+Date: Tue, 7 Jun 2022 21:17:09 -0700
+Message-ID: <CAGETcx8VM+xOCe7HEx9FUU-1B9nrX8Q=tE=NjTyb9uX2_8RXLQ@mail.gmail.com>
+Subject: Re: [PATCH v2 0/9] deferred_probe_timeout logic clean up
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Linus Walleij <linus.walleij@linaro.org>, Eric Dumazet <edumazet@google.com>,
+ Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
+ Kevin Hilman <khilman@kernel.org>, Russell King <linux@armlinux.org.uk>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Android Kernel Team <kernel-team@android.com>, Len Brown <len.brown@intel.com>,
+ Linux PM list <linux-pm@vger.kernel.org>,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ David Ahern <dsahern@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ netdev <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+ Heiner Kallweit <hkallweit1@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -70,59 +103,256 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Ke Liu via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Ke Liu <liuke94@huawei.com>
+From: Saravana Kannan via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Saravana Kannan <saravanak@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove().
+On Tue, Jun 7, 2022 at 5:55 PM Saravana Kannan <saravanak@google.com> wrote:
+>
+> -Hideaki -- their email keeps bouncing.
+>
+> On Tue, Jun 7, 2022 at 11:13 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> >
+> > Hi Saravana,
+> >
+> > On Wed, Jun 1, 2022 at 12:46 PM Saravana Kannan <saravanak@google.com> wrote:
+> > > This series is based on linux-next + these 2 small patches applies on top:
+> > > https://lore.kernel.org/lkml/20220526034609.480766-1-saravanak@google.com/
+> > >
+> > > A lot of the deferred_probe_timeout logic is redundant with
+> > > fw_devlink=on.  Also, enabling deferred_probe_timeout by default breaks
+> > > a few cases.
+> > >
+> > > This series tries to delete the redundant logic, simplify the frameworks
+> > > that use driver_deferred_probe_check_state(), enable
+> > > deferred_probe_timeout=10 by default, and fixes the nfsroot failure
+> > > case.
+> > >
+> > > The overall idea of this series is to replace the global behavior of
+> > > driver_deferred_probe_check_state() where all devices give up waiting on
+> > > supplier at the same time with a more granular behavior:
+> > >
+> > > 1. Devices with all their suppliers successfully probed by late_initcall
+> > >    probe as usual and avoid unnecessary deferred probe attempts.
+> > >
+> > > 2. At or after late_initcall, in cases where boot would break because of
+> > >    fw_devlink=on being strict about the ordering, we
+> > >
+> > >    a. Temporarily relax the enforcement to probe any unprobed devices
+> > >       that can probe successfully in the current state of the system.
+> > >       For example, when we boot with a NFS rootfs and no network device
+> > >       has probed.
+> > >    b. Go back to enforcing the ordering for any devices that haven't
+> > >       probed.
+> > >
+> > > 3. After deferred probe timeout expires, we permanently give up waiting
+> > >    on supplier devices without drivers. At this point, whatever devices
+> > >    can probe without some of their optional suppliers end up probing.
+> > >
+> > > In the case where module support is disabled, it's fairly
+> > > straightforward and all device probes are completed before the initcalls
+> > > are done.
+> > >
+> > > Patches 1 to 3 are fairly straightforward and can probably be applied
+> > > right away.
+> > >
+> > > Patches 4 to 6 are for fixing the NFS rootfs issue and setting the
+> > > default deferred_probe_timeout back to 10 seconds when modules are
+> > > enabled.
+> > >
+> > > Patches 7 to 9 are further clean up of the deferred_probe_timeout logic
+> > > so that no framework has to know/care about deferred_probe_timeout.
+> > >
+> > > Yoshihiro/Geert,
+> > >
+> > > If you can test this patch series and confirm that the NFS root case
+> > > works, I'd really appreciate that.
+> >
+> > Thanks, I gave this a try on various boards I have access to.
+> > The results were quite positive. E.g. the compile error I saw on v1
+> > (implicit declation of fw_devlink_unblock_may_probe(), which is no longer
+> >  used in v2) is gone.
+>
+> Thanks a lot for testing these.
+>
+> > However, I'm seeing a weird error when userspace (Debian9 nfsroot) is
+> > starting:
+> >
+> >     [  OK  ] Started D-Bus System Message Bus.
+> >     Unable to handle kernel NULL pointer dereference at virtual
+> > address 0000000000000000
+> >     Unable to handle kernel NULL pointer dereference at virtual
+> > address 0000000000000000
+> >     Mem abort info:
+> >       ESR = 0x0000000096000004
+> >     Mem abort info:
+> >       ESR = 0x0000000096000004
+> >       EC = 0x25: DABT (current EL), IL = 32 bits
+> >       SET = 0, FnV = 0
+> >       EC = 0x25: DABT (current EL), IL = 32 bits
+> >       EA = 0, S1PTW = 0
+> >       FSC = 0x04: level 0 translation fault
+> >       SET = 0, FnV = 0
+> >     Data abort info:
+> >       ISV = 0, ISS = 0x00000004
+> >       EA = 0, S1PTW = 0
+> >       FSC = 0x04: level 0 translation fault
+> >       CM = 0, WnR = 0
+> >     user pgtable: 4k pages, 48-bit VAs, pgdp=000000004ec45000
+> >     [0000000000000000] pgd=0000000000000000, p4d=0000000000000000
+> >     Data abort info:
+> >     Internal error: Oops: 96000004 [#1] PREEMPT SMP
+> >     CPU: 0 PID: 374 Comm: v4l_id Tainted: G        W
+> > 5.19.0-rc1-arm64-renesas-00799-gc13c3e49e8bd #1660
+> >       ISV = 0, ISS = 0x00000004
+> >     Hardware name: Renesas Ebisu-4D board based on r8a77990 (DT)
+> >     pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> >       CM = 0, WnR = 0
+> >     pc : subdev_open+0x8c/0x128
+> >     lr : subdev_open+0x78/0x128
+> >     sp : ffff80000aadba60
+> >     x29: ffff80000aadba60 x28: 0000000000000000 x27: ffff80000aadbc58
+> >     x26: 0000000000020000 x25: ffff00000b3aaf00 x24: 0000000000000000
+> >     x23: ffff00000c331c00 x22: ffff000009aa61b8 x21: ffff000009aa6000
+> >     x20: ffff000008bae3e8 x19: ffff00000c3fe200 x18: 0000000000000000
+> >     x17: ffff800076945000 x16: ffff800008004000 x15: 00008cc6bf550c7c
+> >     x14: 000000000000038f x13: 000000000000001a x12: ffff00007fba8618
+> >     x11: 0000000000000001 x10: 0000000000000000 x9 : ffff800009253954
+> >     x8 : ffff00000b3aaf00 x7 : 0000000000000004 x6 : 000000000000001a
+> >     x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000000001
+> >     x2 : 0000000100000001 x1 : 0000000000000000 x0 : 0000000000000000
+> >     Call trace:
+> >      subdev_open+0x8c/0x128
 
-Signed-off-by: Ke Liu <liuke94@huawei.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
-v2 subject change to iommu
----
- drivers/iommu/iommu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+After disassembling the code on my end (with slightly different
+config) and looking at 0x8c from the start of the function, I'm pretty
+sure the NULL deref is happening here inside subdev_open()
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 847ad47a2dfd..cdc86c39954e 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -600,7 +600,7 @@ static void iommu_group_release(struct kobject *kobj)
- 	if (group->iommu_data_release)
- 		group->iommu_data_release(group->iommu_data);
- 
--	ida_simple_remove(&iommu_group_ida, group->id);
-+	ida_free(&iommu_group_ida, group->id);
- 
- 	if (group->default_domain)
- 		iommu_domain_free(group->default_domain);
-@@ -641,7 +641,7 @@ struct iommu_group *iommu_group_alloc(void)
- 	INIT_LIST_HEAD(&group->devices);
- 	INIT_LIST_HEAD(&group->entry);
- 
--	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
-+	ret = ida_alloc(&iommu_group_ida, GFP_KERNEL);
- 	if (ret < 0) {
- 		kfree(group);
- 		return ERR_PTR(ret);
-@@ -651,7 +651,7 @@ struct iommu_group *iommu_group_alloc(void)
- 	ret = kobject_init_and_add(&group->kobj, &iommu_group_ktype,
- 				   NULL, "%d", group->id);
- 	if (ret) {
--		ida_simple_remove(&iommu_group_ida, group->id);
-+		ida_free(&iommu_group_ida, group->id);
- 		kobject_put(&group->kobj);
- 		return ERR_PTR(ret);
- 	}
--- 
-2.25.1
+        if (sd->v4l2_dev->mdev && sd->entity.graph_obj.mdev->dev) {
 
+sd->entity.graph_obj.mdev == NULL.
+
+And going by the field names, I'm guessing these are suppliers pointed
+to by "remote-endpoint". Sadly fw_devlink can't extract any dependency
+info from remote-endpoint because the devices generally point to each
+other so a cycle is detected and the probe ordering isn't enforced
+between the endpoints. We still need to parse remote-endpoint to
+detect cycles created by a combination of endpoints/other properties
+(there's a real world case in upstream).
+
+> >      v4l2_open+0xa4/0x120
+> >      chrdev_open+0x78/0x178
+> >      do_dentry_open+0xfc/0x398
+> >      vfs_open+0x28/0x30
+> >      path_openat+0x584/0x9c8
+> >      do_filp_open+0x80/0x108
+> >      do_sys_openat2+0x20c/0x2d8
+> >     user pgtable: 4k pages, 48-bit VAs, pgdp=000000004ec53000
+> >      do_sys_open+0x54/0xa0
+> >      __arm64_sys_openat+0x20/0x28
+> >      invoke_syscall+0x40/0xf8
+> >      el0_svc_common.constprop.0+0xf0/0x110
+> >      do_el0_svc+0x20/0x78
+> >      el0_svc+0x48/0xd0
+> >      el0t_64_sync_handler+0xb0/0xb8
+> >      el0t_64_sync+0x148/0x14c
+> >     Code: f9405280 f9400400 b40000e0 f9400280 (f9400000)
+> >     ---[ end trace 0000000000000000 ]---
+> >
+> > This only happens on the Ebisu-4D board (r8a77990-ebisu.dts).
+> > I do not see this on the Salvator-X(S) boards.
+>
+> Ok. I don't know much about either of these boards. Are they supposed
+> to be very similar?
+>
+> > Bisection shows this starts to happen with "[PATCH v2 7/9] driver core:
+> > Set fw_devlink.strict=1 by default".
+>
+> So in the series, by this point, the previous patches would have
+> deferred probe timeout set to 10s (it can get extended on new driver
+> additions of course) and once the timer expires suppliers without
+> drivers will no longer block any consumers. The only difference
+> fw_devlink.strict=1 should cause is iommus and dmas dependency being
+> treated as mandatory till the timeout expires.
+>
+> In this instance, do you have iommu drivers and dma drivers compiled
+> in or loaded as modules or not available at all? In all these case,
+> the list of devices that would end up probing eventually should be the
+> same with or without fw_devlink.strict=1. The only difference would be
+> some reordering of probes.
+>
+> So this looks to me like improper error handling/assumption in the
+> driver for this subdev device. I'm guessing one of the suppliers to
+> this subdev has a direct/indirect dependency on iommus and this subdev
+> driver is assuming that the supplier would have probed by the time
+> it's probed.
+>
+> >
+> > Adding more debug info:
+> >
+> >     subdev_open:54: file v4l-subdev1
+> >     Unable to handle kernel NULL pointer dereference at virtual
+> > address 0000000000000000
+> >     subdev_open:54: file v4l-subdev2
+> >     Unable to handle kernel NULL pointer dereference at virtual
+> > address 0000000000000000
+
+How did you get these two "subdev_open" strings? And how/why the NULL
+deref there?
+
+> >
+> > Matching the subdev using sysfs gives:
+> >
+> >     /sys/devices/platform/soc/e6500000.i2c/i2c-0/0-0070/video4linux/v4l-subdev1
+> >     /sys/devices/platform/soc/e6500000.i2c/i2c-0/0-0070/video4linux/v4l-subdev2
+> >
+> > The i2c device is the adi,adv7482 at address 0x70.
+>
+> I'm guessing the fix would be somewhere in this driver, but I haven't
+> dug into it. Any guesses on which of its suppliers might have a
+> direct/indirect dependency on an iommu/dma? You could also enable the
+> debug log in fw_devlink_relax_link() and see if it relaxes any link
+> where the supplier is an iommu/dma device. That might give us some
+> hints.
+
+After spending way too much time on this looking at
+drivers/media/v4l2-core, drivers/media/mc and
+drivers/media/i2c/adv748x/ code, I'm guessing the ordering issue is
+probably between "csi40:" device and the video-receiver@70 (the
+"adi,adv7482") device.
+
+Based on your points about the sysfs, I was initially digging into
+drivers/media/i2c/adv748x/adv748x-core.c. But then the parent of
+video-receiver@70 is an i2c0 that has dmas dependencies. The csi40:
+(referred to from video-controller) doesn't seem to have any iommu or
+dmas dependency. So my guess is the csi40 gets probed first and then
+assumes the video-controller is already available.
+
+Can you use this info to take a stab at debugging this further?
+
+TL;DR is that I think this is some driver issue where it's not
+checking for one of its suppliers to be ready yet.
+
+-Saravana
+
+>
+> -Saravana
+>
+> > But now I'm lost...
+> >
+> > Gr{oetje,eeting}s,
+> >
+> >                         Geert
+> >
+> > --
+> > Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> >
+> > In personal conversations with technical people, I call myself a hacker. But
+> > when I'm talking to journalists I just say "programmer" or something like that.
+> >                                 -- Linus Torvalds
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
