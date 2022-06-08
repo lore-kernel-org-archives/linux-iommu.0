@@ -4,78 +4,78 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 02F61C433EF
-	for <iommu@archiver.kernel.org>; Wed,  8 Jun 2022 17:26:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5E55AC43334
+	for <iommu@archiver.kernel.org>; Wed,  8 Jun 2022 17:28:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 8660B40A87;
-	Wed,  8 Jun 2022 17:26:46 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 0DDD040A12;
+	Wed,  8 Jun 2022 17:28:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mVeqNUEILeqY; Wed,  8 Jun 2022 17:26:45 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 64BF640002;
-	Wed,  8 Jun 2022 17:26:45 +0000 (UTC)
+	with ESMTP id PVJgIcskufwM; Wed,  8 Jun 2022 17:28:07 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id C887A40002;
+	Wed,  8 Jun 2022 17:28:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 40E0CC0032;
-	Wed,  8 Jun 2022 17:26:45 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 460A2C002D
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jun 2022 17:26:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A580DC0032;
+	Wed,  8 Jun 2022 17:28:06 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E5B76C002D
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jun 2022 17:28:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 3419860E18
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jun 2022 17:26:44 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id D375540A0D
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jun 2022 17:28:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wOGQpidkkIEe for <iommu@lists.linux-foundation.org>;
- Wed,  8 Jun 2022 17:26:43 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wdZB52nQgfcd for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Jun 2022 17:28:04 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com
- [209.85.215.171])
- by smtp3.osuosl.org (Postfix) with ESMTPS id AFAC660E13
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jun 2022 17:26:43 +0000 (UTC)
-Received: by mail-pg1-f171.google.com with SMTP id 184so3581353pga.12
- for <iommu@lists.linux-foundation.org>; Wed, 08 Jun 2022 10:26:43 -0700 (PDT)
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com
+ [209.85.214.177])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 585BD40002
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jun 2022 17:28:04 +0000 (UTC)
+Received: by mail-pl1-f177.google.com with SMTP id s14so18213019plk.8
+ for <iommu@lists.linux-foundation.org>; Wed, 08 Jun 2022 10:28:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
  :content-language:to:cc:references:from:in-reply-to
  :content-transfer-encoding;
- bh=vdq4x2cK2Kxb7bPLAXT0rRqzYQf9uH8WQ9IJlchFrLc=;
- b=eSMfA1RhZSB9qedtYN1jRO5LtHzgQ2owH/F5JNmAzWMzw7ZyxbkxdGYbCdjRnXR1Hu
- PoItjxgTvpSGMi615sH/DD7t1izulT1LpE+o16w5V2pMcv0igfvggARqdoeKgNuvXHo5
- dCYKGauoaAx7UOLw5oX4pEF1NcfkokAwYELFfM/UvXotaRA5lnBKrhjJsb66eY7rk8zQ
- fRUykQLQV4+RhYf7AylbtXkC2AVsUDYqU8UvOMjNc3hiSer0Z1ftNLfIDQonzxRLiR7D
- ZEqe+ilvE/DmGTbRzL+2OChJ9gSQNENh1u7U2tUVvuANu8DQRCRulKxfj/ZZMpiZCF6I
- qUCQ==
-X-Gm-Message-State: AOAM533IKv5ZapQDdteT6x9JSu/RP6PnLqsX3HXKV/Bh7ziT57+80T7W
- shy42p5biTFO1H/cTLZVQ/0=
-X-Google-Smtp-Source: ABdhPJy2XkL1wjH+iK3e6e2Hx2QMmfgjTy/wyGK/xCsPzQDJHM5fZRi20ssFAqNOW/TkC9QwcpHNxQ==
-X-Received: by 2002:a05:6a00:1344:b0:51b:ed0d:dbbd with SMTP id
- k4-20020a056a00134400b0051bed0ddbbdmr26197497pfu.45.1654709202923; 
- Wed, 08 Jun 2022 10:26:42 -0700 (PDT)
+ bh=dpHSA3kj0eHHqdYze/RCpBE0tw7cvZjVvQOy/DfoJ2s=;
+ b=ltlaHerkFpX0nHtPz59Psfs04hvr4qt2Qm8Z8QPAiYikZb+rpTsoyM/okXp7hK/zEN
+ lkgdvHHyM2s9U/sDDns+Ccabnxpe3Rdg5Eaz7Zz8PyWYMyiPfN1CawS8vr0RSmPL0cQV
+ JYjy+ZOLke+fGNVJ0HqrZaSK7XyU+PaOEK17kJDpeQzoPw1v0Z+7zw5N+uD7QvuVW2al
+ b9CLD/bo7IUTsJf/o5nejM+QA9VtuPCoSqHBQt72tGyRaB5JF/sxXvjaQyzjKuj9Lb5w
+ ucaf1tbjdB06KFYLhL2XiD3KBz3egj2mWFQ0Q7zNujLXhaQAQ5Eh7Xd/t5GQA/ZxHgAU
+ QJAg==
+X-Gm-Message-State: AOAM530p1oaNCGZnzWkh0TkMNTbPzVGzWru8tRx9YfvKqvbbHjVIybvg
+ gWzLoZETAV3IkC2hnOiNdTk=
+X-Google-Smtp-Source: ABdhPJzMDpvgYrNyCdrUrf5LIBVmTVoNnNeogBR/uNjDb79MyeVN9aegG63yruaNNjBQ7ETB9eku5Q==
+X-Received: by 2002:a17:90b:3a87:b0:1e8:8079:b7e6 with SMTP id
+ om7-20020a17090b3a8700b001e88079b7e6mr247147pjb.139.1654709283698; 
+ Wed, 08 Jun 2022 10:28:03 -0700 (PDT)
 Received: from ?IPV6:2620:15c:211:201:1cb7:9e5d:5ca4:2a39?
  ([2620:15c:211:201:1cb7:9e5d:5ca4:2a39])
  by smtp.gmail.com with ESMTPSA id
- p5-20020a62d005000000b0050dc762813csm3282490pfg.22.2022.06.08.10.26.41
+ m19-20020a170902c45300b00162496617b9sm6030401plm.286.2022.06.08.10.28.01
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 08 Jun 2022 10:26:42 -0700 (PDT)
-Message-ID: <d7a72f92-15c9-1d58-c711-83c47444094e@acm.org>
-Date: Wed, 8 Jun 2022 10:26:40 -0700
+ Wed, 08 Jun 2022 10:28:02 -0700 (PDT)
+Message-ID: <543345ac-fbfa-1020-b6c7-72f65412f444@acm.org>
+Date: Wed, 8 Jun 2022 10:27:59 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH v3 2/4] dma-iommu: Add iommu_dma_opt_mapping_size()
+Subject: Re: [PATCH v3 1/4] dma-mapping: Add dma_opt_mapping_size()
 Content-Language: en-US
 To: John Garry <john.garry@huawei.com>, damien.lemoal@opensource.wdc.com,
  joro@8bytes.org, will@kernel.org, jejb@linux.ibm.com,
  martin.petersen@oracle.com, hch@lst.de, m.szyprowski@samsung.com,
  robin.murphy@arm.com
 References: <1654507822-168026-1-git-send-email-john.garry@huawei.com>
- <1654507822-168026-3-git-send-email-john.garry@huawei.com>
+ <1654507822-168026-2-git-send-email-john.garry@huawei.com>
 From: Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <1654507822-168026-3-git-send-email-john.garry@huawei.com>
+In-Reply-To: <1654507822-168026-2-git-send-email-john.garry@huawei.com>
 Cc: linux-scsi@vger.kernel.org, linux-doc@vger.kernel.org,
  liyihang6@hisilicon.com, linux-kernel@vger.kernel.org,
  linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org
@@ -96,15 +96,19 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 6/6/22 02:30, John Garry via iommu wrote:
-> +unsigned long iova_rcache_range(void)
-> +{
-> +	return PAGE_SIZE << (IOVA_RANGE_CACHE_MAX_SIZE - 1);
-> +}
+On 6/6/22 02:30, John Garry wrote:
+> +::
+> +
+> +	size_t
+> +	dma_opt_mapping_size(struct device *dev);
+> +
+> +Returns the maximum optimal size of a mapping for the device. Mapping large
+> +buffers may take longer so device drivers are advised to limit total DMA
+> +streaming mappings length to the returned value.
 
-My understanding is that iova cache entries may be smaller than 
-IOVA_RANGE_CACHE_MAX_SIZE and hence that even if code that uses the DMA 
-mapping API respects this limit that a cache miss can still happen.
+"Maximum optimal" sounds weird to me. Is there a single optimal value or 
+are there multiple optimal values? In the former case I think that the 
+word "maximum" should be left out.
 
 Thanks,
 
