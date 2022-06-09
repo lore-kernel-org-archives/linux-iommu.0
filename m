@@ -1,65 +1,79 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 741E4C433EF
-	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 18:10:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 16085C433EF
+	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 19:01:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 27B3041CCE;
-	Thu,  9 Jun 2022 18:10:04 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id B042C8425B;
+	Thu,  9 Jun 2022 19:01:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9nIcZGIfpaIk; Thu,  9 Jun 2022 18:10:02 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QN_1FK4Xdi9V; Thu,  9 Jun 2022 19:01:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 594F341CCD;
-	Thu,  9 Jun 2022 18:10:02 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 807E084245;
+	Thu,  9 Jun 2022 19:01:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 134DEC0032;
-	Thu,  9 Jun 2022 18:10:02 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0D0C4C002D
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 18:10:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 55804C0039;
+	Thu,  9 Jun 2022 19:01:10 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E8744C002D
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 19:01:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id EFD7361111
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 18:10:00 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id C0C2341CC7
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 19:01:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ynem3B_tqT11 for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jun 2022 18:09:59 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id tRaWrc03Stgm for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jun 2022 19:01:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 781FC60F8C
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 18:09:59 +0000 (UTC)
-Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.206])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LJsV61Xspz67VcZ;
- Fri, 10 Jun 2022 02:06:22 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Thu, 9 Jun 2022 20:09:56 +0200
-Received: from [10.47.88.201] (10.47.88.201) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 9 Jun
- 2022 19:09:55 +0100
-Message-ID: <b46fd053-aaee-a384-0e5a-e7a5a011c71a@huawei.com>
-Date: Thu, 9 Jun 2022 19:09:53 +0100
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 3797B41CBF
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 19:01:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1654801267; x=1686337267;
+ h=date:from:to:cc:subject:message-id:references:
+ mime-version:in-reply-to;
+ bh=EmjwxxcIPjSKbVJyKUdZT+cLlENxHUYXqwB3T5Diz90=;
+ b=GCN520h7bpzoh06DaMUy9U5RZ/wqDIXk3kwKRQa2qJ7dElA3uoxth92o
+ /4ZKAV0MS5uRPX22O9XF7AuuLg7Zf9B6vUhm+xqc01GK073Bbsl0wJSls
+ tTeIMfzAFb9eduqcY+7Uxuaibc0DtHN/Zm0HgztJhQL5K8+mfYWg0lLH5
+ T9MBRdGMRPsOuM5AmvLOVZtcQqZvVT2T9g65Wfsmt8DsEDgwCnLBaOhWl
+ DIZBN3JydApRJb+tsEHtiY3M18aZl+QyIzPeASstt/AEuouEN2QH/KnV8
+ a1rpXqT7U71dtuPfJFM6FeQD52KR7/EKETFV03m6cpjoy4G+NeYXIZYMI A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="278193811"
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; d="scan'208";a="278193811"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 09 Jun 2022 12:01:03 -0700
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; d="scan'208";a="908473498"
+Received: from araj-dh-work.jf.intel.com (HELO araj-dh-work) ([10.165.157.158])
+ by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 09 Jun 2022 12:01:03 -0700
+Date: Thu, 9 Jun 2022 19:01:02 +0000
+From: "Raj, Ashok" <ashok.raj@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v8 02/11] iommu: Add max_pasids field in struct dev_iommu
+Message-ID: <20220609190102.GC33363@araj-dh-work>
+References: <20220607014942.3954894-1-baolu.lu@linux.intel.com>
+ <20220607014942.3954894-3-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v2] iommu/dma: Add config for PCI SAC address trick
-To: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>
-References: <3f06994f9f370f9d35b2630ab75171ecd2065621.1654782107.git.robin.murphy@arm.com>
-In-Reply-To: <3f06994f9f370f9d35b2630ab75171ecd2065621.1654782107.git.robin.murphy@arm.com>
-X-Originating-IP: [10.47.88.201]
-X-ClientProxiedBy: lhreml727-chm.china.huawei.com (10.201.108.78) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, hch@lst.de
+Content-Disposition: inline
+In-Reply-To: <20220607014942.3954894-3-baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Christoph Hellwig <hch@infradead.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Vinod Koul <vkoul@kernel.org>, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -72,113 +86,108 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: John Garry via iommu <iommu@lists.linux-foundation.org>
-Reply-To: John Garry <john.garry@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 09/06/2022 16:12, Robin Murphy wrote:
-> For devices stuck behind a conventional PCI bus, saving extra cycles at
-> 33MHz is probably fairly significant. However since native PCI Express
-> is now the norm for high-performance devices, the optimisation to always
-> prefer 32-bit addresses for the sake of avoiding DAC is starting to look
-> rather anachronistic. Technically 32-bit addresses do have shorter TLPs
-> on PCIe, but unless the device is saturating its link bandwidth with
-> small transfers it seems unlikely that the difference is appreciable.
+On Tue, Jun 07, 2022 at 09:49:33AM +0800, Lu Baolu wrote:
+> Use this field to save the number of PASIDs that a device is able to
+> consume. It is a generic attribute of a device and lifting it into the
+> per-device dev_iommu struct could help to avoid the boilerplate code
+> in various IOMMU drivers.
 > 
-> What definitely is appreciable, however, is that the IOVA allocator
-> doesn't behave all that well once the 32-bit space starts getting full.
-> As DMA working sets get bigger, this optimisation increasingly backfires
-> and adds considerable overhead to the dma_map path for use-cases like
-> high-bandwidth networking. We've increasingly bandaged the allocator
-> in attempts to mitigate this, but it remains fundamentally at odds with
-> other valid requirements to try as hard as possible to satisfy a request
-> within the given limit; what we really need is to just avoid this odd
-> notion of a speculative allocation when it isn't beneficial anyway.
-> 
-> Unfortunately that's where things get awkward... Having been present on
-> x86 for 15 years or so now, it turns out there are systems which fail to
-> properly define the upper limit of usable IOVA space for certain devices
-> and this trick was the only thing letting them work OK. I had a similar
-> ulterior motive for a couple of early arm64 systems when originally
-> adding it to iommu-dma, but those really should be fixed with proper
-> firmware bindings by now. Let's be brave and default it to off in the
-> hope that CI systems and developers will find and fix those bugs, > but
-> expect that desktop-focused distro configs are likely to want to turn
-> it back on for maximum compatibility.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-
-FWIW,
-Reviewed-by: John Garry <john.garry@huawei.com>
-
-If we're not enabling by default for x86 then doesn't Jeorg have some 
-XHCI issue which we would now need to quirk? I don't remember which 
-device exactly. Or, alternatively, simply ask him to enable this new config.
-
-
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
+>  include/linux/iommu.h |  2 ++
+>  drivers/iommu/iommu.c | 26 ++++++++++++++++++++++++++
+>  2 files changed, 28 insertions(+)
 > 
-> v2: Tweak wording to clarify that it's not really an optimisation in
->      general, remove "default X86".
-> 
->   drivers/iommu/Kconfig     | 26 ++++++++++++++++++++++++++
->   drivers/iommu/dma-iommu.c |  2 +-
->   2 files changed, 27 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index c79a0df090c0..5a225b48dd00 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -144,6 +144,32 @@ config IOMMU_DMA
->   	select IRQ_MSI_IOMMU
->   	select NEED_SG_DMA_LENGTH
->   
-> +config IOMMU_DMA_PCI_SAC
-> +	bool "Enable 64-bit legacy PCI optimisation by default"
-> +	depends on IOMMU_DMA
-> +	help
-> +	  Enable by default an IOMMU optimisation for 64-bit legacy PCI devices,
-> +	  wherein the DMA API layer will always first try to allocate a 32-bit
-> +	  DMA address suitable for a single address cycle, before falling back
-> +	  to allocating from the device's full usable address range. If your
-> +	  system has 64-bit legacy PCI devices in 32-bit slots where using dual
-> +	  address cycles reduces DMA throughput significantly, this may be
-> +	  beneficial to overall performance.
-> +
-> +	  If you have a modern PCI Express based system, this feature mostly just
-> +	  represents extra overhead in the allocation path for no practical
-> +	  benefit, and it should usually be preferable to say "n" here.
-> +
-> +	  However, beware that this feature has also historically papered over
-> +	  bugs where the IOMMU address width and/or device DMA mask is not set
-> +	  correctly. If device DMA problems and IOMMU faults start occurring
-> +	  after disabling this option, it is almost certainly indicative of a
-> +	  latent driver or firmware/BIOS bug, which would previously have only
-> +	  manifested with several gigabytes worth of concurrent DMA mappings.
-> +
-> +	  If this option is not set, the feature can still be re-enabled at
-> +	  boot time with the "iommu.forcedac=0" command-line argument.
-> +
->   # Shared Virtual Addressing
->   config IOMMU_SVA
->   	bool
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index f90251572a5d..9f9d9ba7f376 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -67,7 +67,7 @@ struct iommu_dma_cookie {
->   };
->   
->   static DEFINE_STATIC_KEY_FALSE(iommu_deferred_attach_enabled);
-> -bool iommu_dma_forcedac __read_mostly;
-> +bool iommu_dma_forcedac __read_mostly = !IS_ENABLED(CONFIG_IOMMU_DMA_PCI_SAC);
->   
->   static int __init iommu_dma_forcedac_setup(char *str)
->   {
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 03fbb1b71536..d50afb2c9a09 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -364,6 +364,7 @@ struct iommu_fault_param {
+>   * @fwspec:	 IOMMU fwspec data
+>   * @iommu_dev:	 IOMMU device this device is linked to
+>   * @priv:	 IOMMU Driver private data
+> + * @max_pasids:  number of PASIDs device can consume
+>   *
+>   * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
+>   *	struct iommu_group	*iommu_group;
+> @@ -375,6 +376,7 @@ struct dev_iommu {
+>  	struct iommu_fwspec		*fwspec;
+>  	struct iommu_device		*iommu_dev;
+>  	void				*priv;
+> +	u32				max_pasids;
+>  };
+>  
+>  int iommu_device_register(struct iommu_device *iommu,
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 847ad47a2dfd..adac85ccde73 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -20,6 +20,7 @@
+>  #include <linux/idr.h>
+>  #include <linux/err.h>
+>  #include <linux/pci.h>
+> +#include <linux/pci-ats.h>
 
+Is this needed for this patch?
+
+>  #include <linux/bitops.h>
+>  #include <linux/property.h>
+>  #include <linux/fsl/mc.h>
+> @@ -218,6 +219,30 @@ static void dev_iommu_free(struct device *dev)
+>  	kfree(param);
+>  }
+>  
+> +static u32 dev_iommu_get_max_pasids(struct device *dev)
+> +{
+> +	u32 max_pasids = dev->iommu->iommu_dev->max_pasids;
+> +	u32 num_bits;
+> +	int ret;
+> +
+> +	if (!max_pasids)
+> +		return 0;
+> +
+> +	if (dev_is_pci(dev)) {
+> +		ret = pci_max_pasids(to_pci_dev(dev));
+> +		if (ret < 0)
+> +			return 0;
+> +
+> +		return min_t(u32, max_pasids, ret);
+
+Ah.. that answers my other question to consider device pasid-max. I guess
+if we need any enforcement of restricting devices that aren't supporting
+the full PASID, that will be done by some higher layer?
+
+too many returns in this function, maybe setup all returns to the end of
+the function might be elegant?
+
+> +	}
+> +
+> +	ret = device_property_read_u32(dev, "pasid-num-bits", &num_bits);
+> +	if (ret)
+> +		return 0;
+> +
+> +	return min_t(u32, max_pasids, 1UL << num_bits);
+> +}
+> +
+>  static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
+>  {
+>  	const struct iommu_ops *ops = dev->bus->iommu_ops;
+> @@ -243,6 +268,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+>  	}
+>  
+>  	dev->iommu->iommu_dev = iommu_dev;
+> +	dev->iommu->max_pasids = dev_iommu_get_max_pasids(dev);
+>  
+>  	group = iommu_group_get_for_dev(dev);
+>  	if (IS_ERR(group)) {
+> -- 
+> 2.25.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
