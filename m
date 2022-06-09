@@ -1,80 +1,91 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 30E1EC43334
-	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 20:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3DEF0C43334
+	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 20:34:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C735B81D24;
-	Thu,  9 Jun 2022 20:25:45 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id DE8C041C32;
+	Thu,  9 Jun 2022 20:34:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id TEqt-vMptFZS; Thu,  9 Jun 2022 20:25:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 61BC481CE9;
-	Thu,  9 Jun 2022 20:25:44 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5nxHSpIBncsb; Thu,  9 Jun 2022 20:34:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 6CA3641B6B;
+	Thu,  9 Jun 2022 20:34:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A244C0039;
-	Thu,  9 Jun 2022 20:25:44 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0967AC002D
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 20:25:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 42265C0039;
+	Thu,  9 Jun 2022 20:34:37 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4F493C002D
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 20:34:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id DDD9F4100B
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 20:25:42 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 3812260601
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 20:34:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rJClU201bhYH for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jun 2022 20:25:41 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 8E02340ADD
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 20:25:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1654806341; x=1686342341;
- h=date:from:to:cc:subject:message-id:references:
- mime-version:in-reply-to;
- bh=txE7FU3yncMCPt2ZReE/SPe7ebUWewV3IIqWc3P+mT8=;
- b=Wrt5ZUdx+MyJV6NxSA4c4ATYJ4f/sdWJ9VT+Bb0vDr8wkVLL37vURG/E
- Asg434MgWTmIzH05KTkusbinpWQj3tRBnAYuY/qu5BeGi1C/wjN4gwi9T
- Av+kQhvcp9nl5VUH6WGLpnZ5ZLDPmgiMaMbPrCXCQVeuUAk5Pmniymj28
- PeJjU+eifnas2lQgmx7pyF5aDsbvqktRIhnukkjXALZXbKcz2Yw8ECBCF
- mOvaKu0kT7vWRC4f1ajIpXNq8ypfEjRwvRHrspBusCmM+ruaKjW+eCITJ
- YNwcWpea1UPx1M+Fi5GxXfC7nrf6b/fV39xBJAf7N/T/M7moLxRcL/nnc Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="278214580"
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; d="scan'208";a="278214580"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 09 Jun 2022 13:25:40 -0700
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; d="scan'208";a="533756508"
-Received: from araj-dh-work.jf.intel.com (HELO araj-dh-work) ([10.165.157.158])
- by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 09 Jun 2022 13:25:40 -0700
-Date: Thu, 9 Jun 2022 20:25:40 +0000
-From: "Raj, Ashok" <ashok.raj@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v8 04/11] iommu: Add sva iommu_domain support
-Message-ID: <20220609202540.GD33363@araj-dh-work>
-References: <20220607014942.3954894-1-baolu.lu@linux.intel.com>
- <20220607014942.3954894-5-baolu.lu@linux.intel.com>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id D0TdxgAuOzDi for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jun 2022 20:34:35 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com
+ [209.85.216.48])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id B1358605AC
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 20:34:35 +0000 (UTC)
+Received: by mail-pj1-f48.google.com with SMTP id a10so22320831pju.3
+ for <iommu@lists.linux-foundation.org>; Thu, 09 Jun 2022 13:34:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+ :content-language:to:cc:references:from:in-reply-to
+ :content-transfer-encoding;
+ bh=6wtdNtGFdpESF6glfweoRrpOjBH9aO2zp0t1kc4rzd4=;
+ b=0dgrXBLDaXfFsYySpZo1gsbD0xOoIKkjkXHZngb1wIvViv2Reik/E97UBPb0ITQGZx
+ zbnd64AEVeSv8FWLuM4W66hfprgMdMd1ruLn3aWiLNS4MeduXthb+qLmsaFMrQZfCuFb
+ ugdyd7K6YJTCqvLvSq5qU1ZHCH/PSO3eprbLTXsAfYYZ7wWnvjUuMsiI1bs04GhI8B8Q
+ N7fOah/QFuzMzjQKN4S2QcwqC9F2wxB4Tz0Af8Z6h1HWU2ptF9NX1VCjKGho2RpvlYv2
+ GigqP7J71/VK1yL32fDB46/9RnZtrjMeYMBMxHmNyuea0c9VMBKfbdT1GPPKy13IhgJn
+ Thgg==
+X-Gm-Message-State: AOAM532qHxiiQg4aQuz7U/8F9j6feorCH9jGenhu/mSPmbPwOSTiaSld
+ gtbO4J86NnMhL8OYrMuiW9s=
+X-Google-Smtp-Source: ABdhPJzP68mcRSDMkhmkAefbn0A7+sB9Xcl1QQgOF53xsaTu2y4djDDrLLteVYsPMpjj5mZsq2HCYQ==
+X-Received: by 2002:a17:903:22d1:b0:166:4bc1:a1da with SMTP id
+ y17-20020a17090322d100b001664bc1a1damr37186025plg.13.1654806874934; 
+ Thu, 09 Jun 2022 13:34:34 -0700 (PDT)
+Received: from ?IPV6:2620:15c:211:201:8a44:a3e:c994:3f4b?
+ ([2620:15c:211:201:8a44:a3e:c994:3f4b])
+ by smtp.gmail.com with ESMTPSA id
+ k16-20020aa79d10000000b0050dc7628162sm17863699pfp.60.2022.06.09.13.34.32
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Thu, 09 Jun 2022 13:34:33 -0700 (PDT)
+Message-ID: <23bf4427-41c3-bf1d-903a-75928bb47627@acm.org>
+Date: Thu, 9 Jun 2022 13:34:31 -0700
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220607014942.3954894-5-baolu.lu@linux.intel.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- Christoph Hellwig <hch@infradead.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Vinod Koul <vkoul@kernel.org>, Jacob jun Pan <jacob.jun.pan@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 3/4] scsi: core: Cap shost max_sectors according to DMA
+ optimum mapping limits
+Content-Language: en-US
+To: John Garry <john.garry@huawei.com>, damien.lemoal@opensource.wdc.com,
+ joro@8bytes.org, will@kernel.org, jejb@linux.ibm.com,
+ martin.petersen@oracle.com, hch@lst.de, m.szyprowski@samsung.com,
+ robin.murphy@arm.com
+References: <1654507822-168026-1-git-send-email-john.garry@huawei.com>
+ <1654507822-168026-4-git-send-email-john.garry@huawei.com>
+ <fe365aa8-00d5-153d-ceb2-f887a71a6927@acm.org>
+ <31417477-953d-283e-808e-cf8701e820a8@huawei.com>
+ <bccbcc9b-4750-a1a7-130f-69eeea5dcb23@acm.org>
+ <5b214e95-dd95-551a-496e-a2139a74e8eb@huawei.com>
+ <a2585983-75d7-c627-13ba-38a464cf716e@acm.org>
+ <9b1d155e-28cc-08dc-5a5a-8580132575e7@huawei.com>
+From: Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <9b1d155e-28cc-08dc-5a5a-8580132575e7@huawei.com>
+Cc: linux-scsi@vger.kernel.org, linux-doc@vger.kernel.org,
+ liyihang6@hisilicon.com, linux-kernel@vger.kernel.org,
+ linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,292 +98,94 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Baolu
+On 6/9/22 10:54, John Garry wrote:
+> ok, but do you have a system where the UFS host controller is behind an 
+> IOMMU? I had the impression that UFS controllers would be mostly found 
+> in embedded systems and IOMMUs are not as common on there.
 
-some minor nits.
+Modern phones have an IOMMU. Below one can find an example from a Pixel 
+6 phone. The UFS storage controller is not controller by the IOMMU as 
+far as I can see but I wouldn't be surprised if the security team would 
+ask us one day to enable the IOMMU for the UFS controller.
 
-On Tue, Jun 07, 2022 at 09:49:35AM +0800, Lu Baolu wrote:
-> The sva iommu_domain represents a hardware pagetable that the IOMMU
-> hardware could use for SVA translation. This adds some infrastructure
-> to support SVA domain in the iommu common layer. It includes:
-> 
-> - Extend the iommu_domain to support a new IOMMU_DOMAIN_SVA domain
->   type. The IOMMU drivers that support SVA should provide the sva
->   domain specific iommu_domain_ops.
-> - Add a helper to allocate an SVA domain. The iommu_domain_free()
->   is still used to free an SVA domain.
-> - Add helpers to attach an SVA domain to a device and the reverse
->   operation.
-> 
-> Some buses, like PCI, route packets without considering the PASID value.
-> Thus a DMA target address with PASID might be treated as P2P if the
-> address falls into the MMIO BAR of other devices in the group. To make
-> things simple, the attach/detach interfaces only apply to devices
-> belonging to the singleton groups, and the singleton is immutable in
-> fabric i.e. not affected by hotplug.
-> 
-> The iommu_attach/detach_device_pasid() can be used for other purposes,
-> such as kernel DMA with pasid, mediation device, etc.
-> 
-> Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> ---
->  include/linux/iommu.h | 45 ++++++++++++++++++++-
->  drivers/iommu/iommu.c | 93 +++++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 136 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 3fbad42c0bf8..9173c5741447 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -64,6 +64,9 @@ struct iommu_domain_geometry {
->  #define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
->  #define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
->  
-> +#define __IOMMU_DOMAIN_SHARED	(1U << 4)  /* Page table shared from CPU  */
+# (cd /sys/class/iommu && ls */devices)
+1a090000.sysmmu/devices:
+19000000.aoc
 
-s/from CPU/with CPU
+1a510000.sysmmu/devices:
+1a440000.lwis_csi
 
-> +#define __IOMMU_DOMAIN_HOST_VA	(1U << 5)  /* Host CPU virtual address */
+1a540000.sysmmu/devices:
+1aa40000.lwis_pdp
 
-Do you mean general CPU VA? or Host CPU VA, I'm reading the latter as 2nd
-stage?
+1a880000.sysmmu/devices:
+1a840000.lwis_g3aa
 
-> +
->  /*
->   * This are the possible domain-types
->   *
-> @@ -86,15 +89,24 @@ struct iommu_domain_geometry {
->  #define IOMMU_DOMAIN_DMA_FQ	(__IOMMU_DOMAIN_PAGING |	\
->  				 __IOMMU_DOMAIN_DMA_API |	\
->  				 __IOMMU_DOMAIN_DMA_FQ)
-> +#define IOMMU_DOMAIN_SVA	(__IOMMU_DOMAIN_SHARED |	\
-> +				 __IOMMU_DOMAIN_HOST_VA)
+1ad00000.sysmmu/devices:
+1ac40000.lwis_ipp  1ac80000.lwis_gtnr_align
 
-Doesn't shared automatically mean CPU VA? Do we need another flag?
+1b080000.sysmmu/devices:
+1b450000.lwis_itp
 
->  
->  struct iommu_domain {
->  	unsigned type;
->  	const struct iommu_domain_ops *ops;
->  	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
-> -	iommu_fault_handler_t handler;
-> -	void *handler_token;
->  	struct iommu_domain_geometry geometry;
->  	struct iommu_dma_cookie *iova_cookie;
-> +	union {
-> +		struct {	/* IOMMU_DOMAIN_DMA */
-> +			iommu_fault_handler_t handler;
-> +			void *handler_token;
-> +		};
-> +		struct {	/* IOMMU_DOMAIN_SVA */
-> +			struct mm_struct *mm;
-> +		};
-> +	};
->  };
->  
->  static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
-> @@ -262,6 +274,8 @@ struct iommu_ops {
->   * struct iommu_domain_ops - domain specific operations
->   * @attach_dev: attach an iommu domain to a device
->   * @detach_dev: detach an iommu domain from a device
-> + * @set_dev_pasid: set an iommu domain to a pasid of device
-> + * @block_dev_pasid: block pasid of device from using iommu domain
->   * @map: map a physically contiguous memory region to an iommu domain
->   * @map_pages: map a physically contiguous set of pages of the same size to
->   *             an iommu domain.
-> @@ -282,6 +296,10 @@ struct iommu_ops {
->  struct iommu_domain_ops {
->  	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
->  	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
-> +	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
-> +			     ioasid_t pasid);
-> +	void (*block_dev_pasid)(struct iommu_domain *domain, struct device *dev,
-> +				ioasid_t pasid);
->  
->  	int (*map)(struct iommu_domain *domain, unsigned long iova,
->  		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
-> @@ -679,6 +697,12 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner);
->  void iommu_group_release_dma_owner(struct iommu_group *group);
->  bool iommu_group_dma_owner_claimed(struct iommu_group *group);
->  
-> +struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
-> +					    struct mm_struct *mm);
-> +int iommu_attach_device_pasid(struct iommu_domain *domain, struct device *dev,
-> +			      ioasid_t pasid);
-> +void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
-> +			       ioasid_t pasid);
->  #else /* CONFIG_IOMMU_API */
->  
->  struct iommu_ops {};
-> @@ -1052,6 +1076,23 @@ static inline bool iommu_group_dma_owner_claimed(struct iommu_group *group)
->  {
->  	return false;
->  }
-> +
-> +static inline struct iommu_domain *
-> +iommu_sva_domain_alloc(struct device *dev, struct mm_struct *mm)
-> +{
-> +	return NULL;
-> +}
-> +
-> +static inline int iommu_attach_device_pasid(struct iommu_domain *domain,
-> +					    struct device *dev, ioasid_t pasid)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline void iommu_detach_device_pasid(struct iommu_domain *domain,
-> +					     struct device *dev, ioasid_t pasid)
-> +{
-> +}
->  #endif /* CONFIG_IOMMU_API */
->  
->  /**
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index d1ec855b1f72..e92391dcce33 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -27,6 +27,7 @@
->  #include <linux/module.h>
->  #include <linux/cc_platform.h>
->  #include <trace/events/iommu.h>
-> +#include <linux/sched/mm.h>
->  
->  static struct kset *iommu_group_kset;
->  static DEFINE_IDA(iommu_group_ida);
-> @@ -39,6 +40,7 @@ struct iommu_group {
->  	struct kobject kobj;
->  	struct kobject *devices_kobj;
->  	struct list_head devices;
-> +	struct xarray pasid_array;
->  	struct mutex mutex;
->  	void *iommu_data;
->  	void (*iommu_data_release)(void *iommu_data);
-> @@ -666,6 +668,7 @@ struct iommu_group *iommu_group_alloc(void)
->  	mutex_init(&group->mutex);
->  	INIT_LIST_HEAD(&group->devices);
->  	INIT_LIST_HEAD(&group->entry);
-> +	xa_init(&group->pasid_array);
->  
->  	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
->  	if (ret < 0) {
-> @@ -1961,6 +1964,8 @@ EXPORT_SYMBOL_GPL(iommu_domain_alloc);
->  
->  void iommu_domain_free(struct iommu_domain *domain)
->  {
-> +	if (domain->type == IOMMU_DOMAIN_SVA)
-> +		mmdrop(domain->mm);
->  	iommu_put_dma_cookie(domain);
->  	domain->ops->free(domain);
->  }
-> @@ -3277,3 +3282,91 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
->  	return user;
->  }
->  EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
-> +
-> +struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
-> +					    struct mm_struct *mm)
-> +{
-> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
-> +	struct iommu_domain *domain;
-> +
-> +	domain = ops->domain_alloc(IOMMU_DOMAIN_SVA);
-> +	if (!domain)
-> +		return NULL;
-> +
-> +	domain->type = IOMMU_DOMAIN_SVA;
-> +	mmgrab(mm);
-> +	domain->mm = mm;
-> +
-> +	return domain;
-> +}
-> +
-> +static bool iommu_group_immutable_singleton(struct iommu_group *group,
-> +					    struct device *dev)
-> +{
-> +	int count;
-> +
-> +	mutex_lock(&group->mutex);
-> +	count = iommu_group_device_count(group);
-> +	mutex_unlock(&group->mutex);
-> +
-> +	if (count != 1)
-> +		return false;
-> +
-> +	/*
-> +	 * The PCI device could be considered to be fully isolated if all
-> +	 * devices on the path from the device to the host-PCI bridge are
-> +	 * protected from peer-to-peer DMA by ACS.
-> +	 */
-> +	if (dev_is_pci(dev))
-> +		return pci_acs_path_enabled(to_pci_dev(dev), NULL,
-> +					    REQ_ACS_FLAGS);
+1b780000.sysmmu/devices:
 
-Does this comprehend RCiEP devices? Since they are optional even if ACS is
-lacking.
+1b7b0000.sysmmu/devices:
+1b760000.lwis_mcsc
 
+1b7e0000.sysmmu/devices:
 
-> +
-> +	/*
-> +	 * Otherwise, the device came from DT/ACPI, assume it is static and
-> +	 * then singleton can know from the device count in the group.
-> +	 */
-> +	return true;
-> +}
-> +
-> +int iommu_attach_device_pasid(struct iommu_domain *domain, struct device *dev,
-> +			      ioasid_t pasid)
-> +{
-> +	struct iommu_group *group;
-> +	int ret = -EBUSY;
-> +	void *curr;
-> +
-> +	if (!domain->ops->set_dev_pasid)
-> +		return -EOPNOTSUPP;
-> +
-> +	group = iommu_group_get(dev);
-> +	if (!group || !iommu_group_immutable_singleton(group, dev)) {
-> +		iommu_group_put(group);
-> +		return -EINVAL;
-> +	}
-> +
-> +	mutex_lock(&group->mutex);
-> +	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
-> +	if (curr)
-> +		goto out_unlock;
-> +	ret = domain->ops->set_dev_pasid(domain, dev, pasid);
-> +	if (ret)
-> +		xa_erase(&group->pasid_array, pasid);
-> +out_unlock:
-> +	mutex_unlock(&group->mutex);
-> +	iommu_group_put(group);
-> +
-> +	return ret;
-> +}
-> +
-> +void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
-> +			       ioasid_t pasid)
-> +{
-> +	struct iommu_group *group = iommu_group_get(dev);
-> +
-> +	mutex_lock(&group->mutex);
-> +	domain->ops->block_dev_pasid(domain, dev, pasid);
-> +	xa_erase(&group->pasid_array, pasid);
-> +	mutex_unlock(&group->mutex);
-> +
-> +	iommu_group_put(group);
-> +}
-> -- 
-> 2.25.1
-> 
+1baa0000.sysmmu/devices:
+1a4e0000.lwis_votf  1ba40000.lwis_gdc
+
+1bad0000.sysmmu/devices:
+1ba60000.lwis_gdc
+
+1bb00000.sysmmu/devices:
+1ba80000.lwis_scsc
+
+1bc70000.sysmmu/devices:
+1bc40000.lwis_gtnr_merge
+
+1bca0000.sysmmu/devices:
+
+1bcd0000.sysmmu/devices:
+
+1bd00000.sysmmu/devices:
+
+1bd30000.sysmmu/devices:
+
+1c100000.sysmmu/devices:
+1c300000.drmdecon  1c302000.drmdecon
+
+1c110000.sysmmu/devices:
+
+1c120000.sysmmu/devices:
+
+1c660000.sysmmu/devices:
+1c640000.g2d
+
+1c690000.sysmmu/devices:
+
+1c710000.sysmmu/devices:
+1c700000.smfc
+
+1c870000.sysmmu/devices:
+1c8d0000.MFC-0  mfc
+
+1c8a0000.sysmmu/devices:
+
+1ca40000.sysmmu/devices:
+1cb00000.bigocean
+
+1cc40000.sysmmu/devices:
+1ce00000.abrolhos
+
+Bart.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
