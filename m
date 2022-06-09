@@ -4,62 +4,60 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CC9F0C43334
-	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 10:08:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CA678CCA47D
+	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 10:08:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 8755D83F68;
-	Thu,  9 Jun 2022 10:08:16 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 8062D83F40;
+	Thu,  9 Jun 2022 10:08:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EuipxtD09OUI; Thu,  9 Jun 2022 10:08:15 +0000 (UTC)
+	with ESMTP id A6YamSchDgNq; Thu,  9 Jun 2022 10:08:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 6FCFF83E15;
-	Thu,  9 Jun 2022 10:08:15 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 754EC83F54;
+	Thu,  9 Jun 2022 10:08:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 36D95C0032;
-	Thu,  9 Jun 2022 10:08:15 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 05193C002D
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 10:08:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 07882C0082;
+	Thu,  9 Jun 2022 10:08:16 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1DA77C0032
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 10:08:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D5DB7405B3
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 10:08:12 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id F327A83E18
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 10:08:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=collabora.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BciAgYL1kxpA for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jun 2022 10:08:11 +0000 (UTC)
-X-Greylist: delayed 23:04:52 by SQLgrey-1.8.0
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 5yRiFyTkQ9rx for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jun 2022 10:08:13 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from madras.collabora.co.uk (madras.collabora.co.uk
  [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
- by smtp2.osuosl.org (Postfix) with ESMTPS id AF7014000B
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 10:08:11 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 5AD6483DFD
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 10:08:13 +0000 (UTC)
 Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it
  [2.237.20.237])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested) (Authenticated sender: kholk11)
- by madras.collabora.co.uk (Postfix) with ESMTPSA id 3686C66017C8;
- Thu,  9 Jun 2022 11:08:09 +0100 (BST)
+ by madras.collabora.co.uk (Postfix) with ESMTPSA id E996F66017CB;
+ Thu,  9 Jun 2022 11:08:10 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
- s=mail; t=1654769289;
- bh=7NH0zCAnj6DTlLIJ/fPDdoJP+dAMJTzS1hu071yicYQ=;
+ s=mail; t=1654769291;
+ bh=CgNYAOaieQLCVcum8jYWv0FFa/H0G4zrGj0sGsj1tXw=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=GyKAfIQh74M6E0tS7YI+WWQ8i656pqE/dLB+PGHHNhMJCyezDxe/wNPQTf6/Z1Lb6
- 2nOCQ8aQAScMRdbalLEvlepTF4pmn+kYGgE+z9wo7GaA1j7ZTgfUZtTUCDRjtnd1ma
- xiPp1BQ9iM8iXzXh/qZy65LX8UXNXukkqgoeWsUofAN/8jwlGCSI1KOD9UxVRxcE2V
- +HpUPseyFCLwBBIAT5VfImJBx9zVRN6VanQ1fqtE0c3i7pW5Q//ovmvcJmuP8UGoNC
- UcoNwTeiCV2evdJxw8041q5e12xpGLvwPgZTVi7//4c2+RnClJy3RHqvcr0kYmoh4h
- 5MX9E1q6M/9zw==
+ b=K4v9L0EwV6ZsghUeg0tMGf6fhREdFwlSxn5OIdaxyAuxixlQ4vc1mzjV5mAiMi/0S
+ Y3WXyYPd5tu9/AhpTbDVMRDqtHIkAD9u8XCJtHJ0M4R5Vx41+7VZI5lkjfagzYkXBf
+ FYA8CDWVDbT13PoUBpcVoVXTi+lypmCRFqqQzicyUgtTCOBYsHDd19KU9nWfupPSKp
+ NnML1F+R9cf9+URrZzLDaTkg0aUKxsjzbtMz3Dfe2MKnICQY8o+9L/126eozTriZ3a
+ 5dqcZDmn1GD8GaG/PgCqGYCcEi/AJlcZWRmdRQP4mBPofkwleHAMeQi0NjgSWnBXRl
+ W2OGPbpFxLcbQ==
 From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 To: yong.wu@mediatek.com
-Subject: [PATCH v3 2/6] iommu: mtk_iommu: Lookup phandle to retrieve syscon to
- infracfg
-Date: Thu,  9 Jun 2022 12:07:58 +0200
-Message-Id: <20220609100802.54513-3-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v3 4/6] arm64: dts: mediatek: mt2712e: Add mediatek,
+ infracfg phandle for IOMMU
+Date: Thu,  9 Jun 2022 12:08:00 +0200
+Message-Id: <20220609100802.54513-5-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220609100802.54513-1-angelogioacchino.delregno@collabora.com>
 References: <20220609100802.54513-1-angelogioacchino.delregno@collabora.com>
@@ -87,71 +85,40 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This driver will get support for more SoCs and the list of infracfg
-compatibles is expected to grow: in order to prevent getting this
-situation out of control and see a long list of compatible strings,
-add support to retrieve a handle to infracfg's regmap through a
-new "mediatek,infracfg" phandle.
+The IOMMU driver now looks for the "mediatek,infracfg" phandle as a
+new way to retrieve a syscon to that:
+even though the old way is retained, it has been deprecated and the
+driver will write a message in kmsg advertising to use the phandle
+way instead.
 
-In order to keep retrocompatibility with older devicetrees, the old
-way is kept in place.
+For this reason, assign the right phandle to mediatek,infracfg in
+the iommu node.
 
 Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- drivers/iommu/mtk_iommu.c | 38 ++++++++++++++++++++++++--------------
- 1 file changed, 24 insertions(+), 14 deletions(-)
+ arch/arm64/boot/dts/mediatek/mt2712e.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index bb9dd92c9898..90685946fcbe 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1140,22 +1140,32 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
- 
- 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE)) {
--		switch (data->plat_data->m4u_plat) {
--		case M4U_MT2712:
--			p = "mediatek,mt2712-infracfg";
--			break;
--		case M4U_MT8173:
--			p = "mediatek,mt8173-infracfg";
--			break;
--		default:
--			p = NULL;
-+		infracfg = syscon_regmap_lookup_by_phandle(dev->of_node, "mediatek,infracfg");
-+		if (IS_ERR(infracfg)) {
-+			/*
-+			 * Legacy devicetrees will not specify a phandle to
-+			 * mediatek,infracfg: in that case, we use the older
-+			 * way to retrieve a syscon to infra.
-+			 *
-+			 * This is for retrocompatibility purposes only, hence
-+			 * no more compatibles shall be added to this.
-+			 */
-+			switch (data->plat_data->m4u_plat) {
-+			case M4U_MT2712:
-+				p = "mediatek,mt2712-infracfg";
-+				break;
-+			case M4U_MT8173:
-+				p = "mediatek,mt8173-infracfg";
-+				break;
-+			default:
-+				p = NULL;
-+			}
-+
-+			infracfg = syscon_regmap_lookup_by_compatible(p);
-+			if (IS_ERR(infracfg))
-+				return PTR_ERR(infracfg);
- 		}
- 
--		infracfg = syscon_regmap_lookup_by_compatible(p);
--
--		if (IS_ERR(infracfg))
--			return PTR_ERR(infracfg);
--
- 		ret = regmap_read(infracfg, REG_INFRA_MISC, &val);
- 		if (ret)
- 			return ret;
+diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+index 623eb3beabf2..4797537cb368 100644
+--- a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+@@ -329,6 +329,7 @@ iommu0: iommu@10205000 {
+ 		interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_LOW>;
+ 		clocks = <&infracfg CLK_INFRA_M4U>;
+ 		clock-names = "bclk";
++		mediatek,infracfg = <&infracfg>;
+ 		mediatek,larbs = <&larb0>, <&larb1>, <&larb2>,
+ 				 <&larb3>, <&larb6>;
+ 		#iommu-cells = <1>;
+@@ -346,6 +347,7 @@ iommu1: iommu@1020a000 {
+ 		interrupts = <GIC_SPI 145 IRQ_TYPE_LEVEL_LOW>;
+ 		clocks = <&infracfg CLK_INFRA_M4U>;
+ 		clock-names = "bclk";
++		mediatek,infracfg = <&infracfg>;
+ 		mediatek,larbs = <&larb4>, <&larb5>, <&larb7>;
+ 		#iommu-cells = <1>;
+ 	};
 -- 
 2.35.1
 
