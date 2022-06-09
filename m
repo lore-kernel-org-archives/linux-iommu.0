@@ -1,71 +1,73 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 979B3C433EF
-	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 10:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 44815C43334
+	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 10:40:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 5942240878;
-	Thu,  9 Jun 2022 10:08:20 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id F383C60E82;
+	Thu,  9 Jun 2022 10:40:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id n5mfVaK1D_Gc; Thu,  9 Jun 2022 10:08:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 68C9C400AD;
-	Thu,  9 Jun 2022 10:08:17 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id MqCCoptW0PJq; Thu,  9 Jun 2022 10:40:13 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id E4D606101A;
+	Thu,  9 Jun 2022 10:40:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3AD49C0032;
-	Thu,  9 Jun 2022 10:08:17 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5A073C0081
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 10:08:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BA821C007C;
+	Thu,  9 Jun 2022 10:40:12 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BDA44C002D
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 10:40:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 27E7341C70
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 10:08:15 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 9E53B40198
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 10:40:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eRypYSZT_CGI for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jun 2022 10:08:14 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=collabora.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Scf6_FGyhTvD for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jun 2022 10:40:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from madras.collabora.co.uk (madras.collabora.co.uk
  [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 2FEB541A01
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 10:08:14 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 730BC40158
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 10:40:10 +0000 (UTC)
 Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it
  [2.237.20.237])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
  (No client certificate requested) (Authenticated sender: kholk11)
- by madras.collabora.co.uk (Postfix) with ESMTPSA id CAD9866017CA;
- Thu,  9 Jun 2022 11:08:11 +0100 (BST)
+ by madras.collabora.co.uk (Postfix) with ESMTPSA id DEE3F66017C5;
+ Thu,  9 Jun 2022 11:40:07 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
- s=mail; t=1654769292;
- bh=pb2gWlG7j2g032SqdnNvyy3B/6lmxFBQubwWdcY6ii4=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=Q9sTvQ6OjmfN2Xr+h60kQLRKdH+Ux3vnvpmUoxw3cSwR++4MBAYYuBli09cSDm7R9
- /8vEybuz6HL0qQ3LpazzQETe61gJ2WTP+h+Qoahk2WXFeRpczFWosmchVsQWu4oPoY
- fRJV1prrWSfchOnxeH/5SNCNFV0hOgK7unGczlDq8gIL0DeVYOz9NZ2wYud5c9YuPo
- pqwbhAOF+jlLIF807YlqGcdaP5P7aEsSjDSPsX5HjRZVOmcaWB9Pr6IL6p3/eMsCze
- xj8V0I/woD8cOlcaRepHc2UphyFB9OkBkdrla784kO4WOQs46nyMTgvXvV+IShUwX6
- nVaHIcLshW5hA==
+ s=mail; t=1654771208;
+ bh=e0AQfxv8jGpQQTIJ9KKzNfQsGY/6PxPWTtlkTzfZaxQ=;
+ h=From:To:Cc:Subject:Date:From;
+ b=QFp+iinGUw+/GZa9POrbVNX8EqjKqwp/vDjG+HoAKtab89eWAf8/SwDrG7wJSSHzY
+ dnoosbFI8+GYD3a08e9TOw9PWSjBZ0Hj7zL0iXt6dQXVBjCrqg/lCvZs8MV7fNsZiv
+ TfY6Vjck2tHn3FQmO6C4qTZIEo8TfpGi06NGe1XM9K30kbRkipqzFdlUZxWBAenzW4
+ olooBGTyxd9Bn5kx0w5hxsKmFIZnuz68MHXhcGGFX1hOkVrFXNkvgNzsRIzYkid//W
+ xUKG36GZfioFha92O78ghvotmX+1BvKmQRUp96KtQvH8XGTgL0J30iZ9KTZLKajZ9U
+ DQjswuX2s1dYQ==
 From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 To: yong.wu@mediatek.com
-Subject: [PATCH v3 5/6] dt-bindings: iommu: mediatek: Add mediatek,
- pericfg phandle
-Date: Thu,  9 Jun 2022 12:08:01 +0200
-Message-Id: <20220609100802.54513-6-angelogioacchino.delregno@collabora.com>
+Subject: [PATCH v3 0/3] MediaTek Helio X10 MT6795 - M4U/IOMMU Support
+Date: Thu,  9 Jun 2022 12:39:58 +0200
+Message-Id: <20220609104001.97753-1-angelogioacchino.delregno@collabora.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220609100802.54513-1-angelogioacchino.delregno@collabora.com>
-References: <20220609100802.54513-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- krzysztof.kozlowski@linaro.org, iommu@lists.linux-foundation.org,
+Cc: devicetree@vger.kernel.org, martin.botka@somainline.org,
+ paul.bouchara@somainline.org, konrad.dybcio@somainline.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
  robh+dt@kernel.org, linux-mediatek@lists.infradead.org,
- krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com, will@kernel.org,
+ ~postmarketos/upstreaming@lists.sr.ht, krzysztof.kozlowski+dt@linaro.org,
+ matthias.bgg@gmail.com, marijn.suijten@somainline.org,
+ phone-devel@vger.kernel.org, will@kernel.org,
  linux-arm-kernel@lists.infradead.org,
  AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -85,48 +87,32 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add property "mediatek,pericfg" to let the mtk_iommu driver retrieve
-a phandle to the infracfg syscon instead of performing a per-soc
-compatible lookup in the entire devicetree and set it as a required
-property for MT8195's infra IOMMU.
+In an effort to give some love to the apparently forgotten MT6795 SoC,
+I am upstreaming more components that are necessary to support platforms
+powered by this one apart from a simple boot to serial console.
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- .../devicetree/bindings/iommu/mediatek,iommu.yaml  | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+This series introduces support for the IOMMUs found on this SoC.
 
-diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-index 4142a568b293..d5e3272a54e8 100644
---- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-@@ -116,6 +116,10 @@ properties:
-       Refer to bindings/memory-controllers/mediatek,smi-larb.yaml. It must sort
-       according to the local arbiter index, like larb0, larb1, larb2...
- 
-+  mediatek,pericfg:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: The phandle to the mediatek pericfg syscon
-+
-   '#iommu-cells':
-     const: 1
-     description: |
-@@ -183,6 +187,16 @@ allOf:
-       required:
-         - mediatek,infracfg
- 
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: mediatek,mt8195-iommu-infra
-+
-+    then:
-+      required:
-+        - mediatek,pericfg
-+
-   - if: # The IOMMUs don't have larbs.
-       not:
-         properties:
+Tested on a MT6795 Sony Xperia M5 (codename "Holly") smartphone.
+
+Changes in v3:
+ - Added new flag as suggested by Yong Wu
+ - Rebased on top of https://patchwork.kernel.org/project/linux-mediatek/list/?series=648784
+
+Changes in v2:
+ - Rebased on top of https://patchwork.kernel.org/project/linux-mediatek/list/?series=642681
+
+AngeloGioacchino Del Regno (3):
+  dt-bindings: mediatek: Add bindings for MT6795 M4U
+  iommu: mtk_iommu: Introduce new flag TF_PORT_TO_ADDR_MT8173
+  iommu: mtk_iommu: Add support for MT6795 Helio X10 M4Us
+
+ .../bindings/iommu/mediatek,iommu.yaml        |  4 +
+ drivers/iommu/mtk_iommu.c                     | 21 +++-
+ include/dt-bindings/memory/mt6795-larb-port.h | 96 +++++++++++++++++++
+ 3 files changed, 119 insertions(+), 2 deletions(-)
+ create mode 100644 include/dt-bindings/memory/mt6795-larb-port.h
+
 -- 
 2.35.1
 
