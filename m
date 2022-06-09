@@ -1,74 +1,89 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0289AC433EF
-	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 17:06:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5A5DEC43334
+	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 17:18:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 8B2A540C3E;
-	Thu,  9 Jun 2022 17:06:49 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 1F56A61106;
+	Thu,  9 Jun 2022 17:18:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id D9py7oxoUyVn; Thu,  9 Jun 2022 17:06:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 595C5400A8;
-	Thu,  9 Jun 2022 17:06:48 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 8c380Rwdojci; Thu,  9 Jun 2022 17:18:46 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 6AA1C61108;
+	Thu,  9 Jun 2022 17:18:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 397AFC0039;
-	Thu,  9 Jun 2022 17:06:48 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D82B6C002D
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 17:06:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 35CCBC0032;
+	Thu,  9 Jun 2022 17:18:46 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1EF0AC002D
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 17:18:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id B2AB040C3E
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 17:06:46 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id F328240C70
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 17:18:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AHKpVtk25-Db for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jun 2022 17:06:46 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp2.osuosl.org (Postfix) with ESMTPS id DC93E400A8
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 17:06:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1654794405; x=1686330405;
- h=date:from:to:cc:subject:message-id:references:
- mime-version:in-reply-to;
- bh=DqcLSXzla24BAOWUg0Q7TFQHtplmc6Xrbtg5PjslZl4=;
- b=LCq8PSsKdBB7DpZLdrPlEjOoSm7YEbVgv9cfXR8n5KLxmw4rhvjT6vxb
- RTQTJQRg44o+JmcRtQPVvCtnwEvDif24ryOPq6RynJtprt3pDTgvad/28
- NAjVhOPqCWTEEqEqVwTEOimgy5SPG+jT6oPMQtUySQP1TdQrYxlWzW8rz
- RCcxXCIu8JYiNJVjF6/RyszMnOt0aRNK9ZKubd8CbgwKgU18uGnVx5Cil
- Fx0WvN+eAzidLpVUxNkuA3K0M5HMUfRyQLNxGL0LvtWYMfl3Ytthj/42Y
- t/cbjfUrSbJsNE7zM1ewhaNANidWWPeB+/iQHtVdZyQ9K+9tXriKKRdnV Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="274879234"
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; d="scan'208";a="274879234"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 09 Jun 2022 10:06:45 -0700
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; d="scan'208";a="610347539"
-Received: from araj-dh-work.jf.intel.com (HELO araj-dh-work) ([10.165.157.158])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 09 Jun 2022 10:06:44 -0700
-Date: Thu, 9 Jun 2022 17:06:44 +0000
-From: "Raj, Ashok" <ashok.raj@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [RFC PATCHES 1/2] iommu: Add RCU-protected page free support
-Message-ID: <20220609170644.GA33363@araj-dh-work>
-References: <20220609070811.902868-1-baolu.lu@linux.intel.com>
+ with ESMTP id SKUW51HnZ3CO for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jun 2022 17:18:44 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com
+ [209.85.216.53])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 7448940C61
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 17:18:44 +0000 (UTC)
+Received: by mail-pj1-f53.google.com with SMTP id j7so21903520pjn.4
+ for <iommu@lists.linux-foundation.org>; Thu, 09 Jun 2022 10:18:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+ :content-language:to:cc:references:from:in-reply-to
+ :content-transfer-encoding;
+ bh=dBDuOA7Ag4D41J0FVo2zI0CMf8MV1Q4H90cDsiRjqs0=;
+ b=RsO60poNqtXH+KVGPusliFl3dMOEqGEf0rR7/37hvp3fmJ4hM6DrEjDcYHrjmW3JsR
+ 4ynoNapJinKsYBr41WyWo8Pqq2/tHIqMqjrCDXgka1+E+rvFUlGTIF54Mdkx/KWdNhWX
+ tC0lB98Kyhd2F9p0cqXTpK4Mpf4jZ8wIPh6NYr38VN1lDPw4R7bsZ2aQUYcT48mpAExE
+ jSdc+sCxhir+Sp2Xw3OuR8DXe4HxY7p/TCMY7DTVqFrhg7Qob/RM+fxIDbXxNsMftMtH
+ 87WrvbaK6TtRnPuW5PO56g8xLU+866NwKT9RAobEj3rtJnebTeOfal4vX2LSHuNqGacb
+ iJ7g==
+X-Gm-Message-State: AOAM530TaKFkGvdLajGswE6nd3esrXNE7LiX5zDacfzCT/KRqgPzT1f7
+ Z6pkoj7l4GSN+ODULn8uGnM=
+X-Google-Smtp-Source: ABdhPJxSk2cA7JFtd6Y65O6LCndnGyH7rcIrk4lhHhvjln2O2sPxd9TjLkzxezsdsn9gL7KtW74Jsg==
+X-Received: by 2002:a17:902:d409:b0:167:7425:caa8 with SMTP id
+ b9-20020a170902d40900b001677425caa8mr23376154ple.72.1654795123675; 
+ Thu, 09 Jun 2022 10:18:43 -0700 (PDT)
+Received: from ?IPV6:2620:15c:211:201:8a44:a3e:c994:3f4b?
+ ([2620:15c:211:201:8a44:a3e:c994:3f4b])
+ by smtp.gmail.com with ESMTPSA id
+ p8-20020a170902780800b001645730e71bsm17115350pll.59.2022.06.09.10.18.41
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Thu, 09 Jun 2022 10:18:42 -0700 (PDT)
+Message-ID: <a2585983-75d7-c627-13ba-38a464cf716e@acm.org>
+Date: Thu, 9 Jun 2022 10:18:40 -0700
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220609070811.902868-1-baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
- Jason Gunthorpe <jgg@nvidia.com>, Joao Martins <joao.m.martins@oracle.com>,
- Will Deacon <will@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 3/4] scsi: core: Cap shost max_sectors according to DMA
+ optimum mapping limits
+Content-Language: en-US
+To: John Garry <john.garry@huawei.com>, damien.lemoal@opensource.wdc.com,
+ joro@8bytes.org, will@kernel.org, jejb@linux.ibm.com,
+ martin.petersen@oracle.com, hch@lst.de, m.szyprowski@samsung.com,
+ robin.murphy@arm.com
+References: <1654507822-168026-1-git-send-email-john.garry@huawei.com>
+ <1654507822-168026-4-git-send-email-john.garry@huawei.com>
+ <fe365aa8-00d5-153d-ceb2-f887a71a6927@acm.org>
+ <31417477-953d-283e-808e-cf8701e820a8@huawei.com>
+ <bccbcc9b-4750-a1a7-130f-69eeea5dcb23@acm.org>
+ <5b214e95-dd95-551a-496e-a2139a74e8eb@huawei.com>
+From: Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <5b214e95-dd95-551a-496e-a2139a74e8eb@huawei.com>
+Cc: linux-scsi@vger.kernel.org, linux-doc@vger.kernel.org,
+ liyihang6@hisilicon.com, linux-kernel@vger.kernel.org,
+ linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,124 +96,38 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jun 09, 2022 at 03:08:10PM +0800, Lu Baolu wrote:
-> The IOMMU page tables are updated using iommu_map/unmap() interfaces.
-> Currently, there is no mandatory requirement for drivers to use locks
-> to ensure concurrent updates to page tables, because it's assumed that
-> overlapping IOVA ranges do not have concurrent updates. Therefore the
-> IOMMU drivers only need to take care of concurrent updates to level
-> page table entries.
-
-The last part doesn't read well.. 
-s/updates to level page table entries/ updates to page-table entries at the
-same level
-
+On 6/9/22 01:00, John Garry wrote:
+> On 08/06/2022 22:07, Bart Van Assche wrote:
+>> On 6/8/22 10:50, John Garry wrote:
+>>> Please note that this limit only applies if we have an IOMMU enabled 
+>>> for the scsi host dma device. Otherwise we are limited by dma direct 
+>>> or swiotlb max mapping size, as before.
+>>
+>> SCSI host bus adapters that support 64-bit DMA may support much larger 
+>> transfer sizes than 128 KiB.
 > 
-> But enabling new features challenges this assumption. For example, the
-> hardware assisted dirty page tracking feature requires scanning page
-> tables in interfaces other than mapping and unmapping. This might result
-> in a use-after-free scenario in which a level page table has been freed
-> by the unmap() interface, while another thread is scanning the next level
-> page table.
+> Indeed, and that is my problem today, as my storage controller is 
+> generating DMA mapping lengths which exceeds 128K and they slow 
+> everything down.
 > 
-> This adds RCU-protected page free support so that the pages are really
-> freed and reused after a RCU grace period. Hence, the page tables are
-> safe for scanning within a rcu_read_lock critical region. Considering
-> that scanning the page table is a rare case, this also adds a domain
-> flag and the RCU-protected page free is only used when this flat is set.
+> If you say that SRP enjoys best peformance with larger transfers then 
+> can you please test this with an IOMMU enabled (iommu group type DMA or 
+> DMA-FQ)?
 
-s/flat/flag
+Hmm ... what exactly do you want me to test? Do you perhaps want me to 
+measure how much performance drops with an IOMMU enabled? I don't have 
+access anymore to the SRP setup I referred to in my previous email. But 
+I do have access to devices that boot from UFS storage. For these 
+devices we need to transfer 2 MiB per request to achieve full bandwidth.
 
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  include/linux/iommu.h |  9 +++++++++
->  drivers/iommu/iommu.c | 23 +++++++++++++++++++++++
->  2 files changed, 32 insertions(+)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 5e1afe169549..6f68eabb8567 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -95,6 +95,7 @@ struct iommu_domain {
->  	void *handler_token;
->  	struct iommu_domain_geometry geometry;
->  	struct iommu_dma_cookie *iova_cookie;
-> +	unsigned long concurrent_traversal:1;
+Thanks,
 
-Does this need to be a bitfield? Even though you are needing just one bit
-now, you can probably make have maskbits?
-
-
->  };
->  
->  static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
-> @@ -657,6 +658,12 @@ static inline void dev_iommu_priv_set(struct device *dev, void *priv)
->  	dev->iommu->priv = priv;
->  }
->  
-> +static inline void domain_set_concurrent_traversal(struct iommu_domain *domain,
-> +						   bool value)
-> +{
-> +	domain->concurrent_traversal = value;
-> +}
-> +
->  int iommu_probe_device(struct device *dev);
->  void iommu_release_device(struct device *dev);
->  
-> @@ -677,6 +684,8 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner);
->  void iommu_group_release_dma_owner(struct iommu_group *group);
->  bool iommu_group_dma_owner_claimed(struct iommu_group *group);
->  
-> +void iommu_free_pgtbl_pages(struct iommu_domain *domain,
-> +			    struct list_head *pages);
->  #else /* CONFIG_IOMMU_API */
->  
->  struct iommu_ops {};
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 847ad47a2dfd..ceeb97ebe3e2 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3252,3 +3252,26 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
->  	return user;
->  }
->  EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
-> +
-> +static void pgtble_page_free_rcu(struct rcu_head *rcu)
-
-maybe the names can be consistent? pgtble_ vs pgtbl below.
-
-vote to drop the 'e' :-)
-
-> +{
-> +	struct page *page = container_of(rcu, struct page, rcu_head);
-> +
-> +	__free_pages(page, 0);
-> +}
-> +
-> +void iommu_free_pgtbl_pages(struct iommu_domain *domain,
-> +			    struct list_head *pages)
-> +{
-> +	struct page *page, *next;
-> +
-> +	if (!domain->concurrent_traversal) {
-> +		put_pages_list(pages);
-> +		return;
-> +	}
-> +
-> +	list_for_each_entry_safe(page, next, pages, lru) {
-> +		list_del(&page->lru);
-> +		call_rcu(&page->rcu_head, pgtble_page_free_rcu);
-> +	}
-> +}
-> -- 
-> 2.25.1
-> 
+Bart.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
