@@ -4,77 +4,62 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A2D2DC43334
-	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 18:08:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 741E4C433EF
+	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 18:10:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 4B23341CCD;
-	Thu,  9 Jun 2022 18:08:55 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 27B3041CCE;
+	Thu,  9 Jun 2022 18:10:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id H0BbxsKe9GhT; Thu,  9 Jun 2022 18:08:54 +0000 (UTC)
+	with ESMTP id 9nIcZGIfpaIk; Thu,  9 Jun 2022 18:10:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id E0E6041B57;
-	Thu,  9 Jun 2022 18:08:53 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 594F341CCD;
+	Thu,  9 Jun 2022 18:10:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A3EBBC0032;
-	Thu,  9 Jun 2022 18:08:53 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6A4C7C002D
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 18:08:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 134DEC0032;
+	Thu,  9 Jun 2022 18:10:02 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0D0C4C002D
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 18:10:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 50BF982468
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 18:08:52 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id EFD7361111
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 18:10:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id p_sRNO6tegKT for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jun 2022 18:08:51 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ynem3B_tqT11 for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jun 2022 18:09:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 8802D823E3
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 18:08:51 +0000 (UTC)
-X-UUID: 0f46fe5d8de7409e94190e6eefd88765-20220610
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5, REQID:a195b405-18dd-4bd5-a4ed-49db4cfc5322, OB:10,
- L
- OB:20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,A
- CTION:release,TS:45
-X-CID-INFO: VERSION:1.1.5, REQID:a195b405-18dd-4bd5-a4ed-49db4cfc5322, OB:10,
- LOB
- :20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
- ION:release,TS:45
-X-CID-META: VersionHash:2a19b09, CLOUDID:b82cd47e-c8dc-403a-96e8-6237210dceee,
- C
- OID:0599961d4d23,Recheck:0,SF:28|17|19|48,TC:nil,Content:-5,EDM:-3,IP:nil,
- URL:0,File:nil,QS:0,BEC:nil
-X-UUID: 0f46fe5d8de7409e94190e6eefd88765-20220610
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by
- mailgw01.mediatek.com (envelope-from <miles.chen@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 512735973; Fri, 10 Jun 2022 02:08:46 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3; 
- Fri, 10 Jun 2022 02:08:45 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Fri, 10 Jun 2022 02:08:45 +0800
-To: <angelogioacchino.delregno@collabora.com>
-Subject: Re: [PATCH v3 4/6] arm64: dts: mediatek: mt2712e: Add mediatek,
- infracfg phandle for IOMMU
-Date: Fri, 10 Jun 2022 02:08:45 +0800
-Message-ID: <20220609180845.31195-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220609100802.54513-5-angelogioacchino.delregno@collabora.com>
-References: <20220609100802.54513-5-angelogioacchino.delregno@collabora.com>
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 781FC60F8C
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 18:09:59 +0000 (UTC)
+Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.206])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LJsV61Xspz67VcZ;
+ Fri, 10 Jun 2022 02:06:22 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Thu, 9 Jun 2022 20:09:56 +0200
+Received: from [10.47.88.201] (10.47.88.201) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 9 Jun
+ 2022 19:09:55 +0100
+Message-ID: <b46fd053-aaee-a384-0e5a-e7a5a011c71a@huawei.com>
+Date: Thu, 9 Jun 2022 19:09:53 +0100
 MIME-Version: 1.0
-X-MTK: N
-Cc: devicetree@vger.kernel.org, krzysztof.kozlowski@linaro.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- robh+dt@kernel.org, linux-mediatek@lists.infradead.org,
- krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com, will@kernel.org,
- linux-arm-kernel@lists.infradead.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v2] iommu/dma: Add config for PCI SAC address trick
+To: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>
+References: <3f06994f9f370f9d35b2630ab75171ecd2065621.1654782107.git.robin.murphy@arm.com>
+In-Reply-To: <3f06994f9f370f9d35b2630ab75171ecd2065621.1654782107.git.robin.murphy@arm.com>
+X-Originating-IP: [10.47.88.201]
+X-ClientProxiedBy: lhreml727-chm.china.huawei.com (10.201.108.78) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,54 +72,113 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Miles Chen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Miles Chen <miles.chen@mediatek.com>
-Content-Type: text/plain; charset="us-ascii"
+From: John Garry via iommu <iommu@lists.linux-foundation.org>
+Reply-To: John Garry <john.garry@huawei.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> The IOMMU driver now looks for the "mediatek,infracfg" phandle as a
-> new way to retrieve a syscon to that:
-> even though the old way is retained, it has been deprecated and the
-> driver will write a message in kmsg advertising to use the phandle
-> way instead.
+On 09/06/2022 16:12, Robin Murphy wrote:
+> For devices stuck behind a conventional PCI bus, saving extra cycles at
+> 33MHz is probably fairly significant. However since native PCI Express
+> is now the norm for high-performance devices, the optimisation to always
+> prefer 32-bit addresses for the sake of avoiding DAC is starting to look
+> rather anachronistic. Technically 32-bit addresses do have shorter TLPs
+> on PCIe, but unless the device is saturating its link bandwidth with
+> small transfers it seems unlikely that the difference is appreciable.
 > 
-> For this reason, assign the right phandle to mediatek,infracfg in
-> the iommu node.
+> What definitely is appreciable, however, is that the IOVA allocator
+> doesn't behave all that well once the 32-bit space starts getting full.
+> As DMA working sets get bigger, this optimisation increasingly backfires
+> and adds considerable overhead to the dma_map path for use-cases like
+> high-bandwidth networking. We've increasingly bandaged the allocator
+> in attempts to mitigate this, but it remains fundamentally at odds with
+> other valid requirements to try as hard as possible to satisfy a request
+> within the given limit; what we really need is to just avoid this odd
+> notion of a speculative allocation when it isn't beneficial anyway.
 > 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> Unfortunately that's where things get awkward... Having been present on
+> x86 for 15 years or so now, it turns out there are systems which fail to
+> properly define the upper limit of usable IOVA space for certain devices
+> and this trick was the only thing letting them work OK. I had a similar
+> ulterior motive for a couple of early arm64 systems when originally
+> adding it to iommu-dma, but those really should be fixed with proper
+> firmware bindings by now. Let's be brave and default it to off in the
+> hope that CI systems and developers will find and fix those bugs, > but
+> expect that desktop-focused distro configs are likely to want to turn
+> it back on for maximum compatibility.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-Reviewed-by: Miles Chen <miles.chen@mediatek.com> 
+FWIW,
+Reviewed-by: John Garry <john.garry@huawei.com>
+
+If we're not enabling by default for x86 then doesn't Jeorg have some 
+XHCI issue which we would now need to quirk? I don't remember which 
+device exactly. Or, alternatively, simply ask him to enable this new config.
+
 
 > ---
->  arch/arm64/boot/dts/mediatek/mt2712e.dtsi | 2 ++
->  1 file changed, 2 insertions(+)
 > 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> index 623eb3beabf2..4797537cb368 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
-> @@ -329,6 +329,7 @@ iommu0: iommu@10205000 {
->  		interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_LOW>;
->  		clocks = <&infracfg CLK_INFRA_M4U>;
->  		clock-names = "bclk";
-> +		mediatek,infracfg = <&infracfg>;
->  		mediatek,larbs = <&larb0>, <&larb1>, <&larb2>,
->  				 <&larb3>, <&larb6>;
->  		#iommu-cells = <1>;
-> @@ -346,6 +347,7 @@ iommu1: iommu@1020a000 {
->  		interrupts = <GIC_SPI 145 IRQ_TYPE_LEVEL_LOW>;
->  		clocks = <&infracfg CLK_INFRA_M4U>;
->  		clock-names = "bclk";
-> +		mediatek,infracfg = <&infracfg>;
->  		mediatek,larbs = <&larb4>, <&larb5>, <&larb7>;
->  		#iommu-cells = <1>;
->  	};
-> -- 
-> 2.35.1
+> v2: Tweak wording to clarify that it's not really an optimisation in
+>      general, remove "default X86".
 > 
+>   drivers/iommu/Kconfig     | 26 ++++++++++++++++++++++++++
+>   drivers/iommu/dma-iommu.c |  2 +-
+>   2 files changed, 27 insertions(+), 1 deletion(-)
 > 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index c79a0df090c0..5a225b48dd00 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -144,6 +144,32 @@ config IOMMU_DMA
+>   	select IRQ_MSI_IOMMU
+>   	select NEED_SG_DMA_LENGTH
+>   
+> +config IOMMU_DMA_PCI_SAC
+> +	bool "Enable 64-bit legacy PCI optimisation by default"
+> +	depends on IOMMU_DMA
+> +	help
+> +	  Enable by default an IOMMU optimisation for 64-bit legacy PCI devices,
+> +	  wherein the DMA API layer will always first try to allocate a 32-bit
+> +	  DMA address suitable for a single address cycle, before falling back
+> +	  to allocating from the device's full usable address range. If your
+> +	  system has 64-bit legacy PCI devices in 32-bit slots where using dual
+> +	  address cycles reduces DMA throughput significantly, this may be
+> +	  beneficial to overall performance.
+> +
+> +	  If you have a modern PCI Express based system, this feature mostly just
+> +	  represents extra overhead in the allocation path for no practical
+> +	  benefit, and it should usually be preferable to say "n" here.
+> +
+> +	  However, beware that this feature has also historically papered over
+> +	  bugs where the IOMMU address width and/or device DMA mask is not set
+> +	  correctly. If device DMA problems and IOMMU faults start occurring
+> +	  after disabling this option, it is almost certainly indicative of a
+> +	  latent driver or firmware/BIOS bug, which would previously have only
+> +	  manifested with several gigabytes worth of concurrent DMA mappings.
+> +
+> +	  If this option is not set, the feature can still be re-enabled at
+> +	  boot time with the "iommu.forcedac=0" command-line argument.
+> +
+>   # Shared Virtual Addressing
+>   config IOMMU_SVA
+>   	bool
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index f90251572a5d..9f9d9ba7f376 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -67,7 +67,7 @@ struct iommu_dma_cookie {
+>   };
+>   
+>   static DEFINE_STATIC_KEY_FALSE(iommu_deferred_attach_enabled);
+> -bool iommu_dma_forcedac __read_mostly;
+> +bool iommu_dma_forcedac __read_mostly = !IS_ENABLED(CONFIG_IOMMU_DMA_PCI_SAC);
+>   
+>   static int __init iommu_dma_forcedac_setup(char *str)
+>   {
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
