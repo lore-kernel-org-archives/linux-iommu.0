@@ -1,73 +1,73 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C12A2C433EF
-	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 18:06:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id A2D2DC43334
+	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 18:08:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 6875F40A99;
-	Thu,  9 Jun 2022 18:06:17 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 4B23341CCD;
+	Thu,  9 Jun 2022 18:08:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qj2MaVGXJ2WU; Thu,  9 Jun 2022 18:06:16 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 45AB04056D;
-	Thu,  9 Jun 2022 18:06:16 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id H0BbxsKe9GhT; Thu,  9 Jun 2022 18:08:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id E0E6041B57;
+	Thu,  9 Jun 2022 18:08:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 214AEC0032;
-	Thu,  9 Jun 2022 18:06:16 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5A1D7C002D
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 18:06:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A3EBBC0032;
+	Thu,  9 Jun 2022 18:08:53 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6A4C7C002D
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 18:08:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 434D9824DD
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 18:06:14 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 50BF982468
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 18:08:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Rvtk7fNPxjYI for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jun 2022 18:06:12 +0000 (UTC)
+ with ESMTP id p_sRNO6tegKT for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jun 2022 18:08:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 3E3CC8248F
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 18:06:12 +0000 (UTC)
-X-UUID: ee99b984265c4058ac6cfab810248d3e-20220610
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 8802D823E3
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 18:08:51 +0000 (UTC)
+X-UUID: 0f46fe5d8de7409e94190e6eefd88765-20220610
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5, REQID:bfdda56a-d5a8-48be-aa50-547f0f4203a1, OB:0,
- LO
- B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
+X-CID-O-INFO: VERSION:1.1.5, REQID:a195b405-18dd-4bd5-a4ed-49db4cfc5322, OB:10,
+ L
+ OB:20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,A
+ CTION:release,TS:45
+X-CID-INFO: VERSION:1.1.5, REQID:a195b405-18dd-4bd5-a4ed-49db4cfc5322, OB:10,
+ LOB
+ :20,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
  ION:release,TS:45
-X-CID-INFO: VERSION:1.1.5, REQID:bfdda56a-d5a8-48be-aa50-547f0f4203a1, OB:0,
- LOB:
- 0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
- N:release,TS:45
-X-CID-META: VersionHash:2a19b09, CLOUDID:ec22d47e-c8dc-403a-96e8-6237210dceee,
+X-CID-META: VersionHash:2a19b09, CLOUDID:b82cd47e-c8dc-403a-96e8-6237210dceee,
  C
- OID:656875a871f0,Recheck:0,SF:28|17|19|48,TC:nil,Content:-5,EDM:-3,IP:nil,
+ OID:0599961d4d23,Recheck:0,SF:28|17|19|48,TC:nil,Content:-5,EDM:-3,IP:nil,
  URL:0,File:nil,QS:0,BEC:nil
-X-UUID: ee99b984265c4058ac6cfab810248d3e-20220610
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
- (envelope-from <miles.chen@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1258525352; Fri, 10 Jun 2022 02:06:07 +0800
+X-UUID: 0f46fe5d8de7409e94190e6eefd88765-20220610
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by
+ mailgw01.mediatek.com (envelope-from <miles.chen@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+ with ESMTP id 512735973; Fri, 10 Jun 2022 02:08:46 +0800
 Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
  mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3; 
- Fri, 10 Jun 2022 02:06:05 +0800
+ Fri, 10 Jun 2022 02:08:45 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
  mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Fri, 10 Jun 2022 02:06:05 +0800
+ 15.2.792.3 via Frontend Transport; Fri, 10 Jun 2022 02:08:45 +0800
 To: <angelogioacchino.delregno@collabora.com>
-Subject: Re: [PATCH v3 3/6] arm64: dts: mediatek: mt8173: Add mediatek,
+Subject: Re: [PATCH v3 4/6] arm64: dts: mediatek: mt2712e: Add mediatek,
  infracfg phandle for IOMMU
-Date: Fri, 10 Jun 2022 02:06:05 +0800
-Message-ID: <20220609180605.31142-1-miles.chen@mediatek.com>
+Date: Fri, 10 Jun 2022 02:08:45 +0800
+Message-ID: <20220609180845.31195-1-miles.chen@mediatek.com>
 X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220609100802.54513-4-angelogioacchino.delregno@collabora.com>
-References: <20220609100802.54513-4-angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220609100802.54513-5-angelogioacchino.delregno@collabora.com>
+References: <20220609100802.54513-5-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
 X-MTK: N
 Cc: devicetree@vger.kernel.org, krzysztof.kozlowski@linaro.org,
@@ -108,21 +108,29 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 Reviewed-by: Miles Chen <miles.chen@mediatek.com> 
 
 > ---
->  arch/arm64/boot/dts/mediatek/mt8173.dtsi | 1 +
->  1 file changed, 1 insertion(+)
+>  arch/arm64/boot/dts/mediatek/mt2712e.dtsi | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-> index 40d7b47fc52e..825a3c670373 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-> @@ -588,6 +588,7 @@ iommu: iommu@10205000 {
->  			interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_LOW>;
->  			clocks = <&infracfg CLK_INFRA_M4U>;
->  			clock-names = "bclk";
-> +			mediatek,infracfg = <&infracfg>;
->  			mediatek,larbs = <&larb0>, <&larb1>, <&larb2>,
->  					 <&larb3>, <&larb4>, <&larb5>;
->  			#iommu-cells = <1>;
+> diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> index 623eb3beabf2..4797537cb368 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> @@ -329,6 +329,7 @@ iommu0: iommu@10205000 {
+>  		interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_LOW>;
+>  		clocks = <&infracfg CLK_INFRA_M4U>;
+>  		clock-names = "bclk";
+> +		mediatek,infracfg = <&infracfg>;
+>  		mediatek,larbs = <&larb0>, <&larb1>, <&larb2>,
+>  				 <&larb3>, <&larb6>;
+>  		#iommu-cells = <1>;
+> @@ -346,6 +347,7 @@ iommu1: iommu@1020a000 {
+>  		interrupts = <GIC_SPI 145 IRQ_TYPE_LEVEL_LOW>;
+>  		clocks = <&infracfg CLK_INFRA_M4U>;
+>  		clock-names = "bclk";
+> +		mediatek,infracfg = <&infracfg>;
+>  		mediatek,larbs = <&larb4>, <&larb5>, <&larb7>;
+>  		#iommu-cells = <1>;
+>  	};
 > -- 
 > 2.35.1
 > 
