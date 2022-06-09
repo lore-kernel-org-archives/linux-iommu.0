@@ -1,76 +1,74 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id DED05C43334
-	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 17:04:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0289AC433EF
+	for <iommu@archiver.kernel.org>; Thu,  9 Jun 2022 17:06:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 8438460F68;
-	Thu,  9 Jun 2022 17:04:28 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 8B2A540C3E;
+	Thu,  9 Jun 2022 17:06:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JlK_D_D9yIyo; Thu,  9 Jun 2022 17:04:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id E42AC60F5C;
-	Thu,  9 Jun 2022 17:04:26 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id D9py7oxoUyVn; Thu,  9 Jun 2022 17:06:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 595C5400A8;
+	Thu,  9 Jun 2022 17:06:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C4FD1C0039;
-	Thu,  9 Jun 2022 17:04:26 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9E7B9C002D
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 17:04:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 397AFC0039;
+	Thu,  9 Jun 2022 17:06:48 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D82B6C002D
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 17:06:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 87AA683478
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 17:04:25 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id B2AB040C3E
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 17:06:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BxUci6WmSOuf for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jun 2022 17:04:20 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id AHKpVtk25-Db for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jun 2022 17:06:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 53CC1828F2
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 17:04:19 +0000 (UTC)
-X-UUID: ea919fc6e7ff46d1ae53f09593b12f95-20220610
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5, REQID:f3b7cb63-8a22-4c1f-aa9b-47610791aa59, OB:0,
- LO
- B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
- ON:release,TS:5
-X-CID-META: VersionHash:2a19b09, CLOUDID:da00d37e-c8dc-403a-96e8-6237210dceee,
- C
- OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
- ,QS:0,BEC:nil
-X-UUID: ea919fc6e7ff46d1ae53f09593b12f95-20220610
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by
- mailgw01.mediatek.com (envelope-from <miles.chen@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 1294950020; Fri, 10 Jun 2022 01:04:13 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Fri, 10 Jun 2022 01:04:12 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Fri, 10 Jun 2022 01:04:12 +0800
-To: <yf.wang@mediatek.com>
-Subject: Re: [PATCH] iommu/dma: Fix race condition during iova_domain
- initialization
-Date: Fri, 10 Jun 2022 01:04:12 +0800
-Message-ID: <20220609170412.30690-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220530120748.31733-1-yf.wang@mediatek.com>
-References: <20220530120748.31733-1-yf.wang@mediatek.com>
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id DC93E400A8
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jun 2022 17:06:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1654794405; x=1686330405;
+ h=date:from:to:cc:subject:message-id:references:
+ mime-version:in-reply-to;
+ bh=DqcLSXzla24BAOWUg0Q7TFQHtplmc6Xrbtg5PjslZl4=;
+ b=LCq8PSsKdBB7DpZLdrPlEjOoSm7YEbVgv9cfXR8n5KLxmw4rhvjT6vxb
+ RTQTJQRg44o+JmcRtQPVvCtnwEvDif24ryOPq6RynJtprt3pDTgvad/28
+ NAjVhOPqCWTEEqEqVwTEOimgy5SPG+jT6oPMQtUySQP1TdQrYxlWzW8rz
+ RCcxXCIu8JYiNJVjF6/RyszMnOt0aRNK9ZKubd8CbgwKgU18uGnVx5Cil
+ Fx0WvN+eAzidLpVUxNkuA3K0M5HMUfRyQLNxGL0LvtWYMfl3Ytthj/42Y
+ t/cbjfUrSbJsNE7zM1ewhaNANidWWPeB+/iQHtVdZyQ9K+9tXriKKRdnV Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="274879234"
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; d="scan'208";a="274879234"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 09 Jun 2022 10:06:45 -0700
+X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; d="scan'208";a="610347539"
+Received: from araj-dh-work.jf.intel.com (HELO araj-dh-work) ([10.165.157.158])
+ by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 09 Jun 2022 10:06:44 -0700
+Date: Thu, 9 Jun 2022 17:06:44 +0000
+From: "Raj, Ashok" <ashok.raj@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [RFC PATCHES 1/2] iommu: Add RCU-protected page free support
+Message-ID: <20220609170644.GA33363@araj-dh-work>
+References: <20220609070811.902868-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-X-MTK: N
-Cc: miles.chen@mediatek.com, wsd_upstream@mediatek.com,
- linux-kernel@vger.kernel.org, Libo.Kang@mediatek.com,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- ning.li@mediatek.com, matthias.bgg@gmail.com, will@kernel.org,
- linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <20220609070811.902868-1-baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
+ Jason Gunthorpe <jgg@nvidia.com>, Joao Martins <joao.m.martins@oracle.com>,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,134 +81,124 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Miles Chen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Miles Chen <miles.chen@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi YF,
+On Thu, Jun 09, 2022 at 03:08:10PM +0800, Lu Baolu wrote:
+> The IOMMU page tables are updated using iommu_map/unmap() interfaces.
+> Currently, there is no mandatory requirement for drivers to use locks
+> to ensure concurrent updates to page tables, because it's assumed that
+> overlapping IOVA ranges do not have concurrent updates. Therefore the
+> IOMMU drivers only need to take care of concurrent updates to level
+> page table entries.
 
->When many devices share the same iova domain, iommu_dma_init_domain()
->may be called at the same time. The checking of iovad->start_pfn will
->all get false in iommu_dma_init_domain() and both enter init_iova_domain()
->to do iovad initialization.
+The last part doesn't read well.. 
+s/updates to level page table entries/ updates to page-table entries at the
+same level
 
-After reading this patch.
-It means that we use iovad->start_pfn as a key to tell if an iovad is already initialized,
-but we do not protect iovad->start_pfn from concurrent access.
+> 
+> But enabling new features challenges this assumption. For example, the
+> hardware assisted dirty page tracking feature requires scanning page
+> tables in interfaces other than mapping and unmapping. This might result
+> in a use-after-free scenario in which a level page table has been freed
+> by the unmap() interface, while another thread is scanning the next level
+> page table.
+> 
+> This adds RCU-protected page free support so that the pages are really
+> freed and reused after a RCU grace period. Hence, the page tables are
+> safe for scanning within a rcu_read_lock critical region. Considering
+> that scanning the page table is a rare case, this also adds a domain
+> flag and the RCU-protected page free is only used when this flat is set.
 
-So what's happening is like:
+s/flat/flag
 
-   cpu0                                    cpu1
-of_dma_configure_id()              of_dma_configure_id()
-  arch_setup_dma_ops()               arch_setup_dma_ops()
-    iommu_setup_dma_ops()              iommu_setup_dma_ops()
-      init_iova_domain()	 	 init_iova_domain()
-         if (iovad->start_pfn) {           if (iovad->start_pfn) {
-         }                                 }
-         init_iova_domain()                init_iova_domain()
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  include/linux/iommu.h |  9 +++++++++
+>  drivers/iommu/iommu.c | 23 +++++++++++++++++++++++
+>  2 files changed, 32 insertions(+)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 5e1afe169549..6f68eabb8567 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -95,6 +95,7 @@ struct iommu_domain {
+>  	void *handler_token;
+>  	struct iommu_domain_geometry geometry;
+>  	struct iommu_dma_cookie *iova_cookie;
+> +	unsigned long concurrent_traversal:1;
+
+Does this need to be a bitfield? Even though you are needing just one bit
+now, you can probably make have maskbits?
 
 
-init_iova_domain() is called at the same time.
+>  };
+>  
+>  static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
+> @@ -657,6 +658,12 @@ static inline void dev_iommu_priv_set(struct device *dev, void *priv)
+>  	dev->iommu->priv = priv;
+>  }
+>  
+> +static inline void domain_set_concurrent_traversal(struct iommu_domain *domain,
+> +						   bool value)
+> +{
+> +	domain->concurrent_traversal = value;
+> +}
+> +
+>  int iommu_probe_device(struct device *dev);
+>  void iommu_release_device(struct device *dev);
+>  
+> @@ -677,6 +684,8 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner);
+>  void iommu_group_release_dma_owner(struct iommu_group *group);
+>  bool iommu_group_dma_owner_claimed(struct iommu_group *group);
+>  
+> +void iommu_free_pgtbl_pages(struct iommu_domain *domain,
+> +			    struct list_head *pages);
+>  #else /* CONFIG_IOMMU_API */
+>  
+>  struct iommu_ops {};
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 847ad47a2dfd..ceeb97ebe3e2 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -3252,3 +3252,26 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
+>  	return user;
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
+> +
+> +static void pgtble_page_free_rcu(struct rcu_head *rcu)
 
->Fix this by protecting init_iova_domain() with iommu_dma_cookie->mutex.
+maybe the names can be consistent? pgtble_ vs pgtbl below.
 
-Reviewed-by: Miles Chen <miles.chen@mediatek.com> 
+vote to drop the 'e' :-)
 
->Exception backtrace:
->rb_insert_color(param1=0xFFFFFF80CD2BDB40, param3=1) + 64
->init_iova_domain() + 180
->iommu_setup_dma_ops() + 260
->arch_setup_dma_ops() + 132
->of_dma_configure_id() + 468
->platform_dma_configure() + 32
->really_probe() + 1168
->driver_probe_device() + 268
->__device_attach_driver() + 524
->__device_attach() + 524
->bus_probe_device() + 64
->deferred_probe_work_func() + 260
->process_one_work() + 580
->worker_thread() + 1076
->kthread() + 332
->ret_from_fork() + 16
->
->Signed-off-by: Ning Li <ning.li@mediatek.com>
->Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
->---
-> drivers/iommu/dma-iommu.c | 17 +++++++++++++----
-> 1 file changed, 13 insertions(+), 4 deletions(-)
->
->diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->index 09f6e1c0f9c0..b38c5041eeab 100644
->--- a/drivers/iommu/dma-iommu.c
->+++ b/drivers/iommu/dma-iommu.c
->@@ -63,6 +63,7 @@ struct iommu_dma_cookie {
+> +{
+> +	struct page *page = container_of(rcu, struct page, rcu_head);
+> +
+> +	__free_pages(page, 0);
+> +}
+> +
+> +void iommu_free_pgtbl_pages(struct iommu_domain *domain,
+> +			    struct list_head *pages)
+> +{
+> +	struct page *page, *next;
+> +
+> +	if (!domain->concurrent_traversal) {
+> +		put_pages_list(pages);
+> +		return;
+> +	}
+> +
+> +	list_for_each_entry_safe(page, next, pages, lru) {
+> +		list_del(&page->lru);
+> +		call_rcu(&page->rcu_head, pgtble_page_free_rcu);
+> +	}
+> +}
+> -- 
+> 2.25.1
 > 
-> 	/* Domain for flush queue callback; NULL if flush queue not in use */
-> 	struct iommu_domain		*fq_domain;
->+	struct mutex			mutex;
-> };
-> 
-> static DEFINE_STATIC_KEY_FALSE(iommu_deferred_attach_enabled);
->@@ -309,6 +310,7 @@ int iommu_get_dma_cookie(struct iommu_domain *domain)
-> 	if (!domain->iova_cookie)
-> 		return -ENOMEM;
-> 
->+	mutex_init(&domain->iova_cookie->mutex);
-> 	return 0;
-> }
-> 
->@@ -549,26 +551,33 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
-> 	}
-> 
-> 	/* start_pfn is always nonzero for an already-initialised domain */
->+	mutex_lock(&cookie->mutex);
->
-> 	if (iovad->start_pfn) {
-> 		if (1UL << order != iovad->granule ||
-> 		    base_pfn != iovad->start_pfn) {
-> 			pr_warn("Incompatible range for DMA domain\n");
->-			return -EFAULT;
->+			ret = -EFAULT;
->+			goto done_unlock;
-> 		}
-> 
->-		return 0;
->+		ret = 0;
->+		goto done_unlock;
-> 	}
-> 
-> 	init_iova_domain(iovad, 1UL << order, base_pfn);
-> 	ret = iova_domain_init_rcaches(iovad);
-> 	if (ret)
->-		return ret;
->+		goto done_unlock;
-> 
-> 	/* If the FQ fails we can simply fall back to strict mode */
-> 	if (domain->type == IOMMU_DOMAIN_DMA_FQ && iommu_dma_init_fq(domain))
-> 		domain->type = IOMMU_DOMAIN_DMA;
-> 
->-	return iova_reserve_iommu_regions(dev, domain);
->+	ret = iova_reserve_iommu_regions(dev, domain);
->+
->+done_unlock:
->+	mutex_unlock(&cookie->mutex);
->+	return ret;
-> }
-> 
-> /**
->-- 
->2.18.0
->
->
->_______________________________________________
->Linux-mediatek mailing list
->Linux-mediatek@lists.infradead.org
->http://lists.infradead.org/mailman/listinfo/linux-mediatek
->
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
