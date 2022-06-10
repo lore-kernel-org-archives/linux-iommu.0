@@ -1,90 +1,79 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 451B0C433EF
-	for <iommu@archiver.kernel.org>; Fri, 10 Jun 2022 12:34:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 04C04C433EF
+	for <iommu@archiver.kernel.org>; Fri, 10 Jun 2022 15:38:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C17CA60F9F;
-	Fri, 10 Jun 2022 12:34:41 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 9716541989;
+	Fri, 10 Jun 2022 15:38:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id A7Q6qkUILRui; Fri, 10 Jun 2022 12:34:41 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id B00BF60D70;
-	Fri, 10 Jun 2022 12:34:40 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7B006C0032;
-	Fri, 10 Jun 2022 12:34:40 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E61A7C002D
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 12:34:39 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id C6E82419C2
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 12:34:39 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mewrH0v3EzT2 for <iommu@lists.linux-foundation.org>;
- Fri, 10 Jun 2022 12:34:38 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com
- [IPv6:2607:f8b0:4864:20::535])
- by smtp4.osuosl.org (Postfix) with ESMTPS id B10E94196D
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 12:34:38 +0000 (UTC)
-Received: by mail-pg1-x535.google.com with SMTP id c18so16315181pgh.11
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 05:34:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=fTnCXFuyCstJMPBhMqFKxxK2N1Yz6X1NLjBKTceklwM=;
- b=vur4KePcrSZwfP7+Gdvgv0bt/L+tZYdakOo7NYRMZrInzrC3kXcg9wHBqc9MWv59Gj
- fi3P0bGnYTLmFOCZOY87UWoPPXuY7QJc+kIO6+6PEhjv/QoGHk5E8Xl1QDeHaoxjM925
- 7xHg3+imavV8cUH2qIm005hgrV6avSWy6ajROWVEsYy7wiHGbBStoGiNN9f9L+gfFgpZ
- 0hM+Bhq6E/tbkoP6LyawPOMZPovEbkWNCktkNCzVL5E8bPvYCQx+Fa/+mN4cjMn9Ikdx
- ZCD5YqgYZsorAql4dSYI3nUD28lL5b4p/v+pdAwut8e7y3TlwPgakW7CIcLmmASc46Jo
- k8nA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=fTnCXFuyCstJMPBhMqFKxxK2N1Yz6X1NLjBKTceklwM=;
- b=csfeKjuxjPtauQiiEENBUGB0XOk97S+JBzI26aDHwdYqv15OzV7azVBS56RZYR3q8D
- t8Mr1j71o9NQdMF6G8l3GBecp5AfQPZ9UK2kdiPiOMPsNr47FpT/9qdntLeua6/q9k6J
- jKt7SXqZwgv4jewNPFv5rNzq6eBorEhYHKFaK/gQWPk5kP4f/sepDZpcnLU/mtDEI4oq
- f4EWvaFLHG+bsvt3FF7Bc8b7PxblgY3FGiClXVHaopidWwHrWiorDPgwEUV0cwjlY+hE
- C2N/lxlEFN00jrkUcRvZaz7QR48YzWdhPGvQEnzyVRS9f361Hl/5tTD/hlxyA1eutg8v
- l7JQ==
-X-Gm-Message-State: AOAM533dRUiEhwCMgzFO1Mp6F6LJ+ZAYM5h4tcR1c2/1jFy6peuxKzyS
- OPi3OFNCqaY7Q+A3ayzqVTD/tw==
-X-Google-Smtp-Source: ABdhPJye0lkqFNoSURlpFSaRubFAyvZ7H6pZUjfbwhCtArda1i/1Oz2vnL3TD6wFmZ1x8rh776n3gQ==
-X-Received: by 2002:a63:2160:0:b0:3fc:b8ac:1976 with SMTP id
- s32-20020a632160000000b003fcb8ac1976mr40229774pgm.453.1654864478105; 
- Fri, 10 Jun 2022 05:34:38 -0700 (PDT)
-Received: from localhost.localdomain ([94.177.118.5])
- by smtp.gmail.com with ESMTPSA id
- a14-20020a1709027e4e00b0016892555955sm5867860pln.179.2022.06.10.05.34.33
- (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
- Fri, 10 Jun 2022 05:34:37 -0700 (PDT)
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Arnd Bergmann <arnd@arndb.de>, Herbert Xu <herbert@gondor.apana.org.au>,
- jean-philippe <jean-philippe@linaro.org>,
- Wangzhou <wangzhou1@hisilicon.com>,
- Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH] uacce: fix concurrency of fops_open and uacce_remove
-Date: Fri, 10 Jun 2022 20:34:23 +0800
-Message-Id: <20220610123423.27496-1-zhangfei.gao@linaro.org>
-X-Mailer: git-send-email 2.36.1
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JTADbDYVXwn9; Fri, 10 Jun 2022 15:38:05 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 3EF2741D28;
+	Fri, 10 Jun 2022 15:38:05 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 09C68C0039;
+	Fri, 10 Jun 2022 15:38:05 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A0A6DC002D
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 15:38:02 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 884B2404F0
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 15:38:02 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id KBtKU0WcKDeD for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Jun 2022 15:38:00 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id B7CA64031C
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 15:38:00 +0000 (UTC)
+Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.207])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LKQ2n144hz689ML;
+ Fri, 10 Jun 2022 23:33:05 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 10 Jun 2022 17:37:56 +0200
+Received: from [10.47.88.201] (10.47.88.201) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 10 Jun
+ 2022 16:37:55 +0100
+Message-ID: <f7872ebc-dfe5-d977-c51f-91b73e6d1fbb@huawei.com>
+Date: Fri, 10 Jun 2022 16:37:54 +0100
 MIME-Version: 1.0
-Cc: Yang Shen <shenyang39@huawei.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, linux-crypto@vger.kernel.org,
- linux-accelerators@lists.ozlabs.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v3 3/4] scsi: core: Cap shost max_sectors according to DMA
+ optimum mapping limits
+To: Bart Van Assche <bvanassche@acm.org>, <damien.lemoal@opensource.wdc.com>, 
+ <joro@8bytes.org>, <will@kernel.org>, <jejb@linux.ibm.com>,
+ <martin.petersen@oracle.com>, <hch@lst.de>, <m.szyprowski@samsung.com>,
+ <robin.murphy@arm.com>
+References: <1654507822-168026-1-git-send-email-john.garry@huawei.com>
+ <1654507822-168026-4-git-send-email-john.garry@huawei.com>
+ <fe365aa8-00d5-153d-ceb2-f887a71a6927@acm.org>
+ <31417477-953d-283e-808e-cf8701e820a8@huawei.com>
+ <bccbcc9b-4750-a1a7-130f-69eeea5dcb23@acm.org>
+ <5b214e95-dd95-551a-496e-a2139a74e8eb@huawei.com>
+ <a2585983-75d7-c627-13ba-38a464cf716e@acm.org>
+ <9b1d155e-28cc-08dc-5a5a-8580132575e7@huawei.com>
+ <23bf4427-41c3-bf1d-903a-75928bb47627@acm.org>
+In-Reply-To: <23bf4427-41c3-bf1d-903a-75928bb47627@acm.org>
+X-Originating-IP: [10.47.88.201]
+X-ClientProxiedBy: lhreml727-chm.china.huawei.com (10.201.108.78) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: linux-scsi@vger.kernel.org, linux-doc@vger.kernel.org,
+ liyihang6@hisilicon.com, linux-kernel@vger.kernel.org,
+ linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,101 +86,30 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+From: John Garry via iommu <iommu@lists.linux-foundation.org>
+Reply-To: John Garry <john.garry@huawei.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The uacce parent's module can be removed when uacce is working,
-which may cause troubles.
+On 09/06/2022 21:34, Bart Van Assche wrote:
+> On 6/9/22 10:54, John Garry wrote:
+>> ok, but do you have a system where the UFS host controller is behind 
+>> an IOMMU? I had the impression that UFS controllers would be mostly 
+>> found in embedded systems and IOMMUs are not as common on there.
+> 
+> Modern phones have an IOMMU. Below one can find an example from a Pixel 
+> 6 phone. The UFS storage controller is not controller by the IOMMU as 
+> far as I can see but I wouldn't be surprised if the security team would 
+> ask us one day to enable the IOMMU for the UFS controller.
 
-If rmmod/uacce_remove happens just after fops_open: bind_queue,
-the uacce_remove can not remove the bound queue since it is not
-added to the queue list yet, which blocks the uacce_disable_sva.
+OK, then unfortunately it seems that you have no method to test. I might 
+be able to test USB MSC but I am not even sure if I can even get DMA 
+mappings who length exceeds the IOVA rcache limit there.
 
-Change queues_lock area to make sure the bound queue is added to
-the list thereby can be searched in uacce_remove.
-
-And uacce->parent->driver is checked immediately in case rmmod is
-just happening.
-
-Also the parent driver must always stop DMA before calling
-uacce_remove.
-
-Signed-off-by: Yang Shen <shenyang39@huawei.com>
-Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
----
- drivers/misc/uacce/uacce.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
-index 281c54003edc..b6219c6bfb48 100644
---- a/drivers/misc/uacce/uacce.c
-+++ b/drivers/misc/uacce/uacce.c
-@@ -136,9 +136,16 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
- 	if (!q)
- 		return -ENOMEM;
- 
-+	mutex_lock(&uacce->queues_lock);
-+
-+	if (!uacce->parent->driver) {
-+		ret = -ENODEV;
-+		goto out_with_lock;
-+	}
-+
- 	ret = uacce_bind_queue(uacce, q);
- 	if (ret)
--		goto out_with_mem;
-+		goto out_with_lock;
- 
- 	q->uacce = uacce;
- 
-@@ -153,7 +160,6 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
- 	uacce->inode = inode;
- 	q->state = UACCE_Q_INIT;
- 
--	mutex_lock(&uacce->queues_lock);
- 	list_add(&q->list, &uacce->queues);
- 	mutex_unlock(&uacce->queues_lock);
- 
-@@ -161,7 +167,8 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
- 
- out_with_bond:
- 	uacce_unbind_queue(q);
--out_with_mem:
-+out_with_lock:
-+	mutex_unlock(&uacce->queues_lock);
- 	kfree(q);
- 	return ret;
- }
-@@ -171,10 +178,10 @@ static int uacce_fops_release(struct inode *inode, struct file *filep)
- 	struct uacce_queue *q = filep->private_data;
- 
- 	mutex_lock(&q->uacce->queues_lock);
--	list_del(&q->list);
--	mutex_unlock(&q->uacce->queues_lock);
- 	uacce_put_queue(q);
- 	uacce_unbind_queue(q);
-+	list_del(&q->list);
-+	mutex_unlock(&q->uacce->queues_lock);
- 	kfree(q);
- 
- 	return 0;
-@@ -513,10 +520,10 @@ void uacce_remove(struct uacce_device *uacce)
- 		uacce_put_queue(q);
- 		uacce_unbind_queue(q);
- 	}
--	mutex_unlock(&uacce->queues_lock);
- 
- 	/* disable sva now since no opened queues */
- 	uacce_disable_sva(uacce);
-+	mutex_unlock(&uacce->queues_lock);
- 
- 	if (uacce->cdev)
- 		cdev_device_del(uacce->cdev, &uacce->dev);
--- 
-2.36.1
-
+Thanks,
+John
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
