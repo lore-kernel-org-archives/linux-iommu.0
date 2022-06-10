@@ -1,135 +1,79 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3D364C433EF
-	for <iommu@archiver.kernel.org>; Fri, 10 Jun 2022 00:03:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9A3FBC43334
+	for <iommu@archiver.kernel.org>; Fri, 10 Jun 2022 05:37:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id DE38A6112A;
-	Fri, 10 Jun 2022 00:03:52 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 3A28540A93;
+	Fri, 10 Jun 2022 05:37:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id r6u3JrvegNRr; Fri, 10 Jun 2022 00:03:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 8CE01605DB;
-	Fri, 10 Jun 2022 00:03:51 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id N2wAE6J5OQoW; Fri, 10 Jun 2022 05:37:28 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 3052C4023B;
+	Fri, 10 Jun 2022 05:37:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 58437C0039;
-	Fri, 10 Jun 2022 00:03:51 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2F15BC002D
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 00:03:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E6B34C0039;
+	Fri, 10 Jun 2022 05:37:27 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D0A86C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 05:37:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 1626281DCB
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 00:03:50 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id BF0F461192
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 05:37:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XAULGHIV4L0n for <iommu@lists.linux-foundation.org>;
- Fri, 10 Jun 2022 00:03:49 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam12on20631.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:fe5a::631])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 24AD481BBD
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 00:03:49 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EvQtBfVmRzFXFZAuYv6CAefo1Ay6wvbhj+jY/c/prjqsFz8gL3GrFQ6C1EdIQaWdfEx7tQ9lZ3adQmRDxwaT9VAlq30xzlAYcu1VN8mpV+9KpGffr3PXN7WDQ3P7GQIS5wJcnVdvL3tF2arnuYlqZr+QNqlg95uPwlWyblZdcJLeiXFOFV0IZrmR8XlNJrrGXi3sud/xA40FDJToGLZXKLG6YIaZ8JGTF+I6rfolPJikdbi+QyXnyyC4BIVzuygUzTqW7PZVCiJc4RwIRsx91n+TcAfb8xwK6A2rWshAq2hRhqCehm88stqVa8F0nrEWz/0z56UBU/8DlYkNqn8VAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6qqQHMmqTOySnmLqMZOy5QpxYPjtc8tXCT0k/gcg2gE=;
- b=m8eQCUUrOnCtAOXqkaojP796PbVOcJNbMuVMsBaQKgSuKCeWCtYMzU5rlRFhKUFHg2Uqg/6Ctx28HWdsqXdwLrAj89HMDTw8UjrpNhHikV3ARH0p+7dnYdZBKjS0YSQFFuoOBr7Gr9FlKWORK1BEf263G4R3PCYb2nT9x7cuS4sVoj4woDgXgREq4q69YpqxgtDVEKDBBB9GvWePFKT3YAlxz0rMqxxYhwfHQ8RGcZZWjLMXuayzI+5+DmesOuNGjQDVRmvDGpOYlTr3HHnnpI90s2Ir21jpIvz+4ENedbpaTU59Rmmpa3YjccjZHtMB4czJ9PJoOglEHRvjYh+jEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6qqQHMmqTOySnmLqMZOy5QpxYPjtc8tXCT0k/gcg2gE=;
- b=cwS0Y33v+PYjlQVn3R8xagQ1baoEImWx1uN2WQVPFmACrlhHaaUTQkBSwH1TCLWJ1Q6VpZzOjFDXMm7lQYzvLpIVqUrKOX/1sYfM8InLWTcjII0GQlEu8Fgs/E86z5cNv/0Q0gWqYYqZ3j0tPJ9xbS8DhWAJLx20HAPB8Lkm1MteoDbdzvrUFgHNgUYFIkrbMBgd/Y8K29/Fn9cSOXn/sNc+kINzESLlVQmP1QFKMlYpy584r8J/qYZeoCt/PjSRH91aXtAlADmkwBj/2ReHLaflzv8D7SDbkKR0OEyJKpiq96lNKQsSRMFf5WMnyNDk7tHv2MyIBa3WpQHt/WnrKw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by CY4PR12MB1768.namprd12.prod.outlook.com (2603:10b6:903:11c::11)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.17; Fri, 10 Jun
- 2022 00:03:45 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5332.013; Fri, 10 Jun 2022
- 00:03:44 +0000
-Date: Thu, 9 Jun 2022 21:03:43 -0300
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 1/2] vfio/type1: Simplify bus_type determination
-Message-ID: <20220610000343.GD1343366@nvidia.com>
-References: <07c69a27fa5bf9724ea8c9fcfe3ff2e8b68f6bf0.1654697988.git.robin.murphy@arm.com>
-Content-Disposition: inline
-In-Reply-To: <07c69a27fa5bf9724ea8c9fcfe3ff2e8b68f6bf0.1654697988.git.robin.murphy@arm.com>
-X-ClientProxiedBy: BL1PR13CA0198.namprd13.prod.outlook.com
- (2603:10b6:208:2be::23) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id DvFfH6g5cHX1 for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Jun 2022 05:37:25 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A6C8160FAE
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 05:37:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1654839445; x=1686375445;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=6a8QudFS6MG+aPxhpladdSOsdGbNDj5qg8atPxMfEDg=;
+ b=KTQEOsFnQWBCrlt0hn38ofXps6N2upeidNgywiOqeha2eBhFEy945t+6
+ Tp6xdtYKIA9plbkGmKV3DkOzQqm4zP1oDpZEikRFeZctLyD68yZZ8yImp
+ IotSlCv0CkPBnqACC7WAnO/wJDYBT9vpJmvR2vrJmHaevRDSFfaUuXK2u
+ 5qMkq8L+8yXqmvO8gU7qBUTi3PbPCpnqzKxUgamAez098yaV3LTvl4Kra
+ Kf95SAvBdmZ1JZvq6qk0dP7GW23DyJsZ9atkl0jcLjPEj6BgHo97JqtGN
+ xlxcTCp4Z431POU/tMcRPJmDEkbF2SJIQ1LuhcvbABD3TFtcF7WAIj79I Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="302896712"
+X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; d="scan'208";a="302896712"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 09 Jun 2022 22:37:25 -0700
+X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; d="scan'208";a="637944554"
+Received: from chengxu1-mobl2.ccr.corp.intel.com (HELO [10.249.169.148])
+ ([10.249.169.148])
+ by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 09 Jun 2022 22:37:22 -0700
+Message-ID: <bbada5b7-737f-03dd-7d42-2ebad442a2bb@linux.intel.com>
+Date: Fri, 10 Jun 2022 13:37:20 +0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e42045da-66cb-4cbb-6387-08da4a74af3e
-X-MS-TrafficTypeDiagnostic: CY4PR12MB1768:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR12MB17686C5938ECCA7FC66442CCC2A69@CY4PR12MB1768.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Jsfk4YiISAcWhhUwcvT5LSqvKVQ5he69EcNfi3/rnslld21KJT8q9X/aSwJEwM/9vbug3aGHGat5KKOuy18Jeik7O8kgNaSs3HPfu2l7EoSXAqT7/WbI3nt+N51dlHzvQpa9txoHJSyyhuxUaXCYA/jcAbZr2JJ2JpPUbTkvOl1/uRUEEvj1Kh4yKE5zXUS2V54CnWX8JYu1EWexhmFa883rlWKaScXiCTvuSdUZQ008xa3KXKy82vkrv79alai1EXPbjXaD8noylrq0qY5sBCHnQS/I/z4XWKf1zxA3gQAiuqOCmsPR69A/0e5Kx4jox9obwcwKcvbXjt/hxBb7LhfVDrJ49Ctz01jru+rgfKhIKVuPRxxfXpQbDcbnDp/xywGk7oPiO2Zj+UWG5vRlkRVOnfbxZVSH4VvleiLhZWuxZ55bxcAvke+kkkLgtKemu4sBc5sAIzAJIdP3Wvvtdj0NixOq4TzlmRDSBH/C5cEFYn++PkJWVv431qW4QjaToYF+7wntwQpKPmQPaZtIWU2VKuBNkwwkn5rc3EZjxJ34pgb6nMeCz95WZ3f38Nvj4YQr+E4VFImEuEgdr2c81uG96r+ub15Pa6wCg/puUGjZGfiFgzlFUN8CxSlvjlUS5T5EpAz81M0wMs6nGAVelA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(38100700002)(186003)(5660300002)(6916009)(4326008)(66946007)(83380400001)(8936002)(8676002)(66556008)(66476007)(508600001)(316002)(6486002)(33656002)(6506007)(86362001)(26005)(36756003)(2906002)(2616005)(6512007)(1076003);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fTUBiTtRbO2UXFtiI8FMNCJShA7f6zmkyDIFiMPmcpBRFNQ6xKRrOQ66P/8V?=
- =?us-ascii?Q?kqoaDRyTESAm0xqI8pvKIXK8Ar9w7qb7y131PzKRkPXf0WGzD9IQqGCAEGBG?=
- =?us-ascii?Q?cLLMPnlr4tGUg6gycXdkNkpooLfp2QgZQB5X0A7IzPtdcMlmQF32YZzixcpc?=
- =?us-ascii?Q?T4kwf5vjS9xJ22lFsnym3t0XgN4HOjJFas7AI89/KglRjYf5OUH3TASVOGYg?=
- =?us-ascii?Q?DBNQ7VsQ5mzJ6JKhx0RNKycbe4VPQ1ARLObrNzLLJ5uPDNSKcRghu/bjia5K?=
- =?us-ascii?Q?2sc21aTxmm6Ei/Qc6QT9gCh66dHnk4kXX0VuMMeMWwtoZ8LGeHUh9S5Pj2qx?=
- =?us-ascii?Q?se4kKV1hFbxI7rVPJblsALAM4txJjhIi8UmYjAQBty/JoCX1Ei/yBV/3RmRs?=
- =?us-ascii?Q?LsTWMFCgV7LWff+9ur+M3oyBNSLl9PEtVy2NF62hJT1GXPHiw5fTN4UVKlO+?=
- =?us-ascii?Q?Zgm5LETrfrbkN+VffWQ9h59/HvW51WhqRt1LW26Q1KoDGIsAzmMdDpa/vIGa?=
- =?us-ascii?Q?NDjzIoOhwOB/H3vHF5/rYfJQ0ofu1KO0KojDBpt/xsiV2xl6ZfSfnb1Igl18?=
- =?us-ascii?Q?RULBtv7HEGkqsodhz1AoNjtijwhs2d4IB6sTXJZ2QLdMeGv5cf8088iZpQoX?=
- =?us-ascii?Q?qLdjyR3mS5cHWx93cEePRqh62HVK647dzPUwECGNJQa/6KKXnyAQbnMGRUdg?=
- =?us-ascii?Q?CiCjkhhlSJjyIZphfANmfBpmiNoaGXLl9WGsJ2ohNikiHFeIJvnDjIgZPKVi?=
- =?us-ascii?Q?zz8uMggWAlFYuIljbNIhWWAEMqyDn+YW0J2AGIzfBYE/YJfOCZVMyaBsAawi?=
- =?us-ascii?Q?HKSwG2HuyxTLGlOGEN4jcY99JZK4ix1cdX7mEMoHJnDZpqbKhPlGssBPmSFO?=
- =?us-ascii?Q?cAJS0p7tIkxf+IRnC2EGJpt8BMS4UQ5Aajc+0eY260WfE/pv/W1y7BqD1PWv?=
- =?us-ascii?Q?XVWMKZW+/7dVR0hhaet6eAd6urx04+9UXoiGntcnSPXe1ZF3kb6ntWhoAAdE?=
- =?us-ascii?Q?aVj209mwAoCVtRXB/fGfahc/dbWS4GaVQ2bQfTSAjqd8x9pIv+fk7Z41ICce?=
- =?us-ascii?Q?HZ+vIvmqPh9cHI6do4L2InCA9rglZLAzcdAIDXWdD3WsoVXWacomZIraznd9?=
- =?us-ascii?Q?8uSoSC4RYb+9gp9JzDlMBC2n6dRqRMC9vMQRpesX0uycfjsFaTNVbJiu36gB?=
- =?us-ascii?Q?Zg5sOQs61d/7PO89QVyoOrM3HxjR/nlEz5biCU1RvIelZY8yiRQo1d9qJeX4?=
- =?us-ascii?Q?PWVqXz5nDCXOy8vcYTx83w8B4hP3PkvvQm9lmufQtk4QvG8VzZuFykUvv2wO?=
- =?us-ascii?Q?Qt650XZgHCf++mmaFa9Jghwx3OeXM7nxQVaCmoYDbi10eRneaIbBs74h6pPo?=
- =?us-ascii?Q?k5bckrdY1l+YCY7zENe9VXCtPM3CoYXe2ltCHiFNXVQ3I6AGZ/LtlTey3lTb?=
- =?us-ascii?Q?ZCqJlOd2YhcSvnJQMjqkOK4ngUj+gwP5/s5oCRm4iOopb0vW7xMSp7X8Xv2d?=
- =?us-ascii?Q?rdJwvPniJhOUctk4dXXXR4H8Xeloh9l4RPdnqvQvrYUKq5uvGQuaADeOPSq8?=
- =?us-ascii?Q?YiuIWb9poJp040D2zPjw5WX8TCnf/AFEMXsp7/08K0s0LqQea1eh0+GO66Zi?=
- =?us-ascii?Q?+6ttUefRWocVbjtRqUjbu1UdVoH8ZONC0rKYCUrnDlVTjaBI9Yx1ynLcYNYV?=
- =?us-ascii?Q?81W97Cb2ugSufVQGxBJG5nALpce5wa7CeZuDbACLiU0kVol1jZLCUjkRag3Q?=
- =?us-ascii?Q?YdG1TKJG3A=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e42045da-66cb-4cbb-6387-08da4a74af3e
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2022 00:03:44.5296 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: arPN/1TmNfFt4xxvXW1NjpFXJHdY50VLrVh/MLFY+ioRBnYmWfa4DeIny/uB5k89
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1768
-Cc: kvm@vger.kernel.org, cohuck@redhat.com, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, alex.williamson@redhat.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [RFC PATCHES 1/2] iommu: Add RCU-protected page free support
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20220609070811.902868-1-baolu.lu@linux.intel.com>
+ <20220609124934.GZ1343366@nvidia.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220609124934.GZ1343366@nvidia.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+ Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
+ Joao Martins <joao.m.martins@oracle.com>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -142,61 +86,35 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jun 08, 2022 at 03:25:49PM +0100, Robin Murphy wrote:
-> Since IOMMU groups are mandatory for drivers to support, it stands to
-> reason that any device which has been successfully be added to a group
-> must be on a bus supported by that IOMMU driver, and therefore a domain
-> viable for any device in the group must be viable for all devices in
-> the group. This already has to be the case for the IOMMU API's internal
-> default domain, for instance. Thus even if the group contains devices
-> on different buses, that can only mean that the IOMMU driver actually
-> supports such an odd topology, and so without loss of generality we can
-> expect the bus type of any arbitrary device in a group to be suitable
-> for IOMMU API calls.
-> 
-> Replace vfio_bus_type() with a trivial callback that simply returns any
-> device from which to then derive a usable bus type. This is also a step
-> towards removing the vague bus-based interfaces from the IOMMU API.
-> 
-> Furthermore, scrutiny reveals a lack of protection for the bus and/or
-> device being removed while .attach_group is inspecting them; the
-> reference we hold on the iommu_group ensures that data remains valid,
-> but does not prevent the group's membership changing underfoot. Holding
-> the vfio_goup's device_lock should be sufficient to block any relevant
-> device's VFIO driver from unregistering, and thus block unbinding and
-> any further stages of removal for the duration of the attach operation.
+On 2022/6/9 20:49, Jason Gunthorpe wrote:
+>> +void iommu_free_pgtbl_pages(struct iommu_domain *domain,
+>> +			    struct list_head *pages)
+>> +{
+>> +	struct page *page, *next;
+>> +
+>> +	if (!domain->concurrent_traversal) {
+>> +		put_pages_list(pages);
+>> +		return;
+>> +	}
+>> +
+>> +	list_for_each_entry_safe(page, next, pages, lru) {
+>> +		list_del(&page->lru);
+>> +		call_rcu(&page->rcu_head, pgtble_page_free_rcu);
+>> +	}
+> It seems OK, but I wonder if there is benifit to using
+> put_pages_list() from the rcu callback
 
-The device_lock only protects devices that are on the device_list from
-concurrent unregistration, the device returned by
-iommu_group_for_each_dev() is not guarented to be the on the device
-list.
+The price is that we need to allocate a "struct list_head" and free it
+in the rcu callback as well. Currently the list_head is sitting in the
+stack.
 
-> @@ -760,8 +760,11 @@ static int __vfio_container_attach_groups(struct vfio_container *container,
->  	int ret = -ENODEV;
->  
->  	list_for_each_entry(group, &container->group_list, container_next) {
-> +		/* Prevent devices unregistering during attach */
-> +		mutex_lock(&group->device_lock);
->  		ret = driver->ops->attach_group(data, group->iommu_group,
->  						group->type);
-> +		mutex_unlock(&group->device_lock);
-
-I still prefer the version where we pass in an arbitrary vfio_device
-from the list the group maintains:
-
-   list_first_entry(group->device_list)
-
-And don't call iommu_group_for_each_dev(), it is much simpler to
-reason about how it works.
-
-Jason
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
