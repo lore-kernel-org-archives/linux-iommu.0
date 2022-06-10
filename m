@@ -4,80 +4,86 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4EBDFC43334
-	for <iommu@archiver.kernel.org>; Fri, 10 Jun 2022 07:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 22228C43334
+	for <iommu@archiver.kernel.org>; Fri, 10 Jun 2022 08:08:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id CE86A4017A;
-	Fri, 10 Jun 2022 07:16:29 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id A60F240CDB;
+	Fri, 10 Jun 2022 08:08:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VR524XdbgkEV; Fri, 10 Jun 2022 07:16:28 +0000 (UTC)
+	with ESMTP id wze5kuoZQTgG; Fri, 10 Jun 2022 08:08:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 2D0C740C6E;
-	Fri, 10 Jun 2022 07:16:28 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 525DC404A0;
+	Fri, 10 Jun 2022 08:08:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 04471C0039;
-	Fri, 10 Jun 2022 07:16:28 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D5316C002D
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 07:16:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F8ECC002D;
+	Fri, 10 Jun 2022 08:08:21 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2196FC002D
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 08:08:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id AF7B5611C3
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 07:16:26 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0395B40309
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 08:08:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RZOzqD7RO1tW for <iommu@lists.linux-foundation.org>;
- Fri, 10 Jun 2022 07:16:25 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A06DE611BC
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 07:16:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1654845385; x=1686381385;
- h=message-id:date:mime-version:cc:subject:to:references:
- from:in-reply-to:content-transfer-encoding;
- bh=y9gOk8nKuLvO9MuJM128hE/YVKafAr7qvgjxLQMoq2E=;
- b=nFahWmGSDZHI0GbDka2UqcKJmRvpla0ZdSJ8bsftyecNJ72jma0LmIb0
- 92IBRBAsW248PBB1Yiktq1TL2Z4YL0ReZsIFB4lJaiMLSW64izl0lE9d4
- WrAq1swaa/qCf5GVAn/bhLB61Gb9BMpPPc2TB5YAvMzOfumuKIfZXcoEZ
- seoAUstbx0GYpXjMB2I2dVuuo9LwUxZ5QXqtr67tCc7BT6uf3j3fFWlZ8
- ls9zGyj1YadWzGWPR2dDY5EnAUYgHgiYef4gKrpPya9jA/0SrRGMnWcX0
- 3LoB0dBRjqI+U32UAb1wTQVXuuQA1Zw/ZrdAnilXAgEH89Eq8NOpaKNzI w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="266311840"
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; d="scan'208";a="266311840"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 10 Jun 2022 00:16:24 -0700
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; d="scan'208";a="637988807"
-Received: from chengxu1-mobl2.ccr.corp.intel.com (HELO [10.249.169.148])
- ([10.249.169.148])
- by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 10 Jun 2022 00:16:20 -0700
-Message-ID: <a78c5bd0-a9f2-2a6d-3099-8d03c123fa93@linux.intel.com>
-Date: Fri, 10 Jun 2022 15:16:18 +0800
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=baikalelectronics.ru
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id GLBozzHBseBf for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Jun 2022 08:08:15 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.baikalelectronics.com (mail.baikalelectronics.com
+ [87.245.175.230])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2B47A410B4
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jun 2022 08:08:13 +0000 (UTC)
+Received: from mail (mail.baikal.int [192.168.51.25])
+ by mail.baikalelectronics.com (Postfix) with ESMTP id 9473516A0;
+ Fri, 10 Jun 2022 11:08:57 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 9473516A0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=baikalelectronics.ru; s=mail; t=1654848540;
+ bh=P0epdiQ2UfkKeER5KtOFqFsZ8/0xaqJ7ab4vUUQPTCw=;
+ h=From:To:CC:Subject:Date:From;
+ b=FES/RpZBcFEtKNYzfj2ZM1TKH3v4j1D1srCu1QFX0yo+vxrndl74dC/lOEO0AROoD
+ E9WiAns/InODAMwuQ3yGDm0SYSUjNGDlAku4e4gJHtto+ZKLwtUZuRhTH6qiwi2G8o
+ Wx1WzoKWULlo6KhIEebDed0WI8cU+7OfayCvYSmE=
+Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 10 Jun 2022 11:08:05 +0300
+To: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Vladimir
+ Murzin <vladimir.murzin@arm.com>
+Subject: [PATCH] dma-direct: take dma-ranges/offsets into account in resource
+ mapping
+Date: Fri, 10 Jun 2022 11:08:02 +0300
+Message-ID: <20220610080802.11147-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v8 04/11] iommu: Add sva iommu_domain support
-Content-Language: en-US
-To: "Raj, Ashok" <ashok.raj@intel.com>
-References: <20220607014942.3954894-1-baolu.lu@linux.intel.com>
- <20220607014942.3954894-5-baolu.lu@linux.intel.com>
- <20220609202540.GD33363@araj-dh-work>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220609202540.GD33363@araj-dh-work>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, Christoph Hellwig <hch@infradead.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Vinod Koul <vkoul@kernel.org>, Jacob jun Pan <jacob.jun.pan@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Will Deacon <will@kernel.org>
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Cc: Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
+ Geert Uytterhoeven <geert+renesas@glider.be>, David Airlie <airlied@linux.ie>,
+ Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+ Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+ Linu Cherian <lcherian@marvell.com>, linux-renesas-soc@vger.kernel.org,
+ Dave Jiang <dave.jiang@intel.com>,
+ Gregory Clement <gregory.clement@bootlin.com>,
+ Magnus Damm <magnus.damm@gmail.com>, Srujana Challa <schalla@marvell.com>,
+ Geetha sowjanya <gakula@marvell.com>, Andy Gross <agross@kernel.org>,
+ Sunil Goutham <sgoutham@marvell.com>,
+ Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+ Arnd Bergmann <arnd@arndb.de>, Manivannan Sadhasivam <mani@kernel.org>,
+ linux-arm-msm@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
+ Arnaud Ebalard <arno@natisbad.org>,
+ Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+ dmaengine@vger.kernel.org, ntb@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, Boris Brezillon <bbrezillon@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Oded Gabbay <ogabbay@kernel.org>, "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+ iommu@lists.linux-foundation.org, Serge Semin <fancer.lancer@gmail.com>,
+ Li Yang <leoyang.li@nxp.com>, Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+ Vinod Koul <vkoul@kernel.org>, linux-crypto@vger.kernel.org,
+ Alex Deucher <alexander.deucher@amd.com>, Shawn Guo <shawnguo@kernel.org>,
+ =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+ Gerd Hoffmann <kraxel@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,335 +96,93 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+From: Serge Semin via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/6/10 04:25, Raj, Ashok wrote:
-> Hi Baolu
-
-Hi Ashok,
-
-> 
-> some minor nits.
-
-Thanks for your comments.
-
-> 
-> On Tue, Jun 07, 2022 at 09:49:35AM +0800, Lu Baolu wrote:
->> The sva iommu_domain represents a hardware pagetable that the IOMMU
->> hardware could use for SVA translation. This adds some infrastructure
->> to support SVA domain in the iommu common layer. It includes:
->>
->> - Extend the iommu_domain to support a new IOMMU_DOMAIN_SVA domain
->>    type. The IOMMU drivers that support SVA should provide the sva
->>    domain specific iommu_domain_ops.
->> - Add a helper to allocate an SVA domain. The iommu_domain_free()
->>    is still used to free an SVA domain.
->> - Add helpers to attach an SVA domain to a device and the reverse
->>    operation.
->>
->> Some buses, like PCI, route packets without considering the PASID value.
->> Thus a DMA target address with PASID might be treated as P2P if the
->> address falls into the MMIO BAR of other devices in the group. To make
->> things simple, the attach/detach interfaces only apply to devices
->> belonging to the singleton groups, and the singleton is immutable in
->> fabric i.e. not affected by hotplug.
->>
->> The iommu_attach/detach_device_pasid() can be used for other purposes,
->> such as kernel DMA with pasid, mediation device, etc.
->>
->> Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
->> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
->> ---
->>   include/linux/iommu.h | 45 ++++++++++++++++++++-
->>   drivers/iommu/iommu.c | 93 +++++++++++++++++++++++++++++++++++++++++++
->>   2 files changed, 136 insertions(+), 2 deletions(-)
->>
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index 3fbad42c0bf8..9173c5741447 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -64,6 +64,9 @@ struct iommu_domain_geometry {
->>   #define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
->>   #define __IOMMU_DOMAIN_DMA_FQ	(1U << 3)  /* DMA-API uses flush queue    */
->>   
->> +#define __IOMMU_DOMAIN_SHARED	(1U << 4)  /* Page table shared from CPU  */
-> 
-> s/from CPU/with CPU
-
-Sure.
-
-> 
->> +#define __IOMMU_DOMAIN_HOST_VA	(1U << 5)  /* Host CPU virtual address */
-> 
-> Do you mean general CPU VA? or Host CPU VA, I'm reading the latter as 2nd
-> stage?
-
-Host CPU VA. In the near future, we will add another flag _GUEST_VA, so
-that the shared page table types are distiguished.
-
-> 
->> +
->>   /*
->>    * This are the possible domain-types
->>    *
->> @@ -86,15 +89,24 @@ struct iommu_domain_geometry {
->>   #define IOMMU_DOMAIN_DMA_FQ	(__IOMMU_DOMAIN_PAGING |	\
->>   				 __IOMMU_DOMAIN_DMA_API |	\
->>   				 __IOMMU_DOMAIN_DMA_FQ)
->> +#define IOMMU_DOMAIN_SVA	(__IOMMU_DOMAIN_SHARED |	\
->> +				 __IOMMU_DOMAIN_HOST_VA)
-> 
-> Doesn't shared automatically mean CPU VA? Do we need another flag?
-
-Yes. Shared means CPU VA, but there're many types. Besides above two, we
-also see the shared KVM/EPT.
-
-> 
->>   
->>   struct iommu_domain {
->>   	unsigned type;
->>   	const struct iommu_domain_ops *ops;
->>   	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
->> -	iommu_fault_handler_t handler;
->> -	void *handler_token;
->>   	struct iommu_domain_geometry geometry;
->>   	struct iommu_dma_cookie *iova_cookie;
->> +	union {
->> +		struct {	/* IOMMU_DOMAIN_DMA */
->> +			iommu_fault_handler_t handler;
->> +			void *handler_token;
->> +		};
->> +		struct {	/* IOMMU_DOMAIN_SVA */
->> +			struct mm_struct *mm;
->> +		};
->> +	};
->>   };
->>   
->>   static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
->> @@ -262,6 +274,8 @@ struct iommu_ops {
->>    * struct iommu_domain_ops - domain specific operations
->>    * @attach_dev: attach an iommu domain to a device
->>    * @detach_dev: detach an iommu domain from a device
->> + * @set_dev_pasid: set an iommu domain to a pasid of device
->> + * @block_dev_pasid: block pasid of device from using iommu domain
->>    * @map: map a physically contiguous memory region to an iommu domain
->>    * @map_pages: map a physically contiguous set of pages of the same size to
->>    *             an iommu domain.
->> @@ -282,6 +296,10 @@ struct iommu_ops {
->>   struct iommu_domain_ops {
->>   	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
->>   	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
->> +	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
->> +			     ioasid_t pasid);
->> +	void (*block_dev_pasid)(struct iommu_domain *domain, struct device *dev,
->> +				ioasid_t pasid);
->>   
->>   	int (*map)(struct iommu_domain *domain, unsigned long iova,
->>   		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
->> @@ -679,6 +697,12 @@ int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner);
->>   void iommu_group_release_dma_owner(struct iommu_group *group);
->>   bool iommu_group_dma_owner_claimed(struct iommu_group *group);
->>   
->> +struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
->> +					    struct mm_struct *mm);
->> +int iommu_attach_device_pasid(struct iommu_domain *domain, struct device *dev,
->> +			      ioasid_t pasid);
->> +void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
->> +			       ioasid_t pasid);
->>   #else /* CONFIG_IOMMU_API */
->>   
->>   struct iommu_ops {};
->> @@ -1052,6 +1076,23 @@ static inline bool iommu_group_dma_owner_claimed(struct iommu_group *group)
->>   {
->>   	return false;
->>   }
->> +
->> +static inline struct iommu_domain *
->> +iommu_sva_domain_alloc(struct device *dev, struct mm_struct *mm)
->> +{
->> +	return NULL;
->> +}
->> +
->> +static inline int iommu_attach_device_pasid(struct iommu_domain *domain,
->> +					    struct device *dev, ioasid_t pasid)
->> +{
->> +	return -ENODEV;
->> +}
->> +
->> +static inline void iommu_detach_device_pasid(struct iommu_domain *domain,
->> +					     struct device *dev, ioasid_t pasid)
->> +{
->> +}
->>   #endif /* CONFIG_IOMMU_API */
->>   
->>   /**
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index d1ec855b1f72..e92391dcce33 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -27,6 +27,7 @@
->>   #include <linux/module.h>
->>   #include <linux/cc_platform.h>
->>   #include <trace/events/iommu.h>
->> +#include <linux/sched/mm.h>
->>   
->>   static struct kset *iommu_group_kset;
->>   static DEFINE_IDA(iommu_group_ida);
->> @@ -39,6 +40,7 @@ struct iommu_group {
->>   	struct kobject kobj;
->>   	struct kobject *devices_kobj;
->>   	struct list_head devices;
->> +	struct xarray pasid_array;
->>   	struct mutex mutex;
->>   	void *iommu_data;
->>   	void (*iommu_data_release)(void *iommu_data);
->> @@ -666,6 +668,7 @@ struct iommu_group *iommu_group_alloc(void)
->>   	mutex_init(&group->mutex);
->>   	INIT_LIST_HEAD(&group->devices);
->>   	INIT_LIST_HEAD(&group->entry);
->> +	xa_init(&group->pasid_array);
->>   
->>   	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
->>   	if (ret < 0) {
->> @@ -1961,6 +1964,8 @@ EXPORT_SYMBOL_GPL(iommu_domain_alloc);
->>   
->>   void iommu_domain_free(struct iommu_domain *domain)
->>   {
->> +	if (domain->type == IOMMU_DOMAIN_SVA)
->> +		mmdrop(domain->mm);
->>   	iommu_put_dma_cookie(domain);
->>   	domain->ops->free(domain);
->>   }
->> @@ -3277,3 +3282,91 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
->>   	return user;
->>   }
->>   EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
->> +
->> +struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
->> +					    struct mm_struct *mm)
->> +{
->> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
->> +	struct iommu_domain *domain;
->> +
->> +	domain = ops->domain_alloc(IOMMU_DOMAIN_SVA);
->> +	if (!domain)
->> +		return NULL;
->> +
->> +	domain->type = IOMMU_DOMAIN_SVA;
->> +	mmgrab(mm);
->> +	domain->mm = mm;
->> +
->> +	return domain;
->> +}
->> +
->> +static bool iommu_group_immutable_singleton(struct iommu_group *group,
->> +					    struct device *dev)
->> +{
->> +	int count;
->> +
->> +	mutex_lock(&group->mutex);
->> +	count = iommu_group_device_count(group);
->> +	mutex_unlock(&group->mutex);
->> +
->> +	if (count != 1)
->> +		return false;
->> +
->> +	/*
->> +	 * The PCI device could be considered to be fully isolated if all
->> +	 * devices on the path from the device to the host-PCI bridge are
->> +	 * protected from peer-to-peer DMA by ACS.
->> +	 */
->> +	if (dev_is_pci(dev))
->> +		return pci_acs_path_enabled(to_pci_dev(dev), NULL,
->> +					    REQ_ACS_FLAGS);
-> 
-> Does this comprehend RCiEP devices? Since they are optional even if ACS is
-> lacking.
-
-Yes. It's already been covered by pci_acs_enabled().
-
-/**
-  * pci_acs_enabled - test ACS against required flags for a given device
-  * @pdev: device to test
-  * @acs_flags: required PCI ACS flags
-  *
-  * Return true if the device supports the provided flags.  Automatically
-  * filters out flags that are not implemented on multifunction devices.
-  *
-  * Note that this interface checks the effective ACS capabilities of the
-  * device rather than the actual capabilities.  For instance, most single
-  * function endpoints are not required to support ACS because they have no
-  * opportunity for peer-to-peer access.  We therefore return 'true'
-  * regardless of whether the device exposes an ACS capability.  This makes
-  * it much easier for callers of this function to ignore the actual type
-  * or topology of the device when testing ACS support.
-  */
-bool pci_acs_enabled(struct pci_dev *pdev, u16 acs_flags)
-
-
-> 
->> +
->> +	/*
->> +	 * Otherwise, the device came from DT/ACPI, assume it is static and
->> +	 * then singleton can know from the device count in the group.
->> +	 */
->> +	return true;
->> +}
->> +
->> +int iommu_attach_device_pasid(struct iommu_domain *domain, struct device *dev,
->> +			      ioasid_t pasid)
->> +{
->> +	struct iommu_group *group;
->> +	int ret = -EBUSY;
->> +	void *curr;
->> +
->> +	if (!domain->ops->set_dev_pasid)
->> +		return -EOPNOTSUPP;
->> +
->> +	group = iommu_group_get(dev);
->> +	if (!group || !iommu_group_immutable_singleton(group, dev)) {
->> +		iommu_group_put(group);
->> +		return -EINVAL;
->> +	}
->> +
->> +	mutex_lock(&group->mutex);
->> +	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
->> +	if (curr)
->> +		goto out_unlock;
->> +	ret = domain->ops->set_dev_pasid(domain, dev, pasid);
->> +	if (ret)
->> +		xa_erase(&group->pasid_array, pasid);
->> +out_unlock:
->> +	mutex_unlock(&group->mutex);
->> +	iommu_group_put(group);
->> +
->> +	return ret;
->> +}
->> +
->> +void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
->> +			       ioasid_t pasid)
->> +{
->> +	struct iommu_group *group = iommu_group_get(dev);
->> +
->> +	mutex_lock(&group->mutex);
->> +	domain->ops->block_dev_pasid(domain, dev, pasid);
->> +	xa_erase(&group->pasid_array, pasid);
->> +	mutex_unlock(&group->mutex);
->> +
->> +	iommu_group_put(group);
->> +}
->> -- 
->> 2.25.1
->>
-
-Best regards,
-baolu
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+QSBiYXNpYyBkZXZpY2Utc3BlY2lmaWMgbGluZWFyIG1lbW9yeSBtYXBwaW5nIHdhcyBpbnRyb2R1
+Y2VkIGJhY2sgaW4KY29tbWl0ICgiZG1hOiBUYWtlIGludG8gYWNjb3VudCBkbWFfcGZuX29mZnNl
+dCIpIGFzIGEgc2luZ2xlLXZhbHVlZCBvZmZzZXQKcHJlc2VydmVkIGluIHRoZSBkZXZpY2UuZG1h
+X3Bmbl9vZmZzZXQgZmllbGQsIHdoaWNoIHdhcyBpbml0aWFsaXplZCBmb3IKaW5zdGFuY2UgYnkg
+bWVhbnMgb2YgdGhlICJkbWEtcmFuZ2VzIiBEVCBwcm9wZXJ0eS4gQWZ0ZXJ3YXJkcyB0aGUKZnVu
+Y3Rpb25hbGl0eSB3YXMgZXh0ZW5kZWQgdG8gc3VwcG9ydCBtb3JlIHRoYW4gb25lIGRldmljZS1z
+cGVjaWZpYyByZWdpb24KZGVmaW5lZCBpbiB0aGUgZGV2aWNlLmRtYV9yYW5nZV9tYXAgbGlzdCBv
+ZiBtYXBzLiBCdXQgYWxsIG9mIHRoZXNlCmltcHJvdmVtZW50cyBjb25jZXJuZWQgYSBzaW5nbGUg
+cG9pbnRlciwgcGFnZSBvciBzZyBETUEtbWFwcGluZyBtZXRob2RzLAp3aGlsZSB0aGUgc3lzdGVt
+IHJlc291cmNlIG1hcHBpbmcgZnVuY3Rpb24gdHVybmVkIHRvIG1pc3MgdGhlCmNvcnJlc3BvbmRp
+bmcgbW9kaWZpY2F0aW9uLiBUaHVzIHRoZSBkbWFfZGlyZWN0X21hcF9yZXNvdXJjZSgpIG1ldGhv
+ZCBub3cKanVzdCBjYXN0cyB0aGUgQ1BVIHBoeXNpY2FsIGFkZHJlc3MgdG8gdGhlIGRldmljZSBE
+TUEgYWRkcmVzcyB3aXRoIG5vCmRtYS1yYW5nZXMtYmFzZWQgbWFwcGluZyB0YWtpbmcgaW50byBh
+Y2NvdW50LCB3aGljaCBpcyBvYnZpb3VzbHkgd3JvbmcuCkxldCdzIGZpeCBpdCBieSB1c2luZyB0
+aGUgcGh5c190b19kbWFfZGlyZWN0KCkgbWV0aG9kIHRvIGdldCB0aGUKZGV2aWNlLXNwZWNpZmlj
+IGJ1cyBhZGRyZXNzIGZyb20gdGhlIHBhc3NlZCBtZW1vcnkgcmVzb3VyY2UgZm9yIHRoZSBjYXNl
+Cm9mIHRoZSBkaXJlY3RseSBtYXBwZWQgRE1BLgoKRml4ZXM6IDI1ZjFlMTg4NzA4OCAoImRtYTog
+VGFrZSBpbnRvIGFjY291bnQgZG1hX3Bmbl9vZmZzZXQiKQpTaWduZWQtb2ZmLWJ5OiBTZXJnZSBT
+ZW1pbiA8U2VyZ2V5LlNlbWluQGJhaWthbGVsZWN0cm9uaWNzLnJ1PgoKLS0tCgpBZnRlciBhIGxv
+bmcgZGlzY3Vzc2lvbiB3aXRoIENocmlzdG9waCBhbmQgUm9iaW4gcmVnYXJkaW5nIHRoaXMgcGF0
+Y2gKaGVyZToKaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGttbC8yMDIyMDMyNDAxNDgzNi4xOTE0
+OS00LVNlcmdleS5TZW1pbkBiYWlrYWxlbGVjdHJvbmljcy5ydQphbmQgaGVyZQpodHRwczovL2xv
+cmUua2VybmVsLm9yZy9saW51eC1wY2kvMjAyMjA1MDMyMjUxMDQuMTIxMDgtMi1TZXJnZXkuU2Vt
+aW5AYmFpa2FsZWxlY3Ryb25pY3MucnUvCkl0IHdhcyBkZWNpZGVkIHRvIGNvbnN1bHQgd2l0aCB3
+aWRlciBtYWludGFpbmVycyBhdWRpZW5jZSB3aGV0aGVyIGl0J3Mgb2sKdG8gYWNjZXB0IHRoZSBj
+aGFuZ2UgYXMgaXMgb3IgYSBtb3JlIHNvcGhpc3RpY2F0ZWQgc29sdXRpb24gbmVlZHMgdG8gYmUK
+Zm91bmQgZm9yIHRoZSBub24tbGluZWFyIGRpcmVjdCBNTUlPIG1hcHBpbmcuCgpDYzogQ2hyaXN0
+b3BoIEhlbGx3aWcgPGhjaEBsc3QuZGU+CkNjOiBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBh
+cm0uY29tPgpDYzogTWFuaXZhbm5hbiBTYWRoYXNpdmFtIDxtYW5pdmFubmFuLnNhZGhhc2l2YW1A
+bGluYXJvLm9yZz4KCmZpbGU6IGFyY2gvYXJtL21hY2gtb3Jpb241eC9ib2FyZC1kdC5jCkNjOiBB
+bmRyZXcgTHVubiA8YW5kcmV3QGx1bm4uY2g+CkNjOiBTZWJhc3RpYW4gSGVzc2VsYmFydGggPHNl
+YmFzdGlhbi5oZXNzZWxiYXJ0aEBnbWFpbC5jb20+CkNjOiBHcmVnb3J5IENsZW1lbnQgPGdyZWdv
+cnkuY2xlbWVudEBib290bGluLmNvbT4KQ2M6IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFk
+ZWFkLm9yZwoKZmlsZTogZHJpdmVycy9jcnlwdG8vbWFydmVsbC9jZXNhL2Nlc2EuYwpDYzogU3J1
+amFuYSBDaGFsbGEgPHNjaGFsbGFAbWFydmVsbC5jb20+CkNjOiBBcm5hdWQgRWJhbGFyZCA8YXJu
+b0BuYXRpc2JhZC5vcmc+CkNjOiBCb3JpcyBCcmV6aWxsb24gPGJicmV6aWxsb25Aa2VybmVsLm9y
+Zz4KQ2M6IGxpbnV4LWNyeXB0b0B2Z2VyLmtlcm5lbC5vcmcKCmZpbGU6IGRyaXZlcnMvZG1hL3tm
+c2wtZWRtYS1jb21tb24uYyxwbDMzMC5jLHNoL3JjYXItZG1hYy5jfQpDYzogVmlub2QgS291bCA8
+dmtvdWxAa2VybmVsLm9yZz4KQ2M6IGRtYWVuZ2luZUB2Z2VyLmtlcm5lbC5vcmcKCmZpbGU6IGFy
+Y2gvYXJtL2Jvb3QvZHRzL3t2Znh4eC5kdHNpLGxzMTAyMWEuZHRzaSxpbXg3dWxwLmR0c2ksZnNs
+LWxzMTA0M2EuZHRzaX0KQ2M6IFNoYXduIEd1byA8c2hhd25ndW9Aa2VybmVsLm9yZz4KQ2M6IFNh
+c2NoYSBIYXVlciA8cy5oYXVlckBwZW5ndXRyb25peC5kZT4KQ2M6IExpIFlhbmcgPGxlb3lhbmcu
+bGlAbnhwLmNvbT4KQ2M6IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwoKZmls
+ZTogYXJjaC9hcm0vYm9vdC9kdHMvcjhhNzcqLmR0c2ksIGFyY2gvYXJtNjQvYm9vdC9kdHMvcmVu
+ZXNhcy9yOGE3NyouZHRzaQpDYzogR2VlcnQgVXl0dGVyaG9ldmVuIDxnZWVydCtyZW5lc2FzQGds
+aWRlci5iZT4KQ2M6IE1hZ251cyBEYW1tIDxtYWdudXMuZGFtbUBnbWFpbC5jb20+CkNjOiBsaW51
+eC1yZW5lc2FzLXNvY0B2Z2VyLmtlcm5lbC5vcmcKCmZpbGU6IGRyaXZlcnMvZ3B1L2RybS9hbWQv
+YW1kZ3B1L2FtZGdwdV92cmFtX21nci5jCkNjOiBBbGV4IERldWNoZXIgPGFsZXhhbmRlci5kZXVj
+aGVyQGFtZC5jb20+CkNjOiAiQ2hyaXN0aWFuIEvDtm5pZyIgPGNocmlzdGlhbi5rb2VuaWdAYW1k
+LmNvbT4KQ2M6ICJQYW4sIFhpbmh1aSIgPFhpbmh1aS5QYW5AYW1kLmNvbT4KCmZpbGU6IGRyaXZl
+cnMvZ3B1L2RybS92aXJ0aW8vdmlydGdwdV92cmFtLmMKQ2M6IERhdmlkIEFpcmxpZSA8YWlybGll
+ZEBsaW51eC5pZT4KQ2M6IEdlcmQgSG9mZm1hbm4gPGtyYXhlbEByZWRoYXQuY29tPgoKZmlsZTog
+ZHJpdmVycy9tZWRpYS9jb21tb24vdmlkZW9idWYyL3ZpZGVvYnVmMi1kbWEtY29udGlnLmMKQ2M6
+IFRvbWFzeiBGaWdhIDx0ZmlnYUBjaHJvbWl1bS5vcmc+CkNjOiBNYXJlayBTenlwcm93c2tpIDxt
+LnN6eXByb3dza2lAc2Ftc3VuZy5jb20+CgpmaWxlOiBkcml2ZXJzL21pc2MvaGFiYW5hbGFicy9j
+b21tb24vbWVtb3J5LmMKQ2M6IE9kZWQgR2FiYmF5IDxvZ2FiYmF5QGtlcm5lbC5vcmc+CkNjOiBB
+cm5kIEJlcmdtYW5uIDxhcm5kQGFybmRiLmRlPgpDYzogR3JlZyBLcm9haC1IYXJ0bWFuIDxncmVn
+a2hAbGludXhmb3VuZGF0aW9uLm9yZz4KCmZpbGU6IGRyaXZlcnMvbXRkL25hbmQvcmF3L3Fjb21f
+bmFuZGMuYwpDYzogTWFuaXZhbm5hbiBTYWRoYXNpdmFtIDxtYW5pQGtlcm5lbC5vcmc+CgpmaWxl
+OiBhcmNoL2FybTY0L2Jvb3QvZHRzL3Fjb20ve2lwcTgwNzQuZHRzaSxpcHE2MDE4LmR0c2kscWNv
+bS1zZHg1NS5kdHNpLHFjb20taXBxNDAxOS5kdHNpLHFjb20taXBxODA2NC5kdHNpfQpDYzogQW5k
+eSBHcm9zcyA8YWdyb3NzQGtlcm5lbC5vcmc+CkNjOiBCam9ybiBBbmRlcnNzb24gPGJqb3JuLmFu
+ZGVyc3NvbkBsaW5hcm8ub3JnPgpDYzogbGludXgtYXJtLW1zbUB2Z2VyLmtlcm5lbC5vcmcKCmZp
+bGU6IGRyaXZlcnMvbmV0L2V0aGVybmV0L21hcnZlbGwvb2N0ZW9udHgyL2FmL3J2dS5jCkNjOiBT
+dW5pbCBHb3V0aGFtIDxzZ291dGhhbUBtYXJ2ZWxsLmNvbT4KQ2M6IExpbnUgQ2hlcmlhbiA8bGNo
+ZXJpYW5AbWFydmVsbC5jb20+CkNjOiBHZWV0aGEgc293amFueWEgPGdha3VsYUBtYXJ2ZWxsLmNv
+bT4KCmZpbGU6IGRyaXZlcnMvbnRiL250Yl90cmFuc3BvcnQuYwpDYzogSm9uIE1hc29uIDxqZG1h
+c29uQGt1ZHp1LnVzPgpDYzogRGF2ZSBKaWFuZyA8ZGF2ZS5qaWFuZ0BpbnRlbC5jb20+CkNjOiBu
+dGJAbGlzdHMubGludXguZGV2Ci0tLQoga2VybmVsL2RtYS9kaXJlY3QuYyB8IDIgKy0KIDEgZmls
+ZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQoKZGlmZiAtLWdpdCBhL2tl
+cm5lbC9kbWEvZGlyZWN0LmMgYi9rZXJuZWwvZG1hL2RpcmVjdC5jCmluZGV4IDk3NDNjNmNjY2Ux
+YS4uYmMwNmRiNzRkZmRiIDEwMDY0NAotLS0gYS9rZXJuZWwvZG1hL2RpcmVjdC5jCisrKyBiL2tl
+cm5lbC9kbWEvZGlyZWN0LmMKQEAgLTQ5Nyw3ICs0OTcsNyBAQCBpbnQgZG1hX2RpcmVjdF9tYXBf
+c2coc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3Qgc2NhdHRlcmxpc3QgKnNnbCwgaW50IG5lbnRz
+LAogZG1hX2FkZHJfdCBkbWFfZGlyZWN0X21hcF9yZXNvdXJjZShzdHJ1Y3QgZGV2aWNlICpkZXYs
+IHBoeXNfYWRkcl90IHBhZGRyLAogCQlzaXplX3Qgc2l6ZSwgZW51bSBkbWFfZGF0YV9kaXJlY3Rp
+b24gZGlyLCB1bnNpZ25lZCBsb25nIGF0dHJzKQogewotCWRtYV9hZGRyX3QgZG1hX2FkZHIgPSBw
+YWRkcjsKKwlkbWFfYWRkcl90IGRtYV9hZGRyID0gcGh5c190b19kbWFfZGlyZWN0KGRldiwgcGFk
+ZHIpOwogCiAJaWYgKHVubGlrZWx5KCFkbWFfY2FwYWJsZShkZXYsIGRtYV9hZGRyLCBzaXplLCBm
+YWxzZSkpKSB7CiAJCWRldl9lcnJfb25jZShkZXYsCi0tIAoyLjM1LjEKCl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21t
+dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
+bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
