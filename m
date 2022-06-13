@@ -1,60 +1,80 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AFF95C43334
-	for <iommu@archiver.kernel.org>; Mon, 13 Jun 2022 09:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5583AC43334
+	for <iommu@archiver.kernel.org>; Mon, 13 Jun 2022 12:04:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 4154E60F32;
-	Mon, 13 Jun 2022 09:31:44 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id EF1138151E;
+	Mon, 13 Jun 2022 12:04:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RYS5UxcQVyzp; Mon, 13 Jun 2022 09:31:43 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id AK-d7DQ7L8uX; Mon, 13 Jun 2022 12:04:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 25D6D60A9D;
-	Mon, 13 Jun 2022 09:31:43 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id DBABD81AD7;
+	Mon, 13 Jun 2022 12:04:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E9396C0032;
-	Mon, 13 Jun 2022 09:31:42 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 26CF7C002D
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jun 2022 09:31:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B2FC2C0032;
+	Mon, 13 Jun 2022 12:04:10 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 608F4C002D
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jun 2022 12:04:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 06469409EC
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jun 2022 09:31:41 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 504CC8151E
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jun 2022 12:04:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ayf5naHO84Ng for <iommu@lists.linux-foundation.org>;
- Mon, 13 Jun 2022 09:31:40 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id BCW7J8msEeQ2 for <iommu@lists.linux-foundation.org>;
+ Mon, 13 Jun 2022 12:04:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 11D474048A
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jun 2022 09:31:39 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3629CD6E;
- Mon, 13 Jun 2022 02:31:39 -0700 (PDT)
-Received: from [10.57.82.209] (unknown [10.57.82.209])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 219903F66F;
- Mon, 13 Jun 2022 02:31:37 -0700 (PDT)
-Message-ID: <371cacea-368b-d722-8360-13c229b3112b@arm.com>
-Date: Mon, 13 Jun 2022 10:31:33 +0100
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 883308149C
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jun 2022 12:04:04 +0000 (UTC)
+X-UUID: 7463ad46ea3f4f5ea78982a347fa1f4f-20220613
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6, REQID:049ffec7-9613-4c0e-89a5-e7576225fc14, OB:0,
+ LO
+ B:0,IP:0,URL:5,TC:0,Content:10,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+ ION:release,TS:15
+X-CID-META: VersionHash:b14ad71, CLOUDID:0fa58c37-84c0-4f9a-9fbd-acd4a0e9ad0f,
+ C
+ OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:3,EDM:-3,IP:nil,URL:1,File:nil
+ ,QS:nil,BEC:nil,COL:0
+X-UUID: 7463ad46ea3f4f5ea78982a347fa1f4f-20220613
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
+ mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 87006132; Mon, 13 Jun 2022 20:03:57 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Mon, 13 Jun 2022 20:03:56 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Mon, 13 Jun 2022 20:03:55 +0800
+Message-ID: <e15deedee3a412e8496be1867725f7e62e396551.camel@mediatek.com>
+Subject: Re: [PATCH v8 2/3] iommu/mediatek: Rename MTK_IOMMU_TLB_ADDR to
+ MTK_IOMMU_ADDR
+To: <yf.wang@mediatek.com>
+Date: Mon, 13 Jun 2022 20:03:55 +0800
+In-Reply-To: <20220611102656.10954-3-yf.wang@mediatek.com>
+References: <20220611102656.10954-1-yf.wang@mediatek.com>
+ <20220611102656.10954-3-yf.wang@mediatek.com>
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 5/7] iommu: Add domain_type_supported() callback in
- iommu_ops
-Content-Language: en-GB
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- iommu@lists.linux-foundation.org
-References: <20220613012502.109918-1-suravee.suthikulpanit@amd.com>
- <20220613012502.109918-6-suravee.suthikulpanit@amd.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220613012502.109918-6-suravee.suthikulpanit@amd.com>
-Cc: ashish.kalra@amd.com, vasant.hegde@amd.com
+X-MTK: N
+Cc: Miles Chen <miles.chen@mediatek.com>, wsd_upstream@mediatek.com,
+ open list <linux-kernel@vger.kernel.org>, Libo Kang <Libo.Kang@mediatek.com>,
+ "open list:MEDIATEK IOMMU DRIVER" <iommu@lists.linux-foundation.org>,
+ "moderated list:MEDIATEK IOMMU DRIVER" <linux-mediatek@lists.infradead.org>,
+ Ning Li <ning.li@mediatek.com>, Matthias
+ Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>,
+ "moderated list:ARM/Mediatek SoC
+ support" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -67,99 +87,72 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Yong Wu <yong.wu@mediatek.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-06-13 02:25, Suravee Suthikulpanit wrote:
-> When user requests to change IOMMU domain to a new type, IOMMU generic
-> layer checks the requested type against the default domain type returned
-> by vendor-specific IOMMU driver.
+On Sat, 2022-06-11 at 18:26 +0800, yf.wang@mediatek.com wrote:
+> From: Yunfei Wang <yf.wang@mediatek.com>
 > 
-> However, there is only one default domain type, and current mechanism
-> does not allow if the requested type does not match the default type.
+> Rename MTK_IOMMU_TLB_ADDR to MTK_IOMMU_ADDR, and update
+> MTK_IOMMU_ADDR
+> definition for better generality.
 
-I don't really follow the reasoning here. If a driver's def_domain_type 
-callback returns a specific type, it's saying that the device *has* to 
-have that specific domain type for driver/platform-specific reasons. If 
-that's not the case, then the driver shouldn't say so in the first place.
+Comment more about why you need this.
 
-> Introducing check_domain_type_supported() callback in iommu_ops,
-> which allows IOMMU generic layer to check with vendor-specific IOMMU driver
-> whether the requested type is supported. This allows user to request
-> types other than the default type.
+Prepare for supporting TTBR up to 35bit which also need this macro.
+Currently it is dma_addr_t while ttbr is phys_addr_t, thus change the
+type to "unsigned long long" for generality.
 
-Note also that you're only adding this in the sysfs path - what about 
-the "iommu.passthrough=" parameter or CONFIG_IOMMU_DEFAULT_PASSTHROUGH?
+Anyway,
 
-AFAICS there shouldn't need to be any core-level changes to support 
-this. We already have drivers which don't support passthrough at all, so 
-conditionally not supporting it should be no big deal. What should 
-happen currently is that def_domain_type returns 0 for "don't care", 
-then domain_alloc rejects IOMMU_DOMAIN_IDENTITY and and returns NULL, so 
-iommu_group_alloc_default_domain() falls back to IOMMU_DOMAIN_DMA.
+Reviewed-by: Yong Wu <yong.wu@mediatek.com>
 
-Thanks,
-Robin.
-
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> 
+> Signed-off-by: Ning Li <ning.li@mediatek.com>
+> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
 > ---
->   drivers/iommu/iommu.c | 13 ++++++++++++-
->   include/linux/iommu.h |  2 ++
->   2 files changed, 14 insertions(+), 1 deletion(-)
+>  drivers/iommu/mtk_iommu.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index f2c45b85b9fc..4afb956ce083 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1521,6 +1521,16 @@ struct iommu_group *fsl_mc_device_group(struct device *dev)
->   }
->   EXPORT_SYMBOL_GPL(fsl_mc_device_group);
->   
-> +static bool iommu_domain_type_supported(struct device *dev, int type)
-> +{
-> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
-> +
-> +	if (ops->domain_type_supported)
-> +		return ops->domain_type_supported(dev, type);
-> +
-> +	return true;
-> +}
-> +
->   static int iommu_get_def_domain_type(struct device *dev)
->   {
->   	const struct iommu_ops *ops = dev_iommu_ops(dev);
-> @@ -2937,7 +2947,8 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
->   		 * domain the device was booted with
->   		 */
->   		type = dev_def_dom ? : iommu_def_domain_type;
-> -	} else if (dev_def_dom && type != dev_def_dom) {
-> +	} else if (!iommu_domain_type_supported(dev, type) ||
-> +		   (dev_def_dom && type != dev_def_dom)) {
->   		dev_err_ratelimited(prev_dev, "Device cannot be in %s domain\n",
->   				    iommu_domain_type_str(type));
->   		ret = -EINVAL;
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index fecb72e1b11b..40c47ab15005 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -214,6 +214,7 @@ struct iommu_iotlb_gather {
->    *		- IOMMU_DOMAIN_IDENTITY: must use an identity domain
->    *		- IOMMU_DOMAIN_DMA: must use a dma domain
->    *		- 0: use the default setting
-> + * @domain_type_supported: check if the specified domain type is supported
->    * @default_domain_ops: the default ops for domains
->    * @pgsize_bitmap: bitmap of all possible supported page sizes
->    * @owner: Driver module providing these ops
-> @@ -252,6 +253,7 @@ struct iommu_ops {
->   			     struct iommu_page_response *msg);
->   
->   	int (*def_domain_type)(struct device *dev);
-> +	bool (*domain_type_supported)(struct device *dev, int type);
->   
->   	const struct iommu_domain_ops *default_domain_ops;
->   	unsigned long pgsize_bitmap;
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index bb9dd92c9898..3d62399e8865 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -265,8 +265,8 @@ static const struct iommu_ops mtk_iommu_ops;
+>  
+>  static int mtk_iommu_hw_init(const struct mtk_iommu_data *data,
+> unsigned int bankid);
+>  
+> -#define MTK_IOMMU_TLB_ADDR(iova) ({					
+> \
+> -	dma_addr_t _addr = iova;					\
+> +#define MTK_IOMMU_ADDR(addr) ({					
+> 	\
+> +	unsigned long long _addr = addr;				\
+>  	((lower_32_bits(_addr) & GENMASK(31, 12)) |
+> upper_32_bits(_addr));\
+>  })
+>  
+> @@ -381,8 +381,8 @@ static void
+> mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+>  		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+>  			       base + data->plat_data->inv_sel_reg);
+>  
+> -		writel_relaxed(MTK_IOMMU_TLB_ADDR(iova), base +
+> REG_MMU_INVLD_START_A);
+> -		writel_relaxed(MTK_IOMMU_TLB_ADDR(iova + size - 1),
+> +		writel_relaxed(MTK_IOMMU_ADDR(iova), base +
+> REG_MMU_INVLD_START_A);
+> +		writel_relaxed(MTK_IOMMU_ADDR(iova + size - 1),
+>  			       base + REG_MMU_INVLD_END_A);
+>  		writel_relaxed(F_MMU_INV_RANGE, base +
+> REG_MMU_INVALIDATE);
+>  
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
