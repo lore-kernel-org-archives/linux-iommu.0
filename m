@@ -1,88 +1,90 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9DFE5C43334
-	for <iommu@archiver.kernel.org>; Mon, 13 Jun 2022 20:38:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 28510C43334
+	for <iommu@archiver.kernel.org>; Mon, 13 Jun 2022 20:57:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 51D9B60BAB;
-	Mon, 13 Jun 2022 20:38:53 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B7F834158B;
+	Mon, 13 Jun 2022 20:57:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Ax3AVH8_uSxp; Mon, 13 Jun 2022 20:38:52 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fxebsZmEIRJg; Mon, 13 Jun 2022 20:57:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 34B1D60A94;
-	Mon, 13 Jun 2022 20:38:52 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 4A3B741579;
+	Mon, 13 Jun 2022 20:57:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1404EC0032;
-	Mon, 13 Jun 2022 20:38:52 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A2595C002D
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jun 2022 20:38:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 153F8C0032;
+	Mon, 13 Jun 2022 20:57:42 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 716F8C002D
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jun 2022 20:57:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 7CA9760BAB
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jun 2022 20:38:50 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 580B281B99
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jun 2022 20:57:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZhnkBbwzIcks for <iommu@lists.linux-foundation.org>;
- Mon, 13 Jun 2022 20:38:49 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Tn6VbtQsXFnd for <iommu@lists.linux-foundation.org>;
+ Mon, 13 Jun 2022 20:57:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A565660A94
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jun 2022 20:38:49 +0000 (UTC)
+ (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 8CD298142B
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jun 2022 20:57:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1655152728;
+ s=mimecast20190719; t=1655153857;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  in-reply-to:in-reply-to:references:references;
- bh=miyd1T3+stkgi1mrJ4phi+uWQilLr1GqB1Dxvn0GUOs=;
- b=Ix9dlVCEJI3Jpvrben0tvI/Dvll9EPYrlU1L75ddeityuBZ8YME9SaxBKjw2lDFHQIXEs5
- /sYSKEWlpRJrNaHy6ZlghvUgF4EUAws2yspOBPDqIp4MnNZvy254BOMmUj1TcJqvT0jnap
- IxWjggGgfJm3og/j3kkTU08tUejyoC4=
+ bh=DMpM3RLOLxV7DfG66nG4CpZkyo8uEbAIJok5x0MS5a8=;
+ b=T3dd5rfw5+16kkGgVdVi57oF/9Ghhsamsh1scD72h5TM6MsBgjmNSfZaEGVMSrn9yF9xDa
+ HcQAmRDahuIaTJeQWpIdDfY9gOV+Zg6cuNEypzJib2FlDRB7q8n3FMVd0b+ELFUwjXbEz0
+ oltIvqj1d6Nl7joxbuJiCgG1DIu7JM8=
 Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
  [209.85.215.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-622-o-i2xdhINySc2UEeBCC3og-1; Mon, 13 Jun 2022 16:38:45 -0400
-X-MC-Unique: o-i2xdhINySc2UEeBCC3og-1
+ us-mta-447-leGX7dKzNGyayFKt1iNYzA-1; Mon, 13 Jun 2022 16:57:36 -0400
+X-MC-Unique: leGX7dKzNGyayFKt1iNYzA-1
 Received: by mail-pg1-f198.google.com with SMTP id
- 37-20020a630a25000000b003fdcbe1ffc8so3887285pgk.11
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jun 2022 13:38:45 -0700 (PDT)
+ d125-20020a636883000000b003db5e24db27so3900267pgc.13
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jun 2022 13:57:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=miyd1T3+stkgi1mrJ4phi+uWQilLr1GqB1Dxvn0GUOs=;
- b=za9cxMgpugyikDDujbFpCPzV3VTDFvTgn70MzUIlG7zmAJqFWcUj191P/fAZr7hOUN
- QgpWcuaNZ9LDREjqTx+D4+Ox+A78As+cxMZrRUAliX4JFt36BNnLcMEu2wCe3qoS2AF3
- udFkbRaZ6aoSvHLdYcAMRB6gucGq3t5UkXH4TmxfAPpRKIQ8A17H80WoG4ZsXFVIpccf
- 78odALv+fdwFPm4zehsYHr5E8ishYzElt5uif7dMlMTzXuHz5TSR8HuKn4y9U3eON7DR
- m+dRAH7jYibxoNiBgwKgFFAkits77Stvmm6jOpbFozy1JKgydg59j38fXWALz2QyQLGY
- HIKw==
-X-Gm-Message-State: AJIora/HzaAgwQGMLRy67BsJWK7xiJlWQCAhnMy+K4/BXApWfHwNmgJu
- nc4SHhbblXn0liWRatkQY5PlyI9X6pfB0MyHdwWysleOrv/0ozm2ysuyCtd553W4WH4lgl+hxm9
- 53j4uPkSPa3f13MxKV1ffLBjRyxDNcA==
-X-Received: by 2002:a17:902:7604:b0:168:cca6:1b38 with SMTP id
- k4-20020a170902760400b00168cca61b38mr1113740pll.174.1655152724277; 
- Mon, 13 Jun 2022 13:38:44 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sXs1WFaIXkc6CwFKtbKlij7wvfOFwhTNHBGbcdQcBmY3+wFKnIyMn1hhRSLuPxBKdX7sAxag==
-X-Received: by 2002:a17:902:7604:b0:168:cca6:1b38 with SMTP id
- k4-20020a170902760400b00168cca61b38mr1113720pll.174.1655152723983; 
- Mon, 13 Jun 2022 13:38:43 -0700 (PDT)
+ bh=DMpM3RLOLxV7DfG66nG4CpZkyo8uEbAIJok5x0MS5a8=;
+ b=Lg1lXXTKu+N9EpRoJcTeXJyElx0YpPP9lr+bRZdEOVqq0QOV3krSihEw5gsOtKSQoY
+ i+tYrCUXT0Lc70Kv9R6rED/eeacHfR5f3WRImgcRR575XLHMG8TYYKpLIAg8rhkOCHp0
+ Ot1ebareDlM4f2AIEvWKH2ryyjTd9SXOK0HJE8zsxZul1cxb9DzdvoXbb9cSMaBtMhKQ
+ YXZ9etvyrh1YNkuWUU2b7BSxPl3EVsNRU2kicimIUJ80lluH3Mddnhh9ZwKqPUPy6OeK
+ Q6h5ZyCfvW5bjHMI3fBjL+z3MhAbLIBW0YERhntNS4U/BE+ut625mIQUg1teV3JzK/gU
+ AG5A==
+X-Gm-Message-State: AJIora8lJpGaECuMNTnrR1l/iY3OlOPbz7q8aaQZOMqFMuB/ei0OkztI
+ 249YrQNPy2ok0yQlz0B5Ct6lFo0xfUnPu/AHc9imDIzSe1SjpPjr/qcsHS4g90v7GrECtrjL94R
+ T+jG3/7mvkAxQF/Eao29RmXsgVqw2Aw==
+X-Received: by 2002:a17:902:eb85:b0:168:b028:573b with SMTP id
+ q5-20020a170902eb8500b00168b028573bmr1140659plg.158.1655153855686; 
+ Mon, 13 Jun 2022 13:57:35 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uxvz2BCjhipic+Mg5uJOgnZfWvk5iX8yen2Z2mULX6gqvzjjwLap/PzmGC93Z+zJ4AwPc2Pw==
+X-Received: by 2002:a17:902:eb85:b0:168:b028:573b with SMTP id
+ q5-20020a170902eb8500b00168b028573bmr1140628plg.158.1655153855376; 
+ Mon, 13 Jun 2022 13:57:35 -0700 (PDT)
 Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
  by smtp.gmail.com with ESMTPSA id
- ja2-20020a170902efc200b0015e8d4eb2c0sm5526354plb.266.2022.06.13.13.38.43
+ iz19-20020a170902ef9300b001636c0b98a7sm5545154plb.226.2022.06.13.13.57.34
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 13 Jun 2022 13:38:43 -0700 (PDT)
-Date: Mon, 13 Jun 2022 13:38:42 -0700
+ Mon, 13 Jun 2022 13:57:35 -0700 (PDT)
+Date: Mon, 13 Jun 2022 13:57:34 -0700
 From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
+To: Steve Wahl <steve.wahl@hpe.com>
 Subject: Re: [PATCH v2] iommu/vt-d: Make DMAR_UNITS_SUPPORTED a config setting
-Message-ID: <20220613203842.zyncvndwfauef2yh@cantor>
+Message-ID: <20220613205734.3x7i46bnsofzerr4@cantor>
 References: <20220505194658.246121-1-steve.wahl@hpe.com>
  <20220512151309.330068-1-steve.wahl@hpe.com>
 MIME-Version: 1.0
@@ -93,8 +95,8 @@ X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Disposition: inline
 Cc: Dimitri Sivanich <sivanich@hpe.com>, Joerg Roedel <jroedel@suse.de>,
- Russ Anderson <russ.anderson@hpe.com>, Steve Wahl <steve.wahl@hpe.com>,
- Mike Travis <mike.travis@hpe.com>, David Woodhouse <dwmw2@infradead.org>,
+ Russ Anderson <russ.anderson@hpe.com>, Mike Travis <mike.travis@hpe.com>,
+ David Woodhouse <dwmw2@infradead.org>,
  Kyung Min Park <kyung.min.park@intel.com>, linux-kernel@vger.kernel.org,
  iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -143,12 +145,46 @@ On Thu, May 12, 2022 at 10:13:09AM -0500, Steve Wahl wrote:
 >  include/linux/dmar.h        | 6 +-----
 >  2 files changed, 7 insertions(+), 5 deletions(-)
 > 
+> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+> index 247d0f2d5fdf..fdbda77ac21e 100644
+> --- a/drivers/iommu/intel/Kconfig
+> +++ b/drivers/iommu/intel/Kconfig
+> @@ -9,6 +9,12 @@ config DMAR_PERF
+>  config DMAR_DEBUG
+>  	bool
+>  
+> +config DMAR_UNITS_SUPPORTED
+> +	int "Number of DMA Remapping Units supported"
 
-Baolu do you have this queued up for v5.20? Also do you have a public repo where
-you keep the vt-d changes before sending Joerg the patches for a release?
+Also, should there be a "depends on (X86 || IA64)" here?
 
-Regards,
-Jerry
+> +	default 1024 if MAXSMP
+> +	default 128  if X86_64
+> +	default 64
+> +
+>  config INTEL_IOMMU
+>  	bool "Support for Intel IOMMU using DMA Remapping Devices"
+>  	depends on PCI_MSI && ACPI && (X86 || IA64)
+> diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+> index 45e903d84733..0c03c1845c23 100644
+> --- a/include/linux/dmar.h
+> +++ b/include/linux/dmar.h
+> @@ -18,11 +18,7 @@
+>  
+>  struct acpi_dmar_header;
+>  
+> -#ifdef	CONFIG_X86
+> -# define	DMAR_UNITS_SUPPORTED	MAX_IO_APICS
+> -#else
+> -# define	DMAR_UNITS_SUPPORTED	64
+> -#endif
+> +#define	DMAR_UNITS_SUPPORTED	CONFIG_DMAR_UNITS_SUPPORTED
+>  
+>  /* DMAR Flags */
+>  #define DMAR_INTR_REMAP		0x1
+> -- 
+> 2.26.2
+> 
 
 _______________________________________________
 iommu mailing list
