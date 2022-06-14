@@ -1,79 +1,112 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A2982C433EF
-	for <iommu@archiver.kernel.org>; Tue, 14 Jun 2022 17:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CF59AC43334
+	for <iommu@archiver.kernel.org>; Tue, 14 Jun 2022 19:01:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 5576860BF9;
-	Tue, 14 Jun 2022 17:25:12 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GnNX30mWz5DG; Tue, 14 Jun 2022 17:25:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id D48A060B02;
-	Tue, 14 Jun 2022 17:25:10 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BE897C0032;
-	Tue, 14 Jun 2022 17:25:10 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 32CF4C002D
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 17:25:09 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 1334A832D0
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 17:25:09 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 6687F823C0;
+	Tue, 14 Jun 2022 19:01:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Qkt4zQe8_Rvw for <iommu@lists.linux-foundation.org>;
- Tue, 14 Jun 2022 17:25:08 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ToCLuDTL2oCH; Tue, 14 Jun 2022 19:01:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 2A72C82695;
+	Tue, 14 Jun 2022 19:01:54 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EBD7BC0039;
+	Tue, 14 Jun 2022 19:01:53 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 34E0CC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 19:01:53 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 1CDFE410D5
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 19:01:53 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Gb_pIjX6s0eH for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Jun 2022 19:01:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 0C7DC832BF
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 17:25:07 +0000 (UTC)
-X-UUID: 81200fab18394f4f99dc2e2bd184895f-20220615
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6, REQID:cd737d7d-59ac-413f-a4c9-42d40f52fc41, OB:0,
- LO
- B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACT
- ION:release,TS:45
-X-CID-INFO: VERSION:1.1.6, REQID:cd737d7d-59ac-413f-a4c9-42d40f52fc41, OB:0,
- LOB:
- 0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,RULE:Release_Ham,ACTIO
- N:release,TS:45
-X-CID-META: VersionHash:b14ad71, CLOUDID:75169807-b57a-4a25-a071-bc7b4972bc68,
- C
- OID:9bfeafcba085,Recheck:0,SF:28|17|19|48,TC:nil,Content:-5,EDM:-3,IP:nil,
- URL:1,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 81200fab18394f4f99dc2e2bd184895f-20220615
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by
- mailgw02.mediatek.com (envelope-from <miles.chen@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 36879595; Wed, 15 Jun 2022 01:25:01 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3; 
- Wed, 15 Jun 2022 01:24:59 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Wed, 15 Jun 2022 01:24:59 +0800
-To: <yf.wang@mediatek.com>
-Subject: Re: [PATCH v8 3/3] iommu/mediatek: Allow page table PA up to 35bit
-Date: Wed, 15 Jun 2022 01:24:59 +0800
-Message-ID: <20220614172459.15875-1-miles.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220611102656.10954-4-yf.wang@mediatek.com>
-References: <20220611102656.10954-4-yf.wang@mediatek.com>
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id E7A89410CF
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 19:01:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1655233310;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=SAh+GOzRM5ZJKSrACCl7nQjWeiM90GqoVoI/fuo1lHY=;
+ b=a4w/oG3yZrhIYO/Flql3/5EeKOjKFznxdLycpIVP90ijdgy8wWQVUuwnxe3KlM9kiYHWSO
+ Qd77uy/hZ+9ES7Edhy8xBOFv96jXgf7GSvkgGcVwlC0kOqA4hbup1WfSZ0HJZ6ULkJQ/cP
+ JJjmddgX+odD34cyNsAYfHWzjuYLgVI=
+Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com
+ [209.85.210.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-482-a4SRiP_zNbCklaCG5sFkzg-1; Tue, 14 Jun 2022 15:01:49 -0400
+X-MC-Unique: a4SRiP_zNbCklaCG5sFkzg-1
+Received: by mail-pf1-f197.google.com with SMTP id
+ 206-20020a6218d7000000b0051893ee2888so4169567pfy.16
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 12:01:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=SAh+GOzRM5ZJKSrACCl7nQjWeiM90GqoVoI/fuo1lHY=;
+ b=B1ufaSepqk97kv8vmERTeDmBrZ0xw+d6bxgWgVGGaPHUQVwPIv8JBfSbrdmEWGjyS8
+ MLwhzViF+bwwZ7V3oC1QeXOIQU38V2Arx5RamrxgPyb+zlC+YsKqH4kzUzz/JycUtWCF
+ 1reE45gMwz8UttKyH4DrtoOE+l5JOYCFh3YBjcrplZGT2FCUwsxBRe4ANSNk+UeZfDWi
+ 5a7RkB27RN+mgH7yukqYY226Yw0Jd/sgmir8D1uTSvWaTbK47YOW1j82K6PJagBJ4QZZ
+ zuv7QdLO/Ya2CQ4S7mYDD+/sxslJSU8AwvYUHoXcz5T64Idn3r2WuZm2ekJGGMgYV9+p
+ BSyw==
+X-Gm-Message-State: AOAM531mQthxrW9mX0DOoyHDqIJpUXAl+P/8m1Ldi1PXCesjRyNFtniO
+ dPzVL0weG9905v7R+sn+PHtK6qNCcbNU/bTSYpXjied5x5uF2uHe6RucCmL2Ty/pZI82pIFn6c9
+ sJoEPqIy48NaBfa+mwuqP3OvkOkNT8g==
+X-Received: by 2002:a63:ff19:0:b0:403:7c60:ae96 with SMTP id
+ k25-20020a63ff19000000b004037c60ae96mr5581534pgi.466.1655233308295; 
+ Tue, 14 Jun 2022 12:01:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx0/yOlBlVpAjgAT0lLPDbPxws5cMgkxTruGHAuqHHujxe+ske9BuknPn+Zqn64BRk4zuXORQ==
+X-Received: by 2002:a63:ff19:0:b0:403:7c60:ae96 with SMTP id
+ k25-20020a63ff19000000b004037c60ae96mr5581514pgi.466.1655233308009; 
+ Tue, 14 Jun 2022 12:01:48 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+ by smtp.gmail.com with ESMTPSA id
+ y5-20020a17090a8b0500b001ead2406552sm221754pjn.46.2022.06.14.12.01.45
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 14 Jun 2022 12:01:47 -0700 (PDT)
+Date: Tue, 14 Jun 2022 12:01:45 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Steve Wahl <steve.wahl@hpe.com>
+Subject: Re: [PATCH v2] iommu/vt-d: Make DMAR_UNITS_SUPPORTED a config setting
+Message-ID: <20220614190145.dkdwjnqnd7lv6y4n@cantor>
+References: <20220505194658.246121-1-steve.wahl@hpe.com>
+ <20220512151309.330068-1-steve.wahl@hpe.com>
+ <20220613205734.3x7i46bnsofzerr4@cantor>
+ <673eb011-94f4-46b0-f1b4-24a02a269f4e@linux.intel.com>
+ <CALzcddsXciFgKOLSkXxx4Rv_rwh21qe8hkyiEET280D8orP6Vw@mail.gmail.com>
+ <9c943703-0c2f-b654-a28b-f594bf90bec9@linux.intel.com>
+ <CALzcdduU-baVF9VV-NnYD2rKn0YC5hzS_F9udExRE7guvMqXWg@mail.gmail.com>
+ <616dc81c-dfc6-d6c6-1eab-de0e9ba4411f@linux.intel.com>
+ <Yqi7L9A/ADXpIvN6@swahl-home.5wahls.com>
 MIME-Version: 1.0
-X-MTK: N
-Cc: miles.chen@mediatek.com, wsd_upstream@mediatek.com,
- linux-kernel@vger.kernel.org, Libo.Kang@mediatek.com,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- ning.li@mediatek.com, matthias.bgg@gmail.com, will@kernel.org,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <Yqi7L9A/ADXpIvN6@swahl-home.5wahls.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jsnitsel@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Disposition: inline
+Cc: Dimitri Sivanich <sivanich@hpe.com>, Joerg Roedel <jroedel@suse.de>,
+ Russ Anderson <russ.anderson@hpe.com>, Mike Travis <mike.travis@hpe.com>,
+ David Woodhouse <dwmw2@infradead.org>,
+ Kyung Min Park <kyung.min.park@intel.com>,
+ Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
+ iommu <iommu@lists.linux-foundation.org>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,91 +119,111 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Miles Chen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Miles Chen <miles.chen@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> Single memory zone feature will remove ZONE_DMA32 and ZONE_DMA. So add
-> the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT to let level 1 and level 2
-> pgtable support at most 35bit PA.
+On Tue, Jun 14, 2022 at 11:45:35AM -0500, Steve Wahl wrote:
+> On Tue, Jun 14, 2022 at 10:21:29AM +0800, Baolu Lu wrote:
+> > On 2022/6/14 09:54, Jerry Snitselaar wrote:
+> > > On Mon, Jun 13, 2022 at 6:51 PM Baolu Lu <baolu.lu@linux.intel.com> wrote:
+> > > > 
+> > > > On 2022/6/14 09:44, Jerry Snitselaar wrote:
+> > > > > On Mon, Jun 13, 2022 at 6:36 PM Baolu Lu<baolu.lu@linux.intel.com>  wrote:
+> > > > > > On 2022/6/14 04:57, Jerry Snitselaar wrote:
+> > > > > > > On Thu, May 12, 2022 at 10:13:09AM -0500, Steve Wahl wrote:
+> > > > > > > > To support up to 64 sockets with 10 DMAR units each (640), make the
+> > > > > > > > value of DMAR_UNITS_SUPPORTED adjustable by a config variable,
+> > > > > > > > CONFIG_DMAR_UNITS_SUPPORTED, and make it's default 1024 when MAXSMP is
+> > > > > > > > set.
+> > > > > > > > 
+> > > > > > > > If the available hardware exceeds DMAR_UNITS_SUPPORTED (previously set
+> > > > > > > > to MAX_IO_APICS, or 128), it causes these messages: "DMAR: Failed to
+> > > > > > > > allocate seq_id", "DMAR: Parse DMAR table failure.", and "x2apic: IRQ
+> > > > > > > > remapping doesn't support X2APIC mode x2apic disabled"; and the system
+> > > > > > > > fails to boot properly.
+> > > > > > > > 
+> > > > > > > > Signed-off-by: Steve Wahl<steve.wahl@hpe.com>
+> > > > > > > > ---
+> > > > > > > > 
+> > > > > > > > Note that we could not find a reason for connecting
+> > > > > > > > DMAR_UNITS_SUPPORTED to MAX_IO_APICS as was done previously.  Perhaps
+> > > > > > > > it seemed like the two would continue to match on earlier processors.
+> > > > > > > > There doesn't appear to be kernel code that assumes that the value of
+> > > > > > > > one is related to the other.
+> > > > > > > > 
+> > > > > > > > v2: Make this value a config option, rather than a fixed constant.  The default
+> > > > > > > > values should match previous configuration except in the MAXSMP case.  Keeping the
+> > > > > > > > value at a power of two was requested by Kevin Tian.
+> > > > > > > > 
+> > > > > > > >     drivers/iommu/intel/Kconfig | 6 ++++++
+> > > > > > > >     include/linux/dmar.h        | 6 +-----
+> > > > > > > >     2 files changed, 7 insertions(+), 5 deletions(-)
+> > > > > > > > 
+> > > > > > > > diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+> > > > > > > > index 247d0f2d5fdf..fdbda77ac21e 100644
+> > > > > > > > --- a/drivers/iommu/intel/Kconfig
+> > > > > > > > +++ b/drivers/iommu/intel/Kconfig
+> > > > > > > > @@ -9,6 +9,12 @@ config DMAR_PERF
+> > > > > > > >     config DMAR_DEBUG
+> > > > > > > >        bool
+> > > > > > > > 
+> > > > > > > > +config DMAR_UNITS_SUPPORTED
+> > > > > > > > +    int "Number of DMA Remapping Units supported"
+> > > > > > > Also, should there be a "depends on (X86 || IA64)" here?
+> > > > > > Do you have any compilation errors or warnings?
+> > > > > > 
+> > > > > > Best regards,
+> > > > > > baolu
+> > > > > > 
+> > > > > I think it is probably harmless since it doesn't get used elsewhere,
+> > > > > but our tooling was complaining to me because DMAR_UNITS_SUPPORTED was
+> > > > > being autogenerated into the configs for the non-x86 architectures we
+> > > > > build (aarch64, s390x, ppcle64).
+> > > > > We have files corresponding to the config options that it looks at,
+> > > > > and I had one for x86 and not the others so it noticed the
+> > > > > discrepancy.
+> > > > 
+> > > > So with "depends on (X86 || IA64)", that tool doesn't complain anymore,
+> > > > right?
+> > > > 
+> > > > Best regards,
+> > > > baolu
+> > > > 
+> > > 
+> > > Yes, with the depends it no longer happens.
+> > 
+> > The dmar code only exists on X86 and IA64 arch's. Adding this depending
+> > makes sense to me. I will add it if no objections.
 > 
-> Signed-off-by: Ning Li <ning.li@mediatek.com>
-> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-
-
-Reviewed-by: Miles Chen <miles.chen@mediatek.com> 
-
-> ---
->  drivers/iommu/mtk_iommu.c | 14 +++++++++-----
->  1 file changed, 9 insertions(+), 5 deletions(-)
+> I think that works after Baolu's patchset that makes intel-iommu.h
+> private.  I'm pretty sure it wouldn't have worked before that.
 > 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 3d62399e8865..4dbc33758711 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -138,6 +138,7 @@
->  /* PM and clock always on. e.g. infra iommu */
->  #define PM_CLK_AO			BIT(15)
->  #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
-> +#define PGTABLE_PA_35_EN		BIT(17)
->  
->  #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
->  				((((pdata)->flags) & (mask)) == (_x))
-> @@ -240,6 +241,7 @@ struct mtk_iommu_data {
->  struct mtk_iommu_domain {
->  	struct io_pgtable_cfg		cfg;
->  	struct io_pgtable_ops		*iop;
-> +	u32				ttbr;
->  
->  	struct mtk_iommu_bank_data	*bank;
->  	struct iommu_domain		domain;
-> @@ -596,6 +598,9 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
->  		.iommu_dev = data->dev,
->  	};
->  
-> +	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
-> +		dom->cfg.quirks |= IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT;
-> +
->  	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
->  		dom->cfg.oas = data->enable_4GB ? 33 : 32;
->  	else
-> @@ -684,8 +689,8 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
->  			goto err_unlock;
->  		}
->  		bank->m4u_dom = dom;
-> -		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
-> -		       bank->base + REG_MMU_PT_BASE_ADDR);
-> +		bank->m4u_dom->ttbr = MTK_IOMMU_ADDR(dom->cfg.arm_v7s_cfg.ttbr);
-> +		writel(bank->m4u_dom->ttbr, data->base + REG_MMU_PT_BASE_ADDR);
->  
->  		pm_runtime_put(m4udev);
->  	}
-> @@ -1366,8 +1371,7 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
->  		writel_relaxed(reg->int_control[i], base + REG_MMU_INT_CONTROL0);
->  		writel_relaxed(reg->int_main_control[i], base + REG_MMU_INT_MAIN_CONTROL);
->  		writel_relaxed(reg->ivrp_paddr[i], base + REG_MMU_IVRP_PADDR);
-> -		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
-> -		       base + REG_MMU_PT_BASE_ADDR);
-> +		writel(m4u_dom->ttbr, base + REG_MMU_PT_BASE_ADDR);
->  	} while (++i < data->plat_data->banks_num);
->  
->  	/*
-> @@ -1401,7 +1405,7 @@ static const struct mtk_iommu_plat_data mt2712_data = {
->  static const struct mtk_iommu_plat_data mt6779_data = {
->  	.m4u_plat      = M4U_MT6779,
->  	.flags         = HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN | WR_THROT_EN |
-> -			 MTK_IOMMU_TYPE_MM,
-> +			 MTK_IOMMU_TYPE_MM | PGTABLE_PA_35_EN,
->  	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
->  	.banks_num    = 1,
->  	.banks_enable = {true},
+> No objections.
+> 
+
+Yes, I think applying it with the depends prior to Baolu's change would
+still run into the issue from the KTR report if someone compiled without
+INTEL_IOMMU enabled.
+
+This was dealing with being able to do something like:
+
+make allmodconfig ARCH=arm64 ; grep DMAR_UNITS .config
+
+and finding CONFIG_DMAR_UNITS_SUPPORTED=64.
+
+Thinking some more though, instead of the depends being on the arch
+would depending on DMAR_TABLE or INTEL_IOMMU be more appropriate?
+
+Regards,
+Jerry
+
+> --> Steve
+> 
 > -- 
-> 2.18.0
-> 
-> 
+> Steve Wahl, Hewlett Packard Enterprise
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
