@@ -4,59 +4,74 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0F324C433EF
-	for <iommu@archiver.kernel.org>; Tue, 14 Jun 2022 09:51:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id EA81FCCA47A
+	for <iommu@archiver.kernel.org>; Tue, 14 Jun 2022 12:56:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A2107824EF;
-	Tue, 14 Jun 2022 09:51:28 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 859DA82D45;
+	Tue, 14 Jun 2022 12:56:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bdT7sImPqZF6; Tue, 14 Jun 2022 09:51:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 65D8E82443;
-	Tue, 14 Jun 2022 09:51:27 +0000 (UTC)
+	with ESMTP id 3eph8ftX69cc; Tue, 14 Jun 2022 12:56:46 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 3DB7D8006D;
+	Tue, 14 Jun 2022 12:56:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 38046C0032;
-	Tue, 14 Jun 2022 09:51:27 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8840FC002D
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 09:51:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 10CFBC0039;
+	Tue, 14 Jun 2022 12:56:46 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4D758C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 12:56:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 7EA5840A77
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 09:51:26 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 3BFA582D07
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 12:56:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id l7DQ3jymS1mg for <iommu@lists.linux-foundation.org>;
- Tue, 14 Jun 2022 09:51:25 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 5kJCLLxVpv8E for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Jun 2022 12:56:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 42BAB40A21
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 09:51:25 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 907A71424;
- Tue, 14 Jun 2022 02:51:24 -0700 (PDT)
-Received: from [10.57.82.209] (unknown [10.57.82.209])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 795593F792;
- Tue, 14 Jun 2022 02:51:23 -0700 (PDT)
-Message-ID: <9a984e22-6624-e4ea-689b-7e37094c5b87@arm.com>
-Date: Tue, 14 Jun 2022 10:51:18 +0100
+Received: from ams.source.kernel.org (ams.source.kernel.org
+ [IPv6:2604:1380:4601:e00::1])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 248478006D
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 12:56:43 +0000 (UTC)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by ams.source.kernel.org (Postfix) with ESMTPS id E4339B81862;
+ Tue, 14 Jun 2022 12:56:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2E45C3411B;
+ Tue, 14 Jun 2022 12:56:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1655211398;
+ bh=iHxMC4bK6vMql08nJAlYbsQGBq196kEhV81vmOYVdZU=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=OL3u7YQsW8BKxJr9mZnLJZ54ASq/5yWpIgMB7+NQ6dB47B8QBKOaj3DWsXG4WZZWo
+ 94+tTl3/bXtEEsJx+YhNGunEoioNhiWTqPKGWeeKsojraklxMaeLknfvE2/anjJpna
+ hjjHfvga0anMPUX6M1dFbEOtF7CDq/yBGhc1mpZh8GKa5mjPAxnmqb5wkG65Hm+PHv
+ rFFGKJzhIdhSdsC6yPyNoChrzdooUpJoUST+3Egcf+R/MKhqoYqj7k2xQ4b3iJnsh4
+ d5sszGowTb0c2X8W5g6+E0ZVt8LIqpmaFEjys0R8Z5wy6skpmm6Wy194g+erJCvXrU
+ 5Qqc5Xa7jGttQ==
+Date: Tue, 14 Jun 2022 13:56:31 +0100
+From: Will Deacon <will@kernel.org>
+To: yf.wang@mediatek.com
+Subject: Re: [PATCH v8 1/3] iommu/io-pgtable-arm-v7s: Add a quirk to allow
+ pgtable PA up to 35bit
+Message-ID: <20220614125630.GA8159@willie-the-truck>
+References: <20220611102656.10954-1-yf.wang@mediatek.com>
+ <20220611102656.10954-2-yf.wang@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 5/7] iommu: Add domain_type_supported() callback in
- iommu_ops
-Content-Language: en-GB
-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>,
- iommu@lists.linux-foundation.org
-References: <20220613012502.109918-1-suravee.suthikulpanit@amd.com>
- <20220613012502.109918-6-suravee.suthikulpanit@amd.com>
- <371cacea-368b-d722-8360-13c229b3112b@arm.com>
- <b6d64153-9dc4-372f-8c2b-a844199d3cb6@amd.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <b6d64153-9dc4-372f-8c2b-a844199d3cb6@amd.com>
-Cc: ashish.kalra@amd.com, vasant.hegde@amd.com
+Content-Disposition: inline
+In-Reply-To: <20220611102656.10954-2-yf.wang@mediatek.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+ Miles Chen <miles.chen@mediatek.com>, wsd_upstream@mediatek.com,
+ Libo Kang <Libo.Kang@mediatek.com>, open list <linux-kernel@vger.kernel.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
+ Ning Li <ning.li@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -69,106 +84,213 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMi0wNi0xMyAxNTozOCwgU3V0aGlrdWxwYW5pdCwgU3VyYXZlZSB3cm90ZToKPiBSb2Jp
-biwKPiAKPiBPbiA2LzEzLzIwMjIgNDozMSBQTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+PiBPbsKg
-MjAyMi0wNi0xM8KgMDI6MjUswqBTdXJhdmVlwqBTdXRoaWt1bHBhbml0wqB3cm90ZToKPj4+IFdo
-ZW7CoHVzZXLCoHJlcXVlc3RzwqB0b8KgY2hhbmdlwqBJT01NVcKgZG9tYWluwqB0b8KgYcKgbmV3
-wqB0eXBlLMKgSU9NTVXCoGdlbmVyaWMKPj4+IGxheWVywqBjaGVja3PCoHRoZcKgcmVxdWVzdGVk
-wqB0eXBlwqBhZ2FpbnN0wqB0aGXCoGRlZmF1bHTCoGRvbWFpbsKgdHlwZcKgcmV0dXJuZWQKPj4+
-IGJ5wqB2ZW5kb3Itc3BlY2lmaWPCoElPTU1VwqBkcml2ZXIuCj4+Pgo+Pj4gSG93ZXZlcizCoHRo
-ZXJlwqBpc8Kgb25secKgb25lwqBkZWZhdWx0wqBkb21haW7CoHR5cGUswqBhbmTCoGN1cnJlbnTC
-oG1lY2hhbmlzbQo+Pj4gZG9lc8Kgbm90wqBhbGxvd8KgaWbCoHRoZcKgcmVxdWVzdGVkwqB0eXBl
-wqBkb2VzwqBub3TCoG1hdGNowqB0aGXCoGRlZmF1bHTCoHR5cGUuCj4+Cj4+IEkgZG9uJ3QgcmVh
-bGx5IGZvbGxvdyB0aGUgcmVhc29uaW5nIGhlcmUuIElmIGEgZHJpdmVyJ3MgCj4+IGRlZl9kb21h
-aW5fdHlwZSBjYWxsYmFjayByZXR1cm5zIGEgc3BlY2lmaWMgdHlwZSwgaXQncyBzYXlpbmcgdGhh
-dCB0aGUgCj4+IGRldmljZSAqaGFzKiB0byBoYXZlIHRoYXQgc3BlY2lmaWMgZG9tYWluIHR5cGUg
-Zm9yIAo+PiBkcml2ZXIvcGxhdGZvcm0tc3BlY2lmaWMgcmVhc29ucy4gCj4gCj4gQWdyZWUsIGFu
-ZCBJIHVuZGVyc3RhbmQgdGhpcyBwYXJ0Lgo+IAo+PiBJZiAKPj4gdGhhdCdzwqBub3TCoHRoZcKg
-Y2FzZSzCoHRoZW7CoHRoZcKgZHJpdmVywqBzaG91bGRuJ3TCoHNhecKgc2/CoGluwqB0aGXCoGZp
-cnN0wqBwbGFjZS4KPiAKPiBDb25zaWRlcmluZyB0aGUgY2FzZToKPiAxLiBCb290IHcvIGRlZmF1
-bHQgZG9tYWluID0gSU9NTVVfRE9NQUlOX0RNQV9GUQo+IDIuIFVzZXIgd2FudHMgdG8gY2hhbmdl
-IHRvIElPTU1VX0RPTUFJTl9JREVOVElUWSwgd2hpY2ggaXMgbm90IHN1cHBvcnRlZCAKPiBieSBJ
-T01NVSBkcml2ZXIuIEluIHRoaXMgY2FzZSwgSU9NTVUgZHJpdmVyIGNhbiByZXR1cm4gCj4gSU9N
-TVVfRE9NQUlOX0RNQV9GUSBhbmQgcHJldmVudCB0aGUgbW9kZSBjaGFuZ2UuCj4gMy4gSG93ZXZl
-ciwgaWYgdXNlciB3YW50IHRvIGNoYW5nZSB0byBJT01NVV9ET01BSU5fRE1BLiBUaGUgZHJpdmVy
-IGNhbiAKPiBzdXBwb3J0IHRoaXMuIEhvd2V2ZXIsIHNpbmNlIHRoZSBkZWZfZG9tYWluX3R5cGUo
-KSByZXR1cm5zIAo+IElPTU1VX0RPTUFJTl9ETUFfRlEsIGl0IGVuZHMgdXAgcHJldmVudCB0aGUg
-bW9kZSBjaGFuZ2UuCgpXaHkgd291bGQgYSBkcml2ZXIgYmUgZm9yY2luZyBJT01NVV9ET01BSU5f
-RE1BX0ZRIGZvciBhIGRldmljZSB0aG91Z2g/IApOb2JvZHkncyBkb2luZyB0aGF0IHRvZGF5LCBh
-bmQgc2VtYW50aWNhbGx5IGl0IHdvdWxkbid0IHJlYWxseSBtYWtlIApzZW5zZSAtIGZvcmNpbmcg
-dHJhbnNsYXRpb24gdG8gZGVueSBwYXNzdGhyb3VnaCBvbiBhIGRldmljZS1zcGVjaWZpYyAKYmFz
-aXMgKGJleW9uZCB0aGUgY29tbW9uIGhhbmRsaW5nIG9mIHVudHJ1c3RlZCBkZXZpY2VzKSAqbWln
-aHQqIGJlIGEgCnRoaW5nLCBidXQgdGhlIHBlcmZvcm1hbmNlL3N0cmljdG5lc3MgdHJhZGVvZmYg
-b2YgdXNpbmcgYSBmbHVzaCBxdWV1ZSBvciAKbm90IGlzIHN1cmVseSBhIHN1YmplY3RpdmUgdXNl
-ciBkZWNpc2lvbiwgbm90IGFuIG9iamVjdGl2ZSBwbGF0Zm9ybSBvbmUuCgo+IElJVUMsIHdlIHNo
-b3VsZCBzdXBwb3J0IHN0ZXAgMyBhYm92ZS4gQmFzaWNhbGx5LCB3aXRoIHRoZSBuZXdseSBwcm9w
-b3NlZCAKPiBpbnRlcmZhY2UsIGl0IGFsbG93cyB1cyB0byBjaGVjayB3aXRoIElPTU1VIGRyaXZl
-ciBpZiBpdCBjYW4gc3VwcG9ydCAKPiBjZXJ0YWluIGRvbWFpbiB0eXBlcyBiZWZvcmUgdHJ5aW5n
-Cj4gdG8gYWxsb2NhdGUgdGhlIGRvbWFpbi4KCkluZGVlZCB3ZSBjb3VsZCBkbyB0aGF0IC0gYXMg
-YSBtdWNoIG1vcmUgY29tcHJlaGVuc2l2ZSBjaGFuZ2UgdG8gdGhlIAppbnRlcm5hbCBkb21haW5f
-YWxsb2MgaW50ZXJmYWNlcyAtIGJ1dCBkbyB3ZSByZWFsbHkgbmVlZCB0bz8gSWYgd2UgCnN1Y2Nl
-ZWQgYXQgYWxsb2NhdGluZyBhIGRvbWFpbiB0aGVuIHdlIGtub3cgaXQncyBzdXBwb3J0ZWQ7IGlm
-IGl0IGZhaWxzIAp0aGVuIHdlIGNhbid0IGdpdmUgdGhlIHVzZXIgd2hhdCB0aGV5IGFza2VkIGZv
-ciwgcmVnYXJkbGVzcyBvZiB0aGUgZXhhY3QgCnJlYXNvbiB3aHkgLSB3aGF0IGRvIHdlIGdhaW4g
-ZnJvbSBkb3VibGluZyB0aGUgbnVtYmVyIG9mIHBvdGVudGlhbCAKZmFpbHVyZSBwYXRocyB0aGF0
-IHdlIGhhdmUgdG8gaGFuZGxlPwoKPj4+IEludHJvZHVjaW5nwqBjaGVja19kb21haW5fdHlwZV9z
-dXBwb3J0ZWQoKcKgY2FsbGJhY2vCoGluwqBpb21tdV9vcHMsCj4+PiB3aGljaMKgYWxsb3dzwqBJ
-T01NVcKgZ2VuZXJpY8KgbGF5ZXLCoHRvwqBjaGVja8Kgd2l0aMKgdmVuZG9yLXNwZWNpZmljwqBJ
-T01NVcKgZHJpdmVyIAo+Pj4KPj4+IHdoZXRoZXLCoHRoZcKgcmVxdWVzdGVkwqB0eXBlwqBpc8Kg
-c3VwcG9ydGVkLsKgVGhpc8KgYWxsb3dzwqB1c2VywqB0b8KgcmVxdWVzdAo+Pj4gdHlwZXPCoG90
-aGVywqB0aGFuwqB0aGXCoGRlZmF1bHTCoHR5cGUuCj4+Cj4+IE5vdGUgYWxzbyB0aGF0IHlvdSdy
-ZSBvbmx5IGFkZGluZyB0aGlzIGluIHRoZSBzeXNmcyBwYXRoIC0gd2hhdCBhYm91dCAKPj4gdGhl
-wqAiaW9tbXUucGFzc3Rocm91Z2g9IsKgcGFyYW1ldGVywqBvcsKgQ09ORklHX0lPTU1VX0RFRkFV
-TFRfUEFTU1RIUk9VR0g/Cj4gCj4gRm9yIFNOUCBjYXNlLCB3ZSBjYW5ub3QgZW5hYmxlIFNOUCBp
-ZiBpb21tdT1vZmYgb3IgaW9tbXU9cHQgb3IgCj4gaW9tbXUucGFzc3Rocm91Z2g9MSBvciBDT05G
-SUdfSU9NTVVfREVGQVVMVF9QQVNTVEhST1VHSD15Lgo+IFNvLCB3aGVuIGFub3RoZXIgZHJpdmVy
-IHRyaWVzIHRvIGVuYWJsZSBTTlAsIHRoZSBJT01NVSBkcml2ZXIgcHJldmVudHMgCj4gaXQgKHNl
-ZSBpb21tdV9zZXZfc25wX3N1cHBvcnRlZCgpIGluIHBhdGNoIDMpLgoKVWdoLCBJIGhhZG4ndCBs
-b29rZWQgdG9vIGNsb3NlbHkgYXQgdGhlIG90aGVyIHBhdGNoZXMsIGJ1dCBhbiBpbnRlcmZhY2Ug
-CnRoYXQgbG9va3MgbGlrZSBhIHNpbXBsZSAiaXMgdGhpcyBmZWF0dXJlIHN1cHBvcnRlZD8iIGNo
-ZWNrIHdpdGggYSAKc2VjcmV0IHNpZGUtZWZmZWN0IG9mIGNoYW5naW5nIGdsb2JhbCBiZWhhdmlv
-dXIgYXMgd2VsbD8gWXVjayA6KAoKV2hhdCBleHRlcm5hbCBkcml2ZXJzIGFyZSBleHBlY3RlZCB0
-byBoYXZlIHRoZSBhdXRob3JpdHkgdG8gYWZmZWN0IHRoZSAKZW50aXJlIHN5c3RlbSBhbmQgY2Fs
-bCB0aGF0PyBUaGUgZmFjdCB0aGF0IHlvdSdyZSBleHBvcnRpbmcgaXQgc3VnZ2VzdHMgCnRoZXkg
-Y291bGQgYmUgbG9hZGVkIGZyb20gbW9kdWxlcyAqYWZ0ZXIqIHYyIGZlYXR1cmVzIGhhdmUgYmVl
-biBlbmFibGVkIAphbmQvb3IgdGhlIHVzZXIgaGFzIGNvbmZpZ3VyZWQgYSBub24tZGVmYXVsdCBp
-ZGVudGl0eSBkb21haW4gZm9yIGEgZ3JvdXAgCnZpYSBzeXNmcy4uLiBGdW4hCgo+IEluc3RlYWQs
-IGlmIHdlIGJvb3Qgd2l0aCBpb21tdS5wYXNzaHRocm91Z2g9MCwgd2hlbiBhbm90aGVyIGRyaXZl
-ciB0cmllcyAKPiB0byBlbmFibGUgU05QLCB0aGUgSU9NTVUgZHJpdmVyIGFsbG93cyB0aGlzIGFu
-ZCBzd2l0Y2ggdG8gU05QIGVuYWJsZSBtb2RlLgo+IFN1YnNlcXVlbnRseSwgaWYgdXNlciB0cmll
-cyB0byBzd2l0Y2ggYSBkb21haW4gKHZpYSBzeXNmcykgdG8gCj4gSU9NTVVfRE9NQUlOX0lERU5U
-SVRZLCB0aGUgSU9NTVUgbmVlZHMgdG8gcHJldmVudCB0aGlzIGJlY2F1c2UgaXQgaGFzIAo+IGFs
-cmVhZHkgc3dpdGNoCj4gdG8gU05QLWVuYWJsZWQgbW9kZS4KPiAKPj4gQUZBSUNTIHRoZXJlIHNo
-b3VsZG4ndCBuZWVkIHRvIGJlIGFueSBjb3JlLWxldmVsIGNoYW5nZXMgdG8gc3VwcG9ydCAKPj4g
-dGhpcy4gV2UgYWxyZWFkeSBoYXZlIGRyaXZlcnMgd2hpY2ggZG9uJ3Qgc3VwcG9ydCBwYXNzdGhy
-b3VnaCBhdCBhbGwsIAo+PiBzbyBjb25kaXRpb25hbGx5IG5vdCBzdXBwb3J0aW5nIGl0IHNob3Vs
-ZCBiZSBubyBiaWcgZGVhbC4gV2hhdCBzaG91bGQgCj4+IGhhcHBlbiBjdXJyZW50bHkgaXMgdGhh
-dCBkZWZfZG9tYWluX3R5cGUgcmV0dXJucyAwIGZvciAiZG9uJ3QgY2FyZSIsIAo+PiB0aGVuIGRv
-bWFpbl9hbGxvYyByZWplY3RzIElPTU1VX0RPTUFJTl9JREVOVElUWSBhbmQgYW5kIHJldHVybnMg
-TlVMTCwgCj4+IHNvIGlvbW11X2dyb3VwX2FsbG9jX2RlZmF1bHRfZG9tYWluKCnCoGZhbGxzwqBi
-YWNrwqB0b8KgSU9NTVVfRE9NQUlOX0RNQS4KPiAKPiBUZWNobmljYWxseSwgd2UgY2FuIGRvIGl0
-IHRoZSB3YXkgeW91IHN1Z2dlc3QuIEJ1dCBpc24ndCB0aGlzIGNvbmZ1c2luZz8gCj4gQXQgZmly
-c3QsIGRlZl9kb21haW5fdHlwZSgpIHJldHVybnMgMCBmb3IgImRvbid0IGNhcmUiLAo+IGJ1dCB0
-aGVuIGl0IHJlamVjdHMgdGhlIHJlcXVlc3QgdG8gY2hhbmdlIHRvIElPTU1VX0RPTUFJTl9JREVO
-VElUWSB3aGVuIAo+IHRyeWluZyB0byBjYWxsIGRvbWFpbl9hbGxvYygpLgoKWWVzLCB0aGF0J3Mg
-aG93IGl0IHdvcmtzOyBkZWZfZG9tYWluX3R5cGUgaXMgcmVzcG9uc2libGUgZm9yIHF1aXJraW5n
-IAppbmRpdmlkdWFsICpkZXZpY2VzKiB0aGF0IG5lZWQgdG8gaGF2ZSBhIHNwZWNpZmljIGRvbWFp
-biB0eXBlIChpbiAKcHJhY3RpY2UsIGRldmljZXMgd2hpY2ggbmVlZCBpZGVudGl0eSBtYXBwaW5n
-KSwgd2hpbGUgZG9tYWluX2FsbG9jIGlzIApyZXNwb25zaWJsZSBmb3Igc2F5aW5nIHdoaWNoIGRv
-bWFpbiB0eXBlcyB0aGUgZHJpdmVyIHN1cHBvcnRzIGFzIGEgCndob2xlLCBieSBhbGxvY2F0aW5n
-IHRoZW0gb3Igbm90IGFzIGFwcHJvcHJpYXRlLgoKV2UgZG9uJ3QgaGF2ZSBhIHBhcnRpY3VsYXJs
-eSBuZWF0IHdheSB0byBhY2hpZXZlIHRoZSBuZWdhdGl2ZSBvZiAKZGVmX2RvbWFpbl90eXBlIC0g
-aS5lLiBzYXlpbmcgdGhhdCBhIHNwZWNpZmljIGRldmljZSAqY2FuJ3QqIHVzZSBhIApzcGVjaWZp
-YyBvdGhlcndpc2Utc3VwcG9ydGVkIGRvbWFpbiB0eXBlIC0gb3RoZXIgdGhhbiBzdWJzZXF1ZW50
-bHkgCmZhaWxpbmcgaW4gYXR0YWNoX2RldiwgYnV0IHNvIGZhciB3ZSd2ZSBub3QgbmVlZGVkIHN1
-Y2ggYSB0aGluZy4gQW5kIGlmIApTTlAgaXMgZXhwZWN0ZWQgdG8gYmUgbXV0dWFsbHkgZXhjbHVz
-aXZlIHdpdGggaWRlbnRpdHkgZG9tYWluIHN1cHBvcnQgCmdsb2JhbGx5LCB0aGVuIHdlIHN0aWxs
-IHNob3VsZG4ndCBuZWVkIGl0LgoKVGhhbmtzLApSb2Jpbi4KX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3Rz
-LmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9t
-YWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi,
+
+For some reason, this series has landed in my spam folder so apologies
+for the delay :/
+
+On Sat, Jun 11, 2022 at 06:26:53PM +0800, yf.wang@mediatek.com wrote:
+> From: Yunfei Wang <yf.wang@mediatek.com>
+> 
+> Single memory zone feature will remove ZONE_DMA32 and ZONE_DMA and
+> cause pgtable PA size larger than 32bit.
+> 
+> Since Mediatek IOMMU hardware support at most 35bit PA in pgtable,
+> so add a quirk to allow the PA of pgtables support up to bit35.
+> 
+> Signed-off-by: Ning Li <ning.li@mediatek.com>
+> Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+> ---
+>  drivers/iommu/io-pgtable-arm-v7s.c | 48 ++++++++++++++++++++++--------
+>  include/linux/io-pgtable.h         | 17 +++++++----
+>  2 files changed, 46 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+> index be066c1503d3..d4702d8d825a 100644
+> --- a/drivers/iommu/io-pgtable-arm-v7s.c
+> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
+> @@ -182,14 +182,8 @@ static bool arm_v7s_is_mtk_enabled(struct io_pgtable_cfg *cfg)
+>  		(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_EXT);
+>  }
+>  
+> -static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+> -				    struct io_pgtable_cfg *cfg)
+> +static arm_v7s_iopte to_iopte_mtk(phys_addr_t paddr, arm_v7s_iopte pte)
+>  {
+> -	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
+> -
+> -	if (!arm_v7s_is_mtk_enabled(cfg))
+> -		return pte;
+> -
+>  	if (paddr & BIT_ULL(32))
+>  		pte |= ARM_V7S_ATTR_MTK_PA_BIT32;
+>  	if (paddr & BIT_ULL(33))
+> @@ -199,6 +193,17 @@ static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+>  	return pte;
+>  }
+>  
+> +static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+> +				    struct io_pgtable_cfg *cfg)
+> +{
+> +	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
+> +
+> +	if (!arm_v7s_is_mtk_enabled(cfg))
+> +		return pte;
+> +
+> +	return to_iopte_mtk(paddr, pte);
+
+nit, but can we rename and rework this so it reads a bit better, please?
+Something like:
+
+
+	if (arm_v7s_is_mtk_enabled(cfg))
+		return to_mtk_iopte(paddr, pte);
+
+	return pte;
+
+
+>  static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte, int lvl,
+>  				  struct io_pgtable_cfg *cfg)
+>  {
+> @@ -234,6 +239,7 @@ static arm_v7s_iopte *iopte_deref(arm_v7s_iopte pte, int lvl,
+>  static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+>  				   struct arm_v7s_io_pgtable *data)
+>  {
+> +	gfp_t gfp_l1 = __GFP_ZERO | ARM_V7S_TABLE_GFP_DMA;
+>  	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+>  	struct device *dev = cfg->iommu_dev;
+>  	phys_addr_t phys;
+> @@ -241,9 +247,11 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+>  	size_t size = ARM_V7S_TABLE_SIZE(lvl, cfg);
+>  	void *table = NULL;
+>  
+> +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
+> +		gfp_l1 = GFP_KERNEL | __GFP_ZERO;
+
+I think it's a bit grotty to override the flags inline like this (same for
+the slab flag later on). Something like this is a bit cleaner:
+
+
+	/*
+	 * Comment explaining why GFP_KERNEL is desirable here.
+	 * I'm assuming it's because the walker can address all of memory.
+	 */
+	gfp_l1 = cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT ?
+		 GFP_KERNEL : ARM_V7S_TABLE_GFP_DMA;
+
+	...
+
+	__get_free_pages(gfp_l1 | __GFP_ZERO, ...);
+
+
+and similar for the slab flag.
+
+>  	if (lvl == 1)
+> -		table = (void *)__get_free_pages(
+> -			__GFP_ZERO | ARM_V7S_TABLE_GFP_DMA, get_order(size));
+> +		table = (void *)__get_free_pages(gfp_l1, get_order(size));
+>  	else if (lvl == 2)
+>  		table = kmem_cache_zalloc(data->l2_tables, gfp);
+>  
+> @@ -251,7 +259,8 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+>  		return NULL;
+>  
+>  	phys = virt_to_phys(table);
+> -	if (phys != (arm_v7s_iopte)phys) {
+> +	if (phys != (arm_v7s_iopte)phys &&
+> +	    !(cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)) {
+>  		/* Doesn't fit in PTE */
+
+Shouldn't we be checking that the address is within 35 bits here? Perhaps we
+should generate a mask from the oas instead of just using the cast.
+
+>  		dev_err(dev, "Page table does not fit in PTE: %pa", &phys);
+>  		goto out_free;
+> @@ -457,9 +466,14 @@ static arm_v7s_iopte arm_v7s_install_table(arm_v7s_iopte *table,
+>  					   arm_v7s_iopte curr,
+>  					   struct io_pgtable_cfg *cfg)
+>  {
+> +	phys_addr_t phys = virt_to_phys(table);
+>  	arm_v7s_iopte old, new;
+>  
+> -	new = virt_to_phys(table) | ARM_V7S_PTE_TYPE_TABLE;
+> +	new = phys | ARM_V7S_PTE_TYPE_TABLE;
+> +
+> +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
+> +		new = to_iopte_mtk(phys, new);
+> +
+>  	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
+>  		new |= ARM_V7S_ATTR_NS_TABLE;
+>  
+> @@ -778,6 +792,7 @@ static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
+>  static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+>  						void *cookie)
+>  {
+> +	slab_flags_t slab_flag = ARM_V7S_TABLE_SLAB_FLAGS;
+>  	struct arm_v7s_io_pgtable *data;
+>  
+>  	if (cfg->ias > (arm_v7s_is_mtk_enabled(cfg) ? 34 : ARM_V7S_ADDR_BITS))
+> @@ -788,7 +803,8 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+>  
+>  	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+>  			    IO_PGTABLE_QUIRK_NO_PERMS |
+> -			    IO_PGTABLE_QUIRK_ARM_MTK_EXT))
+> +			    IO_PGTABLE_QUIRK_ARM_MTK_EXT |
+> +			    IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT))
+>  		return NULL;
+>  
+>  	/* If ARM_MTK_4GB is enabled, the NO_PERMS is also expected. */
+> @@ -796,15 +812,21 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+>  	    !(cfg->quirks & IO_PGTABLE_QUIRK_NO_PERMS))
+>  			return NULL;
+>  
+> +	if ((cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT) &&
+> +	    !arm_v7s_is_mtk_enabled(cfg))
+> +		return NULL;
+> +
+>  	data = kmalloc(sizeof(*data), GFP_KERNEL);
+>  	if (!data)
+>  		return NULL;
+>  
+>  	spin_lock_init(&data->split_lock);
+> +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT)
+> +		slab_flag = 0;
+>  	data->l2_tables = kmem_cache_create("io-pgtable_armv7s_l2",
+>  					    ARM_V7S_TABLE_SIZE(2, cfg),
+>  					    ARM_V7S_TABLE_SIZE(2, cfg),
+> -					    ARM_V7S_TABLE_SLAB_FLAGS, NULL);
+> +					    slab_flag, NULL);
+>  	if (!data->l2_tables)
+>  		goto out_free_data;
+>  
+> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+> index 86af6f0a00a2..c9189716f6bd 100644
+> --- a/include/linux/io-pgtable.h
+> +++ b/include/linux/io-pgtable.h
+> @@ -74,17 +74,22 @@ struct io_pgtable_cfg {
+>  	 *	to support up to 35 bits PA where the bit32, bit33 and bit34 are
+>  	 *	encoded in the bit9, bit4 and bit5 of the PTE respectively.
+>  	 *
+> +	 * IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT: (ARM v7s format) MediaTek IOMMUs
+> +	 *	extend the translation table base support up to 35 bits PA, the
+> +	 *	encoding format is same with IO_PGTABLE_QUIRK_ARM_MTK_EXT.
+> +	 *
+
+One thing I don't get is how the existing driver handles this. It seems
+as though if the HAS_4GB_MODE flag is not set, then we set oas to 35 but
+without any pgtable changes. How does this work?
+
+If it turns out that the existing devices can't handle 35-bit PAs, then
+could we use an oas of 35 to indicate that this new format is in use
+instead of introducing another quirk?
+
+Will
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
