@@ -1,79 +1,78 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B0B54C43334
-	for <iommu@archiver.kernel.org>; Tue, 14 Jun 2022 07:44:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0D7A5C43334
+	for <iommu@archiver.kernel.org>; Tue, 14 Jun 2022 07:47:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 5ED04410E8;
-	Tue, 14 Jun 2022 07:44:31 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id AE8D060758;
+	Tue, 14 Jun 2022 07:47:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gpDeLV88-8tb; Tue, 14 Jun 2022 07:44:30 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id AE21D409F3;
-	Tue, 14 Jun 2022 07:44:29 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 6O1ZHJPy6D0C; Tue, 14 Jun 2022 07:47:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id AC2E060B77;
+	Tue, 14 Jun 2022 07:47:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 715BEC0032;
-	Tue, 14 Jun 2022 07:44:29 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F0FBEC002D
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 07:44:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 669B2C0032;
+	Tue, 14 Jun 2022 07:47:37 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 09F53C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 07:47:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id C9C9A408F9
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 07:44:27 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id E251181B3E
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 07:47:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id oufbu4AYijQO for <iommu@lists.linux-foundation.org>;
- Tue, 14 Jun 2022 07:44:27 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Yo9gHMJ5eUhX for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Jun 2022 07:47:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 390FC400BB
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 07:44:26 +0000 (UTC)
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 3831D81A27
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 07:47:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1655192667; x=1686728667;
+ t=1655192855; x=1686728855;
  h=message-id:date:mime-version:cc:subject:to:references:
  from:in-reply-to:content-transfer-encoding;
- bh=WehaGt8hJaU+Ma/bzE5/Cn87XrAOis5/aygzc+ECE0w=;
- b=E60nWFNV9YWqs+TNntSKmrBCB1EJmDEx3jB8gCe1X+6UAanXXIF9kfmo
- kqN0lJdoHm4XNhS3nwop3ThrppD7yxqWtz8zlI0FwuLCps3eFfG0WfiRw
- Hicjkdrv/denGDt0ziNdG8DnkOg7skaxgpXLJ+UoaxFkA0eu9YXLWPsW8
- ABY4KZaT6mpgmpDZsPnxHCynM/SrXgw/gJYkj+w1W+rTi8X0yT3T1V8gF
- U/s/gb96zmi9d7Qj2DqkuzRNnZQSGSk6RHAPQ23lDDTLRNBjdzRrCdmEv
- HDig7f1LS3aCf3Q4n7bM5v4n3UVSthUaUj+1ySs3J7X75LVtW0JhAsEtE g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="303947508"
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; d="scan'208";a="303947508"
+ bh=bBWV4mimAXM6dNrx6MgT/rmjeGVJLaL37ecgW/HcuLQ=;
+ b=BKzCzukqbyc8wEnMjljxxOxhhr5VoJXHwH4dnbKLaZussOnbM1fowlwi
+ SZa9z/bgKmuxtLJVRlcKZ7oyqKV3JYWdKSezW9Sr64CiXHsIdupNORLJ2
+ 6fEtrl7s5QRC9GMoIUuUGvWdjhi150jB2rf+vAmyyL+13UQ8JLc/ZtdIV
+ sQaQSc4VQIhAnVc6DPxzi+ymJc5uOKVdoFqRJtCws575p4WLuwdrnHAXF
+ mUnDZfuukZRG0iifWD4IKAXb05jTIiV9krKAzFFCReo/OyUKNcm22jy4V
+ Xdx73IidF3zxTODOSweNOGr4Fg1n9Cq7CUICeutzaXP0NESE8UxKSy/Pa Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="279581363"
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; d="scan'208";a="279581363"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 14 Jun 2022 00:44:26 -0700
-X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; d="scan'208";a="910847959"
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 14 Jun 2022 00:47:26 -0700
+X-IronPort-AV: E=Sophos;i="5.91,299,1647327600"; d="scan'208";a="910848704"
 Received: from gren5-mobl1.ccr.corp.intel.com (HELO [10.255.29.39])
  ([10.255.29.39])
  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 14 Jun 2022 00:44:23 -0700
-Message-ID: <1e19074b-0f8d-b897-585c-582ff3e63367@linux.intel.com>
-Date: Tue, 14 Jun 2022 15:44:21 +0800
+ 14 Jun 2022 00:47:23 -0700
+Message-ID: <76dfe89b-67a1-bbea-0c63-18790adb7b9d@linux.intel.com>
+Date: Tue, 14 Jun 2022 15:47:21 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH v2 10/12] iommu/vt-d: Fold __dmar_remove_one_dev_info()
- into its caller
+Subject: Re: [PATCH v2 11/12] iommu/vt-d: Use device_domain_lock accurately
 Content-Language: en-US
 To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
  "Raj, Ashok" <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>,
  Jason Gunthorpe <jgg@nvidia.com>
 References: <20220614025137.1632762-1-baolu.lu@linux.intel.com>
- <20220614025137.1632762-11-baolu.lu@linux.intel.com>
- <BN9PR11MB527646793F6DFD18145A455D8CAA9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220614025137.1632762-12-baolu.lu@linux.intel.com>
+ <BN9PR11MB52764D7CD86448C5E4EB46668CAA9@BN9PR11MB5276.namprd11.prod.outlook.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB527646793F6DFD18145A455D8CAA9@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB52764D7CD86448C5E4EB46668CAA9@BN9PR11MB5276.namprd11.prod.outlook.com>
 Cc: Will Deacon <will@kernel.org>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
@@ -95,68 +94,76 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/6/14 15:07, Tian, Kevin wrote:
->> From: Lu Baolu<baolu.lu@linux.intel.com>
+On 2022/6/14 15:16, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
 >> Sent: Tuesday, June 14, 2022 10:52 AM
 >>
->> Fold __dmar_remove_one_dev_info() into dmar_remove_one_dev_info()
->> which
->> is its only caller. Make the spin lock critical range only cover the
->> device list change code and remove some unnecessary checks.
+>> The device_domain_lock is used to protect the device tracking list of
+>> a domain. Remove unnecessary spin_lock/unlock()'s and move the necessary
+>> ones around the list access.
 >>
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 >> ---
->>   drivers/iommu/intel/iommu.c | 34 +++++++++-------------------------
->>   1 file changed, 9 insertions(+), 25 deletions(-)
+>>   drivers/iommu/intel/iommu.c | 68 +++++++++++++++----------------------
+>>   1 file changed, 27 insertions(+), 41 deletions(-)
 >>
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index af22690f44c8..8345e0c0824c 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -295,7 +295,6 @@ static LIST_HEAD(dmar_satc_units);
->>   static int g_num_of_iommus;
->>
->>   static void dmar_remove_one_dev_info(struct device *dev);
->> -static void __dmar_remove_one_dev_info(struct device_domain_info *info);
->>
->>   int dmar_disabled = !IS_ENABLED(CONFIG_INTEL_IOMMU_DEFAULT_ON);
->>   int intel_iommu_sm =
->> IS_ENABLED(CONFIG_INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON);
->> @@ -4141,20 +4140,14 @@ static void domain_context_clear(struct
->> device_domain_info *info)
->>   			       &domain_context_clear_one_cb, info);
->>   }
->>
->> -static void __dmar_remove_one_dev_info(struct device_domain_info *info)
->> +static void dmar_remove_one_dev_info(struct device *dev)
+> [...]
+>> +iommu_support_dev_iotlb(struct dmar_domain *domain, struct
+>> intel_iommu *iommu,
+>> +			u8 bus, u8 devfn)
 >>   {
->> -	struct dmar_domain *domain;
->> -	struct intel_iommu *iommu;
+>> -	struct device_domain_info *info;
 >> -
 >> -	assert_spin_locked(&device_domain_lock);
->> -
->> -	if (WARN_ON(!info))
->> -		return;
->> -
->> -	iommu = info->iommu;
->> -	domain = info->domain;
->> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
->> +	struct dmar_domain *domain = info->domain;
-> this local variable is not required as there is just one reference
-> to info->domain.
+>> +	struct device_domain_info *info = NULL, *tmp;
+>> +	unsigned long flags;
+>>
+>>   	if (!iommu->qi)
+>>   		return NULL;
+>>
+>> -	list_for_each_entry(info, &domain->devices, link)
+>> -		if (info->iommu == iommu && info->bus == bus &&
+>> -		    info->devfn == devfn) {
+>> -			if (info->ats_supported && info->dev)
+>> -				return info;
+>> +	spin_lock_irqsave(&device_domain_lock, flags);
+>> +	list_for_each_entry(tmp, &domain->devices, link) {
+>> +		if (tmp->iommu == iommu && tmp->bus == bus &&
+>> +		    tmp->devfn == devfn) {
+>> +			if (tmp->ats_supported)
+>> +				info = tmp;
+> 
+> Directly returning with unlock here is clearer than adding
+> another tmp variable...
 
-Yes. It could be removed and use info->domain directly.
+Sure.
 
 > 
-> btw I didn't see info->domain is cleared in this path. Is it correct?
+>> @@ -2460,15 +2450,14 @@ static int domain_add_dev_info(struct
+>> dmar_domain *domain, struct device *dev)
+>>   	if (!iommu)
+>>   		return -ENODEV;
+>>
+>> -	spin_lock_irqsave(&device_domain_lock, flags);
+>> -	info->domain = domain;
+>>   	ret = domain_attach_iommu(domain, iommu);
+>> -	if (ret) {
+>> -		spin_unlock_irqrestore(&device_domain_lock, flags);
+>> +	if (ret)
+>>   		return ret;
+>> -	}
+>> +
+>> +	spin_lock_irqsave(&device_domain_lock, flags);
+>>   	list_add(&info->link, &domain->devices);
+>>   	spin_unlock_irqrestore(&device_domain_lock, flags);
+>> +	info->domain = domain;
+>>
 > 
+> This is incorrect. You need fully initialize the object before adding
+> it to the list. Otherwise a search right after above unlock and
+> before assigning info->domain will get a wrong data
 
-It's better to clear here. I will make this change in my in-process
-blocking domain series.
-
-But it doesn't cause any real problems because the Intel IOMMU driver
-supports default domain, hence the logic here is info->domain is
-replaced, but not cleared.
+Fair enough. Will fix it in the next version.
 
 Best regards,
 baolu
