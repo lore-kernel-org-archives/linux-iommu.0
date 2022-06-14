@@ -1,112 +1,160 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id CF59AC43334
-	for <iommu@archiver.kernel.org>; Tue, 14 Jun 2022 19:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6389BC433EF
+	for <iommu@archiver.kernel.org>; Tue, 14 Jun 2022 20:45:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6687F823C0;
-	Tue, 14 Jun 2022 19:01:55 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id E67CD40941;
+	Tue, 14 Jun 2022 20:45:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ToCLuDTL2oCH; Tue, 14 Jun 2022 19:01:54 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 2A72C82695;
-	Tue, 14 Jun 2022 19:01:54 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EBD7BC0039;
-	Tue, 14 Jun 2022 19:01:53 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 34E0CC002D
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 19:01:53 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 1CDFE410D5
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 19:01:53 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Gb_pIjX6s0eH for <iommu@lists.linux-foundation.org>;
- Tue, 14 Jun 2022 19:01:52 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp4.osuosl.org (Postfix) with ESMTPS id E7A89410CF
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 19:01:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1655233310;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=SAh+GOzRM5ZJKSrACCl7nQjWeiM90GqoVoI/fuo1lHY=;
- b=a4w/oG3yZrhIYO/Flql3/5EeKOjKFznxdLycpIVP90ijdgy8wWQVUuwnxe3KlM9kiYHWSO
- Qd77uy/hZ+9ES7Edhy8xBOFv96jXgf7GSvkgGcVwlC0kOqA4hbup1WfSZ0HJZ6ULkJQ/cP
- JJjmddgX+odD34cyNsAYfHWzjuYLgVI=
-Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com
- [209.85.210.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-482-a4SRiP_zNbCklaCG5sFkzg-1; Tue, 14 Jun 2022 15:01:49 -0400
-X-MC-Unique: a4SRiP_zNbCklaCG5sFkzg-1
-Received: by mail-pf1-f197.google.com with SMTP id
- 206-20020a6218d7000000b0051893ee2888so4169567pfy.16
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jun 2022 12:01:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=SAh+GOzRM5ZJKSrACCl7nQjWeiM90GqoVoI/fuo1lHY=;
- b=B1ufaSepqk97kv8vmERTeDmBrZ0xw+d6bxgWgVGGaPHUQVwPIv8JBfSbrdmEWGjyS8
- MLwhzViF+bwwZ7V3oC1QeXOIQU38V2Arx5RamrxgPyb+zlC+YsKqH4kzUzz/JycUtWCF
- 1reE45gMwz8UttKyH4DrtoOE+l5JOYCFh3YBjcrplZGT2FCUwsxBRe4ANSNk+UeZfDWi
- 5a7RkB27RN+mgH7yukqYY226Yw0Jd/sgmir8D1uTSvWaTbK47YOW1j82K6PJagBJ4QZZ
- zuv7QdLO/Ya2CQ4S7mYDD+/sxslJSU8AwvYUHoXcz5T64Idn3r2WuZm2ekJGGMgYV9+p
- BSyw==
-X-Gm-Message-State: AOAM531mQthxrW9mX0DOoyHDqIJpUXAl+P/8m1Ldi1PXCesjRyNFtniO
- dPzVL0weG9905v7R+sn+PHtK6qNCcbNU/bTSYpXjied5x5uF2uHe6RucCmL2Ty/pZI82pIFn6c9
- sJoEPqIy48NaBfa+mwuqP3OvkOkNT8g==
-X-Received: by 2002:a63:ff19:0:b0:403:7c60:ae96 with SMTP id
- k25-20020a63ff19000000b004037c60ae96mr5581534pgi.466.1655233308295; 
- Tue, 14 Jun 2022 12:01:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx0/yOlBlVpAjgAT0lLPDbPxws5cMgkxTruGHAuqHHujxe+ske9BuknPn+Zqn64BRk4zuXORQ==
-X-Received: by 2002:a63:ff19:0:b0:403:7c60:ae96 with SMTP id
- k25-20020a63ff19000000b004037c60ae96mr5581514pgi.466.1655233308009; 
- Tue, 14 Jun 2022 12:01:48 -0700 (PDT)
-Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
- by smtp.gmail.com with ESMTPSA id
- y5-20020a17090a8b0500b001ead2406552sm221754pjn.46.2022.06.14.12.01.45
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 14 Jun 2022 12:01:47 -0700 (PDT)
-Date: Tue, 14 Jun 2022 12:01:45 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Steve Wahl <steve.wahl@hpe.com>
-Subject: Re: [PATCH v2] iommu/vt-d: Make DMAR_UNITS_SUPPORTED a config setting
-Message-ID: <20220614190145.dkdwjnqnd7lv6y4n@cantor>
-References: <20220505194658.246121-1-steve.wahl@hpe.com>
- <20220512151309.330068-1-steve.wahl@hpe.com>
- <20220613205734.3x7i46bnsofzerr4@cantor>
- <673eb011-94f4-46b0-f1b4-24a02a269f4e@linux.intel.com>
- <CALzcddsXciFgKOLSkXxx4Rv_rwh21qe8hkyiEET280D8orP6Vw@mail.gmail.com>
- <9c943703-0c2f-b654-a28b-f594bf90bec9@linux.intel.com>
- <CALzcdduU-baVF9VV-NnYD2rKn0YC5hzS_F9udExRE7guvMqXWg@mail.gmail.com>
- <616dc81c-dfc6-d6c6-1eab-de0e9ba4411f@linux.intel.com>
- <Yqi7L9A/ADXpIvN6@swahl-home.5wahls.com>
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id U7KMusxGuHUa; Tue, 14 Jun 2022 20:45:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 721D24097A;
+	Tue, 14 Jun 2022 20:45:29 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 25DD2C0039;
+	Tue, 14 Jun 2022 20:45:29 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BD616C002D;
+ Tue, 14 Jun 2022 20:45:27 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 9750C81A24;
+ Tue, 14 Jun 2022 20:45:27 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id tuGb4oKICU5h; Tue, 14 Jun 2022 20:45:26 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com
+ (mail-co1nam11on20631.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7eab::631])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 82EE281A15;
+ Tue, 14 Jun 2022 20:45:26 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IJ3bF63yYGUN6eohvnWDP9oKyS+9TiW3ayXA/a22grBqOH2hJwisWr8dg6vL6FouhZIJxnde5LqjRSaB0B+B6jBVGsQk36B93Y7xZpZs+lo13PR26x+v0opZkLXS5oaJN5Qfqj7ancj27L3sTu9l27UYeoUv4RDgI8FjYffqcgUDp5V/qg9/U2iH1q2hqf2FXYMLLk3zd5kohvDblI1mhnW5/Zoso9i+mYdgxPpaLq99t7uaJCD0z+zSDITiw4ywtOfDCKZ9sjhwxtl6lt7Dm2tZfMxBdtDDkok9al6DA7ljsRd0uGbx6pYuf9js6DZSCCbD3myNMfIA0bqVbabvCA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=h+wdnHzm5/tFJI64HWledeJrntDDTEnQRGQb3TjHaak=;
+ b=OqjzX1hhs8nf4EaE+2jE3pmO2Kjv2Mpr0fX4ctxEq4KLBSW0RYxjDnmzTvipUuAhUik3AAYgXsEQ9KKGf8RZgjwoViD4bZ+IrVBJp6v6s1KcottmCIVrRKvabPKML4QZ32oDBXoewriLTn8etvY8/CjbYtPNfIRmzBO78If3Lk65ZZUY+El2wr7LiYLrddG9srRMYGmbc2D6BqCYpYBAoNtR3jdIPEfACZrGqt3eHOPoTaVW3yy5O9+9//T3tuI2ozbvEZgzOk8c0XEx4ZSevYhwo98Qyr3cIaSJAv1K7NBIZAnl3WMPqEUq87YW2fpRPkfLISpEQUG3DqjD5psJSg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=h+wdnHzm5/tFJI64HWledeJrntDDTEnQRGQb3TjHaak=;
+ b=XfpsHHlhP6RjgRnv2YvQYPgMseZ6o6stX8nOOrlRUvybxcMS0kC7GSuFMym2nIlbXTp7Odm9I5U5Pf3N/Y2WkCxg89a5nmpO9fvfNZnGmnygKuB/JgY2xtYkaauV+jQq0mCRmEzTu9Mw225ue7e9JSF9FC1xZkmQsaZ12oLvnqlPkb77jV0aKtAGged9X2LvbdBlHCNgh624YBjemTB/kCW9nwo5NuB9PgBKzoc81Lw7L3ZFP3iaf855HfB0+bmqlcx/gJwTpcgGazzT9HTEPQPP29lEZR/+LiMa2HOJF1T/T9Z4/taJufU6An6tgBiu7beCFIpJBgw8Q/Wxz4iHPw==
+Received: from BN0PR04CA0144.namprd04.prod.outlook.com (2603:10b6:408:ed::29)
+ by BN6PR1201MB0113.namprd12.prod.outlook.com (2603:10b6:405:55::10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.12; Tue, 14 Jun
+ 2022 20:45:23 +0000
+Received: from BN8NAM11FT008.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:ed:cafe::87) by BN0PR04CA0144.outlook.office365.com
+ (2603:10b6:408:ed::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.17 via Frontend
+ Transport; Tue, 14 Jun 2022 20:45:23 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.235) by
+ BN8NAM11FT008.mail.protection.outlook.com (10.13.177.95) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5332.12 via Frontend Transport; Tue, 14 Jun 2022 20:45:23 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32;
+ Tue, 14 Jun 2022 20:45:22 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 14 Jun
+ 2022 13:45:22 -0700
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22 via Frontend
+ Transport; Tue, 14 Jun 2022 13:45:19 -0700
+Date: Tue, 14 Jun 2022 13:45:18 -0700
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH 3/5] vfio/iommu_type1: Prefer to reuse domains vs match
+ enforced cache coherency
+Message-ID: <YqjzXpzuBa4ATf9o@Asurada-Nvidia>
+References: <20220606061927.26049-1-nicolinc@nvidia.com>
+ <20220606061927.26049-4-nicolinc@nvidia.com>
+ <BN9PR11MB5276DC98E75B1906A76F7ADC8CA49@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220608111724.GL1343366@nvidia.com>
+ <DM4PR11MB52781590FB8FB197579DEE848CA49@DM4PR11MB5278.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <Yqi7L9A/ADXpIvN6@swahl-home.5wahls.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jsnitsel@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
 Content-Disposition: inline
-Cc: Dimitri Sivanich <sivanich@hpe.com>, Joerg Roedel <jroedel@suse.de>,
- Russ Anderson <russ.anderson@hpe.com>, Mike Travis <mike.travis@hpe.com>,
- David Woodhouse <dwmw2@infradead.org>,
- Kyung Min Park <kyung.min.park@intel.com>,
- Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
- iommu <iommu@lists.linux-foundation.org>, Will Deacon <will@kernel.org>
+In-Reply-To: <DM4PR11MB52781590FB8FB197579DEE848CA49@DM4PR11MB5278.namprd11.prod.outlook.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c57380c9-1dd6-4d7d-4096-08da4e46ce09
+X-MS-TrafficTypeDiagnostic: BN6PR1201MB0113:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR1201MB0113233C3B5CAF3FE03B6129ABAA9@BN6PR1201MB0113.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 01Lo7EEKLCy2OIC9zTeh6zz/WeBLpYGCF/uXe2ghKhndvNCltYjbF+9OT7LjgeEp0EGOYX5nuh8iNeJdBU9ltcgjgxnXDpq2V4ci2ZGnH/qdqBYJAvHqdOHKYZnlUsuyIwMc5/ZbSNSlzit+njn0WYai4x8rr0ZEmgKxr9lbMKggl+67Z3iwkRyy0mB0dp8SfaBVMh1XZDS8flTgxtRw9ggZO3cGg1XUhhsXl9VK5HMTXN8sAFQn3IJgkOd8SZ8F75KGwXFAp8byCM4c6ZzPY0ocQ+1DYLkWW7xxoqtllkzXftPyL/EON92SQXB0iomv5sJSfASJa52ZEdJ9ZCVP8emmMOA0am7u7MWVpExc6P/LjBm1bgZANxlx1mptyq0XjhB057UHTchHzc333st+7lAC+iGMOew4JEbMYoRP//znW+l8zk9usgbzA+tg55NalrgL7Pwht3H1lcAyo+37W026OIYzHwBTwtw0dS3vbt5YA35V7kyPIZnJri/6mo9tuelWk3JF9QPHOG4EAVfkPPv9nWOOTYs4BGK1uO5sxTULTBgNSVwaSw2R+JzRxKw95KPJE1sUFHwcXvCi6mNojKWSjRSoZgD0KA0/ZAbi09qjpoXRJjk/2PiOSdswHXc9qzUWl36cTtF0LUxCn7pNzSodPa/MLmoZXXZ5fZNnEXHmKdEljxtMKov1+RUJYUOPNVkI2hG8arkjz3tAzGtodg==
+X-Forefront-Antispam-Report: CIP:12.22.5.235; CTRY:US; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:InfoNoRecords; CAT:NONE;
+ SFS:(13230016)(4636009)(40470700004)(36840700001)(46966006)(5660300002)(7416002)(356005)(36860700001)(7406005)(2906002)(186003)(4744005)(40460700003)(82310400005)(26005)(9686003)(33716001)(70586007)(54906003)(8936002)(86362001)(70206006)(55016003)(508600001)(83380400001)(4326008)(47076005)(8676002)(316002)(426003)(336012)(6916009)(81166007)(36900700001);
+ DIR:OUT; SFP:1101; 
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2022 20:45:23.5861 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c57380c9-1dd6-4d7d-4096-08da4e46ce09
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[12.22.5.235];
+ Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT008.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB0113
+Cc: "cohuck@redhat.com" <cohuck@redhat.com>,
+ "heiko@sntech.de" <heiko@sntech.de>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+ "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+ "alim.akhtar@samsung.com" <alim.akhtar@samsung.com>,
+ "will@kernel.org" <will@kernel.org>,
+ "alyssa@rosenzweig.io" <alyssa@rosenzweig.io>,
+ "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+ "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>,
+ "samuel@sholland.org" <samuel@sholland.org>,
+ "zhang.lyra@gmail.com" <zhang.lyra@gmail.com>,
+ "jernej.skrabec@gmail.com" <jernej.skrabec@gmail.com>,
+ "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
+ "linux-rockchip@lists.infradead.org" <linux-rockchip@lists.infradead.org>,
+ "wens@csie.org" <wens@csie.org>, "agross@kernel.org" <agross@kernel.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, "orsonzhai@gmail.com" <orsonzhai@gmail.com>,
+ "gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>,
+ "linux-sunxi@lists.linux.dev" <linux-sunxi@lists.linux.dev>,
+ "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+ "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+ "virtualization@lists.linux-foundation.org"
+ <virtualization@lists.linux-foundation.org>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+ "marcan@marcan.st" <marcan@marcan.st>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>,
+ "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,111 +167,40 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Nicolin Chen via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Nicolin Chen <nicolinc@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jun 14, 2022 at 11:45:35AM -0500, Steve Wahl wrote:
-> On Tue, Jun 14, 2022 at 10:21:29AM +0800, Baolu Lu wrote:
-> > On 2022/6/14 09:54, Jerry Snitselaar wrote:
-> > > On Mon, Jun 13, 2022 at 6:51 PM Baolu Lu <baolu.lu@linux.intel.com> wrote:
-> > > > 
-> > > > On 2022/6/14 09:44, Jerry Snitselaar wrote:
-> > > > > On Mon, Jun 13, 2022 at 6:36 PM Baolu Lu<baolu.lu@linux.intel.com>  wrote:
-> > > > > > On 2022/6/14 04:57, Jerry Snitselaar wrote:
-> > > > > > > On Thu, May 12, 2022 at 10:13:09AM -0500, Steve Wahl wrote:
-> > > > > > > > To support up to 64 sockets with 10 DMAR units each (640), make the
-> > > > > > > > value of DMAR_UNITS_SUPPORTED adjustable by a config variable,
-> > > > > > > > CONFIG_DMAR_UNITS_SUPPORTED, and make it's default 1024 when MAXSMP is
-> > > > > > > > set.
-> > > > > > > > 
-> > > > > > > > If the available hardware exceeds DMAR_UNITS_SUPPORTED (previously set
-> > > > > > > > to MAX_IO_APICS, or 128), it causes these messages: "DMAR: Failed to
-> > > > > > > > allocate seq_id", "DMAR: Parse DMAR table failure.", and "x2apic: IRQ
-> > > > > > > > remapping doesn't support X2APIC mode x2apic disabled"; and the system
-> > > > > > > > fails to boot properly.
-> > > > > > > > 
-> > > > > > > > Signed-off-by: Steve Wahl<steve.wahl@hpe.com>
-> > > > > > > > ---
-> > > > > > > > 
-> > > > > > > > Note that we could not find a reason for connecting
-> > > > > > > > DMAR_UNITS_SUPPORTED to MAX_IO_APICS as was done previously.  Perhaps
-> > > > > > > > it seemed like the two would continue to match on earlier processors.
-> > > > > > > > There doesn't appear to be kernel code that assumes that the value of
-> > > > > > > > one is related to the other.
-> > > > > > > > 
-> > > > > > > > v2: Make this value a config option, rather than a fixed constant.  The default
-> > > > > > > > values should match previous configuration except in the MAXSMP case.  Keeping the
-> > > > > > > > value at a power of two was requested by Kevin Tian.
-> > > > > > > > 
-> > > > > > > >     drivers/iommu/intel/Kconfig | 6 ++++++
-> > > > > > > >     include/linux/dmar.h        | 6 +-----
-> > > > > > > >     2 files changed, 7 insertions(+), 5 deletions(-)
-> > > > > > > > 
-> > > > > > > > diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
-> > > > > > > > index 247d0f2d5fdf..fdbda77ac21e 100644
-> > > > > > > > --- a/drivers/iommu/intel/Kconfig
-> > > > > > > > +++ b/drivers/iommu/intel/Kconfig
-> > > > > > > > @@ -9,6 +9,12 @@ config DMAR_PERF
-> > > > > > > >     config DMAR_DEBUG
-> > > > > > > >        bool
-> > > > > > > > 
-> > > > > > > > +config DMAR_UNITS_SUPPORTED
-> > > > > > > > +    int "Number of DMA Remapping Units supported"
-> > > > > > > Also, should there be a "depends on (X86 || IA64)" here?
-> > > > > > Do you have any compilation errors or warnings?
-> > > > > > 
-> > > > > > Best regards,
-> > > > > > baolu
-> > > > > > 
-> > > > > I think it is probably harmless since it doesn't get used elsewhere,
-> > > > > but our tooling was complaining to me because DMAR_UNITS_SUPPORTED was
-> > > > > being autogenerated into the configs for the non-x86 architectures we
-> > > > > build (aarch64, s390x, ppcle64).
-> > > > > We have files corresponding to the config options that it looks at,
-> > > > > and I had one for x86 and not the others so it noticed the
-> > > > > discrepancy.
-> > > > 
-> > > > So with "depends on (X86 || IA64)", that tool doesn't complain anymore,
-> > > > right?
-> > > > 
-> > > > Best regards,
-> > > > baolu
-> > > > 
-> > > 
-> > > Yes, with the depends it no longer happens.
-> > 
-> > The dmar code only exists on X86 and IA64 arch's. Adding this depending
-> > makes sense to me. I will add it if no objections.
+Hi Kevin,
+
+On Wed, Jun 08, 2022 at 11:48:27PM +0000, Tian, Kevin wrote:
+> > > > The KVM mechanism for controlling wbinvd is only triggered during
+> > > > kvm_vfio_group_add(), meaning it is a one-shot test done once the
+> > devices
+> > > > are setup.
+> > >
+> > > It's not one-shot. kvm_vfio_update_coherency() is called in both
+> > > group_add() and group_del(). Then the coherency property is
+> > > checked dynamically in wbinvd emulation:
+> >
+> > From the perspective of managing the domains that is still
+> > one-shot. It doesn't get updated when individual devices are
+> > added/removed to domains.
 > 
-> I think that works after Baolu's patchset that makes intel-iommu.h
-> private.  I'm pretty sure it wouldn't have worked before that.
-> 
-> No objections.
-> 
+> It's unchanged per-domain but dynamic per-vm when multiple
+> domains are added/removed (i.e. kvm->arch.noncoherent_dma_count).
+> It's the latter being checked in the kvm.
 
-Yes, I think applying it with the depends prior to Baolu's change would
-still run into the issue from the KTR report if someone compiled without
-INTEL_IOMMU enabled.
+I am going to send a v2, yet not quite getting the point here.
+Meanwhile, Jason is on leave.
 
-This was dealing with being able to do something like:
+What, in your opinion, would be an accurate description here?
 
-make allmodconfig ARCH=arm64 ; grep DMAR_UNITS .config
-
-and finding CONFIG_DMAR_UNITS_SUPPORTED=64.
-
-Thinking some more though, instead of the depends being on the arch
-would depending on DMAR_TABLE or INTEL_IOMMU be more appropriate?
-
-Regards,
-Jerry
-
-> --> Steve
-> 
-> -- 
-> Steve Wahl, Hewlett Packard Enterprise
-
+Thanks
+Nic
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
