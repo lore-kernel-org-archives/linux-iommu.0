@@ -1,68 +1,86 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 458E0C433EF
-	for <iommu@archiver.kernel.org>; Wed, 15 Jun 2022 10:14:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 262B7C43334
+	for <iommu@archiver.kernel.org>; Wed, 15 Jun 2022 10:28:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 0578040C34;
-	Wed, 15 Jun 2022 10:14:12 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id BC2E76066D;
+	Wed, 15 Jun 2022 10:28:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8VFwsjQsNIoT; Wed, 15 Jun 2022 10:14:11 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Z91iVo2GWFzd; Wed, 15 Jun 2022 10:28:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id DE7BC40C28;
-	Wed, 15 Jun 2022 10:14:10 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id BA23D607C1;
+	Wed, 15 Jun 2022 10:28:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C46D0C007A;
-	Wed, 15 Jun 2022 10:14:10 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8862AC0032
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:14:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8FD48C0032;
+	Wed, 15 Jun 2022 10:28:26 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F2B80C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:28:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id DA78640C4B
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:12:56 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id E21FD83E16
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:28:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id flNbPJ36Aq5H for <iommu@lists.linux-foundation.org>;
- Wed, 15 Jun 2022 10:12:56 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 04AFC40C4E
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:12:55 +0000 (UTC)
-Received: from fraeml711-chm.china.huawei.com (unknown [172.18.147.226])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LNLg95Q5Dz67K73;
- Wed, 15 Jun 2022 18:11:17 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml711-chm.china.huawei.com (10.206.15.60) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 15 Jun 2022 12:12:53 +0200
-Received: from A2006125610.china.huawei.com (10.202.227.178) by
- lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 15 Jun 2022 11:12:46 +0100
-To: <linux-arm-kernel@lists.infradead.org>, <linux-acpi@vger.kernel.org>,
- <iommu@lists.linux-foundation.org>
-Subject: [PATCH v13 9/9] iommu/arm-smmu: Get associated RMR info and install
- bypass SMR
-Date: Wed, 15 Jun 2022 11:10:44 +0100
-Message-ID: <20220615101044.1972-10-shameerali.kolothum.thodi@huawei.com>
-X-Mailer: git-send-email 2.12.0.windows.1
-In-Reply-To: <20220615101044.1972-1-shameerali.kolothum.thodi@huawei.com>
-References: <20220615101044.1972-1-shameerali.kolothum.thodi@huawei.com>
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Em0E8UgT9_N6 for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Jun 2022 10:28:24 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com
+ [IPv6:2607:f8b0:4864:20::834])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 1F7F783E12
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:28:24 +0000 (UTC)
+Received: by mail-qt1-x834.google.com with SMTP id f13so7816519qtb.5
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 03:28:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=VRRIXOfBq1yQuH5EfBFqRJA+XF3LzpkQlfmJRxNlHxM=;
+ b=eTPtLP4NDpa8P0aI9dKapfMCGv9h90H8cChydbnDbXwDM3c9dFce+zWip7UvMIpzAj
+ MwWt4NSMWMqrTbGPwJOf7l27KNudx15eMZzj6SyR4Zlj5OpOoagmM2K/3bI+5LT3Niyi
+ h1vN0EW/aD3emP+jNz1Zcr7cozm+JkmhQecbNLlW+mU39R/LAtqcL2ahfL9sPHZJmXtA
+ n+McjAPLlSceH+/folG8esKMX+j5OcZkgls4MZ7OITX1SzUtIIuFxa5K+LPw/fz8Cv5V
+ vwmBMQsLsRdxHoNvxi45kD3Ty/9jaUWcXcCG6j3dwqXXCZ+czmFsSDp+cv482KfCuh2i
+ qjyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=VRRIXOfBq1yQuH5EfBFqRJA+XF3LzpkQlfmJRxNlHxM=;
+ b=Oc5QPGe9qOZMCKqwmiDjM0FRKGmDA2kx3uTE2AzUA/BguMSAFV/lzHjkUaccheQ5VJ
+ lDEHFNCuUFvbmH7+nJ7WubaojDJxwf78QvaUZflRPlmG1zsukWDfB6fuMoP/uDEKZinw
+ d/wBLJ5JfRfXI1SXiajxWh3/+Wj6NN0XbfvZyTDRWTAdJEbvaqyu306oAkewVXRhCOVg
+ sU4wE2vH5R7T1KrqRg+ffyIEq72r2vqJ6PdegmacB3iDuRZZJAq8Hn9dMXtD7wQj2rPC
+ a9woLEEBsn+MiS6IqE6HwHX3iuhgPMKWBHknzvpVxQbgKcV6lNamPvvjnVcxsPBD0Tsg
+ Twtw==
+X-Gm-Message-State: AOAM531vM7NfmsbBd9mXqswaPBlTqTSqPeHd8EL0fB6DUVeasDZiZvY1
+ 410fO8b6cl7GB0VQh1B562ID/w+A7xyFHFJAUejwKw==
+X-Google-Smtp-Source: ABdhPJzgorGZ/k2s8/OSl6pg37NaKBcKW1yennvKVAegxKpGmun7X2J8lIgtj5Inxl+I5AXypY0S3fE/EQB34TCAN80=
+X-Received: by 2002:a05:622a:1351:b0:305:2e58:939 with SMTP id
+ w17-20020a05622a135100b003052e580939mr7765424qtk.295.1655288902992; Wed, 15
+ Jun 2022 03:28:22 -0700 (PDT)
 MIME-Version: 1.0
-X-Originating-IP: [10.202.227.178]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
-Cc: robin.murphy@arm.com, jon@solid-run.com, linuxarm@huawei.com,
- steven.price@arm.com, hch@infradead.org, guohanjun@huawei.com,
- Sami.Mujawar@arm.com, will@kernel.org, wanghuiqiang@huawei.com
+References: <20220614230136.3726047-1-emma@anholt.net>
+ <20220614230136.3726047-2-emma@anholt.net>
+In-Reply-To: <20220614230136.3726047-2-emma@anholt.net>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date: Wed, 15 Jun 2022 13:28:12 +0300
+Message-ID: <CAA8EJpo=vLmsBRo16_xfbSdfFGvR1ocyuXm=2mqRR-9wyUESvw@mail.gmail.com>
+Subject: Re: [PATCH 2/2] arm64: dts: qcom: sm8250: Enable per-process page
+ tables.
+To: Emma Anholt <emma@anholt.net>
+Cc: Will Deacon <will@kernel.org>, iommu@lists.linux-foundation.org,
+ linux-arm-msm@vger.kernel.org, Jordan Crouse <jcrouse@codeaurora.org>,
+ dri-devel@lists.freedesktop.org, Rob Herring <robh+dt@kernel.org>,
+ Andy Gross <agross@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,102 +93,54 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Shameer Kolothum via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Jon Nettleton <jon@solid-run.com>
+On Wed, 15 Jun 2022 at 02:01, Emma Anholt <emma@anholt.net> wrote:
+>
+> This is an SMMU for the adreno gpu, and adding this compatible lets
+> the driver use per-fd page tables, which are required for security
+> between GPU clients.
+>
+> Signed-off-by: Emma Anholt <emma@anholt.net>
+> ---
+>
+> Tested with a full deqp-vk run on RB5, which did involve some iommu faults.
+>
+>  arch/arm64/boot/dts/qcom/sm8250.dtsi | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+> index a92230bec1dd..483c0e0f1d1a 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+> @@ -2513,7 +2513,7 @@ gpucc: clock-controller@3d90000 {
+>                 };
+>
+>                 adreno_smmu: iommu@3da0000 {
+> -                       compatible = "qcom,sm8250-smmu-500", "arm,mmu-500";
+> +                       compatible = "qcom,sm8250-smmu-500", "arm,mmu-500", "qcom,adreno-smmu";
 
-Check if there is any RMR info associated with the devices behind
-the SMMU and if any, install bypass SMRs for them. This is to
-keep any ongoing traffic associated with these devices alive
-when we enable/reset SMMU during probe().
+I see that other dtsi files use a bit different order for the
+compatibility strings. They put "qcom,adreno-smmu" before
+"arm,mmu-500". Can we please follow them?
 
-Signed-off-by: Jon Nettleton <jon@solid-run.com>
-Signed-off-by: Steven Price <steven.price@arm.com>
-Tested-by: Steven Price <steven.price@arm.com>
-Tested-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
----
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 52 +++++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+With that fixed:
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 2ed3594f384e..7ac4907235c3 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -2071,6 +2071,54 @@ err_reset_platform_ops: __maybe_unused;
- 	return err;
- }
- 
-+static void arm_smmu_rmr_install_bypass_smr(struct arm_smmu_device *smmu)
-+{
-+	struct list_head rmr_list;
-+	struct iommu_resv_region *e;
-+	int idx, cnt = 0;
-+	u32 reg;
-+
-+	INIT_LIST_HEAD(&rmr_list);
-+	iort_get_rmr_sids(dev_fwnode(smmu->dev), &rmr_list);
-+
-+	/*
-+	 * Rather than trying to look at existing mappings that
-+	 * are setup by the firmware and then invalidate the ones
-+	 * that do no have matching RMR entries, just disable the
-+	 * SMMU until it gets enabled again in the reset routine.
-+	 */
-+	reg = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_sCR0);
-+	reg |= ARM_SMMU_sCR0_CLIENTPD;
-+	arm_smmu_gr0_write(smmu, ARM_SMMU_GR0_sCR0, reg);
-+
-+	list_for_each_entry(e, &rmr_list, list) {
-+		struct iommu_iort_rmr_data *rmr;
-+		int i;
-+
-+		rmr = container_of(e, struct iommu_iort_rmr_data, rr);
-+		for (i = 0; i < rmr->num_sids; i++) {
-+			idx = arm_smmu_find_sme(smmu, rmr->sids[i], ~0);
-+			if (idx < 0)
-+				continue;
-+
-+			if (smmu->s2crs[idx].count == 0) {
-+				smmu->smrs[idx].id = rmr->sids[i];
-+				smmu->smrs[idx].mask = 0;
-+				smmu->smrs[idx].valid = true;
-+			}
-+			smmu->s2crs[idx].count++;
-+			smmu->s2crs[idx].type = S2CR_TYPE_BYPASS;
-+			smmu->s2crs[idx].privcfg = S2CR_PRIVCFG_DEFAULT;
-+
-+			cnt++;
-+		}
-+	}
-+
-+	dev_notice(smmu->dev, "\tpreserved %d boot mapping%s\n", cnt,
-+		   cnt == 1 ? "" : "s");
-+	iort_put_rmr_sids(dev_fwnode(smmu->dev), &rmr_list);
-+}
-+
- static int arm_smmu_device_probe(struct platform_device *pdev)
- {
- 	struct resource *res;
-@@ -2191,6 +2239,10 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	}
- 
- 	platform_set_drvdata(pdev, smmu);
-+
-+	/* Check for RMRs and install bypass SMRs if any */
-+	arm_smmu_rmr_install_bypass_smr(smmu);
-+
- 	arm_smmu_device_reset(smmu);
- 	arm_smmu_test_smr_masks(smmu);
- 
+>                         reg = <0 0x03da0000 0 0x10000>;
+>                         #iommu-cells = <2>;
+>                         #global-interrupts = <2>;
+> --
+> 2.36.1
+>
+
+
 -- 
-2.25.1
-
+With best wishes
+Dmitry
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
