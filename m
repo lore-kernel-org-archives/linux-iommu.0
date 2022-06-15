@@ -1,81 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1C1D2C433EF
-	for <iommu@archiver.kernel.org>; Wed, 15 Jun 2022 13:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 45A9DCCA473
+	for <iommu@archiver.kernel.org>; Wed, 15 Jun 2022 13:10:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A3E8D41960;
-	Wed, 15 Jun 2022 13:02:36 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id D7C9340BAC;
+	Wed, 15 Jun 2022 13:10:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EsfOaaBc3nK9; Wed, 15 Jun 2022 13:02:35 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id D5623414C5;
-	Wed, 15 Jun 2022 13:02:34 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B4161C0032;
-	Wed, 15 Jun 2022 13:02:34 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DB134C002D
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 13:02:32 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id C958D408DA
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 13:02:32 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4wP-HJruloRE for <iommu@lists.linux-foundation.org>;
- Wed, 15 Jun 2022 13:02:30 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id q_XE5_SZOdXY; Wed, 15 Jun 2022 13:10:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 0146540178;
+	Wed, 15 Jun 2022 13:10:30 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B93C5C0039;
+	Wed, 15 Jun 2022 13:10:30 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 71B2CC002D
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 13:10:29 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 6838441962
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 13:10:29 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id tPDglSDZkSNv for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Jun 2022 13:10:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 928014034B
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 13:02:30 +0000 (UTC)
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id C282B41960
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 13:10:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1655298150; x=1686834150;
+ t=1655298625; x=1686834625;
  h=message-id:date:mime-version:cc:subject:to:references:
  from:in-reply-to:content-transfer-encoding;
- bh=9aFgN11zv32epzY4IsX2SnErbjKpIlBDe1HikVsn+0U=;
- b=LQXTLOxF4unUQnOQYNk9Pc2R8WlDQASeZg4Gi15t15k5Vcb4YpUTUUHy
- oMI6vB8QKgpHNMXM6K9EUr09P+buvYhXDeqrV/cZiPGE8GQSb6hW3sxT9
- 7S6JBP8/HxZWVPQlXITwLeyhO+DFMtrCc73XmZhrgxSlkZduLKgJEddHh
- rSz9t9bhhuxc1NdzKSMS/WmZOnIW5HcN7AO/dnOotNvG9gQOMEMZC/KsH
- lISDk+VUt7oGeNXqMgvoM9XoqxjRa4/mG+VFM+xhRDcz6346+++1DIpME
- SHmwKJIf9VwyJNHYoL/kNqrHjkIn1TbRqnitdkkO66UVoCpB13T9vVrkW w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="279669341"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; d="scan'208";a="279669341"
+ bh=49iVnIBH2iZUFVwoFe1umaO203mLoJXO8qFijdhPPbM=;
+ b=WTxXP8pohFb5jV+44aOGOMplOZV8wkvbkL9vwdP4Rreaxml7mK2xWfD4
+ Cx1KRJeL656PsE482BO1u/gkliweLJl73vqNJ7pyVbjzhqFedKi5XoGOz
+ mMRHozIr0w1SVUGqUd9Z/KCWMGwN4vTnyLWDmnD/t78bAVZA6kw+pM9gS
+ 7cZWcMOQ7fk4ImysbB8uTKevGmF3FUBDFo4zbFA1YULnUdRS/nd+PxJFG
+ /IUuKhGizJ1AW23f4ZkVYVjaxoqJ+MvRhGs6UYqL9Ynn7yoJPNxftdGH0
+ tuKdsEG+9H7k2osOhY5j4Y+a12iB4MNUEapKqLm4X7zDv+N2fGyeounIw A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="277747074"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; d="scan'208";a="277747074"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 15 Jun 2022 06:02:29 -0700
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; d="scan'208";a="589103071"
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Jun 2022 06:10:25 -0700
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; d="scan'208";a="589105904"
 Received: from leitan-mobl.ccr.corp.intel.com (HELO [10.255.31.142])
  ([10.255.31.142])
  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 15 Jun 2022 06:02:27 -0700
-Message-ID: <08fd79a1-0117-42bb-9105-c8ff400fb7df@linux.intel.com>
-Date: Wed, 15 Jun 2022 21:02:25 +0800
+ 15 Jun 2022 06:10:21 -0700
+Message-ID: <b11b7cca-9e39-ac60-57a9-4e7049579221@linux.intel.com>
+Date: Wed, 15 Jun 2022 21:10:19 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH v2 01/12] iommu/vt-d: debugfs: Remove device_domain_lock
- usage
+Subject: Re: [PATCH v2 03/12] iommu/vt-d: Remove clearing translation data in
+ disable_dmar_iommu()
 Content-Language: en-US
 To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
  "Raj, Ashok" <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>,
  Jason Gunthorpe <jgg@nvidia.com>
 References: <20220614025137.1632762-1-baolu.lu@linux.intel.com>
- <20220614025137.1632762-2-baolu.lu@linux.intel.com>
- <BN9PR11MB527680C1957C0E29E8AE85168CAA9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <4f6f7bb9-5ea4-b466-7a59-62ebd5bc2cf7@linux.intel.com>
- <BN9PR11MB52769385E96377F5FD8CE2928CAD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220614025137.1632762-4-baolu.lu@linux.intel.com>
+ <BN9PR11MB52762E7602FFF7EE4B52AC888CAA9@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <28161d94-6f2d-700f-853d-53b42f4d00d0@linux.intel.com>
+ <BN9PR11MB5276A9FB934BC5F6FA55D4958CAD9@BN9PR11MB5276.namprd11.prod.outlook.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52769385E96377F5FD8CE2928CAD9@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB5276A9FB934BC5F6FA55D4958CAD9@BN9PR11MB5276.namprd11.prod.outlook.com>
 Cc: Will Deacon <will@kernel.org>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
@@ -97,123 +97,66 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/6/15 14:13, Tian, Kevin wrote:
->> From: Baolu Lu<baolu.lu@linux.intel.com>
->> Sent: Wednesday, June 15, 2022 9:54 AM
+On 2022/6/15 14:22, Tian, Kevin wrote:
+>> From: Baolu Lu <baolu.lu@linux.intel.com>
+>> Sent: Tuesday, June 14, 2022 3:21 PM
 >>
->> On 2022/6/14 14:43, Tian, Kevin wrote:
+>> On 2022/6/14 14:49, Tian, Kevin wrote:
 >>>> From: Lu Baolu<baolu.lu@linux.intel.com>
 >>>> Sent: Tuesday, June 14, 2022 10:51 AM
 >>>>
->>>> The domain_translation_struct debugfs node is used to dump the DMAR
->>>> page
->>>> tables for the PCI devices. It potentially races with setting domains to
->>>> devices. The existing code uses a global spinlock device_domain_lock to
->>>> avoid the races, but this is problematical as this lock is only used to
->>>> protect the device tracking lists of each domain.
->>> is it really problematic at this point? Before following patches are applied
->>> using device_domain_lock should have similar effect as holding the group
->>> lock.
->>>
->>> Here it might make more sense to just focus on removing the use of
->>> device_domain_lock outside of iommu.c. Just that using group lock is
->>> cleaner and more compatible to following cleanups.
->>>
->>> and it's worth mentioning that racing with page table updates is out
->>> of the scope of this series. Probably also add a comment in the code
->>> to clarify this point.
->>>
->> Hi Kevin,
+>>>> The disable_dmar_iommu() is called when IOMMU initialization fails or
+>>>> the IOMMU is hot-removed from the system. In both cases, there is no
+>>>> need to clear the IOMMU translation data structures for devices.
+>>>>
+>>>> On the initialization path, the device probing only happens after the
+>>>> IOMMU is initialized successfully, hence there're no translation data
+>>>> structures.
+>>> Out of curiosity. With kexec the IOMMU may contain stale mappings
+>>> from the old kernel. Then is it meaningful to disable IOMMU after the
+>>> new kernel fails to initialize it properly?
 >>
->> How do you like below updated patch?
-> Yes, this is better.
+>> For kexec kernel, if the IOMMU is detected to be pre-enabled, the IOMMU
+>> driver will try to copy tables from the old kernel. If copying table
+>> fails, the IOMMU driver will disable IOMMU and do the normal
+>> initialization.
+>>
 > 
->>   From cecc9a0623780a11c4ea4d0a15aa6187f01541c4 Mon Sep 17 00:00:00
->> 2001
->> From: Lu Baolu<baolu.lu@linux.intel.com>
->> Date: Sun, 29 May 2022 10:18:56 +0800
->> Subject: [PATCH 1/1] iommu/vt-d: debugfs: Remove device_domain_lock
->> usage
->>
->> The domain_translation_struct debugfs node is used to dump the DMAR
->> page
->> tables for the PCI devices. It potentially races with setting domains to
->> devices. The existing code uses the global spinlock device_domain_lock to
->> avoid the races.
->>
->> This removes the use of device_domain_lock outside of iommu.c by replacing
->> it with the group mutex lock. Using the group mutex lock is cleaner and
->> more compatible to following cleanups.
->>
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->> ---
->>    drivers/iommu/intel/debugfs.c | 42 +++++++++++++++++++++++++----------
->>    drivers/iommu/intel/iommu.c   |  2 +-
->>    drivers/iommu/intel/iommu.h   |  1 -
->>    3 files changed, 31 insertions(+), 14 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
->> index d927ef10641b..f4acd8993f60 100644
->> --- a/drivers/iommu/intel/debugfs.c
->> +++ b/drivers/iommu/intel/debugfs.c
->> @@ -342,13 +342,13 @@ static void pgtable_walk_level(struct seq_file *m,
->> struct dma_pte *pde,
->>    	}
->>    }
->>
->> -static int show_device_domain_translation(struct device *dev, void *data)
->> +static int __show_device_domain_translation(struct device *dev, void *data)
->>    {
->> -	struct device_domain_info *info = dev_iommu_priv_get(dev);
->> -	struct dmar_domain *domain = info->domain;
->> +	struct dmar_domain *domain;
->>    	struct seq_file *m = data;
->>    	u64 path[6] = { 0 };
->>
->> +	domain = to_dmar_domain(iommu_get_domain_for_dev(dev));
->>    	if (!domain)
->>    		return 0;
->>
->> @@ -359,20 +359,38 @@ static int show_device_domain_translation(struct
->> device *dev, void *data)
->>    	pgtable_walk_level(m, domain->pgd, domain->agaw + 2, 0, path);
->>    	seq_putc(m, '\n');
->>
->> -	return 0;
->> +	return 1;
->>    }
->>
->> -static int domain_translation_struct_show(struct seq_file *m, void *unused)
->> +static int show_device_domain_translation(struct device *dev, void *data)
->>    {
->> -	unsigned long flags;
->> -	int ret;
->> +	struct iommu_group *group;
->>
->> -	spin_lock_irqsave(&device_domain_lock, flags);
->> -	ret = bus_for_each_dev(&pci_bus_type, NULL, m,
->> -			       show_device_domain_translation);
->> -	spin_unlock_irqrestore(&device_domain_lock, flags);
->> +	group = iommu_group_get(dev);
->> +	if (group) {
->> +		/*
->> +		 * The group->mutex is held across the callback, which will
->> +		 * block calls to iommu_attach/detach_group/device. Hence,
->> +		 * the domain of the device will not change during traversal.
->> +		 *
->> +		 * All devices in an iommu group share a single domain,
->> hence
->> +		 * we only dump the domain of the first device. Even though,
-> bus_for_each_dev() will still lead to duplicated dump in the same group
-> but probably we can leave with it for a debug interface.
-> 
+> What about an error occurred after copying table in the initialization
+> path? The new kernel will be in a state assuming iommu is disabled
+> but it is still enabled using an old mapping for certain devices...
+>   
 
-Yes. This is what it was. Ideally we could walk the iommu groups and
-dump the device names belonging to the group and it's domain mappings,
-but I was not willing to add any helpers in the iommu core just for a
-debugfs use.
+If copying table failed, the translation will be disabled and a clean
+root table will be used.
 
----
+if (translation_pre_enabled(iommu)) {
+         pr_info("Translation already enabled - trying to copy 
+translation structures\n");
+
+         ret = copy_translation_tables(iommu);
+         if (ret) {
+                 /*
+                  * We found the IOMMU with translation
+                  * enabled - but failed to copy over the
+                  * old root-entry table. Try to proceed
+                  * by disabling translation now and
+                  * allocating a clean root-entry table.
+                  * This might cause DMAR faults, but
+                  * probably the dump will still succeed.
+                  */
+                 pr_err("Failed to copy translation tables from previous 
+kernel for %s\n",
+                        iommu->name);
+                 iommu_disable_translation(iommu);
+                 clear_translation_pre_enabled(iommu);
+         } else {
+                 pr_info("Copied translation tables from previous kernel 
+for %s\n",
+                         iommu->name);
+         }
+}
+
 Best regards,
 baolu
 _______________________________________________
