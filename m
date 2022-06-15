@@ -1,57 +1,57 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AA12DC43334
-	for <iommu@archiver.kernel.org>; Wed, 15 Jun 2022 10:12:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 21C93C43334
+	for <iommu@archiver.kernel.org>; Wed, 15 Jun 2022 10:13:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 5BA28419BE;
-	Wed, 15 Jun 2022 10:12:31 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bkI-r6owjC_E; Wed, 15 Jun 2022 10:12:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 1A85D41976;
-	Wed, 15 Jun 2022 10:12:29 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DD4B7C007A;
-	Wed, 15 Jun 2022 10:12:28 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0FA5BC002D
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:12:27 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 63AF840BC9
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:12:01 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id B815940C17;
+	Wed, 15 Jun 2022 10:13:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id e-JNelQYrkbz for <iommu@lists.linux-foundation.org>;
- Wed, 15 Jun 2022 10:12:00 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5ik-hbt0a_xQ; Wed, 15 Jun 2022 10:13:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 25F1C40BF3;
+	Wed, 15 Jun 2022 10:13:03 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 016CEC0032;
+	Wed, 15 Jun 2022 10:13:03 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2ADE5C007A
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:13:02 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 17BD761079
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:12:13 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id nnIJAZwDDbmd for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Jun 2022 10:12:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
  [185.176.79.56])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 76DBF40B9E
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:12:00 +0000 (UTC)
-Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.201])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LNLf60hpqz67bmq;
- Wed, 15 Jun 2022 18:10:22 +0800 (CST)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 39322610EB
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:12:09 +0000 (UTC)
+Received: from fraeml734-chm.china.huawei.com (unknown [172.18.147.200])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LNLbr3FH7z6H8Wj;
+ Wed, 15 Jun 2022 18:08:24 +0800 (CST)
 Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
+ fraeml734-chm.china.huawei.com (10.206.15.215) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 15 Jun 2022 12:11:58 +0200
+ 15.1.2375.24; Wed, 15 Jun 2022 12:12:06 +0200
 Received: from A2006125610.china.huawei.com (10.202.227.178) by
  lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 15 Jun 2022 11:11:51 +0100
+ 15.1.2375.24; Wed, 15 Jun 2022 11:11:59 +0100
 To: <linux-arm-kernel@lists.infradead.org>, <linux-acpi@vger.kernel.org>,
  <iommu@lists.linux-foundation.org>
-Subject: [PATCH v13 3/9] ACPI/IORT: Provide a generic helper to retrieve
- reserve regions
-Date: Wed, 15 Jun 2022 11:10:38 +0100
-Message-ID: <20220615101044.1972-4-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v13 4/9] ACPI/IORT: Add support to retrieve IORT RMR reserved
+ regions
+Date: Wed, 15 Jun 2022 11:10:39 +0100
+Message-ID: <20220615101044.1972-5-shameerali.kolothum.thodi@huawei.com>
 X-Mailer: git-send-email 2.12.0.windows.1
 In-Reply-To: <20220615101044.1972-1-shameerali.kolothum.thodi@huawei.com>
 References: <20220615101044.1972-1-shameerali.kolothum.thodi@huawei.com>
@@ -77,85 +77,360 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
 From: Shameer Kolothum via iommu <iommu@lists.linux-foundation.org>
 Reply-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Q3VycmVudGx5IElPUlQgcHJvdmlkZXMgYSBoZWxwZXIgdG8gcmV0cmlldmUgSFcgTVNJIHJlc2Vy
-dmUgcmVnaW9ucy4KQ2hhbmdlIHRoaXMgdG8gYSBnZW5lcmljIGhlbHBlciB0byByZXRyaWV2ZcKg
-YW55IElPUlQgcmVsYXRlZCByZXNlcnZlCnJlZ2lvbnMuIFRoaXMgd2lsbCBiZSB1c2VmdWwgd2hl
-biB3ZcKgYWRkIHN1cHBvcnQgZm9yIFJNUiBub2RlcyBpbgpzdWJzZXF1ZW50IHBhdGNoZXMuCgpb
-TG9yZW56bzogRm9yIEFDUEkgSU9SVF0KUmV2aWV3ZWQtYnk6IExvcmVuem8gUGllcmFsaXNpIDxs
-b3JlbnpvLnBpZXJhbGlzaUBhcm0uY29tPgpSZXZpZXdlZC1ieTogQ2hyaXN0b3BoIEhlbGx3aWcg
-PGhjaEBsc3QuZGU+ClRlc3RlZC1ieTogU3RldmVuIFByaWNlIDxzdGV2ZW4ucHJpY2VAYXJtLmNv
-bT4KVGVzdGVkLWJ5OiBMYXVyZW50aXUgVHVkb3IgPGxhdXJlbnRpdS50dWRvckBueHAuY29tPgpU
-ZXN0ZWQtYnk6IEhhbmp1biBHdW8gPGd1b2hhbmp1bkBodWF3ZWkuY29tPgpSZXZpZXdlZC1ieTog
-SGFuanVuIEd1byA8Z3VvaGFuanVuQGh1YXdlaS5jb20+ClNpZ25lZC1vZmYtYnk6IFNoYW1lZXIg
-S29sb3RodW0gPHNoYW1lZXJhbGkua29sb3RodW0udGhvZGlAaHVhd2VpLmNvbT4KLS0tCiBkcml2
-ZXJzL2FjcGkvYXJtNjQvaW9ydC5jIHwgMjIgKysrKysrKysrKysrKysrLS0tLS0tLQogZHJpdmVy
-cy9pb21tdS9kbWEtaW9tbXUuYyB8ICAyICstCiBpbmNsdWRlL2xpbnV4L2FjcGlfaW9ydC5oIHwg
-IDQgKystLQogMyBmaWxlcyBjaGFuZ2VkLCAxOCBpbnNlcnRpb25zKCspLCAxMCBkZWxldGlvbnMo
-LSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2FjcGkvYXJtNjQvaW9ydC5jIGIvZHJpdmVycy9hY3Bp
-L2FybTY0L2lvcnQuYwppbmRleCAyMTNmNjFjYWUxNzYuLmNkNWQxZDc4MjNjYiAxMDA2NDQKLS0t
-IGEvZHJpdmVycy9hY3BpL2FybTY0L2lvcnQuYworKysgYi9kcml2ZXJzL2FjcGkvYXJtNjQvaW9y
-dC5jCkBAIC04MDYsMTUgKzgwNiwxMyBAQCBzdGF0aWMgc3RydWN0IGFjcGlfaW9ydF9ub2RlICpp
-b3J0X2dldF9tc2lfcmVzdl9pb21tdShzdHJ1Y3QgZGV2aWNlICpkZXYpCiAJcmV0dXJuIE5VTEw7
-CiB9CiAKLS8qKgotICogaW9ydF9pb21tdV9tc2lfZ2V0X3Jlc3ZfcmVnaW9ucyAtIFJlc2VydmVk
-IHJlZ2lvbiBkcml2ZXIgaGVscGVyCi0gKiBAZGV2OiBEZXZpY2UgZnJvbSBpb21tdV9nZXRfcmVz
-dl9yZWdpb25zKCkKLSAqIEBoZWFkOiBSZXNlcnZlZCByZWdpb24gbGlzdCBmcm9tIGlvbW11X2dl
-dF9yZXN2X3JlZ2lvbnMoKQotICoKKy8qCisgKiBSZXRyaWV2ZSBwbGF0Zm9ybSBzcGVjaWZpYyBI
-VyBNU0kgcmVzZXJ2ZSByZWdpb25zLgogICogVGhlIElUUyBpbnRlcnJ1cHQgdHJhbnNsYXRpb24g
-c3BhY2VzIChJVFNfYmFzZSArIFNaXzY0SywgU1pfNjRLKQogICogYXNzb2NpYXRlZCB3aXRoIHRo
-ZSBkZXZpY2UgYXJlIHRoZSBIVyBNU0kgcmVzZXJ2ZWQgcmVnaW9ucy4KICAqLwotdm9pZCBpb3J0
-X2lvbW11X21zaV9nZXRfcmVzdl9yZWdpb25zKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGxp
-c3RfaGVhZCAqaGVhZCkKK3N0YXRpYyB2b2lkIGlvcnRfaW9tbXVfbXNpX2dldF9yZXN2X3JlZ2lv
-bnMoc3RydWN0IGRldmljZSAqZGV2LAorCQkJCQkgICAgc3RydWN0IGxpc3RfaGVhZCAqaGVhZCkK
-IHsKIAlzdHJ1Y3QgaW9tbXVfZndzcGVjICpmd3NwZWMgPSBkZXZfaW9tbXVfZndzcGVjX2dldChk
-ZXYpOwogCXN0cnVjdCBhY3BpX2lvcnRfaXRzX2dyb3VwICppdHM7CkBAIC04NjMsNiArODYxLDE2
-IEBAIHZvaWQgaW9ydF9pb21tdV9tc2lfZ2V0X3Jlc3ZfcmVnaW9ucyhzdHJ1Y3QgZGV2aWNlICpk
-ZXYsIHN0cnVjdCBsaXN0X2hlYWQgKmhlYWQpCiAJfQogfQogCisvKioKKyAqIGlvcnRfaW9tbXVf
-Z2V0X3Jlc3ZfcmVnaW9ucyAtIEdlbmVyaWMgaGVscGVyIHRvIHJldHJpZXZlIHJlc2VydmVkIHJl
-Z2lvbnMuCisgKiBAZGV2OiBEZXZpY2UgZnJvbSBpb21tdV9nZXRfcmVzdl9yZWdpb25zKCkKKyAq
-IEBoZWFkOiBSZXNlcnZlZCByZWdpb24gbGlzdCBmcm9tIGlvbW11X2dldF9yZXN2X3JlZ2lvbnMo
-KQorICovCit2b2lkIGlvcnRfaW9tbXVfZ2V0X3Jlc3ZfcmVnaW9ucyhzdHJ1Y3QgZGV2aWNlICpk
-ZXYsIHN0cnVjdCBsaXN0X2hlYWQgKmhlYWQpCit7CisJaW9ydF9pb21tdV9tc2lfZ2V0X3Jlc3Zf
-cmVnaW9ucyhkZXYsIGhlYWQpOworfQorCiBzdGF0aWMgaW5saW5lIGJvb2wgaW9ydF9pb21tdV9k
-cml2ZXJfZW5hYmxlZCh1OCB0eXBlKQogewogCXN3aXRjaCAodHlwZSkgewpAQCAtMTAyNyw3ICsx
-MDM1LDcgQEAgaW50IGlvcnRfaW9tbXVfY29uZmlndXJlX2lkKHN0cnVjdCBkZXZpY2UgKmRldiwg
-Y29uc3QgdTMyICppZF9pbikKIH0KIAogI2Vsc2UKLXZvaWQgaW9ydF9pb21tdV9tc2lfZ2V0X3Jl
-c3ZfcmVnaW9ucyhzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBsaXN0X2hlYWQgKmhlYWQpCit2
-b2lkIGlvcnRfaW9tbXVfZ2V0X3Jlc3ZfcmVnaW9ucyhzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVj
-dCBsaXN0X2hlYWQgKmhlYWQpCiB7IH0KIGludCBpb3J0X2lvbW11X2NvbmZpZ3VyZV9pZChzdHJ1
-Y3QgZGV2aWNlICpkZXYsIGNvbnN0IHUzMiAqaW5wdXRfaWQpCiB7IHJldHVybiAtRU5PREVWOyB9
-CmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2RtYS1pb21tdS5jIGIvZHJpdmVycy9pb21tdS9k
-bWEtaW9tbXUuYwppbmRleCBmOTAyNTE1NzJhNWQuLjk3MGEyZTAxODY4NCAxMDA2NDQKLS0tIGEv
-ZHJpdmVycy9pb21tdS9kbWEtaW9tbXUuYworKysgYi9kcml2ZXJzL2lvbW11L2RtYS1pb21tdS5j
-CkBAIC0zODUsNyArMzg1LDcgQEAgdm9pZCBpb21tdV9kbWFfZ2V0X3Jlc3ZfcmVnaW9ucyhzdHJ1
-Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBsaXN0X2hlYWQgKmxpc3QpCiB7CiAKIAlpZiAoIWlzX29m
-X25vZGUoZGV2X2lvbW11X2Z3c3BlY19nZXQoZGV2KS0+aW9tbXVfZndub2RlKSkKLQkJaW9ydF9p
-b21tdV9tc2lfZ2V0X3Jlc3ZfcmVnaW9ucyhkZXYsIGxpc3QpOworCQlpb3J0X2lvbW11X2dldF9y
-ZXN2X3JlZ2lvbnMoZGV2LCBsaXN0KTsKIAogfQogRVhQT1JUX1NZTUJPTChpb21tdV9kbWFfZ2V0
-X3Jlc3ZfcmVnaW9ucyk7CmRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2FjcGlfaW9ydC5oIGIv
-aW5jbHVkZS9saW51eC9hY3BpX2lvcnQuaAppbmRleCBhODE5OGI4Mzc1M2QuLmU1ZDJkZTljYWY3
-ZiAxMDA2NDQKLS0tIGEvaW5jbHVkZS9saW51eC9hY3BpX2lvcnQuaAorKysgYi9pbmNsdWRlL2xp
-bnV4L2FjcGlfaW9ydC5oCkBAIC0zNiw3ICszNiw3IEBAIGludCBpb3J0X3Btc2lfZ2V0X2Rldl9p
-ZChzdHJ1Y3QgZGV2aWNlICpkZXYsIHUzMiAqZGV2X2lkKTsKIC8qIElPTU1VIGludGVyZmFjZSAq
-LwogaW50IGlvcnRfZG1hX2dldF9yYW5nZXMoc3RydWN0IGRldmljZSAqZGV2LCB1NjQgKnNpemUp
-OwogaW50IGlvcnRfaW9tbXVfY29uZmlndXJlX2lkKHN0cnVjdCBkZXZpY2UgKmRldiwgY29uc3Qg
-dTMyICppZF9pbik7Ci12b2lkIGlvcnRfaW9tbXVfbXNpX2dldF9yZXN2X3JlZ2lvbnMoc3RydWN0
-IGRldmljZSAqZGV2LCBzdHJ1Y3QgbGlzdF9oZWFkICpoZWFkKTsKK3ZvaWQgaW9ydF9pb21tdV9n
-ZXRfcmVzdl9yZWdpb25zKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGxpc3RfaGVhZCAqaGVh
-ZCk7CiBwaHlzX2FkZHJfdCBhY3BpX2lvcnRfZG1hX2dldF9tYXhfY3B1X2FkZHJlc3Modm9pZCk7
-CiAjZWxzZQogc3RhdGljIGlubGluZSB2b2lkIGFjcGlfaW9ydF9pbml0KHZvaWQpIHsgfQpAQCAt
-NTIsNyArNTIsNyBAQCBzdGF0aWMgaW5saW5lIGludCBpb3J0X2RtYV9nZXRfcmFuZ2VzKHN0cnVj
-dCBkZXZpY2UgKmRldiwgdTY0ICpzaXplKQogc3RhdGljIGlubGluZSBpbnQgaW9ydF9pb21tdV9j
-b25maWd1cmVfaWQoc3RydWN0IGRldmljZSAqZGV2LCBjb25zdCB1MzIgKmlkX2luKQogeyByZXR1
-cm4gLUVOT0RFVjsgfQogc3RhdGljIGlubGluZQotdm9pZCBpb3J0X2lvbW11X21zaV9nZXRfcmVz
-dl9yZWdpb25zKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGxpc3RfaGVhZCAqaGVhZCkKK3Zv
-aWQgaW9ydF9pb21tdV9nZXRfcmVzdl9yZWdpb25zKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0
-IGxpc3RfaGVhZCAqaGVhZCkKIHsgfQogCiBzdGF0aWMgaW5saW5lIHBoeXNfYWRkcl90IGFjcGlf
-aW9ydF9kbWFfZ2V0X21heF9jcHVfYWRkcmVzcyh2b2lkKQotLSAKMi4yNS4xCgpfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QK
-aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5k
-YXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Parse through the IORT RMR nodes and populate the reserve region list
+corresponding to a given IOMMU and device(optional). Also, go through
+the ID mappings of the RMR node and retrieve all the SIDs associated
+with it.
+
+Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Tested-by: Steven Price <steven.price@arm.com>
+Tested-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Tested-by: Hanjun Guo <guohanjun@huawei.com>
+Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
+Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+---
+ drivers/acpi/arm64/iort.c | 291 ++++++++++++++++++++++++++++++++++++++
+ include/linux/iommu.h     |   8 ++
+ 2 files changed, 299 insertions(+)
+
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index cd5d1d7823cb..b6273af316c6 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -788,6 +788,294 @@ void acpi_configure_pmsi_domain(struct device *dev)
+ }
+ 
+ #ifdef CONFIG_IOMMU_API
++static void iort_rmr_free(struct device *dev,
++			  struct iommu_resv_region *region)
++{
++	struct iommu_iort_rmr_data *rmr_data;
++
++	rmr_data = container_of(region, struct iommu_iort_rmr_data, rr);
++	kfree(rmr_data->sids);
++	kfree(rmr_data);
++}
++
++static struct iommu_iort_rmr_data *iort_rmr_alloc(
++					struct acpi_iort_rmr_desc *rmr_desc,
++					int prot, enum iommu_resv_type type,
++					u32 *sids, u32 num_sids)
++{
++	struct iommu_iort_rmr_data *rmr_data;
++	struct iommu_resv_region *region;
++	u32 *sids_copy;
++	u64 addr = rmr_desc->base_address, size = rmr_desc->length;
++
++	rmr_data = kmalloc(sizeof(*rmr_data), GFP_KERNEL);
++	if (!rmr_data)
++		return NULL;
++
++	/* Create a copy of SIDs array to associate with this rmr_data */
++	sids_copy = kmemdup(sids, num_sids * sizeof(*sids), GFP_KERNEL);
++	if (!sids_copy) {
++		kfree(rmr_data);
++		return NULL;
++	}
++	rmr_data->sids = sids_copy;
++	rmr_data->num_sids = num_sids;
++
++	if (!IS_ALIGNED(addr, SZ_64K) || !IS_ALIGNED(size, SZ_64K)) {
++		/* PAGE align base addr and size */
++		addr &= PAGE_MASK;
++		size = PAGE_ALIGN(size + offset_in_page(rmr_desc->base_address));
++
++		pr_err(FW_BUG "RMR descriptor[0x%llx - 0x%llx] not aligned to 64K, continue with [0x%llx - 0x%llx]\n",
++		       rmr_desc->base_address,
++		       rmr_desc->base_address + rmr_desc->length - 1,
++		       addr, addr + size - 1);
++	}
++
++	region = &rmr_data->rr;
++	INIT_LIST_HEAD(&region->list);
++	region->start = addr;
++	region->length = size;
++	region->prot = prot;
++	region->type = type;
++	region->free = iort_rmr_free;
++
++	return rmr_data;
++}
++
++static void iort_rmr_desc_check_overlap(struct acpi_iort_rmr_desc *desc,
++					u32 count)
++{
++	int i, j;
++
++	for (i = 0; i < count; i++) {
++		u64 end, start = desc[i].base_address, length = desc[i].length;
++
++		if (!length) {
++			pr_err(FW_BUG "RMR descriptor[0x%llx] with zero length, continue anyway\n",
++			       start);
++			continue;
++		}
++
++		end = start + length - 1;
++
++		/* Check for address overlap */
++		for (j = i + 1; j < count; j++) {
++			u64 e_start = desc[j].base_address;
++			u64 e_end = e_start + desc[j].length - 1;
++
++			if (start <= e_end && end >= e_start)
++				pr_err(FW_BUG "RMR descriptor[0x%llx - 0x%llx] overlaps, continue anyway\n",
++				       start, end);
++		}
++	}
++}
++
++/*
++ * Please note, we will keep the already allocated RMR reserve
++ * regions in case of a memory allocation failure.
++ */
++static void iort_get_rmrs(struct acpi_iort_node *node,
++			  struct acpi_iort_node *smmu,
++			  u32 *sids, u32 num_sids,
++			  struct list_head *head)
++{
++	struct acpi_iort_rmr *rmr = (struct acpi_iort_rmr *)node->node_data;
++	struct acpi_iort_rmr_desc *rmr_desc;
++	int i;
++
++	rmr_desc = ACPI_ADD_PTR(struct acpi_iort_rmr_desc, node,
++				rmr->rmr_offset);
++
++	iort_rmr_desc_check_overlap(rmr_desc, rmr->rmr_count);
++
++	for (i = 0; i < rmr->rmr_count; i++, rmr_desc++) {
++		struct iommu_iort_rmr_data *rmr_data;
++		enum iommu_resv_type type;
++		int prot = IOMMU_READ | IOMMU_WRITE;
++
++		if (rmr->flags & ACPI_IORT_RMR_REMAP_PERMITTED)
++			type = IOMMU_RESV_DIRECT_RELAXABLE;
++		else
++			type = IOMMU_RESV_DIRECT;
++
++		if (rmr->flags & ACPI_IORT_RMR_ACCESS_PRIVILEGE)
++			prot |= IOMMU_PRIV;
++
++		/* Attributes 0x00 - 0x03 represents device memory */
++		if (ACPI_IORT_RMR_ACCESS_ATTRIBUTES(rmr->flags) <=
++				ACPI_IORT_RMR_ATTR_DEVICE_GRE)
++			prot |= IOMMU_MMIO;
++		else if (ACPI_IORT_RMR_ACCESS_ATTRIBUTES(rmr->flags) ==
++				ACPI_IORT_RMR_ATTR_NORMAL_IWB_OWB)
++			prot |= IOMMU_CACHE;
++
++		rmr_data = iort_rmr_alloc(rmr_desc, prot, type,
++					  sids, num_sids);
++		if (!rmr_data)
++			return;
++
++		list_add_tail(&rmr_data->rr.list, head);
++	}
++}
++
++static u32 *iort_rmr_alloc_sids(u32 *sids, u32 count, u32 id_start,
++				u32 new_count)
++{
++	u32 *new_sids;
++	u32 total_count = count + new_count;
++	int i;
++
++	new_sids = krealloc_array(sids, count + new_count,
++				  sizeof(*new_sids), GFP_KERNEL);
++	if (!new_sids)
++		return NULL;
++
++	for (i = count; i < total_count; i++)
++		new_sids[i] = id_start++;
++
++	return new_sids;
++}
++
++static bool iort_rmr_has_dev(struct device *dev, u32 id_start,
++			     u32 id_count)
++{
++	int i;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++
++	/*
++	 * Make sure the kernel has preserved the boot firmware PCIe
++	 * configuration. This is required to ensure that the RMR PCIe
++	 * StreamIDs are still valid (Refer: ARM DEN 0049E.d Section 3.1.1.5).
++	 */
++	if (dev_is_pci(dev)) {
++		struct pci_dev *pdev = to_pci_dev(dev);
++		struct pci_host_bridge *host = pci_find_host_bridge(pdev->bus);
++
++		if (!host->preserve_config)
++			return false;
++	}
++
++	for (i = 0; i < fwspec->num_ids; i++) {
++		if (fwspec->ids[i] >= id_start &&
++		    fwspec->ids[i] <= id_start + id_count)
++			return true;
++	}
++
++	return false;
++}
++
++static void iort_node_get_rmr_info(struct acpi_iort_node *node,
++				   struct acpi_iort_node *iommu,
++				   struct device *dev, struct list_head *head)
++{
++	struct acpi_iort_node *smmu = NULL;
++	struct acpi_iort_rmr *rmr;
++	struct acpi_iort_id_mapping *map;
++	u32 *sids = NULL;
++	u32 num_sids = 0;
++	int i;
++
++	if (!node->mapping_offset || !node->mapping_count) {
++		pr_err(FW_BUG "Invalid ID mapping, skipping RMR node %p\n",
++		       node);
++		return;
++	}
++
++	rmr = (struct acpi_iort_rmr *)node->node_data;
++	if (!rmr->rmr_offset || !rmr->rmr_count)
++		return;
++
++	map = ACPI_ADD_PTR(struct acpi_iort_id_mapping, node,
++			   node->mapping_offset);
++
++	/*
++	 * Go through the ID mappings and see if we have a match for SMMU
++	 * and dev(if !NULL). If found, get the sids for the Node.
++	 * Please note, id_count is equal to the number of IDs  in the
++	 * range minus one.
++	 */
++	for (i = 0; i < node->mapping_count; i++, map++) {
++		struct acpi_iort_node *parent;
++
++		if (!map->id_count)
++			continue;
++
++		parent = ACPI_ADD_PTR(struct acpi_iort_node, iort_table,
++				      map->output_reference);
++		if (parent != iommu)
++			continue;
++
++		/* If dev is valid, check RMR node corresponds to the dev SID */
++		if (dev && !iort_rmr_has_dev(dev, map->output_base,
++					     map->id_count))
++			continue;
++
++		/* Retrieve SIDs associated with the Node. */
++		sids = iort_rmr_alloc_sids(sids, num_sids, map->output_base,
++					   map->id_count + 1);
++		if (!sids)
++			return;
++
++		num_sids += map->id_count + 1;
++	}
++
++	if (!sids)
++		return;
++
++	iort_get_rmrs(node, smmu, sids, num_sids, head);
++	kfree(sids);
++}
++
++static void iort_find_rmrs(struct acpi_iort_node *iommu, struct device *dev,
++			   struct list_head *head)
++{
++	struct acpi_table_iort *iort;
++	struct acpi_iort_node *iort_node, *iort_end;
++	int i;
++
++	/* Only supports ARM DEN 0049E.d onwards */
++	if (iort_table->revision < 5)
++		return;
++
++	iort = (struct acpi_table_iort *)iort_table;
++
++	iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort,
++				 iort->node_offset);
++	iort_end = ACPI_ADD_PTR(struct acpi_iort_node, iort,
++				iort_table->length);
++
++	for (i = 0; i < iort->node_count; i++) {
++		if (WARN_TAINT(iort_node >= iort_end, TAINT_FIRMWARE_WORKAROUND,
++			       "IORT node pointer overflows, bad table!\n"))
++			return;
++
++		if (iort_node->type == ACPI_IORT_NODE_RMR)
++			iort_node_get_rmr_info(iort_node, iommu, dev, head);
++
++		iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort_node,
++					 iort_node->length);
++	}
++}
++
++/*
++ * Populate the RMR list associated with a given IOMMU and dev(if provided).
++ * If dev is NULL, the function populates all the RMRs associated with the
++ * given IOMMU.
++ */
++static void iort_iommu_rmr_get_resv_regions(struct fwnode_handle *iommu_fwnode,
++					    struct device *dev,
++					    struct list_head *head)
++{
++	struct acpi_iort_node *iommu;
++
++	iommu = iort_get_iort_node(iommu_fwnode);
++	if (!iommu)
++		return;
++
++	iort_find_rmrs(iommu, dev, head);
++}
++
+ static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
+ {
+ 	struct acpi_iort_node *iommu;
+@@ -868,7 +1156,10 @@ static void iort_iommu_msi_get_resv_regions(struct device *dev,
+  */
+ void iort_iommu_get_resv_regions(struct device *dev, struct list_head *head)
+ {
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++
+ 	iort_iommu_msi_get_resv_regions(dev, head);
++	iort_iommu_rmr_get_resv_regions(fwspec->iommu_fwnode, dev, head);
+ }
+ 
+ static inline bool iort_iommu_driver_enabled(u8 type)
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index b22ffa6bc4a9..e6abd998dbe7 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -146,6 +146,14 @@ struct iommu_resv_region {
+ 	void (*free)(struct device *dev, struct iommu_resv_region *region);
+ };
+ 
++struct iommu_iort_rmr_data {
++	struct iommu_resv_region rr;
++
++	/* Stream IDs associated with IORT RMR entry */
++	const u32 *sids;
++	u32 num_sids;
++};
++
+ /**
+  * enum iommu_dev_features - Per device IOMMU features
+  * @IOMMU_DEV_FEAT_SVA: Shared Virtual Addresses
+-- 
+2.25.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
