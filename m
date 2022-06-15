@@ -1,95 +1,78 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3E049CCA492
-	for <iommu@archiver.kernel.org>; Wed, 15 Jun 2022 16:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E9C6CC43334
+	for <iommu@archiver.kernel.org>; Wed, 15 Jun 2022 16:19:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 137F740169;
-	Wed, 15 Jun 2022 16:13:10 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id A70F560E1D;
+	Wed, 15 Jun 2022 16:19:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id r4UEqkHgCkY3; Wed, 15 Jun 2022 16:13:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 94F8640BF8;
-	Wed, 15 Jun 2022 16:13:08 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id XaA0Vk2DjaRZ; Wed, 15 Jun 2022 16:19:34 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7A3AB60D90;
+	Wed, 15 Jun 2022 16:19:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A4667C008A;
-	Wed, 15 Jun 2022 16:13:07 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 33E02C002D
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 16:13:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 44DEFC0032;
+	Wed, 15 Jun 2022 16:19:34 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7D6F8C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 16:19:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5044D40896
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 16:12:58 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 5DAA482DD9
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 16:19:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=deltatee.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id feupMWj3aJmn for <iommu@lists.linux-foundation.org>;
- Wed, 15 Jun 2022 16:12:55 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id EqHTfTUE186g for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Jun 2022 16:19:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp4.osuosl.org (Postfix) with ESMTPS id D4B92418C1
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 16:12:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
- Message-Id:Date:Cc:To:From:content-disposition;
- bh=NVweqEcjCecZ0bg5dlWjMJWWbRBpQR845+naXv01S1E=; b=mGlJB+Mc6r6QavYLUJHJ2f6Gcf
- 4KC3tU5HmwUMDyO6T64JnNBflaA1Oaq/889fD31ncukdVXKstY3aDuLUssracQXrTgPh503f7c3Gm
- 9oj+XtAemKDfgOgUrEkOhMLRx7YNuoTdepVnGBAGOZtn7In3FvSV64tzpxAi3mfRaDQNZByACspsC
- XfjfXCXxwzOBwEvK7qOAPCqBKHK80aqj8hMmZYlu9nFhBs4fE1kVcpjRmX6n3I+3TQ0fbrvvOg9Lw
- zNRi3B96PZzbaOrO/k/k6P23XfdlbDDDJPP/i6fydDuKVlrF5ptVyivsSZrkhvrBfWhPjYBHZ1EJC
- Ese8FOBw==;
-Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
- by ale.deltatee.com with esmtps (TLS1.3) tls
- TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94.2)
- (envelope-from <gunthorp@deltatee.com>)
- id 1o1VdQ-0084iR-Hv; Wed, 15 Jun 2022 10:12:49 -0600
-Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim
- 4.94.2) (envelope-from <gunthorp@deltatee.com>)
- id 1o1VdI-0004ag-Qo; Wed, 15 Jun 2022 10:12:40 -0600
-From: Logan Gunthorpe <logang@deltatee.com>
-To: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
- linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org
-Date: Wed, 15 Jun 2022 10:12:27 -0600
-Message-Id: <20220615161233.17527-16-logang@deltatee.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220615161233.17527-1-logang@deltatee.com>
-References: <20220615161233.17527-1-logang@deltatee.com>
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id E274D82B81
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 16:19:30 +0000 (UTC)
+X-UUID: c6ce86a7e4924f778e3432b46bd114ed-20220616
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6, REQID:2f619c16-03a1-40cb-8808-48e50f43fe83, OB:0,
+ LO
+ B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+ ON:release,TS:5
+X-CID-META: VersionHash:b14ad71, CLOUDID:0baf9e48-4c92-421c-ad91-b806c0f58b2a,
+ C
+ OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+ ,QS:nil,BEC:nil,COL:0
+X-UUID: c6ce86a7e4924f778e3432b46bd114ed-20220616
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
+ mailgw01.mediatek.com (envelope-from <yf.wang@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+ with ESMTP id 1508141498; Thu, 16 Jun 2022 00:19:27 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Thu, 16 Jun 2022 00:19:26 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Thu, 16 Jun 2022 00:19:25 +0800
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, "open
+ list:MEDIATEK IOMMU DRIVER" <iommu@lists.linux-foundation.org>, "moderated
+ list:MEDIATEK IOMMU DRIVER" <linux-mediatek@lists.infradead.org>, "moderated
+ list:ARM/Mediatek SoC support" <linux-arm-kernel@lists.infradead.org>, "open
+ list" <linux-kernel@vger.kernel.org>
+Subject: [PATCH v9 3/3] iommu/mediatek: Allow page table PA up to 35bit
+Date: Thu, 16 Jun 2022 00:12:23 +0800
+Message-ID: <20220615161224.6923-4-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220615161224.6923-1-yf.wang@mediatek.com>
+References: <20220615161224.6923-1-yf.wang@mediatek.com>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de,
- jgg@ziepe.ca, christian.koenig@amd.com, ddutile@redhat.com,
- willy@infradead.org, daniel.vetter@ffwll.ch, jason@jlekstrand.net,
- dave.hansen@linux.intel.com, helgaas@kernel.org, dan.j.williams@intel.com,
- dave.b.minturn@intel.com, jianxin.xiong@intel.com, ira.weiny@intel.com,
- robin.murphy@arm.com, martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com,
- jhubbard@nvidia.com, rcampbell@nvidia.com, logang@deltatee.com
-X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v7 15/21] iov_iter: introduce
- iov_iter_get_pages_[alloc_]flags()
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: Minturn Dave B <dave.b.minturn@intel.com>,
- Martin Oliveira <martin.oliveira@eideticom.com>,
- Ralph Campbell <rcampbell@nvidia.com>, John Hubbard <jhubbard@nvidia.com>,
- Dave Hansen <dave.hansen@linux.intel.com>, Robin Murphy <robin.murphy@arm.com>,
- Matthew Wilcox <willy@infradead.org>,
- =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Logan Gunthorpe <logang@deltatee.com>,
- Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
- Jason Ekstrand <jason@jlekstrand.net>, Daniel Vetter <daniel.vetter@ffwll.ch>,
- Bjorn Helgaas <helgaas@kernel.org>, Dan Williams <dan.j.williams@intel.com>,
- Stephen Bates <sbates@raithlin.com>, Ira Weiny <ira.weiny@intel.com>,
- Christoph Hellwig <hch@lst.de>, Xiong Jianxin <jianxin.xiong@intel.com>
+X-MTK: N
+Cc: wsd_upstream@mediatek.com, Yunfei Wang <yf.wang@mediatek.com>,
+ Libo Kang <Libo.Kang@mediatek.com>, Miles Chen <miles.chen@mediatek.com>,
+ Ning Li <ning.li@mediatek.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,123 +85,87 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: "yf.wang--- via iommu" <iommu@lists.linux-foundation.org>
+Reply-To: yf.wang@mediatek.com
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add iov_iter_get_pages_flags() and iov_iter_get_pages_alloc_flags()
-which take a flags argument that is passed to get_user_pages_fast().
+From: Yunfei Wang <yf.wang@mediatek.com>
 
-This is so that FOLL_PCI_P2PDMA can be passed when appropriate.
+Single memory zone feature will remove ZONE_DMA32 and ZONE_DMA. So add
+the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT to let level 1 and level 2
+pgtable support at most 35bit PA.
 
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+Signed-off-by: Ning Li <ning.li@mediatek.com>
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
 ---
- include/linux/uio.h |  6 ++++++
- lib/iov_iter.c      | 25 +++++++++++++++++++------
- 2 files changed, 25 insertions(+), 6 deletions(-)
+ drivers/iommu/mtk_iommu.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/uio.h b/include/linux/uio.h
-index 739285fe5a2f..ddf9e4cf4a59 100644
---- a/include/linux/uio.h
-+++ b/include/linux/uio.h
-@@ -232,8 +232,14 @@ void iov_iter_pipe(struct iov_iter *i, unsigned int direction, struct pipe_inode
- void iov_iter_discard(struct iov_iter *i, unsigned int direction, size_t count);
- void iov_iter_xarray(struct iov_iter *i, unsigned int direction, struct xarray *xarray,
- 		     loff_t start, size_t count);
-+ssize_t iov_iter_get_pages_flags(struct iov_iter *i, struct page **pages,
-+		size_t maxsize, unsigned maxpages, size_t *start,
-+		unsigned int gup_flags);
- ssize_t iov_iter_get_pages(struct iov_iter *i, struct page **pages,
- 			size_t maxsize, unsigned maxpages, size_t *start);
-+ssize_t iov_iter_get_pages_alloc_flags(struct iov_iter *i,
-+		struct page ***pages, size_t maxsize, size_t *start,
-+		unsigned int gup_flags);
- ssize_t iov_iter_get_pages_alloc(struct iov_iter *i, struct page ***pages,
- 			size_t maxsize, size_t *start);
- int iov_iter_npages(const struct iov_iter *i, int maxpages);
-diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-index 6dd5330f7a99..9bf6e3af5120 100644
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -1515,9 +1515,9 @@ static struct page *first_bvec_segment(const struct iov_iter *i,
- 	return page;
- }
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 3d62399e8865..4dbc33758711 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -138,6 +138,7 @@
+ /* PM and clock always on. e.g. infra iommu */
+ #define PM_CLK_AO			BIT(15)
+ #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
++#define PGTABLE_PA_35_EN		BIT(17)
  
--ssize_t iov_iter_get_pages(struct iov_iter *i,
-+ssize_t iov_iter_get_pages_flags(struct iov_iter *i,
- 		   struct page **pages, size_t maxsize, unsigned maxpages,
--		   size_t *start)
-+		   size_t *start, unsigned int gup_flags)
- {
- 	size_t len;
- 	int n, res;
-@@ -1528,7 +1528,6 @@ ssize_t iov_iter_get_pages(struct iov_iter *i,
- 		return 0;
+ #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
+ 				((((pdata)->flags) & (mask)) == (_x))
+@@ -240,6 +241,7 @@ struct mtk_iommu_data {
+ struct mtk_iommu_domain {
+ 	struct io_pgtable_cfg		cfg;
+ 	struct io_pgtable_ops		*iop;
++	u32				ttbr;
  
- 	if (likely(iter_is_iovec(i))) {
--		unsigned int gup_flags = 0;
- 		unsigned long addr;
+ 	struct mtk_iommu_bank_data	*bank;
+ 	struct iommu_domain		domain;
+@@ -596,6 +598,9 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
+ 		.iommu_dev = data->dev,
+ 	};
  
- 		if (iov_iter_rw(i) != WRITE)
-@@ -1558,6 +1557,13 @@ ssize_t iov_iter_get_pages(struct iov_iter *i,
- 		return iter_xarray_get_pages(i, pages, maxsize, maxpages, start);
- 	return -EFAULT;
- }
-+EXPORT_SYMBOL_GPL(iov_iter_get_pages_flags);
++	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
++		dom->cfg.quirks |= IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT;
 +
-+ssize_t iov_iter_get_pages(struct iov_iter *i, struct page **pages,
-+			   size_t maxsize, unsigned maxpages, size_t *start)
-+{
-+	return iov_iter_get_pages_flags(i, pages, maxsize, maxpages, start, 0);
-+}
- EXPORT_SYMBOL(iov_iter_get_pages);
+ 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
+ 		dom->cfg.oas = data->enable_4GB ? 33 : 32;
+ 	else
+@@ -684,8 +689,8 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 			goto err_unlock;
+ 		}
+ 		bank->m4u_dom = dom;
+-		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+-		       bank->base + REG_MMU_PT_BASE_ADDR);
++		bank->m4u_dom->ttbr = MTK_IOMMU_ADDR(dom->cfg.arm_v7s_cfg.ttbr);
++		writel(bank->m4u_dom->ttbr, data->base + REG_MMU_PT_BASE_ADDR);
  
- static struct page **get_pages_array(size_t n)
-@@ -1640,9 +1646,9 @@ static ssize_t iter_xarray_get_pages_alloc(struct iov_iter *i,
- 	return actual;
- }
+ 		pm_runtime_put(m4udev);
+ 	}
+@@ -1366,8 +1371,7 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
+ 		writel_relaxed(reg->int_control[i], base + REG_MMU_INT_CONTROL0);
+ 		writel_relaxed(reg->int_main_control[i], base + REG_MMU_INT_MAIN_CONTROL);
+ 		writel_relaxed(reg->ivrp_paddr[i], base + REG_MMU_IVRP_PADDR);
+-		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+-		       base + REG_MMU_PT_BASE_ADDR);
++		writel(m4u_dom->ttbr, base + REG_MMU_PT_BASE_ADDR);
+ 	} while (++i < data->plat_data->banks_num);
  
--ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
-+ssize_t iov_iter_get_pages_alloc_flags(struct iov_iter *i,
- 		   struct page ***pages, size_t maxsize,
--		   size_t *start)
-+		   size_t *start, unsigned int gup_flags)
- {
- 	struct page **p;
- 	size_t len;
-@@ -1654,7 +1660,6 @@ ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
- 		return 0;
- 
- 	if (likely(iter_is_iovec(i))) {
--		unsigned int gup_flags = 0;
- 		unsigned long addr;
- 
- 		if (iov_iter_rw(i) != WRITE)
-@@ -1667,6 +1672,7 @@ ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
- 		p = get_pages_array(n);
- 		if (!p)
- 			return -ENOMEM;
-+
- 		res = get_user_pages_fast(addr, n, gup_flags, p);
- 		if (unlikely(res <= 0)) {
- 			kvfree(p);
-@@ -1694,6 +1700,13 @@ ssize_t iov_iter_get_pages_alloc(struct iov_iter *i,
- 		return iter_xarray_get_pages_alloc(i, pages, maxsize, start);
- 	return -EFAULT;
- }
-+EXPORT_SYMBOL_GPL(iov_iter_get_pages_alloc_flags);
-+
-+ssize_t iov_iter_get_pages_alloc(struct iov_iter *i, struct page ***pages,
-+				 size_t maxsize, size_t *start)
-+{
-+	return iov_iter_get_pages_alloc_flags(i, pages, maxsize, start, 0);
-+}
- EXPORT_SYMBOL(iov_iter_get_pages_alloc);
- 
- size_t csum_and_copy_from_iter(void *addr, size_t bytes, __wsum *csum,
+ 	/*
+@@ -1401,7 +1405,7 @@ static const struct mtk_iommu_plat_data mt2712_data = {
+ static const struct mtk_iommu_plat_data mt6779_data = {
+ 	.m4u_plat      = M4U_MT6779,
+ 	.flags         = HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN | WR_THROT_EN |
+-			 MTK_IOMMU_TYPE_MM,
++			 MTK_IOMMU_TYPE_MM | PGTABLE_PA_35_EN,
+ 	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
+ 	.banks_num    = 1,
+ 	.banks_enable = {true},
 -- 
-2.30.2
+2.18.0
 
 _______________________________________________
 iommu mailing list
