@@ -4,53 +4,54 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1A38DC43334
-	for <iommu@archiver.kernel.org>; Wed, 15 Jun 2022 10:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 79F9CC433EF
+	for <iommu@archiver.kernel.org>; Wed, 15 Jun 2022 10:13:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id D92B883E9B;
-	Wed, 15 Jun 2022 10:13:23 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 3DD2583F03;
+	Wed, 15 Jun 2022 10:13:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cta-BUhM9Myf; Wed, 15 Jun 2022 10:13:23 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id B3AD883EB3;
-	Wed, 15 Jun 2022 10:13:22 +0000 (UTC)
+	with ESMTP id Zujy04JmL9mu; Wed, 15 Jun 2022 10:13:46 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 177E783EE9;
+	Wed, 15 Jun 2022 10:13:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 91700C0032;
-	Wed, 15 Jun 2022 10:13:22 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1794CC0083
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:13:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E7064C0032;
+	Wed, 15 Jun 2022 10:13:45 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 27E7BC0081
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:13:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 917BB83E40
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:12:18 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 1B1F3610F7
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:12:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id F26C7w_6NZ0y for <iommu@lists.linux-foundation.org>;
- Wed, 15 Jun 2022 10:12:18 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id JwLn9TwMDwEr for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Jun 2022 10:12:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
  [185.176.79.56])
- by smtp1.osuosl.org (Postfix) with ESMTPS id B0F0A83DFF
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:12:17 +0000 (UTC)
-Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.201])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LNLc10nNwz6H8ZZ;
- Wed, 15 Jun 2022 18:08:33 +0800 (CST)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 2E1C1610C3
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 10:12:35 +0000 (UTC)
+Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.207])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LNLhW1Vtvz6GD8r;
+ Wed, 15 Jun 2022 18:12:27 +0800 (CST)
 Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
+ fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 15 Jun 2022 12:12:15 +0200
+ 15.1.2375.24; Wed, 15 Jun 2022 12:12:32 +0200
 Received: from A2006125610.china.huawei.com (10.202.227.178) by
  lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 15 Jun 2022 11:12:08 +0100
+ 15.1.2375.24; Wed, 15 Jun 2022 11:12:25 +0100
 To: <linux-arm-kernel@lists.infradead.org>, <linux-acpi@vger.kernel.org>,
  <iommu@lists.linux-foundation.org>
-Subject: [PATCH v13 5/9] ACPI/IORT: Add a helper to retrieve RMR info directly
-Date: Wed, 15 Jun 2022 11:10:40 +0100
-Message-ID: <20220615101044.1972-6-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v13 7/9] iommu/arm-smmu-v3: Refactor
+ arm_smmu_init_bypass_stes() to force bypass
+Date: Wed, 15 Jun 2022 11:10:42 +0100
+Message-ID: <20220615101044.1972-8-shameerali.kolothum.thodi@huawei.com>
 X-Mailer: git-send-email 2.12.0.windows.1
 In-Reply-To: <20220615101044.1972-1-shameerali.kolothum.thodi@huawei.com>
 References: <20220615101044.1972-1-shameerali.kolothum.thodi@huawei.com>
@@ -81,85 +82,68 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This will provide a way for SMMU drivers to retrieve StreamIDs
-associated with IORT RMR nodes and use that to set bypass settings
-for those IDs.
+By default, disable_bypass flag is set and any dev without
+an iommu domain installs STE with CFG_ABORT during
+arm_smmu_init_bypass_stes(). Introduce a "force" flag and
+move the STE update logic to arm_smmu_init_bypass_stes()
+so that we can force it to install CFG_BYPASS STE for specific
+SIDs.
 
-Tested-by: Steven Price <steven.price@arm.com>
-Tested-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+This will be useful in a follow-up patch to install bypass
+for IORT RMR SIDs.
+
 Tested-by: Hanjun Guo <guohanjun@huawei.com>
-Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 ---
- drivers/acpi/arm64/iort.c | 28 ++++++++++++++++++++++++++++
- include/linux/acpi_iort.h |  8 ++++++++
- 2 files changed, 36 insertions(+)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index b6273af316c6..cd1349d3544e 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -1394,6 +1394,34 @@ int iort_dma_get_ranges(struct device *dev, u64 *size)
- 		return nc_dma_get_range(dev, size);
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 17d4f3432df2..09723861a08a 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1380,12 +1380,21 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+ 		arm_smmu_cmdq_issue_cmd(smmu, &prefetch_cmd);
  }
  
-+/**
-+ * iort_get_rmr_sids - Retrieve IORT RMR node reserved regions with
-+ *                     associated StreamIDs information.
-+ * @iommu_fwnode: fwnode associated with IOMMU
-+ * @head: Resereved region list
-+ */
-+void iort_get_rmr_sids(struct fwnode_handle *iommu_fwnode,
-+		       struct list_head *head)
-+{
-+	iort_iommu_rmr_get_resv_regions(iommu_fwnode, NULL, head);
-+}
-+EXPORT_SYMBOL_GPL(iort_get_rmr_sids);
+-static void arm_smmu_init_bypass_stes(__le64 *strtab, unsigned int nent)
++static void arm_smmu_init_bypass_stes(__le64 *strtab, unsigned int nent, bool force)
+ {
+ 	unsigned int i;
++	u64 val = STRTAB_STE_0_V;
 +
-+/**
-+ * iort_put_rmr_sids - Free memory allocated for RMR reserved regions.
-+ * @iommu_fwnode: fwnode associated with IOMMU
-+ * @head: Resereved region list
-+ */
-+void iort_put_rmr_sids(struct fwnode_handle *iommu_fwnode,
-+		       struct list_head *head)
-+{
-+	struct iommu_resv_region *entry, *next;
-+
-+	list_for_each_entry_safe(entry, next, head, list)
-+		entry->free(NULL, entry);
-+}
-+EXPORT_SYMBOL_GPL(iort_put_rmr_sids);
-+
- static void __init acpi_iort_register_irq(int hwirq, const char *name,
- 					  int trigger,
- 					  struct resource *res)
-diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-index e5d2de9caf7f..b43be0987b19 100644
---- a/include/linux/acpi_iort.h
-+++ b/include/linux/acpi_iort.h
-@@ -33,6 +33,10 @@ struct irq_domain *iort_get_device_domain(struct device *dev, u32 id,
- 					  enum irq_domain_bus_token bus_token);
- void acpi_configure_pmsi_domain(struct device *dev);
- int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id);
-+void iort_get_rmr_sids(struct fwnode_handle *iommu_fwnode,
-+		       struct list_head *head);
-+void iort_put_rmr_sids(struct fwnode_handle *iommu_fwnode,
-+		       struct list_head *head);
- /* IOMMU interface */
- int iort_dma_get_ranges(struct device *dev, u64 *size);
- int iort_iommu_configure_id(struct device *dev, const u32 *id_in);
-@@ -46,6 +50,10 @@ static inline struct irq_domain *iort_get_device_domain(
- 	struct device *dev, u32 id, enum irq_domain_bus_token bus_token)
- { return NULL; }
- static inline void acpi_configure_pmsi_domain(struct device *dev) { }
-+static inline
-+void iort_get_rmr_sids(struct fwnode_handle *iommu_fwnode, struct list_head *head) { }
-+static inline
-+void iort_put_rmr_sids(struct fwnode_handle *iommu_fwnode, struct list_head *head) { }
- /* IOMMU interface */
- static inline int iort_dma_get_ranges(struct device *dev, u64 *size)
- { return -ENODEV; }
++	if (disable_bypass && !force)
++		val |= FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_ABORT);
++	else
++		val |= FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_BYPASS);
+ 
+ 	for (i = 0; i < nent; ++i) {
+-		arm_smmu_write_strtab_ent(NULL, -1, strtab);
++		strtab[0] = cpu_to_le64(val);
++		strtab[1] = cpu_to_le64(FIELD_PREP(STRTAB_STE_1_SHCFG,
++						   STRTAB_STE_1_SHCFG_INCOMING));
++		strtab[2] = 0;
+ 		strtab += STRTAB_STE_DWORDS;
+ 	}
+ }
+@@ -1413,7 +1422,7 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+ 		return -ENOMEM;
+ 	}
+ 
+-	arm_smmu_init_bypass_stes(desc->l2ptr, 1 << STRTAB_SPLIT);
++	arm_smmu_init_bypass_stes(desc->l2ptr, 1 << STRTAB_SPLIT, false);
+ 	arm_smmu_write_strtab_l1_desc(strtab, desc);
+ 	return 0;
+ }
+@@ -3051,7 +3060,7 @@ static int arm_smmu_init_strtab_linear(struct arm_smmu_device *smmu)
+ 	reg |= FIELD_PREP(STRTAB_BASE_CFG_LOG2SIZE, smmu->sid_bits);
+ 	cfg->strtab_base_cfg = reg;
+ 
+-	arm_smmu_init_bypass_stes(strtab, cfg->num_l1_ents);
++	arm_smmu_init_bypass_stes(strtab, cfg->num_l1_ents, false);
+ 	return 0;
+ }
+ 
 -- 
 2.25.1
 
