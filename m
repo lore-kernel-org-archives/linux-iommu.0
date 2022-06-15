@@ -4,203 +4,58 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 99173C43334
-	for <iommu@archiver.kernel.org>; Wed, 15 Jun 2022 07:35:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1D729C433EF
+	for <iommu@archiver.kernel.org>; Wed, 15 Jun 2022 09:53:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3D54B82F3D;
-	Wed, 15 Jun 2022 07:35:14 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id B15CB831A7;
+	Wed, 15 Jun 2022 09:53:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9iWPZJs2V6fi; Wed, 15 Jun 2022 07:35:13 +0000 (UTC)
+	with ESMTP id nh8oDFHtO7Qo; Wed, 15 Jun 2022 09:53:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 1281182F4A;
-	Wed, 15 Jun 2022 07:35:13 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 6EC5982DDE;
+	Wed, 15 Jun 2022 09:53:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DACFEC0032;
-	Wed, 15 Jun 2022 07:35:12 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 89B25C002D;
- Wed, 15 Jun 2022 07:35:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3122EC0039;
+	Wed, 15 Jun 2022 09:53:28 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E3A51C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 09:53:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 6E885409DB;
- Wed, 15 Jun 2022 07:35:11 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id C4C4B606C0
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 09:53:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0qQCQgFEYAIi; Wed, 15 Jun 2022 07:35:09 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xj0_QTK6kDFK for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Jun 2022 09:53:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 0B2A6410D3;
- Wed, 15 Jun 2022 07:35:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1655278509; x=1686814509;
- h=from:to:cc:subject:date:message-id:references:
- in-reply-to:content-transfer-encoding:mime-version;
- bh=qjTs6Qqc+6U9DK7fvm60mvysz0KWlM5ghwtuJV99NBg=;
- b=cI5Yzdej86sD2mtgmJIPnSxrB6+ucwO73oMOKMMS/qdPkmHMousC/2Yu
- F+b4L8cQgsDO4lyYyFFDzcs9A1Iemo/oXk8pk/FXSU/U9MStkvtCTZ2gz
- B3MJFqY1ScYxf51i7FT/KJta4OYOYvccK7e7NQFtPmFz6T6fZ4sDEh+Q5
- hzEL4bp9wCkSlaZUzxk/bAuNMw3ButE80o8fLVW1t7EB85PmlX4sM/J5Y
- DAyKOS1gc9zhAdQuenSTjVjhTU+hz3GX+Y/cXgWmt6KgSi6BECOoJDfop
- Pm0vjtm+VSayq16BlE/hN5DCE9UIUuPwiFKifFjWD08KwrcSsFlqUI9xn w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="267556965"
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; d="scan'208";a="267556965"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 15 Jun 2022 00:35:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; d="scan'208";a="674345094"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
- by FMSMGA003.fm.intel.com with ESMTP; 15 Jun 2022 00:35:07 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Wed, 15 Jun 2022 00:35:07 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Wed, 15 Jun 2022 00:35:07 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.108)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Wed, 15 Jun 2022 00:35:07 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lJnI56DiAFK6OBrUFjVVDeBR2VHmW/OosX1p+7aeUmMTIVJ2flVdcBAh7RYGplvJtBp1ZWVdgNBABCAzq3KbN9XG1ultZ1lgI2p0KG5yYItKyYn3DhIFqx18OKt0Jcg2RF4obSIhEwbkB8iu9XWO+9bLq5qer90L+bQHmxhoZZo1BH+avUJDxi7a0C0hlkQKHkvaCLVWp/rFiyizGTLOHXpJEh1Gx3JoJwNXM+dIetpIlhARFU5zQ7LD/HdTPMqbm0Uma81SKJ9+OoC+5980ro6MpNTDpQ9GNYQQz7GRPgs5CSm+yVzUgsc+ceMwn0VUcrZw3BoWv/k4TFeLY6/AMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QmAOL4zLvaH0pBgX6k2mYHNQK0hTQ/UwZGXCmcK3IGI=;
- b=Q5v7s6vzxoNBQCCCt0ihR7B+90OWXxR1Sp38H25pizJKkhQ7umluPnSsmZgcNyVkmDzhaFGb90o/yDRaTTpw5U4eBYFhk3mDqvNe4gZF1cyi+pnbrWf+iwdwhSJIikwu2QbCHMG59xS03peQ7vewSCCNZwvZmddwYJ4ohWpLC28DsZXl4anIT8EQlC78udAMdo55z8mUePcJ8BuWyU485FB3VuvTT2snEeiJI5sv1AxwGmsBks5JexUaLJKxH1cZORn+d48oqAPm40cahLRMRxCtJi5CaObvIrjrbmZ3sFDUw5xQdEMj7D2QH91mTMVXrvh7vEr+f+3OoIrjNTKxjA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by BL1PR11MB5429.namprd11.prod.outlook.com (2603:10b6:208:30b::13)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Wed, 15 Jun
- 2022 07:35:00 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::3583:afc6:2732:74b8]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::3583:afc6:2732:74b8%4]) with mapi id 15.20.5332.022; Wed, 15 Jun 2022
- 07:35:00 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Subject: RE: [PATCH 3/5] vfio/iommu_type1: Prefer to reuse domains vs match
- enforced cache coherency
-Thread-Topic: [PATCH 3/5] vfio/iommu_type1: Prefer to reuse domains vs match
- enforced cache coherency
-Thread-Index: AQHYeW2KrRlTv4MQ5UeMm5INXClL961FJamwgAA6IwCAAMkn0IAJQ4IAgAConjA=
-Date: Wed, 15 Jun 2022 07:35:00 +0000
-Message-ID: <BN9PR11MB527694346588A803F0EDD95E8CAD9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220606061927.26049-1-nicolinc@nvidia.com>
- <20220606061927.26049-4-nicolinc@nvidia.com>
- <BN9PR11MB5276DC98E75B1906A76F7ADC8CA49@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220608111724.GL1343366@nvidia.com>
- <DM4PR11MB52781590FB8FB197579DEE848CA49@DM4PR11MB5278.namprd11.prod.outlook.com>
- <YqjzXpzuBa4ATf9o@Asurada-Nvidia>
-In-Reply-To: <YqjzXpzuBa4ATf9o@Asurada-Nvidia>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.500.17
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6b3f2e08-9de5-49bb-8948-08da4ea18e0d
-x-ms-traffictypediagnostic: BL1PR11MB5429:EE_
-x-microsoft-antispam-prvs: <BL1PR11MB5429955041DDA2F710BDDFEC8CAD9@BL1PR11MB5429.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: gclx44ls315XMkbb/mOK1LsfqKSbzW9+I44SNLlNNKB1MOKmYs9RbqZ6j3amspubH5RTm3TuQew8JqVs1PweGwcNd9wnmyW8m21M37irrjB97J6GhqXArAEGh2s2d0980h4kmcrEa0QeAJ/LeCotU6rgoLfhKca4YtDnQ5QSEadB9fc1+7TjeYvDiB8yC0IT3S3mFJKiV6DG19CgJNvZePzEzEZfSXZs7BPNvvOLyOMps58kltKIUmsbYKmYNG5Vp+8kupYvks56PFyn+ue2dKe2dpymK5BO48++zIeZqrD9kLsQ/tZ5ByZyzQxLUciiq3sVZtB999NzXLSKZqhTk7ziRt94meinpcDhbA6SBa5hYLvW00/htGjPI1s/6pA3glEnxUs6IG9zsFo/sCJ/uGPz/lQgSfSeUlZFwl6MANf6pYevUQtCZOKew9Ak7notoHjS+ntOnuqPal7JfkV8ygqyk4tq3qJHvQtvNOGfIZ7+kSbYmDHN+/K/NoC/GPqLl9b3bIF94pf5+tSgKGv86IBFtR6+ejb528JuQ8poM9hLZOK+l8HY5Yw7kZX/F9DhY/aQxmOp8XAV7aZaghj4y4EuJ5ga4qj2PSpHqBIBsUdxqJBAA5vaVSuiV4F1ICGNrL4tuVVj/O6neG26CBsES2G6roRVAxcCBh2/MIWToj349lpOtiAbw5x3HPuhqqJK0VkYTOr/3TabSmXtfYN6zA==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230016)(366004)(66446008)(66476007)(8676002)(64756008)(66556008)(76116006)(66946007)(8936002)(7416002)(38100700002)(52536014)(508600001)(4326008)(7406005)(86362001)(71200400001)(5660300002)(26005)(6506007)(7696005)(2906002)(9686003)(6916009)(55016003)(38070700005)(33656002)(54906003)(316002)(82960400001)(122000001)(186003)(83380400001);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?FixdU54nkp2j0ExIDKg4vco44Ep9nEs3xx33Ys0G7pbuHo4e42WWkSg/cpC3?=
- =?us-ascii?Q?xg0J9txdDG+ASNpsBpKFlkSeNca1NDo4Us8/Q2BPhm0Pvq/elPoAiLjS/YTK?=
- =?us-ascii?Q?vi7Yzzd++hY/qc8pD5baz7rV0mUn9GfwbybDKkID6fYPCwZ5GJdJsJFubcSd?=
- =?us-ascii?Q?rLZrX/0eznWjjwDA4nQKsUbZZ4FQQ5MU6LZOAsDp+MvbklgjRJjh8uVjOzv9?=
- =?us-ascii?Q?QJ0N8Qa0OucsIHzLUA6B2sb8589/FYUUCpwcnGIdWhb0jfIBo3Brvd2DL8/q?=
- =?us-ascii?Q?Z7Wbv3JTWVE6FK9qZcgJnrLC6JP6OSupsETmaixSMUbo9qSeaJMIFcFM62if?=
- =?us-ascii?Q?+gp+K9I5Z1MCPlN/BmDU8u3nVgYZHbeccVr+FeyFEXvAfS8BkegvGKwm/wd/?=
- =?us-ascii?Q?zX3OWqhMK8xwf8M9IwzaCWzxGQpfo+XU4IA6egFduka4u+wX8Pmdl1YYJBfv?=
- =?us-ascii?Q?sHrhUULxpK4OqTxRimUAQ/lJ/Hb5ZQmYOWZQPSrAmUOe/8t3/MNtyFd0+zV1?=
- =?us-ascii?Q?Aj7xAORyCiBdUYP+Y5qpzjysmgBu70kHSiD4J82tNuJJzWFkv99HZO6xV/QD?=
- =?us-ascii?Q?XxgBmmZDftJxefMCR4h3RxuKKBNBgzbxA4HIFPkjakiXu77FgZUC29dF1XCf?=
- =?us-ascii?Q?R/Goe0XPsPs+FlANtx06192HYBGYFeYwBvGKsxKEdQ9v4DDJTi51+JZb1pfC?=
- =?us-ascii?Q?HwCGn4fb/rItd6RpDKzHwGMkWphq9D4gpB3sIiZZt1fNMlZRt6BFqFGCWY41?=
- =?us-ascii?Q?vZvJb0u98LkOgx8y0a9+b0prj+GXQnBMgo6ycR7Ejfw8x26C0rSXTmfPv7sP?=
- =?us-ascii?Q?tUplK0KjWYSj7Y30mHnn9vhfzuzo8OJM+a5hJv3E5dMAFt12uV21tSrGlpeu?=
- =?us-ascii?Q?MQ3Uvz4AgjAkuZThMja3CusgRWDVEdyOFfFI/FSksMnXrMrf4yhD6Owcaqf4?=
- =?us-ascii?Q?Senv0mMS89bZnOXwLF8y/bPCs2sBM1+AfHcP0b+YzeNDz81MTL/NTOpmE8Yu?=
- =?us-ascii?Q?iGLivg3TV/2kQuGyaHuZI2G8JrSm4YSOARYWG835IVbAs/ceT/131jmDmSZ3?=
- =?us-ascii?Q?wkBYGTDlKFtusb4wk5qQ/htFHgdjnYDfxM5voKV8GNY2f8WjzSLv+5P4k5mf?=
- =?us-ascii?Q?/DFgUv/IRvjUFd2Gxywn29dnmPMZSvQyDoNJx44NHPtsln9D7so+W/APIC/r?=
- =?us-ascii?Q?7J142KSJa22E8/OYLCjKSdH9+we7J9cIOMp2Z2NZgZ3cxouTlXc3MrB8E4D7?=
- =?us-ascii?Q?5ssiiX/IfYAYWB7XUIxB1lh5OzbKbOeQV6S+t9pyQoSz5Q55NX62BDggiiK+?=
- =?us-ascii?Q?p5QykUJs1mZd5o+AFUMOvj4zzbLWzs6Ylv03Ylcx7QaFKm1JC9BQFKLp8blS?=
- =?us-ascii?Q?2FItx8XjJT4j25IYRd9Xs69KhZVnC6n3I5it8fpPsimiHfK1rbG09YPTh3it?=
- =?us-ascii?Q?HR5PpfOwfjHGRm6H/PVkYMATiryGV8GG5+eSw+SX2XZsIhgmFRkhiC7JhwpP?=
- =?us-ascii?Q?Lp7hKuY6qhOu5MOG1OIu/BTA3nvmQnanMQlNAzomD3eh3cu0Sc9xvUd6QayU?=
- =?us-ascii?Q?QFM1BxV8Vzlep9v0GwDvLyRGNSM/z841HjJDDuOuLLgZpjJdVeL58avZC6YH?=
- =?us-ascii?Q?ueXuE8E50MZz7ocnSUbPLogJh4PLNaRKFL3+puytgb6on4hPJDCbDbQJ5ecg?=
- =?us-ascii?Q?/+dkT12834iliiV5XztPFOGfaBR3LcFh91pXvMFkt+bq/ig3EGmhkr64kD+O?=
- =?us-ascii?Q?1Xsw9+6UXg=3D=3D?=
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 88B45605D8
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 09:53:25 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B68F7152B;
+ Wed, 15 Jun 2022 02:53:24 -0700 (PDT)
+Received: from [10.57.7.82] (unknown [10.57.7.82])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3BD563F792;
+ Wed, 15 Jun 2022 02:53:23 -0700 (PDT)
+Message-ID: <10eaa3b1-4cf7-a7b6-a7f6-111a486a343a@arm.com>
+Date: Wed, 15 Jun 2022 10:53:21 +0100
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6b3f2e08-9de5-49bb-8948-08da4ea18e0d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jun 2022 07:35:00.5987 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YB3Oay9/YbjViA+rFqwL5rNvWz1hcm9jfbxfIpp/r37jw1RQTfQQFBsGeSE0ko3JyklMons88TXEE2Bm41toyA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5429
-X-OriginatorOrg: intel.com
-Cc: "cohuck@redhat.com" <cohuck@redhat.com>,
- "heiko@sntech.de" <heiko@sntech.de>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
- "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
- "alim.akhtar@samsung.com" <alim.akhtar@samsung.com>,
- "will@kernel.org" <will@kernel.org>,
- "alyssa@rosenzweig.io" <alyssa@rosenzweig.io>,
- "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "linux-samsung-soc@vger.kernel.org" <linux-samsung-soc@vger.kernel.org>,
- "samuel@sholland.org" <samuel@sholland.org>,
- "zhang.lyra@gmail.com" <zhang.lyra@gmail.com>,
- "jernej.skrabec@gmail.com" <jernej.skrabec@gmail.com>,
- "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
- "linux-rockchip@lists.infradead.org" <linux-rockchip@lists.infradead.org>,
- "wens@csie.org" <wens@csie.org>, "agross@kernel.org" <agross@kernel.org>,
- Jason Gunthorpe <jgg@nvidia.com>, "orsonzhai@gmail.com" <orsonzhai@gmail.com>,
- "gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>,
- "linux-sunxi@lists.linux.dev" <linux-sunxi@lists.linux.dev>,
- "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
- "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
- "virtualization@lists.linux-foundation.org"
- <virtualization@lists.linux-foundation.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
- "marcan@marcan.st" <marcan@marcan.st>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "krzysztof.kozlowski@linaro.org" <krzysztof.kozlowski@linaro.org>,
- "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
- "dwmw2@infradead.org" <dwmw2@infradead.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+From: Steven Price <steven.price@arm.com>
+Subject: Re: [RESEND PATCH v8 01/11] iommu: Add DMA ownership management
+ interfaces
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>
+References: <20220418005000.897664-1-baolu.lu@linux.intel.com>
+ <20220418005000.897664-2-baolu.lu@linux.intel.com>
+Content-Language: en-GB
+In-Reply-To: <20220418005000.897664-2-baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Jason Gunthorpe <jgg@nvidia.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -218,61 +73,87 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Nicolin Chen <nicolinc@nvidia.com>
-> Sent: Wednesday, June 15, 2022 4:45 AM
+On 18/04/2022 01:49, Lu Baolu wrote:
+> Multiple devices may be placed in the same IOMMU group because they
+> cannot be isolated from each other. These devices must either be
+> entirely under kernel control or userspace control, never a mixture.
 > 
-> Hi Kevin,
+> This adds dma ownership management in iommu core and exposes several
+> interfaces for the device drivers and the device userspace assignment
+> framework (i.e. VFIO), so that any conflict between user and kernel
+> controlled dma could be detected at the beginning.
 > 
-> On Wed, Jun 08, 2022 at 11:48:27PM +0000, Tian, Kevin wrote:
-> > > > > The KVM mechanism for controlling wbinvd is only triggered during
-> > > > > kvm_vfio_group_add(), meaning it is a one-shot test done once the
-> > > devices
-> > > > > are setup.
-> > > >
-> > > > It's not one-shot. kvm_vfio_update_coherency() is called in both
-> > > > group_add() and group_del(). Then the coherency property is
-> > > > checked dynamically in wbinvd emulation:
-> > >
-> > > From the perspective of managing the domains that is still
-> > > one-shot. It doesn't get updated when individual devices are
-> > > added/removed to domains.
-> >
-> > It's unchanged per-domain but dynamic per-vm when multiple
-> > domains are added/removed (i.e. kvm->arch.noncoherent_dma_count).
-> > It's the latter being checked in the kvm.
+> The device driver oriented interfaces are,
 > 
-> I am going to send a v2, yet not quite getting the point here.
-> Meanwhile, Jason is on leave.
+> 	int iommu_device_use_default_domain(struct device *dev);
+> 	void iommu_device_unuse_default_domain(struct device *dev);
 > 
-> What, in your opinion, would be an accurate description here?
+> By calling iommu_device_use_default_domain(), the device driver tells
+> the iommu layer that the device dma is handled through the kernel DMA
+> APIs. The iommu layer will manage the IOVA and use the default domain
+> for DMA address translation.
 > 
+> The device user-space assignment framework oriented interfaces are,
+> 
+> 	int iommu_group_claim_dma_owner(struct iommu_group *group,
+> 					void *owner);
+> 	void iommu_group_release_dma_owner(struct iommu_group *group);
+> 	bool iommu_group_dma_owner_claimed(struct iommu_group *group);
+> 
+> The device userspace assignment must be disallowed if the DMA owner
+> claiming interface returns failure.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-Something like below:
---
-The KVM mechanism for controlling wbinvd is based on OR of
-the coherency property of all devices attached to a guest, no matter
-those devices  are attached to a single domain or multiple domains.
+I'm seeing a regression that I've bisected to this commit on a Firefly
+RK3288 board. The display driver fails to probe properly because
+__iommu_attach_group() returns -EBUSY. This causes long hangs and splats
+as the display flips timeout.
 
-So, there is no value in trying to push a device that could do enforced
-cache coherency to a dedicated domain vs re-using an existing domain
-which is non-coherent since KVM won't be able to take advantage of it. 
-This just wastes domain memory.
+The call stack to __iommu_attach_group() is:
 
-Simplify this code and eliminate the test. This removes the only logic
-that needed to have a dummy domain attached prior to searching for a
-matching domain and simplifies the next patches.
+ __iommu_attach_group from iommu_attach_device+0x64/0xb4
+ iommu_attach_device from rockchip_drm_dma_attach_device+0x20/0x50
+ rockchip_drm_dma_attach_device from vop_crtc_atomic_enable+0x10c/0xa64
+ vop_crtc_atomic_enable from drm_atomic_helper_commit_modeset_enables+0xa8/0x290
+ drm_atomic_helper_commit_modeset_enables from drm_atomic_helper_commit_tail_rpm+0x44/0x8c
+ drm_atomic_helper_commit_tail_rpm from commit_tail+0x9c/0x180
+ commit_tail from drm_atomic_helper_commit+0x164/0x18c
+ drm_atomic_helper_commit from drm_atomic_commit+0xac/0xe4
+ drm_atomic_commit from drm_client_modeset_commit_atomic+0x23c/0x284
+ drm_client_modeset_commit_atomic from drm_client_modeset_commit_locked+0x60/0x1c8
+ drm_client_modeset_commit_locked from drm_client_modeset_commit+0x24/0x40
+ drm_client_modeset_commit from drm_fb_helper_set_par+0xb8/0xf8
+ drm_fb_helper_set_par from drm_fb_helper_hotplug_event.part.0+0xa8/0xc0
+ drm_fb_helper_hotplug_event.part.0 from output_poll_execute+0xb8/0x224
 
-It's unclear whether we want to further optimize the Intel driver to
-update the domain coherency after a device is detached from it, at
-least not before KVM can be verified to handle such dynamics in related
-emulation paths (wbinvd, vcpu load, write_cr0, ept, etc.). In reality
-we don't see an usage requiring such optimization as the only device
-which imposes such non-coherency is Intel GPU which even doesn't
-support hotplug/hot remove.
---
+> @@ -2109,7 +2115,7 @@ static int __iommu_attach_group(struct iommu_domain *domain,
+>  {
+>  	int ret;
+>  
+> -	if (group->default_domain && group->domain != group->default_domain)
+> +	if (group->domain && group->domain != group->default_domain)
+>  		return -EBUSY;
+>  
+>  	ret = __iommu_group_for_each_dev(group, domain,
 
-Thanks
-Kevin
+Reverting this 'fixes' the problem for me. The follow up 0286300e6045
+("iommu: iommu_group_claim_dma_owner() must always assign a domain")
+doesn't help.
+
+Adding some debug printks I can see that domain is a valid pointer, but
+both default_domain and blocking_domain are NULL.
+
+I'm using the DTB from the kernel tree (rk3288-firefly.dtb).
+
+Any ideas?
+
+Thanks,
+
+Steve
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
