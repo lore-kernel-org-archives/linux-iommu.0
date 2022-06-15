@@ -4,60 +4,87 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id B6673C433EF
-	for <iommu@archiver.kernel.org>; Wed, 15 Jun 2022 15:09:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C147EC43334
+	for <iommu@archiver.kernel.org>; Wed, 15 Jun 2022 15:16:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6A43283E1E;
-	Wed, 15 Jun 2022 15:09:32 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 4EFDA83DFC;
+	Wed, 15 Jun 2022 15:16:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MNAyeKArZ-Uf; Wed, 15 Jun 2022 15:09:31 +0000 (UTC)
+	with ESMTP id MTbASizeou99; Wed, 15 Jun 2022 15:16:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 3147982F4A;
-	Wed, 15 Jun 2022 15:09:31 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 2A3518316A;
+	Wed, 15 Jun 2022 15:16:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E9EF4C0039;
-	Wed, 15 Jun 2022 15:09:30 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A10C0C002D
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 15:09:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 00E92C0039;
+	Wed, 15 Jun 2022 15:16:31 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 94A1AC002D
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 15:16:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7C6CD82F4A
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 15:09:29 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 90E8440181
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 15:16:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tZ1dQz0FUDxk for <iommu@lists.linux-foundation.org>;
- Wed, 15 Jun 2022 15:09:28 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 57A7882B49
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 15:09:28 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9D81C153B;
- Wed, 15 Jun 2022 08:09:27 -0700 (PDT)
-Received: from [10.57.7.82] (unknown [10.57.7.82])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5E0DA3F7F5;
- Wed, 15 Jun 2022 08:09:26 -0700 (PDT)
-Message-ID: <da9cca0a-ec5b-2e73-9de0-a930f7d947b2@arm.com>
-Date: Wed, 15 Jun 2022 16:09:24 +0100
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ticWaWDhxaDE for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Jun 2022 15:16:29 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com
+ [IPv6:2a00:1450:4864:20::32c])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 82FED40169
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 15:16:29 +0000 (UTC)
+Received: by mail-wm1-x32c.google.com with SMTP id
+ c130-20020a1c3588000000b0039c6fd897b4so1325982wma.4
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jun 2022 08:16:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=Wau0fGW8yZsKjnuoyb0VTR4qVyMVH48h3qQAcCmJxHM=;
+ b=gsDwJdxlq2oa/E5drVyaHd8AqIB5EsHJGZX+yJs4Bh3IZRZWhyJg1tzAiW9vxJl9/Q
+ I6bZWcAHui00mntM2ACoE/BL7ZEWL8139NyKHCSm8617afMK4Qeclks5GiCSExeiU6QX
+ YOaHEWYs3I3Hy3jaUMZzD7qnubmVcnZR/NDqb/+uIGuUaw2hDDyLoyP5qkD1GvKWhAUq
+ D1AXeoyOXog3gnba1I1g82Fzhom0FNx8iA6Uw1p3+kcd+hf9bvi1GtqbfUn9njQEvqDm
+ FiY1W9rhvE/Z600Vn+e3KWPJ+NcO0SSJof7Hrm/ZFynpXA4M3t1Sc0kVO+U1Gzj+5tOg
+ l9ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=Wau0fGW8yZsKjnuoyb0VTR4qVyMVH48h3qQAcCmJxHM=;
+ b=IvadpBHG9bA2hiFv46Fr8ponG57GOXDMTrlidv4uIpGH9RZvEt7lmXAtIi4WWPNexd
+ Nv09IVhfy7+3rDTMAXvYysWMJs9+US3s/XXicA5f2WPptduimuIZ2yf0ZSregVU4abNs
+ Netdhpn1e26g7XLlPwbXZre8p64KQslwR0lOiRe0TJZf1RyY/xqYoaM1NDiWzWVSvQjn
+ FXxGdZWGX518dYn6ab1/RsBfoh3prMZ88hGffMhSCNaov76lzseMzi85jN5G3EioFjUD
+ wUgI3JOfbO2axdOxaAHU3ELocvRMFqm7Ws4b4E+Y/nlY+0YJGFjy5K7k46qUVHkPUZ/7
+ J0xA==
+X-Gm-Message-State: AJIora+MMt0SwKbRBkvaqoALjyRQCwMXDFTKgUcEP+a//t31TXqsQinI
+ ewE3ryQK7tl1CzlpLBdAGMIKGQ==
+X-Google-Smtp-Source: AGRyM1vZvWOxzMMfyRsf49tj6gKTfsbDDI74LUEsue+sAc2CHuDIhWC6vvd1UMApy4oTjuKCS103AA==
+X-Received: by 2002:a1c:29c1:0:b0:39d:86c0:3ece with SMTP id
+ p184-20020a1c29c1000000b0039d86c03ecemr9939wmp.138.1655306187683; 
+ Wed, 15 Jun 2022 08:16:27 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
+ [82.27.106.168]) by smtp.gmail.com with ESMTPSA id
+ q16-20020a5d5750000000b0020e63ab5d78sm14781591wrw.26.2022.06.15.08.16.26
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 15 Jun 2022 08:16:26 -0700 (PDT)
+Date: Wed, 15 Jun 2022 16:16:02 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Zhangfei Gao <zhangfei.gao@linaro.org>
+Subject: Re: [PATCH] uacce: fix concurrency of fops_open and uacce_remove
+Message-ID: <Yqn3spLZHpAkQ9Us@myrica>
+References: <20220610123423.27496-1-zhangfei.gao@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [RESEND PATCH v8 01/11] iommu: Add DMA ownership management
- interfaces
-Content-Language: en-GB
-To: Robin Murphy <robin.murphy@arm.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
- Joerg Roedel <joro@8bytes.org>
-References: <20220418005000.897664-1-baolu.lu@linux.intel.com>
- <20220418005000.897664-2-baolu.lu@linux.intel.com>
- <10eaa3b1-4cf7-a7b6-a7f6-111a486a343a@arm.com>
- <54159102-42f8-e5dc-5099-1d5d4dbbfc65@arm.com>
-From: Steven Price <steven.price@arm.com>
-In-Reply-To: <54159102-42f8-e5dc-5099-1d5d4dbbfc65@arm.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux-foundation.org,
- Jason Gunthorpe <jgg@nvidia.com>, linux-kernel@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <20220610123423.27496-1-zhangfei.gao@linaro.org>
+Cc: Yang Shen <shenyang39@huawei.com>, Herbert Xu <herbert@gondor.apana.org.au>,
+ Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-crypto@vger.kernel.org, linux-accelerators@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -70,111 +97,136 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMTUvMDYvMjAyMiAxMTo1NywgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDIwMjItMDYtMTUg
-MTA6NTMsIFN0ZXZlbiBQcmljZSB3cm90ZToKPj4gT24gMTgvMDQvMjAyMiAwMTo0OSwgTHUgQmFv
-bHUgd3JvdGU6Cj4+PiBNdWx0aXBsZSBkZXZpY2VzIG1heSBiZSBwbGFjZWQgaW4gdGhlIHNhbWUg
-SU9NTVUgZ3JvdXAgYmVjYXVzZSB0aGV5Cj4+PiBjYW5ub3QgYmUgaXNvbGF0ZWQgZnJvbSBlYWNo
-IG90aGVyLiBUaGVzZSBkZXZpY2VzIG11c3QgZWl0aGVyIGJlCj4+PiBlbnRpcmVseSB1bmRlciBr
-ZXJuZWwgY29udHJvbCBvciB1c2Vyc3BhY2UgY29udHJvbCwgbmV2ZXIgYSBtaXh0dXJlLgo+Pj4K
-Pj4+IFRoaXMgYWRkcyBkbWEgb3duZXJzaGlwIG1hbmFnZW1lbnQgaW4gaW9tbXUgY29yZSBhbmQg
-ZXhwb3NlcyBzZXZlcmFsCj4+PiBpbnRlcmZhY2VzIGZvciB0aGUgZGV2aWNlIGRyaXZlcnMgYW5k
-IHRoZSBkZXZpY2UgdXNlcnNwYWNlIGFzc2lnbm1lbnQKPj4+IGZyYW1ld29yayAoaS5lLiBWRklP
-KSwgc28gdGhhdCBhbnkgY29uZmxpY3QgYmV0d2VlbiB1c2VyIGFuZCBrZXJuZWwKPj4+IGNvbnRy
-b2xsZWQgZG1hIGNvdWxkIGJlIGRldGVjdGVkIGF0IHRoZSBiZWdpbm5pbmcuCj4+Pgo+Pj4gVGhl
-IGRldmljZSBkcml2ZXIgb3JpZW50ZWQgaW50ZXJmYWNlcyBhcmUsCj4+Pgo+Pj4gwqDCoMKgwqBp
-bnQgaW9tbXVfZGV2aWNlX3VzZV9kZWZhdWx0X2RvbWFpbihzdHJ1Y3QgZGV2aWNlICpkZXYpOwo+
-Pj4gwqDCoMKgwqB2b2lkIGlvbW11X2RldmljZV91bnVzZV9kZWZhdWx0X2RvbWFpbihzdHJ1Y3Qg
-ZGV2aWNlICpkZXYpOwo+Pj4KPj4+IEJ5IGNhbGxpbmcgaW9tbXVfZGV2aWNlX3VzZV9kZWZhdWx0
-X2RvbWFpbigpLCB0aGUgZGV2aWNlIGRyaXZlciB0ZWxscwo+Pj4gdGhlIGlvbW11IGxheWVyIHRo
-YXQgdGhlIGRldmljZSBkbWEgaXMgaGFuZGxlZCB0aHJvdWdoIHRoZSBrZXJuZWwgRE1BCj4+PiBB
-UElzLiBUaGUgaW9tbXUgbGF5ZXIgd2lsbCBtYW5hZ2UgdGhlIElPVkEgYW5kIHVzZSB0aGUgZGVm
-YXVsdCBkb21haW4KPj4+IGZvciBETUEgYWRkcmVzcyB0cmFuc2xhdGlvbi4KPj4+Cj4+PiBUaGUg
-ZGV2aWNlIHVzZXItc3BhY2UgYXNzaWdubWVudCBmcmFtZXdvcmsgb3JpZW50ZWQgaW50ZXJmYWNl
-cyBhcmUsCj4+Pgo+Pj4gwqDCoMKgwqBpbnQgaW9tbXVfZ3JvdXBfY2xhaW1fZG1hX293bmVyKHN0
-cnVjdCBpb21tdV9ncm91cCAqZ3JvdXAsCj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoCB2b2lkICpvd25lcik7Cj4+PiDCoMKgwqDCoHZvaWQgaW9tbXVfZ3JvdXBfcmVs
-ZWFzZV9kbWFfb3duZXIoc3RydWN0IGlvbW11X2dyb3VwICpncm91cCk7Cj4+PiDCoMKgwqDCoGJv
-b2wgaW9tbXVfZ3JvdXBfZG1hX293bmVyX2NsYWltZWQoc3RydWN0IGlvbW11X2dyb3VwICpncm91
-cCk7Cj4+Pgo+Pj4gVGhlIGRldmljZSB1c2Vyc3BhY2UgYXNzaWdubWVudCBtdXN0IGJlIGRpc2Fs
-bG93ZWQgaWYgdGhlIERNQSBvd25lcgo+Pj4gY2xhaW1pbmcgaW50ZXJmYWNlIHJldHVybnMgZmFp
-bHVyZS4KPj4+Cj4+PiBTaWduZWQtb2ZmLWJ5OiBKYXNvbiBHdW50aG9ycGUgPGpnZ0BudmlkaWEu
-Y29tPgo+Pj4gU2lnbmVkLW9mZi1ieTogS2V2aW4gVGlhbiA8a2V2aW4udGlhbkBpbnRlbC5jb20+
-Cj4+PiBTaWduZWQtb2ZmLWJ5OiBMdSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPgo+
-Pj4gUmV2aWV3ZWQtYnk6IFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+Cj4+Cj4+
-IEknbSBzZWVpbmcgYSByZWdyZXNzaW9uIHRoYXQgSSd2ZSBiaXNlY3RlZCB0byB0aGlzIGNvbW1p
-dCBvbiBhIEZpcmVmbHkKPj4gUkszMjg4IGJvYXJkLiBUaGUgZGlzcGxheSBkcml2ZXIgZmFpbHMg
-dG8gcHJvYmUgcHJvcGVybHkgYmVjYXVzZQo+PiBfX2lvbW11X2F0dGFjaF9ncm91cCgpIHJldHVy
-bnMgLUVCVVNZLiBUaGlzIGNhdXNlcyBsb25nIGhhbmdzIGFuZCBzcGxhdHMKPj4gYXMgdGhlIGRp
-c3BsYXkgZmxpcHMgdGltZW91dC4KPj4KPj4gVGhlIGNhbGwgc3RhY2sgdG8gX19pb21tdV9hdHRh
-Y2hfZ3JvdXAoKSBpczoKPj4KPj4gwqAgX19pb21tdV9hdHRhY2hfZ3JvdXAgZnJvbSBpb21tdV9h
-dHRhY2hfZGV2aWNlKzB4NjQvMHhiNAo+PiDCoCBpb21tdV9hdHRhY2hfZGV2aWNlIGZyb20gcm9j
-a2NoaXBfZHJtX2RtYV9hdHRhY2hfZGV2aWNlKzB4MjAvMHg1MAo+PiDCoCByb2NrY2hpcF9kcm1f
-ZG1hX2F0dGFjaF9kZXZpY2UgZnJvbSB2b3BfY3J0Y19hdG9taWNfZW5hYmxlKzB4MTBjLzB4YTY0
-Cj4+IMKgIHZvcF9jcnRjX2F0b21pY19lbmFibGUgZnJvbQo+PiBkcm1fYXRvbWljX2hlbHBlcl9j
-b21taXRfbW9kZXNldF9lbmFibGVzKzB4YTgvMHgyOTAKPj4gwqAgZHJtX2F0b21pY19oZWxwZXJf
-Y29tbWl0X21vZGVzZXRfZW5hYmxlcyBmcm9tCj4+IGRybV9hdG9taWNfaGVscGVyX2NvbW1pdF90
-YWlsX3JwbSsweDQ0LzB4OGMKPj4gwqAgZHJtX2F0b21pY19oZWxwZXJfY29tbWl0X3RhaWxfcnBt
-IGZyb20gY29tbWl0X3RhaWwrMHg5Yy8weDE4MAo+PiDCoCBjb21taXRfdGFpbCBmcm9tIGRybV9h
-dG9taWNfaGVscGVyX2NvbW1pdCsweDE2NC8weDE4Ywo+PiDCoCBkcm1fYXRvbWljX2hlbHBlcl9j
-b21taXQgZnJvbSBkcm1fYXRvbWljX2NvbW1pdCsweGFjLzB4ZTQKPj4gwqAgZHJtX2F0b21pY19j
-b21taXQgZnJvbSBkcm1fY2xpZW50X21vZGVzZXRfY29tbWl0X2F0b21pYysweDIzYy8weDI4NAo+
-PiDCoCBkcm1fY2xpZW50X21vZGVzZXRfY29tbWl0X2F0b21pYyBmcm9tCj4+IGRybV9jbGllbnRf
-bW9kZXNldF9jb21taXRfbG9ja2VkKzB4NjAvMHgxYzgKPj4gwqAgZHJtX2NsaWVudF9tb2Rlc2V0
-X2NvbW1pdF9sb2NrZWQgZnJvbQo+PiBkcm1fY2xpZW50X21vZGVzZXRfY29tbWl0KzB4MjQvMHg0
-MAo+PiDCoCBkcm1fY2xpZW50X21vZGVzZXRfY29tbWl0IGZyb20gZHJtX2ZiX2hlbHBlcl9zZXRf
-cGFyKzB4YjgvMHhmOAo+PiDCoCBkcm1fZmJfaGVscGVyX3NldF9wYXIgZnJvbSBkcm1fZmJfaGVs
-cGVyX2hvdHBsdWdfZXZlbnQucGFydC4wKzB4YTgvMHhjMAo+PiDCoCBkcm1fZmJfaGVscGVyX2hv
-dHBsdWdfZXZlbnQucGFydC4wIGZyb20gb3V0cHV0X3BvbGxfZXhlY3V0ZSsweGI4LzB4MjI0Cj4+
-Cj4+PiBAQCAtMjEwOSw3ICsyMTE1LDcgQEAgc3RhdGljIGludCBfX2lvbW11X2F0dGFjaF9ncm91
-cChzdHJ1Y3QKPj4+IGlvbW11X2RvbWFpbiAqZG9tYWluLAo+Pj4gwqAgewo+Pj4gwqDCoMKgwqDC
-oCBpbnQgcmV0Owo+Pj4gwqAgLcKgwqDCoCBpZiAoZ3JvdXAtPmRlZmF1bHRfZG9tYWluICYmIGdy
-b3VwLT5kb21haW4gIT0KPj4+IGdyb3VwLT5kZWZhdWx0X2RvbWFpbikKPj4+ICvCoMKgwqAgaWYg
-KGdyb3VwLT5kb21haW4gJiYgZ3JvdXAtPmRvbWFpbiAhPSBncm91cC0+ZGVmYXVsdF9kb21haW4p
-Cj4+PiDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0dXJuIC1FQlVTWTsKPj4+IMKgIMKgwqDCoMKgwqAg
-cmV0ID0gX19pb21tdV9ncm91cF9mb3JfZWFjaF9kZXYoZ3JvdXAsIGRvbWFpbiwKPj4KPj4gUmV2
-ZXJ0aW5nIHRoaXMgJ2ZpeGVzJyB0aGUgcHJvYmxlbSBmb3IgbWUuIFRoZSBmb2xsb3cgdXAgMDI4
-NjMwMGU2MDQ1Cj4+ICgiaW9tbXU6IGlvbW11X2dyb3VwX2NsYWltX2RtYV9vd25lcigpIG11c3Qg
-YWx3YXlzIGFzc2lnbiBhIGRvbWFpbiIpCj4+IGRvZXNuJ3QgaGVscC4KPj4KPj4gQWRkaW5nIHNv
-bWUgZGVidWcgcHJpbnRrcyBJIGNhbiBzZWUgdGhhdCBkb21haW4gaXMgYSB2YWxpZCBwb2ludGVy
-LCBidXQKPj4gYm90aCBkZWZhdWx0X2RvbWFpbiBhbmQgYmxvY2tpbmdfZG9tYWluIGFyZSBOVUxM
-Lgo+Pgo+PiBJJ20gdXNpbmcgdGhlIERUQiBmcm9tIHRoZSBrZXJuZWwgdHJlZSAocmszMjg4LWZp
-cmVmbHkuZHRiKS4KPj4KPj4gQW55IGlkZWFzPwo+IAo+IEhtbSwgVEJIIEknbSBub3Qgc3VyZSBo
-b3cgdGhhdCB3b3JrZWQgcHJldmlvdXNseS4uLiBpdCdsbCBiZSBjb21wbGFpbmluZwo+IGJlY2F1
-c2UgdGhlIEFSTSBETUEgZG9tYWluIGlzIHN0aWxsIGF0dGFjaGVkLCBidXQgZXZlbiB3aGVuIHRo
-ZSBhdHRhY2gKPiBnb2VzIGFoZWFkIGFuZCByZXBsYWNlcyB0aGUgQVJNIGRvbWFpbiB3aXRoIHRo
-ZSBkcml2ZXIncyBuZXcgb25lLCBpdCdzCj4gbm90IHVzaW5nIHRoZSBzcGVjaWFsIGFybV9pb21t
-dV9kZXRhY2hfZGV2aWNlKCkgaW50ZXJmYWNlIGFueXdoZXJlIHNvCj4gdGhlIGRldmljZSB3b3Vs
-ZCBzdGlsbCBiZSBsZWZ0IHdpdGggdGhlIHdyb25nIERNQSBvcHMgOi8KPiAKPiBJIGd1ZXNzIHRo
-ZSBtb3N0IHByYWdtYXRpYyBvcHRpb24gaXMgcHJvYmFibHkgdG8gZ2l2ZSByb2NrY2hpcC1kcm0g
-YQo+IHNpbWlsYXIgYm9kZ2UgdG8gZXh5bm9zIGFuZCB0ZWdyYSwgdG8gZXhwbGljaXRseSByZW1v
-dmUgdGhlIEFSTSBkb21haW4KPiBiZWZvcmUgYXR0YWNoaW5nIGl0cyBvd24uCgpBIGJvZGdlIGxp
-a2UgYmVsb3cgaW5kZWVkICdmaXhlcycgdGhlIHByb2JsZW06CgotLS04PC0tLQpkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9ncHUvZHJtL3JvY2tjaGlwL3JvY2tjaGlwX2RybV9kcnYuYyBiL2RyaXZlcnMv
-Z3B1L2RybS9yb2NrY2hpcC9yb2NrY2hpcF9kcm1fZHJ2LmMKaW5kZXggNjdkMzhmNTNkM2U1Li5j
-YmM2YTUxMjEyOTYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvZ3B1L2RybS9yb2NrY2hpcC9yb2NrY2hp
-cF9kcm1fZHJ2LmMKKysrIGIvZHJpdmVycy9ncHUvZHJtL3JvY2tjaGlwL3JvY2tjaGlwX2RybV9k
-cnYuYwpAQCAtMjMsNiArMjMsMTQgQEAKICNpbmNsdWRlIDxkcm0vZHJtX3Byb2JlX2hlbHBlci5o
-PgogI2luY2x1ZGUgPGRybS9kcm1fdmJsYW5rLmg+CiAKKyNpZiBkZWZpbmVkKENPTkZJR19BUk1f
-RE1BX1VTRV9JT01NVSkKKyNpbmNsdWRlIDxhc20vZG1hLWlvbW11Lmg+CisjZWxzZQorI2RlZmlu
-ZSBhcm1faW9tbXVfZGV0YWNoX2RldmljZSguLi4pCSh7IH0pCisjZGVmaW5lIGFybV9pb21tdV9y
-ZWxlYXNlX21hcHBpbmcoLi4uKQkoeyB9KQorI2RlZmluZSB0b19kbWFfaW9tbXVfbWFwcGluZyhk
-ZXYpIE5VTEwKKyNlbmRpZgorCiAjaW5jbHVkZSAicm9ja2NoaXBfZHJtX2Rydi5oIgogI2luY2x1
-ZGUgInJvY2tjaGlwX2RybV9mYi5oIgogI2luY2x1ZGUgInJvY2tjaGlwX2RybV9nZW0uaCIKQEAg
-LTQ5LDYgKzU3LDE0IEBAIGludCByb2NrY2hpcF9kcm1fZG1hX2F0dGFjaF9kZXZpY2Uoc3RydWN0
-IGRybV9kZXZpY2UgKmRybV9kZXYsCiAJaWYgKCFwcml2YXRlLT5kb21haW4pCiAJCXJldHVybiAw
-OwogCisJaWYgKElTX0VOQUJMRUQoQ09ORklHX0FSTV9ETUFfVVNFX0lPTU1VKSkgeworCQlzdHJ1
-Y3QgZG1hX2lvbW11X21hcHBpbmcgKm1hcHBpbmcgPSB0b19kbWFfaW9tbXVfbWFwcGluZyhkZXYp
-OworCQlpZiAobWFwcGluZykgeworCQkJYXJtX2lvbW11X2RldGFjaF9kZXZpY2UoZGV2KTsKKwkJ
-CWFybV9pb21tdV9yZWxlYXNlX21hcHBpbmcobWFwcGluZyk7CisJCX0KKwl9CisKIAlyZXQgPSBp
-b21tdV9hdHRhY2hfZGV2aWNlKHByaXZhdGUtPmRvbWFpbiwgZGV2KTsKIAlpZiAocmV0KSB7CiAJ
-CURSTV9ERVZfRVJST1IoZGV2LCAiRmFpbGVkIHRvIGF0dGFjaCBpb21tdSBkZXZpY2VcbiIpOwot
-LS04PC0tLQoKSSdsbCB0eXBlIHVwIGEgcHJvcGVyIGNvbW1pdCBtZXNzYWdlIGFuZCBzZWUgd2hh
-dCB0aGUgRFJNIG1haW50YWluZXJzIHRoaW5rLgoKVGhhbmtzLAoKU3RldmUKX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0Cmlv
-bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0
-aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi,
+
+On Fri, Jun 10, 2022 at 08:34:23PM +0800, Zhangfei Gao wrote:
+> The uacce parent's module can be removed when uacce is working,
+> which may cause troubles.
+> 
+> If rmmod/uacce_remove happens just after fops_open: bind_queue,
+> the uacce_remove can not remove the bound queue since it is not
+> added to the queue list yet, which blocks the uacce_disable_sva.
+> 
+> Change queues_lock area to make sure the bound queue is added to
+> the list thereby can be searched in uacce_remove.
+> 
+> And uacce->parent->driver is checked immediately in case rmmod is
+> just happening.
+> 
+> Also the parent driver must always stop DMA before calling
+> uacce_remove.
+> 
+> Signed-off-by: Yang Shen <shenyang39@huawei.com>
+> Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+> ---
+>  drivers/misc/uacce/uacce.c | 19 +++++++++++++------
+>  1 file changed, 13 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
+> index 281c54003edc..b6219c6bfb48 100644
+> --- a/drivers/misc/uacce/uacce.c
+> +++ b/drivers/misc/uacce/uacce.c
+> @@ -136,9 +136,16 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
+>  	if (!q)
+>  		return -ENOMEM;
+>  
+> +	mutex_lock(&uacce->queues_lock);
+> +
+> +	if (!uacce->parent->driver) {
+
+I don't think this is useful, because the core clears parent->driver after
+having run uacce_remove():
+
+  rmmod hisi_zip		open()
+   ...				 uacce_fops_open()
+   __device_release_driver()	  ...
+    pci_device_remove()
+     hisi_zip_remove()
+      hisi_qm_uninit()
+       uacce_remove()
+        ...			  ...
+   				  mutex_lock(uacce->queues_lock)
+    ...				  if (!uacce->parent->driver)
+    device_unbind_cleanup()	  /* driver still valid, proceed */
+     dev->driver = NULL
+
+Since uacce_remove() disabled SVA, the following uacce_bind_queue() will
+fail anyway. However, if uacce->flags does not have UACCE_DEV_SVA set,
+we'll proceed further and call uacce->ops->get_queue(), which does not
+exist anymore since the parent module is gone.
+
+I think we need the global uacce_mutex to serialize uacce_remove() and
+uacce_fops_open(). uacce_remove() would do everything, including
+xa_erase(), while holding that mutex. And uacce_fops_open() would try to
+obtain the uacce object from the xarray while holding the mutex, which
+fails if the uacce object is being removed.
+
+Thanks,
+Jean
+
+> +		ret = -ENODEV;
+> +		goto out_with_lock;
+> +	}
+> +
+>  	ret = uacce_bind_queue(uacce, q);
+>  	if (ret)
+> -		goto out_with_mem;
+> +		goto out_with_lock;
+>  
+>  	q->uacce = uacce;
+>  
+> @@ -153,7 +160,6 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
+>  	uacce->inode = inode;
+>  	q->state = UACCE_Q_INIT;
+>  
+> -	mutex_lock(&uacce->queues_lock);
+>  	list_add(&q->list, &uacce->queues);
+>  	mutex_unlock(&uacce->queues_lock);
+>  
+> @@ -161,7 +167,8 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
+>  
+>  out_with_bond:
+>  	uacce_unbind_queue(q);
+> -out_with_mem:
+> +out_with_lock:
+> +	mutex_unlock(&uacce->queues_lock);
+>  	kfree(q);
+>  	return ret;
+>  }
+> @@ -171,10 +178,10 @@ static int uacce_fops_release(struct inode *inode, struct file *filep)
+>  	struct uacce_queue *q = filep->private_data;
+>  
+>  	mutex_lock(&q->uacce->queues_lock);
+> -	list_del(&q->list);
+> -	mutex_unlock(&q->uacce->queues_lock);
+>  	uacce_put_queue(q);
+>  	uacce_unbind_queue(q);
+> +	list_del(&q->list);
+> +	mutex_unlock(&q->uacce->queues_lock);
+>  	kfree(q);
+>  
+>  	return 0;
+> @@ -513,10 +520,10 @@ void uacce_remove(struct uacce_device *uacce)
+>  		uacce_put_queue(q);
+>  		uacce_unbind_queue(q);
+>  	}
+> -	mutex_unlock(&uacce->queues_lock);
+>  
+>  	/* disable sva now since no opened queues */
+>  	uacce_disable_sva(uacce);
+> +	mutex_unlock(&uacce->queues_lock);
+>  
+>  	if (uacce->cdev)
+>  		cdev_device_del(uacce->cdev, &uacce->dev);
+> -- 
+> 2.36.1
+> 
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
