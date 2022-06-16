@@ -1,201 +1,75 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0CB73CCA480
-	for <iommu@archiver.kernel.org>; Thu, 16 Jun 2022 07:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3539BC433EF
+	for <iommu@archiver.kernel.org>; Thu, 16 Jun 2022 07:59:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A8CDF4021C;
-	Thu, 16 Jun 2022 07:08:19 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id AC8F66111E;
+	Thu, 16 Jun 2022 07:59:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id d2wHge5sK6fK; Thu, 16 Jun 2022 07:08:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 2605B41A45;
-	Thu, 16 Jun 2022 07:08:18 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EC8B2C0039;
-	Thu, 16 Jun 2022 07:08:17 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5B8D5C002D;
- Thu, 16 Jun 2022 07:08:16 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4961D610F9;
- Thu, 16 Jun 2022 07:08:16 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tp78Vkcmwhzi; Thu, 16 Jun 2022 07:08:15 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Q6iTl52O82sk; Thu, 16 Jun 2022 07:59:55 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 6DED361113;
+	Thu, 16 Jun 2022 07:59:55 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 26CDDC0039;
+	Thu, 16 Jun 2022 07:59:55 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A73CFC002D
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 07:59:53 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 8FD1483EF3
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 07:59:53 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ZasUp2GXor1G for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Jun 2022 07:59:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 513136108B;
- Thu, 16 Jun 2022 07:08:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1655363295; x=1686899295;
- h=from:to:cc:subject:date:message-id:references:
- in-reply-to:content-transfer-encoding:mime-version;
- bh=UXuGf8aiYEHvq8TG1B3SPdsJ7KrdO2AQU8Aqtd7i/ns=;
- b=EOj+5NFl2RX7IJN3jyD7KZqG5JkAZIxbnavl3EuI4ALaDjz7UaHunpO9
- VXsNbPvx1UPJVWcjZpimIORxKXnLivTIn9RwelFhTttgvach/q9CxqJF3
- poD+PCa9gac4NGcNFKWTrmdyk7MQCSK6slEX6nkcHieHuceIkf7UURpkQ
- 0J8uZeoVH8tihuUAfneHwZX9NvD86y1e7ba7mGSslUAPOpGJm+oGcvPru
- 9LXlLjNV7Q/LlFp4TW7VqO2KCgakSoGnt2b8MN4dU6UrJv6/sHc3aw9uy
- RFpCDT+WKYSGPS06oCIpTKjwMnWYGPLHSPpSZM3+/dDInt6vQrencfrnm w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="259647701"
-X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; d="scan'208";a="259647701"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 16 Jun 2022 00:08:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; d="scan'208";a="912040866"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
- by fmsmga005.fm.intel.com with ESMTP; 16 Jun 2022 00:08:13 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 16 Jun 2022 00:08:13 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 16 Jun 2022 00:08:12 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Thu, 16 Jun 2022 00:08:12 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.172)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 8AC9781333
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 07:59:48 +0000 (UTC)
+X-UUID: 6dadf92a336c44c6a8c71b01b263b41d-20220616
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.6, REQID:4ed39cf7-ba7c-4993-affd-a02a0d8b52b3, OB:0,
+ LO
+ B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+ ON:release,TS:5
+X-CID-META: VersionHash:b14ad71, CLOUDID:6e7775f6-e099-41ba-a32c-13b8bfe63214,
+ C
+ OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+ ,QS:nil,BEC:nil,COL:0
+X-UUID: 6dadf92a336c44c6a8c71b01b263b41d-20220616
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
+ mailgw02.mediatek.com (envelope-from <yf.wang@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+ with ESMTP id 1466956298; Thu, 16 Jun 2022 15:59:40 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Thu, 16 Jun 2022 00:08:12 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nNAP8+domOPKxBJ4QELOtRizy4c24NKXmfMBz8MHisr9HQoB79rtNi2Xbe/sJHAid023+aIHmaoPIvmAvQ8LgvOw8ZGGEhMRQSRr+zrCnOzit33LOpfIBsRQ6yW/MZqV/Rv0fOJ2oco8qajqEYhovq6cvJ/zLJ1WpzmzRP/NLGWrl+9vZ88Blbc34k5qMnORqWIf7AhFfiOET3UpTXKnAEbwhvwlJ+7YnECh85easACUfYBncokuJnkdwDvTYjF9tG3Shp08/vUKqlUKBwazrJ1k6zXatkmAeJRI52JSoQxpkJw9/MoefH8FOUQ59n/NdKLGrH6UeiJq0CzscDAPew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0Qn7KeKMFd+BaxI/33ypzN2GkVATVsJMxaD4eLYNElw=;
- b=N7qaFa6zdEUAK2ApGCxjLjMAsHMjeOrgJ5iU6SY7RF8ybvY3vnW7fDOeo/PAUC8+6X3Hgw320BW0tFlfH+wbk8c03Z/KHKbiycHVFnPCu37zHpMxsFGRzMpY68LhQHfpYeIed7z8rmYNFnqaI7sRq3hLaCFVY7eqNbCxjaY2x8lm8rBp8jqP09xevRPhpmkRInxW8QvGaw4jW2xetxX90/7gL+5bb8h/kKVKzMBOBWSwBZdcBgWstgo66PhlUv3zDcz9UEZEtuTr8qFBlWH4ob9QwuCUPgvUnngapLvCbVhtj3o1D/jndpCRZoASVzOw1L7CHxA2elL2Dy1iN0IslA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BL1PR11MB5271.namprd11.prod.outlook.com (2603:10b6:208:31a::21)
- by MN2PR11MB4494.namprd11.prod.outlook.com (2603:10b6:208:194::12)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14; Thu, 16 Jun
- 2022 07:08:10 +0000
-Received: from BL1PR11MB5271.namprd11.prod.outlook.com
- ([fe80::4847:321e:a45e:2b69]) by BL1PR11MB5271.namprd11.prod.outlook.com
- ([fe80::4847:321e:a45e:2b69%6]) with mapi id 15.20.5332.022; Thu, 16 Jun 2022
- 07:08:10 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, "joro@8bytes.org" <joro@8bytes.org>,
- "will@kernel.org" <will@kernel.org>, "marcan@marcan.st" <marcan@marcan.st>,
- "sven@svenpeter.dev" <sven@svenpeter.dev>, "robin.murphy@arm.com"
- <robin.murphy@arm.com>, "robdclark@gmail.com" <robdclark@gmail.com>,
- "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
- "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>, "orsonzhai@gmail.com"
- <orsonzhai@gmail.com>, "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
- "zhang.lyra@gmail.com" <zhang.lyra@gmail.com>, "jean-philippe@linaro.org"
- <jean-philippe@linaro.org>, "alex.williamson@redhat.com"
- <alex.williamson@redhat.com>, "jgg@nvidia.com" <jgg@nvidia.com>
-Subject: RE: [PATCH v2 5/5] vfio/iommu_type1: Simplify group attachment
-Thread-Topic: [PATCH v2 5/5] vfio/iommu_type1: Simplify group attachment
-Thread-Index: AQHYgRSKHdu8hpsyN0qjOVzlAFzvDq1RlxsA
-Date: Thu, 16 Jun 2022 07:08:10 +0000
-Message-ID: <BL1PR11MB52710E360B50DDA99C9A65D18CAC9@BL1PR11MB5271.namprd11.prod.outlook.com>
-References: <20220616000304.23890-1-nicolinc@nvidia.com>
- <20220616000304.23890-6-nicolinc@nvidia.com>
-In-Reply-To: <20220616000304.23890-6-nicolinc@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.500.17
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1274b422-2fb1-4cf6-b2ae-08da4f66f8d1
-x-ms-traffictypediagnostic: MN2PR11MB4494:EE_
-x-microsoft-antispam-prvs: <MN2PR11MB4494FDF554777EEFC611FF6B8CAC9@MN2PR11MB4494.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: aCC/EDEw07wUEIuTxxpxm7Gkav126ifNEvw12h7cHnwn9D9rA1Ks207ZjzKtwqqdvgLiNL7HnOujyRT/c+jlR2MEz+4nZgbvT533yzHraMsgCLl4POsALB6NiTjjfyY6R4u9ckHwcpfE1fl/BZPUz6BsDNjmYVRmZAKVq8hym1gg8wncwhFd5eCskF6EadvMnT640B369VKiP9dbOXa5oFKfprH+sA6VSW9GGVjnj8bBXMvN4zCGEt70H3wffBgDaEeSP0DbUk2PFQnU3uF+aYk3Xd8a9VwsshLXiz7Fk5d5za6Vrf1HbuJR/jH9sv4rtis9XD+piOof+FNsbz/1fxjnMkp3iUnNcDX/CWvsC/A+RABdSq84ApTfaSuaNdbaPUKegLJisUEivwoL98H5SJ6OpPhN3yyMNcy+U/XybhzRVQi74cja2osMHSXAUKryyv03KH4gb2w/Q290lEDPlAtwtXbHmfUlYT6UF8/ojnBJ3LlFjD8oM/Clca7psD6f5Jq13qeYR85RYV0E+6R7hf6Wk+OTZiYkLih2m6tyvoAscf8sNSIVfhuzp6y6T0SwRVQXKGpbHlD/9wHqD6+Sp8HDO/xYEUY9aDk9tDQ5x0c4gDhYbj/HimMEiLOxX/hjhwmEYYuc5afNxDUKwkg35Ft2mVeDNIupS2pSeVfUaOU6FCjldfI44+opJAn3GCncB9b9Zh21CMQnJNN1iMUiX16159+jLC29ZKH9RpfpCfg=
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL1PR11MB5271.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230016)(366004)(71200400001)(82960400001)(33656002)(86362001)(38100700002)(316002)(921005)(66556008)(76116006)(8676002)(38070700005)(4326008)(64756008)(66476007)(66446008)(66946007)(122000001)(54906003)(6506007)(26005)(9686003)(7696005)(52536014)(110136005)(508600001)(7406005)(8936002)(186003)(2906002)(7416002)(5660300002)(83380400001)(55016003);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?L9fefZ9gJ6c68+/kMGNd2gOHB/Ryet3AQJGRUY7OOczRMBjof/2O8wZlG7M/?=
- =?us-ascii?Q?trVqTEVWUmsg0Eeti8NAKpLIHVzqYwcJJheNT2q8bnFJ6dk9e3mTQk0f9Iu6?=
- =?us-ascii?Q?K6ikjARIFUcll5LBY30ZQdnlUIzVE6S+Jx8YNom72mFbeGJqerOlh5kAoKqJ?=
- =?us-ascii?Q?qdNRU0dmWAzMoWxEOE6+2CrKXh2WFakhYSeQHEdUEW1T/3O97D6dlj8gDntx?=
- =?us-ascii?Q?X+K19XXSkj9V/qvwB7mHBrzknHnqemy2ygPRgYLB2/wMY53Vf4jiLozMhR08?=
- =?us-ascii?Q?22ins0H5M4Hq4H90heh7vgAY+hcEp0fRvKJwwVHPvTheyQVdQ8juaFoo6f3U?=
- =?us-ascii?Q?F5Wd2qffShLXf+Rh162h8M6nqbjMlENWFi8/218GuOPNDdahfxUalcHQ9uy6?=
- =?us-ascii?Q?Vo8UcPR/GLQxTT4deIq08rNq0hkPLDGZzr/o7rrBm8q0Yn2FRJkGqbk/T3qW?=
- =?us-ascii?Q?CnyVlhq3ncu5E3QLt6mqdUZkisHvaxH0YZd8DdIExxKuu7RZBjMkOR+zxLAG?=
- =?us-ascii?Q?ElN+IVpgCf0Vc6mybD/D7Qt8kH2zCnqRLKHaGCAX2anbPr7VASLjCniRys9E?=
- =?us-ascii?Q?2gACzf0ulY8yD/JpL1K+b5aGkG9Pulp/wVpaw4s+ZkZk1NVA7qviGHm8ljGA?=
- =?us-ascii?Q?1FKzEMz4G5/zkGuM7Fkj5hWysPuJ/ZcGy5Fk4XjB1MziHBXrwr8QWrFTv4sb?=
- =?us-ascii?Q?q1aFWepLEdlJTup1cvkVkAquTciU47Ucf12cVe+WdjB7k3DRP5OnO+FGSrMx?=
- =?us-ascii?Q?rO1iEUXupnhlHzmxz360dvoaiRzWUA4ihNV2joUbicyyerfgHnJuaxUdhDjq?=
- =?us-ascii?Q?FWoFx3sylS5Gw5IEpNyJYkLj/BQf7wDwFBIJiRAgPdkkmSm9VjDG8i41jGzo?=
- =?us-ascii?Q?2bJ/pDBczIXwGnMgKRkFh8VQ3hUOaZ9pCJRW/FacWGhEnKIAz8JcEZqrlru2?=
- =?us-ascii?Q?yhlRtvwHhbYbf2dlgx7p2s0q8crRER81ntjtdwSL/OnHlVWRqjRZSSQIc7JW?=
- =?us-ascii?Q?sznehBeFo4MOYMpIopOOkvj065G1+/1vEkTnBQOHNqbaNBEtW8uGa5ntd2Ev?=
- =?us-ascii?Q?3dO8McRBKeebOeGAHDJvZZG8qMDlUYnn5ws0ZghjOvZFHXze2d0vwALS5s/Y?=
- =?us-ascii?Q?VY1vXDvQJ4HdgEdt/oeJ7aesi0kpFU4Bg4eZsbj6x6IPNH/lKJMujvbFxHa6?=
- =?us-ascii?Q?kMfBMUmbRRzonfUKKdC2IpTB4r7/1JdpCcjEGchIqTUTc2kVwdjCTXFZT/vR?=
- =?us-ascii?Q?KsHVYx+K9U4mlTnfgSogndAJW7mPz0tj6fouLqOvvv6HmicxHBmtijLuwuPo?=
- =?us-ascii?Q?/O4i9rTEo1mpWtFfox28HeSSGvRMptWUZjemZBNvU4mnkHXpTJTrnBuQ0SVX?=
- =?us-ascii?Q?V8a47htd+sDTEvTshjNbGJZcfiLfWEca/3ee2IhSgV4E1HWTRkGTyvJ4sBjL?=
- =?us-ascii?Q?njYLgGTps2Or/sJZiJQ0NKlY+wfn2KlrzEJ43FNWQdCHnYANywrP6N77aFNO?=
- =?us-ascii?Q?eXIHzk3N3bRE5RSWj7BkgM9hGen/jyS9RNsfYCVqrHxwClRM3N49yW/6wgMT?=
- =?us-ascii?Q?409K1uxYj+HIBF+tOiW0XTrAXuA5C2Mo/FeZlaDLQ9W8NQH7XiP6FEvRQX0E?=
- =?us-ascii?Q?ETp8+DkvjjtFHQy91SzeGqfUcpicw/Mmlow6T0mTGwSFcHaD/drC1xyQYurp?=
- =?us-ascii?Q?W/VOQoI2ebOCAN4MYq+a4GPz7tdB94ttdaB5793X+MazekY4yvxDIOLvMNxn?=
- =?us-ascii?Q?lAxph7UyoQ=3D=3D?=
+ 15.2.792.15; Thu, 16 Jun 2022 15:59:38 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Thu, 16 Jun 2022 15:59:36 +0800
+To: <robin.murphy@arm.com>
+Subject: Re: [PATCH v9 3/3] iommu/mediatek: Allow page table PA up to 35bit
+Date: Thu, 16 Jun 2022 15:52:46 +0800
+Message-ID: <20220616075246.11076-1-yf.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <81b55048-a6f1-660f-95b0-6798aa4efc38@arm.com>
+References: <81b55048-a6f1-660f-95b0-6798aa4efc38@arm.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BL1PR11MB5271.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1274b422-2fb1-4cf6-b2ae-08da4f66f8d1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jun 2022 07:08:10.5941 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /pgIASoA9/LtUWOSHRAzUEFdlV4uiXzBUJRTv9bJtl3qyR7FZKA9GV1N/ItvsojMGY5sU9oqpUtunUPvF0dwlA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4494
-X-OriginatorOrg: intel.com
-Cc: "isaacm@codeaurora.org" <isaacm@codeaurora.org>,
- "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
- "saiprakash.ranjan@codeaurora.org" <saiprakash.ranjan@codeaurora.org>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
- "dwmw2@infradead.org" <dwmw2@infradead.org>,
- "cohuck@redhat.com" <cohuck@redhat.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "jordan@cosmicpenguin.net" <jordan@cosmicpenguin.net>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
- "christophe.jaillet@wanadoo.fr" <christophe.jaillet@wanadoo.fr>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "yangyingliang@huawei.com" <yangyingliang@huawei.com>,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
- "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
- "gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>,
- "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
- "virtualization@lists.linux-foundation.org"
- <virtualization@lists.linux-foundation.org>,
- "tglx@linutronix.de" <tglx@linutronix.de>,
- "alyssa@rosenzweig.io" <alyssa@rosenzweig.io>
+X-MTK: N
+Cc: miles.chen@mediatek.com, wsd_upstream@mediatek.com,
+ linux-kernel@vger.kernel.org, Libo.Kang@mediatek.com, yf.wang@mediatek.com,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ ning.li@mediatek.com, matthias.bgg@gmail.com, will@kernel.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -208,109 +82,103 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: "yf.wang--- via iommu" <iommu@lists.linux-foundation.org>
+Reply-To: yf.wang@mediatek.com
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Nicolin Chen
-> Sent: Thursday, June 16, 2022 8:03 AM
+On Wed, 2022-06-15 at 18:25 +0100, Robin Murphy wrote:
+> On 2022-06-15 17:12, yf.wang--- via iommu wrote:
+> > From: Yunfei Wang <yf.wang@mediatek.com>
+> > 
+> > Single memory zone feature will remove ZONE_DMA32 and ZONE_DMA. So
+> > add
+> > the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT to let level 1 and
+> > level 2
+> > pgtable support at most 35bit PA.
 > 
-> Un-inline the domain specific logic from the attach/detach_group ops into
-> two paired functions vfio_iommu_alloc_attach_domain() and
-> vfio_iommu_detach_destroy_domain() that strictly deal with creating and
-> destroying struct vfio_domains.
-> 
-> Add the logic to check for EMEDIUMTYPE return code of
-> iommu_attach_group()
-> and avoid the extra domain allocations and attach/detach sequences of the
-> old code. This allows properly detecting an actual attach error, like
-> -ENOMEM, vs treating all attach errors as an incompatible domain.
-> 
-> Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 298 +++++++++++++++++---------------
->  1 file changed, 163 insertions(+), 135 deletions(-)
+> I'm not sure how this works in practice, given that you don't seem to
+> be 
+> setting the IOMMU's own DMA masks to more than 32 bits, so the DMA 
+> mapping in io-pgtable is going to fail if you ever do actually
+> allocate 
+> a pagetable page above 4GB :/
 > 
 
-...
-> +static struct vfio_domain *
-> +vfio_iommu_alloc_attach_domain(struct bus_type *bus, struct vfio_iommu
-> *iommu,
-> +			       struct vfio_iommu_group *group)
-> +{
-> +	struct iommu_domain *new_domain;
-> +	struct vfio_domain *domain;
-> +	int ret = 0;
-> +
-> +	/* Try to match an existing compatible domain */
-> +	list_for_each_entry (domain, &iommu->domain_list, next) {
-> +		ret = iommu_attach_group(domain->domain, group-
-> >iommu_group);
-> +		if (ret == -EMEDIUMTYPE)
-> +			continue;
+Hi Robin,
+About DMA masks, the master device has set dma mask, when iommu do dma map,
+it will check the dam_mask of the master dev to determine which range the
+address of the iova alloc is in.
 
-Probably good to add one line comment here for what EMEDIUMTYPE
-represents. It's not a widely-used retry type like EAGAIN. A comment
-can save the time of digging out the fact by jumping to iommu file.
+Add the quirk ARM_MTK_TTBR_EXT to let pgtable support larger phys memory.
+Do actually test work fine, example:
+pgtable phys address:0x12054006a, encoded to 32 bits ttbr:0x20540001
 
-...
-> -	if (resv_msi) {
-> +	if (resv_msi && !domain->msi_cookie) {
->  		ret = iommu_get_msi_cookie(domain->domain,
-> resv_msi_base);
->  		if (ret && ret != -ENODEV)
->  			goto out_detach;
-> +		domain->msi_cookie = true;
->  	}
 
-why not moving to alloc_attach_domain() then no need for the new
-domain field? It's required only when a new domain is allocated.
-
-...
-> -		if (list_empty(&domain->group_list)) {
-> -			if (list_is_singular(&iommu->domain_list)) {
-> -				if (list_empty(&iommu-
-> >emulated_iommu_groups)) {
-> -					WARN_ON(iommu->notifier.head);
-> -
-> 	vfio_iommu_unmap_unpin_all(iommu);
-> -				} else {
-> -
-> 	vfio_iommu_unmap_unpin_reaccount(iommu);
-> -				}
-> -			}
-> -			iommu_domain_free(domain->domain);
-> -			list_del(&domain->next);
-> -			kfree(domain);
-> -			vfio_iommu_aper_expand(iommu, &iova_copy);
-
-Previously the aperture is adjusted when a domain is freed...
-
-> -			vfio_update_pgsize_bitmap(iommu);
-> -		}
-> -		/*
-> -		 * Removal of a group without dirty tracking may allow
-> -		 * the iommu scope to be promoted.
-> -		 */
-> -		if (!group->pinned_page_dirty_scope) {
-> -			iommu->num_non_pinned_groups--;
-> -			if (iommu->dirty_page_tracking)
-> -				vfio_iommu_populate_bitmap_full(iommu);
-> -		}
-> +		vfio_iommu_detach_destroy_domain(domain, iommu,
-> group);
->  		kfree(group);
->  		break;
->  	}
+> > Signed-off-by: Ning Li <ning.li@mediatek.com>
+> > Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+> > ---
+> >   drivers/iommu/mtk_iommu.c | 14 +++++++++-----
+> >   1 file changed, 9 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > index 3d62399e8865..4dbc33758711 100644
+> > --- a/drivers/iommu/mtk_iommu.c
+> > +++ b/drivers/iommu/mtk_iommu.c
+> > @@ -138,6 +138,7 @@
+> >   /* PM and clock always on. e.g. infra iommu */
+> >   #define PM_CLK_AO			BIT(15)
+> >   #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
+> > +#define PGTABLE_PA_35_EN		BIT(17)
+> >   
+> >   #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
+> >   				((((pdata)->flags) & (mask)) == (_x))
+> > @@ -240,6 +241,7 @@ struct mtk_iommu_data {
+> >   struct mtk_iommu_domain {
+> >   	struct io_pgtable_cfg		cfg;
+> >   	struct io_pgtable_ops		*iop;
+> > +	u32				ttbr;
+> >   
+> >   	struct mtk_iommu_bank_data	*bank;
+> >   	struct iommu_domain		domain;
+> > @@ -596,6 +598,9 @@ static int mtk_iommu_domain_finalise(struct
+> > mtk_iommu_domain *dom,
+> >   		.iommu_dev = data->dev,
+> >   	};
+> >   
+> > +	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
+> > +		dom->cfg.quirks |= IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT;
+> > +
+> >   	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
+> >   		dom->cfg.oas = data->enable_4GB ? 33 : 32;
+> >   	else
+> > @@ -684,8 +689,8 @@ static int mtk_iommu_attach_device(struct
+> > iommu_domain *domain,
+> >   			goto err_unlock;
+> >   		}
+> >   		bank->m4u_dom = dom;
+> > -		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+> > -		       bank->base + REG_MMU_PT_BASE_ADDR);
+> > +		bank->m4u_dom->ttbr = MTK_IOMMU_ADDR(dom-
+> > >cfg.arm_v7s_cfg.ttbr);
+> > +		writel(bank->m4u_dom->ttbr, data->base +
+> > REG_MMU_PT_BASE_ADDR);
 > 
-> +	vfio_iommu_aper_expand(iommu, &iova_copy);
+> To add to my comment on patch #1, having to make this change here 
+> further indicates that you're using it the wrong way.
+> 
+> Thanks,
+> Robin.
+> 
 
-but now it's done for every group detach. The aperture is decided
-by domain geometry which is not affected by attached groups.
+Hi Robin,
+According to your Path#1's suggestion, next version will keep ttbr to encoded 32 bits,
+then will don't need to modify it.
 
+Thanks,
+Yunfei.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
