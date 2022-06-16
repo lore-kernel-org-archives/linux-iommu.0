@@ -4,75 +4,197 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6AE08C43334
-	for <iommu@archiver.kernel.org>; Thu, 16 Jun 2022 05:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 37F82CCA480
+	for <iommu@archiver.kernel.org>; Thu, 16 Jun 2022 06:28:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 1AD1741A2B;
-	Thu, 16 Jun 2022 05:43:07 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id D7B6041A2B;
+	Thu, 16 Jun 2022 06:28:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XdVPvQQwkOsD; Thu, 16 Jun 2022 05:43:06 +0000 (UTC)
+	with ESMTP id Kv7l8cCf-oy7; Thu, 16 Jun 2022 06:28:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id B4C7C41A28;
-	Thu, 16 Jun 2022 05:43:05 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 7082941A28;
+	Thu, 16 Jun 2022 06:28:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D18FC0039;
-	Thu, 16 Jun 2022 05:43:05 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 91615C002D
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 05:43:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 36A5DC0032;
+	Thu, 16 Jun 2022 06:28:53 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 89612C002D;
+ Thu, 16 Jun 2022 06:28:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7290B83FC5
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 05:43:04 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 7FA1E83F48;
+ Thu, 16 Jun 2022 06:28:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id aQKQMm_KqxI2 for <iommu@lists.linux-foundation.org>;
- Thu, 16 Jun 2022 05:43:03 +0000 (UTC)
+ with ESMTP id weMyGCMd28aE; Thu, 16 Jun 2022 06:28:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp1.osuosl.org (Postfix) with ESMTPS id A05F783F8F
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 05:43:03 +0000 (UTC)
-X-UUID: 07db64669704463e934cf9c7273a9880-20220616
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6, REQID:6a27441d-41d4-4080-808f-ace36c787a6c, OB:0,
- LO
- B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
- ION:release,TS:-5
-X-CID-META: VersionHash:b14ad71, CLOUDID:0ee4b248-4c92-421c-ad91-b806c0f58b2a,
- C
- OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
- ,QS:nil,BEC:nil,COL:0
-X-UUID: 07db64669704463e934cf9c7273a9880-20220616
-Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by
- mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 1425478301; Thu, 16 Jun 2022 13:42:59 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 16 Jun 2022 13:42:58 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 16 Jun 2022 13:42:57 +0800
-To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
- Will Deacon <will@kernel.org>
-Subject: [PATCH v2 5/5] iommu/mediatek: Remove a unused "mapping" which is
- only for v1
-Date: Thu, 16 Jun 2022 13:42:03 +0800
-Message-ID: <20220616054203.11365-6-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220616054203.11365-1-yong.wu@mediatek.com>
-References: <20220616054203.11365-1-yong.wu@mediatek.com>
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 661F583F47;
+ Thu, 16 Jun 2022 06:28:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1655360930; x=1686896930;
+ h=from:to:cc:subject:date:message-id:references:
+ in-reply-to:content-transfer-encoding:mime-version;
+ bh=0uB8sKZR1bdRppG9lnIkuGIdy6JmhB1Ql271vOrPQTY=;
+ b=k5SRTwq0a+/HzieEDsa0M8Zmx17OXNjDTWuNlHYFZ984xRXpm6wnAEWC
+ PPkdwhGzgzmd86HVPxDXg/eGzzsPMYwiKejZbNA3tq8Ju677lpKPCVdWO
+ zL6VWVwsgkrFF12tQoKGU7Ho8jr95mOp5hm/ElWO2uB3VM4XD6DVH7s5L
+ Y4tTMpnopV8PU/9Igb0bkgcszab0BKTvuZhZW3OYOeoxCFA3QHb9xYOEl
+ Icl3dkZBJhVk0klC82CGSUOUQyWyKSAyzyfnDo0YC5J1GLqJ0feCVDlqI
+ 5O15CUGU9R13QtYXp+TkoBW0arPyDcDTlr96TAWfq7CUj8zzwd8DgUx6P A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="279236530"
+X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; d="scan'208";a="279236530"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Jun 2022 23:28:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,304,1647327600"; d="scan'208";a="589504400"
+Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
+ by fmsmga007.fm.intel.com with ESMTP; 15 Jun 2022 23:28:49 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 15 Jun 2022 23:28:49 -0700
+Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 15 Jun 2022 23:28:48 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Wed, 15 Jun 2022 23:28:48 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.102)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Wed, 15 Jun 2022 23:28:48 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Tu2+S0YNfluvuP/oCd2lP+t3ZCs01x+sZkqVRslb1SQZjP4qYzb8N8VpRy7ugt8Lnc/5hAxhnJqhMNtuvGzEtdwPO0YTfB3nuX3cas9Wcl+6Xc4AGhrxDR03/Vt91VnlHMihleq8iMLBoh4+fuCRcA1hm+jiti2VsclIKsJj4cwo2jnLKR6QRsAIg8Z7AlgQK3I54WzHUvLR5w+KZN5qsrWVh0izAJua6UEXfBpW3vRzv/3Kon/LZCiKG112IgBZQi5i4bY+q9Wz3TkcTfgJDNPVz+e63V+U+qJFZnJItWTTOk6m/K0/D4+lc5ZVYxk7AndLOlVogQ9yWOI1mGh0kw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0uB8sKZR1bdRppG9lnIkuGIdy6JmhB1Ql271vOrPQTY=;
+ b=mqQjXO+vO3Dhc2ymqLWKk+A/Hi0vi2b+MYz6lasyfRQBS4yo4AfSnZ06fDMwOheTWqnBOp8BHxK6BMugGjZoV4+PNiybq3TA+8Oev6ecYNM/dwH26FeLrzVRZCD+ga6Ymxjyy2ZL80hweVfd7kj1Wa2GCLufZMOrU8ESNUc/plCxR29RL7uKOtRnPT2sP2ukdVchCosa2yeI4tpAHM2jNauNHoXhkE4I8UPYreJkBCXE/RKVe0PjoCcyu/71Y+vwwooan/PcvCU/m13lsq6XiEeGJBCL6qh8CMio0Bi5S9DsQB5R17tfIJ5BG2Z3vP+KgGb1bjsFTiBcV+3leb5FCQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BL1PR11MB5271.namprd11.prod.outlook.com (2603:10b6:208:31a::21)
+ by BN6PR11MB1810.namprd11.prod.outlook.com (2603:10b6:404:fc::20)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Thu, 16 Jun
+ 2022 06:28:46 +0000
+Received: from BL1PR11MB5271.namprd11.prod.outlook.com
+ ([fe80::4847:321e:a45e:2b69]) by BL1PR11MB5271.namprd11.prod.outlook.com
+ ([fe80::4847:321e:a45e:2b69%6]) with mapi id 15.20.5332.022; Thu, 16 Jun 2022
+ 06:28:46 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Nicolin Chen <nicolinc@nvidia.com>, "joro@8bytes.org" <joro@8bytes.org>,
+ "will@kernel.org" <will@kernel.org>, "marcan@marcan.st" <marcan@marcan.st>,
+ "sven@svenpeter.dev" <sven@svenpeter.dev>, "robin.murphy@arm.com"
+ <robin.murphy@arm.com>, "robdclark@gmail.com" <robdclark@gmail.com>,
+ "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+ "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>, "orsonzhai@gmail.com"
+ <orsonzhai@gmail.com>, "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
+ "zhang.lyra@gmail.com" <zhang.lyra@gmail.com>, "jean-philippe@linaro.org"
+ <jean-philippe@linaro.org>, "alex.williamson@redhat.com"
+ <alex.williamson@redhat.com>, "jgg@nvidia.com" <jgg@nvidia.com>
+Subject: RE: [PATCH v2 1/5] iommu: Return -EMEDIUMTYPE for incompatible domain
+ and device/group
+Thread-Topic: [PATCH v2 1/5] iommu: Return -EMEDIUMTYPE for incompatible
+ domain and device/group
+Thread-Index: AQHYgRSCE9FszAnpgU+hh7vtYPtk261RklOw
+Date: Thu, 16 Jun 2022 06:28:46 +0000
+Message-ID: <BL1PR11MB5271A92E9C5BD7ED559D93268CAC9@BL1PR11MB5271.namprd11.prod.outlook.com>
+References: <20220616000304.23890-1-nicolinc@nvidia.com>
+ <20220616000304.23890-2-nicolinc@nvidia.com>
+In-Reply-To: <20220616000304.23890-2-nicolinc@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2d0fcac6-3940-427a-1d5b-08da4f6177ba
+x-ms-traffictypediagnostic: BN6PR11MB1810:EE_
+x-microsoft-antispam-prvs: <BN6PR11MB1810C0057D7B70597D7A6FFE8CAC9@BN6PR11MB1810.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KjO4dO0YFTCZbugDtBZ9IKswgU+Vp71EWmo0r3NhA6tiM4ZEv4qxjQ7DGIXq0EYjBkabvLorm8kESs5yUyX/aXNElYDto463l/tVbon/eogBIrVoclZtLsV/wka9dcqwQ+a0nhrLpIrPw9J8syApEV9BJyr+m0HbACotgjC+XAG5pvR9JyHtyeg3J3JO39aXFnLCjmVY6SnHkaCIm4tUu7JozRArUnnysfFzZQyqiMiPzEVaq5UwitZPDw1Smp1N3pi+Gz2DufagDXLupG0JwH+RXWTbeivx9CV4dS4pvOp98tl6jg14zm9YDjmw/FGQiFJSWjosj1vQWdsKQM2dcEFBvQJgL0Tyo0mm7Ut8j0Kgs0PonbD7EReh86+F/uku5Eh2IoUy+JoDLDR3ehdfwX9U1q4VKaMsOEdA8NkRrFbxBANCmBzFktxqghBAc5LHm0ESAkYWDRqyvOMkZlIzNsn92//SSkohifseZhfttV5DzeMsI4Vue7h/lxhzd5WJItcHzgZ7LZ3j3z6nS0MAmRzDy9+6RMduzq0qL2LcW+ugTOEeuK6PjwhfLJKh6SywHmf7g6QOPB080rrFwPzeRrF49QdKqKhqSsxPdYsFvfKw9Yi4NZndE1hdgZilu1KLYOf/ZT/zMAR86/laOg8Ysy/61Q+2SXld1CVg6r/Q62NDeFvWUfwSVBx2uYhc7locV1EayA01H6oJ1ZjxtHT/FAkwuqwRj3LezTdiFIYti9E=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BL1PR11MB5271.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230016)(366004)(71200400001)(508600001)(8936002)(52536014)(55016003)(316002)(33656002)(110136005)(54906003)(83380400001)(82960400001)(8676002)(122000001)(38070700005)(921005)(186003)(86362001)(76116006)(7406005)(7416002)(66946007)(7696005)(5660300002)(6506007)(66446008)(66476007)(66556008)(38100700002)(64756008)(4326008)(2906002)(26005)(9686003);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?nSk2NWp8JscFQQR5zyKOlWKnP8TnVfAS15o4UzcgvC1AxRtjlTmnP8f1b17g?=
+ =?us-ascii?Q?cgJGqKs7eQjW0urnx8MjoLTiilTyCXcSGfrQtjxNceOEPaqQLn5Xbw+eLtYs?=
+ =?us-ascii?Q?BcjQV38n1QrSChjqJMGHvjzvlNHWDNBeUVPT1F/78fPNwJ62vPZHw9RCcAHS?=
+ =?us-ascii?Q?WRHMl96s7tNzVbS2sASOKMrSWZefObmDjWea8Owhmy0wHgeMGALZ/yx9ZTC2?=
+ =?us-ascii?Q?W0juNTiX6XpWnYzs0nRRBqx8Y95loHrR8Cv+qQbcxo6DHz1PY008U3SOsC9t?=
+ =?us-ascii?Q?WquhaHYDPfsSlNleILuEurk4kTio+t8NgXI5FepXS2EaHPv4XJvLv4DcZDte?=
+ =?us-ascii?Q?66Ky/daVylK6DGQ3+gcKglDLCPUsBo3+ZaXX/YFmqAIoC33irsi3kSsoLEl2?=
+ =?us-ascii?Q?hwytVUT0AQIWv9CrdhpZ9Mh/5GbwwrHzI5UcA4Fu1zSzDzMa+gYeDNbvlj+z?=
+ =?us-ascii?Q?JN/Q8wlR4Ge2HfukMvWobt7EGq75hZU+AUegznDb78qFjLbhbdhLGhwPONPn?=
+ =?us-ascii?Q?G5IRhfv/Q/Ry04livtIipojGW9WEKrs1pfxOL79NFic7ImyRAALV+XcKX6mz?=
+ =?us-ascii?Q?08Ebef4JBxEs8dQqowbaFI24P68d1tMHjIOr9pUylFtWAuYsg4gJaKLrgy8e?=
+ =?us-ascii?Q?8YtZRL2SkSw7NovtxEEjcprXnko6NVyPh2R+X49M941qQciOy7HvUvvldvRt?=
+ =?us-ascii?Q?zq18xVvapLA7CSIL7TF03clgb6u2EsrC+2ugVdXJCy0mYBcmKAVqM3fzyXP9?=
+ =?us-ascii?Q?TqmX/MbeYIzH9LYRr+6Mp4ZETlwpBF7y+Uc9cGzLWRDuUEpDEhcKsFTfUkhE?=
+ =?us-ascii?Q?o/psp4b3ebA7zoGTMvXtVHqDV+4yjlpVhfe+5xikgxrQEFRDYDhuslJlbXoz?=
+ =?us-ascii?Q?jDkhI9ZGqPnLss0pWxGI+9Gqvhvr7xlmxGzkOdoeSRtvWkWOaAFa+3l3r/Am?=
+ =?us-ascii?Q?8RJVxrH0A9rTtT/fs6AOBjISO1WQjqo0At5ZNT3s+J29P2DYO33tMCFNcPAK?=
+ =?us-ascii?Q?3dtYmY75IwZ2H+hA494ljZS0i+OMz15EBZAOHPOIqxzFxYmDgKMe+0NmEvjr?=
+ =?us-ascii?Q?uJZDJZC8tZsbh3TmGqqAIRdugT6QSHz/cgqEbSBeWSbQtWKT8E2aaxOTmcoj?=
+ =?us-ascii?Q?yOF4KCYz8qIYXgHJ+SotG668kEk8yVudDahNGXECJB6DuDncqJBy1rkGM7EI?=
+ =?us-ascii?Q?skFdhrmf0SoVIMFKl5jRxKltwiHET2ayrwEo8dsEJ55E0VQbUdfTUrOsx+QJ?=
+ =?us-ascii?Q?q41Va1LcT+asptKIz/nH48S3K3ivCzogF4309E1uYROM/PTayKNmXXIkaKBv?=
+ =?us-ascii?Q?TfrqKr5FDD4R7p5H1R92M8ii5vAz2KP8Q+8POkHO6n5L86CYuNH/l0FqA3lQ?=
+ =?us-ascii?Q?WoT4PmzzO+f0WUiHDLgFuzlqosdmmafE0tsvq5hbyuY3JpXQY47uFGhuq0K0?=
+ =?us-ascii?Q?3xRoX6hUEs/0uhuPr9V+mY5PDu5Y+5ya1bnzy6tNv9fnW8Ood+2RMO0h9ZUS?=
+ =?us-ascii?Q?vF+2E4wa7yjLcxe4WNAb2ipcNuwN2Pmar2eR39Aw4f5EDG2+cB/7fP1S/Y3C?=
+ =?us-ascii?Q?Iail6dr9qyO+K3vBtIMkJDqROJcpg9E07LnGehlVZdk1L16lKNeHyUmnCiNX?=
+ =?us-ascii?Q?Fm8IMJQx081Kb3pS9EVxYROtnHupbHNpeU6DUeZFcd5xlVvySge+wjPDGIwZ?=
+ =?us-ascii?Q?MqhKmmY6p9eTXkYExqlEHt2uXdYiwLP8f79DsPqNTpQYQRMvafBhl6JEEGsf?=
+ =?us-ascii?Q?PK3K/CsnSw=3D=3D?=
 MIME-Version: 1.0
-X-MTK: N
-Cc: anan.sun@mediatek.com, chengci.xu@mediatek.com, xueqi.zhang@mediatek.com,
- linux-kernel@vger.kernel.org, libo.kang@mediatek.com, yf.wang@mediatek.com,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org, Guenter Roeck <groeck@chromium.org>, Dan
- Carpenter <dan.carpenter@oracle.com>, mingyuan.ma@mediatek.com,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR11MB5271.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d0fcac6-3940-427a-1d5b-08da4f6177ba
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Jun 2022 06:28:46.5298 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2hseN5bjO1JkL5PjeiLFd917iT3XF117TA1f7kscH+RXgPT0lX7GfiXbY018Yu2lFz0OCFxrlg2EpoS3ZD23pA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1810
+X-OriginatorOrg: intel.com
+Cc: "jordan@cosmicpenguin.net" <jordan@cosmicpenguin.net>,
+ "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+ "alyssa@rosenzweig.io" <alyssa@rosenzweig.io>,
+ "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+ "saiprakash.ranjan@codeaurora.org" <saiprakash.ranjan@codeaurora.org>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ "yangyingliang@huawei.com" <yangyingliang@huawei.com>,
+ "gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>,
+ "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+ "christophe.jaillet@wanadoo.fr" <christophe.jaillet@wanadoo.fr>,
+ "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+ "tglx@linutronix.de" <tglx@linutronix.de>,
+ "virtualization@lists.linux-foundation.org"
+ <virtualization@lists.linux-foundation.org>,
+ "isaacm@codeaurora.org" <isaacm@codeaurora.org>,
+ "cohuck@redhat.com" <cohuck@redhat.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,39 +207,40 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Yong Wu <yong.wu@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Just remove a unused variable that only is for mtk_iommu_v1.
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> Sent: Thursday, June 16, 2022 8:03 AM
+> 
+> Cases like VFIO wish to attach a device to an existing domain that was
+> not allocated specifically from the device. This raises a condition
+> where the IOMMU driver can fail the domain attach because the domain and
+> device are incompatible with each other.
+> 
+> This is a soft failure that can be resolved by using a different domain.
+> 
+> Provide a dedicated errno from the IOMMU driver during attach that the
+> reason attached failed is because of domain incompatability. EMEDIUMTYPE
+> is chosen because it is never used within the iommu subsystem today and
+> evokes a sense that the 'medium' aka the domain is incompatible.
+> 
+> VFIO can use this to know attach is a soft failure and it should continue
+> searching. Otherwise the attach will be a hard failure and VFIO will
+> return the code to userspace.
+> 
+> Update all drivers to return EMEDIUMTYPE in their failure paths that are
+> related to domain incompatability. Also turn adjacent error prints into
+> debug prints, for these soft failures, to prevent a kernel log spam.
+> 
+> Add kdocs describing this behavior.
+> 
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 
-Fixes: 9485a04a5bb9 ("iommu/mediatek: Separate mtk_iommu_data for v1 and v2")
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 5e86fd48928a..e65e705d9fc1 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -221,10 +221,7 @@ struct mtk_iommu_data {
- 	struct device			*smicomm_dev;
- 
- 	struct mtk_iommu_bank_data	*bank;
--
--	struct dma_iommu_mapping	*mapping; /* For mtk_iommu_v1.c */
- 	struct regmap			*pericfg;
--
- 	struct mutex			mutex; /* Protect m4u_group/m4u_dom above */
- 
- 	/*
--- 
-2.18.0
-
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
