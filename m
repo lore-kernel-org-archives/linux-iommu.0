@@ -1,97 +1,83 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 460CAC433EF
-	for <iommu@archiver.kernel.org>; Thu, 16 Jun 2022 13:56:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 69729C433EF
+	for <iommu@archiver.kernel.org>; Thu, 16 Jun 2022 17:48:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id E11EF84037;
-	Thu, 16 Jun 2022 13:56:47 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 1D2B1404DD;
+	Thu, 16 Jun 2022 17:48:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id R6LfpRaz1YK8; Thu, 16 Jun 2022 13:56:45 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 5A1B18401E;
-	Thu, 16 Jun 2022 13:56:45 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qtZhxyTItWas; Thu, 16 Jun 2022 17:48:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 153CF40420;
+	Thu, 16 Jun 2022 17:48:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 35C81C0032;
-	Thu, 16 Jun 2022 13:56:45 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3EA00C002D
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 13:56:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E360BC0032;
+	Thu, 16 Jun 2022 17:48:31 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 047B9C002D
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 17:48:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 2D19C41881
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 13:56:44 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id E06DC41BE3
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 17:48:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nfps9574MaiT for <iommu@lists.linux-foundation.org>;
- Thu, 16 Jun 2022 13:56:43 +0000 (UTC)
+ with ESMTP id 7XoU7wb65KXU for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Jun 2022 17:48:28 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com
- [IPv6:2a00:1450:4864:20::329])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 4B6F941879
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 13:56:43 +0000 (UTC)
-Received: by mail-wm1-x329.google.com with SMTP id q15so824634wmj.2
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 06:56:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=message-id:date:mime-version:user-agent:subject:content-language:to
- :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=m6uBZVuyEz2LJoe25N52zu3vkj3sZBGqGpB8uE3jv7A=;
- b=FCcdLGR8f+Nh4u2S5InboaIgmcQQkJa1/T5sIaER5b1erKLX9DvZqJNGD7loQo/q7C
- 2952kKcUSS0KV+Y8KCAA2obrp6Y7UwwaB/Pq5FcS+zSpkx7tWMmapHDfShl4e/pt0Rxu
- /acX5/8UCfH0p0Kw9wexWShHNrRFe81xuW+3iCzpM6BLg34RyYTX8NwW/PmHwy7+joru
- O9lks34OHP+dOji5ulmU7tW46oqOySDujx/+lIOJwUWX+1sRiOxHGobuNE4qEL5zAjj9
- tGaXFzLgjYRHKA0q72nZauUDuqLWqwwLkD5RD9KB0TMTc+HrUsZ55yS61/GGqUt4DMhA
- uZdA==
+Received: from mail-io1-f49.google.com (mail-io1-f49.google.com
+ [209.85.166.49])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id AA99741BD8
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 17:48:28 +0000 (UTC)
+Received: by mail-io1-f49.google.com with SMTP id a10so2217527ioe.9
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 10:48:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:in-reply-to
- :content-transfer-encoding;
- bh=m6uBZVuyEz2LJoe25N52zu3vkj3sZBGqGpB8uE3jv7A=;
- b=GEyktUXhyLYHYXMxow+fAinuMWH9vbVbm0IFV2WmC0aFBD/G9uLmNR4OCZldjF+anw
- BAr8eToLWX6pkN2qMpqCegtlIcyj6W6oR8vBRvYY0LGR9EyxnmbA7uDwNTawt119cJL8
- KudeChvc434kYBq/1BAKwHOnKDqcpFoECJJExao/g3SbWhFYq8ynSWiZtEznQKlPP/ks
- BcMsokX3+RiaEiyPmnwZKjlQ7i9mKD26crTX9oBV9Sp4SCm8EBzCSkkxACyQ/qoiMdGv
- DhWogv6rO76GHlKt3LVS6LjCZwYD1DQdwQqrkUxnDmu0je/xpb/gzUeBsXdvHG/Iz8da
- D0rw==
-X-Gm-Message-State: AJIora/vul+5OG8m0lm9LwCP8yQ9IY+CnmmwgGlo575Zi53FHopRBiWa
- DWwdpYo3xCELmffmcRhlETw=
-X-Google-Smtp-Source: AGRyM1vaMBvDopUDTt0s4tdWKsT6HUNecCRsYk/m/z7HxI6lnV8qvwV44VhHPlGJhcCQclZE98LQ/Q==
-X-Received: by 2002:a05:600c:34cf:b0:39c:4dfb:1398 with SMTP id
- d15-20020a05600c34cf00b0039c4dfb1398mr5161884wmq.133.1655387801411; 
- Thu, 16 Jun 2022 06:56:41 -0700 (PDT)
-Received: from [192.168.1.145] ([207.188.167.132])
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=8PRZvVfxrwvO+Gtg+me/nbumG0ROGVptfpPPQu8bk/g=;
+ b=yFF0fsUaY0HTKGeSkgsQMAeZYmQvIo/SIMgUt7tCDu6/xlyfz62L3A6vqVU4WBGvUa
+ +CK6ij5+qKnSdzaHzAMoWwLBLU3GGPShbal9hFJQw/9kk2FDdoqYxby6b+0MMXWd9jur
+ Vf2z9jQNJEFvWu3MyYyssxl3+gCgiCeQSvryq5iP14MlCD+FBn5GHxkQ5zDTrPW8vE76
+ hO9rUxG7Wgpuqmn77Bn4MTMOwmsDL8VhkyDBkT+Hybxtz/KotXtsEGo64FkCPtSXcIz5
+ Sm9g0UOrnjWWsWtloivNEgVQzEJ0llUW35f+XUTcAyU0O6eubVY4p0GIyHpKBFE5Hw/H
+ ar8g==
+X-Gm-Message-State: AJIora/W4qIhUcilpp4FlVdAZl7uPisHvEhwHe4akidjf/0PSLRQJam1
+ pzwBTjN5mMRtV9D5NhwPVg==
+X-Google-Smtp-Source: AGRyM1uStzsNCcUCj1nK3GKFUp81TU3fcKgTNQUHLYhagMD1LobI/qIqbi5gYRYzXNdJb3ar1mUyPQ==
+X-Received: by 2002:a05:6602:2d44:b0:669:ef11:523a with SMTP id
+ d4-20020a0566022d4400b00669ef11523amr3141947iow.44.1655401707803; 
+ Thu, 16 Jun 2022 10:48:27 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.251])
  by smtp.gmail.com with ESMTPSA id
- o15-20020a05600c4fcf00b0039c811077d3sm2518057wmq.22.2022.06.16.06.56.39
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 16 Jun 2022 06:56:40 -0700 (PDT)
-Message-ID: <65ebee0a-391a-294f-13f1-bc039f0a748c@gmail.com>
-Date: Thu, 16 Jun 2022 15:56:39 +0200
+ y1-20020a927d01000000b002d3aff5d8b0sm1250089ilc.14.2022.06.16.10.48.26
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 16 Jun 2022 10:48:27 -0700 (PDT)
+Received: (nullmailer pid 3710861 invoked by uid 1000);
+ Thu, 16 Jun 2022 17:48:25 -0000
+Date: Thu, 16 Jun 2022 11:48:25 -0600
+From: Rob Herring <robh@kernel.org>
+To: Luca Weiss <luca@z3ntu.xyz>
+Subject: Re: [PATCH v2 1/4] dt-bindings: qcom-iommu: Add Qualcomm MSM8953
+ compatible
+Message-ID: <20220616174825.GA3710771-robh@kernel.org>
+References: <20220612092218.424809-1-luca@z3ntu.xyz>
+ <20220612092218.424809-2-luca@z3ntu.xyz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 5/5] iommu/mediatek: Remove a unused "mapping" which is
- only for v1
-Content-Language: en-US
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-References: <20220616054203.11365-1-yong.wu@mediatek.com>
- <20220616054203.11365-6-yong.wu@mediatek.com>
-From: Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220616054203.11365-6-yong.wu@mediatek.com>
-Cc: anan.sun@mediatek.com, chengci.xu@mediatek.com, xueqi.zhang@mediatek.com,
- linux-kernel@vger.kernel.org, libo.kang@mediatek.com, yf.wang@mediatek.com,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- Dan Carpenter <dan.carpenter@oracle.com>, Guenter Roeck <groeck@chromium.org>,
- mingyuan.ma@mediatek.com, linux-arm-kernel@lists.infradead.org,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Content-Disposition: inline
+In-Reply-To: <20220612092218.424809-2-luca@z3ntu.xyz>
+Cc: devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+ iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
+ ~postmarketos/upstreaming@lists.sr.ht,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ phone-devel@vger.kernel.org, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,43 +90,24 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-On 16/06/2022 07:42, Yong Wu wrote:
-> Just remove a unused variable that only is for mtk_iommu_v1.
+On Sun, 12 Jun 2022 11:22:13 +0200, Luca Weiss wrote:
+> Document the compatible used for IOMMU on the msm8953 SoC.
 > 
-> Fixes: 9485a04a5bb9 ("iommu/mediatek: Separate mtk_iommu_data for v1 and v2")
-
-It does not fix a bug, so no fixes tag here needed.
-
-With that:
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
 > ---
->   drivers/iommu/mtk_iommu.c | 3 ---
->   1 file changed, 3 deletions(-)
+> Changes from v1:
+> - new patch
 > 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 5e86fd48928a..e65e705d9fc1 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -221,10 +221,7 @@ struct mtk_iommu_data {
->   	struct device			*smicomm_dev;
->   
->   	struct mtk_iommu_bank_data	*bank;
-> -
-> -	struct dma_iommu_mapping	*mapping; /* For mtk_iommu_v1.c */
->   	struct regmap			*pericfg;
-> -
->   	struct mutex			mutex; /* Protect m4u_group/m4u_dom above */
->   
->   	/*
+>  Documentation/devicetree/bindings/iommu/qcom,iommu.txt | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+
+Acked-by: Rob Herring <robh@kernel.org>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
