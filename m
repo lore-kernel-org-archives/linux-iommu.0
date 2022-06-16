@@ -1,75 +1,90 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3539BC433EF
-	for <iommu@archiver.kernel.org>; Thu, 16 Jun 2022 07:59:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5FC4ECCA47A
+	for <iommu@archiver.kernel.org>; Thu, 16 Jun 2022 08:15:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id AC8F66111E;
-	Thu, 16 Jun 2022 07:59:56 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 03B9340134;
+	Thu, 16 Jun 2022 08:15:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Q6iTl52O82sk; Thu, 16 Jun 2022 07:59:55 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id gpDuKTlxGuMc; Thu, 16 Jun 2022 08:15:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 6DED361113;
-	Thu, 16 Jun 2022 07:59:55 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id D1C0040496;
+	Thu, 16 Jun 2022 08:15:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 26CDDC0039;
-	Thu, 16 Jun 2022 07:59:55 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A73CFC002D
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 07:59:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AA132C0032;
+	Thu, 16 Jun 2022 08:15:11 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3929AC002D
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 08:15:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8FD1483EF3
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 07:59:53 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 20C7C40496
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 08:15:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZasUp2GXor1G for <iommu@lists.linux-foundation.org>;
- Thu, 16 Jun 2022 07:59:49 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 8AC9781333
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 07:59:48 +0000 (UTC)
-X-UUID: 6dadf92a336c44c6a8c71b01b263b41d-20220616
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6, REQID:4ed39cf7-ba7c-4993-affd-a02a0d8b52b3, OB:0,
- LO
- B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
- ON:release,TS:5
-X-CID-META: VersionHash:b14ad71, CLOUDID:6e7775f6-e099-41ba-a32c-13b8bfe63214,
- C
- OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
- ,QS:nil,BEC:nil,COL:0
-X-UUID: 6dadf92a336c44c6a8c71b01b263b41d-20220616
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
- mailgw02.mediatek.com (envelope-from <yf.wang@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 1466956298; Thu, 16 Jun 2022 15:59:40 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Thu, 16 Jun 2022 15:59:38 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Thu, 16 Jun 2022 15:59:36 +0800
-To: <robin.murphy@arm.com>
-Subject: Re: [PATCH v9 3/3] iommu/mediatek: Allow page table PA up to 35bit
-Date: Thu, 16 Jun 2022 15:52:46 +0800
-Message-ID: <20220616075246.11076-1-yf.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <81b55048-a6f1-660f-95b0-6798aa4efc38@arm.com>
-References: <81b55048-a6f1-660f-95b0-6798aa4efc38@arm.com>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 12C1Y251vOoM for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Jun 2022 08:15:09 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com
+ [IPv6:2a00:1450:4864:20::52d])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id C4D2840134
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 08:15:09 +0000 (UTC)
+Received: by mail-ed1-x52d.google.com with SMTP id cn20so1100162edb.6
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jun 2022 01:15:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:content-transfer-encoding:in-reply-to;
+ bh=NTbh4MI+QCwbcpkgIpo7198UESJ/mO1+VW3Q06LAB7c=;
+ b=jaqw6FnWxB/5UThR+ZDWPxP3LWg0yS0YKOWgNceuoysE3QYfS+oCxZDmNCa3RDthiA
+ nkA25n9Yi8JFYV85REMoUBn+G4y6pDSV2DxU42hO4xQRb7+rgdKay4JL4s8VmPBn1nC2
+ yF85m7F7VZaH+V+s+cRL0dGTy2NlNoYtbSfZ1CPjfZrocAUyoNrf37+MCeIEcVKY9Mdz
+ 1i9VibVT2e/BJ4fdVSxoKa4OFM3U6ip5yjEZWjhIfkQsGUiBh6VjTAV2L2vDPEt837o3
+ 6rPCfBieZXhr+OtkAuMNYQbYzuIY8e5Vdeqa07pg+PV/0s2Uo8oR92+b05AsASWc2IXa
+ l2+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:content-transfer-encoding
+ :in-reply-to;
+ bh=NTbh4MI+QCwbcpkgIpo7198UESJ/mO1+VW3Q06LAB7c=;
+ b=b9KcECPeYMG2zVg1xDow7sqblrNklw1/PM67lIW3QkIn9VMkLXAp6nNfm57JeJaXVJ
+ TK1kGu/HDYGlobYAvYqBxAYlPep5oJ1vg4r4B6wqVQJFDAJ7Yy2rpGIwlK6Bd51viOms
+ SsgpKGwoiV/AjJ5nAhUVAeOvMZYgCX2nYsqkboKZW7Izq1iY2Ruwao+ViQ+a3tdBiV8G
+ /m1q9JGZ30W0RSAthvduVssBjndunp1hEfIgt7oU4Xf7Kht8K7tmuZgEzCsSWIAVUI6r
+ AAf6OmljsARX7di4LcToy4no3uoxSbH1nL/qhQJl/nYedfFsPiq57CCxWw3F7lSZOAVd
+ p+Aw==
+X-Gm-Message-State: AJIora94YYIZeZFzWm4wSINCk3UY215RdQzjaw7w/1ZMWs9dH28XMbjJ
+ fy5fjCt+3RUfY50nGO4SSde+xQ==
+X-Google-Smtp-Source: AGRyM1tAV7ubqxgWT2Y3vDm33RYC1UL1k8VL4cdyLifra2KOoXTU0YbVtJhJ79SiTn0ipQMr4EiJtw==
+X-Received: by 2002:a05:6402:100c:b0:42d:f407:b050 with SMTP id
+ c12-20020a056402100c00b0042df407b050mr4735798edu.39.1655367307984; 
+ Thu, 16 Jun 2022 01:15:07 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
+ [82.27.106.168]) by smtp.gmail.com with ESMTPSA id
+ s2-20020a1709060d6200b006f3ef214e2csm471585ejh.146.2022.06.16.01.15.06
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 16 Jun 2022 01:15:07 -0700 (PDT)
+Date: Thu, 16 Jun 2022 09:14:44 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Zhangfei Gao <zhangfei.gao@linaro.org>
+Subject: Re: [PATCH] uacce: fix concurrency of fops_open and uacce_remove
+Message-ID: <YqrmdKNrYTCiS/MC@myrica>
+References: <20220610123423.27496-1-zhangfei.gao@linaro.org>
+ <Yqn3spLZHpAkQ9Us@myrica>
+ <fdc8d8b0-4e04-78f5-1e8a-4cf44c89a37f@linaro.org>
 MIME-Version: 1.0
-X-MTK: N
-Cc: miles.chen@mediatek.com, wsd_upstream@mediatek.com,
- linux-kernel@vger.kernel.org, Libo.Kang@mediatek.com, yf.wang@mediatek.com,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- ning.li@mediatek.com, matthias.bgg@gmail.com, will@kernel.org,
- linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <fdc8d8b0-4e04-78f5-1e8a-4cf44c89a37f@linaro.org>
+Cc: Yang Shen <shenyang39@huawei.com>, Herbert Xu <herbert@gondor.apana.org.au>,
+ Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-crypto@vger.kernel.org, linux-accelerators@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,104 +97,61 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: "yf.wang--- via iommu" <iommu@lists.linux-foundation.org>
-Reply-To: yf.wang@mediatek.com
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 2022-06-15 at 18:25 +0100, Robin Murphy wrote:
-> On 2022-06-15 17:12, yf.wang--- via iommu wrote:
-> > From: Yunfei Wang <yf.wang@mediatek.com>
-> > 
-> > Single memory zone feature will remove ZONE_DMA32 and ZONE_DMA. So
-> > add
-> > the quirk IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT to let level 1 and
-> > level 2
-> > pgtable support at most 35bit PA.
-> 
-> I'm not sure how this works in practice, given that you don't seem to
-> be 
-> setting the IOMMU's own DMA masks to more than 32 bits, so the DMA 
-> mapping in io-pgtable is going to fail if you ever do actually
-> allocate 
-> a pagetable page above 4GB :/
-> 
-
-Hi Robin,
-About DMA masks, the master device has set dma mask, when iommu do dma map,
-it will check the dam_mask of the master dev to determine which range the
-address of the iova alloc is in.
-
-Add the quirk ARM_MTK_TTBR_EXT to let pgtable support larger phys memory.
-Do actually test work fine, example:
-pgtable phys address:0x12054006a, encoded to 32 bits ttbr:0x20540001
-
-
-> > Signed-off-by: Ning Li <ning.li@mediatek.com>
-> > Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-> > ---
-> >   drivers/iommu/mtk_iommu.c | 14 +++++++++-----
-> >   1 file changed, 9 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index 3d62399e8865..4dbc33758711 100644
-> > --- a/drivers/iommu/mtk_iommu.c
-> > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -138,6 +138,7 @@
-> >   /* PM and clock always on. e.g. infra iommu */
-> >   #define PM_CLK_AO			BIT(15)
-> >   #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
-> > +#define PGTABLE_PA_35_EN		BIT(17)
-> >   
-> >   #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
-> >   				((((pdata)->flags) & (mask)) == (_x))
-> > @@ -240,6 +241,7 @@ struct mtk_iommu_data {
-> >   struct mtk_iommu_domain {
-> >   	struct io_pgtable_cfg		cfg;
-> >   	struct io_pgtable_ops		*iop;
-> > +	u32				ttbr;
-> >   
-> >   	struct mtk_iommu_bank_data	*bank;
-> >   	struct iommu_domain		domain;
-> > @@ -596,6 +598,9 @@ static int mtk_iommu_domain_finalise(struct
-> > mtk_iommu_domain *dom,
-> >   		.iommu_dev = data->dev,
-> >   	};
-> >   
-> > +	if (MTK_IOMMU_HAS_FLAG(data->plat_data, PGTABLE_PA_35_EN))
-> > +		dom->cfg.quirks |= IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT;
-> > +
-> >   	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_4GB_MODE))
-> >   		dom->cfg.oas = data->enable_4GB ? 33 : 32;
-> >   	else
-> > @@ -684,8 +689,8 @@ static int mtk_iommu_attach_device(struct
-> > iommu_domain *domain,
-> >   			goto err_unlock;
-> >   		}
-> >   		bank->m4u_dom = dom;
-> > -		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
-> > -		       bank->base + REG_MMU_PT_BASE_ADDR);
-> > +		bank->m4u_dom->ttbr = MTK_IOMMU_ADDR(dom-
-> > >cfg.arm_v7s_cfg.ttbr);
-> > +		writel(bank->m4u_dom->ttbr, data->base +
-> > REG_MMU_PT_BASE_ADDR);
-> 
-> To add to my comment on patch #1, having to make this change here 
-> further indicates that you're using it the wrong way.
-> 
-> Thanks,
-> Robin.
-> 
-
-Hi Robin,
-According to your Path#1's suggestion, next version will keep ttbr to encoded 32 bits,
-then will don't need to modify it.
-
-Thanks,
-Yunfei.
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gVGh1LCBKdW4gMTYsIDIwMjIgYXQgMTI6MTA6MThQTSArMDgwMCwgWmhhbmdmZWkgR2FvIHdy
+b3RlOgo+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9taXNjL3VhY2NlL3VhY2NlLmMgYi9kcml2
+ZXJzL21pc2MvdWFjY2UvdWFjY2UuYwo+ID4gPiBpbmRleCAyODFjNTQwMDNlZGMuLmI2MjE5YzZi
+ZmI0OCAxMDA2NDQKPiA+ID4gLS0tIGEvZHJpdmVycy9taXNjL3VhY2NlL3VhY2NlLmMKPiA+ID4g
+KysrIGIvZHJpdmVycy9taXNjL3VhY2NlL3VhY2NlLmMKPiA+ID4gQEAgLTEzNiw5ICsxMzYsMTYg
+QEAgc3RhdGljIGludCB1YWNjZV9mb3BzX29wZW4oc3RydWN0IGlub2RlICppbm9kZSwgc3RydWN0
+IGZpbGUgKmZpbGVwKQo+ID4gPiAgIAlpZiAoIXEpCj4gPiA+ICAgCQlyZXR1cm4gLUVOT01FTTsK
+PiA+ID4gKwltdXRleF9sb2NrKCZ1YWNjZS0+cXVldWVzX2xvY2spOwo+ID4gPiArCj4gPiA+ICsJ
+aWYgKCF1YWNjZS0+cGFyZW50LT5kcml2ZXIpIHsKPiA+IEkgZG9uJ3QgdGhpbmsgdGhpcyBpcyB1
+c2VmdWwsIGJlY2F1c2UgdGhlIGNvcmUgY2xlYXJzIHBhcmVudC0+ZHJpdmVyIGFmdGVyCj4gPiBo
+YXZpbmcgcnVuIHVhY2NlX3JlbW92ZSgpOgo+ID4gCj4gPiAgICBybW1vZCBoaXNpX3ppcAkJb3Bl
+bigpCj4gPiAgICAgLi4uCQkJCSB1YWNjZV9mb3BzX29wZW4oKQo+ID4gICAgIF9fZGV2aWNlX3Jl
+bGVhc2VfZHJpdmVyKCkJICAuLi4KPiA+ICAgICAgcGNpX2RldmljZV9yZW1vdmUoKQo+ID4gICAg
+ICAgaGlzaV96aXBfcmVtb3ZlKCkKPiA+ICAgICAgICBoaXNpX3FtX3VuaW5pdCgpCj4gPiAgICAg
+ICAgIHVhY2NlX3JlbW92ZSgpCj4gPiAgICAgICAgICAuLi4JCQkgIC4uLgo+ID4gICAgIAkJCQkg
+IG11dGV4X2xvY2sodWFjY2UtPnF1ZXVlc19sb2NrKQo+ID4gICAgICAuLi4JCQkJICBpZiAoIXVh
+Y2NlLT5wYXJlbnQtPmRyaXZlcikKPiA+ICAgICAgZGV2aWNlX3VuYmluZF9jbGVhbnVwKCkJICAv
+KiBkcml2ZXIgc3RpbGwgdmFsaWQsIHByb2NlZWQgKi8KPiA+ICAgICAgIGRldi0+ZHJpdmVyID0g
+TlVMTAo+IAo+IFRoZSBjaGVja8KgIGlmICghdWFjY2UtPnBhcmVudC0+ZHJpdmVyKSBpcyByZXF1
+aXJlZCwgb3RoZXJ3aXNlIE5VTEwgcG9pbnRlcgo+IG1heSBoYXBwZW4uCgpJIGFncmVlIHdlIG5l
+ZWQgc29tZXRoaW5nLCB3aGF0IEkgbWVhbiBpcyB0aGF0IHRoaXMgY2hlY2sgaXMgbm90CnN1ZmZp
+Y2llbnQuCgo+IGlvbW11X3N2YV9iaW5kX2RldmljZQo+IGNvbnN0IHN0cnVjdCBpb21tdV9vcHMg
+Km9wcyA9IGRldl9pb21tdV9vcHMoZGV2KTvCoCAtPgo+IGRldi0+aW9tbXUtPmlvbW11X2Rldi0+
+b3BzCj4gCj4gcm1tb2QgaGFzIG5vIGlzc3VlLCBidXQgcmVtb3ZlIHBhcmVudCBwY2kgZGV2aWNl
+IGhhcyB0aGUgaXNzdWUuCgpBaCByaWdodCwgcmVseWluZyBvbiB0aGUgcmV0dXJuIHZhbHVlIG9m
+IGJpbmQoKSB3b3VsZG4ndCBiZSBlbm91Z2ggZXZlbiBpZgp3ZSBtYW5kYXRlZCBTVkEuCgpbLi4u
+XQo+ID4gCj4gPiBJIHRoaW5rIHdlIG5lZWQgdGhlIGdsb2JhbCB1YWNjZV9tdXRleCB0byBzZXJp
+YWxpemUgdWFjY2VfcmVtb3ZlKCkgYW5kCj4gPiB1YWNjZV9mb3BzX29wZW4oKS4gdWFjY2VfcmVt
+b3ZlKCkgd291bGQgZG8gZXZlcnl0aGluZywgaW5jbHVkaW5nCj4gPiB4YV9lcmFzZSgpLCB3aGls
+ZSBob2xkaW5nIHRoYXQgbXV0ZXguIEFuZCB1YWNjZV9mb3BzX29wZW4oKSB3b3VsZCB0cnkgdG8K
+PiA+IG9idGFpbiB0aGUgdWFjY2Ugb2JqZWN0IGZyb20gdGhlIHhhcnJheSB3aGlsZSBob2xkaW5n
+IHRoZSBtdXRleCwgd2hpY2gKPiA+IGZhaWxzIGlmIHRoZSB1YWNjZSBvYmplY3QgaXMgYmVpbmcg
+cmVtb3ZlZC4KPiAKPiBTaW5jZSBmb3BzX29wZW4gZ2V0IGNoYXIgZGV2aWNlIHJlZmNvdW50LCB1
+YWNjZV9yZWxlYXNlIHdpbGwgbm90IGhhcHBlbgo+IHVudGlsIG9wZW4gcmV0dXJucy4KClRoZSBy
+ZWZjb3VudCBvbmx5IGVuc3VyZXMgdGhhdCB0aGUgdWFjY2VfZGV2aWNlIG9iamVjdCBpcyBub3Qg
+ZnJlZWQgYXMKbG9uZyBhcyB0aGVyZSBhcmUgb3BlbiBmZHMuIEJ1dCB1YWNjZV9yZW1vdmUoKSBj
+YW4gcnVuIHdoaWxlIHRoZXJlIGFyZQpvcGVuIGZkcywgb3IgZmRzIGluIHRoZSBwcm9jZXNzIG9m
+IGJlaW5nIG9wZW5lZC4gQW5kIGF0ZmVyIHVhY2NlX3JlbW92ZSgpCnJ1bnMsIHRoZSB1YWNjZV9k
+ZXZpY2Ugb2JqZWN0IHN0aWxsIGV4aXN0cyBidXQgaXMgbW9zdGx5IHVudXNhYmxlLiBGb3IKZXhh
+bXBsZSBvbmNlIHRoZSBtb2R1bGUgaXMgZnJlZWQsIHVhY2NlLT5vcHMgaXMgbm90IHZhbGlkIGFu
+eW1vcmUuIEJ1dApjdXJyZW50bHkgdWFjY2VfZm9wc19vcGVuKCkgbWF5IGRlcmVmZXJlbmNlIHRo
+ZSBvcHMgaW4gdGhpcyBjYXNlOgoKCXVhY2NlX2ZvcHNfb3BlbigpCgkgaWYgKCF1YWNjZS0+cGFy
+ZW50LT5kcml2ZXIpCgkgLyogU3RpbGwgdmFsaWQsIGtlZXAgZ29pbmcgKi8JCQoJIC4uLgkJCQkJ
+cm1tb2QKCQkJCQkJIHVhY2NlX3JlbW92ZSgpCgkgLi4uCQkJCQkgZnJlZV9tb2R1bGUoKQoJIHVh
+Y2NlLT5vcHMtPmdldF9xdWV1ZSgpIC8qIEJVRyAqLwoKQWNjZXNzaW5nIHVhY2NlLT5vcHMgYWZ0
+ZXIgZnJlZV9tb2R1bGUoKSBpcyBhIHVzZS1hZnRlci1mcmVlLiBXZSBuZWVkIGFsbAp0aGUgZm9w
+cyB0byBzeW5jaHJvbml6ZSB3aXRoIHVhY2NlX3JlbW92ZSgpIHRvIGVuc3VyZSB0aGV5IGRvbid0
+IHVzZSBhbnkKcmVzb3VyY2Ugb2YgdGhlIHBhcmVudCBhZnRlciBpdCdzIGJlZW4gZnJlZWQuIAoK
+SSBzZWUgdWFjY2VfZm9wc19wb2xsKCkgbWF5IGhhdmUgdGhlIHNhbWUgcHJvYmxlbSwgYW5kIHNo
+b3VsZCBiZSBpbnNpZGUKdWFjY2VfbXV0ZXguCgpUaGFua3MsCkplYW4KX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
+QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
+Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
