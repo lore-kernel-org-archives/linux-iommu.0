@@ -1,142 +1,97 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 110D7C433EF
-	for <iommu@archiver.kernel.org>; Fri, 17 Jun 2022 14:30:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 72D71C43334
+	for <iommu@archiver.kernel.org>; Fri, 17 Jun 2022 14:47:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8DC3A4188E;
-	Fri, 17 Jun 2022 14:30:12 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 8DC3A4188E
-Authentication-Results: smtp4.osuosl.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=QefTeyNu
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id z3FKB5DTSQ1Q; Fri, 17 Jun 2022 14:30:10 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id F394C41711;
-	Fri, 17 Jun 2022 14:30:09 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org F394C41711
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C89B3C0032;
-	Fri, 17 Jun 2022 14:30:09 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CC8B6C002D
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 14:30:08 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9061540ACE
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 14:30:08 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 9061540ACE
+	by smtp2.osuosl.org (Postfix) with ESMTP id E97AA400E5;
+	Fri, 17 Jun 2022 14:47:50 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org E97AA400E5
 Authentication-Results: smtp2.osuosl.org;
- dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com
- header.a=rsa-sha256 header.s=mail20170921 header.b=QefTeyNu
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20210112 header.b=NxuScNfB
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bOuSR3S3nbOa; Fri, 17 Jun 2022 14:47:49 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 0F2404063C;
+	Fri, 17 Jun 2022 14:47:49 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 0F2404063C
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D665FC0032;
+	Fri, 17 Jun 2022 14:47:48 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0F24EC002D
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 14:47:47 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id D6AC94063C
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 14:47:46 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org D6AC94063C
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rxa73fAKkbFJ for <iommu@lists.linux-foundation.org>;
- Fri, 17 Jun 2022 14:30:07 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org C4FED400E5
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
- [210.118.77.11])
- by smtp2.osuosl.org (Postfix) with ESMTPS id C4FED400E5
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 14:30:06 +0000 (UTC)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
- by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
- 20220617143003euoutp016a46550fdfcf5186ad09d307a322164b~5btYY-93f2064420644euoutp01l
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 14:30:03 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
- 20220617143003euoutp016a46550fdfcf5186ad09d307a322164b~5btYY-93f2064420644euoutp01l
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
- s=mail20170921; t=1655476203;
- bh=LCbEc6Tp6uQ+xLDkMAny+arMkrz5C0Fk7jR9Q8TS4vY=;
- h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
- b=QefTeyNubqDaHtgo+tqnvLT5l3TyMR5wiMevsLnlyDdwGjIhpz2GrZyQ8Z0PqxEv9
- BIg3nmASL3LHl+9ePD68Eg7RndVEnrx7SABBozDjOWHnPBGBUbodvL4ixMquJ70dAa
- N9euIpbAA6gYQNHMZVUfTvUuTmzbrPjFbwGjPrSQ=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
- eucas1p2.samsung.com (KnoxPortal) with ESMTP id
- 20220617143003eucas1p21e8683693765b3b828889243be09336f~5btYDl_P01114111141eucas1p2I;
- Fri, 17 Jun 2022 14:30:03 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
- eusmges3new.samsung.com (EUCPMTA) with SMTP id 8B.D8.09580.BEF8CA26; Fri, 17
- Jun 2022 15:30:03 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
- eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
- 20220617143002eucas1p17fe6039a2bd078ee46df6bdac3ac2f76~5btXfeMOf1420514205eucas1p1K;
- Fri, 17 Jun 2022 14:30:02 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
- eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
- 20220617143002eusmtrp214e6344c8075d27b528f705b67093164~5btXeuCwA2963329633eusmtrp2h;
- Fri, 17 Jun 2022 14:30:02 +0000 (GMT)
-X-AuditID: cbfec7f5-9adff7000000256c-55-62ac8febe125
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
- eusmgms1.samsung.com (EUCPMTA) with SMTP id 10.7E.09095.AEF8CA26; Fri, 17
- Jun 2022 15:30:02 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
- eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
- 20220617143002eusmtip161825d03cd954840e54a90f4c17321f7~5btWwILPo2864128641eusmtip1J;
- Fri, 17 Jun 2022 14:30:02 +0000 (GMT)
-Message-ID: <27b927de-4523-1327-b850-aa389c8c8638@samsung.com>
-Date: Fri, 17 Jun 2022 16:30:01 +0200
+ with ESMTP id E1RKdhJAbM_H for <iommu@lists.linux-foundation.org>;
+ Fri, 17 Jun 2022 14:47:45 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 50178400E5
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com
+ [IPv6:2607:f8b0:4864:20::434])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 50178400E5
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 14:47:45 +0000 (UTC)
+Received: by mail-pf1-x434.google.com with SMTP id s37so4342210pfg.11
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 07:47:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=aYggxfQlLk9rSqqnnIEveh86WVqtON4KSNoZvLjIn7A=;
+ b=NxuScNfBGvTg+lbMohkL4tCVe41sewxyeGYiO1SLy8ZVIMMG1JwShUmyTIwv6/QK3q
+ jhunaTof31i/D6DGUeujdm4UWqg0+ptlvUYdMyiZv8M0hVYx/7r7cHg4TIraK6XUUKqr
+ pK9I5dQ9CcpUHRu/Lw6+cYCWYok4NdjwHeCE5tFVzUHZQ4xebpwZaN9cIVXMCm55glQT
+ 2LDLsObDbImKFzsV5yiVKirjlhXnLAq1BOdv0SIk4z39sYvwV1Mh0fS1QPElvFLjYDXO
+ 3JI/qyntOQb3s9trgVabk7aSmTPnyQjULtuTd4lmmL6cJiq8sOKPH+mNO7v80WLIIiDw
+ QTKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=aYggxfQlLk9rSqqnnIEveh86WVqtON4KSNoZvLjIn7A=;
+ b=z8Rb9i7RIxqCBs7fUCTx5WbSX7uitvZ5cMRZJjFRTbdpWQANzKTtdQvYC1egwR16Du
+ 3KwOyYcwtI9hQ3kZVVe3Cp79GfEDAn4tsN2yufOT8l2yZzkwjPm4mexEEtV6v3IdYk9b
+ C8vh8LfVVgNpuhkBABYo9GgSUUobvlhqLWZEmXYBCPeud+hCiNFGU1y0gBoMFmjzKCxZ
+ xebwsVF/nQ4He5lDvHt4JOoswLTj60Fn6Xpo8DbC4AQt0am5yeOj2c1SZsRnNISfOhle
+ 2YLdIqLWAQ+lEM/QGr0izvDTlx6B4X2DAgZMWbC4ANmUorOjixL7yqL/JTXBXoW6uS3L
+ 1xNw==
+X-Gm-Message-State: AJIora98Nl/aDsvxhMC20R5xJpc5oF7q/frPTewUg+BBvhvl6KjXumyk
+ GEPNO6xkZ0ZkYTwZ3AlPBxo=
+X-Google-Smtp-Source: AGRyM1vUDwKnN2/vtwst+vijRt7I4OiJ06m9CbM5WIpmqX/qaYYdY5/TX8mqyBZqjedVNDzo66jhfQ==
+X-Received: by 2002:a63:4446:0:b0:405:2d62:95e6 with SMTP id
+ t6-20020a634446000000b004052d6295e6mr9149043pgk.328.1655477264537; 
+ Fri, 17 Jun 2022 07:47:44 -0700 (PDT)
+Received: from ubuntu-Virtual-Machine.corp.microsoft.com
+ ([2001:4898:80e8:9:1860:74f:998a:2ed0])
+ by smtp.gmail.com with ESMTPSA id
+ z12-20020aa79f8c000000b0052089e1b88esm3798048pfr.192.2022.06.17.07.47.42
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 17 Jun 2022 07:47:43 -0700 (PDT)
+From: Tianyu Lan <ltykernel@gmail.com>
+To: corbet@lwn.net, hch@infradead.org, m.szyprowski@samsung.com,
+ robin.murphy@arm.com, paulmck@kernel.org, akpm@linux-foundation.org,
+ bp@suse.de, tglx@linutronix.de, songmuchun@bytedance.com,
+ rdunlap@infradead.org, damien.lemoal@opensource.wdc.com,
+ michael.h.kelley@microsoft.com, kys@microsoft.com
+Subject: [RFC PATCH V4 1/1] swiotlb: Split up single swiotlb lock
+Date: Fri, 17 Jun 2022 10:47:41 -0400
+Message-Id: <20220617144741.921308-1-ltykernel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: [PATCH V2 2/6] iommu: iova: properly handle 0 as a valid IOVA
- address
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, Ajay Kumar
- <ajaykumar.rs@samsung.com>, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux-foundation.org, joro@8bytes.org, will@kernel.org
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <1d617b42-55c7-fcf1-e569-052947364d94@arm.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrLKsWRmVeSWpSXmKPExsWy7djP87qv+9ckGUzYIW3x9cRvNosD7w+y
- WDyYt43NYsF+a4vO2RvYLTY9vsZqsWjrF3aLgx+esFq03DF14PR4cnAek8eaeWsYPXbOusvu
- sWlVJ5vH5iX1HpNvLGf06NuyijGAPYrLJiU1J7MstUjfLoErY/Kz12wFH5UqJpzzbWD8Id3F
- yMkhIWAi8fzrVeYuRi4OIYEVjBL3r65kg3C+MEr0vPzLCuF8ZpT49HwPK0xL3/NuqKrljBJ/
- ft9jgXA+MkqcuridDaSKV8BOov/nWSYQm0VAVWLmhoeMEHFBiZMzn7CA2KICSRLzt7WCTRUW
- CJE4f+4kmM0sIC5x68l8sF4RgT2MEj/XQMWDJT7PegA2h03AUKLrbRfYLk4Ba4mbdydC1chL
- bH87B+whCYEPHBJTXqxngzjbRWLR8qNMELawxKvjW9ghbBmJ/ztBlnEA2fkSf2cYQ4QrJK69
- XsMMYVtL3Dn3iw2khFlAU2L9Ln2IsCMwuHayQ3TySdx4KwhxAZ/EpG3TmSHCvBIdbUIQ1WoS
- s46vg9t58MIl5gmMSrOQwmQWkt9nIfllFsLeBYwsqxjFU0uLc9NTi43zUsv1ihNzi0vz0vWS
- 83M3MQJT1Ol/x7/uYFzx6qPeIUYmDsZDjBIczEoivGbBK5OEeFMSK6tSi/Lji0pzUosPMUpz
- sCiJ8yZnbkgUEkhPLEnNTk0tSC2CyTJxcEo1MFXrVnPHyBdtfpdwriZca8vm1+dufkyZp7bw
- V9Ravq+z755v1t31R1Hr2+fN+/uSn+9UDAjgtzh5eXVj9O6p99f2hi8VtdA+xqznrBBxY28n
- M2NLGuf5I1+6I3fG88le37widekNf9VT7+ZXhmz9vX3/ubvnrsy5Gzg/cPE2ocMaAZ6Tw4vE
- S2Xu+iu8PMO0V/Fkn/dnYVHnfy+euXrYPctcuqN/T8wuq3JXRgvmzP8Hzu86yFwstqzZ9oOB
- 9KTUrUJK7wukr6wzvCbf/uPsu3CH/jfXpyxYtPdDjrPtjF9Kp5WyGjUiDpbXdgd4GKrz+O9w
- XMj+xv6L52nrXCYHNt2T7JwGn+xsvDpq51l+TlZiKc5INNRiLipOBAD2EFAgwAMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrEIsWRmVeSWpSXmKPExsVy+t/xu7qv+tckGRz9oWvx9cRvNosD7w+y
- WDyYt43NYsF+a4vO2RvYLTY9vsZqsWjrF3aLgx+esFq03DF14PR4cnAek8eaeWsYPXbOusvu
- sWlVJ5vH5iX1HpNvLGf06NuyijGAPUrPpii/tCRVISO/uMRWKdrQwkjP0NJCz8jEUs/Q2DzW
- yshUSd/OJiU1J7MstUjfLkEvY/Kz12wFH5UqJpzzbWD8Id3FyMkhIWAi0fe8m62LkYtDSGAp
- o8TU5Y/ZIBIyEienNbBC2MISf651QRW9Z5SYs2UHI0iCV8BOov/nWSYQm0VAVWLmhodQcUGJ
- kzOfsIDYogJJEvP2rgaLCwuESJw/dxJsKLOAuMStJ/PBekUE9jBK/J+mDhEPljjbfhRq2S0m
- iXeLHjCDJNgEDCW63naBXccpYC1x8+5EqEFmEl1buxghbHmJ7W/nME9gFJqF5I5ZSPbNQtIy
- C0nLAkaWVYwiqaXFuem5xYZ6xYm5xaV56XrJ+bmbGIGRue3Yz807GOe9+qh3iJGJg/EQowQH
- s5IIr1nwyiQh3pTEyqrUovz4otKc1OJDjKbAwJjILCWanA9MDXkl8YZmBqaGJmaWBqaWZsZK
- 4ryeBR2JQgLpiSWp2ampBalFMH1MHJxSDUz790/7V11UGyC2KzarVC0i9Y3dJO1/HBox1w/1
- p95awcF2QERzbe3StUlC/7cuqz3t7y1tcnpBdCjDH64ld57d+CvIq6Hh8ym6Y8KrqK4rh25e
- XvZ77Vv1ZTsLLee+Dj6U+n+p/V2HPtdgzzmZ+feOf2Xirjrk8Gt21ZOm13YNUxVeXeMKtglT
- 3rzjJrtiSqPykstVWfK2D6ZqMvd0Nq9m/hQyScUxU+iAlEHs3zQ9e65FS6q1y/XMDz6cpx96
- 7MzquexLRbd5ntIIWmCv+Nup/G8hg+2cyMdfbLPnvfTX2Ldqhr2MctiKDzOdfr9pZJ59IpPz
- jchNB9FJV7XyP0WUR1yWPiPRubX1paDbVQMlluKMREMt5qLiRACJ8dnzVQMAAA==
-X-CMS-MailID: 20220617143002eucas1p17fe6039a2bd078ee46df6bdac3ac2f76
-X-Msg-Generator: CA
-X-RootMTR: 20220511121433epcas5p3de77375a85edf1aa78c0976a7107fdfa
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220511121433epcas5p3de77375a85edf1aa78c0976a7107fdfa
-References: <20220511121544.5998-1-ajaykumar.rs@samsung.com>
- <CGME20220511121433epcas5p3de77375a85edf1aa78c0976a7107fdfa@epcas5p3.samsung.com>
- <20220511121544.5998-3-ajaykumar.rs@samsung.com>
- <a21f3016-a9f1-dc86-8604-ae651a763fc8@arm.com>
- <00c1f1c7-e3e5-5f22-0a15-b57b329d6d56@samsung.com>
- <1d617b42-55c7-fcf1-e569-052947364d94@arm.com>
-Cc: pankaj.dubey@samsung.com, alim.akhtar@samsung.com
+Cc: parri.andrea@gmail.com, thomas.lendacky@amd.com, wei.liu@kernel.org,
+ Andi Kleen <ak@linux.intel.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ linux-hyperv@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, kirill.shutemov@intel.com,
+ iommu@lists.linux-foundation.org, andi.kleen@intel.com, vkuznets@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -154,89 +109,547 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin,
+From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-On 06.06.2022 14:38, Robin Murphy wrote:
-> On 2022-06-02 16:58, Marek Szyprowski wrote:
->> On 23.05.2022 19:30, Robin Murphy wrote:
->>> On 2022-05-11 13:15, Ajay Kumar wrote:
->>>> From: Marek Szyprowski <m.szyprowski@samsung.com>
->>>>
->>>> Zero is a valid DMA and IOVA address on many architectures, so adjust
->>>> the
->>>> IOVA management code to properly handle it. A new value IOVA_BAD_ADDR
->>>> (~0UL) is introduced as a generic value for the error case. Adjust all
->>>> callers of the alloc_iova_fast() function for the new return value.
->>>
->>> And when does anything actually need this? In fact if you were to stop
->>> iommu-dma from reserving IOVA 0 - which you don't - it would only show
->>> how patch #3 is broken.
->>
->> I don't get why you says that patch #3 is broken.
->
-> My mistake, in fact it's already just as broken either way - I forgot 
-> that that's done implicitly via iovad->start_pfn rather than an actual 
-> reserve_iova() entry. I see there is an initial calculation attempting 
-> to honour start_pfn in patch #3, but it's always immediately 
-> overwritten. More critically, the rb_first()/rb_next walk means the 
-> starting point can only creep inevitably upwards as older allocations 
-> are freed, so will end up pathologically stuck at or above limit_pfn 
-> and unable to recover. At best it's more "next-fit" than "first-fit", 
-> and TBH the fact that it could ever even allocate anything at all in 
-> an empty domain makes me want to change the definition of IOVA_ANCHOR ;)
->
->> Them main issue with
->> address 0 being reserved appears when one uses first fit allocation
->> algorithm. In such case the first allocation will be at the 0 address,
->> what causes some issues. This patch simply makes the whole iova related
->> code capable of such case. This mimics the similar code already used on
->> ARM 32bit. There are drivers that rely on the way the IOVAs are
->> allocated. This is especially important for the drivers for devices with
->> limited addressing capabilities. And there exists such and they can be
->> even behind the IOMMU.
->>
->> Lets focus on the s5p-mfc driver and the way one of the supported
->> hardware does the DMA. The hardware has very limited DMA window (256M)
->> and addresses all memory buffers as an offset from the firmware base.
->> Currently it has been assumed that the first allocated buffer will be on
->> the beginning of the IOVA space. This worked fine on ARM 32bit and
->> supporting such case is a target of this patchset.
->
-> I still understand the use-case; I object to a solution where PFN 0 is 
-> always reserved yet sometimes allocated. Not to mention the slightly 
-> more fundamental thing of the whole lot not actually working the way 
-> it's supposed to.
->
-> I also remain opposed to baking in secret ABIs where allocators are 
-> expected to honour a particular undocumented behaviour. FWIW I've had 
-> plans for a while now to make the IOVA walk bidirectional to make the 
-> existing retry case more efficient, at which point it's then almost 
-> trivial to implement "bottom-up" allocation, which I'm thinking I 
-> might then force on by default for CONFIG_ARM to minimise any further 
-> surprises for v2 of the default domain conversion. However I'm 
-> increasingly less convinced that it's really sufficient for your case, 
-> and am leaning back towards the opinion that any driver with really 
-> specific constraints on how its DMA addresses are laid out should not 
-> be passively relying on a generic allocator to do exactly what it 
-> wants. A simple flag saying "try to allocate DMA addresses bottom-up" 
-> doesn't actually mean "allocate this thing on a 256MB-aligned address 
-> and everything subsequent within a 256MB window above it", so let's 
-> not build a fragile house of cards on top of pretending that it does.
+Traditionally swiotlb was not performance critical because it was only
+used for slow devices. But in some setups, like TDX/SEV confidential
+guests, all IO has to go through swiotlb. Currently swiotlb only has a
+single lock. Under high IO load with multiple CPUs this can lead to
+significat lock contention on the swiotlb lock.
 
+This patch splits the swiotlb bounce buffer pool into individual areas
+which have their own lock. Each CPU tries to allocate in its own area
+first. Only if that fails does it search other areas. On freeing the
+allocation is freed into the area where the memory was originally
+allocated from.
 
-Okay, I see your point. I'm fine with adding more of the IOVA allocation 
-logic to the respective driver (s5p-mfc), however I would still like to 
-use the dma-mapping framework and helpers, which depend on it (like 
-v4l2-videobuf2, dma-buf, and so on). Would it be fine for you to let 
-device drivers to access the IOVA domains hidden by the DMA-IOMMU glue 
-code to mark certain parts of IOVA space as reserved or to manually 
-remap the buffer (like firmware) with specific address requirements?
+Area number can be set via swiotlb_adjust_nareas() and swiotlb kernel
+parameter.
 
+This idea from Andi Kleen patch(https://github.com/intel/tdx/commit/4529b578
+4c141782c72ec9bd9a92df2b68cb7d45).
 
-Best regards
+Based-on-idea-by: Andi Kleen <ak@linux.intel.com>
+Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+---
+ .../admin-guide/kernel-parameters.txt         |   4 +-
+ include/linux/swiotlb.h                       |  27 +++
+ kernel/dma/swiotlb.c                          | 202 ++++++++++++++----
+ 3 files changed, 194 insertions(+), 39 deletions(-)
+
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 8090130b544b..5d46271982d5 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -5869,8 +5869,10 @@
+ 			it if 0 is given (See Documentation/admin-guide/cgroup-v1/memory.rst)
+ 
+ 	swiotlb=	[ARM,IA-64,PPC,MIPS,X86]
+-			Format: { <int> | force | noforce }
++			Format: { <int> [,<int>] | force | noforce }
+ 			<int> -- Number of I/O TLB slabs
++			<int> -- Second integer after comma. Number of swiotlb
++				 areas with their own lock. Must be power of 2.
+ 			force -- force using of bounce buffers even if they
+ 			         wouldn't be automatically used by the kernel
+ 			noforce -- Never use bounce buffers (for debugging)
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 7ed35dd3de6e..7157428cf3ac 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -62,6 +62,22 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t phys,
+ #ifdef CONFIG_SWIOTLB
+ extern enum swiotlb_force swiotlb_force;
+ 
++/**
++ * struct io_tlb_area - IO TLB memory area descriptor
++ *
++ * This is a single area with a single lock.
++ *
++ * @used:	The number of used IO TLB block.
++ * @index:	The slot index to start searching in this area for next round.
++ * @lock:	The lock to protect the above data structures in the map and
++ *		unmap calls.
++ */
++struct io_tlb_area {
++	unsigned long used;
++	unsigned int index;
++	spinlock_t lock;
++};
++
+ /**
+  * struct io_tlb_mem - IO TLB Memory Pool Descriptor
+  *
+@@ -89,6 +105,8 @@ extern enum swiotlb_force swiotlb_force;
+  * @late_alloc:	%true if allocated using the page allocator
+  * @force_bounce: %true if swiotlb bouncing is forced
+  * @for_alloc:  %true if the pool is used for memory allocation
++ * @nareas:  The area number in the pool.
++ * @area_nslabs: The slot number in the area.
+  */
+ struct io_tlb_mem {
+ 	phys_addr_t start;
+@@ -102,6 +120,9 @@ struct io_tlb_mem {
+ 	bool late_alloc;
+ 	bool force_bounce;
+ 	bool for_alloc;
++	unsigned int nareas;
++	unsigned int area_nslabs;
++	struct io_tlb_area *areas;
+ 	struct io_tlb_slot {
+ 		phys_addr_t orig_addr;
+ 		size_t alloc_size;
+@@ -130,6 +151,7 @@ unsigned int swiotlb_max_segment(void);
+ size_t swiotlb_max_mapping_size(struct device *dev);
+ bool is_swiotlb_active(struct device *dev);
+ void __init swiotlb_adjust_size(unsigned long size);
++void __init swiotlb_adjust_nareas(unsigned int nareas);
+ #else
+ static inline void swiotlb_init(bool addressing_limited, unsigned int flags)
+ {
+@@ -162,6 +184,11 @@ static inline bool is_swiotlb_active(struct device *dev)
+ static inline void swiotlb_adjust_size(unsigned long size)
+ {
+ }
++
++static inline void swiotlb_adjust_nareas(unsigned int nareas)
++{
++}
++
+ #endif /* CONFIG_SWIOTLB */
+ 
+ extern void swiotlb_print_info(void);
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index cb50f8d38360..139d08068912 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -62,6 +62,8 @@
+ 
+ #define INVALID_PHYS_ADDR (~(phys_addr_t)0)
+ 
++#define DEFAULT_NUM_AREAS 1
++
+ static bool swiotlb_force_bounce;
+ static bool swiotlb_force_disable;
+ 
+@@ -70,6 +72,7 @@ struct io_tlb_mem io_tlb_default_mem;
+ phys_addr_t swiotlb_unencrypted_base;
+ 
+ static unsigned long default_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
++static unsigned long default_nareas = DEFAULT_NUM_AREAS;
+ 
+ static int __init
+ setup_io_tlb_npages(char *str)
+@@ -79,6 +82,10 @@ setup_io_tlb_npages(char *str)
+ 		default_nslabs =
+ 			ALIGN(simple_strtoul(str, &str, 0), IO_TLB_SEGSIZE);
+ 	}
++	if (*str == ',')
++		++str;
++	if (isdigit(*str))
++		swiotlb_adjust_nareas(simple_strtoul(str, &str, 0));
+ 	if (*str == ',')
+ 		++str;
+ 	if (!strcmp(str, "force"))
+@@ -103,6 +110,27 @@ unsigned long swiotlb_size_or_default(void)
+ 	return default_nslabs << IO_TLB_SHIFT;
+ }
+ 
++void __init swiotlb_adjust_nareas(unsigned int nareas)
++{
++	if (!is_power_of_2(nareas)) {
++		pr_err("swiotlb: Invalid areas parameter %d.\n", nareas);
++		return;
++	}
++
++	default_nareas = nareas;
++
++	pr_info("area num %d.\n", nareas);
++	/* Round up number of slabs to the next power of 2.
++	 * The last area is going be smaller than the rest if
++	 * default_nslabs is not power of two.
++	 */
++	if (nareas > DEFAULT_NUM_AREAS) {
++		default_nslabs = roundup_pow_of_two(default_nslabs);
++		pr_info("SWIOTLB bounce buffer size roundup to %luMB",
++			(default_nslabs << IO_TLB_SHIFT) >> 20);
++	}
++}
++
+ void __init swiotlb_adjust_size(unsigned long size)
+ {
+ 	/*
+@@ -112,8 +140,18 @@ void __init swiotlb_adjust_size(unsigned long size)
+ 	 */
+ 	if (default_nslabs != IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT)
+ 		return;
++
++	/* Round up number of slabs to the next power of 2.
++	 * The last area is going be smaller than the rest if default_nslabs is
++	 * not power of two.
++	 */
+ 	size = ALIGN(size, IO_TLB_SIZE);
+ 	default_nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
++	if (default_nareas != DEFAULT_NUM_AREAS) {
++		default_nslabs = roundup_pow_of_two(default_nslabs);
++		size = default_nslabs << IO_TLB_SHIFT;
++	}
++
+ 	pr_info("SWIOTLB bounce buffer size adjusted to %luMB", size >> 20);
+ }
+ 
+@@ -192,7 +230,8 @@ void __init swiotlb_update_mem_attributes(void)
+ }
+ 
+ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+-		unsigned long nslabs, unsigned int flags, bool late_alloc)
++				    unsigned long nslabs, unsigned int flags,
++				    bool late_alloc, unsigned int nareas)
+ {
+ 	void *vaddr = phys_to_virt(start);
+ 	unsigned long bytes = nslabs << IO_TLB_SHIFT, i;
+@@ -202,10 +241,17 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+ 	mem->end = mem->start + bytes;
+ 	mem->index = 0;
+ 	mem->late_alloc = late_alloc;
++	mem->nareas = nareas;
++	mem->area_nslabs = nslabs / mem->nareas;
+ 
+ 	mem->force_bounce = swiotlb_force_bounce || (flags & SWIOTLB_FORCE);
+ 
+ 	spin_lock_init(&mem->lock);
++	for (i = 0; i < mem->nareas; i++) {
++		spin_lock_init(&mem->areas[i].lock);
++		mem->areas[i].index = 0;
++	}
++
+ 	for (i = 0; i < mem->nslabs; i++) {
+ 		mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
+ 		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
+@@ -274,7 +320,13 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+ 		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
+ 		      __func__, alloc_size, PAGE_SIZE);
+ 
+-	swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, flags, false);
++	mem->areas = memblock_alloc(sizeof(struct io_tlb_area) *
++			    default_nareas, SMP_CACHE_BYTES);
++	if (!mem->areas)
++		panic("%s: Failed to allocate mem->areas.\n", __func__);
++
++	swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, flags,
++				false, default_nareas);
+ 
+ 	if (flags & SWIOTLB_VERBOSE)
+ 		swiotlb_print_info();
+@@ -296,7 +348,7 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+ 	struct io_tlb_mem *mem = &io_tlb_default_mem;
+ 	unsigned long nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
+ 	unsigned char *vstart = NULL;
+-	unsigned int order;
++	unsigned int order, area_order;
+ 	bool retried = false;
+ 	int rc = 0;
+ 
+@@ -337,19 +389,31 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+ 			(PAGE_SIZE << order) >> 20);
+ 	}
+ 
++	area_order = get_order(array_size(sizeof(*mem->areas),
++		default_nareas));
++	mem->areas = (struct io_tlb_area *)
++		__get_free_pages(GFP_KERNEL | __GFP_ZERO, area_order);
++	if (!mem->areas)
++		goto error_area;
++
+ 	mem->slots = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
+ 		get_order(array_size(sizeof(*mem->slots), nslabs)));
+-	if (!mem->slots) {
+-		free_pages((unsigned long)vstart, order);
+-		return -ENOMEM;
+-	}
++	if (!mem->slots)
++		goto error_slots;
+ 
+ 	set_memory_decrypted((unsigned long)vstart,
+ 			     (nslabs << IO_TLB_SHIFT) >> PAGE_SHIFT);
+-	swiotlb_init_io_tlb_mem(mem, virt_to_phys(vstart), nslabs, 0, true);
++	swiotlb_init_io_tlb_mem(mem, virt_to_phys(vstart), nslabs, 0, true,
++				default_nareas);
+ 
+ 	swiotlb_print_info();
+ 	return 0;
++
++error_slots:
++	free_pages((unsigned long)mem->areas, area_order);
++error_area:
++	free_pages((unsigned long)vstart, order);
++	return -ENOMEM;
+ }
+ 
+ void __init swiotlb_exit(void)
+@@ -357,6 +421,7 @@ void __init swiotlb_exit(void)
+ 	struct io_tlb_mem *mem = &io_tlb_default_mem;
+ 	unsigned long tbl_vaddr;
+ 	size_t tbl_size, slots_size;
++	unsigned int area_order;
+ 
+ 	if (swiotlb_force_bounce)
+ 		return;
+@@ -371,9 +436,14 @@ void __init swiotlb_exit(void)
+ 
+ 	set_memory_encrypted(tbl_vaddr, tbl_size >> PAGE_SHIFT);
+ 	if (mem->late_alloc) {
++		area_order = get_order(array_size(sizeof(*mem->areas),
++			mem->nareas));
++		free_pages((unsigned long)mem->areas, area_order);
+ 		free_pages(tbl_vaddr, get_order(tbl_size));
+ 		free_pages((unsigned long)mem->slots, get_order(slots_size));
+ 	} else {
++		memblock_free_late(__pa(mem->areas),
++				   mem->nareas * sizeof(struct io_tlb_area));
+ 		memblock_free_late(mem->start, tbl_size);
+ 		memblock_free_late(__pa(mem->slots), slots_size);
+ 	}
+@@ -476,9 +546,9 @@ static inline unsigned long get_max_slots(unsigned long boundary_mask)
+ 	return nr_slots(boundary_mask + 1);
+ }
+ 
+-static unsigned int wrap_index(struct io_tlb_mem *mem, unsigned int index)
++static unsigned int wrap_area_index(struct io_tlb_mem *mem, unsigned int index)
+ {
+-	if (index >= mem->nslabs)
++	if (index >= mem->area_nslabs)
+ 		return 0;
+ 	return index;
+ }
+@@ -487,10 +557,13 @@ static unsigned int wrap_index(struct io_tlb_mem *mem, unsigned int index)
+  * Find a suitable number of IO TLB entries size that will fit this request and
+  * allocate a buffer from that IO TLB pool.
+  */
+-static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+-			      size_t alloc_size, unsigned int alloc_align_mask)
++static int swiotlb_do_find_slots(struct io_tlb_mem *mem,
++				 struct io_tlb_area *area,
++				 int area_index,
++				 struct device *dev, phys_addr_t orig_addr,
++				 size_t alloc_size,
++				 unsigned int alloc_align_mask)
+ {
+-	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+ 	unsigned long boundary_mask = dma_get_seg_boundary(dev);
+ 	dma_addr_t tbl_dma_addr =
+ 		phys_to_dma_unencrypted(dev, mem->start) & boundary_mask;
+@@ -501,8 +574,11 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+ 	unsigned int index, wrap, count = 0, i;
+ 	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
+ 	unsigned long flags;
++	unsigned int slot_base;
++	unsigned int slot_index;
+ 
+ 	BUG_ON(!nslots);
++	BUG_ON(area_index >= mem->nareas);
+ 
+ 	/*
+ 	 * For mappings with an alignment requirement don't bother looping to
+@@ -514,16 +590,20 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+ 		stride = max(stride, stride << (PAGE_SHIFT - IO_TLB_SHIFT));
+ 	stride = max(stride, (alloc_align_mask >> IO_TLB_SHIFT) + 1);
+ 
+-	spin_lock_irqsave(&mem->lock, flags);
+-	if (unlikely(nslots > mem->nslabs - mem->used))
++	spin_lock_irqsave(&area->lock, flags);
++	if (unlikely(nslots > mem->area_nslabs - area->used))
+ 		goto not_found;
+ 
+-	index = wrap = wrap_index(mem, ALIGN(mem->index, stride));
++	slot_base = area_index * mem->area_nslabs;
++	index = wrap = wrap_area_index(mem, ALIGN(area->index, stride));
++
+ 	do {
++		slot_index = slot_base + index;
++
+ 		if (orig_addr &&
+-		    (slot_addr(tbl_dma_addr, index) & iotlb_align_mask) !=
+-			    (orig_addr & iotlb_align_mask)) {
+-			index = wrap_index(mem, index + 1);
++		    (slot_addr(tbl_dma_addr, slot_index) &
++		     iotlb_align_mask) != (orig_addr & iotlb_align_mask)) {
++			index = wrap_area_index(mem, index + 1);
+ 			continue;
+ 		}
+ 
+@@ -532,26 +612,26 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+ 		 * contiguous buffers, we allocate the buffers from that slot
+ 		 * and mark the entries as '0' indicating unavailable.
+ 		 */
+-		if (!iommu_is_span_boundary(index, nslots,
++		if (!iommu_is_span_boundary(slot_index, nslots,
+ 					    nr_slots(tbl_dma_addr),
+ 					    max_slots)) {
+-			if (mem->slots[index].list >= nslots)
++			if (mem->slots[slot_index].list >= nslots)
+ 				goto found;
+ 		}
+-		index = wrap_index(mem, index + stride);
++		index = wrap_area_index(mem, index + stride);
+ 	} while (index != wrap);
+ 
+ not_found:
+-	spin_unlock_irqrestore(&mem->lock, flags);
++	spin_unlock_irqrestore(&area->lock, flags);
+ 	return -1;
+ 
+ found:
+-	for (i = index; i < index + nslots; i++) {
++	for (i = slot_index; i < slot_index + nslots; i++) {
+ 		mem->slots[i].list = 0;
+ 		mem->slots[i].alloc_size =
+-			alloc_size - (offset + ((i - index) << IO_TLB_SHIFT));
++			alloc_size - (offset + ((i - slot_index) << IO_TLB_SHIFT));
+ 	}
+-	for (i = index - 1;
++	for (i = slot_index - 1;
+ 	     io_tlb_offset(i) != IO_TLB_SEGSIZE - 1 &&
+ 	     mem->slots[i].list; i--)
+ 		mem->slots[i].list = ++count;
+@@ -559,14 +639,43 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+ 	/*
+ 	 * Update the indices to avoid searching in the next round.
+ 	 */
+-	if (index + nslots < mem->nslabs)
+-		mem->index = index + nslots;
++	if (index + nslots < mem->area_nslabs)
++		area->index = index + nslots;
+ 	else
+-		mem->index = 0;
+-	mem->used += nslots;
++		area->index = 0;
++	area->used += nslots;
++	spin_unlock_irqrestore(&area->lock, flags);
++	return slot_index;
++}
+ 
+-	spin_unlock_irqrestore(&mem->lock, flags);
+-	return index;
++static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
++			      size_t alloc_size, unsigned int alloc_align_mask)
++{
++	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
++	int start = raw_smp_processor_id() & ((1U << __fls(mem->nareas)) - 1);
++	int i = start, index;
++
++	do {
++		index = swiotlb_do_find_slots(mem, mem->areas + i, i,
++					      dev, orig_addr, alloc_size,
++					      alloc_align_mask);
++		if (index >= 0)
++			return index;
++		if (++i >= mem->nareas)
++			i = 0;
++	} while (i != start);
++
++	return -1;
++}
++
++static unsigned long mem_used(struct io_tlb_mem *mem)
++{
++	int i;
++	unsigned long used = 0;
++
++	for (i = 0; i < mem->nareas; i++)
++		used += mem->areas[i].used;
++	return used;
+ }
+ 
+ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+@@ -598,7 +707,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 		if (!(attrs & DMA_ATTR_NO_WARN))
+ 			dev_warn_ratelimited(dev,
+ 	"swiotlb buffer is full (sz: %zd bytes), total %lu (slots), used %lu (slots)\n",
+-				 alloc_size, mem->nslabs, mem->used);
++				 alloc_size, mem->nslabs, mem_used(mem));
+ 		return (phys_addr_t)DMA_MAPPING_ERROR;
+ 	}
+ 
+@@ -628,6 +737,8 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
+ 	unsigned int offset = swiotlb_align_offset(dev, tlb_addr);
+ 	int index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
+ 	int nslots = nr_slots(mem->slots[index].alloc_size + offset);
++	int aindex = index / mem->area_nslabs;
++	struct io_tlb_area *area = &mem->areas[aindex];
+ 	int count, i;
+ 
+ 	/*
+@@ -636,7 +747,9 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
+ 	 * While returning the entries to the free list, we merge the entries
+ 	 * with slots below and above the pool being returned.
+ 	 */
+-	spin_lock_irqsave(&mem->lock, flags);
++	BUG_ON(aindex >= mem->nareas);
++
++	spin_lock_irqsave(&area->lock, flags);
+ 	if (index + nslots < ALIGN(index + 1, IO_TLB_SEGSIZE))
+ 		count = mem->slots[index + nslots].list;
+ 	else
+@@ -660,8 +773,8 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
+ 	     io_tlb_offset(i) != IO_TLB_SEGSIZE - 1 && mem->slots[i].list;
+ 	     i--)
+ 		mem->slots[i].list = ++count;
+-	mem->used -= nslots;
+-	spin_unlock_irqrestore(&mem->lock, flags);
++	area->used -= nslots;
++	spin_unlock_irqrestore(&area->lock, flags);
+ }
+ 
+ /*
+@@ -759,12 +872,14 @@ EXPORT_SYMBOL_GPL(is_swiotlb_active);
+ static void swiotlb_create_debugfs_files(struct io_tlb_mem *mem,
+ 					 const char *dirname)
+ {
++	unsigned long used = mem_used(mem);
++
+ 	mem->debugfs = debugfs_create_dir(dirname, io_tlb_default_mem.debugfs);
+ 	if (!mem->nslabs)
+ 		return;
+ 
+ 	debugfs_create_ulong("io_tlb_nslabs", 0400, mem->debugfs, &mem->nslabs);
+-	debugfs_create_ulong("io_tlb_used", 0400, mem->debugfs, &mem->used);
++	debugfs_create_ulong("io_tlb_used", 0400, mem->debugfs, &used);
+ }
+ 
+ static int __init __maybe_unused swiotlb_create_default_debugfs(void)
+@@ -815,6 +930,9 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+ 	struct io_tlb_mem *mem = rmem->priv;
+ 	unsigned long nslabs = rmem->size >> IO_TLB_SHIFT;
+ 
++	/* Set Per-device io tlb area to one */
++	unsigned int nareas = 1;
++
+ 	/*
+ 	 * Since multiple devices can share the same pool, the private data,
+ 	 * io_tlb_mem struct, will be initialized by the first device attached
+@@ -831,10 +949,18 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+ 			return -ENOMEM;
+ 		}
+ 
++		mem->areas = kcalloc(nareas, sizeof(*mem->areas),
++				     GFP_KERNEL);
++		if (!mem->areas) {
++			kfree(mem);
++			kfree(mem->slots);
++			return -ENOMEM;
++		}
++
+ 		set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
+ 				     rmem->size >> PAGE_SHIFT);
+ 		swiotlb_init_io_tlb_mem(mem, rmem->base, nslabs, SWIOTLB_FORCE,
+-				false);
++					false, nareas);
+ 		mem->for_alloc = true;
+ 
+ 		rmem->priv = mem;
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.25.1
 
 _______________________________________________
 iommu mailing list
