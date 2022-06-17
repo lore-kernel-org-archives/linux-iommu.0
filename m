@@ -4,205 +4,63 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3E315C43334
-	for <iommu@archiver.kernel.org>; Fri, 17 Jun 2022 02:53:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id F31F3C43334
+	for <iommu@archiver.kernel.org>; Fri, 17 Jun 2022 03:20:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id B2DAB60E38;
-	Fri, 17 Jun 2022 02:53:23 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org B2DAB60E38
-Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=NanT2T8T
+	by smtp3.osuosl.org (Postfix) with ESMTP id 888336106F;
+	Fri, 17 Jun 2022 03:20:21 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 888336106F
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8vKEWAsTo3Rp; Fri, 17 Jun 2022 02:53:22 +0000 (UTC)
+	with ESMTP id apbWbM9bmgU6; Fri, 17 Jun 2022 03:20:17 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 61FAF60B5F;
-	Fri, 17 Jun 2022 02:53:22 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 61FAF60B5F
+	by smtp3.osuosl.org (Postfix) with ESMTPS id CBCCE60EF8;
+	Fri, 17 Jun 2022 03:20:16 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org CBCCE60EF8
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A850C0039;
-	Fri, 17 Jun 2022 02:53:22 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 76F42C002D;
- Fri, 17 Jun 2022 02:53:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9EAD3C0032;
+	Fri, 17 Jun 2022 03:20:16 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DCF3CC002D
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 02:06:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 50CBB81470;
- Fri, 17 Jun 2022 02:53:21 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 50CBB81470
-Authentication-Results: smtp1.osuosl.org;
- dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
- header.a=rsa-sha256 header.s=Intel header.b=NanT2T8T
+ by smtp4.osuosl.org (Postfix) with ESMTP id A75D241856
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 02:06:09 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org A75D241856
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nLzNasdK2OOB; Fri, 17 Jun 2022 02:53:20 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 6HFRcMF9ptlc for <iommu@lists.linux-foundation.org>;
+ Fri, 17 Jun 2022 02:06:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 2CFEE8146D
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 2CFEE8146D;
- Fri, 17 Jun 2022 02:53:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1655434400; x=1686970400;
- h=from:to:cc:subject:date:message-id:references:
- in-reply-to:content-transfer-encoding:mime-version;
- bh=2Le/cUDeQ3fVHTzWwi8s6g5GhAwassRMhG4UvW4l4M0=;
- b=NanT2T8TipnS6bCeznI4HhqcxUXrFLcbNRzQ3oRIirZMGPD66ggWYhEy
- srr8UsGwfebpv8Y1pXX24fBigL381tiR8zsjmrax0MTM++15Ud8/gHWXc
- jFnmnHQEhmeo+hu+EiRgBaSsSWPY2D1IMLfq4/i71PShabthRTyiRf+RL
- 1NI/1mmTZWo1+O1laLEy7+7mjPSSU6r2nXnRL5lh8jncmR3YGrQuVtz4z
- 6VBaJE/PONSP7PscNhYO+BJtdc/1aAFx4Nis0u53YSYYCGG7qoOw5hNPm
- Xq8wZtn2yCtHUetHc5iWLV8mEgqI2pmG2COGMB+ky5Rm0s57fT4zYIBiL Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="341059127"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; d="scan'208";a="341059127"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 16 Jun 2022 19:53:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; d="scan'208";a="560183594"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
- by orsmga006.jf.intel.com with ESMTP; 16 Jun 2022 19:53:17 -0700
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 16 Jun 2022 19:53:16 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 16 Jun 2022 19:53:16 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Thu, 16 Jun 2022 19:53:16 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.49) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Thu, 16 Jun 2022 19:53:15 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Pl10RGwB5t1tCmCbyNXyrll3IcJLIjw9m8P5c+1dzFyBAvIprsMnKCUhxoKsPTzzLkW5vVDb6p17ZzRWUN1G8FGnWrHTzsv/hFEkPcaJkX31TLs4r6JUVKLSTXmxeAvA7N1Q2MWygmsi+IYK6LYR4Dj5kZ1JUXynkZjX6JpzUgbOGGJzkrRcWeEcxkrdESTd7fnkgpzp8y4GKv74wYJD1B9bvIVttK+K8mmjU9Lcml+m9sU75G1O1PtUcxiOr2osBNQ6ccbHAa54IhRaJCkIEFGqsPz9PADOwcsZh2iBdwLorG/+DmVH2i47AakzvxY2q9Wam2QSUt61gpgPnWgLFA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yPnaR3oeG9KD4dYZ61Yls2r2JyUJaYA7pG76XgATqjA=;
- b=ZzTM5dbX3UNFH/jHR380Mt73/3yIhceIQBWIy2LOOqwjr9LTGHlwXqnnJtub0RePW+X/XM+egzeC5zYqts6ek6q0RqJcrzFsxVyHXcFOxGoOPiDciZkuQpp4iuDigkzhIMQRbHEDtUqO20uoVaK6sSwALdoVR7hOIrJ0v0fDvT+pws6gsr3zcteS+UZfKCbWo0HqSyuo8wN4v07WEQ9K0wS8+i31cORb3YcS6WBiWErn400h3iwzW3/0gVCIPmy/cL8fEZu3tV9qFbk8l3nmEL34eMnoeXK9Xn/zQHrHEMucb5HFL714OLWRJCpkz3xwcMCTZqmEheuxAh3i1Npr4g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by BL3PR11MB6364.namprd11.prod.outlook.com (2603:10b6:208:3b7::12)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.17; Fri, 17 Jun
- 2022 02:53:13 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c%2]) with mapi id 15.20.5353.016; Fri, 17 Jun 2022
- 02:53:13 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Subject: RE: [PATCH v2 5/5] vfio/iommu_type1: Simplify group attachment
-Thread-Topic: [PATCH v2 5/5] vfio/iommu_type1: Simplify group attachment
-Thread-Index: AQHYgRSKHdu8hpsyN0qjOVzlAFzvDq1RlxsAgAEK+wCAAERFoA==
-Date: Fri, 17 Jun 2022 02:53:13 +0000
-Message-ID: <BN9PR11MB5276C7BFA77C2C176491B56A8CAF9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220616000304.23890-1-nicolinc@nvidia.com>
- <20220616000304.23890-6-nicolinc@nvidia.com>
- <BL1PR11MB52710E360B50DDA99C9A65D18CAC9@BL1PR11MB5271.namprd11.prod.outlook.com>
- <YquxcH2S1fM+llOf@Asurada-Nvidia>
-In-Reply-To: <YquxcH2S1fM+llOf@Asurada-Nvidia>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5147c22a-1f2e-4e1e-86eb-08da500c8596
-x-ms-traffictypediagnostic: BL3PR11MB6364:EE_
-x-microsoft-antispam-prvs: <BL3PR11MB6364D7D831E4B3EC36093BC68CAF9@BL3PR11MB6364.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: V9STjNJLVCbisCsbaj1azUPXnO0ZIcwsFI7Gthg6kPd7aP0t2dSRxQ2Qxjhhy96BRHvZoT2/d9UyF5YdvCqFcHnEkTWYXBo+eD0uiHC1hJKVGmAmL6GwRei1SNl/bDV23QAFQ26Xc1HubgXb7O2V/pIvKTRbZUpiSZNn7GwSVubrJzZa3Om2jImvTkAAm22INVjvsRWT7Z2K2URhpqSUe6bUOt1mqPTpjndJcIz3LD+ejKYcBGL3292OQMNaRJNfGKWa6vJuPaCdtTs7v5LKmoG8InNKJZUgpwNrm1utv4EPQIzS/AxlEN2TQPaPrjvIuNSjaDskuHTOzP9nocR7PMFuqDNsxCV+Kgdd3WViKFftxAhXWbKZ0tNe+t+CBsAMAXEbVmUXz8k1l3bXq30EH5NPmZy6BU4Cd/sgj+huCPunxkU9gOrLXOswv6I4o+zoM0RlzK6ouE13rFWy/aNgYDOkgSx6dT8LBYvC+nlrkch1f/jvx8cYFRnCh4ueT6QOmeEjwZ/qMc/y79n6MGsrVSrowA74yLhTH2SwgeiH8eqrLWXz2shmV4E0z+KOGQr3Dh5w2cpUTaRJeH13DuPO3hsxsKpMOnPAIuIQOiQZKMXSQXbbk2l08ME65DilEDUHhF1BMGxYsxF1ib/5gTL2biWpXgDMOQovHpob3HJ/GTwdgDRyJHw/MmpwGHgsZIHNDN4JEslnqlgg5SXLYR2Iaw==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230016)(366004)(7406005)(66476007)(83380400001)(7696005)(66946007)(66556008)(2906002)(66446008)(64756008)(5660300002)(76116006)(33656002)(52536014)(6506007)(4326008)(86362001)(8676002)(508600001)(8936002)(82960400001)(71200400001)(38100700002)(122000001)(6916009)(55016003)(9686003)(54906003)(316002)(186003)(26005)(7416002)(38070700005);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?lyTN/2amkbHeY/hzFVNHHa0JM68w7YyJZNnFnS4vR0vKqvybaTFEdm5OIC43?=
- =?us-ascii?Q?axmtD9/j+HlbM8OFFS7t+qaz0bnTcO+jDzpnu3rZvzMmHgT2RBTxScoB96pR?=
- =?us-ascii?Q?4CJHkN6dtBFcX2sg6OfTR/6zwWidQ31M3JG5sOnBWGjVTn+u/rF4OYZVVAtM?=
- =?us-ascii?Q?L5a8V82zyJQbTv75i2ejDfzTwZA+2H/r11StA9441Kf6TW2dpz/KKwZsnnMq?=
- =?us-ascii?Q?So2bp9mgVCpt3lAtqC+FuqbS9ULSg9212+2bxQb53hlCETOc2oQwCMVD9Br3?=
- =?us-ascii?Q?nikmSCCHgdmgSOBlIju4OJyDEteYU1p4bBdgpdKWdElHdRioD/eMJGB0EpSO?=
- =?us-ascii?Q?qF+q/TFoIdkQwjeJT3JZ21hQest/H9nuo+Rstx8TsOYJtM+bIkOQClb40kQs?=
- =?us-ascii?Q?ejPAYXc1E8F/8LV08JJ4Jl0bkbzO651S4prnPCZvTd2Lmw7WC1lVhIPk0OX1?=
- =?us-ascii?Q?YsI+w4cs9fykfYPY5uAmtmOJ4Cq1idSCtG29xPPdMdkVdPHfIx+XdJGGvyIr?=
- =?us-ascii?Q?fw3VltI29BQFBW0Cimohic+7XcbK3IVvo+0o3+RkZewyBPL5dgvxDrJk0N4B?=
- =?us-ascii?Q?KBzr17EbnjVVXUXahlgoNbhiZoyAua3G4Pl2uCD2RdPqt8UBRB3N49WQq3Gp?=
- =?us-ascii?Q?O6fjvQNdg4dHPsuBWhe4s+dpuKLTQr60rPtYFzJrDwkRKoIvzRO1+Tj+kS1f?=
- =?us-ascii?Q?NWoSTbt/Uz5azhWju8Bd6hltmmmT6RVYMvzEIsZhMqEJKwsm7U1q8y12LggH?=
- =?us-ascii?Q?zUrQWZA0eRUQ5Ik0witljrGWFeX+mfSFFQIDrCZ+VushsZOehP42Kd963nRA?=
- =?us-ascii?Q?qga9hnyEwXPFASO6yt+pfabVeW9xad91MX66q4p0wlThdYkB4Eifbob8nonc?=
- =?us-ascii?Q?JAjoKgy9rbOM4NDmE1qlWVBm4xDm3o8eJAOJX6CLf8FNYfCr7rxPcCGk8VMH?=
- =?us-ascii?Q?47WQAvMSdmypNXk83zJVwYzra2BKjOglSdWXl5shQ+MiQ6/NvA6gsihJ/02A?=
- =?us-ascii?Q?6o2mRevL6uBByM00Kh+FVFJsPwyexKeoYkwvh7m2ZpLEmmvEuqLjSHmLvINv?=
- =?us-ascii?Q?IHGA5BJEtt9z9oIEEty4npvobI82+AW/xB4ba6dsdikuoMK900ftxoGJ0KYP?=
- =?us-ascii?Q?MBkg8CJWCZp1oRgDGOoDR00XsXcdnRjGnbnnymyhMfrFrjGjno0+alim3xG/?=
- =?us-ascii?Q?F5SiTqNkzpfQTyifmRaRSuOx1lK99CgoAj6Ycx7tx/yxAFrX8nhWBA/am8o6?=
- =?us-ascii?Q?RRhih5NonYCMlJ3Au27hLroZVWhIxz7dzSwktf+ddj2RywTZO7JePEFuoR2K?=
- =?us-ascii?Q?dycdiT2ttjZJ6BWGPcOp3SYBSzD7VaET/wBKK3/ntuz951GCG6ZQCEFdgBWI?=
- =?us-ascii?Q?k1j27NinOj4WlBCeWl2D9FfBIqcg2Mo776eWh3nuIlRthgthSV50oDoRzOph?=
- =?us-ascii?Q?gHhUO/yXPTdvbu9x6RV7A3Uws1hOKrRdj6oJVKzhAlMApNT90JeXsEPdhl8n?=
- =?us-ascii?Q?YF0Z73PxOV3nJUmwgFBGlpXvSnjkfnuwLx0nOaFxz8ybtBBkDqWNS++8Svxo?=
- =?us-ascii?Q?qohhRYFBN87kmLIsNlhtM6M1vAXCBxVZa5XQP8QuuRMc53JviB+l3ujsv4tV?=
- =?us-ascii?Q?5XnU73nukDhpDUzFXNFCStiYl4XJB+Q+OTl0DJkFD0w31ZVk7lqRsr8KDjFt?=
- =?us-ascii?Q?wtMQIdJr1JnECuW7SMfPAsW07i2GCsg/hQmnwUvstMTM4HdaowTL66R/g2z4?=
- =?us-ascii?Q?EUnm3uaz4w=3D=3D?=
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 84080417E0
+Received: from unicom145.biz-email.net (unicom145.biz-email.net
+ [210.51.26.145])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 84080417E0
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 02:06:04 +0000 (UTC)
+Received: from ([60.208.111.195])
+ by unicom145.biz-email.net ((D)) with ASMTP (SSL) id LYX00100;
+ Fri, 17 Jun 2022 10:06:00 +0800
+Received: from localhost.localdomain (10.200.104.97) by
+ jtjnmail201602.home.langchao.com (10.100.2.2) with Microsoft SMTP Server id
+ 15.1.2308.27; Fri, 17 Jun 2022 10:05:59 +0800
+From: Bo Liu <liubo03@inspur.com>
+To: <joro@8bytes.org>, <will@kernel.org>
+Subject: [PATCH] iommu: Remove usage of the deprecated ida_simple_xxx API
+Date: Thu, 16 Jun 2022 22:05:55 -0400
+Message-ID: <20220617020555.2361-1-liubo03@inspur.com>
+X-Mailer: git-send-email 2.18.2
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5147c22a-1f2e-4e1e-86eb-08da500c8596
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jun 2022 02:53:13.7254 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7yUlOT25uayJzx73Rv7IGqb0mK4ZbUqUwe7NsHX4YpxMBVGEhxkIZOlbdE5zx9cWX4zQUHQ3SNFZFp6lMrfRmA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR11MB6364
-X-OriginatorOrg: intel.com
-Cc: "cohuck@redhat.com" <cohuck@redhat.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "jordan@cosmicpenguin.net" <jordan@cosmicpenguin.net>,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
- "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
- "will@kernel.org" <will@kernel.org>,
- "alyssa@rosenzweig.io" <alyssa@rosenzweig.io>,
- "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "saiprakash.ranjan@codeaurora.org" <saiprakash.ranjan@codeaurora.org>,
- "zhang.lyra@gmail.com" <zhang.lyra@gmail.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
- "jgg@nvidia.com" <jgg@nvidia.com>,
- "yangyingliang@huawei.com" <yangyingliang@huawei.com>,
- "orsonzhai@gmail.com" <orsonzhai@gmail.com>,
- "gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>,
- "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
- "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "christophe.jaillet@wanadoo.fr" <christophe.jaillet@wanadoo.fr>,
- "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
- "tglx@linutronix.de" <tglx@linutronix.de>,
- "virtualization@lists.linux-foundation.org"
- <virtualization@lists.linux-foundation.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "isaacm@codeaurora.org" <isaacm@codeaurora.org>,
- "dwmw2@infradead.org" <dwmw2@infradead.org>,
- "marcan@marcan.st" <marcan@marcan.st>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
- "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
+X-Originating-IP: [10.200.104.97]
+tUid: 2022617100600453ddd2e082b575ad03dc12b7589ef45
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
+X-Mailman-Approved-At: Fri, 17 Jun 2022 03:20:16 +0000
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Bo Liu <liubo03@inspur.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -220,80 +78,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Nicolin Chen <nicolinc@nvidia.com>
-> Sent: Friday, June 17, 2022 6:41 AM
-> 
-> > ...
-> > > -     if (resv_msi) {
-> > > +     if (resv_msi && !domain->msi_cookie) {
-> > >               ret = iommu_get_msi_cookie(domain->domain,
-> > > resv_msi_base);
-> > >               if (ret && ret != -ENODEV)
-> > >                       goto out_detach;
-> > > +             domain->msi_cookie = true;
-> > >       }
-> >
-> > why not moving to alloc_attach_domain() then no need for the new
-> > domain field? It's required only when a new domain is allocated.
-> 
-> When reusing an existing domain that doesn't have an msi_cookie,
-> we can do iommu_get_msi_cookie() if resv_msi is found. So it is
-> not limited to a new domain.
+Use ida_alloc_xxx()/ida_free() instead of
+ida_simple_get()/ida_simple_remove().
+The latter is deprecated and more verbose.
 
-Looks msi_cookie requirement is per platform (currently only
-for smmu. see arm_smmu_get_resv_regions()). If there is
-no mixed case then above check is not required.
+Signed-off-by: Bo Liu <liubo03@inspur.com>
+---
+ drivers/iommu/iommu.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-But let's hear whether Robin has a different thought here.
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 847ad47a2dfd..cdc86c39954e 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -600,7 +600,7 @@ static void iommu_group_release(struct kobject *kobj)
+ 	if (group->iommu_data_release)
+ 		group->iommu_data_release(group->iommu_data);
+ 
+-	ida_simple_remove(&iommu_group_ida, group->id);
++	ida_free(&iommu_group_ida, group->id);
+ 
+ 	if (group->default_domain)
+ 		iommu_domain_free(group->default_domain);
+@@ -641,7 +641,7 @@ struct iommu_group *iommu_group_alloc(void)
+ 	INIT_LIST_HEAD(&group->devices);
+ 	INIT_LIST_HEAD(&group->entry);
+ 
+-	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
++	ret = ida_alloc(&iommu_group_ida, GFP_KERNEL);
+ 	if (ret < 0) {
+ 		kfree(group);
+ 		return ERR_PTR(ret);
+@@ -651,7 +651,7 @@ struct iommu_group *iommu_group_alloc(void)
+ 	ret = kobject_init_and_add(&group->kobj, &iommu_group_ktype,
+ 				   NULL, "%d", group->id);
+ 	if (ret) {
+-		ida_simple_remove(&iommu_group_ida, group->id);
++		ida_free(&iommu_group_ida, group->id);
+ 		kobject_put(&group->kobj);
+ 		return ERR_PTR(ret);
+ 	}
+-- 
+2.27.0
 
-> 
-> > ...
-> > > -             if (list_empty(&domain->group_list)) {
-> > > -                     if (list_is_singular(&iommu->domain_list)) {
-> > > -                             if (list_empty(&iommu-
-> > > >emulated_iommu_groups)) {
-> > > -                                     WARN_ON(iommu->notifier.head);
-> > > -
-> > >       vfio_iommu_unmap_unpin_all(iommu);
-> > > -                             } else {
-> > > -
-> > >       vfio_iommu_unmap_unpin_reaccount(iommu);
-> > > -                             }
-> > > -                     }
-> > > -                     iommu_domain_free(domain->domain);
-> > > -                     list_del(&domain->next);
-> > > -                     kfree(domain);
-> > > -                     vfio_iommu_aper_expand(iommu, &iova_copy);
-> >
-> > Previously the aperture is adjusted when a domain is freed...
-> >
-> > > -                     vfio_update_pgsize_bitmap(iommu);
-> > > -             }
-> > > -             /*
-> > > -              * Removal of a group without dirty tracking may allow
-> > > -              * the iommu scope to be promoted.
-> > > -              */
-> > > -             if (!group->pinned_page_dirty_scope) {
-> > > -                     iommu->num_non_pinned_groups--;
-> > > -                     if (iommu->dirty_page_tracking)
-> > > -                             vfio_iommu_populate_bitmap_full(iommu);
-> > > -             }
-> > > +             vfio_iommu_detach_destroy_domain(domain, iommu,
-> > > group);
-> > >               kfree(group);
-> > >               break;
-> > >       }
-> > >
-> > > +     vfio_iommu_aper_expand(iommu, &iova_copy);
-> >
-> > but now it's done for every group detach. The aperture is decided
-> > by domain geometry which is not affected by attached groups.
-> 
-> Yea, I've noticed this part. Actually Jason did this change for
-> simplicity, and I think it'd be safe to do so?
-
-Perhaps detach_destroy() can return a Boolean to indicate whether
-a domain is destroyed.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
