@@ -1,102 +1,142 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1AE92CCA479
-	for <iommu@archiver.kernel.org>; Fri, 17 Jun 2022 14:23:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 110D7C433EF
+	for <iommu@archiver.kernel.org>; Fri, 17 Jun 2022 14:30:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9762F40621;
-	Fri, 17 Jun 2022 14:23:24 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 9762F40621
-Authentication-Results: smtp2.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=gDGVloWl
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QB6yacxtpgGk; Fri, 17 Jun 2022 14:23:23 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1E92F405F4;
-	Fri, 17 Jun 2022 14:23:23 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 1E92F405F4
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F3944C0032;
-	Fri, 17 Jun 2022 14:23:22 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E6F9EC002D
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 14:23:21 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id AC38442431
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 14:23:21 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org AC38442431
+	by smtp4.osuosl.org (Postfix) with ESMTP id 8DC3A4188E;
+	Fri, 17 Jun 2022 14:30:12 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 8DC3A4188E
 Authentication-Results: smtp4.osuosl.org;
- dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org
- header.a=rsa-sha256 header.s=google header.b=gDGVloWl
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=QefTeyNu
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id H-nvCump04b9 for <iommu@lists.linux-foundation.org>;
- Fri, 17 Jun 2022 14:23:20 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 3ABC442429
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com
- [IPv6:2607:f8b0:4864:20::632])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 3ABC442429
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 14:23:20 +0000 (UTC)
-Received: by mail-pl1-x632.google.com with SMTP id o6so4022976plg.2
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 07:23:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=subject:from:to:cc:references:message-id:date:user-agent
- :mime-version:in-reply-to:content-transfer-encoding:content-language;
- bh=RTRTndzcqGpDv1J2yjv0wl7rfjMqIl0ecAShZDEtx0E=;
- b=gDGVloWlIjR4peMDoBY3afbeVzNYW+UIy79mYC21BRxebHIepgX/IQLcSnaZPQUVpi
- CIRYPh1MMgm6Z4ComYznMCRiNrX50Tr/lndX489J2lCPjaioHMQq9itvFx0WGg6hY0ns
- xRT4Q9TkwMsiCisjNABb0uQUpuQFkksCUsNFVLKB+i48dhvZOKbrb//S8sY8E+AMKvpK
- 5mAHxwolMqtv/neOBL30FkATA5WjjBjhSuiqQXbiURZsPjf5UvuRJjbBZs4wwsJg3xk4
- zAuS5NFfc4M9So18A/OGaSUewhxta+/kiIlryuYB+IhjHouvo0tleQCaCF4SWnEgP2Po
- bJYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:subject:from:to:cc:references:message-id:date
- :user-agent:mime-version:in-reply-to:content-transfer-encoding
- :content-language;
- bh=RTRTndzcqGpDv1J2yjv0wl7rfjMqIl0ecAShZDEtx0E=;
- b=rUxS8wkSkr0kQG31SVDqqqfT9G+58aNS7i50o8laOzSr6QeyojA2VR/qoqoc7bMfA7
- evqyckBtk7ZbNHHrpxID/eLVHRwMO28AXVQ6Tur/iUB9/Ah5NAou6rr9C1q6G+c9ysMQ
- u6X+NJQHTH1fRJj6+R93CNoflPZgQqdnFt6JNpte4BBw33w6bd22R56bbCyOJXHLBHyr
- 6u5Hn52fzXWcmIr05r96FjhaWxo6o64h52NwzhYIcEStbzMWmxzwtGGKp2n3aXT/W4v7
- Z3zIiGFHvsYrOY4ZW1La3YzsMEVEoNndbSa7p4EvtQL+RzUOgd3+EoNgODp5jOsV6xX/
- 5DEA==
-X-Gm-Message-State: AJIora/uEQlbiqx4o7jtrpD/FVxHU9j64wwmKEt2qMGI+MtUOs1b2liL
- Erhu81PC3pLQB4sFXNXc3Lu6IQ==
-X-Google-Smtp-Source: AGRyM1u52ygM1NLKLxebtqnme5o4tf+SilzwuDSISYq1Mvj6ktsh8a3pJs2zK6JqnSwz0RW/nWKTxQ==
-X-Received: by 2002:a17:90b:3591:b0:1e3:25d3:e78e with SMTP id
- mm17-20020a17090b359100b001e325d3e78emr10980375pjb.29.1655475799436; 
- Fri, 17 Jun 2022 07:23:19 -0700 (PDT)
-Received: from [10.184.0.6] ([199.101.192.133])
- by smtp.gmail.com with ESMTPSA id
- z2-20020a170903018200b001635a8f9dfdsm3750629plg.26.2022.06.17.07.23.16
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 17 Jun 2022 07:23:19 -0700 (PDT)
-Subject: Re: [PATCH] uacce: fix concurrency of fops_open and uacce_remove
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <20220610123423.27496-1-zhangfei.gao@linaro.org>
- <Yqn3spLZHpAkQ9Us@myrica> <fdc8d8b0-4e04-78f5-1e8a-4cf44c89a37f@linaro.org>
- <YqrmdKNrYTCiS/MC@myrica> <d90e8ea5-2f18-2eda-b4b2-711083aa7ecd@linaro.org>
- <53b9acef-ad32-d0aa-fa1b-a7cb77a0d088@linaro.org>
-Message-ID: <1fab1f9a-5c6c-8190-829b-4bacf15eb306@linaro.org>
-Date: Fri, 17 Jun 2022 22:23:13 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id z3FKB5DTSQ1Q; Fri, 17 Jun 2022 14:30:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id F394C41711;
+	Fri, 17 Jun 2022 14:30:09 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org F394C41711
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C89B3C0032;
+	Fri, 17 Jun 2022 14:30:09 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CC8B6C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 14:30:08 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 9061540ACE
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 14:30:08 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 9061540ACE
+Authentication-Results: smtp2.osuosl.org;
+ dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com
+ header.a=rsa-sha256 header.s=mail20170921 header.b=QefTeyNu
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rxa73fAKkbFJ for <iommu@lists.linux-foundation.org>;
+ Fri, 17 Jun 2022 14:30:07 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org C4FED400E5
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
+ [210.118.77.11])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id C4FED400E5
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 14:30:06 +0000 (UTC)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+ by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20220617143003euoutp016a46550fdfcf5186ad09d307a322164b~5btYY-93f2064420644euoutp01l
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 14:30:03 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
+ 20220617143003euoutp016a46550fdfcf5186ad09d307a322164b~5btYY-93f2064420644euoutp01l
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1655476203;
+ bh=LCbEc6Tp6uQ+xLDkMAny+arMkrz5C0Fk7jR9Q8TS4vY=;
+ h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+ b=QefTeyNubqDaHtgo+tqnvLT5l3TyMR5wiMevsLnlyDdwGjIhpz2GrZyQ8Z0PqxEv9
+ BIg3nmASL3LHl+9ePD68Eg7RndVEnrx7SABBozDjOWHnPBGBUbodvL4ixMquJ70dAa
+ N9euIpbAA6gYQNHMZVUfTvUuTmzbrPjFbwGjPrSQ=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+ 20220617143003eucas1p21e8683693765b3b828889243be09336f~5btYDl_P01114111141eucas1p2I;
+ Fri, 17 Jun 2022 14:30:03 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+ eusmges3new.samsung.com (EUCPMTA) with SMTP id 8B.D8.09580.BEF8CA26; Fri, 17
+ Jun 2022 15:30:03 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+ 20220617143002eucas1p17fe6039a2bd078ee46df6bdac3ac2f76~5btXfeMOf1420514205eucas1p1K;
+ Fri, 17 Jun 2022 14:30:02 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+ eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+ 20220617143002eusmtrp214e6344c8075d27b528f705b67093164~5btXeuCwA2963329633eusmtrp2h;
+ Fri, 17 Jun 2022 14:30:02 +0000 (GMT)
+X-AuditID: cbfec7f5-9adff7000000256c-55-62ac8febe125
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+ eusmgms1.samsung.com (EUCPMTA) with SMTP id 10.7E.09095.AEF8CA26; Fri, 17
+ Jun 2022 15:30:02 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+ eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+ 20220617143002eusmtip161825d03cd954840e54a90f4c17321f7~5btWwILPo2864128641eusmtip1J;
+ Fri, 17 Jun 2022 14:30:02 +0000 (GMT)
+Message-ID: <27b927de-4523-1327-b850-aa389c8c8638@samsung.com>
+Date: Fri, 17 Jun 2022 16:30:01 +0200
 MIME-Version: 1.0
-In-Reply-To: <53b9acef-ad32-d0aa-fa1b-a7cb77a0d088@linaro.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: [PATCH V2 2/6] iommu: iova: properly handle 0 as a valid IOVA
+ address
 Content-Language: en-US
-Cc: Yang Shen <shenyang39@huawei.com>, Herbert Xu <herbert@gondor.apana.org.au>,
- Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-crypto@vger.kernel.org, linux-accelerators@lists.ozlabs.org
+To: Robin Murphy <robin.murphy@arm.com>, Ajay Kumar
+ <ajaykumar.rs@samsung.com>, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux-foundation.org, joro@8bytes.org, will@kernel.org
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <1d617b42-55c7-fcf1-e569-052947364d94@arm.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrLKsWRmVeSWpSXmKPExsWy7djP87qv+9ckGUzYIW3x9cRvNosD7w+y
+ WDyYt43NYsF+a4vO2RvYLTY9vsZqsWjrF3aLgx+esFq03DF14PR4cnAek8eaeWsYPXbOusvu
+ sWlVJ5vH5iX1HpNvLGf06NuyijGAPYrLJiU1J7MstUjfLoErY/Kz12wFH5UqJpzzbWD8Id3F
+ yMkhIWAi8fzrVeYuRi4OIYEVjBL3r65kg3C+MEr0vPzLCuF8ZpT49HwPK0xL3/NuqKrljBJ/
+ ft9jgXA+MkqcuridDaSKV8BOov/nWSYQm0VAVWLmhoeMEHFBiZMzn7CA2KICSRLzt7WCTRUW
+ CJE4f+4kmM0sIC5x68l8sF4RgT2MEj/XQMWDJT7PegA2h03AUKLrbRfYLk4Ba4mbdydC1chL
+ bH87B+whCYEPHBJTXqxngzjbRWLR8qNMELawxKvjW9ghbBmJ/ztBlnEA2fkSf2cYQ4QrJK69
+ XsMMYVtL3Dn3iw2khFlAU2L9Ln2IsCMwuHayQ3TySdx4KwhxAZ/EpG3TmSHCvBIdbUIQ1WoS
+ s46vg9t58MIl5gmMSrOQwmQWkt9nIfllFsLeBYwsqxjFU0uLc9NTi43zUsv1ihNzi0vz0vWS
+ 83M3MQJT1Ol/x7/uYFzx6qPeIUYmDsZDjBIczEoivGbBK5OEeFMSK6tSi/Lji0pzUosPMUpz
+ sCiJ8yZnbkgUEkhPLEnNTk0tSC2CyTJxcEo1MFXrVnPHyBdtfpdwriZca8vm1+dufkyZp7bw
+ V9Ravq+z755v1t31R1Hr2+fN+/uSn+9UDAjgtzh5eXVj9O6p99f2hi8VtdA+xqznrBBxY28n
+ M2NLGuf5I1+6I3fG88le37widekNf9VT7+ZXhmz9vX3/ubvnrsy5Gzg/cPE2ocMaAZ6Tw4vE
+ S2Xu+iu8PMO0V/Fkn/dnYVHnfy+euXrYPctcuqN/T8wuq3JXRgvmzP8Hzu86yFwstqzZ9oOB
+ 9KTUrUJK7wukr6wzvCbf/uPsu3CH/jfXpyxYtPdDjrPtjF9Kp5WyGjUiDpbXdgd4GKrz+O9w
+ XMj+xv6L52nrXCYHNt2T7JwGn+xsvDpq51l+TlZiKc5INNRiLipOBAD2EFAgwAMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrEIsWRmVeSWpSXmKPExsVy+t/xu7qv+tckGRz9oWvx9cRvNosD7w+y
+ WDyYt43NYsF+a4vO2RvYLTY9vsZqsWjrF3aLgx+esFq03DF14PR4cnAek8eaeWsYPXbOusvu
+ sWlVJ5vH5iX1HpNvLGf06NuyijGAPUrPpii/tCRVISO/uMRWKdrQwkjP0NJCz8jEUs/Q2DzW
+ yshUSd/OJiU1J7MstUjfLkEvY/Kz12wFH5UqJpzzbWD8Id3FyMkhIWAi0fe8m62LkYtDSGAp
+ o8TU5Y/ZIBIyEienNbBC2MISf651QRW9Z5SYs2UHI0iCV8BOov/nWSYQm0VAVWLmhodQcUGJ
+ kzOfsIDYogJJEvP2rgaLCwuESJw/dxJsKLOAuMStJ/PBekUE9jBK/J+mDhEPljjbfhRq2S0m
+ iXeLHjCDJNgEDCW63naBXccpYC1x8+5EqEFmEl1buxghbHmJ7W/nME9gFJqF5I5ZSPbNQtIy
+ C0nLAkaWVYwiqaXFuem5xYZ6xYm5xaV56XrJ+bmbGIGRue3Yz807GOe9+qh3iJGJg/EQowQH
+ s5IIr1nwyiQh3pTEyqrUovz4otKc1OJDjKbAwJjILCWanA9MDXkl8YZmBqaGJmaWBqaWZsZK
+ 4ryeBR2JQgLpiSWp2ampBalFMH1MHJxSDUz790/7V11UGyC2KzarVC0i9Y3dJO1/HBox1w/1
+ p95awcF2QERzbe3StUlC/7cuqz3t7y1tcnpBdCjDH64ld57d+CvIq6Hh8ym6Y8KrqK4rh25e
+ XvZ77Vv1ZTsLLee+Dj6U+n+p/V2HPtdgzzmZ+feOf2Xirjrk8Gt21ZOm13YNUxVeXeMKtglT
+ 3rzjJrtiSqPykstVWfK2D6ZqMvd0Nq9m/hQyScUxU+iAlEHs3zQ9e65FS6q1y/XMDz6cpx96
+ 7MzquexLRbd5ntIIWmCv+Nup/G8hg+2cyMdfbLPnvfTX2Ldqhr2MctiKDzOdfr9pZJ59IpPz
+ jchNB9FJV7XyP0WUR1yWPiPRubX1paDbVQMlluKMREMt5qLiRACJ8dnzVQMAAA==
+X-CMS-MailID: 20220617143002eucas1p17fe6039a2bd078ee46df6bdac3ac2f76
+X-Msg-Generator: CA
+X-RootMTR: 20220511121433epcas5p3de77375a85edf1aa78c0976a7107fdfa
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220511121433epcas5p3de77375a85edf1aa78c0976a7107fdfa
+References: <20220511121544.5998-1-ajaykumar.rs@samsung.com>
+ <CGME20220511121433epcas5p3de77375a85edf1aa78c0976a7107fdfa@epcas5p3.samsung.com>
+ <20220511121544.5998-3-ajaykumar.rs@samsung.com>
+ <a21f3016-a9f1-dc86-8604-ae651a763fc8@arm.com>
+ <00c1f1c7-e3e5-5f22-0a15-b57b329d6d56@samsung.com>
+ <1d617b42-55c7-fcf1-e569-052947364d94@arm.com>
+Cc: pankaj.dubey@samsung.com, alim.akhtar@samsung.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,173 +149,96 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CgpPbiAyMDIyLzYvMTcg5LiL5Y2INDoyMCwgWmhhbmdmZWkgR2FvIHdyb3RlOgo+Cj4KPiBPbiAy
-MDIyLzYvMTcg5LiL5Y2IMjowNSwgWmhhbmdmZWkgR2FvIHdyb3RlOgo+Pgo+Pgo+PiBPbiAyMDIy
-LzYvMTYg5LiL5Y2INDoxNCwgSmVhbi1QaGlsaXBwZSBCcnVja2VyIHdyb3RlOgo+Pj4gT24gVGh1
-LCBKdW4gMTYsIDIwMjIgYXQgMTI6MTA6MThQTSArMDgwMCwgWmhhbmdmZWkgR2FvIHdyb3RlOgo+
-Pj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbWlzYy91YWNjZS91YWNjZS5jIGIvZHJpdmVycy9t
-aXNjL3VhY2NlL3VhY2NlLmMKPj4+Pj4+IGluZGV4IDI4MWM1NDAwM2VkYy4uYjYyMTljNmJmYjQ4
-IDEwMDY0NAo+Pj4+Pj4gLS0tIGEvZHJpdmVycy9taXNjL3VhY2NlL3VhY2NlLmMKPj4+Pj4+ICsr
-KyBiL2RyaXZlcnMvbWlzYy91YWNjZS91YWNjZS5jCj4+Pj4+PiBAQCAtMTM2LDkgKzEzNiwxNiBA
-QCBzdGF0aWMgaW50IHVhY2NlX2ZvcHNfb3BlbihzdHJ1Y3QgaW5vZGUgCj4+Pj4+PiAqaW5vZGUs
-IHN0cnVjdCBmaWxlICpmaWxlcCkKPj4+Pj4+IMKgwqDCoMKgwqDCoCBpZiAoIXEpCj4+Pj4+PiDC
-oMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gLUVOT01FTTsKPj4+Pj4+ICvCoMKgwqAgbXV0ZXhf
-bG9jaygmdWFjY2UtPnF1ZXVlc19sb2NrKTsKPj4+Pj4+ICsKPj4+Pj4+ICvCoMKgwqAgaWYgKCF1
-YWNjZS0+cGFyZW50LT5kcml2ZXIpIHsKPj4+Pj4gSSBkb24ndCB0aGluayB0aGlzIGlzIHVzZWZ1
-bCwgYmVjYXVzZSB0aGUgY29yZSBjbGVhcnMgCj4+Pj4+IHBhcmVudC0+ZHJpdmVyIGFmdGVyCj4+
-Pj4+IGhhdmluZyBydW4gdWFjY2VfcmVtb3ZlKCk6Cj4+Pj4+Cj4+Pj4+IMKgwqDCoCBybW1vZCBo
-aXNpX3ppcMKgwqDCoMKgwqDCoMKgIG9wZW4oKQo+Pj4+PiDCoMKgwqDCoCAuLi7CoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB1YWNjZV9mb3BzX29wZW4oKQo+Pj4+PiDCoMKgwqDCoCBf
-X2RldmljZV9yZWxlYXNlX2RyaXZlcigpwqDCoMKgwqDCoCAuLi4KPj4+Pj4gwqDCoMKgwqDCoCBw
-Y2lfZGV2aWNlX3JlbW92ZSgpCj4+Pj4+IMKgwqDCoMKgwqDCoCBoaXNpX3ppcF9yZW1vdmUoKQo+
-Pj4+PiDCoMKgwqDCoMKgwqDCoCBoaXNpX3FtX3VuaW5pdCgpCj4+Pj4+IMKgwqDCoMKgwqDCoMKg
-wqAgdWFjY2VfcmVtb3ZlKCkKPj4+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgIC4uLsKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgIC4uLgo+Pj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCBtdXRleF9sb2NrKHVhY2NlLT5xdWV1ZXNfbG9jaykKPj4+Pj4gwqDCoMKg
-wqDCoCAuLi7CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlmICghdWFjY2UtPnBh
-cmVudC0+ZHJpdmVyKQo+Pj4+PiDCoMKgwqDCoMKgIGRldmljZV91bmJpbmRfY2xlYW51cCgpwqDC
-oMKgwqDCoCAvKiBkcml2ZXIgc3RpbGwgdmFsaWQsIHByb2NlZWQgKi8KPj4+Pj4gwqDCoMKgwqDC
-oMKgIGRldi0+ZHJpdmVyID0gTlVMTAo+Pj4+IFRoZSBjaGVja8KgIGlmICghdWFjY2UtPnBhcmVu
-dC0+ZHJpdmVyKSBpcyByZXF1aXJlZCwgb3RoZXJ3aXNlIE5VTEwgCj4+Pj4gcG9pbnRlcgo+Pj4+
-IG1heSBoYXBwZW4uCj4+PiBJIGFncmVlIHdlIG5lZWQgc29tZXRoaW5nLCB3aGF0IEkgbWVhbiBp
-cyB0aGF0IHRoaXMgY2hlY2sgaXMgbm90Cj4+PiBzdWZmaWNpZW50Lgo+Pj4KPj4+PiBpb21tdV9z
-dmFfYmluZF9kZXZpY2UKPj4+PiBjb25zdCBzdHJ1Y3QgaW9tbXVfb3BzICpvcHMgPSBkZXZfaW9t
-bXVfb3BzKGRldik7wqAgLT4KPj4+PiBkZXYtPmlvbW11LT5pb21tdV9kZXYtPm9wcwo+Pj4+Cj4+
-Pj4gcm1tb2QgaGFzIG5vIGlzc3VlLCBidXQgcmVtb3ZlIHBhcmVudCBwY2kgZGV2aWNlIGhhcyB0
-aGUgaXNzdWUuCj4+PiBBaCByaWdodCwgcmVseWluZyBvbiB0aGUgcmV0dXJuIHZhbHVlIG9mIGJp
-bmQoKSB3b3VsZG4ndCBiZSBlbm91Z2ggCj4+PiBldmVuIGlmCj4+PiB3ZSBtYW5kYXRlZCBTVkEu
-Cj4+Pgo+Pj4gWy4uLl0KPj4+Pj4gSSB0aGluayB3ZSBuZWVkIHRoZSBnbG9iYWwgdWFjY2VfbXV0
-ZXggdG8gc2VyaWFsaXplIHVhY2NlX3JlbW92ZSgpIAo+Pj4+PiBhbmQKPj4+Pj4gdWFjY2VfZm9w
-c19vcGVuKCkuIHVhY2NlX3JlbW92ZSgpIHdvdWxkIGRvIGV2ZXJ5dGhpbmcsIGluY2x1ZGluZwo+
-Pj4+PiB4YV9lcmFzZSgpLCB3aGlsZSBob2xkaW5nIHRoYXQgbXV0ZXguIEFuZCB1YWNjZV9mb3Bz
-X29wZW4oKSB3b3VsZCAKPj4+Pj4gdHJ5IHRvCj4+Pj4+IG9idGFpbiB0aGUgdWFjY2Ugb2JqZWN0
-IGZyb20gdGhlIHhhcnJheSB3aGlsZSBob2xkaW5nIHRoZSBtdXRleCwgCj4+Pj4+IHdoaWNoCj4+
-Pj4+IGZhaWxzIGlmIHRoZSB1YWNjZSBvYmplY3QgaXMgYmVpbmcgcmVtb3ZlZC4KPj4+PiBTaW5j
-ZSBmb3BzX29wZW4gZ2V0IGNoYXIgZGV2aWNlIHJlZmNvdW50LCB1YWNjZV9yZWxlYXNlIHdpbGwg
-bm90IAo+Pj4+IGhhcHBlbgo+Pj4+IHVudGlsIG9wZW4gcmV0dXJucy4KPj4+IFRoZSByZWZjb3Vu
-dCBvbmx5IGVuc3VyZXMgdGhhdCB0aGUgdWFjY2VfZGV2aWNlIG9iamVjdCBpcyBub3QgZnJlZWQg
-YXMKPj4+IGxvbmcgYXMgdGhlcmUgYXJlIG9wZW4gZmRzLiBCdXQgdWFjY2VfcmVtb3ZlKCkgY2Fu
-IHJ1biB3aGlsZSB0aGVyZSBhcmUKPj4+IG9wZW4gZmRzLCBvciBmZHMgaW4gdGhlIHByb2Nlc3Mg
-b2YgYmVpbmcgb3BlbmVkLiBBbmQgYXRmZXIgCj4+PiB1YWNjZV9yZW1vdmUoKQo+Pj4gcnVucywg
-dGhlIHVhY2NlX2RldmljZSBvYmplY3Qgc3RpbGwgZXhpc3RzIGJ1dCBpcyBtb3N0bHkgdW51c2Fi
-bGUuIEZvcgo+Pj4gZXhhbXBsZSBvbmNlIHRoZSBtb2R1bGUgaXMgZnJlZWQsIHVhY2NlLT5vcHMg
-aXMgbm90IHZhbGlkIGFueW1vcmUuIEJ1dAo+Pj4gY3VycmVudGx5IHVhY2NlX2ZvcHNfb3Blbigp
-IG1heSBkZXJlZmVyZW5jZSB0aGUgb3BzIGluIHRoaXMgY2FzZToKPj4+Cj4+PiDCoMKgwqDCoHVh
-Y2NlX2ZvcHNfb3BlbigpCj4+PiDCoMKgwqDCoCBpZiAoIXVhY2NlLT5wYXJlbnQtPmRyaXZlcikK
-Pj4+IMKgwqDCoMKgIC8qIFN0aWxsIHZhbGlkLCBrZWVwIGdvaW5nICovCj4+PiDCoMKgwqDCoCAu
-Li7CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBybW1vZAo+Pj4gwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHVhY2NlX3JlbW92ZSgp
-Cj4+PiDCoMKgwqDCoCAuLi7CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-IGZyZWVfbW9kdWxlKCkKPj4+IMKgwqDCoMKgIHVhY2NlLT5vcHMtPmdldF9xdWV1ZSgpIC8qIEJV
-RyAqLwo+Pgo+PiB1YWNjZV9yZW1vdmUgc2hvdWxkIHdhaXQgZm9yIHVhY2NlLT5xdWV1ZXNfbG9j
-aywgdW50aWwgZm9wc19vcGVuIAo+PiByZWxlYXNlIHRoZSBsb2NrLgo+PiBJZiBvcGVuIGhhcHBl
-biBqdXN0IGFmdGVyIHRoZSB1YWNjZV9yZW1vdmU6IHVubG9jaywgdWFjY2VfYmluZF9xdWV1ZSAK
-Pj4gaW4gb3BlbiBzaG91bGQgZmFpbC4KPj4KPj4+IEFjY2Vzc2luZyB1YWNjZS0+b3BzIGFmdGVy
-IGZyZWVfbW9kdWxlKCkgaXMgYSB1c2UtYWZ0ZXItZnJlZS4gV2UgCj4+PiBuZWVkIGFsbAo+PiB5
-b3UgbWVuIHBhcmVudCByZWxlYXNlIHRoZSByZXNvdXJjZXMuCj4+PiB0aGUgZm9wcyB0byBzeW5j
-aHJvbml6ZSB3aXRoIHVhY2NlX3JlbW92ZSgpIHRvIGVuc3VyZSB0aGV5IGRvbid0IHVzZSAKPj4+
-IGFueQo+Pj4gcmVzb3VyY2Ugb2YgdGhlIHBhcmVudCBhZnRlciBpdCdzIGJlZW4gZnJlZWQuCj4+
-IEFmdGVyIGZvcHNfb3BlbiwgY3VycmVudGx5IHdlIGFyZSBjb3VudGluZyBvbiBwYXJlbnQgZHJp
-dmVyIHN0b3AgYWxsIAo+PiBkbWEgZmlyc3QsIHRoZW4gY2FsbCB1YWNjZV9yZW1vdmUsIHdoaWNo
-IGlzIGFzc3VtcHRpb24uCj4+IExpa2UgZHJpdmVycy9jcnlwdG8vaGlzaWxpY29uL3ppcC96aXBf
-bWFpbi5jOiAKPj4gaGlzaV9xbV93YWl0X3Rhc2tfZmluaXNoLCB3aGljaCB3aWxsIHdhaXQgdWFj
-Y2VfcmVsZWFzZS4KPj4gSWYgY29tbWVudHMgdGhpcyAsIHRoZXJlIG1heSBvdGhlciBpc3N1ZSwK
-Pj4gVW5hYmxlIHRvIGhhbmRsZSBrZXJuZWwgcGFnaW5nIHJlcXVlc3QgYXQgdmlydHVhbCBhZGRy
-ZXNzIAo+PiBmZmZmODAwMDBiNzAwMjA0Cj4+IHBjIDogaGlzaV9xbV9jYWNoZV93Yi5wYXJ0LjAr
-MHgyYy8weGEwCj4+Cj4+PiBJIHNlZSB1YWNjZV9mb3BzX3BvbGwoKSBtYXkgaGF2ZSB0aGUgc2Ft
-ZSBwcm9ibGVtLCBhbmQgc2hvdWxkIGJlIGluc2lkZQo+Pj4gdWFjY2VfbXV0ZXguCj4+IERvIHdl
-IG5lZWQgY29uc2lkZXIgdGhpcywgdWFjY2VfcmVtb3ZlIGNhbiBoYXBwZW4gYW55dGltZSBidXQg
-bm90IAo+PiB3YWl0aW5nIGRtYSBzdG9wPwo+Pgo+PiBOb3Qgc3VyZSB1YWNjZV9tdXRleCBjYW4g
-ZG8gdGhpcy4KPj4gQ3VycmVudGx5IHRoZSBzZXF1ZW5jZSBpcwo+PiBtdXRleF9sb2NrKCZ1YWNj
-ZS0+cXVldWVzX2xvY2spOwo+PiBtdXRleF9sb2NrKCZ1YWNjZV9tdXRleCk7Cj4+Cj4+IE9yIHdl
-IHNldCBhbGwgdGhlIGNhbGxiYWNrcyBvZiB1YWNjZV9vcHMgdG8gTlVMTD8KPiBIb3cgYWJvdXQg
-aW4gdWFjY2VfcmVtb3ZlCj4gbXV0ZXhfbG9jaygmdWFjY2VfbXV0ZXgpOwo+IHVhY2NlLT5vcHMg
-PSBOVUxMOwo+IG11dGV4X3VubG9jaygmdWFjY2VfbXV0ZXgpOwo+Cj4gQW5kIGNoZWNrIHVhY2Nl
-LT5vcHPCoCBmaXJzdCB3aGVuIHVzaW5nLgo+CgpEaWZmIGxpa2UgdGhpcywgd2lsbCBtZXJnZSB0
-b2dldGhlci4KCiDCoGRyaXZlcnMvbWlzYy91YWNjZS91YWNjZS5jIHwgNjUgKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKystLS0tLS0KIMKgMSBmaWxlIGNoYW5nZWQsIDU2IGluc2VydGlv
-bnMoKyksIDkgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9taXNjL3VhY2NlL3Vh
-Y2NlLmMgYi9kcml2ZXJzL21pc2MvdWFjY2UvdWFjY2UuYwppbmRleCBiNjIxOWM2YmZiNDguLjMx
-MTE5MjcyODEzMiAxMDA2NDQKLS0tIGEvZHJpdmVycy9taXNjL3VhY2NlL3VhY2NlLmMKKysrIGIv
-ZHJpdmVycy9taXNjL3VhY2NlL3VhY2NlLmMKQEAgLTIzLDYgKzIzLDExIEBAIHN0YXRpYyBpbnQg
-dWFjY2Vfc3RhcnRfcXVldWUoc3RydWN0IHVhY2NlX3F1ZXVlICpxKQogwqDCoMKgwqAgwqDCoMKg
-IGdvdG8gb3V0X3dpdGhfbG9jazsKIMKgwqDCoMKgIH0KCivCoMKgwqAgaWYgKCFxLT51YWNjZS0+
-b3BzKSB7CivCoMKgwqAgwqDCoMKgIHJldCA9IC1FSU5WQUw7CivCoMKgwqAgwqDCoMKgIGdvdG8g
-b3V0X3dpdGhfbG9jazsKK8KgwqDCoCB9CisKIMKgwqDCoMKgIGlmIChxLT51YWNjZS0+b3BzLT5z
-dGFydF9xdWV1ZSkgewogwqDCoMKgwqAgwqDCoMKgIHJldCA9IHEtPnVhY2NlLT5vcHMtPnN0YXJ0
-X3F1ZXVlKHEpOwogwqDCoMKgwqAgwqDCoMKgIGlmIChyZXQgPCAwKQpAQCAtNDYsNiArNTEsOSBA
-QCBzdGF0aWMgaW50IHVhY2NlX3B1dF9xdWV1ZShzdHJ1Y3QgdWFjY2VfcXVldWUgKnEpCiDCoMKg
-wqDCoCBpZiAocS0+c3RhdGUgPT0gVUFDQ0VfUV9aT01CSUUpCiDCoMKgwqDCoCDCoMKgwqAgZ290
-byBvdXQ7CgorwqDCoMKgIGlmICghdWFjY2UtPm9wcykKK8KgwqDCoCDCoMKgwqAgZ290byBvdXQ7
-CisKIMKgwqDCoMKgIGlmICgocS0+c3RhdGUgPT0gVUFDQ0VfUV9TVEFSVEVEKSAmJiB1YWNjZS0+
-b3BzLT5zdG9wX3F1ZXVlKQogwqDCoMKgwqAgwqDCoMKgIHVhY2NlLT5vcHMtPnN0b3BfcXVldWUo
-cSk7CgpAQCAtNjUsNiArNzMsNyBAQCBzdGF0aWMgbG9uZyB1YWNjZV9mb3BzX3VubF9pb2N0bChz
-dHJ1Y3QgZmlsZSAqZmlsZXAsCiDCoHsKIMKgwqDCoMKgIHN0cnVjdCB1YWNjZV9xdWV1ZSAqcSA9
-IGZpbGVwLT5wcml2YXRlX2RhdGE7CiDCoMKgwqDCoCBzdHJ1Y3QgdWFjY2VfZGV2aWNlICp1YWNj
-ZSA9IHEtPnVhY2NlOworwqDCoMKgIGxvbmcgcmV0OwoKIMKgwqDCoMKgIHN3aXRjaCAoY21kKSB7
-CiDCoMKgwqDCoCBjYXNlIFVBQ0NFX0NNRF9TVEFSVF9ROgpAQCAtNzQsMTAgKzgzLDE3IEBAIHN0
-YXRpYyBsb25nIHVhY2NlX2ZvcHNfdW5sX2lvY3RsKHN0cnVjdCBmaWxlICpmaWxlcCwKIMKgwqDC
-oMKgIMKgwqDCoCByZXR1cm4gdWFjY2VfcHV0X3F1ZXVlKHEpOwoKIMKgwqDCoMKgIGRlZmF1bHQ6
-Ci3CoMKgwqAgwqDCoMKgIGlmICghdWFjY2UtPm9wcy0+aW9jdGwpCi3CoMKgwqAgwqDCoMKgIMKg
-wqDCoCByZXR1cm4gLUVJTlZBTDsKK8KgwqDCoCDCoMKgwqAgbXV0ZXhfbG9jaygmdWFjY2VfbXV0
-ZXgpOworCivCoMKgwqAgwqDCoMKgIGlmICghdWFjY2UtPm9wcyB8fCAhdWFjY2UtPm9wcy0+aW9j
-dGwpIHsKK8KgwqDCoCDCoMKgwqAgwqDCoMKgIHJldCA9IC1FSU5WQUw7CivCoMKgwqAgwqDCoMKg
-IMKgwqDCoCBnb3RvIG91dF93aXRoX2xvY2s7CivCoMKgwqAgwqDCoMKgIH0KCi3CoMKgwqAgwqDC
-oMKgIHJldHVybiB1YWNjZS0+b3BzLT5pb2N0bChxLCBjbWQsIGFyZyk7CivCoMKgwqAgwqDCoMKg
-IHJldCA9IHVhY2NlLT5vcHMtPmlvY3RsKHEsIGNtZCwgYXJnKTsKK291dF93aXRoX2xvY2s6CivC
-oMKgwqAgwqDCoMKgIG11dGV4X3VubG9jaygmdWFjY2VfbXV0ZXgpOworwqDCoMKgIMKgwqDCoCBy
-ZXR1cm4gcmV0OwogwqDCoMKgwqAgfQogwqB9CgpAQCAtMTM4LDEwICsxNTQsMTMgQEAgc3RhdGlj
-IGludCB1YWNjZV9mb3BzX29wZW4oc3RydWN0IGlub2RlICppbm9kZSwgCnN0cnVjdCBmaWxlICpm
-aWxlcCkKCiDCoMKgwqDCoCBtdXRleF9sb2NrKCZ1YWNjZS0+cXVldWVzX2xvY2spOwoKLcKgwqDC
-oCBpZiAoIXVhY2NlLT5wYXJlbnQtPmRyaXZlcikgeworwqDCoMKgIG11dGV4X2xvY2soJnVhY2Nl
-X211dGV4KTsKK8KgwqDCoCBpZiAoIXVhY2NlLT5wYXJlbnQgfHwgIXVhY2NlLT5vcHMpIHsKK8Kg
-wqDCoCDCoMKgwqAgbXV0ZXhfdW5sb2NrKCZ1YWNjZV9tdXRleCk7CiDCoMKgwqDCoCDCoMKgwqAg
-cmV0ID0gLUVOT0RFVjsKIMKgwqDCoMKgIMKgwqDCoCBnb3RvIG91dF93aXRoX2xvY2s7CiDCoMKg
-wqDCoCB9CivCoMKgwqAgbXV0ZXhfdW5sb2NrKCZ1YWNjZV9tdXRleCk7CgogwqDCoMKgwqAgcmV0
-ID0gdWFjY2VfYmluZF9xdWV1ZSh1YWNjZSwgcSk7CiDCoMKgwqDCoCBpZiAocmV0KQpAQCAtMjI2
-LDYgKzI0NSwxMSBAQCBzdGF0aWMgaW50IHVhY2NlX2ZvcHNfbW1hcChzdHJ1Y3QgZmlsZSAqZmls
-ZXAsIApzdHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3QgKnZtYSkKCiDCoMKgwqDCoCBtdXRleF9sb2NrKCZ1
-YWNjZV9tdXRleCk7CgorwqDCoMKgIGlmICghdWFjY2UtPm9wcykgeworwqDCoMKgIMKgwqDCoCBy
-ZXQgPSAtRUlOVkFMOworwqDCoMKgIMKgwqDCoCBnb3RvIG91dF93aXRoX2xvY2s7CivCoMKgwqAg
-fQorCiDCoMKgwqDCoCBpZiAocS0+c3RhdGUgIT0gVUFDQ0VfUV9JTklUICYmIHEtPnN0YXRlICE9
-IFVBQ0NFX1FfU1RBUlRFRCkgewogwqDCoMKgwqAgwqDCoMKgIHJldCA9IC1FSU5WQUw7CiDCoMKg
-wqDCoCDCoMKgwqAgZ290byBvdXRfd2l0aF9sb2NrOwpAQCAtMjcxLDkgKzI5NSwxOCBAQCBzdGF0
-aWMgX19wb2xsX3QgdWFjY2VfZm9wc19wb2xsKHN0cnVjdCBmaWxlICpmaWxlLCAKcG9sbF90YWJs
-ZSAqd2FpdCkKIMKgwqDCoMKgIHN0cnVjdCB1YWNjZV9kZXZpY2UgKnVhY2NlID0gcS0+dWFjY2U7
-CgogwqDCoMKgwqAgcG9sbF93YWl0KGZpbGUsICZxLT53YWl0LCB3YWl0KTsKLcKgwqDCoCBpZiAo
-dWFjY2UtPm9wcy0+aXNfcV91cGRhdGVkICYmIHVhY2NlLT5vcHMtPmlzX3FfdXBkYXRlZChxKSkK
-KworwqDCoMKgIG11dGV4X2xvY2soJnVhY2NlX211dGV4KTsKK8KgwqDCoCBpZiAoIXVhY2NlLT5v
-cHMpCivCoMKgwqAgwqDCoMKgIGdvdG8gb3V0X3dpdGhfbG9jazsKKworwqDCoMKgIGlmICh1YWNj
-ZS0+b3BzLT5pc19xX3VwZGF0ZWQgJiYgdWFjY2UtPm9wcy0+aXNfcV91cGRhdGVkKHEpKSB7CivC
-oMKgwqAgwqDCoMKgIG11dGV4X3VubG9jaygmdWFjY2VfbXV0ZXgpOwogwqDCoMKgwqAgwqDCoMKg
-IHJldHVybiBFUE9MTElOIHwgRVBPTExSRE5PUk07CivCoMKgwqAgfQoKK291dF93aXRoX2xvY2s6
-CivCoMKgwqAgbXV0ZXhfdW5sb2NrKCZ1YWNjZV9tdXRleCk7CiDCoMKgwqDCoCByZXR1cm4gMDsK
-IMKgfQoKQEAgLTMxMiwxMiArMzQ1LDIwIEBAIHN0YXRpYyBzc2l6ZV90IGF2YWlsYWJsZV9pbnN0
-YW5jZXNfc2hvdyhzdHJ1Y3QgCmRldmljZSAqZGV2LAogwqDCoMKgwqAgwqDCoMKgIMKgwqDCoCDC
-oMKgwqAgwqDCoMKgIGNoYXIgKmJ1ZikKIMKgewogwqDCoMKgwqAgc3RydWN0IHVhY2NlX2Rldmlj
-ZSAqdWFjY2UgPSB0b191YWNjZV9kZXZpY2UoZGV2KTsKK8KgwqDCoCBzc2l6ZV90IHJldDsKCi3C
-oMKgwqAgaWYgKCF1YWNjZS0+b3BzLT5nZXRfYXZhaWxhYmxlX2luc3RhbmNlcykKLcKgwqDCoCDC
-oMKgwqAgcmV0dXJuIC1FTk9ERVY7CivCoMKgwqAgbXV0ZXhfbG9jaygmdWFjY2VfbXV0ZXgpOwor
-wqDCoMKgIGlmICghdWFjY2UtPm9wcyB8fCAhdWFjY2UtPm9wcy0+Z2V0X2F2YWlsYWJsZV9pbnN0
-YW5jZXMpIHsKK8KgwqDCoCDCoMKgwqAgcmV0ID0gLUVOT0RFVjsKK8KgwqDCoCDCoMKgwqAgZ290
-byBvdXRfd2l0aF9sb2NrOworwqDCoMKgIH0KKworwqDCoMKgIHJldCA9IHN5c2ZzX2VtaXQoYnVm
-LCAiJWRcbiIsCivCoMKgwqAgwqDCoMKgIMKgwqDCoCDCoHVhY2NlLT5vcHMtPmdldF9hdmFpbGFi
-bGVfaW5zdGFuY2VzKHVhY2NlKSk7CgotwqDCoMKgIHJldHVybiBzeXNmc19lbWl0KGJ1ZiwgIiVk
-XG4iLAotwqDCoMKgIMKgwqDCoCDCoMKgwqDCoMKgwqAgdWFjY2UtPm9wcy0+Z2V0X2F2YWlsYWJs
-ZV9pbnN0YW5jZXModWFjY2UpKTsKK291dF93aXRoX2xvY2s6CivCoMKgwqAgbXV0ZXhfdW5sb2Nr
-KCZ1YWNjZV9tdXRleCk7CivCoMKgwqAgcmV0dXJuIHJldDsKIMKgfQoKIMKgc3RhdGljIHNzaXpl
-X3QgYWxnb3JpdGhtc19zaG93KHN0cnVjdCBkZXZpY2UgKmRldiwKQEAgLTUyMyw2ICs1NjQsMTIg
-QEAgdm9pZCB1YWNjZV9yZW1vdmUoc3RydWN0IHVhY2NlX2RldmljZSAqdWFjY2UpCgogwqDCoMKg
-wqAgLyogZGlzYWJsZSBzdmEgbm93IHNpbmNlIG5vIG9wZW5lZCBxdWV1ZXMgKi8KIMKgwqDCoMKg
-IHVhY2NlX2Rpc2FibGVfc3ZhKHVhY2NlKTsKKworwqDCoMKgIG11dGV4X2xvY2soJnVhY2NlX211
-dGV4KTsKK8KgwqDCoCB1YWNjZS0+cGFyZW50ID0gTlVMTDsKK8KgwqDCoCB1YWNjZS0+b3BzID0g
-TlVMTDsKK8KgwqDCoCBtdXRleF91bmxvY2soJnVhY2NlX211dGV4KTsKKwogwqDCoMKgwqAgbXV0
-ZXhfdW5sb2NrKCZ1YWNjZS0+cXVldWVzX2xvY2spOwoKIMKgwqDCoMKgIGlmICh1YWNjZS0+Y2Rl
-dikKLS0gCjIuMjUuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
-Cmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi Robin,
+
+On 06.06.2022 14:38, Robin Murphy wrote:
+> On 2022-06-02 16:58, Marek Szyprowski wrote:
+>> On 23.05.2022 19:30, Robin Murphy wrote:
+>>> On 2022-05-11 13:15, Ajay Kumar wrote:
+>>>> From: Marek Szyprowski <m.szyprowski@samsung.com>
+>>>>
+>>>> Zero is a valid DMA and IOVA address on many architectures, so adjust
+>>>> the
+>>>> IOVA management code to properly handle it. A new value IOVA_BAD_ADDR
+>>>> (~0UL) is introduced as a generic value for the error case. Adjust all
+>>>> callers of the alloc_iova_fast() function for the new return value.
+>>>
+>>> And when does anything actually need this? In fact if you were to stop
+>>> iommu-dma from reserving IOVA 0 - which you don't - it would only show
+>>> how patch #3 is broken.
+>>
+>> I don't get why you says that patch #3 is broken.
+>
+> My mistake, in fact it's already just as broken either way - I forgot 
+> that that's done implicitly via iovad->start_pfn rather than an actual 
+> reserve_iova() entry. I see there is an initial calculation attempting 
+> to honour start_pfn in patch #3, but it's always immediately 
+> overwritten. More critically, the rb_first()/rb_next walk means the 
+> starting point can only creep inevitably upwards as older allocations 
+> are freed, so will end up pathologically stuck at or above limit_pfn 
+> and unable to recover. At best it's more "next-fit" than "first-fit", 
+> and TBH the fact that it could ever even allocate anything at all in 
+> an empty domain makes me want to change the definition of IOVA_ANCHOR ;)
+>
+>> Them main issue with
+>> address 0 being reserved appears when one uses first fit allocation
+>> algorithm. In such case the first allocation will be at the 0 address,
+>> what causes some issues. This patch simply makes the whole iova related
+>> code capable of such case. This mimics the similar code already used on
+>> ARM 32bit. There are drivers that rely on the way the IOVAs are
+>> allocated. This is especially important for the drivers for devices with
+>> limited addressing capabilities. And there exists such and they can be
+>> even behind the IOMMU.
+>>
+>> Lets focus on the s5p-mfc driver and the way one of the supported
+>> hardware does the DMA. The hardware has very limited DMA window (256M)
+>> and addresses all memory buffers as an offset from the firmware base.
+>> Currently it has been assumed that the first allocated buffer will be on
+>> the beginning of the IOVA space. This worked fine on ARM 32bit and
+>> supporting such case is a target of this patchset.
+>
+> I still understand the use-case; I object to a solution where PFN 0 is 
+> always reserved yet sometimes allocated. Not to mention the slightly 
+> more fundamental thing of the whole lot not actually working the way 
+> it's supposed to.
+>
+> I also remain opposed to baking in secret ABIs where allocators are 
+> expected to honour a particular undocumented behaviour. FWIW I've had 
+> plans for a while now to make the IOVA walk bidirectional to make the 
+> existing retry case more efficient, at which point it's then almost 
+> trivial to implement "bottom-up" allocation, which I'm thinking I 
+> might then force on by default for CONFIG_ARM to minimise any further 
+> surprises for v2 of the default domain conversion. However I'm 
+> increasingly less convinced that it's really sufficient for your case, 
+> and am leaning back towards the opinion that any driver with really 
+> specific constraints on how its DMA addresses are laid out should not 
+> be passively relying on a generic allocator to do exactly what it 
+> wants. A simple flag saying "try to allocate DMA addresses bottom-up" 
+> doesn't actually mean "allocate this thing on a 256MB-aligned address 
+> and everything subsequent within a 256MB window above it", so let's 
+> not build a fragile house of cards on top of pretending that it does.
+
+
+Okay, I see your point. I'm fine with adding more of the IOVA allocation 
+logic to the respective driver (s5p-mfc), however I would still like to 
+use the dma-mapping framework and helpers, which depend on it (like 
+v4l2-videobuf2, dma-buf, and so on). Would it be fine for you to let 
+device drivers to access the IOVA domains hidden by the DMA-IOMMU glue 
+code to mark certain parts of IOVA space as reserved or to manually 
+remap the buffer (like firmware) with specific address requirements?
+
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
