@@ -1,92 +1,164 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BACC7C43334
-	for <iommu@archiver.kernel.org>; Fri, 17 Jun 2022 18:55:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B2ED0C433EF
+	for <iommu@archiver.kernel.org>; Fri, 17 Jun 2022 23:07:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 2932140643;
-	Fri, 17 Jun 2022 18:55:15 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 2932140643
-Authentication-Results: smtp2.osuosl.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=gmx.net header.i=@gmx.net header.a=rsa-sha256 header.s=badeba3b8450 header.b=i+a+pQW8
+	by smtp3.osuosl.org (Postfix) with ESMTP id 1872060D61;
+	Fri, 17 Jun 2022 23:07:32 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 1872060D61
+Authentication-Results: smtp3.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=N6EY401Q
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GOdUZ6TgTxnT; Fri, 17 Jun 2022 18:55:14 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id D93AB400D8;
-	Fri, 17 Jun 2022 18:55:13 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org D93AB400D8
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OjbWk9pTTXPH; Fri, 17 Jun 2022 23:07:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id B652560BF6;
+	Fri, 17 Jun 2022 23:07:30 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org B652560BF6
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A0EFAC0032;
-	Fri, 17 Jun 2022 18:55:13 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C1EC0C002D
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 18:55:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 832D2C0032;
+	Fri, 17 Jun 2022 23:07:30 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 16BE8C002D;
+ Fri, 17 Jun 2022 23:07:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 876F041C0A
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 18:55:12 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 876F041C0A
-Authentication-Results: smtp4.osuosl.org;
- dkim=pass (1024-bit key) header.d=gmx.net header.i=@gmx.net
- header.a=rsa-sha256 header.s=badeba3b8450 header.b=i+a+pQW8
+ by smtp1.osuosl.org (Postfix) with ESMTP id B57E5813DA;
+ Fri, 17 Jun 2022 23:07:29 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org B57E5813DA
+Authentication-Results: smtp1.osuosl.org; dkim=pass (2048-bit key,
+ unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256
+ header.s=selector2 header.b=N6EY401Q
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IMqSwasLylSi for <iommu@lists.linux-foundation.org>;
- Fri, 17 Jun 2022 18:55:11 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 7C49541A37
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 7C49541A37
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jun 2022 18:55:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
- s=badeba3b8450; t=1655492096;
- bh=5TERitrWUvvUfTI5MhjoAnMJtaxI+oi4yMzwuHPSIUs=;
- h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
- b=i+a+pQW8GlxSWj07fLslQTwc24Fe6QepDIgw4YDFU5CRqlZtOLguwhOt5xQLqK59r
- aIyVp69kLQ950G7iYgrKcM08OyMGZ2dm7qX++OTpFYtscahIzIA/+WkZ3fVeG14gbR
- r+yzaXE0SuGkW7fl6rWgl5KPY9tLoyYjLVkYH8wM=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [217.61.144.127] ([217.61.144.127]) by web-mail.gmx.net
- (3c-app-gmx-bap03.server.lan [172.19.172.73]) (via HTTP); Fri, 17 Jun 2022
- 20:54:56 +0200
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id uz86eptdJXQi; Fri, 17 Jun 2022 23:07:28 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 11FB081325
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com
+ (mail-bn8nam04on20626.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e8d::626])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 11FB081325;
+ Fri, 17 Jun 2022 23:07:27 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B2u1DuZRSJtYp1iYwBrTRinuMfGzrZL9LEraKsC9XGIevLrpfG7FQa/DXfJgh3WYPBVpZkg8R1HKgauL+oE4ogIyiBDhczlJCBgi6rdZofHqVq97NxK1OkjFbqtdH2PM9AV+bBz9iSBhD5QztoAir5etC0Y7/2dHgNSLmnUxUcCjDIA3ivTglW1mBeOq6fVPsq3vpVc2zFtxIVmL2cAUoh8pBSWpDWbvAffn7LYzheSoWU9OAOYbX006hjw/NDtEUJjbYLT+IrO1jXqv0S5NQXAm3ejlunludt5iyiEYOf0VlarrOrLIfB9Pnn+Tu5y1VW38OhECWw8ooQZmJ5HRnQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZLqILRQ8qtWCoOCdvWIzsW3EHWsqOopa7YG7IislUhQ=;
+ b=niPg26Two2vNEDuiElaBDjx2COtJriFJvOLp0uIaCL2rlrGuSIbk2D0RpUE+6zazMA9GLSRh63swn/pKktvHhbYegMcDBBnLMmUw4tUVK63ibN2bjkW2Ohdm2qhJn+pj9gGdWvviqAGjsxi9eUuufP3cDkShr8v31Y33M0BdMA9wgBXwIWlfGP5/WtS0hBmuZnObllDRHaxVAEE2IJTC7Ui4TbSgr/onHuTCdWgg3sVXtJIyeOIU2BD0VlOpOxtcavuZ2WBe2G15s6ie0HXAmxAySHhytd2lMbLmSRVb4FnDloC0I/MLquZQ2PG794nIyuDm5ChPL4rGz0VKraEpfQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=svenpeter.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZLqILRQ8qtWCoOCdvWIzsW3EHWsqOopa7YG7IislUhQ=;
+ b=N6EY401QARm2CcqK/sz57/2L26KKb/UTfFojb0OqFFGZlk91ppipJDvblWmndJTRNljY7KYyrCEUHecgPYftA+GfEzuIUdD/G8Kz1JZJXHLXRxag8Unz6uModf8jbkXih9IwSk6783gbFmemug8gheFy6xRrZneH4X3SfLFzQ45YLRx1bJxVFTCqYrUIyIiHCCo4R3FHN+CJz0nX8HAErQ7mPqQr2i1zpcBgPE3I0yHhqAbx+rylIV+4uIsfTZTuXhgWhGJCdp9yK8UFkei07eKnDqLux8t/BDXUP+YfBxUHy9Bp7fJVd6qIjyuKqqYb+QWv/HFhsT4Cf6xLYDETEQ==
+Received: from DM3PR14CA0132.namprd14.prod.outlook.com (2603:10b6:0:53::16) by
+ PH7PR12MB5975.namprd12.prod.outlook.com (2603:10b6:510:1da::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.14; Fri, 17 Jun
+ 2022 23:07:24 +0000
+Received: from DM6NAM11FT046.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:0:53:cafe::e) by DM3PR14CA0132.outlook.office365.com
+ (2603:10b6:0:53::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14 via Frontend
+ Transport; Fri, 17 Jun 2022 23:07:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT046.mail.protection.outlook.com (10.13.172.121) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5353.14 via Frontend Transport; Fri, 17 Jun 2022 23:07:24 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Fri, 17 Jun 2022 23:07:24 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 17 Jun 2022 16:07:23 -0700
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22 via Frontend
+ Transport; Fri, 17 Jun 2022 16:07:21 -0700
+Date: Fri, 17 Jun 2022 16:07:20 -0700
+To: "robin.murphy@arm.com" <robin.murphy@arm.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>
+Subject: Re: [PATCH v2 5/5] vfio/iommu_type1: Simplify group attachment
+Message-ID: <Yq0JKBiQfTkWh4nq@Asurada-Nvidia>
+References: <20220616000304.23890-1-nicolinc@nvidia.com>
+ <20220616000304.23890-6-nicolinc@nvidia.com>
+ <BL1PR11MB52710E360B50DDA99C9A65D18CAC9@BL1PR11MB5271.namprd11.prod.outlook.com>
+ <YquxcH2S1fM+llOf@Asurada-Nvidia>
+ <BN9PR11MB5276C7BFA77C2C176491B56A8CAF9@BN9PR11MB5276.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Message-ID: <trinity-a3fa3f57-696b-44f1-9440-63cd249d1568-1655492096670@3c-app-gmx-bap03>
-From: Frank Wunderlich <frank-w@public-files.de>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Aw: Re: helping with remapping vmem for dma
-Date: Fri, 17 Jun 2022 20:54:56 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <88080559-0c96-ec91-6f72-df05a2d0c5af@arm.com>
-References: <trinity-2d26eb5e-6a3f-485a-aed7-134c1e164942-1655482643278@3c-app-gmx-bap03>
- <88080559-0c96-ec91-6f72-df05a2d0c5af@arm.com>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:NEHWw+yzysQMeV3UCczydEq2+A+cbQ0zKtwmSr3mWWJSVTqpr/npypc8nYI/Lj586NJZ8
- ZQdk6Dll3i+7Lt+GdW3tkpTctzcCH647OJopRuFd5KBEKImQ3T3735UbZYfuB43hER8UQerSWrUE
- DbDyN0V0fTc5aHyWuJqK/4wKy4HtVDvAw8vyBBkX8DJ64lzl6JLDdnK76o0FImdtly1cyKCBvFbf
- aHkEJ1+1wMyZ/rMzXfyUjiOu5C+cH489uun/J0whgoyHbhM9Hvhxk1y2JPHcvZmDl3ZIXxYI4Q63
- pc=
-X-UI-Out-Filterresults: notjunk:1;V03:K0:UxGlKHXmd08=:mO4sRPmbDS3nNfb4UPq1zD
- QL/3on00tn85Gwlp9cHm+SHcY07rN4H00WATjI9vgWy0erTIvxApS5KQybYJVc1iqw1afw6oJ
- CDWsjaq0bp89rnTXVq0uosv6bG2cHQZ2p8ztoqAR6G1Z4onmoB0cefui3tD2HbWQfA51Ge9ZA
- AelTe/1RhVQUd1dr9YkVfsmKnHWFioxWBxFmjfarcZB1Fi99zFybB+scNvLNN2w4v3TW8jaHI
- oB/XCJB4quMOlwF2K8dJFLp3rMaw50/AmUHui7Aani5rt5ipI7T3VST67f43qbvr6AWMyfRq+
- 0C53RM+dqlCChFCe9RdxrlUi5saXtMzyHcNWl6NAj7/+hyWMBTgURsOa4DNoCe0erudLa3VV5
- Pm5keMe0gQTEMZoVlPoFiE7mnHVwSNNcGCOrZ2+LqgKJWRyhuz4KfORDOeouj3tB/FAPYPVnR
- cu0pSxyaM/Z3aZRur0rL90NVJCMX3obV0dkplYept+pMUGozKi3MQqwx7oyXHfce5PeAKB4FC
- CwzsElTEiAqpY0KyMnzoXsTpWWAXpf1QO3S4LcwygeAB5MPEpkZBhvnTQjKeQNwIc8OxIcPMw
- ukmTOi9KdfnYPaYF9tdOiwROHm5zpMY/b2hdCEhdZVLG0XLiLEPyokardiyfrgW4iKenlR3c6
- oOrRDGagOv/Uy3Dx3igqd1D6GCGqUVc+o74IDc5QCfsmhHZnVFg0dABjg0h1x/gCeC5ABmpIM
- fUlhN48hzoXGiq2/1xZ3kjyDy20I3ZUbAl3Z5LsNIy852vxNHLAmHDSQlkW96b0GwAyXggMAr
- S0BdvkF
-Cc: iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>,
- linux-kernel@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276C7BFA77C2C176491B56A8CAF9@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 74598408-44ba-43b6-c24e-08da50b62411
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5975:EE_
+X-Microsoft-Antispam-PRVS: <PH7PR12MB59753098F671ED317266ADB0ABAF9@PH7PR12MB5975.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: rHBGjZj+43wUi5J064DSf+xSBM6gqkjXjw8pjRCTikmQ0UCv2CXBfRvisL+HhxpcTIwK8PXxKGXgE/ZuzSWbkzp4x5hui4L6zvMDZRjzjZFGyMk+u+xJ8vltErWCFCVE9ebu04/ciUDkBXLKmJCB8goEkXpXweUQQNg0SHHJ9qkTgrWFyW3NXwV404h6oDEcqhvhiGcxXaiXa3t3aFumJpW7q1czcoI6SXVvlcQQYaaToCuw19VxliBJpeXWrDZ8MUiEA2eXvtaQ4Rz8SQTCIKqNCWGtK3JcnFtdgh4EK4u8eGHOH5WOhy/VbMn+H39kdAkiJLCfI/fPa4QMoCPo5LwurP7xRPueUyTkMz7eFn7HcWAvTILnB46iS5doggpgQJDJ1SbLUboryP45zO9+AfaleuFQkV0v8LePFu8R0sQM/LATxb7UQEG7f0kmJx7O9fo2m4LdoAidvd4ilWbred2r2QrIHQ8aQ8ZAMdAClFqJ37TU2ObVmjywLDERUTqZOVSPzQ7cMts+cnhhd1NssKLcm5LcUj6qr0FxcxvVtjYfYI6ewoK0KuBjtLJec/M6WGKiPnjSI1Zz6zMruIcLCkM0E0X6HYSIb9qVMNgEFYd/tvj6ct4ogXfUfAT//zeK+iv43TL0e7uSxV7Bx//70Boqvi8z6AkehopmXex2d+aoaXnl4MhV/IWyrhljnSOZPrGD3p41hX4WpPF1DxrwPQ==
+X-Forefront-Antispam-Report: CIP:12.22.5.234; CTRY:US; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:InfoNoRecords; CAT:NONE;
+ SFS:(13230016)(4636009)(36840700001)(40470700004)(46966006)(4326008)(26005)(70586007)(86362001)(7416002)(82310400005)(33716001)(316002)(2906002)(40460700003)(9686003)(83380400001)(7406005)(8676002)(5660300002)(47076005)(498600001)(8936002)(186003)(55016003)(70206006)(426003)(81166007)(110136005)(356005)(54906003)(36860700001)(336012)(36900700001);
+ DIR:OUT; SFP:1101; 
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2022 23:07:24.4666 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 74598408-44ba-43b6-c24e-08da50b62411
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[12.22.5.234];
+ Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT046.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5975
+Cc: "cohuck@redhat.com" <cohuck@redhat.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jordan@cosmicpenguin.net" <jordan@cosmicpenguin.net>,
+ "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+ "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+ "will@kernel.org" <will@kernel.org>,
+ "alyssa@rosenzweig.io" <alyssa@rosenzweig.io>,
+ "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+ "saiprakash.ranjan@codeaurora.org" <saiprakash.ranjan@codeaurora.org>,
+ "zhang.lyra@gmail.com" <zhang.lyra@gmail.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
+ "jgg@nvidia.com" <jgg@nvidia.com>,
+ "yangyingliang@huawei.com" <yangyingliang@huawei.com>,
+ "orsonzhai@gmail.com" <orsonzhai@gmail.com>,
+ "gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>,
+ "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+ "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "christophe.jaillet@wanadoo.fr" <christophe.jaillet@wanadoo.fr>,
+ "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+ "tglx@linutronix.de" <tglx@linutronix.de>,
+ "virtualization@lists.linux-foundation.org"
+ <virtualization@lists.linux-foundation.org>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ "isaacm@codeaurora.org" <isaacm@codeaurora.org>,
+ "marcan@marcan.st" <marcan@marcan.st>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
+ "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,55 +171,79 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Nicolin Chen via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Nicolin Chen <nicolinc@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> Gesendet: Freitag, 17. Juni 2022 um 19:22 Uhr
-> Von: "Robin Murphy" <robin.murphy@arm.com>
-> An: "Frank Wunderlich" <frank-w@public-files.de>, "Christoph Hellwig" <hch@lst.de>
-> Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, "Marek Szyprowski" <m.szyprowski@samsung.com>
-> Betreff: Re: helping with remapping vmem for dma
->
-> On 2022-06-17 17:17, Frank Wunderlich wrote:
-> > Am 15. Juni 2022 15:17:00 MESZ schrieb Christoph Hellwig <hch@lst.de>:
-> >> On Wed, Jun 15, 2022 at 02:15:33PM +0100, Robin Murphy wrote:
-> >>> Put simply, if you want to call dma_map_single() on a buffer, then that
-> >>> buffer needs to be allocated with kmalloc() (or technically alloc_pages(),
-> >>> but then dma_map_page() would make more sense when dealing with entire
-> >>> pages.
-> >>
-> >> Yes.  It sounds like the memory here comes from the dma coherent
-> >> allocator, in which case the code need to use the address returned
-> >> by that and not create another mapping.
+On Fri, Jun 17, 2022 at 02:53:13AM +0000, Tian, Kevin wrote:
+> > > ...
+> > > > -     if (resv_msi) {
+> > > > +     if (resv_msi && !domain->msi_cookie) {
+> > > >               ret = iommu_get_msi_cookie(domain->domain,
+> > > > resv_msi_base);
+> > > >               if (ret && ret != -ENODEV)
+> > > >                       goto out_detach;
+> > > > +             domain->msi_cookie = true;
+> > > >       }
+> > >
+> > > why not moving to alloc_attach_domain() then no need for the new
+> > > domain field? It's required only when a new domain is allocated.
 > >
-> > Hi
+> > When reusing an existing domain that doesn't have an msi_cookie,
+> > we can do iommu_get_msi_cookie() if resv_msi is found. So it is
+> > not limited to a new domain.
+> 
+> Looks msi_cookie requirement is per platform (currently only
+> for smmu. see arm_smmu_get_resv_regions()). If there is
+> no mixed case then above check is not required.
+
+Do you mean "reusing existing domain" for the "mixed case"?
+
+> But let's hear whether Robin has a different thought here.
+
+Yea, sure.
+
+> > > > -                     iommu_domain_free(domain->domain);
+> > > > -                     list_del(&domain->next);
+> > > > -                     kfree(domain);
+> > > > -                     vfio_iommu_aper_expand(iommu, &iova_copy);
+> > >
+> > > Previously the aperture is adjusted when a domain is freed...
+> > >
+> > > > -                     vfio_update_pgsize_bitmap(iommu);
+> > > > -             }
+> > > > -             /*
+> > > > -              * Removal of a group without dirty tracking may allow
+> > > > -              * the iommu scope to be promoted.
+> > > > -              */
+> > > > -             if (!group->pinned_page_dirty_scope) {
+> > > > -                     iommu->num_non_pinned_groups--;
+> > > > -                     if (iommu->dirty_page_tracking)
+> > > > -                             vfio_iommu_populate_bitmap_full(iommu);
+> > > > -             }
+> > > > +             vfio_iommu_detach_destroy_domain(domain, iommu,
+> > > > group);
+> > > >               kfree(group);
+> > > >               break;
+> > > >       }
+> > > >
+> > > > +     vfio_iommu_aper_expand(iommu, &iova_copy);
+> > >
+> > > but now it's done for every group detach. The aperture is decided
+> > > by domain geometry which is not affected by attached groups.
 > >
-> > traced it to buffer allocated as simple uint8-array [1]:
-> >
-> > UINT_8 aucBuffer[sizeof(INIT_HIF_RX_HEADER_T) + sizeof(INIT_EVENT_CMD_RESULT)];
->
-> Ah, so it's trying to do DMA with a stack variable? CONFIG_DMA_API_DEBUG
-> is your friend; it should have screamed about that specifically.
-> Allocate this buffer properly to begin with, and free it again on the
-> way out of the function (it's surely not worth having to make a
-> temporary copy further down the callchain). The kmalloc flags can
-> probably be regular GFP_KERNEL, unless this can be called from more
-> restrictive contexts like an IRQ handler - the fact that it might be
-> mapped for DMA later is essentially irrelevant in that respect.
+> > Yea, I've noticed this part. Actually Jason did this change for
+> > simplicity, and I think it'd be safe to do so?
+> 
+> Perhaps detach_destroy() can return a Boolean to indicate whether
+> a domain is destroyed.
 
-Hi,
-
-simply replaced the stack-vars to uint_8-pointers and using kmalloc/kfree for
-memory handling (needed to replace some returns to goto to always free memory).
-
-Thanks very much for support, driver is now working again :)
-
-https://github.com/frank-w/BPI-R2-4.14/commit/7f3a721d5b0d8ca44935c23d5513a19cc57786c0
-
-> Thanks,
-> Robin.
+It could be a solution but doesn't feel that common for a clean
+function to have a return value indicating a special case. Maybe
+passing in "&domain" so that we can check if it's NULL after?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
