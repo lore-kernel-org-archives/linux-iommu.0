@@ -1,161 +1,77 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 7E647C433EF
-	for <iommu@archiver.kernel.org>; Tue, 21 Jun 2022 21:08:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id F0E94CCA473
+	for <iommu@archiver.kernel.org>; Tue, 21 Jun 2022 21:57:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 15D154059C;
-	Tue, 21 Jun 2022 21:08:43 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 15D154059C
-Authentication-Results: smtp2.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=RdM18ZKL
+	by smtp3.osuosl.org (Postfix) with ESMTP id 825F661120;
+	Tue, 21 Jun 2022 21:57:05 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 825F661120
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0SzLtgib-1Da; Tue, 21 Jun 2022 21:08:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id A83A74023B;
-	Tue, 21 Jun 2022 21:08:41 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org A83A74023B
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id BW7xPhdBbcTF; Tue, 21 Jun 2022 21:57:04 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 2B37B60ED8;
+	Tue, 21 Jun 2022 21:57:04 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 2B37B60ED8
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 81093C0032;
-	Tue, 21 Jun 2022 21:08:41 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E1765C002D;
- Tue, 21 Jun 2022 21:08:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DACBAC0032;
+	Tue, 21 Jun 2022 21:57:03 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EE9E6C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 21:57:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id B506A4059C;
- Tue, 21 Jun 2022 21:08:39 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org B506A4059C
+ by smtp3.osuosl.org (Postfix) with ESMTP id B3F6B60ED8
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 21:57:02 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org B3F6B60ED8
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TXEc0RRdL_xL; Tue, 21 Jun 2022 21:08:38 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org ABB844023B
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com
- (mail-bn7nam10on2044.outbound.protection.outlook.com [40.107.92.44])
- by smtp2.osuosl.org (Postfix) with ESMTPS id ABB844023B;
- Tue, 21 Jun 2022 21:08:38 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cZdXE1OJzBaUYlWF6NbMVt0TwWrbxS3mzOOWXZrEyEAXoHax+XVJtUK0AucL4rrbEAfsK/CPUJt+a/ZVtpuqqRs8pZgoNk01BTfQksKYqoz9v3AU1f8N3Nz+2GK0FLSahgyIZy5cPXe3ZxqPM5Zt4mgLV7W/RzKR5D9G9jIK50m+uiJy0Fg5spR/NM+wtsmqaEVE10u4yfrpKE8emdyVz/aNFqYbXOnz6gFkfO0BEzvvyuo8b62KUxnCswMB/WSv1w5glx5X5+uzE0VtCHOIJZfnaPWhj5JF2NDJ7IJWNrgIB8p9Hc+TvUNqJZlz35qyaWU67DeXePo5MSLwWWW5Uw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IN2rjHI7mae8Dk8au2O2opi72iO/joSCgRpCxMnXvhI=;
- b=Ko8Wvmuv8sXGmpbDKVIFKUXug38k7W8jjTeCFGPi2DAiGMUX/Pb/BiHMpVsoDo8HQJRrFv/RIkzYTvIzvAJMTf2Me6O437lDYkbxBM1s38KwOP/cNe+J0MrTaMO4Hn5+aXO7G95gVRlRb817z3Qje4xAa009ejVxuRekjMN4kLY55uXQ+5i1Uil9K2kHBuWzXrxUve9p+9O5mWkd3lS+iVag/tv6ZnpFEcbuc9WPpk7NsI1wj+GSZvMnZeSEpiZetmiqirVUJWcl/vsUn1kkHbWxlKOYrGdj/GktS/BM5zQSE7MM26M4CJKM4KLM7zHfFY2yQ/oCwHEGIgCQlgDOxQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IN2rjHI7mae8Dk8au2O2opi72iO/joSCgRpCxMnXvhI=;
- b=RdM18ZKL/YFzY2wSIpWBZg3bwhM//xU6WMblFKeRFYlGM+yu9olWMiFF0PdbaLWvhsN4jgUy2knfh9TCxdy7d7K+z2SDCEv2Mk+nxLxtClxFe9KcOTahypm99nEJxI7jZqA9NFM0BFd5cRra7SkVUwCvUSxtqjXfpRoxh/wST3kAYEDvxr9fd0MhX1EA5ylWcAn93u9g6cH2Wd3tgg5FWRhYfwYPXckrEZkRWXeGqRFC7r+/0wn5xKWHPJd0sH7QMpKdA9HQE6G3BvwntlSfllD55DTfrOoDbvxp1849gVO0uEicyRFMMu9u5hG0MPgy8hSYhKF6C6T0RyUErm692w==
-Received: from BN6PR16CA0014.namprd16.prod.outlook.com (2603:10b6:404:f5::24)
- by PH7PR12MB5976.namprd12.prod.outlook.com (2603:10b6:510:1db::22)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.14; Tue, 21 Jun
- 2022 21:08:35 +0000
-Received: from BN8NAM11FT018.eop-nam11.prod.protection.outlook.com
- (2603:10b6:404:f5:cafe::bd) by BN6PR16CA0014.outlook.office365.com
- (2603:10b6:404:f5::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15 via Frontend
- Transport; Tue, 21 Jun 2022 21:08:35 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- BN8NAM11FT018.mail.protection.outlook.com (10.13.176.89) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5373.15 via Frontend Transport; Tue, 21 Jun 2022 21:08:35 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Tue, 21 Jun 2022 21:08:34 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 21 Jun 2022 14:08:34 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22 via Frontend
- Transport; Tue, 21 Jun 2022 14:08:31 -0700
-Date: Tue, 21 Jun 2022 14:08:29 -0700
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 5/5] vfio/iommu_type1: Simplify group attachment
-Message-ID: <YrIzTX2Vg/iJ95hM@Asurada-Nvidia>
-References: <20220616000304.23890-1-nicolinc@nvidia.com>
- <20220616000304.23890-6-nicolinc@nvidia.com>
- <BL1PR11MB52710E360B50DDA99C9A65D18CAC9@BL1PR11MB5271.namprd11.prod.outlook.com>
- <YquxcH2S1fM+llOf@Asurada-Nvidia>
- <BN9PR11MB5276C7BFA77C2C176491B56A8CAF9@BN9PR11MB5276.namprd11.prod.outlook.com>
- <55e352d5-3fea-7e46-0530-b41d323b6fcf@arm.com>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id D9xhURAM9XVn for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Jun 2022 21:57:02 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org CEEF960A82
+Received: from mailout.easymail.ca (mailout.easymail.ca [64.68.200.34])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id CEEF960A82
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 21:57:01 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by mailout.easymail.ca (Postfix) with ESMTP id C97F261DF6;
+ Tue, 21 Jun 2022 21:56:59 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at emo09-pco.easydns.vpn
+Received: from mailout.easymail.ca ([127.0.0.1])
+ by localhost (emo09-pco.easydns.vpn [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id FLc2uL2Ic0RZ; Tue, 21 Jun 2022 21:56:59 +0000 (UTC)
+Received: from mail.gonehiking.org (unknown [38.15.45.1])
+ by mailout.easymail.ca (Postfix) with ESMTPA id 45ED161DF5;
+ Tue, 21 Jun 2022 21:56:59 +0000 (UTC)
+Received: from [192.168.1.4] (internal [192.168.1.4])
+ by mail.gonehiking.org (Postfix) with ESMTP id C716D3EF14;
+ Tue, 21 Jun 2022 15:56:58 -0600 (MDT)
+Message-ID: <7a6df2da-95e8-b2fd-7565-e4b7a51c5b63@gonehiking.org>
+Date: Tue, 21 Jun 2022 15:56:58 -0600
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <55e352d5-3fea-7e46-0530-b41d323b6fcf@arm.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c3ac24fe-ad8d-49f4-dc15-08da53ca3455
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5976:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR12MB59763051D992F16AF8F05BD6ABB39@PH7PR12MB5976.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Fl9OyWh50jzl4t+AuMzoHMYy9C3TFAwRDDPSgk4pLciNlWeqOPXQR6GdNkxh3SxcHy+t++zthderbcYcU+Hwq29AiqGvXQAXmU+HZkbgbp5K3MGf8NLym6BVfeEJtOlSYexF7RVbD8jIUigPBl6+2kXFJT2n6P8V2SBY0iCHOj29DYTFcQkB9XoKqWjaiUfLfdBvItjYKZTZyLxSfiB74P6LDqY1HcOD5Y+ITeGsejfVmKlVl+EXRm0U+aIYnd8Dpsp9lmLTg56kJbmEjLFAdFV5Z2ahl4HTM6uFxLxJEU28RJgzc+k59j2676oCgx8rMlS3cLsHE5EfINhbrNt9UgbsbFuk5ebJMrokYbehcP39/aUmWwP2Ldlbc+1GyXVt36XSRdtKV1PIU/31ErYuAStdT8Hzw4xZc42WkZE1oosYaums+9EUKtOdl9KON3kvy5SOFej0aylW2cxUI035DuKXXKpK0KcCk/Z7af4uhB2aVqS1HPdI7wCPpM6oNxTY+zcbyG5HJoPM4TTMmJOLnBU2BJwaZ8G4kvruD3Afyx0gRX/7IcpV/ED5TOYO/i6F0tJEYqZuXzyBhg1kGGWIG57NXn8DZZJwI4ttQcKJ+Zztk0O7yHk9/JMnB2i7E7zA+Iu3MolPU7YfY/Y6Tc6ynT8FW4q2GA5XSCjNNLlbRoa1mPGtB+5LeDiO+szo7/I7JNO7m/MJ9ogR8wkhW1l8OZOmb2U6GktScpmBy4awXHXH3KqJ3H8HUXBfNPKUNNQG
-X-Forefront-Antispam-Report: CIP:12.22.5.234; CTRY:US; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:InfoNoRecords; CAT:NONE;
- SFS:(13230016)(4636009)(376002)(346002)(39860400002)(136003)(396003)(36840700001)(46966006)(40470700004)(41300700001)(26005)(82310400005)(47076005)(53546011)(54906003)(6916009)(36860700001)(186003)(83380400001)(5660300002)(356005)(2906002)(81166007)(478600001)(426003)(8676002)(40480700001)(86362001)(70206006)(8936002)(70586007)(9686003)(316002)(336012)(7416002)(40460700003)(33716001)(4326008)(82740400003)(7406005)(55016003)(36900700001);
- DIR:OUT; SFP:1101; 
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jun 2022 21:08:35.1169 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c3ac24fe-ad8d-49f4-dc15-08da53ca3455
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[12.22.5.234];
- Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT018.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5976
-Cc: "marcan@marcan.st" <marcan@marcan.st>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "jordan@cosmicpenguin.net" <jordan@cosmicpenguin.net>,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
- "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
- "will@kernel.org" <will@kernel.org>,
- "alyssa@rosenzweig.io" <alyssa@rosenzweig.io>,
- "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "saiprakash.ranjan@codeaurora.org" <saiprakash.ranjan@codeaurora.org>,
- "zhang.lyra@gmail.com" <zhang.lyra@gmail.com>,
- "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
- "jgg@nvidia.com" <jgg@nvidia.com>,
- "yangyingliang@huawei.com" <yangyingliang@huawei.com>,
- "orsonzhai@gmail.com" <orsonzhai@gmail.com>,
- "gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>, "Tian,
- Kevin" <kevin.tian@intel.com>,
- "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
- "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "christophe.jaillet@wanadoo.fr" <christophe.jaillet@wanadoo.fr>,
- "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
- "tglx@linutronix.de" <tglx@linutronix.de>,
- "virtualization@lists.linux-foundation.org"
- <virtualization@lists.linux-foundation.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "isaacm@codeaurora.org" <isaacm@codeaurora.org>,
- "cohuck@redhat.com" <cohuck@redhat.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
- "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
- "dwmw2@infradead.org" <dwmw2@infradead.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 2/3] scsi: BusLogic remove bus_to_virt
+Content-Language: en-US
+To: Arnd Bergmann <arnd@kernel.org>, linux-scsi@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20220617125750.728590-1-arnd@kernel.org>
+ <20220617125750.728590-3-arnd@kernel.org>
+From: Khalid Aziz <khalid@gonehiking.org>
+In-Reply-To: <20220617125750.728590-3-arnd@kernel.org>
+Cc: linux-arch@vger.kernel.org, Miquel van Smoorenburg <mikevs@xs4all.net>,
+ linux-parisc@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+ linuxppc-dev@lists.ozlabs.org, linux-m68k@lists.linux-m68k.org,
+ Denis Efremov <efremov@linux.com>, Mark Salyzyn <salyzyn@android.com>,
+ Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
+ Matt Wang <wwentao@vmware.com>, linux-alpha@vger.kernel.org,
+ Jakub Kicinski <kuba@kernel.org>, "Maciej W . Rozycki" <macro@orcam.me.uk>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -168,50 +84,155 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Nicolin Chen via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Nicolin Chen <nicolinc@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
+Reply-To: khalid@gonehiking.org
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jun 20, 2022 at 11:11:01AM +0100, Robin Murphy wrote:
-> External email: Use caution opening links or attachments
+On 6/17/22 06:57, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
+> The BusLogic driver is the last remaining driver that relies on the
+> deprecated bus_to_virt() function, which in turn only works on a few
+> architectures, and is incompatible with both swiotlb and iommu support.
 > 
-> On 2022-06-17 03:53, Tian, Kevin wrote:
-> > > From: Nicolin Chen <nicolinc@nvidia.com>
-> > > Sent: Friday, June 17, 2022 6:41 AM
-> > > 
-> > > > ...
-> > > > > -     if (resv_msi) {
-> > > > > +     if (resv_msi && !domain->msi_cookie) {
-> > > > >                ret = iommu_get_msi_cookie(domain->domain,
-> > > > > resv_msi_base);
-> > > > >                if (ret && ret != -ENODEV)
-> > > > >                        goto out_detach;
-> > > > > +             domain->msi_cookie = true;
-> > > > >        }
-> > > > 
-> > > > why not moving to alloc_attach_domain() then no need for the new
-> > > > domain field? It's required only when a new domain is allocated.
-> > > 
-> > > When reusing an existing domain that doesn't have an msi_cookie,
-> > > we can do iommu_get_msi_cookie() if resv_msi is found. So it is
-> > > not limited to a new domain.
-> > 
-> > Looks msi_cookie requirement is per platform (currently only
-> > for smmu. see arm_smmu_get_resv_regions()). If there is
-> > no mixed case then above check is not required.
-> > 
-> > But let's hear whether Robin has a different thought here.
+> Before commit 391e2f25601e ("[SCSI] BusLogic: Port driver to 64-bit."),
+> the driver had a dependency on x86-32, presumably because of this
+> problem. However, the change introduced another bug that made it still
+> impossible to use the driver on any 64-bit machine.
 > 
-> Yes, the cookie should logically be tied to the lifetime of the domain
-> itself. In the relevant context, "an existing domain that doesn't have
-> an msi_cookie" should never exist.
+> This was in turn fixed in commit 56f396146af2 ("scsi: BusLogic: Fix
+> 64-bit system enumeration error for Buslogic"), 8 years later, which
+> shows that there are not a lot of users.
+> 
+> Maciej is still using the driver on 32-bit hardware, and Khalid mentioned
+> that the driver works with the device emulation used in VirtualBox
+> and VMware. Both of those only emulate it for Windows 2000 and older
+> operating systems that did not ship with the better LSI logic driver.
+> 
+> Do a minimum fix that searches through the list of descriptors to find
+> one that matches the bus address. This is clearly as inefficient as
+> was indicated in the code comment about the lack of a bus_to_virt()
+> replacement. A better fix would likely involve changing out the entire
+> descriptor allocation for a simpler one, but that would be much
+> more invasive.
+> 
+> Cc: Maciej W. Rozycki <macro@orcam.me.uk>
+> Cc: Matt Wang <wwentao@vmware.com>
+> Cc: Khalid Aziz <khalid@gonehiking.org>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>   drivers/scsi/BusLogic.c | 27 ++++++++++++++++-----------
+>   drivers/scsi/Kconfig    |  2 +-
+>   2 files changed, 17 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/scsi/BusLogic.c b/drivers/scsi/BusLogic.c
+> index a897c8f914cf..d057abfcdd5c 100644
+> --- a/drivers/scsi/BusLogic.c
+> +++ b/drivers/scsi/BusLogic.c
+> @@ -2515,12 +2515,26 @@ static int blogic_resultcode(struct blogic_adapter *adapter,
+>   	return (hoststatus << 16) | tgt_status;
+>   }
+>   
+> +/*
+> + * turn the dma address from an inbox into a ccb pointer
+> + * This is rather inefficient.
+> + */
+> +static struct blogic_ccb *
+> +blogic_inbox_to_ccb(struct blogic_adapter *adapter, struct blogic_inbox *inbox)
+> +{
+> +	struct blogic_ccb *ccb;
+> +
+> +	for (ccb = adapter->all_ccbs; ccb; ccb = ccb->next_all)
+> +		if (inbox->ccb == ccb->dma_handle)
+> +			break;
+> +
+> +	return ccb;
+> +}
+>   
+>   /*
+>     blogic_scan_inbox scans the Incoming Mailboxes saving any
+>     Incoming Mailbox entries for completion processing.
+>   */
+> -
+>   static void blogic_scan_inbox(struct blogic_adapter *adapter)
+>   {
+>   	/*
+> @@ -2540,16 +2554,7 @@ static void blogic_scan_inbox(struct blogic_adapter *adapter)
+>   	enum blogic_cmplt_code comp_code;
+>   
+>   	while ((comp_code = next_inbox->comp_code) != BLOGIC_INBOX_FREE) {
+> -		/*
+> -		   We are only allowed to do this because we limit our
+> -		   architectures we run on to machines where bus_to_virt(
+> -		   actually works.  There *needs* to be a dma_addr_to_virt()
+> -		   in the new PCI DMA mapping interface to replace
+> -		   bus_to_virt() or else this code is going to become very
+> -		   innefficient.
+> -		 */
+> -		struct blogic_ccb *ccb =
+> -			(struct blogic_ccb *) bus_to_virt(next_inbox->ccb);
+> +		struct blogic_ccb *ccb = blogic_inbox_to_ccb(adapter, adapter->next_inbox);
 
-Thanks for the explanation. I will move the iommu_get_msi_cookie()
-into alloc_attach_domain(), as Kevin suggested.
+This change looks good enough as workaround to not use bus_to_virt() for 
+now. There are two problems I see though. One, I do worry about 
+blogic_inbox_to_ccb() returning NULL for ccb which should not happen 
+unless the mailbox pointer was corrupted which would indicate a bigger 
+problem. Nevertheless a NULL pointer causing kernel panic concerns me. 
+How about adding a check before we dereference ccb?
+
+Second, with this patch applied, I am seeing errors from the driver:
+
+=====================
+[ 1623.902685]  sdb: sdb1 sdb2
+[ 1623.903245] sd 2:0:0:0: [sdb] Attached SCSI disk
+[ 1623.911000] scsi2: Illegal CCB #76 status 2 in Incoming Mailbox
+[ 1623.911005] scsi2: Illegal CCB #76 status 2 in Incoming Mailbox
+[ 1623.911070] scsi2: Illegal CCB #79 status 2 in Incoming Mailbox
+[ 1651.458008] scsi2: Warning: Partition Table appears to have Geometry 
+256/63 which is
+[ 1651.458013] scsi2: not compatible with current BusLogic Host Adapter 
+Geometry 255/63
+[ 1658.797609] scsi2: Resetting BusLogic BT-958D Failed
+[ 1659.533208] sd 2:0:0:0: Device offlined - not ready after error recovery
+[ 1659.533331] sd 2:0:0:0: Device offlined - not ready after error recovery
+[ 1659.533333] sd 2:0:0:0: Device offlined - not ready after error recovery
+[ 1659.533342] sd 2:0:0:0: [sdb] tag#101 FAILED Result: 
+hostbyte=DID_TIME_OUT driverbyte=DRIVER_OK cmd_age=35s
+[ 1659.533345] sd 2:0:0:0: [sdb] tag#101 CDB: Read(10) 28 00 00 00 00 28 
+00 00 10 00
+[ 1659.533346] I/O error, dev sdb, sector 40 op 0x0:(READ) flags 0x80700 
+phys_seg 1 prio class 0
+
+=================
+
+This is on VirtualBox using emulated BusLogic adapter.
+
+This patch needs more refinement.
+
+Thanks,
+Khalid
+
+
+
+>   		if (comp_code != BLOGIC_Cn erroneousMD_NOTFOUND) {
+>   			if (ccb->status == BLOGIC_CCB_ACTIVE ||
+>   					ccb->status == BLOGIC_CCB_RESET) {
+> diff --git a/drivers/scsi/Kconfig b/drivers/scsi/Kconfig
+> index cf75588a2587..56bdc08d0b77 100644
+> --- a/drivers/scsi/Kconfig
+> +++ b/drivers/scsi/Kconfig
+> @@ -513,7 +513,7 @@ config SCSI_HPTIOP
+>   
+>   config SCSI_BUSLOGIC
+>   	tristate "BusLogic SCSI support"
+> -	depends on PCI && SCSI && VIRT_TO_BUS
+> +	depends on PCI && SCSI
+>   	help
+>   	  This is support for BusLogic MultiMaster and FlashPoint SCSI Host
+>   	  Adapters. Consult the SCSI-HOWTO, available from
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
