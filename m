@@ -4,59 +4,60 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D0F5EC43334
-	for <iommu@archiver.kernel.org>; Tue, 21 Jun 2022 15:14:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 944A3C433EF
+	for <iommu@archiver.kernel.org>; Tue, 21 Jun 2022 19:09:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 79EC760EB3;
-	Tue, 21 Jun 2022 15:14:46 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 79EC760EB3
+	by smtp3.osuosl.org (Postfix) with ESMTP id 15AD460F09;
+	Tue, 21 Jun 2022 19:09:31 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 15AD460F09
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CxQclvIixyxB; Tue, 21 Jun 2022 15:14:45 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 1198060E0D;
-	Tue, 21 Jun 2022 15:14:45 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 1198060E0D
+	with ESMTP id DB_BjrjbU9fA; Tue, 21 Jun 2022 19:09:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 9A9B160B6B;
+	Tue, 21 Jun 2022 19:09:29 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 9A9B160B6B
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E6EB4C0032;
-	Tue, 21 Jun 2022 15:14:44 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DC120C002D
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 15:14:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6D908C0032;
+	Tue, 21 Jun 2022 19:09:29 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 80F20C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 19:09:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id B322383F79
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 15:14:43 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org B322383F79
+ by smtp2.osuosl.org (Postfix) with ESMTP id 46E9B40432
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 19:09:28 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 46E9B40432
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id oq5pnOxFg1Fc for <iommu@lists.linux-foundation.org>;
- Tue, 21 Jun 2022 15:14:42 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id MUomfOdqFjII for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Jun 2022 19:09:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org D318083F74
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 138FB400B9
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id D318083F74
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 15:14:41 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 138FB400B9
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 19:09:26 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2D01C1692;
- Tue, 21 Jun 2022 08:14:41 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
- [10.1.196.40])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1F9D43F66F;
- Tue, 21 Jun 2022 08:14:40 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org,
-	will@kernel.org
-Subject: [PATCH 3/3] iommu: Clean up release_device checks
-Date: Tue, 21 Jun 2022 16:14:27 +0100
-Message-Id: <02671dbfad7a3343fc25a44222350efcb455fe3c.1655822151.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.36.1.dirty
-In-Reply-To: <cover.1655822151.git.robin.murphy@arm.com>
-References: <cover.1655822151.git.robin.murphy@arm.com>
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 423E9165C;
+ Tue, 21 Jun 2022 12:09:26 -0700 (PDT)
+Received: from [10.57.85.30] (unknown [10.57.85.30])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1B8893F792;
+ Tue, 21 Jun 2022 12:09:24 -0700 (PDT)
+Message-ID: <4bc34090-249a-c505-3d90-f75a7fe7c17d@arm.com>
+Date: Tue, 21 Jun 2022 20:09:20 +0100
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/2] vfio/type1: Simplify bus_type determination
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <07c69a27fa5bf9724ea8c9fcfe3ff2e8b68f6bf0.1654697988.git.robin.murphy@arm.com>
+ <20220610000343.GD1343366@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220610000343.GD1343366@nvidia.com>
+Cc: iommu@lists.linux-foundation.org, cohuck@redhat.com,
+ alex.williamson@redhat.com, linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -69,241 +70,73 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Since .release_device is now called through per-device ops, any call
-which gets as far as a driver definitely *is* for that driver, for a
-device which has successfully passed .probe_device, so all the checks to
-that effect are now redundant and can be removed. In the same vein we
-can also skip freeing fwspecs which are now managed by core code.
+On 2022-06-10 01:03, Jason Gunthorpe via iommu wrote:
+> On Wed, Jun 08, 2022 at 03:25:49PM +0100, Robin Murphy wrote:
+>> Since IOMMU groups are mandatory for drivers to support, it stands to
+>> reason that any device which has been successfully be added to a group
+>> must be on a bus supported by that IOMMU driver, and therefore a domain
+>> viable for any device in the group must be viable for all devices in
+>> the group. This already has to be the case for the IOMMU API's internal
+>> default domain, for instance. Thus even if the group contains devices
+>> on different buses, that can only mean that the IOMMU driver actually
+>> supports such an odd topology, and so without loss of generality we can
+>> expect the bus type of any arbitrary device in a group to be suitable
+>> for IOMMU API calls.
+>>
+>> Replace vfio_bus_type() with a trivial callback that simply returns any
+>> device from which to then derive a usable bus type. This is also a step
+>> towards removing the vague bus-based interfaces from the IOMMU API.
+>>
+>> Furthermore, scrutiny reveals a lack of protection for the bus and/or
+>> device being removed while .attach_group is inspecting them; the
+>> reference we hold on the iommu_group ensures that data remains valid,
+>> but does not prevent the group's membership changing underfoot. Holding
+>> the vfio_goup's device_lock should be sufficient to block any relevant
+>> device's VFIO driver from unregistering, and thus block unbinding and
+>> any further stages of removal for the duration of the attach operation.
+> 
+> The device_lock only protects devices that are on the device_list from
+> concurrent unregistration, the device returned by
+> iommu_group_for_each_dev() is not guarented to be the on the device
+> list.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/apple-dart.c                  |  3 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  8 +-------
- drivers/iommu/arm/arm-smmu/arm-smmu.c       | 14 +++-----------
- drivers/iommu/arm/arm-smmu/qcom_iommu.c     | 11 -----------
- drivers/iommu/exynos-iommu.c                |  3 ---
- drivers/iommu/mtk_iommu.c                   |  5 -----
- drivers/iommu/mtk_iommu_v1.c                |  5 -----
- drivers/iommu/sprd-iommu.c                  | 11 -----------
- drivers/iommu/virtio-iommu.c                |  8 +-------
- 9 files changed, 5 insertions(+), 63 deletions(-)
+Sigh, you're quite right, and now I have a vague feeling that you called 
+that out in the previous discussion too, so apologies for forgetting.
 
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 8af0242a90d9..e87d3cf54ed6 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -564,9 +564,6 @@ static void apple_dart_release_device(struct device *dev)
- {
- 	struct apple_dart_master_cfg *cfg = dev_iommu_priv_get(dev);
- 
--	if (!cfg)
--		return;
--
- 	dev_iommu_priv_set(dev, NULL);
- 	kfree(cfg);
- }
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 88817a3376ef..382f3120e27b 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2691,20 +2691,14 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- 
- static void arm_smmu_release_device(struct device *dev)
- {
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct arm_smmu_master *master;
-+	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
- 
--	if (!fwspec || fwspec->ops != &arm_smmu_ops)
--		return;
--
--	master = dev_iommu_priv_get(dev);
- 	if (WARN_ON(arm_smmu_master_sva_enabled(master)))
- 		iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
- 	arm_smmu_detach_dev(master);
- 	arm_smmu_disable_pasid(master);
- 	arm_smmu_remove_master(master);
- 	kfree(master);
--	iommu_fwspec_free(dev);
- }
- 
- static struct iommu_group *arm_smmu_device_group(struct device *dev)
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 2ed3594f384e..7c2a99862fd3 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -1432,27 +1432,19 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- static void arm_smmu_release_device(struct device *dev)
- {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct arm_smmu_master_cfg *cfg;
--	struct arm_smmu_device *smmu;
-+	struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
- 	int ret;
- 
--	if (!fwspec || fwspec->ops != &arm_smmu_ops)
--		return;
--
--	cfg  = dev_iommu_priv_get(dev);
--	smmu = cfg->smmu;
--
--	ret = arm_smmu_rpm_get(smmu);
-+	ret = arm_smmu_rpm_get(cfg->smmu);
- 	if (ret < 0)
- 		return;
- 
- 	arm_smmu_master_free_smes(cfg, fwspec);
- 
--	arm_smmu_rpm_put(smmu);
-+	arm_smmu_rpm_put(cfg->smmu);
- 
- 	dev_iommu_priv_set(dev, NULL);
- 	kfree(cfg);
--	iommu_fwspec_free(dev);
- }
- 
- static void arm_smmu_probe_finalize(struct device *dev)
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 4c077c38fbd6..4a922c7b69ee 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -532,16 +532,6 @@ static struct iommu_device *qcom_iommu_probe_device(struct device *dev)
- 	return &qcom_iommu->iommu;
- }
- 
--static void qcom_iommu_release_device(struct device *dev)
--{
--	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev);
--
--	if (!qcom_iommu)
--		return;
--
--	iommu_fwspec_free(dev);
--}
--
- static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- {
- 	struct qcom_iommu_dev *qcom_iommu;
-@@ -591,7 +581,6 @@ static const struct iommu_ops qcom_iommu_ops = {
- 	.capable	= qcom_iommu_capable,
- 	.domain_alloc	= qcom_iommu_domain_alloc,
- 	.probe_device	= qcom_iommu_probe_device,
--	.release_device	= qcom_iommu_release_device,
- 	.device_group	= generic_device_group,
- 	.of_xlate	= qcom_iommu_of_xlate,
- 	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 71f2018e23fe..1d6808d6e190 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -1251,9 +1251,6 @@ static void exynos_iommu_release_device(struct device *dev)
- 	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
- 	struct sysmmu_drvdata *data;
- 
--	if (!has_sysmmu(dev))
--		return;
--
- 	if (owner->domain) {
- 		struct iommu_group *group = iommu_group_get(dev);
- 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index bb9dd92c9898..5c3d9366c25c 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -819,17 +819,12 @@ static void mtk_iommu_release_device(struct device *dev)
- 	struct device *larbdev;
- 	unsigned int larbid;
- 
--	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
--		return;
--
- 	data = dev_iommu_priv_get(dev);
- 	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
- 		larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
- 		larbdev = data->larb_imu[larbid].dev;
- 		device_link_remove(dev, larbdev);
- 	}
--
--	iommu_fwspec_free(dev);
- }
- 
- static int mtk_iommu_get_group_id(struct device *dev, const struct mtk_iommu_plat_data *plat_data)
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index e1cb51b9866c..128c7a3f1778 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -532,15 +532,10 @@ static void mtk_iommu_v1_release_device(struct device *dev)
- 	struct device *larbdev;
- 	unsigned int larbid;
- 
--	if (!fwspec || fwspec->ops != &mtk_iommu_v1_ops)
--		return;
--
- 	data = dev_iommu_priv_get(dev);
- 	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
- 	larbdev = data->larb_imu[larbid].dev;
- 	device_link_remove(dev, larbdev);
--
--	iommu_fwspec_free(dev);
- }
- 
- static int mtk_iommu_v1_hw_init(const struct mtk_iommu_v1_data *data)
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index bd409bab6286..511959c8a14d 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -383,16 +383,6 @@ static struct iommu_device *sprd_iommu_probe_device(struct device *dev)
- 	return &sdev->iommu;
- }
- 
--static void sprd_iommu_release_device(struct device *dev)
--{
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--
--	if (!fwspec || fwspec->ops != &sprd_iommu_ops)
--		return;
--
--	iommu_fwspec_free(dev);
--}
--
- static struct iommu_group *sprd_iommu_device_group(struct device *dev)
- {
- 	struct sprd_iommu_device *sdev = dev_iommu_priv_get(dev);
-@@ -417,7 +407,6 @@ static int sprd_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- static const struct iommu_ops sprd_iommu_ops = {
- 	.domain_alloc	= sprd_iommu_domain_alloc,
- 	.probe_device	= sprd_iommu_probe_device,
--	.release_device	= sprd_iommu_release_device,
- 	.device_group	= sprd_iommu_device_group,
- 	.of_xlate	= sprd_iommu_of_xlate,
- 	.pgsize_bitmap	= ~0UL << SPRD_IOMMU_PAGE_SHIFT,
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 25be4b822aa0..55337796a5f8 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -981,13 +981,7 @@ static void viommu_probe_finalize(struct device *dev)
- 
- static void viommu_release_device(struct device *dev)
- {
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct viommu_endpoint *vdev;
--
--	if (!fwspec || fwspec->ops != &viommu_ops)
--		return;
--
--	vdev = dev_iommu_priv_get(dev);
-+	struct viommu_endpoint *vdev = dev_iommu_priv_get(dev);
- 
- 	generic_iommu_put_resv_regions(dev, &vdev->resv_regions);
- 	kfree(vdev);
--- 
-2.36.1.dirty
+>> @@ -760,8 +760,11 @@ static int __vfio_container_attach_groups(struct vfio_container *container,
+>>   	int ret = -ENODEV;
+>>   
+>>   	list_for_each_entry(group, &container->group_list, container_next) {
+>> +		/* Prevent devices unregistering during attach */
+>> +		mutex_lock(&group->device_lock);
+>>   		ret = driver->ops->attach_group(data, group->iommu_group,
+>>   						group->type);
+>> +		mutex_unlock(&group->device_lock);
+> 
+> I still prefer the version where we pass in an arbitrary vfio_device
+> from the list the group maintains:
+> 
+>     list_first_entry(group->device_list)
+> 
+> And don't call iommu_group_for_each_dev(), it is much simpler to
+> reason about how it works.
 
+Agreed, trying to figure out which are the VFIO devices from within the 
+iommu_group iterator seems beyond the threshold of practicality.
+
+Quick consensus then: does anyone have a particular preference between 
+changing the .attach_group signature vs. adding a helper based on 
+vfio_group_get_from_iommu() for type1 to call from within its callback? 
+They seem about equal (but opposite) in terms of the simplicity vs. 
+impact tradeoff to me, so I can't quite decide conclusively...
+
+Thanks,
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
