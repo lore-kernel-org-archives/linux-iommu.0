@@ -4,66 +4,66 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 50469C43334
-	for <iommu@archiver.kernel.org>; Tue, 21 Jun 2022 14:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5FB15CCA473
+	for <iommu@archiver.kernel.org>; Tue, 21 Jun 2022 14:48:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 7DE0D418E7;
-	Tue, 21 Jun 2022 14:48:15 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 7DE0D418E7
+	by smtp4.osuosl.org (Postfix) with ESMTP id 99CA3417C4;
+	Tue, 21 Jun 2022 14:48:16 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 99CA3417C4
 Authentication-Results: smtp4.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=PPJ3trso
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Ayj0d+j6
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hVlWc0-7QL4Y; Tue, 21 Jun 2022 14:48:14 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id EAC6B418F0;
-	Tue, 21 Jun 2022 14:48:12 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org EAC6B418F0
+	with ESMTP id mT25LXNrug0h; Tue, 21 Jun 2022 14:48:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 4C4B0417E3;
+	Tue, 21 Jun 2022 14:48:14 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 4C4B0417E3
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8FDDFC0085;
-	Tue, 21 Jun 2022 14:48:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 09302C0039;
+	Tue, 21 Jun 2022 14:48:14 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4C289C002D
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 14:48:09 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 93C0CC0086
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 14:48:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 1364583F1C
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 14:48:07 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 1364583F1C
+ by smtp1.osuosl.org (Postfix) with ESMTP id D732E83ED1
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 14:48:09 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org D732E83ED1
 Authentication-Results: smtp1.osuosl.org;
  dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
- header.a=rsa-sha256 header.s=Intel header.b=PPJ3trso
+ header.a=rsa-sha256 header.s=Intel header.b=Ayj0d+j6
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nZyr2qT4iBUJ for <iommu@lists.linux-foundation.org>;
- Tue, 21 Jun 2022 14:48:06 +0000 (UTC)
+ with ESMTP id IIx2mGd-DNKN for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Jun 2022 14:48:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org EE2BB83ED1
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 1E35781B17
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by smtp1.osuosl.org (Postfix) with ESMTPS id EE2BB83ED1
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 14:48:05 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 1E35781B17
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 14:48:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1655822885; x=1687358885;
- h=from:to:cc:subject:date:message-id:mime-version:
- content-transfer-encoding;
- bh=fu8/GjqKi9Ni4wzzQ55YeDYb5M22/TNQdg9Rxma6pTE=;
- b=PPJ3trsotGwMbHkE3uU8rSS/cCuA5PAzi0x7Cx9LLRDOLUxSxZhGuDlk
- 73IK6qibJIwx7450pA4G+I+4+D3JyDo3WzRDW9HRj4r1wsG0O71ziiWWL
- X6uE32L92XWBXgl6My3T0/VjXbVFYvg5uZQ6IMS8Ps08u/12S7ugO9xpN
- R1NG5cCp8wzGHdtpB1l9xHdsLtFNJ3nfxFVAkUnB8MOJwO9PllLHQ+TAo
- jBDA0FxF/8TLxKFfs0XmttjZGIUh9scFvYaaSiR2WeJywrVN4iO/KYu9y
- MQ9nIU6kM/GFa9EGtnmnwujyFzRn6t+IYHpBTSIgcqVtPBqX2C5XTSgPg A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="280867038"
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; d="scan'208";a="280867038"
+ t=1655822889; x=1687358889;
+ h=from:to:cc:subject:date:message-id:in-reply-to:
+ references:mime-version:content-transfer-encoding;
+ bh=l0D5qDTDDoZyMPFxm4NouluQhQY8c+kpOZ5I1wmIeCE=;
+ b=Ayj0d+j6xX3YRWStAXPBhfBK6mQVjiLRnEscv96ozbZt2zrih6uiMu7S
+ 1drO/sdI9i+oP6b8FQ1rfyO3yL5xxV4Xd73zo1urbKYbxkpbt++DPSAua
+ kmUkekWbOC265lPMq4o0DowGhwm9AJbcKUHY/S3I/rb2oYy/dSgoPTTyB
+ H+IRYduFtbVsbGr+X32e8tVDGi8I2yyFutuFtr0QA9k7Zj6IHBf3fHupL
+ 5KO9tjxgpSoEZsfVvbVoZPN3GlipgCgl0uSbQkR1fjyNQUhl84t2qoimQ
+ paY9FIw4DolxvPN+K0Tnrz5USXRkR4OVbXXm0CUN0+2LXzGqC6kLutYud w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="280867054"
+X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; d="scan'208";a="280867054"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 21 Jun 2022 07:48:05 -0700
+ 21 Jun 2022 07:48:08 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; d="scan'208";a="643659174"
+X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; d="scan'208";a="643659208"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
- by fmsmga008.fm.intel.com with ESMTP; 21 Jun 2022 07:48:00 -0700
+ by fmsmga008.fm.intel.com with ESMTP; 21 Jun 2022 07:48:05 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
  Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
@@ -71,13 +71,16 @@ To: Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
  Robin Murphy <robin.murphy@arm.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>,
  Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH v9 00/11] iommu: SVA and IOPF refactoring
-Date: Tue, 21 Jun 2022 22:43:42 +0800
-Message-Id: <20220621144353.17547-1-baolu.lu@linux.intel.com>
+Subject: [PATCH v9 01/11] iommu: Add max_pasids field in struct iommu_device
+Date: Tue, 21 Jun 2022 22:43:43 +0800
+Message-Id: <20220621144353.17547-2-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220621144353.17547-1-baolu.lu@linux.intel.com>
+References: <20220621144353.17547-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,151 +98,103 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi folks,
+Use this field to keep the number of supported PASIDs that an IOMMU
+hardware is able to support. This is a generic attribute of an IOMMU
+and lifting it into the per-IOMMU device structure makes it possible
+to allocate a PASID for device without calls into the IOMMU drivers.
+Any iommu driver that supports PASID related features should set this
+field before enabling them on the devices.
 
-The former part of this series refactors the IOMMU SVA code by assigning
-an SVA type of iommu_domain to a shared virtual address and replacing
-sva_bind/unbind iommu ops with set/block_dev_pasid domain ops.
+In the Intel IOMMU driver, intel_iommu_sm is moved to CONFIG_INTEL_IOMMU
+enclave so that the pasid_supported() helper could be used in dmar.c
+without compilation errors.
 
-The latter part changes the existing I/O page fault handling framework
-from only serving SVA to a generic one. Any driver or component could
-handle the I/O page faults for its domain in its own way by installing
-an I/O page fault handler.
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
+ include/linux/intel-iommu.h                 | 3 ++-
+ include/linux/iommu.h                       | 2 ++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
+ drivers/iommu/intel/dmar.c                  | 7 +++++++
+ 4 files changed, 12 insertions(+), 1 deletion(-)
 
-This series has been functionally tested on an x86 machine and compile
-tested for all architectures.
-
-This series is also available on github:
-[2] https://github.com/LuBaolu/intel-iommu/commits/iommu-sva-refactoring-v9
-
-Please review and suggest.
-
-Best regards,
-baolu
-
-Change log:
-v9:
- - Some minor changes on comments and function names.
- - Simplify dev_iommu_get_max_pasids().
-
-v8:
- - https://lore.kernel.org/linux-iommu/20220607014942.3954894-1-baolu.lu@linux.intel.com/
- - Add support for calculating the max pasids that a device could
-   consume.
- - Replace container_of_safe() with container_of.
- - Remove iommu_ops->sva_domain_ops and make sva support through the
-   generic domain_alloc/free() interfaces.
- - [Robin] It would be logical to pass IOMMU_DOMAIN_SVA to the normal
-   domain_alloc call, so that driver-internal stuff like context
-   descriptors can be still be hung off the domain as usual (rather than
-   all drivers having to implement some extra internal lookup mechanism 
-   to handle all the SVA domain ops).
- - [Robin] I'd just stick the mm pointer in struct iommu_domain, in a
-   union with the fault handler stuff those are mutually exclusive with
-   SVA.
- - https://lore.kernel.org/linux-iommu/f3170016-4d7f-e78e-db48-68305f683349@arm.com/
-
-v7:
- - https://lore.kernel.org/linux-iommu/20220519072047.2996983-1-baolu.lu@linux.intel.com/
- - Remove duplicate array for sva domain.
- - Rename detach_dev_pasid to block_dev_pasid.
- - Add raw device driver interfaces for iommufd.
- - Other misc refinements and patch reorganization.
- - Drop "dmaengine: idxd: Separate user and kernel pasid enabling" which
-   has been picked for dmaengine tree.
-
-v6:
- - https://lore.kernel.org/linux-iommu/20220510061738.2761430-1-baolu.lu@linux.intel.com/
- - Refine the SVA basic data structures.
-   Link: https://lore.kernel.org/linux-iommu/YnFv0ps0Ad8v+7uH@myrica/
- - Refine arm smmuv3 sva domain allocation.
- - Fix a possible lock issue.
-   Link: https://lore.kernel.org/linux-iommu/YnFydE8j8l7Q4m+b@myrica/
-
-v5:
- - https://lore.kernel.org/linux-iommu/20220502014842.991097-1-baolu.lu@linux.intel.com/
- - Address review comments from Jean-Philippe Brucker. Very appreciated!
- - Remove redundant pci aliases check in
-   device_group_immutable_singleton().
- - Treat all buses except PCI as static in immutable singleton check.
- - As the sva_bind/unbind() have already guaranteed sva domain free only
-   after iopf_queue_flush_dev(), remove the unnecessary domain refcount.
- - Move domain get() out of the list iteration in iopf_handle_group().
-
-v4:
- - https://lore.kernel.org/linux-iommu/20220421052121.3464100-1-baolu.lu@linux.intel.com/
- - Solve the overlap with another series and make this series
-   self-contained.
- - No objection to the abstraction of data structure during v3 review.
-   Hence remove the RFC subject prefix.
- - Refine the immutable singleton group code according to Kevin's
-   comments.
-
-v3:
- - https://lore.kernel.org/linux-iommu/20220410102443.294128-1-baolu.lu@linux.intel.com/
- - Rework iommu_group_singleton_lockdown() by adding a flag to the group
-   that positively indicates the group can never have more than one
-   member, even after hot plug.
- - Abstract the data structs used for iommu sva in a separated patches to
-   make it easier for review.
- - I still keep the RFC prefix in this series as above two significant
-   changes need at least another round review to be finalized.
- - Several misc refinements.
-
-v2:
- - https://lore.kernel.org/linux-iommu/20220329053800.3049561-1-baolu.lu@linux.intel.com/
- - Add sva domain life cycle management to avoid race between unbind and
-   page fault handling.
- - Use a single domain for each mm.
- - Return a single sva handler for the same binding.
- - Add a new helper to meet singleton group requirement.
- - Rework the SVA domain allocation for arm smmu v3 driver and move the
-   pasid_bit initialization to device probe.
- - Drop the patch "iommu: Handle IO page faults directly".
- - Add mmget_not_zero(mm) in SVA page fault handler.
-
-v1:
- - https://lore.kernel.org/linux-iommu/20220320064030.2936936-1-baolu.lu@linux.intel.com/
- - Initial post.
-
-*** BLURB HERE ***
-
-Lu Baolu (11):
-  iommu: Add max_pasids field in struct iommu_device
-  iommu: Add max_pasids field in struct dev_iommu
-  iommu: Remove SVM_FLAG_SUPERVISOR_MODE support
-  iommu: Add sva iommu_domain support
-  iommu/vt-d: Add SVA domain support
-  arm-smmu-v3/sva: Add SVA domain support
-  iommu/sva: Refactoring iommu_sva_bind/unbind_device()
-  iommu: Remove SVA related callbacks from iommu ops
-  iommu: Prepare IOMMU domain for IOPF
-  iommu: Per-domain I/O page fault handling
-  iommu: Rename iommu-sva-lib.{c,h}
-
- include/linux/intel-iommu.h                   |  12 +-
- include/linux/intel-svm.h                     |  13 -
- include/linux/iommu.h                         | 128 +++++++---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  19 +-
- .../iommu/{iommu-sva-lib.h => iommu-sva.h}    |  14 +-
- drivers/dma/idxd/cdev.c                       |   3 +-
- drivers/dma/idxd/init.c                       |  25 +-
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 112 +++++----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   9 +-
- drivers/iommu/intel/dmar.c                    |   7 +
- drivers/iommu/intel/iommu.c                   |   7 +-
- drivers/iommu/intel/svm.c                     | 149 +++++------
- drivers/iommu/io-pgfault.c                    |  73 ++----
- drivers/iommu/iommu-sva-lib.c                 |  71 ------
- drivers/iommu/iommu-sva.c                     | 229 +++++++++++++++++
- drivers/iommu/iommu.c                         | 237 +++++++++++-------
- drivers/misc/uacce/uacce.c                    |   2 +-
- drivers/iommu/Makefile                        |   2 +-
- 18 files changed, 649 insertions(+), 463 deletions(-)
- rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (83%)
- delete mode 100644 drivers/iommu/iommu-sva-lib.c
- create mode 100644 drivers/iommu/iommu-sva.c
-
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 4f29139bbfc3..e065cbe3c857 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -479,7 +479,6 @@ enum {
+ #define VTD_FLAG_IRQ_REMAP_PRE_ENABLED	(1 << 1)
+ #define VTD_FLAG_SVM_CAPABLE		(1 << 2)
+ 
+-extern int intel_iommu_sm;
+ extern spinlock_t device_domain_lock;
+ 
+ #define sm_supported(iommu)	(intel_iommu_sm && ecap_smts((iommu)->ecap))
+@@ -786,6 +785,7 @@ struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
+ extern const struct iommu_ops intel_iommu_ops;
+ 
+ #ifdef CONFIG_INTEL_IOMMU
++extern int intel_iommu_sm;
+ extern int iommu_calculate_agaw(struct intel_iommu *iommu);
+ extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
+ extern int dmar_disabled;
+@@ -802,6 +802,7 @@ static inline int iommu_calculate_max_sagaw(struct intel_iommu *iommu)
+ }
+ #define dmar_disabled	(1)
+ #define intel_iommu_enabled (0)
++#define intel_iommu_sm (0)
+ #endif
+ 
+ static inline const char *decode_prq_descriptor(char *str, size_t size,
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 5e1afe169549..03fbb1b71536 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -318,12 +318,14 @@ struct iommu_domain_ops {
+  * @list: Used by the iommu-core to keep a list of registered iommus
+  * @ops: iommu-ops for talking to this iommu
+  * @dev: struct device for sysfs handling
++ * @max_pasids: number of supported PASIDs
+  */
+ struct iommu_device {
+ 	struct list_head list;
+ 	const struct iommu_ops *ops;
+ 	struct fwnode_handle *fwnode;
+ 	struct device *dev;
++	u32 max_pasids;
+ };
+ 
+ /**
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 88817a3376ef..ae8ec8df47c1 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -3546,6 +3546,7 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 	/* SID/SSID sizes */
+ 	smmu->ssid_bits = FIELD_GET(IDR1_SSIDSIZE, reg);
+ 	smmu->sid_bits = FIELD_GET(IDR1_SIDSIZE, reg);
++	smmu->iommu.max_pasids = 1UL << smmu->ssid_bits;
+ 
+ 	/*
+ 	 * If the SMMU supports fewer bits than would fill a single L2 stream
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 592c1e1a5d4b..6c338888061a 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -1123,6 +1123,13 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 
+ 	raw_spin_lock_init(&iommu->register_lock);
+ 
++	/*
++	 * A value of N in PSS field of eCap register indicates hardware
++	 * supports PASID field of N+1 bits.
++	 */
++	if (pasid_supported(iommu))
++		iommu->iommu.max_pasids = 2UL << ecap_pss(iommu->ecap);
++
+ 	/*
+ 	 * This is only for hotplug; at boot time intel_iommu_enabled won't
+ 	 * be set yet. When intel_iommu_init() runs, it registers the units
 -- 
 2.25.1
 
