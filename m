@@ -1,100 +1,102 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 880B2C433EF
-	for <iommu@archiver.kernel.org>; Tue, 21 Jun 2022 19:34:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E0507C433EF
+	for <iommu@archiver.kernel.org>; Tue, 21 Jun 2022 19:58:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 052EC60BBA;
-	Tue, 21 Jun 2022 19:34:52 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 052EC60BBA
-Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20210112 header.b=hs0LBDjD
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6476640BD1;
+	Tue, 21 Jun 2022 19:58:02 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 6476640BD1
+Authentication-Results: smtp2.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=FyH+MCco
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OR5IGH6jbqHB; Tue, 21 Jun 2022 19:34:48 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Nttv7tKw4xJn; Tue, 21 Jun 2022 19:58:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 4B5A761071;
-	Tue, 21 Jun 2022 19:34:47 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 4B5A761071
+	by smtp2.osuosl.org (Postfix) with ESMTPS id E7DF3402BC;
+	Tue, 21 Jun 2022 19:58:00 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org E7DF3402BC
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 23E62C0032;
-	Tue, 21 Jun 2022 19:34:47 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 80B85C002D
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 19:34:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C009AC0032;
+	Tue, 21 Jun 2022 19:58:00 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 084C0C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 19:58:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5B71141A1F
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 19:34:45 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 5B71141A1F
+ by smtp4.osuosl.org (Postfix) with ESMTP id D16124168D
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 19:57:59 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org D16124168D
 Authentication-Results: smtp4.osuosl.org;
- dkim=pass (2048-bit key) header.d=google.com header.i=@google.com
- header.a=rsa-sha256 header.s=20210112 header.b=hs0LBDjD
+ dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org
+ header.a=rsa-sha256 header.s=google header.b=FyH+MCco
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id M9F5JQN_CeEe for <iommu@lists.linux-foundation.org>;
- Tue, 21 Jun 2022 19:34:41 +0000 (UTC)
+ with ESMTP id thg1HKs1kZdb for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Jun 2022 19:57:58 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 82F5A417D1
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com
- [IPv6:2607:f8b0:4864:20::b32])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 82F5A417D1
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 19:34:41 +0000 (UTC)
-Received: by mail-yb1-xb32.google.com with SMTP id i15so21384499ybp.1
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 12:34:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 567A24167A
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com
+ [IPv6:2a00:1450:4864:20::12e])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 567A24167A
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 19:57:58 +0000 (UTC)
+Received: by mail-lf1-x12e.google.com with SMTP id g4so11784206lfv.9
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jun 2022 12:57:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=GXndJbSr9Ys4cj6udGMJGPkAdQ+tLqQg3olnN64ieEQ=;
- b=hs0LBDjDT9OlV72N7fBe49gCxiWYUZOxcBIws2Wgn8BN3WqTsnKUdVz0Q6ampLmXSV
- 5NkiSMbN9ezJtAmWUjyXVIOyvmB3tJWzCQSXBR+AO4tHEKCswdhBhhSG3vkBJZtJUVht
- 3JKyU0RJ2Ra5mCUJKBEJL8bG3wIYavBkn/AC2/Ch3FvXau57I9pfQARkPbGSgaJEoyGe
- lTYcqa0zN/847nKzFl1WJjYqvmR1XHqpgkTYKwx4e2Qa8R6Ns1pVO3swtmqqCxrKN2V9
- Bfty4fIeIEEKkVxTaMUi8q3bxkgjiWSJm0iXnvkRaHi2W0O9dPMwDc0y+T+TfR/UJ6Ei
- 2AEw==
+ :cc; bh=fsdYQTaklxVpMVnF74Fwow7BM/BoXJFQmtaeoDmy2hs=;
+ b=FyH+MCcoAhSukHTzzC9zO3eoVyRq1qpXmRCZl6t55YnB32nSo6Oc1s/51247/QscRJ
+ OQ7ZrAGwgwDDFmvRFt6ZDpMXEkkpevwi8l4tnEa05kRFZU0pP3I4ftUjfRnoohZo91gi
+ X0feNSv3mFlUlza65awMWNw5ONu1MZmSj9eiKXjkkqr9BNLasgk35JY6RcLgpQSxH3Am
+ KttX8hoSjULEyvg7mPEWhloR5KHTvC6lE+U4RewNuLg/dmVBiNfYbUTDzWdiMCVppDW1
+ AkMApZQxG9NR4tM1dF9tgXjY7OFKi46cFP0eq9FDf4RyId+GLzioAja0FhXzDuGzprtL
+ O6Ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=GXndJbSr9Ys4cj6udGMJGPkAdQ+tLqQg3olnN64ieEQ=;
- b=JZyKFJMJrP71be+dbmGmWZNZqhh4IlszFJBkWS3X1tqnN5aVMAuO5xtBvvgLVmg7+G
- ti3SiCzJOM4bw3cHQyJNGa1UaarVLbLfAV+v/nMPKVKJKBl2KXte86BRavReM2g/aiFB
- 6DKlO0KqHWSXt6x769MwhxTfjSrhlNiU+Dw8uAQZSTJhpyRoM3tUfsCj+q+KrQVTpSRP
- NZobk7Fc6e+tuTQZAQF6wW630x+EQdEb6mTLQpbjdhmBNQIuYKGzbYEjf0Qu52glv6p/
- YhHEzXvsFeReGgOLBLgqzbVSEY2OwlT6hXbY9+MVBhMo5J53IvSrxp+NaYKG6KGufpoM
- VB5A==
-X-Gm-Message-State: AJIora+rAmpMk9XV0QgaaA+7HXG5iIJyDAN10Bb9X+iBXGnou2W0AoFu
- BmfWi5zGytwR3f6gmdV/dzwFjoPeY7nHj9KXugiBnw==
-X-Google-Smtp-Source: AGRyM1u+tZKGrSW1cGi362mrQj+GEMsoaxrv0rYK4Hl9mC2GWlTK9NyKv5qqlRv1HupVfSdChNkUORkFSlefFHsLXRY=
-X-Received: by 2002:a25:9947:0:b0:663:ec43:61eb with SMTP id
- n7-20020a259947000000b00663ec4361ebmr32241009ybo.115.1655840080076; Tue, 21
- Jun 2022 12:34:40 -0700 (PDT)
+ bh=fsdYQTaklxVpMVnF74Fwow7BM/BoXJFQmtaeoDmy2hs=;
+ b=itP3Y07hhK7sxuYvxGmSofTeKP65/OPv0BBUEyVAP886POx7QuRssz3XCBkm9qDPTH
+ 7DqnicSb3+FWuF5qYJmolBk7FNrQZ0KFLRH6DHfLziTTvU2ZqFxmGrniEv/oaF+QO3sT
+ bkYmOzTTwm2x41Ry39hV/8CQ7EPiysCQqfN8s9OzRYX9DrpPyii62F8cZkasVW/RJ6ix
+ TLNBd/OAW5DgeqAW9jWga5+ia24sfYyDLXn64Ld0lH0Q2e6Ow0X5xQ5jh04BxTeKaaUb
+ Hn1ejnUXWa0usMrj2lULY9akHJ2nYZtuL+9Fe+XSFGAA8oweRfO0j2k4J9JxsTwEODPq
+ /4+w==
+X-Gm-Message-State: AJIora95xVpYJTopMrZZ+qrt4fsKKNpNV4n2uGkX49lXaNKJkTXvVJOj
+ 4RA7W9B5Oa62OLPj/WICQ+yh98VkiUAnSPCY9yZ1yA==
+X-Google-Smtp-Source: AGRyM1tZti33hqtcfRWE9/wlPsix/FQKmBuC6bf9FCaquFQpjIj54ZeAiGqQxoPDRcXHWvdOZFxc6Xpd5l82usRX4h4=
+X-Received: by 2002:a05:6512:1087:b0:479:4fb5:1cbb with SMTP id
+ j7-20020a056512108700b004794fb51cbbmr17405991lfg.142.1655841476083; Tue, 21
+ Jun 2022 12:57:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220601070707.3946847-1-saravanak@google.com>
- <20220601070707.3946847-2-saravanak@google.com> <YrFzK6EiVvXmzVG6@atomide.com>
-In-Reply-To: <YrFzK6EiVvXmzVG6@atomide.com>
-Date: Tue, 21 Jun 2022 12:34:03 -0700
-Message-ID: <CAGETcx_1USPRbFKV5j00qkQ-QXJkp7=FAfnFcfiNnM4J5KF1cQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of
- driver_deferred_probe_check_state()
-To: Tony Lindgren <tony@atomide.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Linus Walleij <linus.walleij@linaro.org>, Eric Dumazet <edumazet@google.com>,
- Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
- Kevin Hilman <khilman@kernel.org>, Russell King <linux@armlinux.org.uk>,
- Geert Uytterhoeven <geert@linux-m68k.org>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, kernel-team@android.com,
- Len Brown <len.brown@intel.com>, linux-pm@vger.kernel.org,
- linux-gpio@vger.kernel.org, Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
- "David S. Miller" <davem@davemloft.net>,
- Heiner Kallweit <hkallweit1@gmail.com>
+References: <20220120201958.2649-1-semen.protsenko@linaro.org>
+ <20220120201958.2649-3-semen.protsenko@linaro.org>
+ <a111932a-6685-2a9d-abce-87af26b121a4@canonical.com>
+ <CGME20220121110911eucas1p28d11e1b04773e8174b9d65f011dc1977@eucas1p2.samsung.com>
+ <CAPLW+4kKR+7hM-eZc8-v6Dzeaj+TPBRmCLDSVNEnfx2WmN2TJA@mail.gmail.com>
+ <54b76143-dff3-8a19-7ab9-57fb80d59743@samsung.com>
+In-Reply-To: <54b76143-dff3-8a19-7ab9-57fb80d59743@samsung.com>
+From: Sam Protsenko <semen.protsenko@linaro.org>
+Date: Tue, 21 Jun 2022 22:57:44 +0300
+Message-ID: <CAPLW+4nxSDeGL-1hFzdDr3vYx+9ct8_YrXfVNgzwm1Gq2=Vh7A@mail.gmail.com>
+Subject: Re: [RFC 2/3] iommu/samsung: Introduce Exynos sysmmu-v8 driver
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Janghyuck Kim <janghyuck.kim@samsung.com>,
+ Catalin Marinas <catalin.marinas@arm.com>, Carlos Llamas <cmllamas@google.com>,
+ Will Deacon <will@kernel.org>, Sumit Semwal <sumit.semwal@linaro.org>,
+ linux-samsung-soc@vger.kernel.org,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ Mark Salyzyn <salyzyn@google.com>, Jinkyu Yang <jinkyu1.yang@samsung.com>,
+ Thierry Strudel <tstrudel@google.com>, Will McVicker <willmcvicker@google.com>,
+ Cho KyongHo <pullip.cho@samsung.com>, linux-arm-kernel@lists.infradead.org,
+ Jonglin Lee <jonglin@google.com>, "J . Avila" <elavila@google.com>,
+ Alex <acnwigwe@google.com>, linux-kernel@vger.kernel.org,
+ Hyesoo Yu <hyesoo.yu@samsung.com>, iommu@lists.linux-foundation.org,
+ Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,96 +109,84 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Saravana Kannan via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Saravana Kannan <saravanak@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jun 21, 2022 at 12:28 AM Tony Lindgren <tony@atomide.com> wrote:
->
-> Hi,
->
-> * Saravana Kannan <saravanak@google.com> [700101 02:00]:
-> > Now that fw_devlink=on by default and fw_devlink supports
-> > "power-domains" property, the execution will never get to the point
-> > where driver_deferred_probe_check_state() is called before the supplier
-> > has probed successfully or before deferred probe timeout has expired.
-> >
-> > So, delete the call and replace it with -ENODEV.
->
-> Looks like this causes omaps to not boot in Linux next.
+Hi Marek,
 
-Can you please point me to an example DTS I could use for debugging
-this? I'm assuming you are leaving fw_devlink=on and not turning it
-off or putting it in permissive mode.
+On Fri, 21 Jan 2022 at 14:31, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
 
-> With this
-> simple-pm-bus fails to probe initially as the power-domain is not
-> yet available.
-
-Before we get to late_initcall(), I'd expect this series to not have
-any impact because both fw_devlink and
-driver_deferred_probe_check_state() should be causing the device's
-probe to get deferred until the PM domain device comes up.
-
-To double check this, without this series, can you give me the list of
-"supplier:*" symlinks under a simple-pm-bus device's sysfs folder
-that's having problems with this series? And for all those symlinks,
-cat the "status" file under that directory?
-
-In the system where this is failing, is the PM domain driver loaded as
-a module at a later point?
-
-Couple of other things to try (with the patches) to narrow this down:
-* Can you set driver_probe_timeout=0 in the command line and see if that helps?
-* Can you set it to something high like 30 or even larger and see if it helps?
-
-> On platform_probe() genpd_get_from_provider() returns
-> -ENOENT.
-
-This error is with the series I assume?
-
-> Seems like other stuff is potentially broken too, any ideas on
-> how to fix this?
-
-I'll want to understand the issue first. It's not yet clear to me why
-fw_devlink isn't blocking the probe of the simple-pm-bus device until
-the PM domain device shows up. And if it is not blocking, then why and
-at what point in boot it's giving up and letting the probe get to this
-point where there's an error.
-
--Saravana
+[snip]
 
 >
+> Well, for starting point the existing exynos-iommu driver is really
+> enough. I've played a bit with newer Exyos SoCs some time ago. If I
+> remember right, if you limit the iommu functionality to the essential
+> things like mapping pages to IO-virtual space, the hardware differences
+> between SYSMMU v5 (already supported by the exynos-iommu driver) and v7
+> are just a matter of changing a one register during the initialization
+> and different bits the page fault reason decoding. You must of course
+> rely on the DMA-mapping framework and its implementation based on
+> mainline DMA-IOMMU helpers. All the code for custom iommu group(s)
+> handling or extended fault management are not needed for the initial
+> version.
 >
-> >
-> > Signed-off-by: Saravana Kannan <saravanak@google.com>
-> > ---
-> >  drivers/base/power/domain.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-> > index 739e52cd4aba..3e86772d5fac 100644
-> > --- a/drivers/base/power/domain.c
-> > +++ b/drivers/base/power/domain.c
-> > @@ -2730,7 +2730,7 @@ static int __genpd_dev_pm_attach(struct device *dev, struct device *base_dev,
-> >               mutex_unlock(&gpd_list_lock);
-> >               dev_dbg(dev, "%s() failed to find PM domain: %ld\n",
-> >                       __func__, PTR_ERR(pd));
-> > -             return driver_deferred_probe_check_state(base_dev);
-> > +             return -ENODEV;
-> >       }
-> >
-> >       dev_dbg(dev, "adding to PM domain %s\n", pd->name);
-> > --
-> > 2.36.1.255.ge46751e96f-goog
-> >
->
-> --
-> To unsubscribe from this group and stop receiving emails from it, send an email to kernel-team+unsubscribe@android.com.
->
+
+Thanks for the advice! Just implemented some testing driver, which
+uses "Emulated Translation" registers available on SysMMU v7. That's
+one way to verify the IOMMU driver with no actual users of it. It
+works fine with vendor SysMMU driver I ported to mainline earlier, and
+now I'm trying to use it with exynos-sysmmu driver (existing
+upstream). If you're curious -- I can share the testing driver
+somewhere on GitHub.
+
+I believe the register you mentioned is PT_BASE one, so I used
+REG_V7_FLPT_BASE_VM = 0x800C instead of REG_V5_PT_BASE_PFN. But I
+didn't manage to get that far, unfortunately, as
+exynos_iommu_domain_alloc() function fails in my case, with BUG_ON()
+at this line:
+
+    /* For mapping page table entries we rely on dma == phys */
+    BUG_ON(handle != virt_to_phys(domain->pgtable));
+
+One possible explanation for this BUG is that "dma-ranges" property is
+not provided in DTS (which seems to be the case right now for all
+users of "samsung,exynos-sysmmu" driver). Because of that the SWIOTLB
+is used for dma_map_single() call (in exynos_iommu_domain_alloc()
+function), which in turn leads to that BUG. At least that's what
+happens in my case. The call chain looks like this:
+
+    exynos_iommu_domain_alloc()
+        v
+    dma_map_single()
+        v
+    dma_map_single_attrs()
+        v
+    dma_map_page_attrs()
+        v
+    dma_direct_map_page()  // dma_capable() == false
+        v
+    swiotlb_map()
+        v
+    swiotlb_tbl_map_single()
+
+And the last call of course always returns the address different than
+the address for allocated pgtable. E.g. in my case I see this:
+
+    handle = 0x00000000fbfff000
+    virt_to_phys(domain->pgtable) = 0x0000000880d0c000
+
+Do you know what might be the reason for that? I just wonder how the
+SysMMU driver work for all existing Exynos platforms right now. I feel
+I might be missing something, like some DMA option should be enabled
+so that SWIOTLB is not used, or something like that. Please let me
+know if you have any idea on possible cause. The vendor's SysMMU
+driver is kinda different in that regard, as it doesn't use
+dma_map_single(), so I don't see such issue there.
+
+Thanks!
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
