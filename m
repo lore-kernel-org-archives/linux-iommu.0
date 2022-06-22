@@ -1,55 +1,161 @@
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9E40110A
-	for <iommu@lists.linux.dev>; Wed, 22 Jun 2022 08:26:12 +0000 (UTC)
-Received: from cap.home.8bytes.org (p5b006cf2.dip0.t-ipconnect.de [91.0.108.242])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-	(No client certificate requested)
-	by theia.8bytes.org (Postfix) with ESMTPSA id 45A3D7F;
-	Wed, 22 Jun 2022 10:26:04 +0200 (CEST)
-From: Joerg Roedel <joro@8bytes.org>
-To: linux-kernel@vger.kernel.org
-Cc: iommu@lists.linux-foundation.org,
-	iommu@lists.linux.dev,
-	Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH] MAINTAINERS: Add new IOMMU development mailing list
-Date: Wed, 22 Jun 2022 10:26:01 +0200
-Message-ID: <20220622082601.31678-1-joro@8bytes.org>
-X-Mailer: git-send-email 2.36.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A5AF10E8
+	for <iommu@lists.linux.dev>; Wed, 22 Jun 2022 09:09:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655888979; x=1687424979;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=YqWiE296DtyHyhO+yyiOrk24VL3NMTPdoeON0AXOges=;
+  b=hiX6ZHz/1P6OAlsQyaAGb0NxjcbnhlJgSubOdYVUZaU8SkmVu+Wa7+bm
+   WNDWtbYmPW1yPObdIkxH2tWCDVYEE//3Lbh70u+P3WN2Q/5SyQ3vHo6SS
+   nFzXPWDJT20/rcAUmvrNK+UMGh6zwRAivjIDIxC6QG/z+ktPEroT6e8VD
+   izV7r1qtUKk/HyxN7BRs06fjaw1TLxtbXJ+VM+2VZiisyxmruvKo6bB0T
+   jThdr/45glT5kyLhzuHTiYUnBFwHCjcZS6S6+bic+tPaHSPnMA32v/l42
+   CEEhC8syhlfEvGZa7asKGy3ZnkHtr5Em+BwH6w4a3LmiDqH64Qk5/QU99
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="281094054"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="281094054"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 02:09:38 -0700
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="644091091"
+Received: from zhaohaif-mobl1.ccr.corp.intel.com (HELO [10.254.210.186]) ([10.254.210.186])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 02:09:35 -0700
+Message-ID: <b7834cb5-4836-fb2d-1570-a46440341bed@linux.intel.com>
+Date: Wed, 22 Jun 2022 17:09:32 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/1] iommu/vt-d: Fix RID2PASID setup failure
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>
+Cc: Chenyi Qiang <chenyi.qiang@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, iommu@lists.linux-foundation.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, stable@vger.kernel.org
+References: <20220622044120.21813-1-baolu.lu@linux.intel.com>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <20220622044120.21813-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Message-ID: <20220622082601.HyE6A78V5PhNKi9cavW-vJX-Rd4dKqLkwDwy4jS9yBs@z>
+Message-ID: <20220622090932.khGa3ifAgW5jWvs_Ac6ovoyy4UiadJjJT_dgMuudyPU@z>
 
-From: Joerg Roedel <jroedel@suse.de>
+Hi,
 
-The IOMMU mailing list will move from lists.linux-foundation.org to
-lists.linux.dev. The hard switch of the archive will happen on July
-5th, but add the new list now already so that people start using the
-list when sending patches.
+在 2022/6/22 12:41, Lu Baolu 写道:
+> The IOMMU driver shares the pasid table for PCI alias devices. When the
+> RID2PASID entry of the shared pasid table has been filled by the first
+> device, the subsequent devices will encounter the "DMAR: Setup RID2PASID
+> failed" failure as the pasid entry has already been marked as present. As
+> the result, the IOMMU probing process will be aborted.
+>
+> This fixes it by skipping RID2PASID setting if the pasid entry has been
+> populated. This works because the IOMMU core ensures that only the same
+> IOMMU domain can be attached to all PCI alias devices at the same time.
+> Therefore the subsequent devices just try to setup the RID2PASID entry
+> with the same domain, which is negligible. This also adds domain validity
+> checks for more confidence anyway.
+>
+> Fixes: ef848b7e5a6a0 ("iommu/vt-d: Setup pasid entry for RID2PASID support")
+> Reported-by: Chenyi Qiang <chenyi.qiang@intel.com>
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>   drivers/iommu/intel/pasid.c | 22 ++++++++++++++++------
+>   1 file changed, 16 insertions(+), 6 deletions(-)
+>
+> Change log:
+> v2:
+>   - Add domain validity check in RID2PASID entry setup.
+>
+> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+> index cb4c1d0cf25c..4f3525f3346f 100644
+> --- a/drivers/iommu/intel/pasid.c
+> +++ b/drivers/iommu/intel/pasid.c
+> @@ -575,6 +575,19 @@ static inline int pasid_enable_wpe(struct pasid_entry *pte)
+>   	return 0;
+>   };
+>   
+> +/*
+> + * Return true if @pasid is RID2PASID and the domain @did has already
+> + * been setup to the @pte. Otherwise, return false. PCI alias devices
+> + * probably share the single RID2PASID pasid entry in the shared pasid
+> + * table. It's reasonable that those devices try to set a share domain
+> + * in their probe paths.
+> + */
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+I am thinking about the counter-part, the intel_pasid_tear_down_entry(),
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1fc9ead83d2a..b5bac297d63d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10354,6 +10354,7 @@ IOMMU DRIVERS
- M:	Joerg Roedel <joro@8bytes.org>
- M:	Will Deacon <will@kernel.org>
- L:	iommu@lists.linux-foundation.org
-+L:	iommu@lists.linux.dev
- S:	Maintained
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
- F:	Documentation/devicetree/bindings/iommu/
+Multi devices share the same PASID entry, then one was detached from the 
+domain,
+
+so the entry doesn't exist anymore, while another devices don't know 
+about the change,
+
+and they are using the mapping, is it possible case ？shared thing, no 
+refer-counter,
+
+am I missing something ?
+
+
+Thanks，
+
+Ethan
+
+
+> +static inline bool
+> +rid2pasid_domain_valid(struct pasid_entry *pte, u32 pasid, u16 did)
+> +{
+> +	return pasid == PASID_RID2PASID && pasid_get_domain_id(pte) == did;
+> +}
+> +
+>   /*
+>    * Set up the scalable mode pasid table entry for first only
+>    * translation type.
+> @@ -595,9 +608,8 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
+>   	if (WARN_ON(!pte))
+>   		return -EINVAL;
+>   
+> -	/* Caller must ensure PASID entry is not in use. */
+>   	if (pasid_pte_is_present(pte))
+> -		return -EBUSY;
+> +		return rid2pasid_domain_valid(pte, pasid, did) ? 0 : -EBUSY;
+>   
+>   	pasid_clear_entry(pte);
+>   
+> @@ -698,9 +710,8 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+>   		return -ENODEV;
+>   	}
+>   
+> -	/* Caller must ensure PASID entry is not in use. */
+>   	if (pasid_pte_is_present(pte))
+> -		return -EBUSY;
+> +		return rid2pasid_domain_valid(pte, pasid, did) ? 0 : -EBUSY;
+>   
+>   	pasid_clear_entry(pte);
+>   	pasid_set_domain_id(pte, did);
+> @@ -738,9 +749,8 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
+>   		return -ENODEV;
+>   	}
+>   
+> -	/* Caller must ensure PASID entry is not in use. */
+>   	if (pasid_pte_is_present(pte))
+> -		return -EBUSY;
+> +		return rid2pasid_domain_valid(pte, pasid, did) ? 0 : -EBUSY;
+>   
+>   	pasid_clear_entry(pte);
+>   	pasid_set_domain_id(pte, did);
+
 -- 
-2.36.1
+AFAIK = As Far As I Know
+AKA = Also Known As
+ASAP = As Soon As Possible
 
