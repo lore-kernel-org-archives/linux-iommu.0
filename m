@@ -1,99 +1,124 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2F90EC43334
-	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 16:25:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E59E0C43334
+	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 17:12:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 9A4FE83E05;
-	Wed, 22 Jun 2022 16:25:47 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 9A4FE83E05
-Authentication-Results: smtp1.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=PUGiKBVA
+	by smtp4.osuosl.org (Postfix) with ESMTP id 719E7417BE;
+	Wed, 22 Jun 2022 17:12:42 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 719E7417BE
+Authentication-Results: smtp4.osuosl.org;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=2i3GaoNK
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id lUvySfY_iYBe; Wed, 22 Jun 2022 17:12:41 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id E2A4B409E5;
+	Wed, 22 Jun 2022 17:12:40 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org E2A4B409E5
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B3393C0032;
+	Wed, 22 Jun 2022 17:12:40 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 23D51C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 17:12:40 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id B2BEE813EF
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 17:12:39 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org B2BEE813EF
+Authentication-Results: smtp1.osuosl.org; dkim=pass (1024-bit key,
+ unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256
+ header.s=selector1 header.b=2i3GaoNK
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id i2MoNELhWMbg; Wed, 22 Jun 2022 16:25:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 8050583312;
-	Wed, 22 Jun 2022 16:25:46 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 8050583312
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 542E5C0039;
-	Wed, 22 Jun 2022 16:25:46 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 97E1DC002D
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 16:25:45 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 6312F60BDD
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 16:25:45 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 6312F60BDD
-Authentication-Results: smtp3.osuosl.org;
- dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org
- header.a=rsa-sha256 header.s=google header.b=PUGiKBVA
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZLAlULnFxUW1 for <iommu@lists.linux-foundation.org>;
- Wed, 22 Jun 2022 16:25:44 +0000 (UTC)
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ZKzKNG8JpPGu for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Jun 2022 17:12:38 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org C90BA6077D
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com
- [IPv6:2607:f8b0:4864:20::634])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C90BA6077D
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 16:25:44 +0000 (UTC)
-Received: by mail-pl1-x634.google.com with SMTP id r1so15804584plo.10
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 09:25:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=nhVxaWNtri1CK0PHzSlalIxtbdAU1PUSddkvaK/+5e4=;
- b=PUGiKBVAkeTgsz2FqLGI7rWQhLimJ38Xj+5Zg180pQyl0ruN+w1AjCcu6fqIZDYjAB
- xG7oN1xzGX2iFM2bnPKINZLXHu/lSyd7wtYcs6OqMcEsqPQA2ynY1LEED97pYyPuEA5B
- qtjsWDJ0vo7Vf+PB9f1yhRi+Rw4TyPhDuxJREQV6OxJ3nV4lruvuhc13IAbkfYRrajre
- naFQHrt0Xgp0jY0cOGp6yjxaC3Dv9YICKdu9t5JldYvxQvfXK3p5P16zqjzR9I19PgF3
- /sdblCFTDXUvSKaef4l5DisLWhm6bhKAkqGEKtWAtc5F2Tt7FQx53ATs58M4BElSCBe/
- zQ1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=nhVxaWNtri1CK0PHzSlalIxtbdAU1PUSddkvaK/+5e4=;
- b=6a1Dkoa+ZolT8NcQFimwg7K8rl8PND7SYm+Yk2NtqbMPhDQFknNkdwQNyu7ALySdJV
- LfRh6gZ5sWIXQI1K3jjDKh+z+o4ZbleJfnDPtew9/ixKAfZzmAy0Z9yInhT9upDFeM6o
- bDTnS92W8wiiVk11Rlb5AUukOTWD9MEsxTvAGgIe/cVIlZOrHJIdhE1f4J+wSR4mI8tO
- twaagcHOhrIkirF5jt1nw7Y5xOisCdq+H7giAdyX+igr3lkQVAZTHwhbXRqIcMZHlNhL
- ly1RlGaDqP+XcObgj1m6FkZF8mGX3WYYWpiNS1u5kQ45hGc8i0Io35J0z7/8HRMw7rQJ
- r5dQ==
-X-Gm-Message-State: AJIora9upb29EVPVPruqCddyr2MVFaNLvE2VxZss+DiCD9Dz0/O73Jav
- YYk2fsR1+0UtCS6Pf0hTBeTxiw==
-X-Google-Smtp-Source: AGRyM1ty3j96F9rBRPvE63v1BVhmw6iHaLjHVSskbjQhiqe7Ui9yA3Lv+QHsTJmdNJXt+uuOX/uoew==
-X-Received: by 2002:a17:90a:9408:b0:1ec:9453:2ebc with SMTP id
- r8-20020a17090a940800b001ec94532ebcmr4523830pjo.150.1655915144128; 
- Wed, 22 Jun 2022 09:25:44 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
- by smtp.gmail.com with ESMTPSA id
- 74-20020a62164d000000b005254535a2cfsm2035941pfw.136.2022.06.22.09.25.42
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 22 Jun 2022 09:25:43 -0700 (PDT)
-Date: Wed, 22 Jun 2022 10:25:40 -0600
-From: Mathieu Poirier <mathieu.poirier@linaro.org>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 0/2] dma-mapping, remoteproc: Fix dma_mem leak after
- rproc_shutdown
-Message-ID: <20220622162540.GA1606016@p14s>
-References: <20220422062436.14384-1-mark-pk.tsai@mediatek.com>
- <20220423174650.GA29219@lst.de>
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 882B2813DD
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com
+ (mail-sn1anam02on2089.outbound.protection.outlook.com [40.107.96.89])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 882B2813DD
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 17:12:38 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TrDeQ+mRszS9JGFtrGcC7LQeTtMyMiPJvzUjEOHm+F430sxcHee6uqp3fwMB4jGwh3i3NuVnLxQGQWX+TjokyNCyipAouWyGG8OpdUXpthQ4w2Tc8KYY4UMrVH7Y4kkglDrhjYUali3z3ZwQHe+etrU1XS+bpQpeO95OpjiJBcH1vsK65CvBErnKpPXWooUJec37h8IS041VknNZCn3iYSEyZvMdjTmVe5FyJA1vEq87hFSbVpXpgKT6MHChvNTuUV70qLPBbsoJAd/aaBSfiB6Iz7IMhV2LAQOk4kIUV7tkrQr6DjV0NXYl3BK0AgyZDq5ALNkUa8L1SPr6pgHntA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UIGbfdOxw2SxUQd9xfOv8DA2my2O4uYPD2LCqkA/fyg=;
+ b=YkQWrkLH46jujJ3yY2XEAzzpo3P86M/YeQe+jP5Yrw7I2akoLWhvr0vrUIafC74sW74XWAISPxtyPwsoHGNJazyINm8eHtSfem7o8BAwfsiTSrgYJEiaIkxmhB5/4xo5rWcOmVjYTuo+osj674/SThBRy9VmMa/yIoYuCXgthbHfJnG7kpNAU0MBvKe56zZXY94g1OqZuR6u1g8nIqI5pdoyvD+0mMJGdu7Gk9bOS3Te5nn6kri2XlOtNvXCKbTSku0qiyATjdcjXz3ohJbLJWMxdeZoM8P58HjmyIZ5VMoQEsc/G3sWkwlSn8UwTbAEufGG2YhSTzk1eucmQe1Uxg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UIGbfdOxw2SxUQd9xfOv8DA2my2O4uYPD2LCqkA/fyg=;
+ b=2i3GaoNKmbmctMXR8qLM96O0xl1sy74Sh5Z+oW4vZ80Gw++qzcJzhL+0tfp43XDbaNvSt+ckl7W9rsFnSTFhdm1fu3yU9ift59OOTwVaEkIN4qN0DDnBB9fllIkjIFZGBgFZtnlHUN4Evny4mroKCd2xGiWFCTQT0CY6KizjgHU=
+Received: from MWHPR08CA0054.namprd08.prod.outlook.com (2603:10b6:300:c0::28)
+ by MWHPR1201MB0077.namprd12.prod.outlook.com (2603:10b6:301:55::18)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.17; Wed, 22 Jun
+ 2022 17:12:35 +0000
+Received: from CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:300:c0:cafe::fe) by MWHPR08CA0054.outlook.office365.com
+ (2603:10b6:300:c0::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14 via Frontend
+ Transport; Wed, 22 Jun 2022 17:12:35 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT005.mail.protection.outlook.com (10.13.174.147) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5353.14 via Frontend Transport; Wed, 22 Jun 2022 17:12:35 +0000
+Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 22 Jun
+ 2022 12:12:32 -0500
+To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux-foundation.org>
+Subject: [PATCH v3 1/7] iommu/amd: Warn when found inconsistency EFR mask
+Date: Wed, 22 Jun 2022 12:11:25 -0500
+Message-ID: <20220622171131.11870-2-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220622171131.11870-1-suravee.suthikulpanit@amd.com>
+References: <20220622171131.11870-1-suravee.suthikulpanit@amd.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220423174650.GA29219@lst.de>
-Cc: yj.chiang@mediatek.com, linux-remoteproc@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- matthias.bgg@gmail.com, robin.murphy@arm.com,
- Mark-PK Tsai <mark-pk.tsai@mediatek.com>
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e64dc68c-774a-4c0a-79c8-08da547266b5
+X-MS-TrafficTypeDiagnostic: MWHPR1201MB0077:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR1201MB00777A4A5D4188AE78CA8545F3B29@MWHPR1201MB0077.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VX704cx8i7183xQhHru+OOrhkF1J4kz8wTSnpxzDftRCXYD++aTXaciZ+MwGmlxcWGT3djBQWH49qGh1IEqXCuRt1zYdcFmvQyz2+u6nlXbVU3U0gH5ttJtG5hLhq5UuI/CYxNRSgVYbyGSbHkiTzxohS9q2SsIVojwlFADsxUPqlgpmUUdhf23qdcLyp1XYEhN79C7hyAZLlMDq0XYc58zCCwKIpj0zJI9Isn4PSHRbh5U/Wnr2pNfM7Pm463PFEYepIwtZgV4IYWH2/7/8obIy2tTMej1jBheWVxE1hFe/g0MRh9RIGCs9zVyWlLlkhDV7bIK1uZKA7pFk8CVIzEnKVpKcIu5x8c9AB3B1qV8dxD5h1q7H5n7SYVWlsJUPRikFUNafbEybKEbOSnnXi9dNxoYiUefoBm2t/ofp9g2ajhIgrrwKT0TbMWitN+uDZzjwOjkxSMjjhbAy816uebbeyHjddoeAcg/xnd5S0T0cYLhnqGSiZ17HUJnD3qZU/zOXy7ioV1Bf2or+cjQiusOd3AgbCQubEUUfYRs4TurZogXkRhEGVmbDwy4IEBACdbHZWvnNUkR/XpIK3xSje16186Pu/CxJZXHtWtM0L6EgATSx4eygzNOPNiyWj5s6RZtEL8exoLJJAFj5KE76q+mbYMmHZ8gbBTQ0+CrFR/3cRNe/SjxXAecimDpJtlfZdtV6ynEk6hqJ7UFk5bmxpeFoTX3O0tEKfjYFKJ59gnNbGaqzRNzJuUN9TbdStPyrUwrXzeKfHD4xrK94YnPFuHb4LWDsAL2zOvjuAMb+NIQ=
+X-Forefront-Antispam-Report: CIP:165.204.84.17; CTRY:US; LANG:en; SCL:1; SRV:;
+ IPV:CAL; SFV:NSPM; H:SATLEXMB04.amd.com; PTR:InfoDomainNonexistent; CAT:NONE;
+ SFS:(13230016)(4636009)(396003)(376002)(346002)(136003)(39860400002)(40470700004)(46966006)(36840700001)(47076005)(70586007)(426003)(336012)(186003)(16526019)(1076003)(82310400005)(83380400001)(356005)(5660300002)(40480700001)(2906002)(4326008)(82740400003)(70206006)(2616005)(44832011)(86362001)(36860700001)(40460700003)(81166007)(26005)(478600001)(8676002)(110136005)(7696005)(41300700001)(36756003)(316002)(8936002)(6666004)(54906003)(36900700001);
+ DIR:OUT; SFP:1101; 
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2022 17:12:35.0645 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e64dc68c-774a-4c0a-79c8-08da547266b5
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d; Ip=[165.204.84.17];
+ Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1201MB0077
+Cc: thomas.lendacky@amd.com, ashish.kalra@amd.com, vasant.hegde@amd.com,
+ robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,21 +131,67 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Suravee Suthikulpanit via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, Apr 23, 2022 at 07:46:50PM +0200, Christoph Hellwig wrote:
-> Sigh.  In theory drivers should never declare coherent memory like
-> this, and there has been some work to fix remoteproc in that regard.
-> 
-> But I guess until that is merged we'll need somthing like this fix.
+The function check_feature_on_all_iommus() checks to ensure if an IOMMU
+feature support bit is set on the Extended Feature Register (EFR).
+Current logic iterates through all IOMMU, and returns false when it
+found the first unset bit.
 
-Should I take this in the remoteproc tree?  If so, can I get an RB?
+To provide more thorough checking, modify the logic to iterate through all
+IOMMUs even when found that the bit is not set, and also throws a FW_BUG
+warning if inconsistency is found.
 
-Thanks,
-Mathieu
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+---
+ drivers/iommu/amd/init.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 3dd0f26039c7..b3e4551ce9dd 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -261,18 +261,29 @@ int amd_iommu_get_num_iommus(void)
+ }
+ 
+ #ifdef CONFIG_IRQ_REMAP
++/*
++ * Iterate through all the IOMMUs to verify if the specified
++ * EFR bitmask of IOMMU feature are set.
++ * Warn and return false if found inconsistency.
++ */
+ static bool check_feature_on_all_iommus(u64 mask)
+ {
+ 	bool ret = false;
+ 	struct amd_iommu *iommu;
+ 
+ 	for_each_iommu(iommu) {
+-		ret = iommu_feature(iommu, mask);
+-		if (!ret)
++		bool tmp = iommu_feature(iommu, mask);
++
++		if ((ret != tmp) &&
++		    !list_is_first(&iommu->list, &amd_iommu_list)) {
++			pr_err(FW_BUG "Found inconsistent EFR mask (%#llx) on iommu%d (%04x:%02x:%02x.%01x).\n",
++			       mask, iommu->index, iommu->pci_seg->id, PCI_BUS_NUM(iommu->devid),
++			       PCI_SLOT(iommu->devid), PCI_FUNC(iommu->devid));
+ 			return false;
++		}
++		ret = tmp;
+ 	}
+-
+-	return true;
++	return ret;
+ }
+ #endif
+ 
+-- 
+2.32.0
 
 _______________________________________________
 iommu mailing list
