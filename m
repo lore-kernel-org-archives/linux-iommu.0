@@ -1,80 +1,73 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 6AA12C433EF
-	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 04:45:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D2CFECCA47A
+	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 04:59:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id E39196122E;
-	Wed, 22 Jun 2022 04:45:36 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org E39196122E
-Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MnySCHHS
+	by smtp1.osuosl.org (Postfix) with ESMTP id 632448463F;
+	Wed, 22 Jun 2022 04:59:04 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 632448463F
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id oNcKFvsCY-2O; Wed, 22 Jun 2022 04:45:36 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 8530561052;
-	Wed, 22 Jun 2022 04:45:35 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 8530561052
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id L9KCImPHz9yw; Wed, 22 Jun 2022 04:59:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 25C62842B8;
+	Wed, 22 Jun 2022 04:59:03 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 25C62842B8
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A35EC0039;
-	Wed, 22 Jun 2022 04:45:35 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3E03BC002D
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 04:45:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D924EC0039;
+	Wed, 22 Jun 2022 04:59:02 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4EC50C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 04:59:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 1155E4038B
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 04:45:33 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 1155E4038B
-Authentication-Results: smtp2.osuosl.org;
- dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
- header.a=rsa-sha256 header.s=Intel header.b=MnySCHHS
+ by smtp1.osuosl.org (Postfix) with ESMTP id 37466845D4
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 04:59:02 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 37466845D4
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SAQWQJiSPbNH for <iommu@lists.linux-foundation.org>;
- Wed, 22 Jun 2022 04:45:32 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 36955400DD
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 36955400DD
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 04:45:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1655873132; x=1687409132;
- h=from:to:cc:subject:date:message-id:mime-version:
- content-transfer-encoding;
- bh=CMoUcpPlVSjI5v0iYxRqec/ZANBG5N/XfEwKajaEL7s=;
- b=MnySCHHSwZmGhaE0YmOkgI1qiJmWUxZyqIFi34uVCer4w/az0AuCN+aP
- bXrDiSqenW2Hu/b3Wpv8KMI/uQO/5jHm5UadAD/8LGGSwbxfEbcfNgOxT
- EhhD4zZ1keH4F8+UkyzOf4udZ4hP+ZjJh4DhM9U1WfQeiCKvv4NkDttgO
- WkuUzg5s6Z6MI6HSwNT8ozVjMN2tewfGWyV9MM+mmfe/roj+T0ZLRSqBq
- V5LXTGwidBNGiVZoogEdjjusk7goHS4CDghu3x/ixLBjO1IEdMOoXDzX2
- ZgVS5OwZqb8v8RwlI60aD0Vk2qeb1iuk1h1aOrJP6i+6U+Vc0g7QugxfN A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="281385376"
-X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; d="scan'208";a="281385376"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 21 Jun 2022 21:45:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; d="scan'208";a="833907396"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
- by fmsmga006.fm.intel.com with ESMTP; 21 Jun 2022 21:45:28 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
- Ashok Raj <ashok.raj@intel.com>
-Subject: [PATCH v2 1/1] iommu/vt-d: Fix RID2PASID setup failure
-Date: Wed, 22 Jun 2022 12:41:20 +0800
-Message-Id: <20220622044120.21813-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id dZscnj8yxlXB for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Jun 2022 04:59:01 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 43069842B8
+Received: from muru.com (muru.com [72.249.23.125])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 43069842B8
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 04:59:01 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by muru.com (Postfix) with ESMTPS id 6B48A809F;
+ Wed, 22 Jun 2022 04:54:00 +0000 (UTC)
+Date: Wed, 22 Jun 2022 07:58:58 +0300
+From: Tony Lindgren <tony@atomide.com>
+To: Saravana Kannan <saravanak@google.com>
+Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of
+ driver_deferred_probe_check_state()
+Message-ID: <YrKhkmj3jCQA39X/@atomide.com>
+References: <20220601070707.3946847-1-saravanak@google.com>
+ <20220601070707.3946847-2-saravanak@google.com>
+ <YrFzK6EiVvXmzVG6@atomide.com>
+ <CAGETcx_1USPRbFKV5j00qkQ-QXJkp7=FAfnFcfiNnM4J5KF1cQ@mail.gmail.com>
 MIME-Version: 1.0
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, stable@vger.kernel.org,
- Chenyi Qiang <chenyi.qiang@intel.com>, iommu@lists.linux-foundation.org,
- Jacob jun Pan <jacob.jun.pan@intel.com>
+Content-Disposition: inline
+In-Reply-To: <CAGETcx_1USPRbFKV5j00qkQ-QXJkp7=FAfnFcfiNnM4J5KF1cQ@mail.gmail.com>
+Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Linus Walleij <linus.walleij@linaro.org>, Eric Dumazet <edumazet@google.com>,
+ Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
+ Kevin Hilman <khilman@kernel.org>, Russell King <linux@armlinux.org.uk>,
+ Geert Uytterhoeven <geert@linux-m68k.org>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, kernel-team@android.com,
+ Len Brown <len.brown@intel.com>, linux-pm@vger.kernel.org,
+ linux-gpio@vger.kernel.org, Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+ "David S. Miller" <davem@davemloft.net>,
+ Heiner Kallweit <hkallweit1@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,91 +85,52 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The IOMMU driver shares the pasid table for PCI alias devices. When the
-RID2PASID entry of the shared pasid table has been filled by the first
-device, the subsequent devices will encounter the "DMAR: Setup RID2PASID
-failed" failure as the pasid entry has already been marked as present. As
-the result, the IOMMU probing process will be aborted.
+Hi,
 
-This fixes it by skipping RID2PASID setting if the pasid entry has been
-populated. This works because the IOMMU core ensures that only the same
-IOMMU domain can be attached to all PCI alias devices at the same time.
-Therefore the subsequent devices just try to setup the RID2PASID entry
-with the same domain, which is negligible. This also adds domain validity
-checks for more confidence anyway.
+* Saravana Kannan <saravanak@google.com> [220621 19:29]:
+> On Tue, Jun 21, 2022 at 12:28 AM Tony Lindgren <tony@atomide.com> wrote:
+> >
+> > Hi,
+> >
+> > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
+> > > Now that fw_devlink=on by default and fw_devlink supports
+> > > "power-domains" property, the execution will never get to the point
+> > > where driver_deferred_probe_check_state() is called before the supplier
+> > > has probed successfully or before deferred probe timeout has expired.
+> > >
+> > > So, delete the call and replace it with -ENODEV.
+> >
+> > Looks like this causes omaps to not boot in Linux next.
+> 
+> Can you please point me to an example DTS I could use for debugging
+> this? I'm assuming you are leaving fw_devlink=on and not turning it
+> off or putting it in permissive mode.
 
-Fixes: ef848b7e5a6a0 ("iommu/vt-d: Setup pasid entry for RID2PASID support")
-Reported-by: Chenyi Qiang <chenyi.qiang@intel.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/pasid.c | 22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
+Sure, this seems to happen at least with simple-pm-bus as the top
+level interconnect with a configured power-domains property:
 
-Change log:
-v2:
- - Add domain validity check in RID2PASID entry setup.
+$ git grep -A10 "ocp {" arch/arm/boot/dts/*.dtsi | grep -B3 -A4 simple-pm-bus
 
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index cb4c1d0cf25c..4f3525f3346f 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -575,6 +575,19 @@ static inline int pasid_enable_wpe(struct pasid_entry *pte)
- 	return 0;
- };
- 
-+/*
-+ * Return true if @pasid is RID2PASID and the domain @did has already
-+ * been setup to the @pte. Otherwise, return false. PCI alias devices
-+ * probably share the single RID2PASID pasid entry in the shared pasid
-+ * table. It's reasonable that those devices try to set a share domain
-+ * in their probe paths.
-+ */
-+static inline bool
-+rid2pasid_domain_valid(struct pasid_entry *pte, u32 pasid, u16 did)
-+{
-+	return pasid == PASID_RID2PASID && pasid_get_domain_id(pte) == did;
-+}
-+
- /*
-  * Set up the scalable mode pasid table entry for first only
-  * translation type.
-@@ -595,9 +608,8 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
- 	if (WARN_ON(!pte))
- 		return -EINVAL;
- 
--	/* Caller must ensure PASID entry is not in use. */
- 	if (pasid_pte_is_present(pte))
--		return -EBUSY;
-+		return rid2pasid_domain_valid(pte, pasid, did) ? 0 : -EBUSY;
- 
- 	pasid_clear_entry(pte);
- 
-@@ -698,9 +710,8 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- 		return -ENODEV;
- 	}
- 
--	/* Caller must ensure PASID entry is not in use. */
- 	if (pasid_pte_is_present(pte))
--		return -EBUSY;
-+		return rid2pasid_domain_valid(pte, pasid, did) ? 0 : -EBUSY;
- 
- 	pasid_clear_entry(pte);
- 	pasid_set_domain_id(pte, did);
-@@ -738,9 +749,8 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
- 		return -ENODEV;
- 	}
- 
--	/* Caller must ensure PASID entry is not in use. */
- 	if (pasid_pte_is_present(pte))
--		return -EBUSY;
-+		return rid2pasid_domain_valid(pte, pasid, did) ? 0 : -EBUSY;
- 
- 	pasid_clear_entry(pte);
- 	pasid_set_domain_id(pte, did);
--- 
-2.25.1
+This issue is no directly related fw_devlink. It is a side effect of
+removing driver_deferred_probe_check_state(). We no longer return
+-EPROBE_DEFER at the end of driver_deferred_probe_check_state().
 
+> > On platform_probe() genpd_get_from_provider() returns
+> > -ENOENT.
+> 
+> This error is with the series I assume?
+
+On the first probe genpd_get_from_provider() will return -ENOENT in
+both cases. The list is empty on the first probe and there are no
+genpd providers at this point.
+
+Earlier with driver_deferred_probe_check_state(), the initial -ENOENT
+ends up getting changed to -EPROBE_DEFER at the end of
+driver_deferred_probe_check_state(), we are now missing that.
+
+Regards,
+
+Tony
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
