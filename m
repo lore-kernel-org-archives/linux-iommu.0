@@ -1,195 +1,87 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 18B6DC43334
-	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 03:07:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D996CC433EF
+	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 03:22:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 6F29C415D0;
-	Wed, 22 Jun 2022 03:07:09 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 6F29C415D0
-Authentication-Results: smtp4.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=QvXGYHEr
+	by smtp2.osuosl.org (Postfix) with ESMTP id 64265400E7;
+	Wed, 22 Jun 2022 03:22:29 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 64265400E7
+Authentication-Results: smtp2.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=eVFOr5i3
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mrYlCSsDBq18; Wed, 22 Jun 2022 03:07:08 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id UmuBpiYnyJaX; Wed, 22 Jun 2022 03:22:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 7E2D0410C2;
-	Wed, 22 Jun 2022 03:07:07 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 7E2D0410C2
+	by smtp2.osuosl.org (Postfix) with ESMTPS id E803840153;
+	Wed, 22 Jun 2022 03:22:27 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org E803840153
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 48518C0032;
-	Wed, 22 Jun 2022 03:07:07 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BE376C002D
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 03:07:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BB5D2C0039;
+	Wed, 22 Jun 2022 03:22:27 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6DA5BC002D
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 02:56:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 844CC8457B
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 03:07:05 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 844CC8457B
-Authentication-Results: smtp1.osuosl.org;
+ by smtp3.osuosl.org (Postfix) with ESMTP id 3369E60E19
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 02:56:22 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 3369E60E19
+Authentication-Results: smtp3.osuosl.org;
  dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
- header.a=rsa-sha256 header.s=Intel header.b=QvXGYHEr
+ header.a=rsa-sha256 header.s=Intel header.b=eVFOr5i3
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id t2YKHmLcrfsU for <iommu@lists.linux-foundation.org>;
- Wed, 22 Jun 2022 03:07:04 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id d7m5BfiqmWLH for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Jun 2022 02:56:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 11B8E84577
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 11B8E84577
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 03:07:02 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 49AE560B5D
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 49AE560B5D
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 02:56:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1655867224; x=1687403224;
- h=from:to:cc:subject:date:message-id:references:
- in-reply-to:content-transfer-encoding:mime-version;
- bh=/WHDFLIaFqzEmbv/ZPtEu9Cd5UZoPTpQNawql8EkYuA=;
- b=QvXGYHEre15q2x15aIQLiDXaumpyW4QSf9PFsaWW2uAWqngDR0Fyah4O
- 7blp7wp42aOcyuelkrOWxiV4FrlAJuRt7LHh7hbTxPMMVRTbOj3rHA3Vw
- 0cKd2C8dhB0ylVYX9B1mKsdVj7Z4Sgen5bWsouFO5psD6Ji1e7k4es3zX
- suLpHRanl3zC2b9OMpuOlqae400uVygBGlrORpXo25gGKNQiTy2ydPfaF
- C7lNcWSyHukkoHed48db5jfEHXcdFHjR1UPac+03PAwEuoEa4WZZhQdbm
- srV86ZGNDxahvvwfNg9iVHBwDFZ+xCUJuQzvhvD2UOlMnbnqbdaC403/o Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="281371836"
-X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; d="scan'208";a="281371836"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 21 Jun 2022 20:07:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; d="scan'208";a="677309083"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
- by FMSMGA003.fm.intel.com with ESMTP; 21 Jun 2022 20:06:59 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 21 Jun 2022 20:06:59 -0700
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 21 Jun 2022 20:06:58 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 21 Jun 2022 20:06:58 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.174)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Tue, 21 Jun 2022 20:06:58 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cqUazKbm4fabxMMjKNTcI0LzXavURAYEgpeV4DIGFLjQH15G9giut4q3EVuOpFpcyAeJs13qnXMkt4WHe59bS+NYwYv5uISpcZ+FX5FquCAd97fJeVYTfu+ePUhE1xdgZqm8mKYNfUZ0/B1bATaFDpmsdm8hehSZ0OchOrsi0JtiiKIrzLQSzXKcnX7FQTd/Zds0a8lSVNfe8/gwhn6uUeuUGFs8wbOQxfwAcLiAT1TYnr5Yy6CXSSeFdfnEVyLVNo84RdPI/aQw40ZYTCMWtSOHghDiKy5ATfFuHVMJGxArCnL/KlFt5Bm9c51XChDkozYTggH/DxlNg8Ks0xhxuw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/WHDFLIaFqzEmbv/ZPtEu9Cd5UZoPTpQNawql8EkYuA=;
- b=W/wcXU++YR71H4b6hrNp6Y2pLxD6Sx5LGiw631ZH/v9PNc6WV8XAGkVfuu7DtuHNwTlJ4a7MRu++1IJXCe5FtDxqLzNmGwoddUWgmNWIHyTeL26VCeS17jCWg+vRjcvCGUaDqZ/gJhxLCKD/IN7ZvVNuQ7NrR/AtEwLUDqYC9/PfjocdutcJGy4KtV1ZCCBgOJQBs7VPZXd45tSu0QrZvVILuApCbAUyobTaCuHzSEdxdvEd4z0Hhy8CS8G+Rfor3kSZGZbNSQrgPbUfuCwtaTEBk2uOYwd2/WCHu2RerPDNSMCaVuO9xhRFohA+BI/JpWrS2Dclo5oONS+ouEAxqw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by BL0PR11MB3233.namprd11.prod.outlook.com (2603:10b6:208:68::17)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.20; Wed, 22 Jun
- 2022 03:06:57 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c%2]) with mapi id 15.20.5353.022; Wed, 22 Jun 2022
- 03:06:57 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Raj, 
- Ashok" <ashok.raj@intel.com>
-Subject: RE: [PATCH 1/1] iommu/vt-d: Fix RID2PASID setup failure
-Thread-Topic: [PATCH 1/1] iommu/vt-d: Fix RID2PASID setup failure
-Thread-Index: AQHYhH7LXPufoGLZlE+CLUNrmpMHyq1ZKuMwgAANHACAAADskIAADMMAgAAVB6CAADfkAIABLcrQ
-Date: Wed, 22 Jun 2022 03:06:56 +0000
-Message-ID: <BN9PR11MB52763B34313DD178B44BA2578CB29@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220620081729.4610-1-baolu.lu@linux.intel.com>
- <BN9PR11MB52764F60972DF52EEF945D408CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
- <5d13cab5-1f0a-51c7-78a3-fb5d3d793ab1@linux.intel.com>
- <BN9PR11MB527671B3B4C1F786E40D67408CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
- <80457871-a760-69ba-70be-5e95344182ea@linux.intel.com>
- <BN9PR11MB5276A8B4E2466BE080CA9E9B8CB39@BN9PR11MB5276.namprd11.prod.outlook.com>
- <ff4d8dab-e409-1e5d-74c5-ddbb65c2ba03@linux.intel.com>
-In-Reply-To: <ff4d8dab-e409-1e5d-74c5-ddbb65c2ba03@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3bcaee62-13fd-4455-2a30-08da53fc4445
-x-ms-traffictypediagnostic: BL0PR11MB3233:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <BL0PR11MB323361F24F08D43881B5F61A8CB29@BL0PR11MB3233.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: YcuAU+0/XdtTedtQp/NIkcM3BSk6JEFlGQV21vbF01lb8fdbPhymis7M4Ab1wR12IUG9OPF+4dvkRY0J55f7SLMsEPZclsHVFRv3TOT/SXP/9yiEpH6V0yVhQStCutVNZPEOaJFXpo/akUSF3TDkegHbB6ii4iFgKSxnsC2h9yWkSrGDnHBAn2ikv+t7n2B54IKi+U5HfJWx5yN/DH66rdyiyasokg7Lwb8WDuFLbBB7I8UereMwZb7ivwTsJoUeFrZYH+O3LURdcO8iKmHsF5eLWZJp0P336CjD16mdXBmH7YUh/HkriyAdOHfgazgDZdOv4lm12uCeghdrf6gvKmcopVfkiaef2ipW4ih1mN+3CQaCdy18rTHfjx9JF0hCQnCLU+XwIv72u+NSiDo1R8ltmLfg+uoWJQfC3jyakWnYNYELt8e58O4StNVI9Gxl9j5ZQ3Q0vFutUUyJyT8l8qpGgmHXEqwwO8sxzYRjhq5iOFchcwIabNtvBRuid9MNx+Qrer/yXHNWIvkVPxJGnBL4Bc5iqf8+qdLx/j/Q3fFBOLvNiQsf8vQeU3L1+Tnux/UOin5zOk/Rr+xYi2j6UNlDmDLxb/T5HRkFIM1RIV2Dfr9pQEJHo62Mmj0N4SWiDJLjP7LgXOO0Ayspp/cV+Quu56oEUqqdABzxu0lZSHDXlIQ0jihF/7JlnTZLP0GweaRTDHM4Fds9WBJe5hXAzQ==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN9PR11MB5276.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230016)(396003)(39860400002)(376002)(346002)(136003)(366004)(38100700002)(76116006)(316002)(8936002)(66556008)(55016003)(66946007)(64756008)(52536014)(54906003)(110136005)(66476007)(5660300002)(66446008)(71200400001)(6636002)(33656002)(478600001)(86362001)(4326008)(7696005)(6506007)(38070700005)(41300700001)(9686003)(82960400001)(122000001)(2906002)(8676002)(26005)(186003)(53546011)(83380400001);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MlZvTXQ3OEtJa05QeGltU0t3bzlwb0liL1lvaEVqbXZ4N2p4Z0JPYlhIS0Ry?=
- =?utf-8?B?NWdxWng4ckdFSmtLMkpLbVhITGllZExPS0xDN3lIV0JqaHE0eTh5eStwQkFq?=
- =?utf-8?B?c3IySFRob3FFVVNqc2xkTFBrQnVMRFRVM2NFODQrRjMrTVJ4cFFzRUlOQXo4?=
- =?utf-8?B?b1Y0Qm5lTWd2VHdLVG5adVEyamtFbkFrajN2Y0swcVZjOGNSWERRdXY1ZmRq?=
- =?utf-8?B?WWRDbjZic2MzT0hQMExFMGtGczQzUXVMajdHN2h0QUlnOEd3R1YzSmZ2YXNl?=
- =?utf-8?B?SXlYVHVBa3VGNHN5TDI1QlBTRVlwdXNnOXF0L09xTXgvTEJTMEpEWmJwVnZs?=
- =?utf-8?B?U2Uvd1hkV2ZwK0RRQmFlemJNV1BibkJTZnBvUGlaZVhCRnBDUkd0Q01pOUFY?=
- =?utf-8?B?c3I1TkVrbU5NWVh2SG9hT1BrTEtNM0NRTDVNcDVHWnFldXNkSmZNaFRtejAw?=
- =?utf-8?B?NDZtWjg5VXQ5dWhsL2tSbnd4SWl6YnFMWTJzSzd1M0M5bzl6MGhJZ2Vad21u?=
- =?utf-8?B?eE13VHUzM1c5ajEraWQ0Qi9ZYTFrUFJkNENNU0FOQjdqNXlIK3BUZjY0UlBp?=
- =?utf-8?B?Rk9Wa2xVNUpFZHh1SUw5N0hJNUhuMXFJa012blljMTBYQzVlaXlkUlNIdXha?=
- =?utf-8?B?QTd6dXYwYUozZjhjeWFyR205azZpdWVnRFo4UWpFQXVtNmlQbjByNXI3ZTIw?=
- =?utf-8?B?N29XR2o1NlNNN2pXLzlYYU1TckV0WlcrK2V5aTRFYWpKeitibE1CLzJtaGd2?=
- =?utf-8?B?UVlLbTdEN0tHY3ZLYlZ6ZzNiYVRmMWc1eWhvNEREMTRvMkZCTHN0bW10L0Vx?=
- =?utf-8?B?cThCdUdKWUFJNFEyWFcrWW9kSktsRHB3WU4xMDdvdSt1KzY5eTdzNFJpRnFs?=
- =?utf-8?B?T1A0cjdobnNVTnd6RXFPdTRoTVFTcGRTQkJLWFNqQjVoUG5ETXdUS2k1cS9o?=
- =?utf-8?B?ano2UUErcGhxeDlMRHBYRE9oMWJwejRLL1BsdUVBVkdWTHZ4Z1VROG5ZbThR?=
- =?utf-8?B?TkZmK0JGR2tXcFU3Uk1MdHd2dW1Xa0RjUjNpZVdKRXRuNCt1aWgyRDVMSldJ?=
- =?utf-8?B?Z3lMWmJmT1hZZVcycW5JKzFGbHZQUUp6NEY0U2JCcXF0NjYyUFpjT2trVW1z?=
- =?utf-8?B?MzBHN25nWWt1Rmtjcis5ODhSc2R1Rm5mUnlqZWtsWVlPRlRwTGVGZGtqL3pG?=
- =?utf-8?B?QnF4YktUbUtrVzhRQ2NIM3d0Ly9DZTBwYVJaTTlvMlU2Q3VjeUYzSlY3a3pD?=
- =?utf-8?B?aHJzQXl6bGJwci93K21FTGNqa0laSS8rN3JvbG51dzVWZlk2UitXaXNEeUFD?=
- =?utf-8?B?bmdwOCtHZ1RCVkZPMFFOandVT1JvOUdiN25UbndnZk5tbGdMd0VSZDRaVFdm?=
- =?utf-8?B?ZjdXQUhRSVFJU0NqV0lEcmRBZHFIMXpQaFpwSHZ0MDQ0cVRFMU51VlhQdjhy?=
- =?utf-8?B?S0VsS2VYSkVGcC92ajFyRmR6a1E4RTlhcWwxVXB0YVFqby85UFk1ckIrZkZq?=
- =?utf-8?B?QmxJM01DWGtJUjUvL0RzODdkSVFjaTJEbnlER3o4bmgzdnkxbUtySXAxVkdJ?=
- =?utf-8?B?bzM3M0FtZG45cXhKQmNWLzd0ZWp4ZU1VVzA4V285eEQrZkdkUkg4dFpDMXNZ?=
- =?utf-8?B?bFpkMTczRXRxSTVXd3pqTlFnY2F3YzJpemhQaUI3VUdUekVwTmhPZXliQlNQ?=
- =?utf-8?B?YTBHR01xTXhIYVhrWUFxVzN5U3J0bWEyY2tJN2EzYzhBampOU0RaOVZRaEdq?=
- =?utf-8?B?MUNzMEpBVzE0clhPZkVQVmhOcUZBOEZmMFltYkxDa3Bod2hDVFY0eTJaL2tW?=
- =?utf-8?B?M05haHEveWlSUnhRdWV3TEdVTnBtOU4rVEFyUWc4akFKZDFOSTVGZGxpd3VE?=
- =?utf-8?B?WGtBYkc4ZTZZUTBiZ2NQNng5K3loVEs0dVRCVytpa3V0d3hJZFRLWjc4YkZo?=
- =?utf-8?B?UFhzcUVKL2tFUmdLQ3VWQzRNQklUR1F1K203L1dOWUlINXpORlE2c0R1K2NW?=
- =?utf-8?B?RS8veVVkVkNRMjhCcHhnb015dEVjVXRETVBFS3VOYzBOdGR1THRmOEcydS9v?=
- =?utf-8?B?TmNnSFNzRXJLem1JRnk1L3dPeXhsdXVLY0NmZndFQ05qcEo3a0xNSmJzREdu?=
- =?utf-8?B?ZUFnbzRqbE85bnR6b25tRHdHa2VZUXFhS3RCaENJQk85SG1sNWpwU055cVA0?=
- =?utf-8?B?MjR0ZUJaTlpaaGk5U3oyLzFPTURTZzY1RTFlbnJ4OHRFSDd5REQ1bWhpall2?=
- =?utf-8?B?d1pCOE43azUweDZXUkg1T0dlSncvMmxGa0J2MVVhS3dNcjkzcm9YVkRja3J3?=
- =?utf-8?B?NFZqajRSVjBGTVZLaE96VWZ5anFqZHhxTEh1MTF0ZFB3b25TQnV2QT09?=
+ t=1655866581; x=1687402581;
+ h=message-id:date:mime-version:subject:to:cc:references:
+ from:in-reply-to;
+ bh=1POWSSJzqvXrAflOI6O5hwkPXEcVuX62fygc96JgKvw=;
+ b=eVFOr5i3GzzPJHcydkZCCYgB8CeAlwQ2K0hLcHmbGybeSEcAjRcfBSVs
+ /kC8rkUN6Knav/UDaRqnT8BPp1Q9bbxB4lJr8jpLW20ZLdgAdIN8eQNFu
+ XYNC5kwpIja01Qa8cYqSeLdpkqg0kkgMDQVsSFMZ7nHY7cM+80w87+F67
+ YiGM3ZXtoGzLdVkE9bLyE3HKz8uTGGsTC6lY22TcTAm/G0G8nVKYM4gVm
+ 0pJ71wbAT30on4sGjLL6uVrwWZMSaTjMFpSpXiPFcLQyK3I+t8CaI5g1g
+ Xte+PWlSEYSxpFrFgocQelMt744L1+b3ipa9jbsVPxGyneLY3vjUR17Fq A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="366619823"
+X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; 
+ d="scan'208,217";a="366619823"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 21 Jun 2022 19:56:20 -0700
+X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; 
+ d="scan'208,217";a="643942407"
+Received: from zhaohaif-mobl1.ccr.corp.intel.com (HELO [10.254.210.186])
+ ([10.254.210.186])
+ by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 21 Jun 2022 19:56:17 -0700
+Message-ID: <30d27b02-0fec-d595-75a0-155eee1c84d6@linux.intel.com>
+Date: Wed, 22 Jun 2022 10:56:15 +0800
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3bcaee62-13fd-4455-2a30-08da53fc4445
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jun 2022 03:06:56.8437 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: LmGiXO8o/vXJSrJR/efP4eUQOsl+iCKCr7NgaoTT0K7+6wzUykKg2+hhn0Z1ljcwWZ9OcoqlBmGgUjbsGUTZMQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR11MB3233
-X-OriginatorOrg: intel.com
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>, "Qiang,
- Chenyi" <chenyi.qiang@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/1] iommu/vt-d: Fix RID2PASID setup failure
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>
+References: <20220620081729.4610-1-baolu.lu@linux.intel.com>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <20220620081729.4610-1-baolu.lu@linux.intel.com>
+X-Mailman-Approved-At: Wed, 22 Jun 2022 03:22:26 +0000
+Cc: linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+ Chenyi Qiang <chenyi.qiang@intel.com>, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -202,91 +94,239 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: multipart/mixed; boundary="===============1429447623006911483=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBUdWVz
-ZGF5LCBKdW5lIDIxLCAyMDIyIDU6MDQgUE0NCj4gDQo+IE9uIDIwMjIvNi8yMSAxMzo0OCwgVGlh
-biwgS2V2aW4gd3JvdGU6DQo+ID4+IEZyb206IEJhb2x1IEx1IDxiYW9sdS5sdUBsaW51eC5pbnRl
-bC5jb20+DQo+ID4+IFNlbnQ6IFR1ZXNkYXksIEp1bmUgMjEsIDIwMjIgMTI6MjggUE0NCj4gPj4N
-Cj4gPj4gT24gMjAyMi82LzIxIDExOjQ2LCBUaWFuLCBLZXZpbiB3cm90ZToNCj4gPj4+PiBGcm9t
-OiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiA+Pj4+IFNlbnQ6IFR1ZXNk
-YXksIEp1bmUgMjEsIDIwMjIgMTE6MzkgQU0NCj4gPj4+Pg0KPiA+Pj4+IE9uIDIwMjIvNi8yMSAx
-MDo1NCwgVGlhbiwgS2V2aW4gd3JvdGU6DQo+ID4+Pj4+PiBGcm9tOiBMdSBCYW9sdSA8YmFvbHUu
-bHVAbGludXguaW50ZWwuY29tPg0KPiA+Pj4+Pj4gU2VudDogTW9uZGF5LCBKdW5lIDIwLCAyMDIy
-IDQ6MTcgUE0NCj4gPj4+Pj4+IEBAIC0yNTY0LDcgKzI1NjQsNyBAQCBzdGF0aWMgaW50IGRvbWFp
-bl9hZGRfZGV2X2luZm8oc3RydWN0DQo+ID4+Pj4+PiBkbWFyX2RvbWFpbiAqZG9tYWluLCBzdHJ1
-Y3QgZGV2aWNlICpkZXYpDQo+ID4+Pj4+PiAgICAgCQkJcmV0ID0gaW50ZWxfcGFzaWRfc2V0dXBf
-c2Vjb25kX2xldmVsKGlvbW11LA0KPiA+Pj4+Pj4gZG9tYWluLA0KPiA+Pj4+Pj4gICAgIAkJCQkJ
-ZGV2LCBQQVNJRF9SSUQyUEFTSUQpOw0KPiA+Pj4+Pj4gICAgIAkJc3Bpbl91bmxvY2tfaXJxcmVz
-dG9yZSgmaW9tbXUtPmxvY2ssIGZsYWdzKTsNCj4gPj4+Pj4+IC0JCWlmIChyZXQpIHsNCj4gPj4+
-Pj4+ICsJCWlmIChyZXQgJiYgcmV0ICE9IC1FQlVTWSkgew0KPiA+Pj4+Pj4gICAgIAkJCWRldl9l
-cnIoZGV2LCAiU2V0dXAgUklEMlBBU0lEIGZhaWxlZFxuIik7DQo+ID4+Pj4+PiAgICAgCQkJZG1h
-cl9yZW1vdmVfb25lX2Rldl9pbmZvKGRldik7DQo+ID4+Pj4+PiAgICAgCQkJcmV0dXJuIHJldDsN
-Cj4gPj4+Pj4+IC0tDQo+ID4+Pj4+PiAyLjI1LjENCj4gPj4+Pj4NCj4gPj4+Pj4gSXQncyBjbGVh
-bmVyIHRvIGF2b2lkIHRoaXMgZXJyb3IgYXQgdGhlIGZpcnN0IHBsYWNlLCBpLmUuIG9ubHkgZG8g
-dGhlDQo+ID4+Pj4+IHNldHVwIHdoZW4gdGhlIGZpcnN0IGRldmljZSBpcyBhdHRhY2hlZCB0byB0
-aGUgcGFzaWQgdGFibGUuDQo+ID4+Pj4NCj4gPj4+PiBUaGUgbG9naWMgdGhhdCBpZGVudGlmaWVz
-IHRoZSBmaXJzdCBkZXZpY2UgbWlnaHQgaW50cm9kdWNlIGFkZGl0aW9uYWwNCj4gPj4+PiB1bm5l
-Y2Vzc2FyeSBjb21wbGV4aXR5LiBEZXZpY2VzIHRoYXQgc2hhcmUgYSBwYXNpZCB0YWJsZSBhcmUg
-cmFyZS4gSQ0KPiA+Pj4+IGV2ZW4gcHJlZmVyIHRvIGdpdmUgdXAgc2hhcmluZyB0YWJsZXMgc28g
-dGhhdCB0aGUgY29kZSBjYW4gYmUNCj4gPj4+PiBzaW1wbGVyLjotKQ0KPiA+Pj4+DQo+ID4+Pg0K
-PiA+Pj4gSXQncyBub3QgdGhhdCBjb21wbGV4IGlmIHlvdSBzaW1wbHkgbW92ZSBkZXZpY2VfYXR0
-YWNoX3Bhc2lkX3RhYmxlKCkNCj4gPj4+IG91dCBvZiBpbnRlbF9wYXNpZF9hbGxvY190YWJsZSgp
-LiBUaGVuIGRvIHRoZSBzZXR1cCBpZg0KPiA+Pj4gbGlzdF9lbXB0eSgmcGFzaWRfdGFibGUtPmRl
-dikgYW5kIHRoZW4gYXR0YWNoIGRldmljZSB0byB0aGUNCj4gPj4+IHBhc2lkIHRhYmxlIGluIGRv
-bWFpbl9hZGRfZGV2X2luZm8oKS4NCj4gPj4NCj4gPj4gVGhlIHBhc2lkIHRhYmxlIGlzIHBhcnQg
-b2YgdGhlIGRldmljZSwgaGVuY2UgYSBiZXR0ZXIgcGxhY2UgdG8NCj4gPj4gYWxsb2NhdGUvZnJl
-ZSB0aGUgcGFzaWQgdGFibGUgaXMgaW4gdGhlIGRldmljZSBwcm9iZS9yZWxlYXNlIHBhdGhzLg0K
-PiA+PiBUaGluZ3Mgd2lsbCBiZWNvbWUgbW9yZSBjb21wbGljYXRlZCBpZiB3ZSBjaGFuZ2UgcmVs
-YXRpb25zaGlwIGJldHdlZW4NCj4gPj4gZGV2aWNlIGFuZCBpdCdzIHBhc2lkIHRhYmxlIHdoZW4g
-YXR0YWNoaW5nL2RldGFjaGluZyBhIGRvbWFpbi4gVGhhdCdzDQo+ID4+IHRoZSByZWFzb24gd2h5
-IEkgdGhvdWdodCBpdCB3YXMgYWRkaXRpb25hbCBjb21wbGV4aXR5Lg0KPiA+Pg0KPiA+DQo+ID4g
-SWYgeW91IGRvIHdhbnQgdG8gZm9sbG93IGN1cnJlbnQgcm91dGUgaXTigJlzIHN0aWxsIGNsZWFu
-ZXIgdG8gY2hlY2sNCj4gPiB3aGV0aGVyIHRoZSBwYXNpZCBlbnRyeSBoYXMgcG9pbnRlZCB0byB0
-aGUgZG9tYWluIGluIHRoZSBpbmRpdmlkdWFsDQo+ID4gc2V0dXAgZnVuY3Rpb24gaW5zdGVhZCBv
-ZiBibGluZGx5IHJldHVybmluZyAtRUJVU1kgYW5kIHRoZW4gaWdub3JpbmcNCj4gPiBpdCBldmVu
-IGlmIGEgcmVhbCBidXN5IGNvbmRpdGlvbiBvY2N1cnMuIFRoZSBzZXR1cCBmdW5jdGlvbnMgY2Fu
-DQo+ID4ganVzdCByZXR1cm4gemVybyBmb3IgdGhpcyBiZW5pZ24gYWxpYXMgY2FzZS4NCj4gDQo+
-IEtldmluLCBob3cgZG8geW91IGxpa2UgdGhpcyBvbmU/DQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJp
-dmVycy9pb21tdS9pbnRlbC9wYXNpZC5jIGIvZHJpdmVycy9pb21tdS9pbnRlbC9wYXNpZC5jDQo+
-IGluZGV4IGNiNGMxZDBjZjI1Yy4uZWNmZmQwMTI5YjJiIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJz
-L2lvbW11L2ludGVsL3Bhc2lkLmMNCj4gKysrIGIvZHJpdmVycy9pb21tdS9pbnRlbC9wYXNpZC5j
-DQo+IEBAIC01NzUsNiArNTc1LDE2IEBAIHN0YXRpYyBpbmxpbmUgaW50IHBhc2lkX2VuYWJsZV93
-cGUoc3RydWN0DQo+IHBhc2lkX2VudHJ5ICpwdGUpDQo+ICAgCXJldHVybiAwOw0KPiAgIH07DQo+
-IA0KPiArLyoNCj4gKyAqIFJldHVybiB0cnVlIGlmIEBwYXNpZCBpcyBSSUQyUEFTSUQgYW5kIHRo
-ZSBkb21haW4gQGRpZCBoYXMgYWxyZWFkeQ0KPiArICogYmVlbiBzZXR1cCB0byB0aGUgQHB0ZS4g
-T3RoZXJ3aXNlLCByZXR1cm4gZmFsc2UuDQo+ICsgKi8NCj4gK3N0YXRpYyBpbmxpbmUgYm9vbA0K
-PiArcmlkMnBhc2lkX2RvbWFpbl92YWxpZChzdHJ1Y3QgcGFzaWRfZW50cnkgKnB0ZSwgdTMyIHBh
-c2lkLCB1MTYgZGlkKQ0KPiArew0KPiArCXJldHVybiBwYXNpZCA9PSBQQVNJRF9SSUQyUEFTSUQg
-JiYgcGFzaWRfZ2V0X2RvbWFpbl9pZChwdGUpID09DQo+IGRpZDsNCj4gK30NCg0KYmV0dGVyIHRo
-aXMgaXMgbm90IHJlc3RyaWN0ZWQgdG8gUklEMlBBU0lEIG9ubHksIGUuZy4gcGFzaWRfcHRlX21h
-dGNoX2RvbWFpbigpDQphbmQgdGhlbiByZWFkIHBhc2lkIGZyb20gdGhlIHB0ZSB0byBjb21wYXJl
-IHdpdGggdGhlIHBhc2lkIGFyZ3VtZW50Lg0KDQo+ICsNCj4gICAvKg0KPiAgICAqIFNldCB1cCB0
-aGUgc2NhbGFibGUgbW9kZSBwYXNpZCB0YWJsZSBlbnRyeSBmb3IgZmlyc3Qgb25seQ0KPiAgICAq
-IHRyYW5zbGF0aW9uIHR5cGUuDQo+IEBAIC01OTUsOSArNjA1LDggQEAgaW50IGludGVsX3Bhc2lk
-X3NldHVwX2ZpcnN0X2xldmVsKHN0cnVjdCBpbnRlbF9pb21tdQ0KPiAqaW9tbXUsDQo+ICAgCWlm
-IChXQVJOX09OKCFwdGUpKQ0KPiAgIAkJcmV0dXJuIC1FSU5WQUw7DQo+IA0KPiAtCS8qIENhbGxl
-ciBtdXN0IGVuc3VyZSBQQVNJRCBlbnRyeSBpcyBub3QgaW4gdXNlLiAqLw0KPiAgIAlpZiAocGFz
-aWRfcHRlX2lzX3ByZXNlbnQocHRlKSkNCj4gLQkJcmV0dXJuIC1FQlVTWTsNCj4gKwkJcmV0dXJu
-IHJpZDJwYXNpZF9kb21haW5fdmFsaWQocHRlLCBwYXNpZCwgZGlkKSA/IDA6IC1FQlVTWTsNCj4g
-DQo+ICAgCXBhc2lkX2NsZWFyX2VudHJ5KHB0ZSk7DQo+IA0KPiBAQCAtNjk4LDkgKzcwNyw4IEBA
-IGludCBpbnRlbF9wYXNpZF9zZXR1cF9zZWNvbmRfbGV2ZWwoc3RydWN0DQo+IGludGVsX2lvbW11
-ICppb21tdSwNCj4gICAJCXJldHVybiAtRU5PREVWOw0KPiAgIAl9DQo+IA0KPiAtCS8qIENhbGxl
-ciBtdXN0IGVuc3VyZSBQQVNJRCBlbnRyeSBpcyBub3QgaW4gdXNlLiAqLw0KPiAgIAlpZiAocGFz
-aWRfcHRlX2lzX3ByZXNlbnQocHRlKSkNCj4gLQkJcmV0dXJuIC1FQlVTWTsNCj4gKwkJcmV0dXJu
-IHJpZDJwYXNpZF9kb21haW5fdmFsaWQocHRlLCBwYXNpZCwgZGlkKSA/IDA6IC1FQlVTWTsNCj4g
-DQo+ICAgCXBhc2lkX2NsZWFyX2VudHJ5KHB0ZSk7DQo+ICAgCXBhc2lkX3NldF9kb21haW5faWQo
-cHRlLCBkaWQpOw0KPiBAQCAtNzM4LDkgKzc0Niw4IEBAIGludCBpbnRlbF9wYXNpZF9zZXR1cF9w
-YXNzX3Rocm91Z2goc3RydWN0DQo+IGludGVsX2lvbW11ICppb21tdSwNCj4gICAJCXJldHVybiAt
-RU5PREVWOw0KPiAgIAl9DQo+IA0KPiAtCS8qIENhbGxlciBtdXN0IGVuc3VyZSBQQVNJRCBlbnRy
-eSBpcyBub3QgaW4gdXNlLiAqLw0KPiAgIAlpZiAocGFzaWRfcHRlX2lzX3ByZXNlbnQocHRlKSkN
-Cj4gLQkJcmV0dXJuIC1FQlVTWTsNCj4gKwkJcmV0dXJuIHJpZDJwYXNpZF9kb21haW5fdmFsaWQo
-cHRlLCBwYXNpZCwgZGlkKSA/IDA6IC1FQlVTWTsNCj4gDQo+ICAgCXBhc2lkX2NsZWFyX2VudHJ5
-KHB0ZSk7DQo+ICAgCXBhc2lkX3NldF9kb21haW5faWQocHRlLCBkaWQpOw0KPiANCj4gLS0NCj4g
-QmVzdCByZWdhcmRzLA0KPiBiYW9sdQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5k
-YXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL2lvbW11
+This is a multi-part message in MIME format.
+--===============1429447623006911483==
+Content-Type: multipart/alternative;
+ boundary="------------6G7t7VvoDiOvTujOaZ8smH0Y"
+
+This is a multi-part message in MIME format.
+--------------6G7t7VvoDiOvTujOaZ8smH0Y
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+Hi，
+
+在 2022/6/20 16:17, Lu Baolu 写道:
+> The IOMMU driver shares the pasid table for PCI alias devices. When the
+> RID2PASID entry of the shared pasid table has been filled by the first
+> device, the subsequent devices will encounter the "DMAR: Setup RID2PASID
+> failed" failure as the pasid entry has already been marke as present. As
+> the result, the IOMMU probing process will be aborted.
+>
+> This fixes it by skipping RID2PASID setting if the pasid entry has been
+> populated. This works because the IOMMU core ensures that only the same
+> IOMMU domain can be attached to all PCI alias devices at the same time.
+> Therefore the subsequent devices just try to setup the RID2PASID entry
+> with the same domain, which is negligible.
+     We have two customers reported the issue "DMAR: Setup RID2PASID 
+failed",
+
+Two ASPEED devices locate behind one PCIe-PCI bridge and iommu SM, PT 
+mode is enabled.  Most
+
+Interesting thing is the second device is only used by BIOS, and BIOS 
+left it to OS without shutting down,
+
+and it is useless for OS.  Is there practical case multi devices behind 
+PCIe-PCI bridge share the same
+
+PASID entry without any security concern ? these two customer's case is 
+not.
+
+
+Thanks,
+
+Ethan
+
+>
+> Fixes: ef848b7e5a6a0 ("iommu/vt-d: Setup pasid entry for RID2PASID support")
+> Reported-by: Chenyi Qiang<chenyi.qiang@intel.com>
+> Cc:stable@vger.kernel.org
+> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+> ---
+>   drivers/iommu/intel/iommu.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 44016594831d..b9966c01a2a2 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -2564,7 +2564,7 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
+>   			ret = intel_pasid_setup_second_level(iommu, domain,
+>   					dev, PASID_RID2PASID);
+>   		spin_unlock_irqrestore(&iommu->lock, flags);
+> -		if (ret) {
+> +		if (ret && ret != -EBUSY) {
+>   			dev_err(dev, "Setup RID2PASID failed\n");
+>   			dmar_remove_one_dev_info(dev);
+>   			return ret;
+
+-- 
+AFAIK = As Far As I Know
+AKA = Also Known As
+ASAP = As Soon As Possible
+BTW = By The Way (used to introduce some piece of information or question that is on a different topic but may be of interest)
+COLA = comp.os.linux.announce (newsgroup)
+ETA = Estimated Time of Arrival
+FAQ = Frequently Asked Question
+FUD = Fear, Uncertainty and Doubt
+FWIW = For What It's Worth
+FYI = For Your Information
+IANAL = I Am Not A Lawyer
+IIRC = If I Recall Correctly
+IMHO = In My Humble Opinion
+IMNSHO = In My Not-So-Humble Opinion
+IOW = In Other Words
+LART = Luser Attitude Readjustment Tool (quoting Al Viro: "Anything you use to forcibly implant the clue into the place where luser's head is")
+LUSER = pronounced "loser", a user who is considered to indeed be a loser (idiot, drongo, wanker, dim-wit, fool, etc.)
+OTOH = On The Other Hand
+PEBKAC = Problem Exists Between Keyboard And Chair
+ROTFL = Rolling On The Floor Laughing
+RSN = Real Soon Now
+RTFM = Read The Fucking Manual (original definition) or Read The Fine Manual (if you want to pretend to be polite)
+TANSTAAFL = There Ain't No Such Thing As A Free Lunch (contributed by David Niemi, quoting Robert Heinlein in his science fiction novel 'The Moon is a Harsh Mistress')
+THX = Thanks (thank you)
+TIA = Thanks In Advance
+WIP = Work In Progress
+WRT = With Respect To
+
+--------------6G7t7VvoDiOvTujOaZ8smH0Y
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <p>Hi，</p>
+    <div class="moz-cite-prefix">在 2022/6/20 16:17, Lu Baolu 写道:<br>
+    </div>
+    <blockquote type="cite"
+      cite="mid:20220620081729.4610-1-baolu.lu@linux.intel.com">
+      <pre class="moz-quote-pre" wrap="">The IOMMU driver shares the pasid table for PCI alias devices. When the
+RID2PASID entry of the shared pasid table has been filled by the first
+device, the subsequent devices will encounter the "DMAR: Setup RID2PASID
+failed" failure as the pasid entry has already been marke as present. As
+the result, the IOMMU probing process will be aborted.
+
+This fixes it by skipping RID2PASID setting if the pasid entry has been
+populated. This works because the IOMMU core ensures that only the same
+IOMMU domain can be attached to all PCI alias devices at the same time.
+Therefore the subsequent devices just try to setup the RID2PASID entry
+with the same domain, which is negligible.</pre>
+    </blockquote>
+        We have two customers reported the issue "DMAR: Setup RID2PASID
+    failed", <br>
+    <p>Two <span
+        style="font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;
+mso-fareast-font-family:等线;mso-ansi-language:EN-US;mso-fareast-language:ZH-CN;
+        mso-bidi-language:AR-SA">ASPEED devices locate behind one
+        PCIe-PCI bridge and iommu SM, PT mode is enabled.  Most</span></p>
+    <p><span
+        style="font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;
+mso-fareast-font-family:等线;mso-ansi-language:EN-US;mso-fareast-language:ZH-CN;
+        mso-bidi-language:AR-SA">Interesting thing is the second device
+        is only used by BIOS, and BIOS left it to OS without shutting
+        down,</span></p>
+    <p><span
+        style="font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;
+mso-fareast-font-family:等线;mso-ansi-language:EN-US;mso-fareast-language:ZH-CN;
+        mso-bidi-language:AR-SA">and it is useless for OS.  Is there
+        practical case multi devices behind PCIe-PCI bridge share the
+        same <br>
+      </span></p>
+    <p><span
+        style="font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;
+mso-fareast-font-family:等线;mso-ansi-language:EN-US;mso-fareast-language:ZH-CN;
+        mso-bidi-language:AR-SA">PASID entry without any security
+        concern ? these two customer's case is not. <br>
+      </span></p>
+    <p><span
+        style="font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;
+mso-fareast-font-family:等线;mso-ansi-language:EN-US;mso-fareast-language:ZH-CN;
+        mso-bidi-language:AR-SA"><br>
+      </span></p>
+    <p><span
+        style="font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;
+mso-fareast-font-family:等线;mso-ansi-language:EN-US;mso-fareast-language:ZH-CN;
+        mso-bidi-language:AR-SA">Thanks,</span></p>
+    <p><span
+        style="font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;
+mso-fareast-font-family:等线;mso-ansi-language:EN-US;mso-fareast-language:ZH-CN;
+        mso-bidi-language:AR-SA">Ethan</span></p>
+    <blockquote type="cite"
+      cite="mid:20220620081729.4610-1-baolu.lu@linux.intel.com">
+      <pre class="moz-quote-pre" wrap="">
+
+Fixes: ef848b7e5a6a0 ("iommu/vt-d: Setup pasid entry for RID2PASID support")
+Reported-by: Chenyi Qiang <a class="moz-txt-link-rfc2396E" href="mailto:chenyi.qiang@intel.com">&lt;chenyi.qiang@intel.com&gt;</a>
+Cc: <a class="moz-txt-link-abbreviated" href="mailto:stable@vger.kernel.org">stable@vger.kernel.org</a>
+Signed-off-by: Lu Baolu <a class="moz-txt-link-rfc2396E" href="mailto:baolu.lu@linux.intel.com">&lt;baolu.lu@linux.intel.com&gt;</a>
+---
+ drivers/iommu/intel/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 44016594831d..b9966c01a2a2 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -2564,7 +2564,7 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
+ 			ret = intel_pasid_setup_second_level(iommu, domain,
+ 					dev, PASID_RID2PASID);
+ 		spin_unlock_irqrestore(&amp;iommu-&gt;lock, flags);
+-		if (ret) {
++		if (ret &amp;&amp; ret != -EBUSY) {
+ 			dev_err(dev, "Setup RID2PASID failed\n");
+ 			dmar_remove_one_dev_info(dev);
+ 			return ret;
+</pre>
+    </blockquote>
+    <pre class="moz-signature" cols="72">-- 
+AFAIK = As Far As I Know
+AKA = Also Known As
+ASAP = As Soon As Possible
+BTW = By The Way (used to introduce some piece of information or question that is on a different topic but may be of interest)
+COLA = comp.os.linux.announce (newsgroup)
+ETA = Estimated Time of Arrival
+FAQ = Frequently Asked Question
+FUD = Fear, Uncertainty and Doubt
+FWIW = For What It's Worth
+FYI = For Your Information
+IANAL = I Am Not A Lawyer
+IIRC = If I Recall Correctly
+IMHO = In My Humble Opinion
+IMNSHO = In My Not-So-Humble Opinion
+IOW = In Other Words
+LART = Luser Attitude Readjustment Tool (quoting Al Viro: "Anything you use to forcibly implant the clue into the place where luser's head is")
+LUSER = pronounced "loser", a user who is considered to indeed be a loser (idiot, drongo, wanker, dim-wit, fool, etc.)
+OTOH = On The Other Hand
+PEBKAC = Problem Exists Between Keyboard And Chair
+ROTFL = Rolling On The Floor Laughing
+RSN = Real Soon Now
+RTFM = Read The Fucking Manual (original definition) or Read The Fine Manual (if you want to pretend to be polite)
+TANSTAAFL = There Ain't No Such Thing As A Free Lunch (contributed by David Niemi, quoting Robert Heinlein in his science fiction novel 'The Moon is a Harsh Mistress')
+THX = Thanks (thank you)
+TIA = Thanks In Advance
+WIP = Work In Progress
+WRT = With Respect To</pre>
+  </body>
+</html>
+
+--------------6G7t7VvoDiOvTujOaZ8smH0Y--
+
+--===============1429447623006911483==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============1429447623006911483==--
