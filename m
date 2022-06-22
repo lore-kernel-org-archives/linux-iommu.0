@@ -1,77 +1,138 @@
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C367210E8
-	for <iommu@lists.linux.dev>; Wed, 22 Jun 2022 01:36:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D255EA8
+	for <iommu@lists.linux.dev>; Wed, 22 Jun 2022 04:45:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655861801; x=1687397801;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=zqCWDRHMK5Aix9ertSDJIJ+yaJFXeDzuTdpljbqYeik=;
-  b=X/vI6DfB+or4sla8wjx0RK0brB1zZYN+x9ld6v5eEnoYCONjw2Avm0gH
-   hfrFugpQiGd8AKyTw1opJ0LrPj1VdDf9nGEjgahqohdjPtyRtRL/mAZfD
-   kwAEDwabY/R4CbzsoZiF4KjrALC8VE2hGQTsLS6F31p4eVWVReM9mhldX
-   6cKwAxrrCjDgoR8pzIC2Gy8DcSpATGlgWNJanmzn+OEYpAk0sRaFWXFsM
-   5uVd9uufPc0BJqhraMl838iTEV346mwt/ej7IkI+8oCZgYYPm/W9b19Ik
-   hiU/3nx5LOG2BEDmMh5P7FSqSic9zvhmIuGyaLdklpMdQQLeUk8NpJR+N
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="263317478"
+  t=1655873131; x=1687409131;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=CMoUcpPlVSjI5v0iYxRqec/ZANBG5N/XfEwKajaEL7s=;
+  b=as/lceldjPvQp6YwREXLnBwWv4B1SFfv6oGHKcgDWvruBDFIYcYHv+e5
+   upRxJ0j4+4FnHEX0uGMYltAZ37F3BBjsyN5J1LzxR3mAKgeJlfdM4YstD
+   pAwaQ5WSPuTM4BtyQsgoGGDqmDTIIFGMHrl20OxfuwZqHIeDs59IN4k+c
+   C12k/M/aBuCxfDTpWq+gj8m+vls3cQicN4bSeHfwbiJ1t60/AHK0W4Alz
+   ryQgNQXzJwBpLqQphQqIdNRBcTd98HWqYjYqlxLSZ9qPZnud2UyUZpfpn
+   ZUuu/mYLM7IduQ+6RNo7ZvDptw1r/xnenKaKSQ4THqlaahz0XV+3REo4T
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="260132548"
 X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; 
-   d="scan'208";a="263317478"
+   d="scan'208";a="260132548"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 18:36:41 -0700
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 21:45:31 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; 
-   d="scan'208";a="833849548"
-Received: from xzhan99-mobl1.ccr.corp.intel.com (HELO [10.249.172.26]) ([10.249.172.26])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 18:36:39 -0700
-Message-ID: <59002dbd-d72a-4f9c-7ad8-808ee8d2ff05@linux.intel.com>
-Date: Wed, 22 Jun 2022 09:36:38 +0800
+   d="scan'208";a="833907396"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by fmsmga006.fm.intel.com with ESMTP; 21 Jun 2022 21:45:28 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Ashok Raj <ashok.raj@intel.com>
+Cc: Chenyi Qiang <chenyi.qiang@intel.com>,
+	Liu Yi L <yi.l.liu@intel.com>,
+	Jacob jun Pan <jacob.jun.pan@intel.com>,
+	iommu@lists.linux-foundation.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: [PATCH v2 1/1] iommu/vt-d: Fix RID2PASID setup failure
+Date: Wed, 22 Jun 2022 12:41:20 +0800
+Message-ID: <20220622044120.21813-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux-foundation.org,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] iommu: Clean up release_device checks
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
-References: <cover.1655822151.git.robin.murphy@arm.com>
- <02671dbfad7a3343fc25a44222350efcb455fe3c.1655822151.git.robin.murphy@arm.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <02671dbfad7a3343fc25a44222350efcb455fe3c.1655822151.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Message-ID: <20220622013638.BKEFDqZefi1cvsXZayhqnUv3kARSgA3tat-v3sSuh3I@z>
+Content-Transfer-Encoding: 8bit
+Message-ID: <20220622044120.TXK6sKVoNod4X2EhFx7ux268p4S-DVM1-1JZZlIciVA@z>
 
-On 2022/6/21 23:14, Robin Murphy wrote:
-> Since .release_device is now called through per-device ops, any call
-> which gets as far as a driver definitely*is*  for that driver, for a
-> device which has successfully passed .probe_device, so all the checks to
-> that effect are now redundant and can be removed. In the same vein we
-> can also skip freeing fwspecs which are now managed by core code.
+The IOMMU driver shares the pasid table for PCI alias devices. When the
+RID2PASID entry of the shared pasid table has been filled by the first
+device, the subsequent devices will encounter the "DMAR: Setup RID2PASID
+failed" failure as the pasid entry has already been marked as present. As
+the result, the IOMMU probing process will be aborted.
 
-Does this depend on any other series? I didn't see iommu_fwspec_free()
-called in the core code. Or I missed anything?
+This fixes it by skipping RID2PASID setting if the pasid entry has been
+populated. This works because the IOMMU core ensures that only the same
+IOMMU domain can be attached to all PCI alias devices at the same time.
+Therefore the subsequent devices just try to setup the RID2PASID entry
+with the same domain, which is negligible. This also adds domain validity
+checks for more confidence anyway.
 
-> 
-> Signed-off-by: Robin Murphy<robin.murphy@arm.com>
-> ---
->   drivers/iommu/apple-dart.c                  |  3 ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  8 +-------
->   drivers/iommu/arm/arm-smmu/arm-smmu.c       | 14 +++-----------
->   drivers/iommu/arm/arm-smmu/qcom_iommu.c     | 11 -----------
->   drivers/iommu/exynos-iommu.c                |  3 ---
->   drivers/iommu/mtk_iommu.c                   |  5 -----
->   drivers/iommu/mtk_iommu_v1.c                |  5 -----
->   drivers/iommu/sprd-iommu.c                  | 11 -----------
->   drivers/iommu/virtio-iommu.c                |  8 +-------
->   9 files changed, 5 insertions(+), 63 deletions(-)
+Fixes: ef848b7e5a6a0 ("iommu/vt-d: Setup pasid entry for RID2PASID support")
+Reported-by: Chenyi Qiang <chenyi.qiang@intel.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/pasid.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
-Best regards,
-baolu
+Change log:
+v2:
+ - Add domain validity check in RID2PASID entry setup.
+
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index cb4c1d0cf25c..4f3525f3346f 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -575,6 +575,19 @@ static inline int pasid_enable_wpe(struct pasid_entry *pte)
+ 	return 0;
+ };
+ 
++/*
++ * Return true if @pasid is RID2PASID and the domain @did has already
++ * been setup to the @pte. Otherwise, return false. PCI alias devices
++ * probably share the single RID2PASID pasid entry in the shared pasid
++ * table. It's reasonable that those devices try to set a share domain
++ * in their probe paths.
++ */
++static inline bool
++rid2pasid_domain_valid(struct pasid_entry *pte, u32 pasid, u16 did)
++{
++	return pasid == PASID_RID2PASID && pasid_get_domain_id(pte) == did;
++}
++
+ /*
+  * Set up the scalable mode pasid table entry for first only
+  * translation type.
+@@ -595,9 +608,8 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
+ 	if (WARN_ON(!pte))
+ 		return -EINVAL;
+ 
+-	/* Caller must ensure PASID entry is not in use. */
+ 	if (pasid_pte_is_present(pte))
+-		return -EBUSY;
++		return rid2pasid_domain_valid(pte, pasid, did) ? 0 : -EBUSY;
+ 
+ 	pasid_clear_entry(pte);
+ 
+@@ -698,9 +710,8 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+ 		return -ENODEV;
+ 	}
+ 
+-	/* Caller must ensure PASID entry is not in use. */
+ 	if (pasid_pte_is_present(pte))
+-		return -EBUSY;
++		return rid2pasid_domain_valid(pte, pasid, did) ? 0 : -EBUSY;
+ 
+ 	pasid_clear_entry(pte);
+ 	pasid_set_domain_id(pte, did);
+@@ -738,9 +749,8 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
+ 		return -ENODEV;
+ 	}
+ 
+-	/* Caller must ensure PASID entry is not in use. */
+ 	if (pasid_pte_is_present(pte))
+-		return -EBUSY;
++		return rid2pasid_domain_valid(pte, pasid, did) ? 0 : -EBUSY;
+ 
+ 	pasid_clear_entry(pte);
+ 	pasid_set_domain_id(pte, did);
+-- 
+2.25.1
+
