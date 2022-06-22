@@ -4,85 +4,80 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BAFD9C43334
-	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 11:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id ABAABC433EF
+	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 11:57:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 3108C42477;
-	Wed, 22 Jun 2022 11:19:13 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 3108C42477
+	by smtp4.osuosl.org (Postfix) with ESMTP id 0E777418EB;
+	Wed, 22 Jun 2022 11:57:22 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 0E777418EB
+Authentication-Results: smtp4.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=HLlrrVVh
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6D9TIfIEU9ab; Wed, 22 Jun 2022 11:19:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id AE23842474;
-	Wed, 22 Jun 2022 11:19:11 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org AE23842474
+	with ESMTP id 5XdasGF3j1Xn; Wed, 22 Jun 2022 11:57:21 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 9EDFA418E9;
+	Wed, 22 Jun 2022 11:57:20 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 9EDFA418E9
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 67270C0032;
-	Wed, 22 Jun 2022 11:19:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4BC81C0032;
+	Wed, 22 Jun 2022 11:57:20 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 894B7C002D
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 11:19:10 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 01ED5C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 11:57:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 6A8BB42476
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 11:19:10 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 6A8BB42476
+ by smtp4.osuosl.org (Postfix) with ESMTP id C0E764189E
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 11:57:18 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org C0E764189E
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id efXvT5Fkkniy for <iommu@lists.linux-foundation.org>;
- Wed, 22 Jun 2022 11:19:09 +0000 (UTC)
+ with ESMTP id 3EAK_t-GsKAU for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Jun 2022 11:57:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org D8E5142474
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de
- [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
- by smtp4.osuosl.org (Postfix) with ESMTPS id D8E5142474
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 11:19:08 +0000 (UTC)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
- by metis.ext.pengutronix.de with esmtps
- (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.92)
- (envelope-from <sha@pengutronix.de>)
- id 1o3yNj-0002pw-5i; Wed, 22 Jun 2022 13:18:47 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
- (envelope-from <sha@pengutronix.de>)
- id 1o3yNV-0004vY-2O; Wed, 22 Jun 2022 13:18:33 +0200
-Date: Wed, 22 Jun 2022 13:18:33 +0200
-From: Sascha Hauer <sha@pengutronix.de>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v2 7/9] driver core: Set fw_devlink.strict=1 by default
-Message-ID: <20220622111833.GW1615@pengutronix.de>
-References: <CAHp75VdqjCoWAHV4AyYrju0o8buREA8pM5wyf8TD=rCMTs-tEA@mail.gmail.com>
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 8C4304188E
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 8C4304188E
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 11:57:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1655899037; x=1687435037;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=q2XnILATBKEg2okUGd1tyEzLN3TTBjUfdFRatA/QoRs=;
+ b=HLlrrVVh3z1dmXlX0OApLzlm2Ed5cVo0RuZrxVm+zWQ6Rb7edCrxekrl
+ SRr5MR9juy2juHdkFhr90DANGyoFMjXwbIoJ4t9hfAMSSbLdJuUVUsT7i
+ 9OX+GvcaJcGoL23/QC5/jsGTjzTqeov38h2zLuItWBy3yMk+7MmHcOJCp
+ S68DYY/jJlDST6nQIibmyndex9gJBMlZPnhJbwgmgrDzbbm4LCXWHmCk1
+ kB8WqO43OXeodHMu2XumVf5TZQyHAyQxfYkJK92JLPbnhqw4WAvJE4/oj
+ AVWCgYK+PR2knfsDEUI+O8gejINLQ7Z4hYkhX07DjSrxj70Ne+IMuwpDo A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="280442793"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; d="scan'208";a="280442793"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 22 Jun 2022 04:57:15 -0700
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; d="scan'208";a="834076732"
+Received: from xzhan99-mobl1.ccr.corp.intel.com (HELO [10.249.172.26])
+ ([10.249.172.26])
+ by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 22 Jun 2022 04:57:14 -0700
+Message-ID: <3ce651de-f375-176e-3435-735365dd3d8f@linux.intel.com>
+Date: Wed, 22 Jun 2022 19:57:12 +0800
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CAHp75VdqjCoWAHV4AyYrju0o8buREA8pM5wyf8TD=rCMTs-tEA@mail.gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL: http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de);
- SAEximRunCond expanded to false
-X-PTX-Original-Recipient: iommu@lists.linux-foundation.org
-Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Linus Walleij <linus.walleij@linaro.org>, Eric Dumazet <edumazet@google.com>,
- Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
- Saravana Kannan <saravanak@google.com>, Kevin Hilman <khilman@kernel.org>,
- Russell King <linux@armlinux.org.uk>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Android Kernel Team <kernel-team@android.com>,
- Len Brown <len.brown@intel.com>, Linux PM <linux-pm@vger.kernel.org>,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- David Ahern <dsahern@kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Sascha Hauer <kernel@pengutronix.de>, netdev <netdev@vger.kernel.org>,
- "David S. Miller" <davem@davemloft.net>,
- Heiner Kallweit <hkallweit1@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 3/3] iommu: Clean up release_device checks
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
+References: <cover.1655822151.git.robin.murphy@arm.com>
+ <02671dbfad7a3343fc25a44222350efcb455fe3c.1655822151.git.robin.murphy@arm.com>
+ <59002dbd-d72a-4f9c-7ad8-808ee8d2ff05@linux.intel.com>
+ <bc4add1b-8b89-7989-5afb-df6b5338eb3d@arm.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <bc4add1b-8b89-7989-5afb-df6b5338eb3d@arm.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,46 +90,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jun 22, 2022 at 12:52:02PM +0200, Andy Shevchenko wrote:
-> On Wed, Jun 22, 2022 at 10:44 AM Linus Walleij <linus.walleij@linaro.org> wrote:
-> > On Wed, Jun 22, 2022 at 9:48 AM Sascha Hauer <sha@pengutronix.de> wrote:
-> 
-> ...
-> 
-> > > This patch has the effect that console UART devices which have "dmas"
-> > > properties specified in the device tree get deferred for 10 to 20
-> > > seconds. This happens on i.MX and likely on other SoCs as well. On i.MX
-> > > the dma channel is only requested at UART startup time and not at probe
-> > > time. dma is not used for the console. Nevertheless with this driver probe
-> > > defers until the dma engine driver is available.
-> > >
-> > > It shouldn't go in as-is.
-> >
-> > This affects all machines with the PL011 UART and DMAs specified as
-> > well.
-> >
-> > It would be best if the console subsystem could be treated special and
-> > not require DMA devlink to be satisfied before probing.
-> 
-> In 8250 we force disable DMA and PM on kernel consoles, because it's
-> so-o PITA and has a lot of corner cases we may never chase down.
-
-On i.MX this is done as well, but it doesn't help here. The driver is
-not even probed when the device node contains a "dmas" property.
-
-Sascha
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMi82LzIyIDE1OjE3LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24gMjAyMi0wNi0yMiAw
+MjozNiwgQmFvbHUgTHUgd3JvdGU6Cj4+IE9uIDIwMjIvNi8yMSAyMzoxNCwgUm9iaW4gTXVycGh5
+IHdyb3RlOgo+Pj4gU2luY2UgLnJlbGVhc2VfZGV2aWNlIGlzIG5vdyBjYWxsZWQgdGhyb3VnaCBw
+ZXItZGV2aWNlIG9wcywgYW55IGNhbGwKPj4+IHdoaWNoIGdldHMgYXMgZmFyIGFzIGEgZHJpdmVy
+IGRlZmluaXRlbHkqaXMqwqAgZm9yIHRoYXQgZHJpdmVyLCBmb3IgYQo+Pj4gZGV2aWNlIHdoaWNo
+IGhhcyBzdWNjZXNzZnVsbHkgcGFzc2VkIC5wcm9iZV9kZXZpY2UsIHNvIGFsbCB0aGUgY2hlY2tz
+IHRvCj4+PiB0aGF0IGVmZmVjdCBhcmUgbm93IHJlZHVuZGFudCBhbmQgY2FuIGJlIHJlbW92ZWQu
+IEluIHRoZSBzYW1lIHZlaW4gd2UKPj4+IGNhbiBhbHNvIHNraXAgZnJlZWluZyBmd3NwZWNzIHdo
+aWNoIGFyZSBub3cgbWFuYWdlZCBieSBjb3JlIGNvZGUuCj4+Cj4+IERvZXMgdGhpcyBkZXBlbmQg
+b24gYW55IG90aGVyIHNlcmllcz8gSSBkaWRuJ3Qgc2VlIGlvbW11X2Z3c3BlY19mcmVlKCkKPj4g
+Y2FsbGVkIGluIHRoZSBjb3JlIGNvZGUuIE9yIEkgbWlzc2VkIGFueXRoaW5nPwo+IAo+IGRldl9p
+b21tdV9mcmVlKCkgY2xlYW5zIHVwIHBhcmFtLT5md3NwZWMgZGlyZWN0bHkgKHNlZSBiNTQyNDBh
+ZDQ5NDMpLiAKPiBGV0lXIHRoZSBwbGFuIGlzIHRoYXQgaW9tbXVfZndzcGVjX2ZyZWUoKSBzaG91
+bGQgZXZlbnR1YWxseSBnbyBhd2F5IC0gb2YgCj4gdGhlIHJlbWFpbmluZyB1c2VzIGFmdGVyIHRo
+aXMsIHR3byBhcmUgaW4gZmFjdCBzaW1pbGFybHkgcmVkdW5kYW50IAo+IGFscmVhZHksIHNpbmNl
+IHRoZXJlJ3MgYWxzbyBhIGRldl9pb21tdV9mcmVlKCkgaW4gdGhlIHByb2JlIGZhaWx1cmUgCj4g
+cGF0aCwgYW5kIHRoZSBvdGhlciB0d28gc2hvdWxkIGRpc2FwcGVhciBpbiBwYXJ0IDIgb2YgZml4
+aW5nIHRoZSBidXMgCj4gcHJvYmluZyBtZXNzICh3aGVyZWluIHRoZSBvZl94bGF0ZSBzdGVwIGdl
+dHMgcHVsbGVkIGludG8gCj4gaW9tbXVfcHJvYmVfZGV2aWNlIGFzIHdlbGwsIGFuZCBmaW5hbGx5
+IHdvcmtzIGNvcnJlY3RseSBhZ2FpbikuCgpZZXMsIGl0IGlzLiBUaGFua3MgZm9yIHRoZSBleHBs
+YW5hdGlvbi4KClJldmlld2VkLWJ5OiBMdSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29t
+PgoKQmVzdCByZWdhcmRzLApiYW9sdQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRh
+dGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGlu
+Zm8vaW9tbXU=
