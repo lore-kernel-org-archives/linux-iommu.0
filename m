@@ -1,85 +1,88 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 73770C433EF
-	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 21:59:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 65CA9C43334
+	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 21:59:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 012EC83EE8;
-	Wed, 22 Jun 2022 21:59:25 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 012EC83EE8
-Authentication-Results: smtp1.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20210112 header.b=JuE5h9PD
+	by smtp2.osuosl.org (Postfix) with ESMTP id F3B13410D2;
+	Wed, 22 Jun 2022 21:59:27 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org F3B13410D2
+Authentication-Results: smtp2.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20210112 header.b=i3p4bjKE
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4fhsmuO9cizM; Wed, 22 Jun 2022 21:59:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id AA94C81BFA;
-	Wed, 22 Jun 2022 21:59:23 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org AA94C81BFA
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id wR3_p_sumI3h; Wed, 22 Jun 2022 21:59:27 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id CA62F4002B;
+	Wed, 22 Jun 2022 21:59:26 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org CA62F4002B
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 83E4FC0032;
-	Wed, 22 Jun 2022 21:59:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B0015C0032;
+	Wed, 22 Jun 2022 21:59:26 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 34171C002D
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 21:59:22 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2E51DC002D
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 21:59:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 0F33B826A8
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 21:59:22 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 0F33B826A8
+ by smtp1.osuosl.org (Postfix) with ESMTP id EFFF983ECB
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 21:59:24 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org EFFF983ECB
+Authentication-Results: smtp1.osuosl.org;
+ dkim=pass (2048-bit key) header.d=google.com header.i=@google.com
+ header.a=rsa-sha256 header.s=20210112 header.b=i3p4bjKE
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2bqfOOpVALDr for <iommu@lists.linux-foundation.org>;
- Wed, 22 Jun 2022 21:59:21 +0000 (UTC)
+ with ESMTP id 5qC0IyqS4rPn for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Jun 2022 21:59:24 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 47D0181CA3
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com
- [IPv6:2607:f8b0:4864:20::b4a])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 47D0181CA3
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 21:59:21 +0000 (UTC)
-Received: by mail-yb1-xb4a.google.com with SMTP id
- d67-20020a251d46000000b006694b8ea9f2so5779009ybd.9
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 14:59:21 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 3C5CB83DF3
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com
+ [IPv6:2607:f8b0:4864:20::b49])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 3C5CB83DF3
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 21:59:24 +0000 (UTC)
+Received: by mail-yb1-xb49.google.com with SMTP id
+ v191-20020a25c5c8000000b00663d6d41f5aso15704009ybe.12
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 14:59:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
  h=date:in-reply-to:message-id:mime-version:references:subject:from:to
- :cc; bh=TSYl2OnOPgIUVM0FnB5YWNZt0eip9Aey9fKvGeEIZ6c=;
- b=JuE5h9PD/539bkLCq5oHJhFDYzn1+YXoF+StWjq3SnT0H3RGIb3TdrcC6p2RLeJH3R
- bTIkxwMMK0AiiTTVWJr1bnvrB7sBe9i/YUJdVTUH8qCKJ6CBcy1T2AWoZC86vVyizDWt
- oGTf9T9Yk+Q1+GAdEjZWRFbG7dcw+Il6FZRB0YrQPlamrfx8M/FzcnHMkQsb8QcICNuF
- xzcttoR+dnJQmlgVy6prUYYejJtZ/WT42YW3hnr93OrR/Q5Ta/bi8BEVNuipIYaI5OO4
- 8TmehohCKJnlYSQ3X9idRWuSjlYJiiVtcPtrwZ5dzjZpzQj1Q8FzEj9aHCcNtsFaA+uN
- zAVQ==
+ :cc; bh=Ah2iRj02YiwPhgw+fxQ8yR+iMVe2r8+mhYVV0rIvZow=;
+ b=i3p4bjKEtbMXzQEuzp8oUcL2dOBUx5t3ouIxH3WFaHxtQBesxVZ95zRpRsbv0rotKc
+ DCfLguFUFd9z7qjx0Dt8NAVaz0jRnB1K5Fh9Yi5/ZA7DG9FgX6RK9DwoMGuX/btXSeNY
+ jRizfq/806YnP4p7qCTtBJ9GK0YOoKEvQNuF2KL6ayR3OaHneYEgbFUH1cZ3RoYx5Y7f
+ 2KbJ9cRY3K9bypygWX7MY4tpexszDMtIlE99YgGPEudPytCeem3ndf6dqYBx6cC19AlU
+ 1k9DIcVe8I+qgmnTG95ADMGi1utSftyTTlGvgR8EUYa2yoeI/p7XaS4EVakP4MZtD+7U
+ xgkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:date:in-reply-to:message-id:mime-version
  :references:subject:from:to:cc;
- bh=TSYl2OnOPgIUVM0FnB5YWNZt0eip9Aey9fKvGeEIZ6c=;
- b=wAfhyAW2Xs6k+tNOMMxoDZUknXw9UuteOcQeEPd80uZoaAqdX+2uq81Cq01c5H5k5h
- th6mHc+G6mV1VwrfB+Oq2bwjTkV8bIVWP5h6WSFdgMR1crltQatGHzj5QgJWH/Nk2ujv
- mOeMpWi08BY2NZJhKMnAu3s6S1EO5z/46OJhyB7eR0OLlY/ct2nCrcrPcH5W6PTFo/sm
- NvLrqIeofZpH5L4TdCrnyu8lY6aXc6VMJyLqOasRZkbFOCrprxHtHMH0uda1R1W7t1f0
- WtRI63K5glxvh3NzvOpV3mjdpl2XKSCMqjN+864sompQ3o2XJ58fdwOFVRXWv7l6FPbl
- lnwQ==
-X-Gm-Message-State: AJIora97AjH3DWTorOD9gj82c8QtV5Tb3oaCcBSaNGGUG1KWhJNiw01y
- Z7Iq/NTd8v45LUnonY4hCqzlz5JVuGbKtcc=
-X-Google-Smtp-Source: AGRyM1u/ogeLy4+AFU9N+Uu+j4V9K9r4kJbRFsYGWYib4JKBkDIXDu12JK70RoVFkDx+eINHtoU6HV2JImNGlxs=
+ bh=Ah2iRj02YiwPhgw+fxQ8yR+iMVe2r8+mhYVV0rIvZow=;
+ b=3XZbPGDvaoDrycYt69KI+dr5TA4sflro56nhSp6WJnDkUOUZp7B4+31YXpdOh7ajF2
+ qyZv8Qm/TSy+frO9NPLGSzM2wCK86U4T0M9ocT2aTKAg+NvbFoJCHkW6oGYcdXhs9t0X
+ juCDiy+2vKuBjhE4ehxn4Btn5BOPzDFGcshBUCrV1jal+u10WKQ+jGxhNt8uS2NeRtye
+ 7KK9l+NKetRItHe3+8rQ5+M8R5dSfgUMzFjOmaSLxrvBr5YtZ1RijYsvLP9Ao6Q17k1X
+ 21b0o2ug+INOByTO+XoHADBq395zYXMgnrMnPGti9l1K3IFRaHSwA7AOu/ssG/7/Rc5I
+ 3ftA==
+X-Gm-Message-State: AJIora/DwANtBGOwszCMkKkE1Jzss58ESLzZEPmGY0qNLwlAxZ/xOxgN
+ usfiBaOmiQSmTpE1uSy4znUUoS3qfBEFowE=
+X-Google-Smtp-Source: AGRyM1serWNuSMZl/j+NqgnonDe+81gNNUGvZ49e005IqIx08CvB3Gw4PJWEQaMJYGKoe5Xwjqr9aD6KRs6btJ0=
 X-Received: from saravanak.san.corp.google.com
  ([2620:15c:2d:3:be1f:89ac:a37d:6bb4])
- (user=saravanak job=sendgmr) by 2002:a81:ff08:0:b0:317:7e90:8910 with SMTP id
- k8-20020a81ff08000000b003177e908910mr6784104ywn.417.1655935160200; Wed, 22
- Jun 2022 14:59:20 -0700 (PDT)
-Date: Wed, 22 Jun 2022 14:59:10 -0700
+ (user=saravanak job=sendgmr) by 2002:a25:6a46:0:b0:669:1da2:ba1d with SMTP id
+ f67-20020a256a46000000b006691da2ba1dmr5894467ybc.163.1655935163161; Wed, 22
+ Jun 2022 14:59:23 -0700 (PDT)
+Date: Wed, 22 Jun 2022 14:59:11 -0700
 In-Reply-To: <20220622215912.550419-1-saravanak@google.com>
-Message-Id: <20220622215912.550419-2-saravanak@google.com>
+Message-Id: <20220622215912.550419-3-saravanak@google.com>
 Mime-Version: 1.0
 References: <20220622215912.550419-1-saravanak@google.com>
 X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
-Subject: [PATCH v1 1/2] driver core: fw_devlink: Allow firmware to mark
- devices as best effort
+Subject: [PATCH v1 2/2] of: base: Avoid console probe delay when
+ fw_devlink.strict=1
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  "Rafael J. Wysocki" <rafael@kernel.org>, 
  Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, 
@@ -121,59 +124,38 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When firmware sets the FWNODE_FLAG_BEST_EFFORT flag for a fwnode,
-fw_devlink will do a best effort ordering for that device where it'll
-only enforce the probe/suspend/resume ordering of that device with
-suppliers that have drivers. The driver of that device can then decide
-if it wants to defer probe or probe without the suppliers.
+Commit 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
+enabled iommus and dmas dependency enforcement by default. On some
+systems, this caused the console device's probe to get delayed until the
+deferred_probe_timeout expires.
 
-This will be useful for avoid probe delays of the console device that
-were caused by commit 71066545b48e ("driver core: Set
-fw_devlink.strict=1 by default").
+We need consoles to work as soon as possible, so mark the console device
+node with FWNODE_FLAG_BEST_EFFORT so that fw_delink knows not to delay
+the probe of the console device for suppliers without drivers. The
+driver can then make the decision on where it can probe without those
+suppliers or defer its probe.
 
 Fixes: 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
 Reported-by: Sascha Hauer <sha@pengutronix.de>
 Reported-by: Peng Fan <peng.fan@nxp.com>
 Signed-off-by: Saravana Kannan <saravanak@google.com>
 ---
- drivers/base/core.c    | 3 ++-
- include/linux/fwnode.h | 4 ++++
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ drivers/of/base.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 839f64485a55..61edd18b7bf3 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -968,7 +968,8 @@ static void device_links_missing_supplier(struct device *dev)
+diff --git a/drivers/of/base.c b/drivers/of/base.c
+index d4f98c8469ed..a19cd0c73644 100644
+--- a/drivers/of/base.c
++++ b/drivers/of/base.c
+@@ -1919,6 +1919,8 @@ void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align))
+ 			of_property_read_string(of_aliases, "stdout", &name);
+ 		if (name)
+ 			of_stdout = of_find_node_opts_by_path(name, &of_stdout_options);
++		if (of_stdout)
++			of_stdout->fwnode.flags |= FWNODE_FLAG_BEST_EFFORT;
+ 	}
  
- static bool dev_is_best_effort(struct device *dev)
- {
--	return fw_devlink_best_effort && dev->can_match;
-+	return (fw_devlink_best_effort && dev->can_match) ||
-+		dev->fwnode->flags & FWNODE_FLAG_BEST_EFFORT;
- }
- 
- /**
-diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
-index 9a81c4410b9f..89b9bdfca925 100644
---- a/include/linux/fwnode.h
-+++ b/include/linux/fwnode.h
-@@ -27,11 +27,15 @@ struct device;
-  *			     driver needs its child devices to be bound with
-  *			     their respective drivers as soon as they are
-  *			     added.
-+ * BEST_EFFORT: The fwnode/device needs to probe early and might be missing some
-+ *		suppliers. Only enforce ordering with suppliers that have
-+ *		drivers.
-  */
- #define FWNODE_FLAG_LINKS_ADDED			BIT(0)
- #define FWNODE_FLAG_NOT_DEVICE			BIT(1)
- #define FWNODE_FLAG_INITIALIZED			BIT(2)
- #define FWNODE_FLAG_NEEDS_CHILD_BOUND_ON_ADD	BIT(3)
-+#define FWNODE_FLAG_BEST_EFFORT			BIT(4)
- 
- struct fwnode_handle {
- 	struct fwnode_handle *secondary;
+ 	if (!of_aliases)
 -- 
 2.37.0.rc0.161.g10f37bed90-goog
 
