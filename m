@@ -1,103 +1,136 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 47500C433EF
-	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 19:10:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C8260C43334
+	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 19:15:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id BDB734191F;
-	Wed, 22 Jun 2022 19:10:14 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org BDB734191F
-Authentication-Results: smtp4.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20210112 header.b=q0iBpeFz
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DMY5G5DGYo_j; Wed, 22 Jun 2022 19:10:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 20A30418F1;
-	Wed, 22 Jun 2022 19:10:11 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 20A30418F1
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 001A6C0032;
-	Wed, 22 Jun 2022 19:10:10 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 983D1C002D
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 19:10:09 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 6CC1D8419F
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 19:10:09 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 6CC1D8419F
+	by smtp1.osuosl.org (Postfix) with ESMTP id 52F22841AE;
+	Wed, 22 Jun 2022 19:15:54 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 52F22841AE
 Authentication-Results: smtp1.osuosl.org;
- dkim=pass (2048-bit key) header.d=google.com header.i=@google.com
- header.a=rsa-sha256 header.s=20210112 header.b=q0iBpeFz
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=microsoft.com header.i=@microsoft.com header.a=rsa-sha256 header.s=selector2 header.b=Lt3tFh6A
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id yKJQ4UpAPtJh; Wed, 22 Jun 2022 19:15:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 0280C84188;
+	Wed, 22 Jun 2022 19:15:52 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 0280C84188
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B3148C0032;
+	Wed, 22 Jun 2022 19:15:52 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F0773C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 19:15:50 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id AD39F841A6
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 19:15:50 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org AD39F841A6
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LX_W7j-ANCUa for <iommu@lists.linux-foundation.org>;
- Wed, 22 Jun 2022 19:10:08 +0000 (UTC)
+ with ESMTP id t2AhNpcE24I1 for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Jun 2022 19:15:49 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 9FD0884188
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com
- [IPv6:2607:f8b0:4864:20::1130])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 9FD0884188
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 19:10:08 +0000 (UTC)
-Received: by mail-yw1-x1130.google.com with SMTP id
- 00721157ae682-3185f5623edso12343497b3.1
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 12:10:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=m2EKhR0TRoyufPiu9Flo4efSG9iVQ7Sr7NIfxXnG//E=;
- b=q0iBpeFzXmVjuV9RJ2U0tO6ECKKIgXqLxhTrd/XuqGhMkas+He99laUPoyLdnfoNFL
- +PttCvM62NPrGDH6bN6Tam5nPc4Jt6Lhqq9iRLcdZDXmODHt/VANxFARtdqBpIOWNqbl
- AatF7ctiFGf72C+0OC82zliefxVYa8dtkAaYmnq0JCPtTgfz1cWUVQ87m5452KZkW/cW
- SPNNeBKYphGmdKaYImVx82HxgMYh2fon8Z8I1JzFAAU0CLZraMDpT8R9qd8YGH1YLF5l
- z+/MLbNzdLViy90RdBW0wFmvw6BnGUFs9HZsF90abo3WhbF4Ja8pDA24KBOpYxV847T2
- I7ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=m2EKhR0TRoyufPiu9Flo4efSG9iVQ7Sr7NIfxXnG//E=;
- b=fDoPHSIhfV6HWxj3/RZCuOmRint3r+mWSXpkH3MzPMqYOxY/UbUiUMsixLQdup7vMR
- LBL9OHm48kKDrT+7QzMxk4yte01usSzyEgvDHQthFNxz5fd8OS7izBZPZpiWu/T5rOqh
- JARCNv3cYCf+makaEWi+Ka8WVqOje01gS4zYftftab0bq/p+oap5fP9axEvW9h/Fh2yK
- 8h4CNpJu3zPgcBVQxifWLXYHe/fmk/nrWoysGOg0+8H40Ws4JJpbC0M3likpJVgVPyXn
- OI/M2qroBIobyfg8Ss5Kvw+FCeN9Mgdrr8Z3x2Rj+cegy/LxbNDk20Wcj6yjq7xTMDby
- GT3w==
-X-Gm-Message-State: AJIora87oFnrgkLej1x78GR+u7QcGBURw8XvgZoFYPtmh6LouTFdTaTE
- meZCpCMHDk4lRdEKD4t/5Ciuh9jYwhZ0/BS8TpwZ/Q==
-X-Google-Smtp-Source: AGRyM1solygMwSWCkiPF1NFwzx5BeilY1scDMXVDLNy5qaonwBsI4xn5J0zOBjmp0RWdt2LaZxnizqSGP3n3TRaTEKc=
-X-Received: by 2002:a0d:eace:0:b0:317:87ac:b3a8 with SMTP id
- t197-20020a0deace000000b0031787acb3a8mr6074480ywe.126.1655925007151; Wed, 22
- Jun 2022 12:10:07 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 7D82584188
+Received: from na01-obe.outbound.protection.outlook.com
+ (mail-centralusazon11021018.outbound.protection.outlook.com [52.101.62.18])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 7D82584188
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 19:15:49 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=epQvadr3sZHgdxj3tBMvxCS4QQDVbrOkCn7gIIIIrcbNLMdcfH1Q6bWj36sYg3vFXW2OIyhNFRgzVOYW82UzfZ52BDHUg43Jcjpg3TrF9rJtx2F9O1dKBVAL3pnhk7weQsPYljldR1CJamX1/uABDryO2SMg2hHonxO7xJxnmOjKW0O4gpz9v+0D38YBVc8EnnRgUKpGA7kBx0RrvE6r7XBtYyb97L73OSgAz6uU43jZqw/fkypZYMLWMNLHeSeefchVw1SS2nSkIQGxeOOreCgWrc6PxXQ7S69JWoQ/CF+bilTYJ1TgNi3tFibvNHahPUtQi35l2Kj2uBDYvDHcDQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9xCS8tKm+WbF1IY7eak1JzaFGb6aovru7CwHJaA4FCo=;
+ b=MYpyJC/PILweGn03ro26jI/pyXc5KZJ9sHyOmp5uHmkuE8BqzHTE5fT+H3WJIXUUD+u+qg8dwZOsGEIKC88lWbU5I5mZJdBhWAW3EOQXgVf25Jg/JgkEKQQaVTwcbTn/Xz7J8FX2nDmwgeFkk4U7JGF7nWOjAY0Utb3nAF2lm+MPg+36Q4Hm7euI/OBpBDq5/mfxasJ2Rjux6eZAVPBC8CRS2JtlmvhHiJg2DC3pcHSONlgLoRbaa/2DlERFbEOcUp3KKr9oiuvLNEv13si4FDD+6gKZV0bD9NJ3Q4szM8l56CVFilMems0wzyNjzIxTBWSbx1Ju1+Hk232g9Cf/FA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9xCS8tKm+WbF1IY7eak1JzaFGb6aovru7CwHJaA4FCo=;
+ b=Lt3tFh6AZf082dQNXI48H5RtQmejHI7vuJbIFaUntkoe5AcKYy8Lme3Y96eO3AOc5imdpEhlblwsf+BfZEFIWbZL/Ou1QoFY6Qs9+Oqc8MY8ykW0ulKnX+nl8E0ZhEgClx6k/QaOEc0ICNpno+o2HEwUJhpr8IF6jNTP3bCDgbw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+Received: from CY4SPR01MB05.namprd21.prod.outlook.com (2603:10b6:910:8b::17)
+ by BL1PR21MB3115.namprd21.prod.outlook.com (2603:10b6:208:393::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5395.3; Wed, 22 Jun
+ 2022 19:15:23 +0000
+Received: from CY4SPR01MB05.namprd21.prod.outlook.com
+ ([fe80::6541:b4a2:1fd8:14c7]) by CY4SPR01MB05.namprd21.prod.outlook.com
+ ([fe80::6541:b4a2:1fd8:14c7%7]) with mapi id 15.20.5395.003; Wed, 22 Jun 2022
+ 19:15:21 +0000
+To: hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] dma-direct: use the correct size for dma_set_encrypted()
+Date: Wed, 22 Jun 2022 12:14:24 -0700
+Message-Id: <20220622191424.15777-1-decui@microsoft.com>
+X-Mailer: git-send-email 2.17.1
+X-ClientProxiedBy: MW4PR03CA0037.namprd03.prod.outlook.com
+ (2603:10b6:303:8e::12) To CY4SPR01MB05.namprd21.prod.outlook.com
+ (2603:10b6:910:8b::17)
 MIME-Version: 1.0
-References: <20220601070707.3946847-1-saravanak@google.com>
- <20220601070707.3946847-2-saravanak@google.com> <YrFzK6EiVvXmzVG6@atomide.com>
- <CAGETcx_1USPRbFKV5j00qkQ-QXJkp7=FAfnFcfiNnM4J5KF1cQ@mail.gmail.com>
- <YrKhkmj3jCQA39X/@atomide.com>
-In-Reply-To: <YrKhkmj3jCQA39X/@atomide.com>
-Date: Wed, 22 Jun 2022 12:09:31 -0700
-Message-ID: <CAGETcx_11wO-HkZ2QsBF8o1+L9L3Xe1QBQ_GzegwozxAx1i0jg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of
- driver_deferred_probe_check_state()
-To: Tony Lindgren <tony@atomide.com>
-Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Linus Walleij <linus.walleij@linaro.org>, Eric Dumazet <edumazet@google.com>,
- Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
- Kevin Hilman <khilman@kernel.org>, Russell King <linux@armlinux.org.uk>,
- Geert Uytterhoeven <geert@linux-m68k.org>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, kernel-team@android.com,
- Len Brown <len.brown@intel.com>, linux-pm@vger.kernel.org,
- linux-gpio@vger.kernel.org, Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
- "David S. Miller" <davem@davemloft.net>,
- Heiner Kallweit <hkallweit1@gmail.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: bfcc9cc6-cbea-40af-2834-08da54838d3d
+X-MS-TrafficTypeDiagnostic: BL1PR21MB3115:EE_
+X-Microsoft-Antispam-PRVS: <BL1PR21MB311514A12B716AD020F5F063BFB29@BL1PR21MB3115.namprd21.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Gg7Z1g618joQ5J4cLIQ9WGiItEae2VmJdZ3NEGWxifhFWKQBYbOg1IFALV6lYVQWDZ9oOpO8akLr9rw4gLFlqGM8Gffo54dmtBhbcV95YdafUjiJabaApekqzn3MTRRJpiT38aM0PcHq5+qOieUF3uqimb6++38hsu8XWEoMP6zOoMpJGM/U0GIEAvdxxjccA7/07TzK0w8qGaOfDE+7Toj/V28Fj6jKIkxTVCuOLgizUxYyNImVMnwKOrQl1a17FsC//ChA7tLcmOBYzGZyY9VhJQ1cWiGb+Cvw+TI1e9fv+1rTWzVqYsIS/ldGw0MCEvWNVvj9TUWtoX5C29BcnZSXRWW+ueDPvaJQQvA0rdEi4Z+Na2O5xbZ5zrZBJHCoHedCtTwwzHTw0pOofbqUTCWkj/ieH7Zei/mOyyulXdwHbSmcLZnb9FuVc2ZKtSt5GkEeMul72WxkGAFu6VgAGMeUPpJdMm+65I0aiKrK3hHa7/r05uX2kFoxS16zGsxkxQ92AbGxbjCu7/iK3cpN2dGKd30NWugWKwghxZJ6dOBZURR8BkohdmiHpKtHpoamyIJeS6d+vB3HJScxG0R1OWbIXNIc8od7kdDoZS6uxt1WQ0F8WX1/jOULlCPOFye2Uz1b/fnFlgbqFQe7lsiFtShWNl9I1lWsYzlHibDY9xpQtujZLSuGBhtCnQUHA/VMrdRYU6J8B5ZeEvk8knAI6gM202TOC4YwrZVDCzGcBwKi3NQHqCy3vm3SJCrXl3bR
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:CY4SPR01MB05.namprd21.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230016)(4636009)(346002)(366004)(376002)(396003)(136003)(39860400002)(451199009)(2616005)(66556008)(6512007)(8936002)(186003)(38100700002)(316002)(4326008)(66946007)(66476007)(82950400001)(1076003)(6486002)(82960400001)(107886003)(83380400001)(5660300002)(8676002)(10290500003)(36756003)(86362001)(2906002)(6506007)(478600001)(52116002)(41300700001);
+ DIR:OUT; SFP:1102; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?K9PhVtYQqgNdImgyIxlx47HIBlzXn4wdzOuK3degpvCExVa8r7hiqWWe9C1k?=
+ =?us-ascii?Q?27tHno1896/ofiZDWp90ds5VPoCtVa5r0QaURswtoAiVPxz+Wie2YShuVsRK?=
+ =?us-ascii?Q?74Y4e2jXTxIZxlPqfUprToq1G83koNl5vhbjAzLQpfOGqdLQrG6mGAvff0eW?=
+ =?us-ascii?Q?PsPYVLvD8D+WrcEHt/T0ZwEz2LzS9anMSAHnuz8knJaidoX7HH8GG/KoVOWd?=
+ =?us-ascii?Q?Zo+OPRpqn5LXcglqR/5fyL2G7dpBHkhx8CrRr7GVZU12aSrzgQ9IZs85ut9E?=
+ =?us-ascii?Q?dAiriGP6YULUfWFKiOD/eQXDCtVVBTCP91XpNQ52IU3g7XBvKBToW5ShrGD/?=
+ =?us-ascii?Q?dRrs1q+nh7DtoW96kfzvBo6XC7oDqiJQI4bOs5cy6K5F0WRVGWExuJl4pUwT?=
+ =?us-ascii?Q?CPDWq/3zPaKGmqsjcpeJuyBj+d0a/hWNTT9SqlJ1p4kpbUXsx2bvQfX6QWqQ?=
+ =?us-ascii?Q?0dRx6Q4dEqFFWB8BMLK0jOCh+qCP3cYG7sF9vHjCAjxP3TKn0FywxJZlXE//?=
+ =?us-ascii?Q?FAQ3u09EhPHlGLeVJLBcLevsMh1QuNsh8CAJErz54OtR/xC0jRwcvaED2o2X?=
+ =?us-ascii?Q?5Prex/n5osYSBgr7sEb0gws6Fg1v6GVu1aW7/f2bMjuWr8YWDZPA4ApQFZGB?=
+ =?us-ascii?Q?zsdinBrQcSlVF38ph+qtN11Yjkr9cAKbAtzeeM1hhxsDuYdh8G5bdu++xVxu?=
+ =?us-ascii?Q?+9JQ9qMSdP1874YtGD8pg4TlfkCMgjf3+EBOJ/5Kuzp/kj7yeYldlq56g31l?=
+ =?us-ascii?Q?76eneJz7952yIXgTH6wBo1q9MgPmRu+RaqXfJhOWA+U9TfEp7GiuNYadjsMH?=
+ =?us-ascii?Q?k+CH8/6SL72k2+U5PRkSTY53SUgbrha3Nf9U8Z4bRzmN45PjWRJDng4TsqkA?=
+ =?us-ascii?Q?ylpk9ndho32E9D3YZBjI0Hm8zzHz8dxZ1gREbU8VkCcej7tAlLE99jv6IePf?=
+ =?us-ascii?Q?Rij7mRBls1RDTF5brUUfob74fCdr6IHo5bhJKBxcE/d/Hw+7Hw56jeOJT4WU?=
+ =?us-ascii?Q?4BIvTYe1AWbJDR4gs5tai0GlGI8EcObrqyu8qnMwBMvGGBVS9HvMt6oSO7xL?=
+ =?us-ascii?Q?M0jx4nKw3UpFLNAxLd5wpE1CnIuRcCF48GY/RgGp0/5/+dECEwhgC6KiAy+g?=
+ =?us-ascii?Q?oHwIrCbab1LrD59+Uu2G4Wd27MD747M6GA7fECEo9k9I2kyr2HbLhbSB5eP/?=
+ =?us-ascii?Q?2tD91DmxUDtsgYC1+aXVVfl0b5PFQn+1/AxADJ+SdAj/eFWiLzh1KPeuMn3c?=
+ =?us-ascii?Q?xpOmuLs4+CIX5C2r8zuiF153T3PmO2oLNHXvbkypkxFtqvu4fuNg/1R7nsT5?=
+ =?us-ascii?Q?UoVKT3MpiaJQkJ08E86saVpuxC9eVBHGMtYRZMs+fgNn6ArFiCj56fM65TcD?=
+ =?us-ascii?Q?piDV1DbmmXC0nmTaH0ZnlAo5qER99/BN7oSNCutq8XtUYJFcpkbejWy+kSux?=
+ =?us-ascii?Q?yqO37OhvD8Yl3WeHDnBEIeLZt1Fc+FMTcncQ4ZL542DZ6bLHAZh3PJ0PlE6v?=
+ =?us-ascii?Q?cjMeGfcXYYQmFAXlEzF2/ykl7gDsfC4FZKqjdU01B2U66NLEbxqgYEQrkIgD?=
+ =?us-ascii?Q?pzSk2HPqhSGy/6tqfudOzxGDtwyqMiOfJyEVrz+9KYqxwe133KIE+DHoZPPj?=
+ =?us-ascii?Q?89voI5Lgzp8+KIQC9QogUIOz7qOIq4k1aeUh/koImxqQ?=
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bfcc9cc6-cbea-40af-2834-08da54838d3d
+X-MS-Exchange-CrossTenant-AuthSource: CY4SPR01MB05.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2022 19:15:21.6359 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: f2jVOwmCNibkvvEI33Wya22JIhoKGJ0Yh9PvbfQs1eTSgMHJU9WZ3N9CGzayeXm95QIFbXPuCW9aPKJ5lKZIiQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR21MB3115
+Cc: Dexuan Cui <decui@microsoft.com>, linux-hyperv@vger.kernel.org,
+ Tianyu.Lan@microsoft.com, Andrea.Parri@microsoft.com, mikelley@microsoft.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,91 +143,55 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Saravana Kannan via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Saravana Kannan <saravanak@google.com>
+From: Dexuan Cui via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Dexuan Cui <decui@microsoft.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jun 21, 2022 at 9:59 PM Tony Lindgren <tony@atomide.com> wrote:
->
-> Hi,
->
-> * Saravana Kannan <saravanak@google.com> [220621 19:29]:
-> > On Tue, Jun 21, 2022 at 12:28 AM Tony Lindgren <tony@atomide.com> wrote:
-> > >
-> > > Hi,
-> > >
-> > > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
-> > > > Now that fw_devlink=on by default and fw_devlink supports
-> > > > "power-domains" property, the execution will never get to the point
-> > > > where driver_deferred_probe_check_state() is called before the supplier
-> > > > has probed successfully or before deferred probe timeout has expired.
-> > > >
-> > > > So, delete the call and replace it with -ENODEV.
-> > >
-> > > Looks like this causes omaps to not boot in Linux next.
-> >
-> > Can you please point me to an example DTS I could use for debugging
-> > this? I'm assuming you are leaving fw_devlink=on and not turning it
-> > off or putting it in permissive mode.
->
-> Sure, this seems to happen at least with simple-pm-bus as the top
-> level interconnect with a configured power-domains property:
->
-> $ git grep -A10 "ocp {" arch/arm/boot/dts/*.dtsi | grep -B3 -A4 simple-pm-bus
+The third parameter of dma_set_encrypted() is a size in bytes rather than
+the number of pages.
 
-Thanks for the example. I generally start looking from dts (not dtsi)
-files in case there are some DT property override/additions after the
-dtsi files are included in the dts file. But I'll assume for now
-that's not the case. If there's a specific dts file for a board I can
-look from that'd be helpful to rule out those kinds of issues.
+Fixes: 4d0564785bb0 ("dma-direct: factor out dma_set_{de,en}crypted helpers")
+Signed-off-by: Dexuan Cui <decui@microsoft.com>
+---
+ kernel/dma/direct.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-For now, I looked at arch/arm/boot/dts/omap4.dtsi.
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index e978f36e6be8..8d0b68a17042 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -357,7 +357,7 @@ void dma_direct_free(struct device *dev, size_t size,
+ 	} else {
+ 		if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
+ 			arch_dma_clear_uncached(cpu_addr, size);
+-		if (dma_set_encrypted(dev, cpu_addr, 1 << page_order))
++		if (dma_set_encrypted(dev, cpu_addr, size))
+ 			return;
+ 	}
+ 
+@@ -392,7 +392,6 @@ void dma_direct_free_pages(struct device *dev, size_t size,
+ 		struct page *page, dma_addr_t dma_addr,
+ 		enum dma_data_direction dir)
+ {
+-	unsigned int page_order = get_order(size);
+ 	void *vaddr = page_address(page);
+ 
+ 	/* If cpu_addr is not from an atomic pool, dma_free_from_pool() fails */
+@@ -400,7 +399,7 @@ void dma_direct_free_pages(struct device *dev, size_t size,
+ 	    dma_free_from_pool(dev, vaddr, size))
+ 		return;
+ 
+-	if (dma_set_encrypted(dev, vaddr, 1 << page_order))
++	if (dma_set_encrypted(dev, vaddr, size))
+ 		return;
+ 	__dma_direct_free_pages(dev, page, size);
+ }
+-- 
+2.25.1
 
->
-> This issue is no directly related fw_devlink. It is a side effect of
-> removing driver_deferred_probe_check_state(). We no longer return
-> -EPROBE_DEFER at the end of driver_deferred_probe_check_state().
-
-Yes, I understand the issue. But driver_deferred_probe_check_state()
-was deleted because fw_devlink=on should have short circuited the
-probe attempt with an  -EPROBE_DEFER before reaching the bus/driver
-probe function and hitting this -ENOENT failure. That's why I was
-asking the other questions.
-
-> > > On platform_probe() genpd_get_from_provider() returns
-> > > -ENOENT.
-> >
-> > This error is with the series I assume?
->
-> On the first probe genpd_get_from_provider() will return -ENOENT in
-> both cases. The list is empty on the first probe and there are no
-> genpd providers at this point.
->
-> Earlier with driver_deferred_probe_check_state(), the initial -ENOENT
-> ends up getting changed to -EPROBE_DEFER at the end of
-> driver_deferred_probe_check_state(), we are now missing that.
-
-Right, I was aware -ENOENT would be returned if we got this far. But
-the point of this series is that you shouldn't have gotten that far
-before your pm domain device is ready. Hence my questions from the
-earlier reply.
-
-Can I get answers to rest of my questions in the first reply please?
-That should help us figure out why fw_devlink let us get this far.
-Summarize them here to make it easy:
-* Are you running with fw_devlink=on?
-* Is the"ti,omap4-prm-inst"/"ti,omap-prm-inst" built-in in this case?
-* If it's not built-in, can you please try deferred_probe_timeout=0
-and deferred_probe_timeout=30 and see if either one of them help?
-* Can I get the output of "ls -d supplier:*" and "cat
-supplier:*/status" output from the sysfs dir for the ocp device
-without this series where it boots properly.
-
-Thanks,
-Saravana
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
