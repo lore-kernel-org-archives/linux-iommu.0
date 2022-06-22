@@ -1,59 +1,58 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 859C1C433EF
-	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 14:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 094B7CCA482
+	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 14:32:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 16B5A84539;
-	Wed, 22 Jun 2022 14:30:05 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 16B5A84539
+	by smtp2.osuosl.org (Postfix) with ESMTP id 8B53740012;
+	Wed, 22 Jun 2022 14:32:28 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 8B53740012
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 81QisXAZyDZl; Wed, 22 Jun 2022 14:30:04 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id E22318450B;
-	Wed, 22 Jun 2022 14:30:03 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org E22318450B
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 2cPZAHYxw-tO; Wed, 22 Jun 2022 14:32:27 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 523FC401B7;
+	Wed, 22 Jun 2022 14:32:27 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 523FC401B7
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B92B4C0039;
-	Wed, 22 Jun 2022 14:30:03 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6C839C002D
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 14:30:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 277A9C0039;
+	Wed, 22 Jun 2022 14:32:27 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CA043C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 14:32:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 5573184529
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 14:30:02 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 5573184529
+ by smtp4.osuosl.org (Postfix) with ESMTP id AEA0841A19
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 14:32:25 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org AEA0841A19
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GLTrpd8rQBgr for <iommu@lists.linux-foundation.org>;
- Wed, 22 Jun 2022 14:30:01 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 5A74684513
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 5A74684513
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 14:30:01 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A6CB3D6E;
- Wed, 22 Jun 2022 07:30:00 -0700 (PDT)
-Received: from e122027.arm.com (unknown [10.57.41.243])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9A1083F792;
- Wed, 22 Jun 2022 07:29:59 -0700 (PDT)
-From: Steven Price <steven.price@arm.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH] swiotlb: Remove redundant swiotlb_force
-Date: Wed, 22 Jun 2022 15:29:52 +0100
-Message-Id: <20220622142952.320057-1-steven.price@arm.com>
-X-Mailer: git-send-email 2.25.1
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id skGXm93PLKRP for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Jun 2022 14:32:24 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 9FEC34193A
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9FEC34193A
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 14:32:24 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id C985168AA6; Wed, 22 Jun 2022 16:32:19 +0200 (CEST)
+Date: Wed, 22 Jun 2022 16:32:19 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH] swiotlb: Remove redundant swiotlb_force
+Message-ID: <20220622143219.GA31314@lst.de>
+References: <20220622142952.320057-1-steven.price@arm.com>
 MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <20220622142952.320057-1-steven.price@arm.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: iommu@lists.linux-foundation.org,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, linux-kernel@vger.kernel.org,
- Steven Price <steven.price@arm.com>
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -71,31 +70,14 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The variable (and enum) was removed in commit c6af2aa9ffc9 ("swiotlb:
-make the swiotlb_init interface more useful") but the declaration was
-left in swiotlb.h. Tidy up by removing the declaration as well.
+On Wed, Jun 22, 2022 at 03:29:52PM +0100, Steven Price wrote:
+> The variable (and enum) was removed in commit c6af2aa9ffc9 ("swiotlb:
+> make the swiotlb_init interface more useful") but the declaration was
+> left in swiotlb.h. Tidy up by removing the declaration as well.
+> 
+> Signed-off-by: Steven Price <steven.price@arm.com>
 
-Signed-off-by: Steven Price <steven.price@arm.com>
----
- include/linux/swiotlb.h | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 7ed35dd3de6e..b1f5ace37502 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -60,8 +60,6 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t phys,
- 		size_t size, enum dma_data_direction dir, unsigned long attrs);
- 
- #ifdef CONFIG_SWIOTLB
--extern enum swiotlb_force swiotlb_force;
--
- /**
-  * struct io_tlb_mem - IO TLB Memory Pool Descriptor
-  *
--- 
-2.25.1
-
+I just applied an identical patch from Dongli Zhang a few hours ago.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
