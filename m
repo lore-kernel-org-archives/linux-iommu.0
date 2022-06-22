@@ -1,87 +1,86 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5DE41C43334
-	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 07:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CE305C43334
+	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 07:48:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 00E1841CC6;
-	Wed, 22 Jun 2022 07:24:47 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 00E1841CC6
-Authentication-Results: smtp4.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=QgUftnS9
+	by smtp2.osuosl.org (Postfix) with ESMTP id 4C4F040C70;
+	Wed, 22 Jun 2022 07:48:57 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 4C4F040C70
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id n9yV9LHlLOQp; Wed, 22 Jun 2022 07:24:45 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id dqjciubWP1Dx; Wed, 22 Jun 2022 07:48:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 3D3F54091A;
-	Wed, 22 Jun 2022 07:24:45 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 3D3F54091A
+	by smtp2.osuosl.org (Postfix) with ESMTPS id C5E7F400DD;
+	Wed, 22 Jun 2022 07:48:55 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org C5E7F400DD
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 18823C0032;
-	Wed, 22 Jun 2022 07:24:45 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 05A71C002D
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 07:24:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A422BC0032;
+	Wed, 22 Jun 2022 07:48:55 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 17244C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 07:48:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id C64D96123D
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 07:24:43 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org C64D96123D
-Authentication-Results: smtp3.osuosl.org;
- dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
- header.a=rsa-sha256 header.s=Intel header.b=QgUftnS9
+ by smtp2.osuosl.org (Postfix) with ESMTP id F36EC40A02
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 07:48:53 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org F36EC40A02
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uHvDo_C9PX6U for <iommu@lists.linux-foundation.org>;
- Wed, 22 Jun 2022 07:24:42 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wcWwwl_wHqhd for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Jun 2022 07:48:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 664D161236
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 664D161236
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 07:24:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1655882682; x=1687418682;
- h=date:from:to:cc:subject:message-id:references:
- mime-version:in-reply-to;
- bh=NgoHLyZGRgMPgNFB7tpululSiyLjykD0PpFVx9n2Or0=;
- b=QgUftnS9QXVRkS1+5REL+XuB+6tf/aG0tEqGHYwE3oUx2Ww1OXB/Lqnv
- cUFtBsbpDWSB23LDKyjVfoPzf1m5jN3/BzIAV1xnTpv7aseUBoh7Jddn/
- dsIW/DPwBPqIXnPHrRME4Lk2bwLPuUf/7lYDr08gPumPo5+6Iw6qmHyr9
- CE00KFyw3fypDznoo8DpNhbw/hJ4Rlowy4MHJBoJUjKgoDY/3vWOkzdD7
- jkqhExFhvfzgD+cnplDgdXbJXKPnZXh4FwBV+zDaDwaG9s58+NyUTp9XS
- yga4nTRa4z71EiMZoJKuJOED774gBzbjIR55gi+Rvf/3v1afKuUOm3Poh A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="366663935"
-X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; d="scan'208";a="366663935"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Jun 2022 00:24:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,211,1650956400"; d="scan'208";a="562834083"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
- by orsmga006.jf.intel.com with ESMTP; 22 Jun 2022 00:24:37 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
- (envelope-from <lkp@intel.com>) id 1o3uj7-0000zN-5j;
- Wed, 22 Jun 2022 07:24:37 +0000
-Date: Wed, 22 Jun 2022 15:24:35 +0800
-From: kernel test robot <lkp@intel.com>
-To: Mikko Perttunen <cyndis@kapsi.fi>, thierry.reding@gmail.com,
- jonathanh@nvidia.com, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, robh+dt@kernel.org, krzysztof.kozlowski@canonical.com
-Subject: Re: [PATCH v6 04/10] gpu: host1x: Add context device management code
-Message-ID: <202206221557.laES8yNQ-lkp@intel.com>
-References: <20220621151022.1416300-5-cyndis@kapsi.fi>
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org B2090400DD
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de
+ [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id B2090400DD
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 07:48:52 +0000 (UTC)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+ by metis.ext.pengutronix.de with esmtps
+ (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.92)
+ (envelope-from <sha@pengutronix.de>)
+ id 1o3v5s-0000nJ-UD; Wed, 22 Jun 2022 09:48:08 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+ (envelope-from <sha@pengutronix.de>)
+ id 1o3v5g-0000yF-8I; Wed, 22 Jun 2022 09:47:56 +0200
+Date: Wed, 22 Jun 2022 09:47:56 +0200
+To: Saravana Kannan <saravanak@google.com>
+Subject: Re: [PATCH v2 7/9] driver core: Set fw_devlink.strict=1 by default
+Message-ID: <20220622074756.GA1647@pengutronix.de>
+References: <20220601070707.3946847-1-saravanak@google.com>
+ <20220601070707.3946847-8-saravanak@google.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20220621151022.1416300-5-cyndis@kapsi.fi>
-Cc: devicetree@vger.kernel.org, kbuild-all@lists.01.org, llvm@lists.linux.dev,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- Mikko Perttunen <mperttunen@nvidia.com>, iommu@lists.linux-foundation.org,
- linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20220601070707.3946847-8-saravanak@google.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL: http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+From: Sascha Hauer <sha@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de);
+ SAEximRunCond expanded to false
+X-PTX-Original-Recipient: iommu@lists.linux-foundation.org
+Cc: Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Linus Walleij <linus.walleij@linaro.org>, Eric Dumazet <edumazet@google.com>,
+ Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
+ Kevin Hilman <khilman@kernel.org>, Russell King <linux@armlinux.org.uk>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ kernel-team@android.com, Len Brown <len.brown@intel.com>,
+ linux-pm@vger.kernel.org, linux-gpio@vger.kernel.org,
+ Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, kernel@pengutronix.de,
+ netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+ Heiner Kallweit <hkallweit1@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,131 +98,56 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Mikko,
+On Wed, Jun 01, 2022 at 12:07:03AM -0700, Saravana Kannan wrote:
+> Now that deferred_probe_timeout is non-zero by default, fw_devlink will
+> never permanently block the probing of devices. It'll try its best to
+> probe the devices in the right order and then finally let devices probe
+> even if their suppliers don't have any drivers.
+> 
+> Signed-off-by: Saravana Kannan <saravanak@google.com>
+> ---
+>  drivers/base/core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thank you for the patch! Yet something to improve:
+As mentioned here:
 
-[auto build test ERROR on drm/drm-next]
-[also build test ERROR on tegra/for-next linus/master v5.19-rc3]
-[cannot apply to tegra-drm/drm/tegra/for-next next-20220621]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+https://lore.kernel.org/lkml/20220622062027.994614-1-peng.fan@oss.nxp.com/
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Mikko-Perttunen/Host1x-context-isolation-support/20220621-231339
-base:   git://anongit.freedesktop.org/drm/drm drm-next
-config: arm64-randconfig-r021-20220622 (https://download.01.org/0day-ci/archive/20220622/202206221557.laES8yNQ-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 8b8d126598ce7bd5243da7f94f69fa1104288bee)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/2501beeae7469b805f9f624049fd56643cf6e18e
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Mikko-Perttunen/Host1x-context-isolation-support/20220621-231339
-        git checkout 2501beeae7469b805f9f624049fd56643cf6e18e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/gpu/host1x/
+This patch has the effect that console UART devices which have "dmas"
+properties specified in the device tree get deferred for 10 to 20
+seconds. This happens on i.MX and likely on other SoCs as well. On i.MX
+the dma channel is only requested at UART startup time and not at probe
+time. dma is not used for the console. Nevertheless with this driver probe
+defers until the dma engine driver is available.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+It shouldn't go in as-is.
 
-All errors (new ones prefixed by >>):
+Sascha
 
->> drivers/gpu/host1x/context.c:80:28: error: no member named 'ids' in 'struct iommu_fwspec'
-                   ctx->stream_id = fwspec->ids[0] & 0xffff;
-                                    ~~~~~~  ^
-   1 error generated.
-
-
-vim +80 drivers/gpu/host1x/context.c
-
-    15	
-    16	int host1x_memory_context_list_init(struct host1x *host1x)
-    17	{
-    18		struct host1x_memory_context_list *cdl = &host1x->context_list;
-    19		struct device_node *node = host1x->dev->of_node;
-    20		struct host1x_memory_context *ctx;
-    21		unsigned int i;
-    22		int err;
-    23	
-    24		cdl->devs = NULL;
-    25		cdl->len = 0;
-    26		mutex_init(&cdl->lock);
-    27	
-    28		err = of_property_count_u32_elems(node, "iommu-map");
-    29		if (err < 0)
-    30			return 0;
-    31	
-    32		cdl->devs = kcalloc(err, sizeof(*cdl->devs), GFP_KERNEL);
-    33		if (!cdl->devs)
-    34			return -ENOMEM;
-    35		cdl->len = err / 4;
-    36	
-    37		for (i = 0; i < cdl->len; i++) {
-    38			struct iommu_fwspec *fwspec;
-    39	
-    40			ctx = &cdl->devs[i];
-    41	
-    42			ctx->host = host1x;
-    43	
-    44			device_initialize(&ctx->dev);
-    45	
-    46			/*
-    47			 * Due to an issue with T194 NVENC, only 38 bits can be used.
-    48			 * Anyway, 256GiB of IOVA ought to be enough for anyone.
-    49			 */
-    50			ctx->dma_mask = DMA_BIT_MASK(38);
-    51			ctx->dev.dma_mask = &ctx->dma_mask;
-    52			ctx->dev.coherent_dma_mask = ctx->dma_mask;
-    53			dev_set_name(&ctx->dev, "host1x-ctx.%d", i);
-    54			ctx->dev.bus = &host1x_context_device_bus_type;
-    55			ctx->dev.parent = host1x->dev;
-    56	
-    57			dma_set_max_seg_size(&ctx->dev, UINT_MAX);
-    58	
-    59			err = device_add(&ctx->dev);
-    60			if (err) {
-    61				dev_err(host1x->dev, "could not add context device %d: %d\n", i, err);
-    62				goto del_devices;
-    63			}
-    64	
-    65			err = of_dma_configure_id(&ctx->dev, node, true, &i);
-    66			if (err) {
-    67				dev_err(host1x->dev, "IOMMU configuration failed for context device %d: %d\n",
-    68					i, err);
-    69				device_del(&ctx->dev);
-    70				goto del_devices;
-    71			}
-    72	
-    73			fwspec = dev_iommu_fwspec_get(&ctx->dev);
-    74			if (!fwspec) {
-    75				dev_err(host1x->dev, "Context device %d has no IOMMU!\n", i);
-    76				device_del(&ctx->dev);
-    77				goto del_devices;
-    78			}
-    79	
-  > 80			ctx->stream_id = fwspec->ids[0] & 0xffff;
-    81		}
-    82	
-    83		return 0;
-    84	
-    85	del_devices:
-    86		while (i--)
-    87			device_del(&cdl->devs[i].dev);
-    88	
-    89		kfree(cdl->devs);
-    90		cdl->len = 0;
-    91	
-    92		return err;
-    93	}
-    94	
+> 
+> diff --git a/drivers/base/core.c b/drivers/base/core.c
+> index 61fdfe99b348..977b379a495b 100644
+> --- a/drivers/base/core.c
+> +++ b/drivers/base/core.c
+> @@ -1613,7 +1613,7 @@ static int __init fw_devlink_setup(char *arg)
+>  }
+>  early_param("fw_devlink", fw_devlink_setup);
+>  
+> -static bool fw_devlink_strict;
+> +static bool fw_devlink_strict = true;
+>  static int __init fw_devlink_strict_setup(char *arg)
+>  {
+>  	return strtobool(arg, &fw_devlink_strict);
+> -- 
+> 2.36.1.255.ge46751e96f-goog
+> 
+> 
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
