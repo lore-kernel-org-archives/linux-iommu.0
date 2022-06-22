@@ -1,57 +1,59 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 94D56C433EF
-	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 13:43:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 335A5C43334
+	for <iommu@archiver.kernel.org>; Wed, 22 Jun 2022 13:45:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3965B40199;
-	Wed, 22 Jun 2022 13:43:47 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 3965B40199
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nYY9LnO9JVDF; Wed, 22 Jun 2022 13:43:46 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 0396C40012;
-	Wed, 22 Jun 2022 13:43:45 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 0396C40012
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CDED6C0032;
-	Wed, 22 Jun 2022 13:43:45 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1125FC002D
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 13:43:44 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id EADC641C0A
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 13:43:43 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org EADC641C0A
+	by smtp4.osuosl.org (Postfix) with ESMTP id C200441A4C;
+	Wed, 22 Jun 2022 13:45:03 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org C200441A4C
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wpg7ZxiioYfc for <iommu@lists.linux-foundation.org>;
- Wed, 22 Jun 2022 13:43:43 +0000 (UTC)
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id X0JWlPE6Dzsy; Wed, 22 Jun 2022 13:45:02 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 4A00741C0A;
+	Wed, 22 Jun 2022 13:45:02 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 4A00741C0A
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 20823C0032;
+	Wed, 22 Jun 2022 13:45:02 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5AE21C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 13:45:01 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 35CAC82848
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 13:45:01 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 35CAC82848
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id fwLo-A7rrCKf for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Jun 2022 13:45:00 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org DC1A041A4C
-Received: from theia.8bytes.org (8bytes.org
- [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
- by smtp4.osuosl.org (Postfix) with ESMTPS id DC1A041A4C
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 13:43:42 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 91A098274E
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 91A098274E
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jun 2022 13:45:00 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 4F96D2D0; Wed, 22 Jun 2022 15:43:40 +0200 (CEST)
-Date: Wed, 22 Jun 2022 15:43:39 +0200
+ id 8C22F2D0; Wed, 22 Jun 2022 15:44:57 +0200 (CEST)
+Date: Wed, 22 Jun 2022 15:44:56 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Bo Liu <liubo03@inspur.com>
-Subject: Re: [PATCH] iommu: Remove usage of the deprecated ida_simple_xxx API
-Message-ID: <YrMci73Qko5ssAND@8bytes.org>
-References: <20220617020555.2361-1-liubo03@inspur.com>
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Subject: Re: [PATCH v4 0/5] mtk_iommu: Specify phandles to infracfg and pericfg
+Message-ID: <YrMc2EUBDIxnoWiB@8bytes.org>
+References: <20220616110830.26037-1-angelogioacchino.delregno@collabora.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20220617020555.2361-1-liubo03@inspur.com>
-Cc: iommu@lists.linux-foundation.org, will@kernel.org,
- linux-kernel@vger.kernel.org
+In-Reply-To: <20220616110830.26037-1-angelogioacchino.delregno@collabora.com>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ krzysztof.kozlowski@linaro.org, iommu@lists.linux-foundation.org,
+ robh+dt@kernel.org, linux-mediatek@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, krzysztof.kozlowski+dt@linaro.org,
+ miles.chen@mediatek.com, matthias.bgg@gmail.com, will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -69,20 +71,21 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jun 16, 2022 at 10:05:55PM -0400, Bo Liu wrote:
-> Use ida_alloc_xxx()/ida_free() instead of
-> ida_simple_get()/ida_simple_remove().
-> The latter is deprecated and more verbose.
+On Thu, Jun 16, 2022 at 01:08:25PM +0200, AngeloGioacchino Del Regno wrote:
+> AngeloGioacchino Del Regno (5):
+>   dt-bindings: iommu: mediatek: Add mediatek,infracfg phandle
+>   iommu/mediatek: Lookup phandle to retrieve syscon to infracfg
+>   arm64: dts: mediatek: mt8173: Add mediatek,infracfg phandle for IOMMU
+>   arm64: dts: mediatek: mt2712e: Add mediatek,infracfg phandle for IOMMU
+>   iommu/mediatek: Cleanup pericfg lookup flow
 > 
-> Signed-off-by: Bo Liu <liubo03@inspur.com>
-> ---
->  drivers/iommu/iommu.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+>  .../bindings/iommu/mediatek,iommu.yaml        | 17 +++++++
+>  arch/arm64/boot/dts/mediatek/mt2712e.dtsi     |  2 +
+>  arch/arm64/boot/dts/mediatek/mt8173.dtsi      |  1 +
+>  drivers/iommu/mtk_iommu.c                     | 50 +++++++++++--------
+>  4 files changed, 49 insertions(+), 21 deletions(-)
 
-Sorry, just applied this similar change:
-
-https://lore.kernel.org/r/20220608021655.1538087-1-liuke94@huawei.com
-
+Applied, thanks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
