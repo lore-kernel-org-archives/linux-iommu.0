@@ -1,124 +1,288 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2071.outbound.protection.outlook.com [40.107.244.71])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2D1C23A8
-	for <iommu@lists.linux.dev>; Thu, 23 Jun 2022 20:50:36 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QaZVFMFgTURV03ydRH/qoFNcLaYXGuUZqBg4CSAIgcSqSmK4BXyLDDbxVlytIw/zWNNtvyYtaAcV6t+bDeGnHxPc0VIBGhA9qlFqVlJnzEgoQIY7fBLUgB2Ospmd8AcuogXNmhtl5xRnfYoRrWtVPu8tKsncGOUjWdU3TKugeLxisL6b8vpCwnzZ6XFuaGTc4zngQUbJ1slNhR9z/q33IWVNbrGAuECsDnJe8M6+THeQISOd5UgU6KD6KUZeS6RGBemiR7BC8u9PmJ5wIJtp+1AmtUTZkRpTxvMKnSvH8qvSYDTViBn2ie2acUvcSxqotgqi07NlJFHfYShXd9+P7w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cqKdjnjHQ5n5G3z3A0A1RcCvqHjiTAVA/wUWl6oZ/6Q=;
- b=I8lKCHVpqEzx1/ZQlLqfLWfjItlpEdWzA+/JXB8dKPPysIMqWk7mgMYAisA3hJMuax5GMS11AEp8rToDSIKUgIQ3+ZDZWn+4//VffT1xYeP9t82VO5hc2wmhgXJIaMzcK5xSCTGT++LG8qbiGnQdKsxH5QwMr+FxX5nWkWVb0V8jtsaC6n08AVNmC4xApkqeZgqsuB8goriRecqGC9TCQusHdjnxQ+mN7ZsYT6lmC+ckzHaRwJ6pxzgNy7isuT/6Zp8nEKuPHgv9juOKXEse9R1jA4WfBOiwTm6QkiREv54L/RXYdloZPSdMgiWKKqNiMctrBeyiY0aMbQY5JmkuUg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cqKdjnjHQ5n5G3z3A0A1RcCvqHjiTAVA/wUWl6oZ/6Q=;
- b=D+gUEUB/l7A61gVJS0RC0TatuTsA42zWp+zT+tEJz7ZXotfXAO1vADZKAaIq+F7qMFxy2LTyrvtQTr7CV0kgh5fTR9rOFRUDdyuyfvL1iXyH/pZ06M57CO8qaFdmlwmbkga2QCBQaxCMwyVFrgHPRpSZ+SCd8bAImqvifxyKgSzA8uGhoUlRo21z0g0dTIAPBkzzMtMbX4+Vs95VJ3PEnAj1lTfY1LVMW3Nxt1UpN6XbSgpk+YIX8zGLEUJd42Ty44j9MGhnrQ4sMGRT31KfrbD/h397eHMbqyRGeP6eLYiKiBcwRn6UIxPSEwkvtshImeXAlepk2q3DuCCJbSkB6Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BN6PR12MB1282.namprd12.prod.outlook.com (2603:10b6:404:1d::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.18; Thu, 23 Jun
- 2022 20:50:34 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5373.016; Thu, 23 Jun 2022
- 20:50:34 +0000
-Date: Thu, 23 Jun 2022 17:50:32 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FA361FAC
+	for <iommu@lists.linux.dev>; Thu, 23 Jun 2022 23:00:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1656025249;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=K2a+ZoO+OyFnk1IwsI6/2cGromoSIiCUd/MQu22EaXU=;
+	b=PPnfMcp3M/y1fXZQh26z0bpGyi8OVP5nRUDA0qn/CXoWc006LZNmGL1S4bKjmrGwJcNutR
+	AGzc0tUqWLgYZRamiyBZcbdz7QNJrUdrOSjEzPf8TKjZlEMEqFrCJMdUAdAUlVHvZS01me
+	WIPI1Y+KumlFpix6tiWLlNsMSFZql5g=
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
+ [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-313--Ok-Q8AROqeDM7LaNyQ1LA-1; Thu, 23 Jun 2022 19:00:48 -0400
+X-MC-Unique: -Ok-Q8AROqeDM7LaNyQ1LA-1
+Received: by mail-io1-f72.google.com with SMTP id o11-20020a6bcf0b000000b0067328c4275bso436097ioa.8
+        for <iommu@lists.linux.dev>; Thu, 23 Jun 2022 16:00:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=K2a+ZoO+OyFnk1IwsI6/2cGromoSIiCUd/MQu22EaXU=;
+        b=jdyc0NTQpdc6Pf/KppVe2Jv6gJKXOITkcsziQcNYnWAiUbNG36hYo0J/14AGCrmRsT
+         niXapIlzqtvWrZ7T4EPP0rbRJP8M2mgSSUYJhW1KrgFDRWOmO+YLTY5lC8pO4wOroQUw
+         4Nm2z4mpbsvmrmkbPOg2MfPQ/OuXl2ELNa70FptXHFL6Xw0blmPY1oUoaBcnWZYn1Rh0
+         sq09armoJokU5Odg0j/lZNJ5bxh+Oy7RKEeJbK3hB/UOlIFb8UIbz7YY383vLsRJAaon
+         PZarfR7fRRELKZvH2FQh76OAH0sHyliwMlqJRJ7b1pV0cPDzfM2FQ02ffKmAL3KT85C7
+         vOfQ==
+X-Gm-Message-State: AJIora+tHQFC0zG+C3ZA05hkhleIehQyaNHHqoBAsbhecmuDovyiwlM+
+	T0cBlceknOba7IqYpYp//m24OS1RKLozvphX7fC8l/WuCMUBFK8yx4S5E3IAlBqw0dHNmRfZJcd
+	fZFoB9596lI/YRC0=
+X-Received: by 2002:a05:6602:3311:b0:669:d9d7:1026 with SMTP id b17-20020a056602331100b00669d9d71026mr5845182ioz.3.1656025247391;
+        Thu, 23 Jun 2022 16:00:47 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1s4e7FapPhiWbwyg7k9pxgE/9jBqkSjaoFx8Qxcthe61Ap3+36D6aUVxzWKfQ185aqMc4RTqg==
+X-Received: by 2002:a05:6602:3311:b0:669:d9d7:1026 with SMTP id b17-20020a056602331100b00669d9d71026mr5845165ioz.3.1656025247044;
+        Thu, 23 Jun 2022 16:00:47 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id f63-20020a0284c5000000b00339c2c0d123sm300924jai.116.2022.06.23.16.00.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 16:00:46 -0700 (PDT)
+Date: Thu, 23 Jun 2022 17:00:44 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
 To: Robin Murphy <robin.murphy@arm.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, cohuck@redhat.com,
-	iommu@lists.linux.dev, iommu@lists.linux-foundation.org,
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: cohuck@redhat.com, jgg@nvidia.com, iommu@lists.linux.dev,
+ iommu@lists.linux-foundation.org, kvm@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2 1/2] vfio/type1: Simplify bus_type determination
-Message-ID: <20220623205032.GH4147@nvidia.com>
-References: <b1d13cade281a7d8acbfd0f6a33dcd086207952c.1655898523.git.robin.murphy@arm.com>
- <20220622161721.469fc9eb.alex.williamson@redhat.com>
- <68263bd7-4528-7acb-b11f-6b1c6c8c72ef@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Message-ID: <20220623170044.1757267d.alex.williamson@redhat.com>
 In-Reply-To: <68263bd7-4528-7acb-b11f-6b1c6c8c72ef@arm.com>
-X-ClientProxiedBy: BL1PR13CA0174.namprd13.prod.outlook.com
- (2603:10b6:208:2bd::29) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+References: <b1d13cade281a7d8acbfd0f6a33dcd086207952c.1655898523.git.robin.murphy@arm.com>
+	<20220622161721.469fc9eb.alex.williamson@redhat.com>
+	<68263bd7-4528-7acb-b11f-6b1c6c8c72ef@arm.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 202ee41a-1e8b-430b-153c-08da555a0496
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1282:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	Hv/AQK4iwzsiUgxxTGmTInf7xHWbiAmRFi2NugUeBNquOQn1zmmbtkp+9aq4hsShiuixd9DQH++2w+ZEKZvP4N8jriVqO58Cny4beA5jPEBl/RMJK6lXNA33wRubIbh92bLGjn/65+eKJU5kNr3/3cxJrntLJxQZaFcIs/Uz8IBXI3JJdNwFMq+5qoImlZg72/8blL1nWGe1RXHTJQjwSRYau5u7lg+bVxc4a3tUL7AP+Dqw8zcdm4PwENDDeXpqPCZGKG/w2o7vAihmKYyK4HlUuFxSzcNPVNR/8oQUQgws7W8w+u5/3LtEn2xelgTYjOTsbM9aVkOdIpmL21576pQ+St8aKXHZhp3vahQ0tK0BkEkO7FsY4C5G6Tf34rwlGQUCNcy9/8pLi9/qcuNewe2TMLycSye33OhpdQ04eH5LG2ts+uQtQ4BJMzdYtaxwo2MoKWHT/ONKych6gw2pBDya/Yt/XniLzMiDPUvaDQr92D/4fdPItPULBr3i3HkgjMe2fEtMGB28TW0q78MVucNUVdYh0aVuCRjV5zRfXoMg4uD54Vu5/xLIrXzJk0DHLmhuNE7gLydcCOy1vv1XQlMwuKuVj3zCRL1NGADMyiXTg9zQOc0UEOmFDV0QDRByt2wkqc+fV0FzApzHwT6str3WuVq5SVEN3xNrz/STZxJc/1+gJiYfn3lhRdJlvFJ1+VrQwWVMXJxIG3ASachUHcmtPjWEo2t0Y7tp4UG+z/3hYU6OjCTZE0bADdRudaFx
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(346002)(366004)(39860400002)(376002)(86362001)(66556008)(6506007)(4744005)(33656002)(66476007)(38100700002)(2906002)(6486002)(5660300002)(8676002)(26005)(6512007)(83380400001)(316002)(478600001)(4326008)(41300700001)(6916009)(36756003)(2616005)(8936002)(1076003)(66946007)(186003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?uhctTAP5nDmjbxp6+1GEfnh3rjot14/GDwv7mjA/bnbyd2Kb/6c3hTtvUfA/?=
- =?us-ascii?Q?Z7KRf1i2ayF+1jMB3HkHugw8hAs/UaRmLEXTO4aiU/9hSJMQo0lrGF/9M1LL?=
- =?us-ascii?Q?If6ZSLFbIVW+ofTNOmmhU2FKUe3CUvVGFxAUGx9hbkV+/vxoqlzvkbaMbDL/?=
- =?us-ascii?Q?JFl5Qn6R14Q/C076D0tm8sGFnmBiKN6FZidxDhLWl32z2Iv3WFJBh0flFhBZ?=
- =?us-ascii?Q?ImYYI9CcB2FGf3MThhUXiHE5lLn3b3ofIhLcI+N59IxkwYFgBKayEVOX030w?=
- =?us-ascii?Q?gnSPGEKTetHmE6VGyPqTfsouoRUAWL5AcAz5O/ivgajNpdYF4z4lfBxCg1jE?=
- =?us-ascii?Q?FOLKo5gRyUtGBudrntBY3jKceUnrXW6tMsYoSf8RRsLcjbO3h9mDGFzDwdke?=
- =?us-ascii?Q?65Ms/qkFg/KsQZnl5LetgIRcymzRnGm2mmD/wQ6NJ2W5qyfzo0mCAAbzhrR+?=
- =?us-ascii?Q?fCZfBXuXOh1boUM7RGLrd45X/6G9MOUhv7JEqZJnTpLWtX/wnpRipvTt+Z1v?=
- =?us-ascii?Q?HHhItsYH2xTKF+HfcMKiiFSXWvL2Ox1Rt9JJJdJnlpt2DGTviCCyUAH9qndd?=
- =?us-ascii?Q?blZI+y6J/ZX4hkLW42laswpYnj8djbyb89HTLId8YN2PFS0NkqqiZOtF2Fb+?=
- =?us-ascii?Q?q34lp0G1VbjmekpWN/HomgjkxrFhKoIraee8VKmTOiy0Bai9pOi+9rrvH4Q4?=
- =?us-ascii?Q?5eCltX/iv3sfqRcDsw706PiwuDhLOGJfS9/Io3nV7lXmGYNQDKFQS69i+Fdr?=
- =?us-ascii?Q?+v4eQJZ6nizdnvBrFnyXp4MEnZcvEFmkqWBuivwSKMMXXQW6Uhu6RYrSE++u?=
- =?us-ascii?Q?bIFgj0rZTaswkG63OsmtWpniCCN0N1AuRwcfe+ezzvaOz0SlUH/sUqhcFN2N?=
- =?us-ascii?Q?1moOWYfB8Ksi2TovXFQV8pouIIvkqxgjOqO4RGcdA4ZpL86JXdstafSIj1oL?=
- =?us-ascii?Q?VUOBAn2B90Cw3UAJ5dXcgaaApO+0S29doXyjP+lBJVuXAtf/zvpeKTbp1ZEM?=
- =?us-ascii?Q?It2DTetYJ9v3Mq1Wd5jet9RZklmuKc6yaBwOunBPrR0sn6pS6sLPzRQWYEO0?=
- =?us-ascii?Q?jX5eF7s7FGiak1GBNKgnU16A5tfD0GhT05sVqypHWj+HGhWbD91UlQqihCNn?=
- =?us-ascii?Q?ligwtjrPIM4aBeRB0SOdC2z4l97q3kfb1Vtx8ADcMZMs9g3NkRNbK6HWkKYX?=
- =?us-ascii?Q?RkpjkIELpDSSzSpNneodxD17/R6HEfnEkyY9vDrCrq4DXM/CEqUYa24dk0hc?=
- =?us-ascii?Q?p1j1eY8ROLqGsAEVm4oVMvfsvCCP1uCqsd6DOzGDW2sdOt8fJKmsNZehsxu+?=
- =?us-ascii?Q?I6TuYZx+laa7vILLdMcSKajmGzWT7EzJKN9CwMqlSu3njV+lZznUV2bkJIZZ?=
- =?us-ascii?Q?dMRz0aP5ne6pWGkVdC3TLJ8NUHTcCD348q2a84QEzVH0KJQqcQbYw1/omoAz?=
- =?us-ascii?Q?QKDGzADh1PLVUJ9jEEs+qcIY1NyQgmy9pt9kUNGiw+X6vR6rP+77m1jpF6DT?=
- =?us-ascii?Q?aPC9ZCY1mKM+O3OKi8F+7WMH0QrzC3M8ZbmpB2Kl5cDXvImCFJ8y+GuHpmy3?=
- =?us-ascii?Q?uRaPgQ9GnJoHoOx7sq48+BPXWAu4Rx70DzJE+FRm?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 202ee41a-1e8b-430b-153c-08da555a0496
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2022 20:50:33.9958
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9kHh6+fTOG+rWJ/d7rDH7B3dUTAnPleJ9eQn0nsnJDrN4NPgVJ6O4NdzsVFLkKtP
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1282
-Message-ID: <20220623205032.2CPKmtQubB9GO0k3dl9CfvDbBtc2jh-KWO47wajthVw@z>
+Authentication-Results: relay.mimecast.com;
+	auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Message-ID: <20220623230044.9dL89hGEX_8hLBE5jGgD2J5x3q4rZrSQQwAL3dv3T4c@z>
 
-On Thu, Jun 23, 2022 at 01:23:05PM +0100, Robin Murphy wrote:
+On Thu, 23 Jun 2022 13:23:05 +0100
+Robin Murphy <robin.murphy@arm.com> wrote:
 
-> So yes, technically we could implement an iommu_group_capable() and an
-> iommu_group_domain_alloc(), which would still just internally resolve the
-> IOMMU ops and instance data from a member device to perform the driver-level
-> call, but once again it would be for the benefit of precisely one
-> user. 
+> On 2022-06-22 23:17, Alex Williamson wrote:
+> > On Wed, 22 Jun 2022 13:04:11 +0100
+> > Robin Murphy <robin.murphy@arm.com> wrote:
+> >   
+> >> Since IOMMU groups are mandatory for drivers to support, it stands to
+> >> reason that any device which has been successfully be added to a group  
+> > 
+> > s/be //  
+> 
+> Oops.
+> 
+> >> must be on a bus supported by that IOMMU driver, and therefore a domain
+> >> viable for any device in the group must be viable for all devices in
+> >> the group. This already has to be the case for the IOMMU API's internal
+> >> default domain, for instance. Thus even if the group contains devices on
+> >> different buses, that can only mean that the IOMMU driver actually
+> >> supports such an odd topology, and so without loss of generality we can
+> >> expect the bus type of any device in a group to be suitable for IOMMU
+> >> API calls.
+> >>
+> >> Replace vfio_bus_type() with a simple call to resolve an appropriate
+> >> member device from which to then derive a bus type. This is also a step
+> >> towards removing the vague bus-based interfaces from the IOMMU API, when
+> >> we can subsequently switch to using this device directly.
+> >>
+> >> Furthermore, scrutiny reveals a lack of protection for the bus being
+> >> removed while vfio_iommu_type1_attach_group() is using it; the reference
+> >> that VFIO holds on the iommu_group ensures that data remains valid, but
+> >> does not prevent the group's membership changing underfoot. Holding the
+> >> vfio_device for as long as we need here also neatly solves this.
+> >>
+> >> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> >> ---
+> >>
+> >> After sleeping on it, I decided to type up the helper function approach
+> >> to see how it looked in practice, and in doing so realised that with one
+> >> more tweak it could also subsume the locking out of the common paths as
+> >> well, so end up being a self-contained way for type1 to take care of its
+> >> own concern, which I rather like.
+> >>
+> >>   drivers/vfio/vfio.c             | 18 +++++++++++++++++-
+> >>   drivers/vfio/vfio.h             |  3 +++
+> >>   drivers/vfio/vfio_iommu_type1.c | 30 +++++++++++-------------------
+> >>   3 files changed, 31 insertions(+), 20 deletions(-)
+> >>
+> >> diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+> >> index 61e71c1154be..73bab04880d0 100644
+> >> --- a/drivers/vfio/vfio.c
+> >> +++ b/drivers/vfio/vfio.c
+> >> @@ -448,7 +448,7 @@ static void vfio_group_get(struct vfio_group *group)
+> >>    * Device objects - create, release, get, put, search
+> >>    */
+> >>   /* Device reference always implies a group reference */
+> >> -static void vfio_device_put(struct vfio_device *device)
+> >> +void vfio_device_put(struct vfio_device *device)
+> >>   {
+> >>   	if (refcount_dec_and_test(&device->refcount))
+> >>   		complete(&device->comp);
+> >> @@ -475,6 +475,22 @@ static struct vfio_device *vfio_group_get_device(struct vfio_group *group,
+> >>   	return NULL;
+> >>   }
+> >>   
+> >> +struct vfio_device *vfio_device_get_from_iommu(struct iommu_group *iommu_group)
+> >> +{
+> >> +	struct vfio_group *group = vfio_group_get_from_iommu(iommu_group);
+> >> +	struct vfio_device *device;  
+> > 
+> > Check group for NULL.  
+> 
+> OK - FWIW in context this should only ever make sense to call with an 
+> iommu_group which has already been derived from a vfio_group, and I did 
+> initially consider a check with a WARN_ON(), but then decided that the 
+> unguarded dereference would be a sufficiently strong message. No problem 
+> with bringing that back to make it more defensive if that's what you prefer.
 
-Benefit one user and come with a fairly complex locking situation to
-boot.
+A while down the road, that's a bit too much implicit knowledge of the
+intent and single purpose of this function just to simply avoid a test.
 
-Alex, I'd rather think about moving the type 1 code so that the iommu
-attach happens during device FD creation (then we have a concrete
-non-fake device), not during group FD opening.
+> >> +
+> >> +	mutex_lock(&group->device_lock);
+> >> +	list_for_each_entry(device, &group->device_list, group_next) {
+> >> +		if (vfio_device_try_get(device)) {
+> >> +			mutex_unlock(&group->device_lock);
+> >> +			return device;
+> >> +		}
+> >> +	}
+> >> +	mutex_unlock(&group->device_lock);
+> >> +	return NULL;  
+> > 
+> > No vfio_group_put() on either path.  
+> 
+> Oops indeed.
+> 
+> >> +}
+> >> +
+> >>   /*
+> >>    * VFIO driver API
+> >>    */
+> >> diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
+> >> index a67130221151..e8f21e64541b 100644
+> >> --- a/drivers/vfio/vfio.h
+> >> +++ b/drivers/vfio/vfio.h
+> >> @@ -70,3 +70,6 @@ struct vfio_iommu_driver_ops {
+> >>   
+> >>   int vfio_register_iommu_driver(const struct vfio_iommu_driver_ops *ops);
+> >>   void vfio_unregister_iommu_driver(const struct vfio_iommu_driver_ops *ops);
+> >> +
+> >> +struct vfio_device *vfio_device_get_from_iommu(struct iommu_group *iommu_group);
+> >> +void vfio_device_put(struct vfio_device *device);
+> >> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> >> index c13b9290e357..e38b8bfde677 100644
+> >> --- a/drivers/vfio/vfio_iommu_type1.c
+> >> +++ b/drivers/vfio/vfio_iommu_type1.c
+> >> @@ -1679,18 +1679,6 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
+> >>   	return ret;
+> >>   }
+> >>   
+> >> -static int vfio_bus_type(struct device *dev, void *data)
+> >> -{
+> >> -	struct bus_type **bus = data;
+> >> -
+> >> -	if (*bus && *bus != dev->bus)
+> >> -		return -EINVAL;
+> >> -
+> >> -	*bus = dev->bus;
+> >> -
+> >> -	return 0;
+> >> -}
+> >> -
+> >>   static int vfio_iommu_replay(struct vfio_iommu *iommu,
+> >>   			     struct vfio_domain *domain)
+> >>   {
+> >> @@ -2159,7 +2147,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+> >>   	struct vfio_iommu *iommu = iommu_data;
+> >>   	struct vfio_iommu_group *group;
+> >>   	struct vfio_domain *domain, *d;
+> >> -	struct bus_type *bus = NULL;
+> >> +	struct vfio_device *iommu_api_dev;
+> >>   	bool resv_msi, msi_remap;
+> >>   	phys_addr_t resv_msi_base = 0;
+> >>   	struct iommu_domain_geometry *geo;
+> >> @@ -2192,18 +2180,19 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+> >>   		goto out_unlock;
+> >>   	}
+> >>   
+> >> -	/* Determine bus_type in order to allocate a domain */
+> >> -	ret = iommu_group_for_each_dev(iommu_group, &bus, vfio_bus_type);
+> >> -	if (ret)
+> >> +	/* Resolve the group back to a member device for IOMMU API ops */
+> >> +	ret = -ENODEV;
+> >> +	iommu_api_dev = vfio_device_get_from_iommu(iommu_group);
+> >> +	if (!iommu_api_dev)
+> >>   		goto out_free_group;
+> >>   
+> >>   	ret = -ENOMEM;
+> >>   	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
+> >>   	if (!domain)
+> >> -		goto out_free_group;
+> >> +		goto out_put_dev;
+> >>   
+> >>   	ret = -EIO;
+> >> -	domain->domain = iommu_domain_alloc(bus);
+> >> +	domain->domain = iommu_domain_alloc(iommu_api_dev->dev->bus);  
+> > 
+> > It makes sense to move away from a bus centric interface to iommu ops
+> > and I can see that having a device interface when we have device level
+> > address-ability within a group makes sense, but does it make sense to
+> > only have that device level interface?  For example, if an iommu_group
+> > is going to remain an aspect of the iommu subsystem, shouldn't we be
+> > able to allocate a domain and test capabilities based on the group and
+> > the iommu driver should have enough embedded information reachable from
+> > the struct iommu_group to do those things?  This "perform group level
+> > operations based on an arbitrary device in the group" is pretty klunky.  
+> 
+> The fact* is that devices (and domains) are the fundamental units of the 
+> IOMMU API internals, due to what's most practical within the Linux 
+> driver model, while groups remain more of a mid-level abstraction - 
+> IOMMU drivers themselves are only aware of groups at all in terms of 
+> whether they can physically distinguish a given device from others. The 
+> client-driver-facing API is already moving back to being device-centric, 
+> because that's what fits everyone else's usage models, and we concluded 
+> that exposing the complexity of groups everywhere was more trouble than 
+> it's worth.
+> 
+> So yes, technically we could implement an iommu_group_capable() and an 
+> iommu_group_domain_alloc(), which would still just internally resolve 
+> the IOMMU ops and instance data from a member device to perform the 
+> driver-level call, but once again it would be for the benefit of 
+> precisely one user. And I really have minimal enthusiasm for diverging 
+> any further into one IOMMU API for everyone else plus a separate special 
+> IOMMU API for VFIO type1, when type1 is supposed to be the 
+> VFIO-to-IOMMU-API translation layer anyway! To look at it another way, 
+> if most of the complexity of groups is for VFIO's benefit, then why 
+> *shouldn't* VFIO take responsibility for some of the fiddly details that 
+> don't matter to anyone else?
 
-That is the model we need for iommufd anyhow.
 
-Jason
+Hmm, I agree, but I can't get past vfio-core exporting a function to
+select an arbitrary vfio_device from an iommu_group.  What if type1 was
+passed an opaque vfio_group pointer and vfio exported a function to
+iterate each vfio_device in that vfio_group?  We'd need to export
+vfio_device_try_get() and vfio_device_put() and type1 itself would stop
+on the first vfio_device object it can get.  Sort of the v1 approach,
+but with a vfio iterator rather than iommu.
+
+I'd lean towards Kevin's idea that we could store bus_type on the
+vfio_group and pass that to type1, with the same assumptions we're
+making in the commit log that it's consistent, but that doesn't get us
+closer to the long term plan of dropping the bus_type interfaces AIUI.
+Thanks,
+
+Alex
+
