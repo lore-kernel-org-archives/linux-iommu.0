@@ -1,59 +1,58 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D880EC43334
-	for <iommu@archiver.kernel.org>; Thu, 23 Jun 2022 11:30:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9AE3EC43334
+	for <iommu@archiver.kernel.org>; Thu, 23 Jun 2022 11:33:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 66C3384758;
-	Thu, 23 Jun 2022 11:30:45 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 66C3384758
+	by smtp4.osuosl.org (Postfix) with ESMTP id 07EC8424B7;
+	Thu, 23 Jun 2022 11:33:27 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 07EC8424B7
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SGbXHJKKp2cM; Thu, 23 Jun 2022 11:30:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 220F58475A;
-	Thu, 23 Jun 2022 11:30:44 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 220F58475A
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id chWX3wJ1neDo; Thu, 23 Jun 2022 11:33:26 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 9DD7441A41;
+	Thu, 23 Jun 2022 11:33:25 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 9DD7441A41
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DDC88C0039;
-	Thu, 23 Jun 2022 11:30:43 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7DE76C002D
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 11:30:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6490CC0039;
+	Thu, 23 Jun 2022 11:33:25 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0AF74C002D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 11:33:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 44B53613DB
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 11:30:42 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 44B53613DB
+ by smtp2.osuosl.org (Postfix) with ESMTP id D8A9840593
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 11:33:23 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org D8A9840593
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3hVJ1zqnO40Z for <iommu@lists.linux-foundation.org>;
- Thu, 23 Jun 2022 11:30:41 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id k6uuXTeGSUrq for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Jun 2022 11:33:23 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 7A6BE60E66
-Received: from theia.8bytes.org (8bytes.org
- [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 7A6BE60E66
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 11:30:41 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 468604019C
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 468604019C
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 11:33:23 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id B64474D2; Thu, 23 Jun 2022 13:30:37 +0200 (CEST)
-Date: Thu, 23 Jun 2022 13:30:35 +0200
+ id F0CE44D2; Thu, 23 Jun 2022 13:33:19 +0200 (CEST)
+Date: Thu, 23 Jun 2022 13:33:18 +0200
 From: Joerg Roedel <joro@8bytes.org>
 To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v1 3/7] iommu/amd: Fix sparse warning
-Message-ID: <YrRO21AvsFioAROB@8bytes.org>
-References: <20220603112107.8603-1-vasant.hegde@amd.com>
- <20220603112107.8603-4-vasant.hegde@amd.com>
- <YrQeXdR8yPOyv957@8bytes.org>
- <82767d0d-a04b-4432-0e7e-77bcca095e09@arm.com>
+Subject: Re: [PATCH v2] iommu/dma: Add config for PCI SAC address trick
+Message-ID: <YrRPfhXvdPo0Y6Cx@8bytes.org>
+References: <3f06994f9f370f9d35b2630ab75171ecd2065621.1654782107.git.robin.murphy@arm.com>
+ <YrMSJ6AGwn3PxSIH@8bytes.org>
+ <b9439692-c72b-b856-c7c0-e60a863f3e74@arm.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <82767d0d-a04b-4432-0e7e-77bcca095e09@arm.com>
-Cc: iommu@lists.linux-foundation.org, Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <b9439692-c72b-b856-c7c0-e60a863f3e74@arm.com>
+Cc: iommu@lists.linux-foundation.org, will@kernel.org,
+ linux-kernel@vger.kernel.org, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -71,21 +70,19 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jun 23, 2022 at 10:42:52AM +0100, Robin Murphy wrote:
-> TBH it's probably time to retire iommu_ops->pgsize_bitmap anyway. At the
-> very least it would be logical to move it to iommu_domain_ops now, but maybe
-> we could skip ahead and just rely on drivers initialising
-> domain->pgsize_bitmap directly in their .domain_alloc?
-> 
-> (and FWIW I'm leaning towards the same for the domain->ops as well; the more
-> I look at ops->default_domain_ops, the more it starts looking like a stupid
-> mess... my stupid mess... sorry about that)
+On Wed, Jun 22, 2022 at 02:12:39PM +0100, Robin Murphy wrote:
+> Thanks for your bravery!
 
-Good idea, that would be even better.
+It already starts, with that patch I am getting:
 
-Thanks,
+	xhci_hcd 0000:02:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x000f address=0xff00ffffffefe000 flags=0x0000]
 
-	Joerg
+In my kernel log. The device is an AMD XHCI controller and seems to
+funciton normally after boot. The message disappears with
+iommu.forcedac=0.
+
+Need to look more into that...
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
