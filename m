@@ -4,60 +4,86 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BE81DC433EF
-	for <iommu@archiver.kernel.org>; Thu, 23 Jun 2022 12:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AC86ACCA47C
+	for <iommu@archiver.kernel.org>; Thu, 23 Jun 2022 12:25:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 3BC4B613EB;
-	Thu, 23 Jun 2022 12:23:16 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 3BC4B613EB
+	by smtp3.osuosl.org (Postfix) with ESMTP id 478F660AEF;
+	Thu, 23 Jun 2022 12:25:27 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 478F660AEF
+Authentication-Results: smtp3.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=HRnHuDpU
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nxqgJe1RNUsD; Thu, 23 Jun 2022 12:23:15 +0000 (UTC)
+	with ESMTP id rLuK1bJtP3Lk; Thu, 23 Jun 2022 12:25:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id B6A9E60AEF;
-	Thu, 23 Jun 2022 12:23:14 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org B6A9E60AEF
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 0DC3A613E9;
+	Thu, 23 Jun 2022 12:25:26 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 0DC3A613E9
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A076C0032;
-	Thu, 23 Jun 2022 12:23:14 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AE70DC002D
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 12:23:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E1D37C0032;
+	Thu, 23 Jun 2022 12:25:25 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 84471C002D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 12:25:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7A38283ED3
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 12:23:12 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 7A38283ED3
+ by smtp4.osuosl.org (Postfix) with ESMTP id 5048C424D9
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 12:25:25 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 5048C424D9
+Authentication-Results: smtp4.osuosl.org;
+ dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org
+ header.a=rsa-sha256 header.s=google header.b=HRnHuDpU
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DMUhxDlF3f0z for <iommu@lists.linux-foundation.org>;
- Thu, 23 Jun 2022 12:23:11 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 5899383E9A
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 5899383E9A
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 12:23:11 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D34E212FC;
- Thu, 23 Jun 2022 05:23:10 -0700 (PDT)
-Received: from [10.57.85.4] (unknown [10.57.85.4])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8A8CF3F534;
- Thu, 23 Jun 2022 05:23:09 -0700 (PDT)
-Message-ID: <68263bd7-4528-7acb-b11f-6b1c6c8c72ef@arm.com>
-Date: Thu, 23 Jun 2022 13:23:05 +0100
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 5R99NvS_CI-2 for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Jun 2022 12:25:24 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 1C222424D3
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com
+ [IPv6:2a00:1450:4864:20::532])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 1C222424D3
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 12:25:24 +0000 (UTC)
+Received: by mail-ed1-x532.google.com with SMTP id z11so22115856edp.9
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 05:25:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=MZX8fvspGt+LtHf7gEGCk2W/SOrNo7rRR2lPEfFjYT4=;
+ b=HRnHuDpUPpi75BV/4x+QAr71ZWTc6YBUanqHvk/hlPqG2B9hZ9GUCCllUSuTSSBWLP
+ N1FbAzmsqFiL5HBeegRUHvT9uqty7wQvH5L1sZo8+Z6sbfIQ4dq7LEmTjtfq4RaRlwJi
+ gtAlzb1rJoO4aqn4U7fqzo2L2hJFuXSi7NCSJEShYM5KDV3UmTr63pDwO/61AerH2eUx
+ Yxm05O8xxZI3hixgEIS0QKQfqQ/Lw5i9zTXrMR3tG+MzYDZxCaikrLVkG/xCV17X/4Mt
+ 5E/k7V4zoAzWTKSdflKbL8whe4vnygRDptVx1LemRmonwavjA1MIDssjVZuNwf5PdZya
+ ezdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=MZX8fvspGt+LtHf7gEGCk2W/SOrNo7rRR2lPEfFjYT4=;
+ b=liOcDvqOYT4O2hIHKFvFSpuz0VIQAVNBWa63nuuip2x4Gj/0+7dUnBvfwSJGGNqKlS
+ C8O2D95NkokbyNOHFCvP5J8S421LMJe/3nQeHl4fSKA59Stb7SkNn/HnVUjOndQMQ7g+
+ Ql/aEPljjC50d1su7qtjSFI8gofgTbR3/+prwUxIMcnqy9lZy+fxFJGbNYBJ/mxRIMVe
+ z8vc7CfK1WA+N+abmqiGEFhdsPivvvAA7ico0x8zJWXVVPixwEu1Inje+sww9cChZNtH
+ KExiuj0QVyXz0Kuqhwol7fFrTeHEuFynqmvCHaNigWayk2DwIlj4K75LgDRj6IpUUAX9
+ Llbw==
+X-Gm-Message-State: AJIora/7E9Ge3vHxOPXTsHn11qn7BmOhNJcHuHqHHgsNvzJ3u/u5Iktk
+ 2gxQnCJrCOEsDuloXeFpB2//N1cNLLPHTQTiiLfv2g==
+X-Google-Smtp-Source: AGRyM1ueoNAn/6UpZzXtWy0ZUh7onypqkpiS+P5CnmQom0So4UY6jwS0/RR6+03SjNQnbCnUydc3U6IYa25HrO1rd9I=
+X-Received: by 2002:a05:6402:5192:b0:435:b3c3:af89 with SMTP id
+ q18-20020a056402519200b00435b3c3af89mr8878880edd.390.1655987122261; Thu, 23
+ Jun 2022 05:25:22 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 1/2] vfio/type1: Simplify bus_type determination
-Content-Language: en-GB
-To: Alex Williamson <alex.williamson@redhat.com>
-References: <b1d13cade281a7d8acbfd0f6a33dcd086207952c.1655898523.git.robin.murphy@arm.com>
- <20220622161721.469fc9eb.alex.williamson@redhat.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220622161721.469fc9eb.alex.williamson@redhat.com>
-Cc: kvm@vger.kernel.org, cohuck@redhat.com, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, iommu@lists.linux.dev, jgg@nvidia.com
+References: <CGME20220623093641eucas1p11732bf2c875960f7a2bb1d6fe053bc81@eucas1p1.samsung.com>
+ <20220623093629.32178-1-m.szyprowski@samsung.com>
+In-Reply-To: <20220623093629.32178-1-m.szyprowski@samsung.com>
+From: Sam Protsenko <semen.protsenko@linaro.org>
+Date: Thu, 23 Jun 2022 15:25:11 +0300
+Message-ID: <CAPLW+4=RRsgizoV4yS2qGvUbiU011W-9J=OTQP6Xm4hMjYgVvQ@mail.gmail.com>
+Subject: Re: [PATCH] iommu/exynos: Make driver independent of the system page
+ size
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -70,209 +96,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-06-22 23:17, Alex Williamson wrote:
-> On Wed, 22 Jun 2022 13:04:11 +0100
-> Robin Murphy <robin.murphy@arm.com> wrote:
-> 
->> Since IOMMU groups are mandatory for drivers to support, it stands to
->> reason that any device which has been successfully be added to a group
-> 
-> s/be //
+Hi Marek,
 
-Oops.
+On Thu, 23 Jun 2022 at 12:36, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
+>
+> PAGE_{SIZE,SHIFT} macros depend on the configured kernel's page size, but
+> the driver expects values calculated as for 4KB pages. Fix this.
+>
+> Reported-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> ---
 
->> must be on a bus supported by that IOMMU driver, and therefore a domain
->> viable for any device in the group must be viable for all devices in
->> the group. This already has to be the case for the IOMMU API's internal
->> default domain, for instance. Thus even if the group contains devices on
->> different buses, that can only mean that the IOMMU driver actually
->> supports such an odd topology, and so without loss of generality we can
->> expect the bus type of any device in a group to be suitable for IOMMU
->> API calls.
->>
->> Replace vfio_bus_type() with a simple call to resolve an appropriate
->> member device from which to then derive a bus type. This is also a step
->> towards removing the vague bus-based interfaces from the IOMMU API, when
->> we can subsequently switch to using this device directly.
->>
->> Furthermore, scrutiny reveals a lack of protection for the bus being
->> removed while vfio_iommu_type1_attach_group() is using it; the reference
->> that VFIO holds on the iommu_group ensures that data remains valid, but
->> does not prevent the group's membership changing underfoot. Holding the
->> vfio_device for as long as we need here also neatly solves this.
->>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>
->> After sleeping on it, I decided to type up the helper function approach
->> to see how it looked in practice, and in doing so realised that with one
->> more tweak it could also subsume the locking out of the common paths as
->> well, so end up being a self-contained way for type1 to take care of its
->> own concern, which I rather like.
->>
->>   drivers/vfio/vfio.c             | 18 +++++++++++++++++-
->>   drivers/vfio/vfio.h             |  3 +++
->>   drivers/vfio/vfio_iommu_type1.c | 30 +++++++++++-------------------
->>   3 files changed, 31 insertions(+), 20 deletions(-)
->>
->> diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
->> index 61e71c1154be..73bab04880d0 100644
->> --- a/drivers/vfio/vfio.c
->> +++ b/drivers/vfio/vfio.c
->> @@ -448,7 +448,7 @@ static void vfio_group_get(struct vfio_group *group)
->>    * Device objects - create, release, get, put, search
->>    */
->>   /* Device reference always implies a group reference */
->> -static void vfio_device_put(struct vfio_device *device)
->> +void vfio_device_put(struct vfio_device *device)
->>   {
->>   	if (refcount_dec_and_test(&device->refcount))
->>   		complete(&device->comp);
->> @@ -475,6 +475,22 @@ static struct vfio_device *vfio_group_get_device(struct vfio_group *group,
->>   	return NULL;
->>   }
->>   
->> +struct vfio_device *vfio_device_get_from_iommu(struct iommu_group *iommu_group)
->> +{
->> +	struct vfio_group *group = vfio_group_get_from_iommu(iommu_group);
->> +	struct vfio_device *device;
-> 
-> Check group for NULL.
+Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
 
-OK - FWIW in context this should only ever make sense to call with an 
-iommu_group which has already been derived from a vfio_group, and I did 
-initially consider a check with a WARN_ON(), but then decided that the 
-unguarded dereference would be a sufficiently strong message. No problem 
-with bringing that back to make it more defensive if that's what you prefer.
+with one note: SPAGE_SIZE and SPAGE_ORDER could be used instead of
+SZ_4K. But that's just a matter of taste, I'm ok with that as is,
+hence R-b tag.
 
->> +
->> +	mutex_lock(&group->device_lock);
->> +	list_for_each_entry(device, &group->device_list, group_next) {
->> +		if (vfio_device_try_get(device)) {
->> +			mutex_unlock(&group->device_lock);
->> +			return device;
->> +		}
->> +	}
->> +	mutex_unlock(&group->device_lock);
->> +	return NULL;
-> 
-> No vfio_group_put() on either path.
+Thanks!
 
-Oops indeed.
-
->> +}
->> +
->>   /*
->>    * VFIO driver API
->>    */
->> diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
->> index a67130221151..e8f21e64541b 100644
->> --- a/drivers/vfio/vfio.h
->> +++ b/drivers/vfio/vfio.h
->> @@ -70,3 +70,6 @@ struct vfio_iommu_driver_ops {
->>   
->>   int vfio_register_iommu_driver(const struct vfio_iommu_driver_ops *ops);
->>   void vfio_unregister_iommu_driver(const struct vfio_iommu_driver_ops *ops);
->> +
->> +struct vfio_device *vfio_device_get_from_iommu(struct iommu_group *iommu_group);
->> +void vfio_device_put(struct vfio_device *device);
->> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->> index c13b9290e357..e38b8bfde677 100644
->> --- a/drivers/vfio/vfio_iommu_type1.c
->> +++ b/drivers/vfio/vfio_iommu_type1.c
->> @@ -1679,18 +1679,6 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
->>   	return ret;
->>   }
->>   
->> -static int vfio_bus_type(struct device *dev, void *data)
->> -{
->> -	struct bus_type **bus = data;
->> -
->> -	if (*bus && *bus != dev->bus)
->> -		return -EINVAL;
->> -
->> -	*bus = dev->bus;
->> -
->> -	return 0;
->> -}
->> -
->>   static int vfio_iommu_replay(struct vfio_iommu *iommu,
->>   			     struct vfio_domain *domain)
->>   {
->> @@ -2159,7 +2147,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->>   	struct vfio_iommu *iommu = iommu_data;
->>   	struct vfio_iommu_group *group;
->>   	struct vfio_domain *domain, *d;
->> -	struct bus_type *bus = NULL;
->> +	struct vfio_device *iommu_api_dev;
->>   	bool resv_msi, msi_remap;
->>   	phys_addr_t resv_msi_base = 0;
->>   	struct iommu_domain_geometry *geo;
->> @@ -2192,18 +2180,19 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->>   		goto out_unlock;
->>   	}
->>   
->> -	/* Determine bus_type in order to allocate a domain */
->> -	ret = iommu_group_for_each_dev(iommu_group, &bus, vfio_bus_type);
->> -	if (ret)
->> +	/* Resolve the group back to a member device for IOMMU API ops */
->> +	ret = -ENODEV;
->> +	iommu_api_dev = vfio_device_get_from_iommu(iommu_group);
->> +	if (!iommu_api_dev)
->>   		goto out_free_group;
->>   
->>   	ret = -ENOMEM;
->>   	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
->>   	if (!domain)
->> -		goto out_free_group;
->> +		goto out_put_dev;
->>   
->>   	ret = -EIO;
->> -	domain->domain = iommu_domain_alloc(bus);
->> +	domain->domain = iommu_domain_alloc(iommu_api_dev->dev->bus);
-> 
-> It makes sense to move away from a bus centric interface to iommu ops
-> and I can see that having a device interface when we have device level
-> address-ability within a group makes sense, but does it make sense to
-> only have that device level interface?  For example, if an iommu_group
-> is going to remain an aspect of the iommu subsystem, shouldn't we be
-> able to allocate a domain and test capabilities based on the group and
-> the iommu driver should have enough embedded information reachable from
-> the struct iommu_group to do those things?  This "perform group level
-> operations based on an arbitrary device in the group" is pretty klunky.
-
-The fact* is that devices (and domains) are the fundamental units of the 
-IOMMU API internals, due to what's most practical within the Linux 
-driver model, while groups remain more of a mid-level abstraction - 
-IOMMU drivers themselves are only aware of groups at all in terms of 
-whether they can physically distinguish a given device from others. The 
-client-driver-facing API is already moving back to being device-centric, 
-because that's what fits everyone else's usage models, and we concluded 
-that exposing the complexity of groups everywhere was more trouble than 
-it's worth.
-
-So yes, technically we could implement an iommu_group_capable() and an 
-iommu_group_domain_alloc(), which would still just internally resolve 
-the IOMMU ops and instance data from a member device to perform the 
-driver-level call, but once again it would be for the benefit of 
-precisely one user. And I really have minimal enthusiasm for diverging 
-any further into one IOMMU API for everyone else plus a separate special 
-IOMMU API for VFIO type1, when type1 is supposed to be the 
-VFIO-to-IOMMU-API translation layer anyway! To look at it another way, 
-if most of the complexity of groups is for VFIO's benefit, then why 
-*shouldn't* VFIO take responsibility for some of the fiddly details that 
-don't matter to anyone else?
-
-Thanks,
-Robin.
-
-
-* with some inescapable degree of subjective opinion, of course
+> Untested, because Exynos based boards I have doesn't boot with non-4KB
+> page size for other reasons.
+> ---
+>  drivers/iommu/exynos-iommu.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 71f2018e23fe..9c060505a46e 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -340,8 +340,7 @@ static void __sysmmu_set_ptbase(struct sysmmu_drvdata *data, phys_addr_t pgd)
+>         if (MMU_MAJ_VER(data->version) < 5)
+>                 writel(pgd, data->sfrbase + REG_PT_BASE_ADDR);
+>         else
+> -               writel(pgd >> PAGE_SHIFT,
+> -                            data->sfrbase + REG_V5_PT_BASE_PFN);
+> +               writel(pgd / SZ_4K, data->sfrbase + REG_V5_PT_BASE_PFN);
+>
+>         __sysmmu_tlb_invalidate(data);
+>  }
+> @@ -551,7 +550,7 @@ static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
+>                  * 64KB page can be one of 16 consecutive sets.
+>                  */
+>                 if (MMU_MAJ_VER(data->version) == 2)
+> -                       num_inv = min_t(unsigned int, size / PAGE_SIZE, 64);
+> +                       num_inv = min_t(unsigned int, size / SZ_4K, 64);
+>
+>                 if (sysmmu_block(data)) {
+>                         __sysmmu_tlb_invalidate_entry(data, iova, num_inv);
+> --
+> 2.17.1
+>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
