@@ -1,113 +1,95 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8B5A4CCA47C
-	for <iommu@archiver.kernel.org>; Thu, 23 Jun 2022 20:36:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 12F26C43334
+	for <iommu@archiver.kernel.org>; Thu, 23 Jun 2022 20:38:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id ECD0184807;
-	Thu, 23 Jun 2022 20:36:01 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org ECD0184807
-Authentication-Results: smtp1.osuosl.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=CPzm4Rqy
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7W2e9HapH0om; Thu, 23 Jun 2022 20:36:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id AF44F8479E;
-	Thu, 23 Jun 2022 20:36:00 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org AF44F8479E
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6C3B3C0032;
-	Thu, 23 Jun 2022 20:36:00 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 00D5DC002D
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 20:35:58 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id BB9D6401E1
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 20:35:58 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org BB9D6401E1
-Authentication-Results: smtp2.osuosl.org;
- dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com
- header.a=rsa-sha256 header.s=mimecast20190719 header.b=CPzm4Rqy
+	by smtp2.osuosl.org (Postfix) with ESMTP id 90B324032A;
+	Thu, 23 Jun 2022 20:38:18 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 90B324032A
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ELAVocTdxu84 for <iommu@lists.linux-foundation.org>;
- Thu, 23 Jun 2022 20:35:58 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JNONvG9wTcna; Thu, 23 Jun 2022 20:38:17 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 26452401E1;
+	Thu, 23 Jun 2022 20:38:17 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 26452401E1
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E3107C0032;
+	Thu, 23 Jun 2022 20:38:16 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4B856C002D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 20:38:15 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 1F0DE417A1
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 20:38:15 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 1F0DE417A1
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id bvc3HY84N1Ru for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Jun 2022 20:38:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org E2E1440101
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.129.124])
- by smtp2.osuosl.org (Postfix) with ESMTPS id E2E1440101
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 20:35:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1656016556;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=jBmUQROEGSBi6KZ4o9E9bBpH1DEN5yNQ4K8Bp+Z/iq4=;
- b=CPzm4RqyO4RL06TxxQKf9e7y7T4S0v1ZjCJwe3FuMIVccdIILiEf4v19uGvtyeV0/5j1xJ
- HVeOUDjgxTz+jFE2JF9KdWosM9+Pv+qZNiF+T4qi5lVqhgGDYG6nqy/ugWzcjzw8aY9Xyl
- wOqFFrpxYWEbyHmjF9pR8q5tKSbPbk8=
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
- [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-259-X6y5ZgA_O2We_t9BuWiwsQ-1; Thu, 23 Jun 2022 16:35:54 -0400
-X-MC-Unique: X6y5ZgA_O2We_t9BuWiwsQ-1
-Received: by mail-io1-f69.google.com with SMTP id
- q13-20020a5d9f0d000000b00669c03397f7so285048iot.10
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 13:35:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
- :references:organization:mime-version:content-transfer-encoding;
- bh=jBmUQROEGSBi6KZ4o9E9bBpH1DEN5yNQ4K8Bp+Z/iq4=;
- b=jE6qokz1nZ86y3AELSVZWjgvwtH58aaVRpX2df0CBGL1SvKeiPfZh0DFC9V38x9+3Q
- kTmgLkUwiMSCVMnEPNns51QPlofcN+Ix6bFVGMZORUbZUQP8hGY59NpbtDQDcsLYMMys
- KrQNxlCcBYWa8N1+li0IXl33cOmJ4epBYJcYXgefFC6g10KBZgwAypQDe0bO8WPlFJ8t
- fpQqDSbosF6AJhkAFmO1X7ODZxMag9mUdbAvgzX4vjVGdFyulvI7FFjtWpTxXMT7++qq
- 8T4exi+IkmMunDl2Ikw1Z+CVLb7bf/QTclhx3Ae6l8CYlKsI2o81m4y6el0IFRrRyHbB
- 28cw==
-X-Gm-Message-State: AJIora+ZKp5oQjKwDBcutP1NKeNNffTG6j/vcZHJQtLMZRwgl2sGsnBY
- ESz4kAdCLm/I64MWhOxp72GBPyc+ORFGf8q5HIV5gkA1Yp/don6HMyKzJswczQi6ctcCFwBeS54
- zbVHsUAjEcFCh48u6/NWxWWvrB5tExw==
-X-Received: by 2002:a02:c503:0:b0:339:ec67:b0a4 with SMTP id
- s3-20020a02c503000000b00339ec67b0a4mr2600641jam.27.1656016554288; 
- Thu, 23 Jun 2022 13:35:54 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uY4A4ulPkvl+0HkPHVJxiXM5mroTpWUdfuh0+GS53HXI+mhS1f3l3m2WS35NzqHwDBGAYR9g==
-X-Received: by 2002:a02:c503:0:b0:339:ec67:b0a4 with SMTP id
- s3-20020a02c503000000b00339ec67b0a4mr2600627jam.27.1656016553968; 
- Thu, 23 Jun 2022 13:35:53 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239]) by smtp.gmail.com with ESMTPSA id
- w16-20020a02cf90000000b00339c3906b08sm151280jar.177.2022.06.23.13.35.53
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 23 Jun 2022 13:35:53 -0700 (PDT)
-Date: Thu, 23 Jun 2022 14:35:52 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [PATCH v2 1/2] vfio/type1: Simplify bus_type determination
-Message-ID: <20220623143552.634779e0.alex.williamson@redhat.com>
-In-Reply-To: <BN9PR11MB5276A79834CCB5954A3025DF8CB59@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <b1d13cade281a7d8acbfd0f6a33dcd086207952c.1655898523.git.robin.murphy@arm.com>
- <20220622161721.469fc9eb.alex.williamson@redhat.com>
- <BN9PR11MB5276A79834CCB5954A3025DF8CB59@BN9PR11MB5276.namprd11.prod.outlook.com>
-Organization: Red Hat
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 62EFB416D4
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de
+ [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 62EFB416D4
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 20:38:13 +0000 (UTC)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+ by metis.ext.pengutronix.de with esmtps
+ (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.92)
+ (envelope-from <sha@pengutronix.de>)
+ id 1o4TZo-0005zb-EL; Thu, 23 Jun 2022 22:37:20 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+ (envelope-from <sha@pengutronix.de>)
+ id 1o4TZk-0004Od-6x; Thu, 23 Jun 2022 22:37:16 +0200
+Date: Thu, 23 Jun 2022 22:37:16 +0200
+From: sascha hauer <sha@pengutronix.de>
+To: Saravana Kannan <saravanak@google.com>
+Subject: Re: [PATCH v2 2/2] of: base: Avoid console probe delay when
+ fw_devlink.strict=1
+Message-ID: <20220623203716.GA1615@pengutronix.de>
+References: <20220623080344.783549-1-saravanak@google.com>
+ <20220623080344.783549-3-saravanak@google.com>
+ <20220623100421.GY1615@pengutronix.de>
+ <CAGETcx_eVkYtVX9=TOKnhpP2_ZpJwRDoBye3i7ND2u5Q-eQfPg@mail.gmail.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "cohuck@redhat.com" <cohuck@redhat.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "jgg@nvidia.com" <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <CAGETcx_eVkYtVX9=TOKnhpP2_ZpJwRDoBye3i7ND2u5Q-eQfPg@mail.gmail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL: http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de);
+ SAEximRunCond expanded to false
+X-PTX-Original-Recipient: iommu@lists.linux-foundation.org
+Cc: andrew lunn <andrew@lunn.ch>, peng fan <peng.fan@nxp.com>,
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ linus walleij <linus.walleij@linaro.org>, ulf hansson <ulf.hansson@linaro.org>,
+ eric dumazet <edumazet@google.com>, pavel machek <pavel@ucw.cz>,
+ will deacon <will@kernel.org>, kevin hilman <khilman@kernel.org>,
+ Frank Rowand <frowand.list@gmail.com>, russell king <linux@armlinux.org.uk>,
+ linux-acpi@vger.kernel.org, jakub kicinski <kuba@kernel.org>,
+ paolo abeni <pabeni@redhat.com>, kernel-team@android.com,
+ Len Brown <lenb@kernel.org>, len brown <len.brown@intel.com>,
+ kernel@pengutronix.de, linux-pm@vger.kernel.org, linux-gpio@vger.kernel.org,
+ Rob Herring <robh+dt@kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ david ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
+ Daniel Scally <djrscally@gmail.com>, iommu@lists.linux-foundation.org,
+ Sakari Ailus <sakari.ailus@linux.intel.com>, netdev@vger.kernel.org,
+ "david s. miller" <davem@davemloft.net>, devicetree@vger.kernel.org,
+ heiner kallweit <hkallweit1@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -125,44 +107,107 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 23 Jun 2022 08:46:45 +0000
-"Tian, Kevin" <kevin.tian@intel.com> wrote:
-
-> > From: Alex Williamson <alex.williamson@redhat.com>
-> > Sent: Thursday, June 23, 2022 6:17 AM
-> >   
+On Thu, Jun 23, 2022 at 10:26:46AM -0700, Saravana Kannan wrote:
+> On Thu, Jun 23, 2022 at 3:05 AM sascha hauer <sha@pengutronix.de> wrote:
+> >
+> > On Thu, Jun 23, 2022 at 01:03:43AM -0700, Saravana Kannan wrote:
+> > > Commit 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
+> > > enabled iommus and dmas dependency enforcement by default. On some
+> > > systems, this caused the console device's probe to get delayed until the
+> > > deferred_probe_timeout expires.
 > > >
-> > >  	ret = -EIO;
-> > > -	domain->domain = iommu_domain_alloc(bus);
-> > > +	domain->domain = iommu_domain_alloc(iommu_api_dev->dev-
-> > >bus);  
-> > 
-> > It makes sense to move away from a bus centric interface to iommu ops
-> > and I can see that having a device interface when we have device level
-> > address-ability within a group makes sense, but does it make sense to
-> > only have that device level interface?  For example, if an iommu_group
-> > is going to remain an aspect of the iommu subsystem, shouldn't we be
-> > able to allocate a domain and test capabilities based on the group and
-> > the iommu driver should have enough embedded information reachable
-> > from
-> > the struct iommu_group to do those things?  This "perform group level
-> > operations based on an arbitrary device in the group" is pretty klunky.
-> > Thanks,
-> >   
+> > > We need consoles to work as soon as possible, so mark the console device
+> > > node with FWNODE_FLAG_BEST_EFFORT so that fw_delink knows not to delay
+> > > the probe of the console device for suppliers without drivers. The
+> > > driver can then make the decision on where it can probe without those
+> > > suppliers or defer its probe.
+> > >
+> > > Fixes: 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
+> > > Reported-by: Sascha Hauer <sha@pengutronix.de>
+> > > Reported-by: Peng Fan <peng.fan@nxp.com>
+> > > Signed-off-by: Saravana Kannan <saravanak@google.com>
+> > > Tested-by: Peng Fan <peng.fan@nxp.com>
+> > > ---
+> > >  drivers/of/base.c | 2 ++
+> > >  1 file changed, 2 insertions(+)
+> > >
+> > > diff --git a/drivers/of/base.c b/drivers/of/base.c
+> > > index d4f98c8469ed..a19cd0c73644 100644
+> > > --- a/drivers/of/base.c
+> > > +++ b/drivers/of/base.c
+> > > @@ -1919,6 +1919,8 @@ void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align))
+> > >                       of_property_read_string(of_aliases, "stdout", &name);
+> > >               if (name)
+> > >                       of_stdout = of_find_node_opts_by_path(name, &of_stdout_options);
+> > > +             if (of_stdout)
+> > > +                     of_stdout->fwnode.flags |= FWNODE_FLAG_BEST_EFFORT;
+> >
+> > The device given in the stdout-path property doesn't necessarily have to
+> > be consistent with the console= parameter. The former is usually
+> > statically set in the device trees contained in the kernel while the
+> > latter is dynamically set by the bootloader. So if you change the
+> > console uart in the bootloader then you'll still run into this trap.
+> >
+> > It's problematic to consult only the device tree for dependencies. I
+> > found several examples of drivers in the tree for which dma support
+> > is optional. They use it if they can, but continue without it when
+> > not available. "hwlock" is another property which consider several
+> > drivers as optional. Also consider SoCs in early upstreaming phases
+> > when the device tree is merged with "dmas" or "hwlock" properties,
+> > but the corresponding drivers are not yet upstreamed. It's not nice
+> > to defer probing of all these devices for a long time.
+> >
+> > I wonder if it wouldn't be a better approach to just probe all devices
+> > and record the device(node) they are waiting on. Then you know that you
+> > don't need to probe them again until the device they are waiting for
+> > is available.
 > 
-> This sounds a right thing to do.
-> 
-> btw another alternative which I'm thinking of is whether vfio_group
-> can record the bus info when the first device is added to it in
-> __vfio_register_dev(). Then we don't need a group interface from
-> iommu to test if vfio is the only user having such requirement.
+> That actually breaks things in a worse sense. There are cases where
+> the consumer driver is built in and the optional supplier driver is
+> loaded at boot. Without fw_devlink and the deferred probe timeout, we
+> end up probing the consumer with limited functionality. With the
+> current setup, sure we delay some probes a bit but at least everything
+> works with the right functionality. And you can reduce or remove the
+> delay if you want to optimize it.
 
-That might be more simple, but it's just another variation on vfio
-picking an arbitrary device from a group to satisfy the iommu interface
-rather than operating on an iommu subsystem provided object.  Thanks,
+We have optional and mandatory resources. In this situation a driver has
+to decide what to do. Either it continues with limited resources or it
+defers probing. Some drivers try to allocate the optional resources at
+open time so that they are able to use them once they are available.  We
+could even think of an asynchronous callback into a driver when a
+resource becomes available. Whether we put this decision what is
+optional or not into the driver or in the framework doesn't make a
+difference to the problem, it is still the same: When a resource is not
+yet available we have no idea if and when it becomes available, if it's
+worth waiting for it or not.
 
-Alex
+The difference is that with my proposal (which isn't actually mine but
+from my collegue Lucas) a driver can decide very fine grained how it
+wants to deal with the situation. With fw_devlink we try to put this
+intelligence into the framework and it seems there are quite some quirks
+necessary to get that running for everyone.
 
+Anyway, we have fw_devlink now and actually I think the dependency graph
+that we have with fw_devlink is quite nice to resolve the natural probe
+order. But why do we have to put an extra penalty on drivers whose
+resources are not yet available?  Probe devices with complete resources
+as long as you find them, execute more initcalls as long as there are
+any, but when there are no more left, you could start probing devices
+with incomplete resources, why wait for another ten seconds?
+
+For me it's no problem when the UART probes late, we have earlycon which
+can be used to debug problems that arise before the UART probes, but
+what nags is the ten seconds delay. zero would be a much saner value for
+me.
+
+Sascha
+
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
