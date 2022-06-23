@@ -1,93 +1,88 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3FBB1841
-	for <iommu@lists.linux.dev>; Thu, 23 Jun 2022 01:47:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98FAA1363
+	for <iommu@lists.linux.dev>; Thu, 23 Jun 2022 04:32:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655948826; x=1687484826;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=5aSD0DjHyYnzIIUB6IzUxLlam0GmvLF8zHoN0ofDDZ0=;
-  b=ESKZ3rdQrlXvYMKmjkZIGJxsj7rH5wUNV3MdVAjMpcbDCil7iHXTzs0l
-   ct2y/7fsxanNsA0Tgnt9yJ5ZjG3me+fOwr9V9N5U7HOukXbieqwadw8r9
-   Pa2OmAvZmagE5aGh2tTZtgiCzSQpcK5WOotQEelUSmNGQYq1Ev4Nv5ybr
-   v5J3Cukew1l706tLbXTrOgRu80ulD5xop4Vp+rLe0tSkE4daVPzZ6Dtw7
-   rI7mRGGGLOb29LEHnOmv6Qlin7CjJ3LVc0WOQ1HIqsEADw1x/bagl5CIn
-   oSuFQk2EcZZLmDJO37uWUfwI4dpdwVy5ZqWvI0Dfb1PNRfrgCC9kq+Q7j
+  t=1655958737; x=1687494737;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Xf1ZndHIWN0yF2ATkspzO18eIZTG7iZNontCpxDrQsk=;
+  b=GRdlZ1t6W9NP/n28RwgSsYrj8bRhV8bh78bMxICF0QMXiPMosck8tZjT
+   FccZZ+Lq0BuxPFUR77793oh9Lbg94/HDALXDM9B2SHFeEz+rbernlVjTy
+   BsDFci92/hF0KE7WHrqtPGxPZ4oQcwiERRgEiaYUMm8BWjz/r01jtTiTd
+   H9DmC1nsPMTtnQBo+m9TVtooAXbLb8zp1lBwQ4XNW6K5OaxlVyDsKtCSw
+   AVbd6A533/BdY4RBnkiIr+tlkdFm9ebcHc5YFtrNBmp+iJ0EfbkHkZnId
+   PNG0PdTHxJ601SoA+V7/l/hsGg9pSjOFtyzMojh1bdix1VcB+YniChqJb
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="279362968"
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="278171007"
 X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="279362968"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 18:47:06 -0700
+   d="scan'208";a="278171007"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 21:32:16 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
-   d="scan'208";a="644487288"
-Received: from yutaoxu-mobl.ccr.corp.intel.com (HELO [10.249.172.190]) ([10.249.172.190])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 18:47:04 -0700
-Message-ID: <809315c8-67b3-c4ce-a1de-bddbe7ec9770@linux.intel.com>
-Date: Thu, 23 Jun 2022 09:47:02 +0800
+   d="scan'208";a="538746728"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 22 Jun 2022 21:32:14 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+	(envelope-from <lkp@intel.com>)
+	id 1o4EVp-0000hJ-Pi;
+	Thu, 23 Jun 2022 04:32:13 +0000
+Date: Thu, 23 Jun 2022 12:32:05 +0800
+From: kernel test robot <lkp@intel.com>
+To: Robin Murphy <robin.murphy@arm.com>, alex.williamson@redhat.com,
+	cohuck@redhat.com
+Cc: kbuild-all@lists.01.org, kvm@vger.kernel.org, iommu@lists.linux.dev,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	jgg@nvidia.com
+Subject: Re: [PATCH v2 1/2] vfio/type1: Simplify bus_type determination
+Message-ID: <202206231208.PGASmlUW-lkp@intel.com>
+References: <b1d13cade281a7d8acbfd0f6a33dcd086207952c.1655898523.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc: baolu.lu@linux.intel.com, jgg@nvidia.com, iommu@lists.linux.dev,
- iommu@lists.linux-foundation.org, kvm@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] vfio: Use device_iommu_capable()
-Content-Language: en-US
-To: Robin Murphy <robin.murphy@arm.com>, alex.williamson@redhat.com,
- cohuck@redhat.com
-References: <b1d13cade281a7d8acbfd0f6a33dcd086207952c.1655898523.git.robin.murphy@arm.com>
- <910aef11138e3b6702b29a3e78415235aa4bf773.1655898523.git.robin.murphy@arm.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <910aef11138e3b6702b29a3e78415235aa4bf773.1655898523.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Message-ID: <20220623014702.JQgHzWCReHHishK__Ym1iMCpM9BlA4QJlso3qI8aSEQ@z>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b1d13cade281a7d8acbfd0f6a33dcd086207952c.1655898523.git.robin.murphy@arm.com>
+Message-ID: <20220623043205.td39OAxXaHZsVFa3F2NtEwUozp8R_ObtkeLVgzRG1Pc@z>
 
-On 2022/6/22 20:04, Robin Murphy wrote:
-> Use the new interface to check the capabilities for our device
-> specifically.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->   drivers/vfio/vfio.c             | 2 +-
->   drivers/vfio/vfio_iommu_type1.c | 2 +-
->   2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-> index 73bab04880d0..765d68192c88 100644
-> --- a/drivers/vfio/vfio.c
-> +++ b/drivers/vfio/vfio.c
-> @@ -621,7 +621,7 @@ int vfio_register_group_dev(struct vfio_device *device)
->   	 * VFIO always sets IOMMU_CACHE because we offer no way for userspace to
->   	 * restore cache coherency.
->   	 */
-> -	if (!iommu_capable(device->dev->bus, IOMMU_CAP_CACHE_COHERENCY))
-> +	if (!device_iommu_capable(device->dev, IOMMU_CAP_CACHE_COHERENCY))
->   		return -EINVAL;
->   
->   	return __vfio_register_dev(device,
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index e38b8bfde677..2107e95eb743 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -2247,7 +2247,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->   	list_add(&group->next, &domain->group_list);
->   
->   	msi_remap = irq_domain_check_msi_remap() ||
-> -		    iommu_capable(iommu_api_dev->dev->bus, IOMMU_CAP_INTR_REMAP);
-> +		    device_iommu_capable(iommu_api_dev->dev, IOMMU_CAP_INTR_REMAP);
->   
->   	if (!allow_unsafe_interrupts && !msi_remap) {
->   		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
+Hi Robin,
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+I love your patch! Yet something to improve:
 
-Best regards,
-baolu
+[auto build test ERROR on v5.19-rc3]
+[also build test ERROR on linus/master next-20220622]
+[cannot apply to awilliam-vfio/next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Robin-Murphy/vfio-type1-Simplify-bus_type-determination/20220622-200503
+base:    a111daf0c53ae91e71fd2bfe7497862d14132e3e
+config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220623/202206231208.PGASmlUW-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/7a6e1ddc765bde40f879995137a2ff20cb0eda47
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Robin-Murphy/vfio-type1-Simplify-bus_type-determination/20220622-200503
+        git checkout 7a6e1ddc765bde40f879995137a2ff20cb0eda47
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: "vfio_device_get_from_iommu" [drivers/vfio/vfio_iommu_type1.ko] undefined!
+>> ERROR: modpost: "vfio_device_put" [drivers/vfio/vfio_iommu_type1.ko] undefined!
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
