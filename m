@@ -1,95 +1,137 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 12F26C43334
-	for <iommu@archiver.kernel.org>; Thu, 23 Jun 2022 20:38:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 331F3C433EF
+	for <iommu@archiver.kernel.org>; Thu, 23 Jun 2022 20:50:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 90B324032A;
-	Thu, 23 Jun 2022 20:38:18 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 90B324032A
+	by smtp3.osuosl.org (Postfix) with ESMTP id AEE4F611B7;
+	Thu, 23 Jun 2022 20:50:40 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org AEE4F611B7
+Authentication-Results: smtp3.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=D+gUEUB/
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JNONvG9wTcna; Thu, 23 Jun 2022 20:38:17 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 26452401E1;
-	Thu, 23 Jun 2022 20:38:17 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 26452401E1
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5wX9EuRBZfG3; Thu, 23 Jun 2022 20:50:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 696E661175;
+	Thu, 23 Jun 2022 20:50:39 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 696E661175
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E3107C0032;
-	Thu, 23 Jun 2022 20:38:16 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4B856C002D
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 20:38:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 403BDC0032;
+	Thu, 23 Jun 2022 20:50:39 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9A907C002D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 20:50:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 1F0DE417A1
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 20:38:15 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 1F0DE417A1
+ by smtp3.osuosl.org (Postfix) with ESMTP id 44D1E61176
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 20:50:38 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 44D1E61176
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bvc3HY84N1Ru for <iommu@lists.linux-foundation.org>;
- Thu, 23 Jun 2022 20:38:13 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 62EFB416D4
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de
- [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 62EFB416D4
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 20:38:13 +0000 (UTC)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
- by metis.ext.pengutronix.de with esmtps
- (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.92)
- (envelope-from <sha@pengutronix.de>)
- id 1o4TZo-0005zb-EL; Thu, 23 Jun 2022 22:37:20 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
- (envelope-from <sha@pengutronix.de>)
- id 1o4TZk-0004Od-6x; Thu, 23 Jun 2022 22:37:16 +0200
-Date: Thu, 23 Jun 2022 22:37:16 +0200
-From: sascha hauer <sha@pengutronix.de>
-To: Saravana Kannan <saravanak@google.com>
-Subject: Re: [PATCH v2 2/2] of: base: Avoid console probe delay when
- fw_devlink.strict=1
-Message-ID: <20220623203716.GA1615@pengutronix.de>
-References: <20220623080344.783549-1-saravanak@google.com>
- <20220623080344.783549-3-saravanak@google.com>
- <20220623100421.GY1615@pengutronix.de>
- <CAGETcx_eVkYtVX9=TOKnhpP2_ZpJwRDoBye3i7ND2u5Q-eQfPg@mail.gmail.com>
-MIME-Version: 1.0
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0aTtMu71If6Q for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Jun 2022 20:50:37 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 1FDFE61175
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam12on2055.outbound.protection.outlook.com [40.107.244.55])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 1FDFE61175
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jun 2022 20:50:36 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QaZVFMFgTURV03ydRH/qoFNcLaYXGuUZqBg4CSAIgcSqSmK4BXyLDDbxVlytIw/zWNNtvyYtaAcV6t+bDeGnHxPc0VIBGhA9qlFqVlJnzEgoQIY7fBLUgB2Ospmd8AcuogXNmhtl5xRnfYoRrWtVPu8tKsncGOUjWdU3TKugeLxisL6b8vpCwnzZ6XFuaGTc4zngQUbJ1slNhR9z/q33IWVNbrGAuECsDnJe8M6+THeQISOd5UgU6KD6KUZeS6RGBemiR7BC8u9PmJ5wIJtp+1AmtUTZkRpTxvMKnSvH8qvSYDTViBn2ie2acUvcSxqotgqi07NlJFHfYShXd9+P7w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cqKdjnjHQ5n5G3z3A0A1RcCvqHjiTAVA/wUWl6oZ/6Q=;
+ b=I8lKCHVpqEzx1/ZQlLqfLWfjItlpEdWzA+/JXB8dKPPysIMqWk7mgMYAisA3hJMuax5GMS11AEp8rToDSIKUgIQ3+ZDZWn+4//VffT1xYeP9t82VO5hc2wmhgXJIaMzcK5xSCTGT++LG8qbiGnQdKsxH5QwMr+FxX5nWkWVb0V8jtsaC6n08AVNmC4xApkqeZgqsuB8goriRecqGC9TCQusHdjnxQ+mN7ZsYT6lmC+ckzHaRwJ6pxzgNy7isuT/6Zp8nEKuPHgv9juOKXEse9R1jA4WfBOiwTm6QkiREv54L/RXYdloZPSdMgiWKKqNiMctrBeyiY0aMbQY5JmkuUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cqKdjnjHQ5n5G3z3A0A1RcCvqHjiTAVA/wUWl6oZ/6Q=;
+ b=D+gUEUB/l7A61gVJS0RC0TatuTsA42zWp+zT+tEJz7ZXotfXAO1vADZKAaIq+F7qMFxy2LTyrvtQTr7CV0kgh5fTR9rOFRUDdyuyfvL1iXyH/pZ06M57CO8qaFdmlwmbkga2QCBQaxCMwyVFrgHPRpSZ+SCd8bAImqvifxyKgSzA8uGhoUlRo21z0g0dTIAPBkzzMtMbX4+Vs95VJ3PEnAj1lTfY1LVMW3Nxt1UpN6XbSgpk+YIX8zGLEUJd42Ty44j9MGhnrQ4sMGRT31KfrbD/h397eHMbqyRGeP6eLYiKiBcwRn6UIxPSEwkvtshImeXAlepk2q3DuCCJbSkB6Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BN6PR12MB1282.namprd12.prod.outlook.com (2603:10b6:404:1d::16)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.18; Thu, 23 Jun
+ 2022 20:50:34 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5373.016; Thu, 23 Jun 2022
+ 20:50:34 +0000
+Date: Thu, 23 Jun 2022 17:50:32 -0300
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2 1/2] vfio/type1: Simplify bus_type determination
+Message-ID: <20220623205032.GH4147@nvidia.com>
+References: <b1d13cade281a7d8acbfd0f6a33dcd086207952c.1655898523.git.robin.murphy@arm.com>
+ <20220622161721.469fc9eb.alex.williamson@redhat.com>
+ <68263bd7-4528-7acb-b11f-6b1c6c8c72ef@arm.com>
 Content-Disposition: inline
-In-Reply-To: <CAGETcx_eVkYtVX9=TOKnhpP2_ZpJwRDoBye3i7ND2u5Q-eQfPg@mail.gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL: http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de);
- SAEximRunCond expanded to false
-X-PTX-Original-Recipient: iommu@lists.linux-foundation.org
-Cc: andrew lunn <andrew@lunn.ch>, peng fan <peng.fan@nxp.com>,
- Heikki Krogerus <heikki.krogerus@linux.intel.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- linus walleij <linus.walleij@linaro.org>, ulf hansson <ulf.hansson@linaro.org>,
- eric dumazet <edumazet@google.com>, pavel machek <pavel@ucw.cz>,
- will deacon <will@kernel.org>, kevin hilman <khilman@kernel.org>,
- Frank Rowand <frowand.list@gmail.com>, russell king <linux@armlinux.org.uk>,
- linux-acpi@vger.kernel.org, jakub kicinski <kuba@kernel.org>,
- paolo abeni <pabeni@redhat.com>, kernel-team@android.com,
- Len Brown <lenb@kernel.org>, len brown <len.brown@intel.com>,
- kernel@pengutronix.de, linux-pm@vger.kernel.org, linux-gpio@vger.kernel.org,
- Rob Herring <robh+dt@kernel.org>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- david ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
- Daniel Scally <djrscally@gmail.com>, iommu@lists.linux-foundation.org,
- Sakari Ailus <sakari.ailus@linux.intel.com>, netdev@vger.kernel.org,
- "david s. miller" <davem@davemloft.net>, devicetree@vger.kernel.org,
- heiner kallweit <hkallweit1@gmail.com>
+In-Reply-To: <68263bd7-4528-7acb-b11f-6b1c6c8c72ef@arm.com>
+X-ClientProxiedBy: BL1PR13CA0174.namprd13.prod.outlook.com
+ (2603:10b6:208:2bd::29) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 202ee41a-1e8b-430b-153c-08da555a0496
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1282:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Hv/AQK4iwzsiUgxxTGmTInf7xHWbiAmRFi2NugUeBNquOQn1zmmbtkp+9aq4hsShiuixd9DQH++2w+ZEKZvP4N8jriVqO58Cny4beA5jPEBl/RMJK6lXNA33wRubIbh92bLGjn/65+eKJU5kNr3/3cxJrntLJxQZaFcIs/Uz8IBXI3JJdNwFMq+5qoImlZg72/8blL1nWGe1RXHTJQjwSRYau5u7lg+bVxc4a3tUL7AP+Dqw8zcdm4PwENDDeXpqPCZGKG/w2o7vAihmKYyK4HlUuFxSzcNPVNR/8oQUQgws7W8w+u5/3LtEn2xelgTYjOTsbM9aVkOdIpmL21576pQ+St8aKXHZhp3vahQ0tK0BkEkO7FsY4C5G6Tf34rwlGQUCNcy9/8pLi9/qcuNewe2TMLycSye33OhpdQ04eH5LG2ts+uQtQ4BJMzdYtaxwo2MoKWHT/ONKych6gw2pBDya/Yt/XniLzMiDPUvaDQr92D/4fdPItPULBr3i3HkgjMe2fEtMGB28TW0q78MVucNUVdYh0aVuCRjV5zRfXoMg4uD54Vu5/xLIrXzJk0DHLmhuNE7gLydcCOy1vv1XQlMwuKuVj3zCRL1NGADMyiXTg9zQOc0UEOmFDV0QDRByt2wkqc+fV0FzApzHwT6str3WuVq5SVEN3xNrz/STZxJc/1+gJiYfn3lhRdJlvFJ1+VrQwWVMXJxIG3ASachUHcmtPjWEo2t0Y7tp4UG+z/3hYU6OjCTZE0bADdRudaFx
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230016)(4636009)(396003)(136003)(346002)(366004)(39860400002)(376002)(86362001)(66556008)(6506007)(4744005)(33656002)(66476007)(38100700002)(2906002)(6486002)(5660300002)(8676002)(26005)(6512007)(83380400001)(316002)(478600001)(4326008)(41300700001)(6916009)(36756003)(2616005)(8936002)(1076003)(66946007)(186003);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uhctTAP5nDmjbxp6+1GEfnh3rjot14/GDwv7mjA/bnbyd2Kb/6c3hTtvUfA/?=
+ =?us-ascii?Q?Z7KRf1i2ayF+1jMB3HkHugw8hAs/UaRmLEXTO4aiU/9hSJMQo0lrGF/9M1LL?=
+ =?us-ascii?Q?If6ZSLFbIVW+ofTNOmmhU2FKUe3CUvVGFxAUGx9hbkV+/vxoqlzvkbaMbDL/?=
+ =?us-ascii?Q?JFl5Qn6R14Q/C076D0tm8sGFnmBiKN6FZidxDhLWl32z2Iv3WFJBh0flFhBZ?=
+ =?us-ascii?Q?ImYYI9CcB2FGf3MThhUXiHE5lLn3b3ofIhLcI+N59IxkwYFgBKayEVOX030w?=
+ =?us-ascii?Q?gnSPGEKTetHmE6VGyPqTfsouoRUAWL5AcAz5O/ivgajNpdYF4z4lfBxCg1jE?=
+ =?us-ascii?Q?FOLKo5gRyUtGBudrntBY3jKceUnrXW6tMsYoSf8RRsLcjbO3h9mDGFzDwdke?=
+ =?us-ascii?Q?65Ms/qkFg/KsQZnl5LetgIRcymzRnGm2mmD/wQ6NJ2W5qyfzo0mCAAbzhrR+?=
+ =?us-ascii?Q?fCZfBXuXOh1boUM7RGLrd45X/6G9MOUhv7JEqZJnTpLWtX/wnpRipvTt+Z1v?=
+ =?us-ascii?Q?HHhItsYH2xTKF+HfcMKiiFSXWvL2Ox1Rt9JJJdJnlpt2DGTviCCyUAH9qndd?=
+ =?us-ascii?Q?blZI+y6J/ZX4hkLW42laswpYnj8djbyb89HTLId8YN2PFS0NkqqiZOtF2Fb+?=
+ =?us-ascii?Q?q34lp0G1VbjmekpWN/HomgjkxrFhKoIraee8VKmTOiy0Bai9pOi+9rrvH4Q4?=
+ =?us-ascii?Q?5eCltX/iv3sfqRcDsw706PiwuDhLOGJfS9/Io3nV7lXmGYNQDKFQS69i+Fdr?=
+ =?us-ascii?Q?+v4eQJZ6nizdnvBrFnyXp4MEnZcvEFmkqWBuivwSKMMXXQW6Uhu6RYrSE++u?=
+ =?us-ascii?Q?bIFgj0rZTaswkG63OsmtWpniCCN0N1AuRwcfe+ezzvaOz0SlUH/sUqhcFN2N?=
+ =?us-ascii?Q?1moOWYfB8Ksi2TovXFQV8pouIIvkqxgjOqO4RGcdA4ZpL86JXdstafSIj1oL?=
+ =?us-ascii?Q?VUOBAn2B90Cw3UAJ5dXcgaaApO+0S29doXyjP+lBJVuXAtf/zvpeKTbp1ZEM?=
+ =?us-ascii?Q?It2DTetYJ9v3Mq1Wd5jet9RZklmuKc6yaBwOunBPrR0sn6pS6sLPzRQWYEO0?=
+ =?us-ascii?Q?jX5eF7s7FGiak1GBNKgnU16A5tfD0GhT05sVqypHWj+HGhWbD91UlQqihCNn?=
+ =?us-ascii?Q?ligwtjrPIM4aBeRB0SOdC2z4l97q3kfb1Vtx8ADcMZMs9g3NkRNbK6HWkKYX?=
+ =?us-ascii?Q?RkpjkIELpDSSzSpNneodxD17/R6HEfnEkyY9vDrCrq4DXM/CEqUYa24dk0hc?=
+ =?us-ascii?Q?p1j1eY8ROLqGsAEVm4oVMvfsvCCP1uCqsd6DOzGDW2sdOt8fJKmsNZehsxu+?=
+ =?us-ascii?Q?I6TuYZx+laa7vILLdMcSKajmGzWT7EzJKN9CwMqlSu3njV+lZznUV2bkJIZZ?=
+ =?us-ascii?Q?dMRz0aP5ne6pWGkVdC3TLJ8NUHTcCD348q2a84QEzVH0KJQqcQbYw1/omoAz?=
+ =?us-ascii?Q?QKDGzADh1PLVUJ9jEEs+qcIY1NyQgmy9pt9kUNGiw+X6vR6rP+77m1jpF6DT?=
+ =?us-ascii?Q?aPC9ZCY1mKM+O3OKi8F+7WMH0QrzC3M8ZbmpB2Kl5cDXvImCFJ8y+GuHpmy3?=
+ =?us-ascii?Q?uRaPgQ9GnJoHoOx7sq48+BPXWAu4Rx70DzJE+FRm?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 202ee41a-1e8b-430b-153c-08da555a0496
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2022 20:50:33.9958 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9kHh6+fTOG+rWJ/d7rDH7B3dUTAnPleJ9eQn0nsnJDrN4NPgVJ6O4NdzsVFLkKtP
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1282
+Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, cohuck@redhat.com,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Alex Williamson <alex.williamson@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,112 +144,31 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jun 23, 2022 at 10:26:46AM -0700, Saravana Kannan wrote:
-> On Thu, Jun 23, 2022 at 3:05 AM sascha hauer <sha@pengutronix.de> wrote:
-> >
-> > On Thu, Jun 23, 2022 at 01:03:43AM -0700, Saravana Kannan wrote:
-> > > Commit 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
-> > > enabled iommus and dmas dependency enforcement by default. On some
-> > > systems, this caused the console device's probe to get delayed until the
-> > > deferred_probe_timeout expires.
-> > >
-> > > We need consoles to work as soon as possible, so mark the console device
-> > > node with FWNODE_FLAG_BEST_EFFORT so that fw_delink knows not to delay
-> > > the probe of the console device for suppliers without drivers. The
-> > > driver can then make the decision on where it can probe without those
-> > > suppliers or defer its probe.
-> > >
-> > > Fixes: 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
-> > > Reported-by: Sascha Hauer <sha@pengutronix.de>
-> > > Reported-by: Peng Fan <peng.fan@nxp.com>
-> > > Signed-off-by: Saravana Kannan <saravanak@google.com>
-> > > Tested-by: Peng Fan <peng.fan@nxp.com>
-> > > ---
-> > >  drivers/of/base.c | 2 ++
-> > >  1 file changed, 2 insertions(+)
-> > >
-> > > diff --git a/drivers/of/base.c b/drivers/of/base.c
-> > > index d4f98c8469ed..a19cd0c73644 100644
-> > > --- a/drivers/of/base.c
-> > > +++ b/drivers/of/base.c
-> > > @@ -1919,6 +1919,8 @@ void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align))
-> > >                       of_property_read_string(of_aliases, "stdout", &name);
-> > >               if (name)
-> > >                       of_stdout = of_find_node_opts_by_path(name, &of_stdout_options);
-> > > +             if (of_stdout)
-> > > +                     of_stdout->fwnode.flags |= FWNODE_FLAG_BEST_EFFORT;
-> >
-> > The device given in the stdout-path property doesn't necessarily have to
-> > be consistent with the console= parameter. The former is usually
-> > statically set in the device trees contained in the kernel while the
-> > latter is dynamically set by the bootloader. So if you change the
-> > console uart in the bootloader then you'll still run into this trap.
-> >
-> > It's problematic to consult only the device tree for dependencies. I
-> > found several examples of drivers in the tree for which dma support
-> > is optional. They use it if they can, but continue without it when
-> > not available. "hwlock" is another property which consider several
-> > drivers as optional. Also consider SoCs in early upstreaming phases
-> > when the device tree is merged with "dmas" or "hwlock" properties,
-> > but the corresponding drivers are not yet upstreamed. It's not nice
-> > to defer probing of all these devices for a long time.
-> >
-> > I wonder if it wouldn't be a better approach to just probe all devices
-> > and record the device(node) they are waiting on. Then you know that you
-> > don't need to probe them again until the device they are waiting for
-> > is available.
-> 
-> That actually breaks things in a worse sense. There are cases where
-> the consumer driver is built in and the optional supplier driver is
-> loaded at boot. Without fw_devlink and the deferred probe timeout, we
-> end up probing the consumer with limited functionality. With the
-> current setup, sure we delay some probes a bit but at least everything
-> works with the right functionality. And you can reduce or remove the
-> delay if you want to optimize it.
+On Thu, Jun 23, 2022 at 01:23:05PM +0100, Robin Murphy wrote:
 
-We have optional and mandatory resources. In this situation a driver has
-to decide what to do. Either it continues with limited resources or it
-defers probing. Some drivers try to allocate the optional resources at
-open time so that they are able to use them once they are available.  We
-could even think of an asynchronous callback into a driver when a
-resource becomes available. Whether we put this decision what is
-optional or not into the driver or in the framework doesn't make a
-difference to the problem, it is still the same: When a resource is not
-yet available we have no idea if and when it becomes available, if it's
-worth waiting for it or not.
+> So yes, technically we could implement an iommu_group_capable() and an
+> iommu_group_domain_alloc(), which would still just internally resolve the
+> IOMMU ops and instance data from a member device to perform the driver-level
+> call, but once again it would be for the benefit of precisely one
+> user. 
 
-The difference is that with my proposal (which isn't actually mine but
-from my collegue Lucas) a driver can decide very fine grained how it
-wants to deal with the situation. With fw_devlink we try to put this
-intelligence into the framework and it seems there are quite some quirks
-necessary to get that running for everyone.
+Benefit one user and come with a fairly complex locking situation to
+boot.
 
-Anyway, we have fw_devlink now and actually I think the dependency graph
-that we have with fw_devlink is quite nice to resolve the natural probe
-order. But why do we have to put an extra penalty on drivers whose
-resources are not yet available?  Probe devices with complete resources
-as long as you find them, execute more initcalls as long as there are
-any, but when there are no more left, you could start probing devices
-with incomplete resources, why wait for another ten seconds?
+Alex, I'd rather think about moving the type 1 code so that the iommu
+attach happens during device FD creation (then we have a concrete
+non-fake device), not during group FD opening.
 
-For me it's no problem when the UART probes late, we have earlycon which
-can be used to debug problems that arise before the UART probes, but
-what nags is the ten seconds delay. zero would be a much saner value for
-me.
+That is the model we need for iommufd anyhow.
 
-Sascha
-
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
