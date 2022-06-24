@@ -1,109 +1,136 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id A4091C433EF
-	for <iommu@archiver.kernel.org>; Fri, 24 Jun 2022 14:12:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 68E1EC43334
+	for <iommu@archiver.kernel.org>; Fri, 24 Jun 2022 14:14:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 2EEA284856;
-	Fri, 24 Jun 2022 14:12:09 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 2EEA284856
-Authentication-Results: smtp1.osuosl.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=hwyM5prn
+	by smtp3.osuosl.org (Postfix) with ESMTP id DFCF16146E;
+	Fri, 24 Jun 2022 14:14:15 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org DFCF16146E
+Authentication-Results: smtp3.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=TAoK2TQu
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QS_Qe_x9u37m; Fri, 24 Jun 2022 14:12:08 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id WxDw4PO7eOzQ; Fri, 24 Jun 2022 14:14:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 0B0AC83ED6;
-	Fri, 24 Jun 2022 14:12:08 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 0B0AC83ED6
+	by smtp3.osuosl.org (Postfix) with ESMTPS id BC03D60AB0;
+	Fri, 24 Jun 2022 14:14:14 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org BC03D60AB0
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C570BC0039;
-	Fri, 24 Jun 2022 14:12:07 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7CC84C002D
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 14:12:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5CA31C0039;
+	Fri, 24 Jun 2022 14:14:14 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B156EC002D
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 14:14:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 4FB938482B
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 14:12:06 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 4FB938482B
+ by smtp3.osuosl.org (Postfix) with ESMTP id 791F66147B
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 14:14:13 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 791F66147B
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TUfxOMYkrzhp for <iommu@lists.linux-foundation.org>;
- Fri, 24 Jun 2022 14:12:05 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org EF3A483ED6
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp1.osuosl.org (Postfix) with ESMTPS id EF3A483ED6
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 14:12:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1656079923;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=4yoKMHx8hwjlhiED35XD21wSiT8cy5Qt0nttKMguOFA=;
- b=hwyM5prnJ4E98em7IHXzqONlzC/8R0e/mA1TaqlpKcWSL/AvO1zZ55ozhYAJ3JksQoak7y
- cWdAliwaa6dZJvjM+LXccWNr2KsxWqAp5BollZNXw8uAlfAzyhBehZ429u/OgDObhSo8nQ
- 9VJDy0UVhYhARMg8xrf6MbvzBsZDTKg=
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
- [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-352-wWnQ4OkIPUOzdxHgjHZ21g-1; Fri, 24 Jun 2022 10:12:02 -0400
-X-MC-Unique: wWnQ4OkIPUOzdxHgjHZ21g-1
-Received: by mail-io1-f69.google.com with SMTP id
- f1-20020a056602070100b00674f8035487so1346739iox.17
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 07:12:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
- :references:organization:mime-version:content-transfer-encoding;
- bh=4yoKMHx8hwjlhiED35XD21wSiT8cy5Qt0nttKMguOFA=;
- b=SIR3TR9pGFmormSVRT2nN99xvLopk3FVVRlZsK/P/nZ81/VEJTAOcA2dGtnp03eEEl
- x/g7j0+vfqk/JY69jgzMlQyilgGcDCm2q3El1yYyHkATxxvj1SqO+D7YmwfxnxNLL+cT
- 8mT8cXMVCINA94ucynoXZBsdBNWvfngYr1bFlzHsWtAdnGObzUFMQe7shtyZb6kFOSVA
- 2RGVZpEl2gpSpqNtaM2cAEYUonRdAUVAujMMAijf7+v1cFxFgrptVobaT1RZY9r+e2j6
- dXrekFmmTZlqcHhLB8v8X1t5RhEQR4MUb2Lu+jj4H3MtFia86pziu0JYLV3tzXCLJ2Dk
- MMvg==
-X-Gm-Message-State: AJIora8aBmhSDpyuVm2lEGIngEBv9rizh/XLun80G/goAalhlI8ItBII
- cX/CA65ClDsN0q2nPAXH+4KwJRy2MIWAvThv+Cb7WeBsSuVEFAam87UIhvqA5zdmSZaO88i2hmv
- BN0hgFWHzk9v/FZvddQbcrl46uskf3w==
-X-Received: by 2002:a05:6e02:1a49:b0:2d9:500e:4a06 with SMTP id
- u9-20020a056e021a4900b002d9500e4a06mr5757818ilv.43.1656079921961; 
- Fri, 24 Jun 2022 07:12:01 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1svZazEj69RanON2dp4ypTbHsA9NUh03zO72gJcjs8JfjOdXtOKKxzpMQNeXHU8+oJ9Wo4RqA==
-X-Received: by 2002:a05:6e02:1a49:b0:2d9:500e:4a06 with SMTP id
- u9-20020a056e021a4900b002d9500e4a06mr5757804ilv.43.1656079921645; 
- Fri, 24 Jun 2022 07:12:01 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239]) by smtp.gmail.com with ESMTPSA id
- t8-20020a5e9908000000b00674eedf7bbfsm1286144ioj.33.2022.06.24.07.12.00
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 24 Jun 2022 07:12:00 -0700 (PDT)
-Date: Fri, 24 Jun 2022 08:11:59 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v2 1/2] vfio/type1: Simplify bus_type determination
-Message-ID: <20220624081159.508baed3.alex.williamson@redhat.com>
-In-Reply-To: <20220624015030.GJ4147@nvidia.com>
-References: <b1d13cade281a7d8acbfd0f6a33dcd086207952c.1655898523.git.robin.murphy@arm.com>
- <20220622161721.469fc9eb.alex.williamson@redhat.com>
- <68263bd7-4528-7acb-b11f-6b1c6c8c72ef@arm.com>
- <20220623170044.1757267d.alex.williamson@redhat.com>
- <20220624015030.GJ4147@nvidia.com>
-Organization: Red Hat
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id yBiT3i_tLgV0 for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Jun 2022 14:14:12 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org C618D61470
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam12on2054.outbound.protection.outlook.com [40.107.244.54])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id C618D61470
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 14:14:12 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jP6/i9Mmxy86HvLjMmKDz/ui7ji0hENQBFQjMZCbus+xVwGMVK67cbd3t9VrMKRz2Q1rQE6wuTE5lNxsqgNepUBQ3wBXrVcVrFsTV8/Fpnco3pAOGGUoQxp2rF5yL5E3/HBAon5jZg+0ijwuhS1aOv38qdcvDooLA+ZCwywlQGJjHP858wREVKlSI/ZPx30oykx/PiEo4YSVo6Z5KSVRFbHhHl+O+WqFC1NUpJiGQYq6KUBxwg2ItmATK4LoIG7sh6pOAmzkoMGNPpDMj2OFN7+OZ2TB8WvQYvQA7WawCTkIGlszbqbC/SpncOxDdNzYvMEkfbhFLOBOhw+LH+HwZQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=C6m+COAtBKRutvAJjUxkbnYWEgjmjmFUhOLFXq2RG5Q=;
+ b=inQjL4jBXcOh3F5qUPp9lRHK5gb45OJDRkEFsyZ2qOaLCigX9VVB06ACKxF+R4hIN7zKYDKQE8OFdtR9HNAMipU6Tk4LYmHbfxpugfQu3mXbtzOwJegu1geZlN5Xl0uODCQHGDMMMYxaccubCCA2z3atKymK//8LmB5jNsK5YYIiHZkjdtABVQ9prcH+rZ5DgKpM1I1B4LJyOopjoszkf2embLnjbzFPm0eSoTOGRJ1Pi3rr+VpZJebxx9zcedod58AVAPbfQNI+0GsUfrI6i0cnMsDaTlU61p1F1Swe5NocNXyNwmBNrtmOQEE6L6I/61NHJbCIZvAOnFfSGaDI7g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C6m+COAtBKRutvAJjUxkbnYWEgjmjmFUhOLFXq2RG5Q=;
+ b=TAoK2TQuSzPbwKhO58lJXo6dD3oYr9r61ZnhlA7XpAyErRQu1TdKu5ZgcVMfTq8GcAN2Z96yb1ElG7uocvqY3N3zLqkRKKvYbK+xabUNRBf2qGv8qvF/7j8LEUL8XvIzN6zhjqlqxz9eK9CzOa3dX3uAF5pG2IgWivu1/cZE6pnpCumwdGlB1f7RqsoqmKPrTPcdEfslILnpCZvw/09riUfqRJt+XDY/LmFwJe0vduI+E5rXdiOTtIHjMciboTBofOEN2m5X+caT3HwGXylqV0dgGa1FI6Cqt/T3YkBnZwhjuzEl5qz4cetXgf6VvWX6aXEl656ShxO5lN95A7thGw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by DM6PR12MB4156.namprd12.prod.outlook.com (2603:10b6:5:218::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.16; Fri, 24 Jun
+ 2022 14:14:10 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5373.016; Fri, 24 Jun 2022
+ 14:14:10 +0000
+Date: Fri, 24 Jun 2022 11:14:09 -0300
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 1/2] vfio/type1: Simplify bus_type determination
+Message-ID: <20220624141409.GR4147@nvidia.com>
+References: <07c69a27fa5bf9724ea8c9fcfe3ff2e8b68f6bf0.1654697988.git.robin.murphy@arm.com>
+ <20220610000343.GD1343366@nvidia.com>
+ <4bc34090-249a-c505-3d90-f75a7fe7c17d@arm.com>
+Content-Disposition: inline
+In-Reply-To: <4bc34090-249a-c505-3d90-f75a7fe7c17d@arm.com>
+X-ClientProxiedBy: MN2PR11CA0026.namprd11.prod.outlook.com
+ (2603:10b6:208:23b::31) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Cc: kvm@vger.kernel.org, cohuck@redhat.com, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- Robin Murphy <robin.murphy@arm.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 09cb8452-125e-4aeb-c93f-08da55ebcea9
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4156:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Cat3jvAfLfoa3XoGaBjoeXw0ryynUU8IgG/8TiXhM3roCyJROLq+hL83sZWu5I8mO9kE+aD1AxMUjq95whfKt7SDXemqzzN/2CQXDfpNimFcf3c0py9us1rBM+x8B5z4HzSlaC0igPEpCrHtp9DFYa/U6LQDhN0jOGOmxJLbzAyxQBU/7tM6S01pLAnCZA3Gi3wMfKp55sB4Ac7dStYVZ0drgZKu6evrIhUfaGbrG7+K+v8MeCYM6afCtc1uGTasaIQwSN8M/vFXhOwV6yjHEfUWNqWmF6CnsRZlv79Tuj6bJnIGBuc2Rr/KEW7qbP5NbsdXoUmPTpTQ95uEgjZZtkuWsU1GzLgJtREd+TF1mV2p5lrYIeLwzPTUm0/J6gVidqc8KeNWejd7tpzcqHPsoS1ZWZMg/CwI0YCCMUT8qjPys/MffSbKTfc1kvDb2YOv6KQpx7nxom6nW7x40mfmICAyzLY81EM1qrUxH27J04MtZx+Pao4SKpxHWz5dBMlkNpNo5SFEsicNxDD3OJUzmmJpSiDm+SJWOpGs+35N2oj5tShVXJTaZZ+rLjouGPtahm4GNhup9Dmhz38MMo+628SbFa/2rTSTxyDfns9fpmfVfQstFOR7fA8CRNJFO0iFoVcLDEQCc++VpJYEh360xOesaKvhlAqY9N5wMihJFK5QgdNcNlOIq0rFEwpVlV5yrrdzi5O16qqNGd39+uZfVFz4W+VT6S5lrd2EscAtSE+h0O9KTTSIwpouKNHevkE+
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230016)(4636009)(39860400002)(136003)(366004)(376002)(346002)(396003)(4326008)(8936002)(33656002)(8676002)(66556008)(66946007)(66476007)(316002)(6916009)(6486002)(38100700002)(86362001)(1076003)(36756003)(186003)(6512007)(26005)(478600001)(6506007)(41300700001)(4744005)(2616005)(2906002)(5660300002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ndNm/pZtNfICcOcVMtE1JiplmDZ/FVinMrb/Imx9+B1WIn41HDrUEeuJAEIN?=
+ =?us-ascii?Q?reAmZrwhdnfqEstGU9cBecGPd073t/eAqqwGyREhpFOVMwYskAV/qFbpV+2q?=
+ =?us-ascii?Q?0Fb0TeI+nSmPQ5AWNdkT+9H0YyIPog+4kWrqCf9fse639rrjAN1hS3mWxo30?=
+ =?us-ascii?Q?c092hM+AHoevHl8B/+XPhW5MxcDbMQqPnESpfpDiN9JC9r4/GhJu/ZKxz5qK?=
+ =?us-ascii?Q?JrpBUXlg0ULGc4wLQPtJ3Vd4RFrqP+jd1FT4KeMI5VQtLCysND7fIPFwmIfk?=
+ =?us-ascii?Q?PCJJXmi3t7ZtiltKbNE88evblcsoxR1XW02YzjvQWN+3U67wXTctvGV4wCsQ?=
+ =?us-ascii?Q?Ab1nxFu0iCmXuaw7p9mrBed+KoZSPZiZRmu/radScEwDIqVt6sVGAdY6jxFl?=
+ =?us-ascii?Q?2Oi/i5v34PnUWlS9kf/kykW7BW4eMKWqvBUcmFkbZqwPxVds7PxbCoXBItSi?=
+ =?us-ascii?Q?VhrGe12nCxwxxdunDgm/QhbS550G4h6uiOYQ2+WbiRg6MqZNB6oxZhSr8pgY?=
+ =?us-ascii?Q?eCa/yFk1ckCiFp9UMYL0KjCqaZvSmih7pA94Iz7tX3Uqs+P5/Z/efYHak2eZ?=
+ =?us-ascii?Q?X9uzbQA6PdoghixRb34/4ymvG9R6S/z031kjcjkri4XhqYqAaxUKekcMlN+g?=
+ =?us-ascii?Q?x6iksms02ky1aElzzcgs/OnztxKm5l5LVj3nsRC4zJnuYZRLD+aKSRdOP5LS?=
+ =?us-ascii?Q?oErz32KzrF6VUf1yuSEyYiO1h1Yf+07OOju5dA9uXkZVCZ4Q8wPykH+Ijp4R?=
+ =?us-ascii?Q?IHEB+ZsSXE1cVv6znvXKU3mfPOSpHDrZ1tKchYoNwlxc+40/HCqy0FEAx9md?=
+ =?us-ascii?Q?UxzvixBnj72ejhp7AkmwLFnCeKTTvhfqEPbT7JaiJnsw5tHcH2lRtsOuNx7x?=
+ =?us-ascii?Q?3etplBbazvtC8Zcg9nvlWFhuHb9LEafk2bGltMfHvjbQijqhakA8jZjAEiNF?=
+ =?us-ascii?Q?7CXVc9nchAW6inwvPF19ixwRUzaeJ6xpgWJLPa3iJyx+8s8vmFTf79LRLBMB?=
+ =?us-ascii?Q?4N4/dh5H83g60zy8nD8TvJMLfJCq07KLhsIPK0oS5Sa7eVzWFndyDY1b+HP8?=
+ =?us-ascii?Q?1FZK62TBgxIyAG3/VmYBCCHG75re5HVM4iSgoiM77sa+RCx9jc+NNWmMkQjy?=
+ =?us-ascii?Q?uRxrl5q5PQmI5/H7PUeCyuM1WI4lujDPwiaBX1WkktMrFQutVTVyBJAFrVCZ?=
+ =?us-ascii?Q?28yaN3j2ZCMmWRgDgtqgcBZebEWFIgsPdsDIY/q/b+Si0xCYm/the88AWNOA?=
+ =?us-ascii?Q?pl4TD+AfJqG0JePvbkS/IRKeIeUY+M0vFrh1a2OnKfkrMrqBGVKjSIM5TtHF?=
+ =?us-ascii?Q?Rk/J+Qhj/drU+tXIP7GjENH18124/NxW+B8W2iHUEBrVpY57hibgAsdbh2EK?=
+ =?us-ascii?Q?tcKTthej8ZoYEoF7Dr5KuOlLIdpoE+pgDGhIoWVK+tsIY9Sh9JJj9nQGg7CN?=
+ =?us-ascii?Q?BVB7OD5lDcyCtz64RHqJADZGfLE41bmYDGUlFrqKOjaxmHVFCl6q4ZQYoCXq?=
+ =?us-ascii?Q?H6VTOhDk3Sy3jVRyO5H6isNtZSQWz4Ml6ftafbYk+xsvL+cBzc610xnOQacM?=
+ =?us-ascii?Q?ihVC1Dq8TuQ8keqMyf4rmPNVA38oEGNu2Ud2DjZk?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 09cb8452-125e-4aeb-c93f-08da55ebcea9
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2022 14:14:10.4097 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FkCJBwju9Ky9UKrRiyMJsgeK0x/fI0tIQLHHZ0MC8iCfEAteCsCMnz0AWd10pVDc
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4156
+Cc: iommu@lists.linux-foundation.org, cohuck@redhat.com,
+ alex.williamson@redhat.com, linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,42 +143,28 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 23 Jun 2022 22:50:30 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+On Tue, Jun 21, 2022 at 08:09:20PM +0100, Robin Murphy wrote:
 
-> On Thu, Jun 23, 2022 at 05:00:44PM -0600, Alex Williamson wrote:
-> 
-> > > >> +struct vfio_device *vfio_device_get_from_iommu(struct iommu_group *iommu_group)
-> > > >> +{
-> > > >> +	struct vfio_group *group = vfio_group_get_from_iommu(iommu_group);
-> > > >> +	struct vfio_device *device;    
-> > > > 
-> > > > Check group for NULL.    
-> > > 
-> > > OK - FWIW in context this should only ever make sense to call with an 
-> > > iommu_group which has already been derived from a vfio_group, and I did 
-> > > initially consider a check with a WARN_ON(), but then decided that the 
-> > > unguarded dereference would be a sufficiently strong message. No problem 
-> > > with bringing that back to make it more defensive if that's what you prefer.  
-> > 
-> > A while down the road, that's a bit too much implicit knowledge of the
-> > intent and single purpose of this function just to simply avoid a test.  
-> 
-> I think we should just pass the 'struct vfio_group *' into the
-> attach_group op and have this API take that type in and forget the
-> vfio_group_get_from_iommu().
+> Quick consensus then: does anyone have a particular preference between
+> changing the .attach_group signature vs. adding a helper based on
+> vfio_group_get_from_iommu() for type1 to call from within its callback? They
+> seem about equal (but opposite) in terms of the simplicity vs. impact
+> tradeoff to me, so I can't quite decide conclusively...
 
-That's essentially what I'm suggesting, the vfio_group is passed as an
-opaque pointer which type1 can use for a
-vfio_group_for_each_vfio_device() type call.  Thanks,
+Ah, I've been away and only just saw this..
 
-Alex
+Given Alex's remarks and the need to re-get the vfio_group in the
+helper, it may be very slightly nicer to pass in the vfio_device as an
+argument. But either works for me.
 
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
