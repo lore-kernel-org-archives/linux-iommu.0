@@ -1,79 +1,139 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D812A7C
-	for <iommu@lists.linux.dev>; Fri, 24 Jun 2022 10:21:40 +0000 (UTC)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2193928EB
+	for <iommu@lists.linux.dev>; Fri, 24 Jun 2022 12:51:51 +0000 (UTC)
+Received: from cap.home.8bytes.org (p5b006cf2.dip0.t-ipconnect.de [91.0.108.242])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id A740721982;
-	Fri, 24 Jun 2022 10:21:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1656066092; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=2o//5RsBBP4Q3Y91eiwaePN5wmGbpiIFxxYpkXu0ZYE=;
-	b=O4tm8iaMwSHu7ldBuiOY3Elnh25wFyZ7CO1Np57zyckcwbNLwUjGFIfBe47zwAUB8KGjed
-	BM+UX85MO9dLfcnS0r7gBEhxEAeTWifOrYCZ8VnHSdYxk6shATkvn4CrKt5yCo1YGaz56t
-	1wOQkxQ+fHRsZ2e7NveJ5q67TCOjW0Q=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1656066092;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=2o//5RsBBP4Q3Y91eiwaePN5wmGbpiIFxxYpkXu0ZYE=;
-	b=g3osGxy0Z3so5e0NMyBNVREKmUrFXe4Bc1ptB8YZmasy9nWMFNoJWl9XKORLjHxtPrXOIP
-	7n3ksU1XW+E8SwCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-	(No client certificate requested)
-	by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6EBD413ACA;
-	Fri, 24 Jun 2022 10:21:32 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-	by imap2.suse-dmz.suse.de with ESMTPSA
-	id K3NaGSyQtWKSJAAAMHmgww
-	(envelope-from <jroedel@suse.de>); Fri, 24 Jun 2022 10:21:32 +0000
-Date: Fri, 24 Jun 2022 12:21:31 +0200
-From: Joerg Roedel <jroedel@suse.de>
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, iommu@lists.linux.dev
-Subject: Re: [PATCH] MAINTAINERS: Add new IOMMU development mailing list
-Message-ID: <YrWQK32lXdyzVheR@suse.de>
-References: <20220622082601.31678-1-joro@8bytes.org>
- <YrVZ7g3AKzoI0uMG@infradead.org>
+	by theia.8bytes.org (Postfix) with ESMTPSA id D6869450;
+	Fri, 24 Jun 2022 14:51:42 +0200 (CEST)
+From: Joerg Roedel <joro@8bytes.org>
+To: linux-kernel@vger.kernel.org
+Cc: iommu@lists.linux-foundation.org,
+	iommu@lists.linux.dev,
+	Joerg Roedel <jroedel@suse.de>,
+	Christoph Hellwig <hch@infradead.org>,
+	joro@8bytes.org,
+	stable@vger.kernel.org
+Subject: [PATCH v2] MAINTAINERS: Add new IOMMU development mailing list
+Date: Fri, 24 Jun 2022 14:51:39 +0200
+Message-ID: <20220624125139.412-1-joro@8bytes.org>
+X-Mailer: git-send-email 2.36.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YrVZ7g3AKzoI0uMG@infradead.org>
-Message-ID: <20220624102131.gUlnPsl5Z6l9m8Br9_qH9ZXmqf9TuWFO71TZvufkWw8@z>
+Message-ID: <20220624125139.6v7HbIxUQmodEDzvPUOmN7u0VhR7-oUNUuGuCG7J-Dg@z>
 
-On Thu, Jun 23, 2022 at 11:30:06PM -0700, Christoph Hellwig wrote:
-> iommu@lists.linux-foundation.org is also listed for various other
-> MAINTAINERS entries.  Can you please send a list to update all of them
-> to Linus ASAP, including for 5.19 and -stable?
+From: Joerg Roedel <jroedel@suse.de>
 
-Right, will do, thanks for the heads-up.
+The IOMMU mailing list will move from lists.linux-foundation.org to
+lists.linux.dev. The hard switch of the archive will happen on July
+5th, but add the new list now already so that people start using the
+list when sending patches. After July 5th the old list will disappear.
 
--- 
-Jörg Rödel
-jroedel@suse.de
+Cc: stable@vger.kernel.org
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ MAINTAINERS | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-SUSE Software Solutions Germany GmbH
-Maxfeldstr. 5
-90409 Nürnberg
-Germany
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 3cf9842d9233..36d1bc999815 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -427,6 +427,7 @@ ACPI VIOT DRIVER
+ M:	Jean-Philippe Brucker <jean-philippe@linaro.org>
+ L:	linux-acpi@vger.kernel.org
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Maintained
+ F:	drivers/acpi/viot.c
+ F:	include/linux/acpi_viot.h
+@@ -960,6 +961,7 @@ AMD IOMMU (AMD-VI)
+ M:	Joerg Roedel <joro@8bytes.org>
+ R:	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+ F:	drivers/iommu/amd/
+@@ -5962,6 +5964,7 @@ M:	Christoph Hellwig <hch@lst.de>
+ M:	Marek Szyprowski <m.szyprowski@samsung.com>
+ R:	Robin Murphy <robin.murphy@arm.com>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Supported
+ W:	http://git.infradead.org/users/hch/dma-mapping.git
+ T:	git git://git.infradead.org/users/hch/dma-mapping.git
+@@ -5974,6 +5977,7 @@ F:	kernel/dma/
+ DMA MAPPING BENCHMARK
+ M:	Xiang Chen <chenxiang66@hisilicon.com>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ F:	kernel/dma/map_benchmark.c
+ F:	tools/testing/selftests/dma/
  
-(HRB 36809, AG Nürnberg)
-Geschäftsführer: Ivo Totev
+@@ -7558,6 +7562,7 @@ F:	drivers/gpu/drm/exynos/exynos_dp*
+ EXYNOS SYSMMU (IOMMU) driver
+ M:	Marek Szyprowski <m.szyprowski@samsung.com>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Maintained
+ F:	drivers/iommu/exynos-iommu.c
+ 
+@@ -9977,6 +9982,7 @@ INTEL IOMMU (VT-d)
+ M:	David Woodhouse <dwmw2@infradead.org>
+ M:	Lu Baolu <baolu.lu@linux.intel.com>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Supported
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+ F:	drivers/iommu/intel/
+@@ -10356,6 +10362,7 @@ IOMMU DRIVERS
+ M:	Joerg Roedel <joro@8bytes.org>
+ M:	Will Deacon <will@kernel.org>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+ F:	Documentation/devicetree/bindings/iommu/
+@@ -12504,6 +12511,7 @@ F:	drivers/i2c/busses/i2c-mt65xx.c
+ MEDIATEK IOMMU DRIVER
+ M:	Yong Wu <yong.wu@mediatek.com>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ L:	linux-mediatek@lists.infradead.org (moderated for non-subscribers)
+ S:	Supported
+ F:	Documentation/devicetree/bindings/iommu/mediatek*
+@@ -16545,6 +16553,7 @@ F:	drivers/i2c/busses/i2c-qcom-cci.c
+ QUALCOMM IOMMU
+ M:	Rob Clark <robdclark@gmail.com>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ L:	linux-arm-msm@vger.kernel.org
+ S:	Maintained
+ F:	drivers/iommu/arm/arm-smmu/qcom_iommu.c
+@@ -19170,6 +19179,7 @@ F:	arch/x86/boot/video*
+ SWIOTLB SUBSYSTEM
+ M:	Christoph Hellwig <hch@infradead.org>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Supported
+ W:	http://git.infradead.org/users/hch/dma-mapping.git
+ T:	git git://git.infradead.org/users/hch/dma-mapping.git
+@@ -21844,6 +21854,7 @@ M:	Juergen Gross <jgross@suse.com>
+ M:	Stefano Stabellini <sstabellini@kernel.org>
+ L:	xen-devel@lists.xenproject.org (moderated for non-subscribers)
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Supported
+ F:	arch/x86/xen/*swiotlb*
+ F:	drivers/xen/*swiotlb*
+-- 
+2.36.1
 
