@@ -1,111 +1,60 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 50342C43334
-	for <iommu@archiver.kernel.org>; Fri, 24 Jun 2022 10:36:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id CAC82C433EF
+	for <iommu@archiver.kernel.org>; Fri, 24 Jun 2022 12:51:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C1002425D4;
-	Fri, 24 Jun 2022 10:36:12 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org C1002425D4
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4A65161467;
+	Fri, 24 Jun 2022 12:51:51 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 4A65161467
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id I1tkuqGTlJTN; Fri, 24 Jun 2022 12:51:50 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 0921460A6C;
+	Fri, 24 Jun 2022 12:51:50 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 0921460A6C
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D3AB4C0039;
+	Fri, 24 Jun 2022 12:51:49 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 56F14C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 12:51:49 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 23C0341A4B
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 12:51:49 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 23C0341A4B
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UfHvq1swGO4y; Fri, 24 Jun 2022 10:36:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 0DA0D425CC;
-	Fri, 24 Jun 2022 10:36:11 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 0DA0D425CC
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C603FC0039;
-	Fri, 24 Jun 2022 10:36:10 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D1E53C002D;
- Fri, 24 Jun 2022 10:36:08 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 9DD8E84906;
- Fri, 24 Jun 2022 10:36:08 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 9DD8E84906
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9lJn6GxL8l8o; Fri, 24 Jun 2022 10:36:02 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 05175848C9
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 05175848C9;
- Fri, 24 Jun 2022 10:36:01 +0000 (UTC)
-X-UUID: df7b175fa89346cd93722cc325d9a2de-20220624
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.6, REQID:ae2831ad-169e-48d6-a70a-39fa0ed6540b, OB:0,
- LO
- B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
- ON:release,TS:0
-X-CID-META: VersionHash:b14ad71, CLOUDID:8ecdf52d-1756-4fa3-be7f-474a6e4be921,
- C
- OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
- ,QS:nil,BEC:nil,COL:0
-X-UUID: df7b175fa89346cd93722cc325d9a2de-20220624
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
- mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 1111625506; Fri, 24 Jun 2022 18:35:53 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3; 
- Fri, 24 Jun 2022 18:35:51 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Fri, 24 Jun 2022 18:35:50 +0800
-Message-ID: <19cfb1b85a347c70c6b0937bbbca4a176a724454.camel@mediatek.com>
-Subject: Re: [PATCH v3 1/5] iommu: Return -EMEDIUMTYPE for incompatible
- domain and device/group
-To: "Tian, Kevin" <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>, 
- Baolu Lu <baolu.lu@linux.intel.com>
-Date: Fri, 24 Jun 2022 18:35:49 +0800
-In-Reply-To: <BN9PR11MB527629DEF740C909A7B7BEB38CB49@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220623200029.26007-1-nicolinc@nvidia.com>
- <20220623200029.26007-2-nicolinc@nvidia.com>
- <270eec00-8aee-2288-4069-d604e6da2925@linux.intel.com>
- <YrUk8IINqDEZLfIa@Asurada-Nvidia>
- <8a5e9c81ab1487154828af3ca21e62e39bcce18c.camel@mediatek.com>
- <BN9PR11MB527629DEF740C909A7B7BEB38CB49@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 7PaL4d6XQeyE for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Jun 2022 12:51:47 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 9E25541A19
+Received: from theia.8bytes.org (8bytes.org
+ [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9E25541A19
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 12:51:46 +0000 (UTC)
+Received: from cap.home.8bytes.org (p5b006cf2.dip0.t-ipconnect.de
+ [91.0.108.242])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+ (No client certificate requested)
+ by theia.8bytes.org (Postfix) with ESMTPSA id D6869450;
+ Fri, 24 Jun 2022 14:51:42 +0200 (CEST)
+From: Joerg Roedel <joro@8bytes.org>
+To: linux-kernel@vger.kernel.org
+Subject: [PATCH v2] MAINTAINERS: Add new IOMMU development mailing list
+Date: Fri, 24 Jun 2022 14:51:39 +0200
+Message-Id: <20220624125139.412-1-joro@8bytes.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-X-MTK: N
-Cc: "marcan@marcan.st" <marcan@marcan.st>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "virtualization@lists.linux-foundation.org"
- <virtualization@lists.linux-foundation.org>,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
- "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
- "will@kernel.org" <will@kernel.org>,
- "alyssa@rosenzweig.io" <alyssa@rosenzweig.io>,
- "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
- "zhang.lyra@gmail.com" <zhang.lyra@gmail.com>,
- "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
- "jgg@nvidia.com" <jgg@nvidia.com>,
- "yangyingliang@huawei.com" <yangyingliang@huawei.com>,
- "orsonzhai@gmail.com" <orsonzhai@gmail.com>,
- "gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>,
- "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "christophe.jaillet@wanadoo.fr" <christophe.jaillet@wanadoo.fr>,
- "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
- "tglx@linutronix.de" <tglx@linutronix.de>,
- "jordan@cosmicpenguin.net" <jordan@cosmicpenguin.net>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "cohuck@redhat.com" <cohuck@redhat.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
- "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
- "dwmw2@infradead.org" <dwmw2@infradead.org>
+Cc: Joerg Roedel <jroedel@suse.de>, iommu@lists.linux.dev,
+ stable@vger.kernel.org, Christoph Hellwig <hch@infradead.org>,
+ iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,92 +67,118 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Yong Wu via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Yong Wu <yong.wu@mediatek.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 2022-06-24 at 06:16 +0000, Tian, Kevin wrote:
-> > From: Yong Wu
-> > Sent: Friday, June 24, 2022 1:39 PM
-> > 
-> > On Thu, 2022-06-23 at 19:44 -0700, Nicolin Chen wrote:
-> > > On Fri, Jun 24, 2022 at 09:35:49AM +0800, Baolu Lu wrote:
-> > > > External email: Use caution opening links or attachments
-> > > > 
-> > > > 
-> > > > On 2022/6/24 04:00, Nicolin Chen wrote:
-> > > > > diff --git a/drivers/iommu/mtk_iommu_v1.c
-> > > > > b/drivers/iommu/mtk_iommu_v1.c
-> > > > > index e1cb51b9866c..5386d889429d 100644
-> > > > > --- a/drivers/iommu/mtk_iommu_v1.c
-> > > > > +++ b/drivers/iommu/mtk_iommu_v1.c
-> > > > > @@ -304,7 +304,7 @@ static int
-> > > > > mtk_iommu_v1_attach_device(struct
-> > > > > iommu_domain *domain, struct device
-> > > > >       /* Only allow the domain created internally. */
-> > > > >       mtk_mapping = data->mapping;
-> > > > >       if (mtk_mapping->domain != domain)
-> > > > > -             return 0;
-> > > > > +             return -EMEDIUMTYPE;
-> > > > > 
-> > > > >       if (!data->m4u_dom) {
-> > > > >               data->m4u_dom = dom;
-> > > > 
-> > > > This change looks odd. It turns the return value from success
-> > > > to
-> > > > failure. Is it a bug? If so, it should go through a separated
-> > > > fix
-> > > > patch.
-> > 
-> > Thanks for the review:)
-> > 
-> > > 
-> > > Makes sense.
-> > > 
-> > > I read the commit log of the original change:
-> > > 
-> > 
-> > https://lore.kernel.org/r/1589530123-30240-1-git-send-email-
-> > yong.wu@mediatek.com
-> > > 
-> > > It doesn't seem to allow devices to get attached to different
-> > > domains other than the shared mapping->domain, created in the
-> > > in the mtk_iommu_probe_device(). So it looks like returning 0
-> > > is intentional. Though I am still very confused by this return
-> > > value here, I doubt it has ever been used in a VFIO context.
-> > 
-> > It's not used in VFIO context. "return 0" just satisfy the iommu
-> > framework to go ahead. and yes, here we only allow the shared
-> > "mapping-
-> > > domain" (All the devices share a domain created internally).
-> > 
-> > thus I think we should still keep "return 0" here.
-> > 
-> 
-> What prevent this driver from being used in VFIO context?
+From: Joerg Roedel <jroedel@suse.de>
 
-Nothing prevent this. Just I didn't test. mtk_iommu_v1.c only is used
-in mt2701 and there is no VFIO scenario. I'm not sure if it supports
-VFIO. (mtk_iommu.c support VFIO.)
+The IOMMU mailing list will move from lists.linux-foundation.org to
+lists.linux.dev. The hard switch of the archive will happen on July
+5th, but add the new list now already so that people start using the
+list when sending patches. After July 5th the old list will disappear.
 
-> and why would we want to go ahead when an obvious error occurs
-> i.e. when a device is attached to an unexpected domain?
+Cc: stable@vger.kernel.org
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ MAINTAINERS | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-The iommu flow in this file always is a bit odd as we need share iommu
-domain in ARM32. As I tested before in the above link, "The iommu
-framework will create a iommu domain for each a device.", therefore we
-have to *workaround* in this file.
-
-And this was expected to be fixed by:
-
-https://lore.kernel.org/linux-iommu/cover.1597931875.git.robin.murphy@arm.com/
-
-sorry, I don't know its current status.
-
-Thanks.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 3cf9842d9233..36d1bc999815 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -427,6 +427,7 @@ ACPI VIOT DRIVER
+ M:	Jean-Philippe Brucker <jean-philippe@linaro.org>
+ L:	linux-acpi@vger.kernel.org
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Maintained
+ F:	drivers/acpi/viot.c
+ F:	include/linux/acpi_viot.h
+@@ -960,6 +961,7 @@ AMD IOMMU (AMD-VI)
+ M:	Joerg Roedel <joro@8bytes.org>
+ R:	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+ F:	drivers/iommu/amd/
+@@ -5962,6 +5964,7 @@ M:	Christoph Hellwig <hch@lst.de>
+ M:	Marek Szyprowski <m.szyprowski@samsung.com>
+ R:	Robin Murphy <robin.murphy@arm.com>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Supported
+ W:	http://git.infradead.org/users/hch/dma-mapping.git
+ T:	git git://git.infradead.org/users/hch/dma-mapping.git
+@@ -5974,6 +5977,7 @@ F:	kernel/dma/
+ DMA MAPPING BENCHMARK
+ M:	Xiang Chen <chenxiang66@hisilicon.com>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ F:	kernel/dma/map_benchmark.c
+ F:	tools/testing/selftests/dma/
+ 
+@@ -7558,6 +7562,7 @@ F:	drivers/gpu/drm/exynos/exynos_dp*
+ EXYNOS SYSMMU (IOMMU) driver
+ M:	Marek Szyprowski <m.szyprowski@samsung.com>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Maintained
+ F:	drivers/iommu/exynos-iommu.c
+ 
+@@ -9977,6 +9982,7 @@ INTEL IOMMU (VT-d)
+ M:	David Woodhouse <dwmw2@infradead.org>
+ M:	Lu Baolu <baolu.lu@linux.intel.com>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Supported
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+ F:	drivers/iommu/intel/
+@@ -10356,6 +10362,7 @@ IOMMU DRIVERS
+ M:	Joerg Roedel <joro@8bytes.org>
+ M:	Will Deacon <will@kernel.org>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+ F:	Documentation/devicetree/bindings/iommu/
+@@ -12504,6 +12511,7 @@ F:	drivers/i2c/busses/i2c-mt65xx.c
+ MEDIATEK IOMMU DRIVER
+ M:	Yong Wu <yong.wu@mediatek.com>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ L:	linux-mediatek@lists.infradead.org (moderated for non-subscribers)
+ S:	Supported
+ F:	Documentation/devicetree/bindings/iommu/mediatek*
+@@ -16545,6 +16553,7 @@ F:	drivers/i2c/busses/i2c-qcom-cci.c
+ QUALCOMM IOMMU
+ M:	Rob Clark <robdclark@gmail.com>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ L:	linux-arm-msm@vger.kernel.org
+ S:	Maintained
+ F:	drivers/iommu/arm/arm-smmu/qcom_iommu.c
+@@ -19170,6 +19179,7 @@ F:	arch/x86/boot/video*
+ SWIOTLB SUBSYSTEM
+ M:	Christoph Hellwig <hch@infradead.org>
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Supported
+ W:	http://git.infradead.org/users/hch/dma-mapping.git
+ T:	git git://git.infradead.org/users/hch/dma-mapping.git
+@@ -21844,6 +21854,7 @@ M:	Juergen Gross <jgross@suse.com>
+ M:	Stefano Stabellini <sstabellini@kernel.org>
+ L:	xen-devel@lists.xenproject.org (moderated for non-subscribers)
+ L:	iommu@lists.linux-foundation.org
++L:	iommu@lists.linux.dev
+ S:	Supported
+ F:	arch/x86/xen/*swiotlb*
+ F:	drivers/xen/*swiotlb*
+-- 
+2.36.1
 
 _______________________________________________
 iommu mailing list
