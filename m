@@ -1,113 +1,76 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 24060C433EF
-	for <iommu@archiver.kernel.org>; Fri, 24 Jun 2022 16:04:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id DC45BCCA47E
+	for <iommu@archiver.kernel.org>; Fri, 24 Jun 2022 16:38:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 82BD060B6E;
-	Fri, 24 Jun 2022 16:04:57 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 82BD060B6E
-Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=E9V3fR12
+	by smtp4.osuosl.org (Postfix) with ESMTP id 6B67642612;
+	Fri, 24 Jun 2022 16:38:36 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 6B67642612
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id g7GK2gB772i8; Fri, 24 Jun 2022 16:04:56 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SSroHlHCFgNU; Fri, 24 Jun 2022 16:38:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 921A260AA8;
-	Fri, 24 Jun 2022 16:04:55 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 921A260AA8
+	by smtp4.osuosl.org (Postfix) with ESMTPS id B339F42616;
+	Fri, 24 Jun 2022 16:38:34 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org B339F42616
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4341AC0039;
-	Fri, 24 Jun 2022 16:04:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6A6C3C0039;
+	Fri, 24 Jun 2022 16:38:34 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A2E07C002D
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 16:04:54 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 74595C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 16:38:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 6D3CF60B69
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 16:04:54 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 6D3CF60B69
+ by smtp3.osuosl.org (Postfix) with ESMTP id 3FDF060E3B
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 16:38:32 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 3FDF060E3B
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FPasWfZ1U8OH for <iommu@lists.linux-foundation.org>;
- Fri, 24 Jun 2022 16:04:53 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 704EC60AA8
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 704EC60AA8
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 16:04:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1656086692;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=Ln1Z2E1M7p8doCl1L1YnM9NdRf2Z0FbPrSaV1f2IMzE=;
- b=E9V3fR12hLP99ec6uCVDDY6Qv/9q47k5/oi0uBKSbLntp45ibHXeI5NsTNeJPxnGZ1YxiQ
- ArzM1axWsXdGxMQhhiIbWh1RAY2LzcEAdu1B/Y1/bAYwvhV1aelWE35Y8U53asnHXNW0yq
- KBM/vZTDIDCWmtnHKuoktRaqR4Fkra8=
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
- [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-202-_Qa6YGIKMniAChBxBg3O1w-1; Fri, 24 Jun 2022 12:04:50 -0400
-X-MC-Unique: _Qa6YGIKMniAChBxBg3O1w-1
-Received: by mail-il1-f199.google.com with SMTP id
- i2-20020a056e021d0200b002d8ff49e7c4so1657346ila.8
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 09:04:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
- :references:organization:mime-version:content-transfer-encoding;
- bh=Ln1Z2E1M7p8doCl1L1YnM9NdRf2Z0FbPrSaV1f2IMzE=;
- b=NZKKXaxkGIFs2zn5z1hY/7GrrVN9RPGyVYWzh0Edq6XmnT3WPxqqtrojBH/KnQ8mMS
- a700vhC9MDRY+M6TeBpu+kz2UaG3JJXBYhqeGxt0ah6NDcGS1STcb3Qs41sPNJRXNBhE
- Ma8Xnu4MUlqdVuAJrrH7G2CsMp8mT51Jgm9LppsFAus+wB3Ofd+gwb+GF+xKG9xrwm6n
- dCJ2zc5U9hvJSGA3XyseZ/N1yt1c05apoebF+nVWfqAVtA60TIeXFCVlX43AYoH82sg5
- H35C2SP5puxQEXTAAwfAmdfiUN8bGzTqKlbWmkTt1jSzFwNipohFjBAf+rkhMPfCtOeD
- e8CQ==
-X-Gm-Message-State: AJIora8C7bXJlBOWYr5s01DiKEWOQhUoxE4da/N1Mj7ATj0uMF+Iz9GN
- HRiu/eacR0TxAmKxwR3xP7VUY4usLfFxCid3xTL0pz2WBS6Gc/Mbxg696+N6wA8RywpftRcU8t4
- VGU9yt7ZIEzWye3dLKBNsB2cvleNhNg==
-X-Received: by 2002:a05:6638:300e:b0:335:c73c:3d25 with SMTP id
- r14-20020a056638300e00b00335c73c3d25mr8993395jak.77.1656086689942; 
- Fri, 24 Jun 2022 09:04:49 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tkLdQdoyXEGpgj4BclSWirmWj1t+0EzYv/auBwq1GquIs3qt+6zmVH3RnW4cPTN1eyU02Q0Q==
-X-Received: by 2002:a05:6638:300e:b0:335:c73c:3d25 with SMTP id
- r14-20020a056638300e00b00335c73c3d25mr8993376jak.77.1656086689538; 
- Fri, 24 Jun 2022 09:04:49 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239]) by smtp.gmail.com with ESMTPSA id
- a30-20020a027a1e000000b00339c67df872sm1216387jac.129.2022.06.24.09.04.48
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 24 Jun 2022 09:04:49 -0700 (PDT)
-Date: Fri, 24 Jun 2022 10:04:47 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 1/2] vfio/type1: Simplify bus_type determination
-Message-ID: <20220624100447.4ec983fb.alex.williamson@redhat.com>
-In-Reply-To: <42679e49-4a04-4700-f420-f6ffe0f4b7d1@arm.com>
-References: <b1d13cade281a7d8acbfd0f6a33dcd086207952c.1655898523.git.robin.murphy@arm.com>
- <20220622161721.469fc9eb.alex.williamson@redhat.com>
- <68263bd7-4528-7acb-b11f-6b1c6c8c72ef@arm.com>
- <20220623170044.1757267d.alex.williamson@redhat.com>
- <20220624015030.GJ4147@nvidia.com>
- <20220624081159.508baed3.alex.williamson@redhat.com>
- <20220624141836.GS4147@nvidia.com>
- <20220624082831.22de3d51.alex.williamson@redhat.com>
- <42679e49-4a04-4700-f420-f6ffe0f4b7d1@arm.com>
-Organization: Red Hat
+ with ESMTP id 1gYIZz2AQm-i for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Jun 2022 16:38:31 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org D9DF860B72
+Received: from mailout.easymail.ca (mailout.easymail.ca [64.68.200.34])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id D9DF860B72
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 16:38:30 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by mailout.easymail.ca (Postfix) with ESMTP id C4F2161F23;
+ Fri, 24 Jun 2022 16:38:28 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at emo09-pco.easydns.vpn
+Received: from mailout.easymail.ca ([127.0.0.1])
+ by localhost (emo09-pco.easydns.vpn [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id LmDe4WjxX0Jc; Fri, 24 Jun 2022 16:38:28 +0000 (UTC)
+Received: from mail.gonehiking.org (unknown [38.15.45.1])
+ by mailout.easymail.ca (Postfix) with ESMTPA id 3B92B6198B;
+ Fri, 24 Jun 2022 16:38:28 +0000 (UTC)
+Received: from [192.168.1.4] (internal [192.168.1.4])
+ by mail.gonehiking.org (Postfix) with ESMTP id A845B3EE4C;
+ Fri, 24 Jun 2022 10:38:27 -0600 (MDT)
+Message-ID: <1cf8b5c7-36f4-7d04-9718-50e9f9790e2b@gonehiking.org>
+Date: Fri, 24 Jun 2022 10:38:27 -0600
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Cc: kvm@vger.kernel.org, cohuck@redhat.com, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@nvidia.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 1/3] scsi: BusLogic remove bus_to_virt
+Content-Language: en-US
+To: Arnd Bergmann <arnd@kernel.org>, linux-scsi@vger.kernel.org
+References: <20220624155226.2889613-1-arnd@kernel.org>
+ <20220624155226.2889613-2-arnd@kernel.org>
+From: Khalid Aziz <khalid@gonehiking.org>
+In-Reply-To: <20220624155226.2889613-2-arnd@kernel.org>
+Cc: linux-arch@vger.kernel.org, Miquel van Smoorenburg <mikevs@xs4all.net>,
+ linux-parisc@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+ linuxppc-dev@lists.ozlabs.org, linux-m68k@lists.linux-m68k.org,
+ Denis Efremov <efremov@linux.com>, Mark Salyzyn <salyzyn@android.com>,
+ Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
+ Matt Wang <wwentao@vmware.com>, Hannes Reinecke <hare@suse.de>,
+ linux-alpha@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+ "Maciej W . Rozycki" <macro@orcam.me.uk>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -120,98 +83,131 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+Reply-To: khalid@gonehiking.org
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 24 Jun 2022 16:12:55 +0100
-Robin Murphy <robin.murphy@arm.com> wrote:
-
-> On 2022-06-24 15:28, Alex Williamson wrote:
-> > On Fri, 24 Jun 2022 11:18:36 -0300
-> > Jason Gunthorpe <jgg@nvidia.com> wrote:
-> >   
-> >> On Fri, Jun 24, 2022 at 08:11:59AM -0600, Alex Williamson wrote:  
-> >>> On Thu, 23 Jun 2022 22:50:30 -0300
-> >>> Jason Gunthorpe <jgg@nvidia.com> wrote:
-> >>>      
-> >>>> On Thu, Jun 23, 2022 at 05:00:44PM -0600, Alex Williamson wrote:
-> >>>>      
-> >>>>>>>> +struct vfio_device *vfio_device_get_from_iommu(struct iommu_group *iommu_group)
-> >>>>>>>> +{
-> >>>>>>>> +	struct vfio_group *group = vfio_group_get_from_iommu(iommu_group);
-> >>>>>>>> +	struct vfio_device *device;  
-> >>>>>>>
-> >>>>>>> Check group for NULL.  
-> >>>>>>
-> >>>>>> OK - FWIW in context this should only ever make sense to call with an
-> >>>>>> iommu_group which has already been derived from a vfio_group, and I did
-> >>>>>> initially consider a check with a WARN_ON(), but then decided that the
-> >>>>>> unguarded dereference would be a sufficiently strong message. No problem
-> >>>>>> with bringing that back to make it more defensive if that's what you prefer.  
-> >>>>>
-> >>>>> A while down the road, that's a bit too much implicit knowledge of the
-> >>>>> intent and single purpose of this function just to simply avoid a test.  
-> >>>>
-> >>>> I think we should just pass the 'struct vfio_group *' into the
-> >>>> attach_group op and have this API take that type in and forget the
-> >>>> vfio_group_get_from_iommu().  
-> >>>
-> >>> That's essentially what I'm suggesting, the vfio_group is passed as an
-> >>> opaque pointer which type1 can use for a
-> >>> vfio_group_for_each_vfio_device() type call.  Thanks,  
-> >>
-> >> I don't want to add a whole vfio_group_for_each_vfio_device()
-> >> machinery that isn't actually needed by anything.. This is all
-> >> internal, we don't need to design more than exactly what is needed.
-> >>
-> >> At this point if we change the signature of the attach then we may as
-> >> well just pass in the representative vfio_device, that is probably
-> >> less LOC overall.  
-> > 
-> > That means that vfio core still needs to pick an arbitrary
-> > representative device, which I find in fundamental conflict to the
-> > nature of groups.  Type1 is the interface to the IOMMU API, if through
-> > the IOMMU API we can make an assumption that all devices within the
-> > group are equivalent for a given operation, that should be done in type1
-> > code, not in vfio core.  A for-each interface is commonplace and not
-> > significantly more code or design than already proposed.  Thanks,  
+On 6/24/22 09:52, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> It also occurred to me this morning that there's another middle-ground 
-> option staring out from the call-wrapping notion I mentioned yesterday - 
-> while I'm not keen to provide it from the IOMMU API, there's absolutely 
-> no reason that VFIO couldn't just use the building blocks by itself, and 
-> in fact it works out almost absurdly simple:
+> The BusLogic driver is the last remaining driver that relies on the
+> deprecated bus_to_virt() function, which in turn only works on a few
+> architectures, and is incompatible with both swiotlb and iommu support.
 > 
-> static bool vfio_device_capable(struct device *dev, void *data)
-> {
-> 	return device_iommu_capable(dev, (enum iommu_cap)data);
-> }
+> Before commit 391e2f25601e ("[SCSI] BusLogic: Port driver to 64-bit."),
+> the driver had a dependency on x86-32, presumably because of this
+> problem. However, the change introduced another bug that made it still
+> impossible to use the driver on any 64-bit machine.
 > 
-> bool vfio_group_capable(struct iommu_group *group, enum iommu_cap cap)
-> {
-> 	return iommu_group_for_each_dev(group, (void *)cap, vfio_device_capable);
-> }
+> This was in turn fixed in commit 56f396146af2 ("scsi: BusLogic: Fix
+> 64-bit system enumeration error for Buslogic"), 8 years later, which
+> shows that there are not a lot of users.
 > 
-> and much the same for iommu_domain_alloc() once I get that far. The 
-> locking concern neatly disappears because we're no longer holding any 
-> bus or device pointer that can go stale. How does that seem as a 
-> compromise for now, looking forward to Jason's longer-term view of 
-> rearranging the attach_group process such that a vfio_device falls 
-> naturally to hand?
+> Maciej is still using the driver on 32-bit hardware, and Khalid mentioned
+> that the driver works with the device emulation used in VirtualBox
+> and VMware. Both of those only emulate it for Windows 2000 and older
+> operating systems that did not ship with the better LSI logic driver.
+> 
+> Do a minimum fix that searches through the list of descriptors to find
+> one that matches the bus address. This is clearly as inefficient as
+> was indicated in the code comment about the lack of a bus_to_virt()
+> replacement. A better fix would likely involve changing out the entire
+> descriptor allocation for a simpler one, but that would be much
+> more invasive.
+> 
+> Cc: Maciej W. Rozycki <macro@orcam.me.uk>
+> Cc: Matt Wang <wwentao@vmware.com>
+> Tested-by: Khalid Aziz <khalid@gonehiking.org>
+> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> Reviewed-by: Hannes Reinecke <hare@suse.de>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> v3: Address issues pointed out by Khalid Aziz
+> v2: Attempt to fix the driver instead of removing it
+> ---
+>   drivers/scsi/BusLogic.c | 35 +++++++++++++++++++++++------------
+>   drivers/scsi/Kconfig    |  2 +-
+>   2 files changed, 24 insertions(+), 13 deletions(-)
+> 
 
-Yup, that seems like another way to do it, a slight iteration on the
-current bus_type flow, and also avoids any sort of arbitrary
-representative device being passed around as an API.
+This looks good.
 
-For clarity of the principle that all devices within the group should
-have the same capabilities, we could even further follow the existing
-bus_type and do a sanity test here at the same time, or perhaps simply
-stop after the first device to avoid the if-any-device-is-capable
-semantics implied above.  Thanks,
+Acked-by: Khalid Aziz <khalid@gonehiking.org>
 
-Alex
+
+> diff --git a/drivers/scsi/BusLogic.c b/drivers/scsi/BusLogic.c
+> index a897c8f914cf..f2abffce2659 100644
+> --- a/drivers/scsi/BusLogic.c
+> +++ b/drivers/scsi/BusLogic.c
+> @@ -2515,12 +2515,26 @@ static int blogic_resultcode(struct blogic_adapter *adapter,
+>   	return (hoststatus << 16) | tgt_status;
+>   }
+>   
+> +/*
+> + * turn the dma address from an inbox into a ccb pointer
+> + * This is rather inefficient.
+> + */
+> +static struct blogic_ccb *
+> +blogic_inbox_to_ccb(struct blogic_adapter *adapter, struct blogic_inbox *inbox)
+> +{
+> +	struct blogic_ccb *ccb;
+> +
+> +	for (ccb = adapter->all_ccbs; ccb; ccb = ccb->next_all)
+> +		if (inbox->ccb == ccb->dma_handle)
+> +			break;
+> +
+> +	return ccb;
+> +}
+>   
+>   /*
+>     blogic_scan_inbox scans the Incoming Mailboxes saving any
+>     Incoming Mailbox entries for completion processing.
+>   */
+> -
+>   static void blogic_scan_inbox(struct blogic_adapter *adapter)
+>   {
+>   	/*
+> @@ -2540,17 +2554,14 @@ static void blogic_scan_inbox(struct blogic_adapter *adapter)
+>   	enum blogic_cmplt_code comp_code;
+>   
+>   	while ((comp_code = next_inbox->comp_code) != BLOGIC_INBOX_FREE) {
+> -		/*
+> -		   We are only allowed to do this because we limit our
+> -		   architectures we run on to machines where bus_to_virt(
+> -		   actually works.  There *needs* to be a dma_addr_to_virt()
+> -		   in the new PCI DMA mapping interface to replace
+> -		   bus_to_virt() or else this code is going to become very
+> -		   innefficient.
+> -		 */
+> -		struct blogic_ccb *ccb =
+> -			(struct blogic_ccb *) bus_to_virt(next_inbox->ccb);
+> -		if (comp_code != BLOGIC_CMD_NOTFOUND) {
+> +		struct blogic_ccb *ccb = blogic_inbox_to_ccb(adapter, next_inbox);
+> +		if (!ccb) {
+> +			/*
+> +			 * This should never happen, unless the CCB list is
+> +			 * corrupted in memory.
+> +			 */
+> +			blogic_warn("Could not find CCB for dma address %x\n", adapter, next_inbox->ccb);
+> +		} else if (comp_code != BLOGIC_CMD_NOTFOUND) {
+>   			if (ccb->status == BLOGIC_CCB_ACTIVE ||
+>   					ccb->status == BLOGIC_CCB_RESET) {
+>   				/*
+> diff --git a/drivers/scsi/Kconfig b/drivers/scsi/Kconfig
+> index 6e3a04107bb6..689186f3a908 100644
+> --- a/drivers/scsi/Kconfig
+> +++ b/drivers/scsi/Kconfig
+> @@ -514,7 +514,7 @@ config SCSI_HPTIOP
+>   
+>   config SCSI_BUSLOGIC
+>   	tristate "BusLogic SCSI support"
+> -	depends on PCI && SCSI && VIRT_TO_BUS
+> +	depends on PCI && SCSI
+>   	help
+>   	  This is support for BusLogic MultiMaster and FlashPoint SCSI Host
+>   	  Adapters. Consult the SCSI-HOWTO, available from
 
 _______________________________________________
 iommu mailing list
