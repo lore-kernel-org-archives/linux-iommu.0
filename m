@@ -1,151 +1,110 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BCCF6C43334
-	for <iommu@archiver.kernel.org>; Fri, 24 Jun 2022 13:39:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 94661C43334
+	for <iommu@archiver.kernel.org>; Fri, 24 Jun 2022 13:41:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 5281684801;
-	Fri, 24 Jun 2022 13:39:09 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 5281684801
+	by smtp2.osuosl.org (Postfix) with ESMTP id 288E84012F;
+	Fri, 24 Jun 2022 13:41:13 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 288E84012F
+Authentication-Results: smtp2.osuosl.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=fRgIK/mn
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id t_7BlkzMtqMy; Fri, 24 Jun 2022 13:41:12 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 86801408BC;
+	Fri, 24 Jun 2022 13:41:11 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 86801408BC
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3E3E9C0032;
+	Fri, 24 Jun 2022 13:41:11 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 46992C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 13:41:10 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 1FD5583F1C
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 13:41:10 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 1FD5583F1C
 Authentication-Results: smtp1.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=hh7rxL72
+ dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com
+ header.a=rsa-sha256 header.s=mimecast20190719 header.b=fRgIK/mn
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eM1H4NRa3hP8; Fri, 24 Jun 2022 13:39:08 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id F41A184030;
-	Fri, 24 Jun 2022 13:39:07 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org F41A184030
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B480FC0032;
-	Fri, 24 Jun 2022 13:39:07 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 878F7C002D
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 13:39:06 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 51EC341841
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 13:39:06 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 51EC341841
-Authentication-Results: smtp4.osuosl.org; dkim=pass (2048-bit key,
- unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256
- header.s=selector2 header.b=hh7rxL72
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TnIQNFEDKjdx for <iommu@lists.linux-foundation.org>;
- Fri, 24 Jun 2022 13:39:05 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org D6C7B41781
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam04on2071.outbound.protection.outlook.com [40.107.102.71])
- by smtp4.osuosl.org (Postfix) with ESMTPS id D6C7B41781
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 13:39:04 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LPJcIudzmy7WuHbPCxv1xjLge1nJ3kASwLwX0LlBhtgFFkHKDquWWm+t2NJ72jAc+GoEPHMN4JDi1SLaTVX+eE2Mi/pMYNVwTbriVMTSKklUiStsZvOFeA2UC9g6Opo/hDpyTX8crspDzYN8tCiCgvFxeLJIcD8y06aAbjSxUam5EjnILc3HX73Ub/U6cIHAABg5uyWGr2U3DwZpe5M6CKvkcW5BEXpHHPjVhVcHFSSnsU13VBlunVe+ZQd4nQtukMjgcxW8OARCZhKYFnr5aAXU+1YMZtRT+CuaP5Seje06kh1HIa7mjHqB1kNEiCeArL8ccyDrbR0QjhZO5qJWWg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vGlYcA07qLgF37l7X+9ZycBJcLp8VxO3IktFM1G+R88=;
- b=L0eoSs3hKbeHxo3AnDijBm6HpprdY65tTyUeupJlK4/Rh3ZhO7GbbElJdu07AzNZJqaqNlSddOIEWh5Do9jMb3PRnJT4ZGf5GbWGsnVo5tDuWxACVS5d9xxmDGn41a0/rQRw36WWJhwDnQWyuVsvXigoMGMs+CrV8KSWyaTis+hjIyNRZb2PLKu302iRALgPRuzUkSRxNFJutl1kkVHk6fObh0NipaRctmJZgjrgXP7JW9onjrox1RsV9upIRAWNG36J419qx8OIEc0P3U26QX2XkjBzm0349m6QFZ0XMpbq5A8CKYGKFfqY/xMA1xPfhRFMUk/YjDG5A5qphVGw0w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vGlYcA07qLgF37l7X+9ZycBJcLp8VxO3IktFM1G+R88=;
- b=hh7rxL723jAu8O3FsFQVtXVvK/3jO18cvGVrTqx8yVn1NS/jJhKpJrr6Kwy516moz95PLbeXOVwULyD2LUA13Yfa9PSDE3evCLAz6NyWHcmLcd0M13C5jQplgY/yZ6MhQNIhQBZL+NRSID8gt7GwV4+idJr07rnPSEqy1CFnOtACoP/07tzuddPga5IJecHMILjeYb+gxgjND2voE+7hHrFzVmO/0KsujEv7YC8v5mldHecD4qhW5pYJXys1lXc3vd5s/xZOyDBxgkH7BaDlQfUbu6qoz3tCruMkd8b2jS33Kr41xaha8quZ+pY9c0kLJrmhpbUbnjOH/5mTI5m6SA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by MN2PR12MB4173.namprd12.prod.outlook.com (2603:10b6:208:1d8::10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17; Fri, 24 Jun
- 2022 13:39:01 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5373.016; Fri, 24 Jun 2022
- 13:39:01 +0000
-Date: Fri, 24 Jun 2022 10:39:00 -0300
-To: nobuhiro1.iwamatsu@toshiba.co.jp
-Subject: Re: [PATCH 1/3] iommu: Add Visconti5 IOMMU driver
-Message-ID: <20220624133900.GN4147@nvidia.com>
-References: <20220525013147.2215355-1-nobuhiro1.iwamatsu@toshiba.co.jp>
- <20220525013147.2215355-2-nobuhiro1.iwamatsu@toshiba.co.jp>
- <63369db0-cf7f-aa53-bf9f-de2b0b2289ac@linux.intel.com>
- <20220525182644.GF1343366@nvidia.com>
- <TYWPR01MB9420F74E27D8513CD2C2D27592B09@TYWPR01MB9420.jpnprd01.prod.outlook.com>
-Content-Disposition: inline
-In-Reply-To: <TYWPR01MB9420F74E27D8513CD2C2D27592B09@TYWPR01MB9420.jpnprd01.prod.outlook.com>
-X-ClientProxiedBy: MN2PR01CA0041.prod.exchangelabs.com (2603:10b6:208:23f::10)
- To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id EbpmVYQul6mz for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Jun 2022 13:41:08 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org A65918305C
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id A65918305C
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 13:41:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1656078067;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=KteV45zEkxYjkxhkm4g2UjRR3BlFLh33bTnUm010RRw=;
+ b=fRgIK/mntylZBGJ5GGL2iO7jheZv1MKn4oc9iBD+1ljtx+2WHlwnq3z102+fzd6zyUvRqJ
+ LxyHouwxJl573+DY0EeTsAWu33ODgDq29vxqHQmTDAz3/cSE1dNBEA+NWGxUw3IK8AR4HY
+ RhAD5qN+u7NuUaGZlPtVUOcOKYGFQKo=
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
+ [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-66-a59kMckmP-2iUhy4LFp-nw-1; Fri, 24 Jun 2022 09:41:06 -0400
+X-MC-Unique: a59kMckmP-2iUhy4LFp-nw-1
+Received: by mail-pl1-f198.google.com with SMTP id
+ a10-20020a170902ecca00b0016a50049af0so1331370plh.10
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 06:41:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=KteV45zEkxYjkxhkm4g2UjRR3BlFLh33bTnUm010RRw=;
+ b=ou7utR0FTQ7N+3iVEP0A6Tec4wWNhwqXh9mINslBv5W+iydv6slnoZ0MeUyP0iRJHm
+ 54WqRW43Pcwlu1corll4d4iJQ08xE3GM2AA8wrQbjkkQTj9D71YbMHqv/cR2ZdcObsIp
+ 9i25AKXHmVAl534y54crWp9PqWAh21ICVZuNPPj2WpK2GtLMurkrAtYUbQQR6uYs34JY
+ dzou3f2sWZ9HCVSl5HOVSOSTJAxfUV4xOJ8lazxEIbbNpWJ1552USNYx6RSY7ai7pkAL
+ +cJr+8+lV2ehJntuL1noQSfYKWFQpQV+47JtJ4e2GckJIYKNYBZRBpt/+NnA3LxaerhI
+ ecJw==
+X-Gm-Message-State: AJIora+rN0oece+/JJL206E5aTM/b6IPYVq0qp/dNGb9AWg3QzJc3bAb
+ E+lJdzbLlrhukMoL+wp65Doe/eWiuheyCvDIqZ2I7g/6vUxP1JlB03S3VMF8l0VxfewOmlS8Kls
+ SsZJYOHm9cb4qrLJuxljlFOjXDsQwoA==
+X-Received: by 2002:a17:902:ef47:b0:169:a2a7:94cf with SMTP id
+ e7-20020a170902ef4700b00169a2a794cfmr40230459plx.143.1656078064624; 
+ Fri, 24 Jun 2022 06:41:04 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1u5VCGAgNDM1n0hA3deVNGsB1Gs3/PjL1/K7rb+QC3L5TiyNJcWlOVfMUttxpTCsWprotPLcQ==
+X-Received: by 2002:a17:902:ef47:b0:169:a2a7:94cf with SMTP id
+ e7-20020a170902ef4700b00169a2a794cfmr40230426plx.143.1656078064129; 
+ Fri, 24 Jun 2022 06:41:04 -0700 (PDT)
+Received: from localhost (ip98-179-76-75.ph.ph.cox.net. [98.179.76.75])
+ by smtp.gmail.com with ESMTPSA id
+ y17-20020a1709027c9100b0016648412514sm1812516pll.188.2022.06.24.06.41.03
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 24 Jun 2022 06:41:03 -0700 (PDT)
+Date: Fri, 24 Jun 2022 06:41:02 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>, Fenghua Yu <fenghua.yu@intel.com>
+Subject: Re: iommu_sva_bind_device question
+Message-ID: <20220624134102.qxid72gqghjhyozn@cantor>
+References: <20220623170232.6whonfjuh3m5vcoy@cantor>
+ <6639b21c-1544-a025-4da5-219a1608f06e@linux.intel.com>
+ <20220624011446.2bexm4sjo2vabay5@cantor>
+ <552074ff-fd32-8cdb-cc10-1d71319c71db@linux.intel.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ca0ad465-9239-4653-9e01-08da55e6e5ca
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4173:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QFOWHI+7M3d0wLEPtiJbY/Vo9v2vXiGnPWRbVsZYCdHZ9Aqw+jDAmliiM1epuEEvpmnbBq5yTenLJfaAGMioIrHEOX3s0cXLHqHPhDOsJHTh0aH5R/S8SyCcDXRZuvKAu5Rfv1w7/qKXX8zmRl0x+U9rPq3ueXv6evo73vClsb8AfLszDZZSoPmvqBAK9Gpj+InJTfc87HKMr+/subOyBDcWiK1NT6j3uPNkrnc+KYU2DDofHEUlTP4wpSO17v3FofXx9sXxYp6RJBGdDAu4qVW3W9ufmfweOHzLybnVIwNdqd6N2WWukpIijtGXP9iJedlAWGQc21Mq0sIwiBKmplIi4Zh87EIWqnByb/gdTG7R8Z+2rpn+G/XU8PafESbKK09dTriy26f6Z3HsUGfjpK8f0ILNSaxQnhIdWghMRkslCxyHq2BVC+Skv/MdcAXfz18MH4vmqHCRkWcwXLTgMKd6C7qAwFFpEGAM+QqxKBu9jlRFdX61tjZ4eoLRRdmfXyyKiJwu2qbJPkyfmBQwC83WD9R1J+u6VMmjeWQr34csFEcw0pnQNL07flzPKYqns8UgtT/VB8m2HUcRWk+OR9JWquYn1OdZdwYlXexSOReVJFTZQ2IW/BLQ0o/4qBRbaTisfcEN2D3P1uJiGSKxRGb/Ph4Pv2qlFtGOxFFSt45+czErZydArumrDxXiaGg2b5XCnfDHp0Z0SbbSAL3lnKSRkC0zw4STm6kYT/Z3RUBYi/mn+ndgxqSdRAhfGYB1
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230016)(4636009)(366004)(136003)(39860400002)(346002)(376002)(396003)(83380400001)(316002)(33656002)(478600001)(8676002)(6506007)(34206002)(2616005)(8936002)(6512007)(53546011)(26005)(41300700001)(66946007)(1076003)(186003)(66476007)(4326008)(66556008)(2906002)(5660300002)(38100700002)(36756003)(86362001)(6486002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?a05LUGIrZFZncnJwR1Z1Y1JSK0NvMDc1b1N3YVJBSGpzTUVUVFJBdWVBQ1Jm?=
- =?utf-8?B?bEhUSDFJR25HTUFlelhIOVFULzBRZDBRZzZsUVJoTHRaZFIwa3ZCM0tncWlo?=
- =?utf-8?B?QmczMFN1ZkRkK3ZSaFFRQ09IZi82TkVrbHFhNUpyZVFwUWlCbWxiek5JQVp2?=
- =?utf-8?B?N3pDYTdwY1l1Q3FiWWdmWWE0SEtQUHE3UXR5bEl4MWN2cDV0S1ZGNUVhbHJG?=
- =?utf-8?B?UzB6TTlNUkFubkFyRDR2a29nRUR6T0s4eTJQV0dZUXZpSHJGRDZOc1J1N3p5?=
- =?utf-8?B?QTVMallQZnIxMDB3Rm44dzIvbUs2R09Yd2U2UkRmbXovNG9ZQW9aR1lFakVI?=
- =?utf-8?B?MWthTndkdGlGNXV5OVJJdGZHYnRlVStXWUxDRTBFMzM1Y01ZT292UHdPdTRH?=
- =?utf-8?B?WWRHMVN1Vmg4a3FwZFMxVzVQNEVHZUVTVW82c21LaGZFSWNhK2Fma2VQM1h3?=
- =?utf-8?B?cmNvTWhrTExqN2NYYVk4VVJwUTZFSGlHNC9GVklQQUZiZ1dmS2NheU1Pclk1?=
- =?utf-8?B?LytNVUwzQ0NHSGd2c3ZVOE53ZHZNVk43Q1B6V2k1VWJwVFR4ampkbFMyenJ3?=
- =?utf-8?B?aUF1NzRqWlNFTnliUGFjNUE4VmM4c0VuV00rTVJJOXlRb09Fd28ydHBxQld6?=
- =?utf-8?B?RG13WThxdjd1S2RVT1lHV0lEazNpeGhGM0lINGJiMU5xS2t1Uk5qZzBjYTJj?=
- =?utf-8?B?MDFYWVdER2RGL3p4Wjl3bVE0a1hoRlhLSnI0L3FwV1hnMHlOcWY4d3hLQngx?=
- =?utf-8?B?RFAwN0s0NnZNMUVzS3NLVlpRYU0yNk1sNFUwa3JpYTI0UVl6Rit1WFgwazdE?=
- =?utf-8?B?RkEvSWIzb3VMNUh3ZnUrc3dadmNEdnAvR01OandrL2NhUjNIZzJBZlI5VEJp?=
- =?utf-8?B?TDJOeHIrVTFRaGl2M3Ywak5PdnlDdlhraFlpaWdrSVNsS0dqYStXQzNjT001?=
- =?utf-8?B?ZGkyQzdZRXF4YllzRnk1ZjB2K2dNOFFNTVQ2L2V5SlM3RnlaL2g5Z3BRTml3?=
- =?utf-8?B?bFptajRUVHUrWXJENUtpYmFobFVmWEhYSGdHNUVRQzBCZUVLcHRNVkhpYm9i?=
- =?utf-8?B?WmxtSk1td1VuT0djZDdNWUViT3d2S1NGR1pxRDZHbThCYitkNGxBckxYQTI0?=
- =?utf-8?B?Z2tGdlkyRks5T1JrV0thQ0h6ZGVOeXJHaEpyR3h0Ly9sdXNFY05iczUvUXls?=
- =?utf-8?B?YkpyNFhCVEJNL2pXNHJxcEpYY3RkdnJIajhaMFlPdXFyMm9iaHlNak4wdUNr?=
- =?utf-8?B?OFJPdkd4cmFWVk8ySS9oajNJa1UxTmpPekgvSk1WTVF4WnhVZDU3dEkxUEE3?=
- =?utf-8?B?eDYySXBXeDhVUWd5NUwyNTY4enlHSDF0bTlRQ3pDS0J1WmVKZ1Q4ZFFURXVU?=
- =?utf-8?B?c1VzWDMxejk3N2owTnZrNFh6YVFRYXNSTE00bmJhSDVVQ2hLWjVaUTcyY2t0?=
- =?utf-8?B?VjlsaG52T2xBNU5sZ2huakg3cHVJUGFObVRvdGxCOE0wTmlieTR2QmMvUUFZ?=
- =?utf-8?B?ZjFYMjlCZ1c4M3JLa2VlbFAyd0tzKzYrZ2RmYU1qQmd0SUVSWFc5MXltcFYz?=
- =?utf-8?B?dGlTV0RxdFpFOVJ6bUMwYlk0OUMvemRLRmIzK2lKNzVVUmlmSUZwdGRRb29U?=
- =?utf-8?B?eU4zZ3Y1V3Q2M0N1clQvZnZxeE9zclhlb0g3aWdpRVJDZVpSU3ZFYm41K0hK?=
- =?utf-8?B?RUxDNEg5Q0V5T1p6c1pGVEZKNmlJZm1rdzEybjM5WkdiVUgrZE9QN2lyeU51?=
- =?utf-8?B?ajhMR0hxSmNVQnNjam9kWVl3K250czZZclNHenBPSGZvMTRCSjFCU1hwalpm?=
- =?utf-8?B?S0JuMnJDanZUVi9ZUThwOGVWMWt6TTBidHlPdUZqNE5NcTVKeFNpMkJOQUFh?=
- =?utf-8?B?OTRBN21BZGdIRmF0ZU9RRXNGdXVJN1J2eCtSaDJKa0FSSkxCNnViUHorTXdw?=
- =?utf-8?B?UnZUOXhadDhYM0FUeS9Td0dHdVRjWTczK2U1WUhyc0VRUnRJT2pEenpPN2li?=
- =?utf-8?B?bDlVcXJLZDZEWFFveDRRNGpvdC9KcU5MZzc4Lyt2bjYybEZrYnFjUjFzVnp2?=
- =?utf-8?B?cXpCenNhUjFzZUhiT3pqb1NqY0VWS1NMRDVoSjRjaEdKaFVuNVl5VUg4WEJI?=
- =?utf-8?Q?41NHhE0RXbkl61xxE3Ht+Grww?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ca0ad465-9239-4653-9e01-08da55e6e5ca
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2022 13:39:01.4477 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bILEbS/3yVcqfPlcosz1W5e1w+YmP2yGSRzqXG8pq4JmCe0aJnV0QdiR83iMLTMM
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4173
-Cc: devicetree@vger.kernel.org, yuji2.ishikawa@toshiba.co.jp,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- robh+dt@kernel.org, will@kernel.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <552074ff-fd32-8cdb-cc10-1d71319c71db@linux.intel.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jsnitsel@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Disposition: inline
+Cc: dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Dave Jiang <dave.jiang@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -158,64 +117,182 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gTW9uLCBKdW4gMjAsIDIwMjIgYXQgMDU6NDk6MTNBTSArMDAwMCwgbm9idWhpcm8xLml3YW1h
-dHN1QHRvc2hpYmEuY28uanAgd3JvdGU6Cj4gSGksCj4gCj4gVGhhbmtzIGZvciB5b3VyIHJldmll
-dy4KPiAKPiA+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tCj4gPiBGcm9tOiBKYXNvbiBHdW50
-aG9ycGUgPGpnZ0BudmlkaWEuY29tPgo+ID4gU2VudDogVGh1cnNkYXksIE1heSAyNiwgMjAyMiAz
-OjI3IEFNCj4gPiBUbzogQmFvbHUgTHUgPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT4KPiA+IENj
-OiBpd2FtYXRzdSBub2J1aGlybyjlsqnmnb4g5L+h5rSLIOKWoe+8s++8t++8o+KXr++8oe+8o++8
-tCkKPiA+IDxub2J1aGlybzEuaXdhbWF0c3VAdG9zaGliYS5jby5qcD47IEpvZXJnIFJvZWRlbCA8
-am9yb0A4Ynl0ZXMub3JnPjsgV2lsbAo+ID4gRGVhY29uIDx3aWxsQGtlcm5lbC5vcmc+OyBSb2Ig
-SGVycmluZyA8cm9iaCtkdEBrZXJuZWwub3JnPjsKPiA+IGRldmljZXRyZWVAdmdlci5rZXJuZWwu
-b3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOwo+ID4gaW9tbXVAbGlzdHMubGludXgt
-Zm91bmRhdGlvbi5vcmc7IGlzaGlrYXdhIHl1amko55+z5bedIOaCoOWPuCDil4vvvLLvvKTvvKPi
-lqHvvKHvvKnvvLQKPiA+IO+8o+KXi++8pe+8oemWiykgPHl1amkyLmlzaGlrYXdhQHRvc2hpYmEu
-Y28uanA+Owo+ID4gbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnCj4gPiBTdWJq
-ZWN0OiBSZTogW1BBVENIIDEvM10gaW9tbXU6IEFkZCBWaXNjb250aTUgSU9NTVUgZHJpdmVyCj4g
-PiAKPiA+IE9uIFdlZCwgTWF5IDI1LCAyMDIyIGF0IDAyOjI2OjM3UE0gKzA4MDAsIEJhb2x1IEx1
-IHdyb3RlOgo+ID4gPiBPbiAyMDIyLzUvMjUgMDk6MzEsIE5vYnVoaXJvIEl3YW1hdHN1IHdyb3Rl
-Ogo+ID4gPiA+ICtzdGF0aWMgY29uc3Qgc3RydWN0IGlvbW11X29wcyB2aXNjb250aV9hdHVfb3Bz
-ID0gewo+ID4gPiA+ICsJLmRvbWFpbl9hbGxvYyA9IHZpc2NvbnRpX2F0dV9kb21haW5fYWxsb2Ms
-Cj4gPiA+ID4gKwkucHJvYmVfZGV2aWNlID0gdmlzY29udGlfYXR1X3Byb2JlX2RldmljZSwKPiA+
-ID4gPiArCS5yZWxlYXNlX2RldmljZSA9IHZpc2NvbnRpX2F0dV9yZWxlYXNlX2RldmljZSwKPiA+
-ID4gPiArCS5kZXZpY2VfZ3JvdXAgPSBnZW5lcmljX2RldmljZV9ncm91cCwKPiA+ID4gPiArCS5v
-Zl94bGF0ZSA9IHZpc2NvbnRpX2F0dV9vZl94bGF0ZSwKPiA+ID4gPiArCS5wZ3NpemVfYml0bWFw
-ID0gQVRVX0lPTU1VX1BHU0laRV9CSVRNQVAsCj4gPiA+ID4gKwkuZGVmYXVsdF9kb21haW5fb3Bz
-ID0gJihjb25zdCBzdHJ1Y3QgaW9tbXVfZG9tYWluX29wcykgewo+ID4gPiA+ICsJCS5hdHRhY2hf
-ZGV2ID0gdmlzY29udGlfYXR1X2F0dGFjaF9kZXZpY2UsCj4gPiA+ID4gKwkJLmRldGFjaF9kZXYg
-PSB2aXNjb250aV9hdHVfZGV0YWNoX2RldmljZSwKPiA+ID4KPiA+ID4gVGhlIGRldGFjaF9kZXYg
-Y2FsbGJhY2sgaXMgYWJvdXQgdG8gYmUgZGVwcmVjYXRlZC4gVGhlIG5ldyBkcml2ZXJzCj4gPiA+
-IHNob3VsZCBpbXBsZW1lbnQgdGhlIGRlZmF1bHQgZG9tYWluIGFuZCBibG9ja2luZyBkb21haW4g
-aW5zdGVhZC4KPiA+IAo+ID4gWWVzIHBsZWFzZSwgbmV3IGRyaXZlcnMgbmVlZCB0byB1c2UgZGVm
-YXVsdF9kb21haW5zLgo+ID4gCj4gPiBJdCBpcyB2ZXJ5IHN0cmFuZ2UgdGhhdCB2aXNjb250aV9h
-dHVfZGV0YWNoX2RldmljZSgpIGRvZXMgbm90aGluZy4gIEl0IGlzIG5vdAo+ID4gcmVxdWlyZWQg
-dGhhdCBhIGRvbWFpbiBpcyBmdWxseSB1bm1hcHBlZCBiZWZvcmUgYmVpbmcgZGVzdHJ1Y3RlZCwg
-SSB0aGluawo+ID4gZGV0YWNoIHNob3VsZCBzZXQgQVRVX0FUX0VOIHRvIDAuCj4gCj4gSSBzZWUs
-IEkgcmV0aGluayBpbXBsZW1lbnRhdGlvbi4KPiAKPiA+IAo+ID4gV2hhdCBiZWhhdmlvciBkb2Vz
-IHRoZSBIVyBoYXZlIHdoZW4gQVRVX0FUX0VOVFJZX0VOID09IDA/IElmIERNQSBpcwo+ID4gcmVq
-ZWN0ZWQgdGhlbiB0aGlzIGRyaXZlciBzaG91bGQgaGF2ZSBhIElPTU1VX0RPTUFJTl9CTE9DS0lO
-RyBhbmQKPiA+IHJldHVybiB0aGF0IGZyb20gb3BzLT5kZWZfZG9tYWluX3R5cGUoKS4KPiAKPiBJ
-ZiBBVFVfQVRfRU5UUllfRU4gaXMgMCwgbm90aGluZyBoYXBwZW5zLiBJdCBkb2VzIG5vdCB3b3Jr
-IHdpdGggSU9NTVUsCj4gaXQgd29ya3Mgd2l0aCB0aGUgbWVtb3J5IHNwYWNlIHNldCBpbiBkZXZp
-Y2UgdHJlZS4KClNvIHRoYXQgd291bGQgYmUgYW4gYXNzaWdubWVudCB0byBET01BSU5fSURFTlRJ
-VFkKCj4gPiBJJ20gZmVlbGluZyBsaWtlIHRoZXNlICJzcGVjaWFsIiBkcml2ZXJzIG5lZWQgc29t
-ZSBraW5kIG9mIGhhbmRzaGFrZSB3aXRoIHRoZWlyCj4gPiBvbmx5IHVzZXJzIGJlY2F1c2UgdGhl
-eSBkb24ndCB3b3JrIHdpdGggdGhpbmdzIGxpa2UgVkZJTy4uCj4gCj4gU2luY2UgdGhlIGRldmlj
-ZXMgdGhhdCB1dGlsaXplIHRoaXMgSU9NTVUgZnVuY3Rpb24gYXJlIGZpeGVkLCBJIGRvCj4gbm90
-IHRoaW5rIHRoYXQgYSBzcGVjaWFsIGhhbmRzaGFrZSBpcyByZXF1aXJlZC4gIENvdWxkIHlvdSB5
-b3UgdGVsbAo+IG1lIHdoZXJlIHlvdSB0aG91Z2h0IHlvdSBuZWVkZWQgYSBoYW5kc2hha2U/CgpJ
-biB0aGlzIGNhc2UgdGhlIGlvbW11IGRyaXZlciBpcyBzbyBsaW1pdGVkIHRoYXQgaXQgd2lsbCBu
-b3Qgd29yayB3aXRoClZGSU8gLSBpdCBpcyBvbmx5IG1lbnQgdG8gYmUgdXNlZCB3aXRoIHRoZSBm
-aXhlZCBkcml2ZXJzIHRoYXQgYXJlCnBhaXJlZCB3aXRoIGl0LgoKSWRlYWxseSB3ZSdkIHByZXZl
-bnQgVkZJTyBmcm9tIGNvbm5lY3RpbmcgYW5kIG9ubHkgYWxsb3cgZHJpdmVycyB0aGF0Cmtub3cg
-dGhlIGxpbWl0YXRpb25zIG9mIHRoZSBJT01NVSB0byB1c2UgdGhlIHVubWFuYWdlZCBkb21haW4u
-CgpKYXNvbgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpp
-b21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6
-Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Fri, Jun 24, 2022 at 09:43:30AM +0800, Baolu Lu wrote:
+> On 2022/6/24 09:14, Jerry Snitselaar wrote:
+> > On Fri, Jun 24, 2022 at 08:55:08AM +0800, Baolu Lu wrote:
+> > > On 2022/6/24 01:02, Jerry Snitselaar wrote:
+> > > > Hi Baolu & Dave,
+> > > > 
+> > > > I noticed last night that on a Sapphire Rapids system if you boot without
+> > > > intel_iommu=on, the idxd driver will crash during probe in iommu_sva_bind_device().
+> > > > Should there be a sanity check before calling dev_iommu_ops(), or is the expectation
+> > > > that the caller would verify it is safe to call? This seemed to be uncovered by
+> > > > the combination of 3f6634d997db ("iommu: Use right way to retrieve iommu_ops"), and
+> > > > 42a1b73852c4 ("dmaengine: idxd: Separate user and kernel pasid enabling").
+> > > > 
+> > > > [   21.423729] BUG: kernel NULL pointer dereference, address: 0000000000000038
+> > > > [   21.445108] #PF: supervisor read access in kernel mode
+> > > > [   21.450912] #PF: error_code(0x0000) - not-present page
+> > > > [   21.456706] PGD 0
+> > > > [   21.459047] Oops: 0000 [#1] PREEMPT SMP NOPTI
+> > > > [   21.464004] CPU: 0 PID: 1420 Comm: kworker/0:3 Not tainted 5.19.0-0.rc3.27.eln120.x86_64 #1
+> > > > [   21.464011] Hardware name: Intel Corporation EAGLESTREAM/EAGLESTREAM, BIOS EGSDCRB1.SYS.0067.D12.2110190954 10/19/2021
+> > > > [   21.464015] Workqueue: events work_for_cpu_fn
+> > > > [   21.464030] RIP: 0010:iommu_sva_bind_device+0x1d/0xe0
+> > > > [   21.464046] Code: c3 cc 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 41 57 41 56 49 89 d6 41 55 41 54 55 53 48 83 ec 08 48 8b 87 d8 02 00 00 <48> 8b 40 38 48 8b 50 10 48 83 7a 70 00 48 89 14 24 0f 84 91 00 00
+> > > > [   21.464050] RSP: 0018:ff7245d9096b7db8 EFLAGS: 00010296
+> > > > [   21.464054] RAX: 0000000000000000 RBX: ff1eadeec8a51000 RCX: 0000000000000000
+> > > > [   21.464058] RDX: ff7245d9096b7e24 RSI: 0000000000000000 RDI: ff1eadeec8a510d0
+> > > > [   21.464060] RBP: ff1eadeec8a51000 R08: ffffffffb1a12300 R09: ff1eadffbfce25b4
+> > > > [   21.464062] R10: ffffffffffffffff R11: 0000000000000038 R12: ffffffffc09f8000
+> > > > [   21.464065] R13: ff1eadeec8a510d0 R14: ff7245d9096b7e24 R15: ff1eaddf54429000
+> > > > [   21.464067] FS:  0000000000000000(0000) GS:ff1eadee7f600000(0000) knlGS:0000000000000000
+> > > > [   21.464070] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > > [   21.464072] CR2: 0000000000000038 CR3: 00000008c0e10006 CR4: 0000000000771ef0
+> > > > [   21.464074] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > > [   21.464076] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
+> > > > [   21.464078] PKRU: 55555554
+> > > > [   21.464079] Call Trace:
+> > > > [   21.464083]  <TASK>
+> > > > [   21.464092]  idxd_pci_probe+0x259/0x1070 [idxd]
+> > > > [   21.464121]  local_pci_probe+0x3e/0x80
+> > > > [   21.464132]  work_for_cpu_fn+0x13/0x20
+> > > > [   21.464136]  process_one_work+0x1c4/0x380
+> > > > [   21.464143]  worker_thread+0x1ab/0x380
+> > > > [   21.464147]  ? _raw_spin_lock_irqsave+0x23/0x50
+> > > > [   21.464158]  ? process_one_work+0x380/0x380
+> > > > [   21.464161]  kthread+0xe6/0x110
+> > > > [   21.464168]  ? kthread_complete_and_exit+0x20/0x20
+> > > > [   21.464172]  ret_from_fork+0x1f/0x30
+> > > > 
+> > > > I figure either there needs to be a check in iommu_sva_bind_device, or
+> > > > idxd needs to check in idxd_enable_system_pasid that that
+> > > > idxd->pdev->dev.iommu is not null before it tries calling iommu_sva_bind_device.
+> > > 
+> > > As documented around the iommu_sva_bind_device() interface:
+> > > 
+> > >   * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first,
+> > > to
+> > >   * initialize the required SVA features.
+> > > 
+> > > idxd->pdev->dev.iommu should be checked in there.
+> > > 
+> > > Dave, any thoughts?
+> > > 
+> > > Best regards,
+> > > baolu
+> > 
+> > Duh, sorry I missed that in the comments.
+> > 
+> > It calls iommu_dev_enable_feature(), but then goes into code that
+> > calls iommu_sva_bind_device whether or not iommu_dev_enable_feature()
+> > fails.
+> > 
+> > You also will get the following warning if you don't have scalable
+> > mode enabled (either not enabled by default, or if enabled by default
+> > and passed intel_iommu=on,sm_off):
+> 
+> If scalable mode is disabled, iommu_dev_enable_feature(IOMMU_SVA) will
+> return failure, hence driver should not call iommu_sva_bind_device().
+> I guess below will disappear if above is fixed in the idxd driver.
+> 
+> Best regards,
+> baolu
+>
+
+It looks like there was a recent maintainer change, and Fenghua is now
+the maintainer. Fenghua thoughts on this? With 42a1b73852c4
+("dmaengine: idxd: Separate user and kernel pasid enabling") the code
+no longer depends on iommu_dev_feature_enable succeeding. Testing with
+something like this works (ran dmatest without sm_on, and
+dsa_user_test_runner.sh with sm_on, plus booting with various
+intel_iommu= combinations):
+
+diff --git a/drivers/dma/idxd/init.c b/drivers/dma/idxd/init.c
+index 355fb3ef4cbf..5b49fd5c1e25 100644
+--- a/drivers/dma/idxd/init.c
++++ b/drivers/dma/idxd/init.c
+@@ -514,13 +514,14 @@ static int idxd_probe(struct idxd_device *idxd)
+        if (IS_ENABLED(CONFIG_INTEL_IDXD_SVM) && sva) {
+                if (iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA))
+                        dev_warn(dev, "Unable to turn on user SVA feature.\n");
+-               else
++               else {
+                        set_bit(IDXD_FLAG_USER_PASID_ENABLED, &idxd->flags);
+
+-               if (idxd_enable_system_pasid(idxd))
+-                       dev_warn(dev, "No in-kernel DMA with PASID.\n");
+-               else
+-                       set_bit(IDXD_FLAG_PASID_ENABLED, &idxd->flags);
++                       if (idxd_enable_system_pasid(idxd))
++                               dev_warn(dev, "No in-kernel DMA with PASID.\n");
++                       else
++                               set_bit(IDXD_FLAG_PASID_ENABLED, &idxd->flags);
++               }
+        } else if (!sva) {
+                dev_warn(dev, "User forced SVA off via module param.\n");
+        }
+
+The commit description is a bit confusing, because it talks about there
+being no dependency, but ties user pasid to enabling/disabling the SVA
+feature, which system pasid would depend on as well.
+
+Regards,
+Jerry
+
+> > 
+> > [   24.645784] idxd 0000:6a:01.0: enabling device (0144 -> 0146)
+> > [   24.645871] idxd 0000:6a:01.0: Unable to turn on user SVA feature.
+> > [   24.645932] ------------[ cut here ]------------
+> > [   24.645935] WARNING: CPU: 0 PID: 422 at drivers/iommu/intel/pasid.c:253 intel_pasid_get_entry.isra.0+0xcd/0xe0
+> > [   24.675872] Modules linked in: intel_uncore(+) drm_ttm_helper isst_if_mbox_pci(+) idxd(+) snd i2c_i801(+) isst_if_mmio ttm isst_if_common mei fjes(+) soundcore intel_vsec i2c_ismt i2c_smbus idxd_bus ipmi_ssif acpi_ipmi ipmi_si acpi_pad acpi_power_meter pfr_telemetry pfr_update vfat fat fuse xfs crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel igc wmi pinctrl_emmitsburg ipmi_devintf ipmi_msghandler
+> > [   24.716612] CPU: 0 PID: 422 Comm: kworker/0:2 Not tainted 5.19.0-0.rc3.27.eln120.x86_64 #1
+> > [   24.716621] Hardware name: Intel Corporation EAGLESTREAM/EAGLESTREAM, BIOS EGSDCRB1.SYS.0067.D12.2110190954 10/19/2021
+> > [   24.716625] Workqueue: events work_for_cpu_fn
+> > [   24.716645] RIP: 0010:intel_pasid_get_entry.isra.0+0xcd/0xe0
+> > [   24.716656] Code: a9 d1 ff ff 48 89 c7 48 85 c0 75 9e 31 c0 5b 5d 41 5c 41 5d c3 cc 41 83 e4 3f 5b 5d 49 c1 e4 06 4a 8d 04 27 41 5c 41 5d c3 cc <0f> 0b 31 c0 eb de 48 8b 05 e6 dd 59 01 eb 87 0f 1f 40 00 0f 1f 44
+> > [   24.716664] RSP: 0018:ff848155c79bfd00 EFLAGS: 00010046
+> > [   24.716671] RAX: 0000000000000206 RBX: ff3deaf807bfdcc0 RCX: 0000000000000001
+> > [   24.716677] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ff3deb0789f53240
+> > [   24.716682] RBP: ff3deb0789f53780 R08: 0000000000000001 R09: 0000000000000003
+> > [   24.716688] R10: ff848155c79bfcf8 R11: 0000000000000000 R12: 0000000000000003
+> > [   24.716693] R13: 0000000000000001 R14: 0000000000000001 R15: ffffffff84e10000
+> > [   24.716700] FS:  0000000000000000(0000) GS:ff3deb073f600000(0000) knlGS:0000000000000000
+> > [   24.716705] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [   24.716709] CR2: 0000558a19e81c58 CR3: 0000000108252005 CR4: 0000000000771ef0
+> > [   24.716714] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > [   24.716719] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
+> > [   24.716723] PKRU: 55555554
+> > [   24.716726] Call Trace:
+> > [   24.716731]  <TASK>
+> > [   24.716738]  intel_pasid_setup_first_level+0x36/0x200
+> > [   24.716753]  intel_svm_bind+0x2f8/0x3a0
+> > [   24.716767]  iommu_sva_bind_device+0x9b/0xe0
+> > [   24.716785]  idxd_pci_probe+0x259/0x1070 [idxd]
+> > [   24.716866]  local_pci_probe+0x3e/0x80
+> > [   24.716890]  work_for_cpu_fn+0x13/0x20
+> > [   24.716900]  process_one_work+0x1c4/0x380
+> > [   24.716912]  worker_thread+0x1ab/0x380
+> > [   24.716922]  ? _raw_spin_lock_irqsave+0x23/0x50
+> > [   24.716945]  ? process_one_work+0x380/0x380
+> > [   24.716954]  kthread+0xe6/0x110
+> > [   24.716967]  ? kthread_complete_and_exit+0x20/0x20
+> > [   24.716976]  ret_from_fork+0x1f/0x30
+> > [   24.716999]  </TASK>
+> > [   24.717000] ---[ end trace 0000000000000000 ]---
+> > [   24.717019] ------------[ cut here ]------------
+> > 
+> > regards,
+> > Jerry
+> > 
+> 
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
