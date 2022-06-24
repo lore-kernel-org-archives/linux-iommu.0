@@ -4,62 +4,138 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2AA08C433EF
-	for <iommu@archiver.kernel.org>; Fri, 24 Jun 2022 18:32:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 643CDCCA481
+	for <iommu@archiver.kernel.org>; Fri, 24 Jun 2022 18:46:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id B5E9B60E6B;
-	Fri, 24 Jun 2022 18:32:04 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org B5E9B60E6B
+	by smtp3.osuosl.org (Postfix) with ESMTP id E756B60AEA;
+	Fri, 24 Jun 2022 18:46:18 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org E756B60AEA
+Authentication-Results: smtp3.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=i0zvBaOt
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fd9ealKC6NCu; Fri, 24 Jun 2022 18:32:03 +0000 (UTC)
+	with ESMTP id 5ZKb0SrrnsCx; Fri, 24 Jun 2022 18:46:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 66A27607B5;
-	Fri, 24 Jun 2022 18:32:03 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 66A27607B5
+	by smtp3.osuosl.org (Postfix) with ESMTPS id B473D60A98;
+	Fri, 24 Jun 2022 18:46:17 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org B473D60A98
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B2C5C0039;
-	Fri, 24 Jun 2022 18:32:03 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AAE28C002D;
- Fri, 24 Jun 2022 18:32:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 82158C0039;
+	Fri, 24 Jun 2022 18:46:17 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 27C28C002D;
+ Fri, 24 Jun 2022 18:46:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7F71F84956;
- Fri, 24 Jun 2022 18:32:01 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 7F71F84956
+ by smtp2.osuosl.org (Postfix) with ESMTP id 01523408EF;
+ Fri, 24 Jun 2022 18:46:16 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 01523408EF
+Authentication-Results: smtp2.osuosl.org; dkim=pass (2048-bit key,
+ unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256
+ header.s=selector2 header.b=i0zvBaOt
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Ieq6n2JTHTNZ; Fri, 24 Jun 2022 18:32:00 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 8CD2A84950
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8CD2A84950;
- Fri, 24 Jun 2022 18:32:00 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E9BE31042;
- Fri, 24 Jun 2022 11:31:59 -0700 (PDT)
-Received: from [10.57.84.111] (unknown [10.57.84.111])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 862573F792;
- Fri, 24 Jun 2022 11:31:53 -0700 (PDT)
-Message-ID: <c9dee5e3-4525-b9bf-3775-30995d59af9e@arm.com>
-Date: Fri, 24 Jun 2022 19:31:47 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ArCDRC6G0bZH; Fri, 24 Jun 2022 18:46:15 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org E9A8A408EB
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam12on2057.outbound.protection.outlook.com [40.107.243.57])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id E9A8A408EB;
+ Fri, 24 Jun 2022 18:46:14 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EchjWnnT77Xm6DWf0380ZJzF+14dXyH63D6HAfdiLX+1W8r6GDrQThR9N06zSpA/jZV1mPfPKl1coHRIBEKwSLCfCu+0cZCEx1xP49pDmy5hG2kDiNjg3/ejSrx6OEzd7OFRUbQK64zD/Gn2FjSJXFD2sd1d9vS9hm3iu+yZxez25pu6iVaCyjsO+MXsHG+Vn6p48SMxByPMGcx+sggaf5zjuHZfWeJixUZ+IlXkhvAudIYgWrvOeZxdj7ZchIqAohvbevVQzaA8BXTKObydndEqpjCPJEJV9+LRRh4sGy4jiT5C5lQXnG+WQ1IaYd4ke1lrOOYH7MJGOU1qGilZrw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FSZzvPV6iaZAbi16zYQI65Bu7ISOVdZ2SPQfnk1uxGY=;
+ b=FdatiJZlxwiyzfGNI01Wgnl1SWo+j/NBmtNMf5GKvJbtYjM/7Q9Hb/xa4elyr+LSBYyIs4sVz1e9y288c1wB/FA0Wjpse+rFe6RxiXiq3EQuSnn+HksRwxac4bmmToGABd8pc29n23cN1SKlsKGwaNqYK7Nm4A8AlZtbaLKZXRCGuFqSLt84DK5hvQfYebWsmeJwMeSjoLCcUs+MohERvEduq0hz5iGbjghnNutTgcoGQOTsnxiRQ6zr93R50htrfN6x7Ttbjb/szfdBijXat+YEh2ZDUt0wC9azqBH6ZpGmF/e/rOUy6wND5+Pll6atRy6RBqV80l5Mm2e/hIlg2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FSZzvPV6iaZAbi16zYQI65Bu7ISOVdZ2SPQfnk1uxGY=;
+ b=i0zvBaOt3gm+IiRly9ebuE0z67u6x2XhMq0S1P8CyxXgo2QsbnXePK9jchLkP3vVEQXLrJJ4SaubEtbBd9DHGMQZFsK9/ojEgV+fFIegfn7kjIv+/RCNtegUT1/FRxBy2ntFjC2hoyQtK2QWQyTISbSBSt0v9yDQAXiy1aFvRRRMKNzs/MHWfvYWRxhOid6oflIIOEyGADynpQuThB7SJxLeofKDC/ojY2PcLXCGgaqnLXH8/y+ghgaAYF+GeW5nmnChf9McvVSlS7JtXYisOXwhZwSsTmblDUF3eD6Iy0KJKCI/p4D29/jJPk6wPYM0zh4mwQv98s71p3AEpk0oFw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by CH2PR12MB4232.namprd12.prod.outlook.com (2603:10b6:610:a4::21)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17; Fri, 24 Jun
+ 2022 18:46:11 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5373.016; Fri, 24 Jun 2022
+ 18:46:11 +0000
+Date: Fri, 24 Jun 2022 15:46:09 -0300
+To: Robin Murphy <robin.murphy@arm.com>
 Subject: Re: [PATCH v2 3/5] vfio/iommu_type1: Remove the domain->ops comparison
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
+Message-ID: <20220624184609.GX4147@nvidia.com>
 References: <20220616000304.23890-1-nicolinc@nvidia.com>
  <20220616000304.23890-4-nicolinc@nvidia.com>
  <BL1PR11MB52717050DBDE29A81637BBFA8CAC9@BL1PR11MB5271.namprd11.prod.outlook.com>
  <YqutYjgtFOTXCF0+@Asurada-Nvidia>
  <6e1280c5-4b22-ebb3-3912-6c72bc169982@arm.com>
  <20220624131611.GM4147@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220624131611.GM4147@nvidia.com>
+ <c9dee5e3-4525-b9bf-3775-30995d59af9e@arm.com>
+Content-Disposition: inline
+In-Reply-To: <c9dee5e3-4525-b9bf-3775-30995d59af9e@arm.com>
+X-ClientProxiedBy: BL1P222CA0020.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:208:2c7::25) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 47e049fc-fa31-4747-c506-08da5611ceda
+X-MS-TrafficTypeDiagnostic: CH2PR12MB4232:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: x+UbGabsh6n/qandmYg2gMW/qTzy0dfeyjAPBbPrISucYYPYJ0HoT/09J3elJGGsar38LCpnHPydsVUbT9bVIQEC+TGq8qgvjTAez6Na5Jbv/mSMsm2i93akEBM+MiUkxzJGeWGVi8rRXvocoBNi/JqpX/um2uMEGoiH9eHCi+VgG1zsTvwVNVORiTYObk0lllcRpRw84TRiJ00rfipALu2l3Q4CgJc0fzk/+YhKLWxpuxSftmnFwGeciyDPDpNv28xKlapGhxiWI/O4b8btGO10UGO9Rlw8mI5j1QhCNAsgXpRYr97zqtLA4Yk753An6k2h8BBu+mPPozeGq6KDk0flPMItRGYO7GhxKM50+2kCg0kDLjGirE0EiA8KoYxsw84b/gDIL+I72trdS1xcJOb1vFv/MviNYpzxyPd/QOMOiUdDLvmnAWvWo8YqlZPOquy3bAHXAwklWzYgi906wShyVoAVUH4YsUJd7T6F2JG+10VyNXLKYpCkPWUe4HCjfWeEk9jBWk08x+1sZZcMchSbOa426ptnwPrPYny9Ea/2bdVUnVV6i3YwydTz+o9uiYT2UaOw2n6i+XSndmp7BgL0RqWk7pmgnKGNB43RvtnemIv/R302v5XJejStNVH2YudVelJcB7PK1qfUR0EtPMjoZmZ2G4nvA92E8Y9Sq5ZbJ5EKV9DLR2cNW/ioFscSzePfTMJoL5FPyOZ1qvgXVR1mTV2Q9ZSzLGaGXasD2wk9sKG8Wv2DbXNminKmHutv
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230016)(4636009)(366004)(346002)(376002)(39860400002)(136003)(396003)(6512007)(6506007)(5660300002)(33656002)(6486002)(316002)(2906002)(36756003)(26005)(41300700001)(38100700002)(478600001)(66946007)(2616005)(66556008)(8676002)(66476007)(4326008)(54906003)(86362001)(7416002)(186003)(8936002)(6916009)(1076003)(7406005);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CDzARChBtb4DsZpFKWqzJw8w+TTcJG5Bn+s12ZV+7IHOmFLEgei+XtTQqJBu?=
+ =?us-ascii?Q?7ddmJJHn00mYx9kiqlka7PUbBgasvq5mMxAvo7lzI9VgMqqGckUIhQ1XIcnC?=
+ =?us-ascii?Q?m+AWAi1OrqXvsiPB3jP9F0cUAFTxeKmW312iB02FGPJUqSX9IuQGbtMXoyfF?=
+ =?us-ascii?Q?9OmkDCdOCgTAVoBlecBQSi9zMs8Fl2bMge92THL6Yhi/N2K+u+crUgYv84zq?=
+ =?us-ascii?Q?s4cLDJtT2uy6ygApTOjoyDLW52Ntzf4uG0O47nMltDYHK0LkqKg+m12WXpW1?=
+ =?us-ascii?Q?NhSNo+pQAoHBbMiw42Ruuh5+vvJR9hJHrHh3la7ojmy9z3v1lr0yyJ/muM/j?=
+ =?us-ascii?Q?3lqVyvLXIqwCLVgB7SdMwxU9J6EtOlpgTWfozXVqq3rK3rUAQE50mzLDn8k2?=
+ =?us-ascii?Q?it4E4WGXcAAD8/2aEDtEf2aAeMbRtk7EJ8j9no6Hnx91rklC8ATsg4IL3vvn?=
+ =?us-ascii?Q?nrJVFCr1cDo1i3XnH1eUWyKLAOgjc5bW7DjosbQQuLU/NGOmHEzCBtPBqGV7?=
+ =?us-ascii?Q?apaMulFUwUNWJYUZFLGPSRlx84aLxvwUo5WluKrJNr2VlRXZc176XVnL25mF?=
+ =?us-ascii?Q?IGI7VePrSCfOututwQrWMDOK2WnmhLa8XB0dVspYHA9+TvLmbSHZWK+sdM8k?=
+ =?us-ascii?Q?ZrtOqNQz/AkKYPFNy6+vU06BbWplt7yR9GsXNP05islB9AoWsX1zoU8t5TuZ?=
+ =?us-ascii?Q?xyApmwpXS9WQvGVFCACQDcDEZwsyIdWd0RLcU31OM8y1ZeqBA2D5FT2UXW4U?=
+ =?us-ascii?Q?9cmFRYUxeEVa2HiPXHsnl2wVgXh6MmagCnB5vBBJRcRjozDWi+f0ooNFx3qs?=
+ =?us-ascii?Q?WmYue8AtQ49VW1YGSQuUg3upQyPU6rnTZotCo87swg8pTy2VA90IxceF0DEQ?=
+ =?us-ascii?Q?XuAuM/2kSj1K3/OhuY0RNeRVMkcATeDw6yetnkCf2Wdh+PuI3Y9h3rz0im8P?=
+ =?us-ascii?Q?ZuYcuwA1M8qzvXdTPZ/5CAMQhZ0tsbvBylQIux0O1Di+3TfxhwsUQ8TVE6LS?=
+ =?us-ascii?Q?6gIyZRvAV+1uU3vpiYG+yuJTfOuT/DfHhXknV58xTFQTSTahVox0jQDcXq70?=
+ =?us-ascii?Q?LA4xUJpifb6KJDkx469kIc8XS52hni1CxVlJe/UzayL0NxpXKgcxHwEZxq73?=
+ =?us-ascii?Q?vPqCqkNOxaLCxRCG6jbyUd3s+nKei918Hsub8HhPl9YQgaTjCu7lXam9NWEp?=
+ =?us-ascii?Q?YPaBpZEeqyEoGAzokRaLGLaKhNuueB/Fdt9faL7oRzsfqOtoutZRw4CYMBeZ?=
+ =?us-ascii?Q?h+rJqjiKmoSnwl+SzazvLJgM85VbJbAzMLpXPsIQyEEFECXTha1N76SQ57aR?=
+ =?us-ascii?Q?wuXjHHDkMAWVrAOAdWZO1nDWoR+2F6g9Y7e9RMc6/SfuIhMCo9xAlzL2G4p0?=
+ =?us-ascii?Q?Zws5dCCeKmpkrK2LMT6iLiq6OAXgGCr1pd1OK0iC+VxbWvZ/udaLrrxCcivg?=
+ =?us-ascii?Q?g9AQLcV+85WzN/RHwVK+tK3MjJGQq/lmGfkuZoXMjjZgwIgvzgUMJ492taSA?=
+ =?us-ascii?Q?j1R/ngk9Yo3DPJdtXidhoGcDjZ6JspSWlujOvWG85Bg2tfMCUHNMN2qxgnXu?=
+ =?us-ascii?Q?L7BxI4iLHHEppOl3z52pwDY8rl4vXdv5nTl2EaHr?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 47e049fc-fa31-4747-c506-08da5611ceda
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2022 18:46:11.2941 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bbaDrGTtc3w0r4jgKFCsk/V410TJZFDwCXiogPLDeGyPjsoCr7B/Bioxqlz3Ox07
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4232
 Cc: "cohuck@redhat.com" <cohuck@redhat.com>,
  "jordan@cosmicpenguin.net" <jordan@cosmicpenguin.net>,
  "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
@@ -103,57 +179,55 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMi0wNi0yNCAxNDoxNiwgSmFzb24gR3VudGhvcnBlIHdyb3RlOgo+IE9uIFdlZCwgSnVu
-IDIyLCAyMDIyIGF0IDA4OjU0OjQ1QU0gKzAxMDAsIFJvYmluIE11cnBoeSB3cm90ZToKPj4gT24g
-MjAyMi0wNi0xNiAyMzoyMywgTmljb2xpbiBDaGVuIHdyb3RlOgo+Pj4gT24gVGh1LCBKdW4gMTYs
-IDIwMjIgYXQgMDY6NDA6MTRBTSArMDAwMCwgVGlhbiwgS2V2aW4gd3JvdGU6Cj4+Pgo+Pj4+PiBU
-aGUgZG9tYWluLT5vcHMgdmFsaWRhdGlvbiB3YXMgYWRkZWQsIGFzIGEgcHJlY2F1dGlvbiwgZm9y
-IG1peGVkLWRyaXZlcgo+Pj4+PiBzeXN0ZW1zLiBIb3dldmVyLCBhdCB0aGlzIG1vbWVudCBvbmx5
-IG9uZSBpb21tdSBkcml2ZXIgaXMgcG9zc2libGUuIFNvCj4+Pj4+IHJlbW92ZSBpdC4KPj4+Pgo+
-Pj4+IEl0J3MgdHJ1ZSBvbiBhIHBoeXNpY2FsIHBsYXRmb3JtLiBCdXQgSSdtIG5vdCBzdXJlIHdo
-ZXRoZXIgYSB2aXJ0dWFsIHBsYXRmb3JtCj4+Pj4gaXMgYWxsb3dlZCB0byBpbmNsdWRlIG11bHRp
-cGxlIGUuZy4gb25lIHZpcnRpby1pb21tdSBhbG9uZ3NpZGUgYSB2aXJ0dWFsIFZULWQKPj4+PiBv
-ciBhIHZpcnR1YWwgc21tdS4gSXQgbWlnaHQgYmUgY2xlYXJlciB0byBjbGFpbSB0aGF0IChhcyBS
-b2JpbiBwb2ludGVkIG91dCkKPj4+PiB0aGVyZSBpcyBwbGVudHkgbW9yZSBzaWduaWZpY2FudCBw
-cm9ibGVtcyB0aGFuIHRoaXMgdG8gc29sdmUgaW5zdGVhZCBvZiBzaW1wbHkKPj4+PiBzYXlpbmcg
-dGhhdCBvbmx5IG9uZSBpb21tdSBkcml2ZXIgaXMgcG9zc2libGUgaWYgd2UgZG9uJ3QgaGF2ZSBl
-eHBsaWNpdCBjb2RlCj4+Pj4gdG8gcmVqZWN0IHN1Y2ggY29uZmlndXJhdGlvbi4g8J+Yigo+Pj4K
-Pj4+IFdpbGwgZWRpdCB0aGlzIHBhcnQuIFRoYW5rcyEKPj4KPj4gT2gsIHBoeXNpY2FsIHBsYXRm
-b3JtcyB3aXRoIG1peGVkIElPTU1VcyBkZWZpbml0ZWx5IGV4aXN0IGFscmVhZHkuIFRoZSBtYWlu
-Cj4+IHBvaW50IGlzIHRoYXQgd2hpbGUgYnVzX3NldF9pb21tdSBzdGlsbCBleGlzdHMsIHRoZSBj
-b3JlIGNvZGUgZWZmZWN0aXZlbHkKPj4gKmRvZXMqIHByZXZlbnQgbXVsdGlwbGUgZHJpdmVycyBm
-cm9tIHJlZ2lzdGVyaW5nIC0gZXZlbiBpbiBlbXVsYXRlZCBjYXNlcwo+PiBsaWtlIHRoZSBleGFt
-cGxlIGFib3ZlLCB2aXJ0aW8taW9tbXUgYW5kIFZULWQgd291bGQgYm90aCB0cnkgdG8KPj4gYnVz
-X3NldF9pb21tdSgmcGNpX2J1c190eXBlKSwgYW5kIG9uZSBvZiB0aGVtIHdpbGwgbG9zZS4gVGhl
-IGFzcGVjdCB3aGljaAo+PiBtaWdodCB3YXJyYW50IGNsYXJpZmljYXRpb24gaXMgdGhhdCB0aGVy
-ZSdzIG5vIGNvbWJpbmF0aW9uIG9mIHN1cHBvcnRlZAo+PiBkcml2ZXJzIHdoaWNoIGNsYWltIG5v
-bi1vdmVybGFwcGluZyBidXNlcyAqYW5kKiBjb3VsZCBhcHBlYXIgaW4gdGhlIHNhbWUKPj4gc3lz
-dGVtIC0gZXZlbiBpZiB5b3UgdHJpZWQgdG8gY29udHJpdmUgc29tZXRoaW5nIGJ5IGVtdWxhdGlu
-Zywgc2F5LCBWVC1kCj4+IChQQ0kpIGFsb25nc2lkZSByb2NrY2hpcC1pb21tdSAocGxhdGZvcm0p
-LCB5b3UgY291bGQgc3RpbGwgb25seSBkZXNjcmliZSBvbmUKPj4gb3IgdGhlIG90aGVyIGR1ZSB0
-byBBQ1BJIHZzLiBEZXZpY2V0cmVlLgo+IAo+IFJpZ2h0LCBhbmQgdGhhdCBpcyBzdGlsbCBzb21l
-dGhpbmcgd2UgbmVlZCB0byBwcm90ZWN0IGFnYWluc3Qgd2l0aAo+IHRoaXMgb3BzIGNoZWNrLiBW
-RklPIGlzIG5vdCBjaGVja2luZyB0aGF0IHRoZSBidXMncyBhcmUgdGhlIHNhbWUKPiBiZWZvcmUg
-YXR0ZW1wdGluZyB0byByZS11c2UgYSBkb21haW4uCj4gCj4gU28gaXQgaXMgYWN0dWFsbHkgZnVu
-Y3Rpb25hbCBhbmQgZG9lcyBwcm90ZWN0IGFnYWluc3Qgc3lzdGVtcyB3aXRoCj4gbXVsdGlwbGUg
-aW9tbXUgZHJpdmVycyBvbiBkaWZmZXJlbnQgYnVzc2VzLgoKQnV0IGFzIGFib3ZlLCB3aGljaCBz
-eXN0ZW1zICphcmUqIHRob3NlPyBFdmVyeXRoaW5nIHRoYXQncyBvbiBteSByYWRhciAKd291bGQg
-aGF2ZSBkcml2ZXJzIGFsbCBjb21wZXRpbmcgZm9yIHRoZSBwbGF0Zm9ybSBidXMgLSBJbnRlbCBh
-bmQgczM5MCAKYXJlIHNvbWV3aGF0IHRoZSBvZGQgb25lcyBvdXQgaW4gdGhhdCByZXNwZWN0LCBi
-dXQgYXJlIGFsc28gbm9uLWlzc3VlcyAKYXMgYWJvdmUuIEZXSVcgbXkgaW9tbXUvYnVzIGRldiBi
-cmFuY2ggaGFzIGdvdCBhcyBmYXIgYXMgdGhlIGZpbmFsIGJ1cyAKb3BzIHJlbW92YWwgYW5kIGFs
-bG93aW5nIG11bHRpcGxlIGRyaXZlciByZWdpc3RyYXRpb25zLCBhbmQgYmVmb3JlIGl0IAphbGxv
-d3MgdGhhdCwgaXQgZG9lcyBub3cgaGF2ZSB0aGUgY29tbW9uIGF0dGFjaCBjaGVjayB0aGF0IEkg
-c2tldGNoZWQgCm91dCBpbiB0aGUgcHJldmlvdXMgZGlzY3Vzc2lvbiBvZiB0aGlzLgoKSXQncyBw
-cm9iYWJseSBhbHNvIG5vdGV3b3J0aHkgdGhhdCBkb21haW4tPm9wcyBpcyBubyBsb25nZXIgdGhl
-IHNhbWUgCmRvbWFpbi0+b3BzIHRoYXQgdGhpcyBjb2RlIHdhcyB3cml0dGVuIHRvIGNoZWNrLCBh
-bmQgbWF5IG5vdyBiZSAKZGlmZmVyZW50IGJldHdlZW4gZG9tYWlucyBmcm9tIHRoZSBzYW1lIGRy
-aXZlci4KClRoYW5rcywKUm9iaW4uCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0
-aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5m
-by9pb21tdQ==
+On Fri, Jun 24, 2022 at 07:31:47PM +0100, Robin Murphy wrote:
+
+> > > Oh, physical platforms with mixed IOMMUs definitely exist already. The main
+> > > point is that while bus_set_iommu still exists, the core code effectively
+> > > *does* prevent multiple drivers from registering - even in emulated cases
+> > > like the example above, virtio-iommu and VT-d would both try to
+> > > bus_set_iommu(&pci_bus_type), and one of them will lose. The aspect which
+> > > might warrant clarification is that there's no combination of supported
+> > > drivers which claim non-overlapping buses *and* could appear in the same
+> > > system - even if you tried to contrive something by emulating, say, VT-d
+> > > (PCI) alongside rockchip-iommu (platform), you could still only describe one
+> > > or the other due to ACPI vs. Devicetree.
+> > 
+> > Right, and that is still something we need to protect against with
+> > this ops check. VFIO is not checking that the bus's are the same
+> > before attempting to re-use a domain.
+> > 
+> > So it is actually functional and does protect against systems with
+> > multiple iommu drivers on different busses.
+> 
+> But as above, which systems *are* those? 
+
+IDK it seems wrong that the system today will allow different buses to
+have different IOMMU drivers and not provide a trivial protection
+check.
+
+> FWIW my iommu/bus dev branch has got as far as the final bus ops removal and
+> allowing multiple driver registrations, and before it allows that, it does
+> now have the common attach check that I sketched out in the previous
+> discussion of this.
+
+If you want to put the check in your series that seems fine too, as
+long as we get it in the end.
+
+> It's probably also noteworthy that domain->ops is no longer the same
+> domain->ops that this code was written to check, and may now be different
+> between domains from the same driver.
+
+Yes, the vfio check is not good anymore.
+
+Jason
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
