@@ -1,85 +1,141 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3C8A3C43334
-	for <iommu@archiver.kernel.org>; Fri, 24 Jun 2022 01:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 27B92C433EF
+	for <iommu@archiver.kernel.org>; Fri, 24 Jun 2022 01:50:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id B7EEE60BBF;
-	Fri, 24 Jun 2022 01:43:48 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org B7EEE60BBF
-Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cyYtJskW
+	by smtp2.osuosl.org (Postfix) with ESMTP id 9EC814059B;
+	Fri, 24 Jun 2022 01:50:38 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 9EC814059B
+Authentication-Results: smtp2.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=daIOn5hR
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id s--wzR7ZmhVU; Fri, 24 Jun 2022 01:43:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 57D9760C01;
-	Fri, 24 Jun 2022 01:43:47 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 57D9760C01
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Q1Sp73uKKF8o; Fri, 24 Jun 2022 01:50:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 4629840441;
+	Fri, 24 Jun 2022 01:50:37 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 4629840441
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 25565C0039;
-	Fri, 24 Jun 2022 01:43:47 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A87B9C002D
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 01:43:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B80CC0039;
+	Fri, 24 Jun 2022 01:50:37 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 54588C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 01:50:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 6F6CD84819
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 01:43:45 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 6F6CD84819
-Authentication-Results: smtp1.osuosl.org;
- dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
- header.a=rsa-sha256 header.s=Intel header.b=cyYtJskW
+ by smtp4.osuosl.org (Postfix) with ESMTP id EB96141964
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 01:50:35 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org EB96141964
+Authentication-Results: smtp4.osuosl.org; dkim=pass (2048-bit key,
+ unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256
+ header.s=selector2 header.b=daIOn5hR
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zJSDIWls5g-S for <iommu@lists.linux-foundation.org>;
- Fri, 24 Jun 2022 01:43:44 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 77A1F84812
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 77A1F84812
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 01:43:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1656035024; x=1687571024;
- h=message-id:date:mime-version:cc:subject:to:references:
- from:in-reply-to:content-transfer-encoding;
- bh=jTo+mIJbSPpgoQqqhYkvcSrHq6LfhDu8DQk5ANuQhWU=;
- b=cyYtJskWWYz7zmJhqFA7e4fQZujjfxHnHQ6S55hVJP+K60IibwygX7dQ
- ZBhs2uCK1Q6yQhPV74C9PZ1jTa+IDKQU3DqqUaYG3yTSARUK2Zo8m7ZEx
- yAAHp7yWR4MlTcQfy8TpgUu/ZcG7NKM0yDqJujmOBM9diUxkcb0dwdybd
- IOTJs7MN8V0XU6QDswhrJhrJRJbPvc2wfRAWzCwy0X3OExJWk4WOAD/MM
- yYDiFOlDO/03hT/5o02FQtEK39FW2thANJt9j5juEGg1MXbzip/l8IAms
- lT/92/LP6lEtUJdXPVIZ8c1KGJMrbF8rfJJh6dC23yLAQbzq4+5bEeSor w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10387"; a="342580436"
-X-IronPort-AV: E=Sophos;i="5.92,217,1650956400"; d="scan'208";a="342580436"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Jun 2022 18:43:43 -0700
-X-IronPort-AV: E=Sophos;i="5.92,217,1650956400"; d="scan'208";a="645042048"
-Received: from wenli3x-mobl.ccr.corp.intel.com (HELO [10.249.168.117])
- ([10.249.168.117])
- by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Jun 2022 18:43:31 -0700
-Message-ID: <552074ff-fd32-8cdb-cc10-1d71319c71db@linux.intel.com>
-Date: Fri, 24 Jun 2022 09:43:30 +0800
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rmxJYkhSVVP3 for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Jun 2022 01:50:34 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org F3DD341920
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com
+ (mail-co1nam11on2053.outbound.protection.outlook.com [40.107.220.53])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id F3DD341920
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 01:50:33 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IqJbAoi9L5bLxTif82oBgwiq9Gl9v5hApgm3sOKnBziCEt2lJM8VBdFoGtOQUiAkE89Lc/7fenprh/7UfC4Ctk+hWQ+8l7d02/dVBSv71RvRXCWBysvfjIIiGZv2d4+QQ6JRLv+4etCB+/0BFkVeXNNxdlQohuRqVJlfhgUKddd37WSPOAQ5Il4EKYzSRXvd7qwUuiCtkIdfNYiSk73HAVKoy1zLjovQWnln08W+OOYv9aXR48O6+/seO5GDwbfrOHtBHLHkp9ZtkSVosB7x9Es1KEF5m8sMUs3SWdP7zokynLUUemPfMptpMPRufnbdeI7WPPx4BmcEIPAY4iQuoQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=B4DHRKlka3MYtTFbBPIU2nOFYSrLrj69UR/YS1bXgz8=;
+ b=KGBjsahtp5SrYvR6NH6pcOHgSBA1kzSyehUuzCSWwzUxF63YmxuaQMZHzBxJPGXcnBZu497imvgEErO5oh294JWQc2A1YZUxtYOC7AKZkVfPG/ja4dC+YlUcjj0nuuF5y4TPTKRcOde0vsrqS37BmOoQQRF/1wkR0j1MHv/R4dsFYRJOOLWVYZMDDfUkuegieA6oXyQ/K+mFYVj83Oktz8w1LYNJHIu3xckya265KCaUznCe17GqQJA1hjm0b4tbjlQrhFoDSufAQgic1hJbxDDsAmksKwu//bzFtJn4sa51ZU1k1/KOgYLCOOrNFqQ/bPNBhQCP44Jv+oDRRKs9Iw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B4DHRKlka3MYtTFbBPIU2nOFYSrLrj69UR/YS1bXgz8=;
+ b=daIOn5hRjZ3NJhsI0YviBkxBm0wICT0/lBq4DnxNFcctcLUgN6VRGFzw1l46PWZhyDzcVB/1RkPqaweiT5PPFKFSsFkPY9OXksC7terVGKz4VlZeXq7NHq5XqO+A8g6T/qJ33Hhuc5y/57g4BV2EcfnwgBj0gPi+aFPD/ZYdPQSy0I/i8G7tQiUHBJVlXyO7vPdHagIxMOB1tbYXHvqoZWfNMr4OKaOR7kHJ4QajLnyXM3VFb+Kqb76N3Llh1QEb8WnQmNrL9WmuqSNWTmxSF2Ubjd3xcJLSFtrEW5ze4p77zUaobk7d149yXTEbAk/G+jMV74N0yOElG0v9db97KA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by MW2PR12MB2522.namprd12.prod.outlook.com (2603:10b6:907:f::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14; Fri, 24 Jun
+ 2022 01:50:31 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5373.016; Fri, 24 Jun 2022
+ 01:50:31 +0000
+Date: Thu, 23 Jun 2022 22:50:30 -0300
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH v2 1/2] vfio/type1: Simplify bus_type determination
+Message-ID: <20220624015030.GJ4147@nvidia.com>
+References: <b1d13cade281a7d8acbfd0f6a33dcd086207952c.1655898523.git.robin.murphy@arm.com>
+ <20220622161721.469fc9eb.alex.williamson@redhat.com>
+ <68263bd7-4528-7acb-b11f-6b1c6c8c72ef@arm.com>
+ <20220623170044.1757267d.alex.williamson@redhat.com>
+Content-Disposition: inline
+In-Reply-To: <20220623170044.1757267d.alex.williamson@redhat.com>
+X-ClientProxiedBy: BL0PR02CA0009.namprd02.prod.outlook.com
+ (2603:10b6:207:3c::22) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: iommu_sva_bind_device question
-Content-Language: en-US
-To: Jerry Snitselaar <jsnitsel@redhat.com>
-References: <20220623170232.6whonfjuh3m5vcoy@cantor>
- <6639b21c-1544-a025-4da5-219a1608f06e@linux.intel.com>
- <20220624011446.2bexm4sjo2vabay5@cantor>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220624011446.2bexm4sjo2vabay5@cantor>
-Cc: dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org,
- Dave Jiang <dave.jiang@intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 79d5af0f-c829-4779-75d3-08da5583ebe8
+X-MS-TrafficTypeDiagnostic: MW2PR12MB2522:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0cPer+L16Wwl74/UppmeoLJc66sRMGMIYgl/Arwfg3OtQ5Xp8DdfavhARWy680V6TI2Puh4qLQn0idZyrS34uic9Ks0U9U3kM7nGb+4QJnya+yKOF8xwQE1SRMto18gPox9liXJf0RTom9s+mf+tToy3c4u6OSgNvJhw1Xvmke9dqKEkKA37DSkUxtsCfVOyKlWMYCWOnHOAWyxX763Pj/8l+VqiyIvKRsDQshm5JRNbk9hF7sGGxRLRFisbui6vAHMvm0lPUIWl0ImsRUPOXWtBGmo7IcElle13/AZ1toI0i8Ltm32BbP2XR17zkkHTBw58GHxgoN431utDr1O6nsgGcGc3MTLTzHdWOTs0021E19VamMVgZ12b8Wnqb3C9IKlRZCMt2zaIX39LCHSPxtUOBByQRw1BLCrpPMqF57mpDHauoRLSTDREV2gwKFayrdYEBM3MgsMJdYjaU+2o7PxKR/5+ZF5+lzq5tQxH9x8uXTZFnzgZAqBM2a8x2O4zp7CHQ99RdBUgwEZOUGtki+UzcY/OE4N+wqVZc24eJ3tNfbm8W3UiSJxu+QZVv4T9dsFlaLxUDdGp2D8YZXgnS8//4S04/UPs8eA8D/YU1Mj8MurqtDApLVFUQkfhwSZg2+3dp1D4CtDUApKAAP8N8YnYPxxSX4eNrxMc0OrTR2xqGpHBEGjSZRWEyamYJfChPB/SAFNtJTM/s6pGkinRrxAJtgwxHpjGDej93s1J1Ju0lxMegNNNyJHu9FUuNHkP
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MN2PR12MB4192.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230016)(4636009)(396003)(39860400002)(376002)(366004)(136003)(346002)(66946007)(6916009)(2616005)(186003)(4326008)(66476007)(86362001)(316002)(2906002)(83380400001)(66556008)(5660300002)(8676002)(33656002)(26005)(1076003)(6512007)(41300700001)(8936002)(6486002)(6506007)(36756003)(38100700002)(478600001);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4COLO8hQhGICRF+HZIdcS6JuATRDsM2Q2ltRbYYlm9T4Dar9Ve7HODLiByIG?=
+ =?us-ascii?Q?hu+OY0PUeUSmUCp8rAHpiIBL0HWrTxAKU7HcfVjXLGskXYos2min1DRovg2w?=
+ =?us-ascii?Q?XTKm6CLFZjUYj9uoNQCTu01YeVXgtp/P7EFN8e00BL3j4d6VvD+I27m2mEGf?=
+ =?us-ascii?Q?ZEMTAgKhOodw7qzmxc3wvWqk75R1LFC7P9uT1OnEbJmOaBUGamLmJ7v721Vj?=
+ =?us-ascii?Q?hq79MB2hRjQqBb8yzkqWWqRwcwyauWINFoTRLgxESPz03GZKWgs0tlskWqNM?=
+ =?us-ascii?Q?j0qc6xhtwZI2fnDgtO6MkzmtrnFeGXx4NWXEgSj0I/DvWJn3dGo4nm7sgM60?=
+ =?us-ascii?Q?Rf8oBcYRBz9Rh6jYa1nm+b8yyWygTc9KzvUpwqGFDHO4KgqWyCakIhJk+8OL?=
+ =?us-ascii?Q?OT8yaVQ4b2CCTedat7nXbErMysMw2FEj5TULPLXsDKucoStJbrE74WSZljl8?=
+ =?us-ascii?Q?NdsQiaVrkpk16s7WR4TIs/cTtTcM1adxYJ9HswiPYTmVjAV/9Ce4KrvkBrrj?=
+ =?us-ascii?Q?BVDUl/7NOfxVD28HkvpdSg/VznYk15jWsy1xeNR9SmJZotKdXAmFuUf7Fiz+?=
+ =?us-ascii?Q?iVvaKRfg1EDHxgwjJw/XWhcM3WmDzEfEC1+5y9Zbrh5IW9KiTRiI7FQ8OaAH?=
+ =?us-ascii?Q?j2QqRnMQleYZjqlD1mZAZq+4VTVSQYsg3Wa00bjRmusri7cvfybKi9DvOsju?=
+ =?us-ascii?Q?SxKCP16Z0PJRsqNZxOgQtZqRBXMLu8cZl2rmwZcrkVjZj1zie1EVkymOrXQj?=
+ =?us-ascii?Q?5fNBk807svUbMXs+u4O++O9/UGD4zXITwAoxfVoioWW21arb2OzTnqoHuk91?=
+ =?us-ascii?Q?p+q+1mFi5pTLZVqy3sxJPWbm4L0OL9bcfVWZ7TEnSn97y0snZMmvPBdQyTIa?=
+ =?us-ascii?Q?nuJQ/skVlaG2GqQmqNhuE/NOxi+h9BECGarZgdKx34NFac+Z068D/HRyH1kN?=
+ =?us-ascii?Q?z/hNqnRiG3Kqap8oT3Tgu6l9QUO8foMZlbLadvnQZEXQNtI1WDVkI9N+PBQf?=
+ =?us-ascii?Q?CpMohSnv58X8z0t1l88HLyK200FUzUNuko8qNEMDk89SzB9xBwJzZNlyman9?=
+ =?us-ascii?Q?mDnpfCebEA6rSip7HvScbthJ4FG0rz6kR7mDAYUn2oM0KaRfY/NUD1zu/Ziy?=
+ =?us-ascii?Q?rDgL7Htz2FjBwoQgE3/4lfxZo4FFpDVopGazgY6qkfiCr7DfLOCP/qYil34M?=
+ =?us-ascii?Q?+6gfucjZsEjVudq6BW0GGu9KUBshjnoSrji4qfc+yWfyiaLsbRu6W4yE1QvQ?=
+ =?us-ascii?Q?EI2EShMEYdIAIS2N8qkniDmGAowJ73w4XUOv4ZvbdCE1bwn2QuRaFChWxIx0?=
+ =?us-ascii?Q?P+Ujf6QqMJ9pbCu2aiRj/86GYSVYwq44ysKIF7STC8IpmtiM7RjofnQ25Vj2?=
+ =?us-ascii?Q?ohzwFMvomXJYckxZsccFRi63v/K+LvTTbnBcDsdCrmu0l9ZW/FtUcMxrIK9Z?=
+ =?us-ascii?Q?79ouIMu35drQUn6fjh9r5fP3EiQpAlvqbrQP/ODcLGwyZwWEVkUiImzJuusU?=
+ =?us-ascii?Q?kROl9reMbzj0GJkRbEj872p64CuuO2Joz7q4zeLIxBTVyTvs10g/LzqiEuRA?=
+ =?us-ascii?Q?z8GZfM+SKuEp063aruWqEDqvkAPP1jI5MutNVhfQ?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 79d5af0f-c829-4779-75d3-08da5583ebe8
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2022 01:50:31.4397 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kxSInNTjfGEjHNmvWTK7oKbvpqj2jOCbfUiPt17nAmwuYB60XatbEnL5h9iRp5WE
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2522
+Cc: kvm@vger.kernel.org, cohuck@redhat.com, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,138 +148,50 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/6/24 09:14, Jerry Snitselaar wrote:
-> On Fri, Jun 24, 2022 at 08:55:08AM +0800, Baolu Lu wrote:
->> On 2022/6/24 01:02, Jerry Snitselaar wrote:
->>> Hi Baolu & Dave,
->>>
->>> I noticed last night that on a Sapphire Rapids system if you boot without
->>> intel_iommu=on, the idxd driver will crash during probe in iommu_sva_bind_device().
->>> Should there be a sanity check before calling dev_iommu_ops(), or is the expectation
->>> that the caller would verify it is safe to call? This seemed to be uncovered by
->>> the combination of 3f6634d997db ("iommu: Use right way to retrieve iommu_ops"), and
->>> 42a1b73852c4 ("dmaengine: idxd: Separate user and kernel pasid enabling").
->>>
->>> [   21.423729] BUG: kernel NULL pointer dereference, address: 0000000000000038
->>> [   21.445108] #PF: supervisor read access in kernel mode
->>> [   21.450912] #PF: error_code(0x0000) - not-present page
->>> [   21.456706] PGD 0
->>> [   21.459047] Oops: 0000 [#1] PREEMPT SMP NOPTI
->>> [   21.464004] CPU: 0 PID: 1420 Comm: kworker/0:3 Not tainted 5.19.0-0.rc3.27.eln120.x86_64 #1
->>> [   21.464011] Hardware name: Intel Corporation EAGLESTREAM/EAGLESTREAM, BIOS EGSDCRB1.SYS.0067.D12.2110190954 10/19/2021
->>> [   21.464015] Workqueue: events work_for_cpu_fn
->>> [   21.464030] RIP: 0010:iommu_sva_bind_device+0x1d/0xe0
->>> [   21.464046] Code: c3 cc 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 41 57 41 56 49 89 d6 41 55 41 54 55 53 48 83 ec 08 48 8b 87 d8 02 00 00 <48> 8b 40 38 48 8b 50 10 48 83 7a 70 00 48 89 14 24 0f 84 91 00 00
->>> [   21.464050] RSP: 0018:ff7245d9096b7db8 EFLAGS: 00010296
->>> [   21.464054] RAX: 0000000000000000 RBX: ff1eadeec8a51000 RCX: 0000000000000000
->>> [   21.464058] RDX: ff7245d9096b7e24 RSI: 0000000000000000 RDI: ff1eadeec8a510d0
->>> [   21.464060] RBP: ff1eadeec8a51000 R08: ffffffffb1a12300 R09: ff1eadffbfce25b4
->>> [   21.464062] R10: ffffffffffffffff R11: 0000000000000038 R12: ffffffffc09f8000
->>> [   21.464065] R13: ff1eadeec8a510d0 R14: ff7245d9096b7e24 R15: ff1eaddf54429000
->>> [   21.464067] FS:  0000000000000000(0000) GS:ff1eadee7f600000(0000) knlGS:0000000000000000
->>> [   21.464070] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>> [   21.464072] CR2: 0000000000000038 CR3: 00000008c0e10006 CR4: 0000000000771ef0
->>> [   21.464074] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->>> [   21.464076] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
->>> [   21.464078] PKRU: 55555554
->>> [   21.464079] Call Trace:
->>> [   21.464083]  <TASK>
->>> [   21.464092]  idxd_pci_probe+0x259/0x1070 [idxd]
->>> [   21.464121]  local_pci_probe+0x3e/0x80
->>> [   21.464132]  work_for_cpu_fn+0x13/0x20
->>> [   21.464136]  process_one_work+0x1c4/0x380
->>> [   21.464143]  worker_thread+0x1ab/0x380
->>> [   21.464147]  ? _raw_spin_lock_irqsave+0x23/0x50
->>> [   21.464158]  ? process_one_work+0x380/0x380
->>> [   21.464161]  kthread+0xe6/0x110
->>> [   21.464168]  ? kthread_complete_and_exit+0x20/0x20
->>> [   21.464172]  ret_from_fork+0x1f/0x30
->>>
->>> I figure either there needs to be a check in iommu_sva_bind_device, or
->>> idxd needs to check in idxd_enable_system_pasid that that
->>> idxd->pdev->dev.iommu is not null before it tries calling iommu_sva_bind_device.
->>
->> As documented around the iommu_sva_bind_device() interface:
->>
->>   * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first,
->> to
->>   * initialize the required SVA features.
->>
->> idxd->pdev->dev.iommu should be checked in there.
->>
->> Dave, any thoughts?
->>
->> Best regards,
->> baolu
-> 
-> Duh, sorry I missed that in the comments.
-> 
-> It calls iommu_dev_enable_feature(), but then goes into code that
-> calls iommu_sva_bind_device whether or not iommu_dev_enable_feature()
-> fails.
-> 
-> You also will get the following warning if you don't have scalable
-> mode enabled (either not enabled by default, or if enabled by default
-> and passed intel_iommu=on,sm_off):
+On Thu, Jun 23, 2022 at 05:00:44PM -0600, Alex Williamson wrote:
 
-If scalable mode is disabled, iommu_dev_enable_feature(IOMMU_SVA) will
-return failure, hence driver should not call iommu_sva_bind_device().
-I guess below will disappear if above is fixed in the idxd driver.
-
-Best regards,
-baolu
-
+> > >> +struct vfio_device *vfio_device_get_from_iommu(struct iommu_group *iommu_group)
+> > >> +{
+> > >> +	struct vfio_group *group = vfio_group_get_from_iommu(iommu_group);
+> > >> +	struct vfio_device *device;  
+> > > 
+> > > Check group for NULL.  
+> > 
+> > OK - FWIW in context this should only ever make sense to call with an 
+> > iommu_group which has already been derived from a vfio_group, and I did 
+> > initially consider a check with a WARN_ON(), but then decided that the 
+> > unguarded dereference would be a sufficiently strong message. No problem 
+> > with bringing that back to make it more defensive if that's what you prefer.
 > 
-> [   24.645784] idxd 0000:6a:01.0: enabling device (0144 -> 0146)
-> [   24.645871] idxd 0000:6a:01.0: Unable to turn on user SVA feature.
-> [   24.645932] ------------[ cut here ]------------
-> [   24.645935] WARNING: CPU: 0 PID: 422 at drivers/iommu/intel/pasid.c:253 intel_pasid_get_entry.isra.0+0xcd/0xe0
-> [   24.675872] Modules linked in: intel_uncore(+) drm_ttm_helper isst_if_mbox_pci(+) idxd(+) snd i2c_i801(+) isst_if_mmio ttm isst_if_common mei fjes(+) soundcore intel_vsec i2c_ismt i2c_smbus idxd_bus ipmi_ssif acpi_ipmi ipmi_si acpi_pad acpi_power_meter pfr_telemetry pfr_update vfat fat fuse xfs crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel igc wmi pinctrl_emmitsburg ipmi_devintf ipmi_msghandler
-> [   24.716612] CPU: 0 PID: 422 Comm: kworker/0:2 Not tainted 5.19.0-0.rc3.27.eln120.x86_64 #1
-> [   24.716621] Hardware name: Intel Corporation EAGLESTREAM/EAGLESTREAM, BIOS EGSDCRB1.SYS.0067.D12.2110190954 10/19/2021
-> [   24.716625] Workqueue: events work_for_cpu_fn
-> [   24.716645] RIP: 0010:intel_pasid_get_entry.isra.0+0xcd/0xe0
-> [   24.716656] Code: a9 d1 ff ff 48 89 c7 48 85 c0 75 9e 31 c0 5b 5d 41 5c 41 5d c3 cc 41 83 e4 3f 5b 5d 49 c1 e4 06 4a 8d 04 27 41 5c 41 5d c3 cc <0f> 0b 31 c0 eb de 48 8b 05 e6 dd 59 01 eb 87 0f 1f 40 00 0f 1f 44
-> [   24.716664] RSP: 0018:ff848155c79bfd00 EFLAGS: 00010046
-> [   24.716671] RAX: 0000000000000206 RBX: ff3deaf807bfdcc0 RCX: 0000000000000001
-> [   24.716677] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ff3deb0789f53240
-> [   24.716682] RBP: ff3deb0789f53780 R08: 0000000000000001 R09: 0000000000000003
-> [   24.716688] R10: ff848155c79bfcf8 R11: 0000000000000000 R12: 0000000000000003
-> [   24.716693] R13: 0000000000000001 R14: 0000000000000001 R15: ffffffff84e10000
-> [   24.716700] FS:  0000000000000000(0000) GS:ff3deb073f600000(0000) knlGS:0000000000000000
-> [   24.716705] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   24.716709] CR2: 0000558a19e81c58 CR3: 0000000108252005 CR4: 0000000000771ef0
-> [   24.716714] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [   24.716719] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
-> [   24.716723] PKRU: 55555554
-> [   24.716726] Call Trace:
-> [   24.716731]  <TASK>
-> [   24.716738]  intel_pasid_setup_first_level+0x36/0x200
-> [   24.716753]  intel_svm_bind+0x2f8/0x3a0
-> [   24.716767]  iommu_sva_bind_device+0x9b/0xe0
-> [   24.716785]  idxd_pci_probe+0x259/0x1070 [idxd]
-> [   24.716866]  local_pci_probe+0x3e/0x80
-> [   24.716890]  work_for_cpu_fn+0x13/0x20
-> [   24.716900]  process_one_work+0x1c4/0x380
-> [   24.716912]  worker_thread+0x1ab/0x380
-> [   24.716922]  ? _raw_spin_lock_irqsave+0x23/0x50
-> [   24.716945]  ? process_one_work+0x380/0x380
-> [   24.716954]  kthread+0xe6/0x110
-> [   24.716967]  ? kthread_complete_and_exit+0x20/0x20
-> [   24.716976]  ret_from_fork+0x1f/0x30
-> [   24.716999]  </TASK>
-> [   24.717000] ---[ end trace 0000000000000000 ]---
-> [   24.717019] ------------[ cut here ]------------
-> 
-> regards,
-> Jerry
-> 
+> A while down the road, that's a bit too much implicit knowledge of the
+> intent and single purpose of this function just to simply avoid a test.
 
+I think we should just pass the 'struct vfio_group *' into the
+attach_group op and have this API take that type in and forget the
+vfio_group_get_from_iommu().
+
+At this point there is little justification for
+vfio_group_get_from_iommu() existing at all, it should be folded into
+the one use in vfio_group_find_or_alloc() and the locking widened so
+we don't have the unlock/alloc/lock race that requires it to be called
+twice.
+
+> I'd lean towards Kevin's idea that we could store bus_type on the
+> vfio_group and pass that to type1, with the same assumptions we're
+> making in the commit log that it's consistent, but that doesn't get us
+> closer to the long term plan of dropping the bus_type interfaces
+> AIUI.
+
+Right, the point is to get a representative struct device here to use.
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
