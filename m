@@ -1,96 +1,85 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 215C5C43334
-	for <iommu@archiver.kernel.org>; Fri, 24 Jun 2022 01:36:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 3C8A3C43334
+	for <iommu@archiver.kernel.org>; Fri, 24 Jun 2022 01:43:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 9B85684814;
-	Fri, 24 Jun 2022 01:36:08 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 9B85684814
+	by smtp3.osuosl.org (Postfix) with ESMTP id B7EEE60BBF;
+	Fri, 24 Jun 2022 01:43:48 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org B7EEE60BBF
+Authentication-Results: smtp3.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=cyYtJskW
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id s--wzR7ZmhVU; Fri, 24 Jun 2022 01:43:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 57D9760C01;
+	Fri, 24 Jun 2022 01:43:47 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 57D9760C01
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 25565C0039;
+	Fri, 24 Jun 2022 01:43:47 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A87B9C002D
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 01:43:45 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 6F6CD84819
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 01:43:45 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 6F6CD84819
 Authentication-Results: smtp1.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=HWaJIDff
+ dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
+ header.a=rsa-sha256 header.s=Intel header.b=cyYtJskW
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jquDmjQfYvAU; Fri, 24 Jun 2022 01:36:07 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 4BC798480B;
-	Fri, 24 Jun 2022 01:36:07 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 4BC798480B
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1ECCCC0039;
-	Fri, 24 Jun 2022 01:36:07 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F402BC002D;
- Fri, 24 Jun 2022 01:36:05 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id C7D1D40510;
- Fri, 24 Jun 2022 01:36:05 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org C7D1D40510
-Authentication-Results: smtp2.osuosl.org;
- dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
- header.a=rsa-sha256 header.s=Intel header.b=HWaJIDff
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QQCK7fERBppJ; Fri, 24 Jun 2022 01:36:04 +0000 (UTC)
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id zJSDIWls5g-S for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Jun 2022 01:43:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 726A140441
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 726A140441;
- Fri, 24 Jun 2022 01:36:04 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 77A1F84812
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 77A1F84812
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jun 2022 01:43:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1656034564; x=1687570564;
+ t=1656035024; x=1687571024;
  h=message-id:date:mime-version:cc:subject:to:references:
  from:in-reply-to:content-transfer-encoding;
- bh=gyA97i97HwL5wq54DYwFbjfmzziuSTurfIWHXSjG3gU=;
- b=HWaJIDffCgb4a3soh172RjZOViB78M6HaiKDdRyEdvGtxTbC4JLTJipw
- Bf3IJfPK28k+D+zUkx3Q2+t1o7NOKnj49LHWmvnq7Vgj4de062ygVnxkR
- HPoORJ5dTc3q27Szw8huwjQCp/AIoS4i+QGiP5WrX5Kn3/SVaUO5dJLzl
- uAzQyUsC2TgiqfJ9UeipPAwZpUXtrLiW/gphEjRAWED1GcCaY1d4LylX6
- 3V8CJ23qtxEmvRzp2cfyxYIFrhYR6umaT01mGZ3wVCTtjc6n10NOtwSYH
- x/I9EjLehQFJox+ao6t3RQyFhdYXHAoCRr8ZAo+3gPOnC72Jrbpq9fJYm A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10387"; a="260710091"
-X-IronPort-AV: E=Sophos;i="5.92,217,1650956400"; d="scan'208";a="260710091"
+ bh=jTo+mIJbSPpgoQqqhYkvcSrHq6LfhDu8DQk5ANuQhWU=;
+ b=cyYtJskWWYz7zmJhqFA7e4fQZujjfxHnHQ6S55hVJP+K60IibwygX7dQ
+ ZBhs2uCK1Q6yQhPV74C9PZ1jTa+IDKQU3DqqUaYG3yTSARUK2Zo8m7ZEx
+ yAAHp7yWR4MlTcQfy8TpgUu/ZcG7NKM0yDqJujmOBM9diUxkcb0dwdybd
+ IOTJs7MN8V0XU6QDswhrJhrJRJbPvc2wfRAWzCwy0X3OExJWk4WOAD/MM
+ yYDiFOlDO/03hT/5o02FQtEK39FW2thANJt9j5juEGg1MXbzip/l8IAms
+ lT/92/LP6lEtUJdXPVIZ8c1KGJMrbF8rfJJh6dC23yLAQbzq4+5bEeSor w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10387"; a="342580436"
+X-IronPort-AV: E=Sophos;i="5.92,217,1650956400"; d="scan'208";a="342580436"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Jun 2022 18:35:59 -0700
-X-IronPort-AV: E=Sophos;i="5.92,217,1650956400"; d="scan'208";a="645038369"
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 23 Jun 2022 18:43:43 -0700
+X-IronPort-AV: E=Sophos;i="5.92,217,1650956400"; d="scan'208";a="645042048"
 Received: from wenli3x-mobl.ccr.corp.intel.com (HELO [10.249.168.117])
  ([10.249.168.117])
  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Jun 2022 18:35:51 -0700
-Message-ID: <270eec00-8aee-2288-4069-d604e6da2925@linux.intel.com>
-Date: Fri, 24 Jun 2022 09:35:49 +0800
+ 23 Jun 2022 18:43:31 -0700
+Message-ID: <552074ff-fd32-8cdb-cc10-1d71319c71db@linux.intel.com>
+Date: Fri, 24 Jun 2022 09:43:30 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH v3 1/5] iommu: Return -EMEDIUMTYPE for incompatible domain
- and device/group
+Subject: Re: iommu_sva_bind_device question
 Content-Language: en-US
-To: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org, will@kernel.org,
- marcan@marcan.st, sven@svenpeter.dev, robin.murphy@arm.com,
- robdclark@gmail.com, matthias.bgg@gmail.com, orsonzhai@gmail.com,
- baolin.wang7@gmail.com, zhang.lyra@gmail.com, jean-philippe@linaro.org,
- alex.williamson@redhat.com, jgg@nvidia.com, kevin.tian@intel.com
-References: <20220623200029.26007-1-nicolinc@nvidia.com>
- <20220623200029.26007-2-nicolinc@nvidia.com>
+To: Jerry Snitselaar <jsnitsel@redhat.com>
+References: <20220623170232.6whonfjuh3m5vcoy@cantor>
+ <6639b21c-1544-a025-4da5-219a1608f06e@linux.intel.com>
+ <20220624011446.2bexm4sjo2vabay5@cantor>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220623200029.26007-2-nicolinc@nvidia.com>
-Cc: jordan@cosmicpenguin.net, thierry.reding@gmail.com, alyssa@rosenzweig.io,
- linux-s390@vger.kernel.org, kvm@vger.kernel.org, jonathanh@nvidia.com,
- yangyingliang@huawei.com, gerald.schaefer@linux.ibm.com,
- linux-arm-msm@vger.kernel.org, christophe.jaillet@wanadoo.fr,
- linux-tegra@vger.kernel.org, tglx@linutronix.de,
- virtualization@lists.linux-foundation.org,
- linux-arm-kernel@lists.infradead.org, cohuck@redhat.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, dwmw2@infradead.org
+In-Reply-To: <20220624011446.2bexm4sjo2vabay5@cantor>
+Cc: dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Dave Jiang <dave.jiang@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,26 +97,133 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/6/24 04:00, Nicolin Chen wrote:
-> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-> index e1cb51b9866c..5386d889429d 100644
-> --- a/drivers/iommu/mtk_iommu_v1.c
-> +++ b/drivers/iommu/mtk_iommu_v1.c
-> @@ -304,7 +304,7 @@ static int mtk_iommu_v1_attach_device(struct iommu_domain *domain, struct device
->   	/* Only allow the domain created internally. */
->   	mtk_mapping = data->mapping;
->   	if (mtk_mapping->domain != domain)
-> -		return 0;
-> +		return -EMEDIUMTYPE;
->   
->   	if (!data->m4u_dom) {
->   		data->m4u_dom = dom;
+On 2022/6/24 09:14, Jerry Snitselaar wrote:
+> On Fri, Jun 24, 2022 at 08:55:08AM +0800, Baolu Lu wrote:
+>> On 2022/6/24 01:02, Jerry Snitselaar wrote:
+>>> Hi Baolu & Dave,
+>>>
+>>> I noticed last night that on a Sapphire Rapids system if you boot without
+>>> intel_iommu=on, the idxd driver will crash during probe in iommu_sva_bind_device().
+>>> Should there be a sanity check before calling dev_iommu_ops(), or is the expectation
+>>> that the caller would verify it is safe to call? This seemed to be uncovered by
+>>> the combination of 3f6634d997db ("iommu: Use right way to retrieve iommu_ops"), and
+>>> 42a1b73852c4 ("dmaengine: idxd: Separate user and kernel pasid enabling").
+>>>
+>>> [   21.423729] BUG: kernel NULL pointer dereference, address: 0000000000000038
+>>> [   21.445108] #PF: supervisor read access in kernel mode
+>>> [   21.450912] #PF: error_code(0x0000) - not-present page
+>>> [   21.456706] PGD 0
+>>> [   21.459047] Oops: 0000 [#1] PREEMPT SMP NOPTI
+>>> [   21.464004] CPU: 0 PID: 1420 Comm: kworker/0:3 Not tainted 5.19.0-0.rc3.27.eln120.x86_64 #1
+>>> [   21.464011] Hardware name: Intel Corporation EAGLESTREAM/EAGLESTREAM, BIOS EGSDCRB1.SYS.0067.D12.2110190954 10/19/2021
+>>> [   21.464015] Workqueue: events work_for_cpu_fn
+>>> [   21.464030] RIP: 0010:iommu_sva_bind_device+0x1d/0xe0
+>>> [   21.464046] Code: c3 cc 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 41 57 41 56 49 89 d6 41 55 41 54 55 53 48 83 ec 08 48 8b 87 d8 02 00 00 <48> 8b 40 38 48 8b 50 10 48 83 7a 70 00 48 89 14 24 0f 84 91 00 00
+>>> [   21.464050] RSP: 0018:ff7245d9096b7db8 EFLAGS: 00010296
+>>> [   21.464054] RAX: 0000000000000000 RBX: ff1eadeec8a51000 RCX: 0000000000000000
+>>> [   21.464058] RDX: ff7245d9096b7e24 RSI: 0000000000000000 RDI: ff1eadeec8a510d0
+>>> [   21.464060] RBP: ff1eadeec8a51000 R08: ffffffffb1a12300 R09: ff1eadffbfce25b4
+>>> [   21.464062] R10: ffffffffffffffff R11: 0000000000000038 R12: ffffffffc09f8000
+>>> [   21.464065] R13: ff1eadeec8a510d0 R14: ff7245d9096b7e24 R15: ff1eaddf54429000
+>>> [   21.464067] FS:  0000000000000000(0000) GS:ff1eadee7f600000(0000) knlGS:0000000000000000
+>>> [   21.464070] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>> [   21.464072] CR2: 0000000000000038 CR3: 00000008c0e10006 CR4: 0000000000771ef0
+>>> [   21.464074] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>>> [   21.464076] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
+>>> [   21.464078] PKRU: 55555554
+>>> [   21.464079] Call Trace:
+>>> [   21.464083]  <TASK>
+>>> [   21.464092]  idxd_pci_probe+0x259/0x1070 [idxd]
+>>> [   21.464121]  local_pci_probe+0x3e/0x80
+>>> [   21.464132]  work_for_cpu_fn+0x13/0x20
+>>> [   21.464136]  process_one_work+0x1c4/0x380
+>>> [   21.464143]  worker_thread+0x1ab/0x380
+>>> [   21.464147]  ? _raw_spin_lock_irqsave+0x23/0x50
+>>> [   21.464158]  ? process_one_work+0x380/0x380
+>>> [   21.464161]  kthread+0xe6/0x110
+>>> [   21.464168]  ? kthread_complete_and_exit+0x20/0x20
+>>> [   21.464172]  ret_from_fork+0x1f/0x30
+>>>
+>>> I figure either there needs to be a check in iommu_sva_bind_device, or
+>>> idxd needs to check in idxd_enable_system_pasid that that
+>>> idxd->pdev->dev.iommu is not null before it tries calling iommu_sva_bind_device.
+>>
+>> As documented around the iommu_sva_bind_device() interface:
+>>
+>>   * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first,
+>> to
+>>   * initialize the required SVA features.
+>>
+>> idxd->pdev->dev.iommu should be checked in there.
+>>
+>> Dave, any thoughts?
+>>
+>> Best regards,
+>> baolu
+> 
+> Duh, sorry I missed that in the comments.
+> 
+> It calls iommu_dev_enable_feature(), but then goes into code that
+> calls iommu_sva_bind_device whether or not iommu_dev_enable_feature()
+> fails.
+> 
+> You also will get the following warning if you don't have scalable
+> mode enabled (either not enabled by default, or if enabled by default
+> and passed intel_iommu=on,sm_off):
 
-This change looks odd. It turns the return value from success to
-failure. Is it a bug? If so, it should go through a separated fix patch.
+If scalable mode is disabled, iommu_dev_enable_feature(IOMMU_SVA) will
+return failure, hence driver should not call iommu_sva_bind_device().
+I guess below will disappear if above is fixed in the idxd driver.
 
 Best regards,
 baolu
+
+> 
+> [   24.645784] idxd 0000:6a:01.0: enabling device (0144 -> 0146)
+> [   24.645871] idxd 0000:6a:01.0: Unable to turn on user SVA feature.
+> [   24.645932] ------------[ cut here ]------------
+> [   24.645935] WARNING: CPU: 0 PID: 422 at drivers/iommu/intel/pasid.c:253 intel_pasid_get_entry.isra.0+0xcd/0xe0
+> [   24.675872] Modules linked in: intel_uncore(+) drm_ttm_helper isst_if_mbox_pci(+) idxd(+) snd i2c_i801(+) isst_if_mmio ttm isst_if_common mei fjes(+) soundcore intel_vsec i2c_ismt i2c_smbus idxd_bus ipmi_ssif acpi_ipmi ipmi_si acpi_pad acpi_power_meter pfr_telemetry pfr_update vfat fat fuse xfs crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel igc wmi pinctrl_emmitsburg ipmi_devintf ipmi_msghandler
+> [   24.716612] CPU: 0 PID: 422 Comm: kworker/0:2 Not tainted 5.19.0-0.rc3.27.eln120.x86_64 #1
+> [   24.716621] Hardware name: Intel Corporation EAGLESTREAM/EAGLESTREAM, BIOS EGSDCRB1.SYS.0067.D12.2110190954 10/19/2021
+> [   24.716625] Workqueue: events work_for_cpu_fn
+> [   24.716645] RIP: 0010:intel_pasid_get_entry.isra.0+0xcd/0xe0
+> [   24.716656] Code: a9 d1 ff ff 48 89 c7 48 85 c0 75 9e 31 c0 5b 5d 41 5c 41 5d c3 cc 41 83 e4 3f 5b 5d 49 c1 e4 06 4a 8d 04 27 41 5c 41 5d c3 cc <0f> 0b 31 c0 eb de 48 8b 05 e6 dd 59 01 eb 87 0f 1f 40 00 0f 1f 44
+> [   24.716664] RSP: 0018:ff848155c79bfd00 EFLAGS: 00010046
+> [   24.716671] RAX: 0000000000000206 RBX: ff3deaf807bfdcc0 RCX: 0000000000000001
+> [   24.716677] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ff3deb0789f53240
+> [   24.716682] RBP: ff3deb0789f53780 R08: 0000000000000001 R09: 0000000000000003
+> [   24.716688] R10: ff848155c79bfcf8 R11: 0000000000000000 R12: 0000000000000003
+> [   24.716693] R13: 0000000000000001 R14: 0000000000000001 R15: ffffffff84e10000
+> [   24.716700] FS:  0000000000000000(0000) GS:ff3deb073f600000(0000) knlGS:0000000000000000
+> [   24.716705] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   24.716709] CR2: 0000558a19e81c58 CR3: 0000000108252005 CR4: 0000000000771ef0
+> [   24.716714] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [   24.716719] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
+> [   24.716723] PKRU: 55555554
+> [   24.716726] Call Trace:
+> [   24.716731]  <TASK>
+> [   24.716738]  intel_pasid_setup_first_level+0x36/0x200
+> [   24.716753]  intel_svm_bind+0x2f8/0x3a0
+> [   24.716767]  iommu_sva_bind_device+0x9b/0xe0
+> [   24.716785]  idxd_pci_probe+0x259/0x1070 [idxd]
+> [   24.716866]  local_pci_probe+0x3e/0x80
+> [   24.716890]  work_for_cpu_fn+0x13/0x20
+> [   24.716900]  process_one_work+0x1c4/0x380
+> [   24.716912]  worker_thread+0x1ab/0x380
+> [   24.716922]  ? _raw_spin_lock_irqsave+0x23/0x50
+> [   24.716945]  ? process_one_work+0x380/0x380
+> [   24.716954]  kthread+0xe6/0x110
+> [   24.716967]  ? kthread_complete_and_exit+0x20/0x20
+> [   24.716976]  ret_from_fork+0x1f/0x30
+> [   24.716999]  </TASK>
+> [   24.717000] ---[ end trace 0000000000000000 ]---
+> [   24.717019] ------------[ cut here ]------------
+> 
+> regards,
+> Jerry
+> 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
