@@ -1,73 +1,103 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1254ECCA473
-	for <iommu@archiver.kernel.org>; Mon, 27 Jun 2022 15:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4C1E8C43334
+	for <iommu@archiver.kernel.org>; Mon, 27 Jun 2022 15:32:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A703283EFB;
-	Mon, 27 Jun 2022 15:31:56 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org A703283EFB
+	by smtp2.osuosl.org (Postfix) with ESMTP id 027F140C38;
+	Mon, 27 Jun 2022 15:32:00 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 027F140C38
+Authentication-Results: smtp2.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20210112 header.b=O+GWloio
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cmhxdNusfKkF; Mon, 27 Jun 2022 15:31:56 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 93F3683E72;
-	Mon, 27 Jun 2022 15:31:55 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 93F3683E72
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id CDFlxpUmhY7h; Mon, 27 Jun 2022 15:31:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id BF48E40C3F;
+	Mon, 27 Jun 2022 15:31:58 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org BF48E40C3F
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 70322C0039;
-	Mon, 27 Jun 2022 15:31:55 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6F797C002D
- for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 15:31:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 99EDBC0039;
+	Mon, 27 Jun 2022 15:31:58 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BDD49C002D
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 15:31:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 4AEB883EA7
- for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 15:31:54 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 4AEB883EA7
+ by smtp3.osuosl.org (Postfix) with ESMTP id 8AB0F610A2
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 15:31:55 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 8AB0F610A2
+Authentication-Results: smtp3.osuosl.org;
+ dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com
+ header.a=rsa-sha256 header.s=20210112 header.b=O+GWloio
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id e59nZTjT9ctq for <iommu@lists.linux-foundation.org>;
- Mon, 27 Jun 2022 15:31:53 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org A88E883E72
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp1.osuosl.org (Postfix) with ESMTPS id A88E883E72
- for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 15:31:53 +0000 (UTC)
-Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.201])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LWs8w6lkwz6H6ql;
- Mon, 27 Jun 2022 23:29:36 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 27 Jun 2022 17:31:51 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 27 Jun 2022 16:31:47 +0100
-To: <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>, <will@kernel.org>, 
- <jejb@linux.ibm.com>, <martin.petersen@oracle.com>, <hch@lst.de>,
- <m.szyprowski@samsung.com>, <robin.murphy@arm.com>
-Subject: [PATCH v4 5/5] libata-scsi: Cap ata_device->max_sectors according to
- shost->max_sectors
-Date: Mon, 27 Jun 2022 23:25:21 +0800
-Message-ID: <1656343521-62897-6-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
-References: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id eaUB9wkBGIl6 for <iommu@lists.linux-foundation.org>;
+ Mon, 27 Jun 2022 15:31:55 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org EA98560E80
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com
+ [IPv6:2607:f8b0:4864:20::636])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id EA98560E80
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 15:31:54 +0000 (UTC)
+Received: by mail-pl1-x636.google.com with SMTP id x20so2880483plx.6
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 08:31:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=iZDC1AGRQHEGpUuB3ISkYbuot/iQPwlOXTIDim4MzLc=;
+ b=O+GWloioEOJpO0XyXVRSMZTQsER89gKRWgIfzRViNiUH+wc06BhSdI/DYNimqD0H/7
+ +pBzmJ7cigXalaMs2EYCeYKV+G6WBWbR7VsAdyeDZvbyF635dgSBJ9nXlWkul7FYLsu8
+ gAtMXnwoSaQlBXInB76dUgvLj6KmA/5ZhOoN5PXuJRteFiHKTnGTlUuAh61yLcYZn323
+ AGGQSk+5H0R6Snc1R2Toqjss7pGQnsZttUZ8diX7VWTqboNL5/2x0EEKY7FPIvyhj3+l
+ 8U+0xCg4eQ3aluY9uc5Aw2N+SRaH40XIYSKcjsS9Uk6Yh8XYwdhjkXZpQ/NAeL8ogA9R
+ 2+yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=iZDC1AGRQHEGpUuB3ISkYbuot/iQPwlOXTIDim4MzLc=;
+ b=jn/Z0IrBisQUTF08P/7NZvMhLzmoX7nFihaKuekt029baL3RyfQiMfSZkYxDLjK9h3
+ 4trB238Ejy7yZRg6c0s8MeJlPwsWloeN/VzU3rFebUugQC3aLMd9EG8DOSXKDWsfd4w+
+ OvWmPNXMad8e/HABwg1w6MNkpcPJRLnwCeG0bXvgJz8bSisoM5Au67g53WhZ0KG29UTn
+ wpIQd5n96Dmt88jA/aeCvzaMF95JFE7HoBsugDhfzUcdnXtNl4T1nPeg1xLiZXmJYA8/
+ 2h404/bwGF4KtNqLOkAZbubhKmau2/sl/t8DB93RY6UV+nob/CtQ30zRjA9g+NvEiTFM
+ DDzg==
+X-Gm-Message-State: AJIora/Vn+DXpQGX9a3ekZi+ii5bebtgmx48GCxSXWKzBlszeplPBAB7
+ ezIJozklcNJ+LOk4y4vB8Dk=
+X-Google-Smtp-Source: AGRyM1sEiEhuPfofrRLQqFzFlVdXiZYLCqnhQsSu7hoQrMhPrjLPj9CQQVl/oAKCcOOKm40jQb6U7g==
+X-Received: by 2002:a17:902:cec4:b0:16a:1fc3:b6e6 with SMTP id
+ d4-20020a170902cec400b0016a1fc3b6e6mr15435957plg.129.1656343914201; 
+ Mon, 27 Jun 2022 08:31:54 -0700 (PDT)
+Received: from ubuntu-Virtual-Machine.corp.microsoft.com
+ ([2001:4898:80e8:36:f0eb:a18:55d7:977b])
+ by smtp.gmail.com with ESMTPSA id
+ y6-20020aa78f26000000b005251ec8bb5bsm7595705pfr.199.2022.06.27.08.31.53
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 27 Jun 2022 08:31:53 -0700 (PDT)
+From: Tianyu Lan <ltykernel@gmail.com>
+To: corbet@lwn.net, rafael@kernel.org, len.brown@intel.com, pavel@ucw.cz,
+ tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+ hch@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
+ paulmck@kernel.org, akpm@linux-foundation.org, keescook@chromium.org,
+ songmuchun@bytedance.com, rdunlap@infradead.org,
+ damien.lemoal@opensource.wdc.com, michael.h.kelley@microsoft.com,
+ kys@microsoft.com
+Subject: [PATCH 0/2] swiotlb: Split up single swiotlb lock
+Date: Mon, 27 Jun 2022 11:31:48 -0400
+Message-Id: <20220627153150.106995-1-ltykernel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: linux-scsi@vger.kernel.org, linux-doc@vger.kernel.org, linuxarm@huawei.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
- iommu@lists.linux-foundation.org
+Cc: parri.andrea@gmail.com, thomas.lendacky@amd.com, wei.liu@kernel.org,
+ Tianyu Lan <Tianyu.Lan@microsoft.com>, linux-hyperv@vger.kernel.org,
+ linux-pm@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, kirill.shutemov@intel.com,
+ iommu@lists.linux-foundation.org, andi.kleen@intel.com, vkuznets@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,42 +110,37 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: John Garry via iommu <iommu@lists.linux-foundation.org>
-Reply-To: John Garry <john.garry@huawei.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-ATA devices (struct ata_device) have a max_sectors field which is
-configured internally in libata. This is then used to (re)configure the
-associated sdev request queue max_sectors value from how it is earlier set
-in __scsi_init_queue(). In __scsi_init_queue() the max_sectors value is set
-according to shost limits, which includes host DMA mapping limits.
+From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-Cap the ata_device max_sectors according to shost->max_sectors to respect
-this shost limit.
+Traditionally swiotlb was not performance critical because it was only
+used for slow devices. But in some setups, like TDX/SEV confidential
+guests, all IO has to go through swiotlb. Currently swiotlb only has a
+single lock. Under high IO load with multiple CPUs this can lead to
+significat lock contention on the swiotlb lock.
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
----
- drivers/ata/libata-scsi.c | 1 +
- 1 file changed, 1 insertion(+)
+Patch 1 is to introduce swiotlb area concept and split up single swiotlb
+lock.
+Patch 2 set swiotlb area number with lapic number
 
-diff --git a/drivers/ata/libata-scsi.c b/drivers/ata/libata-scsi.c
-index 86dbb1cdfabd..24a43d540d9f 100644
---- a/drivers/ata/libata-scsi.c
-+++ b/drivers/ata/libata-scsi.c
-@@ -1060,6 +1060,7 @@ int ata_scsi_dev_config(struct scsi_device *sdev, struct ata_device *dev)
- 		dev->flags |= ATA_DFLAG_NO_UNLOAD;
- 
- 	/* configure max sectors */
-+	dev->max_sectors = min(dev->max_sectors, sdev->host->max_sectors);
- 	blk_queue_max_hw_sectors(q, dev->max_sectors);
- 
- 	if (dev->class == ATA_DEV_ATAPI) {
+
+Tianyu Lan (2):
+  swiotlb: Split up single swiotlb lock
+  x86/ACPI: Set swiotlb area according to the number of lapic entry in
+    MADT
+
+ .../admin-guide/kernel-parameters.txt         |   4 +-
+ arch/x86/kernel/acpi/boot.c                   |   3 +
+ include/linux/swiotlb.h                       |  27 +++
+ kernel/dma/swiotlb.c                          | 202 ++++++++++++++----
+ 4 files changed, 197 insertions(+), 39 deletions(-)
+
 -- 
-2.35.3
+2.25.1
 
 _______________________________________________
 iommu mailing list
