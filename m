@@ -1,86 +1,103 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8DFFAC43334
-	for <iommu@archiver.kernel.org>; Sun, 26 Jun 2022 17:36:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 79081CCA481
+	for <iommu@archiver.kernel.org>; Mon, 27 Jun 2022 01:20:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 0047240643;
-	Sun, 26 Jun 2022 17:36:19 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 0047240643
-Authentication-Results: smtp2.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20201202 header.b=RZSX9NqX
+	by smtp4.osuosl.org (Postfix) with ESMTP id DC8E9415E7;
+	Mon, 27 Jun 2022 01:20:05 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org DC8E9415E7
+Authentication-Results: smtp4.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=MsSky8rD
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uFlILw_RvYKC; Sun, 26 Jun 2022 17:36:18 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id c09jwqtI3CJF; Mon, 27 Jun 2022 01:20:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id C1125402F3;
-	Sun, 26 Jun 2022 17:36:17 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org C1125402F3
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 2687E415DD;
+	Mon, 27 Jun 2022 01:20:04 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 2687E415DD
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 91F3BC0032;
-	Sun, 26 Jun 2022 17:36:17 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BC04CC002D
- for <iommu@lists.linux-foundation.org>; Sun, 26 Jun 2022 17:36:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EEEC2C0032;
+	Mon, 27 Jun 2022 01:20:03 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2CDAAC002D
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 01:20:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 8241660B29
- for <iommu@lists.linux-foundation.org>; Sun, 26 Jun 2022 17:36:16 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 8241660B29
+ by smtp3.osuosl.org (Postfix) with ESMTP id E5D9060F09
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 01:20:01 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org E5D9060F09
 Authentication-Results: smtp3.osuosl.org;
- dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org
- header.a=rsa-sha256 header.s=k20201202 header.b=RZSX9NqX
+ dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org
+ header.a=rsa-sha256 header.s=google header.b=MsSky8rD
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id yFJpSpbVbweE for <iommu@lists.linux-foundation.org>;
- Sun, 26 Jun 2022 17:36:15 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 97F0C60AE8
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 97F0C60AE8
- for <iommu@lists.linux-foundation.org>; Sun, 26 Jun 2022 17:36:15 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id 7E9A260EFB;
- Sun, 26 Jun 2022 17:36:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DEC49C341CF;
- Sun, 26 Jun 2022 17:36:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1656264973;
- bh=c8nuLbyJ32noHL1fCGnmIXKIF1eDIKhRoZCQAUDC63M=;
- h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
- b=RZSX9NqXyQ0uVqxCfiYbg6Apj2LxTWsLn5RsFZc/RqX8E85iRgCv2S6i8erMAhUD/
- fDdyqVY9RQw3/I0RMmib+Bqq0MNWgBzNh9OcbwW5pz1Q6AdzPkMGd0NRjFWJpbC7Jz
- FZUBVyQOHS5N5KEu4d/Esl425ryABdJA3g9ZKN4PYb48qtWVtbqfsLI8hGEgXCJbw1
- YO8wD8ftLsKGimbtmCUV5ZozV141VdnoAijJrh8pSqoFtTyRCgWXCpAhhmwkB4eXiu
- e/isl3b4xZMgeSKCDXYzsHGS8j8fd6fTROIwbEU9/d5uDZEXW5caQZPg7SfmeiQeXp
- pGg2N1WFjg5xA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org
- (localhost.localdomain [127.0.0.1])
- by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id
- CC835E8DBEE; Sun, 26 Jun 2022 17:36:13 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping fix for Linux 5.19
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <Yrf0ItiAJ4cVfdPf@infradead.org>
-References: <Yrf0ItiAJ4cVfdPf@infradead.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Yrf0ItiAJ4cVfdPf@infradead.org>
-X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git
- tags/dma-mapping-5.19-2022-06-26
-X-PR-Tracked-Commit-Id: 3be4562584bba603f33863a00c1c32eecf772ee6
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: c898c67db6d7de1b1e7970cd16c45eaa46bd231b
-Message-Id: <165626497383.22456.6991533634522697276.pr-tracker-bot@kernel.org>
-Date: Sun, 26 Jun 2022 17:36:13 +0000
-To: Christoph Hellwig <hch@infradead.org>
-Cc: iommu@lists.linux-foundation.org,
- Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org
+ with ESMTP id lsKRnAGtdV-I for <iommu@lists.linux-foundation.org>;
+ Mon, 27 Jun 2022 01:20:01 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 2131760E74
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com
+ [IPv6:2607:f8b0:4864:20::631])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 2131760E74
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 01:20:01 +0000 (UTC)
+Received: by mail-pl1-x631.google.com with SMTP id q18so6791626pld.13
+ for <iommu@lists.linux-foundation.org>; Sun, 26 Jun 2022 18:20:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=JiM3N5evqJOowVHWeRy1BwX3FfyhynbxcUWkOm6L1ik=;
+ b=MsSky8rDDNs+PaeJiRVQB1ywR02u//iGONyyvf7FEtTfEv4lDjV4I0s9czbxLDUlC7
+ hsbylmLh4lkwFDR2wcTssR4JKfGmiC0X2jbsyTQqZ8piT/seBMuw9fJg5afyGhwP6hWJ
+ h4KVr+A/lgCTGixqzRRf/QAH3Ih2kD9CrSUYJyArsX3bkBBSeQWDmcUaIaTgp/poVGou
+ wCELTMGy/eNdRn8wkTfLBYMviw3HKzeBKLaP4DuXF7jOANwxuL7mwKoQdphN9VwfycyL
+ EYnKRM7gBzMgq54yzBZbT0+8WpoxkEAGhh9PIHUMCo7yarxf3rbI8yqoZGFOpq3EQwXU
+ GTEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=JiM3N5evqJOowVHWeRy1BwX3FfyhynbxcUWkOm6L1ik=;
+ b=e9WcRX+DonGdgL1XE3dAtRLMURamcunqUcl4WenSCj1LwYbohPLRCNVLN8WXDBrPU4
+ W8YKx1jL+n5T2aUGhzsBngvUCJVW6r95UPAXpzJ4x6SwEcYrr5yAdGfDpB8oAkFrsiKD
+ caIHO3xuhPhkIBF2EP90ueI+8mXEJ44+UebpbxmYV0tYLr73cFH8x7Xfu1iR8ArJ0bTG
+ /9x5mMWVeSRv9Z14iQZ0LR69mASd5jlJGvJB6GLGTGFaft5aq6FY+D3SMRELN4KfZ9r0
+ 4s1n0rzh7wBZpJdonAzyRCIG90ZCsA1SksLQp9m8lYmFiJPx6piiSbFgNa9R1rfJ9P5c
+ cQSA==
+X-Gm-Message-State: AJIora9SdjFNm+f1mgigqoVcjLOJiCvFRTRZHNqUtvIJiRBS1bhkmDSO
+ yErvW34gPSfozzcGnBu4Jgr4/A==
+X-Google-Smtp-Source: AGRyM1t2oztCFYrN6uMQKxDHkXdOqDSQ8UIJhLBDVPzheHA8LqCKnazYXDAdI5hfVtGXQ8ObBUyVpQ==
+X-Received: by 2002:a17:903:1cf:b0:16a:605a:d58a with SMTP id
+ e15-20020a17090301cf00b0016a605ad58amr11786381plh.37.1656292800336; 
+ Sun, 26 Jun 2022 18:20:00 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([103.135.249.206])
+ by smtp.gmail.com with ESMTPSA id
+ n22-20020a17090a161600b001ecd48b80a2sm8064260pja.5.2022.06.26.18.19.54
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sun, 26 Jun 2022 18:19:59 -0700 (PDT)
+Date: Mon, 27 Jun 2022 09:19:52 +0800
+From: Leo Yan <leo.yan@linaro.org>
+To: Yicong Yang <yangyicong@hisilicon.com>
+Subject: Re: [PATCH v9 4/8] perf tool: arm: Refactor event list iteration in
+ auxtrace_record__init()
+Message-ID: <20220627011952.GA143063@leoy-ThinkPad-X240s>
+References: <20220606115555.41103-1-yangyicong@hisilicon.com>
+ <20220606115555.41103-5-yangyicong@hisilicon.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <20220606115555.41103-5-yangyicong@hisilicon.com>
+Cc: mark.rutland@arm.com, prime.zeng@huawei.com,
+ alexander.shishkin@linux.intel.com, linux-pci@vger.kernel.org,
+ linuxarm@huawei.com, james.clark@arm.com, will@kernel.org,
+ peterz@infradead.org, mingo@redhat.com, helgaas@kernel.org,
+ liuqi115@huawei.com, suzuki.poulose@arm.com, acme@kernel.org,
+ zhangshaokun@hisilicon.com, linux-arm-kernel@lists.infradead.org,
+ mathieu.poirier@linaro.org, gregkh@linuxfoundation.org,
+ linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+ iommu@lists.linux-foundation.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,24 +110,110 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The pull request you sent on Sun, 26 Jun 2022 07:52:34 +0200:
+On Mon, Jun 06, 2022 at 07:55:51PM +0800, Yicong Yang wrote:
+> From: Qi Liu <liuqi115@huawei.com>
+> 
+> Add find_pmu_for_event() and use to simplify logic in
+> auxtrace_record_init(). find_pmu_for_event() will be
+> reused in subsequent patches.
+> 
+> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Signed-off-by: Qi Liu <liuqi115@huawei.com>
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
 
-> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.19-2022-06-26
+Reviewed-by: Leo Yan <leo.yan@linaro.org>
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/c898c67db6d7de1b1e7970cd16c45eaa46bd231b
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+> ---
+>  tools/perf/arch/arm/util/auxtrace.c | 53 ++++++++++++++++++-----------
+>  1 file changed, 34 insertions(+), 19 deletions(-)
+> 
+> diff --git a/tools/perf/arch/arm/util/auxtrace.c b/tools/perf/arch/arm/util/auxtrace.c
+> index 5fc6a2a3dbc5..384c7cfda0fd 100644
+> --- a/tools/perf/arch/arm/util/auxtrace.c
+> +++ b/tools/perf/arch/arm/util/auxtrace.c
+> @@ -50,16 +50,32 @@ static struct perf_pmu **find_all_arm_spe_pmus(int *nr_spes, int *err)
+>  	return arm_spe_pmus;
+>  }
+>  
+> +static struct perf_pmu *find_pmu_for_event(struct perf_pmu **pmus,
+> +					   int pmu_nr, struct evsel *evsel)
+> +{
+> +	int i;
+> +
+> +	if (!pmus)
+> +		return NULL;
+> +
+> +	for (i = 0; i < pmu_nr; i++) {
+> +		if (evsel->core.attr.type == pmus[i]->type)
+> +			return pmus[i];
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+>  struct auxtrace_record
+>  *auxtrace_record__init(struct evlist *evlist, int *err)
+>  {
+> -	struct perf_pmu	*cs_etm_pmu;
+> +	struct perf_pmu	*cs_etm_pmu = NULL;
+> +	struct perf_pmu **arm_spe_pmus = NULL;
+>  	struct evsel *evsel;
+> -	bool found_etm = false;
+> +	struct perf_pmu *found_etm = NULL;
+>  	struct perf_pmu *found_spe = NULL;
+> -	struct perf_pmu **arm_spe_pmus = NULL;
+> +	int auxtrace_event_cnt = 0;
+>  	int nr_spes = 0;
+> -	int i = 0;
+>  
+>  	if (!evlist)
+>  		return NULL;
+> @@ -68,24 +84,23 @@ struct auxtrace_record
+>  	arm_spe_pmus = find_all_arm_spe_pmus(&nr_spes, err);
+>  
+>  	evlist__for_each_entry(evlist, evsel) {
+> -		if (cs_etm_pmu &&
+> -		    evsel->core.attr.type == cs_etm_pmu->type)
+> -			found_etm = true;
+> -
+> -		if (!nr_spes || found_spe)
+> -			continue;
+> -
+> -		for (i = 0; i < nr_spes; i++) {
+> -			if (evsel->core.attr.type == arm_spe_pmus[i]->type) {
+> -				found_spe = arm_spe_pmus[i];
+> -				break;
+> -			}
+> -		}
+> +		if (cs_etm_pmu && !found_etm)
+> +			found_etm = find_pmu_for_event(&cs_etm_pmu, 1, evsel);
+> +
+> +		if (arm_spe_pmus && !found_spe)
+> +			found_spe = find_pmu_for_event(arm_spe_pmus, nr_spes, evsel);
+>  	}
+> +
+>  	free(arm_spe_pmus);
+>  
+> -	if (found_etm && found_spe) {
+> -		pr_err("Concurrent ARM Coresight ETM and SPE operation not currently supported\n");
+> +	if (found_etm)
+> +		auxtrace_event_cnt++;
+> +
+> +	if (found_spe)
+> +		auxtrace_event_cnt++;
+> +
+> +	if (auxtrace_event_cnt > 1) {
+> +		pr_err("Concurrent AUX trace operation not currently supported\n");
+>  		*err = -EOPNOTSUPP;
+>  		return NULL;
+>  	}
+> -- 
+> 2.24.0
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
