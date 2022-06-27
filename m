@@ -1,179 +1,126 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E8BA74C6B
-	for <iommu@lists.linux.dev>; Mon, 27 Jun 2022 19:39:46 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 65D001758;
-	Mon, 27 Jun 2022 12:39:45 -0700 (PDT)
-Received: from [10.57.84.159] (unknown [10.57.84.159])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DE96A3F792;
-	Mon, 27 Jun 2022 12:39:43 -0700 (PDT)
-Message-ID: <8b237fd0-96f0-ad48-dfcb-e4a46e4463eb@arm.com>
-Date: Mon, 27 Jun 2022 20:39:32 +0100
+Received: from esa1.hgst.iphmx.com (esa1.hgst.iphmx.com [68.232.141.245])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D21F93229
+	for <iommu@lists.linux.dev>; Mon, 27 Jun 2022 23:25:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1656372322; x=1687908322;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=S8N+p0moc3MloWqEEauJLXVpb/5eTV2AD6EVivHGR+Q=;
+  b=Xr7Bp28sIjV1QUqJkwht3XZTeRmMGhmZsCf5utVkqmK1wAqIhWjPCiCW
+   kiUFg/ycBNK+3zNd4QWD3h1ENrm3mQB4QIunpJFWvI8CDFc9wCRncqVyS
+   tOMnHVMcIj6H2sTx4Rj37VFUgmjyv38HWM8HLjd5HTHpWBnxZV0EbBxHi
+   W1PRbM7eafCamuHKk7pUge29he/G8dmp7KNBMR3MLybQlTbhgqGVTY2hX
+   ML+QecaZ4tzyMx4Vib3blDeO+Ejf1I4S/9uTcUNZT7UI2Zs37DlqW9LaK
+   bfpCrk9imi+XaMOAAlsWEydyKToaxNeC8ZdhyXMy1b0jHrmJbKc5B5Rod
+   w==;
+X-IronPort-AV: E=Sophos;i="5.92,227,1650902400"; 
+   d="scan'208";a="316342591"
+Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 28 Jun 2022 07:24:14 +0800
+IronPort-SDR: OGvQM7G2u0FDdgd4iuxXChA2yhwkxZfe+monG3d7fjMdjKBwfxVvbiRVylyABi1qgdz843QHoP
+ s++IHpCxZ/f0hsIeMztm8pe3NrIwX5ppekQVUdgSMpPncR+RI3ERmfQ9OsqlQL3unmbKHlz+we
+ SEyevS80mbw1xhKTf8Szsaj5lfNIYtONbmJxmUuUR6VPpMVFkIHSqSuzGL93jgvIpKHNEzR9N1
+ UuLxH0AHTHt5Q5HDj/+SNaKZwqeLY4k8OQzkCwnhlfgcmhZH5633nVksyz30gMZDXqsBzvIbbL
+ 6dYti9rwI2LOuvq4pUmOEu69
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 27 Jun 2022 15:46:36 -0700
+IronPort-SDR: 82ccldV4X6jZiNan/ZZVuzJGkz7X8r0qvSATWEATvTl15v6ksJWf/vVIbh+++KK35o+z8pnEVr
+ snTBMniAoCEIHsfCRqiAtT52lBpK39XrwIL3+aCqmVHhO+PIBmXS07ZUNvYWDwskxRj/O7P7N+
+ lIJIMphs5YY4PeV/t1NQmtLcifPwuSfdmCjoeZUPBkl5tf3KN9GoW34zlLLkWo9csxh0W0CA+g
+ Eq7Bt3WJgs4rcAnwwGjm1I+ChyvgH40zqzfQJLvErQ71RMBFNOzqRxIiLYPdIyLhKnGixqOr+h
+ Wbw=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 27 Jun 2022 16:24:14 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+	by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LX3hY5hfZz1Rws9
+	for <iommu@lists.linux.dev>; Mon, 27 Jun 2022 16:24:13 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+	reason="pass (just generated, assumed good)"
+	header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+	opensource.wdc.com; h=content-transfer-encoding:content-type
+	:in-reply-to:organization:from:references:to:content-language
+	:subject:user-agent:mime-version:date:message-id; s=dkim; t=
+	1656372253; x=1658964254; bh=S8N+p0moc3MloWqEEauJLXVpb/5eTV2AD6E
+	VivHGR+Q=; b=lh+Tk4Jv063rd1udyttDvM/8TxvedbRcRkj0NzA/f3V3fi9EDSj
+	FiElQ1SrBdoes9IhtsS2IEWG8dJOQkfeqF5uYIrlu53qf5wuRsyO1sCa7nUFMy5i
+	TEM/IQLLtxKeEbLYOKlnYLg5Edd2El8t1ZaALozmQVqg2+mSU+jKm6i8mPGWupQK
+	LKyXbCciOStUrocicuIVJ/ZT6pK6F2/WiTkxukTX6lX5gPjfCgv7XA4jL5XmLv8A
+	FXhgCvwJislg2YkCoqQFBoBMYNHgrfWc+CP8eY//j5KU5Ko24M9/QzUx7Luh2FIM
+	9SX3HkWjJGd8LGIjh7aMdNYLBttsnm8nZ/Q==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+	by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id gwCiLXKjKAdp for <iommu@lists.linux.dev>;
+	Mon, 27 Jun 2022 16:24:13 -0700 (PDT)
+Received: from [10.225.163.99] (unknown [10.225.163.99])
+	by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LX3hV0cq4z1RtVk;
+	Mon, 27 Jun 2022 16:24:09 -0700 (PDT)
+Message-ID: <b69c6112-98b7-3890-9d11-bb321a7c877a@opensource.wdc.com>
+Date: Tue, 28 Jun 2022 08:24:08 +0900
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v3 1/2] vfio/type1: Simplify bus_type determination
-Content-Language: en-GB
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: cohuck@redhat.com, kvm@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, jgg@nvidia.com, baolu.lu@linux.intel.com,
- iommu@lists.linux.dev
-References: <194a12d3434d7b38f84fa96503c7664451c8c395.1656092606.git.robin.murphy@arm.com>
- <20220627132136.2b902875.alex.williamson@redhat.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220627132136.2b902875.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH v4 5/5] libata-scsi: Cap ata_device->max_sectors according
+ to shost->max_sectors
+Content-Language: en-US
+To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org,
+ jejb@linux.ibm.com, martin.petersen@oracle.com, hch@lst.de,
+ m.szyprowski@samsung.com, robin.murphy@arm.com
+Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org,
+ iommu@lists.linux.dev, linux-scsi@vger.kernel.org, linuxarm@huawei.com
+References: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
+ <1656343521-62897-6-git-send-email-john.garry@huawei.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <1656343521-62897-6-git-send-email-john.garry@huawei.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-ID: <20220627193932.uoPnc1caSLFN5RytFy5C700LKXy31KLOkA7YzK7aoUA@z>
+Message-ID: <20220627232408.Gy0I42zq7jzNwydP10JNiMnrsqnUdCfDvzRUAmbUhJM@z>
 
-On 2022-06-27 20:21, Alex Williamson wrote:
-> On Fri, 24 Jun 2022 18:51:44 +0100
-> Robin Murphy <robin.murphy@arm.com> wrote:
+On 6/28/22 00:25, John Garry wrote:
+> ATA devices (struct ata_device) have a max_sectors field which is
+> configured internally in libata. This is then used to (re)configure the
+> associated sdev request queue max_sectors value from how it is earlier set
+> in __scsi_init_queue(). In __scsi_init_queue() the max_sectors value is set
+> according to shost limits, which includes host DMA mapping limits.
 > 
->> Since IOMMU groups are mandatory for drivers to support, it stands to
->> reason that any device which has been successfully added to a group
->> must be on a bus supported by that IOMMU driver, and therefore a domain
->> viable for any device in the group must be viable for all devices in
->> the group. This already has to be the case for the IOMMU API's internal
->> default domain, for instance. Thus even if the group contains devices on
->> different buses, that can only mean that the IOMMU driver actually
->> supports such an odd topology, and so without loss of generality we can
->> expect the bus type of any device in a group to be suitable for IOMMU
->> API calls.
->>
->> Furthermore, scrutiny reveals a lack of protection for the bus being
->> removed while vfio_iommu_type1_attach_group() is using it; the reference
->> that VFIO holds on the iommu_group ensures that data remains valid, but
->> does not prevent the group's membership changing underfoot.
->>
->> We can address both concerns by recycling vfio_bus_type() into some
->> superficially similar logic to indirect the IOMMU API calls themselves.
->> Each call is thus protected from races by the IOMMU group's own locking,
->> and we no longer need to hold group-derived pointers beyond that scope.
->> It also gives us an easy path for the IOMMU API's migration of bus-based
->> interfaces to device-based, of which we can already take the first step
->> with device_iommu_capable(). As with domains, any capability must in
->> practice be consistent for devices in a given group - and after all it's
->> still the same capability which was expected to be consistent across an
->> entire bus! - so there's no need for any complicated validation.
->>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>
->> v3: Complete rewrite yet again, and finally it doesn't feel like we're
->> stretching any abstraction boundaries the wrong way, and the diffstat
->> looks right too. I did think about embedding IOMMU_CAP_INTR_REMAP
->> directly in the callback, but decided I like the consistency of minimal
->> generic wrappers. And yes, if the capability isn't supported then it
->> does end up getting tested for the whole group, but meh, it's harmless.
->>
->>   drivers/vfio/vfio_iommu_type1.c | 42 +++++++++++++++++----------------
->>   1 file changed, 22 insertions(+), 20 deletions(-)
->>
->> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->> index c13b9290e357..a77ff00c677b 100644
->> --- a/drivers/vfio/vfio_iommu_type1.c
->> +++ b/drivers/vfio/vfio_iommu_type1.c
->> @@ -1679,18 +1679,6 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
->>   	return ret;
->>   }
->>   
->> -static int vfio_bus_type(struct device *dev, void *data)
->> -{
->> -	struct bus_type **bus = data;
->> -
->> -	if (*bus && *bus != dev->bus)
->> -		return -EINVAL;
->> -
->> -	*bus = dev->bus;
->> -
->> -	return 0;
->> -}
->> -
->>   static int vfio_iommu_replay(struct vfio_iommu *iommu,
->>   			     struct vfio_domain *domain)
->>   {
->> @@ -2153,13 +2141,25 @@ static void vfio_iommu_iova_insert_copy(struct vfio_iommu *iommu,
->>   	list_splice_tail(iova_copy, iova);
->>   }
->>   
+> Cap the ata_device max_sectors according to shost->max_sectors to respect
+> this shost limit.
 > 
-> Any objection if I add the following comment:
-> 
-> /* Redundantly walks non-present capabilities to simplify caller */
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-Not at all, feel free - I guess if I felt it was worth pre-empting the 
-review question then it probably is subtle enough to deserve a code comment!
+Nit: please change the patch title to "ata: libata-scsi: Cap ..."
 
-Thanks,
-Robin.
+> ---
+>  drivers/ata/libata-scsi.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/ata/libata-scsi.c b/drivers/ata/libata-scsi.c
+> index 86dbb1cdfabd..24a43d540d9f 100644
+> --- a/drivers/ata/libata-scsi.c
+> +++ b/drivers/ata/libata-scsi.c
+> @@ -1060,6 +1060,7 @@ int ata_scsi_dev_config(struct scsi_device *sdev, struct ata_device *dev)
+>  		dev->flags |= ATA_DFLAG_NO_UNLOAD;
+>  
+>  	/* configure max sectors */
+> +	dev->max_sectors = min(dev->max_sectors, sdev->host->max_sectors);
+>  	blk_queue_max_hw_sectors(q, dev->max_sectors);
+>  
+>  	if (dev->class == ATA_DEV_ATAPI) {
 
-> 
-> Thanks,
-> Alex
-> 
->> +static int vfio_iommu_device_capable(struct device *dev, void *data)
->> +{
->> +	return device_iommu_capable(dev, (enum iommu_cap)data);
->> +}
->> +
->> +static int vfio_iommu_domain_alloc(struct device *dev, void *data)
->> +{
->> +	struct iommu_domain **domain = data;
->> +
->> +	*domain = iommu_domain_alloc(dev->bus);
->> +	return 1; /* Don't iterate */
->> +}
->> +
->>   static int vfio_iommu_type1_attach_group(void *iommu_data,
->>   		struct iommu_group *iommu_group, enum vfio_group_type type)
->>   {
->>   	struct vfio_iommu *iommu = iommu_data;
->>   	struct vfio_iommu_group *group;
->>   	struct vfio_domain *domain, *d;
->> -	struct bus_type *bus = NULL;
->>   	bool resv_msi, msi_remap;
->>   	phys_addr_t resv_msi_base = 0;
->>   	struct iommu_domain_geometry *geo;
->> @@ -2192,18 +2192,19 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->>   		goto out_unlock;
->>   	}
->>   
->> -	/* Determine bus_type in order to allocate a domain */
->> -	ret = iommu_group_for_each_dev(iommu_group, &bus, vfio_bus_type);
->> -	if (ret)
->> -		goto out_free_group;
->> -
->>   	ret = -ENOMEM;
->>   	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
->>   	if (!domain)
->>   		goto out_free_group;
->>   
->> +	/*
->> +	 * Going via the iommu_group iterator avoids races, and trivially gives
->> +	 * us a representative device for the IOMMU API call. We don't actually
->> +	 * want to iterate beyond the first device (if any).
->> +	 */
->>   	ret = -EIO;
->> -	domain->domain = iommu_domain_alloc(bus);
->> +	iommu_group_for_each_dev(iommu_group, &domain->domain,
->> +				 vfio_iommu_domain_alloc);
->>   	if (!domain->domain)
->>   		goto out_free_domain;
->>   
->> @@ -2258,7 +2259,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->>   	list_add(&group->next, &domain->group_list);
->>   
->>   	msi_remap = irq_domain_check_msi_remap() ||
->> -		    iommu_capable(bus, IOMMU_CAP_INTR_REMAP);
->> +		    iommu_group_for_each_dev(iommu_group, (void *)IOMMU_CAP_INTR_REMAP,
->> +					     vfio_iommu_device_capable);
->>   
->>   	if (!allow_unsafe_interrupts && !msi_remap) {
->>   		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
-> 
+
+-- 
+Damien Le Moal
+Western Digital Research
