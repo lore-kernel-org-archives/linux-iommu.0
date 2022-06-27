@@ -4,58 +4,59 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 96FBCC433EF
-	for <iommu@archiver.kernel.org>; Mon, 27 Jun 2022 15:31:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C0990CCA473
+	for <iommu@archiver.kernel.org>; Mon, 27 Jun 2022 15:31:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 2A682404D3;
-	Mon, 27 Jun 2022 15:31:47 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 2A682404D3
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6772340C2B;
+	Mon, 27 Jun 2022 15:31:49 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 6772340C2B
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id d6iMpYLjn4d7; Mon, 27 Jun 2022 15:31:46 +0000 (UTC)
+	with ESMTP id ZJex7OBzEc1l; Mon, 27 Jun 2022 15:31:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id EE3FA40C33;
-	Mon, 27 Jun 2022 15:31:45 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org EE3FA40C33
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 380EE40C33;
+	Mon, 27 Jun 2022 15:31:48 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 380EE40C33
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CB540C0039;
-	Mon, 27 Jun 2022 15:31:45 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A448BC002D
- for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 15:31:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0DBC5C002D;
+	Mon, 27 Jun 2022 15:31:48 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 884DFC002D
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 15:31:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 7F5166106A
- for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 15:31:43 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 7F5166106A
+ by smtp4.osuosl.org (Postfix) with ESMTP id 70DDC41977
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 15:31:46 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 70DDC41977
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GFiQm2hmGBrr for <iommu@lists.linux-foundation.org>;
- Mon, 27 Jun 2022 15:31:42 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id RUqFM4h-Kl2e for <iommu@lists.linux-foundation.org>;
+ Mon, 27 Jun 2022 15:31:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 89F37610A2
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 8960741951
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
  [185.176.79.56])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 89F37610A2
- for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 15:31:42 +0000 (UTC)
-Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.201])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LWsBW0Hlpz67QFM;
- Mon, 27 Jun 2022 23:30:59 +0800 (CST)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 8960741951
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 15:31:45 +0000 (UTC)
+Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.200])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LWsBb04P1z67wM8;
+ Mon, 27 Jun 2022 23:31:03 +0800 (CST)
 Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
+ fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 27 Jun 2022 17:31:39 +0200
+ 15.1.2375.24; Mon, 27 Jun 2022 17:31:43 +0200
 Received: from localhost.localdomain (10.69.192.58) by
  lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 27 Jun 2022 16:31:35 +0100
+ 15.1.2375.24; Mon, 27 Jun 2022 16:31:39 +0100
 To: <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>, <will@kernel.org>, 
  <jejb@linux.ibm.com>, <martin.petersen@oracle.com>, <hch@lst.de>,
  <m.szyprowski@samsung.com>, <robin.murphy@arm.com>
-Subject: [PATCH v4 2/5] dma-iommu: Add iommu_dma_opt_mapping_size()
-Date: Mon, 27 Jun 2022 23:25:18 +0800
-Message-ID: <1656343521-62897-3-git-send-email-john.garry@huawei.com>
+Subject: [PATCH v4 3/5] scsi: core: Cap shost max_sectors according to DMA
+ mapping limits only once
+Date: Mon, 27 Jun 2022 23:25:19 +0800
+Message-ID: <1656343521-62897-4-git-send-email-john.garry@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
 References: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
@@ -86,74 +87,47 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add the IOMMU callback for DMA mapping API dma_opt_mapping_size(), which
-allows the drivers to know the optimal mapping limit and thus limit the
-requested IOVA lengths.
-
-This value is based on the IOVA rcache range limit, as IOVAs allocated
-above this limit must always be newly allocated, which may be quite slow.
+The shost->max_sectors is repeatedly capped according to the host DMA
+mapping limit for each sdev in __scsi_init_queue(). This is unnecessary, so
+set only once when adding the host.
 
 Signed-off-by: John Garry <john.garry@huawei.com>
-Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 ---
- drivers/iommu/dma-iommu.c | 6 ++++++
- drivers/iommu/iova.c      | 5 +++++
- include/linux/iova.h      | 2 ++
- 3 files changed, 13 insertions(+)
+ drivers/scsi/hosts.c    | 5 +++++
+ drivers/scsi/scsi_lib.c | 4 ----
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index f90251572a5d..9e1586447ee8 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1459,6 +1459,11 @@ static unsigned long iommu_dma_get_merge_boundary(struct device *dev)
- 	return (1UL << __ffs(domain->pgsize_bitmap)) - 1;
- }
+diff --git a/drivers/scsi/hosts.c b/drivers/scsi/hosts.c
+index 8352f90d997d..d04bd2c7c9f1 100644
+--- a/drivers/scsi/hosts.c
++++ b/drivers/scsi/hosts.c
+@@ -236,6 +236,11 @@ int scsi_add_host_with_dma(struct Scsi_Host *shost, struct device *dev,
  
-+static size_t iommu_dma_opt_mapping_size(void)
-+{
-+	return iova_rcache_range();
-+}
+ 	shost->dma_dev = dma_dev;
+ 
++	if (dma_dev->dma_mask) {
++		shost->max_sectors = min_t(unsigned int, shost->max_sectors,
++				dma_max_mapping_size(dma_dev) >> SECTOR_SHIFT);
++	}
 +
- static const struct dma_map_ops iommu_dma_ops = {
- 	.alloc			= iommu_dma_alloc,
- 	.free			= iommu_dma_free,
-@@ -1479,6 +1484,7 @@ static const struct dma_map_ops iommu_dma_ops = {
- 	.map_resource		= iommu_dma_map_resource,
- 	.unmap_resource		= iommu_dma_unmap_resource,
- 	.get_merge_boundary	= iommu_dma_get_merge_boundary,
-+	.opt_mapping_size	= iommu_dma_opt_mapping_size,
- };
+ 	error = scsi_mq_setup_tags(shost);
+ 	if (error)
+ 		goto fail;
+diff --git a/drivers/scsi/scsi_lib.c b/drivers/scsi/scsi_lib.c
+index 6ffc9e4258a8..6ce8acea322a 100644
+--- a/drivers/scsi/scsi_lib.c
++++ b/drivers/scsi/scsi_lib.c
+@@ -1884,10 +1884,6 @@ void __scsi_init_queue(struct Scsi_Host *shost, struct request_queue *q)
+ 		blk_queue_max_integrity_segments(q, shost->sg_prot_tablesize);
+ 	}
  
- /*
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index db77aa675145..9f00b58d546e 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -26,6 +26,11 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
- static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad);
- static void free_iova_rcaches(struct iova_domain *iovad);
- 
-+unsigned long iova_rcache_range(void)
-+{
-+	return PAGE_SIZE << (IOVA_RANGE_CACHE_MAX_SIZE - 1);
-+}
-+
- static int iova_cpuhp_dead(unsigned int cpu, struct hlist_node *node)
- {
- 	struct iova_domain *iovad;
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index 320a70e40233..c6ba6d95d79c 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -79,6 +79,8 @@ static inline unsigned long iova_pfn(struct iova_domain *iovad, dma_addr_t iova)
- int iova_cache_get(void);
- void iova_cache_put(void);
- 
-+unsigned long iova_rcache_range(void);
-+
- void free_iova(struct iova_domain *iovad, unsigned long pfn);
- void __free_iova(struct iova_domain *iovad, struct iova *iova);
- struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
+-	if (dev->dma_mask) {
+-		shost->max_sectors = min_t(unsigned int, shost->max_sectors,
+-				dma_max_mapping_size(dev) >> SECTOR_SHIFT);
+-	}
+ 	blk_queue_max_hw_sectors(q, shost->max_sectors);
+ 	blk_queue_segment_boundary(q, shost->dma_boundary);
+ 	dma_set_seg_boundary(dev, shost->dma_boundary);
 -- 
 2.35.3
 
