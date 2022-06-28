@@ -1,58 +1,87 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 75347CCA479
-	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 14:49:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4300CC433EF
+	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 16:17:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id B11DD415A4;
-	Tue, 28 Jun 2022 14:49:30 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org B11DD415A4
+	by smtp2.osuosl.org (Postfix) with ESMTP id B809B4060C;
+	Tue, 28 Jun 2022 16:17:07 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org B809B4060C
+Authentication-Results: smtp2.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20210112 header.b=svPPiUXm
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 6aeaWeo76EUT; Tue, 28 Jun 2022 16:17:06 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A1635402F2;
+	Tue, 28 Jun 2022 16:17:05 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org A1635402F2
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6C3B1C0039;
+	Tue, 28 Jun 2022 16:17:05 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C347DC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 16:17:03 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 8E286408E6
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 16:17:03 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 8E286408E6
+Authentication-Results: smtp4.osuosl.org;
+ dkim=pass (2048-bit key) header.d=google.com header.i=@google.com
+ header.a=rsa-sha256 header.s=20210112 header.b=svPPiUXm
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eODP6Z4baH-W; Tue, 28 Jun 2022 14:49:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 575A741732;
-	Tue, 28 Jun 2022 14:49:29 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 575A741732
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 545ACC0086;
-	Tue, 28 Jun 2022 14:49:28 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3B30CC002D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 14:18:59 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 0770482983
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 14:18:59 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 0770482983
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zx0SL24Gd5fQ for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jun 2022 14:18:57 +0000 (UTC)
-X-Greylist: delayed 00:18:28 by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org B61EF827A0
-Received: from sym2.noone.org (sym.noone.org [178.63.92.236])
- by smtp1.osuosl.org (Postfix) with ESMTPS id B61EF827A0
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 14:18:57 +0000 (UTC)
-Received: by sym2.noone.org (Postfix, from userid 1002)
- id 4LXR7Z2Gb9zvjfm; Tue, 28 Jun 2022 16:00:26 +0200 (CEST)
-Date: Tue, 28 Jun 2022 16:00:26 +0200
-From: Tobias Klauser <tklauser@distanz.ch>
-To: Saravana Kannan <saravanak@google.com>
-Subject: Re: [PATCH v1 2/2] serial: Set probe_no_timeout for all DT based
- drivers
-Message-ID: <20220628140025.qpom64ptru4ub6fu@distanz.ch>
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id a5hKndTtpLqY for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jun 2022 16:17:02 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org F4054408E3
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com
+ [IPv6:2607:f8b0:4864:20::b29])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id F4054408E3
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 16:17:01 +0000 (UTC)
+Received: by mail-yb1-xb29.google.com with SMTP id v185so13532155ybe.8
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 09:17:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=a+P6wSeN2x0ZvD2/JjzHKyqS9/n/5A6tY5jiA6Lhnb8=;
+ b=svPPiUXmjLu4A2+b3rJgoCqrzxWVmAH7KXTvVP4AwaLTDrIN9AN3BtNG2XiV2ycJ8x
+ 6Y9oMX5BQlCl6K+KL9J1KxqNRcb1MdTb/c18nJgwvmc5rVyOe8EKUyj+KrCbNC70iJoL
+ OlJOsi9x5Scvw9W8cP8d/OYBAk6luTiA/PE8w/jzj7tOJ+ICpHFzyCnfh2xqrRn3YVLo
+ nvgpT4pJzONw4hikJOgq/y8DRHjrG2lOfrc2hEWRc02ovhuxlfgkK9/gOnTwVGME5DOU
+ 4AXMX65QfUYiz76GEkrT/465op3M51kj45IkhJmeQobRe1+J32FVHZumFFaJBd9Gan88
+ /wYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=a+P6wSeN2x0ZvD2/JjzHKyqS9/n/5A6tY5jiA6Lhnb8=;
+ b=4L5W2yHquBwliLckng9+YGCA65iyRO71SMwlzQtNRFXOrmwXerBR8yN6dpqGQBqgnN
+ f/3UHVwEmgHbgN7jSCEcF6BQY/x1de8pMFooIhgHTPMdUD34L/Vna/jcvnCTzuk1MDVE
+ yAbpBOQ9FCWnFySlaLE/jTUXuqCPAO/+pQKWZXEUFIvlXiwAvYs+WDiMfpuunpJDzt+l
+ F+fU6AZx5MMnr9wkMrFIGewmtaDGXW5KpsSz+hq4AXjv1rz4pEK8DAe954qHahWeSwO4
+ IN6JYv8mJMvUkFlfVnX79nXOgr/p7g6csSHwucuhoLIZ6v94PgnR3I6zxqK6eALW+8lM
+ ZVuQ==
+X-Gm-Message-State: AJIora8sA1y4IcIVR7t41incuXdC9zQgfofgdgK4XGO2gFUogFSEOQGU
+ fOk/rAtGQtYAF4omzJ8toGDYaOtIDbDJgPdgIg1/6Q==
+X-Google-Smtp-Source: AGRyM1vHa4WRnJlk4sln0xuJGdVhcpu8QS15R2N9PrbVvkglI7Nzwr0PBFdp1lTun6HJ/nUSS1O/TmeoEjFZPidRK0U=
+X-Received: by 2002:a25:5bc3:0:b0:669:b722:beb8 with SMTP id
+ p186-20020a255bc3000000b00669b722beb8mr20258885ybb.447.1656433020483; Tue, 28
+ Jun 2022 09:17:00 -0700 (PDT)
+MIME-Version: 1.0
 References: <20220628020110.1601693-1-saravanak@google.com>
  <20220628020110.1601693-3-saravanak@google.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220628020110.1601693-3-saravanak@google.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Mailman-Approved-At: Tue, 28 Jun 2022 14:49:26 +0000
+ <20220628140025.qpom64ptru4ub6fu@distanz.ch>
+In-Reply-To: <20220628140025.qpom64ptru4ub6fu@distanz.ch>
+Date: Tue, 28 Jun 2022 09:16:24 -0700
+Message-ID: <CAGETcx_7jS3H2cphiXdk=NBfmuPzsusEwPBx75n3PrP6YTnjnA@mail.gmail.com>
+Subject: Re: [PATCH v1 2/2] serial: Set probe_no_timeout for all DT based
+ drivers
+To: Tobias Klauser <tklauser@distanz.ch>
 Cc: andrew lunn <andrew@lunn.ch>, peng fan <peng.fan@nxp.com>,
  "Rafael J. Wysocki" <rafael@kernel.org>,
  Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -128,25 +157,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Saravana Kannan via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Saravana Kannan <saravanak@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022-06-28 at 04:01:03 +0200, Saravana Kannan <saravanak@google.com> wrote:
-> diff --git a/drivers/tty/serial/8250/8250_acorn.c b/drivers/tty/serial/8250/8250_acorn.c
-> index 758c4aa203ab..5a6f2f67de4f 100644
-> --- a/drivers/tty/serial/8250/8250_acorn.c
-> +++ b/drivers/tty/serial/8250/8250_acorn.c
-> @@ -114,7 +114,6 @@ static const struct ecard_id serial_cids[] = {
->  static struct ecard_driver serial_card_driver = {
->  	.probe		= serial_card_probe,
->  	.remove		= serial_card_remove,
-> -	.id_table	= serial_cids,
+On Tue, Jun 28, 2022 at 7:00 AM Tobias Klauser <tklauser@distanz.ch> wrote:
+>
+> On 2022-06-28 at 04:01:03 +0200, Saravana Kannan <saravanak@google.com> wrote:
+> > diff --git a/drivers/tty/serial/8250/8250_acorn.c b/drivers/tty/serial/8250/8250_acorn.c
+> > index 758c4aa203ab..5a6f2f67de4f 100644
+> > --- a/drivers/tty/serial/8250/8250_acorn.c
+> > +++ b/drivers/tty/serial/8250/8250_acorn.c
+> > @@ -114,7 +114,6 @@ static const struct ecard_id serial_cids[] = {
+> >  static struct ecard_driver serial_card_driver = {
+> >       .probe          = serial_card_probe,
+> >       .remove         = serial_card_remove,
+> > -     .id_table       = serial_cids,
+>
+> Is this change intentional? All other drivers are only changed to set
+> .probe_no_time and I don't see anything mentioned in the commit message
+> re. this driver's change.
 
-Is this change intentional? All other drivers are only changed to set
-.probe_no_time and I don't see anything mentioned in the commit message
-re. this driver's change.
+No, that's a mistake. Thanks for catching it! I'll check this patch again.
+
+-Saravana
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
