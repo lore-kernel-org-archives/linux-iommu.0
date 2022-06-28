@@ -1,80 +1,87 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2CFCECCA479
-	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 07:01:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id AB3CDC43334
+	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 07:02:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C67BC4152B;
-	Tue, 28 Jun 2022 07:01:58 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org C67BC4152B
-Authentication-Results: smtp4.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CYYgIGLa
+	by smtp3.osuosl.org (Postfix) with ESMTP id 47D8860AE2;
+	Tue, 28 Jun 2022 07:02:06 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 47D8860AE2
+Authentication-Results: smtp3.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=IMv41IA2
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lrmaYuSmC1NI; Tue, 28 Jun 2022 07:01:57 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bgq_P-u5Xuix; Tue, 28 Jun 2022 07:02:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id EAEB7410AA;
-	Tue, 28 Jun 2022 07:01:56 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org EAEB7410AA
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 5AE8A60A93;
+	Tue, 28 Jun 2022 07:02:04 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 5AE8A60A93
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C00CCC0032;
-	Tue, 28 Jun 2022 07:01:56 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2D3ECC002D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 07:01:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 42BCBC0032;
+	Tue, 28 Jun 2022 07:02:04 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EA4E9C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 07:02:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 0E352410A5
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 07:01:55 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 0E352410A5
+ by smtp4.osuosl.org (Postfix) with ESMTP id B6DC5416CA
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 07:02:02 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org B6DC5416CA
+Authentication-Results: smtp4.osuosl.org;
+ dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
+ header.a=rsa-sha256 header.s=Intel header.b=IMv41IA2
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id B_Ybkb8NTuiQ for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jun 2022 07:01:53 +0000 (UTC)
+ with ESMTP id H4D5dylkkVxv for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jun 2022 07:02:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org BE8BD40A05
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by smtp4.osuosl.org (Postfix) with ESMTPS id BE8BD40A05
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 07:01:53 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org D4136410C2
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id D4136410C2
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 07:02:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1656399713; x=1687935713;
+ t=1656399720; x=1687935720;
  h=from:to:cc:subject:date:message-id:in-reply-to:
  references:mime-version:content-transfer-encoding;
- bh=JhxXs2GNe3FvZ8K4QS8CdHUgLDYKpHaDOujt94hpGh0=;
- b=CYYgIGLayIRjqwkWDGPn8gHVcBjHkwngPY5NF6BomVqpLCZ9E+G2tC+B
- 2+NiodEBJdBCQrnANIMGOJAl545AlCudbPDP7rIDf50XlEXdyxHKaA+tE
- QthxFfHeKLBbVPhwwDCop3pjASkIGgnNwLxwDopNUuEWFTLLOv/Ao8QT1
- Th5XmwEAq3uPXdSIUZv3VjXC1Y1BHY0AXFlabp2hhCdQMCnN2aRWNO5cF
- SUd1ItvpiivSG0bMCtP++Wi0nxNQImGew2Ag8zrzdAWeCZiUpHLlJl3gE
- BkfvLNWogRzdNC3Xk39JGF+C9/cJJG3FfJrVIqxb115W2BrvLzE/9k52h g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="345652869"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="345652869"
+ bh=VlDSeJT+Vd4Pw/ouEol7LnsTGtQxtAjTVsFDFR7asiI=;
+ b=IMv41IA2FXF4lx/GF7MCeDL95+0ix1R6zyX53Z6YXHn6Otm/mVJI4Zqi
+ kHp6SSu8+/s4bC0I1OGdIiZOFgvDiC1VrTBRnosxK81jrJNZp6ACIe9Gq
+ aSCEXsPNhLvzTW76Ma/oWBsy/bAPNXTYj8GECIdfBU9dYOMDCEyhv3Xw5
+ f2vfAANOfgFjt3ADvoWE0dwfXu8oyy4cOo1bUQcoOfO43Meg2/Xb5Jzz1
+ qLejw0y8iGuu9qpHYXbtASbwJH0jTRvrzvVv/JIozqkFpBwgwzM22fZEN
+ mydFjwALqwQ75otLS1Y9Pn62yOwR84F54qrkCXwKzBLcito1abRLJ/QQI A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="282390624"
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="282390624"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Jun 2022 00:01:53 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="646782864"
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Jun 2022 00:02:00 -0700
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="646782912"
 Received: from spr.sh.intel.com ([10.239.53.120])
  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Jun 2022 00:01:50 -0700
+ 28 Jun 2022 00:01:54 -0700
 From: Chao Gao <chao.gao@intel.com>
 To: linux-kernel@vger.kernel.org
-Subject: [PATCH v1 2/3] swiotlb: Allocate memory in a cache-friendly way
-Date: Tue, 28 Jun 2022 15:01:33 +0800
-Message-Id: <20220628070136.419163-3-chao.gao@intel.com>
+Subject: [PATCH v1 3/3] swiotlb: Split up single swiotlb lock
+Date: Tue, 28 Jun 2022 15:01:34 +0800
+Message-Id: <20220628070136.419163-4-chao.gao@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220628070136.419163-1-chao.gao@intel.com>
 References: <20220628070136.419163-1-chao.gao@intel.com>
 MIME-Version: 1.0
-Cc: len.brown@intel.com, tony.luck@intel.com, rafael.j.wysocki@intel.com,
+Cc: len.brown@intel.com, tony.luck@intel.com, Kees Cook <keescook@chromium.org>,
+ "Paul E. McKenney" <paulmck@kernel.org>, linux-doc@vger.kernel.org,
+ Damien Le Moal <damien.lemoal@opensource.wdc.com>, rafael.j.wysocki@intel.com,
  dave.hansen@intel.com, iommu@lists.linux-foundation.org,
- Andi Kleen <ak@linux.intel.com>, ilpo.jarvinen@linux.intel.com,
+ Andi Kleen <ak@linux.intel.com>, Randy Dunlap <rdunlap@infradead.org>,
+ Borislav Petkov <bp@suse.de>, Muchun Song <songmuchun@bytedance.com>,
+ linux-pm@vger.kernel.org, ilpo.jarvinen@linux.intel.com,
  dan.j.williams@intel.com, reinette.chatre@intel.com,
- kirill.shutemov@linux.intel.com
+ Andrew Morton <akpm@linux-foundation.org>, kirill.shutemov@linux.intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,220 +99,477 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Currently, swiotlb uses a global index to indicate the starting point
-of next search. The index increases from 0 to the number of slots - 1
-and then wraps around. It is straightforward but not cache-friendly
-because the "oldest" slot in swiotlb tends to be used first.
+From: Andi Kleen <ak@linux.intel.com>
 
-Freed slots are probably accessed right before being freed, especially
-in VM's case (device backends access them in DMA_TO_DEVICE mode; guest
-accesses them in other DMA modes). Thus those just freed slots may
-reside in cache. Then reusing those just freed slots can reduce cache
-misses.
+Traditionally swiotlb was not performance critical because it was only
+used for slow devices. But in some setups, like TDX confidential
+guests, all IO has to go through swiotlb. Currently swiotlb only has a
+single lock. Under high IO load with multiple CPUs this can lead to
+signifiant lock contention on the swiotlb lock. We've seen 20+% CPU
+time in locks in some extreme cases.
 
-To that end, maintain a free list for free slots and insert freed slots
-from the head and searching for free slots always starts from the head.
+This patch splits the swiotlb into individual areas which have their
+own lock. Each CPU tries to allocate in its own area first. Only if
+that fails does it search other areas. On freeing the allocation is
+freed into the area where the memory was originally allocated from.
 
-With this optimization, network throughput of sending data from host to
-guest, measured by iperf3, increases by 7%.
+To avoid doing a full modulo in the main path the number of swiotlb
+areas is always rounded to the next power of two. I believe that's
+not really needed anymore on modern CPUs (which have fast enough
+dividers), but still a good idea on older parts.
 
-A bad side effect of this patch is we cannot use a large stride to skip
-unaligned slots when there is an alignment requirement. Currently, a
-large stride is used when a) device has an alignment requirement, stride
-is calculated according to the requirement; b) the requested size is
-larger than PAGE_SIZE. For x86 with 4KB page size, stride is set to 2.
+The number of areas can be set using the swiotlb option. But to avoid
+every user having to set this option set the default to the number of
+available CPUs. Unfortunately on x86 swiotlb is initialized before
+num_possible_cpus() is available, that is why it uses a custom hook
+called from the early ACPI code.
 
-For case a), few devices have an alignment requirement; the impact is
-limited. For case b) this patch probably leads to one (or more if page size
-is larger than 4K) additional lookup; but as the "io_tlb_slot" struct of
-free slots are also accessed when freeing slots, they probably resides in
-CPU cache as well and then the overhead is almost negligible.
-
-Suggested-by: Andi Kleen <ak@linux.intel.com>
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+[ rebase and fix warnings of checkpatch.pl ]
 Signed-off-by: Chao Gao <chao.gao@intel.com>
 ---
- include/linux/swiotlb.h | 13 +++++----
- kernel/dma/swiotlb.c    | 63 ++++++++++++++++-------------------------
- 2 files changed, 32 insertions(+), 44 deletions(-)
+ .../admin-guide/kernel-parameters.txt         |   4 +-
+ arch/x86/kernel/acpi/boot.c                   |   4 +
+ include/linux/swiotlb.h                       |  30 +++-
+ kernel/dma/swiotlb.c                          | 168 ++++++++++++++++--
+ 4 files changed, 180 insertions(+), 26 deletions(-)
 
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 8090130b544b..5d46271982d5 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -5869,8 +5869,10 @@
+ 			it if 0 is given (See Documentation/admin-guide/cgroup-v1/memory.rst)
+ 
+ 	swiotlb=	[ARM,IA-64,PPC,MIPS,X86]
+-			Format: { <int> | force | noforce }
++			Format: { <int> [,<int>] | force | noforce }
+ 			<int> -- Number of I/O TLB slabs
++			<int> -- Second integer after comma. Number of swiotlb
++				 areas with their own lock. Must be power of 2.
+ 			force -- force using of bounce buffers even if they
+ 			         wouldn't be automatically used by the kernel
+ 			noforce -- Never use bounce buffers (for debugging)
+diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
+index 907cc98b1938..f05e55b2d50c 100644
+--- a/arch/x86/kernel/acpi/boot.c
++++ b/arch/x86/kernel/acpi/boot.c
+@@ -22,6 +22,7 @@
+ #include <linux/efi-bgrt.h>
+ #include <linux/serial_core.h>
+ #include <linux/pgtable.h>
++#include <linux/swiotlb.h>
+ 
+ #include <asm/e820/api.h>
+ #include <asm/irqdomain.h>
+@@ -1131,6 +1132,9 @@ static int __init acpi_parse_madt_lapic_entries(void)
+ 		return count;
+ 	}
+ 
++	/* This does not take overrides into consideration */
++	swiotlb_hint_cpus(max(count, x2count));
++
+ 	x2count = acpi_table_parse_madt(ACPI_MADT_TYPE_LOCAL_X2APIC_NMI,
+ 					acpi_parse_x2apic_nmi, 0);
+ 	count = acpi_table_parse_madt(ACPI_MADT_TYPE_LOCAL_APIC_NMI,
 diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index c3eab237991a..012a6fde873b 100644
+index 012a6fde873b..cf36c5cc7584 100644
 --- a/include/linux/swiotlb.h
 +++ b/include/linux/swiotlb.h
-@@ -62,6 +62,12 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t phys,
- #ifdef CONFIG_SWIOTLB
- extern enum swiotlb_force swiotlb_force;
+@@ -69,7 +69,25 @@ struct io_tlb_slot {
+ };
  
-+struct io_tlb_slot {
-+	phys_addr_t orig_addr;
-+	size_t alloc_size;
-+	struct list_head node;
+ /**
+- * struct io_tlb_mem - IO TLB Memory Pool Descriptor
++ * struct io_tlb_area - IO TLB memory area descriptor
++ *
++ * This is a single area with a single lock.
++ *
++ * @used:	The number of used IO TLB block.
++ * @list:	The free list describing the number of free entries available
++ *		from each index.
++ * @lock:	The lock to protect the above data structures in the map and
++ *		unmap calls.
++ */
++
++struct io_tlb_area {
++	unsigned long used;
++	struct list_head free_slots;
++	spinlock_t lock;
 +};
 +
- /**
-  * struct io_tlb_mem - IO TLB Memory Pool Descriptor
++/**
++ * struct io_tlb_mem - io tlb memory pool descriptor
   *
-@@ -96,16 +102,13 @@ struct io_tlb_mem {
+  * @start:	The start address of the swiotlb memory pool. Used to do a quick
+  *		range check to see if the memory was in fact allocated by this
+@@ -87,8 +105,6 @@ struct io_tlb_slot {
+  * @index:	The index to start searching in the next round.
+  * @orig_addr:	The original address corresponding to a mapped entry.
+  * @alloc_size:	Size of the allocated buffer.
+- * @lock:	The lock to protect the above data structures in the map and
+- *		unmap calls.
+  * @debugfs:	The dentry to debugfs.
+  * @late_alloc:	%true if allocated using the page allocator
+  * @force_bounce: %true if swiotlb bouncing is forced
+@@ -101,13 +117,11 @@ struct io_tlb_mem {
+ 	phys_addr_t end;
  	void *vaddr;
  	unsigned long nslabs;
- 	unsigned long used;
--	unsigned int index;
-+	struct list_head free_slots;
- 	spinlock_t lock;
+-	unsigned long used;
+-	struct list_head free_slots;
+-	spinlock_t lock;
  	struct dentry *debugfs;
  	bool late_alloc;
  	bool force_bounce;
  	bool for_alloc;
--	struct io_tlb_slot {
--		phys_addr_t orig_addr;
--		size_t alloc_size;
--	} *slots;
-+	struct io_tlb_slot *slots;
++	struct io_tlb_area *areas;
+ 	struct io_tlb_slot *slots;
  	unsigned long *bitmap;
  };
- extern struct io_tlb_mem io_tlb_default_mem;
+@@ -133,6 +147,7 @@ unsigned int swiotlb_max_segment(void);
+ size_t swiotlb_max_mapping_size(struct device *dev);
+ bool is_swiotlb_active(struct device *dev);
+ void __init swiotlb_adjust_size(unsigned long size);
++void swiotlb_hint_cpus(int cpus);
+ #else
+ static inline void swiotlb_init(bool addressing_limited, unsigned int flags)
+ {
+@@ -165,6 +180,9 @@ static inline bool is_swiotlb_active(struct device *dev)
+ static inline void swiotlb_adjust_size(unsigned long size)
+ {
+ }
++static inline void swiotlb_hint_cpus(int cpus)
++{
++}
+ #endif /* CONFIG_SWIOTLB */
+ 
+ extern void swiotlb_print_info(void);
 diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index d7f68c0af7f5..2283f3a36f0d 100644
+index 2283f3a36f0d..a25e53e84b80 100644
 --- a/kernel/dma/swiotlb.c
 +++ b/kernel/dma/swiotlb.c
-@@ -200,7 +200,7 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+@@ -62,6 +62,8 @@
+ 
+ #define INVALID_PHYS_ADDR (~(phys_addr_t)0)
+ 
++#define NUM_AREAS_DEFAULT 1
++
+ static bool swiotlb_force_bounce;
+ static bool swiotlb_force_disable;
+ 
+@@ -71,14 +73,61 @@ phys_addr_t swiotlb_unencrypted_base;
+ 
+ static unsigned long default_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
+ 
++static __read_mostly unsigned int area_index_shift;
++static __read_mostly unsigned int area_bits;
++static __read_mostly int num_areas = NUM_AREAS_DEFAULT;
++
++static __init int setup_areas(int n)
++{
++	unsigned long nslabs;
++
++	if (n < 1 || !is_power_of_2(n) || n > default_nslabs) {
++		pr_err("swiotlb: Invalid areas parameter %d\n", n);
++		return -EINVAL;
++	}
++
++	/*
++	 * Round up number of slabs to the next power of 2.
++	 * The last area is going be smaller than the rest if default_nslabs is
++	 * not power of two.
++	 */
++	nslabs = roundup_pow_of_two(default_nslabs);
++
++	pr_info("swiotlb: Using %d areas\n", n);
++	num_areas = n;
++	area_index_shift = __fls(nslabs) - __fls(num_areas);
++	area_bits = __fls(n);
++	return 0;
++}
++
++/*
++ * Can be called from architecture specific code when swiotlb is set up before
++ * possible cpus are setup.
++ */
++
++void __init swiotlb_hint_cpus(int cpus)
++{
++	if (num_areas == NUM_AREAS_DEFAULT && cpus > 1) {
++		if (!is_power_of_2(cpus))
++			cpus = 1U << (__fls(cpus) + 1);
++		setup_areas(cpus);
++	}
++}
++
+ static int __init
+ setup_io_tlb_npages(char *str)
+ {
++	int ret = 0;
++
+ 	if (isdigit(*str)) {
+ 		/* avoid tail segment of size < IO_TLB_SEGSIZE */
+ 		default_nslabs =
+ 			ALIGN(simple_strtoul(str, &str, 0), IO_TLB_SEGSIZE);
+ 	}
++	if (*str == ',')
++		++str;
++	if (isdigit(*str))
++		ret = setup_areas(simple_strtoul(str, &str, 0));
+ 	if (*str == ',')
+ 		++str;
+ 	if (!strcmp(str, "force"))
+@@ -86,7 +135,7 @@ setup_io_tlb_npages(char *str)
+ 	else if (!strcmp(str, "noforce"))
+ 		swiotlb_force_disable = true;
+ 
+-	return 0;
++	return ret;
+ }
+ early_param("swiotlb", setup_io_tlb_npages);
+ 
+@@ -114,6 +163,7 @@ void __init swiotlb_adjust_size(unsigned long size)
+ 		return;
+ 	size = ALIGN(size, IO_TLB_SIZE);
+ 	default_nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
++	setup_areas(num_areas);
+ 	pr_info("SWIOTLB bounce buffer size adjusted to %luMB", size >> 20);
+ }
+ 
+@@ -200,17 +250,21 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
  	mem->nslabs = nslabs;
  	mem->start = start;
  	mem->end = mem->start + bytes;
--	mem->index = 0;
-+	INIT_LIST_HEAD(&mem->free_slots);
+-	INIT_LIST_HEAD(&mem->free_slots);
  	mem->late_alloc = late_alloc;
  
  	mem->force_bounce = swiotlb_force_bounce || (flags & SWIOTLB_FORCE);
-@@ -210,6 +210,7 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+ 
+-	spin_lock_init(&mem->lock);
++	for (i = 0; i < num_areas; i++) {
++		INIT_LIST_HEAD(&mem->areas[i].free_slots);
++		spin_lock_init(&mem->areas[i].lock);
++	}
+ 	for (i = 0; i < mem->nslabs; i++) {
++		int aindex = area_index_shift ? i >> area_index_shift : 0;
  		__set_bit(i, mem->bitmap);
  		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
  		mem->slots[i].alloc_size = 0;
-+		list_add_tail(&mem->slots[i].node, &mem->free_slots);
+-		list_add_tail(&mem->slots[i].node, &mem->free_slots);
++		list_add_tail(&mem->slots[i].node,
++			      &mem->areas[aindex].free_slots);
  	}
  
  	/*
-@@ -484,13 +485,6 @@ static inline unsigned long get_max_slots(unsigned long boundary_mask)
+@@ -274,6 +328,10 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+ 	if (!mem->slots)
+ 		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
+ 		      __func__, alloc_size, PAGE_SIZE);
++	mem->areas = memblock_alloc(sizeof(struct io_tlb_area) * num_areas,
++				    SMP_CACHE_BYTES);
++	if (!mem->areas)
++		panic("Cannot allocate io_tlb_areas");
+ 
+ 	mem->bitmap = memblock_alloc(BITS_TO_BYTES(nslabs), SMP_CACHE_BYTES);
+ 	if (!mem->bitmap)
+@@ -353,6 +411,12 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+ 		return -ENOMEM;
+ 	}
+ 
++	mem->areas = kcalloc(num_areas, sizeof(struct io_tlb_area), GFP_KERNEL);
++	if (!mem->areas) {
++		free_pages((unsigned long)mem->slots, order);
++		return -ENOMEM;
++	}
++
+ 	set_memory_decrypted((unsigned long)vstart,
+ 			     (nslabs << IO_TLB_SHIFT) >> PAGE_SHIFT);
+ 	swiotlb_init_io_tlb_mem(mem, virt_to_phys(vstart), nslabs, 0, true);
+@@ -380,9 +444,12 @@ void __init swiotlb_exit(void)
+ 
+ 	set_memory_encrypted(tbl_vaddr, tbl_size >> PAGE_SHIFT);
+ 	if (mem->late_alloc) {
++		kfree(mem->areas);
+ 		free_pages(tbl_vaddr, get_order(tbl_size));
+ 		free_pages((unsigned long)mem->slots, get_order(slots_size));
+ 	} else {
++		memblock_free_late(__pa(mem->areas),
++				   num_areas * sizeof(struct io_tlb_area));
+ 		memblock_free_late(mem->start, tbl_size);
+ 		memblock_free_late(__pa(mem->slots), slots_size);
+ 	}
+@@ -485,14 +552,32 @@ static inline unsigned long get_max_slots(unsigned long boundary_mask)
  	return nr_slots(boundary_mask + 1);
  }
  
--static unsigned int wrap_index(struct io_tlb_mem *mem, unsigned int index)
--{
--	if (index >= mem->nslabs)
--		return 0;
--	return index;
--}
--
++static inline unsigned long area_nslabs(struct io_tlb_mem *mem)
++{
++	return area_index_shift ? (1UL << area_index_shift) + 1 :
++			mem->nslabs;
++}
++
++static inline unsigned int area_start(int aindex)
++{
++	return aindex << area_index_shift;
++}
++
++static inline unsigned int area_end(struct io_tlb_mem *mem, int aindex)
++{
++	return area_start(aindex) + area_nslabs(mem);
++}
++
  /*
   * Find a suitable number of IO TLB entries size that will fit this request and
   * allocate a buffer from that IO TLB pool.
-@@ -499,29 +493,21 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 			      size_t alloc_size, unsigned int alloc_align_mask)
+  */
+-static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+-			      size_t alloc_size, unsigned int alloc_align_mask)
++static int swiotlb_do_find_slots(struct io_tlb_mem *mem,
++				 struct io_tlb_area *area,
++				 struct device *dev, phys_addr_t orig_addr,
++				 size_t alloc_size,
++				 unsigned int alloc_align_mask)
  {
- 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-+	struct io_tlb_slot *slot, *tmp;
+-	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+ 	struct io_tlb_slot *slot, *tmp;
  	unsigned long boundary_mask = dma_get_seg_boundary(dev);
  	dma_addr_t tbl_dma_addr =
- 		phys_to_dma_unencrypted(dev, mem->start) & boundary_mask;
-+	dma_addr_t slot_dma_addr;
- 	unsigned long max_slots = get_max_slots(boundary_mask);
- 	unsigned int iotlb_align_mask =
- 		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
--	unsigned int nslots = nr_slots(alloc_size), stride;
--	unsigned int index, wrap, i;
-+	unsigned int nslots = nr_slots(alloc_size);
-+	unsigned int index, i;
- 	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
- 	unsigned long flags;
- 
- 	BUG_ON(!nslots);
- 
--	/*
--	 * For mappings with an alignment requirement don't bother looping to
--	 * unaligned slots once we found an aligned one.  For allocations of
--	 * PAGE_SIZE or larger only look for page aligned allocations.
--	 */
--	stride = (iotlb_align_mask >> IO_TLB_SHIFT) + 1;
--	if (alloc_size >= PAGE_SIZE)
--		stride = max(stride, stride << (PAGE_SHIFT - IO_TLB_SHIFT));
--	stride = max(stride, (alloc_align_mask >> IO_TLB_SHIFT) + 1);
--
+@@ -511,11 +596,11 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
  	/* slots shouldn't cross one segment */
  	max_slots = min_t(unsigned long, max_slots, IO_TLB_SEGSIZE);
  
-@@ -529,15 +515,26 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 	if (unlikely(nslots > mem->nslabs - mem->used))
+-	spin_lock_irqsave(&mem->lock, flags);
+-	if (unlikely(nslots > mem->nslabs - mem->used))
++	spin_lock_irqsave(&area->lock, flags);
++	if (unlikely(nslots > area_nslabs(mem) - area->used))
  		goto not_found;
  
--	index = wrap = wrap_index(mem, ALIGN(mem->index, stride));
--	do {
-+	list_for_each_entry_safe(slot, tmp, &mem->free_slots, node) {
-+		index = slot - mem->slots;
-+		slot_dma_addr = slot_addr(tbl_dma_addr, index);
+-	list_for_each_entry_safe(slot, tmp, &mem->free_slots, node) {
++	list_for_each_entry_safe(slot, tmp, &area->free_slots, node) {
+ 		index = slot - mem->slots;
+ 		slot_dma_addr = slot_addr(tbl_dma_addr, index);
  		if (orig_addr &&
--		    (slot_addr(tbl_dma_addr, index) & iotlb_align_mask) !=
-+		    (slot_dma_addr & iotlb_align_mask) !=
- 			    (orig_addr & iotlb_align_mask)) {
--			index = wrap_index(mem, index + 1);
- 			continue;
- 		}
- 
-+		/* Ensure requested alignment is met */
-+		if (alloc_align_mask && (slot_dma_addr & (alloc_align_mask - 1)))
-+			continue;
-+
-+		/*
-+		 * If requested size is larger than a page, ensure allocated
-+		 * memory to be page aligned.
-+		 */
-+		if (alloc_size >= PAGE_SIZE && (slot_dma_addr & ~PAGE_MASK))
-+			continue;
-+
- 		/*
- 		 * If we find a slot that indicates we have 'nslots' number of
- 		 * contiguous buffers, we allocate the buffers from that slot
-@@ -549,15 +546,8 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 			if (find_next_zero_bit(mem->bitmap, index + nslots, index) ==
- 					index + nslots)
- 				goto found;
--		} else {
--			/*
--			 * Remaining slots between current one and the next
--			 * bounary cannot meet our requirement.
--			 */
--			index = wrap_index(mem, round_up(index, max_slots));
- 		}
--		index = wrap_index(mem, index + stride);
--	} while (index != wrap);
-+	}
- 
- not_found:
- 	spin_unlock_irqrestore(&mem->lock, flags);
-@@ -568,15 +558,9 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
- 		__clear_bit(i, mem->bitmap);
- 		mem->slots[i].alloc_size =
- 			alloc_size - (offset + ((i - index) << IO_TLB_SHIFT));
-+		list_del(&mem->slots[i].node);
+@@ -550,7 +635,7 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
  	}
  
--	/*
--	 * Update the indices to avoid searching in the next round.
--	 */
--	if (index + nslots < mem->nslabs)
--		mem->index = index + nslots;
--	else
--		mem->index = 0;
- 	mem->used += nslots;
+ not_found:
+-	spin_unlock_irqrestore(&mem->lock, flags);
++	spin_unlock_irqrestore(&area->lock, flags);
+ 	return -1;
  
- 	spin_unlock_irqrestore(&mem->lock, flags);
-@@ -653,6 +637,7 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
+ found:
+@@ -561,12 +646,43 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+ 		list_del(&mem->slots[i].node);
+ 	}
+ 
+-	mem->used += nslots;
++	area->used += nslots;
+ 
+-	spin_unlock_irqrestore(&mem->lock, flags);
++	spin_unlock_irqrestore(&area->lock, flags);
+ 	return index;
+ }
+ 
++static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
++			      size_t alloc_size, unsigned int alloc_align_mask)
++{
++	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
++	int start = raw_smp_processor_id() & ((1U << area_bits) - 1);
++	int i, index;
++
++	i = start;
++	do {
++		index = swiotlb_do_find_slots(mem, mem->areas + i,
++					      dev, orig_addr, alloc_size,
++					      alloc_align_mask);
++		if (index >= 0)
++			return index;
++		if (++i >= num_areas)
++			i = 0;
++	} while (i != start);
++	return -1;
++}
++
++/* Somewhat racy estimate */
++static unsigned long mem_used(struct io_tlb_mem *mem)
++{
++	int i;
++	unsigned long used = 0;
++
++	for (i = 0; i < num_areas; i++)
++		used += mem->areas[i].used;
++	return used;
++}
++
+ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 		size_t mapping_size, size_t alloc_size,
+ 		unsigned int alloc_align_mask, enum dma_data_direction dir,
+@@ -596,7 +712,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 		if (!(attrs & DMA_ATTR_NO_WARN))
+ 			dev_warn_ratelimited(dev,
+ 	"swiotlb buffer is full (sz: %zd bytes), total %lu (slots), used %lu (slots)\n",
+-				 alloc_size, mem->nslabs, mem->used);
++				 alloc_size, mem->nslabs, mem_used(mem));
+ 		return (phys_addr_t)DMA_MAPPING_ERROR;
+ 	}
+ 
+@@ -626,9 +742,14 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
+ 	unsigned int offset = swiotlb_align_offset(dev, tlb_addr);
+ 	int index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
+ 	int nslots = nr_slots(mem->slots[index].alloc_size + offset);
++	int aindex = area_index_shift ? index >> area_index_shift : 0;
++	struct io_tlb_area *area = mem->areas + aindex;
+ 	int i;
+ 
+-	spin_lock_irqsave(&mem->lock, flags);
++	WARN_ON(aindex >= num_areas);
++
++	spin_lock_irqsave(&area->lock, flags);
++
+ 	/*
+ 	 * Return the slots to swiotlb, updating bitmap to indicate
+ 	 * corresponding entries are free.
+@@ -637,11 +758,11 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
  		__set_bit(i, mem->bitmap);
  		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
  		mem->slots[i].alloc_size = 0;
-+		list_add(&mem->slots[i].node, &mem->free_slots);
+-		list_add(&mem->slots[i].node, &mem->free_slots);
++		list_add(&mem->slots[i].node, &area->free_slots);
  	}
  
- 	mem->used -= nslots;
+-	mem->used -= nslots;
+-	spin_unlock_irqrestore(&mem->lock, flags);
++	area->used -= nslots;
++	spin_unlock_irqrestore(&area->lock, flags);
+ }
+ 
+ /*
+@@ -736,6 +857,15 @@ bool is_swiotlb_active(struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(is_swiotlb_active);
+ 
++static int used_get(void *data, u64 *val)
++{
++	struct io_tlb_mem *mem = (struct io_tlb_mem *)data;
++	*val = mem_used(mem);
++	return 0;
++}
++
++DEFINE_DEBUGFS_ATTRIBUTE(used_fops, used_get, NULL, "%llu\n");
++
+ static void swiotlb_create_debugfs_files(struct io_tlb_mem *mem,
+ 					 const char *dirname)
+ {
+@@ -744,7 +874,7 @@ static void swiotlb_create_debugfs_files(struct io_tlb_mem *mem,
+ 		return;
+ 
+ 	debugfs_create_ulong("io_tlb_nslabs", 0400, mem->debugfs, &mem->nslabs);
+-	debugfs_create_ulong("io_tlb_used", 0400, mem->debugfs, &mem->used);
++	debugfs_create_file("io_tlb_used", 0400, mem->debugfs, mem, &used_fops);
+ }
+ 
+ static int __init __maybe_unused swiotlb_create_default_debugfs(void)
 -- 
 2.25.1
 
