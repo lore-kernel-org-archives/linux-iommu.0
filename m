@@ -1,182 +1,124 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from esa2.hgst.iphmx.com (esa2.hgst.iphmx.com [68.232.143.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AA337A
-	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 08:53:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656406404; x=1687942404;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=j7RBLyOlka1iLMiwFTIdTRDvqa2H8mNDaHkfg+UpypI=;
-  b=DhjlhhpHntMqZYro3hy4+jSOOannVLLwzk0HEfVCsm7Hrv9Fvcg9wBnK
-   ot3MqbT6k4OL0G8axWtbJFPB8KbtgGSGw3fdtLfHhj/osGRlxWs6x7Ftb
-   rP8DdjnsbpiphlTHxeI15dCUW9Jq54CEvN0jkh2vZfqfN+f/T5PEx6I4H
-   Q1PtofQTjk22nnllLtDA6WFw+mNLlzp6MfNSIqmKquAxsfeDzmU0WTLMg
-   NGS8SWqcSdtZQh1quMTHyph4aeJu7KRJnD4BmgiU2d/IQ5NrJAFSsgNpy
-   wuKG4Z7k0BIpKUKO3rbOtVnWQNbqT/6vYJO6lf6qKxxvyXWdcDUvNnT70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F05C7A
+	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 09:15:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1656407740; x=1687943740;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=m7ZvDnvdd5GvaUmk2CDtIh9qIt0xOE1YKhnPo7clhXk=;
+  b=HQkuBHE7M+I9y1CdI5DpSyxojxwNf1Yejtc7hd+OypbcbpAvMryZsKeE
+   Ac5ojh+PyVftDdHJPY2mXHFLo0XoGlN71mKwYG0pADVH4iakdgV97fQnd
+   N2pYVgCbDqTF2SAxmqi/3Z6D3pS8FwPF1wfnW627ezz+Kb/4KKmN/Vn8u
+   lnwHgnYcJceeWbclqlUJR9YakvvoRXNdZfHgSVKidatgpNnE5lOU0LHw8
+   P6Uq4Lej4R4w0O4DbebQ2mO4U1HmdqlW0sD/ZBBxUpzeHVStxa+YBKyhY
+   gicgkk+u2H86x+SXGdQkJYZp8G8jDZprWcX3JguDIKjXana1TzhZrEwE7
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="307159766"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="307159766"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 01:53:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="717371502"
-Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
-  by orsmga004.jf.intel.com with ESMTP; 28 Jun 2022 01:53:22 -0700
-Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
- ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 28 Jun 2022 01:53:22 -0700
-Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
- ORSMSX609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 28 Jun 2022 01:53:22 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 28 Jun 2022 01:53:22 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.168)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Tue, 28 Jun 2022 01:52:39 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Hfp+fKAgPinUTc+EboRcvyGeAuUQa6Zub2kaW1qnLgga5r65ZF2ong94C+bw4ywqIgTeFoYKhN06cUTDxKBHosb6KGGObmrGecBw5qSs+mG44eBNG2dJa2E5BEL78T0iN9P5xK/W3dvsym+aqaBb4LrLx7XzW4rRQkAhgs1Hw7Ei13mPF22HisCkV/I44wjVkBwUuyJqD0Ps8/nTf17D4ZbtDK9hVufOfHiMVC0wHRa1mP9L/LYp02jvEYQiNmSj6H5sMjHm2Bk73c8ugJF2fzpYJy/5bkD0PJPoEw5J1KynDA6h2SbhnE8W/AngUZ8QLirbUKDxvSRGQvNi8rt5SQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=j7RBLyOlka1iLMiwFTIdTRDvqa2H8mNDaHkfg+UpypI=;
- b=d5OsYU8qzDVY2NmBSlrWwP0xQV8TsCB2wVrdcGtnvd0E3nrYM4cG+ciMewZk+HfwhXwvMasxiqFQIRN52qZHWt8DrKnBZ4szy7brLMYkk/f63eqdQtB15jSKTJNS0IHdDesmkJZVmrLPpimpSFHyOyFgHDEQ5DOnY6CTgpzLu2SqSYkOel/PQ2UwahQl5QFDHsTYZbGCeFFwgSIrQb5LnXzQGPPwxLFXWES2I8bZ+cbDwdXuxTcpajRWiafRXfBSUbZn8O6DKzYO5aNqEsFa/pdoIAtNr2IkfQ8rg0ZILzbkBvsj0zN2uvggDetbiqPyWgPryabbvprOXRzDGDGH8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by CH0PR11MB5377.namprd11.prod.outlook.com (2603:10b6:610:b8::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Tue, 28 Jun
- 2022 08:52:37 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::8435:5a99:1e28:b38c%2]) with mapi id 15.20.5373.018; Tue, 28 Jun 2022
- 08:52:37 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	"Jason Gunthorpe" <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
-	"Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>, Robin
- Murphy <robin.murphy@arm.com>, Jean-Philippe Brucker
-	<jean-philippe@linaro.com>, "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul
-	<vkoul@kernel.org>
-CC: Eric Auger <eric.auger@redhat.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v9 07/11] iommu/sva: Refactoring
- iommu_sva_bind/unbind_device()
-Thread-Topic: [PATCH v9 07/11] iommu/sva: Refactoring
- iommu_sva_bind/unbind_device()
-Thread-Index: AQHYhX4BFOtH7b1yFE6Yv4ZQbmv7RK1jDeuggAFN6ICAADFm8A==
-Date: Tue, 28 Jun 2022 08:52:37 +0000
-Message-ID: <BN9PR11MB5276EBFC3D990EA8EDEDF8C38CB89@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220621144353.17547-1-baolu.lu@linux.intel.com>
- <20220621144353.17547-8-baolu.lu@linux.intel.com>
- <BN9PR11MB5276297FAEB8C9774AABAD208CB99@BN9PR11MB5276.namprd11.prod.outlook.com>
- <543603e3-9d08-59ee-01f2-8dd6e7c73a15@linux.intel.com>
-In-Reply-To: <543603e3-9d08-59ee-01f2-8dd6e7c73a15@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 996dc67b-4a5a-4487-2838-08da58e38d1e
-x-ms-traffictypediagnostic: CH0PR11MB5377:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zrzVwjXleT65KtdmSwcvRZLgEYaZKv4nLae10E8y5pU1NqWFUBiQjavLEcrm5pQ/Wt5BLANEq5qMutd+arvchWD+roF0WXThFK9JhmI1hlQ5FSlWTrgA7Jwzwdy4VqShc4FBuhQB6TC4xUDEh3866EPfCd7qSE4OQ5zSZ6ruI0ObPbZHbnD58AeGLOw5Iv/DLYiirBUpd/OI2VgjZsYzcUSL1f2QttTkauGFIxQhJJ2QCNHVbrn0JwaaMGoSebRrJUzmbQaWVe/GX4F5QE3MJY8VBUfceghXr1xSdpgobj/+z68RqB8zngoCyI7n5dZpy1IAYKu5Mmdz0pRLSu+vcI19QQqrSYSgnaaoXfH9XlFO19jOiD66g88ZZYe5pmbfRSg0l+R4Qp2nzTi4huUQeSxL5wbgbdQ6mO4i2vpwz5B6oDt0uf+xdJLC0x8u7mqGPtGI/5jRCuQCBAlSB0Eq1npCtt+8imxnOArRpBz9IN8QBMYnTDlHrVJtBgIaeg+XiyyByjsztzRVCG5hhcUoWBD608eRanElphvSuFPgpREBZ6INa8qeN2StUfk9pVaRDflHM00MwvRZhglOlMA0nVsTYJiReQ1zf8yw1UjTzsnUU6hDP16F/Kh98Hv2+DWa8AFuEj44vBxAN6iNGokDSKSCAelO3BJXb7so1ibN8V5eV+fsWHb4jnj8di79qttwBYLrwQ/r/lZmMXQSGkzrUI7EGXSvwoBvqif/uAlj9xMPpK3nErLKucySNFKdcbO034te0POL+2YczxlMpOA6qk4QGgpR8fLuLlY/QVG3gDOrBiqyo/yxjM8MB3/n/kul
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(346002)(396003)(136003)(366004)(376002)(8936002)(7696005)(2906002)(6506007)(86362001)(26005)(38070700005)(9686003)(5660300002)(38100700002)(66476007)(478600001)(7416002)(41300700001)(122000001)(33656002)(52536014)(921005)(82960400001)(110136005)(76116006)(66556008)(66446008)(64756008)(55016003)(8676002)(66946007)(316002)(71200400001)(54906003)(4326008)(186003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bnhyZk9naDcvZFJMRVZxOFEwU0wrV3pGYUs4K2ZpZWU5U3hWbEE1VUJLZ2Ni?=
- =?utf-8?B?MHJsMnF4WVN3bzV4US9MNGlTV0I1NTBzSC96alhCT0ZnbEpRbkl6Z3Y4QkxE?=
- =?utf-8?B?S2VZeWtsc3NVZ0RJRG9JN0c4MGhGb1lUcS9TWk9tSnRTZ2pnaWFlcG1YU0Jn?=
- =?utf-8?B?Qk85TzRRNmhmdkY3bUpYZ0xZVDh1MENncW5sTGVIQjkxbXFjOC9oZkhLdXQ0?=
- =?utf-8?B?a3VoQ2t1aE00K1EvbHJWajY0ZXhIaDZaMTdxV2l6ZkMxRDJBb2pUdkxZQ3Bh?=
- =?utf-8?B?OFl3YlFFS1FvdmtpUlc4Yk1aOURhMG1YaXA0blpTdndrODdabERVN1lLWkhR?=
- =?utf-8?B?bU1JTFRIcytyWXpGenFURUtqdmM4K2NkS0JQd0dhUWtoTU1HY2lvZEV2OU1S?=
- =?utf-8?B?T3E4NTBtTlBYZzhPWGwzaFRKR09zL3JMY0JPRzVaTXZVQ1lpeGhyOHQrVXMw?=
- =?utf-8?B?eXVHQWlmV3MvZTVpbERFOGt6YWZ4NEVxcUd0MWVpSVpnUUJWcjZybm1iSk1o?=
- =?utf-8?B?OEpmSTVCSnBsZWxvMkwyV2FuVkQ0TFVBcTNDNU5EUm0rQjFDWmJHVENPQkhl?=
- =?utf-8?B?a1hZMFFWZzVPRTNteVZxOGxiTm1FQjRIbVNSR0RnZ21KaXhLRUpFSldsSlEr?=
- =?utf-8?B?Y2YvTkJ5eGwzOEhEeXZxTytLY1FiNENPaFh3dFBQZm1mQklERzdJMHZyZG95?=
- =?utf-8?B?T21DWCtBaHV5b0F5RmRYRld3TUVLRXpHRjVlY2RHbWFCNGluNlBnS25WUnAv?=
- =?utf-8?B?YUlEeVdYRFVsL3VhNklUZnJsU3FuMFBJU1A4cFBmMmZ6bWJTY1BLMzAvOTBm?=
- =?utf-8?B?Z1ppcXFLL3huS1ZmZTF5WStTVktScVE0QXJLRk1JTDZ0SUFpdmQ0ZkJLYnhS?=
- =?utf-8?B?MzMydmlCdEJoNHhjN05FUTAyUzFwRXpJMGlIdmhwU3VWM2JlckZ1a2dab3lw?=
- =?utf-8?B?SXdyUnhYUGsxRnkzR0FudU8vS0ZtVDUxdHV1SmVpdzJ2V01yeExJZmgvV1BY?=
- =?utf-8?B?VkVTN2hoaVdRMDRYZDYyRUc1V0ZvdSs3R1pvRS9lbmhySG95a1hLYnZKUzNR?=
- =?utf-8?B?dHVSajg2bW83MUQ0QUFjNHZCWGFlbHRhT1dIeGlYcHB5OTdNU0hLQ1Y3RmE5?=
- =?utf-8?B?RVMydGN3U1IvZkdzalpFNzllY3JIeXY3cTB0RkZaNEFOeVdsTkxrcnFlRUZT?=
- =?utf-8?B?dUtkYXdKd0R1MFdZbmRBeUJMZjU3OHZ4cXNCdHFsZkdYM081ZmMzUHluREsv?=
- =?utf-8?B?OVlIdnIvRDhBckdzNWVNS1k5cXRnSU9PVjBlbitzQ3FGeUUrMWp1UFN3L0o0?=
- =?utf-8?B?aUFxZWtYOFZiZ3pXcGVzeitSc080bGtLWHlscTZCei9WVzM5U2RuQXhhVFMz?=
- =?utf-8?B?RzZDa1hEVUxIU0NBOXUyUEh2YkRWVG5iTU9CZGQxYVp5Vm16b2xrcVFzdWpZ?=
- =?utf-8?B?WitGVS9EODYrUElhM1pHYzc1dEh3VHJheXViVEhlN0FyMDVueEtWMk9mcFhJ?=
- =?utf-8?B?dEVtR2VCUkZ3eXJNRmE3YThmdnZpSDdqZWFIaFVVL1NFejIxM1VBbWVERWZF?=
- =?utf-8?B?T1h2bEw2Wks1amhydnpveHJHVWtlRGZRckNWSEVMNGpwUHVLQlhBL3dkcExT?=
- =?utf-8?B?WGo5elQxbkx6MGxaK3plVGxORHFLV2daRFd3N3lpdTRZR2hUcGw2R2lMMEE4?=
- =?utf-8?B?WlVIQnR2bEpuSm9OMUx2RjB1STd6L2lSKzkrMzhYU0xmZXFocVlwZmxYMWE1?=
- =?utf-8?B?VUFXS2k0T2szVklGamNtOWtWTi9RZnpIQUtYaVlFbTEyTHJsMEJOejNHeUVF?=
- =?utf-8?B?ZDhwODV2OEZibWJPQU9wRU02ckhpTDVjbUIzWk9UNnV3Z1BRam9TdTk0SHZN?=
- =?utf-8?B?M1hVbTBuRG1VRXVJT1Z3bUgrL2NKSWhMZkFvQmg3N3R3UHR4Z3VFaC9mNXJS?=
- =?utf-8?B?TVNlZngyOHZYVlJsb2RBNSs4UldyZ1RLZnlzTW8wWUhjRzViWUE0b3ppNEFv?=
- =?utf-8?B?aXFENlZkbWtPRkpIOWRUWWgzcUFyNzlPRE5uR0hLazd6WjMvWFZzdmhqbjIx?=
- =?utf-8?B?dHlQU2xMengzRVpzUmd2RDRWMzV6NllJS3FQSVNhdk01SWllVTBrVmhLdTVL?=
- =?utf-8?Q?vwFPra5jHVvnNeb6gqsYbLQJN?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+X-IronPort-AV: E=Sophos;i="5.92,227,1650902400"; 
+   d="scan'208";a="308600407"
+Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 28 Jun 2022 17:14:30 +0800
+IronPort-SDR: hzlenmokkucRrncDa7+zZaKNL+3USGX8klfcVWTJSe/0UgdZUdzAQInNIxWXeSBJ3XXnhWA+FK
+ UOv0WMmrPoz8QuHQ7OV7+Ct3rq3Y9ltjRhRgzIaR5lO03S0QcKddCJZCTNc65KI1NF4jxpcp74
+ RztMe24apxXFF6TSBWfTxYirBPV7YzlksIvfSMAP47oCvAkZSbPJ6fFKdySqVfmyFERxWL9nb+
+ U86ylY9ztL4TFRubW8yLm3uiKaCeRYwczIMdUbZgCZPnynJWk5DCCzKboRB4kx53lSXcghFSye
+ 3UgdNZJvpqJFfhJpOXSMPwCJ
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 28 Jun 2022 01:36:52 -0700
+IronPort-SDR: lsOprUbM3i0e0Ig8mUhEzBzp7i3mOCaT6qU372lqoMBR/IQ8oT5JjFO00PHwdjObXOQjJSdMU0
+ ZuG1q32kC9Xy3nWYkcFZk+WqnFhIPNM0zdZ5kfDj2S/DRc+mBh1HVEiSZXeQprA4NbMcQJv20U
+ W9B6D9HeVKIZ2AbWIT2lsHv/7axDTrqR/oXFHmOITPVG+NbcrC3Fp5Fn+EskRlYnRboVGuhEB7
+ CBbDTHlHwyinURJdlvdV3lktOvKZ9cF828Sym7agLKE0QofW5xNTzQ4EpCLgPw8+NM439l/o+y
+ D1o=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 28 Jun 2022 02:14:30 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+	by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LXJnf07JRz1Rw4L
+	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 02:14:30 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+	reason="pass (just generated, assumed good)"
+	header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+	opensource.wdc.com; h=content-transfer-encoding:content-type
+	:in-reply-to:organization:from:references:to:content-language
+	:subject:user-agent:mime-version:date:message-id; s=dkim; t=
+	1656407669; x=1658999670; bh=m7ZvDnvdd5GvaUmk2CDtIh9qIt0xOE1YKhn
+	Po7clhXk=; b=n1Hpc6gcPs/kxiOVTQwyRGR+uFdty2ur8mMpVtR58Kwy2fqXmbI
+	HTEscATaBiYXrvQoDsewN6VCSm9M5MIlpqKcq/8hTcw3cjPO33agP8Xd57Tj6DFz
+	4R0ljR0v+eB5w4pbvmsQ5m12TQNrFyNz/lIFaUH0ktaZyNqS0r6+dYb80iSY2vIS
+	eAjGfzucNGjkx5UDxGIgv1ZF4t8Y8uxziilTeI0bERjb3d5G2iyT+xB/TWonmtz9
+	zODt5GChELx+M4SuiD3Cm4Kcm8I7M51ZXMYbgEjMRtCnihX/D9URy755F6CYUCq9
+	+ysvrOnAro+PSPbYDdtqx2RasqndSuvPycw==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+	by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id SW0wQqaZgHrK for <iommu@lists.linux.dev>;
+	Tue, 28 Jun 2022 02:14:29 -0700 (PDT)
+Received: from [10.225.163.99] (unknown [10.225.163.99])
+	by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LXJnZ4JQfz1RtVk;
+	Tue, 28 Jun 2022 02:14:26 -0700 (PDT)
+Message-ID: <ba59a0da-a982-e3eb-1cb7-6e60f80fd319@opensource.wdc.com>
+Date: Tue, 28 Jun 2022 18:14:25 +0900
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 996dc67b-4a5a-4487-2838-08da58e38d1e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jun 2022 08:52:37.4105
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: eSUZoy6kycn6yvImfrhoQLLNEfUaTGwWN2QLlddxfv7nhgtI8PAnGUJivswM8n02WxlNJVF3o31M5W1m9Ow0cA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR11MB5377
-X-OriginatorOrg: intel.com
-Message-ID: <20220628085237.j8gcOcD6_F3mFPpNuSbrsnwEm0Uhn4pngCbDCxATQm8@z>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4 5/5] libata-scsi: Cap ata_device->max_sectors according
+ to shost->max_sectors
+Content-Language: en-US
+To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org,
+ jejb@linux.ibm.com, martin.petersen@oracle.com, hch@lst.de,
+ m.szyprowski@samsung.com, robin.murphy@arm.com
+Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org,
+ iommu@lists.linux.dev, linux-scsi@vger.kernel.org, linuxarm@huawei.com
+References: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
+ <1656343521-62897-6-git-send-email-john.garry@huawei.com>
+ <b69c6112-98b7-3890-9d11-bb321a7c877a@opensource.wdc.com>
+ <6619638c-52e8-cb67-c56c-9c9d38c18161@huawei.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <6619638c-52e8-cb67-c56c-9c9d38c18161@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Message-ID: <20220628091425.M8TE1aCq94xS09oT7FHYXlevnXccqpuLqgPz5ulzqgU@z>
 
-PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBUdWVz
-ZGF5LCBKdW5lIDI4LCAyMDIyIDE6NTQgUE0NCj4gPj4gK3UzMiBpb21tdV9zdmFfZ2V0X3Bhc2lk
-KHN0cnVjdCBpb21tdV9zdmEgKmhhbmRsZSkNCj4gPj4gK3sNCj4gPj4gKwlzdHJ1Y3QgaW9tbXVf
-ZG9tYWluICpkb21haW4gPQ0KPiA+PiArCQkJY29udGFpbmVyX29mKGhhbmRsZSwgc3RydWN0IGlv
-bW11X2RvbWFpbiwgYm9uZCk7DQo+ID4+ICsNCj4gPj4gKwlyZXR1cm4gZG9tYWluLT5tbS0+cGFz
-aWQ7DQo+ID4+ICt9DQo+ID4+ICtFWFBPUlRfU1lNQk9MX0dQTChpb21tdV9zdmFfZ2V0X3Bhc2lk
-KTsNCj4gPg0KPiA+IExvb2tzIHRoaXMgaXMgb25seSB1c2VkIGJ5IHVuYmluZF9kZXZpY2UuIEp1
-c3Qgb3BlbiBjb2RlIGl0Lg0KPiANCj4gSXQncyBwYXJ0IG9mIGN1cnJlbnQgSU9NTVUvU1ZBIGlu
-dGVyZmFjZXMgZm9yIHRoZSBkZXZpY2UgZHJpdmVycywgYW5kDQo+IGhhcyBiZWVuIHVzZWQgaW4g
-dmFyaW91cyBkcml2ZXJzLg0KPiANCj4gJCBnaXQgZ3JlcCBpb21tdV9zdmFfZ2V0X3Bhc2lkDQo+
-IGRyaXZlcnMvZG1hL2lkeGQvY2Rldi5jOiAgICAgICAgICAgICAgICBwYXNpZCA9IGlvbW11X3N2
-YV9nZXRfcGFzaWQoc3ZhKTsNCj4gZHJpdmVycy9pb21tdS9pb21tdS1zdmEtbGliLmM6ICBpb2Fz
-aWRfdCBwYXNpZCA9DQo+IGlvbW11X3N2YV9nZXRfcGFzaWQoaGFuZGxlKTsNCj4gZHJpdmVycy9p
-b21tdS9pb21tdS1zdmEtbGliLmM6dTMyIGlvbW11X3N2YV9nZXRfcGFzaWQoc3RydWN0DQo+IGlv
-bW11X3N2YQ0KPiAqaGFuZGxlKQ0KPiBkcml2ZXJzL2lvbW11L2lvbW11LXN2YS0NCj4gbGliLmM6
-RVhQT1JUX1NZTUJPTF9HUEwoaW9tbXVfc3ZhX2dldF9wYXNpZCk7DQo+IGRyaXZlcnMvbWlzYy91
-YWNjZS91YWNjZS5jOiAgICAgcGFzaWQgPSBpb21tdV9zdmFfZ2V0X3Bhc2lkKGhhbmRsZSk7DQo+
-IGluY2x1ZGUvbGludXgvaW9tbXUuaDp1MzIgaW9tbXVfc3ZhX2dldF9wYXNpZChzdHJ1Y3QgaW9t
-bXVfc3ZhDQo+ICpoYW5kbGUpOw0KPiBpbmNsdWRlL2xpbnV4L2lvbW11Lmg6c3RhdGljIGlubGlu
-ZSB1MzIgaW9tbXVfc3ZhX2dldF9wYXNpZChzdHJ1Y3QNCj4gaW9tbXVfc3ZhICpoYW5kbGUpDQo+
-IA0KPiBPciwgSSBtaXNzZWQgYW55dGhpbmc/DQo+IA0KDQpGb3JnZXQgaXQuIEkgdGhvdWdodCBp
-dCdzIGEgbmV3IGZ1bmN0aW9uIGludHJvZHVjZWQgaW4gdGhpcyBzZXJpZXMuIDovDQo=
+On 6/28/22 16:54, John Garry wrote:
+> On 28/06/2022 00:24, Damien Le Moal wrote:
+>> On 6/28/22 00:25, John Garry wrote:
+>>> ATA devices (struct ata_device) have a max_sectors field which is
+>>> configured internally in libata. This is then used to (re)configure the
+>>> associated sdev request queue max_sectors value from how it is earlier set
+>>> in __scsi_init_queue(). In __scsi_init_queue() the max_sectors value is set
+>>> according to shost limits, which includes host DMA mapping limits.
+>>>
+>>> Cap the ata_device max_sectors according to shost->max_sectors to respect
+>>> this shost limit.
+>>>
+>>> Signed-off-by: John Garry<john.garry@huawei.com>
+>>> Acked-by: Damien Le Moal<damien.lemoal@opensource.wdc.com>
+>> Nit: please change the patch title to "ata: libata-scsi: Cap ..."
+>>
+> 
+> ok, but it's going to be an even longer title :)
+> 
+> BTW, this patch has no real dependency on the rest of the series, so 
+> could be taken separately if you prefer.
+
+Sure, you can send it separately. Adding it through the scsi tree is fine too.
+
+> 
+> Thanks,
+> John
+
+
+-- 
+Damien Le Moal
+Western Digital Research
