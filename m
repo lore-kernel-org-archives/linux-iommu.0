@@ -4,90 +4,141 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8D05BC43334
-	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 11:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 87053C433EF
+	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 11:15:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 37B3960C0F;
-	Tue, 28 Jun 2022 11:02:36 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 37B3960C0F
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0E04E60E92;
+	Tue, 28 Jun 2022 11:15:44 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 0E04E60E92
 Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=jzsXHfGH
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YdmebN9V
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aGoVBushyvOZ; Tue, 28 Jun 2022 11:02:35 +0000 (UTC)
+	with ESMTP id 2M6i5lj78_Po; Tue, 28 Jun 2022 11:15:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 0EC9360B65;
-	Tue, 28 Jun 2022 11:02:35 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 0EC9360B65
+	by smtp3.osuosl.org (Postfix) with ESMTPS id CBB8A60E7E;
+	Tue, 28 Jun 2022 11:15:42 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org CBB8A60E7E
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BC3F5C0039;
-	Tue, 28 Jun 2022 11:02:34 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DEFEDC002D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 11:02:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 842B6C0032;
+	Tue, 28 Jun 2022 11:15:42 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 64CFFC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 11:15:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id AA7CF41521
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 11:02:32 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org AA7CF41521
+ by smtp4.osuosl.org (Postfix) with ESMTP id 3EB5A4091E
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 11:15:41 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 3EB5A4091E
 Authentication-Results: smtp4.osuosl.org;
  dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
- header.a=rsa-sha256 header.s=Intel header.b=jzsXHfGH
+ header.a=rsa-sha256 header.s=Intel header.b=YdmebN9V
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qkQjIwp30R0p for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jun 2022 11:02:31 +0000 (UTC)
+ with ESMTP id yqtsvtsvitKz for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jun 2022 11:15:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org B20E74150E
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by smtp4.osuosl.org (Postfix) with ESMTPS id B20E74150E
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 11:02:31 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org ABFB9408E0
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id ABFB9408E0
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 11:15:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1656414151; x=1687950151;
- h=message-id:date:mime-version:cc:subject:to:references:
- from:in-reply-to:content-transfer-encoding;
- bh=5uCybmEbGP1MC9vWgObj6veTZsOluHrJf+cNJQ0Uaw8=;
- b=jzsXHfGHPRAa4KLzGxT2YbK4lHU0JBFXaus1hPJSDruN2jYhEOnJr0Kh
- zaE8t7zp0rRFOF8tqyoFtxkvnS1Xj+j5oLH/4QPWBBWjO37CDljPoreuT
- YJSZJHCWJJR7zIm2w7BWzebBU/zH+W67otn8sT5Gy2tBS90kvJPjyqgb+
- m+P9SrX0ej7L8ovgmOXNm1EtqF7BCxnC8taZYxfZ14yfHLW+VzvvU8A/o
- NXMlfxuS0jmCX8W2pFPhb8igI7Vk0sUHU74nyvm1vOFOEcMyLCzyHJqQf
- +GxLbod0pfnTDf0RqnNwrZAP/fgMvDhFgPQNcolNMTtL/NMVqmen9OAyr A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="282444648"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="282444648"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Jun 2022 04:02:31 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="646867528"
-Received: from ltang11-mobl1.ccr.corp.intel.com (HELO [10.249.169.64])
- ([10.249.169.64])
- by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Jun 2022 04:02:27 -0700
-Message-ID: <85993f97-fd8c-07b7-9843-20d1b831f2eb@linux.intel.com>
-Date: Tue, 28 Jun 2022 19:02:25 +0800
+ t=1656414939; x=1687950939;
+ h=date:from:to:cc:subject:message-id:references:
+ mime-version:in-reply-to;
+ bh=VAm8GqMxSVbXa5l11MJLdH5RISvLfde2v1QEXHVyiio=;
+ b=YdmebN9VTTFYBqrXPSMSMTJdyfVgVDZTywSBwg/rahumpiBjSqLDh9Ud
+ 3ee75T5XfynMWGNN3lcuMFgD1mYLGyOVqFDuA3vHPXA2FLcxwi0b/kq0C
+ qjR9vtEktDD8wRPq3YITYQPsnwcoKmAztV4Qo53b4tNvUM1zq2318Acnu
+ +eNxPUbHNB5FNXZS0rN+Do6Bpt13+rWzknpx/DDus70c/WYnbm9s7udBv
+ UbAv89iPwrAVnzyeNJmt1sApaZsoOnRHavxRnFL/5DpNQylFIyy3bKuA7
+ 0xlMp6jsjc3zXBzbSfuDEL9+kkk1s1jh0tik9pb6zj8cD7xCM+Fefz1n2 A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="264752578"
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="264752578"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Jun 2022 04:15:38 -0700
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="540456672"
+Received: from smile.fi.intel.com ([10.237.72.54])
+ by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Jun 2022 04:15:17 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+ (envelope-from <andriy.shevchenko@linux.intel.com>)
+ id 1o69BV-000wl7-8C; Tue, 28 Jun 2022 14:15:09 +0300
+Date: Tue, 28 Jun 2022 14:15:09 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Saravana Kannan <saravanak@google.com>
+Subject: Re: [PATCH v1 0/2] Fix console probe delay when stdout-path isn't set
+Message-ID: <Yrrivbk2NSK3loBW@smile.fi.intel.com>
+References: <20220628020110.1601693-1-saravanak@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v9 10/11] iommu: Per-domain I/O page fault handling
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
-References: <20220621144353.17547-1-baolu.lu@linux.intel.com>
- <20220621144353.17547-11-baolu.lu@linux.intel.com>
- <BN9PR11MB52768181B0EB29DBCB11AEA68CB89@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52768181B0EB29DBCB11AEA68CB89@BN9PR11MB5276.namprd11.prod.outlook.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>
+Content-Disposition: inline
+In-Reply-To: <20220628020110.1601693-1-saravanak@google.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Cc: andrew lunn <andrew@lunn.ch>, peng fan <peng.fan@nxp.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ linus walleij <linus.walleij@linaro.org>, Paul Mackerras <paulus@samba.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Peter Korsgaard <jacmet@sunsite.dk>,
+ linux-stm32@st-md-mailman.stormreply.com, Karol Gugala <kgugala@antmicro.com>,
+ Jerome Brunet <jbrunet@baylibre.com>, linux-samsung-soc@vger.kernel.org,
+ Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <michal.simek@xilinx.com>,
+ Hammer Hsieh <hammerh0314@gmail.com>, NXP Linux Team <linux-imx@nxp.com>,
+ Vineet Gupta <vgupta@kernel.org>, len brown <len.brown@intel.com>,
+ Nicolas Saenz Julienne <nsaenz@kernel.org>, linux-pm@vger.kernel.org,
+ Sascha Hauer <s.hauer@pengutronix.de>, linux-unisoc@lists.infradead.org,
+ Scott Branden <sbranden@broadcom.com>, Andrew Jeffery <andrew@aj.id.au>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
+ Richard Genoud <richard.genoud@gmail.com>,
+ Masami Hiramatsu <mhiramat@kernel.org>,
+ Pengutronix Kernel Team <kernel@pengutronix.de>,
+ Claudiu Beznea <claudiu.beznea@microchip.com>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, pavel machek <pavel@ucw.cz>,
+ Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+ eric dumazet <edumazet@google.com>, Thierry Reding <thierry.reding@gmail.com>,
+ sascha hauer <sha@pengutronix.de>, Chunyan Zhang <zhang.lyra@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Gabriel Somlo <gsomlo@gmail.com>,
+ Tobias Klauser <tklauser@distanz.ch>, linux-mips@vger.kernel.org,
+ kernel-team@android.com,
+ Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+ linux-arm-msm@vger.kernel.org, linux-actions@lists.infradead.org,
+ linux-gpio@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+ linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+ Andreas Farber <afaerber@suse.de>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+ Kevin Hilman <khilman@baylibre.com>, Pali Rohar <pali@kernel.org>,
+ heiner kallweit <hkallweit1@gmail.com>, ulf hansson <ulf.hansson@linaro.org>,
+ Neil Armstrong <narmstrong@baylibre.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Al Cooper <alcooperx@gmail.com>,
+ linux-tegra@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+ linux-aspeed@lists.ozlabs.org, Rob Herring <robh@kernel.org>,
+ Florian Fainelli <f.fainelli@gmail.com>,
+ Mateusz Holenko <mholenko@antmicro.com>, Alexander Shiyan <shc_work@mail.ru>,
+ kevin hilman <khilman@kernel.org>,
+ Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+ Joel Stanley <joel@jms.id.au>, Orson Zhai <orsonzhai@gmail.com>,
+ paolo abeni <pabeni@redhat.com>, Patrice Chotard <patrice.chotard@foss.st.com>,
+ Ray Jui <rjui@broadcom.com>, Vladimir Zapolskiy <vz@mleia.com>,
+ linux-snps-arc@lists.infradead.org, Timur Tabi <timur@kernel.org>,
+ hideaki yoshifuji <yoshfuji@linux-ipv6.org>, iommu@lists.linux-foundation.org,
+ Laxman Dewangan <ldewangan@nvidia.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ Baolin Wang <baolin.wang7@gmail.com>, Shawn Guo <shawnguo@kernel.org>,
+ "David S. Miller" <davem@davemloft.net>, Baruch Siach <baruch@tkos.co.il>,
+ Liviu Dudau <liviu.dudau@arm.com>,
+ Alexandre Torgue <alexandre.torgue@foss.st.com>,
+ Paul Cercueil <paul@crapouillou.net>, sparclinux@vger.kernel.org,
+ linux-riscv@lists.infradead.org, Russell King <linux@armlinux.org.uk>,
+ Andy Gross <agross@kernel.org>, linux-serial@vger.kernel.org,
+ jakub kicinski <kuba@kernel.org>, will deacon <will@kernel.org>,
+ Manivannan Sadhasivam <mani@kernel.org>, linux-mediatek@lists.infradead.org,
+ Fabio Estevam <festevam@gmail.com>, Paul Walmsley <paul.walmsley@sifive.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Taichi Sugaya <sugaya.taichi@socionext.com>, netdev@vger.kernel.org,
+ david ahern <dsahern@kernel.org>, Nicolas Ferre <nicolas.ferre@microchip.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Palmer Dabbelt <palmer@dabbelt.com>, Takao Orito <orito.takao@socionext.com>,
+ linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,58 +151,27 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2022/6/28 16:39, Tian, Kevin wrote:
->>   static void iopf_handle_group(struct work_struct *work)
->>   {
->>   	struct iopf_group *group;
->> +	struct iommu_domain *domain;
->>   	struct iopf_fault *iopf, *next;
->>   	enum iommu_page_response_code status =
->> IOMMU_PAGE_RESP_SUCCESS;
->>
->>   	group = container_of(work, struct iopf_group, work);
->> +	domain = iommu_get_domain_for_dev_pasid(group->dev,
->> +				group->last_fault.fault.prm.pasid);
->> +	if (!domain || !domain->iopf_handler)
->> +		status = IOMMU_PAGE_RESP_INVALID;
-> Miss a comment on why no refcnt is required on domain as explained
-> in the commit msg.
+On Mon, Jun 27, 2022 at 07:01:01PM -0700, Saravana Kannan wrote:
+> Since the series that fixes console probe delay based on stdout-path[1] got
+> pulled into driver-core-next, I made these patches on top of them.
+> 
+> Even if stdout-path isn't set in DT, this patch should take console
+> probe times back to how they were before the deferred_probe_timeout
+> clean up series[2].
 
-I had some comments around iommu_queue_iopf() in the previous patch. The
-iommu_queue_iopf() is the generic page fault handler exposed by iommu
-core, hence that's the right place to document this.
+Are you sure it's only limited to the serial drivers?
+(just asking, I don't know myself the answer)
 
-Post it below as well:
+-- 
+With Best Regards,
+Andy Shevchenko
 
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index 1df8c1dcae77..aee9e033012f 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -181,6 +181,13 @@ static void iopf_handle_group(struct work_struct *work)
-   * request completes, outstanding faults will have been dealt with by 
-the time
-   * the PASID is freed.
-   *
-+ * Any valid page fault will be eventually routed to an iommu domain 
-and the
-+ * page fault handler installed there will get called. The users of this
-+ * handling framework should guarantee that the iommu domain could only be
-+ * freed after the device has stopped generating page faults (or the iommu
-+ * hardware has been set to block the page faults) and the pending page 
-faults
-+ * have been flushed.
-+ *
-   * Return: 0 on success and <0 on error.
-   */
-  int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
 
-Best regards,
-baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
