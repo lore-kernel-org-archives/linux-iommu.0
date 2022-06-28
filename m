@@ -1,67 +1,32 @@
-Received: from esa1.hgst.iphmx.com (esa1.hgst.iphmx.com [68.232.141.245])
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D21F93229
-	for <iommu@lists.linux.dev>; Mon, 27 Jun 2022 23:25:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1656372322; x=1687908322;
-  h=message-id:date:mime-version:subject:to:cc:references:
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0265367
+	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 05:41:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656394894; x=1687930894;
+  h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=S8N+p0moc3MloWqEEauJLXVpb/5eTV2AD6EVivHGR+Q=;
-  b=Xr7Bp28sIjV1QUqJkwht3XZTeRmMGhmZsCf5utVkqmK1wAqIhWjPCiCW
-   kiUFg/ycBNK+3zNd4QWD3h1ENrm3mQB4QIunpJFWvI8CDFc9wCRncqVyS
-   tOMnHVMcIj6H2sTx4Rj37VFUgmjyv38HWM8HLjd5HTHpWBnxZV0EbBxHi
-   W1PRbM7eafCamuHKk7pUge29he/G8dmp7KNBMR3MLybQlTbhgqGVTY2hX
-   ML+QecaZ4tzyMx4Vib3blDeO+Ejf1I4S/9uTcUNZT7UI2Zs37DlqW9LaK
-   bfpCrk9imi+XaMOAAlsWEydyKToaxNeC8ZdhyXMy1b0jHrmJbKc5B5Rod
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,227,1650902400"; 
-   d="scan'208";a="316342591"
-Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
-  by ob1.hgst.iphmx.com with ESMTP; 28 Jun 2022 07:24:14 +0800
-IronPort-SDR: OGvQM7G2u0FDdgd4iuxXChA2yhwkxZfe+monG3d7fjMdjKBwfxVvbiRVylyABi1qgdz843QHoP
- s++IHpCxZ/f0hsIeMztm8pe3NrIwX5ppekQVUdgSMpPncR+RI3ERmfQ9OsqlQL3unmbKHlz+we
- SEyevS80mbw1xhKTf8Szsaj5lfNIYtONbmJxmUuUR6VPpMVFkIHSqSuzGL93jgvIpKHNEzR9N1
- UuLxH0AHTHt5Q5HDj/+SNaKZwqeLY4k8OQzkCwnhlfgcmhZH5633nVksyz30gMZDXqsBzvIbbL
- 6dYti9rwI2LOuvq4pUmOEu69
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 27 Jun 2022 15:46:36 -0700
-IronPort-SDR: 82ccldV4X6jZiNan/ZZVuzJGkz7X8r0qvSATWEATvTl15v6ksJWf/vVIbh+++KK35o+z8pnEVr
- snTBMniAoCEIHsfCRqiAtT52lBpK39XrwIL3+aCqmVHhO+PIBmXS07ZUNvYWDwskxRj/O7P7N+
- lIJIMphs5YY4PeV/t1NQmtLcifPwuSfdmCjoeZUPBkl5tf3KN9GoW34zlLLkWo9csxh0W0CA+g
- Eq7Bt3WJgs4rcAnwwGjm1I+ChyvgH40zqzfQJLvErQ71RMBFNOzqRxIiLYPdIyLhKnGixqOr+h
- Wbw=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 27 Jun 2022 16:24:14 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-	by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LX3hY5hfZz1Rws9
-	for <iommu@lists.linux.dev>; Mon, 27 Jun 2022 16:24:13 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-	reason="pass (just generated, assumed good)"
-	header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-	opensource.wdc.com; h=content-transfer-encoding:content-type
-	:in-reply-to:organization:from:references:to:content-language
-	:subject:user-agent:mime-version:date:message-id; s=dkim; t=
-	1656372253; x=1658964254; bh=S8N+p0moc3MloWqEEauJLXVpb/5eTV2AD6E
-	VivHGR+Q=; b=lh+Tk4Jv063rd1udyttDvM/8TxvedbRcRkj0NzA/f3V3fi9EDSj
-	FiElQ1SrBdoes9IhtsS2IEWG8dJOQkfeqF5uYIrlu53qf5wuRsyO1sCa7nUFMy5i
-	TEM/IQLLtxKeEbLYOKlnYLg5Edd2El8t1ZaALozmQVqg2+mSU+jKm6i8mPGWupQK
-	LKyXbCciOStUrocicuIVJ/ZT6pK6F2/WiTkxukTX6lX5gPjfCgv7XA4jL5XmLv8A
-	FXhgCvwJislg2YkCoqQFBoBMYNHgrfWc+CP8eY//j5KU5Ko24M9/QzUx7Luh2FIM
-	9SX3HkWjJGd8LGIjh7aMdNYLBttsnm8nZ/Q==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-	by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id gwCiLXKjKAdp for <iommu@lists.linux.dev>;
-	Mon, 27 Jun 2022 16:24:13 -0700 (PDT)
-Received: from [10.225.163.99] (unknown [10.225.163.99])
-	by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LX3hV0cq4z1RtVk;
-	Mon, 27 Jun 2022 16:24:09 -0700 (PDT)
-Message-ID: <b69c6112-98b7-3890-9d11-bb321a7c877a@opensource.wdc.com>
-Date: Tue, 28 Jun 2022 08:24:08 +0900
+  bh=UxZR/mfdIqnqviiBYRwMkxb2Ju8jlNFffAZNscjJglY=;
+  b=Hc8Rx5qC34rHSI69z/UtaaonHnSYyA/QKaZWka4Aet9XGLALiqj+Q/Ag
+   wfwZ2cm2zTCMf4QaYbsMilT6VEHu4dhxNq1VLnCfXMq9l4NCm0nEJdktz
+   chb2WdhM9Yds4N6wTEC8b8JAe0yprIktGTInriF1sP7esXxMHUv/zRoZk
+   dwGImLR8S+PoX6riff7yBQ95ol9Jlo2u42WjeGw+nMPzdPPYOAACZSq2T
+   +tff0X9CvLUJ/+XAydbwZ4tt9endzpYaIDC/KrD4ScNZXaboC/IhIgZrg
+   Wibgt7b4/qMfctu8pUbC1lXVYtzBYJOsZkwQgZPdQRqsOjso3sgpTnT4Y
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="343328489"
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="343328489"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 22:41:34 -0700
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="646758511"
+Received: from ltang11-mobl1.ccr.corp.intel.com (HELO [10.249.169.64]) ([10.249.169.64])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 22:41:30 -0700
+Message-ID: <42825be5-e24c-0f95-f49d-5f50d608506d@linux.intel.com>
+Date: Tue, 28 Jun 2022 13:41:28 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -69,58 +34,144 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4 5/5] libata-scsi: Cap ata_device->max_sectors according
- to shost->max_sectors
+ Thunderbird/91.9.1
+Cc: baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
+ "Liu, Yi L" <yi.l.liu@intel.com>, "Pan, Jacob jun"
+ <jacob.jun.pan@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v9 04/11] iommu: Add sva iommu_domain support
 Content-Language: en-US
-To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org,
- jejb@linux.ibm.com, martin.petersen@oracle.com, hch@lst.de,
- m.szyprowski@samsung.com, robin.murphy@arm.com
-Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org,
- iommu@lists.linux.dev, linux-scsi@vger.kernel.org, linuxarm@huawei.com
-References: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
- <1656343521-62897-6-git-send-email-john.garry@huawei.com>
-From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <1656343521-62897-6-git-send-email-john.garry@huawei.com>
-Content-Type: text/plain; charset=UTF-8
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
+References: <20220621144353.17547-1-baolu.lu@linux.intel.com>
+ <20220621144353.17547-5-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276FA1A1A8C20786D958C048CB99@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276FA1A1A8C20786D958C048CB99@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <20220627232408.Gy0I42zq7jzNwydP10JNiMnrsqnUdCfDvzRUAmbUhJM@z>
+Message-ID: <20220628054128.91xRvdcopEf3P79Hi5tKgROxz32GZl_kxopmb3dlRpk@z>
 
-On 6/28/22 00:25, John Garry wrote:
-> ATA devices (struct ata_device) have a max_sectors field which is
-> configured internally in libata. This is then used to (re)configure the
-> associated sdev request queue max_sectors value from how it is earlier set
-> in __scsi_init_queue(). In __scsi_init_queue() the max_sectors value is set
-> according to shost limits, which includes host DMA mapping limits.
+Hi Kevin,
+
+On 2022/6/27 16:29, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Tuesday, June 21, 2022 10:44 PM
+>>
+>> The sva iommu_domain represents a hardware pagetable that the IOMMU
+>> hardware could use for SVA translation. This adds some infrastructure
+>> to support SVA domain in the iommu common layer. It includes:
+>>
+>> - Extend the iommu_domain to support a new IOMMU_DOMAIN_SVA
+>> domain
+>>    type. The IOMMU drivers that support SVA should provide the sva
+>>    domain specific iommu_domain_ops.
+>> - Add a helper to allocate an SVA domain. The iommu_domain_free()
+>>    is still used to free an SVA domain.
+>> - Add helpers to attach an SVA domain to a device and the reverse
+>>    operation.
+>>
+>> Some buses, like PCI, route packets without considering the PASID value.
+>> Thus a DMA target address with PASID might be treated as P2P if the
+>> address falls into the MMIO BAR of other devices in the group. To make
+>> things simple, the attach/detach interfaces only apply to devices
+>> belonging to the singleton groups, and the singleton is immutable in
+>> fabric i.e. not affected by hotplug.
+>>
+>> The iommu_attach/detach_device_pasid() can be used for other purposes,
+>> such as kernel DMA with pasid, mediation device, etc.
 > 
-> Cap the ata_device max_sectors according to shost->max_sectors to respect
-> this shost limit.
+> I'd split this into two patches. One for adding iommu_attach/
+> detach_device_pasid() and set/block_dev_pasid ops, and the
+> other for adding SVA.
+
+Yes. Make sense.
+
 > 
-> Signed-off-by: John Garry <john.garry@huawei.com>
-> Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-
-Nit: please change the patch title to "ata: libata-scsi: Cap ..."
-
-> ---
->  drivers/ata/libata-scsi.c | 1 +
->  1 file changed, 1 insertion(+)
+>>   struct iommu_domain {
+>>   	unsigned type;
+>>   	const struct iommu_domain_ops *ops;
+>>   	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
+>> -	iommu_fault_handler_t handler;
+>> -	void *handler_token;
+>>   	struct iommu_domain_geometry geometry;
+>>   	struct iommu_dma_cookie *iova_cookie;
+>> +	union {
+>> +		struct {	/* IOMMU_DOMAIN_DMA */
+>> +			iommu_fault_handler_t handler;
+>> +			void *handler_token;
+>> +		};
 > 
-> diff --git a/drivers/ata/libata-scsi.c b/drivers/ata/libata-scsi.c
-> index 86dbb1cdfabd..24a43d540d9f 100644
-> --- a/drivers/ata/libata-scsi.c
-> +++ b/drivers/ata/libata-scsi.c
-> @@ -1060,6 +1060,7 @@ int ata_scsi_dev_config(struct scsi_device *sdev, struct ata_device *dev)
->  		dev->flags |= ATA_DFLAG_NO_UNLOAD;
->  
->  	/* configure max sectors */
-> +	dev->max_sectors = min(dev->max_sectors, sdev->host->max_sectors);
->  	blk_queue_max_hw_sectors(q, dev->max_sectors);
->  
->  	if (dev->class == ATA_DEV_ATAPI) {
+> why is it DMA domain specific? What about unmanaged
+> domain? Unrecoverable fault can happen on any type
+> including SVA. Hence I think above should be domain type
+> agnostic.
 
+The report_iommu_fault() should be replaced by the new
+iommu_report_device_fault(). Jean has already started this work.
 
--- 
-Damien Le Moal
-Western Digital Research
+https://lore.kernel.org/linux-iommu/Yo4Nw9QyllT1RZbd@myrica/
+
+Currently this is only for DMA domains, hence Robin suggested to make it
+exclude with the SVA domain things.
+
+https://lore.kernel.org/linux-iommu/f3170016-4d7f-e78e-db48-68305f683349@arm.com/
+
+> 
+>> +		struct {	/* IOMMU_DOMAIN_SVA */
+>> +			struct mm_struct *mm;
+>> +		};
+>> +	};
+>>   };
+>>
+> 
+> 
+> 
+>> +
+>> +struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+>> +					    struct mm_struct *mm)
+>> +{
+>> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>> +	struct iommu_domain *domain;
+>> +
+>> +	domain = ops->domain_alloc(IOMMU_DOMAIN_SVA);
+>> +	if (!domain)
+>> +		return NULL;
+>> +
+>> +	domain->type = IOMMU_DOMAIN_SVA;
+> 
+> It's a bit weird that the type has been specified when calling
+> ops->domain_alloc while it still leaves to the caller to set the
+> type. But this is not caused by this series. could be cleaned
+> up separately.
+
+Yes. Robin has patches to refactor the domain allocation interface,
+let's wait and see what it looks like finally.
+
+> 
+>> +
+>> +	mutex_lock(&group->mutex);
+>> +	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain,
+>> GFP_KERNEL);
+>> +	if (curr)
+>> +		goto out_unlock;
+> 
+> Need check xa_is_err(old).
+
+Either
+
+(1) old entry is a valid pointer, or
+(2) xa_is_err(curr)
+
+are failure cases. Hence, "curr == NULL" is the only check we need. Did
+I miss anything?
+
+Best regards,
+baolu
