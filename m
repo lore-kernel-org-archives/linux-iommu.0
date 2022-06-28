@@ -1,32 +1,32 @@
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3567D257A
-	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 11:41:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 176B8257A
+	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 11:53:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656416494; x=1687952494;
+  t=1656417226; x=1687953226;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=e5sDkMOObEeUMkZBt6eVhm9iKgpXHF4MwlPjCkr+LpE=;
-  b=c+uhI85zgWa50ROClu75cSR3j+sQcGno2XXkLSOxZX+zbziJ71DOTkOj
-   tt6Uqe9NnqmBCqYiDWBHv8l9Q40pY14PCv9E+wf3U9jwIOiLwuAlZgDMG
-   cvUE9o9/tlPUr8TzkHBCHoOVAad8ER04MWmcB2Hy7uEcVTcKYEgDA5ieO
-   OQZOC5sQF7manu0J31Lv+/cNNWxShN2uVbWKFgMIQW+m10w02F7q1SR2c
-   CUq3sPd8/HHTILBw2vrwBZNvMB2nwoDnxmlswtobVp3dQ5I1/i6M7R///
-   3NsMLVKxFDcs4pvXcS9Wyf2YY6CiVYqQ1paIxUDeiiQoEi7wZ6fjeYpD1
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="270466744"
+  bh=Ajn0hyQvZuCFAHtCWj0xQ7s0Zvw6UN66/hjKZRjJUTE=;
+  b=L7LDzEAWQHQBWE0ACEy0GicvnRSUxcK/muW/fhiNj/n5dqTlfBrQktta
+   fRmR5quhed6kHIryOn295rhFiLHV3NwbcFKRhfpeamtwSOQ++eY98EJN3
+   fnAMszuC8iEXpKV9GOxLlluQZp/yUfsWUOnqdECCi8jbJ3jZgseiMotQk
+   C/4Zxd7wHJQkjbl/7vKynH1HgLi2SkBDgvh2on3/vxZa+lCt/FKpG8pKc
+   OKgTlSDsb2ppEQ2/70PR+K6zJxA7PdzOCMyLwO2aucc+O54tr2dpmynPY
+   RrvyIlNjYKRbjqE6leBPnMhF3zSw3XNUct7K+9uceLmAl1OBRNRDqRuj+
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="279265601"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="270466744"
+   d="scan'208";a="279265601"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:41:33 -0700
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:53:45 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="646879736"
+   d="scan'208";a="646882963"
 Received: from ltang11-mobl1.ccr.corp.intel.com (HELO [10.249.169.64]) ([10.249.169.64])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:41:29 -0700
-Message-ID: <31116b7f-2ce5-ba18-bcc7-97076199d745@linux.intel.com>
-Date: Tue, 28 Jun 2022 19:41:28 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:53:41 -0700
+Message-ID: <935ca9e3-28c9-99af-5609-41bb1500b2b3@linux.intel.com>
+Date: Tue, 28 Jun 2022 19:53:39 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,60 +36,153 @@ MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
 Cc: baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
- "Liu, Yi L" <yi.l.liu@intel.com>, "Pan, Jacob jun"
- <jacob.jun.pan@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Liu Yi L <yi.l.liu@intel.com>, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org,
  Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v9 04/11] iommu: Add sva iommu_domain support
+Subject: Re: [PATCH v9 10/11] iommu: Per-domain I/O page fault handling
 Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+To: Ethan Zhao <haifeng.zhao@linux.intel.com>, Joerg Roedel
+ <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+ Christoph Hellwig <hch@infradead.org>, Kevin Tian <kevin.tian@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>,
- "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
+ Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
 References: <20220621144353.17547-1-baolu.lu@linux.intel.com>
- <20220621144353.17547-5-baolu.lu@linux.intel.com>
- <BN9PR11MB5276FA1A1A8C20786D958C048CB99@BN9PR11MB5276.namprd11.prod.outlook.com>
- <42825be5-e24c-0f95-f49d-5f50d608506d@linux.intel.com>
- <BN9PR11MB527679FF12B6D990A5E596A88CB89@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220621144353.17547-11-baolu.lu@linux.intel.com>
+ <faacb997-0c0a-04e1-903d-53857f463214@linux.intel.com>
+ <693a3604-d70b-e08c-2621-7f0cb9bdb6ca@linux.intel.com>
+ <75b17c70-1658-91ea-0992-1be769550943@linux.intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB527679FF12B6D990A5E596A88CB89@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <75b17c70-1658-91ea-0992-1be769550943@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Message-ID: <20220628114128.JYs4mt-t7KMGYNlEynLM7vxSxFskHdZIcU-3VrxT9oQ@z>
+Content-Transfer-Encoding: 8bit
+Message-ID: <20220628115339.pESnOTMAUkTveb9eTWEP1ujNXy7E1u7mVIiRSDkOvyI@z>
 
-On 2022/6/28 16:50, Tian, Kevin wrote:
->>>> +
->>>> +	mutex_lock(&group->mutex);
->>>> +	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain,
->>>> GFP_KERNEL);
->>>> +	if (curr)
->>>> +		goto out_unlock;
->>> Need check xa_is_err(old).
->> Either
->>
->> (1) old entry is a valid pointer, or
-> return -EBUSY in this case
+On 2022/6/28 17:10, Ethan Zhao wrote:
+> Hi, Baolu
 > 
->> (2) xa_is_err(curr)
-> return xa_err(cur)
-> 
->> are failure cases. Hence, "curr == NULL" is the only check we need. Did
->> I miss anything?
+> 在 2022/6/28 14:28, Baolu Lu 写道:
+>> Hi Ethan,
 >>
-> But now you always return -EBUSY for all kinds of xa errors.
+>> On 2022/6/27 21:03, Ethan Zhao wrote:
+>>> Hi,
+>>>
+>>> 在 2022/6/21 22:43, Lu Baolu 写道:
+>>>> Tweak the I/O page fault handling framework to route the page faults to
+>>>> the domain and call the page fault handler retrieved from the domain.
+>>>> This makes the I/O page fault handling framework possible to serve more
+>>>> usage scenarios as long as they have an IOMMU domain and install a page
+>>>> fault handler in it. Some unused functions are also removed to avoid
+>>>> dead code.
+>>>>
+>>>> The iommu_get_domain_for_dev_pasid() which retrieves attached domain
+>>>> for a {device, PASID} pair is used. It will be used by the page fault
+>>>> handling framework which knows {device, PASID} reported from the iommu
+>>>> driver. We have a guarantee that the SVA domain doesn't go away during
+>>>> IOPF handling, because unbind() waits for pending faults with
+>>>> iopf_queue_flush_dev() before freeing the domain. Hence, there's no 
+>>>> need
+>>>> to synchronize life cycle of the iommu domains between the unbind() and
+>>>> the interrupt threads.
+>>>>
+>>>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>>>> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+>>>> ---
+>>>>   drivers/iommu/io-pgfault.c | 64 
+>>>> +++++---------------------------------
+>>>>   1 file changed, 7 insertions(+), 57 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
+>>>> index aee9e033012f..4f24ec703479 100644
+>>>> --- a/drivers/iommu/io-pgfault.c
+>>>> +++ b/drivers/iommu/io-pgfault.c
+>>>> @@ -69,69 +69,18 @@ static int iopf_complete_group(struct device 
+>>>> *dev, struct iopf_fault *iopf,
+>>>>       return iommu_page_response(dev, &resp);
+>>>>   }
+>>>> -static enum iommu_page_response_code
+>>>> -iopf_handle_single(struct iopf_fault *iopf)
+>>>> -{
+>>>> -    vm_fault_t ret;
+>>>> -    struct mm_struct *mm;
+>>>> -    struct vm_area_struct *vma;
+>>>> -    unsigned int access_flags = 0;
+>>>> -    unsigned int fault_flags = FAULT_FLAG_REMOTE;
+>>>> -    struct iommu_fault_page_request *prm = &iopf->fault.prm;
+>>>> -    enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
+>>>> -
+>>>> -    if (!(prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID))
+>>>> -        return status;
+>>>> -
+>>>> -    mm = iommu_sva_find(prm->pasid);
+>>>> -    if (IS_ERR_OR_NULL(mm))
+>>>> -        return status;
+>>>> -
+>>>> -    mmap_read_lock(mm);
+>>>> -
+>>>> -    vma = find_extend_vma(mm, prm->addr);
+>>>> -    if (!vma)
+>>>> -        /* Unmapped area */
+>>>> -        goto out_put_mm;
+>>>> -
+>>>> -    if (prm->perm & IOMMU_FAULT_PERM_READ)
+>>>> -        access_flags |= VM_READ;
+>>>> -
+>>>> -    if (prm->perm & IOMMU_FAULT_PERM_WRITE) {
+>>>> -        access_flags |= VM_WRITE;
+>>>> -        fault_flags |= FAULT_FLAG_WRITE;
+>>>> -    }
+>>>> -
+>>>> -    if (prm->perm & IOMMU_FAULT_PERM_EXEC) {
+>>>> -        access_flags |= VM_EXEC;
+>>>> -        fault_flags |= FAULT_FLAG_INSTRUCTION;
+>>>> -    }
+>>>> -
+>>>> -    if (!(prm->perm & IOMMU_FAULT_PERM_PRIV))
+>>>> -        fault_flags |= FAULT_FLAG_USER;
+>>>> -
+>>>> -    if (access_flags & ~vma->vm_flags)
+>>>> -        /* Access fault */
+>>>> -        goto out_put_mm;
+>>>> -
+>>>> -    ret = handle_mm_fault(vma, prm->addr, fault_flags, NULL);
+>>>> -    status = ret & VM_FAULT_ERROR ? IOMMU_PAGE_RESP_INVALID :
+>>>> -        IOMMU_PAGE_RESP_SUCCESS;
+>>>> -
+>>>> -out_put_mm:
+>>>> -    mmap_read_unlock(mm);
+>>>> -    mmput(mm);
+>>>> -
+>>>> -    return status;
+>>>> -}
+>>>> -
+>>>
+>>> Once the iopf_handle_single() is removed, the name of 
+>>> iopf_handle_group() looks a little weired
+>>>
+>>> and confused, does this group mean the iommu group (domain) ? while I 
+>>> take some minutes to
+>>
+>> No. This is not the iommu group. It's page request group defined by the
+>> PCI SIG spec. Multiple page requests could be put in a group with a
+>> same group id. All page requests in a group could be responded to device
+>> in one shot.
+> 
+> Thanks your explaination, understand the concept of PCIe PRG.  I meant
+> 
+> do we still have the necessity to mention the "group" here in the name
+> 
+> iopf_handle_group(),  which one is better ? iopf_handle_prg() or
+> 
+> iopf_handler(),  perhaps none of them ? :)
 
-Fair enough. Updated like below.
+Oh! Sorry for the misunderstanding.
 
-         curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, 
-GFP_KERNEL);
-         if (curr) {
-                 ret = xa_err(curr) ? : -EBUSY;
-                 goto out_unlock;
-         }
+I have no strong feeling to change this naming. :-) All the names
+express what the helper does. Jean is the author of this framework. If
+he has the same idea as you, I don't mind renaming it in this patch.
 
 Best regards,
 baolu
