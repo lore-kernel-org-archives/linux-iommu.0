@@ -1,108 +1,143 @@
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F016257A
-	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 11:02:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656414151; x=1687950151;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=5uCybmEbGP1MC9vWgObj6veTZsOluHrJf+cNJQ0Uaw8=;
-  b=jzsXHfGHPRAa4KLzGxT2YbK4lHU0JBFXaus1hPJSDruN2jYhEOnJr0Kh
-   zaE8t7zp0rRFOF8tqyoFtxkvnS1Xj+j5oLH/4QPWBBWjO37CDljPoreuT
-   YJSZJHCWJJR7zIm2w7BWzebBU/zH+W67otn8sT5Gy2tBS90kvJPjyqgb+
-   m+P9SrX0ej7L8ovgmOXNm1EtqF7BCxnC8taZYxfZ14yfHLW+VzvvU8A/o
-   NXMlfxuS0jmCX8W2pFPhb8igI7Vk0sUHU74nyvm1vOFOEcMyLCzyHJqQf
-   +GxLbod0pfnTDf0RqnNwrZAP/fgMvDhFgPQNcolNMTtL/NMVqmen9OAyr
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="282444649"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="282444649"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:02:31 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="646867528"
-Received: from ltang11-mobl1.ccr.corp.intel.com (HELO [10.249.169.64]) ([10.249.169.64])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:02:27 -0700
-Message-ID: <85993f97-fd8c-07b7-9843-20d1b831f2eb@linux.intel.com>
-Date: Tue, 28 Jun 2022 19:02:25 +0800
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D9F02257A
+	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 11:23:08 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A3284152B;
+	Tue, 28 Jun 2022 04:23:08 -0700 (PDT)
+Received: from [10.57.85.130] (unknown [10.57.85.130])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EE4E43F5A1;
+	Tue, 28 Jun 2022 04:23:05 -0700 (PDT)
+Message-ID: <bbca5df5-8681-d6d9-201d-3d48b34e3001@arm.com>
+Date: Tue, 28 Jun 2022 12:23:01 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc: baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
- "Liu, Yi L" <yi.l.liu@intel.com>, "Pan, Jacob jun"
- <jacob.jun.pan@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v9 10/11] iommu: Per-domain I/O page fault handling
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
-References: <20220621144353.17547-1-baolu.lu@linux.intel.com>
- <20220621144353.17547-11-baolu.lu@linux.intel.com>
- <BN9PR11MB52768181B0EB29DBCB11AEA68CB89@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52768181B0EB29DBCB11AEA68CB89@BN9PR11MB5276.namprd11.prod.outlook.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4 1/5] dma-mapping: Add dma_opt_mapping_size()
+Content-Language: en-GB
+To: John Garry <john.garry@huawei.com>, damien.lemoal@opensource.wdc.com,
+ joro@8bytes.org, will@kernel.org, jejb@linux.ibm.com,
+ martin.petersen@oracle.com, hch@lst.de, m.szyprowski@samsung.com
+Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org,
+ iommu@lists.linux.dev, linux-scsi@vger.kernel.org, linuxarm@huawei.com
+References: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
+ <1656343521-62897-2-git-send-email-john.garry@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <1656343521-62897-2-git-send-email-john.garry@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <20220628110225.meRwKIbsbFgnOVv-CkpPU7oQUUYrdzXr1Kl27-iTM6Q@z>
+Message-ID: <20220628112301.o6hFBrxy7OW-P6G3B0KTNX_SLVqetl_h0Cbv7fPCglI@z>
 
-On 2022/6/28 16:39, Tian, Kevin wrote:
->>   static void iopf_handle_group(struct work_struct *work)
->>   {
->>   	struct iopf_group *group;
->> +	struct iommu_domain *domain;
->>   	struct iopf_fault *iopf, *next;
->>   	enum iommu_page_response_code status =
->> IOMMU_PAGE_RESP_SUCCESS;
->>
->>   	group = container_of(work, struct iopf_group, work);
->> +	domain = iommu_get_domain_for_dev_pasid(group->dev,
->> +				group->last_fault.fault.prm.pasid);
->> +	if (!domain || !domain->iopf_handler)
->> +		status = IOMMU_PAGE_RESP_INVALID;
-> Miss a comment on why no refcnt is required on domain as explained
-> in the commit msg.
+On 2022-06-27 16:25, John Garry wrote:
+> Streaming DMA mapping involving an IOMMU may be much slower for larger
+> total mapping size. This is because every IOMMU DMA mapping requires an
+> IOVA to be allocated and freed. IOVA sizes above a certain limit are not
+> cached, which can have a big impact on DMA mapping performance.
+> 
+> Provide an API for device drivers to know this "optimal" limit, such that
+> they may try to produce mapping which don't exceed it.
+> 
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+> ---
+>   Documentation/core-api/dma-api.rst |  9 +++++++++
+>   include/linux/dma-map-ops.h        |  1 +
+>   include/linux/dma-mapping.h        |  5 +++++
+>   kernel/dma/mapping.c               | 12 ++++++++++++
+>   4 files changed, 27 insertions(+)
+> 
+> diff --git a/Documentation/core-api/dma-api.rst b/Documentation/core-api/dma-api.rst
+> index 6d6d0edd2d27..b3cd9763d28b 100644
+> --- a/Documentation/core-api/dma-api.rst
+> +++ b/Documentation/core-api/dma-api.rst
+> @@ -204,6 +204,15 @@ Returns the maximum size of a mapping for the device. The size parameter
+>   of the mapping functions like dma_map_single(), dma_map_page() and
+>   others should not be larger than the returned value.
+>   
+> +::
+> +
+> +	size_t
+> +	dma_opt_mapping_size(struct device *dev);
+> +
+> +Returns the maximum optimal size of a mapping for the device. Mapping large
+> +buffers may take longer so device drivers are advised to limit total DMA
+> +streaming mappings length to the returned value.
 
-I had some comments around iommu_queue_iopf() in the previous patch. The
-iommu_queue_iopf() is the generic page fault handler exposed by iommu
-core, hence that's the right place to document this.
+Nit: I'm not sure "advised" is necessarily the right thing to say in 
+general - that's only really true for a caller who cares about 
+throughput of churning through short-lived mappings more than anything 
+else, and doesn't take a significant hit overall from splitting up 
+larger requests. I do think it's good to clarify the exact context of 
+"optimal" here, but I'd prefer to be objectively clear that it's for 
+workloads where the up-front mapping overhead dominates.
 
-Post it below as well:
+Thanks,
+Robin.
 
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index 1df8c1dcae77..aee9e033012f 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -181,6 +181,13 @@ static void iopf_handle_group(struct work_struct *work)
-   * request completes, outstanding faults will have been dealt with by 
-the time
-   * the PASID is freed.
-   *
-+ * Any valid page fault will be eventually routed to an iommu domain 
-and the
-+ * page fault handler installed there will get called. The users of this
-+ * handling framework should guarantee that the iommu domain could only be
-+ * freed after the device has stopped generating page faults (or the iommu
-+ * hardware has been set to block the page faults) and the pending page 
-faults
-+ * have been flushed.
-+ *
-   * Return: 0 on success and <0 on error.
-   */
-  int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
-
-Best regards,
-baolu
+> +
+>   ::
+>   
+>   	bool
+> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+> index 0d5b06b3a4a6..98ceba6fa848 100644
+> --- a/include/linux/dma-map-ops.h
+> +++ b/include/linux/dma-map-ops.h
+> @@ -69,6 +69,7 @@ struct dma_map_ops {
+>   	int (*dma_supported)(struct device *dev, u64 mask);
+>   	u64 (*get_required_mask)(struct device *dev);
+>   	size_t (*max_mapping_size)(struct device *dev);
+> +	size_t (*opt_mapping_size)(void);
+>   	unsigned long (*get_merge_boundary)(struct device *dev);
+>   };
+>   
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index dca2b1355bb1..fe3849434b2a 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -144,6 +144,7 @@ int dma_set_mask(struct device *dev, u64 mask);
+>   int dma_set_coherent_mask(struct device *dev, u64 mask);
+>   u64 dma_get_required_mask(struct device *dev);
+>   size_t dma_max_mapping_size(struct device *dev);
+> +size_t dma_opt_mapping_size(struct device *dev);
+>   bool dma_need_sync(struct device *dev, dma_addr_t dma_addr);
+>   unsigned long dma_get_merge_boundary(struct device *dev);
+>   struct sg_table *dma_alloc_noncontiguous(struct device *dev, size_t size,
+> @@ -266,6 +267,10 @@ static inline size_t dma_max_mapping_size(struct device *dev)
+>   {
+>   	return 0;
+>   }
+> +static inline size_t dma_opt_mapping_size(struct device *dev)
+> +{
+> +	return 0;
+> +}
+>   static inline bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
+>   {
+>   	return false;
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index db7244291b74..1bfe11b1edb6 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -773,6 +773,18 @@ size_t dma_max_mapping_size(struct device *dev)
+>   }
+>   EXPORT_SYMBOL_GPL(dma_max_mapping_size);
+>   
+> +size_t dma_opt_mapping_size(struct device *dev)
+> +{
+> +	const struct dma_map_ops *ops = get_dma_ops(dev);
+> +	size_t size = SIZE_MAX;
+> +
+> +	if (ops && ops->opt_mapping_size)
+> +		size = ops->opt_mapping_size();
+> +
+> +	return min(dma_max_mapping_size(dev), size);
+> +}
+> +EXPORT_SYMBOL_GPL(dma_opt_mapping_size);
+> +
+>   bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
+>   {
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
