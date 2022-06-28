@@ -1,101 +1,76 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 0E202CCA479
-	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 07:08:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 44462C43334
+	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 07:17:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9F54F404E2;
-	Tue, 28 Jun 2022 07:08:38 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 9F54F404E2
-Authentication-Results: smtp2.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20201202 header.b=qC+UQmph
+	by smtp1.osuosl.org (Postfix) with ESMTP id D0AA982BE5;
+	Tue, 28 Jun 2022 07:17:25 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org D0AA982BE5
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mvTTDz9dGVU6; Tue, 28 Jun 2022 07:08:37 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id I0uKD24h1SJ4; Tue, 28 Jun 2022 07:17:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 7C4D64027A;
-	Tue, 28 Jun 2022 07:08:37 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 7C4D64027A
+	by smtp1.osuosl.org (Postfix) with ESMTPS id B5ABF824B4;
+	Tue, 28 Jun 2022 07:17:24 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org B5ABF824B4
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5DD9CC0032;
-	Tue, 28 Jun 2022 07:08:37 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 56A6FC002D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 07:08:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 88B0CC0032;
+	Tue, 28 Jun 2022 07:17:24 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8CCA7C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 07:17:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 2311A4048C
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 07:08:36 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 2311A4048C
+ by smtp2.osuosl.org (Postfix) with ESMTP id 58F7E4027A
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 07:17:23 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 58F7E4027A
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hkGeyePkz58D for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jun 2022 07:08:35 +0000 (UTC)
+ with ESMTP id TqvcAmAOT0Tl for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jun 2022 07:17:22 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 646C04027A
-Received: from dfw.source.kernel.org (dfw.source.kernel.org
- [IPv6:2604:1380:4641:c500::1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 646C04027A
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 07:08:35 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by dfw.source.kernel.org (Postfix) with ESMTPS id 1E23F619E3
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 07:08:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84016C341D8
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 07:08:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1656400112;
- bh=Dm+i1ahm5JO1Y0z9h4uqTDK4kJt3Abm9W7KKXWn4iRE=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=qC+UQmphl8Hd+1T1U0QD9tDpqj4RMtyFkgyHY4s5qIB7gRI+xS50dQLQF60N4d53a
- pt8nrB+n/0dsGBpX9rzm604Cauhg2V1pGMdOs9Z8ftj1edDPVWFevjoguG98IqrTXI
- ivqLmEwSVJigzb4BvjUY8SyP2jqcLYvPGrfQt0+Lb4o5OGtjK05l74oqdAtZe6v+RV
- EiZUgKYNvTN+ggir5o2MPXO4/eJKq2WsfCAQvCsHp1NxR2fH/lMZBuGL6JAF9vspsB
- biRI4WdoUfZ8vhFQRuwocB5PEe84qldt+0c/fmHu+92iK9/LCneqYIva5kjHPnQFrz
- CH1QITDOJFbvA==
-Received: by mail-yw1-f171.google.com with SMTP id
- 00721157ae682-317710edb9dso107753737b3.0
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 00:08:32 -0700 (PDT)
-X-Gm-Message-State: AJIora+4FADoM4qkzQNlCDHDPLV+NGtx2swEl8Tu/Fi7pHmhhbKQEqJQ
- MUqkU9kl5vdrLXThonf6Rsb3tuVTsL/diqfLH9o=
-X-Google-Smtp-Source: AGRyM1vKbt5VKtzdC4XgmSFOrmSiRmjlG5/FEc3iJTDP+CtgJE9woQ9uDs2lLsQ8604dHCHHG6u5L7MmI7NPb3gwZE4=
-X-Received: by 2002:a81:1d43:0:b0:318:638d:2ca with SMTP id
- d64-20020a811d43000000b00318638d02camr20536106ywd.135.1656400111255; Tue, 28
- Jun 2022 00:08:31 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org AEA9040496
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id AEA9040496
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 07:17:21 +0000 (UTC)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
+ by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LXG7n0lRdz1L8mG;
+ Tue, 28 Jun 2022 15:15:01 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 28 Jun 2022 15:17:15 +0800
+Subject: Re: [PATCH v9 0/8] Add support for HiSilicon PCIe Tune and Trace
+ device
+To: <mark.rutland@arm.com>, <mathieu.poirier@linaro.org>,
+ <suzuki.poulose@arm.com>, Peter Zijlstra <peterz@infradead.org>
+References: <20220606115555.41103-1-yangyicong@hisilicon.com>
+ <af6723f1-c0c5-8af5-857c-af9280e705af@huawei.com>
+ <Yrms2cI05O2yZRKU@kroah.com>
+ <e737393a-56dd-7d24-33d3-e935b14ba758@huawei.com>
+ <Yrm4O+AFbgnoBVba@hirez.programming.kicks-ass.net>
+Message-ID: <6c923b13-a588-9511-3f94-3241c8aacac5@huawei.com>
+Date: Tue, 28 Jun 2022 15:17:15 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-References: <20220617125750.728590-1-arnd@kernel.org>
- <20220617125750.728590-4-arnd@kernel.org>
- <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
- <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
- <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com>
- <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
-In-Reply-To: <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
-From: Arnd Bergmann <arnd@kernel.org>
-Date: Tue, 28 Jun 2022 09:08:14 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1ivqYB38c_QTjG8e85ZBnCB6HEa-6LR1HDc8shG1Pwmw@mail.gmail.com>
-Message-ID: <CAK8P3a1ivqYB38c_QTjG8e85ZBnCB6HEa-6LR1HDc8shG1Pwmw@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
-To: Michael Schmitz <schmitzmic@gmail.com>
-Cc: Linux-Arch <linux-arch@vger.kernel.org>,
- Miquel van Smoorenburg <mikevs@xs4all.net>, scsi <linux-scsi@vger.kernel.org>,
- Arnd Bergmann <arnd@arndb.de>, linux-m68k <linux-m68k@lists.linux-m68k.org>,
- linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
- Michael Ellerman <mpe@ellerman.id.au>,
- "Maciej W . Rozycki" <macro@orcam.me.uk>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Denis Efremov <efremov@linux.com>, Mark Salyzyn <salyzyn@android.com>,
- Christoph Hellwig <hch@infradead.org>,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- Geert Uytterhoeven <geert@linux-m68k.org>,
- Parisc List <linux-parisc@vger.kernel.org>,
- alpha <linux-alpha@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
- Khalid Aziz <khalid@gonehiking.org>, Robin Murphy <robin.murphy@arm.com>,
- Matt Wang <wwentao@vmware.com>
+In-Reply-To: <Yrm4O+AFbgnoBVba@hirez.programming.kicks-ass.net>
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
+Cc: prime.zeng@huawei.com, alexander.shishkin@linux.intel.com,
+ linux-pci@vger.kernel.org, linuxarm@huawei.com, yangyicong@hisilicon.com,
+ james.clark@arm.com, will@kernel.org, mingo@redhat.com, helgaas@kernel.org,
+ liuqi115@huawei.com, acme@kernel.org, zhangshaokun@hisilicon.com,
+ linux-arm-kernel@lists.infradead.org, Greg KH <gregkh@linuxfoundation.org>,
+ linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+ iommu@lists.linux-foundation.org, leo.yan@linaro.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,45 +83,43 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Yicong Yang via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Yicong Yang <yangyicong@huawei.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jun 28, 2022 at 5:25 AM Michael Schmitz <schmitzmic@gmail.com> wrote:
-> Am 28.06.2022 um 09:12 schrieb Michael Schmitz:
->
-> Leaving the bounce buffer handling in place, and taking a few other
-> liberties - this is what converting the easiest case (a3000 SCSI) might
-> look like. Any obvious mistakes? The mvme147 driver would be very
-> similar to handle (after conversion to a platform device).
->
-> The driver allocates bounce buffers using kmalloc if it hits an
-> unaligned data buffer - can such buffers still even happen these days?
-> If I understand dma_map_single() correctly, the resulting dma handle
-> would be equally misaligned?
->
-> To allocate a bounce buffer, would it be OK to use dma_alloc_coherent()
-> even though AFAIU memory used for DMA buffers generally isn't consistent
-> on m68k?
+On 2022/6/27 22:01, Peter Zijlstra wrote:
+> On Mon, Jun 27, 2022 at 09:25:42PM +0800, Yicong Yang wrote:
+>> On 2022/6/27 21:12, Greg KH wrote:
+>>> On Mon, Jun 27, 2022 at 07:18:12PM +0800, Yicong Yang wrote:
+>>>> Hi Greg,
+>>>>
+>>>> Since the kernel side of this device has been reviewed for 8 versions with
+>>>> all comments addressed and no more comment since v9 posted in 5.19-rc1,
+>>>> is it ok to merge it first (for Patch 1-3 and 7-8)?
+>>>
+>>> I am not the maintainer of this subsystem, so I do not understand why
+>>> you are asking me :(
+>>>
+>>
+>> I checked the log of drivers/hwtracing and seems patches of coresight/intel_th/stm
+>> applied by different maintainers and I see you applied some patches of intel_th/stm.
+>> Should any of these three maintainers or you can help applied this?
+> 
+> I was hoping Mark would have a look, since he knows this ARM stuff
+> better than me. But ISTR he's somewhat busy atm too. But an ACK from the
+> CoreSight people would also be appreciated.
+> 
 
-I think it makes sense to skip the bounce buffering as you do here:
-the only standardized way we have for integrating that part is to
-use the swiotlb infrastructure, but as you mentioned earlier that
-part is probably too resource-heavy here for Amiga.
+Thanks for the instruction.
 
-I see two other problems with your patch though:
+Hi Mark, Mathieu and Suzuki,
 
-a) you still duplicate the cache handling: the cache_clear()/cache_push()
-is supposed to already be done by dma_map_single() when the device
-is not cache-coherent.
+May I have an ack from you to have the driver part of this device merged?
 
-b) The bounce buffer is never mapped here, instead you have the
-virt_to_phys() here, which is not the same. I think you need to map
-the pointer that actually gets passed down to the device after deciding
-to use a bouce buffer or not.
-
-     Arnd
+Thanks!
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
