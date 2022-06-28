@@ -1,112 +1,93 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 34EBDC43334
-	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 03:26:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B9F10C43334
+	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 05:41:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9EDD340483;
-	Tue, 28 Jun 2022 03:26:16 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 9EDD340483
-Authentication-Results: smtp2.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20210112 header.b=fMfCg/HO
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3LXYPquhLgvA; Tue, 28 Jun 2022 03:26:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 29C0340017;
-	Tue, 28 Jun 2022 03:26:15 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 29C0340017
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F03DEC0039;
-	Tue, 28 Jun 2022 03:26:14 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 94003C002D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 03:26:13 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 597D1414C8
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 03:26:13 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 597D1414C8
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1DAF34097F;
+	Tue, 28 Jun 2022 05:41:39 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 1DAF34097F
 Authentication-Results: smtp4.osuosl.org;
- dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com
- header.a=rsa-sha256 header.s=20210112 header.b=fMfCg/HO
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aC+98JUT
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CMmPi9800Wy9 for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jun 2022 03:26:11 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org B9565414C7
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com
- [IPv6:2607:f8b0:4864:20::1032])
- by smtp4.osuosl.org (Postfix) with ESMTPS id B9565414C7
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 03:26:11 +0000 (UTC)
-Received: by mail-pj1-x1032.google.com with SMTP id
- n16-20020a17090ade9000b001ed15b37424so11310411pjv.3
- for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 20:26:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=subject:to:references:cc:from:message-id:date:user-agent
- :mime-version:in-reply-to;
- bh=98ncMEofZ3ypmUWB7oKUkuT/bpmjStGksJuUcGKTVGc=;
- b=fMfCg/HOqcbPVSdVNElbV526+23+XdN3LylNezJqkrHb6fVXmxpkunVG3rLT9XcFXw
- HpCMyB7KDRKw245t+OJHw3FQL2gH2icNy1tzXFhyTeE+J9RLZswjB9T1T9XiFFpbERR5
- lCNa01DtHAYHMiVGjinDg8S0v2LUYuJPChTK5IuIdjUFD4GA99cW8qKKeB++ss8Vw+os
- RLW9bmiojBFFCdkwOuQe/CgRlLJtBdmK9G50X0mwzZYxHK7Dxb7Wga9rrrBIp9c5MIyG
- 9Sx9MkBVwQuwC4cT7mj+YhgLxFUe+8+CDN6etZdDn0xnYNIAkilvA9GHP+xPdmO3Dj67
- /XjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:subject:to:references:cc:from:message-id:date
- :user-agent:mime-version:in-reply-to;
- bh=98ncMEofZ3ypmUWB7oKUkuT/bpmjStGksJuUcGKTVGc=;
- b=G8KkRhQq4ICQeqiT0uDpOaFJE/k7X3GnFwNqu+2Gd0cgViOTfcMe4WoeyX/0gbaWF7
- zpFc68eVIYeRboJ2DxBIdkps5S6X78sfymgHAuOgogp42yfyRSzt/LgetqIwGDaURL0w
- wezACq8GN4dSFWnwp03l7zylee0oZKOgJ58R8xID44XI2Rq8ERyuoYJ6T0tPu1GhNMKE
- TbdCG9+KyI3PRiGUumFFOQCN5BAOI7ZVLuDgwa+4vwVYZmNcc7u36mxeL19+4INW5E8A
- 2pWgHwYLVGV6Qkh5rxas/4Jgnc7zn8t7Q5lfY46uV44XP92SI44ut2fuDm/oYC/8mM9T
- qCXA==
-X-Gm-Message-State: AJIora8yu6UO5WIqa3ELsCJLnB6cHQkmMvKuQxKaXl9kSDY5nAxAxyzs
- Bb99BLAQoo9CoPmY3rQtqAk=
-X-Google-Smtp-Source: AGRyM1uIBHaYKcir3w/b3B00SjBhXm7WkQIigMVOjBeds6D7ImU2LcUjsBGcJ8ZGhoTIiYdSDKQhjw==
-X-Received: by 2002:a17:903:283:b0:16a:6db9:3f02 with SMTP id
- j3-20020a170903028300b0016a6db93f02mr2700935plr.173.1656386771103; 
- Mon, 27 Jun 2022 20:26:11 -0700 (PDT)
-Received: from [10.1.1.24] (222-155-0-244-adsl.sparkbb.co.nz. [222.155.0.244])
- by smtp.gmail.com with ESMTPSA id
- 13-20020a17090a08cd00b001ec932d7592sm8040238pjn.9.2022.06.27.20.26.00
- (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
- Mon, 27 Jun 2022 20:26:10 -0700 (PDT)
-Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-References: <20220617125750.728590-1-arnd@kernel.org>
- <20220617125750.728590-4-arnd@kernel.org>
- <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
- <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
- <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com>
-From: Michael Schmitz <schmitzmic@gmail.com>
-Message-ID: <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
-Date: Tue, 28 Jun 2022 15:25:58 +1200
-User-Agent: Mozilla/5.0 (X11; Linux ppc; rv:45.0) Gecko/20100101 Icedove/45.4.0
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id R7BaF1SpL_04; Tue, 28 Jun 2022 05:41:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 5F6A640931;
+	Tue, 28 Jun 2022 05:41:37 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 5F6A640931
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3DF6DC0039;
+	Tue, 28 Jun 2022 05:41:37 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D12C3C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 05:41:36 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 97299401A4
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 05:41:36 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 97299401A4
+Authentication-Results: smtp2.osuosl.org;
+ dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
+ header.a=rsa-sha256 header.s=Intel header.b=aC+98JUT
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 2GuW8OgcQDT6 for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jun 2022 05:41:35 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 7B6B240017
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 7B6B240017
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 05:41:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1656394895; x=1687930895;
+ h=message-id:date:mime-version:cc:subject:to:references:
+ from:in-reply-to:content-transfer-encoding;
+ bh=UxZR/mfdIqnqviiBYRwMkxb2Ju8jlNFffAZNscjJglY=;
+ b=aC+98JUT06y8SJVnljTQbK7VC0fIBxYWCzXydwBe8mGJGFek+z0Vt9r0
+ 9p7eeLqOsXU6XDtMbompX2GuCmaSIXTME8Ehwo05TjzDiYQ3FgK5H2F/i
+ SKHMGZhnDZURTUUmtfqzMkSNQm45ksO443wZVu4h+PIPi+22ONNhlW/YQ
+ EmEetnHGTz/Jzo+07iZW3T6NOOJtxxdjJFEoK4XCO+JqeZY7Yzte/q2AI
+ KR9oOqBDgWXTqZ88Fp7HNPDbzaMcI/K/9V5MrIHIoBRL982k4KIVDY37P
+ 5k3Aa4w8ErVNRWYb0WADe/4b0wpsl/5sXm7u5hGeQRNZZL9/yFPDAjbJ1 g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="343328487"
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="343328487"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Jun 2022 22:41:34 -0700
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="646758511"
+Received: from ltang11-mobl1.ccr.corp.intel.com (HELO [10.249.169.64])
+ ([10.249.169.64])
+ by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Jun 2022 22:41:30 -0700
+Message-ID: <42825be5-e24c-0f95-f49d-5f50d608506d@linux.intel.com>
+Date: Tue, 28 Jun 2022 13:41:28 +0800
 MIME-Version: 1.0
-In-Reply-To: <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com>
-Content-Type: multipart/mixed; boundary="------------EF1F8A9B021AD1B88577153E"
-Cc: Linux-Arch <linux-arch@vger.kernel.org>, Arnd Bergmann <arnd@kernel.org>,
- scsi <linux-scsi@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
- Miquel van Smoorenburg <mikevs@xs4all.net>,
- linux-m68k <linux-m68k@lists.linux-m68k.org>,
- linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
- Michael Ellerman <mpe@ellerman.id.au>,
- "Maciej W . Rozycki" <macro@orcam.me.uk>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Denis Efremov <efremov@linux.com>, Mark Salyzyn <salyzyn@android.com>,
- Christoph Hellwig <hch@infradead.org>,
- Linux IOMMU <iommu@lists.linux-foundation.org>, Matt Wang <wwentao@vmware.com>,
- Parisc List <linux-parisc@vger.kernel.org>,
- alpha <linux-alpha@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
- Khalid Aziz <khalid@gonehiking.org>, Robin Murphy <robin.murphy@arm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v9 04/11] iommu: Add sva iommu_domain support
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
+References: <20220621144353.17547-1-baolu.lu@linux.intel.com>
+ <20220621144353.17547-5-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276FA1A1A8C20786D958C048CB99@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276FA1A1A8C20786D958C048CB99@BN9PR11MB5276.namprd11.prod.outlook.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,190 +100,128 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This is a multi-part message in MIME format.
---------------EF1F8A9B021AD1B88577153E
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Hi Kevin,
 
-Hii Geert
-
-Am 28.06.2022 um 09:12 schrieb Michael Schmitz:
-> Hi Geert,
->
-> On 27/06/22 20:26, Geert Uytterhoeven wrote:
->> Hi Michael,
+On 2022/6/27 16:29, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Tuesday, June 21, 2022 10:44 PM
 >>
->> On Sat, Jun 18, 2022 at 3:06 AM Michael Schmitz <schmitzmic@gmail.com>
->> wrote:
->>> Am 18.06.2022 um 00:57 schrieb Arnd Bergmann:
->>>> From: Arnd Bergmann <arnd@arndb.de>
->>>>
->>>> All architecture-independent users of virt_to_bus() and bus_to_virt()
->>>> have been fixed to use the dma mapping interfaces or have been
->>>> removed now.  This means the definitions on most architectures, and the
->>>> CONFIG_VIRT_TO_BUS symbol are now obsolete and can be removed.
->>>>
->>>> The only exceptions to this are a few network and scsi drivers for m68k
->>>> Amiga and VME machines and ppc32 Macintosh. These drivers work
->>>> correctly
->>>> with the old interfaces and are probably not worth changing.
->>> The Amiga SCSI drivers are all old WD33C93 ones, and replacing
->>> virt_to_bus by virt_to_phys in the dma_setup() function there would
->>> cause no functional change at all.
->> FTR, the sgiwd93 driver use dma_map_single().
->
-> Thanks! From what I see, it doesn't have to deal with bounce buffers
-> though?
+>> The sva iommu_domain represents a hardware pagetable that the IOMMU
+>> hardware could use for SVA translation. This adds some infrastructure
+>> to support SVA domain in the iommu common layer. It includes:
+>>
+>> - Extend the iommu_domain to support a new IOMMU_DOMAIN_SVA
+>> domain
+>>    type. The IOMMU drivers that support SVA should provide the sva
+>>    domain specific iommu_domain_ops.
+>> - Add a helper to allocate an SVA domain. The iommu_domain_free()
+>>    is still used to free an SVA domain.
+>> - Add helpers to attach an SVA domain to a device and the reverse
+>>    operation.
+>>
+>> Some buses, like PCI, route packets without considering the PASID value.
+>> Thus a DMA target address with PASID might be treated as P2P if the
+>> address falls into the MMIO BAR of other devices in the group. To make
+>> things simple, the attach/detach interfaces only apply to devices
+>> belonging to the singleton groups, and the singleton is immutable in
+>> fabric i.e. not affected by hotplug.
+>>
+>> The iommu_attach/detach_device_pasid() can be used for other purposes,
+>> such as kernel DMA with pasid, mediation device, etc.
+> 
+> I'd split this into two patches. One for adding iommu_attach/
+> detach_device_pasid() and set/block_dev_pasid ops, and the
+> other for adding SVA.
 
-Leaving the bounce buffer handling in place, and taking a few other 
-liberties - this is what converting the easiest case (a3000 SCSI) might 
-look like. Any obvious mistakes? The mvme147 driver would be very 
-similar to handle (after conversion to a platform device).
+Yes. Make sense.
 
-The driver allocates bounce buffers using kmalloc if it hits an 
-unaligned data buffer - can such buffers still even happen these days? 
-If I understand dma_map_single() correctly, the resulting dma handle 
-would be equally misaligned?
+> 
+>>   struct iommu_domain {
+>>   	unsigned type;
+>>   	const struct iommu_domain_ops *ops;
+>>   	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
+>> -	iommu_fault_handler_t handler;
+>> -	void *handler_token;
+>>   	struct iommu_domain_geometry geometry;
+>>   	struct iommu_dma_cookie *iova_cookie;
+>> +	union {
+>> +		struct {	/* IOMMU_DOMAIN_DMA */
+>> +			iommu_fault_handler_t handler;
+>> +			void *handler_token;
+>> +		};
+> 
+> why is it DMA domain specific? What about unmanaged
+> domain? Unrecoverable fault can happen on any type
+> including SVA. Hence I think above should be domain type
+> agnostic.
 
-To allocate a bounce buffer, would it be OK to use dma_alloc_coherent() 
-even though AFAIU memory used for DMA buffers generally isn't consistent 
-on m68k?
+The report_iommu_fault() should be replaced by the new
+iommu_report_device_fault(). Jean has already started this work.
 
-Thinking ahead to the other two Amiga drivers - I wonder whether 
-allocating a static bounce buffer or a DMA pool at driver init is likely 
-to succeed if the kernel runs from the low 16 MB RAM chunk? It certainly 
-won't succeed if the kernel runs from a higher memory address, so the 
-present bounce buffer logic around amiga_chip_alloc() might still need 
-to be used here.
+https://lore.kernel.org/linux-iommu/Yo4Nw9QyllT1RZbd@myrica/
 
-Leaves the question whether converting the gvp11 and a2091 drivers is 
-actually worth it, if bounce buffers still have to be handled explicitly.
+Currently this is only for DMA domains, hence Robin suggested to make it
+exclude with the SVA domain things.
 
-Untested (except for compile testing), un-checkpatched, don't try this 
-on any disk with valuable data ...
+https://lore.kernel.org/linux-iommu/f3170016-4d7f-e78e-db48-68305f683349@arm.com/
 
-Cheers,
+> 
+>> +		struct {	/* IOMMU_DOMAIN_SVA */
+>> +			struct mm_struct *mm;
+>> +		};
+>> +	};
+>>   };
+>>
+> 
+> 
+> 
+>> +
+>> +struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+>> +					    struct mm_struct *mm)
+>> +{
+>> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>> +	struct iommu_domain *domain;
+>> +
+>> +	domain = ops->domain_alloc(IOMMU_DOMAIN_SVA);
+>> +	if (!domain)
+>> +		return NULL;
+>> +
+>> +	domain->type = IOMMU_DOMAIN_SVA;
+> 
+> It's a bit weird that the type has been specified when calling
+> ops->domain_alloc while it still leaves to the caller to set the
+> type. But this is not caused by this series. could be cleaned
+> up separately.
 
-	Michael
+Yes. Robin has patches to refactor the domain allocation interface,
+let's wait and see what it looks like finally.
 
---------------EF1F8A9B021AD1B88577153E
-Content-Type: text/x-diff;
- name="0001-scsi-convert-m68k-WD33C93-drivers-to-DMA-API.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="0001-scsi-convert-m68k-WD33C93-drivers-to-DMA-API.patch"
+> 
+>> +
+>> +	mutex_lock(&group->mutex);
+>> +	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain,
+>> GFP_KERNEL);
+>> +	if (curr)
+>> +		goto out_unlock;
+> 
+> Need check xa_is_err(old).
 
-From e8c6aa068d27901c49dfb7442d4200cc966350a5 Mon Sep 17 00:00:00 2001
-From: Michael Schmitz <schmitzmic@gmail.com>
-Date: Tue, 28 Jun 2022 12:45:08 +1200
-Subject: [PATCH] scsi - convert m68k WD33C93 drivers to DMA API
+Either
 
-Use dma_map_single() for gvp11 driver (leave bounce buffer logic unchanged).
+(1) old entry is a valid pointer, or
+(2) xa_is_err(curr)
 
-Compile-tested only.
+are failure cases. Hence, "curr == NULL" is the only check we need. Did
+I miss anything?
 
-Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
----
- drivers/scsi/a3000.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/scsi/a3000.c b/drivers/scsi/a3000.c
-index dd161885eed1..3c62e8bafb8f 100644
---- a/drivers/scsi/a3000.c
-+++ b/drivers/scsi/a3000.c
-@@ -7,6 +7,7 @@
- #include <linux/spinlock.h>
- #include <linux/interrupt.h>
- #include <linux/platform_device.h>
-+#include <linux/dma-mapping.h>
- #include <linux/module.h>
- 
- #include <asm/page.h>
-@@ -25,8 +26,11 @@
- struct a3000_hostdata {
- 	struct WD33C93_hostdata wh;
- 	struct a3000_scsiregs *regs;
-+	struct device *dev;
- };
- 
-+#define DMA_DIR(d)   ((d == DATA_OUT_DIR) ? DMA_TO_DEVICE : DMA_FROM_DEVICE)
-+
- static irqreturn_t a3000_intr(int irq, void *data)
- {
- 	struct Scsi_Host *instance = data;
-@@ -49,12 +53,16 @@ static irqreturn_t a3000_intr(int irq, void *data)
- static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
- {
- 	struct scsi_pointer *scsi_pointer = WD33C93_scsi_pointer(cmd);
-+	unsigned long len = scsi_pointer->this_residual;
- 	struct Scsi_Host *instance = cmd->device->host;
- 	struct a3000_hostdata *hdata = shost_priv(instance);
- 	struct WD33C93_hostdata *wh = &hdata->wh;
- 	struct a3000_scsiregs *regs = hdata->regs;
- 	unsigned short cntr = CNTR_PDMD | CNTR_INTEN;
--	unsigned long addr = virt_to_bus(scsi_pointer->ptr);
-+	dma_addr_t addr;
-+
-+	addr = dma_map_single(hdata->dev, scsi_pointer->ptr, len, DMA_DIR(dir_in));
-+	scsi_pointer->dma_handle = addr;
- 
- 	/*
- 	 * if the physical address has the wrong alignment, or if
-@@ -79,7 +87,7 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
- 			       scsi_pointer->this_residual);
- 		}
- 
--		addr = virt_to_bus(wh->dma_bounce_buffer);
-+		addr = virt_to_phys(wh->dma_bounce_buffer);
- 	}
- 
- 	/* setup dma direction */
-@@ -166,6 +174,10 @@ static void dma_stop(struct Scsi_Host *instance, struct scsi_cmnd *SCpnt,
- 			wh->dma_bounce_len = 0;
- 		}
- 	}
-+	dma_unmap_single(hdata->dev, scsi_pointer->dma_handle,
-+			 scsi_pointer->this_residual,
-+			 DMA_DIR(wh->dma_dir));
-+
- }
- 
- static struct scsi_host_template amiga_a3000_scsi_template = {
-@@ -193,6 +205,11 @@ static int __init amiga_a3000_scsi_probe(struct platform_device *pdev)
- 	wd33c93_regs wdregs;
- 	struct a3000_hostdata *hdata;
- 
-+	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
-+		dev_warn(&pdev->dev, "cannot use 32 bit DMA\n");
-+		return -ENODEV;
-+	}
-+
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!res)
- 		return -ENODEV;
-@@ -216,6 +233,7 @@ static int __init amiga_a3000_scsi_probe(struct platform_device *pdev)
- 	wdregs.SCMD = &regs->SCMD;
- 
- 	hdata = shost_priv(instance);
-+	hdata->dev = &pdev->dev;
- 	hdata->wh.no_sync = 0xff;
- 	hdata->wh.fast = 0;
- 	hdata->wh.dma_mode = CTRL_DMA;
--- 
-2.17.1
-
-
---------------EF1F8A9B021AD1B88577153E
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---------------EF1F8A9B021AD1B88577153E--
