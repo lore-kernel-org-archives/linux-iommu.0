@@ -1,84 +1,121 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 862E2C43334
-	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 14:49:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 75347CCA479
+	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 14:49:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 13C9C40C58;
+	by smtp4.osuosl.org (Postfix) with ESMTP id B11DD415A4;
 	Tue, 28 Jun 2022 14:49:30 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 13C9C40C58
-Authentication-Results: smtp2.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=jXMv+sJT
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org B11DD415A4
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mp0FpA1EFGXs; Tue, 28 Jun 2022 14:49:29 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id eODP6Z4baH-W; Tue, 28 Jun 2022 14:49:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id ACFAA400FD;
-	Tue, 28 Jun 2022 14:49:28 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org ACFAA400FD
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 575A741732;
+	Tue, 28 Jun 2022 14:49:29 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 575A741732
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 16013C0080;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 545ACC0086;
 	Tue, 28 Jun 2022 14:49:28 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AB8DAC002D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 13:11:32 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3B30CC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 14:18:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 7807D60E64
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 13:11:32 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 7807D60E64
-Authentication-Results: smtp3.osuosl.org;
- dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
- header.a=rsa-sha256 header.s=Intel header.b=jXMv+sJT
+ by smtp1.osuosl.org (Postfix) with ESMTP id 0770482983
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 14:18:59 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 0770482983
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bRqyHcY-DaYv for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jun 2022 13:11:29 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 867B8605AC
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 867B8605AC
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 13:11:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1656421889; x=1687957889;
- h=date:from:to:cc:subject:in-reply-to:message-id:
- references:mime-version;
- bh=DaNkICMn0cvyN3Nw69IWZXGw9/gClLhfsSUxhFyTR1w=;
- b=jXMv+sJTbDcBV1TcFej9Hh4S/bAIsDUywfKEn+jD538wwdXhiTmbCB15
- IC8vmCHZSIlG0VDVVZY8f5COWChAAiW9/s9PQ8oAfhNYuAHFZliCmvpJY
- 06yGD3Zz2UoZwjl2XWZ9Xr1ZIt56lkTFN6nKDNph3jIKMNqf5nEnV3obe
- sg7nxD6qDsVO6n0c5o8ag6WwDOp2TEcEc306cBMr35UOhpVnzQffyI/UT
- ei6M8r934Am0jjU58F/vLBrr+tMA+6uj1dCw3nzKfetexy6V6lxco8dH7
- 7gucsAXnqqcqBTDYnXI/BMefpeYfMDOqsixW6/Pi3JzwhGH1PHWkOTkZ6 g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="261539975"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="261539975"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Jun 2022 06:11:29 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="646908165"
-Received: from iannetti-mobl.ger.corp.intel.com ([10.251.216.215])
- by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Jun 2022 06:11:26 -0700
-Date: Tue, 28 Jun 2022 16:11:24 +0300 (EEST)
-From: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To: Chao Gao <chao.gao@intel.com>
-Subject: Re: [PATCH v1 1/3] swiotlb: Use bitmap to track free slots
-In-Reply-To: <20220628070136.419163-2-chao.gao@intel.com>
-Message-ID: <ae35e2-f224-635f-442f-ce1a537374e3@linux.intel.com>
-References: <20220628070136.419163-1-chao.gao@intel.com>
- <20220628070136.419163-2-chao.gao@intel.com>
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id zx0SL24Gd5fQ for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jun 2022 14:18:57 +0000 (UTC)
+X-Greylist: delayed 00:18:28 by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org B61EF827A0
+Received: from sym2.noone.org (sym.noone.org [178.63.92.236])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id B61EF827A0
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 14:18:57 +0000 (UTC)
+Received: by sym2.noone.org (Postfix, from userid 1002)
+ id 4LXR7Z2Gb9zvjfm; Tue, 28 Jun 2022 16:00:26 +0200 (CEST)
+Date: Tue, 28 Jun 2022 16:00:26 +0200
+From: Tobias Klauser <tklauser@distanz.ch>
+To: Saravana Kannan <saravanak@google.com>
+Subject: Re: [PATCH v1 2/2] serial: Set probe_no_timeout for all DT based
+ drivers
+Message-ID: <20220628140025.qpom64ptru4ub6fu@distanz.ch>
+References: <20220628020110.1601693-1-saravanak@google.com>
+ <20220628020110.1601693-3-saravanak@google.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-1081361240-1656421888=:1603"
+Content-Disposition: inline
+In-Reply-To: <20220628020110.1601693-3-saravanak@google.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 X-Mailman-Approved-At: Tue, 28 Jun 2022 14:49:26 +0000
-Cc: len.brown@intel.com, tony.luck@intel.com, rafael.j.wysocki@intel.com,
- LKML <linux-kernel@vger.kernel.org>, dave.hansen@intel.com,
- iommu@lists.linux-foundation.org, dan.j.williams@intel.com,
- reinette.chatre@intel.com, kirill.shutemov@linux.intel.com
+Cc: andrew lunn <andrew@lunn.ch>, peng fan <peng.fan@nxp.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ linus walleij <linus.walleij@linaro.org>, Paul Mackerras <paulus@samba.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Peter Korsgaard <jacmet@sunsite.dk>,
+ linux-stm32@st-md-mailman.stormreply.com, Karol Gugala <kgugala@antmicro.com>,
+ Jerome Brunet <jbrunet@baylibre.com>, linux-samsung-soc@vger.kernel.org,
+ Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <michal.simek@xilinx.com>,
+ Hammer Hsieh <hammerh0314@gmail.com>, NXP Linux Team <linux-imx@nxp.com>,
+ Vineet Gupta <vgupta@kernel.org>, len brown <len.brown@intel.com>,
+ Nicolas Saenz Julienne <nsaenz@kernel.org>, linux-pm@vger.kernel.org,
+ Sascha Hauer <s.hauer@pengutronix.de>, linux-unisoc@lists.infradead.org,
+ Scott Branden <sbranden@broadcom.com>, Andrew Jeffery <andrew@aj.id.au>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
+ Richard Genoud <richard.genoud@gmail.com>,
+ Masami Hiramatsu <mhiramat@kernel.org>,
+ Pengutronix Kernel Team <kernel@pengutronix.de>,
+ Claudiu Beznea <claudiu.beznea@microchip.com>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, pavel machek <pavel@ucw.cz>,
+ Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+ eric dumazet <edumazet@google.com>, Thierry Reding <thierry.reding@gmail.com>,
+ sascha hauer <sha@pengutronix.de>, Chunyan Zhang <zhang.lyra@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Gabriel Somlo <gsomlo@gmail.com>,
+ linux-mips@vger.kernel.org, kernel-team@android.com,
+ Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+ linux-arm-msm@vger.kernel.org, linux-actions@lists.infradead.org,
+ linux-gpio@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+ linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+ Andreas Farber <afaerber@suse.de>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+ Kevin Hilman <khilman@baylibre.com>, Pali Rohar <pali@kernel.org>,
+ heiner kallweit <hkallweit1@gmail.com>, ulf hansson <ulf.hansson@linaro.org>,
+ Neil Armstrong <narmstrong@baylibre.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Al Cooper <alcooperx@gmail.com>,
+ linux-tegra@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+ linux-aspeed@lists.ozlabs.org, Rob Herring <robh@kernel.org>,
+ Florian Fainelli <f.fainelli@gmail.com>,
+ Mateusz Holenko <mholenko@antmicro.com>, Alexander Shiyan <shc_work@mail.ru>,
+ kevin hilman <khilman@kernel.org>,
+ Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+ Joel Stanley <joel@jms.id.au>, Orson Zhai <orsonzhai@gmail.com>,
+ paolo abeni <pabeni@redhat.com>, Patrice Chotard <patrice.chotard@foss.st.com>,
+ Ray Jui <rjui@broadcom.com>, Vladimir Zapolskiy <vz@mleia.com>,
+ linux-snps-arc@lists.infradead.org, Timur Tabi <timur@kernel.org>,
+ hideaki yoshifuji <yoshfuji@linux-ipv6.org>, iommu@lists.linux-foundation.org,
+ Laxman Dewangan <ldewangan@nvidia.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ Baolin Wang <baolin.wang7@gmail.com>, Shawn Guo <shawnguo@kernel.org>,
+ "David S. Miller" <davem@davemloft.net>, Baruch Siach <baruch@tkos.co.il>,
+ Liviu Dudau <liviu.dudau@arm.com>,
+ Alexandre Torgue <alexandre.torgue@foss.st.com>,
+ Paul Cercueil <paul@crapouillou.net>, sparclinux@vger.kernel.org,
+ linux-riscv@lists.infradead.org, Ahmad Fatoum <a.fatoum@pengutronix.de>,
+ Russell King <linux@armlinux.org.uk>, Andy Gross <agross@kernel.org>,
+ linux-serial@vger.kernel.org, jakub kicinski <kuba@kernel.org>,
+ will deacon <will@kernel.org>, Manivannan Sadhasivam <mani@kernel.org>,
+ linux-mediatek@lists.infradead.org, Fabio Estevam <festevam@gmail.com>,
+ Paul Walmsley <paul.walmsley@sifive.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Taichi Sugaya <sugaya.taichi@socionext.com>, netdev@vger.kernel.org,
+ david ahern <dsahern@kernel.org>, Nicolas Ferre <nicolas.ferre@microchip.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Palmer Dabbelt <palmer@dabbelt.com>, Takao Orito <orito.takao@socionext.com>,
+ linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,164 +128,26 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On 2022-06-28 at 04:01:03 +0200, Saravana Kannan <saravanak@google.com> wrote:
+> diff --git a/drivers/tty/serial/8250/8250_acorn.c b/drivers/tty/serial/8250/8250_acorn.c
+> index 758c4aa203ab..5a6f2f67de4f 100644
+> --- a/drivers/tty/serial/8250/8250_acorn.c
+> +++ b/drivers/tty/serial/8250/8250_acorn.c
+> @@ -114,7 +114,6 @@ static const struct ecard_id serial_cids[] = {
+>  static struct ecard_driver serial_card_driver = {
+>  	.probe		= serial_card_probe,
+>  	.remove		= serial_card_remove,
+> -	.id_table	= serial_cids,
 
---8323329-1081361240-1656421888=:1603
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-
-On Tue, 28 Jun 2022, Chao Gao wrote:
-
-> Currently, each slot tracks the number of contiguous free slots starting
-> from itself. It helps to quickly check if there are enough contiguous
-> entries when dealing with an allocation request. But maintaining this
-> information can leads to some overhead. Specifically, if a slot is
-> allocated/freed, preceding slots may need to be updated as the number
-> of contiguous free slots can change. This process may access memory
-> scattering over multiple cachelines.
-> 
-> To reduce the overhead of maintaining the number of contiguous free
-> entries, use a global bitmap to track free slots; each bit represents
-> if a slot is available. The number of contiguous free slots can be
-> calculated by counting the number of consecutive 1s in the bitmap.
-> 
-> Tests show that the average cost of freeing slots drops by 120 cycles
-> while the average cost of allocation increases by 20 cycles. Overall,
-> 100 cycles are saved from a pair of allocation and freeing.
-> 
-> Signed-off-by: Chao Gao <chao.gao@intel.com>
-
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-
-One nit below.
-
-> ---
->  include/linux/swiotlb.h |  6 ++--
->  kernel/dma/swiotlb.c    | 64 ++++++++++++++++++++---------------------
->  2 files changed, 34 insertions(+), 36 deletions(-)
-> 
-> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> index 7ed35dd3de6e..c3eab237991a 100644
-> --- a/include/linux/swiotlb.h
-> +++ b/include/linux/swiotlb.h
-> @@ -78,8 +78,6 @@ extern enum swiotlb_force swiotlb_force;
->   *		@end. For default swiotlb, this is command line adjustable via
->   *		setup_io_tlb_npages.
->   * @used:	The number of used IO TLB block.
-> - * @list:	The free list describing the number of free entries available
-> - *		from each index.
->   * @index:	The index to start searching in the next round.
->   * @orig_addr:	The original address corresponding to a mapped entry.
->   * @alloc_size:	Size of the allocated buffer.
-> @@ -89,6 +87,8 @@ extern enum swiotlb_force swiotlb_force;
->   * @late_alloc:	%true if allocated using the page allocator
->   * @force_bounce: %true if swiotlb bouncing is forced
->   * @for_alloc:  %true if the pool is used for memory allocation
-> + * @bitmap:	The bitmap used to track free entries. 1 in bit X means the slot
-> + *		indexed by X is free.
->   */
->  struct io_tlb_mem {
->  	phys_addr_t start;
-> @@ -105,8 +105,8 @@ struct io_tlb_mem {
->  	struct io_tlb_slot {
->  		phys_addr_t orig_addr;
->  		size_t alloc_size;
-> -		unsigned int list;
->  	} *slots;
-> +	unsigned long *bitmap;
->  };
->  extern struct io_tlb_mem io_tlb_default_mem;
->  
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index cb50f8d38360..d7f68c0af7f5 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -207,7 +207,7 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
->  
->  	spin_lock_init(&mem->lock);
->  	for (i = 0; i < mem->nslabs; i++) {
-> -		mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
-> +		__set_bit(i, mem->bitmap);
->  		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
->  		mem->slots[i].alloc_size = 0;
->  	}
-> @@ -274,6 +274,11 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
->  		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
->  		      __func__, alloc_size, PAGE_SIZE);
->  
-> +	mem->bitmap = memblock_alloc(BITS_TO_BYTES(nslabs), SMP_CACHE_BYTES);
-> +	if (!mem->bitmap)
-> +		panic("%s: Failed to allocate %lu bytes align=0x%x\n",
-> +		      __func__, DIV_ROUND_UP(nslabs, BITS_PER_BYTE), SMP_CACHE_BYTES);
-> +
->  	swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, flags, false);
->  
->  	if (flags & SWIOTLB_VERBOSE)
-> @@ -337,10 +342,13 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
->  			(PAGE_SIZE << order) >> 20);
->  	}
->  
-> +	mem->bitmap = bitmap_zalloc(nslabs, GFP_KERNEL);
->  	mem->slots = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
->  		get_order(array_size(sizeof(*mem->slots), nslabs)));
-> -	if (!mem->slots) {
-> +	if (!mem->slots || !mem->bitmap) {
->  		free_pages((unsigned long)vstart, order);
-> +		bitmap_free(mem->bitmap);
-> +		kfree(mem->slots);
->  		return -ENOMEM;
->  	}
->  
-> @@ -498,7 +506,7 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
->  	unsigned int iotlb_align_mask =
->  		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
->  	unsigned int nslots = nr_slots(alloc_size), stride;
-> -	unsigned int index, wrap, count = 0, i;
-> +	unsigned int index, wrap, i;
->  	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
->  	unsigned long flags;
->  
-> @@ -514,6 +522,9 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
->  		stride = max(stride, stride << (PAGE_SHIFT - IO_TLB_SHIFT));
->  	stride = max(stride, (alloc_align_mask >> IO_TLB_SHIFT) + 1);
->  
-> +	/* slots shouldn't cross one segment */
-> +	max_slots = min_t(unsigned long, max_slots, IO_TLB_SEGSIZE);
-> +
->  	spin_lock_irqsave(&mem->lock, flags);
->  	if (unlikely(nslots > mem->nslabs - mem->used))
->  		goto not_found;
-> @@ -535,8 +546,15 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
->  		if (!iommu_is_span_boundary(index, nslots,
->  					    nr_slots(tbl_dma_addr),
->  					    max_slots)) {
-> -			if (mem->slots[index].list >= nslots)
-> +			if (find_next_zero_bit(mem->bitmap, index + nslots, index) ==
-> +					index + nslots)
->  				goto found;
-> +		} else {
-> +			/*
-> +			 * Remaining slots between current one and the next
-> +			 * bounary cannot meet our requirement.
-
-bounary -> boundary
-
-
--- 
- i.
-
---8323329-1081361240-1656421888=:1603
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Is this change intentional? All other drivers are only changed to set
+.probe_no_time and I don't see anything mentioned in the commit message
+re. this driver's change.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---8323329-1081361240-1656421888=:1603--
