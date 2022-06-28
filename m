@@ -1,144 +1,66 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 87053C433EF
-	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 11:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 54F3BCCA480
+	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 11:23:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 0E04E60E92;
-	Tue, 28 Jun 2022 11:15:44 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 0E04E60E92
-Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YdmebN9V
+	by smtp1.osuosl.org (Postfix) with ESMTP id D902E830E6;
+	Tue, 28 Jun 2022 11:23:12 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org D902E830E6
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2M6i5lj78_Po; Tue, 28 Jun 2022 11:15:43 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id m2L5SF9MHDtB; Tue, 28 Jun 2022 11:23:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id CBB8A60E7E;
-	Tue, 28 Jun 2022 11:15:42 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org CBB8A60E7E
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 84813815AD;
+	Tue, 28 Jun 2022 11:23:11 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 84813815AD
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 842B6C0032;
-	Tue, 28 Jun 2022 11:15:42 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 64CFFC002D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 11:15:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5CABFC0032;
+	Tue, 28 Jun 2022 11:23:11 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6017EC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 11:23:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 3EB5A4091E
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 11:15:41 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 3EB5A4091E
-Authentication-Results: smtp4.osuosl.org;
- dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
- header.a=rsa-sha256 header.s=Intel header.b=YdmebN9V
+ by smtp2.osuosl.org (Postfix) with ESMTP id 47C7840598
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 11:23:10 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 47C7840598
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id yqtsvtsvitKz for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jun 2022 11:15:39 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id jnP6TF-aTs_H for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jun 2022 11:23:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org ABFB9408E0
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by smtp4.osuosl.org (Postfix) with ESMTPS id ABFB9408E0
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 11:15:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1656414939; x=1687950939;
- h=date:from:to:cc:subject:message-id:references:
- mime-version:in-reply-to;
- bh=VAm8GqMxSVbXa5l11MJLdH5RISvLfde2v1QEXHVyiio=;
- b=YdmebN9VTTFYBqrXPSMSMTJdyfVgVDZTywSBwg/rahumpiBjSqLDh9Ud
- 3ee75T5XfynMWGNN3lcuMFgD1mYLGyOVqFDuA3vHPXA2FLcxwi0b/kq0C
- qjR9vtEktDD8wRPq3YITYQPsnwcoKmAztV4Qo53b4tNvUM1zq2318Acnu
- +eNxPUbHNB5FNXZS0rN+Do6Bpt13+rWzknpx/DDus70c/WYnbm9s7udBv
- UbAv89iPwrAVnzyeNJmt1sApaZsoOnRHavxRnFL/5DpNQylFIyy3bKuA7
- 0xlMp6jsjc3zXBzbSfuDEL9+kkk1s1jh0tik9pb6zj8cD7xCM+Fefz1n2 A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="264752578"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="264752578"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Jun 2022 04:15:38 -0700
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="540456672"
-Received: from smile.fi.intel.com ([10.237.72.54])
- by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Jun 2022 04:15:17 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
- (envelope-from <andriy.shevchenko@linux.intel.com>)
- id 1o69BV-000wl7-8C; Tue, 28 Jun 2022 14:15:09 +0300
-Date: Tue, 28 Jun 2022 14:15:09 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Saravana Kannan <saravanak@google.com>
-Subject: Re: [PATCH v1 0/2] Fix console probe delay when stdout-path isn't set
-Message-ID: <Yrrivbk2NSK3loBW@smile.fi.intel.com>
-References: <20220628020110.1601693-1-saravanak@google.com>
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 40309400BF
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 40309400BF
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 11:23:09 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A3284152B;
+ Tue, 28 Jun 2022 04:23:08 -0700 (PDT)
+Received: from [10.57.85.130] (unknown [10.57.85.130])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EE4E43F5A1;
+ Tue, 28 Jun 2022 04:23:05 -0700 (PDT)
+Message-ID: <bbca5df5-8681-d6d9-201d-3d48b34e3001@arm.com>
+Date: Tue, 28 Jun 2022 12:23:01 +0100
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220628020110.1601693-1-saravanak@google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-Cc: andrew lunn <andrew@lunn.ch>, peng fan <peng.fan@nxp.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- linus walleij <linus.walleij@linaro.org>, Paul Mackerras <paulus@samba.org>,
- Alim Akhtar <alim.akhtar@samsung.com>, Peter Korsgaard <jacmet@sunsite.dk>,
- linux-stm32@st-md-mailman.stormreply.com, Karol Gugala <kgugala@antmicro.com>,
- Jerome Brunet <jbrunet@baylibre.com>, linux-samsung-soc@vger.kernel.org,
- Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <michal.simek@xilinx.com>,
- Hammer Hsieh <hammerh0314@gmail.com>, NXP Linux Team <linux-imx@nxp.com>,
- Vineet Gupta <vgupta@kernel.org>, len brown <len.brown@intel.com>,
- Nicolas Saenz Julienne <nsaenz@kernel.org>, linux-pm@vger.kernel.org,
- Sascha Hauer <s.hauer@pengutronix.de>, linux-unisoc@lists.infradead.org,
- Scott Branden <sbranden@broadcom.com>, Andrew Jeffery <andrew@aj.id.au>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
- Richard Genoud <richard.genoud@gmail.com>,
- Masami Hiramatsu <mhiramat@kernel.org>,
- Pengutronix Kernel Team <kernel@pengutronix.de>,
- Claudiu Beznea <claudiu.beznea@microchip.com>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>, pavel machek <pavel@ucw.cz>,
- Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
- eric dumazet <edumazet@google.com>, Thierry Reding <thierry.reding@gmail.com>,
- sascha hauer <sha@pengutronix.de>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Gabriel Somlo <gsomlo@gmail.com>,
- Tobias Klauser <tklauser@distanz.ch>, linux-mips@vger.kernel.org,
- kernel-team@android.com,
- Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
- linux-arm-msm@vger.kernel.org, linux-actions@lists.infradead.org,
- linux-gpio@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
- linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- Andreas Farber <afaerber@suse.de>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
- Kevin Hilman <khilman@baylibre.com>, Pali Rohar <pali@kernel.org>,
- heiner kallweit <hkallweit1@gmail.com>, ulf hansson <ulf.hansson@linaro.org>,
- Neil Armstrong <narmstrong@baylibre.com>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>, Al Cooper <alcooperx@gmail.com>,
- linux-tegra@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
- linux-aspeed@lists.ozlabs.org, Rob Herring <robh@kernel.org>,
- Florian Fainelli <f.fainelli@gmail.com>,
- Mateusz Holenko <mholenko@antmicro.com>, Alexander Shiyan <shc_work@mail.ru>,
- kevin hilman <khilman@kernel.org>,
- Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
- Joel Stanley <joel@jms.id.au>, Orson Zhai <orsonzhai@gmail.com>,
- paolo abeni <pabeni@redhat.com>, Patrice Chotard <patrice.chotard@foss.st.com>,
- Ray Jui <rjui@broadcom.com>, Vladimir Zapolskiy <vz@mleia.com>,
- linux-snps-arc@lists.infradead.org, Timur Tabi <timur@kernel.org>,
- hideaki yoshifuji <yoshfuji@linux-ipv6.org>, iommu@lists.linux-foundation.org,
- Laxman Dewangan <ldewangan@nvidia.com>, Sudeep Holla <sudeep.holla@arm.com>,
- Baolin Wang <baolin.wang7@gmail.com>, Shawn Guo <shawnguo@kernel.org>,
- "David S. Miller" <davem@davemloft.net>, Baruch Siach <baruch@tkos.co.il>,
- Liviu Dudau <liviu.dudau@arm.com>,
- Alexandre Torgue <alexandre.torgue@foss.st.com>,
- Paul Cercueil <paul@crapouillou.net>, sparclinux@vger.kernel.org,
- linux-riscv@lists.infradead.org, Russell King <linux@armlinux.org.uk>,
- Andy Gross <agross@kernel.org>, linux-serial@vger.kernel.org,
- jakub kicinski <kuba@kernel.org>, will deacon <will@kernel.org>,
- Manivannan Sadhasivam <mani@kernel.org>, linux-mediatek@lists.infradead.org,
- Fabio Estevam <festevam@gmail.com>, Paul Walmsley <paul.walmsley@sifive.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Taichi Sugaya <sugaya.taichi@socionext.com>, netdev@vger.kernel.org,
- david ahern <dsahern@kernel.org>, Nicolas Ferre <nicolas.ferre@microchip.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
- Palmer Dabbelt <palmer@dabbelt.com>, Takao Orito <orito.takao@socionext.com>,
- linuxppc-dev@lists.ozlabs.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4 1/5] dma-mapping: Add dma_opt_mapping_size()
+Content-Language: en-GB
+To: John Garry <john.garry@huawei.com>, damien.lemoal@opensource.wdc.com,
+ joro@8bytes.org, will@kernel.org, jejb@linux.ibm.com,
+ martin.petersen@oracle.com, hch@lst.de, m.szyprowski@samsung.com
+References: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
+ <1656343521-62897-2-git-send-email-john.garry@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <1656343521-62897-2-git-send-email-john.garry@huawei.com>
+Cc: linux-scsi@vger.kernel.org, linux-doc@vger.kernel.org, linuxarm@huawei.com,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
+ iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -151,27 +73,119 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jun 27, 2022 at 07:01:01PM -0700, Saravana Kannan wrote:
-> Since the series that fixes console probe delay based on stdout-path[1] got
-> pulled into driver-core-next, I made these patches on top of them.
+On 2022-06-27 16:25, John Garry wrote:
+> Streaming DMA mapping involving an IOMMU may be much slower for larger
+> total mapping size. This is because every IOMMU DMA mapping requires an
+> IOVA to be allocated and freed. IOVA sizes above a certain limit are not
+> cached, which can have a big impact on DMA mapping performance.
 > 
-> Even if stdout-path isn't set in DT, this patch should take console
-> probe times back to how they were before the deferred_probe_timeout
-> clean up series[2].
+> Provide an API for device drivers to know this "optimal" limit, such that
+> they may try to produce mapping which don't exceed it.
+> 
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+> ---
+>   Documentation/core-api/dma-api.rst |  9 +++++++++
+>   include/linux/dma-map-ops.h        |  1 +
+>   include/linux/dma-mapping.h        |  5 +++++
+>   kernel/dma/mapping.c               | 12 ++++++++++++
+>   4 files changed, 27 insertions(+)
+> 
+> diff --git a/Documentation/core-api/dma-api.rst b/Documentation/core-api/dma-api.rst
+> index 6d6d0edd2d27..b3cd9763d28b 100644
+> --- a/Documentation/core-api/dma-api.rst
+> +++ b/Documentation/core-api/dma-api.rst
+> @@ -204,6 +204,15 @@ Returns the maximum size of a mapping for the device. The size parameter
+>   of the mapping functions like dma_map_single(), dma_map_page() and
+>   others should not be larger than the returned value.
+>   
+> +::
+> +
+> +	size_t
+> +	dma_opt_mapping_size(struct device *dev);
+> +
+> +Returns the maximum optimal size of a mapping for the device. Mapping large
+> +buffers may take longer so device drivers are advised to limit total DMA
+> +streaming mappings length to the returned value.
 
-Are you sure it's only limited to the serial drivers?
-(just asking, I don't know myself the answer)
+Nit: I'm not sure "advised" is necessarily the right thing to say in 
+general - that's only really true for a caller who cares about 
+throughput of churning through short-lived mappings more than anything 
+else, and doesn't take a significant hit overall from splitting up 
+larger requests. I do think it's good to clarify the exact context of 
+"optimal" here, but I'd prefer to be objectively clear that it's for 
+workloads where the up-front mapping overhead dominates.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks,
+Robin.
 
-
+> +
+>   ::
+>   
+>   	bool
+> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+> index 0d5b06b3a4a6..98ceba6fa848 100644
+> --- a/include/linux/dma-map-ops.h
+> +++ b/include/linux/dma-map-ops.h
+> @@ -69,6 +69,7 @@ struct dma_map_ops {
+>   	int (*dma_supported)(struct device *dev, u64 mask);
+>   	u64 (*get_required_mask)(struct device *dev);
+>   	size_t (*max_mapping_size)(struct device *dev);
+> +	size_t (*opt_mapping_size)(void);
+>   	unsigned long (*get_merge_boundary)(struct device *dev);
+>   };
+>   
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index dca2b1355bb1..fe3849434b2a 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -144,6 +144,7 @@ int dma_set_mask(struct device *dev, u64 mask);
+>   int dma_set_coherent_mask(struct device *dev, u64 mask);
+>   u64 dma_get_required_mask(struct device *dev);
+>   size_t dma_max_mapping_size(struct device *dev);
+> +size_t dma_opt_mapping_size(struct device *dev);
+>   bool dma_need_sync(struct device *dev, dma_addr_t dma_addr);
+>   unsigned long dma_get_merge_boundary(struct device *dev);
+>   struct sg_table *dma_alloc_noncontiguous(struct device *dev, size_t size,
+> @@ -266,6 +267,10 @@ static inline size_t dma_max_mapping_size(struct device *dev)
+>   {
+>   	return 0;
+>   }
+> +static inline size_t dma_opt_mapping_size(struct device *dev)
+> +{
+> +	return 0;
+> +}
+>   static inline bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
+>   {
+>   	return false;
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index db7244291b74..1bfe11b1edb6 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -773,6 +773,18 @@ size_t dma_max_mapping_size(struct device *dev)
+>   }
+>   EXPORT_SYMBOL_GPL(dma_max_mapping_size);
+>   
+> +size_t dma_opt_mapping_size(struct device *dev)
+> +{
+> +	const struct dma_map_ops *ops = get_dma_ops(dev);
+> +	size_t size = SIZE_MAX;
+> +
+> +	if (ops && ops->opt_mapping_size)
+> +		size = ops->opt_mapping_size();
+> +
+> +	return min(dma_max_mapping_size(dev), size);
+> +}
+> +EXPORT_SYMBOL_GPL(dma_opt_mapping_size);
+> +
+>   bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
+>   {
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
