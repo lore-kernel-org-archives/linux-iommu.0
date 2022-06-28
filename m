@@ -1,32 +1,32 @@
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0265367
-	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 05:41:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F217E367
+	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 05:46:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656394894; x=1687930894;
+  t=1656395198; x=1687931198;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=UxZR/mfdIqnqviiBYRwMkxb2Ju8jlNFffAZNscjJglY=;
-  b=Hc8Rx5qC34rHSI69z/UtaaonHnSYyA/QKaZWka4Aet9XGLALiqj+Q/Ag
-   wfwZ2cm2zTCMf4QaYbsMilT6VEHu4dhxNq1VLnCfXMq9l4NCm0nEJdktz
-   chb2WdhM9Yds4N6wTEC8b8JAe0yprIktGTInriF1sP7esXxMHUv/zRoZk
-   dwGImLR8S+PoX6riff7yBQ95ol9Jlo2u42WjeGw+nMPzdPPYOAACZSq2T
-   +tff0X9CvLUJ/+XAydbwZ4tt9endzpYaIDC/KrD4ScNZXaboC/IhIgZrg
-   Wibgt7b4/qMfctu8pUbC1lXVYtzBYJOsZkwQgZPdQRqsOjso3sgpTnT4Y
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="343328489"
+  bh=TGG80vJaDllAevuk4S1BcXyz1JoWpznRrkuX2d/Mvkc=;
+  b=hCS1Z/YKPh15yNpB+x1XkLl5LxSWkeGzJyiuOjmoBmzSuIxEohOS81Ej
+   21bULGUK1qqni7lUfFw2s6xmGLZ6bua9IQct5rcHE5+vN54gydMLvnu28
+   Hhq0vSik6Wmg3pDIPApj037Cdv1DM6X00TYCC9TReiS8tuX0ZhIz66mpF
+   ADsBJgrJ62lSh4KK3yFRMMSZTz7mVajgVVvMySMClmQYYDrCSOozznr75
+   X+PHPOkBDdMkmEcBx7mR3wm2ZvCA7dr14z+rMpyFLYsKFdncpgfyak4yr
+   8Efshi4I06X7ojDIap9o/rvBhF6EBvc2dTvCmww/t8yFFfx6HeeSGHxa8
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="270388145"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="343328489"
+   d="scan'208";a="270388145"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 22:41:34 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 22:46:37 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="646758511"
+   d="scan'208";a="646759897"
 Received: from ltang11-mobl1.ccr.corp.intel.com (HELO [10.249.169.64]) ([10.249.169.64])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 22:41:30 -0700
-Message-ID: <42825be5-e24c-0f95-f49d-5f50d608506d@linux.intel.com>
-Date: Tue, 28 Jun 2022 13:41:28 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jun 2022 22:46:34 -0700
+Message-ID: <14fa06b8-e361-db68-8fe4-490aeb0242da@linux.intel.com>
+Date: Tue, 28 Jun 2022 13:46:32 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,143 +35,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Cc: baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
- "Liu, Yi L" <yi.l.liu@intel.com>, "Pan, Jacob jun"
- <jacob.jun.pan@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v9 04/11] iommu: Add sva iommu_domain support
+Cc: baolu.lu@linux.intel.com, Jean-Philippe Brucker
+ <jean-philippe@linaro.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Jacob jun Pan <jacob.jun.pan@intel.com>
+Subject: Re: [PATCH v9 06/11] arm-smmu-v3/sva: Add SVA domain support
 Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+To: Zhangfei Gao <zhangfei.gao@linaro.org>, Joerg Roedel <joro@8bytes.org>,
  Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
- "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>,
- "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
+ Dave Jiang <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
 References: <20220621144353.17547-1-baolu.lu@linux.intel.com>
- <20220621144353.17547-5-baolu.lu@linux.intel.com>
- <BN9PR11MB5276FA1A1A8C20786D958C048CB99@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220621144353.17547-7-baolu.lu@linux.intel.com>
+ <9266198d-33fd-4cc5-fdaa-3ba5571543b1@linaro.org>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276FA1A1A8C20786D958C048CB99@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <9266198d-33fd-4cc5-fdaa-3ba5571543b1@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Message-ID: <20220628054128.91xRvdcopEf3P79Hi5tKgROxz32GZl_kxopmb3dlRpk@z>
+Content-Transfer-Encoding: 8bit
+Message-ID: <20220628054632.w2p5VFgAFI2fSTGiNUdRbtTIVGJP2Q4FLcYPxESB9fo@z>
 
-Hi Kevin,
-
-On 2022/6/27 16:29, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Tuesday, June 21, 2022 10:44 PM
+On 2022/6/27 19:50, Zhangfei Gao wrote:
+> 
+> On 2022/6/21 下午10:43, Lu Baolu wrote:
+>> Add support for SVA domain allocation and provide an SVA-specific
+>> iommu_domain_ops.
 >>
->> The sva iommu_domain represents a hardware pagetable that the IOMMU
->> hardware could use for SVA translation. This adds some infrastructure
->> to support SVA domain in the iommu common layer. It includes:
->>
->> - Extend the iommu_domain to support a new IOMMU_DOMAIN_SVA
->> domain
->>    type. The IOMMU drivers that support SVA should provide the sva
->>    domain specific iommu_domain_ops.
->> - Add a helper to allocate an SVA domain. The iommu_domain_free()
->>    is still used to free an SVA domain.
->> - Add helpers to attach an SVA domain to a device and the reverse
->>    operation.
->>
->> Some buses, like PCI, route packets without considering the PASID value.
->> Thus a DMA target address with PASID might be treated as P2P if the
->> address falls into the MMIO BAR of other devices in the group. To make
->> things simple, the attach/detach interfaces only apply to devices
->> belonging to the singleton groups, and the singleton is immutable in
->> fabric i.e. not affected by hotplug.
->>
->> The iommu_attach/detach_device_pasid() can be used for other purposes,
->> such as kernel DMA with pasid, mediation device, etc.
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 > 
-> I'd split this into two patches. One for adding iommu_attach/
-> detach_device_pasid() and set/block_dev_pasid ops, and the
-> other for adding SVA.
+> Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+> Have tested the series on aarch64.
 
-Yes. Make sense.
-
-> 
->>   struct iommu_domain {
->>   	unsigned type;
->>   	const struct iommu_domain_ops *ops;
->>   	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
->> -	iommu_fault_handler_t handler;
->> -	void *handler_token;
->>   	struct iommu_domain_geometry geometry;
->>   	struct iommu_dma_cookie *iova_cookie;
->> +	union {
->> +		struct {	/* IOMMU_DOMAIN_DMA */
->> +			iommu_fault_handler_t handler;
->> +			void *handler_token;
->> +		};
-> 
-> why is it DMA domain specific? What about unmanaged
-> domain? Unrecoverable fault can happen on any type
-> including SVA. Hence I think above should be domain type
-> agnostic.
-
-The report_iommu_fault() should be replaced by the new
-iommu_report_device_fault(). Jean has already started this work.
-
-https://lore.kernel.org/linux-iommu/Yo4Nw9QyllT1RZbd@myrica/
-
-Currently this is only for DMA domains, hence Robin suggested to make it
-exclude with the SVA domain things.
-
-https://lore.kernel.org/linux-iommu/f3170016-4d7f-e78e-db48-68305f683349@arm.com/
-
-> 
->> +		struct {	/* IOMMU_DOMAIN_SVA */
->> +			struct mm_struct *mm;
->> +		};
->> +	};
->>   };
->>
-> 
-> 
-> 
->> +
->> +struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
->> +					    struct mm_struct *mm)
->> +{
->> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
->> +	struct iommu_domain *domain;
->> +
->> +	domain = ops->domain_alloc(IOMMU_DOMAIN_SVA);
->> +	if (!domain)
->> +		return NULL;
->> +
->> +	domain->type = IOMMU_DOMAIN_SVA;
-> 
-> It's a bit weird that the type has been specified when calling
-> ops->domain_alloc while it still leaves to the caller to set the
-> type. But this is not caused by this series. could be cleaned
-> up separately.
-
-Yes. Robin has patches to refactor the domain allocation interface,
-let's wait and see what it looks like finally.
-
-> 
->> +
->> +	mutex_lock(&group->mutex);
->> +	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain,
->> GFP_KERNEL);
->> +	if (curr)
->> +		goto out_unlock;
-> 
-> Need check xa_is_err(old).
-
-Either
-
-(1) old entry is a valid pointer, or
-(2) xa_is_err(curr)
-
-are failure cases. Hence, "curr == NULL" is the only check we need. Did
-I miss anything?
+Thank you very much! Very appreciated for your help!
 
 Best regards,
 baolu
