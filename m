@@ -1,50 +1,54 @@
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 900277A
-	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 08:39:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF4787A
+	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 08:40:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656405580; x=1687941580;
+  t=1656405637; x=1687941637;
   h=from:to:cc:subject:date:message-id:references:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=J/4bNp6GRH+W/39Q73sGQuIA6nq7i8nQxr6xKD8nKd0=;
-  b=KFNG+GIlPWUBRIOdPBiL+01ksHT1d5X8IHwsF5kdMozsNORmD2qrfpcA
-   eVeIZmf9X4mSX9WJH5ZShbJF7/CURW14e24ihTslO4qnuv5C0SqgHX1Yd
-   ycXvI2ui/KYBsFQg3Duasa2pVqpQnJhweRrEJYzi5acraAoyL+26xM0jw
-   naTkDONpULsir3WsKlecg4s/lp/nasG6i+9I07MVceLdNGlMh65HYLp0A
-   KQ93bRXbQ4y8RPXsw373Ro1K+bAPk1g0j+iopktTG3UYFaux3GhDPLKvs
-   AXFLHu0FPX/rvnrMP95YkNXNe5m8OEF+YWC5tD1VmfcQCg1Y5hIXvDV/A
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="307156444"
+  bh=vIrh23fwc+A6GJmBGy3A7Hytj4GuWLrqOctchdNuVdY=;
+  b=apehaJjpbNURANIjO56a/hoU6BYd+ndL9cAqnd1dpTplg1FVGa6PwLjd
+   SY9DKwRQL527X+JuVN71mRgwPxtIeTOASB+Hm8bsEG5fd9CkAcgO+b0aW
+   7hCoWd11Ou23pIOXXnyPHZoUFgWwo/nZGdW0Pa1axcoy8r9fx7XQ1tEhE
+   mFvsHWSIk1qMmls6MpT3aqOHnT9ShI2cYLM8NI7/FVDJBAcfDHK+XrBRP
+   CskI7ci3TGyERzsHEUnmUXfm9jawGcuYE2HJZ45oGYHmXH0Db6bsRGo8n
+   SBhm0EEez32LafjGSUldI9BK+2AjhiE+DBRZkVqKaYgZp6NAnEyt7saI+
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="345674612"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="307156444"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 01:39:39 -0700
+   d="scan'208";a="345674612"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 01:40:35 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="658045288"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga004.fm.intel.com with ESMTP; 28 Jun 2022 01:39:39 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+   d="scan'208";a="767095222"
+Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
+  by orsmga005.jf.intel.com with ESMTP; 28 Jun 2022 01:40:34 -0700
+Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
+ ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 28 Jun 2022 01:39:39 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
+ 15.1.2308.27; Tue, 28 Jun 2022 01:40:34 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 28 Jun 2022 01:39:39 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.44) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ 15.1.2308.27; Tue, 28 Jun 2022 01:40:33 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Tue, 28 Jun 2022 01:40:33 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.43) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Tue, 28 Jun 2022 01:39:39 -0700
+ 15.1.2308.27; Tue, 28 Jun 2022 01:40:33 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aeMRQ32v58tkFyBi1Op5oO1XQJbZmSZjNABq6j/Wk1jOsG7WykNOMg5rgZV7VaysgpOJvPjDm/iFbvxDHSMDUQsjkM44OJn1FcT5OiXIFEWlxk7I8r40VqYUgPWOtnQv3QflJVTSlKN3aAehTCCaDcfiPLpb6ZWVU+JhbM/YBZJ2tJq0mT83+mKri6JWV4p900nR/kYRa94afQA5uMwzjgrWi57o33SqNpdAllC29qAHxtXbFLtMd6K0+5ZV3+jfFjSit+Rvp5QBC35aDKJOjzfnD+SOzz1sqCB+/h9V2SSXCW3/U+GMJLlQ1VmspDc0NZE8Blb9oSP1gy+BLdG6MA==
+ b=HHKRDsYs6Ay7HUmZZO/kqad0tjcsVhcQHJJ46h6ojRwEc3RAboRuYjtF0VLFGjBaxfdSVdG/6zcp97Rp152TBy3w2JRHrSzh5LsDHDEqXkat24Pi55LvtgP+QyGSBEviaC4HD0Bx2dhOwXQ4mtIewU+eejwZY0yUWSJHay+wm9iLr8e+iZx1yXen3RKJM/ePSVnThscKmlZ3oVW/amvfMYcTZOJaNrbSTYPd4mIwBcYL1oFbA9gOjZNCfpdlYCBNr3aCs9y5TnZEX3RDF0uSYbLyOp6Io89vE5i90cx3aXagNb8ZS4RJb3vYvb4vPGrIkVfbsGE8KB6kPWP9Cemi+A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9iM8vVsP8jjbIj2F1iLytFsSODI7WwLrrxLjr7LBVVo=;
- b=JQhzQI6+AL3NbvdBlKuCp4tKbC83PxvwN/iia6BoXAlTYyP45FPYSjhpwN2rpyo2WKpPWwJRyu3j4r2Z7b5aox9Eew0OacnE54ZWrxnywbJZ7BEGNNEXoDmvm710bbWunxXSuENHL/ncZiyB02xC9dfj56pQnEMupsbX9YFkuW7kihKDpKIJoU1UGAb3GZbUciPdxN7aVwTC31AMuamrg5pP0oChOgAgSvqJL99vx6fdqVT2IHvSQYTlEOfT1kT5j+KpnAh1+kZ5g5qF53XRILLc7lBuM01baPcBrw53zCicZWHaOQ/4r+9Tj9PzOsaT+f5auTnCe3yw4XGXsxvfSQ==
+ bh=vIrh23fwc+A6GJmBGy3A7Hytj4GuWLrqOctchdNuVdY=;
+ b=S6rX5yjUB6D0E2aaWDb3HbTWP/6bu2J6MdhtbjThxLK/X/6Q11cNcKizn/pIsh8yKDKD0kOgYA6dAHdAp+Z1G7/cvdKs6yMX//sEtA9z2AVPxe8+ik+lXQXvmmmILRm/DgKF8i81RQ47bTamTSO8KQGfuye1+OEGlNEvWAxRb8xjioYlH3N8S5f/Hvv2cpyPZ/KXx1gnnsYX5yEhe0bRWURhIsGjs8d+pqw1MuMq96flfmVBEuyMbJ8cMwDzSLlftVC2DkjTyuija28eYAdkGou/AowtExnFjhw+lN8eq9U0V2V6MWGzOT30It16oJOJ/JrQ4LTvERTgwC7CEFHoMQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
@@ -52,31 +56,32 @@ Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
  by SJ1PR11MB6153.namprd11.prod.outlook.com (2603:10b6:a03:488::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17; Tue, 28 Jun
- 2022 08:39:37 +0000
+ 2022 08:40:32 +0000
 Received: from BN9PR11MB5276.namprd11.prod.outlook.com
  ([fe80::8435:5a99:1e28:b38c]) by BN9PR11MB5276.namprd11.prod.outlook.com
  ([fe80::8435:5a99:1e28:b38c%2]) with mapi id 15.20.5373.018; Tue, 28 Jun 2022
- 08:39:37 +0000
+ 08:40:32 +0000
 From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Jason
- Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>, "Raj,
- Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>, "Robin Murphy"
-	<robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	"Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	"Jason Gunthorpe" <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+	"Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>, Robin
+ Murphy <robin.murphy@arm.com>, Jean-Philippe Brucker
+	<jean-philippe@linaro.com>, "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul
+	<vkoul@kernel.org>
 CC: Eric Auger <eric.auger@redhat.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
 	"Pan, Jacob jun" <jacob.jun.pan@intel.com>,
 	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Jean-Philippe
  Brucker" <jean-philippe@linaro.org>
-Subject: RE: [PATCH v9 10/11] iommu: Per-domain I/O page fault handling
-Thread-Topic: [PATCH v9 10/11] iommu: Per-domain I/O page fault handling
-Thread-Index: AQHYhX4HMU+DWWITC0iALdyeXsFzmK1kiO3A
-Date: Tue, 28 Jun 2022 08:39:36 +0000
-Message-ID: <BN9PR11MB52768181B0EB29DBCB11AEA68CB89@BN9PR11MB5276.namprd11.prod.outlook.com>
+Subject: RE: [PATCH v9 11/11] iommu: Rename iommu-sva-lib.{c,h}
+Thread-Topic: [PATCH v9 11/11] iommu: Rename iommu-sva-lib.{c,h}
+Thread-Index: AQHYhX4J7A3caPf9kEinyHwrYlaqza1kil9Q
+Date: Tue, 28 Jun 2022 08:40:32 +0000
+Message-ID: <BN9PR11MB5276C15E0C2BCDB5E2C1ADA68CB89@BN9PR11MB5276.namprd11.prod.outlook.com>
 References: <20220621144353.17547-1-baolu.lu@linux.intel.com>
- <20220621144353.17547-11-baolu.lu@linux.intel.com>
-In-Reply-To: <20220621144353.17547-11-baolu.lu@linux.intel.com>
+ <20220621144353.17547-12-baolu.lu@linux.intel.com>
+In-Reply-To: <20220621144353.17547-12-baolu.lu@linux.intel.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach:
@@ -84,42 +89,42 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b462f284-969a-4d77-abaf-08da58e1bbd3
+x-ms-office365-filtering-correlation-id: c476951a-ffa4-4055-ae05-08da58e1dcb8
 x-ms-traffictypediagnostic: SJ1PR11MB6153:EE_
 x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: V4istEIRcQlVQTILW9FudRbe9qxAwhP8UYGBj0NiDr/VkWzH8wmw/XgnYt51JV8CTyl6G61wzBfOEvi7+l69n1/hpqfBepYdsSS4n+9ZFcHPG0NN+5yosF0gqXDA62HUMPBa1utxeymMkAR4LD2h6Od1lxh9D9ZCgTsqILY+FIUwA8mLXkbBm+c79ysFXcxOkFclzo7+jyNDbgjFQgNjzd+1+F5EYwfUAmhpdv7vBmhsUjPnjLsHMwdaeK9aT3eezoasLpZpXbLCcdkd5HIP8/yLyZJCXyzEi8jBw46fHAb0xYg1X/KQhvrTxjrz4oTe+DWfP+3M+/AFGIrsxYDTpwZw1jHChAsStvsbJMZR4ef2f4QGrssVrWd5Mt5kfuOM/gUVp5pNN+phiNXSu9RKSAD1K63qCT5BS/TY05/bLL0YyRDoDk3Q1vbQRH3CP1zhTEfUPlpQLxas54M3gwRFM25vHqZ/plFgRwFPS0PHegLEbZ+7MZDmikxqxxAGLpXHcA0199azVU9YRe7l4gRH4cJWeeibMbWUMHC3nP+FW/GmCJSYipUxAH28l28SwvbGO+s/4O+MrzPv2eWz/ufulRFq9Cy4qivAitJfhx6bm60FDfpfVxxLSuld3mihVB41emLluR79DXuDSDzbXm+wa8sbt/o8Y6LdrViIeCm4fQqiabMkcm3mPcJH1X7B+ruLRou2Fg2WCUpaH7ELjvIcLp+tnZmytCCL2UHf+Y4ezaTs9WSxIfkbl7YBfiUmfia9JgHeJiWTEN6gBeN2jhVgBv6kYi5qiz7JAXrNtt37Fm/AmawpM/C0wL/rhw/TEksZ
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(376002)(39860400002)(346002)(136003)(396003)(478600001)(186003)(41300700001)(71200400001)(86362001)(55016003)(38100700002)(66946007)(33656002)(66476007)(66556008)(2906002)(66446008)(52536014)(8676002)(54906003)(4326008)(64756008)(7696005)(82960400001)(26005)(76116006)(921005)(9686003)(122000001)(6506007)(316002)(38070700005)(110136005)(8936002)(5660300002)(7416002);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: d5rRNxzqColtvMsj/UDwvG+9fwZtPnrEve+buks6/MabPm8QuZ/N+YJwnE8MELku/XIJ9VstIAWtippyT5Ba9kteiw7GMQc7tkkdwF7K/6johWMtdiR012mu9uTH8dUwTD5Ti8uB1eXhKulReLpLO/dRjhDw8CkyXOZ8GO2ctfwNLsutRo3kuoY5QdTGFEY+fnfR52rwqwf2bboQ0bv6BAoVuDLv84H1msZwf63mXVFWMxLtAVFIXhv11c1/CUmhb1VoInwq4wKI9j12wIGLVfmHqf+Oez4dzlwWMFha7rp39GcpxrnYPeKazEo49GHkDldr9eiShVkNwKLmKgKlEDh4iDHeZYNyfhwd7NRth1HA61nAN1DjS+uaSE4q59OXRmiCaHZPGQIfY5DjUo14Pf72szcGJ0Cuno2rIWDTfvM/d5QZFGfzebXu0pgydYTJBkRXGgMRs/p6IMsim6tpLfu9Lz+ZC+ilDvnVgJoaIOe/KvWAKAMnzQO5ERsehtLphWFMKTRwLF5n2iLQyXPdLYLTbbIhwEQGVluXTP87Nr3s4abQB5xuHUGE/0SUj59zD+lVN4fTjh9sZyTAjAMAgKQONRstpgUsT9BqoCwWnHhDvrQT3lcV4u4OdnH0bM35m8xP2YF3zx3OimsnG/3np6dn5PaBg1JUl8od0zExGeU2cIc34ZTMkETm0bcW7C826IFeQEx3l8jZ8V/Ae4u2RojjfAlFque0PL23IcFneICHbhScqcTmMckK5SmkkB+/zAIThl3r9FYO6UVhG0iItfnNualf63hyukWmCvxuRKQ3y8MeooPj5/cn7jwfV4o7
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(136003)(346002)(39860400002)(376002)(366004)(66446008)(52536014)(2906002)(8676002)(54906003)(4326008)(64756008)(66946007)(33656002)(38100700002)(66556008)(66476007)(38070700005)(110136005)(8936002)(316002)(7416002)(5660300002)(82960400001)(7696005)(26005)(6506007)(76116006)(921005)(9686003)(122000001)(71200400001)(41300700001)(478600001)(186003)(558084003)(86362001)(55016003);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?/oTwxbzQLLLeB/bRtPg46EG3cGxT4ptrO8WzeG0Bx1RGFr27LDZvvoQKDtvT?=
- =?us-ascii?Q?rg5KydXCcyB/js7wODoB5T+pEkfPvhHAqKO8qt0QK8BeV0IrYThlnFDHxwQf?=
- =?us-ascii?Q?HG54KxvoE4B2oSpc9LbwwNsrjY/sUdnOpr7pLjp76ZxrrTfiLLPeh+5Eu6fW?=
- =?us-ascii?Q?IyUuLd/nmyQfUVrKmnjffvcPRu99A/3Ljk5XfTakK7I3ETI/VFXdoMPtfbjS?=
- =?us-ascii?Q?c0PeXi6sIuK5MG2Hmmywxip8fLQM7uWFYDejMCbcJ1X7MD2yXAvnUyZtcjUh?=
- =?us-ascii?Q?iI5EHjaAi6r6rUdTVMSxO1KB40gqSQB+M9CCCH7czSWIBqKPuTxa14wCar8p?=
- =?us-ascii?Q?WNkKWcleLP/KrfolVtRgGilDVchlOB2JYvUOZB8X5jiI3zUf0eJNGknguITX?=
- =?us-ascii?Q?lVmRSXJvI/xezf3g+YPdo83JaRrAR2BTgXjky67e6rFVHBQ32W81OauVBaG1?=
- =?us-ascii?Q?RT+us18ps4Qbf9rdpc2dh3sjT4qNyZLo4CktYSB84A659jCZnW87X8WJ1rIW?=
- =?us-ascii?Q?JsMCta+5j7a+h1E8dNN0zao138qA6V4FbWv/qXcVlqZ2QmW4EzO2jP9y6R/g?=
- =?us-ascii?Q?K0TD5SaUujO8Ii3T1acS2q+pq9VQjOkPo6KgWIkeNkCFT2Rkp8EQo9iHDL80?=
- =?us-ascii?Q?+xz5RO2XuID7FOzARIkgLNvceIwQAuIrRbAkcYkOzoO4DeBC/Jz5fXyfQJkD?=
- =?us-ascii?Q?e7QebSRJ5RUzut8YqqjplwBd6hMV+3DXP0veFufyYqC08guQ/GPJ883UbTAa?=
- =?us-ascii?Q?TKqE4ilZGp/fcJbcVSgpjR4vOrfvNNiB6nVu1q4wen9ROgGFPayYX4rNp5ha?=
- =?us-ascii?Q?LL0weeqTL4raPnoAYw7O++m6htSrIq533q8QyAsnR9gQvK7pronSa/2q+HR/?=
- =?us-ascii?Q?iQ/9C1NmnGrqDm/KznLE0uU0sJN7BHKXcaE5qjzLTTfcS8qrKRCdvyL55zyU?=
- =?us-ascii?Q?w9bwVXVYJAXKiOO59AtSkbm7czySmo7+tvSzodd8yEaEqJAPdFBnsXwfa/er?=
- =?us-ascii?Q?nfYAfq5WAb3B7+Sq/0/TPCWbv44eZFa2YIg0jO8t0Az+4C7xelx3B2CWUeB9?=
- =?us-ascii?Q?WGnTSCWwaPdF+WqPMEab/GUPigFUAsCOvfeeZLaIjndWsBFBkM8ZP0+Ksi1P?=
- =?us-ascii?Q?UP6fLVXKTs5lYorAA/6LGioOVjp6ivHcdbo4dYAVFeWbSSIldQsvGTJT7WEQ?=
- =?us-ascii?Q?oUQtlXRndwWXSlsiZgh8bKdgLnA017C1G+Z8ZJ82TkavghMDdA6DyPqZvfiu?=
- =?us-ascii?Q?Tyo8/FM4eg4h0ObFQcLwPOVr7XrWZqNxcFOrzyhMUsTQB5EhbYwkaqTryOk9?=
- =?us-ascii?Q?YMVm5y7lKxbJ+VzqdCOcWOvrVzT8pr0233lcFr/lAQimyporfWNN/YhsW23w?=
- =?us-ascii?Q?y+Vwlqf05CDkuuVwP7po0PVGX5/xoOYYyM1KxhSAo+SMwtvJfqToNZl3NOfx?=
- =?us-ascii?Q?L4cfdebcnzrEQjrdm0zFTNUJU1gz2E+hWAMMLJ9ix+ocFEXd01rPUh0e7hfm?=
- =?us-ascii?Q?GoxltelK1JDH8rUR7ekz5Ikw2DVwFR5VrPam3M5CxRz4zAvI8/o2/zRpBzlT?=
- =?us-ascii?Q?2Wrr9yCn9CIm7CpATk6S/R6VVYIXU5UI9p6f7rkj?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?8qbc+xzFFGaWWj/+Q9baHcNCvP+sCJDTc2zIL7OJtkgFc0n1MEWz27Z+PXsH?=
+ =?us-ascii?Q?Pl1DaDM6/X77mo82JR0sqbIX5hkRYTBYYqkbaX1K8RBsoDINdykd8LAVrrZU?=
+ =?us-ascii?Q?GsBOHRCJ+5AfNDQjAHpKfqEDzqsDcN+RwnLkpHZSlWwphfi85oyIsXlf+8lj?=
+ =?us-ascii?Q?M8rcWhpMIEHn/X9w2jqL4sQWQXgn4UbZ5ZiftAdhNRIhGc+2Nkf87z99h8zq?=
+ =?us-ascii?Q?4Diu2jbJbgSJEz6CDkD9NeTdNf04wyiOmOUkoJcbl+5v4Bi2Q2vlXb4p9adf?=
+ =?us-ascii?Q?0ux+II2xj/dUIxgcJin0oakdR8HubeGMa4s6sMRu92/XFsFOBVJ8GN8o5GQE?=
+ =?us-ascii?Q?CGaQGZN8vq1ctmVi4I0lkiutNzmJkk+KfqhkVkPqysdtXMnoNBj9vv3R+p8o?=
+ =?us-ascii?Q?1dgPHfVpdToHUhdrapuiLSJ+qWfHzGfMJQdQKyDgHOW8aj6emS3Lop6ZV1hU?=
+ =?us-ascii?Q?8TPHfXzBxVPL1oW7CLq8bOR5Cr8AJW4tVM/tdSz8Z3S/ZL5F3vFBEOC6K3jx?=
+ =?us-ascii?Q?hwe1LTiV/ubzpkyv8UwK9e3hDwSAfQSienzLx3w5Pfm5FKcznE7Dz9+WTgtG?=
+ =?us-ascii?Q?ATJapDI5WW63Mv9f3u1PzBUoEwKBwXIjSbH4yDyt9gUiks4bNDStg/u7QERC?=
+ =?us-ascii?Q?29GxegFQMyOO768Ld3NWvB40ux1/n9M9PHZs+yPA+p3+Rqtzore+y6WFQbMe?=
+ =?us-ascii?Q?6TQVm9v6AorClEruudtntVoerm3/s6si6c48wApCCoAVhpsinvwfE8BjqHKR?=
+ =?us-ascii?Q?eqUNQrxZabiIqY9rlU4G1YOulBQNkYglf1RD6d2rv1Dkrw0rybAtK2nQRbg6?=
+ =?us-ascii?Q?xydb9tIBtqhKW58y0PHjsu0exSH31N2DRC3vIJdPCIJuzO41ybrYBz/TZ2vo?=
+ =?us-ascii?Q?/Oojy+71rrekLmKTDuI5Tt/EhHRJmQomU6JW0qJWr3f61RqLSuJjXOpSIpMI?=
+ =?us-ascii?Q?8901/f29OXOs9KxZTaHxI9ObysB2L7BzLemMjDzsVYCnYbe9uZH7nfHA6lo9?=
+ =?us-ascii?Q?35PpK+8qkKk4gz8NmFDV+2PTclLzMYpTj8elZwFB4tNh7B+4w9hg6Rfp465O?=
+ =?us-ascii?Q?BPqXq/T4ROi9SZWaLipW7nrbJLNlvkC4PlPvEH0md2j9FO4OVRXaMp/urrZY?=
+ =?us-ascii?Q?yhkaRxm2z9i9Dxdkcd4N5HR1mOJpuhj+kZ2CMdP/uLjHeK/LSnTkoijDbTv9?=
+ =?us-ascii?Q?IQ+4gMEgQo7txupNtNpiSnEYTpn38+2aTkt9yYoqTMaV837YW6PT2S3Qu6vE?=
+ =?us-ascii?Q?3Peg8BcMKQiOxexdn8eLHWPo1ECRBegp1tCUdAou31frYmI/ER/WSZSp8p3v?=
+ =?us-ascii?Q?6hMXR9ojOfMFTRVVlaWvO5ZBaE/E9Pjys3U1ufuxXIsHr2okNML/O0VeIsBu?=
+ =?us-ascii?Q?MpI7N0apxFBJ6Iq1eRVGNvVWHxTh0Zq+D+7DjLLJnjgfEg9QlZ67EEy4VLyt?=
+ =?us-ascii?Q?X413SQQv1pYOKbsbiEjCmbkIt/ahdmvms12MlYxxG0ibvXxeuDXjBd2H0K6f?=
+ =?us-ascii?Q?Dhf4XGYkk9wzMLiqOW8s3nEzkdGyh0n2FeH3jDN8HdlQHVO4HmRqnD9ovu1V?=
+ =?us-ascii?Q?SlewLFvr7HeixSUsK6dc6GRCjeRZ4y6T4oAagNVd?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -130,52 +135,24 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b462f284-969a-4d77-abaf-08da58e1bbd3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jun 2022 08:39:36.8287
+X-MS-Exchange-CrossTenant-Network-Message-Id: c476951a-ffa4-4055-ae05-08da58e1dcb8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jun 2022 08:40:32.0167
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: v3P8xDqJCwFhFHg3a2AtE/rs09yMI/pbtOO1uHnpHqRkOfbfgobr5JXKUXWRs8VxrqOdb2fgrKHZ0UwauzQ9uw==
+X-MS-Exchange-CrossTenant-userprincipalname: vCyI2AL98o112y25XVwntuFh4BN452ytoNCV7wRUGhiDk8TlKcKnDchb3lyaraPMa7Z3AbBsqD7P0Yy+ubnCCg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR11MB6153
 X-OriginatorOrg: intel.com
-Message-ID: <20220628083936._GqmjetoLB-Ms-WYcHXn_NDXfjK94Lizj1zksNcGeF0@z>
+Message-ID: <20220628084032.qmp6w4gILzwQ98kx65G25DupnsPCG2CeKGJwdLIBKh8@z>
 
 > From: Lu Baolu <baolu.lu@linux.intel.com>
 > Sent: Tuesday, June 21, 2022 10:44 PM
 >=20
-> Tweak the I/O page fault handling framework to route the page faults to
-> the domain and call the page fault handler retrieved from the domain.
-> This makes the I/O page fault handling framework possible to serve more
-> usage scenarios as long as they have an IOMMU domain and install a page
-> fault handler in it. Some unused functions are also removed to avoid
-> dead code.
+> Rename iommu-sva-lib.c[h] to iommu-sva.c[h] as it contains all code
+> for SVA implementation in iommu core.
 >=20
-> The iommu_get_domain_for_dev_pasid() which retrieves attached domain
-> for a {device, PASID} pair is used. It will be used by the page fault
-> handling framework which knows {device, PASID} reported from the iommu
-> driver. We have a guarantee that the SVA domain doesn't go away during
-> IOPF handling, because unbind() waits for pending faults with
-> iopf_queue_flush_dev() before freeing the domain. Hence, there's no need
-> to synchronize life cycle of the iommu domains between the unbind() and
-> the interrupt threads.
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-I found iopf_queue_flush_dev() is only called in intel-iommu driver. Did
-I overlook anything?
-
->  static void iopf_handle_group(struct work_struct *work)
->  {
->  	struct iopf_group *group;
-> +	struct iommu_domain *domain;
->  	struct iopf_fault *iopf, *next;
->  	enum iommu_page_response_code status =3D
-> IOMMU_PAGE_RESP_SUCCESS;
->=20
->  	group =3D container_of(work, struct iopf_group, work);
-> +	domain =3D iommu_get_domain_for_dev_pasid(group->dev,
-> +				group->last_fault.fault.prm.pasid);
-> +	if (!domain || !domain->iopf_handler)
-> +		status =3D IOMMU_PAGE_RESP_INVALID;
-
-Miss a comment on why no refcnt is required on domain as explained
-in the commit msg.
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
