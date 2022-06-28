@@ -4,190 +4,81 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C924CC433EF
-	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 14:49:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 862E2C43334
+	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 14:49:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 502754014D;
-	Tue, 28 Jun 2022 14:49:29 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 502754014D
+	by smtp2.osuosl.org (Postfix) with ESMTP id 13C9C40C58;
+	Tue, 28 Jun 2022 14:49:30 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 13C9C40C58
 Authentication-Results: smtp2.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=JPdeUI/c
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=jXMv+sJT
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AmP2dfWVIRfZ; Tue, 28 Jun 2022 14:49:28 +0000 (UTC)
+	with ESMTP id mp0FpA1EFGXs; Tue, 28 Jun 2022 14:49:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 129F340C5B;
+	by smtp2.osuosl.org (Postfix) with ESMTPS id ACFAA400FD;
 	Tue, 28 Jun 2022 14:49:28 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 129F340C5B
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org ACFAA400FD
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C45D0C0039;
-	Tue, 28 Jun 2022 14:49:27 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 84181C002D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 06:17:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 16013C0080;
+	Tue, 28 Jun 2022 14:49:28 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AB8DAC002D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 13:11:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 4EC2B4155B
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 06:17:59 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 4EC2B4155B
-Authentication-Results: smtp4.osuosl.org;
+ by smtp3.osuosl.org (Postfix) with ESMTP id 7807D60E64
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 13:11:32 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 7807D60E64
+Authentication-Results: smtp3.osuosl.org;
  dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
- header.a=rsa-sha256 header.s=Intel header.b=JPdeUI/c
+ header.a=rsa-sha256 header.s=Intel header.b=jXMv+sJT
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kWGxhpVl6GYC for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jun 2022 06:17:58 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id bRqyHcY-DaYv for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jun 2022 13:11:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 566BE411C6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 566BE411C6
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 06:17:58 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 867B8605AC
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 867B8605AC
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 13:11:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1656397078; x=1687933078;
- h=from:to:cc:subject:date:message-id:references:
- in-reply-to:content-transfer-encoding:mime-version;
- bh=93orxkzY/N2uwRnrbie6edMYs+oiYtf40xIWlmJQbl4=;
- b=JPdeUI/cpChbCIIAinv6YyBrSw4SOEf/3EjfS1cKPcQeI5GP+cuwiL/4
- aGka3cIJDtv++9NdZRZxMIH47yEvQe4YduRRuZRnwkuZVQi9ULYS6wUWB
- EXusXY7pRnbFDaz1g3k4hIhWcnfCmTUa7VYW4jvE77sawZVzx1+fsJVpi
- g7QhpOmTMY93zt7pf/l9S9lo3iyUmqNl24oDKK0pg+FC5bAUYJrzLI5B8
- +oNrO3p1QWF5JfS697GIRAEfhRja7VmWjjAnFJlPgTut+e8BzeJJMtmIb
- bwMVOf+MmufsgHtoVlw/z5yv375i0chQivYn+L9QVLr45uFO/71trapDX A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="262057748"
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="262057748"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 27 Jun 2022 23:17:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="590193122"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
- by orsmga002.jf.intel.com with ESMTP; 27 Jun 2022 23:17:50 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 27 Jun 2022 23:17:50 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Mon, 27 Jun 2022 23:17:50 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.100)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Mon, 27 Jun 2022 23:17:49 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iGN+mV8DwoRmUG1BmOWq1vYFc/vA2oK6mczdugviFcQURbL2y/T5AbB+8ZRJ4ICVvVJCgSHYZGU982sQyvg+RxL/RCdgxsnU/dC0Bk8wg/IdiM0r9ZlKs/W9UCtNCtBuEO8b8tXvFpen33GaKF5o2PDZIqsunZnQnex2TEAmVVsqBo2KdhSdC+SJxifRpYpk4P4usx5VA6a3oHxg90aGoG9vuveyVhI+zrQaEZz6Dhctvhn4J3qRAho0qiPQpHd+ZfJhvDKE9lLtaJahHZbhgTFNIbROikucFumHDjfm/9c3vOkVJm99ckFIxezkv0i0xTwZIk7eC7pRyS9PbXjutw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=93orxkzY/N2uwRnrbie6edMYs+oiYtf40xIWlmJQbl4=;
- b=UrEwX2ozRz8ydkpKMC6QiyMJ+knZWkbTVlpiq6QN9pqFtzCHSaxdNTiXDh0q7MoeYP1WHrZWb3p/XQMX2j0KRhm8dYz3eYb3OGfnk0Np9of3U8sMigx1ZgPrjq50JSs6qFxMkn3ui6bdpyezuwL/HdTA7rgBPnvu/O1k/jxb3rOEtazTRrqa6zOHQKD3qWJkdX6AIAmjygZsCxAtqSLokUHkh8XO4R4/0Z5n8xXsK3IdzUJLtwCMQWKh++0lpssNvC38snNRMDzXLlLeT6G4N0SWCQLCK4HrV4Ugy3p4CCpO+4KZDcNQLv0FbP9aWwRFHzE0NIKJBTJw3Wwn511chg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com (2603:10b6:408:11e::13)
- by BYAPR11MB2838.namprd11.prod.outlook.com (2603:10b6:a02:cc::33)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Tue, 28 Jun
- 2022 06:17:46 +0000
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::982:48df:bc5a:e5fa]) by BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::982:48df:bc5a:e5fa%2]) with mapi id 15.20.5373.018; Tue, 28 Jun 2022
- 06:17:46 +0000
-From: "Zhu, Tony" <tony.zhu@intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, Zhangfei Gao
- <zhangfei.gao@linaro.org>, Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe
- <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>, "Tian, Kevin"
- <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Jean-Philippe Brucker
- <jean-philippe@linaro.com>, "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul
- <vkoul@kernel.org>
-Subject: RE: [PATCH v9 06/11] arm-smmu-v3/sva: Add SVA domain support
-Thread-Topic: [PATCH v9 06/11] arm-smmu-v3/sva: Add SVA domain support
-Thread-Index: AQHYirYyFebp6sXEWkWECVlmWMhhsa1kVz1Q
-Date: Tue, 28 Jun 2022 06:17:46 +0000
-Message-ID: <BN9PR11MB5433C2F246AE03D1039C1D078AB89@BN9PR11MB5433.namprd11.prod.outlook.com>
-References: <20220621144353.17547-1-baolu.lu@linux.intel.com>
- <20220621144353.17547-7-baolu.lu@linux.intel.com>
- <9266198d-33fd-4cc5-fdaa-3ba5571543b1@linaro.org>
- <5f5f7518-415a-ba21-07b0-15f526bbf045@linux.intel.com>
-In-Reply-To: <5f5f7518-415a-ba21-07b0-15f526bbf045@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.500.17
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5fc95606-ce03-4ef7-4ab3-08da58cdeb0f
-x-ms-traffictypediagnostic: BYAPR11MB2838:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +ciCBtakGymJXr2XrRqNsPpKqpDXTzMkNdUutibzcA3WDi8BcbXmYkTJlMHEfyQqQDBfPLmCmOeiYxmU0HnutplqiqjEnzTBDGKU+zIVJ3WUzEPUKmIii2EWzD3u0qnoK1vXKSpcaBnJg7ZO4bZRT+Wewi9mj7xoyX+VdjFaZS0FloeVSDxmI//Tx2sPrw2J9khZFkgIYaG+p93FpfNuzijvll6KKCJkAAhT/q14PMblUD88kXvz+w1hzmqOqmt7nJA4xQwpisJHmQsSIg7zYh7RGbMg4E5V2wawDx4XLiTfKoQLE3SMiP+Yx69HRcOoNG3GvL+ealk2UIHKcxMF3WPEh3Qc9eZ22a3jebWIUz8ngV06TQT7ukhXph+KlVPFxcCCGxAR5RPUVwvj0dR0YRG9AqCkBbzmOlOY3nYQSvnCz+fZNA1TAaIOf7QsPm5noRF+R7JByxQxFLwkU6eNmYUdKyldR1bOfkZA5yoPZPRrRojUBkBU95G2NwMFSUYx3Og4CWUOYWDyanbI/5V52SdIl9nYDa2l1qhWljhyIavYX3cacYrAL8iHCZ2rEwsaROu0VnEfRrqOlOSpkiinJTDnYNiIo2gf1/cUnguQ1vJ4hfZKObqBUrA7y5W8S9YFxxrlNr55qGZ7nno2DRY306Gy+YlOClZNp5CotYGKPtYvUAZ/PqIu7RAcOismgl/VzNMW+Pl22JnrROOzoL2qk9Pvsa7Y1+Q1dVcUGa33yfFfQuN7uXAHCfAwUFCgEEviPYytrfR7A4jszdIp0R/ygaqabm6z0jiPzl71Mh7oezSRPFv5ikmBx1cJAsGYMJa/
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN9PR11MB5433.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230016)(136003)(376002)(396003)(366004)(39860400002)(346002)(64756008)(66556008)(66446008)(66476007)(52536014)(66946007)(33656002)(4326008)(8676002)(478600001)(38070700005)(76116006)(9686003)(71200400001)(316002)(26005)(7416002)(5660300002)(41300700001)(55016003)(38100700002)(7696005)(921005)(6506007)(86362001)(110136005)(8936002)(2906002)(186003)(83380400001)(82960400001)(122000001)(53546011)(54906003);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MWpmeWxVeTBYeEdubmExVlkrRnVtQUlmTUdPWnNNVTR5UnRJNWczeE13K1NM?=
- =?utf-8?B?TUdJUmFHaVFXNTRyd0ZYQ2NmdkRJMlRxbDRUVHMyQ2E1YUoyUE5ucEp1NlF5?=
- =?utf-8?B?RERRMWJHRVZrR1VNNFcrLzlVMzU3WlZ0aHRid2Y4VlI1RVl0N0JWQlZmcnpH?=
- =?utf-8?B?WFJQN256RDlIQVVQS3BmNFBmUnpheUwzUlczWVk4ZVdySTlwUnowOFVna0sr?=
- =?utf-8?B?ZlNuMVRSRldWaEZndDE3UjgzSy9wS0hOZHpLVjc2NEVDSGpabGNWenR3TmFP?=
- =?utf-8?B?VHlHL0tqc3FmalY1YTlZM3hudFp5bzM1Vk1FbGNYMG42SFEyTlVPZEpVQzlm?=
- =?utf-8?B?RVF0NjFaWC94QjhNN3dqUzJLY2dIRDRNY0Y5VUFuRmhka3J6S3NwT3JOWEJq?=
- =?utf-8?B?b1JjQ0pDY1VDMExWK05TellCeEs3cGNjTVhWQWxTTGZQMU1YcWJ3Q0tCR0Qx?=
- =?utf-8?B?Z2MzZk1xSlhjUDRaRGszaXhNay9VQjhhWUVPcHhGVmFVY25WbVBHc04zUEh2?=
- =?utf-8?B?L2dxSkoxSHBKUE9PbHQ5MGhPUXdBQ2lvQTBjcXFkWkNrVVgrd3VYb0piUldO?=
- =?utf-8?B?ektnNVI4WEQyQ1hqL2dIczJ1cVptSHJrV0Q1cUVaRyt4UkpNakk2b040OERl?=
- =?utf-8?B?T3JvRTZWS0FVaVhPNHllaXhhV2lYT3dKVklNUWJSZVQvU3lBb0NLdE9xNjlW?=
- =?utf-8?B?d0pFT1NTaGNRY05DWUJ1dEdwNVpoaUU3bndCZ2l5YXdEb2Y4N2FCRDJOa2R0?=
- =?utf-8?B?d2lOOVJ4NllRSms4RFNRdXNwTCtpUFA0K21ieGNncHlmY1J0UllUNEQrMDg0?=
- =?utf-8?B?ZFAvdGFjaXIvdVNGUVV3c3BIOXBrUUc3SmxlWDIrZ3h1NGpFM1MrdWdqQVM0?=
- =?utf-8?B?YnV1ajZ5cUl4Q0FsNERuYUx2MUNyS0Q0MVR6SE9LdEU0ZU55Lzh1OHN2N2Z2?=
- =?utf-8?B?Q0VqSkp1cGgvYStmbVdYUnlyTnpyVUx4bUhPUEowcU9XTm9WWUNSYU95VjBW?=
- =?utf-8?B?TDN0RVEybmZhcWpwRWdwVzNQOTJSTXV3K1J4MmdWQlVpYW5hUUNNNTNDeTc2?=
- =?utf-8?B?NjdzS3cwZlh1NnR4cCtLcFZEUE15VUFVSVNFYlMyZ05YZVh3b01sRDJrWEZk?=
- =?utf-8?B?SndvbHdESE1vU0I0bEphc1AwSHRKTnBxNkU0ajloR0kxaGNPYVN3WEtTOU5l?=
- =?utf-8?B?U09HOVh5T3FZN1Y0NE4xSzA4TmtzS0pKN0d5VWVjcE5MNTV2a0o2bjUwQVF5?=
- =?utf-8?B?UXNKSTNoNGRmMnF3QXJMQkNVaEFmK2QvZXdEalVtTDdDU0puNW9HamlMUXp3?=
- =?utf-8?B?NWZTcVRzcUJtaEtZanNGWitmQlN3aU4xb012eHdGUUY3OVp6Y2p3RFBQYmcw?=
- =?utf-8?B?RW1na0twell5aDQ2cVQ1ZmQ3SmFXYVlZS0l3NE5Qek1uSklIc0ZvUG4zbkE3?=
- =?utf-8?B?eDIrWWpHUlRUN2FtUUpQaXdKVDVkaVkwQmQybXpkY1pjUjF2MWt6U3crTUxy?=
- =?utf-8?B?Tlo0Z29Gell2aldKeFlHTnBRWnljM0lJNGxhVnJzcnJ5K2VmRFVvUGlhZHBF?=
- =?utf-8?B?MjhTZVJoaTBndGxOV05JOFd3UktXQTM2UjJxWVpuS2ZkZ3pIa0dKQ1E1WUlT?=
- =?utf-8?B?WTRKYjRTOWk1bStHV0dDd0ppSHdINklRQkRnYVRzQnNtU283WjhGbkxod2ZI?=
- =?utf-8?B?dVY2VS9BWVR4MFR4VTBlSGgvRFlCcyszN3pGUUNTQ3dpZnFMSW1kOWQrTGVz?=
- =?utf-8?B?NjdvNHJzcjdFNzFERGd5c3NnZGVKUEdKK3RrMzBDeTBZSkxjYWpmY08xS0xV?=
- =?utf-8?B?QkRNWWI1NDk2V1BsZ3ZQYStvRENHeUwrekN5eW1oYnRIS1NGM20vY2ZIWitT?=
- =?utf-8?B?ZGZlVlM2aFVOUVcrSzdoVTk5SWxTa09LTnJyRkpxNXV3eU5JVlV4VVVmeklO?=
- =?utf-8?B?aXF3NEY4aDZ6bktrSHFxd0pRT05ybjF3QVd1NmF3VXcrQVlmTzBmS0dWcHlj?=
- =?utf-8?B?a1h1cWZLVWEvd1AxblFJaFl4T1IxMFNZTnhCTTFOUmlRQnpiT3BpcHowK1Nx?=
- =?utf-8?B?Nk1iYXJ5bGhjZnpXM0RhUlV3ZnAzZ1ExMXArSlVxZm1FUmdwTFcwd0RIWTRX?=
- =?utf-8?Q?/ts5jhj3DiJCX3QvZjERs25bi?=
+ t=1656421889; x=1687957889;
+ h=date:from:to:cc:subject:in-reply-to:message-id:
+ references:mime-version;
+ bh=DaNkICMn0cvyN3Nw69IWZXGw9/gClLhfsSUxhFyTR1w=;
+ b=jXMv+sJTbDcBV1TcFej9Hh4S/bAIsDUywfKEn+jD538wwdXhiTmbCB15
+ IC8vmCHZSIlG0VDVVZY8f5COWChAAiW9/s9PQ8oAfhNYuAHFZliCmvpJY
+ 06yGD3Zz2UoZwjl2XWZ9Xr1ZIt56lkTFN6nKDNph3jIKMNqf5nEnV3obe
+ sg7nxD6qDsVO6n0c5o8ag6WwDOp2TEcEc306cBMr35UOhpVnzQffyI/UT
+ ei6M8r934Am0jjU58F/vLBrr+tMA+6uj1dCw3nzKfetexy6V6lxco8dH7
+ 7gucsAXnqqcqBTDYnXI/BMefpeYfMDOqsixW6/Pi3JzwhGH1PHWkOTkZ6 g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="261539975"
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="261539975"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Jun 2022 06:11:29 -0700
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; d="scan'208";a="646908165"
+Received: from iannetti-mobl.ger.corp.intel.com ([10.251.216.215])
+ by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Jun 2022 06:11:26 -0700
+Date: Tue, 28 Jun 2022 16:11:24 +0300 (EEST)
+From: =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To: Chao Gao <chao.gao@intel.com>
+Subject: Re: [PATCH v1 1/3] swiotlb: Use bitmap to track free slots
+In-Reply-To: <20220628070136.419163-2-chao.gao@intel.com>
+Message-ID: <ae35e2-f224-635f-442f-ce1a537374e3@linux.intel.com>
+References: <20220628070136.419163-1-chao.gao@intel.com>
+ <20220628070136.419163-2-chao.gao@intel.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5433.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5fc95606-ce03-4ef7-4ab3-08da58cdeb0f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jun 2022 06:17:46.1065 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ZZ/tM8JtCK/apEu6kCFO3szqmGIBCjdYuuDLZWMkVFmjScEg+RdofvKygrf6aTT3KtsPmk6KLK2f4W8kP/e8UA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2838
-X-OriginatorOrg: intel.com
+Content-Type: multipart/mixed; boundary="8323329-1081361240-1656421888=:1603"
 X-Mailman-Approved-At: Tue, 28 Jun 2022 14:49:26 +0000
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>
+Cc: len.brown@intel.com, tony.luck@intel.com, rafael.j.wysocki@intel.com,
+ LKML <linux-kernel@vger.kernel.org>, dave.hansen@intel.com,
+ iommu@lists.linux-foundation.org, dan.j.williams@intel.com,
+ reinette.chatre@intel.com, kirill.shutemov@linux.intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -200,38 +91,164 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SSB0ZXN0ZWQgdGhlIHBhdGNoIGFuZCB3b3JrcyBhcyBleHBlY3QuDQpUZXN0ZWQtYnk6IFRvbnkg
-Wmh1IHRvbnkuemh1QGludGVsLmNvbQ0KDQpUb255KHpodSwgeGluemhhbikNCkN1YmU6U0haMS0z
-Vy0yNzkNCmlOZXQ6ODgyMS01MDc3DQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9t
-OiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPiANClNlbnQ6IFR1ZXNkYXksIEp1
-bmUgMjgsIDIwMjIgMjoxMyBQTQ0KVG86IFpoYW5nZmVpIEdhbyA8emhhbmdmZWkuZ2FvQGxpbmFy
-by5vcmc+OyBKb2VyZyBSb2VkZWwgPGpvcm9AOGJ5dGVzLm9yZz47IEphc29uIEd1bnRob3JwZSA8
-amdnQG52aWRpYS5jb20+OyBDaHJpc3RvcGggSGVsbHdpZyA8aGNoQGluZnJhZGVhZC5vcmc+OyBU
-aWFuLCBLZXZpbiA8a2V2aW4udGlhbkBpbnRlbC5jb20+OyBSYWosIEFzaG9rIDxhc2hvay5yYWpA
-aW50ZWwuY29tPjsgV2lsbCBEZWFjb24gPHdpbGxAa2VybmVsLm9yZz47IFJvYmluIE11cnBoeSA8
-cm9iaW4ubXVycGh5QGFybS5jb20+OyBKZWFuLVBoaWxpcHBlIEJydWNrZXIgPGplYW4tcGhpbGlw
-cGVAbGluYXJvLmNvbT47IEppYW5nLCBEYXZlIDxkYXZlLmppYW5nQGludGVsLmNvbT47IFZpbm9k
-IEtvdWwgPHZrb3VsQGtlcm5lbC5vcmc+OyBaaHUsIFRvbnkgPHRvbnkuemh1QGludGVsLmNvbT4N
-CkNjOiBiYW9sdS5sdUBsaW51eC5pbnRlbC5jb207IEplYW4tUGhpbGlwcGUgQnJ1Y2tlciA8amVh
-bi1waGlsaXBwZUBsaW5hcm8ub3JnPjsgaW9tbXVAbGlzdHMubGludXguZGV2OyBsaW51eC1rZXJu
-ZWxAdmdlci5rZXJuZWwub3JnOyBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsgUGFu
-LCBKYWNvYiBqdW4gPGphY29iLmp1bi5wYW5AaW50ZWwuY29tPg0KU3ViamVjdDogUmU6IFtQQVRD
-SCB2OSAwNi8xMV0gYXJtLXNtbXUtdjMvc3ZhOiBBZGQgU1ZBIGRvbWFpbiBzdXBwb3J0DQoNCk9u
-IDIwMjIvNi8yNyAxOTo1MCwgWmhhbmdmZWkgR2FvIHdyb3RlOg0KPiANCj4gDQo+IE9uIDIwMjIv
-Ni8yMSDkuIvljYgxMDo0MywgTHUgQmFvbHUgd3JvdGU6DQo+PiBBZGQgc3VwcG9ydCBmb3IgU1ZB
-IGRvbWFpbiBhbGxvY2F0aW9uIGFuZCBwcm92aWRlIGFuIFNWQS1zcGVjaWZpYyANCj4+IGlvbW11
-X2RvbWFpbl9vcHMuDQo+Pg0KPj4gU2lnbmVkLW9mZi1ieTogTHUgQmFvbHUgPGJhb2x1Lmx1QGxp
-bnV4LmludGVsLmNvbT4NCj4+IFJldmlld2VkLWJ5OiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgPGpl
-YW4tcGhpbGlwcGVAbGluYXJvLm9yZz4NCj4gDQo+IFRlc3RlZC1ieTogWmhhbmdmZWkgR2FvIDx6
-aGFuZ2ZlaS5nYW9AbGluYXJvLm9yZz4gSGF2ZSB0ZXN0ZWQgdGhlIA0KPiBzZXJpZXMgb24gYWFy
-Y2g2NC4NCg0KVG9ueSBoYXMgYmVlbiBoZWxwaW5nIHRvIHZhbGlkYXRlIHRoaXMgc2VyaWVzIG9u
-IEludGVsJ3MgcGxhdGZvcm0uDQoNClRvbnksIGNhbiBJIGFkZCB5b3VyIFRlc3QtYnkgYXMgd2Vs
-bCBpbiB0aGlzIHNlcmllcz8NCg0KQmVzdCByZWdhcmRzLA0KYmFvbHUNCl9fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21t
-dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
-bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-1081361240-1656421888=:1603
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+
+On Tue, 28 Jun 2022, Chao Gao wrote:
+
+> Currently, each slot tracks the number of contiguous free slots starting
+> from itself. It helps to quickly check if there are enough contiguous
+> entries when dealing with an allocation request. But maintaining this
+> information can leads to some overhead. Specifically, if a slot is
+> allocated/freed, preceding slots may need to be updated as the number
+> of contiguous free slots can change. This process may access memory
+> scattering over multiple cachelines.
+> 
+> To reduce the overhead of maintaining the number of contiguous free
+> entries, use a global bitmap to track free slots; each bit represents
+> if a slot is available. The number of contiguous free slots can be
+> calculated by counting the number of consecutive 1s in the bitmap.
+> 
+> Tests show that the average cost of freeing slots drops by 120 cycles
+> while the average cost of allocation increases by 20 cycles. Overall,
+> 100 cycles are saved from a pair of allocation and freeing.
+> 
+> Signed-off-by: Chao Gao <chao.gao@intel.com>
+
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+
+One nit below.
+
+> ---
+>  include/linux/swiotlb.h |  6 ++--
+>  kernel/dma/swiotlb.c    | 64 ++++++++++++++++++++---------------------
+>  2 files changed, 34 insertions(+), 36 deletions(-)
+> 
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 7ed35dd3de6e..c3eab237991a 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -78,8 +78,6 @@ extern enum swiotlb_force swiotlb_force;
+>   *		@end. For default swiotlb, this is command line adjustable via
+>   *		setup_io_tlb_npages.
+>   * @used:	The number of used IO TLB block.
+> - * @list:	The free list describing the number of free entries available
+> - *		from each index.
+>   * @index:	The index to start searching in the next round.
+>   * @orig_addr:	The original address corresponding to a mapped entry.
+>   * @alloc_size:	Size of the allocated buffer.
+> @@ -89,6 +87,8 @@ extern enum swiotlb_force swiotlb_force;
+>   * @late_alloc:	%true if allocated using the page allocator
+>   * @force_bounce: %true if swiotlb bouncing is forced
+>   * @for_alloc:  %true if the pool is used for memory allocation
+> + * @bitmap:	The bitmap used to track free entries. 1 in bit X means the slot
+> + *		indexed by X is free.
+>   */
+>  struct io_tlb_mem {
+>  	phys_addr_t start;
+> @@ -105,8 +105,8 @@ struct io_tlb_mem {
+>  	struct io_tlb_slot {
+>  		phys_addr_t orig_addr;
+>  		size_t alloc_size;
+> -		unsigned int list;
+>  	} *slots;
+> +	unsigned long *bitmap;
+>  };
+>  extern struct io_tlb_mem io_tlb_default_mem;
+>  
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index cb50f8d38360..d7f68c0af7f5 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -207,7 +207,7 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+>  
+>  	spin_lock_init(&mem->lock);
+>  	for (i = 0; i < mem->nslabs; i++) {
+> -		mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
+> +		__set_bit(i, mem->bitmap);
+>  		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
+>  		mem->slots[i].alloc_size = 0;
+>  	}
+> @@ -274,6 +274,11 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+>  		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
+>  		      __func__, alloc_size, PAGE_SIZE);
+>  
+> +	mem->bitmap = memblock_alloc(BITS_TO_BYTES(nslabs), SMP_CACHE_BYTES);
+> +	if (!mem->bitmap)
+> +		panic("%s: Failed to allocate %lu bytes align=0x%x\n",
+> +		      __func__, DIV_ROUND_UP(nslabs, BITS_PER_BYTE), SMP_CACHE_BYTES);
+> +
+>  	swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, flags, false);
+>  
+>  	if (flags & SWIOTLB_VERBOSE)
+> @@ -337,10 +342,13 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+>  			(PAGE_SIZE << order) >> 20);
+>  	}
+>  
+> +	mem->bitmap = bitmap_zalloc(nslabs, GFP_KERNEL);
+>  	mem->slots = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
+>  		get_order(array_size(sizeof(*mem->slots), nslabs)));
+> -	if (!mem->slots) {
+> +	if (!mem->slots || !mem->bitmap) {
+>  		free_pages((unsigned long)vstart, order);
+> +		bitmap_free(mem->bitmap);
+> +		kfree(mem->slots);
+>  		return -ENOMEM;
+>  	}
+>  
+> @@ -498,7 +506,7 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+>  	unsigned int iotlb_align_mask =
+>  		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
+>  	unsigned int nslots = nr_slots(alloc_size), stride;
+> -	unsigned int index, wrap, count = 0, i;
+> +	unsigned int index, wrap, i;
+>  	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
+>  	unsigned long flags;
+>  
+> @@ -514,6 +522,9 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+>  		stride = max(stride, stride << (PAGE_SHIFT - IO_TLB_SHIFT));
+>  	stride = max(stride, (alloc_align_mask >> IO_TLB_SHIFT) + 1);
+>  
+> +	/* slots shouldn't cross one segment */
+> +	max_slots = min_t(unsigned long, max_slots, IO_TLB_SEGSIZE);
+> +
+>  	spin_lock_irqsave(&mem->lock, flags);
+>  	if (unlikely(nslots > mem->nslabs - mem->used))
+>  		goto not_found;
+> @@ -535,8 +546,15 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+>  		if (!iommu_is_span_boundary(index, nslots,
+>  					    nr_slots(tbl_dma_addr),
+>  					    max_slots)) {
+> -			if (mem->slots[index].list >= nslots)
+> +			if (find_next_zero_bit(mem->bitmap, index + nslots, index) ==
+> +					index + nslots)
+>  				goto found;
+> +		} else {
+> +			/*
+> +			 * Remaining slots between current one and the next
+> +			 * bounary cannot meet our requirement.
+
+bounary -> boundary
+
+
+-- 
+ i.
+
+--8323329-1081361240-1656421888=:1603
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--8323329-1081361240-1656421888=:1603--
