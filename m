@@ -1,187 +1,112 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 1FE90C43334
-	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 02:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 34EBDC43334
+	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 03:26:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 8DAC582C99;
-	Tue, 28 Jun 2022 02:59:40 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 8DAC582C99
-Authentication-Results: smtp1.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.a=rsa-sha256 header.s=corp-2021-07-09 header.b=jYq/aY1s;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.a=rsa-sha256 header.s=selector2-oracle-onmicrosoft-com header.b=I9XQ0jhF
+	by smtp2.osuosl.org (Postfix) with ESMTP id 9EDD340483;
+	Tue, 28 Jun 2022 03:26:16 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 9EDD340483
+Authentication-Results: smtp2.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20210112 header.b=fMfCg/HO
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1_A4H8AiZUUx; Tue, 28 Jun 2022 02:59:39 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 9ECBD82660;
-	Tue, 28 Jun 2022 02:59:38 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 9ECBD82660
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3LXYPquhLgvA; Tue, 28 Jun 2022 03:26:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 29C0340017;
+	Tue, 28 Jun 2022 03:26:15 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 29C0340017
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 76E89C0032;
-	Tue, 28 Jun 2022 02:59:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F03DEC0039;
+	Tue, 28 Jun 2022 03:26:14 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6A6E9C007E
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 02:59:36 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 94003C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 03:26:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 3C7504090C
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 02:59:36 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 3C7504090C
+ by smtp4.osuosl.org (Postfix) with ESMTP id 597D1414C8
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 03:26:13 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 597D1414C8
 Authentication-Results: smtp4.osuosl.org;
- dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com
- header.a=rsa-sha256 header.s=corp-2021-07-09 header.b=jYq/aY1s; 
- dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
- header.i=@oracle.onmicrosoft.com header.a=rsa-sha256
- header.s=selector2-oracle-onmicrosoft-com header.b=I9XQ0jhF
+ dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com
+ header.a=rsa-sha256 header.s=20210112 header.b=fMfCg/HO
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id h1jNpwts-pL8 for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jun 2022 02:59:34 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org C526C40981
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com
- [205.220.165.32])
- by smtp4.osuosl.org (Postfix) with ESMTPS id C526C40981
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 02:59:33 +0000 (UTC)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
- by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25S1p8pw020672;
- Tue, 28 Jun 2022 02:59:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=to : cc : subject :
- from : message-id : references : date : in-reply-to : content-type :
- mime-version; s=corp-2021-07-09;
- bh=wMamLpDb+BRSMzdaF++yecs649QCHZ3DOgROwQe3Bpc=;
- b=jYq/aY1sqUjt53/It8QrvnGHbksfYg0vkY27bXmC2aouAPvdZPMFYotmYsvQA3HwaTM0
- nOGwnY6e2YmQLwwm1Os56Fyt9OiMzDhqgMyd5CP1TttXBjSva1+SudstztZvZpiRiiWf
- NQeYDvz35LLmRqkpxCvys4KaOBPqMs7CK0UZhD1NUcc4d86VeCxxetSzimF9by7EsK9D
- c4Dmb5bv+xU37YZ700HFacoQ3QKnAgu1EOLTrfsdG7NM8p4nIR/oWAVhf+KuMtQe3nNX
- 1RtmiR8urxRP7d74RwhP1KlFeHgS8vpjuyEQ+97mZf4ZGad6T50Nict57F8nqlAG+HIR pQ== 
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com
- (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
- by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gwt89vrbe-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Tue, 28 Jun 2022 02:59:17 +0000
-Received: from pps.filterd
- (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
- by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2)
- with SMTP id 25S2t1HG032517; Tue, 28 Jun 2022 02:59:15 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com
- (mail-mw2nam12lp2047.outbound.protection.outlook.com [104.47.66.47])
- by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id
- 3gwrt7j601-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Tue, 28 Jun 2022 02:59:15 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GvtE1IluxXRxNRAdXj+qFrHZoAM3IRtNbDnRYlNUxSSv1k4ltXnN24SJG+3iKrA2WdUu8YSn5nPUzubHkcf29mgsNiIbjnx0QSUdqcOB0ZDvgeSN4s5HIPxtb3CjF7D4dceObk+Xi2o6L//+aA6fjYaalrcg7QVI9/zavvbi/K7ygetsmUigDJo18ztgBb91OcqrRgHXKbzgb8x2gVEg6CX2nxoxBc3RCMNYcyfnM1N6YMnzjS8sXmghZnc5Vv3fVbMWyr2dei1vQm6XkwF+tr9f6Xzl3Wj1oSEjQEjn2sGvaj7p9ipueXDhSILYmccHRGBhCKVfOZWPH/wcGJ3NwA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wMamLpDb+BRSMzdaF++yecs649QCHZ3DOgROwQe3Bpc=;
- b=InUGp7rGX1unmBFP0RxlfGt5G8DzuZTxAOjDKSztS0X3yu1sEQXRuks4vys4S6ywdQxOZMIlzQDcVusM3XCeN77/pnNOipp9wPDWPtMRnlxnf20vanF1BBn5xPfrQE4cX1YU3N9kTspFTMhdy4NentGl4ag0eN9Oa7RH82ApocKautzIEBL3XbaiTB+lnryjW6DleJk3rWol2GnMZEMvlv5H/PwvacVnhj9wzx5st2Vuh8OoMXmWLb2Ah38X6m6EsCogQCts29qeoPw2aPRE6iPxGUCXWk5tdVQwkO9AskoM7zM9UjLGw9oZW6DEt2KLLSZSM2tuf+T7FVvKRBSI/w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wMamLpDb+BRSMzdaF++yecs649QCHZ3DOgROwQe3Bpc=;
- b=I9XQ0jhF1X4CeHVVFET+PdKQLm9Namx8Svditd958QPAlpc3pKSMK6eaFJqbv2Rfa0xi09qDZRc5v3LPKhphrZdC9/0gqWQ95AaolsH8WHCHU+E8qwEuJ1QHRHh6+2QG2uijrpfgqAnm+zOWuqHIZiEF1GweR0OtnGZVXv1WSlQ=
-Received: from PH0PR10MB4759.namprd10.prod.outlook.com (2603:10b6:510:3d::12)
- by PH0PR10MB4790.namprd10.prod.outlook.com (2603:10b6:510:3f::12)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.16; Tue, 28 Jun
- 2022 02:59:13 +0000
-Received: from PH0PR10MB4759.namprd10.prod.outlook.com
- ([fe80::6516:e908:d2bd:ca45]) by PH0PR10MB4759.namprd10.prod.outlook.com
- ([fe80::6516:e908:d2bd:ca45%5]) with mapi id 15.20.5373.018; Tue, 28 Jun 2022
- 02:59:13 +0000
-To: Arnd Bergmann <arnd@kernel.org>
-Subject: Re: [PATCH v3 0/3] phase out CONFIG_VIRT_TO_BUS
-From: "Martin K. Petersen" <martin.petersen@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <yq1bkudh4va.fsf@ca-mkp.ca.oracle.com>
-References: <20220624155226.2889613-1-arnd@kernel.org>
-Date: Mon, 27 Jun 2022 22:59:08 -0400
-In-Reply-To: <20220624155226.2889613-1-arnd@kernel.org> (Arnd Bergmann's
- message of "Fri, 24 Jun 2022 17:52:23 +0200")
-X-ClientProxiedBy: DM6PR11CA0005.namprd11.prod.outlook.com
- (2603:10b6:5:190::18) To PH0PR10MB4759.namprd10.prod.outlook.com
- (2603:10b6:510:3d::12)
+ with ESMTP id CMmPi9800Wy9 for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jun 2022 03:26:11 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org B9565414C7
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com
+ [IPv6:2607:f8b0:4864:20::1032])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id B9565414C7
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 03:26:11 +0000 (UTC)
+Received: by mail-pj1-x1032.google.com with SMTP id
+ n16-20020a17090ade9000b001ed15b37424so11310411pjv.3
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Jun 2022 20:26:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=subject:to:references:cc:from:message-id:date:user-agent
+ :mime-version:in-reply-to;
+ bh=98ncMEofZ3ypmUWB7oKUkuT/bpmjStGksJuUcGKTVGc=;
+ b=fMfCg/HOqcbPVSdVNElbV526+23+XdN3LylNezJqkrHb6fVXmxpkunVG3rLT9XcFXw
+ HpCMyB7KDRKw245t+OJHw3FQL2gH2icNy1tzXFhyTeE+J9RLZswjB9T1T9XiFFpbERR5
+ lCNa01DtHAYHMiVGjinDg8S0v2LUYuJPChTK5IuIdjUFD4GA99cW8qKKeB++ss8Vw+os
+ RLW9bmiojBFFCdkwOuQe/CgRlLJtBdmK9G50X0mwzZYxHK7Dxb7Wga9rrrBIp9c5MIyG
+ 9Sx9MkBVwQuwC4cT7mj+YhgLxFUe+8+CDN6etZdDn0xnYNIAkilvA9GHP+xPdmO3Dj67
+ /XjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:subject:to:references:cc:from:message-id:date
+ :user-agent:mime-version:in-reply-to;
+ bh=98ncMEofZ3ypmUWB7oKUkuT/bpmjStGksJuUcGKTVGc=;
+ b=G8KkRhQq4ICQeqiT0uDpOaFJE/k7X3GnFwNqu+2Gd0cgViOTfcMe4WoeyX/0gbaWF7
+ zpFc68eVIYeRboJ2DxBIdkps5S6X78sfymgHAuOgogp42yfyRSzt/LgetqIwGDaURL0w
+ wezACq8GN4dSFWnwp03l7zylee0oZKOgJ58R8xID44XI2Rq8ERyuoYJ6T0tPu1GhNMKE
+ TbdCG9+KyI3PRiGUumFFOQCN5BAOI7ZVLuDgwa+4vwVYZmNcc7u36mxeL19+4INW5E8A
+ 2pWgHwYLVGV6Qkh5rxas/4Jgnc7zn8t7Q5lfY46uV44XP92SI44ut2fuDm/oYC/8mM9T
+ qCXA==
+X-Gm-Message-State: AJIora8yu6UO5WIqa3ELsCJLnB6cHQkmMvKuQxKaXl9kSDY5nAxAxyzs
+ Bb99BLAQoo9CoPmY3rQtqAk=
+X-Google-Smtp-Source: AGRyM1uIBHaYKcir3w/b3B00SjBhXm7WkQIigMVOjBeds6D7ImU2LcUjsBGcJ8ZGhoTIiYdSDKQhjw==
+X-Received: by 2002:a17:903:283:b0:16a:6db9:3f02 with SMTP id
+ j3-20020a170903028300b0016a6db93f02mr2700935plr.173.1656386771103; 
+ Mon, 27 Jun 2022 20:26:11 -0700 (PDT)
+Received: from [10.1.1.24] (222-155-0-244-adsl.sparkbb.co.nz. [222.155.0.244])
+ by smtp.gmail.com with ESMTPSA id
+ 13-20020a17090a08cd00b001ec932d7592sm8040238pjn.9.2022.06.27.20.26.00
+ (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+ Mon, 27 Jun 2022 20:26:10 -0700 (PDT)
+Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+References: <20220617125750.728590-1-arnd@kernel.org>
+ <20220617125750.728590-4-arnd@kernel.org>
+ <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
+ <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
+ <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com>
+From: Michael Schmitz <schmitzmic@gmail.com>
+Message-ID: <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
+Date: Tue, 28 Jun 2022 15:25:58 +1200
+User-Agent: Mozilla/5.0 (X11; Linux ppc; rv:45.0) Gecko/20100101 Icedove/45.4.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b0eddaa0-0a3c-49d6-e44b-08da58b22e24
-X-MS-TrafficTypeDiagnostic: PH0PR10MB4790:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: p4KHyljA+8Z4xiHfUb5lVwRtPt8Osb39c4XVCLviyhjlN0h7hl0nYUd4peL01XITkHdahCs0KSLb9nJEYrMlh14sVy5eGncN2fe6iPcfZ2yreMrp2E/uMdW+d+Pah2QvgDcujX2XZkXzSZZvsWHBjHX5/US4IZstRVFWXaFJ37zIvWwoiTLWRvO5yloORDND/DAISk7xk1E4bPdrzYf7FB8IeGHww8bzCSwiJkh8O2Jh3CIuRKbVMDxkCzwsIywhYtcssT82I3vuaHbK6QfSdzqVqjE1wTJ2rVvEiX60SZ7uxtEzfGj9gcKBvf1rH0enF/Kz0ebXmaOVZRIU593AiFatCQbcDDGm6wiMBAfjDq6bfLY0WRogDUSFXbcqtLBeP3tl7wTRgb2N0Q4BFjYJdIffHfcMsDJlWylfJYmjJ8EZEvlet+Byrh6Uh9D+YmLD0L4fwXjM604RA8lfJLi0ubjccNt+cF0HqLIHimsq9MfCuuXPUZdDJSPDrv04/vU6veJt5MKe9m7SFdxSQx1M7rB3bxkRSJ8sj2mJ3Ps8Bn0p5OVzrg2qxdAQrJn2Zy4iUEQt8BUPJoIE33CrwfEVWie+MLZEqGL8x4AhqhiCzKPWxoLLzcvK0L6csvKumdj4iE1nYqds1creOSKYOVHUcW01NvwwLFiFgzl5IHQPBSDoauIDJ3lvhd1Ud01cIsXiwAToaOehlPeZGiLmXHR/GCqWyus3ZrG/x+TLrmqiV0b03qTg7r0MZrraK12hbh4criYxXRcO8iF8QUdYH4YpnjgsxyShBXeu6bRMpmQDz48=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:PH0PR10MB4759.namprd10.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230016)(136003)(396003)(346002)(39860400002)(366004)(376002)(6512007)(38100700002)(41300700001)(8936002)(86362001)(2906002)(26005)(7416002)(38350700002)(4744005)(316002)(6506007)(6486002)(66946007)(8676002)(478600001)(66476007)(52116002)(5660300002)(4326008)(54906003)(66556008)(6916009)(186003)(36916002)(6666004);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ogi8FfaCr20aXP5D0AeBliPkBoOfl3e5M2wOGI0c4ztz/AvyEfzVnHcH5rRp?=
- =?us-ascii?Q?dyXRZiG2D0FOwmCCh4q5a2/xl4GYGtTvv12cw5s02p/6tgGOkNNgBkvSt1c0?=
- =?us-ascii?Q?5wB1v7fdkezPG9iElRMEIJdjUwksmLFLX1r4slXo28/SSlJPpD9j5IpZ+jXH?=
- =?us-ascii?Q?vvx/OUcnmQEhXxDOtC/3pXzbQEG57qj9z9MRZ+PjTGShfCmdF12KAHweMM6K?=
- =?us-ascii?Q?ZRGkLhkDu4T6PrWSEdgmoj6UUTsEYdNzF61Ifi7pcJtD02G2eibMy5lbcJo3?=
- =?us-ascii?Q?ya5EY9GRclL1w5opXZVDzL2h69sUvCaLieYk91yQuv47Yy4lWDUOr60oZfsI?=
- =?us-ascii?Q?u6w6vmnmiXv3MPwOjMCJ5/d5iaShV0a94hpDESFENw+hAMkJelrNm+B3x62p?=
- =?us-ascii?Q?X9p/HwV/HgX9V13dpmmxcypOTZTDXlof93BC2BBKS83A+QTly6pAfA9G5dAZ?=
- =?us-ascii?Q?jNiK0alRsCN2Zxwa3+2BRYq6YDAUKkOvq8pntEpb5fQYN07fTyPz79yFVcgx?=
- =?us-ascii?Q?oA24FSRpqK/45LrrEyDS0oUeMqqeKsOQU/NZWRFRBVAHN/ZvlRZsE3d1xBVG?=
- =?us-ascii?Q?80Qc5CZ9gVol1VRtqI3262yS2HLYfhdMoqyIi2UH6RsGZlFrztqernXnhSBZ?=
- =?us-ascii?Q?xT7yMVK4XSiLqDa0VHa/d6Ps7ogo1gPJb9SH5VrTqRndeXZ8phk1pkHHrizR?=
- =?us-ascii?Q?1lj2Ozw+SRPpbKg87+EZX3A0kTl4bJXiw9MGPrrlWMJt413eSC3b63CZMVa2?=
- =?us-ascii?Q?lO4tCKmszDzNVT3UoRfZD5qZMYy5T/9JwgEG8Tf73ikG7rd+7Ic2fquhU2xA?=
- =?us-ascii?Q?WGmyHpVKUZqEbhrFt29cMFkQpnQn/2eW0QMbGCcVE7a0NyDrvaNSkANZ4lB4?=
- =?us-ascii?Q?xb2Fi+ElxAEKxf8Yc/TmuqlRSibCXDHas83O4OCNL9BreDeMxkPPo8CvbPyd?=
- =?us-ascii?Q?0ww3ZKpWJndL03XBIRr2deB3XpuPVzqoZ0kYwuWfwnc84HQKFQunoNDb7jEQ?=
- =?us-ascii?Q?nL7/LFrlA0AvDWgTj4UQUI1yVIIGDgF8Eq8okPHHVEusY6ksl1IU8ZZWyXND?=
- =?us-ascii?Q?ZqjfGsMWcv1wBSh3i3YEPTFjvDziQIr/AcXPBrMKW+jGWPfmCrWMip1v0E21?=
- =?us-ascii?Q?FG4H90dS1paXvHufqLxPsmFhCrj0smTDTqZHA+ApCTDTF+zL7GMh80pBv4Rk?=
- =?us-ascii?Q?8/Pp1FYI7kLdizN5t6WQddApPMKBwDWb/3fhhsLNY14nWN2spBn4zCwfNxU0?=
- =?us-ascii?Q?HRqzWrFAk0gu0ra8taFagqJoJm+GbmXe4qPET9hT6jqHNCpVJayg4N/dAOxg?=
- =?us-ascii?Q?QeuE6LB6B2ed37RkPzs4OoKjJQtBl07Q/qBK14FlhlTcZ9rjKNGnfvqoXzpC?=
- =?us-ascii?Q?Tl3Ckr2/mBUe3O7mcvrmEZdeCyc2/K66s7Jc2Rp8QvHEEfX/0vgO61HeWKSU?=
- =?us-ascii?Q?QbDkr7WnovC/Vo/daWD64mYv7brLLZVfcUfPEgd3uaXzVZRDN6HlFQLMrXxW?=
- =?us-ascii?Q?dj0YEqzB3WHLg3hrhTzOUDlUz/FIwvkW6PGgVhv7sIhVCxgz4ghOC55nnXeB?=
- =?us-ascii?Q?JyQ9PLyP0yEgU4QfMBiNzKhi7YZCWlcrZDvd0EidUVbmpkxBHKe55GwEW65Y?=
- =?us-ascii?Q?iA=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b0eddaa0-0a3c-49d6-e44b-08da58b22e24
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB4759.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2022 02:59:13.1219 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zrNNVYlCJEUe2GlQS/SUgboR0K7cd1A8xqCcC9y4F5e/LCSlzQFxkr5DuOQ0MkXbxw4vCXPVIyE+apv27xcBVKtOOhhIFzXrpckfB0DR/ZI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR10MB4790
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517, 18.0.883
- definitions=2022-06-27_06:2022-06-24,
- 2022-06-27 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=879
- suspectscore=0
- mlxscore=0 phishscore=0 malwarescore=0 adultscore=0 spamscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2206280011
-X-Proofpoint-ORIG-GUID: 1dFk_RKS9mTueJWMTx8745vB7FgPTCzA
-X-Proofpoint-GUID: 1dFk_RKS9mTueJWMTx8745vB7FgPTCzA
-Cc: linux-arch@vger.kernel.org, Miquel van Smoorenburg <mikevs@xs4all.net>,
- linux-scsi@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
- linuxppc-dev@lists.ozlabs.org, "Maciej W . Rozycki" <macro@orcam.me.uk>,
- linux-m68k@lists.linux-m68k.org, Denis Efremov <efremov@linux.com>,
- Mark Salyzyn <salyzyn@android.com>, Christoph Hellwig <hch@infradead.org>,
- iommu@lists.linux-foundation.org, Matt Wang <wwentao@vmware.com>,
- linux-parisc@vger.kernel.org, linux-alpha@vger.kernel.org,
- Jakub Kicinski <kuba@kernel.org>, Khalid Aziz <khalid@gonehiking.org>,
- Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com>
+Content-Type: multipart/mixed; boundary="------------EF1F8A9B021AD1B88577153E"
+Cc: Linux-Arch <linux-arch@vger.kernel.org>, Arnd Bergmann <arnd@kernel.org>,
+ scsi <linux-scsi@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+ Miquel van Smoorenburg <mikevs@xs4all.net>,
+ linux-m68k <linux-m68k@lists.linux-m68k.org>,
+ linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+ Michael Ellerman <mpe@ellerman.id.au>,
+ "Maciej W . Rozycki" <macro@orcam.me.uk>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Denis Efremov <efremov@linux.com>, Mark Salyzyn <salyzyn@android.com>,
+ Christoph Hellwig <hch@infradead.org>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>, Matt Wang <wwentao@vmware.com>,
+ Parisc List <linux-parisc@vger.kernel.org>,
+ alpha <linux-alpha@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+ Khalid Aziz <khalid@gonehiking.org>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -194,23 +119,190 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+This is a multi-part message in MIME format.
+--------------EF1F8A9B021AD1B88577153E
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Arnd!
+Hii Geert
 
-> If there are no more issues identified with this series, I'll merge it
-> through the asm-generic tree. The SCSI patches can also get merged
-> separately through the SCSI maintainers' tree if they prefer.
+Am 28.06.2022 um 09:12 schrieb Michael Schmitz:
+> Hi Geert,
+>
+> On 27/06/22 20:26, Geert Uytterhoeven wrote:
+>> Hi Michael,
+>>
+>> On Sat, Jun 18, 2022 at 3:06 AM Michael Schmitz <schmitzmic@gmail.com>
+>> wrote:
+>>> Am 18.06.2022 um 00:57 schrieb Arnd Bergmann:
+>>>> From: Arnd Bergmann <arnd@arndb.de>
+>>>>
+>>>> All architecture-independent users of virt_to_bus() and bus_to_virt()
+>>>> have been fixed to use the dma mapping interfaces or have been
+>>>> removed now.  This means the definitions on most architectures, and the
+>>>> CONFIG_VIRT_TO_BUS symbol are now obsolete and can be removed.
+>>>>
+>>>> The only exceptions to this are a few network and scsi drivers for m68k
+>>>> Amiga and VME machines and ppc32 Macintosh. These drivers work
+>>>> correctly
+>>>> with the old interfaces and are probably not worth changing.
+>>> The Amiga SCSI drivers are all old WD33C93 ones, and replacing
+>>> virt_to_bus by virt_to_phys in the dma_setup() function there would
+>>> cause no functional change at all.
+>> FTR, the sgiwd93 driver use dma_map_single().
+>
+> Thanks! From what I see, it doesn't have to deal with bounce buffers
+> though?
 
-I put patches 1 and 2 in scsi-staging to see if anything breaks...
+Leaving the bounce buffer handling in place, and taking a few other 
+liberties - this is what converting the easiest case (a3000 SCSI) might 
+look like. Any obvious mistakes? The mvme147 driver would be very 
+similar to handle (after conversion to a platform device).
 
+The driver allocates bounce buffers using kmalloc if it hits an 
+unaligned data buffer - can such buffers still even happen these days? 
+If I understand dma_map_single() correctly, the resulting dma handle 
+would be equally misaligned?
+
+To allocate a bounce buffer, would it be OK to use dma_alloc_coherent() 
+even though AFAIU memory used for DMA buffers generally isn't consistent 
+on m68k?
+
+Thinking ahead to the other two Amiga drivers - I wonder whether 
+allocating a static bounce buffer or a DMA pool at driver init is likely 
+to succeed if the kernel runs from the low 16 MB RAM chunk? It certainly 
+won't succeed if the kernel runs from a higher memory address, so the 
+present bounce buffer logic around amiga_chip_alloc() might still need 
+to be used here.
+
+Leaves the question whether converting the gvp11 and a2091 drivers is 
+actually worth it, if bounce buffers still have to be handled explicitly.
+
+Untested (except for compile testing), un-checkpatched, don't try this 
+on any disk with valuable data ...
+
+Cheers,
+
+	Michael
+
+--------------EF1F8A9B021AD1B88577153E
+Content-Type: text/x-diff;
+ name="0001-scsi-convert-m68k-WD33C93-drivers-to-DMA-API.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="0001-scsi-convert-m68k-WD33C93-drivers-to-DMA-API.patch"
+
+From e8c6aa068d27901c49dfb7442d4200cc966350a5 Mon Sep 17 00:00:00 2001
+From: Michael Schmitz <schmitzmic@gmail.com>
+Date: Tue, 28 Jun 2022 12:45:08 +1200
+Subject: [PATCH] scsi - convert m68k WD33C93 drivers to DMA API
+
+Use dma_map_single() for gvp11 driver (leave bounce buffer logic unchanged).
+
+Compile-tested only.
+
+Signed-off-by: Michael Schmitz <schmitzmic@gmail.com>
+---
+ drivers/scsi/a3000.c | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/scsi/a3000.c b/drivers/scsi/a3000.c
+index dd161885eed1..3c62e8bafb8f 100644
+--- a/drivers/scsi/a3000.c
++++ b/drivers/scsi/a3000.c
+@@ -7,6 +7,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/interrupt.h>
+ #include <linux/platform_device.h>
++#include <linux/dma-mapping.h>
+ #include <linux/module.h>
+ 
+ #include <asm/page.h>
+@@ -25,8 +26,11 @@
+ struct a3000_hostdata {
+ 	struct WD33C93_hostdata wh;
+ 	struct a3000_scsiregs *regs;
++	struct device *dev;
+ };
+ 
++#define DMA_DIR(d)   ((d == DATA_OUT_DIR) ? DMA_TO_DEVICE : DMA_FROM_DEVICE)
++
+ static irqreturn_t a3000_intr(int irq, void *data)
+ {
+ 	struct Scsi_Host *instance = data;
+@@ -49,12 +53,16 @@ static irqreturn_t a3000_intr(int irq, void *data)
+ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
+ {
+ 	struct scsi_pointer *scsi_pointer = WD33C93_scsi_pointer(cmd);
++	unsigned long len = scsi_pointer->this_residual;
+ 	struct Scsi_Host *instance = cmd->device->host;
+ 	struct a3000_hostdata *hdata = shost_priv(instance);
+ 	struct WD33C93_hostdata *wh = &hdata->wh;
+ 	struct a3000_scsiregs *regs = hdata->regs;
+ 	unsigned short cntr = CNTR_PDMD | CNTR_INTEN;
+-	unsigned long addr = virt_to_bus(scsi_pointer->ptr);
++	dma_addr_t addr;
++
++	addr = dma_map_single(hdata->dev, scsi_pointer->ptr, len, DMA_DIR(dir_in));
++	scsi_pointer->dma_handle = addr;
+ 
+ 	/*
+ 	 * if the physical address has the wrong alignment, or if
+@@ -79,7 +87,7 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
+ 			       scsi_pointer->this_residual);
+ 		}
+ 
+-		addr = virt_to_bus(wh->dma_bounce_buffer);
++		addr = virt_to_phys(wh->dma_bounce_buffer);
+ 	}
+ 
+ 	/* setup dma direction */
+@@ -166,6 +174,10 @@ static void dma_stop(struct Scsi_Host *instance, struct scsi_cmnd *SCpnt,
+ 			wh->dma_bounce_len = 0;
+ 		}
+ 	}
++	dma_unmap_single(hdata->dev, scsi_pointer->dma_handle,
++			 scsi_pointer->this_residual,
++			 DMA_DIR(wh->dma_dir));
++
+ }
+ 
+ static struct scsi_host_template amiga_a3000_scsi_template = {
+@@ -193,6 +205,11 @@ static int __init amiga_a3000_scsi_probe(struct platform_device *pdev)
+ 	wd33c93_regs wdregs;
+ 	struct a3000_hostdata *hdata;
+ 
++	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
++		dev_warn(&pdev->dev, "cannot use 32 bit DMA\n");
++		return -ENODEV;
++	}
++
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!res)
+ 		return -ENODEV;
+@@ -216,6 +233,7 @@ static int __init amiga_a3000_scsi_probe(struct platform_device *pdev)
+ 	wdregs.SCMD = &regs->SCMD;
+ 
+ 	hdata = shost_priv(instance);
++	hdata->dev = &pdev->dev;
+ 	hdata->wh.no_sync = 0xff;
+ 	hdata->wh.fast = 0;
+ 	hdata->wh.dma_mode = CTRL_DMA;
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+2.17.1
+
+
+--------------EF1F8A9B021AD1B88577153E
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--------------EF1F8A9B021AD1B88577153E--
