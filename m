@@ -1,32 +1,32 @@
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDF32257A
-	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 11:34:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3567D257A
+	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 11:41:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656416056; x=1687952056;
+  t=1656416494; x=1687952494;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=WyQ7Lhg64UA7faLJ8umQR8gY+ay9xEU5cNZImGlhWOk=;
-  b=mPJDr57GEi+1qk2T7LZZHm4bqAo6RCypYCOKO2HWK9nHhcnYcbS9JsP0
-   YR9at9ZzN515jI1a5fElDZPKgi3Vwv4IivcEFdFwpPSxkduHgnvE/nPfO
-   tOY/TFPnwmWOjSpuSdLFW7GLn47vDlz6vVuFFOGOxegQHlfa2ohbQg6zS
-   qnozt6KADcEYk0l2qvqq19Q+VekTkCMUGooxBtMa/cl2/bSx8B54N2VGT
-   WY+3G+TI/CywrCcIAy5GF1GIixD+5eGxD851ifX3sEo2I0kaD11ygik3o
-   SP37scM7y6/FyfLLlw/qUZaPCUsKllb8M6irP3SUwTm7s+NZ98W2VaGHT
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="368029179"
+  bh=e5sDkMOObEeUMkZBt6eVhm9iKgpXHF4MwlPjCkr+LpE=;
+  b=c+uhI85zgWa50ROClu75cSR3j+sQcGno2XXkLSOxZX+zbziJ71DOTkOj
+   tt6Uqe9NnqmBCqYiDWBHv8l9Q40pY14PCv9E+wf3U9jwIOiLwuAlZgDMG
+   cvUE9o9/tlPUr8TzkHBCHoOVAad8ER04MWmcB2Hy7uEcVTcKYEgDA5ieO
+   OQZOC5sQF7manu0J31Lv+/cNNWxShN2uVbWKFgMIQW+m10w02F7q1SR2c
+   CUq3sPd8/HHTILBw2vrwBZNvMB2nwoDnxmlswtobVp3dQ5I1/i6M7R///
+   3NsMLVKxFDcs4pvXcS9Wyf2YY6CiVYqQ1paIxUDeiiQoEi7wZ6fjeYpD1
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="270466744"
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="368029179"
+   d="scan'208";a="270466744"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:34:03 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:41:33 -0700
 X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
-   d="scan'208";a="646877561"
+   d="scan'208";a="646879736"
 Received: from ltang11-mobl1.ccr.corp.intel.com (HELO [10.249.169.64]) ([10.249.169.64])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:33:59 -0700
-Message-ID: <89130952-155c-38f0-3318-1c071562661f@linux.intel.com>
-Date: Tue, 28 Jun 2022 19:33:57 +0800
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:41:29 -0700
+Message-ID: <31116b7f-2ce5-ba18-bcc7-97076199d745@linux.intel.com>
+Date: Tue, 28 Jun 2022 19:41:28 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,47 +59,37 @@ From: Baolu Lu <baolu.lu@linux.intel.com>
 In-Reply-To: <BN9PR11MB527679FF12B6D990A5E596A88CB89@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <20220628113357.yqIz2RjFJn-MdStYWhgosYb7B6zUnoM2cd2aEosLS5w@z>
+Message-ID: <20220628114128.JYs4mt-t7KMGYNlEynLM7vxSxFskHdZIcU-3VrxT9oQ@z>
 
 On 2022/6/28 16:50, Tian, Kevin wrote:
->> From: Baolu Lu<baolu.lu@linux.intel.com>
->> Sent: Tuesday, June 28, 2022 1:41 PM
->>>>    struct iommu_domain {
->>>>    	unsigned type;
->>>>    	const struct iommu_domain_ops *ops;
->>>>    	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
->>>> -	iommu_fault_handler_t handler;
->>>> -	void *handler_token;
->>>>    	struct iommu_domain_geometry geometry;
->>>>    	struct iommu_dma_cookie *iova_cookie;
->>>> +	union {
->>>> +		struct {	/* IOMMU_DOMAIN_DMA */
->>>> +			iommu_fault_handler_t handler;
->>>> +			void *handler_token;
->>>> +		};
->>> why is it DMA domain specific? What about unmanaged
->>> domain? Unrecoverable fault can happen on any type
->>> including SVA. Hence I think above should be domain type
->>> agnostic.
->> The report_iommu_fault() should be replaced by the new
->> iommu_report_device_fault(). Jean has already started this work.
+>>>> +
+>>>> +	mutex_lock(&group->mutex);
+>>>> +	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain,
+>>>> GFP_KERNEL);
+>>>> +	if (curr)
+>>>> +		goto out_unlock;
+>>> Need check xa_is_err(old).
+>> Either
 >>
->> https://lore.kernel.org/linux-iommu/Yo4Nw9QyllT1RZbd@myrica/
+>> (1) old entry is a valid pointer, or
+> return -EBUSY in this case
+> 
+>> (2) xa_is_err(curr)
+> return xa_err(cur)
+> 
+>> are failure cases. Hence, "curr == NULL" is the only check we need. Did
+>> I miss anything?
 >>
->> Currently this is only for DMA domains, hence Robin suggested to make it
->> exclude with the SVA domain things.
->>
->> https://lore.kernel.org/linux-iommu/f3170016-4d7f-e78e-db48-
->> 68305f683349@arm.com/
-> Then it's worthy a comment that those two fields are for
-> some legacy fault reporting stuff and DMA type only.
+> But now you always return -EBUSY for all kinds of xa errors.
 
-The iommu_fault and SVA fields are exclusive. The former is used for
-unrecoverable DMA remapping faults, while the latter is only interested
-in the recoverable page faults.
+Fair enough. Updated like below.
 
-I will update the commit message with above explanation. Does this work
-for you?
+         curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, 
+GFP_KERNEL);
+         if (curr) {
+                 ret = xa_err(curr) ? : -EBUSY;
+                 goto out_unlock;
+         }
 
 Best regards,
 baolu
