@@ -1,89 +1,105 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8CE96C43334
-	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 21:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 4A8BFC433EF
+	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 23:09:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 244D74032A;
-	Tue, 28 Jun 2022 21:55:44 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 244D74032A
-Authentication-Results: smtp2.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20201202 header.b=b9uS1y9z
+	by smtp3.osuosl.org (Postfix) with ESMTP id C415560EA0;
+	Tue, 28 Jun 2022 23:09:14 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org C415560EA0
+Authentication-Results: smtp3.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20210112 header.b=EqbuEMnr
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id P5nzS6DomVDF; Tue, 28 Jun 2022 21:55:43 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id HgZFSdm7sjMA; Tue, 28 Jun 2022 23:09:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id CC8F8400F3;
-	Tue, 28 Jun 2022 21:55:42 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org CC8F8400F3
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 5F0A660B57;
+	Tue, 28 Jun 2022 23:09:13 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 5F0A660B57
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8FD38C0032;
-	Tue, 28 Jun 2022 21:55:42 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5C64BC002D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 21:55:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 224C0C0032;
+	Tue, 28 Jun 2022 23:09:13 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1F831C002D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 23:09:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 224F78145A
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 21:55:41 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 224F78145A
-Authentication-Results: smtp1.osuosl.org;
- dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org
- header.a=rsa-sha256 header.s=k20201202 header.b=b9uS1y9z
+ by smtp4.osuosl.org (Postfix) with ESMTP id D7F85408D2
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 23:09:11 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org D7F85408D2
+Authentication-Results: smtp4.osuosl.org;
+ dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com
+ header.a=rsa-sha256 header.s=20210112 header.b=EqbuEMnr
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5YXc9kq7CvGU for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jun 2022 21:55:40 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 2BEF181449
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 2BEF181449
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 21:55:40 +0000 (UTC)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by ams.source.kernel.org (Postfix) with ESMTPS id 4F69AB82060
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 21:55:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC3DFC36AE2
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 21:55:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1656453335;
- bh=Ih9a5Om/MmEIX4v6ClfaGsYY95Thx/a8Y6asrG6fwXg=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=b9uS1y9zZH5shNehIU788hla2D3cqHzEuOf4ntBz7MxqozEJwfWJnE7Ks7x80vJUW
- 8kv3pqmsjiCee09PX0yvTGcEx2Cut7rd5VUEPi1Ok/r71Li89UIa9lEeJs5lir3L9G
- dn4sMp8EjadD8vyN158bB9WMKMo5ug00j2hr3Rw0LFCkWa1OVhmADFgMiyWCAjhqeq
- 2pPGkYfNIcwUIJa/2IbGbgiBIvXriXV6e543WcMEwsN7/jAf15mGlk3t/07+apGlTT
- 9sZR5rPOipfKd8HT5ntaMBYuQG73aLI/777pK3YIaE2zifWvCB2udwOFws1KKx4vlJ
- kWfB059WXYR2A==
-Received: by mail-yb1-f182.google.com with SMTP id h187so22341025ybg.0
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 14:55:35 -0700 (PDT)
-X-Gm-Message-State: AJIora8IW1WYsTTikuWWP6e10A1/9BA1q11flCsnL2OQvrThvMVWyrBZ
- mxZR2etz3p++1qNX/BwYHUOYAq0QLrjIuJ5q1HE=
-X-Google-Smtp-Source: AGRyM1tb4BjbkpD5w5tudBkGYRK/cIE8Bb7XiI/EYhHGbLLjj5dThHoetSIfSlMkV4AlJod7kkGZlzoBKXhTY7DLP7I=
-X-Received: by 2002:a05:6902:120f:b0:668:2228:9627 with SMTP id
- s15-20020a056902120f00b0066822289627mr22801646ybu.134.1656453334640; Tue, 28
- Jun 2022 14:55:34 -0700 (PDT)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id enToSe3c0CP2 for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jun 2022 23:09:10 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org BC9B740899
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com
+ [IPv6:2607:f8b0:4864:20::102c])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id BC9B740899
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 23:09:10 +0000 (UTC)
+Received: by mail-pj1-x102c.google.com with SMTP id
+ m14-20020a17090a668e00b001ee6ece8368so8192807pjj.3
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 16:09:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=message-id:date:mime-version:user-agent:subject:content-language:to
+ :cc:references:from:in-reply-to:content-transfer-encoding;
+ bh=dNlrbJyo72p6W86+4oHtq0SFKKEweCfCqBRbkZwsc7M=;
+ b=EqbuEMnrslAV+CNK7icH3sIdyHFdJJt4o0XreMd9PWJnnZD3urkUIczP47SLJfHLt2
+ a9Hb2RY2iAMPDYrZzzSebZiLkEkZAZ2GjO1a/YmSZkK2Xp17oEjfDGogNixZdLL3HOfT
+ MzvWAi3e8vTQIn19ErTtVtK9046FovgWZzO54p+FjfQ0vKr2M4MHFIDFYcsnV6vwqKlZ
+ OpVSBU4xgvKUep3BWnCx5mqYbaYMbM8l8r4kRGa0fyiirmqh9Q5Jv5kmLBa0iY42WhAG
+ mXPGja9Jz5H3RSM3uxCyFKm/5U62U9tV2w1DJBxZ5P0LBgo5T9Yd1NziQJflQEY9hQZf
+ YhCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+ :content-language:to:cc:references:from:in-reply-to
+ :content-transfer-encoding;
+ bh=dNlrbJyo72p6W86+4oHtq0SFKKEweCfCqBRbkZwsc7M=;
+ b=4nR8oUKV7qYNWEFr/VrFxrPHcuiF7Azx1DUm0dvCpLFXkda5z9lv4sq1x/bZfXOpSF
+ r1bnfioYO30XVu5+kBnjBR0GwQEeIZ6WiHGpLqY5YlsF2afxyrIhINnwziLDKd1icjoi
+ XVJxc2nwBGgtrH/9i78hTjoREbhBzd8P2D7D/xAGHzyeKxtX043TByZyUgnIE+KoHNAg
+ noZOFt/ZWFnmZVOI6o0f6IfJ0i8J3DXFzvn3fHDBjatO8i3YfT5CIN9aajY6qd131Vsb
+ bQ2xw9+ksUJ4mxVL7hbjL9hP7UZFGg9l8CGd2glj6DsQaIDyxC4zI3g8kB8h+VIS3xAu
+ V5xQ==
+X-Gm-Message-State: AJIora9NoRV7lkmTMsEiAGDOMRvzVNY3Tk9oHkpFW0rWa+5Rch0AHg7O
+ I49NX8IAO347KVbJUTvnoqk=
+X-Google-Smtp-Source: AGRyM1sKFPd7rmb+HZNy3hqqLYOU4RMipHtRZ0GXpNrqgiP6rjxKGk/MTbwV1Q3gFv+zgJ5mODs7jg==
+X-Received: by 2002:a17:902:d50e:b0:16a:13d:30ab with SMTP id
+ b14-20020a170902d50e00b0016a013d30abmr7366924plg.31.1656457750171; 
+ Tue, 28 Jun 2022 16:09:10 -0700 (PDT)
+Received: from ?IPV6:2001:df0:0:200c:75aa:d6ca:4354:6033?
+ ([2001:df0:0:200c:75aa:d6ca:4354:6033])
+ by smtp.gmail.com with ESMTPSA id
+ jy18-20020a17090b325200b001e31803540fsm450854pjb.6.2022.06.28.16.09.02
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 28 Jun 2022 16:09:09 -0700 (PDT)
+Message-ID: <9f812d3d-0fcd-46e6-6d7e-6d4bf66f24ab@gmail.com>
+Date: Wed, 29 Jun 2022 11:09:00 +1200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
+Content-Language: en-US
+To: Arnd Bergmann <arnd@kernel.org>
 References: <20220617125750.728590-1-arnd@kernel.org>
  <20220617125750.728590-4-arnd@kernel.org>
  <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
  <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
  <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com>
  <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
- <CAK8P3a1ivqYB38c_QTjG8e85ZBnCB6HEa-6LR1HDc8shG1Pwmw@mail.gmail.com>
- <b1edec96-ccb2-49d6-323b-1abc0dc37a50@gmail.com>
-In-Reply-To: <b1edec96-ccb2-49d6-323b-1abc0dc37a50@gmail.com>
-From: Arnd Bergmann <arnd@kernel.org>
-Date: Tue, 28 Jun 2022 23:55:17 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2jvFQBvKfdR5ivDBECN5tEej6Ja4=7Loze646hrQ5wzg@mail.gmail.com>
-Message-ID: <CAK8P3a2jvFQBvKfdR5ivDBECN5tEej6Ja4=7Loze646hrQ5wzg@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
-To: Michael Schmitz <schmitzmic@gmail.com>
+ <CAMuHMdXUihTPD9A9hs__Xr2ErfOqkZ5KgCHqm+9HvRf39uS5kA@mail.gmail.com>
+ <c30bc9b6-6ccd-8856-dc6b-4e16450dad6f@gmail.com>
+ <CAK8P3a1rxEVwVF5U-PO6pQkfURU5Tro1Qp8SPUfHEV9jjWOmCQ@mail.gmail.com>
+From: Michael Schmitz <schmitzmic@gmail.com>
+In-Reply-To: <CAK8P3a1rxEVwVF5U-PO6pQkfURU5Tro1Qp8SPUfHEV9jjWOmCQ@mail.gmail.com>
 Cc: Linux-Arch <linux-arch@vger.kernel.org>, scsi <linux-scsi@vger.kernel.org>,
  Michael Ellerman <mpe@ellerman.id.au>, Christoph Hellwig <hch@infradead.org>,
  Geert Uytterhoeven <geert@linux-m68k.org>, Jakub Kicinski <kuba@kernel.org>,
@@ -112,55 +128,30 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jun 28, 2022 at 11:38 PM Michael Schmitz <schmitzmic@gmail.com> wrote:
-> On 28/06/22 19:08, Arnd Bergmann wrote:
-> > I see two other problems with your patch though:
-> >
-> > a) you still duplicate the cache handling: the cache_clear()/cache_push()
-> > is supposed to already be done by dma_map_single() when the device
-> > is not cache-coherent.
->
-> That's one of the 'liberties' I alluded to. The reason I left these in
-> is that I'm none too certain what device feature the DMA API uses to
-> decide a device isn't cache-coherent. If it's dev->coherent_dma_mask,
-> the way I set up the device in the a3000 driver should leave the
-> coherent mask unchanged. For the Zorro drivers, devices are set up to
-> use the same storage to store normal and coherent masks - something we
-> most likely want to change. I need to think about the ramifications of
-> that.
->
-> Note that zorro_esp.c uses dma_sync_single_for_device() and uses a 32
-> bit coherent DMA mask which does work OK. I might  ask Adrian to test a
-> change to only set dev->dma_mask, and drop the
-> dma_sync_single_for_device() calls if there's any doubt on this aspect.
-
-The "coherent_mask" is independent of the cache flushing. On some
-architectures, a device can indicate whether it needs cache management
-or not to guarantee coherency, but on m68k it appears that we always
-assume it does, see arch/m68k/kernel/dma.c
-
-> > b) The bounce buffer is never mapped here, instead you have the
-> > virt_to_phys() here, which is not the same. I think you need to map
-> > the pointer that actually gets passed down to the device after deciding
-> > to use a bouce buffer or not.
->
-> I hadn't realized that I can map the bounce buffer just as it's done for
-> the SCp data buffer. Should have been obvious, but I'm still learning
-> about the DMA API.
->
-> I've updated the patch now, will re-send as part of a complete series
-> once done.
-
-I suppose you can just drop the bounce buffer if this just comes
-from kmalloc().
-
-       Arnd
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgQXJuZCwKCk9uIDI5LzA2LzIyIDA5OjUwLCBBcm5kIEJlcmdtYW5uIHdyb3RlOgo+IE9uIFR1
+ZSwgSnVuIDI4LCAyMDIyIGF0IDExOjAzIFBNIE1pY2hhZWwgU2NobWl0eiA8c2NobWl0em1pY0Bn
+bWFpbC5jb20+IHdyb3RlOgo+PiBPbiAyOC8wNi8yMiAxOTowMywgR2VlcnQgVXl0dGVyaG9ldmVu
+IHdyb3RlOgo+Pj4+IFRoZSBkcml2ZXIgYWxsb2NhdGVzIGJvdW5jZSBidWZmZXJzIHVzaW5nIGtt
+YWxsb2MgaWYgaXQgaGl0cyBhbgo+Pj4+IHVuYWxpZ25lZCBkYXRhIGJ1ZmZlciAtIGNhbiBzdWNo
+IGJ1ZmZlcnMgc3RpbGwgZXZlbiBoYXBwZW4gdGhlc2UgZGF5cz8KPj4+IE5vIGlkZWEuCj4+IEht
+bW0gLSBJIHRoaW5rIEknbGwgc3RpY2sgYSBXQVJOX09OQ0UoKSBpbiB0aGVyZSBzbyB3ZSBrbm93
+IHdoZXRoZXIgdGhpcwo+PiBjb2RlIHBhdGggaXMgc3RpbGwgYmVpbmcgdXNlZC4KPiBrbWFsbG9j
+KCkgZ3VhcmFudGVlcyBhbGlnbm1lbnQgdG8gdGhlIG5leHQgcG93ZXItb2YtdHdvIHNpemUgb3IK
+PiBLTUFMTE9DX01JTl9BTElHTiwgd2hpY2hldmVyIGlzIGJpZ2dlci4gT24gbTY4ayB0aGlzIG1l
+YW5zIGl0Cj4gaXMgY2FjaGVsaW5lIGFsaWduZWQuCgpBbmQgYWxsIFNDU0kgYnVmZmVycyBhcmUg
+YWxsb2NhdGVkIHVzaW5nIGttYWxsb2M/IE5vIHdheSBhdCBhbGwgZm9yIHVzZXIgCnNwYWNlIHRv
+IHBhc3MgdW5hbGlnbmVkIGRhdGE/CgooU0NTSSBpcyBhIHdlaXJkIGJlYXN0IC0gSSBoYXZlIHVz
+ZWQgYSBTQ1NJIERBVCB0YXBlIGRyaXZlciBtYW55IG1hbnkgCnllYXJzIGFnbywgd2hpY2ggYnJv
+a2UgYWxsIHNvcnRzIG9mIGFzc3VtcHRpb25zIGFib3V0IHRyYW5zZmVyIGJsb2NrIApzaXplcyAu
+Li4gYnV0IHRoYXQgbWlnaHQgYWN0dWFsbHkgaGF2ZSBiZWVuIGluIHRoZSB2MC45OSBkYXlzLCBt
+YW55IApyZXdyaXRlcyBvZiBTQ1NJIG1pZGxldmVsIGFnbykuCgpKdXN0IGJlaW5nIGNhdXRpb3Vz
+LCBhcyBnZXR0aW5nIGFueSBvZiB0aGlzIHRlc3RlZCB3aWxsIGJlIGEgc3RyZXRjaC4KCkNoZWVy
+cywKCiDCoMKgwqAgTWljaGFlbAoKPgo+ICAgICAgICBBcm5kCl9fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0
+cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcv
+bWFpbG1hbi9saXN0aW5mby9pb21tdQ==
