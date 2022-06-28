@@ -1,64 +1,105 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43733257A
-	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 11:34:03 +0000 (UTC)
-Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.206])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LXMnz3Xjcz686M3;
-	Tue, 28 Jun 2022 19:29:59 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 28 Jun 2022 13:34:00 +0200
-Received: from [10.126.174.22] (10.126.174.22) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 28 Jun 2022 12:33:59 +0100
-Message-ID: <38ae1cc8-1411-bb54-e082-0f7b91cb9e63@huawei.com>
-Date: Tue, 28 Jun 2022 12:33:58 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDF32257A
+	for <iommu@lists.linux.dev>; Tue, 28 Jun 2022 11:34:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656416056; x=1687952056;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=WyQ7Lhg64UA7faLJ8umQR8gY+ay9xEU5cNZImGlhWOk=;
+  b=mPJDr57GEi+1qk2T7LZZHm4bqAo6RCypYCOKO2HWK9nHhcnYcbS9JsP0
+   YR9at9ZzN515jI1a5fElDZPKgi3Vwv4IivcEFdFwpPSxkduHgnvE/nPfO
+   tOY/TFPnwmWOjSpuSdLFW7GLn47vDlz6vVuFFOGOxegQHlfa2ohbQg6zS
+   qnozt6KADcEYk0l2qvqq19Q+VekTkCMUGooxBtMa/cl2/bSx8B54N2VGT
+   WY+3G+TI/CywrCcIAy5GF1GIixD+5eGxD851ifX3sEo2I0kaD11ygik3o
+   SP37scM7y6/FyfLLlw/qUZaPCUsKllb8M6irP3SUwTm7s+NZ98W2VaGHT
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10391"; a="368029179"
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="368029179"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:34:03 -0700
+X-IronPort-AV: E=Sophos;i="5.92,227,1650956400"; 
+   d="scan'208";a="646877561"
+Received: from ltang11-mobl1.ccr.corp.intel.com (HELO [10.249.169.64]) ([10.249.169.64])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2022 04:33:59 -0700
+Message-ID: <89130952-155c-38f0-3318-1c071562661f@linux.intel.com>
+Date: Tue, 28 Jun 2022 19:33:57 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v4 5/5] libata-scsi: Cap ata_device->max_sectors according
- to shost->max_sectors
-To: Damien Le Moal <damien.lemoal@opensource.wdc.com>, <hch@lst.de>
-CC: <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
-	<iommu@lists.linux.dev>, <linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>,
-	<joro@8bytes.org>, <will@kernel.org>, <jejb@linux.ibm.com>,
-	<martin.petersen@oracle.com>, <m.szyprowski@samsung.com>,
-	<robin.murphy@arm.com>
-References: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
- <1656343521-62897-6-git-send-email-john.garry@huawei.com>
- <b69c6112-98b7-3890-9d11-bb321a7c877a@opensource.wdc.com>
- <6619638c-52e8-cb67-c56c-9c9d38c18161@huawei.com>
- <ba59a0da-a982-e3eb-1cb7-6e60f80fd319@opensource.wdc.com>
-From: John Garry <john.garry@huawei.com>
-In-Reply-To: <ba59a0da-a982-e3eb-1cb7-6e60f80fd319@opensource.wdc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc: baolu.lu@linux.intel.com, Eric Auger <eric.auger@redhat.com>,
+ "Liu, Yi L" <yi.l.liu@intel.com>, "Pan, Jacob jun"
+ <jacob.jun.pan@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v9 04/11] iommu: Add sva iommu_domain support
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>,
+ "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ "Jiang, Dave" <dave.jiang@intel.com>, Vinod Koul <vkoul@kernel.org>
+References: <20220621144353.17547-1-baolu.lu@linux.intel.com>
+ <20220621144353.17547-5-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276FA1A1A8C20786D958C048CB99@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <42825be5-e24c-0f95-f49d-5f50d608506d@linux.intel.com>
+ <BN9PR11MB527679FF12B6D990A5E596A88CB89@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB527679FF12B6D990A5E596A88CB89@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.126.174.22]
-X-ClientProxiedBy: lhreml726-chm.china.huawei.com (10.201.108.77) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Message-ID: <20220628113358.SnSfPeddmasQ79gfFhtNnrDLnsjRo4QhUjjdAQA4U7o@z>
+Message-ID: <20220628113357.yqIz2RjFJn-MdStYWhgosYb7B6zUnoM2cd2aEosLS5w@z>
 
-On 28/06/2022 10:14, Damien Le Moal wrote:
->> BTW, this patch has no real dependency on the rest of the series, so
->> could be taken separately if you prefer.
-> Sure, you can send it separately. Adding it through the scsi tree is fine too.
-> 
+On 2022/6/28 16:50, Tian, Kevin wrote:
+>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>> Sent: Tuesday, June 28, 2022 1:41 PM
+>>>>    struct iommu_domain {
+>>>>    	unsigned type;
+>>>>    	const struct iommu_domain_ops *ops;
+>>>>    	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
+>>>> -	iommu_fault_handler_t handler;
+>>>> -	void *handler_token;
+>>>>    	struct iommu_domain_geometry geometry;
+>>>>    	struct iommu_dma_cookie *iova_cookie;
+>>>> +	union {
+>>>> +		struct {	/* IOMMU_DOMAIN_DMA */
+>>>> +			iommu_fault_handler_t handler;
+>>>> +			void *handler_token;
+>>>> +		};
+>>> why is it DMA domain specific? What about unmanaged
+>>> domain? Unrecoverable fault can happen on any type
+>>> including SVA. Hence I think above should be domain type
+>>> agnostic.
+>> The report_iommu_fault() should be replaced by the new
+>> iommu_report_device_fault(). Jean has already started this work.
+>>
+>> https://lore.kernel.org/linux-iommu/Yo4Nw9QyllT1RZbd@myrica/
+>>
+>> Currently this is only for DMA domains, hence Robin suggested to make it
+>> exclude with the SVA domain things.
+>>
+>> https://lore.kernel.org/linux-iommu/f3170016-4d7f-e78e-db48-
+>> 68305f683349@arm.com/
+> Then it's worthy a comment that those two fields are for
+> some legacy fault reporting stuff and DMA type only.
 
-Well Christoph originally offered to take this series via the 
-dma-mapping tree.
+The iommu_fault and SVA fields are exclusive. The former is used for
+unrecoverable DMA remapping faults, while the latter is only interested
+in the recoverable page faults.
 
-@Christoph, is that still ok with you? If so, would you rather I send 
-this libata patch separately?
+I will update the commit message with above explanation. Does this work
+for you?
 
-Thanks,
-john
+Best regards,
+baolu
