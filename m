@@ -1,95 +1,149 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AF4BFC43334
-	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 09:14:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5BF47C433EF
+	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 11:51:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 41DE64034A;
-	Wed, 29 Jun 2022 09:14:33 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 41DE64034A
-Authentication-Results: smtp4.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=fEDY3d9n
+	by smtp2.osuosl.org (Postfix) with ESMTP id D167341145;
+	Wed, 29 Jun 2022 11:51:05 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org D167341145
+Authentication-Results: smtp2.osuosl.org;
+	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=srT+Xv8P
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XuBY5iJclq5r; Wed, 29 Jun 2022 09:14:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 375574016F;
-	Wed, 29 Jun 2022 09:14:31 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 375574016F
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 2Ih_jAuAqIdz; Wed, 29 Jun 2022 11:51:02 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id C904B40002;
+	Wed, 29 Jun 2022 11:51:01 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org C904B40002
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E8F61C0039;
-	Wed, 29 Jun 2022 09:14:30 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E9C84C002D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 09:14:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9C1DEC0039;
+	Wed, 29 Jun 2022 11:51:01 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8D948C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 11:51:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id BF27D826A8
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 09:14:28 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org BF27D826A8
-Authentication-Results: smtp1.osuosl.org;
- dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org
- header.a=rsa-sha256 header.s=google header.b=fEDY3d9n
+ by smtp1.osuosl.org (Postfix) with ESMTP id 591538269C
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 11:51:00 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 591538269C
+Authentication-Results: smtp1.osuosl.org; dkim=pass (1024-bit key,
+ unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256
+ header.s=selector1 header.b=srT+Xv8P
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EmA2gnPWwUUe for <iommu@lists.linux-foundation.org>;
- Wed, 29 Jun 2022 09:14:28 +0000 (UTC)
+ with ESMTP id v6Ibf842yNzB for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Jun 2022 11:50:58 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org A67808268F
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com
- [IPv6:2a00:1450:4864:20::433])
- by smtp1.osuosl.org (Postfix) with ESMTPS id A67808268F
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 09:14:27 +0000 (UTC)
-Received: by mail-wr1-x433.google.com with SMTP id k22so21436145wrd.6
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 02:14:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=U+mKfaGXoONCznFgzmYIZny9AKkMWKoWt6b7S8f60RM=;
- b=fEDY3d9nvND9FB+yUl1AlWKqmdRimCwOi50i1qa9A3DKppiVdL0evazSl+CYovnpPb
- +xe7MhtHEIdRd/hU3l/ogn7sAWDlJUBLc392CjdJtrSQfAf0m+yIkjQ5Ga6atX/HRS7q
- yWgmVnPRgemnHBcUGxlhsY3DN9UnUcJt1/h9p3fpOkxCpxOj0Ckew4iqSSylcCqnElDa
- AVau4GSEu7q/4s2ZTilxBRERa7+HplvcEVjMmlivdXoSG5lnUC7moEqfpj1JhEbdYSXx
- 6MUxFw9BPh4JT9OYAiLOGKncNm/n7RARaGhuCY/YcqnhEA2h4qe0OikedNdDbvVg1I8b
- JqNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=U+mKfaGXoONCznFgzmYIZny9AKkMWKoWt6b7S8f60RM=;
- b=yKrezu5pU4OKSkaXeJJqo8Yh9LuTR7y++0Wi2o3c8C2enF3eCteb/C4SPFgdQwp9Re
- YmiQdo8rTer/WGWMBaqRogFIYbvL8MNuDW+GyNxytD9XBSc5aAhNAYcKkNVuNIjAytHz
- LkPLvse/Bx+yhasflQ2iP4yBzL/EiJKbAp/C9tA21ZweTJu8HoIv4ex/J7unilBdnLMf
- U4+12+JZeBsLDOjl3KEVsz+zbjDyWRj4bmTfXBSwraGFyTTTgaAg9u+PJtSRYlkEN/vA
- CIfSOrGEjMoBNz524Lrm3WTp/5+XY+sTsEGC5KgKlWnVUPO89l9Julwx2nE5DUY5jskM
- MVrQ==
-X-Gm-Message-State: AJIora/QEj/j2eEikoVN9QFsQSMsyL+a6b+eBpdjPzWfvELx9A2/1/cL
- JX/k6aFbqZxMrAkZsHFPPch3Ng==
-X-Google-Smtp-Source: AGRyM1uss6yL9ryGiFhRNXcrE8eBDDu99NbY6sECQMgnEwKtRLT98HuE31fmJMfucgcPw940Fu+20A==
-X-Received: by 2002:a5d:4352:0:b0:213:4910:6616 with SMTP id
- u18-20020a5d4352000000b0021349106616mr2022060wrr.226.1656494065746; 
- Wed, 29 Jun 2022 02:14:25 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
- [82.27.106.168]) by smtp.gmail.com with ESMTPSA id
- z18-20020a05600c0a1200b0039c45fc58c4sm2440202wmp.21.2022.06.29.02.14.24
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 29 Jun 2022 02:14:25 -0700 (PDT)
-Date: Wed, 29 Jun 2022 10:14:01 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Eric Auger <eric.auger@redhat.com>
-Subject: Re: [PATCH] ACPI: VIOT: Fix ACS setup
-Message-ID: <YrwX2U48HOC+UF07@myrica>
-References: <20220627125534.1035912-1-eric.auger@redhat.com>
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org E2A6A81D11
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam04on2088.outbound.protection.outlook.com [40.107.102.88])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id E2A6A81D11
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 11:50:57 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EgiJumhgbmqkf1YBAumf43Tnbs/S8LfkMbUF5BVB7K2oEvQaE9oHm8cKX5yPpm8jFoQTFRL6m6MZtsLP76FA07MoSSekAHJuUy6uMr6TCazCVKI8OR4GmsHJiC6soGLKZlP3IWbeKwNkBbubX0zZkqs+kUZgcxa5zC7ERC07Ol7VP+GSxc5WduFkNVUt+cQ0fzKdO8uWoPH3IBXI8jUWzvEwmGp7DD+d42KgJR30LwZa+A4TA/DP4yofFrgj3mVP2LYqscytFo2oSsD0wiveEvqkm81abv0t7ouM82lFVnw4jUD2d3MiTA8S5YttsSxQpcqMy1HaNtdPjZumzLqxdA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kvce4JSE4V6lrs0s8modkLeIVjazFa5cALL69mj3iKs=;
+ b=AKn0Xx3MrRLk4J7VhUMgk8A19RrCtEuOU9eljLN+TX2qaHCS3ytDEqE+6bT5kSC3WH2VYtIDnVLl1ZAT/hklpmi0MkRyDuy8XX7H5Fm0KsQOezfaIaD+SVFDD8DEeu2u7zW9+ahCiKdst6F7JjktbjyTEA/p7lIiiltq8LrWU3ds00EhH5aNtsVlMo27w4uNC15i8q+C+WxWLDc9cgtjH6SJIgEnovXKqbRkR7QKRDhGgvbUagSnGiT+egfJvhHYVYsgtW9rbgk8Tp8IDwQ3E1ZRI7MohTHTiqbh+h6hcjodVJxfZUTV+W0T/qq2DcAe2h9qBfzDUVk976QDi85JSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kvce4JSE4V6lrs0s8modkLeIVjazFa5cALL69mj3iKs=;
+ b=srT+Xv8PzyY+GCEEJpa7RrNXXniPT+Xy0T34gKzhO7SWqPbbusO1cDQEcLc/UQKEryqRggSI6V9SZJrVSqss4egSGJBd4JSq7gtKmH5lYiHttkdEF2xqxbdIJV8RNIjHtuoDCVf7n2MbyLVn4Fa/4ARr78rhswhI72wA3D6LHA8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
+ MN2PR12MB4503.namprd12.prod.outlook.com (2603:10b6:208:264::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Wed, 29 Jun
+ 2022 11:50:55 +0000
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::14b:372d:338c:a594]) by DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::14b:372d:338c:a594%9]) with mapi id 15.20.5373.018; Wed, 29 Jun 2022
+ 11:50:55 +0000
+Message-ID: <8b58ba70-714b-ac53-4598-a6c9f270a0be@amd.com>
+Date: Wed, 29 Jun 2022 18:50:46 +0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3 1/7] iommu/amd: Warn when found inconsistency EFR mask
+Content-Language: en-US
+To: Joerg Roedel <joro@8bytes.org>
+References: <20220622171131.11870-1-suravee.suthikulpanit@amd.com>
+ <20220622171131.11870-2-suravee.suthikulpanit@amd.com>
+ <YrQizrI5lR3ki37B@8bytes.org>
+In-Reply-To: <YrQizrI5lR3ki37B@8bytes.org>
+X-ClientProxiedBy: SG2PR02CA0094.apcprd02.prod.outlook.com
+ (2603:1096:4:90::34) To DM8PR12MB5445.namprd12.prod.outlook.com
+ (2603:10b6:8:24::7)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220627125534.1035912-1-eric.auger@redhat.com>
-Cc: jroedel@suse.de, iommu@lists.linux.dev, rafael@kernel.org,
- linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org, eric.auger.pro@gmail.com, lenb@kernel.org
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f56f3285-6a4f-41bd-dafa-08da59c59fbc
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4503:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: y85DNcBb9kEyEzk4CD9CCBo39RjKu3YRjk4ZHin9z1NGw9nVyG1X6eB6ed1N+rK9dEcKDBJtN2KVMrZR+J8uBqdw6v4ljbi3WQZqKQkHFmNld43kpkCxTZpRLpDv7dM5UHUxgZ2zeq/Rp2RoXZ+F4VFU3DKu0DY9HT36NwGofXkYW6A9ejvbU5QWKU1zQmVCnGj0Uilo3CvkCi8U2HnmwC5quriLBFaZ6oksbZUnik9XTqNBOLOtS15wTXUlqs4aGYcrsyryOyiprVi90e9sTYvtZZO+sHCpZW+Ht5kaUSvgpN84vmxc741dySRRStO1XqROzQCgC8BXd1idXz4zPauccS4KC/bdUX/ajSSR/WZP3ao2GLMvSaztlNTcn6m6HvNOo/KdGPaWdaau1Ojt2uqQGDNtylDAxQEnvMPD2NeK1c5pm9SyVZU3T/8n9dpSPgjZgiJjVvgw0mO5aeKryl+/01/AziEMYRAxm29cKdXF6FlyLPmWoOmaudsSE2Jv9EBm7TADGM6bXmf5afdKDRNvsNWWxzct+70+AyMFj3a442y8i36qjkFuY3LwSrSSGrU1otMvyxbqi1+z1ftEChfVi0gnsXfct7uDDzn99+W0sTmGtgXn2BPYdA4vu/LfmC5Nh0ioO9BB/eDnpCTrvVD9aX5vksMRbbtdbZYUjR262uLbtWiFXOngOtmWz4SOHZW1lN3FL2DRc3f97XKHUUWn+TLveWq6sZJ7eVg+n2ZPvP3R93LWlAnaw1ca3H6GgU+9Kf+Su/xDWpipvb08bNG++tYSdzjdOCBulrD7Lgk+zeiEKlv/oId2rVNjT/GXZWfv3/UVUWPWiyHMtHWAug==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM8PR12MB5445.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230016)(4636009)(346002)(396003)(376002)(366004)(39860400002)(136003)(6916009)(31686004)(53546011)(31696002)(6666004)(36756003)(5660300002)(41300700001)(316002)(38100700002)(2906002)(66476007)(2616005)(6512007)(8676002)(4326008)(6486002)(66946007)(6506007)(186003)(86362001)(478600001)(26005)(8936002)(66556008)(83380400001)(43740500002)(45980500001);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?K2NmbWk5TzBOMExHek9wLzhHdTBGLzVGbTdhaEdPeElEVjRVeWxmTUN3dTFr?=
+ =?utf-8?B?WTB3Nm5vcVhQL0FZYUNrQ0EzRVBYbTdaa2NwbUtJTlV1UDdqM3krUkRVUmE3?=
+ =?utf-8?B?VTM5bDQ2ZG0wdEVIb0I3U1Q5TmhtYXYzY080bktKL3Y2eCtvVi9ZdU1KVXc0?=
+ =?utf-8?B?bnJsTitQNWIvekZlNFZGUmZpb0JaT1ZQeWtlbnhqQVB3Z1hWRmk2RmFVN2Vu?=
+ =?utf-8?B?WHg2d2p6VkNjMDk4TVJkUk4wYWJGYUdZTDdrQm1yNTc2Nk5tQUtuWW56VXNG?=
+ =?utf-8?B?VWZsU1VabmdIQW1VSjJHaVlJMVRpZ2o1R1c1R21YQzNMQjBIdkVWL3lJVnVy?=
+ =?utf-8?B?ZGtaMms3ekhuOFFTWHI3aS9FNkpnZ0JCREMxNVJNa2JKdGc2alZVN2c1aXFB?=
+ =?utf-8?B?ZFJtQ2F1K3JxOVhYRjRxamZYRUw1RUpLNnhDaXUyTSszOStlT09vRHNDZktN?=
+ =?utf-8?B?cndQdjdYbWdKSFFPWmEwOFlqZTlzZ1k4VFNVaUw1dWZOSGhJQUhubVkwV0VL?=
+ =?utf-8?B?U2l3MHhBa3g2clFJcGpPdjFtM0VkVUV4ZVlrdm1TdnRkK3dudGkrcnpOZmwv?=
+ =?utf-8?B?cXhHbkJ4SzdmZ3NQMEdPZGFpdEt5eTRwdnVNL1RPVnZHUWdnMnNtVStlWmx1?=
+ =?utf-8?B?OFdXbnRRVmVvV21xRkhGVDFBRlZwSVJ6WmlHLytwTDNkVFRFRTlyQ0YzSXdv?=
+ =?utf-8?B?NFJ1UlVvNG5ZTVhQM01YQlh0cjIrRzdmUXFXSXpRWkRnWGlDajRFbFZhdUY4?=
+ =?utf-8?B?TCtFL2tzVWJEMldoUjdKRzEvRWVPSzA1b2swd1o1Ylh6OVY5TjdtUkZjNVZD?=
+ =?utf-8?B?UmpmS2cvMUFkK2dYTEdQRmRTRGxzN1lGelluOGFhZ1o0Qzl5Z3d0N2VNbXJI?=
+ =?utf-8?B?MzlBYzc0eDBycGZqclB0bmUyU2RiVHNJYmJIT1dGMGtxREFaVE5rTC9jaUlJ?=
+ =?utf-8?B?ek83aFgxQSsrYkh3ODlmVDR2SFhUMkpocS9iWnE5ajFIMy9ncWdOeldRVytM?=
+ =?utf-8?B?TGtydXBRWnlZVkQrYnN4SnV5cFY1YS9vY0U5c2VkSWJuOGRmUkRxQW5YNVp0?=
+ =?utf-8?B?VmhhMTBiTnZkQXJiS1lxU2NJaklTajhSUXRGOSs5aThRa2NuRFAzbnRoMnFr?=
+ =?utf-8?B?Nkt2WGNkRWxvZkJCMnlTRnNOUS84Q0h0eEp5eE0wY1ZFallaK21PRzZUOHE0?=
+ =?utf-8?B?WitKRlc5cDVhYTVwTWx5VUllRFZXREhTY1l0K0YwUDhIdnZXdVI2SDNNSExj?=
+ =?utf-8?B?aXFjSXExMHJ3OGo2YUVHY01VN3N0bWVYTzZiOTU1MzdUcVJhTHpVVnpPcXhl?=
+ =?utf-8?B?RUo1bmVQcVgycXg1aVp0OXBSa1daV29lWk5kR1gwQkdiYi9kb1M0UDZ5TWJE?=
+ =?utf-8?B?R3F3NkIvdERYdjVWUXA2OFIyYlhvVW9zUzZoZUNidUxYUytTb1RsbjA5QWx1?=
+ =?utf-8?B?K2RhZWF3N2ZvcnNuVlRrUXRLSmx6aUZHaGFmZ083K28yYk40dWg5cDZJczJz?=
+ =?utf-8?B?anBOOVVyYnhzTnF4VHMrWXNRa2xIUHZNdkw0OTRvNFBoczBuYUZCUkJWQndI?=
+ =?utf-8?B?RndHSDdQU0o1UG1CRDJKSGJ6V0FDZXZmU2ljaGtHQTUxQ2xoWFcrQ0pQRVJ2?=
+ =?utf-8?B?K0dFejlNQ2pvQUcxUEIySEVhZWUwTG04KzBPZ3loemdhT0xkVyt5RGZvUGtq?=
+ =?utf-8?B?djJBOVZGbmpjNDNjU2daa0ZjYmZ6L2FZM0RLczF3ZlYvRkNmYnVNZ3JnZTc5?=
+ =?utf-8?B?ZHZ2ZFFhckNtUEQ1SkRCcEJrZ2JVeWtNUGphOU5BK3R2QWFvdldoNmFGT2RV?=
+ =?utf-8?B?bXBGNmFkSHNJRDNnM3IxeW94RUFySHJVcXZSTWtOcHFaRlpYdnpKZXc2K2M3?=
+ =?utf-8?B?a3VMVWxlSmpNUFA5WjUwK3NySVhwT2xBTUxiMVR4ZGtURk9SME9kcFRWU2VZ?=
+ =?utf-8?B?N2U3dUdnRGh2bTk0RkpsTUlvYkcvbnNUVktxNFhheVB2VlRtMS9UZ3UxK1dh?=
+ =?utf-8?B?R2xYeFdaYmRwdytjaTZneVhSYyttazJza2t6OFBhYmtrOHdKK0p4R3l2eUgz?=
+ =?utf-8?B?WmhuNENwOEtBRFNpOG5OK1dENEQreWg3azZEUEY0VUFTYlNSRXJmS1hnZjh1?=
+ =?utf-8?Q?UqdOuJpIW/rx4uq2DtcRJ5TIt?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f56f3285-6a4f-41bd-dafa-08da59c59fbc
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 11:50:55.3960 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6ekI/HP2JcABwN6/jxVOKecExrThPC0rjtreRTDY8u1c6hXs6TVkgUD7JwmacM1saSzv/I2RaN7RMFhCHd0pLA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4503
+Cc: thomas.lendacky@amd.com, ashish.kalra@amd.com, linux-kernel@vger.kernel.org,
+ vasant.hegde@amd.com, iommu@lists.linux-foundation.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,133 +156,61 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+From: "Suthikulpanit, Suravee via iommu" <iommu@lists.linux-foundation.org>
+Reply-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Eric,
 
-On Mon, Jun 27, 2022 at 02:55:34PM +0200, Eric Auger wrote:
-> Currently acpi_viot_init() gets called after the pci
-> device has been scanned and pci_enable_acs() has been called.
-> So pci_request_acs() fails to be taken into account leading
-> to wrong single iommu group topologies when dealing with
-> multi-function root ports for instance.
+
+On 6/23/2022 3:22 PM, Joerg Roedel wrote:
+> On Wed, Jun 22, 2022 at 12:11:25PM -0500, Suravee Suthikulpanit wrote:
+>>   #ifdef CONFIG_IRQ_REMAP
+>> +/*
+>> + * Iterate through all the IOMMUs to verify if the specified
+>> + * EFR bitmask of IOMMU feature are set.
+>> + * Warn and return false if found inconsistency.
+>> + */
+>>   static bool check_feature_on_all_iommus(u64 mask)
+>>   {
+>>   	bool ret = false;
+>>   	struct amd_iommu *iommu;
+>>   
+>>   	for_each_iommu(iommu) {
+>> -		ret = iommu_feature(iommu, mask);
+>> -		if (!ret)
+>> +		bool tmp = iommu_feature(iommu, mask);
+>> +
+>> +		if ((ret != tmp) &&
+>> +		    !list_is_first(&iommu->list, &amd_iommu_list)) {
+>> +			pr_err(FW_BUG "Found inconsistent EFR mask (%#llx) on iommu%d (%04x:%02x:%02x.%01x).\n",
+>> +			       mask, iommu->index, iommu->pci_seg->id, PCI_BUS_NUM(iommu->devid),
+>> +			       PCI_SLOT(iommu->devid), PCI_FUNC(iommu->devid));
+>>   			return false;
+>> +		}
+>> +		ret = tmp;
 > 
-> We cannot simply move the acpi_viot_init() earlier, similarly
-> as the IORT init because the VIOT parsing relies on the pci
-> scan. However we can detect VIOT is present earlier and in
-> such a case, request ACS. Introduce a new acpi_viot_early_init()
-> routine that allows to call pci_request_acs() before the scan.
+> It is better to implement this by introducing a global feature mask,
+> which represents the minial set of features supported by any IOMMU in
+> the system.
 > 
-> Fixes: 3cf485540e7b ("ACPI: Add driver for the VIOT table")
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> Reported-by: Jin Liu <jinl@redhat.com>
-
-Thanks for the fix, the patch makes sense and fixes the issue.
-
-I wondered whether we should keep the logic where we only request ACS if
-an IOMMU is found to manage a PCI range, but I can't see any harm in
-requesting it regardless (plus there is a precedent with AMD IOMMU).
-I could imagine some VMM wanting to only put an IOMMU in front of its MMIO
-devices and leave PCI to roam free, but that seems like a stretch.
-
-There is another issue with the existing code, though: we can't call
-pci_request_acs() when CONFIG_PCI is disabled because no stub is defined.
-Could you wrap the call in an #ifdef?
-
-> ---
->  drivers/acpi/bus.c        |  1 +
->  drivers/acpi/viot.c       | 23 +++++++++++++++++------
->  include/linux/acpi_viot.h |  2 ++
->  3 files changed, 20 insertions(+), 6 deletions(-)
+> The warning is then something like:
 > 
-> diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
-> index 86fa61a21826..906ad8153fd9 100644
-> --- a/drivers/acpi/bus.c
-> +++ b/drivers/acpi/bus.c
-> @@ -1400,6 +1400,7 @@ static int __init acpi_init(void)
->  
->  	pci_mmcfg_late_init();
->  	acpi_iort_init();
-> +	acpi_viot_early_init();
->  	acpi_hest_init();
->  	acpi_ghes_init();
->  	acpi_scan_init();
-> diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
-> index d2256326c73a..3c1be123e4d6 100644
-> --- a/drivers/acpi/viot.c
-> +++ b/drivers/acpi/viot.c
-> @@ -248,6 +248,23 @@ static int __init viot_parse_node(const struct acpi_viot_header *hdr)
->  	return ret;
->  }
->  
-> +/**
-> + * acpi_viot_early_init - Test the presence of VIOT and enable ACS
-> + *
-> + * If the VIOT does exist, ACS must be enabled. This cannot be
-> + * done in acpi_viot_init() which is called after the bus scan
-> + */
-> +void __init acpi_viot_early_init(void)
-> +{
-> +	acpi_status status;
-> +	struct acpi_table_header *hdr;
-> +
-> +	status = acpi_get_table(ACPI_SIG_VIOT, 0, &hdr);
-> +	if (!ACPI_FAILURE(status))
-> +		pci_request_acs();
-> +	acpi_put_table(hdr);
+> 	if ((global_feature_mask & iommu_features) != global_feature_mask)
+> 		pr_warn(...);
+> 
+> This also makes the global variable to track SNP support obsolete.
+> 
+> Regards,
+> 
+> 	Joerg
 
-I'd rather not call acpi_put_table() in case of failure. I know it is
-handled but it looks fragile and I couldn't find any other user of
-acpi_get_table() doing this.
-
-> +}
-> +
->  /**
->   * acpi_viot_init - Parse the VIOT table
->   *
-> @@ -319,12 +336,6 @@ static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
->  			epid = ((domain_nr - ep->segment_start) << 16) +
->  				dev_id - ep->bdf_start + ep->endpoint_id;
->  
-> -			/*
-> -			 * If we found a PCI range managed by the viommu, we're
-> -			 * the one that has to request ACS.
-> -			 */
-> -			pci_request_acs();
-> -
->  			return viot_dev_iommu_init(&pdev->dev, ep->viommu,
->  						   epid);
->  		}
-> diff --git a/include/linux/acpi_viot.h b/include/linux/acpi_viot.h
-> index 1eb8ee5b0e5f..e58d60f8ff2e 100644
-> --- a/include/linux/acpi_viot.h
-> +++ b/include/linux/acpi_viot.h
-> @@ -6,10 +6,12 @@
->  #include <linux/acpi.h>
->  
->  #ifdef CONFIG_ACPI_VIOT
-> +void __init acpi_viot_early_init(void);
->  void __init acpi_viot_init(void);
->  int viot_iommu_configure(struct device *dev);
->  #else
->  static inline void acpi_viot_init(void) {}
-> +static inline void acpi_viot_early_init(void) {}
-
-nit: different declaration order
+That's actually better. I'll send out v4 w/ global EFR variable.
 
 Thanks,
-Jean
-
-
->  static inline int viot_iommu_configure(struct device *dev)
->  {
->  	return -ENODEV;
-> -- 
-> 2.35.3
-> 
+Suravee
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
