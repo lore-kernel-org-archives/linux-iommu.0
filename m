@@ -1,91 +1,97 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id C09F8C433EF
-	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 06:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 03E9FC433EF
+	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 06:22:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 4645A4058E;
-	Wed, 29 Jun 2022 06:15:44 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 4645A4058E
-Authentication-Results: smtp2.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MY/2R8fO
+	by smtp3.osuosl.org (Postfix) with ESMTP id 6CF78605EE;
+	Wed, 29 Jun 2022 06:22:12 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 6CF78605EE
+Authentication-Results: smtp3.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.a=rsa-sha256 header.s=bombadil.20210309 header.b=h3tAd+nN
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CM8p6GW8jO9K; Wed, 29 Jun 2022 06:15:43 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id itDhKgXgcHYi; Wed, 29 Jun 2022 06:22:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1C5DF400A6;
-	Wed, 29 Jun 2022 06:15:43 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 1C5DF400A6
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 4768060BD3;
+	Wed, 29 Jun 2022 06:22:11 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 4768060BD3
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 00785C0032;
-	Wed, 29 Jun 2022 06:15:42 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B00ECC002D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:15:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D2387C0032;
+	Wed, 29 Jun 2022 06:22:10 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1FC4CC002D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:22:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 750B04058E
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:15:41 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 750B04058E
+ by smtp1.osuosl.org (Postfix) with ESMTP id E7DAC827FD
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:22:09 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org E7DAC827FD
+Authentication-Results: smtp1.osuosl.org;
+ dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org
+ header.a=rsa-sha256 header.s=bombadil.20210309 header.b=h3tAd+nN
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QcveplGVpLXf for <iommu@lists.linux-foundation.org>;
- Wed, 29 Jun 2022 06:15:40 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 4793B400A6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 4793B400A6
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:15:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
- d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
- t=1656483340; x=1688019340;
- h=message-id:date:mime-version:subject:to:cc:references:
- from:in-reply-to:content-transfer-encoding;
- bh=MIRJXsI3AGI9TOUBaCXQFdgFRZepMITCdgAbqxVUet0=;
- b=MY/2R8fO8KF4PxFaSouucgfYq9NyLGuO1meX1PFfWcM+stoqP1g7fY+p
- sOkVjXQi+g7B2Tvycw5T09K+aUz+xaY1qgVaq1K1a/Q71uquDIK9/PJ7I
- dA185Nh9KagMXLrVkJ3PeRxq+04g4FeV9JIjcbKm536PRvPUtRWOpfkvO
- 1Rje1QyjUkhwAuyg/YnVMVA8/cHPcXZz8Cf23Th1//Lk2ef7YG2D17ArT
- OlbOoZGIJv1w0ak9PwSs/MOgW7TElEYVApiN7L5cbqYUYleJ33qlbQccy
- HgZIBWOVn5HAO8d6u4konawg+HP6aurTzN5GhdSSPPvj5i6/JHY/x4t6L Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="282669503"
-X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; d="scan'208";a="282669503"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Jun 2022 23:15:39 -0700
-X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; d="scan'208";a="595103334"
-Received: from zhaohaif-mobl1.ccr.corp.intel.com (HELO [10.254.214.131])
- ([10.254.214.131])
- by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Jun 2022 23:15:30 -0700
-Message-ID: <2e99710b-becc-1e03-fa10-ad5f2dd06802@linux.intel.com>
-Date: Wed, 29 Jun 2022 14:15:28 +0800
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id NMKHg2NRnYke for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Jun 2022 06:22:09 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 0910C827F0
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [IPv6:2607:7c80:54:3::133])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 0910C827F0
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:22:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+ :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description;
+ bh=7yGusf/8BpHfB7jofxMw85tVuHPTi4bAH8G5H2jvBjY=; b=h3tAd+nNN81Dil4eXw2Lk4CyNH
+ 1475Vuy94bgqSj2tu5/1Xr1gZBM2KPknL6JamvXFdmFANrhSnUNOxMiUStNCzqyfBbttb80rJi566
+ DVlH1oD5tJgtAmhEidd4yafSARpW45WIOCWo6aEhVwxyQXijFQI8BaFSYdwwRjF/FcXRSqfarrS4w
+ yMHV9DjHfI9xh/1Wx6/1z+DAEu5EHm1h+9Cz1lixjewEncE5xNCDuhFMiqMKmak/YED18c9DEiTkF
+ shw99ZN5InGSE/X3yex04M0RucunRXqykifZ7stOcSWbnTFGj/qcYAa7QU52JML8NJVd3Ta4itXpg
+ 3vrA5osg==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red
+ Hat Linux)) id 1o6R5C-009kw7-RG; Wed, 29 Jun 2022 06:21:50 +0000
+Date: Tue, 28 Jun 2022 23:21:50 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: Michael Schmitz <schmitzmic@gmail.com>
+Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
+Message-ID: <YrvvfpW4MmQiM47H@infradead.org>
+References: <20220617125750.728590-1-arnd@kernel.org>
+ <20220617125750.728590-4-arnd@kernel.org>
+ <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
+ <CAMuHMdVewn0OYA9oJfStk0-+vCKAUou+4Mvd5H2kmrSks1p5jg@mail.gmail.com>
+ <b4e5a1c9-e375-63fb-ec7c-abb7384a6d59@gmail.com>
+ <9289fd82-285c-035f-5355-4d70ce4f87b0@gmail.com>
+ <CAMuHMdXUihTPD9A9hs__Xr2ErfOqkZ5KgCHqm+9HvRf39uS5kA@mail.gmail.com>
+ <c30bc9b6-6ccd-8856-dc6b-4e16450dad6f@gmail.com>
+ <CAK8P3a1rxEVwVF5U-PO6pQkfURU5Tro1Qp8SPUfHEV9jjWOmCQ@mail.gmail.com>
+ <9f812d3d-0fcd-46e6-6d7e-6d4bf66f24ab@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v9 10/11] iommu: Per-domain I/O page fault handling
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Baolu Lu <baolu.lu@linux.intel.com>
-References: <20220621144353.17547-1-baolu.lu@linux.intel.com>
- <20220621144353.17547-11-baolu.lu@linux.intel.com>
- <faacb997-0c0a-04e1-903d-53857f463214@linux.intel.com>
- <693a3604-d70b-e08c-2621-7f0cb9bdb6ca@linux.intel.com>
- <75b17c70-1658-91ea-0992-1be769550943@linux.intel.com>
- <935ca9e3-28c9-99af-5609-41bb1500b2b3@linux.intel.com>
- <YrsOO9E+j+CMgKMA@myrica>
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <YrsOO9E+j+CMgKMA@myrica>
-Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, iommu@lists.linux.dev,
- Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, Christoph Hellwig <hch@infradead.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Vinod Koul <vkoul@kernel.org>, Jacob jun Pan <jacob.jun.pan@intel.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Will Deacon <will@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <9f812d3d-0fcd-46e6-6d7e-6d4bf66f24ab@gmail.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Linux-Arch <linux-arch@vger.kernel.org>, scsi <linux-scsi@vger.kernel.org>,
+ Michael Ellerman <mpe@ellerman.id.au>, Christoph Hellwig <hch@infradead.org>,
+ Geert Uytterhoeven <geert@linux-m68k.org>, Jakub Kicinski <kuba@kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>, Miquel van Smoorenburg <mikevs@xs4all.net>,
+ Denis Efremov <efremov@linux.com>,
+ linux-m68k <linux-m68k@lists.linux-m68k.org>,
+ John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+ Khalid Aziz <khalid@gonehiking.org>, Arnd Bergmann <arnd@kernel.org>,
+ Parisc List <linux-parisc@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Matt Wang <wwentao@vmware.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Mark Salyzyn <salyzyn@android.com>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ alpha <linux-alpha@vger.kernel.org>,
+ linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+ "Maciej W . Rozycki" <macro@orcam.me.uk>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,39 +104,20 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CuWcqCAyMDIyLzYvMjggMjI6MjAsIEplYW4tUGhpbGlwcGUgQnJ1Y2tlciDlhpnpgZM6Cj4gT24g
-VHVlLCBKdW4gMjgsIDIwMjIgYXQgMDc6NTM6MzlQTSArMDgwMCwgQmFvbHUgTHUgd3JvdGU6Cj4+
-Pj4+IE9uY2UgdGhlIGlvcGZfaGFuZGxlX3NpbmdsZSgpIGlzIHJlbW92ZWQsIHRoZSBuYW1lIG9m
-Cj4+Pj4+IGlvcGZfaGFuZGxlX2dyb3VwKCkgbG9va3MgYSBsaXR0bGUgd2VpcmVkCj4+Pj4+Cj4+
-Pj4+IGFuZCBjb25mdXNlZCwgZG9lcyB0aGlzIGdyb3VwIG1lYW4gdGhlIGlvbW11IGdyb3VwIChk
-b21haW4pID8KPj4+Pj4gd2hpbGUgSSB0YWtlIHNvbWUgbWludXRlcyB0bwo+Pj4+IE5vLiBUaGlz
-IGlzIG5vdCB0aGUgaW9tbXUgZ3JvdXAuIEl0J3MgcGFnZSByZXF1ZXN0IGdyb3VwIGRlZmluZWQg
-YnkgdGhlCj4+Pj4gUENJIFNJRyBzcGVjLiBNdWx0aXBsZSBwYWdlIHJlcXVlc3RzIGNvdWxkIGJl
-IHB1dCBpbiBhIGdyb3VwIHdpdGggYQo+Pj4+IHNhbWUgZ3JvdXAgaWQuIEFsbCBwYWdlIHJlcXVl
-c3RzIGluIGEgZ3JvdXAgY291bGQgYmUgcmVzcG9uZGVkIHRvIGRldmljZQo+Pj4+IGluIG9uZSBz
-aG90Lgo+Pj4gVGhhbmtzIHlvdXIgZXhwbGFpbmF0aW9uLCB1bmRlcnN0YW5kIHRoZSBjb25jZXB0
-IG9mIFBDSWUgUFJHLsKgIEkgbWVhbnQKPj4+Cj4+PiBkbyB3ZSBzdGlsbCBoYXZlIHRoZSBuZWNl
-c3NpdHkgdG8gbWVudGlvbiB0aGUgImdyb3VwIiBoZXJlIGluIHRoZSBuYW1lCj4+Pgo+Pj4gaW9w
-Zl9oYW5kbGVfZ3JvdXAoKSzCoCB3aGljaCBvbmUgaXMgYmV0dGVyID8gaW9wZl9oYW5kbGVfcHJn
-KCkgb3IKPj4+Cj4+PiBpb3BmX2hhbmRsZXIoKSzCoCBwZXJoYXBzIG5vbmUgb2YgdGhlbSA/IDop
-Cj4+IE9oISBTb3JyeSBmb3IgdGhlIG1pc3VuZGVyc3RhbmRpbmcuCj4+Cj4+IEkgaGF2ZSBubyBz
-dHJvbmcgZmVlbGluZyB0byBjaGFuZ2UgdGhpcyBuYW1pbmcuIDotKSBBbGwgdGhlIG5hbWVzCj4+
-IGV4cHJlc3Mgd2hhdCB0aGUgaGVscGVyIGRvZXMuIEplYW4gaXMgdGhlIGF1dGhvciBvZiB0aGlz
-IGZyYW1ld29yay4gSWYKPj4gaGUgaGFzIHRoZSBzYW1lIGlkZWEgYXMgeW91LCBJIGRvbid0IG1p
-bmQgcmVuYW1pbmcgaXQgaW4gdGhpcyBwYXRjaC4KPiBJJ20gbm90IGF0dGFjaGVkIHRvIHRoZSBu
-YW1lLCBhbmQgSSBzZWUgaG93IGl0IGNvdWxkIGJlIGNvbmZ1c2luZy4gR2l2ZW4KPiB0aGF0IGlv
-LXBnZmF1bHQgaXMgbm90IG9ubHkgZm9yIFBDSWUsICdwcmcnIGlzIG5vdCB0aGUgYmVzdCBoZXJl
-IGVpdGhlci4KPiBpb3BmX2hhbmRsZV9mYXVsdHMoKSwgb3IganVzdCBpb3BmX2hhbmRsZXIoKSwg
-c2VlbSBtb3JlIHN1aXRhYmxlLgoKQm90aCBpb3BmX2hhbmRsZV9mYXVsdHMoKSBhbmQgaW9wZl9o
-YW5kbGVyKCkgbG9va3Mgc3RyYWlnaHQsIGlvcGZfaGFuZGxlcigpCgpzYXZlcyBvbmUgd29yZCAn
-ZmF1bHRzJywgaW9wZiBhbHJlYWR5IGhhcyB0aGUgbWVhbmluZyAnaW8gcGFnZSBmYXVsdCcgLCBz
-bwoKaW9wZl9oYW5kbGVyKCkgaXMgY2xlYXIgZW5vdWdoIEkgdGhpbmsuCgoKVGhhbmtzLAoKRXRo
-YW4KCj4KPiBUaGFua3MsCj4gSmVhbgoKLS0gCiJmaXJtLCBlbmR1cmluZywgc3Ryb25nLCBhbmQg
-bG9uZy1saXZlZCIKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpo
-dHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Wed, Jun 29, 2022 at 11:09:00AM +1200, Michael Schmitz wrote:
+> And all SCSI buffers are allocated using kmalloc? No way at all for user
+> space to pass unaligned data?
+
+Most that you will see actually comes from the page allocator.  But
+the block layer has a dma_alignment limit, and when userspace sends
+I/O that is not properly aligned it will be bounce buffered before
+it it sent to the driver.
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
