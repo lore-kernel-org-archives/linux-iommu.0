@@ -4,53 +4,52 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id BF880C433EF
-	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 06:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 91166CCA47C
+	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 06:42:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 665D0400A6;
-	Wed, 29 Jun 2022 06:42:42 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 665D0400A6
+	by smtp2.osuosl.org (Postfix) with ESMTP id 3D6AA40AE9;
+	Wed, 29 Jun 2022 06:42:56 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 3D6AA40AE9
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UrbTwlCw1-1n; Wed, 29 Jun 2022 06:42:41 +0000 (UTC)
+	with ESMTP id TKIVsQc5jIbX; Wed, 29 Jun 2022 06:42:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 3ADCF40AB7;
-	Wed, 29 Jun 2022 06:42:41 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 3ADCF40AB7
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 62BEE400A6;
+	Wed, 29 Jun 2022 06:42:54 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 62BEE400A6
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 12CBEC0032;
-	Wed, 29 Jun 2022 06:42:41 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1A5CDC002D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:42:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 40635C0032;
+	Wed, 29 Jun 2022 06:42:54 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A166AC002D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:42:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E966C80D20
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:42:39 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org E966C80D20
+ by smtp3.osuosl.org (Postfix) with ESMTP id 6DC7060C13
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:42:52 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 6DC7060C13
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id M_1ibri1xOqt for <iommu@lists.linux-foundation.org>;
- Wed, 29 Jun 2022 06:42:39 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id CKxVudEKZ5-U for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Jun 2022 06:42:52 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 504D480314
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org CC8F960B5E
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 504D480314
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:42:39 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id CC8F960B5E
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:42:51 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
- id 2864567373; Wed, 29 Jun 2022 08:42:36 +0200 (CEST)
-Date: Wed, 29 Jun 2022 08:42:35 +0200
+ id A7BE367373; Wed, 29 Jun 2022 08:42:48 +0200 (CEST)
+Date: Wed, 29 Jun 2022 08:42:48 +0200
 From: Christoph Hellwig <hch@lst.de>
 To: Logan Gunthorpe <logang@deltatee.com>
-Subject: Re: [PATCH v7 11/21] RDMA/core: introduce
- ib_dma_pci_p2p_dma_supported()
-Message-ID: <20220629064235.GK17234@lst.de>
+Subject: Re: [PATCH v7 12/21] RDMA/rw: drop pci_p2pdma_[un]map_sg()
+Message-ID: <20220629064248.GL17234@lst.de>
 References: <20220615161233.17527-1-logang@deltatee.com>
- <20220615161233.17527-12-logang@deltatee.com>
+ <20220615161233.17527-13-logang@deltatee.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20220615161233.17527-12-logang@deltatee.com>
+In-Reply-To: <20220615161233.17527-13-logang@deltatee.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: linux-pci@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
  linux-nvme@lists.infradead.org, Stephen Bates <sbates@raithlin.com>,
@@ -64,9 +63,8 @@ Cc: linux-pci@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
  Daniel Vetter <daniel.vetter@ffwll.ch>, Ralph Campbell <rcampbell@nvidia.com>,
  John Hubbard <jhubbard@nvidia.com>, linux-block@vger.kernel.org,
  Dan Williams <dan.j.williams@intel.com>,
- Xiong Jianxin <jianxin.xiong@intel.com>, Max Gurtovoy <mgurtovoy@nvidia.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>,
+ Xiong Jianxin <jianxin.xiong@intel.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
  Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -85,19 +83,10 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jun 15, 2022 at 10:12:23AM -0600, Logan Gunthorpe wrote:
-> Introduce the helper function ib_dma_pci_p2p_dma_supported() to check
-> if a given ib_device can be used in P2PDMA transfers. This ensures
-> the ib_device is not using virt_dma and also that the underlying
-> dma_device supports P2PDMA.
-> 
-> Use the new helper in nvme-rdma to replace the existing check for
-> ib_uses_virt_dma(). Adding the dma_pci_p2pdma_supported() check allows
-> switching away from pci_p2pdma_[un]map_sg().
-> 
-> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+On Wed, Jun 15, 2022 at 10:12:24AM -0600, Logan Gunthorpe wrote:
+> dma_map_sg() now supports the use of P2PDMA pages so pci_p2pdma_map_sg()
+> is no longer necessary and may be dropped. This means the
+> rdma_rw_[un]map_sg() helpers are no longer necessary. Remove it all.
 
 Looks good:
 
