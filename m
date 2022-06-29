@@ -1,133 +1,91 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id AB2C7C43334
-	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 05:58:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id C09F8C433EF
+	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 06:15:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 1E9E440384;
-	Wed, 29 Jun 2022 05:58:33 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 1E9E440384
-Authentication-Results: smtp4.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=wdc.com header.i=@wdc.com header.a=rsa-sha256 header.s=dkim.wdc.com header.b=HOYDLryi;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=opensource.wdc.com header.i=@opensource.wdc.com header.a=rsa-sha256 header.s=dkim header.b=rZSIxcVa
+	by smtp2.osuosl.org (Postfix) with ESMTP id 4645A4058E;
+	Wed, 29 Jun 2022 06:15:44 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 4645A4058E
+Authentication-Results: smtp2.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MY/2R8fO
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NXtKflVwziff; Wed, 29 Jun 2022 05:58:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 749104035E;
-	Wed, 29 Jun 2022 05:58:31 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 749104035E
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id CM8p6GW8jO9K; Wed, 29 Jun 2022 06:15:43 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 1C5DF400A6;
+	Wed, 29 Jun 2022 06:15:43 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 1C5DF400A6
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2D951C0039;
-	Wed, 29 Jun 2022 05:58:31 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 75170C002D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 05:58:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 00785C0032;
+	Wed, 29 Jun 2022 06:15:42 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B00ECC002D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:15:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 570E581392
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 05:58:29 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 570E581392
-Authentication-Results: smtp1.osuosl.org;
- dkim=pass (2048-bit key) header.d=wdc.com header.i=@wdc.com
- header.a=rsa-sha256 header.s=dkim.wdc.com header.b=HOYDLryi; 
- dkim=pass (2048-bit key) header.d=opensource.wdc.com
- header.i=@opensource.wdc.com header.a=rsa-sha256 header.s=dkim
- header.b=rZSIxcVa
+ by smtp2.osuosl.org (Postfix) with ESMTP id 750B04058E
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:15:41 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 750B04058E
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3FUR40zbhWMu for <iommu@lists.linux-foundation.org>;
- Wed, 29 Jun 2022 05:58:26 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id QcveplGVpLXf for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Jun 2022 06:15:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 3644A826B4
-Received: from esa5.hgst.iphmx.com (esa5.hgst.iphmx.com [216.71.153.144])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 3644A826B4
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 05:58:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
- d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
- t=1656482305; x=1688018305;
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 4793B400A6
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 4793B400A6
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:15:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1656483340; x=1688019340;
  h=message-id:date:mime-version:subject:to:cc:references:
  from:in-reply-to:content-transfer-encoding;
- bh=S274m18N48qoB/3JOPWD2zir1wX7NK811KrJ3AY/WxM=;
- b=HOYDLryiGLMpCGUMYD27x/r+KMN3btvGMpH7fUS9gsMw6/LM4PkyOieC
- NU8z7sbYbtXhv5ISqHTxgqFe/O2GXUq7RnnoajBGZ75v69Caj7B8cxDnv
- 7jywBubKdOmTOaPwzTKrGYrjsYIjc3kULh7OfST4Ozs34+PNT/nD9OofV
- bTB7lnsvpSsRYxJOWNZWt+K0zRL5ro/aiHZnAB3XS+m/N2Ad9xwTf6+5T
- mmbj4KJROyFhRaJwg1OcqTCwCh8Z1P62C8KlVphQGvx/IU+T+YHPmvkYP
- TYVw81RnxC+cs+tpDRy4t/I5mjFYoMDHvPR1yajwPszXktBx2BP+qwG2x g==;
-X-IronPort-AV: E=Sophos;i="5.92,230,1650902400"; d="scan'208";a="204357695"
-Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com)
- ([199.255.45.14])
- by ob1.hgst.iphmx.com with ESMTP; 29 Jun 2022 13:58:24 +0800
-IronPort-SDR: ss0OvvYYZAqEnsYcXoivGq6TLMXRBCH3tD7PwCqBPgHghWWqY2IJpb3zgVaPhyNzcKxE4Ntwqv
- TcENl8w8cOdtTcE19kJvfzdFCRgOJPyHZ3pUmkgEBwY/q6Z0EhJ37E0ZrB7CZUmzzZVVHZuuA5
- GeKt7jRWHQir5yMq3TnQXR4m23PNWvbeWSXbhW5v9PlA40SNWBSt5E1jaMQAKZ+2KuDsC5f5kC
- 41rP5t5BQrD4Sy3GGbnqUEbxu+vNP8KkoX61vZQp3U9I6LpMAynqg0Q3qV/NMGjXflGVErfJ1y
- opkK9mqLEaY3QG2c7q8+JswX
-Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
- by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256;
- 28 Jun 2022 22:20:46 -0700
-IronPort-SDR: mhGSFAQTcdi6l4ELakQ7SYKD5r2+RBcpUP8dwKOo+pHuD+PQBlGEWSvEChOSJMv0jR8Lj/8Dpm
- jkdgAYeVrWhjweTpGHsDNvvH4vF6BsibaiRcY6j2yg8R5I2eZtUr1mp3CpLl0Tf4sSn9BSO0Yf
- JaZggpaLazy6GDnQci7oSzOUQyPjIwKejbbS8eAWf+WY2YTSQkz9fVmZgcX2cMBn17l+l7luuh
- d0CaOyXrzK9iSvJMXZ4DaxVSpjTxa75i4j6JdA6jUn29S+UHk2SFKBi6hoZ06ed2NUzCK6C1F6
- a3A=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
- by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256;
- 28 Jun 2022 22:58:26 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
- by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LXrNx0N5Rz1Rw4L
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 22:58:24 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
- reason="pass (just generated, assumed good)"
- header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
- opensource.wdc.com; h=content-transfer-encoding:content-type
- :in-reply-to:organization:from:references:to:content-language
- :subject:user-agent:mime-version:date:message-id; s=dkim; t=
- 1656482304; x=1659074305; bh=S274m18N48qoB/3JOPWD2zir1wX7NK811Kr
- J3AY/WxM=; b=rZSIxcVazCAwPnit7YiDg5OgUpZgn7oq63L8f4Mx5qqJilG9g8G
- wV5uGQC6JZ3YwlD5RcmYm+uC8m3errnlZAgp6o7+Qhr7ybMyItuZdVnuPUQq8QEd
- alfGKsPbawfDl8vhSXqv7ElY5MHblK270Sv+iK4DJTeh1yOW4yY6pE1FPc0SsVS3
- eEbW6uvondPnaorxx3Tv8sUCSOfC7y2rkIguFVW4kiJALFQpstNM3YhM+lm0p4Sk
- NjgP4mO0z1H7lo92riFs/zobGTmMpBKf5xdH7qdMRzGY7ovcG58VHmy0idD2F4km
- cXLdBqiqjM+YDQfvAyxED73TZ7AcaTKdhxg==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
- by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new,
- port 10026)
- with ESMTP id 6av0Kfj9WNz1 for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jun 2022 22:58:24 -0700 (PDT)
-Received: from [10.225.163.99] (unknown [10.225.163.99])
- by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LXrNt01D4z1RtVk;
- Tue, 28 Jun 2022 22:58:21 -0700 (PDT)
-Message-ID: <da7027d9-bd81-cfb0-f70e-2405f40023fa@opensource.wdc.com>
-Date: Wed, 29 Jun 2022 14:58:20 +0900
+ bh=MIRJXsI3AGI9TOUBaCXQFdgFRZepMITCdgAbqxVUet0=;
+ b=MY/2R8fO8KF4PxFaSouucgfYq9NyLGuO1meX1PFfWcM+stoqP1g7fY+p
+ sOkVjXQi+g7B2Tvycw5T09K+aUz+xaY1qgVaq1K1a/Q71uquDIK9/PJ7I
+ dA185Nh9KagMXLrVkJ3PeRxq+04g4FeV9JIjcbKm536PRvPUtRWOpfkvO
+ 1Rje1QyjUkhwAuyg/YnVMVA8/cHPcXZz8Cf23Th1//Lk2ef7YG2D17ArT
+ OlbOoZGIJv1w0ak9PwSs/MOgW7TElEYVApiN7L5cbqYUYleJ33qlbQccy
+ HgZIBWOVn5HAO8d6u4konawg+HP6aurTzN5GhdSSPPvj5i6/JHY/x4t6L Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="282669503"
+X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; d="scan'208";a="282669503"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Jun 2022 23:15:39 -0700
+X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; d="scan'208";a="595103334"
+Received: from zhaohaif-mobl1.ccr.corp.intel.com (HELO [10.254.214.131])
+ ([10.254.214.131])
+ by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Jun 2022 23:15:30 -0700
+Message-ID: <2e99710b-becc-1e03-fa10-ad5f2dd06802@linux.intel.com>
+Date: Wed, 29 Jun 2022 14:15:28 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
-Subject: Re: [PATCH v4 5/5] libata-scsi: Cap ata_device->max_sectors according
- to shost->max_sectors
-Content-Language: en-US
-To: Christoph Hellwig <hch@lst.de>, John Garry <john.garry@huawei.com>
-References: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
- <1656343521-62897-6-git-send-email-john.garry@huawei.com>
- <b69c6112-98b7-3890-9d11-bb321a7c877a@opensource.wdc.com>
- <6619638c-52e8-cb67-c56c-9c9d38c18161@huawei.com>
- <ba59a0da-a982-e3eb-1cb7-6e60f80fd319@opensource.wdc.com>
- <38ae1cc8-1411-bb54-e082-0f7b91cb9e63@huawei.com>
- <20220629054027.GB16297@lst.de>
-Organization: Western Digital Research
-In-Reply-To: <20220629054027.GB16297@lst.de>
-Cc: martin.petersen@oracle.com, linux-scsi@vger.kernel.org,
- linux-doc@vger.kernel.org, robin.murphy@arm.com, linuxarm@huawei.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
- iommu@lists.linux-foundation.org, will@kernel.org, jejb@linux.ibm.com
+Subject: Re: [PATCH v9 10/11] iommu: Per-domain I/O page fault handling
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Baolu Lu <baolu.lu@linux.intel.com>
+References: <20220621144353.17547-1-baolu.lu@linux.intel.com>
+ <20220621144353.17547-11-baolu.lu@linux.intel.com>
+ <faacb997-0c0a-04e1-903d-53857f463214@linux.intel.com>
+ <693a3604-d70b-e08c-2621-7f0cb9bdb6ca@linux.intel.com>
+ <75b17c70-1658-91ea-0992-1be769550943@linux.intel.com>
+ <935ca9e3-28c9-99af-5609-41bb1500b2b3@linux.intel.com>
+ <YrsOO9E+j+CMgKMA@myrica>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <YrsOO9E+j+CMgKMA@myrica>
+Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, iommu@lists.linux.dev,
+ Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, Christoph Hellwig <hch@infradead.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Vinod Koul <vkoul@kernel.org>, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -140,31 +98,39 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Damien Le Moal via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 6/29/22 14:40, Christoph Hellwig wrote:
-> On Tue, Jun 28, 2022 at 12:33:58PM +0100, John Garry wrote:
->> Well Christoph originally offered to take this series via the dma-mapping 
->> tree.
->>
->> @Christoph, is that still ok with you? If so, would you rather I send this 
->> libata patch separately?
-> 
-> The offer still stands, and I don't really care where the libata
-> patch is routed.  Just tell me what you prefer.
-
-If it is 100% independent from the other patches, I can take it.
-Otherwise, feel free to take it !
-
--- 
-Damien Le Moal
-Western Digital Research
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CuWcqCAyMDIyLzYvMjggMjI6MjAsIEplYW4tUGhpbGlwcGUgQnJ1Y2tlciDlhpnpgZM6Cj4gT24g
+VHVlLCBKdW4gMjgsIDIwMjIgYXQgMDc6NTM6MzlQTSArMDgwMCwgQmFvbHUgTHUgd3JvdGU6Cj4+
+Pj4+IE9uY2UgdGhlIGlvcGZfaGFuZGxlX3NpbmdsZSgpIGlzIHJlbW92ZWQsIHRoZSBuYW1lIG9m
+Cj4+Pj4+IGlvcGZfaGFuZGxlX2dyb3VwKCkgbG9va3MgYSBsaXR0bGUgd2VpcmVkCj4+Pj4+Cj4+
+Pj4+IGFuZCBjb25mdXNlZCwgZG9lcyB0aGlzIGdyb3VwIG1lYW4gdGhlIGlvbW11IGdyb3VwIChk
+b21haW4pID8KPj4+Pj4gd2hpbGUgSSB0YWtlIHNvbWUgbWludXRlcyB0bwo+Pj4+IE5vLiBUaGlz
+IGlzIG5vdCB0aGUgaW9tbXUgZ3JvdXAuIEl0J3MgcGFnZSByZXF1ZXN0IGdyb3VwIGRlZmluZWQg
+YnkgdGhlCj4+Pj4gUENJIFNJRyBzcGVjLiBNdWx0aXBsZSBwYWdlIHJlcXVlc3RzIGNvdWxkIGJl
+IHB1dCBpbiBhIGdyb3VwIHdpdGggYQo+Pj4+IHNhbWUgZ3JvdXAgaWQuIEFsbCBwYWdlIHJlcXVl
+c3RzIGluIGEgZ3JvdXAgY291bGQgYmUgcmVzcG9uZGVkIHRvIGRldmljZQo+Pj4+IGluIG9uZSBz
+aG90Lgo+Pj4gVGhhbmtzIHlvdXIgZXhwbGFpbmF0aW9uLCB1bmRlcnN0YW5kIHRoZSBjb25jZXB0
+IG9mIFBDSWUgUFJHLsKgIEkgbWVhbnQKPj4+Cj4+PiBkbyB3ZSBzdGlsbCBoYXZlIHRoZSBuZWNl
+c3NpdHkgdG8gbWVudGlvbiB0aGUgImdyb3VwIiBoZXJlIGluIHRoZSBuYW1lCj4+Pgo+Pj4gaW9w
+Zl9oYW5kbGVfZ3JvdXAoKSzCoCB3aGljaCBvbmUgaXMgYmV0dGVyID8gaW9wZl9oYW5kbGVfcHJn
+KCkgb3IKPj4+Cj4+PiBpb3BmX2hhbmRsZXIoKSzCoCBwZXJoYXBzIG5vbmUgb2YgdGhlbSA/IDop
+Cj4+IE9oISBTb3JyeSBmb3IgdGhlIG1pc3VuZGVyc3RhbmRpbmcuCj4+Cj4+IEkgaGF2ZSBubyBz
+dHJvbmcgZmVlbGluZyB0byBjaGFuZ2UgdGhpcyBuYW1pbmcuIDotKSBBbGwgdGhlIG5hbWVzCj4+
+IGV4cHJlc3Mgd2hhdCB0aGUgaGVscGVyIGRvZXMuIEplYW4gaXMgdGhlIGF1dGhvciBvZiB0aGlz
+IGZyYW1ld29yay4gSWYKPj4gaGUgaGFzIHRoZSBzYW1lIGlkZWEgYXMgeW91LCBJIGRvbid0IG1p
+bmQgcmVuYW1pbmcgaXQgaW4gdGhpcyBwYXRjaC4KPiBJJ20gbm90IGF0dGFjaGVkIHRvIHRoZSBu
+YW1lLCBhbmQgSSBzZWUgaG93IGl0IGNvdWxkIGJlIGNvbmZ1c2luZy4gR2l2ZW4KPiB0aGF0IGlv
+LXBnZmF1bHQgaXMgbm90IG9ubHkgZm9yIFBDSWUsICdwcmcnIGlzIG5vdCB0aGUgYmVzdCBoZXJl
+IGVpdGhlci4KPiBpb3BmX2hhbmRsZV9mYXVsdHMoKSwgb3IganVzdCBpb3BmX2hhbmRsZXIoKSwg
+c2VlbSBtb3JlIHN1aXRhYmxlLgoKQm90aCBpb3BmX2hhbmRsZV9mYXVsdHMoKSBhbmQgaW9wZl9o
+YW5kbGVyKCkgbG9va3Mgc3RyYWlnaHQsIGlvcGZfaGFuZGxlcigpCgpzYXZlcyBvbmUgd29yZCAn
+ZmF1bHRzJywgaW9wZiBhbHJlYWR5IGhhcyB0aGUgbWVhbmluZyAnaW8gcGFnZSBmYXVsdCcgLCBz
+bwoKaW9wZl9oYW5kbGVyKCkgaXMgY2xlYXIgZW5vdWdoIEkgdGhpbmsuCgoKVGhhbmtzLAoKRXRo
+YW4KCj4KPiBUaGFua3MsCj4gSmVhbgoKLS0gCiJmaXJtLCBlbmR1cmluZywgc3Ryb25nLCBhbmQg
+bG9uZy1saXZlZCIKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpo
+dHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
