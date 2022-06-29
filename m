@@ -4,75 +4,90 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 31B2ECCA479
-	for <iommu@archiver.kernel.org>; Tue, 28 Jun 2022 23:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 272BDCCA480
+	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 00:01:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C7BD581BC2;
-	Tue, 28 Jun 2022 23:50:19 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org C7BD581BC2
+	by smtp1.osuosl.org (Postfix) with ESMTP id 9891E82726;
+	Wed, 29 Jun 2022 00:01:44 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 9891E82726
+Authentication-Results: smtp1.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20210112 header.b=D7i2Nged
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vnXG7usjX8YB; Tue, 28 Jun 2022 23:50:18 +0000 (UTC)
+	with ESMTP id 3tCF-PYn8pdc; Wed, 29 Jun 2022 00:01:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id C5B3B81B99;
-	Tue, 28 Jun 2022 23:50:17 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org C5B3B81B99
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 442E78271A;
+	Wed, 29 Jun 2022 00:01:43 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 442E78271A
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A13AAC0032;
-	Tue, 28 Jun 2022 23:50:17 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7A750C002D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 23:50:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0D052C0032;
+	Wed, 29 Jun 2022 00:01:43 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 146FCC002D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 00:01:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5A9F6409EA
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 23:50:16 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 5A9F6409EA
+ by smtp2.osuosl.org (Postfix) with ESMTP id DA71F400F3
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 00:01:41 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org DA71F400F3
+Authentication-Results: smtp2.osuosl.org;
+ dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com
+ header.a=rsa-sha256 header.s=20210112 header.b=D7i2Nged
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ILpq2vm85xlv for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jun 2022 23:50:15 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id T2-H5rgrAAuq for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Jun 2022 00:01:41 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 52413409DE
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com
- [209.85.214.177])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 52413409DE
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 23:50:15 +0000 (UTC)
-Received: by mail-pl1-f177.google.com with SMTP id m14so12488365plg.5
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 16:50:15 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 010EC400E7
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com
+ [IPv6:2607:f8b0:4864:20::435])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 010EC400E7
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 00:01:40 +0000 (UTC)
+Received: by mail-pf1-x435.google.com with SMTP id d17so13425085pfq.9
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jun 2022 17:01:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=message-id:date:mime-version:user-agent:subject:content-language:to
+ :cc:references:from:in-reply-to:content-transfer-encoding;
+ bh=0kpjfuIly1nOW0q2ELB2CmN7oIQ7HX+3B2PaKKHsB78=;
+ b=D7i2NgedY/bHyI8emNN+y0jr/G9IOYRWkIjlIhVn6DbWgwRG2UARyfZk3UwO7T2V+D
+ ESqmy18MQo7RMsisYmEMOTQj203NqQOZVs7qiFGDUYY81Hru7Iv0ADFCQgagZlaKMdVq
+ xung15+Nlj1soULvCk9mS+bfRYyJ9ltpn9UcH1mz1cQDWfJ2ax2IcuBr2SQ3tsjHpoK1
+ NeL3oeSuqVVYbcSBohKZ73kauU8T3VpyxipPF6h/oJ8e2qxtdKJwYj9HlUbwfye7QPMt
+ PuFn7aX0KOb+qDfsVshvX0sC/38kqLR1JFdKMTuOuvGx8cb2fuTFMwQneoiKRpnAUU2m
+ 4Xkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
  :content-language:to:cc:references:from:in-reply-to
  :content-transfer-encoding;
- bh=SkmGWod1utKevQCGJfPo61gCs9z/vOcHKNlbLZdqJ/g=;
- b=uS1VG/JfNReeruASD9/ot6GYv6VDrY5ntK9EmUmj5P/cT4CWQyS3dzZ7TlrAsoiKBW
- 0CrHwCjh6FUWJRv/tVFMXXu4qhmDIevd8qaNbeeMP6d5VAFKx5soLPOG1WED+tOA6cYV
- 4bY/fiNsU4oGowwUWhrhB17lPeF1ygHIe+tGtir420zRNJ2O/Hur6qrAps4vVDk08w9K
- zXs9+8zMQoZAPHynMHBCA3F1aQRj2kwVGX5DH6VbFHCDF/6r0/lvDYx+SyjKOJbuMr9K
- kQQzMwq9WGW5G7/utKCNenmpj4InZDjxeD6X62hXxkz021kF7gY54JHF6Kr77uCIFiHf
- 7oRg==
-X-Gm-Message-State: AJIora94z3B7eBIv82MsepMkd6twyRvzbYcUPPloyLn/9Qs8fPYzOGEK
- q7heKCaPnSMsOL9pVvdPkVU=
-X-Google-Smtp-Source: AGRyM1tnnxYUcJUuaxfKTDWykUv9yEoY4oVypBD4NkfNBc/cSEjrtWY1RB48/mXAX8MoxReO3fVA2g==
-X-Received: by 2002:a17:90b:4c0d:b0:1ed:2466:c0d3 with SMTP id
- na13-20020a17090b4c0d00b001ed2466c0d3mr2517451pjb.6.1656460214627; 
- Tue, 28 Jun 2022 16:50:14 -0700 (PDT)
-Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd?
- ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
+ bh=0kpjfuIly1nOW0q2ELB2CmN7oIQ7HX+3B2PaKKHsB78=;
+ b=QwPlwAd9a1lsm+BzqBDQ+KLYPAfP6HkjvG9MFdcaiu+RtvT1BH7CGFnr/PcSUQdK6O
+ bNdi/wNtvdoQbn2h6w93LH92fakrDQw8+sHnXd1P78Ms+wvlDobuWamUhGAtvuYvwasg
+ WBi1oLPLFZpYuIlI2fs2S2V9bwPo5IBV+d4mvYlY0ovhJjhpZ61T5CBVufqV9GNgEFzz
+ DGuXXi5gIgp1+HyNJBSexIHJchajtt5/7yKkynjJbLicbUhC+4vElg3e2Y3RPCY/gArp
+ zld4yB/ElTwoIjqKiSFRamBGFb3sVe9YZ2ifkgxWsx0KZPpCFNAkDXTXTfVLQOrISa0D
+ Id5Q==
+X-Gm-Message-State: AJIora+ABNChqFzEdxS+Rmh/8vYmYSNcV8uQmvd4dwSOhUptSOcDDawm
+ BdZO20wwae5SBlUCKf4DXwU=
+X-Google-Smtp-Source: AGRyM1uB9qD4Z15I0Lke4zy2AkjVbLhbeqqf5QXYDPBQAVzl/v0z9XhcHbOncWmuxVZyAGIQBi5g6Q==
+X-Received: by 2002:a63:2b16:0:b0:3fa:faf9:e6d7 with SMTP id
+ r22-20020a632b16000000b003fafaf9e6d7mr446010pgr.325.1656460900460; 
+ Tue, 28 Jun 2022 17:01:40 -0700 (PDT)
+Received: from ?IPV6:2001:df0:0:200c:75aa:d6ca:4354:6033?
+ ([2001:df0:0:200c:75aa:d6ca:4354:6033])
  by smtp.gmail.com with ESMTPSA id
- cr9-20020a056a000f0900b0052594a3ba89sm6923182pfb.65.2022.06.28.16.50.10
+ cd21-20020a056a00421500b0051b32c2a5a7sm9863096pfb.138.2022.06.28.17.01.32
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 28 Jun 2022 16:50:13 -0700 (PDT)
-Message-ID: <fc47e8da-81d3-e563-0a17-4eb23db015cc@acm.org>
-Date: Tue, 28 Jun 2022 16:50:09 -0700
+ Tue, 28 Jun 2022 17:01:39 -0700 (PDT)
+Message-ID: <859c2adc-d3cb-64e8-faba-06e1ac5eddaf@gmail.com>
+Date: Wed, 29 Jun 2022 12:01:24 +1200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
+ Thunderbird/91.9.1
 Subject: Re: [PATCH v2 3/3] arch/*/: remove CONFIG_VIRT_TO_BUS
 Content-Language: en-US
-To: Michael Schmitz <schmitzmic@gmail.com>, Arnd Bergmann <arnd@kernel.org>
+To: Bart Van Assche <bvanassche@acm.org>, Arnd Bergmann <arnd@kernel.org>
 References: <20220617125750.728590-1-arnd@kernel.org>
  <20220617125750.728590-4-arnd@kernel.org>
  <6ba86afe-bf9f-1aca-7af1-d0d348d75ffc@gmail.com>
@@ -83,8 +98,9 @@ References: <20220617125750.728590-1-arnd@kernel.org>
  <c30bc9b6-6ccd-8856-dc6b-4e16450dad6f@gmail.com>
  <CAK8P3a1rxEVwVF5U-PO6pQkfURU5Tro1Qp8SPUfHEV9jjWOmCQ@mail.gmail.com>
  <9f812d3d-0fcd-46e6-6d7e-6d4bf66f24ab@gmail.com>
-From: Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <9f812d3d-0fcd-46e6-6d7e-6d4bf66f24ab@gmail.com>
+ <fc47e8da-81d3-e563-0a17-4eb23db015cc@acm.org>
+From: Michael Schmitz <schmitzmic@gmail.com>
+In-Reply-To: <fc47e8da-81d3-e563-0a17-4eb23db015cc@acm.org>
 Cc: Linux-Arch <linux-arch@vger.kernel.org>, scsi <linux-scsi@vger.kernel.org>,
  Michael Ellerman <mpe@ellerman.id.au>, Christoph Hellwig <hch@infradead.org>,
  Geert Uytterhoeven <geert@linux-m68k.org>, Jakub Kicinski <kuba@kernel.org>,
@@ -113,42 +129,42 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 6/28/22 16:09, Michael Schmitz wrote:
-> On 29/06/22 09:50, Arnd Bergmann wrote:
->> On Tue, Jun 28, 2022 at 11:03 PM Michael Schmitz 
->> <schmitzmic@gmail.com> wrote:
->>> On 28/06/22 19:03, Geert Uytterhoeven wrote:
->>>>> The driver allocates bounce buffers using kmalloc if it hits an
->>>>> unaligned data buffer - can such buffers still even happen these days?
->>>> No idea.
->>> Hmmm - I think I'll stick a WARN_ONCE() in there so we know whether this
->>> code path is still being used.
->> kmalloc() guarantees alignment to the next power-of-two size or
->> KMALLOC_MIN_ALIGN, whichever is bigger. On m68k this means it
->> is cacheline aligned.
-> 
-> And all SCSI buffers are allocated using kmalloc? No way at all for user 
-> space to pass unaligned data?
-> 
-> (SCSI is a weird beast - I have used a SCSI DAT tape driver many many 
-> years ago, which broke all sorts of assumptions about transfer block 
-> sizes ... but that might actually have been in the v0.99 days, many 
-> rewrites of SCSI midlevel ago).
-> 
-> Just being cautious, as getting any of this tested will be a stretch.
-
-An example of a user space application that passes an SG I/O data buffer 
-to the kernel that is aligned to a four byte boundary but not to an 
-eight byte boundary if the -s (scattered) command line option is used: 
-https://github.com/osandov/blktests/blob/master/src/discontiguous-io.cpp
-
-Bart.
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgQmFydCwKCk9uIDI5LzA2LzIyIDExOjUwLCBCYXJ0IFZhbiBBc3NjaGUgd3JvdGU6Cj4gT24g
+Ni8yOC8yMiAxNjowOSwgTWljaGFlbCBTY2htaXR6IHdyb3RlOgo+PiBPbiAyOS8wNi8yMiAwOTo1
+MCwgQXJuZCBCZXJnbWFubiB3cm90ZToKPj4+IE9uIFR1ZSwgSnVuIDI4LCAyMDIyIGF0IDExOjAz
+IFBNIE1pY2hhZWwgU2NobWl0eiAKPj4+IDxzY2htaXR6bWljQGdtYWlsLmNvbT4gd3JvdGU6Cj4+
+Pj4gT24gMjgvMDYvMjIgMTk6MDMsIEdlZXJ0IFV5dHRlcmhvZXZlbiB3cm90ZToKPj4+Pj4+IFRo
+ZSBkcml2ZXIgYWxsb2NhdGVzIGJvdW5jZSBidWZmZXJzIHVzaW5nIGttYWxsb2MgaWYgaXQgaGl0
+cyBhbgo+Pj4+Pj4gdW5hbGlnbmVkIGRhdGEgYnVmZmVyIC0gY2FuIHN1Y2ggYnVmZmVycyBzdGls
+bCBldmVuIGhhcHBlbiB0aGVzZSAKPj4+Pj4+IGRheXM/Cj4+Pj4+IE5vIGlkZWEuCj4+Pj4gSG1t
+bSAtIEkgdGhpbmsgSSdsbCBzdGljayBhIFdBUk5fT05DRSgpIGluIHRoZXJlIHNvIHdlIGtub3cg
+d2hldGhlciAKPj4+PiB0aGlzCj4+Pj4gY29kZSBwYXRoIGlzIHN0aWxsIGJlaW5nIHVzZWQuCj4+
+PiBrbWFsbG9jKCkgZ3VhcmFudGVlcyBhbGlnbm1lbnQgdG8gdGhlIG5leHQgcG93ZXItb2YtdHdv
+IHNpemUgb3IKPj4+IEtNQUxMT0NfTUlOX0FMSUdOLCB3aGljaGV2ZXIgaXMgYmlnZ2VyLiBPbiBt
+NjhrIHRoaXMgbWVhbnMgaXQKPj4+IGlzIGNhY2hlbGluZSBhbGlnbmVkLgo+Pgo+PiBBbmQgYWxs
+IFNDU0kgYnVmZmVycyBhcmUgYWxsb2NhdGVkIHVzaW5nIGttYWxsb2M/IE5vIHdheSBhdCBhbGwg
+Zm9yIAo+PiB1c2VyIHNwYWNlIHRvIHBhc3MgdW5hbGlnbmVkIGRhdGE/Cj4+Cj4+IChTQ1NJIGlz
+IGEgd2VpcmQgYmVhc3QgLSBJIGhhdmUgdXNlZCBhIFNDU0kgREFUIHRhcGUgZHJpdmVyIG1hbnkg
+bWFueSAKPj4geWVhcnMgYWdvLCB3aGljaCBicm9rZSBhbGwgc29ydHMgb2YgYXNzdW1wdGlvbnMg
+YWJvdXQgdHJhbnNmZXIgYmxvY2sgCj4+IHNpemVzIC4uLiBidXQgdGhhdCBtaWdodCBhY3R1YWxs
+eSBoYXZlIGJlZW4gaW4gdGhlIHYwLjk5IGRheXMsIG1hbnkgCj4+IHJld3JpdGVzIG9mIFNDU0kg
+bWlkbGV2ZWwgYWdvKS4KPj4KPj4gSnVzdCBiZWluZyBjYXV0aW91cywgYXMgZ2V0dGluZyBhbnkg
+b2YgdGhpcyB0ZXN0ZWQgd2lsbCBiZSBhIHN0cmV0Y2guCj4KPiBBbiBleGFtcGxlIG9mIGEgdXNl
+ciBzcGFjZSBhcHBsaWNhdGlvbiB0aGF0IHBhc3NlcyBhbiBTRyBJL08gZGF0YSAKPiBidWZmZXIg
+dG8gdGhlIGtlcm5lbCB0aGF0IGlzIGFsaWduZWQgdG8gYSBmb3VyIGJ5dGUgYm91bmRhcnkgYnV0
+IG5vdCAKPiB0byBhbiBlaWdodCBieXRlIGJvdW5kYXJ5IGlmIHRoZSAtcyAoc2NhdHRlcmVkKSBj
+b21tYW5kIGxpbmUgb3B0aW9uIGlzIAo+IHVzZWQ6IAo+IGh0dHBzOi8vZ2l0aHViLmNvbS9vc2Fu
+ZG92L2Jsa3Rlc3RzL2Jsb2IvbWFzdGVyL3NyYy9kaXNjb250aWd1b3VzLWlvLmNwcAoKVGhhbmtz
+IC0gZm91ciBieXRlIGFsaWdubWVudCBhY3R1YWxseSB3b3VsZG4ndCBiZSBhbiBpc3N1ZSBmb3Ig
+bWUuIEl0J3MgCnR3byBieXRlIG9yIHNtYWxsZXIgdGhhdCB3b3VsZCB0cmlwIHVwIHRoZSBTQ1NJ
+IERNQS4KCldoaWxlIEknbSBzdXJlIHN1Y2ggYW4gZXZlbiBtb3JlIHBhdGhvbG9naWNhbCB0ZXN0
+IGNhc2UgY291bGQgYmUgCndyaXR0ZW4sIEkgd2FzIHJhdGhlciB3b3JyaWVkIGFib3V0IHN0LmMg
+YW5kIHNyLmMgaW5wdXQgLi4uCgpDaGVlcnMsCgogwqDCoMKgIE1pY2hhZWwKCj4KPiBCYXJ0Lgpf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWls
+aW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5s
+aW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
