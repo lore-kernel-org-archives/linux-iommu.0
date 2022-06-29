@@ -4,102 +4,99 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 90707C43334
-	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 15:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 90F8BCCA47C
+	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 16:00:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 1A44E41B35;
-	Wed, 29 Jun 2022 15:57:49 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 1A44E41B35
+	by smtp4.osuosl.org (Postfix) with ESMTP id 379F441A6D;
+	Wed, 29 Jun 2022 16:00:20 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 379F441A6D
 Authentication-Results: smtp4.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.a=rsa-sha256 header.s=20200525 header.b=QyUF4DUa
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.a=rsa-sha256 header.s=20200525 header.b=iZsQhnlb
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id y3zyOdNIaTyK; Wed, 29 Jun 2022 15:57:47 +0000 (UTC)
+	with ESMTP id pXW4wdqwOOZ2; Wed, 29 Jun 2022 16:00:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 002B541B2D;
-	Wed, 29 Jun 2022 15:57:46 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 002B541B2D
+	by smtp4.osuosl.org (Postfix) with ESMTPS id B16EC41B2D;
+	Wed, 29 Jun 2022 16:00:18 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org B16EC41B2D
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B3E27C0039;
-	Wed, 29 Jun 2022 15:57:46 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 52670C002D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 15:57:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6A742C0039;
+	Wed, 29 Jun 2022 16:00:18 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4DCAEC002D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 16:00:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 1E2A8408D5
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 15:57:45 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 1E2A8408D5
-Authentication-Results: smtp2.osuosl.org;
+ by smtp1.osuosl.org (Postfix) with ESMTP id 273C38403C
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 16:00:17 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 273C38403C
+Authentication-Results: smtp1.osuosl.org;
  dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com
- header.a=rsa-sha256 header.s=20200525 header.b=QyUF4DUa
+ header.a=rsa-sha256 header.s=20200525 header.b=iZsQhnlb
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CJnw87e1tBdi for <iommu@lists.linux-foundation.org>;
- Wed, 29 Jun 2022 15:57:44 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 02RFVnz1DHod for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Jun 2022 16:00:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 232F9400BB
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 04F7680A74
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 232F9400BB
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 15:57:43 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 04F7680A74
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 16:00:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
  MIME-Version:Date:Message-ID:content-disposition;
- bh=SVR0l1hJUb/SHapAzG2atHABZ/RRitWr1nc+ar7tRXg=; b=QyUF4DUaaZjROkuPI+1suf1xXG
- iYuJIT9YMfYCt00rup88G3A2fOs1LDo7hhHgWo0Ohlqb76yxSlp/vgMGwxd7TW5fYAkKL79lyXLKw
- X+zSU/4jS/f4D/m/J9gbb/UReLJ00H6u78LPJthJAR+juKfGgM94nvaKgzerE3D/pFN6SnvVDAoyK
- eto6eEiUJPslncF4lPynUlCOC3+9GHp8EcwRnCzPOaGuxwS0LB6WUPHazf3fFRXCJnGM+lmx17Hax
- rUH3mIYEFd4d/GhL3bWSdTf7itMjRaQRx0P2J2yU7oU/L88BMNHKeWYzP16i2n7FzmTTvUtv5REt6
- VgBg577w==;
+ bh=DB/o3OL3a8p7Pc5UauzdC49YqSJaVUxyZzB2ozvl7YI=; b=iZsQhnlbpW9sXN/GJaS3jAMw+w
+ 8mn6izIwy085ybj1EKwF9DeEsOt9qyrlLxTvp+P9EVdEEjbQUwL5dVFTMDhjOaBp5PaGks7Gp0vTL
+ Pz4wv3iQN06W33bmzngimPEHWIwXW/s9XuLr428TJq/t9Jpay97zThl6gUaoJoo9UCQ2zqUNOyzir
+ HCs15GX4eR/A0kDWtJ7SaGXsATfCWkaQvG0flWXjWzNvEQkpGnbcu6afAc4ry10M/XvkH8tpuj6H7
+ pV0F7DMjJNZAL9ALRpJtO4Tl1f8+YWZ+iaFmr74pOp+DJyj7fvd7YDPPvJ3gnFshVDAC+8VlO6cQM
+ jCOY9fhQ==;
 Received: from s0106a84e3fe8c3f3.cg.shawcable.net ([24.64.144.200]
  helo=[192.168.0.10]) by ale.deltatee.com with esmtpsa (TLS1.3) tls
  TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Exim 4.94.2)
  (envelope-from <logang@deltatee.com>)
- id 1o6a4O-002RwK-3q; Wed, 29 Jun 2022 09:57:37 -0600
-Message-ID: <f56181fb-7035-a775-22b1-77f97d6ec52c@deltatee.com>
-Date: Wed, 29 Jun 2022 09:57:32 -0600
+ id 1o6a6s-002RzJ-UG; Wed, 29 Jun 2022 10:00:11 -0600
+Message-ID: <99242789-66a6-bbd2-b56a-e47891f4522e@deltatee.com>
+Date: Wed, 29 Jun 2022 10:00:09 -0600
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
 Content-Language: en-CA
-To: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
- linux-pci@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org
+To: Christoph Hellwig <hch@lst.de>
 References: <20220615161233.17527-1-logang@deltatee.com>
- <20220615161233.17527-9-logang@deltatee.com>
- <feecc6fe-a16e-11f2-33c8-3de7c96b9ad5@arm.com>
+ <20220615161233.17527-21-logang@deltatee.com> <20220629064854.GD17576@lst.de>
 From: Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <feecc6fe-a16e-11f2-33c8-3de7c96b9ad5@arm.com>
+In-Reply-To: <20220629064854.GD17576@lst.de>
 X-SA-Exim-Connect-IP: 24.64.144.200
-X-SA-Exim-Rcpt-To: robin.murphy@arm.com, linux-kernel@vger.kernel.org,
+X-SA-Exim-Rcpt-To: hch@lst.de, linux-kernel@vger.kernel.org,
  linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
  linux-pci@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, dave.b.minturn@intel.com,
- martin.oliveira@eideticom.com, rcampbell@nvidia.com, jgg@nvidia.com,
- jhubbard@nvidia.com, dave.hansen@linux.intel.com, willy@infradead.org,
- christian.koenig@amd.com, jgg@ziepe.ca, ckulkarnilinux@gmail.com,
- jason@jlekstrand.net, daniel.vetter@ffwll.ch, helgaas@kernel.org,
- dan.j.williams@intel.com, sbates@raithlin.com, ira.weiny@intel.com, hch@lst.de,
- jianxin.xiong@intel.com
+ iommu@lists.linux-foundation.org, sbates@raithlin.com,
+ dan.j.williams@intel.com, jgg@ziepe.ca, christian.koenig@amd.com,
+ jhubbard@nvidia.com, ddutile@redhat.com, willy@infradead.org,
+ daniel.vetter@ffwll.ch, dave.b.minturn@intel.com, jason@jlekstrand.net,
+ dave.hansen@linux.intel.com, jianxin.xiong@intel.com, helgaas@kernel.org,
+ ira.weiny@intel.com, robin.murphy@arm.com, martin.oliveira@eideticom.com,
+ ckulkarnilinux@gmail.com, rcampbell@nvidia.com, bhelgaas@google.com
 X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH v7 08/21] iommu/dma: support PCI P2PDMA pages in dma-iommu
- map_sg
+Subject: Re: [PATCH v7 20/21] PCI/P2PDMA: Introduce pci_mmap_p2pmem()
 X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: Minturn Dave B <dave.b.minturn@intel.com>,
- Ralph Campbell <rcampbell@nvidia.com>, Jason Ekstrand <jason@jlekstrand.net>,
- Christoph Hellwig <hch@lst.de>, John Hubbard <jhubbard@nvidia.com>,
- Dave Hansen <dave.hansen@linux.intel.com>,
+Cc: linux-pci@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
+ linux-nvme@lists.infradead.org, Stephen Bates <sbates@raithlin.com>,
+ linux-mm@kvack.org, Jason Ekstrand <jason@jlekstrand.net>,
+ Ira Weiny <ira.weiny@intel.com>, Minturn Dave B <dave.b.minturn@intel.com>,
  Martin Oliveira <martin.oliveira@eideticom.com>,
- Matthew Wilcox <willy@infradead.org>, Stephen Bates <sbates@raithlin.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
- Bjorn Helgaas <helgaas@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>,
- Daniel Vetter <daniel.vetter@ffwll.ch>,
- Dan Williams <dan.j.williams@intel.com>, Ira Weiny <ira.weiny@intel.com>,
- =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- Xiong Jianxin <jianxin.xiong@intel.com>
+ Matthew Wilcox <willy@infradead.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
+ Bjorn Helgaas <helgaas@kernel.org>, Daniel Vetter <daniel.vetter@ffwll.ch>,
+ Ralph Campbell <rcampbell@nvidia.com>, John Hubbard <jhubbard@nvidia.com>,
+ linux-block@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+ Dan Williams <dan.j.williams@intel.com>,
+ Xiong Jianxin <jianxin.xiong@intel.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+ =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,167 +109,42 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CgoKT24gMjAyMi0wNi0yOSAwNjowNywgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDIwMjItMDYt
-MTUgMTc6MTIsIExvZ2FuIEd1bnRob3JwZSB3cm90ZToKPj4gV2hlbiBhIFBDSSBQMlBETUEgcGFn
-ZSBpcyBzZWVuLCBzZXQgdGhlIElPVkEgbGVuZ3RoIG9mIHRoZSBzZWdtZW50Cj4+IHRvIHplcm8g
-c28gdGhhdCBpdCBpcyBub3QgbWFwcGVkIGludG8gdGhlIElPVkEuIFRoZW4sIGluIGZpbmFsaXNl
-X3NnKCksCj4+IGFwcGx5IHRoZSBhcHByb3ByaWF0ZSBidXMgYWRkcmVzcyB0byB0aGUgc2VnbWVu
-dC4gVGhlIElPVkEgaXMgbm90Cj4+IGNyZWF0ZWQgaWYgdGhlIHNjYXR0ZXJsaXN0IG9ubHkgY29u
-c2lzdHMgb2YgUDJQRE1BIHBhZ2VzLgo+Pgo+PiBBIFAyUERNQSBwYWdlIG1heSBoYXZlIHRocmVl
-IHBvc3NpYmxlIG91dGNvbWVzIHdoZW4gYmVpbmcgbWFwcGVkOgo+PiDCoMKgIDEpIElmIHRoZSBk
-YXRhIHBhdGggYmV0d2VlbiB0aGUgdHdvIGRldmljZXMgZG9lc24ndCBnbyB0aHJvdWdoCj4+IMKg
-wqDCoMKgwqAgdGhlIHJvb3QgcG9ydCwgdGhlbiBpdCBzaG91bGQgYmUgbWFwcGVkIHdpdGggYSBQ
-Q0kgYnVzIGFkZHJlc3MKPj4gwqDCoCAyKSBJZiB0aGUgZGF0YSBwYXRoIGdvZXMgdGhyb3VnaCB0
-aGUgaG9zdCBicmlkZ2UsIGl0IHNob3VsZCBiZSBtYXBwZWQKPj4gwqDCoMKgwqDCoCBub3JtYWxs
-eSB3aXRoIGFuIElPTU1VIElPVkEuCj4+IMKgwqAgMykgSXQgaXMgbm90IHBvc3NpYmxlIGZvciB0
-aGUgdHdvIGRldmljZXMgdG8gY29tbXVuaWNhdGUgYW5kIHRodXMKPj4gwqDCoMKgwqDCoCB0aGUg
-bWFwcGluZyBvcGVyYXRpb24gc2hvdWxkIGZhaWwgKGFuZCBpdCB3aWxsIHJldHVybiAtRVJFTU9U
-RUlPKS4KPj4KPj4gU2ltaWxhciB0byBkbWEtZGlyZWN0LCB0aGUgc2dfZG1hX21hcmtfcGNpX3Ay
-cGRtYSgpIGZsYWcgaXMgdXNlZCB0bwo+PiBpbmRpY2F0ZSBidXMgYWRkcmVzcyBzZWdtZW50cy4g
-T24gdW5tYXAsIFAyUERNQSBzZWdtZW50cyBhcmUgc2tpcHBlZAo+PiBvdmVyIHdoZW4gZGV0ZXJt
-aW5pbmcgdGhlIHN0YXJ0IGFuZCBlbmQgSU9WQSBhZGRyZXNzZXMuCj4+Cj4+IFdpdGggdGhpcyBj
-aGFuZ2UsIHRoZSBmbGFncyB2YXJpYWJsZSBpbiB0aGUgZG1hX21hcF9vcHMgaXMgc2V0IHRvCj4+
-IERNQV9GX1BDSV9QMlBETUFfU1VQUE9SVEVEIHRvIGluZGljYXRlIHN1cHBvcnQgZm9yIFAyUERN
-QSBwYWdlcy4KPj4KPj4gU2lnbmVkLW9mZi1ieTogTG9nYW4gR3VudGhvcnBlIDxsb2dhbmdAZGVs
-dGF0ZWUuY29tPgo+PiBSZXZpZXdlZC1ieTogSmFzb24gR3VudGhvcnBlIDxqZ2dAbnZpZGlhLmNv
-bT4KPj4gLS0tCj4+IMKgIGRyaXZlcnMvaW9tbXUvZG1hLWlvbW11LmMgfCA2OCArKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0KPj4gwqAgMSBmaWxlIGNoYW5nZWQsIDYxIGlu
-c2VydGlvbnMoKyksIDcgZGVsZXRpb25zKC0pCj4+Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lv
-bW11L2RtYS1pb21tdS5jIGIvZHJpdmVycy9pb21tdS9kbWEtaW9tbXUuYwo+PiBpbmRleCBmOTAy
-NTE1NzJhNWQuLmIwMWNhMGM2YTdhYiAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9pb21tdS9kbWEt
-aW9tbXUuYwo+PiArKysgYi9kcml2ZXJzL2lvbW11L2RtYS1pb21tdS5jCj4+IEBAIC0yMSw2ICsy
-MSw3IEBACj4+IMKgICNpbmNsdWRlIDxsaW51eC9pb3ZhLmg+Cj4+IMKgICNpbmNsdWRlIDxsaW51
-eC9pcnEuaD4KPj4gwqAgI2luY2x1ZGUgPGxpbnV4L2xpc3Rfc29ydC5oPgo+PiArI2luY2x1ZGUg
-PGxpbnV4L21lbXJlbWFwLmg+Cj4+IMKgICNpbmNsdWRlIDxsaW51eC9tbS5oPgo+PiDCoCAjaW5j
-bHVkZSA8bGludXgvbXV0ZXguaD4KPj4gwqAgI2luY2x1ZGUgPGxpbnV4L3BjaS5oPgo+PiBAQCAt
-MTA2Miw2ICsxMDYzLDE2IEBAIHN0YXRpYyBpbnQgX19maW5hbGlzZV9zZyhzdHJ1Y3QgZGV2aWNl
-ICpkZXYsCj4+IHN0cnVjdCBzY2F0dGVybGlzdCAqc2csIGludCBuZW50cywKPj4gwqDCoMKgwqDC
-oMKgwqDCoMKgIHNnX2RtYV9hZGRyZXNzKHMpID0gRE1BX01BUFBJTkdfRVJST1I7Cj4+IMKgwqDC
-oMKgwqDCoMKgwqDCoCBzZ19kbWFfbGVuKHMpID0gMDsKPj4gwqAgK8KgwqDCoMKgwqDCoMKgIGlm
-IChpc19wY2lfcDJwZG1hX3BhZ2Uoc2dfcGFnZShzKSkgJiYgIXNfaW92YV9sZW4pIHsKPiAKPiBM
-b2dpY2FsbHksIHNob3VsZCB3ZSBub3QgYmUgYWJsZSB0byB1c2Ugc2dfaXNfZG1hX2J1c19hZGRy
-ZXNzKCkgaGVyZT8gSQo+IHRoaW5rIGl0IHNob3VsZCBiZSBmZWFzaWJsZSwgYW5kIHNpbXBsZXIs
-IHRvIHByZXBhcmUgdGhlIHAycCBzZWdtZW50cwo+IHVwLWZyb250LCBzdWNoIHRoYXQgYXQgdGhp
-cyBwb2ludCBhbGwgd2UgbmVlZCB0byBkbyBpcyByZXN0b3JlIHRoZQo+IG9yaWdpbmFsIGxlbmd0
-aCAoaWYgZXZlbiB0aGF0LCBzZWUgYmVsb3cpLgoKUGVyIG15IHByZXZpb3VzIGVtYWlsLCBubywg
-YmVjYXVzZSBzZ19pc19kbWFfYnVzX2FkZHJlc3MoKSBpcyBub3Qgc2V0CnlldCBhbmQgbm90IG1l
-YW50IHRvIHRlbGwgeW91IHNvbWV0aGluZyBhYm91dCB0aGUgcGFnZS4gVGhhdCBmbGFnIHdpbGwK
-YmUgc2V0IGJlbG93IGJ5IHBjaV9wMnBkbWFfbWFwX2J1c19zZWdtZW50KCkgYW5kIHRoZW4gY2hl
-Y2tkIGluCmlvbW11X2RtYV91bm1hcF9zZygpIHRvIGRldGVybWluZSBpZiB0aGUgZG1hX2FkZHJl
-c3MgaW4gdGhlIHNlZ21lbnQKbmVlZHMgdG8gYmUgdW5tYXBwZWQuCgo+IAo+PiArwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCBpZiAoaSA+IDApCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgY3VyID0gc2dfbmV4dChjdXIpOwo+PiArCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHBj
-aV9wMnBkbWFfbWFwX2J1c19zZWdtZW50KHMsIGN1cik7Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIGNvdW50Kys7Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGN1cl9sZW4gPSAwOwo+PiAr
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjb250aW51ZTsKPj4gK8KgwqDCoMKgwqDCoMKgIH0KPj4g
-Kwo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgLyoKPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqAgKiBOb3cg
-ZmlsbCBpbiB0aGUgcmVhbCBETUEgZGF0YS4gSWYuLi4KPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-KiAtIHRoZXJlIGlzIGEgdmFsaWQgb3V0cHV0IHNlZ21lbnQgdG8gYXBwZW5kIHRvCj4+IEBAIC0x
-MTU4LDYgKzExNjksOCBAQCBzdGF0aWMgaW50IGlvbW11X2RtYV9tYXBfc2coc3RydWN0IGRldmlj
-ZSAqZGV2LAo+PiBzdHJ1Y3Qgc2NhdHRlcmxpc3QgKnNnLAo+PiDCoMKgwqDCoMKgIHN0cnVjdCBp
-b3ZhX2RvbWFpbiAqaW92YWQgPSAmY29va2llLT5pb3ZhZDsKPj4gwqDCoMKgwqDCoCBzdHJ1Y3Qg
-c2NhdHRlcmxpc3QgKnMsICpwcmV2ID0gTlVMTDsKPj4gwqDCoMKgwqDCoCBpbnQgcHJvdCA9IGRt
-YV9pbmZvX3RvX3Byb3QoZGlyLCBkZXZfaXNfZG1hX2NvaGVyZW50KGRldiksIGF0dHJzKTsKPj4g
-K8KgwqDCoCBzdHJ1Y3QgZGV2X3BhZ2VtYXAgKnBnbWFwID0gTlVMTDsKPj4gK8KgwqDCoCBlbnVt
-IHBjaV9wMnBkbWFfbWFwX3R5cGUgbWFwX3R5cGU7Cj4+IMKgwqDCoMKgwqAgZG1hX2FkZHJfdCBp
-b3ZhOwo+PiDCoMKgwqDCoMKgIHNpemVfdCBpb3ZhX2xlbiA9IDA7Cj4+IMKgwqDCoMKgwqAgdW5z
-aWduZWQgbG9uZyBtYXNrID0gZG1hX2dldF9zZWdfYm91bmRhcnkoZGV2KTsKPj4gQEAgLTExOTMs
-NiArMTIwNiwzNSBAQCBzdGF0aWMgaW50IGlvbW11X2RtYV9tYXBfc2coc3RydWN0IGRldmljZSAq
-ZGV2LAo+PiBzdHJ1Y3Qgc2NhdHRlcmxpc3QgKnNnLAo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgc19s
-ZW5ndGggPSBpb3ZhX2FsaWduKGlvdmFkLCBzX2xlbmd0aCArIHNfaW92YV9vZmYpOwo+PiDCoMKg
-wqDCoMKgwqDCoMKgwqAgcy0+bGVuZ3RoID0gc19sZW5ndGg7Cj4+IMKgICvCoMKgwqDCoMKgwqDC
-oCBpZiAoaXNfcGNpX3AycGRtYV9wYWdlKHNnX3BhZ2UocykpKSB7Cj4+ICvCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgIGlmIChzZ19wYWdlKHMpLT5wZ21hcCAhPSBwZ21hcCkgewo+PiArwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgIHBnbWFwID0gc2dfcGFnZShzKS0+cGdtYXA7Cj4+ICvCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgbWFwX3R5cGUgPSBwY2lfcDJwZG1hX21hcF90eXBl
-KHBnbWFwLCBkZXYpOwo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB9Cj4gCj4gVGhlcmUncyBh
-IGRlZmluaXRlIGNvZGUgc21lbGwgaGVyZSwgYnV0IHBlciBhYm92ZSBhbmQgYmVsb3cgSSB0aGlu
-ayB3ZQo+ICpzaG91bGQqIGFjdHVhbGx5IGNhbGwgdGhlIG5ldyBoZWxwZXIgaW5zdGVhZCBvZiBj
-b3B5LXBhc3RpbmcgaGFsZiBvZiBpdC4KCgo+IAo+PiArCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIHN3aXRjaCAobWFwX3R5cGUpIHsKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY2FzZSBQ
-Q0lfUDJQRE1BX01BUF9CVVNfQUREUjoKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oCAvKgo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKiBBIHplcm8gbGVuZ3Ro
-IHdpbGwgYmUgaWdub3JlZCBieQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-KiBpb21tdV9tYXBfc2coKSBhbmQgdGhlbiBjYW4gYmUgZGV0ZWN0ZWQKPiAKPiBJZiB0aGF0IGlz
-IHJlcXVpcmVkIGJlaGF2aW91ciB0aGVuIGl0IG5lZWRzIGFuIGV4cGxpY2l0IGNoZWNrIGluCj4g
-aW9tbXVfbWFwX3NnKCkgdG8gZ3VhcmFudGVlIChhbmQgZG9jdW1lbnQpIGl0LiBJdCdzIG9ubHkg
-YnkgY2hhbmNlIHRoYXQKPiBfX2lvbW11X21hcCgpIGhhcHBlbnMgdG8gcmV0dXJuIHN1Y2Nlc3Mg
-Zm9yIHNpemUgPT0gMCAqaWYqIGFsbCB0aGUgb3RoZXIKPiBhcmd1bWVudHMgc3RpbGwgbGluZSB1
-cCwgd2hpY2ggaXMgYSBmYXIgY3J5IGZyb20gYSBzYWZlIG5vLW9wLgoKV2hhdCBzaG91bGQgc3Vj
-aCBhIGNoZWNrIGxvb2sgbGlrZT8gSSBjb3VsZCBjZXJ0YWlubHkgYWRkIHNvbWUgY29tbWVudHMK
-dG8gaW9tbXVfbWFwX3NnKCksIGJ1dCBJIGRvbid0IHNlZSB3aGF0IHRoZSBjb2RlIHdvdWxkIG5l
-ZWQgdG8gY2hlY2sgZm9yLi4uCgo+IEhvd2V2ZXIsIHJhdGhlciB0aGFuIHBsYXkgeWV0IG1vcmUg
-c2lsbHkgdHJpY2tzLCBJIHRoaW5rIGl0IHdvdWxkIG1ha2UKPiBldmVuIG1vcmUgc2Vuc2UgdG8g
-bWFrZSBpb21tdV9tYXBfc2coKSBwcm9wZXJseSBhd2FyZSBhbmQgYWJsZSB0byBza2lwCj4gZGly
-ZWN0IHAycCBzZWdtZW50cyBvbiBpdHMgb3duLiBPbmNlIGl0IGJlY29tZXMgbm9ybWFsIHRvIHBh
-c3MgbWl4ZWQKPiBzY2F0dGVybGlzdHMgYXJvdW5kLCBpdCdzIG9ubHkgYSBtYXR0ZXIgb2YgdGlt
-ZSB1bnRpbCBvbmUgZW5kcyB1cCBiZWluZwo+IGhhbmRlZCB0byBhIGRyaXZlciB3aGljaCBtYW5h
-Z2VzIGl0cyBvd24gSU9NTVUgZG9tYWluLCBhbmQgdGhlbiB3aGF0PwoKSSBzdXBwb3NlIHdlIGNh
-biBhZGQgYW5vdGhlciBjYWxsIHRvIGlzX3BjaV9wMnBkbWFfcGFnZSgpIGluc2lkZQppb21tdV9t
-YXBfc2coKSBpZiB5b3UgdGhpbmsgdGhhdCBpcyBjbGVhbmVyLiBTZWVtcyBsaWtlIG1vcmUgd29y
-ayBvbiB0aGUKZmFzdCBwYXRoIHRvIG1lLCBidXQgSSdtIG5vdCBvcHBvc2VkIHRvIGl0LgoKPj4g
-K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICogaW4gX19maW5hbGlzZV9zZygpIHRv
-IGFjdHVhbGx5IG1hcCB0aGUKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICog
-YnVzIGFkZHJlc3MuCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAqLwo+PiAr
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHMtPmxlbmd0aCA9IDA7Cj4+ICvCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY29udGludWU7Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIGNhc2UgUENJX1AyUERNQV9NQVBfVEhSVV9IT1NUX0JSSURHRToKPj4gK8KgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoCAvKgo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgKiBNYXBwaW5nIHRocm91Z2ggaG9zdCBicmlkZ2Ugc2hvdWxkIGJlCj4+ICvCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAqIG1hcHBlZCB3aXRoIHJlZ3VsYXIgSU9WQXMsIHRodXMg
-d2UKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICogZG8gbm90aGluZyBoZXJl
-IGFuZCBjb250aW51ZSBiZWxvdy4KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-ICovCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgYnJlYWs7Cj4+ICvCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgIGRlZmF1bHQ6Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgcmV0ID0gLUVSRU1PVEVJTzsKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBn
-b3RvIG91dF9yZXN0b3JlX3NnOwo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB9Cj4+ICvCoMKg
-wqDCoMKgwqDCoCB9Cj4+ICsKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIC8qCj4+IMKgwqDCoMKgwqDC
-oMKgwqDCoMKgICogRHVlIHRvIHRoZSBhbGlnbm1lbnQgb2Ygb3VyIHNpbmdsZSBJT1ZBIGFsbG9j
-YXRpb24sIHdlIGNhbgo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoCAqIGRlcGVuZCBvbiB0aGVzZSBh
-c3N1bXB0aW9ucyBhYm91dCB0aGUgc2VnbWVudCBib3VuZGFyeSBtYXNrOgo+PiBAQCAtMTIxNSw2
-ICsxMjU3LDkgQEAgc3RhdGljIGludCBpb21tdV9kbWFfbWFwX3NnKHN0cnVjdCBkZXZpY2UgKmRl
-diwKPj4gc3RydWN0IHNjYXR0ZXJsaXN0ICpzZywKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIHByZXYg
-PSBzOwo+PiDCoMKgwqDCoMKgIH0KPj4gwqAgK8KgwqDCoCBpZiAoIWlvdmFfbGVuKQo+PiArwqDC
-oMKgwqDCoMKgwqAgcmV0dXJuIF9fZmluYWxpc2Vfc2coZGV2LCBzZywgbmVudHMsIDApOwo+PiAr
-Cj4+IMKgwqDCoMKgwqAgaW92YSA9IGlvbW11X2RtYV9hbGxvY19pb3ZhKGRvbWFpbiwgaW92YV9s
-ZW4sIGRtYV9nZXRfbWFzayhkZXYpLAo+PiBkZXYpOwo+PiDCoMKgwqDCoMKgIGlmICghaW92YSkg
-ewo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0ID0gLUVOT01FTTsKPj4gQEAgLTEyMzYsNyArMTI4
-MSw3IEBAIHN0YXRpYyBpbnQgaW9tbXVfZG1hX21hcF9zZyhzdHJ1Y3QgZGV2aWNlICpkZXYsCj4+
-IHN0cnVjdCBzY2F0dGVybGlzdCAqc2csCj4+IMKgIG91dF9yZXN0b3JlX3NnOgo+PiDCoMKgwqDC
-oMKgIF9faW52YWxpZGF0ZV9zZyhzZywgbmVudHMpOwo+PiDCoCBvdXQ6Cj4+IC3CoMKgwqAgaWYg
-KHJldCAhPSAtRU5PTUVNKQo+PiArwqDCoMKgIGlmIChyZXQgIT0gLUVOT01FTSAmJiByZXQgIT0g
-LUVSRU1PVEVJTykKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIHJldHVybiAtRUlOVkFMOwo+PiDCoMKg
-wqDCoMKgIHJldHVybiByZXQ7Cj4+IMKgIH0KPj4gQEAgLTEyNDQsNyArMTI4OSw3IEBAIHN0YXRp
-YyBpbnQgaW9tbXVfZG1hX21hcF9zZyhzdHJ1Y3QgZGV2aWNlICpkZXYsCj4+IHN0cnVjdCBzY2F0
-dGVybGlzdCAqc2csCj4+IMKgIHN0YXRpYyB2b2lkIGlvbW11X2RtYV91bm1hcF9zZyhzdHJ1Y3Qg
-ZGV2aWNlICpkZXYsIHN0cnVjdAo+PiBzY2F0dGVybGlzdCAqc2csCj4+IMKgwqDCoMKgwqDCoMKg
-wqDCoCBpbnQgbmVudHMsIGVudW0gZG1hX2RhdGFfZGlyZWN0aW9uIGRpciwgdW5zaWduZWQgbG9u
-ZyBhdHRycykKPj4gwqAgewo+PiAtwqDCoMKgIGRtYV9hZGRyX3Qgc3RhcnQsIGVuZDsKPj4gK8Kg
-wqDCoCBkbWFfYWRkcl90IGVuZCwgc3RhcnQgPSBETUFfTUFQUElOR19FUlJPUjsKPiAKPiBUaGVy
-ZSBhcmUgc2V2ZXJhbCB0aGluZ3MgSSBkb24ndCBsaWtlIGFib3V0IHRoaXMgbG9naWMsIEknZCBy
-YXRoZXIgaGF2ZQo+ICJlbmQgPSAwIiBoZXJlLi4uCgpPaywgSSB0aGluayB0aGF0IHNob3VsZCB3
-b3JrLgoKPj4gwqDCoMKgwqDCoCBzdHJ1Y3Qgc2NhdHRlcmxpc3QgKnRtcDsKPj4gwqDCoMKgwqDC
-oCBpbnQgaTsKPj4gwqAgQEAgLTEyNjAsMTQgKzEzMDUsMjIgQEAgc3RhdGljIHZvaWQgaW9tbXVf
-ZG1hX3VubWFwX3NnKHN0cnVjdCBkZXZpY2UKPj4gKmRldiwgc3RydWN0IHNjYXR0ZXJsaXN0ICpz
-ZywKPj4gwqDCoMKgwqDCoMKgICogVGhlIHNjYXR0ZXJsaXN0IHNlZ21lbnRzIGFyZSBtYXBwZWQg
-aW50byBhIHNpbmdsZQo+PiDCoMKgwqDCoMKgwqAgKiBjb250aWd1b3VzIElPVkEgYWxsb2NhdGlv
-biwgc28gdGhpcyBpcyBpbmNyZWRpYmx5IGVhc3kuCj4+IMKgwqDCoMKgwqDCoCAqLwo+IAo+IFsg
-VGhpcyBjb21tZW50IHJhdGhlciBzdG9wcyBiZWluZyB0cnVlIDooIF0KCk5vdCBleGFjdGx5LiBT
-dXJlIHRoZXJlIGFyZSBzb21lIHNlZ21lbnRzIGluIHRoZSBTR0wgdGhhdCBoYXZlIGJ1cwphZGRy
-ZXNzZXMsIGJ1dCBhbGwgdGhlIHJlZ3VsYXIgSU9WQXMgc3RpbGwgaGF2ZSBhIHNpbmdsZSBjb250
-aWd1b3VzCmFsbG9jYXRpb24gYW5kIG9ubHkgcmVxdWlyZSBvbmUgY2FsbCB0byAgX19pb21tdV9k
-bWFfdW5tYXAoKS4gVGhlIG9ubHkKdHJpY2sgaXNzdWVzIGlzIGZpbmRpbmcgdGhlIGZpcnN0IGFu
-ZCBsYXN0IGFjdHVhbCBJT1ZBIFNHIHRvIGdldCB0aGUgcmFuZ2UuCgo+IAo+PiAtwqDCoMKgIHN0
-YXJ0ID0gc2dfZG1hX2FkZHJlc3Moc2cpOwo+PiAtwqDCoMKgIGZvcl9lYWNoX3NnKHNnX25leHQo
-c2cpLCB0bXAsIG5lbnRzIC0gMSwgaSkgewo+IAo+IC4uLnRoZW4gZ2VuZXJhbGlzZSB0aGUgZmly
-c3QtZWxlbWVudCBzcGVjaWFsIGNhc2UgaGVyZSBpbnRvIGEgZGVkaWNhdGVkCj4gIndhbGsgdG8g
-dGhlIGZpcnN0IG5vbi1wMnAgZWxlbWVudCIgbG9vcC4uLgoKT2ssIEknbGwgc2VlIHdoYXQgSSBj
-YW4gZG8gZm9yIHRoYXQuCgpMb2dhbgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRh
-dGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGlu
-Zm8vaW9tbXU=
+
+
+
+On 2022-06-29 00:48, Christoph Hellwig wrote:
+> On Wed, Jun 15, 2022 at 10:12:32AM -0600, Logan Gunthorpe wrote:
+>> A pseudo mount is used to allocate an inode for each PCI device. The
+>> inode's address_space is used in the file doing the mmap so that all
+>> VMAs are collected and can be unmapped if the PCI device is unbound.
+>> After unmapping, the VMAs are iterated through and their pages are
+>> put so the device can continue to be unbound. An active flag is used
+>> to signal to VMAs not to allocate any further P2P memory once the
+>> removal process starts. The flag is synchronized with concurrent
+>> access with an RCU lock.
+> 
+> Can't we come up with a way of doing this without all the pseudo-fs
+> garbagage?  I really hate all the overhead for that in the next
+> nvme patch as well.
+
+I assume you still want to be able to unmap the VMAs on unbind and not
+just hang?
+
+I'll see if I can come up with something to do the a similar thing using
+vm_private data or some such.
+
+I was not a fan of the extra code for this either, but I was given to
+understand that it was the standard way to collect and cleanup VMAs.
+
+Thanks for the reviews,
+
+Logan
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
