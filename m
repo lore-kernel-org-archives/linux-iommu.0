@@ -1,81 +1,79 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id D7826C433EF
-	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 07:43:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 81BCCC433EF
+	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 07:51:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 5335540896;
-	Wed, 29 Jun 2022 07:43:37 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 5335540896
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0F1CE605B7;
+	Wed, 29 Jun 2022 07:51:57 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 0F1CE605B7
+Authentication-Results: smtp3.osuosl.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=AfDhXHFB
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pVhir2WZIHTx; Wed, 29 Jun 2022 07:51:56 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id C2E4B60AC2;
+	Wed, 29 Jun 2022 07:51:55 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org C2E4B60AC2
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9A1F8C007A;
+	Wed, 29 Jun 2022 07:51:55 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5EA80C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 07:51:54 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2E118409A2
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 07:51:54 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 2E118409A2
+Authentication-Results: smtp4.osuosl.org;
+ dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com
+ header.a=rsa-sha256 header.s=Intel header.b=AfDhXHFB
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1IetQ7e2CSki; Wed, 29 Jun 2022 07:43:36 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id D341140871;
-	Wed, 29 Jun 2022 07:43:35 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org D341140871
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8EC50C0039;
-	Wed, 29 Jun 2022 07:43:35 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2DEC4C002D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 07:43:34 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 095F3814B6
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 07:43:34 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 095F3814B6
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uJfsmxfmAePf for <iommu@lists.linux-foundation.org>;
- Wed, 29 Jun 2022 07:43:33 +0000 (UTC)
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id dP2Tj-Sa2bFI for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Jun 2022 07:51:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org DDF84813BC
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp1.osuosl.org (Postfix) with ESMTPS id DDF84813BC
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 07:43:32 +0000 (UTC)
-Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.200])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LXtgT3zScz6H7fy;
- Wed, 29 Jun 2022 15:41:09 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 29 Jun 2022 09:43:29 +0200
-Received: from [10.195.245.77] (10.195.245.77) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 29 Jun 2022 08:43:28 +0100
-Message-ID: <65e05dd1-8e92-5f6b-d68e-72987fcebf59@huawei.com>
-Date: Wed, 29 Jun 2022 08:43:30 +0100
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org B5F8A409A0
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id B5F8A409A0
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 07:51:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+ t=1656489112; x=1688025112;
+ h=from:to:cc:subject:date:message-id:mime-version:
+ content-transfer-encoding;
+ bh=nv6IKg36g4e5eVCX/5L0FmvRD5dFbZMAXtl/6cXjhDk=;
+ b=AfDhXHFBBwxjJLvPx4aElSXSJofRRicj5q2otTWTvVlTYEfJ/FykhO0S
+ C8P7ybhfP9W1QjKN0PRXckf8HmiOztB/l6lK9bqVeFI4XlFvZN7AcEEmR
+ Vl0f8cwz0IrNnFuLZw32baK9ZlGxPpUl+0RJj+fqxKIhPSAJJ7g+ySiz7
+ /zSFAYLt7Xc3OxTK93nlTa40ALv4rFjM6x94wTpL3N8Eh5yoxpP2yKLm6
+ cUU7cjpLr3lLywZwFEm7H+bw6kGqc+1APAkmgbDhX16+PcudUN8W1FhZ9
+ jks1NRetvBDbwrUhNYkLbGnHUhCkmn3ZGNDw9hB1kM9tM04mQb3oiS3EU A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="262362911"
+X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; d="scan'208";a="262362911"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 29 Jun 2022 00:51:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; d="scan'208";a="588209571"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+ by orsmga007.jf.intel.com with ESMTP; 29 Jun 2022 00:51:49 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: iommu@lists.linux-foundation.org,
+	iommu@lists.linux.dev
+Subject: [PATCH v3 00/11] iommu/vt-d: Optimize the use of locks
+Date: Wed, 29 Jun 2022 15:47:14 +0800
+Message-Id: <20220629074725.2331441-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v4 5/5] libata-scsi: Cap ata_device->max_sectors according
- to shost->max_sectors
-To: Damien Le Moal <damien.lemoal@opensource.wdc.com>, Christoph Hellwig
- <hch@lst.de>
-References: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
- <1656343521-62897-6-git-send-email-john.garry@huawei.com>
- <b69c6112-98b7-3890-9d11-bb321a7c877a@opensource.wdc.com>
- <6619638c-52e8-cb67-c56c-9c9d38c18161@huawei.com>
- <ba59a0da-a982-e3eb-1cb7-6e60f80fd319@opensource.wdc.com>
- <38ae1cc8-1411-bb54-e082-0f7b91cb9e63@huawei.com>
- <20220629054027.GB16297@lst.de>
- <da7027d9-bd81-cfb0-f70e-2405f40023fa@opensource.wdc.com>
-In-Reply-To: <da7027d9-bd81-cfb0-f70e-2405f40023fa@opensource.wdc.com>
-X-Originating-IP: [10.195.245.77]
-X-ClientProxiedBy: lhreml751-chm.china.huawei.com (10.201.108.201) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: martin.petersen@oracle.com, linux-scsi@vger.kernel.org,
- linux-doc@vger.kernel.org, robin.murphy@arm.com, linuxarm@huawei.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
- iommu@lists.linux-foundation.org, will@kernel.org, jejb@linux.ibm.com
+Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ linux-kernel@vger.kernel.org, Jacob jun Pan <jacob.jun.pan@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,36 +86,84 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: John Garry via iommu <iommu@lists.linux-foundation.org>
-Reply-To: John Garry <john.garry@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 29/06/2022 06:58, Damien Le Moal wrote:
-> On 6/29/22 14:40, Christoph Hellwig wrote:
->> On Tue, Jun 28, 2022 at 12:33:58PM +0100, John Garry wrote:
->>> Well Christoph originally offered to take this series via the dma-mapping
->>> tree.
->>>
->>> @Christoph, is that still ok with you? If so, would you rather I send this
->>> libata patch separately?
->>
->> The offer still stands, and I don't really care where the libata
->> patch is routed.  Just tell me what you prefer.
+Hi folks,
 
-Cheers.
+This series tries to optimize the uses of two locks in the Intel IOMMU
+driver:
 
-> 
-> If it is 100% independent from the other patches, I can take it.
-> Otherwise, feel free to take it !
-> 
+- The intel_iommu::lock is used to protect the IOMMU resources shared by
+  devices. They include the IOMMU root and context tables, the pasid
+  tables and the domain IDs.
+- The global device_domain_lock is used to protect the global and the
+  per-domain device tracking lists.
 
-I'll just keep the all together - it's easier in case I need to change 
-anything.
+The optimization includes:
 
-Thanks!
+- Remove the unnecessary global device tracking list;
+- Remove unnecessary locking;
+- Reduce the scope of the lock as much as possible, that is, use the
+  lock only where necessary;
+- The global lock is transformed into a local lock to improve the
+  efficiency.
+
+This series is also available on github:
+https://github.com/LuBaolu/intel-iommu/commits/intel-iommu-lock-optimization-v3
+
+Your comments and suggestions are very appreciated.
+
+Best regards,
+baolu
+
+Change log:
+
+v3:
+ - Split reduction of lock ranges from changing irqsave.
+   https://lore.kernel.org/linux-iommu/BN9PR11MB52760A3D7C6BF1AF9C9D34658CAA9@BN9PR11MB5276.namprd11.prod.outlook.com/
+ - Fully initialize the dev_info before adding it to the list.
+   https://lore.kernel.org/linux-iommu/BN9PR11MB52764D7CD86448C5E4EB46668CAA9@BN9PR11MB5276.namprd11.prod.outlook.com/
+ - Various code and comments refinement.
+
+v2:
+ - https://lore.kernel.org/linux-iommu/20220614025137.1632762-1-baolu.lu@linux.intel.com/
+ - Split the lock-free page walk issue into a new patch:
+   https://lore.kernel.org/linux-iommu/20220609070811.902868-1-baolu.lu@linux.intel.com/
+ - Drop the conversion from spinlock to mutex and make this series
+   cleanup purpose only.
+ - Address several comments received during v1 review.
+
+v1:
+ - https://lore.kernel.org/linux-iommu/20220527063019.3112905-1-baolu.lu@linux.intel.com/
+ - Initial post.
+
+Lu Baolu (11):
+  iommu/vt-d: debugfs: Remove device_domain_lock usage
+  iommu/vt-d: Remove clearing translation data in disable_dmar_iommu()
+  iommu/vt-d: Use pci_get_domain_bus_and_slot() in pgtable_walk()
+  iommu/vt-d: Unnecessary spinlock for root table alloc and free
+  iommu/vt-d: Replace spin_lock_irqsave() with spin_lock()
+  iommu/vt-d: Acquiring lock in domain ID allocation helpers
+  iommu/vt-d: Acquiring lock in pasid manipulation helpers
+  iommu/vt-d: Check device list of domain in domain free path
+  iommu/vt-d: Fold __dmar_remove_one_dev_info() into its caller
+  iommu/vt-d: Use device_domain_lock accurately
+  iommu/vt-d: Convert global spinlock into per domain lock
+
+ drivers/iommu/intel/iommu.h   |   3 +-
+ drivers/iommu/intel/pasid.h   |   1 +
+ drivers/iommu/intel/debugfs.c |  49 ++++---
+ drivers/iommu/intel/iommu.c   | 248 ++++++++++------------------------
+ drivers/iommu/intel/pasid.c   | 103 +++++++-------
+ drivers/iommu/intel/svm.c     |   5 +-
+ 6 files changed, 164 insertions(+), 245 deletions(-)
+
+-- 
+2.25.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
