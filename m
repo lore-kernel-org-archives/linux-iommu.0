@@ -1,101 +1,165 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 8BDC0C43334
-	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 19:15:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 5A133C43334
+	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 19:47:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 25E9560C1C;
-	Wed, 29 Jun 2022 19:15:30 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 25E9560C1C
-Authentication-Results: smtp3.osuosl.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20210112 header.b=PpnhDeUu
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2JnTlP-wl5_N; Wed, 29 Jun 2022 19:15:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id E061D60AEA;
-	Wed, 29 Jun 2022 19:15:28 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org E061D60AEA
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A8EF8C0021;
-	Wed, 29 Jun 2022 19:15:28 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5006DC0011
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 19:15:27 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 1C38E4188D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 19:15:27 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 1C38E4188D
+	by smtp4.osuosl.org (Postfix) with ESMTP id CA5E4409EF;
+	Wed, 29 Jun 2022 19:47:42 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org CA5E4409EF
 Authentication-Results: smtp4.osuosl.org;
- dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com
- header.a=rsa-sha256 header.s=20210112 header.b=PpnhDeUu
+	dkim=fail reason="signature verification failed" (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=kbSpzWzR
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bmz24lvl3dwi for <iommu@lists.linux-foundation.org>;
- Wed, 29 Jun 2022 19:15:26 +0000 (UTC)
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SQk4B36-hg08; Wed, 29 Jun 2022 19:47:41 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 34D064098E;
+	Wed, 29 Jun 2022 19:47:41 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 34D064098E
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 08E3AC0021;
+	Wed, 29 Jun 2022 19:47:41 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4AD02C0011;
+ Wed, 29 Jun 2022 19:47:39 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 2B50060C23;
+ Wed, 29 Jun 2022 19:47:39 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 2B50060C23
+Authentication-Results: smtp3.osuosl.org; dkim=pass (2048-bit key,
+ unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256
+ header.s=selector2 header.b=kbSpzWzR
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id XrJVq9CHDBp3; Wed, 29 Jun 2022 19:47:38 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org B9B8941504
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com
- [IPv6:2a00:1450:4864:20::430])
- by smtp4.osuosl.org (Postfix) with ESMTPS id B9B8941504
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 19:15:25 +0000 (UTC)
-Received: by mail-wr1-x430.google.com with SMTP id q9so23906213wrd.8
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 12:15:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=message-id:date:mime-version:user-agent:subject:content-language:to
- :cc:references:from:in-reply-to:content-transfer-encoding;
- bh=QDVDv5ON0BAYjfNDlZsK6wYaSg+H5s61kzv7l/vdIy0=;
- b=PpnhDeUukAyhD8rnUye13ZPxwiu+Oswze9+LqxoOyZ7FlMJHSHiEPoQq8ksfpGvO8d
- I0tsfja49ZQ83RpEh8p8pz2ZG9RzVEhm4NSY3u4RHLOcyFVB9LGz9aMcPqcvdmSEJDQu
- VTgVB0+NwRtQlf6Flv2B+FWuHH4HiLh7Znmnv6uZKV59i7Td/Bixsmi/gOiFc8pAc2fk
- rWIRhpaJJKmrBACMsO8EnQgSbXJ8+YMONI4dANCN/fPtRJkOTGg3v9DAwlry1rXP5YEH
- NeOkX8B/M0DwA+sRI4CtROBnrb9fjWoWqA2P/c4rdOymKHPCfOsqy+s7lDIoif45jOeg
- hJVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
- :content-language:to:cc:references:from:in-reply-to
- :content-transfer-encoding;
- bh=QDVDv5ON0BAYjfNDlZsK6wYaSg+H5s61kzv7l/vdIy0=;
- b=hRrzeD3p0Ko5sWcOEG8LTWh9EnKsVg2fgbCAhBBgDoTSCY/EHe2OjvgAs2am3noJIg
- lXZM7iXHVoaIntkD5upYnWE+iLbmqUITxVOf0/+eWy91B6022QS3u4npN+41MZGTbQx1
- JgjxWwEUIoiRECuIAhFOOlUKtDimjCkKRSgZUNWKG4n963ec9oEZDKUNaB1AakiznPeq
- oD3taRhSSdId2xUB8BtZ/DEHa7v7biE9BRNdXaoib/4RcISUvhCBGvksXhcrekvK/k64
- nFO8nWJV7b1h1gybSQiOKvoi2XH06IGFsTs3daMC4QccIGYHiauM+Znsjn6g45Do07GF
- RZvg==
-X-Gm-Message-State: AJIora/tYSSiyj/SkNx3NDkPMBSY0WRMLl61ZHQXPoulvQ1zLZfJhw+2
- xeP7UTKeES/QGAj9xa0sp6E=
-X-Google-Smtp-Source: AGRyM1sSZ4x6MUSrqrVMuLIcli30IU+QUFZEsAE3fl4Es1rqa14rtQFbO3ota/6pLd0nXXIrOHxR9w==
-X-Received: by 2002:adf:f245:0:b0:21b:c705:8b1 with SMTP id
- b5-20020adff245000000b0021bc70508b1mr4600636wrp.282.1656530123696; 
- Wed, 29 Jun 2022 12:15:23 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:59e:9d80:527b:9dff:feef:3874?
- ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
- by smtp.gmail.com with ESMTPSA id
- e2-20020adfdbc2000000b0021b9f126fd3sm17770742wrj.14.2022.06.29.12.15.21
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 29 Jun 2022 12:15:23 -0700 (PDT)
-Message-ID: <243b32ba-b338-a3a9-cf78-5e668b7a6d19@gmail.com>
-Date: Wed, 29 Jun 2022 21:15:19 +0200
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 13CE4605A7
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam12on2041.outbound.protection.outlook.com [40.107.244.41])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 13CE4605A7;
+ Wed, 29 Jun 2022 19:47:37 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=f0PJX5RBvOQJXizsm7XXk5ibev9vGSpfBPSn4WdyVa5ghrFuCQFae5qTXcaCWk6xS50Ef/p/HkBXOBmsVjA7GSq0W2eq+KIuffcDoaZoYolI1NDr0MvrSTY053ipmO2PVyyaaQXT4tavqhKI9CHxoCfkCFGy1kOcBBhGf6n9MtJ35ko4u5+I5Ax4ujWkOxP2zwAK7PD70e+7Qkjg0pPHFXmnMGt6NqUdYsNVr1EQLipy5WBUC7Hn0pt3XBrNzCLDZrPmLyXF0lsq+nfhUqZ5qepSUqM2y9ZuOorMdihawoNmQC/FMYyD5SO3kuu1KkcN3SYX8phA+obprcgkMPlQ3A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4t2tMU26BQlyqKCQrdW0JpcVFyJO+mK2EE2oPATlIlA=;
+ b=jpTRnHFVFndMxq3v3N/DsLcCopksASQG2tSes+XRlcpr3NnnfzOmb6ARuSVY9cqWty9YxbYZLjlUNDIb3fjuGcpXqA8rs/QTcVC+at7FX8scfWeM0owd1Rv9bWAlOeBQAdLcPg76BIHX1Lm2aqbErpTuH+foXu0ybORfWxub6Ynj1vC8FTN5WxuuY61N9xEpF01IqOLXZAxHxd2gIRiGQBUeNK41aompUfEUYfS1nRlQS7BbdjadblK0joCyscNYO4f6zPBw9Pyt5QRgDjDbuWnJJxd5zNlZ6AVCuB44s74ojp9iQFAufp49AubKBO+hVh2beXmWSHg+TGTjAijR8Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=rosenzweig.io smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4t2tMU26BQlyqKCQrdW0JpcVFyJO+mK2EE2oPATlIlA=;
+ b=kbSpzWzRS1YUALOvepkAP54VOl8DFy3BXMyZtvElr0/sgXBKuvsoovdvw/j7z29Xy+8+zNA+uGQYhodL2XVyI/k4D33mMLIxVZcaQgU4SLywxUt8qaAE6D7UOxG0834eE3JdNBZm6kevU3BXtq1ZZSbCH4bSjRSXp0SvgJRCM0gMqwHd96XA+jrHf46f7zrbcfupeajYgYobAVhrbTvQvzSMqjx6tgaVqvsxapPmh5R4roDsl93Fv0LZc93VithZBkTENvMgwrkCzuGlAro2zxj3BQOrCLWE3ZQKDuFyEQ6JE5jO3Q5sw43iYRuHskEmbwN/+/FJ0a7wg7foxqnOAg==
+Received: from DS7PR03CA0055.namprd03.prod.outlook.com (2603:10b6:5:3b5::30)
+ by BL1PR12MB5221.namprd12.prod.outlook.com (2603:10b6:208:30b::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.18; Wed, 29 Jun
+ 2022 19:47:35 +0000
+Received: from DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3b5:cafe::74) by DS7PR03CA0055.outlook.office365.com
+ (2603:10b6:5:3b5::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.17 via Frontend
+ Transport; Wed, 29 Jun 2022 19:47:35 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT049.mail.protection.outlook.com (10.13.172.188) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5373.15 via Frontend Transport; Wed, 29 Jun 2022 19:47:34 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32;
+ Wed, 29 Jun 2022 19:47:34 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Wed, 29 Jun
+ 2022 12:47:33 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26 via Frontend
+ Transport; Wed, 29 Jun 2022 12:47:31 -0700
+Date: Wed, 29 Jun 2022 12:47:30 -0700
+To: Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [PATCH v3 1/5] iommu: Return -EMEDIUMTYPE for incompatible
+ domain and device/group
+Message-ID: <YrysUpY4mdzA0h76@Asurada-Nvidia>
+References: <20220623200029.26007-1-nicolinc@nvidia.com>
+ <20220623200029.26007-2-nicolinc@nvidia.com>
+ <270eec00-8aee-2288-4069-d604e6da2925@linux.intel.com>
+ <YrUk8IINqDEZLfIa@Asurada-Nvidia>
+ <8a5e9c81ab1487154828af3ca21e62e39bcce18c.camel@mediatek.com>
+ <BN9PR11MB527629DEF740C909A7B7BEB38CB49@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <19cfb1b85a347c70c6b0937bbbca4a176a724454.camel@mediatek.com>
+ <20220624181943.GV4147@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] ACPI: VIOT: Fix ACS setup
-Content-Language: en-US
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Eric Auger <eric.auger@redhat.com>
-References: <20220627125534.1035912-1-eric.auger@redhat.com>
- <YrwX2U48HOC+UF07@myrica>
-From: Eric Auger <eric.auger.pro@gmail.com>
-In-Reply-To: <YrwX2U48HOC+UF07@myrica>
-Cc: jroedel@suse.de, iommu@lists.linux.dev, rafael@kernel.org,
- linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org, lenb@kernel.org
+Content-Disposition: inline
+In-Reply-To: <20220624181943.GV4147@nvidia.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8d217259-e4d1-4143-1a2e-08da5a0836ac
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5221:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tial0svSqsOBWr4UrH8SCwFIjyQnY3PhwdCieiCRyW+x6vi6nufunUUzfl8XQu8vEaRhJjGBAe4pGe+ZKAfR+B3ov2ln3fdvF0zUhQDAoDJZAm1CfwEJ2JURkCkbc2Q478avagu2XGxhl64JAxb8w+lDpT8aK3PHZ/LfhjAQoqrimWhE2UhfvN24fwDp23yFkeRn+H/kaZ79l4vS2s8AbT/vCOT6O3Jvk0Y6HEcDPlc0VC6l3C/01Q3BPHx0oPlI9KDRXO4pMSE5pvnkF8RmYHIfIISfgUWB7nsuhuzHWuBojcb6rsblTsRxNH0Fp1lK17/I1anKUpXUNmyOKW9OIHIg6Evd4yVFb5DvzvcQ7xaMbss+QpYJQv6oOxwC2QmSNsH3x7ybT5PNdcUMxSMpFf4zX6htMZ77H6It2PS0ueapWuyq+3vJ4+5Vvc0gB2Dxly6eOldTjlwgi/Q6YcJlwHTiIyOpua7KNiNJVOCZn9jas+cQTv46a0febV9sve/Z4MeylJc2s4MbOkEL367bIRjRTbdXy7qmC/y8a8Cn4dagtC3VPlg34Nnm4aD6dWo+5U36sBQOe8N1UVpIdYcZu8eZJ4WIEdJA0ok2GiIdHvicgQbnlGX56hNp4gCurZw+0FZ3KS9CcnYyVuWGMg7oi7o3i4b/FV+KaivcYLJXFieb2yCtFDXk0UOIkhe4saVqE0wh44G0seXU9OKYk+fij1dEt11l7/CKpaRSkWBojSOF+IOwWIih6hk4tDde2pb/MaCPEwtaJFvcdYb2jrqQXLv8ADvPXts+hOQmbXpusmZeVStCPYWHCV9iSMXicf0t5CiYmppSKIA/rg0RSoztiw==
+X-Forefront-Antispam-Report: CIP:12.22.5.234; CTRY:US; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:InfoNoRecords; CAT:NONE;
+ SFS:(13230016)(4636009)(376002)(346002)(136003)(39860400002)(396003)(46966006)(40470700004)(36840700001)(8676002)(70206006)(70586007)(4326008)(9686003)(36860700001)(7416002)(41300700001)(478600001)(26005)(86362001)(40480700001)(82740400003)(40460700003)(6916009)(186003)(81166007)(55016003)(8936002)(356005)(47076005)(82310400005)(33716001)(2906002)(336012)(54906003)(316002)(426003)(7406005)(5660300002)(83380400001)(4744005)(36900700001);
+ DIR:OUT; SFP:1101; 
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 19:47:34.8739 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8d217259-e4d1-4143-1a2e-08da5a0836ac
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[12.22.5.234];
+ Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT049.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5221
+Cc: "marcan@marcan.st" <marcan@marcan.st>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jordan@cosmicpenguin.net" <jordan@cosmicpenguin.net>,
+ "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+ "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+ "will@kernel.org" <will@kernel.org>,
+ "alyssa@rosenzweig.io" <alyssa@rosenzweig.io>,
+ "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+ "zhang.lyra@gmail.com" <zhang.lyra@gmail.com>,
+ "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
+ Jason Gunthorpe <jgg@nvidia.com>,
+ "yangyingliang@huawei.com" <yangyingliang@huawei.com>,
+ "orsonzhai@gmail.com" <orsonzhai@gmail.com>,
+ "gerald.schaefer@linux.ibm.com" <gerald.schaefer@linux.ibm.com>, "Tian,
+ Kevin" <kevin.tian@intel.com>,
+ "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+ "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "christophe.jaillet@wanadoo.fr" <christophe.jaillet@wanadoo.fr>,
+ "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+ "tglx@linutronix.de" <tglx@linutronix.de>,
+ "virtualization@lists.linux-foundation.org"
+ <virtualization@lists.linux-foundation.org>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "cohuck@redhat.com" <cohuck@redhat.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "baolin.wang7@gmail.com" <baolin.wang7@gmail.com>,
+ "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,144 +172,39 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Nicolin Chen via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Nicolin Chen <nicolinc@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jean
+On Fri, Jun 24, 2022 at 03:19:43PM -0300, Jason Gunthorpe wrote:
+> On Fri, Jun 24, 2022 at 06:35:49PM +0800, Yong Wu wrote:
+> 
+> > > > It's not used in VFIO context. "return 0" just satisfy the iommu
+> > > > framework to go ahead. and yes, here we only allow the shared
+> > > > "mapping-domain" (All the devices share a domain created
+> > > > internally).
+> 
+> What part of the iommu framework is trying to attach a domain and
+> wants to see success when the domain was not actually attached ?
+> 
+> > > What prevent this driver from being used in VFIO context?
+> > 
+> > Nothing prevent this. Just I didn't test.
+> 
+> This is why it is wrong to return success here.
 
-On 6/29/22 11:14, Jean-Philippe Brucker wrote:
-> Hi Eric,
-> 
-> On Mon, Jun 27, 2022 at 02:55:34PM +0200, Eric Auger wrote:
->> Currently acpi_viot_init() gets called after the pci
->> device has been scanned and pci_enable_acs() has been called.
->> So pci_request_acs() fails to be taken into account leading
->> to wrong single iommu group topologies when dealing with
->> multi-function root ports for instance.
->>
->> We cannot simply move the acpi_viot_init() earlier, similarly
->> as the IORT init because the VIOT parsing relies on the pci
->> scan. However we can detect VIOT is present earlier and in
->> such a case, request ACS. Introduce a new acpi_viot_early_init()
->> routine that allows to call pci_request_acs() before the scan.
->>
->> Fixes: 3cf485540e7b ("ACPI: Add driver for the VIOT table")
->> Signed-off-by: Eric Auger <eric.auger@redhat.com>
->> Reported-by: Jin Liu <jinl@redhat.com>
-> 
-> Thanks for the fix, the patch makes sense and fixes the issue.
-> 
-> I wondered whether we should keep the logic where we only request ACS if
-> an IOMMU is found to manage a PCI range, but I can't see any harm in
-> requesting it regardless (plus there is a precedent with AMD IOMMU).
-Yes that's what I saw too
-> I could imagine some VMM wanting to only put an IOMMU in front of its MMIO
-> devices and leave PCI to roam free, but that seems like a stretch.
-> 
-> There is another issue with the existing code, though: we can't call
-> pci_request_acs() when CONFIG_PCI is disabled because no stub is defined.
-> Could you wrap the call in an #ifdef?
-sure
-> 
->> ---
->>  drivers/acpi/bus.c        |  1 +
->>  drivers/acpi/viot.c       | 23 +++++++++++++++++------
->>  include/linux/acpi_viot.h |  2 ++
->>  3 files changed, 20 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
->> index 86fa61a21826..906ad8153fd9 100644
->> --- a/drivers/acpi/bus.c
->> +++ b/drivers/acpi/bus.c
->> @@ -1400,6 +1400,7 @@ static int __init acpi_init(void)
->>  
->>  	pci_mmcfg_late_init();
->>  	acpi_iort_init();
->> +	acpi_viot_early_init();
->>  	acpi_hest_init();
->>  	acpi_ghes_init();
->>  	acpi_scan_init();
->> diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
->> index d2256326c73a..3c1be123e4d6 100644
->> --- a/drivers/acpi/viot.c
->> +++ b/drivers/acpi/viot.c
->> @@ -248,6 +248,23 @@ static int __init viot_parse_node(const struct acpi_viot_header *hdr)
->>  	return ret;
->>  }
->>  
->> +/**
->> + * acpi_viot_early_init - Test the presence of VIOT and enable ACS
->> + *
->> + * If the VIOT does exist, ACS must be enabled. This cannot be
->> + * done in acpi_viot_init() which is called after the bus scan
->> + */
->> +void __init acpi_viot_early_init(void)
->> +{
->> +	acpi_status status;
->> +	struct acpi_table_header *hdr;
->> +
->> +	status = acpi_get_table(ACPI_SIG_VIOT, 0, &hdr);
->> +	if (!ACPI_FAILURE(status))
->> +		pci_request_acs();
->> +	acpi_put_table(hdr);
-> 
-> I'd rather not call acpi_put_table() in case of failure. I know it is
-> handled but it looks fragile and I couldn't find any other user of
-> acpi_get_table() doing this.
-OK
-> 
->> +}
->> +
->>  /**
->>   * acpi_viot_init - Parse the VIOT table
->>   *
->> @@ -319,12 +336,6 @@ static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
->>  			epid = ((domain_nr - ep->segment_start) << 16) +
->>  				dev_id - ep->bdf_start + ep->endpoint_id;
->>  
->> -			/*
->> -			 * If we found a PCI range managed by the viommu, we're
->> -			 * the one that has to request ACS.
->> -			 */
->> -			pci_request_acs();
->> -
->>  			return viot_dev_iommu_init(&pdev->dev, ep->viommu,
->>  						   epid);
->>  		}
->> diff --git a/include/linux/acpi_viot.h b/include/linux/acpi_viot.h
->> index 1eb8ee5b0e5f..e58d60f8ff2e 100644
->> --- a/include/linux/acpi_viot.h
->> +++ b/include/linux/acpi_viot.h
->> @@ -6,10 +6,12 @@
->>  #include <linux/acpi.h>
->>  
->>  #ifdef CONFIG_ACPI_VIOT
->> +void __init acpi_viot_early_init(void);
->>  void __init acpi_viot_init(void);
->>  int viot_iommu_configure(struct device *dev);
->>  #else
->>  static inline void acpi_viot_init(void) {}
->> +static inline void acpi_viot_early_init(void) {}
-> 
-> nit: different declaration order
-OK
+Hi Yong, would you or someone you know be able to confirm whether
+this "return 0" is still a must or not?
+
+Considering that it's an old 32-bit platform for MTK, if it would
+take time to do so, I'd like to drop the change in MTK driver and
+note in commit log for you or other MTK folks to change in future.
 
 Thanks
-
-Eric
-> 
-> Thanks,
-> Jean
-> 
-> 
->>  static inline int viot_iommu_configure(struct device *dev)
->>  {
->>  	return -ENODEV;
->> -- 
->> 2.35.3
->>
+Nic
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
