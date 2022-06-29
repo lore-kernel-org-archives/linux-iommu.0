@@ -1,274 +1,129 @@
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+Received: from esa6.hgst.iphmx.com (esa6.hgst.iphmx.com [216.71.154.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3219F7EB
-	for <iommu@lists.linux.dev>; Wed, 29 Jun 2022 07:52:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1656489138; x=1688025138;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=rDw7P6FJi7QTKFVWwAK42b0Q1umngDHKfvQybxOrxMU=;
-  b=Ix33XUlsrLcln0zTLeE6tBb5BsYDs6Rainh+U+9YtlwDjJFufyRtwtPl
-   y2gmka7ngEhP0RrEK1VtOM2egCTe6H+0HI98xYdq6leOl5c5SECdWcWli
-   BJ5kAVFFTYsyyASFCsxtsL/0CtEF031SS03qotQVJmZs2u4rOD088XYhE
-   6azanCaX33N4iT5r7tVZHWNf/pXSzs5pxRUlADjTRRbNA5FQ/METWQuIE
-   VY4i738GjJ4GTObKLE2/BOcu6Tfly+jt28asy7WJUsk44ilN3k9zhVMhG
-   HzlZ86wTasJvymWp68X7MF5YFy5mzwYoo91HfAosbVitm/Q18+ItgXy0c
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 335687EB
+	for <iommu@lists.linux.dev>; Wed, 29 Jun 2022 08:25:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1656491157; x=1688027157;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=AjhPOFbRCAVVpWITsrOe0anHqorsbYYstfbAHDzMisE=;
+  b=pEJnFIjL3pjHB2NyPag4vUqDgYCdpyf79znCPORrXBWC/hhc4IKw6XQf
+   7ipUzOxgj0IF10g2CrJ/f3Be1eA7+ba+x1HW+IX0i5+pte7xb5O/P8ZiO
+   7XUsHo+GM/FdoJcSYR8lcX55kL6ABIGsEyx5lNq/TuopfiGdh6UC8Bemq
+   4FT5MsNzdHeJkEfbfm0+RPRld9/WFlttg01yTqwolkQPQ/isDnEpjAcqe
+   KwI8x+OLZpyiE0fcAeCfVYG9LNekW9/35LdanTHjA1/AHaTFU4nQlrUWw
+   MAjAM4WgNpbFWihrRnPl5sjn92EWjjDrLsLveTHq02awnlGLHQHiu7mls
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10392"; a="280718581"
-X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
-   d="scan'208";a="280718581"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2022 00:52:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,230,1650956400"; 
-   d="scan'208";a="588209753"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 29 Jun 2022 00:52:15 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux-foundation.org,
-	iommu@lists.linux.dev
-Cc: Kevin Tian <kevin.tian@intel.com>,
-	Ashok Raj <ashok.raj@intel.com>,
-	Liu Yi L <yi.l.liu@intel.com>,
-	Jacob jun Pan <jacob.jun.pan@intel.com>,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 11/11] iommu/vt-d: Convert global spinlock into per domain lock
-Date: Wed, 29 Jun 2022 15:47:25 +0800
-Message-ID: <20220629074725.2331441-12-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220629074725.2331441-1-baolu.lu@linux.intel.com>
-References: <20220629074725.2331441-1-baolu.lu@linux.intel.com>
+X-IronPort-AV: E=Sophos;i="5.92,231,1650902400"; 
+   d="scan'208";a="205096302"
+Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 29 Jun 2022 16:24:46 +0800
+IronPort-SDR: ZquWzYQOzsxUAZQEaMqQIhv5sYST5GCziCtv0Fb/BX2dL9qj5Zb+5UWlJrZd0eRxwGl5Mk7WVK
+ GqhfU6rz1ipbGjqEoTHpHPjWH7OKYOe75ipWw2Rb1UCMfpjkyASxBW/2S5z6hJVDk0xImscXrs
+ oiS9hnhw/gJL4H3ngk1QWyBrRoSxuV/fmKdfS/jqbXpeGRtTaUjh0AAHdti4P76xskSIeG/2VJ
+ yGdMRrnKaoRESWKP3aAZqYwKFXDBgs1Kwdf2Igf+DXupcusSQUZpZUF5BxMFUk0ZP2+d7jDtUR
+ GiJeQH8WHgwrS5rNcE2KTpli
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 29 Jun 2022 00:42:25 -0700
+IronPort-SDR: /wYpezuHB2qFBbqkLFX4skeMQMhbRW4HkOYNw8jC7Yf+jgZIT2UZngKF2AQX20S8TRLCjStMJZ
+ rI76CJ+BTxxvEXNnmUo77LGCFu8JcegbiSDB4DWtJdDypnebDPH3sBTQYuqPZ7tXeiOCi5AEnc
+ P9MJfWivPeWULPQAsV6g4tOEmUtX7enbh1l06cMzUEwBvDqVZMHKxP6NraVm1ZA5shLZOFlL/F
+ DyK1WqWRnklNJoXgH29bcIHnQQBn9/KTGSCABxZo0mb99bv3WLn04Fe/zWIg4ID0o++Q7SAAPS
+ MsU=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 29 Jun 2022 01:24:45 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+	by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4LXvdn4v5lz1Rw4L
+	for <iommu@lists.linux.dev>; Wed, 29 Jun 2022 01:24:45 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+	reason="pass (just generated, assumed good)"
+	header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+	opensource.wdc.com; h=content-transfer-encoding:content-type
+	:in-reply-to:organization:from:references:to:content-language
+	:subject:user-agent:mime-version:date:message-id; s=dkim; t=
+	1656491085; x=1659083086; bh=AjhPOFbRCAVVpWITsrOe0anHqorsbYYstfb
+	AHDzMisE=; b=VKSw9+hNpxOTYZUR7tp/8337L+N6pO5KNYt3jMgLrlUq4Zs3t5I
+	jMl5A44R6tUpillWJfxuun6t8WIj6/nJeyHYBNFgXxJrJCS2yPH1HUfJQ6zQaKEX
+	2OJ0kO8NkQPLXmQpu+1+y3ksuL1tk/v2rgilcySdSzmeYNVz2077MvsGBM8rFh6E
+	unedqEh92R/EwjK9+mTcw4E/KYfLdMBZlp79jM4ilUQ2e6nUukZVNKRJBt/KiwQl
+	POgm07sKDuOab4D41/qR63zekUxDhZOyXSYxMteQI1XCQrp7x2kDND7Rg6e6tFBC
+	vPCH1LMqtUTVo5PNfQH7asnVf4zCjXIoDPQ==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+	by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id 8zOFYZ6cGSFA for <iommu@lists.linux.dev>;
+	Wed, 29 Jun 2022 01:24:45 -0700 (PDT)
+Received: from [10.225.163.99] (unknown [10.225.163.99])
+	by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4LXvdk2Vfxz1RtVk;
+	Wed, 29 Jun 2022 01:24:42 -0700 (PDT)
+Message-ID: <bf9d1cc7-c03d-f5a8-bb96-cfcd352ac36e@opensource.wdc.com>
+Date: Wed, 29 Jun 2022 17:24:41 +0900
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Message-ID: <20220629074725.nREgAYBWRolAzuuhRwEOdVidhq92ZesrUj3scnG0JnU@z>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v4 5/5] libata-scsi: Cap ata_device->max_sectors according
+ to shost->max_sectors
+Content-Language: en-US
+To: John Garry <john.garry@huawei.com>, Christoph Hellwig <hch@lst.de>
+Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-ide@vger.kernel.org, iommu@lists.linux-foundation.org,
+ iommu@lists.linux.dev, linux-scsi@vger.kernel.org, linuxarm@huawei.com,
+ joro@8bytes.org, will@kernel.org, jejb@linux.ibm.com,
+ martin.petersen@oracle.com, m.szyprowski@samsung.com, robin.murphy@arm.com
+References: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
+ <1656343521-62897-6-git-send-email-john.garry@huawei.com>
+ <b69c6112-98b7-3890-9d11-bb321a7c877a@opensource.wdc.com>
+ <6619638c-52e8-cb67-c56c-9c9d38c18161@huawei.com>
+ <ba59a0da-a982-e3eb-1cb7-6e60f80fd319@opensource.wdc.com>
+ <38ae1cc8-1411-bb54-e082-0f7b91cb9e63@huawei.com>
+ <20220629054027.GB16297@lst.de>
+ <da7027d9-bd81-cfb0-f70e-2405f40023fa@opensource.wdc.com>
+ <65e05dd1-8e92-5f6b-d68e-72987fcebf59@huawei.com>
+From: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <65e05dd1-8e92-5f6b-d68e-72987fcebf59@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Message-ID: <20220629082441.U_Kdq7KNBnXAXQBLAl49Ao7soGKQIC5GMIPkBgjejIw@z>
 
-Using a global device_domain_lock spinlock to protect per-domain device
-tracking lists is an inefficient way, especially considering this lock
-is also needed in the hot paths. This optimizes the locking mechanism
-by converting the global lock to per domain lock.
+On 6/29/22 16:43, John Garry wrote:
+> On 29/06/2022 06:58, Damien Le Moal wrote:
+>> On 6/29/22 14:40, Christoph Hellwig wrote:
+>>> On Tue, Jun 28, 2022 at 12:33:58PM +0100, John Garry wrote:
+>>>> Well Christoph originally offered to take this series via the dma-mapping
+>>>> tree.
+>>>>
+>>>> @Christoph, is that still ok with you? If so, would you rather I send this
+>>>> libata patch separately?
+>>>
+>>> The offer still stands, and I don't really care where the libata
+>>> patch is routed.  Just tell me what you prefer.
+> 
+> Cheers.
+> 
+>>
+>> If it is 100% independent from the other patches, I can take it.
+>> Otherwise, feel free to take it !
+>>
+> 
+> I'll just keep the all together - it's easier in case I need to change 
+> anything.
 
-On the other hand, as the device tracking lists are never accessed in
-any interrupt context, there is no need to disable interrupts while
-spinning. Replace irqsave variant with spinlock calls.
+Works for me.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.h |  1 +
- drivers/iommu/intel/iommu.c | 50 ++++++++++++++++---------------------
- 2 files changed, 22 insertions(+), 29 deletions(-)
+> 
+> Thanks!
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 198c6c822ef4..df64d3d9c49a 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -541,6 +541,7 @@ struct dmar_domain {
- 	u8 force_snooping : 1;		/* Create IOPTEs with snoop control */
- 	u8 set_pte_snp:1;
- 
-+	spinlock_t lock;		/* Protect device tracking lists */
- 	struct list_head devices;	/* all devices' list */
- 
- 	struct dma_pte	*pgd;		/* virtual address */
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 1783859b511a..da6cfea0f0d6 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -310,7 +310,6 @@ static int iommu_skip_te_disable;
- #define IDENTMAP_GFX		2
- #define IDENTMAP_AZALIA		4
- 
--static DEFINE_SPINLOCK(device_domain_lock);
- const struct iommu_ops intel_iommu_ops;
- 
- static bool translation_pre_enabled(struct intel_iommu *iommu)
-@@ -534,9 +533,8 @@ static int domain_update_device_node(struct dmar_domain *domain)
- {
- 	struct device_domain_info *info;
- 	int nid = NUMA_NO_NODE;
--	unsigned long flags;
- 
--	spin_lock_irqsave(&device_domain_lock, flags);
-+	spin_lock(&domain->lock);
- 	list_for_each_entry(info, &domain->devices, link) {
- 		/*
- 		 * There could possibly be multiple device numa nodes as devices
-@@ -548,7 +546,7 @@ static int domain_update_device_node(struct dmar_domain *domain)
- 		if (nid != NUMA_NO_NODE)
- 			break;
- 	}
--	spin_unlock_irqrestore(&device_domain_lock, flags);
-+	spin_unlock(&domain->lock);
- 
- 	return nid;
- }
-@@ -1375,20 +1373,19 @@ iommu_support_dev_iotlb(struct dmar_domain *domain, struct intel_iommu *iommu,
- 			u8 bus, u8 devfn)
- {
- 	struct device_domain_info *info;
--	unsigned long flags;
- 
- 	if (!iommu->qi)
- 		return NULL;
- 
--	spin_lock_irqsave(&device_domain_lock, flags);
-+	spin_lock(&domain->lock);
- 	list_for_each_entry(info, &domain->devices, link) {
- 		if (info->iommu == iommu && info->bus == bus &&
- 		    info->devfn == devfn) {
--			spin_unlock_irqrestore(&device_domain_lock, flags);
-+			spin_unlock(&domain->lock);
- 			return info->ats_supported ? info : NULL;
- 		}
- 	}
--	spin_unlock_irqrestore(&device_domain_lock, flags);
-+	spin_unlock(&domain->lock);
- 
- 	return NULL;
- }
-@@ -1397,9 +1394,8 @@ static void domain_update_iotlb(struct dmar_domain *domain)
- {
- 	struct device_domain_info *info;
- 	bool has_iotlb_device = false;
--	unsigned long flags;
- 
--	spin_lock_irqsave(&device_domain_lock, flags);
-+	spin_lock(&domain->lock);
- 	list_for_each_entry(info, &domain->devices, link) {
- 		if (info->ats_enabled) {
- 			has_iotlb_device = true;
-@@ -1407,7 +1403,7 @@ static void domain_update_iotlb(struct dmar_domain *domain)
- 		}
- 	}
- 	domain->has_iotlb_device = has_iotlb_device;
--	spin_unlock_irqrestore(&device_domain_lock, flags);
-+	spin_unlock(&domain->lock);
- }
- 
- static void iommu_enable_dev_iotlb(struct device_domain_info *info)
-@@ -1498,17 +1494,15 @@ static void __iommu_flush_dev_iotlb(struct device_domain_info *info,
- static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
- 				  u64 addr, unsigned mask)
- {
--	unsigned long flags;
- 	struct device_domain_info *info;
- 
- 	if (!domain->has_iotlb_device)
- 		return;
- 
--	spin_lock_irqsave(&device_domain_lock, flags);
-+	spin_lock(&domain->lock);
- 	list_for_each_entry(info, &domain->devices, link)
- 		__iommu_flush_dev_iotlb(info, addr, mask);
--
--	spin_unlock_irqrestore(&device_domain_lock, flags);
-+	spin_unlock(&domain->lock);
- }
- 
- static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
-@@ -1768,6 +1762,7 @@ static struct dmar_domain *alloc_domain(unsigned int type)
- 		domain->flags |= DOMAIN_FLAG_USE_FIRST_LEVEL;
- 	domain->has_iotlb_device = false;
- 	INIT_LIST_HEAD(&domain->devices);
-+	spin_lock_init(&domain->lock);
- 
- 	return domain;
- }
-@@ -2441,7 +2436,6 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 	struct intel_iommu *iommu;
--	unsigned long flags;
- 	u8 bus, devfn;
- 	int ret;
- 
-@@ -2454,9 +2448,9 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
- 		return ret;
- 
- 	info->domain = domain;
--	spin_lock_irqsave(&device_domain_lock, flags);
-+	spin_lock(&domain->lock);
- 	list_add(&info->link, &domain->devices);
--	spin_unlock_irqrestore(&device_domain_lock, flags);
-+	spin_unlock(&domain->lock);
- 
- 	/* PASID table is mandatory for a PCI device in scalable mode. */
- 	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
-@@ -4131,8 +4125,8 @@ static void domain_context_clear(struct device_domain_info *info)
- static void dmar_remove_one_dev_info(struct device *dev)
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct dmar_domain *domain = info->domain;
- 	struct intel_iommu *iommu = info->iommu;
--	unsigned long flags;
- 
- 	if (!dev_is_real_dma_subdevice(info->dev)) {
- 		if (dev_is_pci(info->dev) && sm_supported(iommu))
-@@ -4144,11 +4138,11 @@ static void dmar_remove_one_dev_info(struct device *dev)
- 		intel_pasid_free_table(info->dev);
- 	}
- 
--	spin_lock_irqsave(&device_domain_lock, flags);
-+	spin_lock(&domain->lock);
- 	list_del(&info->link);
--	spin_unlock_irqrestore(&device_domain_lock, flags);
-+	spin_unlock(&domain->lock);
- 
--	domain_detach_iommu(info->domain, iommu);
-+	domain_detach_iommu(domain, iommu);
- }
- 
- static int md_domain_init(struct dmar_domain *domain, int guest_width)
-@@ -4430,7 +4424,7 @@ static bool domain_support_force_snooping(struct dmar_domain *domain)
- 	struct device_domain_info *info;
- 	bool support = true;
- 
--	assert_spin_locked(&device_domain_lock);
-+	assert_spin_locked(&domain->lock);
- 	list_for_each_entry(info, &domain->devices, link) {
- 		if (!ecap_sc_support(info->iommu->ecap)) {
- 			support = false;
-@@ -4445,8 +4439,7 @@ static void domain_set_force_snooping(struct dmar_domain *domain)
- {
- 	struct device_domain_info *info;
- 
--	assert_spin_locked(&device_domain_lock);
--
-+	assert_spin_locked(&domain->lock);
- 	/*
- 	 * Second level page table supports per-PTE snoop control. The
- 	 * iommu_map() interface will handle this by setting SNP bit.
-@@ -4464,20 +4457,19 @@ static void domain_set_force_snooping(struct dmar_domain *domain)
- static bool intel_iommu_enforce_cache_coherency(struct iommu_domain *domain)
- {
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
--	unsigned long flags;
- 
- 	if (dmar_domain->force_snooping)
- 		return true;
- 
--	spin_lock_irqsave(&device_domain_lock, flags);
-+	spin_lock(&dmar_domain->lock);
- 	if (!domain_support_force_snooping(dmar_domain)) {
--		spin_unlock_irqrestore(&device_domain_lock, flags);
-+		spin_unlock(&dmar_domain->lock);
- 		return false;
- 	}
- 
- 	domain_set_force_snooping(dmar_domain);
- 	dmar_domain->force_snooping = true;
--	spin_unlock_irqrestore(&device_domain_lock, flags);
-+	spin_unlock(&dmar_domain->lock);
- 
- 	return true;
- }
+
 -- 
-2.25.1
-
+Damien Le Moal
+Western Digital Research
