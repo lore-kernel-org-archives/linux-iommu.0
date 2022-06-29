@@ -1,181 +1,87 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8925C7B
-	for <iommu@lists.linux.dev>; Wed, 29 Jun 2022 09:14:27 +0000 (UTC)
-Received: by mail-wr1-f46.google.com with SMTP id i25so15924492wrc.13
-        for <iommu@lists.linux.dev>; Wed, 29 Jun 2022 02:14:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=U+mKfaGXoONCznFgzmYIZny9AKkMWKoWt6b7S8f60RM=;
-        b=fEDY3d9nvND9FB+yUl1AlWKqmdRimCwOi50i1qa9A3DKppiVdL0evazSl+CYovnpPb
-         +xe7MhtHEIdRd/hU3l/ogn7sAWDlJUBLc392CjdJtrSQfAf0m+yIkjQ5Ga6atX/HRS7q
-         yWgmVnPRgemnHBcUGxlhsY3DN9UnUcJt1/h9p3fpOkxCpxOj0Ckew4iqSSylcCqnElDa
-         AVau4GSEu7q/4s2ZTilxBRERa7+HplvcEVjMmlivdXoSG5lnUC7moEqfpj1JhEbdYSXx
-         6MUxFw9BPh4JT9OYAiLOGKncNm/n7RARaGhuCY/YcqnhEA2h4qe0OikedNdDbvVg1I8b
-         JqNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=U+mKfaGXoONCznFgzmYIZny9AKkMWKoWt6b7S8f60RM=;
-        b=Titudz09kzagoCsqa6+lXfKNQoSGTzwxjvp84G6X/Iyb9RESIVo8pQBZPY4bpPKE4Z
-         pniSihPuvd+5O2AaulJfRqyfXon0DE+z8a2e8+120jU5bvIbLNX21cma4qt+3nOOp6XO
-         /5bcyY6AuLqRK2byksoo2Gzh8D5RCmeTYzs34HtW1uFBJxUdhyjxT8Y3mIeCH+LYTW6b
-         HTu+sZvCpfH3NgBfsZgQzILgk3W6c1wOsQ5qvieD2EAAUMD5oPI0vxV6cyYGo2KTl0Fv
-         XeaVI51UQeNcLdEn5SlXxr84247/AE12umTwIdRN6W87szw7o8CgM/4/uNcxEt4Q9SbF
-         buwg==
-X-Gm-Message-State: AJIora/FwTPjyYlDfvavb5dNxQrlytukBv9Fd1ywRuxwxezbBvaaLfp2
-	Ua7Hz+vHIfOkpl+UHY8Lnffdhw==
-X-Google-Smtp-Source: AGRyM1uss6yL9ryGiFhRNXcrE8eBDDu99NbY6sECQMgnEwKtRLT98HuE31fmJMfucgcPw940Fu+20A==
-X-Received: by 2002:a5d:4352:0:b0:213:4910:6616 with SMTP id u18-20020a5d4352000000b0021349106616mr2022060wrr.226.1656494065746;
-        Wed, 29 Jun 2022 02:14:25 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id z18-20020a05600c0a1200b0039c45fc58c4sm2440202wmp.21.2022.06.29.02.14.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 29 Jun 2022 02:14:25 -0700 (PDT)
-Date: Wed, 29 Jun 2022 10:14:01 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Eric Auger <eric.auger@redhat.com>
-Cc: eric.auger.pro@gmail.com, jroedel@suse.de, linux-acpi@vger.kernel.org,
-	iommu@lists.linux-foundation.org, rafael@kernel.org,
-	lenb@kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH] ACPI: VIOT: Fix ACS setup
-Message-ID: <YrwX2U48HOC+UF07@myrica>
-References: <20220627125534.1035912-1-eric.auger@redhat.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E10A7A
+	for <iommu@lists.linux.dev>; Wed, 29 Jun 2022 11:57:57 +0000 (UTC)
+Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.201])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LY0Lr1xbbz67yhs;
+	Wed, 29 Jun 2022 19:57:08 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 29 Jun 2022 13:57:53 +0200
+Received: from [10.195.245.77] (10.195.245.77) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 29 Jun 2022 12:57:52 +0100
+Message-ID: <416ebe33-28ed-eef0-0001-83efd83a9d0f@huawei.com>
+Date: Wed, 29 Jun 2022 12:57:54 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220627125534.1035912-1-eric.auger@redhat.com>
-Message-ID: <20220629091401.aLHCe5fvgXmwTJz0SLKcbaExfP3eGwP3wqQlcwIZqfY@z>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v4 1/5] dma-mapping: Add dma_opt_mapping_size()
+To: Robin Murphy <robin.murphy@arm.com>
+CC: <linux-scsi@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+	<linuxarm@huawei.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-ide@vger.kernel.org>,
+	<iommu@lists.linux-foundation.org>, <damien.lemoal@opensource.wdc.com>,
+	<jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
+	<m.szyprowski@samsung.com>, <joro@8bytes.org>, <hch@lst.de>,
+	<will@kernel.org>
+References: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
+ <1656343521-62897-2-git-send-email-john.garry@huawei.com>
+ <bbca5df5-8681-d6d9-201d-3d48b34e3001@arm.com>
+ <a2e717d0-c3e2-ea98-9d8b-cee1fd37c117@huawei.com>
+From: John Garry <john.garry@huawei.com>
+In-Reply-To: <a2e717d0-c3e2-ea98-9d8b-cee1fd37c117@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.195.245.77]
+X-ClientProxiedBy: lhreml751-chm.china.huawei.com (10.201.108.201) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Message-ID: <20220629115754.DnfCpPqC3bthqnYc7sMrN2McG2kjGE4N7bKcsS1Dn6k@z>
 
-Hi Eric,
-
-On Mon, Jun 27, 2022 at 02:55:34PM +0200, Eric Auger wrote:
-> Currently acpi_viot_init() gets called after the pci
-> device has been scanned and pci_enable_acs() has been called.
-> So pci_request_acs() fails to be taken into account leading
-> to wrong single iommu group topologies when dealing with
-> multi-function root ports for instance.
+On 28/06/2022 12:27, John Garry via iommu wrote:
+> On 28/06/2022 12:23, Robin Murphy wrote:
+>>> +
+>>> +    size_t
+>>> +    dma_opt_mapping_size(struct device *dev);
+>>> +
+>>> +Returns the maximum optimal size of a mapping for the device. 
+>>> Mapping large
+>>> +buffers may take longer so device drivers are advised to limit total 
+>>> DMA
+>>> +streaming mappings length to the returned value.
+>>
+>> Nit: I'm not sure "advised" is necessarily the right thing to say in 
+>> general - that's only really true for a caller who cares about 
+>> throughput of churning through short-lived mappings more than anything 
+>> else, and doesn't take a significant hit overall from splitting up 
+>> larger requests. I do think it's good to clarify the exact context of 
+>> "optimal" here, but I'd prefer to be objectively clear that it's for 
+>> workloads where the up-front mapping overhead dominates.
 > 
-> We cannot simply move the acpi_viot_init() earlier, similarly
-> as the IORT init because the VIOT parsing relies on the pci
-> scan. However we can detect VIOT is present earlier and in
-> such a case, request ACS. Introduce a new acpi_viot_early_init()
-> routine that allows to call pci_request_acs() before the scan.
-> 
-> Fixes: 3cf485540e7b ("ACPI: Add driver for the VIOT table")
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> Reported-by: Jin Liu <jinl@redhat.com>
+I'm going to go with something like this:
 
-Thanks for the fix, the patch makes sense and fixes the issue.
+size_t
+dma_opt_mapping_size(struct device *dev);
 
-I wondered whether we should keep the logic where we only request ACS if
-an IOMMU is found to manage a PCI range, but I can't see any harm in
-requesting it regardless (plus there is a precedent with AMD IOMMU).
-I could imagine some VMM wanting to only put an IOMMU in front of its MMIO
-devices and leave PCI to roam free, but that seems like a stretch.
+Returns the maximum optimal size of a mapping for the device.
 
-There is another issue with the existing code, though: we can't call
-pci_request_acs() when CONFIG_PCI is disabled because no stub is defined.
-Could you wrap the call in an #ifdef?
+Mapping larger buffers may take much longer in certain scenarios. In 
+addition, for high-rate short-lived streaming mappings the upfront time 
+spent on the mapping may account for an appreciable part of the total 
+request lifetime. As such, if splitting larger requests incurs no 
+significant performance penalty, then device drivers are advised to 
+limit total DMA streaming mappings length to the returned value.
 
-> ---
->  drivers/acpi/bus.c        |  1 +
->  drivers/acpi/viot.c       | 23 +++++++++++++++++------
->  include/linux/acpi_viot.h |  2 ++
->  3 files changed, 20 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
-> index 86fa61a21826..906ad8153fd9 100644
-> --- a/drivers/acpi/bus.c
-> +++ b/drivers/acpi/bus.c
-> @@ -1400,6 +1400,7 @@ static int __init acpi_init(void)
->  
->  	pci_mmcfg_late_init();
->  	acpi_iort_init();
-> +	acpi_viot_early_init();
->  	acpi_hest_init();
->  	acpi_ghes_init();
->  	acpi_scan_init();
-> diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
-> index d2256326c73a..3c1be123e4d6 100644
-> --- a/drivers/acpi/viot.c
-> +++ b/drivers/acpi/viot.c
-> @@ -248,6 +248,23 @@ static int __init viot_parse_node(const struct acpi_viot_header *hdr)
->  	return ret;
->  }
->  
-> +/**
-> + * acpi_viot_early_init - Test the presence of VIOT and enable ACS
-> + *
-> + * If the VIOT does exist, ACS must be enabled. This cannot be
-> + * done in acpi_viot_init() which is called after the bus scan
-> + */
-> +void __init acpi_viot_early_init(void)
-> +{
-> +	acpi_status status;
-> +	struct acpi_table_header *hdr;
-> +
-> +	status = acpi_get_table(ACPI_SIG_VIOT, 0, &hdr);
-> +	if (!ACPI_FAILURE(status))
-> +		pci_request_acs();
-> +	acpi_put_table(hdr);
+Let me know if you would like it further amended.
 
-I'd rather not call acpi_put_table() in case of failure. I know it is
-handled but it looks fragile and I couldn't find any other user of
-acpi_get_table() doing this.
-
-> +}
-> +
->  /**
->   * acpi_viot_init - Parse the VIOT table
->   *
-> @@ -319,12 +336,6 @@ static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
->  			epid = ((domain_nr - ep->segment_start) << 16) +
->  				dev_id - ep->bdf_start + ep->endpoint_id;
->  
-> -			/*
-> -			 * If we found a PCI range managed by the viommu, we're
-> -			 * the one that has to request ACS.
-> -			 */
-> -			pci_request_acs();
-> -
->  			return viot_dev_iommu_init(&pdev->dev, ep->viommu,
->  						   epid);
->  		}
-> diff --git a/include/linux/acpi_viot.h b/include/linux/acpi_viot.h
-> index 1eb8ee5b0e5f..e58d60f8ff2e 100644
-> --- a/include/linux/acpi_viot.h
-> +++ b/include/linux/acpi_viot.h
-> @@ -6,10 +6,12 @@
->  #include <linux/acpi.h>
->  
->  #ifdef CONFIG_ACPI_VIOT
-> +void __init acpi_viot_early_init(void);
->  void __init acpi_viot_init(void);
->  int viot_iommu_configure(struct device *dev);
->  #else
->  static inline void acpi_viot_init(void) {}
-> +static inline void acpi_viot_early_init(void) {}
-
-nit: different declaration order
-
-Thanks,
-Jean
-
-
->  static inline int viot_iommu_configure(struct device *dev)
->  {
->  	return -ENODEV;
-> -- 
-> 2.35.3
-> 
+Cheers,
+John
