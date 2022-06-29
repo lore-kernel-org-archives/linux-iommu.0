@@ -1,69 +1,81 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id EB47BCCA47F
-	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 06:49:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D7826C433EF
+	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 07:43:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9EC786F66A;
-	Wed, 29 Jun 2022 06:49:59 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 9EC786F66A
+	by smtp4.osuosl.org (Postfix) with ESMTP id 5335540896;
+	Wed, 29 Jun 2022 07:43:37 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 5335540896
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3SmsREdaO6iF; Wed, 29 Jun 2022 06:49:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 6E8506F669;
-	Wed, 29 Jun 2022 06:49:58 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 6E8506F669
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1IetQ7e2CSki; Wed, 29 Jun 2022 07:43:36 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id D341140871;
+	Wed, 29 Jun 2022 07:43:35 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org D341140871
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3D721C0032;
-	Wed, 29 Jun 2022 06:49:58 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 78F15C002D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:49:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8EC50C0039;
+	Wed, 29 Jun 2022 07:43:35 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2DEC4C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 07:43:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 4475C40423
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:49:56 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 4475C40423
+ by smtp1.osuosl.org (Postfix) with ESMTP id 095F3814B6
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 07:43:34 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org 095F3814B6
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8Z8uhaciK0_J for <iommu@lists.linux-foundation.org>;
- Wed, 29 Jun 2022 06:49:55 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org A5C28400A6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp2.osuosl.org (Postfix) with ESMTPS id A5C28400A6
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 06:49:55 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 8AA3E68AFE; Wed, 29 Jun 2022 08:49:52 +0200 (CEST)
-Date: Wed, 29 Jun 2022 08:49:52 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Logan Gunthorpe <logang@deltatee.com>
-Subject: Re: [PATCH v7 00/21]  Userspace P2PDMA with O_DIRECT NVMe devices
-Message-ID: <20220629064952.GE17576@lst.de>
-References: <20220615161233.17527-1-logang@deltatee.com>
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id uJfsmxfmAePf for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Jun 2022 07:43:33 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.osuosl.org DDF84813BC
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id DDF84813BC
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 07:43:32 +0000 (UTC)
+Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.200])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LXtgT3zScz6H7fy;
+ Wed, 29 Jun 2022 15:41:09 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 29 Jun 2022 09:43:29 +0200
+Received: from [10.195.245.77] (10.195.245.77) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 29 Jun 2022 08:43:28 +0100
+Message-ID: <65e05dd1-8e92-5f6b-d68e-72987fcebf59@huawei.com>
+Date: Wed, 29 Jun 2022 08:43:30 +0100
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20220615161233.17527-1-logang@deltatee.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: linux-pci@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
- linux-nvme@lists.infradead.org, Stephen Bates <sbates@raithlin.com>,
- linux-mm@kvack.org, Jason Ekstrand <jason@jlekstrand.net>,
- Ira Weiny <ira.weiny@intel.com>, Christoph Hellwig <hch@lst.de>,
- Minturn Dave B <dave.b.minturn@intel.com>,
- Martin Oliveira <martin.oliveira@eideticom.com>,
- Matthew Wilcox <willy@infradead.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
- Bjorn Helgaas <helgaas@kernel.org>, Daniel Vetter <daniel.vetter@ffwll.ch>,
- Ralph Campbell <rcampbell@nvidia.com>, John Hubbard <jhubbard@nvidia.com>,
- linux-block@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>,
- Xiong Jianxin <jianxin.xiong@intel.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
- Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v4 5/5] libata-scsi: Cap ata_device->max_sectors according
+ to shost->max_sectors
+To: Damien Le Moal <damien.lemoal@opensource.wdc.com>, Christoph Hellwig
+ <hch@lst.de>
+References: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
+ <1656343521-62897-6-git-send-email-john.garry@huawei.com>
+ <b69c6112-98b7-3890-9d11-bb321a7c877a@opensource.wdc.com>
+ <6619638c-52e8-cb67-c56c-9c9d38c18161@huawei.com>
+ <ba59a0da-a982-e3eb-1cb7-6e60f80fd319@opensource.wdc.com>
+ <38ae1cc8-1411-bb54-e082-0f7b91cb9e63@huawei.com>
+ <20220629054027.GB16297@lst.de>
+ <da7027d9-bd81-cfb0-f70e-2405f40023fa@opensource.wdc.com>
+In-Reply-To: <da7027d9-bd81-cfb0-f70e-2405f40023fa@opensource.wdc.com>
+X-Originating-IP: [10.195.245.77]
+X-ClientProxiedBy: lhreml751-chm.china.huawei.com (10.201.108.201) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: martin.petersen@oracle.com, linux-scsi@vger.kernel.org,
+ linux-doc@vger.kernel.org, robin.murphy@arm.com, linuxarm@huawei.com,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
+ iommu@lists.linux-foundation.org, will@kernel.org, jejb@linux.ibm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,16 +88,36 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+From: John Garry via iommu <iommu@lists.linux-foundation.org>
+Reply-To: John Garry <john.garry@huawei.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Given how long this is stuck and how big and touching many subsystems,
-can we start to make progress on this pice-mail?
+On 29/06/2022 06:58, Damien Le Moal wrote:
+> On 6/29/22 14:40, Christoph Hellwig wrote:
+>> On Tue, Jun 28, 2022 at 12:33:58PM +0100, John Garry wrote:
+>>> Well Christoph originally offered to take this series via the dma-mapping
+>>> tree.
+>>>
+>>> @Christoph, is that still ok with you? If so, would you rather I send this
+>>> libata patch separately?
+>>
+>> The offer still stands, and I don't really care where the libata
+>> patch is routed.  Just tell me what you prefer.
 
-I think patches 1-13 look pretty solid, and assuming an review for the
-dma-iommu bits these patches could probaby be queued up ASAP.
+Cheers.
+
+> 
+> If it is 100% independent from the other patches, I can take it.
+> Otherwise, feel free to take it !
+> 
+
+I'll just keep the all together - it's easier in case I need to change 
+anything.
+
+Thanks!
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
