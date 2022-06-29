@@ -1,150 +1,76 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 82661C433EF
-	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 11:54:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id B6699C43334
+	for <iommu@archiver.kernel.org>; Wed, 29 Jun 2022 11:58:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id DBCE8410A8;
-	Wed, 29 Jun 2022 11:54:47 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org DBCE8410A8
-Authentication-Results: smtp4.osuosl.org;
-	dkim=fail reason="signature verification failed" (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=B5Rogtey
+	by smtp2.osuosl.org (Postfix) with ESMTP id 3B68640610;
+	Wed, 29 Jun 2022 11:58:02 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org 3B68640610
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SU6ifBLTbqRs; Wed, 29 Jun 2022 11:58:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id F0AE040002;
+	Wed, 29 Jun 2022 11:58:00 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp2.osuosl.org F0AE040002
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C1153C0039;
+	Wed, 29 Jun 2022 11:58:00 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 04CE6C002D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 11:57:59 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id E0EFF410A5
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 11:57:58 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org E0EFF410A5
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id weg9muVY2uYc; Wed, 29 Jun 2022 11:54:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 7A18A409F1;
-	Wed, 29 Jun 2022 11:54:46 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 7A18A409F1
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 41207C0039;
-	Wed, 29 Jun 2022 11:54:46 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EDF4EC002D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 11:54:44 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id C7002612CC
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 11:54:44 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org C7002612CC
-Authentication-Results: smtp3.osuosl.org; dkim=pass (1024-bit key,
- unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256
- header.s=selector1 header.b=B5Rogtey
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gOJMQtTjdzPL for <iommu@lists.linux-foundation.org>;
- Wed, 29 Jun 2022 11:54:44 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp3.osuosl.org 0783C612C6
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam12on2084.outbound.protection.outlook.com [40.107.244.84])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 0783C612C6
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 11:54:43 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N8K8RAy7yyZEp+wPkgvDbiPJ1HuHDt27pep0DSJmu/SGUxiVgucaczX+482zi6it/qSdfMP4aiv3UuOr5v4LxnO+ov5K7Qc8IqBy+jEeom08P0USeOTxD9EysWIUrz+KTzfyr3LTAe6mdG0ASlAicjV1D2T+HoSgVVWQ4w83SDGUJSoBvq8tJjWZz5b3BNH8GtSA3ohAFEzgEvzHZjmv/WpXMoTqP1vTpz8kqBjbjB0gZMtrweqiDHrlZ9JKK/CRaHwba/P904H8IOESHjUA3memhp8P62JxAMzJKfKriqQN041Mnb+XrYmx3t9O8AqBV7svIru3ZQI3B2a9dGEaGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/V5VFGP+nUGdXlM3EpyXG8G+ZHa+lExg7VpqCYnDasc=;
- b=DgTPMS3X76daD6RdqxRxou9RtGD1dCg8gMq0GEZhmcHVlddLIJ4qyoZxjfxqyDo5MVRSTsQQ5MOxb/kqZvWHP1VHLJxkKO9lb52DQb2uxxmwMVi4qCqaPM4OEZkL2DZgoPH7U2w0QH4n0GFaPcOEh8e5eY/YVxB8VnnXnUssPC63HQ8QXEWllzPoEDswHsWgO6pHkiA5Z+uEvfbygPxn+/yywmI8DwQpR2nPDTB/K0sV4dst5KLTxvrO84Cgw/dlpWTicpCL4IWs/Ly7qsBiqYMhpl9MTI+Qtw3PibOKIrNzUhzzDYx/vf6MQ7PzjqjSnWUlh6mBG33MIDooi/m4Dg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/V5VFGP+nUGdXlM3EpyXG8G+ZHa+lExg7VpqCYnDasc=;
- b=B5RogteyAe3a30Da3nHSzHP0bcqSW3Q82Z+fdc/0fE0fDU2VDI3TYgP0bL47Mtoky/YD7MmWsmfmKRrG94QR8PasA4BHGbBKKjq6TEgHwpinM1PUC4Wfs02H1K0W//RpIq9UXiP487/eaCqz2aAj3iyhPSqX/GLJtMGdx8ZS018=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
- CY5PR12MB6156.namprd12.prod.outlook.com (2603:10b6:930:24::15) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5373.18; Wed, 29 Jun 2022 11:54:42 +0000
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::14b:372d:338c:a594]) by DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::14b:372d:338c:a594%9]) with mapi id 15.20.5373.018; Wed, 29 Jun 2022
- 11:54:42 +0000
-Message-ID: <f21aeb41-1648-24b8-01a5-143b6c99960d@amd.com>
-Date: Wed, 29 Jun 2022 18:54:34 +0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 7/7] iommu/amd: Do not support IOMMUv2 APIs when SNP is
- enabled
-Content-Language: en-US
-To: Joerg Roedel <joro@8bytes.org>
-References: <20220622171131.11870-1-suravee.suthikulpanit@amd.com>
- <20220622171131.11870-8-suravee.suthikulpanit@amd.com>
- <YrQjHYsEIGN0mtO2@8bytes.org>
-In-Reply-To: <YrQjHYsEIGN0mtO2@8bytes.org>
-X-ClientProxiedBy: SG2PR02CA0036.apcprd02.prod.outlook.com
- (2603:1096:3:18::24) To DM8PR12MB5445.namprd12.prod.outlook.com
- (2603:10b6:8:24::7)
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 8yKsk4_hevyH for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Jun 2022 11:57:57 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp4.osuosl.org 826CA409FE
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 826CA409FE
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jun 2022 11:57:57 +0000 (UTC)
+Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.201])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LY0Lr1xbbz67yhs;
+ Wed, 29 Jun 2022 19:57:08 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 29 Jun 2022 13:57:53 +0200
+Received: from [10.195.245.77] (10.195.245.77) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 29 Jun 2022 12:57:52 +0100
+Message-ID: <416ebe33-28ed-eef0-0001-83efd83a9d0f@huawei.com>
+Date: Wed, 29 Jun 2022 12:57:54 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e8256c88-d2b7-4880-ec9f-08da59c626f3
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6156:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JWqtYPinHvQ/J5hk7pAIxbAEXqIAi+OHVpoA2CDeGb8mZ/PiT5XJc1FhE0Trs/1GBPNYjE0z5PYp5bbBwGjAyjzXyOTBh8yIqh5ptyngvJHgHz5LFivlXUR9jRg3DEiIdRikgUHc7nbKn/7AR6jBdV9gl7pyNJhTHpaO/v0jMA6rcJqgAqRmZ1WX4FsEu46pOPENKqWKEQy2+8PRq+0no16BjBsf69+GycC17SNVQrXbJOu7WHtj5jMzMXEPjejFQBpC1U2aLad9GTxMoKk4tGfOPiAP2ip5C58nlbiKPNrVJh7C8cH8pVnqixidVELvkpvyuHhjZGsW1oRaa2O1qIM5UWJb1fYnusc7ZShGOC6lszYoUx7xFDE/3eLuvRW0x6n5+f/B2PxPeN+jDqTHCZ+Pc+pwZoQ63LDX7N9BRMW7JTy7LOKkOWFXaP9wibpaLx8h6fNOwuRpoLtVJ0e3/ViIko7OSzdrw9pV+vMMnbq444m6403tbhMpHecVAnfmK1KQ2Yyv2caqi/3GEL7PS3b1xcRrS785wKvwEb60KMXXOFLC415gp71vlM9UfPMAOdP1qEyvUAdymeUv90wJCGEEBSQx4H/yu8llXLW5yYkCurv1Vl/8Nv/vvdAHWOfAHjA8Jo3WS3/4EU1NhdKRNio9B7fF46wrS6JyscBlASH1ls47IohW4qcNiUsG3o14CA5TU+eqN3+wO1hOKn+SAzXS3TiTzeMw15JQj82fP3Ca+o24PVSqP9lqTaDxwMS5qJEcNzc0sBpeJLPv7oyArL3fQnoCqphInavmJr+evzUuvT1XtfdUZfcawY7Dr3L/zN6JRDKcMXPU1oNdFg+wwA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM8PR12MB5445.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230016)(4636009)(366004)(346002)(136003)(376002)(396003)(39860400002)(186003)(6666004)(36756003)(86362001)(6916009)(6506007)(2616005)(31686004)(6512007)(38100700002)(66556008)(6486002)(8676002)(2906002)(316002)(41300700001)(5660300002)(66476007)(66946007)(26005)(4326008)(31696002)(53546011)(478600001)(8936002)(4744005)(43740500002)(45980500001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NnNlNUQ1ckJiSDZWT0tGdEpDZVlMclN6N1NjOWNtY2hPcGE5enFoUTF5UFpL?=
- =?utf-8?B?YkFEazlqWHNEZE5aaWhjTUttVDg4Y3RCWmp1UlF0QURwV2ZUTjJFZEt0bTRC?=
- =?utf-8?B?MzQyRG9JVlVaUDd3K3NTWVNab05ON1FFcVBZT2dEaE5nNVI4VTZCekhjQzJC?=
- =?utf-8?B?RjFhS01KZzFkUmo5bWRPNjJJb2dFZFEvVk1qaHA3TXYwQzZDRDNBVlIyUjJm?=
- =?utf-8?B?Y2VwU3VENnQ4UjQvMWRPM1VLTjRrNGhRSUVpVTN2bXExblZZUTVEUnY1TGlE?=
- =?utf-8?B?eHc4ajh6TUo2amM3ajV3eU5qeXNtYTcwSGZYVWRxSU1EVzlqSURQMEk3Z1BD?=
- =?utf-8?B?WXBKczA4WU82dzZ6aXFRZ0c1ZXY3MU5BNCs1ekhTeUpXRUh6c0U3QlZjZTU1?=
- =?utf-8?B?Ujg3YWlmRm5RZlRUbnNHMGU1TjMxQlphMG5QTG1VNXJpekRXS1diamQybU0r?=
- =?utf-8?B?R3J1WTEzdk5iTC85QUMrTm50U0hRV25lMEd3MXBwVEVOZ3BTNVVYNUYzODFG?=
- =?utf-8?B?RC9sZGFxT1FveEZFNmpwakIxcHl6aThUL1RRbjhGZkRtNFFaOE9yNUVndVNQ?=
- =?utf-8?B?YU82YkRlNnJLckdQdXkxQzdLV2xPMnZ4ZzYzVjByc3Z6VE90eE9vUWovUGxy?=
- =?utf-8?B?SVFYa0orSjc5Yzk2c0pZSDlnWjV2YTk2cWRWMDM1MkJxam9jTFVDOGVDcmNo?=
- =?utf-8?B?RFZBelRrUnkrZ2FGU0krSFpEcnEvNzZSWC9ESDBaaGlyOFNuNjNFUFhHOFU5?=
- =?utf-8?B?STQ4aHBKcGk2SmV3RHZkcXB6cytXaGZibmdvUWZ5R1U2clc2VUZQcmw3QVgw?=
- =?utf-8?B?Q1NhSmgvazg5SDF0UUd5c0RCWWFwSXVQWGtlMDFPeHErS1ZldTY5UnpFOGRp?=
- =?utf-8?B?dHBLc1lCV3dOUG9FZ1RXUVVSK2dlLzNtOGgrT0RzKzNmUE4rZmhhU3g0MVBN?=
- =?utf-8?B?TnFZTlZJZVBlODNKbC9qeXNVdUVVTytnL3FNQi93ODlURjFiY1N3QkpiREVv?=
- =?utf-8?B?UkU3akYrQ1hoTXhNa0JIY1hydWlhMldJVkRubjRRcGpEMC95QUR6TlUyNkxs?=
- =?utf-8?B?blRBVnU5OFBydjJnQ2FsM0V0cmxUTWl4NW95TUtXb2QyL0QwU1ZvT1Bpa2lk?=
- =?utf-8?B?eWpjaTNvNkZCb2Y1a2tJYlRVREN4c0hBZGhCR01NMU1zdTJURklSbDZCQnBS?=
- =?utf-8?B?Y3FzdXE2YjlEU0tGZWx4eWRqZDhJdXQxdTd4Q01GWFU3Rm9ieXU3ZnVNNUYr?=
- =?utf-8?B?UEdyWndaZVloblN5ekxVTVJ1aU4wQUFlZEw2NC9UdmRmY1o1SnAvbkJnRnhn?=
- =?utf-8?B?Nm4zWWlXczExQVoxTnBZZndNV0k2NzBtZytBQUF2ZEE4WjI2NEZmNGlyVDE2?=
- =?utf-8?B?UDdPcEFvUzNuOUtBWWFSZC9zT2xPeWNEY01UT0JlM3NRYmZXTkRkbTdtWmdW?=
- =?utf-8?B?S0d5aWhXaEcvUXVHZ1ExdjR5S3JCOEIwclNzb09sdU9xTUhBY2IxS3NWNWth?=
- =?utf-8?B?ZzBKNFA4d1hDcmpSWm1yTFhXRjBvTktQR2ZjTGlPK2NyRWpNMkcwZlB2UzUv?=
- =?utf-8?B?cFIxeGlBNmt6YTFFTmV2a0F0c0h3VHRNbDducEs2SEhGcURPcWp1MzRsTjFw?=
- =?utf-8?B?cnRRZ1d6dXRMazZGTWdTb1F4TXlDcHl3UVBZK0czWVRhRGNBUHBtcHM0RUJH?=
- =?utf-8?B?NmQ0czF0T2Y2TjdyOStuVFFJRHUwaXUzVFY1MjNXTTV0ZlR5SHA0V1FCSGFG?=
- =?utf-8?B?TXVpam9wNC9yeFpuS003b0lzTHdpa1JOUW5YVHZkYk9sT0RidzBuaWVvblBG?=
- =?utf-8?B?RUZNdVpTYmthTUExRmJPRDU2Z3ZYQ3EvNmxJV01uODBpWks2TTlCREkvQ2pI?=
- =?utf-8?B?V0x0Wkl2Sm0rR00wdWZxT1l3Ui81NmFEOFFqNmpuQTkzSEVnVWFPQkVJUTJN?=
- =?utf-8?B?VG9YYlhCNklBemduREUrWllZNWtxV2RqWHZ0WHdjZDlIWkNpZGNrV2lPaUZ3?=
- =?utf-8?B?R0tnV1F6bzNVS2NYb0tqaFl3WS9JbGRyRlJTNWs3M2JFM3hNbDJMZWpkaEdr?=
- =?utf-8?B?cUFBellnV0k0SzJ1QlZqaGcxK3RRUFc0NnkwS2o1Rnhqbkc3WDBtMTJPR3BV?=
- =?utf-8?Q?CrXlv++t4jN76JnRAEy5qyycH?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e8256c88-d2b7-4880-ec9f-08da59c626f3
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jun 2022 11:54:42.1387 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZW7wa432bn4p5nBOhI9ze4rQZsBMh/XCcln1yPnsGGng6DyRG0bbVZCCU8hI/mkpSzggFdwxVdt19SiLPRgJyA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6156
-Cc: thomas.lendacky@amd.com, ashish.kalra@amd.com, linux-kernel@vger.kernel.org,
- vasant.hegde@amd.com, iommu@lists.linux-foundation.org, robin.murphy@arm.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v4 1/5] dma-mapping: Add dma_opt_mapping_size()
+To: Robin Murphy <robin.murphy@arm.com>
+References: <1656343521-62897-1-git-send-email-john.garry@huawei.com>
+ <1656343521-62897-2-git-send-email-john.garry@huawei.com>
+ <bbca5df5-8681-d6d9-201d-3d48b34e3001@arm.com>
+ <a2e717d0-c3e2-ea98-9d8b-cee1fd37c117@huawei.com>
+In-Reply-To: <a2e717d0-c3e2-ea98-9d8b-cee1fd37c117@huawei.com>
+X-Originating-IP: [10.195.245.77]
+X-ClientProxiedBy: lhreml751-chm.china.huawei.com (10.201.108.201) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: martin.petersen@oracle.com, linux-scsi@vger.kernel.org,
+ linux-doc@vger.kernel.org, will@kernel.org, damien.lemoal@opensource.wdc.com,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linuxarm@huawei.com, linux-ide@vger.kernel.org, iommu@lists.linux.dev,
+ hch@lst.de, jejb@linux.ibm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -157,38 +83,40 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: "Suthikulpanit, Suravee via iommu" <iommu@lists.linux-foundation.org>
-Reply-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+From: John Garry via iommu <iommu@lists.linux-foundation.org>
+Reply-To: John Garry <john.garry@huawei.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-On 6/23/2022 3:23 PM, Joerg Roedel wrote:
-> On Wed, Jun 22, 2022 at 12:11:31PM -0500, Suravee Suthikulpanit wrote:
->>   bool amd_iommu_v2_supported(void)
->>   {
->> -	return amd_iommu_v2_present;
->> +	/*
->> +	 * Since DTE[Mode]=0 is prohibited on SNP-enabled system
->> +	 * (i.e. EFR[SNPSup]=1), IOMMUv2 page table cannot be used without
->> +	 * setting up IOMMUv1 page table.
->> +	 */
->> +	return amd_iommu_v2_present && !amd_iommu_snp_en;
-> 
-> IOMMU_v2 APIs could actually be supported with GIOV and IOMMUv2
-> page-tables in-use, no?
-> 
-We can support IOMMUv2 iff the v1 table is also setup (i.e. DTE[Mode] != 0).
-Currently w/ IOMMU_v2 APIs, the IOMMU sets the mode to zero. Therefore, we
-cannot support this use case.
-
-Best Regards,
-Suravee
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjgvMDYvMjAyMiAxMjoyNywgSm9obiBHYXJyeSB2aWEgaW9tbXUgd3JvdGU6Cj4gT24gMjgv
+MDYvMjAyMiAxMjoyMywgUm9iaW4gTXVycGh5IHdyb3RlOgo+Pj4gKwo+Pj4gK8KgwqDCoCBzaXpl
+X3QKPj4+ICvCoMKgwqAgZG1hX29wdF9tYXBwaW5nX3NpemUoc3RydWN0IGRldmljZSAqZGV2KTsK
+Pj4+ICsKPj4+ICtSZXR1cm5zIHRoZSBtYXhpbXVtIG9wdGltYWwgc2l6ZSBvZiBhIG1hcHBpbmcg
+Zm9yIHRoZSBkZXZpY2UuIAo+Pj4gTWFwcGluZyBsYXJnZQo+Pj4gK2J1ZmZlcnMgbWF5IHRha2Ug
+bG9uZ2VyIHNvIGRldmljZSBkcml2ZXJzIGFyZSBhZHZpc2VkIHRvIGxpbWl0IHRvdGFsIAo+Pj4g
+RE1BCj4+PiArc3RyZWFtaW5nIG1hcHBpbmdzIGxlbmd0aCB0byB0aGUgcmV0dXJuZWQgdmFsdWUu
+Cj4+Cj4+IE5pdDogSSdtIG5vdCBzdXJlICJhZHZpc2VkIiBpcyBuZWNlc3NhcmlseSB0aGUgcmln
+aHQgdGhpbmcgdG8gc2F5IGluIAo+PiBnZW5lcmFsIC0gdGhhdCdzIG9ubHkgcmVhbGx5IHRydWUg
+Zm9yIGEgY2FsbGVyIHdobyBjYXJlcyBhYm91dCAKPj4gdGhyb3VnaHB1dCBvZiBjaHVybmluZyB0
+aHJvdWdoIHNob3J0LWxpdmVkIG1hcHBpbmdzIG1vcmUgdGhhbiBhbnl0aGluZyAKPj4gZWxzZSwg
+YW5kIGRvZXNuJ3QgdGFrZSBhIHNpZ25pZmljYW50IGhpdCBvdmVyYWxsIGZyb20gc3BsaXR0aW5n
+IHVwIAo+PiBsYXJnZXIgcmVxdWVzdHMuIEkgZG8gdGhpbmsgaXQncyBnb29kIHRvIGNsYXJpZnkg
+dGhlIGV4YWN0IGNvbnRleHQgb2YgCj4+ICJvcHRpbWFsIiBoZXJlLCBidXQgSSdkIHByZWZlciB0
+byBiZSBvYmplY3RpdmVseSBjbGVhciB0aGF0IGl0J3MgZm9yIAo+PiB3b3JrbG9hZHMgd2hlcmUg
+dGhlIHVwLWZyb250IG1hcHBpbmcgb3ZlcmhlYWQgZG9taW5hdGVzLgo+IApJJ20gZ29pbmcgdG8g
+Z28gd2l0aCBzb21ldGhpbmcgbGlrZSB0aGlzOgoKc2l6ZV90CmRtYV9vcHRfbWFwcGluZ19zaXpl
+KHN0cnVjdCBkZXZpY2UgKmRldik7CgpSZXR1cm5zIHRoZSBtYXhpbXVtIG9wdGltYWwgc2l6ZSBv
+ZiBhIG1hcHBpbmcgZm9yIHRoZSBkZXZpY2UuCgpNYXBwaW5nIGxhcmdlciBidWZmZXJzIG1heSB0
+YWtlIG11Y2ggbG9uZ2VyIGluIGNlcnRhaW4gc2NlbmFyaW9zLiBJbiAKYWRkaXRpb24sIGZvciBo
+aWdoLXJhdGUgc2hvcnQtbGl2ZWQgc3RyZWFtaW5nIG1hcHBpbmdzIHRoZSB1cGZyb250IHRpbWUg
+CnNwZW50IG9uIHRoZSBtYXBwaW5nIG1heSBhY2NvdW50IGZvciBhbiBhcHByZWNpYWJsZSBwYXJ0
+IG9mIHRoZSB0b3RhbCAKcmVxdWVzdCBsaWZldGltZS4gQXMgc3VjaCwgaWYgc3BsaXR0aW5nIGxh
+cmdlciByZXF1ZXN0cyBpbmN1cnMgbm8gCnNpZ25pZmljYW50IHBlcmZvcm1hbmNlIHBlbmFsdHks
+IHRoZW4gZGV2aWNlIGRyaXZlcnMgYXJlIGFkdmlzZWQgdG8gCmxpbWl0IHRvdGFsIERNQSBzdHJl
+YW1pbmcgbWFwcGluZ3MgbGVuZ3RoIHRvIHRoZSByZXR1cm5lZCB2YWx1ZS4KCkxldCBtZSBrbm93
+IGlmIHlvdSB3b3VsZCBsaWtlIGl0IGZ1cnRoZXIgYW1lbmRlZC4KCkNoZWVycywKSm9obgpfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
+IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
+eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
